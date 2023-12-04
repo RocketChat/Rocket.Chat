@@ -2,27 +2,25 @@ FROM node:14.21.3-alpine3.16
 
 RUN apk add --no-cache ttf-dejavu
 
-ADD . /app
+COPY dist /app
+
+COPY apps/meteor/.scripts/fix-arm64-alpine-fibers.sh /fix-fibers.sh
 
 LABEL maintainer="buildmaster@rocket.chat"
 
+# TODO: use non-root user
+
 RUN set -x \
-    && apk add --no-cache --virtual .fetch-deps python3 make g++ libc6-compat \
+    && apk add --no-cache --virtual .fetch-deps python3 make g++ libc6-compat patch \
     && cd /app/bundle/programs/server \
-    && npm install --production \
-    # Start hack for sharp...
-    && rm -rf npm/node_modules/sharp \
-    && npm install sharp@0.32.6 \
-    && mv node_modules/sharp npm/node_modules/sharp \
-    # End hack for sharp
-    # Start hack for isolated-vm...
-    && rm -rf npm/node_modules/isolated-vm \
-    && npm install isolated-vm@4.4.2 \
-    && mv node_modules/isolated-vm npm/node_modules/isolated-vm \
-    # End hack for isolated-vm
-    && cd npm \
-    && npm rebuild bcrypt --build-from-source \
-    && npm cache clear --force \
+    && npm install --production --unsafe-perm; \
+    if [[ $(uname -m) == 'aarch64' ]]; then \
+        cd npm/node_modules/fibers; \
+        ash /fix-fibers.sh || exit $?; \
+        cd -; \
+        cp -r npm/node_modules/fibers /app/bundle/programs/server/node_modules; \
+    fi; \
+    npm cache clear --force \
     && apk del .fetch-deps
 
 # needs a mongo instance - defaults to container linking with alias 'mongo'

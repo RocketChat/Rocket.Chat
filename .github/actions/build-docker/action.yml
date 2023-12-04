@@ -1,47 +1,73 @@
-name: 'Meteor Docker'
+name: 'Build docker image'
+description: 'Build container image for alpine, debian bases and the preview image; pushes to github container registry (single platform at a time)'
 
 inputs:
-  CR_USER:
-    required: true
-  CR_PAT:
-    required: true
+  registry-username:
+    description: ''
+    required: false
+  registry-token:
+    description: ''
+    required: false
   node-version:
-    required: true
+    required: false
     description: 'Node version'
-    type: string
   platform:
     required: false
     description: 'Platform'
-    type: string
+  repository-owner:
+    description: 'Owner of registry repository'
+    required: false
+    default: 'rocketchat'
+  version-tag:
+    description: 'Version part of a image tag'
+    required: true
+  registry:
+    default: ghcr.io
+    description: 'Registry to push the images to'
+  targets:
+    description: 'Targets to build'
+    required: false
+    default: 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service omnichannel-transcript-service queue-worker-service'
+  arch:
+    description: 'Host architecture to build for'
+    required: true
+    deprecationMessage: 'Soon to use concurrent builds'
+  push:
+    description: Push image to registry
+    required: false
+    default: 'true'
 
 runs:
   using: composite
 
   steps:
     - name: Login to GitHub Container Registry
-      if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
+      if: inputs.push == 'true'
       uses: docker/login-action@v2
       with:
-        registry: ghcr.io
-        username: ${{ inputs.CR_USER }}
-        password: ${{ inputs.CR_PAT }}
+        registry: ${{ inputs.registry }}
+        username: ${{ inputs.registry-username }}
+        password: ${{ inputs.registry-token }}
 
     - name: Restore build
       uses: actions/download-artifact@v3
       with:
         name: build
-        path: /tmp/build
+        path: dist
 
     - name: Unpack build
       shell: bash
       run: |
-        cd /tmp/build
+        cd dist
         tar xzf Rocket.Chat.tar.gz
         rm Rocket.Chat.tar.gz
 
     - uses: dtinth/setup-github-actions-caching-for-turbo@v1
+      if: inputs.platform == 'alpine'
 
+    # no need to "build" stuff if not building the ms targets
     - name: Setup NodeJS
+      if: inputs.platform == 'alpine'
       uses: ./.github/actions/setup-node
       with:
         node-version: ${{ inputs.node-version }}
@@ -49,27 +75,66 @@ runs:
         install: true
 
     - run: yarn build
+      if: inputs.platform == 'alpine'
       shell: bash
 
-    - name: Build Docker images
-      shell: bash
-      run: |
-        args=(rocketchat)
+    - uses: docker/setup-qemu-action@v2
+    - uses: docker/setup-buildx-action@v2
+      id: setup-buildx
+      with:
+        driver: docker-container
+        platforms: linux/amd64,linux/arm64
 
-        if [[ '${{ inputs.platform }}' = 'alpine' ]]; then
-          args+=($SERVICES_PUBLISH)
-        fi;
-
-        docker compose -f docker-compose-ci.yml build "${args[@]}"
-
-    - name: Publish Docker images to GitHub Container Registry
-      if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
+    - name: Build and push docker images
       shell: bash
       run: |
-        args=(rocketchat)
+        export repository_owner=${{ inputs.repository-owner }}
+        export tag=${{ inputs.version-tag }}
+        export registry=${{ inputs.registry }}
 
-        if [[ '${{ inputs.platform }}' = 'alpine' ]]; then
-          args+=($SERVICES_PUBLISH)
-        fi;
+        arch=${{inputs.arch}}
 
-        docker compose -f docker-compose-ci.yml push "${args[@]}"
+        print_and_build() {
+          args=()
+          if [ "$arch" != 'all' ]; then
+            args+=(--set="*.platform=linux/$arch")
+          fi
+
+          if [ ${{inputs.push}} = 'true' ]; then
+            args+=(--push)
+          else
+            args+=(--load)
+          fi
+
+          docker buildx bake --print "$@" "${args[@]}"
+          docker buildx bake "$@" "${args[@]}"
+        }
+
+        type=${{ inputs.platform }}
+
+        if [[ $type == 'preview' ]]; then
+          print_and_build preview
+          exit $?
+        fi
+
+        if [[ $type == 'official' ]]; then
+          print_and_build monolith
+          exit $?
+        fi
+
+        targets=(monolith-alpine)
+        targets+=(${{inputs.targets}})
+
+        if [[ $arch == 'all' ]]; then
+          print_and_build "${targets[@]}"
+        else
+          print_and_build "${targets[@]}"
+        fi
+
+    - name: Clean buildx cache
+      shell: bash
+      run: docker buildx prune -af
+
+    - name: Stop buildx builder
+      shell: bash
+      run: docker buildx stop ${{ steps.setup-buildx.outputs.name }}
