@@ -438,6 +438,64 @@ describe('Create attachments for message URLs', () => {
 		expect(deep).to.be.eq(1);
 
 		const [attachment] = message.attachments ?? [];
+
 		expect(attachment).to.have.property('attachments').and.to.have.lengthOf(0);
+		expect(attachment).to.include({
+			text: 'linked message',
+			author_name: 'username',
+			author_icon: 'url',
+			message_link: 'https://open.rocket.chat/linked?msg=linkedMsgId',
+		});
+	});
+
+	it('should work for multiple URLs', async () => {
+		const jumpToMessage = new BeforeSaveJumpToMessage({
+			getMessage: async (messageId) => {
+				if (messageId === 'msg1') {
+					return createMessage('first message', {
+						_id: 'msg1',
+					});
+				}
+
+				if (messageId === 'msg2') {
+					return createMessage('second message', {
+						_id: 'msg2',
+					});
+				}
+			},
+			getRoom: async () => createRoom(),
+			canAccessRoom: async () => true,
+			getUserAvatarURL: () => 'url',
+		});
+
+		const message = await jumpToMessage.createAttachmentForMessageURLs({
+			message: createMessage('hey', {
+				urls: [{ url: 'https://open.rocket.chat/linked?msg=msg1' }, { url: 'https://open.rocket.chat/linked?msg=msg2' }],
+			}),
+			user: createUser(),
+			config: {
+				chainLimit: 1,
+				siteUrl: 'https://open.rocket.chat',
+				useRealName: true,
+			},
+		});
+
+		expect(message).to.have.property('urls').and.to.have.lengthOf(2);
+		expect(message).to.have.property('attachments').and.to.have.lengthOf(2);
+
+		const deep = countDeep(message);
+		expect(deep).to.be.eq(1);
+
+		const [att1, att2] = message.attachments ?? [];
+
+		expect(att1).to.include({
+			text: 'first message',
+			message_link: 'https://open.rocket.chat/linked?msg=msg1',
+		});
+
+		expect(att2).to.include({
+			text: 'second message',
+			message_link: 'https://open.rocket.chat/linked?msg=msg2',
+		});
 	});
 });
