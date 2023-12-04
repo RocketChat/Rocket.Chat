@@ -1,8 +1,7 @@
-import type { Page } from '@playwright/test';
-
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel } from './utils';
+import { setUserPreferences } from './utils/setUserPreferences';
 import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -65,11 +64,13 @@ test.describe.serial('message-actions', () => {
 
 		await expect(poHomeChannel.content.lastMessageTextAttachmentEqualsText).toHaveText(message);
 	});
+
 	test('expect star the message', async ({ page }) => {
 		await poHomeChannel.content.sendMessage('Message to star');
 		await poHomeChannel.content.openLastMessageMenu();
 		await page.locator('[data-qa-id="star-message"]').click();
-		await page.getByRole('button').and(page.getByTitle('Options')).click();
+		await poHomeChannel.dismissToast();
+		await page.locator('role=button[name="Options"]').click();
 		await page.locator('[data-key="starred-messages"]').click();
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('Message to star');
 	});
@@ -87,22 +88,11 @@ test.describe.serial('message-actions', () => {
 	});
 
 	test.describe('Preference Hide Contextual Bar by clicking outside of it Enabled', () => {
-		let adminPage: Page;
-		test.beforeAll(async ({ browser }) => {
-			adminPage = await browser.newPage({ storageState: Users.admin.state });
-			await adminPage.goto('/account/preferences');
-			await adminPage.locator('role=heading[name="Messages"]').click();
-			await adminPage.locator('text="Hide Contextual Bar by clicking outside of it"').click();
+		test.beforeAll(async ({ api }) => {
+			await setUserPreferences(api, { hideFlexTab: true });
 		});
-		test.afterAll(async () => {
-			await adminPage.close();
-		});
-		test.afterAll(async ({ browser }) => {
-			adminPage = await browser.newPage({ storageState: Users.admin.state });
-			await adminPage.goto('/account/preferences');
-			await adminPage.locator('role=heading[name="Messages"]').click();
-			await adminPage.locator('text="Hide Contextual Bar by clicking outside of it"').click();
-			await adminPage.close();
+		test.afterAll(async ({ api }) => {
+			await setUserPreferences(api, { hideFlexTab: false });
 		});
 		test.beforeEach(async ({ page }) => {
 			poHomeChannel = new HomeChannel(page);

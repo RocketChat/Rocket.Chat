@@ -749,13 +749,31 @@ const LivechatDepartmentsByUnitIdSchema = {
 
 export const isLivechatDepartmentsByUnitIdProps = ajv.compile<LivechatDepartmentsByUnitIdProps>(LivechatDepartmentsByUnitIdSchema);
 
-type LivechatUsersManagerGETProps = PaginatedRequest<{ text?: string; fields?: string }>;
+type LivechatUsersManagerGETProps = PaginatedRequest<{
+	text?: string;
+	fields?: string;
+	onlyAvailable?: boolean;
+	excludeId?: string;
+	showIdleAgents?: boolean;
+}>;
 
 const LivechatUsersManagerGETSchema = {
 	type: 'object',
 	properties: {
 		text: {
 			type: 'string',
+			nullable: true,
+		},
+		onlyAvailable: {
+			type: 'boolean',
+			nullable: true,
+		},
+		excludeId: {
+			type: 'string',
+			nullable: true,
+		},
+		showIdleAgents: {
+			type: 'boolean',
 			nullable: true,
 		},
 		count: {
@@ -3120,7 +3138,8 @@ const POSTLivechatAppearanceParamsSchema = {
 				type: 'string',
 			},
 			value: {
-				anyOf: [{ type: 'string' }, { type: 'boolean' }, { type: 'number' }],
+				// Be careful with anyOf - https://github.com/ajv-validator/ajv/issues/1140
+				type: ['string', 'boolean', 'number'],
 			},
 		},
 		required: ['_id', 'value'],
@@ -3259,7 +3278,7 @@ export type OmnichannelEndpoints = {
 		}>;
 	};
 	'/v1/livechat/tags/:tagId': {
-		GET: () => ILivechatTag | null;
+		GET: () => ILivechatTag;
 	};
 	'/v1/livechat/department': {
 		GET: (params?: LivechatDepartmentProps) => PaginatedResult<{
@@ -3272,15 +3291,12 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/department/:_id': {
 		GET: (params: LivechatDepartmentId) => {
-			department: ILivechatDepartment | null;
+			department: ILivechatDepartment;
 			agents?: ILivechatDepartmentAgents[];
 		};
 		PUT: (params: {
 			department: LivechatDepartmentDTO;
-			agents: {
-				upsert?: { agentId: string; count?: number; order?: number }[];
-				remove?: { agentId: string; count?: number; order?: number };
-			}[];
+			agents: Pick<ILivechatDepartmentAgents, 'agentId' | 'count' | 'order' | 'username'>[];
 		}) => {
 			department: ILivechatDepartment | null;
 			agents: ILivechatDepartmentAgents[];
@@ -3341,7 +3357,7 @@ export type OmnichannelEndpoints = {
 		}>;
 	};
 	'/v1/livechat/custom-fields/:_id': {
-		GET: () => { customField: ILivechatCustomField | null };
+		GET: () => { customField: ILivechatCustomField };
 	};
 	'/v1/livechat/:rid/messages': {
 		GET: (params: LivechatRidMessagesProps) => PaginatedResult<{
@@ -3386,7 +3402,9 @@ export type OmnichannelEndpoints = {
 	};
 
 	'/v1/livechat/users/agent': {
-		GET: (params: PaginatedRequest<{ text?: string }>) => PaginatedResult<{
+		GET: (
+			params: PaginatedRequest<{ text?: string; onlyAvailable?: boolean; excludeId?: string; showIdleAgents?: boolean }>,
+		) => PaginatedResult<{
 			users: (ILivechatAgent & { departments: string[] })[];
 		}>;
 		POST: (params: LivechatUsersManagerPOSTProps) => { success: boolean };
@@ -3595,7 +3613,7 @@ export type OmnichannelEndpoints = {
 		POST: (params: POSTLivechatTriggersParams) => void;
 	};
 	'/v1/livechat/triggers/:_id': {
-		GET: () => { trigger: ILivechatTrigger | null };
+		GET: () => { trigger: ILivechatTrigger };
 		DELETE: () => void;
 	};
 	'/v1/livechat/rooms': {

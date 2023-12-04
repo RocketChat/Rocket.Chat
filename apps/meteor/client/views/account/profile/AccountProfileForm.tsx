@@ -60,12 +60,14 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 		control,
 		watch,
 		handleSubmit,
+		reset,
 		formState: { errors },
 	} = useFormContext<AccountProfileFormValues>();
 
 	const { email, avatar, username } = watch();
 
 	const previousEmail = user ? getUserEmailAddress(user) : '';
+	const previousUsername = user?.username || '';
 	const isUserVerified = user?.emails?.[0]?.verified ?? false;
 
 	const mutateConfirmationEmail = useMutation({
@@ -84,6 +86,10 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 
 	const validateUsername = async (username: string): Promise<string | undefined> => {
 		if (!username) {
+			return;
+		}
+
+		if (username === previousUsername) {
 			return;
 		}
 
@@ -121,6 +127,8 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 			dispatchToastMessage({ type: 'success', message: t('Profile_saved_successfully') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
+		} finally {
+			reset({ email, name, username, statusType, statusText, nickname, bio, customFields });
 		}
 	};
 

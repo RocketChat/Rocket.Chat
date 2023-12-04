@@ -970,7 +970,6 @@
   "Enter_name_here": "Vnesite ime tukaj",
   "Enter_Normal": "Navadni način (pošljite s tipko enter)",
   "Enter_to": "Enter za",
-  "Enterprise": "Podjetje",
   "Entertainment": "Zabava",
   "Error": "Napaka",
   "Error_404": "Napaka: 404",
@@ -2742,5 +2741,7 @@
   "registration.component.form.reasonToJoin": "Razlog za pridružitev",
   "registration.component.form.invalidConfirmPass": "Potrditev gesla se ne ujema z geslom",
   "registration.component.form.confirmPassword": "Potrdi geslo",
-  "registration.component.form.sendConfirmationEmail": "Pošlji potrditveno e-poštno sporočilo"
+  "registration.component.form.sendConfirmationEmail": "Pošlji potrditveno e-poštno sporočilo",
+  "Enterprise": "Podjetje",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Analiza"
 }

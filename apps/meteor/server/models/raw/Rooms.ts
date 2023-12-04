@@ -54,9 +54,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				sparse: true,
 			},
 			{
-				key: { t: 1 },
-			},
-			{
 				key: { 'u._id': 1 },
 			},
 			{
@@ -672,6 +669,16 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	findByE2E(options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
 		return this.find(
 			{
+				encrypted: true,
+			},
+			options,
+		);
+	}
+
+	findE2ERoomById(roomId: IRoom['_id'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
+		return this.findOne(
+			{
+				_id: roomId,
 				encrypted: true,
 			},
 			options,

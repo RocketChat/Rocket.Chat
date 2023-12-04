@@ -12,7 +12,7 @@ export const createSetupWSettings = () =>
 					},
 					{
 						key: 'enterprise',
-						i18nLabel: 'Enterprise',
+						i18nLabel: 'Premium',
 					},
 					{
 						key: 'government',
@@ -34,6 +34,7 @@ export const createSetupWSettings = () =>
 					step: 2,
 					order: 1,
 				},
+				public: true,
 			});
 			await this.add('Industry', '', {
 				type: 'select',
@@ -1344,6 +1345,16 @@ export const createSetupWSettings = () =>
 			});
 
 			await this.add('Cloud_Workspace_Registration_State', '', {
+				type: 'string',
+				hidden: true,
+				readonly: true,
+				enableQuery: {
+					_id: 'Register_Server',
+					value: true,
+				},
+				secret: true,
+			});
+			await this.add('Cloud_Billing_Url', 'https://billing.rocket.chat', {
 				type: 'string',
 				hidden: true,
 				readonly: true,

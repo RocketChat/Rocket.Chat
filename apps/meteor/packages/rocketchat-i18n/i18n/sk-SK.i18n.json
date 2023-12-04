@@ -959,6 +959,7 @@
   "Email_Placeholder": "Prosím, zadajte svoju e-mailovú adresu...",
   "Email_Placeholder_any": "Zadajte e-mailové adresy ...",
   "Email_subject": "predmet",
+  "Enterprise_License": "Enterprise licencia",
   "Email_verified": "E-mail bol overený",
   "Emoji": "Emoji",
   "EmojiCustomFilesystem": "Vlastný súborový systém Emoji",
@@ -981,8 +982,6 @@
   "Enter_name_here": "Tu zadajte názov",
   "Enter_Normal": "Normálny režim (odoslať pomocou Enter)",
   "Enter_to": "Zadajte do",
-  "Enterprise": "podnik",
-  "Enterprise_License": "Enterprise licencia",
   "Entertainment": "zábava",
   "Error": "Chyba",
   "Error_404": "Chyba: 404",
@@ -2762,5 +2761,7 @@
   "registration.component.form.reasonToJoin": "Dôvod pripojenia",
   "registration.component.form.invalidConfirmPass": "Potvrdenie hesla sa nezhoduje s heslom",
   "registration.component.form.confirmPassword": "Potvrďte svoje heslo",
-  "registration.component.form.sendConfirmationEmail": "Pošlite potvrdzovací e-mail"
+  "registration.component.form.sendConfirmationEmail": "Pošlite potvrdzovací e-mail",
+  "Enterprise": "podnik",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Analytika"
 }

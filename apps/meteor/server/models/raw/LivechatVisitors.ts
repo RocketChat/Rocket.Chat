@@ -435,6 +435,9 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 					ip: 1,
 					host: 1,
 					userAgent: 1,
+					username: 1,
+					ts: 1,
+					status: 1,
 				},
 			},
 		);

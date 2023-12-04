@@ -56,7 +56,6 @@ export class UsersRaw extends BaseRaw {
 			{ key: { lastLogin: 1 } },
 			{ key: { status: 1 } },
 			{ key: { statusText: 1 } },
-			{ key: { active: 1 }, sparse: 1 },
 			{ key: { statusConnection: 1 }, sparse: 1 },
 			{ key: { appId: 1 }, sparse: 1 },
 			{ key: { type: 1 } },
@@ -2187,7 +2186,6 @@ export class UsersRaw extends BaseRaw {
 			{
 				active: true,
 				type: { $nin: ['app'] },
-				roles: { $ne: ['guest'] },
 				_id: { $in: ids },
 			},
 			options,
