@@ -18,6 +18,7 @@ import type {
 	UpdateResult,
 	Document,
 	Filter,
+	ModifyResult,
 } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
@@ -252,7 +253,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	getMessageByFileId(fileID: string): Promise<IMessage | null>;
 	setThreadMessagesAsRead(tmid: string, until: Date): Promise<UpdateResult | Document>;
 	updateRepliesByThreadId(tmid: string, replies: string[], ts: Date): Promise<UpdateResult>;
-	refreshDiscussionMetadata(room: Pick<IRoom, '_id' | 'msgs' | 'lm'>): Promise<UpdateResult | Document | false>;
+	refreshDiscussionMetadata(room: Pick<IRoom, '_id' | 'msgs' | 'lm'>): Promise<ModifyResult<IMessage>>;
 	findUnreadThreadMessagesByDate(
 		tmid: string,
 		userId: string,

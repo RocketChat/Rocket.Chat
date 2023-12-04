@@ -1,32 +1,21 @@
 import { Markup } from '@rocket.chat/gazzodown';
 import { parse } from '@rocket.chat/message-parser';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { TextObject } from '@rocket.chat/ui-kit';
-import { useContext } from 'react';
 
-import { UiKitContext } from '../contexts/UiKitContext';
+import { useAppTranslation } from '../hooks/useAppTranslation';
 
 const MarkdownTextElement = ({ textObject }: { textObject: TextObject }) => {
-  const t = useTranslation() as (
-    key: string,
-    args: { [key: string]: string | number }
-  ) => string;
+  const { t } = useAppTranslation();
 
-  const { appId } = useContext(UiKitContext);
+  const text = textObject.i18n
+    ? t(textObject.i18n.key, { ...textObject.i18n.args })
+    : textObject.text;
 
-  const { i18n } = textObject;
-
-  if (i18n) {
-    return (
-      <Markup
-        tokens={parse(t(`apps-${appId}-${i18n.key}`, { ...i18n.args }), {
-          emoticons: false,
-        })}
-      />
-    );
+  if (!text) {
+    return null;
   }
 
-  return <Markup tokens={parse(textObject.text, { emoticons: false })} />;
+  return <Markup tokens={parse(text, { emoticons: false })} />;
 };
 
 export default MarkdownTextElement;

@@ -18,11 +18,17 @@ export class OAuthAccessTokensRaw extends BaseRaw<IOAuthAccessToken> implements 
 		];
 	}
 
-	findOneByAccessToken(accessToken: string, options?: FindOptions<IOAuthAccessToken>): Promise<IOAuthAccessToken | null> {
+	async findOneByAccessToken(accessToken: string, options?: FindOptions<IOAuthAccessToken>): Promise<IOAuthAccessToken | null> {
+		if (!accessToken) {
+			return null;
+		}
 		return this.findOne({ accessToken }, options);
 	}
 
-	findOneByRefreshToken(refreshToken: string, options?: FindOptions<IOAuthAccessToken>): Promise<IOAuthAccessToken | null> {
+	async findOneByRefreshToken(refreshToken: string, options?: FindOptions<IOAuthAccessToken>): Promise<IOAuthAccessToken | null> {
+		if (!refreshToken) {
+			return null;
+		}
 		return this.findOne({ refreshToken }, options);
 	}
 }

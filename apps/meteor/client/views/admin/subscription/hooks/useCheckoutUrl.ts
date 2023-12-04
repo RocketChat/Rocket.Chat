@@ -1,20 +1,15 @@
-import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useMutation } from '@tanstack/react-query';
+import { useAbsoluteUrl } from '@rocket.chat/ui-contexts';
 
-import { useExternalLink } from '../../../../hooks/useExternalLink';
-import { CONTACT_SALES_LINK } from '../utils/links';
+export const useCheckoutUrl = () => {
+	const absoluteUrl = useAbsoluteUrl()('/links/manage-subscription');
 
-export const useCheckoutUrlAction = () => {
-	const getCheckoutUrl = useEndpoint('GET', '/v1/cloud.checkoutUrl');
-	const handleExternalLink = useExternalLink();
-
-	return useMutation({
-		mutationFn: async () => {
-			const { url } = await getCheckoutUrl();
-			handleExternalLink(url);
-		},
-		onError: () => {
-			handleExternalLink(CONTACT_SALES_LINK);
-		},
-	});
+	return (query?: Record<string, string>) => {
+		const url = new URL(absoluteUrl);
+		if (query) {
+			Object.entries(query).forEach(([key, value]) => {
+				url.searchParams.append(key, value.toString());
+			});
+		}
+		return url.toString();
+	};
 };

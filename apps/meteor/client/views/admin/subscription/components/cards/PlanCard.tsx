@@ -7,7 +7,6 @@ import PlanCardTrial from './PlanCard/PlanCardTrial';
 
 type LicenseLimits = {
 	activeUsers: { max: number; value?: number };
-	monthlyActiveContacts: { max: number; value?: number };
 };
 
 type PlanCardProps = {

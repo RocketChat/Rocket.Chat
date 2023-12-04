@@ -6,6 +6,8 @@ import React, { useEffect } from 'react';
 
 import { AppClientOrchestratorInstance } from '../../ee/client/apps/orchestrator';
 import { AppsContext } from '../contexts/AppsContext';
+import { useIsEnterprise } from '../hooks/useIsEnterprise';
+import { useInvalidateLicense } from '../hooks/useLicense';
 import { AsyncStatePhase } from '../lib/asyncState';
 import { useInvalidateAppsCountQueryCallback } from '../views/marketplace/hooks/useAppsCountQuery';
 import type { App } from '../views/marketplace/types';
@@ -17,7 +19,11 @@ const AppsProvider: FC = ({ children }) => {
 
 	const queryClient = useQueryClient();
 
+	const { data } = useIsEnterprise();
+	const isEnterprise = !!data?.isEnterprise;
+
 	const invalidateAppsCountQuery = useInvalidateAppsCountQueryCallback();
+	const invalidateLicenseQuery = useInvalidateLicense();
 
 	const stream = useSingleStream('apps');
 
@@ -35,8 +41,11 @@ const AppsProvider: FC = ({ children }) => {
 			if (['app/added', 'app/removed', 'app/updated', 'app/statusUpdate', 'app/settingUpdated'].includes(key)) {
 				invalidate();
 			}
+			if (['app/added', 'app/removed'].includes(key) && !isEnterprise) {
+				invalidateLicenseQuery();
+			}
 		});
-	}, [invalidate, stream]);
+	}, [invalidate, invalidateLicenseQuery, isEnterprise, stream]);
 
 	const marketplace = useQuery(
 		['marketplace', 'apps-marketplace', isAdminUser],
@@ -65,13 +74,12 @@ const AppsProvider: FC = ({ children }) => {
 		},
 		{
 			staleTime: Infinity,
-			keepPreviousData: true,
 			onSettled: () => queryClient.invalidateQueries(['marketplace', 'apps-stored']),
 		},
 	);
 
 	const store = useQuery(
-		['marketplace', 'apps-stored', isAdminUser],
+		['marketplace', 'apps-stored', instance.data, marketplace.data],
 		() => {
 			if (!marketplace.isFetched && !instance.isFetched) {
 				throw new Error('Apps not loaded');

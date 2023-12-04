@@ -8,7 +8,7 @@ import React, { useEffect } from 'react';
 import AutoCompleteAgent from '../../../components/AutoCompleteAgent';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import GenericModal from '../../../components/GenericModal';
-import { useFormsSubscription } from '../additionalForms';
+import { CurrentChatTags } from '../additionalForms';
 import Label from './Label';
 import RemoveAllClosed from './RemoveAllClosed';
 
@@ -58,14 +58,6 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 		setTags([]);
 		setCustomFields(undefined);
 	});
-
-	const forms = useFormsSubscription() as any;
-
-	// TODO: Refactor the formsSubscription to use components instead of hooks (since the only thing the hook does is return a component)
-	// Conditional hook was required since the whole formSubscription uses hooks in an incorrect manner
-	const { useCurrentChatTags = (): void => undefined } = forms;
-
-	const EETagsComponent = useCurrentChatTags();
 
 	const onSubmit = useMutableCallback((e) => e.preventDefault());
 
@@ -146,11 +138,11 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 					<AutoCompleteDepartment haveAll showArchived value={department} onChange={handleDepartment} onlyMyDepartments />
 				</Box>
 			</Box>
-			{EETagsComponent && (
+			{CurrentChatTags && (
 				<Box display='flex' flexDirection='row' marginBlockStart={8} {...props}>
 					<Box display='flex' mie={8} flexGrow={1} flexDirection='column'>
 						<Label mb={4}>{t('Tags')}</Label>
-						<EETagsComponent value={tags} handler={handleTags} viewAll />
+						<CurrentChatTags value={tags} handler={handleTags} viewAll />
 					</Box>
 				</Box>
 			)}

@@ -8,41 +8,24 @@ import { useModal, useMediaUrl } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 import React, { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import semver from 'semver';
 
 import { useFormatDate } from '../../../../hooks/useFormatDate';
-import { useLicense } from '../../../../hooks/useLicense';
+import { useLicense, useLicenseName } from '../../../../hooks/useLicense';
 import { useRegistrationStatus } from '../../../../hooks/useRegistrationStatus';
 import { isOverLicenseLimits } from '../../../../lib/utils/isOverLicenseLimits';
-import RegisterWorkspaceModal from '../../cloud/modals/RegisterWorkspaceModal';
 import VersionCardActionButton from './components/VersionCardActionButton';
 import type { VersionActionItem } from './components/VersionCardActionItem';
 import VersionCardActionItemList from './components/VersionCardActionItemList';
 import { VersionCardSkeleton } from './components/VersionCardSkeleton';
 import { VersionTag } from './components/VersionTag';
-import type { VersionStatus } from './components/VersionTag';
+import { getVersionStatus } from './getVersionStatus';
+import RegisterWorkspaceModal from './modals/RegisterWorkspaceModal';
 
 const SUPPORT_EXTERNAL_LINK = 'https://go.rocket.chat/i/version-support';
 const RELEASES_EXTERNAL_LINK = 'https://go.rocket.chat/i/update-product';
 
 type VersionCardProps = {
 	serverInfo: IWorkspaceInfo;
-};
-
-const getVersionStatus = (serverVersion: string, versions: { version: string }[]): VersionStatus => {
-	const coercedServerVersion = String(semver.coerce(serverVersion));
-	const highestVersion = versions.reduce((prev, current) => (prev.version > current.version ? prev : current));
-	const isSupported = versions.some((v) => v.version === coercedServerVersion || v.version === serverVersion);
-
-	if (semver.gte(coercedServerVersion, highestVersion.version)) {
-		return 'latest';
-	}
-
-	if (isSupported && semver.gt(highestVersion.version, coercedServerVersion)) {
-		return 'available_version';
-	}
-
-	return 'outdated';
 };
 
 const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
@@ -62,29 +45,31 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 
 	const formatDate = useFormatDate();
 
-	const { data: licenseData, isLoading, refetch: refetchLicense } = useLicense();
+	const { data: licenseData, isLoading, refetch: refetchLicense } = useLicense({ loadValues: true });
 	const { isRegistered } = useRegistrationStatus();
 
-	const { license, tags, trial: isTrial, limits } = licenseData || {};
+	const { license, limits } = licenseData || {};
 	const isAirgapped = license?.information?.offline;
-	const licenseName = tags?.[0]?.name ?? 'Community';
-	const visualExpiration = formatDate(license?.information?.visualExpiration || '');
+	const licenseName = useLicenseName();
 
 	const serverVersion = serverInfo.version;
 
-	const supportedVersions = useMemo(
-		() => decodeBase64(serverInfo?.supportedVersions?.signed || ''),
-		[serverInfo?.supportedVersions?.signed],
-	);
+	const { versionStatus, versions } = useMemo(() => {
+		const supportedVersions = serverInfo?.supportedVersions?.signed ? decodeBase64(serverInfo?.supportedVersions?.signed) : undefined;
+
+		if (!supportedVersions) {
+			return {};
+		}
+
+		const versionStatus = getVersionStatus(serverVersion, supportedVersions?.versions);
+
+		return {
+			versionStatus,
+			versions: supportedVersions?.versions,
+		};
+	}, [serverInfo?.supportedVersions?.signed, serverVersion]);
 
 	const isOverLimits = limits && isOverLicenseLimits(limits);
-
-	const versionStatus = useMemo(() => {
-		if (!supportedVersions.versions) {
-			return;
-		}
-		return getVersionStatus(serverVersion, supportedVersions.versions);
-	}, [serverVersion, supportedVersions.versions]);
 
 	const actionButton:
 		| undefined
@@ -109,7 +94,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 			};
 		}
 
-		if (versionStatus === 'outdated') {
+		if (versionStatus?.label === 'outdated') {
 			return {
 				action: () => {
 					window.open(RELEASES_EXTERNAL_LINK, '_blank');
@@ -137,7 +122,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 							icon: 'check',
 							label: t('Operating_withing_plan_limits'),
 					  },
-				isAirgapped && {
+				(isAirgapped || !versions) && {
 					type: 'neutral',
 					icon: 'warning',
 					label: (
@@ -149,28 +134,28 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 					),
 				},
 
-				versionStatus !== 'outdated'
-					? {
-							type: 'neutral',
-							icon: 'check',
-							label: (
-								<Trans i18nKey='Version_supported_until' values={{ date: visualExpiration }}>
-									Version
-									<ExternalLink to={SUPPORT_EXTERNAL_LINK}>supported</ExternalLink>
-									until {visualExpiration}
-								</Trans>
-							),
-					  }
-					: {
-							type: 'danger',
-							icon: 'warning',
-							label: (
-								<Trans i18nKey='Version_not_supported'>
-									Version
-									<ExternalLink to={SUPPORT_EXTERNAL_LINK}>not supported</ExternalLink>
-								</Trans>
-							),
-					  },
+				versionStatus?.label !== 'outdated' &&
+					versionStatus?.expiration && {
+						type: 'neutral',
+						icon: 'check',
+						label: (
+							<Trans i18nKey='Version_supported_until' values={{ date: formatDate(versionStatus?.expiration) }}>
+								Version
+								<ExternalLink to={SUPPORT_EXTERNAL_LINK}>supported</ExternalLink>
+								until {formatDate(versionStatus?.expiration)}
+							</Trans>
+						),
+					},
+				versionStatus?.label === 'outdated' && {
+					type: 'danger',
+					icon: 'warning',
+					label: (
+						<Trans i18nKey='Version_not_supported'>
+							Version
+							<ExternalLink to={SUPPORT_EXTERNAL_LINK}>not supported</ExternalLink>
+						</Trans>
+					),
+				},
 				isRegistered
 					? {
 							type: 'neutral',
@@ -184,7 +169,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 					  },
 			].filter(Boolean) as VersionActionItem[]
 		).sort((a) => (a.type === 'danger' ? -1 : 1));
-	}, [isOverLimits, isAirgapped, versionStatus, isRegistered, t, visualExpiration]);
+	}, [isOverLimits, t, isAirgapped, versions, versionStatus?.label, versionStatus?.expiration, formatDate, isRegistered]);
 
 	return (
 		<Card background={cardBackground}>
@@ -196,14 +181,14 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 								<Box fontScale='h3' mbe={4} display='flex'>
 									{t('Version_version', { version: serverVersion })}
 									<Box mis={8} alignSelf='center' width='auto'>
-										<VersionTag versionStatus={versionStatus} />
+										{!isAirgapped && versions && <VersionTag versionStatus={versionStatus?.label} title={versionStatus.version} />}
 									</Box>
 								</Box>
 							</CardColTitle>
 
 							<CardColSection m={0}>
 								<Box color='secondary-info' fontScale='p2'>
-									<Icon name='rocketchat' size={16} /> {licenseName} {isTrial && `(${t('trial')})`}
+									<Icon name='rocketchat' size={16} /> {licenseName.data}
 								</Box>
 							</CardColSection>
 							{actionItems.length > 0 && (
@@ -228,7 +213,11 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 
 export default VersionCard;
 
-const decodeBase64 = (b64: string): SupportedVersions => {
+const decodeBase64 = (b64: string): SupportedVersions | undefined => {
 	const [, bodyEncoded] = b64.split('.');
+	if (!bodyEncoded) {
+		return;
+	}
+
 	return JSON.parse(atob(bodyEncoded));
 };

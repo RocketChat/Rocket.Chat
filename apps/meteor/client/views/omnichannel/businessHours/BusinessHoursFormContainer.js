@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { businessHourManager } from '../../../../app/livechat/client/views/app/business-hours/BusinessHours';
 import { useForm } from '../../../hooks/useForm';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
-import { useFormsSubscription } from '../additionalForms';
+import { BusinessHoursMultipleContainer } from '../additionalForms';
 import BusinessHourForm from './BusinessHoursForm';
 import BusinessHoursTimeZone from './BusinessHoursTimeZone';
 
@@ -22,17 +22,9 @@ const getInitalData = ({ workHours }) => ({
 	}, {}),
 });
 
-const cleanFunc = () => {};
-
 const BusinessHoursFormContainer = ({ data, saveRef, onChange = () => {} }) => {
-	const forms = useFormsSubscription();
-
 	const [hasChangesMultiple, setHasChangesMultiple] = useState(false);
 	const [hasChangesTimeZone, setHasChangesTimeZone] = useState(false);
-
-	const { useBusinessHoursMultiple = cleanFunc } = forms;
-
-	const MultipleBHForm = useBusinessHoursMultiple();
 
 	const showMultipleBHForm = useReactiveValue(useMutableCallback(() => businessHourManager.showCustomTemplate(data)));
 
@@ -50,8 +42,8 @@ const BusinessHoursFormContainer = ({ data, saveRef, onChange = () => {} }) => {
 	return (
 		<Box maxWidth='600px' w='full' alignSelf='center'>
 			<FieldGroup>
-				{showMultipleBHForm && MultipleBHForm && (
-					<MultipleBHForm onChange={onChangeMultipleBHForm} data={data} hasChangesAndIsValid={setHasChangesMultiple} />
+				{showMultipleBHForm && (
+					<BusinessHoursMultipleContainer onChange={onChangeMultipleBHForm} data={data} hasChangesAndIsValid={setHasChangesMultiple} />
 				)}
 				<BusinessHoursTimeZone
 					onChange={onChangeTimezone}

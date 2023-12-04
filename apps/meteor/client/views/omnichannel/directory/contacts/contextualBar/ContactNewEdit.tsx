@@ -11,7 +11,7 @@ import { hasAtLeastOnePermission } from '../../../../../../app/authorization/cli
 import { validateEmail } from '../../../../../../lib/emailValidator';
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../../components/Contextualbar';
 import { createToken } from '../../../../../lib/utils/createToken';
-import { useFormsSubscription } from '../../../additionalForms';
+import { ContactManager as ContactManagerForm } from '../../../additionalForms';
 import { FormSkeleton } from '../../components/FormSkeleton';
 import { useCustomFieldsMetadata } from '../../hooks/useCustomFieldsMetadata';
 
@@ -63,10 +63,6 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 
 	const canViewCustomFields = (): boolean =>
 		hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
-
-	const { useContactManager } = useFormsSubscription();
-
-	const ContactManager = useContactManager?.();
 
 	const [userId, setUserId] = useState('no-agent-selected');
 	const saveContact = useEndpoint('POST', '/v1/omnichannel/contact');
@@ -210,7 +206,7 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 					<FieldError>{errors.phone?.message}</FieldError>
 				</Field>
 				{canViewCustomFields() && <CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />}
-				{ContactManager && <ContactManager value={userId} handler={handleContactManagerChange} />}
+				<ContactManagerForm value={userId} handler={handleContactManagerChange} />
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
