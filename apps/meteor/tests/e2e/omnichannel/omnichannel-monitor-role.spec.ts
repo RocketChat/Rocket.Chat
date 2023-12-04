@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { Page } from '@playwright/test';
 
-// import { IS_EE } from '../config/constants';
+import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
@@ -20,7 +20,7 @@ const ROOM_D = faker.person.fullName();
 test.use({ storageState: Users.user3.state });
 
 test.describe('OC - Monitor Role', () => {
-	// test(!IS_EE, 'Enterprise Edition Only');
+	test.skip(!IS_EE, 'Enterprise Edition Only');
 
 	let departments: Awaited<ReturnType<typeof createDepartment>>[];
 	let conversations: Awaited<ReturnType<typeof createConversation>>[];
@@ -28,45 +28,6 @@ test.describe('OC - Monitor Role', () => {
 	let monitor: Awaited<ReturnType<typeof createMonitor>>;
 	let unit: Awaited<ReturnType<typeof createOrUpdateUnit>>;
 	let poOmnichannel: HomeOmnichannel;
-
-	/* Verify that once the department is set with the unit,
-	 * old/new chats should be displayed under current chats f
-	 * and monitor should be allowed to interact with them using Join button.
-	 *
-	 * - Create department (2x)
-	 *
-	 * - Create an agent
-	 * - Create a monitor
-	 * - Create a unit
-	 *
-	 * - Create a conversation (no department)
-	 * - Create a conversation (unit department)
-	 * - Create a conversation (different department)
-	 *
-	 *
-	 */
-
-	/*
-    Verify that monitor has access to only those chats that are associated with the units
-  */
-
-	/*
-    Verify if the user is removed from the monitor list, he does not have access to chats
-    of a unit he was part of. The system must update the list of a monitor in the unit too.
-  */
-
-	/*
-    Verify if the department is removed from the unit,
-    the monitor should not have access to its chats(New/old both).
-  */
-
-	/*
-    Verify if unit is deleted, monitor should not be able to see rooms.
-  */
-
-	/*
-    Verify that a monitor is not allowed to create public Canned Responses.
-  */
 
 	// Create agents
 	test.beforeAll(async ({ api }) => {
