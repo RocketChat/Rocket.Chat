@@ -20,7 +20,7 @@ test.describe.parallel('administration', () => {
 		});
 
 		test('expect download info as JSON', async ({ page }) => {
-			const [download] = await Promise.all([page.waitForEvent('download'), page.locator('button:has-text("Download Info")').click()]);
+			const [download] = await Promise.all([page.waitForEvent('download'), page.locator('button:has-text("Download info")').click()]);
 
 			await expect(download.suggestedFilename()).toBe('statistics.json');
 		});
@@ -38,7 +38,7 @@ test.describe.parallel('administration', () => {
 		});
 
 		test('expect create a user', async () => {
-			await poAdmin.tabs.users.btnNew.click();
+			await poAdmin.tabs.users.btnNewUser.click();
 			await poAdmin.tabs.users.inputName.type(faker.person.firstName());
 			await poAdmin.tabs.users.inputUserName.type(faker.internet.userName());
 			await poAdmin.tabs.users.inputEmail.type(faker.internet.email());

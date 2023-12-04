@@ -7,7 +7,7 @@ import { GenericTableHeaderCell } from '../../../../../../client/components/Gene
 import { usePagination } from '../../../../../../client/components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../../../client/components/GenericTable/hooks/useSort';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
-import DeviceManagementTable from '../../../../deviceManagement/components/DeviceManagementTable';
+import DeviceManagementTable from '../../../../components/deviceManagement/DeviceManagementTable';
 import DeviceManagementAccountRow from './DeviceManagementAccountRow';
 
 const sortMapping = {

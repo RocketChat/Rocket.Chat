@@ -1,4 +1,5 @@
 import type { Cloud, Serialized } from '@rocket.chat/core-typings';
+import { DuplicatedLicenseError } from '@rocket.chat/license';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { v, compile } from 'suretype';
 
@@ -9,9 +10,8 @@ import { CloudWorkspaceRegistrationError } from '../../../../../lib/errors/Cloud
 import { SystemLogger } from '../../../../../server/lib/logger/system';
 import { settings } from '../../../../settings/server';
 import { buildWorkspaceRegistrationData } from '../buildRegistrationData';
-import { getWorkspaceAccessToken } from '../getWorkspaceAccessToken';
+import { CloudWorkspaceAccessTokenEmptyError, getWorkspaceAccessToken } from '../getWorkspaceAccessToken';
 import { retrieveRegistrationStatus } from '../retrieveRegistrationStatus';
-import { legacySyncWorkspace } from './legacySyncWorkspace';
 
 const workspaceSyncPayloadSchema = v.object({
 	workspaceId: v.string().required(),
@@ -62,26 +62,54 @@ export async function syncCloudData() {
 
 		const token = await getWorkspaceAccessToken(true);
 		if (!token) {
-			throw new CloudWorkspaceAccessError('Workspace does not have a valid access token');
+			throw new CloudWorkspaceAccessTokenEmptyError();
 		}
 
 		const workspaceRegistrationData = await buildWorkspaceRegistrationData(undefined);
 
-		const { license } = await fetchWorkspaceSyncPayload({
+		const { license, removeLicense = false } = await fetchWorkspaceSyncPayload({
 			token,
 			data: workspaceRegistrationData,
 		});
 
-		await callbacks.run('workspaceLicenseChanged', license);
+		if (removeLicense) {
+			await callbacks.run('workspaceLicenseRemoved');
+		} else {
+			await callbacks.run('workspaceLicenseChanged', license);
+		}
+
+		SystemLogger.info({
+			msg: 'Synced with Rocket.Chat Cloud',
+			function: 'syncCloudData',
+		});
 
 		return true;
 	} catch (err) {
-		SystemLogger.error({
-			msg: 'Failed to sync with Rocket.Chat Cloud',
-			url: '/sync',
-			err,
-		});
-	}
+		/**
+		 * If some of CloudWorkspaceAccessError and CloudWorkspaceRegistrationError happens, makes no sense to run the legacySyncWorkspace
+		 * because it will fail too.
+		 * The DuplicatedLicenseError license error is also ignored because it is not a problem. the Cloud is allowed to send the same license twice.
+		 */
+		switch (true) {
+			case err instanceof DuplicatedLicenseError:
+				return;
+			case err instanceof CloudWorkspaceAccessError:
+			case err instanceof CloudWorkspaceRegistrationError:
+			case err instanceof CloudWorkspaceAccessTokenEmptyError:
+				SystemLogger.info({
+					msg: 'Failed to sync with Rocket.Chat Cloud',
+					function: 'syncCloudData',
+					err,
+				});
+				break;
 
-	await legacySyncWorkspace();
+			default:
+				SystemLogger.error({
+					msg: 'Failed to sync with Rocket.Chat Cloud',
+					function: 'syncCloudData',
+					err,
+				});
+		}
+		throw err;
+	}
 }

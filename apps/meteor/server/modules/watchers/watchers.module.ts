@@ -1,4 +1,5 @@
 import type { EventSignatures } from '@rocket.chat/core-services';
+import { dbWatchersDisabled } from '@rocket.chat/core-services';
 import type {
 	ISubscription,
 	IUser,
@@ -13,7 +14,6 @@ import type {
 	IIntegration,
 	IEmailInbox,
 	IPbxEvent,
-	SettingValue,
 	ILivechatInquiryRecord,
 	IRole,
 	ILivechatPriority,
@@ -36,10 +36,10 @@ import {
 	Permissions,
 	LivechatPriority,
 } from '@rocket.chat/models';
-import mem from 'mem';
 
 import { subscriptionFields, roomFields } from '../../../lib/publishFields';
 import type { DatabaseWatcher } from '../../database/DatabaseWatcher';
+import { broadcastMessageSentEvent } from './lib/messages';
 
 type BroadcastCallback = <T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>) => Promise<void>;
 
@@ -64,52 +64,26 @@ export function isWatcherRunning(): boolean {
 	return watcherStarted;
 }
 
-export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallback): void {
-	const getSettingCached = mem(async (setting: string): Promise<SettingValue> => Settings.getValueById(setting), { maxAge: 10000 });
-
-	const getUserNameCached = mem(
-		async (userId: string): Promise<string | undefined> => {
-			const user = await Users.findOne<Pick<IUser, 'name'>>(userId, { projection: { name: 1 } });
-			return user?.name;
-		},
-		{ maxAge: 10000 },
-	);
-
+const messageWatcher = (watcher: DatabaseWatcher, broadcast: BroadcastCallback): void => {
 	watcher.on<IMessage>(Messages.getCollectionName(), async ({ clientAction, id, data }) => {
 		switch (clientAction) {
 			case 'inserted':
 			case 'updated':
-				const message = data ?? (await Messages.findOneById(id));
-				if (!message) {
-					return;
-				}
-
-				if (message._hidden !== true && message.imported == null) {
-					const UseRealName = (await getSettingCached('UI_Use_Real_Name')) === true;
-
-					if (UseRealName) {
-						if (message.u?._id) {
-							const name = await getUserNameCached(message.u._id);
-							if (name) {
-								message.u.name = name;
-							}
-						}
-
-						if (message.mentions?.length) {
-							for await (const mention of message.mentions) {
-								const name = await getUserNameCached(mention._id);
-								if (name) {
-									mention.name = name;
-								}
-							}
-						}
-					}
-
-					void broadcast('watch.messages', { clientAction, message });
-				}
+				void broadcastMessageSentEvent({
+					id,
+					data,
+					broadcastCallback: (message) => broadcast('watch.messages', { clientAction, message }),
+				});
 				break;
 		}
 	});
+};
+
+export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallback): void {
+	const dbWatchersEnabled = !dbWatchersDisabled;
+	if (dbWatchersEnabled) {
+		messageWatcher(watcher, broadcast);
+	}
 
 	watcher.on<ISubscription>(Subscriptions.getCollectionName(), async ({ clientAction, id, data, diff }) => {
 		switch (clientAction) {

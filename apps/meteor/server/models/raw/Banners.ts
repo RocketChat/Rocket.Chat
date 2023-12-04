@@ -46,10 +46,29 @@ export class BannersRaw extends BaseRaw<IBanner> implements IBannersModel {
 			$or: [{ roles: { $in: roles } }, { roles: { $exists: false } }],
 		};
 
-		return this.col.find(query, options);
+		return this.find(query, options);
 	}
 
 	disable(bannerId: string): Promise<UpdateResult> {
-		return this.col.updateOne({ _id: bannerId, active: { $ne: false } }, { $set: { active: false, inactivedAt: new Date() } });
+		return this.updateOne({ _id: bannerId, active: { $ne: false } }, { $set: { active: false, inactivedAt: new Date() } });
+	}
+
+	createOrUpdate(banner: IBanner): Promise<UpdateResult> {
+		const invalidPlatform = banner.platform?.some((platform) => !Object.values(BannerPlatform).includes(platform));
+		if (invalidPlatform) {
+			throw new Error('Invalid platform');
+		}
+
+		if (banner.startAt > banner.expireAt) {
+			throw new Error('Start date cannot be later than expire date');
+		}
+
+		if (banner.expireAt < new Date()) {
+			throw new Error('Cannot create banner already expired');
+		}
+
+		const { _id: bannerId, ...doc } = banner;
+
+		return this.updateOne({ _id: bannerId }, { $set: { active: true, ...doc } }, { upsert: true });
 	}
 }
