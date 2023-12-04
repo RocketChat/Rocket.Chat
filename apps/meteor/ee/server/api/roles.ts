@@ -96,7 +96,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			if (!License.hasValidLicense()) {
+			if (!License.hasModule('custom-roles')) {
 				throw new Meteor.Error('error-action-not-allowed', 'This is an enterprise feature');
 			}
 
