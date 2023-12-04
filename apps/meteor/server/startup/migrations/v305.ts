@@ -1,5 +1,6 @@
 import { Permissions } from '@rocket.chat/models';
 
+import { upsertPermissions } from '../../../app/authorization/server/functions/upsertPermissions';
 import { addMigration } from '../../lib/migrations';
 
 addMigration({
