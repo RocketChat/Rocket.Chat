@@ -10,6 +10,7 @@ import type { ChannelsDeleteProps } from './ChannelsDeleteProps';
 import type { ChannelsGetAllUserMentionsByChannelProps } from './ChannelsGetAllUserMentionsByChannelProps';
 import type { ChannelsGetIntegrationsProps } from './ChannelsGetIntegrationsProps';
 import type { ChannelsHistoryProps } from './ChannelsHistoryProps';
+import type { ChannelsImagesProps } from './ChannelsImagesProps';
 import type { ChannelsInviteProps } from './ChannelsInviteProps';
 import type { ChannelsJoinProps } from './ChannelsJoinProps';
 import type { ChannelsKickProps } from './ChannelsKickProps';
@@ -35,6 +36,11 @@ import type { ChannelsUnarchiveProps } from './ChannelsUnarchiveProps';
 export type ChannelsEndpoints = {
 	'/v1/channels.files': {
 		GET: (params: PaginatedRequest<{ roomId: string } | { roomName: string }>) => PaginatedResult<{
+			files: IUpload[];
+		}>;
+	};
+	'/v1/channels.images': {
+		GET: (params: ChannelsImagesProps) => PaginatedResult<{
 			files: IUpload[];
 		}>;
 	};
