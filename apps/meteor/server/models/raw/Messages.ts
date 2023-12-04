@@ -1205,7 +1205,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		oldUsername: string,
 		newUsername: string,
 		newMessage: string,
-		newMd: Root,
+		newMd: Root | null,
 	): Promise<UpdateResult> {
 		const query = {
 			_id,
@@ -1216,8 +1216,9 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			$set: {
 				'mentions.$.username': newUsername,
 				'msg': newMessage,
-				'md': newMd,
+				...(newMd ? { md: newMd } : {}),
 			},
+			...(!newMd ? { $unset: { md: 1 } } : {}),
 		};
 
 		return this.updateOne(query, update);
