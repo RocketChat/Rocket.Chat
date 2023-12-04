@@ -1,6 +1,5 @@
-import { Box, Button, Icon, Tag } from '@rocket.chat/fuselage';
-import { Card, CardFooter, CardFooterWrapper } from '@rocket.chat/ui-client';
-import { useRole, useSettingSetValue, useSetting, useToastMessageDispatch, useTranslation, useRoute } from '@rocket.chat/ui-contexts';
+import { Box, Button, Card, CardBody, CardControls, CardHeader, Icon, Tag } from '@rocket.chat/fuselage';
+import { useRole, useSettingSetValue, useSetting, useToastMessageDispatch, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -10,6 +9,7 @@ import CustomHomepageContent from '../CustomHomePageContent';
 const CustomContentCard = (): ReactElement | null => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const router = useRouter();
 
 	const { data } = useIsEnterprise();
 	const isAdmin = useRole('admin');
@@ -17,8 +17,6 @@ const CustomContentCard = (): ReactElement | null => {
 	const isCustomContentBodyEmpty = customContentBody === '';
 	const isCustomContentVisible = Boolean(useSetting('Layout_Home_Custom_Block_Visible'));
 	const isCustomContentOnly = Boolean(useSetting('Layout_Custom_Body_Only'));
-
-	const settingsRoute = useRoute('admin-settings');
 
 	const setCustomContentVisible = useSettingSetValue('Layout_Home_Custom_Block_Visible');
 	const setCustomContentOnly = useSettingSetValue('Layout_Custom_Body_Only');
@@ -54,40 +52,38 @@ const CustomContentCard = (): ReactElement | null => {
 	if (isAdmin) {
 		return (
 			<Card data-qa-id='homepage-custom-card'>
-				<Box display='flex' mbe={12}>
+				<CardHeader>
 					<Tag role='status' aria-label={willNotShowCustomContent ? t('Not_Visible_To_Workspace') : t('Visible_To_Workspace')}>
 						<Icon mie={4} name={willNotShowCustomContent ? 'eye-off' : 'eye'} size='x12' />
 						{willNotShowCustomContent ? t('Not_Visible_To_Workspace') : t('Visible_To_Workspace')}
 					</Tag>
-				</Box>
-				<Box mb={8} role='status' aria-label={isCustomContentBodyEmpty ? t('Homepage_Custom_Content_Default_Message') : customContentBody}>
+				</CardHeader>
+				<CardBody aria-label={isCustomContentBodyEmpty ? t('Homepage_Custom_Content_Default_Message') : customContentBody}>
 					{isCustomContentBodyEmpty ? t('Homepage_Custom_Content_Default_Message') : <CustomHomepageContent />}
-				</Box>
-				<CardFooterWrapper>
-					<CardFooter>
-						<Button onClick={() => settingsRoute.push({ group: 'Layout' })} title={t('Layout_Home_Page_Content')}>
-							{t('Customize_Content')}
-						</Button>
-						<Button
-							icon={willNotShowCustomContent ? 'eye' : 'eye-off'}
-							disabled={isCustomContentBodyEmpty || (isCustomContentVisible && isCustomContentOnly)}
-							title={isCustomContentBodyEmpty ? t('Action_Available_After_Custom_Content_Added') : userVisibilityTooltipText}
-							onClick={handleChangeCustomContentVisibility}
-							role='button'
-						>
-							{willNotShowCustomContent ? t('Show_To_Workspace') : t('Hide_On_Workspace')}
-						</Button>
-						<Button
-							icon='lightning'
-							disabled={willNotShowCustomContent || !isEnterprise}
-							title={!isEnterprise ? t('Premium_only') : customContentOnlyTooltipText}
-							onClick={handleOnlyShowCustomContent}
-							role='button'
-						>
-							{!isCustomContentOnly ? t('Show_Only_This_Content') : t('Show_default_content')}
-						</Button>
-					</CardFooter>
-				</CardFooterWrapper>
+				</CardBody>
+				<CardControls>
+					<Button onClick={() => router.navigate('/admin/settings/Layout')} title={t('Layout_Home_Page_Content')} medium>
+						{t('Customize_Content')}
+					</Button>
+					<Button
+						icon={willNotShowCustomContent ? 'eye' : 'eye-off'}
+						disabled={isCustomContentBodyEmpty || (isCustomContentVisible && isCustomContentOnly)}
+						title={isCustomContentBodyEmpty ? t('Action_Available_After_Custom_Content_Added') : userVisibilityTooltipText}
+						onClick={handleChangeCustomContentVisibility}
+						medium
+					>
+						{willNotShowCustomContent ? t('Show_To_Workspace') : t('Hide_On_Workspace')}
+					</Button>
+					<Button
+						icon='lightning'
+						disabled={willNotShowCustomContent || !isEnterprise}
+						title={!isEnterprise ? t('Premium_only') : customContentOnlyTooltipText}
+						onClick={handleOnlyShowCustomContent}
+						medium
+					>
+						{!isCustomContentOnly ? t('Show_Only_This_Content') : t('Show_default_content')}
+					</Button>
+				</CardControls>
 			</Card>
 		);
 	}
