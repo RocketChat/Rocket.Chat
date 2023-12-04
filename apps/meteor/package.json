@@ -422,6 +422,7 @@
 		"turndown": "^7.1.2",
 		"twilio": "^3.76.1",
 		"twit": "^2.2.11",
+		"typia": "^5.3.3",
 		"ua-parser-js": "^1.0.37",
 		"underscore": "^1.13.6",
 		"universal-perf-hooks": "^1.0.1",

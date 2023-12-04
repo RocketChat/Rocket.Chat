@@ -9767,6 +9767,7 @@ __metadata:
     twilio: ^3.76.1
     twit: ^2.2.11
     typescript: ~5.3.2
+    typia: ^5.3.3
     ua-parser-js: ^1.0.37
     underscore: ^1.13.6
     universal-perf-hooks: ^1.0.1
@@ -35699,7 +35700,6 @@ __metadata:
     "@types/js-yaml": ^4.0.8
     node-gyp: ^9.4.1
     turbo: ~1.10.16
-    typia: ~5.3.3
   languageName: unknown
   linkType: soft
 
@@ -39518,7 +39518,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typia@npm:5.3.3":
+"typia@npm:5.3.3, typia@npm:^5.3.3":
   version: 5.3.3
   resolution: "typia@npm:5.3.3"
   dependencies:
