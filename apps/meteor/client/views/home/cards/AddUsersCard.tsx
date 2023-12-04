@@ -1,29 +1,24 @@
-import { Button } from '@rocket.chat/fuselage';
-import { Card, CardBody, CardFooter, CardFooterWrapper, CardTitle } from '@rocket.chat/ui-client';
-import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
+import { useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+
+import GenericCard from '../../../components/GenericCard';
 
 const AddUsersCard = (): ReactElement => {
 	const t = useTranslation();
 
-	const adminUsersRoute = useRoute('admin-users');
+	const router = useRouter();
 	const handleOpenUsersRoute = (): void => {
-		adminUsersRoute.push({});
+		router.navigate('/admin/users');
 	};
 
 	return (
-		<Card data-qa-id='homepage-add-users-card'>
-			<CardTitle>{t('Add_users')}</CardTitle>
-			<CardBody>{t('Invite_and_add_members_to_this_workspace_to_start_communicating')}</CardBody>
-			<CardFooterWrapper>
-				<CardFooter>
-					<Button primary onClick={handleOpenUsersRoute}>
-						{t('Add_users')}
-					</Button>
-				</CardFooter>
-			</CardFooterWrapper>
-		</Card>
+		<GenericCard
+			title={t('Add_users')}
+			body={t('Invite_and_add_members_to_this_workspace_to_start_communicating')}
+			controls={[{ onClick: handleOpenUsersRoute, label: t('Add_users'), primary: true }]}
+			data-qa-id='homepage-add-users-card'
+		/>
 	);
 };
 
