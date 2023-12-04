@@ -1,11 +1,9 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import $ from 'jquery';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 
 import { emoji, updateRecent } from '../../../emoji/client';
 import { CachedCollectionManager } from '../../../ui-cached-collection/client';
-import { LegacyRoomManager } from '../../../ui-utils/client';
 import { getURL } from '../../../utils/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 import { isSetNotNull } from './function-isSet';
@@ -45,9 +43,6 @@ export const deleteEmojiCustom = function (emojiData) {
 };
 
 export const updateEmojiCustom = function (emojiData) {
-	let key = `emoji_random_${emojiData.name}`;
-	Session.set(key, Math.round(Math.random() * 1000));
-
 	const previousExists = isSetNotNull(() => emojiData.previousName);
 	const currentAliases = isSetNotNull(() => emojiData.aliases);
 
@@ -85,47 +80,6 @@ export const updateEmojiCustom = function (emojiData) {
 			emoji.list[`:${alias}:`] = {};
 			emoji.list[`:${alias}:`].emojiPackage = 'emojiCustom';
 			emoji.list[`:${alias}:`].aliasOf = emojiData.name;
-		}
-	}
-
-	const url = getEmojiUrlFromName(emojiData.name, emojiData.extension);
-
-	// update in admin interface
-	if (previousExists && emojiData.name !== emojiData.previousName) {
-		$(document)
-			.find(`.emojiAdminPreview-image[data-emoji='${emojiData.previousName}']`)
-			.css('background-image', `url('${url})'`)
-			.attr('data-emoji', `${emojiData.name}`);
-	} else {
-		$(document).find(`.emojiAdminPreview-image[data-emoji='${emojiData.name}']`).css('background-image', `url('${url}')`);
-	}
-
-	// update in picker
-	if (previousExists && emojiData.name !== emojiData.previousName) {
-		$(document)
-			.find(`li[data-emoji='${emojiData.previousName}'] span`)
-			.css('background-image', `url('${url}')`)
-			.attr('data-emoji', `${emojiData.name}`);
-		$(document)
-			.find(`li[data-emoji='${emojiData.previousName}']`)
-			.attr('data-emoji', `${emojiData.name}`)
-			.attr('class', `emoji-${emojiData.name}`);
-	} else {
-		$(document).find(`li[data-emoji='${emojiData.name}'] span`).css('background-image', `url('${url}')`);
-	}
-
-	// update in picker and opened rooms
-	for (key in LegacyRoomManager.openedRooms) {
-		if (LegacyRoomManager.openedRooms.hasOwnProperty(key)) {
-			const room = LegacyRoomManager.openedRooms[key];
-			if (previousExists && emojiData.name !== emojiData.previousName) {
-				$(room.dom)
-					.find(`span[data-emoji='${emojiData.previousName}']`)
-					.css('background-image', `url('${url}')`)
-					.attr('data-emoji', `${emojiData.name}`);
-			} else {
-				$(room.dom).find(`span[data-emoji='${emojiData.name}']`).css('background-image', `url('${url}')`);
-			}
 		}
 	}
 
