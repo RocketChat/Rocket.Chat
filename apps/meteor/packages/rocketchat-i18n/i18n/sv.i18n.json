@@ -967,7 +967,6 @@
   "Close": "Stäng",
   "Close_chat": "Stäng chatt",
   "Close_room_description": "Du håller på att stänga chatten. Vill du fortsätta?",
-  "Close_to_seat_limit_banner_warning": "*Du har [{{seats}}] platser kvar*  \nArbetsytans användarlicenser är nästan slut. När gränsen har uppnåtts kan inga nya medlemmar läggas till. *[Begär fler användarlicenser]({{url}})*",
   "Close_to_seat_limit_warning": "Du kan inte lägga till fler användare när gränsen för användare har uppnåtts.",
   "close-livechat-room": "Stäng Omnichannel-rum  \n",
   "close-livechat-room_description": "Behörighet att stänga den aktuella Omnichannel-kanalen",
@@ -1878,7 +1877,7 @@
   "error-avatar-invalid-url": "Ogiltig avatar-URL: {{url}}",
   "error-avatar-url-handling": "Fel vid hantering av avatarinställning från en URL ({{url}}) för {{username}}",
   "error-business-hours-are-closed": "Kontorstiden är slut",
-  "error-blocked-username": "<strong>{{field}}</strong> är låst och kan inte användas.",
+  "error-blocked-username": "**{{field}}** är låst och kan inte användas.",
   "error-canned-response-not-found": "Standardsvaret hittades inte",
   "error-cannot-delete-app-user": "Det är inte tillåtet att ta bort appanvändaren. Avinstallera den motsvarande appen om du vill ta bort användaren.",
   "error-cant-add-federated-users": "Kan inte lägga till samordnade användare i ett icke federerat rum",
@@ -3915,7 +3914,6 @@
   "Rate Limiter_Description": "Kontrollera andelen förfrågningar som skickas eller tas emot av servern för att förhindra cyberangrepp och skrapning.",
   "Rate_Limiter_Limit_RegisterUser": "Standardantalet anrop till begränsningen vid registrering av en användare",
   "Rate_Limiter_Limit_RegisterUser_Description": "Antalet standardanrop till slutpunkter för användarregistrering (REST- och realtids-API:er), som tillåts inom det tidsintervall som angetts i avsnittet för API-begränsning.",
-  "Reached_seat_limit_banner_warning": "*Inga fler tillgängliga användarlicenser*  \nAlla arbetsytans användarlicenser används, så inga fler medlemmar kan ansluta. *[Begär fler användarlicenser]({{url}})*",
   "React_when_read_only": "Tillåt reaktion",
   "React_when_read_only_changed_successfully": "Tillåta att reagera när ändring av skrivskyddad information har lyckats",
   "Reacted_with": "Reagerade med",
@@ -5758,6 +5756,5 @@
   "Uninstall_grandfathered_app": "Avinstallera {{appName}}?",
   "App_will_lose_grandfathered_status": "**Denna {{context}}-app kommer att förlora sin status som gammal app.**  \n  \nArbetsytorna i Community Edition kan ha upp till {{limit}} __kontext__-appar aktiverade. Gamla appar inkluderas i gränsen, men gränsen tillämpas inte på dem.",
   "Theme_Appearence": "Utseende för tema",
-  "Enterprise": "Enterprise",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analytics"
 }

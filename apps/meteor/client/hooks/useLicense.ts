@@ -14,12 +14,12 @@ type LicenseParams = {
 const invalidateQueryClientLicenses = (() => {
 	let timeout: ReturnType<typeof setTimeout> | undefined;
 
-	return (queryClient: QueryClient) => {
+	return (queryClient: QueryClient, milliseconds = 5000) => {
 		clearTimeout(timeout);
 		timeout = setTimeout(() => {
 			timeout = undefined;
 			queryClient.invalidateQueries(['licenses']);
-		}, 5000);
+		}, milliseconds);
 	};
 })();
 
@@ -62,5 +62,5 @@ export const useLicenseName = (params?: LicenseParams) => {
 
 export const useInvalidateLicense = () => {
 	const queryClient = useQueryClient();
-	return () => invalidateQueryClientLicenses(queryClient);
+	return (milliseconds?: number) => invalidateQueryClientLicenses(queryClient, milliseconds);
 };

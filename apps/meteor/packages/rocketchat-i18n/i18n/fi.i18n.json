@@ -967,7 +967,6 @@
   "Close": "Sulje",
   "Close_chat": "Sulje keskustelu",
   "Close_room_description": "Olet sulkemassa keskustelun. Haluatko varmasti jatkaa?",
-  "Close_to_seat_limit_banner_warning": "*Sinulla on [{{seats}}] käyttäjää jäljellä*  \nTämä työtila lähestyy käyttäjämäärän rajaa. Kun raja on saavutettu, uusia jäseniä ei voida lisätä. *[Request More Seats]({{url}})*",
   "Close_to_seat_limit_warning": "Uusia jäseniä ei voida luoda, kun käyttäjämäärä on saavutettu.",
   "close-livechat-room": "Sulje Omnichannel-huone",
   "close-livechat-room_description": "Lupa nykyisen monikanavahuoneen sulkemiseen",
@@ -1876,7 +1875,7 @@
   "error-avatar-invalid-url": "Virheellinen avatarin URL-osoite: {{url}}",
   "error-avatar-url-handling": "Virhe käsiteltäessä avatar-asetusta URL-osoitteesta ({{url}}) käyttäjälle {{username}}",
   "error-business-hours-are-closed": "Aukioloaika on suljettu",
-  "error-blocked-username": "<strong>{{field}}</strong> on estetty eikä sitä voi käyttää!",
+  "error-blocked-username": "**{{field}}** on estetty eikä sitä voi käyttää!",
   "error-canned-response-not-found": "Valmista vastausta ei löydy",
   "error-cannot-delete-app-user": "Sovelluskäyttäjän poistaminen ei ole sallittua. Poista käyttäjä poistamalla kyseinen sovellus.",
   "error-cant-add-federated-users": "Liittoutuneita käyttäjiä ei voi lisätä organisaation sisäiseen huoneeseen",
@@ -3904,7 +3903,6 @@
   "Rate Limiter_Description": "Hallitse palvelimesi lähettämien tai vastaanottamien pyyntöjen tiheyttä verkkohyökkäysten ja kaapimisen estämiseksi.",
   "Rate_Limiter_Limit_RegisterUser": "Pyyntöjen oletusmäärä nopeusrajoittimelle kun rekisteröidään käyttäjä",
   "Rate_Limiter_Limit_RegisterUser_Description": "Käyttäjärekisteröivien päätepisteiden (REST- ja reaaliaikaiset API:t) oletuspyyntöjen määrä, joka sallitaan API Rate Limiter-osiossa määritellyn aikavälien sisällä.",
-  "Reached_seat_limit_banner_warning": "*Paikkoja ei ole enää saatavilla*  \nTämä työtila on saavuttanut paikkarajansa, joten siihen ei voi liittyä enää lisää jäseniä. *[Pyydä lisää paikkoja]({{url}})*",
   "React_when_read_only": "Salli reaktiot",
   "React_when_read_only_changed_successfully": "Salli reagointi, kun vain luku on muutettu onnistuneesti",
   "Reacted_with": "Reagoi:",
@@ -5747,6 +5745,5 @@
   "Uninstall_grandfathered_app": "Poistetaanko {{appName}}?",
   "App_will_lose_grandfathered_status": "**Tämä {{context}}sovellus menettää aikaisemmin käytetössä olleen sovelluksen tilansa.**  \n  \nYhteisöversion työtiloissa voi olla käytössä enintään {{limit}} {{context}} sovellusta. aikaisemmin Aikaisemmin käytössä olleet sovellukset lasketaan mukaan rajoitukseen, mutta rajoitusta ei sovelleta niihin.",
   "Theme_Appearence": "Teeman ulkoasu",
-  "Enterprise": "Yritys",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analytics"
 }
