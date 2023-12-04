@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Fix connected users search on spotlight
+Fixed issue searching connected users on spotlight
