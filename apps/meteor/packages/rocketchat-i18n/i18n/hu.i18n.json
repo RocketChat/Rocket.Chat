@@ -935,7 +935,6 @@
   "Close": "Bezárás",
   "Close_chat": "Csevegés lezárása",
   "Close_room_description": "A csevegés lezárására készül. Biztosan folytatni szeretné?",
-  "Close_to_seat_limit_banner_warning": "*Önnek [{{seats}}] helye van hátra*  \nEz a munkaterület közelít a helyek korlátjához. A korlát elérése után nem lehet új tagokat hozzáadni. *[További helyek kérése]({{url}})*",
   "Close_to_seat_limit_warning": "Nem lehet új tagokat létrehozni, ha a helyek elérték a korlátot.",
   "close-livechat-room": "Összcsatornás szoba lezárása",
   "close-livechat-room_description": "Jogosultság a jelenlegi összcsatornás szoba lezárásához",
@@ -1820,7 +1819,7 @@
   "error-avatar-invalid-url": "Érvénytelen profilkép URL: {{url}}",
   "error-avatar-url-handling": "Hiba történt {{username}} {{url}} URL-éről érkező profilkép-beállításának kezelésekor",
   "error-business-hours-are-closed": "A munkaidő véget ért",
-  "error-blocked-username": "A(z) <strong>{{field}}</strong> tiltva van és nem használható!",
+  "error-blocked-username": "A(z) **{{field}}** tiltva van és nem használható!",
   "error-canned-response-not-found": "A sablonválasz nem található",
   "error-cannot-delete-app-user": "Az alkalmazás felhasználójának törlése nem engedélyezett, távolítsa el a megfelelő alkalmazást a felhasználó eltávolításához.",
   "error-cant-add-federated-users": "Nem lehet föderált felhasználókat hozzáadni egy nem föderált szobához",
@@ -3764,7 +3763,6 @@
   "Rate Limiter_Description": "A kiszolgáló által elküldött vagy fogadott kérések sebességének vezérlése, hogy megakadályozza a kibertámadásokat és az adatkinyeréseket.",
   "Rate_Limiter_Limit_RegisterUser": "Alapértelmezett hívásszám a sebességkorlátozóhoz egy felhasználó regisztrálásánál",
   "Rate_Limiter_Limit_RegisterUser_Description": "Az API sebességkorlátozó szakaszban meghatározott időtartományon belül engedélyezett alapértelmezett hívások száma a felhasználó regisztrálási végpontoknál (REST és valós idejű API-k).",
-  "Reached_seat_limit_banner_warning": "*Nincs több elérhető hely*  \nEz a munkaterület elérte a helyek korlátját, így több tag nem csatlakozhat. *[További helyek kérése]({{url}})*",
   "React_when_read_only": "Reagálás engedélyezése",
   "React_when_read_only_changed_successfully": "Reagálás engedélyezése csak olvashatókor sikeresen megváltoztatva",
   "Reacted_with": "Reagált ezzel:",
@@ -5430,7 +5428,6 @@
   "Join_your_team": "Csatlakozás csapathoz",
   "Create_an_account": "Fiók létrehozása",
   "RegisterWorkspace_Features_Marketplace_Title": "Piactér",
-  "Enterprise": "Vállalati",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analitika",
   "UpgradeToGetMore_auditing_Title": "Üzenet ellenőrzés"
 }
