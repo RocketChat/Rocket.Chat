@@ -27,6 +27,15 @@ test.describe('OC - Manager Role', () => {
 
 	let manager: Awaited<ReturnType<typeof createManager>>;
 
+	// Allow manual on hold
+	test.beforeAll(async ({ api }) => {
+		const responses = await Promise.all([
+			api.post('/settings/Livechat_allow_manual_on_hold', { value: true }),
+			api.post('/settings/Livechat_allow_manual_on_hold_upon_agent_engagement_only', { value: false }),
+		]);
+		responses.forEach((res) => expect(res.status()).toBe(200));
+	});
+
 	// Create agents
 	test.beforeAll(async ({ api }) => {
 		agents = await Promise.all([createAgent(api, 'user1'), createAgent(api, 'user2'), createAgent(api, MANAGER)]);
@@ -72,12 +81,15 @@ test.describe('OC - Manager Role', () => {
 	});
 
 	// Delete all created data
-	test.afterAll(async () => {
+	test.afterAll(async ({ api }) => {
 		await Promise.all([
 			...agents.map((agent) => agent.delete()),
 			...departments.map((department) => department.delete()),
 			...conversations.map((conversation) => conversation.delete()),
 			manager.delete(),
+			// Reset setting
+			api.post('/settings/Livechat_allow_manual_on_hold', { value: false }),
+			api.post('/settings/Livechat_allow_manual_on_hold_upon_agent_engagement_only', { value: true }),
 		]);
 	});
 
