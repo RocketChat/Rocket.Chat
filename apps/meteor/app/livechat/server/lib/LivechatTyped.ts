@@ -1368,6 +1368,12 @@ class LivechatClass {
 
 	async saveGuest(guestData: Pick<ILivechatVisitor, '_id' | 'name' | 'livechatData'> & { email?: string; phone?: string }, userId: string) {
 		const { _id, name, email, phone, livechatData = {} } = guestData;
+
+		const visitor = await LivechatVisitors.findOneById(_id, { projection: { _id: 1 } });
+		if (!visitor) {
+			throw new Error('error-invalid-visitor');
+		}
+
 		this.logger.debug({ msg: 'Saving guest', guestData });
 		const updateData: {
 			name?: string | undefined;

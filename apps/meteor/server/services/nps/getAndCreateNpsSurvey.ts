@@ -57,6 +57,7 @@ export const getAndCreateNpsSurvey = async function getNpsSurvey(npsId: string) 
 				username: 'rocket.cat',
 			},
 			view: surveyData.survey,
+			surface: 'banner',
 		};
 
 		await Banner.create(banner);
