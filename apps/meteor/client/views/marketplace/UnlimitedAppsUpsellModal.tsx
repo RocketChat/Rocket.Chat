@@ -6,7 +6,7 @@ import { useUpsellActions } from '../../components/GenericUpsellModal/hooks';
 
 const UnlimitedAppsUpsellModal = ({ onClose }: { onClose: () => void }) => {
 	const t = useTranslation();
-	const { handleManageSubscription, handleTalkToSales, cloudWorkspaceHadTrial } = useUpsellActions();
+	const { handleManageSubscription, cloudWorkspaceHadTrial } = useUpsellActions();
 
 	return (
 		<GenericUpsellModal
@@ -14,10 +14,8 @@ const UnlimitedAppsUpsellModal = ({ onClose }: { onClose: () => void }) => {
 			img='images/unlimited-apps-modal.png'
 			subtitle={t('Get_all_apps')}
 			description={!cloudWorkspaceHadTrial ? t('Workspaces_on_community_edition_trial_on') : t('Workspaces_on_community_edition_trial_off')}
-			confirmText={!cloudWorkspaceHadTrial ? t('Start_free_trial') : t('Learn_more')}
-			cancelText={t('Talk_to_sales')}
 			onConfirm={handleManageSubscription}
-			onCancel={handleTalkToSales}
+			onCancel={onClose}
 			onClose={onClose}
 		/>
 	);

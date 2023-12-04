@@ -843,7 +843,6 @@
   "Close": "Fermer",
   "Close_chat": "Fermer le chat",
   "Close_room_description": "Vous êtes sur le point de fermer ce chat. Voulez-vous continuer ?",
-  "Close_to_seat_limit_banner_warning": "*Il vous reste [{{seats}}] sièges*  \nLe nombre maximal de sièges de cet espace de travail est presque atteint. Une fois la limite atteinte, aucun nouveau membre ne pourra être ajouté. *[Demander plus de sièges]({{url}})*",
   "Close_to_seat_limit_warning": "Aucun nouveau membre ne peut être créé une fois que la limite de sièges est atteinte.",
   "close-livechat-room": "Fermer le salon omnicanal",
   "close-livechat-room_description": "Autorisation de fermer le salon omnicanal actuel",
@@ -1652,7 +1651,7 @@
   "error-avatar-invalid-url": "URL d'avatar non valide : {{url}}",
   "error-avatar-url-handling": "Erreur lors du traitement du paramètre d'avatar à partir d'une URL ({{url}}) pour {{username}}",
   "error-business-hours-are-closed": "Les heures d'ouverture sont fermées",
-  "error-blocked-username": "<strong>{{field}}</strong> est bloqué et ne peut pas être utilisé !",
+  "error-blocked-username": "**{{field}}** est bloqué et ne peut pas être utilisé !",
   "error-canned-response-not-found": "Réponse standardisée introuvable",
   "error-cannot-delete-app-user": "La suppression de l'utilisateur de l'application n'est pas autorisée, désinstallez l'application correspondante pour le supprimer.",
   "error-cant-invite-for-direct-room": "Impossible d'inviter l'utilisateur dans les salons directs",
@@ -3412,7 +3411,6 @@
   "Random": "Aléatoire",
   "Rate_Limiter_Limit_RegisterUser": "Nombre d'appels par défaut au limiteur de débit pour l'enregistrement d'un utilisateur",
   "Rate_Limiter_Limit_RegisterUser_Description": "Nombre d'appels par défaut pour les points de terminaison d'enregistrement d'utilisateurs (API REST et en temps réel) autorisés pendant l'intervalle défini dans la section Limiteur de débit d'API.",
-  "Reached_seat_limit_banner_warning": "*Plus de sièges disponibles*  \nLe nombre maximal de sièges de cet espace de travail est atteint. Aucun autre membre ne peut le rejoindre. *[Request More Seats]({{url}})*",
   "React_when_read_only": "Autoriser les réactions",
   "React_when_read_only_changed_successfully": "Autoriser les réactions après modification du mode de lecture seule",
   "Reacted_with": "A réagi avec",
@@ -4891,7 +4889,6 @@
   "RegisterWorkspace_Features_Omnichannel_Title": "Omnicanal",
   "RegisterWorkspace_Setup_Label": "E-mail du compte cloud",
   "cloud.RegisterWorkspace_Setup_Terms_Privacy": "J'accepte les <1>Conditions d'utilisation</1> et la <3>Politique de confidentialité</3>",
-  "Enterprise": "Entreprise",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analyses",
   "UpgradeToGetMore_auditing_Title": "Audit des messages"
 }
