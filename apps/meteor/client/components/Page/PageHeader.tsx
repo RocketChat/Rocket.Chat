@@ -1,5 +1,5 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
-import { HeaderToolbox } from '@rocket.chat/ui-client';
+import { HeaderToolbox, useDocumentTitle } from '@rocket.chat/ui-client';
 import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC, ComponentProps, ReactNode } from 'react';
 import React, { useContext } from 'react';
@@ -17,6 +17,8 @@ const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, onClickB
 	const t = useTranslation();
 	const [border] = useContext(PageContext);
 	const { isMobile } = useLayout();
+
+	useDocumentTitle(typeof title === 'string' ? title : undefined);
 
 	return (
 		<Box
