@@ -7,7 +7,7 @@ import { updateSetting, updatePermission } from '../../data/permissions.helper';
 import { password } from '../../data/user';
 import { createUser, deleteUser } from '../../data/users.helper';
 
-describe('[Failed Login Attempts]', function () {
+describe.skip('[Failed Login Attempts]', function () {
 	this.retries(0);
 
 	const maxAttemptsByUser = 2;

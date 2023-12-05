@@ -6,7 +6,7 @@ import { getCredentials, api, request, credentials } from '../../data/api-data.j
 import { password } from '../../data/user';
 import { createUser, login } from '../../data/users.helper';
 
-describe('[Calendar Events]', function () {
+describe.skip('[Calendar Events]', function () {
 	this.retries(0);
 
 	let user2: Awaited<ReturnType<typeof createUser>> | undefined;

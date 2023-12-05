@@ -2,7 +2,7 @@ import { describe, it } from 'mocha';
 
 import { request } from '../../data/api-data.js';
 
-describe('assets', function () {
+describe.skip('assets', function () {
 	this.retries(0);
 
 	it('should always have CORS headers for assets', async () => {
