@@ -840,7 +840,6 @@
   "Close": "إغلاق",
   "Close_chat": "إغلاق الدردشة",
   "Close_room_description": "إنك توشك على إغلاق هذه الدردشة. هل تريد فعلاً المتابعة؟",
-  "Close_to_seat_limit_warning": "لا يمكن إنشاء أعضاء جدد بمجرد استيفاء حد المقاعد.",
   "close-livechat-room": "إغلاق Room القناة متعددة الاتجاهات",
   "close-livechat-room_description": "إذن لإغلاق غرفة القناة متعددة الاتجاهات الحالية",
   "Close_menu": "إغلاق القائمة",
@@ -3508,11 +3507,6 @@
   "Report_this_message_question_mark": "هل أبلغ عن هذه الرسالة؟",
   "Reporting": "يتم الإبلاغ الآن",
   "Request": "طلب",
-  "Request_seats": "طلب مقاعد",
-  "Request_more_seats": "طلب المزيد من المقاعد.",
-  "Request_more_seats_out_of_seats": "لا يمكنك إضافة أعضاء لأن مساحة العمل هذه ليس بها مقاعد، يرجى طلب المزيد من المقاعد.",
-  "Request_more_seats_sales_team": "بمجرد تقديم طلبك، سينظر فريق المبيعات لدينا في الأمر وسيتواصل معك في غضون اليومين المقبلين.",
-  "Request_more_seats_title": "طلب المزيد من المقاعد",
   "Request_comment_when_closing_conversation": "طلب التعليق عند إغلاق المحادثة",
   "Request_comment_when_closing_conversation_description": "في حال التمكين، سيحتاج الوكيل إلى تعيين تعليق قبل إغلاق المحادثة.",
   "Request_tag_before_closing_chat": "طلب علامة (علامات) قبل إغلاق المحادثة",
@@ -4889,6 +4883,7 @@
   "RegisterWorkspace_Features_Omnichannel_Title": "قناة متعددة الاتجاهات",
   "RegisterWorkspace_Setup_Label": "البريد الإلكتروني لحساب السحابة",
   "cloud.RegisterWorkspace_Setup_Terms_Privacy": "أوافق على <1>البنود والشروط</1> و<3>سياسة الخصوصية</3>",
+  "Enterprise": "مؤسسة",
   "UpgradeToGetMore_engagement-dashboard_Title": "التحليلات",
   "UpgradeToGetMore_auditing_Title": "تدقيق الرسائل"
 }
