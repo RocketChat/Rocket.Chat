@@ -10,6 +10,7 @@ import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { RoomManager } from '../../../lib/RoomManager';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
+import ImageGalleryProvider from '../../../providers/ImageGalleryProvider';
 import RoomNotFound from '../RoomNotFound';
 import RoomSkeleton from '../RoomSkeleton';
 import { useRoomRolesManagement } from '../body/hooks/useRoomRolesManagement';
@@ -109,7 +110,9 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	return (
 		<RoomContext.Provider value={context}>
 			<RoomToolboxProvider>
-				<ComposerPopupProvider room={pseudoRoom}>{children}</ComposerPopupProvider>
+				<ImageGalleryProvider>
+					<ComposerPopupProvider room={pseudoRoom}>{children}</ComposerPopupProvider>
+				</ImageGalleryProvider>
 			</RoomToolboxProvider>
 		</RoomContext.Provider>
 	);

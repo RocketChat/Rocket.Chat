@@ -1,7 +1,7 @@
-import { Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, ContextualbarIcon } from '@rocket.chat/fuselage';
 import { usePermission, useRouteParameter, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 
 import UserPageHeaderContentWithSeatsCap from '../../../../ee/client/views/admin/users/UserPageHeaderContentWithSeatsCap';
 import { useSeatsCap } from '../../../../ee/client/views/admin/users/useSeatsCap';
@@ -12,10 +12,12 @@ import AdminInviteUsers from './AdminInviteUsers';
 import AdminUserForm from './AdminUserForm';
 import AdminUserFormWithData from './AdminUserFormWithData';
 import AdminUserInfoWithData from './AdminUserInfoWithData';
+import AdminUserUpgrade from './AdminUserUpgrade';
 import UsersTable from './UsersTable';
 
 const UsersPage = (): ReactElement => {
 	const t = useTranslation();
+
 	const seatsCap = useSeatsCap();
 	const reload = useRef(() => null);
 
@@ -28,20 +30,12 @@ const UsersPage = (): ReactElement => {
 
 	const isCreateUserDisabled = useShouldPreventAction('activeUsers');
 
-	useEffect(() => {
-		if (!context || !seatsCap) {
-			return;
-		}
-
-		if (isCreateUserDisabled && !['edit', 'info'].includes(context)) {
-			router.navigate('/admin/users');
-		}
-	}, [router, context, seatsCap, isCreateUserDisabled]);
-
 	const handleReload = (): void => {
 		seatsCap?.reload();
 		reload.current();
 	};
+
+	const isRoutePrevented = context && ['new', 'invite'].includes(context) && isCreateUserDisabled;
 
 	return (
 		<Page flexDirection='row'>
@@ -51,14 +45,14 @@ const UsersPage = (): ReactElement => {
 						<UserPageHeaderContentWithSeatsCap {...seatsCap} />
 					) : (
 						<ButtonGroup>
-							{canCreateUser && (
-								<Button icon='user-plus' onClick={() => router.navigate('/admin/users/new')}>
-									{t('New')}
-								</Button>
-							)}
 							{canBulkCreateUser && (
 								<Button icon='mail' onClick={() => router.navigate('/admin/users/invite')}>
 									{t('Invite')}
+								</Button>
+							)}
+							{canCreateUser && (
+								<Button icon='user-plus' onClick={() => router.navigate('/admin/users/new')}>
+									{t('New_user')}
 								</Button>
 							)}
 						</ButtonGroup>
@@ -71,6 +65,7 @@ const UsersPage = (): ReactElement => {
 			{context && (
 				<Contextualbar is='aside' aria-labelledby=''>
 					<ContextualbarHeader>
+						{context === 'upgrade' && <ContextualbarIcon name='user-plus' />}
 						<ContextualbarTitle>
 							{context === 'info' && t('User_Info')}
 							{context === 'edit' && t('Edit_User')}
@@ -81,8 +76,9 @@ const UsersPage = (): ReactElement => {
 					</ContextualbarHeader>
 					{context === 'info' && id && <AdminUserInfoWithData uid={id} onReload={handleReload} />}
 					{context === 'edit' && id && <AdminUserFormWithData uid={id} onReload={handleReload} />}
-					{context === 'new' && <AdminUserForm onReload={handleReload} />}
-					{context === 'invite' && <AdminInviteUsers />}
+					{!isRoutePrevented && context === 'new' && <AdminUserForm onReload={handleReload} />}
+					{!isRoutePrevented && context === 'invite' && <AdminInviteUsers />}
+					{isRoutePrevented && <AdminUserUpgrade />}
 				</Contextualbar>
 			)}
 		</Page>

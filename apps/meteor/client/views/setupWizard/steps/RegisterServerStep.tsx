@@ -4,7 +4,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import type { ReactElement, ComponentProps } from 'react';
 import React, { useState } from 'react';
 
-import { queryClient } from '../../../lib/queryClient';
+import { useInvalidateLicense } from '../../../hooks/useLicense';
 import { dispatchToastMessage } from '../../../lib/toast';
 import { useSetupWizardContext } from '../contexts/SetupWizardContext';
 
@@ -15,8 +15,10 @@ const SERVER_OPTIONS = {
 
 const RegisterServerStep = (): ReactElement => {
 	const t = useTranslation();
-	const { currentStep, goToNextStep, setSetupWizardData, registerServer, maxSteps, completeSetupWizard } = useSetupWizardContext();
+	const { currentStep, goToNextStep, setSetupWizardData, registerServer, maxSteps, completeSetupWizard, saveAgreementData } =
+		useSetupWizardContext();
 	const [serverOption, setServerOption] = useState(SERVER_OPTIONS.REGISTERED);
+	const invalidateLicenseQuery = useInvalidateLicense();
 
 	const handleRegister: ComponentProps<typeof RegisterServerPage>['onSubmit'] = async (data: {
 		email: string;
@@ -51,7 +53,7 @@ const RegisterServerStep = (): ReactElement => {
 		async (token) => registerManually({ cloudBlob: token }),
 		{
 			onSuccess: () => {
-				queryClient.invalidateQueries(['licenses']);
+				invalidateLicenseQuery(100);
 				completeSetupWizard();
 			},
 			onError: () => {
@@ -60,7 +62,8 @@ const RegisterServerStep = (): ReactElement => {
 		},
 	);
 
-	const handleConfirmOffline: ComponentProps<typeof RegisterOfflinePage>['onSubmit'] = ({ token }) => {
+	const handleConfirmOffline: ComponentProps<typeof RegisterOfflinePage>['onSubmit'] = async ({ token, agreement }) => {
+		await saveAgreementData(agreement);
 		mutate(token);
 	};
 
@@ -70,6 +73,7 @@ const RegisterServerStep = (): ReactElement => {
 				termsHref='https://rocket.chat/terms'
 				policyHref='https://rocket.chat/privacy'
 				clientKey={clientKey || ''}
+				onCopySecurityCode={(): void => dispatchToastMessage({ type: 'success', message: t('Copied') })}
 				onBackButtonClick={(): void => setServerOption(SERVER_OPTIONS.REGISTERED)}
 				onSubmit={handleConfirmOffline}
 			/>

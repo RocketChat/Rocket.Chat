@@ -4,9 +4,16 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 import { settings } from '../../../settings/server';
 import { getURL } from '../../../utils/server/getURL';
 import { getWorkspaceAccessTokenOrThrow } from './getWorkspaceAccessToken';
+import { syncWorkspace } from './syncWorkspace';
 
-export const getCheckoutUrl = async () => {
+export const fallback = `https://go.rocket.chat/i/contact-sales`;
+
+export const getCheckoutUrl = async (): Promise<{
+	url: string;
+}> => {
 	try {
+		await syncWorkspace();
+
 		const token = await getWorkspaceAccessTokenOrThrow(true, 'workspace:billing', false);
 
 		const subscriptionURL = getURL('admin/subscription', {
@@ -40,6 +47,8 @@ export const getCheckoutUrl = async () => {
 			err,
 		});
 
-		throw err;
+		return {
+			url: fallback,
+		};
 	}
 };
