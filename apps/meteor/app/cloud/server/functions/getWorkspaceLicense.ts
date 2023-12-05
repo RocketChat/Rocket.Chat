@@ -49,36 +49,24 @@ const fetchCloudWorkspaceLicensePayload = async ({ token }: { token: string }): 
 	return payload;
 };
 
-export async function getWorkspaceLicense(): Promise<{ updated: boolean; license: string }> {
+export async function getWorkspaceLicense() {
 	const currentLicense = await Settings.findOne('Cloud_Workspace_License');
 	// it should never happen, since even if the license is not found, it will return an empty settings
 	if (!currentLicense?._updatedAt) {
 		throw new CloudWorkspaceLicenseError('Failed to retrieve current license');
 	}
 
-	const fromCurrentLicense = async () => {
-		const license = currentLicense?.value as string | undefined;
-		if (license) {
-			await callbacks.run('workspaceLicenseChanged', license);
-		}
-
-		return { updated: false, license: license ?? '' };
-	};
-
 	try {
 		const token = await getWorkspaceAccessToken();
 		if (!token) {
-			return fromCurrentLicense();
+			return;
 		}
 
 		const payload = await fetchCloudWorkspaceLicensePayload({ token });
 
 		if (currentLicense.value && Date.parse(payload.updatedAt) <= currentLicense._updatedAt.getTime()) {
-			return fromCurrentLicense();
+			return;
 		}
-
-		await Settings.updateValueById('Cloud_Workspace_License', payload.license);
-
 		await callbacks.run('workspaceLicenseChanged', payload.license);
 
 		return { updated: true, license: payload.license };
@@ -88,7 +76,5 @@ export async function getWorkspaceLicense(): Promise<{ updated: boolean; license
 			url: '/license',
 			err,
 		});
-
-		return fromCurrentLicense();
 	}
 }

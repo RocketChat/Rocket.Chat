@@ -950,7 +950,6 @@
   "Email_Notification_Mode": "Offline-E-Mail-Benachrichtigungen",
   "Email_Notification_Mode_All": "Jede Erwähnung/DM",
   "Email_Notification_Mode_Disabled": "deaktiviert",
-  "Enterprise": "Unternehmen",
   "Email_or_username": "E-Mail-Adresse oder Nutzername",
   "Email_Placeholder": "Geben Sie bitte Ihre Email-Adresse ein...",
   "Email_Placeholder_any": "Bitte geben Sie E-Mail-Adressen ein ...",
@@ -2758,5 +2757,6 @@
   "registration.component.form.invalidConfirmPass": "Die Passwörter stimmen nicht überein.",
   "registration.component.form.confirmPassword": "Bestätigen Sie Ihr Passwort.",
   "registration.component.form.sendConfirmationEmail": "Bestätigungsmail versenden",
+  "Enterprise": "Unternehmen",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analytics"
 }

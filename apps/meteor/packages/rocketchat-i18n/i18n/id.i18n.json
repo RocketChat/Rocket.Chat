@@ -947,7 +947,6 @@
   "Email_Notification_Mode": "Pemberitahuan Email Offline",
   "Email_Notification_Mode_All": "Setiap Mention / DM",
   "Email_Notification_Mode_Disabled": "Cacat",
-  "Enterprise": "Perusahaan",
   "Email_or_username": "Email atau username",
   "Email_Placeholder": "Silahkan masukkan alamat email anda ...",
   "Email_Placeholder_any": "Harap masukkan alamat email ...",
@@ -2768,5 +2767,6 @@
   "registration.component.form.invalidConfirmPass": "Kata sandi konfirmasi tidak cocok dengan kata sandi utama",
   "registration.component.form.confirmPassword": "Konfirmasikan kata sandi anda",
   "registration.component.form.sendConfirmationEmail": "Kirim email konfirmasi",
+  "Enterprise": "Perusahaan",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analytics"
 }

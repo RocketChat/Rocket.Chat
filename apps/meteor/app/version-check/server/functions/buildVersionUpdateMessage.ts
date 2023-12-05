@@ -20,6 +20,11 @@ export const buildVersionUpdateMessage = async (
 	}
 
 	for await (const version of versions) {
+		// Ignore prerelease versions
+		if (semver.prerelease(version.version)) {
+			continue;
+		}
+
 		if (semver.lte(version.version, lastCheckedVersion)) {
 			continue;
 		}

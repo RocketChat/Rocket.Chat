@@ -946,7 +946,6 @@
   "Email_Notification_Mode": "Офлайн и-мэйл мэдэгдэл",
   "Email_Notification_Mode_All": "Санал болгонд / DM",
   "Email_Notification_Mode_Disabled": "Хөгжлийн бэрхшээлтэй",
-  "Enterprise": "Аж ахуйн нэгж",
   "Email_or_username": "И-мэйл эсвэл Хэрэглэгчийн нэр",
   "Email_Placeholder": "Имэйл хаягаа оруулна уу ...",
   "Email_Placeholder_any": "Имэйл хаягаа оруулна уу ...",
@@ -2747,5 +2746,6 @@
   "registration.component.form.invalidConfirmPass": "Нууц үг баталгаажуулалт нь нууц үгтэй таарахгүй байна",
   "registration.component.form.confirmPassword": "Нууц үгээ батлах",
   "registration.component.form.sendConfirmationEmail": "Баталгаажуулах имэйл илгээх",
+  "Enterprise": "Аж ахуйн нэгж",
   "UpgradeToGetMore_engagement-dashboard_Title": "Аналитик"
 }

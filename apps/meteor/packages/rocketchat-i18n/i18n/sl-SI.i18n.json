@@ -944,7 +944,6 @@
   "Email_Notification_Mode": "E-poštna obvestila ob nedosegljivosti",
   "Email_Notification_Mode_All": "Vsaka omemba/neposredno sporočilo",
   "Email_Notification_Mode_Disabled": "Onemogočeno",
-  "Enterprise": "Podjetje",
   "Email_or_username": "E-naslov ali uporabniško ime",
   "Email_Placeholder": "Prosimo, vnesite vaš e-poštni naslov ...",
   "Email_Placeholder_any": "Prosimo, vnesite e-poštne naslove...",
@@ -2743,5 +2742,6 @@
   "registration.component.form.invalidConfirmPass": "Potrditev gesla se ne ujema z geslom",
   "registration.component.form.confirmPassword": "Potrdi geslo",
   "registration.component.form.sendConfirmationEmail": "Pošlji potrditveno e-poštno sporočilo",
+  "Enterprise": "Podjetje",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analiza"
 }

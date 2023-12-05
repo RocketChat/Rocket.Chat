@@ -859,7 +859,6 @@
   "Email_Notification_Mode": "Обавештења путем е-поште када нисте на мрежи",
   "Email_Notification_Mode_All": "Свако помињање / ДП",
   "Email_Notification_Mode_Disabled": "Онемогућен",
-  "Enterprise": "Предузеће",
   "Email_or_username": "Е-пошта или корисничко име",
   "Email_Placeholder": "Молимо, унесите вашу и-мејл адресу...",
   "Email_Placeholder_any": "Унесите адресе е-поште ...",
@@ -2564,5 +2563,6 @@
   "registration.component.form.invalidConfirmPass": "Потврдна лозинка се не поклапа са лозинком",
   "registration.component.form.confirmPassword": "Потврдите лозинку",
   "registration.component.form.sendConfirmationEmail": "Пошаљи потврдну поруку",
+  "Enterprise": "Предузеће",
   "UpgradeToGetMore_engagement-dashboard_Title": "Аналитика"
 }

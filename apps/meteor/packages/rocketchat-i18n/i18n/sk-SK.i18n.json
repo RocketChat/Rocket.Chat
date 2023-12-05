@@ -955,7 +955,6 @@
   "Email_Notification_Mode": "E-mailové upozornenia offline",
   "Email_Notification_Mode_All": "Každé menovanie / DM",
   "Email_Notification_Mode_Disabled": "invalidný",
-  "Enterprise": "podnik",
   "Email_or_username": "E-mail alebo užívateľské meno",
   "Email_Placeholder": "Prosím, zadajte svoju e-mailovú adresu...",
   "Email_Placeholder_any": "Zadajte e-mailové adresy ...",
@@ -2763,5 +2762,6 @@
   "registration.component.form.invalidConfirmPass": "Potvrdenie hesla sa nezhoduje s heslom",
   "registration.component.form.confirmPassword": "Potvrďte svoje heslo",
   "registration.component.form.sendConfirmationEmail": "Pošlite potvrdzovací e-mail",
+  "Enterprise": "podnik",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analytika"
 }

@@ -15,6 +15,7 @@ import {
 } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { callbacks } from '../../../../lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
@@ -41,9 +42,11 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 
 	// Users without username can't do anything, so there is nothing to remove
 	if (user.username != null) {
+		let userToReplaceWhenUnlinking: IUser | null = null;
+		const nameAlias = i18n.t('Removed_User');
 		await relinquishRoomOwnerships(userId, subscribedRooms);
 
-		const messageErasureType = settings.get('Message_ErasureType');
+		const messageErasureType = settings.get<'Delete' | 'Unlink' | 'Keep'>('Message_ErasureType');
 		switch (messageErasureType) {
 			case 'Delete':
 				const store = FileUpload.getStore('Uploads');
@@ -68,12 +71,11 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 
 				break;
 			case 'Unlink':
-				const rocketCat = await Users.findOneById('rocket.cat');
-				const nameAlias = i18n.t('Removed_User');
-				if (!rocketCat?._id || !rocketCat?.username) {
+				userToReplaceWhenUnlinking = await Users.findOneById('rocket.cat');
+				if (!userToReplaceWhenUnlinking?._id || !userToReplaceWhenUnlinking?.username) {
 					break;
 				}
-				await Messages.unlinkUserId(userId, rocketCat?._id, rocketCat?.username, nameAlias);
+				await Messages.unlinkUserId(userId, userToReplaceWhenUnlinking?._id, userToReplaceWhenUnlinking?.username, nameAlias);
 				break;
 		}
 
@@ -104,8 +106,16 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 		await Integrations.disableByUserId(userId); // Disables all the integrations which rely on the user being deleted.
 
 		// Don't broadcast user.deleted for Erasure Type of 'Keep' so that messages don't disappear from logged in sessions
-		if (messageErasureType !== 'Keep') {
-			void api.broadcast('user.deleted', user);
+		if (messageErasureType === 'Delete') {
+			void api.broadcast('user.deleted', user, {
+				messageErasureType,
+			});
+		}
+		if (messageErasureType === 'Unlink' && userToReplaceWhenUnlinking) {
+			void api.broadcast('user.deleted', user, {
+				messageErasureType,
+				replaceByUser: { _id: userToReplaceWhenUnlinking._id, username: userToReplaceWhenUnlinking?.username, alias: nameAlias },
+			});
 		}
 	}
 
@@ -117,4 +127,6 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 
 	// Refresh the servers list
 	await FederationServers.refreshServers();
+
+	await callbacks.run('afterDeleteUser', user);
 }

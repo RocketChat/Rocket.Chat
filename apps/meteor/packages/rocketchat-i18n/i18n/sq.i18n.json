@@ -948,7 +948,6 @@
   "Email_Notification_Mode": "Njoftimet Offline Email",
   "Email_Notification_Mode_All": "Çdo Mention / DM",
   "Email_Notification_Mode_Disabled": "i paaftë",
-  "Enterprise": "Ndërmarrje",
   "Email_or_username": "Email-i ose emri i përdoruesit",
   "Email_Placeholder": "Shkruani adresën tuaj të postës elektronike ...",
   "Email_Placeholder_any": "Futu adresat e emailit ...",
@@ -2754,5 +2753,6 @@
   "registration.component.form.invalidConfirmPass": "Konfirmimi Fjalëkalimi nuk përputhet me fjalëkalimin",
   "registration.component.form.confirmPassword": "Konfirmoni fjalëkalimin tuaj",
   "registration.component.form.sendConfirmationEmail": "Dërgo email konfirmimi",
+  "Enterprise": "Ndërmarrje",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analitikë"
 }

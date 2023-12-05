@@ -946,7 +946,6 @@
   "Email_Notification_Mode": "Hysbysiadau E-bost Amlinellol",
   "Email_Notification_Mode_All": "Pob Mention / DM",
   "Email_Notification_Mode_Disabled": "Anabl",
-  "Enterprise": "Menter",
   "Email_or_username": "E-bost neu Enw defnyddiwr",
   "Email_Placeholder": "Rhowch eich cyfeiriad e-bost ...",
   "Email_Placeholder_any": "Rhowch gyfeiriadau e-bost ...",
@@ -2749,5 +2748,6 @@
   "registration.component.form.invalidConfirmPass": "Nid yw'r cadarnhad cyfrinair yn cyfateb i'r cyfrinair",
   "registration.component.form.confirmPassword": "Cadarnhau eich cyfrinair",
   "registration.component.form.sendConfirmationEmail": "Anfon ebost cadarnhad",
+  "Enterprise": "Menter",
   "UpgradeToGetMore_engagement-dashboard_Title": "Dadansoddiadau"
 }

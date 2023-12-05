@@ -947,7 +947,6 @@
   "Email_Notification_Mode": "Pemberitahuan E-mel Offline",
   "Email_Notification_Mode_All": "Setiap Mention / DM",
   "Email_Notification_Mode_Disabled": "Orang kurang Upaya",
-  "Enterprise": "Enterprise",
   "Email_or_username": "E-mel atau nama pengguna",
   "Email_Placeholder": "Sila masukkan alamat e-mel anda ...",
   "Email_Placeholder_any": "Sila masukkan alamat e-mel ...",
@@ -2764,5 +2763,6 @@
   "registration.component.form.invalidConfirmPass": "Pengesahan kata laluan tidak sepadan dengan kata laluan",
   "registration.component.form.confirmPassword": "Sahkan kata laluan anda",
   "registration.component.form.sendConfirmationEmail": "Hantar e-mel pengesahan",
+  "Enterprise": "Enterprise",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analisis"
 }

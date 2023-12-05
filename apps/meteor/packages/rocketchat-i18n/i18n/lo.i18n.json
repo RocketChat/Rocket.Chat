@@ -970,7 +970,6 @@
   "Email_Notification_Mode": "ການແຈ້ງເຕືອນ Email ອອຟໄລ",
   "Email_Notification_Mode_All": "ທຸກ Mention / DM",
   "Email_Notification_Mode_Disabled": "ຄົນພິການ",
-  "Enterprise": "Enterprise",
   "Email_or_username": "ອີ​ເມລ​ຫຼື​ຊື່​ຜູ້​ໃຊ້",
   "Email_Placeholder": "ກະລຸນາໃສ່ທີ່ຢູ່ອີເມວຂອງທ່ານ ...",
   "Email_Placeholder_any": "ກະລຸນາໃສ່ທີ່ຢູ່ອີເມວ ...",
@@ -2796,5 +2795,6 @@
   "registration.component.form.invalidConfirmPass": "ການຢືນຢັນລະຫັດຜ່ານບໍ່ກົງກັບລະຫັດຜ່ານ",
   "registration.component.form.confirmPassword": "ຢືນຢັນລະຫັດຜ່ານຂອງທ່ານ",
   "registration.component.form.sendConfirmationEmail": "ສົ່ງອີເມວການຢືນຢັນ",
+  "Enterprise": "Enterprise",
   "UpgradeToGetMore_engagement-dashboard_Title": "ການວິເຄາະ"
 }
