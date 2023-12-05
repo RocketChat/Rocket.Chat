@@ -229,7 +229,8 @@ test.describe('OC - Monitor Role', () => {
 		await test.step('expect not to be able to see current chats once unit is removed', async () => {
 			const res = await unit.delete();
 			await expect(res.status()).toBe(200);
-			await page.reload();
+			await poOmnichannel.omnisidenav.linkAnalytics.click();
+			await poOmnichannel.omnisidenav.linkCurrentChats.click();
 			await expect(page.locator('text="No chats yet"')).toBeVisible();
 		});
 
