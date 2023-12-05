@@ -134,7 +134,7 @@ const ContactInfo = ({ id: contactId, rid: roomId = '', route }: ContactInfoProp
 					{email && (
 						<Field>
 							<Label>{t('Email')}</Label>
-							<Info>{email}</Info>
+							<Info data-qa-id='contactInfo-email'>{email}</Info>
 						</Field>
 					)}
 					{phoneNumber && (
