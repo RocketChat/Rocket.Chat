@@ -1,58 +1,12 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Emitter } from '@rocket.chat/emitter';
 import { Box } from '@rocket.chat/fuselage';
-import { useSession, useSetting } from '@rocket.chat/ui-contexts';
+import { useDocumentTitle } from '@rocket.chat/ui-client';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
-const ee = new Emitter<{
-	change: void;
-}>();
-
-const titles = new Set<{
-	title: string;
-	refocus?: boolean;
-}>();
-
-export const useDocumentTitle = (documentTitle: string, refocus?: boolean) => {
-	useEffect(() => {
-		const title = {
-			title: documentTitle,
-			refocus,
-		};
-		titles.add(title);
-
-		ee.emit('change');
-
-		return () => {
-			titles.delete(title);
-			ee.emit('change');
-		};
-	}, [documentTitle, refocus]);
-};
-
-const useReactiveDocumentTitle = (): string => {
-	return useSyncExternalStore(
-		useCallback((callback) => ee.on('change', callback), []),
-		(): string =>
-			Array.from(titles)
-				.map(({ title }) => title)
-				.join(' - '),
-	);
-};
-
-const useReactiveDocumentTitleKey = (): string => {
-	return useSyncExternalStore(
-		useCallback((callback) => ee.on('change', callback), []),
-		(): string =>
-			Array.from(titles)
-				.filter(({ refocus }) => refocus)
-				.map(({ title }) => title)
-				.join(' - '),
-	);
-};
+import { useUnreadMessages } from './hooks/useUnreadMessages';
 
 const useRouteTitleFocus = () => {
 	return useCallback((node: HTMLElement | null) => {
@@ -64,25 +18,15 @@ const useRouteTitleFocus = () => {
 	}, []);
 };
 
-const useUnreadMessages = (): string => {
-	const unreadMessages = useSession('unread');
-
-	return (() => {
-		if (unreadMessages === '') {
-			return '';
-		}
-
-		return `${unreadMessages} unread messages`;
-	})();
-};
-
 const DocumentTitleWrapper: FC = ({ children }) => {
-	useDocumentTitle(useSetting<string>('Site_Name') || '');
-	useDocumentTitle(useUnreadMessages());
+	useDocumentTitle(useSetting<string>('Site_Name') || '', false);
+	const { title, key } = useDocumentTitle(useUnreadMessages(), false);
 
-	const title = useReactiveDocumentTitle();
-	const key = useReactiveDocumentTitleKey();
 	const refocusRef = useRouteTitleFocus();
+
+	useEffect(() => {
+		document.title = title;
+	}, [title]);
 
 	return (
 		<>
@@ -107,7 +51,6 @@ const DocumentTitleWrapper: FC = ({ children }) => {
 				</Box>,
 				document.body,
 			)}
-
 			{children}
 		</>
 	);
