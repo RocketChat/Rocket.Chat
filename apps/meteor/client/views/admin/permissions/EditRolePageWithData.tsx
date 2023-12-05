@@ -4,8 +4,8 @@ import { useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
+import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
 import PageSkeleton from '../../../components/PageSkeleton';
-import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import EditRolePage from './EditRolePage';
 import { useRole } from './hooks/useRole';
 
@@ -13,17 +13,17 @@ const EditRolePageWithData = ({ roleId }: { roleId?: IRole['_id'] }): ReactEleme
 	const t = useTranslation();
 	const role = useRole(roleId);
 	const context = useRouteParameter('context');
-	const { data, isLoading } = useIsEnterprise();
+	const hasCustomRolesModule = useHasLicenseModule('custom-roles');
 
 	if (!role && context === 'edit') {
 		return <Callout type='danger'>{t('error-invalid-role')}</Callout>;
 	}
 
-	if (isLoading || !data) {
+	if (hasCustomRolesModule === 'loading') {
 		return <PageSkeleton />;
 	}
 
-	return <EditRolePage key={roleId} role={role} isEnterprise={data.isEnterprise} />;
+	return <EditRolePage key={roleId} role={role} isEnterprise={hasCustomRolesModule} />;
 };
 
 export default EditRolePageWithData;

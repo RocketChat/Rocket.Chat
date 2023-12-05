@@ -74,7 +74,7 @@ const EditRolePage = ({ role, isEnterprise }: { role?: IRole; isEnterprise: bool
 			}
 		};
 
-		const deleteRoleMessage = isEnterprise ? t('Delete_Role_Warning') : t('Delete_Role_Warning_Community_Edition');
+		const deleteRoleMessage = isEnterprise ? t('Delete_Role_Warning') : t('Delete_Role_Warning_Not_Enterprise');
 
 		setModal(
 			<GenericModal
