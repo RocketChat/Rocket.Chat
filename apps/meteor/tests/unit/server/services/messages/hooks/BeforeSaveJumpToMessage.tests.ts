@@ -51,8 +51,8 @@ const countDeep = (msg: any, deep = 1): number => {
 describe('Create attachments for message URLs', () => {
 	it('should return message without attatchment and URLs if no URL provided', async () => {
 		const jumpToMessage = new BeforeSaveJumpToMessage({
-			getMessage: async () => createMessage('linked message', { _id: 'linked' }),
-			getRoom: async () => createRoom(),
+			getMessages: async () => [createMessage('linked message', { _id: 'linked' })],
+			getRooms: async () => [createRoom()],
 			canAccessRoom: async () => true,
 			getUserAvatarURL: () => 'url',
 		});
@@ -72,8 +72,8 @@ describe('Create attachments for message URLs', () => {
 
 	it('should do nothing if URL is not from SiteUrl', async () => {
 		const jumpToMessage = new BeforeSaveJumpToMessage({
-			getMessage: async () => createMessage('linked message', { _id: 'linked' }),
-			getRoom: async () => createRoom(),
+			getMessages: async () => [createMessage('linked message', { _id: 'linked' })],
+			getRooms: async () => [createRoom()],
 			canAccessRoom: async () => true,
 			getUserAvatarURL: () => 'url',
 		});
@@ -94,8 +94,8 @@ describe('Create attachments for message URLs', () => {
 
 	it('should do nothing if URL is from SiteUrl but not have a query string', async () => {
 		const jumpToMessage = new BeforeSaveJumpToMessage({
-			getMessage: async () => createMessage('linked message', { _id: 'linked' }),
-			getRoom: async () => createRoom(),
+			getMessages: async () => [createMessage('linked message', { _id: 'linked' })],
+			getRooms: async () => [createRoom()],
 			canAccessRoom: async () => true,
 			getUserAvatarURL: () => 'url',
 		});
@@ -116,8 +116,8 @@ describe('Create attachments for message URLs', () => {
 
 	it('should do nothing if URL is from SiteUrl but not have a msgId query string', async () => {
 		const jumpToMessage = new BeforeSaveJumpToMessage({
-			getMessage: async () => createMessage('linked message', { _id: 'linked' }),
-			getRoom: async () => createRoom(),
+			getMessages: async () => [createMessage('linked message', { _id: 'linked' })],
+			getRooms: async () => [createRoom()],
 			canAccessRoom: async () => true,
 			getUserAvatarURL: () => 'url',
 		});
@@ -138,8 +138,8 @@ describe('Create attachments for message URLs', () => {
 
 	it('should do nothing if it do not find a msg from the URL', async () => {
 		const jumpToMessage = new BeforeSaveJumpToMessage({
-			getMessage: async () => null,
-			getRoom: async () => createRoom(),
+			getMessages: async () => [],
+			getRooms: async () => [createRoom()],
 			canAccessRoom: async () => true,
 			getUserAvatarURL: () => 'url',
 		});
@@ -160,8 +160,8 @@ describe('Create attachments for message URLs', () => {
 
 	it('should do nothing if it cannot find the room of the message from the URL', async () => {
 		const jumpToMessage = new BeforeSaveJumpToMessage({
-			getMessage: async () => createMessage('linked message', { _id: 'linked' }),
-			getRoom: async () => null,
+			getMessages: async () => [createMessage('linked message', { _id: 'linked' })],
+			getRooms: async () => [],
 			canAccessRoom: async () => true,
 			getUserAvatarURL: () => 'url',
 		});
@@ -182,8 +182,8 @@ describe('Create attachments for message URLs', () => {
 
 	it('should do nothing if user dont have access to the room of the message from the URL', async () => {
 		const jumpToMessage = new BeforeSaveJumpToMessage({
-			getMessage: async () => createMessage('linked message', { _id: 'linked' }),
-			getRoom: async () => createRoom(),
+			getMessages: async () => [createMessage('linked message', { _id: 'linked' })],
+			getRooms: async () => [createRoom()],
 			canAccessRoom: async () => false,
 			getUserAvatarURL: () => 'url',
 		});
@@ -204,21 +204,21 @@ describe('Create attachments for message URLs', () => {
 
 	it('should remove other attachments from the message if message_link is the same as the URL', async () => {
 		const jumpToMessage = new BeforeSaveJumpToMessage({
-			getMessage: async () => createMessage('linked message', { _id: 'linked' }),
-			getRoom: async () => createRoom(),
+			getMessages: async () => [createMessage('linked message', { _id: 'linked' })],
+			getRooms: async () => [createRoom()],
 			canAccessRoom: async () => true,
 			getUserAvatarURL: () => 'url',
 		});
 
 		const message = await jumpToMessage.createAttachmentForMessageURLs({
 			message: createMessage('hey', {
-				urls: [{ url: 'https://open.rocket.chat/linked?msg=linkedMsgId' }],
+				urls: [{ url: 'https://open.rocket.chat/linked?msg=linked' }],
 				attachments: [
 					{
 						text: 'old attachment',
 						author_name: 'username',
 						author_icon: 'url',
-						message_link: 'https://open.rocket.chat/linked?msg=linkedMsgId',
+						message_link: 'https://open.rocket.chat/linked?msg=linked',
 						ts: new Date(),
 					},
 				],
@@ -236,7 +236,7 @@ describe('Create attachments for message URLs', () => {
 		const [url] = message.urls ?? [];
 
 		expect(url).to.include({
-			url: 'https://open.rocket.chat/linked?msg=linkedMsgId',
+			url: 'https://open.rocket.chat/linked?msg=linked',
 			ignoreParse: true,
 		});
 
@@ -249,14 +249,14 @@ describe('Create attachments for message URLs', () => {
 
 	it('should return an attachment with the message content if a message URL is provided', async () => {
 		const jumpToMessage = new BeforeSaveJumpToMessage({
-			getMessage: async () => createMessage('linked message', { _id: 'linked' }),
-			getRoom: async () => createRoom(),
+			getMessages: async () => [createMessage('linked message', { _id: 'linked' })],
+			getRooms: async () => [createRoom()],
 			canAccessRoom: async () => true,
 			getUserAvatarURL: () => 'url',
 		});
 
 		const message = await jumpToMessage.createAttachmentForMessageURLs({
-			message: createMessage('hey', { urls: [{ url: 'https://open.rocket.chat/linked?msg=linkedMsgId' }] }),
+			message: createMessage('hey', { urls: [{ url: 'https://open.rocket.chat/linked?msg=linked' }] }),
 			user: createUser(),
 			config: {
 				chainLimit: 10,
@@ -270,7 +270,7 @@ describe('Create attachments for message URLs', () => {
 		const [url] = message.urls ?? [];
 
 		expect(url).to.include({
-			url: 'https://open.rocket.chat/linked?msg=linkedMsgId',
+			url: 'https://open.rocket.chat/linked?msg=linked',
 			ignoreParse: true,
 		});
 
@@ -283,7 +283,7 @@ describe('Create attachments for message URLs', () => {
 
 	it('should respect chain limit config', async () => {
 		const jumpToMessage = new BeforeSaveJumpToMessage({
-			getMessage: async () =>
+			getMessages: async () => [
 				createMessage('linked message', {
 					_id: 'linked',
 					attachments: [
@@ -314,14 +314,15 @@ describe('Create attachments for message URLs', () => {
 						},
 					],
 				}),
-			getRoom: async () => createRoom(),
+			],
+			getRooms: async () => [createRoom()],
 			canAccessRoom: async () => true,
 			getUserAvatarURL: () => 'url',
 		});
 
 		const message = await jumpToMessage.createAttachmentForMessageURLs({
 			message: createMessage('hey', {
-				urls: [{ url: 'https://open.rocket.chat/linked?msg=linkedMsgId' }],
+				urls: [{ url: 'https://open.rocket.chat/linked?msg=linked' }],
 			}),
 			user: createUser(),
 			config: {
@@ -340,15 +341,15 @@ describe('Create attachments for message URLs', () => {
 
 	it('should create the attachment if cannot access room but message has a livechat token', async () => {
 		const jumpToMessage = new BeforeSaveJumpToMessage({
-			getMessage: async () => createMessage('linked message', { _id: 'linked' }),
-			getRoom: async () => createRoom({ t: 'l', v: { token: 'livechatToken' } }),
+			getMessages: async () => [createMessage('linked message', { _id: 'linked' })],
+			getRooms: async () => [createRoom({ t: 'l', v: { token: 'livechatToken' } })],
 			canAccessRoom: async () => false,
 			getUserAvatarURL: () => 'url',
 		});
 
 		const message = await jumpToMessage.createAttachmentForMessageURLs({
 			message: createMessage('hey', {
-				urls: [{ url: 'https://open.rocket.chat/linked?msg=linkedMsgId' }],
+				urls: [{ url: 'https://open.rocket.chat/linked?msg=linked' }],
 				token: 'livechatToken',
 			}),
 			user: createUser(),
@@ -364,7 +365,7 @@ describe('Create attachments for message URLs', () => {
 		const [url] = message.urls ?? [];
 
 		expect(url).to.include({
-			url: 'https://open.rocket.chat/linked?msg=linkedMsgId',
+			url: 'https://open.rocket.chat/linked?msg=linked',
 			ignoreParse: true,
 		});
 
@@ -377,15 +378,15 @@ describe('Create attachments for message URLs', () => {
 
 	it('should do nothing if cannot access room but message has a livechat token but is not from the room does not have a token', async () => {
 		const jumpToMessage = new BeforeSaveJumpToMessage({
-			getMessage: async () => createMessage('linked message', { _id: 'linked' }),
-			getRoom: async () => createRoom({ t: 'l' }),
+			getMessages: async () => [createMessage('linked message', { _id: 'linked' })],
+			getRooms: async () => [createRoom({ t: 'l' })],
 			canAccessRoom: async () => false,
 			getUserAvatarURL: () => 'url',
 		});
 
 		const message = await jumpToMessage.createAttachmentForMessageURLs({
 			message: createMessage('hey', {
-				urls: [{ url: 'https://open.rocket.chat/linked?msg=linkedMsgId' }],
+				urls: [{ url: 'https://open.rocket.chat/linked?msg=linked' }],
 				token: 'another-token',
 			}),
 			user: createUser(),
@@ -402,7 +403,7 @@ describe('Create attachments for message URLs', () => {
 
 	it('should remove the clean up the attachments of the quoted message property if chain limit < 2', async () => {
 		const jumpToMessage = new BeforeSaveJumpToMessage({
-			getMessage: async () =>
+			getMessages: async () => [
 				createMessage('linked message', {
 					_id: 'linkedMsgId',
 					attachments: [
@@ -414,7 +415,8 @@ describe('Create attachments for message URLs', () => {
 						},
 					],
 				}),
-			getRoom: async () => createRoom(),
+			],
+			getRooms: async () => [createRoom()],
 			canAccessRoom: async () => true,
 			getUserAvatarURL: () => 'url',
 		});
@@ -450,20 +452,17 @@ describe('Create attachments for message URLs', () => {
 
 	it('should work for multiple URLs', async () => {
 		const jumpToMessage = new BeforeSaveJumpToMessage({
-			getMessage: async (messageId) => {
-				if (messageId === 'msg1') {
-					return createMessage('first message', {
+			getMessages: async () => {
+				return [
+					createMessage('first message', {
 						_id: 'msg1',
-					});
-				}
-
-				if (messageId === 'msg2') {
-					return createMessage('second message', {
+					}),
+					createMessage('second message', {
 						_id: 'msg2',
-					});
-				}
+					}),
+				];
 			},
-			getRoom: async () => createRoom(),
+			getRooms: async () => [createRoom()],
 			canAccessRoom: async () => true,
 			getUserAvatarURL: () => 'url',
 		});

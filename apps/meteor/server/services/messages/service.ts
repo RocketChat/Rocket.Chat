@@ -1,6 +1,5 @@
 import type { IMessageService } from '@rocket.chat/core-services';
 import { Authorization, ServiceClassInternal } from '@rocket.chat/core-services';
-import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { type IMessage, type MessageTypesValues, type IUser, type IRoom, isEditedMessage } from '@rocket.chat/core-typings';
 import { Messages, Rooms } from '@rocket.chat/models';
 
@@ -33,11 +32,11 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		this.badWords = new BeforeSaveBadWords();
 		this.spotify = new BeforeSaveSpotify();
 		this.jumpToMessage = new BeforeSaveJumpToMessage({
-			getMessage(messageId: IMessage['_id']): Promise<IMessage | null> {
-				return Messages.findOneById(messageId);
+			getMessages(messageIds) {
+				return Messages.findVisibleByIds(messageIds).toArray();
 			},
-			getRoom(roomId: IRoom['_id']): Promise<IOmnichannelRoom | null> {
-				return Rooms.findOneById<IOmnichannelRoom>(roomId);
+			getRooms(roomIds) {
+				return Rooms.findByIds(roomIds).toArray();
 			},
 			canAccessRoom(room: IRoom, user: IUser): Promise<boolean> {
 				return Authorization.canAccessRoom(room, user);

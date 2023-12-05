@@ -33,8 +33,8 @@ const validateAttachmentDeepness = (message: IMessage, quoteChainLimit: number):
 };
 
 type JumpToMessageInit = {
-	getMessage(messageId: IMessage['_id']): Promise<IMessage | null>;
-	getRoom(roomId: IRoom['_id']): Promise<IRoom | IOmnichannelRoom | null>;
+	getMessages(messageIds: IMessage['_id'][]): Promise<IMessage[]>;
+	getRooms(roomIds: IRoom['_id'][]): Promise<IRoom[] | IOmnichannelRoom[] | null>;
 	canAccessRoom(room: IRoom, user: Pick<IUser, '_id' | 'username' | 'name' | 'language'>): Promise<boolean>;
 	getUserAvatarURL(user?: string): string;
 };
@@ -43,17 +43,17 @@ type JumpToMessageInit = {
  * Transform URLs in messages into quote attachments
  */
 export class BeforeSaveJumpToMessage {
-	private getMessage: JumpToMessageInit['getMessage'];
+	private getMessages: JumpToMessageInit['getMessages'];
 
-	private getRoom: JumpToMessageInit['getRoom'];
+	private getRooms: JumpToMessageInit['getRooms'];
 
 	private canAccessRoom: JumpToMessageInit['canAccessRoom'];
 
 	private getUserAvatarURL: JumpToMessageInit['getUserAvatarURL'];
 
 	constructor(options: JumpToMessageInit) {
-		this.getMessage = options.getMessage;
-		this.getRoom = options.getRoom;
+		this.getMessages = options.getMessages;
+		this.getRooms = options.getRooms;
 		this.canAccessRoom = options.canAccessRoom;
 		this.getUserAvatarURL = options.getUserAvatarURL;
 	}
@@ -76,58 +76,85 @@ export class BeforeSaveJumpToMessage {
 			return message;
 		}
 
-		for await (const item of message.urls) {
-			// if the URL doesn't belong to the current server, skip
+		const linkedMessages = message.urls
+			.filter((item) => item.url.includes(config.siteUrl))
+			.map((item) => {
+				const urlObj = URL.parse(item.url);
+
+				// if the URL doesn't have query params (doesn't reference message) skip
+				if (!urlObj.query) {
+					return;
+				}
+
+				const { msg: msgId } = QueryString.parse(urlObj.query);
+
+				if (typeof msgId !== 'string') {
+					return;
+				}
+
+				return { msgId, url: item.url };
+			})
+			.filter(Boolean);
+
+		const msgs = await this.getMessages(linkedMessages.map((linkedMsg) => linkedMsg?.msgId) as string[]);
+
+		const validMessages = msgs.filter((msg) => validateAttachmentDeepness(msg, config.chainLimit));
+
+		const rooms = await this.getRooms(validMessages.map((msg) => msg.rid));
+
+		const roomsWithPermission =
+			rooms &&
+			(await Promise.all(
+				rooms.map(async (room) => {
+					if (!!message.token && isOmnichannelRoom(room) && !!room.v?.token && message.token === room.v.token) {
+						return room;
+					}
+
+					if (currentUser && (await this.canAccessRoom(room, currentUser))) {
+						return room;
+					}
+				}),
+			));
+
+		const validRooms = roomsWithPermission?.filter((room) => !!room);
+
+		const { useRealName } = config;
+
+		const quotes = [];
+
+		for (const item of message.urls) {
 			if (!item.url.includes(config.siteUrl)) {
 				continue;
 			}
 
-			const urlObj = URL.parse(item.url);
-
-			// if the URL doesn't have query params (doesn't reference message) skip
-			if (!urlObj.query) {
+			const linkedMessage = linkedMessages.find((msg) => msg?.url === item.url);
+			if (!linkedMessage) {
 				continue;
 			}
 
-			const { msg: msgId } = QueryString.parse(urlObj.query);
-
-			if (typeof msgId !== 'string') {
+			const messageFromUrl = validMessages.find((msg) => msg._id === linkedMessage.msgId);
+			if (!messageFromUrl) {
 				continue;
 			}
 
-			const messageFromUrl = await this.getMessage(msgId);
-
-			const jumpToMessage = messageFromUrl && validateAttachmentDeepness(messageFromUrl, config.chainLimit);
-			if (!jumpToMessage) {
+			if (!validRooms?.find((room) => room?._id === messageFromUrl.rid)) {
 				continue;
 			}
 
-			// validates if user can see the message
-			// user has to belong to the room the message was first wrote in
-			const room = await this.getRoom(jumpToMessage.rid);
-			if (!room) {
-				continue;
-			}
-
-			const isLiveChatRoomVisitor = !!message.token && isOmnichannelRoom(room) && !!room.v?.token && message.token === room.v.token;
-			const canAccessRoomForUser = isLiveChatRoomVisitor || (currentUser && (await this.canAccessRoom(room, currentUser)));
-			if (!canAccessRoomForUser) {
-				continue;
-			}
-
-			message.attachments = message.attachments || [];
-			// Only QuoteAttachments have "message_link" property
-			const index = message.attachments.findIndex((a) => isQuoteAttachment(a) && a.message_link === item.url);
-			if (index > -1) {
-				message.attachments.splice(index, 1);
-			}
-
-			const { useRealName } = config;
-
-			message.attachments.push(
-				createQuoteAttachment(jumpToMessage, item.url, useRealName, this.getUserAvatarURL(jumpToMessage.u.username)),
-			);
 			item.ignoreParse = true;
+
+			// Only QuoteAttachments have "message_link" property
+			const index = message.attachments?.findIndex((a) => isQuoteAttachment(a) && a.message_link === item.url);
+			if (index !== undefined && index > -1) {
+				message.attachments?.splice(index, 1);
+			}
+
+			quotes.push(createQuoteAttachment(messageFromUrl, item.url, useRealName, this.getUserAvatarURL(messageFromUrl.u.username)));
+		}
+
+		if (quotes.length > 0) {
+			message.attachments = message.attachments || [];
+			message.attachments.push(...quotes);
 		}
 
 		return message;
