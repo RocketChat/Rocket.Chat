@@ -15,4 +15,7 @@ export type LicenseModule =
 	| 'federation'
 	| 'videoconference-enterprise'
 	| 'message-read-receipt'
-	| 'outlook-calendar';
+	| 'outlook-calendar'
+	| 'hide-watermark'
+	| 'custom-roles'
+	| 'accessibility-certification';

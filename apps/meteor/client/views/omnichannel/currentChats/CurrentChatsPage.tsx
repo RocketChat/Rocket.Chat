@@ -1,4 +1,4 @@
-import { Pagination } from '@rocket.chat/fuselage';
+import { Callout, Pagination } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { GETLivechatRoomsParams } from '@rocket.chat/rest-typings';
 import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
@@ -7,6 +7,7 @@ import moment from 'moment';
 import type { ComponentProps, ReactElement } from 'react';
 import React, { memo, useCallback, useMemo, useState } from 'react';
 
+import { RoomActivityIcon } from '../../../../ee/client/omnichannel/components/RoomActivityIcon';
 import { useOmnichannelPriorities } from '../../../../ee/client/omnichannel/hooks/useOmnichannelPriorities';
 import { PriorityIcon } from '../../../../ee/client/omnichannel/priorities/PriorityIcon';
 import GenericNoResults from '../../../components/GenericNoResults';
@@ -22,6 +23,7 @@ import {
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import Page from '../../../components/Page';
+import { useIsOverMacLimit } from '../../../hooks/omnichannel/useIsOverMacLimit';
 import CustomFieldsList from './CustomFieldsList';
 import FilterByText from './FilterByText';
 import RemoveChatButton from './RemoveChatButton';
@@ -118,6 +120,7 @@ const currentChatQuery: useQueryType = (
 };
 
 const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: string) => void }): ReactElement => {
+	const isWorkspaceOverMacLimit = useIsOverMacLimit();
 	const { sortBy, sortDirection, setSort } = useSort<'fname' | 'departmentId' | 'servedBy' | 'priorityWeight' | 'ts' | 'lm' | 'open'>(
 		'ts',
 		'desc',
@@ -165,7 +168,8 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 	});
 
 	const renderRow = useCallback(
-		({ _id, fname, servedBy, ts, lm, department, open, onHold, priorityWeight }) => {
+		(room) => {
+			const { _id, fname, servedBy, ts, lm, department, open, onHold, priorityWeight } = room;
 			const getStatusText = (open: boolean, onHold: boolean): string => {
 				if (!open) return t('Closed');
 				return onHold ? t('On_Hold_Chats') : t('Open');
@@ -194,7 +198,7 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 						{moment(lm).format('L LTS')}
 					</GenericTableCell>
 					<GenericTableCell withTruncatedText data-qa='current-chats-cell-status'>
-						{getStatusText(open, onHold)}
+						<RoomActivityIcon room={room} /> {getStatusText(open, onHold)}
 					</GenericTableCell>
 					{canRemoveClosedChats && !open && <RemoveChatButton _id={_id} />}
 				</GenericTableRow>
@@ -300,6 +304,16 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 							customFields={customFields}
 							hasCustomFields={hasCustomFields}
 						/>
+					)}
+					{isWorkspaceOverMacLimit && (
+						<Callout
+							type='danger'
+							icon='warning'
+							title={t('The_workspace_has_exceeded_the_monthly_limit_of_active_contacts')}
+							style={{ marginBlock: '2rem' }}
+						>
+							{t('Talk_to_your_workspace_admin_to_address_this_issue')}
+						</Callout>
 					)}
 					{isSuccess && data?.rooms.length === 0 && queryHasChanged && <GenericNoResults />}
 					{isSuccess && data?.rooms.length === 0 && !queryHasChanged && (

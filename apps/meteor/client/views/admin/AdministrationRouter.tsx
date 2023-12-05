@@ -6,7 +6,6 @@ import PageSkeleton from '../../components/PageSkeleton';
 import type { Item, SidebarDivider, SidebarItem } from '../../lib/createSidebarItems';
 import { isGoRocketChatLink } from '../../lib/createSidebarItems';
 import SettingsProvider from '../../providers/SettingsProvider';
-import { useUpgradeTabParams } from '../hooks/useUpgradeTabParams';
 import AdministrationLayout from './AdministrationLayout';
 import { getAdminSidebarItems } from './sidebarItems';
 
@@ -28,24 +27,11 @@ type AdministrationRouterProps = {
 
 const AdministrationRouter = ({ children }: AdministrationRouterProps): ReactElement => {
 	const router = useRouter();
-	const { tabType, trialEndDate, isLoading } = useUpgradeTabParams();
 
 	useEffect(
 		() =>
 			router.subscribeToRouteChange(() => {
 				if (router.getRouteName() !== 'admin-index') {
-					return;
-				}
-
-				if (tabType && !isLoading) {
-					router.navigate(
-						{
-							name: 'upgrade',
-							params: { type: tabType },
-							search: trialEndDate ? { trialEndDate } : undefined,
-						},
-						{ replace: true },
-					);
 					return;
 				}
 
@@ -58,7 +44,7 @@ const AdministrationRouter = ({ children }: AdministrationRouterProps): ReactEle
 
 				router.navigate(defaultRoutePath, { replace: true });
 			}),
-		[tabType, trialEndDate, isLoading, router],
+		[router],
 	);
 
 	return (

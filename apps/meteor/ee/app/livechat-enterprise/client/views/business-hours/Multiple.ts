@@ -12,10 +12,6 @@ export class MultipleBusinessHoursBehavior implements IBusinessHourBehavior {
 		return !businessHourData._id || businessHourData.type !== LivechatBusinessHourTypes.DEFAULT;
 	}
 
-	showTimezoneTemplate(): boolean {
-		return true;
-	}
-
 	showBackButton(): boolean {
 		return true;
 	}

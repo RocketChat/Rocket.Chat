@@ -1,7 +1,7 @@
 import { log } from 'console';
 import os from 'os';
 
-import { Analytics, Team, VideoConf } from '@rocket.chat/core-services';
+import { Analytics, Team, VideoConf, Presence } from '@rocket.chat/core-services';
 import type { IRoom, IStats } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import {
@@ -305,18 +305,30 @@ export const statistics = {
 		);
 
 		// Message statistics
-		statistics.totalChannelMessages = (await Rooms.findByType('c', { projection: { msgs: 1 } }).toArray()).reduce(
-			function _countChannelMessages(num: number, room: IRoom) {
+		const channels = await Rooms.findByType('c', { projection: { msgs: 1, prid: 1 } }).toArray();
+		const totalChannelDiscussionsMessages = await channels.reduce(function _countChannelDiscussionsMessages(num: number, room: IRoom) {
+			return num + (room.prid ? room.msgs : 0);
+		}, 0);
+		statistics.totalChannelMessages =
+			(await channels.reduce(function _countChannelMessages(num: number, room: IRoom) {
 				return num + room.msgs;
-			},
-			0,
-		);
-		statistics.totalPrivateGroupMessages = (await Rooms.findByType('p', { projection: { msgs: 1 } }).toArray()).reduce(
-			function _countPrivateGroupMessages(num: number, room: IRoom) {
+			}, 0)) - totalChannelDiscussionsMessages;
+
+		const privateGroups = await Rooms.findByType('p', { projection: { msgs: 1, prid: 1 } }).toArray();
+		const totalPrivateGroupsDiscussionsMessages = await privateGroups.reduce(function _countPrivateGroupsDiscussionsMessages(
+			num: number,
+			room: IRoom,
+		) {
+			return num + (room.prid ? room.msgs : 0);
+		},
+		0);
+		statistics.totalPrivateGroupMessages =
+			(await privateGroups.reduce(function _countPrivateGroupMessages(num: number, room: IRoom) {
 				return num + room.msgs;
-			},
-			0,
-		);
+			}, 0)) - totalPrivateGroupsDiscussionsMessages;
+
+		statistics.totalDiscussionsMessages = totalPrivateGroupsDiscussionsMessages + totalChannelDiscussionsMessages;
+
 		statistics.totalDirectMessages = (await Rooms.findByType('d', { projection: { msgs: 1 } }).toArray()).reduce(
 			function _countDirectMessages(num: number, room: IRoom) {
 				return num + room.msgs;
@@ -332,6 +344,7 @@ export const statistics = {
 		statistics.totalMessages =
 			statistics.totalChannelMessages +
 			statistics.totalPrivateGroupMessages +
+			statistics.totalDiscussionsMessages +
 			statistics.totalDirectMessages +
 			statistics.totalLivechatMessages;
 
@@ -579,6 +592,11 @@ export const statistics = {
 		const defaultLoggedInCustomScript = (await Settings.findOneById('Custom_Script_Logged_In'))?.packageValue;
 		statistics.loggedInCustomScriptChanged = settings.get('Custom_Script_Logged_In') !== defaultLoggedInCustomScript;
 
+		statistics.dailyPeakConnections = await Presence.getPeakConnections(true);
+
+		const peak = await Statistics.findMonthlyPeakConnections();
+		statistics.maxMonthlyPeakConnections = Math.max(statistics.dailyPeakConnections, peak?.dailyPeakConnections || 0);
+
 		statistics.matrixFederation = await getMatrixFederationStatistics();
 
 		// Omnichannel call stats
@@ -593,7 +611,9 @@ export const statistics = {
 	async save(): Promise<IStats> {
 		const rcStatistics = await statistics.get();
 		rcStatistics.createdAt = new Date();
-		await Statistics.insertOne(rcStatistics);
+		const { insertedId } = await Statistics.insertOne(rcStatistics);
+		rcStatistics._id = insertedId;
+
 		return rcStatistics;
 	},
 };

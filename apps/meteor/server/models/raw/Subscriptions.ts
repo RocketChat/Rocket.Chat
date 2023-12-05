@@ -61,7 +61,6 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			{ key: { 'userHighlights.0': 1 }, sparse: true },
 			{ key: { prid: 1 } },
 			{ key: { 'u._id': 1, 'open': 1, 'department': 1 } },
-			{ key: { rid: 1 } },
 			{ key: { rid: 1, ls: 1 } },
 		];
 	}
@@ -693,6 +692,14 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		}
 
 		return this.updateOne(query, update);
+	}
+
+	disableAutoTranslateByRoomId(roomId: IRoom['_id']): Promise<UpdateResult | Document> {
+		const query = {
+			rid: roomId,
+		};
+
+		return this.updateMany(query, { $unset: { autoTranslate: 1 } });
 	}
 
 	updateAutoTranslateLanguageById(_id: string, autoTranslateLanguage: string): Promise<UpdateResult> {

@@ -43,7 +43,7 @@ const AccountProfilePage = (): ReactElement => {
 
 	const {
 		reset,
-		formState: { isDirty },
+		formState: { isDirty, isSubmitting },
 	} = methods;
 
 	const logoutOtherClients = useEndpoint('POST', '/v1/users.logoutOtherClients');
@@ -120,7 +120,7 @@ const AccountProfilePage = (): ReactElement => {
 						<AccountProfileForm id={profileFormId} />
 					</FormProvider>
 					<ButtonGroup stretch mb={12}>
-						<Button onClick={handleLogoutOtherLocations} flexGrow={0} disabled={loggingOut}>
+						<Button onClick={handleLogoutOtherLocations} flexGrow={0} loading={loggingOut}>
 							{t('Logout_Others')}
 						</Button>
 						{allowDeleteOwnAccount && (
@@ -136,7 +136,14 @@ const AccountProfilePage = (): ReactElement => {
 					<Button disabled={!isDirty} onClick={() => reset(getProfileInitialValues(user))}>
 						{t('Cancel')}
 					</Button>
-					<Button form={profileFormId} data-qa='AccountProfilePageSaveButton' primary disabled={!isDirty || loggingOut} type='submit'>
+					<Button
+						form={profileFormId}
+						data-qa='AccountProfilePageSaveButton'
+						primary
+						disabled={!isDirty || loggingOut}
+						loading={isSubmitting}
+						type='submit'
+					>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>

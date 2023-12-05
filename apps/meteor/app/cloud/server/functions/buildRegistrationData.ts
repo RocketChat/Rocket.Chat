@@ -1,4 +1,5 @@
-import { Statistics, Users } from '@rocket.chat/models';
+import { LivechatRooms, Statistics, Users } from '@rocket.chat/models';
+import moment from 'moment';
 
 import { settings } from '../../../settings/server';
 import { statistics } from '../../../statistics/server';
@@ -30,6 +31,7 @@ export type WorkspaceRegistrationData<T> = {
 	deploymentPlatform: string;
 	version: string;
 	licenseVersion: number;
+	license?: string;
 	enterpriseReady: boolean;
 	setupComplete: boolean;
 	connectionDisable: boolean;
@@ -38,6 +40,7 @@ export type WorkspaceRegistrationData<T> = {
 	MAC: number;
 	// activeContactsBillingMonth: number;
 	// activeContactsYesterday: number;
+	statsToken?: string;
 };
 
 export async function buildWorkspaceRegistrationData<T extends string | undefined>(contactEmail: T): Promise<WorkspaceRegistrationData<T>> {
@@ -60,6 +63,9 @@ export async function buildWorkspaceRegistrationData<T extends string | undefine
 
 	const { organizationType, industry, size: orgSize, country, language, serverType: workspaceType, registerServer } = stats.wizard;
 	const seats = await Users.getActiveLocalUserCount();
+	const [macs] = await LivechatRooms.getMACStatisticsForPeriod(moment.utc().format('YYYY-MM'));
+
+	const license = settings.get<string>('Enterprise_License');
 
 	return {
 		uniqueId: stats.uniqueId,
@@ -85,12 +91,14 @@ export async function buildWorkspaceRegistrationData<T extends string | undefine
 		deploymentPlatform: stats.deploy.platform,
 		version: stats.version ?? Info.version,
 		licenseVersion: LICENSE_VERSION,
+		...(license && { license }),
 		enterpriseReady: true,
 		setupComplete: setupWizardState === 'completed',
 		connectionDisable: !registerServer,
 		npsEnabled,
-		MAC: stats.omnichannelContactsBySource.contactsCount,
+		MAC: macs?.contactsCount ?? 0,
 		// activeContactsBillingMonth: stats.omnichannelContactsBySource.contactsCount,
 		// activeContactsYesterday: stats.uniqueContactsOfYesterday.contactsCount,
+		statsToken: stats.statsToken,
 	};
 }

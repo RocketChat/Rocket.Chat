@@ -1,6 +1,7 @@
 import { proxify, proxifyWithWait } from './lib/proxify';
 import type { IAccount, ILoginResult } from './types/IAccount';
 import type { IAnalyticsService } from './types/IAnalyticsService';
+import { IApiService } from './types/IApiService';
 import type { IAppsEngineService } from './types/IAppsEngineService';
 import type { IAuthorization, RoomAccessValidator } from './types/IAuthorization';
 import type { IAuthorizationLivechat } from './types/IAuthorizationLivechat';
@@ -41,7 +42,7 @@ import type {
 } from './types/ITeamService';
 import type { ITelemetryEvent, TelemetryMap, TelemetryEvents } from './types/ITelemetryEvent';
 import type { ITranslationService } from './types/ITranslationService';
-import type { IUiKitCoreApp, IUiKitCoreAppService } from './types/IUiKitCoreApp';
+import type { UiKitCoreAppPayload, IUiKitCoreApp, IUiKitCoreAppService } from './types/IUiKitCoreApp';
 import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from './types/IUploadService';
 import type { IVideoConfService, VideoConferenceJoinOptions } from './types/IVideoConfService';
 import type { IVoipService } from './types/IVoipService';
@@ -49,7 +50,8 @@ import type { IVoipService } from './types/IVoipService';
 export { asyncLocalStorage } from './lib/asyncLocalStorage';
 export { MeteorError, isMeteorError } from './MeteorError';
 export { api } from './api';
-export { EventSignatures } from './Events';
+export { EventSignatures } from './events/Events';
+export { listenToMessageSentEvent, dbWatchersDisabled } from './events/listeners';
 export { LocalBroker } from './LocalBroker';
 
 export { IBroker, IBrokerNode, BaseMetricOptions, IServiceMetrics } from './types/IBroker';
@@ -63,6 +65,7 @@ export {
 	FindVoipRoomsParams,
 	IAccount,
 	IAnalyticsService,
+	IApiService,
 	IAppsEngineService,
 	IAuthorization,
 	IAuthorizationLivechat,
@@ -94,6 +97,7 @@ export {
 	ITeamService,
 	ITeamUpdateData,
 	ITelemetryEvent,
+	UiKitCoreAppPayload,
 	IUiKitCoreApp,
 	IUiKitCoreAppService,
 	IVideoConfService,

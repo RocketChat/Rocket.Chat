@@ -973,7 +973,6 @@
   "Enter_name_here": "Masukkan nama di sini",
   "Enter_Normal": "Mode normal (kirim dengan Enter)",
   "Enter_to": "Masuk ke",
-  "Enterprise": "Perusahaan",
   "Entertainment": "Hiburan",
   "Error": "Kesalahan",
   "Error_404": "Kesalahan 404",
@@ -2767,5 +2766,7 @@
   "registration.component.form.reasonToJoin": "Alasan untuk bergabung",
   "registration.component.form.invalidConfirmPass": "Kata sandi konfirmasi tidak cocok dengan kata sandi utama",
   "registration.component.form.confirmPassword": "Konfirmasikan kata sandi anda",
-  "registration.component.form.sendConfirmationEmail": "Kirim email konfirmasi"
+  "registration.component.form.sendConfirmationEmail": "Kirim email konfirmasi",
+  "Enterprise": "Perusahaan",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Analytics"
 }

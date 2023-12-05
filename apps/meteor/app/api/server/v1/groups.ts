@@ -352,9 +352,8 @@ API.v1.addRoute(
 				if (isMeteorError(error) && error.reason === 'error-not-allowed') {
 					return API.v1.unauthorized();
 				}
+				throw error;
 			}
-
-			return API.v1.internalError();
 		},
 	},
 );
