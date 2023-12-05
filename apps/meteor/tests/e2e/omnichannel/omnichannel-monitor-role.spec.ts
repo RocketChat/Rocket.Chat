@@ -40,7 +40,7 @@ test.describe('OC - Monitor Role', () => {
 
 	// Create agents
 	test.beforeAll(async ({ api }) => {
-		agents = await Promise.all([createAgent(api, 'user1'), createAgent(api, 'user2'), createAgent(api, MONITOR)]);
+		agents = await Promise.all([createAgent(api, 'user1'), createAgent(api, 'user2')]);
 
 		const agentsStatuses = await Promise.all(agents.slice(0, 1).map(({ data: agent }) => makeAgentAvailable(api, agent._id)));
 
@@ -184,12 +184,9 @@ test.describe('OC - Monitor Role', () => {
 			await page.waitForURL('/omnichannel/current');
 		});
 
-		await test.step('expect to be able to remove closed rooms', async () => {
-			await poOmnichannel.currentChats.btnRemoveByName(ROOM_A).click();
-			await expect(poOmnichannel.currentChats.modalConfirmRemove).toBeVisible();
-			await poOmnichannel.currentChats.btnConfirmRemove.click();
-			await expect(poOmnichannel.currentChats.modalConfirmRemove).not.toBeVisible();
-			await expect(poOmnichannel.currentChats.findRowByName(ROOM_A)).not.toBeVisible();
+		await test.step('expect not to be able to remove closed room', async () => {
+			await expect(poOmnichannel.currentChats.findRowByName(ROOM_A)).toBeVisible();
+			await expect(poOmnichannel.currentChats.btnRemoveByName(ROOM_A)).not.toBeVisible();
 		});
 	});
 
