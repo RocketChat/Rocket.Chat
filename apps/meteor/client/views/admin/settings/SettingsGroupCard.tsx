@@ -1,7 +1,6 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Button, Box } from '@rocket.chat/fuselage';
-import { Card, CardBody, CardTitle, CardFooter } from '@rocket.chat/ui-client';
+import { Button, Box, Card, CardTitle, CardBody, CardControls } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -22,19 +21,19 @@ type SettingsGroupCardProps = {
 	description?: TranslationKey;
 };
 
-const SettingsGroupCard = ({ id, title, description }: SettingsGroupCardProps): ReactElement => {
+const SettingsGroupCard = ({ id, title, description, ...props }: SettingsGroupCardProps): ReactElement => {
 	const t = useTranslation();
 	const router = useRouter();
 
 	return (
-		<Card data-qa-id={id}>
+		<Card data-qa-id={id} width={200} {...props}>
 			<CardTitle>{t(title)}</CardTitle>
-			<CardBody height={88}>
+			<CardBody>
 				<Box className={clampStyle}>
 					{description && t.has(description) && <MarkdownText variant='inlineWithoutBreaks' content={t(description)} />}
 				</Box>
 			</CardBody>
-			<CardFooter>
+			<CardControls>
 				<Button
 					is='a'
 					href={router.buildRoutePath({
@@ -42,10 +41,11 @@ const SettingsGroupCard = ({ id, title, description }: SettingsGroupCardProps): 
 						params: { group: id },
 					})}
 					role='button'
+					medium
 				>
 					{t('Open')}
 				</Button>
-			</CardFooter>
+			</CardControls>
 		</Card>
 	);
 };
