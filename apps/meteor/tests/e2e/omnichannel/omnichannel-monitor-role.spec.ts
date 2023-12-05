@@ -29,6 +29,15 @@ test.describe('OC - Monitor Role', () => {
 	let unit: Awaited<ReturnType<typeof createOrUpdateUnit>>;
 	let poOmnichannel: HomeOmnichannel;
 
+	// Reset user3 roles
+	test.beforeAll(async ({ api }) => {
+		const res = await api.post('/users.update', {
+			data: { roles: ['user'] },
+			userId: 'user3',
+		});
+		await expect(res.status()).toBe(200);
+	});
+
 	// Allow manual on hold
 	test.beforeAll(async ({ api }) => {
 		const responses = await Promise.all([
@@ -42,7 +51,7 @@ test.describe('OC - Monitor Role', () => {
 	test.beforeAll(async ({ api }) => {
 		agents = await Promise.all([createAgent(api, 'user1'), createAgent(api, 'user2')]);
 
-		const agentsStatuses = await Promise.all(agents.slice(0, 1).map(({ data: agent }) => makeAgentAvailable(api, agent._id)));
+		const agentsStatuses = await Promise.all(agents.map(({ data: agent }) => makeAgentAvailable(api, agent._id)));
 
 		agentsStatuses.forEach((res) => expect(res.status()).toBe(200));
 	});
@@ -59,25 +68,21 @@ test.describe('OC - Monitor Role', () => {
 		conversations = await Promise.all([
 			createConversation(api, {
 				visitorName: ROOM_A,
-				visitorToken: 'roomA',
 				agentId: `user1`,
 				departmentId: departmentA._id,
 			}),
 			createConversation(api, {
 				visitorName: ROOM_B,
-				visitorToken: 'roomB',
 				agentId: `user2`,
 				departmentId: departmentA._id,
 			}),
 			createConversation(api, {
 				visitorName: ROOM_C,
-				visitorToken: 'roomC',
 				agentId: `user2`,
 				departmentId: departmentB._id,
 			}),
 			createConversation(api, {
 				visitorName: ROOM_D,
-				visitorToken: 'roomD',
 			}),
 		]);
 	});
@@ -229,8 +234,7 @@ test.describe('OC - Monitor Role', () => {
 		await test.step('expect not to be able to see current chats once unit is removed', async () => {
 			const res = await unit.delete();
 			await expect(res.status()).toBe(200);
-			await poOmnichannel.omnisidenav.linkAnalytics.click();
-			await poOmnichannel.omnisidenav.linkCurrentChats.click();
+			await page.reload();
 			await expect(page.locator('text="No chats yet"')).toBeVisible();
 		});
 
