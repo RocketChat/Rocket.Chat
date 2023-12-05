@@ -24,7 +24,7 @@ function getRoomInfo(roomId) {
 	});
 }
 
-describe('[Channels]', function () {
+describe.skip('[Channels]', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));

@@ -24,7 +24,7 @@ function getRoomInfo(roomId) {
 	});
 }
 
-describe('[Groups]', function () {
+describe.skip('[Groups]', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));

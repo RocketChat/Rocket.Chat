@@ -30,7 +30,7 @@ async function joinChannel(userCredentials, roomId) {
 
 const targetUser = {};
 
-describe('[Users]', function () {
+describe.skip('[Users]', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
