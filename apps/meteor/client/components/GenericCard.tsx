@@ -15,7 +15,7 @@ const GenericCard: React.FC<GenericCardProps> = ({ title, body, controls, ...pro
 			<CardBody>{body}</CardBody>
 			<CardControls>
 				{controls?.map(({ label, ...control }, index) => (
-					<Button key={index} {...control}>
+					<Button medium key={index} {...control}>
 						{label}
 					</Button>
 				))}
