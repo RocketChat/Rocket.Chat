@@ -10,6 +10,8 @@ const AccessibilityShortcut = () => {
 
 	const customButtonClass = css`
 		position: absolute;
+		top: 2px;
+		left: 2px;
 		z-index: 99;
 		&:not(:focus) {
 			width: 1px;
