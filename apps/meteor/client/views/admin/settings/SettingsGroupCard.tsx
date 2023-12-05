@@ -26,7 +26,7 @@ const SettingsGroupCard = ({ id, title, description, ...props }: SettingsGroupCa
 	const router = useRouter();
 
 	return (
-		<Card data-qa-id={id} width={200} {...props}>
+		<Card data-qa-id={id} width={204} {...props}>
 			<CardTitle>{t(title)}</CardTitle>
 			<CardBody>
 				<Box className={clampStyle}>
