@@ -26,8 +26,7 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 
 	const hasEngagementDashboard = useHasLicenseModule('engagement-dashboard') as boolean;
 
-	const { shouldShowUpsell, cloudWorkspaceHadTrial, handleManageSubscription, handleTalkToSales } =
-		useUpsellActions(hasEngagementDashboard);
+	const { shouldShowUpsell, handleManageSubscription } = useUpsellActions(hasEngagementDashboard);
 
 	useEffect(() => {
 		if (shouldShowUpsell) {
@@ -39,9 +38,7 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 					description={t('Enrich_your_workspace')}
 					onClose={() => setModal(null)}
 					onConfirm={handleManageSubscription}
-					confirmText={cloudWorkspaceHadTrial ? t('Learn_more') : t('Start_a_free_trial')}
-					onCancel={handleTalkToSales}
-					cancelText={t('Talk_to_an_expert')}
+					onCancel={() => setModal(null)}
 				/>,
 			);
 		}
@@ -57,7 +54,7 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 				);
 			}
 		});
-	}, [shouldShowUpsell, router, tab, setModal, t, handleManageSubscription, cloudWorkspaceHadTrial, handleTalkToSales]);
+	}, [shouldShowUpsell, router, tab, setModal, t, handleManageSubscription]);
 
 	if (isModalOpen) {
 		return <PageSkeleton />;

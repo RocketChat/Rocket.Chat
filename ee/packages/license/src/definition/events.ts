@@ -16,6 +16,7 @@ export type LicenseEvents = ModuleValidation &
 	BehaviorTriggered &
 	LimitReached & {
 		installed: undefined;
+		removed: undefined;
 		validate: undefined;
 		invalidate: undefined;
 		module: { module: LicenseModule; valid: boolean };

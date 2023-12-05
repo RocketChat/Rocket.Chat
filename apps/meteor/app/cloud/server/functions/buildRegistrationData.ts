@@ -31,6 +31,7 @@ export type WorkspaceRegistrationData<T> = {
 	deploymentPlatform: string;
 	version: string;
 	licenseVersion: number;
+	license?: string;
 	enterpriseReady: boolean;
 	setupComplete: boolean;
 	connectionDisable: boolean;
@@ -64,6 +65,8 @@ export async function buildWorkspaceRegistrationData<T extends string | undefine
 	const seats = await Users.getActiveLocalUserCount();
 	const [macs] = await LivechatRooms.getMACStatisticsForPeriod(moment.utc().format('YYYY-MM'));
 
+	const license = settings.get<string>('Enterprise_License');
+
 	return {
 		uniqueId: stats.uniqueId,
 		deploymentFingerprintHash,
@@ -88,6 +91,7 @@ export async function buildWorkspaceRegistrationData<T extends string | undefine
 		deploymentPlatform: stats.deploy.platform,
 		version: stats.version ?? Info.version,
 		licenseVersion: LICENSE_VERSION,
+		...(license && { license }),
 		enterpriseReady: true,
 		setupComplete: setupWizardState === 'completed',
 		connectionDisable: !registerServer,
