@@ -1,12 +1,12 @@
 import { Box, Button, Card, CardBody, CardControls, CardHeader, Icon, Tag } from '@rocket.chat/fuselage';
 import { useRole, useSettingSetValue, useSetting, useToastMessageDispatch, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
 import React from 'react';
 
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import CustomHomepageContent from '../CustomHomePageContent';
 
-const CustomContentCard = (): ReactElement | null => {
+const CustomContentCard = (props: ComponentProps<typeof Card>): ReactElement | null => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const router = useRouter();
@@ -51,7 +51,7 @@ const CustomContentCard = (): ReactElement | null => {
 
 	if (isAdmin) {
 		return (
-			<Card data-qa-id='homepage-custom-card'>
+			<Card data-qa-id='homepage-custom-card' {...props}>
 				<CardHeader>
 					<Tag role='status' aria-label={willNotShowCustomContent ? t('Not_Visible_To_Workspace') : t('Visible_To_Workspace')}>
 						<Icon mie={4} name={willNotShowCustomContent ? 'eye-off' : 'eye'} size='x12' />

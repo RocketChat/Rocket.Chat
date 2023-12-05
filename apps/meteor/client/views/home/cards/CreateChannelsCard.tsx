@@ -1,11 +1,12 @@
+import type { Card } from '@rocket.chat/fuselage';
 import { useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
 import React from 'react';
 
 import GenericCard from '../../../components/GenericCard';
 import CreateChannelWithData from '../../../sidebar/header/CreateChannel';
 
-const CreateChannelsCard = (): ReactElement => {
+const CreateChannelsCard = (props: ComponentProps<typeof Card>): ReactElement => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 
@@ -15,8 +16,9 @@ const CreateChannelsCard = (): ReactElement => {
 		<GenericCard
 			title={t('Create_channels')}
 			body={t('Create_a_public_channel_that_new_workspace_members_can_join')}
-			controls={[{ onClick: openCreateChannelModal, label: t('Create_channel') }]}
+			buttons={[{ onClick: openCreateChannelModal, label: t('Create_channel') }]}
 			data-qa-id='homepage-create-channels-card'
+			{...props}
 		/>
 	);
 };

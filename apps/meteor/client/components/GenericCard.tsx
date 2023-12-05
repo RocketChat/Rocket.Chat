@@ -5,17 +5,17 @@ import React from 'react';
 type GenericCardProps = {
 	title: string;
 	body: string;
-	controls?: ComponentProps<typeof Button>[];
-} & Omit<ComponentProps<typeof Card>, 'controls'>;
+	buttons?: ComponentProps<typeof Button>[];
+} & ComponentProps<typeof Card>;
 
-const GenericCard: React.FC<GenericCardProps> = ({ title, body, controls, ...props }) => {
+const GenericCard: React.FC<GenericCardProps> = ({ title, body, buttons, ...props }) => {
 	return (
-		<Card {...props}>
+		<Card width={340} {...props}>
 			<CardTitle>{title}</CardTitle>
 			<CardBody>{body}</CardBody>
 			<CardControls>
-				{controls?.map(({ label, ...control }, index) => (
-					<Button medium key={index} {...control}>
+				{buttons?.map(({ label, ...buttonProps }, index) => (
+					<Button medium key={index} {...buttonProps}>
 						{label}
 					</Button>
 				))}
