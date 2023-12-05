@@ -12,9 +12,9 @@ const closeButtonStyle = css`
 
 const ImageGalleryLoader = ({ onClose }: { onClose: () => void }) =>
 	createPortal(
-		<ModalBackdrop display='flex' justifyContent='center'>
+		<ModalBackdrop display='flex' justifyContent='center' color='pure-white'>
 			<IconButton icon='cross' aria-label='Close gallery' className={closeButtonStyle} onClick={onClose} />
-			<Throbber />
+			<Throbber inheritColor />
 		</ModalBackdrop>,
 		document.body,
 	);
