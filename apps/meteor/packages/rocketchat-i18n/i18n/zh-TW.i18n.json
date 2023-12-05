@@ -829,7 +829,6 @@
   "Close": "關閉",
   "Close_chat": "關閉聊天",
   "Close_room_description": "您即將關閉此聊天。您確定要繼續嗎？",
-  "Close_to_seat_limit_warning": "一旦到達座位限制，則無法建立新會員。",
   "close-livechat-room": "關閉客服 Room",
   "close-livechat-room_description": "有權限關閉當前客服聊天室",
   "Close_menu": "關閉選單",
@@ -4588,6 +4587,7 @@
   "RegisterWorkspace_Features_Omnichannel_Title": "Omnichannel",
   "RegisterWorkspace_Setup_Label": "雲端帳戶電子郵件",
   "cloud.RegisterWorkspace_Setup_Terms_Privacy": "我同意<1>條款及條件</1>和<3>隱私權政策</3>",
+  "Enterprise": "企業",
   "UpgradeToGetMore_engagement-dashboard_Title": "分析",
   "UpgradeToGetMore_auditing_Title": "訊息稽核"
 }

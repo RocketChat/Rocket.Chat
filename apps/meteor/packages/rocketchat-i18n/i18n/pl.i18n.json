@@ -917,7 +917,6 @@
   "Close": "Zamknij",
   "Close_chat": "Zamknij czat",
   "Close_room_description": "Za chwilę zamkniesz ten czat. Czy na pewno chcesz kontynuować?",
-  "Close_to_seat_limit_warning": "Po wyczerpaniu limitu miejsc nie można tworzyć nowych członków.",
   "close-livechat-room": "Zamknij pokój Omnichannel",
   "close-livechat-room_description": "Uprawnienie do zamykania bieżącego pokoju Omnichannel",
   "Close_menu": "Zamknij menu",
@@ -3804,11 +3803,6 @@
   "Report_this_message_question_mark": "Zgłoś tą wiadomość?",
   "Reporting": "Raportowanie",
   "Request": "Rządanie",
-  "Request_seats": "Zamówienie miejsc",
-  "Request_more_seats": "Zamów więcej miejsc",
-  "Request_more_seats_out_of_seats": "Nie możesz dodać członków, ponieważ ta przestrzeń robocza nie ma wolnych miejsc, poproś o więcej miejsc.",
-  "Request_more_seats_sales_team": "Po złożeniu wniosku, nasz Zespół Sprzedaży zajmie się nim i skontaktuje się z Tobą w ciągu kilku najbliższych dni.",
-  "Request_more_seats_title": "Zamów więcej miejsc",
   "Request_comment_when_closing_conversation": "Poproś o komentarz podczas zamykania rozmowy",
   "Request_comment_when_closing_conversation_description": "Jeśli jest włączona, agent będzie musiał ustawić komentarz przed zamknięciem rozmowy.",
   "Request_tag_before_closing_chat": "Poproś o znacznik (znaczniki) przed zamknięciem rozmowy",
@@ -5348,6 +5342,7 @@
   "RegisterWorkspace_Setup_Label": "E-mail konta w chmurze",
   "RegisterWorkspace_Syncing_Complete": "Synchronizacja zakończona",
   "cloud.RegisterWorkspace_Setup_Terms_Privacy": "Zgadzam się z <1>zasadami i warunkami</1> i <3>Polityką prywatności</3>.",
+  "Enterprise": "Enterprise",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analityka",
   "UpgradeToGetMore_auditing_Title": "Audyt wiadomości"
 }
