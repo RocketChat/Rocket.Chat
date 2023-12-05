@@ -8217,9 +8217,9 @@ __metadata:
     "@rocket.chat/icons": "*"
     "@rocket.chat/prettier-config": "*"
     "@rocket.chat/styled": "*"
-    "@rocket.chat/ui-contexts": 3.0.0-rc.14
+    "@rocket.chat/ui-contexts": 3.0.0
     "@rocket.chat/ui-kit": "*"
-    "@rocket.chat/ui-video-conf": 3.0.0-rc.14
+    "@rocket.chat/ui-video-conf": 3.0.0
     "@tanstack/react-query": "*"
     react: "*"
     react-dom: "*"
@@ -8307,8 +8307,8 @@ __metadata:
     "@rocket.chat/fuselage-tokens": "*"
     "@rocket.chat/message-parser": "*"
     "@rocket.chat/styled": "*"
-    "@rocket.chat/ui-client": 3.0.0-rc.14
-    "@rocket.chat/ui-contexts": 3.0.0-rc.14
+    "@rocket.chat/ui-client": 3.0.0
+    "@rocket.chat/ui-contexts": 3.0.0
     katex: "*"
     react: "*"
   languageName: unknown
@@ -8697,7 +8697,6 @@ __metadata:
     "@types/oauth2-server": ^3.0.15
     "@types/object-path": ^0.11.3
     "@types/parseurl": ^1.3.2
-    "@types/photoswipe": ^4.1.5
     "@types/prometheus-gc-stats": ^0.6.3
     "@types/proxy-from-env": ^1.0.3
     "@types/proxyquire": ^1.3.30
@@ -8811,7 +8810,6 @@ __metadata:
     is-svg: ^4.3.2
     isolated-vm: 4.4.2
     jest: ~29.6.4
-    jquery: ^3.6.0
     jschardet: ^3.0.0
     jsdom: ^16.7.0
     jsdom-global: ^3.0.2
@@ -8852,7 +8850,6 @@ __metadata:
     path: ^0.12.7
     path-to-regexp: ^6.2.1
     pdfjs-dist: ^2.13.216
-    photoswipe: ^4.1.3
     pino: ^8.15.0
     pino-pretty: ^7.6.1
     playwright-qase-reporter: ^1.2.1
@@ -8900,6 +8897,7 @@ __metadata:
     stylelint-order: ^5.0.0
     supertest: ^6.2.3
     suretype: ~2.4.1
+    swiper: ^9.3.2
     tar-stream: ^1.6.2
     template-file: ^6.0.1
     textarea-caret: ^3.1.0
@@ -9470,7 +9468,7 @@ __metadata:
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/icons": "*"
-    "@rocket.chat/ui-contexts": 3.0.0-rc.14
+    "@rocket.chat/ui-contexts": 3.0.0
     react: ~17.0.2
   languageName: unknown
   linkType: soft
@@ -9623,7 +9621,7 @@ __metadata:
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/icons": "*"
     "@rocket.chat/styled": "*"
-    "@rocket.chat/ui-contexts": 3.0.0-rc.14
+    "@rocket.chat/ui-contexts": 3.0.0
     react: ^17.0.2
     react-dom: ^17.0.2
   languageName: unknown
@@ -9709,7 +9707,7 @@ __metadata:
   peerDependencies:
     "@rocket.chat/layout": "*"
     "@rocket.chat/tools": "*"
-    "@rocket.chat/ui-contexts": 3.0.0-rc.14
+    "@rocket.chat/ui-contexts": 3.0.0
     "@tanstack/react-query": "*"
     react: "*"
     react-hook-form: "*"
@@ -12859,13 +12857,6 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: bfe0ad3222a957a1d8d21a5378a61a3ce21f0ce45ddfdd98fc727207b4bd3caf590d2a448c39d08774949e485a5f5f08429f6025a6b0123456a8a7fb9270ddb2
-  languageName: node
-  linkType: hard
-
-"@types/photoswipe@npm:^4.1.5":
-  version: 4.1.5
-  resolution: "@types/photoswipe@npm:4.1.5"
-  checksum: a6b5fd6b029b8e84bc43f680549abf33dbc02e551e8dd176e29ca82e80edf66d0b62777fd42fe415d9e52b7a570718cac684aaea544f8dc084d1cb8bcc422f0f
   languageName: node
   linkType: hard
 
@@ -26297,13 +26288,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jquery@npm:^3.6.0":
-  version: 3.6.0
-  resolution: "jquery@npm:3.6.0"
-  checksum: 8fd5fef4aa48fd374ec716dd1c1df1af407814a228e15c1260ca140de3a697c2a77c30c54ff1d238b6a3ab4ddc445ddeef9adce6c6d28e4869d85eb9d3951c0e
-  languageName: node
-  linkType: hard
-
 "js-git@npm:^0.7.8":
   version: 0.7.8
   resolution: "js-git@npm:0.7.8"
@@ -31015,13 +30999,6 @@ __metadata:
   version: 2.1.0
   resolution: "performance-now@npm:2.1.0"
   checksum: 534e641aa8f7cba160f0afec0599b6cecefbb516a2e837b512be0adbe6c1da5550e89c78059c7fabc5c9ffdf6627edabe23eb7c518c4500067a898fa65c2b550
-  languageName: node
-  linkType: hard
-
-"photoswipe@npm:^4.1.3":
-  version: 4.1.3
-  resolution: "photoswipe@npm:4.1.3"
-  checksum: 2eecc188d81642832cd5086e3954a6b5546b70651b6a76752625d9ff7b5e63ede9347316edc8110d7dba90acf55d2e8b2e917f454ed46c2594b09084c383aa37
   languageName: node
   linkType: hard
 
@@ -35914,6 +35891,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ssr-window@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "ssr-window@npm:4.0.2"
+  checksum: df182600927f4f3225224cf8c02338ea637c9750519505bbfb9a9236741a2a7ec088386fb948bca7b447b8303d9109e7dc7672e3de041c79ac2a0e03665af7d2
+  languageName: node
+  linkType: hard
+
 "ssri@npm:^6.0.1":
   version: 6.0.2
   resolution: "ssri@npm:6.0.2"
@@ -36878,6 +36862,15 @@ __metadata:
   bin:
     svgo: bin/svgo
   checksum: b92f71a8541468ffd0b81b8cdb36b1e242eea320bf3c1a9b2c8809945853e9d8c80c19744267eb91cabf06ae9d5fff3592d677df85a31be4ed59ff78534fa420
+  languageName: node
+  linkType: hard
+
+"swiper@npm:^9.3.2":
+  version: 9.3.2
+  resolution: "swiper@npm:9.3.2"
+  dependencies:
+    ssr-window: ^4.0.2
+  checksum: 9ccb6a0ef67d71ac780d7d1f3b2c2daf6f1846d3df8810aff6dcb8501c87b7769540a869cdd83eb902e5278396e5379cb32d9ed397234f7700ef55f0209f4592
   languageName: node
   linkType: hard
 
