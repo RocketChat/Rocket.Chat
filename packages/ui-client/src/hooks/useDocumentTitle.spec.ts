@@ -11,6 +11,13 @@ it('should return the default title', () => {
 	expect(result.current.title).toBe(DEFAULT_TITLE);
 });
 
+it('should return the default title and empty key value if refocus param is false', () => {
+	const { result } = renderHook(() => useDocumentTitle(DEFAULT_TITLE, false));
+
+	expect(result.current.title).toBe(DEFAULT_TITLE);
+	expect(result.current.key).toBe('');
+});
+
 it('should return the default title and the example title concatenated', () => {
 	renderHook(() => useDocumentTitle(DEFAULT_TITLE));
 	const { result } = renderHook(() => useDocumentTitle(EXAMPLE_TITLE));
