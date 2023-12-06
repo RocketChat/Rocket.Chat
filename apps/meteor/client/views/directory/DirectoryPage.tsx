@@ -56,8 +56,8 @@ const DirectoryPage = (): ReactElement => {
 				)}
 			</Tabs>
 			<Page.Content>
-				{tab === 'users' && <UsersTab />}
 				{tab === 'channels' && <ChannelsTab />}
+				{tab === 'users' && <UsersTab />}
 				{tab === 'teams' && <TeamsTab />}
 				{federationEnabled && tab === 'external' && <UsersTab workspace='external' />}
 			</Page.Content>

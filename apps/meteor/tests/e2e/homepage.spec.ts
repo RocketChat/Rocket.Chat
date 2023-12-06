@@ -50,7 +50,7 @@ test.describe.serial('homepage', () => {
 			test('visibility and button functionality in custom body with empty custom content', async () => {
 				await test.step('expect default value in custom body', async () => {
 					await expect(
-						adminPage.locator('role=status[name="Admins may insert content html to be rendered in this white space."]'),
+						adminPage.locator('div >> text="Admins may insert content html to be rendered in this white space."'),
 					).toBeVisible();
 				});
 
@@ -60,7 +60,7 @@ test.describe.serial('homepage', () => {
 				});
 
 				await test.step('expect visibility tag to show "not visible"', async () => {
-					await expect(adminPage.locator('role=status[name="Not visible to workspace"]')).toBeVisible();
+					await expect(adminPage.locator('span >> text="Not visible to workspace"')).toBeVisible();
 				});
 			});
 		});
@@ -72,7 +72,7 @@ test.describe.serial('homepage', () => {
 
 			test('visibility and button functionality in custom body with custom content', async () => {
 				await test.step('expect custom body to be visible', async () => {
-					await expect(adminPage.locator('role=status[name="Hello admin"]')).toBeVisible();
+					await expect(adminPage.locator('div >> text="Hello admin"')).toBeVisible();
 				});
 
 				await test.step('expect correct state for card buttons', async () => {
@@ -101,7 +101,7 @@ test.describe.serial('homepage', () => {
 					});
 
 					await test.step('expect visibility tag to show "visible to workspace"', async () => {
-						await expect(adminPage.locator('role=status[name="Visible to workspace"]')).toBeVisible();
+						await expect(adminPage.locator('span >> text="Visible to workspace"')).toBeVisible();
 					});
 				});
 			});
@@ -188,7 +188,7 @@ test.describe.serial('homepage', () => {
 			});
 
 			test('expect custom body to be visible', async () => {
-				await expect(regularUserPage.locator('role=status[name="Hello"]')).toBeVisible();
+				await expect(regularUserPage.locator('div >> text="Hello"')).toBeVisible();
 			});
 
 			test.describe('enterprise edition', () => {
@@ -208,7 +208,7 @@ test.describe.serial('homepage', () => {
 					});
 
 					await test.step('expect custom body to be visible', async () => {
-						await expect(regularUserPage.locator('role=status[name="Hello"]')).toBeVisible();
+						await expect(regularUserPage.locator('div >> text="Hello"')).toBeVisible();
 					});
 				});
 			});

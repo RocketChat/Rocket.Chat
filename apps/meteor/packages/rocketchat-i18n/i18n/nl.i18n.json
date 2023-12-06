@@ -838,7 +838,6 @@
   "Close": "Sluiten",
   "Close_chat": "Chat sluiten",
   "Close_room_description": "Je staat op het punt deze chat te sluiten. Weet je zeker dat je wilt doorgaan?",
-  "Close_to_seat_limit_warning": "Er kunnen geen nieuwe leden worden aangemaakt zodra de plaatslimiet bereikt is.",
   "close-livechat-room": "Omnichannel-ruimte sluiten",
   "close-livechat-room_description": "Toestemming om de huidige omnichannel-ruimte te sluiten",
   "Close_menu": "Menu sluiten",
@@ -3495,11 +3494,6 @@
   "Report_this_message_question_mark": "Dit bericht melden?",
   "Reporting": "Rapporteren",
   "Request": "Verzoek",
-  "Request_seats": "Plaatsen aanvragen",
-  "Request_more_seats": "Meer plaatsen aanvragen.",
-  "Request_more_seats_out_of_seats": "Je kan geen leden toevoegen omdat deze werkruimte geen plaatsen meer heeft. Vraag meer plaatsen aan.",
-  "Request_more_seats_sales_team": "Zodra uw verzoek is ingediend, zal ons verkoopteam het bekijken en binnen enkele dagen contact met u opnemen.",
-  "Request_more_seats_title": "Meer plaatsen aanvragen",
   "Request_comment_when_closing_conversation": "Commentaar vragen bij het sluiten van het gesprek",
   "Request_comment_when_closing_conversation_description": "Indien ingeschakeld, moet de agent een opmerking plaatsen voor het gesprek wordt gesloten.",
   "Request_tag_before_closing_chat": "Vraag tag(s) aan voordat u het gesprek sluit",
@@ -4877,6 +4871,7 @@
   "RegisterWorkspace_Features_Omnichannel_Title": "Omnichannel",
   "RegisterWorkspace_Setup_Label": "E-mailadres van cloudaccount",
   "cloud.RegisterWorkspace_Setup_Terms_Privacy": "Ik ga akkoord met de <1>Algemene voorwaarden</1> en <3>Privacybeleid</3>",
+  "Enterprise": "Onderneming",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analytics",
   "UpgradeToGetMore_auditing_Title": "Bericht auditing"
 }

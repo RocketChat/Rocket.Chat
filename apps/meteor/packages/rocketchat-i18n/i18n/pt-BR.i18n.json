@@ -880,7 +880,6 @@
   "Close": "Fechar",
   "Close_chat": "Fechar conversa",
   "Close_room_description": "Você está prestes a fechar esta conversa. Você tem certeza de que deseja continuar?",
-  "Close_to_seat_limit_warning": "Novos membros não podem ser criados, pois o limite de lugares foi atingido.",
   "close-livechat-room": "Fechar sala omnichannel",
   "close-livechat-room_description": "Permissão para fechar a sala Omnichannel atual",
   "Close_menu": "Fechar menu",
@@ -3567,11 +3566,6 @@
   "Report_this_message_question_mark": "Denunciar esta mensagem?",
   "Reporting": "Relatórios",
   "Request": "Solicitar",
-  "Request_seats": "Solicitar lugares",
-  "Request_more_seats": "Solicitar mais lugares.",
-  "Request_more_seats_out_of_seats": "Você não pode adicionar membros porque este espaço de trabalho está sem lugares; solicite mais lugares.",
-  "Request_more_seats_sales_team": "Assim que sua solicitação for enviada, nossa equipe de vendas vai analisá-la e entrará em contato nos próximos dias.",
-  "Request_more_seats_title": "Solicitar mais lugares",
   "Request_comment_when_closing_conversation": "Solicitar comentário ao encerrar a conversa",
   "Request_comment_when_closing_conversation_description": "Se ativado, o agente precisará informar um comentário antes que a conversa seja encerrada.",
   "Request_tag_before_closing_chat": "Solicitar tag(s) antes de encerrar a conversa",
@@ -4982,6 +4976,7 @@
   "RegisterWorkspace_Features_Omnichannel_Title": "Omnichannel",
   "RegisterWorkspace_Setup_Label": "E-mail da conta da nuvem",
   "cloud.RegisterWorkspace_Setup_Terms_Privacy": "Eu concordo com os <1>Termos e condições</1> e a <3>Política de privacidade</3>",
+  "Enterprise": "Enterprise",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analytics",
   "UpgradeToGetMore_auditing_Title": "Auditoria de mensagem"
 }
