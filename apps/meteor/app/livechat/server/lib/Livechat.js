@@ -2,12 +2,8 @@
 // Please add new methods to LivechatTyped.ts
 import { Logger } from '@rocket.chat/logger';
 
-import { Analytics } from './Analytics';
-
 const logger = new Logger('Livechat');
 
 export const Livechat = {
-	Analytics,
-
 	logger,
 };
