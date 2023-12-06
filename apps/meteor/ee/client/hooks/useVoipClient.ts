@@ -43,7 +43,7 @@ export const useVoipClient = (): UseVoipClientResult => {
 		if (!voipEnabled || !user) {
 			return;
 		}
-		subscribeToNotifyLoggedIn(`voip.statuschanged`, (enabled: boolean): void => {
+		return subscribeToNotifyLoggedIn(`voip.statuschanged`, (enabled: boolean): void => {
 			setVoipConnectorEnabled(enabled);
 		});
 	}, [user, voipEnabled, setResult, setVoipConnectorEnabled, subscribeToNotifyLoggedIn]);
