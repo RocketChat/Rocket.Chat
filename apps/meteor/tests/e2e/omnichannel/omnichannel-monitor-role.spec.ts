@@ -12,6 +12,7 @@ import { createOrUpdateUnit, fetchUnitMonitors } from '../utils/omnichannel/unit
 import { test, expect } from '../utils/test';
 
 const MONITOR = 'user3';
+const MONITOR_ADMIN = 'rocketchat.internal.admin.test';
 const ROOM_A = faker.person.fullName();
 const ROOM_B = faker.person.fullName();
 const ROOM_C = faker.person.fullName();
@@ -25,8 +26,8 @@ test.describe('OC - Monitor Role', () => {
 	let departments: Awaited<ReturnType<typeof createDepartment>>[];
 	let conversations: Awaited<ReturnType<typeof createConversation>>[];
 	let agents: Awaited<ReturnType<typeof createAgent>>[];
-	let monitor: Awaited<ReturnType<typeof createMonitor>>;
-	let unit: Awaited<ReturnType<typeof createOrUpdateUnit>>;
+	let monitors: Awaited<ReturnType<typeof createMonitor>>[];
+	let units: Awaited<ReturnType<typeof createOrUpdateUnit>>[];
 	let poOmnichannel: HomeOmnichannel;
 
 	// Reset user3 roles
@@ -58,7 +59,7 @@ test.describe('OC - Monitor Role', () => {
 
 	// Create departments
 	test.beforeAll(async ({ api }) => {
-		departments = await Promise.all([createDepartment(api), createDepartment(api)]);
+		departments = await Promise.all([createDepartment(api), createDepartment(api), createDepartment(api)]);
 	});
 
 	// Create conversations
@@ -87,16 +88,25 @@ test.describe('OC - Monitor Role', () => {
 		]);
 	});
 
-	// Create monitor and unit
+	// Create monitors
 	test.beforeAll(async ({ api }) => {
-		const [departmentA, departmentB] = departments.map(({ data }) => data);
+		monitors = await Promise.all([createMonitor(api, MONITOR), createMonitor(api, MONITOR_ADMIN)]);
+	});
 
-		monitor = await createMonitor(api, MONITOR);
+	// Create units
+	test.beforeAll(async ({ api }) => {
+		const [departmentA, departmentB, departmentC] = departments.map(({ data }) => data);
 
-		unit = await createOrUpdateUnit(api, {
-			monitors: [{ monitorId: MONITOR, username: MONITOR }],
-			departments: [{ departmentId: departmentA._id }, { departmentId: departmentB._id }],
-		});
+		units = await Promise.all([
+			createOrUpdateUnit(api, {
+				monitors: [{ monitorId: MONITOR, username: MONITOR }],
+				departments: [{ departmentId: departmentA._id }, { departmentId: departmentB._id }],
+			}),
+			createOrUpdateUnit(api, {
+				monitors: [{ monitorId: MONITOR_ADMIN, username: MONITOR_ADMIN }],
+				departments: [{ departmentId: departmentC._id }],
+			}),
+		]);
 	});
 
 	// Delete all created data
@@ -105,8 +115,8 @@ test.describe('OC - Monitor Role', () => {
 			...agents.map((agent) => agent.delete()),
 			...departments.map((department) => department.delete()),
 			...conversations.map((conversation) => conversation.delete()),
-			monitor.delete(),
-			unit.delete(),
+			...units.map((unit) => unit.delete()),
+			...monitors.map((monitor) => monitor.delete()),
 			// Reset setting
 			api.post('/settings/Livechat_allow_manual_on_hold', { value: false }),
 			api.post('/settings/Livechat_allow_manual_on_hold_upon_agent_engagement_only', { value: true }),
@@ -136,6 +146,15 @@ test.describe('OC - Monitor Role', () => {
 		// await test.step('expect to be able to see queue', async () => {});
 
 		// await test.step('expect to be able to edit custom fields', async () => {});
+	});
+
+	test('OC - Monitor Role - Canned responses', async () => {
+		// TODO: move to unit test
+		await test.step('expect not to be able to create public canned responses (administration)', async () => {
+			await poOmnichannel.omnisidenav.linkCannedResponses.click();
+			await poOmnichannel.cannedResponses.btnNew.click();
+			await expect(poOmnichannel.cannedResponses.radioPublic).toBeDisabled();
+		});
 	});
 
 	test('OC - Monitor Role - Current Chats', async ({ page }) => {
@@ -195,16 +214,10 @@ test.describe('OC - Monitor Role', () => {
 		});
 	});
 
-	test('OC - Monitor Role - Canned responses', async () => {
-		// TODO: move to unit test
-		await test.step('expect not to be able to create public canned responses (administration)', async () => {
-			await poOmnichannel.omnisidenav.linkCannedResponses.click();
-			await poOmnichannel.cannedResponses.btnNew.click();
-			await expect(poOmnichannel.cannedResponses.radioPublic).toBeDisabled();
-		});
-	});
-
 	test('OC - Monitor Role - Permission revoked', async ({ page, api }) => {
+		const [unitA, unitB] = units;
+		const [monitor] = monitors;
+
 		await poOmnichannel.omnisidenav.linkCurrentChats.click();
 
 		await test.step('expect not to be able to see chats from removed department', async () => {
@@ -216,11 +229,13 @@ test.describe('OC - Monitor Role', () => {
 
 			await test.step('expect to remove departmentB from unit', async () => {
 				const [departmentA] = departments.map(({ data }) => data);
+
 				await createOrUpdateUnit(api, {
-					id: unit.data._id,
+					id: unitA.data._id,
 					monitors: [{ monitorId: MONITOR, username: MONITOR }],
 					departments: [{ departmentId: departmentA._id }],
 				});
+
 				await page.reload();
 			});
 
@@ -231,11 +246,18 @@ test.describe('OC - Monitor Role', () => {
 			});
 		});
 
-		await test.step('expect not to be able to see current chats once unit is removed', async () => {
-			const res = await unit.delete();
+		await test.step('expect not to be able to see conversations once unit is removed', async () => {
+			const res = await unitA.delete();
 			await expect(res.status()).toBe(200);
 			await page.reload();
 			await expect(page.locator('text="No chats yet"')).toBeVisible();
+		});
+
+		await test.step('expect to be able to see all conversations once all units are removed', async () => {
+			const res = await unitB.delete();
+			await expect(res.status()).toBe(200);
+			await page.reload();
+			await expect(poOmnichannel.currentChats.findRowByName(ROOM_D)).toBeVisible();
 		});
 
 		await test.step('expect not to be able to see current chats once role is removed', async () => {
@@ -246,7 +268,7 @@ test.describe('OC - Monitor Role', () => {
 		});
 
 		await test.step('expect monitor to be automaticaly removed from unit once monitor is removed', async () => {
-			const { data: monitors } = await fetchUnitMonitors(api, unit.data._id);
+			const { data: monitors } = await fetchUnitMonitors(api, unitA.data._id);
 			await expect(monitors).toHaveLength(0);
 		});
 	});
