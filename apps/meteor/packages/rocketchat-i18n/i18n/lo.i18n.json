@@ -2795,5 +2795,6 @@
   "registration.component.form.invalidConfirmPass": "ການຢືນຢັນລະຫັດຜ່ານບໍ່ກົງກັບລະຫັດຜ່ານ",
   "registration.component.form.confirmPassword": "ຢືນຢັນລະຫັດຜ່ານຂອງທ່ານ",
   "registration.component.form.sendConfirmationEmail": "ສົ່ງອີເມວການຢືນຢັນ",
+  "Enterprise": "Enterprise",
   "UpgradeToGetMore_engagement-dashboard_Title": "ການວິເຄາະ"
 }

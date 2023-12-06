@@ -32,6 +32,57 @@ describe('License set license procedures', () => {
 		});
 	});
 
+	describe('Invalid periods', () => {
+		it('should throw an error if the license is expired', async () => {
+			const license = await getReadyLicenseManager();
+
+			const mocked = await new MockedLicenseBuilder();
+			const token = await mocked.withExpiredDate().sign();
+
+			await license.setLicense(token);
+			await expect(license.hasValidLicense()).toBe(false);
+		});
+
+		describe('license that is not not started yet is applied', () => {
+			it('should throw an error if the license is not started yet', async () => {
+				const license = await getReadyLicenseManager();
+
+				const mocked = new MockedLicenseBuilder();
+				const token = await mocked.withNotStartedDate().sign();
+
+				await license.setLicense(token);
+				await expect(license.hasValidLicense()).toBe(false);
+			});
+
+			it('should be allowed to set the same license again if the license is not started yet', async () => {
+				const license = await getReadyLicenseManager();
+
+				const mocked = await new MockedLicenseBuilder();
+				const as = await mocked.resetValidPeriods().withNotStartedDate();
+				const token = await as.sign();
+
+				await license.setLicense(token);
+
+				await expect(license.hasValidLicense()).toBe(false);
+
+				// 5 minutes in the future
+
+				const mockedData = new Date();
+
+				mockedData.setMinutes(mockedData.getMinutes() + 5);
+
+				jest.useFakeTimers();
+				jest.setSystemTime(mockedData);
+
+				await license.setLicense(token);
+
+				jest.useRealTimers();
+
+				await expect(license.hasValidLicense()).toBe(true);
+			});
+		});
+	});
+
 	it('should throw an error if the license is duplicated', async () => {
 		const license = await getReadyLicenseManager();
 

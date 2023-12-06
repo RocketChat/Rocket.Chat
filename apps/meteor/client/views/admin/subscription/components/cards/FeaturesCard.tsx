@@ -22,7 +22,7 @@ type FeaturesCardProps = {
 
 const FeaturesCard = ({ activeModules, isEnterprise }: FeaturesCardProps): ReactElement => {
 	const { t } = useTranslation();
-	const mediaQuery = useMediaQuery('(min-width: 1024px)');
+	const isSmall = useMediaQuery('(min-width: 1180px)');
 
 	const getFeatureSet = (modules: string[], isEnterprise: boolean): FeatureSet[] => {
 		const featureSet: FeatureSet[] = [
@@ -78,11 +78,11 @@ const FeaturesCard = ({ activeModules, isEnterprise }: FeaturesCardProps): React
 		<FeatureUsageCard card={{ title: !isEnterprise ? t('Unlock_premium_capabilities') : t('Includes') }}>
 			<CardColSection h='full' w='full' display='flex' flexDirection='column'>
 				<CardCol>
-					<Box maxHeight={mediaQuery ? 140 : undefined} display='flex' flexDirection='column' flexWrap='wrap'>
+					<Box display='flex' flexWrap='wrap' justifyContent='space-between' flexDirection={isSmall ? 'row' : 'column'}>
 						{getFeatureSet(activeModules, isEnterprise).map(({ type, title, infoText }, index) => (
-							<Box key={`feature_${index}`} display='flex' alignItems='center' mbe={4}>
+							<Box key={`feature_${index}`} display='flex' alignItems='center' mbe={4} width={isSmall ? '50%' : 'full'}>
 								<FramedIcon type={type} icon={type === 'success' ? 'check' : 'lock'} />
-								<Box is='p' fontScale='p2' mis={12} color='font-secondary-info'>
+								<Box is='p' fontScale='p2' mis={12} mie={2} color='font-secondary-info'>
 									{t(title)}
 								</Box>
 								{infoText && <InfoTextIconModal title={t(title)} infoText={t(infoText)} />}

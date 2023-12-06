@@ -8,19 +8,18 @@ import { useModal, useMediaUrl } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 import React, { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import semver from 'semver';
 
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useLicense, useLicenseName } from '../../../../hooks/useLicense';
 import { useRegistrationStatus } from '../../../../hooks/useRegistrationStatus';
 import { isOverLicenseLimits } from '../../../../lib/utils/isOverLicenseLimits';
-import RegisterWorkspaceModal from '../../cloud/modals/RegisterWorkspaceModal';
 import VersionCardActionButton from './components/VersionCardActionButton';
 import type { VersionActionItem } from './components/VersionCardActionItem';
 import VersionCardActionItemList from './components/VersionCardActionItemList';
 import { VersionCardSkeleton } from './components/VersionCardSkeleton';
 import { VersionTag } from './components/VersionTag';
-import type { VersionStatus } from './components/VersionTag';
+import { getVersionStatus } from './getVersionStatus';
+import RegisterWorkspaceModal from './modals/RegisterWorkspaceModal';
 
 const SUPPORT_EXTERNAL_LINK = 'https://go.rocket.chat/i/version-support';
 const RELEASES_EXTERNAL_LINK = 'https://go.rocket.chat/i/update-product';
@@ -182,7 +181,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 								<Box fontScale='h3' mbe={4} display='flex'>
 									{t('Version_version', { version: serverVersion })}
 									<Box mis={8} alignSelf='center' width='auto'>
-										{!isAirgapped && versions && <VersionTag versionStatus={versionStatus?.label} />}
+										{!isAirgapped && versions && <VersionTag versionStatus={versionStatus?.label} title={versionStatus.version} />}
 									</Box>
 								</Box>
 							</CardColTitle>
@@ -221,26 +220,4 @@ const decodeBase64 = (b64: string): SupportedVersions | undefined => {
 	}
 
 	return JSON.parse(atob(bodyEncoded));
-};
-
-const getVersionStatus = (
-	serverVersion: string,
-	versions: SupportedVersions['versions'],
-): { label: VersionStatus; expiration: Date | undefined } => {
-	const coercedServerVersion = String(semver.coerce(serverVersion));
-	const highestVersion = versions.reduce((prev, current) => (prev.version > current.version ? prev : current));
-	const currentVersionData = versions.find((v) => v.version.includes(coercedServerVersion) || v.version.includes(serverVersion));
-	const isSupported = currentVersionData?.version === coercedServerVersion || currentVersionData?.version === serverVersion;
-
-	const versionStatus: {
-		label: VersionStatus;
-		expiration: Date | undefined;
-	} = {
-		label: 'outdated',
-		...(semver.gte(coercedServerVersion, highestVersion.version) && { label: 'latest' }),
-		...(isSupported && semver.gt(highestVersion.version, coercedServerVersion) && { label: 'available_version' }),
-		expiration: currentVersionData?.expiration,
-	};
-
-	return versionStatus;
 };
