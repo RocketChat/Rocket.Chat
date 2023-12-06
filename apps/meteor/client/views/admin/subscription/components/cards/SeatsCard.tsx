@@ -27,7 +27,7 @@ const SeatsCard = ({ value, max, hideManageSubscription }: SeatsCardProps): Reac
 	const card: CardProps = {
 		title: t('Seats'),
 		infoText: t('Seats_InfoText'),
-		...(hideManageSubscription &&
+		...(!hideManageSubscription &&
 			nearLimit && {
 				upgradeButton: (
 					<UpgradeButton target='seats-card' action='buy_more' small>
