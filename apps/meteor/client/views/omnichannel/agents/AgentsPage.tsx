@@ -2,7 +2,7 @@ import { usePermission, useRouteParameter, useTranslation } from '@rocket.chat/u
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import AgentEditWithData from './AgentEditWithData';
 import AgentInfo from './AgentInfo';
@@ -22,10 +22,10 @@ const AgentsPage = (): ReactElement => {
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('Agents')} />
-				<Page.Content>
+				<PageHeader title={t('Agents')} />
+				<PageContent>
 					<AgentsTable />
-				</Page.Content>
+				</PageContent>
 			</Page>
 			{id && context === 'edit' && <AgentEditWithData uid={id} />}
 			{id && context === 'info' && <AgentInfo uid={id} />}

@@ -24,7 +24,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
 import { validateEmail } from '../../../../lib/emailValidator';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import { useRecordList } from '../../../hooks/lists/useRecordList';
 import { useRoomsList } from '../../../hooks/useRoomsList';
 import { AsyncStatePhase } from '../../../lib/asyncState';
@@ -211,7 +211,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={title}>
+				<PageHeader title={title}>
 					<ButtonGroup>
 						<Button icon='back' onClick={handleReturn}>
 							{t('Back')}
@@ -220,8 +220,8 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 							{t('Save')}
 						</Button>
 					</ButtonGroup>
-				</Page.Header>
-				<Page.ScrollableContentWithShadow>
+				</PageHeader>
+				<PageScrollableContentWithShadow>
 					<FieldGroup
 						w='full'
 						alignSelf='center'
@@ -460,7 +460,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 							</Box>
 						</Field>
 					</FieldGroup>
-				</Page.ScrollableContentWithShadow>
+				</PageScrollableContentWithShadow>
 			</Page>
 		</Page>
 	);

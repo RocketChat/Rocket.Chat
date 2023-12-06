@@ -19,7 +19,7 @@ import { useMutation } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 
 type WebhooksPageProps = {
 	settings: Record<string, SettingValue>;
@@ -149,7 +149,7 @@ const WebhooksPage = ({ settings }: WebhooksPageProps) => {
 
 	return (
 		<Page>
-			<Page.Header title={t('Webhooks')}>
+			<PageHeader title={t('Webhooks')}>
 				<ButtonGroup>
 					<Button onClick={() => reset()} disabled={!isDirty || isSubmitting}>
 						{t('Reset')}
@@ -165,8 +165,8 @@ const WebhooksPage = ({ settings }: WebhooksPageProps) => {
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
-			</Page.Header>
-			<Page.ScrollableContentWithShadow>
+			</PageHeader>
+			<PageScrollableContentWithShadow>
 				<Box maxWidth='x600' w='full' alignSelf='center'>
 					<p>{t('You_can_use_webhooks_to_easily_integrate_livechat_with_your_CRM')}</p>
 					<p>
@@ -225,7 +225,7 @@ const WebhooksPage = ({ settings }: WebhooksPageProps) => {
 						</Field>
 					</FieldGroup>
 				</Box>
-			</Page.ScrollableContentWithShadow>
+			</PageScrollableContentWithShadow>
 		</Page>
 	);
 };

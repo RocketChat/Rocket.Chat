@@ -14,7 +14,7 @@ import {
 	GenericTableLoadingRow,
 } from '../../../../../components/GenericTable';
 import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
-import Page from '../../../../../components/Page';
+import { PageContent } from '../../../../../components/Page';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import AssignAgentButton from './AssignAgentButton';
 import AssignAgentModal from './AssignAgentModal';
@@ -56,7 +56,7 @@ const VoipExtensionsPage = () => {
 	);
 
 	return (
-		<Page.Content>
+		<PageContent>
 			<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' mb={14}>
 				<Box fontScale='p2' color='hint'>
 					{data?.total} {t('Extensions')}
@@ -134,7 +134,7 @@ const VoipExtensionsPage = () => {
 					/>
 				</>
 			)}
-		</Page.Content>
+		</PageContent>
 	);
 };
 
