@@ -10,6 +10,7 @@ import { numberFormat } from '../../../../lib/utils/stringUtils';
 import Page from '../../../components/Page';
 import { useErrorHandler } from './useErrorHandler';
 
+// TODO: review inner logic
 const ImportProgressPage = function ImportProgressPage() {
 	const queryClient = useQueryClient();
 	const streamer = useStream('importers');
