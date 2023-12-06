@@ -66,7 +66,7 @@
 	"devDependencies": {
 		"@axe-core/playwright": "^4.7.3",
 		"@babel/core": "~7.22.20",
-		"@babel/eslint-parser": "~7.22.15",
+		"@babel/eslint-parser": "~7.23.3",
 		"@babel/plugin-proposal-nullish-coalescing-operator": "~7.18.6",
 		"@babel/plugin-proposal-optional-chaining": "~7.21.0",
 		"@babel/preset-env": "~7.22.20",
@@ -206,7 +206,7 @@
 		"supertest": "^6.2.3",
 		"template-file": "^6.0.1",
 		"ts-node": "^10.9.1",
-		"typescript": "~5.2.2"
+		"typescript": "~5.3.2"
 	},
 	"dependencies": {
 		"@babel/runtime": "~7.22.15",
@@ -272,7 +272,7 @@
 		"@rocket.chat/ui-client": "workspace:^",
 		"@rocket.chat/ui-composer": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:^",
-		"@rocket.chat/ui-kit": "~0.32.1",
+		"@rocket.chat/ui-kit": "workspace:~",
 		"@rocket.chat/ui-theming": "workspace:^",
 		"@rocket.chat/ui-video-conf": "workspace:^",
 		"@rocket.chat/web-ui-registration": "workspace:^",
@@ -422,6 +422,7 @@
 		"turndown": "^7.1.2",
 		"twilio": "^3.76.1",
 		"twit": "^2.2.11",
+		"typia": "^5.3.3",
 		"ua-parser-js": "^1.0.37",
 		"underscore": "^1.13.6",
 		"universal-perf-hooks": "^1.0.1",
