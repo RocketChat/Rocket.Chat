@@ -123,13 +123,20 @@ describe('OverviewData Analytics', () => {
 				}),
 				getOnHoldConversationsBetweenDate: () => 1,
 			} as any);
-			const result = await overview.Conversations(moment().startOf('day'), moment().endOf('day'), '', 'UTC', (v: string): string => v, {});
+			const result = await overview.Conversations(
+				moment.utc().set('month', 10).set('year', 2023).startOf('day'),
+				moment.utc().set('month', 10).set('year', 2023).endOf('day'),
+				'',
+				'UTC',
+				(v: string): string => v,
+				{},
+			);
 			expect(result).to.be.deep.equal([
 				{ title: 'Total_conversations', value: 15 },
 				{ title: 'Open_conversations', value: 3 },
 				{ title: 'On_Hold_conversations', value: 1 },
 				{ title: 'Total_messages', value: 677 },
-				{ title: 'Busiest_day', value: 'Tuesday' },
+				{ title: 'Busiest_day', value: 'Monday' },
 				{ title: 'Conversations_per_day', value: '15.00' },
 				{ title: 'Busiest_time', value: '12AM - 1AM' },
 			]);
