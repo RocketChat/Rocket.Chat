@@ -48,12 +48,13 @@ export const sendNotification = async ({
 		subscription.receiver = [
 			await Users.findOneById(subscription.u._id, {
 				projection: {
-					active: 1,
-					emails: 1,
-					language: 1,
-					status: 1,
-					statusConnection: 1,
-					username: 1,
+					'active': 1,
+					'emails': 1,
+					'language': 1,
+					'status': 1,
+					'statusConnection': 1,
+					'username': 1,
+					'settings.preferences.enableMobileRinging': 1,
 				},
 			}),
 		];
@@ -68,6 +69,7 @@ export const sendNotification = async ({
 	}
 
 	const isThread = !!message.tmid && !message.tshow;
+	const isVideoConf = message.t === 'videoconf';
 
 	notificationMessage = await parseMessageTextPerUser(notificationMessage, message, receiver);
 
@@ -112,6 +114,8 @@ export const sendNotification = async ({
 			hasReplyToThread,
 			roomType,
 			isThread,
+			isVideoConf,
+			userPreferences: receiver.settings?.preferences,
 		})
 	) {
 		queueItems.push({
