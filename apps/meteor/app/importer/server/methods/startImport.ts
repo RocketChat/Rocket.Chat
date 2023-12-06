@@ -19,25 +19,17 @@ export const executeStartImport = async ({ input }: StartImportParamsPOST, start
 		throw new Meteor.Error('error-importer-not-defined', `The importer (${importerKey}) has no import class defined.`, 'startImport');
 	}
 
-	importer.instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
+	const instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
 
 	const usersSelection = input.users.map(
 		(user) => new SelectionUser(user.user_id, user.username, user.email, user.is_deleted, user.is_bot, user.do_import),
 	);
 	const channelsSelection = input.channels.map(
 		(channel) =>
-			new SelectionChannel(
-				channel.channel_id,
-				channel.name,
-				channel.is_archived,
-				channel.do_import,
-				channel.is_private,
-				channel.creator,
-				channel.is_direct,
-			),
+			new SelectionChannel(channel.channel_id, channel.name, channel.is_archived, channel.do_import, channel.is_private, channel.is_direct),
 	);
 	const selection = new Selection(importer.name, usersSelection, channelsSelection, 0);
-	return importer.instance.startImport(selection, startedByUserId);
+	await instance.startImport(selection, startedByUserId);
 };
 
 declare module '@rocket.chat/ui-contexts' {

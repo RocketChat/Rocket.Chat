@@ -1,6 +1,7 @@
+import type * as UiKit from '@rocket.chat/ui-kit';
+
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IUser } from './IUser';
-import type * as UiKit from './uikit';
 
 export enum BannerPlatform {
 	Web = 'web',
