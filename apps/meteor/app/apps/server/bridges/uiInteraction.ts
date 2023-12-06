@@ -2,7 +2,7 @@ import type { IUIKitInteraction } from '@rocket.chat/apps-engine/definition/uiki
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import { UiInteractionBridge as AppsEngineUiInteractionBridge } from '@rocket.chat/apps-engine/server/bridges/UiInteractionBridge';
 import { api } from '@rocket.chat/core-services';
-import type { UiKit } from '@rocket.chat/core-typings';
+import type * as UiKit from '@rocket.chat/ui-kit';
 
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 

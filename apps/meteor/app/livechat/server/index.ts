@@ -65,7 +65,6 @@ import './methods/sendTranscript';
 import './methods/getFirstRoomMessage';
 import './methods/getTagsList';
 import './methods/getDepartmentForwardRestrictions';
-import './lib/Analytics';
 import './lib/QueueManager';
 import './lib/RoutingManager';
 import './lib/routing/External';
