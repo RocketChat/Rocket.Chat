@@ -43,12 +43,8 @@ const DefaultHomePage = (): ReactElement => {
 						<MobileAppsCard />
 						<DesktopAppsCard />
 						<DocumentationCard />
+						{(isAdmin || (isCustomContentVisible && !isCustomContentBodyEmpty)) && <CustomContentCard />}
 					</CardGroup>
-					{(isAdmin || (isCustomContentVisible && !isCustomContentBodyEmpty)) && (
-						<Box pbs={16} mbe={32}>
-							<CustomContentCard />
-						</Box>
-					)}
 				</Box>
 			</PageScrollableContent>
 		</Page>

@@ -27,7 +27,7 @@ const SettingsPage = (): ReactElement => {
 				<SearchInput value={filter} placeholder={t('Search')} onChange={handleChange} addon={<Icon name='magnifier' size='x20' />} />
 			</PageBlockWithBorder>
 
-			<Page.ScrollableContentWithShadow p={0} pi={8}>
+			<Page.ScrollableContentWithShadow p={0} mi={16}>
 				{isLoadingGroups && <Skeleton />}
 				<CardGroup wrap stretch>
 					{!isLoadingGroups &&
