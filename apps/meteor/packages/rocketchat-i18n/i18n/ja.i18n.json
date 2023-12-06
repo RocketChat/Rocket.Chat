@@ -830,7 +830,6 @@
   "Close": "閉じる",
   "Close_chat": "チャットを閉じる",
   "Close_room_description": "このチャットを閉じようとしています。続行してよろしいですか？",
-  "Close_to_seat_limit_warning": "シートの上限に達すると、新しいメンバーを作成できません。",
   "close-livechat-room": "オムニチャネルRoomを閉じる",
   "close-livechat-room_description": "現在のオムニチャネルルームを閉じる権限",
   "Close_menu": "閉じる",
@@ -3472,11 +3471,6 @@
   "Report_this_message_question_mark": "このメッセージを報告しますか？",
   "Reporting": "報告",
   "Request": "要求",
-  "Request_seats": "シートの要求",
-  "Request_more_seats": "追加のシートを要求します。",
-  "Request_more_seats_out_of_seats": "このワークスペースはシートが不足しているため、メンバーを追加できません。追加のシートを要求してください。",
-  "Request_more_seats_sales_team": "要求が送信されました。確認後、営業チームから数日以内にご連絡いたします。",
-  "Request_more_seats_title": "追加のシートの要求",
   "Request_comment_when_closing_conversation": "会話を閉じるときにコメントを要求",
   "Request_comment_when_closing_conversation_description": "有効にした場合、エージェントは会話が閉じられる前にコメントを設定する必要があります。",
   "Request_tag_before_closing_chat": "会話を閉じる前にタグを要求",
@@ -4839,6 +4833,7 @@
   "RegisterWorkspace_Features_Omnichannel_Title": "オムニチャネル",
   "RegisterWorkspace_Setup_Label": "クラウドアカウントメール",
   "cloud.RegisterWorkspace_Setup_Terms_Privacy": "<1>使用</1>と<3>プライバシーポリシー</3>に同意します",
+  "Enterprise": "エンタープライズ",
   "UpgradeToGetMore_engagement-dashboard_Title": "分析",
   "UpgradeToGetMore_auditing_Title": "メッセージ監査"
 }

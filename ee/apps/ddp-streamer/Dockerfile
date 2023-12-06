@@ -42,6 +42,9 @@ COPY ./ee/packages/license/dist packages/license/dist
 COPY ./packages/instance-status/package.json packages/instance-status/package.json
 COPY ./packages/instance-status/dist packages/instance-status/dist
 
+COPY ./packages/ui-kit/package.json packages/ui-kit/package.json
+COPY ./packages/ui-kit/dist packages/ui-kit/dist
+
 COPY ./ee/apps/${SERVICE}/dist .
 
 COPY ./package.json .

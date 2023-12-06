@@ -45,8 +45,8 @@
 		"outdent": "^0.8.0",
 		"react-docgen-typescript-plugin": "~1.0.5",
 		"react-dom": "~17.0.2",
-		"ts-jest": "~29.0.5",
-		"typescript": "~5.2.2"
+		"ts-jest": "~29.1.1",
+		"typescript": "~5.3.2"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",

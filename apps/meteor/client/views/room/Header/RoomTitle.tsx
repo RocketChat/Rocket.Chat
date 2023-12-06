@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { HeaderTitle } from '@rocket.chat/ui-client';
+import { HeaderTitle, useDocumentTitle } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -9,11 +9,15 @@ type RoomTitleProps = {
 	room: IRoom;
 };
 
-const RoomTitle = ({ room }: RoomTitleProps): ReactElement => (
-	<>
-		<HeaderIconWithRoom room={room} />
-		<HeaderTitle is='h1'>{room.name}</HeaderTitle>
-	</>
-);
+const RoomTitle = ({ room }: RoomTitleProps): ReactElement => {
+	useDocumentTitle(room.name, false);
+
+	return (
+		<>
+			<HeaderIconWithRoom room={room} />
+			<HeaderTitle is='h1'>{room.name}</HeaderTitle>
+		</>
+	);
+};
 
 export default RoomTitle;

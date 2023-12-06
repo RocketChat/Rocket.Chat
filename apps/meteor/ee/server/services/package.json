@@ -27,7 +27,7 @@
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/string-helpers": "~0.31.25",
-		"@rocket.chat/ui-kit": "~0.32.1",
+		"@rocket.chat/ui-kit": "workspace:~",
 		"ajv": "^8.11.0",
 		"bcrypt": "^5.0.1",
 		"body-parser": "^1.20.2",
@@ -62,7 +62,7 @@
 		"pino-pretty": "^7.6.1",
 		"pm2": "^5.2.0",
 		"ts-node": "^10.9.1",
-		"typescript": "~5.2.2"
+		"typescript": "~5.3.2"
 	},
 	"volta": {
 		"extends": "../../../package.json"

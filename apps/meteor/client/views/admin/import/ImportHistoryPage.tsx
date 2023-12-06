@@ -7,7 +7,9 @@ import React, { useMemo } from 'react';
 import { ProgressStep } from '../../../../app/importer/lib/ImporterProgressStep';
 import Page from '../../../components/Page';
 import ImportOperationSummary from './ImportOperationSummary';
+import ImportOperationSummarySkeleton from './ImportOperationSummarySkeleton';
 
+// TODO: review inner logic
 function ImportHistoryPage() {
 	const queryClient = useQueryClient();
 	const t = useTranslation();
@@ -165,7 +167,7 @@ function ImportHistoryPage() {
 						{isLoading && (
 							<>
 								{Array.from({ length: 20 }, (_, i) => (
-									<ImportOperationSummary.Skeleton small={small} key={i} />
+									<ImportOperationSummarySkeleton key={i} small={small} />
 								))}
 							</>
 						)}

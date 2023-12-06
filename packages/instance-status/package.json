@@ -7,7 +7,7 @@
 		"eslint": "~8.45.0",
 		"mongodb": "^4.17.1",
 		"prettier": "~2.8.8",
-		"typescript": "~5.2.2"
+		"typescript": "~5.3.2"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",

@@ -13,10 +13,10 @@ const CustomContentCard = (props: ComponentProps<typeof Card>): ReactElement | n
 
 	const { data } = useIsEnterprise();
 	const isAdmin = useRole('admin');
-	const customContentBody = String(useSetting('Layout_Home_Body'));
+	const customContentBody = useSetting<string>('Layout_Home_Body');
 	const isCustomContentBodyEmpty = customContentBody === '';
-	const isCustomContentVisible = Boolean(useSetting('Layout_Home_Custom_Block_Visible'));
-	const isCustomContentOnly = Boolean(useSetting('Layout_Custom_Body_Only'));
+	const isCustomContentVisible = useSetting<boolean>('Layout_Home_Custom_Block_Visible');
+	const isCustomContentOnly = useSetting<boolean>('Layout_Custom_Body_Only');
 
 	const setCustomContentVisible = useSettingSetValue('Layout_Home_Custom_Block_Visible');
 	const setCustomContentOnly = useSettingSetValue('Layout_Custom_Body_Only');
@@ -53,16 +53,14 @@ const CustomContentCard = (props: ComponentProps<typeof Card>): ReactElement | n
 		return (
 			<Card data-qa-id='homepage-custom-card' {...props}>
 				<CardHeader>
-					<Tag role='status' aria-label={willNotShowCustomContent ? t('Not_Visible_To_Workspace') : t('Visible_To_Workspace')}>
+					<Tag>
 						<Icon mie={4} name={willNotShowCustomContent ? 'eye-off' : 'eye'} size='x12' />
 						{willNotShowCustomContent ? t('Not_Visible_To_Workspace') : t('Visible_To_Workspace')}
 					</Tag>
 				</CardHeader>
-				<CardBody aria-label={isCustomContentBodyEmpty ? t('Homepage_Custom_Content_Default_Message') : customContentBody}>
-					{isCustomContentBodyEmpty ? t('Homepage_Custom_Content_Default_Message') : <CustomHomepageContent />}
-				</CardBody>
+				<CardBody>{isCustomContentBodyEmpty ? t('Homepage_Custom_Content_Default_Message') : <CustomHomepageContent />}</CardBody>
 				<CardControls>
-					<Button onClick={() => router.navigate('/admin/settings/Layout')} title={t('Layout_Home_Page_Content')} medium>
+					<Button medium onClick={() => router.navigate('/admin/settings/Layout')} title={t('Layout_Home_Page_Content')}>
 						{t('Customize_Content')}
 					</Button>
 					<Button
