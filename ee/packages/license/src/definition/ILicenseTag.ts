@@ -1,4 +1,1 @@
-export interface ILicenseTag {
-	name: string;
-	color: string;
-}
+export { ILicenseTag } from '@rocket.chat/core-typings';
