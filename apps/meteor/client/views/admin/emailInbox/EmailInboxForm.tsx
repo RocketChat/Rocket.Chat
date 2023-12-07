@@ -26,7 +26,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { validateEmail } from '../../../../lib/emailValidator';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import GenericModal from '../../../components/GenericModal';
-import Page from '../../../components/Page';
+import { PageScrollableContentWithShadow } from '../../../components/Page';
 
 const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): ReactElement => {
 	const t = useTranslation();
@@ -167,7 +167,7 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 	});
 
 	return (
-		<Page.ScrollableContentWithShadow>
+		<PageScrollableContentWithShadow>
 			<Box maxWidth='x600' w='full' alignSelf='center'>
 				<Accordion>
 					<Accordion.Item defaultExpanded title={t('Inbox_Info')}>
@@ -378,7 +378,7 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 					</Field>
 				</Accordion>
 			</Box>
-		</Page.ScrollableContentWithShadow>
+		</PageScrollableContentWithShadow>
 	);
 };
 

@@ -6,7 +6,7 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
 import { getDirtyFields } from '../../../lib/getDirtyFields';
 import PreferencesGlobalSection from './PreferencesGlobalSection';
 import PreferencesHighlightsSection from './PreferencesHighlightsSection';
@@ -75,8 +75,8 @@ const AccountPreferencesPage = (): ReactElement => {
 
 	return (
 		<Page>
-			<Page.Header title={t('Preferences')} />
-			<Page.ScrollableContentWithShadow>
+			<PageHeader title={t('Preferences')} />
+			<PageScrollableContentWithShadow>
 				<FormProvider {...methods}>
 					<Box id={preferencesFormId} is='form' maxWidth='x600' w='full' alignSelf='center' onSubmit={handleSubmit(handleSaveData)}>
 						<Accordion>
@@ -91,15 +91,15 @@ const AccountPreferencesPage = (): ReactElement => {
 						</Accordion>
 					</Box>
 				</FormProvider>
-			</Page.ScrollableContentWithShadow>
-			<Page.Footer isDirty={isDirty}>
+			</PageScrollableContentWithShadow>
+			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
 					<Button onClick={() => reset(preferencesValues)}>{t('Cancel')}</Button>
 					<Button form={preferencesFormId} primary type='submit'>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>
-			</Page.Footer>
+			</PageFooter>
 		</Page>
 	);
 };

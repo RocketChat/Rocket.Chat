@@ -1,5 +1,6 @@
 import { OmnichannelIntegration } from '@rocket.chat/core-services';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { LivechatVisitors, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
@@ -8,8 +9,9 @@ import { Meteor } from 'meteor/meteor';
 import { API } from '../../../../api/server';
 import { FileUpload } from '../../../../file-upload/server';
 import { settings } from '../../../../settings/server';
-import { Livechat } from '../../../server/lib/Livechat';
 import { Livechat as LivechatTyped } from '../../../server/lib/LivechatTyped';
+
+const logger = new Logger('SMS');
 
 const getUploadFile = async (details, fileUrl) => {
 	const response = await fetch(fileUrl);
@@ -156,7 +158,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 					attachment.title_link_download = true;
 				}
 			} catch (err) {
-				Livechat.logger.error({ msg: 'Attachment upload failed', err });
+				logger.error({ msg: 'Attachment upload failed', err });
 				attachment = {
 					fields: [
 						{

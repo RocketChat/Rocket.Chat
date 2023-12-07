@@ -24,7 +24,7 @@
 		"typecheck": "tsc -p tsconfig.typecheck.json"
 	},
 	"devDependencies": {
-		"@babel/eslint-parser": "~7.22.15",
+		"@babel/eslint-parser": "~7.23.3",
 		"@babel/preset-env": "~7.22.20",
 		"@babel/preset-typescript": "~7.22.15",
 		"@rocket.chat/core-typings": "workspace:^",
@@ -81,7 +81,7 @@
 		"stylelint-order": "^5.0.0",
 		"svg-loader": "^0.0.2",
 		"terser-webpack-plugin": "~4.2.3",
-		"typescript": "~5.2.2",
+		"typescript": "~5.3.2",
 		"url-loader": "^4.1.1",
 		"webpack": "^5.89.0",
 		"webpack-bundle-analyzer": "^4.9.1",
@@ -97,7 +97,7 @@
 		"@rocket.chat/message-parser": "~0.31.27",
 		"@rocket.chat/random": "workspace:~",
 		"@rocket.chat/sdk": "^1.0.0-alpha.42",
-		"@rocket.chat/ui-kit": "~0.32.1",
+		"@rocket.chat/ui-kit": "workspace:~",
 		"css-vars-ponyfill": "^2.4.8",
 		"date-fns": "^2.15.0",
 		"emoji-mart": "^3.0.1",

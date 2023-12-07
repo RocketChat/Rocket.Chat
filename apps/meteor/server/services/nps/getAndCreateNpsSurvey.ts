@@ -1,6 +1,7 @@
 import { Banner } from '@rocket.chat/core-services';
-import type { UiKit, IBanner, BannerPlatform } from '@rocket.chat/core-typings';
+import type { IBanner, BannerPlatform } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import type * as UiKit from '@rocket.chat/ui-kit';
 
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
 import { settings } from '../../../app/settings/server';

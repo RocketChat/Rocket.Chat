@@ -3,7 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useRef, useState } from 'react';
 
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import { DAYS_OF_WEEK } from './BusinessHoursForm';
 import BusinessHoursFormContainer from './BusinessHoursFormContainer';
 import { mapBusinessHoursForm } from './mapBusinessHoursForm';
@@ -79,17 +79,17 @@ const NewBusinessHoursPage = () => {
 
 	return (
 		<Page>
-			<Page.Header title={t('Business_Hours')}>
+			<PageHeader title={t('Business_Hours')}>
 				<ButtonGroup>
 					<Button onClick={handleReturn}>{t('Back')}</Button>
 					<Button primary onClick={handleSave} disabled={!hasChanges}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
-			</Page.Header>
-			<Page.ScrollableContentWithShadow>
+			</PageHeader>
+			<PageScrollableContentWithShadow>
 				<BusinessHoursFormContainer data={defaultBusinessHour} saveRef={saveData} onChange={setHasChanges} />
-			</Page.ScrollableContentWithShadow>
+			</PageScrollableContentWithShadow>
 		</Page>
 	);
 };
