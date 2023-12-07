@@ -7,7 +7,6 @@ import type {
 	MessageAttachment,
 	IMessageWithPendingFileImport,
 } from '@rocket.chat/core-typings';
-import type { PaginatedRequest } from '@rocket.chat/rest-typings';
 import type {
 	AggregationCursor,
 	CountDocumentsOptions,
@@ -24,6 +23,13 @@ import type {
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
+type PaginatedRequest<S extends string = string> = {
+	count?: number;
+	offset?: number;
+	sort?: `{ "${S}": ${1 | -1} }` | string;
+	/* deprecated */
+	query?: string;
+};
 export interface IMessagesModel extends IBaseModel<IMessage> {
 	findPaginatedVisibleByMentionAndRoomId(
 		username: IUser['username'],
