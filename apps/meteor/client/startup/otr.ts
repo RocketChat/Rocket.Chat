@@ -2,7 +2,6 @@ import type { IMessage, AtLeast } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import { Notifications } from '../../app/notifications/client';
 import OTR from '../../app/otr/client/OTR';
 import { OtrRoomState } from '../../app/otr/lib/OtrRoomState';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
@@ -12,20 +11,22 @@ import { onClientMessageReceived } from '../lib/onClientMessageReceived';
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {
-		if (Meteor.userId()) {
-			Notifications.onUser('otr', (type, data) => {
-				if (!data.roomId || !data.userId || data.userId === Meteor.userId()) {
-					return;
-				}
-				const instanceByRoomId = OTR.getInstanceByRoomId(data.roomId);
-
-				if (!instanceByRoomId) {
-					return;
-				}
-
-				instanceByRoomId.onUserStream(type, data);
-			});
+		if (!Meteor.userId()) {
+			return;
 		}
+
+		sdk.stream('notify-user', [`${Meteor.userId()}/otr`], (type, data) => {
+			if (!data.roomId || !data.userId || data.userId === Meteor.userId()) {
+				return;
+			}
+			const instanceByRoomId = OTR.getInstanceByRoomId(data.roomId);
+
+			if (!instanceByRoomId) {
+				return;
+			}
+
+			instanceByRoomId.onUserStream(type, data);
+		});
 	});
 
 	onClientBeforeSendMessage.use(async (message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>) => {
