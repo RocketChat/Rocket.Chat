@@ -157,7 +157,7 @@ test.describe('OC - Manager Role', () => {
 			await poOmnichannel.content.inputModalClosingComment.type('any_comment');
 			await poOmnichannel.content.btnModalConfirm.click();
 			await expect(poOmnichannel.toastSuccess).toBeVisible();
-			await poOmnichannel.content.btnReturn.click();
+			await page.waitForURL('/omnichannel/current');
 		});
 
 		await test.step('expect to be able to remove closed rooms', async () => {
