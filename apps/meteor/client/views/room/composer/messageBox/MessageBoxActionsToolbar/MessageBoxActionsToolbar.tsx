@@ -1,6 +1,5 @@
 import type { IRoom, IMessage } from '@rocket.chat/core-typings';
 import { MessageComposerAction, MessageComposerActionsDivider } from '@rocket.chat/ui-composer';
-import { useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import React, { memo } from 'react';
 
@@ -35,19 +34,10 @@ const MessageBoxActionsToolbarBuilder = ({
 		tmid,
 		variant,
 	});
-	const { composerToolbox: hiddenActions } = useLayoutHiddenActions();
 
-	const featured = data.featured.filter((action) => !hiddenActions.includes(action.id));
-	const menu = data.menu.filter((action) => {
-		if (typeof action === 'string') {
-			return action;
-		}
-		return !hiddenActions.includes(action.id);
-	});
+	const { featured, menu } = data;
 
-	const hasValidMenuItems = menu.some((item) => typeof item !== 'string');
-
-	if (!featured.length && !hasValidMenuItems) {
+	if (!featured.length && !menu.length) {
 		return null;
 	}
 
@@ -62,7 +52,7 @@ const MessageBoxActionsToolbarBuilder = ({
 					icon={action.icon as ComponentProps<typeof MessageComposerAction>['icon']}
 				/>
 			))}
-			{hasValidMenuItems && <ActionsToolbarDropdown actions={menu} isRecording={isRecording} rid={rid} tmid={tmid} />}
+			{menu.length > 0 && <ActionsToolbarDropdown actions={menu} isRecording={isRecording} rid={rid} tmid={tmid} />}
 		</>
 	);
 };
