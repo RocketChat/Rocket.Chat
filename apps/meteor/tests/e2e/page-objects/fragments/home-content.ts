@@ -245,10 +245,6 @@ export class HomeContent {
 		await this.page.locator('//main//aside >> [name="alsoSendThreadToChannel"]').setChecked(isChecked);
 	}
 
-	get takeOmnichannelChatButton(): Locator {
-		return this.page.locator('role=button[name="Take it!"]');
-	}
-
 	get lastSystemMessageBody(): Locator {
 		return this.page.locator('[data-qa-type="system-message-body"]').last();
 	}
