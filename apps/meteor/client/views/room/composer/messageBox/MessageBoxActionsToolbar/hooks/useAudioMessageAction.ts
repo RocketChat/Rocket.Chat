@@ -55,9 +55,6 @@ export const useAudioMessageAction = (disabled: boolean, isMicrophoneDenied: boo
 
 	const handleRecordButtonClick = () => chat?.composer?.setRecordingMode(true);
 
-	// TODO use other selector other than data-qa-id
-	// TODO investigate className='rc-message-box__icon rc-message-box__audio-message-mic'
-
 	return {
 		id: 'audio-message',
 		title: getMediaActionTitle,
