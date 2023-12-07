@@ -38,4 +38,8 @@ export class OmnichannelSidenav {
 	get linkPriorities(): Locator {
 		return this.page.locator('a[href="/omnichannel/priorities"]');
 	}
+
+	get linkMonitors(): Locator {
+		return this.page.locator('a[href="/omnichannel/monitors"]');
+	}
 }
