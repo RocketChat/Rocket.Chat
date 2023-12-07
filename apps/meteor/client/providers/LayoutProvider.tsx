@@ -3,67 +3,18 @@ import { LayoutContext, useRouter, useSetting } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React, { useMemo, useState, useEffect } from 'react';
 
-const roomToolbox = [
-	'channel-settings',
-	'team-info',
-	'user-info-group',
-	'user-info',
-	// 'thread',
-	'calls',
-	'canned-responses',
-	'clean-history',
-	'contact-chat-history',
-	'contact-profile',
-	'discussions',
-	'export-messages',
-	'keyboard-shortcut-list',
-	'members-list',
-	'mentions',
-	'otr',
-	'pinned-messages',
-	'push-notifications',
-	'rocket-search',
-	'room-info',
-	'starred-messages',
-	'start-call',
-	'team-channels',
-	'uploaded-files-list',
-	'voip-room-info',
-];
-
-const messageToolbox = [
-	'reaction-message',
-	// 'quote-message',
-	'reply-in-thread',
-	'forward-message',
-	'reply-directly',
-	'follow-message',
-	'pin-message',
-	'star-message',
-	'permalink',
-	'copy',
-	'edit-message',
-	'delete-message',
-];
-
-const composerToolbox = ['video-message' /* 'audio-message' */, 'file-upload', /* 'create-discussion', */ 'webdav-add', 'share-location'];
-
-const userToolbox = [
-	'openDirectMessage',
-	'changeOwner',
-	'changeLeader',
-	'changeModerator',
-	'openModerationConsole',
-	'ignoreUser',
-	'muteUser',
-	'reportUser',
-	'removeUser',
-];
+const hiddenActionsDefaultValue = {
+	roomToolbox: [],
+	messageToolbox: [],
+	composerToolbox: [],
+	userToolbox: [],
+};
 
 const LayoutProvider: FC = ({ children }) => {
 	const showTopNavbarEmbeddedLayout = Boolean(useSetting('UI_Show_top_navbar_embedded_layout'));
 	const [isCollapsed, setIsCollapsed] = useState(false);
 	const breakpoints = useBreakpoints(); // ["xs", "sm", "md", "lg", "xl", xxl"]
+	const [hiddenActions, setHiddenActions] = useState(hiddenActionsDefaultValue);
 
 	const router = useRouter();
 	// Once the layout is embedded, it can't be changed
@@ -74,6 +25,18 @@ const LayoutProvider: FC = ({ children }) => {
 	useEffect(() => {
 		setIsCollapsed(isMobile);
 	}, [isMobile]);
+
+	useEffect(() => {
+		const eventHandler = (event: MessageEvent<any>) => {
+			if (event.data?.event !== 'hide-actions') {
+				return;
+			}
+
+			setHiddenActions({ ...hiddenActionsDefaultValue, ...event.data.actions });
+		};
+		window.addEventListener('message', eventHandler);
+		return () => window.removeEventListener('message', eventHandler);
+	}, []);
 
 	return (
 		<LayoutContext.Provider
@@ -99,14 +62,9 @@ const LayoutProvider: FC = ({ children }) => {
 					contextualBarExpanded: breakpoints.includes('sm'),
 					// eslint-disable-next-line no-nested-ternary
 					contextualBarPosition: breakpoints.includes('sm') ? (breakpoints.includes('lg') ? 'relative' : 'absolute') : 'fixed',
-					hiddenActions: {
-						roomToolbox,
-						messageToolbox,
-						composerToolbox,
-						userToolbox,
-					},
+					hiddenActions,
 				}),
-				[isMobile, isEmbedded, showTopNavbarEmbeddedLayout, isCollapsed, breakpoints, router],
+				[isMobile, isEmbedded, showTopNavbarEmbeddedLayout, isCollapsed, breakpoints, router, hiddenActions],
 			)}
 		/>
 	);
