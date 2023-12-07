@@ -13,8 +13,6 @@ import type { IUser } from '../IUser';
 import type { FileProp } from './MessageAttachment/Files/FileProp';
 import type { MessageAttachment } from './MessageAttachment/MessageAttachment';
 
-type MentionType = 'user' | 'team';
-
 type MessageUrl = {
 	url: string;
 	source?: string;
@@ -127,9 +125,12 @@ export interface IMessage extends IRocketChatRecord {
 	tmid?: string;
 	tshow?: boolean;
 	ts: Date;
-	mentions?: ({
-		type: MentionType;
-	} & Pick<IUser, '_id' | 'username' | 'name'>)[];
+	mentions?: {
+		type: 'user' | 'team';
+		_id: string;
+		name?: string;
+		username?: string;
+	}[];
 
 	groupable?: boolean;
 	channels?: Pick<IRoom, '_id' | 'name'>[];

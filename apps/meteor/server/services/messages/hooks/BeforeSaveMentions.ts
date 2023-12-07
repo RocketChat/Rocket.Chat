@@ -1,5 +1,5 @@
 import { api, Team, MeteorError } from '@rocket.chat/core-services';
-import type { IUser, IRoom, ITeam } from '@rocket.chat/core-typings';
+import type { IMessage, IUser, IRoom } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 
 import { MentionsServer } from '../../../../app/mentions/server/Mentions';
@@ -7,15 +7,14 @@ import { settings } from '../../../../app/settings/server';
 import { i18n } from '../../../lib/i18n';
 
 class MentionQueries {
-	async getUsers(
-		usernames: string[],
-	): Promise<((Pick<IUser, '_id' | 'username' | 'name'> & { type: 'user' }) | (Pick<ITeam, '_id' | 'name'> & { type: 'team' }))[]> {
+	async getUsers(usernames: string[]): Promise<{ type: 'team' | 'user'; _id: string; username?: string; name?: string }[]> {
 		const uniqueUsernames = [...new Set(usernames)];
+
 		const teams = await Team.listByNames(uniqueUsernames, { projection: { name: 1 } });
 
-		const users = await Users.find(
+		const users = await Users.find<Pick<IUser, '_id' | 'username' | 'name'>>(
 			{ username: { $in: uniqueUsernames } },
-			{ projection: { _id: true, username: true, name: 1 } },
+			{ projection: { _id: 1, username: 1, name: 1 } },
 		).toArray();
 
 		const taggedUsers = users.map((user) => ({
@@ -70,9 +69,9 @@ export const mentionServer = new MentionsServer({
 	getUser: async (userId: string) => queries.getUser(userId),
 	getTotalChannelMembers: (rid: string) => queries.getTotalChannelMembers(rid),
 	getChannels: (channels: string[]) => queries.getChannels(channels),
-	async onMaxRoomMembersExceeded({ sender, rid }: { sender: IUser; rid: string }) {
+	async onMaxRoomMembersExceeded({ sender, rid }: { sender: IMessage['u']; rid: string }): Promise<void> {
 		// Get the language of the user for the error notification.
-		const { language } = await this.getUser(sender._id);
+		const { language } = (await this.getUser(sender._id)) || {};
 		const msg = i18n.t('Group_mentions_disabled_x_members', { total: this.messageMaxAll, lng: language });
 
 		void api.broadcast('notify.ephemeralMessage', sender._id, rid, {
