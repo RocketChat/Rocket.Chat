@@ -142,14 +142,14 @@ export class OTRRoom implements IOTRRoom {
 		}
 
 		this._userOnlineComputation = Tracker.autorun(() => {
-			const $room = $(`#chat-window-${this._roomId}`);
-			const $title = $('.rc-header__title', $room);
+			const $room = document.querySelector(`#chat-window-${this._roomId}`);
+			const $title = $room?.querySelector('.rc-header__title');
 			if (this.getState() === OtrRoomState.ESTABLISHED) {
-				if ($room.length && $title.length && !$('.otr-icon', $title).length) {
+				if ($room && $title && !$title.querySelector('.otr-icon')) {
 					$title.prepend("<i class='otr-icon icon-key'></i>");
 				}
-			} else if ($title.length) {
-				$('.otr-icon', $title).remove();
+			} else if ($title) {
+				$title.querySelector('.otr-icon')?.remove();
 			}
 		});
 		try {
