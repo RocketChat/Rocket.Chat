@@ -103,29 +103,23 @@ type OfflineMessageData = {
 	host?: string;
 };
 
+type UploadedFile = {
+	_id: string;
+	name?: string;
+	type?: string;
+	size?: number;
+	description?: string;
+	identify?: { size: { width: number; height: number } };
+	format?: string;
+};
+
 export interface ILivechatMessage {
 	token: string;
 	_id: string;
 	rid: string;
 	msg: string;
-	file?: {
-		_id: string;
-		name?: string;
-		type?: string;
-		size?: number;
-		description?: string;
-		identify?: { size: { width: number; height: number } };
-		format?: string;
-	};
-	files?: {
-		_id: string;
-		name?: string;
-		type?: string;
-		size?: number;
-		description?: string;
-		identify?: { size: { width: number; height: number } };
-		format?: string;
-	}[];
+	file?: UploadedFile;
+	files?: UploadedFile[];
 	attachments?: MessageAttachment[];
 	alias?: string;
 	groupable?: boolean;

@@ -21,16 +21,6 @@ import { settings } from '../../../../settings/server';
 import type { ILivechatMessage } from '../../../server/lib/LivechatTyped';
 import { Livechat as LivechatTyped } from '../../../server/lib/LivechatTyped';
 
-type UploadedFile = {
-	_id: string;
-	name?: string;
-	type?: string;
-	size?: number;
-	description?: string;
-	identify?: { size: { width: number; height: number } };
-	format?: string;
-};
-
 const logger = new Logger('SMS');
 
 const getUploadFile = async (details: Omit<IUpload, '_id'>, fileUrl: string) => {
@@ -134,7 +124,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 			await LivechatTyped.getRoom(visitor, { rid, token, msg: '' }, roomInfo, undefined);
 		}
 
-		let file: UploadedFile | undefined;
+		let file: ILivechatMessage['file'];
 		const attachments: (MessageAttachment | undefined)[] = [];
 
 		const [media] = sms?.media || [];
