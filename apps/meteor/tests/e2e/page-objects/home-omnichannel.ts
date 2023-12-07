@@ -1,6 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { HomeOmnichannelContent, HomeSidenav, HomeFlextab, OmnichannelSidenav } from './fragments';
+import { OmnichannelCannedResponses } from './omnichannel-canned-responses';
 import { OmnichannelCurrentChats } from './omnichannel-current-chats';
 import { OmnichannelTranscript } from './omnichannel-transcript';
 import { OmnichannelTriggers } from './omnichannel-triggers';
@@ -22,6 +23,8 @@ export class HomeOmnichannel {
 
 	readonly transcript: OmnichannelTranscript;
 
+	readonly cannedResponses: OmnichannelCannedResponses;
+
 	constructor(page: Page) {
 		this.page = page;
 		this.content = new HomeOmnichannelContent(page);
@@ -31,6 +34,7 @@ export class HomeOmnichannel {
 		this.omnisidenav = new OmnichannelSidenav(page);
 		this.currentChats = new OmnichannelCurrentChats(page);
 		this.transcript = new OmnichannelTranscript(page);
+		this.cannedResponses = new OmnichannelCannedResponses(page);
 	}
 
 	get toastSuccess(): Locator {
