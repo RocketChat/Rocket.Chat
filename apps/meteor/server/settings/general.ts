@@ -284,11 +284,7 @@ export const createGeneralSettings = () =>
 				public: true,
 			});
 		});
-		await this.section('Reporting', async function () {
-			return this.add('Statistics_reporting', true, {
-				type: 'boolean',
-			});
-		});
+
 		await this.section('Notifications', async function () {
 			await this.add('Notifications_Max_Room_Members', 100, {
 				type: 'int',
