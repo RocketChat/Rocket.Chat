@@ -1,7 +1,7 @@
-import type { UiKit } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
 import { MarkupInteractionContext } from '@rocket.chat/gazzodown';
+import type * as UiKit from '@rocket.chat/ui-kit';
 import React from 'react';
 import type { FormEvent } from 'react';
 

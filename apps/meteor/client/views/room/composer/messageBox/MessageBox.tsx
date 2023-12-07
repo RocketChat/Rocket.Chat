@@ -128,7 +128,7 @@ const MessageBox = ({
 	const messageComposerRef = useRef<HTMLElement>(null);
 	const shadowRef = useRef(null);
 
-	const storageID = `${room._id}${tmid ? `-${tmid}` : ''}`;
+	const storageID = `messagebox_${room._id}${tmid ? `-${tmid}` : ''}`;
 
 	const callbackRef = useCallback(
 		(node: HTMLTextAreaElement) => {

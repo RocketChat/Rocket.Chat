@@ -21,6 +21,7 @@ export const getBannerForAdmins = (expireAt: Date): Omit<IBanner, '_id'> => {
 			username: 'rocket.cat',
 		},
 		_updatedAt: new Date(),
+		surface: 'banner',
 		view: {
 			viewId: Random.id(),
 			appId: '',

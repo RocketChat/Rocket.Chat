@@ -5,7 +5,7 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import ChangePassword from './ChangePassword';
 import EndToEnd from './EndToEnd';
@@ -39,8 +39,8 @@ const AccountSecurityPage = (): ReactElement => {
 
 	return (
 		<Page>
-			<Page.Header title={t('Security')} />
-			<Page.ScrollableContentWithShadow>
+			<PageHeader title={t('Security')} />
+			<PageScrollableContentWithShadow>
 				<Box maxWidth='x600' w='full' alignSelf='center' color='default'>
 					<FormProvider {...methods}>
 						<Accordion>
@@ -68,15 +68,15 @@ const AccountSecurityPage = (): ReactElement => {
 						)}
 					</Accordion>
 				</Box>
-			</Page.ScrollableContentWithShadow>
-			<Page.Footer isDirty={isDirty}>
+			</PageScrollableContentWithShadow>
+			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
 					<Button onClick={() => reset(passwordDefaultValues)}>{t('Cancel')}</Button>
 					<Button form={passwordFormId} primary disabled={!isDirty} type='submit'>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>
-			</Page.Footer>
+			</PageFooter>
 		</Page>
 	);
 };

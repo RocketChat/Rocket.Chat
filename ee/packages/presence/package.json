@@ -1,19 +1,19 @@
 {
 	"name": "@rocket.chat/presence",
-	"version": "0.1.0-rc.7",
+	"version": "0.1.0",
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.22.20",
 		"@babel/preset-env": "~7.22.20",
 		"@babel/preset-typescript": "~7.22.15",
-		"@rocket.chat/apps-engine": "1.41.0-alpha.290",
+		"@rocket.chat/apps-engine": "1.41.0",
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@types/node": "^14.18.63",
 		"babel-jest": "^29.0.3",
 		"eslint": "~8.45.0",
 		"jest": "~29.6.4",
-		"typescript": "~5.2.2"
+		"typescript": "~5.3.2"
 	},
 	"scripts": {
 		"lint": "eslint src",

@@ -4,7 +4,7 @@ import type { ReactElement } from 'react';
 import React, { useCallback, useRef } from 'react';
 
 import { Contextualbar, ContextualbarHeader, ContextualbarClose } from '../../../components/Contextualbar';
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import AddCustomEmoji from './AddCustomEmoji';
 import CustomEmoji from './CustomEmoji';
@@ -45,14 +45,14 @@ const CustomEmojiRoute = (): ReactElement => {
 	return (
 		<Page flexDirection='row'>
 			<Page name='admin-emoji-custom'>
-				<Page.Header title={t('Emoji')}>
+				<PageHeader title={t('Emoji')}>
 					<Button primary onClick={handleAddEmoji} aria-label={t('New')}>
 						{t('New')}
 					</Button>
-				</Page.Header>
-				<Page.Content>
+				</PageHeader>
+				<PageContent>
 					<CustomEmoji reload={reload} onClick={handleItemClick} />
-				</Page.Content>
+				</PageContent>
 			</Page>
 			{context && (
 				<Contextualbar flexShrink={0}>

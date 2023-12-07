@@ -1,17 +1,6 @@
-import {
-	useTranslation,
-	useRoute,
-	useSetModal,
-	useRole,
-	useRouter,
-	useAtLeastOnePermission,
-	usePermission,
-} from '@rocket.chat/ui-contexts';
-import React from 'react';
+import { useTranslation, useRoute, useRouter, useAtLeastOnePermission, usePermission } from '@rocket.chat/ui-contexts';
 
 import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
-import { useRegistrationStatus } from '../../../../hooks/useRegistrationStatus';
-import RegisterWorkspaceModal from '../../../../views/admin/cloud/modals/RegisterWorkspaceModal';
 
 const ADMIN_PERMISSIONS = [
 	'view-statistics',
@@ -53,18 +42,7 @@ export const useAdministrationItems = (): GenericMenuItemProps[] => {
 
 	const shouldShowAdminMenu = useAtLeastOnePermission(ADMIN_PERMISSIONS);
 
-	const isAdmin = useRole('admin');
-	const setModal = useSetModal();
-
-	const { isRegistered } = useRegistrationStatus();
-
-	const handleRegisterWorkspaceClick = (): void => {
-		const handleModalClose = (): void => setModal(null);
-		setModal(<RegisterWorkspaceModal onClose={handleModalClose} />);
-	};
-
 	const adminRoute = useRoute('admin-index');
-	const cloudRoute = useRoute('cloud');
 
 	const omnichannel = usePermission('view-livechat-manager');
 
@@ -75,18 +53,6 @@ export const useAdministrationItems = (): GenericMenuItemProps[] => {
 		onClick: () => router.navigate('/omnichannel/current'),
 	};
 
-	const adminItem: GenericMenuItemProps = {
-		id: 'registration',
-		content: isRegistered ? t('Registration') : t('Register'),
-		icon: 'cloud-plus',
-		onClick: () => {
-			if (isRegistered) {
-				cloudRoute.push({ context: '/' });
-				return;
-			}
-			handleRegisterWorkspaceClick();
-		},
-	};
 	const workspaceItem: GenericMenuItemProps = {
 		id: 'workspace',
 		content: t('Workspace'),
@@ -96,7 +62,5 @@ export const useAdministrationItems = (): GenericMenuItemProps[] => {
 		},
 	};
 
-	return [shouldShowAdminMenu && workspaceItem, isAdmin && adminItem, omnichannel && omnichannelItem].filter(
-		Boolean,
-	) as GenericMenuItemProps[];
+	return [shouldShowAdminMenu && workspaceItem, omnichannel && omnichannelItem].filter(Boolean) as GenericMenuItemProps[];
 };
