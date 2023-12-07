@@ -83,6 +83,7 @@ const normalizeLocationSharing = (payload: ServiceData) => {
 	};
 };
 
+// @ts-expect-error - this is an special endpoint that requires the return to not be wrapped as regular returns
 API.v1.addRoute('livechat/sms-incoming/:service', {
 	async post() {
 		if (!(await OmnichannelIntegration.isConfiguredSmsService(this.urlParams.service))) {
@@ -260,9 +261,9 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 				}
 			});
 
-			return API.v1.success(msg);
+			return msg;
 		} catch (e: any) {
-			return API.v1.success(SMSService.error(e));
+			return SMSService.error(e);
 		}
 	},
 });
