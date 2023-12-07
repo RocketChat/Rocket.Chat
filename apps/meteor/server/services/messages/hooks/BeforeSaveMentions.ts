@@ -72,7 +72,7 @@ export const mentionServer = new MentionsServer({
 	async onMaxRoomMembersExceeded({ sender, rid }: { sender: IMessage['u']; rid: string }): Promise<void> {
 		// Get the language of the user for the error notification.
 		const { language } = (await this.getUser(sender._id)) || {};
-		const msg = i18n.t('Group_mentions_disabled_x_members', { total: this.messageMaxAll, lng: language });
+		const msg = i18n.t('Group_mentions_disabled_x_members', { total: this.messageMaxAll(), lng: language });
 
 		void api.broadcast('notify.ephemeralMessage', sender._id, rid, {
 			msg,

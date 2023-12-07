@@ -45,7 +45,7 @@ export class MentionsServer extends MentionsParser {
 
 	async getUsersByMentions({ msg, rid, u: sender }: Pick<IMessage, 'msg' | 'rid' | 'u'>): Promise<IMessage['mentions']> {
 		const mentions = this.getUserMentions(msg);
-		const mentionsAll: IMessage['mentions'] = [];
+		const mentionsAll: { _id: string; username: string }[] = [];
 		const userMentions = [];
 
 		for await (const m of mentions) {
@@ -59,7 +59,6 @@ export class MentionsServer extends MentionsParser {
 				continue;
 			}
 			mentionsAll.push({
-				type: 'user',
 				_id: mention,
 				username: mention,
 			});
