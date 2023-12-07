@@ -30,6 +30,10 @@ const WorkspaceRoute = (): ReactElement => {
 		statisticsQuery.refetch();
 	};
 
+	const handleClickDownloadInfo = (): void => {
+		downloadJsonAs(statisticsQuery.data, 'statistics');
+	};
+
 	if (serverInfoQuery.isError || instancesQuery.isError || statisticsQuery.isError) {
 		return (
 			<Page>
@@ -46,10 +50,6 @@ const WorkspaceRoute = (): ReactElement => {
 			</Page>
 		);
 	}
-
-	const handleClickDownloadInfo = (): void => {
-		downloadJsonAs(statisticsQuery.data, 'statistics');
-	};
 
 	return (
 		<WorkspacePage

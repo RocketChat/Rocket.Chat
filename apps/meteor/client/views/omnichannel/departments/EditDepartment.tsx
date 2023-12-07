@@ -232,14 +232,11 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 						onSubmit={handleSubmit(handleSave)}
 					>
 						<Field>
-							<Box display='flex' data-qa='DepartmentEditToggle-Enabled' flexDirection='row'>
-								<FieldLabel>{t('Enabled')}</FieldLabel>
-								<FieldRow>
-									<ToggleSwitch flexGrow={1} {...register('enabled')} />
-								</FieldRow>
-							</Box>
+							<FieldLabel>{t('Enabled')}</FieldLabel>
+							<FieldRow>
+								<ToggleSwitch {...register('enabled')} />
+							</FieldRow>
 						</Field>
-
 						<Field>
 							<FieldLabel>{t('Name')}*</FieldLabel>
 							<FieldRow>
@@ -253,30 +250,20 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 							</FieldRow>
 							{errors.name && <FieldError>{errors.name?.message}</FieldError>}
 						</Field>
-
 						<Field>
 							<FieldLabel>{t('Description')}</FieldLabel>
 							<FieldRow>
-								<TextAreaInput
-									data-qa='DepartmentEditTextInput-Description'
-									flexGrow={1}
-									placeholder={t('Description')}
-									{...register('description')}
-								/>
+								<TextAreaInput data-qa='DepartmentEditTextInput-Description' placeholder={t('Description')} {...register('description')} />
 							</FieldRow>
 						</Field>
-
-						<Field>
-							<Box data-qa='DepartmentEditToggle-ShowOnRegistrationPage' display='flex' flexDirection='row'>
+						<Field data-qa='DepartmentEditToggle-ShowOnRegistrationPage'>
+							<FieldRow>
 								<FieldLabel>{t('Show_on_registration_page')}</FieldLabel>
-								<FieldRow>
-									<ToggleSwitch flexGrow={1} {...register('showOnRegistration')} />
-								</FieldRow>
-							</Box>
+								<ToggleSwitch {...register('showOnRegistration')} />
+							</FieldRow>
 						</Field>
-
 						<Field>
-							<FieldLabel>{t('Email')}*</FieldLabel>
+							<FieldLabel required>{t('Email')}</FieldLabel>
 							<FieldRow>
 								<TextInput
 									data-qa='DepartmentEditTextInput-Email'
@@ -292,16 +279,12 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 							</FieldRow>
 							{errors.email && <FieldError>{errors.email?.message}</FieldError>}
 						</Field>
-
-						<Field>
-							<Box display='flex' data-qa='DepartmentEditToggle-ShowOnOfflinePage' flexDirection='row'>
+						<Field data-qa='DepartmentEditToggle-ShowOnOfflinePage'>
+							<FieldRow>
 								<FieldLabel>{t('Show_on_offline_page')}</FieldLabel>
-								<FieldRow>
-									<ToggleSwitch flexGrow={1} {...register('showOnOfflineForm')} />
-								</FieldRow>
-							</Box>
+								<ToggleSwitch {...register('showOnOfflineForm')} />
+							</FieldRow>
 						</Field>
-
 						<Field>
 							<FieldLabel>{t('Livechat_DepartmentOfflineMessageToChannel')}</FieldLabel>
 							<FieldRow>
@@ -327,7 +310,6 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								/>
 							</FieldRow>
 						</Field>
-
 						<Field>
 							<Controller
 								control={control}
@@ -342,7 +324,6 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								)}
 							/>
 						</Field>
-
 						<Field>
 							<Controller
 								control={control}
@@ -357,7 +338,6 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								)}
 							/>
 						</Field>
-
 						<Field>
 							<Controller
 								control={control}
@@ -372,7 +352,6 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								)}
 							/>
 						</Field>
-
 						<Field>
 							<Controller
 								control={control}
@@ -382,7 +361,6 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								)}
 							/>
 						</Field>
-
 						{DepartmentForwarding && (
 							<Field>
 								<Controller
@@ -399,7 +377,6 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								/>
 							</Field>
 						)}
-
 						{hasLicense && (
 							<Field>
 								<FieldLabel>{t('Fallback_forward_department')}</FieldLabel>
@@ -419,23 +396,21 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								/>
 							</Field>
 						)}
-
-						<Field>
-							<Box display='flex' data-qa='DiscussionToggle-RequestTagBeforeCLosingChat' flexDirection='row'>
+						<Field data-qa='DiscussionToggle-RequestTagBeforeCLosingChat'>
+							<FieldRow>
 								<FieldLabel>{t('Request_tag_before_closing_chat')}</FieldLabel>
-								<FieldRow>
-									<ToggleSwitch
-										data-qa='DiscussionToggle-RequestTagBeforeCLosingChat'
-										flexGrow={1}
-										{...register('requestTagBeforeClosingChat')}
-									/>
-								</FieldRow>
-							</Box>
+								<ToggleSwitch
+									data-qa='DiscussionToggle-RequestTagBeforeCLosingChat'
+									flexGrow={1}
+									{...register('requestTagBeforeClosingChat')}
+								/>
+							</FieldRow>
 						</Field>
-
 						{requestTagBeforeClosingChat && (
 							<Field>
-								<FieldLabel alignSelf='stretch'>{t('Conversation_closing_tags')}*</FieldLabel>
+								<FieldLabel alignSelf='stretch' required>
+									{t('Conversation_closing_tags')}
+								</FieldLabel>
 								<Controller
 									control={control}
 									name='chatClosingTags'
@@ -447,11 +422,9 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								{errors.chatClosingTags && <FieldError>{errors.chatClosingTags?.message}</FieldError>}
 							</Field>
 						)}
-
 						<Field>
 							<DepartmentBusinessHours bhId={department?.businessHourId} />
 						</Field>
-
 						<Divider mb={16} />
 						<Field>
 							<FieldLabel mb={4}>{t('Agents')}:</FieldLabel>

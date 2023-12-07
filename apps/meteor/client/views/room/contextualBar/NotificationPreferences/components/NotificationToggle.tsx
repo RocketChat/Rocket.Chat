@@ -1,4 +1,4 @@
-import { Box, Field, FieldLabel, FieldDescription, FieldGroup, ToggleSwitch } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldDescription, FieldGroup, ToggleSwitch, FieldRow } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
@@ -16,13 +16,11 @@ const NotificationToggle = ({ label, description, onChange, defaultChecked }: No
 	return (
 		<FieldGroup>
 			<Field>
-				<Box display='flex' justifyContent='space-between' alignItems='start'>
-					<Box display='flex' flexDirection='column'>
-						<FieldLabel htmlFor={fieldId}>{label}</FieldLabel>
-						{description && <FieldDescription id={`${fieldId}-hint`}>{description}</FieldDescription>}
-					</Box>
+				<FieldRow>
+					<FieldLabel htmlFor={fieldId}>{label}</FieldLabel>
 					<ToggleSwitch id={fieldId} aria-describedby={`${fieldId}-hint`} onChange={onChange} defaultChecked={defaultChecked} />
-				</Box>
+				</FieldRow>
+				{description && <FieldDescription id={`${fieldId}-hint`}>{description}</FieldDescription>}
 			</Field>
 		</FieldGroup>
 	);

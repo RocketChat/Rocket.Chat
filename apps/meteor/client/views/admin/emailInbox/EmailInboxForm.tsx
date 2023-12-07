@@ -173,8 +173,8 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 					<Accordion.Item defaultExpanded title={t('Inbox_Info')}>
 						<FieldGroup>
 							<Field>
-								<FieldLabel display='flex' justifyContent='space-between' w='full'>
-									{t('Active')}
+								<FieldRow>
+									<FieldLabel>{t('Active')}</FieldLabel>
 									<Controller
 										control={control}
 										name='active'
@@ -182,7 +182,7 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 											<ToggleSwitch ref={ref} checked={value} onChange={onChange} />
 										)}
 									/>
-								</FieldLabel>
+								</FieldRow>
 							</Field>
 							<Field>
 								<FieldLabel>{t('Name')}*</FieldLabel>
@@ -276,8 +276,8 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 								{errors.smtpPassword && <FieldError>{errors.smtpPassword?.message}</FieldError>}
 							</Field>
 							<Field>
-								<FieldLabel display='flex' justifyContent='space-between' w='full'>
-									{t('Connect_SSL_TLS')}
+								<FieldRow>
+									<FieldLabel>{t('Connect_SSL_TLS')}</FieldLabel>
 									<Controller
 										control={control}
 										name='smtpSecure'
@@ -285,7 +285,7 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 											<ToggleSwitch ref={ref} checked={value} onChange={onChange} />
 										)}
 									/>
-								</FieldLabel>
+								</FieldRow>
 							</Field>
 						</FieldGroup>
 					</Accordion.Item>
@@ -342,8 +342,8 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 								{errors.imapRetries && <FieldError>{errors.imapRetries?.message}</FieldError>}
 							</Field>
 							<Field>
-								<FieldLabel display='flex' justifyContent='space-between' w='full'>
-									{t('Connect_SSL_TLS')}
+								<FieldRow>
+									<FieldLabel>{t('Connect_SSL_TLS')}</FieldLabel>
 									<Controller
 										control={control}
 										name='imapSecure'
@@ -351,7 +351,7 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 											<ToggleSwitch ref={ref} checked={value} onChange={onChange} />
 										)}
 									/>
-								</FieldLabel>
+								</FieldRow>
 							</Field>
 						</FieldGroup>
 					</Accordion.Item>

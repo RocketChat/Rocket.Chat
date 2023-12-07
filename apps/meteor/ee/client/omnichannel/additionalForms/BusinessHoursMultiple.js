@@ -1,4 +1,4 @@
-import { Field, TextInput, ToggleSwitch, Box } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, TextInput, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
@@ -14,24 +14,22 @@ const BusinessHoursMultiple = ({ values = {}, handlers = {}, className }) => {
 	return (
 		<>
 			<Field className={className}>
-				<Box display='flex' flexDirection='row'>
-					<Field.Label>{t('Enabled')}</Field.Label>
-					<Field.Row>
-						<ToggleSwitch checked={active} onChange={handleActive} />
-					</Field.Row>
-				</Box>
+				<FieldRow>
+					<FieldLabel>{t('Enabled')}</FieldLabel>
+					<ToggleSwitch checked={active} onChange={handleActive} />
+				</FieldRow>
 			</Field>
 			<Field className={className}>
-				<Field.Label>{t('Name')}*</Field.Label>
-				<Field.Row>
+				<FieldLabel required>{t('Name')}</FieldLabel>
+				<FieldRow>
 					<TextInput value={name} onChange={handleName} placeholder={t('Name')} />
-				</Field.Row>
+				</FieldRow>
 			</Field>
 			<Field className={className}>
-				<Field.Label>{t('Departments')}</Field.Label>
-				<Field.Row>
+				<FieldLabel>{t('Departments')}</FieldLabel>
+				<FieldRow>
 					<AutoCompleteDepartmentMultiple value={departments} onChange={handleDepartments} enabled={true} />
-				</Field.Row>
+				</FieldRow>
 			</Field>
 		</>
 	);

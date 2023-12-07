@@ -31,18 +31,11 @@ function BooleanSettingInput({
 
 	return (
 		<FieldRow marginBlockEnd={8}>
-			<ToggleSwitch
-				data-qa-setting-id={_id}
-				id={_id}
-				value='true'
-				checked={value === true}
-				disabled={disabled || readonly}
-				onChange={handleChange}
-			/>
 			<FieldLabel htmlFor={_id} title={_id}>
 				{label}
 			</FieldLabel>
-			{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+			<ToggleSwitch data-qa-setting-id={_id} id={_id} checked={value === true} disabled={disabled || readonly} onChange={handleChange} />
+			{hasResetButton && <ResetSettingButton mis={8} data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
 		</FieldRow>
 	);
 }
