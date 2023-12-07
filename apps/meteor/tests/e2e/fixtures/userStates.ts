@@ -99,9 +99,11 @@ export async function restoreState(page: Page, user: IUserState, options: { exce
 		ls = ls.filter(({ name }) => !options.except?.includes(name));
 	}
 
-	return page.evaluate((items) => {
+	await page.evaluate((items) => {
 		items.forEach(({ name, value }) => {
 			window.localStorage.setItem(name, value);
 		});
 	}, ls);
+
+	await page.waitForTimeout(2000); // Wait for the login to be completed
 }

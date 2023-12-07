@@ -3,7 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useRef, useMemo, useState } from 'react';
 
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import PageSkeleton from '../../../components/PageSkeleton';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
@@ -91,19 +91,19 @@ const EditBusinessHoursPage = ({ id, type }) => {
 	if (state === AsyncStatePhase.REJECTED || (AsyncStatePhase.RESOLVED && !data.businessHour)) {
 		return (
 			<Page>
-				<Page.Header title={t('Business_Hours')}>
+				<PageHeader title={t('Business_Hours')}>
 					<Button onClick={handleReturn}>{t('Back')}</Button>
-				</Page.Header>
-				<Page.ScrollableContentWithShadow>
+				</PageHeader>
+				<PageScrollableContentWithShadow>
 					<Callout type='danger'>{t('Error')}</Callout>
-				</Page.ScrollableContentWithShadow>
+				</PageScrollableContentWithShadow>
 			</Page>
 		);
 	}
 
 	return (
 		<Page>
-			<Page.Header title={t('Business_Hours')}>
+			<PageHeader title={t('Business_Hours')}>
 				<ButtonGroup>
 					{!isSingleBH && <Button onClick={handleReturn}>{t('Back')}</Button>}
 					{type === 'custom' && (
@@ -115,10 +115,10 @@ const EditBusinessHoursPage = ({ id, type }) => {
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
-			</Page.Header>
-			<Page.ScrollableContentWithShadow>
+			</PageHeader>
+			<PageScrollableContentWithShadow>
 				<BusinessHoursFormContainer data={data.businessHour} saveRef={saveData} onChange={setHasChanges} />
-			</Page.ScrollableContentWithShadow>
+			</PageScrollableContentWithShadow>
 		</Page>
 	);
 };

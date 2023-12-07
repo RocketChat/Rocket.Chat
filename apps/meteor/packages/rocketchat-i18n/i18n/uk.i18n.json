@@ -3349,6 +3349,7 @@
   "registration.component.form.confirmPassword": "Підтвердити новий пароль",
   "registration.component.form.sendConfirmationEmail": "Надіслати електронною поштою підтвердження",
   "onboarding.form.registerOfflineForm.title": "Реєстрація вручну",
+  "Enterprise": "Підприємство",
   "UpgradeToGetMore_engagement-dashboard_Title": "Аналітика",
   "UpgradeToGetMore_auditing_Title": "Аудит повідомлень"
 }

@@ -14,10 +14,15 @@ import {
 	onToggledFeature,
 	onValidFeature,
 	onValidateLicense,
+	onInstall,
+	onInvalidate,
+	onRemoveLicense,
 } from './events/listeners';
 import { overwriteClassOnLicense } from './events/overwriteClassOnLicense';
 import { LicenseManager } from './license';
+import { logger } from './logger';
 import { getModules, hasModule } from './modules';
+import { showLicense } from './showLicense';
 import { getTags } from './tags';
 import { getCurrentValueForLicenseLimit, setLicenseLimitCounter } from './validation/getCurrentValueForLicenseLimit';
 import { validateFormat } from './validation/validateFormat';
@@ -32,6 +37,7 @@ export * from './definition/LicenseLimit';
 export * from './definition/LicenseModule';
 export * from './definition/LicensePeriod';
 export * from './definition/LimitContext';
+export * from './MockedLicenseBuilder';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 interface License {
@@ -66,6 +72,31 @@ interface License {
 }
 
 export class LicenseImp extends LicenseManager implements License {
+	constructor() {
+		super();
+		this.onValidateLicense(() => showLicense.call(this, this.getLicense(), this.hasValidLicense()));
+
+		this.onValidateLicense(() => {
+			logger.startup({
+				msg: 'License installed',
+				version: this.getLicense()?.version,
+				hash: this._lockedLicense?.slice(-8),
+			});
+		});
+
+		this.onRemoveLicense(() => {
+			logger.startup({
+				msg: 'License removed',
+			});
+		});
+
+		this.onInvalidateLicense(() => {
+			logger.startup({
+				msg: 'License invalidated',
+			});
+		});
+	}
+
 	validateFormat = validateFormat;
 
 	hasModule = hasModule;
@@ -85,6 +116,12 @@ export class LicenseImp extends LicenseManager implements License {
 	}
 
 	onChange = onChange;
+
+	onInstall = onInstall;
+
+	onRemoveLicense = onRemoveLicense;
+
+	onInvalidate = onInvalidate;
 
 	onValidFeature = onValidFeature;
 

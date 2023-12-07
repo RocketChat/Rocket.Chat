@@ -1,5 +1,8 @@
 import { Importers } from '../../importer/server';
-import { SlackImporterInfo } from '../lib/info';
-import { SlackImporter } from './importer';
+import { SlackImporter } from './SlackImporter';
 
-Importers.add(new SlackImporterInfo(), SlackImporter);
+Importers.add({
+	key: 'slack',
+	name: 'Slack',
+	importer: SlackImporter,
+});
