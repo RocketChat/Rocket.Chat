@@ -1,5 +1,4 @@
 import { useUserRoom, useTranslation } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
 
 import { messageBox } from '../../../../../../../app/ui-utils/client';
 import { isTruthy } from '../../../../../../../lib/isTruthy';
@@ -35,13 +34,11 @@ export const useToolbarActions = ({ canSend, typing, isRecording, isMicrophoneDe
 
 	const apps = useMessageboxAppsActionButtons();
 
-	const result = useQuery(['composer-toolbar', rid, variant], () => {
+	const data = (() => {
 		const actions: { featured: Array<ToolbarAction>; menu: Array<ToolbarAction | string> } = {
 			featured: [],
 			menu: ['Create_new', createDiscussionAction],
 		};
-
-		console.log('variant', variant);
 
 		if (variant === 'small') {
 			actions.featured.push(audioMessageAction);
@@ -75,9 +72,7 @@ export const useToolbarActions = ({ canSend, typing, isRecording, isMicrophoneDe
 
 		actions.menu.push(...messageBoxActions);
 		return actions;
-	});
+	})();
 
-	console.log('data', result.data);
-
-	return result;
+	return data;
 };

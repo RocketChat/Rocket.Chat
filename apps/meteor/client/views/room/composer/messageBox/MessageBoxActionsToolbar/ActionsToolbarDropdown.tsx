@@ -58,6 +58,7 @@ const ActionsToolbarDropdown = ({ actions, isRecording, rid, tmid, ...props }: A
 									})
 								}
 								gap={!option.icon}
+								disabled={option.disabled}
 							>
 								{option.icon && <OptionIcon name={option.icon as ComponentProps<typeof OptionIcon>['name']} />}
 								<OptionContent>{option.label}</OptionContent>

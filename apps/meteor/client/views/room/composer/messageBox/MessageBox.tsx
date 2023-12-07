@@ -38,10 +38,7 @@ import { useRoom } from '../../contexts/RoomContext';
 import ComposerUserActionIndicator from '../ComposerUserActionIndicator';
 import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
-// import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
-import MessageBoxActionsToolbarBuilder from './MessageBoxActionsToolbar/MessageBoxActionsToolbarBuilder';
-import { useToolbarActions } from './MessageBoxActionsToolbar/hooks/useToolbarActions';
-// TODO fix index for this \/
+import MessageBoxActionsToolbarBuilder from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxReplies from './MessageBoxReplies';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
@@ -349,18 +346,6 @@ const MessageBox = ({
 
 	const shouldPopupPreview = useEnablePopupPreview(filter, popup);
 
-	// const { messageToolbox: hiddenActions } = useLayoutHiddenActions();
-
-	const { data: actions, isSuccess } = useToolbarActions({
-		canSend,
-		typing,
-		isRecording,
-		isMicrophoneDenied: Boolean(isMicrophoneDenied),
-		rid: room._id,
-		tmid,
-		variant: sizes.inlineSize < 480 ? 'small' : 'large',
-	});
-
 	return (
 		<>
 			{chat.composer?.quotedMessages && <MessageBoxReplies />}
@@ -426,17 +411,15 @@ const MessageBox = ({
 								disabled={isRecording || !canSend}
 							/>
 						)}
-						<MessageComposerActionsDivider />
-						{/* <MessageBoxActionsToolbar
-							variant={sizes.inlineSize < 480 ? 'small' : 'large'}
-							isRecording={isRecording}
-							typing={typing}
+						<MessageBoxActionsToolbarBuilder
 							canSend={canSend}
+							typing={typing}
+							isMicrophoneDenied={isMicrophoneDenied}
 							rid={room._id}
 							tmid={tmid}
-							isMicrophoneDenied={isMicrophoneDenied}
-						/> */}
-						{isSuccess && <MessageBoxActionsToolbarBuilder rid={room._id} tmid={tmid} isRecording={isRecording} actions={actions} />}
+							isRecording={isRecording}
+							variant={sizes.inlineSize < 480 ? 'small' : 'large'}
+						/>
 					</MessageComposerToolbarActions>
 					<MessageComposerToolbarSubmit>
 						{!canSend && (

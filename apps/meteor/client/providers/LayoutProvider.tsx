@@ -46,7 +46,7 @@ const messageToolbox = [
 	'delete-message',
 ];
 
-const composerToolbox = ['video', 'audio', 'attachment', 'discussion', 'webdav', 'location', 'apps'];
+const composerToolbox = ['video-message' /* 'audio-message' */, 'file-upload', /* 'create-discussion', */ 'webdav-add', 'share-location'];
 
 const LayoutProvider: FC = ({ children }) => {
 	const showTopNavbarEmbeddedLayout = Boolean(useSetting('UI_Show_top_navbar_embedded_layout'));
