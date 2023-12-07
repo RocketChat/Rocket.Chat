@@ -19,7 +19,6 @@ import type {
 	VideoConferenceCapabilities,
 	VideoConferenceCreateData,
 	Optional,
-	UiKit,
 } from '@rocket.chat/core-typings';
 import {
 	VideoConferenceStatus,
@@ -29,7 +28,7 @@ import {
 } from '@rocket.chat/core-typings';
 import { Users, VideoConference as VideoConferenceModel, Rooms, Messages, Subscriptions } from '@rocket.chat/models';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
-import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
+import type * as UiKit from '@rocket.chat/ui-kit';
 import { MongoInternals } from 'meteor/mongo';
 
 import { RocketChatAssets } from '../../../app/assets/server';
@@ -49,6 +48,7 @@ import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { i18n } from '../../lib/i18n';
 import { videoConfProviders } from '../../lib/videoConfProviders';
 import { videoConfTypes } from '../../lib/videoConfTypes';
+import { broadcastMessageSentEvent } from '../../modules/watchers/lib/messages';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -326,6 +326,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				(settings.get<boolean>('UI_Use_Real_Name') ? call.createdBy.name : call.createdBy.username) || call.createdBy.username || '';
 			const text = i18n.t('video_livechat_missed', { username: name });
 			await Messages.setBlocksById(call.messages.started, [this.buildMessageBlock(text)]);
+
+			await broadcastMessageSentEvent({
+				id: call.messages.started,
+				broadcastCallback: (message) => api.broadcast('message.sent', message),
+			});
 		}
 
 		await VideoConferenceModel.setDataById(call._id, {
@@ -571,7 +576,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		]);
 	}
 
-	private buildVideoConfBlock(callId: string): MessageSurfaceLayout[number] {
+	private buildVideoConfBlock(callId: string): UiKit.MessageSurfaceLayout[number] {
 		return {
 			type: 'video_conf',
 			blockId: callId,
@@ -580,7 +585,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		};
 	}
 
-	private buildMessageBlock(text: string): MessageSurfaceLayout[number] {
+	private buildMessageBlock(text: string): UiKit.MessageSurfaceLayout[number] {
 		return {
 			type: 'section',
 			appId: 'videoconf-core',

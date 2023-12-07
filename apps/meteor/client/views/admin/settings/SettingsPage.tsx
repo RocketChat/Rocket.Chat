@@ -6,7 +6,7 @@ import type { ReactElement } from 'react';
 import React, { useCallback, useState } from 'react';
 
 import GenericNoResults from '../../../components/GenericNoResults';
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import PageBlockWithBorder from '../../../components/Page/PageBlockWithBorder';
 import SettingsGroupCard from './SettingsGroupCard';
 import { useSettingsGroups } from './hooks/useSettingsGroups';
@@ -21,13 +21,11 @@ const SettingsPage = (): ReactElement => {
 
 	return (
 		<Page background='tint'>
-			<Page.Header title={t('Settings')} borderBlockEndColor='' />
-
+			<PageHeader title={t('Settings')} borderBlockEndColor='' />
 			<PageBlockWithBorder>
 				<SearchInput value={filter} placeholder={t('Search')} onChange={handleChange} addon={<Icon name='magnifier' size='x20' />} />
 			</PageBlockWithBorder>
-
-			<Page.ScrollableContentWithShadow p='0'>
+			<PageScrollableContentWithShadow p='0'>
 				{isLoadingGroups && <Skeleton />}
 				<Grid mi={16} mbe={18}>
 					{!isLoadingGroups &&
@@ -43,7 +41,7 @@ const SettingsPage = (): ReactElement => {
 						))}
 				</Grid>
 				{!isLoadingGroups && !groups.length && <GenericNoResults />}
-			</Page.ScrollableContentWithShadow>
+			</PageScrollableContentWithShadow>
 		</Page>
 	);
 };

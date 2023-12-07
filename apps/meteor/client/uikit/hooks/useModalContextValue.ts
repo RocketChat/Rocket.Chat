@@ -1,6 +1,6 @@
-import type { UiKit } from '@rocket.chat/core-typings';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import type { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
+import type * as UiKit from '@rocket.chat/ui-kit';
 import type { Dispatch } from 'react';
 import { useMemo, type ContextType } from 'react';
 

@@ -1,10 +1,10 @@
 import { faker } from '@faker-js/faker';
 
 import { IS_EE } from '../config/constants';
-import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
-import { HomeChannel, OmnichannelLiveChat } from '../page-objects';
+import { HomeChannel } from '../page-objects';
 import { OmnichannelRoomInfo } from '../page-objects/omnichannel-room-info';
+import { createConversation } from '../utils/omnichannel/rooms';
 import { test, expect } from '../utils/test';
 
 const NEW_USER = {
@@ -19,7 +19,7 @@ test.skip(!IS_EE, 'Omnichannel Priorities > Enterprise Only');
 
 test.use({ storageState: Users.user1.state });
 
-test.describe.serial('Omnichannel Priorities [Sidebar]', () => {
+test.describe.serial('OC - Priorities [Sidebar]', () => {
 	let poHomeChannel: HomeChannel;
 	let poRoomInfo: OmnichannelRoomInfo;
 
@@ -34,13 +34,17 @@ test.describe.serial('Omnichannel Priorities [Sidebar]', () => {
 	});
 
 	test.beforeEach(async ({ page }) => {
+		poHomeChannel = new HomeChannel(page);
+		poRoomInfo = new OmnichannelRoomInfo(page);
+	});
+
+	test.beforeEach(async ({ page }) => {
 		await page.goto('/');
 		await page.locator('.main-content').waitFor();
 	});
 
-	test.beforeEach(async ({ page }) => {
-		poHomeChannel = new HomeChannel(page);
-		poRoomInfo = new OmnichannelRoomInfo(page);
+	test.beforeEach(async ({ api }) => {
+		await createConversation(api, { visitorName: NEW_USER.name });
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -53,22 +57,11 @@ test.describe.serial('Omnichannel Priorities [Sidebar]', () => {
 		).every((res) => expect(res.status()).toBe(200));
 	});
 
-	test('Priority updates with sidebar', async ({ browser, api }) => {
+	test('OC - Priorities [Sidebar] - Update conversation priority', async ({ page }) => {
 		const systemMessage = poHomeChannel.content.lastSystemMessageBody;
+		await page.emulateMedia({ reducedMotion: 'reduce' });
 
-		await test.step('Initiate conversation', async () => {
-			const poLivechat = await createAuxContext(browser, Users.user1, '/livechat', false).then(
-				({ page }) => new OmnichannelLiveChat(page, api),
-			);
-			await poLivechat.openLiveChat();
-			await poLivechat.sendMessage(NEW_USER, false);
-			await poLivechat.onlineAgentMessage.type('this_a_test_message_from_visitor');
-			await poLivechat.btnSendMessageToOnlineAgent.click();
-			await poHomeChannel.sidenav.getSidebarItemByName(NEW_USER.name).click();
-			await poLivechat.page.close();
-		});
-
-		await test.step('Queue: Sidebar priority change', async () => {
+		await test.step('expect to change inquiry priority using sidebar menu', async () => {
 			await poHomeChannel.sidenav.getSidebarItemByName(NEW_USER.name).click();
 
 			await expect(poRoomInfo.getLabel('Priority')).not.toBeVisible();
@@ -88,9 +81,10 @@ test.describe.serial('Omnichannel Priorities [Sidebar]', () => {
 			await expect(poRoomInfo.getInfo('Unprioritized')).not.toBeVisible();
 		});
 
-		await test.step('Subscription: Sidebar priority change', async () => {
+		await test.step('expect to change subscription priority using sidebar menu', async () => {
 			await poHomeChannel.content.takeOmnichannelChatButton.click();
 			await systemMessage.locator('text="joined the channel"').waitFor();
+			await page.waitForTimeout(500);
 
 			await expect(poRoomInfo.getLabel('Priority')).not.toBeVisible();
 

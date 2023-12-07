@@ -99,6 +99,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 
 	const handleUpdateRoomData = useMutableCallback(async ({ hideSysMes, ...formData }) => {
 		const data = getDirtyFields(formData, dirtyFields);
+		delete data.archived;
 
 		try {
 			await saveAction({
