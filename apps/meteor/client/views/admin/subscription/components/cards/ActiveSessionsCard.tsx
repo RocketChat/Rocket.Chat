@@ -55,7 +55,7 @@ const ActiveSessionsCard = (): ReactElement => {
 				}),
 			}}
 		>
-			<Box textAlign='center'>
+			<Box w='full'>
 				<Box fontScale='h1' color={exceedLimit ? 'font-danger' : 'font-default'}>
 					{used} / {total}
 				</Box>

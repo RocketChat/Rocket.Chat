@@ -1,6 +1,6 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Box, CardCol, CardControls } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import { CardCol, CardColSection, CardFooter, FramedIcon } from '@rocket.chat/ui-client';
+import { FramedIcon } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -76,7 +76,7 @@ const FeaturesCard = ({ activeModules, isEnterprise }: FeaturesCardProps): React
 
 	return (
 		<FeatureUsageCard card={{ title: !isEnterprise ? t('Unlock_premium_capabilities') : t('Includes') }}>
-			<CardColSection h='full' w='full' display='flex' flexDirection='column'>
+			<Box h='full' w='full' display='flex' flexDirection='column'>
 				<CardCol>
 					<Box display='flex' flexWrap='wrap' justifyContent='space-between' flexDirection={isSmall ? 'row' : 'column'}>
 						{getFeatureSet(activeModules, isEnterprise).map(({ type, title, infoText }, index) => (
@@ -90,12 +90,12 @@ const FeaturesCard = ({ activeModules, isEnterprise }: FeaturesCardProps): React
 						))}
 					</Box>
 				</CardCol>
-				<CardFooter>
+				<CardControls>
 					<Box is='a' target='_blank' rel='noopener noreferrer' href={PRICING_LINK} textDecorationLine='underline'>
 						{t('Compare_plans')}
 					</Box>
-				</CardFooter>
-			</CardColSection>
+				</CardControls>
+			</Box>
 		</FeatureUsageCard>
 	);
 };
