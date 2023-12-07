@@ -3,14 +3,14 @@ import type { Page } from '@playwright/test';
 
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
-import { OmnichannelLiveChat, HomeChannel } from '../page-objects';
+import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';
 import { test, expect } from '../utils/test';
 
 test.describe('omnichannel-takeChat', () => {
 	let poLiveChat: OmnichannelLiveChat;
 	let newVisitor: { email: string; name: string };
 
-	let agent: { page: Page; poHomeChannel: HomeChannel };
+	let agent: { page: Page; poHomeChannel: HomeOmnichannel };
 
 	test.beforeAll(async ({ api, browser }) => {
 		await Promise.all([
@@ -20,7 +20,7 @@ test.describe('omnichannel-takeChat', () => {
 		]);
 
 		const { page } = await createAuxContext(browser, Users.user1);
-		agent = { page, poHomeChannel: new HomeChannel(page) };
+		agent = { page, poHomeChannel: new HomeOmnichannel(page) };
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -52,11 +52,11 @@ test.describe('omnichannel-takeChat', () => {
 
 	test('expect "user1" to be able to take the chat from the queue', async () => {
 		await agent.poHomeChannel.sidenav.openQueuedOmnichannelChat(newVisitor.name);
-		await expect(agent.poHomeChannel.content.takeOmnichannelChatButton).toBeVisible();
-		await agent.poHomeChannel.content.takeOmnichannelChatButton.click();
+		await expect(agent.poHomeChannel.content.btnTakeChat).toBeVisible();
+		await agent.poHomeChannel.content.btnTakeChat.click();
 
 		await agent.poHomeChannel.sidenav.openChat(newVisitor.name);
-		await expect(agent.poHomeChannel.content.takeOmnichannelChatButton).not.toBeVisible();
+		await expect(agent.poHomeChannel.content.btnTakeChat).not.toBeVisible();
 		await expect(agent.poHomeChannel.content.inputMessage).toBeVisible();
 	});
 
@@ -65,8 +65,8 @@ test.describe('omnichannel-takeChat', () => {
 		await agent.poHomeChannel.sidenav.switchStatus('offline');
 
 		await agent.poHomeChannel.sidenav.openQueuedOmnichannelChat(newVisitor.name);
-		await expect(agent.poHomeChannel.content.takeOmnichannelChatButton).toBeVisible();
-		await agent.poHomeChannel.content.takeOmnichannelChatButton.click();
+		await expect(agent.poHomeChannel.content.btnTakeChat).toBeVisible();
+		await agent.poHomeChannel.content.btnTakeChat.click();
 
 		// expect to see error message
 		await expect(agent.page.locator('text=Agent status is offline or Omnichannel service is not active')).toBeVisible();
