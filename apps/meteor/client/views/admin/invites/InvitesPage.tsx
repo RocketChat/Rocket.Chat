@@ -14,7 +14,7 @@ import {
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
 } from '../../../components/GenericTable';
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 import InviteRow from './InviteRow';
 
 const InvitesPage = (): ReactElement => {
@@ -88,8 +88,8 @@ const InvitesPage = (): ReactElement => {
 
 	return (
 		<Page>
-			<Page.Header title={t('Invites')} />
-			<Page.Content>
+			<PageHeader title={t('Invites')} />
+			<PageContent>
 				<>
 					{isLoading && (
 						<GenericTable>
@@ -121,7 +121,7 @@ const InvitesPage = (): ReactElement => {
 						</States>
 					)}
 				</>
-			</Page.Content>
+			</PageContent>
 		</Page>
 	);
 };

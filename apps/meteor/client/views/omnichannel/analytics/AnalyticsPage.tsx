@@ -4,7 +4,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useState, useEffect } from 'react';
 
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import AgentOverview from './AgentOverview';
 import DateRangePicker from './DateRangePicker';
 import InterchangeableChart from './InterchangeableChart';
@@ -52,8 +52,8 @@ const AnalyticsPage = () => {
 
 	return (
 		<Page>
-			<Page.Header title={t('Analytics')} />
-			<Page.ScrollableContentWithShadow display='flex' flexDirection='column'>
+			<PageHeader title={t('Analytics')} />
+			<PageScrollableContentWithShadow display='flex' flexDirection='column'>
 				<Margins block={4}>
 					<Box display='flex' mi='neg-x4' flexWrap='wrap' flexGrow={1}>
 						<Box display='flex' flexWrap='wrap' flexGrow={1}>
@@ -96,7 +96,7 @@ const AnalyticsPage = () => {
 						</Box>
 					</Box>
 				</Margins>
-			</Page.ScrollableContentWithShadow>
+			</PageScrollableContentWithShadow>
 		</Page>
 	);
 };

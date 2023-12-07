@@ -3,7 +3,7 @@ import { useRouteParameter, useRoute, useTranslation } from '@rocket.chat/ui-con
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 import EditOauthAppWithData from './EditOauthAppWithData';
 import OAuthAddApp from './OAuthAddApp';
 import OAuthAppsTable from './OAuthAppsTable';
@@ -19,7 +19,7 @@ const OAuthAppsPage = (): ReactElement => {
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('Third_party_login')}>
+				<PageHeader title={t('Third_party_login')}>
 					{context && (
 						<Button icon='back' alignSelf='flex-end' onClick={(): void => router.push({})}>
 							{t('Back')}
@@ -30,12 +30,12 @@ const OAuthAppsPage = (): ReactElement => {
 							{t('New_Application')}
 						</Button>
 					)}
-				</Page.Header>
-				<Page.Content>
+				</PageHeader>
+				<PageContent>
 					{!context && <OAuthAppsTable />}
 					{id && context === 'edit' && <EditOauthAppWithData _id={id} />}
 					{context === 'new' && <OAuthAddApp />}
-				</Page.Content>
+				</PageContent>
 			</Page>
 		</Page>
 	);

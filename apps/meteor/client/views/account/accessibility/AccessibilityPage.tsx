@@ -21,7 +21,7 @@ import { useMutation } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
 import { getDirtyFields } from '../../../lib/getDirtyFields';
 import { fontSizes } from './fontSizes';
 import type { AccessibilityPreferencesData } from './hooks/useAcessibilityPreferencesValues';
@@ -84,8 +84,8 @@ const AccessibilityPage = () => {
 
 	return (
 		<Page>
-			<Page.Header title={t('Accessibility_and_Appearance')} />
-			<Page.ScrollableContentWithShadow>
+			<PageHeader title={t('Accessibility_and_Appearance')} />
+			<PageScrollableContentWithShadow>
 				<Box is='form' id={pageFormId} onSubmit={handleSubmit(handleSaveData)} maxWidth='x600' w='full' alignSelf='center' mb={40} mi={36}>
 					<Box fontScale='p1' mbe={24}>
 						<Box pb={16}>{t('Accessibility_activation')}</Box>
@@ -213,15 +213,15 @@ const AccessibilityPage = () => {
 						</Accordion.Item>
 					</Accordion>
 				</Box>
-			</Page.ScrollableContentWithShadow>
-			<Page.Footer isDirty={isDirty}>
+			</PageScrollableContentWithShadow>
+			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
 					<Button onClick={() => reset(preferencesValues)}>{t('Cancel')}</Button>
 					<Button primary disabled={!isDirty} loading={isSubmitting} form={pageFormId} type='submit'>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>
-			</Page.Footer>
+			</PageFooter>
 		</Page>
 	);
 };

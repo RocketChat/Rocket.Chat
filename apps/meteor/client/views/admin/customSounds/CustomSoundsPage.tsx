@@ -3,7 +3,7 @@ import { useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-con
 import React, { useCallback, useRef } from 'react';
 
 import { ContextualbarTitle, Contextualbar, ContextualbarClose, ContextualbarHeader } from '../../../components/Contextualbar';
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 import AddCustomSound from './AddCustomSound';
 import CustomSoundsTable from './CustomSoundsTable';
 import EditCustomSound from './EditCustomSound';
@@ -41,14 +41,14 @@ const CustomSoundsPage = () => {
 	return (
 		<Page flexDirection='row'>
 			<Page name='admin-custom-sounds'>
-				<Page.Header title={t('Sounds')}>
+				<PageHeader title={t('Sounds')}>
 					<Button primary onClick={handleNewButtonClick} aria-label={t('New')}>
 						{t('New')}
 					</Button>
-				</Page.Header>
-				<Page.Content>
+				</PageHeader>
+				<PageContent>
 					<CustomSoundsTable reload={reload} onClick={handleItemClick} />
-				</Page.Content>
+				</PageContent>
 			</Page>
 			{context && (
 				<Contextualbar flexShrink={0}>

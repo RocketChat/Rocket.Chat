@@ -6,17 +6,30 @@ export type VersionStatus = 'outdated' | 'latest' | 'available_version' | undefi
 
 type VersionTagProps = {
 	versionStatus: VersionStatus;
+	title?: string;
 };
 
-export const VersionTag = ({ versionStatus }: VersionTagProps) => {
+export const VersionTag = ({ versionStatus, title }: VersionTagProps) => {
 	const { t } = useTranslation();
 	if (versionStatus === 'outdated') {
-		return <Tag variant='danger'>{t('Outdated')}</Tag>;
+		return (
+			<Tag title={title} variant='danger'>
+				{t('Outdated')}
+			</Tag>
+		);
 	}
 
 	if (versionStatus === 'latest') {
-		return <Tag variant='primary'>{t('Latest')}</Tag>;
+		return (
+			<Tag title={title} variant='primary'>
+				{t('Latest')}
+			</Tag>
+		);
 	}
 
-	return <Tag variant='secondary'>{t('New_version_available')}</Tag>;
+	return (
+		<Tag title={title} variant='secondary'>
+			{t('New_version_available')}
+		</Tag>
+	);
 };
