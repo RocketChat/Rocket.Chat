@@ -1,3 +1,4 @@
+import { OmnichannelAnalytics } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { LivechatRooms, Users, LivechatVisitors, LivechatAgentActivity } from '@rocket.chat/models';
 import mem from 'mem';
@@ -6,7 +7,6 @@ import moment from 'moment';
 import { secondsToHHMMSS } from '../../../../../lib/utils/secondsToHHMMSS';
 import { settings } from '../../../../settings/server';
 import { getAnalyticsOverviewDataCachedForRealtime } from '../AnalyticsTyped';
-import { Livechat } from '../Livechat';
 import {
 	findPercentageOfAbandonedRoomsAsync,
 	findAllAverageOfChatDurationTimeAsync,
@@ -33,26 +33,27 @@ const getProductivityMetricsAsync = async ({
 	departmentId = undefined,
 	user,
 }: {
-	start: Date;
-	end: Date;
+	start: string;
+	end: string;
 	departmentId?: string;
 	user: IUser;
 }) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
-	const totalizers = await Livechat.Analytics.getAnalyticsOverviewData({
-		daterange: {
-			from: start,
-			to: end,
-		},
-		analyticsOptions: {
-			name: 'Productivity',
-		},
-		departmentId,
-		utcOffset: user?.utcOffset,
-		language: user?.language || settings.get('Language') || 'en',
-	});
+	const totalizers =
+		(await OmnichannelAnalytics.getAnalyticsOverviewData({
+			daterange: {
+				from: start,
+				to: end,
+			},
+			analyticsOptions: {
+				name: 'Productivity',
+			},
+			departmentId,
+			utcOffset: user?.utcOffset,
+			language: user?.language || settings.get('Language') || 'en',
+		})) || [];
 	const averageWaitingTime = await findAllAverageWaitingTimeAsync({
 		start,
 		end,
@@ -78,8 +79,8 @@ const getAgentsProductivityMetricsAsync = async ({
 	departmentId = undefined,
 	user,
 }: {
-	start: Date;
-	end: Date;
+	start: string;
+	end: string;
 	departmentId?: string;
 	user: IUser;
 }) => {
@@ -98,18 +99,19 @@ const getAgentsProductivityMetricsAsync = async ({
 		end,
 		departmentId,
 	});
-	const totalizers = await Livechat.Analytics.getAnalyticsOverviewData({
-		daterange: {
-			from: start,
-			to: end,
-		},
-		analyticsOptions: {
-			name: 'Conversations',
-		},
-		departmentId,
-		utcOffset: user.utcOffset,
-		language: user.language || settings.get('Language') || 'en',
-	});
+	const totalizers =
+		(await OmnichannelAnalytics.getAnalyticsOverviewData({
+			daterange: {
+				from: start,
+				to: end,
+			},
+			analyticsOptions: {
+				name: 'Conversations',
+			},
+			departmentId,
+			utcOffset: user.utcOffset,
+			language: user.language || settings.get('Language') || 'en',
+		})) || [];
 
 	const totalOfServiceTime = averageOfServiceTime.departments.length;
 
@@ -223,30 +225,31 @@ const getConversationsMetricsAsync = async ({
 	departmentId,
 	user,
 }: {
-	start: Date;
-	end: Date;
+	start: string;
+	end: string;
 	departmentId?: string;
 	user: IUser;
 }) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
-	const totalizers = await getAnalyticsOverviewDataCachedForRealtime({
-		daterange: {
-			from: start,
-			to: end,
-		},
-		analyticsOptions: {
-			name: 'Conversations',
-		},
-		...(departmentId && departmentId !== 'undefined' && { departmentId }),
-		utcOffset: user.utcOffset,
-		language: user.language || settings.get('Language') || 'en',
-	});
+	const totalizers =
+		(await getAnalyticsOverviewDataCachedForRealtime({
+			daterange: {
+				from: start,
+				to: end,
+			},
+			analyticsOptions: {
+				name: 'Conversations',
+			},
+			...(departmentId && departmentId !== 'undefined' && { departmentId }),
+			utcOffset: user.utcOffset,
+			language: user.language || settings.get('Language') || 'en',
+		})) || [];
 	const metrics = ['Total_conversations', 'Open_conversations', 'On_Hold_conversations', 'Total_messages'];
 	const visitorsCount = await LivechatVisitors.getVisitorsBetweenDate({
-		start,
-		end,
+		start: new Date(start),
+		end: new Date(end),
 		department: departmentId,
 	}).count();
 	return {

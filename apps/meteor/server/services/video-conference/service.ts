@@ -48,6 +48,7 @@ import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { i18n } from '../../lib/i18n';
 import { videoConfProviders } from '../../lib/videoConfProviders';
 import { videoConfTypes } from '../../lib/videoConfTypes';
+import { broadcastMessageSentEvent } from '../../modules/watchers/lib/messages';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -325,6 +326,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				(settings.get<boolean>('UI_Use_Real_Name') ? call.createdBy.name : call.createdBy.username) || call.createdBy.username || '';
 			const text = i18n.t('video_livechat_missed', { username: name });
 			await Messages.setBlocksById(call.messages.started, [this.buildMessageBlock(text)]);
+
+			await broadcastMessageSentEvent({
+				id: call.messages.started,
+				broadcastCallback: (message) => api.broadcast('message.sent', message),
+			});
 		}
 
 		await VideoConferenceModel.setDataById(call._id, {

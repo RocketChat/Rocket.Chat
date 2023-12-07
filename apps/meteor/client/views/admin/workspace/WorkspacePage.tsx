@@ -4,7 +4,7 @@ import type { IInstance } from '@rocket.chat/rest-typings';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import DeploymentCard from './DeploymentCard/DeploymentCard';
 import MessagesRoomsCard from './MessagesRoomsCard/MessagesRoomsCard';
@@ -39,7 +39,7 @@ const WorkspacePage = ({
 
 	return (
 		<Page bg='tint'>
-			<Page.Header title={t('Workspace')}>
+			<PageHeader title={t('Workspace')}>
 				{canViewStatistics && (
 					<ButtonGroup>
 						<Button onClick={onClickDownloadInfo}>{t('Download_Info')}</Button>
@@ -48,9 +48,9 @@ const WorkspacePage = ({
 						</Button>
 					</ButtonGroup>
 				)}
-			</Page.Header>
+			</PageHeader>
 
-			<Page.ScrollableContentWithShadow p={16}>
+			<PageScrollableContentWithShadow p={16}>
 				<Box marginBlock='none' marginInline='auto' width='full' color='default'>
 					{warningMultipleInstances && (
 						<Callout type='warning' title={t('Multiple_monolith_instances_alert')} marginBlockEnd={16}></Callout>
@@ -94,7 +94,7 @@ const WorkspacePage = ({
 						</Grid.Item>
 					</Grid>
 				</Box>
-			</Page.ScrollableContentWithShadow>
+			</PageScrollableContentWithShadow>
 		</Page>
 	);
 };
