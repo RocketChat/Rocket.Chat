@@ -25,6 +25,20 @@ Meteor.startup(() => {
 
 		Messages.update(
 			{
+				'editedBy._id': _id,
+			},
+			{
+				$set: {
+					'editedBy.username': username,
+				},
+			},
+			{
+				multi: true,
+			},
+		);
+
+		Messages.update(
+			{
 				mentions: {
 					$elemMatch: { _id },
 				},

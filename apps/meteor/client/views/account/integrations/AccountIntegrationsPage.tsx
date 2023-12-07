@@ -8,7 +8,7 @@ import React, { useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { WebdavAccounts } from '../../../../app/models/client';
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { getWebdavServerName } from '../../../lib/getWebdavServerName';
 
@@ -34,8 +34,8 @@ const AccountIntegrationsPage = (): ReactElement => {
 
 	return (
 		<Page>
-			<Page.Header title={t('Integrations')} />
-			<Page.ScrollableContentWithShadow>
+			<PageHeader title={t('Integrations')} />
+			<PageScrollableContentWithShadow>
 				<Box maxWidth='x600' w='full' alignSelf='center'>
 					<Field>
 						<FieldLabel>{t('WebDAV_Accounts')}</FieldLabel>
@@ -60,7 +60,7 @@ const AccountIntegrationsPage = (): ReactElement => {
 						</FieldRow>
 					</Field>
 				</Box>
-			</Page.ScrollableContentWithShadow>
+			</PageScrollableContentWithShadow>
 		</Page>
 	);
 };
