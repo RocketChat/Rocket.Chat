@@ -112,33 +112,31 @@ describe('OverviewData Analytics', () => {
 				{ title: 'Busiest_time', value: '' },
 			]);
 		});
-		it('shuld return the correct values when theres data on the period we pass', async () => {
+		it('should return the correct values when theres data on the period we pass', async () => {
 			const overview = new OverviewData({
-				getAnalyticsBetweenDate: () => ({
-					toArray: () =>
-						analytics({
-							gte: moment().set('month', 10).set('year', 2023).startOf('month').toDate(),
-							lt: moment().set('month', 10).set('year', 2023).endOf('month').toDate(),
-						}),
+				getAnalyticsBetweenDate: (date: { gte: Date; lt: Date }) => ({
+					toArray: () => analytics(date),
 				}),
 				getOnHoldConversationsBetweenDate: () => 1,
 			} as any);
+
+			// Fixed date to assure we get the same data
 			const result = await overview.Conversations(
-				moment.utc().set('month', 10).set('year', 2023).startOf('day'),
-				moment.utc().set('month', 10).set('year', 2023).endOf('day'),
+				moment.utc().set('month', 10).set('year', 2023).set('date', 12).startOf('day'),
+				moment.utc().set('month', 10).set('year', 2023).set('date', 12).endOf('day'),
 				'',
 				'UTC',
 				(v: string): string => v,
 				{},
 			);
 			expect(result).to.be.deep.equal([
-				{ title: 'Total_conversations', value: 15 },
-				{ title: 'Open_conversations', value: 3 },
+				{ title: 'Total_conversations', value: 1 },
+				{ title: 'Open_conversations', value: 0 },
 				{ title: 'On_Hold_conversations', value: 1 },
-				{ title: 'Total_messages', value: 677 },
-				{ title: 'Busiest_day', value: 'Monday' },
-				{ title: 'Conversations_per_day', value: '15.00' },
-				{ title: 'Busiest_time', value: '12AM - 1AM' },
+				{ title: 'Total_messages', value: 93 },
+				{ title: 'Busiest_day', value: 'Sunday' },
+				{ title: 'Conversations_per_day', value: '1.00' },
+				{ title: 'Busiest_time', value: '11AM - 12PM' },
 			]);
 		});
 	});
