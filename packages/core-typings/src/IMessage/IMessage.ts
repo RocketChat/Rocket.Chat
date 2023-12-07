@@ -119,18 +119,20 @@ export type TokenExtra = {
 	noHtml?: string;
 };
 
+export type MessageMention = {
+	type?: 'user' | 'team'; // mentions for 'all' and 'here' doesn't have type
+	_id: string;
+	name?: string;
+	username?: string;
+};
+
 export interface IMessage extends IRocketChatRecord {
 	rid: RoomID;
 	msg: string;
 	tmid?: string;
 	tshow?: boolean;
 	ts: Date;
-	mentions?: {
-		type: 'user' | 'team';
-		_id: string;
-		name?: string;
-		username?: string;
-	}[];
+	mentions?: MessageMention[];
 
 	groupable?: boolean;
 	channels?: Pick<IRoom, '_id' | 'name'>[];

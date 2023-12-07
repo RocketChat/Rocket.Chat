@@ -15,7 +15,7 @@ import { useMessageListHighlights } from './message/list/MessageListContext';
 type GazzodownTextProps = {
 	children: JSX.Element;
 	mentions?: {
-		type: 'user' | 'team';
+		type?: 'user' | 'team';
 		_id: string;
 		username?: string;
 		name?: string;
