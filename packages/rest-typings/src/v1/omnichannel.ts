@@ -25,6 +25,7 @@ import type {
 	ILivechatTriggerAction,
 	ReportResult,
 	ReportWithUnmatchingElements,
+	SMSProviderResponse,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
@@ -3716,6 +3717,9 @@ export type OmnichannelEndpoints = {
 			title: string;
 			value: string | number;
 		}[];
+	};
+	'/v1/livechat/sms-incoming/:service': {
+		POST: (params: unknown) => SMSProviderResponse;
 	};
 } & {
 	// EE
