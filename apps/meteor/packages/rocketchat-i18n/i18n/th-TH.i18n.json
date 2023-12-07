@@ -2740,5 +2740,6 @@
   "registration.component.form.invalidConfirmPass": "การยืนยันรหัสผ่านไม่ตรงกับรหัสผ่าน",
   "registration.component.form.confirmPassword": "ยืนยันรหัสผ่านของคุณ",
   "registration.component.form.sendConfirmationEmail": "ส่งอีเมลยืนยัน",
+  "Enterprise": "องค์กร",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analytics"
 }

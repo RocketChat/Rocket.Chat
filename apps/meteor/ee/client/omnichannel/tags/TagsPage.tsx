@@ -2,7 +2,7 @@ import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useRouter, useTranslation, useRouteParameter } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import Page from '../../../../client/components/Page';
+import { Page, PageHeader, PageContent } from '../../../../client/components/Page';
 import TagEdit from './TagEdit';
 import TagEditWithData from './TagEditWithData';
 import TagsTable from './TagsTable';
@@ -16,14 +16,14 @@ const TagsPage = () => {
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('Tags')}>
+				<PageHeader title={t('Tags')}>
 					<ButtonGroup>
 						<Button onClick={() => router.navigate('/omnichannel/tags/new')}>{t('Create_tag')}</Button>
 					</ButtonGroup>
-				</Page.Header>
-				<Page.Content>
+				</PageHeader>
+				<PageContent>
 					<TagsTable />
-				</Page.Content>
+				</PageContent>
 			</Page>
 			{context === 'edit' && id && <TagEditWithData tagId={id} />}
 			{context === 'new' && <TagEdit />}

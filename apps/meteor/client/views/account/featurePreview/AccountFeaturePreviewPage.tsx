@@ -22,7 +22,7 @@ import type { ChangeEvent } from 'react';
 import React, { useEffect, Fragment } from 'react';
 import { useForm } from 'react-hook-form';
 
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
 
 const AccountFeaturePreviewPage = () => {
 	const t = useTranslation();
@@ -79,8 +79,8 @@ const AccountFeaturePreviewPage = () => {
 
 	return (
 		<Page>
-			<Page.Header title={t('Feature_preview')} />
-			<Page.ScrollableContentWithShadow>
+			<PageHeader title={t('Feature_preview')} />
+			<PageScrollableContentWithShadow>
 				<Box maxWidth='x600' w='full' alignSelf='center'>
 					{featuresPreview.length === 0 && (
 						<States>
@@ -124,15 +124,15 @@ const AccountFeaturePreviewPage = () => {
 						</>
 					)}
 				</Box>
-			</Page.ScrollableContentWithShadow>
-			<Page.Footer isDirty={isDirty}>
+			</PageScrollableContentWithShadow>
+			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
 					<Button onClick={() => reset({ featuresPreview: features })}>{t('Cancel')}</Button>
 					<Button primary disabled={!isDirty} onClick={handleSubmit(handleSave)}>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>
-			</Page.Footer>
+			</PageFooter>
 		</Page>
 	);
 };

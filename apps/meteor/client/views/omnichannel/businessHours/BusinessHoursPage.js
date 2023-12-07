@@ -3,7 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { lazy, useMemo } from 'react';
 
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 
 const BusinessHoursPage = () => {
 	const t = useTranslation();
@@ -19,16 +19,16 @@ const BusinessHoursPage = () => {
 
 	return (
 		<Page>
-			<Page.Header title={t('Business_Hours')}>
+			<PageHeader title={t('Business_Hours')}>
 				<ButtonGroup>
 					<Button icon='plus' onClick={handleNew}>
 						{t('New')}
 					</Button>
 				</ButtonGroup>
-			</Page.Header>
-			<Page.Content>
+			</PageHeader>
+			<PageContent>
 				<BusinessHoursTable />
-			</Page.Content>
+			</PageContent>
 		</Page>
 	);
 };
