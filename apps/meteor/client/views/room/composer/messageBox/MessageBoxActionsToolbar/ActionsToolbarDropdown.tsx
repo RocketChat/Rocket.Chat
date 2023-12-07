@@ -41,8 +41,11 @@ const ActionsToolbarDropdown = ({ actions, isRecording, rid, tmid, ...props }: A
 			/>
 			{isVisible && (
 				<Dropdown reference={reference} ref={target} placement='bottom-start'>
-					{actions.map((option) => {
+					{actions.map((option, index) => {
 						if (typeof option === 'string') {
+							if (index + 1 === actions.length) {
+								return null;
+							}
 							return <OptionTitle key={option}>{t.has(option) ? t(option) : option}</OptionTitle>;
 						}
 
