@@ -2,7 +2,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import Page from '../../../../../client/components/Page';
+import { Page, PageHeader, PageContent } from '../../../../../client/components/Page';
 import DeviceManagementAccountTable from './DeviceManagementAccountTable';
 
 const DeviceManagementAccountPage = (): ReactElement => {
@@ -10,10 +10,10 @@ const DeviceManagementAccountPage = (): ReactElement => {
 
 	return (
 		<Page>
-			<Page.Header title={t('Manage_Devices')} />
-			<Page.Content>
+			<PageHeader title={t('Manage_Devices')} />
+			<PageContent>
 				<DeviceManagementAccountTable />
-			</Page.Content>
+			</PageContent>
 		</Page>
 	);
 };

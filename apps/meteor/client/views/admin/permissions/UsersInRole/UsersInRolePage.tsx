@@ -6,7 +6,7 @@ import type { ReactElement } from 'react';
 import React, { useRef } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
-import Page from '../../../../components/Page';
+import { Page, PageHeader, PageContent } from '../../../../components/Page';
 import RoomAutoComplete from '../../../../components/RoomAutoComplete';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import UsersInRoleTable from './UsersInRoleTable';
@@ -61,12 +61,12 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 
 	return (
 		<Page>
-			<Page.Header title={`${t('Users_in_role')} "${description || name}"`}>
+			<PageHeader title={`${t('Users_in_role')} "${description || name}"`}>
 				<ButtonGroup>
 					<Button onClick={handleReturn}>{t('Back')}</Button>
 				</ButtonGroup>
-			</Page.Header>
-			<Page.Content>
+			</PageHeader>
+			<PageContent>
 				<Box display='flex' flexDirection='column' w='full' mi='neg-x4'>
 					<Margins inline={4}>
 						{role.scope !== 'Users' && (
@@ -108,7 +108,7 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 					)}
 					{role.scope !== 'Users' && !rid && <Callout type='info'>{t('Select_a_room')}</Callout>}
 				</Margins>
-			</Page.Content>
+			</PageContent>
 		</Page>
 	);
 };
