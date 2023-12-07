@@ -12,4 +12,5 @@ export * from './omnichannel-livechat';
 export * from './omnichannel-manager';
 export * from './omnichannel-custom-fields';
 export * from './home-omnichannel';
+export * from './omnichannel-monitors';
 export * from './utils';
