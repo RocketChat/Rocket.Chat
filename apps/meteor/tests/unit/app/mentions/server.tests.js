@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import MentionsServer from '../../../../app/mentions/server/Mentions';
+import { MentionsServer } from '../../../../app/mentions/server/Mentions';
 
 let mention;
 

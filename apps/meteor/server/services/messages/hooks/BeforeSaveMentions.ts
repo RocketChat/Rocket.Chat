@@ -1,14 +1,12 @@
-import { api, Team } from '@rocket.chat/core-services';
+import { api, Team, MeteorError } from '@rocket.chat/core-services';
 import type { IUser, IRoom, ITeam } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../lib/callbacks';
-import { i18n } from '../../../server/lib/i18n';
-import { settings } from '../../settings/server';
-import MentionsServer from './Mentions';
+import { MentionsServer } from '../../../../app/mentions/server/Mentions';
+import { settings } from '../../../../app/settings/server';
+import { i18n } from '../../../lib/i18n';
 
-export class MentionQueries {
+class MentionQueries {
 	async getUsers(
 		usernames: string[],
 	): Promise<((Pick<IUser, '_id' | 'username' | 'name'> & { type: 'user' }) | (Pick<ITeam, '_id' | 'name'> & { type: 'team' }))[]> {
@@ -65,7 +63,7 @@ export class MentionQueries {
 
 const queries = new MentionQueries();
 
-const mention = new MentionsServer({
+export const mentionServer = new MentionsServer({
 	pattern: () => settings.get<string>('UTF8_User_Names_Validation'),
 	messageMaxAll: () => settings.get<number>('Message_MaxAll'),
 	getUsers: async (usernames: string[]) => queries.getUsers(usernames),
@@ -82,10 +80,9 @@ const mention = new MentionsServer({
 		});
 
 		// Also throw to stop propagation of 'sendMessage'.
-		throw new Meteor.Error('error-action-not-allowed', msg, {
+		throw new MeteorError('error-action-not-allowed', msg, {
 			method: 'filterATAllTag',
 			action: msg,
 		});
 	},
 });
-callbacks.add('beforeSaveMessage', async (message) => mention.execute(message), callbacks.priority.HIGH, 'mentions');

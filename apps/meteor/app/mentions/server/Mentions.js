@@ -4,7 +4,7 @@
  */
 import { MentionsParser } from '../lib/MentionsParser';
 
-export default class MentionsServer extends MentionsParser {
+export class MentionsServer extends MentionsParser {
 	constructor(args) {
 		super(args);
 		this.messageMaxAll = args.messageMaxAll;
