@@ -103,6 +103,7 @@ const CannedResponseForm = () => {
 										disabled={hasMonitorPermission && !hasManagerPermission}
 										checked={value === 'global'}
 										aria-describedby={`${publicRadioField}-hint`}
+										data-qa-id='canned-response-public-radio'
 									/>
 								)}
 							/>
