@@ -1,6 +1,13 @@
 import { LivechatRooms, Messages } from '@rocket.chat/models';
 
-export const findAllRoomsAsync = async ({ start, end, answered, departmentId, options = {} }) => {
+type Params = {
+	start: Date;
+	end: Date;
+	options?: any;
+	departmentId?: string;
+};
+
+export const findAllRoomsAsync = async ({ start, end, answered, departmentId, options = {} }: Params & { answered?: boolean }) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
@@ -23,7 +30,7 @@ export const findAllRoomsAsync = async ({ start, end, answered, departmentId, op
 	};
 };
 
-export const findAllAverageOfChatDurationTimeAsync = async ({ start, end, departmentId, options = {} }) => {
+export const findAllAverageOfChatDurationTimeAsync = async ({ start, end, departmentId, options = {} }: Params) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
@@ -44,7 +51,7 @@ export const findAllAverageOfChatDurationTimeAsync = async ({ start, end, depart
 	};
 };
 
-export const findAllAverageServiceTimeAsync = async ({ start, end, departmentId, options = {} }) => {
+export const findAllAverageServiceTimeAsync = async ({ start, end, departmentId, options = {} }: Params) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
@@ -65,7 +72,7 @@ export const findAllAverageServiceTimeAsync = async ({ start, end, departmentId,
 	};
 };
 
-export const findAllServiceTimeAsync = async ({ start, end, departmentId, options = {} }) => {
+export const findAllServiceTimeAsync = async ({ start, end, departmentId, options = {} }: Params) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
@@ -86,7 +93,7 @@ export const findAllServiceTimeAsync = async ({ start, end, departmentId, option
 	};
 };
 
-export const findAllAverageWaitingTimeAsync = async ({ start, end, departmentId, options = {} }) => {
+export const findAllAverageWaitingTimeAsync = async ({ start, end, departmentId, options = {} }: Params) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
@@ -107,7 +114,7 @@ export const findAllAverageWaitingTimeAsync = async ({ start, end, departmentId,
 	};
 };
 
-export const findAllNumberOfTransferredRoomsAsync = async ({ start, end, departmentId, options = {} }) => {
+export const findAllNumberOfTransferredRoomsAsync = async ({ start, end, departmentId, options = {} }: Params) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
@@ -128,7 +135,7 @@ export const findAllNumberOfTransferredRoomsAsync = async ({ start, end, departm
 	};
 };
 
-export const findAllNumberOfAbandonedRoomsAsync = async ({ start, end, departmentId, options = {} }) => {
+export const findAllNumberOfAbandonedRoomsAsync = async ({ start, end, departmentId, options = {} }: Params) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
@@ -139,7 +146,7 @@ export const findAllNumberOfAbandonedRoomsAsync = async ({ start, end, departmen
 	};
 };
 
-export const findPercentageOfAbandonedRoomsAsync = async ({ start, end, departmentId, options = {} }) => {
+export const findPercentageOfAbandonedRoomsAsync = async ({ start, end, departmentId, options = {} }: Params) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
