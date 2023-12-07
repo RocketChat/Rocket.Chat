@@ -8,5 +8,6 @@ export interface INotificationQueueModel extends IBaseModel<INotification> {
 	setErrorById(_id: string, error: any): Promise<UpdateResult>;
 	clearScheduleByUserId(uid: string): Promise<UpdateResult | Document>;
 	clearQueueByUserId(uid: string): Promise<number | undefined>;
+	clearQueueByUserIdAndMessageIds(uid: string, mids: INotification['mid'][]): Promise<number | undefined>;
 	findNextInQueueOrExpired(expired: Date): Promise<INotification | null>;
 }
