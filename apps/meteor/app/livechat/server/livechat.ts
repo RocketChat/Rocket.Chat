@@ -1,11 +1,41 @@
 import url from 'url';
-
 import { WebApp } from 'meteor/webapp';
-
 import { settings } from '../../settings/server';
 import { addServerUrlToIndex } from '../lib/Assets';
 
-const indexHtmlWithServerURL = addServerUrlToIndex((await Assets.getTextAsync('livechat/index.html')) || '');
+let indexHtmlWithServerURL = addServerUrlToIndex((await Assets.getTextAsync('livechat/index.html')) || '');
+
+const jsdom = require("jsdom");
+const domParser = new jsdom.JSDOM(indexHtmlWithServerURL);
+const doc = domParser.window.document;
+const head = doc.querySelector("head");
+const body = doc.querySelector("body");
+
+const liveChatAdditionalScripts = settings.get<string>('Livechat_AdditionalWidgetScripts');
+console.debug("CC-11 liveChatAdditionalScripts is " + liveChatAdditionalScripts);
+if (liveChatAdditionalScripts) {
+	liveChatAdditionalScripts.split(',').forEach((script) => {
+		const scriptElement = doc.createElement('script');
+		scriptElement.src = script;
+		console.debug("CC-11 script src " + scriptElement.src);
+		head?.appendChild(scriptElement);
+		body?.appendChild(scriptElement);
+	});
+}
+const additionalClass = settings.get<string>('Livechat_WidgetLayoutClasses');
+console.debug("CC-11 Livechat_WidgetLayoutClasses is " + additionalClass);
+if (additionalClass) {
+	additionalClass.split(',').forEach((css) => {
+		const linkElement = doc.createElement('link');
+		linkElement.rel="stylesheet";
+		linkElement.href = css;
+		console.debug("CC-11 linkElement.href is " + css);
+		head.appendChild(linkElement);
+		console.debug("CC-11 added " + css + "to " + head)
+	});
+}
+
+indexHtmlWithServerURL = doc.documentElement.innerHTML;
 
 WebApp.connectHandlers.use('/livechat', (req, res, next) => {
 	if (!req.url) {
@@ -38,4 +68,5 @@ WebApp.connectHandlers.use('/livechat', (req, res, next) => {
 
 	res.write(indexHtmlWithServerURL);
 	res.end();
+
 });
