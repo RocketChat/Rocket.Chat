@@ -1,5 +1,6 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import type { Icon } from '@rocket.chat/fuselage';
+import { useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { useMemo } from 'react';
 
@@ -51,6 +52,7 @@ export const useUserInfoActions = (
 	const call = useCallAction(user);
 	const reportUserOption = useReportUser(user);
 	const isLayoutEmbedded = useEmbeddedLayout();
+	const { userToolbox: hiddenActions } = useLayoutHiddenActions();
 
 	const userinfoActions = useMemo(
 		() => ({
@@ -83,7 +85,7 @@ export const useUserInfoActions = (
 	);
 
 	const actionSpread = useMemo(() => {
-		const entries = Object.entries(userinfoActions);
+		const entries = Object.entries(userinfoActions).filter(([key]) => !hiddenActions.includes(key));
 
 		const options = entries.slice(0, size);
 		const slicedOptions = entries.slice(size, entries.length);
@@ -105,7 +107,7 @@ export const useUserInfoActions = (
 		}, [] as UserMenuAction);
 
 		return { actions: options, menuActions };
-	}, [size, userinfoActions]);
+	}, [size, userinfoActions, hiddenActions]);
 
 	return actionSpread;
 };

@@ -48,6 +48,18 @@ const messageToolbox = [
 
 const composerToolbox = ['video-message' /* 'audio-message' */, 'file-upload', /* 'create-discussion', */ 'webdav-add', 'share-location'];
 
+const userToolbox = [
+	'openDirectMessage',
+	'changeOwner',
+	'changeLeader',
+	'changeModerator',
+	'openModerationConsole',
+	'ignoreUser',
+	'muteUser',
+	'reportUser',
+	'removeUser',
+];
+
 const LayoutProvider: FC = ({ children }) => {
 	const showTopNavbarEmbeddedLayout = Boolean(useSetting('UI_Show_top_navbar_embedded_layout'));
 	const [isCollapsed, setIsCollapsed] = useState(false);
@@ -91,6 +103,7 @@ const LayoutProvider: FC = ({ children }) => {
 						roomToolbox,
 						messageToolbox,
 						composerToolbox,
+						userToolbox,
 					},
 				}),
 				[isMobile, isEmbedded, showTopNavbarEmbeddedLayout, isCollapsed, breakpoints, router],

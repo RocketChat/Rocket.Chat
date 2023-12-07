@@ -24,6 +24,7 @@ export type LayoutContextValue = {
 		roomToolbox: Array<string>;
 		messageToolbox: Array<string>;
 		composerToolbox: Array<string>;
+		userToolbox: Array<string>;
 	};
 };
 
@@ -49,5 +50,6 @@ export const LayoutContext = createContext<LayoutContextValue>({
 		roomToolbox: [],
 		messageToolbox: [],
 		composerToolbox: [],
+		userToolbox: [],
 	},
 });
