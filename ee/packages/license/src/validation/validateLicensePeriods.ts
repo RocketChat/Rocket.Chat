@@ -1,7 +1,5 @@
-import type { ILicenseV3 } from '../definition/ILicenseV3';
-import type { BehaviorWithContext } from '../definition/LicenseBehavior';
-import type { Timestamp } from '../definition/LicensePeriod';
-import type { LicenseValidationOptions } from '../definition/LicenseValidationOptions';
+import type { ILicenseV3, BehaviorWithContext, Timestamp, LicenseValidationOptions } from '@rocket.chat/core-typings';
+
 import { isBehaviorAllowed } from '../isItemAllowed';
 import { logger } from '../logger';
 import { getResultingBehavior } from './getResultingBehavior';

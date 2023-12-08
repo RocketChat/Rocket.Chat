@@ -24,8 +24,8 @@ import type {
 	IImportProgress,
 	IBanner,
 	UiKit,
+	LicenseLimitKind,
 } from '@rocket.chat/core-typings';
-import type { LicenseLimitKind } from '@rocket.chat/license';
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 
