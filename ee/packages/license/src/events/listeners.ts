@@ -1,6 +1,5 @@
-import type { LicenseLimitKind } from '../definition/ILicenseV3';
-import type { BehaviorWithContext, LicenseBehavior } from '../definition/LicenseBehavior';
-import type { LicenseModule } from '../definition/LicenseModule';
+import type { LicenseLimitKind, LicenseModule, BehaviorWithContext, LicenseBehavior } from '@rocket.chat/core-typings';
+
 import type { LicenseManager } from '../license';
 import { hasModule } from '../modules';
 
