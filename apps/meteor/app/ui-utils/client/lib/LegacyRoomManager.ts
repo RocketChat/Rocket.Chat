@@ -177,39 +177,36 @@ const computation = Tracker.autorun(() => {
 						// remove thread refenrece from deleted message
 						ChatMessage.update({ tmid: msg._id }, { $unset: { tmid: 1 } }, { multi: true });
 					});
-					Notifications.onRoom(record.rid, 'deleteMessageBulk', ({ rid, ts, excludePinned, ignoreDiscussion, users }) => {
-						const query: Mongo.Selector<IMessage> = { rid, ts };
-						if (excludePinned) {
-							query.pinned = { $ne: true };
+					Notifications.onRoom(record.rid, 'deleteMessageBulk', ({ rid, ts, excludePinned, ignoreDiscussion, users, reportedMessages }) => {
+						if (!reportedMessages) {
+							const query: Mongo.Selector<IMessage> = { rid, ts };
+							if (excludePinned) {
+								query.pinned = { $ne: true };
+							}
+							if (ignoreDiscussion) {
+								query.drid = { $exists: false };
+							}
+							if (users?.length) {
+								query['u.username'] = { $in: users };
+							}
+							return ChatMessage.remove(query);
 						}
-						if (ignoreDiscussion) {
-							query.drid = { $exists: false };
-						}
-						if (users?.length) {
-							query['u.username'] = { $in: users };
-						}
-						ChatMessage.remove(query);
-					});
 
-					void sdk.stream(
-						'room-messages',
-						[`${record.rid}/reported-messages`],
-						async ({ messageIds, hidden, showDeletedStatus, remove }: Record<string, any>) => {
-							if (remove) {
-								return ChatMessage.remove({ _id: { $in: messageIds } });
-							}
-							if (hidden) {
-								return ChatMessage.update({ _id: { $in: messageIds } }, { $set: { _hidden: true } }, { multi: true });
-							}
-							if (showDeletedStatus) {
-								return ChatMessage.update(
-									{ _id: { $in: messageIds } },
-									{ $set: { t: 'rm', msg: '', urls: [], mentions: [], attachments: [], reactions: {} } },
-									{ multi: true },
-								);
-							}
-						},
-					);
+						const { messageIds, remove, hidden, showDeletedStatus } = reportedMessages;
+						if (remove) {
+							return ChatMessage.remove({ _id: { $in: messageIds } });
+						}
+						if (hidden) {
+							return ChatMessage.update({ _id: { $in: messageIds } }, { $set: { _hidden: true } }, { multi: true });
+						}
+						if (showDeletedStatus) {
+							return ChatMessage.update(
+								{ _id: { $in: messageIds } },
+								{ $set: { t: 'rm', msg: '', urls: [], mentions: [], attachments: [], reactions: {} } },
+								{ multi: true },
+							);
+						}
+					});
 				}
 			}
 

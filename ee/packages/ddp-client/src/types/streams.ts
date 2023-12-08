@@ -47,7 +47,16 @@ export interface StreamerEvents {
 		{ key: `${string}/typing`; args: [username: string, typing: boolean] },
 		{
 			key: `${string}/deleteMessageBulk`;
-			args: [args: { rid: IMessage['rid']; excludePinned: boolean; ignoreDiscussion: boolean; ts: Record<string, Date>; users: string[] }];
+			args: [
+				args: {
+					rid: IMessage['rid'];
+					excludePinned: boolean;
+					ignoreDiscussion: boolean;
+					ts: Record<string, Date>;
+					users: string[];
+					reportedMessages?: { messageIds: string[]; hidden: boolean; showDeletedStatus: boolean; remove: boolean };
+				},
+			];
 		},
 		{ key: `${string}/deleteMessage`; args: [{ _id: IMessage['_id'] }] },
 		{ key: `${string}/e2e.keyRequest`; args: [unknown] },
@@ -56,11 +65,7 @@ export interface StreamerEvents {
 		// { key: `${string}/${string}`; args: [id: string] },
 	];
 
-	'room-messages': [
-		{ key: `${string}/reported-messages`; args: [{ messageIds: string[]; hidden: boolean; showDeletedStatus: boolean; remove: boolean }] },
-		{ key: '__my_messages__'; args: [IMessage] },
-		{ key: `${string}`; args: [IMessage] },
-	];
+	'room-messages': [{ key: '__my_messages__'; args: [IMessage] }, { key: string; args: [IMessage] }];
 
 	'notify-all': [
 		{

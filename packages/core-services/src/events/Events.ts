@@ -88,14 +88,9 @@ export type EventSignatures = {
 			ignoreDiscussion: boolean;
 			ts: Record<string, Date>;
 			users: string[];
+			reportedMessages?: { messageIds: string[]; hidden: boolean; showDeletedStatus: boolean; remove: boolean };
 		},
 	): void;
-	'notify.deletedReportedMessages'(data: {
-		messages: Pick<IMessage, '_id' | 'rid'>[];
-		showDeletedStatus: boolean;
-		hidden: boolean;
-		remove: boolean;
-	}): void;
 	'notify.deleteCustomSound'(data: { soundData: ICustomSound }): void;
 	'notify.deleteCustomSound'(data: { soundData: ICustomSound }): void;
 	'notify.updateCustomSound'(data: { soundData: ICustomSound }): void;

@@ -49,10 +49,27 @@ export async function deleteReportedMessages(messages: IMessage[], user: IUser):
 		await Messages.setAsDeletedByIdsAndUser(messageIds, user as any);
 	}
 
-	void api.broadcast('notify.deletedReportedMessages', {
-		messages: messages.map((message) => ({ _id: message._id, rid: message.rid })),
-		showDeletedStatus,
-		hidden: keepHistory && !showDeletedStatus,
-		remove: !keepHistory && !showDeletedStatus,
+	const transformed = messages.reduce((acc, { rid, _id }) => {
+		if (!acc[rid]) {
+			acc[rid] = [];
+		}
+		acc[rid].push(_id);
+		return acc;
+	}, {} as Record<string, string[]>);
+
+	Object.entries(transformed).forEach(([rid, messageIds]) => {
+		void api.broadcast('notify.deleteMessageBulk', rid, {
+			rid,
+			excludePinned: true,
+			ignoreDiscussion: true,
+			ts: { $gt: new Date() },
+			users: [],
+			reportedMessages: {
+				messageIds,
+				showDeletedStatus,
+				hidden: keepHistory && !showDeletedStatus,
+				remove: !keepHistory && !showDeletedStatus,
+			},
+		});
 	});
 }

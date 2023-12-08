@@ -18,10 +18,21 @@ type NotifyRoomRidDeleteMessageBulkEvent = {
 	ignoreDiscussion: boolean;
 	ts: FieldExpression<Date>;
 	users: string[];
+	reportedMessages?: { messageIds: string[]; hidden: boolean; showDeletedStatus: boolean; remove: boolean };
 };
 
 const createDeleteCriteria = (params: NotifyRoomRidDeleteMessageBulkEvent): ((message: IMessage) => boolean) => {
-	const query: Query<IMessage> = { ts: params.ts };
+	const query: Query<IMessage> = {};
+	const { reportedMessages } = params;
+	if (
+		reportedMessages &&
+		reportedMessages.messageIds.length > 0 &&
+		(reportedMessages?.remove || reportedMessages?.showDeletedStatus || reportedMessages?.hidden)
+	) {
+		return createFilterFromQuery<IMessage>({ _id: { $in: reportedMessages.messageIds } });
+	}
+
+	query.ts = params.ts;
 
 	if (params.excludePinned) {
 		query.pinned = { $ne: true };
