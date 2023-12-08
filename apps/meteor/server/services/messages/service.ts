@@ -1,7 +1,7 @@
 import type { IMessageService } from '@rocket.chat/core-services';
-import { ServiceClassInternal } from '@rocket.chat/core-services';
+import { Authorization, ServiceClassInternal } from '@rocket.chat/core-services';
 import { type IMessage, type MessageTypesValues, type IUser, type IRoom, isEditedMessage } from '@rocket.chat/core-typings';
-import { Messages } from '@rocket.chat/models';
+import { Messages, Rooms } from '@rocket.chat/models';
 
 import { deleteMessage } from '../../../app/lib/server/functions/deleteMessage';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
@@ -9,8 +9,10 @@ import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
 import { executeSendMessage } from '../../../app/lib/server/methods/sendMessage';
 import { executeSetReaction } from '../../../app/reactions/server/setReaction';
 import { settings } from '../../../app/settings/server';
+import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
 import { broadcastMessageSentEvent } from '../../modules/watchers/lib/messages';
 import { BeforeSaveBadWords } from './hooks/BeforeSaveBadWords';
+import { BeforeSaveJumpToMessage } from './hooks/BeforeSaveJumpToMessage';
 import { BeforeSavePreventMention } from './hooks/BeforeSavePreventMention';
 import { BeforeSaveSpotify } from './hooks/BeforeSaveSpotify';
 
@@ -23,10 +25,26 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 	private spotify: BeforeSaveSpotify;
 
+	private jumpToMessage: BeforeSaveJumpToMessage;
+
 	async created() {
 		this.preventMention = new BeforeSavePreventMention(this.api);
 		this.badWords = new BeforeSaveBadWords();
 		this.spotify = new BeforeSaveSpotify();
+		this.jumpToMessage = new BeforeSaveJumpToMessage({
+			getMessages(messageIds) {
+				return Messages.findVisibleByIds(messageIds).toArray();
+			},
+			getRooms(roomIds) {
+				return Rooms.findByIds(roomIds).toArray();
+			},
+			canAccessRoom(room: IRoom, user: IUser): Promise<boolean> {
+				return Authorization.canAccessRoom(room, user);
+			},
+			getUserAvatarURL(user?: string): string {
+				return (user && getUserAvatarURL(user)) || '';
+			},
+		});
 
 		await this.configureBadWords();
 	}
@@ -104,6 +122,15 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 		message = await this.badWords.filterBadWords({ message });
 		message = await this.spotify.convertSpotifyLinks({ message });
+		message = await this.jumpToMessage.createAttachmentForMessageURLs({
+			message,
+			user,
+			config: {
+				chainLimit: settings.get<number>('Message_QuoteChainLimit'),
+				siteUrl: settings.get<string>('Site_Url'),
+				useRealName: settings.get<boolean>('UI_Use_Real_Name'),
+			},
+		});
 
 		if (!this.isEditedOrOld(message)) {
 			await Promise.all([
