@@ -44,7 +44,7 @@ export class MessageReadsService extends ServiceClassInternal implements IMessag
 		if (firstRead?.ls) {
 			const result = await Messages.setThreadMessagesAsRead(tmid, firstRead.ls);
 			if (result.modifiedCount > 0) {
-				void api.broadcast('notify.messagesRead', threadMessage.rid, { tmid, until: firstRead.ls });
+				void api.broadcast('notify.messagesRead', { rid: threadMessage.rid, tmid, until: firstRead.ls });
 			}
 		}
 	}

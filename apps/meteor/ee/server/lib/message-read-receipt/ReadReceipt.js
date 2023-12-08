@@ -5,6 +5,7 @@ import { Random } from '@rocket.chat/random';
 import { settings } from '../../../../app/settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
+import { broadcastMessageSentEvent } from '../../../../server/modules/watchers/lib/messages';
 
 // debounced function by roomId, so multiple calls within 2 seconds to same roomId runs only once
 const list = {};
@@ -27,7 +28,7 @@ const updateMessages = debounceByRoomId(async ({ _id, lm }) => {
 
 	const result = await Messages.setVisibleMessagesAsRead(_id, firstSubscription.ls);
 	if (result.modifiedCount > 0) {
-		void api.broadcast('notify.messagesRead', _id, { until: firstSubscription.ls });
+		void api.broadcast('notify.messagesRead', { rid: _id, until: firstSubscription.ls });
 	}
 
 	if (lm <= firstSubscription.ls) {
@@ -67,7 +68,10 @@ export const ReadReceipt = {
 		if (isUserAlone) {
 			const result = await Messages.setAsReadById(message._id);
 			if (result.modifiedCount > 0) {
-				void api.broadcast('notify.messagesRead', roomId);
+				void broadcastMessageSentEvent({
+					id: message._id,
+					broadcastCallback: (message) => api.broadcast('message.sent', message),
+				});
 			}
 		}
 

@@ -182,7 +182,7 @@ export class ListenersModule {
 			notifications.streamRoomMessage.emitWithoutBroadcast(message.rid, message);
 		});
 
-		service.onEvent('notify.messagesRead', (rid, { until, tmid }): void => {
+		service.onEvent('notify.messagesRead', ({ rid, until, tmid }): void => {
 			notifications.notifyRoomInThisInstance(rid, 'messagesRead', { rid, tmid, until });
 		});
 
