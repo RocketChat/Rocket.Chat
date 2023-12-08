@@ -1,6 +1,7 @@
 import { Subscriptions } from '@rocket.chat/models';
 
 import { i18n } from '../../../../../server/lib/i18n';
+import { isRoomCompatibleWithVideoConfRinging } from '../../../../../server/lib/isRoomCompatibleWithVideoConfRinging';
 import { roomCoordinator } from '../../../../../server/lib/rooms/roomCoordinator';
 import { settings } from '../../../../settings/server';
 
@@ -75,6 +76,7 @@ export function shouldNotifyMobile({
 	isThread,
 	isVideoConf,
 	userPreferences,
+	roomUids,
 }) {
 	if (settings.get('Push_enable') !== true) {
 		return false;
@@ -92,6 +94,7 @@ export function shouldNotifyMobile({
 	if (
 		isVideoConf &&
 		settings.get('VideoConf_Mobile_Ringing') &&
+		isRoomCompatibleWithVideoConfRinging(roomType, roomUids) &&
 		(userPreferences?.enableMobileRinging ?? settings.get(`Accounts_Default_User_Preferences_enableMobileRinging`))
 	) {
 		return false;

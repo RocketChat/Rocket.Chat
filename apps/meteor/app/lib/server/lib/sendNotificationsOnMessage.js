@@ -116,6 +116,7 @@ export const sendNotification = async ({
 			isThread,
 			isVideoConf,
 			userPreferences: receiver.settings?.preferences,
+			roomUids: room.uids,
 		})
 	) {
 		queueItems.push({
