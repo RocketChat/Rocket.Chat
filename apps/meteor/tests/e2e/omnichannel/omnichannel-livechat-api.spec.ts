@@ -6,22 +6,44 @@ import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel, OmnichannelLiveChatEmbedded } from '../page-objects';
 import { test, expect } from '../utils/test';
 
-// clearBusinessUnit
-// clearDepartment
-// initialize
-// maximizeWidget
-// minimizeWidget
-// pageVisited
-// registerGuest
-// setAgent
-// setBusinessUnit
-// setCustomField
-// setDepartment
-// setGuestEmail
-// setGuestName
-// setGuestToken
-// setParentUrl
-// setTheme
+// TODO: Use official widget typing once that is merged
+declare const window: Window & {
+	RocketChat: {
+		livechat: {
+			clearBusinessUnit: () => void;
+			clearDepartment: () => void;
+			initialize: () => void;
+			maximizeWidget: () => void;
+			minimizeWidget: () => void;
+			hideWidget: () => void;
+			showWidget: () => void;
+			pageVisited: () => void;
+			registerGuest: (visitor: { name: string; email: string; token: string }) => void;
+			setAgent: (agent: { username: string; _id: string }) => void;
+			setBusinessUnit: (businessUnit: { _id: string; name: string }) => void;
+			setCustomField: (field: { key: string; value: string }) => void;
+			setDepartment: (department: { _id: string; name: string }) => void;
+			setGuestEmail: (email: string) => void;
+			setGuestName: (name: string) => void;
+			setGuestToken: (token: string) => void;
+			setParentUrl: (url: string) => void;
+			setTheme: (theme: { color?: string; fontColor?: string; iconColor?: string; title?: string; offlineTitle?: string; }) => void;
+			setLanguage: (language: string) => void;
+			onChatMaximized: (callback: () => void) => void;
+			onChatMinimized: (callback: () => void) => void;
+			onChatStarted: (callback: () => void) => void;
+			onChatEnded: (callback: () => void) => void;
+			onPrechatFormSubmit: (callback: () => void) => void;
+			onAssignAgent: (callback: () => void) => void;
+			onAgentStatusChange: (callback: () => void) => void;
+			onOfflineFormSubmit: (callback: () => void) => void;
+			onWidgetHidden: (callback: () => void) => void;
+			onWidgetShown: (callback: () => void) => void;
+			onServiceOffline: (callback: () => void) => void;
+			onQueuePositionChange: (callback: () => void) => void;
+		};
+	};
+};
 
 test.describe('Omnichannel - Livechat API', () => {
 	// TODO: Check if there is a way to add livechat to the global window object 
@@ -109,11 +131,69 @@ test.describe('Omnichannel - Livechat API', () => {
 			});
 		});
 
-		test.skip('setTheme', async () => {
-			// TODO: check what are all of the possibilities of themes (colors, fonts, texts, etc...)
-			await test.step('Expect setTheme to do something', async () => {
-				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.setTheme({}));
+		test('setTheme', async () => {
+			// color,
+			// fontColor,
+			// iconColor,
+			// title,
+			// offlineTitle,
+
+			const registerGuestVisitor = {
+				name: faker.person.firstName(),
+				email: faker.internet.email(),
+				token: faker.string.uuid(),
+			};
+
+			await test.step('Expect setTheme set color', async () => {
+				await poLiveChat.page.evaluate(() => {
+					window.RocketChat.livechat.maximizeWidget();
+					window.RocketChat.livechat.setTheme({ color: 'rgb(50, 50, 50)' });
+				});
+
+				await expect(page.frameLocator('#rocketchat-iframe').locator('header')).toHaveCSS('background-color', 'rgb(50, 50, 50)');
 			});
+
+			await test.step('Expect setTheme set fontColor', async () => {
+				await poLiveChat.page.evaluate(() => {
+					window.RocketChat.livechat.maximizeWidget();
+					window.RocketChat.livechat.setTheme({ fontColor: 'rgb(50, 50, 50)' });
+				});
+
+				await expect(page.frameLocator('#rocketchat-iframe').locator('header')).toHaveCSS('color', 'rgb(50, 50, 50)');
+			});
+
+			// TODO: fix iconColor setTheme property
+			// await test.step('Expect setTheme set iconColor', async () => {
+			// 	await poLiveChat.page.evaluate(() => {
+			// 		window.RocketChat.livechat.maximizeWidget();
+			// 		window.RocketChat.livechat.setTheme({ iconColor: 'rgb(50, 50, 50)' });
+			// 	});
+
+			// 	await expect(page.frameLocator('#rocketchat-iframe').locator('header')).toHaveCSS('color', 'rgb(50, 50, 50)');
+			// });
+
+			await test.step('Expect setTheme set title', async () => {
+				await poLiveChat.page.evaluate(() => {
+					window.RocketChat.livechat.maximizeWidget();
+					window.RocketChat.livechat.setTheme({ title: 'CustomTitle' });
+				});
+
+				await poLiveChat.page.evaluate(
+					(registerGuestVisitor) => window.RocketChat.livechat.registerGuest(registerGuestVisitor),
+					registerGuestVisitor,
+				);
+
+				await expect(page.frameLocator('#rocketchat-iframe').getByText('CustomTitle')).toBeVisible();
+			});
+
+			// await test.step('Expect setTheme set offlineTitle', async () => {
+			// 	await poLiveChat.page.evaluate(() => {
+			// 		window.RocketChat.livechat.maximizeWidget();
+			// 		window.RocketChat.livechat.setTheme({ offlineTitle: 'CustomOfflineTitle' });
+			// 	});
+
+			// 	await expect(page.frameLocator('#rocketchat-iframe').getByText('CustomTitle')).toBeVisible();
+			// });
 		});
 
 		test.skip('setParentUrl', async () => {
@@ -209,6 +289,20 @@ test.describe('Omnichannel - Livechat API', () => {
 			});
 		});
 
+		test.skip('setBusinessUnit', async () => {
+			// TODO
+			await test.step('Expect setBusinessUnit to do something', async () => {
+				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.setBusinessUnit());
+			});
+		});
+
+		test.skip('setCustomField', async () => {
+			// TODO
+			await test.step('Expect setCustomField to do something', async () => {
+				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.setCustomField());
+			});
+		});
+
 		test.skip('clearDepartment', async () => {
 			// TODO
 			await test.step('Expect clearDepartment to do something', async () => {
@@ -262,20 +356,6 @@ test.describe('Omnichannel - Livechat API', () => {
 
 				await expect(pageCtx.frameLocator('#rocketchat-iframe').getByText('Start Chat')).not.toBeVisible();
 				await expect(pageCtx.frameLocator('#rocketchat-iframe').getByText('this_a_test_message_from_visitor')).toBeVisible();
-			});
-		});
-
-		test.skip('setBusinessUnit', async () => {
-			// TODO
-			await test.step('Expect setBusinessUnit to do something', async () => {
-				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.setBusinessUnit());
-			});
-		});
-
-		test.skip('setCustomField', async () => {
-			// TODO
-			await test.step('Expect setCustomField to do something', async () => {
-				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.setCustomField());
 			});
 		});
 
@@ -393,6 +473,7 @@ test.describe('Omnichannel - Livechat API', () => {
 
 	test.describe('Widget Listeners', () => {
 		// Tests that listen to events from the widget, and check if they are being triggered
+
 		let poAuxContext: { page: Page; poHomeOmnichannel: HomeOmnichannel };
 		let poLiveChat: OmnichannelLiveChatEmbedded;
 		let page: Page;
@@ -434,31 +515,29 @@ test.describe('Omnichannel - Livechat API', () => {
 
 		test('onChatMaximized & onChatMinimized', async () => {
 			await test.step('Expect onChatMaximized to trigger callback', async () => {
-				await poLiveChat.page.evaluate(() =>
-					window.RocketChat.livechat.onChatMaximized(() => {
-						window.onChatMaximized = true;
-					}),
+				await poLiveChat.page.evaluate(
+					() =>
+						new Promise((resolve) => {
+							window.RocketChat.livechat.onChatMaximized(() => {
+								resolve();
+							});
+
+							window.RocketChat.livechat.maximizeWidget();
+						}),
 				);
-
-				const watchForTrigger = page.waitForFunction(() => window.onChatMaximized === true);
-
-				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.maximizeWidget());
-
-				await watchForTrigger;
 			});
 
 			await test.step('Expect onChatMinimized to trigger callback', async () => {
-				await poLiveChat.page.evaluate(() =>
-					window.RocketChat.livechat.onChatMinimized(() => {
-						window.onChatMinimized = true;
-					}),
+				await poLiveChat.page.evaluate(
+					() =>
+						new Promise((resolve) => {
+							window.RocketChat.livechat.onChatMinimized(() => {
+								resolve();
+							});
+
+							window.RocketChat.livechat.minimizeWidget();
+						}),
 				);
-
-				const watchForTrigger = page.waitForFunction(() => window.onChatMinimized === true);
-
-				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.minimizeWidget());
-
-				await watchForTrigger;
 			});
 		});
 
@@ -467,6 +546,7 @@ test.describe('Omnichannel - Livechat API', () => {
 				name: faker.person.firstName(),
 				email: faker.internet.email(),
 			};
+			
 			await test.step('Expect onChatStarted to trigger callback', async () => {
 				const watchForTrigger = page.waitForFunction(() => window.onChatStarted === true);
 
@@ -518,7 +598,7 @@ test.describe('Omnichannel - Livechat API', () => {
 					}),
 				);
 
-				await poLiveChat.openLiveChat();
+				await poLiveChat.openLiveChat(false);
 				await poLiveChat.sendMessage(newVisitor, false);
 				await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
 				await poLiveChat.btnSendMessageToOnlineAgent.click();
@@ -580,31 +660,29 @@ test.describe('Omnichannel - Livechat API', () => {
 
 		test('onWidgetHidden & onWidgetShown', async () => {
 			await test.step('Expect onWidgetHidden to trigger callback', async () => {
-				await poLiveChat.page.evaluate(() =>
-					window.RocketChat.livechat.onWidgetHidden(() => {
-						window.onWidgetHidden = true;
-					}),
+				await poLiveChat.page.evaluate(
+					() =>
+						new Promise((resolve) => {
+							window.RocketChat.livechat.onWidgetHidden(() => {
+								resolve();
+							});
+
+							window.RocketChat.livechat.hideWidget();
+						}),
 				);
-
-				const watchForTrigger = page.waitForFunction(() => window.onWidgetHidden === true);
-
-				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.hideWidget());
-
-				await watchForTrigger;
 			});
 
 			await test.step('Expect onWidgetShown to trigger callback', async () => {
-				await poLiveChat.page.evaluate(() =>
-					window.RocketChat.livechat.onWidgetShown(() => {
-						window.onWidgetShown = true;
-					}),
+				await poLiveChat.page.evaluate(
+					() =>
+						new Promise((resolve) => {
+							window.RocketChat.livechat.onWidgetShown(() => {
+								resolve();
+							});
+
+							window.RocketChat.livechat.showWidget();
+						}),
 				);
-
-				const watchForTrigger = page.waitForFunction(() => window.onWidgetShown === true);
-
-				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.showWidget());
-
-				await watchForTrigger;
 			});
 		});
 
