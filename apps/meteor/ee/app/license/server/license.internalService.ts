@@ -1,6 +1,7 @@
 import type { ILicense } from '@rocket.chat/core-services';
 import { api, ServiceClassInternal } from '@rocket.chat/core-services';
-import { License, type LicenseModule } from '@rocket.chat/license';
+import { type LicenseModule } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 
 import { guestPermissions } from '../../authorization/lib/guestPermissions';
 import { resetEnterprisePermissions } from '../../authorization/server/resetEnterprisePermissions';
