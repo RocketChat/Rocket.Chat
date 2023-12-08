@@ -107,7 +107,7 @@ export const sendMessageToRoom = async (
 
 export const createConversation = async (
 	api: BaseTest['api'],
-	{ visitorName, visitorToken, agentId, departmentId }: CreateConversationParams,
+	{ visitorName, visitorToken, agentId, departmentId }: CreateConversationParams = {},
 ) => {
 	const token = visitorToken || faker.string.uuid();
 
