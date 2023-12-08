@@ -11,6 +11,22 @@ export class HomeOmnichannelContent extends HomeContent {
 		this.omnichannelCloseChatModal = new OmnichannelCloseChatModal(page);
 	}
 
+	get btnReturnToQueue(): Locator {
+		return this.page.locator('role=button[name="Move to the queue"]');
+	}
+
+	get modalReturnToQueue(): Locator {
+		return this.page.locator('[data-qa-id="return-to-queue-modal"]');
+	}
+
+	get btnReturnToQueueConfirm():Locator {
+		return this.modalReturnToQueue.locator('role=button[name="Confirm"]');
+	}
+
+	get btnReturnToQueueCancel():Locator {
+		return this.modalReturnToQueue.locator('role=button[name="Cancel"]');
+	}
+
 	get btnTakeChat(): Locator {
 		return this.page.locator('role=button[name="Take it!"]');
 	}
