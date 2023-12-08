@@ -8,6 +8,15 @@ import { test, expect } from '../utils/test';
 
 // TODO: Use official widget typing once that is merged
 declare const window: Window & {
+	// TODO: Improve tests to no longer use window object properties
+	onPrechatFormSubmit: boolean;
+	onAssignAgent: boolean;
+	onAgentStatusChange: boolean;
+	onOfflineFormSubmit: boolean;
+	onChatStarted: boolean;
+	onChatEnded: boolean;
+
+
 	RocketChat: {
 		livechat: {
 			clearBusinessUnit: () => void;
@@ -20,14 +29,14 @@ declare const window: Window & {
 			pageVisited: () => void;
 			registerGuest: (visitor: { name: string; email: string; token: string }) => void;
 			setAgent: (agent: { username: string; _id: string }) => void;
-			setBusinessUnit: (businessUnit: { _id: string; name: string }) => void;
+			setBusinessUnit: (businessUnit?: string) => void;
 			setCustomField: (field: { key: string; value: string }) => void;
 			setDepartment: (department: { _id: string; name: string }) => void;
 			setGuestEmail: (email: string) => void;
 			setGuestName: (name: string) => void;
 			setGuestToken: (token: string) => void;
 			setParentUrl: (url: string) => void;
-			setTheme: (theme: { color?: string; fontColor?: string; iconColor?: string; title?: string; offlineTitle?: string; }) => void;
+			setTheme: (theme: { color?: string; fontColor?: string; iconColor?: string; title?: string; offlineTitle?: string }) => void;
 			setLanguage: (language: string) => void;
 			onChatMaximized: (callback: () => void) => void;
 			onChatMinimized: (callback: () => void) => void;
@@ -299,7 +308,7 @@ test.describe('Omnichannel - Livechat API', () => {
 		test.skip('setCustomField', async () => {
 			// TODO
 			await test.step('Expect setCustomField to do something', async () => {
-				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.setCustomField());
+				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.setCustomField({key: 'test', value: 'test'}));
 			});
 		});
 
@@ -517,7 +526,7 @@ test.describe('Omnichannel - Livechat API', () => {
 			await test.step('Expect onChatMaximized to trigger callback', async () => {
 				await poLiveChat.page.evaluate(
 					() =>
-						new Promise((resolve) => {
+						new Promise((resolve: (value?: unknown) => void) => {
 							window.RocketChat.livechat.onChatMaximized(() => {
 								resolve();
 							});
@@ -530,7 +539,7 @@ test.describe('Omnichannel - Livechat API', () => {
 			await test.step('Expect onChatMinimized to trigger callback', async () => {
 				await poLiveChat.page.evaluate(
 					() =>
-						new Promise((resolve) => {
+						new Promise((resolve: (value?: unknown) => void) => {
 							window.RocketChat.livechat.onChatMinimized(() => {
 								resolve();
 							});
@@ -556,7 +565,7 @@ test.describe('Omnichannel - Livechat API', () => {
 					}),
 				);
 
-				await poLiveChat.openLiveChat();
+				await poLiveChat.openLiveChat(false);
 				await poLiveChat.sendMessage(newVisitor, false);
 				await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
 				await poLiveChat.btnSendMessageToOnlineAgent.click();
@@ -662,7 +671,7 @@ test.describe('Omnichannel - Livechat API', () => {
 			await test.step('Expect onWidgetHidden to trigger callback', async () => {
 				await poLiveChat.page.evaluate(
 					() =>
-						new Promise((resolve) => {
+						new Promise((resolve: (value?: unknown) => void) => {
 							window.RocketChat.livechat.onWidgetHidden(() => {
 								resolve();
 							});
@@ -675,7 +684,7 @@ test.describe('Omnichannel - Livechat API', () => {
 			await test.step('Expect onWidgetShown to trigger callback', async () => {
 				await poLiveChat.page.evaluate(
 					() =>
-						new Promise((resolve) => {
+						new Promise((resolve: (value?: unknown) => void) => {
 							window.RocketChat.livechat.onWidgetShown(() => {
 								resolve();
 							});
