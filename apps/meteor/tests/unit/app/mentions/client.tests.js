@@ -5,7 +5,7 @@ import { MentionsParser } from '../../../../app/mentions/lib/MentionsParser';
 let mentionsParser;
 beforeEach(() => {
 	mentionsParser = new MentionsParser({
-		pattern: '[0-9a-zA-Z-_.]+',
+		pattern: () => '[0-9a-zA-Z-_.]+',
 		me: () => 'me',
 	});
 });
