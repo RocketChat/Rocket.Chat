@@ -8,7 +8,7 @@ import { useExternalLink } from '../../../hooks/useExternalLink';
 
 const DOCS_URL = 'https://go.rocket.chat/i/hp-documentation';
 
-const DocumentationCard = (props: ComponentProps<typeof Card>): ReactElement => {
+const DocumentationCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): ReactElement => {
 	const t = useTranslation();
 	const handleOpenLink = useExternalLink();
 

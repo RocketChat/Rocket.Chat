@@ -6,7 +6,7 @@ import React from 'react';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import CustomHomepageContent from '../CustomHomePageContent';
 
-const CustomContentCard = (props: ComponentProps<typeof Card>): ReactElement | null => {
+const CustomContentCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): ReactElement | null => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const router = useRouter();

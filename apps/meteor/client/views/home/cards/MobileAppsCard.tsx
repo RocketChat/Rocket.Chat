@@ -9,7 +9,7 @@ import { useExternalLink } from '../../../hooks/useExternalLink';
 const GOOGLE_PLAY_URL = 'https://go.rocket.chat/i/hp-mobile-app-google';
 const APP_STORE_URL = 'https://go.rocket.chat/i/hp-mobile-app-apple';
 
-const MobileAppsCard = (props: ComponentProps<typeof Card>): ReactElement => {
+const MobileAppsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): ReactElement => {
 	const t = useTranslation();
 	const handleOpenLink = useExternalLink();
 

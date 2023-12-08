@@ -5,7 +5,7 @@ import React from 'react';
 
 import GenericCard from '../../../components/GenericCard';
 
-const AddUsersCard = (props: ComponentProps<typeof Card>): ReactElement => {
+const AddUsersCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): ReactElement => {
 	const t = useTranslation();
 
 	const router = useRouter();

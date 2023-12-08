@@ -10,7 +10,7 @@ const WINDOWS_APP_URL = 'https://go.rocket.chat/i/hp-desktop-app-windows';
 const LINUX_APP_URL = 'https://go.rocket.chat/i/hp-desktop-app-linux';
 const MAC_APP_URL = 'https://go.rocket.chat/i/hp-desktop-app-mac';
 
-const DesktopAppsCard = (props: ComponentProps<typeof Card>): ReactElement => {
+const DesktopAppsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): ReactElement => {
 	const t = useTranslation();
 	const handleOpenLink = useExternalLink();
 

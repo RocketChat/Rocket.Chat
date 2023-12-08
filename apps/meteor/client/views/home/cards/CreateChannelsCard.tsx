@@ -6,7 +6,7 @@ import React from 'react';
 import GenericCard from '../../../components/GenericCard';
 import CreateChannelWithData from '../../../sidebar/header/CreateChannel';
 
-const CreateChannelsCard = (props: ComponentProps<typeof Card>): ReactElement => {
+const CreateChannelsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): ReactElement => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 
