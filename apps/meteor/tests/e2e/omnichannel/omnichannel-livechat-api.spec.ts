@@ -1,11 +1,11 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
+import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel, OmnichannelLiveChatEmbedded } from '../page-objects';
 import { test, expect } from '../utils/test';
-import { IS_EE } from '../config/constants';
 
 // TODO: Use official widget typing once that is merged
 declare const window: Window & {
