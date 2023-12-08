@@ -1,4 +1,12 @@
 import { OmnichannelIntegration } from '@rocket.chat/core-services';
+import type {
+	ILivechatVisitor,
+	IOmnichannelRoom,
+	IUpload,
+	MessageAttachment,
+	ServiceData,
+	FileAttachmentProps,
+} from '@rocket.chat/core-typings';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatVisitors, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
@@ -6,14 +14,16 @@ import { Random } from '@rocket.chat/random';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Meteor } from 'meteor/meteor';
 
+import { getFileExtension } from '../../../../../lib/utils/getFileExtension';
 import { API } from '../../../../api/server';
 import { FileUpload } from '../../../../file-upload/server';
 import { settings } from '../../../../settings/server';
+import type { ILivechatMessage } from '../../../server/lib/LivechatTyped';
 import { Livechat as LivechatTyped } from '../../../server/lib/LivechatTyped';
 
 const logger = new Logger('SMS');
 
-const getUploadFile = async (details, fileUrl) => {
+const getUploadFile = async (details: Omit<IUpload, '_id'>, fileUrl: string) => {
 	const response = await fetch(fileUrl);
 
 	const content = Buffer.from(await response.arrayBuffer());
@@ -29,19 +39,19 @@ const getUploadFile = async (details, fileUrl) => {
 	return fileStore.insert({ ...details, size: contentSize }, content);
 };
 
-const defineDepartment = async (idOrName) => {
+const defineDepartment = async (idOrName?: string) => {
 	if (!idOrName || idOrName === '') {
 		return;
 	}
 
-	const department = await LivechatDepartment.findOneByIdOrName(idOrName);
-	return department && department._id;
+	const department = await LivechatDepartment.findOneByIdOrName(idOrName, { projection: { _id: 1 } });
+	return department?._id;
 };
 
-const defineVisitor = async (smsNumber, targetDepartment) => {
+const defineVisitor = async (smsNumber: string, targetDepartment?: string) => {
 	const visitor = await LivechatVisitors.findOneVisitorByPhone(smsNumber);
-	let data = {
-		token: (visitor && visitor.token) || Random.id(),
+	let data: { token: string; department?: string } = {
+		token: visitor?.token || Random.id(),
 	};
 
 	if (!visitor) {
@@ -61,7 +71,7 @@ const defineVisitor = async (smsNumber, targetDepartment) => {
 	return LivechatVisitors.findOneEnabledById(id);
 };
 
-const normalizeLocationSharing = (payload) => {
+const normalizeLocationSharing = (payload: ServiceData) => {
 	const { extra: { fromLatitude: latitude, fromLongitude: longitude } = {} } = payload;
 	if (!latitude || !longitude) {
 		return;
@@ -73,13 +83,14 @@ const normalizeLocationSharing = (payload) => {
 	};
 };
 
+// @ts-expect-error - this is an special endpoint that requires the return to not be wrapped as regular returns
 API.v1.addRoute('livechat/sms-incoming/:service', {
 	async post() {
 		if (!(await OmnichannelIntegration.isConfiguredSmsService(this.urlParams.service))) {
 			return API.v1.failure('Invalid service');
 		}
 
-		const smsDepartment = settings.get('SMS_Default_Omnichannel_Department');
+		const smsDepartment = settings.get<string>('SMS_Default_Omnichannel_Department');
 		const SMSService = await OmnichannelIntegration.getSmsService(this.urlParams.service);
 		const sms = SMSService.parse(this.bodyParams);
 		const { department } = this.queryParams;
@@ -89,34 +100,35 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 		}
 
 		const visitor = await defineVisitor(sms.from, targetDepartment);
+		if (!visitor) {
+			return API.v1.success(SMSService.error(new Error('Invalid visitor')));
+		}
+
 		const { token } = visitor;
 		const room = await LivechatRooms.findOneOpenByVisitorTokenAndDepartmentIdAndSource(token, targetDepartment, OmnichannelSourceType.SMS);
 		const roomExists = !!room;
 		const location = normalizeLocationSharing(sms);
-		const rid = (room && room._id) || Random.id();
+		const rid = room?._id || Random.id();
 
-		const sendMessage = {
-			guest: visitor,
-			roomInfo: {
-				sms: {
-					from: sms.to,
-				},
-				source: {
-					type: OmnichannelSourceType.SMS,
-					alias: this.urlParams.service,
-				},
+		const roomInfo = {
+			sms: {
+				from: sms.to,
+			},
+			source: {
+				type: OmnichannelSourceType.SMS,
+				alias: this.urlParams.service,
 			},
 		};
 
 		// create an empty room first place, so attachments have a place to live
 		if (!roomExists) {
-			await LivechatTyped.getRoom(visitor, { rid, token, msg: '' }, sendMessage.roomInfo, undefined);
+			await LivechatTyped.getRoom(visitor, { rid, token, msg: '' }, roomInfo, undefined);
 		}
 
-		let file;
-		let attachments;
+		let file: ILivechatMessage['file'];
+		const attachments: (MessageAttachment | undefined)[] = [];
 
-		const [media] = sms.media;
+		const [media] = sms?.media || [];
 		if (media) {
 			const { url: smsUrl, contentType } = media;
 			const details = {
@@ -126,40 +138,74 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 				visitorToken: token,
 			};
 
-			let attachment;
 			try {
 				const uploadedFile = await getUploadFile(details, smsUrl);
-				file = { _id: uploadedFile._id, name: uploadedFile.name, type: uploadedFile.type };
-				const fileUrl = FileUpload.getPath(`${file._id}/${encodeURI(file.name)}`);
+				file = { _id: uploadedFile._id, name: uploadedFile.name || 'file', type: uploadedFile.type };
+				const fileUrl = FileUpload.getPath(`${file._id}/${encodeURI(file.name || 'file')}`);
 
-				attachment = {
-					title: file.name,
-					type: 'file',
-					description: file.description,
-					title_link: fileUrl,
-				};
+				const fileType = file.type as string;
 
-				if (/^image\/.+/.test(file.type)) {
-					attachment.image_url = fileUrl;
-					attachment.image_type = file.type;
-					attachment.image_size = file.size;
-					attachment.image_dimensions = file.identify != null ? file.identify.size : undefined;
-				} else if (/^audio\/.+/.test(file.type)) {
-					attachment.audio_url = fileUrl;
-					attachment.audio_type = file.type;
-					attachment.audio_size = file.size;
-					attachment.title_link_download = true;
-				} else if (/^video\/.+/.test(file.type)) {
-					attachment.video_url = fileUrl;
-					attachment.video_type = file.type;
-					attachment.video_size = file.size;
-					attachment.title_link_download = true;
+				if (/^image\/.+/.test(fileType)) {
+					const attachment: FileAttachmentProps = {
+						title: file.name,
+						type: 'file',
+						description: file.description,
+						title_link: fileUrl,
+						image_url: fileUrl,
+						image_type: fileType,
+						image_size: file.size,
+					};
+
+					if (file.identify?.size) {
+						attachment.image_dimensions = file?.identify.size;
+					}
+
+					attachments.push(attachment);
+				} else if (/^audio\/.+/.test(fileType)) {
+					const attachment: FileAttachmentProps = {
+						title: file.name,
+						type: 'file',
+						description: file.description,
+						title_link: fileUrl,
+						audio_url: fileUrl,
+						audio_type: fileType,
+						audio_size: file.size,
+						title_link_download: true,
+					};
+
+					attachments.push(attachment);
+				} else if (/^video\/.+/.test(fileType)) {
+					const attachment: FileAttachmentProps = {
+						title: file.name,
+						type: 'file',
+						description: file.description,
+						title_link: fileUrl,
+						video_url: fileUrl,
+						video_type: fileType,
+						video_size: file.size as number,
+						title_link_download: true,
+					};
+
+					attachments.push(attachment);
 				} else {
-					attachment.title_link_download = true;
+					const attachment = {
+						title: file.name,
+						type: 'file',
+						description: file.description,
+						format: getFileExtension(file.name),
+						title_link: fileUrl,
+						title_link_download: true,
+						size: file.size as number,
+					};
+
+					attachments.push(attachment);
 				}
 			} catch (err) {
 				logger.error({ msg: 'Attachment upload failed', err });
-				attachment = {
+				const attachment = {
+					title: 'Attachment upload failed',
+					type: 'file',
+					description: 'An attachment was received, but upload to server failed',
 					fields: [
 						{
 							title: 'User upload failed',
@@ -169,22 +215,35 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 					],
 					color: 'yellow',
 				};
+
+				attachments.push(attachment);
 			}
-			attachments = [attachment];
 		}
 
-		sendMessage.message = {
-			_id: Random.id(),
-			rid,
-			token,
-			msg: sms.body,
-			...(location && { location }),
-			...(attachments && { attachments }),
-			...(file && { file }),
+		const sendMessage: {
+			guest: ILivechatVisitor;
+			message: ILivechatMessage;
+			roomInfo: {
+				source?: IOmnichannelRoom['source'];
+				[key: string]: unknown;
+			};
+		} = {
+			guest: visitor,
+			roomInfo,
+			message: {
+				_id: Random.id(),
+				rid,
+				token,
+				msg: sms.body,
+				...(location && { location }),
+				...(attachments && { attachments: attachments.filter((a: any): a is MessageAttachment => !!a) }),
+				...(file && { file }),
+			},
 		};
 
 		try {
-			const msg = SMSService.response.call(this, await LivechatTyped.sendMessage(sendMessage));
+			await LivechatTyped.sendMessage(sendMessage);
+			const msg = SMSService.response();
 			setImmediate(async () => {
 				if (sms.extra) {
 					if (sms.extra.fromCountry) {
@@ -203,8 +262,8 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 			});
 
 			return msg;
-		} catch (e) {
-			return SMSService.error.call(this, e);
+		} catch (e: any) {
+			return SMSService.error(e);
 		}
 	},
 });
