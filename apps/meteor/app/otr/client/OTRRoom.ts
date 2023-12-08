@@ -11,7 +11,6 @@ import { Presence } from '../../../client/lib/presence';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { getUidDirectMessage } from '../../../client/lib/utils/getUidDirectMessage';
 import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
-import { Notifications } from '../../notifications/client';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { t } from '../../utils/lib/i18n';
 import type { IOnUserStreamData, IOTRAlgorithm, IOTRDecrypt, IOTRRoom } from '../lib/IOTR';
@@ -77,13 +76,19 @@ export class OTRRoom implements IOTRRoom {
 		this.setState(OtrRoomState.ESTABLISHING);
 		try {
 			await this.generateKeyPair();
-			this.peerId &&
-				Notifications.notifyUser(this.peerId, 'otr', 'handshake', {
-					roomId: this._roomId,
-					userId: this._userId,
-					publicKey: EJSON.stringify(this._exportedPublicKey),
-					refresh,
-				});
+			if (this.peerId) {
+				sdk.publish('notify-user', [
+					`${this.peerId}/otr`,
+					'handshake',
+					{
+						roomId: this._roomId,
+						userId: this._userId,
+						publicKey: EJSON.stringify(this._exportedPublicKey),
+						refresh,
+					},
+				]);
+			}
+
 			if (refresh) {
 				const user = Meteor.user();
 				if (!user) {
@@ -100,33 +105,48 @@ export class OTRRoom implements IOTRRoom {
 	acknowledge(): void {
 		void sdk.rest.post('/v1/statistics.telemetry', { params: [{ eventName: 'otrStats', timestamp: Date.now(), rid: this._roomId }] });
 
-		this.peerId &&
-			Notifications.notifyUser(this.peerId, 'otr', 'acknowledge', {
-				roomId: this._roomId,
-				userId: this._userId,
-				publicKey: EJSON.stringify(this._exportedPublicKey),
-			});
+		if (this.peerId) {
+			sdk.publish('notify-user', [
+				`${this.peerId}/otr`,
+				'acknowledge',
+				{
+					roomId: this._roomId,
+					userId: this._userId,
+					publicKey: EJSON.stringify(this._exportedPublicKey),
+				},
+			]);
+		}
 	}
 
 	deny(): void {
 		this.reset();
 		this.setState(OtrRoomState.DECLINED);
-		this.peerId &&
-			Notifications.notifyUser(this.peerId, 'otr', 'deny', {
-				roomId: this._roomId,
-				userId: this._userId,
-			});
+		if (this.peerId) {
+			sdk.publish('notify-user', [
+				`${this.peerId}/otr`,
+				'deny',
+				{
+					roomId: this._roomId,
+					userId: this._userId,
+				},
+			]);
+		}
 	}
 
 	end(): void {
 		this.isFirstOTR = true;
 		this.reset();
 		this.setState(OtrRoomState.NOT_STARTED);
-		this.peerId &&
-			Notifications.notifyUser(this.peerId, 'otr', 'end', {
-				roomId: this._roomId,
-				userId: this._userId,
-			});
+		if (this.peerId) {
+			sdk.publish('notify-user', [
+				`${this.peerId}/otr`,
+				'end',
+				{
+					roomId: this._roomId,
+					userId: this._userId,
+				},
+			]);
+		}
 	}
 
 	reset(): void {

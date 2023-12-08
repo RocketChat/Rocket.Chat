@@ -1,4 +1,4 @@
-import { type IMessage, type AtLeast, isOTRMessage } from '@rocket.chat/core-typings';
+import { isOTRMessage } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
@@ -11,31 +11,45 @@ import { onClientMessageReceived } from '../lib/onClientMessageReceived';
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {
-		if (!Meteor.userId()) {
+		const uid = Meteor.userId();
+
+		if (!uid) {
 			return;
 		}
 
-		sdk.stream('notify-user', [`${Meteor.userId()}/otr`], (type, data) => {
-			if (!data.roomId || !data.userId || data.userId === Meteor.userId()) {
+		sdk.stream('notify-user', [`${uid}/otr`], (type, data) => {
+			if (!data.roomId || !data.userId || data.userId === uid) {
 				return;
 			}
 
-			const otrRoom = OTR.getInstanceByRoomId(data.roomId);
+			const otrRoom = OTR.getInstanceByRoomId(uid, data.roomId);
 			otrRoom?.onUserStream(type, data);
 		});
 	});
 
-	onClientBeforeSendMessage.use(async (message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>) => {
-		const otrRoom = OTR.getInstanceByRoomId(message.rid);
+	onClientBeforeSendMessage.use(async (message) => {
+		const uid = Meteor.userId();
 
-		if (message.rid && otrRoom && otrRoom.getState() === OtrRoomState.ESTABLISHED) {
+		if (!uid) {
+			return message;
+		}
+
+		const otrRoom = OTR.getInstanceByRoomId(uid, message.rid);
+
+		if (otrRoom && otrRoom.getState() === OtrRoomState.ESTABLISHED) {
 			const msg = await otrRoom.encrypt(message);
 			return { ...message, msg, t: 'otr' };
 		}
 		return message;
 	});
 
-	onClientMessageReceived.use(async (message: IMessage & { notification?: boolean }) => {
+	onClientMessageReceived.use(async (message) => {
+		const uid = Meteor.userId();
+
+		if (!uid) {
+			return message;
+		}
+
 		if (!isOTRMessage(message)) {
 			return message;
 		}
@@ -44,7 +58,7 @@ Meteor.startup(() => {
 			return { ...message, msg: t('Encrypted_message') };
 		}
 
-		const otrRoom = OTR.getInstanceByRoomId(message.rid);
+		const otrRoom = OTR.getInstanceByRoomId(uid, message.rid);
 
 		if (otrRoom && otrRoom.getState() === OtrRoomState.ESTABLISHED) {
 			const decrypted = await otrRoom.decrypt(message.msg);
