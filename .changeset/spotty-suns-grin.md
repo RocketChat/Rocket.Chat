@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-fixed: do not send push notifications about videoconf messages when a push was already sent for the call itself
+Improved the experience of receiving conference calls on the mobile app by disabling the push notification for the "new call" message if a push is already being sent to trigger the phone's ringing tone.
