@@ -251,43 +251,46 @@ export const sendMessage = async function (user, message, room, upsert = false, 
 	message = await Message.beforeSave({ message, room, user });
 
 	message = await callbacks.run('beforeSaveMessage', message, room);
-	if (message) {
-		if (message.t === 'otr') {
-			const otrStreamer = notifications.streamRoomMessage;
-			otrStreamer.emit(message.rid, message, user, room);
-		} else if (message._id && upsert) {
-			const { _id } = message;
-			delete message._id;
-			await Messages.updateOne(
-				{
-					_id,
-					'u._id': message.u._id,
-				},
-				{ $set: message },
-				{ upsert: true },
-			);
-			message._id = _id;
-		} else {
-			const messageAlreadyExists = message._id && (await Messages.findOneById(message._id, { projection: { _id: 1 } }));
-			if (messageAlreadyExists) {
-				return;
-			}
-			const result = await Messages.insertOne(message);
-			message._id = result.insertedId;
-		}
 
-		if (Apps && Apps.isLoaded()) {
-			// This returns a promise, but it won't mutate anything about the message
-			// so, we don't really care if it is successful or fails
-			void Apps.getBridges()?.getListenerBridge().messageEvent('IPostMessageSent', message);
-		}
+	if (!message) {
+		return;
+	}
 
-		/*
+	if (message.t === 'otr') {
+		const otrStreamer = notifications.streamRoomMessage;
+		otrStreamer.emit(message.rid, message, user, room);
+	} else if (message._id && upsert) {
+		const { _id } = message;
+		delete message._id;
+		await Messages.updateOne(
+			{
+				_id,
+				'u._id': message.u._id,
+			},
+			{ $set: message },
+			{ upsert: true },
+		);
+		message._id = _id;
+	} else {
+		const messageAlreadyExists = message._id && (await Messages.findOneById(message._id, { projection: { _id: 1 } }));
+		if (messageAlreadyExists) {
+			return;
+		}
+		const result = await Messages.insertOne(message);
+		message._id = result.insertedId;
+	}
+
+	if (Apps?.isLoaded()) {
+		// This returns a promise, but it won't mutate anything about the message
+		// so, we don't really care if it is successful or fails
+		void Apps.getBridges()?.getListenerBridge().messageEvent('IPostMessageSent', message);
+	}
+
+	/*
 		Defer other updates as their return is not interesting to the user
 		*/
 
-		// Execute all callbacks
-		await callbacks.run('afterSaveMessage', message, room);
-		return message;
-	}
+	// Execute all callbacks
+	await callbacks.run('afterSaveMessage', message, room);
+	return message;
 };

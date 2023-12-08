@@ -1,4 +1,4 @@
-import { isE2EEMessage, isOTRMessage } from '@rocket.chat/core-typings';
+import { isE2EEMessage, isOTRMessage, isOTRAckMessage } from '@rocket.chat/core-typings';
 import type { Options, Root } from '@rocket.chat/message-parser';
 import { parse } from '@rocket.chat/message-parser';
 
@@ -10,7 +10,7 @@ if (process.env.DISABLE_MESSAGE_PARSER !== 'true') {
 	callbacks.add(
 		'beforeSaveMessage',
 		(message) => {
-			if (isE2EEMessage(message) || isOTRMessage(message)) {
+			if (isE2EEMessage(message) || isOTRMessage(message) || isOTRAckMessage(message)) {
 				return message;
 			}
 			try {

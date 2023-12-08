@@ -56,7 +56,7 @@ export interface StreamerEvents {
 		// { key: `${string}/${string}`; args: [id: string] },
 	];
 
-	'room-messages': [{ key: '__my_messages__'; args: [IMessage] }, { key: string; args: [IMessage] }];
+	'room-messages': [{ key: '__my_messages__'; args: [IMessage] }, { key: string; args: [message: IMessage, user?: IUser, room?: IRoom] }];
 
 	'notify-all': [
 		{
