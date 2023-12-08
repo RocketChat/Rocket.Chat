@@ -68,15 +68,6 @@ export class NotificationQueueRaw extends BaseRaw<INotification> implements INot
 		return op.deletedCount;
 	}
 
-	async clearQueueByUserIdAndMessageIds(uid: string, mids: INotification['mid'][]): Promise<number | undefined> {
-		const op = await this.deleteMany({
-			uid,
-			mid: { $in: mids },
-		});
-
-		return op.deletedCount;
-	}
-
 	async findNextInQueueOrExpired(expired: Date): Promise<INotification | null> {
 		const now = new Date();
 

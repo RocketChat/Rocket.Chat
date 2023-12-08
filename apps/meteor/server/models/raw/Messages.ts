@@ -987,14 +987,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
-	findByThreadId(tmid: string, options?: FindOptions<IMessage>): FindCursor<IMessage> {
-		const query = {
-			tmid,
-		};
-
-		return this.find(query, options);
-	}
-
 	findOneBySlackBotIdAndSlackTs(slackBotId: string, slackTs: Date): Promise<IMessage | null> {
 		const query = {
 			slackBotId,

@@ -1,5 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { Messages, Rooms, NotificationQueue } from '@rocket.chat/models';
+import { Messages, Rooms } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -43,12 +43,8 @@ Meteor.methods<ServerMethods>({
 		}
 
 		await callbacks.run('beforeReadMessages', thread.rid, user?._id);
-		await readThread({ userId: user?._id, rid: thread.rid, tmid });
 		if (user?._id) {
-			const threadMessages = await Messages.findByThreadId(tmid, { projection: { _id: 1 } }).toArray();
-			const mids = threadMessages.map((message) => message._id);
-			await NotificationQueue.clearQueueByUserIdAndMessageIds(user._id, mids);
-
+			await readThread({ userId: user._id, rid: thread.rid, tmid });
 			callbacks.runAsync('afterReadMessages', room._id, { uid: user._id, tmid });
 		}
 	},
