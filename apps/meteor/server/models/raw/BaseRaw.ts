@@ -71,7 +71,9 @@ export abstract class BaseRaw<
 
 		this.col = this.db.collection(this.collectionName, options?.collection || {});
 
-		void this.createIndexes();
+		void this.createIndexes().catch((e) => {
+			console.warn(`Some indexes for collection '${this.collectionName}' could not be created:\n\t${e.message}`);
+		});
 
 		this.preventSetUpdatedAt = options?.preventSetUpdatedAt ?? false;
 	}
@@ -83,9 +85,7 @@ export abstract class BaseRaw<
 		}
 
 		if (indexes?.length) {
-			this.col.createIndexes(indexes).catch((e) => {
-				console.warn(`Some indexes for collection '${this.collectionName}' could not be created:\n\t${e.message}`);
-			});
+			return this.col.createIndexes(indexes);
 		}
 	}
 
