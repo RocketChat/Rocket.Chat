@@ -48,11 +48,11 @@ export class MentionsParser {
 	}
 
 	get userMentionRegex() {
-		return new RegExp(`(^|\\s|>)@(${this.pattern}(@(${this.pattern}))?(:([0-9a-zA-Z-_.]+))?)`, 'gm');
+		return new RegExp(`(^|\\s|>)@(${this.pattern()}(@(${this.pattern()}))?(:([0-9a-zA-Z-_.]+))?)`, 'gm');
 	}
 
 	get channelMentionRegex() {
-		return new RegExp(`(^|\\s|>)#(${this.pattern}(@(${this.pattern}))?)`, 'gm');
+		return new RegExp(`(^|\\s|>)#(${this.pattern()}(@(${this.pattern()}))?)`, 'gm');
 	}
 
 	replaceUsers = (msg: string, { mentions, temp }: IMessage, me: string) =>
