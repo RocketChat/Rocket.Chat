@@ -5,6 +5,7 @@ import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel, OmnichannelLiveChatEmbedded } from '../page-objects';
 import { test, expect } from '../utils/test';
+import { IS_EE } from '../config/constants';
 
 // TODO: Use official widget typing once that is merged
 declare const window: Window & {
@@ -214,6 +215,8 @@ test.describe('Omnichannel - Livechat API', () => {
 	});
 
 	test.describe('Complex Widget Interactions', () => {
+		// Needs Departments to test this, so needs an EE license for multiple deps
+		test.skip(!IS_EE, 'Enterprise Only');
 		// Tests that requires interaction from an agent or more
 		let poAuxContext: { page: Page; poHomeOmnichannel: HomeOmnichannel };
 		let poLiveChat: OmnichannelLiveChatEmbedded;
@@ -224,7 +227,6 @@ test.describe('Omnichannel - Livechat API', () => {
 			const statusCode = (await api.post('/livechat/users/agent', { username: 'user1' })).status();
 			await expect(statusCode).toBe(200);
 			
-			// await expect((await api.post('/livechat/department', { _id: depId, name: 'TestDep', email: 'TestDep@email.com' })).status()).toBe(200);
 			const response = await api.post('/livechat/department', {department: {
 				enabled: true,
 				email: faker.internet.email(),
@@ -266,7 +268,7 @@ test.describe('Omnichannel - Livechat API', () => {
 		});
 
 		test.afterAll(async ({ api }) => {
-			// await expect((await api.post('/settings/Enable_CSP', { value: true })).status()).toBe(200);
+			await expect((await api.post('/settings/Enable_CSP', { value: true })).status()).toBe(200);
 			await api.delete('/livechat/users/agent/user1');
 			await expect((await api.post('/settings/Omnichannel_enable_department_removal', { value: true })).status()).toBe(200);
 			const response = await api.delete(`/livechat/department/${depId}`, { name: 'TestDep', email: 'TestDep@email.com' });
