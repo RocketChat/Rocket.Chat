@@ -193,6 +193,7 @@ const project = {
 		'receiver.status': 1,
 		'receiver.statusConnection': 1,
 		'receiver.username': 1,
+		'receiver.settings.preferences.enableMobileRinging': 1,
 	},
 };
 
