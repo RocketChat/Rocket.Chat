@@ -36,7 +36,6 @@ export interface IOTRRoom {
 }
 
 export interface IOTR {
-	setEnabled(enabled: boolean): void;
 	getInstanceByRoomId(userId: IUser['_id'], roomId: IRoom['_id']): OTRRoom | undefined;
 }
 

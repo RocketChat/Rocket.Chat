@@ -1,4 +1,4 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IRoom, IMessage, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import EJSON from 'ejson';
 import { Meteor } from 'meteor/meteor';
@@ -47,13 +47,23 @@ export class OTRRoom implements IOTRRoom {
 
 	private isFirstOTR: boolean;
 
-	constructor(userId: string, roomId: string) {
-		this._userId = userId;
-		this._roomId = roomId;
+	protected constructor(uid: IUser['_id'], rid: IRoom['_id'], peerId: IUser['_id']) {
+		this._userId = uid;
+		this._roomId = rid;
 		this._keyPair = null;
 		this._sessionKey = null;
-		this.peerId = getUidDirectMessage(roomId) as string;
+		this.peerId = peerId;
 		this.isFirstOTR = true;
+	}
+
+	public static create(uid: IUser['_id'], rid: IRoom['_id']): OTRRoom | undefined {
+		const peerId = getUidDirectMessage(rid);
+
+		if (!peerId) {
+			return undefined;
+		}
+
+		return new OTRRoom(uid, rid, peerId);
 	}
 
 	getPeerId(): string {
@@ -74,79 +84,68 @@ export class OTRRoom implements IOTRRoom {
 
 	async handshake(refresh?: boolean): Promise<void> {
 		this.setState(OtrRoomState.ESTABLISHING);
-		try {
-			await this.generateKeyPair();
-			if (this.peerId) {
-				sdk.publish('notify-user', [
-					`${this.peerId}/otr`,
-					'handshake',
-					{
-						roomId: this._roomId,
-						userId: this._userId,
-						publicKey: EJSON.stringify(this._exportedPublicKey),
-						refresh,
-					},
-				]);
-			}
 
-			if (refresh) {
-				const user = Meteor.user();
-				if (!user) {
-					return;
-				}
-				await sdk.call('sendSystemMessages', this._roomId, user.username, otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH);
-				this.isFirstOTR = false;
+		await this.generateKeyPair();
+		sdk.publish('notify-user', [
+			`${this.peerId}/otr`,
+			'handshake',
+			{
+				roomId: this._roomId,
+				userId: this._userId,
+				publicKey: EJSON.stringify(this._exportedPublicKey),
+				refresh,
+			},
+		]);
+
+		if (refresh) {
+			const user = Meteor.user();
+			if (!user) {
+				return;
 			}
-		} catch (e) {
-			throw e;
+			await sdk.call('sendSystemMessages', this._roomId, user.username, otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH);
+			this.isFirstOTR = false;
 		}
 	}
 
 	acknowledge(): void {
 		void sdk.rest.post('/v1/statistics.telemetry', { params: [{ eventName: 'otrStats', timestamp: Date.now(), rid: this._roomId }] });
 
-		if (this.peerId) {
-			sdk.publish('notify-user', [
-				`${this.peerId}/otr`,
-				'acknowledge',
-				{
-					roomId: this._roomId,
-					userId: this._userId,
-					publicKey: EJSON.stringify(this._exportedPublicKey),
-				},
-			]);
-		}
+		sdk.publish('notify-user', [
+			`${this.peerId}/otr`,
+			'acknowledge',
+			{
+				roomId: this._roomId,
+				userId: this._userId,
+				publicKey: EJSON.stringify(this._exportedPublicKey),
+			},
+		]);
 	}
 
 	deny(): void {
 		this.reset();
 		this.setState(OtrRoomState.DECLINED);
-		if (this.peerId) {
-			sdk.publish('notify-user', [
-				`${this.peerId}/otr`,
-				'deny',
-				{
-					roomId: this._roomId,
-					userId: this._userId,
-				},
-			]);
-		}
+		sdk.publish('notify-user', [
+			`${this.peerId}/otr`,
+			'deny',
+			{
+				roomId: this._roomId,
+				userId: this._userId,
+			},
+		]);
 	}
 
 	end(): void {
 		this.isFirstOTR = true;
 		this.reset();
 		this.setState(OtrRoomState.NOT_STARTED);
-		if (this.peerId) {
-			sdk.publish('notify-user', [
-				`${this.peerId}/otr`,
-				'end',
-				{
-					roomId: this._roomId,
-					userId: this._userId,
-				},
-			]);
-		}
+		sdk.publish('notify-user', [
+			`${this.peerId}/otr`,
+			'end',
+			{
+				roomId: this._roomId,
+				userId: this._userId,
+			},
+		]);
 	}
 
 	reset(): void {
