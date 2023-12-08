@@ -593,9 +593,13 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		let teamRoomIds: string[];
 
 		if (showCanDeleteOnly) {
+			const canDeleteTeamChannel = await Authorization.hasPermission(userId, 'delete-team-channel', team.roomId);
+			const canDeleteTeamGroup = await Authorization.hasPermission(userId, 'delete-team-group', team.roomId);
 			for await (const room of teamRooms) {
-				const roomType = room.t;
-				const canDeleteRoom = await Authorization.hasPermission(userId, roomType === 'c' ? 'delete-c' : 'delete-p', room._id);
+				const isPublicRoom = room.t === 'c';
+				const canDeleteTeamRoom = isPublicRoom ? canDeleteTeamChannel : canDeleteTeamGroup;
+				const canDeleteRoom =
+					canDeleteTeamRoom && (await Authorization.hasPermission(userId, isPublicRoom ? 'delete-c' : 'delete-p', room._id));
 				room.userCanDelete = canDeleteRoom;
 			}
 

@@ -196,6 +196,8 @@ export const permissions = [
 	{ _id: 'add-team-channel', roles: ['admin', 'owner', 'moderator'] },
 	{ _id: 'create-team-channel', roles: ['admin', 'owner', 'moderator'] },
 	{ _id: 'create-team-group', roles: ['admin', 'owner', 'moderator'] },
+	{ _id: 'delete-team-channel', roles: ['admin', 'owner', 'moderator'] },
+	{ _id: 'delete-team-group', roles: ['admin', 'owner', 'moderator'] },
 	{ _id: 'edit-team-channel', roles: ['admin', 'owner', 'moderator'] },
 	{ _id: 'remove-team-channel', roles: ['admin', 'owner', 'moderator'] },
 	{ _id: 'view-all-team-channels', roles: ['admin', 'owner'] },

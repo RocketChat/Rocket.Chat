@@ -34,9 +34,11 @@ const TeamsChannelItem = ({ room, mainRoom, onClickView, reload }: TeamsChannelI
 
 	const [showButton, setShowButton] = useState();
 
-	const canRemoveTeamChannel = usePermission('remove-team-channel', rid);
-	const canEditTeamChannel = usePermission('edit-team-channel', rid);
-	const canDeleteTeamChannel = usePermission(type === 'c' ? 'delete-c' : 'delete-p', rid);
+	const canRemoveTeamChannel = usePermission('remove-team-channel', mainRoom._id);
+	const canEditTeamChannel = usePermission('edit-team-channel', mainRoom._id);
+	const canDeleteChannel = usePermission(`delete-${type}`, rid);
+	const canDeleteTeamChannel = usePermission(`delete-team-${type === 'c' ? 'channel' : 'group'}`, mainRoom._id);
+	const canDelete = canDeleteChannel && canDeleteTeamChannel;
 
 	const isReduceMotionEnabled = usePrefersReducedMotion();
 	const handleMenuEvent = {
@@ -67,7 +69,7 @@ const TeamsChannelItem = ({ room, mainRoom, onClickView, reload }: TeamsChannelI
 					)}
 				</Box>
 			</OptionContent>
-			{(canRemoveTeamChannel || canEditTeamChannel || canDeleteTeamChannel) && (
+			{(canRemoveTeamChannel || canEditTeamChannel || canDelete) && (
 				<OptionMenu onClick={onClick}>
 					{showButton ? <TeamsChannelItemMenu room={room} mainRoom={mainRoom} reload={reload} /> : <IconButton tiny icon='kebab' />}
 				</OptionMenu>
