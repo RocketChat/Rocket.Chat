@@ -102,7 +102,7 @@ API.v1.addRoute(
 			const { agents, total } = await findAvailableServiceTimeHistoryAsync({
 				start,
 				end,
-				...(fullReport ? { fullReport: fullReport === 'true' } : { fullReport: false }),
+				fullReport: fullReport === 'true',
 				options: { offset, count },
 			});
 			return API.v1.success({

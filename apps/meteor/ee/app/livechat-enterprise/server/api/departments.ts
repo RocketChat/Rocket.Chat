@@ -44,7 +44,7 @@ API.v1.addRoute(
 			const { departments, total } = await findAllRoomsAsync({
 				start: startDate,
 				end: endDate,
-				...(answered ? { answered: answered === 'true' } : { answered: false }),
+				answered: answered === 'true',
 				departmentId,
 				options: { offset, count },
 			});
