@@ -18,8 +18,8 @@ const MobileAppsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): React
 			title={t('Mobile_apps')}
 			body={t('Take_rocket_chat_with_you_with_mobile_applications')}
 			buttons={[
-				{ onClick: () => handleOpenLink(GOOGLE_PLAY_URL), label: t('Google_Play') },
-				{ onClick: () => handleOpenLink(APP_STORE_URL), label: t('App_Store') },
+				{ onClick: () => handleOpenLink(GOOGLE_PLAY_URL), label: t('Google_Play'), role: 'link' },
+				{ onClick: () => handleOpenLink(APP_STORE_URL), label: t('App_Store'), role: 'link' },
 			]}
 			data-qa-id='homepage-mobile-apps-card'
 			{...props}

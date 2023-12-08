@@ -19,9 +19,9 @@ const DesktopAppsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): Reac
 			title={t('Desktop_apps')}
 			body={t('Install_rocket_chat_on_your_preferred_desktop_platform')}
 			buttons={[
-				{ onClick: () => handleOpenLink(WINDOWS_APP_URL), label: t('Platform_Windows') },
-				{ onClick: () => handleOpenLink(LINUX_APP_URL), label: t('Platform_Linux') },
-				{ onClick: () => handleOpenLink(MAC_APP_URL), label: t('Platform_Mac') },
+				{ onClick: () => handleOpenLink(WINDOWS_APP_URL), label: t('Platform_Windows'), role: 'link' },
+				{ onClick: () => handleOpenLink(LINUX_APP_URL), label: t('Platform_Linux'), role: 'link' },
+				{ onClick: () => handleOpenLink(MAC_APP_URL), label: t('Platform_Mac'), role: 'link' },
 			]}
 			data-qa-id='homepage-desktop-apps-card'
 			{...props}
