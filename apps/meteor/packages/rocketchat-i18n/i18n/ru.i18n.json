@@ -939,7 +939,6 @@
   "Close": "Закрыть",
   "Close_chat": "Закрыть чат",
   "Close_room_description": "Вы собираетесь закрыть этот чат. Вы уверены, что хотите продолжить?",
-  "Close_to_seat_limit_warning": "Создание новых участников невозможно после достижения ограничения на количество мест.",
   "close-livechat-room": "Закрыть комнату Livechat ",
   "close-livechat-room_description": "Разрешение на закрытие текущего чата LiveChat",
   "Close_menu": "Закрыть меню",
@@ -3654,11 +3653,6 @@
   "Report_this_message_question_mark": "Сообщить об этом сообщении?",
   "Reporting": "Сбор статистики",
   "Request": "Запрос",
-  "Request_seats": "Запросить рабочие места",
-  "Request_more_seats": "Запросите дополнительные рабочие места.",
-  "Request_more_seats_out_of_seats": "Вы не сможете добавить участников, так как в этом рабочем пространстве закончились места. Запросите дополнительные рабочие места.",
-  "Request_more_seats_sales_team": "После отправки запроса наши специалисты из отдела продаж рассмотрят его и свяжутся с вами в течение следующих нескольких дней.",
-  "Request_more_seats_title": "Запросить дополнительные рабочие места",
   "Request_comment_when_closing_conversation": "Запросить комментарий при закрытии разговора",
   "Request_comment_when_closing_conversation_description": "Если эта функция включена, то перед закрытием разговора агенту необходимо будет задать комментарий.",
   "Request_tag_before_closing_chat": "Запросить метки  до закрытия разговора",
@@ -5091,6 +5085,7 @@
   "RegisterWorkspace_Setup_Label": "Адрес электронной почты учетной записи в облаке",
   "cloud.RegisterWorkspace_Setup_Terms_Privacy": "Я принимаю <1>Положения и условия</1> и <3>Политику конфиденциальности</3>",
   "Theme_Appearence": "Внешний вид",
+  "Enterprise": "Корпорация",
   "UpgradeToGetMore_engagement-dashboard_Title": "Аналитика",
   "UpgradeToGetMore_auditing_Title": "Аудит сообщений"
 }

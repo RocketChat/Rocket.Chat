@@ -22,7 +22,7 @@ import {
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 import { useIsOverMacLimit } from '../../../hooks/omnichannel/useIsOverMacLimit';
 import CustomFieldsList from './CustomFieldsList';
 import FilterByText from './FilterByText';
@@ -295,8 +295,8 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('Current_Chats')} />
-				<Page.Content>
+				<PageHeader title={t('Current_Chats')} />
+				<PageContent>
 					{((isSuccess && data?.rooms.length > 0) || queryHasChanged) && (
 						<FilterByText
 							setFilter={onFilter as ComponentProps<typeof FilterByText>['setFilter']}
@@ -352,7 +352,7 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 							/>
 						</>
 					)}
-				</Page.Content>
+				</PageContent>
 			</Page>
 			{id === 'custom-fields' && hasCustomFields && (
 				<CustomFieldsList setCustomFields={setCustomFields} allCustomFields={allCustomFields?.customFields || []} />

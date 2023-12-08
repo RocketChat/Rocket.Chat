@@ -935,7 +935,6 @@
   "Close": "Bezárás",
   "Close_chat": "Csevegés lezárása",
   "Close_room_description": "A csevegés lezárására készül. Biztosan folytatni szeretné?",
-  "Close_to_seat_limit_warning": "Nem lehet új tagokat létrehozni, ha a helyek elérték a korlátot.",
   "close-livechat-room": "Összcsatornás szoba lezárása",
   "close-livechat-room_description": "Jogosultság a jelenlegi összcsatornás szoba lezárásához",
   "Close_menu": "Menü bezárása",
@@ -3872,11 +3871,6 @@
   "Report_this_message_question_mark": "Jelenti ezt az üzenetet?",
   "Reporting": "Jelentés",
   "Request": "Kérés",
-  "Request_seats": "Helyek kérése",
-  "Request_more_seats": "További helyek kérése.",
-  "Request_more_seats_out_of_seats": "Nem tud tagokat hozzáadni, mert ezen a munkaterületen elfogytak a helyek. Kérjen további helyeket.",
-  "Request_more_seats_sales_team": "Miután a kérése elküldésre került, az értékesítési csapatunk megvizsgálja azt, és felveszi Önnel a kapcsolatot a következő néhány napon belül.",
-  "Request_more_seats_title": "További helyek kérése",
   "Request_comment_when_closing_conversation": "Megjegyzés kérése a beszélgetés lezárásakor",
   "Request_comment_when_closing_conversation_description": "Ha engedélyezve van, akkor az ügyintézőnek be kell állítania egy megjegyzést a beszélgetés lezárása előtt.",
   "Request_tag_before_closing_chat": "Címkék kérése a beszélgetés lezárása előtt",
@@ -5428,6 +5422,7 @@
   "Join_your_team": "Csatlakozás csapathoz",
   "Create_an_account": "Fiók létrehozása",
   "RegisterWorkspace_Features_Marketplace_Title": "Piactér",
+  "Enterprise": "Vállalati",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analitika",
   "UpgradeToGetMore_auditing_Title": "Üzenet ellenőrzés"
 }

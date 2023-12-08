@@ -16,7 +16,7 @@ import React, { useState, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import ConfirmOwnerChangeModal from '../../../components/ConfirmOwnerChangeModal';
-import Page from '../../../components/Page';
+import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import { useAllowPasswordChange } from '../security/useAllowPasswordChange';
 import AccountProfileForm from './AccountProfileForm';
 import ActionConfirmModal from './ActionConfirmModal';
@@ -113,8 +113,8 @@ const AccountProfilePage = (): ReactElement => {
 
 	return (
 		<Page>
-			<Page.Header title={t('Profile')} />
-			<Page.ScrollableContentWithShadow>
+			<PageHeader title={t('Profile')} />
+			<PageScrollableContentWithShadow>
 				<Box maxWidth='600px' w='full' alignSelf='center'>
 					<FormProvider {...methods}>
 						<AccountProfileForm id={profileFormId} />
@@ -130,8 +130,8 @@ const AccountProfilePage = (): ReactElement => {
 						)}
 					</ButtonGroup>
 				</Box>
-			</Page.ScrollableContentWithShadow>
-			<Page.Footer isDirty={isDirty}>
+			</PageScrollableContentWithShadow>
+			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
 					<Button disabled={!isDirty} onClick={() => reset(getProfileInitialValues(user))}>
 						{t('Cancel')}
@@ -147,7 +147,7 @@ const AccountProfilePage = (): ReactElement => {
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>
-			</Page.Footer>
+			</PageFooter>
 		</Page>
 	);
 };

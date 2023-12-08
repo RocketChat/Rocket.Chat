@@ -3,12 +3,13 @@ import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
 import ImportOperationSummary from './ImportOperationSummary';
+import ImportOperationSummarySkeleton from './ImportOperationSummarySkeleton';
 
 export default {
 	title: 'Admin/Import/ImportOperationSummary',
 	component: ImportOperationSummary,
 	subcomponents: {
-		'ImportOperationSummary.Skeleton': ImportOperationSummary.Skeleton,
+		ImportOperationSummarySkeleton,
 	},
 	parameters: {
 		layout: 'centered',
@@ -24,4 +25,4 @@ export default {
 
 export const Default: ComponentStory<typeof ImportOperationSummary> = (args) => <ImportOperationSummary {...args} />;
 
-export const Skeleton: ComponentStory<typeof ImportOperationSummary.Skeleton> = (args) => <ImportOperationSummary.Skeleton {...args} />;
+export const Skeleton: ComponentStory<typeof ImportOperationSummarySkeleton> = (args) => <ImportOperationSummarySkeleton {...args} />;

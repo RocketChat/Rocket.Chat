@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, IconButton, Throbber } from '@rocket.chat/fuselage';
+import { Box, IconButton, Palette, Throbber } from '@rocket.chat/fuselage';
 import React, { useRef, useState } from 'react';
 import { FocusScope } from 'react-aria';
 import { createPortal } from 'react-dom';
@@ -83,6 +83,17 @@ const swiperStyle = css`
 		right: 10px;
 		left: auto;
 	}
+
+	.rcx-lazy-preloader {
+		position: absolute;
+		z-index: -1;
+		left: 50%;
+		top: 50%;
+
+		transform: translate(-50%, -50%);
+
+		color: ${Palette.text['font-pure-white']};
+	}
 `;
 
 const ImageGallery = () => {
@@ -122,7 +133,7 @@ const ImageGallery = () => {
 								<div className='swiper-zoom-container'>
 									<img src={url} loading='lazy' />
 									<div className='rcx-lazy-preloader'>
-										<Throbber />
+										<Throbber inheritColor />
 									</div>
 								</div>
 							</SwiperSlide>
