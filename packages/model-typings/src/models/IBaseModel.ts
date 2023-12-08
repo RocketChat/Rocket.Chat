@@ -45,7 +45,7 @@ export interface IBaseModel<
 > {
 	col: Collection<T>;
 
-	createIndexes(): Promise<void>;
+	createIndexes(): Promise<string[] | void>;
 
 	getCollectionName(): string;
 
