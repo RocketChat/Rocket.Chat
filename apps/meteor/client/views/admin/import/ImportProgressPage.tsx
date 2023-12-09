@@ -7,7 +7,7 @@ import React, { useEffect } from 'react';
 
 import { ImportingStartedStates } from '../../../../app/importer/lib/ImporterProgressStep';
 import { numberFormat } from '../../../../lib/utils/stringUtils';
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import { useErrorHandler } from './useErrorHandler';
 
 // TODO: review inner logic
@@ -151,9 +151,8 @@ const ImportProgressPage = function ImportProgressPage() {
 
 	return (
 		<Page>
-			<Page.Header title={t('Importing_Data')} />
-
-			<Page.ScrollableContentWithShadow>
+			<PageHeader title={t('Importing_Data')} />
+			<PageScrollableContentWithShadow>
 				<Box marginInline='auto' marginBlock='neg-x24' width='full' maxWidth='x580'>
 					<Margins block={24}>
 						{currentOperation.isLoading && <Throbber justifyContent='center' />}
@@ -175,7 +174,7 @@ const ImportProgressPage = function ImportProgressPage() {
 						)}
 					</Margins>
 				</Box>
-			</Page.ScrollableContentWithShadow>
+			</PageScrollableContentWithShadow>
 		</Page>
 	);
 };

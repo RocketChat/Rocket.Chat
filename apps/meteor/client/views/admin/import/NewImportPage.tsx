@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import type { ChangeEvent, DragEvent, FormEvent, Key, SyntheticEvent } from 'react';
 import React, { useState, useMemo, useEffect } from 'react';
 
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import { useFormatMemorySize } from '../../../hooks/useFormatMemorySize';
 import { useErrorHandler } from './useErrorHandler';
 
@@ -189,7 +189,7 @@ function NewImportPage() {
 
 	return (
 		<Page className='page-settings'>
-			<Page.Header title={t('Import_New_File')}>
+			<PageHeader title={t('Import_New_File')}>
 				<ButtonGroup>
 					<Button icon='back' secondary onClick={handleBackToImportsButtonClick}>
 						{t('Back_to_imports')}
@@ -200,8 +200,8 @@ function NewImportPage() {
 						</Button>
 					)}
 				</ButtonGroup>
-			</Page.Header>
-			<Page.ScrollableContentWithShadow>
+			</PageHeader>
+			<PageScrollableContentWithShadow>
 				<Box marginInline='auto' marginBlock='neg-x24' width='full' maxWidth='x580'>
 					<Margins block='x24'>
 						<Field>
@@ -305,7 +305,7 @@ function NewImportPage() {
 						)}
 					</Margins>
 				</Box>
-			</Page.ScrollableContentWithShadow>
+			</PageScrollableContentWithShadow>
 		</Page>
 	);
 }

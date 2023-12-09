@@ -1,4 +1,4 @@
-import type { LicenseModule } from '@rocket.chat/license';
+import type { LicenseModule } from '@rocket.chat/core-typings';
 
 import { useLicenseBase } from '../../../client/hooks/useLicense';
 

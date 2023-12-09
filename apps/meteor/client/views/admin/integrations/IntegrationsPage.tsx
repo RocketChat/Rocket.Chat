@@ -3,7 +3,7 @@ import { useRouteParameter, useRouter, useTranslation } from '@rocket.chat/ui-co
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 import IntegrationsTable from './IntegrationsTable';
 import NewBot from './NewBot';
 import NewZapier from './NewZapier';
@@ -17,7 +17,7 @@ const IntegrationsPage = (): ReactElement => {
 
 	return (
 		<Page flexDirection='column'>
-			<Page.Header title={t('Integrations')}>
+			<PageHeader title={t('Integrations')}>
 				<ButtonGroup>
 					<Button
 						primary
@@ -26,7 +26,7 @@ const IntegrationsPage = (): ReactElement => {
 						{t('New')}
 					</Button>
 				</ButtonGroup>
-			</Page.Header>
+			</PageHeader>
 			<Tabs>
 				<Tabs.Item selected={!context} onClick={() => router.navigate('/admin/integrations')}>
 					{t('All')}
@@ -44,11 +44,11 @@ const IntegrationsPage = (): ReactElement => {
 					{t('Bots')}
 				</Tabs.Item>
 			</Tabs>
-			<Page.Content>
+			<PageContent>
 				{context === 'zapier' && <NewZapier />}
 				{context === 'bots' && <NewBot />}
 				{showTable && <IntegrationsTable type={context} />}
-			</Page.Content>
+			</PageContent>
 		</Page>
 	);
 };
