@@ -101,8 +101,8 @@ const MemoizedSetting = ({
 						<Callout type='warning'>{callout}</Callout>
 					</Margins>
 				)}
+				{showUpgradeButton}
 			</Box>
-			{showUpgradeButton}
 		</Field>
 	);
 };
