@@ -214,20 +214,28 @@ export const sendMessage = async function (user: any, message: any, room: any, u
 	await validateMessage(message, room, user);
 	prepareMessageObject(message, room._id, user);
 
+	if (message.t === 'otr') {
+		notifications.streamRoomMessage.emit(message.rid, message, user, room);
+		return message;
+	}
+
 	if (settings.get('Message_Read_Receipt_Enabled')) {
 		message.unread = true;
 	}
 
 	// For the Rocket.Chat Apps :)
 	if (Apps?.isLoaded()) {
-		const prevent = await Apps.getBridges()?.getListenerBridge().messageEvent('IPreMessageSentPrevent', message);
+		const listenerBridge = Apps.getBridges()?.getListenerBridge();
+
+		const prevent = await listenerBridge?.messageEvent('IPreMessageSentPrevent', message);
 		if (prevent) {
 			return;
 		}
 
-		let result;
-		result = await Apps.getBridges()?.getListenerBridge().messageEvent('IPreMessageSentExtend', message);
-		result = await Apps.getBridges()?.getListenerBridge().messageEvent('IPreMessageSentModify', result);
+		const result = await listenerBridge?.messageEvent(
+			'IPreMessageSentModify',
+			await listenerBridge?.messageEvent('IPreMessageSentExtend', message),
+		);
 
 		if (typeof result === 'object') {
 			message = Object.assign(message, result);
@@ -247,10 +255,7 @@ export const sendMessage = async function (user: any, message: any, room: any, u
 		return;
 	}
 
-	if (message.t === 'otr') {
-		const otrStreamer = notifications.streamRoomMessage;
-		otrStreamer.emit(message.rid, message, user, room);
-	} else if (message._id && upsert) {
+	if (message._id && upsert) {
 		const { _id } = message;
 		delete message._id;
 		await Messages.updateOne(
@@ -277,9 +282,7 @@ export const sendMessage = async function (user: any, message: any, room: any, u
 		void Apps.getBridges()?.getListenerBridge().messageEvent('IPostMessageSent', message);
 	}
 
-	/*
-		Defer other updates as their return is not interesting to the user
-		*/
+	/* Defer other updates as their return is not interesting to the user */
 
 	// Execute all callbacks
 	await callbacks.run('afterSaveMessage', message, room);
