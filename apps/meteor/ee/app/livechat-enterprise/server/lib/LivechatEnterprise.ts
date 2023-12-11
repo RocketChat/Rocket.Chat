@@ -113,7 +113,15 @@ export const LivechatEnterprise = {
 			ancestors = unit.ancestors || [];
 		}
 
-		return LivechatUnit.createOrUpdateUnit(_id, unitData, ancestors, unitMonitors, unitDepartments);
+		const monitors = (
+			await Users.findUsersInRolesWithQuery(
+				'livechat-monitor',
+				{ _id: { $in: unitMonitors.map(({ monitorId }) => monitorId) } },
+				{ projection: { _id: 1, username: 1 } },
+			).toArray()
+		).map(({ _id: monitorId, username }) => ({ monitorId, username })) as { monitorId: string; username: string }[];
+
+		return LivechatUnit.createOrUpdateUnit(_id, unitData, ancestors, monitors, unitDepartments);
 	},
 
 	async removeTag(_id: string) {
