@@ -198,7 +198,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 		});
 	});
 
-	describe.only('livechat/room.resumeOnHold', () => {
+	describe('livechat/room.resumeOnHold', () => {
 		it('should fail if user doesnt have view-l-room permission', async () => {
 			await updatePermission('view-l-room', []);
 			const response = await request
