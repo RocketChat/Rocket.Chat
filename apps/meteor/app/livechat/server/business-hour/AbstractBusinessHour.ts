@@ -1,9 +1,4 @@
-import type {
-	ILivechatAgentStatus,
-	ILivechatBusinessHour,
-	ILivechatDepartment,
-	ILivechatBusinessHourPayload,
-} from '@rocket.chat/core-typings';
+import type { ILivechatAgentStatus, ILivechatBusinessHour, ILivechatDepartment } from '@rocket.chat/core-typings';
 import type { ILivechatBusinessHoursModel, IUsersModel } from '@rocket.chat/model-typings';
 import { LivechatBusinessHours, Users } from '@rocket.chat/models';
 import moment from 'moment-timezone';
@@ -32,7 +27,7 @@ export interface IBusinessHourBehavior {
 export interface IBusinessHourType {
 	name: string;
 	getBusinessHour(id?: string): Promise<ILivechatBusinessHour | null>;
-	saveBusinessHour(businessHourData: ILivechatBusinessHourPayload): Promise<ILivechatBusinessHour>;
+	saveBusinessHour(businessHourData: ILivechatBusinessHour): Promise<ILivechatBusinessHour>;
 	removeBusinessHourById(id: string): Promise<void>;
 }
 

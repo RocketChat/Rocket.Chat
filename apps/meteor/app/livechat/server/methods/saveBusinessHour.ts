@@ -1,4 +1,4 @@
-import type { ILivechatBusinessHourPayload } from '@rocket.chat/core-typings';
+import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
@@ -7,7 +7,7 @@ import { businessHourManager } from '../business-hour';
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		'livechat:saveBusinessHour'(businessHourData: ILivechatBusinessHourPayload): void;
+		'livechat:saveBusinessHour'(businessHourData: ILivechatBusinessHour): void;
 	}
 }
 

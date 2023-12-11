@@ -40,8 +40,3 @@ export interface ILivechatBusinessHour {
 	_updatedAt?: Date;
 	departments?: ILivechatDepartment[];
 }
-
-export type ILivechatBusinessHourPayload = Pick<ILivechatBusinessHour, 'name' | 'active' | 'type' | 'departments'> & {
-	_id?: string;
-	timezone: IBusinessHourTimezone['name'];
-};
