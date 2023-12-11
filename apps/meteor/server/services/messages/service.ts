@@ -10,6 +10,7 @@ import { executeSendMessage } from '../../../app/lib/server/methods/sendMessage'
 import { executeSetReaction } from '../../../app/reactions/server/setReaction';
 import { settings } from '../../../app/settings/server';
 import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
+import { BeforeSaveCannedResponse } from '../../../ee/server/hooks/message/BeforeSaveCannedResponse';
 import { broadcastMessageSentEvent } from '../../modules/watchers/lib/messages';
 import { BeforeSaveBadWords } from './hooks/BeforeSaveBadWords';
 import { BeforeSaveJumpToMessage } from './hooks/BeforeSaveJumpToMessage';
@@ -26,6 +27,8 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 	private spotify: BeforeSaveSpotify;
 
 	private jumpToMessage: BeforeSaveJumpToMessage;
+
+	private cannedResponse: BeforeSaveCannedResponse;
 
 	async created() {
 		this.preventMention = new BeforeSavePreventMention(this.api);
@@ -45,6 +48,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 				return (user && getUserAvatarURL(user)) || '';
 			},
 		});
+		this.cannedResponse = new BeforeSaveCannedResponse();
 
 		await this.configureBadWords();
 	}
@@ -110,7 +114,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 	async beforeSave({
 		message,
-		room: _room,
+		room,
 		user,
 	}: {
 		message: IMessage;
@@ -119,6 +123,8 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 	}): Promise<IMessage> {
 		// TODO looks like this one was not being used (so I'll left it commented)
 		// await this.joinDiscussionOnMessage({ message, room, user });
+
+		message = await this.cannedResponse.replacePlaceholders({ message, room });
 
 		message = await this.badWords.filterBadWords({ message });
 		message = await this.spotify.convertSpotifyLinks({ message });
