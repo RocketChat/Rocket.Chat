@@ -19,6 +19,7 @@ const AddUsersCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): ReactEl
 			body={t('Invite_and_add_members_to_this_workspace_to_start_communicating')}
 			buttons={[{ onClick: handleOpenUsersRoute, label: t('Add_users'), primary: true }]}
 			data-qa-id='homepage-add-users-card'
+			width='x340'
 			{...props}
 		/>
 	);

@@ -19,6 +19,7 @@ const JoinRoomsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): ReactE
 			body={t('Discover_public_channels_and_teams_in_the_workspace_directory')}
 			buttons={[{ onClick: handleDirectory, label: t('Open_directory') }]}
 			data-qa-id='homepage-join-rooms-card'
+			width='x340'
 			{...props}
 		/>
 	);

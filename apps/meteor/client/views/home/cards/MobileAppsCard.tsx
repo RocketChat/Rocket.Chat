@@ -22,6 +22,7 @@ const MobileAppsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): React
 				{ onClick: () => handleOpenLink(APP_STORE_URL), label: t('App_Store'), role: 'link' },
 			]}
 			data-qa-id='homepage-mobile-apps-card'
+			width='x340'
 			{...props}
 		/>
 	);

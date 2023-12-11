@@ -23,6 +23,7 @@ const DesktopAppsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): Reac
 				{ onClick: () => handleOpenLink(LINUX_APP_URL), label: t('Platform_Linux'), role: 'link' },
 				{ onClick: () => handleOpenLink(MAC_APP_URL), label: t('Platform_Mac'), role: 'link' },
 			]}
+			width='x340'
 			data-qa-id='homepage-desktop-apps-card'
 			{...props}
 		/>

@@ -1,4 +1,4 @@
-import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, Button, ButtonGroup, CardGroup } from '@rocket.chat/fuselage';
+import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, Button, ButtonGroup, CardGrid } from '@rocket.chat/fuselage';
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -49,11 +49,20 @@ const UpgradeToGetMore = ({ activeModules, children }: UpgradeToGetMoreProps) =>
 				<StatesTitle>{t('UpgradeToGetMore_Headline')}</StatesTitle>
 				<StatesSubtitle>{t('UpgradeToGetMore_Subtitle')}</StatesSubtitle>
 			</States>
-			<CardGroup stretch wrap>
+			<CardGrid
+				breakpoints={{
+					xs: 4,
+					sm: 4,
+					md: 4,
+					lg: 6,
+					xl: 4,
+					p: 8,
+				}}
+			>
 				{upgradeModules.map((card, index) => {
-					return <GenericCard key={index} icon='check' type='success' {...card} />;
+					return <GenericCard key={index} icon='check' type='success' height='full' {...card} />;
 				})}
-			</CardGroup>
+			</CardGrid>
 			<ButtonGroup large vertical pbs={24}>
 				<Button icon='new-window' onClick={() => handleOpenLink(PRICING_LINK)} role='link'>
 					{t('Compare_plans')}

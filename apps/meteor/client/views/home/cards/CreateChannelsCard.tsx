@@ -18,6 +18,7 @@ const CreateChannelsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): R
 			body={t('Create_a_public_channel_that_new_workspace_members_can_join')}
 			buttons={[{ onClick: openCreateChannelModal, label: t('Create_channel') }]}
 			data-qa-id='homepage-create-channels-card'
+			width='x340'
 			{...props}
 		/>
 	);
