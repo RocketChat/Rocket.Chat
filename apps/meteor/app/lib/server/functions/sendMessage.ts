@@ -1,4 +1,5 @@
 import { Message } from '@rocket.chat/core-services';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 
@@ -11,6 +12,8 @@ import { FileUpload } from '../../../file-upload/server';
 import notifications from '../../../notifications/server/lib/Notifications';
 import { settings } from '../../../settings/server';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
+
+// TODO: most of the types here are wrong, but I don't want to change them now
 
 /**
  * IMPORTANT
@@ -49,13 +52,13 @@ const validPartialURLParam = Match.Where((value) => {
 	return true;
 });
 
-const objectMaybeIncluding = (types) =>
-	Match.Where((value) => {
+const objectMaybeIncluding = (types: any) =>
+	Match.Where((value: any) => {
 		Object.keys(types).forEach((field) => {
 			if (value[field] != null) {
 				try {
 					check(value[field], types[field]);
-				} catch (error) {
+				} catch (error: any) {
 					error.path = field;
 					throw error;
 				}
@@ -65,7 +68,7 @@ const objectMaybeIncluding = (types) =>
 		return true;
 	});
 
-const validateAttachmentsFields = (attachmentField) => {
+const validateAttachmentsFields = (attachmentField: any) => {
 	check(
 		attachmentField,
 		objectMaybeIncluding({
@@ -80,7 +83,7 @@ const validateAttachmentsFields = (attachmentField) => {
 	}
 };
 
-const validateAttachmentsActions = (attachmentActions) => {
+const validateAttachmentsActions = (attachmentActions: any) => {
 	check(
 		attachmentActions,
 		objectMaybeIncluding({
@@ -96,7 +99,7 @@ const validateAttachmentsActions = (attachmentActions) => {
 	);
 };
 
-const validateAttachment = (attachment) => {
+const validateAttachment = (attachment: any) => {
 	check(
 		attachment,
 		objectMaybeIncluding({
@@ -138,9 +141,9 @@ const validateAttachment = (attachment) => {
 	}
 };
 
-const validateBodyAttachments = (attachments) => attachments.map(validateAttachment);
+const validateBodyAttachments = (attachments: any[]) => attachments.map(validateAttachment);
 
-export const validateMessage = async (message, room, user) => {
+export const validateMessage = async (message: any, room: any, user: any) => {
 	check(
 		message,
 		objectMaybeIncluding({
@@ -170,7 +173,11 @@ export const validateMessage = async (message, room, user) => {
 	}
 };
 
-export const prepareMessageObject = function (message, rid, user) {
+export function prepareMessageObject(
+	message: Partial<IMessage>,
+	rid: IRoom['_id'],
+	user: { _id: string; username?: string; name?: string },
+): asserts message is IMessage {
 	if (!message.ts) {
 		message.ts = new Date();
 	}
@@ -182,7 +189,7 @@ export const prepareMessageObject = function (message, rid, user) {
 	const { _id, username, name } = user;
 	message.u = {
 		_id,
-		username,
+		username: username as string, // FIXME: this is wrong but I don't want to change it now
 		name,
 	};
 	message.rid = rid;
@@ -194,26 +201,12 @@ export const prepareMessageObject = function (message, rid, user) {
 	if (message.ts == null) {
 		message.ts = new Date();
 	}
-};
-
-/**
- * Clean up the message object before saving on db
- * @param {IMessage} message
- */
-function cleanupMessageObject(message) {
-	['customClass'].forEach((field) => delete message[field]);
 }
 
 /**
  * Validates and sends the message object.
- * @param {IUser} user
- * @param {AtLeast<IMessage, 'rid'>} message
- * @param {IRoom} room
- * @param {boolean} [upsert=false]
- * @param {string[]} [previewUrls]
- * @returns {Promise<IMessage>}
  */
-export const sendMessage = async function (user, message, room, upsert = false, previewUrls = undefined) {
+export const sendMessage = async function (user: any, message: any, room: any, upsert = false, previewUrls?: string[]) {
 	if (!user || !message || !room._id) {
 		return false;
 	}
@@ -226,7 +219,7 @@ export const sendMessage = async function (user, message, room, upsert = false, 
 	}
 
 	// For the Rocket.Chat Apps :)
-	if (Apps && Apps.isLoaded()) {
+	if (Apps?.isLoaded()) {
 		const prevent = await Apps.getBridges()?.getListenerBridge().messageEvent('IPreMessageSentPrevent', message);
 		if (prevent) {
 			return;
@@ -243,8 +236,6 @@ export const sendMessage = async function (user, message, room, upsert = false, 
 			await validateMessage(message, room, user);
 		}
 	}
-
-	cleanupMessageObject(message);
 
 	parseUrlsInMessage(message, previewUrls);
 
@@ -276,8 +267,8 @@ export const sendMessage = async function (user, message, room, upsert = false, 
 		if (messageAlreadyExists) {
 			return;
 		}
-		const result = await Messages.insertOne(message);
-		message._id = result.insertedId;
+		const { insertedId } = await Messages.insertOne(message);
+		message._id = insertedId;
 	}
 
 	if (Apps?.isLoaded()) {
