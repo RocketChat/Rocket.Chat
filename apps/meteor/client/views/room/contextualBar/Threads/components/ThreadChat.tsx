@@ -111,7 +111,7 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 						tshow={sendToChannel}
 					>
 						<Field>
-							<FieldRow justifyContent='initial' marginBlock={8}>
+							<FieldRow marginBlock={8}>
 								<FieldLabel htmlFor={sendToChannelID} color='annotation' fontScale='p2'>
 									{t('Also_send_to_channel')}
 								</FieldLabel>
