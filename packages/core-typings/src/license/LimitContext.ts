@@ -1,5 +1,4 @@
-import type { IUser } from '@rocket.chat/core-typings';
-
+import type { IUser } from '../IUser';
 import type { LicenseLimitKind } from './ILicenseV3';
 
 export type LimitContext<T extends LicenseLimitKind> = { extraCount?: number } & (T extends 'roomsPerGuest'
