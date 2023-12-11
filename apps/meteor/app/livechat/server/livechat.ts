@@ -5,6 +5,7 @@ import { WebApp } from 'meteor/webapp';
 import { settings } from '../../settings/server';
 import { addServerUrlToIndex } from '../lib/Assets';
 
+console.debug('CABACEIRAAAAAAA ');
 const indexHtmlWithServerURL = addServerUrlToIndex((await Assets.getTextAsync('livechat/index.html')) || '');
 
 const jsdom = require("jsdom");
