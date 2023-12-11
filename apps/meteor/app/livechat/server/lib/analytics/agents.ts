@@ -1,6 +1,12 @@
 import { LivechatRooms, LivechatAgentActivity } from '@rocket.chat/models';
 
-export const findAllAverageServiceTimeAsync = async ({ start, end, options = {} }) => {
+type Params = {
+	start: Date;
+	end: Date;
+	options?: any;
+};
+
+export const findAllAverageServiceTimeAsync = async ({ start, end, options = {} }: Params) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
@@ -19,7 +25,7 @@ export const findAllAverageServiceTimeAsync = async ({ start, end, options = {} 
 	};
 };
 
-export const findAllServiceTimeAsync = async ({ start, end, options = {} }) => {
+export const findAllServiceTimeAsync = async ({ start, end, options = {} }: Params) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
@@ -34,7 +40,17 @@ export const findAllServiceTimeAsync = async ({ start, end, options = {} }) => {
 	};
 };
 
-export const findAvailableServiceTimeHistoryAsync = async ({ start, end, fullReport, options = {} }) => {
+export const findAvailableServiceTimeHistoryAsync = async ({
+	start,
+	end,
+	fullReport,
+	options = {},
+}: {
+	start: string;
+	end: string;
+	fullReport: boolean;
+	options: { sort?: Record<string, number>; offset?: number; count?: number };
+}) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}

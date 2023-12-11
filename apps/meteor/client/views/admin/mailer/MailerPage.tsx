@@ -20,7 +20,7 @@ import { Controller, useForm } from 'react-hook-form';
 
 import { validateEmail } from '../../../../lib/emailValidator';
 import { isJSON } from '../../../../lib/utils/isJSON';
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
 
 export type SendEmailFormValue = {
 	fromEmail: string;
@@ -71,8 +71,8 @@ const MailerPage = () => {
 
 	return (
 		<Page>
-			<Page.Header title={t('Mailer')} />
-			<Page.ScrollableContentWithShadow alignSelf='center' w='100%' display='flex' flexDirection='column' alignItems='center'>
+			<PageHeader title={t('Mailer')} />
+			<PageScrollableContentWithShadow alignSelf='center' w='100%' display='flex' flexDirection='column' alignItems='center'>
 				<Box id={mailerFormId} is='form' autoComplete='off' maxWidth='x600' onSubmit={handleSubmit(handleSendEmail)}>
 					<FieldGroup>
 						<Field>
@@ -178,15 +178,15 @@ const MailerPage = () => {
 						</Field>
 					</FieldGroup>
 				</Box>
-			</Page.ScrollableContentWithShadow>
-			<Page.Footer isDirty={isDirty}>
+			</PageScrollableContentWithShadow>
+			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
 					<Button onClick={() => reset(initialData)}>{t('Cancel')}</Button>
 					<Button form={mailerFormId} primary type='submit'>
 						{t('Send_email')}
 					</Button>
 				</ButtonGroup>
-			</Page.Footer>
+			</PageFooter>
 		</Page>
 	);
 };
