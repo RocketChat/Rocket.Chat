@@ -10135,7 +10135,6 @@ __metadata:
     "@rocket.chat/apps-engine": 1.41.0
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/license": "workspace:^"
     "@rocket.chat/message-parser": ~0.31.27
     "@rocket.chat/ui-kit": "workspace:~"
     "@types/jest": ~29.5.7

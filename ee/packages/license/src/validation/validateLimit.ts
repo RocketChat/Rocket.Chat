@@ -1,4 +1,4 @@
-import type { LicenseBehavior } from '../definition/LicenseBehavior';
+import type { LicenseBehavior } from '@rocket.chat/core-typings';
 
 /**
  * The difference between validateLimit and validateWarnLimit is that the first one

@@ -176,7 +176,7 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	findOneOpenByVisitorToken(visitorToken: string, options?: FindOptions<IOmnichannelRoom>): Promise<IOmnichannelRoom | null>;
 	findOneOpenByVisitorTokenAndDepartmentIdAndSource(
 		visitorToken: string,
-		departmentId: string,
+		departmentId?: string,
 		source?: string,
 		options?: FindOptions<IOmnichannelRoom>,
 	): Promise<IOmnichannelRoom | null>;

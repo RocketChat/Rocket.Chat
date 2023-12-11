@@ -3,9 +3,8 @@
  * Transform a License V2 into a V3 representation.
  */
 
-import type { ILicenseV2 } from '../definition/ILicenseV2';
-import type { ILicenseV3 } from '../definition/ILicenseV3';
-import type { LicenseModule } from '../definition/LicenseModule';
+import type { ILicenseV2, ILicenseV3, LicenseModule } from '@rocket.chat/core-typings';
+
 import { isBundle, getBundleFromModule, getBundleModules } from './bundles';
 import { getTagColor } from './getTagColor';
 
