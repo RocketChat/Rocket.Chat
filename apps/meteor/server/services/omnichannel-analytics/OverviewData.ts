@@ -117,8 +117,8 @@ export class OverviewData {
 
 		const utcBusiestHour = this.getKeyHavingMaxValue<number>(totalMessagesInHour, -1);
 		const busiestHour = {
-			to: utcBusiestHour >= 0 ? moment.utc().set({ hour: utcBusiestHour }).tz(timezone).format('hA') : '',
-			from: utcBusiestHour >= 0 ? moment.utc().set({ hour: utcBusiestHour }).subtract(1, 'hour').tz(timezone).format('hA') : '',
+			to: utcBusiestHour >= 0 ? moment.tz(timezone).set({ hour: utcBusiestHour }).format('hA') : '',
+			from: utcBusiestHour >= 0 ? moment.tz(timezone).set({ hour: utcBusiestHour }).subtract(1, 'hour').format('hA') : '',
 		};
 		// @ts-expect-error - Check extraquery usage on this func
 		const onHoldConversations = await this.roomsModel.getOnHoldConversationsBetweenDate(from, to, departmentId, extraQuery);
