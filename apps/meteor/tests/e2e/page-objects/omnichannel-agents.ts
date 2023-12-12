@@ -90,4 +90,8 @@ export class OmnichannelAgents {
 	findRowByUsername(username: string) {
 		return this.page.locator(`[data-qa-id="${username}"]`);
 	}
+
+	findRowByName(name: string) {
+		return this.page.locator('tr', { has: this.page.locator(`td >> text="${name}"`) });
+	}
 }
