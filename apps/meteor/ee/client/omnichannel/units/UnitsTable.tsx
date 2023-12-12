@@ -71,7 +71,7 @@ const UnitsTable = () => {
 		<>
 			{((isSuccess && data?.units.length > 0) || queryHasChanged) && <FilterByText onChange={({ text }): void => setFilter(text)} />}
 			{isLoading && (
-				<GenericTable>
+				<GenericTable aria-busy>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						<GenericTableLoadingRow cols={3} />
@@ -92,7 +92,7 @@ const UnitsTable = () => {
 			)}
 			{isSuccess && data?.units.length > 0 && (
 				<>
-					<GenericTable>
+					<GenericTable aria-busy={filter !== debouncedFilter}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.units.map(({ _id, name, visibility }) => (

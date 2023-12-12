@@ -9,7 +9,6 @@ export class OmnichannelUnits extends OmnichannelAdministration {
 
 	async search(text: string) {
 		await this.inputSearch.fill(text);
-		await this.page.waitForTimeout(500);
 	}
 
 	findRowByName(name: string) {
