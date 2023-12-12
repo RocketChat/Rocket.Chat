@@ -73,6 +73,8 @@ const CustomFieldsTable = () => {
 		</>
 	);
 
+	console.log('CUSTOM FIELDS:', isSuccess, isLoading, queryHasChanged, JSON.stringify(data, null, 2));
+
 	return (
 		<>
 			{((isSuccess && data?.customFields.length > 0) || queryHasChanged) && <FilterByText onChange={({ text }) => setFilter(text)} />}
