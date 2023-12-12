@@ -1,25 +1,30 @@
 import { Box, Skeleton, Tile } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useMethod } from '@rocket.chat/ui-contexts';
+import type { ForwardedRef } from 'react';
 import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
 
-import { useChat } from '../../../../../../client/views/room/contexts/ChatContext';
-import type { ComposerBoxPopupProps } from '../../ComposerBoxPopup';
+import { useChat } from '../contexts/ChatContext';
+import type { ComposerBoxPopupProps } from './ComposerBoxPopup';
 
 type ComposerBoxPopupPreviewItem = { _id: string; type: 'image' | 'video' | 'audio' | 'text' | 'other'; value: string; sort?: number };
 
-const ComposerBoxPopupPreview = forwardRef<
-	| {
-			getFilter?: () => unknown;
-			select?: (s: ComposerBoxPopupPreviewItem) => void;
-	  }
-	| undefined,
-	ComposerBoxPopupProps<ComposerBoxPopupPreviewItem> & {
-		rid: string;
-		tmid?: string;
-		suspended?: boolean;
-	}
->(function ComposerBoxPopupPreview({ focused, items, rid, tmid, select, suspended }, ref) {
+type ComposerBoxPopupPreviewProps = ComposerBoxPopupProps<ComposerBoxPopupPreviewItem> & {
+	rid: string;
+	tmid?: string;
+	suspended?: boolean;
+};
+
+const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
+	{ focused, items, rid, tmid, select, suspended }: ComposerBoxPopupPreviewProps,
+	ref: ForwardedRef<
+		| {
+				getFilter?: () => unknown;
+				select?: (s: ComposerBoxPopupPreviewItem) => void;
+		  }
+		| undefined
+	>,
+) {
 	const id = useUniqueId();
 	const chat = useChat();
 	const executeSlashCommandPreviewMethod = useMethod('executeSlashCommandPreview');

@@ -1,13 +1,13 @@
 import { OptionColumn, OptionContent } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import Emoji from '../../../../../../client/components/Emoji';
+import Emoji from '../../../components/Emoji';
 
 export type ComposerBoxPopupEmojiProps = {
 	_id: string;
 };
 
-const ComposerPopupEmoji = ({ _id }: ComposerBoxPopupEmojiProps) => {
+function ComposerBoxPopupEmoji({ _id }: ComposerBoxPopupEmojiProps) {
 	return (
 		<>
 			<OptionColumn>
@@ -16,6 +16,6 @@ const ComposerPopupEmoji = ({ _id }: ComposerBoxPopupEmojiProps) => {
 			<OptionContent>{_id}</OptionContent>
 		</>
 	);
-};
+}
 
-export default ComposerPopupEmoji;
+export default ComposerBoxPopupEmoji;

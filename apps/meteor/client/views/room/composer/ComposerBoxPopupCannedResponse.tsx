@@ -7,7 +7,7 @@ type ComposerBoxPopupCannedResponseProps = {
 	shortcut: string;
 };
 
-const ComposerPopupCannedResponse = ({ shortcut, text }: ComposerBoxPopupCannedResponseProps) => {
+function ComposerBoxPopupCannedResponse({ shortcut, text }: ComposerBoxPopupCannedResponseProps) {
 	return (
 		<>
 			<OptionColumn>
@@ -16,6 +16,6 @@ const ComposerPopupCannedResponse = ({ shortcut, text }: ComposerBoxPopupCannedR
 			<OptionContent>{text}</OptionContent>
 		</>
 	);
-};
+}
 
-export default ComposerPopupCannedResponse;
+export default ComposerBoxPopupCannedResponse;

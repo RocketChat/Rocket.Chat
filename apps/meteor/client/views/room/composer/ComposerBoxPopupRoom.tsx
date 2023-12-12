@@ -2,11 +2,11 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { OptionColumn, OptionContent } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { RoomIcon } from '../../../../../../client/components/RoomIcon';
+import { RoomIcon } from '../../../components/RoomIcon';
 
 export type ComposerBoxPopupRoomProps = Pick<IRoom, 't' | 'name' | 'fname' | '_id' | 'prid' | 'teamMain' | 'u'>;
 
-const ComposerBoxPopupRoom = ({ fname, name, ...props }: ComposerBoxPopupRoomProps) => {
+function ComposerBoxPopupRoom({ fname, name, ...props }: ComposerBoxPopupRoomProps) {
 	return (
 		<>
 			<OptionColumn>
@@ -17,6 +17,6 @@ const ComposerBoxPopupRoom = ({ fname, name, ...props }: ComposerBoxPopupRoomPro
 			</OptionContent>
 		</>
 	);
-};
+}
 
 export default ComposerBoxPopupRoom;
