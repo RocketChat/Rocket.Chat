@@ -49,7 +49,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 			},
 		});
 		this.cannedResponse = new BeforeSaveCannedResponse({
-			getSetting: settings.get,
+			getSetting: settings.get.bind(settings),
 		});
 
 		await this.configureBadWords();
