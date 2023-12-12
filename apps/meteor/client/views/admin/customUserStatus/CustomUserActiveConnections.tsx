@@ -2,7 +2,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import { GenericResourceUsage, GenericResourceUsageSkeleton } from '../../../components/GenericResourceUsage';
-import { useActiveConnections } from './hooks/useActiveConnections';
+import { useActiveConnections } from '../../hooks/useActiveConnections';
 
 const CustomUserActiveConnections = () => {
 	const t = useTranslation();

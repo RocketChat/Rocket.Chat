@@ -972,7 +972,6 @@
   "Enter_name_here": "name li vir binivîse",
   "Enter_Normal": "Modeya Normal (Ji Bi Enter bişîne)",
   "Enter_to": "binivîse",
-  "Enterprise": "Enterprise",
   "Entertainment": "Axaftin",
   "Error": "Şaşî",
   "Error_404": "Çewt: 404",
@@ -2747,5 +2746,7 @@
   "registration.component.form.reasonToJoin": "Reason to join",
   "registration.component.form.invalidConfirmPass": "دووبارەکراوەی تێپەڕەوشە یەکناگرێتەوە لەگەڵ تێپەڕەوشە",
   "registration.component.form.confirmPassword": "تێپەڕەوشەکەت پشتڕاستکەوە",
-  "registration.component.form.sendConfirmationEmail": "ئیمەیڵی پشتڕاستکردنەوە بنێرە"
+  "registration.component.form.sendConfirmationEmail": "ئیمەیڵی پشتڕاستکردنەوە بنێرە",
+  "Enterprise": "Enterprise",
+  "UpgradeToGetMore_engagement-dashboard_Title": "analytics"
 }

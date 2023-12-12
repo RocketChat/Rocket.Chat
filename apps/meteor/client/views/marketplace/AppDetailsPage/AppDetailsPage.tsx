@@ -1,6 +1,6 @@
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { App } from '@rocket.chat/core-typings';
-import { Button, ButtonGroup, Box, Throbber } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useRouteParameter, useToastMessageDispatch, usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -8,7 +8,7 @@ import React, { useState, useCallback, useRef } from 'react';
 
 import type { ISettings } from '../../../../ee/client/apps/@types/IOrchestrator';
 import { AppClientOrchestratorInstance } from '../../../../ee/client/apps/orchestrator';
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import { handleAPIError } from '../helpers/handleAPIError';
 import { useAppInfo } from '../hooks/useAppInfo';
 import AppDetailsPageHeader from './AppDetailsPageHeader';
@@ -73,17 +73,16 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 
 	return (
 		<Page flexDirection='column' h='full'>
-			<Page.Header title={t('App_Info')} onClickBack={handleReturn}>
+			<PageHeader title={t('App_Info')} onClickBack={handleReturn}>
 				<ButtonGroup>
 					{installed && isAdminUser && (
-						<Button primary disabled={!hasUnsavedChanges || isSaving} onClick={saveAppSettings}>
-							{!isSaving && t('Save_changes')}
-							{isSaving && <Throbber inheritColor />}
+						<Button primary disabled={!hasUnsavedChanges} loading={isSaving} onClick={saveAppSettings}>
+							{t('Save_changes')}
 						</Button>
 					)}
 				</ButtonGroup>
-			</Page.Header>
-			<Page.ScrollableContentWithShadow pi={24} pbs={24} pbe={0} h='full'>
+			</PageHeader>
+			<PageScrollableContentWithShadow pi={24} pbs={24} pbe={0} h='full'>
 				<Box w='full' alignSelf='center' h='full' display='flex' flexDirection='column'>
 					{!appData && <AppDetailsPageLoading />}
 					{appData && (
@@ -118,7 +117,7 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 						</>
 					)}
 				</Box>
-			</Page.ScrollableContentWithShadow>
+			</PageScrollableContentWithShadow>
 		</Page>
 	);
 };

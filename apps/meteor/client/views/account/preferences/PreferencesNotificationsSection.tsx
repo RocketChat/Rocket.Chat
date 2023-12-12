@@ -1,5 +1,6 @@
+import type { INotificationDesktop } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Accordion, Field, Select, FieldGroup, ToggleSwitch, Button, Box } from '@rocket.chat/fuselage';
+import { Accordion, Field, FieldLabel, FieldRow, FieldHint, Select, FieldGroup, ToggleSwitch, Button, Box } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserPreference, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
@@ -45,7 +46,7 @@ const PreferencesNotificationsSection = () => {
 
 	const onSendNotification = useCallback(() => {
 		KonchatNotification.notify({
-			payload: { sender: { _id: 'rocket.cat', username: 'rocket.cat' } },
+			payload: { sender: { _id: 'rocket.cat', username: 'rocket.cat' }, rid: 'GENERAL' } as INotificationDesktop['payload'],
 			title: t('Desktop_Notification_Test'),
 			text: t('This_is_a_desktop_notification'),
 		});
@@ -92,8 +93,8 @@ const PreferencesNotificationsSection = () => {
 		<Accordion.Item title={t('Notifications')}>
 			<FieldGroup>
 				<Field>
-					<Field.Label>{t('Desktop_Notifications')}</Field.Label>
-					<Field.Row>
+					<FieldLabel>{t('Desktop_Notifications')}</FieldLabel>
+					<FieldRow>
 						{notificationsPermission === 'denied' && t('Desktop_Notifications_Disabled')}
 						{notificationsPermission === 'granted' && (
 							<>
@@ -109,12 +110,12 @@ const PreferencesNotificationsSection = () => {
 								</Button>
 							</>
 						)}
-					</Field.Row>
+					</FieldRow>
 				</Field>
 				<Field>
 					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-						<Field.Label htmlFor={notificationRequireId}>{t('Notification_RequireInteraction')}</Field.Label>
-						<Field.Row>
+						<FieldLabel htmlFor={notificationRequireId}>{t('Notification_RequireInteraction')}</FieldLabel>
+						<FieldRow>
 							<Controller
 								name='desktopNotificationRequireInteraction'
 								control={control}
@@ -128,13 +129,13 @@ const PreferencesNotificationsSection = () => {
 									/>
 								)}
 							/>
-						</Field.Row>
+						</FieldRow>
 					</Box>
-					<Field.Hint id={`${notificationRequireId}-hint`}>{t('Only_works_with_chrome_version_greater_50')}</Field.Hint>
+					<FieldHint id={`${notificationRequireId}-hint`}>{t('Only_works_with_chrome_version_greater_50')}</FieldHint>
 				</Field>
 				<Field>
-					<Field.Label htmlFor={desktopNotificationsId}>{t('Notification_Desktop_Default_For')}</Field.Label>
-					<Field.Row>
+					<FieldLabel htmlFor={desktopNotificationsId}>{t('Notification_Desktop_Default_For')}</FieldLabel>
+					<FieldRow>
 						<Controller
 							name='desktopNotifications'
 							control={control}
@@ -142,11 +143,11 @@ const PreferencesNotificationsSection = () => {
 								<Select id={desktopNotificationsId} value={value} onChange={onChange} options={desktopNotificationOptions} />
 							)}
 						/>
-					</Field.Row>
+					</FieldRow>
 				</Field>
 				<Field>
-					<Field.Label htmlFor={pushNotificationsId}>{t('Notification_Push_Default_For')}</Field.Label>
-					<Field.Row>
+					<FieldLabel htmlFor={pushNotificationsId}>{t('Notification_Push_Default_For')}</FieldLabel>
+					<FieldRow>
 						<Controller
 							name='pushNotifications'
 							control={control}
@@ -154,11 +155,11 @@ const PreferencesNotificationsSection = () => {
 								<Select id={pushNotificationsId} value={value} onChange={onChange} options={mobileNotificationOptions} />
 							)}
 						/>
-					</Field.Row>
+					</FieldRow>
 				</Field>
 				<Field>
-					<Field.Label htmlFor={emailNotificationModeId}>{t('Email_Notification_Mode')}</Field.Label>
-					<Field.Row>
+					<FieldLabel htmlFor={emailNotificationModeId}>{t('Email_Notification_Mode')}</FieldLabel>
+					<FieldRow>
 						<Controller
 							name='emailNotificationMode'
 							control={control}
@@ -173,17 +174,17 @@ const PreferencesNotificationsSection = () => {
 								/>
 							)}
 						/>
-					</Field.Row>
-					<Field.Hint id={`${emailNotificationModeId}-hint`}>
+					</FieldRow>
+					<FieldHint id={`${emailNotificationModeId}-hint`}>
 						{canChangeEmailNotification && t('You_need_to_verifiy_your_email_address_to_get_notications')}
 						{!canChangeEmailNotification && t('Email_Notifications_Change_Disabled')}
-					</Field.Hint>
+					</FieldHint>
 				</Field>
 				{showNewLoginEmailPreference && (
 					<Field>
 						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-							<Field.Label htmlFor={receiveLoginDetectionEmailId}>{t('Receive_Login_Detection_Emails')}</Field.Label>
-							<Field.Row>
+							<FieldLabel htmlFor={receiveLoginDetectionEmailId}>{t('Receive_Login_Detection_Emails')}</FieldLabel>
+							<FieldRow>
 								<Controller
 									name='receiveLoginDetectionEmail'
 									control={control}
@@ -197,16 +198,16 @@ const PreferencesNotificationsSection = () => {
 										/>
 									)}
 								/>
-							</Field.Row>
+							</FieldRow>
 						</Box>
-						<Field.Hint id={`${receiveLoginDetectionEmailId}-hint`}>{t('Receive_Login_Detection_Emails_Description')}</Field.Hint>
+						<FieldHint id={`${receiveLoginDetectionEmailId}-hint`}>{t('Receive_Login_Detection_Emails_Description')}</FieldHint>
 					</Field>
 				)}
 				{showCalendarPreference && (
 					<Field>
 						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-							<Field.Label htmlFor={notifyCalendarEventsId}>{t('Notify_Calendar_Events')}</Field.Label>
-							<Field.Row>
+							<FieldLabel htmlFor={notifyCalendarEventsId}>{t('Notify_Calendar_Events')}</FieldLabel>
+							<FieldRow>
 								<Controller
 									name='notifyCalendarEvents'
 									control={control}
@@ -214,15 +215,15 @@ const PreferencesNotificationsSection = () => {
 										<ToggleSwitch id={notifyCalendarEventsId} ref={ref} checked={value} onChange={onChange} />
 									)}
 								/>
-							</Field.Row>
+							</FieldRow>
 						</Box>
 					</Field>
 				)}
 				{showMobileRinging && (
 					<Field>
 						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-							<Field.Label htmlFor={enableMobileRingingId}>{t('VideoConf_Mobile_Ringing')}</Field.Label>
-							<Field.Row>
+							<FieldLabel htmlFor={enableMobileRingingId}>{t('VideoConf_Mobile_Ringing')}</FieldLabel>
+							<FieldRow>
 								<Controller
 									name='enableMobileRinging'
 									control={control}
@@ -230,7 +231,7 @@ const PreferencesNotificationsSection = () => {
 										<ToggleSwitch id={enableMobileRingingId} ref={ref} checked={value} onChange={onChange} />
 									)}
 								/>
-							</Field.Row>
+							</FieldRow>
 						</Box>
 					</Field>
 				)}

@@ -1,7 +1,7 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 import QueueListTable from './QueueListTable';
 
 const QueueListPage = () => {
@@ -9,10 +9,10 @@ const QueueListPage = () => {
 
 	return (
 		<Page>
-			<Page.Header title={t('Livechat_Queue')} />
-			<Page.Content>
+			<PageHeader title={t('Livechat_Queue')} />
+			<PageContent>
 				<QueueListTable />
-			</Page.Content>
+			</PageContent>
 		</Page>
 	);
 };

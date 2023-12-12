@@ -49,36 +49,24 @@ const fetchCloudWorkspaceLicensePayload = async ({ token }: { token: string }): 
 	return payload;
 };
 
-export async function getWorkspaceLicense(): Promise<{ updated: boolean; license: string }> {
+export async function getWorkspaceLicense() {
 	const currentLicense = await Settings.findOne('Cloud_Workspace_License');
-
-	const fromCurrentLicense = async () => {
-		const license = currentLicense?.value as string | undefined;
-		if (license) {
-			callbacks.run('workspaceLicenseChanged', license);
-		}
-
-		return { updated: false, license: license ?? '' };
-	};
+	// it should never happen, since even if the license is not found, it will return an empty settings
+	if (!currentLicense?._updatedAt) {
+		throw new CloudWorkspaceLicenseError('Failed to retrieve current license');
+	}
 
 	try {
 		const token = await getWorkspaceAccessToken();
 		if (!token) {
-			return fromCurrentLicense();
-		}
-
-		if (!currentLicense?._updatedAt) {
-			throw new CloudWorkspaceLicenseError('Failed to retrieve current license');
+			return;
 		}
 
 		const payload = await fetchCloudWorkspaceLicensePayload({ token });
 
-		if (Date.parse(payload.updatedAt) <= currentLicense._updatedAt.getTime()) {
-			return fromCurrentLicense();
+		if (currentLicense.value && Date.parse(payload.updatedAt) <= currentLicense._updatedAt.getTime()) {
+			return;
 		}
-
-		await Settings.updateValueById('Cloud_Workspace_License', payload.license);
-
 		await callbacks.run('workspaceLicenseChanged', payload.license);
 
 		return { updated: true, license: payload.license };
@@ -88,7 +76,5 @@ export async function getWorkspaceLicense(): Promise<{ updated: boolean; license
 			url: '/license',
 			err,
 		});
-
-		return fromCurrentLicense();
 	}
 }

@@ -61,10 +61,10 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 			)}
 
 			{normalizedMessage.blocks && (
-				<UiKitMessageBlock mid={normalizedMessage._id} blocks={normalizedMessage.blocks} appId rid={normalizedMessage.rid} />
+				<UiKitMessageBlock rid={normalizedMessage.rid} mid={normalizedMessage._id} blocks={normalizedMessage.blocks} />
 			)}
 
-			{!!normalizedMessage?.attachments?.length && <Attachments attachments={normalizedMessage.attachments} />}
+			{!!normalizedMessage?.attachments?.length && <Attachments id={message.files?.[0]._id} attachments={normalizedMessage.attachments} />}
 
 			{oembedEnabled && !!normalizedMessage.urls?.length && <UrlPreviews urls={normalizedMessage.urls} />}
 

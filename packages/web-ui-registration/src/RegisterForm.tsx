@@ -1,5 +1,17 @@
 /* eslint-disable complexity */
-import { FieldGroup, TextInput, Field, PasswordInput, ButtonGroup, Button, TextAreaInput, Callout } from '@rocket.chat/fuselage';
+import {
+	FieldGroup,
+	TextInput,
+	Field,
+	FieldLabel,
+	FieldRow,
+	FieldError,
+	PasswordInput,
+	ButtonGroup,
+	Button,
+	TextAreaInput,
+	Callout,
+} from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { Form, ActionLink } from '@rocket.chat/layout';
 import { CustomFieldsForm, PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
@@ -123,10 +135,10 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 			<Form.Container>
 				<FieldGroup>
 					<Field>
-						<Field.Label required={requireNameForRegister} htmlFor={nameId}>
+						<FieldLabel required={requireNameForRegister} htmlFor={nameId}>
 							{t('registration.component.form.name')}
-						</Field.Label>
-						<Field.Row>
+						</FieldLabel>
+						<FieldRow>
 							<TextInput
 								{...register('name', {
 									required: requireNameForRegister ? t('registration.component.form.requiredField') : false,
@@ -138,18 +150,18 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 								aria-describedby={`${nameId}-error`}
 								id={nameId}
 							/>
-						</Field.Row>
+						</FieldRow>
 						{errors.name && (
-							<Field.Error aria-live='assertive' id={`${nameId}-error`}>
+							<FieldError aria-live='assertive' id={`${nameId}-error`}>
 								{errors.name.message}
-							</Field.Error>
+							</FieldError>
 						)}
 					</Field>
 					<Field>
-						<Field.Label required htmlFor={emailId}>
+						<FieldLabel required htmlFor={emailId}>
 							{t('registration.component.form.email')}
-						</Field.Label>
-						<Field.Row>
+						</FieldLabel>
+						<FieldRow>
 							<TextInput
 								{...register('email', {
 									required: t('registration.component.form.requiredField'),
@@ -165,18 +177,18 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 								aria-describedby={`${emailId}-error`}
 								id={emailId}
 							/>
-						</Field.Row>
+						</FieldRow>
 						{errors.email && (
-							<Field.Error aria-live='assertive' id={`${emailId}-error`}>
+							<FieldError aria-live='assertive' id={`${emailId}-error`}>
 								{errors.email.message}
-							</Field.Error>
+							</FieldError>
 						)}
 					</Field>
 					<Field>
-						<Field.Label required htmlFor={usernameId}>
+						<FieldLabel required htmlFor={usernameId}>
 							{t('registration.component.form.username')}
-						</Field.Label>
-						<Field.Row>
+						</FieldLabel>
+						<FieldRow>
 							<TextInput
 								{...register('username', {
 									required: t('registration.component.form.requiredField'),
@@ -188,18 +200,18 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 								id={usernameId}
 								placeholder='jon.doe'
 							/>
-						</Field.Row>
+						</FieldRow>
 						{errors.username && (
-							<Field.Error aria-live='assertive' id={`${usernameId}-error`}>
+							<FieldError aria-live='assertive' id={`${usernameId}-error`}>
 								{errors.username.message}
-							</Field.Error>
+							</FieldError>
 						)}
 					</Field>
 					<Field>
-						<Field.Label required htmlFor={passwordId}>
+						<FieldLabel required htmlFor={passwordId}>
 							{t('registration.component.form.password')}
-						</Field.Label>
-						<Field.Row>
+						</FieldLabel>
+						<FieldRow>
 							<PasswordInput
 								{...register('password', {
 									required: t('registration.component.form.requiredField'),
@@ -212,20 +224,20 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 								placeholder={passwordPlaceholder || t('Create_a_password')}
 								aria-describedby={`${passwordVerifierId} ${passwordId}-error`}
 							/>
-						</Field.Row>
+						</FieldRow>
 						{errors?.password && (
-							<Field.Error aria-live='assertive' id={`${passwordId}-error`}>
+							<FieldError aria-live='assertive' id={`${passwordId}-error`}>
 								{errors.password.message}
-							</Field.Error>
+							</FieldError>
 						)}
 						<PasswordVerifier password={password} id={passwordVerifierId} />
 					</Field>
 					{requiresPasswordConfirmation && (
 						<Field>
-							<Field.Label required htmlFor={passwordConfirmationId}>
+							<FieldLabel required htmlFor={passwordConfirmationId}>
 								{t('registration.component.form.confirmPassword')}
-							</Field.Label>
-							<Field.Row>
+							</FieldLabel>
+							<FieldRow>
 								<PasswordInput
 									{...register('passwordConfirmation', {
 										required: t('registration.component.form.requiredField'),
@@ -240,20 +252,20 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 									placeholder={passwordConfirmationPlaceholder || t('Confirm_password')}
 									disabled={!passwordIsValid}
 								/>
-							</Field.Row>
+							</FieldRow>
 							{errors.passwordConfirmation && (
-								<Field.Error aria-live='assertive' id={`${passwordConfirmationId}-error`}>
+								<FieldError aria-live='assertive' id={`${passwordConfirmationId}-error`}>
 									{errors.passwordConfirmation.message}
-								</Field.Error>
+								</FieldError>
 							)}
 						</Field>
 					)}
 					{manuallyApproveNewUsersRequired && (
 						<Field>
-							<Field.Label required htmlFor={reasonId}>
+							<FieldLabel required htmlFor={reasonId}>
 								{t('registration.component.form.reasonToJoin')}
-							</Field.Label>
-							<Field.Row>
+							</FieldLabel>
+							<FieldRow>
 								<TextAreaInput
 									{...register('reason', {
 										required: t('registration.component.form.requiredField'),
@@ -264,11 +276,11 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 									aria-describedby={`${reasonId}-error`}
 									id={reasonId}
 								/>
-							</Field.Row>
+							</FieldRow>
 							{errors.reason && (
-								<Field.Error aria-live='assertive' id={`${reasonId}-error`}>
+								<FieldError aria-live='assertive' id={`${reasonId}-error`}>
 									{errors.reason.message}
-								</Field.Error>
+								</FieldError>
 							)}
 						</Field>
 					)}
@@ -278,7 +290,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 			</Form.Container>
 			<Form.Footer>
 				<ButtonGroup>
-					<Button type='submit' disabled={registerUser.isLoading} primary>
+					<Button type='submit' loading={registerUser.isLoading} primary>
 						{t('registration.component.form.joinYourTeam')}
 					</Button>
 				</ButtonGroup>

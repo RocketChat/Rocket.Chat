@@ -974,7 +974,6 @@
   "Enter_name_here": "இங்கே பெயரை உள்ளிடுக",
   "Enter_Normal": "இயல்பான பயன்முறை (உள்ளிடவும்)",
   "Enter_to": "க்கு சேர்க்கவும்",
-  "Enterprise": "நிறுவன",
   "Entertainment": "பொழுதுபோக்கு",
   "Error": "பிழை",
   "Error_404": "பிழை: 404",
@@ -2757,5 +2756,7 @@
   "registration.component.form.reasonToJoin": "சேர காரணம்",
   "registration.component.form.invalidConfirmPass": "கடவுச்சொல்லை உறுதிப்படுத்தும் கடவுச்சொல் பொருந்தவில்லை",
   "registration.component.form.confirmPassword": "உங்கள் கடவுச்சொல்லை உறுதிப்படுத்துக",
-  "registration.component.form.sendConfirmationEmail": "உறுதிப்படுத்தும் மின்னஞ்சல் அனுப்பவும்"
+  "registration.component.form.sendConfirmationEmail": "உறுதிப்படுத்தும் மின்னஞ்சல் அனுப்பவும்",
+  "Enterprise": "நிறுவன",
+  "UpgradeToGetMore_engagement-dashboard_Title": "அனலிட்டிக்ஸ்"
 }

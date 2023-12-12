@@ -1,8 +1,9 @@
-import type { BehaviorWithContext } from '../definition/LicenseBehavior';
-import type { LicenseLimit } from '../definition/LicenseLimit';
-import type { LicensePeriod } from '../definition/LicensePeriod';
+import type { LicenseLimitKind, BehaviorWithContext, LicenseLimit, LicensePeriod } from '@rocket.chat/core-typings';
 
-export const getResultingBehavior = (data: LicenseLimit | LicensePeriod | Partial<BehaviorWithContext>): BehaviorWithContext => {
+export const getResultingBehavior = (
+	data: LicenseLimit | LicensePeriod | Partial<Omit<BehaviorWithContext, 'reason'>>,
+	{ reason, limit }: { reason: BehaviorWithContext['reason']; limit?: LicenseLimitKind },
+): BehaviorWithContext => {
 	const behavior = 'invalidBehavior' in data ? data.invalidBehavior : data.behavior;
 
 	switch (behavior) {
@@ -10,11 +11,15 @@ export const getResultingBehavior = (data: LicenseLimit | LicensePeriod | Partia
 			return {
 				behavior,
 				modules: ('modules' in data && data.modules) || [],
+				reason,
+				limit,
 			};
 
 		default:
 			return {
 				behavior,
+				reason,
+				limit,
 			} as BehaviorWithContext;
 	}
 };

@@ -17,11 +17,7 @@ export class ImportsModel extends BaseRaw<IImport> implements IImportsModel {
 	async findLastImport(): Promise<IImport | undefined> {
 		const imports = await this.find({}, { sort: { ts: -1 }, limit: 1 }).toArray();
 
-		if (imports?.length) {
-			return imports.shift();
-		}
-
-		return undefined;
+		return imports.shift();
 	}
 
 	async hasValidOperationInStatus(allowedStatus: IImport['status'][]): Promise<boolean> {

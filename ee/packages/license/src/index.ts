@@ -1,31 +1,33 @@
-import type { ILicenseV3, LicenseLimitKind } from './definition/ILicenseV3';
-import type { LimitContext } from './definition/LimitContext';
+import type { LicenseLimitKind, LicenseInfo, LimitContext } from '@rocket.chat/core-typings';
+
 import { getAppsConfig, getMaxActiveUsers, getUnmodifiedLicenseAndModules } from './deprecated';
 import { onLicense } from './events/deprecated';
 import {
+	onBehaviorToggled,
+	onBehaviorTriggered,
 	onInvalidFeature,
 	onInvalidateLicense,
 	onLimitReached,
 	onModule,
+	onChange,
 	onToggledFeature,
 	onValidFeature,
 	onValidateLicense,
+	onInstall,
+	onInvalidate,
+	onRemoveLicense,
 } from './events/listeners';
 import { overwriteClassOnLicense } from './events/overwriteClassOnLicense';
 import { LicenseManager } from './license';
+import { logger } from './logger';
 import { getModules, hasModule } from './modules';
+import { showLicense } from './showLicense';
 import { getTags } from './tags';
 import { getCurrentValueForLicenseLimit, setLicenseLimitCounter } from './validation/getCurrentValueForLicenseLimit';
 import { validateFormat } from './validation/validateFormat';
 
-export * from './definition/ILicenseTag';
-export * from './definition/ILicenseV2';
-export * from './definition/ILicenseV3';
-export * from './definition/LicenseBehavior';
-export * from './definition/LicenseLimit';
-export * from './definition/LicenseModule';
-export * from './definition/LicensePeriod';
-export * from './definition/LimitContext';
+export { DuplicatedLicenseError } from './errors/DuplicatedLicenseError';
+export * from './MockedLicenseBuilder';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 interface License {
@@ -44,8 +46,10 @@ interface License {
 	onValidateLicense: typeof onValidateLicense;
 	onInvalidateLicense: typeof onInvalidateLicense;
 	onLimitReached: typeof onLimitReached;
+	onBehaviorTriggered: typeof onBehaviorTriggered;
+	revalidateLicense: () => Promise<void>;
 
-	supportedVersions(): ILicenseV3['supportedVersions'];
+	getInfo: (info: { limits: boolean; currentValues: boolean; license: boolean }) => Promise<LicenseInfo>;
 
 	// Deprecated:
 	onLicense: typeof onLicense;
@@ -58,8 +62,29 @@ interface License {
 }
 
 export class LicenseImp extends LicenseManager implements License {
-	supportedVersions() {
-		return this.getLicense()?.supportedVersions;
+	constructor() {
+		super();
+		this.onValidateLicense(() => showLicense.call(this, this.getLicense(), this.hasValidLicense()));
+
+		this.onValidateLicense(() => {
+			logger.startup({
+				msg: 'License installed',
+				version: this.getLicense()?.version,
+				hash: this._lockedLicense?.slice(-8),
+			});
+		});
+
+		this.onRemoveLicense(() => {
+			logger.startup({
+				msg: 'License removed',
+			});
+		});
+
+		this.onInvalidateLicense(() => {
+			logger.startup({
+				msg: 'License invalidated',
+			});
+		});
 	}
 
 	validateFormat = validateFormat;
@@ -76,9 +101,17 @@ export class LicenseImp extends LicenseManager implements License {
 
 	getCurrentValueForLicenseLimit = getCurrentValueForLicenseLimit;
 
-	public async isLimitReached<T extends LicenseLimitKind>(action: T, context?: Partial<LimitContext<T>>) {
-		return this.shouldPreventAction(action, context, 0);
+	public async isLimitReached<T extends LicenseLimitKind>(action: T, context?: Partial<LimitContext<T>>): Promise<boolean> {
+		return this.shouldPreventAction(action, 0, context);
 	}
+
+	onChange = onChange;
+
+	onInstall = onInstall;
+
+	onRemoveLicense = onRemoveLicense;
+
+	onInvalidate = onInvalidate;
 
 	onValidFeature = onValidFeature;
 
@@ -93,6 +126,10 @@ export class LicenseImp extends LicenseManager implements License {
 	onInvalidateLicense = onInvalidateLicense;
 
 	onLimitReached = onLimitReached;
+
+	onBehaviorTriggered = onBehaviorTriggered;
+
+	onBehaviorToggled = onBehaviorToggled;
 
 	// Deprecated:
 	onLicense = onLicense;

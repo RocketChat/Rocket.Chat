@@ -12,6 +12,7 @@ export type ChannelsCreateProps = {
 		encrypted?: boolean;
 		teamId?: string;
 	};
+	excludeSelf?: boolean;
 };
 
 const channelsCreatePropsSchema = {

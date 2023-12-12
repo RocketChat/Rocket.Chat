@@ -2,7 +2,7 @@ import { useTranslation, useRouteParameter, useToastMessageDispatch } from '@roc
 import React from 'react';
 
 import { Contextualbar } from '../../../components/Contextualbar';
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 import { getPermaLink } from '../../../lib/getPermaLink';
 import ModerationConsoleTable from './ModerationConsoleTable';
 import UserMessages from './UserMessages';
@@ -26,10 +26,10 @@ const ModerationConsolePage = () => {
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('Moderation')} />
-				<Page.Content>
+				<PageHeader title={t('Moderation')} />
+				<PageContent>
 					<ModerationConsoleTable />
-				</Page.Content>
+				</PageContent>
 			</Page>
 			{context && <Contextualbar>{context === 'info' && id && <UserMessages userId={id} onRedirect={handleRedirect} />}</Contextualbar>}
 		</Page>

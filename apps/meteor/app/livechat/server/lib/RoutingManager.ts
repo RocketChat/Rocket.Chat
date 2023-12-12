@@ -10,6 +10,7 @@ import type {
 	InquiryWithAgentInfo,
 	TransferData,
 } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatInquiry, LivechatRooms, Subscriptions, Rooms, Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
@@ -80,6 +81,13 @@ export const RoutingManager: Routing = {
 			this.methodName = 'Manual_Selection';
 		} else {
 			this.methodName = name;
+		}
+
+		const shouldPreventQueueStart = await License.shouldPreventAction('monthlyActiveContacts');
+
+		if (shouldPreventQueueStart) {
+			logger.error('Monthly Active Contacts limit reached. Queue will not start');
+			return;
 		}
 
 		void (await Omnichannel.getQueueWorker()).shouldStart();
@@ -154,6 +162,11 @@ export const RoutingManager: Routing = {
 
 		if (user) {
 			await Promise.all([Message.saveSystemMessage('command', rid, 'connected', user), Message.saveSystemMessage('uj', rid, '', user)]);
+		}
+
+		if (!room) {
+			logger.debug(`Cannot assign agent to inquiry ${inquiry._id}: Room not found`);
+			throw new Meteor.Error('error-room-not-found', 'Room not found');
 		}
 
 		await dispatchAgentDelegated(rid, agent.agentId);
@@ -260,6 +273,7 @@ export const RoutingManager: Routing = {
 	},
 
 	async transferRoom(room, guest, transferData) {
+		logger.debug(`Transfering room ${room._id} by ${transferData.transferredBy._id}`);
 		if (transferData.departmentId) {
 			logger.debug(`Transfering room ${room._id} to department ${transferData.departmentId}`);
 			return forwardRoomToDepartment(room, guest, transferData);

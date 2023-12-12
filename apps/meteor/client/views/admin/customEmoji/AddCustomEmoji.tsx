@@ -1,11 +1,11 @@
-import { Box, Button, ButtonGroup, Margins, TextInput, Field, Icon } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Margins, TextInput, Field, FieldLabel, FieldRow, FieldError, Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent } from 'react';
 import React, { useCallback, useState } from 'react';
 
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import { useEndpointUpload } from '../../../hooks/useEndpointUpload';
-import { useFileInput } from '../../../hooks/useFileInput';
+import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 
 type AddCustomEmojiProps = {
 	close: () => void;
@@ -56,7 +56,7 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 		}
 	}, [emojiFile, name, aliases, saveAction, onChange, close]);
 
-	const [clickUpload] = useFileInput(setEmojiPreview, 'emoji');
+	const [clickUpload] = useSingleFileInput(setEmojiPreview, 'emoji');
 
 	const handleChangeName = (e: ChangeEvent<HTMLInputElement>): void => {
 		if (e.currentTarget.value !== '') {
@@ -78,28 +78,28 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 		<>
 			<ContextualbarScrollableContent {...props}>
 				<Field>
-					<Field.Label>{t('Name')}</Field.Label>
-					<Field.Row>
+					<FieldLabel>{t('Name')}</FieldLabel>
+					<FieldRow>
 						<TextInput value={name} onChange={handleChangeName} placeholder={t('Name')} />
-					</Field.Row>
-					{errors.name && <Field.Error>{t('error-the-field-is-required', { field: t('Name') })}</Field.Error>}
+					</FieldRow>
+					{errors.name && <FieldError>{t('error-the-field-is-required', { field: t('Name') })}</FieldError>}
 				</Field>
 				<Field>
-					<Field.Label>{t('Aliases')}</Field.Label>
-					<Field.Row>
+					<FieldLabel>{t('Aliases')}</FieldLabel>
+					<FieldRow>
 						<TextInput value={aliases} onChange={handleChangeAliases} placeholder={t('Aliases')} />
-					</Field.Row>
-					{errors.aliases && <Field.Error>{t('Custom_Emoji_Error_Same_Name_And_Alias')}</Field.Error>}
+					</FieldRow>
+					{errors.aliases && <FieldError>{t('Custom_Emoji_Error_Same_Name_And_Alias')}</FieldError>}
 				</Field>
 				<Field>
-					<Field.Label alignSelf='stretch' display='flex' justifyContent='space-between' alignItems='center'>
+					<FieldLabel alignSelf='stretch' display='flex' justifyContent='space-between' alignItems='center'>
 						{t('Custom_Emoji')}
 						{/* FIXME: replace to IconButton */}
 						<Button square onClick={clickUpload}>
 							<Icon name='upload' size='x20' />
 						</Button>
-					</Field.Label>
-					{errors.emoji && <Field.Error>{t('error-the-field-is-required', { field: t('Custom_Emoji') })}</Field.Error>}
+					</FieldLabel>
+					{errors.emoji && <FieldError>{t('error-the-field-is-required', { field: t('Custom_Emoji') })}</FieldError>}
 					{newEmojiPreview && (
 						<Box display='flex' flexDirection='row' mi='neg-x4' justifyContent='center'>
 							<Margins inline={4}>

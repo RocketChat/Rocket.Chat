@@ -6,7 +6,7 @@ import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';
 import { test, expect } from '../utils/test';
 
-test.describe.serial('Omnichannel Triggers', () => {
+test.describe.serial('omnichannel-triggers', () => {
 	let triggersName: string;
 	let triggerMessage: string;
 	let poLiveChat: OmnichannelLiveChat;
@@ -29,6 +29,7 @@ test.describe.serial('Omnichannel Triggers', () => {
 
 		const { page } = await createAuxContext(browser, Users.user1, '/omnichannel/triggers');
 		agent = { page, poHomeOmnichannel: new HomeOmnichannel(page) };
+		await page.emulateMedia({ reducedMotion: 'reduce' });
 	});
 
 	test.beforeEach(async ({ page, api }) => {
@@ -39,6 +40,7 @@ test.describe.serial('Omnichannel Triggers', () => {
 		await Promise.all([
 			api.delete('/livechat/users/agent/user1'),
 			api.delete('/livechat/users/manager/user1'),
+			api.delete(`/livechat/triggers/${triggersName}`),
 			api.post('/settings/Livechat_clear_local_storage_when_chat_ended', { value: false }),
 		]);
 		await agent.page.close();

@@ -1,23 +1,25 @@
-import type { ILicenseTag } from './definition/ILicenseTag';
+import type { ILicenseTag } from '@rocket.chat/core-typings';
 
-export const tags = new Set<ILicenseTag>();
+import { type LicenseManager } from './license';
 
-export const addTag = (tag: ILicenseTag) => {
+export function addTag(this: LicenseManager, tag: ILicenseTag) {
 	// make sure to not add duplicated tag names
-	for (const addedTag of tags) {
+	for (const addedTag of this.tags) {
 		if (addedTag.name.toLowerCase() === tag.name.toLowerCase()) {
 			return;
 		}
 	}
 
-	tags.add(tag);
-};
+	this.tags.add(tag);
+}
 
-export const replaceTags = (newTags: ILicenseTag[]) => {
-	tags.clear();
+export function replaceTags(this: LicenseManager, newTags: ILicenseTag[]) {
+	this.tags.clear();
 	for (const tag of newTags) {
-		addTag(tag);
+		addTag.call(this, tag);
 	}
-};
+}
 
-export const getTags = () => [...tags];
+export function getTags(this: LicenseManager) {
+	return [...this.tags];
+}

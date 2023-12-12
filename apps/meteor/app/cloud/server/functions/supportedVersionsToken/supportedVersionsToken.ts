@@ -1,14 +1,22 @@
 import type { SettingValue } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Settings } from '@rocket.chat/models';
-import type { SupportedVersions } from '@rocket.chat/server-cloud-communication';
+import type { SignedSupportedVersions, SupportedVersions } from '@rocket.chat/server-cloud-communication';
 import type { Response } from '@rocket.chat/server-fetch';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { SystemLogger } from '../../../../../server/lib/logger/system';
 import { settings } from '../../../../settings/server';
+import { supportedVersions as supportedVersionsFromBuild } from '../../../../utils/rocketchat-supported-versions.info';
+import { buildVersionUpdateMessage } from '../../../../version-check/server/functions/buildVersionUpdateMessage';
 import { generateWorkspaceBearerHttpHeader } from '../getWorkspaceAccessToken';
 import { supportedVersionsChooseLatest } from './supportedVersionsChooseLatest';
+
+declare module '@rocket.chat/core-typings' {
+	interface ILicenseV3 {
+		supportedVersions?: SignedSupportedVersions;
+	}
+}
 
 /** HELPERS */
 
@@ -77,7 +85,9 @@ const cacheValueInSettings = <T extends SettingValue>(
 	);
 };
 
-/** CODE */
+const releaseEndpoint = process.env.OVERWRITE_INTERNAL_RELEASE_URL?.trim()
+	? process.env.OVERWRITE_INTERNAL_RELEASE_URL.trim()
+	: 'https://releases.rocket.chat/v2/server/supportedVersions';
 
 const getSupportedVersionsFromCloud = async () => {
 	if (process.env.CLOUD_SUPPORTED_VERSIONS_TOKEN) {
@@ -91,15 +101,16 @@ const getSupportedVersionsFromCloud = async () => {
 	const headers = await generateWorkspaceBearerHttpHeader();
 
 	const response = await handleResponse<SupportedVersions>(
-		fetch('https://releases.rocket.chat/v2/server/supportedVersions', {
+		fetch(releaseEndpoint, {
 			headers,
+			timeout: 3000,
 		}),
 	);
 
 	if (!response.success) {
 		SystemLogger.error({
 			msg: 'Failed to communicate with Rocket.Chat Cloud',
-			url: 'https://releases.rocket.chat/v2/server/supportedVersions',
+			url: releaseEndpoint,
 			err: response.error,
 		});
 	}
@@ -115,9 +126,17 @@ const getSupportedVersionsToken = async () => {
 	 * return the token
 	 */
 
-	const [versionsFromLicense, response] = await Promise.all([License.supportedVersions(), getSupportedVersionsFromCloud()]);
+	const [versionsFromLicense, response] = await Promise.all([License.getLicense(), getSupportedVersionsFromCloud()]);
 
-	return (await supportedVersionsChooseLatest(versionsFromLicense, (response.success && response.result) || undefined))?.signed;
+	const supportedVersions = await supportedVersionsChooseLatest(
+		supportedVersionsFromBuild,
+		versionsFromLicense?.supportedVersions,
+		(response.success && response.result) || undefined,
+	);
+
+	await buildVersionUpdateMessage(supportedVersions?.versions);
+
+	return supportedVersions?.signed;
 };
 
 export const getCachedSupportedVersionsToken = cacheValueInSettings('Cloud_Workspace_Supported_Versions_Token', getSupportedVersionsToken);

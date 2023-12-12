@@ -1,3 +1,4 @@
+import { api } from '@rocket.chat/core-services';
 import { isIMessageInbox } from '@rocket.chat/core-typings';
 import type { IEmailInbox, IUser, IMessage, IOmnichannelRoom, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { Messages, Uploads, LivechatRooms, Rooms, Users } from '@rocket.chat/models';
@@ -10,6 +11,7 @@ import { settings } from '../../../app/settings/server';
 import { slashCommands } from '../../../app/utils/server/slashCommand';
 import { callbacks } from '../../../lib/callbacks';
 import { i18n } from '../../lib/i18n';
+import { broadcastMessageSentEvent } from '../../modules/watchers/lib/messages';
 import { inboxes } from './EmailInbox';
 import type { Inbox } from './EmailInbox';
 import { logger } from './logger';
@@ -43,15 +45,15 @@ const sendErrorReplyMessage = async (error: string, options: any) => {
 	return sendMessage(user, message, { _id: options.rid });
 };
 
-const sendSuccessReplyMessage = async (options: any) => {
-	if (!options?.rid || !options?.msgId) {
+const sendSuccessReplyMessage = async (options: { room: IOmnichannelRoom; msgId: string; sender: string }) => {
+	if (!options?.room?._id || !options?.msgId) {
 		return;
 	}
 	const message = {
 		groupable: false,
 		msg: `@${options.sender} Attachment was sent successfully`,
 		_id: String(Date.now()),
-		rid: options.rid,
+		rid: options.room._id,
 		ts: new Date(),
 	};
 
@@ -60,7 +62,7 @@ const sendSuccessReplyMessage = async (options: any) => {
 		return;
 	}
 
-	return sendMessage(user, message, { _id: options.rid });
+	return sendMessage(user, message, options.room);
 };
 
 async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promise<{ messageId: string }> {
@@ -170,11 +172,15 @@ slashCommands.add({
 				},
 			},
 		);
+		void broadcastMessageSentEvent({
+			id: message._id,
+			broadcastCallback: (message) => api.broadcast('message.sent', message),
+		});
 
 		return sendSuccessReplyMessage({
 			msgId: message._id,
 			sender: message.u.username,
-			rid: room._id,
+			room,
 		});
 	},
 	options: {
