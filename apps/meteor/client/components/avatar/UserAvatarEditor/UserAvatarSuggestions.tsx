@@ -1,43 +1,31 @@
-import type { AvatarObject } from '@rocket.chat/core-typings';
-import { Box, Button, Margins, Avatar } from '@rocket.chat/fuselage';
+import { Button, Avatar } from '@rocket.chat/fuselage';
 import React, { useCallback } from 'react';
 
-import { useAvatarSuggestions } from '../../../hooks/useAvatarSuggestions';
+import type { UserAvatarSuggestion } from './UserAvatarSuggestion';
+import { useUserAvatarSuggestions } from './useUserAvatarSuggestions';
 
 type UserAvatarSuggestionsProps = {
-	setAvatarObj: (obj: AvatarObject) => void;
-	setNewAvatarSource: (source: string) => void;
 	disabled?: boolean;
+	onSelectOne?: (suggestion: UserAvatarSuggestion) => void;
 };
 
-const UserAvatarSuggestions = ({ setAvatarObj, setNewAvatarSource, disabled }: UserAvatarSuggestionsProps) => {
-	const handleClick = useCallback(
-		(suggestion) => () => {
-			setAvatarObj(suggestion);
-			setNewAvatarSource(suggestion.blob);
-		},
-		[setAvatarObj, setNewAvatarSource],
-	);
+function UserAvatarSuggestions({ disabled, onSelectOne }: UserAvatarSuggestionsProps) {
+	const { data: suggestions = [] } = useUserAvatarSuggestions();
 
-	const { data } = useAvatarSuggestions();
-	const suggestions = Object.values(data?.suggestions || {});
+	const handleClick = useCallback((suggestion: UserAvatarSuggestion) => () => onSelectOne?.(suggestion), [onSelectOne]);
 
 	return (
-		<Margins inline='x4'>
-			{suggestions &&
-				suggestions.length > 0 &&
-				suggestions.map(
-					(suggestion) =>
-						suggestion.blob && (
-							<Button key={suggestion.service} disabled={disabled} square onClick={handleClick(suggestion)}>
-								<Box mie={4}>
-									<Avatar title={suggestion.service} url={suggestion.blob as unknown as string} />
-								</Box>
-							</Button>
-						),
-				)}
-		</Margins>
+		<>
+			{suggestions.map(
+				(suggestion) =>
+					suggestion.blob && (
+						<Button key={suggestion.service} square disabled={disabled} mi={4} onClick={handleClick(suggestion)}>
+							<Avatar title={suggestion.service} url={suggestion.blob} />
+						</Button>
+					),
+			)}
+		</>
 	);
-};
+}
 
 export default UserAvatarSuggestions;

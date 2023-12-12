@@ -8,16 +8,14 @@ import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWar
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		getAvatarSuggestion(): Promise<
-			Record<
-				string,
-				{
-					blob: string;
-					contentType: string;
-					service: string;
-					url: string;
-				}
-			>
+		getAvatarSuggestion(): Record<
+			string,
+			{
+				blob: string;
+				contentType: string;
+				service: string;
+				url: string;
+			}
 		>;
 	}
 }
