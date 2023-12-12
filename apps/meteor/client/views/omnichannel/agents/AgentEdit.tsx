@@ -112,7 +112,7 @@ const AgentEdit = ({ agentData, userDepartments, availableDepartments }: AgentEd
 	const voipExtensionField = useUniqueId();
 
 	return (
-		<Contextualbar>
+		<Contextualbar data-qa-id='agent-edit-contextual-bar'>
 			<ContextualbarHeader>
 				<ContextualbarTitle>{t('Edit_User')}</ContextualbarTitle>
 				<ContextualbarClose onClick={() => router.navigate('/omnichannel/agents')} />
@@ -122,7 +122,7 @@ const AgentEdit = ({ agentData, userDepartments, availableDepartments }: AgentEd
 					<form id={formId} onSubmit={handleSubmit(handleSave)}>
 						{username && (
 							<Box display='flex' flexDirection='column' alignItems='center'>
-								<UserInfo.Avatar data-qa='AgentEdit-Avatar' username={username} />
+								<UserInfo.Avatar data-qa-id='agent-edit-avatar' username={username} />
 							</Box>
 						)}
 						<FieldGroup>
@@ -132,7 +132,7 @@ const AgentEdit = ({ agentData, userDepartments, availableDepartments }: AgentEd
 									<Controller
 										name='name'
 										control={control}
-										render={({ field }) => <TextInput id={nameField} data-qa='AgentEditTextInput-Name' {...field} readOnly />}
+										render={({ field }) => <TextInput id={nameField} data-qa-id='agent-edit-name' {...field} readOnly />}
 									/>
 								</FieldRow>
 							</Field>
@@ -145,7 +145,7 @@ const AgentEdit = ({ agentData, userDepartments, availableDepartments }: AgentEd
 										render={({ field }) => (
 											<TextInput
 												id={usernameField}
-												data-qa='AgentEditTextInput-Username'
+												data-qa-id='agent-edit-username'
 												{...field}
 												readOnly
 												addon={<Icon name='at' size='x20' />}
@@ -163,7 +163,7 @@ const AgentEdit = ({ agentData, userDepartments, availableDepartments }: AgentEd
 										render={({ field }) => (
 											<TextInput
 												id={emailField}
-												data-qa='AgentEditTextInput-Email'
+												data-qa-id='agent-edit-email'
 												{...field}
 												readOnly
 												addon={<Icon name='mail' size='x20' />}
@@ -181,7 +181,7 @@ const AgentEdit = ({ agentData, userDepartments, availableDepartments }: AgentEd
 										render={({ field }) => (
 											<MultiSelect
 												id={departmentsField}
-												data-qa='AgentEditTextInput-Departaments'
+												data-qa-id='agent-edit-departments'
 												options={departmentsOptions}
 												{...field}
 												placeholder={t('Select_an_option')}
@@ -199,7 +199,7 @@ const AgentEdit = ({ agentData, userDepartments, availableDepartments }: AgentEd
 										render={({ field }) => (
 											<Select
 												id={statusField}
-												data-qa='AgentEditTextInput-Status'
+												data-qa-id='agent-edit-status'
 												{...field}
 												options={statusOptions}
 												placeholder={t('Select_an_option')}
@@ -216,7 +216,7 @@ const AgentEdit = ({ agentData, userDepartments, availableDepartments }: AgentEd
 										<Controller
 											name='voipExtension'
 											control={control}
-											render={({ field }) => <TextInput id={voipExtensionField} {...field} data-qa='AgentEditTextInput-VoIP_Extension' />}
+											render={({ field }) => <TextInput id={voipExtensionField} {...field} data-qa-id='agent-edit-voip-extension' />}
 										/>
 									</FieldRow>
 								</Field>
@@ -227,10 +227,10 @@ const AgentEdit = ({ agentData, userDepartments, availableDepartments }: AgentEd
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button data-qa='AgentEditButtonReset' type='reset' disabled={!isDirty} onClick={() => reset()}>
+					<Button data-qa-id='agent-edit-reset' type='reset' disabled={!isDirty} onClick={() => reset()}>
 						{t('Reset')}
 					</Button>
-					<Button form={formId} primary type='submit' data-qa='AgentEditButtonSave' disabled={!isDirty}>
+					<Button form={formId} primary type='submit' data-qa-id='agent-edit-save' disabled={!isDirty}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
