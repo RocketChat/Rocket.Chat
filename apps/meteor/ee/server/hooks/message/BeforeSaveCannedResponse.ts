@@ -1,8 +1,9 @@
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
-import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import { isILivechatVisitor, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { LivechatVisitors, Users } from '@rocket.chat/models';
 import get from 'lodash.get';
+import mem from 'mem';
 
 import { settings } from '../../../../app/settings/server';
 
@@ -33,6 +34,9 @@ export class BeforeSaveCannedResponse {
 	static enabled = false;
 
 	constructor() {
+		if (!settings.get('Canned_Responses_Enable')) {
+			BeforeSaveCannedResponse.enabled = true;
+		}
 		void License.onToggledFeature('canned-responses', {
 			up: () => {
 				BeforeSaveCannedResponse.enabled = true;
@@ -43,7 +47,15 @@ export class BeforeSaveCannedResponse {
 		});
 	}
 
-	async replacePlaceholders({ message, room }: { message: IMessage; room: IRoom }): Promise<IMessage> {
+	private getUser = mem((userId: string) => Users.findOneById(userId, { projection: { name: 1, _id: 1, emails: 1 } }), {
+		maxAge: 1000 * 30,
+	});
+
+	private getVisitor = mem((visitorId: string) => LivechatVisitors.findOneEnabledById(visitorId), {
+		maxAge: 1000 * 30,
+	});
+
+	async replacePlaceholders({ message, room, user }: { message: IMessage; room: IRoom; user: IUser }): Promise<IMessage> {
 		// If the feature is disabled, return the message as is
 		if (!BeforeSaveCannedResponse.enabled) {
 			return message;
@@ -61,19 +73,29 @@ export class BeforeSaveCannedResponse {
 			return message;
 		}
 
+		// do not replace placeholders for visitors
+		if (!user || isILivechatVisitor(user)) {
+			return message;
+		}
+
 		const agentId = room?.servedBy?._id;
 		if (!agentId) {
 			return message;
 		}
 
-		const visitorId = room.v._id;
+		const getAgent = (agentId: string) => {
+			if (agentId === user._id) {
+				return user;
+			}
 
-		const agent = (await Users.findOneById(agentId, { projection: { name: 1, _id: 1, emails: 1 } })) || {};
-		const visitor = visitorId && ((await LivechatVisitors.findOneEnabledById(visitorId, {})) || {});
+			return this.getUser(agentId);
+		};
 
 		message.msg = Object.keys(placeholderFields).reduce((messageText, field) => {
 			const placeholderConfig = placeholderFields[field as keyof typeof placeholderFields];
-			const from = placeholderConfig.from === 'agent' ? agent : visitor;
+
+			const from = placeholderConfig.from === 'agent' ? getAgent(agentId) : this.getVisitor(room.v._id);
+
 			const data = get(from, placeholderConfig.dataKey, '');
 
 			return messageText.replace(new RegExp(`{{${field}}}`, 'g'), data);
