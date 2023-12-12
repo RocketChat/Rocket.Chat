@@ -143,26 +143,31 @@ const parseUrl = async function (url: string): Promise<{ urlPreview: MessageUrl;
 	}
 
 	const data = await getUrlMetaWithCache(url);
-
-	if (data) {
-		if (isOEmbedUrlWithMetadata(data) && data.meta) {
-			parsedUrlObject.meta = getRelevantMetaTags(data.meta) || {};
-			if (parsedUrlObject.meta?.oembedHtml) {
-				parsedUrlObject.meta.oembedHtml = insertMaxWidthInOembedHtml(parsedUrlObject.meta.oembedHtml) || '';
-			}
-		}
-
-		if (data.headers?.contentLength) {
-			parsedUrlObject.headers = { ...parsedUrlObject.headers, contentLength: data.headers.contentLength };
-		}
-
-		if (data.headers?.contentType) {
-			parsedUrlObject.headers = { ...parsedUrlObject.headers, contentType: data.headers.contentType };
-		}
-		foundMeta = true;
+	if (!data) {
+		return { urlPreview: parsedUrlObject, foundMeta };
 	}
 
-	return { urlPreview: parsedUrlObject, foundMeta };
+	if (isOEmbedUrlWithMetadata(data) && data.meta) {
+		parsedUrlObject.meta = getRelevantMetaTags(data.meta) || {};
+		if (parsedUrlObject.meta?.oembedHtml) {
+			parsedUrlObject.meta.oembedHtml = insertMaxWidthInOembedHtml(parsedUrlObject.meta.oembedHtml) || '';
+		}
+	}
+
+	foundMeta = true;
+	return {
+		urlPreview: {
+			...parsedUrlObject,
+			...((parsedUrlObject.headers || data.headers) && {
+				headers: {
+					...parsedUrlObject.headers,
+					...(data.headers?.contentLength && { contentLength: data.headers.contentLength }),
+					...(data.headers?.contentType && { contentType: data.headers.contentType }),
+				},
+			}),
+		},
+		foundMeta,
+	};
 };
 
 const getUrlMeta = async function (
