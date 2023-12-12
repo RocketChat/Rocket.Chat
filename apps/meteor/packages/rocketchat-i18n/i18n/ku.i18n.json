@@ -2747,5 +2747,6 @@
   "registration.component.form.invalidConfirmPass": "دووبارەکراوەی تێپەڕەوشە یەکناگرێتەوە لەگەڵ تێپەڕەوشە",
   "registration.component.form.confirmPassword": "تێپەڕەوشەکەت پشتڕاستکەوە",
   "registration.component.form.sendConfirmationEmail": "ئیمەیڵی پشتڕاستکردنەوە بنێرە",
+  "Enterprise": "Enterprise",
   "UpgradeToGetMore_engagement-dashboard_Title": "analytics"
 }

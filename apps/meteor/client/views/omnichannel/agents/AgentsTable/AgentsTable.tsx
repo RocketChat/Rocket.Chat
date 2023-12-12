@@ -2,8 +2,7 @@ import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import { hashQueryKey } from '@tanstack/react-query';
-import type { MutableRefObject } from 'react';
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import FilterByText from '../../../../components/FilterByText';
 import GenericNoResults from '../../../../components/GenericNoResults/GenericNoResults';
@@ -22,7 +21,7 @@ import AddAgent from './AddAgent';
 import AgentsTableRow from './AgentsTableRow';
 
 // TODO: missing error state
-const AgentsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
+const AgentsTable = () => {
 	const t = useTranslation();
 	const [filter, setFilter] = useState('');
 
@@ -40,11 +39,6 @@ const AgentsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 
 	const [defaultQuery] = useState(hashQueryKey([query]));
 	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
-
-	useEffect(() => {
-		reload.current = refetch;
-	}, [reload, refetch]);
-	reload.current = refetch;
 
 	const onHeaderClick = useMutableCallback((id) => {
 		if (sortBy === id) {
@@ -100,11 +94,11 @@ const AgentsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 			)}
 			{isSuccess && data?.users.length > 0 && (
 				<>
-					<GenericTable aria-busy={filter !== debouncedFilter} aria-live='assertive'>
+					<GenericTable aria-busy={filter !== debouncedFilter} data-qa-id='agents-table'>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody data-qa='GenericTableAgentInfoBody'>
 							{data?.users.map((user) => (
-								<AgentsTableRow key={user._id} user={user} mediaQuery={mediaQuery} reload={refetch} />
+								<AgentsTableRow key={user._id} user={user} mediaQuery={mediaQuery} />
 							))}
 						</GenericTableBody>
 					</GenericTable>

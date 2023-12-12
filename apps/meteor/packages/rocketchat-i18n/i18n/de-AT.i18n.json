@@ -2757,5 +2757,6 @@
   "registration.component.form.invalidConfirmPass": "Die Passwörter stimmen nicht überein.",
   "registration.component.form.confirmPassword": "Bestätigen Sie Ihr Passwort.",
   "registration.component.form.sendConfirmationEmail": "Bestätigungsmail versenden",
+  "Enterprise": "Unternehmen",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analytics"
 }

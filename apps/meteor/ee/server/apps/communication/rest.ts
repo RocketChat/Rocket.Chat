@@ -855,6 +855,7 @@ export class AppsRestApi {
 									user_name: `@${this.user.username}`,
 									message: message || '',
 									learn_more: learnMore,
+									interpolation: { escapeValue: false },
 								}),
 							};
 						};
