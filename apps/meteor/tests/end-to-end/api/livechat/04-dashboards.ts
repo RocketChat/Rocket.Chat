@@ -93,8 +93,6 @@ describe('LIVECHAT - dashboards', function () {
 		const { department: createdDept, agent: agent1 } = await createDepartmentWithAnOnlineAgent();
 		department = createdDept;
 
-		console.log('department', department.name);
-
 		const agent2 = await createAnOnlineAgent();
 		await addOrRemoveAgentFromDepartment(department._id, { agentId: agent2.user._id, username: agent2.user.username }, true);
 		agents.push(agent1);
