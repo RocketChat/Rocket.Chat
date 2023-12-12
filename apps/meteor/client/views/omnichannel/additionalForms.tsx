@@ -1,4 +1,4 @@
-import BusinessHoursMultipleContainer from '../../../ee/client/omnichannel/additionalForms/BusinessHoursMultipleContainer';
+import BusinessHoursMultiple from '../../../ee/client/omnichannel/additionalForms/BusinessHoursMultiple';
 import ContactManager from '../../../ee/client/omnichannel/additionalForms/ContactManager';
 import CurrentChatTags from '../../../ee/client/omnichannel/additionalForms/CurrentChatTags';
 import CustomFieldsAdditionalForm from '../../../ee/client/omnichannel/additionalForms/CustomFieldsAdditionalForm';
@@ -18,7 +18,7 @@ export {
 	MaxChatsPerAgentDisplay,
 	EeNumberInput,
 	EeTextAreaInput,
-	BusinessHoursMultipleContainer,
+	BusinessHoursMultiple,
 	EeTextInput,
 	ContactManager,
 	CurrentChatTags,
