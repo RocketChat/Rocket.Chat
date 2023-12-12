@@ -3,9 +3,11 @@ import moment from 'moment';
 const HOURS_IN_DAY = 24;
 
 export async function* dayIterator(from: moment.Moment, to: moment.Moment): AsyncGenerator<moment.Moment> {
-	const m = moment(from).startOf('day');
-	while (m.diff(to, 'days') <= 0) {
-		yield moment(m);
+	const m = from.clone().startOf('day');
+	const f = to.clone().startOf('day');
+	while (m.diff(f, 'days') <= 0) {
+		console.log({ m, diff: m.diff(f, 'days') });
+		yield m;
 		m.add(1, 'days');
 	}
 }
