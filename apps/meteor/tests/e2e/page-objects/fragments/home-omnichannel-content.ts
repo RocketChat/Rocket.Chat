@@ -1,14 +1,18 @@
 import type { Locator, Page } from '@playwright/test';
 
+import { OmnichannelTransferChatModal } from '../omnichannel-transfer-chat-modal';
 import { HomeContent } from './home-content';
 import { OmnichannelCloseChatModal } from './omnichannel-close-chat-modal';
 
 export class HomeOmnichannelContent extends HomeContent {
-	readonly omnichannelCloseChatModal: OmnichannelCloseChatModal;
+	readonly closeChatModal: OmnichannelCloseChatModal;
+
+	readonly forwardChatModal: OmnichannelTransferChatModal;
 
 	constructor(page: Page) {
 		super(page);
-		this.omnichannelCloseChatModal = new OmnichannelCloseChatModal(page);
+		this.closeChatModal = new OmnichannelCloseChatModal(page);
+		this.forwardChatModal = new OmnichannelTransferChatModal(page);
 	}
 
 	get btnTakeChat(): Locator {
