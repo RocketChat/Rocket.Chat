@@ -1,92 +1,97 @@
+import type { ISetting, SettingValue } from '@rocket.chat/core-typings';
+import { registerModel } from '@rocket.chat/models';
 import { expect } from 'chai';
+import { before, describe, it } from 'mocha';
 
-import { BeforeSaveSpotify } from '../../../../../../server/services/messages/hooks/BeforeSaveSpotify';
+import { BaseRaw } from '../../../../../../server/models/raw/BaseRaw';
+import { BeforeSaveCannedResponse } from '../../../../../server/hooks/messages/BeforeSaveCannedResponse';
 
 const createMessage = (msg?: string, extra: any = {}) => ({
-	_id: 'random',
+	_id: 'msg-id',
 	rid: 'GENERAL',
 	ts: new Date(),
 	u: {
-		_id: 'userId',
-		username: 'username',
+		_id: 'user-id',
+		username: 'user',
 	},
 	_updatedAt: new Date(),
 	msg: msg as string,
 	...extra,
 });
 
-describe.only('Omnichannel canned responses', () => {
-	it('should return no URLs if no Spotify syntax provided', async () => {
-		const spotify = new BeforeSaveSpotify();
+const createRoom = (extra: any = {}) => ({
+	_id: 'GENERAL',
+	name: 'general',
+	...extra,
+});
 
-		const message = await spotify.convertSpotifyLinks({
-			message: createMessage('hey'),
-		});
+const createUser = (extra: any = {}) => ({
+	_id: 'user-id',
+	name: 'User Name',
+	username: 'user',
+	emails: [{ address: 'user@user.com' }],
+	...extra,
+});
 
-		return expect(message).to.not.have.property('urls');
+const makeGetSetting =
+	(values: Record<string, any>) =>
+	<T extends SettingValue = SettingValue>(id: ISetting['_id']): T => {
+		return values[id];
+	};
+
+class LivechatVisitorsModel extends BaseRaw<any> {
+	findOneEnabledById() {
+		return {};
+	}
+}
+
+class UsersModel extends BaseRaw<any> {
+	async findOneById() {
+		return {
+			name: 'John Doe Agent',
+		};
+	}
+}
+
+const db = {
+	collection: () => ({}),
+};
+
+describe('Omnichannel canned responses', () => {
+	before(() => {
+		registerModel('ILivechatVisitorsModel', () => new LivechatVisitorsModel(db as unknown as any, 'visitor'));
+		registerModel('IUsersModel', () => new UsersModel(db as unknown as any, 'user'));
 	});
 
-	it('should return no URLs if an undefined message is provided', async () => {
-		const spotify = new BeforeSaveSpotify();
-
-		const message = await spotify.convertSpotifyLinks({
-			message: createMessage(),
-		});
-
-		return expect(message).to.not.have.property('urls');
-	});
-
-	it('should not return a Spotify URL if some Spotify syntax is provided within a code block', async () => {
-		const spotify = new BeforeSaveSpotify();
-
-		const message = await spotify.convertSpotifyLinks({
-			message: createMessage('test\n```\nspotify:track:1q6IK1l4qpYykOaWaLJkWG\n```'),
-		});
-
-		return expect(message).to.not.have.property('urls');
-	});
-
-	it('should not return a Spotify URL if some Spotify syntax is provided within a inline code', async () => {
-		const spotify = new BeforeSaveSpotify();
-
-		const message = await spotify.convertSpotifyLinks({
-			message: createMessage('test `spotify:track:1q6IK1l4qpYykOaWaLJkWG` ok'),
-		});
-
-		return expect(message).to.not.have.property('urls');
-	});
-
-	it('should return a Spotify URL if some Spotify syntax is provided', async () => {
-		const spotify = new BeforeSaveSpotify();
-
-		const message = await spotify.convertSpotifyLinks({
-			message: createMessage('spotify:track:1q6IK1l4qpYykOaWaLJkWG'),
-		});
-
-		expect(message).to.have.property('urls').and.to.have.lengthOf(1);
-
-		const [url] = message.urls ?? [];
-
-		expect(url).to.have.property('url', 'https://open.spotify.com/track/1q6IK1l4qpYykOaWaLJkWG');
-		expect(url).to.have.property('source', 'spotify:track:1q6IK1l4qpYykOaWaLJkWG');
-	});
-
-	it('should append a Spotify URL when Spotify syntax is provided with already existing URLs', async () => {
-		const spotify = new BeforeSaveSpotify();
-
-		const message = await spotify.convertSpotifyLinks({
-			message: createMessage('spotify:track:1q6IK1l4qpYykOaWaLJkWG', {
-				urls: [{ url: 'https://rocket.chat' }],
+	it('should do nothing if canned response is disabled', async () => {
+		const canned = new BeforeSaveCannedResponse({
+			getSetting: makeGetSetting({
+				Canned_Responses_Enable: false,
 			}),
 		});
 
-		expect(message).to.have.property('urls').and.to.have.lengthOf(2);
+		const message = await canned.replacePlaceholders({
+			message: createMessage('{{agent.name}}'),
+			room: createRoom({ t: 'l', servedBy: { _id: 'agent' }, v: { _id: 'visitor' } }),
+			user: createUser(),
+		});
 
-		const [url1, url2] = message.urls ?? [];
+		return expect(message).to.have.property('msg', '{{agent.name}}');
+	});
 
-		expect(url1).to.have.property('url', 'https://rocket.chat');
+	it('should replace {{agent.name}} when canned response is enabled', async () => {
+		const canned = new BeforeSaveCannedResponse({
+			getSetting: makeGetSetting({
+				Canned_Responses_Enable: true,
+			}),
+		});
 
-		expect(url2).to.have.property('url', 'https://open.spotify.com/track/1q6IK1l4qpYykOaWaLJkWG');
-		expect(url2).to.have.property('source', 'spotify:track:1q6IK1l4qpYykOaWaLJkWG');
+		const message = await canned.replacePlaceholders({
+			message: createMessage('{{agent.name}}'),
+			room: createRoom({ t: 'l', servedBy: { _id: 'agent' }, v: { _id: 'visitor' } }),
+			user: createUser(),
+		});
+
+		return expect(message).to.have.property('msg', 'John Doe Agent');
 	});
 });

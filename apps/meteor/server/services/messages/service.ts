@@ -10,7 +10,7 @@ import { executeSendMessage } from '../../../app/lib/server/methods/sendMessage'
 import { executeSetReaction } from '../../../app/reactions/server/setReaction';
 import { settings } from '../../../app/settings/server';
 import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
-import { BeforeSaveCannedResponse } from '../../../ee/server/hooks/message/BeforeSaveCannedResponse';
+import { BeforeSaveCannedResponse } from '../../../ee/server/hooks/messages/BeforeSaveCannedResponse';
 import { broadcastMessageSentEvent } from '../../modules/watchers/lib/messages';
 import { BeforeSaveBadWords } from './hooks/BeforeSaveBadWords';
 import { BeforeSaveJumpToMessage } from './hooks/BeforeSaveJumpToMessage';
@@ -48,7 +48,9 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 				return (user && getUserAvatarURL(user)) || '';
 			},
 		});
-		this.cannedResponse = new BeforeSaveCannedResponse();
+		this.cannedResponse = new BeforeSaveCannedResponse({
+			getSetting: settings.get,
+		});
 
 		await this.configureBadWords();
 	}

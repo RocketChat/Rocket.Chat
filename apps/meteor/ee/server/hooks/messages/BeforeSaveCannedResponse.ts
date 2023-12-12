@@ -1,11 +1,9 @@
-import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { isILivechatVisitor, isOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISetting, IUser, SettingValue } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { LivechatVisitors, Users } from '@rocket.chat/models';
 import get from 'lodash.get';
 import mem from 'mem';
-
-import { settings } from '../../../../app/settings/server';
 
 const placeholderFields = {
 	'contact.name': {
@@ -33,8 +31,12 @@ const placeholderFields = {
 export class BeforeSaveCannedResponse {
 	static enabled = false;
 
-	constructor() {
-		if (!settings.get('Canned_Responses_Enable')) {
+	private getSetting: <T extends SettingValue = SettingValue>(id: ISetting['_id']) => T;
+
+	constructor({ getSetting }: { getSetting: <T extends SettingValue = SettingValue>(id: ISetting['_id']) => T }) {
+		this.getSetting = getSetting;
+
+		if (this.getSetting('Canned_Responses_Enable')) {
 			BeforeSaveCannedResponse.enabled = true;
 		}
 		void License.onToggledFeature('canned-responses', {
@@ -69,7 +71,7 @@ export class BeforeSaveCannedResponse {
 			return message;
 		}
 
-		if (!settings.get('Canned_Responses_Enable')) {
+		if (!this.getSetting('Canned_Responses_Enable')) {
 			return message;
 		}
 
@@ -99,15 +101,15 @@ export class BeforeSaveCannedResponse {
 			return this.getUser(agentId);
 		};
 
-		message.msg = Object.keys(placeholderFields).reduce((messageText, field) => {
+		message.msg = await Object.keys(placeholderFields).reduce(async (messageText, field) => {
 			const placeholderConfig = placeholderFields[field as keyof typeof placeholderFields];
 
-			const from = placeholderConfig.from === 'agent' ? getAgent(agentId) : this.getVisitor(room.v._id);
+			const from = placeholderConfig.from === 'agent' ? await getAgent(agentId) : await this.getVisitor(room.v._id);
 
 			const data = get(from, placeholderConfig.dataKey, '');
 
-			return messageText.replace(new RegExp(`{{${field}}}`, 'g'), data);
-		}, message.msg);
+			return (await messageText).replace(new RegExp(`{{${field}}}`, 'g'), data);
+		}, Promise.resolve(message.msg));
 
 		return message;
 	}
