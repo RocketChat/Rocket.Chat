@@ -1205,7 +1205,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		oldUsername: string,
 		newUsername: string,
 		newMessage: string,
-		newMd: Root | null,
+		newMd?: Root,
 	): Promise<UpdateResult> {
 		const query = {
 			_id,
