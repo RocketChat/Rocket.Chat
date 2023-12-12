@@ -196,14 +196,6 @@ export class HomeContent {
 		return this.page.locator('.rcx-vertical-bar button:has-text("Create")');
 	}
 
-	get inputModalAgentUserName(): Locator {
-		return this.page.locator('#modal-root input[placeholder="Username, name or e-mail"]');
-	}
-
-	get inputModalAgentForwardComment(): Locator {
-		return this.page.locator('[data-qa-id="ForwardChatModalTextAreaInputComment"]');
-	}
-
 	async pickEmoji(emoji: string, section = 'Smileys & People') {
 		await this.page.locator('role=toolbar[name="Composer Primary Actions"] >> role=button[name="Emoji"]').click();
 
@@ -283,5 +275,9 @@ export class HomeContent {
 
 	get btnAnonymousTalk(): Locator {
 		return this.page.locator('role=button[name="Or talk as anonymous"]');
+	}
+
+	findSystemMessage(text: string): Locator {
+		return this.page.locator(`[data-qa-type="system-message-body"] >> text="${text}"`);
 	}
 }
