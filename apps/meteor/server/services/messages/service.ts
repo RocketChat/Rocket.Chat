@@ -119,12 +119,12 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 	}: {
 		message: IMessage;
 		room: IRoom;
-		user: Pick<IUser, '_id' | 'username' | 'name' | 'language'>;
+		user: Pick<IUser, '_id' | 'username' | 'name' | 'emails' | 'language'>;
 	}): Promise<IMessage> {
 		// TODO looks like this one was not being used (so I'll left it commented)
 		// await this.joinDiscussionOnMessage({ message, room, user });
 
-		message = await this.cannedResponse.replacePlaceholders({ message, room });
+		message = await this.cannedResponse.replacePlaceholders({ message, room, user });
 
 		message = await this.badWords.filterBadWords({ message });
 		message = await this.spotify.convertSpotifyLinks({ message });

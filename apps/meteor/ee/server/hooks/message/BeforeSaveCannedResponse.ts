@@ -55,7 +55,15 @@ export class BeforeSaveCannedResponse {
 		maxAge: 1000 * 30,
 	});
 
-	async replacePlaceholders({ message, room, user }: { message: IMessage; room: IRoom; user: IUser }): Promise<IMessage> {
+	async replacePlaceholders({
+		message,
+		room,
+		user,
+	}: {
+		message: IMessage;
+		room: IRoom;
+		user: Pick<IUser, '_id' | 'username' | 'name' | 'emails' | 'language'>;
+	}): Promise<IMessage> {
 		// If the feature is disabled, return the message as is
 		if (!BeforeSaveCannedResponse.enabled) {
 			return message;
