@@ -1,5 +1,5 @@
+import type { ILicenseV3 } from '@rocket.chat/core-typings';
 import { Box, Icon, Skeleton } from '@rocket.chat/fuselage';
-import type { ILicenseV3 } from '@rocket.chat/license';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 import React from 'react';

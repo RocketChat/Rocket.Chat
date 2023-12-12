@@ -23,9 +23,9 @@ import type {
 	ILivechatAgent,
 	IImportProgress,
 	IBanner,
-	UiKit,
+	LicenseLimitKind,
 } from '@rocket.chat/core-typings';
-import type { LicenseLimitKind } from '@rocket.chat/license';
+import type * as UiKit from '@rocket.chat/ui-kit';
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 

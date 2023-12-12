@@ -287,6 +287,7 @@ export const createGeneralSettings = () =>
 		await this.section('Reporting', async function () {
 			return this.add('Statistics_reporting', true, {
 				type: 'boolean',
+				hidden: true,
 			});
 		});
 		await this.section('Notifications', async function () {

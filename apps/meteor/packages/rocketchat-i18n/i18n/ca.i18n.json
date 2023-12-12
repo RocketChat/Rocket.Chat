@@ -835,7 +835,6 @@
   "Close": "Tanca",
   "Close_chat": "Tancar xat",
   "Close_room_description": "Esteu a punt de tancar aquest xat. Esteu segur que voleu continuar?",
-  "Close_to_seat_limit_warning": "No es poden crear nous membres una vegada que s'arriba al límit de seients.",
   "close-livechat-room": "Tancar Room de Livechat",
   "close-livechat-room_description": "Permís per tancar la sala d'LiveChat actual",
   "Close_menu": "Tanca el menú",
@@ -3454,11 +3453,6 @@
   "Report_this_message_question_mark": "Informar d'aquest missatge?",
   "Reporting": "Informes",
   "Request": "Sol·licitud",
-  "Request_seats": "Sol.licitar llocs",
-  "Request_more_seats": "Sol·licita més llocs.",
-  "Request_more_seats_out_of_seats": "No podeu afegir membres perquè aquest espai de treball no té lloc, demani més llocs.",
-  "Request_more_seats_sales_team": "Una vegada que enviï la seva sol·licitud, el nostre equip de vendes l'analitzarà i es comunicarà amb vostè en els pròxims dies.",
-  "Request_more_seats_title": "Sol·licitar més llocs",
   "Request_comment_when_closing_conversation": "Sol·licitar un comentari al tancar la conversa",
   "Request_comment_when_closing_conversation_description": "Si està activat, l'agent haurà de fer un comentari abans que es tanqui la conversa.",
   "Request_tag_before_closing_chat": "Sol·licitar etiqueta(es) abans de tancar la conversa",
@@ -4693,6 +4687,7 @@
   "onboarding.form.registerOfflineForm.title": "Registra't sense connexió",
   "RegisterWorkspace_Features_Marketplace_Title": "Mercat",
   "RegisterWorkspace_Features_Omnichannel_Title": "LiveChat",
+  "Enterprise": "Empresa",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analítiques",
   "UpgradeToGetMore_auditing_Title": "Auditoria de missatges"
 }

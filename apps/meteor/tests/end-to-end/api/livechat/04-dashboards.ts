@@ -93,8 +93,6 @@ describe('LIVECHAT - dashboards', function () {
 		const { department: createdDept, agent: agent1 } = await createDepartmentWithAnOnlineAgent();
 		department = createdDept;
 
-		console.log('department', department.name);
-
 		const agent2 = await createAnOnlineAgent();
 		await addOrRemoveAgentFromDepartment(department._id, { agentId: agent2.user._id, username: agent2.user.username }, true);
 		agents.push(agent1);
@@ -784,7 +782,7 @@ describe('LIVECHAT - dashboards', function () {
 				// { title: 'Total_messages', value: 6 },
 				// { title: 'Busiest_day', value: moment().format('dddd') }, // TODO: need to check y this return a day before
 				{ title: 'Conversations_per_day', value: '3.50' },
-				{ title: 'Busiest_time', value: '- -' },
+				{ title: 'Busiest_time', value: '' },
 			];
 
 			expectedResult.forEach((expected) => {

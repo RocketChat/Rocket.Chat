@@ -29,19 +29,17 @@ API.v1.addRoute(
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
-			const startDate = new Date(start);
 
 			if (isNaN(Date.parse(end))) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
-			const endDate = new Date(end);
 
 			const user = await Users.findOneById(this.userId, { projection: { utcOffset: 1, language: 1 } });
 			if (!user) {
 				return API.v1.failure('User not found');
 			}
 
-			const totalizers = await getConversationsMetricsAsyncCached({ start: startDate, end: endDate, departmentId, user });
+			const totalizers = await getConversationsMetricsAsyncCached({ start, end, departmentId, user });
 			return API.v1.success(totalizers);
 		},
 	},
@@ -58,19 +56,17 @@ API.v1.addRoute(
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
-			const startDate = new Date(start);
 
 			if (isNaN(Date.parse(end))) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
-			const endDate = new Date(end);
 
 			const user = await Users.findOneById(this.userId, { projection: { utcOffset: 1, language: 1 } });
 			if (!user) {
 				return API.v1.failure('User not found');
 			}
 
-			const totalizers = await getAgentsProductivityMetricsAsyncCached({ start: startDate, end: endDate, departmentId, user });
+			const totalizers = await getAgentsProductivityMetricsAsyncCached({ start, end, departmentId, user });
 			return API.v1.success(totalizers);
 		},
 	},
@@ -111,19 +107,17 @@ API.v1.addRoute(
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
-			const startDate = new Date(start);
 
 			if (isNaN(Date.parse(end))) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
-			const endDate = new Date(end);
 
 			const user = await Users.findOneById(this.userId, { projection: { utcOffset: 1, language: 1 } });
 			if (!user) {
 				return API.v1.failure('User not found');
 			}
 
-			const totalizers = await getProductivityMetricsAsyncCached({ start: startDate, end: endDate, departmentId, user });
+			const totalizers = await getProductivityMetricsAsyncCached({ start, end, departmentId, user });
 
 			return API.v1.success(totalizers);
 		},
