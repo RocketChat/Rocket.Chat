@@ -232,13 +232,13 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 						onSubmit={handleSubmit(handleSave)}
 					>
 						<Field>
-							<FieldLabel>{t('Enabled')}</FieldLabel>
 							<FieldRow>
+								<FieldLabel data-qa='DepartmentEditToggle-Enabled'>{t('Enabled')}</FieldLabel>
 								<ToggleSwitch {...register('enabled')} />
 							</FieldRow>
 						</Field>
 						<Field>
-							<FieldLabel>{t('Name')}*</FieldLabel>
+							<FieldLabel required>{t('Name')}</FieldLabel>
 							<FieldRow>
 								<TextInput
 									data-qa='DepartmentEditTextInput-Name'
