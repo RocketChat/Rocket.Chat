@@ -68,7 +68,7 @@ export const createRoom = async (api: BaseTest['api'], { visitorToken, agentId }
 export const createVisitor = async (api: BaseTest['api'], { name, token, departmentId }: CreateVisitorParams) => {
 	const response = await api.post('/livechat/visitor', {
 		visitor: {
-			name: name || faker.person.firstName(),
+			name: name || faker.person.fullName(),
 			email: faker.internet.email(),
 			token,
 			...(departmentId && { department: departmentId }),
@@ -107,7 +107,7 @@ export const sendMessageToRoom = async (
 
 export const createConversation = async (
 	api: BaseTest['api'],
-	{ visitorName, visitorToken, agentId, departmentId }: CreateConversationParams,
+	{ visitorName, visitorToken, agentId, departmentId }: CreateConversationParams = {},
 ) => {
 	const token = visitorToken || faker.string.uuid();
 

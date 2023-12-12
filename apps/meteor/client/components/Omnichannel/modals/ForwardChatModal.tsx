@@ -82,7 +82,11 @@ const ForwardChatModal = ({
 	}, [register]);
 
 	return (
-		<Modal wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(onSubmit)} {...props} />} {...props}>
+		<Modal
+			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(onSubmit)} {...props} />}
+			{...props}
+			data-qa-id='forward-chat-modal'
+		>
 			<Modal.Header>
 				<Modal.Icon name='baloon-arrow-top-right' />
 				<Modal.Title>{t('Forward_chat')}</Modal.Title>
@@ -100,6 +104,7 @@ const ForwardChatModal = ({
 								options={departments}
 								maxWidth='100%'
 								placeholder={t('Select_an_option')}
+								data-qa-id='forward-to-department'
 								onChange={(value: string): void => {
 									setValue('department', value);
 								}}
