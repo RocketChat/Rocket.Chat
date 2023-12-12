@@ -1,7 +1,7 @@
 import { Message } from '@rocket.chat/core-services';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
-import { isChatReportMessageProps } from '@rocket.chat/rest-typings';
+import { isChatReportMessageProps, isChatGetURLPreviewProps } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -826,18 +826,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.getURLPreview',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChatGetURLPreviewProps },
 	{
 		async get() {
 			const { roomId, url } = this.queryParams;
-
-			if (!roomId) {
-				throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
-			}
-
-			if (!url) {
-				throw new Meteor.Error('error-url-param-not-provided', 'The required "url" query param is missing.');
-			}
 
 			if (!(await canAccessRoomIdAsync(roomId, this.userId))) {
 				throw new Meteor.Error('error-not-allowed', 'Not allowed');
