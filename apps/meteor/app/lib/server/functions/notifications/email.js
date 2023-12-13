@@ -1,5 +1,4 @@
 import { escapeHTML } from '@rocket.chat/string-helpers';
-import emojione from 'emojione';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../../lib/callbacks';
@@ -41,7 +40,7 @@ async function getEmailContent({ message, user, room }) {
 			return header;
 		}
 
-		let messageContent = escapeHTML(emojione.shortnameToUnicode(message.msg));
+		let messageContent = escapeHTML(message.msg);
 
 		if (message.t === 'e2e') {
 			messageContent = i18n.t('Encrypted_message', { lng });
@@ -71,7 +70,7 @@ async function getEmailContent({ message, user, room }) {
 		let content = `${escapeHTML(message.file.name)}`;
 
 		if (message.attachments && message.attachments.length === 1 && message.attachments[0].description !== '') {
-			content += `<br/><br/>${escapeHTML(emojione.shortnameToUnicode(message.attachments[0].description))}`;
+			content += `<br/><br/>${escapeHTML(message.attachments[0].description)}`;
 		}
 
 		return `${fileHeader}:<br/><br/>${content}`;
@@ -90,7 +89,7 @@ async function getEmailContent({ message, user, room }) {
 			content += `${escapeHTML(attachment.title)}<br/>`;
 		}
 		if (attachment.text) {
-			content += `${escapeHTML(emojione.shortnameToUnicode(attachment.text))}<br/>`;
+			content += `${escapeHTML(attachment.text)}<br/>`;
 		}
 
 		return `${header}:<br/><br/>${content}`;
