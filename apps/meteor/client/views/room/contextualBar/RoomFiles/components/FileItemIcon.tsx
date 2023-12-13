@@ -1,10 +1,9 @@
 import React, { memo } from 'react';
 
 const FileItemIcon = ({ type }: { type?: string }) => {
-	let icon;
 	switch (type) {
 		case 'application/vnd.ms-excel':
-			icon = (
+			return (
 				<svg width='50' height='49' viewBox='0 0 50 49' fill='none' xmlns='http://www.w3.org/2000/svg'>
 					<rect width='48' height='48' rx='3' fill='#1ECB92' />
 					<path
@@ -13,9 +12,8 @@ const FileItemIcon = ({ type }: { type?: string }) => {
 					/>
 				</svg>
 			);
-			break;
 		case 'application/msword':
-			icon = (
+			return (
 				<svg width='50' height='49' viewBox='0 0 50 49' fill='none' xmlns='http://www.w3.org/2000/svg'>
 					<rect width='48' height='48' rx='3' fill='#1D74F5' />{' '}
 					<path
@@ -26,9 +24,8 @@ const FileItemIcon = ({ type }: { type?: string }) => {
 					/>
 				</svg>
 			);
-			break;
 		case 'audio':
-			icon = (
+			return (
 				<svg width='50' height='49' viewBox='0 0 50 49' fill='none' xmlns='http://www.w3.org/2000/svg'>
 					<rect width='48' height='48' rx='3' fill='#1D74F5' />
 					<path
@@ -37,9 +34,8 @@ const FileItemIcon = ({ type }: { type?: string }) => {
 					/>
 				</svg>
 			);
-			break;
 		case 'video':
-			icon = (
+			return (
 				<svg width='50' height='49' viewBox='0 0 50 49' fill='none' xmlns='http://www.w3.org/2000/svg'>
 					<rect width='48' height='48' rx='3' fill='#1D74F5' />
 					<path
@@ -52,18 +48,16 @@ const FileItemIcon = ({ type }: { type?: string }) => {
 					/>
 				</svg>
 			);
-			break;
 		case 'application/pdf':
-			icon = (
+			return (
 				<svg width='50' height='49' viewBox='0 0 50 49' fill='none' xmlns='http://www.w3.org/2000/svg'>
 					<rect width='48' height='48' rx='3' fill='#F5455C' />
 					<path d='M30 11C39.3888 11 47 18.6112 47 28H30V11Z' fill='white' />
 					<path d='M11 30C11 20.6112 18.6112 13 28 13V30H45C45 39.3888 37.3888 47 28 47C18.6112 47 11 39.3888 11 30Z' fill='white' />
 				</svg>
 			);
-			break;
 		case 'application/x-zip-compressed':
-			icon = (
+			return (
 				<svg width='50' height='49' viewBox='0 0 50 49' fill='none' xmlns='http://www.w3.org/2000/svg'>
 					<rect width='48' height='48' rx='3' fill='#F3BE08' />
 					<path
@@ -87,9 +81,8 @@ const FileItemIcon = ({ type }: { type?: string }) => {
 					/>
 				</svg>
 			);
-			break;
 		default:
-			icon = (
+			return (
 				<svg width='48' height='48' viewBox='0 0 48 48' fill='none' xmlns='http://www.w3.org/2000/svg'>
 					<rect width='48' height='48' rx='3' fill='#1D74F5' />
 					<path
@@ -101,8 +94,6 @@ const FileItemIcon = ({ type }: { type?: string }) => {
 				</svg>
 			);
 	}
-
-	return <span>{icon}</span>;
 };
 
 export default memo(FileItemIcon);

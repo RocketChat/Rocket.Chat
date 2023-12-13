@@ -1,20 +1,23 @@
 import type { IUpload } from '@rocket.chat/core-typings';
 import { Box, Menu, Icon } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
 import { getURL } from '../../../../../../app/utils/client';
 import { download } from '../../../../../lib/download';
+import { useRoom } from '../../../contexts/RoomContext';
+import { useMessageDeletionIsAllowed } from '../hooks/useMessageDeletionIsAllowed';
 
 type FileItemMenuProps = {
-	_id: IUpload['_id'];
-	name: IUpload['name'];
-	url: IUpload['url'];
+	fileData: IUpload;
 	onClickDelete: (id: IUpload['_id']) => void;
 };
 
-const FileItemMenu = ({ _id, name, url, onClickDelete }: FileItemMenuProps) => {
+const FileItemMenu = ({ fileData, onClickDelete }: FileItemMenuProps) => {
 	const t = useTranslation();
+	const room = useRoom();
+	const uid = useUserId();
+	const isDeletionAllowed = useMessageDeletionIsAllowed(room._id, fileData, uid);
 
 	const menuOptions = {
 		downLoad: {
@@ -25,25 +28,26 @@ const FileItemMenu = ({ _id, name, url, onClickDelete }: FileItemMenuProps) => {
 				</Box>
 			),
 			action: () => {
-				if (url && name) {
+				if (fileData.url && fileData.name) {
 					const URL = window.webkitURL ?? window.URL;
-					const href = getURL(url);
-					download(href, name);
-					URL.revokeObjectURL(url);
+					const href = getURL(fileData.url);
+					download(href, fileData.name);
+					URL.revokeObjectURL(fileData.url);
 				}
 			},
 		},
-		...(onClickDelete && {
-			delete: {
-				label: (
-					<Box display='flex' alignItems='center' color='status-font-on-danger'>
-						<Icon mie={4} name='trash' size='x16' />
-						{t('Delete')}
-					</Box>
-				),
-				action: () => onClickDelete(_id),
-			},
-		}),
+		...(isDeletionAllowed &&
+			onClickDelete && {
+				delete: {
+					label: (
+						<Box display='flex' alignItems='center' color='status-font-on-danger'>
+							<Icon mie={4} name='trash' size='x16' />
+							{t('Delete')}
+						</Box>
+					),
+					action: () => onClickDelete(fileData._id),
+				},
+			}),
 	};
 
 	return <Menu options={menuOptions} />;

@@ -1,7 +1,8 @@
-import type { IUpload } from '@rocket.chat/core-typings';
+import type { IUpload, IUploadWithUser } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput, Select, Throbber, Margins } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { FormEvent } from 'react';
 import React, { useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
@@ -20,14 +21,13 @@ type RoomFilesProps = {
 	loading: boolean;
 	type: string;
 	text: string;
-	filesItems: IUpload[];
+	filesItems: IUploadWithUser[];
 	loadMoreItems: (start: number, end: number) => void;
-	setType: (type: string) => void;
-	setText: (text: string) => void;
+	setType: (value: any) => void;
+	setText: (e: FormEvent<HTMLElement>) => void;
 	total: number;
 	onClickClose: () => void;
 	onClickDelete: (id: IUpload['_id']) => void;
-	isDeletionAllowed: boolean;
 };
 
 const RoomFiles = ({
@@ -41,7 +41,6 @@ const RoomFiles = ({
 	total,
 	onClickClose,
 	onClickDelete,
-	isDeletionAllowed,
 }: RoomFilesProps) => {
 	const t = useTranslation();
 
@@ -64,8 +63,8 @@ const RoomFiles = ({
 				<ContextualbarTitle>{t('Files')}</ContextualbarTitle>
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
-			<ContextualbarContent p={12}>
-				<Box display='flex' flexDirection='row' p={12} flexShrink={0}>
+			<ContextualbarContent paddingInline={0}>
+				<Box display='flex' flexDirection='row' p={24} flexShrink={0}>
 					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
 						<Margins inline='x4'>
 							<TextInput
@@ -82,7 +81,7 @@ const RoomFiles = ({
 					</Box>
 				</Box>
 				{loading && (
-					<Box p={12}>
+					<Box p={24}>
 						<Throbber size='x12' />
 					</Box>
 				)}
@@ -99,7 +98,7 @@ const RoomFiles = ({
 							overscan={50}
 							data={filesItems}
 							components={{ Scroller: ScrollableContentWrapper }}
-							itemContent={(_, data) => <FileItem fileData={data} onClickDelete={onClickDelete} isDeletionAllowed={isDeletionAllowed} />}
+							itemContent={(_, data) => <FileItem fileData={data} onClickDelete={onClickDelete} />}
 						/>
 					</Box>
 				)}

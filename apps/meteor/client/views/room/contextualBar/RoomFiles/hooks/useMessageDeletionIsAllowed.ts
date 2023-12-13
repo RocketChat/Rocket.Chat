@@ -1,58 +1,60 @@
-import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser, IUpload } from '@rocket.chat/core-typings';
 import { useSetting, usePermission } from '@rocket.chat/ui-contexts';
-import { useCallback } from 'react';
+import { useMemo } from 'react';
 
 import { getDifference, MINUTES } from '../lib/getDifference';
 
-export const useMessageDeletionIsAllowed = (rid: IRoom['_id'], uid: IUser['_id']) => {
+export const useMessageDeletionIsAllowed = (rid: IRoom['_id'], file: IUpload, uid: IUser['_id'] | null) => {
 	const canForceDelete = usePermission('force-delete-message', rid);
 	const deletionIsEnabled = useSetting('Message_AllowDeleting');
-	const userHasPermissonToDeleteAny = usePermission('delete-message', rid);
-	const userHasPermissonToDeleteOwn = usePermission('delete-own-message');
+	const userHasPermissionToDeleteAny = usePermission('delete-message', rid);
+	const userHasPermissionToDeleteOwn = usePermission('delete-own-message');
 	const bypassBlockTimeLimit = usePermission('bypass-time-limit-edit-and-delete');
-	const blockDeleteInMinutes = useSetting('Message_AllowDeleting_BlockDeleteInMinutes');
+	const blockDeleteInMinutes = useSetting<number>('Message_AllowDeleting_BlockDeleteInMinutes');
 
-	const isDeletionAllowed = (() => {
+	const isDeletionAllowed = useMemo(() => {
 		if (canForceDelete) {
-			return () => true;
+			return true;
 		}
 
 		if (!deletionIsEnabled) {
-			return () => false;
+			return false;
 		}
 
-		if (!userHasPermissonToDeleteAny && !userHasPermissonToDeleteOwn) {
-			return () => false;
+		if (!userHasPermissionToDeleteAny && !userHasPermissionToDeleteOwn) {
+			return false;
 		}
 
-		const checkTimeframe =
-			!bypassBlockTimeLimit && blockDeleteInMinutes !== 0
-				? ({ ts }) => {
-						if (!ts) {
-							return false;
-						}
+		const checkTimeframe = (file: IUpload) => {
+			if (!bypassBlockTimeLimit && blockDeleteInMinutes !== 0) {
+				if (!file.uploadedAt || !blockDeleteInMinutes) {
+					return false;
+				}
 
-						const currentTsDiff = getDifference(new Date(), new Date(ts), MINUTES);
+				const currentTsDiff = getDifference(new Date(), new Date(file.uploadedAt), MINUTES);
+				return currentTsDiff < blockDeleteInMinutes;
+			}
 
-						return currentTsDiff < blockDeleteInMinutes;
-				  }
-				: () => true;
+			return true;
+		};
 
-		if (userHasPermissonToDeleteAny) {
-			return checkTimeframe;
+		const isUserOwnFile = (file: IUpload) => file.userId === uid;
+
+		if (userHasPermissionToDeleteAny || isUserOwnFile(file)) {
+			return checkTimeframe(file);
 		}
 
-		const isOwn = ({ uid: owner }: IMessage) => owner === uid;
-
-		return (msg: IMessage) => isOwn(msg) && checkTimeframe(msg);
-	})();
-
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	return useCallback(isDeletionAllowed, [
+		return false;
+	}, [
 		canForceDelete,
 		deletionIsEnabled,
-		userHasPermissonToDeleteAny,
-		userHasPermissonToDeleteOwn,
+		userHasPermissionToDeleteAny,
+		userHasPermissionToDeleteOwn,
 		blockDeleteInMinutes,
+		bypassBlockTimeLimit,
+		file,
+		uid,
 	]);
+
+	return isDeletionAllowed;
 };
