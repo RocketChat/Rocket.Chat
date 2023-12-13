@@ -3,16 +3,16 @@ import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
 
-import FilterByText from '../../../client/components/FilterByText';
-import GenericNoResults from '../../../client/components/GenericNoResults';
+import FilterByText from '../../../../client/components/FilterByText';
+import GenericNoResults from '../../../../client/components/GenericNoResults';
 import {
 	GenericTable,
 	GenericTableBody,
 	GenericTableHeaderCell,
 	GenericTableHeader,
 	GenericTableLoadingRow,
-} from '../../../client/components/GenericTable';
-import { usePagination } from '../../../client/components/GenericTable/hooks/usePagination';
+} from '../../../../client/components/GenericTable';
+import { usePagination } from '../../../../client/components/GenericTable/hooks/usePagination';
 import BusinessHoursRow from './BusinessHoursRow';
 
 const BusinessHoursTable = () => {
@@ -23,15 +23,17 @@ const BusinessHoursTable = () => {
 
 	const query = useMemo(
 		() => ({
-			count: itemsPerPage,
-			offset: current,
+			...(itemsPerPage && { count: itemsPerPage }),
+			...(current && { offset: current }),
 			name: text,
 		}),
 		[itemsPerPage, current, text],
 	);
 
 	const getBusinessHours = useEndpoint('GET', '/v1/livechat/business-hours');
-	const { data, isLoading, isSuccess, isError, refetch } = useQuery(['livechat-buiness-hours', query], async () => getBusinessHours(query));
+	const { data, isLoading, isSuccess, isError, refetch } = useQuery(['livechat-getBusinessHours', query], async () =>
+		getBusinessHours(query),
+	);
 
 	const headers = (
 		<>
@@ -61,7 +63,7 @@ const BusinessHoursTable = () => {
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data?.businessHours.map((businessHour) => (
-								<BusinessHoursRow key={businessHour._id} reload={refetch} {...businessHour} />
+								<BusinessHoursRow key={businessHour._id} {...businessHour} />
 							))}
 						</GenericTableBody>
 					</GenericTable>

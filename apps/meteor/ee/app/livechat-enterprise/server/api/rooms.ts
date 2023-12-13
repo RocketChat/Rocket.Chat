@@ -67,7 +67,7 @@ API.v1.addRoute(
 
 			const { name, username, _id: userId } = this.user;
 			const onHoldBy = { _id: userId, username, name };
-			const comment = i18n.t('Omnichannel_On_Hold_manually', {
+			const comment = i18n.t('Omnichannel_on_hold_chat_resumed_manually', {
 				user: onHoldBy.name || `@${onHoldBy.username}`,
 			});
 
