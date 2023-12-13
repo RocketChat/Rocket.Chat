@@ -157,6 +157,32 @@ export const createSettings = async (): Promise<void> => {
 		});
 	});
 
+	await settingsRegistry.add('Livechat_AdditionalWidgetScripts', '', {
+		type: 'string',
+		group: 'Omnichannel',
+		section: 'Livechat',
+		enterprise: true,
+		invalidValue: "",
+		multiline: true,
+		i18nLabel: 'Livechat_AdditionalWidgetScripts',
+		i18nDescription: 'Additional_script_to_embed_in_the_livechat_widget',
+		enableQuery: [omnichannelEnabledQuery],
+		modules: ['livechat-enterprise'],
+	});
+
+	await settingsRegistry.add('Livechat_WidgetLayoutClasses', '', {
+		type: 'string',
+		group: 'Omnichannel',
+		section: 'Livechat',
+		enterprise: true,
+		invalidValue: "",
+		multiline: true,
+		i18nLabel: 'Livechat_WidgetLayoutClasses',
+		i18nDescription: 'Additional_classes_to_add_in_body_of_livechat_widget',
+		enableQuery: [omnichannelEnabledQuery],
+		modules: ['livechat-enterprise'],
+	});
+
 	await settingsRegistry.add('Omnichannel_contact_manager_routing', true, {
 		type: 'boolean',
 		group: 'Omnichannel',
