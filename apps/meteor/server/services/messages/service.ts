@@ -12,6 +12,7 @@ import { settings } from '../../../app/settings/server';
 import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
 import { broadcastMessageSentEvent } from '../../modules/watchers/lib/messages';
 import { BeforeSaveBadWords } from './hooks/BeforeSaveBadWords';
+import { BeforeSaveCheckMAC } from './hooks/BeforeSaveCheckMAC';
 import { BeforeSaveJumpToMessage } from './hooks/BeforeSaveJumpToMessage';
 import { BeforeSaveMarkdownParser } from './hooks/BeforeSaveMarkdownParser';
 import { BeforeSavePreventMention } from './hooks/BeforeSavePreventMention';
@@ -32,6 +33,8 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 	private markdownParser: BeforeSaveMarkdownParser;
 
+  private checkMAC: BeforeSaveCheckMAC;
+
 	async created() {
 		this.preventMention = new BeforeSavePreventMention(this.api);
 		this.badWords = new BeforeSaveBadWords();
@@ -50,7 +53,9 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 				return (user && getUserAvatarURL(user)) || '';
 			},
 		});
-		this.markdownParser = new BeforeSaveMarkdownParser(!disableMarkdownParser);
+
+    this.markdownParser = new BeforeSaveMarkdownParser(!disableMarkdownParser);
+		this.checkMAC = new BeforeSaveCheckMAC();
 
 		await this.configureBadWords();
 	}
@@ -142,6 +147,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 		if (!this.isEditedOrOld(message)) {
 			await Promise.all([
+				this.checkMAC.isWithinLimits({ message, room: _room }),
 				this.preventMention.preventMention({ message, user, mention: 'all', permission: 'mention-all' }),
 				this.preventMention.preventMention({ message, user, mention: 'here', permission: 'mention-here' }),
 			]);

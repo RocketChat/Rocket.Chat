@@ -26,7 +26,7 @@ export class OmnichannelDepartments {
 	}
 
 	get btnEnabled() {
-		return this.page.locator('[data-qa="DepartmentEditToggle-Enabled"] span label');
+		return this.page.locator('label >> text="Enabled"');
 	}
 
 	get inputName() {
@@ -38,7 +38,7 @@ export class OmnichannelDepartments {
 	}
 
 	get toggleRequestTags() {
-		return this.page.locator('[data-qa="DiscussionToggle-RequestTagBeforeCLosingChat"] span label');
+		return this.page.locator('label >> text="Request tag(s) before closing conversation"');
 	}
 
 	get inputTags() {

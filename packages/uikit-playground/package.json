@@ -15,7 +15,7 @@
     "@codemirror/tooltip": "^0.19.16",
     "@lezer/highlight": "^1.1.6",
     "@rocket.chat/css-in-js": "~0.31.25",
-    "@rocket.chat/fuselage": "~0.38.1",
+    "@rocket.chat/fuselage": "0.39.0",
     "@rocket.chat/fuselage-hooks": "~0.32.1",
     "@rocket.chat/fuselage-polyfills": "~0.31.25",
     "@rocket.chat/fuselage-tokens": "~0.32.0",
