@@ -1,6 +1,6 @@
 import { Button, Chip, FieldRow, TextInput } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ComponentProps } from 'react';
+import type { ComponentProps, FormEvent } from 'react';
 import React, { useCallback, useState } from 'react';
 
 type DepartmentTagsProps = {
@@ -34,7 +34,7 @@ const DepartmentTags = ({ error, value: tags, onChange, ...props }: DepartmentTa
 					error={error}
 					placeholder={t('Enter_a_tag')}
 					value={tagText}
-					onChange={onChange}
+					onChange={(e: FormEvent<HTMLInputElement>) => setTagText(e.currentTarget.value)}
 					{...props}
 				/>
 				<Button
