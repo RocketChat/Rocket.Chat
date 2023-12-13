@@ -75,8 +75,8 @@ describe('Check MAC', () => {
 	it('should throw an error if not within limits', () => {
 		const checkMAC = new BeforeSaveCheckMAC();
 
-		broker.setServices({
-			'omnichannel.isWithinMACLimit': () => false,
+		broker.mockServices({
+			'omnichannel.isWithinMACLimit': async () => false,
 		});
 
 		void expect(
@@ -90,8 +90,8 @@ describe('Check MAC', () => {
 	it('should work if MAC within limits', async () => {
 		const checkMAC = new BeforeSaveCheckMAC();
 
-		broker.setServices({
-			'omnichannel.isWithinMACLimit': () => true,
+		broker.mockServices({
+			'omnichannel.isWithinMACLimit': async () => true,
 		});
 
 		const empty = await checkMAC.isWithinLimits({

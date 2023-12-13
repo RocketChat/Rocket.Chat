@@ -1,5 +1,5 @@
 export class BrokerMocked {
-	actions: any;
+	actions: Record<string, (...params: unknown[]) => Promise<unknown>> = {};
 
 	destroyService(): void {
 		// no op
@@ -37,7 +37,7 @@ export class BrokerMocked {
 		// no op
 	}
 
-	setServices(actions: any) {
+	mockServices(actions: Record<string, () => Promise<unknown>>) {
 		this.actions = actions;
 	}
 }
