@@ -1,15 +1,15 @@
-import { Button, Chip, FieldRow, FieldHint, TextInput } from '@rocket.chat/fuselage';
+import { Button, Chip, FieldRow, TextInput } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FormEvent } from 'react';
+import type { ComponentProps, FormEvent } from 'react';
 import React, { useCallback, useState } from 'react';
 
 type DepartmentTagsProps = {
 	error: string;
 	value: string[];
 	onChange: (tags: string[]) => void;
-};
+} & ComponentProps<typeof TextInput>;
 
-export const DepartmentTags = ({ error, value: tags, onChange }: DepartmentTagsProps) => {
+const DepartmentTags = ({ error, value: tags, onChange, ...props }: DepartmentTagsProps) => {
 	const t = useTranslation();
 	const [tagText, setTagText] = useState('');
 
@@ -35,6 +35,7 @@ export const DepartmentTags = ({ error, value: tags, onChange }: DepartmentTagsP
 					placeholder={t('Enter_a_tag')}
 					value={tagText}
 					onChange={(e: FormEvent<HTMLInputElement>) => setTagText(e.currentTarget.value)}
+					{...props}
 				/>
 				<Button
 					disabled={Boolean(!tagText.trim()) || tags.includes(tagText)}
@@ -46,11 +47,8 @@ export const DepartmentTags = ({ error, value: tags, onChange }: DepartmentTagsP
 					{t('Add')}
 				</Button>
 			</FieldRow>
-
-			<FieldHint>{t('Conversation_closing_tags_description')}</FieldHint>
-
 			{tags?.length > 0 && (
-				<FieldRow justifyContent='flex-start'>
+				<FieldRow>
 					{tags.map((tag, i) => (
 						<Chip key={i} onClick={handleTagChipClick(tag)} mie={8}>
 							{tag}
@@ -61,3 +59,5 @@ export const DepartmentTags = ({ error, value: tags, onChange }: DepartmentTagsP
 		</>
 	);
 };
+
+export default DepartmentTags;

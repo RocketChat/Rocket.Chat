@@ -4330,6 +4330,7 @@
   "Require_all_tokens": "Require all tokens",
   "Require_any_token": "Require any token",
   "Require_password_change": "Require password change",
+  "Require_Two_Factor_Authentication": "Require Two Factor Authentication",
   "Resend_verification_email": "Resend verification email",
   "Reset": "Reset",
   "Reset_priorities": "Reset priorities",
