@@ -35,37 +35,36 @@ const AppsUsageCard = ({ privateAppsLimit, marketplaceAppsLimit }: AppsUsageCard
 		}),
 	};
 
+	if (!privateAppsLimit || !marketplaceAppsLimit) {
+		return (
+			<FeatureUsageCard card={card}>
+				<Skeleton variant='rect' width='x112' height='x112' />
+			</FeatureUsageCard>
+		);
+	}
+
 	return (
 		<FeatureUsageCard card={card}>
-			{privateAppsLimit && marketplaceAppsLimit ? (
-				<Box w='full' display='flex' flexDirection='column'>
-					<Box mb={12}>
-						<Box display='flex' flexGrow='1' justifyContent='space-between' mbe={4}>
-							<Box fontScale='c1'>{t('Marketplace_apps')}</Box>
-							<Box fontScale='c1' color={(marketplaceAppsPercentage || 0) >= 80 ? 'font-danger' : 'status-font-on-success'}>
-								{marketplaceAppsEnabled} / {marketplaceAppsLimitCount}
-							</Box>
-						</Box>
-
-						<ProgressBar
-							percentage={marketplaceAppsPercentage || 0}
-							variant={(marketplaceAppsPercentage || 0) >= 80 ? 'danger' : 'success'}
-						/>
-					</Box>
-					<Box mb={12}>
-						<Box display='flex' flexGrow='1' justifyContent='space-between' mbe={4}>
-							<Box fontScale='c1'>{t('Private_apps')}</Box>
-							<Box fontScale='c1' color={(privateAppsPercentage || 0) >= 80 ? 'font-danger' : 'status-font-on-success'}>
-								{privateAppsEnabled} / {privateAppsLimitCount}
-							</Box>
-						</Box>
-
-						<ProgressBar percentage={privateAppsPercentage || 0} variant={(privateAppsPercentage || 0) >= 80 ? 'danger' : 'success'} />
+			<Box fontScale='c1' mb={12}>
+				<Box display='flex' flexGrow='1' justifyContent='space-between' mbe={4}>
+					<div>{t('Marketplace_apps')}</div>
+					<Box color={(marketplaceAppsPercentage || 0) >= 80 ? 'font-danger' : 'status-font-on-success'}>
+						{marketplaceAppsEnabled} / {marketplaceAppsLimitCount}
 					</Box>
 				</Box>
-			) : (
-				<Skeleton variant='rect' width='x112' height='x112' />
-			)}
+
+				<ProgressBar percentage={marketplaceAppsPercentage || 0} variant={(marketplaceAppsPercentage || 0) >= 80 ? 'danger' : 'success'} />
+			</Box>
+			<Box fontScale='c1' mb={12}>
+				<Box display='flex' flexGrow='1' justifyContent='space-between' mbe={4}>
+					<div>{t('Private_apps')}</div>
+					<Box color={(privateAppsPercentage || 0) >= 80 ? 'font-danger' : 'status-font-on-success'}>
+						{privateAppsEnabled} / {privateAppsLimitCount}
+					</Box>
+				</Box>
+
+				<ProgressBar percentage={privateAppsPercentage || 0} variant={(privateAppsPercentage || 0) >= 80 ? 'danger' : 'success'} />
+			</Box>
 		</FeatureUsageCard>
 	);
 };

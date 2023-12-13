@@ -33,20 +33,22 @@ const ActiveSessionsPeakCard = (): ReactElement => {
 		}),
 	};
 
+	if (isLoading || maxMonthlyPeakConnections === undefined) {
+		return (
+			<FeatureUsageCard card={card}>
+				<Skeleton variant='rect' width='x112' height='x112' />
+			</FeatureUsageCard>
+		);
+	}
+
 	return (
 		<FeatureUsageCard card={card}>
-			{!isLoading && maxMonthlyPeakConnections !== undefined ? (
-				<Box textAlign='center'>
-					<Box fontScale='h1' color={exceedLimit ? 'font-danger' : 'font-default'}>
-						{used} / {total}
-					</Box>
-					<Box fontScale='p2' color='font-secondary-info' mbs={12}>
-						{formatDate(new Date())}
-					</Box>
+			<Box color='font-secondary-info'>
+				<Box fontScale='h1' color={exceedLimit ? 'font-danger' : 'font-default'} mbe={12}>
+					{used} / {total}
 				</Box>
-			) : (
-				<Skeleton variant='rect' width='x112' height='x112' />
-			)}
+				{formatDate(new Date())}
+			</Box>
 		</FeatureUsageCard>
 	);
 };

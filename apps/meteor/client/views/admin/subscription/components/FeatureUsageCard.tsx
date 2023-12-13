@@ -18,7 +18,7 @@ export type CardProps = {
 const FeatureUsageCard = ({ children, card }: FeatureUsageCardProps): ReactElement => {
 	const { title, infoText, upgradeButton } = card;
 	return (
-		<Card>
+		<Card height='full'>
 			<CardTitle>
 				{title} {infoText && <InfoTextIconModal title={title} infoText={infoText} />}
 			</CardTitle>
