@@ -76,5 +76,3 @@ import './api';
 import './api/rest';
 import './externalFrame';
 import './methods/saveBusinessHour';
-
-export { Livechat } from './lib/Livechat';

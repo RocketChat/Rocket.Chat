@@ -23,7 +23,7 @@ const PreferencesConversationTranscript = () => {
 		<Accordion.Item defaultExpanded title={t('Conversational_transcript')}>
 			<FieldGroup>
 				<Field>
-					<Box display='flex' alignItems='center' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+					<FieldRow>
 						<FieldLabel htmlFor={omnichannelTranscriptPDF}>
 							<Box display='flex' alignItems='center'>
 								{t('Omnichannel_transcript_pdf')}
@@ -33,14 +33,12 @@ const PreferencesConversationTranscript = () => {
 								</Box>
 							</Box>
 						</FieldLabel>
-						<FieldRow>
-							<ToggleSwitch id={omnichannelTranscriptPDF} disabled={cantSendTranscriptPDF} {...register('omnichannelTranscriptPDF')} />
-						</FieldRow>
-					</Box>
+						<ToggleSwitch id={omnichannelTranscriptPDF} disabled={cantSendTranscriptPDF} {...register('omnichannelTranscriptPDF')} />
+					</FieldRow>
 					<FieldHint>{t('Accounts_Default_User_Preferences_omnichannelTranscriptPDF_Description')}</FieldHint>
 				</Field>
 				<Field>
-					<Box display='flex' alignItems='center' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+					<FieldRow>
 						<FieldLabel htmlFor={omnichannelTranscriptEmail}>
 							<Box display='flex' alignItems='center'>
 								{t('Omnichannel_transcript_email')}
@@ -51,14 +49,8 @@ const PreferencesConversationTranscript = () => {
 								)}
 							</Box>
 						</FieldLabel>
-						<FieldRow>
-							<ToggleSwitch
-								id={omnichannelTranscriptEmail}
-								disabled={!canSendTranscriptEmail}
-								{...register('omnichannelTranscriptEmail')}
-							/>
-						</FieldRow>
-					</Box>
+						<ToggleSwitch id={omnichannelTranscriptEmail} disabled={!canSendTranscriptEmail} {...register('omnichannelTranscriptEmail')} />
+					</FieldRow>
 					<FieldHint>{t('Accounts_Default_User_Preferences_omnichannelTranscriptEmail_Description')}</FieldHint>
 				</Field>
 			</FieldGroup>
