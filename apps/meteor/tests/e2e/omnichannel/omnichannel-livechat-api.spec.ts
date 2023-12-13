@@ -80,13 +80,13 @@ test.describe('Omnichannel - Livechat API', () => {
 		});
 
 		test.afterAll(async ({ api }) => {
-			// await expect((await api.post('/settings/Enable_CSP', { value: true })).status()).toBe(200);
+			await expect((await api.post('/settings/Enable_CSP', { value: true })).status()).toBe(200);
 			await api.delete('/livechat/users/agent/user1');
 			await poAuxContext.page.close();
 			await page.close();
 		});
 
-		test('Open and Close widget', async () => {
+		test('OC - Livechat API - Open and Close widget', async () => {
 			await test.step('Expect widget to be visible after maximizeWidget()', async () => {
 				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.maximizeWidget());
 
@@ -100,7 +100,7 @@ test.describe('Omnichannel - Livechat API', () => {
 			});
 		});
 
-		test('Show and Hide widget', async () => {
+		test('OC - Livechat API - Show and Hide widget', async () => {
 			await test.step('Expect livechat button not be visible after minimizeWidget()', async () => {
 				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.hideWidget());
 
@@ -114,7 +114,7 @@ test.describe('Omnichannel - Livechat API', () => {
 			});
 		});
 
-		test.skip('setAgent', async () => {
+		test.skip('OC - Livechat API - setAgent', async () => {
 			// Set agent does not actually set the agent, it just sets the default agent on the widget state
 			// Maybe that is used in an integration? Since as it is now, when the user starts a chat, the agent will be overriden
 			// TODO: Find the use case of the setAgent method
@@ -123,7 +123,7 @@ test.describe('Omnichannel - Livechat API', () => {
 			});
 		});
 
-		test('setLanguage', async () => {
+		test('OC - Livechat API - setLanguage', async () => {
 			await test.step('Expect language to be pt-BR', async () => {
 				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.maximizeWidget());
 
@@ -141,7 +141,7 @@ test.describe('Omnichannel - Livechat API', () => {
 			});
 		});
 
-		test('setTheme', async () => {
+		test('OC - Livechat API - setTheme', async () => {
 			// color,
 			// fontColor,
 			// iconColor,
@@ -206,7 +206,7 @@ test.describe('Omnichannel - Livechat API', () => {
 			// });
 		});
 
-		test.skip('setParentUrl', async () => {
+		test.skip('OC - Livechat API - setParentUrl', async () => {
 			// TODO: check how to test this, not sure there is a clear indication of parent url changes
 			await test.step('Expect setParentUrl to do something', async () => {
 				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.setParentUrl('http://localhost:3000'));
@@ -293,35 +293,35 @@ test.describe('Omnichannel - Livechat API', () => {
 		// setParentUrl
 		// setTheme
 
-		test.skip('clearBusinessUnit', async () => {
-			// TODO: check how to test this, and if this is working as intended 
+		test.skip('OC - Livechat API - clearBusinessUnit', async () => {
+			// TODO: check how to test this, and if this is working as intended
 			await test.step('Expect clearBusinessUnit to do something', async () => {
 				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.clearBusinessUnit());
 			});
 		});
 
-		test.skip('setBusinessUnit', async () => {
+		test.skip('OC - Livechat API - setBusinessUnit', async () => {
 			// TODO
 			await test.step('Expect setBusinessUnit to do something', async () => {
 				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.setBusinessUnit());
 			});
 		});
 
-		test.skip('setCustomField', async () => {
+		test.skip('OC - Livechat API - setCustomField', async () => {
 			// TODO
 			await test.step('Expect setCustomField to do something', async () => {
-				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.setCustomField({key: 'test', value: 'test'}));
+				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.setCustomField({ key: 'test', value: 'test' }));
 			});
 		});
 
-		test.skip('clearDepartment', async () => {
+		test.skip('OC - Livechat API - clearDepartment', async () => {
 			// TODO
 			await test.step('Expect clearDepartment to do something', async () => {
 				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.clearDepartment());
 			});
 		});
 
-		test('registerGuest', async ({ browser }) => {
+		test('OC - Livechat API - registerGuest', async ({ browser }) => {
 			const registerGuestVisitor = {
 				name: faker.person.firstName(),
 				email: faker.internet.email(),
@@ -352,11 +352,10 @@ test.describe('Omnichannel - Livechat API', () => {
 			});
 
 			await test.step('Expect registerGuest to log in an existing guest and load chat history', async () => {
-
 				const { page: pageCtx } = await createAuxContext(browser, Users.user1);
 
 				await pageCtx.goto('/packages/rocketchat_livechat/assets/demo.html');
-				
+
 				await pageCtx.evaluate(() => window.RocketChat.livechat.maximizeWidget());
 				await expect(pageCtx.frameLocator('#rocketchat-iframe').getByText('Start Chat')).toBeVisible();
 
@@ -370,7 +369,7 @@ test.describe('Omnichannel - Livechat API', () => {
 			});
 		});
 
-		test('setGuestEmail', async () => {
+		test('OC - Livechat API - setGuestEmail', async () => {
 			const registerGuestVisitor = {
 				name: faker.person.firstName(),
 				email: faker.internet.email(),
@@ -402,11 +401,13 @@ test.describe('Omnichannel - Livechat API', () => {
 
 				await poAuxContext.poHomeOmnichannel.content.btnGuestInfo.click();
 				// For some reason the guest info email information is being set to lowercase
-				await expect(poAuxContext.poHomeOmnichannel.content.infoContactEmail).toHaveText(`changed${registerGuestVisitor.email}`.toLowerCase());
+				await expect(poAuxContext.poHomeOmnichannel.content.infoContactEmail).toHaveText(
+					`changed${registerGuestVisitor.email}`.toLowerCase(),
+				);
 			});
 		});
 
-		test('setGuestName', async () => {
+		test('OC - Livechat API - setGuestName', async () => {
 			const registerGuestVisitor = {
 				name: faker.person.firstName(),
 				email: faker.internet.email(),
@@ -436,13 +437,11 @@ test.describe('Omnichannel - Livechat API', () => {
 			await test.step('Expect registered guest to have valid info', async () => {
 				await poAuxContext.poHomeOmnichannel.sidenav.openChat(registerGuestVisitor.name);
 
-				await expect(poAuxContext.poHomeOmnichannel.content.infoContactName).toContainText(
-					`changed${registerGuestVisitor.name}`,
-				);
+				await expect(poAuxContext.poHomeOmnichannel.content.infoContactName).toContainText(`changed${registerGuestVisitor.name}`);
 			});
 		});
 
-		test('setGuestToken', async ({ browser }) => {
+		test('OC - Livechat API - setGuestToken', async ({ browser }) => {
 			const registerGuestVisitor = {
 				name: faker.person.firstName(),
 				email: faker.internet.email(),
@@ -461,7 +460,6 @@ test.describe('Omnichannel - Livechat API', () => {
 
 			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
 			await poLiveChat.btnSendMessageToOnlineAgent.click();
-
 
 			await test.step('Expect setGuestToken to log in an existing guest and load chat history', async () => {
 				const { page: pageCtx } = await createAuxContext(browser, Users.user1);
@@ -520,11 +518,11 @@ test.describe('Omnichannel - Livechat API', () => {
 		});
 
 		test.afterAll(async ({ api }) => {
-			// await expect((await api.post('/settings/Enable_CSP', { value: true })).status()).toBe(200);
+			await expect((await api.post('/settings/Enable_CSP', { value: true })).status()).toBe(200);
 			await api.delete('/livechat/users/agent/user1');
 		});
 
-		test('onChatMaximized & onChatMinimized', async () => {
+		test('OC - Livechat API - onChatMaximized & onChatMinimized', async () => {
 			await test.step('Expect onChatMaximized to trigger callback', async () => {
 				await poLiveChat.page.evaluate(
 					() =>
@@ -552,12 +550,12 @@ test.describe('Omnichannel - Livechat API', () => {
 			});
 		});
 
-		test('onChatStarted & onChatEnded', async () => {
+		test('OC - Livechat API - onChatStarted & onChatEnded', async () => {
 			const newVisitor = {
 				name: faker.person.firstName(),
 				email: faker.internet.email(),
 			};
-			
+
 			await test.step('Expect onChatStarted to trigger callback', async () => {
 				const watchForTrigger = page.waitForFunction(() => window.onChatStarted === true);
 
@@ -594,7 +592,7 @@ test.describe('Omnichannel - Livechat API', () => {
 			});
 		});
 
-		test('onPrechatFormSubmit, onAssignAgent & onAgentStatusChange', async () => {
+		test('OC - Livechat API - onPrechatFormSubmit, onAssignAgent & onAgentStatusChange', async () => {
 			const newVisitor = {
 				name: faker.person.firstName(),
 				email: faker.internet.email(),
@@ -647,7 +645,7 @@ test.describe('Omnichannel - Livechat API', () => {
 			});
 		});
 
-		test('Expect onOfflineFormSubmit to trigger callback', async () => {
+		test('OC - Livechat API - onOfflineFormSubmit', async () => {
 			const newVisitor = {
 				name: faker.person.firstName(),
 				email: faker.internet.email(),
@@ -669,7 +667,7 @@ test.describe('Omnichannel - Livechat API', () => {
 			await watchForTrigger;
 		});
 
-		test('onWidgetHidden & onWidgetShown', async () => {
+		test('OC - Livechat API - onWidgetHidden & onWidgetShown', async () => {
 			await test.step('Expect onWidgetHidden to trigger callback', async () => {
 				await poLiveChat.page.evaluate(
 					() =>
@@ -697,14 +695,14 @@ test.describe('Omnichannel - Livechat API', () => {
 			});
 		});
 
-		test.skip('onServiceOffline', async () => {
+		test.skip('OC - Livechat API - onServiceOffline', async () => {
 			// TODO: Not sure how to test this, need to check if playwright has a way to mock a server disconnect
 			await test.step('Expect onServiceOffline to do something', async () => {
 				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.onServiceOffline(() => console.log('onServiceOffline')));
 			});
 		});
 
-		test.skip('onQueuePositionChange', async () => {
+		test.skip('OC - Livechat API - onQueuePositionChange', async () => {
 			// TODO
 			await test.step('Expect onQueuePositionChange to do something', async () => {
 				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.onQueuePositionChange(() => console.log('onQueuePositionChange')));
