@@ -223,7 +223,7 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		if (!disableMsgRoundtripTracking) {
 			this.onEvent('watch.messages', ({ message }) => {
 				if (message?._updatedAt instanceof Date) {
-					metrics.messageRoundtripTime.observe(Date.now() - message._updatedAt);
+					metrics.messageRoundtripTime.observe(Date.now() - message._updatedAt.getTime());
 				}
 			});
 		}
