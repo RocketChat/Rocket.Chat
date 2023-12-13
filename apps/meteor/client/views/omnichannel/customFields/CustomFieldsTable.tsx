@@ -79,12 +79,15 @@ const CustomFieldsTable = () => {
 		<>
 			{((isSuccess && data?.customFields.length > 0) || queryHasChanged) && <FilterByText onChange={({ text }) => setFilter(text)} />}
 			{isLoading && (
-				<GenericTable>
-					<GenericTableHeader>{headers}</GenericTableHeader>
-					<GenericTableBody>
-						<GenericTableLoadingTable headerCells={5} />
-					</GenericTableBody>
-				</GenericTable>
+				<>
+					<span>IS LOADING</span>
+					<GenericTable>
+						<GenericTableHeader>{headers}</GenericTableHeader>
+						<GenericTableBody>
+							<GenericTableLoadingTable headerCells={5} />
+						</GenericTableBody>
+					</GenericTable>
+				</>
 			)}
 			{isSuccess && data.customFields.length === 0 && queryHasChanged && <GenericNoResults />}
 			{isSuccess && data.customFields.length === 0 && !queryHasChanged && (
@@ -101,6 +104,7 @@ const CustomFieldsTable = () => {
 
 			{isSuccess && data.customFields.length > 0 && (
 				<>
+					<span>IS SUCCESS AND LENGTH GREATER THAN 0</span>
 					<GenericTable data-qa='GenericTableCustomFieldsInfoBody' aria-busy={filter !== debouncedFilter} aria-live='assertive'>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
