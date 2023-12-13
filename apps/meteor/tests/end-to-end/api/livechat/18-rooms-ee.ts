@@ -14,6 +14,7 @@ import {
 	makeAgentAvailable,
 	createAgent,
 	closeOmnichannelRoom,
+	fetchMessages,
 } from '../../../data/livechat/rooms';
 import { sleep } from '../../../data/livechat/utils';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
@@ -269,6 +270,28 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 			const updatedRoom = await getLivechatRoomInfo(room._id);
 			expect(updatedRoom).to.not.have.property('onHold');
+		});
+		it('should resume room on hold and send proper system message', async () => {
+			const { room, visitor } = await startANewLivechatRoomAndTakeIt();
+
+			await sendAgentMessage(room._id);
+			await placeRoomOnHold(room._id);
+
+			const response = await request
+				.post(api('livechat/room.resumeOnHold'))
+				.set(credentials)
+				.send({
+					roomId: room._id,
+				})
+				.expect(200);
+
+			expect(response.body.success).to.be.true;
+
+			const messages = await fetchMessages(room._id, visitor.token);
+			expect(messages).to.be.an('array');
+			expect(messages[0]).to.not.be.undefined;
+			expect(messages[0]).to.have.property('t', 'omnichannel_on_hold_chat_resumed');
+			expect(messages[0]).to.have.property('comment', 'The chat was manually resumed from On Hold by RocketChat Internal Admin Test');
 		});
 		it('should resume chat automatically if visitor sent a message', async () => {
 			const { room, visitor } = await startANewLivechatRoomAndTakeIt();
