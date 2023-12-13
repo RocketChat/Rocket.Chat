@@ -21,18 +21,22 @@ export const Default = Template.bind({});
 Default.args = {
 	filesItems: [
 		{
+			_id: '1',
 			name: 'Lorem Ipsum Indolor Dolor',
 			url: '#',
 			uploadedAt: new Date(),
 			user: {
+				_id: 'rocket.cat',
 				username: 'rocket.cat',
 			},
 		},
 		{
+			_id: '2',
 			name: 'Lorem Ipsum Indolor Dolor',
 			url: '#',
 			uploadedAt: new Date(),
 			user: {
+				_id: 'rocket.cat',
 				username: 'rocket.cat',
 			},
 		},
@@ -43,10 +47,6 @@ Default.args = {
 	setType: action('setType'),
 	total: 2,
 	loadMoreItems: action('loadMoreItems'),
-	isDeletionAllowed: (...args: unknown[]) => {
-		action('isDeletionAllowed')(...args);
-		return true;
-	},
 };
 
 export const Loading = Template.bind({});
@@ -59,8 +59,4 @@ Empty.args = {
 	setText: action('setText'),
 	setType: action('setType'),
 	loadMoreItems: action('loadMoreItems'),
-	isDeletionAllowed: (...args: unknown[]) => {
-		action('isDeletionAllowed')(...args);
-		return true;
-	},
 };
