@@ -216,132 +216,118 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 						)}
 						{canViewType && (
 							<Field>
-								<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+								<FieldRow>
 									<FieldLabel htmlFor={roomTypeField}>{t('Private')}</FieldLabel>
-									<FieldRow>
-										<Controller
-											name='roomType'
-											control={control}
-											render={({ field: { value, onChange, ...field } }) => (
-												<ToggleSwitch
-													{...field}
-													id={roomTypeField}
-													disabled={isDeleting || isRoomFederated(room)}
-													checked={roomType === 'p'}
-													onChange={() => onChange(value === 'p' ? 'c' : 'p')}
-													aria-describedby={`${roomTypeField}-hint`}
-												/>
-											)}
-										/>
-									</FieldRow>
-								</Box>
+									<Controller
+										name='roomType'
+										control={control}
+										render={({ field: { value, onChange, ...field } }) => (
+											<ToggleSwitch
+												{...field}
+												id={roomTypeField}
+												disabled={isDeleting || isRoomFederated(room)}
+												checked={roomType === 'p'}
+												onChange={() => onChange(value === 'p' ? 'c' : 'p')}
+												aria-describedby={`${roomTypeField}-hint`}
+											/>
+										)}
+									/>
+								</FieldRow>
 								<FieldHint id={`${roomTypeField}-hint`}>{t('Just_invited_people_can_access_this_channel')}</FieldHint>
 							</Field>
 						)}
 						{canViewReadOnly && (
 							<Field>
-								<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+								<FieldRow>
 									<FieldLabel htmlFor={readOnlyField}>{t('Read_only')}</FieldLabel>
-									<FieldRow>
-										<Controller
-											name='readOnly'
-											control={control}
-											render={({ field: { value, ...field } }) => (
-												<ToggleSwitch
-													id={readOnlyField}
-													{...field}
-													disabled={isDeleting || isRoomFederated(room)}
-													checked={value}
-													aria-aria-describedby={`${readOnlyField}-hint`}
-												/>
-											)}
-										/>
-									</FieldRow>
-								</Box>
+									<Controller
+										name='readOnly'
+										control={control}
+										render={({ field: { value, ...field } }) => (
+											<ToggleSwitch
+												id={readOnlyField}
+												{...field}
+												disabled={isDeleting || isRoomFederated(room)}
+												checked={value}
+												aria-aria-describedby={`${readOnlyField}-hint`}
+											/>
+										)}
+									/>
+								</FieldRow>
 								<FieldHint id={`${readOnlyField}-hint`}>{t('Only_authorized_users_can_write_new_messages')}</FieldHint>
 							</Field>
 						)}
 						{readOnly && (
 							<Field>
-								<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+								<FieldRow>
 									<FieldLabel htmlFor={reactWhenReadOnly}>{t('React_when_read_only')}</FieldLabel>
-									<FieldRow>
-										<Controller
-											name='reactWhenReadOnly'
-											control={control}
-											render={({ field: { value, ...field } }) => (
-												<ToggleSwitch
-													id={reactWhenReadOnly}
-													{...field}
-													checked={value || isRoomFederated(room)}
-													aria-describedby={`${reactWhenReadOnly}-hint`}
-												/>
-											)}
-										/>
-									</FieldRow>
-								</Box>
+									<Controller
+										name='reactWhenReadOnly'
+										control={control}
+										render={({ field: { value, ...field } }) => (
+											<ToggleSwitch
+												id={reactWhenReadOnly}
+												{...field}
+												checked={value || isRoomFederated(room)}
+												aria-describedby={`${reactWhenReadOnly}-hint`}
+											/>
+										)}
+									/>
+								</FieldRow>
 								<FieldHint id={`${reactWhenReadOnly}-hint`}>{t('React_when_read_only_changed_successfully')}</FieldHint>
 							</Field>
 						)}
 						{canViewArchived && (
 							<Field>
-								<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+								<FieldRow>
 									<FieldLabel htmlFor={archivedField}>{t('Room_archivation_state_true')}</FieldLabel>
-									<FieldRow>
-										<Controller
-											name='archived'
-											control={control}
-											render={({ field: { value, ...field } }) => (
-												<ToggleSwitch id={archivedField} {...field} disabled={isDeleting || isRoomFederated(room)} checked={value} />
-											)}
-										/>
-									</FieldRow>
-								</Box>
+									<Controller
+										name='archived'
+										control={control}
+										render={({ field: { value, ...field } }) => (
+											<ToggleSwitch id={archivedField} {...field} disabled={isDeleting || isRoomFederated(room)} checked={value} />
+										)}
+									/>
+								</FieldRow>
 							</Field>
 						)}
 					</>
 				)}
 				<Field>
-					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+					<FieldRow>
 						<FieldLabel htmlFor={isDefaultField}>{t('Default')}</FieldLabel>
-						<FieldRow>
-							<Controller
-								name='isDefault'
-								control={control}
-								render={({ field: { value, ...field } }) => (
-									<ToggleSwitch id={isDefaultField} {...field} disabled={isDeleting || isRoomFederated(room)} checked={value} />
-								)}
-							/>
-						</FieldRow>
-					</Box>
+						<Controller
+							name='isDefault'
+							control={control}
+							render={({ field: { value, ...field } }) => (
+								<ToggleSwitch id={isDefaultField} {...field} disabled={isDeleting || isRoomFederated(room)} checked={value} />
+							)}
+						/>
+					</FieldRow>
 				</Field>
 				<Field>
-					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+					<FieldRow>
 						<FieldLabel htmlFor={favoriteField}>{t('Favorite')}</FieldLabel>
-						<FieldRow>
-							<Controller
-								name='favorite'
-								control={control}
-								render={({ field: { value, ...field } }) => (
-									<ToggleSwitch id={favoriteField} {...field} disabled={isDeleting} checked={value} />
-								)}
-							/>
-						</FieldRow>
-					</Box>
+						<Controller
+							name='favorite'
+							control={control}
+							render={({ field: { value, ...field } }) => (
+								<ToggleSwitch id={favoriteField} {...field} disabled={isDeleting} checked={value} />
+							)}
+						/>
+					</FieldRow>
 				</Field>
 				<Field>
-					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+					<FieldRow>
 						<FieldLabel htmlFor={featuredField}>{t('Featured')}</FieldLabel>
-						<FieldRow>
-							<Controller
-								name='featured'
-								control={control}
-								render={({ field: { value, ...field } }) => (
-									<ToggleSwitch id={featuredField} {...field} disabled={isDeleting || isRoomFederated(room)} checked={value} />
-								)}
-							/>
-						</FieldRow>
-					</Box>
+						<Controller
+							name='featured'
+							control={control}
+							render={({ field: { value, ...field } }) => (
+								<ToggleSwitch id={featuredField} {...field} disabled={isDeleting || isRoomFederated(room)} checked={value} />
+							)}
+						/>
+					</FieldRow>
 				</Field>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
