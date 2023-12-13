@@ -1,3 +1,4 @@
+import './lib/monitoring';
 import '../app/cors/client';
 import '../app/2fa/client';
 import '../app/apple/client';

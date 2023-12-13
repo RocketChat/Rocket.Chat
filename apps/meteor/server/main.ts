@@ -1,3 +1,4 @@
+import './monitoring';
 import './models/startup';
 import './configureLogLevel';
 import './settings/index';
