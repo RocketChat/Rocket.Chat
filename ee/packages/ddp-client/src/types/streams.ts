@@ -23,8 +23,9 @@ import type {
 	ILivechatAgent,
 	IImportProgress,
 	IBanner,
-	UiKit,
+	LicenseLimitKind,
 } from '@rocket.chat/core-typings';
+import type * as UiKit from '@rocket.chat/ui-kit';
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 
@@ -69,6 +70,7 @@ export interface StreamerEvents {
 		{ key: 'public-settings-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
 		{ key: 'deleteCustomSound'; args: [{ soundData: ICustomSound }] },
 		{ key: 'updateCustomSound'; args: [{ soundData: ICustomSound }] },
+		{ key: 'license'; args: [{ preventedActions: Record<LicenseLimitKind, boolean> }] | [] },
 	];
 
 	'notify-user': [
@@ -224,9 +226,16 @@ export interface StreamerEvents {
 		{
 			key: 'Users:Deleted';
 			args: [
-				{
-					userId: IUser['_id'];
-				},
+				| {
+						userId: IUser['_id'];
+						messageErasureType: 'Delete';
+						replaceByUser?: never;
+				  }
+				| {
+						userId: IUser['_id'];
+						messageErasureType: 'Unlink';
+						replaceByUser?: { _id: IUser['_id']; username: IUser['username']; alias: string };
+				  },
 			];
 		},
 		{

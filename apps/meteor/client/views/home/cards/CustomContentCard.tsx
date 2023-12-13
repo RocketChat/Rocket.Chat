@@ -13,10 +13,10 @@ const CustomContentCard = (): ReactElement | null => {
 
 	const { data } = useIsEnterprise();
 	const isAdmin = useRole('admin');
-	const customContentBody = String(useSetting('Layout_Home_Body'));
+	const customContentBody = useSetting<string>('Layout_Home_Body');
 	const isCustomContentBodyEmpty = customContentBody === '';
-	const isCustomContentVisible = Boolean(useSetting('Layout_Home_Custom_Block_Visible'));
-	const isCustomContentOnly = Boolean(useSetting('Layout_Custom_Body_Only'));
+	const isCustomContentVisible = useSetting<boolean>('Layout_Home_Custom_Block_Visible');
+	const isCustomContentOnly = useSetting<boolean>('Layout_Custom_Body_Only');
 
 	const settingsRoute = useRoute('admin-settings');
 
@@ -55,14 +55,12 @@ const CustomContentCard = (): ReactElement | null => {
 		return (
 			<Card data-qa-id='homepage-custom-card'>
 				<Box display='flex' mbe={12}>
-					<Tag role='status' aria-label={willNotShowCustomContent ? t('Not_Visible_To_Workspace') : t('Visible_To_Workspace')}>
+					<Tag>
 						<Icon mie={4} name={willNotShowCustomContent ? 'eye-off' : 'eye'} size='x12' />
 						{willNotShowCustomContent ? t('Not_Visible_To_Workspace') : t('Visible_To_Workspace')}
 					</Tag>
 				</Box>
-				<Box mb={8} role='status' aria-label={isCustomContentBodyEmpty ? t('Homepage_Custom_Content_Default_Message') : customContentBody}>
-					{isCustomContentBodyEmpty ? t('Homepage_Custom_Content_Default_Message') : <CustomHomepageContent />}
-				</Box>
+				<Box mb={8}>{isCustomContentBodyEmpty ? t('Homepage_Custom_Content_Default_Message') : <CustomHomepageContent />}</Box>
 				<CardFooterWrapper>
 					<CardFooter>
 						<Button onClick={() => settingsRoute.push({ group: 'Layout' })} title={t('Layout_Home_Page_Content')}>
@@ -80,7 +78,7 @@ const CustomContentCard = (): ReactElement | null => {
 						<Button
 							icon='lightning'
 							disabled={willNotShowCustomContent || !isEnterprise}
-							title={!isEnterprise ? t('Enterprise_Only') : customContentOnlyTooltipText}
+							title={!isEnterprise ? t('Premium_only') : customContentOnlyTooltipText}
 							onClick={handleOnlyShowCustomContent}
 							role='button'
 						>

@@ -8,15 +8,15 @@ export const {
 	subscribeToSidebarItems: subscribeToAdminSidebarItems,
 } = createSidebarItems([
 	{
-		href: '/admin/workspace',
+		href: '/admin/info',
 		i18nLabel: 'Workspace',
 		icon: 'info-circled',
 		permissionGranted: (): boolean => hasPermission('view-statistics'),
 	},
 	{
-		href: '/admin/registration',
-		i18nLabel: 'Registration',
-		icon: 'cloud-plus',
+		href: '/admin/subscription',
+		i18nLabel: 'Subscription',
+		icon: 'card',
 		permissionGranted: (): boolean => hasPermission('manage-cloud'),
 	},
 	{

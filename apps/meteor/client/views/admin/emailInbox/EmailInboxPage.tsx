@@ -3,7 +3,7 @@ import { useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-con
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 import EmailInboxForm from './EmailInboxForm';
 import EmailInboxFormWithData from './EmailInboxFormWithData';
 import EmailInboxTable from './EmailInboxTable';
@@ -17,7 +17,7 @@ const EmailInboxPage = (): ReactElement => {
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('Email_Inboxes')}>
+				<PageHeader title={t('Email_Inboxes')}>
 					{context && (
 						<Button icon='back' onClick={(): void => emailInboxRoute.push({})}>
 							{t('Back')}
@@ -28,12 +28,12 @@ const EmailInboxPage = (): ReactElement => {
 							{t('New_Email_Inbox')}
 						</Button>
 					)}
-				</Page.Header>
-				<Page.Content>
+				</PageHeader>
+				<PageContent>
 					{!context && <EmailInboxTable />}
 					{context === 'new' && <EmailInboxForm />}
 					{context === 'edit' && id && <EmailInboxFormWithData id={id} />}
-				</Page.Content>
+				</PageContent>
 			</Page>
 		</Page>
 	);

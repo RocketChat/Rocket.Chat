@@ -165,8 +165,7 @@ export class AppsRestApi {
 						}
 						result = await request.json();
 					} catch (e: any) {
-						orchestrator.getRocketChatLogger().error('Error getting the categories from the Marketplace:', e.response.data);
-						return API.v1.internalError();
+						return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
 					}
 
 					return API.v1.success(result);
@@ -856,6 +855,7 @@ export class AppsRestApi {
 									user_name: `@${this.user.username}`,
 									message: message || '',
 									learn_more: learnMore,
+									interpolation: { escapeValue: false },
 								}),
 							};
 						};

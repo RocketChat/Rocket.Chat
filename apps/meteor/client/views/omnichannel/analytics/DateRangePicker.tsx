@@ -6,6 +6,8 @@ import moment from 'moment';
 import type { ComponentProps } from 'react';
 import React, { useState, useMemo, useEffect } from 'react';
 
+moment.locale('en');
+
 type DateRangePickerProps = Omit<ComponentProps<typeof Box>, 'onChange'> & {
 	onChange(range: { start: string; end: string }): void;
 };

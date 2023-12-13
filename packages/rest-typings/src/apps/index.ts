@@ -12,8 +12,8 @@ import type {
 	AppRequestFilter,
 	AppRequestsStats,
 	PaginatedAppRequests,
-	UiKit,
 } from '@rocket.chat/core-typings';
+import type * as UiKit from '@rocket.chat/ui-kit';
 
 export type AppsEndpoints = {
 	'/apps/count': {
@@ -53,14 +53,7 @@ export type AppsEndpoints = {
 		GET: () => {
 			apps: {
 				id: string;
-				languages: {
-					[key: string]: {
-						Params: string;
-						Description: string;
-						Setting_Name: string;
-						Setting_Description: string;
-					};
-				};
+				languages: { [language: string]: { [key: string]: string } };
 			}[];
 		};
 	};

@@ -3,9 +3,8 @@
  * Transform a License V2 into a V3 representation.
  */
 
-import type { ILicenseV2 } from '../definition/ILicenseV2';
-import type { ILicenseV3 } from '../definition/ILicenseV3';
-import type { LicenseModule } from '../definition/LicenseModule';
+import type { ILicenseV2, ILicenseV3, LicenseModule } from '@rocket.chat/core-typings';
+
 import { isBundle, getBundleFromModule, getBundleModules } from './bundles';
 import { getTagColor } from './getTagColor';
 
@@ -14,7 +13,7 @@ export const convertToV3 = (v2: ILicenseV2): ILicenseV3 => {
 		version: '3.0',
 		information: {
 			autoRenew: false,
-			visualExpiration: new Date(Date.parse(v2.meta?.trialEnd || v2.expiry)).toISOString(),
+			...((v2.meta?.trialEnd || v2.expiry) && { visualExpiration: new Date(Date.parse(v2.meta?.trialEnd || v2.expiry)).toISOString() }),
 			trial: v2.meta?.trial || false,
 			offline: false,
 			createdAt: new Date().toISOString(),
@@ -51,7 +50,7 @@ export const convertToV3 = (v2: ILicenseV2): ILicenseV3 => {
 		},
 		grantedModules: [
 			...new Set(
-				v2.modules
+				['hide-watermark', ...v2.modules]
 					.map((licenseModule) => (isBundle(licenseModule) ? getBundleModules(licenseModule) : [licenseModule]))
 					.reduce((prev, curr) => [...prev, ...curr], [])
 					.map((licenseModule) => ({ module: licenseModule as LicenseModule })),

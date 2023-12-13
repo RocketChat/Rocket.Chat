@@ -15,6 +15,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { validateEmail } from '../../../../lib/emailValidator';
+import { useInvalidateLicense } from '../../../hooks/useLicense';
 import { queryClient } from '../../../lib/queryClient';
 import { SetupWizardContext } from '../contexts/SetupWizardContext';
 import { useParameters } from '../hooks/useParameters';
@@ -30,7 +31,6 @@ const initialData: ContextType<typeof SetupWizardContext>['setupWizardData'] = {
 	serverData: {
 		agreement: false,
 		email: '',
-		registerType: 'registered',
 		updates: false,
 	},
 	registrationData: { cloudEmail: '', device_code: '', user_code: '' },
@@ -39,11 +39,11 @@ const initialData: ContextType<typeof SetupWizardContext>['setupWizardData'] = {
 type HandleRegisterServer = (params: { email: string; resend?: boolean }) => Promise<void>;
 
 const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactElement => {
+	const invalidateLicenseQuery = useInvalidateLicense();
 	const t = useTranslation();
 	const [setupWizardData, setSetupWizardData] = useState<ContextType<typeof SetupWizardContext>['setupWizardData']>(initialData);
 	const [currentStep, setCurrentStep] = useStepRouting();
 	const { isSuccess, data } = useParameters();
-	const [offline, setOffline] = useState(false);
 	const dispatchToastMessage = useToastMessageDispatch();
 	const dispatchSettings = useSettingsDispatch();
 
@@ -52,7 +52,6 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 	const defineUsername = useMethod('setUsername');
 	const loginWithPassword = useLoginWithPassword();
 	const setForceLogin = useSessionDispatch('forceLogin');
-	const registerPreIntentEndpoint = useEndpoint('POST', '/v1/cloud.registerPreIntent');
 	const createRegistrationIntent = useEndpoint('POST', '/v1/cloud.createRegistrationIntent');
 
 	const goToPreviousStep = useCallback(() => setCurrentStep((currentStep) => currentStep - 1), [setCurrentStep]);
@@ -97,16 +96,24 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 		[registerUser, setForceLogin, defineUsername, dispatchSettings, loginWithPassword, dispatchToastMessage, t],
 	);
 
+	const saveAgreementData = useCallback(
+		async (agreement): Promise<void> => {
+			await dispatchSettings([
+				{
+					_id: 'Cloud_Service_Agree_PrivacyTerms',
+					value: agreement,
+				},
+			]);
+		},
+		[dispatchSettings],
+	);
+
 	const saveWorkspaceData = useCallback(async (): Promise<void> => {
 		const {
 			serverData: { updates, agreement },
 		} = setupWizardData;
 
 		await dispatchSettings([
-			{
-				_id: 'Statistics_reporting',
-				value: true,
-			},
 			{
 				_id: 'Register_Server',
 				value: true,
@@ -115,43 +122,40 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 				_id: 'Allow_Marketing_Emails',
 				value: updates,
 			},
-			{
-				_id: 'Cloud_Service_Agree_PrivacyTerms',
-				value: agreement,
-			},
 		]);
-	}, [dispatchSettings, setupWizardData]);
+		await saveAgreementData(agreement);
+	}, [dispatchSettings, saveAgreementData, setupWizardData]);
 
-	const saveOrganizationData = useCallback(async (): Promise<void> => {
-		const {
-			organizationData: { organizationName, organizationIndustry, organizationSize, country },
-		} = setupWizardData;
+	const saveOrganizationData = useCallback(
+		async (organizationData: ContextType<typeof SetupWizardContext>['setupWizardData']['organizationData']): Promise<void> => {
+			const { organizationName, organizationIndustry, organizationSize, country } = organizationData;
 
-		await dispatchSettings([
-			{
-				_id: 'Country',
-				value: country,
-			},
-			{
-				_id: 'Industry',
-				value: organizationIndustry,
-			},
-			{
-				_id: 'Size',
-				value: organizationSize,
-			},
-			{
-				_id: 'Organization_Name',
-				value: organizationName,
-			},
-		]);
-	}, [dispatchSettings, setupWizardData]);
+			await dispatchSettings([
+				{
+					_id: 'Country',
+					value: country,
+				},
+				{
+					_id: 'Industry',
+					value: organizationIndustry,
+				},
+				{
+					_id: 'Size',
+					value: organizationSize,
+				},
+				{
+					_id: 'Organization_Name',
+					value: organizationName,
+				},
+			]);
+		},
+		[dispatchSettings],
+	);
 
 	const registerServer: HandleRegisterServer = useMutableCallback(async ({ email, resend = false }): Promise<void> => {
 		try {
-			await saveOrganizationData();
 			const { intentData } = await createRegistrationIntent({ resend, email });
-			queryClient.invalidateQueries(['licenses']);
+			invalidateLicenseQuery(100);
 			queryClient.invalidateQueries(['getRegistrationStatus']);
 
 			setSetupWizardData((prevState) => ({
@@ -162,22 +166,11 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 			goToStep(4);
 			setShowSetupWizard('in_progress');
 		} catch (e) {
-			console.log(e);
-		}
-	});
-
-	const registerPreIntent = useMutableCallback(async (): Promise<void> => {
-		await saveOrganizationData();
-		try {
-			const { offline } = await registerPreIntentEndpoint();
-			setOffline(offline);
-		} catch (_) {
-			setOffline(true);
+			dispatchToastMessage({ type: 'error', message: t('Cloud_register_error') });
 		}
 	});
 
 	const completeSetupWizard = useMutableCallback(async (): Promise<void> => {
-		await saveOrganizationData();
 		dispatchToastMessage({ type: 'success', message: t('Your_workspace_is_ready') });
 		return setShowSetupWizard('completed');
 	});
@@ -193,15 +186,14 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 			goToPreviousStep,
 			goToNextStep,
 			goToStep,
-			offline,
-			registerPreIntent,
 			registerAdminUser,
 			validateEmail: _validateEmail,
 			registerServer,
+			saveAgreementData,
 			saveWorkspaceData,
 			saveOrganizationData,
 			completeSetupWizard,
-			maxSteps: data.serverAlreadyRegistered ? 2 : 3,
+			maxSteps: data.serverAlreadyRegistered ? 2 : 4,
 		}),
 		[
 			setupWizardData,
@@ -212,11 +204,10 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 			goToPreviousStep,
 			goToNextStep,
 			goToStep,
-			offline,
 			registerAdminUser,
-			registerPreIntent,
 			_validateEmail,
 			registerServer,
+			saveAgreementData,
 			saveWorkspaceData,
 			saveOrganizationData,
 			completeSetupWizard,

@@ -18,7 +18,6 @@ import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestra
 import { callbacks } from '../../../../lib/callbacks';
 import { deasyncPromise } from '../../../../server/deasync/deasync';
 import { getRoom } from '../../../livechat/server/api/lib/livechat';
-import { Livechat } from '../../../livechat/server/lib/Livechat';
 import { Livechat as LivechatTyped } from '../../../livechat/server/lib/LivechatTyped';
 import { settings } from '../../../settings/server';
 
@@ -44,7 +43,7 @@ export class AppLivechatBridge extends LivechatBridge {
 			throw new Error('Invalid token for livechat message');
 		}
 
-		const msg = await Livechat.sendMessage({
+		const msg = await LivechatTyped.sendMessage({
 			guest: this.orch.getConverters()?.get('visitors').convertAppVisitor(message.visitor),
 			message: await this.orch.getConverters()?.get('messages').convertAppMessage(message),
 			agent: undefined,
@@ -300,6 +299,6 @@ export class AppLivechatBridge extends LivechatBridge {
 	): Promise<number> {
 		this.orch.debugLog(`The App ${appId} is setting livechat visitor's custom fields.`);
 
-		return Livechat.setCustomFields(data);
+		return LivechatTyped.setCustomFields(data);
 	}
 }

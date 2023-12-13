@@ -1,36 +1,35 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import type { MutableRefObject } from 'react';
+import { useTranslation, useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import Page from '../../../../client/components/Page';
+import { Page, PageHeader, PageContent } from '../../../../client/components/Page';
+import UnitEdit from './UnitEdit';
+import UnitEditWithData from './UnitEditWithData';
 import UnitsTable from './UnitsTable';
 
-const UnitsPage = ({ reload }: { reload: MutableRefObject<() => void> }) => {
+const UnitsPage = () => {
 	const t = useTranslation();
-	const unitsRoute = useRoute('omnichannel-units');
+	const router = useRouter();
 
-	const handleClick = useMutableCallback(() =>
-		unitsRoute.push({
-			context: 'new',
-		}),
-	);
+	const context = useRouteParameter('context');
+	const id = useRouteParameter('id');
 
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('Units')}>
+				<PageHeader title={t('Units')}>
 					<ButtonGroup>
-						<Button onClick={handleClick} title={t('New_Unit')}>
+						<Button onClick={() => router.navigate('/omnichannel/units/new')} title={t('New_Unit')}>
 							{t('Create_unit')}
 						</Button>
 					</ButtonGroup>
-				</Page.Header>
-				<Page.Content>
-					<UnitsTable reload={reload} />
-				</Page.Content>
+				</PageHeader>
+				<PageContent>
+					<UnitsTable />
+				</PageContent>
 			</Page>
+			{context === 'edit' && id && <UnitEditWithData unitId={id} />}
+			{context === 'new' && <UnitEdit />}
 		</Page>
 	);
 };

@@ -3,40 +3,7 @@ import * as UiKit from '@rocket.chat/ui-kit';
 import { useContext, useMemo, useState } from 'react';
 
 import { UiKitContext } from '../contexts/UiKitContext';
-
-const hasInitialValue = <TElement extends UiKit.ActionableElement>(
-  element: TElement
-): element is TElement & { initialValue: number | string } =>
-  'initialValue' in element;
-
-const hasInitialTime = <TElement extends UiKit.ActionableElement>(
-  element: TElement
-): element is TElement & { initialTime: string } => 'initialTime' in element;
-
-const hasInitialDate = <TElement extends UiKit.ActionableElement>(
-  element: TElement
-): element is TElement & { initialDate: string } => 'initialDate' in element;
-
-const hasInitialOption = <TElement extends UiKit.ActionableElement>(
-  element: TElement
-): element is TElement & { initialOption: UiKit.Option } =>
-  'initialOption' in element;
-
-const hasInitialOptions = <TElement extends UiKit.ActionableElement>(
-  element: TElement
-): element is TElement & { initialOptions: UiKit.Option[] } =>
-  'initialOptions' in element;
-
-const getInitialValue = <TElement extends UiKit.ActionableElement>(
-  element: TElement
-) =>
-  (hasInitialValue(element) && element.initialValue) ||
-  (hasInitialTime(element) && element.initialTime) ||
-  (hasInitialDate(element) && element.initialDate) ||
-  (hasInitialOption(element) && element.initialOption.value) ||
-  (hasInitialOptions(element) &&
-    element.initialOptions.map((option) => option.value)) ||
-  undefined;
+import { getInitialValue } from '../utils/getInitialValue';
 
 const getElementValueFromState = (
   actionId: string,
@@ -80,9 +47,9 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
   const { blockId, actionId, appId, dispatchActionConfig } = element;
   const {
     action,
-    appId: appIdFromContext,
-    viewId,
-    state,
+    appId: appIdFromContext = undefined,
+    viewId = undefined,
+    updateState,
   } = useContext(UiKitContext);
 
   const initialValue = getInitialValue(element);
@@ -113,12 +80,14 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
       setValue(elValue);
     }
 
-    state &&
-      (await state({ blockId, appId, actionId, value: elValue, viewId }, e));
+    await updateState?.(
+      { blockId, appId, actionId, value: elValue, viewId },
+      e
+    );
     await action(
       {
         blockId,
-        appId: appId || appIdFromContext,
+        appId: appId || appIdFromContext || 'core',
         actionId,
         value: elValue,
         viewId,
@@ -135,11 +104,14 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
       target: { value },
     } = e;
     setValue(value);
-    state && (await state({ blockId, appId, actionId, value, viewId }, e));
+
+    updateState &&
+      (await updateState({ blockId, appId, actionId, value, viewId }, e));
+
     await action(
       {
         blockId,
-        appId: appId || appIdFromContext,
+        appId: appId || appIdFromContext || 'core',
         actionId,
         value,
         viewId,
@@ -153,11 +125,13 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
     const {
       target: { value },
     } = e;
+
     setValue(value);
-    await state(
+
+    await updateState?.(
       {
         blockId,
-        appId: appId || appIdFromContext,
+        appId: appId || appIdFromContext || 'core',
         actionId,
         value,
         viewId,
