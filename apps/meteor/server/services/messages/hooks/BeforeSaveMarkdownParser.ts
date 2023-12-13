@@ -3,9 +3,9 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
 
 type ParserConfig = {
-	colors: boolean;
-	emoticons: boolean;
-	customDomains: string[];
+	colors?: boolean;
+	emoticons?: boolean;
+	customDomains?: string[];
 	katex?: {
 		dollarSyntax: boolean;
 		parenthesisSyntax: boolean;
