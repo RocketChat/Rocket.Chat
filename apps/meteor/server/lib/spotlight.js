@@ -236,8 +236,8 @@ export class Spotlight {
 			}
 		}
 
-		if (users.length === 0 && canListOutsiders) {
-			const exactMatch = await Users.findOneByUsernameIgnoringCase(usernames, {
+		if (users.length === 0 && canListOutsiders && text) {
+			const exactMatch = await Users.findOneByUsernameIgnoringCase(text, {
 				projection: options.projection,
 				readPreference: options.readPreference,
 			});
