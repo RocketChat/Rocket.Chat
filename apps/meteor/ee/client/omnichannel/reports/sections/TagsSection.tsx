@@ -8,7 +8,7 @@ export const TagsSection = () => {
 	const { data, ...config } = useTagsSection();
 
 	return (
-		<ReportCard {...config} minHeight={360}>
+		<ReportCard {...config}>
 			<BarChart
 				data={data}
 				direction='horizontal'

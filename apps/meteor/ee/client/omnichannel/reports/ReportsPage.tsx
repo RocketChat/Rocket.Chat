@@ -1,4 +1,4 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Box, CardGrid } from '@rocket.chat/fuselage';
 import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
@@ -26,16 +26,14 @@ const ReportsPage = () => {
 			</Box>
 			<PageScrollableContentWithShadow alignItems='center'>
 				<ResizeObserver>
-					<Box display='flex' flexWrap='wrap' width='100rem' maxWidth='100%' m={-8}>
-						<StatusSection />
-
-						<ChannelsSection />
-
-						<DepartmentsSection />
-
-						<TagsSection />
-
-						<AgentsSection />
+					<Box>
+						<CardGrid breakpoints={{ xs: 4, sm: 8, md: 8, lg: 12, xl: 6 }}>
+							<StatusSection />
+							<ChannelsSection />
+							<DepartmentsSection />
+							<TagsSection />
+							<AgentsSection />
+						</CardGrid>
 					</Box>
 				</ResizeObserver>
 			</PageScrollableContentWithShadow>

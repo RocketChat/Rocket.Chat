@@ -1,5 +1,5 @@
 /* eslint-disable react/no-multi-comp */
-import { Box, Flex, Skeleton } from '@rocket.chat/fuselage';
+import { Box, Flex } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
@@ -8,21 +8,6 @@ import { AgentsTable, BarChart, ReportCard } from '../components';
 import { useAgentsSection } from '../hooks';
 import { ellipsis } from '../utils/ellipsis';
 
-const LoadingSkeleton = () => (
-	<Box display='flex' height='100%' width='100%'>
-		<Box flexGrow={1}>
-			<Skeleton style={{ transform: 'none' }} height='100%' mb={8} mie={16} />
-		</Box>
-		<Box flexGrow={1}>
-			<Skeleton height={28} />
-			<Skeleton height={28} />
-			<Skeleton height={28} />
-			<Skeleton height={28} />
-			<Skeleton height={28} />
-		</Box>
-	</Box>
-);
-
 export const AgentsSection = () => {
 	const { data, sortBy, sortDirection, setSort, ...config } = useAgentsSection();
 	const t = useTranslation();
@@ -30,7 +15,7 @@ export const AgentsSection = () => {
 	const isSmallScreen = !breakpoints.includes('lg');
 
 	return (
-		<ReportCard {...config} full minHeight={360} loadingSkeleton={<LoadingSkeleton />}>
+		<ReportCard {...config}>
 			<Box display='flex' style={{ gap: '1rem' }} flexWrap='wrap' flexDirection={isSmallScreen ? 'column' : 'row'}>
 				<Flex.Item grow={1} shrink={0} basis='auto'>
 					<Box>
