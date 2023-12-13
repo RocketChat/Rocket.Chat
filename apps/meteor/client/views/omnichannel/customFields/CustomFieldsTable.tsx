@@ -81,7 +81,7 @@ const CustomFieldsTable = () => {
 			{isLoading && (
 				<>
 					<span>IS LOADING</span>
-					<GenericTable>
+					<GenericTable aria-busy>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							<GenericTableLoadingTable headerCells={5} />
