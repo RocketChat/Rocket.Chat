@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { Box, Skeleton, States, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
+import { Box, Skeleton, States, StatesIcon, StatesAction, StatesActions, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { Card, CardBody, CardCol, CardTitle } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ComponentProps, ReactElement } from 'react';
@@ -8,7 +8,6 @@ import React from 'react';
 import DownloadDataButton from '../../../components/dashboards/DownloadDataButton';
 import PeriodSelector from '../../../components/dashboards/PeriodSelector';
 import { useIsResizing } from '../hooks/useIsResizing';
-import { CardErrorState } from './CardErrorState';
 
 type ReportCardProps = {
 	id: string;
@@ -80,19 +79,27 @@ export const ReportCard = ({
 			<CardBody>
 				<CardCol>
 					<Box minHeight={minHeight}>
-						<CardErrorState isError={isError} onRetry={onRetry}>
-							{isLoading && LoadingSkeleton}
+						{isLoading ? LoadingSkeleton : null}
 
-							{!isLoading && !isDataFound && (
-								<States style={{ height: '100%' }}>
-									<StatesIcon name='dashboard' />
-									<StatesTitle>{t('No_data_available_for_the_selected_period')}</StatesTitle>
-									<StatesSubtitle>{emptyStateSubtitle}</StatesSubtitle>
-								</States>
-							)}
+						{!isLoading && isError ? (
+							<States>
+								<StatesIcon name='circle-exclamation' />
+								<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
+								<StatesActions data-qa='CardErrorState'>
+									<StatesAction onClick={onRetry}>{t('Retry')}</StatesAction>
+								</StatesActions>
+							</States>
+						) : null}
 
-							{!isLoading && isDataFound && children}
-						</CardErrorState>
+						{!isLoading && !isError && !isDataFound ? (
+							<States style={{ height: '100%' }}>
+								<StatesIcon name='dashboard' />
+								<StatesTitle>{t('No_data_available_for_the_selected_period')}</StatesTitle>
+								<StatesSubtitle>{emptyStateSubtitle}</StatesSubtitle>
+							</States>
+						) : null}
+
+						{isDataFound ? children : null}
 					</Box>
 				</CardCol>
 			</CardBody>
