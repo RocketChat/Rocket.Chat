@@ -49,13 +49,13 @@ const AutoTranslate = ({
 					)}
 					<Field>
 						<FieldRow>
+							<FieldLabel htmlFor='automatic-translation'>{t('Automatic_Translation')}</FieldLabel>
 							<ToggleSwitch
 								id='automatic-translation'
 								onChange={handleSwitch}
 								defaultChecked={translateEnable}
 								disabled={room.encrypted && !translateEnable}
 							/>
-							<FieldLabel htmlFor='automatic-translation'>{t('Automatic_Translation')}</FieldLabel>
 						</FieldRow>
 					</Field>
 					<Field>

@@ -41,9 +41,7 @@ describe('OverviewData Analytics', () => {
 		});
 		it('should call the correct action with the correct parameters', async () => {
 			const overview = new OverviewData({
-				getAnalyticsBetweenDate: () => ({
-					toArray: () => [],
-				}),
+				getAnalyticsBetweenDate: () => [],
 				getOnHoldConversationsBetweenDate: () => 0,
 				getAnalyticsMetricsBetweenDate: () => [],
 			} as any);
@@ -75,12 +73,102 @@ describe('OverviewData Analytics', () => {
 		});
 	});
 
+	describe('getAllMapKeysSize', () => {
+		it('should return the sum of all map keys', () => {
+			const overview = new OverviewData({} as any);
+			const map = new Map();
+			map.set('a', 1);
+			map.set('b', 2);
+			map.set('c', 3);
+			expect(overview.sumAllMapKeys(map)).to.be.equal(6);
+		});
+		it('should return 0 if the map is empty', () => {
+			const overview = new OverviewData({} as any);
+			const map = new Map();
+			expect(overview.sumAllMapKeys(map)).to.be.equal(0);
+		});
+	});
+
+	describe('getBusiestDay', () => {
+		it('should return the day with the most messages', () => {
+			const overview = new OverviewData({} as any);
+			const map = new Map();
+			map.set(
+				'Monday',
+				new Map([
+					['1', 1],
+					['2', 2],
+				]),
+			);
+			map.set(
+				'Tuesday',
+				new Map([
+					['13', 1],
+					['15', 2],
+				]),
+			);
+			map.set(
+				'Sunday',
+				new Map([
+					['12', 2],
+					['23', 2],
+				]),
+			);
+			expect(overview.getBusiestDay(map)).to.be.equal('Sunday');
+		});
+		it('should return the first day with the most messages if theres a tie', () => {
+			const overview = new OverviewData({} as any);
+			const map = new Map();
+			map.set(
+				'Monday',
+				new Map([
+					['1', 1],
+					['2', 2],
+				]),
+			);
+			map.set(
+				'Tuesday',
+				new Map([
+					['13', 1],
+					['15', 2],
+				]),
+			);
+			map.set(
+				'Sunday',
+				new Map([
+					['12', 1],
+					['23', 2],
+				]),
+			);
+			expect(overview.getBusiestDay(map)).to.be.equal('Monday');
+		});
+		it('should return the default key if the map is empty', () => {
+			const overview = new OverviewData({} as any);
+			const map = new Map();
+			expect(overview.getBusiestDay(map)).to.be.equal('-');
+		});
+	});
+
+	describe('sumAllMapKeys', () => {
+		it('should return the sum of all map keys', () => {
+			const overview = new OverviewData({} as any);
+			const map = new Map();
+			map.set('a', 1);
+			map.set('b', 2);
+			map.set('c', 3);
+			expect(overview.sumAllMapKeys(map)).to.be.equal(6);
+		});
+		it('should return 0 if the map is empty', () => {
+			const overview = new OverviewData({} as any);
+			const map = new Map();
+			expect(overview.sumAllMapKeys(map)).to.be.equal(0);
+		});
+	});
+
 	describe('Conversations', () => {
 		it('should return all values as 0 when theres no data', async () => {
 			const overview = new OverviewData({
-				getAnalyticsBetweenDate: () => ({
-					toArray: () => [],
-				}),
+				getAnalyticsBetweenDate: () => [],
 				getOnHoldConversationsBetweenDate: () => 0,
 			} as any);
 			const result = await overview.Conversations(moment(), moment(), '', 'UTC', (v: string): string => v, {});
@@ -91,14 +179,12 @@ describe('OverviewData Analytics', () => {
 				{ title: 'Total_messages', value: 0 },
 				{ title: 'Busiest_day', value: '-' },
 				{ title: 'Conversations_per_day', value: '0.00' },
-				{ title: 'Busiest_time', value: '' },
+				{ title: 'Busiest_time', value: '-' },
 			]);
 		});
 		it('should return all values as 0 when theres data but not on the period we pass', async () => {
 			const overview = new OverviewData({
-				getAnalyticsBetweenDate: () => ({
-					toArray: () => analytics({ gte: moment().set('month', 9).toDate(), lt: moment().set('month', 9).toDate() }),
-				}),
+				getAnalyticsBetweenDate: () => analytics({ gte: moment().set('month', 9).toDate(), lt: moment().set('month', 9).toDate() }),
 				getOnHoldConversationsBetweenDate: () => 0,
 			} as any);
 			const result = await overview.Conversations(moment(), moment(), '', 'UTC', (v: string): string => v, {});
@@ -109,36 +195,32 @@ describe('OverviewData Analytics', () => {
 				{ title: 'Total_messages', value: 0 },
 				{ title: 'Busiest_day', value: '-' },
 				{ title: 'Conversations_per_day', value: '0.00' },
-				{ title: 'Busiest_time', value: '' },
+				{ title: 'Busiest_time', value: '-' },
 			]);
 		});
-		it('shuld return the correct values when theres data on the period we pass', async () => {
+		it('should return the correct values when theres data on the period we pass', async () => {
 			const overview = new OverviewData({
-				getAnalyticsBetweenDate: () => ({
-					toArray: () =>
-						analytics({
-							gte: moment().set('month', 10).set('year', 2023).startOf('month').toDate(),
-							lt: moment().set('month', 10).set('year', 2023).endOf('month').toDate(),
-						}),
-				}),
+				getAnalyticsBetweenDate: (date: { gte: Date; lt: Date }) => analytics(date),
 				getOnHoldConversationsBetweenDate: () => 1,
 			} as any);
+
+			// Fixed date to assure we get the same data
 			const result = await overview.Conversations(
-				moment.utc().set('month', 10).set('year', 2023).startOf('day'),
-				moment.utc().set('month', 10).set('year', 2023).endOf('day'),
+				moment.utc().set('month', 10).set('year', 2023).set('date', 12).startOf('day'),
+				moment.utc().set('month', 10).set('year', 2023).set('date', 12).endOf('day'),
 				'',
 				'UTC',
 				(v: string): string => v,
 				{},
 			);
 			expect(result).to.be.deep.equal([
-				{ title: 'Total_conversations', value: 15 },
-				{ title: 'Open_conversations', value: 3 },
+				{ title: 'Total_conversations', value: 1 },
+				{ title: 'Open_conversations', value: 0 },
 				{ title: 'On_Hold_conversations', value: 1 },
-				{ title: 'Total_messages', value: 677 },
-				{ title: 'Busiest_day', value: 'Monday' },
-				{ title: 'Conversations_per_day', value: '15.00' },
-				{ title: 'Busiest_time', value: '12AM - 1AM' },
+				{ title: 'Total_messages', value: 93 },
+				{ title: 'Busiest_day', value: 'Sunday' },
+				{ title: 'Conversations_per_day', value: '1.00' },
+				{ title: 'Busiest_time', value: '11AM - 12PM' },
 			]);
 		});
 	});

@@ -1,5 +1,5 @@
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
-import type { LicenseAppSources } from '@rocket.chat/license';
+import type { LicenseAppSources } from '@rocket.chat/core-typings';
 
 /**
  * There have been reports of apps not being correctly migrated from versions prior to 6.0

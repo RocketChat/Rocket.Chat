@@ -7,7 +7,6 @@ import { Meteor } from 'meteor/meteor';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { settings } from '../../../settings/server';
-import { Livechat } from '../lib/Livechat';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -27,7 +26,6 @@ Meteor.methods<ServerMethods>({
 		}
 
 		if (!options.analyticsOptions?.name) {
-			Livechat.logger.error('Incorrect analytics options');
 			return;
 		}
 
