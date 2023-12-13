@@ -149,7 +149,7 @@ export const sendNotification = async ({
 			typeof firstAttachment.description === 'string' ? emojione.shortnameToUnicode(firstAttachment.description) : undefined;
 		firstAttachment.text = typeof firstAttachment.text === 'string' ? emojione.shortnameToUnicode(firstAttachment.text) : undefined;
 
-		const attachments = [firstAttachment, ...message.attachments].filter(Boolean);
+		const attachments = firstAttachment ? [firstAttachment, ...message.attachments].filter(Boolean) : [];
 		for await (const email of receiver.emails) {
 			if (email.verified) {
 				queueItems.push({
