@@ -1,9 +1,9 @@
 import { Emitter } from '@rocket.chat/emitter';
 import { Random } from '@rocket.chat/random';
-import type { ReactElement } from 'react';
+import type { ReactPortal } from 'react';
 
 type SubscribedPortal = {
-	portal: ReactElement;
+	portal: ReactPortal;
 	key: string;
 };
 
@@ -11,7 +11,7 @@ type PortalsSubscription = {
 	subscribe: (callback: () => void) => () => void;
 	getSnapshot: () => SubscribedPortal[];
 	has: (key: unknown) => boolean;
-	set: (key: unknown, portal: ReactElement) => void;
+	set: (key: unknown, portal: ReactPortal) => void;
 	delete: (key: unknown) => void;
 };
 
@@ -43,7 +43,7 @@ export const unregisterPortal = (key: unknown): void => {
 	portalsSubscription.delete(key);
 };
 
-export const registerPortal = (key: unknown, portal: ReactElement): (() => void) => {
+export const registerPortal = (key: unknown, portal: ReactPortal): (() => void) => {
 	portalsSubscription.set(key, portal);
 	return (): void => {
 		unregisterPortal(key);
