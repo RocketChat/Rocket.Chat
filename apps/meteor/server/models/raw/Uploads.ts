@@ -50,9 +50,9 @@ export class UploadsRaw extends BaseUploadModelRaw implements IUploadsModel {
 	findPaginatedWithoutThumbs(query: Filter<IUpload> = {}, options?: FindOptions<IUpload>): FindPaginated<FindCursor<WithId<IUpload>>> {
 		return this.findPaginated(
 			{
+				typeGroup: { $ne: 'thumb' },
 				...query,
 				_hidden: { $ne: true },
-				typeGroup: { $ne: 'thumb' },
 			},
 			options,
 		);
