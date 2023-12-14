@@ -1,4 +1,4 @@
-import { FieldLabel, FieldRow, ToggleSwitch } from '@rocket.chat/fuselage';
+import { Box, FieldLabel, FieldRow, ToggleSwitch } from '@rocket.chat/fuselage';
 import type { ReactElement, SyntheticEvent } from 'react';
 import React from 'react';
 
@@ -34,8 +34,10 @@ function BooleanSettingInput({
 			<FieldLabel htmlFor={_id} title={_id}>
 				{label}
 			</FieldLabel>
-			<ToggleSwitch data-qa-setting-id={_id} id={_id} checked={value === true} disabled={disabled || readonly} onChange={handleChange} />
-			{hasResetButton && <ResetSettingButton mis={8} data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+			<Box display='flex' alignItems='center'>
+				{hasResetButton && <ResetSettingButton mie={8} data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+				<ToggleSwitch data-qa-setting-id={_id} id={_id} checked={value === true} disabled={disabled || readonly} onChange={handleChange} />
+			</Box>
 		</FieldRow>
 	);
 }
