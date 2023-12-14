@@ -33,7 +33,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 	private markdownParser: BeforeSaveMarkdownParser;
 
-  private checkMAC: BeforeSaveCheckMAC;
+	private checkMAC: BeforeSaveCheckMAC;
 
 	async created() {
 		this.preventMention = new BeforeSavePreventMention(this.api);
@@ -54,7 +54,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 			},
 		});
 
-    this.markdownParser = new BeforeSaveMarkdownParser(!disableMarkdownParser);
+		this.markdownParser = new BeforeSaveMarkdownParser(!disableMarkdownParser);
 		this.checkMAC = new BeforeSaveCheckMAC();
 
 		await this.configureBadWords();
