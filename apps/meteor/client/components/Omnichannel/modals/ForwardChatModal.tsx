@@ -1,5 +1,16 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { Field, FieldGroup, Button, TextAreaInput, Modal, Box, PaginatedSelectFiltered, Divider } from '@rocket.chat/fuselage';
+import {
+	Field,
+	FieldGroup,
+	Button,
+	TextAreaInput,
+	Modal,
+	Box,
+	PaginatedSelectFiltered,
+	Divider,
+	FieldLabel,
+	FieldRow,
+} from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -80,8 +91,8 @@ const ForwardChatModal = ({
 			<Modal.Content fontScale='p2'>
 				<FieldGroup>
 					<Field>
-						<Field.Label>{t('Forward_to_department')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('Forward_to_department')}</FieldLabel>
+						<FieldRow>
 							<PaginatedSelectFiltered
 								withTitle
 								filter={departmentsFilter as string}
@@ -95,12 +106,12 @@ const ForwardChatModal = ({
 								flexGrow={1}
 								endReached={endReached}
 							/>
-						</Field.Row>
+						</FieldRow>
 					</Field>
 					<Divider p={0} children={t('or')} />
 					<Field>
-						<Field.Label>{t('Forward_to_user')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('Forward_to_user')}</FieldLabel>
+						<FieldRow>
 							<AutoCompleteAgent
 								withTitle
 								onlyAvailable
@@ -112,18 +123,18 @@ const ForwardChatModal = ({
 									setValue('username', value);
 								}}
 							/>
-						</Field.Row>
+						</FieldRow>
 					</Field>
 					<Field marginBlock={15}>
-						<Field.Label>
+						<FieldLabel>
 							{t('Leave_a_comment')}{' '}
 							<Box is='span' color='annotation'>
 								({t('Optional')})
 							</Box>
-						</Field.Label>
-						<Field.Row>
+						</FieldLabel>
+						<FieldRow>
 							<TextAreaInput data-qa-id='ForwardChatModalTextAreaInputComment' {...register('comment')} rows={8} flexGrow={1} />
-						</Field.Row>
+						</FieldRow>
 					</Field>
 				</FieldGroup>
 			</Modal.Content>

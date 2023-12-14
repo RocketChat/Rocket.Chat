@@ -12,6 +12,7 @@ import type {
 	AppRequestFilter,
 	AppRequestsStats,
 	PaginatedAppRequests,
+	UiKit,
 } from '@rocket.chat/core-typings';
 
 export type AppsEndpoints = {
@@ -52,14 +53,7 @@ export type AppsEndpoints = {
 		GET: () => {
 			apps: {
 				id: string;
-				languages: {
-					[key: string]: {
-						Params: string;
-						Description: string;
-						Setting_Name: string;
-						Setting_Description: string;
-					};
-				};
+				languages: { [language: string]: { [key: string]: string } };
 			}[];
 		};
 	};
@@ -258,15 +252,6 @@ export type AppsEndpoints = {
 	};
 
 	'/apps/ui.interaction/:id': {
-		POST: (params: {
-			type: string;
-			actionId: string;
-			rid: string;
-			mid: string;
-			viewId: string;
-			container: string;
-			triggerId: string;
-			payload: any;
-		}) => any;
+		POST: (params: UiKit.UserInteraction) => any;
 	};
 };

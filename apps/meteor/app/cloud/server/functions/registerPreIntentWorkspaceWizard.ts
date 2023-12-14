@@ -15,16 +15,16 @@ export async function registerPreIntentWorkspaceWizard(): Promise<boolean> {
 	}
 
 	const regInfo = await buildWorkspaceRegistrationData(email);
-	const cloudUrl = settings.get('Cloud_Url');
 
 	try {
-		const request = await fetch(`${cloudUrl}/api/v2/register/workspace/pre-intent`, {
-			body: regInfo,
-			timeout: 10 * 1000,
+		const cloudUrl = settings.get<string>('Cloud_Url');
+		const response = await fetch(`${cloudUrl}/api/v2/register/workspace/pre-intent`, {
 			method: 'POST',
+			body: regInfo,
+			timeout: 3 * 1000,
 		});
-		if (!request.ok) {
-			throw new Error((await request.json()).error);
+		if (!response.ok) {
+			throw new Error((await response.json()).error);
 		}
 
 		return true;

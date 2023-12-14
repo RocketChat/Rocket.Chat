@@ -11,7 +11,6 @@ import type { FindCursor, UpdateResult, Document, FindOptions, Db, Collection, F
 
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { LivechatRoomsRaw } from '../../../../server/models/raw/LivechatRooms';
-import { queriesLogger } from '../../../app/livechat-enterprise/server/lib/logger';
 
 declare module '@rocket.chat/model-typings' {
 	interface ILivechatRoomsModel {
@@ -270,25 +269,14 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 			],
 		};
 		const update = { $set: { departmentAncestors: [unitId] } };
-		queriesLogger.debug({ msg: `LivechatRoomsRawEE.associateRoomsWithDepartmentToUnit - association step`, query, update });
-		const associationResult = await this.updateMany(query, update);
-		queriesLogger.debug({ msg: `LivechatRoomsRawEE.associateRoomsWithDepartmentToUnit - association step`, result: associationResult });
+		await this.updateMany(query, update);
 
 		const queryToDisassociateOldRoomsConnectedToUnit = {
 			departmentAncestors: unitId,
 			departmentId: { $nin: departments },
 		};
 		const updateToDisassociateRooms = { $unset: { departmentAncestors: 1 } };
-		queriesLogger.debug({
-			msg: `LivechatRoomsRawEE.associateRoomsWithDepartmentToUnit - disassociation step`,
-			query: queryToDisassociateOldRoomsConnectedToUnit,
-			update: updateToDisassociateRooms,
-		});
-		const disassociationResult = await this.updateMany(queryToDisassociateOldRoomsConnectedToUnit, updateToDisassociateRooms);
-		queriesLogger.debug({
-			msg: `LivechatRoomsRawEE.associateRoomsWithDepartmentToUnit - disassociation step`,
-			result: disassociationResult,
-		});
+		await this.updateMany(queryToDisassociateOldRoomsConnectedToUnit, updateToDisassociateRooms);
 	}
 
 	async removeUnitAssociationFromRooms(unitId: string): Promise<void> {
@@ -296,9 +284,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 			departmentAncestors: unitId,
 		};
 		const update = { $unset: { departmentAncestors: 1 } };
-		queriesLogger.debug({ msg: `LivechatRoomsRawEE.removeUnitAssociationFromRooms`, query, update });
-		const result = await this.updateMany(query, update);
-		queriesLogger.debug({ msg: `LivechatRoomsRawEE.removeUnitAssociationFromRooms`, result });
+		await this.updateMany(query, update);
 	}
 
 	async updateDepartmentAncestorsById(rid: string, departmentAncestors?: string[]) {

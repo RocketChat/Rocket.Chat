@@ -3,6 +3,8 @@ import {
 	Pagination,
 	Button,
 	Field,
+	FieldLabel,
+	FieldRow,
 	Box,
 	States,
 	StatesIcon,
@@ -125,13 +127,13 @@ const MonitorsTable = () => {
 		<>
 			<Box display='flex' flexDirection='column'>
 				<Field>
-					<Field.Label>{t('Username')}</Field.Label>
-					<Field.Row>
+					<FieldLabel>{t('Username')}</FieldLabel>
+					<FieldRow>
 						<UserAutoComplete value={username} onChange={setUsername as () => void} />
-						<Button primary disabled={!username || addMutation.isLoading} onClick={() => handleAdd()} mis={8}>
+						<Button primary disabled={!username} loading={addMutation.isLoading} onClick={() => handleAdd()} mis={8}>
 							{t('Add_monitor')}
 						</Button>
-					</Field.Row>
+					</FieldRow>
 				</Field>
 			</Box>
 			{((isSuccess && data?.monitors.length > 0) || queryHasChanged) && <FilterByText onChange={({ text }): void => setText(text)} />}

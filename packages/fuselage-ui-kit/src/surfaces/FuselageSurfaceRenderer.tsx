@@ -1,5 +1,5 @@
 import * as UiKit from '@rocket.chat/ui-kit';
-import type { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 
 import ActionsBlock from '../blocks/ActionsBlock';
 import CalloutBlock from '../blocks/CalloutBlock';
@@ -9,6 +9,7 @@ import ImageBlock from '../blocks/ImageBlock';
 import InputBlock from '../blocks/InputBlock';
 import PreviewBlock from '../blocks/PreviewBlock';
 import SectionBlock from '../blocks/SectionBlock';
+import { AppIdProvider } from '../contexts/AppIdContext';
 import ButtonElement from '../elements/ButtonElement';
 import CheckboxElement from '../elements/CheckboxElement';
 import DatePickerElement from '../elements/DatePickerElement';
@@ -24,11 +25,52 @@ import StaticSelectElement from '../elements/StaticSelectElement';
 import TimePickerElement from '../elements/TimePickerElement';
 import ToggleSwitchElement from '../elements/ToggleSwitchElement';
 
-export type FuselageSurfaceRendererProps = ConstructorParameters<
+type TextObjectRenderers = {
+  [TTextObject in UiKit.TextObject as TTextObject['type']]: (
+    textObject: TTextObject,
+    index: number
+  ) => ReactElement | null;
+};
+
+const textObjectRenderers: TextObjectRenderers = {
+  plain_text: (textObject, index) => (
+    <PlainTextElement key={index} textObject={textObject} />
+  ),
+  mrkdwn: (textObject, index) => (
+    <MarkdownTextElement key={index} textObject={textObject} />
+  ),
+};
+
+export const renderTextObject = (
+  textObject: UiKit.TextObject,
+  context: UiKit.BlockContext,
+  index: number
+) => {
+  if (context === UiKit.BlockContext.BLOCK) {
+    return null;
+  }
+
+  switch (textObject.type) {
+    case 'plain_text':
+      return textObjectRenderers.plain_text(textObject, index);
+
+    case 'mrkdwn':
+      return textObjectRenderers.mrkdwn(textObject, index);
+  }
+};
+
+const isImageBlock = (
+  _elementOrBlock: UiKit.ImageBlock | UiKit.ImageElement,
+  context: UiKit.BlockContext
+): _elementOrBlock is UiKit.ImageBlock => {
+  return context === UiKit.BlockContext.BLOCK;
+};
+
+type FuselageSurfaceRendererProps = ConstructorParameters<
   typeof UiKit.SurfaceRenderer
 >[0];
 
-export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement> {
+export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement> {
   public constructor(allowedBlocks?: FuselageSurfaceRendererProps) {
     super(
       allowedBlocks || [
@@ -44,7 +86,7 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
   }
 
   public plain_text(
-    textObject: UiKit.TextObject,
+    textObject: UiKit.PlainText,
     context: UiKit.BlockContext,
     index: number
   ): ReactElement | null {
@@ -52,7 +94,7 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
       return null;
     }
 
-    return <PlainTextElement key={index} textObject={textObject} />;
+    return textObjectRenderers.plain_text(textObject, index);
   }
 
   public mrkdwn(
@@ -86,13 +128,14 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
   ): ReactElement | null {
     if (context === UiKit.BlockContext.BLOCK) {
       return (
-        <ActionsBlock
-          key={index}
-          block={block}
-          context={context}
-          index={index}
-          surfaceRenderer={this}
-        />
+        <AppIdProvider key={index} appId={block.appId}>
+          <ActionsBlock
+            block={block}
+            context={context}
+            index={index}
+            surfaceRenderer={this}
+          />
+        </AppIdProvider>
       );
     }
 
@@ -125,13 +168,14 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
   ): ReactElement | null {
     if (context === UiKit.BlockContext.BLOCK) {
       return (
-        <ContextBlock
-          key={index}
-          block={block}
-          context={context}
-          index={index}
-          surfaceRenderer={this}
-        />
+        <AppIdProvider key={index} appId={block.appId}>
+          <ContextBlock
+            block={block}
+            context={context}
+            index={index}
+            surfaceRenderer={this}
+          />
+        </AppIdProvider>
       );
     }
 
@@ -145,13 +189,14 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
   ): ReactElement | null {
     if (context === UiKit.BlockContext.BLOCK) {
       return (
-        <DividerBlock
-          key={index}
-          block={block}
-          context={context}
-          index={index}
-          surfaceRenderer={this}
-        />
+        <AppIdProvider key={index} appId={block.appId}>
+          <DividerBlock
+            block={block}
+            context={context}
+            index={index}
+            surfaceRenderer={this}
+          />
+        </AppIdProvider>
       );
     }
 
@@ -163,15 +208,16 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
     context: UiKit.BlockContext,
     index: number
   ): ReactElement | null {
-    if (context === UiKit.BlockContext.BLOCK) {
+    if (isImageBlock(block, context)) {
       return (
-        <ImageBlock
-          key={index}
-          block={block}
-          context={context}
-          index={index}
-          surfaceRenderer={this}
-        />
+        <AppIdProvider key={index} appId={block.appId}>
+          <ImageBlock
+            block={block}
+            context={context}
+            index={index}
+            surfaceRenderer={this}
+          />
+        </AppIdProvider>
       );
     }
 
@@ -193,13 +239,17 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
   ): ReactElement | null {
     if (context === UiKit.BlockContext.BLOCK) {
       return (
-        <InputBlock
+        <AppIdProvider
           key={block.element.actionId || index}
-          block={block}
-          context={context}
-          index={index}
-          surfaceRenderer={this}
-        />
+          appId={block.appId}
+        >
+          <InputBlock
+            block={block}
+            context={context}
+            index={index}
+            surfaceRenderer={this}
+          />
+        </AppIdProvider>
       );
     }
 
@@ -213,13 +263,14 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
   ): ReactElement | null {
     if (context === UiKit.BlockContext.BLOCK) {
       return (
-        <SectionBlock
-          key={index}
-          block={block}
-          context={context}
-          index={index}
-          surfaceRenderer={this}
-        />
+        <AppIdProvider key={index} appId={block.appId}>
+          <SectionBlock
+            block={block}
+            context={context}
+            index={index}
+            surfaceRenderer={this}
+          />
+        </AppIdProvider>
       );
     }
 
@@ -236,13 +287,14 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
     }
 
     return (
-      <ButtonElement
-        key={index}
-        block={block}
-        context={context}
-        index={index}
-        surfaceRenderer={this}
-      />
+      <AppIdProvider key={index} appId={block.appId}>
+        <ButtonElement
+          block={block}
+          context={context}
+          index={index}
+          surfaceRenderer={this}
+        />
+      </AppIdProvider>
     );
   }
 
@@ -256,13 +308,14 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
     }
 
     return (
-      <DatePickerElement
-        key={block.actionId || index}
-        block={block}
-        context={context}
-        index={index}
-        surfaceRenderer={this}
-      />
+      <AppIdProvider key={block.actionId || index} appId={block.appId}>
+        <DatePickerElement
+          block={block}
+          context={context}
+          index={index}
+          surfaceRenderer={this}
+        />
+      </AppIdProvider>
     );
   }
 
@@ -276,13 +329,14 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
     }
 
     return (
-      <StaticSelectElement
-        key={block.actionId || index}
-        block={block}
-        context={context}
-        index={index}
-        surfaceRenderer={this}
-      />
+      <AppIdProvider key={block.actionId || index} appId={block.appId}>
+        <StaticSelectElement
+          block={block}
+          context={context}
+          index={index}
+          surfaceRenderer={this}
+        />
+      </AppIdProvider>
     );
   }
 
@@ -296,13 +350,14 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
     }
 
     return (
-      <MultiStaticSelectElement
-        key={block.actionId || index}
-        block={block}
-        context={context}
-        index={index}
-        surfaceRenderer={this}
-      />
+      <AppIdProvider key={block.actionId || index} appId={block.appId}>
+        <MultiStaticSelectElement
+          block={block}
+          context={context}
+          index={index}
+          surfaceRenderer={this}
+        />
+      </AppIdProvider>
     );
   }
 
@@ -316,13 +371,14 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
     }
 
     return (
-      <OverflowElement
-        key={index}
-        block={block}
-        context={context}
-        index={index}
-        surfaceRenderer={this}
-      />
+      <AppIdProvider key={index} appId={block.appId}>
+        <OverflowElement
+          block={block}
+          context={context}
+          index={index}
+          surfaceRenderer={this}
+        />
+      </AppIdProvider>
     );
   }
 
@@ -336,13 +392,14 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
     }
 
     return (
-      <PlainTextInputElement
-        key={block.actionId || index}
-        block={block}
-        context={context}
-        index={index}
-        surfaceRenderer={this}
-      />
+      <AppIdProvider key={block.actionId || index} appId={block.appId}>
+        <PlainTextInputElement
+          block={block}
+          context={context}
+          index={index}
+          surfaceRenderer={this}
+        />
+      </AppIdProvider>
     );
   }
 
@@ -356,13 +413,14 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
     }
 
     return (
-      <LinearScaleElement
-        key={block.actionId || index}
-        block={block}
-        context={context}
-        index={index}
-        surfaceRenderer={this}
-      />
+      <AppIdProvider key={block.actionId || index} appId={block.appId}>
+        <LinearScaleElement
+          block={block}
+          context={context}
+          index={index}
+          surfaceRenderer={this}
+        />
+      </AppIdProvider>
     );
   }
 
@@ -376,13 +434,14 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
     }
 
     return (
-      <ToggleSwitchElement
-        key={block.actionId || index}
-        block={block}
-        context={context}
-        index={index}
-        surfaceRenderer={this}
-      />
+      <AppIdProvider key={block.actionId || index} appId={block.appId}>
+        <ToggleSwitchElement
+          block={block}
+          context={context}
+          index={index}
+          surfaceRenderer={this}
+        />
+      </AppIdProvider>
     );
   }
 
@@ -396,13 +455,14 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
     }
 
     return (
-      <RadioButtonElement
-        key={block.actionId || index}
-        block={block}
-        context={context}
-        index={index}
-        surfaceRenderer={this}
-      />
+      <AppIdProvider key={block.actionId || index} appId={block.appId}>
+        <RadioButtonElement
+          block={block}
+          context={context}
+          index={index}
+          surfaceRenderer={this}
+        />
+      </AppIdProvider>
     );
   }
 
@@ -416,13 +476,14 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
     }
 
     return (
-      <CheckboxElement
-        key={block.actionId || index}
-        block={block}
-        context={context}
-        index={index}
-        surfaceRenderer={this}
-      />
+      <AppIdProvider key={block.actionId || index} appId={block.appId}>
+        <CheckboxElement
+          block={block}
+          context={context}
+          index={index}
+          surfaceRenderer={this}
+        />
+      </AppIdProvider>
     );
   }
 
@@ -433,13 +494,14 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
   ): ReactElement | null {
     if (context === UiKit.BlockContext.BLOCK) {
       return (
-        <CalloutBlock
-          key={index}
-          block={block}
-          context={context}
-          index={index}
-          surfaceRenderer={this}
-        />
+        <AppIdProvider key={index} appId={block.appId}>
+          <CalloutBlock
+            block={block}
+            context={context}
+            index={index}
+            surfaceRenderer={this}
+          />
+        </AppIdProvider>
       );
     }
 
@@ -456,13 +518,14 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
     }
 
     return (
-      <TimePickerElement
-        key={block.actionId || index}
-        block={block}
-        context={context}
-        index={index}
-        surfaceRenderer={this}
-      />
+      <AppIdProvider key={block.actionId || index} appId={block.appId}>
+        <TimePickerElement
+          block={block}
+          context={context}
+          index={index}
+          surfaceRenderer={this}
+        />
+      </AppIdProvider>
     );
   }
 }

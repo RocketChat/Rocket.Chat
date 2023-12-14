@@ -1,4 +1,4 @@
-import { Team } from '@rocket.chat/core-services';
+import { Team, Room } from '@rocket.chat/core-services';
 import type { IRoom, ISubscription, IUser, RoomType } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
 import {
@@ -31,7 +31,6 @@ import { saveRoomSettings } from '../../../channel-settings/server/methods/saveR
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { addUsersToRoomMethod } from '../../../lib/server/methods/addUsersToRoom';
 import { createChannelMethod } from '../../../lib/server/methods/createChannel';
-import { joinRoomMethod } from '../../../lib/server/methods/joinRoom';
 import { leaveRoomMethod } from '../../../lib/server/methods/leaveRoom';
 import { settings } from '../../../settings/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
@@ -209,7 +208,7 @@ API.v1.addRoute(
 			const { joinCode, ...params } = this.bodyParams;
 			const findResult = await findChannelByIdOrName({ params });
 
-			await joinRoomMethod(this.userId, findResult._id, joinCode);
+			await Room.join({ room: findResult, user: this.user, joinCode });
 
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params, userId: this.userId }),

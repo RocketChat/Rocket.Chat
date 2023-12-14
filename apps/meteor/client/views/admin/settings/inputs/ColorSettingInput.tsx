@@ -1,4 +1,4 @@
-import { Box, Field, Flex, InputBox, Margins, TextInput, Select } from '@rocket.chat/fuselage';
+import { Box, FieldLabel, FieldRow, FieldHint, Flex, InputBox, Margins, TextInput, Select } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -56,14 +56,14 @@ function ColorSettingInput({
 		<>
 			<Flex.Container>
 				<Box>
-					<Field.Label htmlFor={_id} title={_id}>
+					<FieldLabel htmlFor={_id} title={_id}>
 						{label}
-					</Field.Label>
+					</FieldLabel>
 					{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
 				</Box>
 			</Flex.Container>
 			<Margins inline={4}>
-				<Field.Row>
+				<FieldRow>
 					<Margins inline={4}>
 						<Flex.Item grow={2}>
 							{editor === 'color' && (
@@ -104,9 +104,9 @@ function ColorSettingInput({
 							options={allowedTypes.map((type) => [type, t(type)])}
 						/>
 					</Margins>
-				</Field.Row>
+				</FieldRow>
 			</Margins>
-			<Field.Hint>Variable name: {_id.replace(/theme-color-/, '@')}</Field.Hint>
+			<FieldHint>Variable name: {_id.replace(/theme-color-/, '@')}</FieldHint>
 		</>
 	);
 }

@@ -119,13 +119,13 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 										type: 'quantize',
 										colors: [
 											// TODO: Get it from theme
-											colors.p100,
-											colors.p200,
-											colors.p300,
-											colors.p400,
-											colors.p500,
-											colors.p600,
-											colors.p700,
+											colors.b100,
+											colors.b200,
+											colors.b300,
+											colors.b400,
+											colors.b500,
+											colors.b600,
+											colors.b700,
 										],
 									}}
 									emptyColor='transparent'

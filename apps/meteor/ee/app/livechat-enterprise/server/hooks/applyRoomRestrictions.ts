@@ -28,7 +28,6 @@ export const restrictQuery = async (originalQuery: FilterOperators<IOmnichannelR
 callbacks.add(
 	'livechat.applyRoomRestrictions',
 	async (originalQuery: FilterOperators<IOmnichannelRoom> = {}) => {
-		cbLogger.debug('Applying room query restrictions');
 		return restrictQuery(originalQuery);
 	},
 	callbacks.priority.HIGH,
