@@ -1,6 +1,4 @@
-import { Room } from '@rocket.chat/core-services';
 import { Subscriptions, Users } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
 import { callbacks } from '../../../../lib/callbacks';
@@ -347,50 +345,7 @@ export async function sendAllNotifications(message, room) {
 		return message;
 	}
 
-	const { sender, hasMentionToAll, hasMentionToHere, notificationMessage, mentionIds, mentionIdsWithoutGroups } =
-		await sendMessageNotifications(message, room);
-
-	// on public channels, if a mentioned user is not member of the channel yet, he will first join the channel and then be notified based on his preferences.
-	if (room.t === 'c') {
-		// get subscriptions from users already in room (to not send them a notification)
-		const mentions = [...mentionIdsWithoutGroups];
-		const cursor = Subscriptions.findByRoomIdAndUserIds(room._id, mentionIdsWithoutGroups, {
-			projection: { 'u._id': 1 },
-		});
-
-		for await (const subscription of cursor) {
-			const index = mentions.indexOf(subscription.u._id);
-			if (index !== -1) {
-				mentions.splice(index, 1);
-			}
-		}
-
-		const users = await Promise.all(
-			mentions.map(async (userId) => {
-				await Room.join({ room, user: { _id: userId } });
-
-				return userId;
-			}),
-		).catch((error) => {
-			throw new Meteor.Error(error);
-		});
-
-		const subscriptions = await Subscriptions.findByRoomIdAndUserIds(room._id, users).toArray();
-		users.forEach((userId) => {
-			const subscription = subscriptions.find((subscription) => subscription.u._id === userId);
-
-			void sendNotification({
-				subscription,
-				sender,
-				hasMentionToAll,
-				hasMentionToHere,
-				message,
-				notificationMessage,
-				room,
-				mentionIds,
-			});
-		});
-	}
+	await sendMessageNotifications(message, room);
 
 	return message;
 }
