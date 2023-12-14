@@ -12,6 +12,27 @@ const doc = domParser.window.document;
 const head = doc.querySelector('head');
 const body = doc.querySelector('body');
 
+// TODO IMPROVE CONDITIONS CHECK
+const liveChatAdditionalScripts = settings.get<string>('Livechat_AdditionalWidgetScripts');
+if (liveChatAdditionalScripts) {
+	liveChatAdditionalScripts.split(',').forEach((script) => {
+		const scriptElement = doc.createElement('script');
+		scriptElement.src = script;
+		head?.appendChild(scriptElement);
+		body?.appendChild(scriptElement);
+	});
+}
+
+const additionalClass = settings.get<string>('Livechat_WidgetLayoutClasses');
+if (additionalClass) {
+	additionalClass.split(',').forEach((css) => {
+		const linkElement = doc.createElement('link');
+		linkElement.rel = 'stylesheet';
+		linkElement.href = css;
+		head?.appendChild(linkElement);
+	});
+}
+
 WebApp.connectHandlers.use('/livechat', (req, res, next) => {
 	if (!req.url) {
 		return next();
@@ -23,25 +44,6 @@ WebApp.connectHandlers.use('/livechat', (req, res, next) => {
 	}
 
 	res.setHeader('content-type', 'text/html; charset=utf-8');
-	const liveChatAdditionalScripts = settings.get<string>('Livechat_AdditionalWidgetScripts');
-	if (liveChatAdditionalScripts) {
-		liveChatAdditionalScripts.split(',').forEach((script) => {
-			const scriptElement = doc.createElement('script');
-			scriptElement.src = script;
-			head?.appendChild(scriptElement);
-			body?.appendChild(scriptElement);
-		});
-	}
-	const additionalClass = settings.get<string>('Livechat_WidgetLayoutClasses');
-	if (additionalClass) {
-		additionalClass.split(',').forEach((css) => {
-			const linkElement = doc.createElement('link');
-			linkElement.rel = 'stylesheet';
-			linkElement.href = css;
-			head?.appendChild(linkElement);
-		});
-	}
-	indexHtmlWithServerURL = doc.documentElement.innerHTML;
 	const domainWhiteListSetting = settings.get<string>('Livechat_AllowedDomainsList');
 	let domainWhiteList = [];
 	if (req.headers.referer && domainWhiteListSetting.trim()) {
@@ -56,6 +58,7 @@ WebApp.connectHandlers.use('/livechat', (req, res, next) => {
 		// TODO need to remove inline scripts from this route to be able to enable CSP here as well
 		res.removeHeader('Content-Security-Policy');
 	}
+	indexHtmlWithServerURL = doc.documentElement.innerHTML;
 	res.write(indexHtmlWithServerURL);
 	res.end();
 });
