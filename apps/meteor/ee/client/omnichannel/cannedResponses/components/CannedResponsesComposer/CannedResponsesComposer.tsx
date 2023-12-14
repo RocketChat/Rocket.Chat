@@ -1,14 +1,21 @@
-import { Box, Divider, PositionAnimated, Tile } from '@rocket.chat/fuselage';
+import { Button, PositionAnimated, Tile } from '@rocket.chat/fuselage';
+import {
+	MessageComposerAction,
+	MessageComposerToolbarActions,
+	MessageComposer,
+	MessageComposerInput,
+	MessageComposerToolbar,
+	MessageComposerActionsDivider,
+} from '@rocket.chat/ui-composer';
 import { useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
+import type { ComponentProps } from 'react';
 import React, { memo, useCallback, useRef, useState } from 'react';
 
 import { Backdrop } from '../../../../../../client/components/Backdrop';
 import { useEmojiPicker } from '../../../../../../client/contexts/EmojiPickerContext';
-import TextEditor from '../TextEditor';
 import InsertPlaceholderDropdown from './InsertPlaceholderDropdown';
 
-const MarkdownTextEditor: FC<{ onChange: any; value: string }> = ({ onChange, value }) => {
+const CannedResponsesComposer = ({ onChange, ...props }: ComponentProps<typeof MessageComposerInput>) => {
 	const t = useTranslation();
 	const useEmojisPreference = useUserPreference('useEmojis');
 
@@ -45,7 +52,7 @@ const MarkdownTextEditor: FC<{ onChange: any; value: string }> = ({ onChange, va
 					textAreaRef.current.setSelectionRange(startPos + 1, endPos + 1);
 				}
 
-				onChange(textAreaRef.current.value);
+				onChange?.(textAreaRef.current.value as any);
 			}
 		}, [char]);
 
@@ -60,7 +67,7 @@ const MarkdownTextEditor: FC<{ onChange: any; value: string }> = ({ onChange, va
 			textAreaRef.current.focus();
 			textAreaRef.current.setSelectionRange(startPos + emojiValue.length, startPos + emojiValue.length);
 
-			onChange(textAreaRef.current.value);
+			onChange?.(textAreaRef.current.value as any);
 		}
 	};
 
@@ -82,33 +89,36 @@ const MarkdownTextEditor: FC<{ onChange: any; value: string }> = ({ onChange, va
 	};
 
 	return (
-		<TextEditor>
-			<TextEditor.Toolbox>
-				<Box display='flex' flexDirection='row'>
-					<TextEditor.Toolbox.IconButton name='bold' action={useMarkdownSyntax('*')} title={t('Bold')} />
-					<TextEditor.Toolbox.IconButton name='italic' action={useMarkdownSyntax('_')} title={t('Italic')} />
-					<TextEditor.Toolbox.IconButton name='strike' action={useMarkdownSyntax('~')} title={t('Strike')} />
-					<TextEditor.Toolbox.IconButton name='link' action={useMarkdownSyntax('[]()')} title={t('Link')} />
-					<TextEditor.Toolbox.IconButton name='emoji' action={handleOpenEmojiPicker} title={t('Emoji')} />
-				</Box>
-				<TextEditor.Toolbox.TextButton text='Insert_Placeholder' action={openPlaceholderSelect} ref={ref} />
-				<Backdrop
-					display={visible ? 'block' : 'none'}
-					onClick={(): void => {
-						textAreaRef?.current && textAreaRef.current.focus();
-						setVisible(false);
-					}}
-				/>
-				<PositionAnimated visible={visible ? 'visible' : 'hidden'} anchor={ref}>
-					<Tile elevation='1' w='224px'>
-						<InsertPlaceholderDropdown onChange={onChange} textAreaRef={textAreaRef} setVisible={setVisible} />
-					</Tile>
-				</PositionAnimated>
-			</TextEditor.Toolbox>
-			<Divider w='full' mbe='16px' />
-			<TextEditor.Textarea value={value} onChange={onChange} rows={10} ref={textAreaRef} />
-		</TextEditor>
+		<MessageComposer>
+			<MessageComposerInput ref={textAreaRef} rows={10} onChange={onChange} {...props} />
+			<MessageComposerToolbar>
+				<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
+					<MessageComposerAction icon='emoji' disabled={!useEmojisPreference} onClick={handleOpenEmojiPicker} title={t('Emoji')} />
+					<MessageComposerActionsDivider />
+					<MessageComposerAction icon='bold' onClick={useMarkdownSyntax('*')} title={t('Bold')} />
+					<MessageComposerAction icon='italic' onClick={useMarkdownSyntax('_')} title={t('Italic')} />
+					<MessageComposerAction icon='strike' onClick={useMarkdownSyntax('~')} title={t('Strike')} />
+					<MessageComposerAction icon='link' onClick={useMarkdownSyntax('[]()')} title={t('Link')} />
+					<MessageComposerActionsDivider />
+					<Button ref={ref} small onClick={openPlaceholderSelect}>
+						{t('Insert_Placeholder')}
+					</Button>
+					<Backdrop
+						display={visible ? 'block' : 'none'}
+						onClick={(): void => {
+							textAreaRef?.current && textAreaRef.current.focus();
+							setVisible(false);
+						}}
+					/>
+					<PositionAnimated visible={visible ? 'visible' : 'hidden'} anchor={ref}>
+						<Tile elevation='1' w='224px'>
+							<InsertPlaceholderDropdown onChange={onChange} textAreaRef={textAreaRef} setVisible={setVisible} />
+						</Tile>
+					</PositionAnimated>
+				</MessageComposerToolbarActions>
+			</MessageComposerToolbar>
+		</MessageComposer>
 	);
 };
 
-export default memo(MarkdownTextEditor);
+export default memo(CannedResponsesComposer);
