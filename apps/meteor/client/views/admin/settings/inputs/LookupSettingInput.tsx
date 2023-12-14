@@ -1,4 +1,4 @@
-import { Box, FieldLabel, FieldRow, Flex, Select } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
 import type { PathPattern } from '@rocket.chat/rest-typings';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -16,6 +16,7 @@ type LookupSettingInputProps = {
 	readonly?: boolean;
 	autocomplete?: boolean;
 	disabled?: boolean;
+	required?: boolean;
 	hasResetButton?: boolean;
 	onChangeValue?: (value: string) => void;
 	onResetButtonClick?: () => void;
@@ -29,6 +30,7 @@ function LookupSettingInput({
 	readonly,
 	autocomplete,
 	disabled,
+	required,
 	lookupEndpoint,
 	hasResetButton,
 	onChangeValue,
@@ -42,15 +44,13 @@ function LookupSettingInput({
 	const values = options?.data || [];
 
 	return (
-		<>
-			<Flex.Container>
-				<Box>
-					<FieldLabel htmlFor={_id} title={_id}>
-						{label}
-					</FieldLabel>
-					{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
-				</Box>
-			</Flex.Container>
+		<Field>
+			<FieldRow>
+				<FieldLabel htmlFor={_id} title={_id} required={required}>
+					{label}
+				</FieldLabel>
+				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+			</FieldRow>
 			<FieldRow>
 				<Select
 					data-qa-setting-id={_id}
@@ -64,7 +64,7 @@ function LookupSettingInput({
 					options={values.map(({ key, label }) => [key, label])}
 				/>
 			</FieldRow>
-		</>
+		</Field>
 	);
 }
 

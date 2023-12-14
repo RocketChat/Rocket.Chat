@@ -1,4 +1,4 @@
-import { Box, FieldLabel, FieldRow, Flex, PasswordInput } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, PasswordInput } from '@rocket.chat/fuselage';
 import type { EventHandler, ReactElement, SyntheticEvent } from 'react';
 import React from 'react';
 
@@ -12,6 +12,7 @@ type PasswordSettingInputProps = {
 	readonly?: boolean;
 	autocomplete?: boolean;
 	disabled?: boolean;
+	required?: boolean;
 	hasResetButton?: boolean;
 	onChangeValue?: (value: string) => void;
 	onResetButtonClick?: () => void;
@@ -25,6 +26,7 @@ function PasswordSettingInput({
 	readonly,
 	autocomplete,
 	disabled,
+	required,
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
@@ -34,15 +36,13 @@ function PasswordSettingInput({
 	};
 
 	return (
-		<>
-			<Flex.Container>
-				<Box>
-					<FieldLabel htmlFor={_id} title={_id}>
-						{label}
-					</FieldLabel>
-					{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
-				</Box>
-			</Flex.Container>
+		<Field>
+			<FieldRow>
+				<FieldLabel htmlFor={_id} title={_id} required={required}>
+					{label}
+				</FieldLabel>
+				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+			</FieldRow>
 			<FieldRow>
 				<PasswordInput
 					data-qa-setting-id={_id}
@@ -55,7 +55,7 @@ function PasswordSettingInput({
 					onChange={handleChange}
 				/>
 			</FieldRow>
-		</>
+		</Field>
 	);
 }
 
