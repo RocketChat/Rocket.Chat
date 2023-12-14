@@ -114,7 +114,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 	async beforeSave({
 		message,
-		room: _room,
+		room,
 		user,
 	}: {
 		message: IMessage;
@@ -138,7 +138,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 		if (!this.isEditedOrOld(message)) {
 			await Promise.all([
-				this.checkMAC.isWithinLimits({ message, room: _room }),
+				this.checkMAC.isWithinLimits({ message, room }),
 				this.preventMention.preventMention({ message, user, mention: 'all', permission: 'mention-all' }),
 				this.preventMention.preventMention({ message, user, mention: 'here', permission: 'mention-here' }),
 			]);
