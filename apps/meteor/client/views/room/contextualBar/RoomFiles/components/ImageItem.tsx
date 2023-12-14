@@ -6,12 +6,17 @@ type ImageItemProps = {
 	url: string | undefined;
 	name: string | undefined;
 	timestamp: string;
-	username: string;
+	username?: string;
 };
+
 const ImageItem = ({ id, url, name, timestamp, username }: ImageItemProps) => {
 	return (
 		<Box minWidth={0} data-id={id} className='gallery-item-container' title={name} display='flex' flexGrow={1} flexShrink={1}>
-			{url && <Avatar size='x48' url={url} className='gallery-item' />}
+			{url && (
+				<Box minWidth='x48'>
+					<Avatar size='x48' url={url} className='gallery-item' />
+				</Box>
+			)}
 			<Box mis={8} flexShrink={1} overflow='hidden' className='gallery-item' cursor='default'>
 				{name && (
 					<Box withTruncatedText color='default' fontScale='p2m' className='gallery-item'>

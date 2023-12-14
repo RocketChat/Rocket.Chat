@@ -1,4 +1,4 @@
-import type { LicenseModule } from '../definition/LicenseModule';
+import type { LicenseModule } from '@rocket.chat/core-typings';
 
 interface IBundle {
 	[key: string]: LicenseModule[];

@@ -38,4 +38,32 @@ export class OmnichannelSidenav {
 	get linkPriorities(): Locator {
 		return this.page.locator('a[href="/omnichannel/priorities"]');
 	}
+
+	get linkMonitors(): Locator {
+		return this.page.locator('a[href="/omnichannel/monitors"]');
+	}
+
+	get linkBusinessHours(): Locator {
+		return this.page.locator('a[href="/omnichannel/businessHours"]');
+	}
+
+	get linkAnalytics(): Locator {
+		return this.page.locator('a[href="/omnichannel/analytics"]');
+	}
+
+	get linkRealTimeMonitoring(): Locator {
+		return this.page.locator('a[href="/omnichannel/realtime-monitoring"]');
+	}
+
+	get linkReports(): Locator {
+		return this.page.locator('a[href="/omnichannel/reports"]');
+	}
+
+	get linkCannedResponses(): Locator {
+		return this.page.locator('a[href="/omnichannel/canned-responses"]');
+	}
+
+	get linkUnits(): Locator {
+		return this.page.locator('a[href="/omnichannel/units"]');
+	}
 }

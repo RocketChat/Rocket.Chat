@@ -151,7 +151,7 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 	const monitorsField = useUniqueId();
 
 	return (
-		<Contextualbar>
+		<Contextualbar data-qa-id='units-contextual-bar'>
 			<ContextualbarHeader>
 				<ContextualbarTitle>{_id ? t('Edit_Unit') : t('New_Unit')}</ContextualbarTitle>
 				<ContextualbarClose onClick={() => router.navigate('/omnichannel/units')}></ContextualbarClose>

@@ -1,6 +1,6 @@
 import client from 'prom-client';
 
-const percentiles = [0.01, 0.1, 0.9, 0.99];
+const percentiles = [0.01, 0.1, 0.5, 0.9, 0.95, 0.99, 1];
 
 export const metrics = {
 	deprecations: new client.Counter({
@@ -63,9 +63,10 @@ export const metrics = {
 		labelNames: ['notification_type'],
 		help: 'cumulated number of notifications sent',
 	}),
-	messageRoundtripTime: new client.Gauge({
-		name: 'rocketchat_messages_roundtrip_time',
+	messageRoundtripTime: new client.Summary({
+		name: 'rocketchat_messages_roundtrip_time_summary',
 		help: 'time spent by a message from save to receive back',
+		percentiles,
 	}),
 
 	ddpSessions: new client.Gauge({
