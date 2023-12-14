@@ -47,6 +47,7 @@ import { callbacks } from '../../../lib/callbacks';
 import { availabilityErrors } from '../../../lib/videoConference/constants';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { i18n } from '../../lib/i18n';
+import { isRoomCompatibleWithVideoConfRinging } from '../../lib/isRoomCompatibleWithVideoConfRinging';
 import { videoConfProviders } from '../../lib/videoConfProviders';
 import { videoConfTypes } from '../../lib/videoConfTypes';
 
@@ -74,7 +75,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		if (type === 'direct') {
-			if (room.t !== 'd' || !room.uids || room.uids.length > 2) {
+			if (!isRoomCompatibleWithVideoConfRinging(room.t, room.uids)) {
 				throw new Error('type-and-room-not-compatible');
 			}
 
