@@ -103,67 +103,61 @@ const CannedResponseForm = () => {
 			{(hasManagerPermission || hasMonitorPermission) && (
 				<>
 					<Field>
-						<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+						<FieldRow>
 							<FieldLabel htmlFor={publicRadioField}>{t('Public')}</FieldLabel>
-							<FieldRow>
-								<Controller
-									name='scope'
-									control={control}
-									render={({ field: { onChange, value, ...field } }) => (
-										<RadioButton
-											{...field}
-											id={publicRadioField}
-											onChange={() => onChange('global')}
-											disabled={hasMonitorPermission && !hasManagerPermission}
-											checked={value === 'global'}
-											aria-describedby={`${publicRadioField}-hint`}
-										/>
-									)}
-								/>
-							</FieldRow>
-						</Box>
+							<Controller
+								name='scope'
+								control={control}
+								render={({ field: { onChange, value, ...field } }) => (
+									<RadioButton
+										{...field}
+										id={publicRadioField}
+										onChange={() => onChange('global')}
+										disabled={hasMonitorPermission && !hasManagerPermission}
+										checked={value === 'global'}
+										aria-describedby={`${publicRadioField}-hint`}
+									/>
+								)}
+							/>
+						</FieldRow>
 						<FieldHint id={`${publicRadioField}-hint`}>{t('Canned_Response_Sharing_Public_Description')}</FieldHint>
 					</Field>
 					<Field>
-						<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+						<FieldRow>
 							<FieldLabel htmlFor={departmentRadioField}>{t('Department')}</FieldLabel>
-							<FieldRow>
-								<Controller
-									name='scope'
-									control={control}
-									render={({ field: { onChange, value, ...field } }) => (
-										<RadioButton
-											{...field}
-											id={departmentRadioField}
-											onChange={() => onChange('department')}
-											checked={value === 'department'}
-											aria-describedby={`${departmentRadioField}-hint`}
-										/>
-									)}
-								/>
-							</FieldRow>
-						</Box>
+							<Controller
+								name='scope'
+								control={control}
+								render={({ field: { onChange, value, ...field } }) => (
+									<RadioButton
+										{...field}
+										id={departmentRadioField}
+										onChange={() => onChange('department')}
+										checked={value === 'department'}
+										aria-describedby={`${departmentRadioField}-hint`}
+									/>
+								)}
+							/>
+						</FieldRow>
 						<FieldHint id={`${departmentRadioField}-hint`}>{t('Canned_Response_Sharing_Department_Description')}</FieldHint>
 					</Field>
 					<Field>
-						<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+						<FieldRow>
 							<FieldLabel htmlFor={privateRadioField}>{t('Private')}</FieldLabel>
-							<FieldRow>
-								<Controller
-									name='scope'
-									control={control}
-									render={({ field: { onChange, value, ...field } }) => (
-										<RadioButton
-											{...field}
-											id={privateRadioField}
-											onChange={() => onChange('user')}
-											checked={value === 'user'}
-											aria-describedby={`${privateRadioField}-hint`}
-										/>
-									)}
-								/>
-							</FieldRow>
-						</Box>
+							<Controller
+								name='scope'
+								control={control}
+								render={({ field: { onChange, value, ...field } }) => (
+									<RadioButton
+										{...field}
+										id={privateRadioField}
+										onChange={() => onChange('user')}
+										checked={value === 'user'}
+										aria-describedby={`${privateRadioField}-hint`}
+									/>
+								)}
+							/>
+						</FieldRow>
 						<FieldHint id={`${privateRadioField}-hint`}>{t('Canned_Response_Sharing_Private_Description')}</FieldHint>
 					</Field>
 					{scope === 'department' && (
