@@ -18,7 +18,7 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 	const allowUserStatusMessageChange = useSetting('Accounts_AllowUserStatusMessageChange');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const storedCustomStatus = localStorage.getItem('Local_Custom_Status');
-	const initialStatusText = storedCustomStatus ? storedCustomStatus : userStatusText;
+	const initialStatusText = storedCustomStatus || userStatusText;
 
 	const t = useTranslation();
 	const [statusText, setStatusText] = useState(initialStatusText);
@@ -32,7 +32,7 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 		if (statusText && statusText.length > USER_STATUS_TEXT_MAX_LENGTH) {
 			return setStatusTextError(t('Max_length_is', USER_STATUS_TEXT_MAX_LENGTH));
 		}
-		localStorage.setItem("Local_Custom_Status", e.currentTarget.value);
+		localStorage.setItem('Local_Custom_Status', e.currentTarget.value);
 		return setStatusTextError(undefined);
 	});
 
