@@ -1632,7 +1632,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			drid,
 		};
 
-		return this.col.findOneAndUpdate(
+		return this.findOneAndUpdate(
 			query,
 			{
 				$set: {
