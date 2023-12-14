@@ -14,7 +14,7 @@ import {
 	ImportingErrorStates,
 } from '../../../../app/importer/lib/ImporterProgressStep';
 import { numberFormat } from '../../../../lib/utils/stringUtils';
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import type { ChannelDescriptor } from './ChannelDescriptor';
 import PrepareChannels from './PrepareChannels';
 import PrepareUsers from './PrepareUsers';
@@ -180,7 +180,7 @@ function PrepareImportPage() {
 
 	return (
 		<Page>
-			<Page.Header title={t('Importing_Data')}>
+			<PageHeader title={t('Importing_Data')}>
 				<ButtonGroup>
 					<Button icon='back' secondary onClick={handleBackToImportsButtonClick}>
 						{t('Back_to_imports')}
@@ -189,9 +189,8 @@ function PrepareImportPage() {
 						{t('Importer_Prepare_Start_Import')}
 					</Button>
 				</ButtonGroup>
-			</Page.Header>
-
-			<Page.ScrollableContentWithShadow>
+			</PageHeader>
+			<PageScrollableContentWithShadow>
 				<Box marginInline='auto' marginBlock='x24' width='full' maxWidth='590px'>
 					<Box is='h2' fontScale='p2m'>
 						{statusDebounced && t(statusDebounced.replace('importer_', 'importer_status_') as TranslationKey)}
@@ -231,7 +230,7 @@ function PrepareImportPage() {
 						)}
 					</Margins>
 				</Box>
-			</Page.ScrollableContentWithShadow>
+			</PageScrollableContentWithShadow>
 		</Page>
 	);
 }

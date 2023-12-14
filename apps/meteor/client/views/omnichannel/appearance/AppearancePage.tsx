@@ -5,7 +5,7 @@ import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.ch
 import React from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
 import AppearanceForm from './AppearanceForm';
 
 type LivechatAppearanceSettings = {
@@ -74,8 +74,8 @@ const AppearancePage = ({ settings }: { settings: Serialized<ISetting>[] }) => {
 
 	return (
 		<Page>
-			<Page.Header title={t('Appearance')}></Page.Header>
-			<Page.ScrollableContentWithShadow>
+			<PageHeader title={t('Appearance')} />
+			<PageScrollableContentWithShadow>
 				<Box maxWidth='x600' w='full' alignSelf='center'>
 					<FormProvider {...methods}>
 						<form id={formId} onSubmit={handleSubmit(handleSave)}>
@@ -83,15 +83,15 @@ const AppearancePage = ({ settings }: { settings: Serialized<ISetting>[] }) => {
 						</form>
 					</FormProvider>
 				</Box>
-			</Page.ScrollableContentWithShadow>
-			<Page.Footer isDirty={isDirty}>
+			</PageScrollableContentWithShadow>
+			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
 					<Button onClick={() => reset()}>{t('Cancel')}</Button>
 					<Button form={formId} type='submit' primary>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>
-			</Page.Footer>
+			</PageFooter>
 		</Page>
 	);
 };

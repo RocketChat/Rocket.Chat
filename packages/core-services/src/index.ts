@@ -19,6 +19,7 @@ import type { IMessageReadsService } from './types/IMessageReadsService';
 import type { IMessageService } from './types/IMessageService';
 import type { IMeteor, AutoUpdateRecord } from './types/IMeteor';
 import type { INPSService, NPSCreatePayload, NPSVotePayload } from './types/INPSService';
+import type { IOmnichannelAnalyticsService } from './types/IOmnichannelAnalyticsService';
 import type { IOmnichannelEEService } from './types/IOmnichannelEEService';
 import type { IOmnichannelIntegrationService } from './types/IOmnichannelIntegrationService';
 import type { IOmnichannelService } from './types/IOmnichannelService';
@@ -59,6 +60,15 @@ export { IBroker, IBrokerNode, BaseMetricOptions, IServiceMetrics } from './type
 export { IServiceContext, ServiceClass, IServiceClass, ServiceClassInternal } from './types/ServiceClass';
 
 export { IFederationService, IFederationServiceEE, IFederationJoinExternalPublicRoomInput } from './types/IFederationService';
+
+export {
+	ConversationData,
+	AgentOverviewDataOptions,
+	ChartDataOptions,
+	AnalyticsOverviewDataOptions,
+	ChartDataResult,
+	AnalyticsOverviewDataResult,
+} from './types/IOmnichannelAnalyticsService';
 
 export {
 	AutoUpdateRecord,
@@ -124,6 +134,7 @@ export {
 	IOmnichannelEEService,
 	IOmnichannelIntegrationService,
 	IImportService,
+	IOmnichannelAnalyticsService,
 };
 
 // TODO think in a way to not have to pass the service name to proxify here as well
@@ -160,6 +171,7 @@ export const FederationEE = proxifyWithWait<IFederationServiceEE>('federation-en
 export const Omnichannel = proxifyWithWait<IOmnichannelService>('omnichannel');
 export const OmnichannelEEService = proxifyWithWait<IOmnichannelEEService>('omnichannel-ee');
 export const Import = proxifyWithWait<IImportService>('import');
+export const OmnichannelAnalytics = proxifyWithWait<IOmnichannelAnalyticsService>('omnichannel-analytics');
 
 // Calls without wait. Means that the service is optional and the result may be an error
 // of service/method not available

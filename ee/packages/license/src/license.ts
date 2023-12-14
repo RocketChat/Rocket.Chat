@@ -1,14 +1,18 @@
+import type {
+	ILicenseTag,
+	LicenseEvents,
+	ILicenseV2,
+	ILicenseV3,
+	LicenseLimitKind,
+	BehaviorWithContext,
+	LicenseBehavior,
+	LicenseInfo,
+	LicenseModule,
+	LicenseValidationOptions,
+	LimitContext,
+} from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 
-import { type ILicenseTag } from './definition/ILicenseTag';
-import type { ILicenseV2 } from './definition/ILicenseV2';
-import type { ILicenseV3, LicenseLimitKind } from './definition/ILicenseV3';
-import type { BehaviorWithContext, LicenseBehavior } from './definition/LicenseBehavior';
-import type { LicenseInfo } from './definition/LicenseInfo';
-import type { LicenseModule } from './definition/LicenseModule';
-import type { LicenseValidationOptions } from './definition/LicenseValidationOptions';
-import type { LimitContext } from './definition/LimitContext';
-import type { LicenseEvents } from './definition/events';
 import { getLicenseLimit } from './deprecated';
 import { DuplicatedLicenseError } from './errors/DuplicatedLicenseError';
 import { InvalidLicenseError } from './errors/InvalidLicenseError';

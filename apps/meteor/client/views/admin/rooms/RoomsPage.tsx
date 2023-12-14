@@ -2,7 +2,7 @@ import { useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useRef } from 'react';
 
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 import EditRoomWithData from './EditRoomWithData';
 import RoomsTable from './RoomsTable';
 
@@ -17,10 +17,10 @@ const RoomsPage = (): ReactElement => {
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('Rooms')} />
-				<Page.Content>
+				<PageHeader title={t('Rooms')} />
+				<PageContent>
 					<RoomsTable reload={reloadRef} />
-				</Page.Content>
+				</PageContent>
 			</Page>
 			{context && <EditRoomWithData rid={id} onReload={reloadRef.current} />}
 		</Page>
