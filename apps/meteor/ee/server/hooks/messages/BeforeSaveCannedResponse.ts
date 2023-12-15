@@ -1,6 +1,5 @@
 import { isILivechatVisitor, isOmnichannelRoom } from '@rocket.chat/core-typings';
-import type { IMessage, IRoom, ISetting, IUser, SettingValue } from '@rocket.chat/core-typings';
-import { License } from '@rocket.chat/license';
+import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { LivechatVisitors, Users } from '@rocket.chat/models';
 import get from 'lodash.get';
 import mem from 'mem';
@@ -31,24 +30,6 @@ const placeholderFields = {
 export class BeforeSaveCannedResponse {
 	static enabled = false;
 
-	private getSetting: <T extends SettingValue = SettingValue>(id: ISetting['_id']) => T;
-
-	constructor({ getSetting }: { getSetting: <T extends SettingValue = SettingValue>(id: ISetting['_id']) => T }) {
-		this.getSetting = getSetting;
-
-		if (this.getSetting('Canned_Responses_Enable')) {
-			BeforeSaveCannedResponse.enabled = true;
-		}
-		void License.onToggledFeature('canned-responses', {
-			up: () => {
-				BeforeSaveCannedResponse.enabled = true;
-			},
-			down: () => {
-				BeforeSaveCannedResponse.enabled = false;
-			},
-		});
-	}
-
 	private getUser = mem((userId: string) => Users.findOneById(userId, { projection: { name: 1, _id: 1, emails: 1 } }), {
 		maxAge: 1000 * 30,
 	});
@@ -68,10 +49,6 @@ export class BeforeSaveCannedResponse {
 	}): Promise<IMessage> {
 		// If the feature is disabled, return the message as is
 		if (!BeforeSaveCannedResponse.enabled) {
-			return message;
-		}
-
-		if (!this.getSetting('Canned_Responses_Enable')) {
 			return message;
 		}
 

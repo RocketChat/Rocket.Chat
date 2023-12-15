@@ -1,7 +1,7 @@
-import type { ISetting, SettingValue } from '@rocket.chat/core-typings';
 import { registerModel } from '@rocket.chat/models';
 import { expect } from 'chai';
 import { before, describe, it } from 'mocha';
+import sinon from 'sinon';
 
 import { BaseRaw } from '../../../../../../server/models/raw/BaseRaw';
 import { BeforeSaveCannedResponse } from '../../../../../server/hooks/messages/BeforeSaveCannedResponse';
@@ -33,12 +33,6 @@ const createUser = (extra: any = {}) => ({
 	...extra,
 });
 
-const makeGetSetting =
-	(values: Record<string, any>) =>
-	<T extends SettingValue = SettingValue>(id: ISetting['_id']): T => {
-		return values[id];
-	};
-
 class LivechatVisitorsModel extends BaseRaw<any> {
 	findOneEnabledById() {
 		return {};
@@ -64,11 +58,9 @@ describe('Omnichannel canned responses', () => {
 	});
 
 	it('should do nothing if canned response is disabled', async () => {
-		const canned = new BeforeSaveCannedResponse({
-			getSetting: makeGetSetting({
-				Canned_Responses_Enable: false,
-			}),
-		});
+		BeforeSaveCannedResponse.enabled = false;
+
+		const canned = new BeforeSaveCannedResponse();
 
 		const message = await canned.replacePlaceholders({
 			message: createMessage('{{agent.name}}'),
@@ -79,12 +71,91 @@ describe('Omnichannel canned responses', () => {
 		return expect(message).to.have.property('msg', '{{agent.name}}');
 	});
 
-	it('should replace {{agent.name}} when canned response is enabled', async () => {
-		const canned = new BeforeSaveCannedResponse({
-			getSetting: makeGetSetting({
-				Canned_Responses_Enable: true,
-			}),
+	it('should do nothing if not an omnichannel room', async () => {
+		BeforeSaveCannedResponse.enabled = true;
+
+		const canned = new BeforeSaveCannedResponse();
+
+		const message = await canned.replacePlaceholders({
+			message: createMessage('{{agent.name}}'),
+			room: createRoom(),
+			user: createUser(),
 		});
+
+		return expect(message).to.have.property('msg', '{{agent.name}}');
+	});
+
+	it('should do nothing if the message is from a visitor', async () => {
+		BeforeSaveCannedResponse.enabled = true;
+
+		const canned = new BeforeSaveCannedResponse();
+
+		const message = await canned.replacePlaceholders({
+			message: createMessage('{{agent.name}}'),
+			room: createRoom({ t: 'l', servedBy: { _id: 'agent' }, v: { _id: 'visitor' } }),
+			user: createUser({ token: 'visitor-token' }),
+		});
+
+		return expect(message).to.have.property('msg', '{{agent.name}}');
+	});
+
+	it('should do nothing if room is not served by an agent', async () => {
+		BeforeSaveCannedResponse.enabled = true;
+
+		const canned = new BeforeSaveCannedResponse();
+
+		const message = await canned.replacePlaceholders({
+			message: createMessage('{{agent.name}}'),
+			room: createRoom({ t: 'l', v: { _id: 'visitor' } }),
+			user: createUser(),
+		});
+
+		return expect(message).to.have.property('msg', '{{agent.name}}');
+	});
+
+	it('should do nothing for an empty message', async () => {
+		BeforeSaveCannedResponse.enabled = true;
+
+		const canned = new BeforeSaveCannedResponse();
+
+		const message = await canned.replacePlaceholders({
+			message: createMessage(''),
+			room: createRoom({ t: 'l', servedBy: { _id: 'agent' }, v: { _id: 'visitor' } }),
+			user: createUser(),
+		});
+
+		return expect(message).to.have.property('msg', '');
+	});
+
+	it('should replace {{agent.name}} without finding the user from DB (sender is the agent of room)', async () => {
+		BeforeSaveCannedResponse.enabled = true;
+
+		const usersModel = new UsersModel(db as unknown as any, 'user');
+		const spy = sinon.spy(usersModel, 'findOneById');
+
+		registerModel('IUsersModel', () => usersModel);
+
+		const canned = new BeforeSaveCannedResponse();
+
+		const message = await canned.replacePlaceholders({
+			message: createMessage('{{agent.name}}'),
+			room: createRoom({ t: 'l', servedBy: { _id: 'agent' }, v: { _id: 'visitor' } }),
+			user: createUser({ _id: 'agent', name: 'User As Agent' }),
+		});
+
+		expect(message).to.have.property('msg', 'User As Agent');
+		expect(spy.called).to.be.false;
+	});
+
+	it('should replace {{agent.name}} when canned response is enabled', async () => {
+		BeforeSaveCannedResponse.enabled = true;
+
+		const usersModel = new UsersModel(db as unknown as any, 'user');
+		const spy = sinon.spy(usersModel, 'findOneById');
+
+		registerModel('IUsersModel', () => usersModel);
+
+		const canned = new BeforeSaveCannedResponse();
 
 		const message = await canned.replacePlaceholders({
 			message: createMessage('{{agent.name}}'),
@@ -92,6 +163,7 @@ describe('Omnichannel canned responses', () => {
 			user: createUser(),
 		});
 
-		return expect(message).to.have.property('msg', 'John Doe Agent');
+		expect(message).to.have.property('msg', 'John Doe Agent');
+		expect(spy.called).to.be.true;
 	});
 });
