@@ -1,4 +1,4 @@
-import type { IMessage, IRoom, IUser, IUpload } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser, IUploadWithUser } from '@rocket.chat/core-typings';
 
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
@@ -42,7 +42,7 @@ export type ImEndpoints = {
 	};
 	'/v1/im.files': {
 		GET: (params: DmFileProps) => PaginatedResult<{
-			files: IUpload[];
+			files: IUploadWithUser[];
 		}>;
 	};
 	'/v1/im.history': {

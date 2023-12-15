@@ -33,6 +33,7 @@ export * from './IRocketChatAssets';
 export * from './IPushToken';
 export * from './IPushNotificationConfig';
 export * from './SlashCommands';
+export * from './license';
 
 export * from './IUserDataFile';
 export * from './IUserSession';

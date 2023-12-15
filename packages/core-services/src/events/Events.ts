@@ -32,8 +32,8 @@ import type {
 	ILivechatAgent,
 	IBanner,
 	ILivechatVisitor,
+	LicenseLimitKind,
 } from '@rocket.chat/core-typings';
-import type { LicenseLimitKind } from '@rocket.chat/license';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
 import type { AutoUpdateRecord } from '../types/IMeteor';

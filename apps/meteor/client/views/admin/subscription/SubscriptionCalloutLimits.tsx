@@ -1,5 +1,5 @@
+import type { LicenseBehavior } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
-import type { LicenseBehavior } from '@rocket.chat/license/src/definition/LicenseBehavior';
 import { validateWarnLimit } from '@rocket.chat/license/src/validation/validateLimit';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import React from 'react';

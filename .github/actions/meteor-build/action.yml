@@ -103,9 +103,8 @@ runs:
       working-directory: ./apps/meteor
       run: meteor reset
 
-    - name: Build Rocket.Chat From Pull Request
+    - name: Build Rocket.Chat
       shell: bash
-      if: startsWith(github.ref, 'refs/pull/') == true
       env:
         METEOR_PROFILE: 1000
         BABEL_ENV: ${{ inputs.coverage == 'true' && 'coverage' || '' }}
@@ -117,11 +116,6 @@ runs:
         fi
 
         yarn build:ci -- --directory /tmp/dist
-
-    - name: Build Rocket.Chat
-      shell: bash
-      if: startsWith(github.ref, 'refs/pull/') != true
-      run: yarn build:ci -- --directory /tmp/dist
 
     - name: Prepare build
       shell: bash

@@ -1651,7 +1651,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		const user = await this.col.findOneAndUpdate(query, update, { sort, returnDocument: 'after' });
+		const user = await this.findOneAndUpdate(query, update, { sort, returnDocument: 'after' });
 		if (user && user.value) {
 			return {
 				agentId: user.value._id,
@@ -1681,7 +1681,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		const user = await this.col.findOneAndUpdate(query, update, { sort, returnDocument: 'after' });
+		const user = await this.findOneAndUpdate(query, update, { sort, returnDocument: 'after' });
 		if (user?.value) {
 			return {
 				agentId: user.value._id,
