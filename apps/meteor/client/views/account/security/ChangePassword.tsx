@@ -44,7 +44,7 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 	};
 
 	const [inputStatus, setInputStatus] = useState<'unclicked' | 'focused' | 'blur'>('unclicked');
-	
+
 	return (
 		<Box {...props} is='form' autoComplete='off' onSubmit={handleSubmit(handleSave)}>
 			<FieldGroup>
