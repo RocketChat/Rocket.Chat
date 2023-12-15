@@ -17,11 +17,13 @@ export const Default: ComponentStory<typeof FileItem> = (args) => <FileItem {...
 Default.storyName = 'FileItem';
 Default.args = {
 	fileData: {
+		_id: '1',
 		name: 'Lorem Ipsum Indolor Dolor',
 		url: '#',
-		uploadedAt: 'May 02, 2020 01:00 PM',
+		uploadedAt: new Date(),
 		user: {
-			username: 'loremIpsum',
+			_id: 'rocket.cat',
+			username: 'rocket.cat',
 		},
 	},
 };
