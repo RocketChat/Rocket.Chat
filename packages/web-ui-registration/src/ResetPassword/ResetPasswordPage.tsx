@@ -5,7 +5,7 @@ import { PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useRouter, useRouteParameter, useUser, useMethod, useTranslation, useLoginWithToken } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import HorizontalTemplate from '../template/HorizontalTemplate';
@@ -53,6 +53,8 @@ const ResetPasswordPage = (): ReactElement => {
 
 	const password = watch('password');
 	const passwordIsValid = useValidatePassword(password);
+
+	const [inputStatus, setInputStatus] = useState<'unclicked' | 'focused' | 'blur'>('unclicked');
 
 	useEffect(() => {
 		if (resetPasswordFormRef.current) {
@@ -106,6 +108,8 @@ const ResetPasswordPage = (): ReactElement => {
 									id={passwordId}
 									placeholder={passwordPlaceholder || t('Create_a_password')}
 									aria-describedby={`${passwordVerifierId} ${passwordId}-error`}
+									onFocus={() => setInputStatus('focused')}
+									onBlur={() => setInputStatus('blur')}
 								/>
 							</FieldRow>
 							{errors?.password && (
@@ -113,7 +117,7 @@ const ResetPasswordPage = (): ReactElement => {
 									{errors.password.message}
 								</FieldError>
 							)}
-							<PasswordVerifier password={password} id={passwordVerifierId} />
+							<PasswordVerifier password={password} id={passwordVerifierId} inputStatus={inputStatus} />
 						</Field>
 						{requiresPasswordConfirmation && (
 							<Field>
@@ -134,6 +138,8 @@ const ResetPasswordPage = (): ReactElement => {
 										id={passwordConfirmationId}
 										placeholder={passwordConfirmationPlaceholder || t('Confirm_password')}
 										disabled={!passwordIsValid}
+										onFocus={() => setInputStatus('focused')}
+										onBlur={() => setInputStatus('blur')}
 									/>
 								</FieldRow>
 								{errors.passwordConfirmation && (

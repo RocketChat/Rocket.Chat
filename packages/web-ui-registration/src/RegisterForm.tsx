@@ -1,19 +1,19 @@
 /* eslint-disable complexity */
 import {
-	FieldGroup,
-	TextInput,
+	Button,
+	ButtonGroup,
+	Callout,
 	Field,
+	FieldError,
+	FieldGroup,
 	FieldLabel,
 	FieldRow,
-	FieldError,
 	PasswordInput,
-	ButtonGroup,
-	Button,
 	TextAreaInput,
-	Callout,
+	TextInput,
 } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { Form, ActionLink } from '@rocket.chat/layout';
+import { ActionLink, Form } from '@rocket.chat/layout';
 import { CustomFieldsForm, PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
 import { useAccountsCustomFields, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -74,6 +74,8 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 
 	const { password } = watch();
 	const passwordIsValid = useValidatePassword(password);
+
+	const [inputStatus, setInputStatus] = useState<'unclicked' | 'focused' | 'blur'>('unclicked');
 
 	const registerFormRef = useRef<HTMLElement>(null);
 
@@ -223,6 +225,12 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 								id={passwordId}
 								placeholder={passwordPlaceholder || t('Create_a_password')}
 								aria-describedby={`${passwordVerifierId} ${passwordId}-error`}
+								onFocus={() => {
+									setInputStatus('focused');
+								}}
+								onBlur={() => {
+									setInputStatus('blur');
+								}}
 							/>
 						</FieldRow>
 						{errors?.password && (
@@ -230,7 +238,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 								{errors.password.message}
 							</FieldError>
 						)}
-						<PasswordVerifier password={password} id={passwordVerifierId} />
+						<PasswordVerifier password={password} id={passwordVerifierId} inputStatus={inputStatus} />
 					</Field>
 					{requiresPasswordConfirmation && (
 						<Field>
@@ -251,6 +259,12 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 									aria-describedby={`${passwordConfirmationId}-error`}
 									placeholder={passwordConfirmationPlaceholder || t('Confirm_password')}
 									disabled={!passwordIsValid}
+									onFocus={() => {
+										setInputStatus('focused');
+									}}
+									onBlur={() => {
+										setInputStatus('blur');
+									}}
 								/>
 							</FieldRow>
 							{errors.passwordConfirmation && (

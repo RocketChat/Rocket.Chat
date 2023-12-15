@@ -3,7 +3,7 @@ import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
 import { useMethod, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import type { AllHTMLAttributes } from 'react';
-import React from 'react';
+import React, { useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import { useAllowPasswordChange } from './useAllowPasswordChange';
@@ -43,6 +43,8 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 		}
 	};
 
+	const [inputStatus, setInputStatus] = useState<'unclicked' | 'focused' | 'blur'>('unclicked');
+	
 	return (
 		<Box {...props} is='form' autoComplete='off' onSubmit={handleSubmit(handleSave)}>
 			<FieldGroup>
@@ -66,6 +68,8 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 									disabled={!allowPasswordChange}
 									aria-describedby={`${passwordVerifierId} ${passwordId}-hint ${passwordId}-error`}
 									aria-invalid={errors.password ? 'true' : 'false'}
+									onFocus={() => setInputStatus('focused')}
+									onBlur={() => setInputStatus('blur')}
 								/>
 							)}
 						/>
@@ -76,7 +80,7 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 							{errors.password.message}
 						</FieldError>
 					)}
-					{allowPasswordChange && <PasswordVerifier password={password} id={passwordVerifierId} />}
+					{allowPasswordChange && <PasswordVerifier password={password} id={passwordVerifierId} inputStatus={inputStatus} />}
 				</Field>
 				<Field>
 					<FieldLabel htmlFor={confirmPasswordId}>{t('Confirm_password')}</FieldLabel>
@@ -97,6 +101,8 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 									aria-required={password !== '' ? 'true' : 'false'}
 									aria-invalid={errors.confirmationPassword ? 'true' : 'false'}
 									aria-describedby={`${confirmPasswordId}-error`}
+									onFocus={() => setInputStatus('focused')}
+									onBlur={() => setInputStatus('blur')}
 								/>
 							)}
 						/>

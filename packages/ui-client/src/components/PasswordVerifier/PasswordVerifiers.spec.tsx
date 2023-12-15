@@ -9,7 +9,7 @@ afterEach(() => {
 });
 
 it('should render no policy if its disabled ', () => {
-	const { queryByRole } = render(<PasswordVerifier password='' />, {
+	const { queryByRole } = render(<PasswordVerifier inputStatus='unclicked' password='' />, {
 		wrapper: mockAppRoot().withSetting('Accounts_Password_Policy_Enabled', 'true').build(),
 	});
 
@@ -17,7 +17,7 @@ it('should render no policy if its disabled ', () => {
 });
 
 it('should render no policy if its enabled but empty', async () => {
-	const { queryByRole, queryByTestId } = render(<PasswordVerifier password='asasdfafdgsdffdf' />, {
+	const { queryByRole, queryByTestId } = render(<PasswordVerifier inputStatus='unclicked' password='asasdfafdgsdffdf' />, {
 		wrapper: mockAppRoot().build(),
 	});
 
@@ -28,7 +28,7 @@ it('should render no policy if its enabled but empty', async () => {
 });
 
 it('should render policy list if its enabled and not empty', async () => {
-	const { queryByRole, queryByTestId } = render(<PasswordVerifier password='asasdfafdgsdffdf' />, {
+	const { queryByRole, queryByTestId } = render(<PasswordVerifier inputStatus='unclicked' password='asasdfafdgsdffdf' />, {
 		wrapper: mockAppRoot()
 			.withSetting('Accounts_Password_Policy_Enabled', 'true')
 			.withSetting('Accounts_Password_Policy_MinLength', '6')
@@ -44,7 +44,7 @@ it('should render policy list if its enabled and not empty', async () => {
 });
 
 it('should render all the policies when all policies are enabled', async () => {
-	const { queryByTestId, queryAllByRole } = render(<PasswordVerifier password='asasdfafdgsdffdf' />, {
+	const { queryByTestId, queryAllByRole } = render(<PasswordVerifier inputStatus='unclicked' password='asasdfafdgsdffdf' />, {
 		wrapper: mockAppRoot()
 			.withSetting('Accounts_Password_Policy_Enabled', 'true')
 			.withSetting('Accounts_Password_Policy_MinLength', '6')
@@ -66,7 +66,7 @@ it('should render all the policies when all policies are enabled', async () => {
 });
 
 it("should render policy as invalid if password doesn't match the requirements", async () => {
-	const { queryByTestId, getByRole } = render(<PasswordVerifier password='asd' />, {
+	const { queryByTestId, getByRole } = render(<PasswordVerifier inputStatus='unclicked' password='asd' />, {
 		wrapper: mockAppRoot()
 			.withSetting('Accounts_Password_Policy_Enabled', 'true')
 			.withSetting('Accounts_Password_Policy_MinLength', '10')
@@ -81,7 +81,7 @@ it("should render policy as invalid if password doesn't match the requirements",
 });
 
 it('should render policy as valid if password matches the requirements', async () => {
-	const { queryByTestId, getByRole } = render(<PasswordVerifier password='asd' />, {
+	const { queryByTestId, getByRole } = render(<PasswordVerifier inputStatus='unclicked' password='asd' />, {
 		wrapper: mockAppRoot()
 			.withSetting('Accounts_Password_Policy_Enabled', 'true')
 			.withSetting('Accounts_Password_Policy_MinLength', '2')

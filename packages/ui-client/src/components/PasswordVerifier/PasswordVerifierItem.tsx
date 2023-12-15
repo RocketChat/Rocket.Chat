@@ -1,7 +1,7 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
 import { AllHTMLAttributes, ComponentProps } from 'react';
 
-const variants: {
+export const variants: {
 	[key: string]: {
 		icon: ComponentProps<typeof Icon>['name'];
 		color: string;
@@ -15,14 +15,18 @@ const variants: {
 		icon: 'error-circle',
 		color: 'status-font-on-danger',
 	},
+	default: {
+		icon: 'info',
+		color: 'font-titles-labels',
+	},
 };
 
 export const PasswordVerifierItem = ({
 	text,
-	isValid,
+	variant,
 	...props
-}: { text: string; isValid: boolean } & Omit<AllHTMLAttributes<HTMLElement>, 'is'>) => {
-	const { icon, color } = variants[isValid ? 'success' : 'error'];
+}: { text: string; variant: keyof typeof variants } & Omit<AllHTMLAttributes<HTMLElement>, 'is'>) => {
+	const { icon, color } = variants[variant];
 	return (
 		<Box
 			display='flex'

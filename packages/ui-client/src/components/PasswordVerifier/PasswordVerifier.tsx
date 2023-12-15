@@ -8,6 +8,7 @@ import { PasswordVerifierItem } from './PasswordVerifierItem';
 type PasswordVerifierProps = {
 	password: string | undefined;
 	id?: string;
+	inputStatus: 'unclicked' | 'focused' | 'blur';
 };
 
 type PasswordVerificationProps = {
@@ -16,7 +17,19 @@ type PasswordVerificationProps = {
 	limit?: number;
 }[];
 
-export const PasswordVerifier = ({ password, id }: PasswordVerifierProps) => {
+/*
+	When clicking a textbox for the first time, variant is 'default'.
+	When the user starts typing, if it follows a policy, variant is 'success'.
+	When the user clicks outside the textbox, if it has any errors, display those in 'error' variant.
+*/
+const checkVariant = (inputStatus: 'unclicked' | 'focused' | 'blur', isValid: boolean): 'default' | 'success' | 'error' => {
+	if (inputStatus === 'unclicked') return 'default';
+	if (isValid) return 'success';
+	if (inputStatus === 'blur' && !isValid) return 'error';
+	return 'default';
+};
+
+export const PasswordVerifier = ({ password, id, inputStatus }: PasswordVerifierProps) => {
 	const { t } = useTranslation();
 	const uniqueId = useUniqueId();
 
@@ -37,7 +50,12 @@ export const PasswordVerifier = ({ password, id }: PasswordVerifierProps) => {
 				</Box>
 				<Box display='flex' flexWrap='wrap' role='list' aria-labelledby={uniqueId}>
 					{passwordVerifications.map(({ isValid, limit, name }) => (
-						<PasswordVerifierItem key={name} text={t(`${name}-label`, { limit })} isValid={isValid} aria-invalid={!isValid} />
+						<PasswordVerifierItem
+							key={name}
+							text={t(`${name}-label`, { limit })}
+							variant={!password ? 'default' : checkVariant(inputStatus, isValid)}
+							aria-invalid={!isValid}
+						/>
 					))}
 				</Box>
 			</Box>
