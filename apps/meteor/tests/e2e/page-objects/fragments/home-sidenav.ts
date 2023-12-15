@@ -18,9 +18,7 @@ export class HomeSidenav {
 	}
 
 	get checkboxReadOnly(): Locator {
-		return this.page.locator(
-			'//*[@id="modal-root"]//*[contains(@class, "rcx-field") and contains(text(), "Read Only")]/../following-sibling::label/i',
-		);
+		return this.page.locator('role=dialog[name="Create Channel"] >> label >> text="Read Only"');
 	}
 
 	get inputChannelName(): Locator {
@@ -41,8 +39,8 @@ export class HomeSidenav {
 
 	async selectPriority(name: string, priority: string) {
 		const sidebarItem = this.getSidebarItemByName(name);
-		await sidebarItem.hover();
-		await sidebarItem.locator(`[data-testid="menu"]`).click();
+		await sidebarItem.focus();
+		await sidebarItem.locator('.rcx-sidebar-item__menu').click();
 		await this.page.locator(`li[value="${priority}"]`).click();
 	}
 

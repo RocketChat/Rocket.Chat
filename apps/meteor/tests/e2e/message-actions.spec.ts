@@ -64,12 +64,13 @@ test.describe.serial('message-actions', () => {
 
 		await expect(poHomeChannel.content.lastMessageTextAttachmentEqualsText).toHaveText(message);
 	});
+
 	test('expect star the message', async ({ page }) => {
 		await poHomeChannel.content.sendMessage('Message to star');
 		await poHomeChannel.content.openLastMessageMenu();
 		await page.locator('[data-qa-id="star-message"]').click();
 		await poHomeChannel.dismissToast();
-		await page.getByRole('button').and(page.getByTitle('Options')).click();
+		await page.locator('role=button[name="Options"]').click();
 		await page.locator('[data-key="starred-messages"]').click();
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('Message to star');
 	});

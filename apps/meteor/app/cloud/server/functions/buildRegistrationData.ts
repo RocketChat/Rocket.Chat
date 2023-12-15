@@ -31,6 +31,7 @@ export type WorkspaceRegistrationData<T> = {
 	deploymentPlatform: string;
 	version: string;
 	licenseVersion: number;
+	license?: string;
 	enterpriseReady: boolean;
 	setupComplete: boolean;
 	connectionDisable: boolean;
@@ -60,9 +61,17 @@ export async function buildWorkspaceRegistrationData<T extends string | undefine
 	const firstUser = await Users.getOldest({ projection: { name: 1, emails: 1 } });
 	const contactName = firstUser?.name || '';
 
-	const { organizationType, industry, size: orgSize, country, language, serverType: workspaceType, registerServer } = stats.wizard;
+	const country = settings.get<string>('Country');
+	const language = settings.get<string>('Language');
+	const organizationType = settings.get<string>('Organization_Type');
+	const industry = settings.get<string>('Industry');
+	const orgSize = settings.get<string>('Organization_Size');
+	const workspaceType = settings.get<string>('Server_Type');
+
 	const seats = await Users.getActiveLocalUserCount();
 	const [macs] = await LivechatRooms.getMACStatisticsForPeriod(moment.utc().format('YYYY-MM'));
+
+	const license = settings.get<string>('Enterprise_License');
 
 	return {
 		uniqueId: stats.uniqueId,
@@ -88,9 +97,10 @@ export async function buildWorkspaceRegistrationData<T extends string | undefine
 		deploymentPlatform: stats.deploy.platform,
 		version: stats.version ?? Info.version,
 		licenseVersion: LICENSE_VERSION,
+		...(license && { license }),
 		enterpriseReady: true,
 		setupComplete: setupWizardState === 'completed',
-		connectionDisable: !registerServer,
+		connectionDisable: false,
 		npsEnabled,
 		MAC: macs?.contactsCount ?? 0,
 		// activeContactsBillingMonth: stats.omnichannelContactsBySource.contactsCount,
