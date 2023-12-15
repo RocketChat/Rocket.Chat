@@ -5,6 +5,7 @@ import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel, OmnichannelLiveChatEmbedded } from '../page-objects';
+import { createAgent } from '../utils/omnichannel/agents';
 import { test, expect } from '../utils/test';
 
 // TODO: Use official widget typing once that is merged
@@ -16,7 +17,6 @@ declare const window: Window & {
 	onOfflineFormSubmit: boolean;
 	onChatStarted: boolean;
 	onChatEnded: boolean;
-
 
 	RocketChat: {
 		livechat: {
@@ -55,7 +55,7 @@ declare const window: Window & {
 	};
 };
 
-test.describe('Omnichannel - Livechat API', () => {
+test.describe('OC - Livechat API', () => {
 	// TODO: Check if there is a way to add livechat to the global window object 
 	
 	test.describe('Basic Widget Interactions', () => {
@@ -63,10 +63,10 @@ test.describe('Omnichannel - Livechat API', () => {
 		let poAuxContext: { page: Page; poHomeOmnichannel: HomeOmnichannel };
 		let poLiveChat: OmnichannelLiveChatEmbedded;
 		let page: Page;
+		let agent: Awaited<ReturnType<typeof createAgent>>;
 
 		test.beforeAll(async ({ browser, api }) => {
-			const statusCode = (await api.post('/livechat/users/agent', { username: 'user1' })).status();
-			await expect(statusCode).toBe(200);
+			agent = await createAgent(api, 'user1')
 
 			page = await browser.newPage();
 			await expect((await api.post('/settings/Enable_CSP', { value: false })).status()).toBe(200);
@@ -81,7 +81,7 @@ test.describe('Omnichannel - Livechat API', () => {
 
 		test.afterAll(async ({ api }) => {
 			await expect((await api.post('/settings/Enable_CSP', { value: true })).status()).toBe(200);
-			await api.delete('/livechat/users/agent/user1');
+			await agent.delete();
 			await poAuxContext.page.close();
 			await page.close();
 		});
@@ -222,10 +222,10 @@ test.describe('Omnichannel - Livechat API', () => {
 		let poLiveChat: OmnichannelLiveChatEmbedded;
 		let page: Page;
 		let depId: string;
+		let agent: Awaited<ReturnType<typeof createAgent>>;
 
 		test.beforeAll(async ({ api }) => {
-			const statusCode = (await api.post('/livechat/users/agent', { username: 'user1' })).status();
-			await expect(statusCode).toBe(200);
+			agent = await createAgent(api, 'user1')
 			
 			const response = await api.post('/livechat/department', {department: {
 				enabled: true,
@@ -269,7 +269,7 @@ test.describe('Omnichannel - Livechat API', () => {
 
 		test.afterAll(async ({ api }) => {
 			await expect((await api.post('/settings/Enable_CSP', { value: true })).status()).toBe(200);
-			await api.delete('/livechat/users/agent/user1');
+			await agent.delete();
 			await expect((await api.post('/settings/Omnichannel_enable_department_removal', { value: true })).status()).toBe(200);
 			const response = await api.delete(`/livechat/department/${depId}`, { name: 'TestDep', email: 'TestDep@email.com' });
 			expect(response.status()).toBe(200);
@@ -486,10 +486,10 @@ test.describe('Omnichannel - Livechat API', () => {
 		let poAuxContext: { page: Page; poHomeOmnichannel: HomeOmnichannel };
 		let poLiveChat: OmnichannelLiveChatEmbedded;
 		let page: Page;
+		let agent: Awaited<ReturnType<typeof createAgent>>;
 
 		test.beforeAll(async ({ api }) => {
-			const statusCode = (await api.post('/livechat/users/agent', { username: 'user1' })).status();
-			await expect(statusCode).toBe(200);
+			agent = await createAgent(api, 'user1')
 			await expect((await api.post('/settings/Enable_CSP', { value: false })).status()).toBe(200);
 			await expect((await api.post('/settings/Livechat_offline_email', { value: 'test@testing.com' })).status()).toBe(200);
 		});
@@ -519,7 +519,7 @@ test.describe('Omnichannel - Livechat API', () => {
 
 		test.afterAll(async ({ api }) => {
 			await expect((await api.post('/settings/Enable_CSP', { value: true })).status()).toBe(200);
-			await api.delete('/livechat/users/agent/user1');
+			await agent.delete();
 		});
 
 		test('OC - Livechat API - onChatMaximized & onChatMinimized', async () => {
@@ -584,8 +584,8 @@ test.describe('Omnichannel - Livechat API', () => {
 
 				await poAuxContext.poHomeOmnichannel.sidenav.openChat(newVisitor.name);
 				await poAuxContext.poHomeOmnichannel.content.btnCloseChat.click();
-				await poAuxContext.poHomeOmnichannel.content.omnichannelCloseChatModal.inputComment.fill('this_is_a_test_comment');
-				await poAuxContext.poHomeOmnichannel.content.omnichannelCloseChatModal.btnConfirm.click();
+				await poAuxContext.poHomeOmnichannel.content.closeChatModal.inputComment.fill('this_is_a_test_comment');
+				await poAuxContext.poHomeOmnichannel.content.closeChatModal.btnConfirm.click();
 				await expect(poAuxContext.poHomeOmnichannel.toastSuccess).toBeVisible();
 
 				await watchForTrigger;

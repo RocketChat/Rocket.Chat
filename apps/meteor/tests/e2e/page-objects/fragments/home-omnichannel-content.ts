@@ -57,7 +57,8 @@ export class HomeOmnichannelContent extends HomeContent {
 
 	get infoContactName(): Locator {
 		return this.page.locator('[data-qa-id="contactInfo-name"]');
-  }
+	}
+	
 	get btnReturn(): Locator {
 		return this.page.locator('[data-qa-id="ToolBoxAction-back"]');
 	}
