@@ -68,7 +68,7 @@ describe('Omnichannel canned responses', () => {
 			user: createUser(),
 		});
 
-		return expect(message).to.have.property('msg', '{{agent.name}}');
+		expect(message).to.have.property('msg', '{{agent.name}}');
 	});
 
 	it('should do nothing if not an omnichannel room', async () => {
@@ -82,7 +82,7 @@ describe('Omnichannel canned responses', () => {
 			user: createUser(),
 		});
 
-		return expect(message).to.have.property('msg', '{{agent.name}}');
+		expect(message).to.have.property('msg', '{{agent.name}}');
 	});
 
 	it('should do nothing if the message is from a visitor', async () => {
@@ -96,7 +96,7 @@ describe('Omnichannel canned responses', () => {
 			user: createUser({ token: 'visitor-token' }),
 		});
 
-		return expect(message).to.have.property('msg', '{{agent.name}}');
+		expect(message).to.have.property('msg', '{{agent.name}}');
 	});
 
 	it('should do nothing if room is not served by an agent', async () => {
@@ -110,7 +110,7 @@ describe('Omnichannel canned responses', () => {
 			user: createUser(),
 		});
 
-		return expect(message).to.have.property('msg', '{{agent.name}}');
+		expect(message).to.have.property('msg', '{{agent.name}}');
 	});
 
 	it('should do nothing for an empty message', async () => {
@@ -124,7 +124,7 @@ describe('Omnichannel canned responses', () => {
 			user: createUser(),
 		});
 
-		return expect(message).to.have.property('msg', '');
+		expect(message).to.have.property('msg', '');
 	});
 
 	it('should replace {{agent.name}} without finding the user from DB (sender is the agent of room)', async () => {

@@ -56,10 +56,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 				return (user && getUserAvatarURL(user)) || '';
 			},
 		});
-		this.cannedResponse = new BeforeSaveCannedResponse({
-			getSetting: settings.get.bind(settings),
-		});
-
+		this.cannedResponse = new BeforeSaveCannedResponse();
 		this.markdownParser = new BeforeSaveMarkdownParser(!disableMarkdownParser);
 		this.checkMAC = new BeforeSaveCheckMAC();
 
