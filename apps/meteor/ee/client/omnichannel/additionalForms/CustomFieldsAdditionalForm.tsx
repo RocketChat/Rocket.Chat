@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Field, FieldLabel, FieldRow, FieldError, FieldHint, ToggleSwitch, TextInput, Box, Select } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, FieldError, FieldHint, ToggleSwitch, TextInput, Select } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
@@ -48,16 +48,14 @@ const CustomFieldsAdditionalForm = ({ className }: { className?: ComponentProps<
 	return (
 		<>
 			<Field className={className}>
-				<Box display='flex' flexDirection='row'>
+				<FieldRow>
 					<FieldLabel htmlFor={requiredField}>{t('Required')}</FieldLabel>
-					<FieldRow>
-						<Controller
-							name='required'
-							control={control}
-							render={({ field: { value, ...field } }) => <ToggleSwitch id={requiredField} {...field} checked={value} />}
-						/>
-					</FieldRow>
-				</Box>
+					<Controller
+						name='required'
+						control={control}
+						render={({ field: { value, ...field } }) => <ToggleSwitch id={requiredField} {...field} checked={value} />}
+					/>
+				</FieldRow>
 			</Field>
 			<Field className={className}>
 				<FieldLabel htmlFor={typeField}>{t('Type')}</FieldLabel>
@@ -99,18 +97,16 @@ const CustomFieldsAdditionalForm = ({ className }: { className?: ComponentProps<
 				)}
 			</Field>
 			<Field className={className}>
-				<Box display='flex' flexDirection='row'>
+				<FieldRow>
 					<FieldLabel htmlFor={publicField}>{t('Public')}</FieldLabel>
-					<FieldRow>
-						<Controller
-							name='public'
-							control={control}
-							render={({ field: { value, ...field } }) => (
-								<ToggleSwitch id={publicField} {...field} disabled={!visibility} checked={value} aria-describedby={`${publicField}-hint`} />
-							)}
-						/>
-					</FieldRow>
-				</Box>
+					<Controller
+						name='public'
+						control={control}
+						render={({ field: { value, ...field } }) => (
+							<ToggleSwitch id={publicField} {...field} disabled={!visibility} checked={value} aria-describedby={`${publicField}-hint`} />
+						)}
+					/>
+				</FieldRow>
 				<FieldHint id={`${publicField}-hint`}>{t('Livechat_custom_fields_public_description')}</FieldHint>
 			</Field>
 		</>

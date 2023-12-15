@@ -94,7 +94,7 @@ const AgentsTable = () => {
 			)}
 			{isSuccess && data?.users.length > 0 && (
 				<>
-					<GenericTable aria-busy={filter !== debouncedFilter}>
+					<GenericTable aria-busy={filter !== debouncedFilter} data-qa-id='agents-table'>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody data-qa='GenericTableAgentInfoBody'>
 							{data?.users.map((user) => (
