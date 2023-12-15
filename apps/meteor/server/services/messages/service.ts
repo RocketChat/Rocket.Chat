@@ -13,9 +13,13 @@ import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
 import { BeforeSaveCannedResponse } from '../../../ee/server/hooks/messages/BeforeSaveCannedResponse';
 import { broadcastMessageSentEvent } from '../../modules/watchers/lib/messages';
 import { BeforeSaveBadWords } from './hooks/BeforeSaveBadWords';
+import { BeforeSaveCheckMAC } from './hooks/BeforeSaveCheckMAC';
 import { BeforeSaveJumpToMessage } from './hooks/BeforeSaveJumpToMessage';
+import { BeforeSaveMarkdownParser } from './hooks/BeforeSaveMarkdownParser';
 import { BeforeSavePreventMention } from './hooks/BeforeSavePreventMention';
 import { BeforeSaveSpotify } from './hooks/BeforeSaveSpotify';
+
+const disableMarkdownParser = ['yes', 'true'].includes(String(process.env.DISABLE_MESSAGE_PARSER).toLowerCase());
 
 export class MessageService extends ServiceClassInternal implements IMessageService {
 	protected name = 'message';
@@ -29,6 +33,10 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 	private jumpToMessage: BeforeSaveJumpToMessage;
 
 	private cannedResponse: BeforeSaveCannedResponse;
+
+	private markdownParser: BeforeSaveMarkdownParser;
+
+	private checkMAC: BeforeSaveCheckMAC;
 
 	async created() {
 		this.preventMention = new BeforeSavePreventMention(this.api);
@@ -51,6 +59,9 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		this.cannedResponse = new BeforeSaveCannedResponse({
 			getSetting: settings.get.bind(settings),
 		});
+
+		this.markdownParser = new BeforeSaveMarkdownParser(!disableMarkdownParser);
+		this.checkMAC = new BeforeSaveCheckMAC();
 
 		await this.configureBadWords();
 	}
@@ -127,7 +138,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		// await this.joinDiscussionOnMessage({ message, room, user });
 
 		message = await this.cannedResponse.replacePlaceholders({ message, room, user });
-
+		message = await this.markdownParser.parseMarkdown({ message, config: this.getMarkdownConfig() });
 		message = await this.badWords.filterBadWords({ message });
 		message = await this.spotify.convertSpotifyLinks({ message });
 		message = await this.jumpToMessage.createAttachmentForMessageURLs({
@@ -142,12 +153,34 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 		if (!this.isEditedOrOld(message)) {
 			await Promise.all([
+				this.checkMAC.isWithinLimits({ message, room }),
 				this.preventMention.preventMention({ message, user, mention: 'all', permission: 'mention-all' }),
 				this.preventMention.preventMention({ message, user, mention: 'here', permission: 'mention-here' }),
 			]);
 		}
 
 		return message;
+	}
+
+	private getMarkdownConfig() {
+		const customDomains = settings.get<string>('Message_CustomDomain_AutoLink')
+			? settings
+					.get<string>('Message_CustomDomain_AutoLink')
+					.split(',')
+					.map((domain) => domain.trim())
+			: [];
+
+		return {
+			colors: settings.get<boolean>('HexColorPreview_Enabled'),
+			emoticons: true,
+			customDomains,
+			...(settings.get<boolean>('Katex_Enabled') && {
+				katex: {
+					dollarSyntax: settings.get<boolean>('Katex_Dollar_Syntax'),
+					parenthesisSyntax: settings.get<boolean>('Katex_Parenthesis_Syntax'),
+				},
+			}),
+		};
 	}
 
 	private isEditedOrOld(message: IMessage): boolean {

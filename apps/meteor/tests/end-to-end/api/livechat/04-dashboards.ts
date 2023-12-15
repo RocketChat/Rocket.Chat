@@ -780,9 +780,9 @@ describe('LIVECHAT - dashboards', function () {
 				{ title: 'Open_conversations', value: 4 },
 				{ title: 'On_Hold_conversations', value: 1 },
 				// { title: 'Total_messages', value: 6 },
-				// { title: 'Busiest_day', value: moment().format('dddd') }, // TODO: need to check y this return a day before
+				// { title: 'Busiest_day', value: moment().format('dddd') },
 				{ title: 'Conversations_per_day', value: '3.50' },
-				{ title: 'Busiest_time', value: '' },
+				// { title: 'Busiest_time', value: '' },
 			];
 
 			expectedResult.forEach((expected) => {

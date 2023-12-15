@@ -4,7 +4,6 @@ import {
 	FieldGroup,
 	Button,
 	ButtonGroup,
-	Box,
 	Field,
 	FieldLabel,
 	FieldRow,
@@ -155,28 +154,24 @@ const EditTrigger = ({ triggerData }: { triggerData?: Serialized<ILivechatTrigge
 				<form id={formId} onSubmit={handleSubmit(handleSave)}>
 					<FieldGroup>
 						<Field>
-							<Box display='flex' flexDirection='row'>
+							<FieldRow>
 								<FieldLabel htmlFor={enabledField}>{t('Enabled')}</FieldLabel>
-								<FieldRow>
-									<Controller
-										name='enabled'
-										control={control}
-										render={({ field: { value, ...field } }) => <ToggleSwitch id={enabledField} {...field} checked={value} />}
-									/>
-								</FieldRow>
-							</Box>
+								<Controller
+									name='enabled'
+									control={control}
+									render={({ field: { value, ...field } }) => <ToggleSwitch id={enabledField} {...field} checked={value} />}
+								/>
+							</FieldRow>
 						</Field>
 						<Field>
-							<Box display='flex' flexDirection='row'>
+							<FieldRow>
 								<FieldLabel htmlFor={runOnceField}>{t('Run_only_once_for_each_visitor')}</FieldLabel>
-								<FieldRow>
-									<Controller
-										name='runOnce'
-										control={control}
-										render={({ field: { value, ...field } }) => <ToggleSwitch id={runOnceField} {...field} checked={value} />}
-									/>
-								</FieldRow>
-							</Box>
+								<Controller
+									name='runOnce'
+									control={control}
+									render={({ field: { value, ...field } }) => <ToggleSwitch id={runOnceField} {...field} checked={value} />}
+								/>
+							</FieldRow>
 						</Field>
 						<Field>
 							<FieldLabel htmlFor={nameField} required>

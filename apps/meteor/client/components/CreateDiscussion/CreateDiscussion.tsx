@@ -141,16 +141,14 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 						)}
 					</Field>
 					<Field>
-						<Box display='flex' alignItems='center' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+						<FieldRow>
 							<FieldLabel htmlFor={encryptedField}>{t('Encrypted')}</FieldLabel>
-							<FieldRow>
-								<Controller
-									control={control}
-									name='encrypted'
-									render={({ field: { value, ...field } }) => <ToggleSwitch id={encryptedField} {...field} checked={value} />}
-								/>
-							</FieldRow>
-						</Box>
+							<Controller
+								control={control}
+								name='encrypted'
+								render={({ field: { value, ...field } }) => <ToggleSwitch id={encryptedField} {...field} checked={value} />}
+							/>
+						</FieldRow>
 					</Field>
 					<Field>
 						<FieldLabel htmlFor={discussionField} required>
