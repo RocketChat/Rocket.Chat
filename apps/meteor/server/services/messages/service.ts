@@ -10,6 +10,7 @@ import { executeSendMessage } from '../../../app/lib/server/methods/sendMessage'
 import { executeSetReaction } from '../../../app/reactions/server/setReaction';
 import { settings } from '../../../app/settings/server';
 import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
+import { BeforeSaveCannedResponse } from '../../../ee/server/hooks/messages/BeforeSaveCannedResponse';
 import { broadcastMessageSentEvent } from '../../modules/watchers/lib/messages';
 import { BeforeSaveBadWords } from './hooks/BeforeSaveBadWords';
 import { BeforeSaveCheckMAC } from './hooks/BeforeSaveCheckMAC';
@@ -30,6 +31,8 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 	private spotify: BeforeSaveSpotify;
 
 	private jumpToMessage: BeforeSaveJumpToMessage;
+
+	private cannedResponse: BeforeSaveCannedResponse;
 
 	private markdownParser: BeforeSaveMarkdownParser;
 
@@ -53,7 +56,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 				return (user && getUserAvatarURL(user)) || '';
 			},
 		});
-
+		this.cannedResponse = new BeforeSaveCannedResponse();
 		this.markdownParser = new BeforeSaveMarkdownParser(!disableMarkdownParser);
 		this.checkMAC = new BeforeSaveCheckMAC();
 
@@ -121,18 +124,18 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 	async beforeSave({
 		message,
-		room: _room,
+		room,
 		user,
 	}: {
 		message: IMessage;
 		room: IRoom;
-		user: Pick<IUser, '_id' | 'username' | 'name' | 'language'>;
+		user: Pick<IUser, '_id' | 'username' | 'name' | 'emails' | 'language'>;
 	}): Promise<IMessage> {
 		// TODO looks like this one was not being used (so I'll left it commented)
 		// await this.joinDiscussionOnMessage({ message, room, user });
 
+		message = await this.cannedResponse.replacePlaceholders({ message, room, user });
 		message = await this.markdownParser.parseMarkdown({ message, config: this.getMarkdownConfig() });
-
 		message = await this.badWords.filterBadWords({ message });
 		message = await this.spotify.convertSpotifyLinks({ message });
 		message = await this.jumpToMessage.createAttachmentForMessageURLs({
@@ -147,7 +150,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 		if (!this.isEditedOrOld(message)) {
 			await Promise.all([
-				this.checkMAC.isWithinLimits({ message, room: _room }),
+				this.checkMAC.isWithinLimits({ message, room }),
 				this.preventMention.preventMention({ message, user, mention: 'all', permission: 'mention-all' }),
 				this.preventMention.preventMention({ message, user, mention: 'here', permission: 'mention-here' }),
 			]);
