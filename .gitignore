@@ -48,3 +48,6 @@ yarn-error.log*
 .envrc
 
 *.sublime-workspace
+
+.env
+docker-compose.yml
