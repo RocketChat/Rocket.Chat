@@ -1,4 +1,4 @@
-import { Accordion, Field, FieldLabel, FieldRow, NumberInput, FieldGroup, ToggleSwitch, Box } from '@rocket.chat/fuselage';
+import { Accordion, Field, FieldLabel, FieldRow, NumberInput, FieldGroup, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
@@ -15,18 +15,16 @@ const PreferencesUserPresenceSection = () => {
 		<Accordion.Item title={t('User_Presence')}>
 			<FieldGroup>
 				<Field>
-					<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+					<FieldRow>
 						<FieldLabel htmlFor={enableAutoAwayId}>{t('Enable_Auto_Away')}</FieldLabel>
-						<FieldRow>
-							<Controller
-								name='enableAutoAway'
-								control={control}
-								render={({ field: { ref, value, onChange } }) => (
-									<ToggleSwitch ref={ref} id={enableAutoAwayId} checked={value} onChange={onChange} />
-								)}
-							/>
-						</FieldRow>
-					</Box>
+						<Controller
+							name='enableAutoAway'
+							control={control}
+							render={({ field: { ref, value, onChange } }) => (
+								<ToggleSwitch ref={ref} id={enableAutoAwayId} checked={value} onChange={onChange} />
+							)}
+						/>
+					</FieldRow>
 				</Field>
 				<Field>
 					<FieldLabel htmlFor={idleTimeLimit}>{t('Idle_Time_Limit')}</FieldLabel>
