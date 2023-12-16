@@ -45,8 +45,12 @@ import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
+	const scrollHeight :number = target.scrollHeight;
 
+	target.style.height = `${scrollHeight}px`
+	
 	return Boolean(target.value.trim());
+
 };
 
 const handleFormattingShortcut = (
@@ -385,7 +389,7 @@ const MessageBox = ({
 					aria-label={composerPlaceholder}
 					name='msg'
 					disabled={isRecording || !canSend}
-					onChange={setTyping}
+					onSelect={setTyping}
 					style={textAreaStyle}
 					placeholder={composerPlaceholder}
 					onKeyDown={handler}
