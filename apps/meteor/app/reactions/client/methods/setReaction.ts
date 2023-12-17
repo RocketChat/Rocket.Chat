@@ -1,11 +1,11 @@
-import { Meteor } from 'meteor/meteor';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
-import { Messages, ChatRoom, Subscriptions } from '../../../models/client';
+import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { callbacks } from '../../../../lib/callbacks';
 import { emoji } from '../../../emoji/client';
-import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
+import { Messages, ChatRoom, Subscriptions } from '../../../models/client';
 
 Meteor.methods<ServerMethods>({
 	async setReaction(reaction, messageId) {
@@ -55,10 +55,10 @@ Meteor.methods<ServerMethods>({
 			if (!message.reactions || typeof message.reactions !== 'object' || Object.keys(message.reactions).length === 0) {
 				delete message.reactions;
 				Messages.update({ _id: messageId }, { $unset: { reactions: 1 } });
-				callbacks.run('unsetReaction', messageId, reaction);
+				await callbacks.run('unsetReaction', messageId, reaction);
 			} else {
 				Messages.update({ _id: messageId }, { $set: { reactions: message.reactions } });
-				callbacks.run('setReaction', messageId, reaction);
+				await callbacks.run('setReaction', messageId, reaction);
 			}
 		} else {
 			if (!message.reactions) {
@@ -72,7 +72,7 @@ Meteor.methods<ServerMethods>({
 			message.reactions[reaction].usernames.push(user.username);
 
 			Messages.update({ _id: messageId }, { $set: { reactions: message.reactions } });
-			callbacks.run('setReaction', messageId, reaction);
+			await callbacks.run('setReaction', messageId, reaction);
 		}
 	},
 });

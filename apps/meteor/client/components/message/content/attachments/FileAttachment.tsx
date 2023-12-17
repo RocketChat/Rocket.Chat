@@ -8,7 +8,7 @@ import { GenericFileAttachment } from './file/GenericFileAttachment';
 import { ImageAttachment } from './file/ImageAttachment';
 import { VideoAttachment } from './file/VideoAttachment';
 
-export const FileAttachment: FC<FileAttachmentProps> = (attachment) => {
+export const FileAttachment: FC<FileAttachmentProps & { id: string | undefined }> = (attachment) => {
 	if (isFileImageAttachment(attachment)) {
 		return <ImageAttachment {...attachment} />;
 	}

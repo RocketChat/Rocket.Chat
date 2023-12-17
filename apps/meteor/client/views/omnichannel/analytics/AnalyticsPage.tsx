@@ -1,10 +1,10 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Select, Margins, Field, Label } from '@rocket.chat/fuselage';
+import { Box, Select, Margins, Field, FieldLabel, FieldRow, Label } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useState, useEffect } from 'react';
 
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import AgentOverview from './AgentOverview';
 import DateRangePicker from './DateRangePicker';
 import InterchangeableChart from './InterchangeableChart';
@@ -52,34 +52,36 @@ const AnalyticsPage = () => {
 
 	return (
 		<Page>
-			<Page.Header title={t('Analytics')} />
-			<Page.ScrollableContentWithShadow display='flex' flexDirection='column'>
-				<Margins block='x4'>
-					<Box display='flex' mi='neg-x4' flexDirection='row' flexWrap='wrap'>
-						<Box display='flex' mi='x4' flexGrow={1} flexDirection='column'>
-							<Label mb='x4'>{t('Type')}</Label>
-							<Select flexShrink={0} options={typeOptions} value={type} onChange={setType} />
+			<PageHeader title={t('Analytics')} />
+			<PageScrollableContentWithShadow display='flex' flexDirection='column'>
+				<Margins block={4}>
+					<Box display='flex' mi='neg-x4' flexWrap='wrap' flexGrow={1}>
+						<Box display='flex' flexWrap='wrap' flexGrow={1}>
+							<Box display='flex' mi={4} flexDirection='column' flexGrow={1}>
+								<Label mb={4}>{t('Type')}</Label>
+								<Select options={typeOptions} value={type} onChange={(value) => setType(String(value))} />
+							</Box>
+							<Box display='flex' mi={4} flexDirection='column' flexGrow={1}>
+								<Label mb={4}>{t('Departments')}</Label>
+								<AutoCompleteDepartment value={department || undefined} onChange={setDepartment} onlyMyDepartments />
+							</Box>
 						</Box>
-						<Box maxWidth='40%' display='flex' mi='x4' flexGrow={1} flexDirection='column'>
-							<Label mb='x4'>{t('Departments')}</Label>
-							<AutoCompleteDepartment value={department || undefined} onChange={setDepartment} onlyMyDepartments />
-						</Box>
-						<DateRangePicker mi='x4' flexGrow={1} onChange={setDateRange} />
+						<DateRangePicker flexGrow={1} mi={4} onChange={setDateRange} />
 					</Box>
 					<Box>
 						<Overview type={type} dateRange={dateRange} departmentId={department || ''} />
 					</Box>
-					<Box display='flex' flexDirection='row'>
-						<Margins inline='x2'>
+					<Box display='flex'>
+						<Margins inline={2}>
 							<Field>
-								<Field.Label>{t('Chart')}</Field.Label>
-								<Field.Row>
-									<Select options={graphOptions} value={chartName} onChange={setChartName} />
-								</Field.Row>
+								<FieldLabel>{t('Chart')}</FieldLabel>
+								<FieldRow>
+									<Select options={graphOptions} value={chartName} onChange={(value) => setChartName(String(value))} />
+								</FieldRow>
 							</Field>
 						</Margins>
 					</Box>
-					<Box display='flex' flexDirection='row' flexGrow={1} flexShrink={1}>
+					<Box display='flex' flexGrow={1} flexShrink={1}>
 						<InterchangeableChart
 							flexShrink={1}
 							w='66%'
@@ -89,12 +91,12 @@ const AnalyticsPage = () => {
 							dateRange={dateRange}
 							alignSelf='stretch'
 						/>
-						<Box display='flex' w='33%' flexDirection='row' justifyContent='stretch' p='x10' mis='x4'>
+						<Box display='flex' w='33%' justifyContent='stretch' p={10} mis={4}>
 							<AgentOverview type={chartName || ''} dateRange={dateRange} departmentId={department || ''} />
 						</Box>
 					</Box>
 				</Margins>
-			</Page.ScrollableContentWithShadow>
+			</PageScrollableContentWithShadow>
 		</Page>
 	);
 };

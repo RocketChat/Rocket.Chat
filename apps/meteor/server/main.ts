@@ -1,17 +1,19 @@
 import './models/startup';
+import './configureLogLevel';
+import './settings/index';
 import '../ee/server/models/startup';
 import './services/startup';
 import '../app/settings/server';
-import '../lib/oauthRedirectUri';
-import './overrides/http';
+import '../lib/oauthRedirectUriServer';
 import './lib/logger/startup';
 import './importPackages';
 import '../imports/startup/server';
 import '../app/lib/server/startup';
 
+import '../ee/server/startup';
+import './startup';
 import '../ee/server';
 import './lib/pushConfig';
-import './startup';
 import './configuration/accounts_meld';
 import './configuration/ldap';
 import './methods/OEmbedCacheCleanup';
@@ -79,6 +81,5 @@ import './routes/i18n';
 import './routes/timesync';
 import './routes/userDataDownload';
 import './stream/stdout';
-import './settings/index';
 
 import './features/EmailInbox/index';

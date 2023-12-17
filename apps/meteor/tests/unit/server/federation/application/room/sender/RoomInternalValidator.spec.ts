@@ -3,8 +3,8 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 
 import { FederationRoomInternalValidator } from '../../../../../../../server/services/federation/application/room/sender/RoomInternalValidator';
-import { FederatedUser } from '../../../../../../../server/services/federation/domain/FederatedUser';
 import { FederatedRoom } from '../../../../../../../server/services/federation/domain/FederatedRoom';
+import { FederatedUser } from '../../../../../../../server/services/federation/domain/FederatedUser';
 
 describe('Federation - Application - FederationRoomInternalHooksValidator', () => {
 	let service: FederationRoomInternalValidator;
@@ -78,7 +78,7 @@ describe('Federation - Application - FederationRoomInternalHooksValidator', () =
 		it('should throw an error if the user is trying to add a new external user AND the room is not a DM', async () => {
 			await expect(
 				service.canAddFederatedUserToFederatedRoom('external user', {} as any, { federated: true, t: RoomType.CHANNEL } as any),
-			).to.be.rejectedWith('error-this-is-an-ee-feature');
+			).to.be.rejectedWith('error-this-is-a-premium-feature');
 		});
 
 		it('should NOT throw an error if the user is trying to add a new external user but the room is a DM', async () => {
@@ -145,7 +145,7 @@ describe('Federation - Application - FederationRoomInternalHooksValidator', () =
 			bridge.extractHomeserverOrigin.returns('localDomain');
 			await expect(
 				service.canAddFederatedUserToFederatedRoom({} as any, {} as any, { federated: true, t: RoomType.CHANNEL } as any),
-			).to.be.rejectedWith('error-this-is-an-ee-feature');
+			).to.be.rejectedWith('error-this-is-a-premium-feature');
 		});
 	});
 
@@ -154,7 +154,7 @@ describe('Federation - Application - FederationRoomInternalHooksValidator', () =
 			try {
 				await service.canCreateDirectMessageFromUI([{ federated: true } as any, {} as any]);
 			} catch (e: any) {
-				expect(e.message).to.be.equal('error-this-is-an-ee-feature');
+				expect(e.message).to.be.equal('error-this-is-a-premium-feature');
 			}
 		});
 
@@ -163,7 +163,7 @@ describe('Federation - Application - FederationRoomInternalHooksValidator', () =
 			try {
 				await service.canCreateDirectMessageFromUI(['@myexternal:external.com', {} as any]);
 			} catch (e: any) {
-				expect(e.message).to.be.equal('error-this-is-an-ee-feature');
+				expect(e.message).to.be.equal('error-this-is-a-premium-feature');
 			}
 		});
 	});

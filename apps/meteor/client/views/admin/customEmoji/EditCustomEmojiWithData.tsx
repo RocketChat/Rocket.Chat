@@ -1,9 +1,10 @@
-import { Box, Button, ButtonGroup, Skeleton, Throbber, InputBox, Callout } from '@rocket.chat/fuselage';
+import { Callout } from '@rocket.chat/fuselage';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { FC } from 'react';
 import React, { useMemo } from 'react';
 
+import { FormSkeleton } from '../../../components/Skeleton';
 import EditCustomEmoji from './EditCustomEmoji';
 
 type EditCustomEmojiWithDataProps = {
@@ -24,27 +25,7 @@ const EditCustomEmojiWithData: FC<EditCustomEmojiWithDataProps> = ({ _id, onChan
 	});
 
 	if (isLoading) {
-		return (
-			<Box pb='x20'>
-				<Skeleton mbs='x8' />
-				<InputBox.Skeleton w='full' />
-				<Skeleton mbs='x8' />
-				<InputBox.Skeleton w='full' />
-				<ButtonGroup stretch w='full' mbs='x8'>
-					<Button disabled>
-						<Throbber inheritColor />
-					</Button>
-					<Button primary disabled>
-						<Throbber inheritColor />
-					</Button>
-				</ButtonGroup>
-				<ButtonGroup stretch w='full' mbs='x8'>
-					<Button danger disabled>
-						<Throbber inheritColor />
-					</Button>
-				</ButtonGroup>
-			</Box>
-		);
+		return <FormSkeleton pi={20} />;
 	}
 
 	if (error || !data || !data.emojis || data.emojis.update.length < 1) {

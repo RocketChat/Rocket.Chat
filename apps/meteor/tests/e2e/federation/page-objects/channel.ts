@@ -28,8 +28,8 @@ export class FederationChannel {
 		return this.page.locator('.rcx-toastbar.rcx-toastbar--error');
 	}
 
-	get btnVerticalBarClose(): Locator {
-		return this.page.locator('[data-qa="VerticalBarActionClose"]');
+	get btnContextualbarClose(): Locator {
+		return this.page.locator('[data-qa="ContextualbarActionClose"]');
 	}
 
 	async getFederationServerName(): Promise<string> {
@@ -74,12 +74,12 @@ export class FederationChannel {
 	}
 
 	async createDirectMessagesUsingModal(usernamesToInvite: string[]) {
-		await this.sidenav.openNewByLabel('Direct Messages');
+		await this.sidenav.openNewByLabel('Direct messages');
 		for await (const username of usernamesToInvite) {
 			await this.sidenav.inviteUserToDM(username);
 		}
 		await this.page
-			.locator('//*[@id="modal-root"]//*[contains(@class, "rcx-modal__title") and contains(text(), "Direct Messages")]')
+			.locator('//*[@id="modal-root"]//*[contains(@class, "rcx-modal__title") and contains(text(), "Direct messages")]')
 			.click();
 		await this.sidenav.btnCreateChannel.click();
 	}

@@ -6,6 +6,8 @@ const ConnectionStatusBar = lazy(() => import('../components/connectionStatus/Co
 const BannerRegion = lazy(() => import('../views/banners/BannerRegion'));
 const PortalsWrapper = lazy(() => import('../views/root/PortalsWrapper'));
 const ModalRegion = lazy(() => import('../views/modal/ModalRegion'));
+const ActionManagerBusyState = lazy(() => import('../components/ActionManagerBusyState'));
+const CloudAnnouncementsRegion = lazy(() => import('../views/cloud/CloudAnnouncementsRegion'));
 
 type AppLayoutDescriptor = ReactElement | null;
 
@@ -22,19 +24,21 @@ class AppLayoutSubscription extends Emitter<{ update: void }> {
 	}
 
 	render(element: ReactElement): void {
-		this.setCurrentValue(
+		this.setCurrentValue(element);
+	}
+
+	wrap(element: ReactElement): ReactElement {
+		return (
 			<>
 				<ConnectionStatusBar />
+				<ActionManagerBusyState />
+				<CloudAnnouncementsRegion />
 				<BannerRegion />
 				{element}
 				<PortalsWrapper />
 				<ModalRegion />
-			</>,
+			</>
 		);
-	}
-
-	renderStandalone(element: ReactElement): void {
-		this.setCurrentValue(element);
 	}
 }
 

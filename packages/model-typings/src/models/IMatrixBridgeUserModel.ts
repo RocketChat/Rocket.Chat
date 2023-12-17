@@ -8,5 +8,5 @@ export interface IMatrixBridgedUserModel extends IBaseModel<IMatrixBridgedUser> 
 	getLocalUserIdByExternalId(externalUserId: string): Promise<string | null>;
 	getLocalUsersByExternalIds(externalUserIds: string[]): Promise<IMatrixBridgedUser[]>;
 	getBridgedUserByLocalId(localUserId: string): Promise<IMatrixBridgedUser | null>;
-	createOrUpdateByLocalId(localUserId: string, externalUserId: string, remote: boolean): Promise<void>;
+	createOrUpdateByLocalId(localUserId: string, externalUserId: string, remote: boolean, fromServer: string): Promise<void>;
 }

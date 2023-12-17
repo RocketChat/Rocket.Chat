@@ -1,140 +1,92 @@
-import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
-import { useDebouncedCallback, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { kitContext } from '@rocket.chat/fuselage-ui-kit';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
 import { MarkupInteractionContext } from '@rocket.chat/gazzodown';
-import type { LayoutBlock } from '@rocket.chat/ui-kit';
-import type { ContextType, ReactElement, ReactEventHandler } from 'react';
+import type * as UiKit from '@rocket.chat/ui-kit';
 import React from 'react';
+import type { FormEvent } from 'react';
 
-import * as ActionManager from '../../../../app/ui-message/client/ActionManager';
 import { detectEmoji } from '../../../lib/utils/detectEmoji';
+import { preventSyntheticEvent } from '../../../lib/utils/preventSyntheticEvent';
+import { useModalContextValue } from '../../../uikit/hooks/useModalContextValue';
+import { useUiKitActionManager } from '../../../uikit/hooks/useUiKitActionManager';
+import { useUiKitView } from '../../../uikit/hooks/useUiKitView';
 import ModalBlock from './ModalBlock';
-import type { ActionManagerState } from './hooks/useActionManagerState';
-import { useActionManagerState } from './hooks/useActionManagerState';
-import { useValues } from './hooks/useValues';
 
-const UiKitModal = (props: ActionManagerState): ReactElement => {
-	const state = useActionManagerState(props);
+type UiKitModalProps = {
+	key: UiKit.ModalView['id']; // force re-mount when viewId changes
+	initialView: UiKit.ModalView;
+};
 
-	const { appId, viewId, mid: _mid, errors, view } = state;
+const UiKitModal = ({ initialView }: UiKitModalProps) => {
+	const actionManager = useUiKitActionManager();
+	const { view, errors, values, updateValues, state } = useUiKitView(initialView);
+	const contextValue = useModalContextValue({ view, values, updateValues });
 
-	const [values, updateValues] = useValues(view.blocks as LayoutBlock[]);
-
-	const groupStateByBlockId = (values: { value: unknown; blockId: string }[]) =>
-		Object.entries(values).reduce<any>((obj, [key, { blockId, value }]) => {
-			obj[blockId] = obj[blockId] || {};
-			obj[blockId][key] = value;
-
-			return obj;
-		}, {});
-
-	const prevent: ReactEventHandler = (e) => {
-		if (e) {
-			(e.nativeEvent || e).stopImmediatePropagation();
-			e.stopPropagation();
-			e.preventDefault();
-		}
-	};
-
-	const debouncedBlockAction = useDebouncedCallback((actionId, appId, value, blockId, mid) => {
-		ActionManager.triggerBlockAction({
-			container: {
-				type: UIKitIncomingInteractionContainerType.VIEW,
-				id: viewId,
-			},
-			actionId,
-			appId,
-			value,
-			blockId,
-			mid,
-		});
-	}, 700);
-
-	// TODO: this structure is atrociously wrong; we should revisit this
-	const context: ContextType<typeof kitContext> = {
-		// @ts-expect-error Property 'mid' does not exist on type 'ActionParams'.
-		action: ({ actionId, appId, value, blockId, mid = _mid, dispatchActionConfig }) => {
-			if (Array.isArray(dispatchActionConfig) && dispatchActionConfig.includes('on_character_entered')) {
-				debouncedBlockAction(actionId, appId, value, blockId, mid);
-			} else {
-				ActionManager.triggerBlockAction({
-					container: {
-						type: UIKitIncomingInteractionContainerType.VIEW,
-						id: viewId,
-					},
-					actionId,
-					appId,
-					value,
-					blockId,
-					mid,
-				});
-			}
-		},
-
-		state: ({ actionId, value, /* ,appId, */ blockId = 'default' }) => {
-			updateValues({
-				actionId,
+	const handleSubmit = useMutableCallback((e: FormEvent) => {
+		preventSyntheticEvent(e);
+		void actionManager
+			.emitInteraction(view.appId, {
+				type: 'viewSubmit',
 				payload: {
-					blockId,
-					value,
+					view: {
+						...view,
+						state,
+					},
 				},
+				viewId: view.id,
+			})
+			.finally(() => {
+				actionManager.disposeView(view.id);
 			});
-		},
-		...state,
-		values,
-	};
-
-	const handleSubmit = useMutableCallback((e) => {
-		prevent(e);
-		ActionManager.triggerSubmitView({
-			viewId,
-			appId,
-			payload: {
-				view: {
-					...view,
-					id: viewId,
-					state: groupStateByBlockId(values),
-				},
-			},
-		});
 	});
 
-	const handleCancel = useMutableCallback((e) => {
-		prevent(e);
-		ActionManager.triggerCancel({
-			viewId,
-			appId,
-			view: {
-				...view,
-				id: viewId,
-				state: groupStateByBlockId(values),
-			},
-		});
+	const handleCancel = useMutableCallback((e: FormEvent) => {
+		preventSyntheticEvent(e);
+		void actionManager
+			.emitInteraction(view.appId, {
+				type: 'viewClosed',
+				payload: {
+					viewId: view.id,
+					view: {
+						...view,
+						state,
+					},
+					isCleared: false,
+				},
+			})
+			.finally(() => {
+				actionManager.disposeView(view.id);
+			});
 	});
 
 	const handleClose = useMutableCallback(() => {
-		ActionManager.triggerCancel({
-			viewId,
-			appId,
-			view: {
-				...view,
-				id: viewId,
-				state: groupStateByBlockId(values),
-			},
-			isCleared: true,
-		});
+		void actionManager
+			.emitInteraction(view.appId, {
+				type: 'viewClosed',
+				payload: {
+					viewId: view.id,
+					view: {
+						...view,
+						state,
+					},
+					isCleared: true,
+				},
+			})
+			.finally(() => {
+				actionManager.disposeView(view.id);
+			});
 	});
 
 	return (
-		<kitContext.Provider value={context}>
+		<UiKitContext.Provider value={contextValue}>
 			<MarkupInteractionContext.Provider
 				value={{
 					detectEmoji,
 				}}
 			>
-				<ModalBlock view={view} errors={errors} appId={appId} onSubmit={handleSubmit} onCancel={handleCancel} onClose={handleClose} />
+				<ModalBlock view={view} errors={errors} appId={view.appId} onSubmit={handleSubmit} onCancel={handleCancel} onClose={handleClose} />
 			</MarkupInteractionContext.Provider>
-		</kitContext.Provider>
+		</UiKitContext.Provider>
 	);
 };
 

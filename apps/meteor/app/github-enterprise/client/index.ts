@@ -1,2 +1,2 @@
-import '../lib/common';
+import './lib';
 import './github-enterprise-login-button.css';

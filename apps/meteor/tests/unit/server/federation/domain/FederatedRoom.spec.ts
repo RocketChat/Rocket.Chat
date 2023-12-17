@@ -1,4 +1,3 @@
-/* eslint-disable import/first */
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
@@ -217,9 +216,26 @@ describe('Federation - Domain - FederatedRoom', () => {
 				expect(federatedRoom.shouldUpdateDisplayRoomName('name')).to.be.equal(false);
 			});
 
-			it('should return false if room type is not equal DM', () => {
+			it('should return false if room type is equal DM', () => {
 				const federatedRoom = new MyDMClass({ externalId: 'externalId', internalReference: { fname: 'name' } });
 				expect(federatedRoom.shouldUpdateDisplayRoomName('new name')).to.be.equal(false);
+			});
+		});
+
+		describe('#shouldUpdateRoomName()', () => {
+			it('should return true if the old name is different from the new one and the room type is not equal DM', () => {
+				const federatedRoom = new MyClass({ externalId: 'externalId', internalReference: { name: 'name' } });
+				expect(federatedRoom.shouldUpdateRoomName('new name')).to.be.equal(true);
+			});
+
+			it('should return false if the old name is EQUAL from the new one and the room type is not equal DM', () => {
+				const federatedRoom = new MyClass({ externalId: 'externalId', internalReference: { name: 'name' } });
+				expect(federatedRoom.shouldUpdateRoomName('name')).to.be.equal(false);
+			});
+
+			it('should return false if room type is equal DM', () => {
+				const federatedRoom = new MyDMClass({ externalId: 'externalId', internalReference: { name: 'name' } });
+				expect(federatedRoom.shouldUpdateRoomName('new name')).to.be.equal(false);
 			});
 		});
 

@@ -1,12 +1,11 @@
-import { capitalize } from '@rocket.chat/string-helpers';
-import { Meteor } from 'meteor/meteor';
-import { Match } from 'meteor/check';
-import { Accounts } from 'meteor/accounts-base';
 import { Random } from '@rocket.chat/random';
-import { ServiceConfiguration } from 'meteor/service-configuration';
+import { capitalize } from '@rocket.chat/string-helpers';
+import { Accounts } from 'meteor/accounts-base';
+import { Match } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
+import { ServiceConfiguration } from 'meteor/service-configuration';
 
-import './swapSessionStorage';
 import { isURL } from '../../../lib/utils/isURL';
 
 // Request custom OAuth credentials for the user

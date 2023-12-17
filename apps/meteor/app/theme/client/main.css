@@ -16,7 +16,12 @@
 @import 'imports/components/message-box.css';
 @import 'imports/components/modal.css';
 @import 'imports/components/messages.css';
-@import 'imports/components/emojiPicker.css';
+@import 'imports/components/emoji.css';
+@import 'imports/components/loading.css';
 
 /* Legacy theming */
 @import 'imports/general/theme_old.css';
+@import './vendor/fontello/css/fontello.css';
+@import './rocketchat.font.css';
+@import './mentionLink.css';
+@import '../../../node_modules/@rocket.chat/fuselage/dist/fuselage.css';

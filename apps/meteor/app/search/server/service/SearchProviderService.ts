@@ -1,7 +1,7 @@
+import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 import { settings, settingsRegistry } from '../../../settings/server';
 import { SearchLogger } from '../logger/logger';
 import type { SearchProvider } from '../model/SearchProvider';
-import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 
 export class SearchProviderService {
 	public providers: Record<string, SearchProvider> = {};
@@ -52,13 +52,13 @@ export class SearchProviderService {
 	/**
 	 * Starts the service (loads provider settings for admin ui, add lister not setting changes, enable current provider
 	 */
-	start() {
+	async start() {
 		SearchLogger.debug('Load data for all providers');
 
 		const { providers } = this;
 
 		// add settings for admininistration
-		void settingsRegistry.addGroup('Search', async function () {
+		await settingsRegistry.addGroup('Search', async function () {
 			await this.add('Search.Provider', 'defaultProvider', {
 				type: 'select',
 				values: Object.values(providers).map((provider) => ({

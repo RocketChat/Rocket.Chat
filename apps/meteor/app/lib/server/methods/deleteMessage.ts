@@ -1,11 +1,9 @@
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
-import { Messages } from '@rocket.chat/models';
-import type { IMessage, IUser } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
-import { canDeleteMessageAsync } from '../../../authorization/server/functions/canDeleteMessage';
-import { deleteMessage } from '../functions';
+import { deleteMessageValidatingPermission } from '../functions/deleteMessage';
+import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -16,6 +14,8 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async deleteMessage(message) {
+		methodDeprecationLogger.method('deleteMessage', '7.0.0');
+
 		check(
 			message,
 			Match.ObjectIncluding({
@@ -30,24 +30,6 @@ Meteor.methods<ServerMethods>({
 				method: 'deleteMessage',
 			});
 		}
-
-		const originalMessage = await Messages.findOneById(message._id, {
-			projection: {
-				u: 1,
-				rid: 1,
-				file: 1,
-				files: 1,
-				ts: 1,
-			},
-		});
-
-		if (!originalMessage || !(await canDeleteMessageAsync(uid, originalMessage))) {
-			throw new Meteor.Error('error-action-not-allowed', 'Not allowed', {
-				method: 'deleteMessage',
-				action: 'Delete_message',
-			});
-		}
-
-		return deleteMessage(originalMessage, (await Meteor.userAsync()) as IUser);
+		return deleteMessageValidatingPermission(message, uid);
 	},
 });

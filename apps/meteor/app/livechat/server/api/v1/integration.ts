@@ -1,8 +1,8 @@
 import { Settings } from '@rocket.chat/models';
 import { isPOSTomnichannelIntegrations } from '@rocket.chat/rest-typings';
 
-import { API } from '../../../../api/server';
 import { trim } from '../../../../../lib/utils/stringUtils';
+import { API } from '../../../../api/server';
 
 API.v1.addRoute(
 	'omnichannel/integrations',

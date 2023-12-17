@@ -1,21 +1,21 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import moment from 'moment';
 import { api } from '@rocket.chat/core-services';
-import { Messages, Users } from '@rocket.chat/models';
 import type { AtLeast, IMessage, IUser } from '@rocket.chat/core-typings';
+import { Messages, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
+import moment from 'moment';
 
+import { i18n } from '../../../../server/lib/i18n';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
-import { sendMessage } from '../functions';
+import { sendMessage } from '../functions/sendMessage';
 import { RateLimiter } from '../lib';
-import { SystemLogger } from '../../../../server/lib/logger/system';
 
-export async function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMessage, 'rid'>) {
+export async function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMessage, 'rid'>, previewUrls?: string[]) {
 	if (message.tshow && !message.tmid) {
 		throw new Meteor.Error('invalid-params', 'tshow provided but missing tmid', {
 			method: 'sendMessage',
@@ -82,13 +82,13 @@ export async function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMe
 		const room = await canSendMessageAsync(rid, { uid, username: user.username, type: user.type });
 
 		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
-		return sendMessage(user, message, room, false);
+		return await sendMessage(user, message, room, false, previewUrls);
 	} catch (err: any) {
 		SystemLogger.error({ msg: 'Error sending message:', err });
 
 		const errorMessage = typeof err === 'string' ? err : err.error || err.message;
 		void api.broadcast('notify.ephemeralMessage', uid, message.rid, {
-			msg: TAPi18n.__(errorMessage, {}, user.language),
+			msg: i18n.t(errorMessage, { lng: user.language }),
 		});
 
 		if (typeof err === 'string') {
@@ -102,12 +102,12 @@ export async function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMe
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		sendMessage(message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>): any;
+		sendMessage(message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>, previewUrls?: string[]): any;
 	}
 }
 
 Meteor.methods<ServerMethods>({
-	sendMessage(message) {
+	async sendMessage(message, previewUrls) {
 		check(message, Object);
 
 		const uid = Meteor.userId();
@@ -118,7 +118,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		try {
-			return executeSendMessage(uid, message);
+			return await executeSendMessage(uid, message, previewUrls);
 		} catch (error: any) {
 			if ((error.error || error.message) === 'error-not-allowed') {
 				throw new Meteor.Error(error.error || error.message, error.reason, {

@@ -1,16 +1,11 @@
-import { useMethod, useUserId } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import type { LicenseModule } from '@rocket.chat/core-typings';
 
-import type { BundleFeature } from '../../app/license/server/bundles';
+import { useLicenseBase } from '../../../client/hooks/useLicense';
 
-export const useHasLicenseModule = (licenseName: BundleFeature): 'loading' | boolean => {
-	const method = useMethod('license:getModules');
-	const uid = useUserId();
-
-	const features = useQuery(['ee.features'], method, {
-		enabled: !!uid,
-		refetchOnWindowFocus: false,
-	});
-
-	return features.data?.includes(licenseName) ?? 'loading';
+export const useHasLicenseModule = (licenseName: LicenseModule): 'loading' | boolean => {
+	return (
+		useLicenseBase({
+			select: (data) => data.license.activeModules.includes(licenseName),
+		}).data ?? 'loading'
+	);
 };

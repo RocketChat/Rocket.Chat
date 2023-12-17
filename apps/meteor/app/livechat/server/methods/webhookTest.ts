@@ -1,10 +1,10 @@
-import { Meteor } from 'meteor/meteor';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
-import { fetch } from '../../../../server/lib/http/fetch';
+import { settings } from '../../../settings/server';
 
 const postCatchError = async function (url: string, options?: Record<string, any> | undefined) {
 	try {
@@ -23,8 +23,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:webhookTest'() {
-		methodDeprecationLogger.info(`Method 'livechat:webhookTest' is deprecated and will be removed in future versions of Rocket.Chat`);
-		this.unblock();
+		methodDeprecationLogger.method('livechat:webhookTest', '7.0.0');
 
 		const sampleData = {
 			type: 'LivechatSession',
@@ -73,15 +72,17 @@ Meteor.methods<ServerMethods>({
 		};
 
 		const options = {
+			method: 'POST',
 			headers: {
 				'X-RocketChat-Livechat-Token': settings.get<string>('Livechat_secret_token'),
+				'Accept': 'application/json',
 			},
-			body: JSON.stringify(sampleData),
+			body: sampleData,
 		};
 
 		const response = await postCatchError(settings.get('Livechat_webhookUrl'), options);
 
-		SystemLogger.debug({ response });
+		SystemLogger.debug({ response: await response?.text() });
 
 		if (response?.ok) {
 			return true;

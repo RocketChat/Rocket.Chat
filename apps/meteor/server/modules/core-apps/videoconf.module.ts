@@ -1,17 +1,22 @@
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import type { IUiKitCoreApp } from '@rocket.chat/core-services';
+import type { IUiKitCoreApp, UiKitCoreAppPayload } from '@rocket.chat/core-services';
 import { VideoConf } from '@rocket.chat/core-services';
+
+import { i18n } from '../../lib/i18n';
 
 export class VideoConfModule implements IUiKitCoreApp {
 	appId = 'videoconf-core';
 
-	async blockAction(payload: any): Promise<any> {
+	async blockAction(payload: UiKitCoreAppPayload) {
 		const {
 			triggerId,
 			actionId,
 			payload: { blockId: callId },
-			user: { _id: userId },
+			user: { _id: userId } = {},
 		} = payload;
+
+		if (!callId) {
+			throw new Error('invalid call');
+		}
 
 		if (actionId === 'join') {
 			await VideoConf.join(userId, callId, {});
@@ -30,14 +35,14 @@ export class VideoConfModule implements IUiKitCoreApp {
 					id: `${callId}-info`,
 					title: {
 						type: 'plain_text',
-						text: TAPi18n.__('Video_Conference_Info'),
+						text: i18n.t('Video_Conference_Info'),
 						emoji: false,
 					},
 					close: {
 						type: 'button',
 						text: {
 							type: 'plain_text',
-							text: TAPi18n.__('Close'),
+							text: i18n.t('Close'),
 							emoji: false,
 						},
 						actionId: 'cancel',

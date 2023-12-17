@@ -545,6 +545,22 @@ describe('Federation - Infrastructure - Matrix - RocketTextParser', () => {
 			).to.be.equal('[ ](http://localhost:3000/group/1?msg=2354543564) hey @user:server.com');
 		});
 
+		it('should parse the nested quotes correctly', async () => {
+			const rawMessage = '> <@marcos.defendi:tests-a.fed.rocket.chat>\n> test\nhello nested quote';
+			const nested =
+				'<mx-reply><blockquote><a href="https://matrix.to/#/externalRoomId/eventToReplyToId">In reply to</a> <a href="https://matrix.to/#/originalEventSender">originalEventSender</a><br>test</blockquote></mx-reply>hello nested quote';
+
+			expect(
+				await toInternalQuoteMessageFormat({
+					homeServerDomain,
+					rawMessage,
+					formattedMessage: nested,
+					messageToReplyToUrl: 'http://localhost:3000/group/1?msg=2354543564',
+					senderExternalId: '@user:externalDomain.com',
+				}),
+			).to.be.equal('[ ](http://localhost:3000/group/1?msg=2354543564) hello nested quote');
+		});
+
 		it('should parse the @all mention correctly', async () => {
 			const rawMessage = '> <@originalEventSender:localDomain.com> Quoted message\n\n hey externalRoomId';
 			const formattedMessage = `${quotedMessage}hey <a href="https://matrix.to/#/externalRoomId">externalRoomId</a>`;

@@ -1,10 +1,11 @@
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { ICreatedRoom } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { createRoom } from '../functions';
+import { createRoom } from '../functions/createRoom';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -19,25 +20,43 @@ declare module '@rocket.chat/ui-contexts' {
 	}
 }
 
+export const createChannelMethod = async (
+	userId: string,
+	name: string,
+	members: string[],
+	readOnly = false,
+	customFields: Record<string, any> = {},
+	extraData: Record<string, any> = {},
+	excludeSelf = false,
+) => {
+	check(name, String);
+	check(members, Match.Optional([String]));
+	if (!userId) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'createChannel' });
+	}
+
+	const user = await Users.findOneById(userId);
+	if (!user?.username) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'createChannel' });
+	}
+
+	if (!(await hasPermissionAsync(userId, 'create-c'))) {
+		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createChannel' });
+	}
+	return createRoom('c', name, user, members, excludeSelf, readOnly, {
+		customFields,
+		...extraData,
+	});
+};
+
 Meteor.methods<ServerMethods>({
 	async createChannel(name, members, readOnly = false, customFields = {}, extraData = {}) {
-		check(name, String);
-		check(members, Match.Optional([String]));
-
 		const uid = Meteor.userId();
 
-		const user = await Meteor.userAsync();
-
-		if (!uid || !user?.username) {
+		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'createChannel' });
 		}
 
-		if (!(await hasPermissionAsync(uid, 'create-c'))) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createChannel' });
-		}
-		return createRoom('c', name, user.username, members, readOnly, {
-			customFields,
-			...extraData,
-		});
+		return createChannelMethod(uid, name, members, readOnly, customFields, extraData);
 	},
 });

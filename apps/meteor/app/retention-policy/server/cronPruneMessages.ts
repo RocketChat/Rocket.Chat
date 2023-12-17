@@ -1,9 +1,9 @@
-import { SyncedCron } from 'meteor/littledata:synced-cron';
 import type { IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
+import { cronJobs } from '@rocket.chat/cron';
 import { Rooms } from '@rocket.chat/models';
 
-import { settings } from '../../settings/server';
 import { cleanRoomHistory } from '../../lib/server/functions/cleanRoomHistory';
+import { settings } from '../../settings/server';
 
 const maxTimes = {
 	c: 0,
@@ -24,6 +24,8 @@ async function job(): Promise<void> {
 	const ignoreDiscussion = settings.get<boolean>('RetentionPolicy_DoNotPruneDiscussion');
 	const ignoreThreads = settings.get<boolean>('RetentionPolicy_DoNotPruneThreads');
 
+	const ignoreDiscussionQuery = ignoreDiscussion ? { prid: { $exists: false } } : {};
+
 	// get all rooms with default values
 	for await (const type of types) {
 		const maxAge = maxTimes[type] || 0;
@@ -34,6 +36,7 @@ async function job(): Promise<void> {
 				't': type,
 				'$or': [{ 'retention.enabled': { $eq: true } }, { 'retention.enabled': { $exists: false } }],
 				'retention.overrideGlobal': { $ne: true },
+				...ignoreDiscussionQuery,
 			},
 			{ projection: { _id: 1 } },
 		).toArray();
@@ -56,6 +59,7 @@ async function job(): Promise<void> {
 			'retention.enabled': { $eq: true },
 			'retention.overrideGlobal': { $eq: true },
 			'retention.maxAge': { $gte: 0 },
+			...ignoreDiscussionQuery,
 		},
 		{ projection: { _id: 1, retention: 1 } },
 	).toArray();
@@ -90,14 +94,11 @@ function getSchedule(precision: '0' | '1' | '2' | '3'): string {
 
 const pruneCronName = 'Prune old messages by retention policy';
 
-function deployCron(precision: string): void {
-	SyncedCron.remove(pruneCronName);
-
-	SyncedCron.add({
-		name: pruneCronName,
-		schedule: (parser) => parser.cron(precision),
-		job,
-	});
+async function deployCron(precision: string): Promise<void> {
+	if (await cronJobs.has(pruneCronName)) {
+		await cronJobs.remove(pruneCronName);
+	}
+	await cronJobs.add(pruneCronName, precision, async () => job());
 }
 
 settings.watchMultiple(
@@ -113,11 +114,11 @@ settings.watchMultiple(
 		'RetentionPolicy_Advanced_Precision_Cron',
 		'RetentionPolicy_Precision',
 	],
-	function reloadPolicy() {
+	async function reloadPolicy() {
 		types = [];
 
 		if (!settings.get('RetentionPolicy_Enabled')) {
-			return SyncedCron.remove(pruneCronName);
+			return cronJobs.remove(pruneCronName);
 		}
 		if (settings.get('RetentionPolicy_AppliesToChannels')) {
 			types.push('c');

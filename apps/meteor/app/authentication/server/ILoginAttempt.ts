@@ -1,3 +1,4 @@
+import type { MeteorError } from '@rocket.chat/core-services';
 import type { IUser, IMethodConnection } from '@rocket.chat/core-typings';
 
 interface IMethodArgument {
@@ -22,4 +23,5 @@ export interface ILoginAttempt {
 	methodArguments: IMethodArgument[];
 	connection: IMethodConnection;
 	user?: IUser;
+	error?: MeteorError;
 }

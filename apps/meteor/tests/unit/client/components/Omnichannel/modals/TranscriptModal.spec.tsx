@@ -1,7 +1,8 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
-import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { userEvent } from '@storybook/testing-library';
+import { render, screen } from '@testing-library/react';
 import { expect, spy } from 'chai';
+import React from 'react';
 
 import TranscriptModal from '../../../../../../client/components/Omnichannel/modals/TranscriptModal';
 
@@ -26,33 +27,25 @@ const defaultProps = {
 describe('components/Omnichannel/TranscriptModal', () => {
 	it('should show Undo request button when roomOpen is true and transcriptRequest exist', () => {
 		const onDiscardMock = spy();
-		const { getByText } = render(<TranscriptModal {...defaultProps} onDiscard={onDiscardMock} />);
-		const undoRequestButton = getByText('Undo_request');
+		render(<TranscriptModal {...defaultProps} onDiscard={onDiscardMock} />);
+		const undoRequestButton = screen.getByText('Undo_request');
 
-		fireEvent.click(undoRequestButton);
+		userEvent.click(undoRequestButton);
 
 		expect(onDiscardMock).to.have.been.called();
 	});
 
-	it('should show Request button when roomOpen is true and transcriptRequest not exist', () => {
-		const onRequestMock = spy();
-		const { getByText } = render(
-			<TranscriptModal {...{ ...defaultProps, room: { ...room, transcriptRequest: undefined } }} onRequest={onRequestMock} />,
-		);
-		const requestButton = getByText('Request');
+	it('should show Request button when roomOpen is true and transcriptRequest not exist', async () => {
+		render(<TranscriptModal {...{ ...defaultProps, room: { ...room, transcriptRequest: undefined } }} />);
 
-		fireEvent.click(requestButton);
-
-		expect(onRequestMock).to.have.been.called();
+		const requestBtn = await screen.findByRole('button', { name: 'request-button' });
+		expect(requestBtn).to.be.visible;
 	});
 
-	it('should show Send button when roomOpen is false', () => {
-		const onSendMock = spy();
-		const { getByText } = render(<TranscriptModal {...{ ...defaultProps, room: { ...room, open: false } }} onSend={onSendMock} />);
-		const requestButton = getByText('Send');
+	it('should show Send button when roomOpen is false', async () => {
+		render(<TranscriptModal {...{ ...defaultProps, room: { ...room, open: false } }} />);
 
-		fireEvent.click(requestButton);
-
-		expect(onSendMock).to.have.been.called();
+		const sendBtn = await screen.findByRole('button', { name: 'send-button' });
+		expect(sendBtn).to.be.visible;
 	});
 });

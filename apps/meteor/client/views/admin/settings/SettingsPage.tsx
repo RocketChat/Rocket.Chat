@@ -1,11 +1,12 @@
-import { Icon, SearchInput, Skeleton, Grid, States, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
+import { Icon, SearchInput, Skeleton, Grid } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useIsSettingsContextLoading, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useState } from 'react';
 
-import Page from '../../../components/Page';
+import GenericNoResults from '../../../components/GenericNoResults';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import PageBlockWithBorder from '../../../components/Page/PageBlockWithBorder';
 import SettingsGroupCard from './SettingsGroupCard';
 import { useSettingsGroups } from './hooks/useSettingsGroups';
@@ -20,15 +21,13 @@ const SettingsPage = (): ReactElement => {
 
 	return (
 		<Page background='tint'>
-			<Page.Header title={t('Settings')} borderBlockEndColor='' />
-
+			<PageHeader title={t('Settings')} borderBlockEndColor='' />
 			<PageBlockWithBorder>
 				<SearchInput value={filter} placeholder={t('Search')} onChange={handleChange} addon={<Icon name='magnifier' size='x20' />} />
 			</PageBlockWithBorder>
-
-			<Page.ScrollableContentWithShadow p='0'>
+			<PageScrollableContentWithShadow p='0'>
 				{isLoadingGroups && <Skeleton />}
-				<Grid mi='x16' mbe='x18'>
+				<Grid mi={16} mbe={18}>
 					{!isLoadingGroups &&
 						!!groups.length &&
 						groups.map((group) => (
@@ -41,13 +40,8 @@ const SettingsPage = (): ReactElement => {
 							</Grid.Item>
 						))}
 				</Grid>
-				{!isLoadingGroups && !groups.length && (
-					<States>
-						<StatesIcon name='magnifier' />
-						<StatesTitle>{t('No_results_found')}</StatesTitle>
-					</States>
-				)}
-			</Page.ScrollableContentWithShadow>
+				{!isLoadingGroups && !groups.length && <GenericNoResults />}
+			</PageScrollableContentWithShadow>
 		</Page>
 	);
 };

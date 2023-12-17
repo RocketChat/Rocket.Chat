@@ -4,7 +4,7 @@ import { useToastMessageDispatch, useSetting, useTranslation } from '@rocket.cha
 import type { ReactElement, ChangeEvent } from 'react';
 import React, { useState, useCallback } from 'react';
 
-import { useFileInput } from '../../../hooks/useFileInput';
+import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 import { isValidImageFormat } from '../../../lib/utils/isValidImageFormat';
 import UserAvatar from '../UserAvatar';
 import UserAvatarSuggestions from './UserAvatarSuggestions';
@@ -17,21 +17,15 @@ const toDataURL = (file: File, callback: (result: FileReader['result']) => void)
 	reader.readAsDataURL(file);
 };
 
-type AvatarSuggestion = {
-	service: string;
-	url: string;
-};
-
 type UserAvatarEditorType = {
 	currentUsername: IUser['username'];
 	username: IUser['username'];
 	setAvatarObj: (obj: AvatarObject) => void;
-	suggestions: AvatarSuggestion[] | undefined;
-	disabled: boolean;
+	disabled?: boolean;
 	etag: IUser['avatarETag'];
 };
 
-function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions, disabled, etag }: UserAvatarEditorType): ReactElement {
+function UserAvatarEditor({ currentUsername, username, setAvatarObj, disabled, etag }: UserAvatarEditorType): ReactElement {
 	const t = useTranslation();
 	const rotateImages = useSetting('FileUpload_RotateImages');
 	const [avatarFromUrl, setAvatarFromUrl] = useState('');
@@ -53,7 +47,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions
 		[setAvatarObj, t, dispatchToastMessage],
 	);
 
-	const [clickUpload] = useFileInput(setUploadedPreview);
+	const [clickUpload] = useSingleFileInput(setUploadedPreview);
 
 	const clickUrl = (): void => {
 		setNewAvatarSource(avatarFromUrl);
@@ -74,7 +68,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions
 	return (
 		<Box display='flex' flexDirection='column' fontScale='p2m' color='default'>
 			{t('Profile_picture')}
-			<Box display='flex' flexDirection='row' mbs='x4'>
+			<Box display='flex' flexDirection='row' mbs={4}>
 				<UserAvatar
 					size='x124'
 					url={url}
@@ -85,10 +79,10 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions
 						imageOrientation: rotateImages ? 'from-image' : 'none',
 					}}
 				/>
-				<Box display='flex' flexDirection='column' flexGrow='1' justifyContent='space-between' mis='x4'>
+				<Box display='flex' flexDirection='column' flexGrow='1' justifyContent='space-between' mis={4}>
 					<Box display='flex' flexDirection='row' mbs='none'>
-						<Margins inline='x4'>
-							<Button square mis='none' onClick={clickReset} disabled={disabled} mie='x4' title={t('Accounts_SetDefaultAvatar')}>
+						<Margins inline={4}>
+							<Button square mis='none' onClick={clickReset} disabled={disabled} mie={4} title={t('Accounts_SetDefaultAvatar')}>
 								<Avatar url={`/avatar/%40${username}`} />
 							</Button>
 							<IconButton icon='upload' secondary onClick={clickUpload} disabled={disabled} title={t('Upload')} />
@@ -100,17 +94,10 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions
 								disabled={disabled || !avatarFromUrl}
 								title={t('Add_URL')}
 							/>
-							{suggestions && (
-								<UserAvatarSuggestions
-									suggestions={suggestions}
-									setAvatarObj={setAvatarObj}
-									setNewAvatarSource={setNewAvatarSource}
-									disabled={disabled}
-								/>
-							)}
+							<UserAvatarSuggestions setAvatarObj={setAvatarObj} setNewAvatarSource={setNewAvatarSource} disabled={disabled} />
 						</Margins>
 					</Box>
-					<Margins inlineStart='x4'>
+					<Margins inlineStart={4}>
 						<Box>{t('Use_url_for_avatar')}</Box>
 						<TextInput
 							data-qa-id='UserAvatarEditorLink'

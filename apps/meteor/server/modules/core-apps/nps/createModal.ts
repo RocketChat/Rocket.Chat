@@ -1,7 +1,7 @@
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IUser } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../../app/settings/server';
+import { i18n } from '../../../lib/i18n';
 
 type ModalParams = {
 	id: string;
@@ -26,14 +26,14 @@ export const createModal = ({ type = 'modal.open', id, appId, npsId, triggerId, 
 			id,
 			title: {
 				type: 'plain_text',
-				text: TAPi18n.__('We_appreciate_your_feedback', { lng: language }),
+				text: i18n.t('We_appreciate_your_feedback', { lng: language }),
 				emoji: false,
 			},
 			submit: {
 				type: 'button',
 				text: {
 					type: 'plain_text',
-					text: TAPi18n.__('Send', { lng: language }),
+					text: i18n.t('Send', { lng: language }),
 					emoji: false,
 				},
 				actionId: 'send-vote',
@@ -42,7 +42,7 @@ export const createModal = ({ type = 'modal.open', id, appId, npsId, triggerId, 
 				type: 'button',
 				text: {
 					type: 'plain_text',
-					text: TAPi18n.__('Cancel', { lng: language }),
+					text: i18n.t('Cancel', { lng: language }),
 					emoji: false,
 				},
 				actionId: 'cancel',
@@ -56,16 +56,16 @@ export const createModal = ({ type = 'modal.open', id, appId, npsId, triggerId, 
 							type: 'linear_scale',
 							initialValue: score,
 							actionId: 'nps-score',
-							preLabel: { type: 'plain_text', text: TAPi18n.__('Not_likely', { lng: language }) },
+							preLabel: { type: 'plain_text', text: i18n.t('Not_likely', { lng: language }) },
 							postLabel: {
 								type: 'plain_text',
-								text: TAPi18n.__('Extremely_likely', { lng: language }),
+								text: i18n.t('Extremely_likely', { lng: language }),
 							},
 						},
 					],
 					label: {
 						type: 'plain_text',
-						text: TAPi18n.__('Score', { lng: language }),
+						text: i18n.t('Score', { lng: language }),
 						emoji: false,
 					},
 				},
@@ -79,7 +79,7 @@ export const createModal = ({ type = 'modal.open', id, appId, npsId, triggerId, 
 					},
 					label: {
 						type: 'plain_text',
-						text: TAPi18n.__('Why_did_you_chose__score__', { score, lng: language }),
+						text: i18n.t('Why_did_you_chose__score__', { score, lng: language }),
 						emoji: false,
 					},
 				},

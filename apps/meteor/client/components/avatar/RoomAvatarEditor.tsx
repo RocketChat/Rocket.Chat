@@ -1,14 +1,14 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { IRoom, RoomAdminFieldsType } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect } from 'react';
 
-import { getAvatarURL } from '../../../app/utils/lib/getAvatarURL';
-import { useFileInput } from '../../hooks/useFileInput';
+import { getAvatarURL } from '../../../app/utils/client/getAvatarURL';
+import { useSingleFileInput } from '../../hooks/useSingleFileInput';
 import { isValidImageFormat } from '../../lib/utils/isValidImageFormat';
 import RoomAvatar from './RoomAvatar';
 
@@ -36,7 +36,7 @@ const RoomAvatarEditor = ({ disabled = false, room, roomAvatar, onChangeAvatar }
 		};
 	});
 
-	const [clickUpload, reset] = useFileInput(handleChangeAvatar);
+	const [clickUpload, reset] = useSingleFileInput(handleChangeAvatar);
 	const clickReset = useMutableCallback(() => {
 		reset();
 		onChangeAvatar(null);
@@ -59,23 +59,21 @@ const RoomAvatarEditor = ({ disabled = false, room, roomAvatar, onChangeAvatar }
 					`,
 				]}
 				position='absolute'
-				m='x12'
+				m={12}
 			>
 				<ButtonGroup>
-					<Button disabled={isRoomFederated(room) || disabled} small title={t('Upload_user_avatar')} onClick={clickUpload}>
-						<Icon name='upload' size='x16' />
+					<Button icon='upload' disabled={isRoomFederated(room) || disabled} small title={t('Upload_user_avatar')} onClick={clickUpload}>
 						{t('Upload')}
 					</Button>
 
 					<Button
 						small
 						danger
+						icon='trash'
 						title={t('Accounts_SetDefaultAvatar')}
-						disabled={roomAvatar === null || isRoomFederated(room) || disabled}
+						disabled={!roomAvatar || isRoomFederated(room) || disabled}
 						onClick={clickReset}
-					>
-						<Icon name='trash' size='x16' />
-					</Button>
+					/>
 				</ButtonGroup>
 			</Box>
 		</Box>

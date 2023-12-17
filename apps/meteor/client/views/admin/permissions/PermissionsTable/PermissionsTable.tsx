@@ -1,12 +1,13 @@
-import { Margins, Tabs, Button, Pagination, Tile } from '@rocket.chat/fuselage';
+import { Margins, Tabs, Button, Pagination } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, usePermission, useMethod, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useState } from 'react';
 
+import GenericNoResults from '../../../../components/GenericNoResults';
 import { GenericTable, GenericTableHeader, GenericTableHeaderCell, GenericTableBody } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
-import Page from '../../../../components/Page';
+import { Page, PageHeader, PageContent } from '../../../../components/Page';
 import CustomRoleUpsellModal from '../CustomRoleUpsellModal';
 import PermissionsContextBar from '../PermissionsContextBar';
 import { usePermissionsAndRoles } from '../hooks/usePermissionsAndRoles';
@@ -46,7 +47,7 @@ const PermissionsTable = ({ isEnterprise }: { isEnterprise: boolean }): ReactEle
 
 	const handleAdd = useMutableCallback(() => {
 		if (!isEnterprise) {
-			setModal(<CustomRoleUpsellModal onClose={() => setModal()} />);
+			setModal(<CustomRoleUpsellModal onClose={() => setModal(null)} />);
 			return;
 		}
 		router.push({
@@ -57,12 +58,12 @@ const PermissionsTable = ({ isEnterprise }: { isEnterprise: boolean }): ReactEle
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('Permissions')}>
+				<PageHeader title={t('Permissions')}>
 					<Button primary onClick={handleAdd} aria-label={t('New')} name={t('New_role')}>
 						{t('New_role')}
 					</Button>
-				</Page.Header>
-				<Margins blockEnd='x16'>
+				</PageHeader>
+				<Margins blockEnd={16}>
 					<Tabs>
 						<Tabs.Item
 							data-qa='PermissionTable-Permissions'
@@ -82,14 +83,10 @@ const PermissionsTable = ({ isEnterprise }: { isEnterprise: boolean }): ReactEle
 						</Tabs.Item>
 					</Tabs>
 				</Margins>
-				<Page.Content mb='neg-x8'>
-					<Margins block='x8'>
+				<PageContent mb='neg-x8'>
+					<Margins block={8}>
 						<PermissionsTableFilter onChange={setFilter} />
-						{permissions?.length === 0 && (
-							<Tile fontScale='p2' elevation='0' color='hint' textAlign='center'>
-								{t('No_data_found')}
-							</Tile>
-						)}
+						{permissions?.length === 0 && <GenericNoResults />}
 						{permissions?.length > 0 && (
 							<>
 								<GenericTable fixed={false}>
@@ -123,7 +120,7 @@ const PermissionsTable = ({ isEnterprise }: { isEnterprise: boolean }): ReactEle
 							</>
 						)}
 					</Margins>
-				</Page.Content>
+				</PageContent>
 			</Page>
 			<PermissionsContextBar />
 		</Page>

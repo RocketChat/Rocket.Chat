@@ -7,12 +7,16 @@ export class AdminFlextabUsers {
 		this.page = page;
 	}
 
-	get btnNew(): Locator {
-		return this.page.locator('//button[text()="New"]');
+	get btnNewUser(): Locator {
+		return this.page.locator('role=button[name="New user"]');
 	}
 
 	get btnSave(): Locator {
-		return this.page.locator('//button[text()="Save"]');
+		return this.page.locator('role=button[name="Save"]');
+	}
+
+	get btnInvite(): Locator {
+		return this.page.locator('role=button[name="Invite"]');
 	}
 
 	get inputName(): Locator {
@@ -32,11 +36,19 @@ export class AdminFlextabUsers {
 	}
 
 	get checkboxVerified(): Locator {
-		return this.page.locator('//label[text()="Email"]/following-sibling::span//input/following-sibling::i');
+		return this.page.locator('//label[text()="Verified"]');
+	}
+
+	get userRole(): Locator {
+		return this.page.locator('button[role="option"]:has-text("user")');
 	}
 
 	async addRole(role: string): Promise<void> {
 		await this.page.locator('//label[text()="Roles"]/following-sibling::span//input').click();
 		await this.page.locator(`li[value=${role}]`).click();
+	}
+
+	get setupSmtpLink(): Locator {
+		return this.page.locator('role=link[name="Set up SMTP"]')
 	}
 }

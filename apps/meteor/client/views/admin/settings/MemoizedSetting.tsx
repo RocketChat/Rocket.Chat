@@ -1,5 +1,5 @@
 import type { ISettingBase, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
-import { Box, Callout, Field, Margins } from '@rocket.chat/fuselage';
+import { Box, Callout, Field, FieldHint, Margins } from '@rocket.chat/fuselage';
 import type { ElementType, ReactElement, ReactNode } from 'react';
 import React, { memo } from 'react';
 
@@ -59,6 +59,7 @@ type MemoizedSettingProps = {
 	sectionChanged?: boolean;
 	hasResetButton?: boolean;
 	disabled?: boolean;
+	required?: boolean;
 	showUpgradeButton?: ReactNode;
 	actionText?: string;
 };
@@ -85,24 +86,24 @@ const MemoizedSetting = ({
 
 	return (
 		<Field className={className} flexDirection='row' justifyContent='space-between' alignItems='flex-start'>
-			<Box flexDirection='column' flexGrow={1}>
+			<Box flexDirection='column' flexGrow={1} wordBreak='break-word' w='full'>
 				<InputComponent
 					value={value}
 					hint={hint}
 					editor={editor}
 					onChangeValue={onChangeValue}
 					onChangeEditor={onChangeEditor}
-					{...inputProps}
 					disabled={disabled}
+					{...inputProps}
 				/>
-				{hint && type !== 'code' && <Field.Hint>{hint}</Field.Hint>}
+				{hint && type !== 'code' && <FieldHint>{hint}</FieldHint>}
 				{callout && (
-					<Margins block='x16'>
+					<Margins block={16}>
 						<Callout type='warning'>{callout}</Callout>
 					</Margins>
 				)}
+				{showUpgradeButton}
 			</Box>
-			{showUpgradeButton}
 		</Field>
 	);
 };

@@ -6,28 +6,24 @@ const ajv = new Ajv({
 
 export type StartImportParamsPOST = {
 	input: {
-		users: [
-			{
-				user_id: string;
-				username: string;
-				email: string;
-				is_deleted: boolean;
-				is_bot: boolean;
-				do_import: boolean;
-				is_email_taken: boolean;
-			},
-		];
-		channels: [
-			{
-				channel_id: string;
-				name: string;
-				creator?: string;
-				is_archived: boolean;
-				do_import: boolean;
-				is_private: boolean;
-				is_direct: boolean;
-			},
-		];
+		users: {
+			user_id: string;
+			username: string;
+			email: string;
+			is_deleted: boolean;
+			is_bot: boolean;
+			do_import: boolean;
+			is_email_taken: boolean;
+		}[];
+		channels: {
+			channel_id: string;
+			name: string;
+			creator?: string;
+			is_archived: boolean;
+			do_import: boolean;
+			is_private: boolean;
+			is_direct: boolean;
+		}[];
 	};
 };
 
@@ -42,13 +38,13 @@ const StartImportParamsPostSchema = {
 					items: {
 						type: 'object',
 						properties: {
-							user_id: { type: 'string' }, // eslint-disable-line
+							user_id: { type: 'string' },
 							username: { type: 'string' },
 							email: { type: 'string', nullable: true },
-							is_deleted: { type: 'boolean' }, // eslint-disable-line
-							is_bot: { type: 'boolean' }, // eslint-disable-line
-							do_import: { type: 'boolean' }, // eslint-disable-line
-							is_email_taken: { type: 'boolean' }, // eslint-disable-line
+							is_deleted: { type: 'boolean' },
+							is_bot: { type: 'boolean' },
+							do_import: { type: 'boolean' },
+							is_email_taken: { type: 'boolean' },
 						},
 						required: ['user_id', 'username', 'is_deleted', 'is_bot', 'do_import', 'is_email_taken'],
 					},
@@ -58,13 +54,13 @@ const StartImportParamsPostSchema = {
 					items: {
 						type: 'object',
 						properties: {
-							channel_id: { type: 'string' }, // eslint-disable-line
+							channel_id: { type: 'string' },
 							name: { type: 'string' },
 							creator: { type: 'string' },
-							is_archived: { type: 'boolean' }, // eslint-disable-line
-							do_import: { type: 'boolean' }, // eslint-disable-line
-							is_private: { type: 'boolean' }, // eslint-disable-line
-							is_direct: { type: 'boolean' }, // eslint-disable-line
+							is_archived: { type: 'boolean' },
+							do_import: { type: 'boolean' },
+							is_private: { type: 'boolean' },
+							is_direct: { type: 'boolean' },
 						},
 						required: ['channel_id', 'name', 'is_archived', 'do_import', 'is_private', 'is_direct'],
 					},

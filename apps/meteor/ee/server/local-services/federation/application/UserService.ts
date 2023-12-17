@@ -1,8 +1,8 @@
+import type { RocketChatFileAdapter } from '../../../../../server/services/federation/infrastructure/rocket-chat/adapters/File';
+import type { RocketChatSettingsAdapter } from '../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Settings';
 import type { IFederationBridgeEE } from '../domain/IFederationBridge';
 import type { RocketChatUserAdapterEE } from '../infrastructure/rocket-chat/adapters/User';
 import { AbstractFederationApplicationServiceEE } from './AbstractFederationApplicationServiceEE';
-import type { RocketChatSettingsAdapter } from '../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Settings';
-import type { RocketChatFileAdapter } from '../../../../../server/services/federation/infrastructure/rocket-chat/adapters/File';
 
 const DEFAULT_SERVERS = [
 	{

@@ -1,18 +1,17 @@
 import { Emitter } from '@rocket.chat/emitter';
 import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { Tracker } from 'meteor/tracker';
 
-import { ChromeScreenShare } from './screenShare';
-import { t } from '../../utils/client';
-import { Notifications } from '../../notifications/client';
-import { settings } from '../../settings/client';
-import { ChatSubscription } from '../../models/client';
-import { WEB_RTC_EVENTS } from '../lib/constants';
-import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
 import GenericModal from '../../../client/components/GenericModal';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
+import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
+import { ChatSubscription } from '../../models/client';
+import { Notifications } from '../../notifications/client';
+import { settings } from '../../settings/client';
+import { t } from '../../utils/lib/i18n';
+import { WEB_RTC_EVENTS } from '../lib/constants';
+import { ChromeScreenShare } from './screenShare';
 
 class WebRTCTransportClass extends Emitter {
 	constructor(webrtcInstance) {
@@ -180,9 +179,7 @@ class WebRTCClass {
 		this.transport.onRemoteDescription(this.onRemoteDescription.bind(this));
 		this.transport.onRemoteStatus(this.onRemoteStatus.bind(this));
 
-		Meteor.setInterval(this.checkPeerConnections.bind(this), 1000);
-
-		// Meteor.setInterval(this.broadcastStatus.bind(@), 1000);
+		setInterval(this.checkPeerConnections.bind(this), 1000);
 	}
 
 	onUserStream(...args) {
@@ -284,8 +281,8 @@ class WebRTCClass {
 	onRemoteStatus(data) {
 		// this.log(onRemoteStatus, arguments);
 		this.callInProgress.set(true);
-		Meteor.clearTimeout(this.callInProgressTimeout);
-		this.callInProgressTimeout = Meteor.setTimeout(this.resetCallInProgress, 2000);
+		clearTimeout(this.callInProgressTimeout);
+		this.callInProgressTimeout = setTimeout(this.resetCallInProgress, 2000);
 		if (this.active !== true) {
 			return;
 		}
@@ -366,7 +363,7 @@ class WebRTCClass {
 				peerConnection === this.peerConnections[id]
 			) {
 				this.stopPeerConnection(id);
-				Meteor.setTimeout(() => {
+				setTimeout(() => {
 					if (Object.keys(this.peerConnections).length === 0) {
 						this.stop();
 					}
@@ -416,7 +413,7 @@ class WebRTCClass {
 					component: GenericModal,
 					props: {
 						variant: 'warning',
-						title: TAPi18n.__('Refresh_your_page_after_install_to_enable_screen_sharing'),
+						title: t('Refresh_your_page_after_install_to_enable_screen_sharing'),
 					},
 				});
 			};
@@ -428,16 +425,16 @@ class WebRTCClass {
 				imperativeModal.open({
 					component: GenericModal,
 					props: {
-						title: TAPi18n.__('Screen_Share'),
+						title: t('Screen_Share'),
 						variant: 'warning',
-						confirmText: TAPi18n.__('Install_Extension'),
-						cancelText: TAPi18n.__('Cancel'),
-						children: TAPi18n.__('You_need_install_an_extension_to_allow_screen_sharing'),
+						confirmText: t('Install_Extension'),
+						cancelText: t('Cancel'),
+						children: t('You_need_install_an_extension_to_allow_screen_sharing'),
 						onConfirm: () => {
 							if (this.navigator === 'chrome') {
 								const url = 'https://chrome.google.com/webstore/detail/rocketchat-screen-share/nocfbnnmjnndkbipkabodnheejiegccf';
 								try {
-									chrome.webstore.install(url, refresh, function () {
+									chrome.webstore.install(url, refresh, () => {
 										window.open(url);
 										refresh();
 									});
@@ -559,7 +556,7 @@ class WebRTCClass {
 
 	setAudioEnabled(enabled = true) {
 		if (this.localStream != null) {
-			this.localStream.getAudioTracks().forEach(function (audio) {
+			this.localStream.getAudioTracks().forEach((audio) => {
 				audio.enabled = enabled;
 			});
 			this.audioEnabled.set(enabled);
@@ -583,7 +580,7 @@ class WebRTCClass {
 
 	setVideoEnabled(enabled = true) {
 		if (this.localStream != null) {
-			this.localStream.getVideoTracks().forEach(function (video) {
+			this.localStream.getVideoTracks().forEach((video) => {
 				video.enabled = enabled;
 			});
 			this.videoEnabled.set(enabled);
@@ -679,13 +676,13 @@ class WebRTCClass {
 
 	onRemoteCall(data) {
 		if (this.autoAccept === true) {
-			Meteor.defer(() => {
+			setTimeout(() => {
 				this.joinCall({
 					to: data.from,
 					monitor: data.monitor,
 					media: data.media,
 				});
-			});
+			}, 0);
 			return;
 		}
 
@@ -969,8 +966,8 @@ const WebRTC = new (class {
 	}
 })();
 
-Meteor.startup(function () {
-	Tracker.autorun(function () {
+Meteor.startup(() => {
+	Tracker.autorun(() => {
 		if (Meteor.userId()) {
 			Notifications.onUser(WEB_RTC_EVENTS.WEB_RTC, (type, data) => {
 				if (data.room == null) {

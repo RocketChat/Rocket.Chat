@@ -49,15 +49,15 @@ export class AccountProfile {
 	}
 
 	get tokensTableEmpty(): Locator {
-		return this.page.locator('//div[contains(text(), "No results found")]');
+		return this.page.locator('//h3[contains(text(), "No results found")]');
 	}
 
 	get btnTokensAdd(): Locator {
-		return this.page.locator('//button[contains(text(), "Add")]');
+		return this.page.locator('role=button[name="Add"]');
 	}
 
 	get tokenAddedModal(): Locator {
-		return this.page.locator("//div[text()='Personal Access Token successfully generated']");
+		return this.page.locator('role=dialog[name="Personal Access Token successfully generated"]');
 	}
 
 	tokenInTable(name: string): Locator {
@@ -65,11 +65,11 @@ export class AccountProfile {
 	}
 
 	get btnRegenerateTokenModal(): Locator {
-		return this.page.locator('//button[contains(text(), "Regenerate token")]');
+		return this.page.locator('role=button[name="Regenerate token"]');
 	}
 
 	get btnRemoveTokenModal(): Locator {
-		return this.page.locator('//button[contains(text(), "Remove")]');
+		return this.page.locator('role=button[name="Remove"]');
 	}
 
 	get inputImageFile(): Locator {
@@ -77,7 +77,7 @@ export class AccountProfile {
 	}
 
 	get securityE2EEncryptionSection(): Locator {
-		return this.page.locator('role=region[name="Security"] >> role=region[name="E2E Encryption"]');
+		return this.page.locator('[role="button"]:has-text("E2E Encryption")');
 	}
 
 	get securityE2EEncryptionResetKeyButton(): Locator {

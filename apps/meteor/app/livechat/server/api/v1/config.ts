@@ -1,11 +1,11 @@
-import mem from 'mem';
 import { isGETLivechatConfigParams } from '@rocket.chat/rest-typings';
+import mem from 'mem';
 
 import { API } from '../../../../api/server';
-import { Livechat } from '../../lib/Livechat';
+import { Livechat } from '../../lib/LivechatTyped';
 import { settings, findOpenRoom, getExtraConfigInfo, findAgent } from '../lib/livechat';
 
-const cachedSettings = mem(settings, { maxAge: 1000, cacheKey: JSON.stringify });
+const cachedSettings = mem(settings, { maxAge: process.env.TEST_MODE === 'true' ? 1 : 1000, cacheKey: JSON.stringify });
 
 API.v1.addRoute(
 	'livechat/config',

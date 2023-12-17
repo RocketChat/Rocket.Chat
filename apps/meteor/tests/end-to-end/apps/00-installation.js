@@ -1,9 +1,10 @@
 import { expect } from 'chai';
+import { before, describe, it } from 'mocha';
 
 import { getCredentials, request, credentials, api } from '../../data/api-data.js';
-import { updatePermission } from '../../data/permissions.helper';
 import { APP_URL, apps, APP_USERNAME } from '../../data/apps/apps-data.js';
 import { cleanupApps } from '../../data/apps/helper.js';
+import { updatePermission } from '../../data/permissions.helper';
 import { getUserByUsername } from '../../data/users.helper.js';
 
 describe('Apps - Installation', function () {

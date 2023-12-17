@@ -1,11 +1,11 @@
-import type { Document, Filter, FindOptions } from 'mongodb';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import type { ILivechatDepartment, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents } from '@rocket.chat/models';
+import type { PaginatedResult } from '@rocket.chat/rest-typings';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { Document, Filter, FindOptions } from 'mongodb';
 
-import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { callbacks } from '../../../../../lib/callbacks';
+import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 
 type Pagination<T extends Document> = { pagination: { offset: number; count: number; sort: FindOptions<T>['sort'] } };
 type FindDepartmentParams = {
@@ -55,7 +55,7 @@ export async function findDepartments({
 	};
 
 	if (onlyMyDepartments) {
-		query = callbacks.run('livechat.applyDepartmentRestrictions', query, { userId });
+		query = await callbacks.run('livechat.applyDepartmentRestrictions', query, { userId });
 	}
 
 	const { cursor, totalCount } = LivechatDepartment.findPaginated(query, {
@@ -89,7 +89,7 @@ export async function findArchivedDepartments({
 	};
 
 	if (onlyMyDepartments) {
-		query = callbacks.run('livechat.applyDepartmentRestrictions', query, { userId });
+		query = await callbacks.run('livechat.applyDepartmentRestrictions', query, { userId });
 	}
 
 	const { cursor, totalCount } = LivechatDepartment.findPaginated(query, {
@@ -122,14 +122,14 @@ export async function findDepartmentById({
 	let query = { _id: departmentId };
 
 	if (onlyMyDepartments) {
-		query = callbacks.run('livechat.applyDepartmentRestrictions', query, { userId });
+		query = await callbacks.run('livechat.applyDepartmentRestrictions', query, { userId });
 	}
 
 	const result = {
 		department: await LivechatDepartment.findOne(query),
 		...(includeAgents &&
 			canViewLivechatDepartments && {
-				agents: await LivechatDepartmentAgents.find({ departmentId }).toArray(),
+				agents: await LivechatDepartmentAgents.findByDepartmentId(departmentId).toArray(),
 			}),
 	};
 
@@ -146,7 +146,7 @@ export async function findDepartmentsToAutocomplete({
 	let { conditions = {} } = selector;
 
 	if (onlyMyDepartments) {
-		conditions = callbacks.run('livechat.applyDepartmentRestrictions', conditions, { userId: uid });
+		conditions = await callbacks.run('livechat.applyDepartmentRestrictions', conditions, { userId: uid });
 	}
 
 	const conditionsWithArchived = { archived: { $ne: !showArchived }, ...conditions };
@@ -192,6 +192,6 @@ export async function findDepartmentsBetweenIds({
 	ids: string[];
 	fields: Record<string, unknown>;
 }): Promise<{ departments: ILivechatDepartment[] }> {
-	const departments = await LivechatDepartment.findInIds(ids, fields).toArray();
+	const departments = await LivechatDepartment.findInIds(ids, { projection: fields }).toArray();
 	return { departments };
 }

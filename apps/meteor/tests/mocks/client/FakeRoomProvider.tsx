@@ -1,4 +1,4 @@
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import type { ReactNode, ReactElement } from 'react';
 import React, { useMemo } from 'react';

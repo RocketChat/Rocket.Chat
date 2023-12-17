@@ -1,13 +1,12 @@
-import { Button, ButtonGroup, Icon, Margins } from '@rocket.chat/fuselage';
-import { ExternalLink } from '@rocket.chat/ui-client';
-import { useSetModal, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { Button, ButtonGroup, Margins } from '@rocket.chat/fuselage';
+import { useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import CloseToSeatsCapModal from './CloseToSeatsCapModal';
-import ReachedSeatsCapModal from './ReachedSeatsCapModal';
+import { useExternalLink } from '../../../../../client/hooks/useExternalLink';
+import { useShouldPreventAction } from '../../../../../client/hooks/useShouldPreventAction';
+import { useCheckoutUrl } from '../../../../../client/views/admin/subscription/hooks/useCheckoutUrl';
 import SeatsCapUsage from './SeatsCapUsage';
-import { useRequestSeatsLink } from './useRequestSeatsLink';
 
 type UserPageHeaderContentWithSeatsCapProps = {
 	activeUsers: number;
@@ -15,101 +14,39 @@ type UserPageHeaderContentWithSeatsCapProps = {
 };
 
 const UserPageHeaderContentWithSeatsCap = ({ activeUsers, maxActiveUsers }: UserPageHeaderContentWithSeatsCapProps): ReactElement => {
-	const seatsLinkUrl = useRequestSeatsLink();
+	const isCreateUserDisabled = useShouldPreventAction('activeUsers');
 
 	const t = useTranslation();
-	const usersRoute = useRoute('admin-users');
+	const router = useRouter();
 
-	const setModal = useSetModal();
-	const closeModal = (): void => setModal(null);
+	const manageSubscriptionUrl = useCheckoutUrl()({ target: 'user-page', action: 'buy_more' });
+	const openExternalLink = useExternalLink();
 
-	const isCloseToLimit = (): boolean => {
-		const ratio = activeUsers / maxActiveUsers;
-		return ratio >= 0.8;
+	const handleNewButtonClick = () => {
+		router.navigate('/admin/users/new');
 	};
 
-	const hasReachedLimit = (): boolean => {
-		const ratio = activeUsers / maxActiveUsers;
-		return ratio >= 1;
+	const handleInviteButtonClick = () => {
+		router.navigate('/admin/users/invite');
 	};
-
-	const withPreventionOnReachedLimit = (fn: () => void) => (): void => {
-		if (typeof seatsLinkUrl !== 'string') {
-			return;
-		}
-		if (hasReachedLimit()) {
-			setModal(<ReachedSeatsCapModal members={activeUsers} limit={maxActiveUsers} requestSeatsLink={seatsLinkUrl} onClose={closeModal} />);
-			return;
-		}
-
-		fn();
-	};
-
-	const handleNewButtonClick = withPreventionOnReachedLimit(() => {
-		if (typeof seatsLinkUrl !== 'string') {
-			return;
-		}
-		if (isCloseToLimit()) {
-			setModal(
-				<CloseToSeatsCapModal
-					members={activeUsers}
-					limit={maxActiveUsers}
-					title={t('Create_new_members')}
-					requestSeatsLink={seatsLinkUrl}
-					onConfirm={(): void => {
-						usersRoute.push({ context: 'new' });
-						closeModal();
-					}}
-					onClose={closeModal}
-				/>,
-			);
-			return;
-		}
-
-		usersRoute.push({ context: 'new' });
-	});
-
-	const handleInviteButtonClick = withPreventionOnReachedLimit(() => {
-		if (typeof seatsLinkUrl !== 'string') {
-			return;
-		}
-		if (isCloseToLimit()) {
-			setModal(
-				<CloseToSeatsCapModal
-					members={activeUsers}
-					limit={maxActiveUsers}
-					title={t('Invite_Users')}
-					requestSeatsLink={seatsLinkUrl}
-					onConfirm={(): void => {
-						usersRoute.push({ context: 'invite' });
-						closeModal();
-					}}
-					onClose={closeModal}
-				/>,
-			);
-			return;
-		}
-
-		usersRoute.push({ context: 'invite' });
-	});
 
 	return (
 		<>
-			<Margins inline='x16'>
+			<Margins inline={16}>
 				<SeatsCapUsage members={activeUsers} limit={maxActiveUsers} />
 			</Margins>
 			<ButtonGroup>
-				<Button onClick={handleNewButtonClick}>
-					<Icon size='x20' name='user-plus' /> {t('New')}
+				<Button icon='mail' onClick={handleInviteButtonClick}>
+					{t('Invite')}
 				</Button>
-				<Button onClick={handleInviteButtonClick}>
-					<Icon size='x20' name='mail' /> {t('Invite')}
+				<Button icon='user-plus' onClick={handleNewButtonClick}>
+					{t('New_user')}
 				</Button>
-				<ExternalLink to={seatsLinkUrl || ''}>
-					<Button>
-						<Icon size='x20' name='new-window' /> {t('Request_seats')}
+				{isCreateUserDisabled && (
+					<Button primary role='link' onClick={() => openExternalLink(manageSubscriptionUrl)}>
+						{t('Buy_more_seats')}
 					</Button>
-				</ExternalLink>
+				)}
 			</ButtonGroup>
 		</>
 	);

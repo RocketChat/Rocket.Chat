@@ -9,9 +9,9 @@ const BannerEnterpriseTrialEnded = (): ReactElement => {
 	const isAdmin = usePermission('manage-apps');
 
 	const bannerLink = {
-		link: '/admin/upgrade/go-fully-featured',
+		link: '/links/manage-subscription',
 		linkText: t('Upgrade_tab_upgrade_your_plan'),
-		linkTarget: '_self',
+		linkTarget: '_blank',
 	};
 
 	const cloudWorkspaceHadTrial = useSetting('Cloud_Workspace_Had_Trial') as boolean;
@@ -23,15 +23,15 @@ const BannerEnterpriseTrialEnded = (): ReactElement => {
 			{showTrialBanner && (
 				<Banner
 					closeable
-					icon={<Icon name='store' size={24} />}
+					icon={<Icon name='store' size='x24' />}
 					variant='warning'
-					title={t('Apps_disabled_when_Enterprise_trial_ended')}
+					title={t('Apps_disabled_when_Premium_trial_ended')}
 					onClose={() => setShowTrialBanner(false)}
 					{...(isAdmin && bannerLink)}
 				>
 					{isAdmin
-						? t('Apps_disabled_when_Enterprise_trial_ended_description_admin')
-						: t('Apps_disabled_when_Enterprise_trial_ended_description')}
+						? t('Apps_disabled_when_Premium_trial_ended_description_admin')
+						: t('Apps_disabled_when_Premium_trial_ended_description')}
 				</Banner>
 			)}
 		</>

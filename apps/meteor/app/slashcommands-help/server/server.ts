@@ -1,8 +1,8 @@
-import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
+import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
+import { i18n } from '../../../server/lib/i18n';
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
 
@@ -18,8 +18,7 @@ interface IHelpCommand {
 
 slashCommands.add({
 	command: 'help',
-	callback: async function Help(_command, _params, item): Promise<void> {
-		const userId = Meteor.userId() as string;
+	callback: async function Help({ message, userId }: SlashCommandCallbackParams<'help'>): Promise<void> {
 		const user = await Users.findOneById(userId);
 
 		const keys: IHelpCommand[] = [
@@ -58,13 +57,13 @@ slashCommands.add({
 		];
 		let msg = '';
 		keys.forEach((key) => {
-			msg = `${msg}\n${TAPi18n.__(key.key, {
+			msg = `${msg}\n${i18n.t(key.key, {
 				postProcess: 'sprintf',
 				sprintf: [key.command],
 				lng: user?.language || settings.get('language') || 'en',
 			})}`;
 		});
-		void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+		void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 			msg,
 		});
 	},

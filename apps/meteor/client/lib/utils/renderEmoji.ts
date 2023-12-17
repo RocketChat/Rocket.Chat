@@ -1,4 +1,4 @@
-import { emoji } from '../../../app/emoji/lib/rocketchat';
+import { emoji } from '../../../app/emoji/client/lib';
 
 const emojiList = emoji.list as Record<string, { emojiPackage: string }>;
 const emojiPackages = emoji.packages as Record<string, { render(emojiName: string): string }>;

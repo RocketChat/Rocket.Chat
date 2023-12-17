@@ -44,10 +44,10 @@ const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick, ti
 		<>
 			<Flex.Container alignItems='center' justifyContent='center'>
 				<Box>
-					<IconButton icon='chevron-down' small onClick={onPreviousDateClick} style={{ verticalAlign: 'middle' }} />
+					<IconButton icon='chevron-down' verticalAlign='middle' small onClick={onPreviousDateClick} />
 					<Flex.Item basis='50%'>
-						<Margins inline='x8'>
-							<Box is='span' style={{ textAlign: 'center' }}>
+						<Margins inline={8}>
+							<Box is='span' textAlign='center'>
 								{formattedCurrentDate}
 							</Box>
 						</Margins>
@@ -57,16 +57,10 @@ const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick, ti
 			</Flex.Container>
 			<Flex.Container>
 				{data ? (
-					<Box style={{ height: 196 }}>
+					<Box height={196}>
 						<Flex.Item align='stretch' grow={1} shrink={0}>
-							<Box style={{ position: 'relative' }}>
-								<Box
-									style={{
-										position: 'absolute',
-										width: '100%',
-										height: '100%',
-									}}
-								>
+							<Box position='relative'>
+								<Box position='absolute' width='full' height='full'>
 									<ResponsiveBar
 										data={values}
 										indexBy='day'
@@ -95,9 +89,7 @@ const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick, ti
 										}}
 										axisLeft={null}
 										animate={true}
-										// @ts-ignore
-										motionStiffness={90}
-										motionDamping={15}
+										motionConfig='stiff'
 										theme={{
 											// TODO: Get it from theme
 											axis: {

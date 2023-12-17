@@ -49,11 +49,11 @@ export class FederationAccountProfile {
 	}
 
 	get tokensTableEmpty(): Locator {
-		return this.page.locator('//div[contains(text(), "No results found")]');
+		return this.page.locator('//h3[contains(text(), "No results found")]');
 	}
 
 	get btnTokensAdd(): Locator {
-		return this.page.locator('//button[contains(text(), "Add")]');
+		return this.page.locator('role=button[name="Add"]');
 	}
 
 	get tokenAddedModal(): Locator {
@@ -65,11 +65,11 @@ export class FederationAccountProfile {
 	}
 
 	get btnRegenerateTokenModal(): Locator {
-		return this.page.locator('//button[contains(text(), "Regenerate token")]');
+		return this.page.locator('role=button[name="Regenerate token"]');
 	}
 
 	get btnRemoveTokenModal(): Locator {
-		return this.page.locator('//button[contains(text(), "Remove")]');
+		return this.page.locator('role=button[name="Remove"]');
 	}
 
 	get inputImageFile(): Locator {

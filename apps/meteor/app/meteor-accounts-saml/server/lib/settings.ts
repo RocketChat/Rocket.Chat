@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
-import { settings, settingsRegistry } from '../../../settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { settings, settingsRegistry } from '../../../settings/server';
 import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 import { SAMLUtils } from './Utils';
 import {
@@ -140,8 +140,8 @@ export const addSamlService = function (name: string): void {
 	SystemLogger.warn(`Adding ${name} is deprecated`);
 };
 
-export const addSettings = function (name: string): void {
-	void settingsRegistry.addGroup('SAML', async function () {
+export const addSettings = async function (name: string): Promise<void> {
+	await settingsRegistry.addGroup('SAML', async function () {
 		await this.with(
 			{
 				tab: 'SAML_Connection',

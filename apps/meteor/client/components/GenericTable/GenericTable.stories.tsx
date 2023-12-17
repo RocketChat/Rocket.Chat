@@ -1,8 +1,17 @@
-import { TextInput, Box, Icon, Table } from '@rocket.chat/fuselage';
+import { TextInput, Box, Icon } from '@rocket.chat/fuselage';
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
-import GenericTable from '.';
+import {
+	GenericTable,
+	GenericTableHeaderCell,
+	GenericTableCell,
+	GenericTableRow,
+	GenericTableHeader,
+	GenericTableBody,
+	GenericTableLoadingTable,
+} from '.';
+import GenericNoResults from '../GenericNoResults/GenericNoResults';
 
 export default {
 	title: 'Components/GenericTable',
@@ -16,33 +25,59 @@ export default {
 	],
 } as ComponentMeta<typeof GenericTable>;
 
-const header = [
-	<GenericTable.HeaderCell key='name'>Name</GenericTable.HeaderCell>,
-	<GenericTable.HeaderCell key='email'>Email</GenericTable.HeaderCell>,
-];
-
-const renderFilter = () => (
-	<Box mb='x16' is='form' display='flex' flexDirection='column'>
-		<TextInput flexShrink={0} placeholder='Search...' addon={<Icon name='magnifier' size='x20' />} />
-	</Box>
+const headers = (
+	<>
+		<GenericTableHeaderCell key='name'>Name</GenericTableHeaderCell>
+		<GenericTableHeaderCell key='email'>Email</GenericTableHeaderCell>
+	</>
 );
 
-const renderRow = ({ _id, name, email }: any) => (
-	<Table.Row key={_id}>
-		<Table.Cell>{name}</Table.Cell>
-		<Table.Cell>{email}</Table.Cell>
-	</Table.Row>
+const results = Array.from({ length: 10 }, (_, i) => ({
+	_id: i,
+	name: `John Doe #${i}`,
+	email: `john.doe.n${i}@example.com`,
+}));
+
+const filter = (
+	<>
+		<Box mb={16} is='form' display='flex' flexDirection='column'>
+			<TextInput flexShrink={0} placeholder='Search...' addon={<Icon name='magnifier' size='x20' />} />
+		</Box>
+	</>
 );
 
-export const Default: ComponentStory<typeof GenericTable> = (args) => (
-	<GenericTable {...args} header={header} renderFilter={renderFilter} renderRow={renderRow} />
+export const Default: ComponentStory<typeof GenericTable> = () => (
+	<>
+		{filter}
+		<GenericTable>
+			<GenericTableHeader>{headers}</GenericTableHeader>
+			<GenericTableBody>
+				{results?.map(({ _id, name, email }: any) => (
+					<GenericTableRow key={_id}>
+						<GenericTableCell>{name}</GenericTableCell>
+						<GenericTableCell>{email}</GenericTableCell>
+					</GenericTableRow>
+				))}
+			</GenericTableBody>
+		</GenericTable>
+	</>
 );
-Default.storyName = 'GenericTable';
-Default.args = {
-	results: Array.from({ length: 10 }, (_, i) => ({
-		_id: i,
-		name: `John Doe #${i}`,
-		email: `john.doe.n${i}@example.com`,
-	})),
-	total: 1,
-};
+
+export const Loading: ComponentStory<typeof GenericTable> = () => (
+	<>
+		{filter}
+		<GenericTable>
+			<GenericTableHeader>{headers}</GenericTableHeader>
+			<GenericTableBody>
+				<GenericTableLoadingTable headerCells={2} />
+			</GenericTableBody>
+		</GenericTable>
+	</>
+);
+
+export const NoResults: ComponentStory<typeof GenericTable> = () => (
+	<>
+		{filter}
+		<GenericNoResults />
+	</>
+);

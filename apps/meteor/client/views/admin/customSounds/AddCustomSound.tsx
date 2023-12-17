@@ -1,10 +1,10 @@
-import { Field, TextInput, Box, Icon, Margins, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, TextInput, Box, Icon, Margins, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, FormEvent } from 'react';
 import React, { useState, useCallback } from 'react';
 
-import VerticalBar from '../../../components/VerticalBar';
-import { useFileInput } from '../../../hooks/useFileInput';
+import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
+import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 import { validate, createSoundData } from './lib';
 
 type AddCustomSoundProps = {
@@ -27,7 +27,7 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 		setSound(soundFile);
 	}, []);
 
-	const [clickUpload] = useFileInput(handleChangeFile, 'audio/mp3');
+	const [clickUpload] = useSingleFileInput(handleChangeFile, 'audio/mp3');
 
 	const saveAction = useCallback(
 		async (name, soundFile): Promise<string | undefined> => {
@@ -72,7 +72,9 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 	const handleSave = useCallback(async () => {
 		try {
 			const result = await saveAction(name, sound);
-			dispatchToastMessage({ type: 'success', message: t('Custom_Sound_Saved_Successfully') });
+			if (result) {
+				dispatchToastMessage({ type: 'success', message: t('Custom_Sound_Saved_Successfully') });
+			}
 			result && goToNew(result);
 			onChange();
 		} catch (error) {
@@ -81,41 +83,42 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 	}, [dispatchToastMessage, goToNew, name, onChange, saveAction, sound, t]);
 
 	return (
-		<VerticalBar.ScrollableContent {...props}>
-			<Field>
-				<Field.Label>{t('Name')}</Field.Label>
-				<Field.Row>
-					<TextInput
-						value={name}
-						onChange={(e: FormEvent<HTMLInputElement>): void => setName(e.currentTarget.value)}
-						placeholder={t('Name')}
-					/>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Label alignSelf='stretch'>{t('Sound_File_mp3')}</Field.Label>
-				<Box display='flex' flexDirection='row' mbs='none'>
-					<Margins inline='x4'>
-						<Button square onClick={clickUpload}>
-							<Icon name='upload' size='x20' />
-						</Button>
-						{sound?.name || t('None')}
-					</Margins>
-				</Box>
-			</Field>
-			<Field>
-				<Field.Row>
-					<ButtonGroup stretch w='full'>
-						<Button mie='x4' onClick={close}>
-							{t('Cancel')}
-						</Button>
-						<Button primary onClick={handleSave} disabled={name === ''}>
-							{t('Save')}
-						</Button>
-					</ButtonGroup>
-				</Field.Row>
-			</Field>
-		</VerticalBar.ScrollableContent>
+		<>
+			<ContextualbarScrollableContent {...props}>
+				<Field>
+					<FieldLabel>{t('Name')}</FieldLabel>
+					<FieldRow>
+						<TextInput
+							value={name}
+							onChange={(e: FormEvent<HTMLInputElement>): void => setName(e.currentTarget.value)}
+							placeholder={t('Name')}
+						/>
+					</FieldRow>
+				</Field>
+				<Field>
+					<FieldLabel alignSelf='stretch'>{t('Sound_File_mp3')}</FieldLabel>
+					<Box display='flex' flexDirection='row' mbs='none'>
+						<Margins inline={4}>
+							{/* FIXME: replace to IconButton */}
+							<Button square onClick={clickUpload}>
+								<Icon name='upload' size='x20' />
+							</Button>
+							{sound?.name || t('None')}
+						</Margins>
+					</Box>
+				</Field>
+			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
+				<ButtonGroup stretch>
+					<Button mie={4} onClick={close}>
+						{t('Cancel')}
+					</Button>
+					<Button primary onClick={handleSave} disabled={name === ''}>
+						{t('Save')}
+					</Button>
+				</ButtonGroup>
+			</ContextualbarFooter>
+		</>
 	);
 };
 

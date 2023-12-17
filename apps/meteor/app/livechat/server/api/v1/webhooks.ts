@@ -1,8 +1,10 @@
-import { HTTP } from 'meteor/http';
+import { Logger } from '@rocket.chat/logger';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { API } from '../../../../api/server';
 import { settings } from '../../../../settings/server';
-import { Livechat } from '../../lib/Livechat';
+
+const logger = new Logger('WebhookTest');
 
 API.v1.addRoute(
 	'livechat/webhook.test',
@@ -55,30 +57,33 @@ API.v1.addRoute(
 				],
 			};
 			const options = {
+				method: 'POST',
 				headers: {
 					'X-RocketChat-Livechat-Token': settings.get<string>('Livechat_secret_token'),
+					'Accept': 'application/json',
 				},
-				data: sampleData,
+				body: sampleData,
 			};
 
 			const webhookUrl = settings.get<string>('Livechat_webhookUrl');
 
 			if (!webhookUrl) {
-				return API.v1.failure('Webhook URL is not set');
+				return API.v1.failure('Webhook_URL_not_set');
 			}
 
 			try {
-				Livechat.logger.debug(`Testing webhook ${webhookUrl}`);
-				const response = HTTP.post(webhookUrl, options);
+				logger.debug(`Testing webhook ${webhookUrl}`);
+				const request = await fetch(webhookUrl, options);
+				const response = await request.text();
 
-				Livechat.logger.debug({ response });
-				if (response?.statusCode === 200) {
+				logger.debug({ response });
+				if (request.status === 200) {
 					return API.v1.success();
 				}
 
 				throw new Error('Invalid status code');
 			} catch (error) {
-				Livechat.logger.error(`Error testing webhook: ${error}`);
+				logger.error(`Error testing webhook: ${error}`);
 				throw new Error('error-invalid-webhook-response');
 			}
 		},

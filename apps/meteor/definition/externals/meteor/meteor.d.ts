@@ -1,10 +1,18 @@
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import 'meteor/meteor';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IStreamerConstructor, IStreamer } from 'meteor/rocketchat:streamer';
 
 type StringifyBuffers<T extends unknown[]> = {
 	[P in keyof T]: T[P] extends Buffer ? string : T[P];
 };
+
+declare global {
+	namespace Assets {
+		function getBinaryAsync(assetPath: string): Promise<EJSON | undefined>;
+
+		function getTextAsync(assetPath: string): Promise<string | undefined>;
+	}
+}
 
 declare module 'meteor/meteor' {
 	namespace Meteor {
@@ -69,6 +77,7 @@ declare module 'meteor/meteor' {
 				};
 				_launchConnectionAsync: () => void;
 				allowConnection: () => void;
+				on: (key: 'message', callback: (data: string) => void) => void;
 			};
 
 			_outstandingMethodBlocks: unknown[];
@@ -82,6 +91,18 @@ declare module 'meteor/meteor' {
 				status: 'connected' | 'connecting' | 'failed' | 'waiting' | 'offline';
 				reconnect: () => void;
 			};
+			subscribe(
+				id: string,
+				name: string,
+				...args: [
+					...unknown,
+					callbacks?: {
+						onReady?: (...args: any[]) => void;
+						onStop?: (error?: Error) => void;
+						onError?: (error: Error) => void;
+					},
+				]
+			): SubscriptionHandle;
 		}
 
 		const connection: IMeteorConnection;
@@ -101,11 +122,19 @@ declare module 'meteor/meteor' {
 			cb: (error?: Error | Meteor.Error | Meteor.TypedError) => void,
 		): void;
 
+		function loginWithSamlToken(token: string, cb: (error?: Error | Meteor.Error | Meteor.TypedError) => void): void;
+
 		function methods<TServerMethods extends ServerMethods>(methods: {
 			[TMethodName in keyof TServerMethods]?: (
 				this: MethodThisType,
 				...args: StringifyBuffers<Parameters<TServerMethods[TMethodName]>>
 			) => ReturnType<TServerMethods[TMethodName]> | Promise<ReturnType<TServerMethods[TMethodName]>>;
 		}): void;
+
+		const AppCache:
+			| {
+					config: (config: { onlineOnly: string[] }) => void;
+			  }
+			| undefined;
 	}
 }

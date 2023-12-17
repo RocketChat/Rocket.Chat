@@ -1,11 +1,11 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 
-import { match } from 'path-to-regexp';
-import { WebApp } from 'meteor/webapp';
-import { UserDataFiles, Users } from '@rocket.chat/models';
-import type { IIncomingMessage, IUser, IUserDataFile } from '@rocket.chat/core-typings';
-import { Cookies } from 'meteor/ostrio:cookies';
 import { hashLoginToken } from '@rocket.chat/account-utils';
+import type { IIncomingMessage, IUser, IUserDataFile } from '@rocket.chat/core-typings';
+import { UserDataFiles, Users } from '@rocket.chat/models';
+import { Cookies } from 'meteor/ostrio:cookies';
+import { WebApp } from 'meteor/webapp';
+import { match } from 'path-to-regexp';
 
 import { FileUpload } from '../../app/file-upload/server';
 import { settings } from '../../app/settings/server';
@@ -28,7 +28,7 @@ const isRequestFromOwner = async (req: IIncomingMessage, ownerUID: IUser['_id'])
 
 	if (
 		req.headers.cookie &&
-		(await matchUID(cookies.get(req.headers.cookie, 'rc_uid'), cookies.get(req.headers.cookie, 'rc_token'), ownerUID))
+		(await matchUID(cookies.get('rc_uid', req.headers.cookie), cookies.get('rc_token', req.headers.cookie), ownerUID))
 	) {
 		return true;
 	}

@@ -1,13 +1,13 @@
 import crypto from 'crypto';
 
-import polka from 'polka';
-import WebSocket from 'ws';
-import { throttle } from 'underscore';
 import { MeteorService, Presence, ServiceClass } from '@rocket.chat/core-services';
 import { InstanceStatus } from '@rocket.chat/instance-status';
+import polka from 'polka';
+import { throttle } from 'underscore';
+import WebSocket from 'ws';
 
-import type { NotificationsModule } from '../../../../apps/meteor/server/modules/notifications/notifications.module';
 import { ListenersModule } from '../../../../apps/meteor/server/modules/listeners/listeners.module';
+import type { NotificationsModule } from '../../../../apps/meteor/server/modules/notifications/notifications.module';
 import { StreamerCentral } from '../../../../apps/meteor/server/modules/streamer/streamer.module';
 import { Client } from './Client';
 import { events, server } from './configureServer';
@@ -73,6 +73,15 @@ export class DDPStreamer extends ServiceClass {
 		}
 
 		metrics.register({
+			name: 'rocketchat_subscription',
+			type: 'histogram',
+			labelNames: ['subscription'],
+			description: 'Client subscriptions to Rocket.Chat',
+			unit: 'millisecond',
+			quantiles: true,
+		});
+
+		metrics.register({
 			name: 'users_connected',
 			type: 'gauge',
 			labelNames: ['nodeID'],
@@ -85,6 +94,8 @@ export class DDPStreamer extends ServiceClass {
 			labelNames: ['nodeID'],
 			description: 'Users logged by streamer',
 		});
+
+		server.setMetrics(metrics);
 
 		server.on(DDP_EVENTS.CONNECTED, () => {
 			metrics.increment('users_connected', { nodeID }, 1);
@@ -153,7 +164,11 @@ export class DDPStreamer extends ServiceClass {
 			.use(proxy())
 			.get('/health', async (_req, res) => {
 				try {
-					await this.api?.nodeList();
+					if (!this.api) {
+						throw new Error('API not available');
+					}
+
+					await this.api.nodeList();
 					res.end('ok');
 				} catch (err) {
 					console.error('Service not healthy', err);

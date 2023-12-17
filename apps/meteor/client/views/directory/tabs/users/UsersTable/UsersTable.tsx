@@ -7,6 +7,7 @@ import type { ReactElement } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 
 import FilterByText from '../../../../../components/FilterByText';
+import GenericNoResults from '../../../../../components/GenericNoResults';
 import {
 	GenericTable,
 	GenericTableHeader,
@@ -35,12 +36,12 @@ const UsersTable = ({ workspace = 'local' }): ReactElement => {
 	const headers = useMemo(
 		() =>
 			[
-				<GenericTableHeaderCell key={'name'} direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
+				<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
 					{t('Name')}
 				</GenericTableHeaderCell>,
 				mediaQuery && canViewFullOtherUserInfo && (
 					<GenericTableHeaderCell
-						key={'email'}
+						key='email'
 						direction={sortDirection}
 						active={sortBy === 'email'}
 						onClick={setSort}
@@ -94,7 +95,7 @@ const UsersTable = ({ workspace = 'local' }): ReactElement => {
 
 	return (
 		<>
-			<FilterByText autoFocus placeholder={t('Search_Users')} onChange={({ text }): void => setText(text)} />
+			<FilterByText placeholder={t('Search_Users')} onChange={({ text }): void => setText(text)} />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
@@ -131,12 +132,7 @@ const UsersTable = ({ workspace = 'local' }): ReactElement => {
 					/>
 				</>
 			)}
-			{isFetched && data?.result.length === 0 && (
-				<States>
-					<StatesIcon name='magnifier' />
-					<StatesTitle>{t('No_results_found')}</StatesTitle>
-				</States>
-			)}
+			{isFetched && data?.result.length === 0 && <GenericNoResults />}
 			{isError && (
 				<States>
 					<StatesIcon name='warning' variation='danger' />

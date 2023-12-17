@@ -1,4 +1,3 @@
-import { Random } from '@rocket.chat/random';
 import type {
 	IImportUser,
 	IImportUserRecord,
@@ -9,6 +8,7 @@ import type {
 	IImportData,
 	IImportChannel,
 } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
 
 import { ImportDataConverter } from './ImportDataConverter';
 import type { IConverterOptions } from './ImportDataConverter';
@@ -56,8 +56,8 @@ export class VirtualDataConverter extends ImportDataConverter {
 		return undefined;
 	}
 
-	public addUserSync(data: IImportUser): void {
-		return this.addObjectSync('user', data);
+	public addUserSync(data: IImportUser, options?: Record<string, any>): void {
+		return this.addObjectSync('user', data, options);
 	}
 
 	protected async addObject(type: IImportRecordType, data: IImportData, options: Record<string, any> = {}): Promise<void> {
@@ -79,7 +79,7 @@ export class VirtualDataConverter extends ImportDataConverter {
 			_id: Random.id(),
 			data,
 			dataType: type,
-			...options,
+			options,
 		});
 	}
 

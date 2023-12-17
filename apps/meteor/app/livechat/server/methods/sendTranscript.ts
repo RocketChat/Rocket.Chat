@@ -1,10 +1,11 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
-import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import { Omnichannel } from '@rocket.chat/core-services';
+import { LivechatRooms, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import { Users } from '@rocket.chat/models';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { RateLimiter } from '../../../lib/server';
 import { Livechat } from '../lib/LivechatTyped';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -29,18 +30,21 @@ Meteor.methods<ServerMethods>({
 		const user = await Users.findOneById(uid, {
 			projection: { _id: 1, username: 1, name: 1, utcOffset: 1 },
 		});
+
+		const room = await LivechatRooms.findOneById(rid, { projection: { activity: 1 } });
+		if (!room) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'livechat:sendTranscript' });
+		}
+		if (!(await Omnichannel.isWithinMACLimit(room))) {
+			throw new Meteor.Error('error-mac-limit-reached', 'MAC limit reached', { method: 'livechat:sendTranscript' });
+		}
+
 		return Livechat.sendTranscript({ token, rid, email, subject, user });
 	},
 });
 
-DDPRateLimiter.addRule(
-	{
-		type: 'method',
-		name: 'livechat:sendTranscript',
-		connectionId() {
-			return true;
-		},
+RateLimiter.limitMethod('livechat:sendTranscript', 1, 5000, {
+	connectionId() {
+		return true;
 	},
-	1,
-	5000,
-);
+});

@@ -1,47 +1,43 @@
-import { Field, TextInput, Chip, Button } from '@rocket.chat/fuselage';
+import { TextInput, Chip, Button, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, ReactElement } from 'react';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
-import { useFormsSubscription } from '../../views/omnichannel/additionalForms';
+import { CurrentChatTags } from '../../views/omnichannel/additionalForms';
 import { FormSkeleton } from './Skeleton';
+import { useLivechatTags } from './hooks/useLivechatTags';
 
-const Tags = ({
-	tags = [],
-	handler,
-	error,
-	tagRequired,
-}: {
+type TagsProps = {
 	tags?: string[];
 	handler: (value: string[]) => void;
 	error?: string;
 	tagRequired?: boolean;
-}): ReactElement => {
+	department?: string;
+};
+
+const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps): ReactElement => {
 	const t = useTranslation();
-	const forms = useFormsSubscription() as any;
 
-	// TODO: Refactor the formsSubscription to use components instead of hooks (since the only thing the hook does is return a component)
-	const { useCurrentChatTags } = forms;
-	// Conditional hook was required since the whole formSubscription uses hooks in an incorrect manner
-	const EETagsComponent = useCurrentChatTags?.();
-
-	const getTags = useEndpoint('GET', '/v1/livechat/tags');
-	const { data: tagsResult, isInitialLoading } = useQuery(['/v1/livechat/tags'], () => getTags({ text: '' }), {
-		enabled: Boolean(EETagsComponent),
+	const { data: tagsResult, isInitialLoading } = useLivechatTags({
+		department,
+		viewAll: !department,
 	});
+
+	const customTags = useMemo(() => {
+		return tags.filter((tag) => !tagsResult?.tags.find((rtag) => rtag.name === tag));
+	}, [tags, tagsResult?.tags]);
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const [tagValue, handleTagValue] = useState('');
-	const [paginatedTagValue, handlePaginatedTagValue] = useState<{ label: string; value: string }[]>();
+
+	const paginatedTagValue = useMemo(() => tags.map((tag) => ({ label: tag, value: tag })), [tags]);
 
 	const removeTag = (tagToRemove: string): void => {
-		if (tags) {
-			const tagsFiltered = tags.filter((tag: string) => tag !== tagToRemove);
-			handler(tagsFiltered);
-		}
+		if (!tags) return;
+
+		handler(tags.filter((tag) => tag !== tagToRemove));
 	};
 
 	const handleTagTextSubmit = useMutableCallback(() => {
@@ -69,23 +65,24 @@ const Tags = ({
 
 	return (
 		<>
-			<Field.Label required={tagRequired} mb='x4'>
+			<FieldLabel required={tagRequired} mb={4}>
 				{t('Tags')}
-			</Field.Label>
+			</FieldLabel>
 
-			{EETagsComponent && tagsResult?.tags && tagsResult?.tags.length ? (
-				<Field.Row>
-					<EETagsComponent
+			{tagsResult?.tags && tagsResult?.tags.length ? (
+				<FieldRow>
+					<CurrentChatTags
 						value={paginatedTagValue}
 						handler={(tags: { label: string; value: string }[]): void => {
 							handler(tags.map((tag) => tag.label));
-							handlePaginatedTagValue(tags);
 						}}
+						department={department}
+						viewAll={!department}
 					/>
-				</Field.Row>
+				</FieldRow>
 			) : (
 				<>
-					<Field.Row>
+					<FieldRow>
 						<TextInput
 							error={error}
 							value={tagValue}
@@ -93,19 +90,21 @@ const Tags = ({
 							flexGrow={1}
 							placeholder={t('Enter_a_tag')}
 						/>
-						<Button disabled={!tagValue} mis='x8' title={t('Add')} onClick={handleTagTextSubmit}>
+						<Button disabled={!tagValue} mis={8} title={t('Add')} onClick={handleTagTextSubmit}>
 							{t('Add')}
 						</Button>
-					</Field.Row>
-
-					<Field.Row justifyContent='flex-start'>
-						{tags?.map((tag, i) => (
-							<Chip key={i} onClick={(): void => removeTag(tag)} mie='x8'>
-								{tag}
-							</Chip>
-						))}
-					</Field.Row>
+					</FieldRow>
 				</>
+			)}
+
+			{customTags.length > 0 && (
+				<FieldRow justifyContent='flex-start'>
+					{customTags?.map((tag, i) => (
+						<Chip key={i} onClick={(): void => removeTag(tag)} mie={8}>
+							{tag}
+						</Chip>
+					))}
+				</FieldRow>
 			)}
 		</>
 	);

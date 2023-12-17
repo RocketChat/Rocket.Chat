@@ -1,27 +1,24 @@
-import { Meteor } from 'meteor/meteor';
+import type { ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Livechat } from '../lib/Livechat';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
+import { Livechat } from '../lib/LivechatTyped';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		'livechat:saveDepartmentAgents'(
 			_id: string,
-			departmentAgents: {
-				agentId: string;
-				count?: number;
-				order?: number;
-			}[],
+			departmentAgents: Pick<ILivechatDepartmentAgents, 'agentId' | 'count' | 'order' | 'username'>[],
 		): boolean;
 	}
 }
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:saveDepartmentAgents'(_id, departmentAgents) {
-		methodDeprecationLogger.warn('livechat:saveDepartmentAgents will be deprecated in future versions of Rocket.Chat');
+		methodDeprecationLogger.method('livechat:saveDepartmentAgents', '7.0.0');
 
 		const uid = Meteor.userId();
 		if (!uid || !(await hasPermissionAsync(uid, 'add-livechat-department-agents'))) {

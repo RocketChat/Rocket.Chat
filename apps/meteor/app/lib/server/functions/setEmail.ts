@@ -1,12 +1,12 @@
-import { Meteor } from 'meteor/meteor';
-import { escapeHTML } from '@rocket.chat/string-helpers';
 import { Users } from '@rocket.chat/models';
+import { escapeHTML } from '@rocket.chat/string-helpers';
+import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { RateLimiter, validateEmailDomain } from '../lib';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
-import { checkEmailAvailability } from '.';
+import { RateLimiter, validateEmailDomain } from '../lib';
+import { checkEmailAvailability } from './checkEmailAvailability';
 
 let html = '';
 Meteor.startup(() => {
@@ -47,7 +47,7 @@ const _setEmail = async function (userId: string, email: string, shouldSendVerif
 		throw new Meteor.Error('error-invalid-email', 'Invalid email', { function: '_setEmail' });
 	}
 
-	validateEmailDomain(email);
+	await validateEmailDomain(email);
 
 	const user = await Users.findOneById(userId);
 	if (!user) {

@@ -1,11 +1,12 @@
-import { Meteor } from 'meteor/meteor';
+import { Messages, AppsTokens, Users, Rooms, Settings } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { Match, check } from 'meteor/check';
-import { Messages, AppsTokens, Users, Rooms } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
-import { API } from '../api';
-import PushNotification from '../../../push-notifications/server/lib/PushNotification';
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
+import PushNotification from '../../../push-notifications/server/lib/PushNotification';
+import { settings } from '../../../settings/server';
+import { API } from '../api';
 
 API.v1.addRoute(
 	'push.token',
@@ -107,6 +108,21 @@ API.v1.addRoute(
 			const data = await PushNotification.getNotificationForMessageId({ receiver, room, message });
 
 			return API.v1.success({ data });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'push.info',
+	{ authRequired: true },
+	{
+		async get() {
+			const defaultGateway = (await Settings.findOneById('Push_gateway', { projection: { packageValue: 1 } }))?.packageValue;
+			const defaultPushGateway = settings.get('Push_gateway') === defaultGateway;
+			return API.v1.success({
+				pushGatewayEnabled: settings.get('Push_enable'),
+				defaultPushGateway,
+			});
 		},
 	},
 );

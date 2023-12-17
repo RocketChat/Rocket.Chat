@@ -23,4 +23,13 @@ declare module '*.info' {
 		tag?: string;
 		branch?: string;
 	};
+
+	export const minimumClientVersions: {
+		desktop: string;
+		mobile: string;
+	};
+
+	import type { SignedSupportedVersions } from '@rocket.chat/server-cloud-communication';
+
+	export const supportedVersions: SignedSupportedVersions;
 }

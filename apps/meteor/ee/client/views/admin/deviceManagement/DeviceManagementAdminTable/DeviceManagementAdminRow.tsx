@@ -1,11 +1,12 @@
-import { Box, TableRow, TableCell, Menu, Option } from '@rocket.chat/fuselage';
+import { Box, Menu, Option } from '@rocket.chat/fuselage';
 import { useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import type { KeyboardEvent, ReactElement } from 'react';
 import React, { useCallback } from 'react';
 
+import { GenericTableRow, GenericTableCell } from '../../../../../../client/components/GenericTable';
 import { useFormatDateAndTime } from '../../../../../../client/hooks/useFormatDateAndTime';
-import DeviceIcon from '../../../../deviceManagement/components/DeviceIcon';
+import DeviceIcon from '../../../../components/deviceManagement/DeviceIcon';
 import { useDeviceLogout } from '../../../../hooks/useDeviceLogout';
 
 type DeviceRowProps = {
@@ -16,6 +17,7 @@ type DeviceRowProps = {
 	deviceType?: string;
 	deviceOSName?: string;
 	loginAt: string;
+	rcVersion?: string;
 	onReload: () => void;
 };
 
@@ -27,6 +29,7 @@ const DeviceManagementAdminRow = ({
 	deviceType = 'browser',
 	deviceOSName = '',
 	loginAt,
+	rcVersion,
 	onReload,
 }: DeviceRowProps): ReactElement => {
 	const t = useTranslation();
@@ -61,26 +64,27 @@ const DeviceManagementAdminRow = ({
 	};
 
 	return (
-		<TableRow key={_id} onKeyDown={handleKeyDown} onClick={handleClick} tabIndex={0} action>
-			<TableCell>
+		<GenericTableRow key={_id} onKeyDown={handleKeyDown} onClick={handleClick} tabIndex={0} action>
+			<GenericTableCell>
 				<Box display='flex' alignItems='center'>
 					<DeviceIcon deviceType={deviceType} />
 					{deviceName && <Box withTruncatedText>{deviceName}</Box>}
 				</Box>
-			</TableCell>
-			<TableCell>{deviceOSName}</TableCell>
-			<TableCell withTruncatedText>{username}</TableCell>
-			{mediaQuery && <TableCell>{formatDateAndTime(loginAt)}</TableCell>}
-			{mediaQuery && <TableCell withTruncatedText>{_id}</TableCell>}
-			{mediaQuery && <TableCell withTruncatedText>{ip}</TableCell>}
-			<TableCell onClick={(e): void => e.stopPropagation()}>
+			</GenericTableCell>
+			<GenericTableCell>{rcVersion}</GenericTableCell>
+			<GenericTableCell>{deviceOSName}</GenericTableCell>
+			<GenericTableCell withTruncatedText>{username}</GenericTableCell>
+			{mediaQuery && <GenericTableCell>{formatDateAndTime(loginAt)}</GenericTableCell>}
+			{mediaQuery && <GenericTableCell withTruncatedText>{_id}</GenericTableCell>}
+			{mediaQuery && <GenericTableCell withTruncatedText>{ip}</GenericTableCell>}
+			<GenericTableCell onClick={(e): void => e.stopPropagation()}>
 				<Menu
 					title={t('Options')}
 					options={menuOptions}
 					renderItem={({ label: { label, icon }, ...props }): ReactElement => <Option label={label} icon={icon} {...props} />}
 				/>
-			</TableCell>
-		</TableRow>
+			</GenericTableCell>
+		</GenericTableRow>
 	);
 };
 

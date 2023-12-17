@@ -34,7 +34,7 @@ const DiscussionListItem = ({
 }: DiscussionListItemProps): ReactElement => {
 	const t = useTranslation();
 	return (
-		<Box is={Message} {...props} className={className} pbs='x16' pbe='x8'>
+		<Box is={Message} {...props} className={className} pbs={16} pbe={8}>
 			<Message.LeftContainer>
 				<MessageAvatar username={username} emoji={emoji} size='x36' />
 			</Message.LeftContainer>

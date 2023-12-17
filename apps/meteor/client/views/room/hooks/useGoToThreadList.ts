@@ -1,19 +1,28 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useCurrentRoute, useRoute } from '@rocket.chat/ui-contexts';
+import { useRouter } from '@rocket.chat/ui-contexts';
 
 import { useRoom } from '../contexts/RoomContext';
 
 export const useGoToThreadList = ({ replace = false }: { replace?: boolean } = {}): (() => void) => {
+	const router = useRouter();
 	const room = useRoom();
-	const [routeName, { context, ...params } = { context: '' }, queryParams] = useCurrentRoute();
 
-	if (!routeName) {
-		throw new Error('Route name is not defined');
-	}
-
-	const roomRoute = useRoute(routeName);
-	const go = replace ? roomRoute.replace : roomRoute.push;
 	return useMutableCallback(() => {
-		go({ rid: room._id, ...params, tab: 'thread' }, queryParams);
+		const routeName = router.getRouteName();
+
+		if (!routeName) {
+			throw new Error('Route name is not defined');
+		}
+
+		const { context, ...params } = router.getRouteParameters();
+
+		router.navigate(
+			{
+				name: routeName,
+				params: { rid: room._id, ...params, tab: 'thread' },
+				search: router.getSearchParameters(),
+			},
+			{ replace },
+		);
 	});
 };

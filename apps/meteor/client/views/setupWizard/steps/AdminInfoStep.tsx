@@ -1,9 +1,15 @@
 import { AdminInfoPage } from '@rocket.chat/onboarding-ui';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ComponentProps } from 'react';
 import React from 'react';
 
 import { useSetupWizardContext } from '../contexts/SetupWizardContext';
+
+const toRegExp = (username: string): RegExp => new RegExp(`^${escapeRegExp(username).trim()}$`, 'i');
+const usernameBlackList = ['all', 'here', 'admin'].map(toRegExp);
+const hasBlockedName = (username: string): boolean =>
+	!!usernameBlackList.length && usernameBlackList.some((restrictedUsername) => restrictedUsername.test(escapeRegExp(username).trim()));
 
 const AdminInfoStep = (): ReactElement => {
 	const t = useTranslation();
@@ -14,7 +20,7 @@ const AdminInfoStep = (): ReactElement => {
 
 	// TODO: check if username exists
 	const validateUsername = (username: string): boolean | string => {
-		if (!usernameRegExp.test(username)) {
+		if (!usernameRegExp.test(username) || hasBlockedName(username)) {
 			return t('Invalid_username');
 		}
 
@@ -28,7 +34,7 @@ const AdminInfoStep = (): ReactElement => {
 	return (
 		<AdminInfoPage
 			validatePassword={(password): boolean => password.length > 0}
-			passwordRulesHint={''}
+			passwordRulesHint=''
 			validateUsername={validateUsername}
 			validateEmail={validateEmail}
 			currentStep={currentStep}

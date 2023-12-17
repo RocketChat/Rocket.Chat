@@ -1,22 +1,25 @@
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import { isVideoConfMessage } from '@rocket.chat/core-typings';
+import type { IActionManager } from '@rocket.chat/ui-contexts';
 import type { UIEvent } from 'react';
 
+import type { ChatAPI, ComposerAPI, DataAPI, UploadsAPI } from '../../../../client/lib/chats/ChatAPI';
+import { createDataAPI } from '../../../../client/lib/chats/data';
+import { processMessageEditing } from '../../../../client/lib/chats/flows/processMessageEditing';
+import { processSetReaction } from '../../../../client/lib/chats/flows/processSetReaction';
+import { processSlashCommand } from '../../../../client/lib/chats/flows/processSlashCommand';
+import { processTooLongMessage } from '../../../../client/lib/chats/flows/processTooLongMessage';
+import { replyBroadcast } from '../../../../client/lib/chats/flows/replyBroadcast';
+import { requestMessageDeletion } from '../../../../client/lib/chats/flows/requestMessageDeletion';
+import { sendMessage } from '../../../../client/lib/chats/flows/sendMessage';
+import { uploadFiles } from '../../../../client/lib/chats/flows/uploadFiles';
+import { ReadStateManager } from '../../../../client/lib/chats/readStateManager';
+import { createUploadsAPI } from '../../../../client/lib/chats/uploads';
 import {
 	setHighlightMessage,
 	clearHighlightMessage,
 } from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
-import type { ChatAPI, ComposerAPI, DataAPI, UploadsAPI } from '../../../../client/lib/chats/ChatAPI';
-import { uploadFiles } from '../../../../client/lib/chats/flows/uploadFiles';
-import { processSlashCommand } from '../../../../client/lib/chats/flows/processSlashCommand';
-import { requestMessageDeletion } from '../../../../client/lib/chats/flows/requestMessageDeletion';
-import { processMessageEditing } from '../../../../client/lib/chats/flows/processMessageEditing';
-import { processTooLongMessage } from '../../../../client/lib/chats/flows/processTooLongMessage';
-import { processSetReaction } from '../../../../client/lib/chats/flows/processSetReaction';
-import { sendMessage } from '../../../../client/lib/chats/flows/sendMessage';
 import { UserAction } from './UserAction';
-import { replyBroadcast } from '../../../../client/lib/chats/flows/replyBroadcast';
-import { createDataAPI } from '../../../../client/lib/chats/data';
-import { createUploadsAPI } from '../../../../client/lib/chats/uploads';
 
 type DeepWritable<T> = T extends (...args: any) => any
 	? T
@@ -25,6 +28,8 @@ type DeepWritable<T> = T extends (...args: any) => any
 	  };
 
 export class ChatMessages implements ChatAPI {
+	public uid: string | null;
+
 	public composer: ComposerAPI | undefined;
 
 	public setComposerAPI = (composer: ComposerAPI): void => {
@@ -34,9 +39,18 @@ export class ChatMessages implements ChatAPI {
 
 	public data: DataAPI;
 
+	public readStateManager: ReadStateManager;
+
 	public uploads: UploadsAPI;
 
+	public ActionManager: any;
+
 	public userCard: { open(username: string): (event: UIEvent) => void; close(): void };
+
+	public emojiPicker: {
+		open(el: Element, cb: (emoji: string) => void): void;
+		close(): void;
+	};
 
 	public action: {
 		start(action: 'typing'): Promise<void> | void;
@@ -53,7 +67,12 @@ export class ChatMessages implements ChatAPI {
 			}
 
 			if (!this.currentEditing) {
-				const lastMessage = await this.data.findLastOwnMessage();
+				let lastMessage = await this.data.findLastOwnMessage();
+
+				// Videoconf messages should not be edited
+				if (lastMessage && isVideoConfMessage(lastMessage)) {
+					lastMessage = await this.data.findPreviousOwnMessage(lastMessage);
+				}
 
 				if (lastMessage) {
 					await this.data.saveDraft(undefined, this.composer.text);
@@ -64,7 +83,12 @@ export class ChatMessages implements ChatAPI {
 			}
 
 			const currentMessage = await this.data.findMessageByID(this.currentEditing.mid);
-			const previousMessage = currentMessage ? await this.data.findPreviousOwnMessage(currentMessage) : undefined;
+			let previousMessage = currentMessage ? await this.data.findPreviousOwnMessage(currentMessage) : undefined;
+
+			// Videoconf messages should not be edited
+			if (previousMessage && isVideoConfMessage(previousMessage)) {
+				previousMessage = await this.data.findPreviousOwnMessage(previousMessage);
+			}
 
 			if (previousMessage) {
 				await this.messageEditing.editMessage(previousMessage);
@@ -79,7 +103,12 @@ export class ChatMessages implements ChatAPI {
 			}
 
 			const currentMessage = await this.data.findMessageByID(this.currentEditing.mid);
-			const nextMessage = currentMessage ? await this.data.findNextOwnMessage(currentMessage) : undefined;
+			let nextMessage = currentMessage ? await this.data.findNextOwnMessage(currentMessage) : undefined;
+
+			// Videoconf messages should not be edited
+			if (nextMessage && isVideoConfMessage(nextMessage)) {
+				nextMessage = await this.data.findNextOwnMessage(nextMessage);
+			}
 
 			if (nextMessage) {
 				await this.messageEditing.editMessage(nextMessage, { cursorAtStart: true });
@@ -114,17 +143,28 @@ export class ChatMessages implements ChatAPI {
 		private params: {
 			rid: IRoom['_id'];
 			tmid?: IMessage['_id'];
+			uid: IUser['_id'] | null;
+			actionManager: IActionManager;
 		},
 	) {
 		const { rid, tmid } = params;
+		this.uid = params.uid;
 		this.data = createDataAPI({ rid, tmid });
 		this.uploads = createUploadsAPI({ rid, tmid });
+		this.ActionManager = params.actionManager;
 
 		const unimplemented = () => {
 			throw new Error('Flow is not implemented');
 		};
 
+		this.readStateManager = new ReadStateManager(rid);
+
 		this.userCard = {
+			open: unimplemented,
+			close: unimplemented,
+		};
+
+		this.emojiPicker = {
 			open: unimplemented,
 			close: unimplemented,
 		};

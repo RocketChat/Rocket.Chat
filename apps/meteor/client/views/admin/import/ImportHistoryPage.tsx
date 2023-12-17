@@ -1,13 +1,15 @@
-import { Button, ButtonGroup, Table } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Table, TableHead, TableCell, TableRow, TableBody } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useEndpoint, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
 
 import { ProgressStep } from '../../../../app/importer/lib/ImporterProgressStep';
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import ImportOperationSummary from './ImportOperationSummary';
+import ImportOperationSummarySkeleton from './ImportOperationSummarySkeleton';
 
+// TODO: review inner logic
 function ImportHistoryPage() {
 	const queryClient = useQueryClient();
 	const t = useTranslation();
@@ -19,8 +21,7 @@ function ImportHistoryPage() {
 	const getCurrentImportOperation = useEndpoint('GET', '/v1/getCurrentImportOperation');
 	const getLatestImportOperations = useEndpoint('GET', '/v1/getLatestImportOperations');
 
-	const newImportRoute = useRoute('admin-import-new');
-	const importProgressRoute = useRoute('admin-import-progress');
+	const router = useRouter();
 
 	const currentOperation = useQuery(
 		['ImportHistoryPage', 'currentOperation'],
@@ -51,7 +52,7 @@ function ImportHistoryPage() {
 	}, [latestOperations.isSuccess, latestOperations.data]);
 
 	const handleNewImportClick = () => {
-		newImportRoute.push();
+		router.navigate('/admin/import/new');
 	};
 
 	const downloadPendingFilesResult = useMutation({
@@ -69,7 +70,7 @@ function ImportHistoryPage() {
 			}
 
 			dispatchToastMessage({ type: 'info', message: t('File_Downloads_Started') });
-			importProgressRoute.push();
+			router.navigate('/admin/import/progress');
 		},
 	});
 
@@ -88,7 +89,7 @@ function ImportHistoryPage() {
 			}
 
 			dispatchToastMessage({ type: 'info', message: t('File_Downloads_Started') });
-			importProgressRoute.push();
+			router.navigate('/admin/import/progress');
 		},
 	});
 
@@ -96,69 +97,77 @@ function ImportHistoryPage() {
 
 	return (
 		<Page>
-			<Page.Header title={t('Import')}>
+			<PageHeader title={t('Import')}>
 				<ButtonGroup>
 					<Button primary disabled={isLoading} onClick={handleNewImportClick}>
 						{t('Import_New_File')}
 					</Button>
 					{hasAnySuccessfulImport && (
-						<Button disabled={isLoading || downloadPendingFilesResult.isLoading} onClick={() => downloadPendingFilesResult.mutate()}>
+						<Button
+							loading={downloadPendingFilesResult.isLoading}
+							disabled={downloadPendingAvatarsResult.isLoading}
+							onClick={() => downloadPendingFilesResult.mutate()}
+						>
 							{t('Download_Pending_Files')}
 						</Button>
 					)}
 					{hasAnySuccessfulImport && (
-						<Button disabled={isLoading || downloadPendingAvatarsResult.isLoading} onClick={() => downloadPendingAvatarsResult.mutate()}>
+						<Button
+							loading={downloadPendingAvatarsResult.isLoading}
+							disabled={downloadPendingFilesResult.isLoading}
+							onClick={() => downloadPendingAvatarsResult.mutate()}
+						>
 							{t('Download_Pending_Avatars')}
 						</Button>
 					)}
 				</ButtonGroup>
-			</Page.Header>
-			<Page.ScrollableContentWithShadow>
+			</PageHeader>
+			<PageScrollableContentWithShadow>
 				<Table fixed data-qa-id='ImportTable'>
-					<Table.Head>
-						<Table.Row>
-							<Table.Cell is='th' rowSpan={2} width='x140'>
+					<TableHead>
+						<TableRow>
+							<TableCell is='th' rowSpan={2} width='x140'>
 								{t('Import_Type')}
-							</Table.Cell>
-							<Table.Cell is='th' rowSpan={2}>
+							</TableCell>
+							<TableCell is='th' rowSpan={2}>
 								{t('Last_Updated')}
-							</Table.Cell>
+							</TableCell>
 							{!small && (
 								<>
-									<Table.Cell is='th' rowSpan={2}>
+									<TableCell is='th' rowSpan={2}>
 										{t('Last_Status')}
-									</Table.Cell>
-									<Table.Cell is='th' rowSpan={2}>
+									</TableCell>
+									<TableCell is='th' rowSpan={2}>
 										{t('File')}
-									</Table.Cell>
-									<Table.Cell is='th' align='center' colSpan={4} width='x320'>
+									</TableCell>
+									<TableCell is='th' align='center' colSpan={4} width='x320'>
 										{t('Counters')}
-									</Table.Cell>
+									</TableCell>
 								</>
 							)}
-						</Table.Row>
+						</TableRow>
 						{!small && (
-							<Table.Row>
-								<Table.Cell is='th' align='center'>
+							<TableRow>
+								<TableCell is='th' align='center'>
 									{t('Users')}
-								</Table.Cell>
-								<Table.Cell is='th' align='center'>
+								</TableCell>
+								<TableCell is='th' align='center'>
 									{t('Channels')}
-								</Table.Cell>
-								<Table.Cell is='th' align='center'>
+								</TableCell>
+								<TableCell is='th' align='center'>
 									{t('Messages')}
-								</Table.Cell>
-								<Table.Cell is='th' align='center'>
+								</TableCell>
+								<TableCell is='th' align='center'>
 									{t('Total')}
-								</Table.Cell>
-							</Table.Row>
+								</TableCell>
+							</TableRow>
 						)}
-					</Table.Head>
-					<Table.Body>
+					</TableHead>
+					<TableBody>
 						{isLoading && (
 							<>
 								{Array.from({ length: 20 }, (_, i) => (
-									<ImportOperationSummary.Skeleton small={small} key={i} />
+									<ImportOperationSummarySkeleton key={i} small={small} />
 								))}
 							</>
 						)}
@@ -176,9 +185,9 @@ function ImportHistoryPage() {
 									))}
 							</>
 						)}
-					</Table.Body>
+					</TableBody>
 				</Table>
-			</Page.ScrollableContentWithShadow>
+			</PageScrollableContentWithShadow>
 		</Page>
 	);
 }

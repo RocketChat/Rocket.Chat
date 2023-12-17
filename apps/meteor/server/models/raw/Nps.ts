@@ -1,7 +1,7 @@
 import type { INps, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import { NPSStatus } from '@rocket.chat/core-typings';
 import type { INpsModel } from '@rocket.chat/model-typings';
 import type { Collection, Db, Document, IndexDescription, UpdateResult } from 'mongodb';
-import { NPSStatus } from '@rocket.chat/core-typings';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -27,7 +27,7 @@ export class NpsRaw extends BaseRaw<INps> implements INpsModel {
 				status: NPSStatus.SENDING,
 			},
 		};
-		const { value } = await this.col.findOneAndUpdate(query, update, { sort: { expireAt: 1 } });
+		const { value } = await this.findOneAndUpdate(query, update, { sort: { expireAt: 1 } });
 
 		return value;
 	}

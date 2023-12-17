@@ -1,9 +1,10 @@
-import { Icon, Button } from '@rocket.chat/fuselage';
+import { Button } from '@rocket.chat/fuselage';
+import type { Keys as IconName } from '@rocket.chat/icons';
 import type { ComponentProps, ReactElement, ReactNode } from 'react';
 import React from 'react';
 
 type InfoPanelActionProps = Omit<ComponentProps<typeof Button>, 'label'> & {
-	icon?: ComponentProps<typeof Icon>['name'];
+	icon?: IconName;
 	label: ReactNode;
 };
 
@@ -12,9 +13,8 @@ const InfoPanelAction = ({ label, icon, ...props }: InfoPanelActionProps): React
 		title={typeof label === 'string' ? label : undefined}
 		aria-label={typeof label === 'string' ? label : undefined}
 		{...props}
-		mi='x4'
+		icon={icon}
 	>
-		{icon && <Icon name={icon} size='x20' mie='x4' />}
 		{label}
 	</Button>
 );

@@ -3,8 +3,8 @@
 	"version": "0.0.1",
 	"private": true,
 	"devDependencies": {
-		"eslint": "^8.29.0",
-		"typescript": "~5.0.2"
+		"eslint": "~8.45.0",
+		"typescript": "~5.3.2"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",

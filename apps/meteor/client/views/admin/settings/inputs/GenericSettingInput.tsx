@@ -1,4 +1,4 @@
-import { Box, Field, Flex, TextInput } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage';
 import type { FormEventHandler, ReactElement } from 'react';
 import React from 'react';
 
@@ -12,6 +12,7 @@ type GenericSettingInputProps = {
 	readonly?: boolean;
 	autocomplete?: boolean;
 	disabled?: boolean;
+	required?: boolean;
 	hasResetButton?: boolean;
 	onChangeValue?: (value: string) => void;
 	onResetButtonClick?: () => void;
@@ -24,6 +25,7 @@ function GenericSettingInput({
 	readonly,
 	autocomplete,
 	disabled,
+	required,
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
@@ -33,16 +35,14 @@ function GenericSettingInput({
 	};
 
 	return (
-		<>
-			<Flex.Container>
-				<Box>
-					<Field.Label htmlFor={_id} title={_id}>
-						{label}
-					</Field.Label>
-					{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
-				</Box>
-			</Flex.Container>
-			<Field.Row>
+		<Field>
+			<FieldRow>
+				<FieldLabel htmlFor={_id} title={_id} required={required}>
+					{label}
+				</FieldLabel>
+				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+			</FieldRow>
+			<FieldRow>
 				<TextInput
 					data-qa-setting-id={_id}
 					id={_id}
@@ -53,8 +53,8 @@ function GenericSettingInput({
 					autoComplete={autocomplete === false ? 'off' : undefined}
 					onChange={handleChange}
 				/>
-			</Field.Row>
-		</>
+			</FieldRow>
+		</Field>
 	);
 }
 

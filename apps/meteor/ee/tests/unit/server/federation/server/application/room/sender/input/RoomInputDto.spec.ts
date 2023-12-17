@@ -36,12 +36,16 @@ describe('FederationEE - Application - InputDto - RoomInputDto', () => {
 					externalRoomHomeServerName: 'server.com',
 					internalUserId: 'internalUserId',
 					normalizedRoomId: 'normalizedRoomId',
+					roomName: 'roomName',
+					pageToken: 'pageToken',
 				}),
 			).to.be.eql({
 				externalRoomId: '!roomId:server.com',
 				externalRoomHomeServerName: 'server.com',
 				internalUserId: 'internalUserId',
 				normalizedRoomId: 'normalizedRoomId',
+				roomName: 'roomName',
+				pageToken: 'pageToken',
 			});
 		});
 	});

@@ -1,4 +1,3 @@
-import { settingsRegistry } from '../../../app/settings/server';
 import {
 	defaultAuthnContextTemplate,
 	defaultAuthRequestTemplate,
@@ -10,9 +9,10 @@ import {
 	defaultMetadataTemplate,
 	defaultMetadataCertificateTemplate,
 } from '../../../app/meteor-accounts-saml/server/lib/constants';
+import { settingsRegistry } from '../../../app/settings/server';
 
-export const addSettings = function (name: string): void {
-	void settingsRegistry.addGroup('SAML', async function () {
+export const addSettings = async function (name: string): Promise<void> {
+	await settingsRegistry.addGroup('SAML', async function () {
 		await this.with(
 			{
 				tab: 'SAML_Enterprise',

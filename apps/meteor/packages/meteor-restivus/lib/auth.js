@@ -78,7 +78,7 @@ export class Auth {
 		}
 
 		// Authenticate the user's password
-		const passwordVerification = Accounts._checkPassword(authenticatingUser, password);
+		const passwordVerification = await Accounts._checkPasswordAsync(authenticatingUser, password);
 		if (passwordVerification.error) {
 			throw new Meteor.Error(401, 'Unauthorized');
 		}

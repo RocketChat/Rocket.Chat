@@ -1,0 +1,13 @@
+diff --git a/src/index.d.ts b/src/index.d.ts
+index c57fcb6f6f3734d182313c324de9b28e6dcee68d..b7602c71e9f4b4254f4056fb598ef72ab157c921 100644
+--- a/src/index.d.ts
++++ b/src/index.d.ts
+@@ -110,7 +110,7 @@ export interface ComponentConstructor<P = {}, S = {}>
+ // Type alias for a component instance considered generally, whether stateless or stateful.
+ export type AnyComponent<P = {}, S = {}> =
+ 	| FunctionComponent<P>
+-	| Component<P, S>;
++	| ComponentConstructor<P, S>;
+ 
+ export interface Component<P = {}, S = {}> {
+ 	componentWillMount?(): void;

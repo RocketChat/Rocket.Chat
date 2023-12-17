@@ -1,6 +1,5 @@
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
-import type { IIntegration } from '@rocket.chat/core-typings';
+import type { IIntegration, INewIncomingIntegration, INewOutgoingIntegration } from '@rocket.chat/core-typings';
+import { Integrations, IntegrationHistory } from '@rocket.chat/models';
 import {
 	isIntegrationsCreateProps,
 	isIntegrationsHistoryProps,
@@ -8,17 +7,22 @@ import {
 	isIntegrationsGetProps,
 	isIntegrationsUpdateProps,
 } from '@rocket.chat/rest-typings';
-import { Integrations, IntegrationHistory } from '@rocket.chat/models';
+import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
 import { hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { API } from '../api';
 import {
 	mountIntegrationHistoryQueryBasedOnPermissions,
 	mountIntegrationQueryBasedOnPermissions,
 } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
-import { findOneIntegration } from '../lib/integrations';
+import { addIncomingIntegration } from '../../../integrations/server/methods/incoming/addIncomingIntegration';
+import { deleteIncomingIntegration } from '../../../integrations/server/methods/incoming/deleteIncomingIntegration';
+import { addOutgoingIntegration } from '../../../integrations/server/methods/outgoing/addOutgoingIntegration';
+import { deleteOutgoingIntegration } from '../../../integrations/server/methods/outgoing/deleteOutgoingIntegration';
+import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
+import { findOneIntegration } from '../lib/integrations';
 
 API.v1.addRoute(
 	'integrations.create',
@@ -27,9 +31,9 @@ API.v1.addRoute(
 		async post() {
 			switch (this.bodyParams.type) {
 				case 'webhook-outgoing':
-					return API.v1.success({ integration: await Meteor.callAsync('addOutgoingIntegration', this.bodyParams) });
+					return API.v1.success({ integration: await addOutgoingIntegration(this.userId, this.bodyParams as INewOutgoingIntegration) });
 				case 'webhook-incoming':
-					return API.v1.success({ integration: await Meteor.callAsync('addIncomingIntegration', this.bodyParams) });
+					return API.v1.success({ integration: await addIncomingIntegration(this.userId, this.bodyParams as INewIncomingIntegration) });
 			}
 
 			return API.v1.failure('Invalid integration type.');
@@ -155,9 +159,7 @@ API.v1.addRoute(
 
 					const outgoingId = integration._id;
 
-					await Meteor.runAsUser(this.userId, async () => {
-						await Meteor.callAsync('deleteOutgoingIntegration', outgoingId);
-					});
+					await deleteOutgoingIntegration(outgoingId, this.userId);
 
 					return API.v1.success({
 						integration,
@@ -177,9 +179,7 @@ API.v1.addRoute(
 					}
 
 					const incomingId = integration._id;
-					await Meteor.runAsUser(this.userId, async () => {
-						await Meteor.callAsync('deleteIncomingIntegration', incomingId);
-					});
+					await deleteIncomingIntegration(incomingId, this.userId);
 
 					return API.v1.success({
 						integration,

@@ -1,7 +1,8 @@
+import type { ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { LivechatDepartment, LivechatDepartmentAgents, LivechatRooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { Logger } from '../../../logger/server';
 
 class DepartmentHelperClass {
 	logger = new Logger('Omnichannel:DepartmentHelper');
@@ -11,7 +12,6 @@ class DepartmentHelperClass {
 
 		const department = await LivechatDepartment.findOneById(departmentId);
 		if (!department) {
-			this.logger.debug(`Department not found: ${departmentId}`);
 			throw new Error('error-department-not-found');
 		}
 
@@ -19,12 +19,13 @@ class DepartmentHelperClass {
 
 		const ret = await LivechatDepartment.removeById(_id);
 		if (ret.acknowledged !== true) {
-			this.logger.error(`Department record not removed: ${_id}. Result from db: ${ret}`);
 			throw new Error('error-failed-to-delete-department');
 		}
-		this.logger.debug(`Department record removed: ${_id}`);
 
-		const agentsIds: string[] = await LivechatDepartmentAgents.findAgentsByDepartmentId(department._id)
+		const agentsIds: string[] = await LivechatDepartmentAgents.findAgentsByDepartmentId<Pick<ILivechatDepartmentAgents, 'agentId'>>(
+			department._id,
+			{ projection: { agentId: 1 } },
+		)
 			.cursor.map((agent) => agent.agentId)
 			.toArray();
 
@@ -43,10 +44,8 @@ class DepartmentHelperClass {
 			}
 		});
 
-		this.logger.debug(`Post-department-removal actions completed: ${_id}. Notifying callbacks with department and agentsIds`);
-
-		Meteor.defer(() => {
-			callbacks.run('livechat.afterRemoveDepartment', { department, agentsIds });
+		setImmediate(() => {
+			void callbacks.run('livechat.afterRemoveDepartment', { department, agentsIds });
 		});
 
 		return ret;

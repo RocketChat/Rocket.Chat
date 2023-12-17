@@ -1,5 +1,5 @@
 import type { IMessageSearchProvider } from '@rocket.chat/core-typings';
-import { Box, Field, Icon, TextInput, ToggleSwitch } from '@rocket.chat/fuselage';
+import { Box, Field, FieldLabel, FieldRow, FieldHint, Icon, TextInput, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useDebouncedCallback, useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
@@ -55,7 +55,7 @@ const MessageSearchForm = ({ provider, onSearch }: MessageSearchFormProps) => {
 		>
 			<Box is='form' onSubmit={submitHandler}>
 				<Field>
-					<Field.Row>
+					<FieldRow>
 						<TextInput
 							addon={<Icon name='magnifier' size='x20' />}
 							placeholder={t('Search_Messages')}
@@ -63,15 +63,15 @@ const MessageSearchForm = ({ provider, onSearch }: MessageSearchFormProps) => {
 							autoComplete='off'
 							{...register('searchText')}
 						/>
-					</Field.Row>
-					{provider.description && <Field.Hint dangerouslySetInnerHTML={{ __html: t(provider.description as TranslationKey) }} />}
+					</FieldRow>
+					{provider.description && <FieldHint dangerouslySetInnerHTML={{ __html: t(provider.description as TranslationKey) }} />}
 				</Field>
 				{globalSearchEnabled && (
 					<Field>
-						<Field.Row>
+						<FieldRow>
+							<FieldLabel htmlFor={globalSearchToggleId}>{t('Global_Search')}</FieldLabel>
 							<ToggleSwitch id={globalSearchToggleId} {...register('globalSearch')} />
-							<Field.Label htmlFor={globalSearchToggleId}>{t('Global_Search')}</Field.Label>
-						</Field.Row>
+						</FieldRow>
 					</Field>
 				)}
 			</Box>

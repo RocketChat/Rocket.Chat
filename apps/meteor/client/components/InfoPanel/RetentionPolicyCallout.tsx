@@ -13,7 +13,7 @@ type RetentionPolicyCalloutProps = {
 
 const RetentionPolicyCallout: FC<RetentionPolicyCalloutProps> = ({ filesOnlyDefault, excludePinnedDefault, maxAgeDefault }) => {
 	const t = useTranslation();
-	const time = useFormattedRelativeTime(maxAgeDefault * 1000 * 60 * 60 * 24);
+	const time = useFormattedRelativeTime(maxAgeDefault);
 
 	return (
 		<Callout type='warning'>

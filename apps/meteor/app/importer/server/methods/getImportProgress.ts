@@ -1,10 +1,10 @@
 import type { IImportProgress } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
 import { Imports } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Importers } from '..';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
 export const executeGetImportProgress = async (): Promise<IImportProgress> => {
 	const operation = await Imports.findLastImport();
@@ -18,10 +18,9 @@ export const executeGetImportProgress = async (): Promise<IImportProgress> => {
 		throw new Meteor.Error('error-importer-not-defined', `The importer (${importerKey}) has no import class defined.`, 'getImportProgress');
 	}
 
-	importer.instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
-	await importer.instance.build();
+	const instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
 
-	return importer.instance.getProgress();
+	return instance.getProgress();
 };
 
 declare module '@rocket.chat/ui-contexts' {

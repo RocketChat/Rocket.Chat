@@ -1,15 +1,15 @@
-import { Meteor } from 'meteor/meteor';
-import { check, Match } from 'meteor/check';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import type { ICreatedRoom, IUser } from '@rocket.chat/core-typings';
 import type { ICreateRoomParams } from '@rocket.chat/core-services';
+import type { ICreatedRoom, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { check, Match } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../app/settings/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { RateLimiterClass as RateLimiter } from '../../app/lib/server/lib/RateLimiter';
-import { createRoom } from '../../app/lib/server/functions/createRoom';
 import { addUser } from '../../app/federation/server/functions/addUser';
+import { createRoom } from '../../app/lib/server/functions/createRoom';
+import { RateLimiterClass as RateLimiter } from '../../app/lib/server/lib/RateLimiter';
+import { settings } from '../../app/settings/server';
 import { callbacks } from '../../lib/callbacks';
 
 export async function createDirectMessage(
@@ -100,11 +100,15 @@ export async function createDirectMessage(
 		options.subscriptionExtra = { open: true };
 	}
 	try {
-		callbacks.run('federation.beforeCreateDirectMessage', roomUsers);
+		await callbacks.run('federation.beforeCreateDirectMessage', roomUsers);
 	} catch (error) {
 		throw new Meteor.Error((error as any)?.message);
 	}
-	const { _id: rid, inserted, ...room } = await createRoom('d', undefined, undefined, roomUsers as IUser[], undefined, {}, options);
+	const {
+		_id: rid,
+		inserted,
+		...room
+	} = await createRoom<'d'>('d', undefined, undefined, roomUsers as IUser[], false, undefined, {}, options);
 
 	return {
 		// @ts-expect-error - room type is already defined in the `createRoom` return type

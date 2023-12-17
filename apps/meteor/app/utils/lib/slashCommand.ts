@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import type {
 	IMessage,
 	SlashCommand,
@@ -7,7 +6,7 @@ import type {
 	SlashCommandPreviewItem,
 	SlashCommandPreviews,
 } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
 interface ISlashCommandAddParams<T extends string> {
 	command: string;
@@ -34,6 +33,9 @@ export const slashCommands = {
 		appId,
 		description = '',
 	}: ISlashCommandAddParams<T>): void {
+		if (this.commands[command]) {
+			return;
+		}
 		this.commands[command] = {
 			command,
 			callback,
@@ -48,12 +50,19 @@ export const slashCommands = {
 			appId,
 		} as SlashCommand;
 	},
-	async run(
-		command: string,
-		params: string,
-		message: RequiredField<Partial<IMessage>, 'rid'>,
-		triggerId?: string | undefined,
-	): Promise<unknown> {
+	async run({
+		command,
+		message,
+		params,
+		triggerId,
+		userId,
+	}: {
+		command: string;
+		params: string;
+		message: RequiredField<Partial<IMessage>, 'rid' | '_id'>;
+		userId: string;
+		triggerId?: string | undefined;
+	}): Promise<unknown> {
 		const cmd = this.commands[command];
 		if (typeof cmd?.callback !== 'function') {
 			return;
@@ -63,7 +72,7 @@ export const slashCommands = {
 			throw new Meteor.Error('invalid-command-usage', 'Executing a command requires at least a message with a room id.');
 		}
 
-		return cmd.callback(command, params, message, triggerId);
+		return cmd.callback({ command, params, message, triggerId, userId });
 	},
 	async getPreviews(
 		command: string,
@@ -123,20 +132,3 @@ declare module '@rocket.chat/ui-contexts' {
 		slashCommand(params: { cmd: string; params: string; msg: IMessage; triggerId: string }): unknown;
 	}
 }
-
-Meteor.methods<ServerMethods>({
-	async slashCommand(command) {
-		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'slashCommand',
-			});
-		}
-
-		if (!command?.cmd || !slashCommands.commands[command.cmd]) {
-			throw new Meteor.Error('error-invalid-command', 'Invalid Command Provided', {
-				method: 'executeSlashCommandPreview',
-			});
-		}
-		return slashCommands.run(command.cmd, command.params, command.msg, command.triggerId);
-	},
-});

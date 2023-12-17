@@ -6,6 +6,7 @@
 		"checkJs": false,
 		"jsxImportSource": "preact",
 	},
+	"include": ["./src", "./webpack.config.ts", "./svg-component-loader.ts"],
 	"exclude": [
 		"./node_modules",
 		"./dist"

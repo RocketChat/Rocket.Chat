@@ -13,6 +13,8 @@ interface IFederationRoomJoinExternalPublicRoomInputDto {
 	internalUserId: string;
 	normalizedRoomId: string;
 	externalRoomHomeServerName: string;
+	roomName?: string;
+	pageToken?: string;
 }
 
 interface IFederationRoomJoinInternalPublicRoomInputDto {
@@ -52,12 +54,16 @@ export class FederationJoinExternalPublicRoomInputDto {
 		internalUserId,
 		normalizedRoomId,
 		externalRoomHomeServerName,
+		roomName,
+		pageToken,
 	}: IFederationRoomJoinExternalPublicRoomInputDto) {
 		this.validateExternalRoomId(externalRoomId);
 		this.externalRoomId = externalRoomId;
 		this.internalUserId = internalUserId;
 		this.normalizedRoomId = normalizedRoomId;
 		this.externalRoomHomeServerName = externalRoomHomeServerName;
+		this.roomName = roomName;
+		this.pageToken = pageToken;
 	}
 
 	externalRoomId: string;
@@ -67,6 +73,10 @@ export class FederationJoinExternalPublicRoomInputDto {
 	externalRoomHomeServerName: string;
 
 	internalUserId: string;
+
+	roomName?: string;
+
+	pageToken?: string;
 
 	private validateExternalRoomId(externalRoomId: string): void {
 		if (!isAValidExternalRoomIdFormat(externalRoomId)) {

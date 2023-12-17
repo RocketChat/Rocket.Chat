@@ -1,10 +1,11 @@
 import type { IRole } from '@rocket.chat/core-typings';
-import { TableCell, Margins, Box, CheckBox, Throbber } from '@rocket.chat/fuselage';
+import { Margins, Box, CheckBox, Throbber } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { ReactElement } from 'react';
 import React, { useState, memo } from 'react';
 
 import { AuthorizationUtils } from '../../../../../app/authorization/lib';
+import { GenericTableCell } from '../../../../components/GenericTable';
 
 type RoleCellProps = {
 	_id: IRole['_id'];
@@ -32,8 +33,8 @@ const RoleCell = ({ _id, name, description, onChange, lineHovered, permissionId,
 	const isDisabled = !!loading || !!isRestrictedForRole;
 
 	return (
-		<TableCell withTruncatedText>
-			<Margins inline='x2'>
+		<GenericTableCell withTruncatedText>
+			<Margins inline={2}>
 				<CheckBox checked={granted} onChange={handleChange} disabled={isDisabled} />
 				{!loading && (
 					<Box display='inline' color='hint' invisible={!lineHovered}>
@@ -42,7 +43,7 @@ const RoleCell = ({ _id, name, description, onChange, lineHovered, permissionId,
 				)}
 				{loading && <Throbber size='x12' display='inline-block' />}
 			</Margins>
-		</TableCell>
+		</GenericTableCell>
 	);
 };
 

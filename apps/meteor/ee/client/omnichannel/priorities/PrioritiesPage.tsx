@@ -1,16 +1,16 @@
-import { Button, ButtonGroup, Throbber } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRoute, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useMemo, useState } from 'react';
 
-import Page from '../../../../client/components/Page';
+import { Page, PageHeader, PageContent } from '../../../../client/components/Page';
 import { useOmnichannelPriorities } from '../hooks/useOmnichannelPriorities';
 import { PrioritiesResetModal } from './PrioritiesResetModal';
 import { PrioritiesTable } from './PrioritiesTable';
 import type { PriorityFormData } from './PriorityEditForm';
-import { PriorityVerticalBar } from './PriorityVerticalBar';
+import PriorityList from './PriorityList';
 
 type PrioritiesPageProps = {
 	priorityId: string;
@@ -30,7 +30,7 @@ export const PrioritiesPage = ({ priorityId, context }: PrioritiesPageProps): Re
 	const savePriority = useEndpoint('PUT', `/v1/livechat/priorities/:priorityId`, { priorityId });
 	const resetPriorities = useEndpoint('POST', '/v1/livechat/priorities.reset');
 
-	const { data: priorities } = useOmnichannelPriorities();
+	const { data: priorities, isLoading } = useOmnichannelPriorities();
 
 	const isPrioritiesDirty = useMemo(() => !!priorities.length && priorities.some((p) => p.dirty), [priorities]);
 
@@ -59,7 +59,7 @@ export const PrioritiesPage = ({ priorityId, context }: PrioritiesPageProps): Re
 		prioritiesRoute.push({ context: 'edit', id });
 	});
 
-	const onVerticalBarClose = (): void => {
+	const onContextualbarClose = (): void => {
 		prioritiesRoute.push({});
 	};
 
@@ -75,20 +75,20 @@ export const PrioritiesPage = ({ priorityId, context }: PrioritiesPageProps): Re
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('Priorities')}>
+				<PageHeader title={t('Priorities')}>
 					<ButtonGroup>
-						<Button onClick={handleReset} title={t('Reset')} disabled={!isPrioritiesDirty || isResetting}>
-							{isResetting ? <Throbber size='x12' inheritColor /> : t('Reset')}
+						<Button onClick={handleReset} title={t('Reset')} disabled={!isPrioritiesDirty} loading={isResetting}>
+							{t('Reset')}
 						</Button>
 					</ButtonGroup>
-				</Page.Header>
-				<Page.Content>
-					<PrioritiesTable data={priorities} onRowClick={onRowClick} />
-				</Page.Content>
+				</PageHeader>
+				<PageContent>
+					<PrioritiesTable priorities={priorities} isLoading={isLoading} onRowClick={onRowClick} />
+				</PageContent>
 			</Page>
 
 			{context === 'edit' && (
-				<PriorityVerticalBar priorityId={priorityId} context={context} onSave={onSavePriority} onClose={onVerticalBarClose} />
+				<PriorityList priorityId={priorityId} context={context} onSave={onSavePriority} onClose={onContextualbarClose} />
 			)}
 		</Page>
 	);

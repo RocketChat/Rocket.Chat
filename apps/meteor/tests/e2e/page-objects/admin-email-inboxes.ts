@@ -8,7 +8,7 @@ export class AdminEmailInboxes {
 	}
 
 	get btnNewEmailInbox(): Locator {
-		return this.page.locator('//button >> text="New Email Inbox"');
+		return this.page.locator('role=button[name="New Email Inbox"]');
 	}
 
 	get inputName(): Locator {
@@ -33,7 +33,7 @@ export class AdminEmailInboxes {
 	}
 
 	get inputSmtpSecure(): Locator {
-		return this.page.locator('label >> text="Connect with SSL/TLS" >> nth=0 >> i');
+		return this.page.locator('label >> text="Connect with SSL/TLS"').first();
 	}
 
 	// IMAP
@@ -50,7 +50,7 @@ export class AdminEmailInboxes {
 	}
 
 	get inputImapSecure(): Locator {
-		return this.page.locator('label >> text="Connect with SSL/TLS" >> nth=1 >> i');
+		return this.page.locator('label >> text="Connect with SSL/TLS"').last();
 	}
 
 	get btnSave(): Locator {

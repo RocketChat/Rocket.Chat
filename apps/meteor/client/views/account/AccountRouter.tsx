@@ -1,4 +1,4 @@
-import { useCurrentRoute, useRoute } from '@rocket.chat/ui-contexts';
+import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 import React, { Suspense, useEffect } from 'react';
 
@@ -11,16 +11,19 @@ type AccountRouterProps = {
 };
 
 const AccountRouter = ({ children }: AccountRouterProps): ReactElement => {
-	const [routeName] = useCurrentRoute();
-	const defaultRoute = useRoute('profile');
+	const router = useRouter();
 
-	useEffect(() => {
-		if (routeName !== 'account-index') {
-			return;
-		}
+	useEffect(
+		() =>
+			router.subscribeToRouteChange(() => {
+				if (router.getRouteName() !== 'account-index') {
+					return;
+				}
 
-		defaultRoute.replace();
-	}, [routeName, defaultRoute]);
+				router.navigate('/account/profile', { replace: true });
+			}),
+		[router],
+	);
 
 	return children ? (
 		<>

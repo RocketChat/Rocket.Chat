@@ -1,7 +1,7 @@
 import { Settings, Messages } from '@rocket.chat/models';
 
-import { addMigration } from '../../lib/migrations';
 import { upsertPermissions } from '../../../app/authorization/server/functions/upsertPermissions';
+import { addMigration } from '../../lib/migrations';
 
 addMigration({
 	version: 287,
@@ -51,7 +51,12 @@ addMigration({
 				},
 			},
 		);
-		await Messages.col.dropIndex('snippeted_1');
+
+		try {
+			await Messages.col.dropIndex('snippeted_1');
+		} catch (error: unknown) {
+			console.error('Error while removing index snippeted_1 from rocketchat_message', error);
+		}
 
 		await upsertPermissions();
 	},

@@ -1,7 +1,12 @@
-module.exports = {
-  addons: ['@storybook/addon-essentials'],
+import { type StorybookConfig } from '@storybook/core-common';
+
+const config: StorybookConfig = {
   stories: ['../src/**/*.stories.tsx', '../src/**/stories.tsx'],
+  addons: ['@storybook/addon-essentials', 'storybook-dark-mode'],
   features: {
     postcss: false,
   },
+  framework: '@storybook/react',
 };
+
+module.exports = config;

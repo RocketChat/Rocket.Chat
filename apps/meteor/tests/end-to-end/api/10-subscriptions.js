@@ -1,9 +1,10 @@
 import { expect } from 'chai';
+import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { createRoom } from '../../data/rooms.helper';
+import { adminUsername } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper.js';
-import { adminUsername } from '../../data/user.js';
 
 describe('[Subscriptions]', function () {
 	this.retries(0);
@@ -235,7 +236,8 @@ describe('[Subscriptions]', function () {
 			before(async () => {
 				user = await createUser({ username: 'testthread123', password: 'testthread123' });
 				threadUserCredentials = await login('testthread123', 'testthread123');
-				request
+
+				const res = await request
 					.post(api('chat.sendMessage'))
 					.set(threadUserCredentials)
 					.send({
@@ -243,14 +245,13 @@ describe('[Subscriptions]', function () {
 							rid: testChannel._id,
 							msg: 'Starting a Thread',
 						},
-					})
-					.end((_, res) => {
-						threadId = res.body.message._id;
 					});
+
+				threadId = res.body.message._id;
 			});
 
-			after((done) => {
-				deleteUser(user).then(done);
+			after(async () => {
+				await deleteUser(user);
 			});
 
 			it('should mark threads as read', async () => {

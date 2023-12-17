@@ -1,10 +1,12 @@
+import type { ILivechatDepartment } from '@rocket.chat/core-typings';
+import { LivechatDepartment, LivechatDepartmentAgents } from '@rocket.chat/models';
 import { isGETLivechatDepartmentProps, isPOSTLivechatDepartmentProps } from '@rocket.chat/rest-typings';
 import { Match, check } from 'meteor/check';
-import { LivechatDepartment, LivechatDepartmentAgents } from '@rocket.chat/models';
 
+import { LivechatEnterprise } from '../../../../../ee/app/livechat-enterprise/server/lib/LivechatEnterprise';
 import { API } from '../../../../api/server';
+import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { Livechat } from '../../../server/lib/Livechat';
 import {
 	findDepartments,
 	findDepartmentById,
@@ -13,9 +15,8 @@ import {
 	findDepartmentAgents,
 	findArchivedDepartments,
 } from '../../../server/api/lib/departments';
-import { LivechatEnterprise } from '../../../../../ee/app/livechat-enterprise/server/lib/LivechatEnterprise';
 import { DepartmentHelper } from '../../../server/lib/Departments';
-import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
+import { Livechat as LivechatTs } from '../../../server/lib/LivechatTyped';
 
 API.v1.addRoute(
 	'livechat/department',
@@ -59,7 +60,7 @@ API.v1.addRoute(
 			});
 
 			const agents = this.bodyParams.agents ? { upsert: this.bodyParams.agents } : {};
-			const department = await LivechatEnterprise.saveDepartment(null, this.bodyParams.department, agents);
+			const department = await LivechatEnterprise.saveDepartment(null, this.bodyParams.department as ILivechatDepartment, agents);
 
 			if (department) {
 				return API.v1.success({
@@ -108,10 +109,6 @@ API.v1.addRoute(
 			const permissionToSave = await hasPermissionAsync(this.userId, 'manage-livechat-departments');
 			const permissionToAddAgents = await hasPermissionAsync(this.userId, 'add-livechat-department-agents');
 
-			check(this.urlParams, {
-				_id: String,
-			});
-
 			check(this.bodyParams, {
 				department: Object,
 				agents: Match.Maybe(Array),
@@ -126,13 +123,13 @@ API.v1.addRoute(
 			}
 
 			if (success && agents && permissionToAddAgents) {
-				success = Livechat.saveDepartmentAgents(_id, { upsert: agents });
+				success = await LivechatTs.saveDepartmentAgents(_id, { upsert: agents });
 			}
 
 			if (success) {
 				return API.v1.success({
 					department: await LivechatDepartment.findOneById(_id),
-					agents: await LivechatDepartmentAgents.find({ departmentId: _id }).toArray(),
+					agents: await LivechatDepartmentAgents.findByDepartmentId(_id).toArray(),
 				});
 			}
 
@@ -191,11 +188,9 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			if (await Livechat.archiveDepartment(this.urlParams._id)) {
-				return API.v1.success();
-			}
+			await LivechatTs.archiveDepartment(this.urlParams._id);
 
-			return API.v1.failure();
+			return API.v1.success();
 		},
 	},
 );
@@ -208,11 +203,8 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			if (await Livechat.unarchiveDepartment(this.urlParams._id)) {
-				return API.v1.success();
-			}
-
-			return API.v1.failure();
+			await LivechatTs.unarchiveDepartment(this.urlParams._id);
+			return API.v1.success();
 		},
 	},
 );
@@ -269,10 +261,6 @@ API.v1.addRoute(
 			return API.v1.success(agents);
 		},
 		async post() {
-			check(this.urlParams, {
-				_id: String,
-			});
-
 			check(
 				this.bodyParams,
 				Match.ObjectIncluding({
@@ -280,7 +268,7 @@ API.v1.addRoute(
 					remove: Array,
 				}),
 			);
-			await Livechat.saveDepartmentAgents(this.urlParams._id, this.bodyParams);
+			await LivechatTs.saveDepartmentAgents(this.urlParams._id, this.bodyParams);
 
 			return API.v1.success();
 		},

@@ -1,5 +1,6 @@
-import { Meteor } from 'meteor/meteor';
+import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
+import { executeSendMessage } from '../../lib/server/methods/sendMessage';
 import { slashCommands } from '../../utils/lib/slashCommand';
 
 /*
@@ -8,11 +9,11 @@ import { slashCommands } from '../../utils/lib/slashCommand';
  */
 slashCommands.add({
 	command: 'me',
-	callback: async function Me(_command: 'me', params, item): Promise<void> {
+	callback: async function Me({ params, message, userId }: SlashCommandCallbackParams<'me'>): Promise<void> {
 		if (params.trim()) {
-			const msg = item;
+			const msg = message;
 			msg.msg = `_${params}_`;
-			await Meteor.callAsync('sendMessage', msg);
+			await executeSendMessage(userId, msg);
 		}
 	},
 	options: {

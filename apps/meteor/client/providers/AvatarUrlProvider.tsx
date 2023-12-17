@@ -2,7 +2,7 @@ import { AvatarUrlContext, useSetting } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React, { useMemo } from 'react';
 
-import { getURL } from '../../app/utils/lib/getURL';
+import { getURL } from '../../app/utils/client/getURL';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 
 const AvatarUrlProvider: FC = ({ children }) => {

@@ -14,11 +14,11 @@ import BroadcastMetrics from '../../content/BroadcastMetrics';
 import Location from '../../content/Location';
 import MessageActions from '../../content/MessageActions';
 import Reactions from '../../content/Reactions';
-import UiKitSurface from '../../content/UiKitSurface';
 import UrlPreviews from '../../content/UrlPreviews';
 import { useNormalizedMessage } from '../../hooks/useNormalizedMessage';
 import { useOembedLayout } from '../../hooks/useOembedLayout';
 import { useSubscriptionFromMessageQuery } from '../../hooks/useSubscriptionFromMessageQuery';
+import UiKitMessageBlock from '../../uikit/UiKitMessageBlock';
 
 type ThreadMessageContentProps = {
 	message: IThreadMessage | IThreadMainMessage;
@@ -49,10 +49,10 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps): ReactElem
 			)}
 
 			{normalizedMessage.blocks && (
-				<UiKitSurface mid={normalizedMessage._id} blocks={normalizedMessage.blocks} appId rid={normalizedMessage.rid} />
+				<UiKitMessageBlock rid={normalizedMessage.rid} mid={normalizedMessage._id} blocks={normalizedMessage.blocks} />
 			)}
 
-			{normalizedMessage.attachments && <Attachments attachments={normalizedMessage.attachments} />}
+			{normalizedMessage.attachments && <Attachments attachments={normalizedMessage.attachments} id={normalizedMessage.files?.[0]._id} />}
 
 			{oembedEnabled && !!normalizedMessage.urls?.length && <UrlPreviews urls={normalizedMessage.urls} />}
 

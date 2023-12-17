@@ -1,23 +1,23 @@
-import { Meteor } from 'meteor/meteor';
+import type { IUser } from '@rocket.chat/core-typings';
+import { cronJobs } from '@rocket.chat/cron';
 import { Accounts } from 'meteor/accounts-base';
+import { Meteor } from 'meteor/meteor';
 
-import { BusinessHourManager } from './BusinessHourManager';
-import { SingleBusinessHourBehavior } from './Single';
-import { cronJobs } from '../../../utils/server/lib/cron/Cronjobs';
 import { callbacks } from '../../../../lib/callbacks';
+import { BusinessHourManager } from './BusinessHourManager';
 import { DefaultBusinessHour } from './Default';
+import { SingleBusinessHourBehavior } from './Single';
 
 export const businessHourManager = new BusinessHourManager(cronJobs);
 
-Meteor.startup(() => {
-	const { BusinessHourBehaviorClass } = callbacks.run('on-business-hour-start', {
+Meteor.startup(async () => {
+	const { BusinessHourBehaviorClass } = await callbacks.run('on-business-hour-start', {
 		BusinessHourBehaviorClass: SingleBusinessHourBehavior,
 	});
 	businessHourManager.registerBusinessHourBehavior(new BusinessHourBehaviorClass());
 	businessHourManager.registerBusinessHourType(new DefaultBusinessHour());
 
-	Accounts.onLogin(
-		async ({ user }: { user: any }) =>
-			user?.roles?.includes('livechat-agent') && !user?.roles?.includes('bot') && businessHourManager.onLogin(user._id),
-	);
+	Accounts.onLogin(({ user }: { user: IUser }) => {
+		void (user?.roles?.includes('livechat-agent') && !user?.roles?.includes('bot') && businessHourManager.onLogin(user._id));
+	});
 });

@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Field, Select, Button } from '@rocket.chat/fuselage';
+import { Box, Field, FieldLabel, FieldRow, Select, Button } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
@@ -14,7 +14,7 @@ const EditInviteLink = ({ daysAndMaxUses, onClickNewLink }: EditInviteLinkProps)
 	const t = useTranslation();
 	const {
 		handleSubmit,
-		formState: { isDirty },
+		formState: { isDirty, isSubmitting },
 		control,
 	} = useForm({ defaultValues: { days: daysAndMaxUses.days, maxUses: daysAndMaxUses.maxUses } });
 
@@ -44,31 +44,31 @@ const EditInviteLink = ({ daysAndMaxUses, onClickNewLink }: EditInviteLinkProps)
 	return (
 		<>
 			<Field>
-				<Field.Label flexGrow={0}>{t('Expiration_(Days)')}</Field.Label>
-				<Field.Row>
+				<FieldLabel flexGrow={0}>{t('Expiration_(Days)')}</FieldLabel>
+				<FieldRow>
 					<Controller
 						name='days'
 						control={control}
-						render={({ field: { onChange, value, name, ref } }): ReactElement => (
-							<Select ref={ref} name={name} value={value} onChange={onChange} options={daysOptions} />
+						render={({ field: { onChange, value, name } }): ReactElement => (
+							<Select name={name} value={value} onChange={onChange} options={daysOptions} />
 						)}
 					/>
-				</Field.Row>
+				</FieldRow>
 			</Field>
 			<Field>
-				<Field.Label flexGrow={0}>{t('Max_number_of_uses')}</Field.Label>
-				<Field.Row>
+				<FieldLabel flexGrow={0}>{t('Max_number_of_uses')}</FieldLabel>
+				<FieldRow>
 					<Controller
 						name='maxUses'
 						control={control}
-						render={({ field: { onChange, value, name, ref } }): ReactElement => (
-							<Select ref={ref} name={name} value={value} onChange={onChange} options={maxUsesOptions} />
+						render={({ field: { onChange, value, name } }): ReactElement => (
+							<Select name={name} value={value} onChange={onChange} options={maxUsesOptions} />
 						)}
 					/>
-				</Field.Row>
+				</FieldRow>
 			</Field>
-			<Box mbs='x8'>
-				<Button disabled={!isDirty} primary onClick={handleSubmit(onClickNewLink)}>
+			<Box mbs={8}>
+				<Button loading={isSubmitting} disabled={!isDirty} primary onClick={handleSubmit(onClickNewLink)}>
 					{t('Generate_New_Link')}
 				</Button>
 			</Box>

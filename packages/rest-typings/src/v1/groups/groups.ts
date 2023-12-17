@@ -1,48 +1,48 @@
-import type { IMessage, IRoom, ITeam, IGetRoomRoles, IUser, IUpload, IIntegration, ISubscription } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ITeam, IGetRoomRoles, IUser, IUploadWithUser, IIntegration, ISubscription } from '@rocket.chat/core-typings';
 
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
+import type { GroupsAddAllProps } from './GroupsAddAllProps';
+import type { GroupsAddLeaderProps } from './GroupsAddLeaderProps';
+import type { GroupsAddModeratorProps } from './GroupsAddModeratorProps';
+import type { GroupsAddOwnerProps } from './GroupsAddOwnerProps';
 import type { GroupsArchiveProps } from './GroupsArchiveProps';
-import type { GroupsMembersProps } from './GroupsMembersProps';
-import type { GroupsFilesProps } from './GroupsFilesProps';
-import type { GroupsUnarchiveProps } from './GroupsUnarchiveProps';
-import type { GroupsCreateProps } from './GroupsCreateProps';
+import type { GroupsCloseProps } from './GroupsCloseProps';
 import type { GroupsConvertToTeamProps } from './GroupsConvertToTeamProps';
 import type { GroupsCountersProps } from './GroupsCountersProps';
+import type { GroupsCreateProps } from './GroupsCreateProps';
 import type { GroupsDeleteProps } from './GroupsDeleteProps';
-import type { GroupsCloseProps } from './GroupsCloseProps';
-import type { GroupsKickProps } from './GroupsKickProps';
-import type { GroupsLeaveProps } from './GroupsLeaveProps';
-import type { GroupsRolesProps } from './GroupsRolesProps';
-import type { GroupsMessageProps } from './GroupsMessageProps';
-import type { GroupsAddOwnerProps } from './GroupsAddOwnerProps';
-import type { GroupsRemoveOwnerProps } from './GroupsRemoveOwnerProps';
-import type { GroupsRemoveModeratorProps } from './GroupsRemoveModeratorProps';
-import type { GroupsAddModeratorProps } from './GroupsAddModeratorProps';
-import type { GroupsHistoryProps } from './GroupsHistoryProps';
-import type { GroupsAddLeaderProps } from './GroupsAddLeaderProps';
-import type { GroupsRemoveLeaderProps } from './GroupsRemoveLeaderProps';
-import type { GroupsAddAllProps } from './GroupsAddAllProps';
+import type { GroupsFilesProps } from './GroupsFilesProps';
 import type { GroupsGetIntegrationsProps } from './GroupsGetIntegrationsProps';
+import type { GroupsHistoryProps } from './GroupsHistoryProps';
 import type { GroupsInfoProps } from './GroupsInfoProps';
 import type { GroupsInviteProps } from './GroupsInviteProps';
+import type { GroupsKickProps } from './GroupsKickProps';
+import type { GroupsLeaveProps } from './GroupsLeaveProps';
 import type { GroupsListProps } from './GroupsListProps';
+import type { GroupsMembersProps } from './GroupsMembersProps';
+import type { GroupsMessageProps } from './GroupsMessageProps';
+import type { GroupsModeratorsProps } from './GroupsModeratorsProps';
 import type { GroupsOnlineProps } from './GroupsOnlineProps';
 import type { GroupsOpenProps } from './GroupsOpenProps';
+import type { GroupsRemoveLeaderProps } from './GroupsRemoveLeaderProps';
+import type { GroupsRemoveModeratorProps } from './GroupsRemoveModeratorProps';
+import type { GroupsRemoveOwnerProps } from './GroupsRemoveOwnerProps';
 import type { GroupsRenameProps } from './GroupsRenameProps';
+import type { GroupsRolesProps } from './GroupsRolesProps';
+import type { GroupsSetAnnouncementProps } from './GroupsSetAnnouncementProps';
 import type { GroupsSetCustomFieldsProps } from './GroupsSetCustomFieldsProps';
 import type { GroupsSetDescriptionProps } from './GroupsSetDescriptionProps';
+import type { GroupsSetEncryptedProps } from './GroupsSetEncryptedProps';
 import type { GroupsSetPurposeProps } from './GroupsSetPurposeProps';
 import type { GroupsSetReadOnlyProps } from './GroupsSetReadOnlyProps';
 import type { GroupsSetTopicProps } from './GroupsSetTopicProps';
 import type { GroupsSetTypeProps } from './GroupsSetTypeProps';
-import type { GroupsSetAnnouncementProps } from './GroupsSetAnnouncementProps';
-import type { GroupsSetEncryptedProps } from './GroupsSetEncryptedProps';
-import type { GroupsModeratorsProps } from './GroupsModeratorsProps';
+import type { GroupsUnarchiveProps } from './GroupsUnarchiveProps';
 
 export type GroupsEndpoints = {
 	'/v1/groups.files': {
 		GET: (params: GroupsFilesProps) => PaginatedResult<{
-			files: IUpload[];
+			files: IUploadWithUser[];
 		}>;
 	};
 	'/v1/groups.members': {

@@ -1,17 +1,14 @@
-import { Meteor } from 'meteor/meteor';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import $ from 'jquery';
+import { Meteor } from 'meteor/meteor';
 
-import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
+import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 import type { FormattingButton } from './messageBoxFormatting';
 import { formattingButtons } from './messageBoxFormatting';
 
 export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string): ComposerAPI => {
 	const triggerEvent = (input: HTMLTextAreaElement, evt: string): void => {
-		$(input).trigger(evt);
-
 		const event = new Event(evt, { bubbles: true });
 		// TODO: Remove this hack for react to trigger onChange
 		const tracker = (input as any)._valueTracker;
@@ -51,13 +48,15 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		text: string,
 		{
 			selection,
+			skipFocus,
 		}: {
 			selection?:
 				| { readonly start?: number; readonly end?: number }
 				| ((previous: { readonly start: number; readonly end: number }) => { readonly start?: number; readonly end?: number });
+			skipFocus?: boolean;
 		} = {},
 	): void => {
-		focus();
+		!skipFocus && focus();
 
 		const { selectionStart, selectionEnd } = input;
 		const textAreaTxt = input.value;
@@ -69,7 +68,7 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		if (selection) {
 			if (!document.execCommand?.('insertText', false, text)) {
 				input.value = textAreaTxt.substring(0, selectionStart) + text + textAreaTxt.substring(selectionStart);
-				focus();
+				!skipFocus && focus();
 			}
 			input.setSelectionRange(selection.start ?? 0, selection.end ?? text.length);
 		}
@@ -81,7 +80,7 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		triggerEvent(input, 'input');
 		triggerEvent(input, 'change');
 
-		focus();
+		!skipFocus && focus();
 	};
 
 	const insertText = (text: string): void => {
@@ -263,7 +262,9 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 
 	const insertNewLine = (): void => insertText('\n');
 
-	setText(Meteor._localStorage.getItem(storageID) ?? '');
+	setText(Meteor._localStorage.getItem(storageID) ?? '', {
+		skipFocus: true,
+	});
 
 	// Gets the text that is connected to the cursor and replaces it with the given text
 	const replaceText = (text: string, selection: { readonly start: number; readonly end: number }): void => {

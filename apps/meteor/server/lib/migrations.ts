@@ -1,9 +1,9 @@
-import { Meteor } from 'meteor/meteor';
-import { Migrations } from '@rocket.chat/models';
 import type { IControl } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
+import { Migrations } from '@rocket.chat/models';
 
-import { Info } from '../../app/utils/server';
-import { Logger } from './logger/Logger';
+import { Info } from '../../app/utils/rocketchat.info';
+import { sleep } from '../../lib/utils/sleep';
 import { showErrorBox } from './logger/showBox';
 
 type IMigration = {
@@ -185,7 +185,7 @@ export async function migrateDatabase(targetVersion: 'latest' | number, subcomma
 		if (currentAttempt <= maxAttempts) {
 			log.warn(`${msg}. Trying again in ${retryInterval} seconds.`);
 
-			(Meteor as any)._sleepForMs(retryInterval * 1000);
+			await sleep(retryInterval * 1000);
 
 			currentAttempt++;
 			return migrateDatabase(targetVersion, subcommands);
@@ -292,9 +292,24 @@ export async function migrateDatabase(targetVersion: 'latest' | number, subcomma
 	return true;
 }
 
-export const onFreshInstall =
-	(await getControl()).version !== 0
-		? async (): Promise<void> => {
-				/* noop */
-		  }
-		: (fn: () => unknown): unknown => fn();
+export async function onServerVersionChange(cb: () => Promise<void>): Promise<void> {
+	const result = await Migrations.findOneAndUpdate(
+		{
+			_id: 'upgrade',
+		},
+		{
+			$set: {
+				hash: Info.commit.hash,
+			},
+		},
+		{
+			upsert: true,
+		},
+	);
+
+	if (result.value?.hash === Info.commit.hash) {
+		return;
+	}
+
+	await cb();
+}

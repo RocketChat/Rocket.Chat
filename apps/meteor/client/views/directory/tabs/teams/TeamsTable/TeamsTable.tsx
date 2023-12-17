@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
 
 import FilterByText from '../../../../../components/FilterByText';
+import GenericNoResults from '../../../../../components/GenericNoResults';
 import {
 	GenericTable,
 	GenericTableHeader,
@@ -72,7 +73,7 @@ const TeamsTable = () => {
 
 	return (
 		<>
-			<FilterByText placeholder={t('Teams_Search_teams')} autoFocus onChange={({ text }): void => setText(text)} />
+			<FilterByText placeholder={t('Teams_Search_teams')} onChange={({ text }): void => setText(text)} />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
@@ -107,12 +108,7 @@ const TeamsTable = () => {
 					/>
 				</>
 			)}
-			{isFetched && data?.result.length === 0 && (
-				<States>
-					<StatesIcon name='magnifier' />
-					<StatesTitle>{t('No_results_found')}</StatesTitle>
-				</States>
-			)}
+			{isFetched && data?.result.length === 0 && <GenericNoResults />}
 			{isError && (
 				<States>
 					<StatesIcon name='warning' variation='danger' />
