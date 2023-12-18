@@ -33,9 +33,9 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 		if (statusText && statusText.length > USER_STATUS_TEXT_MAX_LENGTH) {
 			return setStatusTextError(t('Max_length_is', USER_STATUS_TEXT_MAX_LENGTH));
 		}
-		if (statusText && statusText.length < USER_STATUS_TEXT_MAX_LENGTH) {
-			setCustomStatus(statusText);
-		}
+			if (statusText && statusText.length < USER_STATUS_TEXT_MAX_LENGTH) {
+				setCustomStatus(e.currentTarget.value);
+			}
 
 		return setStatusTextError(undefined);
 	});
