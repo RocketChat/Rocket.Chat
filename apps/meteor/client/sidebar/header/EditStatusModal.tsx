@@ -17,7 +17,7 @@ type EditStatusModalProps = {
 const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModalProps): ReactElement => {
 	const allowUserStatusMessageChange = useSetting('Accounts_AllowUserStatusMessageChange');
 	const dispatchToastMessage = useToastMessageDispatch();
-	const [customStatus, setCustomStatus] = useLocalStorage('Local_Custom_Status', '');
+	const [customStatus, setCustomStatus] = useLocalStorage<string | undefined>('Local_Custom_Status', '');
 	const initialStatusText = customStatus || userStatusText;
 
 	const t = useTranslation();
@@ -33,9 +33,6 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 		if (statusText && statusText.length > USER_STATUS_TEXT_MAX_LENGTH) {
 			return setStatusTextError(t('Max_length_is', USER_STATUS_TEXT_MAX_LENGTH));
 		}
-		if (statusText && statusText.length < USER_STATUS_TEXT_MAX_LENGTH) {
-			setCustomStatus(e.currentTarget.value);
-		}
 
 		return setStatusTextError(undefined);
 	});
@@ -45,6 +42,7 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 	const handleSaveStatus = useCallback(async () => {
 		try {
 			await setUserStatus({ message: statusText, status: statusType });
+			setCustomStatus(statusText);
 			dispatchToastMessage({ type: 'success', message: t('StatusMessage_Changed_Successfully') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
