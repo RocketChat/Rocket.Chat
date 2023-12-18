@@ -29,12 +29,14 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 
 	const handleStatusText = useMutableCallback((e: ChangeEvent<HTMLInputElement>): void => {
 		setStatusText(e.currentTarget.value);
+
 		if (statusText && statusText.length > USER_STATUS_TEXT_MAX_LENGTH) {
 			return setStatusTextError(t('Max_length_is', USER_STATUS_TEXT_MAX_LENGTH));
 		}
 		if (statusText && statusText.length < USER_STATUS_TEXT_MAX_LENGTH) {
 			setCustomStatus(statusText);
 		}
+
 		return setStatusTextError(undefined);
 	});
 
