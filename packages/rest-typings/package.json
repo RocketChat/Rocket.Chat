@@ -1,15 +1,15 @@
 {
 	"name": "@rocket.chat/rest-typings",
-	"version": "6.4.0",
+	"version": "6.6.0-develop",
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
-		"@types/jest": "~29.5.3",
+		"@types/jest": "~29.5.7",
 		"eslint": "~8.45.0",
-		"jest": "~29.6.1",
-		"jest-environment-jsdom": "~29.6.1",
+		"jest": "~29.6.4",
+		"jest-environment-jsdom": "~29.6.4",
 		"mongodb": "^4.17.1",
-		"ts-jest": "~29.0.5",
-		"typescript": "~5.2.2"
+		"ts-jest": "~29.1.1",
+		"typescript": "~5.3.2"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
@@ -24,11 +24,10 @@
 		"/dist"
 	],
 	"dependencies": {
-		"@rocket.chat/apps-engine": "1.41.0-alpha.290",
+		"@rocket.chat/apps-engine": "1.41.0",
 		"@rocket.chat/core-typings": "workspace:^",
-		"@rocket.chat/license": "workspace:^",
-		"@rocket.chat/message-parser": "next",
-		"@rocket.chat/ui-kit": "^0.32.1",
+		"@rocket.chat/message-parser": "~0.31.27",
+		"@rocket.chat/ui-kit": "workspace:~",
 		"ajv": "^8.11.0",
 		"ajv-formats": "^2.1.1"
 	},

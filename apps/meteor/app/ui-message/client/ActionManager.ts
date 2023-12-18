@@ -1,21 +1,19 @@
-import type { DistributiveOmit, UiKit } from '@rocket.chat/core-typings';
+import type { DistributiveOmit } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Random } from '@rocket.chat/random';
-import type { ActionManagerContext, RouterContext } from '@rocket.chat/ui-contexts';
+import type { RouterContext, IActionManager } from '@rocket.chat/ui-contexts';
+import type * as UiKit from '@rocket.chat/ui-kit';
 import type { ContextType } from 'react';
 import { lazy } from 'react';
 
 import * as banners from '../../../client/lib/banners';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
-import { router } from '../../../client/providers/RouterProvider';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { UiKitTriggerTimeoutError } from './UiKitTriggerTimeoutError';
 
 const UiKitModal = lazy(() => import('../../../client/views/modal/uikit/UiKitModal'));
 
-type ActionManagerType = Exclude<ContextType<typeof ActionManagerContext>, undefined>;
-
-export class ActionManager implements ActionManagerType {
+export class ActionManager implements IActionManager {
 	protected static TRIGGER_TIMEOUT = 5000;
 
 	protected static TRIGGER_TIMEOUT_ERROR = 'TRIGGER_TIMEOUT_ERROR';
@@ -58,6 +56,14 @@ export class ActionManager implements ActionManagerType {
 		return this.events.off(eventName, listener);
 	}
 
+	public notifyBusy() {
+		this.events.emit('busy', { busy: true });
+	}
+
+	public notifyIdle() {
+		this.events.emit('busy', { busy: false });
+	}
+
 	public generateTriggerId(appId: string | undefined) {
 		const triggerId = Random.id();
 		this.triggersId.set(triggerId, appId);
@@ -66,7 +72,7 @@ export class ActionManager implements ActionManagerType {
 	}
 
 	public async emitInteraction(appId: string, userInteraction: DistributiveOmit<UiKit.UserInteraction, 'triggerId'>) {
-		this.events.emit('busy', { busy: true });
+		this.notifyBusy();
 
 		const triggerId = this.generateTriggerId(appId);
 
@@ -84,7 +90,7 @@ export class ActionManager implements ActionManagerType {
 				.then((interaction) => this.handleServerInteraction(interaction)),
 		]).finally(() => {
 			if (timeout) clearTimeout(timeout);
-			this.events.emit('busy', { busy: false });
+			this.notifyIdle();
 		});
 	}
 
@@ -115,20 +121,7 @@ export class ActionManager implements ActionManagerType {
 
 			case 'modal.open': {
 				const { view } = interaction;
-				const instance = imperativeModal.open({
-					component: UiKitModal,
-					props: {
-						key: view.id,
-						initialView: interaction.view,
-					},
-				});
-
-				this.viewInstances.set(view.id, {
-					close: () => {
-						instance.close();
-						this.viewInstances.delete(view.id);
-					},
-				});
+				this.openModal(view);
 				break;
 			}
 
@@ -151,12 +144,7 @@ export class ActionManager implements ActionManagerType {
 
 			case 'banner.open': {
 				const { type, triggerId, ...view } = interaction;
-				banners.open(view);
-				this.viewInstances.set(view.viewId, {
-					close: () => {
-						banners.closeById(view.viewId);
-					},
-				});
+				this.openBanner(view);
 				break;
 			}
 
@@ -181,30 +169,7 @@ export class ActionManager implements ActionManagerType {
 
 			case 'contextual_bar.open': {
 				const { view } = interaction;
-				this.viewInstances.set(view.id, {
-					payload: {
-						view,
-					},
-					close: () => {
-						this.viewInstances.delete(view.id);
-					},
-				});
-
-				const routeName = this.router.getRouteName();
-				const routeParams = this.router.getRouteParameters();
-
-				if (!routeName) {
-					break;
-				}
-
-				this.router.navigate({
-					name: routeName,
-					params: {
-						...routeParams,
-						tab: 'app',
-						context: view.id,
-					},
-				});
+				this.openContextualBar(view);
 				break;
 			}
 
@@ -226,12 +191,84 @@ export class ActionManager implements ActionManagerType {
 		return this.viewInstances.get(viewId)?.payload;
 	}
 
+	public openView(surface: 'modal', view: UiKit.ModalView): void;
+
+	public openView(surface: 'banner', view: UiKit.BannerView): void;
+
+	public openView(surface: 'contextual_bar', view: UiKit.ContextualBarView): void;
+
+	public openView(surface: string, view: UiKit.View) {
+		switch (surface) {
+			case 'modal':
+				this.openModal(view as UiKit.ModalView);
+				break;
+
+			case 'banner':
+				this.openBanner(view as UiKit.BannerView);
+				break;
+
+			case 'contextual_bar':
+				this.openContextualBar(view as UiKit.ContextualBarView);
+				break;
+		}
+	}
+
+	private openModal(view: UiKit.ModalView) {
+		const instance = imperativeModal.open({
+			component: UiKitModal,
+			props: {
+				key: view.id,
+				initialView: view,
+			},
+		});
+
+		this.viewInstances.set(view.id, {
+			close: () => {
+				instance.close();
+				this.viewInstances.delete(view.id);
+			},
+		});
+	}
+
+	private openBanner(view: UiKit.BannerView) {
+		banners.open(view);
+		this.viewInstances.set(view.viewId, {
+			close: () => {
+				banners.closeById(view.viewId);
+			},
+		});
+	}
+
+	private openContextualBar(view: UiKit.ContextualBarView) {
+		this.viewInstances.set(view.id, {
+			payload: {
+				view,
+			},
+			close: () => {
+				this.viewInstances.delete(view.id);
+			},
+		});
+
+		const routeName = this.router.getRouteName();
+		const routeParams = this.router.getRouteParameters();
+
+		if (!routeName) {
+			return;
+		}
+
+		this.router.navigate({
+			name: routeName,
+			params: {
+				...routeParams,
+				tab: 'app',
+				context: view.id,
+			},
+		});
+	}
+
 	public disposeView(viewId: UiKit.ModalView['id'] | UiKit.BannerView['viewId'] | UiKit.ContextualBarView['id']) {
 		const instance = this.viewInstances.get(viewId);
 		instance?.close?.();
 		this.viewInstances.delete(viewId);
 	}
 }
-
-/** @deprecated consumer should use the context instead */
-export const actionManager = new ActionManager(router);

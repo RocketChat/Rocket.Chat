@@ -5,9 +5,11 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
 
 import { ProgressStep } from '../../../../app/importer/lib/ImporterProgressStep';
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import ImportOperationSummary from './ImportOperationSummary';
+import ImportOperationSummarySkeleton from './ImportOperationSummarySkeleton';
 
+// TODO: review inner logic
 function ImportHistoryPage() {
 	const queryClient = useQueryClient();
 	const t = useTranslation();
@@ -95,7 +97,7 @@ function ImportHistoryPage() {
 
 	return (
 		<Page>
-			<Page.Header title={t('Import')}>
+			<PageHeader title={t('Import')}>
 				<ButtonGroup>
 					<Button primary disabled={isLoading} onClick={handleNewImportClick}>
 						{t('Import_New_File')}
@@ -119,8 +121,8 @@ function ImportHistoryPage() {
 						</Button>
 					)}
 				</ButtonGroup>
-			</Page.Header>
-			<Page.ScrollableContentWithShadow>
+			</PageHeader>
+			<PageScrollableContentWithShadow>
 				<Table fixed data-qa-id='ImportTable'>
 					<TableHead>
 						<TableRow>
@@ -165,7 +167,7 @@ function ImportHistoryPage() {
 						{isLoading && (
 							<>
 								{Array.from({ length: 20 }, (_, i) => (
-									<ImportOperationSummary.Skeleton small={small} key={i} />
+									<ImportOperationSummarySkeleton key={i} small={small} />
 								))}
 							</>
 						)}
@@ -185,7 +187,7 @@ function ImportHistoryPage() {
 						)}
 					</TableBody>
 				</Table>
-			</Page.ScrollableContentWithShadow>
+			</PageScrollableContentWithShadow>
 		</Page>
 	);
 }

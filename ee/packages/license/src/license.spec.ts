@@ -105,7 +105,7 @@ describe('Validate License Limits', () => {
 		});
 	});
 	describe('fair usage behavior', () => {
-		it('should change the flag to true if the counter is equal or over the limit', async () => {
+		it('should change the `prevent_action` flag to true if the counter is equal or over the limit', async () => {
 			const licenseManager = await getReadyLicenseManager();
 
 			const fairUsageCallback = jest.fn();
@@ -137,7 +137,7 @@ describe('Validate License Limits', () => {
 			fairUsageCallback.mockClear();
 			licenseManager.setLicenseLimitCounter('activeUsers', () => 10);
 			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(true);
-			expect(fairUsageCallback).toHaveBeenCalledTimes(0);
+			expect(fairUsageCallback).toHaveBeenCalledTimes(1);
 			expect(preventActionCallback).toHaveBeenCalledTimes(1);
 
 			licenseManager.setLicenseLimitCounter('activeUsers', () => 11);
@@ -148,7 +148,48 @@ describe('Validate License Limits', () => {
 			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(true);
 			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(true);
 			expect(preventActionCallback).toHaveBeenCalledTimes(4);
-			expect(fairUsageCallback).toHaveBeenCalledTimes(4);
+			expect(fairUsageCallback).toHaveBeenCalledTimes(0);
+		});
+		it('should trigger the toggle event if the counter is under the limit', async () => {
+			const licenseManager = await getReadyLicenseManager();
+
+			const fairUsageCallback = jest.fn();
+			const preventActionCallback = jest.fn();
+
+			licenseManager.onBehaviorToggled('start_fair_policy', fairUsageCallback);
+			licenseManager.onBehaviorTriggered('prevent_action', preventActionCallback);
+
+			const license = await new MockedLicenseBuilder().withLimits('activeUsers', [
+				{
+					max: 12,
+					behavior: 'prevent_action',
+				},
+				{
+					max: 10,
+					behavior: 'start_fair_policy',
+				},
+			]);
+
+			await expect(licenseManager.setLicense(await license.sign())).resolves.toBe(true);
+
+			licenseManager.setLicenseLimitCounter('activeUsers', () => 12);
+			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(true);
+			expect(fairUsageCallback).toHaveBeenCalledTimes(1);
+			expect(preventActionCallback).toHaveBeenCalledTimes(1);
+
+			preventActionCallback.mockClear();
+			fairUsageCallback.mockClear();
+			licenseManager.setLicenseLimitCounter('activeUsers', () => 12);
+			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(true);
+			expect(fairUsageCallback).toHaveBeenCalledTimes(0);
+			expect(preventActionCallback).toHaveBeenCalledTimes(1);
+
+			preventActionCallback.mockClear();
+			fairUsageCallback.mockClear();
+			licenseManager.setLicenseLimitCounter('activeUsers', () => 5);
+			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(false);
+			expect(fairUsageCallback).toHaveBeenCalledTimes(1);
+			expect(preventActionCallback).toHaveBeenCalledTimes(0);
 		});
 	});
 
@@ -238,6 +279,9 @@ describe('License.getInfo', () => {
 		it('should respect the default if there is no license applied', async () => {
 			const licenseManager = new LicenseImp();
 
+			licenseManager.setLicenseLimitCounter('privateApps', () => 0);
+			licenseManager.setLicenseLimitCounter('marketplaceApps', () => 0);
+
 			expect(
 				(
 					await licenseManager.getInfo({
@@ -272,5 +316,146 @@ describe('License.getInfo', () => {
 				marketplaceApps: { max: -1 },
 			});
 		});
+	});
+});
+
+describe('License.setLicense', () => {
+	it('should trigger the validate event even if the module callback throws an error', async () => {
+		const licenseManager = await getReadyLicenseManager();
+
+		const validateCallback = jest.fn();
+		const moduleCallback = jest.fn(() => {
+			throw new Error('Error');
+		});
+
+		const syncCallback = jest.fn();
+
+		licenseManager.on('validate', validateCallback);
+		licenseManager.on('sync', syncCallback);
+		licenseManager.on('module', moduleCallback);
+
+		const license = await new MockedLicenseBuilder().withGratedModules(['auditing']);
+
+		await expect(licenseManager.setLicense(await license.sign())).resolves.toBe(true);
+
+		expect(validateCallback).toHaveBeenCalledTimes(1);
+		expect(moduleCallback).toHaveBeenCalledTimes(1);
+		expect(syncCallback).toHaveBeenCalledTimes(0);
+	});
+
+	it('should trigger the sync event only from the sync method', async () => {
+		const licenseManager = await getReadyLicenseManager();
+
+		const validateCallback = jest.fn();
+		const moduleCallback = jest.fn();
+		const syncCallback = jest.fn();
+
+		licenseManager.on('validate', validateCallback);
+		licenseManager.on('sync', syncCallback);
+		licenseManager.on('module', moduleCallback);
+
+		const license = await new MockedLicenseBuilder().withGratedModules(['auditing']).withLimits('activeUsers', [
+			{
+				max: 10,
+				behavior: 'disable_modules',
+				modules: ['auditing'],
+			},
+		]);
+
+		await expect(licenseManager.setLicense(await license.sign(), true)).resolves.toBe(true);
+
+		expect(validateCallback).toHaveBeenCalledTimes(1);
+		expect(moduleCallback).toHaveBeenCalledTimes(1);
+		expect(syncCallback).toHaveBeenCalledTimes(0);
+
+		validateCallback.mockClear();
+		moduleCallback.mockClear();
+		syncCallback.mockClear();
+
+		licenseManager.setLicenseLimitCounter('activeUsers', () => 11);
+		await licenseManager.revalidateLicense();
+
+		expect(validateCallback).toHaveBeenCalledTimes(1);
+		expect(moduleCallback).toHaveBeenCalledTimes(1);
+		expect(syncCallback).toHaveBeenCalledTimes(1);
+	});
+
+	it('should trigger the sync event even if the module callback throws an error', async () => {
+		const licenseManager = await getReadyLicenseManager();
+
+		const validateCallback = jest.fn();
+		const moduleCallback = jest.fn(() => {
+			throw new Error('Error');
+		});
+		const syncCallback = jest.fn();
+
+		licenseManager.on('validate', validateCallback);
+		licenseManager.on('sync', syncCallback);
+		licenseManager.on('module', moduleCallback);
+
+		const license = await new MockedLicenseBuilder().withGratedModules(['auditing']).withLimits('activeUsers', [
+			{
+				max: 10,
+				behavior: 'disable_modules',
+				modules: ['auditing'],
+			},
+		]);
+
+		await expect(licenseManager.setLicense(await license.sign(), true)).resolves.toBe(true);
+
+		expect(validateCallback).toHaveBeenCalledTimes(1);
+		expect(moduleCallback).toHaveBeenCalledTimes(1);
+		expect(syncCallback).toHaveBeenCalledTimes(0);
+
+		validateCallback.mockClear();
+		moduleCallback.mockClear();
+		syncCallback.mockClear();
+
+		licenseManager.setLicenseLimitCounter('activeUsers', () => 11);
+		await licenseManager.revalidateLicense();
+
+		expect(validateCallback).toHaveBeenCalledTimes(1);
+		expect(moduleCallback).toHaveBeenCalledTimes(1);
+		expect(syncCallback).toHaveBeenCalledTimes(1);
+	});
+});
+
+describe('License.removeLicense', () => {
+	it('should trigger the sync event even if the module callback throws an error', async () => {
+		const licenseManager = await getReadyLicenseManager();
+
+		const removeLicense = jest.fn();
+		const moduleCallback = jest.fn();
+
+		licenseManager.on('removed', removeLicense);
+
+		licenseManager.onModule(moduleCallback);
+
+		const license = await new MockedLicenseBuilder().withGratedModules(['auditing']).withLimits('activeUsers', [
+			{
+				max: 10,
+				behavior: 'disable_modules',
+				modules: ['auditing'],
+			},
+		]);
+
+		await expect(licenseManager.setLicense(await license.sign(), true)).resolves.toBe(true);
+		await expect(removeLicense).toHaveBeenCalledTimes(0);
+		await expect(moduleCallback).toHaveBeenNthCalledWith(1, {
+			module: 'auditing',
+			valid: true,
+		});
+
+		removeLicense.mockClear();
+		moduleCallback.mockClear();
+		await licenseManager.remove();
+
+		await expect(removeLicense).toHaveBeenCalledTimes(1);
+		await expect(moduleCallback).toHaveBeenNthCalledWith(1, {
+			module: 'auditing',
+			valid: false,
+		});
+
+		await expect(licenseManager.hasValidLicense()).toBe(false);
 	});
 });

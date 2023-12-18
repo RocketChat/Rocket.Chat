@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useActiveConnections } from '../../../../hooks/useActiveConnections';
 import type { CardProps } from '../FeatureUsageCard';
 import FeatureUsageCard from '../FeatureUsageCard';
+import UpgradeButton from '../UpgradeButton';
 
 const getLimits = ({ max, current }: { max: number; current: number }) => {
 	const total = max || 0;
@@ -29,7 +30,6 @@ const ActiveSessionsCard = (): ReactElement => {
 	const card: CardProps = {
 		title: t('ActiveSessions'),
 		infoText: t('ActiveSessions_InfoText'),
-		showUpgradeButton: true,
 	};
 
 	if (result.isLoading || result.isError) {
@@ -43,7 +43,18 @@ const ActiveSessionsCard = (): ReactElement => {
 	const { total, used, available, exceedLimit } = getLimits(result.data);
 
 	return (
-		<FeatureUsageCard card={{ ...card, showUpgradeButton: exceedLimit }}>
+		<FeatureUsageCard
+			card={{
+				...card,
+				...(exceedLimit && {
+					upgradeButton: (
+						<UpgradeButton target='active-session-card' action='upgrade' small>
+							{t('Upgrade')}
+						</UpgradeButton>
+					),
+				}),
+			}}
+		>
 			<Box textAlign='center'>
 				<Box fontScale='h1' color={exceedLimit ? 'font-danger' : 'font-default'}>
 					{used} / {total}

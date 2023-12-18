@@ -101,15 +101,15 @@ const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps): ReactEle
 		<ContextualbarScrollableContent w='full' {...props}>
 			<FieldGroup maxWidth='x600' alignSelf='center' w='full'>
 				<Field>
-					<FieldLabel display='flex' justifyContent='space-between' w='full'>
-						{t('Active')}
+					<FieldRow>
+						<FieldLabel>{t('Active')}</FieldLabel>
 						<Controller
 							name='active'
 							control={control}
 							defaultValue={data.active}
 							render={({ field }): ReactElement => <ToggleSwitch onChange={field.onChange} checked={field.value} />}
 						/>
-					</FieldLabel>
+					</FieldRow>
 				</Field>
 				<Field>
 					<FieldLabel>{t('Application_Name')}</FieldLabel>

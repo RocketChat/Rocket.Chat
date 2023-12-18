@@ -4,10 +4,11 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 import { settings } from '../../../settings/server';
 import { workspaceScopes } from '../oauthScopes';
 import { getRedirectUri } from './getRedirectUri';
+import { CloudWorkspaceAccessTokenError } from './getWorkspaceAccessToken';
 import { removeWorkspaceRegistrationInfo } from './removeWorkspaceRegistrationInfo';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 
-export async function getWorkspaceAccessTokenWithScope(scope = '') {
+export async function getWorkspaceAccessTokenWithScope(scope = '', throwOnError = false) {
 	const { workspaceRegistered } = await retrieveRegistrationStatus();
 
 	const tokenResponse = { token: '', expiresAt: new Date() };
@@ -44,30 +45,32 @@ export async function getWorkspaceAccessTokenWithScope(scope = '') {
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 			method: 'POST',
 			body,
-		});
-		payload = await response.json();
-	} catch (err: any) {
-		SystemLogger.error({
-			msg: 'Failed to get Workspace AccessToken from Rocket.Chat Cloud',
-			url: '/api/oauth/token',
-			scope,
-			...(err.response?.data && { cloudError: err.response.data }),
-			err,
+			timeout: 3000,
 		});
 
-		if (err.response?.data?.error === 'oauth_invalid_client_credentials') {
-			SystemLogger.error('Server has been unregistered from cloud');
-			void removeWorkspaceRegistrationInfo();
+		payload = await response.json();
+
+		if (response.status >= 400) {
+			if (payload.error === 'oauth_invalid_client_credentials') {
+				throw new CloudWorkspaceAccessTokenError();
+			}
 		}
 
-		return tokenResponse;
+		const expiresAt = new Date();
+		expiresAt.setSeconds(expiresAt.getSeconds() + payload.expires_in);
+
+		return {
+			token: payload.access_token,
+			expiresAt,
+		};
+	} catch (err: any) {
+		if (err instanceof CloudWorkspaceAccessTokenError) {
+			SystemLogger.error('Server has been unregistered from cloud');
+			void removeWorkspaceRegistrationInfo();
+			if (throwOnError) {
+				throw err;
+			}
+		}
 	}
-
-	const expiresAt = new Date();
-	expiresAt.setSeconds(expiresAt.getSeconds() + payload.expires_in);
-
-	tokenResponse.expiresAt = expiresAt;
-	tokenResponse.token = payload.access_token;
-
 	return tokenResponse;
 }

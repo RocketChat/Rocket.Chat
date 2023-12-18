@@ -1,17 +1,15 @@
-import { Box } from '@rocket.chat/fuselage';
-import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import { useQueryClient } from '@tanstack/react-query';
+import { Box, IconButton } from '@rocket.chat/fuselage';
+import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useCallback } from 'react';
+import React from 'react';
 
 import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
-import RemoveAgentButton from './RemoveAgentButton';
+import { useRemoveAgent } from '../hooks/useRemoveAgent';
 
 const AgentsTableRow = ({
-	user: { _id, name, username, avatarETag, emails, statusLivechat, departments },
+	user: { _id, name, username, avatarETag, emails, statusLivechat },
 	mediaQuery,
-	reload,
 }: {
 	user: {
 		_id: string;
@@ -20,30 +18,16 @@ const AgentsTableRow = ({
 		avatarETag?: string;
 		emails?: { address: string }[];
 		statusLivechat: string;
-		departments: string[];
 	};
 	mediaQuery: boolean;
-	reload: () => void;
 }): ReactElement => {
 	const t = useTranslation();
-	const agentsRoute = useRoute('omnichannel-agents');
-	const queryClient = useQueryClient();
+	const router = useRouter();
 
-	const onRowClick = useCallback(() => {
-		agentsRoute.push({
-			context: 'info',
-			id: _id,
-		});
-	}, [_id, agentsRoute]);
-
-	const onAgentRemoved = useCallback(() => {
-		departments.forEach((departmentId) => {
-			queryClient.removeQueries(['/v1/livechat/department/:_id', departmentId]);
-		});
-	}, [queryClient, departments]);
+	const handleDelete = useRemoveAgent(_id);
 
 	return (
-		<GenericTableRow action onClick={onRowClick}>
+		<GenericTableRow data-qa-id={username} action onClick={() => router.navigate(`/omnichannel/agents/info/${_id}`)}>
 			<GenericTableCell>
 				<Box display='flex' alignItems='center'>
 					{username && <UserAvatar size={mediaQuery ? 'x28' : 'x40'} title={username} username={username} etag={avatarETag} />}
@@ -71,7 +55,17 @@ const AgentsTableRow = ({
 			)}
 			<GenericTableCell withTruncatedText>{emails?.length && emails[0].address}</GenericTableCell>
 			<GenericTableCell withTruncatedText>{statusLivechat === 'available' ? t('Available') : t('Not_Available')}</GenericTableCell>
-			<RemoveAgentButton _id={_id} reload={reload} onAgentRemoved={onAgentRemoved} />
+			<GenericTableCell withTruncatedText>
+				<IconButton
+					icon='trash'
+					small
+					title={t('Remove')}
+					onClick={(e) => {
+						e.stopPropagation();
+						handleDelete();
+					}}
+				/>
+			</GenericTableCell>
 		</GenericTableRow>
 	);
 };

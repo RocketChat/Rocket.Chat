@@ -33,6 +33,7 @@ export * from './IRocketChatAssets';
 export * from './IPushToken';
 export * from './IPushNotificationConfig';
 export * from './SlashCommands';
+export * from './license';
 
 export * from './IUserDataFile';
 export * from './IUserSession';
@@ -136,5 +137,3 @@ export * from './IModerationReport';
 export * from './CustomFieldMetadata';
 
 export * as Cloud from './cloud';
-
-export * as UiKit from './uikit';

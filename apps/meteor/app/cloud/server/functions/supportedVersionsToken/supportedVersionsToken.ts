@@ -7,11 +7,12 @@ import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { SystemLogger } from '../../../../../server/lib/logger/system';
 import { settings } from '../../../../settings/server';
+import { supportedVersions as supportedVersionsFromBuild } from '../../../../utils/rocketchat-supported-versions.info';
 import { buildVersionUpdateMessage } from '../../../../version-check/server/functions/buildVersionUpdateMessage';
 import { generateWorkspaceBearerHttpHeader } from '../getWorkspaceAccessToken';
 import { supportedVersionsChooseLatest } from './supportedVersionsChooseLatest';
 
-declare module '@rocket.chat/license' {
+declare module '@rocket.chat/core-typings' {
 	interface ILicenseV3 {
 		supportedVersions?: SignedSupportedVersions;
 	}
@@ -102,6 +103,7 @@ const getSupportedVersionsFromCloud = async () => {
 	const response = await handleResponse<SupportedVersions>(
 		fetch(releaseEndpoint, {
 			headers,
+			timeout: 3000,
 		}),
 	);
 
@@ -127,6 +129,7 @@ const getSupportedVersionsToken = async () => {
 	const [versionsFromLicense, response] = await Promise.all([License.getLicense(), getSupportedVersionsFromCloud()]);
 
 	const supportedVersions = await supportedVersionsChooseLatest(
+		supportedVersionsFromBuild,
 		versionsFromLicense?.supportedVersions,
 		(response.success && response.result) || undefined,
 	);

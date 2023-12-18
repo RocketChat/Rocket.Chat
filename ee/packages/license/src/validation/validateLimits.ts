@@ -1,11 +1,11 @@
-import type { ILicenseV3, LicenseLimitKind } from '../definition/ILicenseV3';
-import type { BehaviorWithContext } from '../definition/LicenseBehavior';
-import type { LicenseValidationOptions } from '../definition/LicenseValidationOptions';
+import type { ILicenseV3, LicenseLimitKind, BehaviorWithContext, LicenseValidationOptions } from '@rocket.chat/core-typings';
+
 import { isLimitAllowed, isBehaviorAllowed } from '../isItemAllowed';
 import type { LicenseManager } from '../license';
 import { logger } from '../logger';
 import { getCurrentValueForLicenseLimit } from './getCurrentValueForLicenseLimit';
 import { getResultingBehavior } from './getResultingBehavior';
+import { logKind } from './logKind';
 import { validateLimit } from './validateLimit';
 
 export async function validateLimits(
@@ -30,11 +30,22 @@ export async function validateLimits(
 					.filter(({ max, behavior }) => validateLimit(max, currentValue, behavior, extraCount))
 					.map((limit) => {
 						if (!options.suppressLog) {
-							logger.error({
-								msg: 'Limit validation failed',
-								kind: limitKey,
-								limit,
-							});
+							switch (logKind(limit.behavior)) {
+								case 'error':
+									logger.error({
+										msg: 'Limit validation failed',
+										kind: limitKey,
+										limit,
+									});
+									break;
+								case 'info':
+									logger.info({
+										msg: 'Limit validation failed',
+										kind: limitKey,
+										limit,
+									});
+									break;
+							}
 						}
 						return getResultingBehavior(limit, { reason: 'limit', limit: limitKey });
 					});

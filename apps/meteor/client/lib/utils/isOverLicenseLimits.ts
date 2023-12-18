@@ -1,4 +1,4 @@
-import type { LicenseLimitKind } from '@rocket.chat/license';
+import type { LicenseLimitKind } from '@rocket.chat/core-typings';
 
 type Limits = Record<
 	LicenseLimitKind,
@@ -9,4 +9,4 @@ type Limits = Record<
 >;
 
 export const isOverLicenseLimits = (limits: Limits): boolean =>
-	Object.values(limits).some((limit) => limit.value !== undefined && limit.value > limit.max);
+	Object.values(limits).some((limit) => limit.value !== undefined && limit.max > 0 && limit.value > limit.max);

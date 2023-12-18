@@ -56,7 +56,6 @@ export class UsersRaw extends BaseRaw {
 			{ key: { lastLogin: 1 } },
 			{ key: { status: 1 } },
 			{ key: { statusText: 1 } },
-			{ key: { active: 1 }, sparse: 1 },
 			{ key: { statusConnection: 1 }, sparse: 1 },
 			{ key: { appId: 1 }, sparse: 1 },
 			{ key: { type: 1 } },
@@ -1652,7 +1651,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		const user = await this.col.findOneAndUpdate(query, update, { sort, returnDocument: 'after' });
+		const user = await this.findOneAndUpdate(query, update, { sort, returnDocument: 'after' });
 		if (user && user.value) {
 			return {
 				agentId: user.value._id,
@@ -1682,7 +1681,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		const user = await this.col.findOneAndUpdate(query, update, { sort, returnDocument: 'after' });
+		const user = await this.findOneAndUpdate(query, update, { sort, returnDocument: 'after' });
 		if (user?.value) {
 			return {
 				agentId: user.value._id,

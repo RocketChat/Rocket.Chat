@@ -27,6 +27,7 @@ import type {
 	UpdateResult,
 	Document,
 	UpdateFilter,
+	ModifyResult,
 } from 'mongodb';
 
 import { otrSystemMessages } from '../../../app/otr/lib/constants';
@@ -153,15 +154,43 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		start,
 		end,
 		departmentId,
+		onlyCount,
+		options,
+	}: {
+		start: Date;
+		end: Date;
+		departmentId?: ILivechatDepartment['_id'];
+		onlyCount: true;
+		options?: PaginatedRequest;
+	}): AggregationCursor<{ total: number }>;
+
+	findAllNumberOfTransferredRooms({
+		start,
+		end,
+		departmentId,
+		onlyCount,
+		options,
+	}: {
+		start: Date;
+		end: Date;
+		departmentId?: ILivechatDepartment['_id'];
+		onlyCount?: false;
+		options?: PaginatedRequest;
+	}): AggregationCursor<{ _id: string | null; numberOfTransferredRooms: number }>;
+
+	findAllNumberOfTransferredRooms({
+		start,
+		end,
+		departmentId,
 		onlyCount = false,
 		options = {},
 	}: {
-		start: string;
-		end: string;
-		departmentId: ILivechatDepartment['_id'];
-		onlyCount: boolean;
-		options: PaginatedRequest;
-	}): AggregationCursor<any> {
+		start: Date;
+		end: Date;
+		departmentId?: ILivechatDepartment['_id'];
+		onlyCount?: boolean;
+		options?: PaginatedRequest;
+	}): AggregationCursor<{ total: number }> | AggregationCursor<{ _id: string | null; numberOfTransferredRooms: number }> {
 		// FIXME: aggregation type definitions
 		const match = {
 			$match: {
@@ -210,7 +239,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		const params = [...firstParams, group, project, sort];
 		if (onlyCount) {
 			params.push({ $count: 'total' });
-			return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
+			return this.col.aggregate<{ total: number }>(params, { readPreference: readSecondaryPreferred() });
 		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
@@ -218,7 +247,10 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate(params, { allowDiskUse: true, readPreference: readSecondaryPreferred() });
+		return this.col.aggregate<{ _id: string | null; numberOfTransferredRooms: number }>(params, {
+			allowDiskUse: true,
+			readPreference: readSecondaryPreferred(),
+		});
 	}
 
 	getTotalOfMessagesSentByDate({ start, end, options = {} }: { start: Date; end: Date; options?: PaginatedRequest }): Promise<any[]> {
@@ -1593,19 +1625,23 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	 * to race conditions: If multiple updates occur, the current state will be updated
 	 * only if the new state of the discussion room is really newer.
 	 */
-	async refreshDiscussionMetadata(room: Pick<IRoom, '_id' | 'msgs' | 'lm'>): Promise<UpdateResult | Document | false> {
+	async refreshDiscussionMetadata(room: Pick<IRoom, '_id' | 'msgs' | 'lm'>): Promise<ModifyResult<IMessage>> {
 		const { _id: drid, msgs: dcount, lm: dlm } = room;
 
 		const query = {
 			drid,
 		};
 
-		return this.updateMany(query, {
-			$set: {
-				dcount,
-				dlm,
+		return this.findOneAndUpdate(
+			query,
+			{
+				$set: {
+					dcount,
+					dlm,
+				},
 			},
-		});
+			{ returnDocument: 'after' },
+		);
 	}
 
 	// //////////////////////////////////////////////////////////////////

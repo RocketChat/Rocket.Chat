@@ -2,7 +2,7 @@ import { Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { useTranslation, useRouteParameter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 import { getPermaLink } from '../../../lib/getPermaLink';
 import ModConsoleReportDetails from './ModConsoleReportDetails';
 import ModerationConsoleTable from './ModerationConsoleTable';
@@ -41,7 +41,7 @@ const ModerationConsolePage = ({ tab = 'messages', onSelectTab }: ModerationCons
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('Moderation')} />
+				<PageHeader title={t('Moderation')} />
 
 				<Tabs>
 					<TabsItem selected={tab === 'messages'} onClick={handleTabClick('messages')}>
@@ -51,10 +51,10 @@ const ModerationConsolePage = ({ tab = 'messages', onSelectTab }: ModerationCons
 						{t('Reported_Users')}
 					</TabsItem>
 				</Tabs>
-				<Page.Content>
+				<PageContent>
 					{tab === 'messages' && <ModerationConsoleTable />}
 					{tab === 'users' && <ModConsoleUsersTable />}
-				</Page.Content>
+				</PageContent>
 			</Page>
 			{context === 'info' && id && <ModConsoleReportDetails userId={id} onRedirect={handleRedirect} default={tab} />}
 		</Page>
