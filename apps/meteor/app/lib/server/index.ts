@@ -21,6 +21,7 @@ import './methods/createToken';
 import './methods/deleteMessage';
 import './methods/deleteUserOwnAccount';
 import './methods/executeSlashCommandPreview';
+import './startup/mentionUserNotInChannel';
 import './methods/getChannelHistory';
 import './methods/getRoomJoinCode';
 import './methods/getRoomRoles';

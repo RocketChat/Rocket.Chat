@@ -1,4 +1,4 @@
-import { Box, FieldLabel, FieldRow, Flex, Select } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
 import { useLanguages } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -13,6 +13,7 @@ type LanguageSettingInputProps = {
 	readonly?: boolean;
 	autocomplete?: boolean;
 	disabled?: boolean;
+	required?: boolean;
 	hasResetButton?: boolean;
 	onChangeValue?: (value: string | number) => void;
 	onResetButtonClick?: () => void;
@@ -26,6 +27,7 @@ function LanguageSettingInput({
 	readonly,
 	autocomplete,
 	disabled,
+	required,
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
@@ -37,15 +39,13 @@ function LanguageSettingInput({
 	};
 
 	return (
-		<>
-			<Flex.Container>
-				<Box>
-					<FieldLabel htmlFor={_id} title={_id}>
-						{label}
-					</FieldLabel>
-					{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
-				</Box>
-			</Flex.Container>
+		<Field>
+			<FieldRow>
+				<FieldLabel htmlFor={_id} title={_id} required={required}>
+					{label}
+				</FieldLabel>
+				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+			</FieldRow>
 			<FieldRow>
 				<Select
 					data-qa-setting-id={_id}
@@ -59,7 +59,7 @@ function LanguageSettingInput({
 					options={languages.map(({ key, name }) => [key, name])}
 				/>
 			</FieldRow>
-		</>
+		</Field>
 	);
 }
 

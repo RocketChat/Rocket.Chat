@@ -71,7 +71,7 @@ const UnitsTable = () => {
 		<>
 			{((isSuccess && data?.units.length > 0) || queryHasChanged) && <FilterByText onChange={({ text }): void => setFilter(text)} />}
 			{isLoading && (
-				<GenericTable>
+				<GenericTable aria-busy>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						<GenericTableLoadingRow cols={3} />
@@ -92,11 +92,11 @@ const UnitsTable = () => {
 			)}
 			{isSuccess && data?.units.length > 0 && (
 				<>
-					<GenericTable>
+					<GenericTable aria-busy={filter !== debouncedFilter}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.units.map(({ _id, name, visibility }) => (
-								<GenericTableRow key={_id} tabIndex={0} role='link' onClick={onRowClick(_id)} action qa-user-id={_id}>
+								<GenericTableRow key={_id} tabIndex={0} role='link' data-qa-id={name} onClick={onRowClick(_id)} action qa-user-id={_id}>
 									<GenericTableCell withTruncatedText>{name}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{visibility}</GenericTableCell>
 									<GenericTableCell>
@@ -104,6 +104,7 @@ const UnitsTable = () => {
 											icon='trash'
 											small
 											title={t('Remove')}
+											data-qa-id={`remove-unit-${name}`}
 											onClick={(e) => {
 												e.stopPropagation();
 												handleDelete(_id);

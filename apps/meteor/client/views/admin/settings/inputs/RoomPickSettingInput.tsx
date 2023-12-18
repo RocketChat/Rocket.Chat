@@ -1,5 +1,5 @@
 import type { SettingValueRoomPick } from '@rocket.chat/core-typings';
-import { Box, FieldLabel, FieldRow, Flex } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -13,6 +13,7 @@ type RoomPickSettingInputProps = {
 	placeholder?: string;
 	readonly?: boolean;
 	disabled?: boolean;
+	required?: boolean;
 	hasResetButton?: boolean;
 	onChangeValue: (value: SettingValueRoomPick) => void;
 	onResetButtonClick?: () => void;
@@ -25,6 +26,7 @@ function RoomPickSettingInput({
 	placeholder,
 	readonly,
 	disabled,
+	required,
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
@@ -39,15 +41,13 @@ function RoomPickSettingInput({
 	};
 
 	return (
-		<>
-			<Flex.Container>
-				<Box>
-					<FieldLabel htmlFor={_id} title={_id}>
-						{label}
-					</FieldLabel>
-					{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
-				</Box>
-			</Flex.Container>
+		<Field>
+			<FieldRow>
+				<FieldLabel htmlFor={_id} title={_id} required={required}>
+					{label}
+				</FieldLabel>
+				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+			</FieldRow>
 			<FieldRow>
 				<RoomAutoCompleteMultiple
 					readOnly={readonly}
@@ -57,7 +57,7 @@ function RoomPickSettingInput({
 					onChange={handleChange}
 				/>
 			</FieldRow>
-		</>
+		</Field>
 	);
 }
 
