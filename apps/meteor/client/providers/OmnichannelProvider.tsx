@@ -41,7 +41,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 	const omniChannelEnabled = useSetting('Livechat_enabled') as boolean;
 	const omnichannelRouting = useSetting('Livechat_Routing_Method');
 	const showOmnichannelQueueLink = useSetting('Livechat_show_queue_list_link') as boolean;
-	const omnichannelPoolMaxIncoming = useSetting('Livechat_guest_pool_max_number_incoming_livechats_displayed') as number;
+	const omnichannelPoolMaxIncoming = useSetting<number>('Livechat_guest_pool_max_number_incoming_livechats_displayed') ?? 0;
 	const omnichannelSortingMechanism = useSetting('Omnichannel_sorting_mechanism') as OmnichannelSortingMechanismSettingType;
 
 	const loggerRef = useRef(new ClientLogger('OmnichannelProvider'));
@@ -116,12 +116,12 @@ const OmnichannelProvider: FC = ({ children }) => {
 		}
 
 		const handleDepartmentAgentData = (): void => {
-			initializeLivechatInquiryStream(user?._id);
+			initializeLivechatInquiryStream(user?._id, omnichannelPoolMaxIncoming);
 		};
 
-		initializeLivechatInquiryStream(user?._id);
+		initializeLivechatInquiryStream(user?._id, omnichannelPoolMaxIncoming);
 		return Notifications.onUser('departmentAgentData', handleDepartmentAgentData).stop;
-	}, [manuallySelected, user?._id]);
+	}, [manuallySelected, user?._id, omnichannelPoolMaxIncoming]);
 
 	const queue = useReactiveValue<ILivechatInquiryRecord[] | undefined>(
 		useCallback(() => {
@@ -136,10 +136,9 @@ const OmnichannelProvider: FC = ({ children }) => {
 				},
 				{
 					sort: getOmniChatSortQuery(omnichannelSortingMechanism),
-					limit: omnichannelPoolMaxIncoming,
 				},
 			).fetch();
-		}, [manuallySelected, omnichannelPoolMaxIncoming, omnichannelSortingMechanism, user?._id]),
+		}, [manuallySelected, omnichannelSortingMechanism, user?._id]),
 	);
 
 	queue?.map(({ rid }) => {

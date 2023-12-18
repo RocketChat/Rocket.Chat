@@ -38,8 +38,10 @@ const removeInquiry = async (inquiry: ILivechatInquiryRecord) => {
 	return queryClient.invalidateQueries(['rooms', { reference: inquiry.rid, type: 'l' }]);
 };
 
-const getInquiriesFromAPI = async () => {
-	const { inquiries } = await sdk.rest.get('/v1/livechat/inquiries.queuedForUser', {});
+const getInquiriesFromAPI = async (maxInquiries: number) => {
+	const { inquiries } = await sdk.rest.get('/v1/livechat/inquiries.queuedForUser', {
+		count: maxInquiries,
+	});
 	return inquiries;
 };
 
@@ -85,7 +87,7 @@ const addGlobalListener = () => {
 	return removeGlobalListener;
 };
 
-const subscribe = async (userId: IOmnichannelAgent['_id']) => {
+const subscribe = async (userId: IOmnichannelAgent['_id'], maxInquiries: number) => {
 	const config = await callWithErrorHandling('livechat:getRoutingConfig');
 	if (config?.autoAssignAgent) {
 		return;
@@ -96,7 +98,7 @@ const subscribe = async (userId: IOmnichannelAgent['_id']) => {
 	// Register to all depts + public queue always to match the inquiry list returned by backend
 	const cleanDepartmentListeners = addListenerForeachDepartment(agentDepartments);
 	const globalCleanup = addGlobalListener();
-	const inquiriesFromAPI = (await getInquiriesFromAPI()) as unknown as ILivechatInquiryRecord[];
+	const inquiriesFromAPI = (await getInquiriesFromAPI(maxInquiries)) as unknown as ILivechatInquiryRecord[];
 
 	await updateInquiries(inquiriesFromAPI);
 
@@ -112,8 +114,8 @@ const subscribe = async (userId: IOmnichannelAgent['_id']) => {
 export const initializeLivechatInquiryStream = (() => {
 	let cleanUp: (() => void) | undefined;
 
-	return async (...args: any[]) => {
+	return async (...args: Parameters<typeof subscribe>) => {
 		cleanUp?.();
-		cleanUp = await subscribe(...(args as [IOmnichannelAgent['_id']]));
+		cleanUp = await subscribe(...args);
 	};
 })();
