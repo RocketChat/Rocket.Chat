@@ -1,6 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Field, TextInput, FieldGroup, Modal, Button, Box, FieldLabel, FieldRow, FieldError, FieldHint } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useLocalStorage, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useSetting, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent, ComponentProps, FormEvent } from 'react';
 import React, { useState, useCallback } from 'react';
@@ -17,8 +17,8 @@ type EditStatusModalProps = {
 const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModalProps): ReactElement => {
 	const allowUserStatusMessageChange = useSetting('Accounts_AllowUserStatusMessageChange');
 	const dispatchToastMessage = useToastMessageDispatch();
-	const storedCustomStatus = localStorage.getItem('Local_Custom_Status');
-	const initialStatusText = storedCustomStatus || userStatusText;
+	const [customStatus, setCustomStatus] = useLocalStorage('Local_Custom_Status', '');
+	const initialStatusText = customStatus || userStatusText;
 
 	const t = useTranslation();
 	const [statusText, setStatusText] = useState(initialStatusText);
@@ -32,7 +32,9 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 		if (statusText && statusText.length > USER_STATUS_TEXT_MAX_LENGTH) {
 			return setStatusTextError(t('Max_length_is', USER_STATUS_TEXT_MAX_LENGTH));
 		}
-		localStorage.setItem('Local_Custom_Status', e.currentTarget.value);
+		if (statusText && statusText.length < USER_STATUS_TEXT_MAX_LENGTH) {
+			setCustomStatus(statusText);
+		}
 		return setStatusTextError(undefined);
 	});
 
