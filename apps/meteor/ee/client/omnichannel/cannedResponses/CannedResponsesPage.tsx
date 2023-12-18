@@ -2,7 +2,7 @@ import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useRouteParameter, useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import Page from '../../../../client/components/Page';
+import { Page, PageHeader, PageContent } from '../../../../client/components/Page';
 import CannedResponseEdit from './CannedResponseEdit';
 import CannedResponseEditWithData from './CannedResponseEditWithData';
 import CannedResponsesTable from './CannedResponsesTable';
@@ -24,14 +24,14 @@ const CannedResponsesPage = () => {
 
 	return (
 		<Page>
-			<Page.Header title={t('Canned_Responses')}>
+			<PageHeader title={t('Canned_Responses')}>
 				<ButtonGroup>
 					<Button onClick={() => router.navigate('/omnichannel/canned-responses/new')}>{t('Create_canned_response')}</Button>
 				</ButtonGroup>
-			</Page.Header>
-			<Page.Content>
+			</PageHeader>
+			<PageContent>
 				<CannedResponsesTable />
-			</Page.Content>
+			</PageContent>
 		</Page>
 	);
 };

@@ -4,11 +4,11 @@ import { Button, ButtonGroup, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useRouteParameter, useToastMessageDispatch, usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useMemo, useCallback } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 
-import type { ISettings } from '../../../../ee/client/apps/@types/IOrchestrator';
 import { AppClientOrchestratorInstance } from '../../../../ee/client/apps/orchestrator';
-import Page from '../../../components/Page';
+import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import { handleAPIError } from '../helpers/handleAPIError';
 import { useAppInfo } from '../hooks/useAppInfo';
 import AppDetailsPageHeader from './AppDetailsPageHeader';
@@ -23,18 +23,12 @@ import AppSettings from './tabs/AppSettings';
 
 const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 	const t = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
 	const router = useRouter();
-
-	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-	const [isSaving, setIsSaving] = useState(false);
-
-	const settingsRef = useRef<Record<string, ISetting['value']>>({});
+	const dispatchToastMessage = useToastMessageDispatch();
 	const isAdminUser = usePermission('manage-apps');
 
 	const tab = useRouteParameter('tab');
 	const context = useRouteParameter('context');
-
 	const appData = useAppInfo(id, context || '');
 
 	const handleReturn = useMutableCallback((): void => {
@@ -49,40 +43,42 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 	});
 
 	const { installed, settings, privacyPolicySummary, permissions, tosLink, privacyLink, name } = appData || {};
-
 	const isSecurityVisible = Boolean(privacyPolicySummary || permissions || tosLink || privacyLink);
 
-	const saveAppSettings = useCallback(async () => {
-		const { current } = settingsRef;
-		setIsSaving(true);
-		try {
-			await AppClientOrchestratorInstance.setAppSettings(
-				id,
-				(Object.values(settings || {}) as ISetting[]).map((value) => ({
-					...value,
-					value: current?.[value.id],
-				})),
-			);
+	const saveAppSettings = useCallback(
+		async (data) => {
+			try {
+				await AppClientOrchestratorInstance.setAppSettings(
+					id,
+					(Object.values(settings || {}) as ISetting[]).map((setting) => ({
+						...setting,
+						value: data[setting.id],
+					})),
+				);
 
-			dispatchToastMessage({ type: 'success', message: `${name} settings saved succesfully` });
-		} catch (e: any) {
-			handleAPIError(e);
-		}
-		setIsSaving(false);
-	}, [dispatchToastMessage, id, name, settings]);
+				dispatchToastMessage({ type: 'success', message: `${name} settings saved succesfully` });
+			} catch (e: any) {
+				handleAPIError(e);
+			}
+		},
+		[dispatchToastMessage, id, name, settings],
+	);
+
+	const reducedSettings = useMemo(() => {
+		return Object.values(settings || {}).reduce((ret, { id, value, packageValue }) => ({ ...ret, [id]: value ?? packageValue }), {});
+	}, [settings]);
+
+	const methods = useForm({ values: reducedSettings });
+	const {
+		handleSubmit,
+		reset,
+		formState: { isDirty, isSubmitting, isSubmitted },
+	} = methods;
 
 	return (
 		<Page flexDirection='column' h='full'>
-			<Page.Header title={t('App_Info')} onClickBack={handleReturn}>
-				<ButtonGroup>
-					{installed && isAdminUser && (
-						<Button primary disabled={!hasUnsavedChanges} loading={isSaving} onClick={saveAppSettings}>
-							{t('Save_changes')}
-						</Button>
-					)}
-				</ButtonGroup>
-			</Page.Header>
-			<Page.ScrollableContentWithShadow pi={24} pbs={24} pbe={0} h='full'>
+			<PageHeader title={t('App_Info')} onClickBack={handleReturn} />
+			<PageScrollableContentWithShadow pi={24} pbs={24} pbe={0} h='full'>
 				<Box w='full' alignSelf='center' h='full' display='flex' flexDirection='column'>
 					{!appData && <AppDetailsPageLoading />}
 					{appData && (
@@ -107,17 +103,25 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 							)}
 							{tab === 'releases' && <AppReleases id={id} />}
 							{Boolean(tab === 'settings' && settings && Object.values(settings).length) && (
-								<AppSettings
-									settings={settings || ({} as ISettings)}
-									setHasUnsavedChanges={setHasUnsavedChanges}
-									settingsRef={settingsRef}
-								/>
+								<FormProvider {...methods}>
+									<AppSettings settings={settings || {}} />
+								</FormProvider>
 							)}
 							{tab === 'logs' && <AppLogs id={id} />}
 						</>
 					)}
 				</Box>
-			</Page.ScrollableContentWithShadow>
+			</PageScrollableContentWithShadow>
+			<PageFooter isDirty={isDirty}>
+				<ButtonGroup>
+					<Button onClick={() => reset()}>{t('Cancel')}</Button>
+					{installed && isAdminUser && (
+						<Button primary loading={isSubmitting || isSubmitted} onClick={handleSubmit(saveAppSettings)}>
+							{t('Save_changes')}
+						</Button>
+					)}
+				</ButtonGroup>
+			</PageFooter>
 		</Page>
 	);
 };

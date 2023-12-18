@@ -115,10 +115,6 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 
 		await dispatchSettings([
 			{
-				_id: 'Statistics_reporting',
-				value: true,
-			},
-			{
 				_id: 'Register_Server',
 				value: true,
 			},

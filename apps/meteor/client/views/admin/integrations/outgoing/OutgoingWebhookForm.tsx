@@ -144,16 +144,14 @@ const OutgoingWebhookForm = () => {
 							<FieldHint id={`${eventField}-hint`}>{t('Event_Trigger_Description')}</FieldHint>
 						</Field>
 						<Field>
-							<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+							<FieldRow>
 								<FieldLabel htmlFor={enabledField}>{t('Enabled')}</FieldLabel>
-								<FieldRow>
-									<Controller
-										name='enabled'
-										control={control}
-										render={({ field: { value, ...field } }) => <ToggleSwitch id={enabledField} {...field} checked={value} />}
-									/>
-								</FieldRow>
-							</Box>
+								<Controller
+									name='enabled'
+									control={control}
+									render={({ field: { value, ...field } }) => <ToggleSwitch id={enabledField} {...field} checked={value} />}
+								/>
+							</FieldRow>
 						</Field>
 						<Field>
 							<FieldLabel htmlFor={nameField}>{t('Name')}</FieldLabel>
@@ -265,16 +263,14 @@ const OutgoingWebhookForm = () => {
 							)}
 						</Field>
 						<Field>
-							<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+							<FieldRow>
 								<FieldLabel htmlFor={impersonateUserField}>{t('Impersonate_user')}</FieldLabel>
-								<FieldRow>
-									<Controller
-										name='impersonateUser'
-										control={control}
-										render={({ field: { value, ...field } }) => <ToggleSwitch id={impersonateUserField} {...field} checked={value} />}
-									/>
-								</FieldRow>
-							</Box>
+								<Controller
+									name='impersonateUser'
+									control={control}
+									render={({ field: { value, ...field } }) => <ToggleSwitch id={impersonateUserField} {...field} checked={value} />}
+								/>
+							</FieldRow>
 						</Field>
 						<Field>
 							<FieldLabel htmlFor={usernameField} required>
@@ -391,16 +387,14 @@ const OutgoingWebhookForm = () => {
 							)}
 						</Field>
 						<Field>
-							<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+							<FieldRow>
 								<FieldLabel htmlFor={scriptEnabledField}>{t('Script_Enabled')}</FieldLabel>
-								<FieldRow>
-									<Controller
-										name='scriptEnabled'
-										control={control}
-										render={({ field: { value, ...field } }) => <ToggleSwitch id={scriptEnabledField} {...field} checked={value} />}
-									/>
-								</FieldRow>
-							</Box>
+								<Controller
+									name='scriptEnabled'
+									control={control}
+									render={({ field: { value, ...field } }) => <ToggleSwitch id={scriptEnabledField} {...field} checked={value} />}
+								/>
+							</FieldRow>
 						</Field>
 						<Field>
 							<FieldLabel htmlFor={scriptEngineField}>{t('Script_Engine')}</FieldLabel>
@@ -449,23 +443,21 @@ const OutgoingWebhookForm = () => {
 				<AccordionItem title={t('Integration_Advanced_Settings')}>
 					<FieldGroup>
 						<Field>
-							<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+							<FieldRow>
 								<FieldLabel htmlFor={retryFailedCallsField}>{t('Integration_Retry_Failed_Url_Calls')}</FieldLabel>
-								<FieldRow>
-									<Controller
-										name='retryFailedCalls'
-										control={control}
-										render={({ field: { value, ...field } }) => (
-											<ToggleSwitch
-												id={retryFailedCallsField}
-												{...field}
-												checked={value}
-												aria-describedby={`${retryFailedCallsField}-hint`}
-											/>
-										)}
-									/>
-								</FieldRow>
-							</Box>
+								<Controller
+									name='retryFailedCalls'
+									control={control}
+									render={({ field: { value, ...field } }) => (
+										<ToggleSwitch
+											id={retryFailedCallsField}
+											{...field}
+											checked={value}
+											aria-describedby={`${retryFailedCallsField}-hint`}
+										/>
+									)}
+								/>
+							</FieldRow>
 							<FieldHint id={`${retryFailedCallsField}-hint`}>{t('Integration_Retry_Failed_Url_Calls_Description')}</FieldHint>
 						</Field>
 						<Field>
@@ -495,38 +487,34 @@ const OutgoingWebhookForm = () => {
 						{event === 'sendMessage' && (
 							<FieldGroup>
 								<Field>
-									<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+									<FieldRow>
 										<FieldLabel htmlFor={triggerWordAnywhereField}>{t('Integration_Word_Trigger_Placement')}</FieldLabel>
-										<FieldRow>
-											<Controller
-												name='triggerWordAnywhere'
-												control={control}
-												render={({ field: { value, ...field } }) => (
-													<ToggleSwitch
-														id={triggerWordAnywhereField}
-														{...field}
-														checked={value}
-														aria-describedby={`${triggerWordAnywhereField}-hint`}
-													/>
-												)}
-											/>
-										</FieldRow>
-									</Box>
+										<Controller
+											name='triggerWordAnywhere'
+											control={control}
+											render={({ field: { value, ...field } }) => (
+												<ToggleSwitch
+													id={triggerWordAnywhereField}
+													{...field}
+													checked={value}
+													aria-describedby={`${triggerWordAnywhereField}-hint`}
+												/>
+											)}
+										/>
+									</FieldRow>
 									<FieldHint id={`${triggerWordAnywhereField}-hint`}>{t('Integration_Word_Trigger_Placement_Description')}</FieldHint>
 								</Field>
 								<Field>
-									<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+									<FieldRow>
 										<FieldLabel htmlFor={runOnEditsField}>{t('Integration_Run_When_Message_Is_Edited')}</FieldLabel>
-										<FieldRow>
-											<Controller
-												name='runOnEdits'
-												control={control}
-												render={({ field: { value, ...field } }) => (
-													<ToggleSwitch id={runOnEditsField} {...field} checked={value} aria-describedby={`${runOnEditsField}-hint`} />
-												)}
-											/>
-										</FieldRow>
-									</Box>
+										<Controller
+											name='runOnEdits'
+											control={control}
+											render={({ field: { value, ...field } }) => (
+												<ToggleSwitch id={runOnEditsField} {...field} checked={value} aria-describedby={`${runOnEditsField}-hint`} />
+											)}
+										/>
+									</FieldRow>
 									<FieldHint id={`${runOnEditsField}-hint`}>{t('Integration_Run_When_Message_Is_Edited_Description')}</FieldHint>
 								</Field>
 							</FieldGroup>

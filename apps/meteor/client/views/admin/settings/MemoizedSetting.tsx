@@ -59,6 +59,7 @@ type MemoizedSettingProps = {
 	sectionChanged?: boolean;
 	hasResetButton?: boolean;
 	disabled?: boolean;
+	required?: boolean;
 	showUpgradeButton?: ReactNode;
 	actionText?: string;
 };
@@ -92,8 +93,8 @@ const MemoizedSetting = ({
 					editor={editor}
 					onChangeValue={onChangeValue}
 					onChangeEditor={onChangeEditor}
-					{...inputProps}
 					disabled={disabled}
+					{...inputProps}
 				/>
 				{hint && type !== 'code' && <FieldHint>{hint}</FieldHint>}
 				{callout && (
@@ -101,8 +102,8 @@ const MemoizedSetting = ({
 						<Callout type='warning'>{callout}</Callout>
 					</Margins>
 				)}
+				{showUpgradeButton}
 			</Box>
-			{showUpgradeButton}
 		</Field>
 	);
 };

@@ -12,7 +12,7 @@ import { buildVersionUpdateMessage } from '../../../../version-check/server/func
 import { generateWorkspaceBearerHttpHeader } from '../getWorkspaceAccessToken';
 import { supportedVersionsChooseLatest } from './supportedVersionsChooseLatest';
 
-declare module '@rocket.chat/license' {
+declare module '@rocket.chat/core-typings' {
 	interface ILicenseV3 {
 		supportedVersions?: SignedSupportedVersions;
 	}
