@@ -1,16 +1,17 @@
 import { api, credentials, request } from './api-data';
 
-export const reportUser = async (userId: string, reason: string) => {
-	const res = await request.post(api('moderation.reportUser')).set(credentials).send({
-		userId,
-		reason,
-	});
+export const makeModerationApiRequest = async (url: string, method: 'get' | 'post', data?: any) => {
+	let res: any;
+
+	if (method === 'get') {
+		res = await request.get(api(url)).set(credentials).query(data);
+	} else if (method === 'post') {
+		res = await request.post(api(url)).set(credentials).send(data);
+	}
+
 	return res.body;
 };
 
-export const getUsersReports = async (userId: string) => {
-	const res = await request.get(api('moderation.user.reportsByUserId')).set(credentials).query({
-		userId,
-	});
-	return res.body;
-};
+export const reportUser = (userId: string, reason: string) => makeModerationApiRequest('moderation.reportUser', 'post', { userId, reason });
+
+export const getUsersReports = (userId: string) => makeModerationApiRequest('moderation.user.reportsByUserId', 'get', { userId });
