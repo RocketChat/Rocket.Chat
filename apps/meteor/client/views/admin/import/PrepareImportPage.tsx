@@ -147,10 +147,6 @@ function PrepareImportPage() {
 		loadCurrentOperation();
 	}, [getCurrentImportOperation, getImportFileData, handleError, router, setMessageCount, setPreparing, setProgressRate, setStatus, t]);
 
-	const handleBackToImportsButtonClick = () => {
-		router.navigate('/admin/import');
-	};
-
 	const handleStartButtonClick = async () => {
 		setImporting(true);
 
@@ -180,11 +176,8 @@ function PrepareImportPage() {
 
 	return (
 		<Page>
-			<PageHeader title={t('Importing_Data')}>
+			<PageHeader title={t('Importing_Data')} onClickBack={() => router.navigate('/admin/import')}>
 				<ButtonGroup>
-					<Button icon='back' secondary onClick={handleBackToImportsButtonClick}>
-						{t('Back_to_imports')}
-					</Button>
 					<Button primary disabled={isImporting || handleMinimumImportData} onClick={handleStartButtonClick}>
 						{t('Importer_Prepare_Start_Import')}
 					</Button>

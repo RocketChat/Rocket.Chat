@@ -44,10 +44,6 @@ function NewImportPage() {
 
 	const formatMemorySize = useFormatMemorySize();
 
-	const handleBackToImportsButtonClick = () => {
-		router.navigate('/admin/import');
-	};
-
 	const handleImporterKeyChange = (importerKey: Key) => {
 		if (typeof importerKey !== 'string') {
 			return;
@@ -189,11 +185,8 @@ function NewImportPage() {
 
 	return (
 		<Page className='page-settings'>
-			<PageHeader title={t('Import_New_File')}>
+			<PageHeader title={t('Import_New_File')} onClickBack={() => router.navigate('/admin/import')}>
 				<ButtonGroup>
-					<Button icon='back' secondary onClick={handleBackToImportsButtonClick}>
-						{t('Back_to_imports')}
-					</Button>
 					{importer && (
 						<Button primary minHeight='x40' loading={isLoading} onClick={handleImportButtonClick}>
 							{t('Import')}

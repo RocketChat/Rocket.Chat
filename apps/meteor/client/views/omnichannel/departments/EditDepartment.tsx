@@ -17,7 +17,7 @@ import {
 	FieldHint,
 } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useRoute, useMethod, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useMethod, useEndpoint, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -100,7 +100,7 @@ const getInitialValues = ({ department, agents, allowedToForwardData }: InitialV
 
 function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmentProps) {
 	const t = useTranslation();
-	const departmentsRoute = useRoute('omnichannel-departments');
+	const router = useRouter();
 	const queryClient = useQueryClient();
 
 	const { department, agents = [] } = data || {};
@@ -195,14 +195,10 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 			}
 			queryClient.invalidateQueries(['/v1/livechat/department/:_id', id]);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
-			departmentsRoute.push({});
+			router.navigate('/omnichannel/departments');
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	});
-
-	const handleReturn = useMutableCallback(() => {
-		departmentsRoute.push({});
 	});
 
 	const isFormValid = isValid && isDirty;
@@ -222,11 +218,8 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<PageHeader title={title}>
+				<PageHeader title={title} onClickBack={() => router.navigate('/omnichannel/departments')}>
 					<ButtonGroup>
-						<Button icon='back' onClick={handleReturn}>
-							{t('Back')}
-						</Button>
 						<Button type='submit' form={formId} primary disabled={!isFormValid} loading={isSubmitting}>
 							{t('Save')}
 						</Button>

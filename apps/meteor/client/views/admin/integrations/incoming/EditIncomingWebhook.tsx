@@ -77,11 +77,8 @@ const EditIncomingWebhook = ({ webhookData }: { webhookData?: Serialized<IIncomi
 
 	return (
 		<Page flexDirection='column'>
-			<PageHeader title={t('Integration_Incoming_WebHook')}>
+			<PageHeader title={t('Integration_Incoming_WebHook')} onClickBack={() => router.navigate('/admin/integrations/webhook-incoming')}>
 				<ButtonGroup>
-					<Button icon='back' onClick={() => router.navigate('/admin/integrations/webhook-incoming')}>
-						{t('Back')}
-					</Button>
 					{webhookData?._id && (
 						<Button danger onClick={handleDeleteIntegration}>
 							{t('Delete')}
