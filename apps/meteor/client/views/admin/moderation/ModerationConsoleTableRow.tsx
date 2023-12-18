@@ -29,7 +29,7 @@ const ModerationConsoleTableRow = ({ report, onClick, isDesktopOrLarger }: Moder
 	return (
 		<GenericTableRow key={_id} onClick={(): void => onClick(_id)} tabIndex={0} role='link' action>
 			<GenericTableCell withTruncatedText>
-				<UserColumn name={name} username={username} isDesktopOrLarger={isDesktopOrLarger} />
+				<UserColumn username={username} name={name} fontSize='micro' size={isDesktopOrLarger ? 'x20' : 'x40'} />
 			</GenericTableCell>
 			<GenericTableCell withTruncatedText>{message}</GenericTableCell>
 			<GenericTableCell withTruncatedText>{concatenatedRoomNames}</GenericTableCell>

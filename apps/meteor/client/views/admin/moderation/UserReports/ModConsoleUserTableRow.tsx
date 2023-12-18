@@ -21,7 +21,7 @@ const ModConsoleUserTableRow = ({ report, onClick, isDesktopOrLarger }: ModConso
 	return (
 		<GenericTableRow key={_id} onClick={(): void => onClick(_id)} tabIndex={0} role='link' action>
 			<GenericTableCell withTruncatedText>
-				<UserColumn name={name} username={username} isDesktopOrLarger={isDesktopOrLarger} />
+				<UserColumn name={name} username={username} fontSize='micro' size={isDesktopOrLarger ? 'x20' : 'x40'} />
 			</GenericTableCell>
 			<GenericTableCell withTruncatedText>{formatDateAndTime(createdAt)}</GenericTableCell>
 			<GenericTableCell withTruncatedText>{emails?.[0].address}</GenericTableCell>

@@ -8,13 +8,11 @@ type UserColumnProps = {
 	username?: string;
 	isDesktopOrLarger?: boolean;
 	isProfile?: boolean;
+	size?: string;
+	fontSize?: string;
 };
 
-const UserColumn = ({ name, username, isDesktopOrLarger, isProfile }: UserColumnProps) => {
-	let size: 'x40' | 'x20' | 'x48' = 'x40';
-	if (isProfile) size = 'x48';
-	else if (isDesktopOrLarger) size = 'x20';
-
+const UserColumn = ({ name, username, fontSize, size }: UserColumnProps) => {
 	return (
 		<Box display='flex' alignItems='center'>
 			{username && (
@@ -28,7 +26,7 @@ const UserColumn = ({ name, username, isDesktopOrLarger, isProfile }: UserColumn
 						{name && username ? (
 							<>
 								{name}{' '}
-								<Box display='inline-flex' fontWeight={300} fontSize={isProfile ? 'p2' : 'micro'}>
+								<Box display='inline-flex' fontWeight={300} fontSize={fontSize}>
 									(@{username})
 								</Box>
 							</>

@@ -45,7 +45,7 @@ const UserReportInfo = ({ userId }: { userId: string }) => {
 		}
 
 		const { username, name } = report.user;
-		return <UserColumn key={dataUpdatedAt} username={username} name={name} isProfile={true} />;
+		return <UserColumn key={dataUpdatedAt} username={username} name={name} fontSize='p2' size='x48' />;
 	}, [report?.user, dataUpdatedAt]);
 
 	const userEmails = useMemo(() => {
