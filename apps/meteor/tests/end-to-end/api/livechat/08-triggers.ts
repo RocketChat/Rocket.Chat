@@ -190,7 +190,7 @@ describe('LIVECHAT - triggers', function () {
 				})
 				.expect(403);
 		});
-		it('should save a new trigger', async () => {
+		it('should save a new trigger of type send-message', async () => {
 			await restorePermissionToRoles('view-livechat-manager');
 			await request
 				.post(api('livechat/triggers'))
@@ -204,6 +204,192 @@ describe('LIVECHAT - triggers', function () {
 					actions: [{ name: 'send-message', params: { sender: 'custom', msg: 'test', name: 'test' } }],
 				})
 				.expect(200);
+		});
+		it('should fail if type is use-external-service but serviceUrl is not a present', async () => {
+			await request
+				.post(api('livechat/triggers'))
+				.set(credentials)
+				.send({
+					name: 'test2',
+					description: 'test2',
+					enabled: true,
+					runOnce: true,
+					conditions: [{ name: 'page-url', value: 'http://localhost:3000' }],
+					actions: [
+						{
+							name: 'use-external-service',
+							params: {
+								serviceTimeout: 5000,
+								serviceFallbackMessage: 'Were sorry, we cannot complete your request',
+							},
+						},
+					],
+				})
+				.expect(400);
+		});
+		it('should fail if type is use-external-service but serviceTimeout is not a present', async () => {
+			await request
+				.post(api('livechat/triggers'))
+				.set(credentials)
+				.send({
+					name: 'test2',
+					description: 'test2',
+					enabled: true,
+					runOnce: true,
+					conditions: [{ name: 'page-url', value: 'http://localhost:3000' }],
+					actions: [
+						{
+							name: 'use-external-service',
+							params: {
+								serviceUrl: 'http://localhost:3000/api/vX',
+								serviceFallbackMessage: 'Were sorry, we cannot complete your request',
+							},
+						},
+					],
+				})
+				.expect(400);
+		});
+		it('should fail if type is use-external-service but serviceFallbackMessage is not a present', async () => {
+			await request
+				.post(api('livechat/triggers'))
+				.set(credentials)
+				.send({
+					name: 'test2',
+					description: 'test2',
+					enabled: true,
+					runOnce: true,
+					conditions: [{ name: 'page-url', value: 'http://localhost:3000' }],
+					actions: [
+						{
+							name: 'use-external-service',
+							params: {
+								serviceUrl: 'http://localhost:3000/api/vX',
+								serviceTimeout: 5000,
+							},
+						},
+					],
+				})
+				.expect(400);
+		});
+		it('should save a new trigger of type use-external-service', async () => {
+			await request
+				.post(api('livechat/triggers'))
+				.set(credentials)
+				.send({
+					name: 'test3',
+					description: 'test3',
+					enabled: true,
+					runOnce: true,
+					conditions: [{ name: 'page-url', value: 'http://localhost:3000' }],
+					actions: [
+						{
+							name: 'use-external-service',
+							params: {
+								serviceUrl: 'http://localhost:3000/api/vX',
+								serviceTimeout: 5000,
+								serviceFallbackMessage: 'Were sorry, we cannot complete your request',
+							},
+						},
+					],
+				})
+				.expect(200);
+		});
+	});
+
+	describe('POST livechat/triggers/webhook-test', () => {
+		const webhookUrl = process.env.WEBHOOK_TEST_URL || 'https://httpbin.org';
+
+		it('should fail if user is not logged in', async () => {
+			await request.post(api('livechat/triggers/webhook-test')).send({}).expect(401);
+		});
+		it('should fail if no data is sent', async () => {
+			await request.post(api('livechat/triggers/webhook-test')).set(credentials).send({}).expect(400);
+		});
+		it('should fail if invalid data is sent', async () => {
+			await request.post(api('livechat/triggers/webhook-test')).set(credentials).send({ webhookUrl: 'test' }).expect(400);
+		});
+		it('should fail if webhookUrl is not an string', async () => {
+			await request
+				.post(api('livechat/triggers/webhook-test'))
+				.set(credentials)
+				.send({ webhookUrl: 1, timeout: 1000, fallbackMessage: 'test', params: {} })
+				.expect(400);
+		});
+		it('should fail if timeout is not an number', async () => {
+			await request
+				.post(api('livechat/triggers/webhook-test'))
+				.set(credentials)
+				.send({ webhookUrl: 'test', timeout: '1000', fallbackMessage: 'test', params: {} })
+				.expect(400);
+		});
+		it('should fail if fallbackMessage is not an string', async () => {
+			await request
+				.post(api('livechat/triggers/webhook-test'))
+				.set(credentials)
+				.send({ webhookUrl: 'test', timeout: 1000, fallbackMessage: 1, params: {} })
+				.expect(400);
+		});
+		it('should fail if params is not an object', async () => {
+			await request
+				.post(api('livechat/triggers/webhook-test'))
+				.set(credentials)
+				.send({ webhookUrl: 'test', timeout: 1000, fallbackMessage: 'test', params: 1 })
+				.expect(400);
+		});
+		it('should fail if user doesnt have view-livechat-webhooks permission', async () => {
+			await removePermissionFromAllRoles('view-livechat-manager');
+			await request
+				.post(api('livechat/triggers/webhook-test'))
+				.set(credentials)
+				.send({ webhookUrl: 'test', timeout: 1000, fallbackMessage: 'test', params: {} })
+				.expect(403);
+		});
+		it('should fail if Livechat_secret_token setting is empty', async () => {
+			await restorePermissionToRoles('view-livechat-manager');
+			await updateSetting('Livechat_secret_token', '');
+			await request
+				.post(api('livechat/triggers/webhook-test'))
+				.set(credentials)
+				.send({ webhookUrl: 'test', timeout: 1000, fallbackMessage: 'test', params: {} })
+				.expect(400);
+		});
+		it('should return error when webhook returns error', async () => {
+			await updateSetting('Livechat_secret_token', 'test');
+
+			await request
+				.post(api('livechat/triggers/webhook-test'))
+				.set(credentials)
+				.send({ webhookUrl: `${webhookUrl}/status/500`, timeout: 5000, fallbackMessage: 'test', params: {} })
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'error-invalid-webhook-response');
+					expect(res.body).to.have.property('response').to.be.a('string');
+				});
+		});
+		it('should return error when webhook times out', async () => {
+			await request
+				.post(api('livechat/triggers/webhook-test'))
+				.set(credentials)
+				.send({ webhookUrl: `${webhookUrl}/delay/2`, timeout: 1000, fallbackMessage: 'test', params: {} })
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'timeout-error');
+					expect(res.body).to.have.property('response').to.be.a('string');
+				});
+		});
+		it('should return success when webhook returns success', async () => {
+			await request
+				.post(api('livechat/triggers/webhook-test'))
+				.set(credentials)
+				.send({ webhookUrl: `${webhookUrl}/status/200`, timeout: 5000, fallbackMessage: 'test', params: {} })
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('response').to.be.a('string');
+					expect(res.body).to.not.have.property('error');
+				});
 		});
 	});
 

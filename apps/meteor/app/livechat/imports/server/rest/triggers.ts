@@ -1,8 +1,11 @@
 import { LivechatTrigger } from '@rocket.chat/models';
 import { isGETLivechatTriggersParams, isPOSTLivechatTriggersParams } from '@rocket.chat/rest-typings';
+import { isLivechatTriggerWebhookTestParams } from '@rocket.chat/rest-typings/src/v1/omnichannel';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { API } from '../../../../api/server';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
+import { settings } from '../../../../settings/server';
 import { findTriggers, findTriggerById, deleteTrigger } from '../../../server/api/lib/triggers';
 
 API.v1.addRoute(
@@ -40,6 +43,51 @@ API.v1.addRoute(
 			}
 
 			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'livechat/triggers/webhook-test',
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isLivechatTriggerWebhookTestParams },
+	{
+		async post() {
+			const { webhookUrl, timeout, fallbackMessage, params: clientParams } = this.bodyParams;
+
+			const token = settings.get<string>('Livechat_secret_token');
+
+			if (!token) {
+				throw new Error('Livechat secret token is not configured');
+			}
+
+			const body = {
+				...clientParams,
+				visitorToken: '1234567890',
+			};
+
+			const headers = {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json',
+				'X-RocketChat-Livechat-Token': token,
+			};
+
+			try {
+				const response = await fetch(webhookUrl, { timeout, body, headers, method: 'POST' });
+				const text = await response.text();
+
+				if (!response.ok || response.status !== 200) {
+					throw new Error(text);
+				}
+
+				return API.v1.success({ response: text });
+			} catch (error: any) {
+				const isTimeout = error.message === 'The user aborted a request.';
+				return API.v1.failure({
+					error: isTimeout ? 'timeout-error' : 'error-invalid-webhook-response',
+					response: error.message,
+					fallbackMessage,
+				});
+			}
 		},
 	},
 );

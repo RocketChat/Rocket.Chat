@@ -12,7 +12,7 @@ export interface ILivechatTriggerCondition {
 	value?: string | number;
 }
 
-export interface ILivechatTriggerAction {
+export interface ILivechatSendMessageAction {
 	name: 'send-message';
 	params?: {
 		sender: 'queue' | 'custom';
@@ -20,6 +20,29 @@ export interface ILivechatTriggerAction {
 		name: string;
 	};
 }
+
+export interface ILivechatUseExternalServiceAction {
+	name: 'use-external-service';
+	params?: {
+		serviceUrl: string;
+		serviceTimeout: number;
+		serviceFallbackMessage: string;
+	};
+}
+
+export const isExternalServiceTrigger = (
+	trigger: ILivechatTrigger,
+): trigger is ILivechatTrigger & { actions: ILivechatUseExternalServiceAction[] } => {
+	return trigger.actions.every((action) => action.name === 'use-external-service');
+};
+
+export const isSendMessageTrigger = (
+	trigger: ILivechatTrigger,
+): trigger is ILivechatTrigger & { actions: ILivechatSendMessageAction[] } => {
+	return trigger.actions.every((action) => action.name === 'send-message');
+};
+
+export type ILivechatTriggerAction = ILivechatSendMessageAction | ILivechatUseExternalServiceAction;
 
 export interface ILivechatTrigger extends IRocketChatRecord {
 	name: string;

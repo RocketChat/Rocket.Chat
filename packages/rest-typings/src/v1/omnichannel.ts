@@ -3083,34 +3083,66 @@ const POSTLivechatTriggersParamsSchema = {
 		actions: {
 			type: 'array',
 			items: {
-				type: 'object',
-				properties: {
-					name: {
-						type: 'string',
-						enum: ['send-message'],
-					},
-					params: {
+				oneOf: [
+					{
 						type: 'object',
-						nullable: true,
 						properties: {
-							sender: {
-								type: 'string',
-								enum: ['queue', 'custom'],
-							},
-							msg: {
-								type: 'string',
-							},
 							name: {
 								type: 'string',
+								enum: ['send-message'],
+							},
+							params: {
+								type: 'object',
 								nullable: true,
+								properties: {
+									sender: {
+										type: 'string',
+										enum: ['queue', 'custom'],
+									},
+									msg: {
+										type: 'string',
+									},
+									name: {
+										type: 'string',
+										nullable: true,
+									},
+								},
+								required: ['sender', 'msg'],
+								additionalProperties: false,
 							},
 						},
-						required: ['sender', 'msg'],
+						required: ['name'],
 						additionalProperties: false,
 					},
-				},
-				required: ['name'],
-				additionalProperties: false,
+					{
+						type: 'object',
+						properties: {
+							name: {
+								type: 'string',
+								enum: ['use-external-service'],
+							},
+							params: {
+								type: 'object',
+								nullable: true,
+								properties: {
+									serviceUrl: {
+										type: 'string',
+									},
+									serviceTimeout: {
+										type: 'number',
+									},
+									serviceFallbackMessage: {
+										type: 'string',
+									},
+								},
+								required: ['serviceUrl', 'serviceTimeout', 'serviceFallbackMessage'],
+								additionalProperties: false,
+							},
+						},
+						required: ['name'],
+						additionalProperties: false,
+					},
+				],
 			},
 			minItems: 1,
 		},
@@ -3237,6 +3269,36 @@ const LivechatAnalyticsOverviewPropsSchema = {
 };
 
 export const isLivechatAnalyticsOverviewProps = ajv.compile<LivechatAnalyticsOverviewProps>(LivechatAnalyticsOverviewPropsSchema);
+
+type LivechatTriggerWebhookTestParams = {
+	webhookUrl: string;
+	timeout: number;
+	fallbackMessage: string;
+	params: Record<string, string>;
+};
+
+const LivechatTriggerWebhookTestParamsSchema = {
+	type: 'object',
+	properties: {
+		webhookUrl: {
+			type: 'string',
+		},
+		timeout: {
+			type: 'number',
+		},
+		fallbackMessage: {
+			type: 'string',
+		},
+		params: {
+			type: 'object',
+			nullable: true,
+		},
+	},
+	required: ['webhookUrl', 'timeout', 'fallbackMessage'],
+	additionalProperties: false,
+};
+
+export const isLivechatTriggerWebhookTestParams = ajv.compile<LivechatTriggerWebhookTestParams>(LivechatTriggerWebhookTestParamsSchema);
 
 export type OmnichannelEndpoints = {
 	'/v1/livechat/appearance': {
@@ -3720,6 +3782,9 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/sms-incoming/:service': {
 		POST: (params: unknown) => SMSProviderResponse;
+	};
+	'/v1/livechat/triggers/webhook-test': {
+		POST: (params: LivechatTriggerWebhookTestParams) => { response: string; error?: string };
 	};
 } & {
 	// EE
