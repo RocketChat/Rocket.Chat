@@ -57,27 +57,25 @@ const UserReportInfo = ({ userId }: { userId: string }) => {
 
 	const renderUserDetails = (user: Serialized<IUser>) => {
 		return (
-			<Box>
-				<FieldGroup>
-					<Field>{userProfile}</Field>
-					<Field>
-						<FieldLabel>{t('Roles')}</FieldLabel>
-						<FieldRow justifyContent='flex-start' spacing={1}>
-							{user.roles.map((role, index) => (
-								<UserCard.Role key={index}>{role}</UserCard.Role>
-							))}
-						</FieldRow>
-					</Field>
-					<Field>
-						<FieldLabel>{t('Email')}</FieldLabel>
-						<FieldRow>{userEmails.join(', ')}</FieldRow>
-					</Field>
-					<Field>
-						<FieldLabel>{t('Created_at')}</FieldLabel>
-						<FieldRow>{formatDateAndTime(user.createdAt)}</FieldRow>
-					</Field>
-				</FieldGroup>
-			</Box>
+			<FieldGroup>
+				<Field>{userProfile}</Field>
+				<Field>
+					<FieldLabel>{t('Roles')}</FieldLabel>
+					<FieldRow justifyContent='flex-start' spacing={1}>
+						{user.roles.map((role, index) => (
+							<UserCard.Role key={index}>{role}</UserCard.Role>
+						))}
+					</FieldRow>
+				</Field>
+				<Field>
+					<FieldLabel>{t('Email')}</FieldLabel>
+					<FieldRow>{userEmails.join(', ')}</FieldRow>
+				</Field>
+				<Field>
+					<FieldLabel>{t('Created_at')}</FieldLabel>
+					<FieldRow>{formatDateAndTime(user.createdAt)}</FieldRow>
+				</Field>
+			</FieldGroup>
 		);
 	};
 
@@ -93,9 +91,7 @@ const UserReportInfo = ({ userId }: { userId: string }) => {
 
 	const renderUserReports = (reports: Serialized<Omit<UserReport, 'moderationInfo'>[]>) => {
 		return reports.map((report, ind) => (
-			<Box key={report._id}>
-				<ReportReason ind={ind + 1} uinfo={report.reportedBy?.username} msg={report.description} ts={new Date(report.ts)} />
-			</Box>
+			<ReportReason key={ind} ind={ind + 1} uinfo={report.reportedBy?.username} msg={report.description} ts={new Date(report.ts)} />
 		));
 	};
 
