@@ -26,10 +26,7 @@ const useResetAvatarAction = (userId: string): GenericMenuItemProps => {
 	const onResetAvatar = async () => {
 		setModal();
 		await handleResetAvatar.mutateAsync({ userId });
-		queryClient.invalidateQueries({ queryKey: ['moderation.reports'] });
-		queryClient.invalidateQueries({ queryKey: ['moderation.usersReport', { userId }] });
-		queryClient.invalidateQueries({ queryKey: ['moderation.userMessages', { userId }] });
-		queryClient.invalidateQueries({ queryKey: ['moderation.userReports'] });
+		queryClient.invalidateQueries({ queryKey: ['moderation'] });
 	};
 
 	const confirmResetAvatar = (): void => {

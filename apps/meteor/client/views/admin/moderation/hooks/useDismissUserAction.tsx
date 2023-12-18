@@ -31,8 +31,7 @@ const useDismissUserAction = (userId: string, isUserReport?: boolean): GenericMe
 
 	const onDismissUser = async () => {
 		await handleDismissUser.mutateAsync({ userId });
-		queryClient.invalidateQueries({ queryKey: ['moderation.reports'] });
-		queryClient.invalidateQueries({ queryKey: ['moderation.userReports'] });
+		queryClient.invalidateQueries({ queryKey: ['moderation', 'userReports'] });
 		setModal();
 		moderationRoute.navigate(`/admin/moderation/${tab}`, { replace: true });
 	};

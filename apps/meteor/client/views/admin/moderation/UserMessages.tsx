@@ -21,7 +21,7 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 		isSuccess,
 		isError,
 	} = useQuery(
-		['moderation.userMessages', { userId }],
+		['moderation', 'msgReports', 'fetchDetails', { userId }],
 		async () => {
 			const messages = await getUserMessages({ userId });
 			return messages;

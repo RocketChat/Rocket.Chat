@@ -26,7 +26,7 @@ const useDeleteMessagesAction = (userId: string): GenericMenuItemProps => {
 
 	const onDeleteAll = async () => {
 		await handleDeleteMessages.mutateAsync({ userId });
-		queryClient.invalidateQueries({ queryKey: ['moderation.reports'] });
+		queryClient.invalidateQueries({ queryKey: ['moderation', 'msgReports', 'fetchAll'] });
 		setModal();
 		router.navigate(`/admin/moderation/${tab}`);
 	};

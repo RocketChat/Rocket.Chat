@@ -3,7 +3,7 @@ import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.ch
 import { useEndpoint, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { FC } from 'react';
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 
 import GenericNoResults from '../../../../components/GenericNoResults';
 import {
@@ -37,23 +37,24 @@ const ModConsoleUsersTable: FC = () => {
 
 	const debouncedText = useDebouncedValue(text, 500);
 
-	const query = useMemo(
-		() => ({
-			selector: debouncedText,
-			sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
-			count: itemsPerPage,
-			offset: current,
-			latest: end ? `${new Date(end).toISOString().slice(0, 10)}T23:59:59.999Z` : undefined,
-			oldest: start ? `${new Date(start).toISOString().slice(0, 10)}T00:00:00.000Z` : undefined,
-		}),
-		[current, debouncedText, end, itemsPerPage, sortBy, sortDirection, start],
-	);
+	const query = {
+		selector: debouncedText,
+		sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
+		count: itemsPerPage,
+		offset: current,
+		latest: end ? `${new Date(end).toISOString().slice(0, 10)}T23:59:59.999Z` : undefined,
+		oldest: start ? `${new Date(start).toISOString().slice(0, 10)}T00:00:00.000Z` : undefined,
+	};
 
 	const getReports = useEndpoint('GET', '/v1/moderation.userReports');
 
-	const { data, isLoading, isSuccess, isError, refetch } = useQuery(['moderation.userReports', query], () => getReports(query), {
-		keepPreviousData: true,
-	});
+	const { data, isLoading, isSuccess, isError, refetch } = useQuery(
+		['moderation', 'userReports', 'fetchAll', query],
+		() => getReports(query),
+		{
+			keepPreviousData: true,
+		},
+	);
 
 	const handleClick = useMutableCallback((id): void => {
 		router.navigate({

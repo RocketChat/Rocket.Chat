@@ -42,7 +42,7 @@ const DateRangePicker = ({ onChange }: DateRangePickerProps) => {
 
 	useEffect(() => {
 		handleRange({
-			start: formatToDateInput(moment().subtract(1, 'month')),
+			start: formatToDateInput(moment(0)),
 			end: todayDate,
 		});
 	}, [handleRange]);

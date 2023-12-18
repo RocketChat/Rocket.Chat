@@ -52,10 +52,9 @@ const useDeactivateUserAction = (userId: string, isUserReport?: boolean): Generi
 	const onDeactivateUser = async () => {
 		setModal();
 		!isUserReport && (await handleDeleteMessages.mutateAsync({ userId }));
-		handleDeactivateUser.mutateAsync({ userId, activeStatus: false, confirmRelinquish: true });
-		handleDismissUserReports.mutateAsync({ userId });
-		queryClient.invalidateQueries({ queryKey: ['moderation.reports'] });
-		queryClient.invalidateQueries({ queryKey: ['moderation.userReports'] });
+		await handleDeactivateUser.mutateAsync({ userId, activeStatus: false, confirmRelinquish: true });
+		await handleDismissUserReports.mutateAsync({ userId });
+		queryClient.invalidateQueries({ queryKey: ['moderation'] });
 		router.navigate(`/admin/moderation/${tab}`);
 	};
 
