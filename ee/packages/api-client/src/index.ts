@@ -49,6 +49,15 @@ const checkIfIsFormData = (data: any = {}): boolean => {
 	});
 };
 
+export class FetchError extends Error {
+	response: Response;
+
+	constructor(message = 'Failed to fetch', response: Response) {
+		super(message);
+		this.response = response;
+	}
+}
+
 export class RestClient implements RestClientInterface {
 	private twoFactorHandler?: (args: {
 		method: 'totp' | 'email' | 'password';
@@ -231,7 +240,8 @@ export class RestClient implements RestClientInterface {
 			}
 
 			if (response.status !== 400) {
-				return Promise.reject(response);
+				const responseObj = await response.json();
+				return Promise.reject(new FetchError(responseObj.message, response));
 			}
 
 			const clone = response.clone();
@@ -259,7 +269,8 @@ export class RestClient implements RestClientInterface {
 				});
 			}
 
-			return Promise.reject(response);
+			const responseObj = await response.json();
+			return Promise.reject(new FetchError(responseObj.message, response));
 		});
 	}
 
