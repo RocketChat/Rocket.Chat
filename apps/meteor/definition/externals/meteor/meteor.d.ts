@@ -116,14 +116,6 @@ declare module 'meteor/meteor' {
 			cb: (error?: Error | Meteor.Error | Meteor.TypedError) => void,
 		): void;
 
-		function loginWithCrowd(
-			username: string | object,
-			password: string,
-			cb: (error?: Error | Meteor.Error | Meteor.TypedError) => void,
-		): void;
-
-		function loginWithSamlToken(token: string, cb: (error?: Error | Meteor.Error | Meteor.TypedError) => void): void;
-
 		function methods<TServerMethods extends ServerMethods>(methods: {
 			[TMethodName in keyof TServerMethods]?: (
 				this: MethodThisType,

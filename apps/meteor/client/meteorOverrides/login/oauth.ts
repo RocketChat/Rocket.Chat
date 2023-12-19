@@ -8,13 +8,53 @@ import { OAuth } from 'meteor/oauth';
 import { Linkedin } from 'meteor/pauli:linkedin-oauth';
 import { Twitter } from 'meteor/twitter-oauth';
 
-import { overrideLoginMethod } from '../../../client/lib/2fa/overrideLoginMethod';
-import { process2faReturn } from '../../../client/lib/2fa/process2faReturn';
-import { convertError } from '../../../client/lib/2fa/utils';
-import { CustomOAuth } from '../../custom-oauth/client/custom_oauth_client';
+import { CustomOAuth } from '../../../app/custom-oauth/client/custom_oauth_client';
+import { overrideLoginMethod, with2FA } from '../../lib/2fa/overrideLoginMethod';
+import { process2faReturn } from '../../lib/2fa/process2faReturn';
+import { convertError } from '../../lib/2fa/utils';
 
-let lastCredentialToken = null;
-let lastCredentialSecret = null;
+declare module 'meteor/accounts-base' {
+	// eslint-disable-next-line @typescript-eslint/no-namespace
+	namespace Accounts {
+		// eslint-disable-next-line @typescript-eslint/no-namespace
+		namespace oauth {
+			function tryLoginAfterPopupClosed(
+				credentialToken: string,
+				callback?: (error?: globalThis.Error | Meteor.Error | Meteor.TypedError) => void,
+				totpCode?: string,
+				credentialSecret?: string | null,
+			): void;
+
+			function credentialRequestCompleteHandler(
+				callback?: (error?: globalThis.Error | Meteor.Error | Meteor.TypedError) => void,
+				totpCode?: string,
+			): (credentialTokenOrError?: string | globalThis.Error | Meteor.Error | Meteor.TypedError) => void;
+		}
+	}
+}
+
+declare module 'meteor/oauth' {
+	// eslint-disable-next-line @typescript-eslint/no-namespace
+	namespace OAuth {
+		function _retrieveCredentialSecret(credentialToken: string): string | null;
+		const _storageTokenPrefix: string;
+	}
+}
+
+let lastCredentialToken: string | null = null;
+let lastCredentialSecret: string | null | undefined = null;
+
+const meteorOAuthRetrieveCredentialSecret = OAuth._retrieveCredentialSecret;
+OAuth._retrieveCredentialSecret = (credentialToken: string): string | null => {
+	let secret = meteorOAuthRetrieveCredentialSecret.call(OAuth, credentialToken);
+	if (!secret) {
+		const localStorageKey = `${OAuth._storageTokenPrefix}${credentialToken}`;
+		secret = localStorage.getItem(localStorageKey);
+		localStorage.removeItem(localStorageKey);
+	}
+
+	return secret;
+};
 
 Accounts.oauth.tryLoginAfterPopupClosed = function (credentialToken, callback, totpCode, credentialSecret = null) {
 	credentialSecret = credentialSecret || OAuth._retrieveCredentialSecret(credentialToken) || null;
@@ -23,12 +63,18 @@ Accounts.oauth.tryLoginAfterPopupClosed = function (credentialToken, callback, t
 			credentialToken,
 			credentialSecret,
 		},
+		...(typeof totpCode === 'string' &&
+			!!totpCode && {
+				totp: {
+					code: totpCode,
+				},
+			}),
 	};
 
 	lastCredentialToken = credentialToken;
 	lastCredentialSecret = credentialSecret;
 
-	if (totpCode && typeof totpCode === 'string') {
+	if (typeof totpCode === 'string' && !!totpCode) {
 		methodArgument.totp = {
 			code: totpCode,
 		};
@@ -46,15 +92,20 @@ Accounts.oauth.tryLoginAfterPopupClosed = function (credentialToken, callback, t
 
 Accounts.oauth.credentialRequestCompleteHandler = function (callback, totpCode) {
 	return function (credentialTokenOrError) {
+		if (!credentialTokenOrError) {
+			callback?.(new Meteor.Error('No credential token passed'));
+			return;
+		}
+
 		if (credentialTokenOrError && credentialTokenOrError instanceof Error) {
-			callback && callback(credentialTokenOrError);
+			callback?.(credentialTokenOrError);
 		} else {
 			Accounts.oauth.tryLoginAfterPopupClosed(credentialTokenOrError, callback, totpCode);
 		}
 	};
 };
 
-const createOAuthTotpLoginMethod = (credentialProvider) => (options, code, callback) => {
+const createOAuthTotpLoginMethod = (credentialProvider?: any) => (options: any, code: any, callback: any) => {
 	// support a callback without options
 	if (!callback && typeof options === 'function') {
 		callback = options;
@@ -64,7 +115,7 @@ const createOAuthTotpLoginMethod = (credentialProvider) => (options, code, callb
 	if (lastCredentialToken && lastCredentialSecret) {
 		Accounts.oauth.tryLoginAfterPopupClosed(lastCredentialToken, callback, code, lastCredentialSecret);
 	} else {
-		const provider = (credentialProvider && credentialProvider()) || this;
+		const provider = credentialProvider?.() || this;
 		const credentialRequestCompleteCallback = Accounts.oauth.credentialRequestCompleteHandler(callback, code);
 		provider.requestCredential(options, credentialRequestCompleteCallback);
 	}
@@ -99,13 +150,20 @@ Meteor.loginWithTwitter = function (options, cb) {
 	overrideLoginMethod(loginWithTwitter, [options], cb, loginWithTwitterAndTOTP);
 };
 
+declare module 'meteor/meteor' {
+	// eslint-disable-next-line @typescript-eslint/no-namespace
+	namespace Meteor {
+		function loginWithLinkedin(options: any, callback?: (error?: Meteor.Error | Meteor.TypedError) => void): void;
+	}
+}
+
 const loginWithLinkedinAndTOTP = createOAuthTotpLoginMethod(() => Linkedin);
 const { loginWithLinkedin } = Meteor;
-Meteor.loginWithLinkedin = function (options, cb) {
+Meteor.loginWithLinkedin = function (options: any, cb: any) {
 	overrideLoginMethod(loginWithLinkedin, [options], cb, loginWithLinkedinAndTOTP);
 };
 
-Accounts.onPageLoadLogin(async (loginAttempt) => {
+Accounts.onPageLoadLogin(async (loginAttempt: any) => {
 	if (loginAttempt?.error?.error !== 'totp-required') {
 		return;
 	}
@@ -115,7 +173,7 @@ Accounts.onPageLoadLogin(async (loginAttempt) => {
 		return;
 	}
 
-	const oAuthArgs = methodArguments.find((arg) => arg.oauth);
+	const oAuthArgs = methodArguments.find((arg: any) => arg.oauth);
 	const { credentialToken, credentialSecret } = oAuthArgs.oauth;
 	const cb = loginAttempt.userCallback;
 
@@ -125,6 +183,8 @@ Accounts.onPageLoadLogin(async (loginAttempt) => {
 		onCode: (code) => {
 			Accounts.oauth.tryLoginAfterPopupClosed(credentialToken, cb, code, credentialSecret);
 		},
+		emailOrUsername: undefined,
+		result: undefined,
 	});
 });
 
@@ -134,9 +194,5 @@ CustomOAuth.prototype.configureLogin = function (...args) {
 
 	oldConfigureLogin.apply(this, args);
 
-	const oldMethod = Meteor[loginWithService];
-
-	Meteor[loginWithService] = function (options, cb) {
-		overrideLoginMethod(oldMethod, [options], cb, loginWithOAuthTokenAndTOTP);
-	};
+	(Meteor as any)[loginWithService] = with2FA((Meteor as any)[loginWithService], loginWithOAuthTokenAndTOTP);
 };

@@ -13,12 +13,9 @@ declare module 'meteor/oauth' {
 	}
 
 	namespace OAuth {
-		function _redirectUri(serviceName: string, config: any, params: any, absoluteUrlOptions: any): string;
-		function _retrieveCredentialSecret(credentialToken: string): string | null;
 		function _retrievePendingCredential(key: string, ...args: string[]): void;
 		function openSecret(secret: string): string;
 		function retrieveCredential(credentialToken: string, credentialSecret: string);
-		const _storageTokenPrefix: string;
 		const _pendingCredentials: Mongo.Collection<IOauthCredentials>;
 	}
 }

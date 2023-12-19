@@ -3,25 +3,22 @@ import { dispatchToastMessage } from '../toast';
 import { process2faReturn } from './process2faReturn';
 import { isTotpInvalidError, isTotpRequiredError } from './utils';
 
-type LoginCallback = {
-	(error: unknown): void;
-	(error: unknown, result: unknown): void;
-};
+export type LoginCallback = (error: globalThis.Error | Meteor.Error | Meteor.TypedError | undefined, result?: unknown) => void;
 
-type LoginMethod<A extends unknown[]> = (...args: [...args: A, cb: LoginCallback]) => void;
+type LoginMethod<TArgs extends any[]> = (...args: [...args: TArgs, cb: LoginCallback]) => void;
 
-type LoginMethodWithTotp<A extends unknown[]> = (...args: [...args: A, code: string, cb: LoginCallback]) => void;
+type LoginMethodWithTotp<TArgs extends any[]> = (...args: [...args: TArgs, code: string, cb: LoginCallback]) => void;
 
-export const overrideLoginMethod = <A extends unknown[]>(
-	loginMethod: LoginMethod<A>,
-	loginArgs: A,
-	callback: LoginCallback,
-	loginMethodTOTP: LoginMethodWithTotp<A>,
-	emailOrUsername: string,
+export const overrideLoginMethod = <TArgs extends any[]>(
+	loginMethod: LoginMethod<TArgs>,
+	loginArgs: TArgs,
+	callback: LoginCallback | undefined,
+	loginMethodTOTP: LoginMethodWithTotp<TArgs>,
+	emailOrUsername?: string,
 ): void => {
-	loginMethod.call(null, ...loginArgs, async (error: unknown, result?: unknown) => {
+	loginMethod.call(null, ...loginArgs, async (error: globalThis.Error | Meteor.Error | Meteor.TypedError | undefined, result?: unknown) => {
 		if (!isTotpRequiredError(error)) {
-			callback(error);
+			callback?.(error);
 			return;
 		}
 
@@ -31,16 +28,25 @@ export const overrideLoginMethod = <A extends unknown[]>(
 			emailOrUsername,
 			originalCallback: callback,
 			onCode: (code: string) => {
-				loginMethodTOTP?.call(null, ...loginArgs, code, (error: unknown) => {
+				loginMethodTOTP?.call(null, ...loginArgs, code, (error: globalThis.Error | Meteor.Error | Meteor.TypedError | undefined) => {
 					if (isTotpInvalidError(error)) {
 						dispatchToastMessage({ type: 'error', message: t('Invalid_two_factor_code') });
-						callback(null);
+						callback?.(undefined);
 						return;
 					}
 
-					callback(error);
+					callback?.(error);
 				});
 			},
 		});
 	});
+};
+
+export const with2FA = <TArgs extends any[]>(loginMethod: LoginMethod<TArgs>, loginMethodTOTP: LoginMethodWithTotp<TArgs>) => {
+	return function (...loginArgs: TArgs): void {
+		const args = loginArgs.slice(0, -1) as TArgs;
+		const callback = loginArgs.slice(-1)[0] as LoginCallback | undefined;
+
+		overrideLoginMethod(loginMethod, args, callback, loginMethodTOTP);
+	};
 };

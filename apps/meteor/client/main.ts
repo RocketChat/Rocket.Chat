@@ -7,7 +7,21 @@ FlowRouter.notFound = {
 };
 
 import('./polyfills')
-	.then(() => Promise.all([import('./lib/meteorCallWrapper'), import('../lib/oauthRedirectUriClient')]))
+	.then(() =>
+		Promise.all([
+			import('./meteorOverrides/ddpOverREST'),
+			import('./meteorOverrides/totpOnCall'),
+			import('./meteorOverrides/oauthRedirectUri'),
+			import('./meteorOverrides/userAndUsers'),
+			import('./meteorOverrides/login/cas'),
+			import('./meteorOverrides/login/crowd'),
+			import('./meteorOverrides/login/google'),
+			import('./meteorOverrides/login/ldap'),
+			import('./meteorOverrides/login/oauth'),
+			import('./meteorOverrides/login/password'),
+			import('./meteorOverrides/login/saml'),
+		]),
+	)
 	.then(() => import('../ee/client/ecdh'))
 	.then(() => import('./importPackages'))
 	.then(() => Promise.all([import('./methods'), import('./startup')]))

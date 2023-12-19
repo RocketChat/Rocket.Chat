@@ -1,10 +1,7 @@
 import '../app/cors/client';
-import '../app/2fa/client';
 import '../app/apple/client';
 import '../app/authorization/client';
 import '../app/autotranslate/client';
-import '../app/cas/client';
-import '../app/crowd/client';
 import '../app/custom-oauth/client/custom_oauth_client';
 import '../app/custom-sounds/client';
 import '../app/dolphin/client';
@@ -36,7 +33,6 @@ import '../app/tokenpass/client';
 import '../app/webdav/client';
 import '../app/webrtc/client';
 import '../app/wordpress/client';
-import '../app/meteor-accounts-saml/client';
 import '../app/e2e/client';
 import '../app/discussion/client';
 import '../app/threads/client';

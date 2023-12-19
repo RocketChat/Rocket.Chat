@@ -2,7 +2,14 @@ import { Random } from '@rocket.chat/random';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../settings/client';
+import { settings } from '../../../app/settings/client';
+
+declare module 'meteor/meteor' {
+	// eslint-disable-next-line @typescript-eslint/no-namespace
+	namespace Meteor {
+		function loginWithCas(_?: unknown, callback?: () => void): void;
+	}
+}
 
 const openCenteredPopup = (url: string, width: number, height: number) => {
 	const screenX = typeof window.screenX !== 'undefined' ? window.screenX : window.screenLeft;
@@ -23,7 +30,7 @@ const openCenteredPopup = (url: string, width: number, height: number) => {
 	return newwindow;
 };
 
-(Meteor as any).loginWithCas = (_?: unknown, callback?: () => void) => {
+Meteor.loginWithCas = (_?: unknown, callback?: () => void) => {
 	const credentialToken = Random.id();
 	const loginUrl = settings.get('CAS_login_url');
 	const popupWidth = settings.get('CAS_popup_width') || 800;
