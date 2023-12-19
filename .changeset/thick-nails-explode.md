@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-fix: Can't create public channels with joinCode
+Fixed the problem of not being possible to add a join code to a public room
