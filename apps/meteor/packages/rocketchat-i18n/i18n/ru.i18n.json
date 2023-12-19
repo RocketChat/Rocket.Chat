@@ -5002,7 +5002,7 @@
   "onboarding.component.form.action.pasteHere": "Вставить сюда...",
   "onboarding.component.form.termsAndConditions": "Я принимаю <1>Положения и условия</1> и <3>Политику конфиденциальности</3>",
   "onboarding.component.emailCodeFallback": "Не получили электронное письмо? <1>Отправить повторно</1> или <3>Изменить адрес электронной почты</3>",
-  "onboarding.page.form.title": "<1>Запустим</1> ваше рабочее пространство",
+  "onboarding.page.form.title": "Запустим ваше рабочее пространство",
   "onboarding.page.emailConfirmed.title": "Адрес электронной почты подтвержден!",
   "onboarding.page.emailConfirmed.subtitle": "Вы можете вернуться в приложение Rocket.Chat — мы уже запустили ваше рабочее пространство.",
   "onboarding.page.checkYourEmail.title": "Проверьте адрес электронной почты",
