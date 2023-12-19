@@ -1,5 +1,5 @@
 import { Button } from '@rocket.chat/fuselage';
-import { useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -10,21 +10,17 @@ import EmailInboxTable from './EmailInboxTable';
 
 const EmailInboxPage = (): ReactElement => {
 	const t = useTranslation();
+	const router = useRouter();
+
 	const id = useRouteParameter('_id');
 	const context = useRouteParameter('context');
-	const emailInboxRoute = useRoute('admin-email-inboxes');
 
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<PageHeader title={t('Email_Inboxes')}>
-					{context && (
-						<Button icon='back' onClick={(): void => emailInboxRoute.push({})}>
-							{t('Back')}
-						</Button>
-					)}
+				<PageHeader title={t('Email_Inboxes')} onClickBack={context ? () => router.navigate('/admin/email-inboxes') : undefined}>
 					{!context && (
-						<Button primary onClick={(): void => emailInboxRoute.push({ context: 'new' })}>
+						<Button primary onClick={() => router.navigate('/admin/email-inboxes/new')}>
 							{t('New_Email_Inbox')}
 						</Button>
 					)}
