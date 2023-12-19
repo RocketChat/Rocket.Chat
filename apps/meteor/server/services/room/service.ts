@@ -1,6 +1,6 @@
 import { ServiceClassInternal, Authorization, MeteorError } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, IRoomService } from '@rocket.chat/core-services';
-import { type AtLeast, type IRoom, type IUser, type IRoomWithJoinCode, isRoomWithJoinCode } from '@rocket.chat/core-typings';
+import { type AtLeast, type IRoom, type IUser, isRoomWithJoinCode } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
 
 import { saveRoomTopic } from '../../../app/channel-settings/server/functions/saveRoomTopic';
@@ -122,7 +122,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 			));
 
 			if (!isCorrectJoinCode) {
-				throw new MeteorError('error-invalid-code', 'Invalid code', { method: 'joinRoom' });
+				throw new MeteorError('error-code-invalid', 'Invalid code', { method: 'joinRoom' });
 			}
 		}
 
