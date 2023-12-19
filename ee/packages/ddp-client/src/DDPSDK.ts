@@ -105,7 +105,7 @@ export class DDPSDK implements SDK {
 				}
 				return {
 					'X-User-Id': account.uid,
-					'X-Auth-Token': account.user?.token,
+					'X-Auth-Token': account.user.token,
 				};
 			}
 		})({ baseUrl: url });
