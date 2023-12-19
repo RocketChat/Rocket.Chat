@@ -251,8 +251,6 @@ export const sendMessage = async function (user, message, room, upsert = false, 
 
 	message = await Message.beforeSave({ message, room, user });
 
-	message = await callbacks.run('beforeSaveMessage', message, room);
-
 	if (message) {
 		if (message.t === 'otr') {
 			const otrStreamer = notifications.streamRoomMessage;
