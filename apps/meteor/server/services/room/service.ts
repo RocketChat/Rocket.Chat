@@ -1,6 +1,6 @@
 import { ServiceClassInternal, Authorization, MeteorError } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, IRoomService } from '@rocket.chat/core-services';
-import { type AtLeast, type IRoom, type IUser, isRoomWithJoinCode, IRoomWithJoinCode } from '@rocket.chat/core-typings';
+import { type AtLeast, type IRoom, type IUser, type IRoomWithJoinCode, isRoomWithJoinCode } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
 
 import { saveRoomTopic } from '../../../app/channel-settings/server/functions/saveRoomTopic';
@@ -106,18 +106,23 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 			throw new MeteorError('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
 		}
 
-		if (isRoomWithJoinCode(room)) {
-			let fetchedJoinCode = room.joinCode;
-			if (!room.joinCode) {
-				fetchedJoinCode = (
-					(await Rooms.findOneById(room._id, {
-						projection: { joinCode: 1 },
-					})) as IRoomWithJoinCode
-				).joinCode;
+		if (isRoomWithJoinCode(room) && !(await Authorization.hasPermission(user._id, 'join-without-join-code'))) {
+			if (!joinCode) {
+				throw new MeteorError('error-code-required', 'Code required', { method: 'joinRoom' });
 			}
 
-			if ((!joinCode || joinCode !== fetchedJoinCode) && !(await Authorization.hasPermission(user._id, 'join-without-join-code'))) {
-				throw new MeteorError('error-code-required', 'Code required', { method: 'joinRoom' });
+			const isCorrectJoinCode = !!(await Rooms.findOne(
+				{
+					_id: room._id,
+					joinCode,
+				},
+				{
+					projection: { _id: 1 },
+				},
+			));
+
+			if (!isCorrectJoinCode) {
+				throw new MeteorError('error-invalid-code', 'Invalid code', { method: 'joinRoom' });
 			}
 		}
 
