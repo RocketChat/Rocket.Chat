@@ -1,5 +1,5 @@
 import React from 'react';
-import type { ReactNode } from 'react';
+import type { ReactElement } from 'react';
 
 import { ReportCardEmptyState } from './ReportCardEmptyState';
 import { ReportCardErrorState } from './ReportCardErrorState';
@@ -11,7 +11,7 @@ type ReportCardContentProps = {
 	isDataFound?: boolean;
 	subtitle?: string;
 	onRetry?: () => void;
-	children: ReactNode;
+	children: ReactElement;
 };
 export const ReportCardContent = ({ isLoading, isError, isDataFound, subtitle, onRetry, children }: ReportCardContentProps) => {
 	if (isLoading) {
@@ -23,5 +23,5 @@ export const ReportCardContent = ({ isLoading, isError, isDataFound, subtitle, o
 	if (!isDataFound) {
 		return <ReportCardEmptyState subtitle={subtitle} />;
 	}
-	return <>{children}</>;
+	return children;
 };
