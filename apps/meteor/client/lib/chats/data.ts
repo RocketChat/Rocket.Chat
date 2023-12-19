@@ -172,7 +172,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 	};
 
 	const pushEphemeralMessage = async (message: Omit<IMessage, 'rid' | 'tmid'>): Promise<void> => {
-		Messages.upsert({ _id: message._id }, { $set: { ...message, rid, ...(tmid && { tmid }) } });
+		await Messages.upsertAsync({ _id: message._id }, { $set: { ...message, rid, ...(tmid && { tmid }) } });
 	};
 
 	const updateMessage = async (message: IEditedMessage, previewUrls?: string[]): Promise<void> =>

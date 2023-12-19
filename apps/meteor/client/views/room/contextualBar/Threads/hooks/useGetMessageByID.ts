@@ -15,7 +15,7 @@ export const useGetMessageByID = () => {
 				const { message: rawMessage } = await getMessage({ msgId: mid });
 				const mappedMessage = mapMessageFromApi(rawMessage);
 				const message = (await onClientMessageReceived(mappedMessage)) || mappedMessage;
-				Messages.upsert({ _id: message._id }, { $set: message as any });
+				await Messages.upsertAsync({ _id: message._id }, { $set: message as any });
 				return message;
 			} catch (error) {
 				if (typeof error === 'object' && error !== null && 'success' in error) {

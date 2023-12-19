@@ -6,7 +6,7 @@ import { Notifications } from '../../../notifications/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 
 const events = {
-	changed: (account) => WebdavAccounts.upsert({ _id: account._id }, account),
+	changed: (account) => WebdavAccounts.upsertAsync({ _id: account._id }, account),
 	removed: ({ _id }) => WebdavAccounts.remove({ _id }),
 };
 

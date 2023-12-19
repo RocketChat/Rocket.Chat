@@ -11,22 +11,20 @@ Meteor.startup(() => {
 		if (Meteor.userId()) {
 			sdk
 				.call('getUserRoles')
-				.then((results) => {
-					for (const record of results) {
-						UserRoles.upsert({ _id: record._id }, record);
-					}
+				.then(async (results) => {
+					await Promise.all(results.map((record) => UserRoles.upsertAsync({ _id: record._id }, record)));
 				})
 				.catch((error) => {
 					dispatchToastMessage({ type: 'error', message: error });
 				});
 
-			Notifications.onLogged('roles-change', (role) => {
+			Notifications.onLogged('roles-change', async (role) => {
 				if (role.type === 'added') {
 					if (!role.scope) {
 						if (!role.u) {
 							return;
 						}
-						UserRoles.upsert({ _id: role.u._id }, { $addToSet: { roles: role._id }, $set: { username: role.u.username } });
+						await UserRoles.upsertAsync({ _id: role.u._id }, { $addToSet: { roles: role._id }, $set: { username: role.u.username } });
 						ChatMessage.update({ 'u._id': role.u._id }, { $addToSet: { roles: role._id } }, { multi: true });
 					}
 

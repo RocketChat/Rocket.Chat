@@ -31,8 +31,8 @@ export abstract class Base<T extends Document = any> {
 		return this.model.update(...args);
 	}
 
-	upsert(...args: Parameters<Mongo.Collection<T>['upsert']>) {
-		return this.model.upsert(...args);
+	upsertAsync(...args: Parameters<Mongo.Collection<T>['upsert']>) {
+		return this.model.upsertAsync(...args);
 	}
 
 	remove(...args: Parameters<Mongo.Collection<T>['remove']>) {

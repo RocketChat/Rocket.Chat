@@ -33,11 +33,16 @@ const EditableSettingsProvider: FunctionComponent<EditableSettingsProviderProps>
 
 	useEffect(() => {
 		const settingsCollection = getSettingsCollection();
+		const upsertSettings = async () => {
+			await Promise.all(
+				persistedSettings.map(({ _id, ...fields }) =>
+					settingsCollection.upsertAsync({ _id }, { $set: { ...fields }, $unset: { changed: true } }),
+				),
+			);
+		};
 
 		settingsCollection.remove({ _id: { $nin: persistedSettings.map(({ _id }) => _id) } });
-		for (const { _id, ...fields } of persistedSettings) {
-			settingsCollection.upsert(_id, { $set: { ...fields }, $unset: { changed: true } });
-		}
+		upsertSettings();
 	}, [getSettingsCollection, persistedSettings]);
 
 	const queryEditableSetting = useMemo(() => {

@@ -7,8 +7,8 @@ import { sdk } from '../../../../../app/utils/client/lib/SDKClient';
 import { CannedResponse } from '../collections/CannedResponse';
 
 const events = {
-	changed: ({ type, ...response }) => {
-		CannedResponse.upsert({ _id: response._id }, response);
+	changed: async ({ type, ...response }) => {
+		await CannedResponse.upsertAsync({ _id: response._id }, response);
 	},
 	removed: (response) => CannedResponse.remove({ _id: response._id }),
 };
@@ -26,12 +26,12 @@ Meteor.startup(() => {
 		}
 		try {
 			// TODO: check options
-			sdk.stream('canned-responses', 'canned-responses', (response, options) => {
+			sdk.stream('canned-responses', 'canned-responses', async (response, options) => {
 				const { agentsId } = options || {};
 				if (Array.isArray(agentsId) && !agentsId.includes(Meteor.userId())) {
 					return;
 				}
-				events[response.type](response);
+				await events[response.type](response);
 			});
 			const { responses } = await sdk.rest.get('/v1/canned-responses.get');
 			responses.forEach((response) => CannedResponse.insert(response));

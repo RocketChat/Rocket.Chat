@@ -19,9 +19,9 @@ Meteor.startup(() => {
 	type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 
 	const events: Record<string, ((role: IRole & { type?: ClientAction }) => void) | undefined> = {
-		changed: (role) => {
+		changed: async (role) => {
 			delete role.type;
-			Roles.upsert({ _id: role._id }, role);
+			await Roles.upsertAsync({ _id: role._id }, role);
 		},
 		removed: (role) => {
 			Roles.remove({ _id: role._id });

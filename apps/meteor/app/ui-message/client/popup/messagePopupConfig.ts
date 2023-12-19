@@ -16,7 +16,7 @@ export const usersFromRoomMessages = new Mongo.Collection<{
 }>(null);
 
 Meteor.startup(() => {
-	Tracker.autorun(() => {
+	Tracker.autorun(async () => {
 		const uid = Meteor.userId();
 		const rid = asReactiveSource(
 			(cb) => RoomManager.on('changed', cb),
@@ -31,35 +31,40 @@ Meteor.startup(() => {
 
 		const uniqueMessageUsersControl: Record<string, boolean> = {};
 
-		Messages.find(
-			{
-				rid,
-				'u.username': { $ne: user.username },
-				't': { $exists: false },
-			},
-			{
-				fields: {
-					'u.username': 1,
-					'u.name': 1,
-					'u._id': 1,
-					'ts': 1,
+		await Promise.all(
+			Messages.find(
+				{
+					rid,
+					'u.username': { $ne: user.username },
+					't': { $exists: false },
 				},
-				sort: { ts: -1 },
-			},
-		)
-			.fetch()
-			.filter(({ u: { username } }) => {
-				const notMapped = !uniqueMessageUsersControl[username];
-				uniqueMessageUsersControl[username] = true;
-				return notMapped;
-			})
-			.forEach(({ u: { username, name, _id }, ts }) =>
-				usersFromRoomMessages.upsert(_id, {
-					_id,
-					username,
-					name,
-					ts,
-				}),
-			);
+				{
+					fields: {
+						'u.username': 1,
+						'u.name': 1,
+						'u._id': 1,
+						'ts': 1,
+					},
+					sort: { ts: -1 },
+				},
+			)
+				.fetch()
+				.filter(({ u: { username } }) => {
+					const notMapped = !uniqueMessageUsersControl[username];
+					uniqueMessageUsersControl[username] = true;
+					return notMapped;
+				})
+				.map(({ u: { username, name, _id }, ts }) =>
+					usersFromRoomMessages.upsertAsync(
+						{ _id },
+						{
+							_id,
+							username,
+							name,
+							ts,
+						},
+					),
+				),
+		);
 	});
 });

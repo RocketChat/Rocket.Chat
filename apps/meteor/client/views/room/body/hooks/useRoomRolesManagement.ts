@@ -10,14 +10,16 @@ export const useRoomRolesManagement = (rid: IRoom['_id']): void => {
 	const getRoomRoles = useMethod('getRoomRoles');
 
 	useEffect(() => {
-		getRoomRoles(rid).then((results) => {
-			Array.from(results).forEach(({ _id, ...data }) => {
-				const {
-					rid,
-					u: { _id: uid },
-				} = data;
-				RoomRoles.upsert({ rid, 'u._id': uid }, { $set: data });
-			});
+		getRoomRoles(rid).then(async (results) => {
+			await Promise.all(
+				Array.from(results).map(({ _id, ...data }) => {
+					const {
+						rid,
+						u: { _id: uid },
+					} = data;
+					return RoomRoles.upsertAsync({ rid, 'u._id': uid }, { $set: data });
+				}),
+			);
 		});
 	}, [getRoomRoles, rid]);
 
@@ -52,7 +54,7 @@ export const useRoomRolesManagement = (rid: IRoom['_id']): void => {
 
 	useEffect(
 		() =>
-			subscribeToNotifyLoggedIn('roles-change', ({ type, ...role }) => {
+			subscribeToNotifyLoggedIn('roles-change', async ({ type, ...role }) => {
 				if (!role.scope) {
 					return;
 				}
@@ -63,7 +65,10 @@ export const useRoomRolesManagement = (rid: IRoom['_id']): void => {
 
 				switch (type) {
 					case 'added':
-						RoomRoles.upsert({ 'rid': role.scope, 'u._id': role.u._id }, { $setOnInsert: { u: role.u }, $addToSet: { roles: role._id } });
+						await RoomRoles.upsertAsync(
+							{ 'rid': role.scope, 'u._id': role.u._id },
+							{ $setOnInsert: { u: role.u }, $addToSet: { roles: role._id } },
+						);
 						break;
 
 					case 'removed':

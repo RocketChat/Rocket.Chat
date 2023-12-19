@@ -21,7 +21,7 @@ const events = {
 			return removeInquiry(inquiry);
 		}
 
-		LivechatInquiry.upsert({ _id: inquiry._id }, { ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) });
+		await LivechatInquiry.upsertAsync({ _id: inquiry._id }, { ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) });
 		await invalidateRoomQueries(inquiry.rid);
 	},
 	removed: (inquiry: ILivechatInquiryRecord) => removeInquiry(inquiry),
@@ -65,7 +65,9 @@ const addListenerForeachDepartment = (departments: ILivechatDepartment['_id'][] 
 };
 
 const updateInquiries = async (inquiries: ILivechatInquiryRecord[] = []) =>
-	inquiries.forEach((inquiry) => LivechatInquiry.upsert({ _id: inquiry._id }, { ...inquiry, _updatedAt: new Date(inquiry._updatedAt) }));
+	Promise.all(
+		inquiries.map((inquiry) => LivechatInquiry.upsertAsync({ _id: inquiry._id }, { ...inquiry, _updatedAt: new Date(inquiry._updatedAt) })),
+	);
 
 const getAgentsDepartments = async (userId: IOmnichannelAgent['_id']) => {
 	const { departments } = await sdk.rest.get(`/v1/livechat/agents/${userId}/departments`, { enabledDepartmentsOnly: 'true' });

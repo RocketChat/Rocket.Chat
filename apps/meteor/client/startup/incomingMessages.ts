@@ -15,7 +15,7 @@ Meteor.startup(() => {
 			msg.u = msg.u || { username: 'rocket.cat' };
 			msg.private = true;
 
-			return ChatMessage.upsert({ _id: msg._id }, msg);
+			return ChatMessage.upsertAsync({ _id: msg._id }, msg);
 		});
 	});
 
