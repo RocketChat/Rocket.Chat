@@ -5,6 +5,7 @@ import {
 	MessageGenericPreviewIcon,
 	MessageGenericPreviewTitle,
 	MessageGenericPreviewDescription,
+	Button,
 } from '@rocket.chat/fuselage';
 import { useMediaUrl } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
@@ -15,6 +16,9 @@ import MarkdownText from '../../../../MarkdownText';
 import MessageCollapsible from '../../../MessageCollapsible';
 import MessageContentBody from '../../../MessageContentBody';
 import AttachmentSize from '../structure/AttachmentSize';
+
+const desktopApp = window.RocketChatDesktop;
+const openDocumentViewer = desktopApp?.openDocumentViewer;
 
 export const GenericFileAttachment: FC<MessageAttachmentBase> = ({
 	title,
@@ -28,6 +32,14 @@ export const GenericFileAttachment: FC<MessageAttachmentBase> = ({
 }) => {
 	const getURL = useMediaUrl();
 
+	const handleOpenDocumentViewer = (event: { preventDefault: () => void }): void => {
+		event.preventDefault();
+
+		if (openDocumentViewer && link && format) {
+			openDocumentViewer(getURL(link), format, '');
+		}
+	};
+
 	return (
 		<>
 			{descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} />}
@@ -36,9 +48,24 @@ export const GenericFileAttachment: FC<MessageAttachmentBase> = ({
 					<MessageGenericPreviewContent
 						thumb={<MessageGenericPreviewIcon name='attachment-file' type={format || getFileExtension(title)} />}
 					>
-						<MessageGenericPreviewTitle externalUrl={hasDownload && link ? getURL(link) : undefined} data-qa-type='attachment-title-link'>
-							{title}
-						</MessageGenericPreviewTitle>
+						{!desktopApp && (
+							<MessageGenericPreviewTitle externalUrl={hasDownload && link ? getURL(link) : undefined} data-qa-type='attachment-title-link'>
+								{title}
+							</MessageGenericPreviewTitle>
+						)}
+						{desktopApp && link && format === 'PDF' && (
+							<Button onClick={handleOpenDocumentViewer} data-qa-type='attachment-title-link'>
+								{title}
+							</Button>
+						)}
+						{desktopApp && format !== 'PDF' && (
+							<MessageGenericPreviewTitle
+								externalUrl={hasDownload && link ? `${getURL(link)}?download` : undefined}
+								data-qa-type='attachment-title-link'
+							>
+								{title}
+							</MessageGenericPreviewTitle>
+						)}
 						{size && (
 							<MessageGenericPreviewDescription>
 								<AttachmentSize size={size} wrapper={false} />
