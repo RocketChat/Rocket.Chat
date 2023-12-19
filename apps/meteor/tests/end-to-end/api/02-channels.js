@@ -50,353 +50,353 @@ describe('[Channels]', function () {
 			.end(done);
 	});
 
-	// describe('[/channels.create]', () => {
-	// 	let guestUser;
-	// 	let room;
+	describe('[/channels.create]', () => {
+		let guestUser;
+		let room;
 
-	// 	before(async () => {
-	// 		guestUser = await createUser({ roles: ['guest'] });
-	// 	});
-	// 	after(async () => {
-	// 		await deleteUser(guestUser);
-	// 	});
+		before(async () => {
+			guestUser = await createUser({ roles: ['guest'] });
+		});
+		after(async () => {
+			await deleteUser(guestUser);
+		});
 
-	// 	it(`should fail when trying to use an existing room's name`, async () => {
-	// 		await request
-	// 			.post(api('channels.create'))
-	// 			.set(credentials)
-	// 			.send({
-	// 				name: 'general',
-	// 			})
-	// 			.expect('Content-Type', 'application/json')
-	// 			.expect(400)
-	// 			.expect((res) => {
-	// 				expect(res.body).to.have.property('success', false);
-	// 				expect(res.body).to.have.nested.property('errorType', 'error-duplicate-channel-name');
-	// 			});
-	// 	});
+		it(`should fail when trying to use an existing room's name`, async () => {
+			await request
+				.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: 'general',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.nested.property('errorType', 'error-duplicate-channel-name');
+				});
+		});
 
-	// 	it('should not add guest users to more rooms than defined in the license', async function () {
-	// 		// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
-	// 		// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
-	// 		if (!process.env.IS_EE) {
-	// 			this.skip();
-	// 		}
+		it('should not add guest users to more rooms than defined in the license', async function () {
+			// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
+			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
+			if (!process.env.IS_EE) {
+				this.skip();
+			}
 
-	// 		const promises = [];
-	// 		for (let i = 0; i < maxRoomsPerGuest; i++) {
-	// 			promises.push(
-	// 				createRoom({
-	// 					type: 'c',
-	// 					name: `channel.test.${Date.now()}-${Math.random()}`,
-	// 					members: [guestUser.username],
-	// 				}),
-	// 			);
-	// 		}
-	// 		await Promise.all(promises);
+			const promises = [];
+			for (let i = 0; i < maxRoomsPerGuest; i++) {
+				promises.push(
+					createRoom({
+						type: 'c',
+						name: `channel.test.${Date.now()}-${Math.random()}`,
+						members: [guestUser.username],
+					}),
+				);
+			}
+			await Promise.all(promises);
 
-	// 		request
-	// 			.post(api('channels.create'))
-	// 			.set(credentials)
-	// 			.send({
-	// 				name: `channel.test.${Date.now()}-${Math.random()}`,
-	// 				members: [guestUser.username],
-	// 			})
-	// 			.expect('Content-Type', 'application/json')
-	// 			.expect(200)
-	// 			.expect((res) => {
-	// 				expect(res.body).to.have.property('success', true);
-	// 				room = res.body.group;
-	// 			})
-	// 			.then(() => {
-	// 				request
-	// 					.get(api('channels.members'))
-	// 					.set(credentials)
-	// 					.query({
-	// 						roomId: room._id,
-	// 					})
-	// 					.expect('Content-Type', 'application/json')
-	// 					.expect(200)
-	// 					.expect((res) => {
-	// 						expect(res.body).to.have.property('success', true);
-	// 						expect(res.body).to.have.property('members').and.to.be.an('array');
-	// 						expect(res.body.members).to.have.lengthOf(1);
-	// 					});
-	// 			});
-	// 	});
-	// });
-	// describe('[/channels.info]', () => {
-	// 	let testChannel = {};
-	// 	let channelMessage = {};
-	// 	it('creating new channel...', (done) => {
-	// 		request
-	// 			.post(api('channels.create'))
-	// 			.set(credentials)
-	// 			.send({
-	// 				name: apiPublicChannelName,
-	// 			})
-	// 			.expect('Content-Type', 'application/json')
-	// 			.expect(200)
-	// 			.expect((res) => {
-	// 				testChannel = res.body.channel;
-	// 			})
-	// 			.end(done);
-	// 	});
-	// 	it('should fail to create the same channel twice', (done) => {
-	// 		request
-	// 			.post(api('channels.create'))
-	// 			.set(credentials)
-	// 			.send({
-	// 				name: apiPublicChannelName,
-	// 			})
-	// 			.expect('Content-Type', 'application/json')
-	// 			.expect(400)
-	// 			.expect((res) => {
-	// 				expect(res.body).to.have.property('success', false);
-	// 				expect(res.body.error).to.contain('error-duplicate-channel-name');
-	// 			})
-	// 			.end(done);
-	// 	});
-	// 	it('should return channel basic structure', (done) => {
-	// 		request
-	// 			.get(api('channels.info'))
-	// 			.set(credentials)
-	// 			.query({
-	// 				roomId: testChannel._id,
-	// 			})
-	// 			.expect('Content-Type', 'application/json')
-	// 			.expect(200)
-	// 			.expect((res) => {
-	// 				expect(res.body).to.have.property('success', true);
-	// 				expect(res.body).to.have.nested.property('channel._id');
-	// 				expect(res.body).to.have.nested.property('channel.name', apiPublicChannelName);
-	// 				expect(res.body).to.have.nested.property('channel.t', 'c');
-	// 				expect(res.body).to.have.nested.property('channel.msgs', 0);
-	// 			})
-	// 			.end(done);
-	// 	});
-	// 	it('sending a message...', (done) => {
-	// 		request
-	// 			.post(api('chat.sendMessage'))
-	// 			.set(credentials)
-	// 			.send({
-	// 				message: {
-	// 					text: 'Sample message',
-	// 					rid: testChannel._id,
-	// 				},
-	// 			})
-	// 			.expect('Content-Type', 'application/json')
-	// 			.expect(200)
-	// 			.expect((res) => {
-	// 				expect(res.body).to.have.property('success', true);
-	// 				channelMessage = res.body.message;
-	// 			})
-	// 			.end(done);
-	// 	});
-	// 	it('REACTing with last message', (done) => {
-	// 		request
-	// 			.post(api('chat.react'))
-	// 			.set(credentials)
-	// 			.send({
-	// 				emoji: ':squid:',
-	// 				messageId: channelMessage._id,
-	// 			})
-	// 			.expect('Content-Type', 'application/json')
-	// 			.expect(200)
-	// 			.expect((res) => {
-	// 				expect(res.body).to.have.property('success', true);
-	// 			})
-	// 			.end(done);
-	// 	});
-	// 	it('STARring last message', (done) => {
-	// 		request
-	// 			.post(api('chat.starMessage'))
-	// 			.set(credentials)
-	// 			.send({
-	// 				messageId: channelMessage._id,
-	// 			})
-	// 			.expect('Content-Type', 'application/json')
-	// 			.expect(200)
-	// 			.expect((res) => {
-	// 				expect(res.body).to.have.property('success', true);
-	// 			})
-	// 			.end(done);
-	// 	});
-	// 	it('PINning last message', (done) => {
-	// 		request
-	// 			.post(api('chat.pinMessage'))
-	// 			.set(credentials)
-	// 			.send({
-	// 				messageId: channelMessage._id,
-	// 			})
-	// 			.expect('Content-Type', 'application/json')
-	// 			.expect(200)
-	// 			.expect((res) => {
-	// 				expect(res.body).to.have.property('success', true);
-	// 			})
-	// 			.end(done);
-	// 	});
-	// 	it('should return channel structure with "lastMessage" object including pin, reactions and star(should be an array) infos', (done) => {
-	// 		request
-	// 			.get(api('channels.info'))
-	// 			.set(credentials)
-	// 			.query({
-	// 				roomId: testChannel._id,
-	// 			})
-	// 			.expect('Content-Type', 'application/json')
-	// 			.expect(200)
-	// 			.expect((res) => {
-	// 				expect(res.body).to.have.property('success', true);
-	// 				expect(res.body).to.have.property('channel').and.to.be.an('object');
-	// 				const { channel } = res.body;
-	// 				expect(channel).to.have.property('lastMessage').and.to.be.an('object');
-	// 				expect(channel.lastMessage).to.have.property('reactions').and.to.be.an('object');
-	// 				expect(channel.lastMessage).to.have.property('pinned').and.to.be.a('boolean');
-	// 				expect(channel.lastMessage).to.have.property('pinnedAt').and.to.be.a('string');
-	// 				expect(channel.lastMessage).to.have.property('pinnedBy').and.to.be.an('object');
-	// 				expect(channel.lastMessage).to.have.property('starred').and.to.be.an('array');
-	// 			})
-	// 			.end(done);
-	// 	});
-	// 	it('should return all channels messages where the last message of array should have the "star" array with USERS star ONLY', (done) => {
-	// 		request
-	// 			.get(api('channels.messages'))
-	// 			.set(credentials)
-	// 			.query({
-	// 				roomId: testChannel._id,
-	// 			})
-	// 			.expect('Content-Type', 'application/json')
-	// 			.expect(200)
-	// 			.expect((res) => {
-	// 				expect(res.body).to.have.property('success', true);
-	// 				expect(res.body).to.have.property('messages').and.to.be.an('array');
-	// 				const { messages } = res.body;
-	// 				const lastMessage = messages.filter((message) => message._id === channelMessage._id)[0];
-	// 				expect(lastMessage).to.have.property('starred').and.to.be.an('array');
-	// 				expect(lastMessage.starred[0]._id).to.be.equal(adminUsername);
-	// 			})
-	// 			.end(done);
-	// 	});
-	// 	it('should return all channels messages where the last message of array should have the "star" array with USERS star ONLY even requested with count and offset params', (done) => {
-	// 		request
-	// 			.get(api('channels.messages'))
-	// 			.set(credentials)
-	// 			.query({
-	// 				roomId: testChannel._id,
-	// 				count: 5,
-	// 				offset: 0,
-	// 			})
-	// 			.expect('Content-Type', 'application/json')
-	// 			.expect(200)
-	// 			.expect((res) => {
-	// 				expect(res.body).to.have.property('success', true);
-	// 				expect(res.body).to.have.property('messages').and.to.be.an('array');
-	// 				const { messages } = res.body;
-	// 				const lastMessage = messages.filter((message) => message._id === channelMessage._id)[0];
-	// 				expect(lastMessage).to.have.property('starred').and.to.be.an('array');
-	// 				expect(lastMessage.starred[0]._id).to.be.equal(adminUsername);
-	// 			})
-	// 			.end(done);
-	// 	});
-	// });
+			request
+				.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: `channel.test.${Date.now()}-${Math.random()}`,
+					members: [guestUser.username],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					room = res.body.group;
+				})
+				.then(() => {
+					request
+						.get(api('channels.members'))
+						.set(credentials)
+						.query({
+							roomId: room._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('members').and.to.be.an('array');
+							expect(res.body.members).to.have.lengthOf(1);
+						});
+				});
+		});
+	});
+	describe('[/channels.info]', () => {
+		let testChannel = {};
+		let channelMessage = {};
+		it('creating new channel...', (done) => {
+			request
+				.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: apiPublicChannelName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					testChannel = res.body.channel;
+				})
+				.end(done);
+		});
+		it('should fail to create the same channel twice', (done) => {
+			request
+				.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: apiPublicChannelName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.contain('error-duplicate-channel-name');
+				})
+				.end(done);
+		});
+		it('should return channel basic structure', (done) => {
+			request
+				.get(api('channels.info'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel._id');
+					expect(res.body).to.have.nested.property('channel.name', apiPublicChannelName);
+					expect(res.body).to.have.nested.property('channel.t', 'c');
+					expect(res.body).to.have.nested.property('channel.msgs', 0);
+				})
+				.end(done);
+		});
+		it('sending a message...', (done) => {
+			request
+				.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						text: 'Sample message',
+						rid: testChannel._id,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					channelMessage = res.body.message;
+				})
+				.end(done);
+		});
+		it('REACTing with last message', (done) => {
+			request
+				.post(api('chat.react'))
+				.set(credentials)
+				.send({
+					emoji: ':squid:',
+					messageId: channelMessage._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('STARring last message', (done) => {
+			request
+				.post(api('chat.starMessage'))
+				.set(credentials)
+				.send({
+					messageId: channelMessage._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('PINning last message', (done) => {
+			request
+				.post(api('chat.pinMessage'))
+				.set(credentials)
+				.send({
+					messageId: channelMessage._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('should return channel structure with "lastMessage" object including pin, reactions and star(should be an array) infos', (done) => {
+			request
+				.get(api('channels.info'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('channel').and.to.be.an('object');
+					const { channel } = res.body;
+					expect(channel).to.have.property('lastMessage').and.to.be.an('object');
+					expect(channel.lastMessage).to.have.property('reactions').and.to.be.an('object');
+					expect(channel.lastMessage).to.have.property('pinned').and.to.be.a('boolean');
+					expect(channel.lastMessage).to.have.property('pinnedAt').and.to.be.a('string');
+					expect(channel.lastMessage).to.have.property('pinnedBy').and.to.be.an('object');
+					expect(channel.lastMessage).to.have.property('starred').and.to.be.an('array');
+				})
+				.end(done);
+		});
+		it('should return all channels messages where the last message of array should have the "star" array with USERS star ONLY', (done) => {
+			request
+				.get(api('channels.messages'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.an('array');
+					const { messages } = res.body;
+					const lastMessage = messages.filter((message) => message._id === channelMessage._id)[0];
+					expect(lastMessage).to.have.property('starred').and.to.be.an('array');
+					expect(lastMessage.starred[0]._id).to.be.equal(adminUsername);
+				})
+				.end(done);
+		});
+		it('should return all channels messages where the last message of array should have the "star" array with USERS star ONLY even requested with count and offset params', (done) => {
+			request
+				.get(api('channels.messages'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					count: 5,
+					offset: 0,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.an('array');
+					const { messages } = res.body;
+					const lastMessage = messages.filter((message) => message._id === channelMessage._id)[0];
+					expect(lastMessage).to.have.property('starred').and.to.be.an('array');
+					expect(lastMessage.starred[0]._id).to.be.equal(adminUsername);
+				})
+				.end(done);
+		});
+	});
 
-	// describe('[/channels.online]', () => {
-	// 	const createUserAndChannel = async () => {
-	// 		const testUser = await createUser();
-	// 		const testUserCredentials = await login(testUser.username, password);
+	describe('[/channels.online]', () => {
+		const createUserAndChannel = async () => {
+			const testUser = await createUser();
+			const testUserCredentials = await login(testUser.username, password);
 
-	// 		await request.post(api('users.setStatus')).set(testUserCredentials).send({
-	// 			message: '',
-	// 			status: 'online',
-	// 		});
+			await request.post(api('users.setStatus')).set(testUserCredentials).send({
+				message: '',
+				status: 'online',
+			});
 
-	// 		const roomName = `group-test-${Date.now()}`;
+			const roomName = `group-test-${Date.now()}`;
 
-	// 		const roomResponse = await createRoom({
-	// 			name: roomName,
-	// 			type: 'c',
-	// 			members: [testUser.username],
-	// 		});
+			const roomResponse = await createRoom({
+				name: roomName,
+				type: 'c',
+				members: [testUser.username],
+			});
 
-	// 		return {
-	// 			testUser,
-	// 			testUserCredentials,
-	// 			room: roomResponse.body.channel,
-	// 		};
-	// 	};
+			return {
+				testUser,
+				testUserCredentials,
+				room: roomResponse.body.channel,
+			};
+		};
 
-	// 	it('should return an error if no query', () =>
-	// 		request
-	// 			.get(api('channels.online'))
-	// 			.set(credentials)
-	// 			.expect('Content-Type', 'application/json')
-	// 			.expect(400)
-	// 			.expect((res) => {
-	// 				expect(res.body).to.have.property('success', false);
-	// 				expect(res.body).to.have.property('error', 'Invalid query');
-	// 			}));
+		it('should return an error if no query', () =>
+			request
+				.get(api('channels.online'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Invalid query');
+				}));
 
-	// 	it('should return an error if passing an empty query', () =>
-	// 		request
-	// 			.get(api('channels.online'))
-	// 			.set(credentials)
-	// 			.query('query={}')
-	// 			.expect('Content-Type', 'application/json')
-	// 			.expect(400)
-	// 			.expect((res) => {
-	// 				expect(res.body).to.have.property('success', false);
-	// 				expect(res.body).to.have.property('error', 'Invalid query');
-	// 			}));
+		it('should return an error if passing an empty query', () =>
+			request
+				.get(api('channels.online'))
+				.set(credentials)
+				.query('query={}')
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Invalid query');
+				}));
 
-	// 	it('should return an array with online members', async () => {
-	// 		const { testUser, testUserCredentials, room } = await createUserAndChannel();
+		it('should return an array with online members', async () => {
+			const { testUser, testUserCredentials, room } = await createUserAndChannel();
 
-	// 		return request
-	// 			.get(api('channels.online'))
-	// 			.set(testUserCredentials)
-	// 			.query(`query={"_id": "${room._id}"}`)
-	// 			.expect('Content-Type', 'application/json')
-	// 			.expect(200)
-	// 			.expect((res) => {
-	// 				expect(res.body).to.have.property('success', true);
-	// 				expect(res.body).to.have.property('online');
+			return request
+				.get(api('channels.online'))
+				.set(testUserCredentials)
+				.query(`query={"_id": "${room._id}"}`)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('online');
 
-	// 				const expected = {
-	// 					_id: testUser._id,
-	// 					username: testUser.username,
-	// 				};
-	// 				expect(res.body.online).to.deep.include(expected);
-	// 			});
-	// 	});
+					const expected = {
+						_id: testUser._id,
+						username: testUser.username,
+					};
+					expect(res.body.online).to.deep.include(expected);
+				});
+		});
 
-	// 	it('should return an empty array if requesting user is not in channel', async () => {
-	// 		const outsider = await createUser();
-	// 		const outsiderCredentials = await login(outsider.username, password);
+		it('should return an empty array if requesting user is not in channel', async () => {
+			const outsider = await createUser();
+			const outsiderCredentials = await login(outsider.username, password);
 
-	// 		const { testUser, room } = await createUserAndChannel();
+			const { testUser, room } = await createUserAndChannel();
 
-	// 		return request
-	// 			.get(api('channels.online'))
-	// 			.set(outsiderCredentials)
-	// 			.query(`query={"_id": "${room._id}"}`)
-	// 			.expect('Content-Type', 'application/json')
-	// 			.expect(200)
-	// 			.expect((res) => {
-	// 				expect(res.body).to.have.property('success', true);
-	// 				expect(res.body).to.have.property('online');
+			return request
+				.get(api('channels.online'))
+				.set(outsiderCredentials)
+				.query(`query={"_id": "${room._id}"}`)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('online');
 
-	// 				const expected = {
-	// 					_id: testUser._id,
-	// 					username: testUser.username,
-	// 				};
-	// 				expect(res.body.online).to.deep.include(expected);
-	// 			});
-	// 	});
-	// });
+					const expected = {
+						_id: testUser._id,
+						username: testUser.username,
+					};
+					expect(res.body.online).to.deep.include(expected);
+				});
+		});
+	});
 
-	// describe('[/channels.files]', async () => {
-	// 	await testFileUploads('channels.files', channel);
-	// });
+	describe('[/channels.files]', async () => {
+		await testFileUploads('channels.files', channel);
+	});
 
 	describe('[/channels.join]', () => {
 		let testChannelNoCode;
