@@ -2,4 +2,4 @@
 "@rocket.chat/meteor": patch
 ---
 
-fix: not being able to access or create rooms with join code
+Fixed an issue where room access and creation were hindered due to join codes not being fetched correctly in the API.
