@@ -1566,20 +1566,26 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	async resetLastMessageById(_id: IRoom['_id'], lastMessage: IRoom['lastMessage']): Promise<UpdateResult> {
+	async resetLastMessageById(_id: IRoom['_id'], lastMessage?: IRoom['lastMessage'], msgCounter?: number): Promise<UpdateResult> {
 		const query: Filter<IRoom> = { _id };
 
-		const update: UpdateFilter<IRoom> = lastMessage
-			? {
-					$set: {
-						lastMessage,
-					},
-			  }
-			: {
-					$unset: {
-						lastMessage: 1,
-					},
-			  };
+		const update: UpdateFilter<IRoom> = {};
+
+		if (lastMessage) {
+			update.$set = {
+				lastMessage,
+			};
+		} else {
+			update.$unset = {
+				lastMessage: 1,
+			};
+		}
+
+		if (msgCounter) {
+			update.$inc = {
+				msgs: msgCounter,
+			};
+		}
 
 		return this.updateOne(query, update);
 	}
