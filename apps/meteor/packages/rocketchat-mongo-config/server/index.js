@@ -6,8 +6,9 @@ import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { WebApp } from 'meteor/webapp';
 
-WebApp.connectHandlers = WebApp.expressHandlers;
-WebApp.rawConnectHandlers = WebApp.rawExpressHandlers;
+// TODO: replace all connect* references all over the codebase
+WebApp.connectHandlers = WebApp.handlers;
+WebApp.rawConnectHandlers = WebApp.rawHandlers;
 Meteor.users.createIndex = function () {
 	console.error('Meteor.users.createIndex');
 };
