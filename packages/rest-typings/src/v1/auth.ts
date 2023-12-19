@@ -1,14 +1,12 @@
 import Ajv from 'ajv';
 
 type LoginWithPassword<T extends object> = (T & { password: string }) | (T & { password: { hashed: string } });
-type Code = { code: string };
 
 type EmailLogin = LoginWithPassword<{ email: string }>;
 type UsernameLogin = LoginWithPassword<{ username: string }>;
-type UserLogin = { user: { username: string } | { email: string } | string };
-type CodeLogin = (EmailLogin | UsernameLogin | UserLogin) & Code;
+type UserLogin = LoginWithPassword<{ user: { username: string } | { email: string } | string }>;
 
-export type LoginProps = EmailLogin | UsernameLogin | CodeLogin | UserLogin;
+export type LoginProps = (EmailLogin | UsernameLogin | UserLogin) & { code?: string };
 
 type LogoutResponse = {
 	message: string;
