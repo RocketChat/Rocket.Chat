@@ -30,7 +30,7 @@ const loginPropsSchema = {
 	properties: {
 		user: { type: 'object', nullable: true },
 		username: { type: 'string', nullable: true },
-		password: { oneOf: [{ type: 'string' }, { type: 'object' }], nullable: true },
+		password: { oneOf: [{ type: 'string',  nullable: true }, { type: 'object', nullable: true }]},
 		email: { type: 'string', nullable: true },
 		code: { type: 'string', nullable: true },
 	},
