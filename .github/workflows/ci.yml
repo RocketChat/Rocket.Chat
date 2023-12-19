@@ -183,7 +183,7 @@ jobs:
       - uses: ./.github/actions/meteor-build
         with:
           node-version: ${{ needs.release-versions.outputs.node-version }}
-          coverage: true
+          coverage: ${{ github.event_name != 'release' }}
 
   build-prod:
     name: 📦 Meteor Build - official
@@ -207,7 +207,7 @@ jobs:
       - uses: ./.github/actions/meteor-build
         with:
           node-version: ${{ needs.release-versions.outputs.node-version }}
-          coverage: false
+          coverage: ${{ github.event_name != 'release' }}
 
   build-gh-docker-coverage:
     name: 🚢 Build Docker Images for Testing

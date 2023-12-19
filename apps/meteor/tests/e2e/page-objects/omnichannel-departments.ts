@@ -110,11 +110,19 @@ export class OmnichannelDepartments {
 	}
 
 	get inputModalConfirmDelete() {
-		return this.page.locator('#modal-root .rcx-modal input');
+		return this.modalConfirmDelete.locator('input[name="confirmDepartmentName"]');
+	}
+
+	get modalConfirmDelete() {
+		return this.page.locator('[data-qa-id="delete-department-modal"]');
 	}
 
 	get btnModalConfirmDelete() {
-		return this.page.locator('#modal-root .rcx-modal .rcx-modal__footer .rcx-button--danger');
+		return this.modalConfirmDelete.locator('role=button[name="Delete"]');
+	}
+
+	get btnModalCancelDelete() {
+		return this.modalConfirmDelete.locator('role=button[name="Cancel"]');
 	}
 
 	get upgradeDepartmentsModal() {

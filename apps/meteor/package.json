@@ -388,7 +388,7 @@
 		"pdfjs-dist": "^2.13.216",
 		"pino": "^8.15.0",
 		"postis": "^2.2.0",
-		"prom-client": "^14.0.1",
+		"prom-client": "^14.2.0",
 		"prometheus-gc-stats": "^0.6.5",
 		"proxy-from-env": "^1.1.0",
 		"psl": "^1.8.0",
