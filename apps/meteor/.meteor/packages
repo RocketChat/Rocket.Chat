@@ -14,35 +14,35 @@ rocketchat:streamer
 rocketchat:version
 rocketchat:user-presence
 
-accounts-base@3.0.0-alpha300.17
-accounts-facebook@1.3.4-alpha300.17
-accounts-github@1.5.1-alpha300.17
-accounts-google@1.4.1-alpha300.17
-accounts-meteor-developer@1.5.1-alpha300.17
-accounts-oauth@1.4.3-alpha300.17
-accounts-password@3.0.0-alpha300.17
-accounts-twitter@1.5.1-alpha300.17
+accounts-base@3.0.0-alpha300.19
+accounts-facebook@1.3.4-alpha300.19
+accounts-github@1.5.1-alpha300.19
+accounts-google@1.4.1-alpha300.19
+accounts-meteor-developer@1.5.1-alpha300.19
+accounts-oauth@1.4.3-alpha300.19
+accounts-password@3.0.0-alpha300.19
+accounts-twitter@1.5.1-alpha300.19
 
 pauli:accounts-linkedin
-google-oauth@1.4.5-alpha300.17
-oauth@3.0.0-alpha300.17
-oauth2@1.3.3-alpha300.17
+google-oauth@1.4.5-alpha300.19
+oauth@3.0.0-alpha300.19
+oauth2@1.3.3-alpha300.19
 
-check@1.3.3-alpha300.17
-ddp-rate-limiter@1.2.1-alpha300.17
-rate-limit@1.1.2-alpha300.17
-email@3.0.0-alpha300.17
+check@1.3.3-alpha300.19
+ddp-rate-limiter@1.2.1-alpha300.19
+rate-limit@1.1.2-alpha300.19
+email@3.0.0-alpha300.19
 
-meteor-base@1.5.2-alpha300.17
-ddp-common@1.4.1-alpha300.17
-webapp@2.0.0-alpha300.17
+meteor-base@1.5.2-alpha300.19
+ddp-common@1.4.1-alpha300.19
+webapp@2.0.0-alpha300.19
 
-mongo@2.0.0-alpha300.17
+mongo@2.0.0-alpha300.19
 
-reload@1.3.2-alpha300.17
-service-configuration@1.3.2-alpha300.17
-session@1.2.2-alpha300.17
-shell-server@0.6.0-alpha300.17
+reload@1.3.2-alpha300.19
+service-configuration@1.3.2-alpha300.19
+session@1.2.2-alpha300.19
+shell-server@0.6.0-alpha300.19
 
 dispatch:run-as-user
 ostrio:cookies
@@ -51,23 +51,23 @@ kadira:flow-router
 
 meteorhacks:inject-initial
 
-routepolicy@1.1.2-alpha300.17
+routepolicy@1.1.2-alpha300.19
 
-webapp-hashing@1.1.2-alpha300.17
-facts-base@1.0.2-alpha300.17
+webapp-hashing@1.1.2-alpha300.19
+facts-base@1.0.2-alpha300.19
 
-tracker@1.3.3-alpha300.17
-reactive-dict@1.3.2-alpha300.17
-reactive-var@1.0.13-alpha300.17
+tracker@1.3.3-alpha300.19
+reactive-dict@1.3.2-alpha300.19
+reactive-var@1.0.13-alpha300.19
 
-babel-compiler@7.11.0-alpha300.17
-standard-minifier-js@3.0.0-alpha300.17
-standard-minifier-css@1.9.3-alpha300.17
-dynamic-import@0.7.4-alpha300.17
-ecmascript@0.16.8-alpha300.17
-typescript@4.9.5-alpha300.17
+babel-compiler@7.11.0-alpha300.19
+standard-minifier-js@3.0.0-alpha300.19
+standard-minifier-css@1.9.3-alpha300.19
+dynamic-import@0.7.4-alpha300.19
+ecmascript@0.16.8-alpha300.19
+typescript@4.9.5-alpha300.19
 
-autoupdate@2.0.0-alpha300.17
+autoupdate@2.0.0-alpha300.19
 
 # photoswipe
 
