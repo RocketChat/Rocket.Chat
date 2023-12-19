@@ -35,7 +35,6 @@ type RoomSettings = {
 	reactWhenReadOnly: boolean;
 	systemMessages: MessageTypesValues[];
 	default: boolean;
-	joinCodeRequired: boolean;
 	joinCode: string;
 	streamingOptions: NonNullable<IRoom['streamingOptions']>;
 	retentionEnabled: boolean;
@@ -349,7 +348,6 @@ const fields: (keyof RoomSettings)[] = [
 	'reactWhenReadOnly',
 	'systemMessages',
 	'default',
-	'joinCodeRequired',
 	'joinCode',
 	'streamingOptions',
 	'retentionEnabled',
