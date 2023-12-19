@@ -23,7 +23,7 @@ export class AccountImpl
 		uid: string | undefined;
 		user: {
 			id: string;
-			username: string;
+			username?: string;
 			token?: string;
 			tokenExpires?: Date;
 		};
@@ -32,7 +32,7 @@ export class AccountImpl
 {
 	uid?: string;
 
-	user?: { id: string; username: string; token?: string; tokenExpires?: Date };
+	user?: { id: string; username?: string; token?: string; tokenExpires?: Date };
 
 	constructor(private readonly client: ClientStream) {
 		super();
@@ -60,8 +60,24 @@ export class AccountImpl
 		});
 	}
 
+	private saveCredentials(id: string, token: string, tokenExpires: string) {
+		this.user = {
+			...this.user,
+			token,
+			tokenExpires: new Date(tokenExpires),
+			id,
+		};
+		this.uid = id;
+		this.emit('uid', this.uid);
+		this.emit('user', this.user);
+	}
+
 	async loginWithPassword(username: string, password: string): Promise<void> {
-		const { uid } = await this.client.callAsyncWithOptions(
+		const {
+			id,
+			token: resultToken,
+			tokenExpires: { $date },
+		} = await this.client.callAsyncWithOptions(
 			'login',
 			{
 				wait: true,
@@ -71,8 +87,8 @@ export class AccountImpl
 				password: { digest: password, algorithm: 'sha-256' },
 			},
 		);
-		this.uid = uid;
-		this.emit('uid', this.uid);
+
+		this.saveCredentials(id, resultToken, $date);
 	}
 
 	async loginWithToken(token: string) {
@@ -86,8 +102,12 @@ export class AccountImpl
 			},
 		);
 
-		this.uid = result.id;
-		this.emit('uid', this.uid);
+		const {
+			id,
+			token: resultToken,
+			tokenExpires: { $date },
+		} = result;
+		this.saveCredentials(id, resultToken, $date);
 
 		return result;
 	}
