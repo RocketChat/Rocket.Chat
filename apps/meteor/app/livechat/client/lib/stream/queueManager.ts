@@ -2,6 +2,7 @@ import type { ILivechatDepartment, ILivechatInquiryRecord, IOmnichannelAgent } f
 
 import { queryClient } from '../../../../../client/lib/queryClient';
 import { callWithErrorHandling } from '../../../../../client/lib/utils/callWithErrorHandling';
+import { settings } from '../../../../settings/client';
 import { sdk } from '../../../../utils/client/lib/SDKClient';
 import { LivechatInquiry } from '../../collections/LivechatInquiry';
 
@@ -38,9 +39,10 @@ const removeInquiry = async (inquiry: ILivechatInquiryRecord) => {
 	return queryClient.invalidateQueries(['rooms', { reference: inquiry.rid, type: 'l' }]);
 };
 
-const getInquiriesFromAPI = async (maxInquiries: number) => {
+const getInquiriesFromAPI = async () => {
+	const count = settings.get('Livechat_guest_pool_max_number_incoming_livechats_displayed') ?? 0;
 	const { inquiries } = await sdk.rest.get('/v1/livechat/inquiries.queuedForUser', {
-		count: maxInquiries,
+		count,
 	});
 	return inquiries;
 };
@@ -87,7 +89,7 @@ const addGlobalListener = () => {
 	return removeGlobalListener;
 };
 
-const subscribe = async (userId: IOmnichannelAgent['_id'], maxInquiries: number) => {
+const subscribe = async (userId: IOmnichannelAgent['_id']) => {
 	const config = await callWithErrorHandling('livechat:getRoutingConfig');
 	if (config?.autoAssignAgent) {
 		return;
@@ -98,9 +100,12 @@ const subscribe = async (userId: IOmnichannelAgent['_id'], maxInquiries: number)
 	// Register to all depts + public queue always to match the inquiry list returned by backend
 	const cleanDepartmentListeners = addListenerForeachDepartment(agentDepartments);
 	const globalCleanup = addGlobalListener();
-	const inquiriesFromAPI = (await getInquiriesFromAPI(maxInquiries)) as unknown as ILivechatInquiryRecord[];
 
-	await updateInquiries(inquiriesFromAPI);
+	const computation = Tracker.autorun(async () => {
+		const inquiriesFromAPI = (await getInquiriesFromAPI()) as unknown as ILivechatInquiryRecord[];
+
+		await updateInquiries(inquiriesFromAPI);
+	});
 
 	return () => {
 		LivechatInquiry.remove({});
@@ -108,6 +113,7 @@ const subscribe = async (userId: IOmnichannelAgent['_id'], maxInquiries: number)
 		cleanDepartmentListeners?.();
 		globalCleanup?.();
 		departments.clear();
+		computation.stop();
 	};
 };
 
