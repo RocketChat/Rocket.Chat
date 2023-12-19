@@ -349,7 +349,7 @@
 		"imap": "^0.8.19",
 		"ip-range-check": "^0.2.0",
 		"is-svg": "^4.3.2",
-		"isolated-vm": "4.4.2",
+		"isolated-vm": "^4.6.0",
 		"jquery": "^3.6.0",
 		"jschardet": "^3.0.0",
 		"jsdom": "^16.7.0",
