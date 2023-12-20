@@ -1,23 +1,20 @@
-import { api, Team } from '@rocket.chat/core-services';
-import type { IUser, IRoom, ITeam } from '@rocket.chat/core-typings';
+import { api, Team, MeteorError } from '@rocket.chat/core-services';
+import type { IMessage, IUser, IRoom } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../lib/callbacks';
-import { i18n } from '../../../server/lib/i18n';
-import { settings } from '../../settings/server';
-import MentionsServer from './Mentions';
+import { MentionsServer } from '../../../../app/mentions/server/Mentions';
+import { settings } from '../../../../app/settings/server';
+import { i18n } from '../../../lib/i18n';
 
-export class MentionQueries {
-	async getUsers(
-		usernames: string[],
-	): Promise<((Pick<IUser, '_id' | 'username' | 'name'> & { type: 'user' }) | (Pick<ITeam, '_id' | 'name'> & { type: 'team' }))[]> {
+class MentionQueries {
+	async getUsers(usernames: string[]): Promise<{ type: 'team' | 'user'; _id: string; username?: string; name?: string }[]> {
 		const uniqueUsernames = [...new Set(usernames)];
+
 		const teams = await Team.listByNames(uniqueUsernames, { projection: { name: 1 } });
 
-		const users = await Users.find(
+		const users = await Users.find<Pick<IUser, '_id' | 'username' | 'name'>>(
 			{ username: { $in: uniqueUsernames } },
-			{ projection: { _id: true, username: true, name: 1 } },
+			{ projection: { _id: 1, username: 1, name: 1 } },
 		).toArray();
 
 		const taggedUsers = users.map((user) => ({
@@ -65,27 +62,26 @@ export class MentionQueries {
 
 const queries = new MentionQueries();
 
-const mention = new MentionsServer({
+export const mentionServer = new MentionsServer({
 	pattern: () => settings.get<string>('UTF8_User_Names_Validation'),
 	messageMaxAll: () => settings.get<number>('Message_MaxAll'),
 	getUsers: async (usernames: string[]) => queries.getUsers(usernames),
 	getUser: async (userId: string) => queries.getUser(userId),
 	getTotalChannelMembers: (rid: string) => queries.getTotalChannelMembers(rid),
 	getChannels: (channels: string[]) => queries.getChannels(channels),
-	async onMaxRoomMembersExceeded({ sender, rid }: { sender: IUser; rid: string }) {
+	async onMaxRoomMembersExceeded({ sender, rid }: { sender: IMessage['u']; rid: string }): Promise<void> {
 		// Get the language of the user for the error notification.
-		const { language } = await this.getUser(sender._id);
-		const msg = i18n.t('Group_mentions_disabled_x_members', { total: this.messageMaxAll, lng: language });
+		const { language } = (await this.getUser(sender._id)) || {};
+		const msg = i18n.t('Group_mentions_disabled_x_members', { total: this.messageMaxAll(), lng: language });
 
 		void api.broadcast('notify.ephemeralMessage', sender._id, rid, {
 			msg,
 		});
 
 		// Also throw to stop propagation of 'sendMessage'.
-		throw new Meteor.Error('error-action-not-allowed', msg, {
+		throw new MeteorError('error-action-not-allowed', msg, {
 			method: 'filterATAllTag',
 			action: msg,
 		});
 	},
 });
-callbacks.add('beforeSaveMessage', async (message) => mention.execute(message), callbacks.priority.HIGH, 'mentions');
