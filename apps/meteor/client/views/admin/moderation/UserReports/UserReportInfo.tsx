@@ -1,4 +1,3 @@
-import type { IUser, UserReport, Serialized } from '@rocket.chat/core-typings';
 import {
 	Box,
 	Callout,
@@ -55,46 +54,6 @@ const UserReportInfo = ({ userId }: { userId: string }) => {
 		return report.user.emails.map((email) => email.address);
 	}, [report]);
 
-	const renderUserDetails = (user: Serialized<IUser>) => {
-		return (
-			<FieldGroup>
-				<Field>{userProfile}</Field>
-				<Field>
-					<FieldLabel>{t('Roles')}</FieldLabel>
-					<FieldRow justifyContent='flex-start' spacing={1}>
-						{user.roles.map((role, index) => (
-							<UserCard.Role key={index}>{role}</UserCard.Role>
-						))}
-					</FieldRow>
-				</Field>
-				<Field>
-					<FieldLabel>{t('Email')}</FieldLabel>
-					<FieldRow>{userEmails.join(', ')}</FieldRow>
-				</Field>
-				<Field>
-					<FieldLabel>{t('Created_at')}</FieldLabel>
-					<FieldRow>{formatDateAndTime(user.createdAt)}</FieldRow>
-				</Field>
-			</FieldGroup>
-		);
-	};
-
-	const renderDeletedUserWarning = () => {
-		return (
-			<Box>
-				<Callout mbs={8} type='warning' icon='warning'>
-					{t('Moderation_User_deleted_warning')}
-				</Callout>
-			</Box>
-		);
-	};
-
-	const renderUserReports = (reports: Serialized<Omit<UserReport, 'moderationInfo'>[]>) => {
-		return reports.map((report, ind) => (
-			<ReportReason key={ind} ind={ind + 1} uinfo={report.reportedBy?.username} msg={report.description} ts={new Date(report.ts)} />
-		));
-	};
-
 	if (isError) {
 		return (
 			<Box display='flex' flexDirection='column' alignItems='center' pb={20} color='default'>
@@ -113,8 +72,34 @@ const UserReportInfo = ({ userId }: { userId: string }) => {
 				{isLoading && <ContextualbarSkeleton />}
 				{isSuccess && report.reports.length > 0 && (
 					<>
-						{report.user ? renderUserDetails(report.user) : renderDeletedUserWarning()}
-						{renderUserReports(report.reports)}
+						{report.user ? (
+							<FieldGroup>
+								<Field>{userProfile}</Field>
+								<Field>
+									<FieldLabel>{t('Roles')}</FieldLabel>
+									<FieldRow justifyContent='flex-start' spacing={1}>
+										{report.user.roles.map((role, index) => (
+											<UserCard.Role key={index}>{role}</UserCard.Role>
+										))}
+									</FieldRow>
+								</Field>
+								<Field>
+									<FieldLabel>{t('Email')}</FieldLabel>
+									<FieldRow>{userEmails.join(', ')}</FieldRow>
+								</Field>
+								<Field>
+									<FieldLabel>{t('Created_at')}</FieldLabel>
+									<FieldRow>{formatDateAndTime(report.user.createdAt)}</FieldRow>
+								</Field>
+							</FieldGroup>
+						) : (
+							<Callout mbs={8} type='warning' icon='warning'>
+								{t('Moderation_User_deleted_warning')}
+							</Callout>
+						)}
+						{report.reports.map((report, ind) => (
+							<ReportReason key={ind} ind={ind + 1} uinfo={report.reportedBy?.username} msg={report.description} ts={new Date(report.ts)} />
+						))}
 					</>
 				)}
 				{isSuccess && report.reports.length === 0 && <GenericNoResults title={t('No_user_reports')} icon='user' />}
