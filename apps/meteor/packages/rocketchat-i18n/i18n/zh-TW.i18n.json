@@ -4520,7 +4520,7 @@
   "onboarding.component.form.action.pasteHere": "貼在這裡...",
   "onboarding.component.form.termsAndConditions": "我同意<1>條款及條件</1>和<3>隱私權政策</3>",
   "onboarding.component.emailCodeFallback": "沒有收到電子郵件？<1>重新傳送</1>或<3>變更電子郵件</3>",
-  "onboarding.page.form.title": "<1>啟動</1>您的工作空間吧！",
+  "onboarding.page.form.title": "啟動您的工作空間吧！",
   "onboarding.page.emailConfirmed.title": "電子郵件已確認！",
   "onboarding.page.emailConfirmed.subtitle": "您可以返回 Rocket.Chat 應用程式 – 我們已啟動您的工作空間。",
   "onboarding.page.checkYourEmail.title": "請查看您的電子郵件",
