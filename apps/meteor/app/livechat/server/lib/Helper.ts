@@ -231,7 +231,6 @@ export const createLivechatSubscription = async (
 
 	const { _id, username, token, status = UserStatus.ONLINE } = guest;
 
-	// @ts-expect-error - lr & ls should be optional
 	const subscriptionData: InsertionModel<ISubscription> = {
 		rid,
 		name,
@@ -259,7 +258,7 @@ export const createLivechatSubscription = async (
 		},
 		ts: new Date(),
 		...(department && { department }),
-	};
+	} as InsertionModel<ISubscription>;
 
 	return Subscriptions.insertOne(subscriptionData);
 };
