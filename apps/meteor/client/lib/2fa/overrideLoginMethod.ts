@@ -41,12 +41,3 @@ export const overrideLoginMethod = <TArgs extends any[]>(
 		});
 	});
 };
-
-export const with2FA = <TArgs extends any[]>(loginMethod: LoginMethod<TArgs>, loginMethodTOTP: LoginMethodWithTotp<TArgs>) => {
-	return function (...loginArgs: TArgs): void {
-		const args = loginArgs.slice(0, -1) as TArgs;
-		const callback = loginArgs.slice(-1)[0] as LoginCallback | undefined;
-
-		overrideLoginMethod(loginMethod, args, callback, loginMethodTOTP);
-	};
-};

@@ -2,19 +2,10 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
 import type { LoginCallback } from '../../lib/2fa/overrideLoginMethod';
-import { with2FA } from '../../lib/2fa/overrideLoginMethod';
-import { reportError } from '../../lib/2fa/utils';
 
 declare module 'meteor/meteor' {
 	// eslint-disable-next-line @typescript-eslint/no-namespace
 	namespace Meteor {
-		function loginWithCrowdAndTOTP(
-			userDescriptor: { username: string } | { email: string } | { id: string } | string,
-			password: string,
-			code: string,
-			callback?: LoginCallback,
-		): void;
-
 		function loginWithCrowd(
 			userDescriptor: { username: string } | { email: string } | { id: string } | string,
 			password: string,
@@ -23,12 +14,19 @@ declare module 'meteor/meteor' {
 	}
 }
 
-Meteor.loginWithCrowdAndTOTP = function (userDescriptor, password, code, callback) {
-	const loginRequest = {
-		crowd: true,
-		username: userDescriptor,
-		crowdPassword: password,
-	};
+const createLoginRequest = (userDescriptor: { username: string } | { email: string } | { id: string } | string, password: string) => ({
+	crowd: true,
+	username: userDescriptor,
+	crowdPassword: password,
+});
+
+const loginWithCrowdAndTOTP = (
+	userDescriptor: { username: string } | { email: string } | { id: string } | string,
+	password: string,
+	code: string,
+	callback?: LoginCallback,
+) => {
+	const loginRequest = createLoginRequest(userDescriptor, password);
 
 	Accounts.callLoginMethod({
 		methodArguments: [
@@ -39,25 +37,49 @@ Meteor.loginWithCrowdAndTOTP = function (userDescriptor, password, code, callbac
 				},
 			},
 		],
-		userCallback: (error) => {
+		userCallback(error) {
 			if (error) {
-				reportError(error, callback);
-				return;
+				if (callback) {
+					callback(error);
+					return;
+				}
+
+				throw error;
+			} else {
+				callback?.(undefined);
 			}
-			callback?.(undefined);
 		},
 	});
 };
 
-Meteor.loginWithCrowd = with2FA(function loginWithCrowd(userDescriptor, password, callback) {
-	const loginRequest = {
-		crowd: true,
-		username: userDescriptor,
-		crowdPassword: password,
-	};
+const loginWithCrowd = (
+	userDescriptor: { username: string } | { email: string } | { id: string } | string,
+	password: string,
+	callback?: LoginCallback,
+) => {
+	const loginRequest = createLoginRequest(userDescriptor, password);
 
 	Accounts.callLoginMethod({
 		methodArguments: [loginRequest],
-		userCallback: (error) => callback?.(error || null),
+		userCallback(error) {
+			if (error) {
+				if (callback) {
+					callback(error);
+					return;
+				}
+
+				throw error;
+			} else {
+				callback?.(undefined);
+			}
+		},
 	});
-}, Meteor.loginWithCrowdAndTOTP);
+};
+
+Meteor.loginWithCrowd = (userDescriptor, password, callback) => {
+	import('../../lib/2fa/overrideLoginMethod')
+		.then(({ overrideLoginMethod }) => {
+			overrideLoginMethod(loginWithCrowd, [userDescriptor, password], callback, loginWithCrowdAndTOTP);
+		})
+		.catch(callback);
+};

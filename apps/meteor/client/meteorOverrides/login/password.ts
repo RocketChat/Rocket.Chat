@@ -1,19 +1,11 @@
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
-import { with2FA, type LoginCallback } from '../../lib/2fa/overrideLoginMethod';
-import { reportError } from '../../lib/2fa/utils';
+import type { LoginCallback } from '../../lib/2fa/overrideLoginMethod';
 
 declare module 'meteor/meteor' {
 	// eslint-disable-next-line @typescript-eslint/no-namespace
 	namespace Meteor {
-		function loginWithPasswordAndTOTP(
-			userDescriptor: { username: string } | { email: string } | { id: string } | string,
-			password: string,
-			code: string,
-			callback?: LoginCallback,
-		): void;
-
 		function loginWithPassword(
 			userDescriptor: { username: string } | { email: string } | { id: string } | string,
 			password: string,
@@ -22,7 +14,12 @@ declare module 'meteor/meteor' {
 	}
 }
 
-Meteor.loginWithPasswordAndTOTP = function (userDescriptor, password, code, callback) {
+const loginWithPasswordAndTOTP = (
+	userDescriptor: { username: string } | { email: string } | { id: string } | string,
+	password: string,
+	code: string,
+	callback?: LoginCallback,
+) => {
 	if (typeof userDescriptor === 'string') {
 		if (userDescriptor.indexOf('@') === -1) {
 			userDescriptor = { username: userDescriptor };
@@ -45,7 +42,12 @@ Meteor.loginWithPasswordAndTOTP = function (userDescriptor, password, code, call
 		],
 		userCallback(error) {
 			if (error) {
-				reportError(error, callback);
+				if (callback) {
+					callback(error);
+					return;
+				}
+
+				throw error;
 			} else {
 				callback?.(undefined);
 			}
@@ -53,4 +55,16 @@ Meteor.loginWithPasswordAndTOTP = function (userDescriptor, password, code, call
 	});
 };
 
-Meteor.loginWithPassword = with2FA(Meteor.loginWithPassword, Meteor.loginWithPasswordAndTOTP);
+const { loginWithPassword } = Meteor;
+
+Meteor.loginWithPassword = (
+	userDescriptor: { username: string } | { email: string } | { id: string } | string,
+	password: string,
+	callback?: LoginCallback,
+) => {
+	import('../../lib/2fa/overrideLoginMethod')
+		.then(({ overrideLoginMethod }) => {
+			overrideLoginMethod(loginWithPassword, [userDescriptor, password], callback, loginWithPasswordAndTOTP);
+		})
+		.catch(callback);
+};

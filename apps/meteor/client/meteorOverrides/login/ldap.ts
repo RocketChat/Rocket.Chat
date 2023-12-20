@@ -2,19 +2,10 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
 import type { LoginCallback } from '../../lib/2fa/overrideLoginMethod';
-import { overrideLoginMethod } from '../../lib/2fa/overrideLoginMethod';
-import { reportError } from '../../lib/2fa/utils';
 
 declare module 'meteor/meteor' {
 	// eslint-disable-next-line @typescript-eslint/no-namespace
 	namespace Meteor {
-		function loginWithLDAPAndTOTP(
-			username: string | { username: string } | { email: string } | { id: string },
-			ldapPass: string,
-			code: string,
-			callback?: LoginCallback,
-		): void;
-
 		function loginWithLDAP(
 			username: string | { username: string } | { email: string } | { id: string },
 			ldapPass: string,
@@ -23,39 +14,17 @@ declare module 'meteor/meteor' {
 	}
 }
 
-Meteor.loginWithLDAP = function (username, password, callback) {
-	Accounts.callLoginMethod({
-		methodArguments: [
-			{
-				ldap: true,
-				username,
-				ldapPass: password,
-				ldapOptions: {},
-			},
-		],
-		userCallback: callback,
-	});
-};
-
-Meteor.loginWithLDAPAndTOTP = function (...args) {
-	// Pull username and password
-	const username = args.shift();
-	const ldapPass = args.shift();
-
-	// Check if last argument is a function. if it is, pop it off and set callback to it
-	const callback = typeof args[args.length - 1] === 'function' ? (args.pop() as LoginCallback) : undefined;
-	// The last argument before the callback is the totp code
-	const code = args.pop();
-
-	// if args still holds options item, grab it
-	const ldapOptions = args.length > 0 ? args.shift() : {};
-
-	// Set up loginRequest object
+const loginWithLDAPAndTOTP = (
+	username: string | { username: string } | { email: string } | { id: string },
+	ldapPass: string,
+	code: string,
+	callback?: LoginCallback,
+) => {
 	const loginRequest = {
 		ldap: true,
 		username,
 		ldapPass,
-		ldapOptions,
+		ldapOptions: {},
 	};
 
 	Accounts.callLoginMethod({
@@ -69,7 +38,12 @@ Meteor.loginWithLDAPAndTOTP = function (...args) {
 		],
 		userCallback(error) {
 			if (error) {
-				reportError(error, callback);
+				if (callback) {
+					callback(error);
+					return;
+				}
+
+				throw error;
 			} else {
 				callback?.(undefined);
 			}
@@ -77,10 +51,38 @@ Meteor.loginWithLDAPAndTOTP = function (...args) {
 	});
 };
 
-const { loginWithLDAP } = Meteor;
+const loginWithLDAP = (
+	username: string | { username: string } | { email: string } | { id: string },
+	ldapPass: string,
+	callback?: LoginCallback,
+) => {
+	Accounts.callLoginMethod({
+		methodArguments: [
+			{
+				ldap: true,
+				username,
+				ldapPass,
+				ldapOptions: {},
+			},
+		],
+		userCallback: callback,
+	});
+};
 
-Meteor.loginWithLDAP = function (...args) {
-	const callback = typeof args[args.length - 1] === 'function' ? (args.pop() as LoginCallback) : undefined;
-
-	overrideLoginMethod(loginWithLDAP, args as any, callback, Meteor.loginWithLDAPAndTOTP, args[0] as string | undefined);
+Meteor.loginWithLDAP = (
+	username: string | { username: string } | { email: string } | { id: string },
+	ldapPass: string,
+	callback?: LoginCallback,
+) => {
+	import('../../lib/2fa/overrideLoginMethod')
+		.then(({ overrideLoginMethod }) => {
+			overrideLoginMethod(
+				loginWithLDAP,
+				[username, ldapPass],
+				callback,
+				loginWithLDAPAndTOTP,
+				typeof username === 'string' ? username : undefined,
+			);
+		})
+		.catch(callback);
 };

@@ -15,15 +15,6 @@ export const isTotpInvalidError = (error: unknown): error is Meteor.Error & ({ e
 const isLoginCancelledError = (error: unknown): error is Meteor.Error =>
 	error instanceof Meteor.Error && error.error === Accounts.LoginCancelledError.numericError;
 
-export const reportError = <T>(error: T, callback?: (error?: T) => void): void => {
-	if (callback) {
-		callback(error);
-		return;
-	}
-
-	throw error;
-};
-
 export const convertError = <T>(error: T): Accounts.LoginCancelledError | T => {
 	if (isLoginCancelledError(error)) {
 		return new Accounts.LoginCancelledError(error.reason);

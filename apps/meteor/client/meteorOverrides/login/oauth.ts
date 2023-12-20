@@ -9,7 +9,8 @@ import { Linkedin } from 'meteor/pauli:linkedin-oauth';
 import { Twitter } from 'meteor/twitter-oauth';
 
 import { CustomOAuth } from '../../../app/custom-oauth/client/custom_oauth_client';
-import { overrideLoginMethod, with2FA } from '../../lib/2fa/overrideLoginMethod';
+import type { LoginCallback } from '../../lib/2fa/overrideLoginMethod';
+import { overrideLoginMethod } from '../../lib/2fa/overrideLoginMethod';
 import { process2faReturn } from '../../lib/2fa/process2faReturn';
 import { convertError } from '../../lib/2fa/utils';
 
@@ -194,5 +195,8 @@ CustomOAuth.prototype.configureLogin = function (...args) {
 
 	oldConfigureLogin.apply(this, args);
 
-	(Meteor as any)[loginWithService] = with2FA((Meteor as any)[loginWithService], loginWithOAuthTokenAndTOTP);
+	const loginWithOAuthToken = (Meteor as any)[loginWithService];
+	(Meteor as any)[loginWithService] = (options: Meteor.LoginWithExternalServiceOptions, callback: LoginCallback) => {
+		overrideLoginMethod(loginWithOAuthToken, [options], callback, loginWithOAuthTokenAndTOTP);
+	};
 };

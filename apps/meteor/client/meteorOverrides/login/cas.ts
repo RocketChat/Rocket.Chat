@@ -22,7 +22,5 @@ Meteor.loginWithCas = (_, callback) => {
 				userCallback: callback,
 			});
 		})
-		.catch((error) => {
-			callback?.(error);
-		});
+		.catch(callback);
 };

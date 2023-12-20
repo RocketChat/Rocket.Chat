@@ -3,7 +3,6 @@ import { Google } from 'meteor/google-oauth';
 import { Meteor } from 'meteor/meteor';
 
 import type { LoginCallback } from '../../lib/2fa/overrideLoginMethod';
-import { overrideLoginMethod } from '../../lib/2fa/overrideLoginMethod';
 
 declare module 'meteor/accounts-base' {
 	// eslint-disable-next-line @typescript-eslint/no-namespace
@@ -14,7 +13,7 @@ declare module 'meteor/accounts-base' {
 	}
 }
 
-function loginWithGoogleAndTOTP(
+const loginWithGoogleAndTOTP = (
 	options?:
 		| (Meteor.LoginWithExternalServiceOptions & {
 				loginUrlParameters?: {
@@ -25,7 +24,7 @@ function loginWithGoogleAndTOTP(
 		| null,
 	code?: string,
 	callback?: LoginCallback,
-) {
+) => {
 	if (Meteor.isCordova && Google.signIn) {
 		// After 20 April 2017, Google OAuth login will no longer work from
 		// a WebView, so Cordova apps must use Google Sign-In instead.
@@ -46,9 +45,14 @@ function loginWithGoogleAndTOTP(
 
 	const credentialRequestCompleteCallback = Accounts.oauth.credentialRequestCompleteHandler(callback, code);
 	Google.requestCredential(options, credentialRequestCompleteCallback);
-}
+};
 
 const { loginWithGoogle } = Meteor;
-Meteor.loginWithGoogle = function (options, cb) {
-	overrideLoginMethod(loginWithGoogle, [options], cb, loginWithGoogleAndTOTP);
+
+Meteor.loginWithGoogle = (options, callback) => {
+	import('../../lib/2fa/overrideLoginMethod')
+		.then(({ overrideLoginMethod }) => {
+			overrideLoginMethod(loginWithGoogle, [options], callback, loginWithGoogleAndTOTP);
+		})
+		.catch(callback);
 };
