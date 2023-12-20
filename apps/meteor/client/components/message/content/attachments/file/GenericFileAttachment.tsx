@@ -5,11 +5,10 @@ import {
 	MessageGenericPreviewIcon,
 	MessageGenericPreviewTitle,
 	MessageGenericPreviewDescription,
-	Button,
 } from '@rocket.chat/fuselage';
 import { useMediaUrl } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { getFileExtension } from '../../../../../../lib/utils/getFileExtension';
 import MarkdownText from '../../../../MarkdownText';
@@ -40,6 +39,12 @@ export const GenericFileAttachment: FC<MessageAttachmentBase> = ({
 		}
 	};
 
+	const [isDesktopAppAvailable, setIsDesktopAppAvailable] = useState<boolean>(!!window.RocketChatDesktop);
+
+	useEffect(() => {
+		setIsDesktopAppAvailable(!!window.RocketChatDesktop);
+	}, []);
+
 	return (
 		<>
 			{descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} />}
@@ -48,12 +53,12 @@ export const GenericFileAttachment: FC<MessageAttachmentBase> = ({
 					<MessageGenericPreviewContent
 						thumb={<MessageGenericPreviewIcon name='attachment-file' type={format || getFileExtension(title)} />}
 					>
-						{!desktopApp && (
+						{!isDesktopAppAvailable && (
 							<MessageGenericPreviewTitle externalUrl={hasDownload && link ? getURL(link) : undefined} data-qa-type='attachment-title-link'>
 								{title}
 							</MessageGenericPreviewTitle>
 						)}
-						{desktopApp && link && format === 'PDF' && (
+						{isDesktopAppAvailable && link && format === 'PDF' && (
 							<MessageGenericPreviewTitle
 								externalUrl={hasDownload && link ? `${getURL(link)}` : undefined}
 								onClick={handleOpenDocumentViewer}
@@ -62,7 +67,7 @@ export const GenericFileAttachment: FC<MessageAttachmentBase> = ({
 								{title}
 							</MessageGenericPreviewTitle>
 						)}
-						{desktopApp && format !== 'PDF' && (
+						{isDesktopAppAvailable && format !== 'PDF' && (
 							<MessageGenericPreviewTitle
 								externalUrl={hasDownload && link ? `${getURL(link)}?download` : undefined}
 								data-qa-type='attachment-title-link'
