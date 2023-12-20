@@ -4766,7 +4766,7 @@
   "onboarding.component.form.action.pasteHere": "ここに貼り付け...",
   "onboarding.component.form.termsAndConditions": "<1>使用</1>と<3>プライバシーポリシー</3>に同意します",
   "onboarding.component.emailCodeFallback": "メールを受け取っていませんか？</1>返信</1>または <3>メールを変更</3>してください",
-  "onboarding.page.form.title": "ワークスペースを<1>起動</1>しましょう",
+  "onboarding.page.form.title": "ワークスペースを起動しましょう",
   "onboarding.page.emailConfirmed.title": "メールを確認しました！",
   "onboarding.page.emailConfirmed.subtitle": "Rocket.Chatアプリケーションに戻ることができます。すでにワークスペースを起動しています。",
   "onboarding.page.checkYourEmail.title": "メールのチェック",
