@@ -1,4 +1,4 @@
-import { LivechatClientImpl } from '@rocket.chat/ddp-client';
+import { LivechatClientImpl, FetchError } from '@rocket.chat/ddp-client';
 import { parse } from 'query-string';
 
 const host =
@@ -11,8 +11,8 @@ Livechat.rest.use(async function (request, next) {
 	try {
 		return await next(...request);
 	} catch (error) {
-		if (error instanceof Response) {
-			const e = await error.json();
+		if (error instanceof FetchError) {
+			const e = await error.response.json();
 			throw e;
 		}
 
