@@ -1,9 +1,10 @@
 import './models/startup';
+import '../ee/server/models/startup';
+import './startup/broker';
 import './configureLogLevel';
 import './settings/index';
-import '../ee/server/models/startup';
-import './services/startup';
 import '../app/settings/server';
+import './services/startup';
 import '../lib/oauthRedirectUriServer';
 import './lib/logger/startup';
 import './importPackages';

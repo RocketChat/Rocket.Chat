@@ -34,6 +34,7 @@ export class Api implements IApiService {
 
 		if (this.broker) {
 			this.broker.createService(instance, serviceDependencies);
+			void instance.started();
 		}
 	}
 
