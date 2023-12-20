@@ -43,7 +43,7 @@ export const ReportCard = forwardRef<HTMLElement, ReportCardProps>(function Repo
 						</CardRow>
 					</CardCol>
 				</CardHeader>
-				<CardBody flexDirection='column' h='full'>
+				<CardBody flexDirection='column' height='full'>
 					<Box h='full' display='flex' flexDirection='column' justifyContent='center'>
 						<ReportCardContent
 							isLoading={isLoading}
