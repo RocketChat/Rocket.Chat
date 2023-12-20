@@ -67,6 +67,9 @@ export const metrics = {
 		name: 'rocketchat_messages_roundtrip_time_summary',
 		help: 'time spent by a message from save to receive back',
 		percentiles,
+		maxAgeSeconds: 60,
+		ageBuckets: 5,
+		// pruneAgedBuckets: true, // Type not added to prom-client on 14.2 https://github.com/siimon/prom-client/pull/558
 	}),
 
 	ddpSessions: new client.Gauge({
