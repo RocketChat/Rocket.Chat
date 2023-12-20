@@ -655,6 +655,8 @@ test.describe('OC - Livechat API', () => {
 
 			const watchForTrigger = page.waitForFunction(() => window.onOfflineFormSubmit === true);
 
+			await poLiveChat.page.reload();
+
 			await poLiveChat.page.evaluate(() =>
 				window.RocketChat.livechat.onOfflineFormSubmit(() => {
 					window.onOfflineFormSubmit = true;
