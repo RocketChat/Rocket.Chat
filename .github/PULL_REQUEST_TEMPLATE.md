@@ -22,15 +22,12 @@
 -->
 
 ## Proposed changes (including videos or screenshots)
-<!-- CHANGELOG -->
 <!--
   Describe the big picture of your changes here to communicate to the maintainers why we should accept this pull request.
   If it fixes a bug or resolves a feature request, be sure to link to that issue below.
   This description won't be displayed to our end users in the release notes, so feel free to add as much technical context as needed.
   If the changes introduced in this pull request must be presented in the release notes, make sure to add a changeset file. Check our guidelines for adding a changeset to your pull request: https://developer.rocket.chat/contribute-to-rocket.chat/modes-of-contribution/participate-in-rocket.chat-development/development-workflow#4.-adding-changeset-to-your-pull-request 
 -->
-
-<!-- END CHANGELOG -->
 
 ## Issue(s)
 <!-- Link the issues being closed by or related to this PR. For example, you can use #594 if this PR closes issue number 594 -->
