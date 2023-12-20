@@ -5265,7 +5265,7 @@
   "onboarding.component.form.action.pasteHere": "Wklej tutaj...",
   "onboarding.component.form.termsAndConditions": "Zgadzam się z <1>zasadami i warunkami</1> i <3>Polityką prywatności</3>.",
   "onboarding.component.emailCodeFallback": "Nie otrzymałeś emaila? <1>Wyślij ponownie</1> lub <3>Zmień e-mail</3>.",
-  "onboarding.page.form.title": "<1> Uruchom <1> swoją przestrzeń roboczą",
+  "onboarding.page.form.title": "Uruchom swoją przestrzeń roboczą",
   "onboarding.page.emailConfirmed.title": "Email potwierdzony!",
   "onboarding.page.emailConfirmed.subtitle": "Możesz wrócić do swojej aplikacji Rocket.Chat - uruchomiliśmy już Twój obszar roboczy.",
   "onboarding.page.checkYourEmail.title": "Sprawdź swój email",
