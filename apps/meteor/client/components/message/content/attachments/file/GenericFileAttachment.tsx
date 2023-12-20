@@ -54,9 +54,13 @@ export const GenericFileAttachment: FC<MessageAttachmentBase> = ({
 							</MessageGenericPreviewTitle>
 						)}
 						{desktopApp && link && format === 'PDF' && (
-							<Button onClick={handleOpenDocumentViewer} data-qa-type='attachment-title-link'>
+							<MessageGenericPreviewTitle
+								externalUrl={hasDownload && link ? `${getURL(link)}` : undefined}
+								onClick={handleOpenDocumentViewer}
+								data-qa-type='attachment-title-link'
+							>
 								{title}
-							</Button>
+							</MessageGenericPreviewTitle>
 						)}
 						{desktopApp && format !== 'PDF' && (
 							<MessageGenericPreviewTitle
