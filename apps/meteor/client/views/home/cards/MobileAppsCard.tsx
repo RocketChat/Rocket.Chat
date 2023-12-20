@@ -3,7 +3,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import React from 'react';
 
-import GenericCard from '../../../components/GenericCard';
+import { GenericCard, GenericCardButton } from '../../../components/GenericCard';
 import { useExternalLink } from '../../../hooks/useExternalLink';
 
 const GOOGLE_PLAY_URL = 'https://go.rocket.chat/i/hp-mobile-app-google';
@@ -18,8 +18,8 @@ const MobileAppsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): React
 			title={t('Mobile_apps')}
 			body={t('Take_rocket_chat_with_you_with_mobile_applications')}
 			buttons={[
-				{ onClick: () => handleOpenLink(GOOGLE_PLAY_URL), label: t('Google_Play'), role: 'link' },
-				{ onClick: () => handleOpenLink(APP_STORE_URL), label: t('App_Store'), role: 'link' },
+				<GenericCardButton key={1} onClick={() => handleOpenLink(GOOGLE_PLAY_URL)} children={t('Google_Play')} role='link' />,
+				<GenericCardButton key={2} onClick={() => handleOpenLink(APP_STORE_URL)} children={t('App_Store')} role='link' />,
 			]}
 			data-qa-id='homepage-mobile-apps-card'
 			width='x340'

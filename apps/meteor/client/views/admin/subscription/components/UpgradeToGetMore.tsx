@@ -2,7 +2,7 @@ import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, Button, ButtonGro
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import GenericCard from '../../../../components/GenericCard';
+import { GenericCard } from '../../../../components/GenericCard';
 import { useExternalLink } from '../../../../hooks/useExternalLink';
 import { PRICING_LINK } from '../utils/links';
 

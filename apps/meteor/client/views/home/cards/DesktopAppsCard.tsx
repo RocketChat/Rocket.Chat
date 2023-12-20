@@ -3,7 +3,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import React from 'react';
 
-import GenericCard from '../../../components/GenericCard';
+import { GenericCard, GenericCardButton } from '../../../components/GenericCard';
 import { useExternalLink } from '../../../hooks/useExternalLink';
 
 const WINDOWS_APP_URL = 'https://go.rocket.chat/i/hp-desktop-app-windows';
@@ -19,9 +19,9 @@ const DesktopAppsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): Reac
 			title={t('Desktop_apps')}
 			body={t('Install_rocket_chat_on_your_preferred_desktop_platform')}
 			buttons={[
-				{ onClick: () => handleOpenLink(WINDOWS_APP_URL), label: t('Platform_Windows'), role: 'link' },
-				{ onClick: () => handleOpenLink(LINUX_APP_URL), label: t('Platform_Linux'), role: 'link' },
-				{ onClick: () => handleOpenLink(MAC_APP_URL), label: t('Platform_Mac'), role: 'link' },
+				<GenericCardButton key={1} onClick={() => handleOpenLink(WINDOWS_APP_URL)} children={t('Platform_Windows')} role='link' />,
+				<GenericCardButton key={2} onClick={() => handleOpenLink(LINUX_APP_URL)} children={t('Platform_Linux')} role='link' />,
+				<GenericCardButton key={3} onClick={() => handleOpenLink(MAC_APP_URL)} children={t('Platform_Mac')} role='link' />,
 			]}
 			width='x340'
 			data-qa-id='homepage-desktop-apps-card'

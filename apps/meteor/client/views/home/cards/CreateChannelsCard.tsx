@@ -3,7 +3,7 @@ import { useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import React from 'react';
 
-import GenericCard from '../../../components/GenericCard';
+import { GenericCard, GenericCardButton } from '../../../components/GenericCard';
 import CreateChannelWithData from '../../../sidebar/header/CreateChannel';
 
 const CreateChannelsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): ReactElement => {
@@ -16,7 +16,7 @@ const CreateChannelsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): R
 		<GenericCard
 			title={t('Create_channels')}
 			body={t('Create_a_public_channel_that_new_workspace_members_can_join')}
-			buttons={[{ onClick: openCreateChannelModal, label: t('Create_channel') }]}
+			buttons={[<GenericCardButton key={1} onClick={openCreateChannelModal} children={t('Create_channel')} />]}
 			data-qa-id='homepage-create-channels-card'
 			width='x340'
 			{...props}
