@@ -592,7 +592,7 @@ test.describe('OC - Livechat API', () => {
 			});
 		});
 
-		test('OC - Livechat API - onPrechatFormSubmit, onAssignAgent & onAgentStatusChange', async () => {
+		test('OC - Livechat API - onPrechatFormSubmit & onAssignAgent', async () => {
 			const newVisitor = {
 				name: faker.person.firstName(),
 				email: faker.internet.email(),
@@ -643,6 +643,32 @@ test.describe('OC - Livechat API', () => {
 
 				await watchForTrigger;
 			});
+		});
+
+		test('onAgentStatusChange', async () => {
+			const newVisitor = {
+				name: faker.person.firstName(),
+				email: faker.internet.email(),
+			};
+
+			await poLiveChat.openLiveChat(false);
+			await poLiveChat.sendMessage(newVisitor, false);
+			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
+			await poLiveChat.btnSendMessageToOnlineAgent.click();
+				
+
+			const watchForTrigger = page.waitForFunction(() => window.onAgentStatusChange === true);
+
+			await poLiveChat.page.evaluate(() =>
+				window.RocketChat.livechat.onAgentStatusChange(() => {
+					window.onAgentStatusChange = true;
+				}),
+			);
+
+			await poAuxContext.poHomeOmnichannel.sidenav.openChat(newVisitor.name);
+			await poAuxContext.poHomeOmnichannel.sidenav.switchStatus('offline');
+
+			await watchForTrigger;
 		});
 
 		test('OC - Livechat API - onOfflineFormSubmit', async () => {
