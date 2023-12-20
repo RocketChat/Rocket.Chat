@@ -2,6 +2,7 @@ import type { IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import {
+	FieldError,
 	Field,
 	FieldRow,
 	FieldLabel,
@@ -97,7 +98,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 
 	const handleArchive = useArchiveRoom(room);
 
-	const handleUpdateRoomData = useMutableCallback(async ({ hideSysMes, ...formData }) => {
+	const handleUpdateRoomData = useMutableCallback(async ({ hideSysMes, joinCodeRequired, ...formData }) => {
 		const data = getDirtyFields(formData, dirtyFields);
 		delete data.archived;
 
@@ -169,7 +170,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 									render={({ field }) => <TextInput id={roomNameField} {...field} disabled={!canViewName} />}
 								/>
 							</FieldRow>
-							{errors.roomName && <Field.Error>{errors.roomName.message}</Field.Error>}
+							{errors.roomName && <FieldError>{errors.roomName.message}</FieldError>}
 						</Field>
 						{canViewDescription && (
 							<Field>
