@@ -240,8 +240,8 @@ export class RestClient implements RestClientInterface {
 			}
 
 			if (response.status !== 400) {
-				const responseObj = await response.json();
-				return Promise.reject(new FetchError(responseObj.message, response));
+				const error = await response.clone().json();
+				return Promise.reject(new FetchError(error.message, response));
 			}
 
 			const clone = response.clone();
@@ -269,8 +269,7 @@ export class RestClient implements RestClientInterface {
 				});
 			}
 
-			const responseObj = await response.json();
-			return Promise.reject(new FetchError(responseObj.message, response));
+			return Promise.reject(new FetchError(error.message, response));
 		});
 	}
 

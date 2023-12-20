@@ -1,4 +1,4 @@
-import { RestClient } from '@rocket.chat/api-client';
+import { RestClient, FetchError } from '@rocket.chat/api-client';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
@@ -41,8 +41,8 @@ APIClient.use(async (request, next) => {
 	try {
 		return await next(...request);
 	} catch (error) {
-		if (error instanceof Response) {
-			const e = await error.json();
+		if (error instanceof FetchError) {
+			const e = await error.response.json();
 			throw e;
 		}
 
