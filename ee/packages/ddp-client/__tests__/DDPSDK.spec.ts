@@ -211,7 +211,7 @@ describe('Method call and Disconnection cases', () => {
 
 		await handleConnection(server, sdk.connection.connect());
 
-		const [result] = await handleMethod(server, 'method', ['args1'], sdk.client.callAsync('method', 'args1'));
+		const [result] = await handleMethod(server, 'method', ['args1'], '1', sdk.client.callAsync('method', 'args1'));
 
 		expect(result).toBe(1);
 		// Fake timers are used to avoid waiting for the reconnect timeout
@@ -231,7 +231,7 @@ describe('Method call and Disconnection cases', () => {
 
 		await handleConnection(server, jest.advanceTimersByTimeAsync(1000), reconnect, connecting, connected);
 
-		const [result2] = await handleMethod(server, 'method', ['args2'], callResult);
+		const [result2] = await handleMethod(server, 'method', ['args2'], '1', callResult);
 
 		expect(util.inspect(callResult).includes('pending')).toBe(false);
 		expect(result2).toBe(1);
@@ -263,7 +263,7 @@ describe('Method call and Disconnection cases', () => {
 
 		expect(util.inspect(callResult).includes('pending')).toBe(true);
 
-		const [result] = await handleMethod(server, 'method', ['args2'], callResult);
+		const [result] = await handleMethod(server, 'method', ['args2'], '1', callResult);
 
 		expect(result).toBe(1);
 
