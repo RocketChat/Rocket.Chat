@@ -38,11 +38,6 @@ export class AccountImpl
 
 	constructor(private readonly client: ClientStream) {
 		super();
-		this.client.on('connected', () => {
-			if (this.user?.token) {
-				this.loginWithToken(this.user.token);
-			}
-		});
 
 		client.onCollection('users', (data) => {
 			if (data.collection !== 'users') {
