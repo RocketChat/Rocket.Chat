@@ -1,20 +1,25 @@
 import { exec } from 'child_process';
 import fs from 'fs';
+import https from 'https';
 import os from 'os';
 import path from 'path';
 import util from 'util';
-import https from 'https';
 
 const execAsync = util.promisify(exec);
 
 class VersionCompiler {
 	async processFilesForTarget(files) {
 		const processVersionFile = async function (file) {
-			const data = await new Promise((resolve, reject) => {
+			const data = await new Promise((resolve) => {
 				const currentVersion =
 					JSON.parse(fs.readFileSync(path.resolve(process.cwd(), './package.json'), { encoding: 'utf8' }))?.version || '';
 
-				const type = currentVersion.includes('-rc.') ? 'candidate' : currentVersion.includes('-develop') ? 'develop' : 'stable';
+				let type = 'stable';
+				if (currentVersion.includes('-rc.')) {
+					type = 'candidate';
+				} else if (currentVersion.includes('-develop')) {
+					type = 'develop';
+				}
 
 				const url = `https://releases.rocket.chat/v2/server/supportedVersions?includeDraftType=${type}&includeDraftTag=${currentVersion}`;
 
@@ -29,19 +34,19 @@ class VersionCompiler {
 				}
 
 				https
-					.get(url, function (response) {
+					.get(url, (response) => {
 						let data = '';
-						response.on('data', function (chunk) {
+						response.on('data', (chunk) => {
 							data += chunk;
 						});
-						response.on('end', function () {
+						response.on('end', () => {
 							const supportedVersions = JSON.parse(data);
 							if (!supportedVersions?.signed) {
 								return handleError(new Error(`Invalid supportedVersions result:\n  URL: ${url} \n  RESULT: ${data}`));
 							}
 							resolve(supportedVersions);
 						});
-						response.on('error', function (err) {
+						response.on('error', (err) => {
 							handleError(err);
 						});
 					})
@@ -55,7 +60,7 @@ class VersionCompiler {
 		};
 
 		const processFile = async function (file) {
-			let output = JSON.parse(file.getContentsAsString());
+			const output = JSON.parse(file.getContentsAsString());
 			output.build = {
 				date: new Date().toISOString(),
 				nodeVersion: process.version,

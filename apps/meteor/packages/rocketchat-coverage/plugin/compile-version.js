@@ -1,10 +1,6 @@
-import { exec } from 'child_process';
-import os from 'os';
-import util from 'util';
-
+import libCoverage from 'istanbul-lib-coverage';
 import libReport from 'istanbul-lib-report';
 import reports from 'istanbul-reports';
-import libCoverage from 'istanbul-lib-coverage';
 
 const dir = process.env.COVERAGE_DIR;
 const reporter = process.env.COVERAGE_REPORTER || 'lcov';
@@ -12,15 +8,10 @@ const reporter = process.env.COVERAGE_REPORTER || 'lcov';
 console.log('Coverage plugin started');
 
 if (!dir && !reporter) {
-	return console.log('Coverage plugin not configured');
-}
-
-if (!dir || !reporter) {
+	console.log('Coverage plugin not configured');
+} else if (!dir || !reporter) {
 	console.log('Coverage plugin not fully configured');
-	return;
-}
-
-process.on('exit', async () => {
+} else {
 	try {
 		if (!dir) {
 			throw new Error('No coverage dir');
@@ -30,8 +21,8 @@ process.on('exit', async () => {
 			throw new Error('No coverage reporter');
 		}
 		console.log('Coverage plugin triggered');
-
-		const coverageMap = libCoverage.createCoverageMap(globalThis['__coverage__']);
+		// eslint-disable-next-line no-undef
+		const coverageMap = libCoverage.createCoverageMap(globalThis.__coverage__);
 
 		const configWatermarks = {
 			statements: [50, 80],
@@ -43,6 +34,7 @@ process.on('exit', async () => {
 		const context = libReport.createContext({
 			dir,
 			coverageMap,
+			watermarks: configWatermarks,
 		});
 
 		const report = reports.create(reporter);
@@ -51,4 +43,4 @@ process.on('exit', async () => {
 	} catch (e) {
 		console.log('Error', e);
 	}
-});
+}
