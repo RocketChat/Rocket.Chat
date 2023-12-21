@@ -1,7 +1,7 @@
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
-import type { LoginCallback } from '../../lib/2fa/overrideLoginMethod';
+import { overrideLoginMethod, type LoginCallback } from '../../lib/2fa/overrideLoginMethod';
 
 declare module 'meteor/meteor' {
 	// eslint-disable-next-line @typescript-eslint/no-namespace
@@ -41,16 +41,17 @@ const loginWithPasswordAndTOTP = (
 			},
 		],
 		userCallback(error) {
-			if (error) {
-				if (callback) {
-					callback(error);
-					return;
-				}
-
-				throw error;
-			} else {
+			if (!error) {
 				callback?.(undefined);
+				return;
 			}
+
+			if (callback) {
+				callback(error);
+				return;
+			}
+
+			throw error;
 		},
 	});
 };
@@ -62,9 +63,5 @@ Meteor.loginWithPassword = (
 	password: string,
 	callback?: LoginCallback,
 ) => {
-	import('../../lib/2fa/overrideLoginMethod')
-		.then(({ overrideLoginMethod }) => {
-			overrideLoginMethod(loginWithPassword, [userDescriptor, password], callback, loginWithPasswordAndTOTP);
-		})
-		.catch(callback);
+	overrideLoginMethod(loginWithPassword, [userDescriptor, password], callback, loginWithPasswordAndTOTP);
 };

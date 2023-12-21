@@ -15,11 +15,16 @@ import('./polyfills')
 			import('./meteorOverrides/userAndUsers'),
 			import('./meteorOverrides/login/cas'),
 			import('./meteorOverrides/login/crowd'),
+			import('./meteorOverrides/login/facebook'),
+			import('./meteorOverrides/login/github'),
 			import('./meteorOverrides/login/google'),
 			import('./meteorOverrides/login/ldap'),
+			import('./meteorOverrides/login/linkedin'),
+			import('./meteorOverrides/login/meteorDeveloperAccount'),
 			import('./meteorOverrides/login/oauth'),
 			import('./meteorOverrides/login/password'),
 			import('./meteorOverrides/login/saml'),
+			import('./meteorOverrides/login/twitter'),
 		]),
 	)
 	.then(() => import('../ee/client/ecdh'))

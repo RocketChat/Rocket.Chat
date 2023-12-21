@@ -3,7 +3,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
-import type { LoginCallback } from '../../lib/2fa/overrideLoginMethod';
+import { type LoginCallback, callLoginMethod, handleLogin } from '../../lib/2fa/overrideLoginMethod';
 
 declare module 'meteor/meteor' {
 	// eslint-disable-next-line @typescript-eslint/no-namespace
@@ -83,8 +83,18 @@ Meteor.loginWithSaml = (options) => {
 	window.location.href = `_saml/authorize/${options.provider}/${options.credentialToken}`;
 };
 
-const loginWithSamlTokenAndTOTP = (credentialToken: string, code: string, callback?: LoginCallback) => {
-	Accounts.callLoginMethod({
+const loginWithSamlToken = (credentialToken: string) =>
+	callLoginMethod({
+		methodArguments: [
+			{
+				saml: true,
+				credentialToken,
+			},
+		],
+	});
+
+const loginWithSamlTokenAndTOTP = (credentialToken: string, code: string) =>
+	callLoginMethod({
 		methodArguments: [
 			{
 				totp: {
@@ -96,37 +106,6 @@ const loginWithSamlTokenAndTOTP = (credentialToken: string, code: string, callba
 				},
 			},
 		],
-		userCallback(error) {
-			if (error) {
-				if (callback) {
-					callback(error);
-					return;
-				}
-
-				throw error;
-			} else {
-				callback?.(undefined);
-			}
-		},
 	});
-};
 
-const loginWithSamlToken = (credentialToken: string, callback?: LoginCallback) => {
-	Accounts.callLoginMethod({
-		methodArguments: [
-			{
-				saml: true,
-				credentialToken,
-			},
-		],
-		userCallback: callback,
-	});
-};
-
-Meteor.loginWithSamlToken = (credentialToken, callback) => {
-	import('../../lib/2fa/overrideLoginMethod')
-		.then(({ overrideLoginMethod }) => {
-			overrideLoginMethod(loginWithSamlToken, [credentialToken], callback, loginWithSamlTokenAndTOTP);
-		})
-		.catch(callback);
-};
+Meteor.loginWithSamlToken = handleLogin(loginWithSamlToken, loginWithSamlTokenAndTOTP);

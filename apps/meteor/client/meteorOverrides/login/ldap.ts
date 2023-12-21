@@ -1,7 +1,6 @@
-import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
-import type { LoginCallback } from '../../lib/2fa/overrideLoginMethod';
+import { callLoginMethod, handleLogin, type LoginCallback } from '../../lib/2fa/overrideLoginMethod';
 
 declare module 'meteor/meteor' {
 	// eslint-disable-next-line @typescript-eslint/no-namespace
@@ -14,49 +13,8 @@ declare module 'meteor/meteor' {
 	}
 }
 
-const loginWithLDAPAndTOTP = (
-	username: string | { username: string } | { email: string } | { id: string },
-	ldapPass: string,
-	code: string,
-	callback?: LoginCallback,
-) => {
-	const loginRequest = {
-		ldap: true,
-		username,
-		ldapPass,
-		ldapOptions: {},
-	};
-
-	Accounts.callLoginMethod({
-		methodArguments: [
-			{
-				totp: {
-					login: loginRequest,
-					code,
-				},
-			},
-		],
-		userCallback(error) {
-			if (error) {
-				if (callback) {
-					callback(error);
-					return;
-				}
-
-				throw error;
-			} else {
-				callback?.(undefined);
-			}
-		},
-	});
-};
-
-const loginWithLDAP = (
-	username: string | { username: string } | { email: string } | { id: string },
-	ldapPass: string,
-	callback?: LoginCallback,
-) => {
-	Accounts.callLoginMethod({
+const loginWithLDAP = (username: string | { username: string } | { email: string } | { id: string }, ldapPass: string) =>
+	callLoginMethod({
 		methodArguments: [
 			{
 				ldap: true,
@@ -65,24 +23,30 @@ const loginWithLDAP = (
 				ldapOptions: {},
 			},
 		],
-		userCallback: callback,
+	});
+
+const loginWithLDAPAndTOTP = (
+	username: string | { username: string } | { email: string } | { id: string },
+	ldapPass: string,
+	code: string,
+) => {
+	const loginRequest = {
+		ldap: true,
+		username,
+		ldapPass,
+		ldapOptions: {},
+	};
+
+	return callLoginMethod({
+		methodArguments: [
+			{
+				totp: {
+					login: loginRequest,
+					code,
+				},
+			},
+		],
 	});
 };
 
-Meteor.loginWithLDAP = (
-	username: string | { username: string } | { email: string } | { id: string },
-	ldapPass: string,
-	callback?: LoginCallback,
-) => {
-	import('../../lib/2fa/overrideLoginMethod')
-		.then(({ overrideLoginMethod }) => {
-			overrideLoginMethod(
-				loginWithLDAP,
-				[username, ldapPass],
-				callback,
-				loginWithLDAPAndTOTP,
-				typeof username === 'string' ? username : undefined,
-			);
-		})
-		.catch(callback);
-};
+Meteor.loginWithLDAP = handleLogin(loginWithLDAP, loginWithLDAPAndTOTP);

@@ -2,7 +2,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Google } from 'meteor/google-oauth';
 import { Meteor } from 'meteor/meteor';
 
-import type { LoginCallback } from '../../lib/2fa/overrideLoginMethod';
+import { overrideLoginMethod, type LoginCallback } from '../../lib/2fa/overrideLoginMethod';
 
 declare module 'meteor/accounts-base' {
 	// eslint-disable-next-line @typescript-eslint/no-namespace
@@ -12,6 +12,25 @@ declare module 'meteor/accounts-base' {
 		};
 	}
 }
+
+declare module 'meteor/meteor' {
+	// eslint-disable-next-line @typescript-eslint/no-namespace
+	namespace Meteor {
+		function loginWithGoogle(
+			options?:
+				| (Meteor.LoginWithExternalServiceOptions & {
+						loginUrlParameters?: {
+							include_granted_scopes?: boolean;
+							hd?: string;
+						};
+				  })
+				| null,
+			callback?: LoginCallback,
+		): void;
+	}
+}
+
+const { loginWithGoogle } = Meteor;
 
 const loginWithGoogleAndTOTP = (
 	options?:
@@ -47,12 +66,6 @@ const loginWithGoogleAndTOTP = (
 	Google.requestCredential(options, credentialRequestCompleteCallback);
 };
 
-const { loginWithGoogle } = Meteor;
-
 Meteor.loginWithGoogle = (options, callback) => {
-	import('../../lib/2fa/overrideLoginMethod')
-		.then(({ overrideLoginMethod }) => {
-			overrideLoginMethod(loginWithGoogle, [options], callback, loginWithGoogleAndTOTP);
-		})
-		.catch(callback);
+	overrideLoginMethod(loginWithGoogle, [options], callback, loginWithGoogleAndTOTP);
 };

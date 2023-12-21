@@ -1,5 +1,4 @@
-import { Accounts } from 'meteor/accounts-base';
-import { Meteor } from 'meteor/meteor';
+import type { Meteor } from 'meteor/meteor';
 
 export const isTotpRequiredError = (
 	error: unknown,
@@ -11,14 +10,3 @@ export const isTotpRequiredError = (
 export const isTotpInvalidError = (error: unknown): error is Meteor.Error & ({ error: 'totp-invalid' } | { errorType: 'totp-invalid' }) =>
 	(error as { error?: unknown } | undefined)?.error === 'totp-invalid' ||
 	(error as { errorType?: unknown } | undefined)?.errorType === 'totp-invalid';
-
-const isLoginCancelledError = (error: unknown): error is Meteor.Error =>
-	error instanceof Meteor.Error && error.error === Accounts.LoginCancelledError.numericError;
-
-export const convertError = <T>(error: T): Accounts.LoginCancelledError | T => {
-	if (isLoginCancelledError(error)) {
-		return new Accounts.LoginCancelledError(error.reason);
-	}
-
-	return error;
-};
