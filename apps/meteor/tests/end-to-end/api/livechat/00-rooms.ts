@@ -743,9 +743,11 @@ describe('LIVECHAT - rooms', function () {
 				fallbackForwardDepartment: forwardToDepartment._id,
 			});
 
+			console.log(JSON.stringify({ forwardToDepartment1, forwardToDepartment, initialDepartment }, null, 2));
 			const newVisitor = await createVisitor(initialDepartment._id);
 			const newRoom = await createLivechatRoom(newVisitor.token);
 
+			console.log(JSON.stringify({ newRoom, newVisitor }, null, 2));
 			await request
 				.post(api('livechat/room.forward'))
 				.set(credentials)
@@ -758,6 +760,7 @@ describe('LIVECHAT - rooms', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res: Response) => {
+					console.log({ res: res.body });
 					expect(res.body).to.have.property('success', true);
 				});
 
@@ -765,6 +768,8 @@ describe('LIVECHAT - rooms', function () {
 
 			expect(latestRoom).to.have.property('departmentId');
 			expect(latestRoom.departmentId).to.be.equal(forwardToDepartment._id);
+
+			console.log({ latestRoom: JSON.stringify(latestRoom, null, 2) });
 
 			expect(latestRoom).to.have.property('lastMessage');
 			expect(latestRoom.lastMessage?.t).to.be.equal('livechat_transfer_history');
