@@ -969,7 +969,6 @@
   "Email_Notification_Mode": "离线电子邮件通知",
   "Email_Notification_Mode_All": "Every Everytion / DM",
   "Email_Notification_Mode_Disabled": "残",
-  "Enterprise": "企业",
   "Email_or_username": "电子邮件或用户名",
   "Email_Placeholder": "请输入您的电子邮件地址...",
   "Email_Placeholder_any": "请输入电子邮件地址...",
@@ -2773,5 +2772,6 @@
   "registration.component.form.invalidConfirmPass": "第二次密码输入与第一次不匹配",
   "registration.component.form.confirmPassword": "确认密码",
   "registration.component.form.sendConfirmationEmail": "已发送确认电子邮件",
+  "Enterprise": "企业",
   "UpgradeToGetMore_engagement-dashboard_Title": "分析"
 }

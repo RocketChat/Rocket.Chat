@@ -1,14 +1,11 @@
-import type { LicenseModule } from '@rocket.chat/license';
-import { useMethod, useUserId } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import type { LicenseModule } from '@rocket.chat/core-typings';
+
+import { useLicenseBase } from '../../../client/hooks/useLicense';
 
 export const useHasLicenseModule = (licenseName: LicenseModule): 'loading' | boolean => {
-	const method = useMethod('license:getModules');
-	const uid = useUserId();
-
-	const features = useQuery(['ee.features'], method, {
-		enabled: !!uid,
-	});
-
-	return features.data?.includes(licenseName) ?? 'loading';
+	return (
+		useLicenseBase({
+			select: (data) => data.license.activeModules.includes(licenseName),
+		}).data ?? 'loading'
+	);
 };

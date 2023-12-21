@@ -42,7 +42,7 @@ const Medium: VFC<MediumProps> = ({ icon, title = '', avatar, actions, href, bad
 				{badges && <Sidebar.Item.Badge>{badges}</Sidebar.Item.Badge>}
 				{menu && (
 					<Sidebar.Item.Menu {...handleMenuEvent}>
-						{menuVisibility ? menu() : <IconButton mini rcx-sidebar-item__menu icon='kebab' />}
+						{menuVisibility ? menu() : <IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-item__menu icon='kebab' />}
 					</Sidebar.Item.Menu>
 				)}
 			</Sidebar.Item.Content>

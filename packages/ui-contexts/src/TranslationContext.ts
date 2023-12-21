@@ -11,7 +11,7 @@ export type TranslationLanguage = {
 	key: string;
 };
 
-export type TranslationKey = keyof typeof keys;
+export type TranslationKey = keyof typeof keys | `app-${string}.${string}`;
 
 export type TranslationContextValue = {
 	languages: TranslationLanguage[];

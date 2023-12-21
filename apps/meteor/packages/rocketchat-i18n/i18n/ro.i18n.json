@@ -948,7 +948,6 @@
   "Email_Notification_Mode": "Notificări prin e-mail offline",
   "Email_Notification_Mode_All": "Toate mențiunile/Mesajele directe",
   "Email_Notification_Mode_Disabled": "Dezactivat",
-  "Enterprise": "Afacere",
   "Email_or_username": "Adresă de e-mail sau nume de utilizator",
   "Email_Placeholder": "Te rugam sa introduci adresa ta de email...",
   "Email_Placeholder_any": "Introduceți adrese de e-mail ...",
@@ -2753,5 +2752,6 @@
   "registration.component.form.invalidConfirmPass": "Confirmarea parolei nu se potrivește cu parola introdusă",
   "registration.component.form.confirmPassword": "Confirmați parola",
   "registration.component.form.sendConfirmationEmail": "Trimite email de confirmare",
+  "Enterprise": "Afacere",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analytics"
 }

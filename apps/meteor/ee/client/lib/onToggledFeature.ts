@@ -1,4 +1,4 @@
-import type { LicenseModule } from '@rocket.chat/license';
+import type { LicenseModule } from '@rocket.chat/core-typings';
 import { QueryObserver } from '@tanstack/react-query';
 
 import { queryClient } from '../../../client/lib/queryClient';

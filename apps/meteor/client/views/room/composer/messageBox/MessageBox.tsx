@@ -12,7 +12,7 @@ import {
 } from '@rocket.chat/ui-composer';
 import { useTranslation, useUserPreference, useLayout } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type { ReactElement, MouseEventHandler, FormEvent, KeyboardEventHandler, KeyboardEvent, Ref, ClipboardEventHandler } from 'react';
+import type { ReactElement, MouseEventHandler, FormEvent, KeyboardEventHandler, KeyboardEvent, ClipboardEventHandler } from 'react';
 import React, { memo, useRef, useReducer, useCallback } from 'react';
 import { useSubscription } from 'use-subscription';
 
@@ -128,7 +128,7 @@ const MessageBox = ({
 	const messageComposerRef = useRef<HTMLElement>(null);
 	const shadowRef = useRef(null);
 
-	const storageID = `${room._id}${tmid ? `-${tmid}` : ''}`;
+	const storageID = `messagebox_${room._id}${tmid ? `-${tmid}` : ''}`;
 
 	const callbackRef = useCallback(
 		(node: HTMLTextAreaElement) => {
@@ -381,7 +381,7 @@ const MessageBox = ({
 			<MessageComposer ref={messageComposerRef} variant={isEditing ? 'editing' : undefined}>
 				{isRecordingAudio && <AudioMessageRecorder rid={room._id} isMicrophoneDenied={isMicrophoneDenied} />}
 				<MessageComposerInput
-					ref={mergedRefs as unknown as Ref<HTMLInputElement>}
+					ref={mergedRefs}
 					aria-label={composerPlaceholder}
 					name='msg'
 					disabled={isRecording || !canSend}

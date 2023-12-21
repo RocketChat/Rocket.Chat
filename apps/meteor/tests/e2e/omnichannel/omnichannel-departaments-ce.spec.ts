@@ -8,7 +8,7 @@ import { test, expect } from '../utils/test';
 
 test.use({ storageState: Users.admin.state });
 
-test.describe.serial('omnichannel-departments', () => {
+test.describe.serial('OC - Manage Departments (CE)', () => {
 	test.skip(IS_EE, 'Community Edition Only');
 	let poOmnichannelDepartments: OmnichannelDepartments;
 
@@ -25,7 +25,7 @@ test.describe.serial('omnichannel-departments', () => {
 		await poOmnichannelDepartments.sidenav.linkDepartments.click();
 	});
 
-	test('CE departments', async () => {
+	test('OC - Manage Departments (CE) - Create department', async () => {
 		await test.step('expect create new department', async () => {
 			await poOmnichannelDepartments.headingButtonNew('Create department').click();
 			await poOmnichannelDepartments.btnEnabled.click();
@@ -37,6 +37,7 @@ test.describe.serial('omnichannel-departments', () => {
 			await poOmnichannelDepartments.inputSearch.fill(departmentName);
 			await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
 		});
+
 		await test.step('expect to not be possible adding a second department ', async () => {
 			await poOmnichannelDepartments.headingButtonNew('Create department').click();
 

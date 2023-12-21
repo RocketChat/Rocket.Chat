@@ -947,7 +947,6 @@
   "Email_Notification_Mode": "Offline Retpoŝto Sciigoj",
   "Email_Notification_Mode_All": "Ĉiu Mencio / DM",
   "Email_Notification_Mode_Disabled": "Malebligita",
-  "Enterprise": "Entrepreno",
   "Email_or_username": "Retpoŝtadreso aŭ uzantnomo",
   "Email_Placeholder": "Bonvolu eniri vian retpoŝtadreson ...",
   "Email_Placeholder_any": "Bonvolu eniri retpoŝtadresojn ...",
@@ -2759,5 +2758,6 @@
   "registration.component.form.invalidConfirmPass": "La konfirmilo de pasvorto ne kongruas kun pasvorto",
   "registration.component.form.confirmPassword": "Konfirmu vian pasvorton",
   "registration.component.form.sendConfirmationEmail": "Sendu konfirman retpoŝton",
+  "Enterprise": "Entrepreno",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analitiko"
 }

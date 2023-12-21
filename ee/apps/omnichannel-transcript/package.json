@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/omnichannel-transcript",
 	"private": true,
-	"version": "0.2.14",
+	"version": "0.3.0",
 	"description": "Rocket.Chat service",
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
@@ -15,17 +15,17 @@
 	],
 	"author": "Rocket.Chat",
 	"dependencies": {
-		"@react-pdf/renderer": "^3.1.12",
+		"@react-pdf/renderer": "^3.1.14",
 		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
-		"@rocket.chat/emitter": "next",
+		"@rocket.chat/emitter": "~0.31.25",
 		"@rocket.chat/logger": "workspace:^",
 		"@rocket.chat/model-typings": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/omnichannel-services": "workspace:^",
 		"@rocket.chat/pdf-worker": "workspace:^",
 		"@rocket.chat/tools": "workspace:^",
-		"@types/node": "^14.18.51",
+		"@types/node": "^14.18.63",
 		"ejson": "^2.2.3",
 		"emoji-toolkit": "^7.0.1",
 		"event-loop-stats": "^1.4.1",
@@ -33,7 +33,7 @@
 		"fibers": "^5.0.3",
 		"gc-stats": "^1.4.0",
 		"mem": "^8.1.1",
-		"moleculer": "^0.14.29",
+		"moleculer": "^0.14.31",
 		"moment-timezone": "^0.5.43",
 		"mongo-message-queue": "^1.0.0",
 		"mongodb": "^4.17.1",
@@ -44,11 +44,11 @@
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:^",
-		"@types/gc-stats": "^1",
-		"@types/polka": "^0.5.4",
+		"@types/gc-stats": "^1.4.2",
+		"@types/polka": "^0.5.6",
 		"eslint": "~8.45.0",
 		"ts-node": "^10.9.1",
-		"typescript": "~5.2.2"
+		"typescript": "~5.3.2"
 	},
 	"main": "./dist/ee/apps/omnichannel-transcript/src/service.js",
 	"files": [

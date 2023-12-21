@@ -13,9 +13,11 @@ import React, { useCallback, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { AppClientOrchestratorInstance } from '../../../ee/client/apps/orchestrator';
-import Page from '../../components/Page';
+import { Page, PageHeader, PageScrollableContent } from '../../components/Page';
 import { useAppsReload } from '../../contexts/hooks/useAppsReload';
-import { useFileInput } from '../../hooks/useFileInput';
+import { useExternalLink } from '../../hooks/useExternalLink';
+import { useSingleFileInput } from '../../hooks/useSingleFileInput';
+import { useCheckoutUrl } from '../admin/subscription/hooks/useCheckoutUrl';
 import AppPermissionsReviewModal from './AppPermissionsReviewModal';
 import AppUpdateModal from './AppUpdateModal';
 import AppInstallModal from './components/AppInstallModal/AppInstallModal';
@@ -49,12 +51,15 @@ function AppInstallPage() {
 
 	const appCountQuery = useAppsCountQuery('private');
 
+	const openExternalLink = useExternalLink();
+	const manageSubscriptionUrl = useCheckoutUrl()({ target: 'marketplace-app-install', action: 'Enable_unlimited_apps' });
+
 	const { control, setValue, watch } = useForm({ defaultValues: { url: queryUrl || '' } });
 	const { file, url } = watch();
 
 	const canSave = !!url || !!file?.name;
 
-	const [handleUploadButtonClick] = useFileInput((value) => setValue('file', value), 'app');
+	const [handleUploadButtonClick] = useSingleFileInput((value) => setValue('file', value), 'app');
 
 	const sendFile = async (permissionsGranted, appFile, appId) => {
 		let app;
@@ -169,7 +174,7 @@ function AppInstallPage() {
 				handleClose={cancelAction}
 				handleConfirm={() => uploadFile(appFile, manifest)}
 				handleEnableUnlimitedApps={() => {
-					router.navigate('/admin/subscription');
+					openExternalLink(manageSubscriptionUrl);
 					setModal(null);
 				}}
 			/>,
@@ -191,8 +196,8 @@ function AppInstallPage() {
 
 	return (
 		<Page flexDirection='column'>
-			<Page.Header title={t('App_Installation')} />
-			<Page.ScrollableContent>
+			<PageHeader title={t('App_Installation')} />
+			<PageScrollableContent>
 				<FieldGroup display='flex' flexDirection='column' alignSelf='center' maxWidth='x600' w='full'>
 					<Field>
 						<FieldLabel htmlFor={urlField}>{t('App_Url_to_Install_From')}</FieldLabel>
@@ -237,7 +242,7 @@ function AppInstallPage() {
 						</ButtonGroup>
 					</Field>
 				</FieldGroup>
-			</Page.ScrollableContent>
+			</PageScrollableContent>
 		</Page>
 	);
 }

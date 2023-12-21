@@ -9,9 +9,9 @@ const BannerEnterpriseTrialEnded = (): ReactElement => {
 	const isAdmin = usePermission('manage-apps');
 
 	const bannerLink = {
-		link: '/admin/subscription',
+		link: '/links/manage-subscription',
 		linkText: t('Upgrade_tab_upgrade_your_plan'),
-		linkTarget: '_self',
+		linkTarget: '_blank',
 	};
 
 	const cloudWorkspaceHadTrial = useSetting('Cloud_Workspace_Had_Trial') as boolean;

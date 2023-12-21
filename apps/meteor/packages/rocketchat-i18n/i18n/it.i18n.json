@@ -993,7 +993,6 @@
   "Email_Notification_Mode": "Notifiche email offline",
   "Email_Notification_Mode_All": "Ogni menzione/DM",
   "Email_Notification_Mode_Disabled": "Disabilitato",
-  "Enterprise": "impresa",
   "Email_or_username": "Email o nome utente",
   "Email_Placeholder": "Inserisci il tuo indirizzo email...",
   "Email_Placeholder_any": "Per favore inserisci gli indirizzi email ...",
@@ -2861,5 +2860,6 @@
   "registration.component.form.invalidConfirmPass": "La password di conferma non corrisponde con la password",
   "registration.component.form.confirmPassword": "Conferma la tua password",
   "registration.component.form.sendConfirmationEmail": "Invia email di conferma",
+  "Enterprise": "impresa",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analytics"
 }

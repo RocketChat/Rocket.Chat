@@ -1158,7 +1158,6 @@
   "Email_Notification_Mode": "ការជូនដំណឹងអ៊ីម៉ែលក្រៅបណ្តាញ",
   "Email_Notification_Mode_All": "ជារៀងរាល់រៀបរាប់ / ទឹកនោមផ្អែម",
   "Email_Notification_Mode_Disabled": "ជនពិការ",
-  "Enterprise": "សហគ្រាស",
   "Email_or_username": "អ៊ីមែល ឬឈ្មោះ​សម្ងាត់",
   "Email_Placeholder": "សូមបញ្ចូលអាសយដ្ឋានអ៊ីមែលរបស់អ្នក ...",
   "Email_Placeholder_any": "សូមបញ្ចូលអាសយដ្ឋានអ៊ីមែល ...",
@@ -3114,6 +3113,7 @@
   "registration.component.form.confirmPassword": "បញ្ជាក់​ពាក្យ​សម្ងាត់",
   "registration.component.form.sendConfirmationEmail": "ផ្ញើរអ៊ីម៉ែល​បញ្ជាក់",
   "onboarding.form.registerOfflineForm.title": "ចុះឈ្មោះដោយដៃ",
+  "Enterprise": "សហគ្រាស",
   "UpgradeToGetMore_engagement-dashboard_Title": "វិភាគ",
   "UpgradeToGetMore_auditing_Title": "សវនកម្មសារ"
 }

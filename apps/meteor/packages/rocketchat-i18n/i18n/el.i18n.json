@@ -954,7 +954,6 @@
   "Email_Notification_Mode": "Ειδοποιήσεις Email Εκτός Σύνδεσης",
   "Email_Notification_Mode_All": "Κάθε Μνεία/ΑΜ",
   "Email_Notification_Mode_Disabled": "Απενεργοποιημένο",
-  "Enterprise": "Επιχείρηση",
   "Email_or_username": "Email ή όνομα χρήστη",
   "Email_Placeholder": "Παρακαλούμε εισάγετε τη διεύθυνση ηλεκτρονικού ταχυδρομείου σας...",
   "Email_Placeholder_any": "Παρακαλούμε εισάγετε διευθύνσεις ηλεκτρονικού ταχυδρομείου...",
@@ -2767,5 +2766,6 @@
   "registration.component.form.invalidConfirmPass": "Η επιβεβαίωση κωδικού δεν ταιριάζει με τον αρχικό κωδικό",
   "registration.component.form.confirmPassword": "Επιβεβαιώστε τον κωδικό σας",
   "registration.component.form.sendConfirmationEmail": "Αποστολή email επιβεβαίωσης",
+  "Enterprise": "Επιχείρηση",
   "UpgradeToGetMore_engagement-dashboard_Title": "Αναλυτικά στοιχεία"
 }

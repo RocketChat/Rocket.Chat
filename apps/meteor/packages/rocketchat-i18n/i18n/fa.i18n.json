@@ -1186,7 +1186,6 @@
   "Email_Notification_Mode": "هشدارهای برون‌خط ایمیلی",
   "Email_Notification_Mode_All": "هر اشاره/DM",
   "Email_Notification_Mode_Disabled": "غیر فعال شد",
-  "Enterprise": "شرکت، پروژه",
   "Email_or_username": "ایمیل یا نام کاربری",
   "Email_Placeholder": "لطفا آدرس ایمیل خود را وارد کنید...",
   "Email_Placeholder_any": "لطفا آدرسهای ایمیل را وارد کنید ...",
@@ -3104,5 +3103,6 @@
   "registration.component.form.sendConfirmationEmail": "ارسال ایمیل تایید",
   "onboarding.form.registerOfflineForm.title": "ثبت دستی",
   "RegisterWorkspace_Features_Omnichannel_Title": "کانال همه‌کاره",
+  "Enterprise": "شرکت، پروژه",
   "UpgradeToGetMore_engagement-dashboard_Title": "تجزیه و تحلیل ترافیک"
 }

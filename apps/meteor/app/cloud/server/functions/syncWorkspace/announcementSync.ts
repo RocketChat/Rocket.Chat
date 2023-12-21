@@ -2,16 +2,14 @@ import { type Cloud, type Serialized } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { v, compile } from 'suretype';
 
-import { CloudWorkspaceAccessError } from '../../../../../lib/errors/CloudWorkspaceAccessError';
 import { CloudWorkspaceConnectionError } from '../../../../../lib/errors/CloudWorkspaceConnectionError';
 import { CloudWorkspaceRegistrationError } from '../../../../../lib/errors/CloudWorkspaceRegistrationError';
 import { SystemLogger } from '../../../../../server/lib/logger/system';
 import { settings } from '../../../../settings/server';
 import { buildWorkspaceRegistrationData } from '../buildRegistrationData';
-import { getWorkspaceAccessToken } from '../getWorkspaceAccessToken';
+import { CloudWorkspaceAccessTokenEmptyError, getWorkspaceAccessToken } from '../getWorkspaceAccessToken';
 import { retrieveRegistrationStatus } from '../retrieveRegistrationStatus';
 import { handleAnnouncementsOnWorkspaceSync, handleNpsOnWorkspaceSync } from './handleCommsSync';
-import { legacySyncWorkspace } from './legacySyncWorkspace';
 
 const workspaceCommPayloadSchema = v.object({
 	workspaceId: v.string().required(),
@@ -85,7 +83,7 @@ export async function announcementSync() {
 
 		const token = await getWorkspaceAccessToken(true);
 		if (!token) {
-			throw new CloudWorkspaceAccessError('Workspace does not have a valid access token');
+			throw new CloudWorkspaceAccessTokenEmptyError();
 		}
 
 		const workspaceRegistrationData = await buildWorkspaceRegistrationData(undefined);
@@ -105,12 +103,25 @@ export async function announcementSync() {
 
 		return true;
 	} catch (err) {
-		SystemLogger.error({
-			msg: 'Failed to sync with Rocket.Chat Cloud',
-			url: '/comms/workspace',
-			err,
-		});
+		switch (true) {
+			case err instanceof CloudWorkspaceConnectionError:
+			case err instanceof CloudWorkspaceRegistrationError:
+			case err instanceof CloudWorkspaceAccessTokenEmptyError: {
+				SystemLogger.info({
+					msg: 'Failed to sync with Rocket.Chat Cloud',
+					function: 'announcementSync',
+					err,
+				});
+				break;
+			}
+			default: {
+				SystemLogger.error({
+					msg: 'Error during workspace sync',
+					function: 'announcementSync',
+					err,
+				});
+			}
+		}
+		throw err;
 	}
-
-	await legacySyncWorkspace();
 }

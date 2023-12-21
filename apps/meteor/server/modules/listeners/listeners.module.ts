@@ -1,7 +1,7 @@
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { IServiceClass } from '@rocket.chat/core-services';
-import { EnterpriseSettings } from '@rocket.chat/core-services';
+import { EnterpriseSettings, listenToMessageSentEvent } from '@rocket.chat/core-services';
 import { UserStatus, isSettingColor, isSettingEnterprise } from '@rocket.chat/core-typings';
 import type { IUser, IRoom, VideoConference, ISetting, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
@@ -99,9 +99,10 @@ export class ListenersModule {
 			});
 		});
 
-		service.onEvent('user.deleted', ({ _id: userId }) => {
+		service.onEvent('user.deleted', ({ _id: userId }, data) => {
 			notifications.notifyLoggedInThisInstance('Users:Deleted', {
 				userId,
+				...data,
 			});
 		});
 
@@ -166,7 +167,7 @@ export class ListenersModule {
 			});
 		});
 
-		service.onEvent('watch.messages', ({ message }) => {
+		listenToMessageSentEvent(service, async (message) => {
 			if (!message.rid) {
 				return;
 			}

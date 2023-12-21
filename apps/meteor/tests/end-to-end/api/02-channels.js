@@ -61,6 +61,21 @@ describe('[Channels]', function () {
 			await deleteUser(guestUser);
 		});
 
+		it(`should fail when trying to use an existing room's name`, async () => {
+			await request
+				.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: 'general',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.nested.property('errorType', 'error-duplicate-channel-name');
+				});
+		});
+
 		it('should not add guest users to more rooms than defined in the license', async function () {
 			// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
 			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.

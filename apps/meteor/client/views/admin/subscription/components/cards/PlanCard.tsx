@@ -1,4 +1,4 @@
-import type { ILicenseV3 } from '@rocket.chat/license';
+import type { ILicenseV3 } from '@rocket.chat/core-typings';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -7,7 +7,6 @@ import PlanCardTrial from './PlanCard/PlanCardTrial';
 
 type LicenseLimits = {
 	activeUsers: { max: number; value?: number };
-	monthlyActiveContacts: { max: number; value?: number };
 };
 
 type PlanCardProps = {

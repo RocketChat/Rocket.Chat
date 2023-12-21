@@ -1,5 +1,215 @@
 # @rocket.chat/ui-contexts
 
+## 3.0.0
+
+### Patch Changes
+
+- 7da1edf866: Fixed an issue in the invite registration flow in which the user would not be automatically redirected to the homepage upon succesfully submiting the user registration form.
+- Updated dependencies [dea1fe9191]
+- Updated dependencies [c0ef13a0bf]
+- Updated dependencies [5b9d6883bf]
+- Updated dependencies [92613680b7]
+- Updated dependencies [ec1b2b9846]
+- Updated dependencies [a98f3ff303]
+- Updated dependencies [5f81a0f3cb]
+- Updated dependencies [dea1fe9191]
+  - @rocket.chat/core-typings@6.5.0
+  - @rocket.chat/rest-typings@6.5.0
+  - @rocket.chat/ddp-client@0.2.9
+
+## 3.0.0-rc.19
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.19
+- @rocket.chat/rest-typings@6.5.0-rc.19
+- @rocket.chat/ddp-client@0.2.9-rc.12
+
+## 3.0.0-rc.18
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.18
+- @rocket.chat/rest-typings@6.5.0-rc.18
+- @rocket.chat/ddp-client@0.2.9-rc.11
+
+## 3.0.0-rc.17
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.17
+- @rocket.chat/rest-typings@6.5.0-rc.17
+- @rocket.chat/ddp-client@0.2.9-rc.10
+
+## 3.0.0-rc.16
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.16
+- @rocket.chat/rest-typings@6.5.0-rc.16
+- @rocket.chat/ddp-client@0.2.9-rc.9
+
+## 3.0.0-rc.15
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.15
+- @rocket.chat/rest-typings@6.5.0-rc.15
+- @rocket.chat/ddp-client@0.2.9-rc.8
+
+## 3.0.0-rc.14
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.14
+- @rocket.chat/rest-typings@6.5.0-rc.14
+- @rocket.chat/ddp-client@0.2.9-rc.7
+
+## 3.0.0-rc.13
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.13
+- @rocket.chat/rest-typings@6.5.0-rc.13
+- @rocket.chat/ddp-client@0.2.9-rc.6
+
+## 3.0.0-rc.12
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.12
+- @rocket.chat/rest-typings@6.5.0-rc.12
+- @rocket.chat/ddp-client@0.2.9-rc.5
+
+## 3.0.0-rc.11
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.11
+- @rocket.chat/rest-typings@6.5.0-rc.11
+- @rocket.chat/ddp-client@0.2.9-rc.4
+
+## 3.0.0-rc.10
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.10
+- @rocket.chat/rest-typings@6.5.0-rc.10
+- @rocket.chat/ddp-client@0.2.9-rc.3
+
+## 3.0.0-rc.9
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.9
+- @rocket.chat/rest-typings@6.5.0-rc.9
+- @rocket.chat/ddp-client@0.2.9-rc.2
+
+## 3.0.0-rc.8
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.8
+- @rocket.chat/rest-typings@6.5.0-rc.8
+- @rocket.chat/ddp-client@0.2.9-rc.1
+
+## 3.0.0-rc.7
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.7
+- @rocket.chat/rest-typings@6.5.0-rc.7
+- @rocket.chat/ddp-client@0.2.6-rc.7
+
+## 3.0.0-rc.6
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.6
+- @rocket.chat/rest-typings@6.5.0-rc.6
+- @rocket.chat/ddp-client@0.2.6-rc.6
+
+## 3.0.0-rc.5
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.5
+- @rocket.chat/rest-typings@6.5.0-rc.5
+- @rocket.chat/ddp-client@0.2.6-rc.5
+
+## 3.0.0-rc.4
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.4
+- @rocket.chat/rest-typings@6.5.0-rc.4
+- @rocket.chat/ddp-client@0.2.6-rc.4
+
+## 3.0.0-rc.3
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.3
+- @rocket.chat/rest-typings@6.5.0-rc.3
+- @rocket.chat/ddp-client@0.2.6-rc.3
+
+## 3.0.0-rc.2
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.2
+- @rocket.chat/rest-typings@6.5.0-rc.2
+- @rocket.chat/ddp-client@0.2.6-rc.2
+
+## 3.0.0-rc.1
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.1
+- @rocket.chat/rest-typings@6.5.0-rc.1
+- @rocket.chat/ddp-client@0.2.6-rc.1
+
+## 3.0.0-rc.0
+
+### Patch Changes
+
+- 7da1edf866: Fixed an issue in the invite registration flow in which the user would not be automatically redirected to the homepage upon succesfully submiting the user registration form.
+- Updated dependencies [dea1fe9191]
+- Updated dependencies [c0ef13a0bf]
+- Updated dependencies [5b9d6883bf]
+- Updated dependencies [92613680b7]
+- Updated dependencies [ec1b2b9846]
+- Updated dependencies [a98f3ff303]
+- Updated dependencies [5f81a0f3cb]
+- Updated dependencies [dea1fe9191]
+  - @rocket.chat/core-typings@6.5.0-rc.0
+  - @rocket.chat/rest-typings@6.5.0-rc.0
+  - @rocket.chat/ddp-client@0.2.6-rc.0
+
+## 2.0.8
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.8
+- @rocket.chat/rest-typings@6.4.8
+- @rocket.chat/ddp-client@0.2.8
+
+## 2.0.7
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.7
+- @rocket.chat/rest-typings@6.4.7
+- @rocket.chat/ddp-client@0.2.7
+
+## 2.0.6
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.6
+- @rocket.chat/rest-typings@6.4.6
+- @rocket.chat/ddp-client@0.2.6
+
 ## 2.0.5
 
 ### Patch Changes

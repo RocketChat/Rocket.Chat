@@ -89,7 +89,10 @@ export class OTRRoom implements IOTRRoom {
 				if (!user) {
 					return;
 				}
-				await sdk.call('sendSystemMessages', this._roomId, user.username, otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH);
+				await sdk.rest.post('/v1/chat.otr', {
+					roomId: this._roomId,
+					type: otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH,
+				});
 				this.isFirstOTR = false;
 			}
 		} catch (e) {

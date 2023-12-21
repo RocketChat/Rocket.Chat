@@ -15,6 +15,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { validateEmail } from '../../../../lib/emailValidator';
+import { useInvalidateLicense } from '../../../hooks/useLicense';
 import { queryClient } from '../../../lib/queryClient';
 import { SetupWizardContext } from '../contexts/SetupWizardContext';
 import { useParameters } from '../hooks/useParameters';
@@ -38,6 +39,7 @@ const initialData: ContextType<typeof SetupWizardContext>['setupWizardData'] = {
 type HandleRegisterServer = (params: { email: string; resend?: boolean }) => Promise<void>;
 
 const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactElement => {
+	const invalidateLicenseQuery = useInvalidateLicense();
 	const t = useTranslation();
 	const [setupWizardData, setSetupWizardData] = useState<ContextType<typeof SetupWizardContext>['setupWizardData']>(initialData);
 	const [currentStep, setCurrentStep] = useStepRouting();
@@ -94,16 +96,24 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 		[registerUser, setForceLogin, defineUsername, dispatchSettings, loginWithPassword, dispatchToastMessage, t],
 	);
 
+	const saveAgreementData = useCallback(
+		async (agreement): Promise<void> => {
+			await dispatchSettings([
+				{
+					_id: 'Cloud_Service_Agree_PrivacyTerms',
+					value: agreement,
+				},
+			]);
+		},
+		[dispatchSettings],
+	);
+
 	const saveWorkspaceData = useCallback(async (): Promise<void> => {
 		const {
 			serverData: { updates, agreement },
 		} = setupWizardData;
 
 		await dispatchSettings([
-			{
-				_id: 'Statistics_reporting',
-				value: true,
-			},
 			{
 				_id: 'Register_Server',
 				value: true,
@@ -112,12 +122,9 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 				_id: 'Allow_Marketing_Emails',
 				value: updates,
 			},
-			{
-				_id: 'Cloud_Service_Agree_PrivacyTerms',
-				value: agreement,
-			},
 		]);
-	}, [dispatchSettings, setupWizardData]);
+		await saveAgreementData(agreement);
+	}, [dispatchSettings, saveAgreementData, setupWizardData]);
 
 	const saveOrganizationData = useCallback(
 		async (organizationData: ContextType<typeof SetupWizardContext>['setupWizardData']['organizationData']): Promise<void> => {
@@ -148,7 +155,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 	const registerServer: HandleRegisterServer = useMutableCallback(async ({ email, resend = false }): Promise<void> => {
 		try {
 			const { intentData } = await createRegistrationIntent({ resend, email });
-			queryClient.invalidateQueries(['licenses']);
+			invalidateLicenseQuery(100);
 			queryClient.invalidateQueries(['getRegistrationStatus']);
 
 			setSetupWizardData((prevState) => ({
@@ -182,6 +189,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 			registerAdminUser,
 			validateEmail: _validateEmail,
 			registerServer,
+			saveAgreementData,
 			saveWorkspaceData,
 			saveOrganizationData,
 			completeSetupWizard,
@@ -199,6 +207,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 			registerAdminUser,
 			_validateEmail,
 			registerServer,
+			saveAgreementData,
 			saveWorkspaceData,
 			saveOrganizationData,
 			completeSetupWizard,

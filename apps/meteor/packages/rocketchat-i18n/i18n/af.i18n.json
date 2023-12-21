@@ -947,7 +947,6 @@
   "Email_Notification_Mode": "Vanlyn e-pos kennisgewings",
   "Email_Notification_Mode_All": "Elke noem / DM",
   "Email_Notification_Mode_Disabled": "gestremde",
-  "Enterprise": "onderneming",
   "Email_or_username": "E-pos of gebruikersnaam",
   "Email_Placeholder": "Voer asseblief jou e-posadres in...",
   "Email_Placeholder_any": "Voer asseblief e-posadresse in ...",
@@ -2758,5 +2757,6 @@
   "registration.component.form.invalidConfirmPass": "Die wagwoord bevestiging pas nie by die wagwoord nie",
   "registration.component.form.confirmPassword": "Bevestig jou wagwoord",
   "registration.component.form.sendConfirmationEmail": "Stuur bevestiging e-pos",
+  "Enterprise": "onderneming",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analytics"
 }

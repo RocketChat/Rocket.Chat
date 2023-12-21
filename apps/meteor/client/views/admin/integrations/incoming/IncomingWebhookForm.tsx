@@ -139,16 +139,14 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 				<AccordionItem title={t('Settings')} defaultExpanded>
 					<FieldGroup>
 						<Field>
-							<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+							<FieldRow>
 								<FieldLabel htmlFor={enabledField}>{t('Enabled')}</FieldLabel>
-								<FieldRow>
-									<Controller
-										name='enabled'
-										control={control}
-										render={({ field: { value, ...field } }) => <ToggleSwitch id={enabledField} {...field} checked={value} />}
-									/>
-								</FieldRow>
-							</Box>
+								<Controller
+									name='enabled'
+									control={control}
+									render={({ field: { value, ...field } }) => <ToggleSwitch id={enabledField} {...field} checked={value} />}
+								/>
+							</FieldRow>
 						</Field>
 						<Field>
 							<FieldLabel htmlFor={nameField}>{t('Name')}</FieldLabel>
@@ -276,30 +274,26 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 							<FieldHint id={`${emojiField}-hint-2`} dangerouslySetInnerHTML={{ __html: t('Example_s', ':ghost:') }} />
 						</Field>
 						<Field>
-							<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+							<FieldRow>
 								<FieldLabel htmlFor={overrideDestinationChannelEnabledField}>{t('Override_Destination_Channel')}</FieldLabel>
-								<FieldRow>
-									<Controller
-										name='overrideDestinationChannelEnabled'
-										control={control}
-										render={({ field: { value, ...field } }) => (
-											<ToggleSwitch id={overrideDestinationChannelEnabledField} {...field} checked={value} />
-										)}
-									/>
-								</FieldRow>
-							</Box>
+								<Controller
+									name='overrideDestinationChannelEnabled'
+									control={control}
+									render={({ field: { value, ...field } }) => (
+										<ToggleSwitch id={overrideDestinationChannelEnabledField} {...field} checked={value} />
+									)}
+								/>
+							</FieldRow>
 						</Field>
 						<Field>
-							<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+							<FieldRow>
 								<FieldLabel htmlFor={scriptEnabledField}>{t('Script_Enabled')}</FieldLabel>
-								<FieldRow>
-									<Controller
-										name='scriptEnabled'
-										control={control}
-										render={({ field: { value, ...field } }) => <ToggleSwitch id={scriptEnabledField} {...field} checked={value} />}
-									/>
-								</FieldRow>
-							</Box>
+								<Controller
+									name='scriptEnabled'
+									control={control}
+									render={({ field: { value, ...field } }) => <ToggleSwitch id={scriptEnabledField} {...field} checked={value} />}
+								/>
+							</FieldRow>
 						</Field>
 						<Field>
 							<FieldLabel htmlFor={scriptEngineField}>{t('Script_Engine')}</FieldLabel>

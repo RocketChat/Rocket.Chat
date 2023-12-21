@@ -17,10 +17,12 @@ const createOrUpdateGuest = async (guest: StoreState['guest']) => {
 	const { token } = guest;
 	token && (await store.setState({ token }));
 	const { visitor: user } = await Livechat.grantVisitor({ visitor: { ...guest } });
+
 	if (!user) {
 		return;
 	}
 	store.setState({ user } as Omit<StoreState['user'], 'ts'>);
+	await loadConfig();
 };
 
 const updateIframeGuestData = (data: Partial<StoreState['guest']>) => {
@@ -175,8 +177,7 @@ const api = {
 		if (token === localToken) {
 			return;
 		}
-		createOrUpdateGuest({ token });
-		await loadConfig();
+		await createOrUpdateGuest({ token });
 	},
 
 	setGuestName: (name: string) => {
@@ -187,7 +188,7 @@ const api = {
 		updateIframeGuestData({ email });
 	},
 
-	registerGuest: (data: StoreState['guest']) => {
+	registerGuest: async (data: StoreState['guest']) => {
 		if (typeof data !== 'object') {
 			return;
 		}
@@ -200,7 +201,9 @@ const api = {
 			api.setDepartment(data.department);
 		}
 
-		createOrUpdateGuest(data);
+		Livechat.unsubscribeAll();
+
+		await createOrUpdateGuest(data);
 	},
 
 	setLanguage: async ({ language }: { language: StoreState['iframe']['language'] }) => {

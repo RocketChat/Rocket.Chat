@@ -6,7 +6,7 @@ import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';
 import { test, expect } from '../utils/test';
 
-test.describe.parallel('omnichannel-triggers', () => {
+test.describe.serial('omnichannel-triggers', () => {
 	let triggersName: string;
 	let triggerMessage: string;
 	let poLiveChat: OmnichannelLiveChat;

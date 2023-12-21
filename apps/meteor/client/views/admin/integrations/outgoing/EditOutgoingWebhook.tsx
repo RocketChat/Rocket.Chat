@@ -6,7 +6,7 @@ import React, { useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import GenericModal from '../../../../components/GenericModal';
-import Page from '../../../../components/Page';
+import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../../components/Page';
 import { triggerWordsToArray, triggerWordsToString } from '../helpers/triggerWords';
 import { useCreateIntegration } from '../hooks/useCreateIntegration';
 import { useDeleteIntegration } from '../hooks/useDeleteIntegration';
@@ -100,11 +100,8 @@ const EditOutgoingWebhook = ({ webhookData }: { webhookData?: Serialized<IOutgoi
 
 	return (
 		<Page flexDirection='column'>
-			<Page.Header title={t('Integration_Outgoing_WebHook')}>
+			<PageHeader title={t('Integration_Outgoing_WebHook')} onClickBack={() => router.navigate('/admin/integrations/webhook-outgoing')}>
 				<ButtonGroup>
-					<Button icon='back' onClick={() => router.navigate('/admin/integrations/webhook-outgoing')}>
-						{t('Back')}
-					</Button>
 					{webhookData?._id && (
 						<Button onClick={() => router.navigate(`/admin/integrations/history/outgoing/${webhookData._id}`)}>{t('History')}</Button>
 					)}
@@ -114,7 +111,7 @@ const EditOutgoingWebhook = ({ webhookData }: { webhookData?: Serialized<IOutgoi
 						</Button>
 					)}
 				</ButtonGroup>
-			</Page.Header>
+			</PageHeader>
 			{!webhookData?._id && (
 				<Tabs>
 					<TabsItem selected={tab === 'incoming'} onClick={() => router.navigate('/admin/integrations/new/incoming')}>
@@ -125,12 +122,12 @@ const EditOutgoingWebhook = ({ webhookData }: { webhookData?: Serialized<IOutgoi
 					</TabsItem>
 				</Tabs>
 			)}
-			<Page.ScrollableContentWithShadow is='form' id={formId} onSubmit={handleSubmit(handleSave)}>
+			<PageScrollableContentWithShadow is='form' id={formId} onSubmit={handleSubmit(handleSave)}>
 				<FormProvider {...methods}>
 					<OutgoingWebhookForm />
 				</FormProvider>
-			</Page.ScrollableContentWithShadow>
-			<Page.Footer isDirty={isDirty}>
+			</PageScrollableContentWithShadow>
+			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
 					<Button type='reset' onClick={() => reset()}>
 						{t('Cancel')}
@@ -139,7 +136,7 @@ const EditOutgoingWebhook = ({ webhookData }: { webhookData?: Serialized<IOutgoi
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
-			</Page.Footer>
+			</PageFooter>
 		</Page>
 	);
 };

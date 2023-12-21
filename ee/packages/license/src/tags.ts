@@ -1,4 +1,5 @@
-import type { ILicenseTag } from './definition/ILicenseTag';
+import type { ILicenseTag } from '@rocket.chat/core-typings';
+
 import { type LicenseManager } from './license';
 
 export function addTag(this: LicenseManager, tag: ILicenseTag) {
