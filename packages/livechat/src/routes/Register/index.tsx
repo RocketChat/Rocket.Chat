@@ -10,6 +10,7 @@ import { Button } from '../../components/Button';
 import { Form, FormField, TextInput, SelectInput, CustomFields as CustomFieldsForm } from '../../components/Form';
 import { FormScrollShadow } from '../../components/Form/FormScrollShadow';
 import Screen from '../../components/Screen';
+import type { Department } from '../../definitions/departments';
 import { createClassName } from '../../helpers/createClassName';
 import { sortArrayByColumn } from '../../helpers/sortArrayByColumn';
 import CustomFields from '../../lib/customFields';
@@ -98,6 +99,8 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 		}
 	};
 
+	const availableDepartments = departments?.filter((dept) => dept.showOnRegistration) as Department[];
+
 	useEffect(() => {
 		if (user?._id) {
 			route('/');
@@ -157,7 +160,7 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 							</FormField>
 						) : null}
 
-						{departments?.some((dept) => dept.showOnRegistration) ? (
+						{availableDepartments.length ? (
 							<FormField label={t('i_need_help_with')} error={errors.department?.message?.toString()}>
 								<Controller
 									name='department'
@@ -165,7 +168,7 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 									defaultValue={getDepartmentDefault()}
 									render={({ field }) => (
 										<SelectInput
-											options={sortArrayByColumn(departments, 'name').map(({ _id, name }: { _id: string; name: string }) => ({
+											options={sortArrayByColumn(availableDepartments, 'name').map(({ _id, name }: { _id: string; name: string }) => ({
 												value: _id,
 												label: name,
 											}))}
