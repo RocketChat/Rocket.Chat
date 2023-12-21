@@ -13,7 +13,7 @@ const initialData = {
 };
 
 const init = (canvas, context, t) =>
-	drawLineChart(canvas, context, [t('Room_Status_Open'), t('Closed'), t('On_Hold_Chats')], [], [[], []], {
+	drawLineChart(canvas, context, [t('Open'), t('Closed'), t('On_Hold_Chats')], [], [[], []], {
 		legends: true,
 		anim: true,
 		smallTicks: true,
