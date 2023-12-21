@@ -133,9 +133,18 @@ const AppsProvider: FC = ({ children }) => {
 		<AppsContext.Provider
 			children={children}
 			value={{
-				installedApps: { phase: AsyncStatePhase.RESOLVED, value: { apps: store.data?.[1] || [] } },
-				marketplaceApps: { phase: AsyncStatePhase.RESOLVED, value: { apps: store.data?.[0] || [] } },
-				privateApps: { phase: AsyncStatePhase.RESOLVED, value: { apps: store.data?.[2] || [] } },
+				installedApps: {
+					phase: store.isLoading ? AsyncStatePhase.LOADING : AsyncStatePhase.RESOLVED,
+					value: { apps: store.data?.[1] || [] },
+				},
+				marketplaceApps: {
+					phase: store.isLoading ? AsyncStatePhase.LOADING : AsyncStatePhase.RESOLVED,
+					value: { apps: store.data?.[0] || [] },
+				},
+				privateApps: {
+					phase: store.isLoading ? AsyncStatePhase.LOADING : AsyncStatePhase.RESOLVED,
+					value: { apps: store.data?.[2] || [] },
+				},
 				reload: async () => {
 					await Promise.all([queryClient.invalidateQueries(['marketplace'])]);
 				},
