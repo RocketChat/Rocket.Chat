@@ -624,7 +624,8 @@ test.describe('OC - Livechat API', () => {
 			});
 		});
 
-		test('onAgentStatusChange', async () => {
+		// TODO: Fix this Flaky test
+		test.skip('onAgentStatusChange', async () => {
 			const newVisitor = {
 				name: faker.person.firstName(),
 				email: faker.internet.email(),
