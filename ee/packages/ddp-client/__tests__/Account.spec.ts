@@ -30,7 +30,7 @@ describe('login', () => {
 
 		const { user } = sdk.account;
 		expect(user?.token).toBe(messageResult.token);
-		expect(user?.tokenExpires?.toISOString()).toBe(new Date(messageResult.tokenExpires.$date).toISOString());
+		expect((user?.tokenExpires as Date)?.toISOString()).toBe(new Date(messageResult.tokenExpires.$date).toISOString());
 		expect(user?.id).toBe(messageResult.id);
 	});
 
@@ -55,7 +55,7 @@ describe('login', () => {
 
 		const { user } = sdk.account;
 		expect(user?.token).toBe(messageResult.token);
-		expect(user?.tokenExpires?.toISOString()).toBe(new Date(messageResult.tokenExpires.$date).toISOString());
+		expect((user?.tokenExpires as Date)?.toISOString()).toBe(new Date(messageResult.tokenExpires.$date).toISOString());
 		expect(user?.id).toBe(messageResult.id);
 	});
 
