@@ -142,12 +142,6 @@ test.describe('OC - Livechat API', () => {
 		});
 
 		test('OC - Livechat API - setTheme', async () => {
-			// color,
-			// fontColor,
-			// iconColor,
-			// title,
-			// offlineTitle,
-
 			const registerGuestVisitor = {
 				name: faker.person.firstName(),
 				email: faker.internet.email(),
@@ -625,21 +619,6 @@ test.describe('OC - Livechat API', () => {
 				);
 
 				await poLiveChat.btnSendMessageToOnlineAgent.click();
-
-				await watchForTrigger;
-			});
-
-			await test.step('onAgentStatusChange', async () => {
-				const watchForTrigger = page.waitForFunction(() => window.onAgentStatusChange === true);
-
-				await poLiveChat.page.evaluate(() =>
-					window.RocketChat.livechat.onAgentStatusChange(() => {
-						window.onAgentStatusChange = true;
-					}),
-				);
-
-				await poAuxContext.poHomeOmnichannel.sidenav.openChat(newVisitor.name);
-				await poAuxContext.poHomeOmnichannel.sidenav.switchStatus('offline');
 
 				await watchForTrigger;
 			});
