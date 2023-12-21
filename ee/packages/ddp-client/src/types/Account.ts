@@ -114,6 +114,7 @@ export class AccountImpl
 			wait: true,
 		});
 		this.uid = undefined;
+		this.user = undefined;
 		this.emit('uid', this.uid);
 	}
 }
