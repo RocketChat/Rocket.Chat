@@ -1,4 +1,4 @@
-FROM node:18.16.1-alpine3.18
+FROM node:20.9.0-alpine3.18
 
 RUN apk add --no-cache ttf-dejavu
 

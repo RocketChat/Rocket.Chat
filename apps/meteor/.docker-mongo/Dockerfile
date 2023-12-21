@@ -1,4 +1,4 @@
-FROM node:18.16.1-bookworm-slim
+FROM node:20.9.0-bookworm-slim
 
 LABEL maintainer="buildmaster@rocket.chat"
 
