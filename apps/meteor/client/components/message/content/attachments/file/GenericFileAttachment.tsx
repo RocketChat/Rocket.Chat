@@ -45,6 +45,16 @@ export const GenericFileAttachment: FC<MessageAttachmentBase> = ({
 		setIsDesktopAppAvailable(!!window.RocketChatDesktop);
 	}, []);
 
+	const getExternalUrl = () => {
+		if (!hasDownload || !link) return undefined;
+
+		if (isDesktopAppAvailable) return `${getURL(link)}?download`;
+
+		return getURL(link);
+	};
+
+	const onClickHandler = isDesktopAppAvailable && link && format === 'PDF' ? handleOpenDocumentViewer : undefined;
+
 	return (
 		<>
 			{descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} />}
@@ -53,28 +63,9 @@ export const GenericFileAttachment: FC<MessageAttachmentBase> = ({
 					<MessageGenericPreviewContent
 						thumb={<MessageGenericPreviewIcon name='attachment-file' type={format || getFileExtension(title)} />}
 					>
-						{!isDesktopAppAvailable && (
-							<MessageGenericPreviewTitle externalUrl={hasDownload && link ? getURL(link) : undefined} data-qa-type='attachment-title-link'>
-								{title}
-							</MessageGenericPreviewTitle>
-						)}
-						{isDesktopAppAvailable && link && format === 'PDF' && (
-							<MessageGenericPreviewTitle
-								externalUrl={hasDownload && link ? `${getURL(link)}` : undefined}
-								onClick={handleOpenDocumentViewer}
-								data-qa-type='attachment-title-link'
-							>
-								{title}
-							</MessageGenericPreviewTitle>
-						)}
-						{isDesktopAppAvailable && format !== 'PDF' && (
-							<MessageGenericPreviewTitle
-								externalUrl={hasDownload && link ? `${getURL(link)}?download` : undefined}
-								data-qa-type='attachment-title-link'
-							>
-								{title}
-							</MessageGenericPreviewTitle>
-						)}
+						<MessageGenericPreviewTitle externalUrl={getExternalUrl()} onClick={onClickHandler} data-qa-type='attachment-title-link'>
+							{title}
+						</MessageGenericPreviewTitle>
 						{size && (
 							<MessageGenericPreviewDescription>
 								<AttachmentSize size={size} wrapper={false} />
