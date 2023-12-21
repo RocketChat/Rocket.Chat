@@ -737,6 +737,7 @@ describe('LIVECHAT - rooms', function () {
 		let roomId: string;
 		let visitorToken: string;
 		(IS_EE ? it : it.skip)('should return a success message when transferring to a fallback department', async () => {
+			await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
 			const { department: initialDepartment } = await createDepartmentWithAnOnlineAgent();
 			const { department: forwardToDepartment } = await createDepartmentWithAnOnlineAgent();
 			const forwardToDepartment1 = await createDepartment(undefined, undefined, true, {
