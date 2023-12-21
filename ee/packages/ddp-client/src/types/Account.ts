@@ -36,10 +36,7 @@ export class AccountImpl
 
 	constructor(private readonly client: ClientStream) {
 		super();
-		console.log('CONSTRUCTOR');
 		this.client.on('connected', () => {
-			console.log('WHYYYYYYYYYYY');
-
 			if (this.user?.token) {
 				this.loginWithToken(this.user.token);
 			}
