@@ -24,20 +24,23 @@ Meteor.startup(() => {
 		if (!hasPermission('view-canned-responses')) {
 			return;
 		}
-		try {
-			// TODO: check options
-			sdk.stream('canned-responses', 'canned-responses', async (response, options) => {
-				const { agentsId } = options || {};
-				if (Array.isArray(agentsId) && !agentsId.includes(Meteor.userId())) {
-					return;
-				}
-				await events[response.type](response);
-			});
-			const { responses } = await sdk.rest.get('/v1/canned-responses.get');
-			responses.forEach((response) => CannedResponse.insert(response));
-			c.stop();
-		} catch (error) {
-			console.log(error);
-		}
+		Tracker.afterFlush(() => {
+			try {
+				// TODO: check options
+				sdk.stream('canned-responses', ['canned-responses'], async (response, options) => {
+					const { agentsId } = options || {};
+					if (Array.isArray(agentsId) && !agentsId.includes(Meteor.userId())) {
+						return;
+					}
+					await events[response.type](response);
+				});
+			} catch (error) {
+				console.log(error);
+			}
+		});
+
+		const { responses } = await sdk.rest.get('/v1/canned-responses.get');
+		responses.forEach((response) => CannedResponse.insert(response));
+		c.stop();
 	});
 });

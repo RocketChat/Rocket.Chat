@@ -1,4 +1,4 @@
-import { Banner, Icon, Pagination } from '@rocket.chat/fuselage';
+import { Callout, Pagination } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { GETLivechatRoomsParams } from '@rocket.chat/rest-typings';
 import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
@@ -22,7 +22,7 @@ import {
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 import { useIsOverMacLimit } from '../../../hooks/omnichannel/useIsOverMacLimit';
 import CustomFieldsList from './CustomFieldsList';
 import FilterByText from './FilterByText';
@@ -176,7 +176,7 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 			};
 
 			return (
-				<GenericTableRow key={_id} onClick={(): void => onRowClick(_id)} action>
+				<GenericTableRow key={_id} onClick={(): void => onRowClick(_id)} action data-qa-id={fname}>
 					{isPriorityEnabled && (
 						<GenericTableCell withTruncatedText data-qa='current-chats-cell-priority'>
 							<PriorityIcon level={priorityWeight} />
@@ -295,8 +295,8 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('Current_Chats')} />
-				<Page.Content>
+				<PageHeader title={t('Current_Chats')} />
+				<PageContent>
 					{((isSuccess && data?.rooms.length > 0) || queryHasChanged) && (
 						<FilterByText
 							setFilter={onFilter as ComponentProps<typeof FilterByText>['setFilter']}
@@ -306,15 +306,14 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 						/>
 					)}
 					{isWorkspaceOverMacLimit && (
-						<Banner
-							variant='danger'
-							actionable
-							icon={<Icon name='warning' size='x24' />}
+						<Callout
+							type='danger'
+							icon='warning'
 							title={t('The_workspace_has_exceeded_the_monthly_limit_of_active_contacts')}
 							style={{ marginBlock: '2rem' }}
 						>
 							{t('Talk_to_your_workspace_admin_to_address_this_issue')}
-						</Banner>
+						</Callout>
 					)}
 					{isSuccess && data?.rooms.length === 0 && queryHasChanged && <GenericNoResults />}
 					{isSuccess && data?.rooms.length === 0 && !queryHasChanged && (
@@ -353,7 +352,7 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 							/>
 						</>
 					)}
-				</Page.Content>
+				</PageContent>
 			</Page>
 			{id === 'custom-fields' && hasCustomFields && (
 				<CustomFieldsList setCustomFields={setCustomFields} allCustomFields={allCustomFields?.customFields || []} />

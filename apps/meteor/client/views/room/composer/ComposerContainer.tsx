@@ -1,4 +1,5 @@
 import { isOmnichannelRoom, isRoomFederated, isVoipRoom } from '@rocket.chat/core-typings';
+import { usePermission } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
@@ -18,19 +19,14 @@ import { useMessageComposerIsReadOnly } from './hooks/useMessageComposerIsReadOn
 
 const ComposerContainer = ({ children, ...props }: ComposerMessageProps): ReactElement => {
 	const room = useRoom();
-
-	const mustJoinWithCode = !props.subscription && room.joinCodeRequired;
+	const canJoinWithoutCode = usePermission('join-without-join-code');
+	const mustJoinWithCode = !props.subscription && room.joinCodeRequired && !canJoinWithoutCode;
 
 	const isAnonymous = useMessageComposerIsAnonymous();
-
 	const isBlockedOrBlocker = useMessageComposerIsBlocked({ subscription: props.subscription });
-
-	const isReadOnly = useMessageComposerIsReadOnly(props.rid, props.subscription);
-
+	const isReadOnly = useMessageComposerIsReadOnly(room._id, props.subscription);
 	const isOmnichannel = isOmnichannelRoom(room);
-
 	const isFederation = isRoomFederated(room);
-
 	const isVoip = isVoipRoom(room);
 
 	if (isOmnichannel) {

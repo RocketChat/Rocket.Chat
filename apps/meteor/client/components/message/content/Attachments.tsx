@@ -7,13 +7,14 @@ import AttachmentsItem from './attachments/AttachmentsItem';
 type AttachmentsProps = {
 	attachments: MessageAttachmentBase[];
 	collapsed?: boolean;
+	id?: string | undefined;
 };
 
-const Attachments = ({ attachments, collapsed }: AttachmentsProps): ReactElement => {
+const Attachments = ({ attachments, collapsed, id }: AttachmentsProps): ReactElement => {
 	return (
 		<>
 			{attachments?.map((attachment, index) => (
-				<AttachmentsItem key={index} attachment={{ ...attachment, collapsed }} />
+				<AttachmentsItem key={index} id={id} attachment={{ ...attachment, collapsed }} />
 			))}
 		</>
 	);

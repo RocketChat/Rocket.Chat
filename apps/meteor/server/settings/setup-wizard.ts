@@ -12,7 +12,7 @@ export const createSetupWSettings = () =>
 					},
 					{
 						key: 'enterprise',
-						i18nLabel: 'Enterprise',
+						i18nLabel: 'Premium',
 					},
 					{
 						key: 'government',

@@ -12,7 +12,7 @@ RUN set -x \
     && npm install --production \
     # Start hack for sharp...
     && rm -rf npm/node_modules/sharp \
-    && npm install sharp@0.30.4 \
+    && npm install sharp@0.32.6 \
     && mv node_modules/sharp npm/node_modules/sharp \
     # End hack for sharp
     # Start hack for isolated-vm...

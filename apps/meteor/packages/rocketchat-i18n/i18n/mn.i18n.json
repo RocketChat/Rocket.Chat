@@ -972,7 +972,6 @@
   "Enter_name_here": "Нэрийг оруулна уу",
   "Enter_Normal": "Хэвийн горим (Enter ашиглан илгээ)",
   "Enter_to": "Руу оруулна уу",
-  "Enterprise": "Аж ахуйн нэгж",
   "Entertainment": "Үзвэр үйлчилгээ",
   "Error": "Алдаа",
   "Error_404": "Алдаа: 404",
@@ -2746,5 +2745,7 @@
   "registration.component.form.reasonToJoin": "Яагаад болохгүй гэж?",
   "registration.component.form.invalidConfirmPass": "Нууц үг баталгаажуулалт нь нууц үгтэй таарахгүй байна",
   "registration.component.form.confirmPassword": "Нууц үгээ батлах",
-  "registration.component.form.sendConfirmationEmail": "Баталгаажуулах имэйл илгээх"
+  "registration.component.form.sendConfirmationEmail": "Баталгаажуулах имэйл илгээх",
+  "Enterprise": "Аж ахуйн нэгж",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Аналитик"
 }

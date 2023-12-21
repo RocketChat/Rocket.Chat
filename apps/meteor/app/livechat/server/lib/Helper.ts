@@ -1,5 +1,5 @@
 import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
-import { api, Message } from '@rocket.chat/core-services';
+import { api, Message, Omnichannel } from '@rocket.chat/core-services';
 import type {
 	ILivechatVisitor,
 	IOmnichannelRoom,
@@ -38,7 +38,6 @@ import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { sendNotification } from '../../../lib/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { settings } from '../../../settings/server';
-import { Livechat } from './Livechat';
 import { Livechat as LivechatTyped } from './LivechatTyped';
 import { queueInquiry, saveQueueInquiry } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
@@ -296,7 +295,7 @@ export const parseAgentCustomFields = (customFields?: Record<string, any>) => {
 			const parseCustomFields = JSON.parse(accountCustomFields);
 			return Object.keys(parseCustomFields).filter((customFieldKey) => parseCustomFields[customFieldKey].sendToIntegrations === true);
 		} catch (error) {
-			Livechat.logger.error(error);
+			logger.error(error);
 			return [];
 		}
 	};
@@ -543,10 +542,8 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 		agent = { agentId, username };
 	}
 
-	if (!RoutingManager.getConfig()?.autoAssignAgent) {
-		logger.debug(
-			`Routing algorithm doesn't support auto assignment (using ${RoutingManager.methodName}). Chat will be on department queue`,
-		);
+	if (!RoutingManager.getConfig()?.autoAssignAgent || !(await Omnichannel.isWithinMACLimit(room))) {
+		logger.debug(`Room ${room._id} will be on department queue`);
 		await LivechatTyped.saveTransferHistory(room, transferData);
 		return RoutingManager.unassignAgent(inquiry, departmentId);
 	}

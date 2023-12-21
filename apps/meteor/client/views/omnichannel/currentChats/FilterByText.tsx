@@ -8,7 +8,7 @@ import React, { useEffect } from 'react';
 import AutoCompleteAgent from '../../../components/AutoCompleteAgent';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import GenericModal from '../../../components/GenericModal';
-import { useFormsSubscription } from '../additionalForms';
+import { CurrentChatTags } from '../additionalForms';
 import Label from './Label';
 import RemoveAllClosed from './RemoveAllClosed';
 
@@ -59,14 +59,6 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 		setCustomFields(undefined);
 	});
 
-	const forms = useFormsSubscription() as any;
-
-	// TODO: Refactor the formsSubscription to use components instead of hooks (since the only thing the hook does is return a component)
-	// Conditional hook was required since the whole formSubscription uses hooks in an incorrect manner
-	const { useCurrentChatTags = (): void => undefined } = forms;
-
-	const EETagsComponent = useCurrentChatTags();
-
 	const onSubmit = useMutableCallback((e) => e.preventDefault());
 
 	useEffect(() => {
@@ -106,7 +98,14 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 		};
 
 		setModal(
-			<GenericModal variant='danger' onConfirm={onDeleteAll} onClose={handleClose} onCancel={handleClose} confirmText={t('Delete')} />,
+			<GenericModal
+				variant='danger'
+				data-qa-id='current-chats-modal-remove-all-closed'
+				onConfirm={onDeleteAll}
+				onClose={handleClose}
+				onCancel={handleClose}
+				confirmText={t('Delete')}
+			/>,
 		);
 	});
 
@@ -122,8 +121,17 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 					<AutoCompleteAgent haveAll value={servedBy} onChange={handleServedBy} />
 				</Box>
 				<Box display='flex' mie={8} flexGrow={1} flexDirection='column'>
-					<Label mb={4}>{t('Status')}</Label>
-					<Select options={statusOptions} value={status} onChange={handleStatus} placeholder={t('Status')} data-qa='current-chats-status' />
+					<Label mb={4} id='current-chats-status'>
+						{t('Status')}
+					</Label>
+					<Select
+						options={statusOptions}
+						value={status}
+						onChange={handleStatus}
+						placeholder={t('Status')}
+						aria-labelledby='current-chats-status'
+						data-qa='current-chats-status'
+					/>
 				</Box>
 				<Box display='flex' mie={8} flexGrow={0} flexDirection='column'>
 					<Label mb={4}>{t('From')}</Label>
@@ -146,11 +154,11 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 					<AutoCompleteDepartment haveAll showArchived value={department} onChange={handleDepartment} onlyMyDepartments />
 				</Box>
 			</Box>
-			{EETagsComponent && (
+			{CurrentChatTags && (
 				<Box display='flex' flexDirection='row' marginBlockStart={8} {...props}>
-					<Box display='flex' mie={8} flexGrow={1} flexDirection='column'>
+					<Box display='flex' mie={8} flexGrow={1} flexDirection='column' data-qa='current-chats-tags'>
 						<Label mb={4}>{t('Tags')}</Label>
-						<EETagsComponent value={tags} handler={handleTags} viewAll />
+						<CurrentChatTags value={tags} handler={handleTags} viewAll />
 					</Box>
 				</Box>
 			)}

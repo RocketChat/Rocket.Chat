@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/authorization-service",
 	"private": true,
-	"version": "0.2.9",
+	"version": "0.3.0",
 	"description": "Rocket.Chat Authorization service",
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
@@ -17,18 +17,18 @@
 	"dependencies": {
 		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
-		"@rocket.chat/emitter": "next",
+		"@rocket.chat/emitter": "~0.31.25",
 		"@rocket.chat/model-typings": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
-		"@rocket.chat/string-helpers": "next",
-		"@types/node": "^14.18.51",
+		"@rocket.chat/string-helpers": "~0.31.25",
+		"@types/node": "^14.18.63",
 		"ejson": "^2.2.3",
 		"event-loop-stats": "^1.4.1",
 		"eventemitter3": "^4.0.7",
 		"gc-stats": "^1.4.0",
 		"mem": "^8.1.1",
-		"moleculer": "^0.14.29",
+		"moleculer": "^0.14.31",
 		"mongodb": "^4.17.1",
 		"nats": "^2.4.0",
 		"pino": "^8.15.0",
@@ -36,11 +36,11 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
-		"@types/gc-stats": "^1",
-		"@types/polka": "^0.5.4",
+		"@types/gc-stats": "^1.4.2",
+		"@types/polka": "^0.5.6",
 		"eslint": "~8.45.0",
 		"ts-node": "^10.9.1",
-		"typescript": "~5.2.2"
+		"typescript": "~5.3.2"
 	},
 	"main": "./dist/ee/apps/authorization-service/src/service.js",
 	"files": [

@@ -5,6 +5,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
+import { broadcastMessageSentEvent } from '../../../../server/modules/watchers/lib/messages';
 import { canDeleteMessageAsync } from '../../../authorization/server/functions/canDeleteMessage';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
@@ -68,7 +69,6 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 			file?._id && (await FileUpload.getStore('Uploads').deleteById(file._id));
 		}
 	}
-
 	if (showDeletedStatus) {
 		// TODO is there a better way to tell TS "IUser[username]" is not undefined?
 		await Messages.setAsDeletedByIdAndUser(message._id, user as Required<Pick<IUser, '_id' | 'username' | 'name'>>);
@@ -86,10 +86,17 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 		}
 	}
 
-	await callbacks.run('afterDeleteMessage', deletedMsg, room);
-
 	// decrease message count
 	await Rooms.decreaseMessageCountById(message.rid, 1);
+
+	await callbacks.run('afterDeleteMessage', deletedMsg, room);
+
+	if (keepHistory || showDeletedStatus) {
+		void broadcastMessageSentEvent({
+			id: message._id,
+			broadcastCallback: (message) => api.broadcast('message.sent', message),
+		});
+	}
 
 	if (bridges) {
 		void bridges.getListenerBridge().messageEvent('IPostMessageDeleted', deletedMsg, user);

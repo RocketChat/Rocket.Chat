@@ -62,9 +62,9 @@ const PreferencesSoundSection = () => {
 						/>
 					</FieldRow>
 				</Field>
-				<Field display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-					<FieldLabel htmlFor={muteFocusedConversationsId}>{t('Mute_Focused_Conversations')}</FieldLabel>
+				<Field>
 					<FieldRow>
+						<FieldLabel htmlFor={muteFocusedConversationsId}>{t('Mute_Focused_Conversations')}</FieldLabel>
 						<Controller
 							name='muteFocusedConversations'
 							control={control}

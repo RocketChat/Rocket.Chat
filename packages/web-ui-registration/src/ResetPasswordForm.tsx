@@ -1,6 +1,7 @@
 import { FieldGroup, TextInput, Field, FieldLabel, FieldRow, FieldError, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { Form, ActionLink } from '@rocket.chat/layout';
+import { useDocumentTitle } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
@@ -14,6 +15,8 @@ export const ResetPasswordForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 	const emailId = useUniqueId();
 	const formLabelId = useUniqueId();
 	const forgotPasswordFormRef = useRef<HTMLElement>(null);
+
+	useDocumentTitle(t('registration.component.resetPassword'), false);
 
 	const {
 		register,

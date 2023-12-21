@@ -1,13 +1,15 @@
-import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, Grid, Button } from '@rocket.chat/fuselage';
+import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, Grid, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { Card, CardBody, CardTitle, FramedIcon } from '@rocket.chat/ui-client';
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useExternalLink } from '../../../../hooks/useExternalLink';
 import { PRICING_LINK } from '../utils/links';
 
 type UpgradeToGetMoreProps = {
 	activeModules: string[];
 	isEnterprise: boolean;
+	children: React.ReactNode;
 };
 
 const enterpriseModules = [
@@ -19,8 +21,9 @@ const enterpriseModules = [
 	'auditing',
 ];
 
-const UpgradeToGetMore = ({ activeModules }: UpgradeToGetMoreProps) => {
+const UpgradeToGetMore = ({ activeModules, children }: UpgradeToGetMoreProps) => {
 	const { t } = useTranslation();
+	const handleOpenLink = useExternalLink();
 
 	const upgradeModules = enterpriseModules
 		.filter((module) => !activeModules.includes(module))
@@ -32,7 +35,11 @@ const UpgradeToGetMore = ({ activeModules }: UpgradeToGetMoreProps) => {
 		});
 
 	if (upgradeModules?.length === 0) {
-		return null;
+		return (
+			<ButtonGroup large vertical>
+				{children}
+			</ButtonGroup>
+		);
 	}
 
 	return (
@@ -63,9 +70,12 @@ const UpgradeToGetMore = ({ activeModules }: UpgradeToGetMoreProps) => {
 					</Grid.Item>
 				))}
 			</Grid>
-			<Button is='a' external href={PRICING_LINK}>
-				{t('Compare_plans')}
-			</Button>
+			<ButtonGroup large vertical>
+				<Button icon='new-window' onClick={() => handleOpenLink(PRICING_LINK)}>
+					{t('Compare_plans')}
+				</Button>
+				{children}
+			</ButtonGroup>
 		</Box>
 	);
 };

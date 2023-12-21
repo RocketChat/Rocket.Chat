@@ -1,5 +1,222 @@
 # @rocket.chat/ddp-client
 
+## 0.2.9
+
+### Patch Changes
+
+- 5b9d6883bf: feat: Improve UI when MAC limits are reached
+  feat: Limit endpoints on MAC limit reached
+- Updated dependencies [5b9d6883bf]
+- Updated dependencies [92613680b7]
+- Updated dependencies [ec1b2b9846]
+- Updated dependencies [a98f3ff303]
+- Updated dependencies [5f81a0f3cb]
+  - @rocket.chat/rest-typings@6.5.0
+  - @rocket.chat/api-client@0.1.18
+
+## 0.2.9-rc.12
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.5.0-rc.19
+- @rocket.chat/api-client@0.1.18-rc.12
+
+## 0.2.9-rc.11
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.5.0-rc.18
+- @rocket.chat/api-client@0.1.18-rc.11
+
+## 0.2.9-rc.10
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.5.0-rc.17
+- @rocket.chat/api-client@0.1.18-rc.10
+
+## 0.2.9-rc.9
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.5.0-rc.16
+- @rocket.chat/api-client@0.1.18-rc.9
+
+## 0.2.9-rc.8
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.5.0-rc.15
+- @rocket.chat/api-client@0.1.18-rc.8
+
+## 0.2.9-rc.7
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.5.0-rc.14
+- @rocket.chat/api-client@0.1.18-rc.7
+
+## 0.2.9-rc.6
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.5.0-rc.13
+- @rocket.chat/api-client@0.1.18-rc.6
+
+## 0.2.9-rc.5
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.5.0-rc.12
+- @rocket.chat/api-client@0.1.18-rc.5
+
+## 0.2.9-rc.4
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.5.0-rc.11
+- @rocket.chat/api-client@0.1.18-rc.4
+
+## 0.2.9-rc.3
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.5.0-rc.10
+- @rocket.chat/api-client@0.1.18-rc.3
+
+## 0.2.9-rc.2
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.5.0-rc.9
+- @rocket.chat/api-client@0.1.18-rc.2
+
+## 0.2.9-rc.1
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.5.0-rc.8
+- @rocket.chat/api-client@0.1.18-rc.1
+
+## 0.2.6-rc.7
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.5.0-rc.7
+- @rocket.chat/api-client@0.1.15-rc.7
+
+## 0.2.6-rc.6
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.5.0-rc.6
+- @rocket.chat/api-client@0.1.15-rc.6
+
+## 0.2.6-rc.5
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.5.0-rc.5
+- @rocket.chat/api-client@0.1.15-rc.5
+
+## 0.2.6-rc.4
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.5.0-rc.4
+- @rocket.chat/api-client@0.1.15-rc.4
+
+## 0.2.6-rc.3
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.5.0-rc.3
+- @rocket.chat/api-client@0.1.15-rc.3
+
+## 0.2.6-rc.2
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.5.0-rc.2
+- @rocket.chat/api-client@0.1.15-rc.2
+
+## 0.2.6-rc.1
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.5.0-rc.1
+- @rocket.chat/api-client@0.1.15-rc.1
+
+## 0.2.6-rc.0
+
+### Patch Changes
+
+- 5b9d6883bf: feat: Improve UI when MAC limits are reached
+  feat: Limit endpoints on MAC limit reached
+- Updated dependencies [5b9d6883bf]
+- Updated dependencies [92613680b7]
+- Updated dependencies [ec1b2b9846]
+- Updated dependencies [a98f3ff303]
+- Updated dependencies [5f81a0f3cb]
+  - @rocket.chat/rest-typings@6.5.0-rc.0
+  - @rocket.chat/api-client@0.1.15-rc.0
+
+## 0.2.8
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.4.8
+- @rocket.chat/api-client@0.1.17
+
+## 0.2.7
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.4.7
+- @rocket.chat/api-client@0.1.16
+
+## 0.2.6
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.4.6
+- @rocket.chat/api-client@0.1.15
+
+## 0.2.5
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.4.5
+- @rocket.chat/api-client@0.1.14
+
+## 0.2.4
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.4.4
+- @rocket.chat/api-client@0.1.13
+
+## 0.2.3
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.4.3
+- @rocket.chat/api-client@0.1.12
+
+## 0.2.2
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.4.2
+- @rocket.chat/api-client@0.1.11
+
+## 0.2.1
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.4.1
+- @rocket.chat/api-client@0.1.10
+
 ## 0.2.0
 
 ### Minor Changes

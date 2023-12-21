@@ -973,7 +973,6 @@
   "Enter_name_here": "Masukkan nama di sini",
   "Enter_Normal": "Mod biasa (hantar dengan Enter)",
   "Enter_to": "Masuk ke",
-  "Enterprise": "Enterprise",
   "Entertainment": "Hiburan",
   "Error": "ralat",
   "Error_404": "Ralat: 404",
@@ -2763,5 +2762,7 @@
   "registration.component.form.reasonToJoin": "Sebab untuk Bergabung",
   "registration.component.form.invalidConfirmPass": "Pengesahan kata laluan tidak sepadan dengan kata laluan",
   "registration.component.form.confirmPassword": "Sahkan kata laluan anda",
-  "registration.component.form.sendConfirmationEmail": "Hantar e-mel pengesahan"
+  "registration.component.form.sendConfirmationEmail": "Hantar e-mel pengesahan",
+  "Enterprise": "Enterprise",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Analisis"
 }

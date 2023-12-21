@@ -313,3 +313,19 @@ export const placeRoomOnHold = async (roomId: string): Promise<void> => {
         .send({ roomId })
         .expect(200);
 }
+
+export const moveBackToQueue = async (roomId: string, overrideCredentials?: IUserCredentialsHeader): Promise<void> => {
+	await request
+		.post(methodCall('livechat:returnAsInquiry'))
+		.set(overrideCredentials || credentials)
+		.send({
+			message: JSON.stringify({
+				method: 'livechat:returnAsInquiry',
+				params: [roomId],
+				id: 'id',
+				msg: 'method',
+			}),
+		})
+		.expect('Content-Type', 'application/json')
+		.expect(200);
+};

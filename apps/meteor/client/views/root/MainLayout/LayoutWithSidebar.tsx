@@ -6,6 +6,7 @@ import type { ReactElement, ReactNode } from 'react';
 import React, { useEffect, useRef } from 'react';
 
 import Sidebar from '../../../sidebar';
+import AccessibilityShortcut from './AccessibilityShortcut';
 
 const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement => {
 	const { isEmbedded: embeddedLayout } = useLayout();
@@ -46,10 +47,14 @@ const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement 
 			className={[embeddedLayout ? 'embedded-view' : undefined, 'menu-nav'].filter(Boolean).join(' ')}
 			aria-hidden={Boolean(modal)}
 		>
+			<AccessibilityShortcut />
 			<PaletteStyleTag />
 			<SidebarPaletteStyleTag />
 			{!removeSidenav && <Sidebar />}
-			<main className={['rc-old', 'main-content', readReceiptsEnabled ? 'read-receipts-enabled' : undefined].filter(Boolean).join(' ')}>
+			<main
+				id='main-content'
+				className={['rc-old', 'main-content', readReceiptsEnabled ? 'read-receipts-enabled' : undefined].filter(Boolean).join(' ')}
+			>
 				{children}
 			</main>
 		</Box>
