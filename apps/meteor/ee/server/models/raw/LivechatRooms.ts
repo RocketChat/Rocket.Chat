@@ -424,7 +424,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 					$project: {
 						total: 1,
 						data: [
-							{ label: 'Open', value: '$open' },
+							{ label: 'Room_Status_Open', value: '$open' },
 							{ label: 'Closed', value: '$closed' },
 							{ label: 'Queued', value: '$queued' },
 							{ label: 'On_Hold', value: '$onhold' },

@@ -53,7 +53,7 @@ const ChatsChart = ({ params, reloadRef, ...props }) => {
 
 	useEffect(() => {
 		if (state === AsyncStatePhase.RESOLVED) {
-			updateChartData(t('Open'), [open]);
+			updateChartData(t('Room_Status_Open'), [open]);
 			updateChartData(t('Closed'), [closed]);
 			updateChartData(t('On_Hold_Chats'), [onhold]);
 			updateChartData(t('Queued'), [queued]);
