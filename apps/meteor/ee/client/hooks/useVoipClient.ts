@@ -40,7 +40,9 @@ export const useVoipClient = (): UseVoipClientResult => {
 	const voipEnabled = settingVoipEnabled && voipConnectorEnabled;
 
 	useEffect(() => {
-		if (!voipEnabled || !user) {
+		const uid = user?._id;
+		const userExtension = user?.extension;
+		if (!uid || !userExtension || !voipEnabled) {
 			return;
 		}
 		return subscribeToNotifyLoggedIn(`voip.statuschanged`, (enabled: boolean): void => {
