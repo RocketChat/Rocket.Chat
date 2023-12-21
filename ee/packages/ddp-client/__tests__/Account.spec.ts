@@ -1,26 +1,24 @@
-import { ClientStreamImpl } from '../src/ClientStream';
-import { DDPDispatcher } from '../src/DDPDispatcher';
-import { AccountImpl } from '../src/types/Account';
-// import type { MethodPayload } from '../src/types/methodsPayloads';
+import WS from 'jest-websocket-mock';
 
-class DispatcherMock extends DDPDispatcher {
-	lastPayloadId: string;
+import { DDPSDK } from '../src/DDPSDK';
+import { handleConnection, handleMethod } from './helpers';
 
-	call(method: string, params: any[] = []) {
-		const payload = super.call(method, params);
-		this.lastPayloadId = payload.id;
-		return payload;
-	}
-}
+let server: WS;
+
+beforeEach(async () => {
+	server = new WS('ws://localhost:1234/websocket');
+});
+
+afterEach(() => {
+	server.close();
+	WS.clean();
+});
 
 describe('login', () => {
 	it('should save credentials to user object - loginWithToken', async () => {
-		const ws = new DispatcherMock();
-		const client = new ClientStreamImpl(ws);
+		const sdk = DDPSDK.create('ws://localhost:1234');
 
-		const acc = new AccountImpl(client);
-
-		const promise = acc.loginWithToken('token');
+		await handleConnection(server, sdk.connection.connect());
 
 		const messageResult = {
 			id: 123,
@@ -28,27 +26,18 @@ describe('login', () => {
 			tokenExpires: { $date: 99999999 },
 		};
 
-		ws.handleMessage(
-			JSON.stringify({
-				msg: 'result',
-				result: messageResult,
-				id: ws.lastPayloadId,
-			}),
-		);
-		await promise;
-		const { user } = acc;
+		await handleMethod(server, 'login', [{ resume: 'token' }], JSON.stringify(messageResult), sdk.account.loginWithToken('token'));
+
+		const { user } = sdk.account;
 		expect(user?.token).toBe(messageResult.token);
 		expect(user?.tokenExpires?.toISOString()).toBe(new Date(messageResult.tokenExpires.$date).toISOString());
 		expect(user?.id).toBe(messageResult.id);
 	});
 
 	it('should save credentials to user object - loginWithPassword', async () => {
-		const ws = new DispatcherMock();
-		const client = new ClientStreamImpl(ws);
+		const sdk = DDPSDK.create('ws://localhost:1234');
 
-		const acc = new AccountImpl(client);
-
-		const promise = acc.loginWithPassword('username', 'password');
+		await handleConnection(server, sdk.connection.connect());
 
 		const messageResult = {
 			id: 123,
@@ -56,19 +45,39 @@ describe('login', () => {
 			tokenExpires: { $date: 99999999 },
 		};
 
-		ws.handleMessage(
-			JSON.stringify({
-				msg: 'result',
-				result: messageResult,
-				id: ws.lastPayloadId,
-			}),
+		await handleMethod(
+			server,
+			'login',
+			[{ user: { username: 'username' }, password: { digest: 'password', algorithm: 'sha-256' } }],
+			JSON.stringify(messageResult),
+			sdk.account.loginWithPassword('username', 'password'),
 		);
 
-		await promise;
-		const { user } = acc;
-
+		const { user } = sdk.account;
 		expect(user?.token).toBe(messageResult.token);
 		expect(user?.tokenExpires?.toISOString()).toBe(new Date(messageResult.tokenExpires.$date).toISOString());
 		expect(user?.id).toBe(messageResult.id);
+	});
+
+	it('should logout', async () => {
+		const sdk = DDPSDK.create('ws://localhost:1234');
+
+		await handleConnection(server, sdk.connection.connect());
+
+		const messageResult = {
+			id: 123,
+			token: 'token',
+			tokenExpires: { $date: 99999999 },
+		};
+
+		const cb = jest.fn();
+		sdk.account.once('uid', cb);
+
+		await handleMethod(server, 'logout', [], JSON.stringify(messageResult), sdk.account.logout());
+
+		expect(cb).toHaveBeenCalledTimes(1);
+
+		const { user } = sdk.account;
+		expect(user).toBeUndefined();
 	});
 });
