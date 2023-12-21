@@ -35,7 +35,7 @@ const handleConnectionButNoResponse = async (server: WS, method: string, params:
 	});
 };
 
-export const handleMethod = async (server: WS, method: string, params: string[], responseResult: string, ...client: Promise<unknown>[]) => {
+export const handleMethod = async (server: WS, method: string, params: any[], responseResult: string, ...client: Promise<unknown>[]) => {
 	const result = await handleConnectionButNoResponse(server, method, params);
 	return Promise.all([server.send(`{"msg":"result","id":"${result.id}","result":${responseResult}}`), ...client]).then((result) => {
 		result.shift();

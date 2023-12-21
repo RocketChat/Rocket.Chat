@@ -205,6 +205,45 @@ it('should create and connect to a stream', async () => {
 	sdk.connection.close();
 });
 
+it.skip('should try to loginWithToken after reconnection', async () => {
+	const sdk = DDPSDK.create('ws://localhost:1234');
+
+	await handleConnection(server, sdk.connection.connect());
+
+	const messageResult = {
+		id: 123,
+		token: 'token1234',
+		tokenExpires: { $date: 99999999 },
+	};
+
+	const { loginWithToken } = sdk.account;
+	const loginFn = jest.fn((token: string) => loginWithToken.apply(sdk.account, [token]));
+	sdk.account.loginWithToken = loginFn;
+
+	await handleMethod(server, 'login', [{ resume: 'token' }], JSON.stringify(messageResult), sdk.account.loginWithToken('token'));
+
+	expect(sdk.account.user?.token).toBe(messageResult.token);
+	expect(loginFn).toHaveBeenCalledTimes(1);
+
+	// Fake timers are used to avoid waiting for the reconnect timeout
+	jest.useFakeTimers();
+
+	server.close();
+	WS.clean();
+	server = new WS('ws://localhost:1234/websocket');
+
+	const reconnect = new Promise((resolve) => sdk.connection.once('reconnecting', () => resolve(undefined)));
+	const connecting = new Promise((resolve) => sdk.connection.once('connecting', () => resolve(undefined)));
+	const connected = new Promise((resolve) => sdk.connection.once('connected', () => resolve(undefined)));
+	await handleConnection(server, jest.advanceTimersByTimeAsync(1000), reconnect, connecting, connected);
+
+	jest.advanceTimersByTimeAsync(1000);
+	expect(loginFn).toHaveBeenCalledTimes(2);
+
+	jest.useRealTimers();
+	sdk.connection.close();
+});
+
 describe('Method call and Disconnection cases', () => {
 	it('should handle properly if the message was sent after disconnection', async () => {
 		const sdk = DDPSDK.create('ws://localhost:1234');
