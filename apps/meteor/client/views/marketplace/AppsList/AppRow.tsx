@@ -48,7 +48,7 @@ const AppRow = ({ className, ...props }: App & { className: string }): ReactElem
 	const canUpdate = installed && version && marketplaceVersion && semver.lt(version, marketplaceVersion);
 
 	return (
-		<div role='listitem' className={className}>
+		<div role='listitem' className={className} key={id}>
 			<Card
 				horizontal
 				clickable
@@ -57,7 +57,7 @@ const AppRow = ({ className, ...props }: App & { className: string }): ReactElem
 				aria-describedby={`${id}-description`}
 				onClick={handleNavigateToAppInfo}
 				onKeyDown={handleKeyDown}
-				key={id}
+				tabIndex={0}
 			>
 				<CardRow>
 					<CardCol>
