@@ -11,7 +11,7 @@ import AppMenu from '../AppMenu';
 import BundleChips from '../BundleChips';
 
 // TODO: org props
-const AppRow = ({ className, ...props }: App & { className: string }): ReactElement => {
+const AppRow = ({ className, ...props }: App & { className?: string }): ReactElement => {
 	const { name, id, shortDescription, iconFileData, marketplaceVersion, iconFileContent, installed, bundledIn, version } = props;
 
 	const router = useRouter();
