@@ -1,11 +1,9 @@
-import { capitalize } from '@rocket.chat/string-helpers';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
 
-import { CustomOAuth } from '../../../app/custom-oauth/client/custom_oauth_client';
+import type { IOAuthProvider } from '../../definitions/IOAuthProvider';
 import type { LoginCallback } from '../../lib/2fa/overrideLoginMethod';
-import { overrideLoginMethod } from '../../lib/2fa/overrideLoginMethod';
 
 const isLoginCancelledError = (error: unknown): error is Meteor.Error =>
 	error instanceof Meteor.Error && error.error === Accounts.LoginCancelledError.numericError;
@@ -87,13 +85,6 @@ const credentialRequestCompleteHandler =
 		}
 	};
 
-interface IOAuthProvider {
-	requestCredential(
-		options: Meteor.LoginWithExternalServiceOptions | undefined,
-		credentialRequestCompleteCallback: (credentialTokenOrError?: string | Error) => void,
-	): void;
-}
-
 export const createOAuthTotpLoginMethod = (credentialProviderFactory?: () => IOAuthProvider) =>
 	function (this: IOAuthProvider, options: Meteor.LoginWithExternalServiceOptions | undefined, code: string, callback?: LoginCallback) {
 		if (lastCredentialToken && lastCredentialSecret) {
@@ -136,17 +127,3 @@ Accounts.onPageLoadLogin(async (loginAttempt: any) => {
 		result: undefined,
 	});
 });
-
-const loginWithOAuthTokenAndTOTP = createOAuthTotpLoginMethod();
-
-const oldConfigureLogin = CustomOAuth.prototype.configureLogin;
-CustomOAuth.prototype.configureLogin = function (...args) {
-	const loginWithService = `loginWith${capitalize(String(this.name || ''))}`;
-
-	oldConfigureLogin.apply(this, args);
-
-	const loginWithOAuthToken = (Meteor as any)[loginWithService];
-	(Meteor as any)[loginWithService] = (options: Meteor.LoginWithExternalServiceOptions, callback: LoginCallback) => {
-		overrideLoginMethod(loginWithOAuthToken, [options], callback, loginWithOAuthTokenAndTOTP);
-	};
-};

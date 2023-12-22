@@ -2,7 +2,6 @@ import '../app/cors/client';
 import '../app/apple/client';
 import '../app/authorization/client';
 import '../app/autotranslate/client';
-import '../app/custom-oauth/client/custom_oauth_client';
 import '../app/custom-sounds/client';
 import '../app/dolphin/client';
 import '../app/drupal/client';
