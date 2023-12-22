@@ -9,10 +9,11 @@ export type PrepareUsersProps = {
 	usersCount: number;
 	users: UserDescriptor[];
 	setUsers: Dispatch<SetStateAction<UserDescriptor[]>>;
+	indeterminate: boolean;
 };
 
 // TODO: review inner logic
-const PrepareUsers: FC<PrepareUsersProps> = ({ usersCount, users, setUsers }) => {
+const PrepareUsers: FC<PrepareUsersProps> = ({ usersCount, users, setUsers, indeterminate }) => {
 	const t = useTranslation();
 	const [current, setCurrent] = useState(0);
 	const [itemsPerPage, setItemsPerPage] = useState<25 | 50 | 100>(25);
@@ -30,7 +31,7 @@ const PrepareUsers: FC<PrepareUsersProps> = ({ usersCount, users, setUsers }) =>
 						<TableCell width='x36'>
 							<CheckBox
 								checked={usersCount > 0}
-								indeterminate={usersCount > 0 && usersCount !== users.length}
+								indeterminate={indeterminate}
 								onChange={(): void => {
 									setUsers((users) => {
 										const hasCheckedDeletedUsers = users.some(({ is_deleted, do_import }) => is_deleted && do_import);

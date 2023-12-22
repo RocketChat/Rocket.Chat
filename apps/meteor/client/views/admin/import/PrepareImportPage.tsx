@@ -4,7 +4,7 @@ import { Badge, Box, Button, ButtonGroup, Margins, ProgressBar, Throbber, Tabs }
 import { useDebouncedValue, useSafely } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useTranslation, useStream, useRouter } from '@rocket.chat/ui-contexts';
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 
 import {
 	ProgressStep,
@@ -18,6 +18,7 @@ import { numberFormat } from '../../../../lib/utils/stringUtils';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import type { ChannelDescriptor } from './ChannelDescriptor';
 import PrepareChannels from './PrepareChannels';
+import PrepareImportFilters from './PrepareImportFilters';
 import PrepareUsers from './PrepareUsers';
 import type { UserDescriptor } from './UserDescriptor';
 import { countMessages } from './countMessages';
@@ -52,13 +53,30 @@ function PrepareImportPage() {
 	const [messages, setMessages] = useState<IImporterSelectionMessage[]>([]);
 	const [isImporting, setImporting] = useSafely(useState(false));
 
+	const [tab, setTab] = useState<'users' | 'channels'>('users');
+	const handleTabClick = useMemo(() => (tab: 'users' | 'channels') => () => setTab(tab), []);
+
+	const [searchFilters, setSearchFilters] = useState('');
+	const prevSearchFilterText = useRef(searchFilters);
+	const searchText = useDebouncedValue(searchFilters, 500);
+
+	useEffect(() => {
+		prevSearchFilterText.current = searchText;
+	}, [searchText]);
+
 	const selectedUsers = useMemo(() => {
-		return users.filter(({ do_import }) => do_import);
-	}, [users]);
+		return users.filter(({ do_import, username }) => {
+			if (tab === 'users' && searchText) return username.includes(searchText) && do_import;
+			return do_import;
+		});
+	}, [searchText, tab, users]);
 
 	const selectedChannels = useMemo(() => {
-		return channels.filter(({ do_import }) => do_import);
-	}, [channels]);
+		return channels.filter(({ do_import, name }) => {
+			if (tab === 'channels' && searchText) return name.includes(searchText) && do_import;
+			return do_import;
+		});
+	}, [channels, searchText, tab]);
 
 	const messagesCount = useMemo(() => {
 		return countMessages(selectedUsers, selectedChannels, messages);
@@ -174,9 +192,6 @@ function PrepareImportPage() {
 		}
 	};
 
-	const [tab, setTab] = useState('users');
-	const handleTabClick = useMemo(() => (tab: string) => () => setTab(tab), []);
-
 	const statusDebounced = useDebouncedValue(status, 100);
 
 	const handleMinimumImportData = !!(
@@ -193,6 +208,7 @@ function PrepareImportPage() {
 					</Button>
 				</ButtonGroup>
 			</PageHeader>
+			{!isPreparing && <PrepareImportFilters setFilters={setSearchFilters} />}
 			<PageScrollableContentWithShadow>
 				<Box marginInline='auto' marginBlock='x24' width='full' maxWidth='590px'>
 					<Box is='h2' fontScale='p2m'>
@@ -227,9 +243,21 @@ function PrepareImportPage() {
 								)}
 							</>
 						)}
-						{!isPreparing && tab === 'users' && <PrepareUsers usersCount={selectedUsers.length} users={users} setUsers={setUsers} />}
+						{!isPreparing && tab === 'users' && (
+							<PrepareUsers
+								usersCount={selectedUsers.length}
+								users={selectedUsers.length === 0 ? users : selectedUsers}
+								setUsers={setUsers}
+								indeterminate={selectedUsers.length > 0 && selectedUsers.length !== users.length}
+							/>
+						)}
 						{!isPreparing && tab === 'channels' && (
-							<PrepareChannels channels={channels} channelsCount={selectedChannels.length} setChannels={setChannels} />
+							<PrepareChannels
+								channels={selectedChannels.length === 0 ? channels : selectedChannels}
+								channelsCount={selectedChannels.length}
+								setChannels={setChannels}
+								indeterminate={selectedChannels.length > 0 && selectedChannels.length !== channels.length}
+							/>
 						)}
 					</Margins>
 				</Box>

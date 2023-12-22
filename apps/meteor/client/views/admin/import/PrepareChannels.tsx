@@ -9,10 +9,11 @@ export type PrepareChannelsProps = {
 	channelsCount: number;
 	channels: ChannelDescriptor[];
 	setChannels: Dispatch<SetStateAction<ChannelDescriptor[]>>;
+	indeterminate: boolean;
 };
 
 // TODO: review inner logic
-const PrepareChannels: FC<PrepareChannelsProps> = ({ channels, channelsCount, setChannels }) => {
+const PrepareChannels: FC<PrepareChannelsProps> = ({ channels, channelsCount, setChannels, indeterminate }) => {
 	const t = useTranslation();
 	const [current, setCurrent] = useState(0);
 	const [itemsPerPage, setItemsPerPage] = useState<25 | 50 | 100>(25);
@@ -34,7 +35,7 @@ const PrepareChannels: FC<PrepareChannelsProps> = ({ channels, channelsCount, se
 						<TableCell width='x36'>
 							<CheckBox
 								checked={channelsCount > 0}
-								indeterminate={channelsCount > 0 && channelsCount !== channels.length}
+								indeterminate={indeterminate}
 								onChange={(): void => {
 									setChannels((channels) => {
 										const hasCheckedArchivedChannels = channels.some(({ is_archived, do_import }) => is_archived && do_import);
