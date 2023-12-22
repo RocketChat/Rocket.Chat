@@ -2,13 +2,20 @@ import { Emitter } from '@rocket.chat/emitter';
 
 import type { ClientStream } from './ClientStream';
 
+type User = {
+	id: string;
+	username?: string;
+	token?: string;
+	tokenExpires?: Date;
+} & Record<string, unknown>;
+
 export interface Account
 	extends Emitter<{
 		uid: string | undefined;
-		user: Record<string, unknown> | undefined;
+		user?: User;
 	}> {
 	uid?: string;
-	user?: Record<string, unknown>;
+	user?: User;
 	loginWithPassword(username: string, password: string): Promise<void>;
 	loginWithToken(token: string): Promise<{
 		id: string;
@@ -21,12 +28,7 @@ export interface Account
 export class AccountImpl
 	extends Emitter<{
 		uid: string | undefined;
-		user: {
-			id: string;
-			username?: string;
-			token?: string;
-			tokenExpires?: Date;
-		};
+		user: User;
 	}>
 	implements Account
 {
@@ -36,11 +38,6 @@ export class AccountImpl
 
 	constructor(private readonly client: ClientStream) {
 		super();
-		this.client.on('connected', () => {
-			if (this.user?.token) {
-				this.loginWithToken(this.user.token);
-			}
-		});
 
 		client.onCollection('users', (data) => {
 			if (data.collection !== 'users') {
@@ -117,6 +114,7 @@ export class AccountImpl
 			wait: true,
 		});
 		this.uid = undefined;
+		this.user = undefined;
 		this.emit('uid', this.uid);
 	}
 }
