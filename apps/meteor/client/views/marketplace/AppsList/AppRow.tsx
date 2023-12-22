@@ -1,7 +1,5 @@
 import type { App } from '@rocket.chat/core-typings';
-import { css } from '@rocket.chat/css-in-js';
-import { Badge, Box, Card, CardBody, CardCol, CardControls, CardHeader, CardRow, CardTitle, Palette } from '@rocket.chat/fuselage';
-import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
+import { Badge, Card, CardBody, CardCol, CardControls, CardHeader, CardRow, CardTitle } from '@rocket.chat/fuselage';
 import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import type { KeyboardEvent, MouseEvent, ReactElement } from 'react';
 import React, { memo } from 'react';
@@ -13,14 +11,11 @@ import AppMenu from '../AppMenu';
 import BundleChips from '../BundleChips';
 
 // TODO: org props
-const AppRow = (props: App): ReactElement => {
-	const { name, id, shortDescription, iconFileData, marketplaceVersion, iconFileContent, installed, bundledIn, version, className } = props;
-	const breakpoints = useBreakpoints();
+const AppRow = ({ className, ...props }: App & { className: string }): ReactElement => {
+	const { name, id, shortDescription, iconFileData, marketplaceVersion, iconFileContent, installed, bundledIn, version } = props;
 
 	const router = useRouter();
 	const context = useRouteParameter('context');
-
-	const isMobile = !breakpoints.includes('md');
 
 	const handleNavigateToAppInfo = () => {
 		if (!context) {
@@ -53,39 +48,38 @@ const AppRow = (props: App): ReactElement => {
 	const canUpdate = installed && version && marketplaceVersion && semver.lt(version, marketplaceVersion);
 
 	return (
-		<Card
-			horizontal
-			role='link'
-			aria-labelledby={`${id}-title`}
-			aria-describedby={`${id}-description`}
-			onClick={handleNavigateToAppInfo}
-			onKeyDown={handleKeyDown}
-			role='listitem'
-			key={id}
-			className={className}
-			// className={hoverClass}
-		>
-			<CardRow>
-				<CardCol>
-					<AppAvatar size='x40' iconFileContent={iconFileContent} iconFileData={iconFileData} />
-				</CardCol>
-				<CardCol>
-					<CardHeader>
-						<CardTitle variant='h5' id={`${id}-title`}>
-							{name}
-						</CardTitle>
-						{Boolean(bundledIn.length) && <BundleChips bundledIn={bundledIn} />}
-					</CardHeader>
-					{shortDescription && <CardBody id={`${id}-description`}>{shortDescription}</CardBody>}
-				</CardCol>
-			</CardRow>
-			<CardControls onClick={preventClickPropagation} style={{ justifyContent: 'flex-end' }}>
-				{canUpdate && <Badge small variant='primary' />}
-				<Badge small variant='primary' />
-				<AppStatus app={props} isAppDetailsPage={false} installed={installed} />
-				<AppMenu app={props} isAppDetailsPage={false} mis={4} />
-			</CardControls>
-		</Card>
+		<div role='listitem' className={className}>
+			<Card
+				horizontal
+				clickable
+				role='link'
+				aria-labelledby={`${id}-title`}
+				aria-describedby={`${id}-description`}
+				onClick={handleNavigateToAppInfo}
+				onKeyDown={handleKeyDown}
+				key={id}
+			>
+				<CardRow>
+					<CardCol>
+						<AppAvatar size='x40' iconFileContent={iconFileContent} iconFileData={iconFileData} />
+					</CardCol>
+					<CardCol>
+						<CardHeader>
+							<CardTitle variant='h5' id={`${id}-title`}>
+								{name}
+							</CardTitle>
+							{Boolean(bundledIn.length) && <BundleChips bundledIn={bundledIn} />}
+						</CardHeader>
+						{shortDescription && <CardBody id={`${id}-description`}>{shortDescription}</CardBody>}
+					</CardCol>
+				</CardRow>
+				<CardControls onClick={preventClickPropagation} style={{ justifyContent: 'flex-end' }}>
+					{canUpdate && <Badge small variant='primary' />}
+					<AppStatus app={props} isAppDetailsPage={false} installed={installed} />
+					<AppMenu app={props} isAppDetailsPage={false} mis={4} />
+				</CardControls>
+			</Card>
+		</div>
 	);
 };
 
