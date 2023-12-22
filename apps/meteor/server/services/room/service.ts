@@ -111,15 +111,9 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 				throw new MeteorError('error-code-required', 'Code required', { method: 'joinRoom' });
 			}
 
-			const isCorrectJoinCode = !!(await Rooms.findOne(
-				{
-					_id: room._id,
-					joinCode,
-				},
-				{
-					projection: { _id: 1 },
-				},
-			));
+			const isCorrectJoinCode = !!(await Rooms.findOneByJoinCodeAndId(joinCode, room._id, {
+				projection: { _id: 1 },
+			}));
 
 			if (!isCorrectJoinCode) {
 				throw new MeteorError('error-code-invalid', 'Invalid code', { method: 'joinRoom' });
