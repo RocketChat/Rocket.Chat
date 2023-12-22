@@ -326,7 +326,7 @@
   "onboarding.component.form.action.confirm": "Confirmar",
   "onboarding.component.form.termsAndConditions": "Acepto os <1>Termos e condicións</1> e a <3>Política de privacidade</3>",
   "onboarding.component.emailCodeFallback": "Non recibiches o correo electrónico? <1>Reenviar</1> ou <3>Cambiar correo electrónico</3>",
-  "onboarding.page.form.title": "Imos <1>Iniciar</1> o teu espazo de traballo",
+  "onboarding.page.form.title": "Imos Iniciar o teu espazo de traballo",
   "onboarding.page.emailConfirmed.title": "Correo electrónico confirmado!",
   "onboarding.page.emailConfirmed.subtitle": "Podes volver á túa aplicación Rocket.Chat: xa lanzamos o teu espazo de traballo.",
   "onboarding.page.checkYourEmail.title": "Comprobe o seu correo electrónico",

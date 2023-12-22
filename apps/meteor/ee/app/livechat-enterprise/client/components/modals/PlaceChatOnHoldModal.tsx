@@ -13,7 +13,7 @@ const PlaceChatOnHoldModal: FC<PlaceChatOnHoldModalProps> = ({ onCancel, onOnHol
 	const t = useTranslation();
 
 	return (
-		<Modal {...props}>
+		<Modal {...props} data-qa-id='on-hold-modal'>
 			<Modal.Header>
 				<Modal.Icon name='pause-unfilled' />
 				<Modal.Title>{t('Omnichannel_onHold_Chat')}</Modal.Title>

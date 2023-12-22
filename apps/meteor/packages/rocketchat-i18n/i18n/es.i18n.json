@@ -4831,7 +4831,7 @@
   "onboarding.component.form.action.completeRegistration": "Completar registro.",
   "onboarding.component.form.termsAndConditions": "Acepto los <1>términos y condiciones</1> y la <3>política de privacidad</3>",
   "onboarding.component.emailCodeFallback": "¿No has recibido el correo electrónico? <1>Volver a enviar</1> o <3>cambiar correo electrónico</3>",
-  "onboarding.page.form.title": "Vamos a <1>Iniciar</1> tu espacio de trabajo",
+  "onboarding.page.form.title": "Vamos a Iniciar tu espacio de trabajo",
   "onboarding.page.emailConfirmed.title": "Correo electrónico confirmado",
   "onboarding.page.emailConfirmed.subtitle": "Puedes volver a la aplicación de Rocket.Chat. Ya hemos iniciado tu espacio de trabajo.",
   "onboarding.page.checkYourEmail.title": "Comprueba tu correo electrónico",

@@ -42,7 +42,7 @@ const AgentInfo = ({ uid }: AgentInfoProps) => {
 	const { username, statusLivechat, status: userStatus } = data?.user;
 
 	return (
-		<Contextualbar>
+		<Contextualbar data-qa-id='agent-info-contextual-bar'>
 			<ContextualbarHeader>
 				<ContextualbarTitle>{t('User_Info')}</ContextualbarTitle>
 				<ContextualbarClose onClick={() => router.navigate('/omnichannel/agents')} />

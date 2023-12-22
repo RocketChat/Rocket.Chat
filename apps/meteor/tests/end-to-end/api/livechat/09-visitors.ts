@@ -44,6 +44,10 @@ describe('LIVECHAT - visitors', function () {
 			const { body } = await request.post(api('livechat/visitor')).send({ visitor: {} });
 			expect(body).to.have.property('success', false);
 		});
+		it('should fail when token is an empty string', async () => {
+			const { body } = await request.post(api('livechat/visitor')).send({ visitor: { token: '' } });
+			expect(body).to.have.property('success', false);
+		});
 		it('should create a visitor', async () => {
 			const { body } = await request.post(api('livechat/visitor')).send({ visitor: { token: 'test' } });
 			expect(body).to.have.property('success', true);

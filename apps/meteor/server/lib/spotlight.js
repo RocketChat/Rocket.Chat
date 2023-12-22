@@ -236,7 +236,7 @@ export class Spotlight {
 			}
 		}
 
-		if (users.length === 0 && canListOutsiders) {
+		if (users.length === 0 && canListOutsiders && text) {
 			const exactMatch = await Users.findOneByUsernameIgnoringCase(text, {
 				projection: options.projection,
 				readPreference: options.readPreference,
@@ -265,7 +265,7 @@ export class Spotlight {
 			if (await this._searchOutsiderUsers(searchParams)) {
 				return users;
 			}
-		} else if (await this._searchConnectedUsers(userId, searchParams)) {
+		} else if (await this._searchConnectedUsers(userId, searchParams, 'd')) {
 			return users;
 		}
 
