@@ -39,6 +39,7 @@ The just created `sdk` exposes an `account` interface (`sdk.account`), which sho
 While the `sdk` instance is kept in memory, you can find some user information and credentials by referencing `sdk.account.user`
 
 ## REST API
+> TIP: You might have to enable CORS in your Rocket.Chat instance for this to work.
 
 The sdk exposes a `rest` interface, which accept all rest methods (`get`, `post`, `put`, `delete`).
 
