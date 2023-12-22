@@ -48,13 +48,6 @@ Example call:
 
 > WARNING: if you wrap a rest call in a try catch block, the error will be of type `Response`. By calling `error.json()` you get access to the server error response.
 
-## Method calls
-
-Rocket.Chat was built on top of `meteorjs`. The sdk exposes a `call` method to use those.
-
-Example usage:
-`await sdk.call('sendMessage', { rid: id, msg } );`
-
 ## Streams
 
 Rocket.Chat uses websockets as to provide realtime data. You can subscribe to publications in order to listen to data updates.
