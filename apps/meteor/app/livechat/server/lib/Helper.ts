@@ -257,10 +257,8 @@ export const createLivechatSubscription = async (
 			status,
 		},
 		ts: new Date(),
-		lr: new Date(),
-		ls: new Date(),
 		...(department && { department }),
-	};
+	} as InsertionModel<ISubscription>;
 
 	return Subscriptions.insertOne(subscriptionData);
 };
