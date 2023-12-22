@@ -28,7 +28,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 	const statusOptions: [string, string][] = [
 		['all', t('All')],
 		['closed', t('Closed')],
-		['opened', t('Open')],
+		['opened', t('Room_Status_Open')],
 		['onhold', t('On_Hold_Chats')],
 	];
 

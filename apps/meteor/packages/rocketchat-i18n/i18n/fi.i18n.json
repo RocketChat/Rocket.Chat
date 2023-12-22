@@ -5574,7 +5574,7 @@
   "onboarding.component.form.action.confirm": "Vahvista",
   "onboarding.component.form.termsAndConditions": "Hyväksyn käyttöehdot <1>ja</1> <3>tietosuojaselosteen</3>",
   "onboarding.component.emailCodeFallback": "Etkö saanut sähköpostia? <1>Lähetä uudelleen</1> tai <3>muuta sähköpostia</3>",
-  "onboarding.page.form.title": " <1>Käynnistetään</1> työtilasi",
+  "onboarding.page.form.title": " Käynnistetään työtilasi",
   "onboarding.page.emailConfirmed.title": "Sähköposti vahvistettu!",
   "onboarding.page.emailConfirmed.subtitle": "Voit palata chatsovellukseen, olemme jo käynnistäneet työtilasi.",
   "onboarding.page.checkYourEmail.title": "Tarkista sähköpostisi",
