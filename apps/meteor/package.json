@@ -257,7 +257,7 @@
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/mp3-encoder": "0.24.0",
 		"@rocket.chat/omnichannel-services": "workspace:^",
-		"@rocket.chat/onboarding-ui": "~0.33.2",
+		"@rocket.chat/onboarding-ui": "~0.33.3",
 		"@rocket.chat/password-policies": "workspace:^",
 		"@rocket.chat/pdf-worker": "workspace:^",
 		"@rocket.chat/poplib": "workspace:^",
