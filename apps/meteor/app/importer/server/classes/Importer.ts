@@ -12,6 +12,7 @@ import type { ImporterInfo } from '../definitions/ImporterInfo';
 import { ImportDataConverter } from './ImportDataConverter';
 import type { IConverterOptions } from './ImportDataConverter';
 import { ImporterProgress } from './ImporterProgress';
+import { SelectionMessage } from './ImporterSelectionMessage';
 import { ImporterWebsocket } from './ImporterWebsocket';
 
 type OldSettings = {
@@ -366,6 +367,7 @@ export class Importer {
 
 		const users = await ImportData.getAllUsersForSelection();
 		const channels = await ImportData.getAllChannelsForSelection();
+		const messages = await ImportData.getAllMessages().toArray();
 		const hasDM = await ImportData.checkIfDirectMessagesExists();
 
 		const selectionUsers = users.map(
@@ -375,13 +377,17 @@ export class Importer {
 		const selectionChannels = channels.map(
 			(c) => new SelectionChannel(c.data.importIds[0], c.data.name, Boolean(c.data.archived), true, c.data.t === 'p', c.data.t === 'd'),
 		);
-		const selectionMessages = await ImportData.countMessages();
+
+		const selectionMessages: SelectionMessage[] = messages.map((m) => new SelectionMessage(m._id, m.data.rid, m.data.u._id));
+
+		const selectionMessagesCount = await ImportData.countMessages();
+		// In the future, iterate the cursor?
 
 		if (hasDM) {
 			selectionChannels.push(new SelectionChannel('__directMessages__', t('Direct_Messages'), false, true, true, true));
 		}
 
-		const results = new Selection(this.info.name, selectionUsers, selectionChannels, selectionMessages);
+		const results = new Selection(this.info.name, selectionUsers, selectionChannels, selectionMessagesCount, selectionMessages);
 
 		return results;
 	}

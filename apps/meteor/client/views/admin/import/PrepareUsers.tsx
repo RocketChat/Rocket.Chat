@@ -5,7 +5,7 @@ import React, { useState, useCallback } from 'react';
 
 import type { UserDescriptor } from './UserDescriptor';
 
-type PrepareUsersProps = {
+export type PrepareUsersProps = {
 	usersCount: number;
 	users: UserDescriptor[];
 	setUsers: Dispatch<SetStateAction<UserDescriptor[]>>;

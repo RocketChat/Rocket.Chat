@@ -5,7 +5,7 @@ import React, { useState, useCallback } from 'react';
 
 import type { ChannelDescriptor } from './ChannelDescriptor';
 
-type PrepareChannelsProps = {
+export type PrepareChannelsProps = {
 	channelsCount: number;
 	channels: ChannelDescriptor[];
 	setChannels: Dispatch<SetStateAction<ChannelDescriptor[]>>;
