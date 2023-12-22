@@ -15,7 +15,12 @@ const openCenteredPopup = (url: string, width: number, height: number) => {
 	const features = `width=${width},height=${height},left=${left},top=${top},scrollbars=yes`;
 
 	const newwindow = window.open(url, 'Login', features);
-	newwindow?.focus();
+
+	if (!newwindow) {
+		throw new Error('Could not open popup');
+	}
+
+	newwindow.focus();
 
 	return newwindow;
 };
@@ -35,24 +40,10 @@ const getPopupUrl = (credentialToken: string): string => {
 	return url.href;
 };
 
-const waitForPopupClose = (popup: Window | null) => {
+const waitForPopupClose = (popup: Window) => {
 	return new Promise<void>((resolve) => {
 		const checkPopupOpen = setInterval(() => {
-			let popupClosed;
-			try {
-				// Fix for #328 - added a second test criteria (popup.closed === undefined)
-				// to humour this Android quirk:
-				// http://code.google.com/p/android/issues/detail?id=21061
-				popupClosed = popup?.closed || popup?.closed === undefined;
-			} catch (e) {
-				// For some unknown reason, IE9 (and others?) sometimes (when
-				// the popup closes too quickly?) throws "SCRIPT16386: No such
-				// interface supported" when trying to read 'popup.closed'. Try
-				// again in 100ms.
-				return;
-			}
-
-			if (popupClosed) {
+			if (popup.closed || popup.closed === undefined) {
 				clearInterval(checkPopupOpen);
 				resolve();
 			}

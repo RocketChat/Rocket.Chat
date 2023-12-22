@@ -3,6 +3,7 @@ import { Google } from 'meteor/google-oauth';
 import { Meteor } from 'meteor/meteor';
 
 import { overrideLoginMethod, type LoginCallback } from '../../lib/2fa/overrideLoginMethod';
+import { createOAuthTotpLoginMethod } from './oauth';
 
 declare module 'meteor/accounts-base' {
 	// eslint-disable-next-line @typescript-eslint/no-namespace
@@ -18,13 +19,12 @@ declare module 'meteor/meteor' {
 	namespace Meteor {
 		function loginWithGoogle(
 			options?:
-				| (Meteor.LoginWithExternalServiceOptions & {
+				| Meteor.LoginWithExternalServiceOptions & {
 						loginUrlParameters?: {
 							include_granted_scopes?: boolean;
 							hd?: string;
 						};
-				  })
-				| null,
+				  },
 			callback?: LoginCallback,
 		): void;
 	}
@@ -32,16 +32,18 @@ declare module 'meteor/meteor' {
 
 const { loginWithGoogle } = Meteor;
 
+const innerLoginWithGoogleAndTOTP = createOAuthTotpLoginMethod(Google);
+
 const loginWithGoogleAndTOTP = (
-	options?:
+	options:
 		| (Meteor.LoginWithExternalServiceOptions & {
 				loginUrlParameters?: {
 					include_granted_scopes?: boolean;
 					hd?: string;
 				};
 		  })
-		| null,
-	code?: string,
+		| undefined,
+	code: string,
 	callback?: LoginCallback,
 ) => {
 	if (Meteor.isCordova && Google.signIn) {
@@ -62,8 +64,7 @@ const loginWithGoogleAndTOTP = (
 		options.loginUrlParameters.hd = Accounts._options.restrictCreationByEmailDomain;
 	}
 
-	const credentialRequestCompleteCallback = Accounts.oauth.credentialRequestCompleteHandler(callback, code);
-	Google.requestCredential(options, credentialRequestCompleteCallback);
+	innerLoginWithGoogleAndTOTP(options, code, callback);
 };
 
 Meteor.loginWithGoogle = (options, callback) => {

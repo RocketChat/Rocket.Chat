@@ -70,7 +70,7 @@ export class CustomOAuth implements IOAuthProvider {
 	configureLogin() {
 		const loginWithService = `loginWith${capitalize(String(this.name || ''))}` as const;
 
-		const loginWithOAuthTokenAndTOTP = createOAuthTotpLoginMethod(() => this);
+		const loginWithOAuthTokenAndTOTP = createOAuthTotpLoginMethod(this);
 
 		const loginWithOAuthToken = async (options?: Meteor.LoginWithExternalServiceOptions, callback?: LoginCallback) => {
 			const credentialRequestCompleteCallback = Accounts.oauth.credentialRequestCompleteHandler(callback);

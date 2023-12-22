@@ -5,7 +5,7 @@ import { overrideLoginMethod } from '../../lib/2fa/overrideLoginMethod';
 import { createOAuthTotpLoginMethod } from './oauth';
 
 const { loginWithTwitter } = Meteor;
-const loginWithTwitterAndTOTP = createOAuthTotpLoginMethod(() => Twitter);
+const loginWithTwitterAndTOTP = createOAuthTotpLoginMethod(Twitter);
 Meteor.loginWithTwitter = (options, callback) => {
 	overrideLoginMethod(loginWithTwitter, [options], callback, loginWithTwitterAndTOTP);
 };

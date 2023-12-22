@@ -4,15 +4,11 @@ type LoginError = globalThis.Error | Meteor.Error | Meteor.TypedError;
 
 export type LoginCallback = (error: LoginError | undefined, result?: unknown) => void;
 
-type LoginMethod<TArgs extends any[]> = (...args: [...args: TArgs, cb: LoginCallback]) => void;
-
-type LoginMethodWithTotp<TArgs extends any[]> = (...args: [...args: TArgs, code: string, cb: LoginCallback]) => void;
-
-export const overrideLoginMethod = <TArgs extends any[], TLoginMethod extends LoginMethod<TArgs>>(
-	loginMethod: TLoginMethod,
+export const overrideLoginMethod = <TArgs extends any[]>(
+	loginMethod: (...args: [...args: TArgs, cb: LoginCallback]) => void,
 	loginArgs: TArgs,
 	callback: LoginCallback | undefined,
-	loginMethodTOTP: LoginMethodWithTotp<TArgs>,
+	loginMethodTOTP: (...args: [...args: TArgs, code: string, cb: LoginCallback]) => void,
 ) => {
 	loginMethod(...loginArgs, async (error: LoginError | undefined, result?: unknown) => {
 		if (!isTotpRequiredError(error)) {
@@ -28,7 +24,12 @@ export const overrideLoginMethod = <TArgs extends any[], TLoginMethod extends Lo
 			emailOrUsername: typeof loginArgs[0] === 'string' ? loginArgs[0] : undefined,
 			originalCallback: callback,
 			onCode: (code: string) => {
-				loginMethodTOTP(...loginArgs, code, (error: LoginError | undefined) => {
+				loginMethodTOTP(...loginArgs, code, (error: LoginError | undefined, result?: unknown) => {
+					if (!error) {
+						callback?.(undefined, result);
+						return;
+					}
+
 					if (isTotpInvalidError(error)) {
 						callback?.(error);
 						return;

@@ -1,4 +1,4 @@
-import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -29,11 +29,12 @@ type TwoFactorModalProps = {
 );
 
 const TwoFactorModal = ({ onConfirm, onClose, invalidAttempt, ...props }: TwoFactorModalProps): ReactElement => {
+	const uid = useUserId();
 	const logoutOtherSessions = useEndpoint('POST', '/v1/users.logoutOtherClients');
 
 	const confirm = (code: any, method: Method): void => {
 		onConfirm(code, method);
-		logoutOtherSessions();
+		if (uid) logoutOtherSessions();
 	};
 	if (props.method === Method.TOTP) {
 		return <TwoFactorTotp onConfirm={confirm} onClose={onClose} invalidAttempt={invalidAttempt} />;

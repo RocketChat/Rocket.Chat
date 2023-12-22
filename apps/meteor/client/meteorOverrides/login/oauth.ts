@@ -62,11 +62,9 @@ const tryLoginAfterPopupClosed = (
 
 	Accounts.callLoginMethod({
 		methodArguments: [methodArgument],
-		userCallback:
-			callback &&
-			function (err) {
-				callback(convertError(err));
-			},
+		userCallback: (err) => {
+			callback?.(convertError(err));
+		},
 	});
 };
 
@@ -78,19 +76,19 @@ const credentialRequestCompleteHandler =
 			return;
 		}
 
-		if (credentialTokenOrError && credentialTokenOrError instanceof Error) {
+		if (credentialTokenOrError instanceof Error) {
 			callback?.(credentialTokenOrError);
-		} else {
-			tryLoginAfterPopupClosed(credentialTokenOrError, callback, totpCode);
+			return;
 		}
+
+		tryLoginAfterPopupClosed(credentialTokenOrError, callback, totpCode);
 	};
 
-export const createOAuthTotpLoginMethod = (credentialProviderFactory?: () => IOAuthProvider) =>
-	function (this: IOAuthProvider, options: Meteor.LoginWithExternalServiceOptions | undefined, code: string, callback?: LoginCallback) {
+export const createOAuthTotpLoginMethod =
+	(provider: IOAuthProvider) => (options: Meteor.LoginWithExternalServiceOptions | undefined, code: string, callback?: LoginCallback) => {
 		if (lastCredentialToken && lastCredentialSecret) {
 			tryLoginAfterPopupClosed(lastCredentialToken, callback, code, lastCredentialSecret);
 		} else {
-			const provider = credentialProviderFactory?.() || this;
 			const credentialRequestCompleteCallback = credentialRequestCompleteHandler(callback, code);
 			provider.requestCredential(options, credentialRequestCompleteCallback);
 		}

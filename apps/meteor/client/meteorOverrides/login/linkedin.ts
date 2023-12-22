@@ -12,7 +12,7 @@ declare module 'meteor/meteor' {
 	}
 }
 const { loginWithLinkedin } = Meteor;
-const loginWithLinkedinAndTOTP = createOAuthTotpLoginMethod(() => Linkedin);
+const loginWithLinkedinAndTOTP = createOAuthTotpLoginMethod(Linkedin);
 Meteor.loginWithLinkedin = (options, callback) => {
 	overrideLoginMethod(loginWithLinkedin, [options], callback, loginWithLinkedinAndTOTP);
 };
