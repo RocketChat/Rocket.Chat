@@ -8,11 +8,25 @@ import { AppClientOrchestratorInstance } from '../../ee/client/apps/orchestrator
 import { AppsContext } from '../contexts/AppsContext';
 import { useIsEnterprise } from '../hooks/useIsEnterprise';
 import { useInvalidateLicense } from '../hooks/useLicense';
+import type { AsyncState } from '../lib/asyncState';
 import { AsyncStatePhase } from '../lib/asyncState';
 import { useInvalidateAppsCountQueryCallback } from '../views/marketplace/hooks/useAppsCountQuery';
 import type { App } from '../views/marketplace/types';
 
 const sortByName = (apps: App[]): App[] => apps.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1));
+
+const getAppState = (
+	loading: boolean,
+	apps: App[] | undefined,
+): Omit<
+	AsyncState<{
+		apps: App[];
+	}>,
+	'error'
+> => ({
+	phase: loading ? AsyncStatePhase.LOADING : AsyncStatePhase.RESOLVED,
+	value: { apps: apps || [] },
+});
 
 const AppsProvider: FC = ({ children }) => {
 	const isAdminUser = usePermission('manage-apps');
@@ -129,22 +143,16 @@ const AppsProvider: FC = ({ children }) => {
 		},
 	);
 
+	const [marketplaceAppsData, installedAppsData, privateAppsData] = store.data || [];
+	const { isLoading } = store;
+
 	return (
 		<AppsContext.Provider
 			children={children}
 			value={{
-				installedApps: {
-					phase: store.isLoading ? AsyncStatePhase.LOADING : AsyncStatePhase.RESOLVED,
-					value: { apps: store.data?.[1] || [] },
-				},
-				marketplaceApps: {
-					phase: store.isLoading ? AsyncStatePhase.LOADING : AsyncStatePhase.RESOLVED,
-					value: { apps: store.data?.[0] || [] },
-				},
-				privateApps: {
-					phase: store.isLoading ? AsyncStatePhase.LOADING : AsyncStatePhase.RESOLVED,
-					value: { apps: store.data?.[2] || [] },
-				},
+				installedApps: getAppState(isLoading, installedAppsData),
+				marketplaceApps: getAppState(isLoading, marketplaceAppsData),
+				privateApps: getAppState(isLoading, privateAppsData),
 				reload: async () => {
 					await Promise.all([queryClient.invalidateQueries(['marketplace'])]);
 				},
