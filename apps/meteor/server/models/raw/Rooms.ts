@@ -562,7 +562,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findOne(query, options);
 	}
 
-	findOneByJoinCodeAndId(joinCode: string, rid: IRoom['_id'], options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
+	findOneByJoinCodeAndId(joinCode: string, rid: IRoom['_id'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
 		const query: Filter<IRoom> = {
 			_id: rid,
 			joinCode,
