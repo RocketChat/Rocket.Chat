@@ -88,6 +88,10 @@ export abstract class BaseRaw<
 			indexes?.push({ ...this.options._updatedAtIndexOptions, key: { _updatedAt: 1 } });
 		}
 
+			if(this.collectionName === 'rocketchat_message' && await this.col.indexExists('msg_text')) {
+			await this.col.dropIndex('msg_text');
+		}
+
 		if (indexes?.length) {
 			if (this.pendingIndexes) {
 				await this.pendingIndexes;
