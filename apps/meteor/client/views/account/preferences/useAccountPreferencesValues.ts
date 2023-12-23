@@ -1,7 +1,7 @@
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 
 export type AccountPreferencesData = {
-	language?: string;
+	language: string;
 	dontAskAgainList?: string[];
 	enableAutoAway?: boolean;
 	idleTimeLimit?: number;
@@ -39,7 +39,7 @@ export type AccountPreferencesData = {
 };
 
 export const useAccountPreferencesValues = (): AccountPreferencesData => {
-	const language = useUserPreference<string>('language');
+	const language = useUserPreference<string>('language') || '';
 	const userDontAskAgainList = useUserPreference<{ action: string; label: string }[]>('dontAskAgainList') || [];
 	const dontAskAgainList = userDontAskAgainList.map(({ action }) => action);
 	const enableAutoAway = useUserPreference<boolean>('enableAutoAway');
