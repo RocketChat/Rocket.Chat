@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isThreadMessage } from '@rocket.chat/core-typings';
-import { MessageDivider } from '@rocket.chat/fuselage';
+import { MessageDivider, Box } from '@rocket.chat/fuselage';
 import { useSetting, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ComponentProps } from 'react';
 import React, { Fragment, memo } from 'react';
@@ -58,9 +58,13 @@ export const MessageList = ({ rid, scrollMessageList }: MessageListProps): React
 					return (
 						<Fragment key={message._id}>
 							{showDivider && (
-								<MessageDivider unreadLabel={showUnreadDivider ? t('Unread_Messages').toLowerCase() : undefined}>
-									{newDay && formatDate(message.ts)}
-								</MessageDivider>
+								<Box style={{ position: 'sticky', top: '0' }}>
+									<MessageDivider unreadLabel={showUnreadDivider ? t('Unread_Messages').toLowerCase() : undefined}>
+										{newDay && formatDate(message.ts)}
+									</MessageDivider>
+
+								</Box>
+
 							)}
 
 							{visible && (
