@@ -16,7 +16,7 @@ const PreferencesLocalizationSection = () => {
 		mapOptions.sort(([a], [b]) => a.localeCompare(b));
 		return mapOptions;
 	}, [languages]);
-
+	
 	const languageId = useUniqueId();
 
 	return (
@@ -29,7 +29,7 @@ const PreferencesLocalizationSection = () => {
 							control={control}
 							name='language'
 							render={({ field: { value, onChange } }) => (
-								<Select id={languageId} value={value} onChange={onChange} options={languageOptions} />
+								<Select id={languageId} value={value || ''} onChange={onChange} options={languageOptions} />
 							)}
 						/>
 					</FieldRow>
