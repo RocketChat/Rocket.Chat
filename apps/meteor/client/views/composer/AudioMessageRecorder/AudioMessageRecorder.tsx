@@ -16,9 +16,10 @@ type AudioMessageRecorderProps = {
 	rid: IRoom['_id'];
 	chatContext?: ChatAPI; // TODO: remove this when the composer is migrated to React
 	isMicrophoneDenied?: boolean;
+	tshow?: boolean;
 };
 
-const AudioMessageRecorder = ({ rid, chatContext, isMicrophoneDenied }: AudioMessageRecorderProps): ReactElement | null => {
+const AudioMessageRecorder = ({ rid, chatContext, isMicrophoneDenied, tshow }: AudioMessageRecorderProps): ReactElement | null => {
 	const t = useTranslation();
 
 	const [state, setState] = useState<'loading' | 'recording'>('recording');
@@ -89,7 +90,7 @@ const AudioMessageRecorder = ({ rid, chatContext, isMicrophoneDenied }: AudioMes
 		const fileName = `${t('Audio_record')}.mp3`;
 		const file = new File([blob], fileName, { type: 'audio/mpeg' });
 
-		await chat?.flows.uploadFiles([file]);
+		await chat?.flows.uploadFiles([file], undefined, tshow);
 	});
 
 	useEffect(() => {
