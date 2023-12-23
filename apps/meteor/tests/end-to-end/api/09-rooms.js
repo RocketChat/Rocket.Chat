@@ -174,7 +174,8 @@ describe('[Rooms]', function () {
 			await request.get(fileOldUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
 		});
 
-		it('should be able to get the file when no access to the room', async () => {
+		it('should be able to get the file when no access to the room if setting allows it', async () => {
+			await updateSetting('FileUpload_Restrict_to_room_members', false);
 			await request.get(fileNewUrl).set(userCredentials).expect('Content-Type', 'image/png').expect(200);
 			await request.get(fileOldUrl).set(userCredentials).expect('Content-Type', 'image/png').expect(200);
 		});
