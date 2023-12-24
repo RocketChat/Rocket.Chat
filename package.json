@@ -43,6 +43,10 @@
 		"node": "14.21.3",
 		"npm": "Use yarn instead"
 	},
+	"os": [
+		"linux",
+		"darwin"
+	],
 	"packageManager": "yarn@3.5.0",
 	"houston": {
 		"minTag": "0.55.0-rc.0",
