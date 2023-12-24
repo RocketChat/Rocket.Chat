@@ -9,13 +9,13 @@ class VideoRecorder {
 
 	private recordingAvailable = new ReactiveVar(false);
 
-	private videoel: HTMLVideoElement | undefined;
+	private videoel?: HTMLVideoElement;
 
 	private chunks: Blob[] = [];
 
-	private stream: MediaStream | undefined;
+	private stream?: MediaStream;
 
-	private mediaRecorder: MediaRecorder | undefined;
+	private mediaRecorder?: MediaRecorder;
 
 	public getSupportedMimeTypes() {
 		if (window.MediaRecorder.isTypeSupported('video/webm')) {

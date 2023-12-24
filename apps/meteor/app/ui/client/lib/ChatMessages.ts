@@ -30,7 +30,7 @@ type DeepWritable<T> = T extends (...args: any) => any
 export class ChatMessages implements ChatAPI {
 	public uid: string | null;
 
-	public composer: ComposerAPI | undefined;
+	public composer?: ComposerAPI;
 
 	public setComposerAPI = (composer: ComposerAPI): void => {
 		this.composer?.release();

@@ -2,11 +2,11 @@ import { settings } from '../../../../settings/client';
 import { AudioEncoder } from './AudioEncoder';
 
 export class AudioRecorder {
-	private audioContext: AudioContext | undefined;
+	private audioContext?: AudioContext;
 
-	private stream: MediaStream | undefined;
+	private stream?: MediaStream;
 
-	private encoder: AudioEncoder | undefined;
+	private encoder?: AudioEncoder;
 
 	isSupported() {
 		return Boolean(navigator.mediaDevices?.getUserMedia) && Boolean(AudioContext);

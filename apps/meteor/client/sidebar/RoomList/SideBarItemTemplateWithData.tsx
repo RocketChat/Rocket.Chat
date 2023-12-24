@@ -215,7 +215,7 @@ function SideBarItemTemplateWithData({
 	);
 }
 
-function safeDateNotEqualCheck(a: Date | string | undefined, b: Date | string | undefined): boolean {
+function safeDateNotEqualCheck(a?: Date | string, b?: Date | string): boolean {
 	if (!a || !b) {
 		return a !== b;
 	}
