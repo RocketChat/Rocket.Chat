@@ -89,4 +89,3 @@ dist
 matrix-federation-config/*
 .eslintcache
 tsconfig.typecheck.tsbuildinfo
-.gitpod.yml
