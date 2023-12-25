@@ -19,6 +19,8 @@ const PreferencesLocalizationSection = () => {
 
 	const languageId = useUniqueId();
 
+	const defaultLanguageKey = languages.find(language => language.name === 'Default')?.key;
+
 	return (
 		<Accordion.Item title={t('Localization')} defaultExpanded>
 			<FieldGroup>
@@ -28,6 +30,7 @@ const PreferencesLocalizationSection = () => {
 						<Controller
 							control={control}
 							name='language'
+							defaultValue={defaultLanguageKey || ''}
 							render={({ field: { value, onChange } }) => (
 								<Select id={languageId} value={value} onChange={onChange} options={languageOptions} />
 							)}
