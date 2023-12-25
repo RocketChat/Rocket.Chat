@@ -14,7 +14,7 @@ const Attachments = ({ attachments, collapsed, id }: AttachmentsProps): ReactEle
 	return (
 		<>
 			{attachments?.map((attachment, index) => (
-				<AttachmentsItem key={index} id={id} attachment={{ ...attachment, collapsed }} />
+				<AttachmentsItem key={index} attachment={{ ...attachment, collapsed: collapsed ?? attachment.collapsed }} />
 			))}
 		</>
 	);
