@@ -57,6 +57,22 @@ export default async function injectInitialData() {
 				_id: 'API_Enable_Rate_Limiter_Dev',
 				value: false,
 			},
+			{
+				_id: 'SAML_Custom_Default_provider',
+				value: 'test-sp',
+			},
+			{
+				_id: 'SAML_Custom_Default_issuer',
+				value: 'http://localhost:3000/_saml/metadata/test-sp',
+			},
+			{
+				_id: 'SAML_Custom_Default_entry_point',
+				value: 'http://localhost:8080/simplesaml/saml2/idp/SSOService.php',
+			},
+			{
+				_id: 'SAML_Custom_Default_idp_slo_redirect_url',
+				value: 'http://localhost:8080/simplesaml/saml2/idp/SingleLogoutService.php',
+			},
 		].map((setting) =>
 			connection
 				.db()

@@ -9623,6 +9623,7 @@ __metadata:
     date-fns: ^2.28.0
     date.js: ~0.3.3
     debug: ~4.1.1
+    docker-compose: ^0.24.3
     dompurify: ^2.3.8
     ejson: ^2.2.3
     emailreplyparser: ^0.0.5
@@ -20415,6 +20416,15 @@ __metadata:
   dependencies:
     "@leichtgewicht/ip-codec": ^2.0.1
   checksum: 3aa26bb03a613362937225f786d46b1a39b5002d0a68b40537326b090685d5c53d46e25cc7c610f2a29ea5029c8ce480c368a8b0492932c5fb88ebc377676e84
+  languageName: node
+  linkType: hard
+
+"docker-compose@npm:^0.24.3":
+  version: 0.24.3
+  resolution: "docker-compose@npm:0.24.3"
+  dependencies:
+    yaml: ^2.2.2
+  checksum: b2149eafb6e0a37ff4595044fe63d2fac23483afab06bca71cece78df4bae6f796b0a123854957addda77cc0559f205bc03cf3984ced816161e30e7f247d88e7
   languageName: node
   linkType: hard
 
@@ -41754,6 +41764,13 @@ __metadata:
   version: 1.10.2
   resolution: "yaml@npm:1.10.2"
   checksum: ce4ada136e8a78a0b08dc10b4b900936912d15de59905b2bf415b4d33c63df1d555d23acb2a41b23cf9fb5da41c256441afca3d6509de7247daa062fd2c5ea5f
+  languageName: node
+  linkType: hard
+
+"yaml@npm:^2.2.2":
+  version: 2.3.4
+  resolution: "yaml@npm:2.3.4"
+  checksum: e6d1dae1c6383bcc8ba11796eef3b8c02d5082911c6723efeeb5ba50fc8e881df18d645e64de68e421b577296000bea9c75d6d9097c2f6699da3ae0406c030d8
   languageName: node
   linkType: hard
 
