@@ -1,5 +1,19 @@
 # @rocket.chat/ddp-client
 
+## 0.2.10
+
+### Patch Changes
+
+- 46fa2ff2cf: Exceeding API calls when sending OTR messages
+- f6a525a444: SDK login methods not saving token
+- 1233bffa8c: removed @rocket.chat/license as a dependency of ddp client
+- 1233bffa8c: fixed an issue with the ddp client reconnection not resuming the login
+- 1233bffa8c: fixed an issue with the ddp client account not saving credentials correctly
+- b42aa49fbd: Fixed a problem where chained callbacks' return value was being overrided by some callbacks returning something different, causing callbacks with lower priority to operate on invalid values
+- Updated dependencies [4b0fa27e53]
+  - @rocket.chat/rest-typings@6.6.0
+  - @rocket.chat/api-client@0.1.19
+
 ## 0.2.9
 
 ### Patch Changes

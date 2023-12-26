@@ -1,5 +1,55 @@
 # @rocket.chat/meteor
 
+## 6.6.0
+
+### Minor Changes
+
+- 4b0fa27e53: fix Federation Regression, builds service correctly
+
+### Patch Changes
+
+- 24e9dc2633: Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+- 2c577efc5f: Security improvements
+- 055cb0fa3e: Fixed issue with the new `custom-roles` license module not being checked throughout the application
+- 68ff7e5c5b: fix: stop refetching banner data each 5 minutes
+- 077d04f0a8: Fixed an issue allowing admin user cancelling subscription when license's trial param is provided
+- dc111e2e84: Fixed Country select component at Organization form from `onboarding-ui` package
+- 816dd50548: fix: Wrong `Message Roundtrip Time` metric
+
+  Removes the wrong metric gauge named `rocketchat_messages_roundtrip_time` and replace it by a new summary metric named `rocketchat_messages_roundtrip_time_summary`. Add new percentiles `0.5, 0.95 and 1` to all summary metrics.
+
+- 46fa2ff2cf: Exceeding API calls when sending OTR messages
+- d6a8360564: Fixed a problem with the subscription creation on Omnichannel rooms.
+  Rooms were being created as seen, causing sound notifications to not work
+- b42aa49fbd: Fixed a problem where chained callbacks' return value was being overrided by some callbacks returning something different, causing callbacks with lower priority to operate on invalid values
+- f2699e4988: Fix desktop notification routing for direct rooms
+- 4e49fcc7d9: Improved the experience of receiving conference calls on the mobile app by disabling the push notification for the "new call" message if a push is already being sent to trigger the phone's ringing tone.
+- 6ba8bcc2ca: Fixed verify the account through email link
+- 4b2bdd5508: Fixed the filter for file type in the list of room files
+- Updated dependencies [4b0fa27e53]
+- Updated dependencies [46fa2ff2cf]
+  - @rocket.chat/rest-typings@6.6.0
+  - @rocket.chat/core-typings@6.6.0
+  - @rocket.chat/api-client@0.1.19
+  - @rocket.chat/omnichannel-services@0.1.1
+  - @rocket.chat/presence@0.1.1
+  - @rocket.chat/core-services@0.3.1
+  - @rocket.chat/ui-contexts@4.0.0
+  - @rocket.chat/license@0.1.1
+  - @rocket.chat/pdf-worker@0.0.25
+  - @rocket.chat/cron@0.0.21
+  - @rocket.chat/gazzodown@4.0.0
+  - @rocket.chat/model-typings@0.2.1
+  - @rocket.chat/ui-theming@0.1.1
+  - @rocket.chat/fuselage-ui-kit@4.0.0
+  - @rocket.chat/ui-client@4.0.0
+  - @rocket.chat/ui-video-conf@4.0.0
+  - @rocket.chat/web-ui-registration@4.0.0
+  - @rocket.chat/server-cloud-communication@0.0.1
+  - @rocket.chat/models@0.0.25
+  - @rocket.chat/instance-status@0.0.25
+
 ## 6.5.0
 
 ### Minor Changes
