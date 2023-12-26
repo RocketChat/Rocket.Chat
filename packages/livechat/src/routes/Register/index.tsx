@@ -15,6 +15,7 @@ import { sortArrayByColumn } from '../../helpers/sortArrayByColumn';
 import CustomFields from '../../lib/customFields';
 import { validateEmail } from '../../lib/email';
 import { parentCall } from '../../lib/parentCall';
+import Triggers from '../../lib/triggers';
 import { StoreContext } from '../../store';
 import styles from './styles.scss';
 
@@ -86,6 +87,7 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 			const { visitor: user } = await Livechat.grantVisitor({ visitor: { ...fields, token } });
 			await dispatch({ user });
 			parentCall('callback', ['pre-chat-form-submit', fields]);
+			Triggers.callbacks?.emit('chat-visitor-registered');
 			registerCustomFields(customFields);
 		} finally {
 			await dispatch({ loading: false });

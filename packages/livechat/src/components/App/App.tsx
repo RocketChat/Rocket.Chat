@@ -129,9 +129,9 @@ export class App extends Component<AppProps, AppState> {
 				return route('/leave-message');
 			}
 
-			const showDepartment = departments.filter((dept) => dept.showOnRegistration).length > 0;
+			const showDepartment = departments.some((dept) => dept.showOnRegistration);
 			const isAnyFieldVisible = nameFieldRegistrationForm || emailFieldRegistrationForm || showDepartment;
-			const showRegistrationForm = !user?.token && registrationForm && isAnyFieldVisible && !Triggers.showTriggerMessages();
+			const showRegistrationForm = !user?.token && registrationForm && isAnyFieldVisible && !Triggers.hasTriggeredMessages();
 
 			if (url === '/' && showRegistrationForm) {
 				return route('/register');

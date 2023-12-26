@@ -15,6 +15,7 @@ const createOrUpdateGuest = async (guest) => {
 	const { visitor: user } = await Livechat.grantVisitor({ visitor: { ...guest } });
 	store.setState({ user });
 	await loadConfig();
+	Triggers.callbacks?.emit('chat-visitor-registered');
 };
 
 const updateIframeGuestData = (data) => {
