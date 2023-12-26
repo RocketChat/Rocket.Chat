@@ -1,27 +1,27 @@
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
+import { before, after, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
+import { updateSetting } from '../../data/permissions.helper';
 
-describe('push token', function () {
+describe('[Push]', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
 
 	describe('POST [/push.token]', () => {
-		it('should fail if not logged in', (done) => {
-			request
+		it('should fail if not logged in', async () => {
+			await request
 				.post(api('push.token'))
 				.expect(401)
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');
-				})
-				.end(done);
+				});
 		});
 
-		it('should fail if missing type', (done) => {
-			request
+		it('should fail if missing type', async () => {
+			await request
 				.post(api('push.token'))
 				.set(credentials)
 				.send({
@@ -32,12 +32,11 @@ describe('push token', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('errorType', 'error-type-param-not-valid');
-				})
-				.end(done);
+				});
 		});
 
-		it('should fail if missing value', (done) => {
-			request
+		it('should fail if missing value', async () => {
+			await request
 				.post(api('push.token'))
 				.set(credentials)
 				.send({
@@ -48,12 +47,11 @@ describe('push token', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('errorType', 'error-token-param-not-valid');
-				})
-				.end(done);
+				});
 		});
 
-		it('should fail if missing appName', (done) => {
-			request
+		it('should fail if missing appName', async () => {
+			await request
 				.post(api('push.token'))
 				.set(credentials)
 				.send({
@@ -64,12 +62,11 @@ describe('push token', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('errorType', 'error-appName-param-not-valid');
-				})
-				.end(done);
+				});
 		});
 
-		it('should fail if type param is unknown', (done) => {
-			request
+		it('should fail if type param is unknown', async () => {
+			await request
 				.post(api('push.token'))
 				.set(credentials)
 				.send({
@@ -79,12 +76,11 @@ describe('push token', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('errorType', 'error-type-param-not-valid');
-				})
-				.end(done);
+				});
 		});
 
-		it('should fail if token param is empty', (done) => {
-			request
+		it('should fail if token param is empty', async () => {
+			await request
 				.post(api('push.token'))
 				.set(credentials)
 				.send({
@@ -96,12 +92,11 @@ describe('push token', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('errorType', 'error-token-param-not-valid');
-				})
-				.end(done);
+				});
 		});
 
-		it('should add a token if valid', (done) => {
-			request
+		it('should add a token if valid', async () => {
+			await request
 				.post(api('push.token'))
 				.set(credentials)
 				.send({
@@ -113,14 +108,13 @@ describe('push token', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('result').and.to.be.an('object');
-				})
-				.end(done);
+				});
 		});
 	});
 
 	describe('DELETE [/push.token]', () => {
-		it('should fail if not logged in', (done) => {
-			request
+		it('should fail if not logged in', async () => {
+			await request
 				.delete(api('push.token'))
 				.send({
 					token: 'token',
@@ -129,12 +123,11 @@ describe('push token', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');
-				})
-				.end(done);
+				});
 		});
 
-		it('should fail if missing token key', (done) => {
-			request
+		it('should fail if missing token key', async () => {
+			await request
 				.delete(api('push.token'))
 				.set(credentials)
 				.send({})
@@ -142,12 +135,11 @@ describe('push token', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('errorType', 'error-token-param-not-valid');
-				})
-				.end(done);
+				});
 		});
 
-		it('should fail if token is empty', (done) => {
-			request
+		it('should fail if token is empty', async () => {
+			await request
 				.delete(api('push.token'))
 				.set(credentials)
 				.send({
@@ -157,12 +149,11 @@ describe('push token', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('errorType', 'error-token-param-not-valid');
-				})
-				.end(done);
+				});
 		});
 
-		it('should fail if token is invalid', (done) => {
-			request
+		it('should fail if token is invalid', async () => {
+			await request
 				.delete(api('push.token'))
 				.set(credentials)
 				.send({
@@ -171,12 +162,11 @@ describe('push token', function () {
 				.expect(404)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
+				});
 		});
 
-		it('should delete a token if valid', (done) => {
-			request
+		it('should delete a token if valid', async () => {
+			await request
 				.delete(api('push.token'))
 				.set(credentials)
 				.send({
@@ -185,12 +175,11 @@ describe('push token', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				});
 		});
 
-		it('should fail if token is already deleted', (done) => {
-			request
+		it('should fail if token is already deleted', async () => {
+			await request
 				.delete(api('push.token'))
 				.set(credentials)
 				.send({
@@ -199,8 +188,75 @@ describe('push token', function () {
 				.expect(404)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
+				});
+		});
+	});
+
+	describe('[/push.info]', () => {
+		before(async () => {
+			await updateSetting('Push_enable', true);
+			await updateSetting('Push_enable_gateway', true);
+			await updateSetting('Push_gateway', 'https://random-gateway.rocket.chat');
+		});
+
+		it('should fail if not logged in', async () => {
+			await request
+				.get(api('push.info'))
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('message');
+				});
+		});
+
+		it('should succesfully retrieve non default push notification info', async () => {
+			await request
+				.get(api('push.info'))
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('pushGatewayEnabled', true);
+					expect(res.body).to.have.property('defaultPushGateway', false);
+				});
+		});
+
+		it('should succesfully retrieve default push notification info', async () => {
+			await updateSetting('Push_gateway', 'https://gateway.rocket.chat');
+			await request
+				.get(api('push.info'))
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('pushGatewayEnabled', true);
+					expect(res.body).to.have.property('defaultPushGateway', true);
+				});
+		});
+	});
+
+	describe('[/push.test]', () => {
+		before(async () => {
+			await updateSetting('Push_enable', false);
+		});
+
+		it('should fail if not logged in', async () => {
+			await request
+				.post(api('push.test'))
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('message');
+				});
+		});
+
+		it('should fail if push is disabled', async () => {
+			await request
+				.post(api('push.test'))
+				.set(credentials)
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-push-disabled');
+				});
 		});
 	});
 });
