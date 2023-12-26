@@ -1,5 +1,7 @@
-import type { IAppsTokens } from '@rocket.chat/core-typings';
+import type { IAppsTokens, IUser } from '@rocket.chat/core-typings';
 
 import type { IBaseModel } from './IBaseModel';
 
-export type IAppsTokensModel = IBaseModel<IAppsTokens>;
+export interface IAppsTokensModel extends IBaseModel<IAppsTokens> {
+	countTokensByClientType(apn: boolean, gcm: boolean, userId?: IUser['_id']): Promise<number>;
+}

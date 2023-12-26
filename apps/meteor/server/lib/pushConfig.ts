@@ -11,29 +11,7 @@ import { settings } from '../../app/settings/server';
 import { i18n } from './i18n';
 
 export const executePushTest = async (userId: IUser['_id'], username: IUser['username']): Promise<number> => {
-	const query = {
-		$and: [
-			{
-				userId,
-			},
-			{
-				$or: [
-					{
-						'token.apn': {
-							$exists: true,
-						},
-					},
-					{
-						'token.gcm': {
-							$exists: true,
-						},
-					},
-				],
-			},
-		],
-	};
-
-	const tokens = await AppsTokens.col.countDocuments(query);
+	const tokens = await AppsTokens.countTokensByClientType(true, true, userId);
 
 	if (tokens === 0) {
 		throw new Meteor.Error('error-no-tokens-for-this-user', 'There are no tokens for this user', {
