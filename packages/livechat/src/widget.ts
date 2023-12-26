@@ -51,6 +51,10 @@ function emitCallback(eventName: string, data?: unknown) {
 	}
 }
 
+function clearAllCallbacks() {
+	callbacks.all.clear();
+}
+
 // hooks
 function callHook<T extends ApiMethods>(action: T, params: ApiArgs<T> | [] = []) {
 	if (!ready) {
@@ -352,18 +356,22 @@ function setLanguage(lang: ApiArgs<'setLanguage'>[0]) {
 
 function showWidget() {
 	callHook('showWidget');
+	emitCallback('show-widget');
 }
 
 function hideWidget() {
 	callHook('hideWidget');
+	emitCallback('hide-widget');
 }
 
 function maximizeWidget() {
 	callHook('maximizeWidget');
+	emitCallback('chat-maximized');
 }
 
 function minimizeWidget() {
 	callHook('minimizeWidget');
+	emitCallback('chat-minimized');
 }
 
 function setParentUrl(url?: ApiArgs<'setParentUrl'>[0]) {
@@ -551,6 +559,7 @@ const livechatWidgetAPI = {
 	setBusinessUnit,
 	clearBusinessUnit,
 	setParentUrl,
+	clearAllCallbacks,
 
 	// callbacks
 	onChatMaximized(fn: () => unknown) {
