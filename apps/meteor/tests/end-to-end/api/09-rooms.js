@@ -169,14 +169,16 @@ describe('[Rooms]', function () {
 				.end(done);
 		});
 
-		it('should be able to get the file', async () => {
+		it('should be able to get the file if contains the right credentials', async () => {
 			await request.get(fileNewUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
 			await request.get(fileOldUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
 		});
 
 		it('should be able to get the file when no access to the room', async () => {
+			await updateSetting('FileUpload_Restrict_to_room_members', false);
 			await request.get(fileNewUrl).set(userCredentials).expect('Content-Type', 'image/png').expect(200);
 			await request.get(fileOldUrl).set(userCredentials).expect('Content-Type', 'image/png').expect(200);
+			await updateSetting('FileUpload_Restrict_to_room_members', true);
 		});
 
 		it('should not be able to get the file when no access to the room if setting blocks', async () => {
