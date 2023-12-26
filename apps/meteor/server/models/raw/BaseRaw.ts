@@ -66,23 +66,27 @@ export abstract class BaseRaw<
 	 * @param trash Trash collection instance
 	 * @param options Model options
 	 */
-	constructor(private db: Db, protected name: string, protected trash?: Collection<TDeleted>, options?: ModelOptions) {
+	constructor(private db: Db, protected name: string, protected trash?: Collection<TDeleted>, private options?: ModelOptions) {
 		this.collectionName = options?.collectionNameResolver ? options.collectionNameResolver(name) : getCollectionName(name);
 
 		this.col = this.db.collection(this.collectionName, options?.collection || {});
 
+		void this.createIndexes().catch((e) => {
+			console.warn(`Some indexes for collection '${this.collectionName}' could not be created:\n\t${e.message}`);
+		});
+
+		this.preventSetUpdatedAt = options?.preventSetUpdatedAt ?? false;
+	}
+
+	public async createIndexes() {
 		const indexes = this.modelIndexes();
-		if (options?._updatedAtIndexOptions) {
-			indexes?.push({ ...options._updatedAtIndexOptions, key: { _updatedAt: 1 } });
+		if (this.options?._updatedAtIndexOptions) {
+			indexes?.push({ ...this.options._updatedAtIndexOptions, key: { _updatedAt: 1 } });
 		}
 
 		if (indexes?.length) {
-			this.col.createIndexes(indexes).catch((e) => {
-				console.warn(`Some indexes for collection '${this.collectionName}' could not be created:\n\t${e.message}`);
-			});
+			return this.col.createIndexes(indexes);
 		}
-
-		this.preventSetUpdatedAt = options?.preventSetUpdatedAt ?? false;
 	}
 
 	protected modelIndexes(): IndexDescription[] | undefined {

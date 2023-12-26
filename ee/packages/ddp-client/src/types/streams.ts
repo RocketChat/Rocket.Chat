@@ -24,8 +24,8 @@ import type {
 	IImportProgress,
 	IBanner,
 	UiKit,
+	LicenseLimitKind,
 } from '@rocket.chat/core-typings';
-import type { LicenseLimitKind } from '@rocket.chat/license';
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 
@@ -56,7 +56,7 @@ export interface StreamerEvents {
 		// { key: `${string}/${string}`; args: [id: string] },
 	];
 
-	'room-messages': [{ key: '__my_messages__'; args: [IMessage] }, { key: string; args: [IMessage] }];
+	'room-messages': [{ key: '__my_messages__'; args: [IMessage] }, { key: string; args: [message: IMessage, user?: IUser, room?: IRoom] }];
 
 	'notify-all': [
 		{

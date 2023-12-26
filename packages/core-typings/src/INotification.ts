@@ -51,6 +51,7 @@ export interface INotification {
 export interface INotificationDesktop {
 	title: string;
 	text: string;
+	icon?: string;
 	duration?: number;
 	payload: {
 		_id: IMessage['_id'];
