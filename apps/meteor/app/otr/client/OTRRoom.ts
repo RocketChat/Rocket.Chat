@@ -1,4 +1,4 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IRoom, IMessage, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import EJSON from 'ejson';
 import { Meteor } from 'meteor/meteor';
@@ -11,7 +11,6 @@ import { Presence } from '../../../client/lib/presence';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { getUidDirectMessage } from '../../../client/lib/utils/getUidDirectMessage';
 import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
-import { Notifications } from '../../notifications/client';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { t } from '../../utils/lib/i18n';
 import type { IOnUserStreamData, IOTRAlgorithm, IOTRDecrypt, IOTRRoom } from '../lib/IOTR';
@@ -48,13 +47,23 @@ export class OTRRoom implements IOTRRoom {
 
 	private isFirstOTR: boolean;
 
-	constructor(userId: string, roomId: string) {
-		this._userId = userId;
-		this._roomId = roomId;
+	protected constructor(uid: IUser['_id'], rid: IRoom['_id'], peerId: IUser['_id']) {
+		this._userId = uid;
+		this._roomId = rid;
 		this._keyPair = null;
 		this._sessionKey = null;
-		this.peerId = getUidDirectMessage(roomId) as string;
+		this.peerId = peerId;
 		this.isFirstOTR = true;
+	}
+
+	public static create(uid: IUser['_id'], rid: IRoom['_id']): OTRRoom | undefined {
+		const peerId = getUidDirectMessage(rid);
+
+		if (!peerId) {
+			return undefined;
+		}
+
+		return new OTRRoom(uid, rid, peerId);
 	}
 
 	getPeerId(): string {
@@ -75,61 +84,71 @@ export class OTRRoom implements IOTRRoom {
 
 	async handshake(refresh?: boolean): Promise<void> {
 		this.setState(OtrRoomState.ESTABLISHING);
-		try {
-			await this.generateKeyPair();
-			this.peerId &&
-				Notifications.notifyUser(this.peerId, 'otr', 'handshake', {
-					roomId: this._roomId,
-					userId: this._userId,
-					publicKey: EJSON.stringify(this._exportedPublicKey),
-					refresh,
-				});
-			if (refresh) {
-				const user = Meteor.user();
-				if (!user) {
-					return;
-				}
-				await sdk.rest.post('/v1/chat.otr', {
-					roomId: this._roomId,
-					type: otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH,
-				});
-				this.isFirstOTR = false;
+
+		await this.generateKeyPair();
+		sdk.publish('notify-user', [
+			`${this.peerId}/otr`,
+			'handshake',
+			{
+				roomId: this._roomId,
+				userId: this._userId,
+				publicKey: EJSON.stringify(this._exportedPublicKey),
+				refresh,
+			},
+		]);
+
+		if (refresh) {
+			const user = Meteor.user();
+			if (!user) {
+				return;
 			}
-		} catch (e) {
-			throw e;
+			await sdk.rest.post('/v1/chat.otr', {
+				roomId: this._roomId,
+				type: otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH,
+			});
+			this.isFirstOTR = false;
 		}
 	}
 
 	acknowledge(): void {
 		void sdk.rest.post('/v1/statistics.telemetry', { params: [{ eventName: 'otrStats', timestamp: Date.now(), rid: this._roomId }] });
 
-		this.peerId &&
-			Notifications.notifyUser(this.peerId, 'otr', 'acknowledge', {
+		sdk.publish('notify-user', [
+			`${this.peerId}/otr`,
+			'acknowledge',
+			{
 				roomId: this._roomId,
 				userId: this._userId,
 				publicKey: EJSON.stringify(this._exportedPublicKey),
-			});
+			},
+		]);
 	}
 
 	deny(): void {
 		this.reset();
 		this.setState(OtrRoomState.DECLINED);
-		this.peerId &&
-			Notifications.notifyUser(this.peerId, 'otr', 'deny', {
+		sdk.publish('notify-user', [
+			`${this.peerId}/otr`,
+			'deny',
+			{
 				roomId: this._roomId,
 				userId: this._userId,
-			});
+			},
+		]);
 	}
 
 	end(): void {
 		this.isFirstOTR = true;
 		this.reset();
 		this.setState(OtrRoomState.NOT_STARTED);
-		this.peerId &&
-			Notifications.notifyUser(this.peerId, 'otr', 'end', {
+		sdk.publish('notify-user', [
+			`${this.peerId}/otr`,
+			'end',
+			{
 				roomId: this._roomId,
 				userId: this._userId,
-			});
+			},
+		]);
 	}
 
 	reset(): void {
@@ -145,14 +164,14 @@ export class OTRRoom implements IOTRRoom {
 		}
 
 		this._userOnlineComputation = Tracker.autorun(() => {
-			const $room = $(`#chat-window-${this._roomId}`);
-			const $title = $('.rc-header__title', $room);
+			const $room = document.querySelector(`#chat-window-${this._roomId}`);
+			const $title = $room?.querySelector('.rc-header__title');
 			if (this.getState() === OtrRoomState.ESTABLISHED) {
-				if ($room.length && $title.length && !$('.otr-icon', $title).length) {
+				if ($room && $title && !$title.querySelector('.otr-icon')) {
 					$title.prepend("<i class='otr-icon icon-key'></i>");
 				}
-			} else if ($title.length) {
-				$('.otr-icon', $title).remove();
+			} else if ($title) {
+				$title.querySelector('.otr-icon')?.remove();
 			}
 		});
 		try {
