@@ -15,13 +15,12 @@ type MessageComposerInputProps = ComponentProps<typeof Box>;
 
 const MessageComposerInput = forwardRef(function MessageComposerInput(
 	props: MessageComposerInputProps,
-	ref: Ref<HTMLInputElement>,
+	ref: Ref<HTMLTextAreaElement>,
 ): ReactElement {
 	return (
 		<Box is='label' width='full' fontSize={0}>
 			<Box
 				className={[messageComposerInputStyle, 'rc-message-box__textarea js-input-message']}
-				{...props}
 				color='default'
 				width='full'
 				minHeight='20px'

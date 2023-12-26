@@ -106,11 +106,11 @@ const OutgoingWebhookHistoryPage = (props: ComponentProps<typeof Page>) => {
 
 	return (
 		<Page flexDirection='column' {...props}>
-			<PageHeader title={t('Integration_Outgoing_WebHook_History')}>
+			<PageHeader
+				title={t('Integration_Outgoing_WebHook_History')}
+				onClickBack={() => router.navigate(`/admin/integrations/edit/outgoing/${id}`)}
+			>
 				<ButtonGroup>
-					<Button icon='back' onClick={() => router.navigate(`/admin/integrations/edit/outgoing/${id}`)}>
-						{t('Back')}
-					</Button>
 					<Button icon='trash' danger onClick={handleClearHistory} disabled={total === 0}>
 						{t('clear_history')}
 					</Button>

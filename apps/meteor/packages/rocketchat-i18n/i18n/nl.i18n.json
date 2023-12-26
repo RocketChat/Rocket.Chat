@@ -4804,7 +4804,7 @@
   "onboarding.component.form.action.pasteHere": "Plak hier...",
   "onboarding.component.form.termsAndConditions": "Ik ga akkoord met de <1>Algemene voorwaarden</1> en <3>Privacybeleid</3>",
   "onboarding.component.emailCodeFallback": "Geen e-mail ontvangen? <1>Opnieuw verzenden</1> of <3>E-mailadres wijzigen</3>",
-  "onboarding.page.form.title": "<1>Lanceer</1> uw werkruimte",
+  "onboarding.page.form.title": "Lanceer uw werkruimte",
   "onboarding.page.emailConfirmed.title": "E-mail bevestigd!",
   "onboarding.page.emailConfirmed.subtitle": "U kunt terugkeren naar uw Rocket.Chat-toepassing - we hebben uw werkruimte al gelanceerd.",
   "onboarding.page.checkYourEmail.title": "Controleer je e-mail",

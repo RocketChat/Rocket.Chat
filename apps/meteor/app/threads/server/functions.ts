@@ -1,6 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
-import { Messages, Subscriptions, ReadReceipts } from '@rocket.chat/models';
+import { Messages, Subscriptions, ReadReceipts, NotificationQueue } from '@rocket.chat/models';
 
 import { getMentions } from '../../lib/server/lib/notifyUsersOnMessage';
 
@@ -58,12 +58,8 @@ export async function unfollow({ tmid, rid, uid }: { tmid: string; rid: string; 
 	await Messages.removeThreadFollowerByThreadId(tmid, uid);
 }
 
-export const readThread = async ({ userId, rid, tmid }: { userId?: string; rid: string; tmid: string }) => {
+export const readThread = async ({ userId, rid, tmid }: { userId: string; rid: string; tmid: string }) => {
 	const projection = { tunread: 1 };
-	if (!userId) {
-		return;
-	}
-
 	const sub = await Subscriptions.findOneByRoomIdAndUserId(rid, userId, { projection });
 	if (!sub) {
 		return;
@@ -72,4 +68,5 @@ export const readThread = async ({ userId, rid, tmid }: { userId?: string; rid: 
 	const clearAlert = sub.tunread && sub.tunread?.length <= 1 && sub.tunread.includes(tmid);
 
 	await Subscriptions.removeUnreadThreadByRoomIdAndUserId(rid, userId, tmid, clearAlert);
+	await NotificationQueue.clearQueueByUserId(userId);
 };

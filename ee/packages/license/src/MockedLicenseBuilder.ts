@@ -1,8 +1,5 @@
-import type { ILicenseTag } from './definition/ILicenseTag';
-import type { ILicenseV3 } from './definition/ILicenseV3';
-import type { LicenseLimit } from './definition/LicenseLimit';
-import type { LicenseModule } from './definition/LicenseModule';
-import type { LicensePeriod, Timestamp } from './definition/LicensePeriod';
+import type { ILicenseTag, ILicenseV3, LicenseLimit, LicenseModule, LicensePeriod, Timestamp } from '@rocket.chat/core-typings';
+
 import { encrypt } from './token';
 
 export class MockedLicenseBuilder {

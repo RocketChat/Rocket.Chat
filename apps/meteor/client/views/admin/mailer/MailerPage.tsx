@@ -100,6 +100,7 @@ const MailerPage = () => {
 						</Field>
 						<Field>
 							<FieldRow>
+								<FieldLabel htmlFor={dryRunId}>{t('Dry_run')}</FieldLabel>
 								<Controller
 									control={control}
 									name='dryRun'
@@ -107,7 +108,6 @@ const MailerPage = () => {
 										<CheckBox aria-describedby={`${dryRunId}-hint`} ref={ref} id={dryRunId} checked={value} onChange={onChange} />
 									)}
 								/>
-								<FieldLabel htmlFor={dryRunId}>{t('Dry_run')}</FieldLabel>
 							</FieldRow>
 							<FieldHint id={`${dryRunId}-hint`}>{t('Dry_run_description')}</FieldHint>
 						</Field>

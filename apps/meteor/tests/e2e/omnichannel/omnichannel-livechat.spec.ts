@@ -87,8 +87,8 @@ test.describe.serial('OC - Livechat', () => {
 
 		await test.step('expect livechat conversation to be closed by agent', async () => {
 			await poHomeOmnichannel.content.btnCloseChat.click();
-			await poHomeOmnichannel.content.omnichannelCloseChatModal.inputComment.fill('this_is_a_test_comment');
-			await poHomeOmnichannel.content.omnichannelCloseChatModal.btnConfirm.click();
+			await poHomeOmnichannel.content.closeChatModal.inputComment.fill('this_is_a_test_comment');
+			await poHomeOmnichannel.content.closeChatModal.btnConfirm.click();
 			await expect(poHomeOmnichannel.toastSuccess).toBeVisible();
 		});
 	});

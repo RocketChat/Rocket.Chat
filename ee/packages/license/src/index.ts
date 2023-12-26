@@ -1,6 +1,5 @@
-import type { LicenseLimitKind } from './definition/ILicenseV3';
-import type { LicenseInfo } from './definition/LicenseInfo';
-import type { LimitContext } from './definition/LimitContext';
+import type { LicenseLimitKind, LicenseInfo, LimitContext } from '@rocket.chat/core-typings';
+
 import { getAppsConfig, getMaxActiveUsers, getUnmodifiedLicenseAndModules } from './deprecated';
 import { onLicense } from './events/deprecated';
 import {
@@ -28,15 +27,6 @@ import { getCurrentValueForLicenseLimit, setLicenseLimitCounter } from './valida
 import { validateFormat } from './validation/validateFormat';
 
 export { DuplicatedLicenseError } from './errors/DuplicatedLicenseError';
-export * from './definition/ILicenseTag';
-export * from './definition/ILicenseV2';
-export * from './definition/ILicenseV3';
-export * from './definition/LicenseBehavior';
-export * from './definition/LicenseInfo';
-export * from './definition/LicenseLimit';
-export * from './definition/LicenseModule';
-export * from './definition/LicensePeriod';
-export * from './definition/LimitContext';
 export * from './MockedLicenseBuilder';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention

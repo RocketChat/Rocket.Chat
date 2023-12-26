@@ -55,8 +55,8 @@ const getProductivityMetricsAsync = async ({
 			language: user?.language || settings.get('Language') || 'en',
 		})) || [];
 	const averageWaitingTime = await findAllAverageWaitingTimeAsync({
-		start,
-		end,
+		start: new Date(start),
+		end: new Date(end),
 		departmentId,
 	});
 
@@ -95,8 +95,8 @@ const getAgentsProductivityMetricsAsync = async ({
 		})
 	)[0];
 	const averageOfServiceTime = await findAllAverageServiceTimeAsync({
-		start,
-		end,
+		start: new Date(start),
+		end: new Date(end),
 		departmentId,
 	});
 	const totalizers =
