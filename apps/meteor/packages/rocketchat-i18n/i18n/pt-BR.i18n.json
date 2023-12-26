@@ -3686,6 +3686,7 @@
   "Room_password_changed_successfully": "A senha da sala foi alterada com sucesso",
   "room_removed_read_only": "Permissão de escrita adicionada à sala por {{user_by}}",
   "room_set_read_only": "Sala definida como somente leitura por {{user_by}}",
+  "Room_Status_Open": "Aberto",
   "Room_topic_changed_successfully": "Tópico da sala alterado com sucesso",
   "Room_type_changed_successfully": "Tipo de sala alterado com sucesso",
   "Room_type_of_default_rooms_cant_be_changed": "Esta é uma sala padrão e o tipo não pode ser alterado; consulte o seu administrador.",
