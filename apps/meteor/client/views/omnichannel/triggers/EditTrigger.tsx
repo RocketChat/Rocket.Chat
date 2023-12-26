@@ -29,11 +29,11 @@ import {
 } from '../../../components/Contextualbar';
 
 const getInitialValues = (triggerData: Serialized<ILivechatTrigger> | undefined) => ({
-	name: triggerData?.name || '',
+	name: triggerData?.name ?? '',
 	description: triggerData?.description || '',
-	enabled: triggerData?.enabled || true,
-	runOnce: !!triggerData?.runOnce || false,
-	conditions: triggerData?.conditions.map(({ name, value }) => ({ name: name || 'page-url', value: value || '' })) || [
+	enabled: triggerData?.enabled ?? true,
+	runOnce: !!triggerData?.runOnce ?? false,
+	conditions: triggerData?.conditions.map(({ name, value }) => ({ name: name || 'page-url', value: value || '' })) ?? [
 		{ name: 'page-url' as unknown as ILivechatTriggerCondition['name'], value: '' },
 	],
 	actions: triggerData?.actions.map(({ name, params }) => ({
@@ -43,7 +43,7 @@ const getInitialValues = (triggerData: Serialized<ILivechatTrigger> | undefined)
 			msg: params?.msg || '',
 			name: params?.name || '',
 		},
-	})) || [
+	})) ?? [
 		{
 			name: 'send-message',
 			params: {
@@ -73,13 +73,14 @@ const EditTrigger = ({ triggerData }: { triggerData?: Serialized<ILivechatTrigge
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const saveTrigger = useEndpoint('POST', '/v1/livechat/triggers');
-
+	const initValues = getInitialValues(triggerData);
+	console.log(triggerData, initValues);
 	const {
 		control,
 		handleSubmit,
 		formState: { isDirty, errors },
 		watch,
-	} = useForm<TriggersPayload>({ mode: 'onBlur', values: getInitialValues(triggerData) });
+	} = useForm<TriggersPayload>({ mode: 'onBlur', values: initValues });
 
 	const { fields: conditionsFields } = useFieldArray({
 		control,
@@ -123,6 +124,7 @@ const EditTrigger = ({ triggerData }: { triggerData?: Serialized<ILivechatTrigge
 		mutationFn: saveTrigger,
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
+			queryClient.invalidateQueries(['livechat-getTriggersById']);
 			queryClient.invalidateQueries(['livechat-triggers']);
 			router.navigate('/omnichannel/triggers');
 		},
