@@ -1,7 +1,7 @@
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 
 export type AccountPreferencesData = {
-	language: string;
+	language?: string;
 	dontAskAgainList?: string[];
 	enableAutoAway?: boolean;
 	idleTimeLimit?: number;

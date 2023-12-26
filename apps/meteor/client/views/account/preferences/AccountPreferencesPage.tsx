@@ -25,7 +25,7 @@ const AccountPreferencesPage = (): ReactElement => {
 	const dataDownloadEnabled = useSetting('UserData_EnableDownload');
 	const preferencesValues = useAccountPreferencesValues();
 
-	const methods = useForm<AccountPreferencesData>({ defaultValues: preferencesValues });
+	const methods = useForm({ defaultValues: preferencesValues });
 	const {
 		handleSubmit,
 		reset,
