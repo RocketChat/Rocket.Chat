@@ -32,6 +32,6 @@ export class AppsTokens extends BaseRaw<IAppsTokens> implements IAppsTokensModel
 			],
 		};
 
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 }
