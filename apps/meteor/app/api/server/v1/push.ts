@@ -5,7 +5,6 @@ import { Meteor } from 'meteor/meteor';
 
 import { executePushTest } from '../../../../server/lib/pushConfig';
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import PushNotification from '../../../push-notifications/server/lib/PushNotification';
 import { settings } from '../../../settings/server';
 import { API } from '../api';
@@ -137,15 +136,10 @@ API.v1.addRoute(
 			numRequestsAllowed: 1,
 			intervalTimeInMS: 1000,
 		},
+		permissionsRequired: ['test-push-notifications'],
 	},
 	{
 		async post() {
-			if (!(await hasPermissionAsync(this.userId, 'test-push-notifications'))) {
-				throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-					method: 'push_test',
-				});
-			}
-
 			if (settings.get('Push_enable') !== true) {
 				throw new Meteor.Error('error-push-disabled', 'Push is disabled', {
 					method: 'push_test',
