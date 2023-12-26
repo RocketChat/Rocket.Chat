@@ -1,16 +1,5 @@
 # @rocket.chat/rest-typings
 
-## 6.6.0
-
-### Minor Changes
-
-- 4b0fa27e53: fix Federation Regression, builds service correctly
-
-### Patch Changes
-
-- Updated dependencies [46fa2ff2cf]
-  - @rocket.chat/core-typings@6.6.0
-
 ## 6.5.0
 
 ### Minor Changes

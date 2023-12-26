@@ -1,11 +1,5 @@
 # @rocket.chat/core-typings
 
-## 6.6.0
-
-### Patch Changes
-
-- 46fa2ff2cf: Exceeding API calls when sending OTR messages
-
 ## 6.5.0
 
 ### Minor Changes
