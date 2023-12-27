@@ -10,7 +10,6 @@ import { Button } from '../../components/Button';
 import { Form, FormField, TextInput, SelectInput, CustomFields as CustomFieldsForm } from '../../components/Form';
 import { FormScrollShadow } from '../../components/Form/FormScrollShadow';
 import Screen from '../../components/Screen';
-import type { Department } from '../../definitions/departments';
 import { createClassName } from '../../helpers/createClassName';
 import { sortArrayByColumn } from '../../helpers/sortArrayByColumn';
 import CustomFields from '../../lib/customFields';
@@ -82,24 +81,24 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 			...(department && { department }),
 		};
 
-		await dispatch({ loading: true, department });
+		dispatch({ loading: true, department });
 		try {
 			const { visitor: user } = await Livechat.grantVisitor({ visitor: { ...fields, token } });
-			await dispatch({ user });
+			dispatch({ user });
 			parentCall('callback', ['pre-chat-form-submit', fields]);
 			registerCustomFields(customFields);
 		} finally {
-			await dispatch({ loading: false });
+			dispatch({ loading: false });
 		}
 	};
 
 	const getDepartmentDefault = () => {
-		if (departments?.some((dept) => dept._id === guestDepartment)) {
+		if (departments.some((dept) => dept._id === guestDepartment)) {
 			return guestDepartment;
 		}
 	};
 
-	const availableDepartments = departments?.filter((dept) => dept.showOnRegistration) as Department[];
+	const availableDepartments = departments.filter((dept) => dept.showOnRegistration);
 
 	useEffect(() => {
 		if (user?._id) {
