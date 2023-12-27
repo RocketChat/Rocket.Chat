@@ -16,7 +16,7 @@ type VersionCardActionItemProps = {
 
 const VersionCardActionItem = ({ actionItem }: VersionCardActionItemProps): ReactElement => {
 	return (
-		<Box display='flex' alignItems='center' color={actionItem.type === 'danger' ? 'danger' : 'secondary-info'} fontScale='p2m' mbe={4}>
+		<Box display='flex' alignItems='center' color={actionItem.type === 'danger' ? 'danger' : 'secondary-info'} fontScale='p2m'>
 			<FramedIcon type={actionItem.type} icon={actionItem.icon} />
 			<Box mis={12}>{actionItem.label}</Box>
 		</Box>

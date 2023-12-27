@@ -1,4 +1,4 @@
-import { Card, CardTitle, CardBody, CardControls, CardHeader, CardCol } from '@rocket.chat/fuselage';
+import { Card, CardTitle, CardBody, CardControls, CardHeader } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { FramedIcon } from '@rocket.chat/ui-client';
 import type { ComponentProps, ReactElement } from 'react';
@@ -20,13 +20,11 @@ export const GenericCard: React.FC<GenericCardProps> = ({ title, body, buttons, 
 
 	return (
 		<Card role='region' aria-labelledby={cardId} aria-describedby={descriptionId} {...props}>
-			<CardCol>
-				<CardHeader>
-					{icon && <FramedIcon icon={icon} type={type || 'neutral'} />}
-					<CardTitle id={cardId}>{title}</CardTitle>
-				</CardHeader>
-				<CardBody id={descriptionId}>{body}</CardBody>
-			</CardCol>
+			<CardHeader>
+				{icon && <FramedIcon icon={icon} type={type || 'neutral'} />}
+				<CardTitle id={cardId}>{title}</CardTitle>
+			</CardHeader>
+			<CardBody id={descriptionId}>{body}</CardBody>
 			{buttons && <CardControls>{buttons}</CardControls>}
 		</Card>
 	);
