@@ -70,7 +70,6 @@ const getStream = <N extends StreamNames, K extends StreamKeys<N>>(
 		retransmitToSelf?: boolean | undefined;
 	},
 ): ((eventName: K, callback: (...args: StreamerCallbackArgs<N, K>) => void) => () => void) => {
-	const stream = getStream(streamName);
 	return (eventName, callback): (() => void) => {
 		ee.on(`${streamName}/${eventName}`, callback);
 
@@ -94,7 +93,7 @@ const getStream = <N extends StreamNames, K extends StreamKeys<N>>(
 		};
 
 		if (!events.has(`${streamName}/${eventName}`)) {
-			events.set(`${streamName}/${eventName}`, stream(eventName, handler));
+			events.set(`${streamName}/${eventName}`, sdk.stream(streamName, [eventName], handler).stop);
 		}
 		return stop;
 	};
