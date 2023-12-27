@@ -44,7 +44,7 @@
 		".testunit:definition": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --config ./.mocharc.definition.js",
 		"testunit-watch": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --watch --config ./.mocharc.js",
 		"test": "npm run testapi && npm run testui",
-		"translation-diff": "node .scripts/translationDiff.js",
+		"translation-diff": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' ts-node .scripts/translation-diff.ts",
 		"translation-check": "node .scripts/check-i18n.js",
 		"translation-fix-order": "node .scripts/fix-i18n.js",
 		"version": "node .scripts/version.js",
