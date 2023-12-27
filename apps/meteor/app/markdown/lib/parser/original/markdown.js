@@ -52,10 +52,13 @@ const parseStrike = getParserWithCustomMarker('~', 'strike');
 const parseItalic = getRegexReplacer(
 	(wrapper, match, p1, p2, p3, p4, p5) => {
 		if (p1 || p5 || endsWithWhitespace(p3)) {
+			console.log("HI");
 			return match;
 		}
 
+		console.log("HELLO");
 		const finalMarkerCount = getParseableMarkersCount(p2, p4);
+		console.log(finalMarkerCount);
 		return wrapper(p2.substring(finalMarkerCount), p3, p4.substring(finalMarkerCount));
 	},
 	() => new RegExp('([^\\r\\n\\s~*_]){0,1}(\\_+(?!\\s))([^\\_\\r\\n]+)(\\_+)([^\\r\\n\\s]){0,1}', 'gm'),

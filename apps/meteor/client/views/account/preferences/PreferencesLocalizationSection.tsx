@@ -17,6 +17,7 @@ const PreferencesLocalizationSection = () => {
 		return mapOptions;
 	}, [languages]);
 
+
 	const languageId = useUniqueId();
 
 	return (
@@ -26,8 +27,8 @@ const PreferencesLocalizationSection = () => {
 					<FieldLabel htmlFor={languageId}>{t('Language')}</FieldLabel>
 					<FieldRow>
 						<Controller
-							control={control}
 							name='language'
+							control={control}
 							render={({ field: { value, onChange } }) => (
 								<Select id={languageId} value={value} onChange={onChange} options={languageOptions} />
 							)}

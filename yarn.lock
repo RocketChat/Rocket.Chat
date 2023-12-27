@@ -13062,6 +13062,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/deasync@npm:^0":
+  version: 0.1.5
+  resolution: "@types/deasync@npm:0.1.5"
+  checksum: 5a8fec89572abc6fbcce7b4f5b5357ba58b2d6d6860b640eb452eb9e87a8d44f787a40450e456b6e2d7fa12cf52bac2ab0d2f9be431dd51bd40584e316ffaa2c
+  languageName: node
+  linkType: hard
+
 "@types/debug@npm:^4.1.10":
   version: 4.1.10
   resolution: "@types/debug@npm:4.1.10"
@@ -19792,6 +19799,16 @@ __metadata:
   dependencies:
     lodash.isequal: ^4.5.0
   checksum: 629d23f83f1dc1c12012471c9cde3ea491c7401dc081e6c56b43f67e9f92875f0ecfa8d2bf43c6c7653958c6ed9880fefbcee04e1ac6c2679301e4b49bc2aa9f
+  languageName: node
+  linkType: hard
+
+"deasync@npm:^0.1.29":
+  version: 0.1.29
+  resolution: "deasync@npm:0.1.29"
+  dependencies:
+    bindings: ^1.5.0
+    node-addon-api: ^1.7.1
+  checksum: 60a23d893153832cd2e2da7afcdb7e21afdd63b0450f67466aefd387e8ca49b649484527ce7bd9e6282a1ea27be9db45a83e6a6cf8ddedd71c51aaf8c10cc323
   languageName: node
   linkType: hard
 
@@ -30431,6 +30448,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"node-addon-api@npm:^1.7.1":
+  version: 1.7.2
+  resolution: "node-addon-api@npm:1.7.2"
+  dependencies:
+    node-gyp: latest
+  checksum: 938922b3d7cb34ee137c5ec39df6289a3965e8cab9061c6848863324c21a778a81ae3bc955554c56b6b86962f6ccab2043dd5fa3f33deab633636bd28039333f
+  languageName: node
+  linkType: hard
+
 "node-addon-api@npm:^3.1.0":
   version: 3.2.1
   resolution: "node-addon-api@npm:3.2.1"
@@ -35705,7 +35731,9 @@ __metadata:
   dependencies:
     "@changesets/cli": ^2.26.2
     "@types/chart.js": ^2.9.39
+    "@types/deasync": ^0
     "@types/js-yaml": ^4.0.8
+    deasync: ^0.1.29
     node-gyp: ^9.4.1
     turbo: ~1.10.16
   languageName: unknown

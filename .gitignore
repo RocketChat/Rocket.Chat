@@ -48,3 +48,7 @@ yarn-error.log*
 .envrc
 
 *.sublime-workspace
+
+
+.package.json
+.yarn.lock
