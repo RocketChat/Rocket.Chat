@@ -6270,5 +6270,11 @@
   "Unlimited_seats_MACs": "Unlimited seats and MACs",
   "Seat_limit_reached": "Seat limit reached",
   "Seat_limit_reached_Description": "Your workspace reached its contractual seat limit. Buy more seats to add more users.",
-  "Buy_more_seats": "Buy more seats"
+  "Buy_more_seats": "Buy more seats",
+  "No_invite_records": "No invite records",
+  "Add_people_by_sending_invites": "Add people to this workspace by sending invites or manually creating new users.",
+  "Invite_type": "Invite type",
+  "Invite_status": "Invite status",
+  "Delete_record": "Delete record",
+  "Open_invitations_will_be_revoked": "Open invitations will be revoked, while accepted invitations won't be affected. This action cannot be undone."
 }
