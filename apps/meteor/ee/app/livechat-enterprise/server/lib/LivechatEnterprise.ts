@@ -272,8 +272,24 @@ export const LivechatEnterprise = {
 			);
 		}
 
-		if (fallbackForwardDepartment && !(await LivechatDepartmentRaw.findOneById(fallbackForwardDepartment))) {
-			throw new Meteor.Error('error-fallback-department-not-found', 'Fallback department not found', { method: 'livechat:saveDepartment' });
+		if (fallbackForwardDepartment) {
+			const fallbackDep = await LivechatDepartmentRaw.findOneById(fallbackForwardDepartment, {
+				projection: { _id: 1, fallbackForwardDepartment: 1 },
+			});
+			if (!fallbackDep) {
+				throw new Meteor.Error('error-fallback-department-not-found', 'Fallback department not found', {
+					method: 'livechat:saveDepartment',
+				});
+			}
+
+			// This checks for first level circular reference, there's a possibility of a deeper circular reference
+			// We'll control those cases with a setting of max depth of fallback departments
+			if (fallbackDep.fallbackForwardDepartment === _id) {
+				throw new Meteor.Error(
+					'error-fallback-department-circular',
+					'Cannot save department. Circular reference between fallback department and department',
+				);
+			}
 		}
 
 		const departmentDB = await LivechatDepartmentRaw.createOrUpdateDepartment(_id, departmentData);

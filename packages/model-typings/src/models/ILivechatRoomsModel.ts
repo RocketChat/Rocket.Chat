@@ -6,7 +6,7 @@ import type {
 	ILivechatVisitor,
 	MACStats,
 } from '@rocket.chat/core-typings';
-import type { FindCursor, UpdateResult, AggregationCursor, Document, FindOptions, DeleteResult, Filter } from 'mongodb';
+import type { FindCursor, UpdateResult, AggregationCursor, Document, FindOptions, DeleteResult, Filter, ModifyResult } from 'mongodb';
 
 import type { FindPaginated } from '..';
 import type { IBaseModel } from './IBaseModel';
@@ -244,4 +244,6 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	markVisitorActiveForPeriod(rid: string, period: string): Promise<UpdateResult>;
 	getMACStatisticsForPeriod(period: string): Promise<MACStats[]>;
 	getMACStatisticsBetweenDates(start: Date, end: Date): Promise<MACStats[]>;
+	resetNumberOfForwardHopsByRoomId(roomId: string): Promise<UpdateResult>;
+	incNumOfForwardHopsByRoomId(roomId: string): Promise<ModifyResult<IOmnichannelRoom>>;
 }

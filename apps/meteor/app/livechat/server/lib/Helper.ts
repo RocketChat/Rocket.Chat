@@ -570,7 +570,7 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 			throw new Error('error-no-agents-online-in-department');
 		}
 		// if a chat has a fallback department, attempt to redirect chat to there [EE]
-		const transferSuccess = !!(await callbacks.run('livechat:onTransferFailure', room, { guest, transferData }));
+		const transferSuccess = !!(await callbacks.run('livechat:onTransferFailure', room, { guest, transferData, department }));
 		// On CE theres no callback so it will return the room
 		if (typeof transferSuccess !== 'boolean' || !transferSuccess) {
 			logger.debug(`Cannot forward room ${room._id}. Unable to delegate inquiry`);
