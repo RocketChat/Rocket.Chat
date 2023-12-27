@@ -283,6 +283,8 @@
 	"Accounts_TwoFactorAuthentication_MaxDelta_Description": "The Maximum Delta determines how many tokens are valid at any given time. Tokens are generated every 30 seconds, and are valid for (30 * Maximum Delta) seconds.  \nExample: With a Maximum Delta set to 10, each token can be used up to 300 seconds before or after it's timestamp. This is useful when the client's clock is not properly synced with the server.",
 	"Accounts_TwoFactorAuthentication_RememberFor": "Remember Two Factor for (seconds)",
 	"Accounts_TwoFactorAuthentication_RememberFor_Description": "Do not request two factor authorization code if it was already provided before in the given time.",
+	"Accounts_TwoFactorAuthentication_Max_Invalid_Email_Code_Attempts": "Maximun Invalid Email OTP Codes Allowed",
+	"Accounts_TwoFactorAuthentication_Max_Invalid_Email_Code_Attempts_Description": "The system allows a maximum number of invalid email OTP codes, after which a new code is automatically generated. We highly recommend using this setting along with 'Block failed login attempts by Username'.",
 	"Accounts_UseDefaultBlockedDomainsList": "Use Default Blocked Domains List",
 	"Accounts_UseDNSDomainCheck": "Use DNS Domain Check",
 	"API_EmbedDisabledFor": "Disable Embed for Users",
@@ -5236,6 +5238,7 @@
 	"totp-disabled": "You do not have 2FA login enabled for your user",
 	"totp-invalid": "Code or password invalid",
 	"totp-required": "TOTP Required",
+	"totp-max-attempts": "Maximum OTP failed attempts reached. A new code will be generated.",
 	"Transcript": "Transcript",
 	"Transcript_Enabled": "Ask Visitor if They Would Like a Transcript After Chat Closed",
 	"Transcript_message": "Message to Show When Asking About Transcript",
@@ -6254,6 +6257,6 @@
 	"Unlimited_seats_MACs": "Unlimited seats and MACs",
 	"Seat_limit_reached": "Seat limit reached",
 	"Seat_limit_reached_Description": "Your workspace reached its contractual seat limit. Buy more seats to add more users.",
-	"Search_importer": "Search importer",
-	"Buy_more_seats": "Buy more seats"
+	"Buy_more_seats": "Buy more seats",
+	"Search_importer": "Search importer"
 }
