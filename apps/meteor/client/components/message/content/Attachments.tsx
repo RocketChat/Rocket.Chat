@@ -6,7 +6,6 @@ import AttachmentsItem from './attachments/AttachmentsItem';
 
 type AttachmentsProps = {
 	attachments: MessageAttachmentBase[];
-	collapsed?: boolean;
 	id?: string | undefined;
 };
 
