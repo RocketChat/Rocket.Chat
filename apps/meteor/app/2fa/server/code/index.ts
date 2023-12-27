@@ -217,6 +217,15 @@ export async function checkCodeForUser({ user, code, method, options = {}, conne
 
 	const valid = await selectedMethod.verify(existingUser, code, options.requireSecondFactor);
 	if (!valid) {
+		const tooManyFailedAttempts = await selectedMethod.maxFaildedAttemtpsReached(existingUser);
+		if (tooManyFailedAttempts) {
+			throw new Meteor.Error('totp-max-attempts', 'TOTP Maximun Failed Attempts Reached', {
+				method: selectedMethod.name,
+				...data,
+				availableMethods,
+			});
+		}
+
 		throw new Meteor.Error('totp-invalid', 'TOTP Invalid', {
 			method: selectedMethod.name,
 			...data,
