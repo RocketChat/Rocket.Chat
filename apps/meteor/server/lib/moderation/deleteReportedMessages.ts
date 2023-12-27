@@ -64,12 +64,8 @@ export async function deleteReportedMessages(messages: IMessage[], user: IUser):
 			ignoreDiscussion: true,
 			ts: { $gt: new Date() },
 			users: [],
-			reportedMessages: {
-				messageIds,
-				showDeletedStatus,
-				hidden: keepHistory && !showDeletedStatus,
-				remove: !keepHistory && !showDeletedStatus,
-			},
+			ids: messageIds,
+			showDeletedStatus,
 		});
 	});
 }

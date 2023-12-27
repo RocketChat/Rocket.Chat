@@ -54,7 +54,8 @@ export interface StreamerEvents {
 					ignoreDiscussion: boolean;
 					ts: Record<string, Date>;
 					users: string[];
-					reportedMessages?: { messageIds: string[]; hidden: boolean; showDeletedStatus: boolean; remove: boolean };
+					ids?: string[]; // message ids have priority over ts
+					showDeletedStatus?: boolean;
 				},
 			];
 		},

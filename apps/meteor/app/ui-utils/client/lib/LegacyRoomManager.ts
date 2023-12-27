@@ -177,9 +177,17 @@ const computation = Tracker.autorun(() => {
 						// remove thread refenrece from deleted message
 						ChatMessage.update({ tmid: msg._id }, { $unset: { tmid: 1 } }, { multi: true });
 					});
-					Notifications.onRoom(record.rid, 'deleteMessageBulk', ({ rid, ts, excludePinned, ignoreDiscussion, users, reportedMessages }) => {
-						if (!reportedMessages) {
-							const query: Mongo.Selector<IMessage> = { rid, ts };
+					Notifications.onRoom(
+						record.rid,
+						'deleteMessageBulk',
+						({ rid, ts, excludePinned, ignoreDiscussion, users, ids, showDeletedStatus }) => {
+							const query: Mongo.Selector<IMessage> = { rid };
+
+							if (ids) {
+								query._id = { $in: ids };
+							} else {
+								query.ts = ts;
+							}
 							if (excludePinned) {
 								query.pinned = { $ne: true };
 							}
@@ -189,24 +197,17 @@ const computation = Tracker.autorun(() => {
 							if (users?.length) {
 								query['u.username'] = { $in: users };
 							}
-							return ChatMessage.remove(query);
-						}
 
-						const { messageIds, remove, hidden, showDeletedStatus } = reportedMessages;
-						if (remove) {
-							return ChatMessage.remove({ _id: { $in: messageIds } });
-						}
-						if (hidden) {
-							return ChatMessage.update({ _id: { $in: messageIds } }, { $set: { _hidden: true } }, { multi: true });
-						}
-						if (showDeletedStatus) {
-							return ChatMessage.update(
-								{ _id: { $in: messageIds } },
-								{ $set: { t: 'rm', msg: '', urls: [], mentions: [], attachments: [], reactions: {} } },
-								{ multi: true },
-							);
-						}
-					});
+							if (showDeletedStatus) {
+								return ChatMessage.update(
+									query,
+									{ $set: { t: 'rm', msg: '', urls: [], mentions: [], attachments: [], reactions: {} } },
+									{ multi: true },
+								);
+							}
+							return ChatMessage.remove(query);
+						},
+					);
 				}
 			}
 
