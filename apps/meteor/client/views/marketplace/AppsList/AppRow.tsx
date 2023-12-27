@@ -73,7 +73,7 @@ const AppRow = ({ className, ...props }: App & { className?: string }): ReactEle
 						{shortDescription && <CardBody id={`${id}-description`}>{shortDescription}</CardBody>}
 					</CardCol>
 				</CardRow>
-				<CardControls onClick={preventClickPropagation} style={{ justifyContent: 'flex-end' }}>
+				<CardControls onClick={preventClickPropagation}>
 					{canUpdate && <Badge small variant='primary' />}
 					<AppStatus app={props} isAppDetailsPage={false} installed={installed} />
 					<AppMenu app={props} isAppDetailsPage={false} mis={4} />
