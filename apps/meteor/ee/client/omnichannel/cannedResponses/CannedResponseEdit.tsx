@@ -66,17 +66,17 @@ const CannedResponseEdit = ({ cannedResponseData }: CannedResponseEditProps) => 
 
 	return (
 		<Page>
-			<PageHeader title={cannedResponseData?._id ? t('Edit_CannedResponse') : t('New_CannedResponse')}>
-				<ButtonGroup>
-					<Button icon='back' onClick={() => router.navigate('/omnichannel/canned-responses')}>
-						{t('Back')}
-					</Button>
-					{cannedResponseData?._id && (
+			<PageHeader
+				title={cannedResponseData?._id ? t('Edit_CannedResponse') : t('New_CannedResponse')}
+				onClickBack={() => router.navigate('/omnichannel/canned-responses')}
+			>
+				{cannedResponseData?._id && (
+					<ButtonGroup>
 						<Button danger onClick={() => handleDelete(cannedResponseData._id)}>
 							{t('Delete')}
 						</Button>
-					)}
-				</ButtonGroup>
+					</ButtonGroup>
+				)}
 			</PageHeader>
 			<PageScrollableContentWithShadow>
 				<FormProvider {...methods}>
