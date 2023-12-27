@@ -59,23 +59,11 @@ const callEndpoint = <TMethod extends Method, TPathPattern extends PathPattern>(
 
 const uploadToEndpoint = (endpoint: PathFor<'POST'>, formData: any): Promise<UploadResult> => sdk.rest.post(endpoint as any, formData);
 
-const getStream = <N extends StreamNames, K extends StreamKeys<N>>(
-	streamName: N,
-	_options?: {
-		retransmit?: boolean | undefined;
-		retransmitToSelf?: boolean | undefined;
-	},
-): ((eventName: K, callback: (...args: StreamerCallbackArgs<N, K>) => void) => () => void) => {
-	return (eventName, callback): (() => void) => {
-		return sdk.stream(streamName, [eventName], callback as (...args: any[]) => void).stop;
-	};
-};
-
 const ee = new Emitter<Record<string, void>>();
 
 const events = new Map<string, () => void>();
 
-const getSingleStream = <N extends StreamNames, K extends StreamKeys<N>>(
+const getStream = <N extends StreamNames, K extends StreamKeys<N>>(
 	streamName: N,
 	_options?: {
 		retransmit?: boolean | undefined;
@@ -119,7 +107,6 @@ const contextValue = {
 	callEndpoint,
 	uploadToEndpoint,
 	getStream,
-	getSingleStream,
 };
 
 const ServerProvider: FC = ({ children }) => <ServerContext.Provider children={children} value={contextValue} />;
