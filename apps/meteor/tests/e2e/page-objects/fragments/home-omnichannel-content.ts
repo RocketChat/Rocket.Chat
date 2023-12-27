@@ -47,6 +47,18 @@ export class HomeOmnichannelContent extends HomeContent {
 		return this.page.locator('[data-qa-id="ToolBoxAction-balloon-close-top-right"]');
 	}
 
+	get btnGuestInfo(): Locator {
+		return this.page.locator('[data-qa-id="ToolBoxAction-user"]');
+	}
+
+	get infoContactEmail(): Locator {
+		return this.page.locator('[data-qa-id="contactInfo-email"]');
+	}
+
+	get infoContactName(): Locator {
+		return this.page.locator('[data-qa-id="contactInfo-name"]');
+	}
+	
 	get btnReturn(): Locator {
 		return this.page.locator('[data-qa-id="ToolBoxAction-back"]');
 	}
