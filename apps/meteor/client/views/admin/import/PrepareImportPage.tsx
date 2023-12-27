@@ -66,14 +66,14 @@ function PrepareImportPage() {
 
 	const selectedUsers = useMemo(() => {
 		return users.filter(({ do_import, username }) => {
-			if (tab === 'users' && searchText) return username.includes(searchText) && do_import;
+			if (tab === 'users' && searchText) return username.includes(searchText);
 			return do_import;
 		});
 	}, [searchText, tab, users]);
 
 	const selectedChannels = useMemo(() => {
 		return channels.filter(({ do_import, name }) => {
-			if (tab === 'channels' && searchText) return name.includes(searchText) && do_import;
+			if (tab === 'channels' && searchText) return name.includes(searchText);
 			return do_import;
 		});
 	}, [channels, searchText, tab]);
@@ -245,15 +245,15 @@ function PrepareImportPage() {
 						)}
 						{!isPreparing && tab === 'users' && (
 							<PrepareUsers
+								users={searchText ? selectedUsers : users}
 								usersCount={selectedUsers.length}
-								users={selectedUsers.length === 0 ? users : selectedUsers}
 								setUsers={setUsers}
 								indeterminate={selectedUsers.length > 0 && selectedUsers.length !== users.length}
 							/>
 						)}
 						{!isPreparing && tab === 'channels' && (
 							<PrepareChannels
-								channels={selectedChannels.length === 0 ? channels : selectedChannels}
+								channels={searchText ? selectedChannels : channels}
 								channelsCount={selectedChannels.length}
 								setChannels={setChannels}
 								indeterminate={selectedChannels.length > 0 && selectedChannels.length !== channels.length}
