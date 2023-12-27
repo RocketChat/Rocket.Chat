@@ -39,7 +39,7 @@ export type AccountPreferencesData = {
 };
 
 export const useAccountPreferencesValues = (): AccountPreferencesData => {
-	const language = useUserPreference<string>('language');
+	const language = useUserPreference<string>('language') || '';
 	const userDontAskAgainList = useUserPreference<{ action: string; label: string }[]>('dontAskAgainList') || [];
 	const dontAskAgainList = userDontAskAgainList.map(({ action }) => action);
 	const enableAutoAway = useUserPreference<boolean>('enableAutoAway');

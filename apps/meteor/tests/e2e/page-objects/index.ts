@@ -9,6 +9,7 @@ export * from './omnichannel-agents';
 export * from './omnichannel-departments';
 export * from './omnichannel-current-chats';
 export * from './omnichannel-livechat';
+export * from './omnichannel-livechat-embedded';
 export * from './omnichannel-manager';
 export * from './omnichannel-custom-fields';
 export * from './omnichannel-units';
