@@ -45,7 +45,7 @@
 		"testunit-watch": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --watch --config ./.mocharc.js",
 		"test": "npm run testapi && npm run testui",
 		"translation-diff": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' ts-node .scripts/translation-diff.ts",
-		"translation-check": "node .scripts/check-i18n.js",
+		"translation-check": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' ts-node .scripts/translation-check.ts",
 		"translation-fix-order": "node .scripts/fix-i18n.js",
 		"version": "node .scripts/version.js",
 		"set-version": "node .scripts/set-version.js",

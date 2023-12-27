@@ -1,11 +1,11 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
-const fg = require('fast-glob');
+import fg from 'fast-glob';
 
 const regexVar = /__[a-zA-Z_]+__/g;
 
-const validateKeys = (json, usedKeys) =>
+const validateKeys = (json: Record<string, string>, usedKeys: { key: string; replaces: string[] }[]) =>
 	usedKeys
 		.filter(({ key }) => typeof json[key] !== 'undefined')
 		.reduce((prev, cur) => {
@@ -18,9 +18,9 @@ const validateKeys = (json, usedKeys) =>
 			}
 
 			return prev;
-		}, []);
+		}, [] as { key: string; miss: string[] }[]);
 
-const removeMissingKeys = (i18nFiles, usedKeys) => {
+const removeMissingKeys = (i18nFiles: string[], usedKeys: { key: string; replaces: string[] }[]) => {
 	i18nFiles.forEach((file) => {
 		const json = JSON.parse(fs.readFileSync(file, 'utf8'));
 		if (Object.keys(json).length === 0) {
@@ -35,7 +35,7 @@ const removeMissingKeys = (i18nFiles, usedKeys) => {
 	});
 };
 
-const checkUniqueKeys = (content, json, filename) => {
+const checkUniqueKeys = (content: string, json: Record<string, string>, filename: string) => {
 	const matchKeys = content.matchAll(/^\s+"([^"]+)"/gm);
 
 	const allKeys = [...matchKeys];
@@ -45,14 +45,12 @@ const checkUniqueKeys = (content, json, filename) => {
 	}
 };
 
-const validate = (i18nFiles, usedKeys) => {
+const validate = (i18nFiles: string[], usedKeys: { key: string; replaces: string[] }[]) => {
 	const totalErrors = i18nFiles.reduce((errors, file) => {
 		const content = fs.readFileSync(file, 'utf8');
 		const json = JSON.parse(content);
 
 		checkUniqueKeys(content, json, file);
-
-		// console.log('json, usedKeys2', json, usedKeys);
 
 		const result = validateKeys(json, usedKeys);
 
@@ -74,29 +72,29 @@ const validate = (i18nFiles, usedKeys) => {
 	}
 };
 
-const checkFiles = async (sourcePath, sourceFile, fix = false) => {
+const checkFiles = async (sourcePath: string, sourceFile: string, fix = false) => {
 	const content = fs.readFileSync(path.join(sourcePath, sourceFile), 'utf8');
-	const sourceContent = JSON.parse(content);
+	const sourceContent = JSON.parse(content) as Record<string, string>;
 
 	checkUniqueKeys(content, sourceContent, sourceFile);
 
-	const usedKeys = Object.entries(sourceContent).map(([key, value]) => {
-		const replaces = value.match(regexVar);
-		return {
-			key,
-			replaces,
-		};
-	});
-
-	const keysWithInterpolation = usedKeys.filter(({ replaces }) => !!replaces);
+	const usedKeys = Object.entries(sourceContent)
+		.map(([key, value]) => {
+			const replaces = value.match(regexVar);
+			return {
+				key,
+				replaces,
+			};
+		})
+		.filter((usedKey): usedKey is { key: string; replaces: RegExpMatchArray } => !!usedKey.replaces);
 
 	const i18nFiles = await fg([`${sourcePath}/**/*.i18n.json`]);
 
 	if (fix) {
-		return removeMissingKeys(i18nFiles, keysWithInterpolation);
+		return removeMissingKeys(i18nFiles, usedKeys);
 	}
 
-	validate(i18nFiles, keysWithInterpolation);
+	validate(i18nFiles, usedKeys);
 };
 
 (async () => {
