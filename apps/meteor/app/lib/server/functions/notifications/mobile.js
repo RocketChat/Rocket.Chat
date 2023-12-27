@@ -115,6 +115,6 @@ export function shouldNotifyMobile({
 			isHighlighted ||
 			mobilePushNotifications === 'all' ||
 			hasMentionToUser) &&
-		(!isThread || hasReplyToThread)
+		(isHighlighted || !isThread || hasReplyToThread)
 	);
 }
