@@ -31,6 +31,7 @@ Meteor.methods<ServerMethods>({
 		await executeClearOEmbedCache();
 		return {
 			message: 'cache_cleared',
+			params: [],
 		};
 	},
 });
