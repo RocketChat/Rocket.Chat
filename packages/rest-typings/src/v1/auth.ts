@@ -1,6 +1,12 @@
 import Ajv from 'ajv';
 
-export type LoginProps = { user: Record<string, any> | string; username: string; email: string; password: string; code: string };
+type Password = string | { hashed: string };
+
+type EmailLogin = { email: string };
+type UsernameLogin = { username: string };
+type UserLogin = { user: UsernameLogin | EmailLogin | string };
+
+export type LoginProps = (EmailLogin | UsernameLogin | UserLogin) & { code?: string; password?: Password };
 
 type LogoutResponse = {
 	message: string;
@@ -24,7 +30,12 @@ const loginPropsSchema = {
 	properties: {
 		user: { type: 'object', nullable: true },
 		username: { type: 'string', nullable: true },
-		password: { type: 'string', nullable: true },
+		password: {
+			oneOf: [
+				{ type: 'string', nullable: true },
+				{ type: 'object', nullable: true },
+			],
+		},
 		email: { type: 'string', nullable: true },
 		code: { type: 'string', nullable: true },
 	},

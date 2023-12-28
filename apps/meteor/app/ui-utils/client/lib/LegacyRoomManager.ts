@@ -177,19 +177,37 @@ const computation = Tracker.autorun(() => {
 						// remove thread refenrece from deleted message
 						ChatMessage.update({ tmid: msg._id }, { $unset: { tmid: 1 } }, { multi: true });
 					});
-					Notifications.onRoom(record.rid, 'deleteMessageBulk', ({ rid, ts, excludePinned, ignoreDiscussion, users }) => {
-						const query: Mongo.Selector<IMessage> = { rid, ts };
-						if (excludePinned) {
-							query.pinned = { $ne: true };
-						}
-						if (ignoreDiscussion) {
-							query.drid = { $exists: false };
-						}
-						if (users?.length) {
-							query['u.username'] = { $in: users };
-						}
-						ChatMessage.remove(query);
-					});
+					Notifications.onRoom(
+						record.rid,
+						'deleteMessageBulk',
+						({ rid, ts, excludePinned, ignoreDiscussion, users, ids, showDeletedStatus }) => {
+							const query: Mongo.Selector<IMessage> = { rid };
+
+							if (ids) {
+								query._id = { $in: ids };
+							} else {
+								query.ts = ts;
+							}
+							if (excludePinned) {
+								query.pinned = { $ne: true };
+							}
+							if (ignoreDiscussion) {
+								query.drid = { $exists: false };
+							}
+							if (users?.length) {
+								query['u.username'] = { $in: users };
+							}
+
+							if (showDeletedStatus) {
+								return ChatMessage.update(
+									query,
+									{ $set: { t: 'rm', msg: '', urls: [], mentions: [], attachments: [], reactions: {} } },
+									{ multi: true },
+								);
+							}
+							return ChatMessage.remove(query);
+						},
+					);
 					Notifications.onRoom(record.rid, 'messagesRead', ({ rid, tmid, until }) => {
 						if (tmid) {
 							return ChatMessage.update(

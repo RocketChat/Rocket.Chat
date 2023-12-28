@@ -1,5 +1,5 @@
 import { api } from '@rocket.chat/core-services';
-import type { LicenseLimitKind } from '@rocket.chat/license';
+import type { LicenseLimitKind } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Subscriptions, Users, Settings, LivechatVisitors } from '@rocket.chat/models';
 import { wrapExceptions } from '@rocket.chat/tools';
