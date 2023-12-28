@@ -105,6 +105,6 @@ export function shouldNotifyDesktop({
 			isHighlighted ||
 			desktopNotifications === 'all' ||
 			hasMentionToUser) &&
-		(!isThread || hasReplyToThread)
+		(isHighlighted || !isThread || hasReplyToThread)
 	);
 }

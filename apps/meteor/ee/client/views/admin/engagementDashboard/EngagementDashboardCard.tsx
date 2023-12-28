@@ -1,5 +1,4 @@
-import { Box } from '@rocket.chat/fuselage';
-import { Card, CardBody, CardCol, CardTitle } from '@rocket.chat/ui-client';
+import { Box, Card, CardTitle, CardBody } from '@rocket.chat/fuselage';
 import type { ReactElement, ReactNode } from 'react';
 import React from 'react';
 
@@ -15,11 +14,9 @@ const EngagementDashboardCard = ({ children, title = undefined }: EngagementDash
 		<Card>
 			{title && <CardTitle>{title}</CardTitle>}
 			<CardBody>
-				<CardCol>
-					<EngagementDashboardCardErrorBoundary>
-						<Box>{children}</Box>
-					</EngagementDashboardCardErrorBoundary>
-				</CardCol>
+				<EngagementDashboardCardErrorBoundary>
+					<Box w='full'>{children}</Box>
+				</EngagementDashboardCardErrorBoundary>
 			</CardBody>
 		</Card>
 	</Box>

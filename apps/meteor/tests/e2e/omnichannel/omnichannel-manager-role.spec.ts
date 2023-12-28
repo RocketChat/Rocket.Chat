@@ -40,7 +40,7 @@ test.describe('OC - Manager Role', () => {
 	test.beforeAll(async ({ api }) => {
 		agents = await Promise.all([createAgent(api, 'user1'), createAgent(api, 'user2'), createAgent(api, MANAGER)]);
 
-		const agentsStatuses = await Promise.all(agents.slice(0, 1).map(({ data: agent }) => makeAgentAvailable(api, agent._id)));
+		const agentsStatuses = await Promise.all(agents.slice(0, 2).map(({ data: agent }) => makeAgentAvailable(api, agent._id)));
 
 		agentsStatuses.forEach((res) => expect(res.status()).toBe(200));
 	});

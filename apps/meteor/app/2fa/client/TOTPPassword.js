@@ -2,7 +2,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
 import { process2faReturn } from '../../../client/lib/2fa/process2faReturn';
-import { isTotpInvalidError, reportError } from '../../../client/lib/2fa/utils';
+import { isTotpInvalidError, isTotpMaxAttemptsError, reportError } from '../../../client/lib/2fa/utils';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { t } from '../../utils/lib/i18n';
 
@@ -47,6 +47,14 @@ Meteor.loginWithPassword = function (email, password, cb) {
 			emailOrUsername: email,
 			onCode: (code) => {
 				Meteor.loginWithPasswordAndTOTP(email, password, code, (error) => {
+					if (isTotpMaxAttemptsError(error)) {
+						dispatchToastMessage({
+							type: 'error',
+							message: t('totp-max-attempts'),
+						});
+						cb();
+						return;
+					}
 					if (isTotpInvalidError(error)) {
 						dispatchToastMessage({
 							type: 'error',
@@ -55,7 +63,6 @@ Meteor.loginWithPassword = function (email, password, cb) {
 						cb();
 						return;
 					}
-
 					cb(error);
 				});
 			},
