@@ -40,8 +40,7 @@ const onTransferFailure = async (
 		return false;
 	}
 
-	const { value } = await LivechatRooms.incNumOfForwardHopsByRoomId(room._id);
-	const currentHops = value?.forwardHopsCount || 1;
+	const { hops: currentHops = 1 } = transferData;
 	const maxHops = settings.get<number>('Omnichannel_max_fallback_forward_depth');
 
 	if (currentHops > maxHops) {
@@ -52,7 +51,6 @@ const onTransferFailure = async (
 			maxHops,
 			departmentId: department._id,
 		});
-		await LivechatRooms.resetNumberOfForwardHopsByRoomId(room._id);
 		return false;
 	}
 
@@ -61,6 +59,7 @@ const onTransferFailure = async (
 		prevDepartment: department.name,
 		departmentId: department.fallbackForwardDepartment,
 		department: fallbackDepartment,
+		hops: currentHops + 1,
 	};
 
 	const forwardSuccess = await forwardRoomToDepartment(room, guest, transferDataFallback);
@@ -75,16 +74,13 @@ const onTransferFailure = async (
 	}
 
 	const { _id, username } = transferData.transferredBy;
-	await Promise.all([
-		Message.saveSystemMessage(
-			'livechat_transfer_history_fallback',
-			room._id,
-			'',
-			{ _id, username },
-			{ transferData: transferDataFallback },
-		),
-		LivechatRooms.resetNumberOfForwardHopsByRoomId(room._id),
-	]);
+	await Message.saveSystemMessage(
+		'livechat_transfer_history_fallback',
+		room._id,
+		'',
+		{ _id, username },
+		{ transferData: transferDataFallback },
+	);
 	cbLogger.info({
 		msg: 'Fallback forward success',
 		departmentId: department._id,

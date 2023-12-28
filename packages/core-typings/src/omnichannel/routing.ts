@@ -38,6 +38,7 @@ export type TransferData = {
 	clientAction?: boolean;
 	scope?: 'agent' | 'department' | 'queue' | 'autoTransferUnansweredChatsToAgent' | 'autoTransferUnansweredChatsToQueue';
 	comment?: string;
+	hops?: number;
 };
 
 export type TransferByData = {

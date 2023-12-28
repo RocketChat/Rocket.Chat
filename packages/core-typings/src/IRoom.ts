@@ -233,8 +233,6 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 	closingMessage?: IMessage;
 
 	departmentAncestors?: string[];
-
-	forwardHopsCount?: number;
 }
 
 export interface IOmnichannelRoom extends IOmnichannelGenericRoom {

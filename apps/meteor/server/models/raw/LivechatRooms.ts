@@ -2568,37 +2568,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			.toArray();
 	}
 
-	// Should return the count after update
-	incNumOfForwardHopsByRoomId(roomId: string) {
-		const query: Filter<IOmnichannelRoom> = {
-			_id: roomId,
-			t: 'l',
-		};
-
-		const update: UpdateFilter<IOmnichannelRoom> = {
-			$inc: {
-				forwardHopsCount: 1,
-			},
-		};
-
-		return this.findOneAndUpdate(query, update, { returnDocument: 'after' });
-	}
-
-	resetNumberOfForwardHopsByRoomId(roomId: string) {
-		const query: Filter<IOmnichannelRoom> = {
-			_id: roomId,
-			t: 'l',
-		};
-
-		const update: UpdateFilter<IOmnichannelRoom> = {
-			$set: {
-				forwardHopsCount: 0,
-			},
-		};
-
-		return this.updateOne(query, update);
-	}
-
 	async unsetAllPredictedVisitorAbandonment(): Promise<void> {
 		throw new Error('Method not implemented.');
 	}
