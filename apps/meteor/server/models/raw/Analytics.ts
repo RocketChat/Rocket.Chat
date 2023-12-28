@@ -1,10 +1,10 @@
 import type { IAnalytic, IRoom } from '@rocket.chat/core-typings';
 import type { IAnalyticsModel } from '@rocket.chat/model-typings';
-import type { AggregationCursor, FindCursor, Db, IndexDescription, FindOptions, UpdateResult, Document } from 'mongodb';
 import { Random } from '@rocket.chat/random';
+import type { AggregationCursor, FindCursor, Db, IndexDescription, FindOptions, UpdateResult, Document } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
+import { BaseRaw } from './BaseRaw';
 
 export class AnalyticsRaw extends BaseRaw<IAnalytic> implements IAnalyticsModel {
 	constructor(db: Db) {
@@ -14,7 +14,7 @@ export class AnalyticsRaw extends BaseRaw<IAnalytic> implements IAnalyticsModel 
 	}
 
 	protected modelIndexes(): IndexDescription[] {
-		return [{ key: { date: 1 } }, { key: { 'room._id': 1, 'date': 1 }, unique: true }];
+		return [{ key: { date: 1 } }, { key: { 'room._id': 1, 'date': 1 }, unique: true, partialFilterExpression: { type: 'rooms' } }];
 	}
 
 	saveMessageSent({ room, date }: { room: IRoom; date: IAnalytic['date'] }): Promise<Document | UpdateResult> {
@@ -32,7 +32,7 @@ export class AnalyticsRaw extends BaseRaw<IAnalytic> implements IAnalyticsModel 
 				$setOnInsert: {
 					_id: Random.id(),
 					date,
-					type: 'messages',
+					type: 'messages' as const,
 				},
 				$inc: { messages: 1 },
 			},
@@ -47,7 +47,7 @@ export class AnalyticsRaw extends BaseRaw<IAnalytic> implements IAnalyticsModel 
 				$setOnInsert: {
 					_id: Random.id(),
 					date,
-					type: 'users',
+					type: 'users' as const,
 				},
 				$inc: { users: 1 },
 			},

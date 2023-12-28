@@ -1,4 +1,4 @@
-import { Header } from '@rocket.chat/ui-client';
+import { HeaderTag, HeaderTagIcon } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
@@ -14,10 +14,10 @@ const FederatedRoomOriginServer = ({ room }: FederatedRoomProps): ReactElement |
 		return null;
 	}
 	return (
-		<Header.Tag data-qa='federated-origin-server-name'>
-			<Header.Tag.Icon icon={{ name: 'globe' }} />
+		<HeaderTag data-qa='federated-origin-server-name'>
+			<HeaderTagIcon icon={{ name: 'globe' }} />
 			{originServerName}
-		</Header.Tag>
+		</HeaderTag>
 	);
 };
 

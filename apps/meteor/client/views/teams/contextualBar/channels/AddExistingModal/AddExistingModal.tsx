@@ -1,4 +1,4 @@
-import { Box, Button, Field, Modal } from '@rocket.chat/fuselage';
+import { Box, Button, Field, FieldLabel, Modal } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
@@ -47,8 +47,8 @@ const AddExistingModal = ({ onClose, teamId }: AddExistingModalProps) => {
 				<Modal.Close onClick={onClose} />
 			</Modal.Header>
 			<Modal.Content>
-				<Field mbe='x24'>
-					<Field.Label>{t('Channels')}</Field.Label>
+				<Field mbe={24}>
+					<FieldLabel>{t('Channels')}</FieldLabel>
 					<Controller
 						control={control}
 						name='rooms'

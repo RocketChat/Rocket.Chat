@@ -1,16 +1,15 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
-import { userLoggedOut } from './userLoggedOut';
-import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
-import { settings } from '../../../settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { settings } from '../../../settings/server';
+import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
+import { userLoggedOut } from './userLoggedOut';
 
 export async function userLogout(userId: string): Promise<string | boolean> {
-	const { connectToCloud, workspaceRegistered } = await retrieveRegistrationStatus();
+	const { workspaceRegistered } = await retrieveRegistrationStatus();
 
-	if (!connectToCloud || !workspaceRegistered) {
+	if (!workspaceRegistered) {
 		return '';
 	}
 
@@ -22,21 +21,22 @@ export async function userLogout(userId: string): Promise<string | boolean> {
 
 	if (user?.services?.cloud?.refreshToken) {
 		try {
-			const client_id = settings.get<string>('Cloud_Workspace_Client_Id');
-			if (!client_id) {
+			const clientId = settings.get<string>('Cloud_Workspace_Client_Id');
+			if (!clientId) {
 				return '';
 			}
 
-			const cloudUrl = settings.get('Cloud_Url');
-			const client_secret = settings.get('Cloud_Workspace_Client_Secret');
+			const clientSecret = settings.get('Cloud_Workspace_Client_Secret');
 
 			const { refreshToken } = user.services.cloud;
+
+			const cloudUrl = settings.get<string>('Cloud_Url');
 			await fetch(`${cloudUrl}/api/oauth/revoke`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 				params: {
-					client_id,
-					client_secret,
+					client_id: clientId,
+					client_secret: clientSecret,
 					token: refreshToken,
 					token_type_hint: 'refresh_token',
 				},

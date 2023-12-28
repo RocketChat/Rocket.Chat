@@ -1,14 +1,14 @@
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Message } from '@rocket.chat/core-services';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
-import { Message } from '@rocket.chat/core-services';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
+import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
 import { callbacks } from '../../lib/callbacks';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
-import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -65,7 +65,11 @@ export const muteUserInRoom = async (fromId: string, data: { rid: IRoom['_id']; 
 
 	await callbacks.run('beforeMuteUser', { mutedUser, fromUser }, room);
 
-	await Rooms.muteUsernameByRoomId(data.rid, mutedUser.username);
+	if (room.ro) {
+		await Rooms.muteReadOnlyUsernameByRoomId(data.rid, mutedUser.username);
+	} else {
+		await Rooms.muteUsernameByRoomId(data.rid, mutedUser.username);
+	}
 
 	await Message.saveSystemMessage('user-muted', data.rid, mutedUser.username, fromUser);
 

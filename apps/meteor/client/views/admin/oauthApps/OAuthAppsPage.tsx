@@ -1,17 +1,16 @@
-import { Button, Icon } from '@rocket.chat/fuselage';
-import { useRouteParameter, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { useRouteParameter, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 import EditOauthAppWithData from './EditOauthAppWithData';
 import OAuthAddApp from './OAuthAddApp';
 import OAuthAppsTable from './OAuthAppsTable';
 
 const OAuthAppsPage = (): ReactElement => {
 	const t = useTranslation();
-
-	const router = useRoute('admin-oauth-apps');
+	const router = useRouter();
 
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
@@ -19,25 +18,20 @@ const OAuthAppsPage = (): ReactElement => {
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('OAuth_Applications')}>
-					{context && (
-						<Button alignSelf='flex-end' onClick={(): void => router.push({})}>
-							<Icon name='back' />
-							{t('Back')}
-						</Button>
-					)}
+				<PageHeader title={t('Third_party_login')} onClickBack={context ? () => router.navigate('/admin/third-party-login') : undefined}>
 					{!context && (
-						<Button primary alignSelf='flex-end' onClick={(): void => router.push({ context: 'new' })}>
-							<Icon name='plus' />
-							{t('New_Application')}
-						</Button>
+						<ButtonGroup>
+							<Button primary onClick={() => router.navigate('/admin/third-party-login/new')}>
+								{t('New_Application')}
+							</Button>
+						</ButtonGroup>
 					)}
-				</Page.Header>
-				<Page.Content>
+				</PageHeader>
+				<PageContent>
 					{!context && <OAuthAppsTable />}
 					{id && context === 'edit' && <EditOauthAppWithData _id={id} />}
 					{context === 'new' && <OAuthAddApp />}
-				</Page.Content>
+				</PageContent>
 			</Page>
 		</Page>
 	);

@@ -5,13 +5,11 @@ import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import moment from 'moment';
 
-import { hasPermission } from '../../app/authorization/client';
 import { register } from '../../app/markdown/lib/hljs';
 import { settings } from '../../app/settings/client';
 import { getUserPreference } from '../../app/utils/client';
 import 'hljs9/styles/github.css';
-import { t } from '../../app/utils/lib/i18n';
-import * as banners from '../lib/banners';
+import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { synchronizeUserData, removeLocalUserData } from '../lib/userData';
 import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
 
@@ -41,7 +39,7 @@ Meteor.startup(() => {
 
 		const utcOffset = moment().utcOffset() / 60;
 		if (user.utcOffset !== utcOffset) {
-			Meteor.call('userSetUtcOffset', utcOffset);
+			sdk.call('userSetUtcOffset', utcOffset);
 		}
 
 		if (getUserPreference(user, 'enableAutoAway')) {
@@ -58,35 +56,6 @@ Meteor.startup(() => {
 			status = user.status;
 			fireGlobalEvent('status-changed', status);
 		}
-	});
-
-	Tracker.autorun(async (c) => {
-		const uid = Meteor.userId();
-		if (!uid) {
-			return;
-		}
-
-		if (!hasPermission('manage-cloud')) {
-			return;
-		}
-
-		Meteor.call('cloud:checkRegisterStatus', (err: unknown, data: { connectToCloud?: boolean; workspaceRegistered?: boolean }) => {
-			if (err) {
-				console.log(err);
-				return;
-			}
-
-			c.stop();
-			const { connectToCloud = false, workspaceRegistered = false } = data;
-			if (connectToCloud === true && workspaceRegistered !== true) {
-				banners.open({
-					id: 'cloud-registration',
-					title: t('Cloud_registration_pending_title'),
-					html: t('Cloud_registration_pending_html'),
-					modifiers: ['large', 'danger'],
-				});
-			}
-		});
 	});
 });
 Meteor.startup(() => {

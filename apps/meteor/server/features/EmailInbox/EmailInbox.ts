@@ -1,13 +1,13 @@
+import type { IEmailInbox } from '@rocket.chat/core-typings';
+import { EmailInbox, EmailMessageHistory } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import nodemailer from 'nodemailer';
 import type Mail from 'nodemailer/lib/mailer';
-import type { IEmailInbox } from '@rocket.chat/core-typings';
-import { EmailInbox, EmailMessageHistory } from '@rocket.chat/models';
 
+import { settings } from '../../../app/settings/server';
 import { IMAPInterceptor } from '../../email/IMAPInterceptor';
 import { onEmailReceived } from './EmailInbox_Incoming';
 import { logger } from './logger';
-import { settings } from '../../../app/settings/server';
 
 export type Inbox = {
 	imap: IMAPInterceptor;

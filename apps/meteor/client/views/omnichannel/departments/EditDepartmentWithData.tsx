@@ -17,10 +17,12 @@ type EditDepartmentWithDataProps = {
 const EditDepartmentWithData = ({ id, title }: EditDepartmentWithDataProps) => {
 	const t = useTranslation();
 	const getDepartment = useEndpoint('GET', '/v1/livechat/department/:_id', { _id: id ?? '' });
-	const { data, isInitialLoading, isError } = useQuery(['/v1/livechat/department/:_id'], () => getDepartment(params), { enabled: !!id });
+	const { data, isInitialLoading, isError } = useQuery(['/v1/livechat/department/:_id', id], () => getDepartment(params), {
+		enabled: !!id,
+	});
 
 	if (isInitialLoading) {
-		return <FormSkeleton />;
+		return <FormSkeleton padding='1.5rem 1rem' maxWidth='37.5rem' margin='0 auto' />;
 	}
 
 	if (isError || (id && !data?.department)) {

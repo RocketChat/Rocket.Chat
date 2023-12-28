@@ -7,6 +7,12 @@ import Markup from './Markup';
 
 afterEach(cleanup);
 
+beforeAll(() => {
+	jest.mock('highlight.js', () => ({
+		highlightElement: (): void => undefined,
+	}));
+});
+
 it('renders empty', () => {
 	const { container } = render(<Markup tokens={[]} />);
 	expect(container).toBeEmptyDOMElement();

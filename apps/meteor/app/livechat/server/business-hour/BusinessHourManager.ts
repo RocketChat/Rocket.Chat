@@ -1,22 +1,13 @@
-import moment from 'moment';
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import type { AgendaCronJobs } from '@rocket.chat/cron';
-import { Users } from '@rocket.chat/models';
+import { LivechatDepartment, Users } from '@rocket.chat/models';
+import moment from 'moment';
 
-import type { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
-import { settings } from '../../../settings/server';
+import { closeBusinessHour } from '../../../../ee/app/livechat-enterprise/server/business-hour/Helper';
 import { callbacks } from '../../../../lib/callbacks';
-
-const cronJobDayDict: Record<string, number> = {
-	Sunday: 0,
-	Monday: 1,
-	Tuesday: 2,
-	Wednesday: 3,
-	Thursday: 4,
-	Friday: 5,
-	Saturday: 6,
-};
+import { settings } from '../../../settings/server';
+import type { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
 
 export class BusinessHourManager {
 	private types: Map<string, IBusinessHourType> = new Map();
@@ -36,6 +27,7 @@ export class BusinessHourManager {
 	async startManager(): Promise<void> {
 		await this.createCronJobsForWorkHours();
 		this.setupCallbacks();
+		await this.cleanupDisabledDepartmentReferences();
 		await this.behavior.onStartBusinessHours();
 	}
 
@@ -44,6 +36,40 @@ export class BusinessHourManager {
 		this.clearCronJobsCache();
 		this.removeCallbacks();
 		await this.behavior.onDisableBusinessHours();
+	}
+
+	async restartManager(): Promise<void> {
+		await this.stopManager();
+		await this.startManager();
+	}
+
+	async cleanupDisabledDepartmentReferences(): Promise<void> {
+		// Get business hours with departments enabled and disabled
+		const bhWithDepartments = await LivechatDepartment.getBusinessHoursWithDepartmentStatuses();
+
+		if (!bhWithDepartments.length) {
+			// If there are no bh, skip
+			return;
+		}
+
+		for await (const { _id: businessHourId, validDepartments, invalidDepartments } of bhWithDepartments) {
+			if (!invalidDepartments.length) {
+				continue;
+			}
+
+			// If there are no enabled departments, close the business hour
+			const allDepsAreDisabled = validDepartments.length === 0 && invalidDepartments.length > 0;
+			if (allDepsAreDisabled) {
+				const businessHour = await this.getBusinessHour(businessHourId, LivechatBusinessHourTypes.CUSTOM);
+				if (!businessHour) {
+					continue;
+				}
+				await closeBusinessHour(businessHour);
+			}
+
+			// Remove business hour from disabled departments
+			await LivechatDepartment.removeBusinessHourFromDepartmentsByIdsAndBusinessHourId(invalidDepartments, businessHourId);
+		}
 	}
 
 	async allowAgentChangeServiceStatus(agentId: string): Promise<boolean> {
@@ -96,6 +122,14 @@ export class BusinessHourManager {
 		return Users.setLivechatStatusActiveBasedOnBusinessHours(agentId);
 	}
 
+	async restartCronJobsIfNecessary(): Promise<void> {
+		if (!settings.get('Livechat_enable_business_hours')) {
+			return;
+		}
+
+		await this.createCronJobsForWorkHours();
+	}
+
 	private setupCallbacks(): void {
 		callbacks.add(
 			'livechat.removeAgentDepartment',
@@ -115,12 +149,33 @@ export class BusinessHourManager {
 			callbacks.priority.HIGH,
 			'business-hour-livechat-on-save-agent-department',
 		);
+		callbacks.add(
+			'livechat.afterDepartmentDisabled',
+			this.behavior.onDepartmentDisabled.bind(this),
+			callbacks.priority.HIGH,
+			'business-hour-livechat-on-department-disabled',
+		);
+		callbacks.add(
+			'livechat.afterDepartmentArchived',
+			this.behavior.onDepartmentArchived.bind(this),
+			callbacks.priority.HIGH,
+			'business-hour-livechat-on-department-archived',
+		);
+		callbacks.add(
+			'livechat.onNewAgentCreated',
+			this.behavior.onNewAgentCreated.bind(this),
+			callbacks.priority.HIGH,
+			'business-hour-livechat-on-agent-created',
+		);
 	}
 
 	private removeCallbacks(): void {
 		callbacks.remove('livechat.removeAgentDepartment', 'business-hour-livechat-on-remove-agent-department');
 		callbacks.remove('livechat.afterRemoveDepartment', 'business-hour-livechat-after-remove-department');
 		callbacks.remove('livechat.saveAgentDepartment', 'business-hour-livechat-on-save-agent-department');
+		callbacks.remove('livechat.afterDepartmentDisabled', 'business-hour-livechat-on-department-disabled');
+		callbacks.remove('livechat.afterDepartmentArchived', 'business-hour-livechat-on-department-archived');
+		callbacks.remove('livechat.onNewAgentCreated', 'business-hour-livechat-on-agent-created');
 	}
 
 	private async createCronJobsForWorkHours(): Promise<void> {
@@ -132,16 +187,22 @@ export class BusinessHourManager {
 		}
 
 		const { start, finish } = workHours;
+
 		await Promise.all(start.map(({ day, times }) => this.scheduleCronJob(times, day, 'open', this.openWorkHoursCallback)));
 		await Promise.all(finish.map(({ day, times }) => this.scheduleCronJob(times, day, 'close', this.closeWorkHoursCallback)));
 	}
 
-	private async scheduleCronJob(items: string[], day: string, type: string, job: (day: string, hour: string) => void): Promise<void> {
+	private async scheduleCronJob(
+		items: string[],
+		day: string,
+		type: 'open' | 'close',
+		job: (day: string, hour: string) => void,
+	): Promise<void> {
 		await Promise.all(
 			items.map((hour) => {
-				const jobName = `${day}/${hour}/${type}`;
-				const time = moment(hour, 'HH:mm');
-				const scheduleAt = `${time.minutes()} ${time.hours()} * * ${cronJobDayDict[day]}`;
+				const time = moment(hour, 'HH:mm').day(day);
+				const jobName = `${time.format('dddd')}/${time.format('HH:mm')}/${type}`;
+				const scheduleAt = `${time.minutes()} ${time.hours()} * * ${time.day()}`;
 				this.addToCache(jobName);
 				return this.cronJobs.add(jobName, scheduleAt, () => job(day, hour));
 			}),

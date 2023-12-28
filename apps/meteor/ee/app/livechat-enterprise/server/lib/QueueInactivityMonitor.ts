@@ -1,15 +1,15 @@
-import type { Db } from 'mongodb';
 import { Agenda } from '@rocket.chat/agenda';
-import { MongoInternals } from 'meteor/mongo';
-import { Meteor } from 'meteor/meteor';
 import type { IUser, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { MainLogger } from '@rocket.chat/logger';
 import { LivechatRooms, LivechatInquiry as LivechatInquiryRaw, Users } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
+import { MongoInternals } from 'meteor/mongo';
+import type { Db } from 'mongodb';
 
-import { settings } from '../../../../../app/settings/server';
 import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
+import { settings } from '../../../../../app/settings/server';
 import { i18n } from '../../../../../server/lib/i18n';
 import { schedulerLogger } from './logger';
-import type { MainLogger } from '../../../../../server/lib/logger/getPino';
 
 const SCHEDULER_NAME = 'omnichannel_queue_inactivity_monitor';
 
@@ -69,6 +69,7 @@ class OmnichannelQueueInactivityMonitorClass {
 		}
 
 		await this.scheduler.start();
+		this.logger.info('Service started');
 		this.running = true;
 	}
 
@@ -108,21 +109,18 @@ class OmnichannelQueueInactivityMonitorClass {
 	async closeRoom({ attrs: { data } }: any = {}): Promise<void> {
 		const { inquiryId } = data;
 		const inquiry = await LivechatInquiryRaw.findOneById(inquiryId);
-		this.logger.debug(`Processing inquiry item ${inquiryId}`);
 		if (!inquiry || inquiry.status !== 'queued') {
-			this.logger.debug(`Skipping inquiry ${inquiryId}. Invalid or not queued anymore`);
 			return;
 		}
 
 		const room = await LivechatRooms.findOneById(inquiry.rid);
 		if (!room) {
-			this.logger.error(`Error: unable to find room ${inquiry.rid} for inquiry ${inquiryId} to close in queue inactivity monitor`);
+			this.logger.error(`Unable to find room ${inquiry.rid} for inquiry ${inquiryId} to close in queue inactivity monitor`);
 			return;
 		}
 
 		await Promise.all([this.closeRoomAction(room), this.stopInquiry(inquiryId)]);
-
-		this.logger.debug(`Running successful. Closed inquiry ${inquiry._id} because of inactivity`);
+		this.logger.info(`Closed room ${inquiry.rid} for inquiry ${inquiryId} due to inactivity`);
 	}
 }
 

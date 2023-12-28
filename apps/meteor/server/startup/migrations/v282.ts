@@ -1,7 +1,7 @@
 import { Settings } from '@rocket.chat/models';
 
-import { addMigration } from '../../lib/migrations';
 import { settings } from '../../../app/settings/server';
+import { addMigration } from '../../lib/migrations';
 
 addMigration({
 	version: 282,

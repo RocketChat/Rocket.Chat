@@ -142,7 +142,7 @@ export const drawLineChart = async (
 
 	const datasets: ChartDataSet[] = [];
 
-	chartLabels.forEach(function (chartLabel: string, index: number) {
+	chartLabels.forEach((chartLabel: string, index: number) => {
 		datasets.push({
 			label: t(chartLabel), // chart label
 			data: dataSets[index], // data points corresponding to data labels, x-axis points

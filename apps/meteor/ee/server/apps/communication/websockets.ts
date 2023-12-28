@@ -1,12 +1,11 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
-import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
 import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
-import type { IStreamer } from 'meteor/rocketchat:streamer';
+import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
 import { api } from '@rocket.chat/core-services';
+import type { IStreamer } from 'meteor/rocketchat:streamer';
 
-import { SystemLogger } from '../../../../server/lib/logger/system';
 import notifications from '../../../../app/notifications/server/lib/Notifications';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import type { AppServerOrchestrator } from '../orchestrator';
 import { AppEvents } from './events';
 

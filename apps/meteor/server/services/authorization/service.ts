@@ -1,8 +1,8 @@
-import mem from 'mem';
-import type { IUser, IRole, IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { Subscriptions, Rooms, Users, Roles, Permissions } from '@rocket.chat/models';
 import type { IAuthorization, RoomAccessValidator } from '@rocket.chat/core-services';
 import { License, ServiceClass } from '@rocket.chat/core-services';
+import type { IUser, IRole, IRoom, ISubscription, IRocketChatRecord } from '@rocket.chat/core-typings';
+import { Subscriptions, Rooms, Users, Roles, Permissions } from '@rocket.chat/models';
+import mem from 'mem';
 
 import { AuthorizationUtils } from '../../../app/authorization/lib/AuthorizationUtils';
 import { canAccessRoom } from './canAccessRoom';
@@ -39,7 +39,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 	}
 
 	async started(): Promise<void> {
-		if (!(await License.isEnterprise())) {
+		if (!(await License.hasValidLicense())) {
 			return;
 		}
 
@@ -97,7 +97,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		AuthorizationUtils.addRolePermissionWhiteList(role, permissions);
 	}
 
-	async getUsersFromPublicRoles(): Promise<Pick<IUser, '_id' | 'username' | 'roles'>[]> {
+	async getUsersFromPublicRoles(): Promise<(IRocketChatRecord & Pick<IUser, '_id' | 'username' | 'roles'>)[]> {
 		const roleIds = await this.getPublicRoles();
 
 		return this.getUserFromRoles(roleIds);

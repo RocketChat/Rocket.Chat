@@ -1,7 +1,7 @@
-import { Meteor } from 'meteor/meteor';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { Messages, Subscriptions } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import { Meteor } from 'meteor/meteor';
 
 import logger from './logger';
 

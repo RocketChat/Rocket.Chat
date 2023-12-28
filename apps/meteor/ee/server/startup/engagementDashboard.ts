@@ -1,19 +1,14 @@
-import { Meteor } from 'meteor/meteor';
+import { License } from '@rocket.chat/license';
 
-import { onToggledFeature } from '../../app/license/server/license';
-
-onToggledFeature('engagement-dashboard', {
-	up: () =>
-		Meteor.startup(async () => {
-			const { prepareAnalytics, prepareAuthorization, attachCallbacks } = await import('../lib/engagementDashboard/startup');
-			await prepareAuthorization();
-			await prepareAnalytics();
-			attachCallbacks();
-			await import('../api/engagementDashboard');
-		}),
-	down: () =>
-		Meteor.startup(async () => {
-			const { detachCallbacks } = await import('../lib/engagementDashboard/startup');
-			detachCallbacks();
-		}),
+License.onToggledFeature('engagement-dashboard', {
+	up: async () => {
+		const { prepareAnalytics, attachCallbacks } = await import('../lib/engagementDashboard/startup');
+		await prepareAnalytics();
+		attachCallbacks();
+		await import('../api/engagementDashboard');
+	},
+	down: async () => {
+		const { detachCallbacks } = await import('../lib/engagementDashboard/startup');
+		detachCallbacks();
+	},
 });

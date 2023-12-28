@@ -1,10 +1,10 @@
 import { View, StyleSheet } from '@react-pdf/renderer';
-import { fontScales } from '@rocket.chat/fuselage-tokens/typography.json';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
+import { fontScales } from '@rocket.chat/fuselage-tokens/typography.json';
 
 import type { Quote as QuoteType } from '..';
-import { MessageHeader } from './MessageHeader';
 import { Markup } from '../markup';
+import { MessageHeader } from './MessageHeader';
 
 const styles = StyleSheet.create({
 	wrapper: {

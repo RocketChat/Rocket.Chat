@@ -1,8 +1,8 @@
 import type { IRoom, IUser, Username } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 
-import { callbacks } from '../../../../../../../lib/callbacks';
 import { settings } from '../../../../../../../app/settings/server';
+import { callbacks } from '../../../../../../../lib/callbacks';
 
 export class FederationHooksEE {
 	public static onFederatedRoomCreated(callback: (room: IRoom, owner: IUser, originalMemberList: string[]) => Promise<void>): void {

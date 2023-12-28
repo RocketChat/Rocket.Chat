@@ -1,7 +1,7 @@
-import { EventEmitter } from 'eventemitter3';
-import type { IPublication, Rule, Connection, DDPSubscription, IStreamer, IRules, TransformMessage } from 'meteor/rocketchat:streamer';
 import { MeteorError } from '@rocket.chat/core-services';
 import type { StreamerEvents } from '@rocket.chat/ui-contexts';
+import { EventEmitter } from 'eventemitter3';
+import type { IPublication, Rule, Connection, DDPSubscription, IStreamer, IRules, TransformMessage } from 'meteor/rocketchat:streamer';
 
 import { SystemLogger } from '../../lib/logger/system';
 

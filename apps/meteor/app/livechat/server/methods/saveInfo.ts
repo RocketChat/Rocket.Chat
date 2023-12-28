@@ -1,13 +1,13 @@
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { LivechatRooms, Users } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { callbacks } from '../../../../lib/callbacks';
-import { Livechat } from '../lib/Livechat';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
+import { Livechat as LivechatTyped } from '../lib/LivechatTyped';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -34,9 +34,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:saveInfo'(guestData, roomData) {
-		methodDeprecationLogger.warn(
-			'livechat:saveInfo method will be deprecated in future versions of Rocket.Chat. Use "livechat/room.saveInfo" endpoint instead.',
-		);
+		methodDeprecationLogger.method('livechat:saveInfo', '7.0.0', 'Use "livechat/room.saveInfo" endpoint instead.');
 		const userId = Meteor.userId();
 
 		if (!userId || !(await hasPermissionAsync(userId, 'view-l-room'))) {
@@ -79,7 +77,9 @@ Meteor.methods<ServerMethods>({
 			delete guestData.phone;
 		}
 
-		await Promise.allSettled([Livechat.saveGuest(guestData), Livechat.saveRoomInfo(roomData)]);
+		// Since the endpoint is going to be deprecated, we can live with this for a while
+		// @ts-expect-error - type is right, but `check` converts it to something else
+		await Promise.allSettled([LivechatTyped.saveGuest(guestData as any, userId), LivechatTyped.saveRoomInfo(roomData)]);
 
 		const user = await Users.findOne({ _id: userId }, { projection: { _id: 1, username: 1 } });
 

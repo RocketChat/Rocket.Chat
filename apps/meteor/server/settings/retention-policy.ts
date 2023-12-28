@@ -12,7 +12,7 @@ export const createRetentionSettings = () =>
 			public: true,
 			i18nLabel: 'RetentionPolicy_Enabled',
 			alert:
-				'Watch out! Tweaking these settings without utmost care can destroy all message history. Please read the documentation before turning the feature on at rocket.chat/docs/administrator-guides/retention-policies/',
+				'Watch out! Tweaking these settings without utmost care can destroy all message history. Please read <a href="https://docs.rocket.chat/use-rocket.chat/workspace-administration/settings/retention-policies" target="_blank">here</a> the documentation before turning the feature ON.',
 		});
 
 		await this.add('RetentionPolicy_Precision', '0', {

@@ -1,11 +1,11 @@
-import { Meteor } from 'meteor/meteor';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
-import { Messages, ChatRoom, Subscriptions } from '../../../models/client';
+import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { callbacks } from '../../../../lib/callbacks';
 import { emoji } from '../../../emoji/client';
-import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
+import { Messages, ChatRoom, Subscriptions } from '../../../models/client';
 
 Meteor.methods<ServerMethods>({
 	async setReaction(reaction, messageId) {

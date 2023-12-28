@@ -1,17 +1,28 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-import URL from 'url';
 import QueryString from 'querystring';
+import URL from 'url';
 
-import { Meteor } from 'meteor/meteor';
-import { ReactiveVar } from 'meteor/reactive-var';
-import type { ReactiveVar as ReactiveVarType } from 'meteor/reactive-var';
-import EJSON from 'ejson';
-import { Emitter } from '@rocket.chat/emitter';
 import type { IE2EEMessage, IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
+import { Emitter } from '@rocket.chat/emitter';
+import EJSON from 'ejson';
+import { Meteor } from 'meteor/meteor';
+import type { ReactiveVar as ReactiveVarType } from 'meteor/reactive-var';
+import { ReactiveVar } from 'meteor/reactive-var';
 
+import * as banners from '../../../client/lib/banners';
+import type { LegacyBannerPayload } from '../../../client/lib/banners';
+import { imperativeModal } from '../../../client/lib/imperativeModal';
+import { mapMessageFromApi } from '../../../client/lib/utils/mapMessageFromApi';
+import { waitUntilFind } from '../../../client/lib/utils/waitUntilFind';
+import EnterE2EPasswordModal from '../../../client/views/e2e/EnterE2EPasswordModal';
+import SaveE2EPasswordModal from '../../../client/views/e2e/SaveE2EPasswordModal';
+import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
 import { getMessageUrlRegex } from '../../../lib/getMessageUrlRegex';
-import { E2ERoom } from './rocketchat.e2e.room';
+import { ChatRoom, Subscriptions, Messages } from '../../models/client';
+import { settings } from '../../settings/client';
+import { getUserAvatarURL } from '../../utils/client';
+import { sdk } from '../../utils/client/lib/SDKClient';
+import { t } from '../../utils/lib/i18n';
 import {
 	toString,
 	toArrayBuffer,
@@ -26,23 +37,9 @@ import {
 	deriveKey,
 	generateMnemonicPhrase,
 } from './helper';
-import * as banners from '../../../client/lib/banners';
-import type { LegacyBannerPayload } from '../../../client/lib/banners';
-import { settings } from '../../settings/client';
-import { ChatRoom, Subscriptions, Messages } from '../../models/client';
-import './events.js';
-import './tabbar';
 import { log, logError } from './logger';
-import { waitUntilFind } from '../../../client/lib/utils/waitUntilFind';
-import { imperativeModal } from '../../../client/lib/imperativeModal';
-import SaveE2EPasswordModal from '../../../client/views/e2e/SaveE2EPasswordModal';
-import EnterE2EPasswordModal from '../../../client/views/e2e/EnterE2EPasswordModal';
-import { call } from '../../../client/lib/utils/call';
-import { getUserAvatarURL } from '../../utils/client';
-import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
-import { mapMessageFromApi } from '../../../client/lib/utils/mapMessageFromApi';
-import { t } from '../../utils/lib/i18n';
-import { sdk } from '../../utils/client/lib/SDKClient';
+import { E2ERoom } from './rocketchat.e2e.room';
+import './events.js';
 
 let failedToDecodeKey = false;
 
@@ -181,8 +178,8 @@ class E2E extends Emitter {
 				this.started = false;
 				failedToDecodeKey = true;
 				this.openAlert({
-					title: t("Wasn't possible to decode your encryption key to be imported."),
-					html: '<div>Your encryption password seems wrong. Click here to try again.</div>',
+					title: "Wasn't possible to decode your encryption key to be imported.", // TODO: missing translation
+					html: '<div>Your encryption password seems wrong. Click here to try again.</div>', // TODO: missing translation
 					modifiers: ['large', 'danger'],
 					closable: true,
 					icon: 'key',
@@ -207,14 +204,9 @@ class E2E extends Emitter {
 
 		const randomPassword = Meteor._localStorage.getItem('e2e.randomPassword');
 		if (randomPassword) {
-			const passwordRevealText = t('E2E_password_reveal_text', {
-				postProcess: 'sprintf',
-				sprintf: [randomPassword],
-			});
-
 			this.openAlert({
-				title: t('Save_your_encryption_password'),
-				html: t('Click_here_to_view_and_copy_your_password'),
+				title: () => t('Save_your_encryption_password'),
+				html: () => t('Click_here_to_view_and_copy_your_password'),
 				modifiers: ['large'],
 				closable: false,
 				icon: 'key',
@@ -222,7 +214,6 @@ class E2E extends Emitter {
 					imperativeModal.open({
 						component: SaveE2EPasswordModal,
 						props: {
-							passwordRevealText,
 							randomPassword,
 							onClose: imperativeModal.close,
 							onCancel: () => {
@@ -316,7 +307,7 @@ class E2E extends Emitter {
 	}
 
 	async requestSubscriptionKeys(): Promise<void> {
-		await call('e2e.requestSubscriptionKeys');
+		await sdk.call('e2e.requestSubscriptionKeys');
 	}
 
 	async createRandomPassword(): Promise<string> {
@@ -325,12 +316,12 @@ class E2E extends Emitter {
 		return randomPassword;
 	}
 
-	async encodePrivateKey(private_key: string, password: string): Promise<string | void> {
+	async encodePrivateKey(privateKey: string, password: string): Promise<string | void> {
 		const masterKey = await this.getMasterKey(password);
 
 		const vector = crypto.getRandomValues(new Uint8Array(16));
 		try {
-			const encodedPrivateKey = await encryptAES(vector, masterKey, toArrayBuffer(private_key));
+			const encodedPrivateKey = await encryptAES(vector, masterKey, toArrayBuffer(privateKey));
 
 			return EJSON.stringify(joinVectorAndEcryptedData(vector, encodedPrivateKey));
 		} catch (error) {
@@ -382,8 +373,8 @@ class E2E extends Emitter {
 
 			const showAlert = () => {
 				this.openAlert({
-					title: t('Enter_your_E2E_password'),
-					html: t('Click_here_to_enter_your_encryption_password'),
+					title: () => t('Enter_your_E2E_password'),
+					html: () => t('Click_here_to_enter_your_encryption_password'),
 					modifiers: ['large'],
 					closable: false,
 					icon: 'key',
@@ -401,12 +392,12 @@ class E2E extends Emitter {
 		});
 	}
 
-	async decodePrivateKey(private_key: string): Promise<string> {
+	async decodePrivateKey(privateKey: string): Promise<string> {
 		const password = await this.requestPassword();
 
 		const masterKey = await this.getMasterKey(password);
 
-		const [vector, cipherText] = splitVectorAndEcryptedData(EJSON.parse(private_key));
+		const [vector, cipherText] = splitVectorAndEcryptedData(EJSON.parse(privateKey));
 
 		try {
 			const privKey = await decryptAES(vector, masterKey, cipherText);
@@ -475,7 +466,7 @@ class E2E extends Emitter {
 
 		await Promise.all(
 			urls.map(async (url) => {
-				if (!url.includes(Meteor.absoluteUrl())) {
+				if (!url.includes(settings.get('Site_Url'))) {
 					return;
 				}
 

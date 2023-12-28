@@ -1,7 +1,7 @@
-import type { ILivechatBusinessHoursModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, Document, FindOptions } from 'mongodb';
 import type { ILivechatBusinessHour, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
+import type { ILivechatBusinessHoursModel } from '@rocket.chat/model-typings';
+import type { Collection, Db, Document, FindOptions } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -63,7 +63,7 @@ export class LivechatBusinessHoursRaw extends BaseRaw<ILivechatBusinessHour> imp
 				active: true,
 				workHours: {
 					$elemMatch: {
-						$or: [{ 'start.cron.dayOfWeek': day, 'finish.cron.dayOfWeek': day }],
+						$or: [{ 'start.cron.dayOfWeek': day }, { 'finish.cron.dayOfWeek': day }],
 						open: true,
 					},
 				},
@@ -170,5 +170,9 @@ export class LivechatBusinessHoursRaw extends BaseRaw<ILivechatBusinessHour> imp
 			query.type = type;
 		}
 		return this.col.find(query, options).toArray();
+	}
+
+	disableBusinessHour(businessHourId: string): Promise<any> {
+		return this.updateOne({ _id: businessHourId }, { $set: { active: false } });
 	}
 }

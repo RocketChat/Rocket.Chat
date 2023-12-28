@@ -1,8 +1,8 @@
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
-import { slashCommands } from '../../utils/lib/slashCommand';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { saveRoomSettings } from '../../channel-settings/server/methods/saveRoomSettings';
+import { slashCommands } from '../../utils/lib/slashCommand';
 
 slashCommands.add({
 	command: 'topic',

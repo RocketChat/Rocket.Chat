@@ -10,6 +10,7 @@ import {
 	ContextualbarHeader,
 	ContextualbarClose,
 	ContextualbarContent,
+	ContextualbarTitle,
 } from '../../../../../../client/components/Contextualbar';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../../../client/lib/asyncState';
@@ -46,7 +47,7 @@ const DeviceInfoWithData = ({ deviceId, onReload }: { deviceId: string; onReload
 		return (
 			<Contextualbar>
 				<ContextualbarHeader>
-					{t('Device_Info')}
+					<ContextualbarTitle>{t('Device_Info')}</ContextualbarTitle>
 					<ContextualbarClose />
 				</ContextualbarHeader>
 				<ContextualbarContent>

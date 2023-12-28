@@ -1,9 +1,9 @@
 import type { IUser, IMessage } from '@rocket.chat/core-typings';
 import { Roles, Users } from '@rocket.chat/models';
 
-import { SystemLogger } from './logger/system';
 import { executeSendMessage } from '../../app/lib/server/methods/sendMessage';
 import { createDirectMessage } from '../methods/createDirectMessage';
+import { SystemLogger } from './logger/system';
 
 type Banner = {
 	id: string;

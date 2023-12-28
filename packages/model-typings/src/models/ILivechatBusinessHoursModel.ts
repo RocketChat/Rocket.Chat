@@ -1,5 +1,5 @@
-import type { Document, FindOptions } from 'mongodb';
 import type { ILivechatBusinessHour, LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
+import type { Document, FindOptions } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -39,4 +39,6 @@ export interface ILivechatBusinessHoursModel extends IBaseModel<ILivechatBusines
 		type?: LivechatBusinessHourTypes,
 		options?: any,
 	): Promise<ILivechatBusinessHour[]>;
+
+	disableBusinessHour(businessHourId: string): Promise<any>;
 }

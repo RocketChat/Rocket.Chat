@@ -32,8 +32,11 @@ Meteor.startup(() => {
 		if (!Meteor.userId()) {
 			return;
 		}
-		sdk.stream('roles', ['roles'], (role) => {
-			events[role.type]?.(role);
+
+		Tracker.afterFlush(() => {
+			sdk.stream('roles', ['roles'], (role) => {
+				events[role.type]?.(role);
+			});
 		});
 
 		c.stop();

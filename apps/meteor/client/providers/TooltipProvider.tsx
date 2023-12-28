@@ -121,7 +121,7 @@ const TooltipProvider: FC = ({ children }) => {
 		document.body.addEventListener('mouseover', handleMouseOver, {
 			passive: true,
 		});
-		document.body.addEventListener('click', dismissOnClick);
+		document.body.addEventListener('click', dismissOnClick, { capture: true });
 
 		return (): void => {
 			contextValue.close();

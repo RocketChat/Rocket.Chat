@@ -1,4 +1,3 @@
-import type { FindCursor, UpdateOptions, UpdateFilter, UpdateResult, IndexDescription, Collection, Db, FindOptions } from 'mongodb';
 import type {
 	VideoConference,
 	IGroupVideoConference,
@@ -7,8 +6,9 @@ import type {
 	IRoom,
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
-import type { FindPaginated, InsertionModel, IVideoConferenceModel } from '@rocket.chat/model-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
+import type { FindPaginated, InsertionModel, IVideoConferenceModel } from '@rocket.chat/model-typings';
+import type { FindCursor, UpdateOptions, UpdateFilter, UpdateResult, IndexDescription, Collection, Db, FindOptions } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -183,7 +183,7 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 				  }
 				: {
 						$unset: {
-							providerData: 1,
+							providerData: 1 as const,
 						},
 				  }),
 		});

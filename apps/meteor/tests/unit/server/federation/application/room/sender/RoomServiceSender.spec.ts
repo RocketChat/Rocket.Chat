@@ -1,13 +1,13 @@
+import { faker } from '@faker-js/faker';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import type { IEditedMessage, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import sinon from 'sinon';
 import proxyquire from 'proxyquire';
-import faker from '@faker-js/faker';
+import sinon from 'sinon';
 
 import type * as RoomServiceSenderModule from '../../../../../../../server/services/federation/application/room/sender/RoomServiceSender';
-import type * as FederatedUserModule from '../../../../../../../server/services/federation/domain/FederatedUser';
 import type * as FederatedRoomModule from '../../../../../../../server/services/federation/domain/FederatedRoom';
+import type * as FederatedUserModule from '../../../../../../../server/services/federation/domain/FederatedUser';
 import { MATRIX_POWER_LEVELS } from '../../../../../../../server/services/federation/infrastructure/matrix/definitions/MatrixPowerLevels';
 import { createFakeMessage, createFakeUser } from '../../../../../../mocks/data';
 
@@ -621,7 +621,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 				t: 'rm',
 				u: createFakeUser<Required<IUser>>({
 					username: faker.internet.userName(),
-					name: faker.name.findName(),
+					name: faker.person.fullName(),
 				}),
 			});
 
@@ -718,7 +718,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 				editedBy: createFakeUser(),
 				u: createFakeUser<Required<IUser>>({
 					username: faker.internet.userName(),
-					name: faker.name.findName(),
+					name: faker.person.fullName(),
 				}),
 			});
 
@@ -740,7 +740,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 				u: createFakeUser<Required<IUser>>({
 					_id: 'internalUserId',
 					username: faker.internet.userName(),
-					name: faker.name.findName(),
+					name: faker.person.fullName(),
 				}),
 			});
 

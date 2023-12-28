@@ -75,7 +75,7 @@ yarn turbo run ms
 
 After initialized, you can access the server at http://localhost:4000
 
-> ⚠️ Check more detailed informations in the [Rocket.Chat Environment Setup](https://developer.rocket.chat/rocket.chat/rocket-chat-environment-setup) guide
+> ⚠️ Check more detailed information in the [Rocket.Chat Environment Setup](https://developer.rocket.chat/rocket.chat/rocket-chat-environment-setup) guide
 
 # 💻 Installation
 

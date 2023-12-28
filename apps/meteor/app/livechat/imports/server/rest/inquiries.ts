@@ -1,3 +1,5 @@
+import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
+import { LivechatInquiry, LivechatDepartment, Users } from '@rocket.chat/models';
 import {
 	isGETLivechatInquiriesListParams,
 	isPOSTLivechatInquiriesTakeParams,
@@ -5,13 +7,10 @@ import {
 	isGETLivechatInquiriesQueuedForUserParams,
 	isGETLivechatInquiriesGetOneParams,
 } from '@rocket.chat/rest-typings';
-import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
-import { LivechatInquiry, LivechatDepartment, Users } from '@rocket.chat/models';
 
 import { API } from '../../../../api/server';
-import { findInquiries, findOneInquiryByRoomId } from '../../../server/api/lib/inquiries';
-import { deprecationWarning } from '../../../../api/server/helpers/deprecationWarning';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
+import { findInquiries, findOneInquiryByRoomId } from '../../../server/api/lib/inquiries';
 import { takeInquiry } from '../../../server/methods/takeInquiry';
 
 API.v1.addRoute(
@@ -72,7 +71,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/inquiries.queued',
-	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isGETLivechatInquiriesQueuedParams },
+	{
+		authRequired: true,
+		permissionsRequired: ['view-l-room'],
+		validateParams: isGETLivechatInquiriesQueuedParams,
+		deprecationVersion: '7.0.0',
+	},
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -80,19 +84,15 @@ API.v1.addRoute(
 			const { department } = this.queryParams;
 
 			return API.v1.success(
-				deprecationWarning({
-					endpoint: 'livechat/inquiries.queued',
-					versionWillBeRemoved: '6.0',
-					response: await findInquiries({
-						userId: this.userId,
-						department,
-						status: LivechatInquiryStatus.QUEUED,
-						pagination: {
-							offset,
-							count,
-							sort,
-						},
-					}),
+				await findInquiries({
+					userId: this.userId,
+					department,
+					status: LivechatInquiryStatus.QUEUED,
+					pagination: {
+						offset,
+						count,
+						sort,
+					},
 				}),
 			);
 		},

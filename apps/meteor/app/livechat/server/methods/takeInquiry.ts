@@ -1,22 +1,26 @@
+import { Omnichannel } from '@rocket.chat/core-services';
+import { LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import { LivechatInquiry, Users } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { RoutingManager } from '../lib/RoutingManager';
 import { settings } from '../../../settings/server';
+import { RoutingManager } from '../lib/RoutingManager';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		'livechat:takeInquiry'(inquiryId: string, options?: { clientAction: boolean; forwardingToDepartment?: boolean }): unknown;
+		'livechat:takeInquiry'(
+			inquiryId: string,
+			options?: { clientAction: boolean; forwardingToDepartment?: { oldDepartmentId: string; transferData: any } },
+		): unknown;
 	}
 }
 
 export const takeInquiry = async (
 	userId: string,
 	inquiryId: string,
-	options?: { clientAction: boolean; forwardingToDepartment?: boolean },
+	options?: { clientAction: boolean; forwardingToDepartment?: { oldDepartmentId: string; transferData: any } },
 ): Promise<void> => {
 	if (!userId || !(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
@@ -43,6 +47,11 @@ export const takeInquiry = async (
 		throw new Meteor.Error('error-agent-status-service-offline', 'Agent status is offline or Omnichannel service is not active', {
 			method: 'livechat:takeInquiry',
 		});
+	}
+
+	const room = await LivechatRooms.findOneById(inquiry.rid);
+	if (!room || !(await Omnichannel.isWithinMACLimit(room))) {
+		throw new Error('error-mac-limit-reached');
 	}
 
 	const agent = {

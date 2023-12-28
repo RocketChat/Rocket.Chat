@@ -5,8 +5,16 @@ import type { IBaseModel } from './IBaseModel';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface ILivechatCustomFieldModel extends IBaseModel<ILivechatCustomField> {
-	findByScope<T extends Document = ILivechatCustomField>(scope: ILivechatCustomField['scope'], options?: FindOptions<T>): FindCursor<T>;
-	findByScope(scope: ILivechatCustomField['scope'], options?: FindOptions<ILivechatCustomField>): FindCursor<ILivechatCustomField>;
+	findByScope<T extends Document = ILivechatCustomField>(
+		scope: ILivechatCustomField['scope'],
+		options?: FindOptions<T>,
+		includeHidden?: boolean,
+	): FindCursor<T>;
+	findByScope(
+		scope: ILivechatCustomField['scope'],
+		options?: FindOptions<ILivechatCustomField>,
+		includeHidden?: boolean,
+	): FindCursor<ILivechatCustomField>;
 	findMatchingCustomFields(
 		scope: ILivechatCustomField['scope'],
 		searchable: boolean,

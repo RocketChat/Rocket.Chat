@@ -1,7 +1,7 @@
-import { Meteor } from 'meteor/meteor';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
 import { TranslationProviderRegistry } from '..';
 

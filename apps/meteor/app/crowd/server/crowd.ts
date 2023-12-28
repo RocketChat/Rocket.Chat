@@ -1,16 +1,17 @@
-import { Meteor } from 'meteor/meteor';
-import { SHA256 } from '@rocket.chat/sha256';
-import { Accounts } from 'meteor/accounts-base';
-import { Users } from '@rocket.chat/models';
 import type { IUser } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
+import { Users } from '@rocket.chat/models';
+import { SHA256 } from '@rocket.chat/sha256';
+import AtlassianCrowd from 'atlassian-crowd-patched';
+import { Accounts } from 'meteor/accounts-base';
+import { Meteor } from 'meteor/meteor';
 
-import { _setRealName } from '../../lib/server';
-import { settings } from '../../settings/server';
-import { deleteUser } from '../../lib/server/functions';
-import { setUserActiveStatus } from '../../lib/server/functions/setUserActiveStatus';
-import { logger } from './logger';
 import { crowdIntervalValuesToCronMap } from '../../../server/settings/crowd';
+import { deleteUser } from '../../lib/server/functions/deleteUser';
+import { _setRealName } from '../../lib/server/functions/setRealName';
+import { setUserActiveStatus } from '../../lib/server/functions/setUserActiveStatus';
+import { settings } from '../../settings/server';
+import { logger } from './logger';
 
 type CrowdUser = Pick<IUser, '_id' | 'username'> & { crowd: Record<string, any>; crowd_username: string };
 
@@ -51,8 +52,6 @@ export class CROWD {
 	};
 
 	constructor() {
-		// eslint-disable-next-line @typescript-eslint/no-var-requires
-		const AtlassianCrowd = require('atlassian-crowd-patched');
 		let url = settings.get<string>('CROWD_URL');
 
 		this.options = {
@@ -225,7 +224,7 @@ export class CROWD {
 					logger.warn('Could not find user in CROWD with username or email:', crowdUsername, email);
 					if (settings.get('CROWD_Remove_Orphaned_Users') === true) {
 						logger.info('Removing user:', crowdUsername);
-						setImmediate(async function () {
+						setImmediate(async () => {
 							await deleteUser(user._id);
 							logger.info('User removed:', crowdUsername);
 						});

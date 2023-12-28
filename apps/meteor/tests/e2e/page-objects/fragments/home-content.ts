@@ -42,7 +42,7 @@ export class HomeContent {
 	}
 
 	get btnJoinRoom(): Locator {
-		return this.page.locator('//button[contains(text(), "Join")]');
+		return this.page.locator('role=button[name="Join"]');
 	}
 
 	async openRoomInfo(): Promise<void> {
@@ -145,7 +145,7 @@ export class HomeContent {
 	}
 
 	get btnVideoMessage(): Locator {
-		return this.page.locator('[data-id="video-message"]');
+		return this.page.locator('[data-qa-id="video-message"]');
 	}
 
 	get btnRecordAudio(): Locator {
@@ -177,7 +177,7 @@ export class HomeContent {
 	}
 
 	get btnSendTranscript(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-mail-arrow-top-right"]');
+		return this.page.locator('role=button[name="Send transcript"]');
 	}
 
 	get btnSendTranscriptToEmail(): Locator {
@@ -194,14 +194,6 @@ export class HomeContent {
 
 	get btnNewCannedResponse(): Locator {
 		return this.page.locator('.rcx-vertical-bar button:has-text("Create")');
-	}
-
-	get inputModalAgentUserName(): Locator {
-		return this.page.locator('#modal-root input:nth-child(1)');
-	}
-
-	get inputModalAgentForwardComment(): Locator {
-		return this.page.locator('[data-qa-id="ForwardChatModalTextAreaInputComment"]');
 	}
 
 	async pickEmoji(emoji: string, section = 'Smileys & People') {
@@ -237,24 +229,12 @@ export class HomeContent {
 
 	async openLastThreadMessageMenu(): Promise<void> {
 		await this.page.locator('//main//aside >> [data-qa-type="message"]').last().hover();
-		await this.page
-			.locator('//main//aside >> [data-qa-type="message"]')
-			.last()
-			.locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]')
-			.waitFor();
-		await this.page
-			.locator('//main//aside >> [data-qa-type="message"]')
-			.last()
-			.locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]')
-			.click();
+		await this.page.locator('//main//aside >> [data-qa-type="message"]').last().locator('role=button[name="More"]').waitFor();
+		await this.page.locator('//main//aside >> [data-qa-type="message"]').last().locator('role=button[name="More"]').click();
 	}
 
 	async toggleAlsoSendThreadToChannel(isChecked: boolean): Promise<void> {
 		await this.page.locator('//main//aside >> [name="alsoSendThreadToChannel"]').setChecked(isChecked);
-	}
-
-	get takeOmnichannelChatButton(): Locator {
-		return this.page.locator('role=button[name="Take it!"]');
 	}
 
 	get lastSystemMessageBody(): Locator {
@@ -295,5 +275,9 @@ export class HomeContent {
 
 	get btnAnonymousTalk(): Locator {
 		return this.page.locator('role=button[name="Or talk as anonymous"]');
+	}
+
+	findSystemMessage(text: string): Locator {
+		return this.page.locator(`[data-qa-type="system-message-body"] >> text="${text}"`);
 	}
 }

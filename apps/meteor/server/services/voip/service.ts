@@ -1,5 +1,5 @@
-import type { Db } from 'mongodb';
-import mem from 'mem';
+import type { IVoipService } from '@rocket.chat/core-services';
+import { api, ServiceClassInternal } from '@rocket.chat/core-services';
 import { ServerType, isICallServerConfigData, isIExtensionDetails } from '@rocket.chat/core-typings';
 import type {
 	IVoipConnectorResult,
@@ -12,12 +12,12 @@ import type {
 	IQueueMembershipSubscription,
 	IRegistrationInfo,
 } from '@rocket.chat/core-typings';
-import type { IVoipService } from '@rocket.chat/core-services';
-import { api, ServiceClassInternal } from '@rocket.chat/core-services';
+import { Logger } from '@rocket.chat/logger';
+import mem from 'mem';
+import type { Db } from 'mongodb';
 
-import { Logger } from '../../lib/logger/Logger';
-import { CommandHandler } from './connector/asterisk/CommandHandler';
 import { CommandType } from './connector/asterisk/Command';
+import { CommandHandler } from './connector/asterisk/CommandHandler';
 import { Commands } from './connector/asterisk/Commands';
 import { getServerConfigDataFromSettings, voipEnabled } from './lib/Helper';
 

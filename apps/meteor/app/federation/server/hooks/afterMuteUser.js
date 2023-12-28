@@ -1,10 +1,10 @@
 import { FederationRoomEvents } from '@rocket.chat/models';
 
+import { hasExternalDomain } from '../functions/helpers';
+import { dispatchEvent } from '../handler';
+import { getFederationDomain } from '../lib/getFederationDomain';
 import { clientLogger } from '../lib/logger';
 import { normalizers } from '../normalizers';
-import { hasExternalDomain } from '../functions/helpers';
-import { getFederationDomain } from '../lib/getFederationDomain';
-import { dispatchEvent } from '../handler';
 
 async function afterMuteUser(involvedUsers, room) {
 	// If there are not federated users on this room, ignore it

@@ -54,6 +54,10 @@ function emitCallback(eventName, data) {
 	}
 }
 
+function clearAllCallbacks() {
+	callbacks.all.clear();
+}
+
 // hooks
 function callHook(action, params) {
 	if (!ready) {
@@ -138,6 +142,7 @@ const createWidget = (url) => {
 		smallScreen = matches;
 		updateWidgetStyle(widget.dataset.state === 'opened');
 		callHook('setExpanded', smallScreen);
+		callHook('setParentUrl', window.location.href);
 	};
 
 	const mediaQueryList = window.matchMedia('screen and (max-device-width: 480px)');
@@ -304,18 +309,26 @@ function setLanguage(language) {
 
 function showWidget() {
 	callHook('showWidget');
+	emitCallback('show-widget');
 }
 
 function hideWidget() {
 	callHook('hideWidget');
+	emitCallback('hide-widget');
 }
 
 function maximizeWidget() {
 	callHook('maximizeWidget');
+	emitCallback('chat-maximized');
 }
 
 function minimizeWidget() {
 	callHook('minimizeWidget');
+	emitCallback('chat-minimized');
+}
+
+function setParentUrl(url) {
+	callHook('setParentUrl', url);
 }
 
 function initialize(params) {
@@ -367,6 +380,9 @@ function initialize(params) {
 			case 'agent':
 				setAgent(params[method]);
 				continue;
+			case 'parentUrl':
+				setParentUrl(params[method]);
+				continue;
 			default:
 				continue;
 		}
@@ -409,13 +425,14 @@ const trackNavigation = () => {
 };
 
 const init = (url) => {
-	if (!url) {
+	const trimmedUrl = url.trim();
+	if (!trimmedUrl) {
 		return;
 	}
 
-	config.url = url;
+	config.url = trimmedUrl;
 
-	createWidget(url);
+	createWidget(trimmedUrl);
 	attachMessageListener();
 	trackNavigation();
 };
@@ -457,6 +474,8 @@ window.RocketChat.livechat = {
 	minimizeWidget,
 	setBusinessUnit,
 	clearBusinessUnit,
+	setParentUrl,
+	clearAllCallbacks,
 
 	// callbacks
 	onChatMaximized(fn) {

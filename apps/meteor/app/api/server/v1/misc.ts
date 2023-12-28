@@ -1,35 +1,38 @@
 import crypto from 'crypto';
 
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
-import EJSON from 'ejson';
-import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-import { escapeHTML } from '@rocket.chat/string-helpers';
+import type { IUser } from '@rocket.chat/core-typings';
+import { Settings, Users } from '@rocket.chat/models';
 import {
 	isShieldSvgProps,
 	isSpotlightProps,
 	isDirectoryProps,
 	isMethodCallProps,
 	isMethodCallAnonProps,
+	isFingerprintProps,
 	isMeteorCall,
 	validateParamsPwGetPolicyRest,
 } from '@rocket.chat/rest-typings';
-import type { IUser } from '@rocket.chat/core-typings';
-import { Users } from '@rocket.chat/models';
+import { escapeHTML } from '@rocket.chat/string-helpers';
+import EJSON from 'ejson';
+import { check } from 'meteor/check';
+import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import { Meteor } from 'meteor/meteor';
+import { v4 as uuidv4 } from 'uuid';
 
+import { i18n } from '../../../../server/lib/i18n';
+import { SystemLogger } from '../../../../server/lib/logger/system';
+import { getLogs } from '../../../../server/stream/stdout';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { passwordPolicy } from '../../../lib/server';
+import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { settings } from '../../../settings/server';
-import { API } from '../api';
 import { getDefaultUserFields } from '../../../utils/server/functions/getDefaultUserFields';
 import { getURL } from '../../../utils/server/getURL';
-import { getLogs } from '../../../../server/stream/stdout';
-import { SystemLogger } from '../../../../server/lib/logger/system';
-import { passwordPolicy } from '../../../lib/server';
+import { API } from '../api';
 import { getLoggedInUser } from '../helpers/getLoggedInUser';
-import { getUserInfo } from '../helpers/getUserInfo';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
-import { i18n } from '../../../../server/lib/i18n';
+import { getUserInfo } from '../helpers/getUserInfo';
 
 /**
  * @openapi
@@ -184,7 +187,7 @@ API.v1.addRoute(
 							password: {
 								// The password hash shouldn't be leaked but the client may need to know if it exists.
 								exists: Boolean(services?.password?.bcrypt),
-							} as any,
+							},
 						},
 					}),
 				}),
@@ -231,7 +234,7 @@ API.v1.addRoute(
 				});
 			}
 			const hideIcon = icon === 'false';
-			if (hideIcon && (!name || !name.trim())) {
+			if (hideIcon && !name?.trim()) {
 				return API.v1.failure('Name cannot be empty when icon is hidden');
 			}
 
@@ -392,7 +395,7 @@ API.v1.addRoute(
 API.v1.addRoute(
 	'pw.getPolicy',
 	{
-		authRequired: true,
+		authRequired: false,
 	},
 	{
 		get() {
@@ -409,6 +412,7 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
+			apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, ' Use pw.getPolicy instead.');
 			check(
 				this.queryParams,
 				Match.ObjectIncluding({
@@ -534,7 +538,7 @@ API.v1.addRoute(
 				this.token ||
 				crypto
 					.createHash('md5')
-					.update(this.requestIp + this.request.headers['user-agent'])
+					.update(this.requestIp + this.user._id)
 					.digest('hex');
 
 			const rateLimiterInput = {
@@ -590,12 +594,7 @@ API.v1.addRoute(
 
 			const { method, params, id } = data;
 
-			const connectionId =
-				this.token ||
-				crypto
-					.createHash('md5')
-					.update(this.requestIp + this.request.headers['user-agent'])
-					.digest('hex');
+			const connectionId = this.token || crypto.createHash('md5').update(this.requestIp).digest('hex');
 
 			const rateLimiterInput = {
 				userId: this.userId || undefined,
@@ -638,6 +637,78 @@ API.v1.addRoute(
 			const isMailURLSet = !(process.env.MAIL_URL === 'undefined' || process.env.MAIL_URL === undefined);
 			const isSMTPConfigured = Boolean(settings.get('SMTP_Host')) || isMailURLSet;
 			return API.v1.success({ isSMTPConfigured });
+		},
+	},
+);
+
+/**
+ * @openapi
+ *  /api/v1/fingerprint:
+ *    post:
+ *      description: Update Fingerprint definition as a new workspace or update of configuration
+ *      security:
+ *        $ref: '#/security/authenticated'
+ *      requestBody:
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                setDeploymentAs:
+ *                  type: string
+ *            example: |
+ *              {
+ *                 "setDeploymentAs": "new-workspace"
+ *              }
+ *      responses:
+ *        200:
+ *          description: Workspace successfully configured
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ApiSuccessV1'
+ *        default:
+ *          description: Unexpected error
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ApiFailureV1'
+ */
+API.v1.addRoute(
+	'fingerprint',
+	{
+		authRequired: true,
+		validateParams: isFingerprintProps,
+	},
+	{
+		async post() {
+			check(this.bodyParams, {
+				setDeploymentAs: String,
+			});
+
+			if (this.bodyParams.setDeploymentAs === 'new-workspace') {
+				await Promise.all([
+					Settings.resetValueById('uniqueID', process.env.DEPLOYMENT_ID || uuidv4()),
+					// Settings.resetValueById('Cloud_Url'),
+					Settings.resetValueById('Cloud_Service_Agree_PrivacyTerms'),
+					Settings.resetValueById('Cloud_Workspace_Id'),
+					Settings.resetValueById('Cloud_Workspace_Name'),
+					Settings.resetValueById('Cloud_Workspace_Client_Id'),
+					Settings.resetValueById('Cloud_Workspace_Client_Secret'),
+					Settings.resetValueById('Cloud_Workspace_Client_Secret_Expires_At'),
+					Settings.resetValueById('Cloud_Workspace_Registration_Client_Uri'),
+					Settings.resetValueById('Cloud_Workspace_PublicKey'),
+					Settings.resetValueById('Cloud_Workspace_License'),
+					Settings.resetValueById('Cloud_Workspace_Had_Trial'),
+					Settings.resetValueById('Cloud_Workspace_Access_Token'),
+					Settings.resetValueById('Cloud_Workspace_Access_Token_Expires_At', new Date(0)),
+					Settings.resetValueById('Cloud_Workspace_Registration_State'),
+				]);
+			}
+
+			await Settings.updateValueById('Deployment_FingerPrint_Verified', true);
+
+			return API.v1.success({});
 		},
 	},
 );

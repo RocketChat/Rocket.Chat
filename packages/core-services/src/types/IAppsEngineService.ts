@@ -1,6 +1,6 @@
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
-import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import type { IGetAppsFilter } from '@rocket.chat/apps-engine/server/IGetAppsFilter';
+import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 
 export interface IAppsEngineService {
 	isInitialized(): boolean;

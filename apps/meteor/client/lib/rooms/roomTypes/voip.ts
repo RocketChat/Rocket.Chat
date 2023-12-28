@@ -45,7 +45,7 @@ roomCoordinator.add(
 		},
 
 		extractOpenRoomParams({ id }) {
-			return { type: 'v', ref: id };
+			return { type: 'v', reference: id };
 		},
 	} as AtLeast<IRoomTypeClientDirectives, 'roomName'>,
 );

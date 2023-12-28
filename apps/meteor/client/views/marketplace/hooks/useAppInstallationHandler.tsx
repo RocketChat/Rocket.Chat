@@ -1,12 +1,14 @@
 import type { App } from '@rocket.chat/core-typings';
-import { useEndpoint, useRoute, useRouteParameter, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouteParameter, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
-import { Apps } from '../../../../ee/client/apps/orchestrator';
+import { AppClientOrchestratorInstance } from '../../../../ee/client/apps/orchestrator';
+import { useExternalLink } from '../../../hooks/useExternalLink';
+import { useCheckoutUrl } from '../../admin/subscription/hooks/useCheckoutUrl';
 import IframeModal from '../IframeModal';
 import AppInstallModal from '../components/AppInstallModal/AppInstallModal';
 import type { Actions } from '../helpers';
-import { handleAPIError } from '../helpers';
+import { handleAPIError } from '../helpers/handleAPIError';
 import { isMarketplaceRouteContext, useAppsCountQuery } from './useAppsCountQuery';
 import { useOpenAppPermissionsReviewModal } from './useOpenAppPermissionsReviewModal';
 import { useOpenIncompatibleModal } from './useOpenIncompatibleModal';
@@ -23,7 +25,6 @@ export function useAppInstallationHandler({ app, action, isAppPurchased, onDismi
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 
-	const upgradeRoute = useRoute('upgrade');
 	const routeContext = String(useRouteParameter('context'));
 	const context = isMarketplaceRouteContext(routeContext) ? routeContext : 'explore';
 
@@ -32,6 +33,9 @@ export function useAppInstallationHandler({ app, action, isAppPurchased, onDismi
 	const notifyAdmins = useEndpoint('POST', `/apps/notify-admins`);
 
 	const openIncompatibleModal = useOpenIncompatibleModal();
+
+	const openExternalLink = useExternalLink();
+	const manageSubscriptionUrl = useCheckoutUrl()({ target: 'user-page', action: 'buy_more' });
 
 	const closeModal = useCallback(() => {
 		setModal(null);
@@ -51,7 +55,7 @@ export function useAppInstallationHandler({ app, action, isAppPurchased, onDismi
 	const acquireApp = useCallback(async () => {
 		if (action === 'purchase' && !isAppPurchased) {
 			try {
-				const data = await Apps.buildExternalUrl(app.id, app.purchaseType, false);
+				const data = await AppClientOrchestratorInstance.buildExternalUrl(app.id, app.purchaseType, false);
 				setModal(<IframeModal url={data.url} cancel={onDismiss} confirm={openPermissionModal} />);
 			} catch (error) {
 				handleAPIError(error);
@@ -84,7 +88,7 @@ export function useAppInstallationHandler({ app, action, isAppPurchased, onDismi
 			};
 
 			try {
-				const data = await Apps.buildExternalAppRequest(app.id);
+				const data = await AppClientOrchestratorInstance.buildExternalAppRequest(app.id);
 				setModal(<IframeModal url={data.url} wrapperHeight='x460' cancel={onDismiss} confirm={requestConfirmAction} />);
 			} catch (error) {
 				handleAPIError(error);
@@ -109,7 +113,7 @@ export function useAppInstallationHandler({ app, action, isAppPurchased, onDismi
 				handleClose={closeModal}
 				handleConfirm={acquireApp}
 				handleEnableUnlimitedApps={() => {
-					upgradeRoute.push({ type: 'go-fully-featured-registered' });
+					openExternalLink(manageSubscriptionUrl);
 					setModal(null);
 				}}
 			/>,
@@ -120,13 +124,14 @@ export function useAppInstallationHandler({ app, action, isAppPurchased, onDismi
 		appCountQuery.data,
 		setModal,
 		context,
+		closeModal,
 		acquireApp,
 		openIncompatibleModal,
-		closeModal,
 		dispatchToastMessage,
 		notifyAdmins,
 		success,
 		onDismiss,
-		upgradeRoute,
+		openExternalLink,
+		manageSubscriptionUrl,
 	]);
 }

@@ -1,5 +1,5 @@
-import type { DeleteResult, UpdateResult, Document, InsertOneResult, WithId } from 'mongodb';
 import type { IUpload } from '@rocket.chat/core-typings';
+import type { DeleteResult, UpdateResult, Document, InsertOneResult, WithId } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 

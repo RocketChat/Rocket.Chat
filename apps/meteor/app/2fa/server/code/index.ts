@@ -1,15 +1,15 @@
 import crypto from 'crypto';
 
-import { Meteor } from 'meteor/meteor';
-import { Accounts } from 'meteor/accounts-base';
 import type { IUser, IMethodConnection } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import { Accounts } from 'meteor/accounts-base';
+import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../settings/server';
-import { TOTPCheck } from './TOTPCheck';
 import { EmailCheck } from './EmailCheck';
-import { PasswordCheckFallback } from './PasswordCheckFallback';
 import type { ICodeCheck } from './ICodeCheck';
+import { PasswordCheckFallback } from './PasswordCheckFallback';
+import { TOTPCheck } from './TOTPCheck';
 
 export interface ITwoFactorOptions {
 	disablePasswordFallback?: boolean;
@@ -217,6 +217,15 @@ export async function checkCodeForUser({ user, code, method, options = {}, conne
 
 	const valid = await selectedMethod.verify(existingUser, code, options.requireSecondFactor);
 	if (!valid) {
+		const tooManyFailedAttempts = await selectedMethod.maxFaildedAttemtpsReached(existingUser);
+		if (tooManyFailedAttempts) {
+			throw new Meteor.Error('totp-max-attempts', 'TOTP Maximun Failed Attempts Reached', {
+				method: selectedMethod.name,
+				...data,
+				availableMethods,
+			});
+		}
+
 		throw new Meteor.Error('totp-invalid', 'TOTP Invalid', {
 			method: selectedMethod.name,
 			...data,

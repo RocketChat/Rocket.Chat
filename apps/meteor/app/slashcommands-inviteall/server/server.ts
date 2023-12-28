@@ -8,13 +8,13 @@ import type { ISubscription, SlashCommand, SlashCommandCallbackParams } from '@r
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../settings/server';
+import { isTruthy } from '../../../lib/isTruthy';
 import { i18n } from '../../../server/lib/i18n';
-import { slashCommands } from '../../utils/lib/slashCommand';
+import { addUsersToRoomMethod } from '../../lib/server/methods/addUsersToRoom';
 import { createChannelMethod } from '../../lib/server/methods/createChannel';
 import { createPrivateGroupMethod } from '../../lib/server/methods/createPrivateGroup';
-import { isTruthy } from '../../../lib/isTruthy';
-import { addUsersToRoomMethod } from '../../lib/server/methods/addUsersToRoom';
+import { settings } from '../../settings/server';
+import { slashCommands } from '../../utils/lib/slashCommand';
 
 function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 	return async function inviteAll({ command, params, message, userId }: SlashCommandCallbackParams<T>): Promise<void> {
@@ -37,6 +37,9 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 		}
 
 		const user = await Users.findOneById(userId);
+		if (!user) {
+			return;
+		}
 		const lng = user?.language || settings.get('Language') || 'en';
 
 		const baseChannel = type === 'to' ? await Rooms.findOneById(message.rid) : await Rooms.findOneByName(channel);
@@ -69,7 +72,7 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 			const users = (await cursor.toArray()).map((s: ISubscription) => s.u.username).filter(isTruthy);
 
 			if (!targetChannel && ['c', 'p'].indexOf(baseChannel.t) > -1) {
-				baseChannel.t === 'c' ? await createChannelMethod(userId, channel, users) : await createPrivateGroupMethod(userId, channel, users);
+				baseChannel.t === 'c' ? await createChannelMethod(userId, channel, users) : await createPrivateGroupMethod(user, channel, users);
 				void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 					msg: i18n.t('Channel_created', {
 						postProcess: 'sprintf',
@@ -86,7 +89,6 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 				msg: i18n.t('Users_added', { lng }),
 			});
-			return;
 		} catch (e: any) {
 			const msg = e.error === 'cant-invite-for-direct-room' ? 'Cannot_invite_users_to_direct_rooms' : e.error;
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {

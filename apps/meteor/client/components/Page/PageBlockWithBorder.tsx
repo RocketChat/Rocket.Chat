@@ -10,7 +10,7 @@ const PageBlockWithBorder = forwardRef<HTMLElement, ComponentProps<typeof Box>>(
 	return (
 		<PageContent
 			{...props}
-			pb='x16'
+			pb={16}
 			ref={ref}
 			borderBlockEndColor={border ? 'extra-light' : 'transparent'}
 			borderBlockEndWidth='default'

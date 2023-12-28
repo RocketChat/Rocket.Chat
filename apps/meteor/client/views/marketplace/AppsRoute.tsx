@@ -3,11 +3,11 @@ import type { ReactElement } from 'react';
 import React, { useState, useEffect } from 'react';
 
 import PageSkeleton from '../../components/PageSkeleton';
+import AppsProvider from '../../providers/AppsProvider';
 import NotAuthorizedPage from '../notAuthorized/NotAuthorizedPage';
 import AppDetailsPage from './AppDetailsPage';
 import AppInstallPage from './AppInstallPage';
 import AppsPage from './AppsPage';
-import AppsProvider from './AppsProvider';
 import BannerEnterpriseTrialEnded from './components/BannerEnterpriseTrialEnded';
 
 const AppsRoute = (): ReactElement => {
@@ -42,7 +42,7 @@ const AppsRoute = (): ReactElement => {
 	}, [marketplaceRoute, context]);
 
 	if (
-		(context === 'explore' || context === 'installed' || context === 'private' || context === 'enterprise') &&
+		(context === 'explore' || context === 'installed' || context === 'private' || context === 'premium') &&
 		!canAccessMarketplace &&
 		!isAdminUser
 	) {

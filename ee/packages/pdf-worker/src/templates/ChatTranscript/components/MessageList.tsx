@@ -1,11 +1,11 @@
 import { Text, View, StyleSheet } from '@react-pdf/renderer';
 import { fontScales } from '@rocket.chat/fuselage-tokens/typography.json';
 
-import { Divider } from './Divider';
-import { MessageHeader } from './MessageHeader';
-import { Files } from './Files';
 import type { ChatTranscriptData } from '..';
 import { Markup } from '../markup';
+import { Divider } from './Divider';
+import { Files } from './Files';
+import { MessageHeader } from './MessageHeader';
 import { Quotes } from './Quotes';
 
 const styles = StyleSheet.create({

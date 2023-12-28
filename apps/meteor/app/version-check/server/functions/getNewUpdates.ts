@@ -1,11 +1,13 @@
 import os from 'os';
 
 import { Settings } from '@rocket.chat/models';
-import { check, Match } from 'meteor/check';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { check, Match } from 'meteor/check';
 
-import { Info } from '../../../utils/server';
 import { getWorkspaceAccessToken } from '../../../cloud/server';
+import { Info } from '../../../utils/rocketchat.info';
+
+/** @deprecated */
 
 export const getNewUpdates = async () => {
 	try {
@@ -50,18 +52,16 @@ export const getNewUpdates = async () => {
 						infoUrl: String,
 					}),
 				],
-				alerts: [
-					Match.Optional([
-						Match.ObjectIncluding({
-							id: String,
-							title: String,
-							text: String,
-							textArguments: [Match.Any],
-							modifiers: [String] as [StringConstructor],
-							infoUrl: String,
-						}),
-					]),
-				],
+				alerts: Match.Optional([
+					Match.ObjectIncluding({
+						id: String,
+						title: String,
+						text: String,
+						textArguments: [Match.Any],
+						modifiers: [String] as [StringConstructor],
+						infoUrl: String,
+					}),
+				]),
 			}),
 		);
 

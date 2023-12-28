@@ -19,7 +19,7 @@ import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import type { ThreadsListOptions } from '../../../../lib/lists/ThreadsList';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
-import { useTabBarClose } from '../../contexts/ToolboxContext';
+import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import { useGoToThread } from '../../hooks/useGoToThread';
 import ThreadListItem from './components/ThreadListItem';
 import { useThreadsList } from './hooks/useThreadsList';
@@ -29,10 +29,11 @@ type ThreadType = 'all' | 'following' | 'unread';
 const ThreadList: VFC = () => {
 	const t = useTranslation();
 
-	const closeTabBar = useTabBarClose();
+	const { closeTab } = useRoomToolbox();
+
 	const handleTabBarCloseButtonClick = useCallback(() => {
-		closeTabBar();
-	}, [closeTabBar]);
+		closeTab();
+	}, [closeTab]);
 
 	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } = useResizeObserver<HTMLElement>({
 		debounceDelay: 200,
@@ -143,7 +144,7 @@ const ThreadList: VFC = () => {
 								onChange={handleSearchTextChange}
 							/>
 							<Box w='x144'>
-								<Select options={typeOptions} value={type} onChange={handleTypeChange} />
+								<Select options={typeOptions} value={type} onChange={(value) => handleTypeChange(String(value))} />
 							</Box>
 						</Margins>
 					</Box>
@@ -151,7 +152,7 @@ const ThreadList: VFC = () => {
 
 				{phase === AsyncStatePhase.LOADING && (
 					<Box pi={24} pb={12}>
-						<Throbber size={12} />
+						<Throbber size='x12' />
 					</Box>
 				)}
 

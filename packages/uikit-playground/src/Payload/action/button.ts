@@ -39,6 +39,26 @@ export const actionWithButtonPrimary: readonly LayoutBlock[] = [
   },
 ];
 
+export const actionWithButtonSecondary: readonly LayoutBlock[] = [
+  {
+    type: 'actions',
+    elements: [
+      {
+        type: 'button',
+        appId: 'app-id',
+        blockId: 'block-id',
+        actionId: 'action-id',
+        text: {
+          type: 'plain_text',
+          text: 'Click Me',
+          emoji: true,
+        },
+        secondary: true,
+      },
+    ],
+  },
+];
+
 export const actionWithButtonDanger: readonly LayoutBlock[] = [
   {
     type: 'actions',
@@ -54,6 +74,67 @@ export const actionWithButtonDanger: readonly LayoutBlock[] = [
           emoji: true,
         },
         style: 'danger',
+      },
+    ],
+  },
+];
+
+export const actionWithButtonSuccess: readonly LayoutBlock[] = [
+  {
+    type: 'actions',
+    elements: [
+      {
+        type: 'button',
+        appId: 'app-id',
+        blockId: 'block-id',
+        actionId: 'action-id',
+        text: {
+          type: 'plain_text',
+          text: 'Click Me',
+          emoji: true,
+        },
+        style: 'success',
+      },
+    ],
+  },
+];
+
+export const actionWithButtonWarning: readonly LayoutBlock[] = [
+  {
+    type: 'actions',
+    elements: [
+      {
+        type: 'button',
+        appId: 'app-id',
+        blockId: 'block-id',
+        actionId: 'action-id',
+        text: {
+          type: 'plain_text',
+          text: 'Click Me',
+          emoji: true,
+        },
+        style: 'warning',
+      },
+    ],
+  },
+];
+
+export const actionWithButtonSecondaryWithVariant: readonly LayoutBlock[] = [
+  {
+    type: 'actions',
+    elements: [
+      {
+        type: 'button',
+        appId: 'app-id',
+        blockId: 'block-id',
+        actionId: 'action-id',
+        text: {
+          type: 'plain_text',
+          text: 'Click Me',
+          emoji: true,
+        },
+        style: 'danger',
+        secondary: true,
       },
     ],
   },

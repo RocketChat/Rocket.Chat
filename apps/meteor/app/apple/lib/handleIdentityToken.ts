@@ -1,6 +1,6 @@
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { KJUR } from 'jsrsasign';
 import NodeRSA from 'node-rsa';
-import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 async function isValidAppleJWT(identityToken: string, header: any): Promise<boolean> {
 	const request = await fetch('https://appleid.apple.com/auth/keys', { method: 'GET' });

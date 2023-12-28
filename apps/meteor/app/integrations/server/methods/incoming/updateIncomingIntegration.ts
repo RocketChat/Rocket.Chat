@@ -1,11 +1,13 @@
-import { Meteor } from 'meteor/meteor';
-import { Babel } from 'meteor/babel-compiler';
-import _ from 'underscore';
-import { Integrations, Roles, Subscriptions, Users, Rooms } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IIntegration, INewIncomingIntegration, IUpdateIncomingIntegration } from '@rocket.chat/core-typings';
+import { Integrations, Roles, Subscriptions, Users, Rooms } from '@rocket.chat/models';
+import { wrapExceptions } from '@rocket.chat/tools';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Babel } from 'meteor/babel-compiler';
+import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
 
 import { hasAllPermissionAsync, hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { isScriptEngineFrozen, validateScriptEngine } from '../../lib/validateScriptEngine';
 
 const validChannelChars = ['@', '#'];
 
@@ -64,42 +66,57 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		let scriptCompiled: string | undefined;
-		let scriptError: Pick<Error, 'name' | 'message' | 'stack'> | undefined;
+		const oldScriptEngine = currentIntegration.scriptEngine ?? 'vm2';
+		const scriptEngine = integration.scriptEngine ?? oldScriptEngine;
+		if (
+			integration.script?.trim() &&
+			(scriptEngine !== oldScriptEngine || integration.script?.trim() !== currentIntegration.script?.trim())
+		) {
+			wrapExceptions(() => validateScriptEngine(scriptEngine)).catch((e) => {
+				throw new Meteor.Error(e.message);
+			});
+		}
 
-		if (integration.scriptEnabled === true && integration.script && integration.script.trim() !== '') {
-			try {
-				let babelOptions = Babel.getDefaultOptions({ runtime: false });
-				babelOptions = _.extend(babelOptions, { compact: true, minified: true, comments: false });
+		const isFrozen = isScriptEngineFrozen(scriptEngine);
 
-				scriptCompiled = Babel.compile(integration.script, babelOptions).code;
-				scriptError = undefined;
-				await Integrations.updateOne(
-					{ _id: integrationId },
-					{
-						$set: {
-							scriptCompiled,
+		if (!isFrozen) {
+			let scriptCompiled: string | undefined;
+			let scriptError: Pick<Error, 'name' | 'message' | 'stack'> | undefined;
+
+			if (integration.scriptEnabled === true && integration.script && integration.script.trim() !== '') {
+				try {
+					let babelOptions = Babel.getDefaultOptions({ runtime: false });
+					babelOptions = _.extend(babelOptions, { compact: true, minified: true, comments: false });
+
+					scriptCompiled = Babel.compile(integration.script, babelOptions).code;
+					scriptError = undefined;
+					await Integrations.updateOne(
+						{ _id: integrationId },
+						{
+							$set: {
+								scriptCompiled,
+							},
+							$unset: { scriptError: 1 as const },
 						},
-						$unset: { scriptError: 1 },
-					},
-				);
-			} catch (e) {
-				scriptCompiled = undefined;
-				if (e instanceof Error) {
-					const { name, message, stack } = e;
-					scriptError = { name, message, stack };
+					);
+				} catch (e) {
+					scriptCompiled = undefined;
+					if (e instanceof Error) {
+						const { name, message, stack } = e;
+						scriptError = { name, message, stack };
+					}
+					await Integrations.updateOne(
+						{ _id: integrationId },
+						{
+							$set: {
+								scriptError,
+							},
+							$unset: {
+								scriptCompiled: 1 as const,
+							},
+						},
+					);
 				}
-				await Integrations.updateOne(
-					{ _id: integrationId },
-					{
-						$set: {
-							scriptError,
-						},
-						$unset: {
-							scriptCompiled: 1,
-						},
-					},
-				);
 			}
 		}
 
@@ -157,8 +174,16 @@ Meteor.methods<ServerMethods>({
 					emoji: integration.emoji,
 					alias: integration.alias,
 					channel: channels,
-					script: integration.script,
-					scriptEnabled: integration.scriptEnabled,
+					...(isFrozen
+						? {}
+						: {
+								script: integration.script,
+								scriptEnabled: integration.scriptEnabled,
+								scriptEngine,
+						  }),
+					...(typeof integration.overrideDestinationChannelEnabled !== 'undefined' && {
+						overrideDestinationChannelEnabled: integration.overrideDestinationChannelEnabled,
+					}),
 					_updatedAt: new Date(),
 					_updatedBy: await Users.findOne({ _id: this.userId }, { projection: { username: 1 } }),
 				},

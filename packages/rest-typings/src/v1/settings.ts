@@ -32,6 +32,7 @@ export type OauthCustomConfiguration = {
 	channelsMap: string;
 	channelsAdmin: string;
 	mergeUsers: boolean;
+	mergeUsersDistinctServices: boolean;
 	mergeRoles: boolean;
 	accessTokenParam: string;
 	showButton: boolean;

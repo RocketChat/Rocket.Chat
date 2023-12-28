@@ -2,10 +2,10 @@ import { EventEmitter } from 'events';
 
 import { InstanceStatus } from '@rocket.chat/models';
 
+import { asyncLocalStorage } from '.';
+import type { EventSignatures } from './events/Events';
 import type { IBroker, IBrokerNode } from './types/IBroker';
 import type { ServiceClass, IServiceClass } from './types/ServiceClass';
-import { asyncLocalStorage } from '.';
-import type { EventSignatures } from './Events';
 
 export class LocalBroker implements IBroker {
 	private methods = new Map<string, (...params: any) => any>();
@@ -35,9 +35,7 @@ export class LocalBroker implements IBroker {
 	destroyService(instance: ServiceClass): void {
 		const namespace = instance.getName();
 
-		instance.getEvents().forEach((eventName) => {
-			this.events.removeListener(eventName, instance.emit);
-		});
+		instance.getEvents().forEach((event) => event.listeners.forEach((listener) => this.events.removeListener(event.eventName, listener)));
 
 		const methods =
 			instance.constructor?.name === 'Object'
@@ -50,6 +48,7 @@ export class LocalBroker implements IBroker {
 
 			this.methods.delete(`${namespace}.${method}`);
 		}
+		instance.removeAllListeners();
 		instance.stopped();
 	}
 
@@ -60,11 +59,7 @@ export class LocalBroker implements IBroker {
 
 		instance.created();
 
-		instance.getEvents().forEach((eventName) => {
-			this.events.on(eventName, (...args) => {
-				instance.emit(eventName, ...(args as Parameters<EventSignatures[typeof eventName]>));
-			});
-		});
+		instance.getEvents().forEach((event) => event.listeners.forEach((listener) => this.events.on(event.eventName, listener)));
 
 		const methods =
 			instance.constructor?.name === 'Object'

@@ -11,7 +11,6 @@ export const useInfiniteFederationSearchPublicRooms = (serverName: string, roomN
 		{
 			getNextPageParam: (lastPage) => lastPage.nextPageToken,
 			useErrorBoundary: true,
-			refetchOnWindowFocus: false,
 			staleTime: tenMinutes,
 			cacheTime: tenMinutes,
 		},

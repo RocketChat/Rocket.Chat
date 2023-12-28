@@ -1,72 +1,114 @@
-import type { ReactElement, ReactNode } from 'react';
-import React, { useCallback, useRef, useState, useMemo } from 'react';
+import type { To, SearchParameters, LocationPathname, LocationSearch } from '@rocket.chat/ui-contexts';
 import { RouterContext } from '@rocket.chat/ui-contexts';
-import { Emitter } from '@rocket.chat/emitter';
+import { compile } from 'path-to-regexp';
+import React, { useRef, useMemo } from 'react';
+import type { MutableRefObject, ReactElement, ReactNode } from 'react';
 
-const useSubscribableState = <T,>(initialState: T | (() => T)) => {
-	const [value, setValue] = useState<T>(initialState);
+const encodeSearchParameters = (searchParameters: SearchParameters) => {
+	const search = new URLSearchParams();
 
-	const emitterRef = useRef(new Emitter<{ update: void }>());
+	for (const [key, value] of Object.entries(searchParameters)) {
+		search.append(key, value);
+	}
 
-	const get = useCallback(() => value, [value]);
+	const searchString = search.toString();
 
-	const set = useCallback((newValue: T | ((prev: T) => T)) => {
-		setValue(newValue);
-		emitterRef.current.emit('update');
-	}, []);
-
-	const subscribe = useMemo(() => emitterRef.current.on.bind(emitterRef.current, 'update'), []);
-
-	return { get, set, subscribe };
+	return searchString ? (`?${searchString}` as `?${LocationSearch}`) : '';
 };
 
-type RouteTuple = [name: string, parameters?: Record<string, string>, queryStringParameters?: Record<string, string>];
+const buildRoutePath = (to: To): LocationPathname | `${LocationPathname}?${LocationSearch}` => {
+	if (typeof to === 'string') {
+		return to;
+	}
+
+	if ('pathname' in to) {
+		const { pathname, search = {} } = to;
+		return (pathname + encodeSearchParameters(search)) as LocationPathname | `${LocationPathname}?${LocationSearch}`;
+	}
+
+	if ('pattern' in to) {
+		const { pattern, params = {}, search = {} } = to;
+		return (compile(pattern, { encode: encodeURIComponent })(params) + encodeSearchParameters(search)) as
+			| LocationPathname
+			| `${LocationPathname}?${LocationSearch}`;
+	}
+
+	if ('name' in to) {
+		const { name, params = {}, search = {} } = to;
+
+		switch (name) {
+			case 'audit-home':
+				return `/audit${encodeSearchParameters(search)}`;
+
+			case 'audit-log':
+				return `/audit-log${encodeSearchParameters(search)}`;
+
+			case 'marketplace':
+				return `/marketplace/${params.context}/${params.page}${encodeSearchParameters(search)}`;
+		}
+
+		return (compile(name, { encode: encodeURIComponent })(params) + encodeSearchParameters(search)) as
+			| LocationPathname
+			| `${LocationPathname}?${LocationSearch}`;
+	}
+
+	throw new Error('Invalid route');
+};
 
 type RouterContextMockProps = {
 	children?: ReactNode;
-	initialRoute?: RouteTuple;
-	pushRoute?: (...args: RouteTuple) => void;
-	replaceRoute?: (...args: RouteTuple) => void;
+	navigate?: (toOrDelta: number | To) => void;
+	currentPath?: MutableRefObject<string | undefined>;
 };
 
-const RouterContextMock = ({ children, initialRoute, pushRoute, replaceRoute }: RouterContextMockProps): ReactElement => {
-	const currentRoute = useSubscribableState(initialRoute ?? (['home'] as RouteTuple));
+const RouterContextMock = ({ children, navigate, currentPath }: RouterContextMockProps): ReactElement => {
+	const history = useRef<{ stack: To[]; index: number }>({ stack: ['/'], index: 0 });
+
+	if (currentPath) {
+		currentPath.current = buildRoutePath(history.current.stack[history.current.index]);
+	}
 
 	return (
 		<RouterContext.Provider
 			value={useMemo(() => {
-				const subscribeToCurrentRoute = currentRoute.subscribe;
-				const getCurrentRoute = currentRoute.get;
-				const setCurrentRoute = currentRoute.set;
-
 				return {
-					queryRoutePath: () => [() => (): void => undefined, (): undefined => undefined],
-					queryRouteUrl: () => [() => (): void => undefined, (): undefined => undefined],
-					pushRoute: (
-						name: string,
-						parameters?: Record<string, string>,
-						queryStringParameters?: ((prev: Record<string, string>) => Record<string, string>) | Record<string, string>,
-					) => {
-						const queryParams = typeof queryStringParameters === 'function' ? queryStringParameters({}) : queryStringParameters;
-						setCurrentRoute([name, parameters, queryParams]);
-						pushRoute?.(name, parameters, queryParams);
-					},
-					replaceRoute: (
-						name: string,
-						parameters?: Record<string, string>,
-						queryStringParameters?: ((prev: Record<string, string>) => Record<string, string>) | Record<string, string>,
-					) => {
-						const queryParams = typeof queryStringParameters === 'function' ? queryStringParameters({}) : queryStringParameters;
-						setCurrentRoute([name, parameters, queryParams]);
-						replaceRoute?.(name, parameters, queryParams);
-					},
-					queryRouteParameter: () => [() => (): void => undefined, (): undefined => undefined],
-					queryQueryStringParameter: () => [() => (): void => undefined, (): undefined => undefined],
-					queryCurrentRoute: () => [subscribeToCurrentRoute, getCurrentRoute],
-					setQueryString: () => undefined,
-					getRoutePath: () => '/',
+					subscribeToRouteChange: () => () => undefined,
+					getLocationPathname: () => '/',
+					getLocationSearch: () => '',
+					getRouteParameters: () => ({}),
+					getSearchParameters: () => ({}),
+					getRouteName: () => 'home',
+					buildRoutePath,
+					navigate:
+						navigate ??
+						((toOrDelta: number | To) => {
+							if (typeof toOrDelta === 'number') {
+								history.current.index += toOrDelta;
+
+								if (history.current.index < 0) {
+									history.current.index = 0;
+								}
+
+								if (history.current.index >= history.current.stack.length) {
+									history.current.index = history.current.stack.length - 1;
+								}
+
+								return;
+							}
+
+							history.current.stack = history.current.stack.slice(0, history.current.index + 1);
+							history.current.stack.push(toOrDelta);
+							history.current.index = history.current.stack.length - 1;
+
+							if (currentPath) {
+								currentPath.current = buildRoutePath(history.current.stack[history.current.index]);
+							}
+						}),
+					defineRoutes: () => () => undefined,
+					getRoutes: () => [],
+					subscribeToRoutesChange: () => () => undefined,
 				};
-			}, [currentRoute.get, currentRoute.set, currentRoute.subscribe, pushRoute, replaceRoute])}
+			}, [currentPath, navigate])}
 		>
 			{children}
 		</RouterContext.Provider>

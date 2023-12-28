@@ -1,23 +1,25 @@
-import { Meteor } from 'meteor/meteor';
-import type { ILivechatVisitor } from '@rocket.chat/core-typings';
-import { LivechatVisitors, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
 import { Message } from '@rocket.chat/core-services';
+import type { ILivechatVisitor, IOmnichannelSystemMessage } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { LivechatVisitors, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
+import { methodDeprecationLogger } from '../../../../../app/lib/server/lib/deprecationWarningLogger';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { callbacks } from '../../../../../lib/callbacks';
 import { i18n } from '../../../../../server/lib/i18n';
 
 async function resolveOnHoldCommentInfo(options: { clientAction: boolean }, room: any, onHoldChatResumedBy: any): Promise<string> {
 	if (options.clientAction) {
-		return i18n.t('Omnichannel_on_hold_chat_manually', {
+		return i18n.t('Omnichannel_on_hold_chat_resumed_manually', {
 			user: onHoldChatResumedBy.name || onHoldChatResumedBy.username,
 		});
 	}
 	const {
 		v: { _id: visitorId },
 	} = room;
-	const visitor = await LivechatVisitors.findOneById<Pick<ILivechatVisitor, 'name' | 'username'>>(visitorId, {
+	const visitor = await LivechatVisitors.findOneEnabledById<Pick<ILivechatVisitor, 'name' | 'username'>>(visitorId, {
 		projection: { name: 1, username: 1 },
 	});
 	if (!visitor) {
@@ -38,8 +40,12 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:resumeOnHold'(roomId, options = { clientAction: false }) {
+		methodDeprecationLogger.warn(
+			'Method "livechat:resumeOnHold" is deprecated and will be removed in next major version. Please use "livechat/room.resumeOnHold" API instead.',
+		);
+
 		const room = await LivechatRooms.findOneById(roomId);
-		if (!room || room.t !== 'l') {
+		if (!room || !isOmnichannelRoom(room)) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
 				method: 'livechat:resumeOnHold',
 			});
@@ -58,19 +64,30 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const { servedBy: { _id: agentId, username } = {} } = room;
+		if (!room.servedBy) {
+			throw new Meteor.Error('error-unserved-rooms-cannot-be-placed-onhold', 'Error! Un-served rooms cannot be placed OnHold', {
+				method: 'livechat:resumeOnHold',
+			});
+		}
+
+		const {
+			servedBy: { _id: agentId, username },
+		} = room;
 		await RoutingManager.takeInquiry(inquiry, { agentId, username }, options);
 
 		const onHoldChatResumedBy = options.clientAction ? await Meteor.userAsync() : await Users.findOneById('rocket.cat');
 		if (!onHoldChatResumedBy) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'livechat:resumeOnHold' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'livechat:resumeOnHold',
+			});
 		}
 
 		const comment = await resolveOnHoldCommentInfo(options, room, onHoldChatResumedBy);
 
-		await Message.saveSystemMessage('omnichannel_on_hold_chat_resumed', roomId, '', onHoldChatResumedBy, { comment });
+		await Message.saveSystemMessage<IOmnichannelSystemMessage>('omnichannel_on_hold_chat_resumed', roomId, '', onHoldChatResumedBy, {
+			comment,
+		});
 
-		const updatedRoom = await LivechatRooms.findOneById(roomId);
-		updatedRoom && setImmediate(() => callbacks.run('livechat:afterOnHoldChatResumed', updatedRoom));
+		setImmediate(() => callbacks.run('livechat:afterOnHoldChatResumed', room));
 	},
 });

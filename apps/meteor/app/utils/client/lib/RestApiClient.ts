@@ -1,9 +1,9 @@
 import { RestClient } from '@rocket.chat/api-client';
-import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import { Meteor } from 'meteor/meteor';
 
-import { baseURI } from '../../../../client/lib/baseURI';
 import { invokeTwoFactorModal } from '../../../../client/lib/2fa/process2faReturn';
+import { baseURI } from '../../../../client/lib/baseURI';
 
 class RestApiClient extends RestClient {
 	getCredentials():
@@ -37,7 +37,7 @@ APIClient.handleTwoFactorChallenge(invokeTwoFactorModal);
  * This middleware will throw the error object instead.
  * */
 
-APIClient.use(async function (request, next) {
+APIClient.use(async (request, next) => {
 	try {
 		return await next(...request);
 	} catch (error) {

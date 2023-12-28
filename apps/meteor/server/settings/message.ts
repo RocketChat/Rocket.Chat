@@ -200,6 +200,7 @@ export const createMessageSettings = () =>
 		await this.add('Message_ErasureType', 'Delete', {
 			type: 'select',
 			public: true,
+			i18nDescription: 'Message_ErasureType_Description',
 			values: [
 				{
 					key: 'Keep',
@@ -242,6 +243,14 @@ export const createMessageSettings = () =>
 			group: 'Message',
 			section: 'AutoTranslate',
 			public: true,
+		});
+
+		await this.add('AutoTranslate_AutoEnableOnJoinRoom', false, {
+			type: 'boolean',
+			group: 'Message',
+			section: 'AutoTranslate',
+			public: true,
+			enableQuery: [{ _id: 'AutoTranslate_Enabled', value: true }],
 		});
 
 		await this.add('AutoTranslate_ServiceProvider', 'google-translate', {
@@ -333,18 +342,18 @@ export const createMessageSettings = () =>
 				_id: 'Katex_Enabled',
 				value: true,
 			};
-			await settingsRegistry.add('Katex_Enabled', true, {
+			await this.add('Katex_Enabled', true, {
 				type: 'boolean',
 				public: true,
 				i18nDescription: 'Katex_Enabled_Description',
 			});
-			await settingsRegistry.add('Katex_Parenthesis_Syntax', true, {
+			await this.add('Katex_Parenthesis_Syntax', true, {
 				type: 'boolean',
 				public: true,
 				enableQuery,
 				i18nDescription: 'Katex_Parenthesis_Syntax_Description',
 			});
-			await settingsRegistry.add('Katex_Dollar_Syntax', false, {
+			await this.add('Katex_Dollar_Syntax', false, {
 				type: 'boolean',
 				public: true,
 				enableQuery,
@@ -353,13 +362,13 @@ export const createMessageSettings = () =>
 		});
 
 		await this.section('Google Maps', async function () {
-			await settingsRegistry.add('MapView_Enabled', false, {
+			await this.add('MapView_Enabled', false, {
 				type: 'boolean',
 				public: true,
 				i18nLabel: 'MapView_Enabled',
 				i18nDescription: 'MapView_Enabled_Description',
 			});
-			await settingsRegistry.add('MapView_GMapsAPIKey', '', {
+			await this.add('MapView_GMapsAPIKey', '', {
 				type: 'string',
 				public: true,
 				i18nLabel: 'MapView_GMapsAPIKey',

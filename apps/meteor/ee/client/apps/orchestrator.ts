@@ -1,57 +1,32 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 import { AppClientManager } from '@rocket.chat/apps-engine/client/AppClientManager';
-import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
-import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
 import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
-import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage/IAppStorageItem';
-import type { AppScreenshot, AppRequestFilter, Serialized, AppRequestsStats, PaginatedAppRequests } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
+import type { Serialized } from '@rocket.chat/core-typings';
 
 import { hasAtLeastOnePermission } from '../../../app/authorization/client';
-import { CachedCollectionManager } from '../../../app/ui-cached-collection/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import type { App } from '../../../client/views/marketplace/types';
-import type {
-	// IAppFromMarketplace,
-	IAppLanguage,
-	IAppExternalURL,
-	ICategory,
-	// IAppSynced,
-	// IAppScreenshots,
-	// IScreenshot,
-} from './@types/IOrchestrator';
+import type { IAppExternalURL, ICategory } from './@types/IOrchestrator';
 import { RealAppsEngineUIHost } from './RealAppsEngineUIHost';
-import { AppWebsocketReceiver } from './communication';
-import { handleI18nResources } from './i18n';
 
 class AppClientOrchestrator {
 	private _appClientUIHost: RealAppsEngineUIHost;
 
 	private _manager: AppClientManager;
 
-	private isLoaded: boolean;
-
-	private ws: AppWebsocketReceiver;
+	private _isLoaded: boolean;
 
 	constructor() {
 		this._appClientUIHost = new RealAppsEngineUIHost();
 		this._manager = new AppClientManager(this._appClientUIHost);
-		this.isLoaded = false;
+		this._isLoaded = false;
 	}
 
 	public async load(): Promise<void> {
-		if (!this.isLoaded) {
-			this.ws = new AppWebsocketReceiver();
-			this.isLoaded = true;
+		if (!this._isLoaded) {
+			this._isLoaded = true;
 		}
-
-		await handleI18nResources();
-	}
-
-	public getWsListener(): AppWebsocketReceiver {
-		return this.ws;
 	}
 
 	public getAppClientManager(): AppClientManager {
@@ -67,11 +42,6 @@ class AppClientOrchestrator {
 		}
 	}
 
-	public async screenshots(appId: string): Promise<AppScreenshot[]> {
-		const { screenshots } = await sdk.rest.get(`/apps/${appId}/screenshots`);
-		return screenshots;
-	}
-
 	public async getInstalledApps(): Promise<App[]> {
 		const result = await sdk.rest.get<'/apps/installed'>('/apps/installed');
 
@@ -82,8 +52,8 @@ class AppClientOrchestrator {
 		throw new Error('Invalid response from API');
 	}
 
-	public async getAppsFromMarketplace(isAdminUser?: string): Promise<App[]> {
-		const result = await sdk.rest.get('/apps/marketplace', { isAdminUser });
+	public async getAppsFromMarketplace(isAdminUser?: boolean): Promise<App[]> {
+		const result = await sdk.rest.get('/apps/marketplace', { isAdminUser: isAdminUser ? isAdminUser.toString() : 'false' });
 
 		if (!Array.isArray(result)) {
 			// TODO: chapter day: multiple results are returned, but we only need one
@@ -111,51 +81,13 @@ class AppClientOrchestrator {
 		return apps;
 	}
 
-	public async getAppsLanguages(): Promise<IAppLanguage> {
-		const { apps } = await sdk.rest.get('/apps/languages');
-		return apps;
-	}
-
 	public async getApp(appId: string): Promise<App> {
 		const { app } = await sdk.rest.get(`/apps/${appId}` as any);
 		return app;
 	}
 
-	public async getAppFromMarketplace(appId: string, version: string): Promise<{ app: App; success: boolean }> {
-		const result = await sdk.rest.get(
-			`/apps/${appId}` as any,
-			{
-				marketplace: 'true',
-				version,
-			} as any,
-		);
-		return result;
-	}
-
-	public async getLatestAppFromMarketplace(appId: string, version: string): Promise<App> {
-		const { app } = await sdk.rest.get(
-			`/apps/${appId}` as any,
-			{
-				marketplace: 'true',
-				update: 'true',
-				appVersion: version,
-			} as any,
-		);
-		return app;
-	}
-
 	public async setAppSettings(appId: string, settings: ISetting[]): Promise<void> {
 		await sdk.rest.post(`/apps/${appId}/settings`, { settings });
-	}
-
-	public async getAppApis(appId: string): Promise<IApiEndpointMetadata[]> {
-		const { apis } = await sdk.rest.get(`/apps/${appId}/apis`);
-		return apis;
-	}
-
-	public async getAppLanguages(appId: string): Promise<IAppStorageItem['languageContent']> {
-		const { languages } = await sdk.rest.get(`/apps/${appId}/languages`);
-		return languages;
 	}
 
 	public async installApp(appId: string, version: string, permissionsGranted?: IPermission[]): Promise<App> {
@@ -180,15 +112,6 @@ class AppClientOrchestrator {
 			return result.app;
 		}
 		throw new Error('App not found');
-	}
-
-	public async setAppStatus(appId: string, status: AppStatus): Promise<string> {
-		const { status: effectiveStatus } = await sdk.rest.post(`/apps/${appId}/status`, { status });
-		return effectiveStatus;
-	}
-
-	public disableApp(appId: string): Promise<string> {
-		return this.setAppStatus(appId, AppStatus.MANUALLY_ENABLED);
 	}
 
 	public async buildExternalUrl(appId: string, purchaseType: 'buy' | 'subscription' = 'buy', details = false): Promise<IAppExternalURL> {
@@ -230,32 +153,6 @@ class AppClientOrchestrator {
 		throw new Error('Failed to build external url');
 	}
 
-	public async appRequests(
-		appId: string,
-		filter?: AppRequestFilter,
-		sort?: string,
-		limit?: number,
-		offset?: number,
-	): Promise<PaginatedAppRequests> {
-		try {
-			const response = await sdk.rest.get(`/apps/app-request?appId=${appId}&q=${filter}&sort=${sort}&limit=${limit}&offset=${offset}`);
-
-			return response;
-		} catch (e: unknown) {
-			throw new Error('Could not get the list of app requests');
-		}
-	}
-
-	public async getAppRequestsStats(): Promise<AppRequestsStats> {
-		try {
-			const response = await sdk.rest.get('/apps/app-request/stats');
-
-			return response;
-		} catch (e: unknown) {
-			throw new Error('Could not get the app requests stats');
-		}
-	}
-
 	public async getCategories(): Promise<Serialized<ICategory[]>> {
 		const result = await sdk.rest.get('/apps/categories');
 
@@ -265,17 +162,6 @@ class AppClientOrchestrator {
 		}
 		throw new Error('Failed to get categories');
 	}
-
-	public getUIHost(): RealAppsEngineUIHost {
-		return this._appClientUIHost;
-	}
 }
 
-export const Apps = new AppClientOrchestrator();
-
-Meteor.startup(() => {
-	CachedCollectionManager.onLogin(() => {
-		Apps.getAppClientManager().initialize();
-		Apps.load();
-	});
-});
+export const AppClientOrchestratorInstance = new AppClientOrchestrator();

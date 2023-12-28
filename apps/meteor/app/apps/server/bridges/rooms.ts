@@ -1,21 +1,20 @@
+import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
-import { RoomBridge } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
-import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
+import { RoomBridge } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
 import type { ISubscription, IUser as ICoreUser, IRoom as ICoreRoom } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
+import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
+import { createDiscussion } from '../../../discussion/server/methods/createDiscussion';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
 import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
 import { createChannelMethod } from '../../../lib/server/methods/createChannel';
 import { createPrivateGroupMethod } from '../../../lib/server/methods/createPrivateGroup';
-import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
-import { createDiscussion } from '../../../discussion/server/methods/createDiscussion';
 
 export class AppRoomBridge extends RoomBridge {
-	// eslint-disable-next-line no-empty-function
 	constructor(private readonly orch: AppServerOrchestrator) {
 		super();
 	}
@@ -56,7 +55,11 @@ export class AppRoomBridge extends RoomBridge {
 	}
 
 	private async createPrivateGroup(userId: string, room: ICoreRoom, members: string[]): Promise<string> {
-		return (await createPrivateGroupMethod(userId, room.name || '', members, room.ro, room.customFields, this.prepareExtraData(room))).rid;
+		const user = await Users.findOneById(userId);
+		if (!user) {
+			throw new Error('Invalid user');
+		}
+		return (await createPrivateGroupMethod(user, room.name || '', members, room.ro, room.customFields, this.prepareExtraData(room))).rid;
 	}
 
 	protected async getById(roomId: string, appId: string): Promise<IRoom> {

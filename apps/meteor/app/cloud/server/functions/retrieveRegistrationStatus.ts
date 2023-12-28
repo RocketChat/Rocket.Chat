@@ -3,7 +3,6 @@ import { Users } from '@rocket.chat/models';
 import { settings } from '../../../settings/server';
 
 export async function retrieveRegistrationStatus(): Promise<{
-	connectToCloud: boolean;
 	workspaceRegistered: boolean;
 	workspaceId: string;
 	uniqueId: string;
@@ -11,7 +10,6 @@ export async function retrieveRegistrationStatus(): Promise<{
 	email: string;
 }> {
 	const info = {
-		connectToCloud: settings.get<boolean>('Register_Server'),
 		workspaceRegistered: !!settings.get('Cloud_Workspace_Client_Id') && !!settings.get('Cloud_Workspace_Client_Secret'),
 		workspaceId: settings.get<string>('Cloud_Workspace_Id'),
 		uniqueId: settings.get<string>('uniqueID'),

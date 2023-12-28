@@ -14,6 +14,7 @@ interface IFederationCreateDMAndInviteUserDto extends IFederationSenderBaseRoomI
 interface IFederationRoomSendExternalMessageDto extends IFederationSenderBaseRoomInputDto {
 	message: IMessage;
 	internalSenderId: string;
+	isThreadedMessage: boolean;
 }
 
 interface IFederationAfterLeaveRoomDto extends IFederationSenderBaseRoomInputDto {
@@ -58,13 +59,16 @@ export class FederationCreateDMAndInviteUserDto extends FederationSenderBaseRoom
 }
 
 export class FederationRoomSendExternalMessageDto extends FederationSenderBaseRoomInputDto {
-	constructor({ internalRoomId, internalSenderId, message }: IFederationRoomSendExternalMessageDto) {
+	constructor({ internalRoomId, internalSenderId, message, isThreadedMessage }: IFederationRoomSendExternalMessageDto) {
 		super({ internalRoomId });
 		this.internalSenderId = internalSenderId;
 		this.message = message;
+		this.isThreadedMessage = isThreadedMessage;
 	}
 
 	internalSenderId: string;
+
+	isThreadedMessage: boolean;
 
 	message: IMessage;
 }

@@ -1,28 +1,15 @@
 module.exports = {
-	presets: [
-		[
-			'@babel/preset-env',
-			{
-				useBuiltIns: 'entry',
-				corejs: 3,
-			},
-		],
-		'@babel/preset-typescript',
-	],
+	presets: [['@babel/preset-env', { loose: true }], '@babel/preset-typescript'],
 	plugins: [
-		'@babel/plugin-proposal-class-properties',
-		'@babel/plugin-proposal-object-rest-spread',
-		['@babel/plugin-transform-react-jsx', { pragma: 'h', pragmaFrag: 'Fragment' }],
+		['@babel/plugin-transform-class-properties', { loose: true }],
+		['@babel/plugin-transform-private-methods', { loose: true }],
+		['@babel/plugin-transform-private-property-in-object', { loose: true }],
 		[
-			'babel-plugin-jsx-pragmatic',
+			'@babel/plugin-transform-react-jsx',
 			{
-				module: 'preact',
-				import: 'h',
-				export: 'h',
+				runtime: 'automatic',
+				importSource: 'preact',
 			},
 		],
 	],
-	assumptions: {
-		setPublicClassFields: true,
-	},
 };

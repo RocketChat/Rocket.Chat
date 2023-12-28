@@ -2,7 +2,7 @@ import { MultiSelectFiltered, Icon, Box, Chip } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
+import type { ReactElement, AllHTMLAttributes } from 'react';
 import React, { memo, useState, useCallback, useMemo } from 'react';
 
 import UserAvatar from '../avatar/UserAvatar';
@@ -12,7 +12,7 @@ type UserAutoCompleteMultipleFederatedProps = {
 	onChange: (value: Array<string>) => void;
 	value: Array<string>;
 	placeholder?: string;
-};
+} & Omit<AllHTMLAttributes<HTMLElement>, 'is' | 'onChange'>;
 
 type UserAutoCompleteOptionType = {
 	name: string;
@@ -93,19 +93,20 @@ const UserAutoCompleteMultipleFederated = ({
 	return (
 		<OptionsContext.Provider value={{ options }}>
 			<MultiSelectFiltered
+				{...props}
 				data-qa-type='user-auto-complete-input'
 				placeholder={placeholder}
 				value={value}
 				onChange={handleOnChange}
 				filter={filter}
 				setFilter={setFilter}
-				renderSelected={({ value, onMouseDown }: { value: string; onMouseDown: () => void }): ReactElement => {
+				renderSelected={({ value, onMouseDown }: { value: string; onMouseDown: () => void }) => {
 					const currentCachedOption = selectedCache[value] || {};
 
 					return (
-						<Chip key={value} {...props} height='x20' onMouseDown={onMouseDown} mie='x4' mb='x2'>
+						<Chip key={value} height='x20' onMouseDown={onMouseDown} mie={4} mb={2}>
 							{currentCachedOption._federated ? <Icon size='x20' name='globe' /> : <UserAvatar size='x20' username={value} />}
-							<Box is='span' margin='none' mis='x4'>
+							<Box is='span' margin='none' mis={4}>
 								{currentCachedOption.name || currentCachedOption.username || value}
 							</Box>
 						</Chip>

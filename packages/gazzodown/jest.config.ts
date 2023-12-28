@@ -13,7 +13,7 @@ export default {
 						syntax: 'typescript',
 						tsx: true,
 						decorators: false,
-						dynamicImport: false,
+						dynamicImport: true,
 					},
 					transform: {
 						react: {

@@ -1,15 +1,15 @@
-import { Meteor } from 'meteor/meteor';
 import { api } from '@rocket.chat/core-services';
 import { isRegisterUser } from '@rocket.chat/core-typings';
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { Users, Rooms } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
-import { slashCommands } from '../../utils/lib/slashCommand';
-import { settings } from '../../settings/server';
-import { roomCoordinator } from '../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
-import { unarchiveRoom } from '../../lib/server';
 import { i18n } from '../../../server/lib/i18n';
+import { roomCoordinator } from '../../../server/lib/rooms/roomCoordinator';
+import { unarchiveRoom } from '../../lib/server/functions/unarchiveRoom';
+import { settings } from '../../settings/server';
+import { slashCommands } from '../../utils/lib/slashCommand';
 
 slashCommands.add({
 	command: 'unarchive',

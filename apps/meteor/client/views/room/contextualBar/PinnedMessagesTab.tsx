@@ -5,8 +5,8 @@ import type { ReactElement } from 'react';
 import React from 'react';
 
 import { mapMessageFromApi } from '../../../lib/utils/mapMessageFromApi';
-import MessageListTab from '../components/contextualBar/MessageListTab';
 import { useRoom } from '../contexts/RoomContext';
+import MessageListTab from './MessageListTab';
 
 const PinnedMessagesTab = (): ReactElement => {
 	const getPinnedMessages = useEndpoint('GET', '/v1/chat.getPinnedMessages');

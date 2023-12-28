@@ -1,7 +1,7 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
+import { Subscriptions, Rooms } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import { Subscriptions } from '@rocket.chat/models';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
@@ -46,6 +46,13 @@ Meteor.methods<ServerMethods>({
 
 		switch (field) {
 			case 'autoTranslate':
+				const room = await Rooms.findE2ERoomById(rid, { projection: { _id: 1 } });
+				if (room && value === '1') {
+					throw new Meteor.Error('error-e2e-enabled', 'Enabling auto-translation in E2E encrypted rooms is not allowed', {
+						method: 'saveAutoTranslateSettings',
+					});
+				}
+
 				await Subscriptions.updateAutoTranslateById(subscription._id, value === '1');
 				if (!subscription.autoTranslateLanguage && options.defaultLanguage) {
 					await Subscriptions.updateAutoTranslateLanguageById(subscription._id, options.defaultLanguage);

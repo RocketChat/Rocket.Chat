@@ -20,7 +20,7 @@ const AppSecurity = ({ privacyPolicySummary, appPermissions, tosLink, privacyLin
 	return (
 		<Box maxWidth='x640' w='full' marginInline='auto' color='default'>
 			<Box display='flex' flexDirection='column'>
-				<Margins block='x17'>
+				<Margins block={16}>
 					<Box is='section'>
 						<AppSecurityLabel>{t('Privacy_summary')}</AppSecurityLabel>
 						<Box is='p' lineHeight='x20'>
@@ -30,7 +30,7 @@ const AppSecurity = ({ privacyPolicySummary, appPermissions, tosLink, privacyLin
 
 					<Box is='section'>
 						<AppSecurityLabel>{t('Permissions')}</AppSecurityLabel>
-						<Box is='ol' type='1' style={{ listStyleType: 'decimal' }} mis='x24'>
+						<Box is='ol' type='1' style={{ listStyleType: 'decimal' }} mis={24}>
 							<AppPermissionsList appPermissions={appPermissions} />
 						</Box>
 					</Box>

@@ -1,16 +1,16 @@
-import type { IVoipRoom } from '@rocket.chat/core-typings';
-import { Table } from '@rocket.chat/fuselage';
+import type { IVoipRoom, Serialized } from '@rocket.chat/core-typings';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
 
 import { parseOutboundPhoneNumber } from '../../../../../ee/client/lib/voip/parseOutboundPhoneNumber';
+import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
 import { useIsCallReady } from '../../../../contexts/CallContext';
 import { CallDialpadButton } from '../components/CallDialpadButton';
 
 type CallTableRowProps = {
-	room: IVoipRoom;
+	room: Serialized<IVoipRoom>;
 	onRowClick(_id: string, token?: string): void;
 };
 
@@ -34,7 +34,7 @@ export const CallTableRow = ({ room, onRowClick }: CallTableRowProps): ReactElem
 	);
 
 	return (
-		<Table.Row
+		<GenericTableRow
 			key={_id}
 			rcx-show-call-button-on-hover
 			tabIndex={0}
@@ -44,13 +44,13 @@ export const CallTableRow = ({ room, onRowClick }: CallTableRowProps): ReactElem
 			qa-user-id={_id}
 			height='40px'
 		>
-			<Table.Cell withTruncatedText>{parseOutboundPhoneNumber(fname)}</Table.Cell>
-			<Table.Cell withTruncatedText>{parseOutboundPhoneNumber(phoneNumber)}</Table.Cell>
-			<Table.Cell withTruncatedText>{queue}</Table.Cell>
-			<Table.Cell withTruncatedText>{moment(callStarted).format('L LTS')}</Table.Cell>
-			<Table.Cell withTruncatedText>{duration.isValid() && duration.humanize()}</Table.Cell>
-			<Table.Cell withTruncatedText>{resolveDirectionLabel(direction)}</Table.Cell>
-			<Table.Cell>{isCallReady && <CallDialpadButton phoneNumber={phoneNumber} />}</Table.Cell>
-		</Table.Row>
+			<GenericTableCell withTruncatedText>{parseOutboundPhoneNumber(fname)}</GenericTableCell>
+			<GenericTableCell withTruncatedText>{parseOutboundPhoneNumber(phoneNumber)}</GenericTableCell>
+			<GenericTableCell withTruncatedText>{queue}</GenericTableCell>
+			<GenericTableCell withTruncatedText>{moment(callStarted).format('L LTS')}</GenericTableCell>
+			<GenericTableCell withTruncatedText>{duration.isValid() && duration.humanize()}</GenericTableCell>
+			<GenericTableCell withTruncatedText>{resolveDirectionLabel(direction)}</GenericTableCell>
+			<GenericTableCell>{isCallReady && <CallDialpadButton phoneNumber={phoneNumber} />}</GenericTableCell>
+		</GenericTableRow>
 	);
 };

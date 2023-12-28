@@ -20,7 +20,6 @@ type DepartmentListItem = {
 	_id: string;
 	label: string;
 	value: string;
-	_updatedAt: Date;
 };
 
 export const useDepartmentsList = (
@@ -66,7 +65,6 @@ export const useDepartmentsList = (
 						_id,
 						label: department.archived ? `${name} [${t('Archived')}]` : name,
 						value: _id,
-						_updatedAt: new Date(_updatedAt || ''),
 					};
 				});
 
@@ -75,7 +73,6 @@ export const useDepartmentsList = (
 					_id: '',
 					label: t('All'),
 					value: 'all',
-					_updatedAt: new Date(),
 				});
 
 			options.haveNone &&
@@ -83,7 +80,6 @@ export const useDepartmentsList = (
 					_id: '',
 					label: t('None'),
 					value: '',
-					_updatedAt: new Date(),
 				});
 
 			return {

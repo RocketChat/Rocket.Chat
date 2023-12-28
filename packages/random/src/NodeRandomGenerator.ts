@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 
-import { RandomGenerator } from './RandomGenerator';
 import { AleaRandomGenerator } from './AleaRandomGenerator';
+import { RandomGenerator } from './RandomGenerator';
 import { createAleaGeneratorWithGeneratedSeed } from './createAleaGenerator';
 
 export class NodeRandomGenerator extends RandomGenerator {
@@ -36,6 +36,16 @@ export class NodeRandomGenerator extends RandomGenerator {
 		// If the number of digits is odd, we'll have generated an extra 4 bits
 		// of randomness, so we need to trim the last digit.
 		return result.substring(0, digits);
+	}
+
+	/**
+	 * @name Random.between Returns a random integer between min and max, inclusive.
+	 * @param min Minimum value (inclusive)
+	 * @param max Maximum value (inclusive)
+	 * @returns A random integer between min and max, inclusive.
+	 */
+	between(min: number, max: number) {
+		return Math.floor(this.fraction() * (max - min + 1)) + min;
 	}
 
 	protected safelyCreateWithSeeds(...seeds: readonly unknown[]) {

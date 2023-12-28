@@ -1,14 +1,14 @@
 import stream from 'stream';
 
-import { check } from 'meteor/check';
-import { Random } from '@rocket.chat/random';
-import _ from 'underscore';
-import S3 from 'aws-sdk/clients/s3';
-import type { OptionalId } from 'mongodb';
 import type { IUpload } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
+import S3 from 'aws-sdk/clients/s3';
+import { check } from 'meteor/check';
+import type { OptionalId } from 'mongodb';
+import _ from 'underscore';
 
-import { UploadFS } from '../../../../server/ufs';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { UploadFS } from '../../../../server/ufs';
 import type { StoreOptions } from '../../../../server/ufs/ufs-store';
 
 export type S3Options = StoreOptions & {
@@ -80,7 +80,7 @@ class AmazonS3Store extends UploadFS.Store {
 				ResponseContentDisposition: `${forceDownload ? 'attachment' : 'inline'}; filename="${encodeURI(file.name || '')}"`,
 			};
 
-			return s3.getSignedUrl('getObject', params);
+			return s3.getSignedUrlPromise('getObject', params);
 		};
 
 		/**

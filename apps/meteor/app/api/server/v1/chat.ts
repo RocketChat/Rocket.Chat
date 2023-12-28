@@ -1,25 +1,26 @@
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
-import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Message } from '@rocket.chat/core-services';
 import type { IMessage } from '@rocket.chat/core-typings';
+import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import { isChatReportMessageProps } from '@rocket.chat/rest-typings';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
+import { reportMessage } from '../../../../server/lib/moderation/reportMessage';
 import { roomAccessAttributes } from '../../../authorization/server';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
-import { API } from '../api';
-import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
-import { settings } from '../../../settings/server';
-import { executeSetReaction } from '../../../reactions/server/setReaction';
-import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } from '../lib/messages';
-import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
-import { getPaginationItems } from '../helpers/getPaginationItems';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { deleteMessageValidatingPermission } from '../../../lib/server/functions/deleteMessage';
-import { reportMessage } from '../../../../server/lib/moderation/reportMessage';
+import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
+import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
+import { executeUpdateMessage } from '../../../lib/server/methods/updateMessage';
+import { executeSetReaction } from '../../../reactions/server/setReaction';
+import { settings } from '../../../settings/server';
+import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
+import { API } from '../api';
+import { getPaginationItems } from '../helpers/getPaginationItems';
+import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } from '../lib/messages';
 
 API.v1.addRoute(
 	'chat.delete',
@@ -215,7 +216,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-params', 'The "message" parameter must be provided.');
 			}
 
-			const sent = await executeSendMessage(this.userId, this.bodyParams.message as Pick<IMessage, 'rid'>);
+			const sent = await executeSendMessage(this.userId, this.bodyParams.message as Pick<IMessage, 'rid'>, this.bodyParams.previewUrls);
 			const [message] = await normalizeMessagesForUser([sent], this.userId);
 
 			return API.v1.success({
@@ -310,6 +311,7 @@ API.v1.addRoute(
 					roomId: String,
 					msgId: String,
 					text: String, // Using text to be consistant with chat.postMessage
+					previewUrls: Match.Maybe([String]),
 				}),
 			);
 
@@ -325,7 +327,7 @@ API.v1.addRoute(
 			}
 
 			// Permission checks are already done in the updateMessage method, so no need to duplicate them
-			await Meteor.callAsync('updateMessage', { _id: msg._id, msg: this.bodyParams.text, rid: msg.rid });
+			await executeUpdateMessage(this.userId, { _id: msg._id, msg: this.bodyParams.text, rid: msg.rid }, this.bodyParams.previewUrls);
 
 			const updatedMessage = await Messages.findOneById(msg._id);
 			const [message] = await normalizeMessagesForUser(updatedMessage ? [updatedMessage] : [], this.userId);

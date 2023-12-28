@@ -1,11 +1,11 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 
 import { actionLinks } from '../../../client/lib/actionLinks';
+import { dispatchToastMessage } from '../../../client/lib/toast';
 import { ChatRoom } from '../../models/client';
 import { Notifications } from '../../notifications/client';
-import { dispatchToastMessage } from '../../../client/lib/toast';
-import { t } from '../../utils/lib/i18n';
 import { sdk } from '../../utils/client/lib/SDKClient';
+import { t } from '../../utils/lib/i18n';
 
 actionLinks.register('joinLivechatWebRTCCall', (message: IMessage) => {
 	const room = ChatRoom.findOne({ _id: message.rid });

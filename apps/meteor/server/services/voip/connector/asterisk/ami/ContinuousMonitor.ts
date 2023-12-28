@@ -12,7 +12,7 @@
  * (AgentConnect.calleridnum, connectedlinenum, queue) to signify which agent ansered the call from which queue.
  *
  */
-import type { Db } from 'mongodb';
+import { api } from '@rocket.chat/core-services';
 import type {
 	IPbxEvent,
 	IQueueDetails,
@@ -43,15 +43,15 @@ import {
 	isIContactStatusEvent,
 	isICallHangupEvent,
 } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { Users, PbxEvents } from '@rocket.chat/models';
-import { api } from '@rocket.chat/core-services';
+import type { Db } from 'mongodb';
 
 import { Command, CommandType } from '../Command';
-import { Logger } from '../../../../../lib/logger/Logger';
+import { Commands } from '../Commands';
+import { ACDQueue } from './ACDQueue';
 import { CallbackContext } from './CallbackContext';
 // import { sendMessage } from '../../../../../../app/lib/server/functions/sendMessage';
-import { ACDQueue } from './ACDQueue';
-import { Commands } from '../Commands';
 
 export class ContinuousMonitor extends Command {
 	private logger: Logger;

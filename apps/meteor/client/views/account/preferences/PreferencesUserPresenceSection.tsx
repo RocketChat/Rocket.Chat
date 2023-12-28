@@ -1,46 +1,36 @@
-import { Accordion, Field, NumberInput, FieldGroup, ToggleSwitch } from '@rocket.chat/fuselage';
-import { useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
-import React, { useCallback } from 'react';
+import { Accordion, Field, FieldLabel, FieldRow, NumberInput, FieldGroup, ToggleSwitch } from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import React from 'react';
+import { Controller, useFormContext } from 'react-hook-form';
 
-import { useForm } from '../../../hooks/useForm';
-import type { FormSectionProps } from './AccountPreferencesPage';
-
-const PreferencesUserPresenceSection = ({ onChange, commitRef, ...props }: FormSectionProps): ReactElement => {
+const PreferencesUserPresenceSection = () => {
 	const t = useTranslation();
-	const userEnableAutoAway = useUserPreference('enableAutoAway');
-	const userIdleTimeLimit = useUserPreference('idleTimeLimit');
+	const { register, control } = useFormContext();
 
-	const { values, handlers, commit } = useForm(
-		{
-			enableAutoAway: userEnableAutoAway,
-			idleTimeLimit: userIdleTimeLimit,
-		},
-		onChange,
-	);
-
-	const { enableAutoAway, idleTimeLimit } = values as { enableAutoAway: boolean; idleTimeLimit: string | number | string[] };
-
-	const { handleEnableAutoAway, handleIdleTimeLimit } = handlers;
-
-	commitRef.current.userPreference = commit;
-
-	const onChangeIdleTimeLimit = useCallback((e) => handleIdleTimeLimit(Number(e.currentTarget.value)), [handleIdleTimeLimit]);
+	const enableAutoAwayId = useUniqueId();
+	const idleTimeLimit = useUniqueId();
 
 	return (
-		<Accordion.Item title={t('User_Presence')} {...props}>
+		<Accordion.Item title={t('User_Presence')}>
 			<FieldGroup>
-				<Field display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-					<Field.Label>{t('Enable_Auto_Away')}</Field.Label>
-					<Field.Row>
-						<ToggleSwitch checked={enableAutoAway} onChange={handleEnableAutoAway} />
-					</Field.Row>
+				<Field>
+					<FieldRow>
+						<FieldLabel htmlFor={enableAutoAwayId}>{t('Enable_Auto_Away')}</FieldLabel>
+						<Controller
+							name='enableAutoAway'
+							control={control}
+							render={({ field: { ref, value, onChange } }) => (
+								<ToggleSwitch ref={ref} id={enableAutoAwayId} checked={value} onChange={onChange} />
+							)}
+						/>
+					</FieldRow>
 				</Field>
 				<Field>
-					<Field.Label>{t('Idle_Time_Limit')}</Field.Label>
-					<Field.Row>
-						<NumberInput value={idleTimeLimit} onChange={onChangeIdleTimeLimit} />
-					</Field.Row>
+					<FieldLabel htmlFor={idleTimeLimit}>{t('Idle_Time_Limit')}</FieldLabel>
+					<FieldRow>
+						<NumberInput id={idleTimeLimit} {...register('idleTimeLimit')} />
+					</FieldRow>
 				</Field>
 			</FieldGroup>
 		</Accordion.Item>

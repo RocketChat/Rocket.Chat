@@ -1,9 +1,9 @@
 import type { IServiceClass } from './ServiceClass';
 
 export interface ILicense extends IServiceClass {
-	hasLicense(feature: string): boolean;
+	hasModule(feature: string): boolean;
 
-	isEnterprise(): boolean;
+	hasValidLicense(): boolean;
 
 	getModules(): string[];
 

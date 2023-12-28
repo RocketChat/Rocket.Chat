@@ -1,14 +1,14 @@
-import { Meteor } from 'meteor/meteor';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
+import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
+import { dispatchToastMessage } from '../../../../client/lib/toast';
+import { callbacks } from '../../../../lib/callbacks';
+import { trim } from '../../../../lib/utils/stringUtils';
 import { ChatMessage, ChatRoom } from '../../../models/client';
 import { settings } from '../../../settings/client';
-import { callbacks } from '../../../../lib/callbacks';
 import { t } from '../../../utils/lib/i18n';
-import { dispatchToastMessage } from '../../../../client/lib/toast';
-import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
-import { trim } from '../../../../lib/utils/stringUtils';
 
 Meteor.methods<ServerMethods>({
 	async sendMessage(message) {
@@ -36,15 +36,14 @@ Meteor.methods<ServerMethods>({
 		}
 
 		// If the room is federated, send the message to matrix only
-		const federated = ChatRoom.findOne({ _id: message.rid }, { fields: { federated: 1 } })?.federated;
-		if (federated) {
+		const room = ChatRoom.findOne({ _id: message.rid }, { fields: { federated: 1, name: 1 } });
+		if (room?.federated) {
 			return;
 		}
 
-		message = await callbacks.run('beforeSaveMessage', message);
-		await onClientMessageReceived(message as IMessage).then(function (message) {
+		await onClientMessageReceived(message as IMessage).then((message) => {
 			ChatMessage.insert(message);
-			return callbacks.run('afterSaveMessage', message);
+			return callbacks.run('afterSaveMessage', message, room);
 		});
 	},
 });

@@ -9,7 +9,7 @@ type BannerSurfaceProps = {
 
 const BannerSurface = ({ children }: BannerSurfaceProps): ReactElement => (
   <Surface type='banner'>
-    <Margins block='x8'>{children}</Margins>
+    <Margins block={8}>{children}</Margins>
   </Surface>
 );
 

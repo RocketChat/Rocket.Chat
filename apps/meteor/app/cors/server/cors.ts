@@ -1,13 +1,15 @@
-import url from 'url';
+import { createHash } from 'crypto';
 import type http from 'http';
+import type { UrlWithParsedQuery } from 'url';
+import url from 'url';
 
+import { Logger } from '@rocket.chat/logger';
 import { Meteor } from 'meteor/meteor';
 import type { StaticFiles } from 'meteor/webapp';
 import { WebApp, WebAppInternals } from 'meteor/webapp';
 import _ from 'underscore';
 
 import { settings } from '../../settings/server';
-import { Logger } from '../../logger/server';
 
 // Taken from 'connect' types
 type NextFunction = (err?: any) => void;
@@ -21,7 +23,7 @@ settings.watch<boolean>(
 	}),
 );
 
-WebApp.rawConnectHandlers.use(function (_req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) {
+WebApp.rawConnectHandlers.use((_req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) => {
 	// XSS Protection for old browsers (IE)
 	res.setHeader('X-XSS-Protection', '1');
 
@@ -77,15 +79,58 @@ WebApp.rawConnectHandlers.use(function (_req: http.IncomingMessage, res: http.Se
 });
 
 const _staticFilesMiddleware = WebAppInternals.staticFilesMiddleware;
+declare module 'meteor/webapp' {
+	// eslint-disable-next-line @typescript-eslint/no-namespace
+	namespace WebApp {
+		function categorizeRequest(
+			req: http.IncomingMessage,
+		): { arch: string; path: string; url: UrlWithParsedQuery } & Record<string, unknown>;
+	}
+}
+
+let cachingVersion = '';
+settings.watch<string>('Troubleshoot_Force_Caching_Version', (value) => {
+	cachingVersion = String(value).trim();
+});
 
 // @ts-expect-error - accessing internal property of webapp
-WebAppInternals._staticFilesMiddleware = function (
+WebAppInternals.staticFilesMiddleware = function (
 	staticFiles: StaticFiles,
-	req: http.IncomingMessage,
-	res: http.ServerResponse,
+	req: http.IncomingMessage & { cookies: Record<string, string> },
+	res: http.ServerResponse & { cookie: (cookie: string, value: string) => void },
 	next: NextFunction,
 ) {
 	res.setHeader('Access-Control-Allow-Origin', '*');
+	const { arch, path, url } = WebApp.categorizeRequest(req);
+
+	if (cachingVersion && req.cookies.cache_version !== cachingVersion) {
+		res.cookie('cache_version', cachingVersion);
+		res.setHeader('Clear-Site-Data', '"cache"');
+	}
+
+	// Prevent meteor_runtime_config.js to load from a different expected hash possibly causing
+	// a cache of the file for the wrong hash and start a client loop due to the mismatch
+	// of the hashes of ui versions which would be checked against a websocket response
+	if (path === '/meteor_runtime_config.js') {
+		const program = WebApp.clientPrograms[arch] as (typeof WebApp.clientPrograms)[string] & {
+			meteorRuntimeConfigHash?: string;
+			meteorRuntimeConfig: string;
+		};
+
+		if (!program?.meteorRuntimeConfigHash) {
+			program.meteorRuntimeConfigHash = createHash('sha1')
+				.update(JSON.stringify(encodeURIComponent(program.meteorRuntimeConfig)))
+				.digest('hex');
+		}
+
+		if (program.meteorRuntimeConfigHash !== url.query.hash) {
+			res.writeHead(404);
+			return res.end();
+		}
+
+		res.setHeader('Cache-Control', 'public, max-age=3600');
+	}
+
 	return _staticFilesMiddleware(staticFiles, req, res, next);
 };
 
@@ -93,7 +138,7 @@ const oldHttpServerListeners = WebApp.httpServer.listeners('request').slice(0);
 
 WebApp.httpServer.removeAllListeners('request');
 
-WebApp.httpServer.addListener('request', function (req, res, ...args) {
+WebApp.httpServer.addListener('request', (req, res, ...args) => {
 	const next = () => {
 		for (const oldListener of oldHttpServerListeners) {
 			oldListener.apply(WebApp.httpServer, [req, res, ...args]);

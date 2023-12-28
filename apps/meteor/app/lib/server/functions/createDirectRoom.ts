@@ -10,7 +10,7 @@ import { Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { settings } from '../../../settings/server';
-import { getDefaultSubscriptionPref } from '../../../utils/server';
+import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
 
 const generateSubscription = (
 	fname: string,
@@ -19,6 +19,7 @@ const generateSubscription = (
 	extra: MatchKeysAndValues<ISubscription>,
 ): MatchKeysAndValues<ISubscription> => ({
 	_id: Random.id(),
+	ts: new Date(),
 	alert: false,
 	unread: 0,
 	userMentions: 0,

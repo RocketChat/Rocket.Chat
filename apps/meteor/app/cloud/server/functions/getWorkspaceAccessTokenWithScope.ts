@@ -1,18 +1,19 @@
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
-import { getRedirectUri } from './getRedirectUri';
-import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
-import { removeWorkspaceRegistrationInfo } from './removeWorkspaceRegistrationInfo';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { settings } from '../../../settings/server';
 import { workspaceScopes } from '../oauthScopes';
-import { SystemLogger } from '../../../../server/lib/logger/system';
+import { getRedirectUri } from './getRedirectUri';
+import { CloudWorkspaceAccessTokenError } from './getWorkspaceAccessToken';
+import { removeWorkspaceRegistrationInfo } from './removeWorkspaceRegistrationInfo';
+import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 
-export async function getWorkspaceAccessTokenWithScope(scope = '') {
-	const { connectToCloud, workspaceRegistered } = await retrieveRegistrationStatus();
+export async function getWorkspaceAccessTokenWithScope(scope = '', throwOnError = false) {
+	const { workspaceRegistered } = await retrieveRegistrationStatus();
 
 	const tokenResponse = { token: '', expiresAt: new Date() };
 
-	if (!connectToCloud || !workspaceRegistered) {
+	if (!workspaceRegistered) {
 		return tokenResponse;
 	}
 
@@ -26,12 +27,11 @@ export async function getWorkspaceAccessTokenWithScope(scope = '') {
 		scope = workspaceScopes.join(' ');
 	}
 
-	const cloudUrl = settings.get<string>('Cloud_Url');
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	const client_secret = settings.get<string>('Cloud_Workspace_Client_Secret');
 	const redirectUri = getRedirectUri();
 
-	let authTokenResult;
+	let payload;
 	try {
 		const body = new URLSearchParams();
 		body.append('client_id', client_id);
@@ -40,34 +40,37 @@ export async function getWorkspaceAccessTokenWithScope(scope = '') {
 		body.append('grant_type', 'client_credentials');
 		body.append('redirect_uri', redirectUri);
 
-		const result = await fetch(`${cloudUrl}/api/oauth/token`, {
+		const cloudUrl = settings.get<string>('Cloud_Url');
+		const response = await fetch(`${cloudUrl}/api/oauth/token`, {
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 			method: 'POST',
 			body,
-		});
-		authTokenResult = await result.json();
-	} catch (err: any) {
-		SystemLogger.error({
-			msg: 'Failed to get Workspace AccessToken from Rocket.Chat Cloud',
-			url: '/api/oauth/token',
-			scope,
-			...(err.response?.data && { cloudError: err.response.data }),
-			err,
+			timeout: 3000,
 		});
 
-		if (err.response?.data?.error === 'oauth_invalid_client_credentials') {
-			SystemLogger.error('Server has been unregistered from cloud');
-			void removeWorkspaceRegistrationInfo();
+		payload = await response.json();
+
+		if (response.status >= 400) {
+			if (payload.error === 'oauth_invalid_client_credentials') {
+				throw new CloudWorkspaceAccessTokenError();
+			}
 		}
 
-		return tokenResponse;
+		const expiresAt = new Date();
+		expiresAt.setSeconds(expiresAt.getSeconds() + payload.expires_in);
+
+		return {
+			token: payload.access_token,
+			expiresAt,
+		};
+	} catch (err: any) {
+		if (err instanceof CloudWorkspaceAccessTokenError) {
+			SystemLogger.error('Server has been unregistered from cloud');
+			void removeWorkspaceRegistrationInfo();
+			if (throwOnError) {
+				throw err;
+			}
+		}
 	}
-
-	const expiresAt = new Date();
-	expiresAt.setSeconds(expiresAt.getSeconds() + authTokenResult.expires_in);
-
-	tokenResponse.expiresAt = expiresAt;
-	tokenResponse.token = authTokenResult.access_token;
-
 	return tokenResponse;
 }

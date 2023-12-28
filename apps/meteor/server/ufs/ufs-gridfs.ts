@@ -1,7 +1,7 @@
+import type { IUpload } from '@rocket.chat/core-typings';
 import { MongoInternals } from 'meteor/mongo';
 import type { ObjectId } from 'mongodb';
 import { GridFSBucket } from 'mongodb';
-import type { IUpload } from '@rocket.chat/core-typings';
 
 import { UploadFS } from './ufs';
 import type { StoreOptions } from './ufs-store';
@@ -75,10 +75,10 @@ export class GridFSStore extends UploadFS.Store {
 				contentType: file.type,
 			});
 			let finished = false;
-			writeStream.on('finish', function () {
+			writeStream.on('finish', () => {
 				finished = true;
 			});
-			writeStream.on('close', function () {
+			writeStream.on('close', () => {
 				if (!finished) {
 					writeStream.emit('finish');
 				}

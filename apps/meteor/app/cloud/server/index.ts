@@ -1,36 +1,17 @@
-import { Meteor } from 'meteor/meteor';
 import { cronJobs } from '@rocket.chat/cron';
+import { Meteor } from 'meteor/meteor';
 
-import { getWorkspaceAccessToken } from './functions/getWorkspaceAccessToken';
+import { SystemLogger } from '../../../server/lib/logger/system';
+import { connectWorkspace } from './functions/connectWorkspace';
+import { CloudWorkspaceAccessTokenEmptyError, getWorkspaceAccessToken } from './functions/getWorkspaceAccessToken';
 import { getWorkspaceAccessTokenWithScope } from './functions/getWorkspaceAccessTokenWithScope';
 import { retrieveRegistrationStatus } from './functions/retrieveRegistrationStatus';
 import { syncWorkspace } from './functions/syncWorkspace';
-import { connectWorkspace } from './functions/connectWorkspace';
-import { settings } from '../../settings/server';
-import { SystemLogger } from '../../../server/lib/logger/system';
 import './methods';
 
 const licenseCronName = 'Cloud Workspace Sync';
 
-Meteor.startup(async function () {
-	// run token/license sync if registered
-	let TroubleshootDisableWorkspaceSync: boolean;
-	settings.watch<boolean>('Troubleshoot_Disable_Workspace_Sync', async (value) => {
-		if (TroubleshootDisableWorkspaceSync === value) {
-			return;
-		}
-		TroubleshootDisableWorkspaceSync = value;
-
-		if (value) {
-			return cronJobs.remove(licenseCronName);
-		}
-
-		setImmediate(() => syncWorkspace());
-		await cronJobs.add(licenseCronName, '0 */12 * * *', async () => {
-			await syncWorkspace();
-		});
-	});
-
+Meteor.startup(async () => {
 	const { workspaceRegistered } = await retrieveRegistrationStatus();
 
 	if (process.env.REG_TOKEN && process.env.REG_TOKEN !== '' && !workspaceRegistered) {
@@ -43,9 +24,36 @@ Meteor.startup(async function () {
 
 			console.log('Successfully registered with token provided by REG_TOKEN!');
 		} catch (e: any) {
-			SystemLogger.error('An error occured registering with token.', e.message);
+			SystemLogger.error('An error occurred registering with token.', e.message);
 		}
 	}
+
+	setImmediate(async () => {
+		try {
+			await syncWorkspace();
+		} catch (e: any) {
+			if (e instanceof CloudWorkspaceAccessTokenEmptyError) {
+				return;
+			}
+			if (e.type && e.type === 'AbortError') {
+				return;
+			}
+			SystemLogger.error('An error occurred syncing workspace.', e.message);
+		}
+	});
+	await cronJobs.add(licenseCronName, '0 */12 * * *', async () => {
+		try {
+			await syncWorkspace();
+		} catch (e: any) {
+			if (e instanceof CloudWorkspaceAccessTokenEmptyError) {
+				return;
+			}
+			if (e.type && e.type === 'AbortError') {
+				return;
+			}
+			SystemLogger.error('An error occurred syncing workspace.', e.message);
+		}
+	});
 });
 
 export { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope };

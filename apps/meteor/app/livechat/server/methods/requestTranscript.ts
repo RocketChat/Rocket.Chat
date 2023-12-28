@@ -1,10 +1,11 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Users } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
-import { Livechat } from '../lib/Livechat';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
+import { Livechat } from '../lib/LivechatTyped';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -15,6 +16,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:requestTranscript'(rid, email, subject) {
+		methodDeprecationLogger.method('livechat:requestTranscript', '7.0.0');
 		check(rid, String);
 		check(email, String);
 
@@ -29,6 +31,12 @@ Meteor.methods<ServerMethods>({
 		const user = await Users.findOneById(userId, {
 			projection: { _id: 1, username: 1, name: 1, utcOffset: 1 },
 		});
+
+		if (!user) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'livechat:requestTranscript',
+			});
+		}
 
 		await Livechat.requestTranscript({ rid, email, subject, user });
 

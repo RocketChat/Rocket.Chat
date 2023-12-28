@@ -1,10 +1,10 @@
 import { isLivechatCustomFieldsProps, isPOSTLivechatCustomFieldParams, isPOSTLivechatCustomFieldsParams } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
-import { findGuest } from '../lib/livechat';
-import { Livechat } from '../../lib/Livechat';
-import { findLivechatCustomFields, findCustomFieldById } from '../lib/customFields';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
+import { Livechat } from '../../lib/LivechatTyped';
+import { findLivechatCustomFields, findCustomFieldById } from '../lib/customFields';
+import { findGuest } from '../lib/livechat';
 
 API.v1.addRoute(
 	'livechat/custom.field',

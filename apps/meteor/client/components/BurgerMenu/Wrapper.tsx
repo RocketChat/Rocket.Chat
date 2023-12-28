@@ -9,8 +9,8 @@ const Wrapper = ({ children }: { children: ReactNode }): ReactElement => (
 		flexDirection='column'
 		alignItems='center'
 		justifyContent='space-between'
-		paddingBlock='x4'
-		paddingInline='x2'
+		paddingBlock={4}
+		paddingInline={2}
 		verticalAlign='middle'
 		children={children}
 		height='x24'

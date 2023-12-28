@@ -1,7 +1,7 @@
 import { BlockContext } from '@rocket.chat/ui-kit';
 import { memo, useCallback } from 'preact/compat';
 
-import { createClassName } from '../../../helpers';
+import { createClassName } from '../../../../helpers/createClassName';
 import { usePerformAction } from '../Block';
 import styles from './styles.scss';
 

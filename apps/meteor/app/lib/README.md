@@ -47,19 +47,6 @@ settingsRegistry.addGroup('Settings_Group', function() {
 * `enableQuery` - Only enable this setting if the correspondent setting has the value specified
 * `alert` - Shows an alert message with the given text
 
-### AccountBox
-
-You can add items to the left upper corner drop menu:
-```javascript
-AccountBox.addItem({
-    name: 'Livechat',
-    icon: 'icon-chat-empty',
-    class: 'livechat-manager',
-    condition: () => {
-        return RocketChat.authz.hasPermission('view-livechat-manager');
-    }
-});
-```
 
 ### Functions
 n/a

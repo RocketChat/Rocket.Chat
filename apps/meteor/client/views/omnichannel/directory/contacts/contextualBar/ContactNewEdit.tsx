@@ -1,6 +1,8 @@
 import type { ILivechatVisitor, Serialized } from '@rocket.chat/core-typings';
-import { Field, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, FieldError, TextInput, ButtonGroup, Button, ContextualbarContent } from '@rocket.chat/fuselage';
+import { CustomFieldsForm } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -8,9 +10,8 @@ import { useForm } from 'react-hook-form';
 import { hasAtLeastOnePermission } from '../../../../../../app/authorization/client';
 import { validateEmail } from '../../../../../../lib/emailValidator';
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../../components/Contextualbar';
-import { CustomFieldsForm } from '../../../../../components/CustomFieldsFormV2';
 import { createToken } from '../../../../../lib/utils/createToken';
-import { useFormsSubscription } from '../../../additionalForms';
+import { ContactManager as ContactManagerForm } from '../../../additionalForms';
 import { FormSkeleton } from '../../components/FormSkeleton';
 import { useCustomFieldsMetadata } from '../../hooks/useCustomFieldsMetadata';
 
@@ -58,13 +59,10 @@ const getInitialValues = (data: ContactNewEditProps['data']): ContactFormData =>
 const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const queryClient = useQueryClient();
 
 	const canViewCustomFields = (): boolean =>
 		hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
-
-	const { useContactManager } = useFormsSubscription();
-
-	const ContactManager = useContactManager?.();
 
 	const [userId, setUserId] = useState('no-agent-selected');
 	const saveContact = useEndpoint('POST', '/v1/omnichannel/contact');
@@ -81,7 +79,7 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 
 	const {
 		register,
-		formState: { errors, isValid, isDirty },
+		formState: { errors, isValid, isDirty, isSubmitting },
 		control,
 		setValue,
 		handleSubmit,
@@ -168,6 +166,7 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 		try {
 			await saveContact(payload);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
+			await queryClient.invalidateQueries({ queryKey: ['current-contacts'] });
 			close();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
@@ -175,42 +174,54 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 	};
 
 	if (isLoadingCustomFields) {
-		return <FormSkeleton />;
+		return (
+			<ContextualbarContent>
+				<FormSkeleton />
+			</ContextualbarContent>
+		);
 	}
 
 	return (
 		<>
 			<ContextualbarScrollableContent is='form' onSubmit={handleSubmit(handleSave)}>
 				<Field>
-					<Field.Label>{t('Name')}*</Field.Label>
-					<Field.Row>
+					<FieldLabel>{t('Name')}*</FieldLabel>
+					<FieldRow>
 						<TextInput {...register('name', { validate: validateName })} error={errors.name?.message} flexGrow={1} />
-					</Field.Row>
-					<Field.Error>{errors.name?.message}</Field.Error>
+					</FieldRow>
+					<FieldError>{errors.name?.message}</FieldError>
 				</Field>
 				<Field>
-					<Field.Label>{t('Email')}</Field.Label>
-					<Field.Row>
+					<FieldLabel>{t('Email')}</FieldLabel>
+					<FieldRow>
 						<TextInput {...register('email', { validate: validateEmailFormat })} error={errors.email?.message} flexGrow={1} />
-					</Field.Row>
-					<Field.Error>{errors.email?.message}</Field.Error>
+					</FieldRow>
+					<FieldError>{errors.email?.message}</FieldError>
 				</Field>
 				<Field>
-					<Field.Label>{t('Phone')}</Field.Label>
-					<Field.Row>
+					<FieldLabel>{t('Phone')}</FieldLabel>
+					<FieldRow>
 						<TextInput {...register('phone')} error={errors.phone?.message} flexGrow={1} />
-					</Field.Row>
-					<Field.Error>{errors.phone?.message}</Field.Error>
+					</FieldRow>
+					<FieldError>{errors.phone?.message}</FieldError>
 				</Field>
 				{canViewCustomFields() && <CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />}
-				{ContactManager && <ContactManager value={userId} handler={handleContactManagerChange} />}
+				<ContactManagerForm value={userId} handler={handleContactManagerChange} />
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button flexGrow={1} onClick={close}>
 						{t('Cancel')}
 					</Button>
-					<Button mie='none' type='submit' onClick={handleSubmit(handleSave)} flexGrow={1} disabled={!isValid || !isDirty} primary>
+					<Button
+						mie='none'
+						type='submit'
+						onClick={handleSubmit(handleSave)}
+						flexGrow={1}
+						loading={isSubmitting}
+						disabled={!isValid || !isDirty}
+						primary
+					>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

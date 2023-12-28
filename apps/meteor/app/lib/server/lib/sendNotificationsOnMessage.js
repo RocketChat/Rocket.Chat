@@ -1,22 +1,16 @@
-import { Meteor } from 'meteor/meteor';
-import moment from 'moment';
 import { Subscriptions, Users } from '@rocket.chat/models';
+import moment from 'moment';
 
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import {
-	callJoinRoom,
-	messageContainsHighlight,
-	parseMessageTextPerUser,
-	replaceMentionedUsernamesWithFullNames,
-} from '../functions/notifications';
+import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { Notification } from '../../../notification-queue/server/NotificationQueue';
+import { settings } from '../../../settings/server';
+import { messageContainsHighlight, parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../functions/notifications';
+import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notifications/desktop';
 import { getEmailData, shouldNotifyEmail } from '../functions/notifications/email';
 import { getPushData, shouldNotifyMobile } from '../functions/notifications/mobile';
-import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notifications/desktop';
-import { Notification } from '../../../notification-queue/server/NotificationQueue';
 import { getMentions } from './notifyUsersOnMessage';
-import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
 let TroubleshootDisableNotifications;
 
@@ -52,12 +46,13 @@ export const sendNotification = async ({
 		subscription.receiver = [
 			await Users.findOneById(subscription.u._id, {
 				projection: {
-					active: 1,
-					emails: 1,
-					language: 1,
-					status: 1,
-					statusConnection: 1,
-					username: 1,
+					'active': 1,
+					'emails': 1,
+					'language': 1,
+					'status': 1,
+					'statusConnection': 1,
+					'username': 1,
+					'settings.preferences.enableMobileRinging': 1,
 				},
 			}),
 		];
@@ -72,6 +67,7 @@ export const sendNotification = async ({
 	}
 
 	const isThread = !!message.tmid && !message.tshow;
+	const isVideoConf = message.t === 'videoconf';
 
 	notificationMessage = await parseMessageTextPerUser(notificationMessage, message, receiver);
 
@@ -116,6 +112,9 @@ export const sendNotification = async ({
 			hasReplyToThread,
 			roomType,
 			isThread,
+			isVideoConf,
+			userPreferences: receiver.settings?.preferences,
+			roomUids: room.uids,
 		})
 	) {
 		queueItems.push({
@@ -193,6 +192,7 @@ const project = {
 		'receiver.status': 1,
 		'receiver.statusConnection': 1,
 		'receiver.username': 1,
+		'receiver.settings.preferences.enableMobileRinging': 1,
 	},
 };
 
@@ -345,50 +345,7 @@ export async function sendAllNotifications(message, room) {
 		return message;
 	}
 
-	const { sender, hasMentionToAll, hasMentionToHere, notificationMessage, mentionIds, mentionIdsWithoutGroups } =
-		await sendMessageNotifications(message, room);
-
-	// on public channels, if a mentioned user is not member of the channel yet, he will first join the channel and then be notified based on his preferences.
-	if (room.t === 'c') {
-		// get subscriptions from users already in room (to not send them a notification)
-		const mentions = [...mentionIdsWithoutGroups];
-		const cursor = Subscriptions.findByRoomIdAndUserIds(room._id, mentionIdsWithoutGroups, {
-			projection: { 'u._id': 1 },
-		});
-
-		for await (const subscription of cursor) {
-			const index = mentions.indexOf(subscription.u._id);
-			if (index !== -1) {
-				mentions.splice(index, 1);
-			}
-		}
-
-		const users = await Promise.all(
-			mentions.map(async (userId) => {
-				await callJoinRoom(userId, room._id);
-
-				return userId;
-			}),
-		).catch((error) => {
-			throw new Meteor.Error(error);
-		});
-
-		const subscriptions = await Subscriptions.findByRoomIdAndUserIds(room._id, users).toArray();
-		users.forEach((userId) => {
-			const subscription = subscriptions.find((subscription) => subscription.u._id === userId);
-
-			void sendNotification({
-				subscription,
-				sender,
-				hasMentionToAll,
-				hasMentionToHere,
-				message,
-				notificationMessage,
-				room,
-				mentionIds,
-			});
-		});
-	}
+	await sendMessageNotifications(message, room);
 
 	return message;
 }

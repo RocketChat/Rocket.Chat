@@ -1,28 +1,31 @@
-import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
-import { Meteor } from 'meteor/meteor';
-import { Settings, Users } from '@rocket.chat/models';
 import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
-import type { IUser, IMessage } from '@rocket.chat/core-typings';
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
+import { AppInstallationSource } from '@rocket.chat/apps-engine/server/storage';
+import type { IUser, IMessage } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
+import { Settings, Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { Meteor } from 'meteor/meteor';
 
-import { getUploadFormData } from '../../../../app/api/server/lib/getUploadFormData';
-import { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope } from '../../../../app/cloud/server';
-import { settings } from '../../../../app/settings/server';
-import { formatAppInstanceForRest } from '../../../lib/misc/formatAppInstanceForRest';
-import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
-import { apiDeprecationLogger } from '../../../../app/lib/server/lib/deprecationWarningLogger';
-import { notifyAppInstall } from '../marketplace/appInstall';
-import { canEnableApp } from '../../../app/license/server/license';
-import { appsCountHandler } from './endpoints/appsCountHandler';
-import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
-import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
 import type { APIClass } from '../../../../app/api/server';
 import { API } from '../../../../app/api/server';
-import { Info } from '../../../../app/utils/server';
+import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
+import { getUploadFormData } from '../../../../app/api/server/lib/getUploadFormData';
+import { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope } from '../../../../app/cloud/server';
+import { apiDeprecationLogger } from '../../../../app/lib/server/lib/deprecationWarningLogger';
+import { settings } from '../../../../app/settings/server';
+import { Info } from '../../../../app/utils/rocketchat.info';
+import { i18n } from '../../../../server/lib/i18n';
+import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
+import { canEnableApp } from '../../../app/license/server/canEnableApp';
+import { formatAppInstanceForRest } from '../../../lib/misc/formatAppInstanceForRest';
+import { appEnableCheck } from '../marketplace/appEnableCheck';
+import { notifyAppInstall } from '../marketplace/appInstall';
 import type { AppServerOrchestrator } from '../orchestrator';
 import { Apps } from '../orchestrator';
-import { i18n } from '../../../../server/lib/i18n';
+import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
+import { appsCountHandler } from './endpoints/appsCountHandler';
 
 const rocketChatVersion = Info.version;
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
@@ -162,8 +165,7 @@ export class AppsRestApi {
 						}
 						result = await request.json();
 					} catch (e: any) {
-						orchestrator.getRocketChatLogger().error('Error getting the categories from the Marketplace:', e.response.data);
-						return API.v1.internalError();
+						return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
 					}
 
 					return API.v1.success(result);
@@ -223,9 +225,7 @@ export class AppsRestApi {
 
 					// Gets the Apps from the marketplace
 					if ('marketplace' in this.queryParams && this.queryParams.marketplace) {
-						apiDeprecationLogger.warn(
-							'This endpoint has been deprecated and will be removed in the future. Use /apps/marketplace to get the apps list.',
-						);
+						apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, 'Use /apps/marketplace to get the apps list.');
 
 						const headers = getDefaultHeaders();
 						const token = await getWorkspaceAccessToken();
@@ -249,9 +249,7 @@ export class AppsRestApi {
 					}
 
 					if ('categories' in this.queryParams && this.queryParams.categories) {
-						apiDeprecationLogger.warn(
-							'This endpoint has been deprecated and will be removed in the future. Use /apps/categories to get the categories list.',
-						);
+						apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, 'Use /apps/categories to get the categories list.');
 						const headers = getDefaultHeaders();
 						const token = await getWorkspaceAccessToken();
 						if (token) {
@@ -280,9 +278,7 @@ export class AppsRestApi {
 						this.queryParams.buildExternalUrl &&
 						this.queryParams.appId
 					) {
-						apiDeprecationLogger.warn(
-							'This endpoint has been deprecated and will be removed in the future. Use /apps/buildExternalUrl to get the modal URLs.',
-						);
+						apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, 'Use /apps/buildExternalUrl to get the modal URLs.');
 						const workspaceId = settings.get('Cloud_Workspace_Id');
 
 						if (!this.queryParams.purchaseType || !purchaseTypes.has(this.queryParams.purchaseType)) {
@@ -304,10 +300,8 @@ export class AppsRestApi {
 							}?workspaceId=${workspaceId}&token=${token.token}&seats=${seats}`,
 						});
 					}
+					apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, 'Use /apps/installed to get the installed apps list.');
 
-					apiDeprecationLogger.warn(
-						'This endpoint has been deprecated and will be removed in the future. Use /apps/installed to get the installed apps list.',
-					);
 					const apps = manager.get().map(formatAppInstanceForRest);
 
 					return API.v1.success({ apps });
@@ -389,6 +383,11 @@ export class AppsRestApi {
 
 					if (!buff) {
 						return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
+					}
+
+					// Used mostly in Cloud hosting for security reasons
+					if (!marketplaceInfo && orchestrator.shouldDisablePrivateAppInstallation()) {
+						return API.v1.internalError('private_app_install_disabled');
 					}
 
 					const user = orchestrator
@@ -674,6 +673,7 @@ export class AppsRestApi {
 				async post() {
 					let buff;
 					let permissionsGranted;
+					let isPrivateAppUpload = false;
 
 					if (this.bodyParams.url) {
 						const response = await fetch(this.bodyParams.url);
@@ -716,6 +716,8 @@ export class AppsRestApi {
 							return API.v1.internalError();
 						}
 					} else {
+						isPrivateAppUpload = true;
+
 						const app = await getUploadFormData(
 							{
 								request: this.request,
@@ -738,6 +740,10 @@ export class AppsRestApi {
 
 					if (!buff) {
 						return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
+					}
+
+					if (isPrivateAppUpload && orchestrator.shouldDisablePrivateAppInstallation()) {
+						return API.v1.internalError('private_app_install_disabled');
 					}
 
 					const aff = await manager.update(buff, permissionsGranted);
@@ -807,7 +813,7 @@ export class AppsRestApi {
 					let result;
 					let statusCode;
 					try {
-						const request = await fetch(`${baseUrl}/v1/apps/${this.urlParams.id}/versions`, { headers });
+						const request = await fetch(`${baseUrl}/v1/apps/${this.urlParams.id}`, { headers });
 						statusCode = request.status;
 						result = await request.json();
 
@@ -849,6 +855,7 @@ export class AppsRestApi {
 									user_name: `@${this.user.username}`,
 									message: message || '',
 									learn_more: learnMore,
+									interpolation: { escapeValue: false },
 								}),
 							};
 						};
@@ -1128,24 +1135,46 @@ export class AppsRestApi {
 					return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
 				},
 				async post() {
-					if (!this.bodyParams.status || typeof this.bodyParams.status !== 'string') {
+					const { id: appId } = this.urlParams;
+					const { status } = this.bodyParams;
+
+					if (!status || typeof status !== 'string') {
 						return API.v1.failure('Invalid status provided, it must be "status" field and a string.');
 					}
 
-					const prl = manager.getOneById(this.urlParams.id);
-
+					const prl = manager.getOneById(appId);
 					if (!prl) {
-						return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
+						return API.v1.notFound(`No App found by the id of: ${appId}`);
 					}
 
-					if (AppStatusUtils.isEnabled(this.bodyParams.status)) {
-						if (!(await canEnableApp(prl.getStorageItem()))) {
-							return API.v1.failure('Enabled apps have been maxed out');
+					const storedApp = prl.getStorageItem();
+					const { installationSource, marketplaceInfo } = storedApp;
+
+					if (!License.hasValidLicense() && installationSource === AppInstallationSource.MARKETPLACE) {
+						try {
+							const baseUrl = orchestrator.getMarketplaceUrl() as string;
+							const headers = getDefaultHeaders();
+							const { version } = prl.getInfo();
+
+							await appEnableCheck({
+								baseUrl,
+								headers,
+								appId,
+								version,
+								marketplaceInfo,
+								status,
+								logger: orchestrator.getRocketChatLogger(),
+							});
+						} catch (error: any) {
+							return API.v1.failure(error.message);
 						}
 					}
 
-					const result = await manager.changeStatus(prl.getID(), this.bodyParams.status);
+					if (AppStatusUtils.isEnabled(status) && !(await canEnableApp(storedApp))) {
+						return API.v1.failure('Enabled apps have been maxed out');
+					}
 
+					const result = await manager.changeStatus(prl.getID(), status);
 					return API.v1.success({ status: result.getStatus() });
 				},
 			},

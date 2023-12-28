@@ -1,206 +1,241 @@
 import type { ILivechatAgent, ILivechatDepartment, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
-import { Field, TextInput, Button, Margins, Box, MultiSelect, Icon, Select } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useRoute, useSetting, useMethod, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import type { FC, ReactElement } from 'react';
-import React, { useMemo, useRef, useState } from 'react';
+import {
+	Field,
+	FieldLabel,
+	FieldGroup,
+	FieldRow,
+	TextInput,
+	Button,
+	Box,
+	MultiSelect,
+	Icon,
+	Select,
+	ContextualbarFooter,
+	ButtonGroup,
+} from '@rocket.chat/fuselage';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useSetting, useMethod, useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
+import React, { useMemo } from 'react';
+import { useForm, Controller, FormProvider } from 'react-hook-form';
 
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
-import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
+import {
+	Contextualbar,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarHeader,
+	ContextualbarScrollableContent,
+} from '../../../components/Contextualbar';
 import UserInfo from '../../../components/UserInfo';
-import { useForm } from '../../../hooks/useForm';
-import { useFormsSubscription } from '../additionalForms';
-
-// TODO: TYPE:
-// Department
-
-type dataType = {
-	user: Pick<ILivechatAgent, '_id' | 'username' | 'name' | 'status' | 'statusLivechat' | 'emails' | 'livechat'>;
-};
+import { MaxChatsPerAgent } from '../additionalForms';
 
 type AgentEditProps = {
-	data: dataType;
-	userDepartments: { departments: Pick<ILivechatDepartmentAgents, 'departmentId'>[] };
-	availableDepartments: { departments: Pick<ILivechatDepartment, '_id' | 'name' | 'archived'>[] };
-	uid: string;
-	reset: () => void;
+	agentData: Pick<ILivechatAgent, '_id' | 'username' | 'name' | 'status' | 'statusLivechat' | 'emails' | 'livechat'>;
+	userDepartments: Pick<ILivechatDepartmentAgents, 'departmentId'>[];
+	availableDepartments: Pick<ILivechatDepartment, '_id' | 'name' | 'archived'>[];
 };
 
-const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartments, uid, reset, ...props }) => {
+const AgentEdit = ({ agentData, userDepartments, availableDepartments }: AgentEditProps) => {
 	const t = useTranslation();
-	const agentsRoute = useRoute('omnichannel-agents');
-	const [maxChatUnsaved, setMaxChatUnsaved] = useState();
+	const router = useRouter();
+	const queryClient = useQueryClient();
+
 	const voipEnabled = useSetting('VoIP_Enabled');
+	const dispatchToastMessage = useToastMessageDispatch();
 
-	const { user } = data || { user: {} };
-	const { name, username, statusLivechat } = user;
+	const { name, username, livechat, statusLivechat } = agentData;
 
-	const email = getUserEmailAddress(user);
+	const email = getUserEmailAddress(agentData);
 
-	const options: [string, string][] = useMemo(() => {
+	const departmentsOptions: SelectOption[] = useMemo(() => {
 		const archivedDepartment = (name: string, archived?: boolean) => (archived ? `${name} [${t('Archived')}]` : name);
 
-		return availableDepartments?.departments
-			? availableDepartments.departments.map(({ _id, name, archived }) =>
-					name ? [_id, archivedDepartment(name, archived)] : [_id, archivedDepartment(_id, archived)],
-			  )
-			: [];
-	}, [availableDepartments.departments, t]);
+		return (
+			availableDepartments.map(({ _id, name, archived }) =>
+				name ? [_id, archivedDepartment(name, archived)] : [_id, archivedDepartment(_id, archived)],
+			) || []
+		);
+	}, [availableDepartments, t]);
 
-	const initialDepartmentValue = useMemo(
-		() => (userDepartments.departments ? userDepartments.departments.map(({ departmentId }) => departmentId) : []),
-		[userDepartments],
+	const statusOptions: SelectOption[] = useMemo(
+		() => [
+			['available', t('Available')],
+			['not-available', t('Not_Available')],
+		],
+		[t],
 	);
-	const eeForms = useFormsSubscription();
 
-	const saveRef = useRef({
-		values: {},
-		hasUnsavedChanges: false,
-		reset: () => undefined,
-		commit: () => undefined,
+	const initialDepartmentValue = useMemo(() => userDepartments.map(({ departmentId }) => departmentId) || [], [userDepartments]);
+
+	const methods = useForm({
+		values: {
+			name,
+			username,
+			email,
+			departments: initialDepartmentValue,
+			status: statusLivechat,
+			maxNumberSimultaneousChat: livechat?.maxNumberSimultaneousChat || 0,
+			voipExtension: '',
+		},
 	});
 
-	const { reset: resetMaxChats, commit: commitMaxChats } = saveRef.current;
-
-	const onChangeMaxChats = useMutableCallback(({ hasUnsavedChanges, ...value }) => {
-		saveRef.current = value;
-
-		if (hasUnsavedChanges !== maxChatUnsaved) {
-			setMaxChatUnsaved(hasUnsavedChanges);
-		}
-	});
-
-	const { useMaxChatsPerAgent = (): ReactElement | null => null } = eeForms as any; // TODO: Find out how to use ts with eeForms
-
-	const { values, handlers, hasUnsavedChanges, commit } = useForm({
-		departments: initialDepartmentValue,
-		status: statusLivechat,
-		maxChats: 0,
-		voipExtension: '',
-	});
-
-	const { handleDepartments, handleStatus, handleVoipExtension } = handlers;
-	const { departments, status, voipExtension } = values as {
-		departments: string[];
-		status: ILivechatAgent['statusLivechat'];
-		voipExtension: string;
-	};
-
-	const MaxChats = useMaxChatsPerAgent();
+	const {
+		control,
+		handleSubmit,
+		reset,
+		formState: { isDirty },
+	} = methods;
 
 	const saveAgentInfo = useMethod('livechat:saveAgentInfo');
 	const saveAgentStatus = useEndpoint('POST', '/v1/livechat/agent.status');
 
-	const dispatchToastMessage = useToastMessageDispatch();
-
-	const handleReset = useMutableCallback(() => {
-		reset();
-		resetMaxChats();
-	});
-
-	const handleSave = useMutableCallback(async () => {
+	const handleSave = useMutableCallback(async ({ status, departments, ...data }) => {
 		try {
-			await saveAgentInfo(uid, saveRef.current.values, departments);
-			await saveAgentStatus({ status, agentId: uid });
+			await saveAgentStatus({ agentId: agentData._id, status });
+			await saveAgentInfo(agentData._id, data, departments);
 			dispatchToastMessage({ type: 'success', message: t('Success') });
-			agentsRoute.push({});
-			reset();
+			router.navigate('/omnichannel/agents');
+			queryClient.invalidateQueries(['livechat-agents']);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-		commit();
-		commitMaxChats();
 	});
 
+	const formId = useUniqueId();
+	const nameField = useUniqueId();
+	const usernameField = useUniqueId();
+	const emailField = useUniqueId();
+	const departmentsField = useUniqueId();
+	const statusField = useUniqueId();
+	const voipExtensionField = useUniqueId();
+
 	return (
-		<ContextualbarScrollableContent is='form' {...props}>
-			{username && (
-				<Box alignSelf='center'>
-					<UserInfo.Avatar data-qa='AgentEdit-Avatar' username={username} />
-				</Box>
-			)}
-			<Field>
-				<Field.Label>{t('Name')}</Field.Label>
-				<Field.Row>
-					<TextInput data-qa='AgentEditTextInput-Name' value={name} disabled />
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Label>{t('Username')}</Field.Label>
-				<Field.Row>
-					<TextInput data-qa='AgentEditTextInput-Username' value={username} disabled addon={<Icon name='at' size='x20' />} />
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Label>{t('Email')}</Field.Label>
-				<Field.Row>
-					<TextInput data-qa='AgentEditTextInput-Email' value={email} disabled addon={<Icon name='mail' size='x20' />} />
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Label>{t('Departments')}</Field.Label>
-				<Field.Row>
-					<MultiSelect
-						data-qa='AgentEditTextInput-Departaments'
-						options={options}
-						value={departments}
-						placeholder={t('Select_an_option')}
-						onChange={handleDepartments}
-					/>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Label>{t('Status')}</Field.Label>
-				<Field.Row>
-					<Select
-						data-qa='AgentEditTextInput-Status'
-						options={[
-							['available', t('Available')],
-							['not-available', t('Not_Available')],
-						]}
-						value={status}
-						placeholder={t('Select_an_option')}
-						onChange={handleStatus}
-					/>
-				</Field.Row>
-			</Field>
-
-			{MaxChats && <MaxChats data={user} onChange={onChangeMaxChats} />}
-
-			{voipEnabled && (
-				<Field>
-					<Field.Label>{t('VoIP_Extension')}</Field.Label>
-					<Field.Row>
-						<TextInput data-qa='AgentEditTextInput-VoIP_Extension' value={voipExtension as string} onChange={handleVoipExtension} />
-					</Field.Row>
-				</Field>
-			)}
-
-			<Field.Row>
-				<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
-					<Margins inlineEnd='x4'>
-						<Button
-							data-qa='AgentEditButtonReset'
-							flexGrow={1}
-							type='reset'
-							disabled={!hasUnsavedChanges && !maxChatUnsaved}
-							onClick={handleReset}
-						>
-							{t('Reset')}
-						</Button>
-						<Button
-							data-qa='AgentEditButtonSave'
-							mie='none'
-							flexGrow={1}
-							disabled={!hasUnsavedChanges && !maxChatUnsaved}
-							onClick={handleSave}
-						>
-							{t('Save')}
-						</Button>
-					</Margins>
-				</Box>
-			</Field.Row>
-		</ContextualbarScrollableContent>
+		<Contextualbar data-qa-id='agent-edit-contextual-bar'>
+			<ContextualbarHeader>
+				<ContextualbarTitle>{t('Edit_User')}</ContextualbarTitle>
+				<ContextualbarClose onClick={() => router.navigate('/omnichannel/agents')} />
+			</ContextualbarHeader>
+			<ContextualbarScrollableContent>
+				<FormProvider {...methods}>
+					<form id={formId} onSubmit={handleSubmit(handleSave)}>
+						{username && (
+							<Box display='flex' flexDirection='column' alignItems='center'>
+								<UserInfo.Avatar data-qa-id='agent-edit-avatar' username={username} />
+							</Box>
+						)}
+						<FieldGroup>
+							<Field>
+								<FieldLabel htmlFor={nameField}>{t('Name')}</FieldLabel>
+								<FieldRow>
+									<Controller
+										name='name'
+										control={control}
+										render={({ field }) => <TextInput id={nameField} data-qa-id='agent-edit-name' {...field} readOnly />}
+									/>
+								</FieldRow>
+							</Field>
+							<Field>
+								<FieldLabel htmlFor={usernameField}>{t('Username')}</FieldLabel>
+								<FieldRow>
+									<Controller
+										name='username'
+										control={control}
+										render={({ field }) => (
+											<TextInput
+												id={usernameField}
+												data-qa-id='agent-edit-username'
+												{...field}
+												readOnly
+												addon={<Icon name='at' size='x20' />}
+											/>
+										)}
+									/>
+								</FieldRow>
+							</Field>
+							<Field>
+								<FieldLabel htmlFor={emailField}>{t('Email')}</FieldLabel>
+								<FieldRow>
+									<Controller
+										name='email'
+										control={control}
+										render={({ field }) => (
+											<TextInput
+												id={emailField}
+												data-qa-id='agent-edit-email'
+												{...field}
+												readOnly
+												addon={<Icon name='mail' size='x20' />}
+											/>
+										)}
+									/>
+								</FieldRow>
+							</Field>
+							<Field>
+								<FieldLabel htmlFor={departmentsField}>{t('Departments')}</FieldLabel>
+								<FieldRow>
+									<Controller
+										name='departments'
+										control={control}
+										render={({ field }) => (
+											<MultiSelect
+												id={departmentsField}
+												data-qa-id='agent-edit-departments'
+												options={departmentsOptions}
+												{...field}
+												placeholder={t('Select_an_option')}
+											/>
+										)}
+									/>
+								</FieldRow>
+							</Field>
+							<Field>
+								<FieldLabel htmlFor={statusField}>{t('Status')}</FieldLabel>
+								<FieldRow>
+									<Controller
+										name='status'
+										control={control}
+										render={({ field }) => (
+											<Select
+												id={statusField}
+												data-qa-id='agent-edit-status'
+												{...field}
+												options={statusOptions}
+												placeholder={t('Select_an_option')}
+											/>
+										)}
+									/>
+								</FieldRow>
+							</Field>
+							{MaxChatsPerAgent && <MaxChatsPerAgent />}
+							{voipEnabled && (
+								<Field>
+									<FieldLabel htmlFor={voipExtensionField}>{t('VoIP_Extension')}</FieldLabel>
+									<FieldRow>
+										<Controller
+											name='voipExtension'
+											control={control}
+											render={({ field }) => <TextInput id={voipExtensionField} {...field} data-qa-id='agent-edit-voip-extension' />}
+										/>
+									</FieldRow>
+								</Field>
+							)}
+						</FieldGroup>
+					</form>
+				</FormProvider>
+			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
+				<ButtonGroup stretch>
+					<Button data-qa-id='agent-edit-reset' type='reset' disabled={!isDirty} onClick={() => reset()}>
+						{t('Reset')}
+					</Button>
+					<Button form={formId} primary type='submit' data-qa-id='agent-edit-save' disabled={!isDirty}>
+						{t('Save')}
+					</Button>
+				</ButtonGroup>
+			</ContextualbarFooter>
+		</Contextualbar>
 	);
 };
 

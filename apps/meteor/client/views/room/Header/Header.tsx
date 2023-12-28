@@ -1,15 +1,16 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isVoipRoom } from '@rocket.chat/core-typings';
-import { Header as TemplateHeader } from '@rocket.chat/ui-client';
+import { HeaderToolbox } from '@rocket.chat/ui-client';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { memo, useMemo } from 'react';
+import React, { lazy, memo, useMemo } from 'react';
 
 import BurgerMenu from '../../../components/BurgerMenu';
-import DirectRoomHeader from './DirectRoomHeader';
-import OmnichannelRoomHeader from './Omnichannel/OmnichannelRoomHeader';
-import VoipRoomHeader from './Omnichannel/VoipRoomHeader';
-import RoomHeader from './RoomHeader';
+
+const DirectRoomHeader = lazy(() => import('./DirectRoomHeader'));
+const OmnichannelRoomHeader = lazy(() => import('./Omnichannel/OmnichannelRoomHeader'));
+const VoipRoomHeader = lazy(() => import('./Omnichannel/VoipRoomHeader'));
+const RoomHeader = lazy(() => import('./RoomHeader'));
 
 type HeaderProps<T> = {
 	room: T;
@@ -21,9 +22,9 @@ const Header = ({ room }: HeaderProps<IRoom>): ReactElement | null => {
 	const slots = useMemo(
 		() => ({
 			start: isMobile && (
-				<TemplateHeader.ToolBox>
+				<HeaderToolbox>
 					<BurgerMenu />
-				</TemplateHeader.ToolBox>
+				</HeaderToolbox>
 			),
 		}),
 		[isMobile],

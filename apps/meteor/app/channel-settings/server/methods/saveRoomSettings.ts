@@ -1,26 +1,26 @@
-import { Meteor } from 'meteor/meteor';
-import { Match } from 'meteor/check';
+import { Team } from '@rocket.chat/core-services';
 import type { IRoom, IRoomWithRetentionPolicy, IUser, MessageTypesValues } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
-import { Team } from '@rocket.chat/core-services';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Rooms, Users } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Match } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
-import { setRoomAvatar } from '../../../lib/server/functions/setRoomAvatar';
+import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
+import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { saveRoomName } from '../functions/saveRoomName';
-import { saveRoomTopic } from '../functions/saveRoomTopic';
+import { setRoomAvatar } from '../../../lib/server/functions/setRoomAvatar';
+import { saveReactWhenReadOnly } from '../functions/saveReactWhenReadOnly';
 import { saveRoomAnnouncement } from '../functions/saveRoomAnnouncement';
 import { saveRoomCustomFields } from '../functions/saveRoomCustomFields';
 import { saveRoomDescription } from '../functions/saveRoomDescription';
-import { saveRoomType } from '../functions/saveRoomType';
-import { saveRoomReadOnly } from '../functions/saveRoomReadOnly';
-import { saveReactWhenReadOnly } from '../functions/saveReactWhenReadOnly';
-import { saveRoomSystemMessages } from '../functions/saveRoomSystemMessages';
 import { saveRoomEncrypted } from '../functions/saveRoomEncrypted';
+import { saveRoomName } from '../functions/saveRoomName';
+import { saveRoomReadOnly } from '../functions/saveRoomReadOnly';
+import { saveRoomSystemMessages } from '../functions/saveRoomSystemMessages';
+import { saveRoomTopic } from '../functions/saveRoomTopic';
+import { saveRoomType } from '../functions/saveRoomType';
 import { saveStreamingOptions } from '../functions/saveStreamingOptions';
-import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
-import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
 
 type RoomSettings = {
 	roomAvatar: string;

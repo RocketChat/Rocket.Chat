@@ -16,12 +16,17 @@ export class OmnichannelDepartments {
 		return this.page.locator('[placeholder="Search"]');
 	}
 
-	get btnNew() {
-		return this.page.locator('button.rcx-button >> text="New"');
+	async search(text: string) {
+		await this.inputSearch.fill(text);
+		await this.page.waitForTimeout(500);
+	}
+
+	headingButtonNew(name: string) {
+		return this.page.locator(`role=main >> role=button[name="${name}"]`).first();
 	}
 
 	get btnEnabled() {
-		return this.page.locator('[data-qa="DepartmentEditToggle-Enabled"] span label');
+		return this.page.locator('label >> text="Enabled"');
 	}
 
 	get inputName() {
@@ -33,7 +38,7 @@ export class OmnichannelDepartments {
 	}
 
 	get toggleRequestTags() {
-		return this.page.locator('[data-qa="DiscussionToggle-RequestTagBeforeCLosingChat"] span label');
+		return this.page.locator('label >> text="Request tag(s) before closing conversation"');
 	}
 
 	get inputTags() {
@@ -57,11 +62,11 @@ export class OmnichannelDepartments {
 	}
 
 	get btnSave() {
-		return this.page.locator('button.rcx-button--primary.rcx-button >> text="Save"');
+		return this.page.locator('role=button[name="Save"]');
 	}
 
 	get btnBack() {
-		return this.page.locator('button.rcx-button >> text=" Back"');
+		return this.page.locator('role=button[name="Back"]');
 	}
 
 	get allDepartmentsTab() {
@@ -105,11 +110,19 @@ export class OmnichannelDepartments {
 	}
 
 	get inputModalConfirmDelete() {
-		return this.page.locator('#modal-root .rcx-modal input');
+		return this.modalConfirmDelete.locator('input[name="confirmDepartmentName"]');
+	}
+
+	get modalConfirmDelete() {
+		return this.page.locator('[data-qa-id="delete-department-modal"]');
 	}
 
 	get btnModalConfirmDelete() {
-		return this.page.locator('#modal-root .rcx-modal .rcx-modal__footer .rcx-button--danger');
+		return this.modalConfirmDelete.locator('role=button[name="Delete"]');
+	}
+
+	get btnModalCancelDelete() {
+		return this.modalConfirmDelete.locator('role=button[name="Cancel"]');
 	}
 
 	get upgradeDepartmentsModal() {

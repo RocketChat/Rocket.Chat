@@ -4,11 +4,9 @@ import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { settings } from '../../../../app/settings/client';
-import { generateTriggerId } from '../../../../app/ui-message/client/ActionManager';
 import { slashCommands } from '../../../../app/utils/client';
 import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 import { t } from '../../../../app/utils/lib/i18n';
-import { call } from '../../utils/call';
 import type { ChatAPI } from '../ChatAPI';
 
 const parse = (msg: string): { command: string; params: string } | { command: SlashCommand; params: string } | undefined => {
@@ -28,13 +26,13 @@ const parse = (msg: string): { command: string; params: string } | { command: Sl
 	return { command, params };
 };
 
-const warnUnrecognizedSlashCommand = async (chat: ChatAPI, command: string): Promise<void> => {
-	console.error(t('No_such_command', { command: escapeHTML(command) }));
+const warnUnrecognizedSlashCommand = async (chat: ChatAPI, message: string): Promise<void> => {
+	console.error(message);
 
 	await chat.data.pushEphemeralMessage({
 		_id: Random.id(),
 		ts: new Date(),
-		msg: t('No_such_command', { command: escapeHTML(command) }),
+		msg: message,
 		u: {
 			_id: 'rocket.cat',
 			username: 'rocket.cat',
@@ -56,7 +54,7 @@ export const processSlashCommand = async (chat: ChatAPI, message: IMessage): Pro
 
 	if (typeof command === 'string') {
 		if (!settings.get('Message_AllowUnrecognizedSlashCommand')) {
-			await warnUnrecognizedSlashCommand(chat, command);
+			await warnUnrecognizedSlashCommand(chat, t('No_such_command', { command: escapeHTML(command) }));
 			return true;
 		}
 
@@ -65,8 +63,9 @@ export const processSlashCommand = async (chat: ChatAPI, message: IMessage): Pro
 
 	const { permission, clientOnly, callback: handleOnClient, result: handleResult, appId, command: commandName } = command;
 
-	if (permission && !hasAtLeastOnePermission(permission)) {
-		return false;
+	if (permission && !hasAtLeastOnePermission(permission, message.rid)) {
+		await warnUnrecognizedSlashCommand(chat, t('You_do_not_have_permission_to_execute_this_command', { command: escapeHTML(commandName) }));
+		return true;
 	}
 
 	if (clientOnly && chat.uid) {
@@ -78,7 +77,7 @@ export const processSlashCommand = async (chat: ChatAPI, message: IMessage): Pro
 		params: [{ eventName: 'slashCommandsStats', timestamp: Date.now(), command: commandName }],
 	});
 
-	const triggerId = generateTriggerId(appId);
+	const triggerId = chat.ActionManager.generateTriggerId(appId);
 
 	const data = {
 		cmd: commandName,
@@ -88,10 +87,20 @@ export const processSlashCommand = async (chat: ChatAPI, message: IMessage): Pro
 	} as const;
 
 	try {
-		const result = await call('slashCommand', { cmd: commandName, params, msg: message, triggerId });
+		if (appId) {
+			chat.ActionManager.notifyBusy();
+		}
+
+		const result = await sdk.call('slashCommand', { cmd: commandName, params, msg: message, triggerId });
+
 		handleResult?.(undefined, result, data);
 	} catch (error: unknown) {
+		await warnUnrecognizedSlashCommand(chat, t('Something_went_wrong_while_executing_command', { command: commandName }));
 		handleResult?.(error, undefined, data);
+	}
+
+	if (appId) {
+		chat.ActionManager.notifyIdle();
 	}
 
 	return true;

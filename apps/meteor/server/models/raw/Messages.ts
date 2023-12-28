@@ -6,9 +6,12 @@ import type {
 	MessageTypesValues,
 	RocketChatRecordDeleted,
 	MessageAttachment,
+	IMessageWithPendingFileImport,
 } from '@rocket.chat/core-typings';
 import type { FindPaginated, IMessagesModel } from '@rocket.chat/model-typings';
+import { Rooms } from '@rocket.chat/models';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {
 	AggregationCursor,
 	Collection,
@@ -24,14 +27,13 @@ import type {
 	UpdateResult,
 	Document,
 	UpdateFilter,
+	ModifyResult,
 } from 'mongodb';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { Rooms } from '@rocket.chat/models';
 
-import { BaseRaw } from './BaseRaw';
+import { otrSystemMessages } from '../../../app/otr/lib/constants';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { escapeExternalFederationEventId } from '../../services/federation/infrastructure/rocket-chat/adapters/federation-id-escape-helper';
-import { otrSystemMessages } from '../../../app/otr/lib/constants';
+import { BaseRaw } from './BaseRaw';
 
 type DeepWritable<T> = T extends (...args: any) => any
 	? T
@@ -76,6 +78,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			{ key: { 'navigation.token': 1 }, sparse: true },
 
 			{ key: { 'federation.eventId': 1 }, sparse: true },
+			{ key: { t: 1 }, sparse: true },
 		];
 	}
 
@@ -151,15 +154,43 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		start,
 		end,
 		departmentId,
+		onlyCount,
+		options,
+	}: {
+		start: Date;
+		end: Date;
+		departmentId?: ILivechatDepartment['_id'];
+		onlyCount: true;
+		options?: PaginatedRequest;
+	}): AggregationCursor<{ total: number }>;
+
+	findAllNumberOfTransferredRooms({
+		start,
+		end,
+		departmentId,
+		onlyCount,
+		options,
+	}: {
+		start: Date;
+		end: Date;
+		departmentId?: ILivechatDepartment['_id'];
+		onlyCount?: false;
+		options?: PaginatedRequest;
+	}): AggregationCursor<{ _id: string | null; numberOfTransferredRooms: number }>;
+
+	findAllNumberOfTransferredRooms({
+		start,
+		end,
+		departmentId,
 		onlyCount = false,
 		options = {},
 	}: {
-		start: string;
-		end: string;
-		departmentId: ILivechatDepartment['_id'];
-		onlyCount: boolean;
-		options: PaginatedRequest;
-	}): AggregationCursor<any> {
+		start: Date;
+		end: Date;
+		departmentId?: ILivechatDepartment['_id'];
+		onlyCount?: boolean;
+		options?: PaginatedRequest;
+	}): AggregationCursor<{ total: number }> | AggregationCursor<{ _id: string | null; numberOfTransferredRooms: number }> {
 		// FIXME: aggregation type definitions
 		const match = {
 			$match: {
@@ -208,7 +239,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		const params = [...firstParams, group, project, sort];
 		if (onlyCount) {
 			params.push({ $count: 'total' });
-			return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
+			return this.col.aggregate<{ total: number }>(params, { readPreference: readSecondaryPreferred() });
 		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
@@ -216,16 +247,41 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate(params, { allowDiskUse: true, readPreference: readSecondaryPreferred() });
+		return this.col.aggregate<{ _id: string | null; numberOfTransferredRooms: number }>(params, {
+			allowDiskUse: true,
+			readPreference: readSecondaryPreferred(),
+		});
 	}
 
 	getTotalOfMessagesSentByDate({ start, end, options = {} }: { start: Date; end: Date; options?: PaginatedRequest }): Promise<any[]> {
 		const params: Exclude<Parameters<Collection<IMessage>['aggregate']>[0], undefined> = [
 			{ $match: { t: { $exists: false }, ts: { $gte: start, $lte: end } } },
 			{
+				$group: {
+					_id: {
+						rid: '$rid',
+						date: {
+							$dateToString: { format: '%Y%m%d', date: '$ts' },
+						},
+					},
+					messages: { $sum: 1 },
+				},
+			},
+			{
+				$group: {
+					_id: '$_id.rid',
+					data: {
+						$push: {
+							date: '$_id.date',
+							messages: '$messages',
+						},
+					},
+				},
+			},
+			{
 				$lookup: {
 					from: 'rocketchat_room',
-					localField: 'rid',
+					localField: '_id',
 					foreignField: '_id',
 					as: 'room',
 				},
@@ -236,8 +292,9 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 				},
 			},
 			{
-				$group: {
-					_id: {
+				$project: {
+					data: '$data',
+					room: {
 						_id: '$room._id',
 						name: {
 							$cond: [{ $ifNull: ['$room.fname', false] }, '$room.fname', '$room.name'],
@@ -246,25 +303,22 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 						usernames: {
 							$cond: [{ $ifNull: ['$room.usernames', false] }, '$room.usernames', []],
 						},
-						date: {
-							$concat: [{ $substr: ['$ts', 0, 4] }, { $substr: ['$ts', 5, 2] }, { $substr: ['$ts', 8, 2] }],
-						},
 					},
-					messages: { $sum: 1 },
+					type: 'messages',
+				},
+			},
+			{
+				$unwind: {
+					path: '$data',
 				},
 			},
 			{
 				$project: {
 					_id: 0,
-					date: '$_id.date',
-					room: {
-						_id: '$_id._id',
-						name: '$_id.name',
-						t: '$_id.t',
-						usernames: '$_id.usernames',
-					},
-					type: 'messages',
-					messages: 1,
+					date: '$data.date',
+					room: 1,
+					type: 1,
+					messages: '$data.messages',
 				},
 			},
 		];
@@ -1006,25 +1060,28 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.findOne(query, options);
 	}
 
+	async cloneAndSaveAsHistoryByRecord(record: IMessage, user: IMessage['u']): Promise<InsertOneResult<IMessage>> {
+		const { _id: _, ...nRecord } = record;
+		return this.insertOne({
+			...nRecord,
+			_hidden: true,
+			// @ts-expect-error - mongo allows it, but types don't :(
+			parent: record._id,
+			editedAt: new Date(),
+			editedBy: {
+				_id: user._id,
+				username: user.username,
+			},
+		});
+	}
+
 	async cloneAndSaveAsHistoryById(_id: string, user: IMessage['u']): Promise<InsertOneResult<IMessage>> {
 		const record = await this.findOneById(_id);
 		if (!record) {
 			throw new Error('Record not found');
 		}
 
-		record._hidden = true;
-		// @ts-expect-error - :)
-		record.parent = record._id;
-		// @ts-expect-error - :)
-		record.editedAt = new Date();
-		// @ts-expect-error - :)
-		record.editedBy = {
-			_id: user._id,
-			username: user.username,
-		};
-
-		const { _id: ignoreId, ...nRecord } = record;
-		return this.insertOne(nRecord);
+		return this.cloneAndSaveAsHistoryByRecord(record, user);
 	}
 
 	// UPDATE
@@ -1323,22 +1380,22 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
-	async removeByIdPinnedTimestampLimitAndUsers(
+	async findByIdPinnedTimestampLimitAndUsers(
 		rid: string,
-		pinned: boolean,
+		ignorePinned: boolean,
 		ignoreDiscussion = true,
 		ts: Filter<IMessage>['ts'],
 		limit: number,
 		users: string[] = [],
 		ignoreThreads = true,
-	): Promise<number> {
+	): Promise<string[]> {
 		const query: Filter<IMessage> = {
 			rid,
 			ts,
 			...(users.length > 0 && { 'u.username': { $in: users } }),
 		};
 
-		if (pinned) {
+		if (ignorePinned) {
 			query.pinned = { $ne: true };
 		}
 
@@ -1351,9 +1408,62 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			query.tcount = { $exists: false };
 		}
 
-		if (!limit) {
-			const count = (await this.deleteMany(query)).deletedCount;
+		return (
+			await this.find(query, {
+				projection: {
+					_id: 1,
+				},
+				limit,
+			}).toArray()
+		).map(({ _id }) => _id);
+	}
 
+	async removeByIdPinnedTimestampLimitAndUsers(
+		rid: string,
+		ignorePinned: boolean,
+		ignoreDiscussion = true,
+		ts: Filter<IMessage>['ts'],
+		limit: number,
+		users: string[] = [],
+		ignoreThreads = true,
+		selectedMessageIds: string[] = [],
+	): Promise<number> {
+		const query: Filter<IMessage> = {
+			rid,
+			ts,
+			...(users.length > 0 && { 'u.username': { $in: users } }),
+		};
+
+		if (ignorePinned) {
+			query.pinned = { $ne: true };
+		}
+
+		if (ignoreDiscussion) {
+			query.drid = { $exists: false };
+		}
+
+		if (ignoreThreads) {
+			query.tmid = { $exists: false };
+			query.tcount = { $exists: false };
+		}
+
+		const notCountedMessages = (
+			await this.find(
+				{
+					...query,
+					$or: [{ _hidden: true }, { editedAt: { $exists: true }, editedBy: { $exists: true }, t: 'rm' }],
+				},
+				{
+					projection: {
+						_id: 1,
+					},
+					limit,
+				},
+			).toArray()
+		).length;
+
+		if (!limit) {
+			const count = (await this.deleteMany(query)).deletedCount - notCountedMessages;
 			if (count) {
 				// decrease message count
 				await Rooms.decreaseMessageCountById(rid, count);
@@ -1362,22 +1472,14 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			return count;
 		}
 
-		const messagesToDelete = (
-			await this.find(query, {
-				projection: {
-					_id: 1,
-				},
-				limit,
-			}).toArray()
-		).map(({ _id }) => _id);
-
-		const count = (
-			await this.deleteMany({
-				_id: {
-					$in: messagesToDelete,
-				},
-			})
-		).deletedCount;
+		const count =
+			(
+				await this.deleteMany({
+					_id: {
+						$in: selectedMessageIds,
+					},
+				})
+			).deletedCount - notCountedMessages;
 
 		if (count) {
 			// decrease message count
@@ -1466,7 +1568,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		);
 	}
 
-	findVisibleUnreadMessagesByRoomAndDate(rid: string, after: Date): FindCursor<Pick<IMessage, '_id'>> {
+	findVisibleUnreadMessagesByRoomAndDate(rid: string, after: Date): FindCursor<Pick<IMessage, '_id' | 't' | 'pinned' | 'drid' | 'tmid'>> {
 		const query = {
 			unread: true,
 			rid,
@@ -1484,11 +1586,19 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, {
 			projection: {
 				_id: 1,
+				t: 1,
+				pinned: 1,
+				drid: 1,
+				tmid: 1,
 			},
 		});
 	}
 
-	findUnreadThreadMessagesByDate(tmid: string, userId: string, after: Date): FindCursor<Pick<IMessage, '_id'>> {
+	findUnreadThreadMessagesByDate(
+		tmid: string,
+		userId: string,
+		after: Date,
+	): FindCursor<Pick<IMessage, '_id' | 't' | 'pinned' | 'drid' | 'tmid'>> {
 		const query = {
 			'u._id': { $ne: userId },
 			'unread': true,
@@ -1500,6 +1610,10 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, {
 			projection: {
 				_id: 1,
+				t: 1,
+				pinned: 1,
+				drid: 1,
+				tmid: 1,
 			},
 		});
 	}
@@ -1511,19 +1625,23 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	 * to race conditions: If multiple updates occur, the current state will be updated
 	 * only if the new state of the discussion room is really newer.
 	 */
-	async refreshDiscussionMetadata(room: Pick<IRoom, '_id' | 'msgs' | 'lm'>): Promise<UpdateResult | Document | false> {
+	async refreshDiscussionMetadata(room: Pick<IRoom, '_id' | 'msgs' | 'lm'>): Promise<ModifyResult<IMessage>> {
 		const { _id: drid, msgs: dcount, lm: dlm } = room;
 
 		const query = {
 			drid,
 		};
 
-		return this.updateMany(query, {
-			$set: {
-				dcount,
-				dlm,
+		return this.findOneAndUpdate(
+			query,
+			{
+				$set: {
+					dcount,
+					dlm,
+				},
 			},
-		});
+			{ returnDocument: 'after' },
+		);
 	}
 
 	// //////////////////////////////////////////////////////////////////
@@ -1602,7 +1720,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.findOne(query, { sort: { ts: 1 } });
 	}
 
-	findAllImportedMessagesWithFilesToDownload(): FindCursor<IMessage> {
+	findAllImportedMessagesWithFilesToDownload(): FindCursor<IMessageWithPendingFileImport> {
 		const query = {
 			'_importFile.downloadUrl': {
 				$exists: true,
@@ -1618,7 +1736,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			},
 		};
 
-		return this.find(query);
+		return this.find<IMessageWithPendingFileImport>(query);
 	}
 
 	countAllImportedMessagesWithFilesToDownload(): Promise<number> {

@@ -1,18 +1,19 @@
-import type { IMessage, IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
-import { ReactiveVar } from 'meteor/reactive-var';
-import { FlowRouter } from 'meteor/kadira:flow-router';
+import type { INotificationDesktop, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 
+import { RoomManager } from '../../../../client/lib/RoomManager';
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
-import { getUserPreference } from '../../../utils/client';
-import { getUserAvatarURL } from '../../../utils/client/getUserAvatarURL';
+import { getAvatarAsPng } from '../../../../client/lib/utils/getAvatarAsPng';
+import { router } from '../../../../client/providers/RouterProvider';
+import { stripTags } from '../../../../lib/utils/stringUtils';
+import { CustomSounds } from '../../../custom-sounds/client/lib/CustomSounds';
 import { e2e } from '../../../e2e/client';
 import { ChatSubscription } from '../../../models/client';
-import { CustomSounds } from '../../../custom-sounds/client/lib/CustomSounds';
-import { getAvatarAsPng } from '../../../../client/lib/utils/getAvatarAsPng';
-import { stripTags } from '../../../../lib/utils/stringUtils';
-import { RoomManager } from '../../../../client/lib/RoomManager';
+import { getUserPreference } from '../../../utils/client';
+import { getUserAvatarURL } from '../../../utils/client/getUserAvatarURL';
+import { sdk } from '../../../utils/client/lib/SDKClient';
 
 declare global {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -20,25 +21,6 @@ declare global {
 		reply: { response: string };
 	}
 }
-
-export type NotificationEvent = {
-	icon?: string;
-	title: string;
-	text: string;
-	duration?: number;
-	payload: {
-		_id?: IMessage['_id'];
-		rid?: IRoom['_id'];
-		tmid?: IMessage['_id'];
-		sender?: Pick<IUser, '_id' | 'username'>;
-		type?: RoomType;
-		name?: string;
-		message?: {
-			msg: string;
-			t?: string;
-		};
-	};
-};
 
 class KonchatNotification {
 	public notificationStatus = new ReactiveVar<NotificationPermission | undefined>(undefined);
@@ -51,7 +33,7 @@ class KonchatNotification {
 		}
 	}
 
-	public async notify(notification: NotificationEvent) {
+	public async notify(notification: INotificationDesktop) {
 		if (typeof window.Notification === 'undefined' || Notification.permission !== 'granted') {
 			return;
 		}
@@ -62,6 +44,9 @@ class KonchatNotification {
 
 		const { rid } = notification.payload;
 
+		if (!rid) {
+			return;
+		}
 		const message = await onClientMessageReceived({
 			rid,
 			msg: notification.text,
@@ -86,12 +71,14 @@ class KonchatNotification {
 		}
 
 		if (n.addEventListener) {
-			n.addEventListener('reply', ({ response }) =>
-				Meteor.call('sendMessage', {
-					_id: Random.id(),
-					rid,
-					msg: response,
-				}),
+			n.addEventListener(
+				'reply',
+				({ response }) =>
+					void sdk.call('sendMessage', {
+						_id: Random.id(),
+						rid,
+						msg: response,
+					}),
 			);
 		}
 
@@ -105,46 +92,55 @@ class KonchatNotification {
 
 			switch (notification.payload?.type) {
 				case 'd':
-					return FlowRouter.go(
-						'direct',
-						{
+					return router.navigate({
+						pattern: '/direct/:rid/:tab?/:context?',
+						params: {
 							rid: notification.payload.rid,
 							...(notification.payload.tmid && {
 								tab: 'thread',
 								context: notification.payload.tmid,
 							}),
 						},
-						{ ...FlowRouter.current().queryParams, jump: notification.payload._id },
-					);
+						search: { ...router.getSearchParameters(), jump: notification.payload._id },
+					});
 				case 'c':
-					return FlowRouter.go(
-						'channel',
-						{
+					return router.navigate({
+						pattern: '/channel/:name/:tab?/:context?',
+						params: {
 							name: notification.payload.name,
 							...(notification.payload.tmid && {
 								tab: 'thread',
 								context: notification.payload.tmid,
 							}),
 						},
-						{ ...FlowRouter.current().queryParams, jump: notification.payload._id },
-					);
+						search: { ...router.getSearchParameters(), jump: notification.payload._id },
+					});
 				case 'p':
-					return FlowRouter.go(
-						'group',
-						{
+					return router.navigate({
+						pattern: '/group/:name/:tab?/:context?',
+						params: {
 							name: notification.payload.name,
 							...(notification.payload.tmid && {
 								tab: 'thread',
 								context: notification.payload.tmid,
 							}),
 						},
-						{ ...FlowRouter.current().queryParams, jump: notification.payload._id },
-					);
+						search: { ...router.getSearchParameters(), jump: notification.payload._id },
+					});
+				case 'l':
+					return router.navigate({
+						pattern: '/live/:id/:tab?/:context?',
+						params: {
+							id: notification.payload.rid,
+							tab: 'room-info',
+						},
+						search: { ...router.getSearchParameters(), jump: notification.payload._id },
+					});
 			}
 		};
 	}
 
-	public async showDesktop(notification: NotificationEvent) {
+	public async showDesktop(notification: INotificationDesktop) {
 		if (!notification.payload.rid) {
 			return;
 		}

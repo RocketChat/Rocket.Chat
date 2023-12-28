@@ -9,17 +9,19 @@ import { useFeaturedApps } from '../hooks/useFeaturedApps';
 
 type FeaturedSectionsProps = {
 	appsResult: App[];
+	appsListId: string;
 };
 
-const FeaturedAppsSections = ({ appsResult }: FeaturedSectionsProps): ReactElement | null => {
+const FeaturedAppsSections = ({ appsResult, appsListId }: FeaturedSectionsProps): ReactElement | null => {
 	const t = useTranslation();
 	const featuredApps = useFeaturedApps();
 
 	if (featuredApps.isSuccess) {
 		return (
 			<>
-				{featuredApps.data.sections.map((section) => (
+				{featuredApps.data.sections.map((section, index) => (
 					<AppsList
+						appsListId={`${appsListId + index}`}
 						key={section.slug}
 						apps={normalizeFeaturedApps(section.apps, appsResult)}
 						title={t.has(section.i18nLabel) ? t(section.i18nLabel) : section.i18nLabel}

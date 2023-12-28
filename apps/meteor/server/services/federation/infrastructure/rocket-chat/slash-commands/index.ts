@@ -1,8 +1,8 @@
 import { Federation } from '@rocket.chat/core-services';
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
+import { slashCommands } from '../../../../../../app/utils/server/slashCommand';
 import { executeSlashCommand } from './action';
-import { slashCommands } from '../../../../../../app/utils/server';
 
 const FEDERATION_COMMANDS: Record<string, (currentUserId: string, roomId: string, invitee: string) => Promise<void>> = {
 	dm: async (currentUserId: string, roomId: string, invitee: string) =>

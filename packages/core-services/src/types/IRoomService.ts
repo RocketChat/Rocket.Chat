@@ -1,9 +1,10 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { AtLeast, IRoom, IUser } from '@rocket.chat/core-typings';
 
 export interface ISubscriptionExtraData {
 	open: boolean;
 	ls?: Date;
 	prid?: string;
+	roles?: string[];
 }
 
 interface ICreateRoomOptions extends Partial<Record<string, string | ISubscriptionExtraData>> {
@@ -29,4 +30,28 @@ export interface IRoomService {
 	addMember(uid: string, rid: string): Promise<boolean>;
 	create(uid: string, params: ICreateRoomParams): Promise<IRoom>;
 	createDirectMessage(data: { to: string; from: string }): Promise<{ rid: string }>;
+	createDirectMessageWithMultipleUsers(members: string[], creatorId: string): Promise<{ rid: string }>;
+	addUserToRoom(
+		roomId: string,
+		user: Pick<IUser, '_id' | 'username'> | string,
+		inviter?: Pick<IUser, '_id' | 'username'>,
+		silenced?: boolean,
+	): Promise<boolean | undefined>;
+	removeUserFromRoom(roomId: string, user: IUser, options?: { byUser: Pick<IUser, '_id' | 'username'> }): Promise<void>;
+	getValidRoomName(
+		displayName: string,
+		roomId?: string,
+		options?: { allowDuplicates?: boolean; nameValidationRegex?: string },
+	): Promise<string>;
+	saveRoomTopic(
+		roomId: string,
+		roomTopic: string | undefined,
+		user: {
+			username: string;
+			_id: string;
+		},
+		sendMessage?: boolean,
+	): Promise<void>;
+	getRouteLink(room: AtLeast<IRoom, '_id' | 't' | 'name'>): Promise<string | boolean>;
+	join(param: { room: IRoom; user: Pick<IUser, '_id'>; joinCode?: string }): Promise<boolean | undefined>;
 }

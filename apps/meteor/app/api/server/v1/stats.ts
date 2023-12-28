@@ -1,6 +1,6 @@
-import { API } from '../api';
 import { getStatistics, getLastStatistics } from '../../../statistics/server';
 import telemetryEvent from '../../../statistics/server/lib/telemetryEvents';
+import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 
 API.v1.addRoute(

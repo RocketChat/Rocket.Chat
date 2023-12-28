@@ -46,7 +46,7 @@ const updateUser = (userData: IUser): void => {
 	Object.keys(user).forEach((key) => {
 		delete userData[key as keyof IUser];
 	});
-	Users.update({ _id: user._id }, { $set: userData });
+	Users.update({ _id: user._id }, { $set: { ...userData } });
 };
 
 let cancel: undefined | (() => void);
@@ -69,7 +69,7 @@ export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserDat
 				break;
 
 			case 'updated':
-				Users.upsert({ _id: uid }, { $set: data.diff, $unset: data.unset });
+				Users.upsert({ _id: uid }, { $set: data.diff, $unset: data.unset as any });
 				break;
 
 			case 'removed':
@@ -122,7 +122,7 @@ export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserDat
 								},
 						  }
 						: {}),
-					emailCode: emailCode?.map(({ expire, ...data }) => ({ expire: new Date(expire), ...data })) || [],
+					...(emailCode ? { ...emailCode, expire: new Date(emailCode.expire) } : {}),
 					...(email2fa ? { email2fa: { ...email2fa, changedAt: new Date(email2fa.changedAt) } } : {}),
 					...(email?.verificationTokens && {
 						email: {

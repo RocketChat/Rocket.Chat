@@ -1,6 +1,6 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 import { getMomentLocale } from '../lib/getMomentLocale';
 

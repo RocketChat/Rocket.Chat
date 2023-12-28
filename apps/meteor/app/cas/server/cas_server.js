@@ -1,17 +1,17 @@
 import url from 'url';
 
-import { Meteor } from 'meteor/meteor';
-import { Accounts } from 'meteor/accounts-base';
-import { WebApp } from 'meteor/webapp';
-import { RoutePolicy } from 'meteor/routepolicy';
-import _ from 'underscore';
-import { CredentialTokens, Rooms, Users } from '@rocket.chat/models';
 import { validate } from '@rocket.chat/cas-validate';
+import { CredentialTokens, Rooms, Users } from '@rocket.chat/models';
+import { Accounts } from 'meteor/accounts-base';
+import { Meteor } from 'meteor/meteor';
+import { RoutePolicy } from 'meteor/routepolicy';
+import { WebApp } from 'meteor/webapp';
+import _ from 'underscore';
 
-import { logger } from './cas_rocketchat';
-import { settings } from '../../settings/server';
-import { _setRealName } from '../../lib/server';
 import { createRoom } from '../../lib/server/functions/createRoom';
+import { _setRealName } from '../../lib/server/functions/setRealName';
+import { settings } from '../../settings/server';
+import { logger } from './cas_rocketchat';
 
 RoutePolicy.declare('/_cas/', 'network');
 
@@ -43,7 +43,7 @@ const casTicket = function (req, token, callback) {
 			service: `${appUrl}/_cas/${token}`,
 		},
 		ticketId,
-		async function (err, status, username, details) {
+		async (err, status, username, details) => {
 			if (err) {
 				logger.error(`error when trying to validate: ${err.message}`);
 			} else if (status) {
@@ -87,7 +87,7 @@ const middleware = function (req, res, next) {
 		}
 
 		// validate ticket
-		casTicket(req, credentialToken, function () {
+		casTicket(req, credentialToken, () => {
 			closePopup(res);
 		});
 	} catch (err) {
@@ -97,7 +97,7 @@ const middleware = function (req, res, next) {
 };
 
 // Listen to incoming OAuth http requests
-WebApp.connectHandlers.use(function (req, res, next) {
+WebApp.connectHandlers.use((req, res, next) => {
 	middleware(req, res, next);
 });
 
@@ -106,7 +106,7 @@ WebApp.connectHandlers.use(function (req, res, next) {
  * It is call after Accounts.callLoginMethod() is call from client.
  *
  */
-Accounts.registerLoginHandler('cas', async function (options) {
+Accounts.registerLoginHandler('cas', async (options) => {
 	if (!options.cas) {
 		return undefined;
 	}
@@ -141,7 +141,7 @@ Accounts.registerLoginHandler('cas', async function (options) {
 	// Import response attributes
 	if (cas_version >= 2.0) {
 		// Clean & import external attributes
-		_.each(result.attributes, function (value, ext_name) {
+		_.each(result.attributes, (value, ext_name) => {
 			if (value) {
 				ext_attrs[ext_name] = value[0];
 			}
@@ -154,11 +154,11 @@ Accounts.registerLoginHandler('cas', async function (options) {
 		// Spoken: Source this internal attribute from these external attributes
 		const attr_map = JSON.parse(syncUserDataFieldMap);
 
-		_.each(attr_map, function (source, int_name) {
+		_.each(attr_map, (source, int_name) => {
 			// Source is our String to interpolate
 			if (source && typeof source.valueOf() === 'string') {
 				let replacedValue = source;
-				_.each(ext_attrs, function (value, ext_name) {
+				_.each(ext_attrs, (value, ext_name) => {
 					replacedValue = replacedValue.replace(`%${ext_name}%`, ext_attrs[ext_name]);
 				});
 
@@ -257,7 +257,7 @@ Accounts.registerLoginHandler('cas', async function (options) {
 				if (roomName) {
 					let room = await Rooms.findOneByNameAndType(roomName, 'c');
 					if (!room) {
-						room = await createRoom('c', roomName, user.username);
+						room = await createRoom('c', roomName, user);
 					}
 				}
 			}

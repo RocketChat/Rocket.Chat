@@ -1,10 +1,9 @@
-import type { Db } from 'mongodb';
+import { ServiceClass, api } from '@rocket.chat/core-services';
+import type { IQueueWorkerService, HealthAggResult } from '@rocket.chat/core-services';
+import type { Logger } from '@rocket.chat/logger';
 import type { Actions, ValidResult, Work } from 'mongo-message-queue';
 import MessageQueue from 'mongo-message-queue';
-import { ServiceClass, api, License } from '@rocket.chat/core-services';
-import type { IQueueWorkerService, HealthAggResult } from '@rocket.chat/core-services';
-
-import type { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';
+import type { Db } from 'mongodb';
 
 export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 	protected name = 'queue-worker';
@@ -18,28 +17,12 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 
 	private logger: Logger;
 
-	private shouldWork = true;
-
 	constructor(private readonly db: Db, loggerClass: typeof Logger) {
 		super();
 
 		// eslint-disable-next-line new-cap
 		this.logger = new loggerClass('QueueWorker');
 		this.queue = new MessageQueue();
-
-		this.onEvent('license.module', ({ module, valid }) => {
-			if (module === 'scalability') {
-				this.shouldWork = valid;
-			}
-		});
-	}
-
-	async started(): Promise<void> {
-		try {
-			this.shouldWork = await License.hasLicense('scalability');
-		} catch (e: unknown) {
-			// ignore
-		}
 	}
 
 	isServiceNotFoundMessage(message: string): boolean {
@@ -133,11 +116,6 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 	// `to` is a service name that will be called, including namespace + action
 	// This is a "generic" job that allows you to call any service
 	async queueWork<T extends Record<string, unknown>>(queue: Actions, to: string, data: T): Promise<void> {
-		if (!this.shouldWork) {
-			this.logger.info('Queue worker is disabled, not queueing work');
-			return;
-		}
-
 		this.logger.info(`Queueing work for ${to}`);
 		if (!this.matchServiceCall(to)) {
 			// We don't want to queue calls to invalid service names

@@ -1,9 +1,9 @@
 import type { IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
-import { Rooms } from '@rocket.chat/models';
 import { cronJobs } from '@rocket.chat/cron';
+import { Rooms } from '@rocket.chat/models';
 
-import { settings } from '../../settings/server';
 import { cleanRoomHistory } from '../../lib/server/functions/cleanRoomHistory';
+import { settings } from '../../settings/server';
 
 const maxTimes = {
 	c: 0,
@@ -24,6 +24,8 @@ async function job(): Promise<void> {
 	const ignoreDiscussion = settings.get<boolean>('RetentionPolicy_DoNotPruneDiscussion');
 	const ignoreThreads = settings.get<boolean>('RetentionPolicy_DoNotPruneThreads');
 
+	const ignoreDiscussionQuery = ignoreDiscussion ? { prid: { $exists: false } } : {};
+
 	// get all rooms with default values
 	for await (const type of types) {
 		const maxAge = maxTimes[type] || 0;
@@ -34,6 +36,7 @@ async function job(): Promise<void> {
 				't': type,
 				'$or': [{ 'retention.enabled': { $eq: true } }, { 'retention.enabled': { $exists: false } }],
 				'retention.overrideGlobal': { $ne: true },
+				...ignoreDiscussionQuery,
 			},
 			{ projection: { _id: 1 } },
 		).toArray();
@@ -56,6 +59,7 @@ async function job(): Promise<void> {
 			'retention.enabled': { $eq: true },
 			'retention.overrideGlobal': { $eq: true },
 			'retention.maxAge': { $gte: 0 },
+			...ignoreDiscussionQuery,
 		},
 		{ projection: { _id: 1, retention: 1 } },
 	).toArray();

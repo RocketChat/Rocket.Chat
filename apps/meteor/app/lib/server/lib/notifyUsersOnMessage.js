@@ -1,9 +1,9 @@
-import moment from 'moment';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+import moment from 'moment';
 
-import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
+import { settings } from '../../../settings/server';
 
 /**
  * Chechs if a messages contains a user highlight
@@ -18,7 +18,7 @@ function messageContainsHighlight(message, highlights) {
 		return false;
 	}
 
-	return highlights.some(function (highlight) {
+	return highlights.some((highlight) => {
 		const regexp = new RegExp(escapeRegExp(highlight), 'i');
 		return regexp.test(message.msg);
 	});
@@ -73,7 +73,7 @@ const incUserMentions = async (rid, roomType, uids, unreadCount) => {
 	await Subscriptions.incUserMentionsAndUnreadForRoomIdAndUserIds(rid, uids, 1, incUnread);
 };
 
-const getUserIdsFromHighlights = async (rid, message) => {
+export const getUserIdsFromHighlights = async (rid, message) => {
 	const highlightOptions = { projection: { 'userHighlights': 1, 'u._id': 1 } };
 	const subs = await Subscriptions.findByRoomWithUserHighlights(rid, highlightOptions).toArray();
 
@@ -191,4 +191,9 @@ export async function notifyUsersOnMessage(message, room) {
 	return message;
 }
 
-callbacks.add('afterSaveMessage', (message, room) => notifyUsersOnMessage(message, room), callbacks.priority.LOW, 'notifyUsersOnMessage');
+callbacks.add(
+	'afterSaveMessage',
+	(message, room) => notifyUsersOnMessage(message, room),
+	callbacks.priority.MEDIUM,
+	'notifyUsersOnMessage',
+);

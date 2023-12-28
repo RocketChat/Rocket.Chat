@@ -1,13 +1,14 @@
-import { Meteor } from 'meteor/meteor';
-import type { AtLeast, IMessage, IUser } from '@rocket.chat/core-typings';
-import { Messages, Rooms, Uploads, Users } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
+import type { AtLeast, IMessage, IUser } from '@rocket.chat/core-typings';
+import { Messages, Rooms, Uploads, Users, ReadReceipts } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
+import { Apps } from '../../../../ee/server/apps';
+import { callbacks } from '../../../../lib/callbacks';
+import { broadcastMessageSentEvent } from '../../../../server/modules/watchers/lib/messages';
+import { canDeleteMessageAsync } from '../../../authorization/server/functions/canDeleteMessage';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
-import { callbacks } from '../../../../lib/callbacks';
-import { Apps } from '../../../../ee/server/apps';
-import { canDeleteMessageAsync } from '../../../authorization/server/functions/canDeleteMessage';
 
 export const deleteMessageValidatingPermission = async (message: AtLeast<IMessage, '_id'>, userId: IUser['_id']): Promise<void> => {
 	if (!message?._id) {
@@ -62,30 +63,39 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 		if (!showDeletedStatus) {
 			await Messages.removeById(message._id);
 		}
+		await ReadReceipts.removeByMessageId(message._id);
 
 		for await (const file of files) {
 			file?._id && (await FileUpload.getStore('Uploads').deleteById(file._id));
 		}
 	}
+	if (showDeletedStatus) {
+		// TODO is there a better way to tell TS "IUser[username]" is not undefined?
+		await Messages.setAsDeletedByIdAndUser(message._id, user as Required<Pick<IUser, '_id' | 'username' | 'name'>>);
+	} else {
+		void api.broadcast('notify.deleteMessage', message.rid, { _id: message._id });
+	}
 
 	const room = await Rooms.findOneById(message.rid, { projection: { lastMessage: 1, prid: 1, mid: 1, federated: 1 } });
-	await callbacks.run('afterDeleteMessage', deletedMsg, room);
 
 	// update last message
 	if (settings.get('Store_Last_Message')) {
 		if (!room?.lastMessage || room.lastMessage._id === message._id) {
-			await Rooms.resetLastMessageById(message.rid, deletedMsg);
+			const lastMessageNotDeleted = await Messages.getLastVisibleMessageSentWithNoTypeByRoomId(message.rid);
+			await Rooms.resetLastMessageById(message.rid, lastMessageNotDeleted);
 		}
 	}
 
 	// decrease message count
 	await Rooms.decreaseMessageCountById(message.rid, 1);
 
-	if (showDeletedStatus) {
-		// TODO is there a better way to tell TS "IUser[username]" is not undefined?
-		await Messages.setAsDeletedByIdAndUser(message._id, user as Required<Pick<IUser, '_id' | 'username' | 'name'>>);
-	} else {
-		void api.broadcast('notify.deleteMessage', message.rid, { _id: message._id });
+	await callbacks.run('afterDeleteMessage', deletedMsg, room);
+
+	if (keepHistory || showDeletedStatus) {
+		void broadcastMessageSentEvent({
+			id: message._id,
+			broadcastCallback: (message) => api.broadcast('message.sent', message),
+		});
 	}
 
 	if (bridges) {

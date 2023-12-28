@@ -1,5 +1,5 @@
-import type { FindCursor, UpdateFilter, UpdateResult, Document } from 'mongodb';
 import type { ISetting, ISettingColor, ISettingSelectOption } from '@rocket.chat/core-typings';
+import type { FindCursor, UpdateFilter, UpdateResult, Document } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -16,6 +16,11 @@ export interface ISettingsModel extends IBaseModel<ISetting> {
 		_id: string,
 		value: (ISetting['value'] extends undefined ? never : ISetting['value']) | null,
 	): Promise<Document | UpdateResult>;
+
+	resetValueById(
+		_id: string,
+		value?: (ISetting['value'] extends undefined ? never : ISetting['value']) | null,
+	): Promise<Document | UpdateResult | undefined>;
 
 	incrementValueById(_id: ISetting['_id'], value?: number): Promise<Document | UpdateResult>;
 

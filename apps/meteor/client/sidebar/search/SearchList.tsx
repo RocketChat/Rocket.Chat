@@ -55,7 +55,7 @@ const shortcut = ((): string => {
 	if (window.navigator.platform.toLowerCase().includes('mac')) {
 		return '(\u2318+K)';
 	}
-	return '(\u2303+K)';
+	return '(Ctrl+K)';
 })();
 
 const LIMIT = parseInt(String(getConfig('Sidebar_Search_Spotlight_LIMIT', 20)));
@@ -101,7 +101,7 @@ const useSearchItems = (filterText: string): UseQueryResult<(ISubscription & IRo
 	const getSpotlight = useMethod('spotlight');
 
 	return useQuery(
-		['sidebar/search/spotlight', name, usernamesFromClient, type],
+		['sidebar/search/spotlight', name, usernamesFromClient, type, localRooms.map(({ _id }) => _id)],
 		async () => {
 			if (localRooms.length === LIMIT) {
 				return localRooms;
@@ -144,6 +144,7 @@ const useSearchItems = (filterText: string): UseQueryResult<(ISubscription & IRo
 				_id: string;
 				t: string;
 				name: string;
+				teamMain?: boolean;
 				fname?: string;
 				avatarETag?: string | undefined;
 				uids?: string[] | undefined;
@@ -235,9 +236,15 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 		let nextSelectedElement = null;
 
 		if (dir === 'up') {
-			nextSelectedElement = (selectedElement.current?.parentElement?.previousSibling as HTMLElement).querySelector('a');
+			const potentialElement = selectedElement.current?.parentElement?.previousSibling as HTMLElement;
+			if (potentialElement) {
+				nextSelectedElement = potentialElement.querySelector('a');
+			}
 		} else {
-			nextSelectedElement = (selectedElement.current?.parentElement?.nextSibling as HTMLElement).querySelector('a');
+			const potentialElement = selectedElement.current?.parentElement?.nextSibling as HTMLElement;
+			if (potentialElement) {
+				nextSelectedElement = potentialElement.querySelector('a');
+			}
 		}
 
 		if (nextSelectedElement) {
@@ -248,14 +255,14 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 	});
 
 	const resetCursor = useMutableCallback(() => {
-		itemIndexRef.current = 0;
-		listRef.current?.scrollToIndex({ index: itemIndexRef.current });
-
-		selectedElement.current = boxRef.current?.querySelector('a.rcx-sidebar-item');
-
-		if (selectedElement.current) {
-			toggleSelectionState(selectedElement.current, undefined, cursorRef?.current || undefined);
-		}
+		setTimeout(() => {
+			itemIndexRef.current = 0;
+			listRef.current?.scrollToIndex({ index: itemIndexRef.current });
+			selectedElement.current = boxRef.current?.querySelector('a.rcx-sidebar-item');
+			if (selectedElement.current) {
+				toggleSelectionState(selectedElement.current, undefined, cursorRef?.current || undefined);
+			}
+		}, 0);
 	});
 
 	usePreventDefault(boxRef);
@@ -296,9 +303,12 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 				listRef.current?.scrollToIndex({ index: itemIndexRef.current });
 				selectedElement.current = currentElement;
 			},
-			Enter: () => {
-				if (selectedElement.current) {
+			Enter: (event) => {
+				event.preventDefault();
+				if (selectedElement.current && items.length > 0) {
 					selectedElement.current.click();
+				} else {
+					onClose();
 				}
 			},
 		});

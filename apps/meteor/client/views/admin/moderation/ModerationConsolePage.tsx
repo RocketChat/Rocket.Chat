@@ -1,10 +1,9 @@
 import { useTranslation, useRouteParameter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import { MessageAction } from '../../../../app/ui-utils/client';
 import { Contextualbar } from '../../../components/Contextualbar';
-import Page from '../../../components/Page';
-import MessageReportInfo from './MessageReportInfo';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
+import { getPermaLink } from '../../../lib/getPermaLink';
 import ModerationConsoleTable from './ModerationConsoleTable';
 import UserMessages from './UserMessages';
 
@@ -16,7 +15,7 @@ const ModerationConsolePage = () => {
 
 	const handleRedirect = async (mid: string) => {
 		try {
-			const permalink = await MessageAction.getPermaLink(mid);
+			const permalink = await getPermaLink(mid);
 			// open the permalink in same tab
 			window.open(permalink, '_self');
 		} catch (error) {
@@ -27,17 +26,12 @@ const ModerationConsolePage = () => {
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('Moderation_Console')} />
-				<Page.Content>
+				<PageHeader title={t('Moderation')} />
+				<PageContent>
 					<ModerationConsoleTable />
-				</Page.Content>
+				</PageContent>
 			</Page>
-			{context && (
-				<Contextualbar>
-					{context === 'info' && id && <UserMessages userId={id} onRedirect={handleRedirect} />}
-					{context === 'reports' && id && <MessageReportInfo msgId={id} />}
-				</Contextualbar>
-			)}
+			{context && <Contextualbar>{context === 'info' && id && <UserMessages userId={id} onRedirect={handleRedirect} />}</Contextualbar>}
 		</Page>
 	);
 };

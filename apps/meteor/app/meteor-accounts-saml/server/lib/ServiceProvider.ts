@@ -1,10 +1,14 @@
-import zlib from 'zlib';
 import crypto from 'crypto';
 import querystring from 'querystring';
 import util from 'util';
+import zlib from 'zlib';
 
 import { Meteor } from 'meteor/meteor';
 
+import type { ILogoutResponse } from '../definition/ILogoutResponse';
+import type { ISAMLRequest } from '../definition/ISAMLRequest';
+import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
+import type { ILogoutRequestValidateCallback, ILogoutResponseValidateCallback, IResponseValidateCallback } from '../definition/callbacks';
 import { SAMLUtils } from './Utils';
 import { AuthorizeRequest } from './generators/AuthorizeRequest';
 import { LogoutRequest } from './generators/LogoutRequest';
@@ -13,10 +17,6 @@ import { ServiceProviderMetadata } from './generators/ServiceProviderMetadata';
 import { LogoutRequestParser } from './parsers/LogoutRequest';
 import { LogoutResponseParser } from './parsers/LogoutResponse';
 import { ResponseParser } from './parsers/Response';
-import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
-import type { ISAMLRequest } from '../definition/ISAMLRequest';
-import type { ILogoutResponse } from '../definition/ILogoutResponse';
-import type { ILogoutRequestValidateCallback, ILogoutResponseValidateCallback, IResponseValidateCallback } from '../definition/callbacks';
 
 export class SAMLServiceProvider {
 	serviceProviderOptions: IServiceProviderOptions;

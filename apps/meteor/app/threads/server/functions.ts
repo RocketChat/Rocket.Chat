@@ -1,8 +1,8 @@
-import { Messages, Subscriptions } from '@rocket.chat/models';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
+import { Messages, Subscriptions, ReadReceipts, NotificationQueue } from '@rocket.chat/models';
 
-import { getMentions } from '../../lib/server/lib/notifyUsersOnMessage';
+import { getMentions, getUserIdsFromHighlights } from '../../lib/server/lib/notifyUsersOnMessage';
 
 export async function reply({ tmid }: { tmid?: string }, message: IMessage, parentMessage: IMessage, followers: string[]) {
 	const { rid, ts, u } = message;
@@ -19,8 +19,11 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 			...(Array.isArray(parentMessage.replies) && parentMessage.replies.length ? [u._id] : [parentMessage.u._id, u._id]),
 		]),
 	];
+	const highlightedUserIds = new Set<string>();
 
+	(await getUserIdsFromHighlights(rid, message)).forEach((uid) => highlightedUserIds.add(uid));
 	await Messages.updateRepliesByThreadId(tmid, addToReplies, ts);
+	await ReadReceipts.setAsThreadById(tmid);
 
 	const replies = await Messages.getThreadFollowsByThreadId(tmid);
 
@@ -34,8 +37,15 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 		await Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, repliesFiltered, tmid, {});
 	}
 
-	for await (const userId of mentionIds) {
+	const mentionedUsers = new Set<string>([...mentionIds, ...highlightedUserIds]);
+	for await (const userId of mentionedUsers) {
 		await Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, [userId], tmid, { userMention: true });
+	}
+
+	const highlightIds = Array.from(highlightedUserIds);
+	if (highlightIds.length) {
+		await Subscriptions.setAlertForRoomIdAndUserIds(rid, highlightIds);
+		await Subscriptions.setOpenForRoomIdAndUserIds(rid, highlightIds);
 	}
 }
 
@@ -57,12 +67,8 @@ export async function unfollow({ tmid, rid, uid }: { tmid: string; rid: string; 
 	await Messages.removeThreadFollowerByThreadId(tmid, uid);
 }
 
-export const readThread = async ({ userId, rid, tmid }: { userId?: string; rid: string; tmid: string }) => {
+export const readThread = async ({ userId, rid, tmid }: { userId: string; rid: string; tmid: string }) => {
 	const projection = { tunread: 1 };
-	if (!userId) {
-		return;
-	}
-
 	const sub = await Subscriptions.findOneByRoomIdAndUserId(rid, userId, { projection });
 	if (!sub) {
 		return;
@@ -71,4 +77,5 @@ export const readThread = async ({ userId, rid, tmid }: { userId?: string; rid: 
 	const clearAlert = sub.tunread && sub.tunread?.length <= 1 && sub.tunread.includes(tmid);
 
 	await Subscriptions.removeUnreadThreadByRoomIdAndUserId(rid, userId, tmid, clearAlert);
+	await NotificationQueue.clearQueueByUserId(userId);
 };

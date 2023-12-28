@@ -5,7 +5,7 @@ import type { ReactElement } from 'react';
 import React, { useState, useEffect } from 'react';
 
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
-import { useTabBarClose } from '../../../contexts/ToolboxContext';
+import { useRoomToolbox } from '../../../contexts/RoomToolboxContext';
 import InviteUsers from './InviteUsers';
 
 type InviteUsersWithDataProps = {
@@ -33,7 +33,7 @@ const InviteUsersWithData = ({ rid, onClickBack }: InviteUsersWithDataProps): Re
 		error: undefined as Error | undefined,
 	});
 
-	const handleClose = useTabBarClose();
+	const { closeTab } = useRoomToolbox();
 	const format = useFormatDateAndTime();
 	const findOrCreateInvite = useEndpoint('POST', '/v1/findOrCreateInvite');
 
@@ -89,7 +89,7 @@ const InviteUsersWithData = ({ rid, onClickBack }: InviteUsersWithDataProps): Re
 			linkText={url}
 			captionText={caption}
 			daysAndMaxUses={{ days, maxUses }}
-			onClose={handleClose}
+			onClose={closeTab}
 			onClickBackMembers={onClickBack}
 			onClickBackLink={handleBackToLink}
 			onClickEdit={handleEdit}

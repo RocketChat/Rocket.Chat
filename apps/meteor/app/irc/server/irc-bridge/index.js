@@ -1,13 +1,15 @@
-import Queue from 'queue-fifo';
-import moment from 'moment';
+import { Logger } from '@rocket.chat/logger';
 import { Settings } from '@rocket.chat/models';
+import moment from 'moment';
+import Queue from 'queue-fifo';
 
-import * as peerCommandHandlers from './peerHandlers';
-import * as localCommandHandlers from './localHandlers';
 import { callbacks } from '../../../../lib/callbacks';
-import * as servers from '../servers';
-import { Logger } from '../../../logger/server';
+import { afterLeaveRoomCallback } from '../../../../lib/callbacks/afterLeaveRoomCallback';
+import { afterLogoutCleanUpCallback } from '../../../../lib/callbacks/afterLogoutCleanUpCallback';
 import { withThrottling } from '../../../../lib/utils/highOrderFunctions';
+import * as servers from '../servers';
+import * as localCommandHandlers from './localHandlers';
+import * as peerCommandHandlers from './peerHandlers';
 
 const logger = new Logger('IRC Bridge');
 const queueLogger = logger.section('Queue');
@@ -204,7 +206,7 @@ class Bridge {
 		);
 		callbacks.add('afterJoinRoom', this.onMessageReceived.bind(this, 'local', 'onJoinRoom'), callbacks.priority.LOW, 'irc-on-join-room');
 		// Leaving rooms or channels
-		callbacks.add('afterLeaveRoom', this.onMessageReceived.bind(this, 'local', 'onLeaveRoom'), callbacks.priority.LOW, 'irc-on-leave-room');
+		afterLeaveRoomCallback.add(this.onMessageReceived.bind(this, 'local', 'onLeaveRoom'), callbacks.priority.LOW, 'irc-on-leave-room');
 		// Chatting
 		callbacks.add(
 			'afterSaveMessage',
@@ -213,7 +215,7 @@ class Bridge {
 			'irc-on-save-message',
 		);
 		// Leaving
-		callbacks.add('afterLogoutCleanUp', this.onMessageReceived.bind(this, 'local', 'onLogout'), callbacks.priority.LOW, 'irc-on-logout');
+		afterLogoutCleanUpCallback.add(this.onMessageReceived.bind(this, 'local', 'onLogout'), callbacks.priority.LOW, 'irc-on-logout');
 	}
 
 	removeLocalHandlers() {
@@ -222,9 +224,9 @@ class Bridge {
 		callbacks.remove('afterCreateChannel', 'irc-on-create-channel');
 		callbacks.remove('afterCreateRoom', 'irc-on-create-room');
 		callbacks.remove('afterJoinRoom', 'irc-on-join-room');
-		callbacks.remove('afterLeaveRoom', 'irc-on-leave-room');
+		afterLeaveRoomCallback.remove('irc-on-leave-room');
 		callbacks.remove('afterSaveMessage', 'irc-on-save-message');
-		callbacks.remove('afterLogoutCleanUp', 'irc-on-logout');
+		afterLogoutCleanUpCallback.remove('irc-on-logout');
 	}
 
 	sendCommand(command, parameters) {

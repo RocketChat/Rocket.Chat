@@ -1,5 +1,5 @@
-import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import type { AppSignatureManager } from '@rocket.chat/apps-engine/server/managers/AppSignatureManager';
+import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 
 import { Apps } from '../../../ee/server/apps';
 import type { AppRealStorage } from '../../../ee/server/apps/storage';

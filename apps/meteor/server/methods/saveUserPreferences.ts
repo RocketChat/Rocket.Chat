@@ -1,7 +1,9 @@
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Subscriptions, Users } from '@rocket.chat/models';
+import type { FontSize } from '@rocket.chat/rest-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { ThemePreference } from '@rocket.chat/ui-theming/src/types/themes';
+import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 type UserPreferences = {
 	language: string;
@@ -34,8 +36,12 @@ type UserPreferences = {
 	sidebarGroupByType: boolean;
 	muteFocusedConversations: boolean;
 	dontAskAgainList: { action: string; label: string }[];
-	themeAppearence: 'auto' | 'light' | 'dark';
+	themeAppearence: ThemePreference;
+	fontSize?: FontSize;
 	receiveLoginDetectionEmail: boolean;
+	notifyCalendarEvents: boolean;
+	enableMobileRinging: boolean;
+	mentionsWithSymbol?: boolean;
 };
 
 declare module '@rocket.chat/ui-contexts' {
@@ -76,8 +82,14 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		sidebarDisplayAvatar: Match.Optional(Boolean),
 		sidebarGroupByType: Match.Optional(Boolean),
 		muteFocusedConversations: Match.Optional(Boolean),
+		themeAppearence: Match.Optional(String),
+		fontSize: Match.Optional(String),
 		omnichannelTranscriptEmail: Match.Optional(Boolean),
 		omnichannelTranscriptPDF: Match.Optional(Boolean),
+		omnichannelHideConversationAfterClosing: Match.Optional(Boolean),
+		notifyCalendarEvents: Match.Optional(Boolean),
+		enableMobileRinging: Match.Optional(Boolean),
+		mentionsWithSymbol: Match.Optional(Boolean),
 	};
 	check(settings, Match.ObjectIncluding(keys));
 	const user = await Users.findOneById(userId);

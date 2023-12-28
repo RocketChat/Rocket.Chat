@@ -2,9 +2,7 @@ import { Margins, States, StatesIcon, StatesSubtitle, StatesTitle, Tabs } from '
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import Page from '../../../../client/components/Page/Page';
-import PageHeader from '../../../../client/components/Page/PageHeader';
-import PageScrollableContentWithShadow from '../../../../client/components/Page/PageScrollableContentWithShadow';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../../client/components/Page';
 import MessageListSkeleton from '../../../../client/components/message/list/MessageListSkeleton';
 import { getErrorMessage } from '../../../../client/lib/errorHandling';
 import AuditForm from './components/AuditForm';
@@ -18,7 +16,7 @@ const AuditPage = () => {
 	const t = useTranslation();
 
 	return (
-		<Page>
+		<Page background='room'>
 			<PageHeader title={t('Message_auditing')} />
 			<Tabs>
 				<Tabs.Item selected={type === ''} onClick={() => setType('')}>

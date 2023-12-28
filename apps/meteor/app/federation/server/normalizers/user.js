@@ -1,5 +1,5 @@
-import _ from 'underscore';
 import { Users } from '@rocket.chat/models';
+import _ from 'underscore';
 
 import { getNameAndDomain, isFullyQualified } from '../functions/helpers';
 import { getFederationDomain } from '../lib/getFederationDomain';

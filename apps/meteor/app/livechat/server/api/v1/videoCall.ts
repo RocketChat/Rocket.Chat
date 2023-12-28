@@ -1,13 +1,14 @@
-import { isGETWebRTCCall, isPUTWebRTCCallId } from '@rocket.chat/rest-typings';
+import { Message, Omnichannel } from '@rocket.chat/core-services';
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Messages, Settings, Rooms } from '@rocket.chat/models';
-import { Message } from '@rocket.chat/core-services';
+import { isGETWebRTCCall, isPUTWebRTCCallId } from '@rocket.chat/rest-typings';
 
-import { settings as rcSettings } from '../../../../settings/server';
-import { API } from '../../../../api/server';
-import { settings } from '../lib/livechat';
-import { canSendMessageAsync } from '../../../../authorization/server/functions/canSendMessage';
-import { Livechat } from '../../lib/Livechat';
 import { i18n } from '../../../../../server/lib/i18n';
+import { API } from '../../../../api/server';
+import { canSendMessageAsync } from '../../../../authorization/server/functions/canSendMessage';
+import { settings as rcSettings } from '../../../../settings/server';
+import { Livechat } from '../../lib/LivechatTyped';
+import { settings } from '../lib/livechat';
 
 API.v1.addRoute(
 	'livechat/webrtc.call',
@@ -25,6 +26,10 @@ API.v1.addRoute(
 			);
 			if (!room) {
 				throw new Error('invalid-room');
+			}
+
+			if (!(await Omnichannel.isWithinMACLimit(room as IOmnichannelRoom))) {
+				throw new Error('error-mac-limit-reached');
 			}
 
 			const webrtcCallingAllowed = rcSettings.get('WebRTC_Enabled') === true && rcSettings.get('Omnichannel_call_provider') === 'WebRTC';
@@ -77,6 +82,10 @@ API.v1.addRoute(
 			);
 			if (!room) {
 				throw new Error('invalid-room');
+			}
+
+			if (!(await Omnichannel.isWithinMACLimit(room as IOmnichannelRoom))) {
+				throw new Error('error-mac-limit-reached');
 			}
 
 			const call = await Messages.findOneById(callId);

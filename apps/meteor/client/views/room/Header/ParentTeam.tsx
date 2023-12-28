@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
-import { Header } from '@rocket.chat/ui-client';
+import { HeaderTag, HeaderTagIcon, HeaderTagSkeleton } from '@rocket.chat/ui-client';
 import { useUserId, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
@@ -30,7 +30,6 @@ const ParentTeam = ({ room }: { room: IRoom }): ReactElement | null => {
 		isLoading: teamInfoLoading,
 		isError: teamInfoError,
 	} = useQuery(['teamId', teamId], async () => teamsInfoEndpoint({ teamId }), {
-		refetchOnWindowFocus: false,
 		keepPreviousData: true,
 		retry: (_, error) => (error as APIErrorResult)?.error === 'unauthorized' && false,
 	});
@@ -51,7 +50,7 @@ const ParentTeam = ({ room }: { room: IRoom }): ReactElement | null => {
 	};
 
 	if (teamInfoLoading || userTeamsLoading) {
-		return <Header.Tag.Skeleton />;
+		return <HeaderTagSkeleton />;
 	}
 
 	if (teamInfoError) {
@@ -59,10 +58,10 @@ const ParentTeam = ({ room }: { room: IRoom }): ReactElement | null => {
 	}
 
 	return (
-		<Header.Tag onClick={isTeamPublic || userBelongsToTeam ? redirectToMainRoom : undefined}>
-			<Header.Tag.Icon icon={{ name: isTeamPublic ? 'team' : 'team-lock' }} />
+		<HeaderTag onClick={isTeamPublic || userBelongsToTeam ? redirectToMainRoom : undefined}>
+			<HeaderTagIcon icon={{ name: isTeamPublic ? 'team' : 'team-lock' }} />
 			{teamInfoData?.teamInfo.name}
-		</Header.Tag>
+		</HeaderTag>
 	);
 };
 

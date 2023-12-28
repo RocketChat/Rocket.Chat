@@ -9,6 +9,7 @@ const ajv = new Ajv({
 
 type ChatSendMessage = {
 	message: Partial<IMessage>;
+	previewUrls?: string[];
 };
 
 const chatSendMessageSchema = {
@@ -63,6 +64,13 @@ const chatSendMessageSchema = {
 					nullable: true,
 				},
 			},
+		},
+		previewUrls: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+			nullable: true,
 		},
 	},
 	required: ['message'],
@@ -430,6 +438,7 @@ type ChatUpdate = {
 	roomId: IRoom['_id'];
 	msgId: string;
 	text: string;
+	previewUrls?: string[];
 };
 
 const ChatUpdateSchema = {
@@ -443,6 +452,13 @@ const ChatUpdateSchema = {
 		},
 		text: {
 			type: 'string',
+		},
+		previewUrls: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+			nullable: true,
 		},
 	},
 	required: ['roomId', 'msgId', 'text'],
@@ -681,8 +697,8 @@ const ChatGetDeletedMessagesSchema = {
 export const isChatGetDeletedMessagesProps = ajv.compile<ChatGetDeletedMessages>(ChatGetDeletedMessagesSchema);
 
 type ChatPostMessage =
-	| { roomId: string; text?: string; alias?: string; emoji?: string; avatar?: string; attachments?: MessageAttachment[] }
-	| { channel: string; text?: string; alias?: string; emoji?: string; avatar?: string; attachments?: MessageAttachment[] };
+	| { roomId: string | string[]; text?: string; alias?: string; emoji?: string; avatar?: string; attachments?: MessageAttachment[] }
+	| { channel: string | string[]; text?: string; alias?: string; emoji?: string; avatar?: string; attachments?: MessageAttachment[] };
 
 const ChatPostMessageSchema = {
 	oneOf: [
@@ -690,7 +706,15 @@ const ChatPostMessageSchema = {
 			type: 'object',
 			properties: {
 				roomId: {
-					type: 'string',
+					oneOf: [
+						{ type: 'string' },
+						{
+							type: 'array',
+							items: {
+								type: 'string',
+							},
+						},
+					],
 				},
 				text: {
 					type: 'string',
@@ -723,7 +747,15 @@ const ChatPostMessageSchema = {
 			type: 'object',
 			properties: {
 				channel: {
-					type: 'string',
+					oneOf: [
+						{ type: 'string' },
+						{
+							type: 'array',
+							items: {
+								type: 'string',
+							},
+						},
+					],
 				},
 				text: {
 					type: 'string',

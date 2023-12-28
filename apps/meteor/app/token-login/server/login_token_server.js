@@ -1,8 +1,8 @@
-import { check } from 'meteor/check';
-import { Accounts } from 'meteor/accounts-base';
 import { Users } from '@rocket.chat/models';
+import { Accounts } from 'meteor/accounts-base';
+import { check } from 'meteor/check';
 
-Accounts.registerLoginHandler('login-token', async function (result) {
+Accounts.registerLoginHandler('login-token', async (result) => {
 	if (!result.loginToken) {
 		return;
 	}

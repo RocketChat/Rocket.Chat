@@ -1,11 +1,11 @@
-import { Match, check } from 'meteor/check';
+import { Voip } from '@rocket.chat/core-services';
 import type { IVoipExtensionBase } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import { Voip } from '@rocket.chat/core-services';
+import { Match, check } from 'meteor/check';
 
-import { API } from '../../api';
-import { generateJWT } from '../../../../utils/server/lib/JWTHelper';
 import { settings } from '../../../../settings/server';
+import { generateJWT } from '../../../../utils/server/lib/JWTHelper';
+import { API } from '../../api';
 import { logger } from './logger';
 
 // Get the connector version and type

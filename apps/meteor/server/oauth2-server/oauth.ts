@@ -1,8 +1,8 @@
-import { Accounts } from 'meteor/accounts-base';
-import OAuthServer, { OAuthError, UnauthorizedRequestError } from 'oauth2-server';
+import { OAuthApps, Users } from '@rocket.chat/models';
 import express from 'express';
 import type { Express, NextFunction, Request, Response } from 'express';
-import { OAuthApps, Users } from '@rocket.chat/models';
+import { Accounts } from 'meteor/accounts-base';
+import OAuthServer, { OAuthError, UnauthorizedRequestError } from 'oauth2-server';
 
 import type { ModelConfig } from './model';
 import { Model } from './model';
@@ -68,7 +68,7 @@ export class OAuth2Server {
 			return next();
 		};
 
-		this.app.all('/oauth/token', debugMiddleware, transformRequestsNotUsingFormUrlencodedType, async function (req, res, next) {
+		this.app.all('/oauth/token', debugMiddleware, transformRequestsNotUsingFormUrlencodedType, async (req, res, next) => {
 			const request = new OAuthServer.Request(req);
 			const response = new OAuthServer.Response(res);
 
@@ -81,7 +81,7 @@ export class OAuth2Server {
 			}
 		});
 
-		this.app.get('/oauth/authorize', debugMiddleware, async function (req, res, next) {
+		this.app.get('/oauth/authorize', debugMiddleware, async (req, res, next) => {
 			if (typeof req.query.client_id !== 'string') {
 				return res.redirect('/oauth/error/404');
 			}
@@ -100,7 +100,7 @@ export class OAuth2Server {
 			return next();
 		});
 
-		this.app.post('/oauth/authorize', debugMiddleware, async function (req, res, next) {
+		this.app.post('/oauth/authorize', debugMiddleware, async (req, res, next) => {
 			if (req.body.allow !== 'yes') {
 				res.status(401);
 				return res.send({ error: 'access_denied', error_description: 'The user denied access to your application' });
@@ -131,7 +131,7 @@ export class OAuth2Server {
 			return next();
 		});
 
-		this.app.post('/oauth/authorize', debugMiddleware, async function (req: Request, res: Response, next: NextFunction) {
+		this.app.post('/oauth/authorize', debugMiddleware, async (req: Request, res: Response, next: NextFunction) => {
 			const request = new OAuthServer.Request(req);
 			const response = new OAuthServer.Response(res);
 
@@ -159,7 +159,7 @@ export class OAuth2Server {
 			}
 		});
 
-		this.app.use('/oauth/*', function (err: Error, _req: Request, res: Response, next: NextFunction) {
+		this.app.use('/oauth/*', (err: Error, _req: Request, res: Response, next: NextFunction) => {
 			if (!(err instanceof OAuthError)) return next(err);
 
 			delete err.stack;

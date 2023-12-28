@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { RocketChatFile } from '../../../file/server';
 import { settings } from '../../../settings/server';
-import { SystemLogger } from '../../../../server/lib/logger/system';
 
 export let RocketChatFileCustomSoundsInstance;
 
-Meteor.startup(function () {
+Meteor.startup(() => {
 	let storeType = 'GridFS';
 
 	if (settings.get('CustomSounds_Storage_Type')) {
@@ -34,7 +34,7 @@ Meteor.startup(function () {
 		absolutePath: path,
 	});
 
-	return WebApp.connectHandlers.use('/custom-sounds/', async function (req, res /* , next*/) {
+	return WebApp.connectHandlers.use('/custom-sounds/', async (req, res /* , next*/) => {
 		const fileId = decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, ''));
 
 		if (!fileId) {

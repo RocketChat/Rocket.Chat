@@ -7,7 +7,7 @@ const LoggedOutBanner = (): ReactElement => {
 	const t = useTranslation();
 
 	return (
-		<Banner variant='warning' icon={<Icon name='warning' size={24} />}>
+		<Banner variant='warning' icon={<Icon name='warning' size='x24' />}>
 			<Box textAlign='left'>{t('Logged_Out_Banner_Text')}</Box>
 		</Banner>
 	);

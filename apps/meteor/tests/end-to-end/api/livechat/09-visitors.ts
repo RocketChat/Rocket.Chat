@@ -1,12 +1,13 @@
-/* eslint-env mocha */
-
-import { expect } from 'chai';
+import { faker } from '@faker-js/faker';
 import type { ILivechatVisitor } from '@rocket.chat/core-typings';
-import type { Response } from 'supertest';
-import faker from '@faker-js/faker';
+import { expect } from 'chai';
+import { before, describe, it } from 'mocha';
+import moment from 'moment';
+import { type Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { updatePermission, updateSetting, removePermissionFromAllRoles, restorePermissionToRoles } from '../../../data/permissions.helper';
+import { getLicenseInfo } from '../../../data/licenses.helper';
+import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';
 import {
 	makeAgentAvailable,
 	createAgent,
@@ -14,9 +15,9 @@ import {
 	createVisitor,
 	startANewLivechatRoomAndTakeIt,
 } from '../../../data/livechat/rooms';
-import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';
 import { getRandomVisitorToken } from '../../../data/livechat/users';
 import { getLivechatVisitorByToken } from '../../../data/livechat/visitor';
+import { updatePermission, updateSetting, removePermissionFromAllRoles, restorePermissionToRoles } from '../../../data/permissions.helper';
 import { adminUsername } from '../../../data/user';
 import { IS_EE } from '../../../e2e/config/constants';
 
@@ -41,6 +42,10 @@ describe('LIVECHAT - visitors', function () {
 		});
 		it('should fail if visitor.token is not present', async () => {
 			const { body } = await request.post(api('livechat/visitor')).send({ visitor: {} });
+			expect(body).to.have.property('success', false);
+		});
+		it('should fail when token is an empty string', async () => {
+			const { body } = await request.post(api('livechat/visitor')).send({ visitor: { token: '' } });
 			expect(body).to.have.property('success', false);
 		});
 		it('should create a visitor', async () => {
@@ -305,6 +310,7 @@ describe('LIVECHAT - visitors', function () {
 		});
 
 		it("should return a 'visitor-has-open-rooms' error when there are open rooms", async () => {
+			await updateSetting('Livechat_Allow_collect_and_store_HTTP_header_informations', false);
 			const createdVisitor = await createVisitor();
 			await createLivechatRoom(createdVisitor.token);
 
@@ -317,6 +323,18 @@ describe('LIVECHAT - visitors', function () {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.error).to.be.equal('Cannot remove visitors with opened rooms [visitor-has-open-rooms]');
 				});
+		});
+
+		it("should not return a 'visitor-has-open-rooms' when visitor has open rooms but GDPR is enabled", async () => {
+			await updateSetting('Livechat_Allow_collect_and_store_HTTP_header_informations', true);
+			const createdVisitor = await createVisitor();
+			await createLivechatRoom(createdVisitor.token);
+
+			await request
+				.delete(api(`livechat/visitor/${createdVisitor.token}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
 		});
 
 		it('should return a visitor when the query params is all valid', async () => {
@@ -333,6 +351,62 @@ describe('LIVECHAT - visitors', function () {
 					expect(res.body.visitor).to.have.property('ts');
 					expect(res.body.visitor._id).to.be.equal(createdVisitor._id);
 				});
+		});
+
+		it('should return visitor activity field when visitor was active on month', async () => {
+			// Activity is determined by a conversation in which an agent has engaged (sent a message)
+			// For a visitor to be considered active, they must have had a conversation in the last 30 days
+			const period = moment().format('YYYY-MM');
+			const { visitor, room } = await startANewLivechatRoomAndTakeIt();
+			// agent should send a message on the room
+			await request
+				.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						rid: room._id,
+						msg: 'test',
+					},
+				});
+
+			const activeVisitor = await getLivechatVisitorByToken(visitor.token);
+			expect(activeVisitor).to.have.property('activity');
+			expect(activeVisitor.activity).to.include(period);
+		});
+
+		it('should not affect MAC count when a visitor is removed via GDPR', async () => {
+			const { visitor, room } = await startANewLivechatRoomAndTakeIt();
+			// agent should send a message on the room
+			await request
+				.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						rid: room._id,
+						msg: 'test',
+					},
+				});
+			const { body: currentLicense } = await getLicenseInfo(true);
+
+			await request
+				.delete(api(`livechat/visitor/${visitor.token}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			const { body: licenseAfterGdpr } = await getLicenseInfo(true);
+
+			expect(currentLicense.license).to.have.property('limits');
+			expect(currentLicense.license.limits).to.have.property('monthlyActiveContacts');
+			expect(currentLicense.license.limits.monthlyActiveContacts).to.have.property('value');
+			const currentLimit = currentLicense.license.limits.monthlyActiveContacts.value;
+
+			expect(licenseAfterGdpr.license).to.have.property('limits');
+			expect(licenseAfterGdpr.license.limits).to.have.property('monthlyActiveContacts');
+			expect(licenseAfterGdpr.license.limits.monthlyActiveContacts).to.have.property('value');
+			const limitAfterGdpr = licenseAfterGdpr.license.limits.monthlyActiveContacts.value;
+
+			expect(limitAfterGdpr).to.be.equal(currentLimit);
 		});
 
 		it("should return a 'error-removing-visitor' error when removeGuest's result is false", async () => {
@@ -800,7 +874,7 @@ describe('LIVECHAT - visitors', function () {
 		it('should create a new contact', async () => {
 			const token = getRandomVisitorToken();
 			const res = await request.post(api('omnichannel/contact')).set(credentials).send({
-				name: faker.name.findName(),
+				name: faker.person.fullName(),
 				token,
 			});
 			expect(res.body).to.have.property('success', true);
@@ -812,7 +886,7 @@ describe('LIVECHAT - visitors', function () {
 			expect(contact._id).to.equal(contactId);
 		});
 		it('should update an existing contact', async () => {
-			const name = faker.name.findName();
+			const name = faker.person.fullName();
 			const res = await request.post(api('omnichannel/contact')).set(credentials).send({
 				name,
 				token: contact.token,
@@ -826,9 +900,9 @@ describe('LIVECHAT - visitors', function () {
 			expect(contact.name).to.equal(name);
 		});
 		it('should change the contact name, email and phone', async () => {
-			const name = faker.name.findName();
+			const name = faker.person.fullName();
 			const email = faker.internet.email().toLowerCase();
-			const phone = faker.phone.phoneNumber();
+			const phone = faker.phone.number();
 			const res = await request.post(api('omnichannel/contact')).set(credentials).send({
 				name,
 				email,

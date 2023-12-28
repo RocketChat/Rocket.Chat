@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import { useCurrent } from './useCurrent';
 import { useItemsPerPage } from './useItemsPerPage';
@@ -17,6 +17,11 @@ export const usePagination = (): {
 	const [current, setCurrent] = useCurrent();
 	const itemsPerPageLabel = useItemsPerPageLabel();
 	const showingResultsLabel = useShowingResultsLabel();
+
+	// Reset to first page when itemsPerPage changes
+	useEffect(() => {
+		setCurrent(0);
+	}, [itemsPerPage, setCurrent]);
 
 	return useMemo(
 		() => ({

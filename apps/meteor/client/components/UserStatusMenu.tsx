@@ -28,7 +28,7 @@ const UserStatusMenu = ({
 	const options = useMemo(() => {
 		const renderOption = (status: UserStatusType, label: string): ReactElement => (
 			<Box display='flex' flexDirection='row' alignItems='center'>
-				<Box marginInlineEnd='x8'>
+				<Box marginInlineEnd={8}>
 					<UserStatus status={status} />
 				</Box>
 				{label}
@@ -87,6 +87,7 @@ const UserStatusMenu = ({
 				onKeyUp={handleKeyUp}
 				onKeyDown={handleKeyDown}
 				margin={margin}
+				aria-label={t('User_status_menu')}
 			>
 				<UserStatus status={status} />
 			</Button>

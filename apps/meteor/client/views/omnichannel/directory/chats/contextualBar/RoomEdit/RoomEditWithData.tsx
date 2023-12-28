@@ -31,11 +31,11 @@ function RoomEditWithData({ id: roomId, reload, reloadInfo, onClose }: RoomEditW
 	}
 
 	if (isRoomError || !room) {
-		return <Box mbs='x16'>{t('Room_not_found')}</Box>;
+		return <Box mbs={16}>{t('Room_not_found')}</Box>;
 	}
 
 	if (isVisitorError || !visitor) {
-		return <Box mbs='x16'>{t('Visitor_not_found')}</Box>;
+		return <Box mbs={16}>{t('Visitor_not_found')}</Box>;
 	}
 
 	return <RoomEdit room={room} visitor={visitor} reload={reload} reloadInfo={reloadInfo} onClose={onClose} />;

@@ -1,5 +1,5 @@
-import { Rooms } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
+import { Rooms } from '@rocket.chat/models';
 
 import notifications from '../../../../../../app/notifications/server/lib/Notifications';
 import { i18n } from '../../../../../lib/i18n';

@@ -1,13 +1,13 @@
-import { Random } from '@rocket.chat/random';
 import { api } from '@rocket.chat/core-services';
-import { Users } from '@rocket.chat/models';
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
 
-import { slashCommands } from '../../utils/lib/slashCommand';
-import { settings } from '../../settings/server';
-import { executeSendMessage } from '../../lib/server/methods/sendMessage';
-import { createDirectMessage } from '../../../server/methods/createDirectMessage';
 import { i18n } from '../../../server/lib/i18n';
+import { createDirectMessage } from '../../../server/methods/createDirectMessage';
+import { executeSendMessage } from '../../lib/server/methods/sendMessage';
+import { settings } from '../../settings/server';
+import { slashCommands } from '../../utils/lib/slashCommand';
 
 /*
  * Msg is a named function that will replace /msg commands

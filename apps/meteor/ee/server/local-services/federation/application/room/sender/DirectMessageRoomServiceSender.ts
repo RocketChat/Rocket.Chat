@@ -1,16 +1,16 @@
+import type { RocketChatFileAdapter } from '../../../../../../../server/services/federation/infrastructure/rocket-chat/adapters/File';
+import type { RocketChatSettingsAdapter } from '../../../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Settings';
 import { FederatedUserEE } from '../../../domain/FederatedUser';
 import type { IFederationBridgeEE } from '../../../domain/IFederationBridge';
 import type { RocketChatRoomAdapterEE } from '../../../infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatUserAdapterEE } from '../../../infrastructure/rocket-chat/adapters/User';
+import { AbstractFederationApplicationServiceEE } from '../../AbstractFederationApplicationServiceEE';
 import type {
 	FederationBeforeDirectMessageRoomCreationDto,
 	FederationCreateDirectMessageDto,
 	FederationOnDirectMessageRoomCreationDto,
 	FederationRoomInviteUserDto,
 } from './input/RoomSenderDto';
-import { AbstractFederationApplicationServiceEE } from '../../AbstractFederationApplicationServiceEE';
-import type { RocketChatFileAdapter } from '../../../../../../../server/services/federation/infrastructure/rocket-chat/adapters/File';
-import type { RocketChatSettingsAdapter } from '../../../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Settings';
 
 export class FederationDirectMessageRoomServiceSender extends AbstractFederationApplicationServiceEE {
 	constructor(

@@ -18,6 +18,6 @@ Meteor.startup(() => {
 			return !!subscription;
 		},
 		order: 100,
-		group: ['message', 'menu'],
+		group: 'message',
 	});
 });

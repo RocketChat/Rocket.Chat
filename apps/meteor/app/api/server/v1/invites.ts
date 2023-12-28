@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import type { IInvite } from '@rocket.chat/core-typings';
 import {
 	isFindOrCreateInviteParams,
@@ -7,13 +6,13 @@ import {
 	isSendInvitationEmailParams,
 } from '@rocket.chat/rest-typings';
 
-import { API } from '../api';
 import { findOrCreateInvite } from '../../../invites/server/functions/findOrCreateInvite';
-import { removeInvite } from '../../../invites/server/functions/removeInvite';
 import { listInvites } from '../../../invites/server/functions/listInvites';
+import { removeInvite } from '../../../invites/server/functions/removeInvite';
+import { sendInvitationEmail } from '../../../invites/server/functions/sendInvitationEmail';
 import { useInviteToken } from '../../../invites/server/functions/useInviteToken';
 import { validateInviteToken } from '../../../invites/server/functions/validateInviteToken';
-import { sendInvitationEmail } from '../../../invites/server/functions/sendInvitationEmail';
+import { API } from '../api';
 
 API.v1.addRoute(
 	'listInvites',
@@ -66,6 +65,7 @@ API.v1.addRoute(
 			const { token } = this.bodyParams;
 			// eslint-disable-next-line react-hooks/rules-of-hooks
 
+			// eslint-disable-next-line react-hooks/rules-of-hooks
 			return API.v1.success(await useInviteToken(this.userId, token));
 		},
 	},

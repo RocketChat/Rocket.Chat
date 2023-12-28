@@ -1,18 +1,48 @@
-import { Meteor } from 'meteor/meteor';
-import { Accounts } from 'meteor/accounts-base';
 import { Settings, Rooms, Users } from '@rocket.chat/models';
 import colors from 'colors/safe';
+import { Accounts } from 'meteor/accounts-base';
+import { Meteor } from 'meteor/meteor';
 
-import { RocketChatFile } from '../../app/file/server';
-import { FileUpload } from '../../app/file-upload/server';
 import { getUsersInRole } from '../../app/authorization/server';
-import { addUserRolesAsync } from '../lib/roles/addUserRoles';
-import { settings } from '../../app/settings/server';
-import { addUserToDefaultChannels } from '../../app/lib/server';
+import { FileUpload } from '../../app/file-upload/server';
+import { RocketChatFile } from '../../app/file/server';
+import { addUserToDefaultChannels } from '../../app/lib/server/functions/addUserToDefaultChannels';
 import { checkUsernameAvailability } from '../../app/lib/server/functions/checkUsernameAvailability';
+import { settings } from '../../app/settings/server';
 import { validateEmail } from '../../lib/emailValidator';
+import { addUserRolesAsync } from '../lib/roles/addUserRoles';
 
-Meteor.startup(async function () {
+Meteor.startup(async () => {
+	const dynamicImport = {
+		'dynamic-import': {
+			useLocationOrigin: true,
+		},
+	};
+
+	if (!Meteor.settings) {
+		Meteor.settings = {
+			public: {
+				packages: {
+					'dynamic-import': dynamicImport,
+				},
+			},
+		};
+	}
+
+	if (!Meteor.settings.public) {
+		Meteor.settings.public = {
+			packages: {
+				'dynamic-import': dynamicImport,
+			},
+		};
+	}
+
+	if (!Meteor.settings.public.packages) {
+		Meteor.settings.public.packages = dynamicImport;
+	}
+
+	Meteor.settings.public.packages['dynamic-import'] = dynamicImport['dynamic-import'];
+
 	if (!settings.get('Initial_Channel_Created')) {
 		const exists = await Rooms.findOneById('GENERAL', { projection: { _id: 1 } });
 		if (!exists) {
@@ -115,11 +145,11 @@ Meteor.startup(async function () {
 
 			adminUser.type = 'user';
 
-			const id = await Users.create(adminUser);
+			const { insertedId: userId } = await Users.create(adminUser);
 
-			await Accounts.setPasswordAsync(id, process.env.ADMIN_PASS);
+			await Accounts.setPasswordAsync(userId, process.env.ADMIN_PASS);
 
-			await addUserRolesAsync(id, ['admin']);
+			await addUserRolesAsync(userId, ['admin']);
 		} else {
 			console.log(colors.red('Users with admin role already exist; Ignoring environment variables ADMIN_PASS'));
 		}

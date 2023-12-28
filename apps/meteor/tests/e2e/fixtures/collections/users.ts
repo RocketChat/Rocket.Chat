@@ -9,7 +9,7 @@ type UserFixture = IUser & {
 };
 
 export function createUserFixture(user: IUserState): UserFixture {
-	const {username, hashedToken, loginExpire} = user.data;
+	const { username, hashedToken, loginExpire } = user.data;
 
 	return {
 		_id: `${username}`,
@@ -28,17 +28,21 @@ export function createUserFixture(user: IUserState): UserFixture {
 			email: {
 				verificationTokens: [
 					{
-						token: faker.datatype.uuid(),
+						token: faker.string.uuid(),
 						address: `${username}@email.com`,
 						when: new Date(),
 					},
 				],
 			},
-			resume: { loginTokens: [ {
-				when: loginExpire,
-				hashedToken
-			} ] },
-			emailCode: [{ code: '', expire: new Date() }],
+			resume: {
+				loginTokens: [
+					{
+						when: loginExpire,
+						hashedToken,
+					},
+				],
+			},
+			emailCode: { code: '', attempts: 0, expire: new Date() },
 		},
 		createdAt: new Date(),
 		_updatedAt: new Date(),

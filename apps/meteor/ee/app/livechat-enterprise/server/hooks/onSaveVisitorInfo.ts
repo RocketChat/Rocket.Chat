@@ -4,7 +4,6 @@ import { OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
 import { callbacks } from '../../../../../lib/callbacks';
 import { removePriorityFromRoom, updateRoomPriority } from '../api/lib/priorities';
 import { removeRoomSLA, updateRoomSLA } from '../api/lib/sla';
-import { cbLogger } from '../lib/logger';
 
 const updateSLA = async (room: IOmnichannelRoom, user: Required<Pick<IUser, '_id' | 'username' | 'name'>>, slaId?: string) => {
 	if (!slaId) {
@@ -37,19 +36,13 @@ callbacks.add(
 		const { slaId: newSlaId, priorityId: newPriorityId } = room;
 
 		if (oldSlaId === newSlaId && oldPriorityId === newPriorityId) {
-			cbLogger.debug('No changes in SLA or Priority');
 			return room;
 		}
 		if (oldSlaId === newSlaId && oldPriorityId !== newPriorityId) {
-			cbLogger.debug(`Updating Priority for room ${room._id}, from ${oldPriorityId} to ${newPriorityId}`);
 			await updatePriority(room, user, newPriorityId);
 		} else if (oldSlaId !== newSlaId && oldPriorityId === newPriorityId) {
-			cbLogger.debug(`Updating SLA for room ${room._id}, from ${oldSlaId} to ${newSlaId}`);
 			await updateSLA(room, user, newSlaId);
 		} else {
-			cbLogger.debug(
-				`Updating SLA and Priority for room ${room._id}, from ${oldSlaId} to ${newSlaId} and from ${oldPriorityId} to ${newPriorityId}`,
-			);
 			await Promise.all([updateSLA(room, user, newSlaId), updatePriority(room, user, newPriorityId)]);
 		}
 

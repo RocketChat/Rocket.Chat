@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { check } from 'meteor/check';
-import Gravatar from 'gravatar';
-import { ServiceConfiguration } from 'meteor/service-configuration';
 import type { IUser } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import Gravatar from 'gravatar';
+import { check } from 'meteor/check';
+import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { settings } from '../../../settings/server';
 

@@ -10,6 +10,7 @@ import {
 	ContextualbarClose,
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
+	ContextualbarTitle,
 } from '../../../../../../client/components/Contextualbar';
 import InfoPanel from '../../../../../../client/components/InfoPanel';
 import UserAvatar from '../../../../../../client/components/avatar/UserAvatar';
@@ -28,7 +29,7 @@ const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user, o
 
 	const handleDeviceLogout = useDeviceLogout(sessionId, '/v1/sessions/logout');
 
-	const { name: clientName, os } = device || {};
+	const { name: clientName, os, version: rcVersion } = device || {};
 	const { username, name } = _user || {};
 	const userPresence = usePresence(userId);
 
@@ -37,7 +38,7 @@ const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user, o
 	return (
 		<Contextualbar>
 			<ContextualbarHeader>
-				{t('Device_Info')}
+				<ContextualbarTitle>{t('Device_Info')}</ContextualbarTitle>
 				<ContextualbarClose onClick={handleCloseContextualBar} />
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent>
@@ -45,6 +46,11 @@ const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user, o
 					<InfoPanel.Field>
 						<InfoPanel.Label>{t('Client')}</InfoPanel.Label>
 						<InfoPanel.Text>{clientName}</InfoPanel.Text>
+					</InfoPanel.Field>
+
+					<InfoPanel.Field>
+						<InfoPanel.Label>{t('Version')}</InfoPanel.Label>
+						<InfoPanel.Text>{rcVersion || '—'}</InfoPanel.Text>
 					</InfoPanel.Field>
 
 					<InfoPanel.Field>
@@ -57,7 +63,7 @@ const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user, o
 							<InfoPanel.Label>{t('User')}</InfoPanel.Label>
 							<Box>
 								<UserAvatar username={username} etag={userPresence?.avatarETag} />
-								<Box is='span' pi='x8'>
+								<Box is='span' pi={8}>
 									<StatusBullet status={userPresence?.status} />
 								</Box>
 								{name && <Box is='span'>{name}</Box>}

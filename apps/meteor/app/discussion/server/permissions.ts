@@ -1,5 +1,5 @@
-import { Meteor } from 'meteor/meteor';
 import { Permissions } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
 Meteor.startup(async () => {
 	// Add permissions for discussion

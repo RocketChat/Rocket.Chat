@@ -1,11 +1,11 @@
 import { mkdir, writeFile } from 'fs/promises';
 
-import { Messages } from '@rocket.chat/models';
 import type { IMessage, IRoom, IUser, MessageAttachment, FileProp, RoomType } from '@rocket.chat/core-typings';
+import { Messages } from '@rocket.chat/models';
 
 import { settings } from '../../../app/settings/server';
-import { joinPath } from '../fileUtils';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
+import { joinPath } from '../fileUtils';
 import { i18n } from '../i18n';
 
 const hideUserName = (

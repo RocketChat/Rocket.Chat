@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { updateCustomUserStatus } from '../lib/customUserStatus';
 import { Notifications } from '../../../notifications/client';
+import { updateCustomUserStatus } from '../lib/customUserStatus';
 
 Meteor.startup(() => Notifications.onLogged('updateCustomUserStatus', (data) => updateCustomUserStatus(data.userStatusData)));

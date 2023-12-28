@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 
 import { emoji } from '../../emoji/server';
-import { getEmojiConfig, isSetNotNull } from '../lib/rocketchat';
-import { getUserPreference } from '../../utils/server';
+import { getUserPreference } from '../../utils/server/lib/getUserPreference';
+import { getEmojiConfig } from '../lib/getEmojiConfig';
+import { isSetNotNull } from '../lib/isSetNotNull';
 
 const config = getEmojiConfig();
 
@@ -20,16 +21,11 @@ if (emoji.packages.emojione) {
 	for (const key in config.emojione.emojioneList) {
 		if (config.emojione.emojioneList.hasOwnProperty(key)) {
 			const currentEmoji = config.emojione.emojioneList[key];
-			// @ts-expect-error - emojione types
 			currentEmoji.emojiPackage = 'emojione';
-			// @ts-expect-error - emojione types
 			emoji.list[key] = currentEmoji;
 
-			// @ts-expect-error - emojione types
 			if (currentEmoji.shortnames) {
-				// @ts-expect-error - emojione types
 				currentEmoji.shortnames.forEach((shortname: string) => {
-					// @ts-expect-error - emojione types
 					emoji.list[shortname] = currentEmoji;
 				});
 			}
@@ -37,7 +33,7 @@ if (emoji.packages.emojione) {
 	}
 
 	// Additional settings -- ascii emojis
-	Meteor.startup(async function () {
+	Meteor.startup(async () => {
 		if ((await isSetNotNull(() => emoji.packages.emojione)) && emoji.packages.emojione) {
 			if (await isSetNotNull(() => getUserPreference(Meteor.userId() as string, 'convertAsciiEmoji'))) {
 				emoji.packages.emojione.ascii = await getUserPreference(Meteor.userId() as string, 'convertAsciiEmoji');

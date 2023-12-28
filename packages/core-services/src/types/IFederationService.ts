@@ -2,6 +2,8 @@ import type { FederationPaginatedResult, IFederationPublicRooms } from '@rocket.
 
 export interface IFederationService {
 	createDirectMessageRoomAndInviteUser(internalInviterId: string, internalRoomId: string, externalInviteeId: string): Promise<void>;
+
+	verifyMatrixIds(matrixIds: string[]): Promise<Map<string, string>>;
 }
 
 export interface IFederationJoinExternalPublicRoomInput {
@@ -34,4 +36,6 @@ export interface IFederationServiceEE {
 	scheduleJoinExternalPublicRoom(internalUserId: string, externalRoomId: string, roomName?: string, pageToken?: string): Promise<void>;
 
 	joinExternalPublicRoom(input: IFederationJoinExternalPublicRoomInput): Promise<void>;
+
+	verifyMatrixIds(matrixIds: string[]): Promise<Map<string, string>>;
 }

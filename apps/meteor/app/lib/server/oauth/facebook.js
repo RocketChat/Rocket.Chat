@@ -1,9 +1,9 @@
 import crypto from 'crypto';
 
-import { Match, check } from 'meteor/check';
-import _ from 'underscore';
-import { OAuth } from 'meteor/oauth';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { Match, check } from 'meteor/check';
+import { OAuth } from 'meteor/oauth';
+import _ from 'underscore';
 
 import { registerAccessTokenService } from './oauth';
 
@@ -37,7 +37,7 @@ const getIdentity = async function (accessToken, fields, secret) {
 	}
 };
 
-registerAccessTokenService('facebook', async function (options) {
+registerAccessTokenService('facebook', async (options) => {
 	check(
 		options,
 		Match.ObjectIncluding({

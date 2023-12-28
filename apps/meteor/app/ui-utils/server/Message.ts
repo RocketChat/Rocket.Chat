@@ -1,11 +1,11 @@
-import { Meteor } from 'meteor/meteor';
-import { escapeHTML } from '@rocket.chat/string-helpers';
 import type { IMessage } from '@rocket.chat/core-typings';
+import { escapeHTML } from '@rocket.chat/string-helpers';
+import { Meteor } from 'meteor/meteor';
 
-import { MessageTypes } from '../lib/MessageTypes';
-import { settings } from '../../settings/server';
 import { trim } from '../../../lib/utils/stringUtils';
 import { i18n } from '../../../server/lib/i18n';
+import { settings } from '../../settings/server';
+import { MessageTypes } from '../lib/MessageTypes';
 
 export const Message = {
 	parse(msg: IMessage, language: string) {

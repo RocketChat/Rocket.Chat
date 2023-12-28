@@ -60,7 +60,7 @@ export abstract class RoomCoordinator {
 		const fields = routeData;
 
 		const regExp = /(:[\w\(\)\\\+\*\.\?]+)+/g;
-		let path = pathDef.replace(regExp, function (key) {
+		let path = pathDef.replace(regExp, (key) => {
 			const firstRegexpChar = key.indexOf('(');
 			// get the content behind : and (\\d+/)
 			key = key.substring(1, firstRegexpChar > 0 ? firstRegexpChar : undefined);

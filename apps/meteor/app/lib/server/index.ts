@@ -21,9 +21,7 @@ import './methods/createToken';
 import './methods/deleteMessage';
 import './methods/deleteUserOwnAccount';
 import './methods/executeSlashCommandPreview';
-import './startup/filterATAllTag';
-import './startup/filterATHereTag';
-import './methods/filterBadWords';
+import './startup/mentionUserNotInChannel';
 import './methods/getChannelHistory';
 import './methods/getRoomJoinCode';
 import './methods/getRoomRoles';
@@ -53,4 +51,3 @@ import './methods/updateMessage';
 import './methods/saveCustomFields';
 
 export * from './lib';
-export * from './functions';

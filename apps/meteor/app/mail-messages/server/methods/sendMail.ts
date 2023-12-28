@@ -1,9 +1,9 @@
-import { Meteor } from 'meteor/meteor';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
-import { Mailer } from '../lib/Mailer';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
+import { Mailer } from '../lib/Mailer';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -14,7 +14,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'Mailer.sendMail'(from, subject, body, dryrun, query) {
-		methodDeprecationLogger.warn('Mailer.sendMail will be deprecated in future versions of Rocket.Chat');
+		methodDeprecationLogger.method('Mailer.sendMail', '7.0.0');
 
 		const userId = Meteor.userId();
 

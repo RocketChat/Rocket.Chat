@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { updatePermission } from '../../data/permissions.helper';
@@ -62,10 +63,36 @@ describe('[OAuthApps]', function () {
 				})
 				.end(done);
 		});
+		it('should return a 403 Forbidden error when the user does not have the necessary permission by client id', (done) => {
+			updatePermission('manage-oauth-apps', []).then(() => {
+				request
+					.get(api('oauth-apps.get?clientId=zapier'))
+					.set(credentials)
+					.expect(403)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.be.equal('unauthorized');
+					})
+					.end(done);
+			});
+		});
+		it('should return a 403 Forbidden error when the user does not have the necessary permission by app id', (done) => {
+			updatePermission('manage-oauth-apps', []).then(() => {
+				request
+					.get(api('oauth-apps.get?appId=zapier'))
+					.set(credentials)
+					.expect(403)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.be.equal('unauthorized');
+					})
+					.end(done);
+			});
+		});
 	});
 
-	describe('[/oauth-apps.create]', function () {
-		it('should return an error when the user does not have the necessary permission', async function () {
+	describe('[/oauth-apps.create]', () => {
+		it('should return an error when the user does not have the necessary permission', async () => {
 			await updatePermission('manage-oauth-apps', []);
 
 			await request
@@ -81,7 +108,7 @@ describe('[OAuthApps]', function () {
 			await updatePermission('manage-oauth-apps', ['admin']);
 		});
 
-		it("should return an error when the 'name' property is invalid", async function () {
+		it("should return an error when the 'name' property is invalid", async () => {
 			await request
 				.post(api('oauth-apps.create'))
 				.set(credentials)
@@ -98,7 +125,7 @@ describe('[OAuthApps]', function () {
 				});
 		});
 
-		it("should return an error when the 'redirectUri' property is invalid", async function () {
+		it("should return an error when the 'redirectUri' property is invalid", async () => {
 			await request
 				.post(api('oauth-apps.create'))
 				.set(credentials)
@@ -115,7 +142,7 @@ describe('[OAuthApps]', function () {
 				});
 		});
 
-		it("should return an error when the 'active' property is not a boolean", async function () {
+		it("should return an error when the 'active' property is not a boolean", async () => {
 			await request
 				.post(api('oauth-apps.create'))
 				.set(credentials)
@@ -132,7 +159,7 @@ describe('[OAuthApps]', function () {
 				});
 		});
 
-		it('should create an oauthApp', async function () {
+		it('should create an oauthApp', async () => {
 			const name = `new app ${Date.now()}`;
 			const redirectUri = 'http://localhost:3000';
 			const active = true;

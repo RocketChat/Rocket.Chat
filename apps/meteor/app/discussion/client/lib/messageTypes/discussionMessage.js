@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { MessageTypes } from '../../../../ui-utils/client';
 
-Meteor.startup(function () {
+Meteor.startup(() => {
 	MessageTypes.registerType({
 		id: 'discussion-created',
 		system: false,

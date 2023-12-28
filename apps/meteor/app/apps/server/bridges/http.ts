@@ -1,14 +1,18 @@
-import { HttpBridge } from '@rocket.chat/apps-engine/server/bridges/HttpBridge';
 import type { IHttpResponse } from '@rocket.chat/apps-engine/definition/accessors';
 import type { IHttpBridgeRequestInfo } from '@rocket.chat/apps-engine/server/bridges';
+import { HttpBridge } from '@rocket.chat/apps-engine/server/bridges/HttpBridge';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 
 const isGetOrHead = (method: string): boolean => ['GET', 'HEAD'].includes(method.toUpperCase());
 
+// Previously, there was no timeout for HTTP requests.
+// We're setting the default timeout now to 3 minutes as it
+// seems to be a good balance
+const DEFAULT_TIMEOUT = 3 * 60 * 1000;
+
 export class AppHttpBridge extends HttpBridge {
-	// eslint-disable-next-line no-empty-function
 	constructor(private readonly orch: AppServerOrchestrator) {
 		super();
 	}
@@ -63,6 +67,8 @@ export class AppHttpBridge extends HttpBridge {
 			content = undefined;
 		}
 
+		const timeout = request.timeout || DEFAULT_TIMEOUT;
+
 		// end comptability with old HTTP.call API
 
 		this.orch.debugLog(`The App ${info.appId} is requesting from the outter webs:`, info);
@@ -74,6 +80,7 @@ export class AppHttpBridge extends HttpBridge {
 					method,
 					body: content,
 					headers,
+					timeout,
 				},
 				(request.hasOwnProperty('strictSSL') && !request.strictSSL) ||
 					(request.hasOwnProperty('rejectUnauthorized') && request.rejectUnauthorized),

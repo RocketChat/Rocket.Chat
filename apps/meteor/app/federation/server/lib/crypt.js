@@ -1,7 +1,7 @@
 import { FederationKeys } from '@rocket.chat/models';
 
-import { getFederationDomain } from './getFederationDomain';
 import { search } from './dns';
+import { getFederationDomain } from './getFederationDomain';
 import { cryptLogger } from './logger';
 
 async function decrypt(data, peerKey) {

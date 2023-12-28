@@ -1,6 +1,6 @@
 declare module 'meteor/oauth' {
-	import type { Mongo } from 'meteor/mongo';
 	import type { IRocketChatRecord } from '@rocket.chat/core-typings';
+	import type { Mongo } from 'meteor/mongo';
 
 	interface IOauthCredentials extends IRocketChatRecord {
 		key: string;

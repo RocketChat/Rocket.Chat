@@ -2,6 +2,8 @@ version: '3.8'
 
 services:
   rocketchat:
+    volumes:
+      - /tmp/coverage:/tmp/coverage
     platform: linux/amd64
     build:
       dockerfile: ${RC_DOCKERFILE}
@@ -15,6 +17,8 @@ services:
       - 'TRANSPORTER=${TRANSPORTER}'
       - MOLECULER_LOG_LEVEL=info
       - 'ROCKETCHAT_LICENSE=${ENTERPRISE_LICENSE}'
+      - 'COVERAGE_DIR=${COVERAGE_DIR}'
+      - 'COVERAGE_REPORTER=${COVERAGE_REPORTER}'
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     depends_on:
@@ -29,6 +33,7 @@ services:
     platform: linux/amd64
     build:
       dockerfile: ee/apps/authorization-service/Dockerfile
+      context: .
       args:
         SERVICE: authorization-service
     image: ghcr.io/${LOWERCASE_REPOSITORY}/authorization-service:${DOCKER_TAG}
@@ -45,6 +50,7 @@ services:
     platform: linux/amd64
     build:
       dockerfile: ee/apps/account-service/Dockerfile
+      context: .
       args:
         SERVICE: account-service
     image: ghcr.io/${LOWERCASE_REPOSITORY}/account-service:${DOCKER_TAG}
@@ -61,6 +67,7 @@ services:
     platform: linux/amd64
     build:
       dockerfile: ee/apps/presence-service/Dockerfile
+      context: .
       args:
         SERVICE: presence-service
     image: ghcr.io/${LOWERCASE_REPOSITORY}/presence-service:${DOCKER_TAG}
@@ -77,6 +84,7 @@ services:
     platform: linux/amd64
     build:
       dockerfile: ee/apps/ddp-streamer/Dockerfile
+      context: .
       args:
         SERVICE: ddp-streamer
     image: ghcr.io/${LOWERCASE_REPOSITORY}/ddp-streamer-service:${DOCKER_TAG}
@@ -99,6 +107,7 @@ services:
     platform: linux/amd64
     build:
       dockerfile: ee/apps/stream-hub-service/Dockerfile
+      context: .
       args:
         SERVICE: stream-hub-service
     image: ghcr.io/${LOWERCASE_REPOSITORY}/stream-hub-service:${DOCKER_TAG}
@@ -115,6 +124,7 @@ services:
     platform: linux/amd64
     build:
       dockerfile: ee/apps/queue-worker/Dockerfile
+      context: .
       args:
         SERVICE: queue-worker
     image: ghcr.io/${LOWERCASE_REPOSITORY}/queue-worker-service:${DOCKER_TAG}
@@ -131,6 +141,7 @@ services:
     platform: linux/amd64
     build:
       dockerfile: ee/apps/omnichannel-transcript/Dockerfile
+      context: .
       args:
         SERVICE: omnichannel-transcript
     image: ghcr.io/${LOWERCASE_REPOSITORY}/omnichannel-transcript-service:${DOCKER_TAG}

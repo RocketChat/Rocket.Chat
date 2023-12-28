@@ -1,17 +1,15 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 
+import { router } from '../../../providers/RouterProvider';
 import { roomCoordinator } from '../../rooms/roomCoordinator';
 import type { ChatAPI } from '../ChatAPI';
 
 export const replyBroadcast = async (_chat: ChatAPI, message: IMessage) => {
-	const queryStringParams = FlowRouter.current().queryParams;
-
 	roomCoordinator.openRouteLink(
 		'd',
 		{ name: message.u.username },
 		{
-			...queryStringParams,
+			...router.getSearchParameters(),
 			reply: message._id,
 		},
 	);

@@ -1,10 +1,10 @@
-import React, { useMemo } from 'react';
 import { useSetting, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
+import React, { useMemo } from 'react';
 
-import { encrypt, getKeyFromString } from './crypto';
 import { useRoom } from '../../../../client/views/room/contexts/RoomContext';
 import { sdk } from '../../../utils/client/lib/SDKClient';
+import { encrypt, getKeyFromString } from './crypto';
 
 const ExternalFrameContainer = () => {
 	const uid = useUserId();

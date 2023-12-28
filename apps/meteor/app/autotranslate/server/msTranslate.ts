@@ -2,14 +2,14 @@
  * @author Vigneshwaran Odayappan <vickyokrm@gmail.com>
  */
 
-import _ from 'underscore';
 import type { IMessage, IProviderMetadata, ISupportedLanguage, ITranslationResult, MessageAttachment } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import _ from 'underscore';
 
+import { i18n } from '../../../server/lib/i18n';
+import { settings } from '../../settings/server';
 import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';
 import { msLogger } from './logger';
-import { settings } from '../../settings/server';
-import { i18n } from '../../../server/lib/i18n';
 
 /**
  * Microsoft translation service provider class representation.
@@ -87,7 +87,7 @@ class MsAutoTranslate extends AutoTranslate {
 		if (this.supportedLanguages[target]) {
 			return this.supportedLanguages[target];
 		}
-		const request = await fetch(this.apiEndPointUrl);
+		const request = await fetch(this.apiGetLanguages);
 		if (!request.ok) {
 			throw new Error(request.statusText);
 		}

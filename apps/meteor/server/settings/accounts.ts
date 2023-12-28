@@ -57,6 +57,19 @@ export const createAccountSettings = () =>
 				],
 			});
 
+			await this.add('Accounts_TwoFactorAuthentication_Max_Invalid_Email_Code_Attempts', 5, {
+				type: 'int',
+				enableQuery: [
+					enable2FA,
+					{
+						_id: 'Accounts_TwoFactorAuthentication_By_Email_Enabled',
+						value: true,
+					},
+				],
+				i18nLabel: 'Accounts_TwoFactorAuthentication_Max_Invalid_Email_Code_Attempts',
+				i18nDescription: 'Accounts_TwoFactorAuthentication_Max_Invalid_Email_Code_Attempts_Description',
+			});
+
 			await this.add('Accounts_TwoFactorAuthentication_RememberFor', 1800, {
 				type: 'int',
 				enableQuery: enable2FA,
@@ -72,7 +85,7 @@ export const createAccountSettings = () =>
 		const enableQueryCollectData = { _id: 'Block_Multiple_Failed_Logins_Enabled', value: true };
 
 		await this.section('Login_Attempts', async function () {
-			await this.add('Block_Multiple_Failed_Logins_Enabled', false, {
+			await this.add('Block_Multiple_Failed_Logins_Enabled', true, {
 				type: 'boolean',
 			});
 
@@ -205,6 +218,10 @@ export const createAccountSettings = () =>
 			type: 'boolean',
 			public: true,
 		});
+		await this.add('Accounts_AllowFeaturePreview', false, {
+			type: 'boolean',
+			public: true,
+		});
 		await this.add('Accounts_CustomFieldsToShowInUserInfo', '', {
 			type: 'string',
 			public: true,
@@ -278,13 +295,6 @@ export const createAccountSettings = () =>
 			await this.add('Accounts_EmailVerification', false, {
 				type: 'boolean',
 				public: true,
-				enableQuery: {
-					_id: 'SMTP_Host',
-					value: {
-						$exists: true,
-						$ne: '',
-					},
-				},
 			});
 			await this.add('Accounts_Verify_Email_For_External_Accounts', true, {
 				type: 'boolean',
@@ -386,6 +396,7 @@ export const createAccountSettings = () =>
 			});
 			await this.add('Accounts_Registration_Users_Default_Roles', 'user', {
 				type: 'string',
+				public: true,
 			});
 			await this.add('Accounts_PasswordReset', true, {
 				type: 'boolean',
@@ -572,6 +583,12 @@ export const createAccountSettings = () =>
 				i18nLabel: 'Sort_By',
 			});
 
+			await this.add('Accounts_Default_User_Preferences_showThreadsInMainChannel', false, {
+				type: 'boolean',
+				public: true,
+				i18nLabel: 'Always_show_thread_replies_in_main_channel',
+			});
+
 			await this.add('Accounts_Default_User_Preferences_alsoSendThreadToChannel', 'default', {
 				type: 'select',
 				values: [
@@ -680,6 +697,18 @@ export const createAccountSettings = () =>
 				public: true,
 				i18nLabel: 'Omnichannel_transcript_email',
 			});
+
+			await this.add('Accounts_Default_User_Preferences_notifyCalendarEvents', true, {
+				type: 'boolean',
+				public: true,
+				i18nLabel: 'Notify_Calendar_Events',
+			});
+
+			await this.add('Accounts_Default_User_Preferences_enableMobileRinging', true, {
+				type: 'boolean',
+				public: true,
+				i18nLabel: 'VideoConf_Mobile_Ringing',
+			});
 		});
 
 		await this.section('Avatar', async function () {
@@ -722,50 +751,60 @@ export const createAccountSettings = () =>
 		await this.section('Password_Policy', async function () {
 			await this.add('Accounts_Password_Policy_Enabled', false, {
 				type: 'boolean',
+				public: true,
 			});
 
 			const enableQuery = {
 				_id: 'Accounts_Password_Policy_Enabled',
 				value: true,
+				public: true,
 			};
 
 			await this.add('Accounts_Password_Policy_MinLength', 7, {
 				type: 'int',
+				public: true,
 				enableQuery,
 			});
 
 			await this.add('Accounts_Password_Policy_MaxLength', -1, {
 				type: 'int',
+				public: true,
 				enableQuery,
 			});
 
 			await this.add('Accounts_Password_Policy_ForbidRepeatingCharacters', true, {
 				type: 'boolean',
+				public: true,
 				enableQuery,
 			});
 
 			await this.add('Accounts_Password_Policy_ForbidRepeatingCharactersCount', 3, {
 				type: 'int',
+				public: true,
 				enableQuery,
 			});
 
 			await this.add('Accounts_Password_Policy_AtLeastOneLowercase', true, {
 				type: 'boolean',
+				public: true,
 				enableQuery,
 			});
 
 			await this.add('Accounts_Password_Policy_AtLeastOneUppercase', true, {
 				type: 'boolean',
+				public: true,
 				enableQuery,
 			});
 
 			await this.add('Accounts_Password_Policy_AtLeastOneNumber', true, {
 				type: 'boolean',
+				public: true,
 				enableQuery,
 			});
 
 			await this.add('Accounts_Password_Policy_AtLeastOneSpecialCharacter', true, {
 				type: 'boolean',
+				public: true,
 				enableQuery,
 			});
 		});

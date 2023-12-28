@@ -1,9 +1,8 @@
 import type { IServerInfo, Serialized } from '@rocket.chat/core-typings';
+import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from '@rocket.chat/ddp-client/src/types/methods';
+import type { StreamKeys, StreamNames, StreamerCallbackArgs } from '@rocket.chat/ddp-client/src/types/streams';
 import type { Method, OperationParams, OperationResult, PathFor, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
 import { createContext } from 'react';
-
-import type { StreamKeys, StreamNames, StreamerCallbackArgs } from './streams';
-import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from './methods';
 
 export type UploadResult = {
 	success: boolean;

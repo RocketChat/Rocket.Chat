@@ -1,5 +1,5 @@
-import { useContext } from 'react';
 import type { IUser } from '@rocket.chat/core-typings';
+import { useContext } from 'react';
 
 import { UserContext } from '../UserContext';
 

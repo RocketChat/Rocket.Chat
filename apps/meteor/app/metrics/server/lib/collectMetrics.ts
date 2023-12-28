@@ -1,20 +1,20 @@
 import http from 'http';
 
-import client from 'prom-client';
+import { Statistics } from '@rocket.chat/models';
 import connect from 'connect';
-import _ from 'underscore';
-import gcStats from 'prometheus-gc-stats';
+import { Facts } from 'meteor/facts-base';
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
-import { Facts } from 'meteor/facts-base';
-import { Statistics } from '@rocket.chat/models';
+import client from 'prom-client';
+import gcStats from 'prometheus-gc-stats';
+import _ from 'underscore';
 
-import { Info } from '../../../utils/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { getControl } from '../../../../server/lib/migrations';
 import { settings } from '../../../settings/server';
-import { SystemLogger } from '../../../../server/lib/logger/system';
-import { metrics } from './metrics';
 import { getAppsStatistics } from '../../../statistics/server/lib/getAppsStatistics';
+import { Info } from '../../../utils/rocketchat.info';
+import { metrics } from './metrics';
 
 const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
 
@@ -175,17 +175,10 @@ const updatePrometheusConfig = async (): Promise<void> => {
 	clearInterval(resetTimer);
 	if (is.resetInterval) {
 		resetTimer = setInterval(() => {
-			client.register
-				.getMetricsAsArray()
-				.then((metrics) => {
-					metrics.forEach((metric) => {
-						// @ts-expect-error Property 'hashMap' does not exist on type 'metric'.
-						metric.hashMap = {};
-					});
-				})
-				.catch((err) => {
-					SystemLogger.error({ msg: 'Error while collecting metrics', err });
-				});
+			client.register.getMetricsAsArray().forEach((metric) => {
+				// @ts-expect-error Property 'hashMap' does not exist on type 'metric'.
+				metric.hashMap = {};
+			});
 		}, is.resetInterval);
 	}
 

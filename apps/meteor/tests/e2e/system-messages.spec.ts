@@ -1,4 +1,4 @@
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 import type { Locator, Page } from '@playwright/test';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 
@@ -10,8 +10,8 @@ import { test, expect } from './utils/test';
 test.use({ storageState: Users.admin.state });
 
 const userData = {
-	username: faker.datatype.uuid(),
-	name: faker.name.firstName(),
+	username: faker.string.uuid(),
+	name: faker.person.firstName(),
 	email: faker.internet.email(),
 	password: faker.internet.password(),
 };
@@ -29,7 +29,7 @@ test.describe.serial('System Messages', () => {
 	test.beforeAll(async ({ api }) => {
 		await expect((await setSettingValueById(api, 'Hide_System_Messages', [])).status()).toBe(200);
 
-		const groupResult = await api.post('/groups.create', { name: faker.datatype.uuid() });
+		const groupResult = await api.post('/groups.create', { name: faker.string.uuid() });
 		await expect(groupResult.status()).toBe(200);
 
 		group = (await groupResult.json()).group;

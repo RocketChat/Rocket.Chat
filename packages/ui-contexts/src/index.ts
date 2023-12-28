@@ -5,7 +5,7 @@ export { ConnectionStatusContext, ConnectionStatusContextValue } from './Connect
 export { CustomSoundContext, CustomSoundContextValue } from './CustomSoundContext';
 export { LayoutContext, LayoutContextValue } from './LayoutContext';
 export { ModalContext, ModalContextValue } from './ModalContext';
-export { RouterContext, RouterContextValue } from './RouterContext';
+export * from './RouterContext';
 export { ServerContext, ServerContextValue } from './ServerContext';
 export { SessionContext, SessionContextValue } from './SessionContext';
 export { SettingsContext, SettingsContextValue, SettingsContextQuery } from './SettingsContext';
@@ -14,6 +14,7 @@ export { TooltipContext, TooltipContextValue } from './TooltipContext';
 export { TranslationContext, TranslationContextValue } from './TranslationContext';
 export { UserContext, UserContextValue, LoginService } from './UserContext';
 export { DeviceContext, Device, IExperimentalHTMLAudioElement, DeviceContextValue } from './DeviceContext';
+export { ActionManagerContext, IActionManager } from './ActionManagerContext';
 
 export { useAbsoluteUrl } from './hooks/useAbsoluteUrl';
 export { useAllPermissions } from './hooks/useAllPermissions';
@@ -25,7 +26,7 @@ export { useAttachmentDimensions } from './hooks/useAttachmentDimensions';
 export { useAttachmentIsCollapsedByDefault } from './hooks/useAttachmentIsCollapsedByDefault';
 export { useConnectionStatus } from './hooks/useConnectionStatus';
 export { useCurrentModal } from './hooks/useCurrentModal';
-export { useCurrentRoute } from './hooks/useCurrentRoute';
+export { useCurrentRoutePath } from './hooks/useCurrentRoutePath';
 export { useCustomSound } from './hooks/useCustomSound';
 export { useEndpoint } from './hooks/useEndpoint';
 export type { EndpointFunction } from './hooks/useEndpoint';
@@ -48,14 +49,14 @@ export { useMethod } from './hooks/useMethod';
 export { useModal } from './hooks/useModal';
 export { usePermission } from './hooks/usePermission';
 export { usePermissionWithScopedRoles } from './hooks/usePermissionWithScopedRoles';
-export { useQueryStringParameter } from './hooks/useQueryStringParameter';
 export { useRole } from './hooks/useRole';
 export { useRolesDescription } from './hooks/useRolesDescription';
 export { useRoomAvatarPath } from './hooks/useRoomAvatarPath';
+export { useRouter } from './hooks/useRouter';
 export { useRoute } from './hooks/useRoute';
 export { useRouteParameter } from './hooks/useRouteParameter';
-export { useRoutePath } from './hooks/useRoutePath';
-export { useRouteUrl } from './hooks/useRouteUrl';
+export { useSearchParameter } from './hooks/useSearchParameter';
+export { useSearchParameters } from './hooks/useSearchParameters';
 export { useServerInformation } from './hooks/useServerInformation';
 export { useSession } from './hooks/useSession';
 export { useSessionDispatch } from './hooks/useSessionDispatch';
@@ -79,15 +80,30 @@ export { useUserRoom } from './hooks/useUserRoom';
 export { useUserSubscription } from './hooks/useUserSubscription';
 export { useUserSubscriptionByName } from './hooks/useUserSubscriptionByName';
 export { useUserSubscriptions } from './hooks/useUserSubscriptions';
+export { useVerifyPassword } from './hooks/useVerifyPassword';
 export { useSelectedDevices } from './hooks/useSelectedDevices';
 export { useDeviceConstraints } from './hooks/useDeviceConstraints';
 export { useAvailableDevices } from './hooks/useAvailableDevices';
 export { useIsDeviceManagementEnabled } from './hooks/useIsDeviceManagementEnabled';
 export { useSetOutputMediaDevice } from './hooks/useSetOutputMediaDevice';
 export { useSetInputMediaDevice } from './hooks/useSetInputMediaDevice';
+export { useAccountsCustomFields } from './hooks/useAccountsCustomFields';
 
-export { ServerMethods, ServerMethodName, ServerMethodParameters, ServerMethodReturn, ServerMethodFunction } from './ServerContext/methods';
-export { StreamerEvents, StreamNames, StreamKeys, StreamerConfigs, StreamerConfig, StreamerCallbackArgs } from './ServerContext/streams';
+export {
+	ServerMethods,
+	ServerMethodName,
+	ServerMethodParameters,
+	ServerMethodReturn,
+	ServerMethodFunction,
+} from '@rocket.chat/ddp-client/src/types/methods';
+export {
+	StreamerEvents,
+	StreamNames,
+	StreamKeys,
+	StreamerConfigs,
+	StreamerConfig,
+	StreamerCallbackArgs,
+} from '@rocket.chat/ddp-client/src/types/streams';
 export { UploadResult } from './ServerContext';
 export { TranslationKey, TranslationLanguage } from './TranslationContext';
 export { Fields } from './UserContext';

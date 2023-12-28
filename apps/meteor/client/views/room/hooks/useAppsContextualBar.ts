@@ -1,49 +1,35 @@
-import type { IUIKitContextualBarInteraction } from '@rocket.chat/apps-engine/definition/uikit';
-import { useCurrentRoute } from '@rocket.chat/ui-contexts';
-import { useEffect, useState } from 'react';
+import { useRouteParameter } from '@rocket.chat/ui-contexts';
+import { useCallback } from 'react';
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
-import { getUserInteractionPayloadByViewId } from '../../../../app/ui-message/client/ActionManager';
-import { useRoom } from '../contexts/RoomContext';
+import { useUiKitActionManager } from '../../../uikit/hooks/useUiKitActionManager';
 
-type AppsContextualBarData = {
-	viewId: string;
-	roomId: string;
-	payload: IUIKitContextualBarInteraction;
-	appId: string;
-};
+export const useAppsContextualBar = () => {
+	const viewId = useRouteParameter('context');
+	const actionManager = useUiKitActionManager();
 
-export const useAppsContextualBar = (): AppsContextualBarData | undefined => {
-	const [, params] = useCurrentRoute();
-	const [payload, setPayload] = useState<IUIKitContextualBarInteraction>();
-	const [appId, setAppId] = useState<string>();
-
-	const { _id: roomId } = useRoom();
-
-	const viewId = params?.context;
-
-	useEffect(() => {
-		if (viewId) {
-			setPayload(getUserInteractionPayloadByViewId(viewId) as IUIKitContextualBarInteraction);
+	const getSnapshot = useCallback(() => {
+		if (!viewId) {
+			return undefined;
 		}
 
-		if (payload?.appId) {
-			setAppId(payload.appId);
-		}
+		return actionManager.getInteractionPayloadByViewId(viewId)?.view;
+	}, [actionManager, viewId]);
 
-		return (): void => {
-			setPayload(undefined);
-			setAppId(undefined);
-		};
-	}, [viewId, payload?.appId]);
+	const subscribe = useCallback(
+		(handler: () => void) => {
+			if (!viewId) {
+				return () => undefined;
+			}
 
-	if (viewId && payload && appId) {
-		return {
-			viewId,
-			roomId,
-			payload,
-			appId,
-		};
-	}
+			actionManager.on(viewId, handler);
 
-	return undefined;
+			return () => actionManager.off(viewId, handler);
+		},
+		[actionManager, viewId],
+	);
+
+	const view = useSyncExternalStore(subscribe, getSnapshot);
+
+	return view;
 };

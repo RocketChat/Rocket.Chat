@@ -1,11 +1,11 @@
 import { FederationRoomEvents, Subscriptions } from '@rocket.chat/models';
 
-import { clientLogger } from '../lib/logger';
 import { getFederatedRoomData, hasExternalDomain, isLocalUser, checkRoomType, checkRoomDomainsLength } from '../functions/helpers';
+import { dispatchEvent } from '../handler';
+import { getFederationDomain } from '../lib/getFederationDomain';
+import { clientLogger } from '../lib/logger';
 import { normalizers } from '../normalizers';
 import { doAfterCreateRoom } from './afterCreateRoom';
-import { getFederationDomain } from '../lib/getFederationDomain';
-import { dispatchEvent } from '../handler';
 
 async function afterAddedToRoom(involvedUsers, room) {
 	const { user: addedUser } = involvedUsers;

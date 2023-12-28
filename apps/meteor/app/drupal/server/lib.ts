@@ -1,8 +1,8 @@
-import { Meteor } from 'meteor/meteor';
 import type { OauthConfig } from '@rocket.chat/core-typings';
+import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../settings/server';
 import { CustomOAuth } from '../../custom-oauth/server/custom_oauth_server';
+import { settings } from '../../settings/server';
 
 // Drupal Server CallBack URL needs to be http(s)://{rocketchat.server}[:port]/_oauth/drupal
 // In RocketChat -> Administration the URL needs to be http(s)://{drupal.server}/
@@ -25,8 +25,8 @@ const config: OauthConfig = {
 
 const Drupal = new CustomOAuth('drupal', config);
 
-Meteor.startup(function () {
-	settings.watch<string>('API_Drupal_URL', function (value) {
+Meteor.startup(() => {
+	settings.watch<string>('API_Drupal_URL', (value) => {
 		config.serverURL = value;
 		Drupal.configure(config);
 	});

@@ -1,6 +1,6 @@
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
+import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
 
@@ -15,7 +15,7 @@ export const registerAccessTokenService = function (serviceName, handleAccessTok
 
 // Listen to calls to `login` with an oauth option set. This is where
 // users actually get logged in to meteor via oauth.
-Accounts.registerLoginHandler(async function (options) {
+Accounts.registerLoginHandler(async (options) => {
 	if (!options.accessToken) {
 		return undefined; // don't handle
 	}

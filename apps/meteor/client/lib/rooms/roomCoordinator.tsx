@@ -1,6 +1,7 @@
 import type { IRoom, RoomType, IUser, AtLeast, ValueOf, ISubscription } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import { FlowRouter } from 'meteor/kadira:flow-router';
+import type { RouteName } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 import React from 'react';
 
 import { hasPermission } from '../../../app/authorization/client';
@@ -16,8 +17,9 @@ import type {
 	IRoomTypeClientConfig,
 } from '../../../definition/IRoomTypeConfig';
 import { RoomCoordinator } from '../../../lib/rooms/coordinator';
-import RoomOpener from '../../views/room/RoomOpener';
-import MainLayout from '../../views/root/MainLayout/MainLayout';
+import { router } from '../../providers/RouterProvider';
+import RoomRoute from '../../views/room/RoomRoute';
+import MainLayout from '../../views/root/MainLayout';
 import { appLayout } from '../appLayout';
 
 class RoomCoordinatorClient extends RoomCoordinator {
@@ -70,7 +72,12 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		return this.roomTypes[roomType].directives as IRoomTypeClientDirectives;
 	}
 
-	public openRouteLink(roomType: RoomType, subData: RoomIdentification, queryParams?: Record<string, string>): void {
+	public openRouteLink(
+		roomType: RoomType,
+		subData: RoomIdentification,
+		queryParams?: Record<string, string>,
+		options: { replace?: boolean } = {},
+	): void {
 		const config = this.getRoomTypeConfig(roomType);
 		if (!config?.route) {
 			return;
@@ -87,7 +94,14 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			return;
 		}
 
-		FlowRouter.go(config.route.name, routeData, queryParams);
+		router.navigate(
+			{
+				pattern: config.route.path ?? '/home',
+				params: routeData,
+				search: queryParams,
+			},
+			options,
+		);
 	}
 
 	public isLivechatRoom(roomType: string): boolean {
@@ -161,7 +175,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		return true;
 	}
 
-	private validateRoute(route: IRoomTypeRouteConfig): void {
+	private validateRoute<TRouteName extends RouteName>(route: IRoomTypeRouteConfig<TRouteName>): void {
 		const { name, path, link } = route;
 
 		if (typeof name !== 'string' || name.length === 0) {
@@ -199,18 +213,17 @@ class RoomCoordinatorClient extends RoomCoordinator {
 				route: { name, path },
 			} = roomConfig;
 			const { extractOpenRoomParams } = directives;
-			FlowRouter.route(path, {
-				name,
-				action: (params) => {
-					const { type, ref } = extractOpenRoomParams(params ?? {});
-
-					appLayout.render(
+			router.defineRoutes([
+				{
+					path,
+					id: name,
+					element: appLayout.wrap(
 						<MainLayout>
-							<RoomOpener type={type} reference={ref} />
+							<RoomRoute extractOpenRoomParams={extractOpenRoomParams} />
 						</MainLayout>,
-					);
+					),
 				},
-			});
+			]);
 		}
 	}
 
@@ -225,7 +238,12 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			return false;
 		}
 
-		return FlowRouter.url(config.route.name, routeData);
+		return Meteor.absoluteUrl(
+			router.buildRoutePath({
+				name: config.route.name,
+				params: routeData,
+			}),
+		);
 	}
 
 	public isRouteNameKnown(routeName: string): boolean {

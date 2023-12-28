@@ -17,11 +17,11 @@ import Location from '../../content/Location';
 import MessageActions from '../../content/MessageActions';
 import Reactions from '../../content/Reactions';
 import ThreadMetrics from '../../content/ThreadMetrics';
-import UiKitSurface from '../../content/UiKitSurface';
 import UrlPreviews from '../../content/UrlPreviews';
 import { useNormalizedMessage } from '../../hooks/useNormalizedMessage';
 import { useOembedLayout } from '../../hooks/useOembedLayout';
 import { useSubscriptionFromMessageQuery } from '../../hooks/useSubscriptionFromMessageQuery';
+import UiKitMessageBlock from '../../uikit/UiKitMessageBlock';
 
 type RoomMessageContentProps = {
 	message: IMessage;
@@ -61,10 +61,10 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 			)}
 
 			{normalizedMessage.blocks && (
-				<UiKitSurface mid={normalizedMessage._id} blocks={normalizedMessage.blocks} appId rid={normalizedMessage.rid} />
+				<UiKitMessageBlock rid={normalizedMessage.rid} mid={normalizedMessage._id} blocks={normalizedMessage.blocks} />
 			)}
 
-			{!!normalizedMessage?.attachments?.length && <Attachments attachments={normalizedMessage.attachments} />}
+			{!!normalizedMessage?.attachments?.length && <Attachments id={message.files?.[0]._id} attachments={normalizedMessage.attachments} />}
 
 			{oembedEnabled && !!normalizedMessage.urls?.length && <UrlPreviews urls={normalizedMessage.urls} />}
 

@@ -1,18 +1,17 @@
-import { Meteor } from 'meteor/meteor';
 import type { ISlashCommand, ISlashCommandPreview, ISlashCommandPreviewItem } from '@rocket.chat/apps-engine/definition/slashcommands';
 import { SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands';
 import { CommandBridge } from '@rocket.chat/apps-engine/server/bridges/CommandBridge';
 import type { IMessage, RequiredField, SlashCommand, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
+import { Meteor } from 'meteor/meteor';
 
-import { slashCommands } from '../../../utils/server';
 import { Utilities } from '../../../../ee/lib/misc/Utilities';
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 import { parseParameters } from '../../../../lib/utils/parseParameters';
+import { slashCommands } from '../../../utils/server/slashCommand';
 
 export class AppCommandsBridge extends CommandBridge {
 	disabledCommands: Map<string, (typeof slashCommands.commands)[string]>;
 
-	// eslint-disable-next-line no-empty-function
 	constructor(private readonly orch: AppServerOrchestrator) {
 		super();
 		this.disabledCommands = new Map();

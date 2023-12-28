@@ -1,5 +1,5 @@
 import type { IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
-import type { FindOptions, FindCursor, DeleteResult } from 'mongodb';
+import type { FindOptions, FindCursor, DeleteResult, UpdateResult, Document } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -24,4 +24,5 @@ export interface ICannedResponseModel extends IBaseModel<IOmnichannelCannedRespo
 		_id: string,
 		{ shortcut, text, tags, scope, userId, departmentId, createdBy }: Omit<IOmnichannelCannedResponse, '_id' | '_updatedAt' | '_createdAt'>,
 	): Promise<Omit<IOmnichannelCannedResponse, '_updatedAt' | '_createdAt'>>;
+	removeTagFromCannedResponses(tagId: string): Promise<UpdateResult | Document>;
 }

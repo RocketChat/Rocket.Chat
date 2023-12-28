@@ -22,7 +22,7 @@ function RemoveAgentButton({ agentId, onRemove }: { agentId: string; onRemove: (
 		setModal(<GenericModal variant='danger' onConfirm={onRemoveAgent} onCancel={() => setModal()} confirmText={t('Delete')} />);
 	});
 
-	return <IconButton icon='trash' mini title={t('Remove')} onClick={handleDelete} />;
+	return <IconButton icon='trash' small title={t('Remove')} onClick={handleDelete} />;
 }
 
 export default RemoveAgentButton;

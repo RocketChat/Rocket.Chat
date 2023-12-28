@@ -1,7 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 
-import { getAvatarURL } from './getAvatarURL';
 import { settings } from '../../settings/client';
+import { getAvatarURL } from './getAvatarURL';
 
 export const getRoomAvatarURL = ({ roomId, cache = '' }: { roomId: IRoom['_id']; cache: IRoom['avatarETag'] }) => {
 	const externalSource = (settings.get('Accounts_RoomAvatarExternalProviderUrl') || '').trim().replace(/\/$/, '');

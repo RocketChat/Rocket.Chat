@@ -1,9 +1,9 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
 import { Settings } from '@rocket.chat/models';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
-import * as Mailer from '../../../mailer/server/api';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 
 let html = '';

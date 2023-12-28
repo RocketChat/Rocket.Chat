@@ -1,55 +1,67 @@
-import type { IMessage, AtLeast } from '@rocket.chat/core-typings';
+import { isOTRMessage } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import { Notifications } from '../../app/notifications/client';
 import OTR from '../../app/otr/client/OTR';
 import { OtrRoomState } from '../../app/otr/lib/OtrRoomState';
+import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { t } from '../../app/utils/lib/i18n';
 import { onClientBeforeSendMessage } from '../lib/onClientBeforeSendMessage';
 import { onClientMessageReceived } from '../lib/onClientMessageReceived';
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {
-		if (Meteor.userId()) {
-			Notifications.onUser('otr', (type, data) => {
-				if (!data.roomId || !data.userId || data.userId === Meteor.userId()) {
-					return;
-				}
-				const instanceByRoomId = OTR.getInstanceByRoomId(data.roomId);
+		const uid = Meteor.userId();
 
-				if (!instanceByRoomId) {
-					return;
-				}
-
-				instanceByRoomId.onUserStream(type, data);
-			});
+		if (!uid) {
+			return;
 		}
+
+		sdk.stream('notify-user', [`${uid}/otr`], (type, data) => {
+			if (!data.roomId || !data.userId || data.userId === uid) {
+				return;
+			}
+
+			const otrRoom = OTR.getInstanceByRoomId(uid, data.roomId);
+			otrRoom?.onUserStream(type, data);
+		});
 	});
 
-	onClientBeforeSendMessage.use(async (message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>) => {
-		const instanceByRoomId = OTR.getInstanceByRoomId(message.rid);
+	onClientBeforeSendMessage.use(async (message) => {
+		const uid = Meteor.userId();
 
-		if (message.rid && instanceByRoomId && instanceByRoomId.getState() === OtrRoomState.ESTABLISHED) {
-			const msg = await instanceByRoomId.encrypt(message);
+		if (!uid) {
+			return message;
+		}
+
+		const otrRoom = OTR.getInstanceByRoomId(uid, message.rid);
+
+		if (otrRoom && otrRoom.getState() === OtrRoomState.ESTABLISHED) {
+			const msg = await otrRoom.encrypt(message);
 			return { ...message, msg, t: 'otr' };
 		}
 		return message;
 	});
 
-	onClientMessageReceived.use(async (message: IMessage & { notification?: boolean }) => {
-		const instanceByRoomId = OTR.getInstanceByRoomId(message.rid);
+	onClientMessageReceived.use(async (message) => {
+		const uid = Meteor.userId();
 
-		if (message.rid && instanceByRoomId && instanceByRoomId.getState() === OtrRoomState.ESTABLISHED) {
-			if (message?.notification) {
-				message.msg = t('Encrypted_message');
-				return message;
-			}
-			if (message.t !== 'otr') {
-				return message;
-			}
+		if (!uid) {
+			return message;
+		}
 
-			const decrypted = await instanceByRoomId.decrypt(message.msg);
+		if (!isOTRMessage(message)) {
+			return message;
+		}
+
+		if ('notification' in message) {
+			return { ...message, msg: t('Encrypted_message') };
+		}
+
+		const otrRoom = OTR.getInstanceByRoomId(uid, message.rid);
+
+		if (otrRoom && otrRoom.getState() === OtrRoomState.ESTABLISHED) {
+			const decrypted = await otrRoom.decrypt(message.msg);
 			if (typeof decrypted === 'string') {
 				return { ...message, msg: decrypted };
 			}
@@ -58,15 +70,18 @@ Meteor.startup(() => {
 			if (ts) message.ts = ts;
 
 			if (message.otrAck) {
-				const otrAck = await instanceByRoomId.decrypt(message.otrAck);
+				const otrAck = await otrRoom.decrypt(message.otrAck);
 				if (typeof otrAck === 'string') {
 					return { ...message, msg: otrAck };
 				}
-				if (ack === otrAck.text) message.t = 'otr-ack';
-			} else if (userId !== Meteor.userId()) {
-				const encryptedAck = await instanceByRoomId.encryptText(ack);
 
-				Meteor.call('updateOTRAck', { message, ack: encryptedAck });
+				if (ack === otrAck.text) {
+					return { ...message, _id, t: 'otr-ack', msg };
+				}
+			} else if (userId !== Meteor.userId()) {
+				const encryptedAck = await otrRoom.encryptText(ack);
+
+				void sdk.call('updateOTRAck', { message, ack: encryptedAck });
 			}
 
 			return { ...message, _id, msg };

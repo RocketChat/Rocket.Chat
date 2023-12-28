@@ -1,13 +1,13 @@
-import { Meteor } from 'meteor/meteor';
+import { api } from '@rocket.chat/core-services';
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { isRegisterUser } from '@rocket.chat/core-typings';
-import { api } from '@rocket.chat/core-services';
 import { Users, Rooms } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
-import { slashCommands } from '../../utils/lib/slashCommand';
-import { settings } from '../../settings/server';
-import { archiveRoom } from '../../lib/server/functions/archiveRoom';
 import { i18n } from '../../../server/lib/i18n';
+import { archiveRoom } from '../../lib/server/functions/archiveRoom';
+import { settings } from '../../settings/server';
+import { slashCommands } from '../../utils/lib/slashCommand';
 
 slashCommands.add({
 	command: 'archive',

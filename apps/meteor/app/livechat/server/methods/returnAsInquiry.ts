@@ -1,10 +1,11 @@
+import { Omnichannel } from '@rocket.chat/core-services';
 import type { ILivechatDepartment, IRoom } from '@rocket.chat/core-typings';
+import { LivechatRooms } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import { LivechatRooms } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Livechat } from '../lib/Livechat';
+import { Livechat } from '../lib/LivechatTyped';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -29,10 +30,14 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
+		if (!(await Omnichannel.isWithinMACLimit(room))) {
+			throw new Meteor.Error('error-mac-limit-reached', 'MAC limit reached', { method: 'livechat:returnAsInquiry' });
+		}
+
 		if (!room.open) {
 			throw new Meteor.Error('room-closed', 'Room closed', { method: 'livechat:returnAsInquiry' });
 		}
 
-		return Livechat.returnRoomAsInquiry(rid, departmentId);
+		return Livechat.returnRoomAsInquiry(room, departmentId);
 	},
 });

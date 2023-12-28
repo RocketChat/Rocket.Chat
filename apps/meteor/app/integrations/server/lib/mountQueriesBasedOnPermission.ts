@@ -1,5 +1,5 @@
-import { Meteor } from 'meteor/meteor';
 import type { DeepWritable } from '@rocket.chat/core-typings';
+import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';

@@ -1,16 +1,60 @@
 import { exec } from 'child_process';
 import os from 'os';
 import util from 'util';
+import path from 'path';
+import fs from 'fs';
+import https from 'https';
 
 const execAsync = util.promisify(exec);
 
 class VersionCompiler {
 	async processFilesForTarget(files) {
-		const processFile = async function (file) {
-			if (!file.getDisplayPath().match(/rocketchat\.info$/)) {
-				return;
-			}
+		const processVersionFile = async function (file) {
+			const data = await new Promise((resolve, reject) => {
+				const currentVersion =
+					JSON.parse(fs.readFileSync(path.resolve(process.cwd(), './package.json'), { encoding: 'utf8' }))?.version || '';
 
+				const type = currentVersion.includes('-rc.') ? 'candidate' : currentVersion.includes('-develop') ? 'develop' : 'stable';
+
+				const url = `https://releases.rocket.chat/v2/server/supportedVersions?includeDraftType=${type}&includeDraftTag=${currentVersion}`;
+
+				function handleError(err) {
+					console.error(err);
+					// TODO remove this when we are ready to fail
+					// if (process.env.NODE_ENV !== 'development') {
+					// 	reject(err);
+					// 	return;
+					// }
+					resolve({});
+				}
+
+				https
+					.get(url, function (response) {
+						let data = '';
+						response.on('data', function (chunk) {
+							data += chunk;
+						});
+						response.on('end', function () {
+							const supportedVersions = JSON.parse(data);
+							if (!supportedVersions?.signed) {
+								return handleError(new Error(`Invalid supportedVersions result:\n  URL: ${url} \n  RESULT: ${data}`));
+							}
+							resolve(supportedVersions);
+						});
+						response.on('error', function (err) {
+							handleError(err);
+						});
+					})
+					.end();
+			});
+
+			file.addJavaScript({
+				data: `exports.supportedVersions = ${JSON.stringify(data)}`,
+				path: `${file.getPathInPackage()}.js`,
+			});
+		};
+
+		const processFile = async function (file) {
 			let output = JSON.parse(file.getContentsAsString());
 			output.build = {
 				date: new Date().toISOString(),
@@ -24,6 +68,9 @@ class VersionCompiler {
 			};
 
 			output.marketplaceApiVersion = require('@rocket.chat/apps-engine/package.json').version.replace(/^[^0-9]/g, '');
+			const minimumClientVersions =
+				JSON.parse(fs.readFileSync(path.resolve(process.cwd(), './package.json'), { encoding: 'utf8' }))?.rocketchat
+					?.minimumClientVersions || {};
 			try {
 				const result = await execAsync("git log --pretty=format:'%H%n%ad%n%an%n%s' -n 1");
 				const data = result.stdout.split('\n');
@@ -34,6 +81,9 @@ class VersionCompiler {
 					subject: data.join('\n'),
 				};
 			} catch (e) {
+				if (process.env.NODE_ENV !== 'development') {
+					throw e;
+				}
 				// no git
 			}
 
@@ -52,19 +102,34 @@ class VersionCompiler {
 					output.commit.branch = branch.stdout.replace('\n', '');
 				}
 			} catch (e) {
+				if (process.env.NODE_ENV !== 'development') {
+					throw e;
+				}
+
 				// no branch
 			}
 
-			output = `exports.Info = ${JSON.stringify(output, null, 4)};`;
-
 			file.addJavaScript({
-				data: output,
+				data: `exports.Info = ${JSON.stringify(output, null, 4)};
+				exports.minimumClientVersions = ${JSON.stringify(minimumClientVersions, null, 4)};`,
 				path: `${file.getPathInPackage()}.js`,
 			});
 		};
 
 		for await (const file of files) {
-			await processFile(file);
+			switch (true) {
+				case file.getDisplayPath().endsWith('rocketchat.info'): {
+					await processFile(file);
+					break;
+				}
+				case file.getDisplayPath().endsWith('rocketchat-supported-versions.info'): {
+					await processVersionFile(file);
+					break;
+				}
+				default: {
+					throw new Error(`Unexpected file ${file.getDisplayPath()}`);
+				}
+			}
 		}
 	}
 }

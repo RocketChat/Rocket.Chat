@@ -1,11 +1,10 @@
-/* eslint-env mocha */
-
 import { expect } from 'chai';
+import { before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createTrigger, fetchTriggers } from '../../../data/livechat/triggers';
-import { updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
 
 describe('LIVECHAT - triggers', function () {
 	this.retries(0);
@@ -18,12 +17,12 @@ describe('LIVECHAT - triggers', function () {
 
 	describe('livechat/triggers', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
-			await updatePermission('view-livechat-manager', []);
+			await removePermissionFromAllRoles('view-livechat-manager');
 			await request.get(api('livechat/triggers')).set(credentials).expect('Content-Type', 'application/json').expect(403);
 		});
 
 		it('should return an array of triggers', async () => {
-			await updatePermission('view-livechat-manager', ['admin']);
+			await restorePermissionToRoles('view-livechat-manager');
 			await createTrigger(`test${Date.now()}`);
 			await request
 				.get(api('livechat/triggers'))
@@ -44,6 +43,167 @@ describe('LIVECHAT - triggers', function () {
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
 				});
+		});
+	});
+
+	describe('POST livechat/triggers', () => {
+		it('should fail if user is not logged in', async () => {
+			await request.post(api('livechat/triggers')).send({}).expect(401);
+		});
+		it('should fail if no data is sent', async () => {
+			await request.post(api('livechat/triggers')).set(credentials).send({}).expect(400);
+		});
+		it('should fail if invalid data is sent', async () => {
+			await request.post(api('livechat/triggers')).set(credentials).send({ name: 'test' }).expect(400);
+		});
+		it('should fail if name is not an string', async () => {
+			await request
+				.post(api('livechat/triggers'))
+				.set(credentials)
+				.send({ name: 1, description: 'test', enabled: true, runOnce: true, conditions: [], actions: [] })
+				.expect(400);
+		});
+		it('should fail if description is not an string', async () => {
+			await request
+				.post(api('livechat/triggers'))
+				.set(credentials)
+				.send({ name: 'test', description: 1, enabled: true, runOnce: true, conditions: [], actions: [] })
+				.expect(400);
+		});
+		it('should fail if enabled is not an boolean', async () => {
+			await request
+				.post(api('livechat/triggers'))
+				.set(credentials)
+				.send({ name: 'test', description: 'test', enabled: 1, runOnce: true, conditions: [], actions: [] })
+				.expect(400);
+		});
+		it('should fail if runOnce is not an boolean', async () => {
+			await request
+				.post(api('livechat/triggers'))
+				.set(credentials)
+				.send({ name: 'test', description: 'test', enabled: true, runOnce: 1, conditions: [], actions: [] })
+				.expect(400);
+		});
+		it('should fail if conditions is not an array', async () => {
+			await request
+				.post(api('livechat/triggers'))
+				.set(credentials)
+				.send({ name: 'test', description: 'test', enabled: true, runOnce: true, conditions: 1, actions: [] })
+				.expect(400);
+		});
+		it('should fail if actions is not an array', async () => {
+			await request
+				.post(api('livechat/triggers'))
+				.set(credentials)
+				.send({ name: 'test', description: 'test', enabled: true, runOnce: true, conditions: [], actions: 1 })
+				.expect(400);
+		});
+		it('should fail if conditions is an array with invalid data', async () => {
+			await request
+				.post(api('livechat/triggers'))
+				.set(credentials)
+				.send({ name: 'test', description: 'test', enabled: true, runOnce: true, conditions: [1], actions: [] })
+				.expect(400);
+		});
+		it('should fail if conditions is an array of objects, but name is not a valid value', async () => {
+			await request
+				.post(api('livechat/triggers'))
+				.set(credentials)
+				.send({ name: 'test', description: 'test', enabled: true, runOnce: true, conditions: [{ name: 'invalid' }], actions: [] })
+				.expect(400);
+		});
+		it('should fail if actions is an array of invalid values', async () => {
+			await request
+				.post(api('livechat/triggers'))
+				.set(credentials)
+				.send({ name: 'test', description: 'test', enabled: true, runOnce: true, conditions: [{ name: 'page-url' }], actions: [1] })
+				.expect(400);
+		});
+		it('should fail if actions is an array of objects, but name is not a valid value', async () => {
+			await request
+				.post(api('livechat/triggers'))
+				.set(credentials)
+				.send({
+					name: 'test',
+					description: 'test',
+					enabled: true,
+					runOnce: true,
+					conditions: [{ name: 'page-url', value: 'http://localhost:3000' }],
+					actions: [{ name: 'invalid' }],
+				})
+				.expect(400);
+		});
+		it('should fail if actions is an array of objects, but sender is not a valid value', async () => {
+			await request
+				.post(api('livechat/triggers'))
+				.set(credentials)
+				.send({
+					name: 'test',
+					description: 'test',
+					enabled: true,
+					runOnce: true,
+					conditions: [{ name: 'page-url' }],
+					actions: [{ name: 'send-message', params: { sender: 'invalid' } }],
+				})
+				.expect(400);
+		});
+		it('should fail if actions is an array of objects, but msg is not a valid value', async () => {
+			await request
+				.post(api('livechat/triggers'))
+				.set(credentials)
+				.send({
+					name: 'test',
+					description: 'test',
+					enabled: true,
+					runOnce: true,
+					conditions: [{ name: 'page-url', value: 'http://localhost:3000' }],
+					actions: [{ name: 'send-message', params: { sender: 'custom' } }],
+				})
+				.expect(400);
+		});
+		it('should fail if actions is an array of objects, but name is not a valid value', async () => {
+			await request
+				.post(api('livechat/triggers'))
+				.set(credentials)
+				.send({
+					name: 'test',
+					description: 'test',
+					enabled: true,
+					runOnce: true,
+					conditions: [{ name: 'page-url', value: 'http://localhost:3000' }],
+					actions: [{ name: 'send-message', params: { sender: 'custom', msg: 'test', name: {} } }],
+				})
+				.expect(400);
+		});
+		it('should fail if user doesnt have view-livechat-manager permission', async () => {
+			await removePermissionFromAllRoles('view-livechat-manager');
+			await request
+				.post(api('livechat/triggers'))
+				.set(credentials)
+				.send({
+					name: 'test',
+					description: 'test',
+					enabled: true,
+					runOnce: true,
+					conditions: [{ name: 'page-url', value: 'http://localhost:3000' }],
+					actions: [{ name: 'send-message', params: { sender: 'custom', msg: 'test', name: 'test' } }],
+				})
+				.expect(403);
+		});
+		it('should save a new trigger', async () => {
+			await restorePermissionToRoles('view-livechat-manager');
+			await request
+				.post(api('livechat/triggers'))
+				.set(credentials)
+				.send({
+					name: 'test',
+					description: 'test',
+					enabled: true,
+					runOnce: true,
+					conditions: [{ name: 'page-url', value: 'http://localhost:3000' }],
+					actions: [{ name: 'send-message', params: { sender: 'custom', msg: 'test', name: 'test' } }],
+				})
+				.expect(200);
 		});
 	});
 

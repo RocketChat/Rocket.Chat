@@ -47,7 +47,7 @@ const MediaPreview = ({ file, fileType }: MediaPreviewProps): ReactElement => {
 	if (typeof url !== 'string') {
 		return (
 			<Box display='flex' alignItems='center' w='full'>
-				<Icon name='image' size='x24' mie='x4' />
+				<Icon name='image' size='x24' mie={4} />
 				{t('FileUpload_Cannot_preview_file')}
 			</Box>
 		);

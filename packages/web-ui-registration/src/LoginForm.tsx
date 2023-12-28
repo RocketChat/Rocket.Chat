@@ -1,26 +1,62 @@
-import type { UseMutationResult } from '@tanstack/react-query';
-import { useMutation } from '@tanstack/react-query';
+import {
+	FieldGroup,
+	TextInput,
+	Field,
+	FieldLabel,
+	FieldRow,
+	FieldError,
+	FieldLink,
+	PasswordInput,
+	ButtonGroup,
+	Button,
+	Callout,
+} from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { FieldGroup, TextInput, Field, PasswordInput, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { Form, ActionLink } from '@rocket.chat/layout';
+import { useDocumentTitle } from '@rocket.chat/ui-client';
 import { useLoginWithPassword, useSetting } from '@rocket.chat/ui-contexts';
+import { useMutation } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
 import EmailConfirmationForm from './EmailConfirmationForm';
-import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import LoginServices from './LoginServices';
+import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 
-export type LoginErrors =
-	| 'error-user-is-not-activated'
-	| 'error-invalid-email'
-	| 'error-login-blocked-for-ip'
-	| 'error-login-blocked-for-user'
-	| 'error-license-user-limit-reached'
-	| 'user-not-found'
-	| 'error-app-user-is-not-allowed-to-login';
+const LOGIN_SUBMIT_ERRORS = {
+	'error-user-is-not-activated': {
+		type: 'warning',
+		i18n: 'registration.page.registration.waitActivationWarning',
+	},
+	'error-app-user-is-not-allowed-to-login': {
+		type: 'danger',
+		i18n: 'registration.page.login.errors.AppUserNotAllowedToLogin',
+	},
+	'user-not-found': {
+		type: 'danger',
+		i18n: 'registration.page.login.errors.wrongCredentials',
+	},
+	'error-login-blocked-for-ip': {
+		type: 'danger',
+		i18n: 'registration.page.login.errors.loginBlockedForIp',
+	},
+	'error-login-blocked-for-user': {
+		type: 'danger',
+		i18n: 'registration.page.login.errors.loginBlockedForUser',
+	},
+	'error-license-user-limit-reached': {
+		type: 'warning',
+		i18n: 'registration.page.login.errors.licenseUserLimitReached',
+	},
+	'error-invalid-email': {
+		type: 'danger',
+		i18n: 'registration.page.login.errors.invalidEmail',
+	},
+} as const;
+
+export type LoginErrors = keyof typeof LOGIN_SUBMIT_ERRORS;
 
 export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }): ReactElement => {
 	const {
@@ -30,12 +66,8 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 		clearErrors,
 		getValues,
 		formState: { errors },
-	} = useForm<{
-		email?: string;
-		username: string;
-		password: string;
-	}>({
-		mode: 'onChange',
+	} = useForm<{ username: string; password: string }>({
+		mode: 'onBlur',
 	});
 
 	const { t } = useTranslation();
@@ -48,21 +80,15 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 	const usernameOrEmailPlaceholder = String(useSetting('Accounts_EmailOrUsernamePlaceholder'));
 	const passwordPlaceholder = String(useSetting('Accounts_PasswordPlaceholder'));
 
-	const loginMutation: UseMutationResult<
-		void,
-		Error,
-		{
-			username: string;
-			password: string;
-			email?: string;
-		}
-	> = useMutation({
-		mutationFn: (formData) => {
+	useDocumentTitle(t('registration.component.login'), false);
+
+	const loginMutation = useMutation({
+		mutationFn: (formData: { username: string; password: string }) => {
 			return login(formData.username, formData.password);
 		},
 		onError: (error: any) => {
 			if ([error.error, error.errorType].includes('error-invalid-email')) {
-				setError('email', { type: 'invalid-email', message: t('registration.page.login.errors.invalidEmail') });
+				setError('username', { type: 'invalid-email', message: t('registration.page.login.errors.invalidEmail') });
 			}
 
 			if ('error' in error && error.error !== 403) {
@@ -71,25 +97,39 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 			}
 
 			setErrorOnSubmit('user-not-found');
-			setError('username', { type: 'user-not-found', message: t('registration.component.login.userNotFound') });
-			setError('password', { type: 'user-not-found', message: t('registration.component.login.incorrectPassword') });
 		},
 	});
 
-	if (errors.email?.type === 'invalid-email') {
-		return <EmailConfirmationForm onBackToLogin={() => clearErrors('email')} email={getValues('email')} />;
+	const usernameId = useUniqueId();
+	const passwordId = useUniqueId();
+	const loginFormRef = useRef<HTMLElement>(null);
+
+	useEffect(() => {
+		if (loginFormRef.current) {
+			loginFormRef.current.focus();
+		}
+	}, [errorOnSubmit]);
+
+	const renderErrorOnSubmit = (error: LoginErrors) => {
+		const { type, i18n } = LOGIN_SUBMIT_ERRORS[error];
+		return (
+			<Callout id={`${usernameId}-error`} aria-live='assertive' type={type}>
+				{t(i18n)}
+			</Callout>
+		);
+	};
+
+	if (errors.username?.type === 'invalid-email') {
+		return <EmailConfirmationForm onBackToLogin={() => clearErrors('username')} email={getValues('username')} />;
 	}
 
 	return (
 		<Form
+			tabIndex={-1}
+			ref={loginFormRef}
 			aria-labelledby={formLabelId}
-			onSubmit={handleSubmit(async (data) => {
-				if (loginMutation.isLoading) {
-					return;
-				}
-
-				loginMutation.mutate(data);
-			})}
+			aria-describedby='welcomeTitle'
+			onSubmit={handleSubmit(async (data) => loginMutation.mutate(data))}
 		>
 			<Form.Header>
 				<Form.Title id={formLabelId}>{t('registration.component.login')}</Form.Title>
@@ -99,54 +139,51 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 					<Form.Container>
 						<FieldGroup disabled={loginMutation.isLoading}>
 							<Field>
-								<Field.Label htmlFor='username'>{t('registration.component.form.emailOrUsername')}</Field.Label>
-								<Field.Row>
+								<FieldLabel required htmlFor={usernameId}>
+									{t('registration.component.form.emailOrUsername')}
+								</FieldLabel>
+								<FieldRow>
 									<TextInput
 										{...register('username', {
-											required: true,
-											onChange: () => {
-												clearErrors(['username', 'password']);
-											},
+											required: t('registration.component.form.requiredField'),
 										})}
 										placeholder={usernameOrEmailPlaceholder || t('registration.component.form.emailPlaceholder')}
-										error={
-											errors.username?.message ||
-											(errors.username?.type === 'required' ? t('registration.component.form.requiredField') : undefined)
-										}
-										aria-invalid={errors.username ? 'true' : 'false'}
-										id='username'
+										error={errors.username?.message}
+										aria-invalid={errors.username || errorOnSubmit ? 'true' : 'false'}
+										aria-describedby={`${usernameId}-error`}
+										id={usernameId}
 									/>
-								</Field.Row>
-								{errors.username && errors.username.type === 'required' && (
-									<Field.Error>{t('registration.component.form.requiredField')}</Field.Error>
+								</FieldRow>
+								{errors.username && (
+									<FieldError aria-live='assertive' id={`${usernameId}-error`}>
+										{errors.username.message}
+									</FieldError>
 								)}
 							</Field>
-
 							<Field>
-								<Field.Label htmlFor='password'>{t('registration.component.form.password')}</Field.Label>
-								<Field.Row>
+								<FieldLabel required htmlFor={passwordId}>
+									{t('registration.component.form.password')}
+								</FieldLabel>
+								<FieldRow>
 									<PasswordInput
 										{...register('password', {
-											required: true,
-											onChange: () => {
-												clearErrors(['username', 'password']);
-											},
+											required: t('registration.component.form.requiredField'),
 										})}
 										placeholder={passwordPlaceholder}
-										error={
-											errors.password?.message ||
-											(errors.password?.type === 'required' ? t('registration.component.form.requiredField') : undefined)
-										}
-										aria-invalid={errors.password ? 'true' : 'false'}
-										id='password'
+										error={errors.password?.message}
+										aria-invalid={errors.password || errorOnSubmit ? 'true' : 'false'}
+										aria-describedby={`${passwordId}-error`}
+										id={passwordId}
 									/>
-								</Field.Row>
-								{errors.password && errors.password.type === 'required' && (
-									<Field.Error>{t('registration.component.form.requiredField')}</Field.Error>
+								</FieldRow>
+								{errors.password && (
+									<FieldError aria-live='assertive' id={`${passwordId}-error`}>
+										{errors.password.message}
+									</FieldError>
 								)}
 								{isResetPasswordAllowed && (
-									<Field.Row justifyContent='end'>
-										<Field.Link
+									<FieldRow justifyContent='end'>
+										<FieldLink
 											href='#'
 											onClick={(e): void => {
 												e.preventDefault();
@@ -154,40 +191,16 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 											}}
 										>
 											<Trans i18nKey='registration.page.login.forgot'>Forgot your password?</Trans>
-										</Field.Link>
-									</Field.Row>
+										</FieldLink>
+									</FieldRow>
 								)}
 							</Field>
 						</FieldGroup>
-						<FieldGroup disabled={loginMutation.isLoading}>
-							{errorOnSubmit === 'error-user-is-not-activated' && (
-								<Callout type='warning'>{t('registration.page.registration.waitActivationWarning')}</Callout>
-							)}
-
-							{errorOnSubmit === 'error-app-user-is-not-allowed-to-login' && (
-								<Callout type='danger'>{t('registration.page.login.errors.AppUserNotAllowedToLogin')}</Callout>
-							)}
-
-							{errorOnSubmit === 'user-not-found' && (
-								<Callout type='danger'>{t('registration.page.login.errors.wrongCredentials')}</Callout>
-							)}
-
-							{errorOnSubmit === 'error-login-blocked-for-ip' && (
-								<Callout type='danger'>{t('registration.page.login.errors.loginBlockedForIp')}</Callout>
-							)}
-
-							{errorOnSubmit === 'error-login-blocked-for-user' && (
-								<Callout type='danger'>{t('registration.page.login.errors.loginBlockedForUser')}</Callout>
-							)}
-
-							{errorOnSubmit === 'error-license-user-limit-reached' && (
-								<Callout type='warning'>{t('registration.page.login.errors.licenseUserLimitReached')}</Callout>
-							)}
-						</FieldGroup>
+						{errorOnSubmit && <FieldGroup disabled={loginMutation.isLoading}>{renderErrorOnSubmit(errorOnSubmit)}</FieldGroup>}
 					</Form.Container>
 					<Form.Footer>
 						<ButtonGroup stretch>
-							<Button disabled={loginMutation.isLoading} type='submit' primary>
+							<Button loading={loginMutation.isLoading} type='submit' primary>
 								{t('registration.component.login')}
 							</Button>
 						</ButtonGroup>

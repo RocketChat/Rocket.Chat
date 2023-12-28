@@ -3,7 +3,7 @@ import type { ReactElement } from 'react';
 import React, { useEffect } from 'react';
 
 import { useUserDisplayName } from '../../hooks/useUserDisplayName';
-import { useVideoOpenCall } from '../room/contextualBar/VideoConference/hooks/useVideoConfOpenCall';
+import { useVideoConfOpenCall } from '../room/contextualBar/VideoConference/hooks/useVideoConfOpenCall';
 import PageLoading from '../root/PageLoading';
 import ConferencePageError from './ConferencePageError';
 
@@ -17,9 +17,9 @@ const getQueryParams = () => {
 
 const ConferencePage = (): ReactElement => {
 	const user = useUser();
-	const defaultRoute = useRoute('/');
+	const defaultRoute = useRoute('home');
 	const setModal = useSetModal();
-	const handleOpenCall = useVideoOpenCall();
+	const handleOpenCall = useVideoConfOpenCall();
 	const userDisplayName = useUserDisplayName({ name: user?.name, username: user?.username });
 
 	const { callUrlParam } = getQueryParams();

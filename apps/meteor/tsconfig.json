@@ -23,7 +23,7 @@
 			/* Support absolute /imports/* with a leading '/' */
 			"/*": ["*"],
 			"meteor/*": [
-				"node_modules/@types/meteor/*",
+				"../../node_modules/@types/meteor/*",
 				".meteor/local/types/packages.d.ts"
 			]
 		},

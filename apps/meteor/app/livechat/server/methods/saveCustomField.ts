@@ -1,8 +1,8 @@
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
-import { LivechatCustomField } from '@rocket.chat/models';
 import type { ILivechatCustomField } from '@rocket.chat/core-typings';
+import { LivechatCustomField } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 

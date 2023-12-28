@@ -116,7 +116,7 @@ const RoomList = (): ReactElement => {
 	`;
 
 	return (
-		<Box className={[roomsListStyle, 'sidebar--custom-colors'].filter(Boolean)} aria-label={t('Channels')} role='region'>
+		<Box className={[roomsListStyle, 'sidebar--custom-colors'].filter(Boolean)} aria-label={t('Channels')} role='navigation'>
 			<Box h='full' w='full' ref={ref}>
 				<Virtuoso
 					totalCount={roomsList.length}

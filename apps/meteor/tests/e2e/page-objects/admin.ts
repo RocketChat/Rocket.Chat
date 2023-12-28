@@ -13,7 +13,7 @@ export class Admin {
 	}
 
 	get inputSearchRooms(): Locator {
-		return this.page.locator('input[placeholder ="Search Rooms"]');
+		return this.page.locator('input[placeholder ="Search rooms"]');
 	}
 
 	get inputSearchUsers(): Locator {
@@ -122,7 +122,7 @@ export class Admin {
 	}
 
 	get btnAssetsSettings(): Locator {
-		return this.page.locator('[data-qa-id="Assets"] >> role=button[name="Open"]');
+		return this.page.locator('[data-qa-id="Assets"] >> role=link[name="Open"]');
 	}
 
 	get btnDeleteAssetsLogo(): Locator {

@@ -1,15 +1,15 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 
-import { Meteor } from 'meteor/meteor';
-import { WebApp } from 'meteor/webapp';
-import { RoutePolicy } from 'meteor/routepolicy';
-import bodyParser from 'body-parser';
 import type { IIncomingMessage } from '@rocket.chat/core-typings';
+import bodyParser from 'body-parser';
+import { Meteor } from 'meteor/meteor';
+import { RoutePolicy } from 'meteor/routepolicy';
+import { WebApp } from 'meteor/webapp';
 
 import { SystemLogger } from '../../../server/lib/logger/system';
+import type { ISAMLAction } from './definition/ISAMLAction';
 import { SAML } from './lib/SAML';
 import { SAMLUtils } from './lib/Utils';
-import type { ISAMLAction } from './definition/ISAMLAction';
 
 RoutePolicy.declare('/_saml/', 'network');
 

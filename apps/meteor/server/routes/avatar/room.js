@@ -1,9 +1,9 @@
-import { Cookies } from 'meteor/ostrio:cookies';
 import { Avatars, Rooms } from '@rocket.chat/models';
+import { Cookies } from 'meteor/ostrio:cookies';
 
-import { renderSVGLetters, serveAvatar, wasFallbackModified, setCacheAndDispositionHeaders } from './utils';
 import { FileUpload } from '../../../app/file-upload/server';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
+import { renderSVGLetters, serveAvatar, wasFallbackModified, setCacheAndDispositionHeaders } from './utils';
 
 const cookie = new Cookies();
 const getRoomAvatar = async (roomId) => {

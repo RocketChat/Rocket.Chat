@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Modal, Field, Select, Button, Box } from '@rocket.chat/fuselage';
+import { Modal, Field, FieldLabel, FieldRow, Select, Button, Box } from '@rocket.chat/fuselage';
 import {
 	useTranslation,
 	useAvailableDevices,
@@ -77,8 +77,8 @@ const DeviceSettingsModal = (): ReactElement => {
 					</Box>
 				)}
 				<Field>
-					<Field.Label>{t('Microphone')}</Field.Label>
-					<Field.Row w='full' display='flex' flexDirection='column' alignItems='stretch'>
+					<FieldLabel>{t('Microphone')}</FieldLabel>
+					<FieldRow w='full' display='flex' flexDirection='column' alignItems='stretch'>
 						<Controller
 							name='inputDevice'
 							control={control}
@@ -86,11 +86,11 @@ const DeviceSettingsModal = (): ReactElement => {
 								<Select disabled={!setSinkIdAvailable} {...field} options={availableInputDevices || []} />
 							)}
 						/>
-					</Field.Row>
+					</FieldRow>
 				</Field>
 				<Field>
-					<Field.Label>{t('Speakers')}</Field.Label>
-					<Field.Row w='full' display='flex' flexDirection='column' alignItems='stretch'>
+					<FieldLabel>{t('Speakers')}</FieldLabel>
+					<FieldRow w='full' display='flex' flexDirection='column' alignItems='stretch'>
 						<Controller
 							name='outputDevice'
 							control={control}
@@ -98,7 +98,7 @@ const DeviceSettingsModal = (): ReactElement => {
 								<Select disabled={!setSinkIdAvailable} {...field} options={availableOutputDevices || []} />
 							)}
 						/>
-					</Field.Row>
+					</FieldRow>
 				</Field>
 			</Modal.Content>
 			<Modal.Footer>

@@ -1,8 +1,8 @@
 import { LivechatRooms } from '@rocket.chat/models';
 
 import { API } from '../../../../api/server';
-import { findLivechatTransferHistory } from '../lib/transfer';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
+import { findLivechatTransferHistory } from '../lib/transfer';
 
 API.v1.addRoute(
 	'livechat/transfer.history/:rid',

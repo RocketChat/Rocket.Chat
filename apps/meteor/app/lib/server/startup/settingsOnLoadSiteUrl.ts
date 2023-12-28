@@ -8,7 +8,7 @@ export let hostname: string;
 settings.watch<string>(
 	'Site_Url',
 	// Needed as WebAppInternals.generateBoilerplate needs to be called in a fiber
-	Meteor.bindEnvironment(function (value) {
+	Meteor.bindEnvironment((value) => {
 		if (value == null || value.trim() === '') {
 			return;
 		}

@@ -2,12 +2,12 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	useSetModal,
 	useToastMessageDispatch,
-	useRoute,
 	useUserId,
 	useSetting,
 	usePermission,
 	useMethod,
 	useTranslation,
+	useRouter,
 } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
@@ -16,9 +16,10 @@ import { GenericModalDoNotAskAgain } from '../../../../components/GenericModal';
 import { useDontAskAgain } from '../../../../hooks/useDontAskAgain';
 import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
-import { useTabBarClose, useTabBarOpen } from '../../../room/contexts/ToolboxContext';
+import { useDeleteRoom } from '../../../hooks/roomActions/useDeleteRoom';
+import { useRoom } from '../../../room/contexts/RoomContext';
+import { useRoomToolbox } from '../../../room/contexts/RoomToolboxContext';
 import ConvertToChannelModal from '../../ConvertToChannelModal';
-import DeleteTeamModal from './Delete';
 import LeaveTeam from './LeaveTeam';
 import TeamsInfo from './TeamsInfo';
 
@@ -34,9 +35,9 @@ const retentionPolicyAppliesTo = {
 	d: 'RetentionPolicy_AppliesToDMs',
 };
 
-const TeamsInfoWithLogic = ({ room, openEditing }) => {
-	const onClickClose = useTabBarClose();
-	const openTabbar = useTabBarOpen();
+const TeamsInfoWithLogic = ({ openEditing }) => {
+	const room = useRoom();
+	const { openTab, closeTab } = useRoomToolbox();
 	const t = useTranslation();
 	const userId = useUserId();
 
@@ -55,36 +56,18 @@ const TeamsInfoWithLogic = ({ room, openEditing }) => {
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal());
 
-	const deleteTeam = useEndpointAction('POST', '/v1/teams.delete');
 	const leaveTeam = useEndpointAction('POST', '/v1/teams.leave');
 	const convertTeamToChannel = useEndpointAction('POST', '/v1/teams.convertToChannel');
 
 	const hideTeam = useMethod('hideRoom');
 
-	const router = useRoute('home');
+	const router = useRouter();
 
-	const canDelete = usePermission('delete-team', room._id);
 	const canEdit = usePermission('edit-team-channel', room._id);
 
 	// const canLeave = usePermission('leave-team'); /* && room.cl !== false && joined */
 
-	const onClickDelete = useMutableCallback(() => {
-		const onConfirm = async (deletedRooms) => {
-			const roomsToRemove = Array.isArray(deletedRooms) && deletedRooms.length > 0 ? deletedRooms : [];
-
-			try {
-				await deleteTeam({ teamId: room.teamId, ...(roomsToRemove.length && { roomsToRemove }) });
-				dispatchToastMessage({ type: 'success', message: t('Team_has_been_deleted') });
-				router.push({});
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
-			} finally {
-				closeModal();
-			}
-		};
-
-		setModal(<DeleteTeamModal onConfirm={onConfirm} onCancel={closeModal} teamId={room.teamId} />);
-	});
+	const { handleDelete, canDeleteRoom } = useDeleteRoom(room);
 
 	const onClickLeave = useMutableCallback(() => {
 		const onConfirm = async (roomsLeft) => {
@@ -97,7 +80,7 @@ const TeamsInfoWithLogic = ({ room, openEditing }) => {
 					...(roomsToLeave.length && { rooms: roomsToLeave }),
 				});
 				dispatchToastMessage({ type: 'success', message: t('Teams_left_team_successfully') });
-				router.push({});
+				router.navigate('/home');
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {
@@ -112,7 +95,7 @@ const TeamsInfoWithLogic = ({ room, openEditing }) => {
 		const hide = async () => {
 			try {
 				await hideTeam(room._id);
-				router.push({});
+				router.navigate('/home');
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {
@@ -144,7 +127,7 @@ const TeamsInfoWithLogic = ({ room, openEditing }) => {
 		);
 	});
 
-	const onClickViewChannels = useCallback(() => openTabbar('team-channels'), [openTabbar]);
+	const onClickViewChannels = useCallback(() => openTab('team-channels'), [openTab]);
 
 	const onClickConvertToChannel = useMutableCallback(() => {
 		const onConfirm = async (roomsToRemove) => {
@@ -172,8 +155,8 @@ const TeamsInfoWithLogic = ({ room, openEditing }) => {
 			room={room}
 			retentionPolicy={retentionPolicyEnabled && retentionPolicy}
 			onClickEdit={canEdit && openEditing}
-			onClickClose={onClickClose}
-			onClickDelete={canDelete && onClickDelete}
+			onClickClose={closeTab}
+			onClickDelete={canDeleteRoom && handleDelete}
 			onClickLeave={/* canLeave && */ onClickLeave}
 			onClickHide={/* joined && */ handleHide}
 			onClickViewChannels={onClickViewChannels}

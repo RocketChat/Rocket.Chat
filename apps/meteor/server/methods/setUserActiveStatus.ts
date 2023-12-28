@@ -1,6 +1,6 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { setUserActiveStatus } from '../../app/lib/server/functions/setUserActiveStatus';

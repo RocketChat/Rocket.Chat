@@ -1,12 +1,14 @@
 import { expect } from 'chai';
+import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials, apiPublicChannelName, channel, reservedWords } from '../../data/api-data.js';
-import { adminUsername, password } from '../../data/user';
-import { createUser, login } from '../../data/users.helper';
+import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
+import { createIntegration, removeIntegration } from '../../data/integration.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom } from '../../data/rooms.helper';
-import { createIntegration, removeIntegration } from '../../data/integration.helper';
 import { testFileUploads } from '../../data/uploads.helper';
+import { adminUsername, password } from '../../data/user';
+import { createUser, login, deleteUser } from '../../data/users.helper';
 
 function getRoomInfo(roomId) {
 	return new Promise((resolve /* , reject*/) => {
@@ -48,6 +50,81 @@ describe('[Channels]', function () {
 			.end(done);
 	});
 
+	describe('[/channels.create]', () => {
+		let guestUser;
+		let room;
+
+		before(async () => {
+			guestUser = await createUser({ roles: ['guest'] });
+		});
+		after(async () => {
+			await deleteUser(guestUser);
+		});
+
+		it(`should fail when trying to use an existing room's name`, async () => {
+			await request
+				.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: 'general',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.nested.property('errorType', 'error-duplicate-channel-name');
+				});
+		});
+
+		it('should not add guest users to more rooms than defined in the license', async function () {
+			// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
+			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
+			if (!process.env.IS_EE) {
+				this.skip();
+			}
+
+			const promises = [];
+			for (let i = 0; i < maxRoomsPerGuest; i++) {
+				promises.push(
+					createRoom({
+						type: 'c',
+						name: `channel.test.${Date.now()}-${Math.random()}`,
+						members: [guestUser.username],
+					}),
+				);
+			}
+			await Promise.all(promises);
+
+			request
+				.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: `channel.test.${Date.now()}-${Math.random()}`,
+					members: [guestUser.username],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					room = res.body.group;
+				})
+				.then(() => {
+					request
+						.get(api('channels.members'))
+						.set(credentials)
+						.query({
+							roomId: room._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('members').and.to.be.an('array');
+							expect(res.body.members).to.have.lengthOf(1);
+						});
+				});
+		});
+	});
 	describe('[/channels.info]', () => {
 		let testChannel = {};
 		let channelMessage = {};
@@ -317,7 +394,7 @@ describe('[Channels]', function () {
 		});
 	});
 
-	describe('[/channels.files]', async function () {
+	describe('[/channels.files]', async () => {
 		await testFileUploads('channels.files', channel);
 	});
 
@@ -1137,6 +1214,7 @@ describe('[Channels]', function () {
 										alias: 'test',
 										username: 'rocket.cat',
 										scriptEnabled: false,
+										overrideDestinationChannelEnabled: true,
 										channel: `#${createdChannel.name}`,
 									},
 									userCredentials,
@@ -1510,25 +1588,49 @@ describe('[Channels]', function () {
 			});
 	});
 
-	it('/channels.setDefault', async () => {
-		const roomInfo = await getRoomInfo(channel._id);
+	describe('/channels.setDefault', () => {
+		it('should set channel as default', async () => {
+			const roomInfo = await getRoomInfo(channel._id);
 
-		return request
-			.post(api('channels.setDefault'))
-			.set(credentials)
-			.send({
-				roomId: channel._id,
-				default: true,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.nested.property('channel._id');
-				expect(res.body).to.have.nested.property('channel.name', `EDITED${apiPublicChannelName}`);
-				expect(res.body).to.have.nested.property('channel.t', 'c');
-				expect(res.body).to.have.nested.property('channel.msgs', roomInfo.channel.msgs);
-			});
+			return request
+				.post(api('channels.setDefault'))
+				.set(credentials)
+				.send({
+					roomId: channel._id,
+					default: true,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel._id');
+					expect(res.body).to.have.nested.property('channel.name', `EDITED${apiPublicChannelName}`);
+					expect(res.body).to.have.nested.property('channel.t', 'c');
+					expect(res.body).to.have.nested.property('channel.msgs', roomInfo.channel.msgs);
+					expect(res.body).to.have.nested.property('channel.default', true);
+				});
+		});
+		it('should unset channel as default', async () => {
+			const roomInfo = await getRoomInfo(channel._id);
+
+			return request
+				.post(api('channels.setDefault'))
+				.set(credentials)
+				.send({
+					roomId: channel._id,
+					default: false,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel._id');
+					expect(res.body).to.have.nested.property('channel.name', `EDITED${apiPublicChannelName}`);
+					expect(res.body).to.have.nested.property('channel.t', 'c');
+					expect(res.body).to.have.nested.property('channel.msgs', roomInfo.channel.msgs);
+					expect(res.body).to.have.nested.property('channel.default', false);
+				});
+		});
 	});
 
 	it('/channels.leave', async () => {
@@ -2007,7 +2109,7 @@ describe('[Channels]', function () {
 		});
 	});
 
-	context("Setting: 'Use Real Name': true", () => {
+	describe("Setting: 'Use Real Name': true", () => {
 		before(async () => {
 			await updateSetting('UI_Use_Real_Name', true);
 

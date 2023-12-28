@@ -2,7 +2,6 @@
  * @author Vigneshwaran Odayappan <vickyokrm@gmail.com>
  */
 
-import _ from 'underscore';
 import type {
 	IMessage,
 	IDeepLTranslation,
@@ -12,11 +11,15 @@ import type {
 	ISupportedLanguage,
 } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import _ from 'underscore';
 
-import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';
+import { i18n } from '../../../server/lib/i18n';
 import { SystemLogger } from '../../../server/lib/logger/system';
 import { settings } from '../../settings/server';
-import { i18n } from '../../../server/lib/i18n';
+import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';
+
+const proApiEndpoint = 'https://api.deepl.com/v2/translate';
+const freeApiEndpoint = 'https://api-free.deepl.com/v2/translate';
 
 /**
  * DeepL translation service provider class representation.
@@ -38,10 +41,18 @@ class DeeplAutoTranslate extends AutoTranslate {
 	constructor() {
 		super();
 		this.name = 'deepl-translate';
-		this.apiEndPointUrl = 'https://api.deepl.com/v2/translate';
+		this.apiEndPointUrl = proApiEndpoint;
+
 		// Get the service provide API key.
 		settings.watch<string>('AutoTranslate_DeepLAPIKey', (value) => {
 			this.apiKey = value;
+
+			// if the api key ends with `:fx` it is a free api key
+			if (/:fx$/.test(value)) {
+				this.apiEndPointUrl = freeApiEndpoint;
+				return;
+			}
+			this.apiEndPointUrl = proApiEndpoint;
 		});
 	}
 
@@ -198,15 +209,20 @@ class DeeplAutoTranslate extends AutoTranslate {
 	 */
 	async _translateMessage(message: IMessage, targetLanguages: string[]): Promise<ITranslationResult> {
 		const translations: { [k: string]: string } = {};
-		let msgs = message.msg.split('\n');
-		msgs = msgs.map((msg) => encodeURIComponent(msg));
+		const msgs = message.msg.split('\n');
 		const supportedLanguages = await this.getSupportedLanguages('en');
 		for await (let language of targetLanguages) {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
 				language = language.substr(0, 2);
 			}
 			try {
-				const result = await fetch(this.apiEndPointUrl, { params: { auth_key: this.apiKey, target_lang: language, text: msgs } });
+				const result = await fetch(this.apiEndPointUrl, {
+					params: { target_lang: language, text: msgs },
+					headers: {
+						Authorization: `DeepL-Auth-Key ${this.apiKey}`,
+					},
+					method: 'POST',
+				});
 
 				if (!result.ok) {
 					throw new Error(result.statusText);
@@ -250,7 +266,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 					params: {
 						auth_key: this.apiKey,
 						target_lang: language,
-						text: encodeURIComponent(attachment.description || attachment.text || ''),
+						text: attachment.description || attachment.text || '',
 					},
 				});
 				if (!result.ok) {
