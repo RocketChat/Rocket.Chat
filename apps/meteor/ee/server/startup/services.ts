@@ -3,7 +3,6 @@ import { License } from '@rocket.chat/license';
 
 import { isRunningMs } from '../../../server/lib/isRunningMs';
 import { FederationService } from '../../../server/services/federation/service';
-import { LicenseService } from '../../app/license/server/license.internalService';
 import { OmnichannelEE } from '../../app/livechat-enterprise/server/services/omnichannel.internalService';
 import { EnterpriseSettings } from '../../app/settings/server/settings.internalService';
 import { FederationServiceEE } from '../local-services/federation/service';
@@ -14,7 +13,6 @@ import { MessageReadsService } from '../local-services/message-reads/service';
 // TODO consider registering these services only after a valid license is added
 api.registerService(new EnterpriseSettings());
 api.registerService(new LDAPEEService());
-api.registerService(new LicenseService());
 api.registerService(new MessageReadsService());
 api.registerService(new OmnichannelEE());
 

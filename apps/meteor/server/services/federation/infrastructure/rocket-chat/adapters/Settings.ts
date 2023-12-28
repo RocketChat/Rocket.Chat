@@ -7,6 +7,7 @@ import yaml from 'js-yaml';
 import { v4 as uuidv4 } from 'uuid';
 
 import { settings, settingsRegistry } from '../../../../../../app/settings/server';
+import { createFederationSettings as createFederationV1Settings } from '../../../../../settings/federation';
 import type { IFederationBridgeRegistrationFile } from '../../../domain/IFederationBridge';
 
 const EVERYTHING_REGEX = '.*';
@@ -173,6 +174,8 @@ export class RocketChatSettingsAdapter {
 
 	private async addFederationSettings(): Promise<void> {
 		const preExistingConfiguration = this.getRegistrationFileFromHomeserver();
+
+		await createFederationV1Settings();
 
 		await settingsRegistry.addGroup('Federation', async function () {
 			await this.section('Matrix Bridge', async function () {

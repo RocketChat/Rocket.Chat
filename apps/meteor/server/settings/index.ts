@@ -10,7 +10,6 @@ import { createSoundsSettings } from './custom-sounds';
 import { createDiscussionsSettings } from './discussions';
 import { createE2ESettings } from './e2e';
 import { createEmailSettings } from './email';
-import { createFederationSettings } from './federation';
 import { createFileUploadSettings } from './file-upload';
 import { createGeneralSettings } from './general';
 import { createIRCSettings } from './irc';
@@ -51,7 +50,6 @@ async function createSettings() {
 		createDiscussionsSettings(),
 		createEmailSettings(),
 		createE2ESettings(),
-		createFederationSettings(),
 		createFileUploadSettings(),
 		createGeneralSettings(),
 		createIRCSettings(),

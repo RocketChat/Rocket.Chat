@@ -592,7 +592,11 @@ export const statistics = {
 		const defaultLoggedInCustomScript = (await Settings.findOneById('Custom_Script_Logged_In'))?.packageValue;
 		statistics.loggedInCustomScriptChanged = settings.get('Custom_Script_Logged_In') !== defaultLoggedInCustomScript;
 
-		statistics.dailyPeakConnections = await Presence.getPeakConnections(true);
+		try {
+			statistics.dailyPeakConnections = await Presence.getPeakConnections(true);
+		} catch {
+			statistics.dailyPeakConnections = 0;
+		}
 
 		const peak = await Statistics.findMonthlyPeakConnections();
 		statistics.maxMonthlyPeakConnections = Math.max(statistics.dailyPeakConnections, peak?.dailyPeakConnections || 0);

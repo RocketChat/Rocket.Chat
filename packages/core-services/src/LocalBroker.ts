@@ -73,6 +73,7 @@ export class LocalBroker implements IBroker {
 
 			this.methods.set(`${namespace}.${method}`, i[method].bind(i));
 		}
+		void instance.started();
 	}
 
 	onBroadcast(callback: (eventName: string, args: unknown[]) => void): void {

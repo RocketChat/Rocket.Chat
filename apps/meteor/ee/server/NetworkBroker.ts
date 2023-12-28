@@ -25,8 +25,6 @@ const waitForServicesTimeout = parseInt(WAIT_FOR_SERVICES_TIMEOUT, 10) || 10000;
 export class NetworkBroker implements IBroker {
 	private broker: ServiceBroker;
 
-	private started: Promise<void>;
-
 	metrics: IServiceMetrics;
 
 	constructor(broker: ServiceBroker) {
@@ -36,8 +34,6 @@ export class NetworkBroker implements IBroker {
 	}
 
 	async call(method: string, data: any): Promise<any> {
-		await this.started;
-
 		const context = asyncLocalStorage.getStore();
 
 		if (context?.ctx?.call) {
@@ -54,12 +50,10 @@ export class NetworkBroker implements IBroker {
 	}
 
 	async waitAndCall(method: string, data: any): Promise<any> {
-		await this.started;
-
 		try {
 			await this.broker.waitForServices(method.split('.')[0], waitForServicesTimeout);
 		} catch (err) {
-			console.error(err);
+			throw new Error('Dependent services not available');
 		}
 
 		const context = asyncLocalStorage.getStore();
@@ -181,6 +175,6 @@ export class NetworkBroker implements IBroker {
 	}
 
 	async start(): Promise<void> {
-		this.started = this.broker.start();
+		await this.broker.start();
 	}
 }
