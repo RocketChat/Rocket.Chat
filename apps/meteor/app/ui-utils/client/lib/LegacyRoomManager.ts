@@ -208,11 +208,11 @@ const computation = Tracker.autorun(() => {
 							return ChatMessage.remove(query);
 						},
 					);
-					Notifications.onRoom(record.rid, 'messagesRead', ({ rid, tmid, until }) => {
+					Notifications.onRoom(record.rid, 'messagesRead', ({ tmid, until }) => {
 						if (tmid) {
 							return ChatMessage.update(
 								{
-									$or: [{ tmid }, { _id: tmid }],
+									tmid,
 									unread: true,
 								},
 								{ $unset: { unread: 1 } },
@@ -221,9 +221,9 @@ const computation = Tracker.autorun(() => {
 						}
 						ChatMessage.update(
 							{
-								rid,
+								rid: record.rid,
 								unread: true,
-								...(until && { ts: { $lt: until } }),
+								ts: { $lt: until },
 								$or: [
 									{
 										tmid: { $exists: false },

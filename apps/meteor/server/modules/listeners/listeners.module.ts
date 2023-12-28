@@ -183,7 +183,7 @@ export class ListenersModule {
 		});
 
 		service.onEvent('notify.messagesRead', ({ rid, until, tmid }): void => {
-			notifications.notifyRoomInThisInstance(rid, 'messagesRead', { rid, tmid, until });
+			notifications.notifyRoomInThisInstance(rid, 'messagesRead', { tmid, until });
 		});
 
 		service.onEvent('watch.subscriptions', ({ clientAction, subscription }) => {
