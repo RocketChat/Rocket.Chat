@@ -111,10 +111,12 @@ export const isSubscriptionsUnreadProps = ajv.compile<SubscriptionsUnread>(Subsc
 
 export type SubscriptionsEndpoints = {
 	'/v1/subscriptions.get': {
-		GET: (params: SubscriptionsGet) => {
-			update: ISubscription[];
-			remove: (Pick<ISubscription, '_id'> & { _deletedAt: Date })[];
-		};
+		GET: (params: SubscriptionsGet) =>
+			| {
+					update: ISubscription[];
+					remove: (Pick<ISubscription, '_id'> & { _deletedAt: Date })[];
+			  }
+			| ISubscription[];
 	};
 
 	'/v1/subscriptions.getOne': {
