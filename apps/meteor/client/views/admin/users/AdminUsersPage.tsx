@@ -14,6 +14,7 @@ import AdminUserForm from './AdminUserForm';
 import AdminUserFormWithData from './AdminUserFormWithData';
 import AdminUserInfoWithData from './AdminUserInfoWithData';
 import AdminUserUpgrade from './AdminUserUpgrade';
+import InviteUsersTable from './InviteUsersTable';
 import UsersTable from './UsersTable';
 
 const UsersPage = (): ReactElement => {
@@ -80,7 +81,12 @@ const UsersPage = (): ReactElement => {
 							{t('Invited')}
 						</TabsItem>
 					</Tabs>
-					<UsersTable reload={reload} tab={tab} onReload={handleReload} setPendingActionsCount={setPendingActionsCount} />
+					{tab !== 'invited' && (
+						<UsersTable reload={reload} tab={tab} onReload={handleReload} setPendingActionsCount={setPendingActionsCount} />
+					)}
+					{tab === 'invited' && (
+						<InviteUsersTable reload={reload} onReload={handleReload} setPendingActionsCount={setPendingActionsCount} />
+					)}
 				</PageContent>
 			</Page>
 			{context && (
