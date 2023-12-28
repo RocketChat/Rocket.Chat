@@ -122,7 +122,7 @@ export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserDat
 								},
 						  }
 						: {}),
-					emailCode: emailCode?.map(({ expire, ...data }) => ({ expire: new Date(expire), ...data })) || [],
+					...(emailCode ? { ...emailCode, expire: new Date(emailCode.expire) } : {}),
 					...(email2fa ? { email2fa: { ...email2fa, changedAt: new Date(email2fa.changedAt) } } : {}),
 					...(email?.verificationTokens && {
 						email: {

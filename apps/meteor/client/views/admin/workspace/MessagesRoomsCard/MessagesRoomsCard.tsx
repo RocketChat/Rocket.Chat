@@ -1,8 +1,11 @@
 import type { IStats } from '@rocket.chat/core-typings';
-import { TextSeparator, Card, CardBody, CardCol, CardColSection, CardColTitle, CardIcon } from '@rocket.chat/ui-client';
+import { Card } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
+
+import WorkspaceCardSection from '../components/WorkspaceCardSection';
+import WorkspaceCardTextSeparator from '../components/WorkspaceCardTextSeparator';
 
 type MessagesRoomsCardProps = {
 	statistics: IStats;
@@ -12,110 +15,46 @@ const MessagesRoomsCard = ({ statistics }: MessagesRoomsCardProps): ReactElement
 	const t = useTranslation();
 
 	return (
-		<Card>
-			<CardBody>
-				<CardCol>
-					<CardColSection mbs={0} mbe={16}>
-						<CardColTitle>{t('Total_rooms')}</CardColTitle>
-						<TextSeparator
-							label={
-								<>
-									<CardIcon name='hash' size='x16' mie={4} />
-									{t('Channels')}
-								</>
-							}
-							value={statistics.totalChannels}
-						/>
-						<TextSeparator
-							label={
-								<>
-									<CardIcon name='lock' size='x16' mie={4} />
-									{t('Private_Groups')}
-								</>
-							}
-							value={statistics.totalPrivateGroups}
-						/>
-						<TextSeparator
-							label={
-								<>
-									<CardIcon name='balloon' size='x16' mie={4} />
-									{t('Direct_Messages')}
-								</>
-							}
-							value={statistics.totalDirect}
-						/>
-						<TextSeparator
-							label={
-								<>
-									<CardIcon name='discussion' size='x16' mie={4} />
-									{t('Discussions')}
-								</>
-							}
-							value={statistics.totalDiscussions}
-						/>
-						<TextSeparator
-							label={
-								<>
-									<CardIcon name='headset' size='x16' mie={4} />
-									{t('Omnichannel')}
-								</>
-							}
-							value={statistics.totalLivechat}
-						/>
-						<TextSeparator label={t('Total')} value={statistics.totalRooms} />
-					</CardColSection>
+		<Card height='full'>
+			<WorkspaceCardSection
+				title={t('Total_rooms')}
+				body={
+					<>
+						<WorkspaceCardTextSeparator label={t('Channels')} icon='hash' value={statistics.totalChannels} />
+						<WorkspaceCardTextSeparator label={t('Private_Groups')} icon='lock' value={statistics.totalPrivateGroups} />
+						<WorkspaceCardTextSeparator label={t('Direct_Messages')} icon='balloon' value={statistics.totalDirect} />
+						<WorkspaceCardTextSeparator label={t('Discussions')} icon='discussion' value={statistics.totalDiscussions} />
+						<WorkspaceCardTextSeparator label={t('Omnichannel')} icon='headset' value={statistics.totalLivechat} />
+						<WorkspaceCardTextSeparator label={t('Total')} value={statistics.totalRooms} />
+					</>
+				}
+			/>
 
-					<CardColSection mbs={0} mbe={16}>
-						<CardColTitle>{t('Messages')}</CardColTitle>
-						<TextSeparator
-							label={
-								<>
-									<CardIcon name='hash' size='x16' mie={4} />
-									{t('Stats_Total_Messages_Channel')}
-								</>
-							}
-							value={statistics.totalChannelMessages}
-						/>
-						<TextSeparator
-							label={
-								<>
-									<CardIcon name='lock' size='x16' mie={4} />
-									{t('Stats_Total_Messages_PrivateGroup')}
-								</>
-							}
+			<WorkspaceCardSection
+				title={t('Messages')}
+				body={
+					<>
+						<WorkspaceCardTextSeparator label={t('Stats_Total_Messages_Channel')} icon='hash' value={statistics.totalChannelMessages} />
+						<WorkspaceCardTextSeparator
+							label={t('Stats_Total_Messages_PrivateGroup')}
+							icon='lock'
 							value={statistics.totalPrivateGroupMessages}
 						/>
-						<TextSeparator
-							label={
-								<>
-									<CardIcon name='balloon' size='x16' mie={4} />
-									{t('Stats_Total_Messages_Direct')}
-								</>
-							}
-							value={statistics.totalDirectMessages}
-						/>
-						<TextSeparator
-							label={
-								<>
-									<CardIcon name='discussion' size='x16' mie={4} />
-									{t('Stats_Total_Messages_Discussions')}
-								</>
-							}
+						<WorkspaceCardTextSeparator label={t('Stats_Total_Messages_Direct')} icon='balloon' value={statistics.totalDirectMessages} />
+						<WorkspaceCardTextSeparator
+							label={t('Stats_Total_Messages_Discussions')}
+							icon='discussion'
 							value={statistics.totalDiscussionsMessages}
 						/>
-						<TextSeparator
-							label={
-								<>
-									<CardIcon name='headset' size='x16' mie={4} />
-									{t('Stats_Total_Messages_Livechat')}
-								</>
-							}
+						<WorkspaceCardTextSeparator
+							label={t('Stats_Total_Messages_Livechat')}
+							icon='headset'
 							value={statistics.totalLivechatMessages}
 						/>
-						<TextSeparator label={t('Total')} value={statistics.totalMessages} />
-					</CardColSection>
-				</CardCol>
-			</CardBody>
+						<WorkspaceCardTextSeparator label={t('Total')} value={statistics.totalMessages} />
+					</>
+				}
+			/>
 		</Card>
 	);
 };
