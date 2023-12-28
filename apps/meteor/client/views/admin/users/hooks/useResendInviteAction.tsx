@@ -1,8 +1,5 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useRoute, usePermission, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
 
-import GenericModal from '../../../../components/GenericModal';
 import type { Action } from '../../../hooks/useActionSpread';
 
 export const useResendInviteAction = (onReload: () => void): Action | undefined => {

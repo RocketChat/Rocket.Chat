@@ -1,16 +1,16 @@
-import { UserStatus as Status } from '@rocket.chat/core-typings';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Box, Menu, Option } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React from 'react';
 
 import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
-import { UserStatus } from '../../../../components/UserStatus';
-import UserAvatar from '../../../../components/avatar/UserAvatar';
-import { useChangeUserStatusAction } from '../hooks/useChangeUserStatusAction';
+import { useMessageDateFormatter } from '../../../../components/message/list/MessageListContext';
+import type { Action } from '../../../hooks/useActionSpread';
+import { useDeleteInviteRecordAction } from '../hooks/useDeleteInviteRecordAction';
+import { useResendInviteAction } from '../hooks/useResendInviteAction';
+import { useRevokeInviteAction } from '../hooks/useRevokeInviteAction';
 
 type UsersTableRowProps = {
 	user: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'emails' | 'active' | 'avatarETag' | 'roles'>;
@@ -20,48 +20,49 @@ type UsersTableRowProps = {
 	onReload: () => void;
 };
 
-const UsersTableRow = ({ user, onClick, mediaQuery, refetchUsers, onReload }: UsersTableRowProps): ReactElement => {
+const UsersTableRow = ({ user, onClick, mediaQuery, onReload }: UsersTableRowProps): ReactElement => {
 	const t = useTranslation();
-	const { _id, emails, username, name, status, avatarETag } = user;
+	const { _id, emails } = user;
 
-	// TODO: change
-	const inviteStatus: 'pending' | 'accepted' | 'expired' = 'pending';
+	// TODO: create endpoint to return invite status and type
+	const inviteStatus: 'Pending' | 'Accepted' | 'Expired' = 'Pending';
+	const inviteType: 'email' | 'link' = 'link';
+	const inviteDate = new Date();
 
-	const userId = user._id;
+	// TODO: get this data from seats available?
+	const currentUsage = 0;
+	const maxUsageAllowance: number | 'Unlimited' = 'Unlimited';
 
+	/*
 	const onChange = useMutableCallback(() => {
 		onReload();
 		refetchUsers();
 	});
+	*/
 
-	// const deleteUserAction = useDeleteUserAction(userId, onChange, onReload);
-	// const changeUserStatusAction = useChangeUserStatusAction(userId, isActive, onChange);
-
-	// TODO: fix
-	const resendInviteAction = useResendInviteAction(userId, onChange, onReload);
-	const revokeInviteAction = useRevokeInviteAction();
-	const deleteInviteRecordAction = useDeleteInviteRecord(userId, onChange, onReload);
+	// TODO: fix params
+	const resendInviteAction: Action | undefined = useResendInviteAction(onReload);
+	const revokeInviteAction: Action | undefined = useRevokeInviteAction(onReload);
+	const deleteInviteRecordAction: Action | undefined = useDeleteInviteRecordAction(onReload);
 
 	const menuOptions = {
 		...(resendInviteAction &&
-			inviteStatus === 'pending' && {
+			inviteStatus === 'Pending' && {
 				resend: { label: { label: resendInviteAction.label, icon: resendInviteAction.icon }, action: resendInviteAction.action },
 			}),
 		...(revokeInviteAction &&
-			(inviteStatus === 'pending' || inviteStatus === 'accepted') && {
+			(inviteStatus === 'Pending' || inviteStatus === 'Accepted') && {
 				revoke: { label: { label: revokeInviteAction.label, icon: revokeInviteAction.icon }, action: revokeInviteAction.action },
 			}),
 		...(deleteInviteRecordAction && {
-			delete: { label: { label: deleteInviteRecordAction.label, icon: deleteInviteRecordAction.icon }, action: deleteInviteRecordAction.action },
+			delete: {
+				label: { label: deleteInviteRecordAction.label, icon: deleteInviteRecordAction.icon },
+				action: deleteInviteRecordAction.action,
+			},
 		}),
 	};
 
-	// TODO: create action for this?
-	// TODO: implement logic
-	// const handleResendWelcomeEmail = () => {
-	// 	console.log('Welcome email resent');
-	// 	dispatchToastMessage({ type: 'success', message: t('Welcome_email_resent') });
-	// };
+	const formatter = useMessageDateFormatter();
 
 	return (
 		<GenericTableRow
@@ -72,39 +73,36 @@ const UsersTableRow = ({ user, onClick, mediaQuery, refetchUsers, onReload }: Us
 			action
 			qa-user-id={_id}
 		>
-			<GenericTableCell withTruncatedText>
-				<Box display='flex' alignItems='center'>
-					{username && <UserAvatar size={mediaQuery ? 'x28' : 'x40'} username={username} etag={avatarETag} />}
-					<Box display='flex' mi={8} withTruncatedText>
-						<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
-							<Box fontScale='p2m' color='default' withTruncatedText>
-								<Box display='inline' mie='x8'>
-									<UserStatus status={status || Status.OFFLINE} />
-								</Box>
-								{name || username}
-							</Box>
-							{!mediaQuery && name && (
-								<Box fontScale='p2' color='hint' withTruncatedText>
-									{`@${username}`}
-								</Box>
-							)}
-						</Box>
-					</Box>
-				</Box>
-			</GenericTableCell>
 			{mediaQuery && (
 				<GenericTableCell>
 					<Box fontScale='p2m' color='hint' withTruncatedText>
-						{username}
+						{t(inviteType)}
 					</Box>
 					<Box mi={4} />
 				</GenericTableCell>
 			)}
 
 			<GenericTableCell withTruncatedText>{emails?.length && emails[0].address}</GenericTableCell>
-			{tab === 'all' && (
-				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
-					{registrationStatusText}
+
+			<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
+				{formatter(inviteDate)}
+			</GenericTableCell>
+
+			{mediaQuery && (
+				<GenericTableCell>
+					<Box fontScale='p2m' color='hint' withTruncatedText>
+						{t(inviteStatus)}
+					</Box>
+					<Box mi={4} />
+				</GenericTableCell>
+			)}
+
+			{mediaQuery && (
+				<GenericTableCell>
+					<Box fontScale='p2m' color='hint' withTruncatedText>
+						{`${currentUsage} / ${maxUsageAllowance === 'Unlimited' ? t(maxUsageAllowance) : maxUsageAllowance}`}
+					</Box>
+					<Box mi={4} />
 				</GenericTableCell>
 			)}
 

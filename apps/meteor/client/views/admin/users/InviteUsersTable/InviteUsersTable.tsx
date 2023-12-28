@@ -114,6 +114,11 @@ const UsersTable = ({ reload, onReload, setPendingActionsCount }: UsersTableProp
 					{t('Invite_status')}
 				</GenericTableHeaderCell>
 			),
+			mediaQuery && (
+				<GenericTableHeaderCell w='x100' key='allowance'>
+					{t('Usage_allowance')}
+				</GenericTableHeaderCell>
+			),
 			<GenericTableHeaderCell key='actions' w='x176' />,
 		],
 		[mediaQuery, setSort, sortBy, sortDirection, t],

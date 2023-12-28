@@ -5,7 +5,7 @@ import React from 'react';
 import GenericModal from '../../../../components/GenericModal';
 import type { Action } from '../../../hooks/useActionSpread';
 
-export const useDeleteUserAction = (onReload: () => void): Action | undefined => {
+export const useDeleteInviteRecordAction = (onReload: () => void): Action | undefined => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const userRoute = useRoute('admin-users');

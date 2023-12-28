@@ -6282,5 +6282,7 @@
   "Invitation_link_will_become_invalid": "The invitation link or email will become invalid. This action cannot be undone.",
   "Revoke": "Revoke",
   "Invitation_resent": "Invitation resent",
-  "Resend": "Resend"
+  "Resend": "Resend",
+  "Usage_allowance": "Usage allowance",
+  "Accepted": "Accepted"
 }
