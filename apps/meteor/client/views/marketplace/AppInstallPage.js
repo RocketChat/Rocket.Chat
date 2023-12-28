@@ -13,10 +13,10 @@ import React, { useCallback, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { AppClientOrchestratorInstance } from '../../../ee/client/apps/orchestrator';
-import Page from '../../components/Page';
+import { Page, PageHeader, PageScrollableContent } from '../../components/Page';
 import { useAppsReload } from '../../contexts/hooks/useAppsReload';
 import { useExternalLink } from '../../hooks/useExternalLink';
-import { useFileInput } from '../../hooks/useFileInput';
+import { useSingleFileInput } from '../../hooks/useSingleFileInput';
 import { useCheckoutUrl } from '../admin/subscription/hooks/useCheckoutUrl';
 import AppPermissionsReviewModal from './AppPermissionsReviewModal';
 import AppUpdateModal from './AppUpdateModal';
@@ -59,7 +59,7 @@ function AppInstallPage() {
 
 	const canSave = !!url || !!file?.name;
 
-	const [handleUploadButtonClick] = useFileInput((value) => setValue('file', value), 'app');
+	const [handleUploadButtonClick] = useSingleFileInput((value) => setValue('file', value), 'app');
 
 	const sendFile = async (permissionsGranted, appFile, appId) => {
 		let app;
@@ -196,8 +196,8 @@ function AppInstallPage() {
 
 	return (
 		<Page flexDirection='column'>
-			<Page.Header title={t('App_Installation')} />
-			<Page.ScrollableContent>
+			<PageHeader title={t('App_Installation')} />
+			<PageScrollableContent>
 				<FieldGroup display='flex' flexDirection='column' alignSelf='center' maxWidth='x600' w='full'>
 					<Field>
 						<FieldLabel htmlFor={urlField}>{t('App_Url_to_Install_From')}</FieldLabel>
@@ -242,7 +242,7 @@ function AppInstallPage() {
 						</ButtonGroup>
 					</Field>
 				</FieldGroup>
-			</Page.ScrollableContent>
+			</PageScrollableContent>
 		</Page>
 	);
 }

@@ -30,6 +30,11 @@ API.v1.addRoute('livechat/visitor', {
 		});
 
 		const { customFields, id, token, name, email, department, phone, username, connectionData } = this.bodyParams.visitor;
+
+		if (!token?.trim()) {
+			throw new Meteor.Error('error-invalid-token', 'Token cannot be empty', { method: 'livechat/visitor' });
+		}
+
 		const guest = {
 			token,
 			...(id && { id }),

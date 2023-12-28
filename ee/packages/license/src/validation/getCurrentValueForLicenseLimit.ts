@@ -1,5 +1,5 @@
-import type { LicenseLimitKind } from '../definition/ILicenseV3';
-import type { LimitContext } from '../definition/LimitContext';
+import type { LicenseLimitKind, LimitContext } from '@rocket.chat/core-typings';
+
 import type { LicenseManager } from '../license';
 import { logger } from '../logger';
 import { applyPendingLicense, hasPendingLicense } from '../pendingLicense';

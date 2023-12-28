@@ -32,8 +32,8 @@ import type {
 	ILivechatAgent,
 	IBanner,
 	ILivechatVisitor,
+	LicenseLimitKind,
 } from '@rocket.chat/core-typings';
-import type { LicenseLimitKind } from '@rocket.chat/license';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
 import type { AutoUpdateRecord } from '../types/IMeteor';
@@ -88,6 +88,8 @@ export type EventSignatures = {
 			ignoreDiscussion: boolean;
 			ts: Record<string, Date>;
 			users: string[];
+			ids?: string[]; // message ids have priority over ts
+			showDeletedStatus?: boolean;
 		},
 	): void;
 	'notify.deleteCustomSound'(data: { soundData: ICustomSound }): void;

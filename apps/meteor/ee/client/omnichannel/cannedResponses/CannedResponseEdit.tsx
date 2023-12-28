@@ -6,7 +6,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import React, { memo, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import Page from '../../../../client/components/Page';
+import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../../client/components/Page';
 import CannedResponseForm from './components/cannedResponseForm';
 import { useRemoveCannedResponse } from './useRemoveCannedResponse';
 
@@ -66,33 +66,33 @@ const CannedResponseEdit = ({ cannedResponseData }: CannedResponseEditProps) => 
 
 	return (
 		<Page>
-			<Page.Header title={cannedResponseData?._id ? t('Edit_CannedResponse') : t('New_CannedResponse')}>
-				<ButtonGroup>
-					<Button icon='back' onClick={() => router.navigate('/omnichannel/canned-responses')}>
-						{t('Back')}
-					</Button>
-					{cannedResponseData?._id && (
+			<PageHeader
+				title={cannedResponseData?._id ? t('Edit_CannedResponse') : t('New_CannedResponse')}
+				onClickBack={() => router.navigate('/omnichannel/canned-responses')}
+			>
+				{cannedResponseData?._id && (
+					<ButtonGroup>
 						<Button danger onClick={() => handleDelete(cannedResponseData._id)}>
 							{t('Delete')}
 						</Button>
-					)}
-				</ButtonGroup>
-			</Page.Header>
-			<Page.ScrollableContentWithShadow>
+					</ButtonGroup>
+				)}
+			</PageHeader>
+			<PageScrollableContentWithShadow>
 				<FormProvider {...methods}>
 					<Box id={formId} onSubmit={handleSubmit(handleSave)} w='full' alignSelf='center' maxWidth='x600' is='form' autoComplete='off'>
 						<CannedResponseForm />
 					</Box>
 				</FormProvider>
-			</Page.ScrollableContentWithShadow>
-			<Page.Footer isDirty={isDirty}>
+			</PageScrollableContentWithShadow>
+			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
 					<Button onClick={() => reset()}>{t('Cancel')}</Button>
 					<Button form={formId} primary type='submit'>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
-			</Page.Footer>
+			</PageFooter>
 		</Page>
 	);
 };

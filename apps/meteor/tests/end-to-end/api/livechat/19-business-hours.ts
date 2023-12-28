@@ -850,6 +850,7 @@ describe('LIVECHAT - business hours', function () {
 		});
 
 		it('should verify if agent becomes unavailable to take chats when user is deactivated', async () => {
+			await makeAgentAvailable(await login(agent.username, password));
 			await setUserActiveStatus(agent._id, false);
 
 			const latestAgent = await getUserByUsername(agent.username);

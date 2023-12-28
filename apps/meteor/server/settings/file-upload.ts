@@ -31,7 +31,7 @@ export const createFileUploadSettings = () =>
 			i18nDescription: 'FileUpload_ProtectFilesDescription',
 		});
 
-		await this.add('FileUpload_Restrict_to_room_members', false, {
+		await this.add('FileUpload_Restrict_to_room_members', true, {
 			type: 'boolean',
 			enableQuery: {
 				_id: 'FileUpload_ProtectFiles',

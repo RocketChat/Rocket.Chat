@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useSingleStream } from '@rocket.chat/ui-contexts';
+import { useStream } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
@@ -14,7 +14,7 @@ export const useVideoConfDataStream = ({
 }) => {
   const queryClient = useQueryClient();
 
-  const subscribeNotifyRoom = useSingleStream('notify-room');
+  const subscribeNotifyRoom = useStream('notify-room');
 
   useEffect(() => {
     return subscribeNotifyRoom(

@@ -22,7 +22,7 @@ import type { ChangeEvent } from 'react';
 import React, { useEffect, Fragment } from 'react';
 import { useForm } from 'react-hook-form';
 
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
 
 const AccountFeaturePreviewPage = () => {
 	const t = useTranslation();
@@ -79,8 +79,8 @@ const AccountFeaturePreviewPage = () => {
 
 	return (
 		<Page>
-			<Page.Header title={t('Feature_preview')} />
-			<Page.ScrollableContentWithShadow>
+			<PageHeader title={t('Feature_preview')} />
+			<PageScrollableContentWithShadow>
 				<Box maxWidth='x600' w='full' alignSelf='center'>
 					{featuresPreview.length === 0 && (
 						<States>
@@ -106,12 +106,10 @@ const AccountFeaturePreviewPage = () => {
 											{features.map((feature) => (
 												<Fragment key={feature.name}>
 													<Field>
-														<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+														<FieldRow>
 															<FieldLabel htmlFor={feature.name}>{t(feature.i18n)}</FieldLabel>
-															<FieldRow>
-																<ToggleSwitch id={feature.name} checked={feature.value} name={feature.name} onChange={handleFeatures} />
-															</FieldRow>
-														</Box>
+															<ToggleSwitch id={feature.name} checked={feature.value} name={feature.name} onChange={handleFeatures} />
+														</FieldRow>
 														{feature.description && <FieldHint mbs={12}>{t(feature.description)}</FieldHint>}
 													</Field>
 													{feature.imageUrl && <Box is='img' width='100%' height='auto' mbs={16} src={feature.imageUrl} alt='' />}
@@ -124,15 +122,15 @@ const AccountFeaturePreviewPage = () => {
 						</>
 					)}
 				</Box>
-			</Page.ScrollableContentWithShadow>
-			<Page.Footer isDirty={isDirty}>
+			</PageScrollableContentWithShadow>
+			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
 					<Button onClick={() => reset({ featuresPreview: features })}>{t('Cancel')}</Button>
 					<Button primary disabled={!isDirty} onClick={handleSubmit(handleSave)}>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>
-			</Page.Footer>
+			</PageFooter>
 		</Page>
 	);
 };

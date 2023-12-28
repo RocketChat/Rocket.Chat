@@ -18,9 +18,7 @@ export class HomeSidenav {
 	}
 
 	get checkboxReadOnly(): Locator {
-		return this.page.locator(
-			'//*[@id="modal-root"]//*[contains(@class, "rcx-field") and contains(text(), "Read Only")]/../following-sibling::label/i',
-		);
+		return this.page.locator('role=dialog[name="Create Channel"] >> label >> text="Read Only"');
 	}
 
 	get inputChannelName(): Locator {
