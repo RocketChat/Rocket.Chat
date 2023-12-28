@@ -131,7 +131,7 @@ export class App extends Component<AppProps, AppState> {
 
 			const showDepartment = departments.some((dept) => dept.showOnRegistration);
 			const isAnyFieldVisible = nameFieldRegistrationForm || emailFieldRegistrationForm || showDepartment;
-			const showRegistrationForm = !user?.token && registrationForm && isAnyFieldVisible && !Triggers.hasTriggeredMessages();
+			const showRegistrationForm = !user?.token && registrationForm && isAnyFieldVisible && !Triggers.hasTriggersBeforeRegistration();
 
 			if (url === '/' && showRegistrationForm) {
 				return route('/register');

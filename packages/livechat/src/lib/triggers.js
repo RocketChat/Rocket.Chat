@@ -65,7 +65,7 @@ class Triggers {
 		this._listenParentUrlChanges();
 	}
 
-	when(id, condition) {
+	async when(id, condition) {
 		if (!this._enabled) {
 			return Promise.reject('Triggers disabled');
 		}
@@ -73,9 +73,15 @@ class Triggers {
 		this._updateRecord(id, {
 			status: 'scheduled',
 			condition: condition.name,
+			error: null,
 		});
 
-		return conditions[condition.name](condition);
+		try {
+			return await conditions[condition.name](condition);
+		} catch (error) {
+			this._updateRecord(id, { status: 'error', error });
+			throw error;
+		}
 	}
 
 	async fire(id, action, params) {
@@ -83,8 +89,13 @@ class Triggers {
 			return Promise.reject('Triggers disabled');
 		}
 
-		await actions[action.name](action, params);
-		this._updateRecord(id, { status: 'fired', action: action.name });
+		try {
+			await actions[action.name](action, params);
+			this._updateRecord(id, { status: 'fired', action: action.name });
+		} catch (error) {
+			this._updateRecord(id, { status: 'error', error });
+			throw error;
+		}
 	}
 
 	schedule(trigger) {
@@ -106,16 +117,30 @@ class Triggers {
 		try {
 			await this.scheduleAll(triggers);
 		} catch (error) {
-			console.error(error);
+			console.error(`[Livechat Triggers]: ${error}`);
 		}
 	}
 
-	hasTriggeredMessages() {
+	hasTriggersBeforeRegistration() {
 		if (!this._triggers.length) {
 			return false;
 		}
 
-		return this._findRecordsByStatus('scheduled').some((r) => r.condition !== 'after-guest-registration');
+		const records = this._findRecordsByStatus(['scheduled', 'fired']);
+		return records.some((r) => r.condition !== 'after-guest-registration');
+	}
+
+	canRenderMessage(message) {
+		const { origin, scope } = message;
+
+		if (origin !== 'trigger' || !scope) {
+			return true;
+		}
+
+		const { user } = store.state;
+		const isRegistered = !!user?.token;
+
+		return (isRegistered && scope === 'after-registration') || (!isRegistered && scope === 'before-registration');
 	}
 
 	_listenParentUrlChanges() {
@@ -143,7 +168,7 @@ class Triggers {
 		const { triggersRecords = {} } = store.state;
 		const records = Object.values(triggersRecords);
 
-		return records.filter((e) => e.status === status);
+		return records.filter((e) => status.includes(e.status));
 	}
 
 	_findRecordById(id) {

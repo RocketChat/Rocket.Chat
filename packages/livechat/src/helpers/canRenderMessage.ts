@@ -25,15 +25,3 @@ const msgTypesNotRendered = [
 ];
 
 export const canRenderMessage = ({ t }: { t: string }) => !msgTypesNotRendered.includes(t);
-
-export const canRenderTriggerMessage = (user: { token: string }) => (message: { origin?: string; context: string }) => {
-	const { origin, context = [] } = message;
-	if (origin !== 'trigger') {
-		return true;
-	}
-
-	const isRegistered = !!user?.token;
-
-	// triggers show before registration by default
-	return (context === 'after-registration') === isRegistered;
-};

@@ -25,7 +25,7 @@ export const timeOnSiteCondition = (condition) => {
 
 			clearTimeout(timeoutId);
 			store.off('change', watchStateChange);
-			reject(`Livechat triggers: condition ${condition.name} is no longer valid`);
+			reject(`Condition "${condition.name}" is no longer valid`);
 		};
 
 		store.on('change', watchStateChange);
@@ -47,7 +47,7 @@ export const visitorRegisteredCondition = () => {
 	return new Promise((resolve) => {
 		const openFunc = async () => {
 			Triggers.callbacks.off('chat-visitor-registered', openFunc);
-			resolve({ context: 'after-registration' });
+			resolve({ scope: 'after-registration' });
 		};
 
 		Triggers.callbacks.on('chat-visitor-registered', openFunc);

@@ -5,7 +5,7 @@ import { withTranslation } from 'react-i18next';
 import { Livechat } from '../../api';
 import { ModalManager } from '../../components/Modal';
 import { getAvatarUrl } from '../../helpers/baseUrl';
-import { canRenderMessage, canRenderTriggerMessage } from '../../helpers/canRenderMessage';
+import { canRenderMessage } from '../../helpers/canRenderMessage';
 import { debounce } from '../../helpers/debounce';
 import { throttle } from '../../helpers/throttle';
 import { upsert } from '../../helpers/upsert';
@@ -15,6 +15,7 @@ import { getLastReadMessage, loadConfig, processUnread, shouldMarkAsUnread } fro
 import { parentCall, runCallbackEventEmitter } from '../../lib/parentCall';
 import { createToken } from '../../lib/random';
 import { initRoom, closeChat, loadMessages, loadMoreMessages, defaultRoomParams, getGreetingMessages } from '../../lib/room';
+import Triggers from '../../lib/triggers';
 import { Consumer } from '../../store';
 import Chat from './component';
 
@@ -447,7 +448,7 @@ export const ChatConnector = ({ ref, t, ...props }) => (
 						: undefined
 				}
 				room={room}
-				messages={messages && messages.filter(canRenderMessage).filter(canRenderTriggerMessage(user))}
+				messages={messages && messages.filter(canRenderMessage).filter(Triggers.canRenderMessage)}
 				noMoreMessages={noMoreMessages}
 				emoji={true}
 				uploads={uploads}

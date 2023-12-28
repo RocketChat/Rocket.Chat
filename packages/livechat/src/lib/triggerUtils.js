@@ -70,3 +70,19 @@ export const hasTriggerCondition = (conditionName) => (trigger) => {
 };
 
 export const isInIframe = () => window.self !== window.top;
+
+export const requestMessage = async (url, fallbackMessage) => {
+	try {
+		const response = await new Promise((resolve) => {
+			setTimeout(() => resolve('message here'), 5000);
+		});
+
+		return response;
+	} catch (error) {
+		if (!fallbackMessage) {
+			throw Error('Unable to fetch message from external service.');
+		}
+
+		return fallbackMessage;
+	}
+};
