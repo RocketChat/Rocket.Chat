@@ -807,7 +807,7 @@ export class ImportDataConverter {
 
 		for await (const rid of rids) {
 			try {
-				await Rooms.resetLastMessageById(rid);
+				await Rooms.resetLastMessageById(rid, null);
 			} catch (e) {
 				this._logger.warn(`Failed to update last message of room ${rid}`);
 				this._logger.error(e);
