@@ -90,6 +90,8 @@ export const permissions = [
 	{ _id: 'call-management', roles: ['admin', 'owner', 'moderator', 'user'] },
 	{ _id: 'create-invite-links', roles: ['admin', 'owner', 'moderator'] },
 	{ _id: 'delete-invite-records', roles: ['admin'] },
+	{ _id: 'revoke-invite', roles: ['admin'] },
+	{ _id: 'resend-invite', roles: ['admin'] },
 	{
 		_id: 'view-l-room',
 		roles: ['livechat-manager', 'livechat-monitor', 'livechat-agent', 'admin'],

@@ -6277,5 +6277,10 @@
   "Invite_status": "Invite status",
   "Delete_record": "Delete record",
   "Open_invitations_will_be_revoked": "Open invitations will be revoked, while accepted invitations won't be affected. This action cannot be undone.",
-  "Invite_record_deleted": "Record deleted"
+  "Invite_record_deleted": "Record deleted",
+  "Invitation_revoked": "Invitation revoked",
+  "Invitation_link_will_become_invalid": "The invitation link or email will become invalid. This action cannot be undone.",
+  "Revoke": "Revoke",
+  "Invitation_resent": "Invitation resent",
+  "Resend": "Resend"
 }

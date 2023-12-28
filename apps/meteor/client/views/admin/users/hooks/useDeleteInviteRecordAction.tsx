@@ -1,15 +1,15 @@
-import type { IUser } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useRoute, usePermission, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo } from 'react';
+import React from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
 import type { Action } from '../../../hooks/useActionSpread';
 
-export const useDeleteUserAction = (userId: IUser['_id'], onReload: () => void): Action | undefined => {
+export const useDeleteUserAction = (onReload: () => void): Action | undefined => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const userRoute = useRoute('admin-users');
+	// TODO: check if permission should have different roles
 	const canDeleteInviteRecord = usePermission('delete-invite-records');
 	const dispatchToastMessage = useToastMessageDispatch();
 
