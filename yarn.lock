@@ -10373,6 +10373,7 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": ~0.31.25
     "@rocket.chat/fuselage-hooks": ~0.32.1
+    "@rocket.chat/i18n": "workspace:~"
     "@rocket.chat/password-policies": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
     "@types/jest": ~29.5.7
@@ -10392,6 +10393,7 @@ __metadata:
     "@rocket.chat/ddp-client": "workspace:^"
     "@rocket.chat/emitter": "*"
     "@rocket.chat/fuselage-hooks": "*"
+    "@rocket.chat/i18n": "workspace:~"
     "@rocket.chat/rest-typings": "workspace:^"
     react: ~17.0.2
     use-sync-external-store: ^1.2.0
