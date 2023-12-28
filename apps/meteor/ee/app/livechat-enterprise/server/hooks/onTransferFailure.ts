@@ -1,7 +1,7 @@
 import { Message } from '@rocket.chat/core-services';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { IRoom, ILivechatVisitor, ILivechatDepartment, TransferData, AtLeast } from '@rocket.chat/core-typings';
-import { LivechatDepartment, LivechatRooms } from '@rocket.chat/models';
+import { LivechatDepartment } from '@rocket.chat/models';
 
 import { forwardRoomToDepartment } from '../../../../../app/livechat/server/lib/Helper';
 import { settings } from '../../../../../app/settings/server';
