@@ -13,7 +13,60 @@ import { getUserInfo } from './utils/getUserInfo';
 import { setSettingValueById } from './utils/setSettingValueById';
 import { test, expect } from './utils/test';
 
-test.describe.parallel('SAML', () => {
+const resetTestData = async (cleanupOnly = false) => {
+	// Reset saml users' data on mongo in the beforeAll hook to allow re-running the tests within the same playwright session
+	// This is needed because those tests will modify this data and running them a second time would trigger different code paths
+	const connection = await MongoClient.connect(constants.URL_MONGODB);
+
+	const usernamesToDelete = [Users.userForSamlMerge, Users.userForSamlMerge2, Users.samluser1, Users.samluser2].map(({ data: { username }}) => username);
+	await connection
+		.db()
+		.collection('users')
+		.deleteMany({
+			username: {
+				$in: usernamesToDelete,
+			}
+		});
+
+	if (cleanupOnly) {
+		return;
+	}
+
+	const usersFixtures = [Users.userForSamlMerge, Users.userForSamlMerge2].map((user) => createUserFixture(user));
+	await Promise.all(
+		usersFixtures.map((user) =>
+			connection.db().collection('users').updateOne({ username: user.username }, { $set: user }, { upsert: true }),
+		),
+	);
+
+	await Promise.all(
+		[
+			{
+				_id: 'SAML_Custom_Default_logout_behaviour',
+				value: 'SAML',
+			},
+			{
+				_id: 'SAML_Custom_Default_immutable_property',
+				value: 'EMail',
+			},
+			{
+				_id: 'SAML_Custom_Default_mail_overwrite',
+				value: false,
+			},
+			{
+				_id: 'SAML_Custom_Default',
+				value: false,
+			},
+		].map((setting) =>
+			connection
+				.db()
+				.collection('rocketchat_settings')
+				.updateOne({ _id: setting._id }, { $set: { value: setting.value } }),
+		),
+	);
+};
+
+test.describe('SAML', () => {
 	let poRegistration: Registration;
 
 	const containerPath = path.join(__dirname, 'containers', 'saml');
@@ -27,52 +80,7 @@ test.describe.parallel('SAML', () => {
 			cwd: containerPath,
 		});
 
-		// Reset saml users' data on mongo in the beforeAll hook to allow re-running the tests within the same playwright session
-		// This is needed because those tests will modify this data and running them a second time would trigger different code paths
-		const connection = await MongoClient.connect(constants.URL_MONGODB);
-
-		const usernamesToDelete = [Users.userForSamlMerge, Users.userForSamlMerge2, Users.samluser1, Users.samluser2].map(({ data: { username }}) => username);
-		await connection
-			.db()
-			.collection('users')
-			.deleteMany({
-				username: {
-					$in: usernamesToDelete,
-				}
-			});
-
-		const usersFixtures = [Users.userForSamlMerge, Users.userForSamlMerge2].map((user) => createUserFixture(user));
-		await Promise.all(
-			usersFixtures.map((user) =>
-				connection.db().collection('users').updateOne({ username: user.username }, { $set: user }, { upsert: true }),
-			),
-		);
-
-		await Promise.all(
-			[
-				{
-					_id: 'SAML_Custom_Default_logout_behaviour',
-					value: 'SAML',
-				},
-				{
-					_id: 'SAML_Custom_Default_immutable_property',
-					value: 'EMail',
-				},
-				{
-					_id: 'SAML_Custom_Default_mail_overwrite',
-					value: false,
-				},
-				{
-					_id: 'SAML_Custom_Default',
-					value: false,
-				},
-			].map((setting) =>
-				connection
-					.db()
-					.collection('rocketchat_settings')
-					.updateOne({ _id: setting._id }, { $set: { value: setting.value } }),
-			),
-		);
+		await resetTestData();
 
 		// Only one setting updated through the API to avoid refreshing the service configurations several times
 		await expect((await setSettingValueById(api, 'SAML_Custom_Default', true)).status()).toBe(200);
@@ -91,6 +99,9 @@ test.describe.parallel('SAML', () => {
 		} catch {
 			// ignore errors here
 		}
+
+		// Remove saml test users so they don't interfere with other tests
+		await resetTestData(true);
 	});
 
 	test.beforeEach(async ({ page }) => {
