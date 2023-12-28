@@ -6276,5 +6276,6 @@
   "Invite_type": "Invite type",
   "Invite_status": "Invite status",
   "Delete_record": "Delete record",
-  "Open_invitations_will_be_revoked": "Open invitations will be revoked, while accepted invitations won't be affected. This action cannot be undone."
+  "Open_invitations_will_be_revoked": "Open invitations will be revoked, while accepted invitations won't be affected. This action cannot be undone.",
+  "Invite_record_deleted": "Record deleted"
 }
