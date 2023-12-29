@@ -60,9 +60,7 @@ const AppRow = ({ className, ...props }: App & { className?: string }): ReactEle
 				tabIndex={0}
 			>
 				<CardRow>
-					<CardCol>
-						<AppAvatar size='x40' iconFileContent={iconFileContent} iconFileData={iconFileData} />
-					</CardCol>
+					<AppAvatar size='x40' iconFileContent={iconFileContent} iconFileData={iconFileData} />
 					<CardCol>
 						<CardHeader>
 							<CardTitle variant='h5' id={`${id}-title`}>
@@ -76,7 +74,7 @@ const AppRow = ({ className, ...props }: App & { className?: string }): ReactEle
 				<CardControls onClick={preventClickPropagation}>
 					{canUpdate && <Badge small variant='primary' />}
 					<AppStatus app={props} isAppDetailsPage={false} installed={installed} />
-					<AppMenu app={props} isAppDetailsPage={false} mis={4} />
+					<AppMenu app={props} isAppDetailsPage={false} />
 				</CardControls>
 			</Card>
 		</div>
