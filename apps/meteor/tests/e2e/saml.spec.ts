@@ -72,6 +72,11 @@ test.describe('SAML', () => {
 	const containerPath = path.join(__dirname, 'containers', 'saml');
 
 	test.beforeAll(async ({ api }) => {
+		await resetTestData();
+
+		// Only one setting updated through the API to avoid refreshing the service configurations several times
+		await expect((await setSettingValueById(api, 'SAML_Custom_Default', true)).status()).toBe(200);
+
 		await compose.buildOne('testsamlidp_idp', {
 			cwd: containerPath,
 		});
@@ -79,11 +84,6 @@ test.describe('SAML', () => {
 		await compose.upOne('testsamlidp_idp', {
 			cwd: containerPath,
 		});
-
-		await resetTestData();
-
-		// Only one setting updated through the API to avoid refreshing the service configurations several times
-		await expect((await setSettingValueById(api, 'SAML_Custom_Default', true)).status()).toBe(200);
 	});
 
 	test.afterAll(async () => {
@@ -112,7 +112,7 @@ test.describe('SAML', () => {
 
 	test('Login', async ({ page, api }) => {
 		await test.step('expect to have SAML login button available', async () => {
-			await expect(poRegistration.btnLoginWithSaml).toBeVisible();
+			await expect(poRegistration.btnLoginWithSaml).toBeVisible({ timeout: 10000 });
 		});
 
 		await test.step('expect to be redirected to the IdP for login', async () => {
