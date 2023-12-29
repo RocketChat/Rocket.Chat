@@ -30,7 +30,8 @@ export const useDeleteRoom = (room: IRoom | Pick<IRoom, RoomAdminFieldsType>, { 
 
 	const hasPermissionToDeleteRoom = usePermission(`delete-${room.t}`, room._id);
 	const hasPermissionToDeleteTeamRoom = usePermission(`delete-team-${room.t === 'c' ? 'channel' : 'group'}`, teamInfoData?.teamInfo.roomId);
-	const canDeleteRoom = isRoomFederated(room) ? false : hasPermissionToDeleteRoom && hasPermissionToDeleteTeamRoom;
+	const isTeamRoom = room.teamId;
+	const canDeleteRoom = isRoomFederated(room) ? false : hasPermissionToDeleteRoom && (!isTeamRoom || hasPermissionToDeleteTeamRoom);
 
 	const deleteRoomMutation = useMutation({
 		mutationFn: deleteRoomEndpoint,
