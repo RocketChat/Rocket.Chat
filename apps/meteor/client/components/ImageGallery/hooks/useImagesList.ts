@@ -1,12 +1,10 @@
 import type { ChannelsImagesProps } from '@rocket.chat/rest-typings';
-import { useUserId, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useState } from 'react';
 
 import { useScrollableRecordList } from '../../../hooks/lists/useScrollableRecordList';
-import { useStreamUpdatesForMessageList } from '../../../hooks/lists/useStreamUpdatesForMessageList';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 import { ImagesList } from '../../../lib/lists/ImagesList';
-import type { MessageList } from '../../../lib/lists/MessageList';
 
 export const useImagesList = (
 	options: ChannelsImagesProps,
@@ -18,7 +16,6 @@ export const useImagesList = (
 } => {
 	const [filesList, setFilesList] = useState(() => new ImagesList(options));
 	const reload = useCallback(() => setFilesList(new ImagesList(options)), [options]);
-	const uid = useUserId();
 
 	useComponentDidUpdate(() => {
 		options && reload();
@@ -56,9 +53,6 @@ export const useImagesList = (
 	);
 
 	const { loadMoreItems, initialItemCount } = useScrollableRecordList(filesList, fetchMessages, 5);
-
-	// TODO: chapter day : frontend create useStreamUpdatesForUploadList
-	useStreamUpdatesForMessageList(filesList as unknown as MessageList, uid, options.roomId || null);
 
 	return {
 		reload,

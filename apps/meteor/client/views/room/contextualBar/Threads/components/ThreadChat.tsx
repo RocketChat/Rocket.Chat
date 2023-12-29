@@ -110,15 +110,15 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 						onUploadFiles={handleUploadFiles}
 						tshow={sendToChannel}
 					>
-						<Field>
-							<FieldRow marginBlock={8}>
+						<Field marginBlock={8}>
+							<FieldRow justifyContent='initial'>
 								<CheckBox
 									id={sendToChannelID}
 									checked={sendToChannel}
 									onChange={() => setSendToChannel((checked) => !checked)}
 									name='alsoSendThreadToChannel'
 								/>
-								<FieldLabel htmlFor={sendToChannelID} color='annotation' fontScale='p2'>
+								<FieldLabel mis='x8' htmlFor={sendToChannelID} color='annotation' fontScale='p2'>
 									{t('Also_send_to_channel')}
 								</FieldLabel>
 							</FieldRow>

@@ -46,6 +46,7 @@ import { callbacks } from '../../../lib/callbacks';
 import { availabilityErrors } from '../../../lib/videoConference/constants';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { i18n } from '../../lib/i18n';
+import { isRoomCompatibleWithVideoConfRinging } from '../../lib/isRoomCompatibleWithVideoConfRinging';
 import { videoConfProviders } from '../../lib/videoConfProviders';
 import { videoConfTypes } from '../../lib/videoConfTypes';
 import { broadcastMessageSentEvent } from '../../modules/watchers/lib/messages';
@@ -74,7 +75,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		if (type === 'direct') {
-			if (room.t !== 'd' || !room.uids || room.uids.length > 2) {
+			if (!isRoomCompatibleWithVideoConfRinging(room.t, room.uids)) {
 				throw new Error('type-and-room-not-compatible');
 			}
 
@@ -500,13 +501,18 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			msg: '',
 			groupable: false,
 			blocks: customBlocks || [this.buildVideoConfBlock(call._id)],
-		};
+		} satisfies Partial<IMessage>;
 
 		const room = await Rooms.findOneById(call.rid);
 		const appId = videoConfProviders.getProviderAppId(call.providerName);
 		const user = createdBy || (appId && (await Users.findOneByAppId(appId))) || (await Users.findOneById('rocket.cat'));
 
 		const message = await sendMessage(user, record, room, false);
+
+		if (!message) {
+			throw new Error('failed-to-create-message');
+		}
+
 		return message._id;
 	}
 

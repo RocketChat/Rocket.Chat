@@ -23,8 +23,8 @@ import type {
 	ILivechatAgent,
 	IImportProgress,
 	IBanner,
+	LicenseLimitKind,
 } from '@rocket.chat/core-typings';
-import type { LicenseLimitKind } from '@rocket.chat/license';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
@@ -47,19 +47,30 @@ export interface StreamerEvents {
 		{ key: `${string}/typing`; args: [username: string, typing: boolean] },
 		{
 			key: `${string}/deleteMessageBulk`;
-			args: [args: { rid: IMessage['rid']; excludePinned: boolean; ignoreDiscussion: boolean; ts: Record<string, Date>; users: string[] }];
+			args: [
+				args: {
+					rid: IMessage['rid'];
+					excludePinned: boolean;
+					ignoreDiscussion: boolean;
+					ts: Record<string, Date>;
+					users: string[];
+					ids?: string[]; // message ids have priority over ts
+					showDeletedStatus?: boolean;
+				},
+			];
 		},
 		{ key: `${string}/deleteMessage`; args: [{ _id: IMessage['_id'] }] },
 		{ key: `${string}/e2e.keyRequest`; args: [unknown] },
 		{ key: `${string}/videoconf`; args: [id: string] },
+		{ key: `${string}/messagesRead`; args: [{ until: Date; tmid?: string }] },
 		/* @deprecated over videoconf*/
 		// { key: `${string}/${string}`; args: [id: string] },
 	];
 
 	'room-messages': [
 		{ key: '__my_messages__'; args: [IMessage] },
+		{ key: string; args: [message: IMessage, user?: IUser, room?: IRoom] },
 		{ key: `${string}/messages-imported`; args: [{ rid: string }] },
-		{ key: string; args: [IMessage] },
 	];
 
 	'notify-all': [

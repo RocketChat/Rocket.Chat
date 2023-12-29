@@ -9,7 +9,6 @@ import type {
 	IMessageWithPendingFileImport,
 } from '@rocket.chat/core-typings';
 import type { FindPaginated, IMessagesModel } from '@rocket.chat/model-typings';
-import { Rooms } from '@rocket.chat/models';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {
@@ -154,15 +153,43 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		start,
 		end,
 		departmentId,
+		onlyCount,
+		options,
+	}: {
+		start: Date;
+		end: Date;
+		departmentId?: ILivechatDepartment['_id'];
+		onlyCount: true;
+		options?: PaginatedRequest;
+	}): AggregationCursor<{ total: number }>;
+
+	findAllNumberOfTransferredRooms({
+		start,
+		end,
+		departmentId,
+		onlyCount,
+		options,
+	}: {
+		start: Date;
+		end: Date;
+		departmentId?: ILivechatDepartment['_id'];
+		onlyCount?: false;
+		options?: PaginatedRequest;
+	}): AggregationCursor<{ _id: string | null; numberOfTransferredRooms: number }>;
+
+	findAllNumberOfTransferredRooms({
+		start,
+		end,
+		departmentId,
 		onlyCount = false,
 		options = {},
 	}: {
-		start: string;
-		end: string;
-		departmentId: ILivechatDepartment['_id'];
-		onlyCount: boolean;
-		options: PaginatedRequest;
-	}): AggregationCursor<any> {
+		start: Date;
+		end: Date;
+		departmentId?: ILivechatDepartment['_id'];
+		onlyCount?: boolean;
+		options?: PaginatedRequest;
+	}): AggregationCursor<{ total: number }> | AggregationCursor<{ _id: string | null; numberOfTransferredRooms: number }> {
 		// FIXME: aggregation type definitions
 		const match = {
 			$match: {
@@ -211,7 +238,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		const params = [...firstParams, group, project, sort];
 		if (onlyCount) {
 			params.push({ $count: 'total' });
-			return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
+			return this.col.aggregate<{ total: number }>(params, { readPreference: readSecondaryPreferred() });
 		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
@@ -219,7 +246,10 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate(params, { allowDiskUse: true, readPreference: readSecondaryPreferred() });
+		return this.col.aggregate<{ _id: string | null; numberOfTransferredRooms: number }>(params, {
+			allowDiskUse: true,
+			readPreference: readSecondaryPreferred(),
+		});
 	}
 
 	getTotalOfMessagesSentByDate({ start, end, options = {} }: { start: Date; end: Date; options?: PaginatedRequest }): Promise<any[]> {
@@ -1309,8 +1339,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 		const data = Object.assign(record, extraData);
 
-		await Rooms.incMsgCountById(rid, 1);
-
 		return this.insertOne(data);
 	}
 
@@ -1433,10 +1461,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 		if (!limit) {
 			const count = (await this.deleteMany(query)).deletedCount - notCountedMessages;
-			if (count) {
-				// decrease message count
-				await Rooms.decreaseMessageCountById(rid, count);
-			}
 
 			return count;
 		}
@@ -1449,11 +1473,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 					},
 				})
 			).deletedCount - notCountedMessages;
-
-		if (count) {
-			// decrease message count
-			await Rooms.decreaseMessageCountById(rid, count);
-		}
 
 		return count;
 	}
@@ -1601,7 +1620,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			drid,
 		};
 
-		return this.col.findOneAndUpdate(
+		return this.findOneAndUpdate(
 			query,
 			{
 				$set: {

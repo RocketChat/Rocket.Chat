@@ -4,7 +4,7 @@ import { test, expect } from '../utils/test';
 
 test.use({ storageState: Users.admin.state });
 
-test.describe.parallel('omnichannel-customFields', () => {
+test.describe('omnichannel-customFields', () => {
 	let poOmnichannelCustomFields: OmnichannelCustomFields;
 	const newField = 'any_field';
 	test.beforeEach(async ({ page }) => {

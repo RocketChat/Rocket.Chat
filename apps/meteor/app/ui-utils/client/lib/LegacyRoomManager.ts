@@ -182,18 +182,65 @@ const computation = Tracker.autorun(() => {
 						// remove thread refenrece from deleted message
 						ChatMessage.update({ tmid: msg._id }, { $unset: { tmid: 1 } }, { multi: true });
 					});
-					Notifications.onRoom(record.rid, 'deleteMessageBulk', ({ rid, ts, excludePinned, ignoreDiscussion, users }) => {
-						const query: Mongo.Selector<IMessage> = { rid, ts };
-						if (excludePinned) {
-							query.pinned = { $ne: true };
+					Notifications.onRoom(
+						record.rid,
+						'deleteMessageBulk',
+						({ rid, ts, excludePinned, ignoreDiscussion, users, ids, showDeletedStatus }) => {
+							const query: Mongo.Selector<IMessage> = { rid };
+
+							if (ids) {
+								query._id = { $in: ids };
+							} else {
+								query.ts = ts;
+							}
+							if (excludePinned) {
+								query.pinned = { $ne: true };
+							}
+							if (ignoreDiscussion) {
+								query.drid = { $exists: false };
+							}
+							if (users?.length) {
+								query['u.username'] = { $in: users };
+							}
+
+							if (showDeletedStatus) {
+								return ChatMessage.update(
+									query,
+									{ $set: { t: 'rm', msg: '', urls: [], mentions: [], attachments: [], reactions: {} } },
+									{ multi: true },
+								);
+							}
+							return ChatMessage.remove(query);
+						},
+					);
+					Notifications.onRoom(record.rid, 'messagesRead', ({ tmid, until }) => {
+						if (tmid) {
+							return ChatMessage.update(
+								{
+									tmid,
+									unread: true,
+								},
+								{ $unset: { unread: 1 } },
+								{ multi: true },
+							);
 						}
-						if (ignoreDiscussion) {
-							query.drid = { $exists: false };
-						}
-						if (users?.length) {
-							query['u.username'] = { $in: users };
-						}
-						ChatMessage.remove(query);
+						ChatMessage.update(
+							{
+								rid: record.rid,
+								unread: true,
+								ts: { $lt: until },
+								$or: [
+									{
+										tmid: { $exists: false },
+									},
+									{
+										tshow: true,
+									},
+								],
+							},
+							{ $unset: { unread: 1 } },
+							{ multi: true },
+						);
 					});
 				}
 			}
