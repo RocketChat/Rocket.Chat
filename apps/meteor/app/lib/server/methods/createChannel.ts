@@ -42,7 +42,10 @@ export const createChannelMethod = async (
 
 	if (extraData.teamId) {
 		const team = await Team.findOneById<Pick<ITeam, '_id' | 'roomId'>>(extraData.teamId, { projection: { roomId: 1 } });
-		if (!(await hasPermissionAsync(userId, 'create-team-channel', team?.roomId))) {
+		if (!team) {
+			throw new Meteor.Error('error-team-not-found', 'The "teamId" param provided does not match any team', { method: 'createChannel' });
+		}
+		if (!(await hasPermissionAsync(userId, 'create-team-channel', team.roomId))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createChannel' });
 		}
 	} else if (!(await hasPermissionAsync(userId, 'create-c'))) {
