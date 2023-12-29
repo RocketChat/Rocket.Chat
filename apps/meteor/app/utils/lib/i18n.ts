@@ -1,4 +1,4 @@
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import type { RocketchatI18nKeys } from '@rocket.chat/i18n';
 import i18next from 'i18next';
 import sprintf from 'i18next-sprintf-postprocessor';
 
@@ -103,7 +103,7 @@ export const extractTranslationKeys = (source: Record<string, string>, namespace
 };
 
 export type TranslationNamespace =
-	| (Extract<TranslationKey, `${string}.${string}`> extends `${infer T}.${string}` ? (T extends Lowercase<T> ? T : never) : never)
+	| (Extract<RocketchatI18nKeys, `${string}.${string}`> extends `${infer T}.${string}` ? (T extends Lowercase<T> ? T : never) : never)
 	| 'core';
 
 const namespacesMap: Record<TranslationNamespace, true> = {
