@@ -4,7 +4,7 @@ import { useToastMessageDispatch, useSetting, useTranslation } from '@rocket.cha
 import type { ReactElement, ChangeEvent } from 'react';
 import React, { useState, useCallback } from 'react';
 
-import { useFileInput } from '../../../hooks/useFileInput';
+import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 import { isValidImageFormat } from '../../../lib/utils/isValidImageFormat';
 import UserAvatar from '../UserAvatar';
 import UserAvatarSuggestions from './UserAvatarSuggestions';
@@ -47,7 +47,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, disabled, e
 		[setAvatarObj, t, dispatchToastMessage],
 	);
 
-	const [clickUpload] = useFileInput(setUploadedPreview);
+	const [clickUpload] = useSingleFileInput(setUploadedPreview);
 
 	const clickUrl = (): void => {
 		setNewAvatarSource(avatarFromUrl);

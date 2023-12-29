@@ -27,7 +27,7 @@ export class NpsRaw extends BaseRaw<INps> implements INpsModel {
 				status: NPSStatus.SENDING,
 			},
 		};
-		const { value } = await this.col.findOneAndUpdate(query, update, { sort: { expireAt: 1 } });
+		const { value } = await this.findOneAndUpdate(query, update, { sort: { expireAt: 1 } });
 
 		return value;
 	}

@@ -1,5 +1,5 @@
+import type { ILicenseV3 } from '@rocket.chat/core-typings';
 import { Box, Tag } from '@rocket.chat/fuselage';
-import type { ILicenseV3 } from '@rocket.chat/license';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import differenceInDays from 'date-fns/differenceInDays';
 import type { ReactElement } from 'react';

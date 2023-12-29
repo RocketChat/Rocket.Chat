@@ -1,7 +1,7 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import Page from '../../../../client/components/Page';
+import { Page, PageHeader, PageContent } from '../../../../client/components/Page';
 import MonitorsTable from './MonitorsTable';
 
 const MonitorsPage = () => {
@@ -10,10 +10,10 @@ const MonitorsPage = () => {
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('Livechat_Monitors')} />
-				<Page.Content>
+				<PageHeader title={t('Livechat_Monitors')} />
+				<PageContent>
 					<MonitorsTable />
-				</Page.Content>
+				</PageContent>
 			</Page>
 		</Page>
 	);

@@ -46,6 +46,14 @@ export class CloudWorkspaceAccessTokenError extends Error {
 	}
 }
 
+export const isAbortError = (error: unknown): error is { type: 'AbortError' } => {
+	if (typeof error !== 'object' || error === null) {
+		return false;
+	}
+
+	return 'type' in error && error.type === 'AbortError';
+};
+
 export class CloudWorkspaceAccessTokenEmptyError extends Error {
 	constructor() {
 		super('Workspace access token is empty');

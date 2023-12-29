@@ -1,16 +1,15 @@
+import type { LicenseBehavior } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
-import type { LicenseBehavior } from '@rocket.chat/license/src/definition/LicenseBehavior';
-import { validateLimit } from '@rocket.chat/license/src/validation/validateLimit';
+import { validateWarnLimit } from '@rocket.chat/license/src/validation/validateLimit';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { useLicense } from '../../../hooks/useLicense';
-import { useCheckoutUrlAction } from './hooks/useCheckoutUrl';
-import { CONTACT_SALES_LINK } from './utils/links';
+import { useCheckoutUrl } from './hooks/useCheckoutUrl';
 
 export const SubscriptionCalloutLimits = () => {
-	const mutation = useCheckoutUrlAction();
+	const manageSubscriptionUrl = useCheckoutUrl();
 
 	const { t } = useTranslation();
 	const result = useLicense({ loadValues: true });
@@ -32,10 +31,18 @@ export const SubscriptionCalloutLimits = () => {
 	const rules = keyLimits
 		.map((key) => {
 			const rule = license.limits[key]
-				?.filter((limit) => validateLimit(limit.max, limits[key].value ?? 0, limit.behavior))
+				?.filter((limit) => validateWarnLimit(limit.max, limits[key].value ?? 0, limit.behavior))
 				.sort((a, b) => b.max - a.max)[0];
 
 			if (!rule) {
+				return undefined;
+			}
+
+			if (rule.max === 0) {
+				return undefined;
+			}
+
+			if (rule.max === -1) {
 				return undefined;
 			}
 
@@ -62,14 +69,6 @@ export const SubscriptionCalloutLimits = () => {
 
 	const map = (key: keyof typeof limits) => t(`subscription.callout.${key}`);
 
-	const handleClick = (params: Record<string, string>) => (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-		e.preventDefault();
-		if (mutation.isLoading) {
-			return;
-		}
-		mutation.mutate(params);
-	};
-
 	return (
 		<>
 			{start_fair_policy && (
@@ -77,8 +76,7 @@ export const SubscriptionCalloutLimits = () => {
 					<Trans i18nKey='subscription.callout.description.limitsReached' count={start_fair_policy.length}>
 						Your workspace reached the <>{{ val: start_fair_policy.map(map) }}</> limit.
 						<ExternalLink
-							to={CONTACT_SALES_LINK}
-							onClick={handleClick({
+							to={manageSubscriptionUrl({
 								target: 'callout',
 								action: 'start_fair_policy',
 								limits: start_fair_policy.join(','),
@@ -95,8 +93,7 @@ export const SubscriptionCalloutLimits = () => {
 					<Trans i18nKey='subscription.callout.description.limitsExceeded' count={prevent_action.length}>
 						Your workspace exceeded the <>{{ val: prevent_action.map(map) }}</> license limit.
 						<ExternalLink
-							to={CONTACT_SALES_LINK}
-							onClick={handleClick({
+							to={manageSubscriptionUrl({
 								target: 'callout',
 								action: 'prevent_action',
 								limits: prevent_action.join(','),
@@ -114,8 +111,7 @@ export const SubscriptionCalloutLimits = () => {
 					<Trans i18nKey='subscription.callout.description.limitsExceeded' count={disable_modules.length}>
 						Your workspace exceeded the <>{{ val: disable_modules.map(map) }}</> license limit.
 						<ExternalLink
-							to={CONTACT_SALES_LINK}
-							onClick={handleClick({
+							to={manageSubscriptionUrl({
 								target: 'callout',
 								action: 'disable_modules',
 								limits: disable_modules.join(','),
@@ -133,8 +129,7 @@ export const SubscriptionCalloutLimits = () => {
 					<Trans i18nKey='subscription.callout.description.limitsExceeded' count={disable_modules.length}>
 						Your workspace exceeded the <>{{ val: invalidate_license.map(map) }}</> license limit.
 						<ExternalLink
-							to={CONTACT_SALES_LINK}
-							onClick={handleClick({
+							to={manageSubscriptionUrl({
 								target: 'callout',
 								action: 'invalidate_license',
 								limits: invalidate_license.join(','),

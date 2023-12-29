@@ -1,6 +1,5 @@
 import { NPS, Banner } from '@rocket.chat/core-services';
-import { type Cloud, type Serialized } from '@rocket.chat/core-typings';
-import { CloudAnnouncements } from '@rocket.chat/models';
+import type { Cloud, Serialized } from '@rocket.chat/core-typings';
 
 import { getAndCreateNpsSurvey } from '../../../../../server/services/nps/getAndCreateNpsSurvey';
 
@@ -40,13 +39,18 @@ export const handleBannerOnWorkspaceSync = async (banners: Exclude<Serialized<Cl
 	}
 };
 
-const deserializeAnnouncement = (announcement: Serialized<Cloud.Announcement>): Cloud.Announcement => ({
-	...announcement,
-	_updatedAt: new Date(announcement._updatedAt),
-	expireAt: new Date(announcement.expireAt),
-	startAt: new Date(announcement.startAt),
-	createdAt: new Date(announcement.createdAt),
-});
+const deserializeAnnouncement = (announcement: Serialized<Cloud.Announcement>): Cloud.Announcement => {
+	const { inactivedAt, _updatedAt, expireAt, startAt, createdAt } = announcement;
+
+	return {
+		...announcement,
+		_updatedAt: new Date(_updatedAt),
+		expireAt: new Date(expireAt),
+		startAt: new Date(startAt),
+		createdAt: new Date(createdAt),
+		inactivedAt: inactivedAt ? new Date(inactivedAt) : undefined,
+	};
+};
 
 export const handleAnnouncementsOnWorkspaceSync = async (
 	announcements: Exclude<Serialized<Cloud.WorkspaceCommsResponsePayload>['announcements'], undefined>,
@@ -54,12 +58,21 @@ export const handleAnnouncementsOnWorkspaceSync = async (
 	const { create, delete: deleteIds } = announcements;
 
 	if (deleteIds) {
-		await CloudAnnouncements.deleteMany({ _id: { $in: deleteIds } });
+		await Promise.all(deleteIds.map((bannerId) => Banner.disable(bannerId)));
 	}
 
-	for await (const announcement of create.map(deserializeAnnouncement)) {
-		const { _id, ...rest } = announcement;
+	await Promise.all(
+		create.map(deserializeAnnouncement).map((announcement) => {
+			const { view, selector } = announcement;
 
-		await CloudAnnouncements.updateOne({ _id }, { $set: rest }, { upsert: true });
-	}
+			return Banner.create({
+				...announcement,
+				...(selector?.roles ? { roles: selector.roles } : {}),
+				view: {
+					...view,
+					appId: 'cloud-announcements-core',
+				},
+			});
+		}),
+	);
 };

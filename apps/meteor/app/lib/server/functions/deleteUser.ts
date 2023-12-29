@@ -15,6 +15,7 @@ import {
 } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { callbacks } from '../../../../lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
@@ -126,4 +127,6 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 
 	// Refresh the servers list
 	await FederationServers.refreshServers();
+
+	await callbacks.run('afterDeleteUser', user);
 }

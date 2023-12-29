@@ -1,8 +1,8 @@
+import { Message } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
-import { LivechatDepartmentAgents, Messages, Rooms, Subscriptions, Users, VideoConference } from '@rocket.chat/models';
+import { LivechatDepartmentAgents, Rooms, Subscriptions, Users, VideoConference } from '@rocket.chat/models';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import { messageTextToAstMarkdown } from '../../../../server/lib/messageTextToAstMarkdown';
 import { FileUpload } from '../../../file-upload/server';
 import { _setRealName } from './setRealName';
 import { _setUsername } from './setUsername';
@@ -120,17 +120,11 @@ async function updateUsernameReferences({
 			await fileStore.model.updateFileNameById(previousFile._id, username);
 		}
 
-		await Messages.updateAllUsernamesByUserId(user._id, username);
-		await Messages.updateUsernameOfEditByUserId(user._id, username);
-
-		const cursor = Messages.findByMention(previousUsername);
-		const isParserEnabled = process.env.DISABLE_MESSAGE_PARSER !== 'true';
-		for await (const msg of cursor) {
-			const updatedMsg = msg.msg.replace(new RegExp(`@${previousUsername}`, 'ig'), `@${username}`);
-
-			const updatedMd = isParserEnabled ? messageTextToAstMarkdown(updatedMsg) : undefined;
-			await Messages.updateUsernameAndMessageAndMdOfMentionByIdAndOldUsername(msg._id, previousUsername, username, updatedMsg, updatedMd);
-		}
+        await Message.updateUserReferences({
+            username,
+            previousUsername,
+            userId: user._id,
+        });
 
 		await Rooms.replaceUsername(previousUsername, username);
 		await Rooms.replaceMutedUsername(previousUsername, username);

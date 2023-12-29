@@ -1,5 +1,118 @@
 # @rocket.chat/gazzodown
 
+## 3.0.0
+
+### Patch Changes
+
+- c2f337664e: fixed an issue with mentions showing usernames instead of names on smaller screens
+- Updated dependencies [7da1edf866]
+- Updated dependencies [dea1fe9191]
+- Updated dependencies [c0ef13a0bf]
+- Updated dependencies [5b9d6883bf]
+- Updated dependencies [92613680b7]
+- Updated dependencies [ec1b2b9846]
+- Updated dependencies [5f81a0f3cb]
+- Updated dependencies [dea1fe9191]
+  - @rocket.chat/ui-contexts@3.0.0
+  - @rocket.chat/core-typings@6.5.0
+  - @rocket.chat/ui-client@3.0.0
+
+## 3.0.0-rc.19
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.19
+- @rocket.chat/ui-contexts@3.0.0-rc.19
+- @rocket.chat/ui-client@3.0.0-rc.19
+
+## 3.0.0-rc.18
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.18
+- @rocket.chat/ui-contexts@3.0.0-rc.18
+- @rocket.chat/ui-client@3.0.0-rc.18
+
+## 3.0.0-rc.17
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.17
+- @rocket.chat/ui-contexts@3.0.0-rc.17
+- @rocket.chat/ui-client@3.0.0-rc.17
+
+## 3.0.0-rc.16
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.16
+- @rocket.chat/ui-contexts@3.0.0-rc.16
+- @rocket.chat/ui-client@3.0.0-rc.16
+
+## 3.0.0-rc.15
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.15
+- @rocket.chat/ui-contexts@3.0.0-rc.15
+- @rocket.chat/ui-client@3.0.0-rc.15
+
+## 3.0.0-rc.14
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.14
+- @rocket.chat/ui-contexts@3.0.0-rc.14
+- @rocket.chat/ui-client@3.0.0-rc.14
+
+## 3.0.0-rc.13
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.13
+- @rocket.chat/ui-contexts@3.0.0-rc.13
+- @rocket.chat/ui-client@3.0.0-rc.13
+
+## 3.0.0-rc.12
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.12
+- @rocket.chat/ui-contexts@3.0.0-rc.12
+- @rocket.chat/ui-client@3.0.0-rc.12
+
+## 3.0.0-rc.11
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.11
+- @rocket.chat/ui-contexts@3.0.0-rc.11
+- @rocket.chat/ui-client@3.0.0-rc.11
+
+## 3.0.0-rc.10
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.10
+- @rocket.chat/ui-contexts@3.0.0-rc.10
+- @rocket.chat/ui-client@3.0.0-rc.10
+
+## 3.0.0-rc.9
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.9
+- @rocket.chat/ui-contexts@3.0.0-rc.9
+- @rocket.chat/ui-client@3.0.0-rc.9
+
+## 3.0.0-rc.8
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.8
+- @rocket.chat/ui-contexts@3.0.0-rc.8
+- @rocket.chat/ui-client@3.0.0-rc.8
+
 ## 3.0.0-rc.7
 
 ### Patch Changes

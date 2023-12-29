@@ -60,7 +60,6 @@ export type IConverterOptions = {
 	flagEmailsAsVerified?: boolean;
 	skipExistingUsers?: boolean;
 	skipNewUsers?: boolean;
-	bindSkippedUsers?: boolean;
 	skipUserCallbacks?: boolean;
 	skipDefaultChannels?: boolean;
 
@@ -100,7 +99,6 @@ export class ImportDataConverter {
 			flagEmailsAsVerified: false,
 			skipExistingUsers: false,
 			skipNewUsers: false,
-			bindSkippedUsers: false,
 		};
 		this._userCache = new Map();
 		this._userDisplayNameCache = new Map();
@@ -396,18 +394,6 @@ export class ImportDataConverter {
 	}
 
 	async findExistingUser(data: IImportUser): Promise<IUser | undefined> {
-		// If we're gonna force-bind importIds, we search for them first to ensure they are unique
-		if (this._options.bindSkippedUsers) {
-			// #TODO: Use a single operation for multiple IDs
-			// (Currently there's no existing use case with multiple IDs being passed to this function)
-			for await (const importId of data.importIds) {
-				const importedUser = await Users.findOneByImportId(importId, {});
-				if (importedUser) {
-					return importedUser;
-				}
-			}
-		}
-
 		if (data.emails.length) {
 			const emailUser = await Users.findOneByEmailAddress(data.emails[0], {});
 
@@ -488,13 +474,6 @@ export class ImportDataConverter {
 
 				const existingUser = await this.findExistingUser(data);
 				if (existingUser && this._options.skipExistingUsers) {
-					if (this._options.bindSkippedUsers) {
-						const newImportIds = data.importIds.filter((importId) => !(existingUser as IUser).importIds?.includes(importId));
-						if (newImportIds.length) {
-							await Users.addImportIds(existingUser._id, newImportIds);
-						}
-					}
-
 					await this.skipRecord(_id);
 					skippedCount++;
 					continue;

@@ -24,21 +24,24 @@ const MACCard = ({
 		total: max,
 	};
 
-	const nearLimit = pieGraph && pieGraph.used / pieGraph.total >= 0.8;
+	const nearLimit = pieGraph && pieGraph.used > 0 && pieGraph.used / pieGraph.total >= 0.8;
 
 	const macLeft = pieGraph.total - pieGraph.used;
+
+	const shouldShowBuyMore = !hideManageSubscription && nearLimit;
+	const shouldShowUpgrade = hideManageSubscription && nearLimit;
 
 	const card: CardProps = {
 		title: t('Monthly_active_contacts'),
 		infoText: t('MAC_InfoText'),
-		...(hideManageSubscription && {
+		...(shouldShowBuyMore && {
 			upgradeButton: (
 				<UpgradeButton target='mac-card' action='buy_more' small>
 					{t('Buy_more')}
 				</UpgradeButton>
 			),
 
-			...(nearLimit && {
+			...(shouldShowUpgrade && {
 				upgradeButton: (
 					<UpgradeButton target='mac-card' action='upgrade' small>
 						{t('Upgrade')}

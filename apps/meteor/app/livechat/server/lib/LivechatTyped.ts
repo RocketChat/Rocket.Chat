@@ -103,29 +103,23 @@ type OfflineMessageData = {
 	host?: string;
 };
 
+type UploadedFile = {
+	_id: string;
+	name?: string;
+	type?: string;
+	size?: number;
+	description?: string;
+	identify?: { size: { width: number; height: number } };
+	format?: string;
+};
+
 export interface ILivechatMessage {
 	token: string;
 	_id: string;
 	rid: string;
 	msg: string;
-	file?: {
-		_id: string;
-		name?: string;
-		type?: string;
-		size?: number;
-		description?: string;
-		identify?: { size: { width: number; height: number } };
-		format?: string;
-	};
-	files?: {
-		_id: string;
-		name?: string;
-		type?: string;
-		size?: number;
-		description?: string;
-		identify?: { size: { width: number; height: number } };
-		format?: string;
-	}[];
+	file?: UploadedFile;
+	files?: UploadedFile[];
 	attachments?: MessageAttachment[];
 	alias?: string;
 	groupable?: boolean;
@@ -368,7 +362,7 @@ class LivechatClass {
 
 	async getRoom(
 		guest: ILivechatVisitor,
-		message: Pick<IMessage, 'rid' | 'msg'>,
+		message: Pick<IMessage, 'rid' | 'msg' | 'token'>,
 		roomInfo: {
 			source?: IOmnichannelRoom['source'];
 			[key: string]: unknown;
@@ -1368,6 +1362,12 @@ class LivechatClass {
 
 	async saveGuest(guestData: Pick<ILivechatVisitor, '_id' | 'name' | 'livechatData'> & { email?: string; phone?: string }, userId: string) {
 		const { _id, name, email, phone, livechatData = {} } = guestData;
+
+		const visitor = await LivechatVisitors.findOneById(_id, { projection: { _id: 1 } });
+		if (!visitor) {
+			throw new Error('error-invalid-visitor');
+		}
+
 		this.logger.debug({ msg: 'Saving guest', guestData });
 		const updateData: {
 			name?: string | undefined;

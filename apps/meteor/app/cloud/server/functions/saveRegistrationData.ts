@@ -1,9 +1,39 @@
 import { Settings } from '@rocket.chat/models';
 
+import { applyLicense } from '../../../../ee/app/license/server/applyLicense';
 import { settings } from '../../../settings/server';
 import { syncCloudData } from './syncWorkspace/syncCloudData';
 
-export function saveRegistrationData({
+export async function saveRegistrationData({
+	workspaceId,
+	client_name,
+	client_id,
+	client_secret,
+	client_secret_expires_at,
+	publicKey,
+	registration_client_uri,
+}: {
+	workspaceId: string;
+	client_name: string;
+	client_id: string;
+	client_secret: string;
+	client_secret_expires_at: number;
+	publicKey: string;
+	registration_client_uri: string;
+}) {
+	await saveRegistrationDataBase({
+		workspaceId,
+		client_name,
+		client_id,
+		client_secret,
+		client_secret_expires_at,
+		publicKey,
+		registration_client_uri,
+	});
+
+	await syncCloudData();
+}
+function saveRegistrationDataBase({
 	workspaceId,
 	client_name,
 	client_id,
@@ -50,8 +80,39 @@ export function saveRegistrationData({
 			}
 			await new Promise((resolve) => setTimeout(resolve, 1000));
 		}
-
-		await syncCloudData();
 		return results;
 	});
+}
+
+export async function saveRegistrationDataManual({
+	workspaceId,
+	client_name,
+	client_id,
+	client_secret,
+	client_secret_expires_at,
+	publicKey,
+	registration_client_uri,
+	licenseData,
+}: {
+	workspaceId: string;
+	client_name: string;
+	client_id: string;
+	client_secret: string;
+	client_secret_expires_at: number;
+	publicKey: string;
+	registration_client_uri: string;
+	licenseData: {
+		license: string;
+	};
+}) {
+	await saveRegistrationDataBase({
+		workspaceId,
+		client_name,
+		client_id,
+		client_secret,
+		client_secret_expires_at,
+		publicKey,
+		registration_client_uri,
+	});
+	await applyLicense(licenseData.license, true);
 }

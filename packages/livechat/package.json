@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/livechat",
-	"version": "1.14.9-rc.0",
+	"version": "1.14.9",
 	"files": [
 		"/build"
 	],
@@ -24,14 +24,14 @@
 		"typecheck": "tsc -p tsconfig.typecheck.json"
 	},
 	"devDependencies": {
-		"@babel/eslint-parser": "~7.22.15",
+		"@babel/eslint-parser": "~7.23.3",
 		"@babel/preset-env": "~7.22.20",
 		"@babel/preset-typescript": "~7.22.15",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/ddp-client": "workspace:^",
 		"@rocket.chat/eslint-config": "workspace:^",
-		"@rocket.chat/fuselage-tokens": "^0.32.0",
-		"@rocket.chat/logo": "^0.31.28",
+		"@rocket.chat/fuselage-tokens": "~0.32.0",
+		"@rocket.chat/logo": "~0.31.28",
 		"@storybook/addon-essentials": "~6.5.16",
 		"@storybook/addon-postcss": "~2.0.0",
 		"@storybook/preact": "~6.5.16",
@@ -81,7 +81,7 @@
 		"stylelint-order": "^5.0.0",
 		"svg-loader": "^0.0.2",
 		"terser-webpack-plugin": "~4.2.3",
-		"typescript": "~5.2.2",
+		"typescript": "~5.3.2",
 		"url-loader": "^4.1.1",
 		"webpack": "^5.89.0",
 		"webpack-bundle-analyzer": "^4.9.1",
@@ -94,10 +94,10 @@
 	},
 	"dependencies": {
 		"@rocket.chat/gazzodown": "workspace:^",
-		"@rocket.chat/message-parser": "next",
+		"@rocket.chat/message-parser": "~0.31.27",
 		"@rocket.chat/random": "workspace:~",
 		"@rocket.chat/sdk": "^1.0.0-alpha.42",
-		"@rocket.chat/ui-kit": "^0.32.1",
+		"@rocket.chat/ui-kit": "workspace:~",
 		"css-vars-ponyfill": "^2.4.8",
 		"date-fns": "^2.15.0",
 		"emoji-mart": "^3.0.1",
