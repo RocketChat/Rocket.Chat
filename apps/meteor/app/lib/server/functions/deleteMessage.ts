@@ -79,15 +79,13 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 	const room = await Rooms.findOneById(message.rid, { projection: { lastMessage: 1, prid: 1, mid: 1, federated: 1 } });
 
 	// update last message
-	if (settings.get('Store_Last_Message')) {
-		if (!room?.lastMessage || room.lastMessage._id === message._id) {
-			const lastMessageNotDeleted = await Messages.getLastVisibleMessageSentWithNoTypeByRoomId(message.rid);
-			await Rooms.resetLastMessageById(message.rid, lastMessageNotDeleted);
-		}
+	if (settings.get('Store_Last_Message') && (!room?.lastMessage || room.lastMessage._id === message._id)) {
+		const lastMessageNotDeleted = await Messages.getLastVisibleMessageSentWithNoTypeByRoomId(message.rid);
+		await Rooms.resetLastMessageById(message.rid, lastMessageNotDeleted, -1);
+	} else {
+		// decrease message count
+		await Rooms.decreaseMessageCountById(message.rid, 1);
 	}
-
-	// decrease message count
-	await Rooms.decreaseMessageCountById(message.rid, 1);
 
 	await callbacks.run('afterDeleteMessage', deletedMsg, room);
 
