@@ -1,0 +1,46 @@
+{
+	"name": "react-sdk-example",
+	"private": true,
+	"version": "0.0.0",
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+		"preview": "vite preview"
+	},
+	"dependencies": {
+		"@rocket.chat/ddp-client": "workspace:^",
+		"@rocket.chat/fuselage": "^0.41.0",
+		"@rocket.chat/fuselage-tokens": "^0.32.0",
+		"@rocket.chat/instance-status": "workspace:^",
+		"@rocket.chat/jwt": "workspace:^",
+		"@rocket.chat/log-format": "workspace:^",
+		"@rocket.chat/logger": "workspace:^",
+		"@rocket.chat/password-policies": "workspace:^",
+		"@rocket.chat/rest-typings": "workspace:^",
+		"@rocket.chat/sha256": "workspace:^",
+		"@rocket.chat/ui-client": "workspace:^",
+		"@rocket.chat/ui-contexts": "workspace:^",
+		"@tanstack/react-query": "^4.16.1",
+		"path-to-regexp": "^6.2.1",
+		"react": "^17.0.2",
+		"react-dom": "^17.0.2"
+	},
+	"volta": {
+		"extends": "../../package.json"
+	},
+	"devDependencies": {
+		"@types/react": "^18.2.43",
+		"@types/react-dom": "^18.2.17",
+		"@typescript-eslint/eslint-plugin": "^6.14.0",
+		"@typescript-eslint/parser": "^6.14.0",
+		"@vitejs/plugin-react": "^4.0.0",
+		"@vitejs/plugin-react-swc": "^3.5.0",
+		"eslint": "^8.55.0",
+		"eslint-plugin-react-hooks": "^4.6.0",
+		"eslint-plugin-react-refresh": "^0.4.5",
+		"typescript": "~5.3.2",
+		"vite": "^4.3.9",
+		"vite-plugin-lightningcss": "^0.0.5"
+	}
+}

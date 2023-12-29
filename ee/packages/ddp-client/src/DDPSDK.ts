@@ -88,6 +88,7 @@ export class DDPSDK implements SDK {
 	 * ```
 	 */
 	static create(url: string, retryOptions = { retryCount: 1, retryTime: 100 }): DDPSDK {
+		console.log('DDPSDK.create', url, retryOptions);
 		const ddp = new DDPDispatcher();
 
 		const connection = ConnectionImpl.create(url, WebSocket, ddp, retryOptions);

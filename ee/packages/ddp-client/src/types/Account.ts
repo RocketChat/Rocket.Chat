@@ -7,7 +7,7 @@ type User = {
 	username?: string;
 	token?: string;
 	tokenExpires?: Date;
-} & Record<string, unknown>;
+};
 
 export interface Account
 	extends Emitter<{
@@ -65,6 +65,8 @@ export class AccountImpl
 			id,
 		};
 		this.uid = id;
+
+		console.log(id, token, tokenExpires);
 		this.emit('uid', this.uid);
 		this.emit('user', this.user);
 	}
