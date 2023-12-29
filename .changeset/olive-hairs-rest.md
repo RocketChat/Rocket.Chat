@@ -3,4 +3,4 @@
 "@rocket.chat/model-typings": patch
 ---
 
-fix: Message mentions displayed in the UI are outdated after changing username
+Resolved an issue where mentions in messages did not reflect updated usernames, ensuring mentions now accurately display the current username after any changes
