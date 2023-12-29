@@ -1,6 +1,7 @@
 import http from 'http';
 import https from 'https';
 
+import { api } from '@rocket.chat/core-services';
 import type { IImport, MessageAttachment, IUpload } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
@@ -10,7 +11,6 @@ import { Importer, ProgressStep, Selection } from '../../importer/server';
 import type { IConverterOptions } from '../../importer/server/classes/ImportDataConverter';
 import type { ImporterProgress } from '../../importer/server/classes/ImporterProgress';
 import type { ImporterInfo } from '../../importer/server/definitions/ImporterInfo';
-import { msgStream } from '../../lib/server';
 
 export class PendingFileImporter extends Importer {
 	constructor(info: ImporterInfo, importRecord: IImport, converterOptions: IConverterOptions = {}) {
@@ -81,7 +81,7 @@ export class PendingFileImporter extends Importer {
 
 		try {
 			const pendingFileMessageList = Messages.findAllImportedMessagesWithFilesToDownload();
-			const roomIdsToNotifyMessageImporting = new Set();
+			const importedRoomIds = new Set<string>();
 			for await (const message of pendingFileMessageList) {
 				try {
 					const { _importFile } = message;
@@ -142,7 +142,7 @@ export class PendingFileImporter extends Importer {
 
 								await Messages.setImportFileRocketChatAttachment(_importFile.id, url, attachment);
 								await completeFile(details);
-								roomIdsToNotifyMessageImporting.add(message.rid);
+								importedRoomIds.add(message.rid);
 							} catch (error) {
 								await completeFile(details);
 								logError(error);
@@ -154,7 +154,7 @@ export class PendingFileImporter extends Importer {
 				}
 			}
 
-			Array.from(roomIdsToNotifyMessageImporting).forEach((rid) => msgStream.emitWithoutBroadcast(`${rid}/messages-imported`, { rid }));
+			void api.broadcast('notify.importedMessages', { roomIds: Array.from(importedRoomIds) });
 		} catch (error) {
 			// If the cursor expired, restart the method
 			if (this.isCursorNotFoundError(error)) {

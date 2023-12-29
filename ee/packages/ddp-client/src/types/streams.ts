@@ -63,15 +63,12 @@ export interface StreamerEvents {
 		{ key: `${string}/e2e.keyRequest`; args: [unknown] },
 		{ key: `${string}/videoconf`; args: [id: string] },
 		{ key: `${string}/messagesRead`; args: [{ until: Date; tmid?: string }] },
+		{ key: `${string}/messagesImported`; args: [null] },
 		/* @deprecated over videoconf*/
 		// { key: `${string}/${string}`; args: [id: string] },
 	];
 
-	'room-messages': [
-		{ key: '__my_messages__'; args: [IMessage] },
-		{ key: string; args: [message: IMessage, user?: IUser, room?: IRoom] },
-		{ key: `${string}/messages-imported`; args: [{ rid: string }] },
-	];
+	'room-messages': [{ key: '__my_messages__'; args: [IMessage] }, { key: string; args: [message: IMessage, user?: IUser, room?: IRoom] }];
 
 	'notify-all': [
 		{

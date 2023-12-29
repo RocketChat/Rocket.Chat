@@ -172,10 +172,12 @@ const computation = Tracker.autorun(() => {
 							openedRoomsDependency.changed();
 						});
 
-					void sdk.stream('room-messages', [`${record.rid}/messages-imported`], async ({ rid }) => {
-						await RoomHistoryManager.clear(rid);
-						await RoomHistoryManager.getMore(rid);
+					// when we receive a messages imported event we just clear the room history and fetch it again
+					Notifications.onRoom(record.rid, 'messagesImported', async () => {
+						await RoomHistoryManager.clear(record.rid);
+						await RoomHistoryManager.getMore(record.rid);
 					});
+
 					Notifications.onRoom(record.rid, 'deleteMessage', (msg) => {
 						ChatMessage.remove({ _id: msg._id });
 

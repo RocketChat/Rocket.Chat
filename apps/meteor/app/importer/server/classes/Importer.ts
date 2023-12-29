@@ -1,3 +1,4 @@
+import { api } from '@rocket.chat/core-services';
 import type { IImport, IImportRecord, IImportChannel, IImportUser, IImportProgress } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Settings, ImportData, Imports } from '@rocket.chat/models';
@@ -6,10 +7,8 @@ import type { MatchKeysAndValues, MongoServerError } from 'mongodb';
 
 import { Selection, SelectionChannel, SelectionUser } from '..';
 import { callbacks } from '../../../../lib/callbacks';
-import { msgStream } from '../../../lib/server';
 import { t } from '../../../utils/lib/i18n';
 import { ProgressStep, ImportPreparingStartedStates } from '../../lib/ImporterProgressStep';
-import type { ImporterAfterImportCallback } from '../definitions/IConversionCallbacks';
 import type { ImporterInfo } from '../definitions/ImporterInfo';
 import { ImportDataConverter } from './ImportDataConverter';
 import type { IConverterOptions } from './ImportDataConverter';
@@ -117,7 +116,6 @@ export class Importer {
 		await this.updateProgress(ProgressStep.IMPORTING_STARTED);
 		this.reloadCount();
 		const started = Date.now();
-		const existingRooms: string[] = [];
 
 		const beforeImportFn = async ({ data, dataType: type }: IImportRecord) => {
 			if (this.importRecord.valid === false) {
@@ -173,18 +171,8 @@ export class Importer {
 			}
 		};
 
-		const afterImportChannelsFn: ImporterAfterImportCallback = async (record, isNew) => {
-			await afterImportFn();
-			if (!isNew && record.data._id) {
-				existingRooms.push(record.data._id);
-			}
-		};
-
-		const afterImportAllMessagesFn = async (roomIdsWithMessagesSent: string[]): Promise<void> => {
-			await afterImportFn();
-			const roomIdsToNotifyMessageImporting = existingRooms.filter((rid) => roomIdsWithMessagesSent.includes(rid));
-			roomIdsToNotifyMessageImporting.forEach((rid) => msgStream.emitWithoutBroadcast(`${rid}/messages-imported`, { rid }));
-		};
+		const afterImportAllMessagesFn = async (importedRoomIds: string[]): Promise<void> =>
+			api.broadcast('notify.importedMessages', { roomIds: importedRoomIds });
 
 		const afterBatchFn = async (successCount: number, errorCount: number) => {
 			if (successCount) {
@@ -216,7 +204,7 @@ export class Importer {
 				await this.converter.convertUsers({ beforeImportFn, afterImportFn, onErrorFn, afterBatchFn });
 
 				await this.updateProgress(ProgressStep.IMPORTING_CHANNELS);
-				await this.converter.convertChannels(startedByUserId, { beforeImportFn, afterImportFn: afterImportChannelsFn, onErrorFn });
+				await this.converter.convertChannels(startedByUserId, { beforeImportFn, afterImportFn, onErrorFn });
 
 				await this.updateProgress(ProgressStep.IMPORTING_MESSAGES);
 				await this.converter.convertMessages({ afterImportFn, onErrorFn, afterImportAllMessagesFn });
