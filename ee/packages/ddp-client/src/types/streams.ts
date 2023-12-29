@@ -62,6 +62,7 @@ export interface StreamerEvents {
 		{ key: `${string}/deleteMessage`; args: [{ _id: IMessage['_id'] }] },
 		{ key: `${string}/e2e.keyRequest`; args: [unknown] },
 		{ key: `${string}/videoconf`; args: [id: string] },
+		{ key: `${string}/messagesRead`; args: [{ until: Date; tmid?: string }] },
 		/* @deprecated over videoconf*/
 		// { key: `${string}/${string}`; args: [id: string] },
 	];

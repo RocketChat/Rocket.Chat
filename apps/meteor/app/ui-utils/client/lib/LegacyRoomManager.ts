@@ -208,6 +208,35 @@ const computation = Tracker.autorun(() => {
 							return ChatMessage.remove(query);
 						},
 					);
+					Notifications.onRoom(record.rid, 'messagesRead', ({ tmid, until }) => {
+						if (tmid) {
+							return ChatMessage.update(
+								{
+									tmid,
+									unread: true,
+								},
+								{ $unset: { unread: 1 } },
+								{ multi: true },
+							);
+						}
+						ChatMessage.update(
+							{
+								rid: record.rid,
+								unread: true,
+								ts: { $lt: until },
+								$or: [
+									{
+										tmid: { $exists: false },
+									},
+									{
+										tshow: true,
+									},
+								],
+							},
+							{ $unset: { unread: 1 } },
+							{ multi: true },
+						);
+					});
 				}
 			}
 
