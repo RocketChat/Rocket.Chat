@@ -511,7 +511,7 @@ describe('[Chat]', function () {
 				.end(done);
 		});
 
-		describe('markdown message field', () => {
+		describe('message md field', () => {
 			let user = null;
 			let userCredentials = null;
 			let messageId = null;
