@@ -553,7 +553,7 @@ describe('[Chat]', function () {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 
-						const message = res.body.message;
+						const { message } = res.body;
 						expect(message).to.have.property('msg', `test message mention: @${editedUsername}`);
 						expect(message).to.have.property('mentions').to.be.an('array').that.is.not.empty;
 						expect(message.mentions[0]).to.have.property('_id', user._id);
