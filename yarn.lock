@@ -5913,19 +5913,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@playwright/test@npm:^1.37.1":
-  version: 1.37.1
-  resolution: "@playwright/test@npm:1.37.1"
+"@playwright/test@npm:^1.40.1":
+  version: 1.40.1
+  resolution: "@playwright/test@npm:1.40.1"
   dependencies:
-    "@types/node": "*"
-    fsevents: 2.3.2
-    playwright-core: 1.37.1
-  dependenciesMeta:
-    fsevents:
-      optional: true
+    playwright: 1.40.1
   bin:
     playwright: cli.js
-  checksum: b7038f29000289103c08b215eff7aabdda70cdc1375fa7dad0e81651be71086a1e2fc0e0e29dc70348037c366cf0cc69f762373fda34ba1a74aa1658741d9195
+  checksum: ae094e6cb809365c0707ee2b184e42d2a2542569ada020d2d44ca5866066941262bd9a67af185f86c2fb0133c9b712ea8cb73e2959a289e4261c5fd17077283c
   languageName: node
   linkType: hard
 
@@ -9468,7 +9463,7 @@ __metadata:
     "@nivo/heatmap": 0.80.0
     "@nivo/line": 0.80.0
     "@nivo/pie": 0.80.0
-    "@playwright/test": ^1.37.1
+    "@playwright/test": ^1.40.1
     "@react-aria/color": ^3.0.0-beta.15
     "@react-pdf/renderer": ^3.1.14
     "@rocket.chat/account-utils": "workspace:^"
@@ -32611,12 +32606,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.37.1":
-  version: 1.37.1
-  resolution: "playwright-core@npm:1.37.1"
+"playwright-core@npm:1.40.1":
+  version: 1.40.1
+  resolution: "playwright-core@npm:1.40.1"
   bin:
     playwright-core: cli.js
-  checksum: 69f818da2230057584140d5b3af7778a4f4a822b5b18d133abfc5d259128becb943c343a2ddf6b0635277a69f28983e83e2bc3fce23595ececb1e410475b6368
+  checksum: 84d92fb9b86e3c225b16b6886bf858eb5059b4e60fa1205ff23336e56a06dcb2eac62650992dede72f406c8e70a7b6a5303e511f9b4bc0b85022ede356a01ee0
   languageName: node
   linkType: hard
 
@@ -32628,6 +32623,21 @@ __metadata:
     form-data: ^3.0.0
     qaseio: ^2.0.2
   checksum: 8b4d2f5902a8d655b781e9dd6898d5d2f25739033f1fda2b600b07ac3fc7680f9a1ee917a969b7315f4f05211e36f1a6699155f9ead05a435afa695932bde9fa
+  languageName: node
+  linkType: hard
+
+"playwright@npm:1.40.1":
+  version: 1.40.1
+  resolution: "playwright@npm:1.40.1"
+  dependencies:
+    fsevents: 2.3.2
+    playwright-core: 1.40.1
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  bin:
+    playwright: cli.js
+  checksum: 9e36791c1b4a649c104aa365fdd9d049924eeb518c5967c0e921aa38b9b00994aa6ee54784d6c2af194b3b494b6f69772673081ef53c6c4a4b2065af9955c4ba
   languageName: node
   linkType: hard
 
