@@ -1,4 +1,4 @@
-import { Icon, SearchInput, Skeleton, Grid } from '@rocket.chat/fuselage';
+import { Icon, SearchInput, Skeleton, CardGrid } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useIsSettingsContextLoading, useTranslation } from '@rocket.chat/ui-contexts';
@@ -25,21 +25,31 @@ const SettingsPage = (): ReactElement => {
 			<PageBlockWithBorder>
 				<SearchInput value={filter} placeholder={t('Search')} onChange={handleChange} addon={<Icon name='magnifier' size='x20' />} />
 			</PageBlockWithBorder>
-			<PageScrollableContentWithShadow p='0'>
+
+			<PageScrollableContentWithShadow p={0} mi={24} mbe={16}>
 				{isLoadingGroups && <Skeleton />}
-				<Grid mi={16} mbe={18}>
+				<CardGrid
+					breakpoints={{
+						xs: 4,
+						sm: 4,
+						md: 4,
+						lg: 6,
+						xl: 4,
+						p: 8,
+					}}
+				>
 					{!isLoadingGroups &&
 						!!groups.length &&
 						groups.map((group) => (
-							<Grid.Item key={group._id} xs={4} sm={4} md={4} lg={4} xl={3}>
-								<SettingsGroupCard
-									id={group._id}
-									title={group.i18nLabel as TranslationKey}
-									description={group.i18nDescription as TranslationKey}
-								/>
-							</Grid.Item>
+							<SettingsGroupCard
+								key={group._id}
+								id={group._id}
+								title={group.i18nLabel as TranslationKey}
+								description={group.i18nDescription as TranslationKey}
+							/>
 						))}
-				</Grid>
+				</CardGrid>
+
 				{!isLoadingGroups && !groups.length && <GenericNoResults />}
 			</PageScrollableContentWithShadow>
 		</Page>

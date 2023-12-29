@@ -182,6 +182,10 @@ export class ListenersModule {
 			notifications.streamRoomMessage.emitWithoutBroadcast(message.rid, message);
 		});
 
+		service.onEvent('notify.messagesRead', ({ rid, until, tmid }): void => {
+			notifications.notifyRoomInThisInstance(rid, 'messagesRead', { tmid, until });
+		});
+
 		service.onEvent('watch.subscriptions', ({ clientAction, subscription }) => {
 			if (!subscription.u?._id) {
 				return;

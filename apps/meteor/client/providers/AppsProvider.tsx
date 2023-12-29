@@ -1,5 +1,5 @@
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import { usePermission, useSingleStream } from '@rocket.chat/ui-contexts';
+import { usePermission, useStream } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { FC } from 'react';
 import React, { useEffect } from 'react';
@@ -39,7 +39,7 @@ const AppsProvider: FC = ({ children }) => {
 	const invalidateAppsCountQuery = useInvalidateAppsCountQueryCallback();
 	const invalidateLicenseQuery = useInvalidateLicense();
 
-	const stream = useSingleStream('apps');
+	const stream = useStream('apps');
 
 	const invalidate = useDebouncedCallback(
 		() => {
