@@ -3615,7 +3615,7 @@
   "SAML_General": "一般",
   "SAML_Custom_Authn_Context": "カスタム認証コンテキスト",
   "SAML_Custom_Authn_Context_Comparison": "認証コンテキストの比較",
-  "SAML_Custom_Authn_Context_description": "要求からauthnコンテキストを除外するには、これを空のままにします。  \n  \n複数の認証コンテキストを追加するには、__AuthnContextTemplate__設定に直接追加します。",
+  "SAML_Custom_Authn_Context_description": "要求からauthnコンテキストを除外するには、これを空のままにします。  \n  \n複数の認証コンテキストを追加するには、{{AuthnContext Template}}設定に直接追加します。",
   "SAML_Custom_Cert": "カスタム証明書",
   "SAML_Custom_Debug": "デバッグを有効にする",
   "SAML_Custom_EMail_Field": "メールのフィールド名",

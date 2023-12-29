@@ -1,6 +1,6 @@
 {
   "500": "Ralat Pelayan Dalaman",
-  "__username__was_set__role__by__user_by_": "__nama pengguna__ ditubuhkan __role__ oleh __user_by__",
+  "__username__was_set__role__by__user_by_": "__nama pengguna__ ditubuhkan {{role}} oleh {{user_by}}",
   "@username": "@pengguna",
   "@username_message": "@username <message>",
   "#channel": "#channel",

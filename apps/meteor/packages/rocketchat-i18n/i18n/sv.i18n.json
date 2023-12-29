@@ -5732,7 +5732,7 @@
   "RegisterWorkspace_Token_Step_Two": "Kopiera ditt token och klistra in det nedan.",
   "RegisterWorkspace_with_email": "Registrera arbetsytan med e-post",
   "RegisterWorkspace_Setup_Subtitle": "För att registrera arbetsytan måste det associeras med ett Rocket.Chat Cloud-konto.",
-  "RegisterWorkspace_Setup_Steps": "Steg __steg__ av __numberOfSteps__",
+  "RegisterWorkspace_Setup_Steps": "Steg {{step}} av {{numberOfSteps}}",
   "RegisterWorkspace_Setup_Label": "E-postadress för molnkonto",
   "RegisterWorkspace_Setup_Have_Account_Title": "Har du ett konto?",
   "RegisterWorkspace_Setup_Have_Account_Subtitle": "Ange din e-postadress till Cloud-kontot för att koppla arbetsytan till ditt konto.",
@@ -5747,7 +5747,7 @@
   "cloud.RegisterWorkspace_Setup_Terms_Privacy": "Jag godkänner <1>villkoren</1> och <3>integritetspolicyn</3>",
   "Larger_amounts_of_active_connections": "För större mängder aktiva anslutningar kan du överväga vår",
   "Uninstall_grandfathered_app": "Avinstallera {{appName}}?",
-  "App_will_lose_grandfathered_status": "**Denna {{context}}-app kommer att förlora sin status som gammal app.**  \n  \nArbetsytorna i Community Edition kan ha upp till {{limit}} __kontext__-appar aktiverade. Gamla appar inkluderas i gränsen, men gränsen tillämpas inte på dem.",
+  "App_will_lose_grandfathered_status": "**Denna {{context}}-app kommer att förlora sin status som gammal app.**  \n  \nArbetsytorna i Community Edition kan ha upp till {{limit}} {{context}}-appar aktiverade. Gamla appar inkluderas i gränsen, men gränsen tillämpas inte på dem.",
   "Theme_Appearence": "Utseende för tema",
   "Enterprise": "Enterprise",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analytics"
