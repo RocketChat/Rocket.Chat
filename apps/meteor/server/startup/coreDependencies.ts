@@ -17,8 +17,8 @@ export const startCoreDependencies = async (): Promise<void> => {
 		api.setBroker(broker);
 
 		await api.start();
-		await require('../settings/index');
-		await require('../../app/settings/server');
-		await require('./migrations');
 	}
+	await require('../settings/index');
+	await require('../../app/settings/server');
+	await require('./migrations');
 };
