@@ -88,6 +88,8 @@ export type EventSignatures = {
 			ignoreDiscussion: boolean;
 			ts: Record<string, Date>;
 			users: string[];
+			ids?: string[]; // message ids have priority over ts
+			showDeletedStatus?: boolean;
 		},
 	): void;
 	'notify.deleteCustomSound'(data: { soundData: ICustomSound }): void;
