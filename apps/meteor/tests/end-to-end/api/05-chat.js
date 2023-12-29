@@ -6,7 +6,7 @@ import { sendSimpleMessage, deleteMessage, pinMessage } from '../../data/chat.he
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom } from '../../data/rooms.helper.js';
 import { password } from '../../data/user';
-import { createUser, login } from '../../data/users.helper';
+import { createUser, login, deleteUser } from '../../data/users.helper';
 
 describe('[Chat]', function () {
 	this.retries(0);
@@ -509,6 +509,68 @@ describe('[Chat]', function () {
 					expect(res.body).to.have.nested.property('message._id', message._id);
 				})
 				.end(done);
+		});
+
+		describe('markdown message field', () => {
+			let user = null;
+			let userCredentials = null;
+			let messageId = null;
+			const editedUsername = `edited.username.${Date.now()}`;
+
+			before(async () => {
+				user = await createUser();
+				userCredentials = await login(user.username, password);
+
+				messageId = (
+					await request
+						.post(api('chat.postMessage'))
+						.set(userCredentials)
+						.send({
+							channel: 'general',
+							text: `test message mention: @${user.username}`,
+						})
+				).body.message._id;
+
+				await request
+					.post(api('users.updateOwnBasicInfo'))
+					.set(userCredentials)
+					.send({
+						data: {
+							username: editedUsername,
+						},
+					});
+			});
+
+			it('should update mention in markdown content in message when user name changes', async () => {
+				await request
+					.get(api('chat.getMessage'))
+					.set(userCredentials)
+					.query({
+						msgId: messageId,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+
+						const message = res.body.message;
+						expect(message).to.have.property('msg', `test message mention: @${editedUsername}`);
+						expect(message).to.have.property('mentions').to.be.an('array').that.is.not.empty;
+						expect(message.mentions[0]).to.have.property('_id', user._id);
+						expect(message.mentions[0]).to.have.property('username', editedUsername);
+						expect(message).to.have.property('md').to.be.an('array').that.is.not.empty;
+
+						const markdownMessage = message.md[0];
+						expect(markdownMessage).to.have.property('value').to.be.an('array').to.have.lengthOf(2);
+						expect(markdownMessage.value[0]).to.have.property('type', 'PLAIN_TEXT');
+						expect(markdownMessage.value[1]).to.have.property('type', 'MENTION_USER');
+						expect(markdownMessage.value[1].value).to.have.property('value', editedUsername);
+					});
+			});
+
+			after(async () => {
+				await deleteUser(user);
+			});
 		});
 	});
 
