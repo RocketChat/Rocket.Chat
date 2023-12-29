@@ -120,11 +120,11 @@ async function updateUsernameReferences({
 			await fileStore.model.updateFileNameById(previousFile._id, username);
 		}
 
-        await Message.updateUserReferences({
-            username,
-            previousUsername,
-            userId: user._id,
-        });
+		await Message.updateUserReferences({
+			username,
+			previousUsername,
+			userId: user._id,
+		});
 
 		await Rooms.replaceUsername(previousUsername, username);
 		await Rooms.replaceMutedUsername(previousUsername, username);
