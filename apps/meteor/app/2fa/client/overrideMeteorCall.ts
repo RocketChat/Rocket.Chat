@@ -12,7 +12,7 @@ Meteor.call = function (): void {
 
 Meteor.callAsync = async function _callAsyncWithTotp(methodName: string, ...args: unknown[]): Promise<unknown> {
 	try {
-		return await callAsync(methodName, { returnServerPromise: true }, ...args);
+		return await callAsync(methodName, ...args);
 	} catch (error: unknown) {
 		return process2faAsyncReturn({
 			error,
