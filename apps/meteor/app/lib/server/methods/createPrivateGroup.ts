@@ -38,7 +38,12 @@ export const createPrivateGroupMethod = async (
 
 	if (extraData.teamId) {
 		const team = await Team.findOneById<Pick<ITeam, '_id' | 'roomId'>>(extraData.teamId, { projection: { roomId: 1 } });
-		if (!(await hasPermissionAsync(user._id, 'create-team-group', team?.roomId))) {
+		if (!team) {
+			throw new Meteor.Error('error-team-not-found', 'The "teamId" param provided does not match any team', {
+				method: 'createPrivateGroup',
+			});
+		}
+		if (!(await hasPermissionAsync(user._id, 'create-team-group', team.roomId))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createPrivateGroup' });
 		}
 	} else if (!(await hasPermissionAsync(user._id, 'create-p'))) {
