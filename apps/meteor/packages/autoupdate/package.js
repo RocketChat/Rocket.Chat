@@ -1,6 +1,6 @@
 Package.describe({
 	summary: 'Update the client when new client code is available',
-	version: '2.0.0-alpha300.19',
+	version: '2.0.0-alpha300.20',
 });
 
 Package.onUse(function(api) {
