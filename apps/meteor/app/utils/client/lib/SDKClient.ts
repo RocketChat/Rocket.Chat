@@ -45,49 +45,92 @@ const isChangedCollectionPayload = (
 	return true;
 };
 
-export const createSDK = (rest: RestClientInterface) => {
-	const ev = new Emitter();
+type EventMap<N extends StreamNames = StreamNames, K extends StreamKeys<N> = StreamKeys<N>> = {
+	[key in `stream-${N}/${K}`]: StreamerCallbackArgs<N, K>;
+};
 
-	const streams = new Map<string, (...args: unknown[]) => void>();
+const createStreamManager = () => {
+	// Emitter that replicates stream messages to registered callbacks
+	const streamProxy = new Emitter<EventMap>();
+
+	// Collection of unsubscribe callbacks for each stream.
+	const proxyUnsubLists = new Map<string, Set<() => void>>();
+
+	const streams = new Map<string, () => void>();
 
 	Meteor.connection._stream.on('message', (rawMsg: string) => {
 		const msg = DDPCommon.parseDDP(rawMsg);
 		if (!isChangedCollectionPayload(msg)) {
 			return;
 		}
-		ev.emit(`${msg.collection}/${msg.fields.eventName}`, msg.fields.args);
+		streamProxy.emit(`${msg.collection}/${msg.fields.eventName}` as any, msg.fields.args as any);
 	});
 
 	const stream: SDK['stream'] = <N extends StreamNames, K extends StreamKeys<N>>(
 		name: N,
 		data: [key: K, ...args: unknown[]],
-		cb: (...args: StreamerCallbackArgs<N, K>) => void,
+		callback: (...args: StreamerCallbackArgs<N, K>) => void,
+		_options?: {
+			retransmit?: boolean | undefined;
+			retransmitToSelf?: boolean | undefined;
+		},
 	): ReturnType<ClientStream['subscribe']> => {
 		const [key, ...args] = data;
-		const streamName = `stream-${name}`;
-		const streamKey = `${streamName}/${key}`;
+		const eventLiteral = `stream-${name}/${key}` as const;
+		const proxyCallback = (args?: unknown): void => {
+			if (!args || !Array.isArray(args)) {
+				throw new Error('Invalid streamer callback');
+			}
+			callback(...(args as StreamerCallbackArgs<N, K>));
+		};
 
-		const ee = new Emitter();
+		streamProxy.on(eventLiteral, proxyCallback);
+
+		const stop = (): void => {
+			streamProxy.off(eventLiteral, proxyCallback);
+
+			// If someone is still listening, don't unsubscribe
+			if (streamProxy.has(eventLiteral)) {
+				return;
+			}
+
+			const unsubscribe = streams.get(eventLiteral);
+			if (unsubscribe) {
+				unsubscribe();
+				streams.delete(eventLiteral);
+			}
+		};
+
+		const unsubList = proxyUnsubLists.get(eventLiteral) || new Set();
+		unsubList.add(stop);
+		if (!proxyUnsubLists.has(eventLiteral)) {
+			proxyUnsubLists.set(eventLiteral, unsubList);
+		}
 
 		const meta = {
 			ready: false,
 		};
 
-		const sub = Meteor.connection.subscribe(
-			streamName,
-			key,
-			{ useCollection: false, args },
-			{
-				onReady: (args: any) => {
-					meta.ready = true;
-					ee.emit('ready', [undefined, args]);
+		if (!streams.has(eventLiteral)) {
+			const sub = Meteor.connection.subscribe(
+				`stream-${name}`,
+				key,
+				{ useCollection: false, args },
+				{
+					onReady: (args: any) => {
+						meta.ready = true;
+						ee.emit('ready', [undefined, args]);
+					},
+					onError: (err: any) => {
+						console.error(err);
+						ee.emit('ready', [err]);
+					},
 				},
-				onError: (err: any) => {
-					console.error(err);
-					ee.emit('ready', [err]);
-				},
-			},
-		);
+			);
+			streams.set(eventLiteral, sub.stop);
+		}
+
+		const ee = new Emitter();
 
 		const onChange: ReturnType<ClientStream['subscribe']>['onChange'] = (cb) => {
 			if (meta.ready) {
@@ -122,16 +165,6 @@ export const createSDK = (rest: RestClientInterface) => {
 			});
 		};
 
-		const removeEv = ev.on(`${streamKey}`, (args) => cb(...args));
-
-		const stop = () => {
-			streams.delete(`${streamKey}`);
-			sub.stop();
-			removeEv();
-		};
-
-		streams.set(`${streamKey}`, stop);
-
 		return {
 			id: '',
 			name,
@@ -145,13 +178,15 @@ export const createSDK = (rest: RestClientInterface) => {
 		};
 	};
 
-	const stop = (name: string, key: string) => {
-		const streamKey = `stream-${name}/${key}`;
-		const stop = streams.get(streamKey);
-		if (stop) {
-			stop();
-		}
+	const stopAll = (streamName: string, key: string) => {
+		proxyUnsubLists.get(`${streamName}/${key}`)?.forEach((stop) => stop());
 	};
+
+	return { stream, stopAll };
+};
+
+export const createSDK = (rest: RestClientInterface) => {
+	const { stream, stopAll } = createStreamManager();
 
 	const publish = (name: string, args: unknown[]) => {
 		Meteor.call(`stream-${name}`, ...args);
@@ -163,7 +198,7 @@ export const createSDK = (rest: RestClientInterface) => {
 
 	return {
 		rest,
-		stop,
+		stop: stopAll,
 		stream,
 		publish,
 		call,
