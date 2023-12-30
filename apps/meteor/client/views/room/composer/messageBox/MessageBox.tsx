@@ -42,6 +42,7 @@ import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxReplies from './MessageBoxReplies';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
+import MessageEditingInstruction from './MessageEditingInstruction';
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -348,6 +349,7 @@ const MessageBox = ({
 	return (
 		<>
 			{chat.composer?.quotedMessages && <MessageBoxReplies />}
+			{isEditing && <MessageEditingInstruction />}
 
 			{shouldPopupPreview && popup && (
 				<ComposerBoxPopup select={select} items={items} focused={focused} title={popup.title} renderItem={popup.renderItem} />
