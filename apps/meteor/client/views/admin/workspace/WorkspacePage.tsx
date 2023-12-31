@@ -1,5 +1,5 @@
 import type { IWorkspaceInfo, IStats } from '@rocket.chat/core-typings';
-import { Box, Button, ButtonGroup, Callout, Grid } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Callout, CardGrid } from '@rocket.chat/fuselage';
 import type { IInstance } from '@rocket.chat/rest-typings';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
@@ -78,21 +78,14 @@ const WorkspacePage = ({
 							</Box>
 						</Callout>
 					)}
-
-					<Grid m={0}>
-						<Grid.Item lg={12} xs={4} p={8}>
-							<VersionCard serverInfo={serverInfo} />
-						</Grid.Item>
-						<Grid.Item lg={4} xs={4} p={8}>
-							<DeploymentCard serverInfo={serverInfo} statistics={statistics} instances={instances} />
-						</Grid.Item>
-						<Grid.Item lg={4} xs={4} p={8}>
-							<UsersUploadsCard statistics={statistics} />
-						</Grid.Item>
-						<Grid.Item lg={4} xs={4} p={8}>
-							<MessagesRoomsCard statistics={statistics} />
-						</Grid.Item>
-					</Grid>
+					<Box mbe={16}>
+						<VersionCard serverInfo={serverInfo} />
+					</Box>
+					<CardGrid breakpoints={{ lg: 4, xs: 4, p: 8 }}>
+						<DeploymentCard serverInfo={serverInfo} statistics={statistics} instances={instances} />
+						<UsersUploadsCard statistics={statistics} />
+						<MessagesRoomsCard statistics={statistics} />
+					</CardGrid>
 				</Box>
 			</PageScrollableContentWithShadow>
 		</Page>
