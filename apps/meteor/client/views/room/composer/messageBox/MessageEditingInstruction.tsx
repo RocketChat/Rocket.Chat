@@ -1,5 +1,6 @@
 import { Box, Tooltip } from '@rocket.chat/fuselage';
-import React, { ReactElement, memo } from 'react';
+import type { ReactElement } from 'react';
+import React, { memo } from 'react';
 
 const MessageEditingInstruction = (): ReactElement => {
 	return (
