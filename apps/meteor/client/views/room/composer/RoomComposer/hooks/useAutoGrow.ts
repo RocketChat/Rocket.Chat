@@ -54,7 +54,7 @@ export const useAutoGrow = (
 		textarea.addEventListener('input', updateTextareaSize);
 		return () => {
 			textarea.removeEventListener('input', updateTextareaSize);
-		}; 
+		};
 	}, [ref, shadowRef]);
 
 	const shadowContentSize = useContentBoxSize(shadowRef);
