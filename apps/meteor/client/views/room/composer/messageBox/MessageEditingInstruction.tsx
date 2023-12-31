@@ -1,6 +1,6 @@
 import { Box, Tooltip } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React, { memo } from 'react';
+import React from 'react';
 
 const MessageEditingInstruction = (): ReactElement => {
 	return (
@@ -19,4 +19,4 @@ const MessageEditingInstruction = (): ReactElement => {
 	);
 };
 
-export default memo(MessageEditingInstruction);
+export default MessageEditingInstruction;
