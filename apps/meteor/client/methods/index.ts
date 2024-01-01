@@ -6,3 +6,4 @@ import './starMessage';
 import './toggleFavorite';
 import './unpinMessage';
 import './updateMessage';
+import './markAsDoneMessage';

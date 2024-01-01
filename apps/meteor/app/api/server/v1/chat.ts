@@ -259,6 +259,32 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
+	'chat.markAsDoneMessage',
+	{ authRequired: true },
+	{
+		async post() {
+			if (!this.bodyParams.messageId?.trim()) {
+				throw new Meteor.Error('error-messageid-param-not-provided', 'The required "messageId" param is required.');
+			}
+
+			const msg = await Messages.findOneById(this.bodyParams.messageId);
+
+			if (!msg) {
+				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
+			}
+
+			await Meteor.callAsync('markAsDoneMessage', {
+				_id: msg._id,
+				rid: msg.rid,
+				markedAsDone: true,
+			});
+
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
 	'chat.unPinMessage',
 	{ authRequired: true },
 	{

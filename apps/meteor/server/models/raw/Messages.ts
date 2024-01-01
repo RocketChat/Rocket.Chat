@@ -1288,6 +1288,27 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.updateOne(query, update);
 	}
 
+	updateUserMarkedAsDoneById(_id: string, userId: string, markedAsDone?: boolean): Promise<UpdateResult> {
+		let update: UpdateFilter<IMessage>;
+		const query = { _id };
+
+		if (markedAsDone) {
+			update = {
+				$addToSet: {
+					markedAsDone: { _id: userId },
+				},
+			};
+		} else {
+			update = {
+				$pull: {
+					markedAsDone: { _id: userId },
+				},
+			};
+		}
+
+		return this.updateOne(query, update);
+	}
+
 	setMessageAttachments(_id: string, attachments: IMessage['attachments']): Promise<UpdateResult> {
 		const query = { _id };
 
