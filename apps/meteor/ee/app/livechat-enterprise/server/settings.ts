@@ -157,15 +157,15 @@ export const createSettings = async (): Promise<void> => {
 		});
 	});
 
-	await settingsRegistry.add('Livechat_AdditionalWidgetScripts', '', {
+	await settingsRegistry.add('Livechat_additional_widget_scripts', '', {
 		type: 'string',
 		group: 'Omnichannel',
 		section: 'Livechat',
 		enterprise: true,
 		invalidValue: "",
 		multiline: true,
-		i18nLabel: 'Livechat_AdditionalWidgetScripts',
-		i18nDescription: 'Additional_script_to_embed_in_the_livechat_widget',
+		i18nLabel: 'Livechat_additional_widget_scripts',
+		i18nDescription: 'Livechat_additional_widget_scripts_Description',
 		enableQuery: [omnichannelEnabledQuery],
 		modules: ['livechat-enterprise'],
 	});
@@ -178,7 +178,7 @@ export const createSettings = async (): Promise<void> => {
 		invalidValue: "",
 		multiline: true,
 		i18nLabel: 'Livechat_WidgetLayoutClasses',
-		i18nDescription: 'Additional_classes_to_add_in_body_of_livechat_widget',
+		i18nDescription: 'Livechat_WidgetLayoutClasses_Description',
 		enableQuery: [omnichannelEnabledQuery],
 		modules: ['livechat-enterprise'],
 	});

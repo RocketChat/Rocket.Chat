@@ -12,13 +12,11 @@ const doc = domParser.window.document;
 const head = doc.querySelector('head');
 const body = doc.querySelector('body');
 
-// TODO IMPROVE CONDITIONS CHECK
 const liveChatAdditionalScripts = settings.get<string>('Livechat_AdditionalWidgetScripts');
 if (liveChatAdditionalScripts) {
 	liveChatAdditionalScripts.split(',').forEach((script) => {
 		const scriptElement = doc.createElement('script');
 		scriptElement.src = script;
-		head?.appendChild(scriptElement);
 		body?.appendChild(scriptElement);
 	});
 }
