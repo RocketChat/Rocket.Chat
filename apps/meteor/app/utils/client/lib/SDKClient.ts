@@ -49,14 +49,87 @@ type EventMap<N extends StreamNames = StreamNames, K extends StreamKeys<N> = Str
 	[key in `stream-${N}/${K}`]: StreamerCallbackArgs<N, K>;
 };
 
+type StreamMapValue = {
+	stop: () => void;
+	onChange: ReturnType<ClientStream['subscribe']>['onChange'];
+	ready: () => Promise<void>;
+	isReady: boolean;
+	unsubList: Set<() => void>;
+};
+
+const createNewMeteorStream = (streamName: StreamNames, key: StreamKeys<StreamNames>, args: unknown[]): StreamMapValue => {
+	const ee = new Emitter();
+	const meta = {
+		ready: false,
+	};
+	const sub = Meteor.connection.subscribe(
+		`stream-${streamName}`,
+		key,
+		{ useCollection: false, args },
+		{
+			onReady: (args: any) => {
+				meta.ready = true;
+				ee.emit('ready', [undefined, args]);
+			},
+			onError: (err: any) => {
+				console.error(err);
+				ee.emit('ready', [err]);
+			},
+		},
+	);
+
+	const onChange: ReturnType<ClientStream['subscribe']>['onChange'] = (cb) => {
+		if (meta.ready) {
+			cb({
+				msg: 'ready',
+
+				subs: [],
+			});
+			return;
+		}
+		ee.once('ready', ([error, result]) => {
+			if (error) {
+				cb({
+					msg: 'nosub',
+
+					id: '',
+					error,
+				});
+				return;
+			}
+
+			cb(result);
+		});
+	};
+
+	const ready = () => {
+		if (meta.ready) {
+			return Promise.resolve();
+		}
+		return new Promise<void>((r) => {
+			ee.once('ready', r);
+		});
+	};
+
+	return {
+		stop: sub.stop,
+		onChange,
+		ready,
+		get isReady() {
+			return meta.ready;
+		},
+		unsubList: new Set(),
+	};
+};
+
 const createStreamManager = () => {
 	// Emitter that replicates stream messages to registered callbacks
 	const streamProxy = new Emitter<EventMap>();
 
 	// Collection of unsubscribe callbacks for each stream.
-	const proxyUnsubLists = new Map<string, Set<() => void>>();
+	// const proxyUnsubLists = new Map<string, Set<() => void>>();
 
-	const streams = new Map<string, () => void>();
+	const streams = new Map<string, StreamMapValue>();
 
 	Meteor.connection._stream.on('message', (rawMsg: string) => {
 		const msg = DDPCommon.parseDDP(rawMsg);
@@ -77,6 +150,7 @@ const createStreamManager = () => {
 	): ReturnType<ClientStream['subscribe']> => {
 		const [key, ...args] = data;
 		const eventLiteral = `stream-${name}/${key}` as const;
+
 		const proxyCallback = (args?: unknown): void => {
 			if (!args || !Array.isArray(args)) {
 				throw new Error('Invalid streamer callback');
@@ -94,103 +168,41 @@ const createStreamManager = () => {
 				return;
 			}
 
-			const unsubscribe = streams.get(eventLiteral);
-			if (unsubscribe) {
-				unsubscribe();
+			if (stream) {
+				stream.stop();
 				streams.delete(eventLiteral);
 			}
 		};
 
-		const unsubList = proxyUnsubLists.get(eventLiteral) || new Set();
-		unsubList.add(stop);
-		if (!proxyUnsubLists.has(eventLiteral)) {
-			proxyUnsubLists.set(eventLiteral, unsubList);
-		}
-
-		const meta = {
-			ready: false,
-		};
-
+		const stream = streams.get(eventLiteral) || createNewMeteorStream(name, key, args);
+		stream.unsubList.add(stop);
 		if (!streams.has(eventLiteral)) {
-			const sub = Meteor.connection.subscribe(
-				`stream-${name}`,
-				key,
-				{ useCollection: false, args },
-				{
-					onReady: (args: any) => {
-						meta.ready = true;
-						ee.emit('ready', [undefined, args]);
-					},
-					onError: (err: any) => {
-						console.error(err);
-						ee.emit('ready', [err]);
-					},
-				},
-			);
-			streams.set(eventLiteral, sub.stop);
+			streams.set(eventLiteral, stream);
 		}
-
-		const ee = new Emitter();
-
-		const onChange: ReturnType<ClientStream['subscribe']>['onChange'] = (cb) => {
-			if (meta.ready) {
-				cb({
-					msg: 'ready',
-
-					subs: [],
-				});
-				return;
-			}
-			ee.once('ready', ([error, result]) => {
-				if (error) {
-					cb({
-						msg: 'nosub',
-
-						id: '',
-						error,
-					});
-					return;
-				}
-
-				cb(result);
-			});
-		};
-
-		const ready = () => {
-			if (meta.ready) {
-				return Promise.resolve();
-			}
-			return new Promise<void>((r) => {
-				ee.once('ready', r);
-			});
-		};
 
 		return {
 			id: '',
 			name,
 			params: data as any,
 			stop,
-			ready,
-			onChange,
-			get isReady() {
-				return meta.ready;
-			},
+			ready: stream.ready,
+			onChange: stream.onChange,
+			isReady: stream.isReady,
 		};
 	};
 
 	const stopAll = (streamName: string, key: string) => {
-		// We have to delete the stream first because waiting for the unsublist causes a race condition
-		// when trying to create a new stream right after stopping the old one.
-		const unsubList = proxyUnsubLists.get(`${streamName}/${key}`);
-		// turning the set into an array to avoid stopping events registered on a new stream
-		const unsubArray = unsubList ? Array.from(unsubList) : [];
 		const streamLiteral = `stream-${streamName}/${key}`;
-		const unsubscribe = streams.get(streamLiteral);
-		if (unsubscribe) {
-			unsubscribe();
+		const stream = streams.get(streamLiteral);
+
+		if (stream) {
+			const { unsubList } = stream;
+			// We have to delete the stream first because waiting for the unsublist causes a race condition
+			// when trying to create a new stream right after stopping the old one.
+			stream.stop();
 			streams.delete(streamLiteral);
+			unsubList.forEach((stop) => stop());
 		}
-		unsubArray.forEach((stop) => stop());
 	};
 
 	return { stream, stopAll };
