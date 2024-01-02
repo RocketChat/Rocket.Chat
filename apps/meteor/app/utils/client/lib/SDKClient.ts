@@ -192,8 +192,7 @@ const createStreamManager = () => {
 	};
 
 	const stopAll = (streamName: string, key: string) => {
-		const streamLiteral = `stream-${streamName}/${key}`;
-		const stream = streams.get(streamLiteral);
+		const stream = streams.get(`stream-${streamName}/${key}`);
 
 		if (stream) {
 			stream.unsubList.forEach((stop) => stop());
