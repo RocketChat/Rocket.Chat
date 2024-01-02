@@ -7,7 +7,6 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { Apps, AppEvents } from '../../../ee/server/apps/orchestrator';
-import { callbacks } from '../../../lib/callbacks';
 import { isTruthy } from '../../../lib/isTruthy';
 import { broadcastMessageSentEvent } from '../../../server/modules/watchers/lib/messages';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization/server';
@@ -109,8 +108,6 @@ Meteor.methods<ServerMethods>({
 			username: me.username,
 		};
 
-		originalMessage = await callbacks.run('beforeSaveMessage', originalMessage);
-
 		originalMessage = await Message.beforeSave({ message: originalMessage, room, user: me });
 
 		await Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
@@ -211,8 +208,6 @@ Meteor.methods<ServerMethods>({
 		if (!(await canAccessRoomAsync(room, { _id: userId }))) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'unpinMessage' });
 		}
-
-		originalMessage = await callbacks.run('beforeSaveMessage', originalMessage);
 
 		originalMessage = await Message.beforeSave({ message: originalMessage, room, user: me });
 

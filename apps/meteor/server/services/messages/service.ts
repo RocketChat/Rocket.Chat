@@ -16,6 +16,7 @@ import { BeforeSaveBadWords } from './hooks/BeforeSaveBadWords';
 import { BeforeSaveCheckMAC } from './hooks/BeforeSaveCheckMAC';
 import { BeforeSaveJumpToMessage } from './hooks/BeforeSaveJumpToMessage';
 import { BeforeSaveMarkdownParser } from './hooks/BeforeSaveMarkdownParser';
+import { mentionServer } from './hooks/BeforeSaveMentions';
 import { BeforeSavePreventMention } from './hooks/BeforeSavePreventMention';
 import { BeforeSaveSpotify } from './hooks/BeforeSaveSpotify';
 
@@ -107,18 +108,24 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		if (!username) {
 			throw new Error('The username cannot be empty.');
 		}
-		const result = await Messages.createWithTypeRoomIdMessageUserAndUnread(
-			type,
-			rid,
-			message,
-			{ _id: userId, username, name },
-			settings.get('Message_Read_Receipt_Enabled'),
-			extraData,
-		);
+
+		const [result] = await Promise.all([
+			Messages.createWithTypeRoomIdMessageUserAndUnread(
+				type,
+				rid,
+				message,
+				{ _id: userId, username, name },
+				settings.get('Message_Read_Receipt_Enabled'),
+				extraData,
+			),
+			Rooms.incMsgCountById(rid, 1),
+		]);
+
 		void broadcastMessageSentEvent({
 			id: result.insertedId,
 			broadcastCallback: async (message) => this.api?.broadcast('message.sent', message),
 		});
+
 		return result.insertedId;
 	}
 
@@ -134,6 +141,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		// TODO looks like this one was not being used (so I'll left it commented)
 		// await this.joinDiscussionOnMessage({ message, room, user });
 
+		message = await mentionServer.execute(message);
 		message = await this.cannedResponse.replacePlaceholders({ message, room, user });
 		message = await this.markdownParser.parseMarkdown({ message, config: this.getMarkdownConfig() });
 		message = await this.badWords.filterBadWords({ message });

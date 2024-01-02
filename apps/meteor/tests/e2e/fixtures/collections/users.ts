@@ -42,7 +42,7 @@ export function createUserFixture(user: IUserState): UserFixture {
 					},
 				],
 			},
-			emailCode: [{ code: '', expire: new Date() }],
+			emailCode: { code: '', attempts: 0, expire: new Date() },
 		},
 		createdAt: new Date(),
 		_updatedAt: new Date(),
