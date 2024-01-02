@@ -20,10 +20,8 @@ Meteor.startup(() => {
 		context: ['pinned', 'message', 'message-mobile', 'threads', 'direct', 'videoconf', 'videoconf-threads'],
 		async action(_, props) {
 			const { message = messageArgs(this).msg } = props;
-			const onCloseModal = () => {
-				imperativeModal.close();
-			};
-			const onConfirm = async (): Promise<void> => {
+
+			const handleConfirm = async () => {
 				message.pinned = true;
 				try {
 					await sdk.call('pinMessage', message);
@@ -31,18 +29,19 @@ Meteor.startup(() => {
 				} catch (error) {
 					dispatchToastMessage({ type: 'error', message: error });
 				}
-				onCloseModal();
+				imperativeModal.close();
 			};
 
 			imperativeModal.open({
 				component: GenericModal,
 				props: {
 					title: 'Are you sure you want to pin this message?',
-					variant: 'info',
+					variant: 'warning',
+					icon: null,
 					confirmText: 'Yes pin it',
-					onConfirm,
-					onClose: onCloseModal,
-					onCancel: onCloseModal,
+					onConfirm: handleConfirm,
+					onClose: () => imperativeModal.close(),
+					onCancel: () => imperativeModal.close(),
 				},
 			});
 		},
