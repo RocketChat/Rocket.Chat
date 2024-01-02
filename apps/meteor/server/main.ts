@@ -1,8 +1,7 @@
 import './models/startup';
 import './configureLogLevel';
 import './settings/index';
-import '../ee/server/models/startup';
-import './services/startup';
+import './loadServices';
 import '../app/settings/server';
 import '../lib/oauthRedirectUriServer';
 import './lib/logger/startup';
@@ -10,9 +9,7 @@ import './importPackages';
 import '../imports/startup/server';
 import '../app/lib/server/startup';
 
-import '../ee/server/startup';
-import './startup';
-import '../ee/server';
+import './loadStartup';
 import './lib/pushConfig';
 import './configuration/accounts_meld';
 import './configuration/ldap';
