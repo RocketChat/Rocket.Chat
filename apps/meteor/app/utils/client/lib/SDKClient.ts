@@ -196,12 +196,7 @@ const createStreamManager = () => {
 		const stream = streams.get(streamLiteral);
 
 		if (stream) {
-			const { unsubList } = stream;
-			// We have to delete the stream first because waiting for the unsublist causes a race condition
-			// when trying to create a new stream right after stopping the old one.
-			stream.stop();
-			streams.delete(streamLiteral);
-			unsubList.forEach((stop) => stop());
+			stream.unsubList.forEach((stop) => stop());
 		}
 	};
 
