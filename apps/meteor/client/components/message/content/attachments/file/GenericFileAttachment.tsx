@@ -7,7 +7,7 @@ import {
 	MessageGenericPreviewDescription,
 } from '@rocket.chat/fuselage';
 import { useMediaUrl } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
+import type { UIEvent } from 'react';
 import React from 'react';
 
 import { getFileExtension } from '../../../../../../lib/utils/getFileExtension';
@@ -16,10 +16,11 @@ import MessageCollapsible from '../../../MessageCollapsible';
 import MessageContentBody from '../../../MessageContentBody';
 import AttachmentSize from '../structure/AttachmentSize';
 
-const desktopApp = window.RocketChatDesktop;
-const openDocumentViewer = desktopApp?.openDocumentViewer;
+const openDocumentViewer = window.RocketChatDesktop?.openDocumentViewer;
 
-export const GenericFileAttachment: FC<MessageAttachmentBase> = ({
+type GenericFileAttachmentProps = MessageAttachmentBase;
+
+export const GenericFileAttachment = ({
 	title,
 	description,
 	descriptionMd,
@@ -28,10 +29,10 @@ export const GenericFileAttachment: FC<MessageAttachmentBase> = ({
 	size,
 	format,
 	collapsed,
-}) => {
+}: GenericFileAttachmentProps) => {
 	const getURL = useMediaUrl();
 
-	const handleOpenDocumentViewer = (event: { preventDefault: () => void }): void => {
+	const handleTitleClick = (event: UIEvent): void => {
 		if (openDocumentViewer && link && format === 'PDF') {
 			event.preventDefault();
 			openDocumentViewer(getURL(link), format, '');
@@ -54,11 +55,7 @@ export const GenericFileAttachment: FC<MessageAttachmentBase> = ({
 					<MessageGenericPreviewContent
 						thumb={<MessageGenericPreviewIcon name='attachment-file' type={format || getFileExtension(title)} />}
 					>
-						<MessageGenericPreviewTitle
-							externalUrl={getExternalUrl()}
-							onClick={handleOpenDocumentViewer}
-							data-qa-type='attachment-title-link'
-						>
+						<MessageGenericPreviewTitle externalUrl={getExternalUrl()} onClick={handleTitleClick} data-qa-type='attachment-title-link'>
 							{title}
 						</MessageGenericPreviewTitle>
 						{size && (
