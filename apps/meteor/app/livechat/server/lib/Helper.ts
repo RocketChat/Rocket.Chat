@@ -576,6 +576,8 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 			logger.debug(`Cannot forward room ${room._id}. Unable to delegate inquiry`);
 			return false;
 		}
+
+		return true;
 	}
 
 	await LivechatTyped.saveTransferHistory(room, transferData);
@@ -583,9 +585,6 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 		// if chat is queued then we don't ignore the new servedBy agent bcs at this
 		// point the chat is not assigned to him/her and it is still in the queue
 		await RoutingManager.removeAllRoomSubscriptions(room, !chatQueued ? servedBy : undefined);
-	}
-	if (!chatQueued && servedBy) {
-		await Message.saveSystemMessage('uj', rid, servedBy.username || '', servedBy);
 	}
 
 	await updateChatDepartment({ rid, newDepartmentId: departmentId, oldDepartmentId });
@@ -604,10 +603,6 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 		await queueInquiry(newInquiry);
 		logger.debug(`Inquiry ${inquiry._id} queued succesfully`);
 	}
-
-	const { token } = guest;
-	await LivechatTyped.setDepartmentForGuest({ token, department: departmentId });
-	logger.debug(`Department for visitor with token ${token} was updated to ${departmentId}`);
 
 	return true;
 };

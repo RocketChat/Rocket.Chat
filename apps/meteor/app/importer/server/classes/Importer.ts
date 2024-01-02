@@ -1,3 +1,4 @@
+import { api } from '@rocket.chat/core-services';
 import type { IImport, IImportRecord, IImportChannel, IImportUser, IImportProgress } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Settings, ImportData, Imports } from '@rocket.chat/models';
@@ -171,6 +172,9 @@ export class Importer {
 			}
 		};
 
+		const afterImportAllMessagesFn = async (importedRoomIds: string[]): Promise<void> =>
+			api.broadcast('notify.importedMessages', { roomIds: importedRoomIds });
+
 		const afterBatchFn = async (successCount: number, errorCount: number) => {
 			if (successCount) {
 				await this.addCountCompleted(successCount);
@@ -204,7 +208,7 @@ export class Importer {
 				await this.converter.convertChannels(startedByUserId, { beforeImportFn, afterImportFn, onErrorFn });
 
 				await this.updateProgress(ProgressStep.IMPORTING_MESSAGES);
-				await this.converter.convertMessages({ afterImportFn, onErrorFn });
+				await this.converter.convertMessages({ afterImportFn, onErrorFn, afterImportAllMessagesFn });
 
 				await this.updateProgress(ProgressStep.FINISHING);
 

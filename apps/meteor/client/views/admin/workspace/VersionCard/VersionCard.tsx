@@ -1,5 +1,5 @@
 import type { IWorkspaceInfo } from '@rocket.chat/core-typings';
-import { Box, Card, CardBody, CardControls, CardHeader, CardTitle, Icon } from '@rocket.chat/fuselage';
+import { Box, Card, CardBody, CardCol, CardControls, CardHeader, CardTitle, Icon } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import type { SupportedVersions } from '@rocket.chat/server-cloud-communication';
 import { ExternalLink } from '@rocket.chat/ui-client';
@@ -181,14 +181,16 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 
 	return (
 		<Card style={{ ...cardBackground }}>
-			<CardHeader>
-				<CardTitle variant='h3'>{t('Version_version', { version: serverVersion })}</CardTitle>
-				{!isAirgapped && versions && <VersionTag versionStatus={versionStatus?.label} title={versionStatus.version} />}
-			</CardHeader>
+			<CardCol>
+				<CardHeader>
+					<CardTitle variant='h3'>{t('Version_version', { version: serverVersion })}</CardTitle>
+					{!isAirgapped && versions && <VersionTag versionStatus={versionStatus?.label} title={versionStatus.version} />}
+				</CardHeader>
 
-			<Box color='secondary-info' fontScale='p2' mbs={8}>
-				<Icon name='rocketchat' size={16} /> {licenseName.data}
-			</Box>
+				<Box color='secondary-info'>
+					<Icon name='rocketchat' size={16} /> {licenseName.data}
+				</Box>
+			</CardCol>
 
 			<CardBody flexDirection='column'>
 				{actionItems.length > 0 && actionItems.map((item, index) => <VersionCardActionItem key={index} actionItem={item} />)}
