@@ -6,6 +6,7 @@ import { inspect } from 'node:util';
 
 import fg from 'fast-glob';
 import i18next from 'i18next';
+import supportsColor from 'supports-color';
 
 const validateKeys = (json: Record<string, string>, usedKeys: { key: string; replaces: string[] }[]) =>
 	usedKeys
@@ -117,33 +118,74 @@ const checkPlaceholdersFormat = (json: Record<string, string>, path: PathLike) =
 		.filter((outdatedKey): outdatedKey is { key: string; value: string; placeholders: RegExpMatchArray } => !!outdatedKey.placeholders);
 
 	if (outdatedKeys.length > 0) {
-		throw new Error(`Outdated placeholder format on file ${path}: ${outdatedKeys.map((key) => inspect(key, { colors: true })).join(', ')}`);
+		throw new Error(
+			`Outdated placeholder format on file ${path}: ${outdatedKeys
+				.map((key) => inspect(key, { colors: !!supportsColor.stdout }))
+				.join(', ')}`,
+		);
 	}
 };
 
-const checkMissingPlurals = (json: Record<string, string>, path: PathLike, lng: string) => {
-	const keys = Object.keys(json);
-
+export const extractSingularKeys = (json: Record<string, string>, lng: string) => {
 	if (!i18next.isInitialized) {
 		i18next.init({ initImmediate: false });
 	}
 
 	const pluralSuffixes = i18next.services.pluralResolver.getSuffixes(lng) as string[];
-	const allKeys = keys.flatMap((key) => {
-		for (const pluralSuffix of pluralSuffixes) {
-			if (key.endsWith(`_${pluralSuffix}`)) {
-				const normalizedKey = key.slice(0, -pluralSuffix.length);
-				return [normalizedKey, ...pluralSuffixes.map((suffix) => `${normalizedKey}_${suffix}`)];
+
+	const singularKeys = new Set(
+		Object.keys(json).map((key) => {
+			for (const pluralSuffix of pluralSuffixes) {
+				if (key.endsWith(`_${pluralSuffix}`)) {
+					return key.slice(0, -pluralSuffix.length);
+				}
 			}
+
+			return key;
+		}),
+	);
+
+	return [singularKeys, pluralSuffixes] as const;
+};
+
+const checkMissingPlurals = (json: Record<string, string>, path: PathLike, lng: string) => {
+	const [singularKeys, pluralSuffixes] = extractSingularKeys(json, lng);
+
+	const missingPluralKeys: { singularKey: string; pluralKeys: string[] }[] = [];
+
+	for (const singularKey of singularKeys) {
+		if (singularKey in json) {
+			continue;
 		}
 
-		return [key];
-	});
+		const pluralKeys = pluralSuffixes.map((suffix) => `${singularKey}_${suffix}`);
 
-	if (keys.length !== allKeys.length) {
-		const missingKeys = allKeys.filter((key) => !keys.includes(key));
+		const missingOnes = pluralKeys.filter((key) => !(key in json));
 
-		throw new Error(`Missing plural keys on file ${path}: ${missingKeys.map((key) => inspect(key, { colors: true })).join(', ')}`);
+		if (missingOnes.length > 0) {
+			missingPluralKeys.push({ singularKey, pluralKeys: missingOnes });
+		}
+	}
+
+	if (missingPluralKeys.length > 0) {
+		throw new Error(`Missing plural keys on file ${path}: ${inspect(missingPluralKeys, { colors: !!supportsColor.stdout })}`);
+	}
+};
+
+const checkExceedingKeys = (
+	json: Record<string, string>,
+	path: PathLike,
+	lng: string,
+	sourceJson: Record<string, string>,
+	sourceLng: string,
+) => {
+	const [singularKeys] = extractSingularKeys(json, lng);
+	const [sourceSingularKeys] = extractSingularKeys(sourceJson, sourceLng);
+
+	const exceedingKeys = [...singularKeys].filter((key) => !sourceSingularKeys.has(key));
+
+	if (exceedingKeys.length > 0) {
+		throw new Error(`Exceeding keys on file ${path}: ${inspect(exceedingKeys, { colors: !!supportsColor.stdout })}`);
 	}
 };
 
@@ -163,6 +205,7 @@ const checkFiles = async (sourceDirPath: string, sourceFile: string, fix = false
 	for await (const { path, json, lng } of translations) {
 		checkPlaceholdersFormat(json, path);
 		checkMissingPlurals(json, path, lng);
+		checkExceedingKeys(json, path, lng, sourceJson, 'en');
 	}
 
 	const regexVar = /__[a-zA-Z_]+__/g;

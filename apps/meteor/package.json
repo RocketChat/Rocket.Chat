@@ -204,6 +204,7 @@
 		"stylelint": "^14.9.1",
 		"stylelint-order": "^5.0.0",
 		"supertest": "^6.2.3",
+		"supports-color": "~7.2.0",
 		"template-file": "^6.0.1",
 		"ts-node": "^10.9.1",
 		"typescript": "~5.3.2"

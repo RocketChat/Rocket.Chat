@@ -9756,6 +9756,7 @@ __metadata:
     stylelint: ^14.9.1
     stylelint-order: ^5.0.0
     supertest: ^6.2.3
+    supports-color: ~7.2.0
     suretype: ~2.4.1
     swiper: ^9.3.2
     tar-stream: ^1.6.2
@@ -38032,7 +38033,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"supports-color@npm:^7.0.0, supports-color@npm:^7.1.0, supports-color@npm:^7.2.0":
+"supports-color@npm:^7.0.0, supports-color@npm:^7.1.0, supports-color@npm:^7.2.0, supports-color@npm:~7.2.0":
   version: 7.2.0
   resolution: "supports-color@npm:7.2.0"
   dependencies:
