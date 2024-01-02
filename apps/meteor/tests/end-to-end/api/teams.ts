@@ -1519,14 +1519,14 @@ describe('/teams.addRooms', () => {
 	after(async () => {
 		await Promise.all([deleteTeam(credentials, publicTeam.name), deleteTeam(credentials, privateTeam.name)]);
 		await Promise.all([
-			updatePermission('add-team-channel', ['admin', 'owner', 'moderator']),
+			updatePermission('move-room-to-team', ['admin', 'owner', 'moderator']),
 			...[privateRoom, privateRoom2, privateRoom3, publicRoom, publicRoom2].map((room) => deleteRoom({ type: room.t, roomId: room._id })),
 			deleteUser(testUser),
 		]);
 	});
 
 	it('should throw an error if no permission', (done) => {
-		void updatePermission('add-team-channel', []).then(() => {
+		void updatePermission('move-room-to-team', []).then(() => {
 			void request
 				.post(api('teams.addRooms'))
 				.set(credentials)
@@ -1546,7 +1546,7 @@ describe('/teams.addRooms', () => {
 	});
 
 	it('should add public and private rooms to team', (done) => {
-		void updatePermission('add-team-channel', ['admin']).then(() => {
+		void updatePermission('move-room-to-team', ['admin']).then(() => {
 			void request
 				.post(api('teams.addRooms'))
 				.set(credentials)
@@ -1575,7 +1575,7 @@ describe('/teams.addRooms', () => {
 	});
 
 	it('should add public room to private team', (done) => {
-		void updatePermission('add-team-channel', ['admin']).then(() => {
+		void updatePermission('move-room-to-team', ['admin']).then(() => {
 			void request
 				.post(api('teams.addRooms'))
 				.set(credentials)
@@ -1596,7 +1596,7 @@ describe('/teams.addRooms', () => {
 	});
 
 	it('should add private room to team', (done) => {
-		void updatePermission('add-team-channel', ['admin']).then(() => {
+		void updatePermission('move-room-to-team', ['admin']).then(() => {
 			void request
 				.post(api('teams.addRooms'))
 				.set(credentials)
@@ -1617,7 +1617,7 @@ describe('/teams.addRooms', () => {
 	});
 
 	it('should fail if the user cannot access the channel', (done) => {
-		void updatePermission('add-team-channel', ['admin', 'user'])
+		void updatePermission('move-room-to-team', ['admin', 'user'])
 			.then(() => {
 				void request
 					.post(api('teams.addRooms'))
