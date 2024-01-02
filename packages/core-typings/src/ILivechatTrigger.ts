@@ -52,3 +52,14 @@ export interface ILivechatTrigger extends IRocketChatRecord {
 	conditions: ILivechatTriggerCondition[];
 	actions: ILivechatTriggerAction[];
 }
+
+export interface ILivechatTriggerActionResponse {
+	_id: string;
+	response: {
+		statusCode: number;
+		contents: {
+			msg: string;
+			order: number;
+		}[];
+	};
+}

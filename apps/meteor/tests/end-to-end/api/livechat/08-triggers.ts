@@ -312,28 +312,28 @@ describe('LIVECHAT - triggers', function () {
 			await request
 				.post(api('livechat/triggers/webhook-test'))
 				.set(credentials)
-				.send({ webhookUrl: 1, timeout: 1000, fallbackMessage: 'test', params: {} })
+				.send({ webhookUrl: 1, timeout: 1000, fallbackMessage: 'test', extraData: [] })
 				.expect(400);
 		});
 		it('should fail if timeout is not an number', async () => {
 			await request
 				.post(api('livechat/triggers/webhook-test'))
 				.set(credentials)
-				.send({ webhookUrl: 'test', timeout: '1000', fallbackMessage: 'test', params: {} })
+				.send({ webhookUrl: 'test', timeout: '1000', fallbackMessage: 'test', extraData: [] })
 				.expect(400);
 		});
 		it('should fail if fallbackMessage is not an string', async () => {
 			await request
 				.post(api('livechat/triggers/webhook-test'))
 				.set(credentials)
-				.send({ webhookUrl: 'test', timeout: 1000, fallbackMessage: 1, params: {} })
+				.send({ webhookUrl: 'test', timeout: 1000, fallbackMessage: 1, extraData: [] })
 				.expect(400);
 		});
-		it('should fail if params is not an object', async () => {
+		it('should fail if params is not an array', async () => {
 			await request
 				.post(api('livechat/triggers/webhook-test'))
 				.set(credentials)
-				.send({ webhookUrl: 'test', timeout: 1000, fallbackMessage: 'test', params: 1 })
+				.send({ webhookUrl: 'test', timeout: 1000, fallbackMessage: 'test', extraData: 1 })
 				.expect(400);
 		});
 		it('should fail if user doesnt have view-livechat-webhooks permission', async () => {
@@ -341,7 +341,7 @@ describe('LIVECHAT - triggers', function () {
 			await request
 				.post(api('livechat/triggers/webhook-test'))
 				.set(credentials)
-				.send({ webhookUrl: 'test', timeout: 1000, fallbackMessage: 'test', params: {} })
+				.send({ webhookUrl: 'test', timeout: 1000, fallbackMessage: 'test', extraData: [] })
 				.expect(403);
 		});
 		it('should fail if Livechat_secret_token setting is empty', async () => {
@@ -350,7 +350,7 @@ describe('LIVECHAT - triggers', function () {
 			await request
 				.post(api('livechat/triggers/webhook-test'))
 				.set(credentials)
-				.send({ webhookUrl: 'test', timeout: 1000, fallbackMessage: 'test', params: {} })
+				.send({ webhookUrl: 'test', timeout: 1000, fallbackMessage: 'test', extraData: [] })
 				.expect(400);
 		});
 		it('should return error when webhook returns error', async () => {
@@ -359,7 +359,7 @@ describe('LIVECHAT - triggers', function () {
 			await request
 				.post(api('livechat/triggers/webhook-test'))
 				.set(credentials)
-				.send({ webhookUrl: `${webhookUrl}/status/500`, timeout: 5000, fallbackMessage: 'test', params: {} })
+				.send({ webhookUrl: `${webhookUrl}/status/500`, timeout: 5000, fallbackMessage: 'test', extraData: [] })
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
@@ -371,7 +371,7 @@ describe('LIVECHAT - triggers', function () {
 			await request
 				.post(api('livechat/triggers/webhook-test'))
 				.set(credentials)
-				.send({ webhookUrl: `${webhookUrl}/delay/2`, timeout: 1000, fallbackMessage: 'test', params: {} })
+				.send({ webhookUrl: `${webhookUrl}/delay/2`, timeout: 1000, fallbackMessage: 'test', extraData: [] })
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
@@ -379,16 +379,15 @@ describe('LIVECHAT - triggers', function () {
 					expect(res.body).to.have.property('response').to.be.a('string');
 				});
 		});
-		it('should return success when webhook returns success', async () => {
+		it('should fail when webhook returns an answer that doesnt match the format', async () => {
 			await request
 				.post(api('livechat/triggers/webhook-test'))
 				.set(credentials)
-				.send({ webhookUrl: `${webhookUrl}/status/200`, timeout: 5000, fallbackMessage: 'test', params: {} })
-				.expect(200)
+				.send({ webhookUrl: `${webhookUrl}/anything`, timeout: 5000, fallbackMessage: 'test', extraData: [] })
+				.expect(400)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('response').to.be.a('string');
-					expect(res.body).to.not.have.property('error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'error-invalid-webhook-response');
 				});
 		});
 	});

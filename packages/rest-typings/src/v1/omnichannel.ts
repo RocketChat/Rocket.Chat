@@ -26,6 +26,7 @@ import type {
 	ReportResult,
 	ReportWithUnmatchingElements,
 	SMSProviderResponse,
+	ILivechatTriggerActionResponse,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
@@ -3274,7 +3275,10 @@ type LivechatTriggerWebhookTestParams = {
 	webhookUrl: string;
 	timeout: number;
 	fallbackMessage: string;
-	params: Record<string, string>;
+	extraData: {
+		key: string;
+		value: string;
+	}[];
 };
 
 const LivechatTriggerWebhookTestParamsSchema = {
@@ -3289,8 +3293,21 @@ const LivechatTriggerWebhookTestParamsSchema = {
 		fallbackMessage: {
 			type: 'string',
 		},
-		params: {
-			type: 'object',
+		extraData: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					key: {
+						type: 'string',
+					},
+					value: {
+						type: 'string',
+					},
+				},
+				required: ['key', 'value'],
+				additionalProperties: false,
+			},
 			nullable: true,
 		},
 	},
@@ -3299,6 +3316,44 @@ const LivechatTriggerWebhookTestParamsSchema = {
 };
 
 export const isLivechatTriggerWebhookTestParams = ajv.compile<LivechatTriggerWebhookTestParams>(LivechatTriggerWebhookTestParamsSchema);
+
+type LivechatTriggerWebhookCallParams = {
+	token: string;
+	extraData?: {
+		key: string;
+		value: string;
+	}[];
+};
+
+const LivechatTriggerWebhookCallParamsSchema = {
+	type: 'object',
+	properties: {
+		token: {
+			type: 'string',
+		},
+		extraData: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					key: {
+						type: 'string',
+					},
+					value: {
+						type: 'string',
+					},
+				},
+				required: ['key', 'value'],
+				additionalProperties: false,
+			},
+			nullable: true,
+		},
+	},
+	required: ['token'],
+	additionalProperties: false,
+};
+
+export const isLivechatTriggerWebhookCallParams = ajv.compile<LivechatTriggerWebhookCallParams>(LivechatTriggerWebhookCallParamsSchema);
 
 export type OmnichannelEndpoints = {
 	'/v1/livechat/appearance': {
@@ -3784,7 +3839,10 @@ export type OmnichannelEndpoints = {
 		POST: (params: unknown) => SMSProviderResponse;
 	};
 	'/v1/livechat/triggers/webhook-test': {
-		POST: (params: LivechatTriggerWebhookTestParams) => { response: string; error?: string };
+		POST: (params: LivechatTriggerWebhookTestParams) => ILivechatTriggerActionResponse;
+	};
+	'/v1/livechat/triggers/:_id/call': {
+		POST: (params: LivechatTriggerWebhookCallParams) => ILivechatTriggerActionResponse;
 	};
 } & {
 	// EE
