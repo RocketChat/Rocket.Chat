@@ -2546,7 +2546,7 @@
   "leave-c_description": "チャネルから退出する権限",
   "leave-p": "プライベートグループから退出",
   "leave-p_description": "プライベートグループから退出する権限",
-  "Lets_get_you_new_one": "新たな挑戦をしてみましょう！",
+  "Lets_get_you_new_one_": "新たな挑戦をしてみましょう！",
   "List_of_Channels": "Channel一覧",
   "List_of_departments_for_forward": "転送が許可されている部署の一覧（オプション）",
   "List_of_departments_for_forward_description": "この部署からチャットを受信できる部署の制限リストを設定することを許可します",

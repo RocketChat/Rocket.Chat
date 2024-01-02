@@ -9572,6 +9572,7 @@ __metadata:
     "@types/strict-uri-encode": ^2.0.1
     "@types/string-strip-html": ^5.0.1
     "@types/supertest": ^2.0.15
+    "@types/supports-color": ~7.2.0
     "@types/textarea-caret": ^3.0.2
     "@types/ua-parser-js": ^0.7.38
     "@types/use-subscription": ^1.0.1
@@ -14081,6 +14082,13 @@ __metadata:
   dependencies:
     "@types/superagent": "*"
   checksum: 89c1983662f0ab20969b3a6c44344397fd222d0f78b282619aabbe817f7c88a64210fd2b8b8f075ea22a27084e30ebc287bc5105619cbbf9af7f008e77f6eb93
+  languageName: node
+  linkType: hard
+
+"@types/supports-color@npm:~7.2.0":
+  version: 7.2.1
+  resolution: "@types/supports-color@npm:7.2.1"
+  checksum: abf7d9348deadf5386cf5faec062a4132e647a179584f52cace87435248f520be73c58ac28618cf5684e6b0ed6bb635d5a975cc71ff613af7db2d5648557ef45
   languageName: node
   linkType: hard
 
