@@ -152,8 +152,6 @@ const computation = Tracker.autorun(() => {
 								}
 							}
 
-							handleTrackSettingsChange({ ...msg });
-
 							await callbacks.run('streamMessage', { ...msg, name: room.name || '' });
 
 							fireGlobalEvent('new-message', {
