@@ -17,14 +17,14 @@ export const GenericCard: React.FC<GenericCardProps> = ({ title, body, buttons, 
 	const cardId = useUniqueId();
 	const descriptionId = useUniqueId();
 
-	const iconType = {
-		[type || 'neutral']: true,
+	const iconType = type && {
+		[type]: true,
 	};
 
 	return (
 		<Card role='region' aria-labelledby={cardId} aria-describedby={descriptionId} {...props}>
 			<CardHeader>
-				{icon && <FramedIcon icon={icon} {...iconType} />}
+				{icon && <FramedIcon icon={icon} {...(type && iconType)} />}
 				<CardTitle id={cardId}>{title}</CardTitle>
 			</CardHeader>
 			<CardBody id={descriptionId}>{body}</CardBody>
