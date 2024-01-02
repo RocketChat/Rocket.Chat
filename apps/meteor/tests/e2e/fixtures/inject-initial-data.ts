@@ -73,6 +73,10 @@ export default async function injectInitialData() {
 				_id: 'SAML_Custom_Default_idp_slo_redirect_url',
 				value: 'http://localhost:8080/simplesaml/saml2/idp/SingleLogoutService.php',
 			},
+			{
+				_id: 'Accounts_OAuth_Google',
+				value: false,
+			},
 		].map((setting) =>
 			connection
 				.db()

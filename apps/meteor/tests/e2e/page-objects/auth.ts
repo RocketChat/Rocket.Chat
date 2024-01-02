@@ -24,6 +24,10 @@ export class Registration {
 		return this.page.locator('role=button[name="SAML"]');
 	}
 
+	get btnLoginWithGoogle(): Locator {
+		return this.page.locator('role=button[name="Sign in with Google"]');
+	}
+
 	get goToRegister(): Locator {
 		return this.page.locator('role=link[name="Create an account"]');
 	}
