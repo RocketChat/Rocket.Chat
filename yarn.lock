@@ -35707,6 +35707,7 @@ __metadata:
     "@types/chart.js": ^2.9.39
     "@types/js-yaml": ^4.0.8
     node-gyp: ^9.4.1
+    ts-node: ^10.9.1
     turbo: ~1.10.16
   languageName: unknown
   linkType: soft
