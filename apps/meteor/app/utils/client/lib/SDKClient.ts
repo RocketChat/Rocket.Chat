@@ -182,13 +182,15 @@ const createStreamManager = () => {
 		// We have to delete the stream first because waiting for the unsublist causes a race condition
 		// when trying to create a new stream right after stopping the old one.
 		const unsubList = proxyUnsubLists.get(`${streamName}/${key}`);
+		// turning the set into an array to avoid stopping events registered on a new stream
+		const unsubArray = unsubList ? Array.from(unsubList) : [];
 		const streamLiteral = `stream-${streamName}/${key}`;
 		const unsubscribe = streams.get(streamLiteral);
 		if (unsubscribe) {
 			unsubscribe();
 			streams.delete(streamLiteral);
 		}
-		unsubList?.forEach((stop) => stop());
+		unsubArray.forEach((stop) => stop());
 	};
 
 	return { stream, stopAll };
