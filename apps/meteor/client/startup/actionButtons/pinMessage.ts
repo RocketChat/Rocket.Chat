@@ -4,12 +4,13 @@ import { hasAtLeastOnePermission } from '../../../app/authorization/client';
 import { settings } from '../../../app/settings/client';
 import { MessageAction } from '../../../app/ui-utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
-import GenericModal from '../../components/GenericModal/index';
 import { imperativeModal } from '../../lib/imperativeModal';
 import { queryClient } from '../../lib/queryClient';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { dispatchToastMessage } from '../../lib/toast';
 import { messageArgs } from '../../lib/utils/messageArgs';
+
+import PinMessageModal from './modals/PinMessageModal';
 
 Meteor.startup(() => {
 	MessageAction.addButton({
@@ -33,16 +34,12 @@ Meteor.startup(() => {
 				}
 				onCloseModal();
 			};
-
 			imperativeModal.open({
-				component: GenericModal,
+				component: PinMessageModal,
 				props: {
-					title: 'Are you sure you want to pin this message?',
-					variant: 'info',
-					confirmText: 'Yes pin it',
+					message,
 					onConfirm,
-					onClose: onCloseModal,
-					onCancel: onCloseModal,
+					onCloseModal,
 				},
 			});
 		},
