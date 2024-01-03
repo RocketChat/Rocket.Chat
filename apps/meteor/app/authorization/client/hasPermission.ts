@@ -58,10 +58,6 @@ const createPermissionValidator =
 
 				const model = Models[roleScope];
 
-				// if (scopedRoles?.includes(roleId)) {
-				// 	return true;
-				// }
-
 				if (hasIsUserInRole(model)) {
 					return model.isUserInRole(userId, roleId, scope);
 				}
@@ -118,14 +114,15 @@ export const userHasAllPermission = (
 export const hasPermission = hasAllPermission;
 
 /**
- * This function is used to check if the user will have the permission after something happens.
+ * This function is used to check if the user will have the permission when given some roles.
  * For example, The user is creating a new channel and he wants to set read-only config to true.
  * This is a problem, set-readonly is a permission related with the scoped permissions `owner`
  * so the user cannot set this permission to true during the channel creation, because there is no room yet to be owned and used as scope, but is possible
  * during the channel update, which is weird.
+ * So, using this function, we can check if user will have a particular permission, for any given scoped role.
  *
  * @param permissions The permissions to check
- * @param scopedRoles The scoped roles to check to be included in the user roles
+ * @param scopedRoles The scoped roles to check
  * @returns If the user will have the permission
  */
 
