@@ -57,7 +57,7 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			const { webhookUrl, timeout, fallbackMessage, params: clientParams } = this.bodyParams;
+			const { webhookUrl, timeout, fallbackMessage, extraData: clientParams } = this.bodyParams;
 
 			const token = settings.get<string>('Livechat_secret_token');
 
