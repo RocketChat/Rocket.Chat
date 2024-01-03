@@ -59,6 +59,10 @@ API.v1.addRoute(
 				agents: Match.Maybe(Array),
 			});
 
+			if (Object.keys(this.bodyParams.department).length > 50) {
+				throw new Error('error-department-object-too-long');
+			}
+
 			const agents = this.bodyParams.agents ? { upsert: this.bodyParams.agents } : {};
 			const department = await LivechatEnterprise.saveDepartment(null, this.bodyParams.department as ILivechatDepartment, agents);
 

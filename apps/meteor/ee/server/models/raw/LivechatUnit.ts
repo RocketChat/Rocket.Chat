@@ -106,34 +106,27 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 		const savedDepartments = (await LivechatDepartment.findByParentId(_id, { projection: { _id: 1 } }).toArray()).map(({ _id }) => _id);
 		const departmentsToSave = departments.map(({ departmentId }) => departmentId);
 
-		// remove other departments
-		for await (const departmentId of savedDepartments) {
-			if (!departmentsToSave.includes(departmentId)) {
-				await LivechatDepartment.updateOne(
-					{ _id: departmentId },
-					{
-						$set: {
-							parentId: null,
-							ancestors: null,
-						},
+		await Promise.all([
+			LivechatDepartment.updateMany(
+				{ _id: { $in: savedDepartments.filter((departmentId) => !departmentsToSave.includes(departmentId)) } },
+				{
+					$set: {
+						parentId: null,
+						ancestors: null,
 					},
-				);
-			}
-		}
-
-		for await (const departmentId of departmentsToSave) {
-			await LivechatDepartment.updateOne(
-				{ _id: departmentId },
+				},
+			),
+			LivechatDepartment.updateMany(
+				{ _id: { $in: departmentsToSave } },
 				{
 					$set: {
 						parentId: _id,
 						ancestors,
 					},
 				},
-			);
-		}
-
-		await LivechatRooms.associateRoomsWithDepartmentToUnit(departmentsToSave, _id);
+			),
+			LivechatRooms.associateRoomsWithDepartmentToUnit(departmentsToSave, _id),
+		]);
 
 		return {
 			...record,

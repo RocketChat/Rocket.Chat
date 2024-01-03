@@ -149,6 +149,29 @@ import { IS_EE } from '../../../e2e/config/constants';
 			await deleteUser(user);
 		});
 
+		it('should create a unit with no departments if departments sent are already on other units', async () => {
+			const user = await createUser();
+			await createMonitor(user.username);
+			const department = await createDepartment();
+			await createUnit(user._id, user.username, [department._id]);
+
+			const { body } = await request
+				.post(api('livechat/units'))
+				.set(credentials)
+				.send({
+					unitData: { name: 'test', visibility: 'public', enabled: true, description: 'test' },
+					unitMonitors: [{ monitorId: user._id, username: user.username }],
+					unitDepartments: [{ departmentId: department._id }],
+				})
+				.expect(200);
+
+			expect(body).to.have.property('success', true);
+			expect(body).to.have.property('numDepartments', 0);
+
+			// cleanup
+			await deleteUser(user);
+		});
+
 		it('should return a unit with no monitors if a user who is not a monitor is passed', async () => {
 			await updatePermission('manage-livechat-units', ['admin']);
 			const user = await createUser();
@@ -249,22 +272,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 			// cleanup
 			await deleteUser(user);
-		});
-		it('should move the department to the latest unit that attempted to assign it', async () => {
-			const user = await createUser();
-			await createMonitor(user.username);
-			const department = await createDepartment();
-			const unit1 = await createUnit(user._id, user.username, [department._id]);
-			const unit2 = await createUnit(user._id, user.username, [department._id]);
-
-			const { body } = await request
-				.get(api(`livechat/units/${unit1._id}/departments`))
-				.set(credentials)
-				.expect(200);
-
-			expect(body).to.have.property('departments');
-			expect(body.departments).to.have.lengthOf(0);
-			expect(unit2.numDepartments).to.be.equal(1);
 		});
 		it('should remove the department from the unit if it is not passed in the request', async () => {
 			const user = await createUser();

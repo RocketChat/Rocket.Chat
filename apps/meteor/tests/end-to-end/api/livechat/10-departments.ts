@@ -181,7 +181,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 		});
 	});
 
-	describe('POST livechat/departments', () => {
+	describe('POST livechat/department', () => {
 		it('should return unauthorized error when the user does not have the necessary permission', async () => {
 			await updatePermission('manage-livechat-departments', []);
 			await request
@@ -255,6 +255,31 @@ import { IS_EE } from '../../../e2e/config/constants';
 						fallbackForwardDepartment: 'not a department id',
 					},
 				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+
+		it('should return an error when _id prop is being passed inside `department` key', async () => {
+			await request
+				.post(api('livechat/department'))
+				.set(credentials)
+				.send({
+					department: { _id: false, name: 'Test', enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'bla@bla' },
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+
+		it('should throw an error when department object has more than 75 keys', async () => {
+			const department: any = { name: 'Test', enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'bla@bla' };
+			for (let i = 0; i < 47; i++) {
+				department[`key${i}`] = 'value';
+			}
+
+			await request
+				.post(api('livechat/department'))
+				.set(credentials)
+				.send({ department })
 				.expect('Content-Type', 'application/json')
 				.expect(400);
 		});

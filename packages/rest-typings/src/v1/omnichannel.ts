@@ -29,6 +29,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
+import keywords from 'ajv-keywords';
 import type { WithId } from 'mongodb';
 
 import type { Deprecated } from '../helpers/Deprecated';
@@ -41,6 +42,8 @@ const ajv = new Ajv({
 	coerceTypes: true,
 	allowUnionTypes: true,
 });
+
+keywords(ajv, 'prohibited');
 
 type LivechatVisitorsInfo = {
 	visitorId: string;
@@ -619,6 +622,7 @@ const POSTLivechatDepartmentSchema = {
 				},
 			},
 			required: ['name', 'email', 'enabled', 'showOnRegistration', 'showOnOfflineForm'],
+			prohibited: ['_id'],
 			additionalProperties: true,
 		},
 		agents: {
