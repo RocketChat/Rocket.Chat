@@ -1,4 +1,4 @@
-import { isTotpInvalidError, isTotpRequiredError } from './utils';
+import { isTotpInvalidError, isTotpMaxAttemptsError, isTotpRequiredError } from './utils';
 
 type LoginError = globalThis.Error | Meteor.Error | Meteor.TypedError;
 
@@ -36,6 +36,15 @@ export const overrideLoginMethod = <TArgs extends any[]>(
 					}
 
 					Promise.all([import('../../../app/utils/lib/i18n'), import('../toast')]).then(([{ t }, { dispatchToastMessage }]) => {
+						if (isTotpMaxAttemptsError(error)) {
+							dispatchToastMessage({
+								type: 'error',
+								message: t('totp-max-attempts'),
+							});
+							callback?.(undefined);
+							return;
+						}
+
 						dispatchToastMessage({ type: 'error', message: t('Invalid_two_factor_code') });
 						callback?.(undefined);
 					});

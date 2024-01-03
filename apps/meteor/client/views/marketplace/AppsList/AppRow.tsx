@@ -1,7 +1,5 @@
 import type { App } from '@rocket.chat/core-typings';
-import { css } from '@rocket.chat/css-in-js';
-import { Badge, Box, Palette } from '@rocket.chat/fuselage';
-import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
+import { Badge, Card, CardBody, CardCol, CardControls, CardHeader, CardRow, CardTitle } from '@rocket.chat/fuselage';
 import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import type { KeyboardEvent, MouseEvent, ReactElement } from 'react';
 import React, { memo } from 'react';
@@ -13,14 +11,11 @@ import AppMenu from '../AppMenu';
 import BundleChips from '../BundleChips';
 
 // TODO: org props
-const AppRow = (props: App): ReactElement => {
+const AppRow = ({ className, ...props }: App & { className?: string }): ReactElement => {
 	const { name, id, shortDescription, iconFileData, marketplaceVersion, iconFileContent, installed, bundledIn, version } = props;
-	const breakpoints = useBreakpoints();
 
 	const router = useRouter();
 	const context = useRouteParameter('context');
-
-	const isMobile = !breakpoints.includes('md');
 
 	const handleNavigateToAppInfo = () => {
 		if (!context) {
@@ -50,65 +45,38 @@ const AppRow = (props: App): ReactElement => {
 		e.stopPropagation();
 	};
 
-	const hoverClass = css`
-		&:hover,
-		&:focus {
-			cursor: pointer;
-			outline: 0;
-			background-color: ${Palette.surface['surface-hover']} !important;
-		}
-	`;
-
 	const canUpdate = installed && version && marketplaceVersion && semver.lt(version, marketplaceVersion);
 
 	return (
-		<div role='listitem' key={id}>
-			<Box
+		<div role='listitem' className={className} key={id}>
+			<Card
+				horizontal
+				clickable
 				role='link'
 				aria-labelledby={`${id}-title`}
 				aria-describedby={`${id}-description`}
-				tabIndex={0}
 				onClick={handleNavigateToAppInfo}
 				onKeyDown={handleKeyDown}
-				display='flex'
-				flexDirection='row'
-				justifyContent='space-between'
-				alignItems='center'
-				mbe={8}
-				pb={8}
-				pi={16}
-				borderRadius='x4'
-				className={hoverClass}
-				bg='light'
+				tabIndex={0}
 			>
-				<Box display='flex' flexDirection='row' width='80%'>
-					<AppAvatar size='x40' mie={16} alignSelf='center' iconFileContent={iconFileContent} iconFileData={iconFileData} />
-					<Box id={`${id}-title`} display='flex' alignItems='center' fontScale='h5' withTruncatedText>
-						{name}
-					</Box>
-					<Box display='flex' alignItems='center'>
-						{bundledIn && Boolean(bundledIn.length) && (
-							<Box display='flex' alignItems='center' mis={16}>
-								<BundleChips bundledIn={bundledIn} />
-							</Box>
-						)}
-						{shortDescription && !isMobile && (
-							<Box id={`${id}-description`} is='span' mi={16} fontScale='c1'>
-								{shortDescription}
-							</Box>
-						)}
-					</Box>
-				</Box>
-				<Box display='flex' flexDirection='row' width='20%' alignItems='center' justifyContent='flex-end' onClick={preventClickPropagation}>
-					{canUpdate && (
-						<Box mie={8}>
-							<Badge small variant='primary' />
-						</Box>
-					)}
+				<CardRow>
+					<AppAvatar size='x40' iconFileContent={iconFileContent} iconFileData={iconFileData} />
+					<CardCol>
+						<CardHeader>
+							<CardTitle variant='h5' id={`${id}-title`}>
+								{name}
+							</CardTitle>
+							{Boolean(bundledIn.length) && <BundleChips bundledIn={bundledIn} />}
+						</CardHeader>
+						{shortDescription && <CardBody id={`${id}-description`}>{shortDescription}</CardBody>}
+					</CardCol>
+				</CardRow>
+				<CardControls onClick={preventClickPropagation}>
+					{canUpdate && <Badge small variant='primary' />}
 					<AppStatus app={props} isAppDetailsPage={false} installed={installed} />
-					<AppMenu app={props} isAppDetailsPage={false} mis={4} />
-				</Box>
-			</Box>
+					<AppMenu app={props} isAppDetailsPage={false} />
+				</CardControls>
+			</Card>
 		</div>
 	);
 };

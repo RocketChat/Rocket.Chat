@@ -82,7 +82,7 @@ export const fetchInquiry = (roomId: string): Promise<ILivechatInquiryRecord> =>
 	});
 };
 
-export const createDepartment = (agents?: { agentId: string }[], name?: string, enabled = true): Promise<ILivechatDepartment> => {
+export const createDepartment = (agents?: { agentId: string }[], name?: string, enabled = true, opts: Record<string, any> = {}): Promise<ILivechatDepartment> => {
 	return new Promise((resolve, reject) => {
 		request
 			.post(api('livechat/department'))
@@ -94,6 +94,7 @@ export const createDepartment = (agents?: { agentId: string }[], name?: string, 
 					showOnOfflineForm: true,
 					showOnRegistration: true,
 					email: 'a@b.com',
+					...opts,
 				},
 				agents,
 			})
