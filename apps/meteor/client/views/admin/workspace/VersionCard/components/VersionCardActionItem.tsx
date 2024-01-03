@@ -1,24 +1,21 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Box, FramedIcon } from '@rocket.chat/fuselage';
 import type { Keys } from '@rocket.chat/icons';
-import { FramedIcon } from '@rocket.chat/ui-client';
 import type { ReactElement, ReactNode } from 'react';
 import React from 'react';
 
 export type VersionActionItem = {
-	type: 'danger' | 'neutral';
+	danger?: boolean;
 	icon: Keys;
 	label: ReactNode;
 };
 
-type VersionCardActionItemProps = {
-	actionItem: VersionActionItem;
-};
+type VersionCardActionItemProps = VersionActionItem;
 
-const VersionCardActionItem = ({ actionItem }: VersionCardActionItemProps): ReactElement => {
+const VersionCardActionItem = ({ icon, label, danger }: VersionCardActionItemProps): ReactElement => {
 	return (
-		<Box display='flex' alignItems='center' color={actionItem.type === 'danger' ? 'danger' : 'secondary-info'} fontScale='p2m' mbe={4}>
-			<FramedIcon type={actionItem.type} icon={actionItem.icon} />
-			<Box mis={12}>{actionItem.label}</Box>
+		<Box display='flex' alignItems='center' color={danger ? 'danger' : 'secondary-info'} fontScale='p2m'>
+			<FramedIcon danger={danger} icon={icon} />
+			<Box mis={12}>{label}</Box>
 		</Box>
 	);
 };

@@ -171,6 +171,13 @@ const computation = Tracker.autorun(() => {
 							record.streamActive = true;
 							openedRoomsDependency.changed();
 						});
+
+					// when we receive a messages imported event we just clear the room history and fetch it again
+					Notifications.onRoom(record.rid, 'messagesImported', async () => {
+						await RoomHistoryManager.clear(record.rid);
+						await RoomHistoryManager.getMore(record.rid);
+					});
+
 					Notifications.onRoom(record.rid, 'deleteMessage', (msg) => {
 						ChatMessage.remove({ _id: msg._id });
 
@@ -208,6 +215,35 @@ const computation = Tracker.autorun(() => {
 							return ChatMessage.remove(query);
 						},
 					);
+					Notifications.onRoom(record.rid, 'messagesRead', ({ tmid, until }) => {
+						if (tmid) {
+							return ChatMessage.update(
+								{
+									tmid,
+									unread: true,
+								},
+								{ $unset: { unread: 1 } },
+								{ multi: true },
+							);
+						}
+						ChatMessage.update(
+							{
+								rid: record.rid,
+								unread: true,
+								ts: { $lt: until },
+								$or: [
+									{
+										tmid: { $exists: false },
+									},
+									{
+										tshow: true,
+									},
+								],
+							},
+							{ $unset: { unread: 1 } },
+							{ multi: true },
+						);
+					});
 				}
 			}
 
