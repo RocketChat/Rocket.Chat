@@ -416,8 +416,9 @@ export const saveUser = async function (userId, userData) {
 		updateUser.$set.language = userData.language;
 	}
 
-	if (typeof userData.requirePasswordChange !== 'undefined') {
-		updateUser.$set.requirePasswordChange = userData.requirePasswordChange;
+	updateUser.$set.requirePasswordChange = userData?.requirePasswordChange;
+	if (!userData?.requirePasswordChange) {
+		updateUser.$unset.requirePasswordChangeReason = 1;
 	}
 
 	if (typeof userData.verified === 'boolean') {
