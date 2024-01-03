@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/meteor",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "6.5.1",
+	"version": "6.5.2",
 	"private": true,
 	"author": {
 		"name": "Rocket.Chat",
@@ -77,7 +77,7 @@
 		"@rocket.chat/livechat": "workspace:^",
 		"@rocket.chat/mock-providers": "workspace:^",
 		"@settlin/spacebars-loader": "^1.0.9",
-		"@storybook/addon-a11y": "6.5.16",
+		"@storybook/addon-a11y": "6.5.26",
 		"@storybook/addon-essentials": "~6.5.16",
 		"@storybook/addon-interactions": "~6.5.16",
 		"@storybook/addon-postcss": "~2.0.0",
