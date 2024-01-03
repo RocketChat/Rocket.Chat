@@ -1,5 +1,13 @@
 # Change Log
 
+## 3.0.2
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.2
+- @rocket.chat/ui-contexts@3.0.2
+- @rocket.chat/ui-video-conf@3.0.2
+
 ## 3.0.1
 
 ### Patch Changes
