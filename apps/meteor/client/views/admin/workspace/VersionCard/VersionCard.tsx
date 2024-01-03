@@ -113,17 +113,15 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 			[
 				isOverLimits
 					? {
-							type: 'danger',
+							danger: true,
 							icon: 'warning',
 							label: t('Plan_limits_reached'),
 					  }
 					: {
-							type: 'neutral',
 							icon: 'check',
 							label: t('Operating_withing_plan_limits'),
 					  },
 				(isAirgapped || !versions) && {
-					type: 'neutral',
 					icon: 'warning',
 					label: (
 						<Trans i18nKey='Check_support_availability'>
@@ -136,7 +134,6 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 
 				versionStatus?.label !== 'outdated' &&
 					versionStatus?.expiration && {
-						type: 'neutral',
 						icon: 'check',
 						label: (
 							<Trans i18nKey='Version_supported_until' values={{ date: formatDate(versionStatus?.expiration) }}>
@@ -147,7 +144,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 						),
 					},
 				versionStatus?.label === 'outdated' && {
-					type: 'danger',
+					danger: true,
 					icon: 'warning',
 					label: (
 						<Trans i18nKey='Version_not_supported'>
@@ -158,17 +155,16 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 				},
 				isRegistered
 					? {
-							type: 'neutral',
 							icon: 'check',
 							label: t('Workspace_registered'),
 					  }
 					: {
-							type: 'danger',
+							danger: true,
 							icon: 'warning',
 							label: t('Workspace_not_registered'),
 					  },
 			].filter(Boolean) as VersionActionItem[]
-		).sort((a) => (a.type === 'danger' ? -1 : 1));
+		).sort((a) => (a.danger ? -1 : 1));
 	}, [isOverLimits, t, isAirgapped, versions, versionStatus?.label, versionStatus?.expiration, formatDate, isRegistered]);
 
 	if (isLoading && !licenseData) {
@@ -193,7 +189,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 			</CardCol>
 
 			<CardBody flexDirection='column'>
-				{actionItems.length > 0 && actionItems.map((item, index) => <VersionCardActionItem key={index} actionItem={item} />)}
+				{actionItems.length > 0 && actionItems.map((item, index) => <VersionCardActionItem key={index} {...item} />)}
 			</CardBody>
 
 			{actionButton && (
