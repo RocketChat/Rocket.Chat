@@ -43,7 +43,7 @@ Meteor.startup(() => {
 					variant: 'warning',
 					children: <PinMessageQuoteAttachment message={message} />,
 					icon: 'pin',
-					title: t('Pin_Message'),
+					title: t('pin-message'),
 					confirmText: t('Yes_pin_message'),
 					cancelText: t('Cancel'),
 					onConfirm,
