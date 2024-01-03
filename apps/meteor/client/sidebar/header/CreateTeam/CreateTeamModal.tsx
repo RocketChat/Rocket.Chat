@@ -16,7 +16,7 @@ import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import {
 	useEndpoint,
 	usePermission,
-	usePermissionWithScopedRoles,
+	usePermissionWithScopedAndUserRoles,
 	useSetting,
 	useToastMessageDispatch,
 	useTranslation,
@@ -46,7 +46,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const canCreateTeam = usePermission('create-team');
-	const canSetReadOnly = usePermissionWithScopedRoles('set-readonly', ['owner']);
+	const canSetReadOnly = usePermissionWithScopedAndUserRoles('set-readonly', ['owner']);
 
 	const checkTeamNameExists = useEndpoint('GET', '/v1/rooms.nameExists');
 	const createTeamAction = useEndpoint('POST', '/v1/teams.create');
