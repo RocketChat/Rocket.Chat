@@ -10,7 +10,10 @@ import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { dispatchToastMessage } from '../../lib/toast';
 import { messageArgs } from '../../lib/utils/messageArgs';
 
-import PinMessageModal from './modals/PinMessageModal';
+import PinMessageQuoteAttachment from './components/PinMessageQuoteAttachment';
+import GenericModal from '../../components/GenericModal';
+import React from 'react';
+import { t } from '../../../app/utils/lib/i18n';
 
 Meteor.startup(() => {
 	MessageAction.addButton({
@@ -21,7 +24,7 @@ Meteor.startup(() => {
 		context: ['pinned', 'message', 'message-mobile', 'threads', 'direct', 'videoconf', 'videoconf-threads'],
 		async action(_, props) {
 			const { message = messageArgs(this).msg } = props;
-			const onCloseModal = () => {
+			const onClose = () => {
 				imperativeModal.close();
 			};
 			const onConfirm = async (): Promise<void> => {
@@ -32,14 +35,20 @@ Meteor.startup(() => {
 				} catch (error) {
 					dispatchToastMessage({ type: 'error', message: error });
 				}
-				onCloseModal();
+				onClose();
 			};
 			imperativeModal.open({
-				component: PinMessageModal,
+				component: GenericModal,
 				props: {
-					message,
+					variant: 'warning',
+					children: <PinMessageQuoteAttachment message={message} />,
+					icon: 'pin',
+					title: t('Pin_Message'),
+					confirmText: t('Yes_pin_message'),
+					cancelText: t('Cancel'),
 					onConfirm,
-					onCloseModal,
+					onClose,
+					onCancel: onClose,
 				},
 			});
 		},
