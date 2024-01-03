@@ -1,3 +1,4 @@
+import { useSetting } from '@rocket.chat/ui-contexts';
 import React, { useEffect, Suspense } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
@@ -18,6 +19,19 @@ const AppLayout = () => {
 			document.body.classList.remove('color-primary-font-color', 'rcx-content--main');
 		};
 	}, []);
+
+	const customTheme = useSetting('theme-custom-css');
+
+	useEffect(() => {
+		if (customTheme) {
+			const desktopApp = window.RocketChatDesktop;
+
+			if (!desktopApp?.setSidebarCustomTheme) {
+				return;
+			}
+			desktopApp.setSidebarCustomTheme(customTheme as string);
+		}
+	}, [customTheme]);
 
 	useMessageLinkClicks();
 	useGoogleTagManager();
