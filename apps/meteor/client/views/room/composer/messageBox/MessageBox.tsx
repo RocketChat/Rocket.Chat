@@ -126,7 +126,7 @@ const MessageBox = ({
 
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
 	const messageComposerRef = useRef<HTMLElement>(null);
-	const shadowRef = useRef(null);
+	const shadowRef = useRef<HTMLDivElement>(null);
 
 	const storageID = `messagebox_${room._id}${tmid ? `-${tmid}` : ''}`;
 

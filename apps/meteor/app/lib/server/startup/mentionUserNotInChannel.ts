@@ -1,7 +1,7 @@
 import { api } from '@rocket.chat/core-services';
 import type { IMessage } from '@rocket.chat/core-typings';
-import { isDirectMessageRoom, isEditedMessage, isRoomFederated } from '@rocket.chat/core-typings';
-import { Subscriptions, Rooms, Users, Settings } from '@rocket.chat/models';
+import { isDirectMessageRoom, isEditedMessage, isOmnichannelRoom, isRoomFederated } from '@rocket.chat/core-typings';
+import { Subscriptions, Users } from '@rocket.chat/models';
 import type { ActionsBlock } from '@rocket.chat/ui-kit';
 import moment from 'moment';
 
@@ -10,6 +10,7 @@ import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { i18n } from '../../../../server/lib/i18n';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { settings } from '../../../settings/server';
 
 const APP_ID = 'mention-core';
 const getBlocks = (mentions: IMessage['mentions'], messageId: string, lng: string | undefined) => {
@@ -52,8 +53,8 @@ const getBlocks = (mentions: IMessage['mentions'], messageId: string, lng: strin
 };
 
 callbacks.add(
-	'beforeSaveMessage',
-	async (message) => {
+	'afterSaveMessage',
+	async (message, room) => {
 		// TODO: check if I need to test this 60 second rule.
 		// If the message was edited, or is older than 60 seconds (imported)
 		// the notifications will be skipped, so we can also skip this validation
@@ -66,8 +67,7 @@ callbacks.add(
 			return message;
 		}
 
-		const room = await Rooms.findOneById(message.rid);
-		if (!room || isDirectMessageRoom(room) || isRoomFederated(room) || room.t === 'l') {
+		if (isDirectMessageRoom(room) || isRoomFederated(room) || isOmnichannelRoom(room)) {
 			return message;
 		}
 
@@ -90,6 +90,7 @@ callbacks.add(
 			: hasPermissionAsync(message.u._id, 'add-user-to-any-p-room'));
 		const canDMUsers = await hasPermissionAsync(message.u._id, 'create-d'); // TODO: Perhaps check if user has DM with mentioned user (might be too expensive)
 		const canAddUsers = canAddUsersToThisRoom || canAddToAnyRoom;
+
 		const { language } = (await Users.findOneById(message.u._id)) || {};
 
 		const actionBlocks = getBlocks(mentionsUsersNotInChannel, message._id, language);
@@ -103,11 +104,9 @@ callbacks.add(
 			? 'You_mentioned___mentions__but_theyre_not_in_this_room'
 			: 'You_mentioned___mentions__but_theyre_not_in_this_room_You_can_ask_a_room_admin_to_add_them';
 
-		const { value: useRealName } = (await Settings.findOneById('UI_Use_Real_Name')) || {};
+		const useRealName = settings.get<boolean>('UI_Use_Real_Name');
 
-		const usernamesOrNames = mentionsUsersNotInChannel.map(
-			({ username, name }) => `*${getUserDisplayName(name, username, Boolean(useRealName))}*`,
-		);
+		const usernamesOrNames = mentionsUsersNotInChannel.map(({ username, name }) => `*${getUserDisplayName(name, username, useRealName)}*`);
 
 		const mentionsText = usernamesOrNames.join(', ');
 
