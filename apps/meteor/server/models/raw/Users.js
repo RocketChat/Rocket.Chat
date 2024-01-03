@@ -1628,7 +1628,7 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	// 2
-	async getNextAgent(ignoreAgentId, extraQuery) {
+	async getNextAgent(ignoreAgentId, extraQuery, isLivechatEnabledWhenAgentIdle) {
 		// TODO: Create class Agent
 		// fetch all unavailable agents, and exclude them from the selection
 		const unavailableAgents = (await this.getUnavailableAgents(null, extraQuery)).map((u) => u.username);
@@ -1638,7 +1638,7 @@ export class UsersRaw extends BaseRaw {
 			username: { $nin: unavailableAgents },
 		};
 
-		const query = queryStatusAgentOnline(extraFilters);
+		const query = queryStatusAgentOnline(extraFilters, isLivechatEnabledWhenAgentIdle);
 
 		const sort = {
 			livechatCount: 1,
