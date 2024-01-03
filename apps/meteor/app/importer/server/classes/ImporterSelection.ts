@@ -20,7 +20,7 @@ export class ImporterSelection implements IImporterSelection {
 	 * @param users the users which can be selected
 	 * @param channels the channels which can be selected
 	 * @param messageCount the number of messages
-	 * @param {SelectionMessage[]} messages the messages from this import (with only: _id, rid, u)
+	 * @param messages the messages from this import (with only: _id, rid, u)
 	 */
 	constructor(
 		name: string,
@@ -33,6 +33,6 @@ export class ImporterSelection implements IImporterSelection {
 		this.users = users;
 		this.channels = channels;
 		this.message_count = messageCount;
-		this.messages = messages || []; // not all importers use this
+		this.messages = messages || [];
 	}
 }

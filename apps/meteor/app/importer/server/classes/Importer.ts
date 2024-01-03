@@ -385,7 +385,6 @@ export class Importer {
 		const selectionMessages: SelectionMessage[] = messages.map((m) => new SelectionMessage(m._id, m.data.rid, m.data.u._id));
 
 		const selectionMessagesCount = await ImportData.countMessages();
-		// In the future, iterate the cursor?
 
 		if (hasDM) {
 			selectionChannels.push(new SelectionChannel('__directMessages__', t('Direct_Messages'), false, true, true, true));

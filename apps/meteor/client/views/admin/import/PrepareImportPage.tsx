@@ -1,5 +1,4 @@
-import type { IImport, IImporterSelection, Serialized } from '@rocket.chat/core-typings';
-import type { IImporterSelectionMessage } from '@rocket.chat/core-typings/dist/import/IImporterSelectionMessage';
+import type { IImport, IImporterSelection, Serialized, IImporterSelectionMessage } from '@rocket.chat/core-typings';
 import { Badge, Box, Button, ButtonGroup, Margins, ProgressBar, Throbber, Tabs } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useSafely } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
@@ -30,6 +29,7 @@ const waitFor = <T, U extends T>(fn: () => Promise<T>, predicate: (arg: T) => ar
 			fn().then((result) => {
 				if (predicate(result)) {
 					resolve(result);
+
 					return;
 				}
 
