@@ -112,17 +112,18 @@ const ImageGallery = () => {
 	const [, setSwiperInst] = useState<SwiperClass>();
 	const [zoomScale, setZoomScale] = useState(1);
 
-	const handleZoom = (ratio: 1 | -1) => {
+	const handleZoom = (ratio: number) => {
 		if (swiperRef.current?.swiper.zoom) {
 			const { scale, in: zoomIn } = swiperRef.current?.swiper.zoom;
-
 			setZoomScale(scale + ratio);
 			return zoomIn(scale + ratio);
 		}
 	};
 
-	const handleZoomIn = usePreventPropagation(() => handleZoom(1));
-	const handleZoomOut = usePreventPropagation(() => handleZoom(-1));
+	const handleZoomIn = () => handleZoom(1);
+	const handleZoomOut = () => handleZoom(-1);
+	const handleResize = () => handleZoom(-(zoomScale - 1));
+
 	const preventPropagation = usePreventPropagation();
 
 	const { isLoading, loadMore, images, onClose } = useImageGallery();
@@ -137,6 +138,7 @@ const ImageGallery = () => {
 				<div className='swiper-container' onClick={onClose}>
 					<div className='rcx-swiper-controls' onClick={preventPropagation}>
 						<ButtonGroup>
+							{zoomScale !== 1 && <IconButton icon='arrow-collapse' title='Resize' rcx-swiper-zoom-out onClick={handleResize} />}
 							<IconButton icon='h-bar' title='Zoom out' rcx-swiper-zoom-out onClick={handleZoomOut} disabled={zoomScale === 1} />
 							<IconButton icon='plus' title='Zoom in' rcx-swiper-zoom-in onClick={handleZoomIn} />
 							<IconButton icon='cross' title='Close' aria-label='Close gallery' className='rcx-swiper-close-button' onClick={onClose} />
