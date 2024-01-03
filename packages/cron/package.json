@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/cron",
-	"version": "0.0.19",
+	"version": "0.0.20",
 	"private": true,
 	"devDependencies": {
 		"@types/jest": "~29.5.3",

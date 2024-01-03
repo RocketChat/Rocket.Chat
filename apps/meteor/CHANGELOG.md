@@ -1,5 +1,31 @@
 # @rocket.chat/meteor
 
+## 6.4.9
+
+### Patch Changes
+
+- 7fac819c15: Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+- 6bcd75054c: Fixed conversations in queue being limited to 50 items
+  - @rocket.chat/core-typings@6.4.9
+  - @rocket.chat/rest-typings@6.4.9
+  - @rocket.chat/api-client@0.1.18
+  - @rocket.chat/omnichannel-services@0.0.24
+  - @rocket.chat/pdf-worker@0.0.24
+  - @rocket.chat/presence@0.0.24
+  - @rocket.chat/core-services@0.2.9
+  - @rocket.chat/cron@0.0.20
+  - @rocket.chat/gazzodown@2.0.9
+  - @rocket.chat/model-typings@0.1.9
+  - @rocket.chat/ui-contexts@2.0.9
+  - @rocket.chat/fuselage-ui-kit@2.0.9
+  - @rocket.chat/models@0.0.24
+  - @rocket.chat/ui-theming@0.1.0
+  - @rocket.chat/ui-client@2.0.9
+  - @rocket.chat/ui-video-conf@2.0.9
+  - @rocket.chat/web-ui-registration@2.0.9
+  - @rocket.chat/instance-status@0.0.24
+
 ## 6.4.8
 
 ### Patch Changes

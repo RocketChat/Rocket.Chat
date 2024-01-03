@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-contexts",
-	"version": "2.0.8",
+	"version": "2.0.9",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/core-typings": "workspace:^",

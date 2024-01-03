@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/meteor",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "6.4.8",
+	"version": "6.4.9",
 	"private": true,
 	"author": {
 		"name": "Rocket.Chat",
@@ -132,7 +132,7 @@
 		"@types/node": "^14.18.51",
 		"@types/node-gcm": "^1.0.1",
 		"@types/node-rsa": "^1.1.1",
-		"@types/nodemailer": "^6.4.8",
+		"@types/nodemailer": "^6.4.9",
 		"@types/oauth2-server": "^3.0.13",
 		"@types/parseurl": "^1.3.1",
 		"@types/photoswipe": "^4.1.2",

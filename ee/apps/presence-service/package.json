@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/presence-service",
 	"private": true,
-	"version": "0.2.17",
+	"version": "0.2.18",
 	"description": "Rocket.Chat Presence service",
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
