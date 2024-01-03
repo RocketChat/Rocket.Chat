@@ -1,6 +1,5 @@
-import type { ILicenseV3, LicenseLimitKind } from '../definition/ILicenseV3';
-import type { BehaviorWithContext } from '../definition/LicenseBehavior';
-import type { LicenseValidationOptions } from '../definition/LicenseValidationOptions';
+import type { ILicenseV3, LicenseLimitKind, BehaviorWithContext, LicenseValidationOptions } from '@rocket.chat/core-typings';
+
 import { isLimitAllowed, isBehaviorAllowed } from '../isItemAllowed';
 import type { LicenseManager } from '../license';
 import { logger } from '../logger';

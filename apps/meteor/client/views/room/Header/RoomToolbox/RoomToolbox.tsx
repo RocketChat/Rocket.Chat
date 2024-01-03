@@ -91,7 +91,7 @@ const RoomToolbox = ({ className }: RoomToolboxProps) => {
 			{featuredActions.map(mapToToolboxItem)}
 			{featuredActions.length > 0 && <HeaderToolboxDivider />}
 			{visibleActions.map(mapToToolboxItem)}
-			{(normalActions.length > 6 || roomToolboxExpanded) && !!hiddenActions.length && (
+			{(normalActions.length > 6 || !roomToolboxExpanded) && !!hiddenActions.length && (
 				<GenericMenu title={t('Options')} data-qa-id='ToolBox-Menu' sections={hiddenActions} placement='bottom-end' />
 			)}
 		</>

@@ -2,7 +2,6 @@ import type { ILivechatCustomField, Serialized } from '@rocket.chat/core-typings
 import type { SelectOption } from '@rocket.chat/fuselage';
 import {
 	FieldError,
-	Box,
 	Button,
 	ButtonGroup,
 	Field,
@@ -170,28 +169,24 @@ const EditCustomFields = ({ customFieldData }: { customFieldData?: Serialized<IL
 								</FieldRow>
 							</Field>
 							<Field>
-								<Box display='flex' flexDirection='row'>
+								<FieldRow>
 									<FieldLabel htmlFor={visibilityField}>{t('Visible')}</FieldLabel>
-									<FieldRow>
-										<Controller
-											name='visibility'
-											control={control}
-											render={({ field: { value, ...field } }) => <ToggleSwitch id={visibilityField} {...field} checked={value} />}
-										/>
-									</FieldRow>
-								</Box>
+									<Controller
+										name='visibility'
+										control={control}
+										render={({ field: { value, ...field } }) => <ToggleSwitch id={visibilityField} {...field} checked={value} />}
+									/>
+								</FieldRow>
 							</Field>
 							<Field>
-								<Box display='flex' flexDirection='row'>
+								<FieldRow>
 									<FieldLabel htmlFor={searchableField}>{t('Searchable')}</FieldLabel>
-									<FieldRow>
-										<Controller
-											name='searchable'
-											control={control}
-											render={({ field: { value, ...field } }) => <ToggleSwitch id={searchableField} {...field} checked={value} />}
-										/>
-									</FieldRow>
-								</Box>
+									<Controller
+										name='searchable'
+										control={control}
+										render={({ field: { value, ...field } }) => <ToggleSwitch id={searchableField} {...field} checked={value} />}
+									/>
+								</FieldRow>
 							</Field>
 							<Field>
 								<FieldLabel htmlFor={regexpField}>{t('Validation')}</FieldLabel>

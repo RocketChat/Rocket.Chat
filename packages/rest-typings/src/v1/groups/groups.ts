@@ -1,4 +1,4 @@
-import type { IMessage, IRoom, ITeam, IGetRoomRoles, IUser, IUpload, IIntegration, ISubscription } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ITeam, IGetRoomRoles, IUser, IUploadWithUser, IIntegration, ISubscription } from '@rocket.chat/core-typings';
 
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
 import type { GroupsAddAllProps } from './GroupsAddAllProps';
@@ -42,7 +42,7 @@ import type { GroupsUnarchiveProps } from './GroupsUnarchiveProps';
 export type GroupsEndpoints = {
 	'/v1/groups.files': {
 		GET: (params: GroupsFilesProps) => PaginatedResult<{
-			files: IUpload[];
+			files: IUploadWithUser[];
 		}>;
 	};
 	'/v1/groups.members': {

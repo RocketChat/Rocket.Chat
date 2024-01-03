@@ -55,13 +55,11 @@ const ActiveSessionsCard = (): ReactElement => {
 				}),
 			}}
 		>
-			<Box textAlign='center'>
-				<Box fontScale='h1' color={exceedLimit ? 'font-danger' : 'font-default'}>
+			<Box color='font-secondary-info'>
+				<Box fontScale='h1' color={exceedLimit ? 'font-danger' : 'font-default'} mbe={12}>
 					{used} / {total}
 				</Box>
-				<Box fontScale='p2' color='font-secondary-info' mbs={12}>
-					{available} {t('ActiveSessions_available')}
-				</Box>
+				{available} {t('ActiveSessions_available')}
 			</Box>
 		</FeatureUsageCard>
 	);

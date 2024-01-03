@@ -26,19 +26,14 @@ Accounts.registerLoginHandler('totp', function (options) {
 callbacks.add(
 	'onValidateLogin',
 	async (login) => {
-		if (login.methodName === 'verifyEmail') {
-			throw new Meteor.Error('verify-email', 'E-mail verified');
-		}
-
-		if (login.type === 'resume' || login.type === 'proxy' || (login.type === 'password' && login.methodName === 'resetPassword')) {
-			return login;
-		}
-		// CAS login doesn't yet support 2FA.
-		if (login.type === 'cas') {
-			return login;
-		}
-
-		if (!login.user) {
+		if (
+			!login.user ||
+			login.type === 'resume' ||
+			login.type === 'proxy' ||
+			login.type === 'cas' ||
+			(login.type === 'password' && login.methodName === 'resetPassword') ||
+			login.methodName === 'verifyEmail'
+		) {
 			return login;
 		}
 

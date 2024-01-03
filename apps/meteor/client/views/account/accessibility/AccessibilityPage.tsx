@@ -95,20 +95,18 @@ const AccessibilityPage = () => {
 							{themes.map(({ id, title, description }, index) => {
 								return (
 									<Field key={id} pbe={themes.length - 1 ? undefined : 'x28'} pbs={index === 0 ? undefined : 'x28'}>
-										<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+										<FieldRow>
 											<FieldLabel display='flex' alignItems='center' htmlFor={id}>
 												{t(title)}
 											</FieldLabel>
-											<FieldRow>
-												<Controller
-													control={control}
-													name='themeAppearence'
-													render={({ field: { onChange, value, ref } }) => (
-														<RadioButton id={id} ref={ref} onChange={() => onChange(id)} checked={value === id} />
-													)}
-												/>
-											</FieldRow>
-										</Box>
+											<Controller
+												control={control}
+												name='themeAppearence'
+												render={({ field: { onChange, value, ref } }) => (
+													<RadioButton id={id} ref={ref} onChange={() => onChange(id)} checked={value === id} />
+												)}
+											/>
+										</FieldRow>
 										<FieldHint mbs={12} style={{ whiteSpace: 'break-spaces' }}>
 											{t(description)}
 										</FieldHint>
@@ -134,18 +132,16 @@ const AccessibilityPage = () => {
 									<FieldDescription mb={12}>{t('Adjustable_font_size_description')}</FieldDescription>
 								</Field>
 								<Field>
-									<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+									<FieldRow>
 										<FieldLabel htmlFor={fontSizeId}>{t('Mentions_with_@_symbol')}</FieldLabel>
-										<FieldRow>
-											<Controller
-												control={control}
-												name='mentionsWithSymbol'
-												render={({ field: { onChange, value, ref } }) => (
-													<ToggleSwitch id={mentionsWithSymbolId} ref={ref} checked={value} onChange={onChange} />
-												)}
-											/>
-										</FieldRow>
-									</Box>
+										<Controller
+											control={control}
+											name='mentionsWithSymbol'
+											render={({ field: { onChange, value, ref } }) => (
+												<ToggleSwitch id={mentionsWithSymbolId} ref={ref} checked={value} onChange={onChange} />
+											)}
+										/>
+									</FieldRow>
 									<FieldDescription
 										className={css`
 											white-space: break-spaces;
@@ -168,15 +164,33 @@ const AccessibilityPage = () => {
 									</FieldRow>
 								</Field>
 								<Field>
-									<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+									<FieldRow>
 										<FieldLabel htmlFor={hideUsernamesId}>{t('Show_usernames')}</FieldLabel>
+										<Controller
+											name='hideUsernames'
+											control={control}
+											render={({ field: { value, onChange, ref } }) => (
+												<ToggleSwitch
+													id={hideUsernamesId}
+													ref={ref}
+													checked={!value}
+													onChange={(e) => onChange(!(e.target as HTMLInputElement).checked)}
+												/>
+											)}
+										/>
+									</FieldRow>
+									<FieldDescription>{t('Show_or_hide_the_username_of_message_authors')}</FieldDescription>
+								</Field>
+								{displayRolesEnabled && (
+									<Field>
 										<FieldRow>
+											<FieldLabel htmlFor={hideRolesId}>{t('Show_roles')}</FieldLabel>
 											<Controller
-												name='hideUsernames'
+												name='hideRoles'
 												control={control}
 												render={({ field: { value, onChange, ref } }) => (
 													<ToggleSwitch
-														id={hideUsernamesId}
+														id={hideRolesId}
 														ref={ref}
 														checked={!value}
 														onChange={(e) => onChange(!(e.target as HTMLInputElement).checked)}
@@ -184,28 +198,6 @@ const AccessibilityPage = () => {
 												)}
 											/>
 										</FieldRow>
-									</Box>
-									<FieldDescription>{t('Show_or_hide_the_username_of_message_authors')}</FieldDescription>
-								</Field>
-								{displayRolesEnabled && (
-									<Field>
-										<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-											<FieldLabel htmlFor={hideRolesId}>{t('Show_roles')}</FieldLabel>
-											<FieldRow>
-												<Controller
-													name='hideRoles'
-													control={control}
-													render={({ field: { value, onChange, ref } }) => (
-														<ToggleSwitch
-															id={hideRolesId}
-															ref={ref}
-															checked={!value}
-															onChange={(e) => onChange(!(e.target as HTMLInputElement).checked)}
-														/>
-													)}
-												/>
-											</FieldRow>
-										</Box>
 										<FieldDescription>{t('Show_or_hide_the_user_roles_of_message_authors')}</FieldDescription>
 									</Field>
 								)}

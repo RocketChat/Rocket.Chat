@@ -5355,7 +5355,7 @@
   "onboarding.component.form.action.pasteHere": "Beillesztés ide...",
   "onboarding.component.form.termsAndConditions": "Elfogadom a <1>használati feltételeket</1> és az <3>adatvédelmi irányelveket</3>",
   "onboarding.component.emailCodeFallback": "Nem kapott levelet? <1>Újraküldés</1> vagy <3>e-mail-cím megváltoztatása</3>",
-  "onboarding.page.form.title": "<1>Indítsuk el</1> a munkaterületét",
+  "onboarding.page.form.title": "Indítsuk el a munkaterületét",
   "onboarding.page.emailConfirmed.title": "E-mail-cím megerősítve!",
   "onboarding.page.emailConfirmed.subtitle": "Visszatérhet a Rocket.Chat alkalmazásához – már elindítottuk a munkaterületét.",
   "onboarding.page.checkYourEmail.title": "Nézze meg a leveleit",
