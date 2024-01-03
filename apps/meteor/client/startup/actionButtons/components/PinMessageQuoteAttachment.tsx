@@ -1,11 +1,11 @@
-import { Button, ButtonGroup, Field, FieldHint, Modal } from '@rocket.chat/fuselage';
+import type { MessageQuoteAttachment, IMessage } from '@rocket.chat/core-typings';
+import { Field, FieldHint } from '@rocket.chat/fuselage';
+import { useTranslation, useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+
 import { QuoteAttachment } from '../../../components/message/content/attachments/QuoteAttachment';
 import { useUserDisplayName } from '../../../hooks/useUserDisplayName';
-import { IMessage } from '@rocket.chat/core-typings';
-import { useTranslation, useUserAvatarPath } from '@rocket.chat/ui-contexts';
-import { MessageQuoteAttachment } from '@rocket.chat/core-typings';
 
 const PinMessageQuoteAttachment = ({ message }: { message: IMessage }): ReactElement => {
 	const t = useTranslation();

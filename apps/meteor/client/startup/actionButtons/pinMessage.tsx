@@ -1,19 +1,18 @@
 import { Meteor } from 'meteor/meteor';
+import React from 'react';
 
 import { hasAtLeastOnePermission } from '../../../app/authorization/client';
 import { settings } from '../../../app/settings/client';
 import { MessageAction } from '../../../app/ui-utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
+import { t } from '../../../app/utils/lib/i18n';
+import GenericModal from '../../components/GenericModal';
 import { imperativeModal } from '../../lib/imperativeModal';
 import { queryClient } from '../../lib/queryClient';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { dispatchToastMessage } from '../../lib/toast';
 import { messageArgs } from '../../lib/utils/messageArgs';
-
 import PinMessageQuoteAttachment from './components/PinMessageQuoteAttachment';
-import GenericModal from '../../components/GenericModal';
-import React from 'react';
-import { t } from '../../../app/utils/lib/i18n';
 
 Meteor.startup(() => {
 	MessageAction.addButton({
