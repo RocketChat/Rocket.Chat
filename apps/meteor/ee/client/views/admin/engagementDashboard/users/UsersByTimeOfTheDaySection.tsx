@@ -138,14 +138,14 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 									axisBottom={{
 										// TODO: Get it from theme
 										tickSize: 0,
-										tickPadding: 4,
+										tickPadding: 8,
 										tickRotation: 0,
 										format: (isoString): string => (dates?.length === 8 ? moment(isoString).format('ddd') : ''),
 									}}
 									axisLeft={{
 										// TODO: Get it from theme
 										tickSize: 0,
-										tickPadding: 4,
+										tickPadding: 8,
 										tickRotation: 0,
 										format: (hour): string =>
 											moment()
