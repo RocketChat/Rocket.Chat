@@ -28,7 +28,7 @@ const LayoutProvider: FC = ({ children }) => {
 
 	useEffect(() => {
 		const eventHandler = (event: MessageEvent<any>) => {
-			if (event.data?.event !== 'hide-actions') {
+			if (event.data?.event !== 'overrideUi') {
 				return;
 			}
 
