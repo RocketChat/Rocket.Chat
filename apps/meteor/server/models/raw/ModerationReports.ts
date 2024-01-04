@@ -19,11 +19,17 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 
 	modelIndexes(): IndexDescription[] | undefined {
 		return [
-			{ key: { '_hidden': 1, 'ts': 1, 'reports.ts': 1 } },
-			{ key: { userId: 1, ts: 1 } },
-			{ key: { 'message._id': 1, 'ts': 1 } },
-			{ key: { '_hidden': 1, 'message.u._id': 1, 'ts': 1 } },
-			{ key: { '_hidden': 1, 'reportedUser._id': 1, 'ts': 1 } },
+			// deprecated
+			// { key: { 'ts': 1, 'reports.ts': 1 } },
+			// { key: { 'message.u._id': 1, 'ts': 1 } },
+			// { key: { 'reportedUser._id': 1, 'ts': 1 } },
+			// { key: { 'message.rid': 1, 'ts': 1 } },
+			// { key: { 'message._id': 1, 'ts': 1 } },
+			// { key: { userId: 1, ts: 1 } },
+			{ key: { _hidden: 1, ts: 1 } },
+			{ key: { 'message._id': 1, '_hidden': 1, 'ts': 1 } },
+			{ key: { 'message.u._id': 1, '_hidden': 1, 'ts': 1 } },
+			{ key: { 'reportedUser._id': 1, '_hidden': 1, 'ts': 1 } },
 		];
 	}
 
