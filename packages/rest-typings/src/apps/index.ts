@@ -209,7 +209,7 @@ export type AppsEndpoints = {
 		};
 	};
 
-	'/apps/': {
+	'/apps': {
 		GET:
 			| ((params: { buildExternalUrl: 'true'; purchaseType?: 'buy' | 'subscription'; appId?: string; details?: 'true' | 'false' }) => {
 					url: string;
@@ -248,6 +248,12 @@ export type AppsEndpoints = {
 			downloadOnly?: boolean;
 		}) => {
 			app: App;
+		};
+	};
+
+	'/apps/downloadFromUrl': {
+		GET: (params: { url: string }) => {
+			buff: { data: number[] };
 		};
 	};
 
