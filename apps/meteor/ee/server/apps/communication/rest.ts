@@ -217,7 +217,7 @@ export class AppsRestApi {
 
 		// WE NEED TO MOVE EACH ENDPOINT HANDLER TO IT'S OWN FILE
 		this.api.addRoute(
-			'',
+			'' as '/apps', // this is the default route, but an empty path was confusing the type
 			{ authRequired: true, permissionsRequired: ['manage-apps'] },
 			{
 				async get() {
@@ -321,13 +321,15 @@ export class AppsRestApi {
 								});
 							}
 
-							buff = Buffer.from(await response.arrayBuffer());
+							buff = await response.buffer();
 						} catch (e: any) {
 							orchestrator.getRocketChatLogger().error('Error getting the app from url:', e.response.data);
 							return API.v1.internalError();
 						}
 
 						if (this.bodyParams.downloadOnly) {
+							apiDeprecationLogger.parameter(this.request.route, 'downloadOnly', '7.0.0', this.response);
+
 							return API.v1.success({ buff });
 						}
 					} else if (this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
