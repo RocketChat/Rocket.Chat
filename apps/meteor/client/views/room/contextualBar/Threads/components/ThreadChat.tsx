@@ -1,6 +1,6 @@
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
-import { Box, CheckBox, Field } from '@rocket.chat/fuselage';
+import { Box, CheckBox, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useMethod, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import React, { useState, useEffect, useCallback } from 'react';
@@ -101,7 +101,6 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 
 				<RoomComposer>
 					<ComposerContainer
-						rid={mainMessage.rid}
 						tmid={mainMessage._id}
 						subscription={subscription}
 						onSend={handleSend}
@@ -111,18 +110,18 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 						onUploadFiles={handleUploadFiles}
 						tshow={sendToChannel}
 					>
-						<Field>
-							<Field.Row marginBlock={8}>
+						<Field marginBlock={8}>
+							<FieldRow justifyContent='initial'>
 								<CheckBox
 									id={sendToChannelID}
 									checked={sendToChannel}
 									onChange={() => setSendToChannel((checked) => !checked)}
 									name='alsoSendThreadToChannel'
 								/>
-								<Field.Label htmlFor={sendToChannelID} color='annotation' fontScale='p2'>
+								<FieldLabel mis='x8' htmlFor={sendToChannelID} color='annotation' fontScale='p2'>
 									{t('Also_send_to_channel')}
-								</Field.Label>
-							</Field.Row>
+								</FieldLabel>
+							</FieldRow>
 						</Field>
 					</ComposerContainer>
 				</RoomComposer>

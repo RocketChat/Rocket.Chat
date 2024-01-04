@@ -19,8 +19,19 @@ COPY ./packages/rest-typings/dist packages/rest-typings/dist
 COPY ./packages/model-typings/package.json packages/model-typings/package.json
 COPY ./packages/model-typings/dist packages/model-typings/dist
 
+COPY ./packages/jwt/package.json packages/jwt/package.json
+COPY ./packages/jwt/dist packages/jwt/dist
+
 COPY ./packages/models/package.json packages/models/package.json
 COPY ./packages/models/dist packages/models/dist
+
+COPY ./packages/logger/package.json packages/logger/package.json
+COPY ./packages/logger/dist packages/logger/dist
+
+COPY ./packages/server-cloud-communication/ packages/server-cloud-communication/
+
+COPY ./ee/packages/license/package.json packages/license/package.json
+COPY ./ee/packages/license/dist packages/license/dist
 
 COPY ./ee/packages/omnichannel-services/package.json ee/packages/omnichannel-services/package.json
 COPY ./ee/packages/omnichannel-services/dist ee/packages/omnichannel-services/dist
@@ -31,8 +42,8 @@ COPY ./ee/packages/pdf-worker/dist ee/packages/pdf-worker/dist
 COPY ./packages/tools/package.json packages/tools/package.json
 COPY ./packages/tools/dist packages/tools/dist
 
-COPY ./packages/logger/package.json packages/logger/package.json
-COPY ./packages/logger/dist packages/logger/dist
+COPY ./packages/ui-kit/package.json packages/ui-kit/package.json
+COPY ./packages/ui-kit/dist packages/ui-kit/dist
 
 COPY ./ee/apps/${SERVICE}/dist .
 
@@ -41,6 +52,7 @@ COPY ./yarn.lock .
 COPY ./.yarnrc.yml .
 COPY ./.yarn/plugins .yarn/plugins
 COPY ./.yarn/releases .yarn/releases
+COPY ./.yarn/patches .yarn/patches
 COPY ./ee/apps/${SERVICE}/package.json ee/apps/${SERVICE}/package.json
 
 ENV NODE_ENV=production \

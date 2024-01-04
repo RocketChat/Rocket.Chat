@@ -1,11 +1,11 @@
-import { Box, Button, ButtonGroup, Margins, TextInput, Field, IconButton } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Margins, TextInput, Field, FieldLabel, FieldRow, IconButton } from '@rocket.chat/fuselage';
 import { useSetModal, useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, SyntheticEvent } from 'react';
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
 
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import GenericModal from '../../../components/GenericModal';
-import { useFileInput } from '../../../hooks/useFileInput';
+import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 import { validate, createSoundData } from './lib';
 
 type EditSoundProps = {
@@ -114,23 +114,23 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 		));
 	}, [_id, close, deleteCustomSound, dispatchToastMessage, onChange, setModal, t]);
 
-	const [clickUpload] = useFileInput(handleChangeFile, 'audio/mp3');
+	const [clickUpload] = useSingleFileInput(handleChangeFile, 'audio/mp3');
 
 	return (
 		<>
 			<ContextualbarScrollableContent {...props}>
 				<Field>
-					<Field.Label>{t('Name')}</Field.Label>
-					<Field.Row>
+					<FieldLabel>{t('Name')}</FieldLabel>
+					<FieldRow>
 						<TextInput
 							value={name}
 							onChange={(e: SyntheticEvent<HTMLInputElement>): void => setName(e.currentTarget.value)}
 							placeholder={t('Name')}
 						/>
-					</Field.Row>
+					</FieldRow>
 				</Field>
 				<Field>
-					<Field.Label alignSelf='stretch'>{t('Sound_File_mp3')}</Field.Label>
+					<FieldLabel alignSelf='stretch'>{t('Sound_File_mp3')}</FieldLabel>
 					<Box display='flex' flexDirection='row' mbs='none'>
 						<Margins inline={4}>
 							<IconButton icon='upload' secondary onClick={clickUpload} />

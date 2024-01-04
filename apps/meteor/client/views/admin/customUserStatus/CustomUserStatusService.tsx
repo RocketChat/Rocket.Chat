@@ -11,16 +11,17 @@ import {
 	StatesSubtitle,
 	ToggleSwitch,
 } from '@rocket.chat/fuselage';
-import { useEndpoint, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import React from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 
 import { ContextualbarContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
-import { useActiveConnections } from './hooks/useActiveConnections';
+import { useActiveConnections } from '../../hooks/useActiveConnections';
 
 const CustomUserStatusService = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const result = useActiveConnections();
 	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
 	const togglePresenceServiceEndpoint = useEndpoint('POST', '/v1/presence.enableBroadcast');
@@ -81,13 +82,16 @@ const CustomUserStatusService = () => {
 					{license?.isEnterprise ? (
 						<>
 							<Box fontScale='p2' mb={8}>
-								{t('Enterprise_cap_description')}
+								{t('Premium_cap_description')}
 							</Box>
 							<Box fontScale='p2' mb={8}>
-								{t('Larger_amounts_of_active_connections')}{' '}
-								<Box is='a' href='https://docs.rocket.chat/deploy/scaling-rocket.chat' target='_blank' color='info'>
-									{t('multiple_instance_solutions')}
-								</Box>
+								<Trans i18nKey='Larger_amounts_of_active_connections'>
+									For larger amounts of active connections you can consider our
+									<Box is='a' href='https://docs.rocket.chat/deploy/scaling-rocket.chat' target='_blank' color='info'>
+										multiple instance solutions
+									</Box>
+									.
+								</Trans>
 							</Box>
 						</>
 					) : (
@@ -96,7 +100,7 @@ const CustomUserStatusService = () => {
 								{t('Community_cap_description')}
 							</Box>
 							<Box fontScale='p2' mb={8}>
-								{t('Enterprise_cap_description')}
+								{t('Premium_cap_description')}
 							</Box>
 						</>
 					)}
@@ -106,7 +110,7 @@ const CustomUserStatusService = () => {
 				<ContextualbarFooter borderBlockStartWidth='default' borderBlockColor='extra-light'>
 					<ButtonGroup stretch vertical>
 						<Button primary width='100%' is='a' href='https://www.rocket.chat/enterprise' target='_blank'>
-							{t('More_about_Enterprise_Edition')}
+							{t('More_about_Premium_plans')}
 						</Button>
 					</ButtonGroup>
 				</ContextualbarFooter>

@@ -236,7 +236,8 @@ describe('[Subscriptions]', function () {
 			before(async () => {
 				user = await createUser({ username: 'testthread123', password: 'testthread123' });
 				threadUserCredentials = await login('testthread123', 'testthread123');
-				request
+
+				const res = await request
 					.post(api('chat.sendMessage'))
 					.set(threadUserCredentials)
 					.send({
@@ -244,14 +245,13 @@ describe('[Subscriptions]', function () {
 							rid: testChannel._id,
 							msg: 'Starting a Thread',
 						},
-					})
-					.end((_, res) => {
-						threadId = res.body.message._id;
 					});
+
+				threadId = res.body.message._id;
 			});
 
-			after((done) => {
-				deleteUser(user).then(done);
+			after(async () => {
+				await deleteUser(user);
 			});
 
 			it('should mark threads as read', async () => {

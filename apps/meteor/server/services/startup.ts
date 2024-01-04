@@ -16,6 +16,7 @@ import { LDAPService } from './ldap/service';
 import { MessageService } from './messages/service';
 import { MeteorService } from './meteor/service';
 import { NPSService } from './nps/service';
+import { OmnichannelAnalyticsService } from './omnichannel-analytics/service';
 import { OmnichannelIntegrationService } from './omnichannel-integrations/service';
 import { OmnichannelVoipService } from './omnichannel-voip/service';
 import { OmnichannelService } from './omnichannel/service';
@@ -25,7 +26,7 @@ import { SAUMonitorService } from './sauMonitor/service';
 import { SettingsService } from './settings/service';
 import { TeamService } from './team/service';
 import { TranslationService } from './translation/service';
-import { UiKitCoreApp } from './uikit-core-app/service';
+import { UiKitCoreAppService } from './uikit-core-app/service';
 import { UploadService } from './upload/service';
 import { VideoConfService } from './video-conference/service';
 import { VoipService } from './voip/service';
@@ -47,7 +48,7 @@ api.registerService(new VoipService(db));
 api.registerService(new OmnichannelService());
 api.registerService(new OmnichannelVoipService());
 api.registerService(new TeamService());
-api.registerService(new UiKitCoreApp());
+api.registerService(new UiKitCoreAppService());
 api.registerService(new PushService());
 api.registerService(new DeviceManagementService());
 api.registerService(new VideoConfService());
@@ -57,6 +58,7 @@ api.registerService(new TranslationService());
 api.registerService(new SettingsService());
 api.registerService(new OmnichannelIntegrationService());
 api.registerService(new ImportService());
+api.registerService(new OmnichannelAnalyticsService());
 
 // if the process is running in micro services mode we don't need to register services that will run separately
 if (!isRunningMs()) {

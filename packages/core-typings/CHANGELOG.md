@@ -1,5 +1,176 @@
 # @rocket.chat/core-typings
 
+## 6.5.2
+
+## 6.5.1
+
+### Patch Changes
+
+- c2b224fd82: Exceeding API calls when sending OTR messages
+
+## 6.5.0
+
+### Minor Changes
+
+- c0ef13a0bf: Added `push` statistic, containing three bits. Each bit represents a boolean:
+  ```
+  1 1 1
+  | | |
+  | | +- push enabled = 0b1 = 1
+  | +--- push gateway enabled = 0b10 = 2
+  +----- push gateway changed = 0b100 = 4
+  ```
+- 92613680b7: Added option to select between two script engine options for the integrations
+- ec1b2b9846: Create a deployment fingerprint to identify possible deployment changes caused by database cloning. A question to the admin will confirm if it's a regular deployment change or an intent of a new deployment and correct identification values as needed.
+  The fingerprint is composed by `${siteUrl}${dbConnectionString}` and hashed via `sha256` in `base64`.
+  An environment variable named `AUTO_ACCEPT_FINGERPRINT`, when set to `true`, can be used to auto-accept an expected fingerprint change as a regular deployment update.
+- 5f81a0f3cb: Implemented the License library, it is used to handle the functionality like expiration date, modules, limits, etc.
+  Also added a version v3 of the license, which contains an extended list of features.
+  v2 is still supported, since we convert it to v3 on the fly.
+
+### Patch Changes
+
+- dea1fe9191: chore: Calculate & Store MAC stats
+  Added new info to the stats: `omnichannelContactsBySource`, `uniqueContactsOfLastMonth`, `uniqueContactsOfLastWeek`, `uniqueContactsOfYesterday`
+- 5b9d6883bf: feat: Improve UI when MAC limits are reached
+  feat: Limit endpoints on MAC limit reached
+- dea1fe9191: feat: Disable and annonimize visitors instead of removing
+
+## 6.5.0-rc.19
+
+## 6.5.0-rc.18
+
+## 6.5.0-rc.17
+
+## 6.5.0-rc.16
+
+## 6.5.0-rc.15
+
+## 6.5.0-rc.14
+
+## 6.5.0-rc.13
+
+## 6.5.0-rc.12
+
+## 6.5.0-rc.11
+
+## 6.5.0-rc.10
+
+## 6.5.0-rc.9
+
+## 6.5.0-rc.8
+
+## 6.5.0-rc.7
+
+## 6.5.0-rc.6
+
+## 6.5.0-rc.5
+
+## 6.5.0-rc.4
+
+## 6.5.0-rc.3
+
+## 6.5.0-rc.2
+
+## 6.5.0-rc.1
+
+## 6.5.0-rc.0
+
+### Minor Changes
+
+- c0ef13a0bf: Added `push` statistic, containing three bits. Each bit represents a boolean:
+  ```
+  1 1 1
+  | | |
+  | | +- push enabled = 0b1 = 1
+  | +--- push gateway enabled = 0b10 = 2
+  +----- push gateway changed = 0b100 = 4
+  ```
+- 92613680b7: Added option to select between two script engine options for the integrations
+- ec1b2b9846: Create a deployment fingerprint to identify possible deployment changes caused by database cloning. A question to the admin will confirm if it's a regular deployment change or an intent of a new deployment and correct identification values as needed.
+  The fingerprint is composed by `${siteUrl}${dbConnectionString}` and hashed via `sha256` in `base64`.
+  An environment variable named `AUTO_ACCEPT_FINGERPRINT`, when set to `true`, can be used to auto-accept an expected fingerprint change as a regular deployment update.
+- 5f81a0f3cb: Implemented the License library, it is used to handle the functionality like expiration date, modules, limits, etc.
+  Also added a version v3 of the license, which contains an extended list of features.
+  v2 is still supported, since we convert it to v3 on the fly.
+
+### Patch Changes
+
+- dea1fe9191: chore: Calculate & Store MAC stats
+  Added new info to the stats: `omnichannelContactsBySource`, `uniqueContactsOfLastMonth`, `uniqueContactsOfLastWeek`, `uniqueContactsOfYesterday`
+- 5b9d6883bf: feat: Improve UI when MAC limits are reached
+  feat: Limit endpoints on MAC limit reached
+- dea1fe9191: feat: Disable and annonimize visitors instead of removing
+
+## 6.4.8
+
+## 6.4.7
+
+## 6.4.6
+
+## 6.4.5
+
+## 6.4.4
+
+## 6.4.3
+
+## 6.4.2
+
+## 6.4.1
+
+## 6.4.0
+
+### Minor Changes
+
+- 239a34e877: new: ring mobile users on direct conference calls
+- 4186eecf05: Introduce the ability to report an user
+- ebab8c4dd8: Added Reports Metrics Dashboard to Omnichannel
+- 1041d4d361: Added option to select between two script engine options for the integrations
+
+### Patch Changes
+
+- 203304782f: Fixed `overrideDestinationChannelEnabled` treated as a required param in `integrations.create` and `integration.update` endpoints
+- ba24f3c21f: Fixed `default` field not being returned from the `setDefault` endpoints when setting to false
+- 61128364d6: Fixes a problem where the calculated time for considering the visitor abandonment was the first message from the visitor and not the visitor's reply to the agent.
+- d45365436e: Use group filter when set to LDAP sync process
+
+## 6.4.0-rc.5
+
+### Minor Changes
+
+- 1041d4d361: Added option to select between two script engine options for the integrations
+
+## 6.4.0-rc.4
+
+## 6.4.0-rc.3
+
+## 6.4.0-rc.2
+
+## 6.4.0-rc.1
+
+## 6.4.0-rc.0
+
+### Minor Changes
+
+- 239a34e877: new: ring mobile users on direct conference calls
+- 4186eecf05: Introduce the ability to report an user
+- ebab8c4dd8: Added Reports Metrics Dashboard to Omnichannel
+
+### Patch Changes
+
+- 203304782f: Fixed `overrideDestinationChannelEnabled` treated as a required param in `integrations.create` and `integration.update` endpoints
+- ba24f3c21f: Fixed `default` field not being returned from the `setDefault` endpoints when setting to false
+- 61128364d6: Fixes a problem where the calculated time for considering the visitor abandonment was the first message from the visitor and not the visitor's reply to the agent.
+- d45365436e: Use group filter when set to LDAP sync process
+
+## 6.3.8
+
+## 6.3.7
+
+## 6.3.6
+
+## 6.3.5
+
 ## 6.3.4
 
 ## 6.3.3

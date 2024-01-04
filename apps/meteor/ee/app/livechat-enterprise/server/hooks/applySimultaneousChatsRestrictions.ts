@@ -3,7 +3,6 @@ import { LivechatDepartment } from '@rocket.chat/models';
 
 import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
-import { cbLogger } from '../lib/logger';
 
 callbacks.add(
 	'livechat.applySimultaneousChatRestrictions',
@@ -12,11 +11,10 @@ callbacks.add(
 			const departmentLimit =
 				(
 					await LivechatDepartment.findOneById<Pick<ILivechatDepartment, 'maxNumberSimultaneousChat'>>(departmentId, {
-						projection: { maxNumberSimultaneousChats: 1 },
+						projection: { maxNumberSimultaneousChat: 1 },
 					})
 				)?.maxNumberSimultaneousChat || 0;
 			if (departmentLimit > 0) {
-				cbLogger.debug(`Applying department filters. Max chats per department ${departmentLimit}`);
 				return { $match: { 'queueInfo.chats': { $gte: Number(departmentLimit) } } };
 			}
 		}
@@ -48,8 +46,6 @@ callbacks.add(
 				  }
 				: // dummy filter meaning: don't match anything
 				  { _id: '' };
-
-		cbLogger.debug(`Applying agent & global filters. Max number of chats allowed to all agents by setting: ${maxChatsPerSetting}`);
 
 		return { $match: { $or: [agentFilter, globalFilter] } };
 	},

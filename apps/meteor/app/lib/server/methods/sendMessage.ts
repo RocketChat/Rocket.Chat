@@ -82,7 +82,7 @@ export async function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMe
 		const room = await canSendMessageAsync(rid, { uid, username: user.username, type: user.type });
 
 		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
-		return sendMessage(user, message, room, false, previewUrls);
+		return await sendMessage(user, message, room, false, previewUrls);
 	} catch (err: any) {
 		SystemLogger.error({ msg: 'Error sending message:', err });
 
@@ -107,7 +107,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	sendMessage(message, previewUrls) {
+	async sendMessage(message, previewUrls) {
 		check(message, Object);
 
 		const uid = Meteor.userId();
@@ -118,7 +118,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		try {
-			return executeSendMessage(uid, message, previewUrls);
+			return await executeSendMessage(uid, message, previewUrls);
 		} catch (error: any) {
 			if ((error.error || error.message) === 'error-not-allowed') {
 				throw new Meteor.Error(error.error || error.message, error.reason, {

@@ -626,7 +626,6 @@ const RoomBody = (): ReactElement => {
 							</div>
 							<RoomComposer>
 								<ComposerContainer
-									rid={room._id}
 									subscription={subscription}
 									onResize={handleComposerResize}
 									onNavigateToPreviousMessage={handleNavigateToPreviousMessage}

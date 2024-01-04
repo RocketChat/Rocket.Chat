@@ -130,5 +130,11 @@ declare module 'meteor/meteor' {
 				...args: StringifyBuffers<Parameters<TServerMethods[TMethodName]>>
 			) => ReturnType<TServerMethods[TMethodName]> | Promise<ReturnType<TServerMethods[TMethodName]>>;
 		}): void;
+
+		const AppCache:
+			| {
+					config: (config: { onlineOnly: string[] }) => void;
+			  }
+			| undefined;
 	}
 }

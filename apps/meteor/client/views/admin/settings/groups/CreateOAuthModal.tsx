@@ -1,4 +1,4 @@
-import { TextInput, Field, Box } from '@rocket.chat/fuselage';
+import { TextInput, Field, FieldLabel, FieldRow, FieldError, Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, FormEvent, SyntheticEvent } from 'react';
 import React, { useState } from 'react';
@@ -34,8 +34,8 @@ const CreateOAuthModal = ({ onConfirm, onClose }: CreateOAuthModalProps): ReactE
 			onConfirm={handleConfirm}
 		>
 			<Field>
-				<Field.Label>{t('Give_a_unique_name_for_the_custom_oauth')}</Field.Label>
-				<Field.Row>
+				<FieldLabel>{t('Give_a_unique_name_for_the_custom_oauth')}</FieldLabel>
+				<FieldRow>
 					<TextInput
 						error={error}
 						placeholder={t('Custom_oauth_unique_name')}
@@ -45,8 +45,8 @@ const CreateOAuthModal = ({ onConfirm, onClose }: CreateOAuthModalProps): ReactE
 							setError('');
 						}}
 					/>
-				</Field.Row>
-				{error && <Field.Error>{error}</Field.Error>}
+				</FieldRow>
+				{error && <FieldError>{error}</FieldError>}
 			</Field>
 		</GenericModal>
 	);

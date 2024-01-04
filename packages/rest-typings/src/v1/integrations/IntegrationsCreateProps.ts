@@ -1,4 +1,4 @@
-import type { OutgoingIntegrationEvent } from '@rocket.chat/core-typings';
+import type { OutgoingIntegrationEvent, IntegrationScriptEngine } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 const ajv = new Ajv();
@@ -16,6 +16,7 @@ export type IntegrationsCreateProps =
 			alias?: string;
 			avatar?: string;
 			emoji?: string;
+			scriptEngine?: IntegrationScriptEngine;
 	  }
 	| {
 			type: 'webhook-outgoing';
@@ -44,6 +45,7 @@ export type IntegrationsCreateProps =
 			alias?: string;
 			avatar?: string;
 			emoji?: string;
+			scriptEngine?: IntegrationScriptEngine;
 	  };
 
 const integrationsCreateSchema = {
@@ -93,6 +95,10 @@ const integrationsCreateSchema = {
 					nullable: true,
 				},
 				emoji: {
+					type: 'string',
+					nullable: true,
+				},
+				scriptEngine: {
 					type: 'string',
 					nullable: true,
 				},
@@ -193,6 +199,10 @@ const integrationsCreateSchema = {
 					nullable: true,
 				},
 				emoji: {
+					type: 'string',
+					nullable: true,
+				},
+				scriptEngine: {
 					type: 'string',
 					nullable: true,
 				},

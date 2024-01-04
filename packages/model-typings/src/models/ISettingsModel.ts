@@ -17,6 +17,11 @@ export interface ISettingsModel extends IBaseModel<ISetting> {
 		value: (ISetting['value'] extends undefined ? never : ISetting['value']) | null,
 	): Promise<Document | UpdateResult>;
 
+	resetValueById(
+		_id: string,
+		value?: (ISetting['value'] extends undefined ? never : ISetting['value']) | null,
+	): Promise<Document | UpdateResult | undefined>;
+
 	incrementValueById(_id: ISetting['_id'], value?: number): Promise<Document | UpdateResult>;
 
 	updateOptionsById<T extends ISetting = ISetting>(

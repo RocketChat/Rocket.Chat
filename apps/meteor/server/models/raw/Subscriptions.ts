@@ -1,4 +1,13 @@
-import type { IRole, IRoom, ISubscription, IUser, RocketChatRecordDeleted, RoomType, SpotlightUser } from '@rocket.chat/core-typings';
+import type {
+	AtLeast,
+	IRole,
+	IRoom,
+	ISubscription,
+	IUser,
+	RocketChatRecordDeleted,
+	RoomType,
+	SpotlightUser,
+} from '@rocket.chat/core-typings';
 import type { ISubscriptionsModel } from '@rocket.chat/model-typings';
 import { Rooms, Users } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
@@ -17,6 +26,7 @@ import type {
 	IndexDescription,
 	UpdateFilter,
 	InsertOneResult,
+	InsertManyResult,
 } from 'mongodb';
 
 import { getDefaultSubscriptionPref } from '../../../app/utils/lib/getDefaultSubscriptionPref';
@@ -50,7 +60,6 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			{ key: { 'userHighlights.0': 1 }, sparse: true },
 			{ key: { prid: 1 } },
 			{ key: { 'u._id': 1, 'open': 1, 'department': 1 } },
-			{ key: { rid: 1 } },
 			{ key: { rid: 1, ls: 1 } },
 		];
 	}
@@ -592,6 +601,14 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		}
 
 		return this.updateOne(query, update);
+	}
+
+	disableAutoTranslateByRoomId(roomId: IRoom['_id']): Promise<UpdateResult | Document> {
+		const query = {
+			rid: roomId,
+		};
+
+		return this.updateMany(query, { $unset: { autoTranslate: 1 } });
 	}
 
 	updateAutoTranslateLanguageById(_id: string, autoTranslateLanguage: string): Promise<UpdateResult> {
@@ -1601,6 +1618,38 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		if (!['d', 'l'].includes(room.t)) {
 			await Users.addRoomByUserId(user._id, room._id);
 		}
+
+		return result;
+	}
+
+	async createWithRoomAndManyUsers(
+		room: IRoom,
+		users: { user: AtLeast<IUser, '_id' | 'username' | 'name' | 'settings'>; extraData: Record<string, any> }[] = [],
+	): Promise<InsertManyResult<ISubscription>> {
+		const subscriptions = users.map(({ user, extraData }) => ({
+			open: false,
+			alert: false,
+			unread: 0,
+			userMentions: 0,
+			groupMentions: 0,
+			ts: room.ts,
+			rid: room._id,
+			name: room.name,
+			fname: room.fname,
+			...(room.customFields && { customFields: room.customFields }),
+			t: room.t,
+			u: {
+				_id: user._id,
+				username: user.username,
+				name: user.name,
+			},
+			...(room.prid && { prid: room.prid }),
+			...getDefaultSubscriptionPref(user),
+			...extraData,
+		}));
+
+		// @ts-expect-error - types not good :(
+		const result = await this.insertMany(subscriptions);
 
 		return result;
 	}

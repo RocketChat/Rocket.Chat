@@ -1,6 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { TextAreaInput, FieldGroup, Field, Box } from '@rocket.chat/fuselage';
+import { TextAreaInput, FieldGroup, Field, FieldRow, FieldError, Box } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useTranslation, useMethod } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -60,10 +60,10 @@ const ReportMessageModal = ({ message, onClose }: ReportMessageModalProps): Reac
 			</Box>
 			<FieldGroup>
 				<Field>
-					<Field.Row>
+					<FieldRow>
 						<TextAreaInput {...register('description', { required: true })} placeholder={t('Why_do_you_want_to_report_question_mark')} />
-					</Field.Row>
-					{errors.description && <Field.Error>{t('You_need_to_write_something')}</Field.Error>}
+					</FieldRow>
+					{errors.description && <FieldError>{t('You_need_to_write_something')}</FieldError>}
 				</Field>
 			</FieldGroup>
 		</GenericModal>

@@ -2,7 +2,7 @@ import { Box, CheckBox, Icon, Option, SearchInput, Tile } from '@rocket.chat/fus
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FormEvent } from 'react';
-import { Fragment, useCallback, useEffect, useState } from 'react';
+import { Fragment, useCallback, useState } from 'react';
 
 import type { OptionProp } from './MultiSelectCustom';
 import { useFilteredOptions } from './useFilteredOptions';
@@ -19,13 +19,10 @@ const MultiSelectCustomList = ({
 	const t = useTranslation();
 
 	const [text, setText] = useState('');
+
 	const handleChange = useCallback((event) => setText(event.currentTarget.value), []);
 
-	const [optionSearch, setOptionSearch] = useState('');
-
-	useEffect(() => setOptionSearch(text), [setOptionSearch, text]);
-
-	const filteredOptions = useFilteredOptions(optionSearch, options);
+	const filteredOptions = useFilteredOptions(text, options);
 
 	return (
 		<Tile overflow='auto' pb='x12' pi={0} elevation='2' w='full' bg='light' borderRadius='x2'>
@@ -48,11 +45,11 @@ const MultiSelectCustomList = ({
 							{t(option.text as TranslationKey)}
 						</Box>
 					) : (
-						<Option key={option.id} onClick={(): void => onSelected(option)}>
-							<Box pis='x4' pb='x4' w='full' display='flex' justifyContent='space-between'>
+						<Option key={option.id}>
+							<Box pis='x4' pb='x4' w='full' display='flex' justifyContent='space-between' is='label'>
 								{t(option.text as TranslationKey)}
 
-								<CheckBox checked={option.checked} onChange={(e): void => onSelected(option, e)} pi={0} name={option.text} />
+								<CheckBox checked={option.checked} pi={0} name={option.text} id={option.id} onChange={() => onSelected(option)} />
 							</Box>
 						</Option>
 					)}

@@ -130,6 +130,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	findByE2E(options?: FindOptions<IRoom>): FindCursor<IRoom>;
 
+	findE2ERoomById(roomId: IRoom['_id'], options?: FindOptions<IRoom>): Promise<IRoom | null>;
+
 	findRoomsInsideTeams(autoJoin?: boolean): FindCursor<IRoom>;
 
 	findOneDirectRoomContainingAllUserIDs(uid: IDirectMessageRoom['uids'], options?: FindOptions<IRoom>): Promise<IRoom | null>;
@@ -237,7 +239,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	incUsersCountById(rid: string, inc: number): Promise<UpdateResult>;
 	incUsersCountNotDMsByIds(rids: string[], inc: number): Promise<Document | UpdateResult>;
 	setLastMessageById(rid: string, lastMessage: IRoom['lastMessage']): Promise<UpdateResult>;
-	resetLastMessageById(rid: string, lastMessage?: IMessage | null): Promise<UpdateResult>;
+	resetLastMessageById(rid: string, lastMessage: IMessage | null, msgCountDelta?: number): Promise<UpdateResult>;
 	replaceUsername(username: string, newUsername: string): Promise<UpdateResult | Document>;
 	replaceMutedUsername(username: string, newUsername: string): Promise<UpdateResult | Document>;
 	replaceUsernameOfUserByUserId(userId: string, newUsername: string): Promise<UpdateResult | Document>;

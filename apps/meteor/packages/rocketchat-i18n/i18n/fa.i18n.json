@@ -1190,6 +1190,7 @@
   "Email_Placeholder": "لطفا آدرس ایمیل خود را وارد کنید...",
   "Email_Placeholder_any": "لطفا آدرسهای ایمیل را وارد کنید ...",
   "Email_subject": "موضوع",
+  "Enterprise_License": "مجوز سازمانی",
   "Email_verified": "ایمیل تایید شد",
   "Emoji": "شکلک",
   "EmojiCustomFilesystem": "سیستم فایل Emoji سفارشی",
@@ -1214,8 +1215,6 @@
   "Enter_name_here": "نام را اینجا وارد کنید",
   "Enter_Normal": "حالت عادی (ارسال با Enter)",
   "Enter_to": "ورود به ",
-  "Enterprise": "شرکت، پروژه",
-  "Enterprise_License": "مجوز سازمانی",
   "Entertainment": "سرگرمی",
   "Error": "خطا",
   "Error_404": "خطای 404",
@@ -3104,5 +3103,8 @@
   "registration.component.form.invalidConfirmPass": "تأییدیه رمز عبور با رمز عبور اصلی مطابقت ندارد.",
   "registration.component.form.confirmPassword": "رمز عبور خود را تأیید کنید",
   "registration.component.form.sendConfirmationEmail": "ارسال ایمیل تایید",
-  "RegisterWorkspace_Features_Omnichannel_Title": "کانال همه‌کاره"
+  "onboarding.form.registerOfflineForm.title": "ثبت دستی",
+  "RegisterWorkspace_Features_Omnichannel_Title": "کانال همه‌کاره",
+  "Enterprise": "شرکت، پروژه",
+  "UpgradeToGetMore_engagement-dashboard_Title": "تجزیه و تحلیل ترافیک"
 }

@@ -14,15 +14,15 @@ export async function finishOAuthAuthorization(code: string, state: string) {
 		});
 	}
 
-	const cloudUrl = settings.get<string>('Cloud_Url');
 	const clientId = settings.get<string>('Cloud_Workspace_Client_Id');
 	const clientSecret = settings.get<string>('Cloud_Workspace_Client_Secret');
 
 	const scope = userScopes.join(' ');
 
-	let result;
+	let payload;
 	try {
-		const request = await fetch(`${cloudUrl}/api/oauth/token`, {
+		const cloudUrl = settings.get<string>('Cloud_Url');
+		const response = await fetch(`${cloudUrl}/api/oauth/token`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 			params: new URLSearchParams({
@@ -35,11 +35,11 @@ export async function finishOAuthAuthorization(code: string, state: string) {
 			}),
 		});
 
-		if (!request.ok) {
-			throw new Error((await request.json()).error);
+		if (!response.ok) {
+			throw new Error((await response.json()).error);
 		}
 
-		result = await request.json();
+		payload = await response.json();
 	} catch (err) {
 		SystemLogger.error({
 			msg: 'Failed to finish OAuth authorization with Rocket.Chat Cloud',
@@ -51,7 +51,7 @@ export async function finishOAuthAuthorization(code: string, state: string) {
 	}
 
 	const expiresAt = new Date();
-	expiresAt.setSeconds(expiresAt.getSeconds() + result.expires_in);
+	expiresAt.setSeconds(expiresAt.getSeconds() + payload.expires_in);
 
 	const uid = Meteor.userId();
 	if (!uid) {
@@ -65,11 +65,11 @@ export async function finishOAuthAuthorization(code: string, state: string) {
 		{
 			$set: {
 				'services.cloud': {
-					accessToken: result.access_token,
+					accessToken: payload.access_token,
 					expiresAt,
-					scope: result.scope,
-					tokenType: result.token_type,
-					refreshToken: result.refresh_token,
+					scope: payload.scope,
+					tokenType: payload.token_type,
+					refreshToken: payload.refresh_token,
 				},
 			},
 		},

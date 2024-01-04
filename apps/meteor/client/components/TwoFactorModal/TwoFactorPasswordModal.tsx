@@ -1,4 +1,4 @@
-import { Box, PasswordInput, FieldGroup, Field } from '@rocket.chat/fuselage';
+import { Box, PasswordInput, FieldGroup, Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage';
 import { useAutoFocus, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent, Ref, SyntheticEvent } from 'react';
@@ -43,10 +43,10 @@ const TwoFactorPasswordModal = ({ onConfirm, onClose, invalidAttempt }: TwoFacto
 		>
 			<FieldGroup>
 				<Field>
-					<Field.Label alignSelf='stretch' htmlFor={id}>
+					<FieldLabel alignSelf='stretch' htmlFor={id}>
 						{t('For_your_security_you_must_enter_your_current_password_to_continue')}
-					</Field.Label>
-					<Field.Row>
+					</FieldLabel>
+					<FieldRow>
 						<PasswordInput
 							id={id}
 							ref={ref as Ref<HTMLInputElement>}
@@ -54,8 +54,8 @@ const TwoFactorPasswordModal = ({ onConfirm, onClose, invalidAttempt }: TwoFacto
 							onChange={onChange}
 							placeholder={t('Password')}
 						></PasswordInput>
-					</Field.Row>
-					{invalidAttempt && <Field.Error>{t('Invalid_password')}</Field.Error>}
+					</FieldRow>
+					{invalidAttempt && <FieldError>{t('Invalid_password')}</FieldError>}
 				</Field>
 			</FieldGroup>
 		</GenericModal>

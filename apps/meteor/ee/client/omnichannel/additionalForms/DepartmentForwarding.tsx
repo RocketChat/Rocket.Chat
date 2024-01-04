@@ -1,4 +1,4 @@
-import { Field, Box, PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, FieldHint, Box, PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
 import type { PaginatedMultiSelectOption } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
@@ -8,6 +8,7 @@ import React, { useMemo, useState } from 'react';
 import { useDepartmentsList } from '../../../../client/components/Omnichannel/hooks/useDepartmentsList';
 import { useRecordList } from '../../../../client/hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
+import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 
 type DepartmentForwardingProps = {
 	departmentId: string;
@@ -19,6 +20,7 @@ type DepartmentForwardingProps = {
 export const DepartmentForwarding = ({ departmentId, value = [], handler, label }: DepartmentForwardingProps) => {
 	const t = useTranslation();
 	const [departmentsFilter, setDepartmentsFilter] = useState('');
+	const hasLicense = useHasLicenseModule('livechat-enterprise');
 
 	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);
 
@@ -33,10 +35,14 @@ export const DepartmentForwarding = ({ departmentId, value = [], handler, label 
 		return [...departmentsItems, ...pending];
 	}, [departmentsItems, value]);
 
+	if (!hasLicense) {
+		return null;
+	}
+
 	return (
 		<Field>
-			<Field.Label>{t(label)}</Field.Label>
-			<Field.Row>
+			<FieldLabel>{t(label)}</FieldLabel>
+			<FieldRow>
 				<Box w='100%'>
 					<PaginatedMultiSelectFiltered
 						withTitle
@@ -61,8 +67,8 @@ export const DepartmentForwarding = ({ departmentId, value = [], handler, label 
 						}
 					/>
 				</Box>
-			</Field.Row>
-			<Field.Hint>{t('List_of_departments_for_forward_description')}</Field.Hint>
+			</FieldRow>
+			<FieldHint>{t('List_of_departments_for_forward_description')}</FieldHint>
 		</Field>
 	);
 };

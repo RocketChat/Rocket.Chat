@@ -18,6 +18,14 @@ const FileUploadAction = ({ collapsed, chatContext, disabled, ...props }: FileUp
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const chat = useChat() ?? chatContext;
 
+	const resetFileInput = () => {
+		if (!fileInputRef.current) {
+			return;
+		}
+
+		fileInputRef.current.value = '';
+	};
+
 	const handleUploadChange = async (e: ChangeEvent<HTMLInputElement>) => {
 		const { mime } = await import('../../../../../../../app/utils/lib/mimeTypes');
 		const filesToUpload = Array.from(e.target.files ?? []).map((file) => {
@@ -26,8 +34,7 @@ const FileUploadAction = ({ collapsed, chatContext, disabled, ...props }: FileUp
 			});
 			return file;
 		});
-
-		chat?.flows.uploadFiles(filesToUpload);
+		chat?.flows.uploadFiles(filesToUpload, resetFileInput);
 	};
 
 	const handleUpload = () => {

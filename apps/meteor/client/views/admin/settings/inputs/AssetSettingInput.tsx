@@ -1,4 +1,4 @@
-import { Button, Field, Icon } from '@rocket.chat/fuselage';
+import { Button, Field, FieldLabel, FieldRow, Icon } from '@rocket.chat/fuselage';
 import { Random } from '@rocket.chat/random';
 import { useToastMessageDispatch, useEndpoint, useTranslation, useUpload } from '@rocket.chat/ui-contexts';
 import type { ChangeEventHandler, DragEvent, ReactElement, SyntheticEvent } from 'react';
@@ -11,10 +11,11 @@ type AssetSettingInputProps = {
 	label: string;
 	value?: { url: string };
 	asset?: any;
+	required?: boolean;
 	fileConstraints?: { extensions: string[] };
 };
 
-function AssetSettingInput({ _id, label, value, asset, fileConstraints }: AssetSettingInputProps): ReactElement {
+function AssetSettingInput({ _id, label, value, asset, required, fileConstraints }: AssetSettingInputProps): ReactElement {
 	const t = useTranslation();
 
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -57,11 +58,11 @@ function AssetSettingInput({ _id, label, value, asset, fileConstraints }: AssetS
 	};
 
 	return (
-		<>
-			<Field.Label htmlFor={_id} title={_id}>
+		<Field>
+			<FieldLabel htmlFor={_id} title={_id} required={required}>
 				{label}
-			</Field.Label>
-			<Field.Row>
+			</FieldLabel>
+			<FieldRow>
 				<div className='settings-file-preview'>
 					{value?.url ? (
 						<div
@@ -93,8 +94,8 @@ function AssetSettingInput({ _id, label, value, asset, fileConstraints }: AssetS
 						)}
 					</div>
 				</div>
-			</Field.Row>
-		</>
+			</FieldRow>
+		</Field>
 	);
 }
 

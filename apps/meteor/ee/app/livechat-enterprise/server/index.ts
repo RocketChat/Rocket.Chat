@@ -1,3 +1,4 @@
+import { License } from '@rocket.chat/license';
 import { Meteor } from 'meteor/meteor';
 
 import './methods/addMonitor';
@@ -25,11 +26,10 @@ import './hooks/onTransferFailure';
 import './lib/routing/LoadBalancing';
 import './lib/routing/LoadRotation';
 import './lib/AutoCloseOnHoldScheduler';
-import { onLicense } from '../../license/server';
 import './business-hour';
 import { createDefaultPriorities } from './priorities';
 
-await onLicense('livechat-enterprise', async () => {
+await License.onLicense('livechat-enterprise', async () => {
 	require('./api');
 	require('./hooks');
 	await import('./startup');

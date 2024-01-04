@@ -12,7 +12,6 @@ class DepartmentHelperClass {
 
 		const department = await LivechatDepartment.findOneById(departmentId);
 		if (!department) {
-			this.logger.debug(`Department not found: ${departmentId}`);
 			throw new Error('error-department-not-found');
 		}
 
@@ -20,10 +19,8 @@ class DepartmentHelperClass {
 
 		const ret = await LivechatDepartment.removeById(_id);
 		if (ret.acknowledged !== true) {
-			this.logger.error(`Department record not removed: ${_id}. Result from db: ${ret}`);
 			throw new Error('error-failed-to-delete-department');
 		}
-		this.logger.debug(`Department record removed: ${_id}`);
 
 		const agentsIds: string[] = await LivechatDepartmentAgents.findAgentsByDepartmentId<Pick<ILivechatDepartmentAgents, 'agentId'>>(
 			department._id,
@@ -46,8 +43,6 @@ class DepartmentHelperClass {
 				this.logger.error(`Error while performing post-department-removal actions: ${_id}. Action No: ${index}. Error:`, response.reason);
 			}
 		});
-
-		this.logger.debug(`Post-department-removal actions completed: ${_id}. Notifying callbacks with department and agentsIds`);
 
 		setImmediate(() => {
 			void callbacks.run('livechat.afterRemoveDepartment', { department, agentsIds });

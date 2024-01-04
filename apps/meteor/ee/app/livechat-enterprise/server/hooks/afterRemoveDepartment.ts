@@ -5,7 +5,6 @@ import { callbacks } from '../../../../../lib/callbacks';
 import { cbLogger } from '../lib/logger';
 
 const afterRemoveDepartment = async (options: { department: ILivechatDepartmentRecord; agentsId: ILivechatAgent['_id'][] }) => {
-	cbLogger.debug(`Performing post-department-removal actions in EE: ${options?.department?._id}. Removing department from forward list`);
 	if (!options?.department) {
 		cbLogger.warn('No department found in options', options);
 		return options;

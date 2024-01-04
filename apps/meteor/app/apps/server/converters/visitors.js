@@ -9,7 +9,7 @@ export class AppVisitorsConverter {
 	}
 
 	async convertById(id) {
-		const visitor = await LivechatVisitors.findOneById(id);
+		const visitor = await LivechatVisitors.findOneEnabledById(id);
 
 		return this.convertVisitor(visitor);
 	}

@@ -1,6 +1,6 @@
 import type { IUserStatus } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { FieldGroup, Button, ButtonGroup, TextInput, Field, Select } from '@rocket.chat/fuselage';
+import { FieldGroup, Button, ButtonGroup, TextInput, Field, FieldLabel, FieldRow, FieldError, Select } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useRoute, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -92,23 +92,23 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 			<ContextualbarScrollableContent>
 				<FieldGroup id={formId} is='form' onSubmit={handleSubmit(handleSave)}>
 					<Field>
-						<Field.Label>{t('Name')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('Name')}</FieldLabel>
+						<FieldRow>
 							<TextInput {...register('name', { required: true })} placeholder={t('Name')} />
-						</Field.Row>
-						{errors?.name && <Field.Error>{t('error-the-field-is-required', { field: t('Name') })}</Field.Error>}
+						</FieldRow>
+						{errors?.name && <FieldError>{t('error-the-field-is-required', { field: t('Name') })}</FieldError>}
 					</Field>
 					<Field>
-						<Field.Label>{t('Presence')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('Presence')}</FieldLabel>
+						<FieldRow>
 							<Controller
 								name='statusType'
 								control={control}
 								rules={{ required: true }}
 								render={({ field }): ReactElement => <Select {...field} placeholder={t('Presence')} options={presenceOptions} />}
 							/>
-						</Field.Row>
-						{errors?.statusType && <Field.Error>{t('error-the-field-is-required', { field: t('Presence') })}</Field.Error>}
+						</FieldRow>
+						{errors?.statusType && <FieldError>{t('error-the-field-is-required', { field: t('Presence') })}</FieldError>}
 					</Field>
 				</FieldGroup>
 			</ContextualbarScrollableContent>

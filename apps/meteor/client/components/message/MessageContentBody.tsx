@@ -46,7 +46,7 @@ const MessageContentBody = ({ mentions, channels, md, searchText }: MessageConte
 				text-decoration: underline;
 			}
 			&:focus {
-				border: 2px solid ${Palette.stroke['stroke-extra-light-highlight']};
+				box-shadow: 0 0 0 2px ${Palette.stroke['stroke-extra-light-highlight']};
 				border-radius: 2px;
 			}
 		}

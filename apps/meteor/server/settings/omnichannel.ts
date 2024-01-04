@@ -534,6 +534,16 @@ export const createOmniSettings = () =>
 			enableQuery: [{ _id: 'Livechat_Routing_Method', value: 'External' }, omnichannelEnabledQuery],
 		});
 
+		await this.add('Omnichannel_queue_delay_timeout', 5, {
+			type: 'int',
+			group: 'Omnichannel',
+			section: 'Queue_management',
+			i18nLabel: 'Queue_delay_timeout',
+			i18nDescription: 'Time_in_seconds',
+			enableQuery: [{ _id: 'Livechat_Routing_Method', value: { $ne: 'Manual_Selection' } }, omnichannelEnabledQuery],
+			invalidValue: 5,
+		});
+
 		await this.add('Livechat_Allow_collect_and_store_HTTP_header_informations', false, {
 			type: 'boolean',
 			group: 'Omnichannel',
@@ -768,7 +778,7 @@ await settingsRegistry.addGroup('SMS', async function () {
 			i18nLabel: 'Mobex_sms_gateway_password',
 		});
 		await this.add('SMS_Mobex_from_number', '', {
-			type: 'int',
+			type: 'string',
 			enableQuery: {
 				_id: 'SMS_Service',
 				value: 'mobex',

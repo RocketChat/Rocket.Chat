@@ -25,7 +25,7 @@ export const createMonitor = async (username: string): Promise<{ _id: string; us
 	});
 };
 
-export const createUnit = async (monitorId: string, username: string, departmentIds: string[]): Promise<IOmnichannelBusinessUnit> => {
+export const createUnit = async (monitorId: string, username: string, departmentIds: string[], name?: string): Promise<IOmnichannelBusinessUnit> => {
     return new Promise((resolve, reject) => {
         request
             .post(methodCall(`livechat:saveUnit`))
@@ -33,7 +33,7 @@ export const createUnit = async (monitorId: string, username: string, department
             .send({
                 message: JSON.stringify({
                     method: 'livechat:saveUnit',
-                    params: [null, { name: faker.person.firstName(), visibility: faker.helpers.arrayElement(['public', 'private']) }, [{ monitorId, username }], departmentIds.map((departmentId) => ({ departmentId }))],
+                    params: [null, { name: name || faker.person.firstName(), visibility: faker.helpers.arrayElement(['public', 'private']) }, [{ monitorId, username }], departmentIds.map((departmentId) => ({ departmentId }))],
                     id: '101',
                     msg: 'method',
                 }),

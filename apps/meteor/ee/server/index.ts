@@ -1,5 +1,3 @@
-import './startup';
-
 import '../app/license/server/index';
 import '../app/api-enterprise/server/index';
 import '../app/authorization/server/index';

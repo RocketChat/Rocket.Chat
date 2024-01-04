@@ -1,4 +1,5 @@
-import { Box, Button, Icon } from '@rocket.chat/fuselage';
+import type { Button } from '@rocket.chat/fuselage';
+import { Box, Icon } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 import React, { forwardRef } from 'react';
 
@@ -14,22 +15,25 @@ const RadioDownAnchor = forwardRef<HTMLElement, RadioDropdownAnchorProps>(functi
 
 	return (
 		<Box
-			is={Button}
+			is='button'
 			ref={ref}
 			onClick={onClick as any}
-			display='flex'
 			alignItems='center'
-			justifyContent='space-between'
-			borderColor='light'
-			borderWidth='x1'
-			borderRadius='x4'
 			bg='light'
+			borderColor='light'
+			borderRadius='x4'
+			borderWidth='x1'
 			color='secondary-info'
-			fontScale='p2'
-			minWidth='x144'
-			h='x40'
+			display='flex'
 			flexGrow={1}
 			flexShrink={1}
+			fontScale='p2'
+			h='x40'
+			justifyContent='space-between'
+			minWidth='x144'
+			pie={10}
+			pis={14}
+			rcx-input-box
 			{...props}
 		>
 			{selected}

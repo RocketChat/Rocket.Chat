@@ -54,9 +54,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				sparse: true,
 			},
 			{
-				key: { t: 1 },
-			},
-			{
 				key: { 'u._id': 1 },
 			},
 			{
@@ -672,6 +669,16 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	findByE2E(options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
 		return this.find(
 			{
+				encrypted: true,
+			},
+			options,
+		);
+	}
+
+	findE2ERoomById(roomId: IRoom['_id'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
+		return this.findOne(
+			{
+				_id: roomId,
 				encrypted: true,
 			},
 			options,
@@ -1559,20 +1566,13 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	async resetLastMessageById(_id: IRoom['_id'], lastMessage: IRoom['lastMessage']): Promise<UpdateResult> {
+	async resetLastMessageById(_id: IRoom['_id'], lastMessage: IRoom['lastMessage'] | null, msgCountDelta?: number): Promise<UpdateResult> {
 		const query: Filter<IRoom> = { _id };
 
-		const update: UpdateFilter<IRoom> = lastMessage
-			? {
-					$set: {
-						lastMessage,
-					},
-			  }
-			: {
-					$unset: {
-						lastMessage: 1,
-					},
-			  };
+		const update = {
+			...(lastMessage ? { $set: { lastMessage } } : { $unset: { lastMessage: 1 as const } }),
+			...(msgCountDelta ? { $inc: { msgs: msgCountDelta } } : {}),
+		};
 
 		return this.updateOne(query, update);
 	}
