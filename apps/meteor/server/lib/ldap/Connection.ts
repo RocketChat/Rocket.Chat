@@ -48,7 +48,7 @@ export class LDAPConnection {
 
 	private _connectionCallback: ILDAPCallback;
 
-	private usingAuthentication: boolean;
+	private usingAdminAuthentication: boolean;
 
 	constructor() {
 		this.ldapjs = ldapjs;
@@ -107,7 +107,7 @@ export class LDAPConnection {
 	}
 
 	public disconnect(): void {
-		this.usingAuthentication = false;
+		this.usingAdminAuthentication = false;
 		this.connected = false;
 		connLogger.info('Disconnecting');
 
@@ -258,6 +258,7 @@ export class LDAPConnection {
 		authLogger.info({ msg: 'Authenticating', dn });
 
 		try {
+			this.usingAdminAuthentication = false;
 			await this.bindDN(dn, password);
 
 			authLogger.info({ msg: 'Authenticated', dn });
@@ -465,9 +466,9 @@ export class LDAPConnection {
 
 		searchLogger.debug({ msg: 'Group filter LDAP:', filter: searchOptions.filter });
 
-		const result = await this.searchRaw(this.options.baseDN, searchOptions);
+		const result = await this.searchAndCount(this.options.baseDN, searchOptions);
 
-		if (!Array.isArray(result) || result.length === 0) {
+		if (result === 0) {
 			return false;
 		}
 		return true;
@@ -661,7 +662,7 @@ export class LDAPConnection {
 	}
 
 	protected async maybeBindDN(): Promise<void> {
-		if (this.usingAuthentication) {
+		if (this.usingAdminAuthentication) {
 			return;
 		}
 
@@ -677,14 +678,14 @@ export class LDAPConnection {
 		bindLogger.info({ msg: 'Binding UserDN', userDN: this.options.authenticationUserDN });
 		try {
 			await this.bindDN(this.options.authenticationUserDN, this.options.authenticationPassword);
-			this.usingAuthentication = true;
+			this.usingAdminAuthentication = true;
 		} catch (error) {
 			authLogger.error({
 				msg: 'Base Authentication Issue',
 				err: error,
 				dn: this.options.authenticationUserDN,
 			});
-			this.usingAuthentication = false;
+			this.usingAdminAuthentication = false;
 		}
 	}
 
