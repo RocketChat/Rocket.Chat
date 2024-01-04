@@ -1,5 +1,5 @@
-import type { IVisitor } from './IInquiry';
 import type { ILivechatPriority } from './ILivechatPriority';
+import type { ILivechatVisitor } from './ILivechatVisitor';
 import type { IMessage, MessageTypesValues } from './IMessage';
 import type { IOmnichannelServiceLevelAgreements } from './IOmnichannelServiceLevelAgreements';
 import type { IRocketChatRecord } from './IRocketChatRecord';
@@ -23,7 +23,7 @@ export interface IRoom extends IRocketChatRecord {
 	name?: string;
 	fname?: string;
 	msgs: number;
-	default?: true;
+	default?: boolean;
 	broadcast?: true;
 	featured?: true;
 	announcement?: string;
@@ -151,7 +151,10 @@ export enum OmnichannelSourceType {
 
 export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast' | ''> {
 	t: 'l' | 'v';
-	v: IVisitor;
+	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token' | 'activity'> & {
+		lastMessageTs?: Date;
+		phone?: string;
+	};
 	email?: {
 		// Data used when the room is created from an email, via email Integration.
 		inbox: string;
@@ -193,8 +196,24 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 	metrics?: {
 		serviceTimeDuration?: number;
 	};
+	// set to true when the room is waiting for a response from the visitor
 	waitingResponse: any;
-	responseBy: any;
+	// contains information about the last response from an agent
+	responseBy?: {
+		_id: string;
+		username: string;
+
+		// when the agent first responded to the visitor after the latest message from visitor
+		// this will reset when the visitor sends a new message
+		firstResponseTs: Date;
+
+		// when the agent last responded to the visitor
+		// This is almost the same as firstResponseTs, but here we hold the timestamp of the last response
+		// and it gets updated after each message from agent
+		// So if an agent sends multiple messages to visitor, then firstResponseTs will store timestamp
+		// of their first reply, and lastMessageTs will store timestamp of their latest response
+		lastMessageTs: Date;
+	};
 
 	livechatData: any;
 	queuedAt?: Date;
@@ -253,6 +272,11 @@ export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 		response?: {
 			tt: number;
 			total: number;
+			avg: number;
+			ft: number;
+		};
+		reaction?: {
+			ft: number;
 		};
 	};
 
@@ -277,7 +301,7 @@ export interface IVoipRoom extends IOmnichannelGenericRoom {
 	queue: string;
 	// The ID assigned to the call (opaque ID)
 	callUniqueId?: string;
-	v: IVisitor;
+	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token'> & { lastMessageTs?: Date; phone?: string };
 	// Outbound means the call was initiated from Rocket.Chat and vise versa
 	direction: 'inbound' | 'outbound';
 }

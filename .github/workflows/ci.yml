@@ -80,9 +80,49 @@ jobs:
           echo "DOCKER_TAG: ${DOCKER_TAG}"
           echo "gh-docker-tag=${DOCKER_TAG}" >> $GITHUB_OUTPUT
 
+  notify-draft-services:
+    name: 🚀 Notify external services - draft
+    runs-on: ubuntu-20.04
+    needs: [release-versions]
+    steps:
+      - uses: Bhacaz/checkout-files@v2
+        with:
+          files: package.json
+          branch: ${{ github.ref }}
+
+      - name: Register release on cloud as Draft
+        if: github.event_name == 'release'
+        env:
+          UPDATE_TOKEN: ${{ secrets.UPDATE_TOKEN }}
+        run: |
+          REPO_VERSION=$(node -p "require('./package.json').version")
+
+          if [[ '${{ github.event_name }}' = 'release' ]]; then
+            GIT_TAG="${GITHUB_REF#*tags/}"
+            GIT_BRANCH=""
+            ARTIFACT_NAME="${REPO_VERSION}"
+            RC_VERSION=$GIT_TAG
+
+            if [[ '${{ needs.release-versions.outputs.release }}' = 'release-candidate' ]]; then
+              RC_RELEASE=candidate
+            elif [[ '${{ needs.release-versions.outputs.release }}' = 'latest' ]]; then
+              RC_RELEASE=stable
+            fi
+          else
+            GIT_TAG=""
+            GIT_BRANCH="${GITHUB_REF#*heads/}"
+            ARTIFACT_NAME="${REPO_VERSION}.$GITHUB_SHA"
+            RC_VERSION="${REPO_VERSION}"
+            RC_RELEASE=develop
+          fi;
+
+          curl -H "Content-Type: application/json" -H "X-Update-Token: $UPDATE_TOKEN" -d \
+              "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"compatibleMongoVersions\": [\"4.4\", \"5.0\", \"6.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"draft\", \"draftAs\": \"$RC_RELEASE\"}" \
+              https://releases.rocket.chat/update
+
   packages-build:
     name: 📦 Build Packages
-    needs: [release-versions]
+    needs: [release-versions, notify-draft-services]
     runs-on: ubuntu-20.04
     steps:
       - name: Github Info
@@ -100,7 +140,7 @@ jobs:
         with:
           swap-size-gb: 4
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
@@ -120,11 +160,10 @@ jobs:
       - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
       - name: Build Rocket.Chat Packages
-        if: startsWith(github.ref, 'refs/pull/') != true
         run: yarn build
 
   build:
-    name: 📦 Meteor Build
+    name: 📦 Meteor Build - coverage
     needs: [release-versions, packages-build]
     runs-on: ubuntu-20.04
 
@@ -139,109 +178,101 @@ jobs:
           echo "github.event_name: ${{ github.event_name }}"
           cat $GITHUB_EVENT_PATH
 
-      - name: Set Swap Space
-        uses: pierotofy/set-swap-space@master
-        with:
-          swap-size-gb: 4
+      - uses: actions/checkout@v4
 
-      - uses: actions/checkout@v3
-
-      - name: Setup NodeJS
-        uses: ./.github/actions/setup-node
+      - uses: ./.github/actions/meteor-build
         with:
           node-version: ${{ needs.release-versions.outputs.node-version }}
-          cache-modules: true
-          install: true
+          coverage: ${{ github.event_name != 'release' }}
 
-      # - name: Free disk space
-      #   run: |
-      #     sudo apt clean
-      #     docker rmi $(docker image ls -aq)
-      #     df -h
+  build-prod:
+    name: 📦 Meteor Build - official
+    needs: [tests-done, release-versions, packages-build]
+    if: (github.event_name == 'release' || github.ref == 'refs/heads/develop')
+    runs-on: ubuntu-20.04
 
-      - name: Cache vite
-        uses: actions/cache@v3
-        with:
-          path: ./node_modules/.vite
-          key: vite-local-cache-${{ runner.OS }}-${{ hashFiles('package.json') }}
-          restore-keys: |
-            vite-local-cache-${{ runner.os }}-
-
-      - name: Cache meteor local
-        uses: actions/cache@v3
-        with:
-          path: ./apps/meteor/.meteor/local
-          key: meteor-local-cache-${{ runner.OS }}-${{ hashFiles('apps/meteor/.meteor/versions') }}
-          restore-keys: |
-            meteor-local-cache-${{ runner.os }}-
-
-      - name: Cache meteor
-        uses: actions/cache@v3
-        with:
-          path: ~/.meteor
-          key: meteor-cache-${{ runner.OS }}-${{ hashFiles('apps/meteor/.meteor/release') }}
-          restore-keys: |
-            meteor-cache-${{ runner.os }}-
-
-      - name: Install Meteor
+    steps:
+      - name: Github Info
         run: |
-          # Restore bin from cache
-          set +e
-          METEOR_SYMLINK_TARGET=$(readlink ~/.meteor/meteor)
-          METEOR_TOOL_DIRECTORY=$(dirname "$METEOR_SYMLINK_TARGET")
-          set -e
-          LAUNCHER=$HOME/.meteor/$METEOR_TOOL_DIRECTORY/scripts/admin/launch-meteor
-          if [ -e $LAUNCHER ]
-          then
-            echo "Cached Meteor bin found, restoring it"
-            sudo cp "$LAUNCHER" "/usr/local/bin/meteor"
-          else
-            echo "No cached Meteor bin found."
-          fi
+          echo "GITHUB_ACTION: $GITHUB_ACTION"
+          echo "GITHUB_ACTOR: $GITHUB_ACTOR"
+          echo "GITHUB_REF: $GITHUB_REF"
+          echo "GITHUB_HEAD_REF: $GITHUB_HEAD_REF"
+          echo "GITHUB_BASE_REF: $GITHUB_BASE_REF"
+          echo "github.event_name: ${{ github.event_name }}"
+          cat $GITHUB_EVENT_PATH
 
-          # only install meteor if bin isn't found
-          command -v meteor >/dev/null 2>&1 || curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh
+      - uses: actions/checkout@v4
 
-      - name: Versions
-        run: |
-          npm --versions
-          yarn -v
-          node -v
-          meteor --version
-          meteor npm --versions
-          meteor node -v
-          git version
-
-      - uses: dtinth/setup-github-actions-caching-for-turbo@v1
-
-      - name: Translation check
-        run: yarn turbo run translation-check
-
-      - name: Reset Meteor
-        if: startsWith(github.ref, 'refs/tags/') == 'true' || github.ref == 'refs/heads/develop'
-        working-directory: ./apps/meteor
-        run: meteor reset
-
-      - name: Build Rocket.Chat From Pull Request
-        if: startsWith(github.ref, 'refs/pull/') == true
-        env:
-          METEOR_PROFILE: 1000
-        run: yarn build:ci -- --directory /tmp/dist
-
-      - name: Build Rocket.Chat
-        if: startsWith(github.ref, 'refs/pull/') != true
-        run: yarn build:ci -- --directory /tmp/dist
-
-      - name: Prepare build
-        run: |
-          cd /tmp/dist
-          tar czf /tmp/Rocket.Chat.tar.gz bundle
-
-      - name: Store build
-        uses: actions/upload-artifact@v3
+      - uses: ./.github/actions/meteor-build
         with:
-          name: build
-          path: /tmp/Rocket.Chat.tar.gz
+          node-version: ${{ needs.release-versions.outputs.node-version }}
+          coverage: ${{ github.event_name != 'release' }}
+
+  build-gh-docker-coverage:
+    name: 🚢 Build Docker Images for Testing
+    needs: [build, release-versions]
+    runs-on: ubuntu-20.04
+
+    env:
+      RC_DOCKERFILE: ${{ matrix.platform == 'alpine' && needs.release-versions.outputs.rc-dockerfile-alpine || needs.release-versions.outputs.rc-dockerfile }}
+      RC_DOCKER_TAG: ${{ matrix.platform == 'alpine' && needs.release-versions.outputs.rc-docker-tag-alpine || needs.release-versions.outputs.rc-docker-tag }}
+      DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
+      LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
+      SERVICES_PUBLISH: 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service'
+
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: ['official', 'alpine']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # we only build and publish the actual docker images if not a PR from a fork
+      - uses: ./.github/actions/build-docker
+        if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
+        with:
+          CR_USER: ${{ secrets.CR_USER }}
+          CR_PAT: ${{ secrets.CR_PAT }}
+          node-version: ${{ needs.release-versions.outputs.node-version }}
+          platform: ${{ matrix.platform }}
+
+  build-gh-docker:
+    name: 🚢 Build Docker Images for Production
+    needs: [build-prod, release-versions]
+    runs-on: ubuntu-20.04
+
+    env:
+      RC_DOCKERFILE: ${{ matrix.platform == 'alpine' && needs.release-versions.outputs.rc-dockerfile-alpine || needs.release-versions.outputs.rc-dockerfile }}
+      RC_DOCKER_TAG: ${{ matrix.platform == 'alpine' && needs.release-versions.outputs.rc-docker-tag-alpine || needs.release-versions.outputs.rc-docker-tag }}
+      DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
+      LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
+      SERVICES_PUBLISH: 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service'
+
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: ['official', 'alpine']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/build-docker
+        with:
+          CR_USER: ${{ secrets.CR_USER }}
+          CR_PAT: ${{ secrets.CR_PAT }}
+          node-version: ${{ needs.release-versions.outputs.node-version }}
+          platform: ${{ matrix.platform }}
+
+      - name: Rename official Docker tag to GitHub Container Registry
+        if: matrix.platform == 'official'
+        run: |
+          IMAGE_NAME_BASE="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${DOCKER_TAG}"
+
+          echo "Push Docker image: ${IMAGE_NAME_BASE}"
+          docker tag ${IMAGE_NAME_BASE}.official $IMAGE_NAME_BASE
+          docker push $IMAGE_NAME_BASE
 
   checks:
     needs: [release-versions, packages-build]
@@ -258,16 +289,17 @@ jobs:
     uses: ./.github/workflows/ci-test-unit.yml
     with:
       node-version: ${{ needs.release-versions.outputs.node-version }}
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   test-api:
     name: 🔨 Test API (CE)
-    needs: [checks, build, release-versions]
+    needs: [checks, build-gh-docker-coverage, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
       type: api
       release: ce
-      publish-container: true
       node-version: ${{ needs.release-versions.outputs.node-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
@@ -281,7 +313,7 @@ jobs:
 
   test-ui:
     name: 🔨 Test UI (CE)
-    needs: [checks, build, release-versions]
+    needs: [checks, build-gh-docker-coverage, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -307,7 +339,7 @@ jobs:
 
   test-api-ee:
     name: 🔨 Test API (EE)
-    needs: [checks, build, release-versions]
+    needs: [checks, build-gh-docker-coverage, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -315,7 +347,6 @@ jobs:
       release: ee
       transporter: 'nats://nats:4222'
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
-      publish-container: true
       mongodb-version: "['4.4']"
       node-version: ${{ needs.release-versions.outputs.node-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
@@ -330,7 +361,7 @@ jobs:
 
   test-ui-ee:
     name: 🔨 Test UI (EE)
-    needs: [checks, build, release-versions]
+    needs: [checks, build-gh-docker-coverage, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -354,6 +385,7 @@ jobs:
       QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
       REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
       REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   tests-done:
     name: ✅ Tests Done
@@ -366,13 +398,16 @@ jobs:
           echo finished
 
   deploy:
-    name: 🚀 Publish build and update our registry
+    name: 🚀 Publish build assets
     runs-on: ubuntu-20.04
     if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
-    needs: [tests-done, release-versions]
+    needs: [build-gh-docker, release-versions]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: Bhacaz/checkout-files@v2
+        with:
+          files: package.json
+          branch: ${{ github.ref }}
 
       - name: Restore build
         uses: actions/download-artifact@v3
@@ -386,32 +421,17 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: 'us-east-1'
           GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
-          REDHAT_REGISTRY_PID: ${{ secrets.REDHAT_REGISTRY_PID }}
-          REDHAT_REGISTRY_KEY: ${{ secrets.REDHAT_REGISTRY_KEY }}
-          UPDATE_TOKEN: ${{ secrets.UPDATE_TOKEN }}
         run: |
           REPO_VERSION=$(node -p "require('./package.json').version")
+
           if [[ '${{ github.event_name }}' = 'release' ]]; then
             GIT_TAG="${GITHUB_REF#*tags/}"
-            GIT_BRANCH=""
             ARTIFACT_NAME="${REPO_VERSION}"
-            RC_VERSION=$GIT_TAG
-
-            if [[ '${{ needs.release-versions.outputs.release }}' = 'release-candidate' ]]; then
-              SNAP_CHANNEL=candidate
-              RC_RELEASE=candidate
-            elif [[ '${{ needs.release-versions.outputs.release }}' = 'latest' ]]; then
-              SNAP_CHANNEL=stable
-              RC_RELEASE=stable
-            fi
           else
             GIT_TAG=""
-            GIT_BRANCH="${GITHUB_REF#*heads/}"
             ARTIFACT_NAME="${REPO_VERSION}.$GITHUB_SHA"
-            RC_VERSION="${REPO_VERSION}"
-            SNAP_CHANNEL=edge
-            RC_RELEASE=develop
           fi;
+
           ROCKET_DEPLOY_DIR="/tmp/deploy"
           FILENAME="$ROCKET_DEPLOY_DIR/rocket.chat-$ARTIFACT_NAME.tgz";
 
@@ -429,29 +449,13 @@ jobs:
 
           aws s3 cp $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/build/ --recursive
 
-          curl -H "Content-Type: application/json" -H "X-Update-Token: $UPDATE_TOKEN" -d \
-              "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"compatibleMongoVersions\": [\"4.4\", \"5.0\", \"6.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"$RC_RELEASE\"}" \
-              https://releases.rocket.chat/update
-
-          # Makes build fail if the release isn't there
-          curl --fail https://releases.rocket.chat/$RC_VERSION/info
-
-          if [[ $GIT_TAG ]]; then
-            curl -X POST \
-              https://connect.redhat.com/api/v2/projects/$REDHAT_REGISTRY_PID/build \
-              -H "Authorization: Bearer $REDHAT_REGISTRY_KEY" \
-              -H 'Cache-Control: no-cache' \
-              -H 'Content-Type: application/json' \
-              -d '{"tag":"'$GIT_TAG'"}'
-          fi
-
   build-docker-preview:
     name: 🚢 Build Docker Image (preview)
     runs-on: ubuntu-20.04
     needs: [build, checks, release-versions]
     if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Restore build
         uses: actions/download-artifact@v3
@@ -674,6 +678,66 @@ jobs:
           done
 
           echo "::endgroup::"
+
+  notify-services:
+    name: 🚀 Notify external services
+    runs-on: ubuntu-20.04
+    needs:
+      - services-docker-image-publish
+      - docker-image-publish
+      - release-versions
+    steps:
+      - uses: Bhacaz/checkout-files@v2
+        with:
+          files: package.json
+          branch: ${{ github.ref }}
+
+      - name: Releases service
+        env:
+          UPDATE_TOKEN: ${{ secrets.UPDATE_TOKEN }}
+        run: |
+          REPO_VERSION=$(node -p "require('./package.json').version")
+
+          if [[ '${{ github.event_name }}' = 'release' ]]; then
+            GIT_TAG="${GITHUB_REF#*tags/}"
+            GIT_BRANCH=""
+            ARTIFACT_NAME="${REPO_VERSION}"
+            RC_VERSION=$GIT_TAG
+
+            if [[ '${{ needs.release-versions.outputs.release }}' = 'release-candidate' ]]; then
+              RC_RELEASE=candidate
+            elif [[ '${{ needs.release-versions.outputs.release }}' = 'latest' ]]; then
+              RC_RELEASE=stable
+            fi
+          else
+            GIT_TAG=""
+            GIT_BRANCH="${GITHUB_REF#*heads/}"
+            ARTIFACT_NAME="${REPO_VERSION}.$GITHUB_SHA"
+            RC_VERSION="${REPO_VERSION}"
+            RC_RELEASE=develop
+          fi;
+
+          curl -H "Content-Type: application/json" -H "X-Update-Token: $UPDATE_TOKEN" -d \
+              "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"compatibleMongoVersions\": [\"4.4\", \"5.0\", \"6.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"$RC_RELEASE\"}" \
+              https://releases.rocket.chat/update
+
+          # Makes build fail if the release isn't there
+          curl --fail https://releases.rocket.chat/$RC_VERSION/info
+
+      - name: RedHat Registry
+        if: github.event_name == 'release'
+        env:
+          REDHAT_REGISTRY_PID: ${{ secrets.REDHAT_REGISTRY_PID }}
+          REDHAT_REGISTRY_KEY: ${{ secrets.REDHAT_REGISTRY_KEY }}
+        run: |
+          GIT_TAG="${GITHUB_REF#*tags/}"
+
+          curl -X POST \
+            https://connect.redhat.com/api/v2/projects/$REDHAT_REGISTRY_PID/build \
+            -H "Authorization: Bearer $REDHAT_REGISTRY_KEY" \
+            -H 'Cache-Control: no-cache' \
+            -H 'Content-Type: application/json' \
+            -d '{"tag":"'$GIT_TAG'"}'
 
   trigger-dependent-workflows:
     runs-on: ubuntu-latest

@@ -113,7 +113,7 @@ const AudioMessageRecorder = ({ rid, chatContext, isMicrophoneDenied }: AudioMes
 	}
 
 	return (
-		<Box position='absolute' pi='x4' pb='x12' className={`rc-message-box__audio-message ${stateClass}`}>
+		<Box position='absolute' pi={4} pb={12} className={`rc-message-box__audio-message ${stateClass}`}>
 			{state === 'recording' && (
 				<>
 					<MessageComposerAction

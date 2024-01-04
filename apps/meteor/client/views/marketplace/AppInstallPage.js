@@ -1,4 +1,5 @@
-import { Button, ButtonGroup, Icon, Field, FieldGroup, TextInput, Throbber } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Icon, Field, FieldGroup, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import {
 	useSetModal,
 	useEndpoint,
@@ -8,13 +9,15 @@ import {
 	useRouter,
 	useSearchParameter,
 } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 
 import { AppClientOrchestratorInstance } from '../../../ee/client/apps/orchestrator';
-import Page from '../../components/Page';
+import { Page, PageHeader, PageScrollableContent } from '../../components/Page';
 import { useAppsReload } from '../../contexts/hooks/useAppsReload';
-import { useFileInput } from '../../hooks/useFileInput';
-import { useForm } from '../../hooks/useForm';
+import { useExternalLink } from '../../hooks/useExternalLink';
+import { useSingleFileInput } from '../../hooks/useSingleFileInput';
+import { useCheckoutUrl } from '../admin/subscription/hooks/useCheckoutUrl';
 import AppPermissionsReviewModal from './AppPermissionsReviewModal';
 import AppUpdateModal from './AppUpdateModal';
 import AppInstallModal from './components/AppInstallModal/AppInstallModal';
@@ -48,22 +51,15 @@ function AppInstallPage() {
 
 	const appCountQuery = useAppsCountQuery('private');
 
-	const { values, handlers } = useForm({
-		file: {},
-		url: queryUrl,
-	});
+	const openExternalLink = useExternalLink();
+	const manageSubscriptionUrl = useCheckoutUrl()({ target: 'marketplace-app-install', action: 'Enable_unlimited_apps' });
 
-	const { file, url } = values;
+	const { control, setValue, watch } = useForm({ defaultValues: { url: queryUrl || '' } });
+	const { file, url } = watch();
 
-	const canSave = !!url || !!file.name;
+	const canSave = !!url || !!file?.name;
 
-	const { handleFile, handleUrl } = handlers;
-
-	useEffect(() => {
-		queryUrl && handleUrl(queryUrl);
-	}, [queryUrl, handleUrl]);
-
-	const [handleUploadButtonClick] = useFileInput(handleFile, 'app');
+	const [handleUploadButtonClick] = useSingleFileInput((value) => setValue('file', value), 'app');
 
 	const sendFile = async (permissionsGranted, appFile, appId) => {
 		let app;
@@ -77,23 +73,23 @@ function AppInstallPage() {
 			} else {
 				app = await uploadAppEndpoint(fileData);
 			}
+
+			router.navigate({
+				name: 'marketplace',
+				params: {
+					context: 'private',
+					page: 'info',
+					id: appId || app.app.id,
+				},
+			});
+
+			reload();
 		} catch (e) {
 			handleAPIError(e);
+		} finally {
+			setInstalling(false);
+			setModal(null);
 		}
-
-		router.navigate({
-			name: 'marketplace',
-			params: {
-				context: 'private',
-				page: 'info',
-				id: appId || app.app.id,
-			},
-		});
-
-		reload();
-
-		setInstalling(false);
-		setModal(null);
 	};
 
 	const cancelAction = useCallback(() => {
@@ -178,12 +174,7 @@ function AppInstallPage() {
 				handleClose={cancelAction}
 				handleConfirm={() => uploadFile(appFile, manifest)}
 				handleEnableUnlimitedApps={() => {
-					router.navigate({
-						name: 'upgrade',
-						params: {
-							type: 'go-fully-featured-registered',
-						},
-					});
+					openExternalLink(manageSubscriptionUrl);
 					setModal(null);
 				}}
 			/>,
@@ -200,41 +191,58 @@ function AppInstallPage() {
 		});
 	};
 
+	const urlField = useUniqueId();
+	const fileField = useUniqueId();
+
 	return (
 		<Page flexDirection='column'>
-			<Page.Header title={t('App_Installation')} />
-			<Page.ScrollableContent>
+			<PageHeader title={t('App_Installation')} />
+			<PageScrollableContent>
 				<FieldGroup display='flex' flexDirection='column' alignSelf='center' maxWidth='x600' w='full'>
 					<Field>
-						<Field.Label>{t('App_Url_to_Install_From')}</Field.Label>
-						<Field.Row>
-							<TextInput placeholder={placeholderUrl} value={url} onChange={handleUrl} addon={<Icon name='permalink' size='x20' />} />
-						</Field.Row>
+						<FieldLabel htmlFor={urlField}>{t('App_Url_to_Install_From')}</FieldLabel>
+						<FieldRow>
+							<Controller
+								name='url'
+								control={control}
+								render={({ field }) => (
+									<TextInput id={urlField} placeholder={placeholderUrl} addon={<Icon name='permalink' size='x20' />} {...field} />
+								)}
+							/>
+						</FieldRow>
 					</Field>
 					<Field>
-						<Field.Label>{t('App_Url_to_Install_From_File')}</Field.Label>
-						<Field.Row>
-							<TextInput
-								value={file.name || ''}
-								addon={
-									<Button icon='upload' small primary onClick={handleUploadButtonClick} mb='neg-x4' mie='neg-x8'>
-										{t('Browse_Files')}
-									</Button>
-								}
+						<FieldLabel htmlFor={fileField}>{t('App_Url_to_Install_From_File')}</FieldLabel>
+						<FieldRow>
+							<Controller
+								name='file'
+								control={control}
+								render={({ field }) => (
+									<TextInput
+										id={fileField}
+										readOnly
+										{...field}
+										value={field.value?.name || ''}
+										addon={
+											<Button icon='upload' small primary onClick={handleUploadButtonClick} mb='neg-x4' mie='neg-x8'>
+												{t('Browse_Files')}
+											</Button>
+										}
+									/>
+								)}
 							/>
-						</Field.Row>
+						</FieldRow>
 					</Field>
 					<Field>
 						<ButtonGroup>
-							<Button disabled={!canSave || installing} onClick={install}>
-								{!installing && t('Install')}
-								{installing && <Throbber inheritColor />}
+							<Button disabled={!canSave} loading={installing} onClick={install}>
+								{t('Install')}
 							</Button>
 							<Button onClick={handleCancel}>{t('Cancel')}</Button>
 						</ButtonGroup>
 					</Field>
 				</FieldGroup>
-			</Page.ScrollableContent>
+			</PageScrollableContent>
 		</Page>
 	);
 }

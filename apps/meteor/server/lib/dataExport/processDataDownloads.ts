@@ -49,6 +49,8 @@ const generateUserFile = async (exportOperation: IExportOperation, userData?: IU
 		return;
 	}
 
+	await mkdir(exportOperation.exportPath, { recursive: true });
+
 	const { username, name, statusText, emails, roles, services } = userData;
 
 	const dataToSave = {
@@ -101,6 +103,8 @@ const generateUserAvatarFile = async (exportOperation: IExportOperation, userDat
 		return;
 	}
 
+	await mkdir(exportOperation.exportPath, { recursive: true });
+
 	const file = await Avatars.findOneByName(userData.username);
 	if (!file) {
 		return;
@@ -116,6 +120,8 @@ const generateChannelsFile = async (type: 'json' | 'html', exportPath: string, e
 	if (type !== 'json') {
 		return;
 	}
+
+	await mkdir(exportOperation.exportPath, { recursive: true });
 
 	const fileName = joinPath(exportPath, 'channels.json');
 	await writeFile(

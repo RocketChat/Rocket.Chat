@@ -1,10 +1,10 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import type { Logger } from '@rocket.chat/logger';
 import type { Method, MethodOf, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
 import type { ValidateFunction } from 'ajv';
 import type { Request, Response } from 'express';
 
 import type { ITwoFactorOptions } from '../../2fa/server/code';
-import type { Logger } from '../../logger/server';
 
 export type SuccessResult<T> = {
 	statusCode: 200;

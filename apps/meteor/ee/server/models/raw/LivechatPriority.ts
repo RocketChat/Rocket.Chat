@@ -1,7 +1,7 @@
 import type { ILivechatPriority } from '@rocket.chat/core-typings';
 import type { ILivechatPriorityModel } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { Db, UpdateFilter, ModifyResult, IndexDescription, FindOptions } from 'mongodb';
+import type { Db, UpdateFilter, ModifyResult, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
 
@@ -74,11 +74,5 @@ export class LivechatPriorityRaw extends BaseRaw<ILivechatPriority> implements I
 		return this.findOneAndUpdate(query, update, {
 			returnDocument: 'after',
 		});
-	}
-
-	findOneById(_id: string, options?: FindOptions<ILivechatPriority>): Promise<ILivechatPriority | null> {
-		const query = { _id };
-
-		return this.findOne(query, options);
 	}
 }

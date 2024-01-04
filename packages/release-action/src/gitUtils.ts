@@ -37,6 +37,16 @@ export async function pushChanges() {
 	await exec('git', ['push', '--follow-tags']);
 }
 
-export async function pushNewBranch(newBranch: string) {
-	await exec('git', ['push', '--force', '--follow-tags', 'origin', `HEAD:refs/heads/${newBranch}`]);
+export async function pushNewBranch(newBranch: string, force = false) {
+	const params = ['push'];
+
+	if (force) {
+		params.push('--force');
+	}
+
+	params.push('--follow-tags');
+	params.push('origin');
+	params.push(`HEAD:refs/heads/${newBranch}`);
+
+	await exec('git', params);
 }

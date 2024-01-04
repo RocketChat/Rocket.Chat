@@ -3,7 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useUserSubscription, useTranslation } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { hasPermission } from '../../../../../../app/authorization/client';
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../../components/Contextualbar';
@@ -16,6 +16,7 @@ import Info from '../../../components/Info';
 import Label from '../../../components/Label';
 import { AgentField, ContactField, SlaField } from '../../components';
 import PriorityField from '../../components/PriorityField';
+import { formatQueuedAt } from '../../utils/formatQueuedAt';
 import DepartmentField from './DepartmentField';
 import VisitorClientInfo from './VisitorClientInfo';
 
@@ -51,6 +52,8 @@ function ChatInfoDirectory({ id, route = undefined, room }) {
 	const hasLocalEditRoomPermission = servedBy?._id === Meteor.userId();
 	const visitorId = v?._id;
 	const queueStartedAt = queuedAt || ts;
+
+	const queueTime = useMemo(() => formatQueuedAt(room), [room]);
 
 	const dispatchToastMessage = useToastMessageDispatch();
 	useEffect(() => {
@@ -91,7 +94,7 @@ function ChatInfoDirectory({ id, route = undefined, room }) {
 
 	return (
 		<>
-			<ContextualbarScrollableContent p='x24'>
+			<ContextualbarScrollableContent p={24}>
 				<Margins block='x4'>
 					{room && v && <ContactField contact={v} room={room} />}
 					{visitorId && <VisitorClientInfo uid={visitorId} />}
@@ -102,7 +105,7 @@ function ChatInfoDirectory({ id, route = undefined, room }) {
 							<Label>{t('Tags')}</Label>
 							<Info>
 								{tags.map((tag) => (
-									<Box key={tag} mie='x4' display='inline'>
+									<Box key={tag} mie={4} display='inline'>
 										<Tag style={{ display: 'inline' }} disabled>
 											{tag}
 										</Tag>
@@ -120,11 +123,7 @@ function ChatInfoDirectory({ id, route = undefined, room }) {
 					{queueStartedAt && (
 						<Field>
 							<Label>{t('Queue_Time')}</Label>
-							{servedBy ? (
-								<Info>{moment(servedBy.ts).from(moment(queueStartedAt), true)}</Info>
-							) : (
-								<Info>{moment(queueStartedAt).fromNow(true)}</Info>
-							)}
+							{queueTime}
 						</Field>
 					)}
 					{closedAt && (

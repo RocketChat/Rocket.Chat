@@ -1,9 +1,10 @@
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { IServiceClass } from '@rocket.chat/core-services';
-import { EnterpriseSettings } from '@rocket.chat/core-services';
-import { UserStatus, isSettingColor } from '@rocket.chat/core-typings';
+import { EnterpriseSettings, listenToMessageSentEvent } from '@rocket.chat/core-services';
+import { UserStatus, isSettingColor, isSettingEnterprise } from '@rocket.chat/core-typings';
 import type { IUser, IRoom, VideoConference, ISetting, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { parse } from '@rocket.chat/message-parser';
 
 import { settings } from '../../../app/settings/server/cached';
@@ -26,6 +27,11 @@ const minimongoChangeMap: Record<string, string> = {
 
 export class ListenersModule {
 	constructor(service: IServiceClass, notifications: NotificationsModule) {
+		const logger = new Logger('ListenersModule');
+
+		service.onEvent('license.sync', () => notifications.notifyAllInThisInstance('license'));
+		service.onEvent('license.actions', () => notifications.notifyAllInThisInstance('license'));
+
 		service.onEvent('emoji.deleteCustom', (emoji) => {
 			notifications.notifyLoggedInThisInstance('deleteEmojiCustom', {
 				emojiData: emoji,
@@ -93,9 +99,10 @@ export class ListenersModule {
 			});
 		});
 
-		service.onEvent('user.deleted', ({ _id: userId }) => {
+		service.onEvent('user.deleted', ({ _id: userId }, data) => {
 			notifications.notifyLoggedInThisInstance('Users:Deleted', {
 				userId,
+				...data,
 			});
 		});
 
@@ -160,7 +167,7 @@ export class ListenersModule {
 			});
 		});
 
-		service.onEvent('watch.messages', ({ message }) => {
+		listenToMessageSentEvent(service, async (message) => {
 			if (!message.rid) {
 				return;
 			}
@@ -173,6 +180,10 @@ export class ListenersModule {
 			);
 
 			notifications.streamRoomMessage.emitWithoutBroadcast(message.rid, message);
+		});
+
+		service.onEvent('notify.messagesRead', ({ rid, until, tmid }): void => {
+			notifications.notifyRoomInThisInstance(rid, 'messagesRead', { tmid, until });
 		});
 
 		service.onEvent('watch.subscriptions', ({ clientAction, subscription }) => {
@@ -247,11 +258,16 @@ export class ListenersModule {
 		});
 
 		service.onEvent('watch.settings', async ({ clientAction, setting }): Promise<void> => {
-			if (clientAction !== 'removed') {
-				// TODO check if setting is EE before calling this
-				const result = await EnterpriseSettings.changeSettingValue(setting);
-				if (result !== undefined && !(result instanceof Error)) {
-					setting.value = result;
+			// if a EE setting changed make sure we broadcast the correct value according to license
+			if (clientAction !== 'removed' && isSettingEnterprise(setting)) {
+				try {
+					const result = await EnterpriseSettings.changeSettingValue(setting);
+					if (result !== undefined && !(result instanceof Error)) {
+						setting.value = result;
+					}
+				} catch (err: unknown) {
+					logger.error({ msg: 'Error getting proper enterprise setting value. Returning `invalidValue` instead.', err });
+					setting.value = setting.invalidValue;
 				}
 			}
 
@@ -337,13 +353,19 @@ export class ListenersModule {
 			});
 		});
 
+		service.onEvent('banner.user', (userId, banner): void => {
+			notifications.notifyUserInThisInstance(userId, 'banners', banner);
+		});
+
 		service.onEvent('banner.new', (bannerId): void => {
 			notifications.notifyLoggedInThisInstance('new-banner', { bannerId }); // deprecated
 			notifications.notifyLoggedInThisInstance('banner-changed', { bannerId });
 		});
+
 		service.onEvent('banner.disabled', (bannerId): void => {
 			notifications.notifyLoggedInThisInstance('banner-changed', { bannerId });
 		});
+
 		service.onEvent('banner.enabled', (bannerId): void => {
 			notifications.notifyLoggedInThisInstance('banner-changed', { bannerId });
 		});
@@ -396,6 +418,13 @@ export class ListenersModule {
 
 		service.onEvent('notify.calendar', (uid, data): void => {
 			notifications.notifyUserInThisInstance(uid, 'calendar', data);
+		});
+
+		service.onEvent('notify.importedMessages', ({ roomIds }): void => {
+			roomIds.forEach((rid) => {
+				// couldnt get TS happy by providing no data, so had to provide null
+				notifications.notifyRoomInThisInstance(rid, 'messagesImported', null);
+			});
 		});
 
 		service.onEvent('connector.statuschanged', (enabled): void => {

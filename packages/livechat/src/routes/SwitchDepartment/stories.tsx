@@ -3,7 +3,7 @@ import type { Meta, Story } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import { screenDecorator, screenProps } from '../../helpers.stories';
-import SwitchDepartment from './component';
+import SwitchDepartment from './index';
 
 export default {
 	title: 'Routes/SwitchDepartment',
@@ -40,9 +40,3 @@ const Template: Story<ComponentProps<typeof SwitchDepartment>> = (args) => <Swit
 
 export const Normal = Template.bind({});
 Normal.storyName = 'normal';
-
-export const Loading = Template.bind({});
-Loading.storyName = 'loading';
-Loading.args = {
-	loading: true,
-};

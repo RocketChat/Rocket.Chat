@@ -7,10 +7,11 @@ export { keys };
 export type TranslationLanguage = {
 	en: string;
 	name: string;
+	ogName: string;
 	key: string;
 };
 
-export type TranslationKey = keyof typeof keys;
+export type TranslationKey = keyof typeof keys | `app-${string}.${string}`;
 
 export type TranslationContextValue = {
 	languages: TranslationLanguage[];
@@ -33,6 +34,7 @@ export const TranslationContext = createContext<TranslationContextValue>({
 		{
 			name: 'Default',
 			en: 'Default',
+			ogName: 'Default',
 			key: '',
 		},
 	],

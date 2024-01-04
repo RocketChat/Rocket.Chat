@@ -3,7 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useUserSubscription, useTranslation, usePermission } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../../components/Contextualbar';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
@@ -16,7 +16,7 @@ import Label from '../../../components/Label';
 import { AgentField, SlaField, ContactField, SourceField } from '../../components';
 import PriorityField from '../../components/PriorityField';
 import { useOmnichannelRoomInfo } from '../../hooks/useOmnichannelRoomInfo';
-import { useTagsLabels } from '../hooks/useTagsLabels';
+import { formatQueuedAt } from '../../utils/formatQueuedAt';
 import DepartmentField from './DepartmentField';
 import VisitorClientInfo from './VisitorClientInfo';
 
@@ -34,6 +34,7 @@ function ChatInfo({ id, route }) {
 
 	const {
 		ts,
+		tags,
 		closedAt,
 		departmentId,
 		v,
@@ -49,7 +50,6 @@ function ChatInfo({ id, route }) {
 		queuedAt,
 	} = room || { room: { v: {} } };
 
-	const tags = useTagsLabels(room?.tags);
 	const routePath = useRoute(route || 'omnichannel-directory');
 	const canViewCustomFields = usePermission('view-livechat-room-customfields');
 	const subscription = useUserSubscription(id);
@@ -57,6 +57,8 @@ function ChatInfo({ id, route }) {
 	const hasLocalEditRoomPermission = servedBy?._id === Meteor.userId();
 	const visitorId = v?._id;
 	const queueStartedAt = queuedAt || ts;
+
+	const queueTime = useMemo(() => formatQueuedAt(room), [room]);
 
 	useEffect(() => {
 		if (allCustomFields) {
@@ -95,7 +97,7 @@ function ChatInfo({ id, route }) {
 
 	return (
 		<>
-			<ContextualbarScrollableContent p='x24'>
+			<ContextualbarScrollableContent p={24}>
 				<Margins block='x4'>
 					{source && <SourceField room={room} />}
 					{room && v && <ContactField contact={v} room={room} />}
@@ -107,7 +109,7 @@ function ChatInfo({ id, route }) {
 							<Label>{t('Tags')}</Label>
 							<Info>
 								{tags.map((tag) => (
-									<Box key={tag} mie='x4' display='inline'>
+									<Box key={tag} mie={4} display='inline'>
 										<Tag style={{ display: 'inline' }} disabled>
 											{tag}
 										</Tag>
@@ -125,11 +127,7 @@ function ChatInfo({ id, route }) {
 					{queueStartedAt && (
 						<Field>
 							<Label>{t('Queue_Time')}</Label>
-							{servedBy ? (
-								<Info>{moment(servedBy.ts).from(moment(queueStartedAt), true)}</Info>
-							) : (
-								<Info>{moment(queueStartedAt).fromNow(true)}</Info>
-							)}
+							<Info>{queueTime}</Info>
 						</Field>
 					)}
 					{closedAt && (
@@ -175,7 +173,7 @@ function ChatInfo({ id, route }) {
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button icon='pencil' onClick={onEditClick}>
+					<Button icon='pencil' onClick={onEditClick} data-qa-id='room-info-edit'>
 						{t('Edit')}
 					</Button>
 				</ButtonGroup>

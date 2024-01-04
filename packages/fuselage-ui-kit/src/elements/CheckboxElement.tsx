@@ -21,14 +21,14 @@ const CheckboxElement = ({
         const isChecked = value?.includes(option.value);
 
         return (
-          <Box key={option.value} pb='x4'>
+          <Box key={option.value} pb={4}>
             <CheckBox
               disabled={loading}
               value={option.value}
               checked={isChecked}
               onChange={action}
             />
-            <Box is='label' pis='x8'>
+            <Box is='label' pis={8}>
               {surfaceRenderer.renderTextObject(
                 option.text,
                 0,

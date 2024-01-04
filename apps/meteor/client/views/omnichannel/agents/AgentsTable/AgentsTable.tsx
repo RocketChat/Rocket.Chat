@@ -1,8 +1,8 @@
 import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { MutableRefObject } from 'react';
-import React, { useMemo, useState, useEffect } from 'react';
+import { hashQueryKey } from '@tanstack/react-query';
+import React, { useMemo, useState } from 'react';
 
 import FilterByText from '../../../../components/FilterByText';
 import GenericNoResults from '../../../../components/GenericNoResults/GenericNoResults';
@@ -21,7 +21,7 @@ import AddAgent from './AddAgent';
 import AgentsTableRow from './AgentsTableRow';
 
 // TODO: missing error state
-const AgentsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
+const AgentsTable = () => {
 	const t = useTranslation();
 	const [filter, setFilter] = useState('');
 
@@ -37,10 +37,8 @@ const AgentsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 	const query = useQuery({ text: debouncedFilter, current, itemsPerPage }, debouncedSort);
 	const { data, isSuccess, isLoading, refetch } = useAgentsQuery(query);
 
-	useEffect(() => {
-		reload.current = refetch;
-	}, [reload, refetch]);
-	reload.current = refetch;
+	const [defaultQuery] = useState(hashQueryKey([query]));
+	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
 
 	const onHeaderClick = useMutableCallback((id) => {
 		if (sortBy === id) {
@@ -75,7 +73,7 @@ const AgentsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 	return (
 		<>
 			<AddAgent reload={refetch} />
-			<FilterByText onChange={({ text }) => setFilter(text)} />
+			{((isSuccess && data?.users.length > 0) || queryHasChanged) && <FilterByText onChange={({ text }) => setFilter(text)} />}
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
@@ -84,14 +82,23 @@ const AgentsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 					</GenericTableBody>
 				</GenericTable>
 			)}
-			{isSuccess && data.users.length === 0 && <GenericNoResults />}
+			{isSuccess && data?.users.length === 0 && queryHasChanged && <GenericNoResults />}
+			{isSuccess && data.users.length === 0 && !queryHasChanged && (
+				<GenericNoResults
+					icon='headset'
+					title={t('No_agents_yet')}
+					description={t('No_agents_yet_description')}
+					linkHref='https://go.rocket.chat/omnichannel-docs'
+					linkText={t('Learn_more_about_agents')}
+				/>
+			)}
 			{isSuccess && data?.users.length > 0 && (
 				<>
-					<GenericTable>
+					<GenericTable aria-busy={filter !== debouncedFilter} data-qa-id='agents-table'>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody data-qa='GenericTableAgentInfoBody'>
 							{data?.users.map((user) => (
-								<AgentsTableRow key={user._id} user={user} mediaQuery={mediaQuery} reload={refetch} />
+								<AgentsTableRow key={user._id} user={user} mediaQuery={mediaQuery} />
 							))}
 						</GenericTableBody>
 					</GenericTable>

@@ -5,7 +5,6 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { callbacks } from '../../../../../lib/callbacks';
 import { i18n } from '../../../../../server/lib/i18n';
 import { settings } from '../../../../settings/server';
-import { joinRoomMethod } from '../../methods/joinRoom';
 
 /**
  * This function returns a string ready to be shown in the notification
@@ -65,8 +64,4 @@ export function messageContainsHighlight(message: IMessage, highlights: string[]
 		const regexp = new RegExp(escapeRegExp(highlight), 'i');
 		return regexp.test(message.msg);
 	});
-}
-
-export async function callJoinRoom(userId: string, rid: string): Promise<void> {
-	await joinRoomMethod(userId, rid);
 }

@@ -1,34 +1,36 @@
 import type { ICustomSound } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 
-import { CachedCollectionManager } from '../../../ui-cached-collection/client';
 import { getURL } from '../../../utils/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 
 const getCustomSoundId = (soundId: ICustomSound['_id']) => `custom-sound-${soundId}`;
+const getAssetUrl = (asset: string, params?: Record<string, any>) => getURL(asset, params, undefined, true);
 
 const defaultSounds = [
-	{ _id: 'chime', name: 'Chime', extension: 'mp3', src: getURL('sounds/chime.mp3') },
-	{ _id: 'door', name: 'Door', extension: 'mp3', src: getURL('sounds/door.mp3') },
-	{ _id: 'beep', name: 'Beep', extension: 'mp3', src: getURL('sounds/beep.mp3') },
-	{ _id: 'chelle', name: 'Chelle', extension: 'mp3', src: getURL('sounds/chelle.mp3') },
-	{ _id: 'ding', name: 'Ding', extension: 'mp3', src: getURL('sounds/ding.mp3') },
-	{ _id: 'droplet', name: 'Droplet', extension: 'mp3', src: getURL('sounds/droplet.mp3') },
-	{ _id: 'highbell', name: 'Highbell', extension: 'mp3', src: getURL('sounds/highbell.mp3') },
-	{ _id: 'seasons', name: 'Seasons', extension: 'mp3', src: getURL('sounds/seasons.mp3') },
-	{ _id: 'telephone', name: 'Telephone', extension: 'mp3', src: getURL('sounds/telephone.mp3') },
-	{ _id: 'outbound-call-ringing', name: 'Outbound Call Ringing', extension: 'mp3', src: getURL('sounds/outbound-call-ringing.mp3') },
-	{ _id: 'call-ended', name: 'Call Ended', extension: 'mp3', src: getURL('sounds/call-ended.mp3') },
-	{ _id: 'dialtone', name: 'Dialtone', extension: 'mp3', src: getURL('sounds/dialtone.mp3') },
-	{ _id: 'ringtone', name: 'Ringtone', extension: 'mp3', src: getURL('sounds/ringtone.mp3') },
+	{ _id: 'chime', name: 'Chime', extension: 'mp3', src: getAssetUrl('sounds/chime.mp3') },
+	{ _id: 'door', name: 'Door', extension: 'mp3', src: getAssetUrl('sounds/door.mp3') },
+	{ _id: 'beep', name: 'Beep', extension: 'mp3', src: getAssetUrl('sounds/beep.mp3') },
+	{ _id: 'chelle', name: 'Chelle', extension: 'mp3', src: getAssetUrl('sounds/chelle.mp3') },
+	{ _id: 'ding', name: 'Ding', extension: 'mp3', src: getAssetUrl('sounds/ding.mp3') },
+	{ _id: 'droplet', name: 'Droplet', extension: 'mp3', src: getAssetUrl('sounds/droplet.mp3') },
+	{ _id: 'highbell', name: 'Highbell', extension: 'mp3', src: getAssetUrl('sounds/highbell.mp3') },
+	{ _id: 'seasons', name: 'Seasons', extension: 'mp3', src: getAssetUrl('sounds/seasons.mp3') },
+	{ _id: 'telephone', name: 'Telephone', extension: 'mp3', src: getAssetUrl('sounds/telephone.mp3') },
+	{ _id: 'outbound-call-ringing', name: 'Outbound Call Ringing', extension: 'mp3', src: getAssetUrl('sounds/outbound-call-ringing.mp3') },
+	{ _id: 'call-ended', name: 'Call Ended', extension: 'mp3', src: getAssetUrl('sounds/call-ended.mp3') },
+	{ _id: 'dialtone', name: 'Dialtone', extension: 'mp3', src: getAssetUrl('sounds/dialtone.mp3') },
+	{ _id: 'ringtone', name: 'Ringtone', extension: 'mp3', src: getAssetUrl('sounds/ringtone.mp3') },
 ];
 
 class CustomSoundsClass {
 	list: ReactiveVar<Record<string, ICustomSound>>;
 
+	initialFetchDone: boolean;
+
 	constructor() {
 		this.list = new ReactiveVar({});
+		this.initialFetchDone = false;
 		defaultSounds.forEach((sound) => this.add(sound));
 	}
 
@@ -42,7 +44,7 @@ class CustomSoundsClass {
 
 		const audio = document.createElement('audio');
 		audio.id = getCustomSoundId(sound._id);
-		audio.preload = 'auto';
+		audio.preload = 'none';
 		audio.appendChild(source);
 
 		document.body.appendChild(audio);
@@ -85,7 +87,7 @@ class CustomSoundsClass {
 	}
 
 	getURL(sound: ICustomSound) {
-		return getURL(`/custom-sounds/${sound._id}.${sound.extension}?_dc=${sound.random || 0}`);
+		return getAssetUrl(`/custom-sounds/${sound._id}.${sound.extension}`, { _dc: sound.random || 0 });
 	}
 
 	getList() {
@@ -129,15 +131,17 @@ class CustomSoundsClass {
 
 		return audio && audio.duration > 0 && !audio.paused;
 	};
+
+	fetchCustomSoundList = async () => {
+		if (this.initialFetchDone) {
+			return;
+		}
+		const result = await sdk.call('listCustomSounds');
+		for (const sound of result) {
+			this.add(sound);
+		}
+		this.initialFetchDone = true;
+	};
 }
 
 export const CustomSounds = new CustomSoundsClass();
-
-Meteor.startup(() =>
-	CachedCollectionManager.onLogin(async () => {
-		const result = await sdk.call('listCustomSounds');
-		for (const sound of result) {
-			CustomSounds.add(sound);
-		}
-	}),
-);

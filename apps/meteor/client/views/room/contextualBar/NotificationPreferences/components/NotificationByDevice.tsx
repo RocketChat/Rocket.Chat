@@ -14,7 +14,7 @@ const NotificationByDevice = ({ device, icon, children }: NotificationByDevicePr
 		title={
 			<Box display='flex' alignItems='center'>
 				<Icon name={icon} size='x18' />
-				<Box fontScale='p2m' mi='x16'>
+				<Box fontScale='p2m' mi={16}>
 					{device}
 				</Box>
 			</Box>

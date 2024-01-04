@@ -3,7 +3,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 
-import Page from '../../../../../client/components/Page';
+import { Page, PageHeader, PageScrollableContent } from '../../../../../client/components/Page';
 import ChannelsTab from './channels/ChannelsTab';
 import MessagesTab from './messages/MessagesTab';
 import UsersTab from './users/UsersTab';
@@ -34,9 +34,14 @@ const EngagementDashboardPage = ({ tab = 'users', onSelectTab }: EngagementDashb
 
 	return (
 		<Page background='tint'>
-			<Page.Header title={t('Engagement')}>
-				<Select options={timezoneOptions} value={timezoneId} onChange={handleTimezoneChange} />
-			</Page.Header>
+			<PageHeader title={t('Engagement')}>
+				<Select
+					options={timezoneOptions}
+					value={timezoneId}
+					onChange={(value) => handleTimezoneChange(String(value))}
+					aria-label={t('Default_Timezone_For_Reporting')}
+				/>
+			</PageHeader>
 			<Tabs>
 				<Tabs.Item selected={tab === 'users'} onClick={handleTabClick('users')}>
 					{t('Users')}
@@ -48,13 +53,13 @@ const EngagementDashboardPage = ({ tab = 'users', onSelectTab }: EngagementDashb
 					{t('Channels')}
 				</Tabs.Item>
 			</Tabs>
-			<Page.ScrollableContent padding={0}>
-				<Box m='x24'>
+			<PageScrollableContent padding={0}>
+				<Box m={24}>
 					{(tab === 'users' && <UsersTab timezone={timezoneId} />) ||
 						(tab === 'messages' && <MessagesTab />) ||
 						(tab === 'channels' && <ChannelsTab />)}
 				</Box>
-			</Page.ScrollableContent>
+			</PageScrollableContent>
 		</Page>
 	);
 };

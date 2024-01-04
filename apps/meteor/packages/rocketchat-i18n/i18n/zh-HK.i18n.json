@@ -817,7 +817,6 @@
   "Custom_Sound_Has_Been_Deleted": "自定义声音已被删除。",
   "Custom_Sound_Info": "自定义声音信息",
   "Custom_Sound_Saved_Successfully": "自定义声音保存成功",
-  "Custom_Sounds": "自定义声音",
   "Custom_Translations": "定制翻译",
   "Custom_Translations_Description": "应该是有效的JSON，其中键是包含键和翻译字典的语言。例如：  \n `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Customize": "定制",
@@ -996,7 +995,6 @@
   "Enter_name_here": "在此输入姓名",
   "Enter_Normal": "普通模式（使用回车发送）",
   "Enter_to": "进入",
-  "Enterprise": "企业",
   "Entertainment": "娱乐",
   "Error": "错误",
   "Error_404": "错误：404",
@@ -1837,7 +1835,6 @@
   "Num_Agents": "＃代理商",
   "Number_of_messages": "消息的数量",
   "OAuth_Application": "OAuth应用程序",
-  "OAuth_Applications": "OAuth应用程序",
   "Objects": "对象",
   "Off": "离",
   "Off_the_record_conversation": "最新的对话",
@@ -1857,6 +1854,8 @@
   "Offline_success_message": "离线成功消息",
   "Offline_unavailable": "离线不可用",
   "Older_than": "年长过",
+  "Omnichannel_Reports_Status_Open": "开放",
+  "Omnichannel_Reports_Status_Closed": "关闭",
   "On": "上",
   "online": "在线",
   "Online": "在线",
@@ -2772,5 +2771,7 @@
   "registration.component.form.reasonToJoin": "加入的理由",
   "registration.component.form.invalidConfirmPass": "第二次密码输入与第一次不匹配",
   "registration.component.form.confirmPassword": "确认密码",
-  "registration.component.form.sendConfirmationEmail": "已发送确认电子邮件"
+  "registration.component.form.sendConfirmationEmail": "已发送确认电子邮件",
+  "Enterprise": "企业",
+  "UpgradeToGetMore_engagement-dashboard_Title": "分析"
 }

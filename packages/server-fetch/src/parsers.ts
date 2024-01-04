@@ -1,32 +1,20 @@
 import type { ExtendedFetchOptions, FetchOptions, OriginalFetchOptions } from './types';
 
-function isPostOrPutOrDeleteWithBody(options?: ExtendedFetchOptions): boolean {
-	// No method === 'get'
-	if (!options?.method) {
-		return false;
-	}
-	const { method, body } = options;
-	const lowerMethod = method?.toLowerCase();
-	return ['post', 'put', 'delete'].includes(lowerMethod) && body != null;
-}
-
 const jsonParser = (options: ExtendedFetchOptions) => {
 	if (!options) {
 		return {};
 	}
 
-	if (isPostOrPutOrDeleteWithBody(options)) {
-		try {
-			if (options && typeof options.body === 'object') {
-				options.body = JSON.stringify(options.body);
-				options.headers = {
-					'Content-Type': 'application/json',
-					...options.headers,
-				};
-			}
-		} catch (e) {
-			// Body is not JSON, do nothing
+	try {
+		if (typeof options.body === 'object' && !Buffer.isBuffer(options.body)) {
+			options.body = JSON.stringify(options.body);
+			options.headers = {
+				...options.headers,
+				'Content-Type': 'application/json', // force content type to be json
+			};
 		}
+	} catch (e) {
+		// Body is not JSON, do nothing
 	}
 
 	return options as FetchOptions;

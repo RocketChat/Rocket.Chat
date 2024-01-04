@@ -7,6 +7,7 @@ declare module 'meteor/accounts-base' {
 				password?: string;
 				profile?: Record<string, unknown>;
 				joinDefaultChannelsSilenced?: boolean;
+				skipEmailValidation?: boolean;
 			},
 			callback?: (error?: Error | Meteor.Error | Meteor.TypedError) => void,
 		): string;

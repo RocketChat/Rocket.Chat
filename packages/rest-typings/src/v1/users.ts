@@ -1,7 +1,14 @@
-import type { IExportOperation, ISubscription, ITeam, IUser, IPersonalAccessToken, UserStatus } from '@rocket.chat/core-typings';
+import type {
+	IExportOperation,
+	AvatarServiceObject,
+	ISubscription,
+	ITeam,
+	IUser,
+	IPersonalAccessToken,
+	UserStatus,
+} from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
-import type { UsersSendConfirmationEmailParamsPOST } from '..';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 import type { UserCreateParamsPOST } from './users/UserCreateParamsPOST';
@@ -12,7 +19,9 @@ import type { UserSetActiveStatusParamsPOST } from './users/UserSetActiveStatusP
 import type { UsersAutocompleteParamsGET } from './users/UsersAutocompleteParamsGET';
 import type { UsersInfoParamsGet } from './users/UsersInfoParamsGet';
 import type { UsersListTeamsParamsGET } from './users/UsersListTeamsParamsGET';
+import type { UsersSendConfirmationEmailParamsPOST } from './users/UsersSendConfirmationEmailParamsPOST';
 import type { UsersSetPreferencesParamsPOST } from './users/UsersSetPreferenceParamsPOST';
+import type { UsersUpdateOwnBasicInfoParamsPOST } from './users/UsersUpdateOwnBasicInfoParamsPOST';
 import type { UsersUpdateParamsPOST } from './users/UsersUpdateParamsPOST';
 
 const ajv = new Ajv({
@@ -232,7 +241,7 @@ export type UsersEndpoints = {
 
 	'/v1/users.getAvatarSuggestion': {
 		GET: () => {
-			suggestions: Record<string, { blob: string; contentType: string; service: string; url: string }>;
+			suggestions: Record<string, AvatarServiceObject>;
 		};
 	};
 
@@ -350,18 +359,7 @@ export type UsersEndpoints = {
 	};
 
 	'/v1/users.updateOwnBasicInfo': {
-		POST: (params: {
-			data: {
-				email?: string;
-				name?: string;
-				username?: string;
-				nickname?: string;
-				statusText?: string;
-				newPassword?: string;
-				currentPassword?: string;
-			};
-			customFields?: Record<string, unknown>;
-		}) => {
+		POST: (params: UsersUpdateOwnBasicInfoParamsPOST) => {
 			user: IUser;
 		};
 	};

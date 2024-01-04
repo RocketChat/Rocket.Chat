@@ -11,10 +11,10 @@ on:
         options:
           - next
           - patch
-          - publish
+          - cut
       base-ref:
         description: Base version
-        default: master
+        default: develop
         required: false
 
 env:
@@ -25,8 +25,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.inputs.base-ref }}
           fetch-depth: 0
           token: ${{ secrets.CI_PAT }}
 
@@ -42,30 +43,10 @@ jobs:
       - name: Build packages
         run: yarn build
 
-      - name: Start next release
-        if: ${{ github.event.inputs.name == 'next' }}
+      - name: 'Start release: ${{ github.event.inputs.name }}'
         uses: ./packages/release-action
         with:
-          action: bump
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.CI_PAT }}
-
-      - name: Start patch release
-        if: ${{ github.event.inputs.name == 'patch' }}
-        uses: ./packages/release-action
-        with:
-          action: patch
-          base-ref: ${{ github.event.inputs.base-ref }}
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.CI_PAT }}
-
-      - name: Publish release
-        if: ${{ github.event.inputs.name == 'publish' }}
-        uses: ./packages/release-action
-        with:
-          action: publish
+          action: ${{ github.event.inputs.name }}
           base-ref: ${{ github.event.inputs.base-ref }}
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -794,7 +794,6 @@
   "Custom_Sound_Has_Been_Deleted": "Гаалийн дуу устгагдсан байна.",
   "Custom_Sound_Info": "Custom Sound Info",
   "Custom_Sound_Saved_Successfully": "Гаалийн дуу амжилттай хадгалагдсан",
-  "Custom_Sounds": "Гаалийн дуу чимээ",
   "Custom_Translations": "Гаалийн хэлүүд",
   "Custom_Translations_Description": "Хүчинтэй JSON байх ёстой түлхүүрүүд нь түлхүүр үг болон орчуулгын толь агуулсан хэлүүд байх ёстой. Жишээ нь:  \n `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Customize": "Тохируулах",
@@ -973,7 +972,6 @@
   "Enter_name_here": "Нэрийг оруулна уу",
   "Enter_Normal": "Хэвийн горим (Enter ашиглан илгээ)",
   "Enter_to": "Руу оруулна уу",
-  "Enterprise": "Аж ахуйн нэгж",
   "Entertainment": "Үзвэр үйлчилгээ",
   "Error": "Алдаа",
   "Error_404": "Алдаа: 404",
@@ -1808,7 +1806,6 @@
   "Num_Agents": "# Агентууд",
   "Number_of_messages": "Мессежний тоо",
   "OAuth_Application": "OAuth програм",
-  "OAuth_Applications": "OAuth програмууд",
   "Objects": "Объект",
   "Off": "Off",
   "Off_the_record_conversation": "Бичлэгээс гадуурх ярилцлага",
@@ -1828,6 +1825,8 @@
   "Offline_success_message": "Оффлайн амжилттай зурвас",
   "Offline_unavailable": "Офлайн боломжгүй байна",
   "Older_than": "Аас дээш насны",
+  "Omnichannel_Reports_Status_Open": "Нээлттэй байна",
+  "Omnichannel_Reports_Status_Closed": "Хаалттай байна",
   "On": "Дээр",
   "online": "онлайн байна",
   "Online": "Онлайн",
@@ -2746,5 +2745,7 @@
   "registration.component.form.reasonToJoin": "Яагаад болохгүй гэж?",
   "registration.component.form.invalidConfirmPass": "Нууц үг баталгаажуулалт нь нууц үгтэй таарахгүй байна",
   "registration.component.form.confirmPassword": "Нууц үгээ батлах",
-  "registration.component.form.sendConfirmationEmail": "Баталгаажуулах имэйл илгээх"
+  "registration.component.form.sendConfirmationEmail": "Баталгаажуулах имэйл илгээх",
+  "Enterprise": "Аж ахуйн нэгж",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Аналитик"
 }

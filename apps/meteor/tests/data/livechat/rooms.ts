@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import type {
-	IInquiry,
+	ILivechatInquiryRecord,
 	ILivechatAgent,
 	ILivechatDepartment,
 	ILivechatVisitor,
@@ -8,7 +8,7 @@ import type {
 	IOmnichannelRoom,
 } from '@rocket.chat/core-typings';
 import { api, credentials, methodCall, request } from '../api-data';
-import { getSettingValueById, updatePermission, updateSetting } from '../permissions.helper';
+import { getSettingValueById, restorePermissionToRoles, updateSetting } from '../permissions.helper';
 import { IUserCredentialsHeader, adminUsername } from '../user';
 import { getRandomVisitorToken } from './users';
 import { DummyResponse, sleep } from './utils';
@@ -68,12 +68,12 @@ export const takeInquiry = async (inquiryId: string, agentCredentials?: IUserCre
     await request.post(api('livechat/inquiries.take')).set(agentCredentials || credentials).send({ userId, inquiryId }).expect(200);
 };
 
-export const fetchInquiry = (roomId: string): Promise<IInquiry> => {
+export const fetchInquiry = (roomId: string): Promise<ILivechatInquiryRecord> => {
 	return new Promise((resolve, reject) => {
 		request
 			.get(api(`livechat/inquiries.getOne?roomId=${roomId}`))
 			.set(credentials)
-			.end((err: Error, res: DummyResponse<IInquiry>) => {
+			.end((err: Error, res: DummyResponse<ILivechatInquiryRecord>) => {
 				if (err) {
 					return reject(err);
 				}
@@ -82,7 +82,7 @@ export const fetchInquiry = (roomId: string): Promise<IInquiry> => {
 	});
 };
 
-export const createDepartment = (agents?: { agentId: string }[], name?: string): Promise<ILivechatDepartment> => {
+export const createDepartment = (agents?: { agentId: string }[], name?: string, enabled = true, opts: Record<string, any> = {}): Promise<ILivechatDepartment> => {
 	return new Promise((resolve, reject) => {
 		request
 			.post(api('livechat/department'))
@@ -90,10 +90,11 @@ export const createDepartment = (agents?: { agentId: string }[], name?: string):
 			.send({
 				department: {
 					name: name || `Department ${Date.now()}`,
-					enabled: true,
+					enabled,
 					showOnOfflineForm: true,
 					showOnRegistration: true,
 					email: 'a@b.com',
+					...opts,
 				},
 				agents,
 			})
@@ -139,7 +140,7 @@ export const createManager = (overrideUsername?: string): Promise<ILivechatAgent
 	});
 
 export const makeAgentAvailable = async (overrideCredentials?: { 'X-Auth-Token': string | undefined; 'X-User-Id': string | undefined }): Promise<Response> => {
-	await updatePermission('view-l-room', ['livechat-agent', 'livechat-manager', 'admin']);
+	await restorePermissionToRoles('view-l-room');
 	await request
 		.post(api('users.setStatus'))
 		.set(overrideCredentials || credentials)
@@ -185,6 +186,9 @@ export const getLivechatRoomInfo = (roomId: string): Promise<IOmnichannelRoom> =
 	});
 };
 
+/**
+ * @summary Sends message as visitor
+*/
 export const sendMessage = (roomId: string, message: string, visitorToken: string): Promise<IMessage> => {
 	return new Promise((resolve, reject) => {
 		request
@@ -245,7 +249,7 @@ export const fetchMessages = (roomId: string, visitorToken: string): Promise<IMe
 };
 
 export const closeOmnichannelRoom = async (roomId: string, tags?: string[]): Promise<void> => {
-	await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: roomId, ...tags && { tags } }).expect(200);
+	await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: roomId, ...tags && { tags }, comment: faker.lorem.sentence() }).expect(200);
 };
 
 export const bulkCreateLivechatRooms = async (
@@ -310,3 +314,19 @@ export const placeRoomOnHold = async (roomId: string): Promise<void> => {
         .send({ roomId })
         .expect(200);
 }
+
+export const moveBackToQueue = async (roomId: string, overrideCredentials?: IUserCredentialsHeader): Promise<void> => {
+	await request
+		.post(methodCall('livechat:returnAsInquiry'))
+		.set(overrideCredentials || credentials)
+		.send({
+			message: JSON.stringify({
+				method: 'livechat:returnAsInquiry',
+				params: [roomId],
+				id: 'id',
+				msg: 'method',
+			}),
+		})
+		.expect('Content-Type', 'application/json')
+		.expect(200);
+};

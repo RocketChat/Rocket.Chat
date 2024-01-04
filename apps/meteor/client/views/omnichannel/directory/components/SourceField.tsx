@@ -58,7 +58,7 @@ const SourceField: FC<SourceFieldProps> = ({ room }) => {
 			<Info>
 				<Box display='flex' alignItems='center'>
 					<OmnichannelRoomIcon room={room} size='x24' placement='default' />
-					<Label mi='x8' mbe='0'>
+					<Label mi={8} mbe='0'>
 						{defaultTypesLabels[room.source.type] || roomSource}
 					</Label>
 					{defaultTypesVisitorData[room.source.type]}

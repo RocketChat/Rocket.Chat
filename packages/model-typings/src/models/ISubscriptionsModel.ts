@@ -1,5 +1,15 @@
-import type { ISubscription, IRole, IUser, IRoom, RoomType, SpotlightUser } from '@rocket.chat/core-typings';
-import type { FindOptions, FindCursor, UpdateResult, DeleteResult, Document, AggregateOptions, Filter, InsertOneResult } from 'mongodb';
+import type { ISubscription, IRole, IUser, IRoom, RoomType, SpotlightUser, AtLeast } from '@rocket.chat/core-typings';
+import type {
+	FindOptions,
+	FindCursor,
+	UpdateResult,
+	DeleteResult,
+	Document,
+	AggregateOptions,
+	Filter,
+	InsertOneResult,
+	InsertManyResult,
+} from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -121,6 +131,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	findByUserId(userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 	cachedFindByUserId(userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 	updateAutoTranslateById(_id: string, autoTranslate: boolean): Promise<UpdateResult>;
+	disableAutoTranslateByRoomId(roomId: IRoom['_id']): Promise<UpdateResult | Document>;
 	findAlwaysNotifyDesktopUsersByRoomId(roomId: string): FindCursor<ISubscription>;
 
 	findOneByRoomNameAndUserId(roomName: string, userId: string): Promise<ISubscription | null>;
@@ -216,6 +227,10 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	): Promise<UpdateResult | Document>;
 	removeByUserId(userId: string): Promise<number>;
 	createWithRoomAndUser(room: IRoom, user: IUser, extraData?: Record<string, any>): Promise<InsertOneResult<ISubscription>>;
+	createWithRoomAndManyUsers(
+		room: IRoom,
+		users: { user: AtLeast<IUser, '_id' | 'username' | 'name' | 'settings'>; extraData: Record<string, any> }[],
+	): Promise<InsertManyResult<ISubscription>>;
 	removeByRoomIdsAndUserId(rids: string[], userId: string): Promise<number>;
 	removeByRoomIdAndUserId(roomId: string, userId: string): Promise<number>;
 

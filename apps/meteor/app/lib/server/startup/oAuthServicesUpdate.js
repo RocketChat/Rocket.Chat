@@ -1,8 +1,8 @@
+import { Logger } from '@rocket.chat/logger';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
 
 import { CustomOAuth } from '../../../custom-oauth/server/custom_oauth_server';
-import { Logger } from '../../../logger/server';
 import { settings } from '../../../settings/server';
 import { addOAuthService } from '../functions/addOAuthService';
 
@@ -97,7 +97,7 @@ async function _OAuthServicesUpdate() {
 
 			if (serviceName === 'Linkedin') {
 				data.clientConfig = {
-					requestPermissions: ['r_liteprofile', 'r_emailaddress'],
+					requestPermissions: ['openid', 'email', 'profile'],
 				};
 			}
 

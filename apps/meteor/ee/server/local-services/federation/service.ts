@@ -198,6 +198,10 @@ export class FederationServiceEE extends AbstractBaseFederationServiceEE impleme
 		);
 	}
 
+	public async verifyMatrixIds(matrixIds: string[]): Promise<Map<string, string>> {
+		return super.verifyMatrixIds(matrixIds);
+	}
+
 	static async createFederationService(): Promise<FederationServiceEE> {
 		const federationService = new FederationServiceEE();
 		await federationService.initialize();

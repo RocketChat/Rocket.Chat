@@ -6,7 +6,7 @@ import { callbacks } from '../../lib/callbacks';
 export async function readMessages(rid: IRoom['_id'], uid: IUser['_id'], readThreads: boolean): Promise<void> {
 	await callbacks.run('beforeReadMessages', rid, uid);
 
-	const projection = { ls: 1, tunread: 1, alert: 1 };
+	const projection = { ls: 1, tunread: 1, alert: 1, ts: 1 };
 	const sub = await Subscriptions.findOneByRoomIdAndUserId(rid, uid, { projection });
 	if (!sub) {
 		throw new Error('error-invalid-subscription');
@@ -19,5 +19,6 @@ export async function readMessages(rid: IRoom['_id'], uid: IUser['_id'], readThr
 
 	await NotificationQueue.clearQueueByUserId(uid);
 
-	callbacks.runAsync('afterReadMessages', rid, { uid, lastSeen: sub.ls });
+	const lastSeen = sub.ls || sub.ts;
+	callbacks.runAsync('afterReadMessages', rid, { uid, lastSeen });
 }

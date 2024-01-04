@@ -1,12 +1,12 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useState, useMemo } from 'react';
 
 import CounterItem from '../realTimeMonitoring/counter/CounterItem';
 import CounterRow from '../realTimeMonitoring/counter/CounterRow';
 
-const initialData: { title?: TranslationKey; value: string }[] = Array.from({ length: 3 }).map(() => ({ title: undefined, value: '' }));
+const initialData: { title?: string; value: string | number }[] = Array.from({ length: 3 }).map(() => ({ title: undefined, value: '' }));
 
 const conversationsInitialData = [initialData, initialData];
 const productivityInitialData = [initialData];
@@ -18,14 +18,15 @@ const Overview = ({ type, dateRange, departmentId }: { type: string; dateRange: 
 
 	const params = useMemo(
 		() => ({
-			analyticsOptions: { name: type },
-			daterange: { from: start, to: end },
+			name: type,
+			from: start,
+			to: end,
 			...(departmentId && { departmentId }),
 		}),
 		[departmentId, end, start, type],
 	);
 
-	const loadData = useMethod('livechat:getAnalyticsOverviewData');
+	const loadData = useEndpoint('GET', '/v1/livechat/analytics/overview');
 
 	const [displayData, setDisplayData] = useState(conversationsInitialData);
 
@@ -54,16 +55,16 @@ const Overview = ({ type, dateRange, departmentId }: { type: string; dateRange: 
 	}, [start, end, loadData, params]);
 
 	return (
-		<Box pb='x28' flexDirection='column'>
+		<Box pb={28} flexDirection='column'>
 			{displayData.map((items = [], i) => (
 				<CounterRow key={i} border='0' pb='none'>
 					{items.map(({ title, value }, i) => (
 						<CounterItem
 							flexShrink={1}
-							pb='x8'
+							pb={8}
 							flexBasis='100%'
 							key={i}
-							title={title ? t(title) : <Skeleton width='x60' />}
+							title={title ? t(title as TranslationKey) : <Skeleton width='x60' />}
 							count={value}
 						/>
 					))}

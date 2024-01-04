@@ -45,14 +45,14 @@ const ChatsContextualBar: FC<{ chatReload?: () => void }> = ({ chatReload }) => 
 
 	if (isLoading) {
 		return (
-			<Box pi='x24'>
+			<Box pi={24}>
 				<FormSkeleton />
 			</Box>
 		);
 	}
 
 	if (isError || !room) {
-		return <Box mbs='x16'>{t('Room_not_found')}</Box>;
+		return <Box mbs={16}>{t('Room_not_found')}</Box>;
 	}
 
 	return (

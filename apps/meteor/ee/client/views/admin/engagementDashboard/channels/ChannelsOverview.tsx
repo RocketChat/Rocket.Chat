@@ -1,14 +1,14 @@
-import { Box, Icon, Margins, Pagination, Skeleton, Table, TableBody, TableCell, TableHead, TableRow, Tile } from '@rocket.chat/fuselage';
+import { Icon, Margins, Pagination, Skeleton, Table, TableBody, TableCell, TableHead, TableRow, Tile } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import type { ReactElement } from 'react';
 import React, { useMemo, useState } from 'react';
 
 import Growth from '../../../../../../client/components/dataView/Growth';
+import DownloadDataButton from '../../../../components/dashboards/DownloadDataButton';
+import PeriodSelector from '../../../../components/dashboards/PeriodSelector';
+import { usePeriodSelectorState } from '../../../../components/dashboards/usePeriodSelectorState';
 import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
-import DownloadDataButton from '../dataView/DownloadDataButton';
-import PeriodSelector from '../dataView/PeriodSelector';
-import { usePeriodSelectorState } from '../dataView/usePeriodSelectorState';
 import { useChannelsList } from './useChannelsList';
 
 const ChannelsOverview = (): ReactElement => {
@@ -59,7 +59,7 @@ const ChannelsOverview = (): ReactElement => {
 					}
 				/>
 			</EngagementDashboardCardFilter>
-			<Box>
+			<div>
 				{channels && !channels.length && (
 					<Tile fontScale='p1' color='hint' style={{ textAlign: 'center' }}>
 						{t('No_data_found')}
@@ -81,7 +81,7 @@ const ChannelsOverview = (): ReactElement => {
 								<TableRow key={i}>
 									<TableCell>{i + 1}.</TableCell>
 									<TableCell>
-										<Margins inlineEnd='x4'>
+										<Margins inlineEnd={4}>
 											{(t === 'd' && <Icon name='at' />) || (t === 'p' && <Icon name='lock' />) || (t === 'c' && <Icon name='hashtag' />)}
 										</Margins>
 										{name}
@@ -127,7 +127,7 @@ const ChannelsOverview = (): ReactElement => {
 					onSetItemsPerPage={setItemsPerPage}
 					onSetCurrent={setCurrent}
 				/>
-			</Box>
+			</div>
 		</>
 	);
 };

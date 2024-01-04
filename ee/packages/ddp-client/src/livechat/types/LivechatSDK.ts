@@ -14,15 +14,15 @@ export type LivechatRoomEvents<T> = StreamerCallbackArgs<'livechat-room', `${str
 	: never;
 
 export interface LivechatStream {
-	notifyVisitorTyping(rid: string, username: string, typing: boolean): Promise<unknown>;
+	notifyVisitorActivity(rid: string, username: string, activities: string[]): Promise<unknown>;
 	notifyCallDeclined(rid: string): Promise<unknown>;
 
 	subscribeRoom(rid: string): Promise<any>;
 	onMessage(cb: (...args: StreamerCallbackArgs<'room-messages', string>) => void): () => void;
-	onTyping(cb: (...args: StreamerCallbackArgs<'notify-room', `${string}/typing`>) => void): () => void;
+	onUserActivity(cb: (...args: StreamerCallbackArgs<'notify-room', `${string}/user-activity`>) => void): () => void;
 
 	onRoomMessage(rid: string, cb: (...args: StreamerCallbackArgs<'room-messages', string>) => void): () => void;
-	onRoomTyping(rid: string, cb: (...args: StreamerCallbackArgs<'notify-room', `${string}/typing`>) => void): () => void;
+	onRoomUserActivity(rid: string, cb: (...args: StreamerCallbackArgs<'notify-room', `${string}/user-activity`>) => void): () => void;
 	onRoomDeleteMessage(rid: string, cb: (...args: StreamerCallbackArgs<'notify-room', `${string}/deleteMessage`>) => void): () => void;
 
 	onAgentChange(rid: string, cb: (args: LivechatRoomEvents<'agentData'>) => void): () => void;

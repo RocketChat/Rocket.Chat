@@ -12,7 +12,8 @@ Meteor.startup(() => {
 		id: 'unstar-message',
 		icon: 'star',
 		label: 'Unstar_Message',
-		context: ['starred', 'message', 'message-mobile', 'threads', 'federated'],
+		type: 'interaction',
+		context: ['starred', 'message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
 		async action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 
@@ -30,7 +31,7 @@ Meteor.startup(() => {
 
 			return Boolean(message.starred?.find((star: any) => star._id === user?._id));
 		},
-		order: 9,
+		order: 3,
 		group: 'menu',
 	});
 });

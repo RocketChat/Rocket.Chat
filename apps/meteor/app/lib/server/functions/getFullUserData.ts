@@ -1,8 +1,8 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Logger } from '../../../logger/server';
 import { settings } from '../../../settings/server';
 
 const logger = new Logger('getFullUserData');
@@ -21,6 +21,7 @@ const defaultFields = {
 	avatarETag: 1,
 	extension: 1,
 	federated: 1,
+	statusLivechat: 1,
 } as const;
 
 const fullFields = {
@@ -33,6 +34,7 @@ const fullFields = {
 	requirePasswordChange: 1,
 	requirePasswordChangeReason: 1,
 	roles: 1,
+	importIds: 1,
 } as const;
 
 let publicCustomFields: Record<string, 0 | 1> = {};
@@ -69,17 +71,25 @@ const getFields = (canViewAllInfo: boolean): Record<string, 0 | 1> => ({
 	...getCustomFields(canViewAllInfo),
 });
 
-export async function getFullUserDataByIdOrUsername(
+export async function getFullUserDataByIdOrUsernameOrImportId(
 	userId: string,
-	{ filterId, filterUsername }: { filterId: string; filterUsername?: undefined } | { filterId?: undefined; filterUsername: string },
+	searchValue: string,
+	searchType: 'id' | 'username' | 'importId',
 ): Promise<IUser | null> {
-	const caller = await Users.findOneById(userId, { projection: { username: 1 } });
+	const caller = await Users.findOneById(userId, { projection: { username: 1, importIds: 1 } });
 	if (!caller) {
 		return null;
 	}
-	const targetUser = (filterId || filterUsername) as string;
-	const myself = (filterId && targetUser === userId) || (filterUsername && targetUser === caller.username);
+	const myself =
+		(searchType === 'id' && searchValue === userId) ||
+		(searchType === 'username' && searchValue === caller.username) ||
+		(searchType === 'importId' && caller.importIds?.includes(searchValue));
 	const canViewAllInfo = !!myself || (await hasPermissionAsync(userId, 'view-full-other-user-info'));
+
+	// Only search for importId if the user has permission to view the import id
+	if (searchType === 'importId' && !canViewAllInfo) {
+		return null;
+	}
 
 	const fields = getFields(canViewAllInfo);
 
@@ -90,7 +100,9 @@ export async function getFullUserDataByIdOrUsername(
 		},
 	};
 
-	const user = await Users.findOneByIdOrUsername(targetUser, options);
+	const user = await (searchType === 'importId'
+		? Users.findOneByImportId(searchValue, options)
+		: Users.findOneByIdOrUsername(searchValue, options));
 	if (!user) {
 		return null;
 	}

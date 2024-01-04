@@ -8,15 +8,15 @@ export class FederationAdminFlextabUsers {
 	}
 
 	get btnNew(): Locator {
-		return this.page.locator('//button[text()="New"]');
+		return this.page.locator('role=button[name="New"]');
 	}
 
 	get btnEdit(): Locator {
-		return this.page.locator('//button[text()="Edit"]');
+		return this.page.locator('role=button[name="Edit"]');
 	}
 
 	get btnSave(): Locator {
-		return this.page.locator('//button[text()="Save"]');
+		return this.page.locator('role=button[name="Save"]');
 	}
 
 	get inputName(): Locator {

@@ -46,7 +46,7 @@ const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick, ti
 				<Box>
 					<IconButton icon='chevron-down' verticalAlign='middle' small onClick={onPreviousDateClick} />
 					<Flex.Item basis='50%'>
-						<Margins inline='x8'>
+						<Margins inline={8}>
 							<Box is='span' textAlign='center'>
 								{formattedCurrentDate}
 							</Box>

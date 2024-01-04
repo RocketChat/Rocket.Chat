@@ -5,10 +5,12 @@ import type { ComponentProps, FC } from 'react';
 const HeaderToolboxActionBadge: FC<ComponentProps<typeof Badge>> = (props) => (
 	<Box
 		position='absolute'
+		role='status'
 		className={css`
 			top: 0;
 			right: 0;
 			transform: translate(30%, -30%);
+			z-index: 1;
 		`}
 	>
 		<Badge {...props} />

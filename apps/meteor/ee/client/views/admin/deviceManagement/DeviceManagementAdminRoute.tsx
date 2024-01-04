@@ -1,7 +1,8 @@
-import { usePermission, useRouter, useSetModal, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
+import { usePermission, useRouter, useSetModal, useCurrentModal, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect } from 'react';
 
+import { getURL } from '../../../../../app/utils/client/getURL';
 import GenericUpsellModal from '../../../../../client/components/GenericUpsellModal';
 import { useUpsellActions } from '../../../../../client/components/GenericUpsellModal/hooks';
 import PageSkeleton from '../../../../../client/components/PageSkeleton';
@@ -13,30 +14,28 @@ const DeviceManagementAdminRoute = (): ReactElement => {
 	const t = useTranslation();
 	const router = useRouter();
 	const setModal = useSetModal();
+	const isModalOpen = useCurrentModal() !== null;
 
 	const hasDeviceManagement = useHasLicenseModule('device-management') as boolean;
 	const canViewDeviceManagement = usePermission('view-device-management');
-	const cloudWorkspaceHadTrial = useSetting<boolean>('Cloud_Workspace_Had_Trial');
 
-	const { shouldShowUpsell, isModalOpen, handleGoFullyFeatured, handleTalkToSales } = useUpsellActions(hasDeviceManagement);
+	const { shouldShowUpsell, handleManageSubscription } = useUpsellActions(hasDeviceManagement);
 
 	useEffect(() => {
 		if (shouldShowUpsell) {
 			setModal(
 				<GenericUpsellModal
 					title={t('Device_Management')}
-					img='images/device-management.png'
+					img={getURL('images/device-management.png')}
 					subtitle={t('Ensure_secure_workspace_access')}
 					description={t('Manage_which_devices')}
-					cancelText={t('Talk_to_an_expert')}
-					confirmText={cloudWorkspaceHadTrial ? t('Learn_more') : t('Start_a_free_trial')}
 					onClose={() => setModal(null)}
-					onConfirm={handleGoFullyFeatured}
-					onCancel={handleTalkToSales}
+					onConfirm={handleManageSubscription}
+					onCancel={() => setModal(null)}
 				/>,
 			);
 		}
-	}, [shouldShowUpsell, router, setModal, t, cloudWorkspaceHadTrial, handleGoFullyFeatured, handleTalkToSales]);
+	}, [shouldShowUpsell, router, setModal, t, handleManageSubscription]);
 
 	if (isModalOpen) {
 		return <PageSkeleton />;

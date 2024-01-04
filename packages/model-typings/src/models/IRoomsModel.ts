@@ -130,6 +130,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	findByE2E(options?: FindOptions<IRoom>): FindCursor<IRoom>;
 
+	findE2ERoomById(roomId: IRoom['_id'], options?: FindOptions<IRoom>): Promise<IRoom | null>;
+
 	findRoomsInsideTeams(autoJoin?: boolean): FindCursor<IRoom>;
 
 	findOneDirectRoomContainingAllUserIDs(uid: IDirectMessageRoom['uids'], options?: FindOptions<IRoom>): Promise<IRoom | null>;
@@ -213,7 +215,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		options?: FindOptions<IRoom>,
 		includeFederatedRooms?: boolean,
 	): FindCursor<IRoom>;
-	findByNameAndTypesNotInIds(
+	findByNameOrFNameAndTypesNotInIds(
 		name: IRoom['name'] | RegExp,
 		types: IRoom['t'][],
 		ids: string[],
@@ -237,7 +239,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	incUsersCountById(rid: string, inc: number): Promise<UpdateResult>;
 	incUsersCountNotDMsByIds(rids: string[], inc: number): Promise<Document | UpdateResult>;
 	setLastMessageById(rid: string, lastMessage: IRoom['lastMessage']): Promise<UpdateResult>;
-	resetLastMessageById(rid: string, lastMessage?: IMessage | null): Promise<UpdateResult>;
+	resetLastMessageById(rid: string, lastMessage: IMessage | null, msgCountDelta?: number): Promise<UpdateResult>;
 	replaceUsername(username: string, newUsername: string): Promise<UpdateResult | Document>;
 	replaceMutedUsername(username: string, newUsername: string): Promise<UpdateResult | Document>;
 	replaceUsernameOfUserByUserId(userId: string, newUsername: string): Promise<UpdateResult | Document>;
@@ -251,7 +253,9 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	): Promise<UpdateResult>;
 	setCustomFieldsById(rid: string, customFields: Record<string, any>): Promise<UpdateResult>;
 	muteUsernameByRoomId(rid: string, username: string): Promise<UpdateResult>;
-	unmuteUsernameByRoomId(rid: string, username: string): Promise<UpdateResult>;
+	muteReadOnlyUsernameByRoomId(rid: string, username: string): Promise<UpdateResult>;
+	unmuteMutedUsernameByRoomId(rid: string, username: string): Promise<UpdateResult>;
+	unmuteReadOnlyUsernameByRoomId(rid: string, username: string): Promise<UpdateResult>;
 	saveFeaturedById(rid: string, featured: boolean): Promise<UpdateResult>;
 	saveDefaultById(rid: string, defaultValue: boolean): Promise<UpdateResult>;
 	saveFavoriteById(rid: string, favorite: boolean, defaultValue: boolean): Promise<UpdateResult>;

@@ -6,7 +6,6 @@ import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
-import './swapSessionStorage';
 import { isURL } from '../../../lib/utils/isURL';
 
 // Request custom OAuth credentials for the user

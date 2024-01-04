@@ -1,8 +1,8 @@
-import { Box, Pagination } from '@rocket.chat/fuselage';
+import { Box, IconButton, Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useTranslation, usePermission, useToastMessageDispatch, useRoute, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
-import React, { useMemo } from 'react';
+import { useTranslation, usePermission, useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
+import { useQuery, hashQueryKey } from '@tanstack/react-query';
+import React, { useMemo, useState } from 'react';
 
 import GenericNoResults from '../../../../client/components/GenericNoResults';
 import {
@@ -17,42 +17,28 @@ import {
 import { usePagination } from '../../../../client/components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../client/components/GenericTable/hooks/useSort';
 import UserAvatar from '../../../../client/components/avatar/UserAvatar';
-import { useForm } from '../../../../client/hooks/useForm';
 import { useFormatDateAndTime } from '../../../../client/hooks/useFormatDateAndTime';
 import CannedResponseFilter from './CannedResponseFilter';
-import RemoveCannedResponseButton from './RemoveCannedResponseButton';
-
-type CannedResponseFilterValues = {
-	sharing: string;
-	createdBy: string;
-	tags: Array<{ value: string; label: string }>;
-	text: string;
-	firstMessage: string;
-};
+import { useRemoveCannedResponse } from './useRemoveCannedResponse';
 
 type Scope = 'global' | 'department' | 'user';
 
 const CannedResponsesTable = () => {
 	const t = useTranslation();
-	const cannedResponseRoute = useRoute('omnichannel-canned-responses');
+	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const getTime = useFormatDateAndTime();
+
 	const isMonitor = usePermission('save-department-canned-responses');
 	const isManager = usePermission('save-all-canned-responses');
 
-	const { values, handlers } = useForm({
-		sharing: '',
-		createdBy: '',
-		tags: [],
-		text: '',
-	});
-
-	const { sharing, createdBy, text } = values as CannedResponseFilterValues;
-	const { handleSharing, handleCreatedBy, handleText } = handlers;
+	const [createdBy, setCreatedBy] = useState('all');
+	const [sharing, setSharing] = useState<'' | 'user' | 'global' | 'department'>('');
+	const [text, setText] = useState('');
+	const debouncedText = useDebouncedValue(text, 500);
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, setSort, sortDirection } = useSort<'shortcut' | 'scope' | 'tags' | '_createdAt' | 'createdBy'>('shortcut');
-
-	const debouncedText = useDebouncedValue(text, 500);
 
 	const query = useMemo(
 		() => ({
@@ -66,31 +52,28 @@ const CannedResponsesTable = () => {
 		[createdBy, current, debouncedText, itemsPerPage, sharing, sortBy, sortDirection],
 	);
 
+	const [defaultQuery] = useState(hashQueryKey([query]));
+	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
+
 	const getCannedResponses = useEndpoint('GET', '/v1/canned-responses');
-	const { data, isLoading, isSuccess, refetch } = useQuery(['/v1/canned-responses', query], () => getCannedResponses(query));
+	const { data, isLoading, isSuccess } = useQuery(['getCannedResponses', query], () => getCannedResponses(query), {
+		refetchOnWindowFocus: false,
+	});
 
-	const getTime = useFormatDateAndTime();
-
-	const handleClick = useMutableCallback(() =>
-		cannedResponseRoute.push({
-			context: 'new',
-		}),
-	);
+	const handleAddNew = useMutableCallback(() => router.navigate('/omnichannel/canned-responses/new'));
 
 	const onRowClick = useMutableCallback((id, scope) => (): void => {
 		if (scope === 'global' && isMonitor && !isManager) {
-			dispatchToastMessage({
+			return dispatchToastMessage({
 				type: 'error',
 				message: t('Not_authorized'),
 			});
-			return;
 		}
 
-		cannedResponseRoute.push({
-			context: 'edit',
-			id,
-		});
+		router.navigate(`/omnichannel/canned-responses/edit/${id}`);
 	});
+
+	const handleDelete = useRemoveCannedResponse();
 
 	const defaultOptions = useMemo(
 		() => ({
@@ -132,14 +115,16 @@ const CannedResponsesTable = () => {
 
 	return (
 		<>
-			<CannedResponseFilter
-				sharingValue={sharing}
-				createdByValue={createdBy}
-				shortcutValue={text}
-				setSharing={handleSharing}
-				setCreatedBy={handleCreatedBy}
-				setShortcut={handleText}
-			/>
+			{((isSuccess && data?.cannedResponses.length > 0) || queryHasChanged) && (
+				<CannedResponseFilter
+					createdBy={createdBy}
+					setCreatedBy={setCreatedBy}
+					sharing={sharing}
+					setSharing={setSharing}
+					text={text}
+					setText={setText}
+				/>
+			)}
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
@@ -148,13 +133,16 @@ const CannedResponsesTable = () => {
 					</GenericTableBody>
 				</GenericTable>
 			)}
-			{isSuccess && data?.cannedResponses.length === 0 && (
+			{isSuccess && data?.cannedResponses.length === 0 && queryHasChanged && <GenericNoResults />}
+			{isSuccess && data?.cannedResponses.length === 0 && !queryHasChanged && (
 				<GenericNoResults
 					icon='baloon-exclamation'
 					title={t('No_Canned_Responses_Yet')}
 					description={t('No_Canned_Responses_Yet-description')}
-					buttonTitle={t('Create_your_First_Canned_Response')}
-					buttonAction={handleClick}
+					buttonTitle={t('Create_canned_response')}
+					buttonAction={handleAddNew}
+					linkHref='https://go.rocket.chat/omnichannel-docs'
+					linkText={t('Learn_more_about_canned_responses')}
 				/>
 			)}
 			{isSuccess && data?.cannedResponses.length > 0 && (
@@ -169,7 +157,7 @@ const CannedResponsesTable = () => {
 									<GenericTableCell withTruncatedText>
 										<Box display='flex' alignItems='center'>
 											<UserAvatar size='x24' username={createdBy.username} />
-											<Box display='flex' withTruncatedText mi='x8'>
+											<Box display='flex' withTruncatedText mi={8}>
 												<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
 													<Box fontScale='p2m' withTruncatedText color='default'>
 														{createdBy.username}
@@ -180,7 +168,19 @@ const CannedResponsesTable = () => {
 									</GenericTableCell>
 									<GenericTableCell withTruncatedText>{getTime(_createdAt)}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{tags.join(', ')}</GenericTableCell>
-									{!(scope === 'global' && isMonitor && !isManager) && <RemoveCannedResponseButton _id={_id} reload={refetch} />}
+									{!(scope === 'global' && isMonitor && !isManager) && (
+										<GenericTableCell withTruncatedText>
+											<IconButton
+												icon='trash'
+												small
+												title={t('Remove')}
+												onClick={(e) => {
+													e.stopPropagation();
+													handleDelete(_id);
+												}}
+											/>
+										</GenericTableCell>
+									)}
 								</GenericTableRow>
 							))}
 						</GenericTableBody>

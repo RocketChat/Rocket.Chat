@@ -1,54 +1,59 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Field, TextInput, ButtonGroup, Button, Box, Icon, Callout, FieldGroup } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useUserRoom, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC, MouseEventHandler } from 'react';
-import React, { useState, useEffect, useContext } from 'react';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import {
+	FieldError,
+	Field,
+	FieldLabel,
+	FieldRow,
+	TextAreaInput,
+	TextInput,
+	ButtonGroup,
+	Button,
+	Box,
+	Icon,
+	Callout,
+	FieldGroup,
+	Select,
+} from '@rocket.chat/fuselage';
+import { useAutoFocus, useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import React, { useEffect, useContext } from 'react';
+import { Controller, useFormContext } from 'react-hook-form';
 
 import { validateEmail } from '../../../../../lib/emailValidator';
+import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../components/Contextualbar';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
-import { useForm } from '../../../../hooks/useForm';
-import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { SelectedMessageContext, useCountSelected } from '../../MessageList/contexts/SelectedMessagesContext';
+import type { MailExportFormValues } from './ExportMessages';
+import { useRoomExportMutation } from './useRoomExportMutation';
 
-type MailExportFormValues = {
-	dateFrom: string;
-	dateTo: string;
-	toUsers: string[];
-	additionalEmails: string;
-	subject: string;
+type MailExportFormProps = {
+	formId: string;
+	rid: IRoom['_id'];
+	onCancel: () => void;
+	exportOptions: SelectOption[];
 };
 
-type MailExportFormProps = { onCancel: MouseEventHandler<HTMLOrSVGElement>; rid: IRoom['_id'] };
-
-const clickable = css`
-	cursor: pointer;
-`;
-
-const MailExportForm: FC<MailExportFormProps> = ({ onCancel, rid }) => {
-	const { selectedMessageStore } = useContext(SelectedMessageContext);
-
+const MailExportForm = ({ formId, rid, onCancel, exportOptions }: MailExportFormProps) => {
 	const t = useTranslation();
-	const room = useUserRoom(rid);
-	const roomName = room?.t && roomCoordinator.getRoomName(room.t, room);
+	const formFocus = useAutoFocus<HTMLFormElement>();
 
-	const [errorMessage, setErrorMessage] = useState<string>();
+	const {
+		watch,
+		setValue,
+		control,
+		register,
+		formState: { errors, isDirty, isSubmitting },
+		handleSubmit,
+		clearErrors,
+	} = useFormContext<MailExportFormValues>();
+	const roomExportMutation = useRoomExportMutation();
 
+	const { selectedMessageStore } = useContext(SelectedMessageContext);
 	const messages = selectedMessageStore.getSelectedMessages();
+
 	const count = useCountSelected();
-
-	const { values, handlers } = useForm({
-		dateFrom: '',
-		dateTo: '',
-		toUsers: [],
-		additionalEmails: '',
-		subject: t('Mail_Messages_Subject', roomName),
-	});
-
-	const dispatchToastMessage = useToastMessageDispatch();
-
-	const { toUsers, additionalEmails, subject } = values as MailExportFormValues;
 
 	const clearSelection = useMutableCallback(() => {
 		selectedMessageStore.clearStore();
@@ -61,93 +66,155 @@ const MailExportForm: FC<MailExportFormProps> = ({ onCancel, rid }) => {
 		};
 	}, [selectedMessageStore]);
 
-	const { handleToUsers, handleAdditionalEmails, handleSubject } = handlers;
+	const { toUsers } = watch();
 
-	const roomsExport = useEndpoint('POST', '/v1/rooms.export');
+	useEffect(() => {
+		setValue('messagesCount', messages.length);
+	}, [setValue, messages.length]);
 
-	const handleSubmit = async (): Promise<void> => {
-		if (toUsers.length === 0 && additionalEmails === '') {
-			setErrorMessage(t('Mail_Message_Missing_to'));
-			return;
-		}
-		if (additionalEmails !== '' && !validateEmail(additionalEmails)) {
-			setErrorMessage(t('Mail_Message_Invalid_emails', additionalEmails));
-			return;
-		}
-		if (messages.length === 0) {
-			setErrorMessage(t('Mail_Message_No_messages_selected_select_all'));
-			return;
-		}
-		setErrorMessage(undefined);
-
-		try {
-			await roomsExport({
-				rid,
-				type: 'email',
-				toUsers,
-				toEmails: additionalEmails.split(','),
-				subject,
-				messages,
-			});
-
-			dispatchToastMessage({
-				type: 'success',
-				message: t('Your_email_has_been_queued_for_sending'),
-			});
-		} catch (error) {
-			dispatchToastMessage({
-				type: 'error',
-				message: error,
-			});
-		}
+	const handleExport = async ({ type, toUsers, subject, additionalEmails }: MailExportFormValues) => {
+		roomExportMutation.mutateAsync({
+			rid,
+			type,
+			toUsers,
+			toEmails: additionalEmails?.split(','),
+			subject,
+			messages,
+		});
 	};
 
+	const clickable = css`
+		cursor: pointer;
+	`;
+
+	const methodField = useUniqueId();
+	const toUsersField = useUniqueId();
+	const additionalEmailsField = useUniqueId();
+	const subjectField = useUniqueId();
+
 	return (
-		<FieldGroup>
-			<Field>
-				<Callout onClick={clearSelection} title={t('Messages_selected')} type={count > 0 ? 'success' : 'info'}>
-					<p>{`${count} Messages selected`}</p>
-					{count > 0 && (
-						<Box is='p' className={clickable}>
-							{t('Click_here_to_clear_the_selection')}
-						</Box>
-					)}
-					{count === 0 && <Box is='p'>{t('Click_the_messages_you_would_like_to_send_by_email')}</Box>}
-				</Callout>
-			</Field>
-			<Field>
-				<Field.Label>{t('To_users')}</Field.Label>
-				<Field.Row>
-					<UserAutoCompleteMultiple value={toUsers} onChange={handleToUsers} />
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Label>{t('To_additional_emails')}</Field.Label>
-				<Field.Row>
-					<TextInput
-						placeholder={t('Email_Placeholder_any')}
-						value={additionalEmails}
-						onChange={handleAdditionalEmails}
-						addon={<Icon name='mail' size='x20' />}
-					/>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Label>{t('Subject')}</Field.Label>
-				<Field.Row>
-					<TextInput value={subject} onChange={handleSubject} addon={<Icon name='edit' size='x20' />} />
-				</Field.Row>
-			</Field>
+		<>
+			<ContextualbarScrollableContent>
+				<form ref={formFocus} tabIndex={-1} aria-labelledby={`${formId}-title`} id={formId} onSubmit={handleSubmit(handleExport)}>
+					<FieldGroup>
+						<Field>
+							<FieldLabel htmlFor={methodField}>{t('Method')}</FieldLabel>
+							<FieldRow>
+								<Controller
+									name='type'
+									control={control}
+									render={({ field }) => <Select id={methodField} {...field} placeholder={t('Type')} options={exportOptions} />}
+								/>
+							</FieldRow>
+						</Field>
+						<Field>
+							<Callout onClick={clearSelection} title={t('Messages_selected')} type={count > 0 ? 'success' : 'info'}>
+								<p>{`${count} Messages selected`}</p>
+								{count > 0 && (
+									<Box is='p' className={clickable}>
+										{t('Click_here_to_clear_the_selection')}
+									</Box>
+								)}
+								{count === 0 && <Box is='p'>{t('Click_the_messages_you_would_like_to_send_by_email')}</Box>}
+							</Callout>
+							<input
+								type='hidden'
+								{...register('messagesCount', {
+									validate: (messagesCount) => (messagesCount > 0 ? undefined : t('Mail_Message_No_messages_selected_select_all')),
+								})}
+							/>
+							{errors.messagesCount && <FieldError aria-live='assertive'>{errors.messagesCount.message}</FieldError>}
+						</Field>
+						<Field>
+							<FieldLabel htmlFor={toUsersField}>{t('To_users')}</FieldLabel>
+							<FieldRow>
+								<Controller
+									name='toUsers'
+									control={control}
+									render={({ field: { value, onChange, onBlur, name } }) => (
+										<UserAutoCompleteMultiple
+											id={toUsersField}
+											value={value}
+											onChange={(value) => {
+												onChange(value);
+												clearErrors('additionalEmails');
+											}}
+											onBlur={onBlur}
+											name={name}
+										/>
+									)}
+								/>
+							</FieldRow>
+						</Field>
+						<Field>
+							<FieldLabel htmlFor={additionalEmailsField}>{t('To_additional_emails')}</FieldLabel>
+							<FieldRow>
+								<Controller
+									name='additionalEmails'
+									control={control}
+									rules={{
+										validate: {
+											validateEmail: (additionalEmails) => {
+												if (additionalEmails === '') {
+													return undefined;
+												}
 
-			{errorMessage && <Callout type='danger'>{errorMessage}</Callout>}
+												if (additionalEmails !== '' && validateEmail(additionalEmails)) {
+													return undefined;
+												}
 
-			<ButtonGroup stretch mb='x12'>
-				<Button onClick={onCancel}>{t('Cancel')}</Button>
-				<Button primary onClick={(): Promise<void> => handleSubmit()}>
-					{t('Send')}
-				</Button>
-			</ButtonGroup>
-		</FieldGroup>
+												return t('Mail_Message_Invalid_emails', additionalEmails);
+											},
+											validateToUsers: (additionalEmails) => {
+												if (additionalEmails !== '' || toUsers?.length > 0) {
+													return undefined;
+												}
+
+												return t('Mail_Message_Missing_to');
+											},
+										},
+									}}
+									render={({ field }) => (
+										<TextInput
+											id={additionalEmailsField}
+											{...field}
+											placeholder={t('Email_Placeholder_any')}
+											addon={<Icon name='mail' size='x20' />}
+											aria-describedby={`${additionalEmailsField}-error`}
+											aria-invalid={Boolean(errors?.additionalEmails?.message)}
+											error={errors?.additionalEmails?.message}
+										/>
+									)}
+								/>
+							</FieldRow>
+							{errors?.additionalEmails && (
+								<FieldError aria-live='assertive' id={`${additionalEmailsField}-error`}>
+									{errors.additionalEmails.message}
+								</FieldError>
+							)}
+						</Field>
+						<Field>
+							<FieldLabel htmlFor={subjectField}>{t('Subject')}</FieldLabel>
+							<FieldRow>
+								<Controller
+									name='subject'
+									control={control}
+									render={({ field }) => <TextAreaInput rows={3} id={subjectField} {...field} addon={<Icon name='edit' size='x20' />} />}
+								/>
+							</FieldRow>
+						</Field>
+					</FieldGroup>
+				</form>
+			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
+				<ButtonGroup stretch>
+					<Button onClick={onCancel}>{t('Cancel')}</Button>
+					<Button loading={isSubmitting} disabled={!isDirty} form={formId} primary type='submit'>
+						{t('Send')}
+					</Button>
+				</ButtonGroup>
+			</ContextualbarFooter>
+		</>
 	);
 };
 

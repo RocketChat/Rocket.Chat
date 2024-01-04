@@ -1,4 +1,5 @@
 import { uiKitMessage, UiKitParserMessage, BlockContext } from '@rocket.chat/ui-kit';
+import { Suspense } from 'preact/compat';
 
 import ActionsBlock from './ActionsBlock';
 import ButtonElement from './ButtonElement';
@@ -59,7 +60,11 @@ class MessageParser extends UiKitParserMessage<JSX.Element> {
 			return null;
 		}
 
-		return <PlainText key={index} {...element} />;
+		return (
+			<Suspense fallback={null}>
+				<PlainText key={index} {...element} />
+			</Suspense>
+		);
 	};
 
 	mrkdwn = (element: any, context: any, index: any) => {
@@ -67,7 +72,11 @@ class MessageParser extends UiKitParserMessage<JSX.Element> {
 			return null;
 		}
 
-		return <Mrkdwn key={index} {...element} />;
+		return (
+			<Suspense fallback={null}>
+				<Mrkdwn key={index} {...element} />
+			</Suspense>
+		);
 	};
 
 	button = (element: any, context: any, index: any) => {

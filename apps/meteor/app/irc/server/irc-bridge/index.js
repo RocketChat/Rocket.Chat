@@ -1,3 +1,4 @@
+import { Logger } from '@rocket.chat/logger';
 import { Settings } from '@rocket.chat/models';
 import moment from 'moment';
 import Queue from 'queue-fifo';
@@ -6,7 +7,6 @@ import { callbacks } from '../../../../lib/callbacks';
 import { afterLeaveRoomCallback } from '../../../../lib/callbacks/afterLeaveRoomCallback';
 import { afterLogoutCleanUpCallback } from '../../../../lib/callbacks/afterLogoutCleanUpCallback';
 import { withThrottling } from '../../../../lib/utils/highOrderFunctions';
-import { Logger } from '../../../logger/server';
 import * as servers from '../servers';
 import * as localCommandHandlers from './localHandlers';
 import * as peerCommandHandlers from './peerHandlers';

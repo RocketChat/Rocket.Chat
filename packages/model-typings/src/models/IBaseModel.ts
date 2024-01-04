@@ -45,6 +45,8 @@ export interface IBaseModel<
 > {
 	col: Collection<T>;
 
+	createIndexes(): Promise<string[] | void>;
+
 	getCollectionName(): string;
 
 	findOneAndUpdate(query: Filter<T>, update: UpdateFilter<T> | T, options?: FindOneAndUpdateOptions): Promise<ModifyResult<T>>;
@@ -117,4 +119,6 @@ export interface IBaseModel<
 	): FindPaginated<FindCursor<WithId<TDeleted>>>;
 
 	watch(pipeline?: object[]): ChangeStream<T>;
+	countDocuments(query: Filter<T>): Promise<number>;
+	estimatedDocumentCount(): Promise<number>;
 }

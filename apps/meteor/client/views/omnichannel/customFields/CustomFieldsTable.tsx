@@ -1,9 +1,8 @@
-import { Pagination } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
-import type { MutableRefObject } from 'react';
-import React, { useMemo, useState, useEffect } from 'react';
+import { IconButton, Pagination } from '@rocket.chat/fuselage';
+import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
+import { useQuery, hashQueryKey } from '@tanstack/react-query';
+import React, { useMemo, useState } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
 import GenericNoResults from '../../../components/GenericNoResults';
@@ -18,35 +17,37 @@ import {
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
-import RemoveCustomFieldButton from './RemoveCustomFieldButton';
+import { useRemoveCustomField } from './useRemoveCustomField';
 
-const CustomFieldsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
+const CustomFieldsTable = () => {
 	const t = useTranslation();
+	const router = useRouter();
 	const [filter, setFilter] = useState('');
-	const departmentsRoute = useRoute('omnichannel-customfields');
+	const debouncedFilter = useDebouncedValue(filter, 500);
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'_id' | 'label' | 'scope' | 'visibility'>('_id');
 
+	const handleAddNew = useMutableCallback(() => router.navigate('/omnichannel/customfields/new'));
+	const onRowClick = useMutableCallback((id) => () => router.navigate(`/omnichannel/customfields/edit/${id}`));
+
+	const handleDelete = useRemoveCustomField();
+
 	const query = useMemo(
 		() => ({
-			text: filter,
+			text: debouncedFilter,
 			sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
 			...(itemsPerPage && { count: itemsPerPage }),
 			...(current && { offset: current }),
 		}),
-		[filter, itemsPerPage, current, sortBy, sortDirection],
+		[debouncedFilter, itemsPerPage, current, sortBy, sortDirection],
 	);
 
 	const getCustomFields = useEndpoint('GET', '/v1/livechat/custom-fields');
-	const { data, isSuccess, isLoading, refetch } = useQuery(['livechat-customFields', query], async () => getCustomFields(query), {
-		refetchOnWindowFocus: false,
-	});
+	const { data, isSuccess, isLoading } = useQuery(['livechat-customFields', query, debouncedFilter], async () => getCustomFields(query));
 
-	useEffect(() => {
-		reload.current = refetch;
-	}, [reload, refetch]);
-	reload.current = refetch;
+	const [defaultQuery] = useState(hashQueryKey([query]));
+	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
 
 	const headers = (
 		<>
@@ -68,23 +69,13 @@ const CustomFieldsTable = ({ reload }: { reload: MutableRefObject<() => void> })
 			>
 				{t('Visibility')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='remove' w='x60'>
-				{t('Remove')}
-			</GenericTableHeaderCell>
+			<GenericTableHeaderCell key='remove' w='x60' />
 		</>
-	);
-
-	const onRowClick = useMutableCallback(
-		(id) => () =>
-			departmentsRoute.push({
-				context: 'edit',
-				id,
-			}),
 	);
 
 	return (
 		<>
-			<FilterByText onChange={({ text }) => setFilter(text)} />
+			{((isSuccess && data?.customFields.length > 0) || queryHasChanged) && <FilterByText onChange={({ text }) => setFilter(text)} />}
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
@@ -93,10 +84,22 @@ const CustomFieldsTable = ({ reload }: { reload: MutableRefObject<() => void> })
 					</GenericTableBody>
 				</GenericTable>
 			)}
-			{isSuccess && data.customFields.length === 0 && <GenericNoResults />}
+			{isSuccess && data.customFields.length === 0 && queryHasChanged && <GenericNoResults />}
+			{isSuccess && data.customFields.length === 0 && !queryHasChanged && (
+				<GenericNoResults
+					icon='file-sheets'
+					title={t('No_custom_fields_yet')}
+					description={t('No_custom_fields_yet_description')}
+					buttonAction={handleAddNew}
+					buttonTitle={t('Create_custom_field')}
+					linkHref='https://go.rocket.chat/omnichannel-docs'
+					linkText={t('Learn_more_about_custom_fields')}
+				/>
+			)}
+
 			{isSuccess && data.customFields.length > 0 && (
 				<>
-					<GenericTable data-qa='GenericTableCustomFieldsInfoBody'>
+					<GenericTable data-qa='GenericTableCustomFieldsInfoBody' aria-busy={filter !== debouncedFilter} aria-live='assertive'>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.customFields.map(({ label, _id, scope, visibility }) => (
@@ -105,7 +108,17 @@ const CustomFieldsTable = ({ reload }: { reload: MutableRefObject<() => void> })
 									<GenericTableCell withTruncatedText>{label}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{scope === 'visitor' ? t('Visitor') : t('Room')}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{visibility === 'visible' ? t('Visible') : t('Hidden')}</GenericTableCell>
-									<RemoveCustomFieldButton _id={_id} reload={refetch} />
+									<GenericTableCell withTruncatedText>
+										<IconButton
+											icon='trash'
+											small
+											title={t('Remove')}
+											onClick={(e) => {
+												e.stopPropagation();
+												handleDelete(_id);
+											}}
+										/>
+									</GenericTableCell>
 								</GenericTableRow>
 							))}
 						</GenericTableBody>

@@ -493,6 +493,7 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 		if (!FederatedRoom.shouldUpdateMessage(newRawMessage, message)) {
 			return;
 		}
+
 		await this.internalMessageAdapter.editMessage(
 			senderUser,
 			newRawMessage,
@@ -672,6 +673,130 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 					notifyChannel: true,
 				});
 			}),
+		);
+	}
+
+	public async onExternalThreadedMessageReceived(roomReceiveExternalMessageInput: FederationRoomReceiveExternalMessageDto): Promise<void> {
+		const { externalRoomId, externalSenderId, rawMessage, externalFormattedText, externalEventId, replyToEventId, thread } =
+			roomReceiveExternalMessageInput;
+		if (!thread?.rootEventId) {
+			return;
+		}
+
+		const parentMessage = await this.internalMessageAdapter.getMessageByFederationId(thread.rootEventId);
+		if (!parentMessage) {
+			return;
+		}
+
+		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
+		if (!federatedRoom) {
+			return;
+		}
+
+		const senderUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalSenderId);
+		if (!senderUser) {
+			return;
+		}
+		const message = await this.internalMessageAdapter.getMessageByFederationId(externalEventId);
+		if (message) {
+			return;
+		}
+		if (replyToEventId) {
+			const messageToReplyTo = await this.internalMessageAdapter.getMessageByFederationId(replyToEventId);
+			if (!messageToReplyTo) {
+				return;
+			}
+			await this.internalMessageAdapter.sendThreadQuoteMessage(
+				senderUser,
+				federatedRoom,
+				rawMessage,
+				externalEventId,
+				messageToReplyTo,
+				this.internalHomeServerDomain,
+				parentMessage._id,
+				externalFormattedText,
+			);
+			return;
+		}
+
+		await this.internalMessageAdapter.sendThreadMessage(
+			senderUser,
+			federatedRoom,
+			rawMessage,
+			externalEventId,
+			parentMessage._id,
+			externalFormattedText,
+			this.internalHomeServerDomain,
+		);
+	}
+
+	public async onExternalThreadedFileMessageReceived(
+		roomReceiveExternalMessageInput: FederationRoomReceiveExternalFileMessageDto,
+	): Promise<void> {
+		const { externalRoomId, externalSenderId, messageBody, externalEventId, replyToEventId, thread } = roomReceiveExternalMessageInput;
+
+		if (!thread?.rootEventId) {
+			return;
+		}
+
+		const parentMessage = await this.internalMessageAdapter.getMessageByFederationId(thread.rootEventId);
+		if (!parentMessage) {
+			return;
+		}
+
+		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
+		if (!federatedRoom) {
+			return;
+		}
+
+		const senderUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalSenderId);
+		if (!senderUser) {
+			return;
+		}
+		const message = await this.internalMessageAdapter.getMessageByFederationId(externalEventId);
+		if (message) {
+			return;
+		}
+		const fileDetails = {
+			name: messageBody.filename,
+			size: messageBody.size,
+			type: messageBody.mimetype,
+			rid: federatedRoom.getInternalId(),
+			userId: senderUser.getInternalId(),
+		};
+		const readableStream = await this.bridge.getReadStreamForFileFromUrl(senderUser.getExternalId(), messageBody.url);
+		const { files = [], attachments } = await this.internalFileAdapter.uploadFile(
+			readableStream,
+			federatedRoom.getInternalId(),
+			senderUser.getInternalReference(),
+			fileDetails,
+		);
+
+		if (replyToEventId) {
+			const messageToReplyTo = await this.internalMessageAdapter.getMessageByFederationId(replyToEventId);
+			if (!messageToReplyTo) {
+				return;
+			}
+			await this.internalMessageAdapter.sendThreadQuoteFileMessage(
+				senderUser,
+				federatedRoom,
+				files,
+				attachments,
+				externalEventId,
+				messageToReplyTo,
+				this.internalHomeServerDomain,
+				parentMessage._id,
+			);
+			return;
+		}
+
+		await this.internalMessageAdapter.sendThreadFileMessage(
+			senderUser,
+			federatedRoom,
+			files,
+			attachments,
+			externalEventId,
+			parentMessage._id,
 		);
 	}
 }

@@ -33,7 +33,7 @@ API.v1.addRoute(
 				contactId: String,
 			});
 
-			const contact = await LivechatVisitors.findOneById(this.queryParams.contactId);
+			const contact = await LivechatVisitors.findOneEnabledById(this.queryParams.contactId);
 
 			return API.v1.success({ contact });
 		},

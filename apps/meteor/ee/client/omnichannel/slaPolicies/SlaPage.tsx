@@ -4,7 +4,7 @@ import { useRouteParameter, useRoute, useTranslation } from '@rocket.chat/ui-con
 import React, { useRef, useCallback } from 'react';
 
 import { Contextualbar, ContextualbarTitle, ContextualbarHeader, ContextualbarClose } from '../../../../client/components/Contextualbar';
-import Page from '../../../../client/components/Page';
+import { Page, PageHeader, PageContent } from '../../../../client/components/Page';
 import SlaEditWithData from './SlaEditWithData';
 import SlaNew from './SlaNew';
 import SlaTable from './SlaTable';
@@ -34,16 +34,14 @@ const SlaPage = () => {
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('SLA_Policies')}>
+				<PageHeader title={t('SLA_Policies')}>
 					<ButtonGroup>
-						<Button onClick={handleClick} title={t('New_SLA_Policy')}>
-							{t('New')}
-						</Button>
+						<Button onClick={handleClick}>{t('Create_SLA_policy')}</Button>
 					</ButtonGroup>
-				</Page.Header>
-				<Page.Content>
+				</PageHeader>
+				<PageContent>
 					<SlaTable reload={reload} />
-				</Page.Content>
+				</PageContent>
 			</Page>
 			{context && (
 				<Contextualbar>

@@ -794,7 +794,6 @@
   "Custom_Sound_Has_Been_Deleted": "เสียงที่กำหนดเองถูกลบแล้ว",
   "Custom_Sound_Info": "ข้อมูลเสียงที่กำหนดเอง",
   "Custom_Sound_Saved_Successfully": "บันทึกเสียงที่กำหนดเองเรียบร้อยแล้ว",
-  "Custom_Sounds": "เสียงที่กำหนดเอง",
   "Custom_Translations": "การแปลแบบกำหนดเอง",
   "Custom_Translations_Description": "ควรเป็น JSON ที่ถูกต้องซึ่งคีย์คือภาษาที่มีพจนานุกรมสำคัญและคำแปล ตัวอย่าง:  \n `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Customize": "ปรับแต่ง",
@@ -973,7 +972,6 @@
   "Enter_name_here": "ป้อนชื่อที่นี่",
   "Enter_Normal": "โหมดปกติ (ส่งพร้อมด้วย Enter)",
   "Enter_to": "เข้าสู่",
-  "Enterprise": "องค์กร",
   "Entertainment": "การบันเทิง",
   "Error": "ความผิดพลาด",
   "Error_404": "ข้อผิดพลาด: 404",
@@ -1806,7 +1804,6 @@
   "Num_Agents": "# Agents",
   "Number_of_messages": "จำนวนข้อความ",
   "OAuth_Application": "แอ็พพลิเคชัน OAuth",
-  "OAuth_Applications": "แอ็พพลิเคชัน OAuth",
   "Objects": "วัตถุ",
   "Off": "ปิด",
   "Off_the_record_conversation": "บทสนทนานอกแช็ท",
@@ -1826,6 +1823,8 @@
   "Offline_success_message": "ข้อความความสำเร็จออฟไลน์",
   "Offline_unavailable": "ไม่มีออฟไลน์",
   "Older_than": "เก่ากว่า",
+  "Omnichannel_Reports_Status_Open": "เปิด",
+  "Omnichannel_Reports_Status_Closed": "ปิด",
   "On": "บน",
   "online": "ออนไลน์",
   "Online": "ออนไลน์",
@@ -2740,5 +2739,7 @@
   "registration.component.form.reasonToJoin": "เหตุผลที่เข้าร่วม",
   "registration.component.form.invalidConfirmPass": "การยืนยันรหัสผ่านไม่ตรงกับรหัสผ่าน",
   "registration.component.form.confirmPassword": "ยืนยันรหัสผ่านของคุณ",
-  "registration.component.form.sendConfirmationEmail": "ส่งอีเมลยืนยัน"
+  "registration.component.form.sendConfirmationEmail": "ส่งอีเมลยืนยัน",
+  "Enterprise": "องค์กร",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Analytics"
 }

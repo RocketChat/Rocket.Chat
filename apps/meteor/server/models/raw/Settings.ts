@@ -69,6 +69,25 @@ export class SettingsRaw extends BaseRaw<ISetting> implements ISettingsModel {
 		return this.updateOne(query, update);
 	}
 
+	async resetValueById(
+		_id: string,
+		value?: (ISetting['value'] extends undefined ? never : ISetting['value']) | null,
+	): Promise<Document | UpdateResult | undefined> {
+		if (value == null) {
+			const record = await this.findOneById(_id);
+			if (record) {
+				const prop = record.valueSource || 'packageValue';
+				value = record[prop];
+			}
+		}
+
+		if (value == null) {
+			return;
+		}
+
+		return this.updateValueById(_id, value);
+	}
+
 	async incrementValueById(_id: ISetting['_id'], value = 1): Promise<Document | UpdateResult> {
 		return this.updateOne(
 			{

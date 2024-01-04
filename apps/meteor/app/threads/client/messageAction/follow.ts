@@ -18,7 +18,8 @@ Meteor.startup(() => {
 			id: 'follow-message',
 			icon: 'bell',
 			label: 'Follow_message',
-			context: ['message', 'message-mobile', 'threads', 'federated'],
+			type: 'interaction',
+			context: ['message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
 			async action(_, { message }) {
 				if (!message) {
 					return;
@@ -44,7 +45,7 @@ Meteor.startup(() => {
 				}
 				return user?._id ? !replies.includes(user._id) : false;
 			},
-			order: 2,
+			order: 1,
 			group: 'menu',
 		});
 	});

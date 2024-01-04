@@ -7,7 +7,6 @@ import { Meteor } from 'meteor/meteor';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { deleteUser } from '../../app/lib/server/functions/deleteUser';
 import { AppEvents, Apps } from '../../ee/server/apps/orchestrator';
-import { callbacks } from '../../lib/callbacks';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -50,9 +49,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		await deleteUser(userId, confirmRelinquish);
-
-		await callbacks.run('afterDeleteUser', user);
+		await deleteUser(userId, confirmRelinquish, uid);
 
 		// App IPostUserDeleted event hook
 		await Apps.triggerEvent(AppEvents.IPostUserDeleted, { user, performedBy: await Meteor.userAsync() });

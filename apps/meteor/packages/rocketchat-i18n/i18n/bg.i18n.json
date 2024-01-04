@@ -795,7 +795,6 @@
   "Custom_Sound_Has_Been_Deleted": "Персонализираният звук е изтрит.",
   "Custom_Sound_Info": "Информация за персонализирания звук",
   "Custom_Sound_Saved_Successfully": "Персонализираният звук е запазен успешно",
-  "Custom_Sounds": "Персонализирани звуци",
   "Custom_Translations": "Потребителски преводи",
   "Custom_Translations_Description": "Трябва да е валидна JSON, където ключовете са езици, съдържащи речник на ключове и преводи. Пример:  \n `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Customize": "Персонализирайте",
@@ -974,7 +973,6 @@
   "Enter_name_here": "Въведете име тук",
   "Enter_Normal": "Нормален режим (изпратете с Enter)",
   "Enter_to": "Влезте в",
-  "Enterprise": "начинание",
   "Entertainment": "забавление",
   "Error": "Грешка",
   "Error_404": "Грешка: 404",
@@ -1810,7 +1808,6 @@
   "Num_Agents": "# Агенти",
   "Number_of_messages": "Брой съобщения",
   "OAuth_Application": "Приложение OAuth",
-  "OAuth_Applications": "OAuth приложения",
   "Objects": "Обекти",
   "Off": "Край",
   "Off_the_record_conversation": "Разговор извън рекорда",
@@ -1830,6 +1827,8 @@
   "Offline_success_message": "Съобщение за успешно офлайн",
   "Offline_unavailable": "Офлайн не е налице",
   "Older_than": "По-стари от",
+  "Omnichannel_Reports_Status_Open": "Отвори",
+  "Omnichannel_Reports_Status_Closed": "Затворен",
   "On": "На",
   "online": "на линия",
   "Online": "На линия",
@@ -2749,5 +2748,7 @@
   "registration.component.form.reasonToJoin": "Причина за присъединяване",
   "registration.component.form.invalidConfirmPass": "Потвърждението на паролата не съвпада с паролата",
   "registration.component.form.confirmPassword": "Потвърдите паролата",
-  "registration.component.form.sendConfirmationEmail": "Изпратете имейл за потвърждение"
+  "registration.component.form.sendConfirmationEmail": "Изпратете имейл за потвърждение",
+  "Enterprise": "начинание",
+  "UpgradeToGetMore_engagement-dashboard_Title": "анализ"
 }

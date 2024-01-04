@@ -1,4 +1,4 @@
-import { Box, TextInput, Field, FieldGroup } from '@rocket.chat/fuselage';
+import { Box, TextInput, Field, FieldGroup, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage';
 import { useAutoFocus, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent, SyntheticEvent } from 'react';
@@ -42,13 +42,13 @@ const TwoFactorTotpModal = ({ onConfirm, onClose, invalidAttempt }: TwoFactorTot
 		>
 			<FieldGroup>
 				<Field>
-					<Field.Label alignSelf='stretch' htmlFor={id}>
+					<FieldLabel alignSelf='stretch' htmlFor={id}>
 						{t('Open_your_authentication_app_and_enter_the_code')}
-					</Field.Label>
-					<Field.Row>
+					</FieldLabel>
+					<FieldRow>
 						<TextInput id={id} ref={ref} value={code} onChange={onChange} placeholder={t('Enter_authentication_code')}></TextInput>
-					</Field.Row>
-					{invalidAttempt && <Field.Error>{t('Invalid_password')}</Field.Error>}
+					</FieldRow>
+					{invalidAttempt && <FieldError>{t('Invalid_password')}</FieldError>}
 				</Field>
 			</FieldGroup>
 		</GenericModal>

@@ -23,7 +23,7 @@ const CustomField = ({ id, value }: CustomFieldProps) => {
 	}
 
 	if (isError || !data?.customField) {
-		return <Box mbs='x16'>{t('Custom_Field_Not_Found')}</Box>;
+		return <Box mbs={16}>{t('Custom_Field_Not_Found')}</Box>;
 	}
 
 	const { label } = data.customField;

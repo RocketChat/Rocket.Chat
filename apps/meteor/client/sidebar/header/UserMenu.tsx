@@ -1,5 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { FeaturePreview, FeaturePreviewOn, FeaturePreviewOff } from '@rocket.chat/ui-client';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, memo } from 'react';
 
 import GenericMenu from '../../components/GenericMenu/GenericMenu';
@@ -10,6 +11,7 @@ import UserAvatarWithStatusUnstable from './UserAvatarWithStatusUnstable';
 import { useUserMenu } from './hooks/useUserMenu';
 
 const UserMenu = ({ user }: { user: IUser }) => {
+	const t = useTranslation();
 	const [isOpen, setIsOpen] = useState(false);
 
 	const sections = useUserMenu(user);
@@ -22,9 +24,10 @@ const UserMenu = ({ user }: { user: IUser }) => {
 			<FeaturePreviewOff>
 				<GenericMenu
 					icon={<UserAvatarWithStatus />}
+					placement='bottom-end'
 					selectionMode='multiple'
 					sections={sections}
-					title='User menu'
+					title={t('User_menu')}
 					onAction={handleAction}
 					isOpen={isOpen}
 					onOpenChange={setIsOpen}
@@ -34,9 +37,10 @@ const UserMenu = ({ user }: { user: IUser }) => {
 				<GenericMenu
 					icon={<UserAvatarWithStatusUnstable />}
 					medium
+					placement='bottom-end'
 					selectionMode='multiple'
 					sections={sections}
-					title='User menu'
+					title={t('User_menu')}
 					onAction={handleAction}
 					isOpen={isOpen}
 					onOpenChange={setIsOpen}

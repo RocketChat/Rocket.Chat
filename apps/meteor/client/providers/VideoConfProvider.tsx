@@ -5,7 +5,7 @@ import type { Unsubscribe } from 'use-subscription';
 
 import type { VideoConfPopupPayload } from '../contexts/VideoConfContext';
 import { VideoConfContext } from '../contexts/VideoConfContext';
-import type { DirectCallParams, ProviderCapabilities, CallPreferences } from '../lib/VideoConfManager';
+import type { DirectCallData, ProviderCapabilities, CallPreferences } from '../lib/VideoConfManager';
 import { VideoConfManager } from '../lib/VideoConfManager';
 import VideoConfPopups from '../views/room/contextualBar/VideoConference/VideoConfPopups';
 import { useVideoConfOpenCall } from '../views/room/contextualBar/VideoConference/hooks/useVideoConfOpenCall';
@@ -17,7 +17,7 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 	useEffect(
 		() =>
 			VideoConfManager.on('call/join', (props) => {
-				handleOpenCall(props.url);
+				handleOpenCall(props.url, props.providerName);
 			}),
 		[handleOpenCall],
 	);
@@ -42,7 +42,7 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 			abortCall: (): void => VideoConfManager.abortCall(),
 			setPreferences: (prefs: Partial<(typeof VideoConfManager)['preferences']>): void => VideoConfManager.setPreferences(prefs),
 			queryIncomingCalls: {
-				getCurrentValue: (): DirectCallParams[] => VideoConfManager.getIncomingDirectCalls(),
+				getCurrentValue: (): DirectCallData[] => VideoConfManager.getIncomingDirectCalls(),
 				subscribe: (cb: () => void): Unsubscribe => VideoConfManager.on('incoming/changed', cb),
 			},
 			queryRinging: {

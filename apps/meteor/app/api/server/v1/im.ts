@@ -123,18 +123,33 @@ API.v1.addRoute(
 			if (!roomId) {
 				throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" is required');
 			}
-			const canAccess = await canAccessRoomIdAsync(roomId, this.userId);
-			if (!canAccess) {
-				return API.v1.unauthorized();
+
+			let subscription;
+
+			const roomExists = !!(await Rooms.findOneById(roomId));
+			if (!roomExists) {
+				// even if the room doesn't exist, we should allow the user to close the subscription anyways
+				subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId);
+			} else {
+				const canAccess = await canAccessRoomIdAsync(roomId, this.userId);
+				if (!canAccess) {
+					return API.v1.unauthorized();
+				}
+
+				const { subscription: subs } = await findDirectMessageRoom({ roomId }, this.userId);
+
+				subscription = subs;
 			}
 
-			const { room, subscription } = await findDirectMessageRoom({ roomId }, this.userId);
+			if (!subscription) {
+				return API.v1.failure(`The user is not subscribed to the room`);
+			}
 
-			if (!subscription?.open) {
+			if (!subscription.open) {
 				return API.v1.failure(`The direct message room, is already closed to the sender`);
 			}
 
-			await hideRoomMethod(this.userId, room._id);
+			await hideRoomMethod(this.userId, roomId);
 
 			return API.v1.success();
 		},

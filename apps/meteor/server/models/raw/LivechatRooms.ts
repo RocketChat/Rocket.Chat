@@ -7,7 +7,10 @@ import type {
 	IMessage,
 	ILivechatPriority,
 	IOmnichannelServiceLevelAgreements,
+	ReportResult,
+	MACStats,
 } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
 import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
 import { Settings } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
@@ -22,6 +25,7 @@ import type {
 	SortDirection,
 	FindCursor,
 	UpdateResult,
+	AggregationCursor,
 } from 'mongodb';
 
 import { getValue } from '../../../app/settings/server/raw';
@@ -47,7 +51,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			{ key: { 'omnichannel.predictedVisitorAbandonmentAt': 1 }, sparse: true },
 			{ key: { closedAt: 1 }, sparse: true },
 			{ key: { servedBy: 1 }, sparse: true },
-			{ key: { 'v.token': 1 }, sparse: true },
 			{ key: { 'v.token': 1, 'email.thread': 1 }, sparse: true },
 			{ key: { 'v._id': 1 }, sparse: true },
 			{ key: { t: 1, departmentId: 1, closedAt: 1 }, partialFilterExpression: { closedAt: { $exists: true } } },
@@ -67,6 +70,11 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			{ key: { callStatus: 1 }, sparse: true }, // used on statistics
 			{ key: { priorityId: 1 }, sparse: true },
 			{ key: { slaId: 1 }, sparse: true },
+			{ key: { source: 1, ts: 1 }, partialFilterExpression: { source: { $exists: true }, t: 'l' } },
+			{ key: { departmentId: 1, ts: 1 }, partialFilterExpression: { departmentId: { $exists: true }, t: 'l' } },
+			{ key: { 'tags.0': 1, 'ts': 1 }, partialFilterExpression: { 'tags.0': { $exists: true }, 't': 'l' } },
+			{ key: { servedBy: 1, ts: 1 }, partialFilterExpression: { servedBy: { $exists: true }, t: 'l' } },
+			{ key: { 'v.activity': 1, 'ts': 1 }, partialFilterExpression: { 'v.activity': { $exists: true }, 't': 'l' } },
 		];
 	}
 
@@ -179,7 +187,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		};
 
 		const params = [...firstParams, usersGroup, project, facet];
-		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() }).toArray();
+		return this.col.aggregate(params, { readPreference: readSecondaryPreferred(), allowDiskUse: true }).toArray();
 	}
 
 	async findAllNumberOfAbandonedRooms({
@@ -1509,11 +1517,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			{
 				$set: { pdfTranscriptRequested: true },
 			},
-			{},
-			// @ts-expect-error - extra arg not on base types
-			{
-				bypassUnits: true,
-			},
 		);
 	}
 
@@ -1525,11 +1528,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			{
 				$unset: { pdfTranscriptRequested: 1 },
 			},
-			{},
-			// @ts-expect-error - extra arg not on base types
-			{
-				bypassUnits: true,
-			},
 		);
 	}
 
@@ -1540,11 +1538,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			},
 			{
 				$set: { pdfTranscriptFileId: fileId },
-			},
-			{},
-			// @ts-expect-error - extra arg not on base types
-			{
-				bypassUnits: true,
 			},
 		);
 	}
@@ -1597,7 +1590,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 					closedAt,
 					'metrics.chatDuration': chatDuration,
 					'metrics.serviceTimeDuration': serviceTimeDuration,
-					'v.status': 'offline',
+					'v.status': UserStatus.OFFLINE,
 					...(closer && { closer }),
 					...(closedBy && { closedBy }),
 					...(tags && { tags }),
@@ -1898,7 +1891,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 
 	findOneOpenByVisitorTokenAndDepartmentIdAndSource(
 		visitorToken: string,
-		departmentId: string,
+		departmentId?: string,
 		source?: string,
 		options: FindOptions<IOmnichannelRoom> = {},
 	) {
@@ -1979,7 +1972,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.find(query, options);
 	}
 
-	setResponseByRoomId(roomId: string, response: { user: { _id: string; username: string } }) {
+	setResponseByRoomId(roomId: string, responseBy: IOmnichannelRoom['responseBy']) {
 		return this.updateOne(
 			{
 				_id: roomId,
@@ -1987,11 +1980,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			},
 			{
 				$set: {
-					responseBy: {
-						_id: response.user._id,
-						username: response.user.username,
-						lastMessageTs: new Date(),
-					},
+					responseBy,
 				},
 				$unset: {
 					waitingResponse: 1,
@@ -2336,7 +2325,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.updateOne(query, update);
 	}
 
-	updateVisitorStatus(token: string, status: 'online' | 'busy' | 'away' | 'offline') {
+	updateVisitorStatus(token: string, status: UserStatus) {
 		const query: Filter<IOmnichannelRoom> = {
 			'v.token': token,
 			'open': true,
@@ -2445,6 +2434,140 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.updateOne(query, update);
 	}
 
+	markVisitorActiveForPeriod(rid: string, period: string): Promise<UpdateResult> {
+		const query = {
+			_id: rid,
+		};
+
+		const update = {
+			$addToSet: {
+				'v.activity': period,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	async getMACStatisticsForPeriod(period: string): Promise<MACStats[]> {
+		return this.col
+			.aggregate<MACStats>([
+				{
+					$match: {
+						't': 'l',
+						'v.activity': period,
+					},
+				},
+				{
+					$group: {
+						_id: {
+							source: {
+								$ifNull: ['$source.alias', '$source.type'],
+							},
+						},
+						contactsCount: {
+							$addToSet: '$v._id',
+						},
+						conversationsCount: {
+							$sum: 1,
+						},
+					},
+				},
+				{
+					$group: {
+						_id: null,
+						sources: {
+							$push: {
+								source: '$_id.source',
+								contactsCount: {
+									$size: '$contactsCount',
+								},
+								conversationsCount: '$conversationsCount',
+							},
+						},
+						totalContactsCount: {
+							$sum: {
+								$size: '$contactsCount',
+							},
+						},
+						totalConversationsCount: {
+							$sum: '$conversationsCount',
+						},
+					},
+				},
+				{
+					$project: {
+						_id: 0,
+						contactsCount: '$totalContactsCount',
+						conversationsCount: '$totalConversationsCount',
+						sources: 1,
+					},
+				},
+			])
+			.toArray();
+	}
+
+	async getMACStatisticsBetweenDates(start: Date, end: Date): Promise<MACStats[]> {
+		return this.col
+			.aggregate<MACStats>([
+				{
+					$match: {
+						't': 'l',
+						'v.activity': { $exists: true },
+						'ts': {
+							$gte: start,
+							$lt: end,
+						},
+					},
+				},
+				{
+					$group: {
+						_id: {
+							source: {
+								$ifNull: ['$source.alias', '$source.type'],
+							},
+						},
+						contactsCount: {
+							$addToSet: '$v._id',
+						},
+						conversationsCount: {
+							$sum: 1,
+						},
+					},
+				},
+				{
+					$group: {
+						_id: null,
+						sources: {
+							$push: {
+								source: '$_id.source',
+								contactsCount: {
+									$size: '$contactsCount',
+								},
+								conversationsCount: '$conversationsCount',
+							},
+						},
+						totalContactsCount: {
+							$sum: {
+								$size: '$contactsCount',
+							},
+						},
+						totalConversationsCount: {
+							$sum: '$conversationsCount',
+						},
+					},
+				},
+				{
+					$project: {
+						_id: 0,
+						contactsCount: '$totalContactsCount',
+						conversationsCount: '$totalConversationsCount',
+						sources: 1,
+					},
+				},
+			])
+			.toArray();
+	}
+
 	async unsetAllPredictedVisitorAbandonment(): Promise<void> {
 		throw new Error('Method not implemented.');
 	}
@@ -2513,6 +2636,69 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	}
 
 	async updateDepartmentAncestorsById(_rid: string, _departmentAncestors?: string[]): Promise<UpdateResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	countPrioritizedRooms(): Promise<number> {
+		throw new Error('Method not implemented.');
+	}
+
+	countRoomsWithSla(): Promise<number> {
+		throw new Error('Method not implemented.');
+	}
+
+	countRoomsWithPdfTranscriptRequested(): Promise<number> {
+		throw new Error('Method not implemented.');
+	}
+
+	countRoomsWithTranscriptSent(): Promise<number> {
+		throw new Error('Method not implemented.');
+	}
+
+	getConversationsBySource(_start: Date, _end: Date, _extraQuery: Filter<IOmnichannelRoom>): AggregationCursor<ReportResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	getConversationsByStatus(_start: Date, _end: Date, _extraQuery: Filter<IOmnichannelRoom>): AggregationCursor<ReportResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	getConversationsByDepartment(
+		_start: Date,
+		_end: Date,
+		_sort: Record<string, 1 | -1>,
+		_extraQuery: Filter<IOmnichannelRoom>,
+	): AggregationCursor<ReportResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	getConversationsByTags(
+		_start: Date,
+		_end: Date,
+		_sort: Record<string, 1 | -1>,
+		_extraQuery: Filter<IOmnichannelRoom>,
+	): AggregationCursor<ReportResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	getConversationsByAgents(
+		_start: Date,
+		_end: Date,
+		_sort: Record<string, 1 | -1>,
+		_extraQuery: Filter<IOmnichannelRoom>,
+	): AggregationCursor<ReportResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	getConversationsWithoutTagsBetweenDate(_start: Date, _end: Date, _extraQuery: Filter<IOmnichannelRoom>): Promise<number> {
+		throw new Error('Method not implemented.');
+	}
+
+	getTotalConversationsWithoutAgentsBetweenDate(_start: Date, _end: Date, _extraQuery: Filter<IOmnichannelRoom>): Promise<number> {
+		throw new Error('Method not implemented.');
+	}
+
+	getTotalConversationsWithoutDepartmentBetweenDates(_start: Date, _end: Date, _extraQuery: Filter<IOmnichannelRoom>): Promise<number> {
 		throw new Error('Method not implemented.');
 	}
 }

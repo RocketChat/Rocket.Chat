@@ -1,16 +1,20 @@
+import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment } from '@rocket.chat/models';
 
 import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
-import { cbLogger } from '../lib/logger';
 
 callbacks.add(
 	'livechat.applySimultaneousChatRestrictions',
 	async (_: any, { departmentId }: { departmentId?: string } = {}) => {
 		if (departmentId) {
-			const departmentLimit = (await LivechatDepartment.findOneById(departmentId))?.maxNumberSimultaneousChat || 0;
+			const departmentLimit =
+				(
+					await LivechatDepartment.findOneById<Pick<ILivechatDepartment, 'maxNumberSimultaneousChat'>>(departmentId, {
+						projection: { maxNumberSimultaneousChat: 1 },
+					})
+				)?.maxNumberSimultaneousChat || 0;
 			if (departmentLimit > 0) {
-				cbLogger.debug(`Applying department filters. Max chats per department ${departmentLimit}`);
 				return { $match: { 'queueInfo.chats': { $gte: Number(departmentLimit) } } };
 			}
 		}
@@ -42,8 +46,6 @@ callbacks.add(
 				  }
 				: // dummy filter meaning: don't match anything
 				  { _id: '' };
-
-		cbLogger.debug(`Applying agent & global filters. Max number of chats allowed to all agents by setting: ${maxChatsPerSetting}`);
 
 		return { $match: { $or: [agentFilter, globalFilter] } };
 	},

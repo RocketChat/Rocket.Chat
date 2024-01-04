@@ -43,11 +43,11 @@ const FirstStep: FC<FirstStepProps> = ({
 			onConfirm={onConfirm}
 			{...props}
 		>
-			<Box mbe='x24' fontScale='p2'>
+			<Box mbe={24} fontScale='p2'>
 				{t('Select_the_teams_channels_you_would_like_to_delete')}
 			</Box>
 
-			<Box mbe='x24' fontScale='p2'>
+			<Box mbe={24} fontScale='p2'>
 				{t('Notice_that_public_channels_will_be_public_and_visible_to_everyone')}
 			</Box>
 

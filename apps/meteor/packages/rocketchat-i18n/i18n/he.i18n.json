@@ -982,7 +982,6 @@
   "Num_Agents": "סוכני #",
   "Number_of_messages": "מספר הודעות",
   "OAuth_Application": "יישום OAuth",
-  "OAuth_Applications": "יישומי OAuth",
   "Objects": "אובייקטים",
   "Off": "לא פועל",
   "Off_the_record_conversation": "שיחה לא לציטוט",
@@ -995,6 +994,8 @@
   "Offline_message": "הודעה מנותקת",
   "Offline_success_message": "הודעת הצלחה מנותקת",
   "Offline_unavailable": "זמין מנותק",
+  "Omnichannel_Reports_Status_Open": "לִפְתוֹחַ",
+  "Omnichannel_Reports_Status_Closed": "סגור",
   "On": "פועל",
   "online": "זמין",
   "Online": "זמינים",
@@ -1533,5 +1534,6 @@
   "registration.component.form.submit": "שליחה",
   "registration.component.form.invalidConfirmPass": "אימות הססמה אינו זהה לססמה",
   "registration.component.form.confirmPassword": "אמת את הסיסמה שלך",
-  "registration.component.form.sendConfirmationEmail": "שליחת דוא״ל אימות"
+  "registration.component.form.sendConfirmationEmail": "שליחת דוא״ל אימות",
+  "UpgradeToGetMore_engagement-dashboard_Title": "סטטיסטיקה"
 }

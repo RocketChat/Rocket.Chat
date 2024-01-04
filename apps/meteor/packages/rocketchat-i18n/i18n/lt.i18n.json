@@ -850,7 +850,6 @@
   "Custom_Sound_Has_Been_Deleted": "Pasirinktinis garsas ištrintas.",
   "Custom_Sound_Info": "Pasirinktinė garso informacija",
   "Custom_Sound_Saved_Successfully": "Tinkintas garso įrašas sėkmingai išsaugotas",
-  "Custom_Sounds": "Pasirinktiniai garsai",
   "Custom_Translations": "Tinkinti vertimai",
   "Custom_Translations_Description": "Turėtų būti galiojantis JSON, kur raktai yra kalbos, kuriose yra raktinių žodžių ir vertimų žodynas. Pavyzdys:  \n `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Customize": "Pritaikyti",
@@ -1029,7 +1028,6 @@
   "Enter_name_here": "Įveskite pavadinimą čia",
   "Enter_Normal": "Normalus režimas (siųsti su \"Enter\")",
   "Enter_to": "Įeiti į",
-  "Enterprise": "Įmonė",
   "Entertainment": "Pramogos",
   "Error": "Klaida",
   "Error_404": "Klaida: 404",
@@ -1868,7 +1866,6 @@
   "Num_Agents": "# Agentai",
   "Number_of_messages": "Pranešimų skaičius",
   "OAuth_Application": "\"OAuth\" programa",
-  "OAuth_Applications": "\"OAuth\" programos",
   "Objects": "Objektai",
   "Off": "Išjungtas",
   "Off_the_record_conversation": "Neakivaizdinė pokalbis",
@@ -1888,6 +1885,8 @@
   "Offline_success_message": "Sesijos neprisijungus pranešimas",
   "Offline_unavailable": "Atsijungęs nepasiekiamas",
   "Older_than": "Vyresni nei",
+  "Omnichannel_Reports_Status_Open": "Atidaryta",
+  "Omnichannel_Reports_Status_Closed": "Uždaryta",
   "On": "apie",
   "online": "prisijungęs",
   "Online": "Prisijungęs",
@@ -2812,5 +2811,7 @@
   "registration.component.form.reasonToJoin": "Priežastys prisijungti",
   "registration.component.form.invalidConfirmPass": "Slaptažodžio patvirtinimas nesutampa su slaptažodžiu",
   "registration.component.form.confirmPassword": "Patvirtinkite savo slaptažodį",
-  "registration.component.form.sendConfirmationEmail": "Siųsti patvirtinimo el. Laišką"
+  "registration.component.form.sendConfirmationEmail": "Siųsti patvirtinimo el. Laišką",
+  "Enterprise": "Įmonė",
+  "UpgradeToGetMore_engagement-dashboard_Title": "\"Analytics\""
 }

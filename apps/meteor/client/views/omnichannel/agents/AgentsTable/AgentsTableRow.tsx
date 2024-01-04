@@ -1,37 +1,37 @@
-import { Box } from '@rocket.chat/fuselage';
-import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { Box, IconButton } from '@rocket.chat/fuselage';
+import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useCallback } from 'react';
+import React from 'react';
 
 import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
-import RemoveAgentButton from './RemoveAgentButton';
+import { useRemoveAgent } from '../hooks/useRemoveAgent';
 
 const AgentsTableRow = ({
 	user: { _id, name, username, avatarETag, emails, statusLivechat },
 	mediaQuery,
-	reload,
 }: {
-	user: { _id: string; name?: string; username?: string; avatarETag?: string; emails?: { address: string }[]; statusLivechat: string };
+	user: {
+		_id: string;
+		name?: string;
+		username?: string;
+		avatarETag?: string;
+		emails?: { address: string }[];
+		statusLivechat: string;
+	};
 	mediaQuery: boolean;
-	reload: () => void;
 }): ReactElement => {
 	const t = useTranslation();
-	const agentsRoute = useRoute('omnichannel-agents');
+	const router = useRouter();
 
-	const onRowClick = useCallback(() => {
-		agentsRoute.push({
-			context: 'info',
-			id: _id,
-		});
-	}, [_id, agentsRoute]);
+	const handleDelete = useRemoveAgent(_id);
 
 	return (
-		<GenericTableRow action onClick={onRowClick}>
+		<GenericTableRow data-qa-id={username} action onClick={() => router.navigate(`/omnichannel/agents/info/${_id}`)}>
 			<GenericTableCell>
 				<Box display='flex' alignItems='center'>
 					{username && <UserAvatar size={mediaQuery ? 'x28' : 'x40'} title={username} username={username} etag={avatarETag} />}
-					<Box display='flex' withTruncatedText mi='x8'>
+					<Box display='flex' withTruncatedText mi={8}>
 						<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
 							<Box fontScale='p2m' withTruncatedText color='default'>
 								{name || username}
@@ -50,12 +50,22 @@ const AgentsTableRow = ({
 					<Box fontScale='p2m' withTruncatedText color='hint'>
 						{username}
 					</Box>
-					<Box mi='x4' />
+					<Box mi={4} />
 				</GenericTableCell>
 			)}
 			<GenericTableCell withTruncatedText>{emails?.length && emails[0].address}</GenericTableCell>
 			<GenericTableCell withTruncatedText>{statusLivechat === 'available' ? t('Available') : t('Not_Available')}</GenericTableCell>
-			<RemoveAgentButton _id={_id} reload={reload} />
+			<GenericTableCell withTruncatedText>
+				<IconButton
+					icon='trash'
+					small
+					title={t('Remove')}
+					onClick={(e) => {
+						e.stopPropagation();
+						handleDelete();
+					}}
+				/>
+			</GenericTableCell>
 		</GenericTableRow>
 	);
 };

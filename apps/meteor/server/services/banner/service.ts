@@ -26,13 +26,13 @@ export class BannerService extends ServiceClassInternal implements IBannerServic
 		return true;
 	}
 
-	async create(doc: Optional<IBanner, '_id'>): Promise<IBanner> {
+	async create(doc: Optional<IBanner, '_id' | '_updatedAt'>): Promise<IBanner> {
 		const bannerId = doc._id || uuidv4();
 
-		doc.view.appId = 'banner-core';
+		doc.view.appId = doc.view.appId ?? 'banner-core';
 		doc.view.viewId = bannerId;
 
-		await Banners.create({
+		await Banners.createOrUpdate({
 			...doc,
 			_id: bannerId,
 		});
@@ -42,7 +42,7 @@ export class BannerService extends ServiceClassInternal implements IBannerServic
 			throw new Error('error-creating-banner');
 		}
 
-		void api.broadcast('banner.new', banner._id);
+		void this.sendToUsers(banner);
 
 		return banner;
 	}
@@ -64,7 +64,13 @@ export class BannerService extends ServiceClassInternal implements IBannerServic
 
 		const dismissed = new Set(result.map(({ bannerId }) => bannerId));
 
-		return banners.filter((banner) => !dismissed.has(banner._id));
+		return banners
+			.filter((banner) => !dismissed.has(banner._id))
+			.map((banner) => ({
+				...banner,
+				// add surface to legacy banners
+				surface: !banner.surface ? 'banner' : banner.surface,
+			}));
 	}
 
 	async dismiss(userId: string, bannerId: string): Promise<boolean> {
@@ -123,9 +129,38 @@ export class BannerService extends ServiceClassInternal implements IBannerServic
 
 		const { _id, ...banner } = result;
 
-		await Banners.updateOne({ _id }, { $set: { ...banner, ...doc, active: true } }); // reenable the banner
+		const newBanner = { ...banner, ...doc, active: true };
 
-		void api.broadcast('banner.enabled', bannerId);
+		await Banners.updateOne({ _id }, { $set: newBanner }); // reenable the banner
+
+		void this.sendToUsers({ _id, ...newBanner });
+
+		return true;
+	}
+
+	async sendToUsers(banner: IBanner): Promise<boolean> {
+		if (!banner.active) {
+			return false;
+		}
+
+		// no roles set, so it should be sent to all users
+		if (!banner.roles?.length) {
+			void api.broadcast('banner.enabled', banner._id);
+			return true;
+		}
+
+		const total = await Users.countActiveUsersInRoles(banner.roles);
+
+		// if more than 100 users should receive the banner, send it to all users
+		if (total > 100) {
+			void api.broadcast('banner.enabled', banner._id);
+			return true;
+		}
+
+		await Users.findActiveUsersInRoles(banner.roles, { projection: { _id: 1 } }).forEach((user) => {
+			void api.broadcast('banner.user', user._id, banner);
+		});
+
 		return true;
 	}
 }

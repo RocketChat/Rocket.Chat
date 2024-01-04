@@ -12,41 +12,37 @@ import ContextualBarSurface from './ContextualBarSurface';
 import { reorder } from './Reorder';
 
 const Surface: FC = () => {
-  const {
-    state: {
-      doc: { payload },
-      surface,
-    },
-  } = useContext(context);
-  const [uniqueBlocks, setUniqueBlocks] = useState<Block[]>(
-    payload.map((block, i) => ({ id: `${i}`, payload: block }))
-  );
+	const {
+		state: {
+			doc: { payload },
+			surface,
+		},
+	} = useContext(context);
+	const [uniqueBlocks, setUniqueBlocks] = useState<Block[]>(payload.map((block, i) => ({ id: `${i}`, payload: block })));
 
-  useEffect(() => {
-    setUniqueBlocks(
-      payload.map((block, i) => ({ id: `${i}`, payload: block }))
-    );
-  }, [payload]);
+	useEffect(() => {
+		setUniqueBlocks(payload.map((block, i) => ({ id: `${i}`, payload: block })));
+	}, [payload]);
 
-  const onDragEnd = ({ destination, source }: DropResult) => {
-    if (!destination) return;
+	const onDragEnd = ({ destination, source }: DropResult) => {
+		if (!destination) return;
 
-    const newBlocks = reorder(uniqueBlocks, source.index, destination.index);
+		const newBlocks = reorder(uniqueBlocks, source.index, destination.index);
 
-    setUniqueBlocks(newBlocks);
-  };
+		setUniqueBlocks(newBlocks);
+	};
 
-  const surfaceRender: { [key: number]: () => JSX.Element } = {
-    '1': () => <MessageSurface blocks={uniqueBlocks} onDragEnd={onDragEnd} />,
-    '2': () => <BannerSurface blocks={uniqueBlocks} onDragEnd={onDragEnd} />,
-    '3': () => <ModalSurface blocks={uniqueBlocks} onDragEnd={onDragEnd} />,
-    '4': () => <ContextualBarSurface blocks={uniqueBlocks} onDragEnd={onDragEnd}/>,
-  };
-  return (
-    <Box pb='40px' pi='x20'>
-      {surfaceRender[surface]()}
-    </Box>
-  );
+	const surfaceRender: { [key: number]: () => JSX.Element } = {
+		'1': () => <MessageSurface blocks={uniqueBlocks} onDragEnd={onDragEnd} />,
+		'2': () => <BannerSurface blocks={uniqueBlocks} onDragEnd={onDragEnd} />,
+		'3': () => <ModalSurface blocks={uniqueBlocks} onDragEnd={onDragEnd} />,
+		'4': () => <ContextualBarSurface blocks={uniqueBlocks} onDragEnd={onDragEnd} />,
+	};
+	return (
+		<Box pb='40px' pi={20}>
+			{surfaceRender[surface]()}
+		</Box>
+	);
 };
 
 export default Surface;

@@ -20,6 +20,7 @@ import { ClientLogger } from '../../lib/ClientLogger';
 import type { OmnichannelContextValue } from '../contexts/OmnichannelContext';
 import { OmnichannelContext } from '../contexts/OmnichannelContext';
 import { useReactiveValue } from '../hooks/useReactiveValue';
+import { useShouldPreventAction } from '../hooks/useShouldPreventAction';
 
 const emptyContextValue: OmnichannelContextValue = {
 	inquiries: { enabled: false },
@@ -27,6 +28,7 @@ const emptyContextValue: OmnichannelContextValue = {
 	isEnterprise: false,
 	agentAvailable: false,
 	showOmnichannelQueueLink: false,
+	isOverMacLimit: false,
 	livechatPriorities: {
 		enabled: false,
 		data: [],
@@ -39,7 +41,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 	const omniChannelEnabled = useSetting('Livechat_enabled') as boolean;
 	const omnichannelRouting = useSetting('Livechat_Routing_Method');
 	const showOmnichannelQueueLink = useSetting('Livechat_show_queue_list_link') as boolean;
-	const omnichannelPoolMaxIncoming = useSetting('Livechat_guest_pool_max_number_incoming_livechats_displayed') as number;
+	const omnichannelPoolMaxIncoming = useSetting<number>('Livechat_guest_pool_max_number_incoming_livechats_displayed') ?? 0;
 	const omnichannelSortingMechanism = useSetting('Omnichannel_sorting_mechanism') as OmnichannelSortingMechanismSettingType;
 
 	const loggerRef = useRef(new ClientLogger('OmnichannelProvider'));
@@ -63,6 +65,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 	const subscribe = useStream('notify-logged');
 	const queryClient = useQueryClient();
 	const isPrioritiesEnabled = isEnterprise && accessible;
+	const enabled = accessible && !!user && !!routeConfig;
 
 	const {
 		data: { priorities = [] } = {},
@@ -72,6 +75,8 @@ const OmnichannelProvider: FC = ({ children }) => {
 		staleTime: Infinity,
 		enabled: isPrioritiesEnabled,
 	});
+
+	const isOverMacLimit = useShouldPreventAction('monthlyActiveContacts');
 
 	useEffect(() => {
 		if (!isPrioritiesEnabled) {
@@ -102,7 +107,6 @@ const OmnichannelProvider: FC = ({ children }) => {
 		}
 	}, [accessible, getRoutingConfig, iceServersSetting, omnichannelRouting, setRouteConfig, voipCallAvailable]);
 
-	const enabled = accessible && !!user && !!routeConfig;
 	const manuallySelected =
 		enabled && canViewOmnichannelQueue && !!routeConfig && routeConfig.showQueue && !routeConfig.autoAssignAgent && agentAvailable;
 
@@ -126,16 +130,13 @@ const OmnichannelProvider: FC = ({ children }) => {
 			}
 
 			return LivechatInquiry.find(
-				{
-					status: 'queued',
-					$or: [{ defaultAgent: { $exists: false } }, { 'defaultAgent.agentId': user?._id }],
-				},
+				{ status: 'queued' },
 				{
 					sort: getOmniChatSortQuery(omnichannelSortingMechanism),
 					limit: omnichannelPoolMaxIncoming,
 				},
 			).fetch();
-		}, [manuallySelected, omnichannelPoolMaxIncoming, omnichannelSortingMechanism, user?._id]),
+		}, [manuallySelected, omnichannelPoolMaxIncoming, omnichannelSortingMechanism]),
 	);
 
 	queue?.map(({ rid }) => {
@@ -167,6 +168,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 				voipCallAvailable,
 				routeConfig,
 				livechatPriorities,
+				isOverMacLimit,
 			};
 		}
 
@@ -185,6 +187,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 				: { enabled: false },
 			showOmnichannelQueueLink: showOmnichannelQueueLink && !!agentAvailable,
 			livechatPriorities,
+			isOverMacLimit,
 		};
 	}, [
 		enabled,
@@ -199,6 +202,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 		routeConfig,
 		queue,
 		showOmnichannelQueueLink,
+		isOverMacLimit,
 	]);
 
 	return <OmnichannelContext.Provider children={children} value={contextValue} />;

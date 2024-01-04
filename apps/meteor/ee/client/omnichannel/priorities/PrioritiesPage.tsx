@@ -1,11 +1,11 @@
-import { Button, ButtonGroup, Throbber } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRoute, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useMemo, useState } from 'react';
 
-import Page from '../../../../client/components/Page';
+import { Page, PageHeader, PageContent } from '../../../../client/components/Page';
 import { useOmnichannelPriorities } from '../hooks/useOmnichannelPriorities';
 import { PrioritiesResetModal } from './PrioritiesResetModal';
 import { PrioritiesTable } from './PrioritiesTable';
@@ -75,16 +75,16 @@ export const PrioritiesPage = ({ priorityId, context }: PrioritiesPageProps): Re
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('Priorities')}>
+				<PageHeader title={t('Priorities')}>
 					<ButtonGroup>
-						<Button onClick={handleReset} title={t('Reset')} disabled={!isPrioritiesDirty || isResetting}>
-							{isResetting ? <Throbber size='x12' inheritColor /> : t('Reset')}
+						<Button onClick={handleReset} title={t('Reset')} disabled={!isPrioritiesDirty} loading={isResetting}>
+							{t('Reset')}
 						</Button>
 					</ButtonGroup>
-				</Page.Header>
-				<Page.Content>
+				</PageHeader>
+				<PageContent>
 					<PrioritiesTable priorities={priorities} isLoading={isLoading} onRowClick={onRowClick} />
-				</Page.Content>
+				</PageContent>
 			</Page>
 
 			{context === 'edit' && (

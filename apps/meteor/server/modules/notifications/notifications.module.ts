@@ -4,6 +4,7 @@ import { Rooms, Subscriptions, Users, Settings } from '@rocket.chat/models';
 import type { StreamerCallbackArgs, StreamKeys, StreamNames } from '@rocket.chat/ui-contexts';
 import type { IStreamer, IStreamerConstructor, IPublication } from 'meteor/rocketchat:streamer';
 
+import type { ImporterProgress } from '../../../app/importer/server/classes/ImporterProgress';
 import { emit, StreamPresence } from '../../../app/notifications/server/lib/Presence';
 import { SystemLogger } from '../../lib/logger/system';
 
@@ -535,29 +536,7 @@ export class NotificationsModule {
 		return this.streamPresence.emitWithoutBroadcast(uid, args);
 	}
 
-	progressUpdated(progress: {
-		rate: number;
-		count?: { completed: number; total: number };
-		step?:
-			| 'importer_new'
-			| 'importer_uploading'
-			| 'importer_downloading_file'
-			| 'importer_file_loaded'
-			| 'importer_preparing_started'
-			| 'importer_preparing_users'
-			| 'importer_preparing_channels'
-			| 'importer_preparing_messages'
-			| 'importer_user_selection'
-			| 'importer_importing_started'
-			| 'importer_importing_users'
-			| 'importer_importing_channels'
-			| 'importer_importing_messages'
-			| 'importer_importing_files'
-			| 'importer_finishing'
-			| 'importer_done'
-			| 'importer_import_failed'
-			| 'importer_import_cancelled';
-	}): void {
+	progressUpdated(progress: { rate: number } | ImporterProgress): void {
 		this.streamImporters.emit('progress', progress);
 	}
 }

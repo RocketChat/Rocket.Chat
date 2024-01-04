@@ -55,7 +55,7 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport  */ }: VoipInfo
 					<InfoPanel.Field>
 						<InfoPanel.Label>{t('Channel')}</InfoPanel.Label>
 						<Box color='default'>
-							<Icon size='x24' name='phone' />
+							<Icon size='x24' name='phone' verticalAlign='middle' />
 							{t('Voice_Call')}
 						</Box>
 					</InfoPanel.Field>
@@ -65,7 +65,7 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport  */ }: VoipInfo
 							<InfoPanel.Label>{t('Contact')}</InfoPanel.Label>
 							<Box display='flex'>
 								<UserAvatar size='x28' username={_name} />
-								<AgentInfoDetails mis='x8' name={parseOutboundPhoneNumber(_name)} status={<UserStatus status={v?.status} />} />
+								<AgentInfoDetails mis={8} name={parseOutboundPhoneNumber(_name)} status={<UserStatus status={v?.status} />} />
 							</Box>
 						</InfoPanel.Field>
 					)}
@@ -82,7 +82,7 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport  */ }: VoipInfo
 							<InfoPanel.Text>
 								<Box display='flex' flexDirection='row' alignItems='center'>
 									{tags?.map((tag: string) => (
-										<Chip mie='x4' key={tag} value={tag}>
+										<Chip mie={4} key={tag} value={tag}>
 											{tag}
 										</Chip>
 									))}

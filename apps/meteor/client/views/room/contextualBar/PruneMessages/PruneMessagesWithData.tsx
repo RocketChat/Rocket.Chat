@@ -1,14 +1,14 @@
-import type { IRoom } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch, useUserRoom, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import type { ReactElement } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 
 import GenericModal from '../../../../components/GenericModal';
-import type { ToolboxContextValue } from '../../contexts/ToolboxContext';
+import { useRoom } from '../../contexts/RoomContext';
+import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import PruneMessages from './PruneMessages';
 
 const getTimeZoneOffset = (): string => {
@@ -36,11 +36,11 @@ export const initialValues = {
 
 const DEFAULT_PRUNE_LIMIT = 2000;
 
-const PruneMessagesWithData = ({ rid, tabBar }: { rid: IRoom['_id']; tabBar: ToolboxContextValue['tabBar'] }): ReactElement => {
+const PruneMessagesWithData = (): ReactElement => {
 	const t = useTranslation();
-	const room = useUserRoom(rid);
+	const room = useRoom();
 	const setModal = useSetModal();
-	const onClickClose = useMutableCallback(() => tabBar?.close());
+	const { closeTab: close } = useRoomToolbox();
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 	const dispatchToastMessage = useToastMessageDispatch();
 	const pruneMessagesAction = useEndpoint('POST', '/v1/rooms.cleanHistory');
@@ -78,7 +78,7 @@ const PruneMessagesWithData = ({ rid, tabBar }: { rid: IRoom['_id']; tabBar: Too
 				}
 
 				const { count } = await pruneMessagesAction({
-					roomId: rid,
+					roomId: room._id,
 					latest: toDate.toISOString(),
 					oldest: fromDate.toISOString(),
 					inclusive,
@@ -191,13 +191,7 @@ const PruneMessagesWithData = ({ rid, tabBar }: { rid: IRoom['_id']; tabBar: Too
 
 	return (
 		<FormProvider {...methods}>
-			<PruneMessages
-				callOutText={callOutText}
-				validateText={validateText}
-				users={users}
-				onClickClose={onClickClose}
-				onClickPrune={handlePrune}
-			/>
+			<PruneMessages callOutText={callOutText} validateText={validateText} users={users} onClickClose={close} onClickPrune={handlePrune} />
 		</FormProvider>
 	);
 };

@@ -54,6 +54,10 @@ function emitCallback(eventName, data) {
 	}
 }
 
+function clearAllCallbacks() {
+	callbacks.all.clear();
+}
+
 // hooks
 function callHook(action, params) {
 	if (!ready) {
@@ -305,18 +309,22 @@ function setLanguage(language) {
 
 function showWidget() {
 	callHook('showWidget');
+	emitCallback('show-widget');
 }
 
 function hideWidget() {
 	callHook('hideWidget');
+	emitCallback('hide-widget');
 }
 
 function maximizeWidget() {
 	callHook('maximizeWidget');
+	emitCallback('chat-maximized');
 }
 
 function minimizeWidget() {
 	callHook('minimizeWidget');
+	emitCallback('chat-minimized');
 }
 
 function setParentUrl(url) {
@@ -417,13 +425,14 @@ const trackNavigation = () => {
 };
 
 const init = (url) => {
-	if (!url) {
+	const trimmedUrl = url.trim();
+	if (!trimmedUrl) {
 		return;
 	}
 
-	config.url = url;
+	config.url = trimmedUrl;
 
-	createWidget(url);
+	createWidget(trimmedUrl);
 	attachMessageListener();
 	trackNavigation();
 };
@@ -466,6 +475,7 @@ window.RocketChat.livechat = {
 	setBusinessUnit,
 	clearBusinessUnit,
 	setParentUrl,
+	clearAllCallbacks,
 
 	// callbacks
 	onChatMaximized(fn) {

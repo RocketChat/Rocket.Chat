@@ -711,7 +711,6 @@
   "Custom_Sound_Has_Been_Deleted": "Прилагођени звук је обрисан.",
   "Custom_Sound_Info": "Информације о прилагођеном звуку",
   "Custom_Sound_Saved_Successfully": "Прилагођен звук је успешно сачуван",
-  "Custom_Sounds": "Прилагођени звуци",
   "Custom_Translations": "Прилагођени преводи",
   "Customize": "Прилагоди",
   "Dashboard": "Kомандна табла",
@@ -884,7 +883,6 @@
   "Enter_name_here": "Овде унесите име",
   "Enter_Normal": "Нормални режим (пошаљи са Ентер)",
   "Enter_to": "Ентер да",
-  "Enterprise": "Предузеће",
   "Entertainment": "Забава",
   "Error": "Грешка",
   "Error_404": "Грешка: 404",
@@ -1651,7 +1649,6 @@
   "Num_Agents": "# Агенти",
   "Number_of_messages": "Број порука",
   "OAuth_Application": "ОАутх Апликација",
-  "OAuth_Applications": "ОАутх Апликације",
   "Objects": "Објекти",
   "Off": "С",
   "Off_the_record_conversation": "Офф-тхе-рецорд Разговор",
@@ -1671,6 +1668,8 @@
   "Offline_success_message": "Оффлине успех порука",
   "Offline_unavailable": "оффлине недоступан",
   "Older_than": "Старији од",
+  "Omnichannel_Reports_Status_Open": "Отвори",
+  "Omnichannel_Reports_Status_Closed": "Затворено",
   "On": "на",
   "online": "на мрежи",
   "Online": "На мрежи",
@@ -2563,5 +2562,7 @@
   "registration.component.form.reasonToJoin": "Разлог за придруживање",
   "registration.component.form.invalidConfirmPass": "Потврдна лозинка се не поклапа са лозинком",
   "registration.component.form.confirmPassword": "Потврдите лозинку",
-  "registration.component.form.sendConfirmationEmail": "Пошаљи потврдну поруку"
+  "registration.component.form.sendConfirmationEmail": "Пошаљи потврдну поруку",
+  "Enterprise": "Предузеће",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Аналитика"
 }

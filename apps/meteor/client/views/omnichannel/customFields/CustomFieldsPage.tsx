@@ -1,30 +1,33 @@
 import { Button } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import type { MutableRefObject } from 'react';
+import { useRouteParameter, useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 import CustomFieldsTable from './CustomFieldsTable';
+import EditCustomFields from './EditCustomFields';
+import EditCustomFieldsWithData from './EditCustomFieldsWithData';
 
-const CustomFieldsPage = ({ reload }: { reload: MutableRefObject<() => void> }) => {
+const CustomFieldsPage = () => {
 	const t = useTranslation();
-	const router = useRoute('omnichannel-customfields');
+	const router = useRouter();
 
-	const onAddNew = useMutableCallback(() => router.push({ context: 'new' }));
+	const context = useRouteParameter('context');
+	const id = useRouteParameter('id');
 
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('Custom_Fields')}>
-					<Button data-qa-id='CustomFieldPageBtnNew' onClick={onAddNew}>
-						{t('New')}
+				<PageHeader title={t('Custom_Fields')}>
+					<Button data-qa-id='CustomFieldPageBtnNew' onClick={() => router.navigate('/omnichannel/customfields/new')}>
+						{t('Create_custom_field')}
 					</Button>
-				</Page.Header>
-				<Page.Content>
-					<CustomFieldsTable reload={reload} />
-				</Page.Content>
+				</PageHeader>
+				<PageContent>
+					<CustomFieldsTable />
+				</PageContent>
 			</Page>
+			{context === 'edit' && id && <EditCustomFieldsWithData customFieldId={id} />}
+			{context === 'new' && <EditCustomFields />}
 		</Page>
 	);
 };

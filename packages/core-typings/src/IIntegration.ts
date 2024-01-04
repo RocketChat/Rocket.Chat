@@ -1,6 +1,8 @@
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IUser } from './IUser';
 
+export type IntegrationScriptEngine = 'vm2' | 'isolated-vm';
+
 export interface IIncomingIntegration extends IRocketChatRecord {
 	type: 'webhook-incoming';
 	_createdBy: Pick<IUser, 'username' | '_id'> | null;
@@ -10,7 +12,6 @@ export interface IIncomingIntegration extends IRocketChatRecord {
 	channel: string[];
 
 	token: string;
-	overrideDestinationChannelEnabled: boolean;
 	scriptEnabled: boolean;
 	script: string;
 	scriptCompiled?: string;
@@ -19,9 +20,12 @@ export interface IIncomingIntegration extends IRocketChatRecord {
 	name: string;
 	enabled: boolean;
 
+	overrideDestinationChannelEnabled?: boolean;
 	alias?: string;
 	avatar?: string;
 	emoji?: string;
+
+	scriptEngine?: IntegrationScriptEngine;
 }
 
 export type OutgoingIntegrationEvent =
@@ -65,6 +69,8 @@ export interface IOutgoingIntegration extends IRocketChatRecord {
 	alias?: string;
 	avatar?: string;
 	emoji?: string;
+
+	scriptEngine?: IntegrationScriptEngine;
 }
 
 export type IIntegration = IIncomingIntegration | IOutgoingIntegration;

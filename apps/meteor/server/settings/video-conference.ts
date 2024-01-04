@@ -8,6 +8,15 @@ export const createVConfSettings = () =>
 			public: true,
 		});
 
+		await this.add('VideoConf_Mobile_Ringing', false, {
+			type: 'boolean',
+			public: true,
+			enterprise: true,
+			modules: ['videoconference-enterprise'],
+			invalidValue: false,
+			alert: 'VideoConf_Mobile_Ringing_Alert',
+		});
+
 		// #ToDo: Those should probably be handled by the apps themselves
 		await this.add('Jitsi_Click_To_Join_Count', 0, {
 			type: 'int',

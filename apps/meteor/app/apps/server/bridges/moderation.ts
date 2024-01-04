@@ -32,7 +32,7 @@ export class AppModerationBridge extends ModerationBridge {
 			throw new Error('Invalid message id');
 		}
 
-		await ModerationReports.hideReportsByMessageId(messageId, appId, reason, action);
+		await ModerationReports.hideMessageReportsByMessageId(messageId, appId, reason, action);
 	}
 
 	protected async dismissReportsByUserId(userId: IUser['id'], reason: string, action: string, appId: string): Promise<void> {
@@ -41,6 +41,6 @@ export class AppModerationBridge extends ModerationBridge {
 		if (!userId) {
 			throw new Error('Invalid user id');
 		}
-		await ModerationReports.hideReportsByUserId(userId, appId, reason, action);
+		await ModerationReports.hideMessageReportsByUserId(userId, appId, reason, action);
 	}
 }

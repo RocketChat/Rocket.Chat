@@ -1,6 +1,8 @@
 import type { ComponentChildren } from 'preact';
 import { Component, createContext } from 'preact';
 
+import type { CustomField } from '../components/Form/CustomFields';
+import type { Department } from '../definitions/departments';
 import { parentCall } from '../lib/parentCall';
 import { createToken } from '../lib/random';
 import Store from './Store';
@@ -22,12 +24,11 @@ type StoreState = {
 			allowSwitchingDepartments?: any;
 			showConnecting?: any;
 			limitTextLength?: any;
+			displayOfflineForm?: boolean;
 		};
 		online?: boolean;
-		departments: {
-			_id: string;
-			showOnRegistration: boolean;
-		}[];
+		departments: Department[];
+		customFields?: CustomField[];
 		enabled?: boolean;
 	};
 	messages: any[];
@@ -61,6 +62,7 @@ type StoreState = {
 	room?: any;
 	noMoreMessages?: boolean;
 	loading?: boolean;
+	department?: string;
 	lastReadMessageId?: any;
 	triggerAgent?: any;
 	queueInfo?: any;

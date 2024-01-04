@@ -3,7 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation, useRouteParameter } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 import DepartmentsTableV2 from './DepartmentsTable';
 import EditDepartmentWithData from './EditDepartmentWithData';
 import NewDepartment from './NewDepartment';
@@ -38,9 +38,9 @@ const DepartmentsPage = () => {
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('Departments')}>
-					<Button onClick={onAddNew}>{t('New')}</Button>
-				</Page.Header>
+				<PageHeader title={t('Departments')}>
+					<Button onClick={onAddNew}>{t('Create_department')}</Button>
+				</PageHeader>
 				<Tabs>
 					<Tabs.Item key='departments' selected={!context} onClick={() => handleTabClick(undefined)}>
 						{t('All')}
@@ -49,9 +49,9 @@ const DepartmentsPage = () => {
 						{t('Archived')}
 					</Tabs.Item>
 				</Tabs>
-				<Page.Content>
+				<PageContent>
 					<DepartmentsTableV2 archived={context === 'archived'} />
-				</Page.Content>
+				</PageContent>
 			</Page>
 		</Page>
 	);

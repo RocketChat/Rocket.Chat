@@ -140,7 +140,7 @@ const AccountTokensTable = (): ReactElement => {
 		<>
 			<AddToken reload={reload} />
 			{phase === AsyncStatePhase.LOADING && (
-				<GenericTable>
+				<GenericTable aria-busy>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>{phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={5} />}</GenericTableBody>
 				</GenericTable>

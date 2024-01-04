@@ -12,8 +12,12 @@ import {
 	Margins,
 	NumberInput,
 	PasswordInput,
+	FieldLabel,
+	FieldRow,
+	FieldError,
+	FieldHint,
 } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
@@ -22,7 +26,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { validateEmail } from '../../../../lib/emailValidator';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import GenericModal from '../../../components/GenericModal';
-import Page from '../../../components/Page';
+import { PageScrollableContentWithShadow } from '../../../components/Page';
 
 const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): ReactElement => {
 	const t = useTranslation();
@@ -37,7 +41,6 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 	const emailAlreadyExistsAction = useEndpoint('GET', '/v1/email-inbox.search');
 
 	const {
-		register,
 		control,
 		handleSubmit,
 		formState: { errors, isDirty },
@@ -162,206 +165,426 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 		return t('Email_already_exists');
 	});
 
+	const activeField = useUniqueId();
+	const nameField = useUniqueId();
+	const emailField = useUniqueId();
+	const descriptionField = useUniqueId();
+	const senderInfoField = useUniqueId();
+	const departmentField = useUniqueId();
+
+	const smtpServerField = useUniqueId();
+	const smtpPortField = useUniqueId();
+	const smtpUsernameField = useUniqueId();
+	const smtpPasswordField = useUniqueId();
+	const smtpSecureField = useUniqueId();
+
+	const imapServerField = useUniqueId();
+	const imapPortField = useUniqueId();
+	const imapUsernameField = useUniqueId();
+	const imapPasswordField = useUniqueId();
+	const imapRetriesField = useUniqueId();
+	const imapSecureField = useUniqueId();
+
 	return (
-		<Page.ScrollableContentWithShadow>
+		<PageScrollableContentWithShadow>
 			<Box maxWidth='x600' w='full' alignSelf='center'>
 				<Accordion>
 					<Accordion.Item defaultExpanded title={t('Inbox_Info')}>
 						<FieldGroup>
 							<Field>
-								<Field.Label display='flex' justifyContent='space-between' w='full'>
-									{t('Active')}
+								<FieldRow>
+									<FieldLabel htmlFor={activeField}>{t('Active')}</FieldLabel>
 									<Controller
 										control={control}
 										name='active'
 										render={({ field: { onChange, value, ref } }): ReactElement => (
-											<ToggleSwitch ref={ref} checked={value} onChange={onChange} />
+											<ToggleSwitch id={activeField} ref={ref} checked={value} onChange={onChange} />
 										)}
 									/>
-								</Field.Label>
+								</FieldRow>
 							</Field>
 							<Field>
-								<Field.Label>{t('Name')}*</Field.Label>
-								<Field.Row>
-									<TextInput
-										{...register('name', { required: t('error-the-field-is-required', { field: t('Name') }) })}
-										error={errors.name?.message}
+								<FieldLabel htmlFor={nameField} required>
+									{t('Name')}
+								</FieldLabel>
+								<FieldRow>
+									<Controller
+										name='name'
+										control={control}
+										rules={{ required: t('error-the-field-is-required', { field: t('Name') }) }}
+										render={({ field }) => (
+											<TextInput
+												id={nameField}
+												{...field}
+												error={errors.name?.message}
+												aria-required={true}
+												aria-invalid={Boolean(errors.name)}
+												aria-describedby={`${nameField}-error`}
+											/>
+										)}
 									/>
-								</Field.Row>
-								{errors.name && <Field.Error>{errors.name?.message}</Field.Error>}
+								</FieldRow>
+								{errors.name && (
+									<FieldError aria-live='assertive' id={`${nameField}-error`}>
+										{errors.name?.message}
+									</FieldError>
+								)}
 							</Field>
 							<Field>
-								<Field.Label>{t('Email')}*</Field.Label>
-								<Field.Row>
-									<TextInput
-										{...register('email', {
+								<FieldLabel htmlFor={emailField} required>
+									{t('Email')}
+								</FieldLabel>
+								<FieldRow>
+									<Controller
+										name='email'
+										control={control}
+										rules={{
 											required: t('error-the-field-is-required', { field: t('Email') }),
 											validate: (value) => checkEmailExists(value),
-										})}
-										error={errors.email?.message}
+										}}
+										render={({ field }) => (
+											<TextInput
+												{...field}
+												id={emailField}
+												error={errors.email?.message}
+												aria-required={true}
+												aria-invalid={Boolean(errors.email)}
+												aria-describedby={`${emailField}-error`}
+											/>
+										)}
 									/>
-								</Field.Row>
-								{errors.email && <Field.Error>{errors.email?.message}</Field.Error>}
+								</FieldRow>
+								{errors.email && (
+									<FieldError aria-live='assertive' id={`${emailField}-error`}>
+										{errors.email?.message}
+									</FieldError>
+								)}
 							</Field>
 							<Field>
-								<Field.Label>{t('Description')}</Field.Label>
-								<Field.Row>
-									<TextAreaInput {...register('description')} rows={4} />
-								</Field.Row>
+								<FieldLabel htmlFor={descriptionField}>{t('Description')}</FieldLabel>
+								<FieldRow>
+									<Controller
+										name='description'
+										control={control}
+										render={({ field }) => <TextAreaInput id={descriptionField} {...field} rows={4} />}
+									/>
+								</FieldRow>
 							</Field>
 							<Field>
-								<Field.Label>{t('Sender_Info')}</Field.Label>
-								<Field.Row>
-									<TextInput {...register('senderInfo')} placeholder={t('Optional')} />
-								</Field.Row>
-								<Field.Hint>{t('Will_Appear_In_From')}</Field.Hint>
+								<FieldLabel htmlFor={senderInfoField}>{t('Sender_Info')}</FieldLabel>
+								<FieldRow>
+									<Controller
+										name='senderInfo'
+										control={control}
+										render={({ field }) => <TextInput id={senderInfoField} {...field} aria-describedby={`${senderInfoField}-hint`} />}
+									/>
+								</FieldRow>
+								<FieldHint id={`${senderInfoField}-hint`}>{t('Will_Appear_In_From')}</FieldHint>
 							</Field>
 							<Field>
-								<Field.Label>{t('Department')}</Field.Label>
-								<Field.Row>
+								<FieldLabel htmlFor={departmentField}>{t('Department')}</FieldLabel>
+								<FieldRow>
 									<Controller
 										control={control}
 										name='department'
-										render={({ field: { onChange, value } }): ReactElement => <AutoCompleteDepartment value={value} onChange={onChange} />}
+										render={({ field: { onChange, onBlur, name, value } }) => (
+											<AutoCompleteDepartment
+												id={departmentField}
+												name={name}
+												onBlur={onBlur}
+												value={value}
+												onChange={onChange}
+												aria-describedby={`${departmentField}-hint`}
+											/>
+										)}
 									/>
-								</Field.Row>
-								<Field.Hint>{t('Only_Members_Selected_Department_Can_View_Channel')}</Field.Hint>
+								</FieldRow>
+								<FieldHint id={`${departmentField}-hint`}>{t('Only_Members_Selected_Department_Can_View_Channel')}</FieldHint>
 							</Field>
 						</FieldGroup>
 					</Accordion.Item>
 					<Accordion.Item defaultExpanded={!inboxData?._id} title={t('Configure_Outgoing_Mail_SMTP')}>
 						<FieldGroup>
 							<Field>
-								<Field.Label>{t('Server')}*</Field.Label>
-								<Field.Row>
-									<TextInput
-										{...register('smtpServer', { required: t('error-the-field-is-required', { field: t('Server') }) })}
-										error={errors.smtpServer?.message}
+								<FieldLabel htmlFor={smtpServerField} required>
+									{t('Server')}
+								</FieldLabel>
+								<FieldRow>
+									<Controller
+										name='smtpServer'
+										control={control}
+										rules={{ required: t('error-the-field-is-required', { field: t('Server') }) }}
+										render={({ field }) => (
+											<TextInput
+												id={smtpServerField}
+												{...field}
+												error={errors.smtpServer?.message}
+												aria-required={true}
+												aria-invalid={Boolean(errors.email)}
+												aria-describedby={`${smtpServerField}-error`}
+											/>
+										)}
 									/>
-								</Field.Row>
-								{errors.smtpServer && <Field.Error>{errors.smtpServer?.message}</Field.Error>}
+								</FieldRow>
+								{errors.smtpServer && (
+									<FieldError aria-live='assertive' id={`${smtpServerField}-error`}>
+										{errors.smtpServer?.message}
+									</FieldError>
+								)}
 							</Field>
 							<Field>
-								<Field.Label>{t('Port')}*</Field.Label>
-								<Field.Row>
-									<NumberInput
-										{...register('smtpPort', { required: t('error-the-field-is-required', { field: t('Port') }) })}
-										error={errors.smtpPort?.message}
+								<FieldLabel htmlFor={smtpPortField} required>
+									{t('Port')}
+								</FieldLabel>
+								<FieldRow>
+									<Controller
+										name='smtpPort'
+										control={control}
+										rules={{ required: t('error-the-field-is-required', { field: t('Port') }) }}
+										render={({ field }) => (
+											<NumberInput
+												id={smtpPortField}
+												{...field}
+												error={errors.smtpPort?.message}
+												aria-required={true}
+												aria-invalid={Boolean(errors.email)}
+												aria-describedby={`${smtpPortField}-error`}
+											/>
+										)}
 									/>
-								</Field.Row>
-								{errors.smtpPort && <Field.Error>{errors.smtpPort?.message}</Field.Error>}
+								</FieldRow>
+								{errors.smtpPort && (
+									<FieldError aria-live='assertive' id={`${smtpPortField}-error`}>
+										{errors.smtpPort?.message}
+									</FieldError>
+								)}
 							</Field>
 							<Field>
-								<Field.Label>{t('Username')}*</Field.Label>
-								<Field.Row>
-									<TextInput
-										{...register('smtpUsername', { required: t('error-the-field-is-required', { field: t('Username') }) })}
-										error={errors.smtpUsername?.message}
+								<FieldLabel htmlFor={smtpUsernameField} required>
+									{t('Username')}
+								</FieldLabel>
+								<FieldRow>
+									<Controller
+										name='smtpUsername'
+										control={control}
+										rules={{ required: t('error-the-field-is-required', { field: t('Username') }) }}
+										render={({ field }) => (
+											<TextInput
+												id={smtpUsernameField}
+												{...field}
+												error={errors.smtpUsername?.message}
+												aria-describedby={`${smtpUsernameField}-error`}
+												aria-required={true}
+												aria-invalid={Boolean(errors.email)}
+											/>
+										)}
 									/>
-								</Field.Row>
-								{errors.smtpUsername && <Field.Error>{errors.smtpUsername?.message}</Field.Error>}
+								</FieldRow>
+								{errors.smtpUsername && (
+									<FieldError aria-live='assertive' id={`${smtpUsernameField}-error`}>
+										{errors.smtpUsername?.message}
+									</FieldError>
+								)}
 							</Field>
 							<Field>
-								<Field.Label>{t('Password')}*</Field.Label>
-								<Field.Row>
-									<PasswordInput
-										{...register('smtpPassword', { required: t('error-the-field-is-required', { field: t('Password') }) })}
-										error={errors.smtpPassword?.message}
+								<FieldLabel htmlFor={smtpPasswordField} required>
+									{t('Password')}
+								</FieldLabel>
+								<FieldRow>
+									<Controller
+										name='smtpPassword'
+										control={control}
+										rules={{ required: t('error-the-field-is-required', { field: t('Password') }) }}
+										render={({ field }) => (
+											<PasswordInput
+												id={smtpPasswordField}
+												{...field}
+												error={errors.smtpPassword?.message}
+												aria-describedby={`${smtpPasswordField}-error`}
+												aria-required={true}
+												aria-invalid={Boolean(errors.email)}
+											/>
+										)}
 									/>
-								</Field.Row>
-								{errors.smtpPassword && <Field.Error>{errors.smtpPassword?.message}</Field.Error>}
+								</FieldRow>
+								{errors.smtpPassword && (
+									<FieldError aria-live='assertive' id={`${smtpPasswordField}-error`}>
+										{errors.smtpPassword?.message}
+									</FieldError>
+								)}
 							</Field>
 							<Field>
-								<Field.Label display='flex' justifyContent='space-between' w='full'>
-									{t('Connect_SSL_TLS')}
+								<FieldRow>
+									<FieldLabel htmlFor={smtpSecureField}>{t('Connect_SSL_TLS')}</FieldLabel>
 									<Controller
 										control={control}
 										name='smtpSecure'
-										render={({ field: { onChange, value, ref } }): ReactElement => (
-											<ToggleSwitch ref={ref} checked={value} onChange={onChange} />
-										)}
+										render={({ field: { value, ...field } }) => <ToggleSwitch id={smtpSecureField} {...field} checked={value} />}
 									/>
-								</Field.Label>
+								</FieldRow>
 							</Field>
 						</FieldGroup>
 					</Accordion.Item>
 					<Accordion.Item defaultExpanded={!inboxData?._id} title={t('Configure_Incoming_Mail_IMAP')}>
 						<FieldGroup>
 							<Field>
-								<Field.Label>{t('Server')}*</Field.Label>
-								<Field.Row>
-									<TextInput
-										{...register('imapServer', { required: t('error-the-field-is-required', { field: t('Server') }) })}
-										error={errors.imapServer?.message}
+								<FieldLabel htmlFor={imapServerField} required>
+									{t('Server')}
+								</FieldLabel>
+								<FieldRow>
+									<Controller
+										name='imapServer'
+										control={control}
+										rules={{ required: t('error-the-field-is-required', { field: t('Server') }) }}
+										render={({ field }) => (
+											<TextInput
+												id={imapServerField}
+												{...field}
+												error={errors.imapServer?.message}
+												aria-describedby={`${imapServerField}-error`}
+												aria-required={true}
+												aria-invalid={Boolean(errors.email)}
+											/>
+										)}
 									/>
-								</Field.Row>
-								{errors.imapServer && <Field.Error>{errors.imapServer?.message}</Field.Error>}
+								</FieldRow>
+								{errors.imapServer && (
+									<FieldError aria-live='assertive' id={`${imapServerField}-error`}>
+										{errors.imapServer?.message}
+									</FieldError>
+								)}
 							</Field>
 							<Field>
-								<Field.Label>{t('Port')}*</Field.Label>
-								<Field.Row>
-									<NumberInput
-										{...register('imapPort', { required: t('error-the-field-is-required', { field: t('Port') }) })}
-										error={errors.imapPort?.message}
+								<FieldLabel htmlFor={imapPortField} required>
+									{t('Port')}
+								</FieldLabel>
+								<FieldRow>
+									<Controller
+										name='imapPort'
+										control={control}
+										rules={{ required: t('error-the-field-is-required', { field: t('Port') }) }}
+										render={({ field }) => (
+											<NumberInput
+												id={imapPortField}
+												{...field}
+												error={errors.imapPort?.message}
+												aria-aria-describedby={`${imapPortField}-error`}
+												aria-required={true}
+												aria-invalid={Boolean(errors.email)}
+											/>
+										)}
 									/>
-								</Field.Row>
-								{errors.imapPort && <Field.Error>{errors.imapPort?.message}</Field.Error>}
+								</FieldRow>
+								{errors.imapPort && (
+									<FieldError aria-live='assertive' id={`${imapPortField}-error`}>
+										{errors.imapPort?.message}
+									</FieldError>
+								)}
 							</Field>
 							<Field>
-								<Field.Label>{t('Username')}*</Field.Label>
-								<Field.Row>
-									<TextInput
-										{...register('imapUsername', { required: t('error-the-field-is-required', { field: t('Username') }) })}
-										error={errors.imapUsername?.message}
+								<FieldLabel htmlFor={imapUsernameField} required>
+									{t('Username')}
+								</FieldLabel>
+								<FieldRow>
+									<Controller
+										name='imapUsername'
+										control={control}
+										rules={{ required: t('error-the-field-is-required', { field: t('Username') }) }}
+										render={({ field }) => (
+											<TextInput
+												id={imapUsernameField}
+												{...field}
+												error={errors.imapUsername?.message}
+												aria-describedby={`${imapUsernameField}-error`}
+												aria-required={true}
+												aria-invalid={Boolean(errors.email)}
+											/>
+										)}
 									/>
-								</Field.Row>
-								{errors.imapUsername && <Field.Error>{errors.imapUsername?.message}</Field.Error>}
+								</FieldRow>
+								{errors.imapUsername && (
+									<FieldError aria-live='assertive' id={`${imapUsernameField}-error`}>
+										{errors.imapUsername?.message}
+									</FieldError>
+								)}
 							</Field>
 							<Field>
-								<Field.Label>{t('Password')}*</Field.Label>
-								<Field.Row>
-									<PasswordInput
-										{...register('imapPassword', { required: t('error-the-field-is-required', { field: t('Password') }) })}
-										error={errors.imapPassword?.message}
+								<FieldLabel htmlFor={imapPasswordField} required>
+									{t('Password')}
+								</FieldLabel>
+								<FieldRow>
+									<Controller
+										name='imapPassword'
+										control={control}
+										rules={{ required: t('error-the-field-is-required', { field: t('Password') }) }}
+										render={({ field }) => (
+											<PasswordInput
+												id={imapPasswordField}
+												{...field}
+												error={errors.imapPassword?.message}
+												aria-describedby={`${imapPasswordField}-error`}
+												aria-required={true}
+												aria-invalid={Boolean(errors.email)}
+											/>
+										)}
 									/>
-								</Field.Row>
-								{errors.imapPassword && <Field.Error>{errors.imapPassword?.message}</Field.Error>}
+								</FieldRow>
+								{errors.imapPassword && (
+									<FieldError aria-live='assertive' id={`${imapPasswordField}-error`}>
+										{errors.imapPassword?.message}
+									</FieldError>
+								)}
 							</Field>
 							<Field>
-								<Field.Label>{t('Max_Retry')}*</Field.Label>
-								<Field.Row>
-									<NumberInput
-										{...register('imapRetries', { required: t('error-the-field-is-required', { field: t('Max_Retry') }) })}
-										error={errors.imapRetries?.message}
+								<FieldLabel htmlFor={imapRetriesField} required>
+									{t('Max_Retry')}
+								</FieldLabel>
+								<FieldRow>
+									<Controller
+										name='imapRetries'
+										control={control}
+										rules={{ required: t('error-the-field-is-required', { field: t('Max_Retry') }) }}
+										render={({ field }) => (
+											<NumberInput
+												id={imapRetriesField}
+												{...field}
+												error={errors.imapRetries?.message}
+												aria-describedby={`${imapRetriesField}-error`}
+												aria-required={true}
+												aria-invalid={Boolean(errors.email)}
+											/>
+										)}
 									/>
-								</Field.Row>
-								{errors.imapRetries && <Field.Error>{errors.imapRetries?.message}</Field.Error>}
+								</FieldRow>
+								{errors.imapRetries && (
+									<FieldError aria-live='assertive' id={`${imapRetriesField}-error`}>
+										{errors.imapRetries?.message}
+									</FieldError>
+								)}
 							</Field>
 							<Field>
-								<Field.Label display='flex' justifyContent='space-between' w='full'>
-									{t('Connect_SSL_TLS')}
+								<FieldRow>
+									<FieldLabel htmlFor={imapSecureField}>{t('Connect_SSL_TLS')}</FieldLabel>
 									<Controller
 										control={control}
 										name='imapSecure'
-										render={({ field: { onChange, value, ref } }): ReactElement => (
-											<ToggleSwitch ref={ref} checked={value} onChange={onChange} />
-										)}
+										render={({ field: { value, ...field } }) => <ToggleSwitch id={imapSecureField} {...field} checked={value} />}
 									/>
-								</Field.Label>
+								</FieldRow>
 							</Field>
 						</FieldGroup>
 					</Accordion.Item>
 					<Field>
-						<Field.Row>
+						<FieldRow>
 							<ButtonGroup stretch w='full'>
 								<Button onClick={handleBack}>{t('Cancel')}</Button>
 								<Button disabled={!isDirty} primary onClick={handleSubmit(handleSave)}>
 									{t('Save')}
 								</Button>
 							</ButtonGroup>
-						</Field.Row>
-						<Field.Row>
-							<Margins blockStart='x16'>
+						</FieldRow>
+						<FieldRow>
+							<Margins blockStart={16}>
 								<ButtonGroup stretch w='full'>
 									{inboxData?._id && (
 										<Button danger onClick={handleDelete}>
@@ -370,11 +593,11 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 									)}
 								</ButtonGroup>
 							</Margins>
-						</Field.Row>
+						</FieldRow>
 					</Field>
 				</Accordion>
 			</Box>
-		</Page.ScrollableContentWithShadow>
+		</PageScrollableContentWithShadow>
 	);
 };
 

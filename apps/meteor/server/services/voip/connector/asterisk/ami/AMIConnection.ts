@@ -8,9 +8,9 @@
  * happens in /etc/asterisk/manager.conf file.
  *
  */
+import { Logger } from '@rocket.chat/logger';
 import Manager from 'asterisk-manager';
 
-import { Logger } from '../../../../../lib/logger/Logger';
 import type { Command } from '../Command';
 import type { IConnection } from '../IConnection';
 import type { CallbackContext } from './CallbackContext';

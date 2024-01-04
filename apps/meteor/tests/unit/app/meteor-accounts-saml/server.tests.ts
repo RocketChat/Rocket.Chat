@@ -964,4 +964,13 @@ describe('SAML', () => {
 			});
 		});
 	});
+
+	describe('[Utils]', () => {
+		it('should return correct validation action redirect path', () => {
+			const credentialToken = SAMLUtils.generateUniqueID();
+			expect(SAMLUtils.getValidationActionRedirectPath(credentialToken)).to.be.equal(
+				`saml/${credentialToken}?saml_idp_credentialToken=${credentialToken}`,
+			);
+		});
+	});
 });

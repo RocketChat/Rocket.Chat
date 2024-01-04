@@ -1,52 +1,23 @@
-import { Settings } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
+import { settingsRegistry } from '../../../../app/settings/server';
 
-import { settings, settingsRegistry } from '../../../../app/settings/server';
-import { addLicense } from './license';
-
-Meteor.startup(async () => {
-	await settingsRegistry.addGroup('Enterprise', async function () {
-		await this.section('License', async function () {
-			await this.add('Enterprise_License', '', {
-				type: 'string',
-				i18nLabel: 'Enterprise_License',
-			});
-			await this.add('Enterprise_License_Status', '', {
-				readonly: true,
-				type: 'string',
-				i18nLabel: 'Status',
-			});
+// The proper name for this group is Premium, but we can't change it because it's already in use and we will break the settings
+// TODO: Keep this until next major updates
+await settingsRegistry.addGroup('Enterprise', async function () {
+	await this.section('Enterprise', async function () {
+		await this.add('Enterprise_License', '', {
+			type: 'string',
+			i18nLabel: 'Premium_License',
+			alert: 'Premium_License_alert',
+		});
+		await this.add('Enterprise_License_Data', '', {
+			type: 'string',
+			hidden: true,
+			public: false,
+		});
+		await this.add('Enterprise_License_Status', '', {
+			readonly: true,
+			type: 'string',
+			i18nLabel: 'Status',
 		});
 	});
 });
-
-settings.watch<string>('Enterprise_License', async (license) => {
-	if (!license || String(license).trim() === '') {
-		return;
-	}
-
-	if (license === process.env.ROCKETCHAT_LICENSE) {
-		return;
-	}
-
-	if (!addLicense(license)) {
-		await Settings.updateValueById('Enterprise_License_Status', 'Invalid');
-		return;
-	}
-
-	await Settings.updateValueById('Enterprise_License_Status', 'Valid');
-});
-
-if (process.env.ROCKETCHAT_LICENSE) {
-	addLicense(process.env.ROCKETCHAT_LICENSE);
-
-	Meteor.startup(async () => {
-		if (settings.get('Enterprise_License')) {
-			console.warn(
-				'Rocket.Chat Enterprise: The license from your environment variable was ignored, please use only the admin setting from now on.',
-			);
-			return;
-		}
-		await Settings.updateValueById('Enterprise_License', process.env.ROCKETCHAT_LICENSE);
-	});
-}

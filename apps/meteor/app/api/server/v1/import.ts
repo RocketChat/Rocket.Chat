@@ -1,3 +1,4 @@
+import { Import } from '@rocket.chat/core-services';
 import { Imports } from '@rocket.chat/models';
 import {
 	isUploadImportFileParamsPOST,
@@ -9,9 +10,13 @@ import {
 	isDownloadPendingFilesParamsPOST,
 	isDownloadPendingAvatarsParamsPOST,
 	isGetCurrentImportOperationParamsGET,
+	isImportersListParamsGET,
+	isImportAddUsersParamsPOST,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
+import { PendingAvatarImporter } from '../../../importer-pending-avatars/server/PendingAvatarImporter';
+import { PendingFileImporter } from '../../../importer-pending-files/server/PendingFileImporter';
 import { Importers } from '../../../importer/server';
 import {
 	executeUploadImportFile,
@@ -66,7 +71,7 @@ API.v1.addRoute(
 		async post() {
 			const { input } = this.bodyParams;
 
-			await executeStartImport({ input });
+			await executeStartImport({ input }, this.userId);
 
 			return API.v1.success();
 		},
@@ -133,9 +138,9 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-importer-not-defined', 'The Pending File Importer was not found.', 'downloadPendingFiles');
 			}
 
-			importer.instance = new importer.importer(importer); // eslint-disable-line new-cap
-			await importer.instance.build();
-			const count = await importer.instance.prepareFileCount();
+			const operation = await Import.newOperation(this.userId, importer.name, importer.key);
+			const instance = new PendingFileImporter(importer, operation);
+			const count = await instance.prepareFileCount();
 
 			return API.v1.success({
 				count,
@@ -158,9 +163,9 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-importer-not-defined', 'The Pending File Importer was not found.', 'downloadPendingAvatars');
 			}
 
-			importer.instance = new importer.importer(importer); // eslint-disable-line new-cap
-			await importer.instance.build();
-			const count = await importer.instance.prepareFileCount();
+			const operation = await Import.newOperation(this.userId, importer.name, importer.key);
+			const instance = new PendingAvatarImporter(importer, operation);
+			const count = await instance.prepareFileCount();
 
 			return API.v1.success({
 				count,
@@ -182,6 +187,100 @@ API.v1.addRoute(
 			return API.v1.success({
 				operation,
 			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'importers.list',
+	{
+		authRequired: true,
+		validateParams: isImportersListParamsGET,
+		permissionsRequired: ['run-import'],
+	},
+	{
+		async get() {
+			const importers = Importers.getAllVisible().map(({ key, name }) => ({ key, name }));
+
+			return API.v1.success(importers);
+		},
+	},
+);
+
+API.v1.addRoute(
+	'import.clear',
+	{
+		authRequired: true,
+		permissionsRequired: ['run-import'],
+	},
+	{
+		async post() {
+			await Import.clear();
+
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'import.new',
+	{
+		authRequired: true,
+		permissionsRequired: ['run-import'],
+	},
+	{
+		async post() {
+			const operation = await Import.newOperation(this.userId, 'api', 'api');
+
+			return API.v1.success({ operation });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'import.status',
+	{
+		authRequired: true,
+		permissionsRequired: ['run-import'],
+	},
+	{
+		async get() {
+			const status = await Import.status();
+
+			return API.v1.success(status);
+		},
+	},
+);
+
+API.v1.addRoute(
+	'import.addUsers',
+	{
+		authRequired: true,
+		validateParams: isImportAddUsersParamsPOST,
+		permissionsRequired: ['run-import'],
+	},
+	{
+		async post() {
+			const { users } = this.bodyParams;
+
+			await Import.addUsers(users);
+
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'import.run',
+	{
+		authRequired: true,
+		permissionsRequired: ['run-import'],
+	},
+	{
+		async post() {
+			await Import.run(this.userId);
+
+			return API.v1.success();
 		},
 	},
 );

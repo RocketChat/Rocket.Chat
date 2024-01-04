@@ -103,7 +103,11 @@ export class AppMessageBridge extends MessageBridge {
 	protected async typing({ scope, id, username, isTyping }: ITypingDescriptor): Promise<void> {
 		switch (scope) {
 			case 'room':
-				notifications.notifyRoom(id, 'typing', username!, isTyping);
+				if (!username) {
+					throw new Error('Invalid username');
+				}
+
+				notifications.notifyRoom(id, 'user-activity', username, isTyping ? ['user-typing'] : []);
 				return;
 			default:
 				throw new Error('Unrecognized typing scope provided');

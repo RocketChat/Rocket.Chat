@@ -49,7 +49,7 @@ const ContentForHours = ({ displacement, onPreviousDateClick, onNextDateClick, t
 				<Button square small onClick={onPreviousDateClick}>
 					<Chevron left size='x20' style={{ verticalAlign: 'middle' }} />
 				</Button>
-				<Box mi='x8' flexBasis='25%' is='span' style={{ textAlign: 'center' }}>
+				<Box mi={8} flexBasis='25%' is='span' style={{ textAlign: 'center' }}>
 					{data ? moment(data.day).format(displacement < 7 ? 'dddd' : 'L') : null}
 				</Box>
 				<Button square small disabled={displacement === 0} onClick={onNextDateClick}>

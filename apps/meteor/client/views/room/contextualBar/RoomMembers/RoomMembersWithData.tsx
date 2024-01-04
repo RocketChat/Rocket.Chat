@@ -7,7 +7,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 
 import * as Federation from '../../../../lib/federation/Federation';
 import { useMembersList } from '../../../hooks/useMembersList';
-import { useTabBarClose } from '../../contexts/ToolboxContext';
+import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import UserInfoWithData from '../UserInfo';
 import AddUsers from './AddUsers';
 import InviteUsers from './InviteUsers';
@@ -25,7 +25,7 @@ type validRoomType = 'd' | 'p' | 'c';
 const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 	const user = useUser();
 	const room = useUserRoom(rid);
-	const handleClose = useTabBarClose();
+	const { closeTab } = useRoomToolbox();
 	const [type, setType] = useLocalStorage<'online' | 'all'>('members-list-type', 'online');
 	const [text, setText] = useState('');
 	const subscription = useUserSubscription(rid);
@@ -81,7 +81,7 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 	}, [setState]);
 
 	if (state.tab === ROOM_MEMBERS_TABS.INFO && state.userId) {
-		return <UserInfoWithData rid={rid} uid={state.userId} onClose={handleClose} onClickBack={handleBack} />;
+		return <UserInfoWithData rid={rid} uid={state.userId} onClose={closeTab} onClickBack={handleBack} />;
 	}
 
 	if (state.tab === ROOM_MEMBERS_TABS.INVITE) {
@@ -104,7 +104,7 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 			setType={setType}
 			members={data?.pages?.flatMap((page) => page.members) ?? []}
 			total={data?.pages[data.pages.length - 1].total ?? 0}
-			onClickClose={handleClose}
+			onClickClose={closeTab}
 			onClickView={openUserInfo}
 			loadMoreItems={hasNextPage ? fetchNextPage : () => undefined}
 			reload={refetch}

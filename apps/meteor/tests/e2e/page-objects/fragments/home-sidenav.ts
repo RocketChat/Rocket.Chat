@@ -10,17 +10,15 @@ export class HomeSidenav {
 	}
 
 	get checkboxPrivateChannel(): Locator {
-		return this.page.locator('#modal-root [data-qa="create-channel-modal"] [data-qa-type="channel-private-toggle"]');
+		return this.page.locator('role=dialog[name="Create Channel"] >> label >> text="Private"');
 	}
 
 	get checkboxEncryption(): Locator {
-		return this.page.locator('role=dialog[name="Create Channel"] >> role=checkbox[name="Encrypted"]').locator('..');
+		return this.page.locator('role=dialog[name="Create Channel"] >> label >> text="Encrypted"');
 	}
 
 	get checkboxReadOnly(): Locator {
-		return this.page.locator(
-			'//*[@id="modal-root"]//*[contains(@class, "rcx-field") and contains(text(), "Read Only")]/../following-sibling::label/i',
-		);
+		return this.page.locator('role=dialog[name="Create Channel"] >> label >> text="Read Only"');
 	}
 
 	get inputChannelName(): Locator {
@@ -32,11 +30,18 @@ export class HomeSidenav {
 	}
 
 	get btnCreate(): Locator {
-		return this.page.locator('//*[@id="modal-root"]//button[contains(text(), "Create")]');
+		return this.page.locator('role=button[name="Create"]');
 	}
 
 	getSidebarItemByName(name: string): Locator {
 		return this.page.locator(`[data-qa="sidebar-item"][aria-label="${name}"]`);
+	}
+
+	async selectPriority(name: string, priority: string) {
+		const sidebarItem = this.getSidebarItemByName(name);
+		await sidebarItem.focus();
+		await sidebarItem.locator('.rcx-sidebar-item__menu').click();
+		await this.page.locator(`li[value="${priority}"]`).click();
 	}
 
 	async openAdministrationByLabel(text: string): Promise<void> {
@@ -45,7 +50,7 @@ export class HomeSidenav {
 	}
 
 	async openInstalledApps(): Promise<void> {
-		await this.page.locator('//button[@title="Administration"]').click();
+		await this.page.locator('role=button[name="Administration"]').click();
 		await this.page.locator('//div[contains(text(),"Installed")]').click();
 	}
 
@@ -59,7 +64,7 @@ export class HomeSidenav {
 		await this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Logout")]').click();
 	}
 
-	async switchStatus(status: 'Offline offline' | 'Online online'): Promise<void> {
+	async switchStatus(status: 'offline' | 'online'): Promise<void> {
 		await this.page.locator('[data-qa="sidebar-avatar-button"]').click();
 		await this.page.locator(`role=menuitemcheckbox[name="${status}"]`).click();
 	}
@@ -68,6 +73,15 @@ export class HomeSidenav {
 		await this.page.locator('role=navigation >> role=button[name=Search]').click();
 		await this.page.locator('role=search >> role=searchbox').type(name);
 		await this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`).click();
+		await this.waitForChannel();
+	}
+
+	async waitForChannel(): Promise<void> {
+		await this.page.locator('role=main').waitFor();
+		await this.page.locator('role=main >> role=heading[level=1]').waitFor();
+
+		await expect(this.page.locator('role=main >> .rcx-skeleton')).toHaveCount(0);
+		await expect(this.page.locator('role=main >> role=list')).not.toHaveAttribute('aria-busy', 'true');
 	}
 
 	async switchOmnichannelStatus(status: 'offline' | 'online') {
@@ -80,7 +94,7 @@ export class HomeSidenav {
 			online = 'Turn off answer chats',
 		}
 
-		const currentStatus = await toggleButton.getAttribute('data-tooltip');
+		const currentStatus = await toggleButton.getAttribute('title');
 		if (status === 'offline') {
 			if (currentStatus === StatusTitleMap.online) {
 				await toggleButton.click();
@@ -91,7 +105,7 @@ export class HomeSidenav {
 
 		await this.page.waitForTimeout(500);
 
-		const newStatus = await this.page.locator('#omnichannel-status-toggle').getAttribute('data-tooltip');
+		const newStatus = await this.page.locator('#omnichannel-status-toggle').getAttribute('title');
 		expect(newStatus).toBe(status === 'offline' ? StatusTitleMap.offline : StatusTitleMap.online);
 	}
 

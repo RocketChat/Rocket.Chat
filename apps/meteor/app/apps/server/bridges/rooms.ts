@@ -55,7 +55,11 @@ export class AppRoomBridge extends RoomBridge {
 	}
 
 	private async createPrivateGroup(userId: string, room: ICoreRoom, members: string[]): Promise<string> {
-		return (await createPrivateGroupMethod(userId, room.name || '', members, room.ro, room.customFields, this.prepareExtraData(room))).rid;
+		const user = await Users.findOneById(userId);
+		if (!user) {
+			throw new Error('Invalid user');
+		}
+		return (await createPrivateGroupMethod(user, room.name || '', members, room.ro, room.customFields, this.prepareExtraData(room))).rid;
 	}
 
 	protected async getById(roomId: string, appId: string): Promise<IRoom> {

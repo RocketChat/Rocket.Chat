@@ -1,3 +1,36 @@
+# 6.2.11
+
+`2023-07-26  ·  1 🐛  ·  1 🔍  ·  4 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.21.3`
+- NPM: `6.14.17`
+- MongoDB: `4.4, 5.0, 6.0`
+- Apps-Engine: `1.39.1`
+
+### 🐛 Bug fixes
+
+
+- Performance issue when using api to create users ([#29914](https://github.com/RocketChat/Rocket.Chat/pull/29914) by [@KevLehman](https://github.com/KevLehman))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 6.2.11 ([#29915](https://github.com/RocketChat/Rocket.Chat/pull/29915) by [@rocketchat-github-ci](https://github.com/rocketchat-github-ci))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@rocketchat-github-ci](https://github.com/rocketchat-github-ci)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+- [@rodrigok](https://github.com/rodrigok)
+
 # 6.2.5
 
 `2023-06-07  ·  1 🐛  ·  1 👩‍💻👨‍💻`

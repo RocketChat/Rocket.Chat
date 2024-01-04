@@ -13,6 +13,36 @@ import { validateEmail } from '../../lib/emailValidator';
 import { addUserRolesAsync } from '../lib/roles/addUserRoles';
 
 Meteor.startup(async () => {
+	const dynamicImport = {
+		'dynamic-import': {
+			useLocationOrigin: true,
+		},
+	};
+
+	if (!Meteor.settings) {
+		Meteor.settings = {
+			public: {
+				packages: {
+					'dynamic-import': dynamicImport,
+				},
+			},
+		};
+	}
+
+	if (!Meteor.settings.public) {
+		Meteor.settings.public = {
+			packages: {
+				'dynamic-import': dynamicImport,
+			},
+		};
+	}
+
+	if (!Meteor.settings.public.packages) {
+		Meteor.settings.public.packages = dynamicImport;
+	}
+
+	Meteor.settings.public.packages['dynamic-import'] = dynamicImport['dynamic-import'];
+
 	if (!settings.get('Initial_Channel_Created')) {
 		const exists = await Rooms.findOneById('GENERAL', { projection: { _id: 1 } });
 		if (!exists) {
@@ -115,11 +145,11 @@ Meteor.startup(async () => {
 
 			adminUser.type = 'user';
 
-			const id = await Users.create(adminUser);
+			const { insertedId: userId } = await Users.create(adminUser);
 
-			await Accounts.setPasswordAsync(id, process.env.ADMIN_PASS);
+			await Accounts.setPasswordAsync(userId, process.env.ADMIN_PASS);
 
-			await addUserRolesAsync(id, ['admin']);
+			await addUserRolesAsync(userId, ['admin']);
 		} else {
 			console.log(colors.red('Users with admin role already exist; Ignoring environment variables ADMIN_PASS'));
 		}

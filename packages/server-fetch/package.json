@@ -1,13 +1,13 @@
 {
 	"name": "@rocket.chat/server-fetch",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"private": true,
 	"devDependencies": {
-		"@types/jest": "~29.5.3",
+		"@types/jest": "~29.5.7",
 		"eslint": "~8.45.0",
-		"jest": "~29.6.1",
-		"ts-jest": "~29.0.5",
-		"typescript": "~5.1.6"
+		"jest": "~29.6.4",
+		"ts-jest": "~29.1.1",
+		"typescript": "~5.3.2"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
@@ -25,7 +25,7 @@
 		"extends": "../../package.json"
 	},
 	"dependencies": {
-		"@types/proxy-from-env": "^1.0.1",
+		"@types/proxy-from-env": "^1.0.3",
 		"http-proxy-agent": "^5.0.0",
 		"https-proxy-agent": "^5.0.1",
 		"node-fetch": "2.3.0",

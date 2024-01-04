@@ -155,14 +155,17 @@ export const sendFileMessage = async (
 		return false;
 	}
 
-	check(msgData, {
-		avatar: Match.Optional(String),
-		emoji: Match.Optional(String),
-		alias: Match.Optional(String),
-		groupable: Match.Optional(Boolean),
-		msg: Match.Optional(String),
-		tmid: Match.Optional(String),
-	});
+	check(
+		msgData,
+		Match.Maybe({
+			avatar: Match.Optional(String),
+			emoji: Match.Optional(String),
+			alias: Match.Optional(String),
+			groupable: Match.Optional(Boolean),
+			msg: Match.Optional(String),
+			tmid: Match.Optional(String),
+		}),
+	);
 
 	const { files, attachments } = await parseFileIntoMessageAttachments(file, roomId, user);
 
@@ -173,8 +176,8 @@ export const sendFileMessage = async (
 		files,
 		attachments,
 		...msgData,
-		msg: msgData.msg ?? '',
-		groupable: msgData.groupable ?? false,
+		msg: msgData?.msg ?? '',
+		groupable: msgData?.groupable ?? false,
 	});
 
 	callbacks.runAsync('afterFileUpload', { user, room, message: msg });

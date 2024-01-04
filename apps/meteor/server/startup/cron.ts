@@ -1,6 +1,6 @@
+import { Logger } from '@rocket.chat/logger';
 import { Meteor } from 'meteor/meteor';
 
-import { Logger } from '../../app/logger/server';
 import { federationCron } from '../cron/federation';
 import { npsCron } from '../cron/nps';
 import { oembedCron } from '../cron/oembed';

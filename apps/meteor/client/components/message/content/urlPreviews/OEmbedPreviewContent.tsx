@@ -39,7 +39,7 @@ const OEmbedPreviewContent = ({
 				<MessageGenericPreviewFooter>
 					<Box display='flex' justifyContent='flex-start'>
 						{showSiteName && <MarkdownText variant='inline' content={`[${siteName}](${siteUrl})`} />}
-						{showFooterSeparator && <Box marginInline='x4'>|</Box>}
+						{showFooterSeparator && <Box marginInline={4}>|</Box>}
 						{showAuthorName && <MarkdownText variant='inline' content={`[${authorName}](${authorUrl})`} />}
 					</Box>
 				</MessageGenericPreviewFooter>

@@ -10,7 +10,7 @@ Meteor.startup(() => {
 		id: 'jump-to-star-message',
 		icon: 'jump',
 		label: 'Jump_to_message',
-		context: ['starred', 'threads', 'message-mobile'],
+		context: ['starred', 'threads', 'message-mobile', 'videoconf-threads'],
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			setMessageJumpQueryStringParameter(message._id);
@@ -23,6 +23,6 @@ Meteor.startup(() => {
 			return Boolean(message.starred?.find((star) => star._id === user?._id));
 		},
 		order: 100,
-		group: ['message', 'menu'],
+		group: 'message',
 	});
 });

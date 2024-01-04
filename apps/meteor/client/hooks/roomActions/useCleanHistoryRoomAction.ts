@@ -4,17 +4,17 @@ import { lazy, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useRoom } from '../../views/room/contexts/RoomContext';
-import type { ToolboxActionConfig } from '../../views/room/lib/Toolbox';
+import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
 const PruneMessages = lazy(() => import('../../views/room/contextualBar/PruneMessages'));
 
-export const useCleanHistoryRoomAction = (): ToolboxActionConfig | undefined => {
+export const useCleanHistoryRoomAction = () => {
 	const room = useRoom();
 	const federated = isRoomFederated(room);
 	const permitted = usePermission('clean-channel-history', room._id);
 	const { t } = useTranslation();
 
-	return useMemo(() => {
+	return useMemo((): RoomToolboxActionConfig | undefined => {
 		if (!permitted) {
 			return undefined;
 		}
@@ -29,8 +29,9 @@ export const useCleanHistoryRoomAction = (): ToolboxActionConfig | undefined => 
 				tooltip: t('core.Clean_History_unavailable_for_federation'),
 				disabled: true,
 			}),
-			template: PruneMessages,
+			tabComponent: PruneMessages,
 			order: 250,
+			type: 'customization',
 		};
 	}, [federated, permitted, t]);
 };

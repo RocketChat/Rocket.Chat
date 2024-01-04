@@ -43,10 +43,10 @@ import {
 	isIContactStatusEvent,
 	isICallHangupEvent,
 } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { Users, PbxEvents } from '@rocket.chat/models';
 import type { Db } from 'mongodb';
 
-import { Logger } from '../../../../../lib/logger/Logger';
 import { Command, CommandType } from '../Command';
 import { Commands } from '../Commands';
 import { ACDQueue } from './ACDQueue';

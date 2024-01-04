@@ -1,14 +1,13 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import React from 'react';
 
 import { mapMessageFromApi } from '../../../lib/utils/mapMessageFromApi';
-import MessageListTab from '../components/contextualBar/MessageListTab';
 import { useRoom } from '../contexts/RoomContext';
+import MessageListTab from './MessageListTab';
 
-const StarredMessagesTab = (): ReactElement => {
+const StarredMessagesTab = () => {
 	const getStarredMessages = useEndpoint('GET', '/v1/chat.getStarredMessages');
 
 	const room = useRoom();

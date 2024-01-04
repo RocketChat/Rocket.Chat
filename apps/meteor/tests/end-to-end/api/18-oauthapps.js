@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { updatePermission } from '../../data/permissions.helper';
@@ -61,6 +62,32 @@ describe('[OAuthApps]', function () {
 					expect(res.body.oauthApp._id).to.be.equal('zapier');
 				})
 				.end(done);
+		});
+		it('should return a 403 Forbidden error when the user does not have the necessary permission by client id', (done) => {
+			updatePermission('manage-oauth-apps', []).then(() => {
+				request
+					.get(api('oauth-apps.get?clientId=zapier'))
+					.set(credentials)
+					.expect(403)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.be.equal('unauthorized');
+					})
+					.end(done);
+			});
+		});
+		it('should return a 403 Forbidden error when the user does not have the necessary permission by app id', (done) => {
+			updatePermission('manage-oauth-apps', []).then(() => {
+				request
+					.get(api('oauth-apps.get?appId=zapier'))
+					.set(credentials)
+					.expect(403)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.be.equal('unauthorized');
+					})
+					.end(done);
+			});
 		});
 	});
 

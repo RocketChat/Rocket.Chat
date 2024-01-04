@@ -1,10 +1,10 @@
+import { License } from '@rocket.chat/license';
 import { Meteor } from 'meteor/meteor';
 
-import { onInvalidateLicense } from '../../../app/license/server/license';
 import { Apps } from '../../apps';
 
 Meteor.startup(() => {
-	onInvalidateLicense(() => {
+	License.onInvalidateLicense(() => {
 		void Apps.disableApps();
 	});
 });

@@ -1,16 +1,16 @@
 import { useMemo } from 'react';
 
 import { MemberListRouter } from '../../views/room';
-import type { ToolboxActionConfig } from '../../views/room/lib/Toolbox';
+import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
-export const useUserInfoRoomAction = (): ToolboxActionConfig => {
+export const useUserInfoRoomAction = () => {
 	return useMemo(
-		() => ({
+		(): RoomToolboxActionConfig => ({
 			id: 'user-info',
 			groups: ['direct'],
 			title: 'User_Info',
 			icon: 'user',
-			template: MemberListRouter,
+			tabComponent: MemberListRouter,
 			order: 1,
 		}),
 		[],

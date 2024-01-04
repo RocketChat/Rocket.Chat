@@ -4,7 +4,6 @@ import { LivechatUnitMonitors, LivechatDepartment, LivechatRooms } from '@rocket
 import type { FindOptions, Filter, FindCursor, Db, FilterOperators, UpdateResult, DeleteResult, Document, UpdateFilter } from 'mongodb';
 
 import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
-import { queriesLogger } from '../../../app/livechat-enterprise/server/lib/logger';
 import { getUnitsFromUser } from '../../../app/livechat-enterprise/server/lib/units';
 
 const addQueryRestrictions = async (originalQuery: Filter<IOmnichannelBusinessUnit> = {}) => {
@@ -40,7 +39,6 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 		options: FindOptions<IOmnichannelBusinessUnit>,
 	): Promise<FindCursor<IOmnichannelBusinessUnit>> {
 		const query = await addQueryRestrictions(originalQuery);
-		queriesLogger.debug({ msg: 'LivechatUnit.find', query });
 		return this.col.find(query, options) as FindCursor<IOmnichannelBusinessUnit>;
 	}
 
@@ -50,18 +48,7 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 		options: FindOptions<IOmnichannelBusinessUnit>,
 	): Promise<IOmnichannelBusinessUnit | null> {
 		const query = await addQueryRestrictions(originalQuery);
-		queriesLogger.debug({ msg: 'LivechatUnit.findOne', query });
 		return this.col.findOne(query, options);
-	}
-
-	async update(
-		originalQuery: Filter<IOmnichannelBusinessUnit>,
-		update: Filter<IOmnichannelBusinessUnit>,
-		options: FindOptions<IOmnichannelBusinessUnit>,
-	): Promise<UpdateResult> {
-		const query = await addQueryRestrictions(originalQuery);
-		queriesLogger.debug({ msg: 'LivechatUnit.update', query });
-		return this.col.updateOne(query, update, options);
 	}
 
 	remove(query: Filter<IOmnichannelBusinessUnit>): Promise<DeleteResult> {
@@ -116,7 +103,7 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 			});
 		}
 
-		const savedDepartments = (await LivechatDepartment.find({ parentId: _id }).toArray()).map(({ _id }) => _id);
+		const savedDepartments = (await LivechatDepartment.findByParentId(_id, { projection: { _id: 1 } }).toArray()).map(({ _id }) => _id);
 		const departmentsToSave = departments.map(({ departmentId }) => departmentId);
 
 		// remove other departments
@@ -135,7 +122,7 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 		}
 
 		for await (const departmentId of departmentsToSave) {
-			await LivechatDepartment.update(
+			await LivechatDepartment.updateOne(
 				{ _id: departmentId },
 				{
 					$set: {
@@ -200,8 +187,12 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 		return monitoredUnits.map((u) => u.unitId);
 	}
 
-	async findMonitoredDepartmentsByMonitorId(monitorId: string): Promise<ILivechatDepartment[]> {
+	async findMonitoredDepartmentsByMonitorId(monitorId: string, includeDisabled: boolean): Promise<ILivechatDepartment[]> {
 		const monitoredUnits = await this.findByMonitorId(monitorId);
+
+		if (includeDisabled) {
+			return LivechatDepartment.findByUnitIds(monitoredUnits, {}).toArray();
+		}
 		return LivechatDepartment.findActiveByUnitIds(monitoredUnits, {}).toArray();
 	}
 

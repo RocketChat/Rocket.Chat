@@ -1,10 +1,10 @@
-import { Field, TextInput, Box, Icon, Margins, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, TextInput, Box, Icon, Margins, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, FormEvent } from 'react';
 import React, { useState, useCallback } from 'react';
 
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
-import { useFileInput } from '../../../hooks/useFileInput';
+import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 import { validate, createSoundData } from './lib';
 
 type AddCustomSoundProps = {
@@ -27,7 +27,7 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 		setSound(soundFile);
 	}, []);
 
-	const [clickUpload] = useFileInput(handleChangeFile, 'audio/mp3');
+	const [clickUpload] = useSingleFileInput(handleChangeFile, 'audio/mp3');
 
 	const saveAction = useCallback(
 		async (name, soundFile): Promise<string | undefined> => {
@@ -86,19 +86,19 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 		<>
 			<ContextualbarScrollableContent {...props}>
 				<Field>
-					<Field.Label>{t('Name')}</Field.Label>
-					<Field.Row>
+					<FieldLabel>{t('Name')}</FieldLabel>
+					<FieldRow>
 						<TextInput
 							value={name}
 							onChange={(e: FormEvent<HTMLInputElement>): void => setName(e.currentTarget.value)}
 							placeholder={t('Name')}
 						/>
-					</Field.Row>
+					</FieldRow>
 				</Field>
 				<Field>
-					<Field.Label alignSelf='stretch'>{t('Sound_File_mp3')}</Field.Label>
+					<FieldLabel alignSelf='stretch'>{t('Sound_File_mp3')}</FieldLabel>
 					<Box display='flex' flexDirection='row' mbs='none'>
-						<Margins inline='x4'>
+						<Margins inline={4}>
 							{/* FIXME: replace to IconButton */}
 							<Button square onClick={clickUpload}>
 								<Icon name='upload' size='x20' />
@@ -110,7 +110,7 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button mie='x4' onClick={close}>
+					<Button mie={4} onClick={close}>
 						{t('Cancel')}
 					</Button>
 					<Button primary onClick={handleSave} disabled={name === ''}>

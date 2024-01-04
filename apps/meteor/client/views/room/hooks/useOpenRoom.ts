@@ -6,7 +6,9 @@ import { useRef } from 'react';
 import { roomFields } from '../../../../lib/publishFields';
 import { omit } from '../../../../lib/utils/omit';
 import { NotAuthorizedError } from '../../../lib/errors/NotAuthorizedError';
+import { OldUrlRoomError } from '../../../lib/errors/OldUrlRoomError';
 import { RoomNotFoundError } from '../../../lib/errors/RoomNotFoundError';
+import { queryClient } from '../../../lib/queryClient';
 
 export function useOpenRoom({ type, reference }: { type: RoomType; reference: string }) {
 	const user = useUser();
@@ -30,7 +32,21 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 			try {
 				roomData = await getRoomByTypeAndName(type, reference);
 			} catch (error) {
-				throw new RoomNotFoundError(undefined, { type, reference });
+				if (type !== 'd') {
+					throw new RoomNotFoundError(undefined, { type, reference });
+				}
+
+				try {
+					const { rid } = await createDirectMessage(...reference.split(', '));
+					const { ChatSubscription } = await import('../../../../app/models/client');
+					const { waitUntilFind } = await import('../../../lib/utils/waitUntilFind');
+					await waitUntilFind(() => ChatSubscription.findOne({ rid }));
+					directRoute.push({ rid }, (prev) => prev);
+				} catch (error) {
+					throw new RoomNotFoundError(undefined, { type, reference });
+				}
+
+				throw new OldUrlRoomError(undefined, { type, reference });
 			}
 
 			if (!roomData._id) {
@@ -59,10 +75,11 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 
 			const { LegacyRoomManager } = await import('../../../../app/ui-utils/client');
 
-			if (room._id !== reference && type === 'd') {
+			if (reference !== undefined && room._id !== reference && type === 'd') {
 				// Redirect old url using username to rid
 				await LegacyRoomManager.close(type + reference);
-				throw new RoomNotFoundError(undefined, { rid: room._id });
+				directRoute.push({ rid: room._id }, (prev) => prev);
+				throw new OldUrlRoomError(undefined, { rid: room._id });
 			}
 
 			const { RoomManager } = await import('../../../lib/RoomManager');
@@ -87,20 +104,13 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 		{
 			retry: 0,
 			onError: async (error) => {
-				if (type !== 'd') {
-					return;
-				}
+				if (['l', 'v'].includes(type) && error instanceof RoomNotFoundError) {
+					const { ChatRoom } = await import('../../../../app/models/client');
 
-				if (error instanceof RoomNotFoundError && error.details !== undefined && 'rid' in error.details) {
-					directRoute.push({ rid: error.details.rid }, (prev) => prev);
-					return;
+					ChatRoom.remove(reference);
+					queryClient.removeQueries(['rooms', reference]);
+					queryClient.removeQueries(['/v1/rooms.info', reference]);
 				}
-
-				const { rid } = await createDirectMessage(...reference.split(', '));
-				const { ChatSubscription } = await import('../../../../app/models/client');
-				const { waitUntilFind } = await import('../../../lib/utils/waitUntilFind');
-				await waitUntilFind(() => ChatSubscription.findOne({ rid }));
-				directRoute.push({ rid }, (prev) => prev);
 			},
 		},
 	);

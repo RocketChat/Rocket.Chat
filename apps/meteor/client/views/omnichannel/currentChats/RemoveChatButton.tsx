@@ -35,7 +35,14 @@ const RemoveChatButton: FC<{ _id: string }> = ({ _id }) => {
 		};
 
 		setModal(
-			<GenericModal variant='danger' onConfirm={onDeleteAgent} onClose={handleClose} onCancel={handleClose} confirmText={t('Delete')} />,
+			<GenericModal
+				variant='danger'
+				data-qa-id='current-chats-modal-remove'
+				onConfirm={onDeleteAgent}
+				onClose={handleClose}
+				onCancel={handleClose}
+				confirmText={t('Delete')}
+			/>,
 		);
 	});
 

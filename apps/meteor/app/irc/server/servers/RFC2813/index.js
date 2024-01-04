@@ -2,7 +2,8 @@ import { EventEmitter } from 'events';
 import net from 'net';
 import util from 'util';
 
-import { Logger } from '../../../../logger/server';
+import { Logger } from '@rocket.chat/logger';
+
 import localCommandHandlers from './localCommandHandlers';
 import parseMessage from './parseMessage';
 import peerCommandHandlers from './peerCommandHandlers';

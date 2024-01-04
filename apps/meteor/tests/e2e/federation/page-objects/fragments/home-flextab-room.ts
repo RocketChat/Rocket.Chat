@@ -8,15 +8,15 @@ export class FederationHomeFlextabRoom {
 	}
 
 	get btnEdit(): Locator {
-		return this.page.locator('//aside//button[contains(text(), "Edit")]');
+		return this.page.locator('role=button[name="Edit"]');
 	}
 
 	get btnLeave(): Locator {
-		return this.page.locator('//aside//button[contains(text(), "Leave")]');
+		return this.page.locator('role=button[name="Leave"]');
 	}
 
 	get btnDelete(): Locator {
-		return this.page.locator('//aside//button[contains(text(), "Delete")]');
+		return this.page.locator('role=button[name="Delete"]');
 	}
 
 	get inputName(): Locator {
@@ -40,7 +40,7 @@ export class FederationHomeFlextabRoom {
 	}
 
 	get btnSave(): Locator {
-		return this.page.locator('//aside//button[contains(text(), "Save")]');
+		return this.page.locator('role=button[name="Save"]');
 	}
 
 	get btnModalConfirm(): Locator {

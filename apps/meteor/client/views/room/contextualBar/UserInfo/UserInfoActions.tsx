@@ -1,47 +1,51 @@
+/* eslint-disable react/display-name, react/no-multi-comp */
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { ButtonGroup, Menu, Option } from '@rocket.chat/fuselage';
+import { ButtonGroup, IconButton } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
+import GenericMenu from '../../../../components/GenericMenu/GenericMenu';
 import UserInfo from '../../../../components/UserInfo';
-import { useActionSpread } from '../../../hooks/useActionSpread';
 import { useUserInfoActions } from '../../hooks/useUserInfoActions';
 
 type UserInfoActionsProps = {
-	user: Pick<IUser, '_id' | 'username'>;
+	user: Pick<IUser, '_id' | 'username' | 'name'>;
 	rid: IRoom['_id'];
 	backToList: () => void;
 };
 
 const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): ReactElement => {
-	const { actions: actionsDefinition, menu: menuOptions } = useActionSpread(
-		useUserInfoActions({ _id: user._id, username: user.username }, rid, backToList),
+	const t = useTranslation();
+	const { actions: actionsDefinition, menuActions: menuOptions } = useUserInfoActions(
+		{ _id: user._id, username: user.username, name: user.name },
+		rid,
+		backToList,
 	);
 
 	const menu = useMemo(() => {
-		if (!menuOptions) {
+		if (!menuOptions?.length) {
 			return null;
 		}
 
 		return (
-			<Menu
+			<GenericMenu
+				button={<IconButton icon='kebab' secondary />}
+				title={t('More')}
 				key='menu'
-				mi='x4'
-				secondary
+				data-qa-id='UserUserInfo-menu'
+				sections={menuOptions}
+				placement='bottom-end'
 				small={false}
-				maxHeight='initial'
-				renderItem={({ label: { label, icon }, ...props }): ReactElement => <Option {...props} label={label} icon={icon} />}
-				flexShrink={0}
-				options={menuOptions}
 				data-qa='UserUserInfo-menu'
 			/>
 		);
-	}, [menuOptions]);
+	}, [menuOptions, t]);
 
 	// TODO: sanitize Action type to avoid any
 	const actions = useMemo(() => {
-		const mapAction = ([key, { label, icon, action }]: any): ReactElement => (
-			<UserInfo.Action key={key} title={label} label={label} onClick={action} icon={icon} />
+		const mapAction = ([key, { content, icon, onClick }]: any): ReactElement => (
+			<UserInfo.Action key={key} title={content} label={content} onClick={onClick} icon={icon} />
 		);
 
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);

@@ -8,7 +8,8 @@ import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import CreateChannelWithData from '../../../../sidebar/header/CreateChannel';
-import { useTabBarClose } from '../../../room/contexts/ToolboxContext';
+import { useRoom } from '../../../room/contexts/RoomContext';
+import { useRoomToolbox } from '../../../room/contexts/RoomToolboxContext';
 import RoomInfo from '../../../room/contextualBar/Info';
 import AddExistingModal from './AddExistingModal';
 import BaseTeamsChannels from './BaseTeamsChannels';
@@ -29,18 +30,16 @@ const useReactModal = (Component: FC<any>, teamId: string, reload: () => void) =
 	});
 };
 
-type TeamChannelsProps = {
-	teamId?: string;
-	rid: string;
-};
+const TeamsChannels = () => {
+	const room = useRoom();
+	const { teamId } = room;
 
-const TeamsChannels = ({ teamId, rid }: TeamChannelsProps) => {
 	if (!teamId) {
 		throw new Error('Invalid teamId');
 	}
 
 	const [state, setState] = useState<{ tab?: string; rid?: string }>({});
-	const onClickClose = useTabBarClose();
+	const { closeTab } = useRoomToolbox();
 
 	const [type, setType] = useLocalStorage<'all' | 'autoJoin'>('channels-list-type', 'all');
 	const [text, setText] = useState('');
@@ -57,7 +56,7 @@ const TeamsChannels = ({ teamId, rid }: TeamChannelsProps) => {
 		setText(event.currentTarget.value);
 	}, []);
 
-	const canAddExistingTeam = usePermission('add-team-channel', rid);
+	const canAddExistingTeam = usePermission('add-team-channel', room._id);
 	const addExisting = useReactModal(AddExistingModal, teamId, reload);
 	const createNew = useReactModal(CreateChannelWithData, teamId, reload);
 
@@ -68,7 +67,7 @@ const TeamsChannels = ({ teamId, rid }: TeamChannelsProps) => {
 	});
 
 	if (state?.tab === 'RoomInfo' && state?.rid) {
-		return <RoomInfo rid={state?.rid} onClickBack={handleBack} onEnterRoom={goToRoom} resetState={() => setState({})} />;
+		return <RoomInfo onClickBack={handleBack} onEnterRoom={goToRoom} resetState={() => setState({})} />;
 	}
 
 	return (
@@ -80,7 +79,7 @@ const TeamsChannels = ({ teamId, rid }: TeamChannelsProps) => {
 			setText={handleTextChange}
 			channels={items}
 			total={total}
-			onClickClose={onClickClose}
+			onClickClose={closeTab}
 			onClickAddExisting={canAddExistingTeam && addExisting}
 			onClickCreateNew={canAddExistingTeam && createNew}
 			onClickView={viewRoom}

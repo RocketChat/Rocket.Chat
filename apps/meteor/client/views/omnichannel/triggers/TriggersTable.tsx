@@ -1,10 +1,11 @@
-import { Callout, Pagination } from '@rocket.chat/fuselage';
-import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
-import type { MutableRefObject } from 'react';
-import React, { useEffect, useMemo } from 'react';
+import { Pagination } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
+import { useQuery, hashQueryKey } from '@tanstack/react-query';
+import React, { useMemo, useState } from 'react';
 
-import GenericNoResults from '../../../components/GenericNoResults/GenericNoResults';
+import GenericError from '../../../components/GenericError';
+import GenericNoResults from '../../../components/GenericNoResults';
 import {
 	GenericTable,
 	GenericTableHeader,
@@ -15,8 +16,14 @@ import {
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import TriggersRow from './TriggersRow';
 
-const TriggersTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
+const TriggersTable = () => {
 	const t = useTranslation();
+	const router = useRouter();
+
+	const handleAddNew = useMutableCallback(() => {
+		router.navigate('/omnichannel/triggers/new');
+	});
+
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 
 	const query = useMemo(() => ({ offset: current, count: itemsPerPage }), [current, itemsPerPage]);
@@ -24,20 +31,15 @@ const TriggersTable = ({ reload }: { reload: MutableRefObject<() => void> }) => 
 	const getTriggers = useEndpoint('GET', '/v1/livechat/triggers');
 	const { data, refetch, isSuccess, isLoading, isError } = useQuery(['livechat-triggers', query], async () => getTriggers(query));
 
-	useEffect(() => {
-		reload.current = refetch;
-	}, [reload, refetch]);
-
-	if (isError) {
-		return <Callout>{t('Error')}</Callout>;
-	}
+	const [defaultQuery] = useState(hashQueryKey([query]));
+	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
 
 	const headers = (
 		<>
 			<GenericTableHeaderCell>{t('Name')}</GenericTableHeaderCell>
 			<GenericTableHeaderCell>{t('Description')}</GenericTableHeaderCell>
 			<GenericTableHeaderCell>{t('Enabled')}</GenericTableHeaderCell>
-			<GenericTableHeaderCell width='x60'>{t('Remove')}</GenericTableHeaderCell>
+			<GenericTableHeaderCell width='x60' />
 		</>
 	);
 
@@ -51,7 +53,18 @@ const TriggersTable = ({ reload }: { reload: MutableRefObject<() => void> }) => 
 					</GenericTableBody>
 				</GenericTable>
 			)}
-			{isSuccess && data.triggers.length === 0 && <GenericNoResults />}
+			{isSuccess && data.triggers.length === 0 && queryHasChanged && <GenericNoResults />}
+			{isSuccess && data.triggers.length === 0 && !queryHasChanged && (
+				<GenericNoResults
+					icon='smart'
+					title={t('No_triggers_yet')}
+					description={t('No_triggers_yet_description')}
+					buttonAction={handleAddNew}
+					buttonTitle={t('Create_trigger')}
+					linkHref='https://go.rocket.chat/omnichannel-docs'
+					linkText={t('Learn_more_about_triggers')}
+				/>
+			)}
 			{isSuccess && data.triggers.length > 0 && (
 				<>
 					<GenericTable>
@@ -73,6 +86,7 @@ const TriggersTable = ({ reload }: { reload: MutableRefObject<() => void> }) => 
 					/>
 				</>
 			)}
+			{isError && <GenericError buttonAction={refetch} />}
 		</>
 	);
 };

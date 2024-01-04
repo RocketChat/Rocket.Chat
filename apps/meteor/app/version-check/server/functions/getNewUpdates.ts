@@ -7,6 +7,8 @@ import { check, Match } from 'meteor/check';
 import { getWorkspaceAccessToken } from '../../../cloud/server';
 import { Info } from '../../../utils/rocketchat.info';
 
+/** @deprecated */
+
 export const getNewUpdates = async () => {
 	try {
 		const uniqueID = await Settings.findOne('uniqueID');
@@ -50,18 +52,16 @@ export const getNewUpdates = async () => {
 						infoUrl: String,
 					}),
 				],
-				alerts: [
-					Match.Optional([
-						Match.ObjectIncluding({
-							id: String,
-							title: String,
-							text: String,
-							textArguments: [Match.Any],
-							modifiers: [String] as [StringConstructor],
-							infoUrl: String,
-						}),
-					]),
-				],
+				alerts: Match.Optional([
+					Match.ObjectIncluding({
+						id: String,
+						title: String,
+						text: String,
+						textArguments: [Match.Any],
+						modifiers: [String] as [StringConstructor],
+						infoUrl: String,
+					}),
+				]),
 			}),
 		);
 

@@ -12,10 +12,10 @@ import type {
 	IQueueMembershipSubscription,
 	IRegistrationInfo,
 } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import mem from 'mem';
 import type { Db } from 'mongodb';
 
-import { Logger } from '../../lib/logger/Logger';
 import { CommandType } from './connector/asterisk/Command';
 import { CommandHandler } from './connector/asterisk/CommandHandler';
 import { Commands } from './connector/asterisk/Commands';

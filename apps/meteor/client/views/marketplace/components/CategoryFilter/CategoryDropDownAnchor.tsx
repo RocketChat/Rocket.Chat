@@ -1,4 +1,6 @@
-import { Box, Button, Icon } from '@rocket.chat/fuselage';
+import type { Button } from '@rocket.chat/fuselage';
+import { Box, Icon } from '@rocket.chat/fuselage';
+import colorTokens from '@rocket.chat/fuselage-tokens/colors.json';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, MouseEventHandler } from 'react';
 import React, { forwardRef } from 'react';
@@ -15,33 +17,42 @@ const CategoryDropDownAnchor = forwardRef<HTMLElement, CategoryDropDownAnchorPro
 
 	return (
 		<Box
-			is={Button}
+			is='button'
 			ref={ref}
 			onClick={onClick}
-			display='flex'
 			alignItems='center'
-			justifyContent='space-between'
-			minWidth='x144'
+			bg={selectedCategoriesCount ? colorTokens.b500 : 'light'}
+			borderColor={selectedCategoriesCount ? 'none' : 'light'}
+			borderRadius='x4'
+			borderWidth={selectedCategoriesCount ? 'none' : 'x1'}
+			display='flex'
 			flexGrow={1}
 			flexShrink={1}
-			borderColor={selectedCategoriesCount ? 'none' : 'light'}
-			borderWidth={selectedCategoriesCount ? 'none' : 'x1'}
-			{...(selectedCategoriesCount ? { primary: true } : { bg: 'surface-light' })}
+			justifyContent='space-between'
+			minWidth='x144'
+			height='x40'
+			pie={7}
+			pis={14}
+			lineHeight='unset'
+			rcx-input-box
 			{...props}
 		>
 			{selectedCategoriesCount > 0 && (
 				<Box
-					mie='x6'
-					borderRadius='x32'
-					bg='light'
-					fontWeight={700}
-					fontSize='micro'
-					color='info'
-					pi='x6'
-					h='x40'
-					display='flex'
+					is='span'
 					alignItems='center'
+					bg='light'
+					borderRadius='x32'
+					color='info'
+					display='flex'
+					fontSize='micro'
+					fontWeight={700}
+					h='fit-content'
 					justifyContent='center'
+					mie={6}
+					minWidth={22}
+					pb={4}
+					pi={0}
 				>
 					{selectedCategoriesCount}
 				</Box>
@@ -49,8 +60,8 @@ const CategoryDropDownAnchor = forwardRef<HTMLElement, CategoryDropDownAnchorPro
 			<Box is='span' display='flex' flexGrow={1} fontScale='p2' color={selectedCategoriesCount ? 'white' : 'hint'}>
 				{selectedCategoriesCount > 0 ? t('Categories') : t('All_categories')}
 			</Box>
-			<Box mi='x4' display='flex' alignItems='center' justifyContent='center'>
-				<Icon name='chevron-down' fontSize='x20' color={selectedCategoriesCount ? 'white' : 'hint'} />
+			<Box mi={4} display='flex' alignItems='center' justifyContent='center'>
+				<Icon name='chevron-down' size='x20' color={selectedCategoriesCount ? 'white' : 'hint'} />
 			</Box>
 		</Box>
 	);

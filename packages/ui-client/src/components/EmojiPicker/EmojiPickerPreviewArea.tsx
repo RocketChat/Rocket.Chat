@@ -4,7 +4,7 @@ import type { AllHTMLAttributes } from 'react';
 const EmojiPickerPreviewArea = (props: Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>) => (
 	<Box
 		{...props}
-		p='x12'
+		p={12}
 		bg='tint'
 		color='secondary-info'
 		display='flex'

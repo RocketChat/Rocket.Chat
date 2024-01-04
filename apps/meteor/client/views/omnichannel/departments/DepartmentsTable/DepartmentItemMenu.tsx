@@ -60,7 +60,7 @@ const DepartmentItemMenu = ({ department, archived }: DepartmentItemMenuProps): 
 			edit: {
 				label: (
 					<>
-						<Icon name='edit' size='x16' mie='x4' />
+						<Icon name='edit' size='x16' mie={4} />
 						{t('Edit')}
 					</>
 				),
@@ -70,7 +70,7 @@ const DepartmentItemMenu = ({ department, archived }: DepartmentItemMenuProps): 
 		[archived ? 'unarchive' : 'archive']: {
 			label: (
 				<>
-					<Icon name={archived ? 'undo' : 'arrow-down-box'} size='x16' mie='x4' />
+					<Icon name={archived ? 'undo' : 'arrow-down-box'} size='x16' mie={4} />
 					{archived ? t('Unarchive') : t('Archive')}
 				</>
 			),
@@ -79,7 +79,7 @@ const DepartmentItemMenu = ({ department, archived }: DepartmentItemMenuProps): 
 		delete: {
 			label: (
 				<Box data-tooltip={!departmentRemovalEnabled ? t('Department_Removal_Disabled') : undefined}>
-					<Icon name='trash' size='x16' mie='x4' />
+					<Icon name='trash' size='x16' mie={4} />
 					{t('Delete')}
 				</Box>
 			),

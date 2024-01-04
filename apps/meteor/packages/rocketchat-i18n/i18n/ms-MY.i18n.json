@@ -795,7 +795,6 @@
   "Custom_Sound_Has_Been_Deleted": "Bunyi adat telah dipadamkan.",
   "Custom_Sound_Info": "Maklumat Bunyi Khas",
   "Custom_Sound_Saved_Successfully": "Bunyi adat berjaya disimpan",
-  "Custom_Sounds": "Bunyi adat",
   "Custom_Translations": "Terjemahan Tradisional",
   "Custom_Translations_Description": "Harus menjadi JSON yang sah di mana kekunci adalah bahasa yang mengandungi kamus kunci dan terjemahan. Contoh:  \n `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Customize": "Peribadikan",
@@ -974,7 +973,6 @@
   "Enter_name_here": "Masukkan nama di sini",
   "Enter_Normal": "Mod biasa (hantar dengan Enter)",
   "Enter_to": "Masuk ke",
-  "Enterprise": "Enterprise",
   "Entertainment": "Hiburan",
   "Error": "ralat",
   "Error_404": "Ralat: 404",
@@ -1820,7 +1818,6 @@
   "Num_Agents": "# Agents",
   "Number_of_messages": "Bilangan mesej",
   "OAuth_Application": "OAuth Permohonan",
-  "OAuth_Applications": "Aplikasi OAuth",
   "Objects": "objek",
   "Off": "Off",
   "Off_the_record_conversation": "Off-the-rekod Perbualan",
@@ -1840,6 +1837,8 @@
   "Offline_success_message": "mesej kejayaan Offline",
   "Offline_unavailable": "luar talian tidak tersedia",
   "Older_than": "Lebih tua daripada",
+  "Omnichannel_Reports_Status_Open": "Dibuka",
+  "Omnichannel_Reports_Status_Closed": "ditutup",
   "On": "Pada",
   "online": "dalam talian",
   "Online": "Dalam talian",
@@ -2763,5 +2762,7 @@
   "registration.component.form.reasonToJoin": "Sebab untuk Bergabung",
   "registration.component.form.invalidConfirmPass": "Pengesahan kata laluan tidak sepadan dengan kata laluan",
   "registration.component.form.confirmPassword": "Sahkan kata laluan anda",
-  "registration.component.form.sendConfirmationEmail": "Hantar e-mel pengesahan"
+  "registration.component.form.sendConfirmationEmail": "Hantar e-mel pengesahan",
+  "Enterprise": "Enterprise",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Analisis"
 }

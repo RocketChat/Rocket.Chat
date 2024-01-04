@@ -13,8 +13,6 @@ import type { IUser } from '../IUser';
 import type { FileProp } from './MessageAttachment/Files/FileProp';
 import type { MessageAttachment } from './MessageAttachment/MessageAttachment';
 
-type MentionType = 'user' | 'team';
-
 type MessageUrl = {
 	url: string;
 	source?: string;
@@ -121,15 +119,20 @@ export type TokenExtra = {
 	noHtml?: string;
 };
 
+export type MessageMention = {
+	type?: 'user' | 'team'; // mentions for 'all' and 'here' doesn't have type
+	_id: string;
+	name?: string;
+	username?: string;
+};
+
 export interface IMessage extends IRocketChatRecord {
 	rid: RoomID;
 	msg: string;
 	tmid?: string;
 	tshow?: boolean;
 	ts: Date;
-	mentions?: ({
-		type: MentionType;
-	} & Pick<IUser, '_id' | 'username' | 'name'>)[];
+	mentions?: MessageMention[];
 
 	groupable?: boolean;
 	channels?: Pick<IRoom, '_id' | 'name'>[];
@@ -354,14 +357,34 @@ export type IE2EEMessage = IMessage & {
 	e2e: 'pending' | 'done';
 };
 
-export type IOTRMessage = IMessage & {
-	t: 'otr' | 'otr-ack';
-};
+export interface IOTRMessage extends IMessage {
+	t: 'otr';
+	otrAck?: string;
+}
+
+export interface IOTRAckMessage extends IMessage {
+	t: 'otr-ack';
+}
 
 export type IVideoConfMessage = IMessage & {
 	t: 'videoconf';
 };
 
 export const isE2EEMessage = (message: IMessage): message is IE2EEMessage => message.t === 'e2e';
-export const isOTRMessage = (message: IMessage): message is IOTRMessage => message.t === 'otr' || message.t === 'otr-ack';
+export const isOTRMessage = (message: IMessage): message is IOTRMessage => message.t === 'otr';
+export const isOTRAckMessage = (message: IMessage): message is IOTRAckMessage => message.t === 'otr-ack';
 export const isVideoConfMessage = (message: IMessage): message is IVideoConfMessage => message.t === 'videoconf';
+
+export type IMessageWithPendingFileImport = IMessage & {
+	_importFile: {
+		downloadUrl: string;
+		id: string;
+		size: number;
+		name: string;
+		external: boolean;
+		source: 'slack' | 'hipchat-enterprise';
+		original: Record<string, any>;
+		rocketChatUrl?: string;
+		downloaded?: boolean;
+	};
+};

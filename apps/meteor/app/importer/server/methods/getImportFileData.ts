@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import type { IImportFileData } from '@rocket.chat/core-typings';
+import type { IImportProgress, IImporterSelection } from '@rocket.chat/core-typings';
 import { Imports } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
@@ -11,7 +11,7 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { RocketChatImportFileInstance } from '../startup/store';
 
-export const executeGetImportFileData = async (): Promise<IImportFileData | { waiting: true }> => {
+export const executeGetImportFileData = async (): Promise<IImporterSelection | { waiting: true }> => {
 	const operation = await Imports.findLastImport();
 	if (!operation) {
 		throw new Meteor.Error('error-operation-not-found', 'Import Operation Not Found', 'getImportFileData');
@@ -24,10 +24,9 @@ export const executeGetImportFileData = async (): Promise<IImportFileData | { wa
 		throw new Meteor.Error('error-importer-not-defined', `The importer (${importerKey}) has no import class defined.`, 'getImportFileData');
 	}
 
-	importer.instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
-	await importer.instance.build();
+	const instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
 
-	const waitingSteps = [
+	const waitingSteps: IImportProgress['step'][] = [
 		ProgressStep.DOWNLOADING_FILE,
 		ProgressStep.PREPARING_CHANNELS,
 		ProgressStep.PREPARING_MESSAGES,
@@ -35,29 +34,37 @@ export const executeGetImportFileData = async (): Promise<IImportFileData | { wa
 		ProgressStep.PREPARING_STARTED,
 	];
 
-	if (waitingSteps.indexOf(importer.instance.progress.step) >= 0) {
-		if (importer.instance.importRecord?.valid) {
+	if (waitingSteps.indexOf(instance.progress.step) >= 0) {
+		if (instance.importRecord?.valid) {
 			return { waiting: true };
 		}
 		throw new Meteor.Error('error-import-operation-invalid', 'Invalid Import Operation', 'getImportFileData');
 	}
 
-	const readySteps = [ProgressStep.USER_SELECTION, ProgressStep.DONE, ProgressStep.CANCELLED, ProgressStep.ERROR];
+	const readySteps: IImportProgress['step'][] = [
+		ProgressStep.USER_SELECTION,
+		ProgressStep.DONE,
+		ProgressStep.CANCELLED,
+		ProgressStep.ERROR,
+	];
 
-	if (readySteps.indexOf(importer.instance.progress.step) >= 0) {
-		return importer.instance.buildSelection();
+	if (readySteps.indexOf(instance.progress.step) >= 0) {
+		return instance.buildSelection();
 	}
 
-	const fileName = importer.instance.importRecord.file;
-	const fullFilePath = fs.existsSync(fileName) ? fileName : path.join(RocketChatImportFileInstance.absolutePath, fileName);
-	await importer.instance.prepareUsingLocalFile(fullFilePath);
-	return importer.instance.buildSelection();
+	const fileName = instance.importRecord.file;
+	if (fileName) {
+		const fullFilePath = fs.existsSync(fileName) ? fileName : path.join(RocketChatImportFileInstance.absolutePath, fileName);
+		await instance.prepareUsingLocalFile(fullFilePath);
+	}
+
+	return instance.buildSelection();
 };
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		getImportFileData(): IImportFileData | { waiting: true };
+		getImportFileData(): IImporterSelection | { waiting: true };
 	}
 }
 

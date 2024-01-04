@@ -6,6 +6,7 @@ import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import type { MinimongoCollection } from '../../../../client/definitions/MinimongoCollection';
+import { baseURI } from '../../../../client/lib/baseURI';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
@@ -33,6 +34,10 @@ const hasUnserializedUpdatedAt = <T>(record: T): record is T & { _updatedAt: Con
 	record !== null &&
 	'_updatedAt' in record &&
 	!((record as unknown as { _updatedAt: unknown })._updatedAt instanceof Date);
+
+localforage.config({
+	name: baseURI,
+});
 
 export class CachedCollection<T extends { _id: string }, U = T> extends Emitter<{ changed: T; removed: T }> {
 	private static MAX_CACHE_TIME = 60 * 60 * 24 * 30;

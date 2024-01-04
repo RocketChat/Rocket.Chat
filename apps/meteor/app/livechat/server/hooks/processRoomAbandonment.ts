@@ -1,4 +1,4 @@
-import type { IOmnichannelRoom, IMessage, IBusinessHourWorkHour } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom, IMessage, IBusinessHourWorkHour, ILivechatDepartment } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatBusinessHours, LivechatDepartment, Messages, LivechatRooms } from '@rocket.chat/models';
 import moment from 'moment';
@@ -27,7 +27,11 @@ const getSecondsSinceLastAgentResponse = async (room: IOmnichannelRoom, agentLas
 		return getSecondsWhenOfficeHoursIsDisabled(room, agentLastMessage);
 	}
 	let officeDays;
-	const department = room.departmentId ? await LivechatDepartment.findOneById(room.departmentId) : null;
+	const department = room.departmentId
+		? await LivechatDepartment.findOneById<Pick<ILivechatDepartment, 'businessHourId'>>(room.departmentId, {
+				projection: { businessHourId: 1 },
+		  })
+		: null;
 	if (department?.businessHourId) {
 		const businessHour = await LivechatBusinessHours.findOneById(department.businessHourId);
 		if (!businessHour) {

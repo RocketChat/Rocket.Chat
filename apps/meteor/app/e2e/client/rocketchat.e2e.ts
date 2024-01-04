@@ -204,11 +204,6 @@ class E2E extends Emitter {
 
 		const randomPassword = Meteor._localStorage.getItem('e2e.randomPassword');
 		if (randomPassword) {
-			const passwordRevealText = t('E2E_password_reveal_text', {
-				postProcess: 'sprintf',
-				sprintf: [randomPassword],
-			});
-
 			this.openAlert({
 				title: () => t('Save_your_encryption_password'),
 				html: () => t('Click_here_to_view_and_copy_your_password'),
@@ -219,7 +214,6 @@ class E2E extends Emitter {
 					imperativeModal.open({
 						component: SaveE2EPasswordModal,
 						props: {
-							passwordRevealText,
 							randomPassword,
 							onClose: imperativeModal.close,
 							onCancel: () => {
@@ -472,7 +466,7 @@ class E2E extends Emitter {
 
 		await Promise.all(
 			urls.map(async (url) => {
-				if (!url.includes(Meteor.absoluteUrl())) {
+				if (!url.includes(settings.get('Site_Url'))) {
 					return;
 				}
 

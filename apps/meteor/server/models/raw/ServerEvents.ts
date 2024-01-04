@@ -34,6 +34,26 @@ export class ServerEventsRaw extends BaseRaw<IServerEvent> implements IServerEve
 		);
 	}
 
+	async findLastSuccessfulAttemptByIp(ip: string): Promise<IServerEvent | null> {
+		return this.findOne<IServerEvent>(
+			{
+				ip,
+				t: ServerEventType.LOGIN,
+			},
+			{ sort: { ts: -1 } },
+		);
+	}
+
+	async findLastSuccessfulAttemptByUsername(username: string): Promise<IServerEvent | null> {
+		return this.findOne<IServerEvent>(
+			{
+				'u.username': username,
+				't': ServerEventType.LOGIN,
+			},
+			{ sort: { ts: -1 } },
+		);
+	}
+
 	async countFailedAttemptsByUsernameSince(username: string, since: Date): Promise<number> {
 		return this.find({
 			'u.username': username,

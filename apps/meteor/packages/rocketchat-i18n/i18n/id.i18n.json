@@ -795,7 +795,6 @@
   "Custom_Sound_Has_Been_Deleted": "Suara khusus telah dihapus.",
   "Custom_Sound_Info": "Info Suara Kustom",
   "Custom_Sound_Saved_Successfully": "Suara khusus berhasil disimpan",
-  "Custom_Sounds": "Suara Khusus",
   "Custom_Translations": "Terjemahan kustom",
   "Custom_Translations_Description": "Harus menjadi JSON yang valid dimana kunci adalah bahasa yang berisi kamus kunci dan terjemahan. Contoh:  \n `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Customize": "Sesuaikan",
@@ -974,7 +973,6 @@
   "Enter_name_here": "Masukkan nama di sini",
   "Enter_Normal": "Mode normal (kirim dengan Enter)",
   "Enter_to": "Masuk ke",
-  "Enterprise": "Perusahaan",
   "Entertainment": "Hiburan",
   "Error": "Kesalahan",
   "Error_404": "Kesalahan 404",
@@ -1821,7 +1819,6 @@
   "Num_Agents": "# Agen",
   "Number_of_messages": "Jumlah pesan",
   "OAuth_Application": "OAuth Aplikasi",
-  "OAuth_Applications": "Aplikasi OAuth",
   "Objects": "benda",
   "Off": "Lepas",
   "Off_the_record_conversation": "Off-the-record Conversation",
@@ -1841,6 +1838,8 @@
   "Offline_success_message": "pesan sukses Offline",
   "Offline_unavailable": "Offline tidak tersedia",
   "Older_than": "Lebih tua dari",
+  "Omnichannel_Reports_Status_Open": "Buka",
+  "Omnichannel_Reports_Status_Closed": "Tutup",
   "On": "Di",
   "online": "on line",
   "Online": "Online",
@@ -2767,5 +2766,7 @@
   "registration.component.form.reasonToJoin": "Alasan untuk bergabung",
   "registration.component.form.invalidConfirmPass": "Kata sandi konfirmasi tidak cocok dengan kata sandi utama",
   "registration.component.form.confirmPassword": "Konfirmasikan kata sandi anda",
-  "registration.component.form.sendConfirmationEmail": "Kirim email konfirmasi"
+  "registration.component.form.sendConfirmationEmail": "Kirim email konfirmasi",
+  "Enterprise": "Perusahaan",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Analytics"
 }

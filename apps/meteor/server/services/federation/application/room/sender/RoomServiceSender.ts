@@ -168,7 +168,7 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 	}
 
 	public async sendExternalMessage(roomSendExternalMessageInput: FederationRoomSendExternalMessageDto): Promise<void> {
-		const { internalRoomId, internalSenderId, message } = roomSendExternalMessageInput;
+		const { internalRoomId, internalSenderId, message, isThreadedMessage } = roomSendExternalMessageInput;
 		const federatedSender = await this.internalUserAdapter.getFederatedUserByInternalId(internalSenderId);
 		if (!federatedSender) {
 			throw new Error(`Could not find user id for ${internalSenderId}`);
@@ -202,23 +202,25 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 				return;
 			}
 
-			await getExternalMessageSender(
+			await getExternalMessageSender({
 				message,
-				this.bridge,
-				this.internalFileAdapter,
-				this.internalMessageAdapter,
-				this.internalUserAdapter,
-			).sendQuoteMessage(federatedRoom.getExternalId(), federatedSender.getExternalId(), message, messageToReplyTo);
+				isThreadedMessage,
+				bridge: this.bridge,
+				internalFileAdapter: this.internalFileAdapter,
+				internalMessageAdapter: this.internalMessageAdapter,
+				internalUserAdapter: this.internalUserAdapter,
+			}).sendQuoteMessage(federatedRoom.getExternalId(), federatedSender.getExternalId(), message, messageToReplyTo);
 			return;
 		}
 
-		await getExternalMessageSender(
+		await getExternalMessageSender({
 			message,
-			this.bridge,
-			this.internalFileAdapter,
-			this.internalMessageAdapter,
-			this.internalUserAdapter,
-		).sendMessage(federatedRoom.getExternalId(), federatedSender.getExternalId(), message);
+			isThreadedMessage,
+			bridge: this.bridge,
+			internalFileAdapter: this.internalFileAdapter,
+			internalMessageAdapter: this.internalMessageAdapter,
+			internalUserAdapter: this.internalUserAdapter,
+		}).sendMessage(federatedRoom.getExternalId(), federatedSender.getExternalId(), message);
 	}
 
 	public async afterMessageDeleted(internalMessage: IMessage, internalRoomId: string): Promise<void> {

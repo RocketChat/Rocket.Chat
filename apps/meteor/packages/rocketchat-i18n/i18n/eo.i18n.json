@@ -795,7 +795,6 @@
   "Custom_Sound_Has_Been_Deleted": "La kutimo sono estis forigita.",
   "Custom_Sound_Info": "Propra Sono Informoj",
   "Custom_Sound_Saved_Successfully": "Propra sono savis sukcese",
-  "Custom_Sounds": "Propra Sonoj",
   "Custom_Translations": "Propra Tradukoj",
   "Custom_Translations_Description": "Devus esti valida JSON kie klavoj estas lingvoj enhavantaj vortaron de ŝlosilo kaj tradukoj. Ekzemplo:  \n `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Customize": "Agordu",
@@ -974,7 +973,6 @@
   "Enter_name_here": "Enmetu nomon ĉi tie",
   "Enter_Normal": "Normala reĝimo (sendu kun Eniri)",
   "Enter_to": "Eniri al",
-  "Enterprise": "Entrepreno",
   "Entertainment": "Amuzaĵo",
   "Error": "Eraro",
   "Error_404": "Eraro: 404",
@@ -1813,7 +1811,6 @@
   "Num_Agents": "# Agentoj",
   "Number_of_messages": "Nombro da mesaĝoj",
   "OAuth_Application": "OAuth-Aplikaĵo",
-  "OAuth_Applications": "OAuth-Aplikoj",
   "Objects": "Objektoj",
   "Off": "Ekstere",
   "Off_the_record_conversation": "Off-the-Record-Konversacio",
@@ -1833,6 +1830,8 @@
   "Offline_success_message": "Senkonekta Sukcesa Mesaĝo",
   "Offline_unavailable": "Senkonekta ne disponebla",
   "Older_than": "Pli maljuna ol",
+  "Omnichannel_Reports_Status_Open": "Malfermita",
+  "Omnichannel_Reports_Status_Closed": "Fermita",
   "On": "Sur",
   "online": "enreta",
   "Online": "Enreta",
@@ -2758,5 +2757,7 @@
   "registration.component.form.reasonToJoin": "Kialo por aliĝi",
   "registration.component.form.invalidConfirmPass": "La konfirmilo de pasvorto ne kongruas kun pasvorto",
   "registration.component.form.confirmPassword": "Konfirmu vian pasvorton",
-  "registration.component.form.sendConfirmationEmail": "Sendu konfirman retpoŝton"
+  "registration.component.form.sendConfirmationEmail": "Sendu konfirman retpoŝton",
+  "Enterprise": "Entrepreno",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Analitiko"
 }

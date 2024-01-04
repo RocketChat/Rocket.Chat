@@ -1,5 +1,5 @@
 import type { App } from '@rocket.chat/core-typings';
-import { Box, Button, Throbber, Tag, Margins } from '@rocket.chat/fuselage';
+import { Box, Button, Tag, Margins } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useRouteParameter, usePermission, useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
@@ -117,7 +117,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	};
 
 	return (
-		<Box {...props} display='flex' alignItems='center' mie='x8'>
+		<Box {...props} display='flex' alignItems='center' mie={8}>
 			{button && isAppDetailsPage && (!installed || canUpdate) && (
 				<Box
 					display='flex'
@@ -128,15 +128,15 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 					invisible={!showStatus && !loading}
 				>
 					<Button
-						icon={!loading && button.icon ? button.icon : undefined}
+						icon={button.icon}
 						primary
 						small
-						disabled={loading || (action === 'request' && (app?.requestedEndUser || endUserRequested))}
+						loading={loading}
+						disabled={action === 'request' && (app?.requestedEndUser || endUserRequested)}
 						onClick={handleAcquireApp}
-						mie='x8'
+						mie={8}
 					>
-						{loading && <Throbber inheritColor />}
-						{!loading && t(button.label.replace(' ', '_') as TranslationKey)}
+						{t(button.label.replace(' ', '_') as TranslationKey)}
 					</Button>
 
 					{shouldShowPriceDisplay && !installed && (
@@ -146,7 +146,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 			)}
 
 			{statuses?.map((status, index) => (
-				<Margins inlineEnd='x8' key={index}>
+				<Margins inlineEnd={index !== statuses.length - 1 ? 8 : undefined} key={index}>
 					<Tag variant={getStatusVariant(status)} title={status.tooltipText ? status.tooltipText : ''}>
 						{handleAppRequestsNumber(status)} {t(`${status.label}` as TranslationKey)}
 					</Tag>

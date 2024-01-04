@@ -1,4 +1,5 @@
 import type { ILivechatPriority } from './ILivechatPriority';
+import type { ILivechatVisitor } from './ILivechatVisitor';
 import type { IMessage } from './IMessage';
 import type { IOmnichannelServiceLevelAgreements } from './IOmnichannelServiceLevelAgreements';
 import type { IRocketChatRecord } from './IRocketChatRecord';
@@ -36,16 +37,16 @@ export interface ILivechatInquiryRecord extends IRocketChatRecord {
 	ts: Date;
 	message: string;
 	status: LivechatInquiryStatus;
-	v: IVisitor;
+	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token' | 'phone' | 'activity'> & { lastMessageTs?: Date };
 	t: 'l';
 
-	department: string;
-	estimatedInactivityCloseTimeAt: Date;
+	department?: string;
+	estimatedInactivityCloseTimeAt?: Date;
 	locked?: boolean;
 	lockedAt?: Date;
 	lastMessage?: IMessage & { token?: string };
 	defaultAgent?: SelectedAgent;
-	source: {
+	source?: {
 		type: OmnichannelSourceType;
 	};
 	// Note: for the sort order to be maintained, we're making priorityWeight and estimatedWaitingTimeQueue required
@@ -58,5 +59,5 @@ export interface ILivechatInquiryRecord extends IRocketChatRecord {
 
 export type InquiryWithAgentInfo = Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department' | 'v'> & {
 	position?: number;
-	defaultAgent?: { username: string; agentId: string };
+	defaultAgent?: SelectedAgent;
 };

@@ -1,9 +1,11 @@
+import { api } from '@rocket.chat/core-services';
 import { LivechatVisitors, ReadReceipts, Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 
 import { settings } from '../../../../app/settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
+import { broadcastMessageSentEvent } from '../../../../server/modules/watchers/lib/messages';
 
 // debounced function by roomId, so multiple calls within 2 seconds to same roomId runs only once
 const list = {};
@@ -24,7 +26,10 @@ const updateMessages = debounceByRoomId(async ({ _id, lm }) => {
 		return;
 	}
 
-	await Messages.setVisibleMessagesAsRead(_id, firstSubscription.ls);
+	const result = await Messages.setVisibleMessagesAsRead(_id, firstSubscription.ls);
+	if (result.modifiedCount > 0) {
+		void api.broadcast('notify.messagesRead', { rid: _id, until: firstSubscription.ls });
+	}
 
 	if (lm <= firstSubscription.ls) {
 		await Rooms.setLastMessageAsRead(_id);
@@ -61,11 +66,17 @@ export const ReadReceipt = {
 		// mark message as read if the sender is the only one in the room
 		const isUserAlone = (await Subscriptions.countByRoomIdAndNotUserId(roomId, userId)) === 0;
 		if (isUserAlone) {
-			await Messages.setAsReadById(message._id);
+			const result = await Messages.setAsReadById(message._id);
+			if (result.modifiedCount > 0) {
+				void broadcastMessageSentEvent({
+					id: message._id,
+					broadcastCallback: (message) => api.broadcast('message.sent', message),
+				});
+			}
 		}
 
 		const extraData = roomCoordinator.getRoomDirectives(t).getReadReceiptsExtraData(message);
-		this.storeReadReceipts([{ _id: message._id }], roomId, userId, extraData);
+		this.storeReadReceipts([message], roomId, userId, extraData);
 	},
 
 	async storeThreadMessagesReadReceipts(tmid, userId, userLastSeen) {
@@ -92,6 +103,10 @@ export const ReadReceipt = {
 				userId,
 				messageId: message._id,
 				ts,
+				...(message.t && { t: message.t }),
+				...(message.pinned && { pinned: true }),
+				...(message.drid && { drid: message.drid }),
+				...(message.tmid && { tmid: message.tmid }),
 				...extraData,
 			}));
 

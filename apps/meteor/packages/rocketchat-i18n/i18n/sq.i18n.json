@@ -796,7 +796,6 @@
   "Custom_Sound_Has_Been_Deleted": "Tingujt me porosi janë fshirë.",
   "Custom_Sound_Info": "Informacioni personal i zërit",
   "Custom_Sound_Saved_Successfully": "Tingulli i personalizuar ruhet me sukses",
-  "Custom_Sounds": "Custom Tinguj",
   "Custom_Translations": "Trajnime të personalizuara",
   "Custom_Translations_Description": "Duhet të jetë një JSON i vlefshëm ku çelësat janë gjuhë që përmbajnë një fjalor të çelësave dhe përkthimeve. Shembull:  \n `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Customize": "Customize",
@@ -975,7 +974,6 @@
   "Enter_name_here": "Shkruani emrin këtu",
   "Enter_Normal": "Modaliteti normal (dërgoni me Enter)",
   "Enter_to": "Enter për të",
-  "Enterprise": "Ndërmarrje",
   "Entertainment": "argëtim",
   "Error": "gabim",
   "Error_404": "Error: 404",
@@ -1812,7 +1810,6 @@
   "Num_Agents": "# Agents",
   "Number_of_messages": "Numri i mesazheve",
   "OAuth_Application": "OAuth Aplikimi",
-  "OAuth_Applications": "Aplikime OAuth",
   "Objects": "objektet",
   "Off": "nga",
   "Off_the_record_conversation": "Off-the-rekord bisedë",
@@ -1832,6 +1829,8 @@
   "Offline_success_message": "Mesazhi Offline sukses",
   "Offline_unavailable": "Offline padisponueshëm",
   "Older_than": "Më të vjetër se",
+  "Omnichannel_Reports_Status_Open": "hapur",
+  "Omnichannel_Reports_Status_Closed": "Mbyllur",
   "On": "në",
   "online": "Online",
   "Online": "Në linjë",
@@ -2753,5 +2752,7 @@
   "registration.component.form.reasonToJoin": "Arsyeja për t'u bashkuar",
   "registration.component.form.invalidConfirmPass": "Konfirmimi Fjalëkalimi nuk përputhet me fjalëkalimin",
   "registration.component.form.confirmPassword": "Konfirmoni fjalëkalimin tuaj",
-  "registration.component.form.sendConfirmationEmail": "Dërgo email konfirmimi"
+  "registration.component.form.sendConfirmationEmail": "Dërgo email konfirmimi",
+  "Enterprise": "Ndërmarrje",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Analitikë"
 }

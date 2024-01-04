@@ -15,10 +15,10 @@ type GenericUpsellModalProps = {
 	icon?: IconName;
 	img: ComponentProps<typeof Modal.HeroImage>['src'];
 	onCancel?: () => void;
-	onClose?: () => void;
+	onClose: () => void;
 	onConfirm?: () => void;
 	annotation?: ReactNode;
-};
+} & ComponentProps<typeof Modal>;
 
 const GenericUpsellModal = ({
 	tagline,
@@ -29,32 +29,33 @@ const GenericUpsellModal = ({
 	confirmText,
 	icon,
 	description,
+	onClose,
 	onCancel,
 	onConfirm,
-	onClose = onCancel,
 	annotation,
+	...props
 }: GenericUpsellModalProps) => {
 	const t = useTranslation();
 
 	return (
-		<Modal>
+		<Modal {...props}>
 			<Modal.Header>
 				{icon && <Modal.Icon name={icon} />}
 				<Modal.HeaderText>
-					<Modal.Tagline color='font-annotation'>{tagline ?? t('Enterprise_capability')}</Modal.Tagline>
+					<Modal.Tagline color='font-annotation'>{tagline ?? t('Premium_capability')}</Modal.Tagline>
 					<Modal.Title>{title}</Modal.Title>
 				</Modal.HeaderText>
-				<Modal.Close onClick={onClose} />
+				<Modal.Close aria-label={t('Close')} onClick={onClose} />
 			</Modal.Header>
 			<Modal.Content>
-				<Modal.HeroImage src={img} />
+				<Modal.HeroImage src={img} alt='' />
 				{subtitle && (
 					<Box is='h3' fontScale='h3'>
 						{subtitle}
 					</Box>
 				)}
 				{description && (
-					<Box style={{ whiteSpace: 'break-spaces' }} fontScale='p2' mbs='x16'>
+					<Box style={{ whiteSpace: 'break-spaces' }} fontScale='p2' mbs={16}>
 						{description}
 					</Box>
 				)}
@@ -65,12 +66,12 @@ const GenericUpsellModal = ({
 					<Modal.FooterControllers>
 						{onCancel && (
 							<Button secondary onClick={onCancel}>
-								{cancelText ?? t('Close')}
+								{cancelText ?? t('Cancel')}
 							</Button>
 						)}
 						{onConfirm && (
 							<Button primary onClick={onConfirm}>
-								{confirmText ?? t('Talk_to_sales')}
+								{confirmText ?? t('Upgrade')}
 							</Button>
 						)}
 					</Modal.FooterControllers>

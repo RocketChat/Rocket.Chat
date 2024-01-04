@@ -1,4 +1,4 @@
-import { Box, PasswordInput, TextInput, FieldGroup, Field } from '@rocket.chat/fuselage';
+import { Box, PasswordInput, TextInput, FieldGroup, Field, FieldRow, FieldError } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React, { useState, useCallback } from 'react';
@@ -47,14 +47,14 @@ const ActionConfirmModal: FC<ActionConfirmModalProps> = ({ isPassword, onConfirm
 			title={t('Delete_account?')}
 			confirmText={t('Delete_account')}
 		>
-			<Box mb='x8'>{isPassword ? t('Enter_your_password_to_delete_your_account') : t('Enter_your_username_to_delete_your_account')}</Box>
+			<Box mb={8}>{isPassword ? t('Enter_your_password_to_delete_your_account') : t('Enter_your_username_to_delete_your_account')}</Box>
 			<FieldGroup w='full'>
 				<Field>
-					<Field.Row>
+					<FieldRow>
 						{isPassword && <PasswordInput value={inputText} onChange={handleChange} />}
 						{!isPassword && <TextInput value={inputText} onChange={handleChange} />}
-					</Field.Row>
-					<Field.Error>{inputError}</Field.Error>
+					</FieldRow>
+					<FieldError>{inputError}</FieldError>
 				</Field>
 			</FieldGroup>
 		</GenericModal>

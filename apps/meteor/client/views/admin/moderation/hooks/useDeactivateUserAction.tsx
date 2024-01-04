@@ -2,9 +2,10 @@ import { useEndpoint, useRoute, useSetModal, useToastMessageDispatch, useTransla
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 
+import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
 import GenericModal from '../../../../components/GenericModal';
 
-const useDeactivateUserAction = (userId: string) => {
+const useDeactivateUserAction = (userId: string): GenericMenuItemProps => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -20,7 +21,7 @@ const useDeactivateUserAction = (userId: string) => {
 			dispatchToastMessage({ type: 'error', message: error });
 		},
 		onSuccess: () => {
-			dispatchToastMessage({ type: 'success', message: t('User_has_been_deactivated') });
+			dispatchToastMessage({ type: 'success', message: t('Moderation_User_deactivated') });
 		},
 	});
 
@@ -30,7 +31,7 @@ const useDeactivateUserAction = (userId: string) => {
 			dispatchToastMessage({ type: 'error', message: error });
 		},
 		onSuccess: () => {
-			dispatchToastMessage({ type: 'success', message: t('Deleted') });
+			dispatchToastMessage({ type: 'success', message: t('Moderation_Messages_deleted') });
 		},
 	});
 
@@ -57,8 +58,10 @@ const useDeactivateUserAction = (userId: string) => {
 	};
 
 	return {
-		label: { label: t('Moderation_Deactivate_User'), icon: 'ban' },
-		action: () => confirmDeactivateUser(),
+		id: 'deactiveUser',
+		content: t('Moderation_Deactivate_User'),
+		icon: 'ban',
+		onClick: () => confirmDeactivateUser(),
 	};
 };
 

@@ -5,9 +5,9 @@ import { useTranslation } from 'react-i18next';
 
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { useRoom } from '../../views/room/contexts/RoomContext';
-import type { ToolboxActionConfig } from '../../views/room/lib/Toolbox';
+import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
-export const useWebRTCVideoRoomAction = (): ToolboxActionConfig | undefined => {
+export const useWebRTCVideoRoomAction = () => {
 	const enabled = useSetting('WebRTC_Enabled', false);
 	const room = useRoom();
 	const federated = isRoomFederated(room);
@@ -24,7 +24,7 @@ export const useWebRTCVideoRoomAction = (): ToolboxActionConfig | undefined => {
 		window.open(`/meet/${room._id}`, room._id);
 	}, [room._id, room.callStatus]);
 
-	return useMemo(() => {
+	return useMemo((): RoomToolboxActionConfig | undefined => {
 		if (!allowed) {
 			return undefined;
 		}

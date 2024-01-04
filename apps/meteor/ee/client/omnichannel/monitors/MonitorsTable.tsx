@@ -3,6 +3,8 @@ import {
 	Pagination,
 	Button,
 	Field,
+	FieldLabel,
+	FieldRow,
 	Box,
 	States,
 	StatesIcon,
@@ -12,7 +14,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useToastMessageDispatch, useMethod, useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, hashQueryKey } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
 
 import FilterByText from '../../../../client/components/FilterByText';
@@ -54,14 +56,22 @@ const MonitorsTable = () => {
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = pagination;
 	const { sortBy, sortDirection, setSort } = sort;
 
-	const { data, refetch, isLoading, isSuccess, isError } = useQuery(['omnichannel', 'monitors', debouncedText, pagination, sort], () =>
-		getMonitors({
-			text,
-			sort: JSON.stringify({ [sort.sortBy]: sort.sortDirection === 'asc' ? 1 : -1 }),
-			...(pagination.current && { offset: pagination.current }),
-			...(pagination.itemsPerPage && { count: pagination.itemsPerPage }),
+	const query = useMemo(
+		() => ({
+			text: debouncedText,
+			sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
+			...(itemsPerPage && { count: itemsPerPage }),
+			...(current && { offset: current }),
 		}),
+		[debouncedText, itemsPerPage, current, sortBy, sortDirection],
 	);
+
+	const { data, refetch, isLoading, isSuccess, isError } = useQuery(['omnichannel', 'monitors', debouncedText, pagination, sort], () =>
+		getMonitors(query),
+	);
+
+	const [defaultQuery] = useState(hashQueryKey([query]));
+	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
 
 	const addMutation = useMutation({
 		mutationFn: async (username: string) => {
@@ -94,7 +104,15 @@ const MonitorsTable = () => {
 			setModal();
 		};
 
-		setModal(<GenericModal variant='danger' onConfirm={onDeleteMonitor} onCancel={() => setModal()} confirmText={t('Delete')} />);
+		setModal(
+			<GenericModal
+				variant='danger'
+				data-qa-id='manage-monitors-confirm-remove'
+				onConfirm={onDeleteMonitor}
+				onCancel={() => setModal()}
+				confirmText={t('Delete')}
+			/>,
+		);
 	};
 
 	const headers = useMemo(
@@ -117,16 +135,16 @@ const MonitorsTable = () => {
 		<>
 			<Box display='flex' flexDirection='column'>
 				<Field>
-					<Field.Label>{t('Username')}</Field.Label>
-					<Field.Row>
-						<UserAutoComplete value={username} onChange={setUsername as () => void} />
-						<Button primary disabled={!username || addMutation.isLoading} onClick={() => handleAdd()} mis='x8'>
-							{t('Add')}
+					<FieldLabel>{t('Username')}</FieldLabel>
+					<FieldRow>
+						<UserAutoComplete name='monitor' value={username} onChange={setUsername as () => void} />
+						<Button primary disabled={!username} loading={addMutation.isLoading} onClick={() => handleAdd()} mis={8}>
+							{t('Add_monitor')}
 						</Button>
-					</Field.Row>
+					</FieldRow>
 				</Field>
 			</Box>
-			<FilterByText onChange={({ text }): void => setText(text)} />
+			{((isSuccess && data?.monitors.length > 0) || queryHasChanged) && <FilterByText onChange={({ text }): void => setText(text)} />}
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
@@ -135,13 +153,23 @@ const MonitorsTable = () => {
 					</GenericTableBody>
 				</GenericTable>
 			)}
+			{isSuccess && data.monitors.length === 0 && queryHasChanged && <GenericNoResults />}
+			{isSuccess && data.monitors.length === 0 && !queryHasChanged && (
+				<GenericNoResults
+					icon='shield-blank'
+					title={t('No_monitors_yet')}
+					description={t('No_monitors_yet_description')}
+					linkHref='https://go.rocket.chat/omnichannel-docs'
+					linkText={t('Learn_more_about_monitors')}
+				/>
+			)}
 			{isSuccess && data.monitors.length > 0 && (
 				<>
-					<GenericTable aria-busy={text !== debouncedText} aria-live='assertive'>
+					<GenericTable aria-busy={text !== debouncedText} aria-live='assertive' data-qa-id='manage-monitors-table'>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.monitors?.map((monitor) => (
-								<GenericTableRow key={monitor._id} tabIndex={0} width='full'>
+								<GenericTableRow key={monitor._id} tabIndex={0} width='full' data-qa-id={monitor.name}>
 									<GenericTableCell withTruncatedText>{monitor.name}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{monitor.username}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{monitor.email}</GenericTableCell>
@@ -162,9 +190,6 @@ const MonitorsTable = () => {
 						{...paginationProps}
 					/>
 				</>
-			)}
-			{isSuccess && data?.total === 0 && (
-				<GenericNoResults icon='baloon-exclamation' title={t('No_monitors_found')} description={t('No_monitors_found_description')} />
 			)}
 			{isError && (
 				<States>

@@ -26,7 +26,7 @@ import UserAvatar from '../../../../components/avatar/UserAvatar';
 import MessageContentBody from '../../../../components/message/MessageContentBody';
 import StatusIndicators from '../../../../components/message/StatusIndicators';
 import Attachments from '../../../../components/message/content/Attachments';
-import UiKitSurface from '../../../../components/message/content/UiKitSurface';
+import UiKitMessageBlock from '../../../../components/message/uikit/UiKitMessageBlock';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useFormatTime } from '../../../../hooks/useFormatTime';
 import { useChat } from '../../../room/contexts/ChatContext';
@@ -105,7 +105,7 @@ const ContactHistoryMessage: FC<{
 							<MessageContentBody md={message.md} mentions={message.mentions} channels={message.channels} />
 						</MessageBody>
 					)}
-					{message.blocks && <UiKitSurface mid={message._id} blocks={message.blocks} appId rid={message.rid} />}
+					{message.blocks && <UiKitMessageBlock rid={message.rid} mid={message._id} blocks={message.blocks} />}
 					{message.attachments && <Attachments attachments={message.attachments} />}
 				</MessageContainer>
 			</MessageTemplate>

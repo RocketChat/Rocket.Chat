@@ -2,6 +2,7 @@ import { PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
 import type { PaginatedMultiSelectOption } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ComponentProps } from 'react';
 import React, { memo, useMemo, useState } from 'react';
 
 import { useRecordList } from '../hooks/lists/useRecordList';
@@ -14,10 +15,10 @@ type AutoCompleteDepartmentMultipleProps = {
 	onlyMyDepartments?: boolean;
 	showArchived?: boolean;
 	enabled?: boolean;
-};
+} & Omit<ComponentProps<typeof PaginatedMultiSelectFiltered>, 'options'>;
 
 const AutoCompleteDepartmentMultiple = ({
-	value,
+	value = [],
 	onlyMyDepartments = false,
 	showArchived = false,
 	enabled = false,
@@ -37,6 +38,11 @@ const AutoCompleteDepartmentMultiple = ({
 
 	const { phase: departmentsPhase, items: departmentsItems, itemCount: departmentsTotal } = useRecordList(departmentsList);
 
+	const departmentOptions = useMemo(() => {
+		const pending = value.filter(({ value }) => !departmentsItems.find((dep) => dep.value === value)) || [];
+		return [...departmentsItems, ...pending];
+	}, [departmentsItems, value]);
+
 	return (
 		<PaginatedMultiSelectFiltered
 			withTitle
@@ -44,7 +50,7 @@ const AutoCompleteDepartmentMultiple = ({
 			onChange={onChange}
 			filter={departmentsFilter}
 			setFilter={setDepartmentsFilter}
-			options={departmentsItems}
+			options={departmentOptions}
 			width='100%'
 			flexShrink={0}
 			flexGrow={0}

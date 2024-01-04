@@ -122,7 +122,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return this.findOne(query, options);
 	}
 
-	getDistinctQueuedDepartments(options: DistinctOptions): Promise<string[]> {
+	getDistinctQueuedDepartments(options: DistinctOptions): Promise<(string | undefined)[]> {
 		return this.col.distinct('department', { status: LivechatInquiryStatus.QUEUED }, options);
 	}
 
@@ -137,7 +137,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 
 	async findNextAndLock(queueSortBy: OmnichannelSortingMechanismSettingType, department?: string): Promise<ILivechatInquiryRecord | null> {
 		const date = new Date();
-		const result = await this.col.findOneAndUpdate(
+		const result = await this.findOneAndUpdate(
 			{
 				status: LivechatInquiryStatus.QUEUED,
 				...(department ? { department } : { department: { $exists: false } }),
@@ -175,10 +175,17 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return this.updateOne({ _id: inquiryId }, { $unset: { locked: 1, lockedAt: 1 } });
 	}
 
+	async unlockAndQueue(inquiryId: string): Promise<UpdateResult> {
+		return this.updateOne(
+			{ _id: inquiryId },
+			{ $unset: { locked: 1, lockedAt: 1 }, $set: { status: LivechatInquiryStatus.QUEUED, queuedAt: new Date() } },
+		);
+	}
+
 	async unlockAll(): Promise<UpdateResult | Document> {
 		return this.updateMany(
 			{ $or: [{ lockedAt: { $exists: true } }, { locked: { $exists: true } }] },
-			{ $unset: { locked: 1, lockedAt: 1 } },
+			{ $unset: { locked: 1, lockedAt: 1 }, $set: { status: LivechatInquiryStatus.QUEUED, queuedAt: new Date() } },
 		);
 	}
 
@@ -280,7 +287,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 			},
 			{
 				$set: { status: LivechatInquiryStatus.TAKEN, takenAt: new Date() },
-				$unset: { defaultAgent: 1, estimatedInactivityCloseTimeAt: 1 },
+				$unset: { defaultAgent: 1, estimatedInactivityCloseTimeAt: 1, queuedAt: 1 },
 			},
 		);
 	}
@@ -415,5 +422,9 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		};
 
 		await this.deleteMany(query);
+	}
+
+	async markInquiryActiveForPeriod(rid: string, period: string): Promise<UpdateResult> {
+		return this.updateOne({ rid }, { $addToSet: { 'v.activity': period } });
 	}
 }

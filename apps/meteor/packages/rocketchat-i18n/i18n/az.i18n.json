@@ -795,7 +795,6 @@
   "Custom_Sound_Has_Been_Deleted": "Xüsusi səs silindi.",
   "Custom_Sound_Info": "Xüsusi səs məlumatı",
   "Custom_Sound_Saved_Successfully": "Xüsusi səs müvəffəqiyyətlə qeyd edildi",
-  "Custom_Sounds": "Xüsusi səslər",
   "Custom_Translations": "Xüsusi tərcümə",
   "Custom_Translations_Description": "Açar sözlər və tərcümələr olan dillərdə olan dillərdə olan düzgün JSON olmalıdır. Məsələn:  \n `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Customize": "Özəlləşdirmək",
@@ -974,7 +973,6 @@
   "Enter_name_here": "Bura ad daxil edin",
   "Enter_Normal": "Normal rejim (Enter ilə göndərin)",
   "Enter_to": "Daxil ol",
-  "Enterprise": "Müəssisə",
   "Entertainment": "Əyləncə",
   "Error": "Səhv",
   "Error_404": "Hata: 404",
@@ -1813,7 +1811,6 @@
   "Num_Agents": "# Agentlər",
   "Number_of_messages": "Mesajların sayı",
   "OAuth_Application": "OAuth tətbiqi",
-  "OAuth_Applications": "OAuth Proqramlar",
   "Objects": "Obyektlər",
   "Off": "Off",
   "Off_the_record_conversation": "Off-the-Record söhbət",
@@ -1833,6 +1830,8 @@
   "Offline_success_message": "Offline Uğur Mesajı",
   "Offline_unavailable": "Offline mövcud deyil",
   "Older_than": "Daha yaşlı",
+  "Omnichannel_Reports_Status_Open": "Açıq",
+  "Omnichannel_Reports_Status_Closed": "Bağlı",
   "On": "On",
   "online": "onlayn",
   "Online": "Onlayn",
@@ -2757,5 +2756,7 @@
   "registration.component.form.reasonToJoin": "Qoşulma səbəbi",
   "registration.component.form.invalidConfirmPass": "Şifrənin təsdiqlənməsi şifrə uyğun gəlmir",
   "registration.component.form.confirmPassword": "Şifrənizi təsdiqləyin",
-  "registration.component.form.sendConfirmationEmail": "Təsdiq e-poçt göndər"
+  "registration.component.form.sendConfirmationEmail": "Təsdiq e-poçt göndər",
+  "Enterprise": "Müəssisə",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Analytics"
 }

@@ -4,12 +4,12 @@ import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
-import { Livechat } from '../lib/Livechat';
+import { Livechat } from '../lib/LivechatTyped';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		'livechat:sendOfflineMessage'(data: { name: string; email: string; message: string }): Promise<boolean>;
+		'livechat:sendOfflineMessage'(data: { name: string; email: string; message: string }): Promise<void>;
 	}
 }
 
@@ -23,7 +23,7 @@ Meteor.methods<ServerMethods>({
 			message: String,
 		});
 
-		return Livechat.sendOfflineMessage(data);
+		await Livechat.sendOfflineMessage(data);
 	},
 });
 

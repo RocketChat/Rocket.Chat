@@ -796,7 +796,6 @@
   "Custom_Sound_Has_Been_Deleted": "தனிப்பயன் ஒலி நீக்கப்பட்டது.",
   "Custom_Sound_Info": "விருப்ப ஒலி தகவல்",
   "Custom_Sound_Saved_Successfully": "தனிப்பயன் ஒலி வெற்றிகரமாக சேமிக்கப்பட்டது",
-  "Custom_Sounds": "விருப்ப ஒலிகள்",
   "Custom_Translations": "தனிப்பயன் மொழிபெயர்ப்புகள்",
   "Custom_Translations_Description": "விசைகள் விசை மற்றும் மொழிபெயர்ப்புகளின் ஒரு மொழியைக் கொண்டுள்ள மொழிகளில் எங்கே சரியான JSON ஆக இருக்க வேண்டும். எடுத்துக்காட்டு:  \n `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Customize": "தனிப்பயனாக்கலாம்",
@@ -975,7 +974,6 @@
   "Enter_name_here": "இங்கே பெயரை உள்ளிடுக",
   "Enter_Normal": "இயல்பான பயன்முறை (உள்ளிடவும்)",
   "Enter_to": "க்கு சேர்க்கவும்",
-  "Enterprise": "நிறுவன",
   "Entertainment": "பொழுதுபோக்கு",
   "Error": "பிழை",
   "Error_404": "பிழை: 404",
@@ -1813,7 +1811,6 @@
   "Num_Agents": "# முகவர்கள்",
   "Number_of_messages": "செய்திகளின் எண்ணிக்கை",
   "OAuth_Application": "அறிந்திருந்தால் விண்ணப்ப",
-  "OAuth_Applications": "அறிந்திருந்தால் பயன்பாடுகள்",
   "Objects": "பொருள்கள்",
   "Off": "ஆஃப்",
   "Off_the_record_conversation": "பதிவில் உரையாடல்",
@@ -1833,6 +1830,8 @@
   "Offline_success_message": "ஆஃப்லைன் வெற்றி செய்தியை",
   "Offline_unavailable": "ஆஃப்லைனில் கிடையாது",
   "Older_than": "விட பழைய",
+  "Omnichannel_Reports_Status_Open": "திறந்த",
+  "Omnichannel_Reports_Status_Closed": "மூடப்பட்ட",
   "On": "மீது",
   "online": "ஆன்லைன்",
   "Online": "ஆன்லைன்",
@@ -2757,5 +2756,7 @@
   "registration.component.form.reasonToJoin": "சேர காரணம்",
   "registration.component.form.invalidConfirmPass": "கடவுச்சொல்லை உறுதிப்படுத்தும் கடவுச்சொல் பொருந்தவில்லை",
   "registration.component.form.confirmPassword": "உங்கள் கடவுச்சொல்லை உறுதிப்படுத்துக",
-  "registration.component.form.sendConfirmationEmail": "உறுதிப்படுத்தும் மின்னஞ்சல் அனுப்பவும்"
+  "registration.component.form.sendConfirmationEmail": "உறுதிப்படுத்தும் மின்னஞ்சல் அனுப்பவும்",
+  "Enterprise": "நிறுவன",
+  "UpgradeToGetMore_engagement-dashboard_Title": "அனலிட்டிக்ஸ்"
 }

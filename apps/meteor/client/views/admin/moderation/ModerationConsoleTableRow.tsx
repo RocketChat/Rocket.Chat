@@ -28,7 +28,7 @@ const ModerationConsoleTableRow = ({ report, onClick, isDesktopOrLarger }: Moder
 	const concatenatedRoomNames = roomNames.join(', ');
 
 	return (
-		<GenericTableRow key={_id} onKeyDown={(): void => onClick(_id)} onClick={(): void => onClick(_id)} tabIndex={0} role='link' action>
+		<GenericTableRow key={_id} onClick={(): void => onClick(_id)} tabIndex={0} role='link' action>
 			<GenericTableCell withTruncatedText>
 				<Box display='flex' alignItems='center'>
 					{username && (
@@ -36,7 +36,7 @@ const ModerationConsoleTableRow = ({ report, onClick, isDesktopOrLarger }: Moder
 							<UserAvatar size={isDesktopOrLarger ? 'x20' : 'x40'} username={username} />
 						</Box>
 					)}
-					<Box display='flex' mi='x8' withTruncatedText>
+					<Box display='flex' mi={8} withTruncatedText>
 						<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
 							<Box fontScale='p2m' color='default' withTruncatedText>
 								{name || username}

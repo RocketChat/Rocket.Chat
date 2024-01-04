@@ -10,7 +10,7 @@ export const LoginPoweredBy = (): ReactElement | null => {
 		return null;
 	}
 	return (
-		<Box mbe='x18'>
+		<Box mbe={18}>
 			<Trans i18nKey='registration.page.poweredBy'>
 				{'Powered by '}
 				<Link href='https://rocket.chat/' target='_blank' rel='noopener noreferrer'>

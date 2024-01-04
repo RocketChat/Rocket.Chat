@@ -1,13 +1,12 @@
-import { isThreadMainMessage } from '@rocket.chat/core-typings';
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { useStream } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { useCallback, useEffect, useRef } from 'react';
 
+import { withDebouncing } from '../../../../../../lib/utils/highOrderFunctions';
 import type { FieldExpression, Query } from '../../../../../lib/minimongo';
 import { createFilterFromQuery } from '../../../../../lib/minimongo';
-import { onClientMessageReceived } from '../../../../../lib/onClientMessageReceived';
 import { useRoom } from '../../../contexts/RoomContext';
 import { useGetMessageByID } from './useGetMessageByID';
 
@@ -19,10 +18,18 @@ type NotifyRoomRidDeleteMessageBulkEvent = {
 	ignoreDiscussion: boolean;
 	ts: FieldExpression<Date>;
 	users: string[];
+	ids?: string[]; // message ids have priority over ts
+	showDeletedStatus?: boolean;
 };
 
 const createDeleteCriteria = (params: NotifyRoomRidDeleteMessageBulkEvent): ((message: IMessage) => boolean) => {
-	const query: Query<IMessage> = { ts: params.ts };
+	const query: Query<IMessage> = {};
+
+	if (params.ids) {
+		query._id = { $in: params.ids };
+	} else {
+		query.ts = params.ts;
+	}
 
 	if (params.excludePinned) {
 		query.pinned = { $ne: true };
@@ -86,31 +93,30 @@ export const useThreadMainMessageQuery = (
 		};
 	}, [tmid]);
 
-	return useQuery(
-		['rooms', room._id, 'threads', tmid, 'main-message'] as const,
-		async ({ queryKey }) => {
-			const message = await getMessage(tmid);
+	return useQuery(['rooms', room._id, 'threads', tmid, 'main-message'] as const, async ({ queryKey }) => {
+		const mainMessage = await getMessage(tmid);
 
-			const mainMessage = (await onClientMessageReceived(message)) || message;
+		if (!mainMessage) {
+			throw new Error('Invalid main message');
+		}
 
-			if (!mainMessage && !isThreadMainMessage(mainMessage)) {
-				throw new Error('Invalid main message');
-			}
+		const debouncedInvalidate = withDebouncing({ wait: 10000 })(() => {
+			queryClient.invalidateQueries(queryKey, { exact: true });
+		});
 
-			unsubscribeRef.current =
-				unsubscribeRef.current ||
-				subscribeToMessage(mainMessage, {
-					onMutate: () => {
-						queryClient.invalidateQueries(queryKey, { exact: true });
-					},
-					onDelete: () => {
-						onDelete?.();
-						queryClient.invalidateQueries(queryKey, { exact: true });
-					},
-				});
+		unsubscribeRef.current =
+			unsubscribeRef.current ||
+			subscribeToMessage(mainMessage, {
+				onMutate: (message) => {
+					queryClient.setQueryData(queryKey, () => message);
+					debouncedInvalidate();
+				},
+				onDelete: () => {
+					onDelete?.();
+					queryClient.invalidateQueries(queryKey, { exact: true });
+				},
+			});
 
-			return mainMessage;
-		},
-		{ refetchOnWindowFocus: false },
-	);
+		return mainMessage;
+	});
 };

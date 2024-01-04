@@ -15,7 +15,7 @@ import { settings } from '../../../settings/server';
 import { sendMessage } from '../functions/sendMessage';
 import { RateLimiter } from '../lib';
 
-export async function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMessage, 'rid'>) {
+export async function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMessage, 'rid'>, previewUrls?: string[]) {
 	if (message.tshow && !message.tmid) {
 		throw new Meteor.Error('invalid-params', 'tshow provided but missing tmid', {
 			method: 'sendMessage',
@@ -82,7 +82,7 @@ export async function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMe
 		const room = await canSendMessageAsync(rid, { uid, username: user.username, type: user.type });
 
 		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
-		return sendMessage(user, message, room, false);
+		return await sendMessage(user, message, room, false, previewUrls);
 	} catch (err: any) {
 		SystemLogger.error({ msg: 'Error sending message:', err });
 
@@ -102,12 +102,12 @@ export async function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMe
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		sendMessage(message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>): any;
+		sendMessage(message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>, previewUrls?: string[]): any;
 	}
 }
 
 Meteor.methods<ServerMethods>({
-	sendMessage(message) {
+	async sendMessage(message, previewUrls) {
 		check(message, Object);
 
 		const uid = Meteor.userId();
@@ -118,7 +118,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		try {
-			return executeSendMessage(uid, message);
+			return await executeSendMessage(uid, message, previewUrls);
 		} catch (error: any) {
 			if ((error.error || error.message) === 'error-not-allowed') {
 				throw new Meteor.Error(error.error || error.message, error.reason, {

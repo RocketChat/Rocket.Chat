@@ -58,7 +58,7 @@ export const TriggerMessageConnector = ({ ref, ...props }) => (
 						  }
 						: undefined
 				}
-				messages={messages && messages.filter((message) => canRenderMessage(message))}
+				messages={messages && messages.filter(canRenderMessage)}
 			/>
 		)}
 	</Consumer>

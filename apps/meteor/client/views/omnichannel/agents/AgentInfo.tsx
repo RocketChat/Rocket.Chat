@@ -1,67 +1,83 @@
-import { Box, Margins, ButtonGroup } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { Box, Margins, ButtonGroup, ContextualbarSkeleton } from '@rocket.chat/fuselage';
+import { useEndpoint, useRouter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { HTMLAttributes } from 'react';
-import React, { memo } from 'react';
+import React from 'react';
 
-import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
-import { FormSkeleton } from '../../../components/Skeleton';
+import {
+	Contextualbar,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarHeader,
+	ContextualbarScrollableContent,
+} from '../../../components/Contextualbar';
 import UserInfo from '../../../components/UserInfo';
 import { UserStatus } from '../../../components/UserStatus';
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../hooks/useEndpointData';
-import { useFormsSubscription } from '../additionalForms';
+import { MaxChatsPerAgentDisplay } from '../additionalForms';
+import AgentInfoAction from './AgentInfoAction';
+import { useRemoveAgent } from './hooks/useRemoveAgent';
 
 type AgentInfoProps = {
 	uid: string;
 } & Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
-const AgentInfo = memo<AgentInfoProps>(function AgentInfo({ uid, children, ...props }) {
+const AgentInfo = ({ uid }: AgentInfoProps) => {
 	const t = useTranslation();
-	const result = useEndpointData('/v1/livechat/users/agent/:_id', { keys: { _id: uid } });
+	const router = useRouter();
+	const getAgentById = useEndpoint('GET', '/v1/livechat/users/agent/:_id', { _id: uid });
+	const { data, isLoading, isError } = useQuery(['livechat-getAgentInfoById', uid], async () => getAgentById(), {
+		refetchOnWindowFocus: false,
+	});
 
-	const { useMaxChatsPerAgentDisplay } = useFormsSubscription();
+	const handleDelete = useRemoveAgent(uid);
 
-	const MaxChats = useMaxChatsPerAgentDisplay?.();
-
-	if (result.phase === AsyncStatePhase.LOADING) {
-		return <FormSkeleton />;
+	if (isLoading) {
+		return <ContextualbarSkeleton />;
 	}
 
-	if (result.phase === AsyncStatePhase.REJECTED) {
-		return <Box mbs='x16'>{t('User_not_found')}</Box>;
+	if (isError) {
+		return <Box mbs={16}>{t('User_not_found')}</Box>;
 	}
 
-	const { user } = result.value;
-	const { username, statusLivechat, status: userStatus } = user;
+	const { username, statusLivechat, status: userStatus } = data?.user;
 
 	return (
-		<ContextualbarScrollableContent p='x24' {...props}>
-			{username && (
-				<Box alignSelf='center'>
-					<UserInfo.Avatar data-qa='AgentUserInfoAvatar' username={username} />
-				</Box>
-			)}
-
-			<ButtonGroup mi='neg-x4' flexShrink={0} flexWrap='nowrap' withTruncatedText justifyContent='center'>
-				{children}
-			</ButtonGroup>
-
-			<Margins block='x4'>
-				<Box mb='x2'>
-					<UserInfo.Username data-qa='AgentInfoUserInfoUserName' username={username} status={<UserStatus status={userStatus} />} />
-				</Box>
-
-				{statusLivechat && (
-					<>
-						<UserInfo.Label data-qa='AgentInfoUserInfoLabel'>{t('Livechat_status')}</UserInfo.Label>
-						<UserInfo.Info>{t(statusLivechat === 'available' ? 'Available' : 'Not_Available')}</UserInfo.Info>
-					</>
+		<Contextualbar data-qa-id='agent-info-contextual-bar'>
+			<ContextualbarHeader>
+				<ContextualbarTitle>{t('User_Info')}</ContextualbarTitle>
+				<ContextualbarClose onClick={() => router.navigate('/omnichannel/agents')} />
+			</ContextualbarHeader>
+			<ContextualbarScrollableContent>
+				{username && (
+					<Box alignSelf='center'>
+						<UserInfo.Avatar data-qa='AgentUserInfoAvatar' username={username} />
+					</Box>
 				)}
-
-				{MaxChats && <MaxChats data={user} />}
-			</Margins>
-		</ContextualbarScrollableContent>
+				<ButtonGroup mi='neg-x4' flexShrink={0} flexWrap='nowrap' withTruncatedText justifyContent='center'>
+					<AgentInfoAction
+						key={t('Edit')}
+						title={t('Edit')}
+						label={t('Edit')}
+						onClick={() => router.navigate(`/omnichannel/agents/edit/${uid}`)}
+						icon='edit'
+					/>
+					<AgentInfoAction key={t('Remove')} title={t('Remove')} label={t('Remove')} onClick={handleDelete} icon='trash' />
+				</ButtonGroup>
+				<Margins block={4}>
+					<Box mb={2}>
+						<UserInfo.Username data-qa='AgentInfoUserInfoUserName' username={username} status={<UserStatus status={userStatus} />} />
+					</Box>
+					{statusLivechat && (
+						<>
+							<UserInfo.Label data-qa='AgentInfoUserInfoLabel'>{t('Livechat_status')}</UserInfo.Label>
+							<UserInfo.Info>{t(statusLivechat === 'available' ? 'Available' : 'Not_Available')}</UserInfo.Info>
+						</>
+					)}
+					{MaxChatsPerAgentDisplay && <MaxChatsPerAgentDisplay maxNumberSimultaneousChat={data.user.livechat?.maxNumberSimultaneousChat} />}
+				</Margins>
+			</ContextualbarScrollableContent>
+		</Contextualbar>
 	);
-});
+};
 
 export default AgentInfo;

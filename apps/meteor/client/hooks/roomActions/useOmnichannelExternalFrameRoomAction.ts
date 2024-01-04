@@ -1,14 +1,14 @@
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { lazy, useMemo } from 'react';
 
-import type { ToolboxActionConfig } from '../../views/room/lib/Toolbox';
+import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
 const ExternalFrameContainer = lazy(() => import('../../../app/livechat/client/externalFrame/ExternalFrameContainer'));
 
-export const useOmnichannelExternalFrameRoomAction = (): ToolboxActionConfig | undefined => {
+export const useOmnichannelExternalFrameRoomAction = () => {
 	const enabled = useSetting('Omnichannel_External_Frame_Enabled', false);
 
-	return useMemo(() => {
+	return useMemo((): RoomToolboxActionConfig | undefined => {
 		if (!enabled) {
 			return undefined;
 		}
@@ -18,7 +18,7 @@ export const useOmnichannelExternalFrameRoomAction = (): ToolboxActionConfig | u
 			groups: ['live'],
 			title: 'Omnichannel_External_Frame',
 			icon: 'cube',
-			template: ExternalFrameContainer,
+			tabComponent: ExternalFrameContainer,
 			order: -1,
 		};
 	}, [enabled]);

@@ -8,7 +8,7 @@ const getInsertIndex = <T>(array: T[], item: T, ranking: (item: T) => number) =>
 		const guessedOrder = ranking(array[guess]);
 		if (guessedOrder < order) {
 			min = guess + 1;
-		} else if (guessedOrder > ranking(array[guess + 1])) {
+		} else if (guess + 1 <= max && guessedOrder > ranking(array[guess + 1])) {
 			return guess;
 		} else {
 			max = guess - 1;

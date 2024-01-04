@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Messages, Subscriptions } from '@rocket.chat/models';
+import { Messages, Subscriptions, ReadReceipts } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
@@ -28,5 +28,6 @@ Meteor.methods<ServerMethods>({
 		}
 
 		await Messages.deleteOldOTRMessages(roomId, now);
+		await ReadReceipts.removeOTRReceiptsUntilDate(roomId, now);
 	},
 });

@@ -759,7 +759,6 @@
   "Num_Agents": "مۇلازىم#",
   "Number_of_messages": "ئۇچۇر سانى",
   "OAuth_Application": "ئەپ OAuth",
-  "OAuth_Applications": "ئەپ OAuth",
   "Objects": "نەرسە",
   "Off_the_record_conversation": "خاتىرىلەنمىگەن دىيالوگ",
   "Off_the_record_conversation_is_not_available_for_your_browser_or_device": "سىزنىڭ توركۆرگۈچىڭىز ياكى ئۈسكىنىڭىز خاتىرلەنمەيدىغان دىئالوگنى قوللىمايدۇ.",
@@ -771,6 +770,8 @@
   "Offline_message": "تورسىز ئۇچۇر",
   "Offline_success_message": "ئۇتۇقلۇق تورسىز بولغان ئۇچۇر",
   "Offline_unavailable": "تورسىز ئىشلەتكىلى بولمايدۇ",
+  "Omnichannel_Reports_Status_Open": "ئېچىل",
+  "Omnichannel_Reports_Status_Closed": "ئاخىرلاشتى",
   "Online": "توردا",
   "Only_you_can_see_this_message": "پەقەت سىزلا بۇ ئۇچۇرنى كۆرەلەيسىز",
   "Oops!": "ئاپلا",
@@ -1241,5 +1242,6 @@
   "registration.component.form.submit": "تاپشۇرۇش",
   "registration.component.form.invalidConfirmPass": "ئىككىنچى قېتىم كىرگۈزۈلگەن مەخپىي نومۇر بىلەن بىرىنچى قېتىم كىرگۈزۈلگىنى بىلەن ماس كەلمىدى.",
   "registration.component.form.confirmPassword": "مەخپىي نومۇرنى جەزملەشتۈرۈش",
-  "registration.component.form.sendConfirmationEmail": "جەزملەشتۈرگەن ئىلخەت يوللاندى"
+  "registration.component.form.sendConfirmationEmail": "جەزملەشتۈرگەن ئىلخەت يوللاندى",
+  "UpgradeToGetMore_engagement-dashboard_Title": "ئانالىز قىلىش"
 }

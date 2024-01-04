@@ -1,69 +1,65 @@
-import { usePermission } from '@rocket.chat/ui-contexts';
+import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
+import { usePermission, useStream } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { FC } from 'react';
 import React, { useEffect } from 'react';
 
-import { AppEvents } from '../../ee/client/apps/communication';
 import { AppClientOrchestratorInstance } from '../../ee/client/apps/orchestrator';
-import PageSkeleton from '../components/PageSkeleton';
 import { AppsContext } from '../contexts/AppsContext';
+import { useIsEnterprise } from '../hooks/useIsEnterprise';
+import { useInvalidateLicense } from '../hooks/useLicense';
+import type { AsyncState } from '../lib/asyncState';
 import { AsyncStatePhase } from '../lib/asyncState';
 import { useInvalidateAppsCountQueryCallback } from '../views/marketplace/hooks/useAppsCountQuery';
 import type { App } from '../views/marketplace/types';
 
-type ListenersMapping = {
-	readonly [P in keyof typeof AppEvents]?: (...args: any[]) => void;
-};
-
-const registerListeners = (listeners: ListenersMapping): (() => void) => {
-	const entries = Object.entries(listeners) as Exclude<
-		{
-			[K in keyof ListenersMapping]: [K, ListenersMapping[K]];
-		}[keyof ListenersMapping],
-		undefined
-	>[];
-	for (const [event, callback] of entries) {
-		AppClientOrchestratorInstance.getWsListener()?.registerListener(AppEvents[event], callback);
-	}
-	return (): void => {
-		for (const [event, callback] of entries) {
-			AppClientOrchestratorInstance.getWsListener()?.unregisterListener(AppEvents[event], callback);
-		}
-	};
-};
-
 const sortByName = (apps: App[]): App[] => apps.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1));
+
+const getAppState = (
+	loading: boolean,
+	apps: App[] | undefined,
+): Omit<
+	AsyncState<{
+		apps: App[];
+	}>,
+	'error'
+> => ({
+	phase: loading ? AsyncStatePhase.LOADING : AsyncStatePhase.RESOLVED,
+	value: { apps: apps || [] },
+});
 
 const AppsProvider: FC = ({ children }) => {
 	const isAdminUser = usePermission('manage-apps');
 
 	const queryClient = useQueryClient();
 
+	const { data } = useIsEnterprise();
+	const isEnterprise = !!data?.isEnterprise;
+
 	const invalidateAppsCountQuery = useInvalidateAppsCountQueryCallback();
+	const invalidateLicenseQuery = useInvalidateLicense();
+
+	const stream = useStream('apps');
+
+	const invalidate = useDebouncedCallback(
+		() => {
+			queryClient.invalidateQueries(['marketplace', 'apps-instance']);
+			invalidateAppsCountQuery();
+		},
+		100,
+		[],
+	);
 
 	useEffect(() => {
-		const listeners = {
-			APP_ADDED: (): void => {
-				queryClient.invalidateQueries(['marketplace', 'apps-instance']);
-			},
-			APP_UPDATED: (): void => {
-				queryClient.invalidateQueries(['marketplace', 'apps-instance']);
-			},
-			APP_REMOVED: (): void => {
-				queryClient.invalidateQueries(['marketplace', 'apps-instance']);
-			},
-			APP_STATUS_CHANGE: (): void => {
-				queryClient.invalidateQueries(['marketplace', 'apps-instance']);
-			},
-			APP_SETTING_UPDATED: (): void => {
-				queryClient.invalidateQueries(['marketplace', 'apps-instance']);
-			},
-		};
-		const unregisterListeners = registerListeners(listeners);
-
-		// eslint-disable-next-line no-unsafe-finally
-		return unregisterListeners;
-	}, [invalidateAppsCountQuery, isAdminUser, queryClient]);
+		return stream('apps', ([key]) => {
+			if (['app/added', 'app/removed', 'app/updated', 'app/statusUpdate', 'app/settingUpdated'].includes(key)) {
+				invalidate();
+			}
+			if (['app/added', 'app/removed'].includes(key) && !isEnterprise) {
+				invalidateLicenseQuery();
+			}
+		});
+	}, [invalidate, invalidateLicenseQuery, isEnterprise, stream]);
 
 	const marketplace = useQuery(
 		['marketplace', 'apps-marketplace', isAdminUser],
@@ -74,7 +70,6 @@ const AppsProvider: FC = ({ children }) => {
 		},
 		{
 			staleTime: Infinity,
-			refetchOnWindowFocus: false,
 			keepPreviousData: true,
 			onSettled: () => queryClient.invalidateQueries(['marketplace', 'apps-stored']),
 		},
@@ -93,25 +88,23 @@ const AppsProvider: FC = ({ children }) => {
 		},
 		{
 			staleTime: Infinity,
-			refetchOnWindowFocus: false,
-			keepPreviousData: true,
 			onSettled: () => queryClient.invalidateQueries(['marketplace', 'apps-stored']),
 		},
 	);
 
 	const store = useQuery(
-		['marketplace', 'apps-stored', isAdminUser],
+		['marketplace', 'apps-stored', instance.data, marketplace.data],
 		() => {
-			if (!marketplace.isSuccess || !instance.isSuccess) {
+			if (!marketplace.isFetched && !instance.isFetched) {
 				throw new Error('Apps not loaded');
 			}
 
 			const marketplaceApps: App[] = [];
 			const installedApps: App[] = [];
 			const privateApps: App[] = [];
-			const clonedData = [...instance.data];
+			const clonedData = [...(instance.data || [])];
 
-			sortByName(marketplace.data).forEach((app) => {
+			sortByName(marketplace.data || []).forEach((app) => {
 				const appIndex = clonedData.findIndex(({ id }) => id === app.id);
 				const [installedApp] = appIndex > -1 ? clonedData.splice(appIndex, 1) : [];
 
@@ -145,23 +138,21 @@ const AppsProvider: FC = ({ children }) => {
 			return [marketplaceApps, installedApps, privateApps];
 		},
 		{
-			enabled: marketplace.isSuccess && instance.isSuccess && !instance.isRefetching,
-			refetchOnWindowFocus: false,
+			enabled: marketplace.isFetched && instance.isFetched,
 			keepPreviousData: true,
 		},
 	);
 
-	if (!store.isSuccess) {
-		return <PageSkeleton />;
-	}
+	const [marketplaceAppsData, installedAppsData, privateAppsData] = store.data || [];
+	const { isLoading } = store;
 
 	return (
 		<AppsContext.Provider
 			children={children}
 			value={{
-				installedApps: { phase: AsyncStatePhase.RESOLVED, value: { apps: store.data[1] } },
-				marketplaceApps: { phase: AsyncStatePhase.RESOLVED, value: { apps: store.data[0] } },
-				privateApps: { phase: AsyncStatePhase.RESOLVED, value: { apps: store.data[2] } },
+				installedApps: getAppState(isLoading, installedAppsData),
+				marketplaceApps: getAppState(isLoading, marketplaceAppsData),
+				privateApps: getAppState(isLoading, privateAppsData),
 				reload: async () => {
 					await Promise.all([queryClient.invalidateQueries(['marketplace'])]);
 				},

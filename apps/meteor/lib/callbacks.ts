@@ -1,5 +1,3 @@
-import type { UrlWithParsedQuery } from 'url';
-
 import type {
 	IMessage,
 	IRoom,
@@ -10,7 +8,6 @@ import type {
 	ILivechatInquiryRecord,
 	ILivechatVisitor,
 	VideoConference,
-	ParsedUrl,
 	OEmbedMeta,
 	OEmbedUrlContent,
 	Username,
@@ -19,6 +16,9 @@ import type {
 	SelectedAgent,
 	InquiryWithAgentInfo,
 	ILivechatTagRecord,
+	TransferData,
+	AtLeast,
+	UserStatus,
 } from '@rocket.chat/core-typings';
 import type { FilterOperators } from 'mongodb';
 
@@ -39,8 +39,8 @@ interface EventLikeCallbackSignatures {
 	'afterCreatePrivateGroup': (owner: IUser, room: IRoom) => void;
 	'afterDeactivateUser': (user: IUser) => void;
 	'afterDeleteMessage': (message: IMessage, room: IRoom) => void;
-	'validateUserRoles': (userData: Partial<IUser>) => void;
 	'workspaceLicenseChanged': (license: string) => void;
+	'workspaceLicenseRemoved': () => void;
 	'afterReadMessages': (rid: IRoom['_id'], params: { uid: IUser['_id']; lastSeen?: Date; tmid?: IMessage['_id'] }) => void;
 	'beforeReadMessages': (rid: IRoom['_id'], uid: IUser['_id']) => void;
 	'afterDeleteUser': (user: IUser) => void;
@@ -50,14 +50,14 @@ interface EventLikeCallbackSignatures {
 	'livechat.removeAgentDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => void;
 	'livechat.saveAgentDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => void;
 	'livechat.closeRoom': (params: { room: IOmnichannelRoom; options: CloseRoomParams['options'] }) => void;
-	'livechat.saveRoom': (room: IRoom) => void;
 	'livechat:afterReturnRoomAsInquiry': (params: { room: IRoom }) => void;
 	'livechat.setUserStatusLivechat': (params: { userId: IUser['_id']; status: OmnichannelAgentStatus }) => void;
-	'livechat.agentStatusChanged': (params: { userId: IUser['_id']; status: OmnichannelAgentStatus }) => void;
+	'livechat.agentStatusChanged': (params: { userId: IUser['_id']; status: UserStatus }) => void;
 	'livechat.onNewAgentCreated': (agentId: string) => void;
 	'livechat.afterTakeInquiry': (inq: InquiryWithAgentInfo, agent: { agentId: string; username: string }) => void;
+	'livechat.afterAgentRemoved': (params: { agent: Pick<IUser, '_id' | 'username'> }) => void;
 	'afterAddedToRoom': (params: { user: IUser; inviter?: IUser }, room: IRoom) => void;
-	'beforeAddedToRoom': (params: { user: IUser; inviter: IUser }) => void;
+	'beforeAddedToRoom': (params: { user: AtLeast<IUser, '_id' | 'federated' | 'roles'>; inviter: IUser }) => void;
 	'afterCreateDirectRoom': (params: IRoom, second: { members: IUser[]; creatorId: IUser['_id'] }) => void;
 	'beforeDeleteRoom': (params: IRoom) => void;
 	'beforeJoinDefaultChannels': (user: IUser) => void;
@@ -85,8 +85,11 @@ interface EventLikeCallbackSignatures {
 	'afterJoinRoom': (user: IUser, room: IRoom) => void;
 	'livechat.afterDepartmentDisabled': (department: ILivechatDepartmentRecord) => void;
 	'livechat.afterDepartmentArchived': (department: Pick<ILivechatDepartmentRecord, '_id'>) => void;
-	'afterSaveUser': ({ user, oldUser }: { user: IUser; oldUser: IUser | null }) => void;
+	'beforeSaveUser': ({ user, oldUser }: { user: IUser; oldUser?: IUser }) => void;
+	'afterSaveUser': ({ user, oldUser }: { user: IUser; oldUser?: IUser | null }) => void;
 	'livechat.afterTagRemoved': (tag: ILivechatTagRecord) => void;
+	'beforeUserImport': (data: { userCount: number }) => void;
+	'afterUserImport': (data: { inserted: IUser['_id'][]; updated: IUser['_id']; skipped: number; failed: number }) => void;
 }
 
 /**
@@ -119,16 +122,14 @@ type ChainedCallbackSignatures = {
 
 	'livechat.onLoadConfigApi': (config: { room: IOmnichannelRoom }) => Record<string, unknown>;
 
-	'beforeSaveMessage': (message: IMessage, room?: IRoom) => IMessage;
 	'afterCreateUser': (user: IUser) => IUser;
 	'afterDeleteRoom': (rid: IRoom['_id']) => IRoom['_id'];
 	'livechat:afterOnHold': (room: Pick<IOmnichannelRoom, '_id'>) => Pick<IOmnichannelRoom, '_id'>;
 	'livechat:afterOnHoldChatResumed': (room: Pick<IOmnichannelRoom, '_id'>) => Pick<IOmnichannelRoom, '_id'>;
-	'livechat:onTransferFailure': (params: { room: IRoom; guest: ILivechatVisitor; transferData: { [k: string]: string | any } }) => {
-		room: IRoom;
-		guest: ILivechatVisitor;
-		transferData: { [k: string]: string | any };
-	};
+	'livechat:onTransferFailure': (
+		room: IRoom,
+		params: { guest: ILivechatVisitor; transferData: TransferData },
+	) => IOmnichannelRoom | Promise<boolean>;
 	'livechat.afterForwardChatToAgent': (params: {
 		rid: IRoom['_id'];
 		servedBy: { _id: string; ts: Date; username?: string };
@@ -164,24 +165,13 @@ type ChainedCallbackSignatures = {
 		BusinessHourBehaviorClass: { new (): IBusinessHourBehavior };
 	};
 	'renderMessage': <T extends IMessage & { html: string }>(message: T) => T;
-	'oembed:beforeGetUrlContent': (data: {
-		urlObj: Omit<UrlWithParsedQuery, 'host' | 'search'> & { host?: unknown; search?: unknown };
-		parsedUrl: ParsedUrl;
-	}) => {
-		urlObj: UrlWithParsedQuery;
-		parsedUrl: ParsedUrl;
+	'oembed:beforeGetUrlContent': (data: { urlObj: URL }) => {
+		urlObj: URL;
 	};
-	'oembed:afterParseContent': (data: {
+	'oembed:afterParseContent': (data: { url: string; meta: OEmbedMeta; headers: { [k: string]: string }; content: OEmbedUrlContent }) => {
 		url: string;
 		meta: OEmbedMeta;
 		headers: { [k: string]: string };
-		parsedUrl: ParsedUrl;
-		content: OEmbedUrlContent;
-	}) => {
-		url: string;
-		meta: OEmbedMeta;
-		headers: { [k: string]: string };
-		parsedUrl: ParsedUrl;
 		content: OEmbedUrlContent;
 	};
 	'livechat.beforeListTags': () => ILivechatTag[];
@@ -189,15 +179,18 @@ type ChainedCallbackSignatures = {
 	'livechat.chatQueued': (room: IOmnichannelRoom) => IOmnichannelRoom;
 	'livechat.leadCapture': (room: IOmnichannelRoom) => IOmnichannelRoom;
 	'beforeSendMessageNotifications': (message: string) => string;
-	'livechat.onAgentAssignmentFailed': (params: {
-		inquiry: {
-			_id: string;
-			rid: string;
-			status: string;
-		};
-		room: IOmnichannelRoom;
-		options: { forwardingToDepartment?: { oldDepartmentId: string; transferData: any }; clientAction?: boolean };
-	}) => (IOmnichannelRoom & { chatQueued: boolean }) | void;
+	'livechat.onAgentAssignmentFailed': (
+		room: IOmnichannelRoom,
+		params: {
+			inquiry: {
+				_id: string;
+				rid: string;
+				status: string;
+			};
+			options: { forwardingToDepartment?: { oldDepartmentId?: string; transferData?: any }; clientAction?: boolean };
+		},
+	) => Promise<(IOmnichannelRoom & { chatQueued: boolean }) | undefined>;
+	'livechat.beforeInquiry': (data: Pick<ILivechatInquiryRecord, 'source'>) => Pick<ILivechatInquiryRecord, 'source'>;
 	'roomNameChanged': (room: IRoom) => void;
 	'roomTopicChanged': (room: IRoom) => void;
 	'roomAnnouncementChanged': (room: IRoom) => void;
@@ -221,7 +214,6 @@ export type Hook =
 	| 'beforeRemoveFromRoom'
 	| 'beforeValidateLogin'
 	| 'livechat.beforeForwardRoomToDepartment'
-	| 'livechat.beforeInquiry'
 	| 'livechat.beforeRoom'
 	| 'livechat.beforeRouteChat'
 	| 'livechat.chatQueued'

@@ -26,14 +26,14 @@ export const useSortModeItems = (): GenericMenuItemProps[] => {
 			id: 'activity',
 			content: t('Activity'),
 			icon: 'clock',
-			addon: <RadioButton mi='x16' onChange={setToActivity} checked={sidebarSortBy === 'activity'} />,
+			addon: <RadioButton onChange={setToActivity} checked={sidebarSortBy === 'activity'} />,
 			description: sidebarSortBy === 'activity' && isOmnichannelEnabled && <OmnichannelSortingDisclaimer />,
 		},
 		{
 			id: 'name',
 			content: t('Name'),
 			icon: 'sort-az',
-			addon: <RadioButton mi='x16' onChange={setToAlphabetical} checked={sidebarSortBy === 'alphabetical'} />,
+			addon: <RadioButton onChange={setToAlphabetical} checked={sidebarSortBy === 'alphabetical'} />,
 			description: sidebarSortBy === 'alphabetical' && isOmnichannelEnabled && <OmnichannelSortingDisclaimer />,
 		},
 	];

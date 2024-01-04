@@ -1,9 +1,9 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { usePermission, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 
-import type { Action } from '../../../../hooks/useActionSpread';
+import type { UserInfoAction, UserInfoActionType } from '../useUserInfoActions';
 
-export const useRedirectModerationConsole = (uid: IUser['_id']): Action | undefined => {
+export const useRedirectModerationConsole = (uid: IUser['_id']): UserInfoAction | undefined => {
 	const t = useTranslation();
 	const hasPermissionToView = usePermission('view-moderation-console');
 	const router = useRoute('moderation-console');
@@ -18,8 +18,9 @@ export const useRedirectModerationConsole = (uid: IUser['_id']): Action | undefi
 	};
 
 	return {
-		label: t('Moderation_Action_View_reports'),
+		content: t('Moderation_Action_View_reports'),
 		icon: 'warning' as const,
-		action: redirectModerationConsoleAction,
+		onClick: redirectModerationConsoleAction,
+		type: 'privileges' as UserInfoActionType,
 	};
 };

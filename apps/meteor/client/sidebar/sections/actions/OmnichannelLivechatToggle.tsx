@@ -24,7 +24,7 @@ export const OmnichannelLivechatToggle = (props: Omit<ComponentProps<typeof Side
 		<Sidebar.TopBar.Action
 			{...props}
 			id='omnichannel-status-toggle'
-			data-tooltip={agentAvailable ? t('Turn_off_answer_chats') : t('Turn_on_answer_chats')}
+			title={agentAvailable ? t('Turn_off_answer_chats') : t('Turn_on_answer_chats')}
 			success={agentAvailable}
 			icon={agentAvailable ? 'message' : 'message-disabled'}
 			onClick={handleAvailableStatusChange}

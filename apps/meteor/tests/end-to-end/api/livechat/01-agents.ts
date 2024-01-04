@@ -1,7 +1,6 @@
-/* eslint-env mocha */
-
-import type { ILivechatAgent, ILivechatDepartment, IUser } from '@rocket.chat/core-typings';
+import { UserStatus, type ILivechatAgent, type ILivechatDepartment, type IRoom, type IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
+import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
@@ -14,10 +13,14 @@ import {
 	takeInquiry,
 	fetchInquiry,
 	makeAgentAvailable,
+	startANewLivechatRoomAndTakeIt,
+	moveBackToQueue,
+	closeOmnichannelRoom,
 } from '../../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
+import type { IUserCredentialsHeader } from '../../../data/user';
 import { password } from '../../../data/user';
-import { createUser, getMe, login } from '../../../data/users.helper';
+import { createUser, deleteUser, getMe, login, setUserStatus } from '../../../data/users.helper';
 
 describe('LIVECHAT - Agents', function () {
 	this.retries(0);
@@ -46,6 +49,10 @@ describe('LIVECHAT - Agents', function () {
 			user,
 			credentials: userCredentials,
 		};
+	});
+
+	after(async () => {
+		await deleteUser(agent2.user);
 	});
 
 	// TODO: missing test cases for POST method
@@ -91,6 +98,88 @@ describe('LIVECHAT - Agents', function () {
 					expect(agentRecentlyCreated?._id).to.be.equal(agent._id);
 				});
 		});
+		it('should return an array of available agents', async () => {
+			await updatePermission('edit-omnichannel-contact', ['admin']);
+			await updatePermission('transfer-livechat-guest', ['admin']);
+			await updatePermission('manage-livechat-agents', ['admin']);
+
+			await request
+				.get(api('livechat/users/agent'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.query({ onlyAvailable: true })
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.users).to.be.an('array');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('count');
+					expect(res.body.users.every((u: { statusLivechat: string }) => u.statusLivechat === 'available')).to.be.true;
+				});
+		});
+		it('should return an array of available/unavailable agents when onlyAvailable is false', async () => {
+			await request
+				.get(api('livechat/users/agent'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.query({ onlyAvailable: false })
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.users).to.be.an('array');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('count');
+					expect(
+						res.body.users.every(
+							(u: { statusLivechat: string }) => !u.statusLivechat || ['available', 'not-available'].includes(u.statusLivechat),
+						),
+					).to.be.true;
+				});
+		});
+
+		it('should return offline agents when showIdleAgents is true', async () => {
+			await setUserStatus(agent2.credentials, UserStatus.OFFLINE);
+			await request
+				.get(api('livechat/users/agent'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.query({ showIdleAgents: true })
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.users).to.be.an('array');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('count');
+					expect(
+						res.body.users.every(
+							(u: { status: UserStatus }) =>
+								!u.status || [UserStatus.ONLINE, UserStatus.OFFLINE, UserStatus.AWAY, UserStatus.BUSY].includes(u.status),
+						),
+					).to.be.true;
+				});
+		});
+
+		it('should return only online agents when showIdleAgents is false', async () => {
+			await setUserStatus(agent2.credentials, UserStatus.ONLINE);
+			await request
+				.get(api('livechat/users/agent'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.query({ showIdleAgents: false })
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.users).to.be.an('array');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('count');
+					expect(res.body.users.every((u: { status: UserStatus }) => u.status !== UserStatus.OFFLINE)).to.be.true;
+				});
+		});
+
 		it('should return an array of managers', async () => {
 			await updatePermission('view-livechat-manager', ['admin']);
 			await updatePermission('manage-livechat-agents', ['admin']);
@@ -154,7 +243,7 @@ describe('LIVECHAT - Agents', function () {
 
 		it('should return a valid user when all goes fine', async () => {
 			await updatePermission('view-livechat-manager', ['admin']);
-			const user = await createUser();
+			const user: IUser = await createUser();
 			await request
 				.post(api('livechat/users/agent'))
 				.set(credentials)
@@ -169,6 +258,30 @@ describe('LIVECHAT - Agents', function () {
 					expect(res.body.user).to.have.property('_id');
 					expect(res.body.user).to.have.property('username');
 				});
+
+			// cleanup
+			await deleteUser(user);
+		});
+
+		it('should properly create a manager', async () => {
+			const user: IUser = await createUser();
+			await request
+				.post(api('livechat/users/manager'))
+				.set(credentials)
+				.send({
+					username: user.username,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('user');
+					expect(res.body.user).to.have.property('_id');
+					expect(res.body.user).to.have.property('username');
+				});
+
+			// cleanup
+			await deleteUser(user);
 		});
 	});
 
@@ -218,7 +331,7 @@ describe('LIVECHAT - Agents', function () {
 
 		it('should return { user: null } when user is not an agent', async () => {
 			await updatePermission('view-livechat-manager', ['admin']);
-			const user = await createUser();
+			const user: IUser = await createUser();
 			await request
 				.get(api(`livechat/users/agent/${user._id}`))
 				.set(credentials)
@@ -229,6 +342,9 @@ describe('LIVECHAT - Agents', function () {
 					expect(res.body).to.have.property('user');
 					expect(res.body.user).to.be.null;
 				});
+
+			// cleanup
+			await deleteUser(user);
 		});
 	});
 
@@ -377,6 +493,9 @@ describe('LIVECHAT - Agents', function () {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'Agent not found');
 				});
+
+			// cleanup
+			await deleteUser(user);
 		});
 		it('should return an error if status is not valid', async () => {
 			await request
@@ -449,7 +568,7 @@ describe('LIVECHAT - Agents', function () {
 					expect(res.body).to.have.property('error', 'error-business-hours-are-closed');
 				});
 		});
-		it('should allow managers to make other agents available outside business hour', async () => {
+		it('should not allow managers to make other agents available outside business hour', async () => {
 			await updatePermission('manage-livechat-agents', ['admin']);
 
 			const currentUser: ILivechatAgent = await getMe(agent2.credentials as any);
@@ -463,10 +582,72 @@ describe('LIVECHAT - Agents', function () {
 				.expect(200)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('status', newStatus);
+					expect(res.body).to.have.property('status', currentStatus);
 				});
 
 			await disableDefaultBusinessHour();
+		});
+	});
+
+	describe('Agent sidebar', () => {
+		let testUser: { user: IUser; credentials: IUserCredentialsHeader };
+		before(async () => {
+			const user = await createUser();
+			await createAgent(user.username);
+			const credentials2 = await login(user.username, password);
+			await makeAgentAvailable(credentials2);
+
+			testUser = {
+				user,
+				credentials: credentials2,
+			};
+		});
+		after(async () => {
+			await deleteUser(testUser.user._id);
+		});
+
+		it('should return an empty list of rooms for a newly created agent', async () => {
+			const { body } = await request.get(api('rooms.get')).set(testUser.credentials).send({}).expect(200);
+
+			expect(body).to.have.property('success', true);
+			expect(body.update.filter((r: IRoom) => r.t === 'l')).to.have.lengthOf(0);
+		});
+
+		it('should have a new room in his sidebar after taking a conversation from the queue', async () => {
+			const { room } = await startANewLivechatRoomAndTakeIt({ agent: testUser.credentials });
+
+			const { body } = await request.get(api('rooms.get')).set(testUser.credentials).send({}).expect(200);
+
+			expect(body).to.have.property('success', true);
+			const livechatRooms = body.update.filter((r: IRoom) => r.t === 'l');
+			expect(livechatRooms).to.have.lengthOf(1);
+			expect(body.update.find((r: { _id: string }) => r._id === room._id)).to.be.an('object');
+			expect(body.update.find((r: { _id: string }) => r._id === 'GENERAL')).to.be.an('object');
+		});
+
+		it('should not have the room if user moves room back to queue', async () => {
+			const { room } = await startANewLivechatRoomAndTakeIt({ agent: testUser.credentials });
+
+			await moveBackToQueue(room._id, testUser.credentials);
+
+			const { body } = await request
+				.get(api('rooms.get'))
+				.set(testUser.credentials)
+				.query({ updatedSince: new Date(new Date().getTime() - 2000) })
+				.expect(200);
+
+			expect(body).to.have.property('success', true);
+			expect(body.update.find((r: { _id: string }) => r._id === room._id)).to.be.undefined;
+		});
+
+		it('should not have the room if the user closes the room', async () => {
+			const { room } = await startANewLivechatRoomAndTakeIt({ agent: testUser.credentials });
+
+			await closeOmnichannelRoom(room._id);
+
+			const { body } = await request.get(api('rooms.get')).set(testUser.credentials).expect(200);
+
+			expect(body.update.find((r: { _id: string }) => r._id === room._id)).to.be.undefined;
 		});
 	});
 });

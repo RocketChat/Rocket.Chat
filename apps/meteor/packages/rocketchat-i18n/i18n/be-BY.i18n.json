@@ -814,7 +814,6 @@
   "Custom_Sound_Has_Been_Deleted": "Звычай гук быў выдалены.",
   "Custom_Sound_Info": "Custom Sound інфармацыя",
   "Custom_Sound_Saved_Successfully": "Карыстацкі гук паспяхова захаваны",
-  "Custom_Sounds": "прыстасаваныя Гукі",
   "Custom_Translations": "прыстасаваныя Пераклады",
   "Custom_Translations_Description": "Павінна быць сапраўдным JSON, дзе ключы з'яўляюцца мовамі, якія змяшчаюць слоўнік ключа і перакладаў. Прыклад:  \n `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Customize": "наладзіць",
@@ -993,7 +992,6 @@
   "Enter_name_here": "Калі ласка, увядзіце імя тут",
   "Enter_Normal": "Нармальны рэжым (адпраўка з Enter)",
   "Enter_to": "увядзіце ў",
-  "Enterprise": "прадпрыемства",
   "Entertainment": "забавы",
   "Error": "памылка",
   "Error_404": "Памылка: 404",
@@ -1829,7 +1827,6 @@
   "Num_Agents": "# Агенты",
   "Number_of_messages": "колькасць паведамленняў",
   "OAuth_Application": "OAuth Ужыванне",
-  "OAuth_Applications": "OAuth Прыкладанні",
   "Objects": "аб'екты",
   "Off": "ад",
   "Off_the_record_conversation": "Off-на-запісы размовы",
@@ -1849,6 +1846,8 @@
   "Offline_success_message": "Offline Поспех паведамлення",
   "Offline_unavailable": "Offline недаступны",
   "Older_than": "Старэй",
+  "Omnichannel_Reports_Status_Open": "адкрыты",
+  "Omnichannel_Reports_Status_Closed": "закрыта",
   "On": "на",
   "online": "онлайн",
   "Online": "інтэрнэт",
@@ -2775,5 +2774,7 @@
   "registration.component.form.reasonToJoin": "прычына рэгістрацыі",
   "registration.component.form.invalidConfirmPass": "Пацвярджэнне пароля не супадае пароль",
   "registration.component.form.confirmPassword": "Пацвердзіць пароль",
-  "registration.component.form.sendConfirmationEmail": "Адправіць па электроннай пошце пацвярджэнне"
+  "registration.component.form.sendConfirmationEmail": "Адправіць па электроннай пошце пацвярджэнне",
+  "Enterprise": "прадпрыемства",
+  "UpgradeToGetMore_engagement-dashboard_Title": "аналітыка"
 }

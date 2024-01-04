@@ -10,7 +10,6 @@ interface IInternalMention {
 
 const DEFAULT_LINK_FOR_MATRIX_MENTIONS = 'https://matrix.to/#/';
 const DEFAULT_TAGS_FOR_MATRIX_QUOTES = ['mx-reply', 'blockquote'];
-const DEFAULT_QUOTES_SYMBOLS_FOR_MATRIX_IN_RAW_TEXT = /^>.*/; // > text
 
 const getAllMentionsWithTheirRealNames = (message: string, homeServerDomain: string, senderExternalId: string): IInternalMention[] => {
 	const mentions: IInternalMention[] = [];
@@ -71,7 +70,6 @@ export const toInternalMessageFormat = ({
 	);
 
 const MATCH_ANYTHING = 'w';
-const MATCH_ANYTHING_BUT_COLON = ':';
 const replaceAllMentionsOneByOneSequentially = (message: string, allMentionsWithRealNames: IInternalMention[]): string => {
 	let parsedMessage = '';
 	let toCompareAgain = message;
@@ -81,7 +79,7 @@ const replaceAllMentionsOneByOneSequentially = (message: string, allMentionsWith
 	}
 
 	allMentionsWithRealNames.forEach(({ mention, realName }, mentionsIndex) => {
-		const negativeLookAhead = `(?!${realName.includes(':') ? MATCH_ANYTHING : MATCH_ANYTHING_BUT_COLON})`;
+		const negativeLookAhead = `(?!${MATCH_ANYTHING})`;
 		const realNameRegex = new RegExp(`(?<!w)${realName}${negativeLookAhead}`);
 		let realNamePosition = toCompareAgain.search(realNameRegex);
 		const realNamePresentInMessage = realNamePosition !== -1;
@@ -106,6 +104,21 @@ const replaceAllMentionsOneByOneSequentially = (message: string, allMentionsWith
 	return parsedMessage.trim();
 };
 
+function stripReplyQuote(message: string): string {
+	const splitLines = message.split(/\r?\n/);
+
+	// Find which line the quote ends on
+	let splitLineIndex = 0;
+	for (const line of splitLines) {
+		if (line[0] !== '>') {
+			break;
+		}
+		splitLineIndex += 1;
+	}
+
+	return splitLines.splice(splitLineIndex).join('\n').trim();
+}
+
 export const toInternalQuoteMessageFormat = async ({
 	homeServerDomain,
 	formattedMessage,
@@ -119,9 +132,6 @@ export const toInternalQuoteMessageFormat = async ({
 	homeServerDomain: string;
 	senderExternalId: string;
 }): Promise<string> => {
-	if (!rawMessage || !formattedMessage) {
-		return '';
-	}
 	const withMentionsOnly = sanitizeHtml(formattedMessage, {
 		allowedTags: ['a'],
 		allowedAttributes: {
@@ -129,7 +139,7 @@ export const toInternalQuoteMessageFormat = async ({
 		},
 		nonTextTags: DEFAULT_TAGS_FOR_MATRIX_QUOTES,
 	});
-	const rawMessageWithoutMatrixQuotingFormatting = rawMessage.replace(DEFAULT_QUOTES_SYMBOLS_FOR_MATRIX_IN_RAW_TEXT, '').trimStart();
+	const rawMessageWithoutMatrixQuotingFormatting = stripReplyQuote(rawMessage);
 
 	return `[ ](${messageToReplyToUrl}) ${replaceAllMentionsOneByOneSequentially(
 		rawMessageWithoutMatrixQuotingFormatting,

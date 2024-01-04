@@ -40,14 +40,14 @@ const CallsContextualBarDirectory: FC = () => {
 
 	if (state === AsyncStatePhase.LOADING) {
 		return (
-			<Box pi='x24'>
+			<Box pi={24}>
 				<FormSkeleton />
 			</Box>
 		);
 	}
 
 	if (error || !data || !data.room) {
-		return <Box mbs='x16'>{t('Room_not_found')}</Box>;
+		return <Box mbs={16}>{t('Room_not_found')}</Box>;
 	}
 
 	const room = data.room as unknown as IVoipRoom; // TODO Check why types are incompatible even though the endpoint returns an IVoipRooms

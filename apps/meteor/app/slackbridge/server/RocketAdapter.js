@@ -230,11 +230,11 @@ export default class RocketAdapter {
 	}
 
 	async getChannel(slackMessage) {
-		return slackMessage.channel ? this.findChannel(slackMessage.channel) || this.addChannel(slackMessage.channel) : null;
+		return slackMessage.channel ? (await this.findChannel(slackMessage.channel)) || this.addChannel(slackMessage.channel) : null;
 	}
 
 	async getUser(slackUser) {
-		return slackUser ? this.findUser(slackUser) || this.addUser(slackUser) : null;
+		return slackUser ? (await this.findUser(slackUser)) || this.addUser(slackUser) : null;
 	}
 
 	createRocketID(slackChannel, ts) {
@@ -259,7 +259,7 @@ export default class RocketAdapter {
 	}
 
 	async getRocketUserCreator(slackChannel) {
-		return slackChannel.creator ? this.findUser(slackChannel.creator) || this.addUser(slackChannel.creator) : null;
+		return slackChannel.creator ? (await this.findUser(slackChannel.creator)) || this.addUser(slackChannel.creator) : null;
 	}
 
 	async addChannel(slackChannelID, hasRetried = false) {
@@ -271,9 +271,9 @@ export default class RocketAdapter {
 				return;
 			}
 
-			const slackChannel = slack.slackAPI.getRoomInfo(slackChannelID);
+			const slackChannel = await slack.slackAPI.getRoomInfo(slackChannelID);
 			if (slackChannel) {
-				const members = slack.slackAPI.getMembers(slackChannelID);
+				const members = await slack.slackAPI.getMembers(slackChannelID);
 				if (!members) {
 					rocketLogger.error('Could not fetch room members');
 					return;
@@ -286,7 +286,7 @@ export default class RocketAdapter {
 					await Rooms.addImportIds(slackChannel.rocketId, slackChannel.id);
 				} else {
 					const rocketUsers = await this.getRocketUsers(members, slackChannel);
-					const rocketUserCreator = this.getRocketUserCreator(slackChannel);
+					const rocketUserCreator = await this.getRocketUserCreator(slackChannel);
 
 					if (!rocketUserCreator) {
 						rocketLogger.error({ msg: 'Could not fetch room creator information', creator: slackChannel.creator });
@@ -295,14 +295,14 @@ export default class RocketAdapter {
 
 					try {
 						const isPrivate = slackChannel.is_private;
-						const rocketChannel = await createRoom(isPrivate ? 'p' : 'c', slackChannel.name, rocketUserCreator.username, rocketUsers);
-						rocketChannel.rocketId = rocketChannel.rid;
+						const rocketChannel = await createRoom(isPrivate ? 'p' : 'c', slackChannel.name, rocketUserCreator, rocketUsers);
+						slackChannel.rocketId = rocketChannel.rid;
 					} catch (e) {
 						if (!hasRetried) {
 							rocketLogger.debug('Error adding channel from Slack. Will retry in 1s.', e.message);
 							// If first time trying to create channel fails, could be because of multiple messages received at the same time. Try again once after 1s.
 							await sleep(1000);
-							return this.findChannel(slackChannelID) || this.addChannel(slackChannelID, true);
+							return (await this.findChannel(slackChannelID)) || this.addChannel(slackChannelID, true);
 						}
 						rocketLogger.error(e);
 					}
@@ -320,7 +320,6 @@ export default class RocketAdapter {
 					if (slackChannel.purpose && slackChannel.purpose.value && slackChannel.purpose.last_set > lastSetTopic) {
 						roomUpdate.topic = slackChannel.purpose.value;
 					}
-
 					await Rooms.addImportIds(slackChannel.rocketId, slackChannel.id);
 					slack.addSlackChannel(slackChannel.rocketId, slackChannelID);
 				}
@@ -354,7 +353,7 @@ export default class RocketAdapter {
 				return;
 			}
 
-			const user = slack.slackAPI.getUser(slackUserID);
+			const user = await slack.slackAPI.getUser(slackUserID);
 			if (user) {
 				const rocketUserData = user;
 				const isBot = rocketUserData.is_bot === true;
@@ -465,7 +464,7 @@ export default class RocketAdapter {
 				}
 			} else {
 				rocketMsgObj = {
-					msg: this.convertSlackMsgTxtToRocketTxtFormat(slackMessage.text),
+					msg: await this.convertSlackMsgTxtToRocketTxtFormat(slackMessage.text),
 					rid: rocketChannel._id,
 					u: {
 						_id: rocketUser._id,

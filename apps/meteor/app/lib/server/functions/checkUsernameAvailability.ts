@@ -48,12 +48,9 @@ export const checkUsernameAvailability = async function (username: string): Prom
 	}
 
 	// Make sure no users are using this username
-	const existingUser = await Users.findOne(
-		{
-			username: toRegExp(username),
-		},
-		{ projection: { _id: 1 } },
-	);
+	const existingUser = await Users.findOneByUsernameIgnoringCase(username, {
+		projection: { _id: 1 },
+	});
 	if (existingUser) {
 		return false;
 	}

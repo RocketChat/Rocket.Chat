@@ -49,9 +49,9 @@ export interface ILivechatDepartmentModel extends IBaseModel<ILivechatDepartment
 
 	unsetFallbackDepartmentByDepartmentId(departmentId: string): Promise<Document | UpdateResult>;
 	removeDepartmentFromForwardListById(_departmentId: string): Promise<void>;
-	saveDepartmentsByAgent(agent: { _id: string; username: string }, departments: string[]): Promise<void>;
 	updateById(_id: string, update: Partial<ILivechatDepartment>): Promise<Document | UpdateResult>;
 	updateNumAgentsById(_id: string, numAgents: number): Promise<Document | UpdateResult>;
+	decreaseNumberOfAgentsByIds(_ids: string[]): Promise<Document | UpdateResult>;
 	findEnabledWithAgents(projection?: FindOptions<ILivechatDepartment>['projection']): FindCursor<ILivechatDepartment>;
 	findEnabledWithAgentsAndBusinessUnit(
 		_: any,
@@ -69,4 +69,8 @@ export interface ILivechatDepartmentModel extends IBaseModel<ILivechatDepartment
 		}[]
 	>;
 	checkIfMonitorIsMonitoringDepartmentById(monitorId: string, departmentId: string): Promise<boolean>;
+	countArchived(): Promise<number>;
+	findEnabledInIds(departmentsIds: string[], options?: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;
+	archiveDepartment(_id: string): Promise<Document | UpdateResult>;
+	unarchiveDepartment(_id: string): Promise<Document | UpdateResult>;
 }

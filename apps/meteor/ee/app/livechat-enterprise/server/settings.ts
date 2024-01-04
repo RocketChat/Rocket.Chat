@@ -114,22 +114,6 @@ export const createSettings = async (): Promise<void> => {
 				modules: ['livechat-enterprise'],
 			});
 
-			await this.add('Omnichannel_queue_delay_timeout', 5, {
-				type: 'int',
-				group: 'Omnichannel',
-				section: 'Queue_management',
-				i18nLabel: 'Queue_delay_timeout',
-				i18nDescription: 'Time_in_seconds',
-				enableQuery: [
-					{ _id: 'Livechat_waiting_queue', value: true },
-					{ _id: 'Livechat_Routing_Method', value: { $ne: 'Manual_Selection' } },
-					omnichannelEnabledQuery,
-				],
-				enterprise: true,
-				invalidValue: 5,
-				modules: ['livechat-enterprise'],
-			});
-
 			await this.add('Livechat_number_most_recent_chats_estimate_wait_time', 100, {
 				type: 'int',
 				group: 'Omnichannel',
@@ -212,6 +196,17 @@ export const createSettings = async (): Promise<void> => {
 		public: true,
 		modules: ['livechat-enterprise'],
 		enableQuery: omnichannelEnabledQuery,
+	});
+
+	await settingsRegistry.add('Livechat_allow_manual_on_hold_upon_agent_engagement_only', true, {
+		type: 'boolean',
+		group: 'Omnichannel',
+		section: 'Sessions',
+		enterprise: true,
+		invalidValue: false,
+		public: true,
+		modules: ['livechat-enterprise'],
+		enableQuery: { _id: 'Livechat_allow_manual_on_hold', value: true },
 	});
 
 	await settingsRegistry.add('Livechat_auto_transfer_chat_timeout', 0, {

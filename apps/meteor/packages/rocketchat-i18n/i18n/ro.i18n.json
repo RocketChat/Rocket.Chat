@@ -796,7 +796,6 @@
   "Custom_Sound_Has_Been_Deleted": "Sunetul particularizat a fost șters.",
   "Custom_Sound_Info": "Informații despre sunet personalizat",
   "Custom_Sound_Saved_Successfully": "Sunetul particularizat a fost salvat cu succes",
-  "Custom_Sounds": "Sunete personalizate",
   "Custom_Translations": "Traduceri personalizate",
   "Custom_Translations_Description": "Ar trebui să fie un JSON valid în cazul în care cheile sunt limbi care conțin un dicționar de chei și traduceri. Exemplu:  \n `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Customize": "Personalizați",
@@ -975,7 +974,6 @@
   "Enter_name_here": "Introdu numele aici",
   "Enter_Normal": "Modul normal (trimiteți cu Enter)",
   "Enter_to": "Enter pentru a",
-  "Enterprise": "Afacere",
   "Entertainment": "Divertisment",
   "Error": "Eroare",
   "Error_404": "Eroare 404",
@@ -1812,7 +1810,6 @@
   "Num_Agents": "# Agenți",
   "Number_of_messages": "Numărul de mesaje",
   "OAuth_Application": "Aplicație OAuth",
-  "OAuth_Applications": "Aplicații OAuth",
   "Objects": "Obiecte",
   "Off": "De pe",
   "Off_the_record_conversation": "Off-the-record conversație",
@@ -1832,6 +1829,8 @@
   "Offline_success_message": "Mesajul de succes offline",
   "Offline_unavailable": "offline nu sunt disponibile",
   "Older_than": "Mai vechi de",
+  "Omnichannel_Reports_Status_Open": "Deschis",
+  "Omnichannel_Reports_Status_Closed": "Închis",
   "On": "Pe",
   "online": "pe net",
   "Online": "Activ",
@@ -2752,5 +2751,7 @@
   "registration.component.form.reasonToJoin": "Motivul de a te alătura",
   "registration.component.form.invalidConfirmPass": "Confirmarea parolei nu se potrivește cu parola introdusă",
   "registration.component.form.confirmPassword": "Confirmați parola",
-  "registration.component.form.sendConfirmationEmail": "Trimite email de confirmare"
+  "registration.component.form.sendConfirmationEmail": "Trimite email de confirmare",
+  "Enterprise": "Afacere",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Analytics"
 }

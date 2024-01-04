@@ -802,7 +802,6 @@
   "Custom_Sound_Has_Been_Deleted": "Ο προσαρμοσμένος ήχος έχει διαγραφεί.",
   "Custom_Sound_Info": "Πληροφορίες Προσαρμοσμένου Ήχου",
   "Custom_Sound_Saved_Successfully": "Ο προσαρμοσμένος ήχος αποθηκεύτηκε επιτυχώς",
-  "Custom_Sounds": "Προσαρμοσμένοι Ήχοι",
   "Custom_Translations": "Προσαρμοσμένες Μεταφράσεις",
   "Custom_Translations_Description": "Θα πρέπει να είναι μια έγκυρη JSON όπου κλειδιά είναι οι γλώσσες που θα περιέχουν ένα λεξικό κλειδιών και μεταφράσεων. Παράδειγμα:  \n `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Customize": "Προσαρμογή",
@@ -981,7 +980,6 @@
   "Enter_name_here": "Πληκτρολογήστε το όνομα εδώ",
   "Enter_Normal": "Κανονική λειτουργία (αποστολή με Enter)",
   "Enter_to": "Enter για να",
-  "Enterprise": "Επιχείρηση",
   "Entertainment": "Ψυχαγωγία",
   "Error": "Λάθος",
   "Error_404": "Σφάλμα 404",
@@ -1821,7 +1819,6 @@
   "Num_Agents": "# Πράκτορες",
   "Number_of_messages": "Αριθμός μηνυμάτων",
   "OAuth_Application": "OAuth Εφαρμογή",
-  "OAuth_Applications": "OAuth Εφαρμογές",
   "Objects": "αντικείμενα",
   "Off": "Μακριά από",
   "Off_the_record_conversation": "Off-the-record συνομιλία",
@@ -1841,6 +1838,8 @@
   "Offline_success_message": "Offline μήνυμα επιτυχίας",
   "Offline_unavailable": "offline διαθέσιμη",
   "Older_than": "Μεγαλύτερος από",
+  "Omnichannel_Reports_Status_Open": "Ανοιχτό",
+  "Omnichannel_Reports_Status_Closed": "Έκλεισε",
   "On": "Επί",
   "online": "σε απευθείας σύνδεση",
   "Online": "Συνδεδεμένος",
@@ -2766,5 +2765,7 @@
   "registration.component.form.reasonToJoin": "Λόγος για συμμετοχή",
   "registration.component.form.invalidConfirmPass": "Η επιβεβαίωση κωδικού δεν ταιριάζει με τον αρχικό κωδικό",
   "registration.component.form.confirmPassword": "Επιβεβαιώστε τον κωδικό σας",
-  "registration.component.form.sendConfirmationEmail": "Αποστολή email επιβεβαίωσης"
+  "registration.component.form.sendConfirmationEmail": "Αποστολή email επιβεβαίωσης",
+  "Enterprise": "Επιχείρηση",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Αναλυτικά στοιχεία"
 }

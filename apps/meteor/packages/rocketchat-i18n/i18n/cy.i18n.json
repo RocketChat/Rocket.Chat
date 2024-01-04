@@ -794,7 +794,6 @@
   "Custom_Sound_Has_Been_Deleted": "Mae'r sain arfer wedi cael ei ddileu.",
   "Custom_Sound_Info": "Gwybodaeth Sain Sain",
   "Custom_Sound_Saved_Successfully": "Sain sain wedi'i arbed yn llwyddiannus",
-  "Custom_Sounds": "Sain Sainiau",
   "Custom_Translations": "Cyfieithiadau Custom",
   "Custom_Translations_Description": "Dylai fod yn JSON dilys lle mae allweddi yn ieithoedd sy'n cynnwys geiriadur allweddol a chyfieithiadau. Enghraifft:  \n `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Customize": "Addasu",
@@ -973,7 +972,6 @@
   "Enter_name_here": "Rhowch enw yma",
   "Enter_Normal": "Modd arferol (anfonwch â Enter)",
   "Enter_to": "Rhowch i",
-  "Enterprise": "Menter",
   "Entertainment": "Adloniant",
   "Error": "Gwall",
   "Error_404": "Gwall: 404",
@@ -1808,7 +1806,6 @@
   "Num_Agents": "# Asiantau",
   "Number_of_messages": "Nifer y negeseuon",
   "OAuth_Application": "Cais OAuth",
-  "OAuth_Applications": "Ceisiadau OAuth",
   "Objects": "Gwrthrychau",
   "Off": "I ffwrdd",
   "Off_the_record_conversation": "Sgwrs y tu allan i'r record",
@@ -1828,6 +1825,8 @@
   "Offline_success_message": "Neges Llwyddiant All-lein",
   "Offline_unavailable": "All-lein ddim ar gael",
   "Older_than": "Yn hŷn na",
+  "Omnichannel_Reports_Status_Open": "Agor",
+  "Omnichannel_Reports_Status_Closed": "Ar gau",
   "On": "Ar",
   "online": "ar-lein",
   "Online": "Ar-lein",
@@ -2748,5 +2747,7 @@
   "registration.component.form.reasonToJoin": "Rheswm i Ymuno",
   "registration.component.form.invalidConfirmPass": "Nid yw'r cadarnhad cyfrinair yn cyfateb i'r cyfrinair",
   "registration.component.form.confirmPassword": "Cadarnhau eich cyfrinair",
-  "registration.component.form.sendConfirmationEmail": "Anfon ebost cadarnhad"
+  "registration.component.form.sendConfirmationEmail": "Anfon ebost cadarnhad",
+  "Enterprise": "Menter",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Dadansoddiadau"
 }

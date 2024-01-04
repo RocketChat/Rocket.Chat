@@ -48,7 +48,7 @@ test.describe('Omnichannel SLA Policies', () => {
 
 	test('Manage SLAs', async () => {
 		await test.step('Add new SLA', async () => {
-			await poOmnichannelSlaPolicies.btnNew.click();
+			await poOmnichannelSlaPolicies.headingButtonNew('Create SLA policy').click();
 
 			await test.step('field name is required', async () => {
 				await poOmnichannelSlaPolicies.manageSlaPolicy.inputName.fill('any_text');

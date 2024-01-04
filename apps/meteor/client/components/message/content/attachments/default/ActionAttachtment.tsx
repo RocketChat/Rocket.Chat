@@ -10,7 +10,7 @@ export const ActionAttachment: FC<MessageAttachmentAction> = ({ actions }) => {
 	const handleLinkClick = useExternalLink();
 
 	return (
-		<ButtonGroup mb='x4' small>
+		<ButtonGroup mb={4} small>
 			{actions
 				.filter(
 					({ type, msg_in_chat_window: msgInChatWindow, url, image_url: image, text }) =>

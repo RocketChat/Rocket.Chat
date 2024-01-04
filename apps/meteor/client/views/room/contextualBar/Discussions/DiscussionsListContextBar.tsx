@@ -1,4 +1,4 @@
-import type { IDiscussionMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IDiscussionMessage } from '@rocket.chat/core-typings';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -6,23 +6,25 @@ import React, { useCallback, useMemo, useState } from 'react';
 
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
-import { useTabBarClose } from '../../contexts/ToolboxContext';
+import { useRoom } from '../../contexts/RoomContext';
+import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import DiscussionsList from './DiscussionsList';
 import { useDiscussionsList } from './useDiscussionsList';
 
-const DiscussionListContextBar = ({ rid }: { rid: IRoom['_id'] }): ReactElement | null => {
+const DiscussionListContextBar = (): ReactElement | null => {
 	const userId = useUserId();
-	const onClose = useTabBarClose();
+	const room = useRoom();
+	const { closeTab } = useRoomToolbox();
 
 	const [text, setText] = useState('');
 	const debouncedText = useDebouncedValue(text, 400);
 
 	const options = useMemo(
 		() => ({
-			rid,
+			rid: room._id,
 			text: debouncedText,
 		}),
-		[rid, debouncedText],
+		[room._id, debouncedText],
 	);
 
 	const { discussionsList, loadMoreItems } = useDiscussionsList(options, userId);
@@ -38,7 +40,7 @@ const DiscussionListContextBar = ({ rid }: { rid: IRoom['_id'] }): ReactElement 
 
 	return (
 		<DiscussionsList
-			onClose={onClose}
+			onClose={closeTab}
 			userId={userId}
 			error={error}
 			discussions={discussions}
