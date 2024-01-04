@@ -1,10 +1,13 @@
 import type { IRoom, IMessage } from '@rocket.chat/core-typings';
+import { MessageComposerAction } from '@rocket.chat/ui-composer';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
+import type { GenericMenuItemProps } from '../../../../../components/GenericMenu/GenericMenuItem';
 import ActionsToolbarDropdown from './ActionsToolbarDropdown';
-import AudioMessageAction from './actions/AudioMessageAction';
-import FileUploadAction from './actions/FileUploadAction';
-import VideoMessageAction from './actions/VideoMessageAction';
+import { useAudioMessageAction } from './actions/useAudioMessageAction';
+import { useFileUploadAction } from './actions/useFileUploadAction';
+import useVideoMessageAction from './actions/useVideoMessageAction';
 
 type MessageBoxActionsToolbarProps = {
 	variant: 'small' | 'large';
@@ -24,29 +27,58 @@ const MessageBoxActionsToolbar = ({
 	rid,
 	tmid,
 	isMicrophoneDenied,
-	...props
 }: MessageBoxActionsToolbarProps) => {
-	const actions = [
-		<VideoMessageAction key='video' collapsed={variant === 'small'} disabled={!canSend || typing || isRecording} {...props} />,
-		<AudioMessageAction
-			key='audio'
-			disabled={!canSend || typing || isRecording || isMicrophoneDenied}
-			isMicrophoneDenied={isMicrophoneDenied}
-			{...props}
-		/>,
-		<FileUploadAction key='file' collapsed={variant === 'small'} disabled={!canSend || isRecording} {...props} />,
-	];
+	const t = useTranslation();
+
+	const { handleRecordButtonClick, audioTitle, isAudioAllowed } = useAudioMessageAction(isMicrophoneDenied);
+	const { handleOpenVideoMessage, videoTitle, isVideoAllowed } = useVideoMessageAction();
+	const { handleUpload, handleUploadChange, fileUploadEnabled, fileInputRef } = useFileUploadAction();
+
+	const audioMessageItem: GenericMenuItemProps = {
+		id: 'audio-record',
+		content: audioTitle,
+		icon: 'mic',
+		disabled: !isAudioAllowed || !canSend || typing || isRecording || isMicrophoneDenied,
+		onClick: () => handleRecordButtonClick(),
+	};
+
+	const videoMessageItem: GenericMenuItemProps = {
+		id: 'video-message',
+		content: videoTitle,
+		icon: 'video',
+		disabled: !isVideoAllowed || !canSend || typing || isRecording,
+		onClick: () => handleOpenVideoMessage(),
+	};
+
+	const fileUploadItem: GenericMenuItemProps = {
+		id: 'file-upload',
+		content: t('Upload_file'),
+		icon: 'clip',
+		disabled: !fileUploadEnabled || !canSend || isRecording,
+		onClick: () => handleUpload(),
+	};
+
+	const actions = [audioMessageItem, videoMessageItem, fileUploadItem];
 
 	let featuredAction;
 	if (variant === 'small') {
-		featuredAction = actions.splice(1, 1);
+		featuredAction = actions.splice(0, 1);
 	}
+
+	const renderAction = ({ id, icon, content, disabled, onClick }: GenericMenuItemProps) => {
+		if (!icon) {
+			return;
+		}
+
+		return <MessageComposerAction key={id} icon={icon} data-qa-id={id} title={content as string} disabled={disabled} onClick={onClick} />;
+	};
 
 	return (
 		<>
-			{variant !== 'small' && actions}
-			{variant === 'small' && featuredAction}
-			<ActionsToolbarDropdown {...(variant === 'small' && { actions })} isRecording={isRecording} rid={rid} tmid={tmid} {...props} />
+			{variant !== 'small' && actions.map((action) => renderAction(action))}
+			{variant === 'small' && featuredAction?.map((action) => renderAction(action))}
+			<ActionsToolbarDropdown actions={variant === 'small' ? actions : undefined} isRecording={isRecording} rid={rid} tmid={tmid} />
+			<input ref={fileInputRef} type='file' onChange={handleUploadChange} multiple style={{ display: 'none' }} />
 		</>
 	);
 };
