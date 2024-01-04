@@ -1,7 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isThreadMessage } from '@rocket.chat/core-typings';
 import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
-import type { ComponentProps } from 'react';
+import { useSetting, useTranslation, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
 import React, { Fragment } from 'react';
 
 import { MessageTypes } from '../../../../app/ui-utils/client';
@@ -20,6 +20,7 @@ type MessageListProps = {
 
 export const MessageList = function MessageList({ rid, messageListRef }: MessageListProps) {
 	const messages = useMessages({ rid });
+	const userId = useUserId();
 	const subscription = useRoomSubscription();
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 	const messageGroupingPeriod = Number(useSetting('Message_GroupingPeriod'));
@@ -31,8 +32,10 @@ export const MessageList = function MessageList({ rid, messageListRef }: Message
 				{messages.map((message, index, { [index - 1]: previous }) => {
 					const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
 					const showUnreadDivider = firstUnreadMessageId === message._id;
-					const system = MessageTypes.isSystemMessage(message);
-					const visible = !isThreadMessage(message) && !system;
+					const system = MessageTypes.isSystemMessage(message); 
+					const shouldHideBecauseMarkedAsDone = message.markedAsDone && userId ? message.markedAsDone.some(marker => marker._id === userId) : false;
+
+					const visible = !isThreadMessage(message) && !system && !shouldHideBecauseMarkedAsDone;
 
 					return (
 						<Fragment key={message._id}>
