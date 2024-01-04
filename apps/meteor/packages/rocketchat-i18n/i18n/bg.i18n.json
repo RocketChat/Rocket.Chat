@@ -947,7 +947,6 @@
   "Email_Notification_Mode": "Известия за имейл офлайн",
   "Email_Notification_Mode_All": "Всяко споменаване / DM",
   "Email_Notification_Mode_Disabled": "хора с увреждания",
-  "Enterprise": "начинание",
   "Email_or_username": "Електрона поща или потребителско име",
   "Email_Placeholder": "Моля, въведете вашия имейл адрес...",
   "Email_Placeholder_any": "Моля, въведете имейл адреси ...",
@@ -2750,5 +2749,6 @@
   "registration.component.form.invalidConfirmPass": "Потвърждението на паролата не съвпада с паролата",
   "registration.component.form.confirmPassword": "Потвърдите паролата",
   "registration.component.form.sendConfirmationEmail": "Изпратете имейл за потвърждение",
+  "Enterprise": "начинание",
   "UpgradeToGetMore_engagement-dashboard_Title": "анализ"
 }

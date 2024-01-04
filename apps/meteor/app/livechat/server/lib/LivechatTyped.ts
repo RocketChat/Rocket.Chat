@@ -17,9 +17,10 @@ import type {
 	TransferData,
 	MessageAttachment,
 	IMessageInbox,
-	ILivechatAgentStatus,
+	IOmnichannelAgent,
+	ILivechatDepartmentAgents,
 } from '@rocket.chat/core-typings';
-import { UserStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { ILivechatAgentStatus, UserStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Logger, type MainLogger } from '@rocket.chat/logger';
 import {
 	LivechatDepartment,
@@ -37,13 +38,16 @@ import {
 } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { Match, check } from 'meteor/check';
 import moment from 'moment-timezone';
 import type { Filter, FindCursor, UpdateFilter } from 'mongodb';
+import UAParser from 'ua-parser-js';
 
 import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { i18n } from '../../../../server/lib/i18n';
+import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -56,7 +60,8 @@ import * as Mailer from '../../../mailer/server/api';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
 import { getTimezone } from '../../../utils/server/lib/getTimezone';
-import { updateDepartmentAgents, validateEmail, normalizeTransferredByData } from './Helper';
+import { businessHourManager } from '../business-hour';
+import { parseAgentCustomFields, updateDepartmentAgents, validateEmail, normalizeTransferredByData } from './Helper';
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
 
@@ -98,29 +103,23 @@ type OfflineMessageData = {
 	host?: string;
 };
 
+type UploadedFile = {
+	_id: string;
+	name?: string;
+	type?: string;
+	size?: number;
+	description?: string;
+	identify?: { size: { width: number; height: number } };
+	format?: string;
+};
+
 export interface ILivechatMessage {
 	token: string;
 	_id: string;
 	rid: string;
 	msg: string;
-	file?: {
-		_id: string;
-		name?: string;
-		type?: string;
-		size?: number;
-		description?: string;
-		identify?: { size: { width: number; height: number } };
-		format?: string;
-	};
-	files?: {
-		_id: string;
-		name?: string;
-		type?: string;
-		size?: number;
-		description?: string;
-		identify?: { size: { width: number; height: number } };
-		format?: string;
-	}[];
+	file?: UploadedFile;
+	files?: UploadedFile[];
 	attachments?: MessageAttachment[];
 	alias?: string;
 	groupable?: boolean;
@@ -133,6 +132,26 @@ type AKeyOf<T> = {
 };
 
 type PageInfo = { title: string; location: { href: string }; change: string };
+
+type ICRMData = {
+	_id: string;
+	label?: string;
+	topic?: string;
+	createdAt: Date;
+	lastMessageAt?: Date;
+	tags?: string[];
+	customFields?: IOmnichannelRoom['livechatData'];
+	visitor: Pick<ILivechatVisitor, '_id' | 'token' | 'name' | 'username' | 'department' | 'phone' | 'ip'> & {
+		email?: ILivechatVisitor['visitorEmails'];
+		os?: string;
+		browser?: string;
+		customFields: ILivechatVisitor['livechatData'];
+	};
+	agent?: Pick<IOmnichannelAgent, '_id' | 'username' | 'name' | 'customFields'> & {
+		email?: NonNullable<IOmnichannelAgent['emails']>[number]['address'];
+	};
+	crmData?: IOmnichannelRoom['crmData'];
+};
 
 const dnsResolveMx = util.promisify(dns.resolveMx);
 
@@ -343,7 +362,7 @@ class LivechatClass {
 
 	async getRoom(
 		guest: ILivechatVisitor,
-		message: Pick<IMessage, 'rid' | 'msg'>,
+		message: Pick<IMessage, 'rid' | 'msg' | 'token'>,
 		roomInfo: {
 			source?: IOmnichannelRoom['source'];
 			[key: string]: unknown;
@@ -527,11 +546,7 @@ class LivechatClass {
 			throw new Error('error-invalid-room');
 		}
 
-		if (!(await Omnichannel.isWithinMACLimit(room))) {
-			throw new Error('error-mac-limit-reached');
-		}
-
-		const showAgentInfo = settings.get<string>('Livechat_show_agent_info');
+		const showAgentInfo = settings.get<boolean>('Livechat_show_agent_info');
 		const closingMessage = await Messages.findLivechatClosingMessage(rid, { projection: { ts: 1 } });
 		const ignoredMessageTypes: MessageTypesValues[] = [
 			'livechat_navigation_history',
@@ -1347,6 +1362,12 @@ class LivechatClass {
 
 	async saveGuest(guestData: Pick<ILivechatVisitor, '_id' | 'name' | 'livechatData'> & { email?: string; phone?: string }, userId: string) {
 		const { _id, name, email, phone, livechatData = {} } = guestData;
+
+		const visitor = await LivechatVisitors.findOneById(_id, { projection: { _id: 1 } });
+		if (!visitor) {
+			throw new Error('error-invalid-visitor');
+		}
+
 		this.logger.debug({ msg: 'Saving guest', guestData });
 		const updateData: {
 			name?: string | undefined;
@@ -1545,6 +1566,224 @@ class LivechatClass {
 		}
 
 		return removeUserFromRolesAsync(user._id, ['livechat-manager']);
+	}
+
+	async getLivechatRoomGuestInfo(room: IOmnichannelRoom) {
+		const visitor = await LivechatVisitors.findOneEnabledById(room.v._id);
+		if (!visitor) {
+			throw new Error('error-invalid-visitor');
+		}
+
+		const agent = room.servedBy?._id ? await Users.findOneById(room.servedBy?._id) : null;
+
+		const ua = new UAParser();
+		ua.setUA(visitor.userAgent || '');
+
+		const postData: ICRMData = {
+			_id: room._id,
+			label: room.fname || room.label, // using same field for compatibility
+			topic: room.topic,
+			createdAt: room.ts,
+			lastMessageAt: room.lm,
+			tags: room.tags,
+			customFields: room.livechatData,
+			visitor: {
+				_id: visitor._id,
+				token: visitor.token,
+				name: visitor.name,
+				username: visitor.username,
+				department: visitor.department,
+				ip: visitor.ip,
+				os: ua.getOS().name && `${ua.getOS().name} ${ua.getOS().version}`,
+				browser: ua.getBrowser().name && `${ua.getBrowser().name} ${ua.getBrowser().version}`,
+				customFields: visitor.livechatData,
+			},
+		};
+
+		if (agent) {
+			const customFields = parseAgentCustomFields(agent.customFields);
+
+			postData.agent = {
+				_id: agent._id,
+				username: agent.username,
+				name: agent.name,
+				...(customFields && { customFields }),
+			};
+
+			if (agent.emails && agent.emails.length > 0) {
+				postData.agent.email = agent.emails[0].address;
+			}
+		}
+
+		if (room.crmData) {
+			postData.crmData = room.crmData;
+		}
+
+		if (visitor.visitorEmails && visitor.visitorEmails.length > 0) {
+			postData.visitor.email = visitor.visitorEmails;
+		}
+		if (visitor.phone && visitor.phone.length > 0) {
+			postData.visitor.phone = visitor.phone;
+		}
+
+		return postData;
+	}
+
+	async allowAgentChangeServiceStatus(statusLivechat: ILivechatAgentStatus, agentId: string) {
+		if (statusLivechat !== ILivechatAgentStatus.AVAILABLE) {
+			return true;
+		}
+
+		return businessHourManager.allowAgentChangeServiceStatus(agentId);
+	}
+
+	async notifyGuestStatusChanged(token: string, status: UserStatus) {
+		await LivechatInquiry.updateVisitorStatus(token, status);
+		await LivechatRooms.updateVisitorStatus(token, status);
+	}
+
+	async setUserStatusLivechat(userId: string, status: ILivechatAgentStatus) {
+		const user = await Users.setLivechatStatus(userId, status);
+		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
+		return user;
+	}
+
+	async afterAgentAdded(user: IUser) {
+		await Promise.all([
+			Users.setOperator(user._id, true),
+			this.setUserStatusLivechat(user._id, user.status !== 'offline' ? ILivechatAgentStatus.AVAILABLE : ILivechatAgentStatus.NOT_AVAILABLE),
+		]);
+		callbacks.runAsync('livechat.onNewAgentCreated', user._id);
+
+		return user;
+	}
+
+	async addAgent(username: string) {
+		check(username, String);
+
+		const user = await Users.findOneByUsername(username, { projection: { _id: 1, username: 1 } });
+
+		if (!user) {
+			throw new Meteor.Error('error-invalid-user');
+		}
+
+		if (await addUserRolesAsync(user._id, ['livechat-agent'])) {
+			return this.afterAgentAdded(user);
+		}
+
+		return false;
+	}
+
+	async addManager(username: string) {
+		check(username, String);
+
+		const user = await Users.findOneByUsername(username, { projection: { _id: 1, username: 1 } });
+
+		if (!user) {
+			throw new Meteor.Error('error-invalid-user');
+		}
+
+		if (await addUserRolesAsync(user._id, ['livechat-manager'])) {
+			return user;
+		}
+
+		return false;
+	}
+
+	async saveDepartmentAgents(
+		_id: string,
+		departmentAgents: {
+			upsert?: Pick<ILivechatDepartmentAgents, 'agentId' | 'count' | 'order' | 'username'>[];
+			remove?: Pick<ILivechatDepartmentAgents, 'agentId'>[];
+		},
+	) {
+		check(_id, String);
+		check(departmentAgents, {
+			upsert: Match.Maybe([
+				Match.ObjectIncluding({
+					agentId: String,
+					username: String,
+					count: Match.Maybe(Match.Integer),
+					order: Match.Maybe(Match.Integer),
+				}),
+			]),
+			remove: Match.Maybe([
+				Match.ObjectIncluding({
+					agentId: String,
+					username: Match.Maybe(String),
+					count: Match.Maybe(Match.Integer),
+					order: Match.Maybe(Match.Integer),
+				}),
+			]),
+		});
+
+		const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, 'enabled'>>(_id, { projection: { enabled: 1 } });
+		if (!department) {
+			throw new Meteor.Error('error-department-not-found', 'Department not found');
+		}
+
+		return updateDepartmentAgents(_id, departmentAgents, department.enabled);
+	}
+
+	async saveRoomInfo(
+		roomData: {
+			_id: string;
+			topic?: string;
+			tags?: string[];
+			livechatData?: { [k: string]: string };
+			// For priority and SLA, if the value is blank (ie ""), then system will remove the priority or SLA from the room
+			priorityId?: string;
+			slaId?: string;
+		},
+		guestData?: {
+			_id: string;
+			name?: string;
+			email?: string;
+			phone?: string;
+			livechatData?: { [k: string]: string };
+		},
+		userId?: string,
+	) {
+		this.logger.debug(`Saving room information on room ${roomData._id}`);
+		const { livechatData = {} } = roomData;
+		const customFields: Record<string, string> = {};
+
+		if ((!userId || (await hasPermissionAsync(userId, 'edit-livechat-room-customfields'))) && Object.keys(livechatData).length) {
+			const fields = LivechatCustomField.findByScope('room');
+			for await (const field of fields) {
+				if (!livechatData.hasOwnProperty(field._id)) {
+					continue;
+				}
+				const value = trim(livechatData[field._id]);
+				if (value !== '' && field.regexp !== undefined && field.regexp !== '') {
+					const regexp = new RegExp(field.regexp);
+					if (!regexp.test(value)) {
+						throw new Meteor.Error(i18n.t('error-invalid-custom-field-value', { field: field.label }));
+					}
+				}
+				customFields[field._id] = value;
+			}
+			roomData.livechatData = customFields;
+			Livechat.logger.debug(`About to update ${Object.keys(customFields).length} custom fields on room ${roomData._id}`);
+		}
+
+		await LivechatRooms.saveRoomById(roomData);
+
+		setImmediate(() => {
+			void Apps.triggerEvent(AppEvents.IPostLivechatRoomSaved, roomData._id);
+		});
+
+		if (guestData?.name?.trim().length) {
+			const { _id: rid } = roomData;
+			const { name } = guestData;
+			await Promise.all([
+				Rooms.setFnameById(rid, name),
+				LivechatInquiry.setNameByRoomId(rid, name),
+				Subscriptions.updateDisplayNameByRoomId(rid, name),
+			]);
+
+			return true;
+		}
 	}
 }
 

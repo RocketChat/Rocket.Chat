@@ -1,5 +1,8 @@
 import { Importers } from '../../importer/server';
-import { HipChatEnterpriseImporterInfo } from '../lib/info';
-import { HipChatEnterpriseImporter } from './importer';
+import { HipChatEnterpriseImporter } from './HipChatEnterpriseImporter';
 
-Importers.add(new HipChatEnterpriseImporterInfo(), HipChatEnterpriseImporter);
+Importers.add({
+	key: 'hipchatenterprise',
+	name: 'HipChat (tar.gz)',
+	importer: HipChatEnterpriseImporter,
+});

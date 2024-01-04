@@ -7,8 +7,8 @@ export class AdminFlextabUsers {
 		this.page = page;
 	}
 
-	get btnNew(): Locator {
-		return this.page.locator('role=button[name="New"]');
+	get btnNewUser(): Locator {
+		return this.page.locator('role=button[name="New user"]');
 	}
 
 	get btnSave(): Locator {

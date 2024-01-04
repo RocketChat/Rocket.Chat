@@ -1,5 +1,129 @@
 # @rocket.chat/models
 
+## 0.0.26
+
+### Patch Changes
+
+- @rocket.chat/model-typings@0.2.2
+
+## 0.0.25
+
+### Patch Changes
+
+- @rocket.chat/model-typings@0.2.1
+
+## 0.0.24
+
+### Patch Changes
+
+- Updated dependencies [dea1fe9191]
+- Updated dependencies [223dce18a3]
+- Updated dependencies [ec1b2b9846]
+- Updated dependencies [5f81a0f3cb]
+  - @rocket.chat/model-typings@0.2.0
+
+## 0.0.24-rc.12
+
+### Patch Changes
+
+- @rocket.chat/model-typings@0.2.0-rc.19
+
+## 0.0.24-rc.11
+
+### Patch Changes
+
+- @rocket.chat/model-typings@0.2.0-rc.18
+
+## 0.0.24-rc.10
+
+### Patch Changes
+
+- @rocket.chat/model-typings@0.2.0-rc.17
+
+## 0.0.24-rc.9
+
+### Patch Changes
+
+- @rocket.chat/model-typings@0.2.0-rc.16
+
+## 0.0.24-rc.8
+
+### Patch Changes
+
+- @rocket.chat/model-typings@0.2.0-rc.15
+
+## 0.0.24-rc.7
+
+### Patch Changes
+
+- @rocket.chat/model-typings@0.2.0-rc.14
+
+## 0.0.24-rc.6
+
+### Patch Changes
+
+- @rocket.chat/model-typings@0.2.0-rc.13
+
+## 0.0.24-rc.5
+
+### Patch Changes
+
+- @rocket.chat/model-typings@0.2.0-rc.12
+
+## 0.0.24-rc.4
+
+### Patch Changes
+
+- @rocket.chat/model-typings@0.2.0-rc.11
+
+## 0.0.24-rc.3
+
+### Patch Changes
+
+- @rocket.chat/model-typings@0.2.0-rc.10
+
+## 0.0.24-rc.2
+
+### Patch Changes
+
+- @rocket.chat/model-typings@0.2.0-rc.9
+
+## 0.0.24-rc.1
+
+### Patch Changes
+
+- @rocket.chat/model-typings@0.2.0-rc.8
+
+## 0.0.21-rc.7
+
+### Patch Changes
+
+- @rocket.chat/model-typings@0.2.0-rc.7
+
+## 0.0.21-rc.6
+
+### Patch Changes
+
+- @rocket.chat/model-typings@0.2.0-rc.6
+
+## 0.0.21-rc.5
+
+### Patch Changes
+
+- @rocket.chat/model-typings@0.2.0-rc.5
+
+## 0.0.21-rc.4
+
+### Patch Changes
+
+- @rocket.chat/model-typings@0.2.0-rc.4
+
+## 0.0.21-rc.3
+
+### Patch Changes
+
+- @rocket.chat/model-typings@0.2.0-rc.3
+
 ## 0.0.21-rc.2
 
 ### Patch Changes
@@ -21,6 +145,24 @@
 - Updated dependencies [ec1b2b9846]
 - Updated dependencies [5f81a0f3cb]
   - @rocket.chat/model-typings@0.2.0-rc.0
+
+## 0.0.23
+
+### Patch Changes
+
+- @rocket.chat/model-typings@0.1.8
+
+## 0.0.22
+
+### Patch Changes
+
+- @rocket.chat/model-typings@0.1.7
+
+## 0.0.21
+
+### Patch Changes
+
+- @rocket.chat/model-typings@0.1.6
 
 ## 0.0.20
 

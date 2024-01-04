@@ -1002,7 +1002,6 @@
   "Email_Notification_Mode": "Atsijungus el. Pašto pranešimai",
   "Email_Notification_Mode_All": "Kiekvienas paminėjimas / DM",
   "Email_Notification_Mode_Disabled": "Neįgalus",
-  "Enterprise": "Įmonė",
   "Email_or_username": "El. pastas arba vartotojo vardas",
   "Email_Placeholder": "Įveskite savo el. Pašto adresą ...",
   "Email_Placeholder_any": "Įveskite el. Pašto adresus ...",
@@ -2813,5 +2812,6 @@
   "registration.component.form.invalidConfirmPass": "Slaptažodžio patvirtinimas nesutampa su slaptažodžiu",
   "registration.component.form.confirmPassword": "Patvirtinkite savo slaptažodį",
   "registration.component.form.sendConfirmationEmail": "Siųsti patvirtinimo el. Laišką",
+  "Enterprise": "Įmonė",
   "UpgradeToGetMore_engagement-dashboard_Title": "\"Analytics\""
 }

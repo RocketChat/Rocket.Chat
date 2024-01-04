@@ -14,6 +14,7 @@ type AttachmentImageProps = {
 	src: string;
 	loadImage?: boolean;
 	setLoadImage: () => void;
+	id: string | undefined;
 } & Dimensions &
 	({ loadImage: true } | { loadImage: false; setLoadImage: () => void });
 
@@ -36,7 +37,7 @@ const getDimensions = (
 	return { width, height, ratio: (height / width) * 100 };
 };
 
-const AttachmentImage: FC<AttachmentImageProps> = ({ previewUrl, dataSrc, loadImage = true, setLoadImage, src, ...size }) => {
+const AttachmentImage: FC<AttachmentImageProps> = ({ id, previewUrl, dataSrc, loadImage = true, setLoadImage, src, ...size }) => {
 	const limits = useAttachmentDimensions();
 
 	const [error, setError] = useState(false);
@@ -77,7 +78,14 @@ const AttachmentImage: FC<AttachmentImageProps> = ({ previewUrl, dataSrc, loadIm
 						right: 0,
 					}}
 				>
-					<img className='gallery-item' data-src={dataSrc || src} src={src} width={dimensions.width} height={dimensions.height} />
+					<img
+						data-id={id}
+						className='gallery-item'
+						data-src={dataSrc || src}
+						src={src}
+						width={dimensions.width}
+						height={dimensions.height}
+					/>
 				</ImageBox>
 			</Box>
 		</Box>

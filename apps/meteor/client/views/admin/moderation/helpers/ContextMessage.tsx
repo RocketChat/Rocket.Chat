@@ -77,7 +77,7 @@ const ContextMessage = ({
 						)}
 
 						{message.blocks && <UiKitMessageBlock rid={message.rid} mid={message._id} blocks={message.blocks} />}
-						{message.attachments && <Attachments attachments={message.attachments} />}
+						{message.attachments && <Attachments id={message.files[0]._id} attachments={message.attachments} />}
 					</Message.Body>
 					<ReportReasonCollapsible>
 						<MessageReportInfo msgId={message._id} />

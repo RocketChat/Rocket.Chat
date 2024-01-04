@@ -947,7 +947,6 @@
   "Email_Notification_Mode": "Offline Email Bildirişləri",
   "Email_Notification_Mode_All": "Hər bir qeyd / DM",
   "Email_Notification_Mode_Disabled": "Əlil",
-  "Enterprise": "Müəssisə",
   "Email_or_username": "E-poçt və ya istifadəçi adı",
   "Email_Placeholder": "E-poçt ünvanınızı daxil edin ...",
   "Email_Placeholder_any": "E-poçt ünvanlarını daxil edin ...",
@@ -2758,5 +2757,6 @@
   "registration.component.form.invalidConfirmPass": "Şifrənin təsdiqlənməsi şifrə uyğun gəlmir",
   "registration.component.form.confirmPassword": "Şifrənizi təsdiqləyin",
   "registration.component.form.sendConfirmationEmail": "Təsdiq e-poçt göndər",
+  "Enterprise": "Müəssisə",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analytics"
 }

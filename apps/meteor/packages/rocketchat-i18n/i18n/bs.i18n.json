@@ -944,7 +944,6 @@
   "Email_Notification_Mode": "Izvanmrežne email obavijesti",
   "Email_Notification_Mode_All": "Svako spominjanje/IP",
   "Email_Notification_Mode_Disabled": "Onesposobljeno",
-  "Enterprise": "Poduzeće",
   "Email_or_username": "Email or username",
   "Email_Placeholder": "Molim upišite svoju adresu e-pošte...",
   "Email_Placeholder_any": "Unesite adrese e-pošte ...",
@@ -2746,5 +2745,6 @@
   "registration.component.form.invalidConfirmPass": "Potvrda lozinke se ne slaže sa lozinkom",
   "registration.component.form.confirmPassword": "Potvrdi svoju lozinku",
   "registration.component.form.sendConfirmationEmail": "Pošalji potvrdni email",
+  "Enterprise": "Poduzeće",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analitika"
 }

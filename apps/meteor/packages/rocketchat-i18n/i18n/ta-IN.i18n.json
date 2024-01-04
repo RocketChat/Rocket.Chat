@@ -948,7 +948,6 @@
   "Email_Notification_Mode": "ஆஃப்லைன் மின்னஞ்சல் அறிவிப்புகள்",
   "Email_Notification_Mode_All": "ஒவ்வொரு குறிப்பும் / டி.எம்",
   "Email_Notification_Mode_Disabled": "முடக்கப்பட்டது",
-  "Enterprise": "நிறுவன",
   "Email_or_username": "மின்னஞ்சல் அல்லது பயனர் பெயர்",
   "Email_Placeholder": "தயவுசெய்து உங்கள் மின்னஞ்சல் முகவரியை உள்ளிடவும்...",
   "Email_Placeholder_any": "மின்னஞ்சல் முகவரிகள் உள்ளிடுக ...",
@@ -2758,5 +2757,6 @@
   "registration.component.form.invalidConfirmPass": "கடவுச்சொல்லை உறுதிப்படுத்தும் கடவுச்சொல் பொருந்தவில்லை",
   "registration.component.form.confirmPassword": "உங்கள் கடவுச்சொல்லை உறுதிப்படுத்துக",
   "registration.component.form.sendConfirmationEmail": "உறுதிப்படுத்தும் மின்னஞ்சல் அனுப்பவும்",
+  "Enterprise": "நிறுவன",
   "UpgradeToGetMore_engagement-dashboard_Title": "அனலிட்டிக்ஸ்"
 }

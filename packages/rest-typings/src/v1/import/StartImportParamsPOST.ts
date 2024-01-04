@@ -6,28 +6,24 @@ const ajv = new Ajv({
 
 export type StartImportParamsPOST = {
 	input: {
-		users: [
-			{
-				user_id: string;
-				username: string;
-				email: string;
-				is_deleted: boolean;
-				is_bot: boolean;
-				do_import: boolean;
-				is_email_taken: boolean;
-			},
-		];
-		channels: [
-			{
-				channel_id: string;
-				name: string;
-				creator?: string;
-				is_archived: boolean;
-				do_import: boolean;
-				is_private: boolean;
-				is_direct: boolean;
-			},
-		];
+		users: {
+			user_id: string;
+			username: string;
+			email: string;
+			is_deleted: boolean;
+			is_bot: boolean;
+			do_import: boolean;
+			is_email_taken: boolean;
+		}[];
+		channels: {
+			channel_id: string;
+			name: string;
+			creator?: string;
+			is_archived: boolean;
+			do_import: boolean;
+			is_private: boolean;
+			is_direct: boolean;
+		}[];
 	};
 };
 

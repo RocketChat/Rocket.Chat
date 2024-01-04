@@ -946,7 +946,6 @@
   "Email_Notification_Mode": "Notifications Email is offline",
   "Email_Notification_Mode_All": "Her qala / DM",
   "Email_Notification_Mode_Disabled": "Bêmecel",
-  "Enterprise": "Enterprise",
   "Email_or_username": "ئیمەیڵ یان ناوی بەکارهێنەر",
   "Email_Placeholder": "Ji kerema xwe ji navnîşana emailê xwe bişîne ...",
   "Email_Placeholder_any": "Ji kerema xwe re navnîşan e-nameyan bişînin",
@@ -2748,5 +2747,6 @@
   "registration.component.form.invalidConfirmPass": "دووبارەکراوەی تێپەڕەوشە یەکناگرێتەوە لەگەڵ تێپەڕەوشە",
   "registration.component.form.confirmPassword": "تێپەڕەوشەکەت پشتڕاستکەوە",
   "registration.component.form.sendConfirmationEmail": "ئیمەیڵی پشتڕاستکردنەوە بنێرە",
+  "Enterprise": "Enterprise",
   "UpgradeToGetMore_engagement-dashboard_Title": "analytics"
 }

@@ -946,7 +946,6 @@
   "Email_Notification_Mode": "การแจ้งเตือนทางอีเมลแบบออฟไลน์",
   "Email_Notification_Mode_All": "ทุกข้อเสนอ / DM",
   "Email_Notification_Mode_Disabled": "พิการ",
-  "Enterprise": "องค์กร",
   "Email_or_username": "อีเมล์หรือชื่อผู้ใช้",
   "Email_Placeholder": "กรุณากรอกอีเมลของคุณ...",
   "Email_Placeholder_any": "โปรดป้อนที่อยู่อีเมล ...",
@@ -2741,5 +2740,6 @@
   "registration.component.form.invalidConfirmPass": "การยืนยันรหัสผ่านไม่ตรงกับรหัสผ่าน",
   "registration.component.form.confirmPassword": "ยืนยันรหัสผ่านของคุณ",
   "registration.component.form.sendConfirmationEmail": "ส่งอีเมลยืนยัน",
+  "Enterprise": "องค์กร",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analytics"
 }
