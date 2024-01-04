@@ -82,7 +82,7 @@ jobs:
 
   notify-draft-services:
     name: 🚀 Notify external services - draft
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: [release-versions]
     steps:
       - uses: Bhacaz/checkout-files@v2
