@@ -1,18 +1,15 @@
 import { Meteor } from 'meteor/meteor';
-import React from 'react';
 
 import { hasAtLeastOnePermission } from '../../../app/authorization/client';
 import { settings } from '../../../app/settings/client';
 import { MessageAction } from '../../../app/ui-utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
-import { t } from '../../../app/utils/lib/i18n';
-import GenericModal from '../../components/GenericModal';
 import { imperativeModal } from '../../lib/imperativeModal';
 import { queryClient } from '../../lib/queryClient';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { dispatchToastMessage } from '../../lib/toast';
 import { messageArgs } from '../../lib/utils/messageArgs';
-import PinMessageQuoteAttachment from './components/PinMessageQuoteAttachment';
+import PinMessageModal from '../../views/room/modals/PinMessageModal';
 
 Meteor.startup(() => {
 	MessageAction.addButton({
@@ -23,10 +20,7 @@ Meteor.startup(() => {
 		context: ['pinned', 'message', 'message-mobile', 'threads', 'direct', 'videoconf', 'videoconf-threads'],
 		async action(_, props) {
 			const { message = messageArgs(this).msg } = props;
-			const onClose = () => {
-				imperativeModal.close();
-			};
-			const onConfirm = async (): Promise<void> => {
+			const onConfirm = async () => {
 				message.pinned = true;
 				try {
 					await sdk.call('pinMessage', message);
@@ -34,20 +28,15 @@ Meteor.startup(() => {
 				} catch (error) {
 					dispatchToastMessage({ type: 'error', message: error });
 				}
-				onClose();
+				imperativeModal.close();
 			};
+
 			imperativeModal.open({
-				component: GenericModal,
+				component: PinMessageModal,
 				props: {
-					variant: 'warning',
-					children: <PinMessageQuoteAttachment message={message} />,
-					icon: 'pin',
-					title: t('pin-message'),
-					confirmText: t('Yes_pin_message'),
-					cancelText: t('Cancel'),
+					message,
 					onConfirm,
-					onClose,
-					onCancel: onClose,
+					onCancel: () => imperativeModal.close(),
 				},
 			});
 		},
