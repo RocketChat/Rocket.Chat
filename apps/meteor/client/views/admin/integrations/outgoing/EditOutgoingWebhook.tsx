@@ -100,11 +100,8 @@ const EditOutgoingWebhook = ({ webhookData }: { webhookData?: Serialized<IOutgoi
 
 	return (
 		<Page flexDirection='column'>
-			<PageHeader title={t('Integration_Outgoing_WebHook')}>
+			<PageHeader title={t('Integration_Outgoing_WebHook')} onClickBack={() => router.navigate('/admin/integrations/webhook-outgoing')}>
 				<ButtonGroup>
-					<Button icon='back' onClick={() => router.navigate('/admin/integrations/webhook-outgoing')}>
-						{t('Back')}
-					</Button>
 					{webhookData?._id && (
 						<Button onClick={() => router.navigate(`/admin/integrations/history/outgoing/${webhookData._id}`)}>{t('History')}</Button>
 					)}

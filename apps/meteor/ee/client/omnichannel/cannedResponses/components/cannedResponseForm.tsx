@@ -7,10 +7,9 @@ import { useFormContext, Controller } from 'react-hook-form';
 
 import AutoCompleteDepartment from '../../../../../client/components/AutoCompleteDepartment';
 import Tags from '../../../../../client/components/Omnichannel/Tags';
-import MarkdownTextEditor from './MarkdownTextEditor';
-import PreviewText from './PreviewText';
+import CannedResponsesComposer from './CannedResponsesComposer/CannedResponsesComposer';
+import CannedResponsesComposerPreview from './CannedResponsesComposer/CannedResponsesComposerPreview';
 
-// TODO: refactor Message field to get proper validation
 // TODO: refactor Tags field to get proper validation
 const CannedResponseForm = () => {
 	const t = useTranslation();
@@ -31,6 +30,7 @@ const CannedResponseForm = () => {
 	const [preview, setPreview] = useState(false);
 
 	const shortcutField = useUniqueId();
+	const messageField = useUniqueId();
 	const publicRadioField = useUniqueId();
 	const departmentRadioField = useUniqueId();
 	const privateRadioField = useUniqueId();
@@ -62,27 +62,40 @@ const CannedResponseForm = () => {
 				)}
 			</Field>
 			<Field>
-				<FieldLabel w='full'>
-					<Box w='full' display='flex' flexDirection='row' justifyContent='space-between'>
-						{t('Message')}
-						{text !== '' && (
-							<Box className={clickable} color='info' onClick={() => setPreview(!preview)}>
-								{preview ? t('Editor') : t('Preview')}
-							</Box>
-						)}
-					</Box>
+				<FieldLabel htmlFor={messageField} w='full' display='flex' flexDirection='row' justifyContent='space-between'>
+					{t('Message')}
+					{text !== '' && (
+						<Box className={clickable} color='info' onClick={() => setPreview(!preview)}>
+							{preview ? t('Editor') : t('Preview')}
+						</Box>
+					)}
 				</FieldLabel>
 				{preview ? (
-					<PreviewText text={text} />
+					<CannedResponsesComposerPreview text={text} />
 				) : (
 					<Controller
 						name='text'
 						control={control}
-						rules={{ required: t('Field_required') }}
-						render={({ field: { value, onChange } }) => <MarkdownTextEditor value={value} onChange={onChange} />}
+						rules={{ required: t('The_field_is_required', t('Message')) }}
+						render={({ field: { value, onChange, name, onBlur } }) => (
+							<CannedResponsesComposer
+								id={messageField}
+								value={value}
+								onChange={onChange}
+								name={name}
+								onBlur={onBlur}
+								aria-describedby={`${messageField}-error`}
+								aria-required={true}
+								aria-invalid={Boolean(errors.text)}
+							/>
+						)}
 					/>
 				)}
-				{errors?.text && <FieldError>{errors.text.message}</FieldError>}
+				{errors?.text && (
+					<FieldError aria-live='assertive' id={`${messageField}-error`}>
+						{errors.text.message}
+					</FieldError>
+				)}
 			</Field>
 			<Field>
 				<Controller name='tags' control={control} render={({ field: { value, onChange } }) => <Tags handler={onChange} tags={value} />} />
@@ -103,6 +116,7 @@ const CannedResponseForm = () => {
 										disabled={hasMonitorPermission && !hasManagerPermission}
 										checked={value === 'global'}
 										aria-describedby={`${publicRadioField}-hint`}
+										data-qa-id='canned-response-public-radio'
 									/>
 								)}
 							/>

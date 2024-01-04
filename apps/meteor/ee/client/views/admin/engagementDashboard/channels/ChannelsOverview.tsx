@@ -1,4 +1,4 @@
-import { Box, Icon, Margins, Pagination, Skeleton, Table, TableBody, TableCell, TableHead, TableRow, Tile } from '@rocket.chat/fuselage';
+import { Icon, Margins, Pagination, Skeleton, Table, TableBody, TableCell, TableHead, TableRow, Tile } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import type { ReactElement } from 'react';
@@ -59,7 +59,7 @@ const ChannelsOverview = (): ReactElement => {
 					}
 				/>
 			</EngagementDashboardCardFilter>
-			<Box>
+			<div>
 				{channels && !channels.length && (
 					<Tile fontScale='p1' color='hint' style={{ textAlign: 'center' }}>
 						{t('No_data_found')}
@@ -127,7 +127,7 @@ const ChannelsOverview = (): ReactElement => {
 					onSetItemsPerPage={setItemsPerPage}
 					onSetCurrent={setCurrent}
 				/>
-			</Box>
+			</div>
 		</>
 	);
 };

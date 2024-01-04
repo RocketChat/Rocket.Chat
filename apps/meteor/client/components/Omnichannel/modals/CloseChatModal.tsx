@@ -138,7 +138,7 @@ const CloseChatModal = ({
 
 	if (commentRequired || tagRequired || canSendTranscript) {
 		return (
-			<Modal wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(onSubmit)} {...props} />}>
+			<Modal wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(onSubmit)} {...props} data-qa-id='close-chat-modal' />}>
 				<Modal.Header>
 					<Modal.Icon name='baloon-close-top-right' />
 					<Modal.Title>{t('Wrap_up_conversation')}</Modal.Title>

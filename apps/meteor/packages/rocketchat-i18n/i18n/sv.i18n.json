@@ -5576,7 +5576,7 @@
   "onboarding.component.form.action.confirm": "Bekräfta",
   "onboarding.component.form.termsAndConditions": "Jag godkänner <1>villkoren</1> och <3>integritetspolicyn</3>",
   "onboarding.component.emailCodeFallback": "Fick du inget e-postmeddelande? <1>Skicka igen</1> eller <3>ändra e-postadressen</3>",
-  "onboarding.page.form.title": "Nu <1>startar</1> vi arbetsytan",
+  "onboarding.page.form.title": "Nu startar vi arbetsytan",
   "onboarding.page.emailConfirmed.title": "E-postadressen har bekräftats.",
   "onboarding.page.emailConfirmed.subtitle": "Du kan gå tillbaka till Rocket.Chat-applikationen. Vi har startat din arbetsyta.",
   "onboarding.page.checkYourEmail.title": "Titta i inkorgen",
