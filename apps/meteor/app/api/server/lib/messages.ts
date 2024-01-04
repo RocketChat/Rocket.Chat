@@ -82,6 +82,45 @@ export async function findStarredMessages({
 	};
 }
 
+export async function findMarkedAsDoneMessages({
+	uid,
+	roomId,
+	pagination: { offset, count, sort },
+}: {
+	uid: string;
+	roomId: string;
+	pagination: { offset: number; count: number; sort: FindOptions<IMessage>['sort'] };
+}): Promise<{
+	messages: IMessage[];
+	count: number;
+	offset: number;
+	total: number;
+}> {
+	const room = await Rooms.findOneById(roomId);
+	if (!room || !(await canAccessRoomAsync(room, { _id: uid }))) {
+		throw new Error('error-not-allowed');
+	}
+	const user = await Users.findOneById<Pick<IUser, 'username'>>(uid, { projection: { username: 1 } });
+	if (!user) {
+		throw new Error('invalid-user');
+	}
+
+	const { cursor, totalCount } = Messages.findMarkedAsDoneByUserAtRoom(uid, roomId, {
+		sort: sort || { ts: -1 },
+		skip: offset,
+		limit: count,
+	});
+
+	const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+	return {
+		messages,
+		count: messages.length,
+		offset,
+		total,
+	};
+}
+
 export async function findDiscussionsFromRoom({
 	uid,
 	roomId,

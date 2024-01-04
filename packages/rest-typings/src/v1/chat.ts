@@ -560,6 +560,38 @@ const GetStarredMessagesSchema = {
 
 export const isChatGetStarredMessagesProps = ajv.compile<GetStarredMessages>(GetStarredMessagesSchema);
 
+type GetMarkedAsDoneMessages = {
+	roomId: IRoom['_id'];
+	count?: number;
+	offset?: number;
+	sort?: string;
+};
+
+const GetMarkedAsDoneMessagesSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+export const isChatGetMarkedAsDoneMessagesProps = ajv.compile<GetMarkedAsDoneMessages>(GetMarkedAsDoneMessagesSchema);
+
 type GetPinnedMessages = {
 	roomId: IRoom['_id'];
 	count?: number;
@@ -966,6 +998,14 @@ export type ChatEndpoints = {
 	};
 	'/v1/chat.getStarredMessages': {
 		GET: (params: GetStarredMessages) => {
+			messages: IMessage[];
+			count: number;
+			offset: number;
+			total: number;
+		};
+	};
+	'/v1/chat.getMarkedAsDoneMessages': {
+		GET: (params: GetMarkedAsDoneMessages) => {
 			messages: IMessage[];
 			count: number;
 			offset: number;

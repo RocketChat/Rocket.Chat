@@ -25,6 +25,7 @@ import { usePushNotificationsRoomAction } from './hooks/roomActions/usePushNotif
 import { useRocketSearchRoomAction } from './hooks/roomActions/useRocketSearchRoomAction';
 import { useRoomInfoRoomAction } from './hooks/roomActions/useRoomInfoRoomAction';
 import { useStarredMessagesRoomAction } from './hooks/roomActions/useStarredMessagesRoomAction';
+import { useMarkedAsDoneMessagesRoomAction } from './hooks/roomActions/useMarkedAsDoneMessagesRoomAction';
 import { useStartCallRoomAction } from './hooks/roomActions/useStartCallRoomAction';
 import { useTeamChannelsRoomAction } from './hooks/roomActions/useTeamChannelsRoomAction';
 import { useTeamInfoRoomAction } from './hooks/roomActions/useTeamInfoRoomAction';
@@ -64,6 +65,7 @@ export const roomActionHooks = [
 	useRocketSearchRoomAction,
 	useRoomInfoRoomAction,
 	useStarredMessagesRoomAction,
+	useMarkedAsDoneMessagesRoomAction,
 	useStartCallRoomAction,
 	useTeamChannelsRoomAction,
 	useUploadedFilesListRoomAction,

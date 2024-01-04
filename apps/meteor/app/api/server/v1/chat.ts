@@ -22,7 +22,7 @@ import { MessageTypes } from '../../../ui-utils/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
-import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } from '../lib/messages';
+import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages, findMarkedAsDoneMessages } from '../lib/messages';
 
 API.v1.addRoute(
 	'chat.delete',
@@ -818,6 +818,35 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-params', 'The required "roomId" query param is missing.');
 			}
 			const messages = await findStarredMessages({
+				uid: this.userId,
+				roomId,
+				pagination: {
+					offset,
+					count,
+					sort,
+				},
+			});
+
+			messages.messages = await normalizeMessagesForUser(messages.messages, this.userId);
+
+			return API.v1.success(messages);
+		},
+	},
+);
+
+API.v1.addRoute(
+	'chat.getMarkedAsDoneMessages',
+	{ authRequired: true },
+	{
+		async get() {
+			const { roomId } = this.queryParams;
+			const { sort } = await this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+
+			if (!roomId) {
+				throw new Meteor.Error('error-invalid-params', 'The required "roomId" query param is missing.');
+			}
+			const messages = await findMarkedAsDoneMessages({
 				uid: this.userId,
 				roomId,
 				pagination: {

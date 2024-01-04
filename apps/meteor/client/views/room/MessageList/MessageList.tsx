@@ -33,7 +33,7 @@ export const MessageList = function MessageList({ rid, messageListRef }: Message
 					const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
 					const showUnreadDivider = firstUnreadMessageId === message._id;
 					const system = MessageTypes.isSystemMessage(message); 
-					const shouldHideBecauseMarkedAsDone = message.markedAsDone && userId ? message.markedAsDone.some(marker => marker._id === userId) : false;
+					const shouldHideBecauseMarkedAsDone = message.markedAsDone && userId ? message.markedAsDone.some((marker : any) => marker._id === userId) : false;
 
 					const visible = !isThreadMessage(message) && !system && !shouldHideBecauseMarkedAsDone;
 

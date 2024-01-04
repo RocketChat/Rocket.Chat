@@ -118,6 +118,20 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.findPaginated(query, options);
 	}
 
+	findMarkedAsDoneByUserAtRoom(
+		userId: IUser['_id'],
+		roomId: IRoom['_id'],
+		options?: FindOptions<IMessage>,
+	): FindPaginated<FindCursor<IMessage>> {
+		const query: Filter<IMessage> = {
+			'_hidden': { $ne: true },
+			'markedAsDone._id': userId,
+			'rid': roomId,
+		};
+
+		return this.findPaginated(query, options);
+	}
+
 	findPaginatedByRoomIdAndType(
 		roomId: IRoom['_id'],
 		type: IMessage['t'],
