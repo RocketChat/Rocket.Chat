@@ -1,7 +1,7 @@
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
-import VerticalBar from '../../../../../components/VerticalBar';
+import { Contextualbar } from '../../../../../components/Contextualbar';
 import InviteUsers from './InviteUsers';
 
 export default {
@@ -11,7 +11,7 @@ export default {
 		layout: 'fullscreen',
 		actions: { argTypesRegex: '^on.*' },
 	},
-	decorators: [(fn) => <VerticalBar height='100vh'>{fn()}</VerticalBar>],
+	decorators: [(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>],
 } as ComponentMeta<typeof InviteUsers>;
 
 export const Default: ComponentStory<typeof InviteUsers> = (args) => <InviteUsers {...args} />;

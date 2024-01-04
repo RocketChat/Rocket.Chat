@@ -1,13 +1,9 @@
-import fs from 'fs';
-
-import { Meteor } from 'meteor/meteor';
+import fsp from 'fs/promises';
 
 import { UploadFS } from '../../../../server/ufs';
 import { settings } from '../../../settings/server';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import { getFileRange, setRangeHeaders } from '../lib/ranges';
-
-const statSync = Meteor.wrapAsync(fs.stat);
 
 const FileSystemUploads = new FileUploadClass({
 	name: 'FileSystem:Uploads',
@@ -17,12 +13,12 @@ const FileSystemUploads = new FileUploadClass({
 		if (!this.store || !file) {
 			return;
 		}
-		const filePath = this.store.getFilePath(file._id, file);
+		const filePath = await this.store.getFilePath(file._id, file);
 
 		const options: { start?: number; end?: number } = {};
 
 		try {
-			const stat = statSync(filePath);
+			const stat = await fsp.stat(filePath);
 			if (!stat?.isFile()) {
 				res.writeHead(404);
 				res.end();
@@ -52,7 +48,7 @@ const FileSystemUploads = new FileUploadClass({
 				res.setHeader('Content-Length', file.size || 0);
 			}
 
-			this.store.getReadStream(file._id, file, options).pipe(res);
+			(await this.store.getReadStream(file._id, file, options)).pipe(res);
 		} catch (e) {
 			res.writeHead(404);
 			res.end();
@@ -63,14 +59,14 @@ const FileSystemUploads = new FileUploadClass({
 		if (!this.store) {
 			return;
 		}
-		const filePath = this.store.getFilePath(file._id, file);
+		const filePath = await this.store.getFilePath(file._id, file);
 		try {
-			const stat = statSync(filePath);
+			const stat = await fsp.stat(filePath);
 
 			if (stat?.isFile()) {
 				file = FileUpload.addExtensionTo(file);
 
-				this.store.getReadStream(file._id, file).pipe(out);
+				(await this.store.getReadStream(file._id, file)).pipe(out);
 			}
 		} catch (e) {
 			out.end();
@@ -86,15 +82,15 @@ const FileSystemAvatars = new FileUploadClass({
 		if (!this.store) {
 			return;
 		}
-		const filePath = this.store.getFilePath(file._id, file);
+		const filePath = await this.store.getFilePath(file._id, file);
 
 		try {
-			const stat = statSync(filePath);
+			const stat = await fsp.stat(filePath);
 
 			if (stat?.isFile()) {
 				file = FileUpload.addExtensionTo(file);
 
-				this.store.getReadStream(file._id, file).pipe(res);
+				(await this.store.getReadStream(file._id, file)).pipe(res);
 			}
 		} catch (e) {
 			res.writeHead(404);
@@ -110,10 +106,10 @@ const FileSystemUserDataFiles = new FileUploadClass({
 		if (!this.store) {
 			return;
 		}
-		const filePath = this.store.getFilePath(file._id, file);
+		const filePath = await this.store.getFilePath(file._id, file);
 
 		try {
-			const stat = statSync(filePath);
+			const stat = await fsp.stat(filePath);
 
 			if (stat?.isFile()) {
 				file = FileUpload.addExtensionTo(file);
@@ -122,7 +118,7 @@ const FileSystemUserDataFiles = new FileUploadClass({
 				res.setHeader('Content-Type', file.type || '');
 				res.setHeader('Content-Length', file.size || 0);
 
-				this.store.getReadStream(file._id, file).pipe(res);
+				(await this.store.getReadStream(file._id, file)).pipe(res);
 			}
 		} catch (e) {
 			res.writeHead(404);
@@ -131,7 +127,7 @@ const FileSystemUserDataFiles = new FileUploadClass({
 	},
 });
 
-settings.watch('FileUpload_FileSystemPath', function () {
+settings.watch('FileUpload_FileSystemPath', () => {
 	const options = {
 		path: settings.get('FileUpload_FileSystemPath'), // '/tmp/uploads/photos',
 	};

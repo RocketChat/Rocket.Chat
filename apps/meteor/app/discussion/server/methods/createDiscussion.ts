@@ -1,17 +1,20 @@
-import { Meteor } from 'meteor/meteor';
-import { Random } from '@rocket.chat/random';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import type { IMessage, IRoom, IUser, MessageAttachmentDefault } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import { Messages, Rooms } from '@rocket.chat/models';
 import { Message } from '@rocket.chat/core-services';
+import type { IMessage, IRoom, IUser, MessageAttachmentDefault } from '@rocket.chat/core-typings';
+import { Messages, Rooms, Users } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
-import { hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
-import { createRoom, addUserToRoom, sendMessage, attachMessage } from '../../../lib/server';
-import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
+import { i18n } from '../../../../server/lib/i18n';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
+import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
+import { hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
+import { attachMessage } from '../../../lib/server/functions/attachMessage';
+import { createRoom } from '../../../lib/server/functions/createRoom';
+import { sendMessage } from '../../../lib/server/functions/sendMessage';
+import { settings } from '../../../settings/server';
 
 const getParentRoom = async (rid: IRoom['_id']) => {
 	const room = await Rooms.findOne(rid);
@@ -35,7 +38,7 @@ async function createDiscussionMessage(
 
 async function mentionMessage(
 	rid: IRoom['_id'],
-	{ _id, username }: Pick<IUser, '_id' | 'username'>,
+	{ _id, username, name }: Pick<IUser, '_id' | 'username' | 'name'>,
 	messageEmbedded?: MessageAttachmentDefault,
 ) {
 	if (!username) {
@@ -44,7 +47,7 @@ async function mentionMessage(
 	await Messages.insertOne({
 		rid,
 		msg: '',
-		u: { _id, username },
+		u: { _id, username, name },
 		ts: new Date(),
 		_updatedAt: new Date(),
 		...(messageEmbedded && { attachments: [messageEmbedded] }),
@@ -61,7 +64,15 @@ type CreateDiscussionProperties = {
 	encrypted?: boolean;
 };
 
-const create = async ({ prid, pmid, t_name: discussionName, reply, users, user, encrypted }: CreateDiscussionProperties) => {
+const create = async ({
+	prid,
+	pmid,
+	t_name: discussionName,
+	reply,
+	users,
+	user,
+	encrypted,
+}: CreateDiscussionProperties): Promise<IRoom & { rid: string }> => {
 	// if you set both, prid and pmid, and the rooms dont match... should throw an error)
 	let message: null | IMessage = null;
 	if (pmid) {
@@ -123,7 +134,7 @@ const create = async ({ prid, pmid, t_name: discussionName, reply, users, user, 
 		if (discussionAlreadyExists) {
 			// do not allow multiple discussions to the same message'\
 			await addUserToRoom(discussionAlreadyExists._id, user);
-			return discussionAlreadyExists;
+			return { ...discussionAlreadyExists, rid: discussionAlreadyExists._id };
 		}
 	}
 
@@ -145,8 +156,9 @@ const create = async ({ prid, pmid, t_name: discussionName, reply, users, user, 
 	const discussion = await createRoom(
 		type,
 		name,
-		user.username as string,
+		user,
 		[...new Set(invitedUsers)].filter(Boolean),
+		false,
 		false,
 		{
 			fname: discussionName,
@@ -165,7 +177,7 @@ const create = async ({ prid, pmid, t_name: discussionName, reply, users, user, 
 	let discussionMsg;
 	if (message) {
 		if (parentRoom.encrypted) {
-			message.msg = TAPi18n.__('Encrypted_message');
+			message.msg = i18n.t('Encrypted_message');
 		}
 		await mentionMessage(discussion._id, user, attachMessage(message, parentRoom));
 
@@ -174,12 +186,12 @@ const create = async ({ prid, pmid, t_name: discussionName, reply, users, user, 
 		discussionMsg = await createDiscussionMessage(prid, user, discussion._id, discussionName);
 	}
 
-	if (discussionMsg) {
-		callbacks.runAsync('afterSaveMessage', discussionMsg, parentRoom);
-	}
-
 	if (reply) {
 		await sendMessage(user, { msg: reply }, discussion);
+	}
+
+	if (discussionMsg) {
+		callbacks.runAsync('afterSaveMessage', discussionMsg, parentRoom);
 	}
 	return discussion;
 };
@@ -190,6 +202,37 @@ declare module '@rocket.chat/ui-contexts' {
 		createDiscussion: typeof create;
 	}
 }
+
+export const createDiscussion = async (
+	userId: string,
+	{ prid, pmid, t_name: discussionName, reply, users, encrypted }: Omit<CreateDiscussionProperties, 'user'>,
+): Promise<
+	IRoom & {
+		rid: string;
+	}
+> => {
+	if (!settings.get('Discussion_enabled')) {
+		throw new Meteor.Error('error-action-not-allowed', 'You are not allowed to create a discussion', { method: 'createDiscussion' });
+	}
+
+	if (!userId) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			method: 'DiscussionCreation',
+		});
+	}
+
+	if (!(await hasAtLeastOnePermissionAsync(userId, ['start-discussion', 'start-discussion-other-user'], prid))) {
+		throw new Meteor.Error('error-action-not-allowed', 'You are not allowed to create a discussion', { method: 'createDiscussion' });
+	}
+	const user = await Users.findOneById(userId);
+	if (!user) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			method: 'createDiscussion',
+		});
+	}
+
+	return create({ prid, pmid, t_name: discussionName, reply, users, user, encrypted });
+};
 
 Meteor.methods<ServerMethods>({
 	/**
@@ -203,10 +246,6 @@ Meteor.methods<ServerMethods>({
 	 * @param {boolean} encrypted - if the discussion's e2e encryption should be enabled.
 	 */
 	async createDiscussion({ prid, pmid, t_name: discussionName, reply, users, encrypted }: CreateDiscussionProperties) {
-		if (!settings.get('Discussion_enabled')) {
-			throw new Meteor.Error('error-action-not-allowed', 'You are not allowed to create a discussion', { method: 'createDiscussion' });
-		}
-
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -214,10 +253,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!(await hasAtLeastOnePermissionAsync(uid, ['start-discussion', 'start-discussion-other-user']))) {
-			throw new Meteor.Error('error-action-not-allowed', 'You are not allowed to create a discussion', { method: 'createDiscussion' });
-		}
-
-		return create({ prid, pmid, t_name: discussionName, reply, users, user: (await Meteor.userAsync()) as IUser, encrypted });
+		return createDiscussion(uid, { prid, pmid, t_name: discussionName, reply, users, encrypted });
 	},
 });

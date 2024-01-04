@@ -1,13 +1,14 @@
-import { isGETWebRTCCall, isPUTWebRTCCallId } from '@rocket.chat/rest-typings';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { Message, Omnichannel } from '@rocket.chat/core-services';
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Messages, Settings, Rooms } from '@rocket.chat/models';
-import { Message } from '@rocket.chat/core-services';
+import { isGETWebRTCCall, isPUTWebRTCCallId } from '@rocket.chat/rest-typings';
 
-import { settings as rcSettings } from '../../../../settings/server';
+import { i18n } from '../../../../../server/lib/i18n';
 import { API } from '../../../../api/server';
-import { settings } from '../lib/livechat';
 import { canSendMessageAsync } from '../../../../authorization/server/functions/canSendMessage';
-import { Livechat } from '../../lib/Livechat';
+import { settings as rcSettings } from '../../../../settings/server';
+import { Livechat } from '../../lib/LivechatTyped';
+import { settings } from '../lib/livechat';
 
 API.v1.addRoute(
 	'livechat/webrtc.call',
@@ -27,6 +28,10 @@ API.v1.addRoute(
 				throw new Error('invalid-room');
 			}
 
+			if (!(await Omnichannel.isWithinMACLimit(room as IOmnichannelRoom))) {
+				throw new Error('error-mac-limit-reached');
+			}
+
 			const webrtcCallingAllowed = rcSettings.get('WebRTC_Enabled') === true && rcSettings.get('Omnichannel_call_provider') === 'WebRTC';
 			if (!webrtcCallingAllowed) {
 				throw new Error('webRTC calling not enabled');
@@ -44,15 +49,9 @@ API.v1.addRoute(
 				callStatus = 'ringing';
 				await Rooms.setCallStatusAndCallStartTime(room._id, callStatus);
 
-				await Message.saveSystemMessage(
-					'livechat_webrtc_video_call',
-					room._id,
-					TAPi18n.__('Join_my_room_to_start_the_video_call'),
-					this.user,
-					{
-						actionLinks: config.theme.actionLinks.webrtc,
-					},
-				);
+				await Message.saveSystemMessage('livechat_webrtc_video_call', room._id, i18n.t('Join_my_room_to_start_the_video_call'), this.user, {
+					actionLinks: config.theme.actionLinks.webrtc,
+				});
 			}
 			const videoCall = {
 				rid: room._id,
@@ -83,6 +82,10 @@ API.v1.addRoute(
 			);
 			if (!room) {
 				throw new Error('invalid-room');
+			}
+
+			if (!(await Omnichannel.isWithinMACLimit(room as IOmnichannelRoom))) {
+				throw new Error('error-mac-limit-reached');
 			}
 
 			const call = await Messages.findOneById(callId);

@@ -1,6 +1,6 @@
 import { memo, useEffect, useState, useMemo } from 'preact/compat';
 
-import { createClassName } from '../../../helpers';
+import { createClassName } from '../../../../helpers/createClassName';
 import Block from '../Block';
 import styles from './styles.scss';
 

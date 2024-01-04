@@ -1,14 +1,14 @@
 import EventEmitter from 'events';
 
 import type { IRocketChatRecord } from '@rocket.chat/core-typings';
-import type { Timestamp, Db, ChangeStreamDeleteDocument, ChangeStreamInsertDocument, ChangeStreamUpdateDocument } from 'mongodb';
+import type { Logger } from '@rocket.chat/logger';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { Timestamp, Db, ChangeStreamDeleteDocument, ChangeStreamInsertDocument, ChangeStreamUpdateDocument } from 'mongodb';
 import { MongoClient } from 'mongodb';
 
-import type { Logger } from '../lib/logger/Logger';
 import { convertChangeStreamPayload } from './convertChangeStreamPayload';
 import { convertOplogPayload } from './convertOplogPayload';
-import { watchCollections } from './watchCollections';
+import { getWatchCollections } from './watchCollections';
 
 const instancePing = parseInt(String(process.env.MULTIPLE_INSTANCES_PING_INTERVAL)) || 10000;
 
@@ -28,6 +28,8 @@ const ignoreChangeStream = ['yes', 'true'].includes(String(process.env.IGNORE_CH
 
 const useMeteorOplog = ['yes', 'true'].includes(String(process.env.USE_NATIVE_OPLOG).toLowerCase());
 
+const useFullDocument = ['yes', 'true'].includes(String(process.env.CHANGESTREAM_FULL_DOCUMENT).toLowerCase());
+
 export class DatabaseWatcher extends EventEmitter {
 	private db: Db;
 
@@ -37,10 +39,14 @@ export class DatabaseWatcher extends EventEmitter {
 
 	private logger: Logger;
 
+	private resumeRetryCount = 0;
+
 	/**
 	 * Last doc timestamp received from a real time event
 	 */
 	private lastDocTS: Date;
+
+	private watchCollections: string[];
 
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	constructor({ db, _oplogHandle, metrics, logger: LoggerClass }: { db: Db; _oplogHandle?: any; metrics?: any; logger: typeof Logger }) {
@@ -53,6 +59,8 @@ export class DatabaseWatcher extends EventEmitter {
 	}
 
 	async watch(): Promise<void> {
+		this.watchCollections = getWatchCollections();
+
 		if (useMeteorOplog) {
 			// TODO remove this when updating to Meteor 2.8
 			this.logger.warn(
@@ -80,7 +88,7 @@ export class DatabaseWatcher extends EventEmitter {
 		}
 
 		const isMasterDoc = await this.db.admin().command({ ismaster: 1 });
-		if (!isMasterDoc || !isMasterDoc.setName) {
+		if (!isMasterDoc?.setName) {
 			throw Error("$MONGO_URL should be a replica set's URL");
 		}
 
@@ -119,7 +127,7 @@ export class DatabaseWatcher extends EventEmitter {
 		const stream = cursor.stream();
 
 		stream.on('data', (doc) => {
-			const doesMatter = watchCollections.some((collection) => doc.ns === `${dbName}.${collection}`);
+			const doesMatter = this.watchCollections.some((collection) => doc.ns === `${dbName}.${collection}`);
 			if (!doesMatter) {
 				return;
 			}
@@ -141,41 +149,65 @@ export class DatabaseWatcher extends EventEmitter {
 
 		this.logger.startup('Using Meteor oplog');
 
-		watchCollections.forEach((collection) => {
+		this.watchCollections.forEach((collection) => {
 			this._oplogHandle.onOplogEntry({ collection }, (event: any) => {
 				this.emitDoc(collection, convertOplogPayload(event));
 			});
 		});
 	}
 
-	private watchChangeStream(): void {
+	private watchChangeStream(resumeToken?: unknown): void {
 		try {
+			const options = {
+				...(useFullDocument ? { fullDocument: 'updateLookup' } : {}),
+				...(resumeToken ? { startAfter: resumeToken } : {}),
+			};
+
+			let lastEvent: unknown;
+
 			const changeStream = this.db.watch<
 				IRocketChatRecord,
 				| ChangeStreamInsertDocument<IRocketChatRecord>
 				| ChangeStreamUpdateDocument<IRocketChatRecord>
 				| ChangeStreamDeleteDocument<IRocketChatRecord>
-			>([
-				{
-					$match: {
-						'operationType': { $in: ['insert', 'update', 'delete'] },
-						'ns.coll': { $in: watchCollections },
+			>(
+				[
+					{
+						$match: {
+							'operationType': { $in: ['insert', 'update', 'delete'] },
+							'ns.coll': { $in: this.watchCollections },
+						},
 					},
-				},
-			]);
+				],
+				options,
+			);
 			changeStream.on('change', (event) => {
+				// reset retry counter
+				this.resumeRetryCount = 0;
+
+				// save last event to resume on error
+				lastEvent = event._id;
+
 				this.emitDoc(event.ns.coll, convertChangeStreamPayload(event));
 			});
 
 			changeStream.on('error', (err) => {
+				if (this.resumeRetryCount++ < 5) {
+					this.logger.warn({ msg: `Change stream error. Trying resume after ${this.resumeRetryCount} seconds.`, err });
+
+					setTimeout(() => {
+						this.watchChangeStream(lastEvent);
+					}, this.resumeRetryCount * 1000);
+
+					return;
+				}
+
 				throw err;
 			});
 
 			this.logger.startup('Using change streams');
 		} catch (err: unknown) {
-			this.logger.error(err, 'Change stream error');
-
-			throw err;
+			this.logger.fatal({ msg: 'Cannot resume change stream.', err });
 		}
 	}
 

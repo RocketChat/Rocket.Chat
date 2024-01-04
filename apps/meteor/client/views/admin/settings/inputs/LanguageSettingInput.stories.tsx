@@ -45,6 +45,6 @@ WithResetButton.args = {
 	_id: 'setting_id',
 	label: 'Label',
 	placeholder: 'Placeholder',
-	value: ['1', '2', '3'],
+	value: '1',
 	hasResetButton: true,
 };

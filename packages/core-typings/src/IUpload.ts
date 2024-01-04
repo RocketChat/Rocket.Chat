@@ -1,3 +1,5 @@
+import type { IUser } from './IUser';
+
 export interface IUpload {
 	_id: string;
 	typeGroup?: string;
@@ -15,7 +17,8 @@ export interface IUpload {
 	etag?: string;
 	size?: number;
 	identify?: {
-		size: {
+		format?: string;
+		size?: {
 			width: number;
 			height: number;
 		};
@@ -46,3 +49,5 @@ export interface IUpload {
 		path: string;
 	};
 }
+
+export type IUploadWithUser = IUpload & { user?: Pick<IUser, '_id' | 'name' | 'username'> };

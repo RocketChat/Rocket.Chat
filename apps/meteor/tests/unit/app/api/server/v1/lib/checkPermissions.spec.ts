@@ -1,5 +1,3 @@
-/* eslint-disable import/order */
-/* eslint-disable import/no-duplicates */
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
 

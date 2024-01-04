@@ -1,10 +1,10 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { ISubscription } from '@rocket.chat/core-typings';
 import { Subscriptions } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
-import { getUserNotificationPreference } from '../../../utils/server';
+import { getUserNotificationPreference } from '../../../utils/server/getUserNotificationPreference';
 
 const saveAudioNotificationValue = (subId: ISubscription['_id'], value: string) =>
 	value === 'default' ? Subscriptions.clearAudioNotificationValueById(subId) : Subscriptions.updateAudioNotificationValueById(subId, value);
@@ -44,7 +44,14 @@ Meteor.methods<ServerMethods>({
 
 		const getNotificationPrefValue = async (field: string, value: unknown) => {
 			if (value === 'default') {
-				const userPref = await getUserNotificationPreference(Meteor.userId(), field);
+				const userId = Meteor.userId();
+				if (!userId) {
+					throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+						method: 'saveNotificationSettings',
+					});
+				}
+
+				const userPref = await getUserNotificationPreference(userId, field);
 				return userPref?.origin === 'server' ? null : userPref;
 			}
 			return { value, origin: 'subscription' };

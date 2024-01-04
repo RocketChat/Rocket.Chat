@@ -1,7 +1,7 @@
 import type { INpsVote, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import { INpsVoteStatus } from '@rocket.chat/core-typings';
 import type { INpsVoteModel } from '@rocket.chat/model-typings';
 import type { Collection, FindCursor, Db, Document, FindOptions, IndexDescription, UpdateResult } from 'mongodb';
-import { INpsVoteStatus } from '@rocket.chat/core-typings';
 import { ObjectId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';

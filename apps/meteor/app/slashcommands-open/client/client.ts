@@ -1,15 +1,15 @@
-import type { RoomType, ISubscription } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
+import type { RoomType, ISubscription, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import type { Mongo } from 'meteor/mongo';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
-import { slashCommands } from '../../utils/lib/slashCommand';
+import { router } from '../../../client/providers/RouterProvider';
 import { Subscriptions, ChatSubscription } from '../../models/client';
+import { sdk } from '../../utils/client/lib/SDKClient';
+import { slashCommands } from '../../utils/lib/slashCommand';
 
 slashCommands.add({
 	command: 'open',
-	callback: async function Open(_command, params): Promise<void> {
+	callback: async function Open({ params }: SlashCommandCallbackParams<'open'>): Promise<void> {
 		const dict: Record<string, RoomType[]> = {
 			'#': ['c', 'p'],
 			'@': ['d'],
@@ -26,22 +26,22 @@ slashCommands.add({
 		const subscription = ChatSubscription.findOne(query);
 
 		if (subscription) {
-			roomCoordinator.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
+			roomCoordinator.openRouteLink(subscription.t, subscription, router.getSearchParameters());
 		}
 
 		if (type && type.indexOf('d') === -1) {
 			return;
 		}
-		return Meteor.callAsync('createDirectMessage', room, function (err: Meteor.Error) {
-			if (err) {
-				return;
-			}
+		try {
+			await sdk.call('createDirectMessage', room);
 			const subscription = Subscriptions.findOne(query);
 			if (!subscription) {
 				return;
 			}
-			roomCoordinator.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
-		});
+			roomCoordinator.openRouteLink(subscription.t, subscription, router.getSearchParameters());
+		} catch (err: unknown) {
+			// noop
+		}
 	},
 	options: {
 		description: 'Opens_a_channel_group_or_direct_message',

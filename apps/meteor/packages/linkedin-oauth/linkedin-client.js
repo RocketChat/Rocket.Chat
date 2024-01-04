@@ -9,17 +9,16 @@ export const Linkedin = {};
 // @param credentialRequestCompleteCallback {Function} Callback function to call on
 //   completion. Takes one argument, credentialToken on success, or Error on
 //   error.
-Linkedin.requestCredential = function (options, credentialRequestCompleteCallback) {
+Linkedin.requestCredential = async function (options, credentialRequestCompleteCallback) {
 	// support both (options, callback) and (callback).
 	if (!credentialRequestCompleteCallback && typeof options === 'function') {
 		credentialRequestCompleteCallback = options;
 		options = {};
 	}
 
-	const config = ServiceConfiguration.configurations.findOne({ service: 'linkedin' });
+	const config = await ServiceConfiguration.configurations.findOneAsync({ service: 'linkedin' });
 	if (!config) {
-		credentialRequestCompleteCallback && credentialRequestCompleteCallback(new ServiceConfiguration.ConfigError('Service not configured'));
-		return;
+		throw new ServiceConfiguration.ConfigError('Service not configured');
 	}
 
 	const credentialToken = Random.secret();
@@ -30,7 +29,7 @@ Linkedin.requestCredential = function (options, credentialRequestCompleteCallbac
 		scope = requestPermissions.join('+');
 	} else {
 		// If extra permissions not passed, we need to request basic, available to all
-		scope = 'r_emailaddress+r_liteprofile';
+		scope = 'openid+email+profile';
 	}
 	const loginStyle = OAuth._loginStyle('linkedin', config, options);
 	if (!otherOptionsToPassThrough.popupOptions) {

@@ -1,17 +1,17 @@
 import { useEffect } from 'preact/hooks';
 
+import { createClassName } from '../../helpers/createClassName';
 import ChatIcon from '../../icons/chat.svg';
 import CloseIcon from '../../icons/close.svg';
 import { Button } from '../Button';
 import { Footer, FooterContent, PoweredBy } from '../Footer';
 import { PopoverContainer } from '../Popover';
 import { Sound } from '../Sound';
-import { createClassName } from '../helpers';
 import ScreenHeader from './Header';
 import styles from './styles.scss';
 
-export const ScreenContent = ({ children, nopadding, triggered = false }) => (
-	<main className={createClassName(styles, 'screen__main', { nopadding, triggered })}>{children}</main>
+export const ScreenContent = ({ children, nopadding, triggered = false, full = false }) => (
+	<main className={createClassName(styles, 'screen__main', { nopadding, triggered, full })}>{children}</main>
 );
 
 export const ScreenFooter = ({ children, options, limit }) => (
@@ -72,6 +72,7 @@ const CssVar = ({ theme }) => {
 	);
 };
 
+/** @type {{ (props: any) => JSX.Element; Content: (props: any) => JSX.Element; Footer: (props: any) => JSX.Element }} */
 export const Screen = ({
 	theme = {},
 	agent,

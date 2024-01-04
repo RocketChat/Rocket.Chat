@@ -1,7 +1,6 @@
-/* eslint-env mocha */
-
 import type { ISetting } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
+import { before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
@@ -21,21 +20,21 @@ describe('LIVECHAT - Integrations', function () {
 			await updatePermission('view-livechat-manager', []);
 			await request.get(api('livechat/integrations.settings')).set(credentials).expect('Content-Type', 'application/json').expect(403);
 		});
-
-		it('should return an array of settings', async () => {
-			await updatePermission('view-livechat-manager', ['admin']);
-			await request
-				.get(api('livechat/integrations.settings'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
+		it('should return an array of settings', (done) => {
+			updatePermission('view-livechat-manager', ['admin'])
+				.then(async () => {
+					const res = await request
+						.get(api('livechat/integrations.settings'))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200);
 					expect(res.body).to.have.property('success', true);
 					expect(res.body.settings).to.be.an('array');
 					const settingIds = res.body.settings.map((setting: ISetting) => setting._id);
 					expect(settingIds).to.include.members([
 						'Livechat_webhookUrl',
 						'Livechat_secret_token',
+						'Livechat_http_timeout',
 						'Livechat_webhook_on_start',
 						'Livechat_webhook_on_close',
 						'Livechat_webhook_on_chat_taken',
@@ -45,7 +44,9 @@ describe('LIVECHAT - Integrations', function () {
 						'Livechat_webhook_on_visitor_message',
 						'Livechat_webhook_on_agent_message',
 					]);
-				});
+				})
+				.then(done)
+				.catch(done);
 		});
 	});
 
@@ -120,6 +121,8 @@ describe('LIVECHAT - Integrations', function () {
 	});
 
 	describe('Livechat - Webhooks', () => {
+		const webhookUrl = process.env.WEBHOOK_TEST_URL || 'https://httpbin.org';
+
 		describe('livechat/webhook.test', () => {
 			it('should fail when user doesnt have view-livechat-webhooks permission', async () => {
 				await updatePermission('view-livechat-webhooks', []);
@@ -129,20 +132,61 @@ describe('LIVECHAT - Integrations', function () {
 			it('should fail if setting Livechat_webhookUrl is not set', async () => {
 				await updateSetting('Livechat_webhookUrl', '');
 				await updatePermission('view-livechat-webhooks', ['admin', 'livechat-manager']);
-				await setTimeout(() => null, 1000);
 				const response = await request.post(api('livechat/webhook.test')).set(credentials).expect(400);
 				expect(response.body).to.have.property('success', false);
 			});
 			it('should return true if webhook test went good', async () => {
-				await updateSetting('Livechat_webhookUrl', 'https://httpbin.org/status/200');
-				await setTimeout(() => null, 1000);
+				await updateSetting('Livechat_webhookUrl', `${webhookUrl}/status/200`);
 				const response = await request.post(api('livechat/webhook.test')).set(credentials).expect(200);
 				expect(response.body.success).to.be.true;
 			});
 			it('should fail if webhook test went bad', async () => {
-				await updateSetting('Livechat_webhookUrl', 'https://httpbin.org/status/400');
-				await setTimeout(() => null, 1000);
+				await updateSetting('Livechat_webhookUrl', `${webhookUrl}/status/400`);
 				await request.post(api('livechat/webhook.test')).set(credentials).expect(400);
+			});
+		});
+	});
+	describe('omnichannel/integrations', () => {
+		describe('POST', () => {
+			it('should update the integration settings if the required parameters are provided', async () => {
+				const response = await request
+					.post(api('omnichannel/integrations'))
+					.set(credentials)
+					.send({
+						LivechatWebhookUrl: 'http://localhost:8080',
+						LivechatSecretToken: 'asdfasdf',
+						LivechatHttpTimeout: 3000,
+						LivechatWebhookOnStart: false,
+						LivechatWebhookOnClose: false,
+						LivechatWebhookOnChatTaken: false,
+						LivechatWebhookOnChatQueued: false,
+						LivechatWebhookOnForward: false,
+						LivechatWebhookOnOfflineMsg: false,
+						LivechatWebhookOnVisitorMessage: false,
+						LivechatWebhookOnAgentMessage: false,
+					})
+					.expect(200);
+				expect(response.body).to.have.property('success', true);
+			});
+			it('should fail if a wrong type is provided', async () => {
+				const response = await request
+					.post(api('omnichannel/integrations'))
+					.set(credentials)
+					.send({
+						LivechatWebhookUrl: 8000,
+					})
+					.expect(200);
+				expect(response.body).to.have.property('success', true);
+			});
+			it('should fail if a wrong setting is provided', async () => {
+				const response = await request
+					.post(api('omnichannel/integrations'))
+					.set(credentials)
+					.send({
+						LivechatWebhook_url: 'http://localhost:8000',
+					})
+					.expect(400);
+				expect(response.body).to.have.property('success', false);
 			});
 		});
 	});

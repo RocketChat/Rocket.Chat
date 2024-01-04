@@ -1,5 +1,5 @@
-import { Meteor } from 'meteor/meteor';
 import { OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../../lib/callbacks';
 

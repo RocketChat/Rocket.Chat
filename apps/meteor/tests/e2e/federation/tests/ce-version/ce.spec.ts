@@ -1,4 +1,4 @@
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 
 import * as constants from '../../config/constants';
 import { FederationChannel } from '../../page-objects/channel';
@@ -70,7 +70,7 @@ test.describe.parallel('Federation - CE version', () => {
 	});
 
 	test('expect to not be able to invite federated users to non-federated rooms (using modal)', async () => {
-		const channelName = faker.datatype.uuid();
+		const channelName = faker.string.uuid();
 		await poFederationChannelServer2.createNonFederatedPublicChannelAndInviteUsersUsingCreationModal(channelName, [
 			fullUsernameFromServer2,
 		]);

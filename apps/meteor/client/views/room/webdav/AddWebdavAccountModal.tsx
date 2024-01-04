@@ -1,5 +1,5 @@
 import type { IWebdavAccountPayload } from '@rocket.chat/core-typings';
-import { Modal, Field, FieldGroup, TextInput, PasswordInput, Button } from '@rocket.chat/fuselage';
+import { Modal, Field, FieldGroup, FieldLabel, FieldRow, FieldError, TextInput, PasswordInput, Button, Box } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useState } from 'react';
@@ -39,7 +39,7 @@ const AddWebdavAccountModal = ({ onClose, onConfirm }: AddWebdavAccountModalProp
 	};
 
 	return (
-		<Modal is='form' onSubmit={handleSubmit(onSubmit)}>
+		<Modal wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(onSubmit)} {...props} />}>
 			<Modal.Header>
 				<Modal.Title>{t('Webdav_add_new_account')}</Modal.Title>
 				<Modal.Close onClick={onClose} />
@@ -47,31 +47,31 @@ const AddWebdavAccountModal = ({ onClose, onConfirm }: AddWebdavAccountModalProp
 			<Modal.Content>
 				<FieldGroup>
 					<Field>
-						<Field.Label>{t('Name_optional')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('Name_optional')}</FieldLabel>
+						<FieldRow>
 							<TextInput placeholder={t('Name_optional')} {...register('name')} />
-						</Field.Row>
+						</FieldRow>
 					</Field>
 					<Field>
-						<Field.Label>{t('Webdav_Server_URL')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('Webdav_Server_URL')}</FieldLabel>
+						<FieldRow>
 							<TextInput placeholder={t('Webdav_Server_URL')} {...register('serverURL', { required: true })} />
-						</Field.Row>
-						{errors.serverURL && <Field.Error>{t('error-the-field-is-required', { field: t('Webdav_Server_URL') })}</Field.Error>}
+						</FieldRow>
+						{errors.serverURL && <FieldError>{t('error-the-field-is-required', { field: t('Webdav_Server_URL') })}</FieldError>}
 					</Field>
 					<Field>
-						<Field.Label>{t('Username')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('Username')}</FieldLabel>
+						<FieldRow>
 							<TextInput placeholder={t('Username')} {...register('username', { required: true })} />
-						</Field.Row>
-						{errors.username && <Field.Error>{t('error-the-field-is-required', { field: t('Username') })}</Field.Error>}
+						</FieldRow>
+						{errors.username && <FieldError>{t('error-the-field-is-required', { field: t('Username') })}</FieldError>}
 					</Field>
 					<Field>
-						<Field.Label>{t('Password')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('Password')}</FieldLabel>
+						<FieldRow>
 							<PasswordInput placeholder={t('Password')} {...register('password', { required: true })} />
-						</Field.Row>
-						{errors.password && <Field.Error>{t('error-the-field-is-required', { field: t('Password') })}</Field.Error>}
+						</FieldRow>
+						{errors.password && <FieldError>{t('error-the-field-is-required', { field: t('Password') })}</FieldError>}
 					</Field>
 				</FieldGroup>
 			</Modal.Content>
@@ -80,8 +80,8 @@ const AddWebdavAccountModal = ({ onClose, onConfirm }: AddWebdavAccountModalProp
 					<Button secondary onClick={onClose}>
 						{t('Cancel')}
 					</Button>
-					<Button primary type='submit' disabled={isLoading}>
-						{isLoading ? t('Please_wait') : t('Webdav_add_new_account')}
+					<Button primary type='submit' loading={isLoading}>
+						{t('Webdav_add_new_account')}
 					</Button>
 				</Modal.FooterControllers>
 			</Modal.Footer>

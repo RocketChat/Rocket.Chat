@@ -1,17 +1,18 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import { AutoTranslate } from './autotranslate';
-import { settings } from '../../../settings/client';
-import { hasAtLeastOnePermission } from '../../../authorization/client';
-import { MessageAction } from '../../../ui-utils/client/lib/MessageAction';
+import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { messageArgs } from '../../../../client/lib/utils/messageArgs';
-import { Messages } from '../../../models/client';
 import {
 	hasTranslationLanguageInAttachments,
 	hasTranslationLanguageInMessage,
 } from '../../../../client/views/room/MessageList/lib/autoTranslate';
-import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
+import { hasAtLeastOnePermission } from '../../../authorization/client';
+import { Messages } from '../../../models/client';
+import { settings } from '../../../settings/client';
+import { MessageAction } from '../../../ui-utils/client/lib/MessageAction';
+import { sdk } from '../../../utils/client/lib/SDKClient';
+import { AutoTranslate } from './autotranslate';
 
 Meteor.startup(() => {
 	AutoTranslate.init();
@@ -23,13 +24,14 @@ Meteor.startup(() => {
 				icon: 'language',
 				label: 'Translate',
 				context: ['message', 'message-mobile', 'threads'],
+				type: 'interaction',
 				action(_, props) {
 					const { message = messageArgs(this).msg } = props;
 					const language = AutoTranslate.getLanguage(message.rid);
 					if (!hasTranslationLanguageInMessage(message, language) && !hasTranslationLanguageInAttachments(message.attachments, language)) {
 						(AutoTranslate.messageIdsToWait as any)[message._id] = true;
 						Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
-						Meteor.call('autoTranslate.translateMessage', message, language);
+						void sdk.call('autoTranslate.translateMessage', message, language);
 					}
 					const action = 'autoTranslateShowInverse' in message ? '$unset' : '$set';
 					Messages.update({ _id: message._id }, { [action]: { autoTranslateShowInverse: true } });
@@ -57,13 +59,14 @@ Meteor.startup(() => {
 				icon: 'language',
 				label: 'View_original',
 				context: ['message', 'message-mobile', 'threads'],
+				type: 'interaction',
 				action(_, props) {
 					const { message = messageArgs(this).msg } = props;
 					const language = AutoTranslate.getLanguage(message.rid);
 					if (!hasTranslationLanguageInMessage(message, language) && !hasTranslationLanguageInAttachments(message.attachments, language)) {
 						(AutoTranslate.messageIdsToWait as any)[message._id] = true;
 						Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
-						Meteor.call('autoTranslate.translateMessage', message, language);
+						void sdk.call('autoTranslate.translateMessage', message, language);
 					}
 					const action = 'autoTranslateShowInverse' in message ? '$unset' : '$set';
 					Messages.update({ _id: message._id }, { [action]: { autoTranslateShowInverse: true } });

@@ -6,21 +6,21 @@ import { settings } from '../../../settings/server';
 function testWebAppInternals(fn) {
 	typeof WebAppInternals !== 'undefined' && fn(WebAppInternals);
 }
-settings.change('CDN_PREFIX', function (value) {
+settings.change('CDN_PREFIX', (value) => {
 	const useForAll = settings.get('CDN_PREFIX_ALL');
 	if (value && typeof value.valueOf() === 'string' && value.trim() && useForAll) {
 		return testWebAppInternals((WebAppInternals) => WebAppInternals.setBundledJsCssPrefix(value));
 	}
 });
 
-settings.change('CDN_JSCSS_PREFIX', function (value) {
+settings.change('CDN_JSCSS_PREFIX', (value) => {
 	const useForAll = settings.get('CDN_PREFIX_ALL');
 	if (value && typeof value.valueOf() === 'string' && value.trim() && !useForAll) {
 		return testWebAppInternals((WebAppInternals) => WebAppInternals.setBundledJsCssPrefix(value));
 	}
 });
 
-Meteor.startup(function () {
+Meteor.startup(() => {
 	const cdnValue = settings.get('CDN_PREFIX');
 	const useForAll = settings.get('CDN_PREFIX_ALL');
 	const cdnJsCss = settings.get('CDN_JSCSS_PREFIX');

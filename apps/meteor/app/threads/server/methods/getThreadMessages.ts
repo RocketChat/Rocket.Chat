@@ -1,7 +1,7 @@
-import { Meteor } from 'meteor/meteor';
 import type { IMessage } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Messages, Rooms } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { canAccessRoomAsync } from '../../../authorization/server';
@@ -47,7 +47,7 @@ Meteor.methods<ServerMethods>({
 			return [];
 		}
 
-		callbacks.run('beforeReadMessages', thread.rid, user._id);
+		await callbacks.run('beforeReadMessages', thread.rid, user._id);
 		await readThread({ userId: user._id, rid: thread.rid, tmid });
 
 		const result = await Messages.findVisibleThreadByThreadId(tmid, {

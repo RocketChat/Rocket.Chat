@@ -1,4 +1,4 @@
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 import type { IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
 
@@ -10,7 +10,7 @@ export function createFakeUser(overrides?: Partial<IUser>): IUser {
 		_id: faker.database.mongodbObjectId(),
 		_updatedAt: faker.date.recent(),
 		username: faker.internet.userName(),
-		name: faker.name.findName(),
+		name: faker.person.fullName(),
 		createdAt: faker.date.recent(),
 		roles: ['user'],
 		active: faker.datatype.boolean(),
@@ -23,15 +23,15 @@ export const createFakeRoom = (overrides?: Partial<IRoom>): IRoom => ({
 	_id: faker.database.mongodbObjectId(),
 	_updatedAt: faker.date.recent(),
 	t: faker.helpers.arrayElement(['c', 'p', 'd']),
-	msgs: faker.datatype.number({ min: 0 }),
+	msgs: faker.number.int({ min: 0 }),
 	u: {
 		_id: faker.database.mongodbObjectId(),
 		username: faker.internet.userName(),
-		name: faker.name.findName(),
+		name: faker.person.fullName(),
 		...overrides?.u,
 	},
-	usersCount: faker.datatype.number({ min: 0 }),
-	autoTranslateLanguage: faker.random.locale(),
+	usersCount: faker.number.int({ min: 0 }),
+	autoTranslateLanguage: faker.helpers.arrayElement(['en', 'es', 'pt', 'ar', 'it', 'ru', 'fr']),
 	...overrides,
 });
 
@@ -41,21 +41,21 @@ export const createFakeSubscription = (overrides?: Partial<ISubscription>): ISub
 	u: {
 		_id: faker.database.mongodbObjectId(),
 		username: faker.internet.userName(),
-		name: faker.name.findName(),
+		name: faker.person.fullName(),
 		...overrides?.u,
 	},
 	rid: faker.database.mongodbObjectId(),
 	open: faker.datatype.boolean(),
 	ts: faker.date.recent(),
-	name: faker.name.findName(),
-	unread: faker.datatype.number({ min: 0 }),
+	name: faker.person.fullName(),
+	unread: faker.number.int({ min: 0 }),
 	t: faker.helpers.arrayElement(['c', 'p', 'd']),
 	ls: faker.date.recent(),
 	lr: faker.date.recent(),
-	userMentions: faker.datatype.number({ min: 0 }),
-	groupMentions: faker.datatype.number({ min: 0 }),
-	lowerCaseName: faker.name.findName().toLowerCase(),
-	lowerCaseFName: faker.name.findName().toLowerCase(),
+	userMentions: faker.number.int({ min: 0 }),
+	groupMentions: faker.number.int({ min: 0 }),
+	lowerCaseName: faker.person.fullName().toLowerCase(),
+	lowerCaseFName: faker.person.fullName().toLowerCase(),
 	...overrides,
 });
 
@@ -70,7 +70,7 @@ export function createFakeMessage(overrides?: Partial<IMessage>): IMessage {
 		u: {
 			_id: faker.database.mongodbObjectId(),
 			username: faker.internet.userName(),
-			name: faker.name.findName(),
+			name: faker.person.fullName(),
 			...overrides?.u,
 		},
 		...overrides,

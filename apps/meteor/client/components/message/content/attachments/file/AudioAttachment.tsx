@@ -1,4 +1,5 @@
 import type { AudioAttachmentProps } from '@rocket.chat/core-typings';
+import { AudioPlayer } from '@rocket.chat/fuselage';
 import { useMediaUrl } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React from 'react';
@@ -23,9 +24,7 @@ export const AudioAttachment: FC<AudioAttachmentProps> = ({
 		<>
 			{descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} />}
 			<MessageCollapsible title={title} hasDownload={hasDownload} link={getURL(link || url)} size={size} isCollapsed={collapsed}>
-				<audio controls preload='metadata'>
-					<source src={getURL(url)} type={type} />
-				</audio>
+				<AudioPlayer src={getURL(url)} type={type} />
 			</MessageCollapsible>
 		</>
 	);

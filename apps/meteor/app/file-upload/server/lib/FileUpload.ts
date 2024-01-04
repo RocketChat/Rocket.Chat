@@ -1,45 +1,44 @@
+import { Buffer } from 'buffer';
 import type { WriteStream } from 'fs';
 import fs from 'fs';
-import { unlink, rename } from 'fs/promises';
-import stream from 'stream';
+import { unlink, rename, writeFile } from 'fs/promises';
 import type * as http from 'http';
 import type * as https from 'https';
-import { Buffer } from 'buffer';
+import stream from 'stream';
 import URL from 'url';
 
+import { hashLoginToken } from '@rocket.chat/account-utils';
+import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
+import type { IUpload } from '@rocket.chat/core-typings';
+import { Users, Avatars, UserDataFiles, Uploads, Settings, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
+import type { NextFunction } from 'connect';
+import filesize from 'filesize';
+import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import { Mongo } from 'meteor/mongo';
+import { Cookies } from 'meteor/ostrio:cookies';
+import type { OptionalId } from 'mongodb';
+import sharp from 'sharp';
 import type { WritableStreamBuffer } from 'stream-buffers';
 import streamBuffers from 'stream-buffers';
-import sharp from 'sharp';
-import { Cookies } from 'meteor/ostrio:cookies';
-import { Match } from 'meteor/check';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { Users, Avatars, UserDataFiles, Uploads, Settings, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
-import filesize from 'filesize';
-import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { hashLoginToken } from '@rocket.chat/account-utils';
-import type { IUpload } from '@rocket.chat/core-typings';
-import type { NextFunction } from 'connect';
-import type { OptionalId } from 'mongodb';
 
-import { UploadFS } from '../../../../server/ufs';
-import { settings } from '../../../settings/server';
-import { mime } from '../../../utils/lib/mimeTypes';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
-import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
-import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
 import { AppEvents, Apps } from '../../../../ee/server/apps';
-import { streamToBuffer } from './streamToBuffer';
+import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
-import type { Store } from '../../../../server/ufs/ufs-store';
+import { UploadFS } from '../../../../server/ufs';
+import { ufsComplete } from '../../../../server/ufs/ufs-methods';
+import type { Store, StoreOptions } from '../../../../server/ufs/ufs-store';
+import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
+import { settings } from '../../../settings/server';
+import { mime } from '../../../utils/lib/mimeTypes';
+import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
+import { fileUploadIsValidContentType } from '../../../utils/server/restrictions';
+import { streamToBuffer } from './streamToBuffer';
 
 const cookie = new Cookies();
 let maxFileSize = 0;
 
-settings.watch('FileUpload_MaxFileSize', async function (value: string) {
+settings.watch('FileUpload_MaxFileSize', async (value: string) => {
 	try {
 		maxFileSize = parseInt(value);
 	} catch (e) {
@@ -47,16 +46,12 @@ settings.watch('FileUpload_MaxFileSize', async function (value: string) {
 	}
 });
 
-const AvatarModel = new Mongo.Collection(Avatars.col.collectionName);
-const UserDataFilesModel = new Mongo.Collection(UserDataFiles.col.collectionName);
-const UploadsModel = new Mongo.Collection(Uploads.col.collectionName);
-
 const handlers: Record<string, FileUploadClass> = {};
 
-const defaults: Record<string, any> = {
+const defaults: Record<string, () => Partial<StoreOptions>> = {
 	Uploads() {
 		return {
-			collection: UploadsModel,
+			collection: Uploads,
 			filter: new UploadFS.Filter({
 				onCheck: FileUpload.validateFileUpload,
 			}),
@@ -64,9 +59,9 @@ const defaults: Record<string, any> = {
 				return `${settings.get('uniqueID')}/uploads/${file.rid}/${file.userId}/${file._id}`;
 			},
 			onValidate: FileUpload.uploadsOnValidate,
-			onRead(_fileId: string, file: IUpload, req: http.IncomingMessage, res: http.ServerResponse) {
+			async onRead(_fileId: string, file: IUpload, req: http.IncomingMessage, res: http.ServerResponse) {
 				// Deprecated: Remove support to usf path
-				if (!FileUpload.requestCanAccessFiles(req, file)) {
+				if (!(await FileUpload.requestCanAccessFiles(req, file))) {
 					res.writeHead(403);
 					return false;
 				}
@@ -79,7 +74,7 @@ const defaults: Record<string, any> = {
 
 	Avatars() {
 		return {
-			collection: AvatarModel,
+			collection: Avatars,
 			filter: new UploadFS.Filter({
 				onCheck: FileUpload.validateAvatarUpload,
 			}),
@@ -94,13 +89,13 @@ const defaults: Record<string, any> = {
 
 	UserDataFiles() {
 		return {
-			collection: UserDataFilesModel,
+			collection: UserDataFiles,
 			getPath(file: IUpload) {
 				return `${settings.get('uniqueID')}/uploads/userData/${file.userId}`;
 			},
 			onValidate: FileUpload.uploadsOnValidate,
-			onRead(_fileId: string, file: IUpload, req: http.IncomingMessage, res: http.ServerResponse) {
-				if (!FileUpload.requestCanAccessFiles(req)) {
+			async onRead(_fileId: string, file: IUpload, req: http.IncomingMessage, res: http.ServerResponse) {
+				if (!(await FileUpload.requestCanAccessFiles(req))) {
 					res.writeHead(403);
 					return false;
 				}
@@ -138,54 +133,51 @@ export const FileUpload = {
 		);
 	},
 
-	validateFileUpload(file: IUpload, content?: Buffer) {
+	async validateFileUpload(file: IUpload, content?: Buffer) {
 		if (!Match.test(file.rid, String)) {
 			return false;
 		}
 
 		// livechat users can upload files but they don't have an userId
-		const user = (file.userId && Promise.await(Users.findOne(file.userId))) || undefined;
+		const user = (file.userId && (await Users.findOne(file.userId))) || undefined;
 
-		const room = Promise.await(Rooms.findOneById(file.rid));
+		const room = await Rooms.findOneById(file.rid);
 		if (!room) {
 			return false;
 		}
 		const directMessageAllowed = settings.get('FileUpload_Enabled_Direct');
 		const fileUploadAllowed = settings.get('FileUpload_Enabled');
-		if (user?.type !== 'app' && Promise.await(canAccessRoomAsync(room, user, file)) !== true) {
+		if (user?.type !== 'app' && (await canAccessRoomAsync(room, user, file)) !== true) {
 			return false;
 		}
 		const language = user?.language || 'en';
 		if (!fileUploadAllowed) {
-			const reason = TAPi18n.__('FileUpload_Disabled', { lng: language });
+			const reason = i18n.t('FileUpload_Disabled', { lng: language });
 			throw new Meteor.Error('error-file-upload-disabled', reason);
 		}
 
 		if (!directMessageAllowed && room.t === 'd') {
-			const reason = TAPi18n.__('File_not_allowed_direct_messages', { lng: language });
+			const reason = i18n.t('File_not_allowed_direct_messages', { lng: language });
 			throw new Meteor.Error('error-direct-message-file-upload-not-allowed', reason);
 		}
 
 		// -1 maxFileSize means there is no limit
 		if (maxFileSize > -1 && (file.size || 0) > maxFileSize) {
-			const reason = TAPi18n.__(
-				'File_exceeds_allowed_size_of_bytes',
-				{
-					size: filesize(maxFileSize),
-				},
-				language,
-			);
+			const reason = i18n.t('File_exceeds_allowed_size_of_bytes', {
+				size: filesize(maxFileSize),
+				lng: language,
+			});
 			throw new Meteor.Error('error-file-too-large', reason);
 		}
 
-		if (!fileUploadIsValidContentType(file.type)) {
-			const reason = TAPi18n.__('File_type_is_not_accepted', { lng: language });
+		if (!fileUploadIsValidContentType(file.type as string, '')) {
+			const reason = i18n.t('File_type_is_not_accepted', { lng: language });
 			throw new Meteor.Error('error-invalid-file-type', reason);
 		}
 
 		// App IPreFileUpload event hook
 		try {
-			Promise.await(Apps.triggerEvent(AppEvents.IPreFileUpload, { file, content: content || Buffer.from([]) }));
+			await Apps.triggerEvent(AppEvents.IPreFileUpload, { file, content: content || Buffer.from([]) });
 		} catch (error: any) {
 			if (error.name === AppsEngineException.name) {
 				throw new Meteor.Error('error-app-prevented', error.message);
@@ -197,29 +189,26 @@ export const FileUpload = {
 		return true;
 	},
 
-	validateAvatarUpload(file: IUpload) {
+	async validateAvatarUpload(file: IUpload) {
 		if (!Match.test(file.rid, String) && !Match.test(file.userId, String)) {
 			return false;
 		}
 
-		const user = file.uid ? Promise.await(Users.findOne(file.uid, { projection: { language: 1 } })) : null;
+		const user = file.uid ? await Users.findOne(file.uid, { projection: { language: 1 } }) : null;
 		const language = user?.language || 'en';
 
 		// accept only images
 		if (!/^image\//.test(file.type || '')) {
-			const reason = TAPi18n.__('File_type_is_not_accepted', { lng: language });
+			const reason = i18n.t('File_type_is_not_accepted', { lng: language });
 			throw new Meteor.Error('error-invalid-file-type', reason);
 		}
 
 		// -1 maxFileSize means there is no limit
 		if (maxFileSize > -1 && (file.size || 0) > maxFileSize) {
-			const reason = TAPi18n.__(
-				'File_exceeds_allowed_size_of_bytes',
-				{
-					size: filesize(maxFileSize),
-				},
-				language,
-			);
+			const reason = i18n.t('File_exceeds_allowed_size_of_bytes', {
+				size: filesize(maxFileSize),
+				lng: language,
+			});
 			throw new Meteor.Error('error-file-too-large', reason);
 		}
 
@@ -228,18 +217,9 @@ export const FileUpload = {
 
 	defaults,
 
-	avatarsOnValidate(this: Store, file: IUpload) {
-		const userId = Meteor.userId();
-		if (!userId || settings.get('Accounts_AvatarResize') !== true) {
+	async avatarsOnValidate(this: Store, file: IUpload) {
+		if (settings.get('Accounts_AvatarResize') !== true) {
 			return;
-		}
-
-		if (file.rid) {
-			if (!Promise.await(hasPermissionAsync(userId, 'edit-room-avatar', file.rid))) {
-				throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
-			}
-		} else if (userId !== file.userId && !Promise.await(hasPermissionAsync(userId, 'edit-other-user-avatar'))) {
-			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 		}
 
 		const tempFilePath = UploadFS.getTempFilePath(file._id);
@@ -247,57 +227,55 @@ export const FileUpload = {
 		const height = settings.get('Accounts_AvatarSize') as number;
 		const width = height as number;
 
-		Promise.await(async () => {
-			const s = sharp(tempFilePath);
-			if (settings.get('FileUpload_RotateImages') === true) {
-				s.rotate();
-			}
+		const s = sharp(tempFilePath);
+		if (settings.get('FileUpload_RotateImages') === true) {
+			s.rotate();
+		}
 
-			const metadata = await s.metadata();
-			// if (!metadata) {
-			// 	metadata = {};
-			// }
+		const metadata = await s.metadata();
+		// if (!metadata) {
+		// 	metadata = {};
+		// }
 
-			const { data, info } = await s
-				.resize({
-					width,
-					height,
-					fit: metadata.hasAlpha ? sharp.fit.contain : sharp.fit.cover,
-					background: { r: 255, g: 255, b: 255, alpha: metadata.hasAlpha ? 0 : 1 },
-				})
-				// Use buffer to get the result in memory then replace the existing file
-				// There is no option to override a file using this library
-				//
-				// BY THE SHARP DOCUMENTATION:
-				// toBuffer: Write output to a Buffer. JPEG, PNG, WebP, TIFF and RAW output are supported.
-				// By default, the format will match the input image, except GIF and SVG input which become PNG output.
-				.toBuffer({ resolveWithObject: true });
+		const { data, info } = await s
+			.resize({
+				width,
+				height,
+				fit: metadata.hasAlpha ? sharp.fit.contain : sharp.fit.cover,
+				background: { r: 255, g: 255, b: 255, alpha: metadata.hasAlpha ? 0 : 1 },
+			})
+			// Use buffer to get the result in memory then replace the existing file
+			// There is no option to override a file using this library
+			//
+			// BY THE SHARP DOCUMENTATION:
+			// toBuffer: Write output to a Buffer. JPEG, PNG, WebP, TIFF and RAW output are supported.
+			// By default, the format will match the input image, except GIF and SVG input which become PNG output.
+			.toBuffer({ resolveWithObject: true });
 
-			fs.writeFile(tempFilePath, data, (err) => {
-				if (err != null) {
-					SystemLogger.error(err);
-				}
+		try {
+			await writeFile(tempFilePath, data);
+		} catch (err: any) {
+			SystemLogger.error(err);
+		}
 
-				this.getCollection().direct.update(
-					{ _id: file._id },
-					{
-						$set: {
-							size: info.size,
-							...(['gif', 'svg'].includes(metadata.format || '') ? { type: 'image/png' } : {}),
-						},
-					},
-				);
-			});
-		});
+		await this.getCollection().updateOne(
+			{ _id: file._id },
+			{
+				$set: {
+					size: info.size,
+					...(['gif', 'svg'].includes(metadata.format || '') ? { type: 'image/png' } : {}),
+				},
+			},
+		);
 	},
 
-	resizeImagePreview(fileParam: IUpload) {
-		let file = Promise.await(Uploads.findOneById(fileParam._id));
+	async resizeImagePreview(fileParam: IUpload) {
+		let file = await Uploads.findOneById(fileParam._id);
 		if (!file) {
 			return;
 		}
 		file = FileUpload.addExtensionTo(file);
-		const image = FileUpload.getStore('Uploads')._store.getReadStream(file._id, file);
+		const image = await FileUpload.getStore('Uploads')._store.getReadStream(file._id, file);
 
 		const transformer = sharp().resize({ width: 32, height: 32, fit: 'inside' }).jpeg().blur();
 		const result = transformer.toBuffer().then((out) => out.toString('base64'));
@@ -306,10 +284,10 @@ export const FileUpload = {
 	},
 
 	async extractMetadata(file: IUpload) {
-		return sharp(FileUpload.getBufferSync(file)).metadata();
+		return sharp(await FileUpload.getBuffer(file)).metadata();
 	},
 
-	createImageThumbnail(fileParam: IUpload) {
+	async createImageThumbnail(fileParam: IUpload) {
 		if (!settings.get('Message_Attachments_Thumbnails_Enabled')) {
 			return;
 		}
@@ -321,14 +299,14 @@ export const FileUpload = {
 			return;
 		}
 
-		let file = Promise.await(Uploads.findOneById(fileParam._id));
+		let file = await Uploads.findOneById(fileParam._id);
 		if (!file) {
 			return;
 		}
 
 		file = FileUpload.addExtensionTo(file);
 		const store = FileUpload.getStore('Uploads');
-		const image = store._store.getReadStream(file._id, file);
+		const image = await store._store.getReadStream(file._id, file);
 
 		const transformer = sharp().resize({ width, height, fit: 'inside' });
 
@@ -338,7 +316,7 @@ export const FileUpload = {
 		return result;
 	},
 
-	uploadImageThumbnail(file: IUpload, buffer: Buffer, rid: string, userId: string) {
+	async uploadImageThumbnail(file: IUpload, buffer: Buffer, rid: string, userId: string) {
 		const store = FileUpload.getStore('Uploads');
 		const details = {
 			name: `thumb-${file.name}`,
@@ -352,93 +330,85 @@ export const FileUpload = {
 			userId,
 		};
 
-		return store.insertSync(details, buffer);
+		return store.insert(details, buffer);
 	},
 
-	uploadsOnValidate(this: Store, file: IUpload) {
+	async uploadsOnValidate(this: Store, file: IUpload) {
 		if (!file.type || !/^image\/((x-windows-)?bmp|p?jpeg|png|gif|webp)$/.test(file.type)) {
 			return;
 		}
 
 		const tmpFile = UploadFS.getTempFilePath(file._id);
 
-		Promise.await(async () => {
-			const s = sharp(tmpFile);
-			const metadata = await s.metadata();
-			// if (err != null) {
-			// 	SystemLogger.error(err);
-			// 	return fut.return();
-			// }
+		const s = sharp(tmpFile);
+		const metadata = await s.metadata();
+		// if (err != null) {
+		// 	SystemLogger.error(err);
+		// 	return fut.return();
+		// }
 
-			const rotated = typeof metadata.orientation !== 'undefined' && metadata.orientation !== 1;
+		const rotated = typeof metadata.orientation !== 'undefined' && metadata.orientation !== 1;
+		const width = rotated ? metadata.height : metadata.width;
+		const height = rotated ? metadata.width : metadata.height;
 
-			const identify = {
-				format: metadata.format,
-				size: {
-					width: rotated ? metadata.height : metadata.width,
-					height: rotated ? metadata.width : metadata.height,
-				},
-			};
+		const identify = {
+			format: metadata.format,
+			size:
+				width != null && height != null
+					? {
+							width,
+							height,
+					  }
+					: undefined,
+		};
 
-			const reorientation = async () => {
-				if (!rotated || settings.get('FileUpload_RotateImages') !== true) {
-					return;
-				}
+		const reorientation = async () => {
+			if (!rotated || settings.get('FileUpload_RotateImages') !== true) {
+				return;
+			}
 
-				await s.rotate().toFile(`${tmpFile}.tmp`);
+			await s.rotate().toFile(`${tmpFile}.tmp`);
 
-				await unlink(tmpFile);
+			await unlink(tmpFile);
 
-				await rename(`${tmpFile}.tmp`, tmpFile);
-				// SystemLogger.error(err);
-			};
+			await rename(`${tmpFile}.tmp`, tmpFile);
+			// SystemLogger.error(err);
+		};
 
-			await reorientation();
+		await reorientation();
 
-			const { size } = await fs.lstatSync(tmpFile);
-			this.getCollection().direct.update(
-				{ _id: file._id },
-				{
-					$set: { size, identify },
-				},
-			);
-		});
+		const { size } = await fs.lstatSync(tmpFile);
+		await this.getCollection().updateOne(
+			{ _id: file._id },
+			{
+				$set: { size, identify },
+			},
+		);
 	},
 
-	avatarRoomOnFinishUpload(file: IUpload) {
-		const userId = Meteor.userId();
-		if (userId && !Promise.await(hasPermissionAsync(userId, 'edit-room-avatar', file.rid))) {
-			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
-		}
-	},
-	avatarsOnFinishUpload(file: IUpload) {
+	async avatarsOnFinishUpload(file: IUpload) {
 		if (file.rid) {
-			return FileUpload.avatarRoomOnFinishUpload(file);
+			return;
 		}
-
-		const userId = Meteor.userId();
 
 		if (!file.userId) {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 		}
 
-		if (userId && userId !== file.userId && !Promise.await(hasPermissionAsync(userId, 'edit-other-user-avatar'))) {
-			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
-		}
 		// update file record to match user's username
-		const user = Promise.await(Users.findOneById(file.userId));
+		const user = await Users.findOneById(file.userId);
 		if (!user?.username) {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 		}
-		const oldAvatar = Promise.await(Avatars.findOneByName(user.username));
+		const oldAvatar = await Avatars.findOneByName(user.username);
 		if (oldAvatar) {
-			Promise.await(Avatars.deleteFile(oldAvatar._id));
+			await Avatars.deleteFile(oldAvatar._id);
 		}
-		Promise.await(Avatars.updateFileNameById(file._id, user.username));
+		await Avatars.updateFileNameById(file._id, user.username);
 		// console.log('upload finished ->', file);
 	},
 
-	requestCanAccessFiles({ headers = {}, url }: http.IncomingMessage, file?: IUpload) {
+	async requestCanAccessFiles({ headers = {}, url }: http.IncomingMessage, file?: IUpload) {
 		if (!url || !settings.get('FileUpload_ProtectFiles')) {
 			return true;
 		}
@@ -455,27 +425,25 @@ export const FileUpload = {
 			rc_room_type = cookie.get('rc_room_type', headers.cookie);
 		}
 
-		const isAuthorizedByRoom = () =>
+		const isAuthorizedByRoom = async () =>
 			rc_room_type &&
-			Promise.await(
-				roomCoordinator
-					.getRoomDirectives(rc_room_type)
-					.canAccessUploadedFile({ rc_uid: rc_uid || '', rc_rid: rc_rid || '', rc_token: rc_token || '' }),
-			);
+			roomCoordinator
+				.getRoomDirectives(rc_room_type)
+				.canAccessUploadedFile({ rc_uid: rc_uid || '', rc_rid: rc_rid || '', rc_token: rc_token || '' });
+
 		const isAuthorizedByJWT = () =>
 			settings.get('FileUpload_Enable_json_web_token_for_files') &&
 			token &&
-			isValidJWT(token, settings.get('FileUpload_json_web_token_secret_for_files'));
+			isValidJWT(token as string, settings.get('FileUpload_json_web_token_secret_for_files'));
 
-		if (isAuthorizedByRoom() || isAuthorizedByJWT()) {
+		if ((await isAuthorizedByRoom()) || isAuthorizedByJWT()) {
 			return true;
 		}
 
 		const uid = rc_uid || (headers['x-user-id'] as string);
 		const authToken = rc_token || (headers['x-auth-token'] as string);
 
-		const user =
-			uid && authToken && Promise.await(Users.findOneByIdAndLoginToken(uid, hashLoginToken(authToken), { projection: { _id: 1 } }));
+		const user = uid && authToken && (await Users.findOneByIdAndLoginToken(uid, hashLoginToken(authToken), { projection: { _id: 1 } }));
 
 		if (!user) {
 			return false;
@@ -485,7 +453,7 @@ export const FileUpload = {
 			return true;
 		}
 
-		const subscription = Promise.await(Subscriptions.findOneByRoomIdAndUserId(file.rid, user._id, { projection: { _id: 1 } }));
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(file.rid, user._id, { projection: { _id: 1 } });
 
 		if (subscription) {
 			return true;
@@ -538,25 +506,29 @@ export const FileUpload = {
 		res.end();
 	},
 
-	getBuffer(file: IUpload, cb: (err?: Error, data?: false | Buffer) => void) {
+	async getBuffer(file: IUpload): Promise<Buffer> {
 		const store = this.getStoreByName(file.store);
 
 		if (!store?.get) {
-			cb(new Error('Store is invalid'), undefined);
+			throw new Error('Store is invalid');
 		}
 
 		const buffer = new streamBuffers.WritableStreamBuffer({
 			initialSize: file.size,
 		});
 
-		buffer.on('finish', () => {
-			cb(undefined, buffer.getContents());
+		return new Promise((resolve, reject) => {
+			buffer.on('finish', () => {
+				const contents = buffer.getContents();
+				if (contents === false) {
+					return reject();
+				}
+				resolve(contents);
+			});
+
+			void store.copy?.(file, buffer);
 		});
-
-		void store.copy?.(file, buffer);
 	},
-
-	getBufferSync: Meteor.wrapAsync((file: IUpload, cb: (err?: Error, data?: false | Buffer) => void) => FileUpload.getBuffer(file, cb)),
 
 	async copy(file: IUpload, targetFile: string) {
 		const store = this.getStoreByName(file.store);
@@ -590,7 +562,32 @@ export const FileUpload = {
 	) {
 		res.setHeader('Content-Disposition', `${forceDownload ? 'attachment' : 'inline'}; filename="${encodeURI(fileName)}"`);
 
-		request.get(fileUrl, (fileRes) => fileRes.pipe(res));
+		request.get(fileUrl, (fileRes) => {
+			if (fileRes.statusCode !== 200) {
+				res.setHeader('x-rc-proxyfile-status', String(fileRes.statusCode));
+				res.setHeader('content-length', 0);
+				res.writeHead(500);
+				res.end();
+				return;
+			}
+
+			// eslint-disable-next-line prettier/prettier
+			const headersToProxy = [
+				'age',
+				'cache-control',
+				'content-length',
+				'content-type',
+				'date',
+				'expired',
+				'last-modified',
+			];
+
+			headersToProxy.forEach((header) => {
+				fileRes.headers[header] && res.setHeader(header, String(fileRes.headers[header]));
+			});
+
+			fileRes.pipe(res);
+		});
 	},
 
 	generateJWTToFileUrls({ rid, userId, fileId }: { rid: string; userId: string; fileId: string }) {
@@ -638,7 +635,7 @@ type FileUploadClassOptions = {
 	model?: typeof Avatars | typeof Uploads | typeof UserDataFiles;
 	store?: Store;
 	get: (file: IUpload, req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) => Promise<void>;
-	insert?: () => void;
+	insert?: () => Promise<IUpload>;
 	getStore?: () => Store;
 	copy?: (file: IUpload, out: WriteStream | WritableStreamBuffer) => Promise<void>;
 };
@@ -653,8 +650,6 @@ export class FileUploadClass {
 	public get: FileUploadClassOptions['get'];
 
 	public copy: FileUploadClassOptions['copy'];
-
-	public insertSync: (fileData: OptionalId<IUpload>, streamOrBuffer: ReadableStream | stream | Buffer) => IUpload;
 
 	constructor({ name, model, store, get, insert, getStore, copy }: FileUploadClassOptions) {
 		this.name = name;
@@ -672,8 +667,6 @@ export class FileUploadClass {
 		}
 
 		FileUpload.handlers[name] = this;
-
-		this.insertSync = Meteor.wrapAsync(this.insert, this);
 	}
 
 	getStore() {
@@ -701,30 +694,17 @@ export class FileUploadClass {
 		return modelsAvailable[modelName];
 	}
 
-	delete(fileId: string) {
+	async delete(fileId: string) {
 		// TODO: Remove this method
 		if (this.store?.delete) {
-			this.store.delete(fileId);
+			await this.store.delete(fileId);
 		}
 
-		return Promise.await(this.model.deleteFile(fileId));
+		return this.model.deleteFile(fileId);
 	}
 
-	deleteById(fileId: string) {
-		const file = Promise.await(this.model.findOneById(fileId));
-
-		// eslint-disable-next-line @typescript-eslint/no-misused-promises
-		if (!file) {
-			return;
-		}
-
-		const store = FileUpload.getStoreByName(file.store);
-
-		return store.delete(file._id);
-	}
-
-	deleteByName(fileName: string) {
-		const file = Promise.await(this.model.findOneByName(fileName));
+	async deleteById(fileId: string) {
+		const file = await this.model.findOneById(fileId);
 
 		if (!file) {
 			return;
@@ -735,8 +715,8 @@ export class FileUploadClass {
 		return store.delete(file._id);
 	}
 
-	deleteByRoomId(rid: string) {
-		const file = Promise.await(this.model.findOneByRoomId(rid));
+	async deleteByName(fileName: string) {
+		const file = await this.model.findOneByName(fileName);
 
 		if (!file) {
 			return;
@@ -747,9 +727,20 @@ export class FileUploadClass {
 		return store.delete(file._id);
 	}
 
-	_doInsert(fileData: OptionalId<IUpload>, streamOrBuffer: stream | Buffer, cb?: (err?: Error, file?: IUpload) => void) {
-		const fileId = this.store.create(fileData);
-		const token = this.store.createToken(fileId);
+	async deleteByRoomId(rid: string) {
+		const file = await this.model.findOneByRoomId(rid);
+
+		if (!file) {
+			return;
+		}
+
+		const store = FileUpload.getStoreByName(file.store);
+
+		return store.delete(file._id);
+	}
+
+	async _doInsert(fileData: OptionalId<IUpload>, streamOrBuffer: ReadableStream | stream | Buffer): Promise<IUpload> {
+		const fileId = await this.store.create(fileData);
 		const tmpFile = UploadFS.getTempFilePath(fileId);
 
 		try {
@@ -761,25 +752,17 @@ export class FileUploadClass {
 				throw new Error('Invalid file type');
 			}
 
-			const file = Meteor.call('ufsComplete', fileId, this.name, token);
-
-			if (cb) {
-				cb(undefined, file);
-			}
+			const file = await ufsComplete(fileId, this.name);
 
 			return file;
 		} catch (e: any) {
-			if (cb) {
-				cb(e);
-			} else {
-				throw e;
-			}
+			throw e;
 		}
 	}
 
-	insert(fileData: OptionalId<IUpload>, streamOrBuffer: stream.Readable | Buffer, cb?: (err?: Error, file?: IUpload) => void) {
+	async insert(fileData: OptionalId<IUpload>, streamOrBuffer: ReadableStream | stream.Readable | Buffer) {
 		if (streamOrBuffer instanceof stream) {
-			streamOrBuffer = Promise.await(streamToBuffer(streamOrBuffer));
+			streamOrBuffer = await streamToBuffer(streamOrBuffer);
 		}
 
 		if (streamOrBuffer instanceof Uint8Array) {
@@ -790,9 +773,9 @@ export class FileUploadClass {
 		// Check if the fileData matches store filter
 		const filter = this.store.getFilter();
 		if (filter?.check) {
-			filter.check(fileData, streamOrBuffer);
+			await filter.check(fileData, streamOrBuffer);
 		}
 
-		return this._doInsert(fileData, streamOrBuffer, cb);
+		return this._doInsert(fileData, streamOrBuffer);
 	}
 }

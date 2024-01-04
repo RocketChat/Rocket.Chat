@@ -1,10 +1,9 @@
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { AppRequest, IUser, Pagination } from '@rocket.chat/core-typings';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
-import { API } from '../../../../app/api/server';
 import { getWorkspaceAccessToken } from '../../../../app/cloud/server';
+import { i18n } from '../../../../server/lib/i18n';
 import { sendDirectMessageToUsers } from '../../../../server/lib/sendDirectMessageToUsers';
-import { fetch } from '../../../../server/lib/http/fetch';
 
 const ROCKET_CAT_USERID = 'rocket.cat';
 const DEFAULT_LIMIT = 100;
@@ -25,7 +24,7 @@ const notifyBatchOfUsers = async (appName: string, learnMoreUrl: string, appRequ
 
 	const msgFn = (user: IUser): string => {
 		const defaultLang = user.language || 'en';
-		const msg = `${TAPi18n.__('App_request_enduser_message', { appname: appName, learnmore: learnMoreUrl, lng: defaultLang })}`;
+		const msg = `${i18n.t('App_request_enduser_message', { appName, learnmore: learnMoreUrl, lng: defaultLang })}`;
 
 		return msg;
 	};
@@ -53,15 +52,19 @@ export const appRequestNotififyForUsers = async (
 		const pagination: Pagination = { limit: DEFAULT_LIMIT, offset: 0 };
 
 		// First request to get the total and the first batch
-		const response = await fetch(
-			`${marketplaceBaseUrl}/v1/app-request?appId=${appId}&q=notification-not-sent&limit=${pagination.limit}&offset=${pagination.offset}`,
-			{ headers },
-		);
+		const response = await fetch(`${marketplaceBaseUrl}/v1/app-request`, {
+			headers,
+			params: {
+				appId,
+				q: 'notification-not-sent',
+				limit: pagination.limit,
+				offset: pagination.offset,
+			},
+		});
 
-		const data = await response.json();
+		const data = (await response.json()) as { meta: { total: number }; data: any };
 
-		const appRequests = API.v1.success({ data });
-		const { total } = appRequests.body.data.data.meta;
+		const { total } = data.meta;
 
 		if (total === undefined || total === 0) {
 			return [];
@@ -73,11 +76,7 @@ export const appRequestNotififyForUsers = async (
 		const learnMore = `${workspaceUrl}marketplace/explore/info/${appId}`;
 
 		// Notify first batch
-		requestsCollection.push(
-			Promise.resolve(appRequests.body.data.data.data)
-				.then((response) => notifyBatchOfUsers(appName, learnMore, response))
-				.catch(notifyBatchOfUsersError),
-		);
+		requestsCollection.push(notifyBatchOfUsers(appName, learnMore, data.data).catch(notifyBatchOfUsersError));
 
 		// Batch requests
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -89,9 +88,9 @@ export const appRequestNotififyForUsers = async (
 				{ headers },
 			);
 
-			const data = await request.json();
+			const { data } = await request.json();
 
-			requestsCollection.push(notifyBatchOfUsers(appName, learnMore, data.data.data));
+			requestsCollection.push(notifyBatchOfUsers(appName, learnMore, data));
 		}
 
 		const finalResult = await Promise.all(requestsCollection);

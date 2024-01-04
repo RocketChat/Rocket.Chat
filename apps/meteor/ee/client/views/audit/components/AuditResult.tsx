@@ -1,9 +1,8 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
+import GenericNoResults from '../../../../../client/components/GenericNoResults';
 import AuditMessageList from './AuditMessageList';
 
 type AuditResultProps = {
@@ -12,14 +11,8 @@ type AuditResultProps = {
 };
 
 const AuditResult = ({ className, messages }: AuditResultProps): ReactElement => {
-	const t = useTranslation();
-
 	if (messages.length === 0) {
-		return (
-			<Box padding={24} textAlign='center'>
-				{t('Nothing_found')}
-			</Box>
-		);
+		return <GenericNoResults />;
 	}
 
 	return (

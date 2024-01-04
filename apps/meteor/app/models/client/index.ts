@@ -1,24 +1,23 @@
 import { Base } from './models/Base';
-import { Roles } from './models/Roles';
-import { Users } from './models/Users';
 import { CachedChannelList } from './models/CachedChannelList';
 import { CachedChatRoom } from './models/CachedChatRoom';
 import { CachedChatSubscription } from './models/CachedChatSubscription';
 import { CachedUserList } from './models/CachedUserList';
+import { ChatMessage } from './models/ChatMessage';
+import { AuthzCachedCollection, ChatPermissions } from './models/ChatPermissions';
 import { ChatRoom } from './models/ChatRoom';
 import { ChatSubscription } from './models/ChatSubscription';
-import { ChatMessage } from './models/ChatMessage';
+import CustomSounds from './models/CustomSounds';
+import EmojiCustom from './models/EmojiCustom';
+import { Roles } from './models/Roles';
 import { RoomRoles } from './models/RoomRoles';
 import { UserAndRoom } from './models/UserAndRoom';
 import { UserRoles } from './models/UserRoles';
-import { AuthzCachedCollection, ChatPermissions } from './models/ChatPermissions';
+import { Users } from './models/Users';
 import { WebdavAccounts } from './models/WebdavAccounts';
-import CustomSounds from './models/CustomSounds';
-import EmojiCustom from './models/EmojiCustom';
 
 // overwrite Meteor.users collection so records on it don't get erased whenever the client reconnects to websocket
-Meteor.users = Users as typeof Meteor.users;
-Meteor.user = () => {
+const meteorUserOverwrite = () => {
 	const uid = Meteor.userId();
 
 	if (!uid) {
@@ -27,17 +26,8 @@ Meteor.user = () => {
 
 	return (Users.findOne({ _id: uid }) ?? null) as Meteor.User | null;
 };
-
-declare global {
-	// eslint-disable-next-line @typescript-eslint/no-namespace
-	namespace Meteor {
-		function userAsync(options?: { fields?: Mongo.FieldSpecifier | undefined }): Promise<Meteor.User | null>;
-	}
-}
-
-Meteor.userAsync = async () => {
-	return Meteor.user();
-};
+Meteor.users = Users as typeof Meteor.users;
+Meteor.user = meteorUserOverwrite;
 
 export {
 	Base,
@@ -56,8 +46,6 @@ export {
 	WebdavAccounts,
 	/** @deprecated */
 	Users,
-	/** @deprecated */
-	ChatRoom as Rooms,
 	/** @deprecated */
 	ChatRoom,
 	/** @deprecated */

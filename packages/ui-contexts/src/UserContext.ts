@@ -57,7 +57,7 @@ export type UserContextValue = {
 		options?: FindOptions,
 	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => SubscriptionWithRoom[]];
 
-	loginWithPassword: (user: string | object, password: string) => Promise<void>;
+	loginWithPassword: (user: string | { username: string } | { email: string } | { id: string }, password: string) => Promise<void>;
 	loginWithToken: (user: string) => Promise<void>;
 	logout: () => Promise<void>;
 

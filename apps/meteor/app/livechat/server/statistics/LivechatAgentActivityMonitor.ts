@@ -1,8 +1,8 @@
-import moment from 'moment';
 import type { ILivechatAgent, ISocketConnection } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
-import { SyncedCron } from 'meteor/littledata:synced-cron';
+import { cronJobs } from '@rocket.chat/cron';
 import { LivechatAgentActivity, Sessions, Users } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
+import moment from 'moment';
 
 import { callbacks } from '../../../../lib/callbacks';
 
@@ -15,23 +15,26 @@ export class LivechatAgentActivityMonitor {
 
 	private _name: string;
 
+	private scheduler = cronJobs;
+
 	constructor() {
 		this._started = false;
 		this._handleAgentStatusChanged = this._handleAgentStatusChanged.bind(this);
 		this._handleUserStatusLivechatChanged = this._handleUserStatusLivechatChanged.bind(this);
+		this._updateActiveSessions = this._updateActiveSessions.bind(this);
 		this._name = 'Livechat Agent Activity Monitor';
 	}
 
-	start(): void {
-		this._setupListeners();
+	async start(): Promise<void> {
+		await this._setupListeners();
 	}
 
-	stop(): void {
+	async stop(): Promise<void> {
 		if (!this.isRunning()) {
 			return;
 		}
 
-		SyncedCron.remove(this._name);
+		await this.scheduler.remove(this._name);
 
 		this._started = false;
 	}
@@ -40,11 +43,11 @@ export class LivechatAgentActivityMonitor {
 		return this._started;
 	}
 
-	_setupListeners(): void {
+	async _setupListeners(): Promise<void> {
 		if (this.isRunning()) {
 			return;
 		}
-		this._startMonitoring();
+		await this._startMonitoring();
 
 		// TODO use service event socket.connected instead
 		Meteor.onConnection((connection: unknown) => this._handleMeteorConnection(connection as ISocketConnection));
@@ -55,14 +58,8 @@ export class LivechatAgentActivityMonitor {
 		this._started = true;
 	}
 
-	_startMonitoring(): void {
-		SyncedCron.add({
-			name: this._name,
-			schedule: (parser: any) => parser.cron('0 0 * * *'),
-			job: async () => {
-				await this._updateActiveSessions();
-			},
-		});
+	async _startMonitoring(): Promise<void> {
+		await this.scheduler.add(this._name, '0 0 * * *', async () => this._updateActiveSessions());
 	}
 
 	async _updateActiveSessions(): Promise<void> {

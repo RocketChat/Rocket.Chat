@@ -1,10 +1,10 @@
-import { Meteor } from 'meteor/meteor';
 import { MeteorError } from '@rocket.chat/core-services';
 import type { IWebdavAccount } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import type { ServerMethods, TranslationKey } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../settings/server';
-import { Logger } from '../../../logger/server';
 import { uploadFileToWebdav } from '../lib/uploadFileToWebdav';
 
 const logger = new Logger('WebDAV_Upload');

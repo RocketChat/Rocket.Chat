@@ -3,12 +3,10 @@ import { LivechatRooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
-import { callbackLogger } from '../lib/callbackLogger';
 
 callbacks.add(
 	'afterSaveMessage',
-	async function (message, room) {
-		callbackLogger.debug(`Calculating Omnichannel metrics for room ${room._id}`);
+	async (message, room) => {
 		// check if room is livechat
 		if (!isOmnichannelRoom(room)) {
 			return message;
@@ -29,7 +27,7 @@ callbacks.add(
 		}
 
 		if (message.file) {
-			message = await normalizeMessageFileUpload(message);
+			message = { ...(await normalizeMessageFileUpload(message)), ...{ _updatedAt: message._updatedAt } };
 		}
 
 		const now = new Date();
@@ -43,7 +41,6 @@ callbacks.add(
 		const isResponseTotal = room.metrics?.response?.total;
 
 		if (agentLastReply === room.ts) {
-			callbackLogger.debug('Calculating: first message from agent');
 			// first response
 			const firstResponseDate = now;
 			const firstResponseTime = (now.getTime() - new Date(visitorLastQuery).getTime()) / 1000;
@@ -66,7 +63,6 @@ callbacks.add(
 				reactionTime,
 			};
 		} else if (visitorLastQuery > agentLastReply) {
-			callbackLogger.debug('Calculating: visitor sent a message after agent');
 			// response, not first
 			const responseTime = (now.getTime() - new Date(visitorLastQuery).getTime()) / 1000;
 			const avgResponseTime =

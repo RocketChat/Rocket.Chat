@@ -1,10 +1,9 @@
-import { Meteor } from 'meteor/meteor';
-import { Cookies } from 'meteor/ostrio:cookies';
 import { Avatars, Rooms } from '@rocket.chat/models';
+import { Cookies } from 'meteor/ostrio:cookies';
 
-import { renderSVGLetters, serveAvatar, wasFallbackModified, setCacheAndDispositionHeaders } from './utils';
 import { FileUpload } from '../../../app/file-upload/server';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
+import { renderSVGLetters, serveAvatar, wasFallbackModified, setCacheAndDispositionHeaders } from './utils';
 
 const cookie = new Cookies();
 const getRoomAvatar = async (roomId) => {
@@ -23,7 +22,7 @@ const getRoomAvatar = async (roomId) => {
 	return { room, file };
 };
 
-export const roomAvatar = Meteor.bindEnvironment(async function (req, res /* , next*/) {
+export const roomAvatar = async function (req, res /* , next*/) {
 	const roomId = decodeURIComponent(req.url.substr(1).replace(/\?.*$/, ''));
 
 	const { room, file } = await getRoomAvatar(roomId);
@@ -68,4 +67,4 @@ export const roomAvatar = Meteor.bindEnvironment(async function (req, res /* , n
 	const svg = renderSVGLetters(roomName, req.query.size && parseInt(req.query.size));
 
 	return serveAvatar(svg, req.query.format, res);
-});
+};

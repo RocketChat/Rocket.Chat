@@ -13,7 +13,7 @@ const Attachment: FC<ComponentProps<typeof Box>> = (props) => {
 	return (
 		<Box
 			rcx-message-attachment
-			mb='x4'
+			mb={4}
 			maxWidth={width}
 			width='full'
 			display='flex'

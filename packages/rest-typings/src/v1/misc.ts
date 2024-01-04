@@ -164,6 +164,22 @@ const MethodCallAnonSchema = {
 
 export const isMethodCallAnonProps = ajv.compile<MethodCallAnon>(MethodCallAnonSchema);
 
+type Fingerprint = { setDeploymentAs: 'new-workspace' | 'updated-configuration' };
+
+const FingerprintSchema = {
+	type: 'object',
+	properties: {
+		setDeploymentAs: {
+			type: 'string',
+			enum: ['new-workspace', 'updated-configuration'],
+		},
+	},
+	required: ['setDeploymentAs'],
+	additionalProperties: false,
+};
+
+export const isFingerprintProps = ajv.compile<Fingerprint>(FingerprintSchema);
+
 type PwGetPolicyReset = { token: string };
 
 const PwGetPolicyResetSchema = {
@@ -206,7 +222,7 @@ export type MiscEndpoints = {
 	'/v1/pw.getPolicy': {
 		GET: () => {
 			enabled: boolean;
-			policy: [name: string, options?: Record<string, unknown>][];
+			policy: [name: string, value?: Record<string, number>][];
 		};
 	};
 
@@ -226,6 +242,18 @@ export type MiscEndpoints = {
 	'/v1/method.callAnon/:method': {
 		POST: (params: { message: string }) => {
 			message: unknown;
+		};
+	};
+
+	'/v1/fingerprint': {
+		POST: (params: Fingerprint) => {
+			success: boolean;
+		};
+	};
+
+	'/v1/smtp.check': {
+		GET: () => {
+			isSMTPConfigured: boolean;
 		};
 	};
 };

@@ -1,34 +1,32 @@
-import { Button } from '@rocket.chat/fuselage';
-import { ExternalLink, Card } from '@rocket.chat/ui-client';
+import type { Card } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
 import React from 'react';
+
+import { GenericCard, GenericCardButton } from '../../../components/GenericCard';
+import { useExternalLink } from '../../../hooks/useExternalLink';
 
 const WINDOWS_APP_URL = 'https://go.rocket.chat/i/hp-desktop-app-windows';
 const LINUX_APP_URL = 'https://go.rocket.chat/i/hp-desktop-app-linux';
 const MAC_APP_URL = 'https://go.rocket.chat/i/hp-desktop-app-mac';
 
-const DesktopAppsCard = (): ReactElement => {
+const DesktopAppsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): ReactElement => {
 	const t = useTranslation();
+	const handleOpenLink = useExternalLink();
 
 	return (
-		<Card data-qa-id='homepage-desktop-apps-card'>
-			<Card.Title>{t('Desktop_apps')}</Card.Title>
-			<Card.Body>{t('Install_rocket_chat_on_your_preferred_desktop_platform')}</Card.Body>
-			<Card.FooterWrapper>
-				<Card.Footer>
-					<ExternalLink to={WINDOWS_APP_URL}>
-						<Button>{t('Platform_Windows')}</Button>
-					</ExternalLink>
-					<ExternalLink to={LINUX_APP_URL}>
-						<Button>{t('Platform_Linux')}</Button>
-					</ExternalLink>
-					<ExternalLink to={MAC_APP_URL}>
-						<Button>{t('Platform_Mac')}</Button>
-					</ExternalLink>
-				</Card.Footer>
-			</Card.FooterWrapper>
-		</Card>
+		<GenericCard
+			title={t('Desktop_apps')}
+			body={t('Install_rocket_chat_on_your_preferred_desktop_platform')}
+			buttons={[
+				<GenericCardButton key={1} onClick={() => handleOpenLink(WINDOWS_APP_URL)} children={t('Platform_Windows')} role='link' />,
+				<GenericCardButton key={2} onClick={() => handleOpenLink(LINUX_APP_URL)} children={t('Platform_Linux')} role='link' />,
+				<GenericCardButton key={3} onClick={() => handleOpenLink(MAC_APP_URL)} children={t('Platform_Mac')} role='link' />,
+			]}
+			width='x340'
+			data-qa-id='homepage-desktop-apps-card'
+			{...props}
+		/>
 	);
 };
 

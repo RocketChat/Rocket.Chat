@@ -10,12 +10,16 @@ import { getConfig } from '../../../../lib/utils/getConfig';
 
 export const useDiscussionsList = (
 	options: DiscussionsListOptions,
-	uid: IUser['_id'],
+	uid: IUser['_id'] | null,
 ): {
 	discussionsList: DiscussionsList;
 	initialItemCount: number;
 	loadMoreItems: (start: number, end: number) => void;
 } => {
+	if (!uid) {
+		throw new Error('User ID is undefined. Cannot load discussions list');
+	}
+
 	const discussionsList = useMemo(() => new DiscussionsList(options), [options]);
 
 	const getDiscussions = useEndpoint('GET', '/v1/chat.getDiscussions');

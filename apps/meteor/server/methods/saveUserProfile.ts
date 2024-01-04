@@ -1,17 +1,23 @@
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
-import { Accounts } from 'meteor/accounts-base';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { UserStatus } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Accounts } from 'meteor/accounts-base';
+import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
-import { saveCustomFields, passwordPolicy } from '../../app/lib/server';
-import { validateUserEditing } from '../../app/lib/server/functions/saveUser';
-import { settings as rcSettings } from '../../app/settings/server';
 import { twoFactorRequired } from '../../app/2fa/server/twoFactorRequired';
+import { saveCustomFields } from '../../app/lib/server/functions/saveCustomFields';
+import { validateUserEditing } from '../../app/lib/server/functions/saveUser';
 import { saveUserIdentity } from '../../app/lib/server/functions/saveUserIdentity';
+import { passwordPolicy } from '../../app/lib/server/lib/passwordPolicy';
+import { settings as rcSettings } from '../../app/settings/server';
+import { setUserStatusMethod } from '../../app/user-status/server/methods/setUserStatus';
+import { AppEvents, Apps } from '../../ee/server/apps/orchestrator';
 import { compareUserPassword } from '../lib/compareUserPassword';
 import { compareUserPasswordHistory } from '../lib/compareUserPasswordHistory';
-import { AppEvents, Apps } from '../../ee/server/apps/orchestrator';
+
+const MAX_BIO_LENGTH = 260;
+const MAX_NICKNAME_LENGTH = 120;
 
 async function saveUserProfile(
 	this: Meteor.MethodThisType,
@@ -66,16 +72,21 @@ async function saveUserProfile(
 	}
 
 	if (settings.statusText || settings.statusText === '') {
-		await Meteor.callAsync('setUserStatus', null, settings.statusText);
+		await setUserStatusMethod(this.userId, undefined, settings.statusText);
 	}
 
 	if (settings.statusType) {
-		await Meteor.callAsync('setUserStatus', settings.statusType, null);
+		await setUserStatusMethod(this.userId, settings.statusType as UserStatus, undefined);
 	}
 
 	if (user && settings.bio) {
-		if (typeof settings.bio !== 'string' || settings.bio.length > 260) {
+		if (typeof settings.bio !== 'string') {
 			throw new Meteor.Error('error-invalid-field', 'bio', {
+				method: 'saveUserProfile',
+			});
+		}
+		if (settings.bio.length > MAX_BIO_LENGTH) {
+			throw new Meteor.Error('error-bio-size-exceeded', `Bio size exceeds ${MAX_BIO_LENGTH} characters`, {
 				method: 'saveUserProfile',
 			});
 		}
@@ -83,8 +94,13 @@ async function saveUserProfile(
 	}
 
 	if (user && settings.nickname) {
-		if (typeof settings.nickname !== 'string' || settings.nickname.length > 120) {
+		if (typeof settings.nickname !== 'string') {
 			throw new Meteor.Error('error-invalid-field', 'nickname', {
+				method: 'saveUserProfile',
+			});
+		}
+		if (settings.nickname.length > MAX_NICKNAME_LENGTH) {
+			throw new Meteor.Error('error-nickname-size-exceeded', `Nickname size exceeds ${MAX_NICKNAME_LENGTH} characters`, {
 				method: 'saveUserProfile',
 			});
 		}
@@ -100,13 +116,13 @@ async function saveUserProfile(
 		// Should be the last check to prevent error when trying to check password for users without password
 		if (settings.newPassword && rcSettings.get<boolean>('Accounts_AllowPasswordChange') === true && user?.services?.password?.bcrypt) {
 			// don't let user change to same password
-			if (user && compareUserPassword(user, { plain: settings.newPassword })) {
+			if (user && (await compareUserPassword(user, { plain: settings.newPassword }))) {
 				throw new Meteor.Error('error-password-same-as-current', 'Entered password same as current password', {
 					method: 'saveUserProfile',
 				});
 			}
 
-			if (user?.services?.passwordHistory && !compareUserPasswordHistory(user, { plain: settings.newPassword })) {
+			if (user?.services?.passwordHistory && !(await compareUserPasswordHistory(user, { plain: settings.newPassword }))) {
 				throw new Meteor.Error('error-password-in-history', 'Entered password has been previously used', {
 					method: 'saveUserProfile',
 				});
@@ -114,7 +130,7 @@ async function saveUserProfile(
 
 			passwordPolicy.validate(settings.newPassword);
 
-			Accounts.setPassword(this.userId, settings.newPassword, {
+			await Accounts.setPasswordAsync(this.userId, settings.newPassword, {
 				logout: false,
 			});
 

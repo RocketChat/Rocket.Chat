@@ -1,24 +1,28 @@
-import { Meteor } from 'meteor/meteor';
+import type { IMethodConnection, IUser, IRoom } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
+import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import { DDPCommon } from 'meteor/ddp-common';
-import { DDP } from 'meteor/ddp';
+import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
 import { Accounts } from 'meteor/accounts-base';
+import { DDP } from 'meteor/ddp';
+import { DDPCommon } from 'meteor/ddp-common';
+import { Meteor } from 'meteor/meteor';
+import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
+import { RateLimiter } from 'meteor/rate-limit';
 import type { Request, Response } from 'meteor/rocketchat:restivus';
 import { Restivus } from 'meteor/rocketchat:restivus';
 import _ from 'underscore';
-import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
-import { RateLimiter } from 'meteor/rate-limit';
-import type { IMethodConnection, IUser, IRoom } from '@rocket.chat/core-typings';
-import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
 
+import { isObject } from '../../../lib/utils/isObject';
 import { getRestPayload } from '../../../server/lib/logger/logPayloads';
-import { settings } from '../../settings/server';
-import { metrics } from '../../metrics/server';
-import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
 import { checkCodeForUser } from '../../2fa/server/code';
+import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
+import { apiDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
+import { metrics } from '../../metrics/server';
+import { settings } from '../../settings/server';
+import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
 import type { PermissionsPayload } from './api.helpers';
 import { checkPermissionsForInvocation, checkPermissions } from './api.helpers';
-import { isObject } from '../../../lib/utils/isObject';
 import type {
 	FailureResult,
 	InternalError,
@@ -29,19 +33,19 @@ import type {
 	SuccessResult,
 	UnauthorizedResult,
 } from './definition';
-import { parseJsonQuery } from './helpers/parseJsonQuery';
-import { Logger } from '../../logger/server';
 import { getUserInfo } from './helpers/getUserInfo';
-import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
+import { parseJsonQuery } from './helpers/parseJsonQuery';
 
 const logger = new Logger('API');
 
 interface IAPIProperties {
-	apiPath: string;
 	useDefaultAuth: boolean;
 	prettyJson: boolean;
-	defaultOptionsEndpoint: () => Promise<void>;
 	auth: { token: string; user: () => Promise<{ userId: string; token: string }> };
+	defaultOptionsEndpoint?: () => Promise<void>;
+	version?: string;
+	enableCors?: boolean;
+	apiPath?: string;
 }
 
 interface IAPIDefaultFieldsToExclude {
@@ -107,7 +111,7 @@ const getRequestIP = (req: Request): string | null => {
 let prometheusAPIUserAgent = false;
 
 export class APIClass<TBasePath extends string = ''> extends Restivus {
-	protected apiPath: string;
+	protected apiPath?: string;
 
 	public authMethods: ((...args: any[]) => any)[];
 
@@ -174,10 +178,7 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 	}
 
 	async parseJsonQuery(this: PartialThis) {
-		// eslint-disable-next-line @typescript-eslint/no-this-alias
-		const self = this;
-
-		return parseJsonQuery(this.request.route, self.userId, self.queryParams, self.logger, self.queryFields, self.queryOperations);
+		return parseJsonQuery(this);
 	}
 
 	public addAuthMethod(func: (this: PartialThis, ...args: any[]) => any): void {
@@ -537,13 +538,13 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 						if (!options.authRequired && options.authOrAnonRequired) {
 							const { 'x-user-id': userId, 'x-auth-token': userToken } = this.request.headers;
 							if (userId && userToken) {
-								this.user = Meteor.users.findOne(
+								this.user = await Users.findOne(
 									{
 										'services.resume.loginTokens.hashedToken': Accounts._hashLoginToken(userToken),
 										'_id': userId,
 									},
 									{
-										fields: getDefaultUserFields(),
+										projection: getDefaultUserFields(),
 									},
 								);
 
@@ -578,6 +579,10 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 						};
 
 						try {
+							if (options.deprecationVersion) {
+								apiDeprecationLogger.endpoint(this.request.route, options.deprecationVersion, this.response);
+							}
+
 							await api.enforceRateLimit(objectForRateLimitMatch, this.request, this.response, this.userId);
 
 							if (_options.validateParams) {
@@ -787,16 +792,16 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 						} as unknown as SuccessResult<Record<string, any>>;
 					}
 
-					this.user = Meteor.users.findOne(
+					this.user = await Users.findOne(
 						{
 							_id: auth.id,
 						},
 						{
-							fields: getDefaultUserFields(),
+							projection: getDefaultUserFields(),
 						},
-					) as any;
+					);
 
-					this.userId = (this.user as unknown as IUser)?._id as any;
+					this.userId = (this.user as unknown as IUser)?._id;
 
 					const response = {
 						status: 'success',
@@ -820,7 +825,7 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 			},
 		);
 
-		const logout = function (this: Restivus): { status: string; data: { message: string } } {
+		const logout = async function (this: Restivus): Promise<{ status: string; data: { message: string } }> {
 			// Remove the given auth token from the user's account
 			const authToken = this.request.headers['x-auth-token'];
 			const hashedToken = Accounts._hashLoginToken(authToken);
@@ -833,9 +838,12 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 			const tokenRemovalQuery: Record<string, any> = {};
 			tokenRemovalQuery[tokenPath] = tokenToRemove;
 
-			Meteor.users.update(this.user._id, {
-				$pull: tokenRemovalQuery,
-			});
+			await Users.updateOne(
+				{ _id: this.user._id },
+				{
+					$pull: tokenRemovalQuery,
+				},
+			);
 
 			const response = {
 				status: 'success',
@@ -981,8 +989,8 @@ const createApi = function _createApi(options: { version?: string } = {}): APICl
 export const API: {
 	v1: APIClass<'/v1'>;
 	default: APIClass;
-	getUserAuth?: () => { token: string; user: (this: Restivus) => Promise<{ userId: string; token: string }> };
-	ApiClass?: typeof APIClass;
+	getUserAuth: () => { token: string; user: (this: Restivus) => Promise<{ userId: string; token: string }> };
+	ApiClass: typeof APIClass;
 	channels?: {
 		create: {
 			validate: (params: {

@@ -1,5 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { useSetModal, useSetting, usePermission, useEndpoint, useTranslation, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useSetModal, usePermission, useEndpoint, useTranslation, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
@@ -10,7 +10,6 @@ export const useResetE2EEKeyAction = (userId: IUser['_id']): Action | undefined 
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const canResetE2EEKey = usePermission('edit-other-user-e2ee');
-	const enforcePassword = useSetting('Accounts_TwoFactorAuthentication_Enforce_Password_Fallback');
 	const resetE2EEKeyRequest = useEndpoint('POST', '/v1/users.resetE2EKey');
 
 	const resetE2EEKey = useCallback(async () => {
@@ -32,7 +31,7 @@ export const useResetE2EEKeyAction = (userId: IUser['_id']): Action | undefined 
 		);
 	}, [resetE2EEKey, t, setModal]);
 
-	return canResetE2EEKey && enforcePassword
+	return canResetE2EEKey
 		? {
 				icon: 'key',
 				label: t('Reset_E2E_Key'),

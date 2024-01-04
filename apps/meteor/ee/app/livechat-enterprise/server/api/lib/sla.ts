@@ -1,8 +1,8 @@
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
 import type { IOmnichannelServiceLevelAgreements, IUser } from '@rocket.chat/core-typings';
-import type { FindOptions } from 'mongodb';
+import { OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { FindOptions } from 'mongodb';
 
 import {
 	addSlaChangeHistoryToRoom,

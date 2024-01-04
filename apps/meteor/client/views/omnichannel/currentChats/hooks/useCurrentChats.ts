@@ -11,6 +11,7 @@ export const useCurrentChats = (query: GETLivechatRoomsParams): UseQueryResult<O
 
 	return useQuery(['current-chats', debouncedQuery], () => currentChats(debouncedQuery), {
 		// TODO: Update this to use an stream of room changes instead of polling
+		refetchOnWindowFocus: false,
 		cacheTime: 0,
 	});
 };

@@ -1,14 +1,14 @@
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
-import { Accounts } from 'meteor/accounts-base';
-import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Accounts } from 'meteor/accounts-base';
+import { Match, check } from 'meteor/check';
+import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../app/settings/server';
-import { validateEmailDomain, passwordPolicy, RateLimiter } from '../../app/lib/server';
 import { validateInviteToken } from '../../app/invites/server/functions/validateInviteToken';
+import { validateEmailDomain, passwordPolicy, RateLimiter } from '../../app/lib/server';
+import { settings } from '../../app/settings/server';
 import { trim } from '../../lib/utils/stringUtils';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -84,7 +84,7 @@ Meteor.methods<ServerMethods>({
 
 		passwordPolicy.validate(formData.pass);
 
-		validateEmailDomain(formData.email);
+		await validateEmailDomain(formData.email);
 
 		const userData = {
 			email: trim(formData.email.toLowerCase()),
@@ -95,15 +95,7 @@ Meteor.methods<ServerMethods>({
 
 		let userId;
 		try {
-			// Check if user has already been imported and never logged in. If so, set password and let it through
-			const importedUser = await Users.findOneByEmailAddress(formData.email);
-
-			if (importedUser?.importIds?.length && !importedUser.lastLogin) {
-				Accounts.setPassword(importedUser._id, userData.password);
-				userId = importedUser._id;
-			} else {
-				userId = Accounts.createUser(userData);
-			}
+			userId = await Accounts.createUserAsync(userData);
 		} catch (e) {
 			if (e instanceof Meteor.Error) {
 				throw e;

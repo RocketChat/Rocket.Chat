@@ -1,22 +1,25 @@
 import type { ServerResponse } from 'http';
 
-import { Meteor } from 'meteor/meteor';
-import { Random } from '@rocket.chat/random';
-import { Accounts } from 'meteor/accounts-base';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 import type { IUser, IIncomingMessage, IPersonalAccessToken } from '@rocket.chat/core-typings';
 import { CredentialTokens, Rooms, Users } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
+import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
+import { Accounts } from 'meteor/accounts-base';
+import { Meteor } from 'meteor/meteor';
 
+import { ensureArray } from '../../../../lib/utils/arrayUtils';
+import { SystemLogger } from '../../../../server/lib/logger/system';
+import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
+import { createRoom } from '../../../lib/server/functions/createRoom';
+import { generateUsernameSuggestion } from '../../../lib/server/functions/getUsernameSuggestion';
+import { saveUserIdentity } from '../../../lib/server/functions/saveUserIdentity';
 import { settings } from '../../../settings/server';
-import { saveUserIdentity, createRoom, generateUsernameSuggestion, addUserToRoom } from '../../../lib/server/functions';
-import { SAMLServiceProvider } from './ServiceProvider';
-import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
+import { i18n } from '../../../utils/lib/i18n';
 import type { ISAMLAction } from '../definition/ISAMLAction';
 import type { ISAMLUser } from '../definition/ISAMLUser';
+import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
+import { SAMLServiceProvider } from './ServiceProvider';
 import { SAMLUtils } from './Utils';
-import { SystemLogger } from '../../../../server/lib/logger/system';
-import { ensureArray } from '../../../../lib/utils/arrayUtils';
 
 const showErrorMessage = function (res: ServerResponse, err: string): void {
 	res.writeHead(200, {
@@ -120,6 +123,7 @@ export class SAML {
 		}));
 
 		let { username } = userObject;
+		const { fullName } = userObject;
 
 		const active = !settings.get('Accounts_ManuallyApproveNewUsers');
 
@@ -128,7 +132,7 @@ export class SAML {
 			const roles = userObject.roles?.length ? userObject.roles : ensureArray<string>(defaultUserRole.split(','));
 
 			const newUser: Record<string, any> = {
-				name: userObject.fullName,
+				name: fullName,
 				active,
 				globalRoles: roles,
 				emails,
@@ -154,8 +158,7 @@ export class SAML {
 			}
 
 			if (userObject.language) {
-				const languages = TAPi18n.getLanguages();
-				if (languages[userObject.language]) {
+				if (i18n.languages?.includes(userObject.language)) {
 					newUser.language = userObject.language;
 				}
 			}
@@ -197,7 +200,7 @@ export class SAML {
 
 		// Overwrite fullname if needed
 		if (nameOverwrite === true) {
-			updateData.name = userObject.fullName;
+			updateData.name = fullName;
 		}
 
 		// When updating an user, we only update the roles if we received them from the mapping
@@ -218,8 +221,8 @@ export class SAML {
 			},
 		);
 
-		if (username && username !== user.username) {
-			await saveUserIdentity({ _id: user._id, username });
+		if ((username && username !== user.username) || (fullName && fullName !== user.name)) {
+			await saveUserIdentity({ _id: user._id, name: fullName || undefined, username });
 		}
 
 		// sending token along with the userId
@@ -374,22 +377,28 @@ export class SAML {
 		res.end();
 	}
 
-	private static processAuthorizeAction(res: ServerResponse, service: IServiceProviderOptions, samlObject: ISAMLAction): void {
+	private static async processAuthorizeAction(
+		res: ServerResponse,
+		service: IServiceProviderOptions,
+		samlObject: ISAMLAction,
+	): Promise<void> {
 		service.id = samlObject.credentialToken;
 
 		const serviceProvider = new SAMLServiceProvider(service);
-		serviceProvider.getAuthorizeUrl((err, url) => {
-			if (err) {
-				SAMLUtils.error('Unable to generate authorize url');
-				SAMLUtils.error(err);
-				url = Meteor.absoluteUrl();
-			}
+		let url: string | undefined;
 
-			res.writeHead(302, {
-				Location: url,
-			});
-			res.end();
+		try {
+			url = await serviceProvider.getAuthorizeUrl();
+		} catch (err: any) {
+			SAMLUtils.error('Unable to generate authorize url');
+			SAMLUtils.error(err);
+			url = Meteor.absoluteUrl();
+		}
+
+		res.writeHead(302, {
+			Location: url,
 		});
+		res.end();
 	}
 
 	private static processValidateAction(
@@ -421,7 +430,7 @@ export class SAML {
 				};
 
 				await this.storeCredential(credentialToken, loginResult);
-				const url = `${Meteor.absoluteUrl('home')}?saml_idp_credentialToken=${credentialToken}`;
+				const url = Meteor.absoluteUrl(SAMLUtils.getValidationActionRedirectPath(credentialToken));
 				res.writeHead(302, {
 					Location: url,
 				});
@@ -471,7 +480,6 @@ export class SAML {
 					continue;
 				}
 
-				const room = await Rooms.findOneByNameAndType(roomName, 'c', {});
 				const privRoom = await Rooms.findOneByNameAndType(roomName, 'p', {});
 
 				if (privRoom && includePrivateChannelsInUpdate === true) {
@@ -479,6 +487,7 @@ export class SAML {
 					continue;
 				}
 
+				const room = await Rooms.findOneByNameAndType(roomName, 'c', {});
 				if (room) {
 					await addUserToRoom(room._id, user);
 					continue;
@@ -487,7 +496,7 @@ export class SAML {
 				if (!room && !privRoom) {
 					// If the user doesn't have an username yet, we can't create new rooms for them
 					if (user.username) {
-						await createRoom('c', roomName, user.username);
+						await createRoom('c', roomName, user);
 					}
 				}
 			}

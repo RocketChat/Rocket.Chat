@@ -1,6 +1,6 @@
 import type { MessageAttachment, IWebdavAccount } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Modal, Box, Button, FieldGroup, Field, Select, Throbber } from '@rocket.chat/fuselage';
+import { Modal, Box, Button, FieldGroup, Field, FieldLabel, FieldRow, FieldError, Select, Throbber } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useMethod, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -81,7 +81,7 @@ const SaveToWebdavModal = ({ onClose, data }: SaveToWebdavModalProps): ReactElem
 	};
 
 	return (
-		<Modal is='form' onSubmit={handleSubmit(handleSaveFile)}>
+		<Modal wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleSaveFile)} {...props} />}>
 			<Modal.Header>
 				<Modal.Title>{t('Save_To_Webdav')}</Modal.Title>
 				<Modal.Close title={t('Close')} onClick={onClose} />
@@ -95,8 +95,8 @@ const SaveToWebdavModal = ({ onClose, data }: SaveToWebdavModalProps): ReactElem
 				{!isLoading && (
 					<FieldGroup>
 						<Field>
-							<Field.Label>{t('Select_a_webdav_server')}</Field.Label>
-							<Field.Row>
+							<FieldLabel>{t('Select_a_webdav_server')}</FieldLabel>
+							<FieldRow>
 								<Controller
 									name='accountId'
 									control={control}
@@ -105,8 +105,8 @@ const SaveToWebdavModal = ({ onClose, data }: SaveToWebdavModalProps): ReactElem
 										<Select {...field} options={accountsOptions} id={accountIdField} placeholder={t('Select_an_option')} />
 									)}
 								/>
-							</Field.Row>
-							{errors.accountId && <Field.Error>{t('Field_required')}</Field.Error>}
+							</FieldRow>
+							{errors.accountId && <FieldError>{t('Field_required')}</FieldError>}
 						</Field>
 					</FieldGroup>
 				)}
@@ -114,8 +114,8 @@ const SaveToWebdavModal = ({ onClose, data }: SaveToWebdavModalProps): ReactElem
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button primary type='submit' disabled={isLoading}>
-						{isLoading ? t('Please_wait') : t('Save_To_Webdav')}
+					<Button primary type='submit' loading={isLoading}>
+						{t('Save_To_Webdav')}
 					</Button>
 				</Modal.FooterControllers>
 			</Modal.Footer>

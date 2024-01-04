@@ -1,11 +1,11 @@
-import { Match, check } from 'meteor/check';
+import { Voip } from '@rocket.chat/core-services';
 import type { IVoipExtensionBase } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import { Voip } from '@rocket.chat/core-services';
+import { Match, check } from 'meteor/check';
 
-import { API } from '../../api';
-import { generateJWT } from '../../../../utils/server/lib/JWTHelper';
 import { settings } from '../../../../settings/server';
+import { generateJWT } from '../../../../utils/server/lib/JWTHelper';
+import { API } from '../../api';
 import { logger } from './logger';
 
 // Get the connector version and type
@@ -69,7 +69,7 @@ API.v1.addRoute(
 				}),
 			);
 			const endpointDetails = await Voip.getRegistrationInfo(this.queryParams);
-			const encKey = settings.get('VoIP_JWT_Secret');
+			const encKey = settings.get<string>('VoIP_JWT_Secret');
 			if (!encKey) {
 				logger.warn('No JWT keys set. Sending registration info as plain text');
 				return API.v1.success({ ...endpointDetails.result });
@@ -112,7 +112,7 @@ API.v1.addRoute(
 			}
 
 			const endpointDetails = await Voip.getRegistrationInfo({ extension });
-			const encKey = settings.get('VoIP_JWT_Secret');
+			const encKey = settings.get<string>('VoIP_JWT_Secret');
 			if (!encKey) {
 				logger.warn('No JWT keys set. Sending registration info as plain text');
 				return API.v1.success({ ...endpointDetails.result });

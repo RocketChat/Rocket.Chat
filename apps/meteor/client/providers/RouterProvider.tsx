@@ -1,84 +1,202 @@
-import type { RouterContextValue } from '@rocket.chat/ui-contexts';
+import type {
+	RouterContextValue,
+	RouteName,
+	LocationPathname,
+	RouteParameters,
+	SearchParameters,
+	To,
+	RouteObject,
+} from '@rocket.chat/ui-contexts';
 import { RouterContext } from '@rocket.chat/ui-contexts';
+import type { LocationSearch } from '@rocket.chat/ui-contexts/src/RouterContext';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Tracker } from 'meteor/tracker';
 import type { FC } from 'react';
 import React from 'react';
 
-import { createSubscription } from '../lib/createSubscription';
+import { appLayout } from '../lib/appLayout';
+import { queueMicrotask } from '../lib/utils/queueMicrotask';
 
-const queryRoutePath = (
-	name: Parameters<RouterContextValue['queryRoutePath']>[0],
-	parameters: Parameters<RouterContextValue['queryRoutePath']>[1],
-	queryStringParameters: Parameters<RouterContextValue['queryRoutePath']>[2],
-): ReturnType<RouterContextValue['queryRoutePath']> => createSubscription(() => FlowRouter.path(name, parameters, queryStringParameters));
+const subscribers = new Set<() => void>();
 
-const queryRouteUrl = (
-	name: Parameters<RouterContextValue['queryRouteUrl']>[0],
-	parameters: Parameters<RouterContextValue['queryRouteUrl']>[1],
-	queryStringParameters: Parameters<RouterContextValue['queryRouteUrl']>[2],
-): ReturnType<RouterContextValue['queryRouteUrl']> => createSubscription(() => FlowRouter.url(name, parameters, queryStringParameters));
-
-const pushRoute = (
-	name: Parameters<RouterContextValue['pushRoute']>[0],
-	parameters: Parameters<RouterContextValue['pushRoute']>[1],
-	queryStringParameters: Parameters<RouterContextValue['pushRoute']>[2],
-): ReturnType<RouterContextValue['pushRoute']> => {
-	FlowRouter.go(name, parameters, queryStringParameters);
+const listenToRouteChange = () => {
+	FlowRouter.watchPathChange();
+	subscribers.forEach((onRouteChange) => onRouteChange());
 };
 
-const replaceRoute = (
-	name: Parameters<RouterContextValue['replaceRoute']>[0],
-	parameters: Parameters<RouterContextValue['replaceRoute']>[1],
-	queryStringParameters: Parameters<RouterContextValue['replaceRoute']>[2],
-): ReturnType<RouterContextValue['replaceRoute']> => {
-	FlowRouter.withReplaceState(() => {
-		FlowRouter.go(name, parameters, queryStringParameters);
-	});
+let computation: Tracker.Computation | undefined;
+
+queueMicrotask(() => {
+	computation = Tracker.autorun(listenToRouteChange);
+});
+
+const subscribeToRouteChange = (onRouteChange: () => void): (() => void) => {
+	subscribers.add(onRouteChange);
+
+	computation?.invalidate();
+
+	return () => {
+		subscribers.delete(onRouteChange);
+
+		if (subscribers.size === 0) {
+			queueMicrotask(() => computation?.stop());
+		}
+	};
 };
 
-const queryRouteParameter = (
-	name: Parameters<RouterContextValue['replaceRoute']>[0],
-): ReturnType<RouterContextValue['queryRouteParameter']> => createSubscription(() => FlowRouter.getParam(name));
+const getLocationPathname = () => FlowRouter.current().path as LocationPathname;
 
-const queryQueryStringParameter = (
-	name: Parameters<RouterContextValue['queryQueryStringParameter']>[0],
-): ReturnType<RouterContextValue['queryQueryStringParameter']> => createSubscription(() => FlowRouter.getQueryParam(name));
+const getLocationSearch = () => location.search as LocationSearch;
 
-const queryCurrentRoute = (): ReturnType<RouterContextValue['queryCurrentRoute']> =>
-	createSubscription(() => {
-		FlowRouter.watchPathChange();
-		const { route, params, queryParams } = FlowRouter.current();
-		return [route?.name, params, queryParams, route?.group?.name];
-	});
+const getRouteParameters = () => (FlowRouter.current().params ?? {}) as RouteParameters;
 
-const setQueryString = (paramsOrFn: Record<string, string | null> | ((prev: Record<string, string>) => Record<string, string>)): void => {
-	if (typeof paramsOrFn === 'function') {
-		const prevParams = FlowRouter.current().queryParams;
-		const emptyParams = Object.fromEntries(Object.entries(prevParams).map(([key]) => [key, null]));
-		const newParams = paramsOrFn(prevParams);
-		FlowRouter.setQueryParams({ ...emptyParams, ...newParams });
+const getSearchParameters = () => (FlowRouter.current().queryParams ?? {}) as SearchParameters;
+
+const getRouteName = () => FlowRouter.current().route?.name as RouteName | undefined;
+
+const encodeSearchParameters = (searchParameters: SearchParameters) => {
+	const search = new URLSearchParams();
+
+	for (const [key, value] of Object.entries(searchParameters)) {
+		search.append(key, value);
+	}
+
+	const searchString = search.toString();
+
+	return searchString ? `?${searchString}` : '';
+};
+
+const buildRoutePath = (to: To): LocationPathname | `${LocationPathname}?${LocationSearch}` => {
+	if (typeof to === 'string') {
+		return to;
+	}
+
+	if ('pathname' in to) {
+		const { pathname, search = {} } = to;
+		return (pathname + encodeSearchParameters(search)) as LocationPathname | `${LocationPathname}?${LocationSearch}`;
+	}
+
+	if ('pattern' in to) {
+		const { pattern, params = {}, search = {} } = to;
+		return Tracker.nonreactive(() => FlowRouter.path(pattern, params, search)) as
+			| LocationPathname
+			| `${LocationPathname}?${LocationSearch}`;
+	}
+
+	if ('name' in to) {
+		const { name, params = {}, search = {} } = to;
+		return Tracker.nonreactive(() => FlowRouter.path(name, params, search)) as LocationPathname | `${LocationPathname}?${LocationSearch}`;
+	}
+
+	throw new Error('Invalid route');
+};
+
+const navigate = (
+	toOrDelta: To | number,
+	options?: {
+		replace?: boolean;
+	},
+) => {
+	if (typeof toOrDelta === 'number') {
+		history.go(toOrDelta);
 		return;
 	}
 
-	FlowRouter.setQueryParams(paramsOrFn);
+	const path = buildRoutePath(toOrDelta);
+	const state = { path };
+
+	if (options?.replace) {
+		history.replaceState(state, '', path);
+	} else {
+		history.pushState(state, '', path);
+	}
+
+	dispatchEvent(new PopStateEvent('popstate', { state }));
 };
 
-const getRoutePath = (name: string, parameters?: Record<string, string>, queryStringParameters?: Record<string, string>) =>
-	Tracker.nonreactive(() => FlowRouter.path(name, parameters, queryStringParameters));
+const routes: RouteObject[] = [];
+const routesSubscribers = new Set<() => void>();
 
-const contextValue = {
-	queryRoutePath,
-	queryRouteUrl,
-	pushRoute,
-	replaceRoute,
-	queryRouteParameter,
-	queryQueryStringParameter,
-	queryCurrentRoute,
-	setQueryString,
-	getRoutePath,
+const updateFlowRouter = () => {
+	if (FlowRouter._initialized) {
+		FlowRouter._updateCallbacks();
+		FlowRouter._page.dispatch(new FlowRouter._page.Context(FlowRouter._current.path));
+		return;
+	}
+
+	FlowRouter.initialize();
 };
 
-const RouterProvider: FC = ({ children }) => <RouterContext.Provider children={children} value={contextValue} />;
+const defineRoutes = (routes: RouteObject[]) => {
+	const flowRoutes = routes.map((route) => {
+		if (route.path === '*') {
+			FlowRouter.notFound = {
+				action: () => appLayout.render(<>{route.element}</>),
+			};
+
+			return FlowRouter.notFound;
+		}
+
+		return FlowRouter.route(route.path, {
+			name: route.id,
+			action: () => appLayout.render(<>{route.element}</>),
+		});
+	});
+
+	routes.push(...routes);
+	const index = routes.length - 1;
+
+	updateFlowRouter();
+	routesSubscribers.forEach((onRoutesChange) => onRoutesChange());
+
+	return () => {
+		flowRoutes.forEach((flowRoute) => {
+			FlowRouter._routes = FlowRouter._routes.filter((r) => r !== flowRoute);
+			if ('name' in flowRoute && flowRoute.name) {
+				delete FlowRouter._routesMap[flowRoute.name];
+			} else {
+				FlowRouter.notFound = {
+					action: () => appLayout.render(<></>),
+				};
+			}
+		});
+
+		if (index !== -1) {
+			routes.splice(index, 1);
+		}
+
+		updateFlowRouter();
+		routesSubscribers.forEach((onRoutesChange) => onRoutesChange());
+	};
+};
+
+const getRoutes = () => routes;
+
+const subscribeToRoutesChange = (onRoutesChange: () => void): (() => void) => {
+	routesSubscribers.add(onRoutesChange);
+
+	onRoutesChange();
+
+	return () => {
+		routesSubscribers.delete(onRoutesChange);
+	};
+};
+
+/** @deprecated */
+export const router: RouterContextValue = {
+	subscribeToRouteChange,
+	getLocationPathname,
+	getLocationSearch,
+	getRouteParameters,
+	getSearchParameters,
+	getRouteName,
+	buildRoutePath,
+	navigate,
+	defineRoutes,
+	getRoutes,
+	subscribeToRoutesChange,
+};
+
+const RouterProvider: FC = ({ children }) => <RouterContext.Provider children={children} value={router} />;
 
 export default RouterProvider;

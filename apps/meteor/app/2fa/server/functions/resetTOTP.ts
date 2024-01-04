@@ -1,11 +1,11 @@
-import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../settings/server';
-import * as Mailer from '../../../mailer/server/api';
+import { i18n } from '../../../../server/lib/i18n';
 import { isUserIdFederated } from '../../../../server/lib/isUserIdFederated';
+import * as Mailer from '../../../mailer/server/api';
+import { settings } from '../../../settings/server';
 
 const sendResetNotification = async function (uid: string): Promise<void> {
 	const user = await Users.findOneById<Pick<IUser, 'language' | 'emails'>>(uid, {
@@ -21,7 +21,7 @@ const sendResetNotification = async function (uid: string): Promise<void> {
 		return;
 	}
 
-	const t = (s: string): string => TAPi18n.__(s, { lng: language });
+	const t = (s: string): string => i18n.t(s, { lng: language });
 	const text = `
 	${t('Your_TOTP_has_been_reset')}
 
@@ -35,24 +35,22 @@ const sendResetNotification = async function (uid: string): Promise<void> {
 	const from = settings.get('From_Email');
 	const subject = t('TOTP_reset_email');
 
-	for (const address of addresses) {
-		Meteor.defer(() => {
-			try {
-				Mailer.send({
-					to: address,
-					from,
-					subject,
-					text,
-					html,
-				} as any);
-			} catch (error) {
-				const message = error instanceof Error ? error.message : String(error);
-				throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${message}`, {
-					function: 'resetUserTOTP',
-					message,
-				});
-			}
-		});
+	for await (const address of addresses) {
+		try {
+			await Mailer.send({
+				to: address,
+				from,
+				subject,
+				text,
+				html,
+			} as any);
+		} catch (error) {
+			const message = error instanceof Error ? error.message : String(error);
+			throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${message}`, {
+				function: 'resetUserTOTP',
+				message,
+			});
+		}
 	}
 };
 

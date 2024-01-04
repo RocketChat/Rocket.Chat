@@ -15,8 +15,8 @@ const RouterContextMock = ({ children }: RouterContextMockProps): ReactElement =
 	const value = useMemo(
 		(): ContextType<typeof RouterContext> => ({
 			...parent,
-			pushRoute: (name, parameters, queryStringParameters): void => {
-				logAction('pushRoute', name, parameters, queryStringParameters);
+			navigate: (...args): void => {
+				logAction('navigate', ...args);
 			},
 		}),
 		[parent],

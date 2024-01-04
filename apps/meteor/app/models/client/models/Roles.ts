@@ -2,9 +2,9 @@ import type { IRole, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
 
+import type { MinimongoCollection } from '../../../../client/definitions/MinimongoCollection';
 import { ChatSubscription } from './ChatSubscription';
 import { Users } from './Users';
-import type { MinimongoCollection } from '../../../../client/definitions/MinimongoCollection';
 
 class RolesCollection extends Mongo.Collection<IRole> implements MinimongoCollection<IRole> {
 	ready = new ReactiveVar(false);
@@ -49,8 +49,6 @@ class RolesCollection extends Mongo.Collection<IRole> implements MinimongoCollec
 	}
 
 	public declare _collection: MinimongoCollection<IRole>['_collection'];
-
-	public declare direct: MinimongoCollection<IRole>['direct'];
 
 	public declare queries: MinimongoCollection<IRole>['queries'];
 }

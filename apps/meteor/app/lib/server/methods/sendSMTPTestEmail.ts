@@ -1,6 +1,6 @@
-import { Meteor } from 'meteor/meteor';
-import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import { Meteor } from 'meteor/meteor';
 
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
@@ -29,7 +29,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 		try {
-			Mailer.send({
+			await Mailer.send({
 				to: user.emails[0].address,
 				from: settings.get('From_Email'),
 				subject: 'SMTP Test Email',

@@ -1,55 +1,88 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { Box, Modal, Button } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
-import React, { useState, memo } from 'react';
+import { Box, Modal, Button, FieldGroup, Field, FieldRow, FieldLabel, FieldError } from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useTranslation, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useMutation } from '@tanstack/react-query';
+import React, { memo } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 
 import UserAutoCompleteMultipleFederated from '../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
-import { useEndpointAction } from '../../hooks/useEndpointAction';
 import { goToRoomById } from '../../lib/utils/goToRoomById';
 
-type Username = Exclude<IUser['username'], undefined>;
-
-type CreateDirectMessageProps = {
-	onClose: () => void;
-};
-
-const CreateDirectMessage: FC<CreateDirectMessageProps> = ({ onClose }) => {
+const CreateDirectMessage = ({ onClose }: { onClose: () => void }) => {
 	const t = useTranslation();
-	const [users, setUsers] = useState<Array<Username>>([]);
+	const membersFieldId = useUniqueId();
+	const dispatchToastMessage = useToastMessageDispatch();
 
-	const createDirect = useEndpointAction('POST', '/v1/dm.create');
+	const createDirectAction = useEndpoint('POST', '/v1/dm.create');
 
-	const onCreate = useMutableCallback(async () => {
-		try {
-			const {
-				room: { rid },
-			} = await createDirect({ usernames: users.join(',') });
+	const {
+		control,
+		handleSubmit,
+		formState: { isDirty, isSubmitting, isValidating, errors },
+	} = useForm({ mode: 'onBlur', defaultValues: { users: [] } });
 
+	const mutateDirectMessage = useMutation({
+		mutationFn: createDirectAction,
+		onSuccess: ({ room: { rid } }) => {
 			goToRoomById(rid);
+		},
+		onError: (error) => {
+			dispatchToastMessage({ type: 'error', message: error });
+		},
+		onSettled: () => {
 			onClose();
-		} catch (error) {
-			console.warn(error);
-		}
+		},
 	});
 
+	const handleCreate = async ({ users }: { users: IUser['username'][] }) => {
+		return mutateDirectMessage.mutateAsync({ usernames: users.join(',') });
+	};
+
 	return (
-		<Modal data-qa='create-direct-modal'>
+		<Modal data-qa='create-direct-modal' wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleCreate)} {...props} />}>
 			<Modal.Header>
-				<Modal.Title>{t('Direct_Messages')}</Modal.Title>
-				<Modal.Close onClick={onClose} />
+				<Modal.Title>{t('Create_direct_message')}</Modal.Title>
+				<Modal.Close tabIndex={-1} onClick={onClose} />
 			</Modal.Header>
-			<Modal.Content mbe='x2'>
-				<Box>{t('Direct_message_creation_description')}</Box>
-				<Box mbs='x16' display='flex' flexDirection='column' width='full'>
-					<UserAutoCompleteMultipleFederated value={users} onChange={setUsers} />
-				</Box>
+			<Modal.Content mbe={2}>
+				<Box mbe={24}>{t('Direct_message_creation_description')}</Box>
+				<FieldGroup>
+					<Field>
+						<FieldLabel htmlFor={membersFieldId} required>
+							{t('Members')}
+						</FieldLabel>
+						<FieldRow>
+							<Controller
+								name='users'
+								rules={{ required: t('error-the-field-is-required', { field: t('Members') }) }}
+								control={control}
+								render={({ field: { name, onChange, value, onBlur } }) => (
+									<UserAutoCompleteMultipleFederated
+										name={name}
+										onChange={onChange}
+										value={value}
+										onBlur={onBlur}
+										id={membersFieldId}
+										aria-describedby={`${membersFieldId}-error`}
+										aria-required='true'
+										aria-invalid={Boolean(errors.users)}
+									/>
+								)}
+							/>
+						</FieldRow>
+						{errors.users && (
+							<FieldError aria-live='assertive' id={`${membersFieldId}-error`}>
+								{errors.users.message}
+							</FieldError>
+						)}
+					</Field>
+				</FieldGroup>
 			</Modal.Content>
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button disabled={users.length < 1} onClick={onCreate} primary>
+					<Button disabled={!isDirty} loading={isSubmitting || isValidating} type='submit' primary>
 						{t('Create')}
 					</Button>
 				</Modal.FooterControllers>

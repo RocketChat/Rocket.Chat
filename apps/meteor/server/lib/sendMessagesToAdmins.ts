@@ -1,9 +1,9 @@
 import type { IUser, IMessage } from '@rocket.chat/core-typings';
 import { Roles, Users } from '@rocket.chat/models';
 
-import { SystemLogger } from './logger/system';
 import { executeSendMessage } from '../../app/lib/server/methods/sendMessage';
 import { createDirectMessage } from '../methods/createDirectMessage';
+import { SystemLogger } from './logger/system';
 
 type Banner = {
 	id: string;
@@ -15,7 +15,7 @@ type Banner = {
 	link: string;
 };
 
-const getData = async <T>(param: T[] | ((params: { adminUser: IUser }) => Promise<T[]>), adminUser: IUser): Promise<T[]> => {
+const getData = async <T>(param: T[] | ((params: { adminUser: IUser }) => Promise<T[] | T>), adminUser: IUser): Promise<T[]> => {
 	const result = typeof param === 'function' ? await param({ adminUser }) : param;
 
 	if (!Array.isArray(result)) {
@@ -33,7 +33,7 @@ export async function sendMessagesToAdmins({
 }: {
 	fromId?: string;
 	checkFrom?: boolean;
-	msgs?: Partial<IMessage>[] | ((params: { adminUser: IUser }) => Promise<Partial<IMessage>[]>);
+	msgs?: Partial<IMessage>[] | ((params: { adminUser: IUser }) => Promise<Partial<IMessage>[] | Partial<IMessage>>);
 	banners?: Banner[] | ((params: { adminUser: IUser }) => Promise<Banner[]>);
 }): Promise<void> {
 	const fromUser = checkFrom ? await Users.findOneById(fromId, { projection: { _id: 1 } }) : true;

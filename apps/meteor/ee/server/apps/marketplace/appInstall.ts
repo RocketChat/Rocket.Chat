@@ -1,9 +1,9 @@
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { getWorkspaceAccessToken } from '../../../../app/cloud/server';
 import { settings } from '../../../../app/settings/server';
-import { Info } from '../../../../app/utils/server';
-import { fetch } from '../../../../server/lib/http/fetch';
+import { Info } from '../../../../app/utils/rocketchat.info';
 
 type installAction = 'install' | 'update' | 'uninstall';
 
@@ -40,7 +40,7 @@ export async function notifyAppInstall(marketplaceBaseUrl: string, action: insta
 		await fetch(pendingSentUrl, {
 			method: 'POST',
 			headers,
-			body: JSON.stringify(data),
+			body: data,
 		});
 
 		// eslint-disable-next-line no-empty

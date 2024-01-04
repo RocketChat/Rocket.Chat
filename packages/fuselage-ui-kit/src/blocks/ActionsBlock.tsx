@@ -3,7 +3,7 @@ import * as UiKit from '@rocket.chat/ui-kit';
 import type { ReactElement } from 'react';
 import { memo, useCallback, useMemo, useState } from 'react';
 
-import { useSurfaceType } from '../contexts/SurfaceContext';
+import { useSurfaceType } from '../hooks/useSurfaceType';
 import type { BlockProps } from '../utils/BlockProps';
 import Action from './ActionsBlock.Action';
 

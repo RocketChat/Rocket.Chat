@@ -1,11 +1,12 @@
-import _ from 'underscore';
-import { Meteor } from 'meteor/meteor';
+import { Logger } from '@rocket.chat/logger';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import { Meteor } from 'meteor/meteor';
 import { RateLimiter } from 'meteor/rate-limit';
+import _ from 'underscore';
 
-import { settings } from '../../../settings/server';
+import { sleep } from '../../../../lib/utils/sleep';
 import { metrics } from '../../../metrics/server';
-import { Logger } from '../../../logger/server';
+import { settings } from '../../../settings/server';
 
 const logger = new Logger('RateLimiter');
 
@@ -61,7 +62,7 @@ RateLimiter.prototype.check = function (input) {
 	};
 
 	const matchedRules = self._findAllMatchingRules(input);
-	_.each(matchedRules, function (rule) {
+	_.each(matchedRules, (rule) => {
 		// ==== BEGIN OVERRIDE ====
 		const callbackReply = {
 			allowed: true,
@@ -135,7 +136,7 @@ const callback = (msg, name) => (reply, input) => {
 		});
 		// sleep before sending the error to slow down next requests
 		if (slowDownRate > 0 && reply.numInvocationsExceeded) {
-			Meteor._sleepForMs(slowDownRate * reply.numInvocationsExceeded);
+			Promise.await(sleep(slowDownRate * reply.numInvocationsExceeded));
 		}
 		// } else {
 		// 	console.log('DDP RATE LIMIT:', message);

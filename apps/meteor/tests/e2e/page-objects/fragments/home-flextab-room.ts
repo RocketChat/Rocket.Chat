@@ -8,7 +8,7 @@ export class HomeFlextabRoom {
 	}
 
 	get btnEdit(): Locator {
-		return this.page.locator('//aside//button[contains(text(), "Edit")]');
+		return this.page.locator('role=button[name="Edit"]');
 	}
 
 	get inputName(): Locator {
@@ -32,6 +32,6 @@ export class HomeFlextabRoom {
 	}
 
 	get btnSave(): Locator {
-		return this.page.locator('//aside//button[contains(text(), "Save")]');
+		return this.page.locator('role=button[name="Save"]');
 	}
 }

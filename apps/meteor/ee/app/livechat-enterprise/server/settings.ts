@@ -1,5 +1,5 @@
-import { Settings } from '@rocket.chat/models';
 import { OmnichannelSortingMechanismSettingType } from '@rocket.chat/core-typings';
+import { Settings } from '@rocket.chat/models';
 
 import { settingsRegistry } from '../../../../app/settings/server';
 
@@ -7,7 +7,7 @@ const omnichannelEnabledQuery = { _id: 'Livechat_enabled', value: true };
 const businessHoursEnabled = { _id: 'Livechat_enable_business_hours', value: true };
 
 export const createSettings = async (): Promise<void> => {
-	void settingsRegistry.add('Livechat_abandoned_rooms_action', 'none', {
+	await settingsRegistry.add('Livechat_abandoned_rooms_action', 'none', {
 		type: 'select',
 		group: 'Omnichannel',
 		section: 'Sessions',
@@ -23,7 +23,7 @@ export const createSettings = async (): Promise<void> => {
 		enableQuery: omnichannelEnabledQuery,
 	});
 
-	void settingsRegistry.add('Livechat_abandoned_rooms_closed_custom_message', '', {
+	await settingsRegistry.add('Livechat_abandoned_rooms_closed_custom_message', '', {
 		type: 'string',
 		group: 'Omnichannel',
 		section: 'Sessions',
@@ -34,7 +34,7 @@ export const createSettings = async (): Promise<void> => {
 		modules: ['livechat-enterprise'],
 	});
 
-	void settingsRegistry.add('Livechat_last_chatted_agent_routing', false, {
+	await settingsRegistry.add('Livechat_last_chatted_agent_routing', false, {
 		type: 'boolean',
 		group: 'Omnichannel',
 		section: 'Routing',
@@ -44,9 +44,9 @@ export const createSettings = async (): Promise<void> => {
 		enableQuery: omnichannelEnabledQuery,
 	});
 
-	void settingsRegistry.addGroup('Omnichannel', function () {
-		this.section('Business_Hours', function () {
-			this.add('Livechat_business_hour_type', 'Single', {
+	await settingsRegistry.addGroup('Omnichannel', async function () {
+		await this.section('Business_Hours', async function () {
+			await this.add('Livechat_business_hour_type', 'Single', {
 				type: 'select',
 				values: [
 					{
@@ -67,8 +67,8 @@ export const createSettings = async (): Promise<void> => {
 			});
 		});
 
-		this.section('Queue_management', function () {
-			this.add('Livechat_waiting_queue', false, {
+		await this.section('Queue_management', async function () {
+			await this.add('Livechat_waiting_queue', false, {
 				type: 'boolean',
 				group: 'Omnichannel',
 				section: 'Queue_management',
@@ -79,7 +79,7 @@ export const createSettings = async (): Promise<void> => {
 				enableQuery: omnichannelEnabledQuery,
 			});
 
-			this.add('Livechat_waiting_queue_message', '', {
+			await this.add('Livechat_waiting_queue_message', '', {
 				type: 'string',
 				group: 'Omnichannel',
 				section: 'Queue_management',
@@ -91,7 +91,7 @@ export const createSettings = async (): Promise<void> => {
 				modules: ['livechat-enterprise'],
 			});
 
-			this.add('Livechat_maximum_chats_per_agent', 0, {
+			await this.add('Livechat_maximum_chats_per_agent', 0, {
 				type: 'int',
 				group: 'Omnichannel',
 				section: 'Queue_management',
@@ -103,7 +103,7 @@ export const createSettings = async (): Promise<void> => {
 				modules: ['livechat-enterprise'],
 			});
 
-			this.add('Omnichannel_calculate_dispatch_service_queue_statistics', true, {
+			await this.add('Omnichannel_calculate_dispatch_service_queue_statistics', true, {
 				type: 'boolean',
 				group: 'Omnichannel',
 				section: 'Queue_management',
@@ -114,23 +114,7 @@ export const createSettings = async (): Promise<void> => {
 				modules: ['livechat-enterprise'],
 			});
 
-			this.add('Omnichannel_queue_delay_timeout', 5, {
-				type: 'int',
-				group: 'Omnichannel',
-				section: 'Queue_management',
-				i18nLabel: 'Queue_delay_timeout',
-				i18nDescription: 'Time_in_seconds',
-				enableQuery: [
-					{ _id: 'Livechat_waiting_queue', value: true },
-					{ _id: 'Livechat_Routing_Method', value: { $ne: 'Manual_Selection' } },
-					omnichannelEnabledQuery,
-				],
-				enterprise: true,
-				invalidValue: 5,
-				modules: ['livechat-enterprise'],
-			});
-
-			this.add('Livechat_number_most_recent_chats_estimate_wait_time', 100, {
+			await this.add('Livechat_number_most_recent_chats_estimate_wait_time', 100, {
 				type: 'int',
 				group: 'Omnichannel',
 				section: 'Queue_management',
@@ -142,7 +126,7 @@ export const createSettings = async (): Promise<void> => {
 				modules: ['livechat-enterprise'],
 			});
 
-			this.add('Livechat_max_queue_wait_time', -1, {
+			await this.add('Livechat_max_queue_wait_time', -1, {
 				type: 'int',
 				group: 'Omnichannel',
 				section: 'Queue_management',
@@ -154,7 +138,7 @@ export const createSettings = async (): Promise<void> => {
 				modules: ['livechat-enterprise'],
 			});
 
-			this.add('Omnichannel_sorting_mechanism', 'Timestamp', {
+			await this.add('Omnichannel_sorting_mechanism', 'Timestamp', {
 				type: 'select',
 				values: [
 					{ key: OmnichannelSortingMechanismSettingType.Timestamp, i18nLabel: 'Timestamp' },
@@ -173,7 +157,7 @@ export const createSettings = async (): Promise<void> => {
 		});
 	});
 
-	void settingsRegistry.add('Omnichannel_contact_manager_routing', true, {
+	await settingsRegistry.add('Omnichannel_contact_manager_routing', true, {
 		type: 'boolean',
 		group: 'Omnichannel',
 		section: 'Routing',
@@ -183,7 +167,7 @@ export const createSettings = async (): Promise<void> => {
 		enableQuery: omnichannelEnabledQuery,
 	});
 
-	void settingsRegistry.add('Livechat_auto_close_on_hold_chats_timeout', 3600, {
+	await settingsRegistry.add('Livechat_auto_close_on_hold_chats_timeout', 3600, {
 		type: 'int',
 		group: 'Omnichannel',
 		section: 'Sessions',
@@ -193,7 +177,7 @@ export const createSettings = async (): Promise<void> => {
 		enableQuery: omnichannelEnabledQuery,
 	});
 
-	void settingsRegistry.add('Livechat_auto_close_on_hold_chats_custom_message', '', {
+	await settingsRegistry.add('Livechat_auto_close_on_hold_chats_custom_message', '', {
 		type: 'string',
 		group: 'Omnichannel',
 		section: 'Sessions',
@@ -203,7 +187,7 @@ export const createSettings = async (): Promise<void> => {
 		modules: ['livechat-enterprise'],
 	});
 
-	void settingsRegistry.add('Livechat_allow_manual_on_hold', false, {
+	await settingsRegistry.add('Livechat_allow_manual_on_hold', false, {
 		type: 'boolean',
 		group: 'Omnichannel',
 		section: 'Sessions',
@@ -214,7 +198,18 @@ export const createSettings = async (): Promise<void> => {
 		enableQuery: omnichannelEnabledQuery,
 	});
 
-	void settingsRegistry.add('Livechat_auto_transfer_chat_timeout', 0, {
+	await settingsRegistry.add('Livechat_allow_manual_on_hold_upon_agent_engagement_only', true, {
+		type: 'boolean',
+		group: 'Omnichannel',
+		section: 'Sessions',
+		enterprise: true,
+		invalidValue: false,
+		public: true,
+		modules: ['livechat-enterprise'],
+		enableQuery: { _id: 'Livechat_allow_manual_on_hold', value: true },
+	});
+
+	await settingsRegistry.add('Livechat_auto_transfer_chat_timeout', 0, {
 		type: 'int',
 		group: 'Omnichannel',
 		section: 'Sessions',
@@ -225,7 +220,7 @@ export const createSettings = async (): Promise<void> => {
 		enableQuery: omnichannelEnabledQuery,
 	});
 
-	void settingsRegistry.add('Accounts_Default_User_Preferences_omnichannelTranscriptPDF', false, {
+	await settingsRegistry.add('Accounts_Default_User_Preferences_omnichannelTranscriptPDF', false, {
 		type: 'boolean',
 		public: true,
 		i18nLabel: 'Omnichannel_transcript_pdf',

@@ -1,13 +1,13 @@
-import type { Icon } from '@rocket.chat/fuselage';
 import { States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
+import type { Keys as IconName } from '@rocket.chat/icons';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ComponentProps } from 'react';
+import type { ReactElement } from 'react';
 import React from 'react';
 
 type OTRStatesProps = {
 	title: string;
 	description: string;
-	icon: ComponentProps<typeof Icon>['name'];
+	icon: IconName;
 	onClickStart: () => void;
 };
 

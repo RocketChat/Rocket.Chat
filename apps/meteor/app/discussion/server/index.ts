@@ -1,4 +1,3 @@
-import './config';
 import './permissions';
 
 import './hooks/propagateDiscussionMetadata';

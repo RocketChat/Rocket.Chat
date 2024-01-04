@@ -1,40 +1,33 @@
+import ejson from 'ejson';
 import { Meteor } from 'meteor/meteor';
-import { EJSON } from 'meteor/ejson';
 
-import { isValidQuery } from '../lib/isValidQuery';
-import { clean } from '../lib/cleanQuery';
-import { API } from '../api';
-import type { Logger } from '../../../logger/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
+import { API } from '../api';
+import type { PartialThis } from '../definition';
+import { clean } from '../lib/cleanQuery';
+import { isValidQuery } from '../lib/isValidQuery';
 
 const pathAllowConf = {
 	'/api/v1/users.list': ['$or', '$regex', '$and'],
 	'def': ['$or', '$and', '$regex'],
 };
 
-const warnFields =
-	process.env.NODE_ENV !== 'production' || process.env.SHOW_WARNINGS === 'true'
-		? (...rest: any): void => {
-				console.warn(...rest, new Error().stack);
-		  }
-		: new Function();
-
-export async function parseJsonQuery(
-	route: string,
-	userId: string,
-	params: {
-		query?: string;
-		sort?: string;
-		fields?: string;
-	},
-	logger: Logger,
-	queryFields?: string[],
-	queryOperations?: string[],
-): Promise<{
+export async function parseJsonQuery(api: PartialThis): Promise<{
 	sort: Record<string, 1 | -1>;
 	fields: Record<string, 0 | 1>;
 	query: Record<string, unknown>;
 }> {
+	const {
+		request: { route },
+		userId,
+		queryParams: params,
+		logger,
+		queryFields,
+		queryOperations,
+		response,
+	} = api;
+
 	let sort;
 	if (params.sort) {
 		try {
@@ -56,7 +49,7 @@ export async function parseJsonQuery(
 
 	let fields: Record<string, 0 | 1> | undefined;
 	if (params.fields) {
-		warnFields('attribute fields is deprecated');
+		apiDeprecationLogger.parameter(route, 'fields', '7.0.0', response);
 		try {
 			fields = JSON.parse(params.fields) as Record<string, 0 | 1>;
 
@@ -107,10 +100,10 @@ export async function parseJsonQuery(
 
 	let query: Record<string, any> = {};
 	if (params.query) {
-		warnFields('attribute query is deprecated');
+		apiDeprecationLogger.parameter(route, 'query', '7.0.0', response);
 
 		try {
-			query = EJSON.parse(params.query);
+			query = ejson.parse(params.query);
 			query = clean(query, pathAllowConf.def);
 		} catch (e) {
 			logger.warn(`Invalid query parameter provided "${params.query}":`, e);

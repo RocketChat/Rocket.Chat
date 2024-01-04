@@ -1,3 +1,4 @@
+import { License } from '@rocket.chat/license';
 import { Meteor } from 'meteor/meteor';
 
 import './methods/addMonitor';
@@ -17,7 +18,6 @@ import './hooks/checkAgentBeforeTakeInquiry';
 import './hooks/handleNextAgentPreferredEvents';
 import './hooks/onCheckRoomParamsApi';
 import './hooks/onLoadConfigApi';
-import './hooks/onCloseLivechat';
 import './hooks/onSaveVisitorInfo';
 import './hooks/scheduleAutoTransfer';
 import './hooks/resumeOnHold';
@@ -26,18 +26,17 @@ import './hooks/onTransferFailure';
 import './lib/routing/LoadBalancing';
 import './lib/routing/LoadRotation';
 import './lib/AutoCloseOnHoldScheduler';
-import { onLicense } from '../../license/server';
 import './business-hour';
 import { createDefaultPriorities } from './priorities';
 
-onLicense('livechat-enterprise', async () => {
+await License.onLicense('livechat-enterprise', async () => {
 	require('./api');
 	require('./hooks');
 	await import('./startup');
 	const { createPermissions } = await import('./permissions');
 	const { createSettings } = await import('./settings');
 
-	Meteor.startup(function () {
+	Meteor.startup(() => {
 		void createSettings();
 		void createPermissions();
 		void createDefaultPriorities();

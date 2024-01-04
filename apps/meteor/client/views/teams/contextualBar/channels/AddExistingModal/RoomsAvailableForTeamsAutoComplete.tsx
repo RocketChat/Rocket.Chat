@@ -1,4 +1,4 @@
-import { AutoComplete, Box, Icon, Option, Options, Chip } from '@rocket.chat/fuselage';
+import { AutoComplete, Box, Option, Options, Chip } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -46,9 +46,9 @@ const RoomsAvailableForTeamsAutoComplete = ({ value, onChange, ...props }: Rooms
 			filter={filter}
 			setFilter={setFilter}
 			renderSelected={({ selected: { value, label }, onRemove }) => (
-				<Chip key={value} height='x20' value={value} onClick={onRemove} mie='x4'>
-					<Icon name={label.type === 'c' ? 'hash' : 'hashtag-lock'} size='x12' />
-					<Box is='span' margin='none' mis='x4'>
+				<Chip key={value} height='x20' value={value} onClick={onRemove} mb={2} mie={4}>
+					<RoomAvatar size='x20' room={{ type: label?.type || 'c', _id: value, ...label }} />
+					<Box is='span' margin='none' mis={4}>
 						{label.name}
 					</Box>
 				</Chip>

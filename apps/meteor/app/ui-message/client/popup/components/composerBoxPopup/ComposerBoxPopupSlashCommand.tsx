@@ -1,5 +1,5 @@
+import { OptionColumn, OptionContent, OptionDescription, OptionInput } from '@rocket.chat/fuselage';
 import React from 'react';
-import { OptionColumn, OptionContent } from '@rocket.chat/fuselage';
 
 export type ComposerBoxPopupSlashCommandProps = {
 	_id: string;
@@ -10,10 +10,12 @@ export type ComposerBoxPopupSlashCommandProps = {
 const ComposerPopupSlashCommand = ({ _id, description, params }: ComposerBoxPopupSlashCommandProps) => {
 	return (
 		<>
+			<OptionContent>
+				{_id} <OptionDescription>{params}</OptionDescription>
+			</OptionContent>
 			<OptionColumn>
-				<strong>{_id}</strong> {params}
+				<OptionInput>{description}</OptionInput>
 			</OptionColumn>
-			<OptionContent>{description}</OptionContent>
 		</>
 	);
 };

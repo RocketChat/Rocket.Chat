@@ -1,8 +1,7 @@
-import { Meteor } from 'meteor/meteor';
+import { Logger } from '@rocket.chat/logger';
 
-import { Livechat } from '../Livechat';
 import { settings } from '../../../../settings/server';
-import { Logger } from '../../../../logger/server';
+import { Livechat } from '../LivechatTyped';
 
 const logger = new Logger('AgentStatusWatcher');
 
@@ -63,17 +62,17 @@ export const onlineAgents = {
 		return this.users.has(userId);
 	},
 
-	runAgentLeaveAction: Meteor.bindEnvironment(async (userId: string) => {
+	runAgentLeaveAction: async (userId: string) => {
 		onlineAgents.users.delete(userId);
 		onlineAgents.queue.delete(userId);
 
 		try {
 			if (action === 'close') {
-				return Livechat.closeOpenChats(userId, comment);
+				return await Livechat.closeOpenChats(userId, comment);
 			}
 
 			if (action === 'forward') {
-				return Livechat.forwardOpenChats(userId);
+				return await Livechat.forwardOpenChats(userId);
 			}
 		} catch (e) {
 			logger.error({
@@ -81,5 +80,5 @@ export const onlineAgents = {
 				err: e,
 			});
 		}
-	}),
+	},
 };

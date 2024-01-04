@@ -1,9 +1,9 @@
 import type { IImportUser, IUser } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 
-import { VirtualDataConverter } from '../../../app/importer/server/classes/VirtualDataConverter';
 import type { IConverterOptions } from '../../../app/importer/server/classes/ImportDataConverter';
-import { Logger } from '../logger/Logger';
+import { VirtualDataConverter } from '../../../app/importer/server/classes/VirtualDataConverter';
 import { settings } from '../../../app/settings/server';
 
 const logger = new Logger('LDAP Data Converter');
@@ -30,8 +30,17 @@ export class LDAPDataConverter extends VirtualDataConverter {
 			return;
 		}
 
-		// Search by email and username
-		return super.findExistingUser(data);
+		if (data.emails.length) {
+			const emailUser = await Users.findOneWithoutLDAPByEmailAddress(data.emails[0], {});
+
+			if (emailUser) {
+				return emailUser;
+			}
+		}
+
+		if (data.username) {
+			return Users.findOneWithoutLDAPByUsernameIgnoringCase(data.username);
+		}
 	}
 
 	static async convertSingleUser(userData: IImportUser, options?: IConverterOptions): Promise<void> {

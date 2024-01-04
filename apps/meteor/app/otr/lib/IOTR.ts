@@ -1,7 +1,7 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 
-import type { OtrRoomState } from './OtrRoomState';
 import type { OTRRoom } from '../client/OTRRoom';
+import type { OtrRoomState } from './OtrRoomState';
 
 export interface IOnUserStreamData {
 	roomId: IRoom['_id'];
@@ -36,9 +36,7 @@ export interface IOTRRoom {
 }
 
 export interface IOTR {
-	isEnabled(): boolean;
-	setEnabled(enabled: boolean): void;
-	getInstanceByRoomId(roomId: IRoom['_id']): OTRRoom | undefined;
+	getInstanceByRoomId(userId: IUser['_id'], roomId: IRoom['_id']): OTRRoom | undefined;
 }
 
 export interface IOTRAlgorithm extends EcKeyAlgorithm, EcdhKeyDeriveParams {}

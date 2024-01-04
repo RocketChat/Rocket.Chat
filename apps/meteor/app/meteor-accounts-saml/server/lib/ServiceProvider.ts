@@ -1,9 +1,14 @@
-import zlib from 'zlib';
 import crypto from 'crypto';
 import querystring from 'querystring';
+import util from 'util';
+import zlib from 'zlib';
 
 import { Meteor } from 'meteor/meteor';
 
+import type { ILogoutResponse } from '../definition/ILogoutResponse';
+import type { ISAMLRequest } from '../definition/ISAMLRequest';
+import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
+import type { ILogoutRequestValidateCallback, ILogoutResponseValidateCallback, IResponseValidateCallback } from '../definition/callbacks';
 import { SAMLUtils } from './Utils';
 import { AuthorizeRequest } from './generators/AuthorizeRequest';
 import { LogoutRequest } from './generators/LogoutRequest';
@@ -12,15 +17,9 @@ import { ServiceProviderMetadata } from './generators/ServiceProviderMetadata';
 import { LogoutRequestParser } from './parsers/LogoutRequest';
 import { LogoutResponseParser } from './parsers/LogoutResponse';
 import { ResponseParser } from './parsers/Response';
-import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
-import type { ISAMLRequest } from '../definition/ISAMLRequest';
-import type { ILogoutResponse } from '../definition/ILogoutResponse';
-import type { ILogoutRequestValidateCallback, ILogoutResponseValidateCallback, IResponseValidateCallback } from '../definition/callbacks';
 
 export class SAMLServiceProvider {
 	serviceProviderOptions: IServiceProviderOptions;
-
-	syncRequestToUrl: (request: string, operation: string) => void;
 
 	constructor(serviceProviderOptions: IServiceProviderOptions) {
 		if (!serviceProviderOptions) {
@@ -28,8 +27,6 @@ export class SAMLServiceProvider {
 		}
 
 		this.serviceProviderOptions = serviceProviderOptions;
-
-		this.syncRequestToUrl = Meteor.wrapAsync(this.requestToUrl, this);
 	}
 
 	private signRequest(xml: string): string {
@@ -103,68 +100,63 @@ export class SAMLServiceProvider {
 	/*
 		This method will generate the request URL with all the query string params and pass it to the callback
 	*/
-	public requestToUrl(request: string, operation: string, callback: (err: string | object | null, url?: string) => void): void {
-		zlib.deflateRaw(request, (err, buffer) => {
-			if (err) {
-				return callback(err);
+	public async requestToUrl(request: string, operation: string): Promise<string | undefined> {
+		const buffer = await util.promisify(zlib.deflateRaw)(request);
+		try {
+			const base64 = buffer.toString('base64');
+			let target = this.serviceProviderOptions.entryPoint;
+
+			if (operation === 'logout') {
+				if (this.serviceProviderOptions.idpSLORedirectURL) {
+					target = this.serviceProviderOptions.idpSLORedirectURL;
+				}
 			}
 
-			try {
-				const base64 = buffer.toString('base64');
-				let target = this.serviceProviderOptions.entryPoint;
-
-				if (operation === 'logout') {
-					if (this.serviceProviderOptions.idpSLORedirectURL) {
-						target = this.serviceProviderOptions.idpSLORedirectURL;
-					}
-				}
-
-				if (target.indexOf('?') > 0) {
-					target += '&';
-				} else {
-					target += '?';
-				}
-
-				// TBD. We should really include a proper RelayState here
-				let relayState;
-				if (operation === 'logout') {
-					// in case of logout we want to be redirected back to the Meteor app.
-					relayState = Meteor.absoluteUrl();
-				} else {
-					relayState = this.serviceProviderOptions.provider;
-				}
-
-				const samlRequest: Record<string, any> = {
-					SAMLRequest: base64,
-					RelayState: relayState,
-				};
-
-				if (this.serviceProviderOptions.privateCert) {
-					samlRequest.SigAlg = 'http://www.w3.org/2000/09/xmldsig#rsa-sha1';
-					samlRequest.Signature = this.signRequest(querystring.stringify(samlRequest));
-				}
-
-				target += querystring.stringify(samlRequest);
-
-				SAMLUtils.log(`requestToUrl: ${target}`);
-
-				if (operation === 'logout') {
-					// in case of logout we want to be redirected back to the Meteor app.
-					return callback(null, target);
-				}
-				callback(null, target);
-			} catch (error) {
-				callback(error instanceof Error ? error : String(error));
+			if (target.indexOf('?') > 0) {
+				target += '&';
+			} else {
+				target += '?';
 			}
-		});
+
+			// TBD. We should really include a proper RelayState here
+			let relayState;
+			if (operation === 'logout') {
+				// in case of logout we want to be redirected back to the Meteor app.
+				relayState = Meteor.absoluteUrl();
+			} else {
+				relayState = this.serviceProviderOptions.provider;
+			}
+
+			const samlRequest: Record<string, any> = {
+				SAMLRequest: base64,
+				RelayState: relayState,
+			};
+
+			if (this.serviceProviderOptions.privateCert) {
+				samlRequest.SigAlg = 'http://www.w3.org/2000/09/xmldsig#rsa-sha1';
+				samlRequest.Signature = this.signRequest(querystring.stringify(samlRequest));
+			}
+
+			target += querystring.stringify(samlRequest);
+
+			SAMLUtils.log(`requestToUrl: ${target}`);
+
+			if (operation === 'logout') {
+				// in case of logout we want to be redirected back to the Meteor app.
+				return target;
+			}
+			return target;
+		} catch (error) {
+			throw error instanceof Error ? error : String(error);
+		}
 	}
 
-	public getAuthorizeUrl(callback: (err: string | object | null, url?: string) => void): void {
+	public async getAuthorizeUrl(): Promise<string | undefined> {
 		const request = this.generateAuthorizeRequest();
 		SAMLUtils.log('-----REQUEST------');
 		SAMLUtils.log(request);
 
-		this.requestToUrl(request, 'authorize', callback);
+		return this.requestToUrl(request, 'authorize');
 	}
 
 	public async validateLogoutRequest(samlRequest: string, callback: ILogoutRequestValidateCallback): Promise<void> {

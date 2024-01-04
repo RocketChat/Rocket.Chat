@@ -1,6 +1,6 @@
-import moment from 'moment';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users, Analytics, Sessions } from '@rocket.chat/models';
+import moment from 'moment';
 
 import { convertDateToInt, diffBetweenDaysInclusive, getTotalOfWeekItems, convertIntToDate } from './date';
 

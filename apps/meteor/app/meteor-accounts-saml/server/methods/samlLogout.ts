@@ -1,10 +1,10 @@
-import { Meteor } from 'meteor/meteor';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Users } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
+import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 import { SAMLServiceProvider } from '../lib/ServiceProvider';
 import { SAMLUtils } from '../lib/Utils';
-import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 
 /**
  * Fetch SAML provider configs for given 'provider'.
@@ -28,7 +28,7 @@ function getSamlServiceProviderOptions(provider: string): IServiceProviderOption
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		samlLogout(provider: string): Promise<void>;
+		samlLogout(provider: string): Promise<string | undefined>;
 	}
 }
 
@@ -71,7 +71,7 @@ Meteor.methods<ServerMethods>({
 
 		await Users.setSamlInResponseTo(userId, request.id);
 
-		const result = _saml.syncRequestToUrl(request.request, 'logout');
+		const result = await _saml.requestToUrl(request.request, 'logout');
 		SAMLUtils.log(`SAML Logout Request ${result}`);
 
 		return result;

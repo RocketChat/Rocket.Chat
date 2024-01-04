@@ -1,22 +1,17 @@
-import type { FindCursor, DeleteResult, InsertOneResult, UpdateResult, WithId, Filter } from 'mongodb';
-import type { IUpload } from '@rocket.chat/core-typings';
+import type { IRoom, IUpload } from '@rocket.chat/core-typings';
+import type { FindCursor, WithId, Filter, FindOptions } from 'mongodb';
 
-import type { FindPaginated, IBaseModel } from './IBaseModel';
+import type { FindPaginated } from './IBaseModel';
+import type { IBaseUploadsModel } from './IBaseUploadsModel';
 
-export interface IUploadsModel extends IBaseModel<IUpload> {
+export interface IUploadsModel extends IBaseUploadsModel<IUpload> {
 	findNotHiddenFilesOfRoom(roomId: string, searchText: string, fileType: string, limit: number): FindCursor<IUpload>;
-
-	insertFileInit(userId: string, store: string, file: { name: string }, extra: object): Promise<InsertOneResult<WithId<IUpload>>>;
-
-	updateFileComplete(fileId: string, userId: string, file: object): Promise<UpdateResult | undefined>;
-
-	updateFileNameById(fileId: string, name: string): Promise<Document | UpdateResult>;
-
-	deleteFile(fileId: string): Promise<DeleteResult>;
 
 	findPaginatedWithoutThumbs(query: Filter<IUpload>, options?: any): FindPaginated<FindCursor<WithId<IUpload>>>;
 
-	findOneByName(name: string): Promise<IUpload | null>;
-
-	findOneByRoomId(rid: string): Promise<IUpload | null>;
+	findImagesByRoomId(
+		rid: IRoom['_id'],
+		uploadedAt?: Date,
+		options?: Omit<FindOptions<IUpload>, 'sort'>,
+	): FindPaginated<FindCursor<WithId<IUpload>>>;
 }

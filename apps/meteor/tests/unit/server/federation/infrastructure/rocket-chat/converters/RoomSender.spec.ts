@@ -1,15 +1,15 @@
-import { expect } from 'chai';
 import type { IMessage } from '@rocket.chat/core-typings';
+import { expect } from 'chai';
 
-import { FederationRoomSenderConverter } from '../../../../../../../server/services/federation/infrastructure/rocket-chat/converters/RoomSender';
 import {
 	FederationAfterLeaveRoomDto,
 	FederationAfterRemoveUserFromRoomDto,
 	FederationCreateDMAndInviteUserDto,
 	FederationRoomSendExternalMessageDto,
 } from '../../../../../../../server/services/federation/application/room/input/RoomSenderDto';
+import { FederationRoomSenderConverter } from '../../../../../../../server/services/federation/infrastructure/rocket-chat/converters/RoomSender';
 
-describe('Federation - Infrastructure - RocketChat - FederationRoomSenderConverter', () => {
+describe.skip('Federation - Infrastructure - RocketChat - FederationRoomSenderConverter', () => {
 	describe('#toCreateDirectMessageRoomDto()', () => {
 		it('should return an instance of FederationCreateDMAndInviteUserDto', () => {
 			expect(

@@ -1,18 +1,28 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-import URL from 'url';
 import QueryString from 'querystring';
+import URL from 'url';
 
-import { Meteor } from 'meteor/meteor';
-import { ReactiveVar } from 'meteor/reactive-var';
-import type { ReactiveVar as ReactiveVarType } from 'meteor/reactive-var';
-import { EJSON } from 'meteor/ejson';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { Emitter } from '@rocket.chat/emitter';
 import type { IE2EEMessage, IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
+import { Emitter } from '@rocket.chat/emitter';
+import EJSON from 'ejson';
+import { Meteor } from 'meteor/meteor';
+import type { ReactiveVar as ReactiveVarType } from 'meteor/reactive-var';
+import { ReactiveVar } from 'meteor/reactive-var';
 
+import * as banners from '../../../client/lib/banners';
+import type { LegacyBannerPayload } from '../../../client/lib/banners';
+import { imperativeModal } from '../../../client/lib/imperativeModal';
+import { mapMessageFromApi } from '../../../client/lib/utils/mapMessageFromApi';
+import { waitUntilFind } from '../../../client/lib/utils/waitUntilFind';
+import EnterE2EPasswordModal from '../../../client/views/e2e/EnterE2EPasswordModal';
+import SaveE2EPasswordModal from '../../../client/views/e2e/SaveE2EPasswordModal';
+import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
 import { getMessageUrlRegex } from '../../../lib/getMessageUrlRegex';
-import { E2ERoom } from './rocketchat.e2e.room';
+import { ChatRoom, Subscriptions, Messages } from '../../models/client';
+import { settings } from '../../settings/client';
+import { getUserAvatarURL } from '../../utils/client';
+import { sdk } from '../../utils/client/lib/SDKClient';
+import { t } from '../../utils/lib/i18n';
 import {
 	toString,
 	toArrayBuffer,
@@ -22,25 +32,14 @@ import {
 	decryptAES,
 	generateRSAKey,
 	exportJWKKey,
-	// importRSAKey,
+	importRSAKey,
 	importRawKey,
 	deriveKey,
 	generateMnemonicPhrase,
 } from './helper';
-import * as banners from '../../../client/lib/banners';
-import type { LegacyBannerPayload } from '../../../client/lib/banners';
-import { Rooms, Subscriptions, Messages } from '../../models/client';
-import './events.js';
-import './tabbar';
 import { log, logError } from './logger';
-import { waitUntilFind } from '../../../client/lib/utils/waitUntilFind';
-import { imperativeModal } from '../../../client/lib/imperativeModal';
-import SaveE2EPasswordModal from '../../../client/views/e2e/SaveE2EPasswordModal';
-import EnterE2EPasswordModal from '../../../client/views/e2e/EnterE2EPasswordModal';
-import { call } from '../../../client/lib/utils/call';
-import { APIClient } from '../../utils/client';
-import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
-import { mapMessageFromApi } from '../../../client/lib/utils/mapMessageFromApi';
+import { E2ERoom } from './rocketchat.e2e.room';
+import './events.js';
 
 let failedToDecodeKey = false;
 
@@ -62,7 +61,7 @@ class E2E extends Emitter {
 
 	private db_private_key: string | null;
 
-	// private privateKey: CryptoKey | undefined;
+	public privateKey: CryptoKey | undefined;
 
 	constructor() {
 		super();
@@ -98,7 +97,7 @@ class E2E extends Emitter {
 	}
 
 	async getInstanceByRoomId(rid: IRoom['_id']): Promise<E2ERoom | null> {
-		const room = await waitUntilFind(() => Rooms.findOne({ _id: rid }));
+		const room = await waitUntilFind(() => ChatRoom.findOne({ _id: rid }));
 
 		if (room.t !== 'd' && room.t !== 'p') {
 			return null;
@@ -130,20 +129,20 @@ class E2E extends Emitter {
 			throw new Error('Failed to encode private key with provided password.');
 		}
 
-		await APIClient.post('/v1/e2e.setUserPublicAndPrivateKeys', {
+		await sdk.rest.post('/v1/e2e.setUserPublicAndPrivateKeys', {
 			public_key,
 			private_key: encodedPrivateKey,
 		});
 	}
 
 	async acceptSuggestedKey(rid: string): Promise<void> {
-		await APIClient.post('/v1/e2e.acceptSuggestedGroupKey', {
+		await sdk.rest.post('/v1/e2e.acceptSuggestedGroupKey', {
 			rid,
 		});
 	}
 
 	async rejectSuggestedKey(rid: string): Promise<void> {
-		await APIClient.post('/v1/e2e.rejectSuggestedGroupKey', {
+		await sdk.rest.post('/v1/e2e.rejectSuggestedGroupKey', {
 			rid,
 		});
 	}
@@ -179,8 +178,8 @@ class E2E extends Emitter {
 				this.started = false;
 				failedToDecodeKey = true;
 				this.openAlert({
-					title: TAPi18n.__("Wasn't possible to decode your encryption key to be imported."),
-					html: '<div>Your encryption password seems wrong. Click here to try again.</div>',
+					title: "Wasn't possible to decode your encryption key to be imported.", // TODO: missing translation
+					html: '<div>Your encryption password seems wrong. Click here to try again.</div>', // TODO: missing translation
 					modifiers: ['large', 'danger'],
 					closable: true,
 					icon: 'key',
@@ -205,14 +204,9 @@ class E2E extends Emitter {
 
 		const randomPassword = Meteor._localStorage.getItem('e2e.randomPassword');
 		if (randomPassword) {
-			const passwordRevealText = TAPi18n.__('E2E_password_reveal_text', {
-				postProcess: 'sprintf',
-				sprintf: [randomPassword],
-			});
-
 			this.openAlert({
-				title: TAPi18n.__('Save_Your_Encryption_Password'),
-				html: TAPi18n.__('Click_here_to_view_and_copy_your_password'),
+				title: () => t('Save_your_encryption_password'),
+				html: () => t('Click_here_to_view_and_copy_your_password'),
 				modifiers: ['large'],
 				closable: false,
 				icon: 'key',
@@ -220,7 +214,7 @@ class E2E extends Emitter {
 					imperativeModal.open({
 						component: SaveE2EPasswordModal,
 						props: {
-							passwordRevealText,
+							randomPassword,
 							onClose: imperativeModal.close,
 							onCancel: () => {
 								this.closeAlert();
@@ -246,7 +240,7 @@ class E2E extends Emitter {
 		Meteor._localStorage.removeItem('public_key');
 		Meteor._localStorage.removeItem('private_key');
 		this.instancesByRoomId = {};
-		// this.privateKey = undefined;
+		this.privateKey = undefined;
 		this.enabled.set(false);
 		this._ready.set(false);
 		this.started = false;
@@ -262,7 +256,7 @@ class E2E extends Emitter {
 
 	async loadKeysFromDB(): Promise<void> {
 		try {
-			const { public_key, private_key } = await APIClient.get('/v1/e2e.fetchMyKeys');
+			const { public_key, private_key } = await sdk.rest.get('/v1/e2e.fetchMyKeys');
 
 			this.db_public_key = public_key;
 			this.db_private_key = private_key;
@@ -275,7 +269,7 @@ class E2E extends Emitter {
 		Meteor._localStorage.setItem('public_key', public_key);
 
 		try {
-			// this.privateKey = await importRSAKey(EJSON.parse(private_key), ['decrypt']);
+			this.privateKey = await importRSAKey(EJSON.parse(private_key), ['decrypt']);
 
 			Meteor._localStorage.setItem('private_key', private_key);
 		} catch (error) {
@@ -288,7 +282,7 @@ class E2E extends Emitter {
 		let key;
 		try {
 			key = await generateRSAKey();
-			// this.privateKey = key.privateKey;
+			this.privateKey = key.privateKey;
 		} catch (error) {
 			return this.error('Error generating key: ', error);
 		}
@@ -313,7 +307,7 @@ class E2E extends Emitter {
 	}
 
 	async requestSubscriptionKeys(): Promise<void> {
-		await call('e2e.requestSubscriptionKeys');
+		await sdk.call('e2e.requestSubscriptionKeys');
 	}
 
 	async createRandomPassword(): Promise<string> {
@@ -322,12 +316,12 @@ class E2E extends Emitter {
 		return randomPassword;
 	}
 
-	async encodePrivateKey(private_key: string, password: string): Promise<string | void> {
+	async encodePrivateKey(privateKey: string, password: string): Promise<string | void> {
 		const masterKey = await this.getMasterKey(password);
 
 		const vector = crypto.getRandomValues(new Uint8Array(16));
 		try {
-			const encodedPrivateKey = await encryptAES(vector, masterKey, toArrayBuffer(private_key));
+			const encodedPrivateKey = await encryptAES(vector, masterKey, toArrayBuffer(privateKey));
 
 			return EJSON.stringify(joinVectorAndEcryptedData(vector, encodedPrivateKey));
 		} catch (error) {
@@ -379,8 +373,8 @@ class E2E extends Emitter {
 
 			const showAlert = () => {
 				this.openAlert({
-					title: TAPi18n.__('Enter_your_E2E_password'),
-					html: TAPi18n.__('Click_here_to_enter_your_encryption_password'),
+					title: () => t('Enter_your_E2E_password'),
+					html: () => t('Click_here_to_enter_your_encryption_password'),
 					modifiers: ['large'],
 					closable: false,
 					icon: 'key',
@@ -398,12 +392,12 @@ class E2E extends Emitter {
 		});
 	}
 
-	async decodePrivateKey(private_key: string): Promise<string> {
+	async decodePrivateKey(privateKey: string): Promise<string> {
 		const password = await this.requestPassword();
 
 		const masterKey = await this.getMasterKey(password);
 
-		const [vector, cipherText] = splitVectorAndEcryptedData(EJSON.parse(private_key));
+		const [vector, cipherText] = splitVectorAndEcryptedData(EJSON.parse(privateKey));
 
 		try {
 			const privKey = await decryptAES(vector, masterKey, cipherText);
@@ -443,7 +437,7 @@ class E2E extends Emitter {
 
 	async decryptPendingMessages(): Promise<void> {
 		return Messages.find({ t: 'e2e', e2e: 'pending' }).forEach(async ({ _id, ...msg }: IMessage) => {
-			Messages.direct.update({ _id }, await this.decryptMessage(msg as IE2EEMessage));
+			Messages.update({ _id }, await this.decryptMessage(msg as IE2EEMessage));
 		});
 	}
 
@@ -472,7 +466,7 @@ class E2E extends Emitter {
 
 		await Promise.all(
 			urls.map(async (url) => {
-				if (!url.includes(Meteor.absoluteUrl())) {
+				if (!url.includes(settings.get('Site_Url'))) {
 					return;
 				}
 
@@ -488,7 +482,7 @@ class E2E extends Emitter {
 					return;
 				}
 
-				const getQuotedMessage = await APIClient.get('/v1/chat.getMessage', { msgId });
+				const getQuotedMessage = await sdk.rest.get('/v1/chat.getMessage', { msgId });
 				const quotedMessage = getQuotedMessage?.message;
 
 				if (!quotedMessage) {
@@ -499,7 +493,13 @@ class E2E extends Emitter {
 
 				message.attachments = message.attachments || [];
 
-				const quoteAttachment = createQuoteAttachment(decryptedQuoteMessage, url);
+				const useRealName = settings.get('UI_Use_Real_Name');
+				const quoteAttachment = createQuoteAttachment(
+					decryptedQuoteMessage,
+					url,
+					useRealName,
+					getUserAvatarURL(decryptedQuoteMessage.u.username || '') as string,
+				);
 
 				message.attachments.push(quoteAttachment);
 			}),

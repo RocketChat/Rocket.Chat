@@ -1,12 +1,13 @@
-import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { AppsTokens } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
-import { getWorkspaceAccessToken } from '../../app/cloud/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { settings } from '../../app/settings/server';
+import { getWorkspaceAccessToken } from '../../app/cloud/server';
+import { RateLimiter } from '../../app/lib/server/lib';
 import { Push } from '../../app/push/server';
+import { settings } from '../../app/settings/server';
+import { i18n } from './i18n';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -25,7 +26,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!(await hasPermissionAsync(user._id, 'test-admin-options'))) {
+		if (!(await hasPermissionAsync(user._id, 'test-push-notifications'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'push_test',
 			});
@@ -70,10 +71,7 @@ Meteor.methods<ServerMethods>({
 		await Push.send({
 			from: 'push',
 			title: `@${user.username}`,
-			text: TAPi18n.__('This_is_a_push_test_messsage'),
-			apn: {
-				text: `@${user.username}:\n${TAPi18n.__('This_is_a_push_test_messsage')}`,
-			},
+			text: i18n.t('This_is_a_push_test_messsage'),
 			sound: 'default',
 			userId: user._id,
 		});
@@ -85,7 +83,11 @@ Meteor.methods<ServerMethods>({
 	},
 });
 
-settings.watch<boolean>('Push_enable', async function (enabled) {
+RateLimiter.limitMethod('push_test', 1, 1000, {
+	userId: () => true,
+});
+
+settings.watch<boolean>('Push_enable', async (enabled) => {
 	if (!enabled) {
 		return;
 	}
@@ -96,7 +98,6 @@ settings.watch<boolean>('Push_enable', async function (enabled) {
 
 	let apn:
 		| {
-				apiKey?: string;
 				passphrase: string;
 				key: string;
 				cert: string;

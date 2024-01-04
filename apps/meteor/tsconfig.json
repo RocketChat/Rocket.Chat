@@ -21,7 +21,11 @@
 		"baseUrl": ".",
 		"paths": {
 			/* Support absolute /imports/* with a leading '/' */
-			"/*": ["*"]
+			"/*": ["*"],
+			"meteor/*": [
+				"../../node_modules/@types/meteor/*",
+				".meteor/local/types/packages.d.ts"
+			]
 		},
 		"preserveSymlinks": true
 
@@ -34,7 +38,6 @@
 	"exclude": [
 		"**/node_modules/**",
 		"./.meteor/**",
-		"./packages/**",
 		"./imports/client/**",
 		"**/dist/**",
 		"./public/**"

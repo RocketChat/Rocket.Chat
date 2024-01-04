@@ -1,8 +1,7 @@
-/* eslint-disable import/first */
-import { expect } from 'chai';
-import sinon from 'sinon';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+import { expect } from 'chai';
 import proxyquire from 'proxyquire';
+import sinon from 'sinon';
 
 import { EVENT_ORIGIN } from '../../../../../../../server/services/federation/domain/IFederationBridge';
 
@@ -60,6 +59,7 @@ describe('Federation - Application - FederationRoomServiceReceiver', () => {
 		updateRoomTopic: sinon.stub(),
 		applyRoomRolesToUser: sinon.stub(),
 		updateDisplayRoomName: sinon.stub(),
+		addUsersToRoomWhenJoinExternalPublicRoom: sinon.stub(),
 	};
 	const userAdapter = {
 		getFederatedUserByExternalId: sinon.stub(),
@@ -82,6 +82,10 @@ describe('Federation - Application - FederationRoomServiceReceiver', () => {
 		sendQuoteFileMessage: sinon.stub(),
 		editQuotedMessage: sinon.stub(),
 		getMessageToEditWhenReplyAndQuote: sinon.stub(),
+		sendThreadQuoteMessage: sinon.stub(),
+		sendThreadMessage: sinon.stub(),
+		sendThreadFileMessage: sinon.stub(),
+		sendThreadQuoteFileMessage: sinon.stub(),
 	};
 	const settingsAdapter = {
 		getHomeServerDomain: sinon.stub().returns('localDomain'),
@@ -103,6 +107,7 @@ describe('Federation - Application - FederationRoomServiceReceiver', () => {
 		convertMatrixUrlToHttp: sinon.stub().returns('toHttpUrl'),
 		getReadStreamForFileFromUrl: sinon.stub(),
 		getRoomHistoricalJoinEvents: sinon.stub(),
+		getRoomData: sinon.stub(),
 	};
 
 	beforeEach(() => {
@@ -129,6 +134,7 @@ describe('Federation - Application - FederationRoomServiceReceiver', () => {
 		roomAdapter.updateRoomTopic.reset();
 		roomAdapter.removeUserFromRoom.reset();
 		roomAdapter.isUserAlreadyJoined.reset();
+		roomAdapter.addUsersToRoomWhenJoinExternalPublicRoom.reset();
 		roomAdapter.getInternalRoomById.reset();
 		roomAdapter.addUserToRoom.reset();
 		roomAdapter.applyRoomRolesToUser.reset();
@@ -149,10 +155,15 @@ describe('Federation - Application - FederationRoomServiceReceiver', () => {
 		messageAdapter.findOneByFederationIdOnReactions.reset();
 		messageAdapter.sendQuoteFileMessage.reset();
 		messageAdapter.sendQuoteMessage.reset();
+		messageAdapter.sendThreadQuoteMessage.reset();
+		messageAdapter.sendThreadMessage.reset();
+		messageAdapter.sendThreadFileMessage.reset();
+		messageAdapter.sendThreadQuoteFileMessage.reset();
 		bridge.extractHomeserverOrigin.reset();
 		bridge.joinRoom.reset();
 		bridge.getUserProfileInformation.reset();
 		bridge.getReadStreamForFileFromUrl.reset();
+		bridge.getRoomData.reset();
 		bridge.getRoomHistoricalJoinEvents.reset();
 		fileAdapter.uploadFile.reset();
 		queueInstance.addToQueue.reset();
@@ -218,36 +229,23 @@ describe('Federation - Application - FederationRoomServiceReceiver', () => {
 		});
 		const room = FederatedRoom.createInstance('externalRoomId', 'normalizedRoomId', user, RoomType.CHANNEL, 'externalRoomName');
 
-		it('should NOT throw an error if the room already exists AND event origin is equal to LOCAL', async () => {
+		it('should NOT process the method if the room already exists AND event origin is equal to LOCAL', async () => {
 			roomAdapter.getFederatedRoomByExternalId.resolves(room);
 			userAdapter.getFederatedUserByExternalId.resolves(user);
+			await service.onChangeRoomMembership({ externalRoomId: 'externalRoomId', eventOrigin: EVENT_ORIGIN.LOCAL } as any);
 
-			await expect(service.onChangeRoomMembership({ externalRoomId: 'externalRoomId', eventOrigin: EVENT_ORIGIN.LOCAL } as any)).not.to.be
-				.rejected;
-		});
-
-		it('should NOT throw an error if the room already exists AND event origin is equal to REMOTE', async () => {
-			roomAdapter.getFederatedRoomByExternalId.resolves(room);
-			userAdapter.getFederatedUserByExternalId.resolves(user);
-
-			await expect(service.onChangeRoomMembership({ externalRoomId: 'externalRoomId', eventOrigin: EVENT_ORIGIN.REMOTE } as any)).not.to.be
-				.rejected;
-		});
-
-		it('should NOT process the method logic if the event was generated on the proxy home server and it is a join event (by user himself)', async () => {
-			roomAdapter.getFederatedRoomByExternalId.resolves(room);
-			userAdapter.getFederatedUserByExternalId.onFirstCall().resolves(undefined);
-
-			await service.onChangeRoomMembership({
-				externalRoomId: 'externalRoomId',
-				externalInviterId: 'same',
-				externalInviteeId: 'same',
-				eventOrigin: EVENT_ORIGIN.LOCAL,
-			} as any);
 			expect(userAdapter.createFederatedUser.called).to.be.false;
 		});
 
-		it('should NOT process the method logic if the event was generated on the proxy home server, it is NOT a join event (by user himself), but the room does not exists yet', async () => {
+		it('should NOT process the method if the room already exists AND event origin is equal to REMOTE', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			userAdapter.getFederatedUserByExternalId.resolves(user);
+			await service.onChangeRoomMembership({ externalRoomId: 'externalRoomId', eventOrigin: EVENT_ORIGIN.REMOTE } as any);
+
+			expect(userAdapter.createFederatedUser.called).to.be.false;
+		});
+
+		it('should NOT process the method logic if the event was generated on the proxy home server, it is NOT a join event (user joining himself), but the room does not exists yet', async () => {
 			roomAdapter.getFederatedRoomByExternalId.resolves(undefined);
 			userAdapter.getFederatedUserByExternalId.onFirstCall().resolves(undefined);
 
@@ -694,27 +692,6 @@ describe('Federation - Application - FederationRoomServiceReceiver', () => {
 			expect(roomAdapter.addUserToRoom.called).to.be.false;
 		});
 
-		it('should do nothing if the user is auto-joining and the event is original from the LOCAL', async () => {
-			roomAdapter.getFederatedRoomByExternalId.resolves(room);
-			userAdapter.getFederatedUserByExternalId.resolves(user);
-			await service.onChangeRoomMembership({
-				externalRoomId: 'externalRoomId',
-				normalizedRoomId: 'normalizedRoomId',
-				eventOrigin: EVENT_ORIGIN.LOCAL,
-				roomType: RoomType.CHANNEL,
-				externalInviteeId: 'externalInviteeId',
-				externalInviterId: 'externalInviteeId',
-				leave: false,
-				normalizedInviteeId: 'normalizedInviteeId',
-			} as any);
-
-			expect(roomAdapter.removeUserFromRoom.called).to.be.false;
-			expect(roomAdapter.removeDirectMessageRoom.called).to.be.false;
-			expect(roomAdapter.createFederatedRoomForDirectMessage.called).to.be.false;
-			expect(bridge.joinRoom.called).to.be.false;
-			expect(roomAdapter.addUserToRoom.called).to.be.false;
-		});
-
 		it('should add the user into the room if its NOT a LEAVE event providing the inviter when the user is NOT joining by himself', async () => {
 			roomAdapter.getFederatedRoomByExternalId.resolves(room);
 			userAdapter.getFederatedUserByExternalId.resolves(user);
@@ -790,6 +767,324 @@ describe('Federation - Application - FederationRoomServiceReceiver', () => {
 			expect(roomAdapter.createFederatedRoomForDirectMessage.called).to.be.false;
 			expect(bridge.joinRoom.called).to.be.false;
 			expect(roomAdapter.addUserToRoom.calledWith(room, user)).to.be.true;
+		});
+
+		describe('Handling users auto-joining', () => {
+			it('should subscribe to the typings events if the room already exists', async () => {
+				roomAdapter.getFederatedRoomByExternalId.resolves(room);
+				userAdapter.getFederatedUserByExternalId.resolves(user);
+				await service.onChangeRoomMembership({
+					externalRoomId: 'externalRoomId',
+					normalizedRoomId: 'normalizedRoomId',
+					eventOrigin: EVENT_ORIGIN.LOCAL,
+					roomType: RoomType.CHANNEL,
+					externalInviteeId: 'externalInviteeId',
+					externalInviterId: 'externalInviteeId',
+					leave: false,
+					normalizedInviteeId: 'normalizedInviteeId',
+				} as any);
+
+				expect(notificationsAdapter.subscribeToUserTypingEventsOnFederatedRoomId.called).to.be.true;
+			});
+
+			it('should NOT add the user to the room if the user is already a room member', async () => {
+				roomAdapter.getFederatedRoomByExternalId.resolves(room);
+				userAdapter.getFederatedUserByExternalId.resolves(user);
+				roomAdapter.isUserAlreadyJoined.resolves(true);
+				await service.onChangeRoomMembership({
+					externalRoomId: 'externalRoomId',
+					normalizedRoomId: 'normalizedRoomId',
+					eventOrigin: EVENT_ORIGIN.LOCAL,
+					roomType: RoomType.CHANNEL,
+					externalInviteeId: 'externalInviteeId',
+					externalInviterId: 'externalInviteeId',
+					leave: false,
+					normalizedInviteeId: 'normalizedInviteeId',
+				} as any);
+
+				expect(roomAdapter.addUserToRoom.called).to.be.false;
+			});
+
+			it('should add the user to the room if the user is NOT a room member yet', async () => {
+				roomAdapter.getFederatedRoomByExternalId.resolves(room);
+				userAdapter.getFederatedUserByExternalId.resolves(user);
+				roomAdapter.isUserAlreadyJoined.resolves(false);
+				await service.onChangeRoomMembership({
+					externalRoomId: 'externalRoomId',
+					normalizedRoomId: 'normalizedRoomId',
+					eventOrigin: EVENT_ORIGIN.LOCAL,
+					roomType: RoomType.CHANNEL,
+					externalInviteeId: 'externalInviteeId',
+					externalInviterId: 'externalInviteeId',
+					leave: false,
+					normalizedInviteeId: 'normalizedInviteeId',
+				} as any);
+
+				expect(roomAdapter.addUserToRoom.calledWith(room, user)).to.be.true;
+			});
+
+			it('should NOT create the room if it was not possible to retrieve the information from the room from the bridge', async () => {
+				roomAdapter.getFederatedRoomByExternalId.onCall(0).resolves(room);
+				roomAdapter.getFederatedRoomByExternalId.resolves(undefined);
+				userAdapter.getFederatedUserByExternalId.resolves(user);
+				roomAdapter.isUserAlreadyJoined.resolves(false);
+				bridge.getRoomData.resolves(undefined);
+				await service.onChangeRoomMembership({
+					externalRoomId: 'externalRoomId',
+					normalizedRoomId: 'normalizedRoomId',
+					eventOrigin: EVENT_ORIGIN.LOCAL,
+					roomType: RoomType.CHANNEL,
+					externalInviteeId: 'externalInviteeId',
+					externalInviterId: 'externalInviteeId',
+					leave: false,
+					normalizedInviteeId: 'normalizedInviteeId',
+				} as any);
+
+				expect(roomAdapter.createFederatedRoom.called).to.be.false;
+			});
+
+			it('should NOT create the room if it there is already a room creation process already running', async () => {
+				roomAdapter.getFederatedRoomByExternalId.onCall(0).resolves(room);
+				roomAdapter.getFederatedRoomByExternalId.resolves(undefined);
+				userAdapter.getFederatedUserByExternalId.resolves(user);
+				roomAdapter.isUserAlreadyJoined.resolves(false);
+				bridge.getRoomData.resolves({ creator: {} });
+				await service.onChangeRoomMembership({
+					externalRoomId: 'externalRoomId',
+					normalizedRoomId: 'normalizedRoomId',
+					eventOrigin: EVENT_ORIGIN.LOCAL,
+					roomType: RoomType.CHANNEL,
+					externalInviteeId: 'externalInviteeId',
+					externalInviterId: 'externalInviteeId',
+					leave: false,
+					normalizedInviteeId: 'normalizedInviteeId',
+				} as any);
+
+				expect(roomAdapter.createFederatedRoom.called).to.be.false;
+			});
+
+			it('should create the creator user only if it does not exists yet and use the provided username if its from the same homeserver', async () => {
+				const spy = sinon.spy(service, 'createFederatedUserInternallyOnly');
+				roomAdapter.getFederatedRoomByExternalId.onCall(0).resolves(room);
+				userAdapter.getFederatedUserByExternalId.onCall(0).resolves(user);
+				userAdapter.getFederatedUserByExternalId.onCall(1).resolves(user);
+				userAdapter.getFederatedUserByExternalId.onCall(2).resolves(undefined);
+				userAdapter.getFederatedUserByExternalId.onCall(3).resolves(undefined);
+				bridge.getRoomData.resolves({ creator: { id: 'creatorId', username: 'creatorUsername' } });
+				bridge.extractHomeserverOrigin.returns('localDomain');
+				await service.onChangeRoomMembership({
+					externalRoomId: 'externalRoomId',
+					normalizedRoomId: 'normalizedRoomId',
+					eventOrigin: EVENT_ORIGIN.LOCAL,
+					roomType: RoomType.CHANNEL,
+					externalInviteeId: 'externalInviteeId',
+					externalInviterId: 'externalInviteeId',
+					leave: false,
+					normalizedInviteeId: 'normalizedInviteeId',
+				} as any);
+
+				const existsOnlyOnProxyServer = true;
+
+				expect(spy.calledWith('creatorId', 'creatorUsername', existsOnlyOnProxyServer)).to.be.true;
+			});
+
+			it('should create the creator user if it does not exists yet and use the external id as username if its not from the same homeserver', async () => {
+				const spy = sinon.spy(service, 'createFederatedUserInternallyOnly');
+				roomAdapter.getFederatedRoomByExternalId.onCall(0).resolves(room);
+				userAdapter.getFederatedUserByExternalId.onCall(0).resolves(user);
+				userAdapter.getFederatedUserByExternalId.onCall(1).resolves(user);
+				userAdapter.getFederatedUserByExternalId.onCall(2).resolves(undefined);
+				userAdapter.getFederatedUserByExternalId.onCall(3).resolves(undefined);
+				bridge.getRoomData.resolves({ creator: { id: '@creatorId:externalserver.com', username: 'creatorUsername' } });
+				bridge.extractHomeserverOrigin.returns('externalDomain');
+				await service.onChangeRoomMembership({
+					externalRoomId: 'externalRoomId',
+					normalizedRoomId: 'normalizedRoomId',
+					eventOrigin: EVENT_ORIGIN.LOCAL,
+					roomType: RoomType.CHANNEL,
+					externalInviteeId: 'externalInviteeId',
+					externalInviterId: 'externalInviteeId',
+					leave: false,
+					normalizedInviteeId: 'normalizedInviteeId',
+				} as any);
+
+				const existsOnlyOnProxyServer = false;
+
+				expect(spy.calledWith('@creatorId:externalserver.com', 'creatorId:externalserver.com', existsOnlyOnProxyServer)).to.be.true;
+			});
+
+			it('should NOT create the room if the creator does not exists nor was created successfully previously', async () => {
+				sinon.stub(service, 'createFederatedUserAndReturnIt').resolves();
+				roomAdapter.getFederatedRoomByExternalId.resolves(undefined);
+				userAdapter.getFederatedUserByExternalId.onCall(0).resolves(user);
+				userAdapter.getFederatedUserByExternalId.onCall(1).resolves(user);
+				userAdapter.getFederatedUserByExternalId.onCall(2).resolves(undefined);
+				bridge.getRoomData.resolves({ creator: { id: '@creatorId:externalserver.com', username: 'creatorUsername' } });
+				bridge.extractHomeserverOrigin.returns('externalDomain');
+				await service.onChangeRoomMembership({
+					externalRoomId: 'externalRoomId',
+					normalizedRoomId: 'normalizedRoomId',
+					eventOrigin: EVENT_ORIGIN.LOCAL,
+					roomType: RoomType.CHANNEL,
+					externalInviteeId: 'externalInviteeId',
+					externalInviterId: 'externalInviteeId',
+					leave: false,
+					normalizedInviteeId: 'normalizedInviteeId',
+				} as any);
+
+				expect(roomAdapter.createFederatedRoom.called).to.be.false;
+			});
+
+			it('should create the room using the external room name if its original from the same homeserver', async () => {
+				sinon.stub(service, 'createFederatedUserAndReturnIt').resolves();
+				roomAdapter.getFederatedRoomByExternalId.resolves(undefined);
+				userAdapter.getFederatedUserByExternalId.onCall(0).resolves(user);
+				userAdapter.getFederatedUserByExternalId.onCall(1).resolves(user);
+				userAdapter.getFederatedUserByExternalId.onCall(2).resolves(undefined);
+				userAdapter.getFederatedUserByExternalId.onCall(3).resolves(user);
+				bridge.getRoomData.resolves({ name: 'roomName', creator: { id: '@creatorId:externalserver.com', username: 'creatorUsername' } });
+				bridge.extractHomeserverOrigin.returns('localDomain');
+				await service.onChangeRoomMembership({
+					externalRoomId: 'externalRoomId',
+					normalizedRoomId: 'normalizedRoomId',
+					eventOrigin: EVENT_ORIGIN.LOCAL,
+					roomType: RoomType.CHANNEL,
+					externalInviteeId: 'externalInviteeId',
+					externalInviterId: 'externalInviteeId',
+					leave: false,
+					normalizedInviteeId: 'normalizedInviteeId',
+				} as any);
+
+				expect(
+					roomAdapter.createFederatedRoom.calledWith(
+						FederatedRoom.createInstance('externalRoomId', 'normalizedRoomId', user, RoomType.CHANNEL, 'roomName'),
+					),
+				).to.be.true;
+			});
+
+			it('should create the room using nothing if its not original from the same homeserver', async () => {
+				sinon.stub(service, 'createFederatedUserAndReturnIt').resolves();
+				roomAdapter.getFederatedRoomByExternalId.resolves(undefined);
+				userAdapter.getFederatedUserByExternalId.onCall(0).resolves(user);
+				userAdapter.getFederatedUserByExternalId.onCall(1).resolves(user);
+				userAdapter.getFederatedUserByExternalId.onCall(2).resolves(undefined);
+				userAdapter.getFederatedUserByExternalId.onCall(3).resolves(user);
+				bridge.getRoomData.resolves({ name: 'roomName', creator: { id: '@creatorId:externalserver.com', username: 'creatorUsername' } });
+				bridge.extractHomeserverOrigin.returns('externalDomain');
+				await service.onChangeRoomMembership({
+					externalRoomId: 'externalRoomId',
+					normalizedRoomId: 'normalizedRoomId',
+					eventOrigin: EVENT_ORIGIN.LOCAL,
+					roomType: RoomType.CHANNEL,
+					externalInviteeId: 'externalInviteeId',
+					externalInviterId: 'externalInviteeId',
+					leave: false,
+					normalizedInviteeId: 'normalizedInviteeId',
+				} as any);
+
+				expect(
+					roomAdapter.createFederatedRoom.calledWith(
+						FederatedRoom.createInstance('externalRoomId', 'normalizedRoomId', user, RoomType.CHANNEL, undefined),
+					),
+				).to.be.true;
+			});
+
+			it('should dispatch a room name event if its not from the same homeserver and it was possible to retrieve the name from the bridge query', async () => {
+				const spy = sinon.spy(service, 'onChangeRoomName');
+				sinon.stub(service, 'createFederatedUserAndReturnIt').resolves();
+				roomAdapter.getFederatedRoomByExternalId.resolves(undefined);
+				userAdapter.getFederatedUserByExternalId.onCall(0).resolves(user);
+				userAdapter.getFederatedUserByExternalId.onCall(1).resolves(user);
+				userAdapter.getFederatedUserByExternalId.onCall(2).resolves(undefined);
+				userAdapter.getFederatedUserByExternalId.onCall(3).resolves(user);
+				roomAdapter.createFederatedRoom.resolves();
+				bridge.getRoomData.resolves({ name: 'roomName', creator: { id: '@creatorId:externalserver.com', username: 'creatorUsername' } });
+				bridge.extractHomeserverOrigin.returns('externalDomain');
+				await service.onChangeRoomMembership({
+					externalRoomId: 'externalRoomId',
+					normalizedRoomId: 'normalizedRoomId',
+					eventOrigin: EVENT_ORIGIN.LOCAL,
+					roomType: RoomType.CHANNEL,
+					externalInviteeId: 'externalInviteeId',
+					externalInviterId: 'externalInviteeId',
+					leave: false,
+					normalizedInviteeId: 'normalizedInviteeId',
+				} as any);
+
+				expect(
+					spy.calledWith({
+						externalRoomId: 'externalRoomId',
+						normalizedRoomName: 'roomName',
+						externalEventId: '',
+						externalSenderId: user.getExternalId(),
+						normalizedRoomId: 'normalizedRoomId',
+					}),
+				).to.be.true;
+			});
+
+			it('should create federated users for each member of the room excluding the one joining and the creator, and add them to the room ', async () => {
+				const stub = sinon.stub(service, 'createFederatedUserAndReturnIt');
+				roomAdapter.getFederatedRoomByExternalId.onCall(0).resolves(undefined);
+				roomAdapter.getFederatedRoomByExternalId.onCall(1).resolves(undefined);
+				roomAdapter.getFederatedRoomByExternalId.onCall(2).resolves(room);
+				userAdapter.getFederatedUserByExternalId.onCall(0).resolves(user);
+				userAdapter.getFederatedUserByExternalId.onCall(1).resolves(user);
+				userAdapter.getFederatedUserByExternalId.onCall(2).resolves(undefined);
+				userAdapter.getFederatedUserByExternalId.onCall(3).resolves(user);
+				stub.resolves(user);
+				roomAdapter.createFederatedRoom.resolves({});
+				bridge.getRoomData.resolves({
+					joinedMembers: ['user1', '@creatorId:externalserver.com', user.getExternalId(), 'user2'],
+					creator: { id: '@creatorId:externalserver.com', username: 'creatorUsername' },
+				});
+				bridge.extractHomeserverOrigin.returns('localDomain');
+				await service.onChangeRoomMembership({
+					externalRoomId: 'externalRoomId',
+					normalizedRoomId: 'normalizedRoomId',
+					eventOrigin: EVENT_ORIGIN.LOCAL,
+					roomType: RoomType.CHANNEL,
+					externalInviteeId: 'externalInviteeId',
+					externalInviterId: 'externalInviteeId',
+					leave: false,
+					normalizedInviteeId: 'normalizedInviteeId',
+				} as any);
+
+				expect(stub.callCount).to.be.equal(3);
+				expect(stub.getCall(1).calledWith('user1')).to.be.true;
+				expect(stub.getCall(2).calledWith('user2')).to.be.true;
+
+				expect(roomAdapter.addUsersToRoomWhenJoinExternalPublicRoom.calledWith([user, user])).to.be.true;
+			});
+
+			it('should add the user to the room and subscribe to typings events if everything was done correctly', async () => {
+				sinon.stub(service, 'createFederatedUserAndReturnIt').resolves(user);
+				roomAdapter.getFederatedRoomByExternalId.onCall(0).resolves(undefined);
+				roomAdapter.getFederatedRoomByExternalId.onCall(1).resolves(undefined);
+				roomAdapter.getFederatedRoomByExternalId.onCall(2).resolves(room);
+				userAdapter.getFederatedUserByExternalId.onCall(0).resolves(user);
+				userAdapter.getFederatedUserByExternalId.onCall(1).resolves(user);
+				userAdapter.getFederatedUserByExternalId.onCall(2).resolves(undefined);
+				userAdapter.getFederatedUserByExternalId.onCall(3).resolves(user);
+				roomAdapter.createFederatedRoom.resolves({});
+				bridge.getRoomData.resolves({
+					joinedMembers: ['user1', '@creatorId:externalserver.com', user.getExternalId(), 'user2'],
+					creator: { id: '@creatorId:externalserver.com', username: 'creatorUsername' },
+				});
+				bridge.extractHomeserverOrigin.returns('localDomain');
+				await service.onChangeRoomMembership({
+					externalRoomId: 'externalRoomId',
+					normalizedRoomId: 'normalizedRoomId',
+					eventOrigin: EVENT_ORIGIN.LOCAL,
+					roomType: RoomType.CHANNEL,
+					externalInviteeId: 'externalInviteeId',
+					externalInviterId: 'externalInviteeId',
+					leave: false,
+					normalizedInviteeId: 'normalizedInviteeId',
+				} as any);
+
+				expect(notificationsAdapter.subscribeToUserTypingEventsOnFederatedRoomId.called).to.be.true;
+				expect(roomAdapter.addUserToRoom.calledWith(room, user)).to.be.true;
+			});
 		});
 
 		describe('User profile changed event', () => {
@@ -1576,6 +1871,284 @@ describe('Federation - Application - FederationRoomServiceReceiver', () => {
 					notifyChannel: true,
 				}),
 			).to.be.true;
+		});
+	});
+
+	describe('#onExternalThreadedMessageReceived()', () => {
+		it('should NOT send a message if the thread root event id does not exist', async () => {
+			await service.onExternalThreadedMessageReceived({
+				rawMessage: 'text',
+			} as any);
+
+			expect(messageAdapter.sendThreadMessage.called).to.be.false;
+			expect(messageAdapter.sendThreadQuoteMessage.called).to.be.false;
+		});
+		it('should NOT send a message if the internal thread parent message does not exist', async () => {
+			messageAdapter.getMessageByFederationId.resolves(undefined);
+			await service.onExternalThreadedMessageReceived({
+				rawMessage: 'text',
+				thread: { rootEventId: 'rootEventId' },
+			} as any);
+
+			expect(messageAdapter.sendThreadMessage.called).to.be.false;
+			expect(messageAdapter.sendThreadQuoteMessage.called).to.be.false;
+		});
+		it('should NOT send a message if the room does not exists', async () => {
+			messageAdapter.getMessageByFederationId.resolves({});
+			roomAdapter.getFederatedRoomByExternalId.resolves(undefined);
+			await service.onExternalThreadedMessageReceived({
+				rawMessage: 'text',
+				thread: { rootEventId: 'rootEventId' },
+			} as any);
+
+			expect(messageAdapter.sendThreadQuoteMessage.called).to.be.false;
+			expect(messageAdapter.sendThreadMessage.called).to.be.false;
+		});
+
+		it('should NOT send a message if the sender does not exists', async () => {
+			messageAdapter.getMessageByFederationId.resolves({});
+			roomAdapter.getFederatedRoomByExternalId.resolves({} as any);
+			userAdapter.getFederatedUserByExternalId.resolves(undefined);
+			await service.onExternalThreadedMessageReceived({
+				rawMessage: 'text',
+				thread: { rootEventId: 'rootEventId' },
+			} as any);
+
+			expect(messageAdapter.sendThreadQuoteMessage.called).to.be.false;
+			expect(messageAdapter.sendThreadMessage.called).to.be.false;
+		});
+
+		it('should NOT send a message if the message was already be sent through federation and is just a reply back event', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves({} as any);
+			userAdapter.getFederatedUserByExternalId.resolves({} as any);
+			messageAdapter.getMessageByFederationId.resolves({} as any);
+			await service.onExternalThreadedMessageReceived({
+				messageText: 'text',
+				thread: { rootEventId: 'rootEventId' },
+			} as any);
+
+			expect(messageAdapter.sendThreadQuoteMessage.called).to.be.false;
+			expect(messageAdapter.sendThreadMessage.called).to.be.false;
+		});
+
+		it('should send a message if the room, the sender already exists and the message does not exists, because it was sent originally from Matrix', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves({} as any);
+			userAdapter.getFederatedUserByExternalId.resolves({} as any);
+			messageAdapter.getMessageByFederationId.onFirstCall().resolves({ _id: 'messageThreadId' });
+			roomAdapter.getFederatedRoomByExternalId.onSecondCall().resolves(undefined);
+			await service.onExternalThreadedMessageReceived({
+				messageText: 'text',
+				rawMessage: 'rawMessage',
+				externalFormattedText: 'externalFormattedText',
+				externalEventId: 'externalEventId',
+				thread: { rootEventId: 'rootEventId' },
+			} as any);
+
+			expect(
+				messageAdapter.sendThreadMessage.calledWith(
+					{},
+					{},
+					'rawMessage',
+					'externalEventId',
+					'messageThreadId',
+					'externalFormattedText',
+					'localDomain',
+				),
+			).to.be.true;
+			expect(messageAdapter.sendThreadQuoteMessage.called).to.be.false;
+		});
+
+		describe('Quoting messages', () => {
+			it('should NOT send a quote message if its necessary to quote but the message to quote does not exists', async () => {
+				messageAdapter.getMessageByFederationId.onFirstCall().resolves({ _id: 'messageThreadId' });
+				roomAdapter.getFederatedRoomByExternalId.onSecondCall().resolves(undefined);
+				roomAdapter.getFederatedRoomByExternalId.onThirdCall().resolves(undefined);
+				roomAdapter.getFederatedRoomByExternalId.resolves({} as any);
+				userAdapter.getFederatedUserByExternalId.resolves({} as any);
+				messageAdapter.getMessageByFederationId.resolves(undefined);
+				await service.onExternalThreadedMessageReceived({
+					messageText: 'text',
+					replyToEventId: 'replyToEventId',
+					thread: { rootEventId: 'rootEventId' },
+				} as any);
+
+				expect(messageAdapter.sendThreadQuoteMessage.called).to.be.false;
+				expect(messageAdapter.sendThreadMessage.called).to.be.false;
+			});
+
+			it('should send a quote message if its necessary to quote and the message to quote exists', async () => {
+				messageAdapter.getMessageByFederationId.onFirstCall().resolves({ _id: 'messageThreadId' });
+				roomAdapter.getFederatedRoomByExternalId.resolves({} as any);
+				userAdapter.getFederatedUserByExternalId.resolves({} as any);
+				messageAdapter.getMessageByFederationId.onSecondCall().resolves(undefined);
+				messageAdapter.getMessageByFederationId.onThirdCall().resolves({} as any);
+				await service.onExternalThreadedMessageReceived({
+					messageText: 'text',
+					externalEventId: 'externalEventId',
+					replyToEventId: 'replyToEventId',
+					rawMessage: 'rawMessage',
+					externalFormattedText: 'externalFormattedText',
+					thread: { rootEventId: 'rootEventId' },
+				} as any);
+
+				expect(
+					messageAdapter.sendThreadQuoteMessage.calledWith(
+						{},
+						{},
+						'rawMessage',
+						'externalEventId',
+						{},
+						'localDomain',
+						'messageThreadId',
+						'externalFormattedText',
+					),
+				).to.be.true;
+				expect(messageAdapter.sendThreadMessage.called).to.be.false;
+			});
+		});
+	});
+
+	describe('#onExternalThreadedFileMessageReceived()', () => {
+		const user = FederatedUser.createInstance('externalInviterId', {
+			name: 'normalizedInviterId',
+			username: 'normalizedInviterId',
+			existsOnlyOnProxyServer: false,
+		});
+		const room = FederatedRoom.createInstance('externalRoomId', 'normalizedRoomId', user, RoomType.CHANNEL, 'externalRoomName');
+
+		it('should NOT send a message if the thread root event id does not exist', async () => {
+			await service.onExternalThreadedFileMessageReceived({
+				rawMessage: 'text',
+			} as any);
+
+			expect(messageAdapter.sendThreadQuoteFileMessage.called).to.be.false;
+			expect(messageAdapter.sendThreadFileMessage.called).to.be.false;
+		});
+		it('should NOT send a message if the internal thread parent message does not exist', async () => {
+			messageAdapter.getMessageByFederationId.resolves(undefined);
+			await service.onExternalThreadedFileMessageReceived({
+				rawMessage: 'text',
+				thread: { rootEventId: 'rootEventId' },
+			} as any);
+
+			expect(messageAdapter.sendThreadQuoteFileMessage.called).to.be.false;
+			expect(messageAdapter.sendThreadFileMessage.called).to.be.false;
+		});
+		it('should NOT send a message if the room does not exists', async () => {
+			messageAdapter.getMessageByFederationId.resolves({});
+			roomAdapter.getFederatedRoomByExternalId.resolves(undefined);
+			await service.onExternalThreadedFileMessageReceived({
+				rawMessage: 'text',
+				thread: { rootEventId: 'rootEventId' },
+			} as any);
+
+			expect(messageAdapter.sendThreadQuoteFileMessage.called).to.be.false;
+			expect(messageAdapter.sendThreadFileMessage.called).to.be.false;
+		});
+
+		it('should NOT send a message if the sender does not exists', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves({} as any);
+			userAdapter.getFederatedUserByExternalId.resolves(undefined);
+			messageAdapter.getMessageByFederationId.resolves({});
+			await service.onExternalThreadedFileMessageReceived({
+				rawMessage: 'text',
+				thread: { rootEventId: 'rootEventId' },
+			} as any);
+
+			expect(messageAdapter.sendThreadQuoteFileMessage.called).to.be.false;
+			expect(messageAdapter.sendThreadFileMessage.called).to.be.false;
+		});
+
+		it('should send a message if the room and the sender already exists', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			userAdapter.getFederatedUserByExternalId.resolves(user);
+			bridge.getReadStreamForFileFromUrl.resolves();
+
+			const files = [{ id: 'fileId', name: 'filename' }];
+			const attachments = ['attachment', 'attachment2'];
+			fileAdapter.uploadFile.resolves({ files, attachments } as any);
+			messageAdapter.getMessageByFederationId.onFirstCall().resolves({ _id: 'messageThreadId' });
+			messageAdapter.getMessageByFederationId.onSecondCall().resolves(undefined);
+
+			await service.onExternalThreadedFileMessageReceived({
+				thread: { rootEventId: 'rootEventId' },
+				externalEventId: 'externalEventId',
+				messageBody: {
+					filename: 'filename',
+					size: 12,
+					mimetype: 'mimetype',
+					url: 'url',
+				},
+			} as any);
+
+			expect(messageAdapter.sendThreadFileMessage.calledWith(user, room, files, attachments, 'externalEventId', 'messageThreadId')).to.be
+				.true;
+			expect(messageAdapter.sendThreadQuoteFileMessage.called).to.be.false;
+		});
+
+		describe('Quoting messages', () => {
+			it('should NOT send a quote message if its necessary to quote but the message to quote does not exists', async () => {
+				roomAdapter.getFederatedRoomByExternalId.resolves(room);
+				userAdapter.getFederatedUserByExternalId.resolves(user);
+				messageAdapter.getMessageByFederationId.resolves(undefined);
+				fileAdapter.uploadFile.resolves({} as any);
+
+				messageAdapter.getMessageByFederationId.onFirstCall().resolves({ _id: 'messageThreadId' });
+				messageAdapter.getMessageByFederationId.onSecondCall().resolves(undefined);
+				messageAdapter.getMessageByFederationId.onThirdCall().resolves(undefined);
+				await service.onExternalThreadedFileMessageReceived({
+					thread: { rootEventId: 'rootEventId' },
+					externalEventId: 'externalEventId',
+					replyToEventId: 'replyToEventId',
+					messageBody: {
+						filename: 'filename',
+						size: 12,
+						mimetype: 'mimetype',
+						url: 'url',
+					},
+				} as any);
+
+				expect(messageAdapter.sendThreadQuoteFileMessage.called).to.be.false;
+				expect(messageAdapter.sendThreadFileMessage.called).to.be.false;
+			});
+
+			it('should send a quote message if its necessary to quote and the message to quote exists', async () => {
+				const messageToReplyTo = { federation: { eventId: 'eventId' } } as any;
+				roomAdapter.getFederatedRoomByExternalId.resolves(room);
+				userAdapter.getFederatedUserByExternalId.resolves(user);
+				messageAdapter.getMessageByFederationId.onFirstCall().resolves({ _id: 'messageThreadId' });
+				messageAdapter.getMessageByFederationId.onSecondCall().resolves(undefined);
+				messageAdapter.getMessageByFederationId.onThirdCall().resolves(messageToReplyTo);
+				const files = [{ id: 'fileId', name: 'filename' }];
+				const attachments = ['attachment', 'attachment2'];
+				fileAdapter.uploadFile.resolves({ files, attachments } as any);
+
+				await service.onExternalThreadedFileMessageReceived({
+					thread: { rootEventId: 'rootEventId' },
+					externalEventId: 'externalEventId',
+					replyToEventId: 'replyToEventId',
+					messageBody: {
+						filename: 'filename',
+						size: 12,
+						mimetype: 'mimetype',
+						url: 'url',
+					},
+				} as any);
+
+				expect(
+					messageAdapter.sendThreadQuoteFileMessage.calledWith(
+						user,
+						room,
+						files,
+						attachments,
+						'externalEventId',
+						messageToReplyTo,
+						'localDomain',
+						'messageThreadId',
+					),
+				).to.be.true;
+				expect(messageAdapter.sendThreadFileMessage.called).to.be.false;
+			});
 		});
 	});
 });

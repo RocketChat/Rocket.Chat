@@ -1,10 +1,10 @@
 import type { ILivechatPriority } from './ILivechatPriority';
+import type { ILivechatVisitor } from './ILivechatVisitor';
+import type { IMessage, MessageTypesValues } from './IMessage';
 import type { IOmnichannelServiceLevelAgreements } from './IOmnichannelServiceLevelAgreements';
 import type { IRocketChatRecord } from './IRocketChatRecord';
-import type { IMessage, MessageTypesValues } from './IMessage';
 import type { IUser, Username } from './IUser';
 import type { RoomType } from './RoomType';
-import type { IVisitor } from './IInquiry';
 
 type CallStatus = 'ringing' | 'ended' | 'declined' | 'ongoing';
 
@@ -23,7 +23,7 @@ export interface IRoom extends IRocketChatRecord {
 	name?: string;
 	fname?: string;
 	msgs: number;
-	default?: true;
+	default?: boolean;
 	broadcast?: true;
 	featured?: true;
 	announcement?: string;
@@ -36,7 +36,8 @@ export interface IRoom extends IRocketChatRecord {
 
 	reactWhenReadOnly?: boolean;
 
-	sysMes?: MessageTypesValues[];
+	// TODO: this boolean might be an accident
+	sysMes?: MessageTypesValues[] | boolean;
 
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
 	uids?: Array<string>;
@@ -52,7 +53,11 @@ export interface IRoom extends IRocketChatRecord {
 
 	streamingOptions?: {
 		id?: string;
-		type: string;
+		type?: string;
+		url?: string;
+		thumbnail?: string;
+		isAudioOnly?: boolean;
+		message?: string;
 	};
 
 	prid?: string;
@@ -123,6 +128,8 @@ export const isDiscussion = (room: Partial<IRoom>): room is IRoom => !!room.prid
 export const isPrivateDiscussion = (room: Partial<IRoom>): room is IRoom => isDiscussion(room) && room.t === 'p';
 export const isPublicDiscussion = (room: Partial<IRoom>): room is IRoom => isDiscussion(room) && room.t === 'c';
 
+export const isPublicRoom = (room: Partial<IRoom>): room is IRoom => room.t === 'c';
+
 export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {
 	t: 'd';
 	uids: Array<string>;
@@ -144,7 +151,10 @@ export enum OmnichannelSourceType {
 
 export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast' | ''> {
 	t: 'l' | 'v';
-	v: IVisitor;
+	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token' | 'activity'> & {
+		lastMessageTs?: Date;
+		phone?: string;
+	};
 	email?: {
 		// Data used when the room is created from an email, via email Integration.
 		inbox: string;
@@ -186,8 +196,24 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 	metrics?: {
 		serviceTimeDuration?: number;
 	};
+	// set to true when the room is waiting for a response from the visitor
 	waitingResponse: any;
-	responseBy: any;
+	// contains information about the last response from an agent
+	responseBy?: {
+		_id: string;
+		username: string;
+
+		// when the agent first responded to the visitor after the latest message from visitor
+		// this will reset when the visitor sends a new message
+		firstResponseTs: Date;
+
+		// when the agent last responded to the visitor
+		// This is almost the same as firstResponseTs, but here we hold the timestamp of the last response
+		// and it gets updated after each message from agent
+		// So if an agent sends multiple messages to visitor, then firstResponseTs will store timestamp
+		// of their first reply, and lastMessageTs will store timestamp of their latest response
+		lastMessageTs: Date;
+	};
 
 	livechatData: any;
 	queuedAt?: Date;
@@ -246,6 +272,11 @@ export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 		response?: {
 			tt: number;
 			total: number;
+			avg: number;
+			ft: number;
+		};
+		reaction?: {
+			ft: number;
 		};
 	};
 
@@ -270,7 +301,7 @@ export interface IVoipRoom extends IOmnichannelGenericRoom {
 	queue: string;
 	// The ID assigned to the call (opaque ID)
 	callUniqueId?: string;
-	v: IVisitor;
+	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token'> & { lastMessageTs?: Date; phone?: string };
 	// Outbound means the call was initiated from Rocket.Chat and vise versa
 	direction: 'inbound' | 'outbound';
 }
@@ -295,7 +326,7 @@ export type IOmnichannelRoomClosingInfo = Pick<IOmnichannelGenericRoom, 'closer'
 	chatDuration: number;
 };
 
-export const isOmnichannelRoom = (room: IRoom): room is IOmnichannelRoom & IRoom => room.t === 'l';
+export const isOmnichannelRoom = (room: Pick<IRoom, 't'>): room is IOmnichannelRoom & IRoom => room.t === 'l';
 
 export const isVoipRoom = (room: IRoom): room is IVoipRoom & IRoom => room.t === 'v';
 

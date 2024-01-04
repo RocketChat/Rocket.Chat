@@ -1,10 +1,10 @@
-import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import { Meteor } from 'meteor/meteor';
 
-import { t } from '../../utils/client';
 import { process2faReturn } from '../../../client/lib/2fa/process2faReturn';
-import { isTotpInvalidError, reportError } from '../../../client/lib/2fa/utils';
+import { isTotpInvalidError, isTotpMaxAttemptsError, reportError } from '../../../client/lib/2fa/utils';
 import { dispatchToastMessage } from '../../../client/lib/toast';
+import { t } from '../../utils/lib/i18n';
 
 Meteor.loginWithPasswordAndTOTP = function (selector, password, code, callback) {
 	if (typeof selector === 'string') {
@@ -40,13 +40,21 @@ Meteor.loginWithPasswordAndTOTP = function (selector, password, code, callback) 
 const { loginWithPassword } = Meteor;
 
 Meteor.loginWithPassword = function (email, password, cb) {
-	loginWithPassword(email, password, (error) => {
-		process2faReturn({
+	loginWithPassword(email, password, async (error) => {
+		await process2faReturn({
 			error,
 			originalCallback: cb,
 			emailOrUsername: email,
 			onCode: (code) => {
 				Meteor.loginWithPasswordAndTOTP(email, password, code, (error) => {
+					if (isTotpMaxAttemptsError(error)) {
+						dispatchToastMessage({
+							type: 'error',
+							message: t('totp-max-attempts'),
+						});
+						cb();
+						return;
+					}
 					if (isTotpInvalidError(error)) {
 						dispatchToastMessage({
 							type: 'error',
@@ -55,7 +63,6 @@ Meteor.loginWithPassword = function (email, password, cb) {
 						cb();
 						return;
 					}
-
 					cb(error);
 				});
 			},

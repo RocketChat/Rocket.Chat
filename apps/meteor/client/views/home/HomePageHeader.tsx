@@ -1,5 +1,5 @@
-import { Button, Icon } from '@rocket.chat/fuselage';
-import { useSetting, useTranslation, useAllPermissions } from '@rocket.chat/ui-contexts';
+import { Button } from '@rocket.chat/fuselage';
+import { useSetting, useTranslation, useAllPermissions, useRoute } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -11,11 +11,13 @@ const HomepageHeader = (): ReactElement => {
 	const t = useTranslation();
 	const title = useSetting('Layout_Home_Title') as string;
 	const canEditLayout = useAllPermissions(EDIT_LAYOUT_PERMISSIONS);
+	const settingsRoute = useRoute('admin-settings');
+
 	return (
-		<PageHeader title={title} data-qa-id='home-header' role='heading'>
+		<PageHeader title={title} data-qa-id='home-header'>
 			{canEditLayout && (
-				<Button is='a' href='/admin/settings/Layout' role='button'>
-					<Icon name='pencil' size='x16' /> {t('Customize')}
+				<Button icon='pencil' onClick={() => settingsRoute.push({ group: 'Layout' })}>
+					{t('Customize')}
 				</Button>
 			)}
 		</PageHeader>

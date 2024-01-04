@@ -1,13 +1,13 @@
-import { check } from 'meteor/check';
-import { Random } from '@rocket.chat/random';
 import type { GetSignedUrlConfig } from '@google-cloud/storage';
 import { Storage } from '@google-cloud/storage';
+import type { IUpload } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
+import { check } from 'meteor/check';
 import type { OptionalId } from 'mongodb';
 
-import { UploadFS } from '../../../../server/ufs';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { UploadFS } from '../../../../server/ufs';
 import type { StoreOptions } from '../../../../server/ufs/ufs-store';
-import type { IFile } from '../../../../server/ufs/definition';
 
 type GStoreOptions = StoreOptions & {
 	connection: {
@@ -19,11 +19,11 @@ type GStoreOptions = StoreOptions & {
 	};
 	bucket: string;
 	URLExpiryTimeSpan: number;
-	getPath: (file: OptionalId<IFile>) => string;
+	getPath: (file: OptionalId<IUpload>) => string;
 };
 
 class GoogleStorageStore extends UploadFS.Store {
-	protected getPath: (file: IFile) => string;
+	protected getPath: (file: IUpload) => string;
 
 	constructor(options: GStoreOptions) {
 		super(options);
@@ -67,7 +67,7 @@ class GoogleStorageStore extends UploadFS.Store {
 		 * @param callback
 		 * @return {string}
 		 */
-		this.create = function (file, callback) {
+		this.create = async function (file) {
 			check(file, Object);
 
 			if (file._id == null) {
@@ -79,7 +79,8 @@ class GoogleStorageStore extends UploadFS.Store {
 			};
 
 			file.store = this.options.name; // assign store to file
-			return this.getCollection().insert(file, callback);
+
+			return (await this.getCollection().insertOne(file)).insertedId;
 		};
 
 		/**
@@ -87,19 +88,18 @@ class GoogleStorageStore extends UploadFS.Store {
 		 * @param fileId
 		 * @param callback
 		 */
-		this.delete = function (fileId, callback) {
-			const file = this.getCollection().findOne({ _id: fileId });
+		this.delete = async function (fileId) {
+			// TODO
+			const file = await this.getCollection().findOne({ _id: fileId });
 			if (!file) {
-				callback?.(new Error('File not found'));
-				return;
+				throw new Error('File not found');
 			}
-			bucket.file(this.getPath(file)).delete(function (err, data) {
-				if (err) {
-					SystemLogger.error(err);
-				}
 
-				callback?.(err || undefined, data);
-			});
+			try {
+				return bucket.file(this.getPath(file)).delete();
+			} catch (err: any) {
+				SystemLogger.error(err);
+			}
 		};
 
 		/**
@@ -109,7 +109,7 @@ class GoogleStorageStore extends UploadFS.Store {
 		 * @param options
 		 * @return {*}
 		 */
-		this.getReadStream = function (_fileId, file, options = {}) {
+		this.getReadStream = async function (_fileId, file, options = {}) {
 			const config: {
 				start?: number;
 				end?: number;
@@ -133,7 +133,7 @@ class GoogleStorageStore extends UploadFS.Store {
 		 * @param options
 		 * @return {*}
 		 */
-		this.getWriteStream = function (_fileId, file /* , options*/) {
+		this.getWriteStream = async function (_fileId, file /* , options*/) {
 			return bucket.file(this.getPath(file)).createWriteStream({
 				gzip: false,
 				metadata: {

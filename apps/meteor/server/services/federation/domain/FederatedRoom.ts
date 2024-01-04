@@ -1,5 +1,5 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IDirectMessageRoom, IMessage, IRoom } from '@rocket.chat/core-typings';
 import { ObjectId } from 'mongodb'; // This should not be in the domain layer, but its a known "problem"
 
 import type { FederatedUser } from './FederatedUser';
@@ -86,6 +86,10 @@ export abstract class AbstractFederatedRoom {
 			throw new Error('Its not possible to change a direct message name');
 		}
 		this.internalReference.fname = displayName;
+	}
+
+	public shouldUpdateRoomName(aRoomName: string): boolean {
+		return this.internalReference?.name !== aRoomName && !this.isDirectMessage();
 	}
 
 	public changeRoomName(name: string): void {
@@ -185,9 +189,9 @@ export class DirectMessageFederatedRoom extends AbstractFederatedRoom {
 		});
 	}
 
-	public static createWithInternalReference(
+	public static createWithInternalReference<T extends IRoom | IDirectMessageRoom>(
 		externalId: string,
-		internalReference: IRoom,
+		internalReference: T,
 		members: FederatedUser[],
 	): DirectMessageFederatedRoom {
 		return new DirectMessageFederatedRoom({

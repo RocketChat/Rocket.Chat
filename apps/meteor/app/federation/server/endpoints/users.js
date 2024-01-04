@@ -1,9 +1,9 @@
 import { Users } from '@rocket.chat/models';
 
 import { API } from '../../../api/server';
-import { normalizers } from '../normalizers';
-import { serverLogger } from '../lib/logger';
 import { isFederationEnabled } from '../lib/isFederationEnabled';
+import { serverLogger } from '../lib/logger';
+import { normalizers } from '../normalizers';
 
 const userFields = { _id: 1, username: 1, type: 1, emails: 1, name: 1 };
 

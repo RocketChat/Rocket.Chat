@@ -1,10 +1,10 @@
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import type { IRoom } from '@rocket.chat/core-typings';
 import { api } from '@rocket.chat/core-services';
-import { Messages, Rooms, Subscriptions } from '@rocket.chat/models';
+import type { IRoom } from '@rocket.chat/core-typings';
+import { Messages, Rooms, Subscriptions, ReadReceipts, Users } from '@rocket.chat/models';
 
-import { deleteRoom } from './deleteRoom';
+import { i18n } from '../../../../server/lib/i18n';
 import { FileUpload } from '../../../file-upload/server';
+import { deleteRoom } from './deleteRoom';
 
 export async function cleanRoomHistory({
 	rid = '',
@@ -34,7 +34,7 @@ export async function cleanRoomHistory({
 
 	const ts = { [gt]: oldest, [lt]: latest };
 
-	const text = `_${TAPi18n.__('File_removed_by_prune')}_`;
+	const text = `_${i18n.t('File_removed_by_prune')}_`;
 
 	let fileCount = 0;
 
@@ -46,7 +46,7 @@ export async function cleanRoomHistory({
 	for await (const document of cursor) {
 		const uploadsStore = FileUpload.getStore('Uploads');
 
-		await document.files?.map((file) => uploadsStore.deleteById(file._id));
+		document.files && (await Promise.all(document.files.map((file) => uploadsStore.deleteById(file._id))));
 
 		fileCount++;
 		if (filesOnly) {
@@ -86,6 +86,9 @@ export async function cleanRoomHistory({
 		}
 	}
 
+	const selectedMessageIds = limit
+		? await Messages.findByIdPinnedTimestampLimitAndUsers(rid, excludePinned, ignoreDiscussion, ts, limit, fromUsers, ignoreThreads)
+		: undefined;
 	const count = await Messages.removeByIdPinnedTimestampLimitAndUsers(
 		rid,
 		excludePinned,
@@ -94,10 +97,23 @@ export async function cleanRoomHistory({
 		limit,
 		fromUsers,
 		ignoreThreads,
+		selectedMessageIds,
 	);
+
+	if (!limit) {
+		const uids = await Users.findByUsernames(fromUsers, { projection: { _id: 1 } })
+			.map((user) => user._id)
+			.toArray();
+		await ReadReceipts.removeByIdPinnedTimestampLimitAndUsers(rid, excludePinned, ignoreDiscussion, ts, uids, ignoreThreads);
+	} else if (selectedMessageIds) {
+		await ReadReceipts.removeByMessageIds(selectedMessageIds);
+	}
+
 	if (count) {
 		const lastMessage = await Messages.getLastVisibleMessageSentWithNoTypeByRoomId(rid);
-		await Rooms.resetLastMessageById(rid, lastMessage);
+
+		await Rooms.resetLastMessageById(rid, lastMessage, -count);
+
 		void api.broadcast('notify.deleteMessageBulk', rid, {
 			rid,
 			excludePinned,

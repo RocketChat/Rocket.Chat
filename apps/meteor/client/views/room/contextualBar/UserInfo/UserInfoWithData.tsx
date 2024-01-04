@@ -5,11 +5,18 @@ import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
 import { getUserEmailAddress } from '../../../../../lib/getUserEmailAddress';
+import {
+	ContextualbarHeader,
+	ContextualbarBack,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarContent,
+} from '../../../../components/Contextualbar';
 import { FormSkeleton } from '../../../../components/Skeleton';
 import UserCard from '../../../../components/UserCard';
 import UserInfo from '../../../../components/UserInfo';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
-import VerticalBar from '../../../../components/VerticalBar';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { getUserEmailVerified } from '../../../../lib/utils/getUserEmailVerified';
@@ -78,31 +85,26 @@ const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfo
 
 	return (
 		<>
-			<VerticalBar.Header>
-				{onClickBack && <VerticalBar.Back onClick={onClickBack} />}
-				{!onClickBack && <VerticalBar.Icon name='user' />}
-				<VerticalBar.Text>{t('User_Info')}</VerticalBar.Text>
-				{onClose && <VerticalBar.Close onClick={onClose} />}
-			</VerticalBar.Header>
+			<ContextualbarHeader>
+				{onClickBack && <ContextualbarBack onClick={onClickBack} />}
+				{!onClickBack && <ContextualbarIcon name='user' />}
+				<ContextualbarTitle>{t('User_Info')}</ContextualbarTitle>
+				{onClose && <ContextualbarClose onClick={onClose} />}
+			</ContextualbarHeader>
 
 			{isLoading && (
-				<VerticalBar.Content>
+				<ContextualbarContent>
 					<FormSkeleton />
-				</VerticalBar.Content>
+				</ContextualbarContent>
 			)}
 
 			{error && !user && (
-				<VerticalBar.Content pb='x16'>
+				<ContextualbarContent pb={16}>
 					<Callout type='danger'>{t('User_not_found')}</Callout>
-				</VerticalBar.Content>
+				</ContextualbarContent>
 			)}
 
-			{!isLoading && user && (
-				<UserInfo
-					{...user}
-					actions={<UserInfoActions user={{ _id: user?._id, username: user?.username }} rid={rid} backToList={onClickBack} />}
-				/>
-			)}
+			{!isLoading && user && <UserInfo {...user} actions={<UserInfoActions user={user} rid={rid} backToList={onClickBack} />} />}
 		</>
 	);
 };

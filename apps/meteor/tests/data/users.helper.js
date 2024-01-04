@@ -1,3 +1,4 @@
+import { UserStatus } from '@rocket.chat/core-typings';
 import { api, credentials, request } from './api-data';
 import { password } from './user';
 
@@ -9,7 +10,12 @@ export const createUser = (userData = {}) =>
 			.post(api('users.create'))
 			.set(credentials)
 			.send({ email, name: username, username, password, ...userData })
-			.end((err, res) => resolve(res.body.user));
+			.end((err, res) => {
+				if (err) {
+					return reject(err);
+				}
+				resolve(res.body.user);
+			});
 	});
 
 export const login = (username, password) =>
@@ -28,15 +34,9 @@ export const login = (username, password) =>
 			});
 	});
 
-export const deleteUser = (user) =>
-	new Promise((resolve) => {
-		request
-			.post(api('users.delete'))
-			.set(credentials)
-			.send({
-				userId: user._id,
-			})
-			.end(resolve);
+export const deleteUser = async (user) =>
+	request.post(api('users.delete')).set(credentials).send({
+		userId: user._id,
 	});
 
 export const getUserByUsername = (username) =>
@@ -71,4 +71,22 @@ export const getMe = (overrideCredential = credentials) =>
 			.end((end, res) => {
 				resolve(res.body);
 			});
+	});
+
+export const setUserActiveStatus = (userId, activeStatus = true) =>
+	new Promise((resolve) => {
+		request
+			.post(api('users.setActiveStatus'))
+			.set(credentials)
+			.send({
+				userId,
+				activeStatus,
+			})
+			.end(resolve);
+	});
+
+export const setUserStatus = (overrideCredentials = credentials, status = UserStatus.ONLINE) =>
+	request.post(api('users.setStatus')).set(overrideCredentials).send({
+		message: '',
+		status,
 	});

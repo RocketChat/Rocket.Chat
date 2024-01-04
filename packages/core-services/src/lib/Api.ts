@@ -1,7 +1,7 @@
+import type { EventSignatures } from '../events/Events';
 import type { IApiService } from '../types/IApiService';
 import type { IBroker, IBrokerNode } from '../types/IBroker';
 import type { IServiceClass } from '../types/ServiceClass';
-import type { EventSignatures } from '../Events';
 
 export class Api implements IApiService {
 	private services: Set<IServiceClass> = new Set<IServiceClass>();
@@ -46,7 +46,11 @@ export class Api implements IApiService {
 	}
 
 	async broadcast<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
-		return this.broker?.broadcast(event, ...args);
+		if (!this.broker) {
+			throw new Error(`No broker set to broadcast: ${event}`);
+		}
+
+		return this.broker.broadcast(event, ...args);
 	}
 
 	async broadcastToServices<T extends keyof EventSignatures>(

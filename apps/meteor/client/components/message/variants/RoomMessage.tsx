@@ -15,11 +15,11 @@ import {
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import { useJumpToMessage } from '../../../views/room/MessageList/hooks/useJumpToMessage';
 import { useChat } from '../../../views/room/contexts/ChatContext';
-import UserAvatar from '../../avatar/UserAvatar';
 import IgnoredContent from '../IgnoredContent';
 import MessageHeader from '../MessageHeader';
+import MessageToolboxHolder from '../MessageToolboxHolder';
 import StatusIndicators from '../StatusIndicators';
-import ToolboxHolder from '../ToolboxHolder';
+import MessageAvatar from '../header/MessageAvatar';
 import RoomMessageContent from './room/RoomMessageContent';
 
 type RoomMessageProps = {
@@ -80,8 +80,9 @@ const RoomMessage = ({
 		>
 			<MessageLeftContainer>
 				{!sequential && message.u.username && !selecting && showUserAvatar && (
-					<UserAvatar
-						url={message.avatar}
+					<MessageAvatar
+						emoji={message.emoji}
+						avatarUrl={message.avatar}
 						username={message.u.username}
 						size='x36'
 						{...(chat?.userCard && {
@@ -103,7 +104,7 @@ const RoomMessage = ({
 					<RoomMessageContent message={message} unread={unread} mention={mention} all={all} searchText={searchText} />
 				)}
 			</MessageContainer>
-			{!message.private && <ToolboxHolder message={message} context={context} />}
+			{!message.private && <MessageToolboxHolder message={message} context={context} />}
 		</Message>
 	);
 };

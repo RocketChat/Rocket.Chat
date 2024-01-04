@@ -1,1 +1,1 @@
-import '../lib/common';
+import './lib';

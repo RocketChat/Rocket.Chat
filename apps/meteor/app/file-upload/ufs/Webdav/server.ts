@@ -1,14 +1,14 @@
 import stream from 'stream';
 
-import { check } from 'meteor/check';
+import type { IUpload } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
+import { check } from 'meteor/check';
 import type { OptionalId } from 'mongodb';
 
-import { UploadFS } from '../../../../server/ufs';
-import { WebdavClientAdapter } from '../../../webdav/server/lib/webdavClientAdapter';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { UploadFS } from '../../../../server/ufs';
 import type { StoreOptions } from '../../../../server/ufs/ufs-store';
-import type { IFile } from '../../../../server/ufs/definition';
+import { WebdavClientAdapter } from '../../../webdav/server/lib/webdavClientAdapter';
 
 type WebdavOptions = StoreOptions & {
 	connection: {
@@ -19,11 +19,11 @@ type WebdavOptions = StoreOptions & {
 		};
 	};
 	uploadFolderPath: string;
-	getPath: (file: OptionalId<IFile>) => string;
+	getPath: (file: OptionalId<IUpload>) => string;
 };
 
 class WebdavStore extends UploadFS.Store {
-	protected getPath: (file: IFile) => string;
+	protected getPath: (file: IUpload) => string;
 
 	constructor(options: WebdavOptions) {
 		super(options);
@@ -64,7 +64,7 @@ class WebdavStore extends UploadFS.Store {
 		 * @param callback
 		 * @return {string}
 		 */
-		this.create = function (file, callback) {
+		this.create = async function (file) {
 			check(file, Object);
 
 			if (file._id == null) {
@@ -76,7 +76,8 @@ class WebdavStore extends UploadFS.Store {
 			};
 
 			file.store = this.options.name;
-			return this.getCollection().insert(file, callback);
+
+			return (await this.getCollection().insertOne(file)).insertedId;
 		};
 
 		/**
@@ -84,18 +85,17 @@ class WebdavStore extends UploadFS.Store {
 		 * @param fileId
 		 * @param callback
 		 */
-		this.delete = function (fileId, callback) {
-			const file = this.getCollection().findOne({ _id: fileId });
+		this.delete = async function (fileId) {
+			const file = await this.getCollection().findOne({ _id: fileId });
 			if (!file) {
-				callback?.(new Error('File no found'));
-				return;
+				throw new Error('File no found');
 			}
-			client
-				.deleteFile(this.getPath(file))
-				.then((data) => {
-					callback?.(undefined, data);
-				})
-				.catch((...args) => SystemLogger.error(...args));
+
+			try {
+				return client.deleteFile(this.getPath(file));
+			} catch (err: any) {
+				SystemLogger.error(err);
+			}
 		};
 
 		/**
@@ -105,7 +105,7 @@ class WebdavStore extends UploadFS.Store {
 		 * @param options
 		 * @return {*}
 		 */
-		this.getReadStream = function (_fileId, file, options = {}) {
+		this.getReadStream = async function (_fileId, file, options = {}) {
 			const range: {
 				start?: number;
 				end?: number;
@@ -127,7 +127,7 @@ class WebdavStore extends UploadFS.Store {
 		 * @param file
 		 * @return {*}
 		 */
-		this.getWriteStream = function (_fileId, file) {
+		this.getWriteStream = async function (_fileId, file) {
 			const writeStream = new stream.PassThrough();
 			const webdavStream = client.createWriteStream(this.getPath(file), file.size || 0);
 
@@ -137,7 +137,7 @@ class WebdavStore extends UploadFS.Store {
 					process.nextTick(() => {
 						writeStream.removeListener(event, listener);
 						writeStream.removeListener('newListener', newListenerCallback);
-						writeStream.on(event, function () {
+						writeStream.on(event, () => {
 							setTimeout(listener, 500);
 						});
 					});

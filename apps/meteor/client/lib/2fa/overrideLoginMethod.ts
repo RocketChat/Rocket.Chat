@@ -1,4 +1,4 @@
-import { t } from '../../../app/utils/client';
+import { t } from '../../../app/utils/lib/i18n';
 import { dispatchToastMessage } from '../toast';
 import { process2faReturn } from './process2faReturn';
 import { isTotpInvalidError, isTotpRequiredError } from './utils';
@@ -19,13 +19,13 @@ export const overrideLoginMethod = <A extends unknown[]>(
 	loginMethodTOTP: LoginMethodWithTotp<A>,
 	emailOrUsername: string,
 ): void => {
-	loginMethod.call(null, ...loginArgs, (error: unknown, result?: unknown) => {
+	loginMethod.call(null, ...loginArgs, async (error: unknown, result?: unknown) => {
 		if (!isTotpRequiredError(error)) {
 			callback(error);
 			return;
 		}
 
-		process2faReturn({
+		await process2faReturn({
 			error,
 			result,
 			emailOrUsername,

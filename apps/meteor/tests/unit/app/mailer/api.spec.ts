@@ -2,7 +2,7 @@ import { expect } from 'chai';
 
 import { replaceVariables } from '../../../../app/mailer/server/replaceVariables';
 
-describe('Mailer-API', function () {
+describe('Mailer-API', () => {
 	describe('replaceVariables', () => {
 		const i18n: {
 			[key: string]: string;

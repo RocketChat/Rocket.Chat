@@ -5,6 +5,7 @@ export async function findIntegrationSettings(): Promise<{ settings: ISetting[] 
 	const settings = await Settings.findByIds([
 		'Livechat_webhookUrl',
 		'Livechat_secret_token',
+		'Livechat_http_timeout',
 		'Livechat_webhook_on_start',
 		'Livechat_webhook_on_close',
 		'Livechat_webhook_on_chat_taken',

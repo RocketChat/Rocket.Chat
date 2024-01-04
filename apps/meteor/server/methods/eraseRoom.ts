@@ -1,12 +1,12 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
 import { Message, Team } from '@rocket.chat/core-services';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Rooms } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
-import { deleteRoom } from '../../app/lib/server/functions/deleteRoom';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
+import { deleteRoom } from '../../app/lib/server/functions/deleteRoom';
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { Apps } from '../../ee/server/apps';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 
@@ -42,7 +42,7 @@ export async function eraseRoom(rid: string, uid: string): Promise<void> {
 		}
 	}
 
-	deleteRoom(rid);
+	await deleteRoom(rid);
 
 	const team = room.teamId && (await Team.getOneById(room.teamId));
 
@@ -67,7 +67,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async eraseRoom(rid: string) {
-		methodDeprecationLogger.warn('eraseRoom is deprecated and will be removed in future versions of Rocket.Chat');
+		methodDeprecationLogger.method('eraseRoom', '7.0.0');
 
 		check(rid, String);
 

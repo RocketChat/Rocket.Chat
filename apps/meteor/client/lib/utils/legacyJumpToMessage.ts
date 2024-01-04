@@ -1,37 +1,36 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isThreadMessage } from '@rocket.chat/core-typings';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { ChatRoom } from '../../../app/models/client';
 import { RoomHistoryManager } from '../../../app/ui-utils/client';
+import { router } from '../../providers/RouterProvider';
 import { RoomManager } from '../RoomManager';
 import { goToRoomById } from './goToRoomById';
 
 /** @deprecated */
 export const legacyJumpToMessage = async (message: IMessage) => {
-	if (matchMedia('(max-width: 500px)').matches) {
-		(Template.instance() as any)?.tabBar?.close();
-	}
-
 	if (isThreadMessage(message) || message.tcount) {
-		const { route, queryParams, params } = FlowRouter.current();
+		const { tab, context } = router.getRouteParameters();
 
-		if (params.tab === 'thread' && (params.context === message.tmid || params.context === message._id)) {
+		if (tab === 'thread' && (context === message.tmid || context === message._id)) {
 			return;
 		}
 
-		FlowRouter.go(
-			route?.name ?? '/',
+		router.navigate(
 			{
-				tab: 'thread',
-				context: message.tmid || message._id,
-				rid: message.rid,
-				name: ChatRoom.findOne({ _id: message.rid })?.name ?? '',
+				name: router.getRouteName()!,
+				params: {
+					tab: 'thread',
+					context: message.tmid || message._id,
+					rid: message.rid,
+					name: ChatRoom.findOne({ _id: message.rid })?.name ?? '',
+				},
+				search: {
+					...router.getSearchParameters(),
+					msg: message._id,
+				},
 			},
-			{
-				...queryParams,
-				msg: message._id,
-			},
+			{ replace: false },
 		);
 		return;
 	}

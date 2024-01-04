@@ -37,8 +37,4 @@ export interface IFederationPublicRoomsResult extends IFederationPaginationResul
 export interface IFederationBridgeEE extends IFederationBridge {
 	createRoom(externalCreatorId: string, roomType: RoomType, roomName: string, roomTopic?: string): Promise<string>;
 	searchPublicRooms(params: IFederationSearchPublicRoomsParams): Promise<IFederationPublicRoomsResult>;
-	getRoomData(
-		externalUserId: string,
-		externalRoomId: string,
-	): Promise<{ creator: { id: string; username: string }; name: string } | undefined>;
 }

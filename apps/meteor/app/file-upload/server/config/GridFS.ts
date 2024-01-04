@@ -1,12 +1,12 @@
+import type * as http from 'http';
 import type { TransformCallback, TransformOptions } from 'stream';
 import stream from 'stream';
 import zlib from 'zlib';
-import type * as http from 'http';
 
 import type { IUpload } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 
 import { UploadFS } from '../../../../server/ufs';
-import { Logger } from '../../../logger/server';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import { getFileRange, setRangeHeaders } from '../lib/ranges';
 
@@ -56,7 +56,7 @@ class ExtractRange extends stream.Transform {
 }
 
 // code from: https://github.com/jalik/jalik-ufs/blob/master/ufs-server.js#L310
-const readFromGridFS = function (
+const readFromGridFS = async function (
 	storeName: string | undefined,
 	fileId: string,
 	file: IUpload,
@@ -67,17 +67,17 @@ const readFromGridFS = function (
 		return;
 	}
 	const store = UploadFS.getStore(storeName);
-	const rs = store.getReadStream(fileId, file);
+	const rs = await store.getReadStream(fileId, file);
 	const ws = new stream.PassThrough();
 
 	[rs, ws].forEach((stream) =>
-		stream.on('error', function (err) {
+		stream.on('error', (err) => {
 			store.onReadError.call(store, err, fileId, file);
 			res.end();
 		}),
 	);
 
-	ws.on('close', function () {
+	ws.on('close', () => {
 		// Close output stream at the end
 		ws.emit('end');
 	});
@@ -122,16 +122,16 @@ const readFromGridFS = function (
 	ws.pipe(res);
 };
 
-const copyFromGridFS = function (storeName: string | undefined, fileId: string, file: IUpload, out: stream.Writable) {
+const copyFromGridFS = async function (storeName: string | undefined, fileId: string, file: IUpload, out: stream.Writable) {
 	if (!storeName) {
 		return;
 	}
 
 	const store = UploadFS.getStore(storeName);
-	const rs = store.getReadStream(fileId, file);
+	const rs = await store.getReadStream(fileId, file);
 
 	[rs, out].forEach((stream) =>
-		stream.on('error', function (err) {
+		stream.on('error', (err) => {
 			store.onReadError.call(store, err, fileId, file);
 			out.end();
 		}),
@@ -166,11 +166,11 @@ new FileUploadClass({
 		res.setHeader('Content-Type', file.type || 'application/octet-stream');
 		res.setHeader('Content-Length', file.size || 0);
 
-		readFromGridFS(file.store, file._id, file, req, res);
+		await readFromGridFS(file.store, file._id, file, req, res);
 	},
 
 	async copy(file, out) {
-		copyFromGridFS(file.store, file._id, file, out);
+		await copyFromGridFS(file.store, file._id, file, out);
 	},
 });
 
@@ -185,11 +185,11 @@ new FileUploadClass({
 		res.setHeader('Content-Type', file.type || '');
 		res.setHeader('Content-Length', file.size || 0);
 
-		readFromGridFS(file.store, file._id, file, req, res);
+		await readFromGridFS(file.store, file._id, file, req, res);
 	},
 
 	async copy(file, out) {
-		copyFromGridFS(file.store, file._id, file, out);
+		await copyFromGridFS(file.store, file._id, file, out);
 	},
 });
 
@@ -199,10 +199,10 @@ new FileUploadClass({
 	async get(file, req, res) {
 		file = FileUpload.addExtensionTo(file);
 
-		readFromGridFS(file.store, file._id, file, req, res);
+		await readFromGridFS(file.store, file._id, file, req, res);
 	},
 
 	async copy(file, out) {
-		copyFromGridFS(file.store, file._id, file, out);
+		await copyFromGridFS(file.store, file._id, file, out);
 	},
 });

@@ -1,10 +1,11 @@
-import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
-import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
+import type { IRoom, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
+import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
+import { i18n } from '../../../server/lib/i18n';
+import { hideRoomMethod } from '../../../server/methods/hideRoom';
 import { settings } from '../../settings/server';
-import { slashCommands } from '../../utils/server';
+import { slashCommands } from '../../utils/server/slashCommand';
 
 /*
  * Hide is a named function that will replace /hide commands
@@ -13,9 +14,8 @@ import { slashCommands } from '../../utils/server';
 
 slashCommands.add({
 	command: 'hide',
-	callback: async (_command: 'hide', param, item): Promise<void> => {
-		const room = param.trim();
-		const userId = Meteor.userId();
+	callback: async ({ params, message, userId }: SlashCommandCallbackParams<'hide'>): Promise<void> => {
+		const room = params.trim();
 		if (!userId) {
 			return;
 		}
@@ -29,13 +29,13 @@ slashCommands.add({
 		const lng = user.language || settings.get('Language') || 'en';
 
 		// if there is not a param, hide the current room
-		let { rid } = item;
+		let { rid } = message;
 		if (room !== '') {
 			const [strippedRoom] = room.replace(/#|@/, '').split(' ');
 
 			const [type] = room;
 
-			const roomObject =
+			const roomObject: IRoom | null =
 				type === '#'
 					? await Rooms.findOneByName(strippedRoom)
 					: await Rooms.findOne({
@@ -43,17 +43,17 @@ slashCommands.add({
 							usernames: { $all: [user.username, strippedRoom] },
 					  });
 			if (!roomObject) {
-				void api.broadcast('notify.ephemeralMessage', user._id, item.rid, {
-					msg: TAPi18n.__('Channel_doesnt_exist', {
+				void api.broadcast('notify.ephemeralMessage', user._id, message.rid, {
+					msg: i18n.t('Channel_doesnt_exist', {
 						postProcess: 'sprintf',
 						sprintf: [room],
 						lng,
 					}),
 				});
 			}
-			if (!(await Subscriptions.findOneByRoomIdAndUserId(roomObject._id, user._id, { projection: { _id: 1 } }))) {
-				void api.broadcast('notify.ephemeralMessage', user._id, item.rid, {
-					msg: TAPi18n.__('error-logged-user-not-in-room', {
+			if (!(await Subscriptions.findOneByRoomIdAndUserId(roomObject ? roomObject._id : '', user._id, { projection: { _id: 1 } }))) {
+				void api.broadcast('notify.ephemeralMessage', user._id, message.rid, {
+					msg: i18n.t('error-logged-user-not-in-room', {
 						postProcess: 'sprintf',
 						sprintf: [room],
 						lng,
@@ -61,15 +61,15 @@ slashCommands.add({
 				});
 				return;
 			}
-			rid = roomObject._id;
+			rid = roomObject?._id || message.rid;
 		}
-		await Meteor.callAsync('hideRoom', rid, (error: string) => {
-			if (error) {
-				return api.broadcast('notify.ephemeralMessage', user._id, item.rid, {
-					msg: TAPi18n.__(error, { lng }),
-				});
-			}
-		});
+		try {
+			await hideRoomMethod(userId, rid);
+		} catch (error: any) {
+			await api.broadcast('notify.ephemeralMessage', user._id, message.rid, {
+				msg: i18n.t(error, { lng }),
+			});
+		}
 	},
 	options: { description: 'Hide_room', params: '#room' },
 });

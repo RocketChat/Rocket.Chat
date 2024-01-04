@@ -1,5 +1,6 @@
 import type { ILivechatVisitor, IOmnichannelRoom, Serialized } from '@rocket.chat/core-typings';
-import { Field, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { CustomFieldsForm } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import React, { useCallback } from 'react';
@@ -7,10 +8,9 @@ import { useController, useForm } from 'react-hook-form';
 
 import { hasAtLeastOnePermission } from '../../../../../../../app/authorization/client';
 import { useOmnichannelPriorities } from '../../../../../../../ee/client/omnichannel/hooks/useOmnichannelPriorities';
-import { CustomFieldsForm } from '../../../../../../components/CustomFieldsFormV2';
+import { ContextualbarFooter, ContextualbarScrollableContent } from '../../../../../../components/Contextualbar';
 import Tags from '../../../../../../components/Omnichannel/Tags';
-import VerticalBar from '../../../../../../components/VerticalBar';
-import { useFormsSubscription } from '../../../../additionalForms';
+import { SlaPoliciesSelect, PrioritiesSelect } from '../../../../additionalForms';
 import { FormSkeleton } from '../../../components/FormSkeleton';
 import { useCustomFieldsMetadata } from '../../../hooks/useCustomFieldsMetadata';
 import { useSlaPolicies } from '../../../hooks/useSlaPolicies';
@@ -57,14 +57,10 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 	});
 	const { data: priorities, isLoading: isPrioritiesLoading } = useOmnichannelPriorities();
 
-	const { useSlaPoliciesSelect = () => undefined, usePrioritiesSelect = () => undefined } = useFormsSubscription();
-	const SlaPoliciesSelect = useSlaPoliciesSelect();
-	const PrioritiesSelect = usePrioritiesSelect();
-
 	const {
 		register,
 		control,
-		formState: { isDirty: isFormDirty, isValid: isFormValid },
+		formState: { isDirty: isFormDirty, isValid: isFormValid, isSubmitting },
 		handleSubmit,
 	} = useForm({
 		mode: 'onChange',
@@ -113,28 +109,28 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 
 	if (isCustomFieldsLoading || isSlaPoliciesLoading || isPrioritiesLoading) {
 		return (
-			<VerticalBar.ScrollableContent>
+			<ContextualbarScrollableContent>
 				<FormSkeleton />
-			</VerticalBar.ScrollableContent>
+			</ContextualbarScrollableContent>
 		);
 	}
 
 	return (
 		<>
-			<VerticalBar.ScrollableContent is='form' onSubmit={handleSubmit(handleSave)}>
+			<ContextualbarScrollableContent is='form' onSubmit={handleSubmit(handleSave)}>
 				{canViewCustomFields && customFieldsMetadata && (
 					<CustomFieldsForm formName='livechatData' formControl={control} metadata={customFieldsMetadata} />
 				)}
 
 				<Field>
-					<Field.Label>{t('Topic')}</Field.Label>
-					<Field.Row>
+					<FieldLabel>{t('Topic')}</FieldLabel>
+					<FieldRow>
 						<TextInput {...register('topic')} flexGrow={1} />
-					</Field.Row>
+					</FieldRow>
 				</Field>
 
 				<Field>
-					<Tags tags={tagsField.value} handler={tagsField.onChange} />
+					<Tags tags={tagsField.value} handler={tagsField.onChange} department={room.departmentId} />
 				</Field>
 
 				{SlaPoliciesSelect && !!slaPolicies?.length && (
@@ -144,19 +140,25 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 				{PrioritiesSelect && !!priorities?.length && (
 					<PrioritiesSelect label={t('Priority')} value={priorityIdField.value} options={priorities} onChange={priorityIdField.onChange} />
 				)}
-			</VerticalBar.ScrollableContent>
-
-			<VerticalBar.Footer>
+			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button flexGrow={1} onClick={onClose}>
 						{t('Cancel')}
 					</Button>
 
-					<Button mie='none' flexGrow={1} onClick={handleSubmit(handleSave)} disabled={!isFormValid || !isFormDirty} primary>
+					<Button
+						mie='none'
+						flexGrow={1}
+						onClick={handleSubmit(handleSave)}
+						loading={isSubmitting}
+						disabled={!isFormValid || !isFormDirty}
+						primary
+					>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
-			</VerticalBar.Footer>
+			</ContextualbarFooter>
 		</>
 	);
 }

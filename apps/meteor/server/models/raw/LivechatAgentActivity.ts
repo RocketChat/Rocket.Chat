@@ -1,10 +1,10 @@
 import type { ILivechatAgentActivity, IServiceHistory, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ILivechatAgentActivityModel } from '@rocket.chat/model-typings';
-import type { AggregationCursor, Collection, Document, FindCursor, Db, ModifyResult, IndexDescription, UpdateResult } from 'mongodb';
 import moment from 'moment';
+import type { AggregationCursor, Collection, Document, FindCursor, Db, ModifyResult, IndexDescription, UpdateResult } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
+import { BaseRaw } from './BaseRaw';
 
 export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> implements ILivechatAgentActivityModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatAgentActivity>>) {
@@ -155,6 +155,22 @@ export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> im
 			.toArray();
 	}
 
+	findAvailableServiceTimeHistory(p: {
+		start: string;
+		end: string;
+		fullReport: boolean;
+		onlyCount: true;
+		options?: { sort?: Record<string, number>; offset?: number; count?: number };
+	}): AggregationCursor<{ total: number }>;
+
+	findAvailableServiceTimeHistory(p: {
+		start: string;
+		end: string;
+		fullReport: boolean;
+		onlyCount?: false;
+		options?: { sort?: Record<string, number>; offset?: number; count?: number };
+	}): AggregationCursor<ILivechatAgentActivity>;
+
 	findAvailableServiceTimeHistory({
 		start,
 		end,
@@ -165,9 +181,9 @@ export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> im
 		start: string;
 		end: string;
 		fullReport: boolean;
-		onlyCount: boolean;
-		options: any;
-	}): AggregationCursor<ILivechatAgentActivity> {
+		onlyCount?: boolean;
+		options?: { sort?: Record<string, number>; offset?: number; count?: number };
+	}): AggregationCursor<ILivechatAgentActivity> | AggregationCursor<{ total: number }> {
 		const match = {
 			$match: {
 				date: {
@@ -209,7 +225,7 @@ export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> im
 		const params = [match, lookup, unwind, group, project, sort] as object[];
 		if (onlyCount) {
 			params.push({ $count: 'total' });
-			return this.col.aggregate(params);
+			return this.col.aggregate<{ total: number }>(params);
 		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
@@ -217,6 +233,6 @@ export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> im
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate(params, { allowDiskUse: true, readPreference: readSecondaryPreferred() });
+		return this.col.aggregate<ILivechatAgentActivity>(params, { allowDiskUse: true, readPreference: readSecondaryPreferred() });
 	}
 }

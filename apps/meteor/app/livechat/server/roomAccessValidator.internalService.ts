@@ -1,6 +1,6 @@
-import type { IUser, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { IAuthorizationLivechat } from '@rocket.chat/core-services';
 import { ServiceClassInternal } from '@rocket.chat/core-services';
+import type { IUser, IOmnichannelRoom } from '@rocket.chat/core-typings';
 
 import { validators } from './roomAccessValidator.compatibility';
 

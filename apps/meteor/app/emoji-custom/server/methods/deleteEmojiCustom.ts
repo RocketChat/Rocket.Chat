@@ -1,8 +1,8 @@
-import { Meteor } from 'meteor/meteor';
-import { EmojiCustom } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { ICustomEmojiDescriptor } from '@rocket.chat/core-typings';
+import { EmojiCustom } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { RocketChatFileEmojiCustomInstance } from '../startup/emoji-custom';
@@ -27,7 +27,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emoji.name}.${emoji.extension}`));
+		await RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emoji.name}.${emoji.extension}`));
 		await EmojiCustom.removeById(emojiID);
 		void api.broadcast('emoji.deleteCustom', emoji);
 

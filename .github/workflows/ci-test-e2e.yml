@@ -35,9 +35,6 @@ on:
       release:
         required: true
         type: string
-      publish-container:
-        default: false
-        type: boolean
       shard:
         default: '[1]'
         required: false
@@ -55,6 +52,12 @@ on:
       CR_PAT:
         required: true
       QASE_API_TOKEN:
+        required: false
+      REPORTER_ROCKETCHAT_URL:
+        required: false
+      REPORTER_ROCKETCHAT_API_KEY:
+        required: false
+      CODECOV_TOKEN:
         required: false
 
 env:
@@ -80,12 +83,12 @@ jobs:
 
     steps:
       - name: Launch MongoDB
-        uses: supercharge/mongodb-github-action@1.9.0
+        uses: supercharge/mongodb-github-action@v1.10.0
         with:
           mongodb-version: ${{ matrix.mongodb-version }}
           mongodb-replica-set: rs0
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
@@ -94,70 +97,60 @@ jobs:
           cache-modules: true
           install: true
 
+      # if we are testing a PR from a fork, we need to build the docker image at this point
+      - uses: ./.github/actions/build-docker
+        if: github.event.pull_request.head.repo.full_name != github.repository
+        with:
+          CR_USER: ${{ secrets.CR_USER }}
+          CR_PAT: ${{ secrets.CR_PAT }}
+          node-version: ${{ inputs.node-version }}
+
       - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
-      - name: yarn build
-        run: yarn build
-
-      - name: Restore build
-        uses: actions/download-artifact@v3
-        with:
-          name: build
-          path: /tmp/build
-
-      - name: Unpack build
+      - name: Start httpbin container and wait for it to be ready
+        if: inputs.type == 'api'
         run: |
-          cd /tmp/build
-          tar xzf Rocket.Chat.tar.gz
-          rm Rocket.Chat.tar.gz
+          docker run -d -p 10000:80 --name httpbin-container kennethreitz/httpbin
+          i=0
+          while [ $i -lt 10 ]; do
+            if curl -s -o /dev/null http://localhost:10000; then
+              echo "httpbin is running"
+              break
+            fi
+            i=$((i + 1))
+            sleep 5
+          done
+          if [ $i -eq 10 ]; then
+            echo "Failed to verify httpbin is running"
+            exit 1
+          fi
 
-      - name: Start containers
+      - run: yarn build
+
+      - name: Prepare code coverage directory
+        if: inputs.release == 'ee'
+        run: |
+          mkdir -p /tmp/coverage
+          chmod 777 /tmp/coverage
+
+      - name: Start containers for CE
         if: inputs.release == 'ce'
         env:
           MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
         run: |
-          docker compose -f docker-compose-ci.yml up -d --build rocketchat
+          # when we are testing CE, we only need to start the rocketchat container
+          docker compose -f docker-compose-ci.yml up -d rocketchat
 
-      - name: Start containers
+      - name: Start containers for EE
         if: inputs.release == 'ee'
         env:
           MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
           ENTERPRISE_LICENSE: ${{ inputs.enterprise-license }}
           TRANSPORTER: ${{ inputs.transporter }}
+          COVERAGE_DIR: '/tmp/coverage'
+          COVERAGE_REPORTER: 'lcov'
         run: |
-          docker compose -f docker-compose-ci.yml up -d --build
-
-      - name: Login to GitHub Container Registry
-        if: inputs.publish-container == true && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ secrets.CR_USER }}
-          password: ${{ secrets.CR_PAT }}
-
-      - name: Publish Docker images to GitHub Container Registry
-        if: inputs.publish-container == true && inputs.release == 'ce' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
-        run: |
-          docker compose -f docker-compose-ci.yml push rocketchat
-
-          if [[ '${{ matrix.mongodb-version }}' = '4.4' ]]; then
-            IMAGE_NAME_BASE="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${{ inputs.gh-docker-tag }}"
-
-            echo "Push Docker image: ${IMAGE_NAME_BASE}"
-
-            docker tag ${IMAGE_NAME_BASE}.official $IMAGE_NAME_BASE
-            docker push $IMAGE_NAME_BASE
-          fi;
-
-      - name: Publish Docker images (services) to GitHub Container Registry
-        if: inputs.publish-container == true && inputs.release == 'ee' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
-        run: |
-          docker compose -f docker-compose-ci.yml push \
-            authorization-service \
-            account-service \
-            ddp-streamer-service \
-            presence-service \
-            stream-hub-service
+          docker compose -f docker-compose-ci.yml up -d
 
       - name: Cache Playwright binaries
         if: inputs.type == 'ui'
@@ -167,7 +160,7 @@ jobs:
           path: |
             ~/.cache/ms-playwright
           # This is the version of Playwright that we are using, if you are willing to upgrade, you should update this.
-          key: playwright-1.23.1
+          key: playwright-1.37.1
 
       - name: Install Playwright
         if: inputs.type == 'ui' && steps.cache-playwright.outputs.cache-hit != 'true'
@@ -197,7 +190,10 @@ jobs:
         if: inputs.type == 'api'
         working-directory: ./apps/meteor
         env:
+          WEBHOOK_TEST_URL: 'http://host.docker.internal:10000'
           IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
+          COVERAGE_DIR: '/tmp/coverage'
+          COVERAGE_REPORTER: 'lcovonly'
         run: |
           for i in $(seq 1 2); do
             npm run testapi && s=0 && break || s=$?
@@ -218,6 +214,9 @@ jobs:
               sleep 10
             done;
           done;
+          docker compose -f ../../docker-compose-ci.yml stop
+
+          ls -l $COVERAGE_DIR
           exit $s
 
       - name: E2E Test UI (${{ matrix.shard }}/${{ inputs.total-shard }})
@@ -225,10 +224,19 @@ jobs:
         env:
           E2E_COVERAGE: ${{ inputs.release == 'ee' && 'true' || '' }}
           IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
+          REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
+          REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
+          REPORTER_ROCKETCHAT_REPORT: ${{ github.event.pull_request.draft != 'true' && 'true' || '' }}
+          REPORTER_ROCKETCHAT_RUN: ${{ github.run_number }}
+          REPORTER_ROCKETCHAT_BRANCH: ${{ github.ref }}
+          REPORTER_ROCKETCHAT_DRAFT: ${{ github.event.pull_request.draft }}
           QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
           QASE_REPORT: ${{ github.ref == 'refs/heads/develop' && 'true' || '' }}
+          CI: true
         working-directory: ./apps/meteor
-        run: yarn test:e2e --shard=${{ matrix.shard }}/${{ inputs.total-shard }}
+        run: |
+          yarn prepare
+          yarn test:e2e --shard=${{ matrix.shard }}/${{ inputs.total-shard }}
 
       - name: Store playwright test trace
         if: inputs.type == 'ui' && always()
@@ -252,6 +260,23 @@ jobs:
           directory: ./apps/meteor
           flags: e2e
           verbose: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - uses: codecov/codecov-action@v3
+        if: inputs.type == 'api' && inputs.release == 'ee'
+        with:
+          directory: /tmp/coverage
+          working-directory: .
+          flags: e2e-api
+          verbose: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Store e2e-api-ee-coverage
+        if: inputs.type == 'api' && inputs.release == 'ee'
+        uses: actions/upload-artifact@v3
+        with:
+          name: e2e-api-ee-coverage
+          path: /tmp/coverage
 
       - name: Store e2e-ee-coverage
         if: inputs.type == 'ui' && inputs.release == 'ee'

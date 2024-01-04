@@ -1,6 +1,7 @@
 import { Users, Rooms } from '@rocket.chat/models';
 
-import { createRoom, addUserToRoom } from '../../../../lib/server';
+import { addUserToRoom } from '../../../../lib/server/functions/addUserToRoom';
+import { createRoom } from '../../../../lib/server/functions/createRoom';
 
 // TODO doesn't seem to be used anywhere, remove
 export default async function handleJoinedChannel(args) {
@@ -15,7 +16,7 @@ export default async function handleJoinedChannel(args) {
 	let room = await Rooms.findOneByName(args.roomName);
 
 	if (!room) {
-		const createdRoom = await createRoom('c', args.roomName, user.username, []);
+		const createdRoom = await createRoom('c', args.roomName, user, []);
 		room = await Rooms.findOne({ _id: createdRoom.rid });
 
 		this.log(`${user.username} created room ${args.roomName}`);

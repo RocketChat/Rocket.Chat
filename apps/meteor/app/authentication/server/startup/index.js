@@ -1,25 +1,26 @@
-import { Meteor } from 'meteor/meteor';
-import { Match } from 'meteor/check';
-import { Accounts } from 'meteor/accounts-base';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import _ from 'underscore';
+import { Roles, Settings, Users } from '@rocket.chat/models';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
-import { Roles, Settings, Users as UsersRaw } from '@rocket.chat/models';
+import { Accounts } from 'meteor/accounts-base';
+import { Match } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
 
+import { AppEvents, Apps } from '../../../../ee/server/apps/orchestrator';
+import { callbacks } from '../../../../lib/callbacks';
+import { beforeCreateUserCallback } from '../../../../lib/callbacks/beforeCreateUserCallback';
+import { parseCSV } from '../../../../lib/utils/parseCSV';
+import { safeHtmlDots } from '../../../../lib/utils/safeHtmlDots';
+import { getClientAddress } from '../../../../server/lib/getClientAddress';
+import { i18n } from '../../../../server/lib/i18n';
+import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
+import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
+import { getAvatarSuggestionForUser } from '../../../lib/server/functions/getAvatarSuggestionForUser';
+import { joinDefaultChannels } from '../../../lib/server/functions/joinDefaultChannels';
+import { setAvatarFromServiceWithValidation } from '../../../lib/server/functions/setUserAvatar';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
-import { callbacks } from '../../../../lib/callbacks';
-import { Users } from '../../../models/server';
-import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
-import { getAvatarSuggestionForUser } from '../../../lib/server/functions/getAvatarSuggestionForUser';
-import { parseCSV } from '../../../../lib/utils/parseCSV';
-import { isValidAttemptByUser, isValidLoginAttemptByIp } from '../lib/restrictLoginAttempts';
-import './settings';
-import { getClientAddress } from '../../../../server/lib/getClientAddress';
-import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
-import { AppEvents, Apps } from '../../../../ee/server/apps/orchestrator';
 import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
-import { safeHtmlDots } from '../../../../lib/utils/safeHtmlDots';
+import { isValidAttemptByUser, isValidLoginAttemptByIp } from '../lib/restrictLoginAttempts';
 
 Accounts.config({
 	forbidClientAccountCreation: true,
@@ -37,7 +38,7 @@ Meteor.startup(() => {
 
 Accounts.emailTemplates.userToActivate = {
 	subject() {
-		const subject = TAPi18n.__('Accounts_Admin_Email_Approval_Needed_Subject_Default');
+		const subject = i18n.t('Accounts_Admin_Email_Approval_Needed_Subject_Default');
 		const siteName = settings.get('Site_Name');
 
 		return `[${siteName}] ${subject}`;
@@ -48,7 +49,7 @@ Accounts.emailTemplates.userToActivate = {
 			? 'Accounts_Admin_Email_Approval_Needed_With_Reason_Default'
 			: 'Accounts_Admin_Email_Approval_Needed_Default';
 
-		return Mailer.replace(TAPi18n.__(email), {
+		return Mailer.replace(i18n.t(email), {
 			name: escapeHTML(options.name),
 			email: escapeHTML(options.email),
 			reason: escapeHTML(options.reason),
@@ -63,14 +64,14 @@ Accounts.emailTemplates.userActivated = {
 		const subject = `Accounts_Email_${action}_Subject`;
 		const siteName = settings.get('Site_Name');
 
-		return `[${siteName}] ${TAPi18n.__(subject)}`;
+		return `[${siteName}] ${i18n.t(subject)}`;
 	},
 
 	html({ active, name, username }) {
 		const activated = username ? 'Activated' : 'Approved';
 		const action = active ? activated : 'Deactivated';
 
-		return Mailer.replace(TAPi18n.__(`Accounts_Email_${action}`), {
+		return Mailer.replace(i18n.t(`Accounts_Email_${action}`), {
 			name: escapeHTML(name),
 		});
 	},
@@ -157,8 +158,34 @@ const getLinkedInName = ({ firstName, lastName }) => {
 	return `${firstName} ${lastName}`;
 };
 
-Accounts.onCreateUser(function (options, user = {}) {
-	callbacks.run('beforeCreateUser', options, user);
+const validateEmailDomain = (user) => {
+	if (user.type === 'visitor') {
+		return true;
+	}
+
+	let domainWhiteList = settings.get('Accounts_AllowedDomainsList');
+	if (_.isEmpty(domainWhiteList?.trim())) {
+		return true;
+	}
+
+	domainWhiteList = domainWhiteList.split(',').map((domain) => domain.trim());
+
+	if (user.emails && user.emails.length > 0) {
+		const email = user.emails[0].address;
+		const inWhiteList = domainWhiteList.some((domain) => email.match(`@${escapeRegExp(domain)}$`));
+
+		if (!inWhiteList) {
+			throw new Meteor.Error('error-invalid-domain');
+		}
+	}
+
+	return true;
+};
+
+const onCreateUserAsync = async function (options, user = {}) {
+	if (!options.skipBeforeCreateUserCallback) {
+		await beforeCreateUserCallback.run(options, user);
+	}
 
 	user.status = 'offline';
 	user.active = user.active !== undefined ? user.active : !settings.get('Accounts_ManuallyApproveNewUsers');
@@ -193,10 +220,10 @@ Accounts.onCreateUser(function (options, user = {}) {
 		}
 	}
 
-	if (!user.active) {
+	if (!options.skipAdminEmail && !user.active) {
 		const destinations = [];
-		const usersInRole = Promise.await(Roles.findUsersInRole('admin'));
-		Promise.await(usersInRole.toArray()).forEach((adminUser) => {
+		const usersInRole = await Roles.findUsersInRole('admin');
+		await usersInRole.forEach((adminUser) => {
 			if (Array.isArray(adminUser.emails)) {
 				adminUser.emails.forEach((email) => {
 					destinations.push(`${adminUser.name}<${email.address}>`);
@@ -215,18 +242,27 @@ Accounts.onCreateUser(function (options, user = {}) {
 			}),
 		};
 
-		Mailer.send(email);
+		await Mailer.send(email);
 	}
 
-	callbacks.run('onCreateUser', options, user);
+	if (!options.skipOnCreateUserCallback) {
+		await callbacks.run('onCreateUser', options, user);
+	}
 
-	// App IPostUserCreated event hook
-	Promise.await(Apps.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: safeGetMeteorUser() }));
+	if (!options.skipEmailValidation && !validateEmailDomain(user)) {
+		throw new Meteor.Error(403, 'User validation failed');
+	}
 
 	return user;
+};
+
+Accounts.onCreateUser(function (...args) {
+	// Depends on meteor support for Async
+	return Promise.await(onCreateUserAsync.call(this, ...args));
 });
 
-Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function (insertUserDoc, options, user) {
+const { insertUserDoc } = Accounts;
+const insertUserDocAsync = async function (options, user) {
 	const globalRoles = [];
 
 	if (Match.test(user.globalRoles, [String]) && user.globalRoles.length > 0) {
@@ -257,39 +293,16 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function (insertUserDoc,
 		};
 	}
 
+	// Make sure that the user has the field 'roles'
+	if (!user.roles) {
+		user.roles = [];
+	}
+
 	const _id = insertUserDoc.call(Accounts, options, user);
 
-	user = Meteor.users.findOne({
+	user = await Users.findOne({
 		_id,
 	});
-
-	if (user.username) {
-		if (options.joinDefaultChannels !== false && user.joinDefaultChannels !== false) {
-			Meteor.runAsUser(_id, function () {
-				return Meteor.call('joinDefaultChannels', options.joinDefaultChannelsSilenced);
-			});
-		}
-
-		if (user.type !== 'visitor') {
-			Meteor.defer(function () {
-				return callbacks.run('afterCreateUser', user);
-			});
-		}
-		if (settings.get('Accounts_SetDefaultAvatar') === true) {
-			const avatarSuggestions = Promise.await(getAvatarSuggestionForUser(user));
-			Object.keys(avatarSuggestions).some((service) => {
-				const avatarData = avatarSuggestions[service];
-				if (service !== 'gravatar') {
-					Meteor.runAsUser(_id, function () {
-						return Meteor.call('setAvatarFromService', avatarData.blob, '', service);
-					});
-					return true;
-				}
-
-				return false;
-			});
-		}
-	}
 
 	/**
 	 * if settings shows setup wizard to be pending
@@ -298,29 +311,68 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function (insertUserDoc,
 	 * create this user admin.
 	 * count this as the completion of setup wizard step 1.
 	 */
-	const hasAdmin = Users.findOneByRolesAndType('admin', 'user', { fields: { _id: 1 } });
-	if (!roles.includes('admin') && !hasAdmin) {
-		roles.push('admin');
-		if (settings.get('Show_Setup_Wizard') === 'pending') {
-			Promise.await(Settings.updateValueById('Show_Setup_Wizard', 'in_progress'));
+	if (!options.skipAdminCheck) {
+		const hasAdmin = await Users.findOneByRolesAndType('admin', 'user', { projection: { _id: 1 } });
+		if (!roles.includes('admin') && !hasAdmin) {
+			roles.push('admin');
+			if (settings.get('Show_Setup_Wizard') === 'pending') {
+				await Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
+			}
 		}
 	}
 
-	Promise.await(addUserRolesAsync(_id, roles));
+	await addUserRolesAsync(_id, roles);
+
+	// Make user's roles to be present on callback
+	user = await Users.findOneById(_id, { projection: { username: 1, type: 1 } });
+
+	if (user.username) {
+		if (options.joinDefaultChannels !== false) {
+			await joinDefaultChannels(_id, options.joinDefaultChannelsSilenced);
+		}
+
+		if (!options.skipAfterCreateUserCallback && user.type !== 'visitor') {
+			setImmediate(() => {
+				return callbacks.run('afterCreateUser', user);
+			});
+		}
+		if (!options.skipDefaultAvatar && settings.get('Accounts_SetDefaultAvatar') === true) {
+			const avatarSuggestions = await getAvatarSuggestionForUser(user);
+			for await (const service of Object.keys(avatarSuggestions)) {
+				const avatarData = avatarSuggestions[service];
+				if (service !== 'gravatar') {
+					await setAvatarFromServiceWithValidation(_id, avatarData.blob, '', service);
+					break;
+				}
+			}
+		}
+	}
+
+	if (!options.skipAppsEngineEvent) {
+		// `post` triggered events don't need to wait for the promise to resolve
+		Apps.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: await safeGetMeteorUser() }).catch((e) => {
+			Apps.getRocketChatLogger().error('Error while executing post user created event:', e);
+		});
+	}
 
 	return _id;
-});
+};
 
-Accounts.validateLoginAttempt(function (login) {
-	login = callbacks.run('beforeValidateLogin', login);
+Accounts.insertUserDoc = function (...args) {
+	// Depends on meteor support for Async
+	return Promise.await(insertUserDocAsync.call(this, ...args));
+};
 
-	if (!Promise.await(isValidLoginAttemptByIp(getClientAddress(login.connection)))) {
+const validateLoginAttemptAsync = async function (login) {
+	login = await callbacks.run('beforeValidateLogin', login);
+
+	if (!(await isValidLoginAttemptByIp(getClientAddress(login.connection)))) {
 		throw new Meteor.Error('error-login-blocked-for-ip', 'Login has been temporarily blocked For IP', {
 			function: 'Accounts.validateLoginAttempt',
 		});
 	}
 
-	if (!Promise.await(isValidAttemptByUser(login))) {
+	if (!(await isValidAttemptByUser(login))) {
 		throw new Meteor.Error('error-login-blocked-for-user', 'Login has been temporarily blocked For User', {
 			function: 'Accounts.validateLoginAttempt',
 		});
@@ -359,10 +411,10 @@ Accounts.validateLoginAttempt(function (login) {
 		}
 	}
 
-	login = callbacks.run('onValidateLogin', login);
+	login = await callbacks.run('onValidateLogin', login);
 
-	Users.updateLastLoginById(login.user._id);
-	Meteor.defer(function () {
+	await Users.updateLastLoginById(login.user._id);
+	setImmediate(() => {
 		return callbacks.run('afterValidateLogin', login);
 	});
 
@@ -372,13 +424,18 @@ Accounts.validateLoginAttempt(function (login) {
 	 */
 	if (login.type !== 'resume') {
 		// App IPostUserLoggedIn event hook
-		Promise.await(Apps.triggerEvent(AppEvents.IPostUserLoggedIn, login.user));
+		await Apps.triggerEvent(AppEvents.IPostUserLoggedIn, login.user);
 	}
 
 	return true;
+};
+
+Accounts.validateLoginAttempt(function (...args) {
+	// Depends on meteor support for Async
+	return Promise.await(validateLoginAttemptAsync.call(this, ...args));
 });
 
-Accounts.validateNewUser(function (user) {
+Accounts.validateNewUser((user) => {
 	if (user.type === 'visitor') {
 		return true;
 	}
@@ -394,7 +451,7 @@ Accounts.validateNewUser(function (user) {
 	return true;
 });
 
-Accounts.validateNewUser(function (user) {
+Accounts.validateNewUser((user) => {
 	if (user.type === 'visitor') {
 		return true;
 	}
@@ -429,9 +486,9 @@ Accounts.onLogin(async ({ user }) => {
 		return;
 	}
 
-	const { tokens } = (await UsersRaw.findAllResumeTokensByUserId(user._id))[0];
+	const { tokens } = (await Users.findAllResumeTokensByUserId(user._id))[0];
 	if (tokens.length >= MAX_RESUME_LOGIN_TOKENS) {
 		const oldestDate = tokens.reverse()[MAX_RESUME_LOGIN_TOKENS - 1];
-		await UsersRaw.removeOlderResumeTokensByUserId(user._id, oldestDate.when);
+		await Users.removeOlderResumeTokensByUserId(user._id, oldestDate.when);
 	}
 });

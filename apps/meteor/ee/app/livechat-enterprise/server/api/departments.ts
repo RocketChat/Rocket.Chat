@@ -1,4 +1,3 @@
-import { Match, check } from 'meteor/check';
 import {
 	isLivechatAnalyticsDepartmentsAmountOfChatsProps,
 	isLivechatAnalyticsDepartmentsAverageServiceTimeProps,
@@ -11,6 +10,7 @@ import {
 } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../../app/api/server';
+import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
 import {
 	findAllRoomsAsync,
 	findAllAverageServiceTimeAsync,
@@ -21,7 +21,6 @@ import {
 	findPercentageOfAbandonedRoomsAsync,
 	findAllAverageOfChatDurationTimeAsync,
 } from '../../../../../app/livechat/server/lib/analytics/departments';
-import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
 
 API.v1.addRoute(
 	'livechat/analytics/departments/amount-of-chats',
@@ -45,7 +44,7 @@ API.v1.addRoute(
 			const { departments, total } = await findAllRoomsAsync({
 				start: startDate,
 				end: endDate,
-				answered: answered && answered === 'true',
+				answered: answered === 'true',
 				departmentId,
 				options: { offset, count },
 			});
@@ -188,10 +187,6 @@ API.v1.addRoute(
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { start, end } = this.queryParams;
 			const { departmentId } = this.queryParams;
-
-			check(start, String);
-			check(end, String);
-			check(departmentId, Match.Maybe(String));
 
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');

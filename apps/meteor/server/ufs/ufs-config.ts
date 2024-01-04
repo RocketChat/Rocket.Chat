@@ -1,7 +1,4 @@
-import { StorePermissions } from './ufs-store-permissions';
-
 type ConfigOptions = {
-	defaultStorePermissions?: StorePermissions;
 	https?: boolean;
 	simulateUploadSpeed?: number;
 	storesPath?: string;
@@ -12,8 +9,6 @@ type ConfigOptions = {
 type RequiredConfigOptions = Required<ConfigOptions>;
 
 export class Config {
-	public defaultStorePermissions: ConfigOptions['defaultStorePermissions'];
-
 	public https: RequiredConfigOptions['https'];
 
 	public simulateUploadSpeed: RequiredConfigOptions['simulateUploadSpeed'];
@@ -36,9 +31,6 @@ export class Config {
 		};
 
 		// Check options
-		if (options.defaultStorePermissions && !(options.defaultStorePermissions instanceof StorePermissions)) {
-			throw new TypeError('Config: defaultStorePermissions is not an instance of StorePermissions');
-		}
 		if (typeof options.https !== 'boolean') {
 			throw new TypeError('Config: https is not a function');
 		}
@@ -55,7 +47,6 @@ export class Config {
 			throw new TypeError('Config: tmpDirPermissions is not a string');
 		}
 
-		this.defaultStorePermissions = options.defaultStorePermissions;
 		this.https = options.https;
 		this.simulateUploadSpeed = options.simulateUploadSpeed;
 		this.storesPath = options.storesPath;

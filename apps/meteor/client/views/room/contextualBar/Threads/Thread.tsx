@@ -6,13 +6,16 @@ import { useLayoutContextualBarExpanded, useToastMessageDispatch, useTranslation
 import type { VFC } from 'react';
 import React from 'react';
 
-import VerticalBar from '../../../../components/VerticalBar';
-import VerticalBarAction from '../../../../components/VerticalBar/VerticalBarAction';
-import VerticalBarActions from '../../../../components/VerticalBar/VerticalBarActions';
-import VerticalBarClose from '../../../../components/VerticalBar/VerticalBarClose';
-import VerticalBarHeader from '../../../../components/VerticalBar/VerticalBarHeader';
-import VerticalBarInnerContent from '../../../../components/VerticalBar/VerticalBarInnerContent';
-import { useTabBarClose } from '../../contexts/ToolboxContext';
+import {
+	Contextualbar,
+	ContextualbarHeader,
+	ContextualbarAction,
+	ContextualbarActions,
+	ContextualbarClose,
+	ContextualbarBack,
+	ContextualbarInnerContent,
+} from '../../../../components/Contextualbar';
+import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import { useGoToThreadList } from '../../hooks/useGoToThreadList';
 import ChatProvider from '../../providers/ChatProvider';
 import ThreadChat from './components/ThreadChat';
@@ -27,11 +30,11 @@ type ThreadProps = {
 
 const Thread: VFC<ThreadProps> = ({ tmid }) => {
 	const goToThreadList = useGoToThreadList({ replace: true });
-	const closeTabBar = useTabBarClose();
+	const { closeTab } = useRoomToolbox();
 
 	const mainMessageQueryResult = useThreadMainMessageQuery(tmid, {
 		onDelete: () => {
-			closeTabBar();
+			closeTab();
 		},
 	});
 
@@ -50,7 +53,7 @@ const Thread: VFC<ThreadProps> = ({ tmid }) => {
 	});
 
 	const handleBackdropClick = () => {
-		closeTabBar();
+		closeTab();
 	};
 
 	const handleGoBack = () => {
@@ -72,14 +75,14 @@ const Thread: VFC<ThreadProps> = ({ tmid }) => {
 	};
 
 	const handleClose = () => {
-		closeTabBar();
+		closeTab();
 	};
 
 	return (
-		<VerticalBarInnerContent>
+		<ContextualbarInnerContent>
 			{canExpand && expanded && <Modal.Backdrop onClick={handleBackdropClick} />}
 			<Box flexGrow={1} position={expanded ? 'static' : 'relative'}>
-				<VerticalBar
+				<Contextualbar
 					rcx-thread-view
 					className={
 						canExpand && expanded
@@ -100,28 +103,28 @@ const Thread: VFC<ThreadProps> = ({ tmid }) => {
 					insetBlock={0}
 					border='none'
 				>
-					<VerticalBarHeader expanded={expanded}>
-						<VerticalBarAction name='arrow-back' title={t('Back_to_threads')} onClick={handleGoBack} />
+					<ContextualbarHeader expanded={expanded}>
+						<ContextualbarBack onClick={handleGoBack} />
 						{(mainMessageQueryResult.isLoading && <Skeleton width='100%' />) ||
 							(mainMessageQueryResult.isSuccess && <ThreadTitle mainMessage={mainMessageQueryResult.data} />) ||
 							null}
-						<VerticalBarActions>
+						<ContextualbarActions>
 							{canExpand && (
-								<VerticalBarAction
+								<ContextualbarAction
 									name={expanded ? 'arrow-collapse' : 'arrow-expand'}
 									title={expanded ? t('Collapse') : t('Expand')}
 									onClick={handleToggleExpand}
 								/>
 							)}
-							<VerticalBarAction
+							<ContextualbarAction
 								name={following ? 'bell' : 'bell-off'}
 								title={following ? t('Following') : t('Not_Following')}
 								disabled={!mainMessageQueryResult.isSuccess || toggleFollowingMutation.isLoading}
 								onClick={handleToggleFollowing}
 							/>
-							<VerticalBarClose onClick={handleClose} />
-						</VerticalBarActions>
-					</VerticalBarHeader>
+							<ContextualbarClose onClick={handleClose} />
+						</ContextualbarActions>
+					</ContextualbarHeader>
 
 					{(mainMessageQueryResult.isLoading && <ThreadSkeleton />) ||
 						(mainMessageQueryResult.isSuccess && (
@@ -130,9 +133,9 @@ const Thread: VFC<ThreadProps> = ({ tmid }) => {
 							</ChatProvider>
 						)) ||
 						null}
-				</VerticalBar>
+				</Contextualbar>
 			</Box>
-		</VerticalBarInnerContent>
+		</ContextualbarInnerContent>
 	);
 };
 

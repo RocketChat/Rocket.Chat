@@ -1,4 +1,4 @@
-import { Logger } from '../logger/Logger';
+import { Logger } from '@rocket.chat/logger';
 
 export const logger = new Logger('LDAP');
 export const connLogger = logger.section('Connection');

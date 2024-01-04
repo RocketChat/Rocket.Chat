@@ -1,6 +1,6 @@
-import moment from 'moment';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { Messages, Users } from '@rocket.chat/models';
+import moment from 'moment';
 
 import * as Mailer from '../../../app/mailer/server/api';
 import { settings } from '../../../app/settings/server';
@@ -53,7 +53,7 @@ export async function sendViaEmail(
 	const localMoment = moment();
 
 	if (lang !== 'en') {
-		const localeFn = getMomentLocale(lang);
+		const localeFn = await getMomentLocale(lang);
 		if (localeFn) {
 			Function(localeFn).call({ moment });
 			localMoment.locale(lang);
@@ -73,7 +73,7 @@ export async function sendViaEmail(
 		})
 		.join('');
 
-	Mailer.send({
+	await Mailer.send({
 		to: emails,
 		from: settings.get('From_Email'),
 		replyTo: email,

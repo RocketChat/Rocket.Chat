@@ -1,17 +1,13 @@
 import '../lib/rooms/roomTypes';
 import './absoluteUrl';
-import './accounts';
 import './actionButtons';
 import './afterLogoutCleanUp';
 import './appRoot';
 import './callbacks';
 import './collections';
-import './contextualBar';
 import './customOAuth';
-import './customTranslations';
 import './e2e';
 import './forceLogout';
-import './i18n';
 import './iframeCommands';
 import './incomingMessages';
 import './ldap';

@@ -1,9 +1,9 @@
 import { FederationRoomEvents, Rooms } from '@rocket.chat/models';
 
-import { clientLogger } from '../lib/logger';
 import { hasExternalDomain } from '../functions/helpers';
-import { getFederationDomain } from '../lib/getFederationDomain';
 import { dispatchEvent } from '../handler';
+import { getFederationDomain } from '../lib/getFederationDomain';
+import { clientLogger } from '../lib/logger';
 
 async function afterUnsetReaction(message, { user, reaction }) {
 	const room = Rooms.findOneById(message.rid, { fields: { federation: 1 } });

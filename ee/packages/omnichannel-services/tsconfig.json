@@ -2,6 +2,7 @@
 	"extends": "../../../tsconfig.base.server.json",
 	"compilerOptions": {
 		"outDir": "./dist",
+		"rootDir": "./src",
 		"declaration": true,
 	},
 	"include": ["./src/**/*", "../../../apps/meteor/definition/externals/meteor"],

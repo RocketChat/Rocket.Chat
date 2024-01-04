@@ -9,9 +9,9 @@ type SidebarGenericItemProps = {
 	featured?: boolean;
 	children: ReactNode;
 	customColors?: {
-		default: typeof colors[string];
-		hover: typeof colors[string];
-		active: typeof colors[string];
+		default: (typeof colors)[string];
+		hover: (typeof colors)[string];
+		active: (typeof colors)[string];
 	};
 	externalUrl?: boolean;
 };
@@ -25,7 +25,7 @@ const SidebarGenericItem = ({ href, active, externalUrl, children, ...props }: S
 		{...(externalUrl && { target: '_blank', rel: 'noopener noreferrer' })}
 		{...props}
 	>
-		<Box display='flex' flexDirection='row' alignItems='center' pb='x8' width='100%'>
+		<Box display='flex' flexDirection='row' alignItems='center' pb={8} width='100%'>
 			{children}
 		</Box>
 	</SidebarItem>

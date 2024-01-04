@@ -1,10 +1,10 @@
-import { Meteor } from 'meteor/meteor';
 import type { INotification, INotificationItemPush, INotificationItemEmail, NotificationItem, IUser } from '@rocket.chat/core-typings';
 import { NotificationQueue, Users } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
+import { SystemLogger } from '../../../server/lib/logger/system';
 import { sendEmailFromData } from '../../lib/server/functions/notifications/email';
 import { PushNotification } from '../../push-notifications/server';
-import { SystemLogger } from '../../../server/lib/logger/system';
 
 const {
 	NOTIFICATIONS_WORKER_TIMEOUT = 2000,
@@ -74,7 +74,7 @@ class NotificationClass {
 						await this.push(notification, item);
 						break;
 					case 'email':
-						this.email(item);
+						await this.email(item);
 						break;
 				}
 			}
@@ -107,8 +107,8 @@ class NotificationClass {
 		});
 	}
 
-	email(item: INotificationItemEmail): void {
-		sendEmailFromData(item.data);
+	async email(item: INotificationItemEmail): Promise<void> {
+		return sendEmailFromData(item.data);
 	}
 
 	async scheduleItem({

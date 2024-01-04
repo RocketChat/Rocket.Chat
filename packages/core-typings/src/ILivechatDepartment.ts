@@ -15,7 +15,21 @@ export interface ILivechatDepartment {
 	fallbackForwardDepartment?: string;
 	archived?: boolean;
 	departmentsAllowedToForward?: string[];
+	maxNumberSimultaneousChat?: number;
 	ancestors?: string[];
 	// extra optional fields
 	[k: string]: any;
 }
+
+export type LivechatDepartmentDTO = {
+	enabled: boolean;
+	name: string;
+	description?: string | undefined;
+	showOnRegistration: boolean;
+	email: string;
+	showOnOfflineForm: boolean;
+	requestTagBeforeClosingChat?: boolean | undefined;
+	chatClosingTags?: string[] | undefined;
+	fallbackForwardDepartment?: string | undefined;
+	departmentsAllowedToForward?: string[] | undefined;
+};

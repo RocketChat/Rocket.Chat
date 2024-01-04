@@ -1,4 +1,3 @@
-import type { RouteOptions } from 'meteor/kadira:flow-router';
 import type {
 	IRoom,
 	RoomType,
@@ -10,12 +9,14 @@ import type {
 	ISubscription,
 	IOmnichannelRoom,
 } from '@rocket.chat/core-typings';
+import type { Keys as IconName } from '@rocket.chat/icons';
+import type { IRouterPaths, RouteName } from '@rocket.chat/ui-contexts';
 
-export type RoomIdentification = { rid?: IRoom['_id']; name?: string };
-export interface IRoomTypeRouteConfig {
-	name: string;
-	path?: string;
-	action?: RouteOptions['action'];
+export type RoomIdentification = { rid?: IRoom['_id']; name?: string; tab?: string };
+
+export interface IRoomTypeRouteConfig<TRouteName extends RouteName> {
+	name: TRouteName;
+	path?: IRouterPaths[TRouteName]['pattern'];
 	link?: (data: RoomIdentification) => Record<string, string>;
 }
 
@@ -49,28 +50,21 @@ export const RoomMemberActions = {
 } as const;
 
 export const UiTextContext = {
-	CLOSE_WARNING: 'closeWarning',
 	HIDE_WARNING: 'hideWarning',
 	LEAVE_WARNING: 'leaveWarning',
-	NO_ROOMS_SUBSCRIBED: 'noRoomsSubscribed',
 } as const;
 
 export interface IRoomTypeConfig {
 	identifier: string;
-	order: number;
-	icon?: 'hash' | 'hashtag' | 'hashtag-lock' | 'at' | 'omnichannel' | 'phone' | 'star';
-	header?: string;
+	route?: IRoomTypeRouteConfig<RouteName>;
+}
+
+export interface IRoomTypeClientConfig extends IRoomTypeConfig {
 	label?: string;
-	route?: IRoomTypeRouteConfig;
-	customTemplate?: string;
-	/** @deprecated */
-	notSubscribedTpl?: 'livechatNotSubscribed';
-	/** @deprecated */
-	readOnlyTpl?: 'ComposerNotAvailablePhoneCalls' | 'livechatReadOnly';
 }
 
 export interface IRoomTypeClientDirectives {
-	config: IRoomTypeConfig;
+	config: IRoomTypeClientConfig;
 
 	allowRoomSettingChange: (room: Partial<IRoom>, setting: ValueOf<typeof RoomSettingsEnum>) => boolean;
 	allowMemberAction: (
@@ -86,7 +80,8 @@ export interface IRoomTypeClientDirectives {
 	getAvatarPath: (
 		room: AtLeast<IRoom, '_id' | 'name' | 'fname' | 'prid' | 'avatarETag' | 'uids' | 'usernames'> & { username?: IRoom['_id'] },
 	) => string;
-	getIcon: (room: Partial<IRoom>) => IRoomTypeConfig['icon'];
+	getIcon?: (room: Partial<IRoom>) => IconName;
+	extractOpenRoomParams?: (routeParams: Record<string, string | null | undefined>) => { type: RoomType; reference: string };
 	findRoom: (identifier: string) => IRoom | undefined;
 	showJoinLink: (roomId: string) => boolean;
 	isLivechatRoom: () => boolean;
@@ -110,7 +105,7 @@ export interface IRoomTypeServerDirectives {
 		sender: AtLeast<IUser, '_id' | 'name' | 'username'>,
 		notificationMessage: string,
 		userId: string,
-	) => Promise<{ title: string | undefined; text: string }>;
+	) => Promise<{ title: string | undefined; text: string; name: string | undefined }>;
 	getMsgSender: (senderId: IUser['_id']) => Promise<IUser | null>;
 	includeInRoomSearch: () => boolean;
 	getReadReceiptsExtraData: (message: IMessage) => Partial<ReadReceipt>;

@@ -17,6 +17,16 @@ class VideoRecorder {
 
 	private mediaRecorder: MediaRecorder | undefined;
 
+	public getSupportedMimeTypes() {
+		if (window.MediaRecorder.isTypeSupported('video/webm')) {
+			return 'video/webm; codecs=vp8,opus';
+		}
+		if (window.MediaRecorder.isTypeSupported('video/mp4')) {
+			return 'video/mp4';
+		}
+		return '';
+	}
+
 	public start(videoel?: HTMLVideoElement, cb?: (this: this, success: boolean) => void) {
 		this.videoel = videoel;
 
@@ -51,7 +61,7 @@ class VideoRecorder {
 			return;
 		}
 
-		this.mediaRecorder = new MediaRecorder(this.stream, { mimeType: 'video/webm; codecs=vp8,opus' });
+		this.mediaRecorder = new MediaRecorder(this.stream, { mimeType: this.getSupportedMimeTypes() });
 		this.mediaRecorder.ondataavailable = (blobev) => {
 			this.chunks.push(blobev.data);
 			if (!this.recordingAvailable.get()) {
@@ -66,7 +76,6 @@ class VideoRecorder {
 		if (!this.videoel) {
 			return;
 		}
-
 		this.stream = stream;
 
 		try {
@@ -75,11 +84,6 @@ class VideoRecorder {
 			const URL = window.URL || window.webkitURL;
 			this.videoel.src = URL.createObjectURL(stream as unknown as MediaSource | Blob);
 		}
-
-		this.videoel.muted = true;
-		this.videoel.onloadedmetadata = () => {
-			void this.videoel?.play();
-		};
 
 		this.started = true;
 		return this.cameraStarted.set(true);

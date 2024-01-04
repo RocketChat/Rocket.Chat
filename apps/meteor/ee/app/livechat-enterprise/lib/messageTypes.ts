@@ -1,7 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 
 import { MessageTypes } from '../../../../app/ui-utils/client';
-import { t } from '../../../../app/utils/client';
+import { t } from '../../../../app/utils/lib/i18n';
 
 MessageTypes.registerType({
 	id: 'omnichannel_priority_change_history',

@@ -1,12 +1,12 @@
-import { Meteor } from 'meteor/meteor';
-import mem from 'mem';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Users, Rooms } from '@rocket.chat/models';
+import mem from 'mem';
+import { Meteor } from 'meteor/meteor';
 
-import { SearchLogger } from '../logger/logger';
-import { canAccessRoomAsync } from '../../../authorization/server';
-import type { IRawSearchResult, ISearchResult } from '../model/ISearchResult';
 import { isTruthy } from '../../../../lib/isTruthy';
+import { canAccessRoomAsync } from '../../../authorization/server';
+import { SearchLogger } from '../logger/logger';
+import type { IRawSearchResult, ISearchResult } from '../model/ISearchResult';
 
 export class SearchResultValidationService {
 	private getSubscription = mem(async (rid: IRoom['_id'], uid?: IUser['_id']) => {

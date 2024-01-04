@@ -1,18 +1,17 @@
-import { Meteor } from 'meteor/meteor';
-import moment from 'moment';
-import type { ParsedMail } from 'mailparser';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Messages, Subscriptions, Users, Rooms } from '@rocket.chat/models';
+import type { ParsedMail } from 'mailparser';
+import moment from 'moment';
 
-import { settings } from '../../../settings/server';
-import { metrics } from '../../../metrics/server';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { metrics } from '../../../metrics/server';
+import { settings } from '../../../settings/server';
 import { sendMessage } from '../functions/sendMessage';
 
 const isParsedEmail = (email: ParsedMail): email is Required<ParsedMail> => 'date' in email && 'html' in email;
 
-export const processDirectEmail = Meteor.bindEnvironment(async function (email: ParsedMail): Promise<void> {
+export const processDirectEmail = async function (email: ParsedMail): Promise<void> {
 	if (!isParsedEmail(email)) {
 		return;
 	}
@@ -122,4 +121,4 @@ export const processDirectEmail = Meteor.bindEnvironment(async function (email: 
 	};
 
 	return sendMessage(user, message, roomInfo);
-});
+};

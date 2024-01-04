@@ -1,7 +1,7 @@
+import type { ServerMethodFunction, ServerMethodParameters, ServerMethods } from '@rocket.chat/ddp-client/src/types/methods';
 import { useCallback, useContext } from 'react';
 
 import { ServerContext } from '../ServerContext';
-import type { ServerMethodFunction, ServerMethodParameters, ServerMethods } from '../ServerContext/methods';
 
 export const useMethod = <MethodName extends keyof ServerMethods>(methodName: MethodName): ServerMethodFunction<MethodName> => {
 	const { callMethod } = useContext(ServerContext);

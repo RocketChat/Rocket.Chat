@@ -1,8 +1,8 @@
 import type { IServerInfo, Serialized } from '@rocket.chat/core-typings';
+import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from '@rocket.chat/ddp-client/src/types/methods';
+import type { StreamKeys, StreamNames, StreamerCallbackArgs } from '@rocket.chat/ddp-client/src/types/streams';
 import type { Method, OperationParams, OperationResult, PathFor, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
 import { createContext } from 'react';
-
-import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from './methods';
 
 export type UploadResult = {
 	success: boolean;
@@ -31,20 +31,13 @@ export type ServerContextValue = {
 		| {
 				promise: Promise<UploadResult>;
 		  };
-	getStream: (
-		streamName: string,
-		options?: {
+	getStream: <N extends StreamNames, K extends StreamKeys<N>>(
+		streamName: N,
+		_options?: {
 			retransmit?: boolean | undefined;
 			retransmitToSelf?: boolean | undefined;
 		},
-	) => <TEvent extends unknown[]>(eventName: string, callback: (...event: TEvent) => void) => () => void;
-	getSingleStream: (
-		streamName: string,
-		options?: {
-			retransmit?: boolean | undefined;
-			retransmitToSelf?: boolean | undefined;
-		},
-	) => <TEvent extends unknown[]>(eventName: string, callback: (...event: TEvent) => void) => () => void;
+	) => (eventName: K, callback: (...args: StreamerCallbackArgs<N, K>) => void) => () => void;
 };
 
 export const ServerContext = createContext<ServerContextValue>({
@@ -57,5 +50,4 @@ export const ServerContext = createContext<ServerContextValue>({
 		throw new Error('not implemented');
 	},
 	getStream: () => () => (): void => undefined,
-	getSingleStream: () => () => (): void => undefined,
 });

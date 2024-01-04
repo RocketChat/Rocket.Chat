@@ -1,16 +1,16 @@
+import type { RocketChatFileAdapter } from '../../../../../../../server/services/federation/infrastructure/rocket-chat/adapters/File';
+import type { RocketChatSettingsAdapter } from '../../../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Settings';
 import { FederatedUserEE } from '../../../domain/FederatedUser';
 import type { IFederationBridgeEE } from '../../../domain/IFederationBridge';
 import type { RocketChatRoomAdapterEE } from '../../../infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatUserAdapterEE } from '../../../infrastructure/rocket-chat/adapters/User';
+import { AbstractFederationApplicationServiceEE } from '../../AbstractFederationApplicationServiceEE';
 import type {
 	FederationBeforeDirectMessageRoomCreationDto,
 	FederationCreateDirectMessageDto,
 	FederationOnDirectMessageRoomCreationDto,
 	FederationRoomInviteUserDto,
 } from './input/RoomSenderDto';
-import { AbstractFederationApplicationServiceEE } from '../../AbstractFederationApplicationServiceEE';
-import type { RocketChatFileAdapter } from '../../../../../../../server/services/federation/infrastructure/rocket-chat/adapters/File';
-import type { RocketChatSettingsAdapter } from '../../../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Settings';
 
 export class FederationDirectMessageRoomServiceSender extends AbstractFederationApplicationServiceEE {
 	constructor(
@@ -87,21 +87,6 @@ export class FederationDirectMessageRoomServiceSender extends AbstractFederation
 		);
 		const internalFederatedRoom = await this.internalRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
 
-		if (!internalFederatedRoom && isInviterFromTheSameHomeServer) {
-			const allInviteeExternalIds = invitees.map((invitee) => invitee.rawInviteeId);
-			const externalRoomId = await this.bridge.createDirectMessageRoom(federatedInviterUser.getExternalId(), allInviteeExternalIds, {
-				internalRoomId,
-			});
-			const inviteesFromTheSameHomeServer = invitees.filter((invitee) =>
-				FederatedUserEE.isOriginalFromTheProxyServer(
-					this.bridge.extractHomeserverOrigin(invitee.rawInviteeId),
-					this.internalHomeServerDomain,
-				),
-			);
-			await Promise.all(inviteesFromTheSameHomeServer.map((invitee) => this.bridge.joinRoom(externalRoomId, invitee.rawInviteeId)));
-			await this.internalRoomAdapter.updateFederatedRoomByInternalRoomId(internalRoomId, externalRoomId);
-		}
-
 		await Promise.all(
 			invitees.map((member) =>
 				this.createUserForDirectMessageRoom({
@@ -113,6 +98,23 @@ export class FederationDirectMessageRoomServiceSender extends AbstractFederation
 				}),
 			),
 		);
+
+		if (internalFederatedRoom || !isInviterFromTheSameHomeServer) {
+			return;
+		}
+
+		const allInviteeExternalIds = invitees.map((invitee) => invitee.rawInviteeId);
+		const externalRoomId = await this.bridge.createDirectMessageRoom(federatedInviterUser.getExternalId(), allInviteeExternalIds, {
+			internalRoomId,
+		});
+		const inviteesFromTheSameHomeServer = invitees.filter((invitee) =>
+			FederatedUserEE.isOriginalFromTheProxyServer(
+				this.bridge.extractHomeserverOrigin(invitee.rawInviteeId),
+				this.internalHomeServerDomain,
+			),
+		);
+		await Promise.all(inviteesFromTheSameHomeServer.map((invitee) => this.bridge.joinRoom(externalRoomId, invitee.rawInviteeId)));
+		await this.internalRoomAdapter.updateFederatedRoomByInternalRoomId(internalRoomId, externalRoomId);
 	}
 
 	private async createUserForDirectMessageRoom(roomInviteUserInput: FederationRoomInviteUserDto): Promise<void> {

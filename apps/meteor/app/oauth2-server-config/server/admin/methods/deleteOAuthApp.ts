@@ -1,7 +1,7 @@
-import { Meteor } from 'meteor/meteor';
-import { OAuthApps } from '@rocket.chat/models';
 import type { IOAuthApps } from '@rocket.chat/core-typings';
+import { OAuthAccessTokens, OAuthApps, OAuthAuthCodes } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 
@@ -30,6 +30,9 @@ Meteor.methods<ServerMethods>({
 		}
 
 		await OAuthApps.deleteOne({ _id: applicationId });
+
+		await OAuthAccessTokens.deleteMany({ clientId: application.clientId });
+		await OAuthAuthCodes.deleteMany({ clientId: application.clientId });
 
 		return true;
 	},

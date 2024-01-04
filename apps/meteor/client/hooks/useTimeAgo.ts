@@ -1,15 +1,37 @@
+import { useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import { useCallback } from 'react';
 
-export const useTimeAgo = (): ((time: Date | number | string) => string) =>
-	useCallback((time) => moment(time).calendar(null, { sameDay: 'LT', lastWeek: 'dddd LT', sameElse: 'LL' }), []);
+import { t } from '../../app/utils/lib/i18n';
 
-export const useShortTimeAgo = (): ((time: Date | string | number) => string) =>
-	useCallback(
+const dayFormat = ['h:mm A', 'H:mm'] as const;
+
+export const useTimeAgo = (): ((time: Date | number | string) => string) => {
+	const clockMode = useUserPreference<1 | 2>('clockMode');
+	const timeFormat = useSetting<string>('Message_TimeFormat', 'LT');
+	const format = clockMode !== undefined ? dayFormat[clockMode - 1] : timeFormat;
+	return useCallback(
+		(time) => {
+			return moment(time).calendar(null, {
+				sameDay: format,
+				lastDay: moment(time).calendar('lastDay').replace('LT', format),
+				lastWeek: `dddd ${format}`,
+				sameElse: 'LL',
+			});
+		},
+		[format],
+	);
+};
+
+export const useShortTimeAgo = (): ((time: Date | string | number) => string) => {
+	const clockMode = useUserPreference<1 | 2>('clockMode');
+	const timeFormat = useSetting('Message_TimeFormat') as string;
+	const format = clockMode !== undefined ? dayFormat[clockMode - 1] : timeFormat;
+	return useCallback(
 		(time) =>
 			moment(time).calendar(null, {
-				sameDay: 'LT',
-				lastDay: '[Yesterday]',
+				sameDay: format,
+				lastDay: `[${t('Yesterday')}]`,
 				lastWeek: 'dddd',
 				sameElse(now) {
 					/*
@@ -27,5 +49,6 @@ export const useShortTimeAgo = (): ((time: Date | string | number) => string) =>
 					return 'MMM Do';
 				},
 			}),
-		[],
+		[format],
 	);
+};

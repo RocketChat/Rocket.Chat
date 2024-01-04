@@ -1,7 +1,7 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
-import type { ServerMethods, TranslationKey } from '@rocket.chat/ui-contexts';
 import { Users } from '@rocket.chat/models';
+import type { ServerMethods, TranslationKey } from '@rocket.chat/ui-contexts';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 import { passwordPolicy } from '../../app/lib/server';
 import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
@@ -18,7 +18,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async getPasswordPolicy(params) {
-		methodDeprecationLogger.warn('getPasswordPolicy is deprecated and will be removed in future versions of Rocket.Chat');
+		methodDeprecationLogger.method('getPasswordPolicy', '7.0.0');
 
 		check(params, { token: String });
 
@@ -28,6 +28,9 @@ Meteor.methods<ServerMethods>({
 				method: 'getPasswordPolicy',
 			});
 		}
-		return passwordPolicy.getPasswordPolicy();
+		return passwordPolicy.getPasswordPolicy() as {
+			enabled: boolean;
+			policy: [name: TranslationKey, options?: Record<string, unknown>][];
+		};
 	},
 });

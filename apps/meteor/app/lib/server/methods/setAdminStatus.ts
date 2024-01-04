@@ -1,7 +1,8 @@
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
 import { isUserFederated } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
@@ -27,7 +28,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setAdminStatus' });
 		}
 
-		const user = Meteor.users.findOne({ _id: userId }, { fields: { username: 1, federated: 1 } });
+		const user = await Users.findOne({ _id: userId }, { projection: { username: 1, federated: 1 } });
 		if (!user || isUserFederated(user)) {
 			throw new Meteor.Error('error-not-allowed', 'Federated Users cant be admins', { method: 'setAdminStatus' });
 		}

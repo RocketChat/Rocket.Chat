@@ -30,23 +30,27 @@ const Medium: VFC<MediumProps> = ({ icon, title = '', avatar, actions, href, bad
 	};
 
 	return (
-		<Sidebar.Item {...props} {...({ href } as any)} clickable={!!href}>
+		<Sidebar.Item {...props} href={href} clickable={!!href}>
 			{avatar && <Sidebar.Item.Avatar>{avatar}</Sidebar.Item.Avatar>}
 			<Sidebar.Item.Content>
 				<Sidebar.Item.Wrapper>
 					{icon}
-					<Sidebar.Item.Title data-qa='sidebar-item-title' className={(unread && 'rcx-sidebar-item--highlighted') as string}>
+					<Sidebar.Item.Title data-qa='sidebar-item-title' className={unread ? 'rcx-sidebar-item--highlighted' : undefined}>
 						{title}
 					</Sidebar.Item.Title>
 				</Sidebar.Item.Wrapper>
 				{badges && <Sidebar.Item.Badge>{badges}</Sidebar.Item.Badge>}
 				{menu && (
 					<Sidebar.Item.Menu {...handleMenuEvent}>
-						{menuVisibility ? menu() : <IconButton mini rcx-sidebar-item__menu icon='kebab' />}
+						{menuVisibility ? menu() : <IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-item__menu icon='kebab' />}
 					</Sidebar.Item.Menu>
 				)}
 			</Sidebar.Item.Content>
-			{actions && <Sidebar.Item.Container>{<Sidebar.Item.Actions>{actions}</Sidebar.Item.Actions>}</Sidebar.Item.Container>}
+			{actions && (
+				<Sidebar.Item.Container>
+					<Sidebar.Item.Actions>{actions}</Sidebar.Item.Actions>
+				</Sidebar.Item.Container>
+			)}
 		</Sidebar.Item>
 	);
 };

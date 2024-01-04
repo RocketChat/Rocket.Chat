@@ -1,15 +1,15 @@
-import { ResponsiveHeatMap } from '@nivo/heatmap';
+import { ResponsiveHeatMapCanvas } from '@nivo/heatmap';
 import { Box, Flex, Skeleton, Tooltip } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import type { ReactElement } from 'react';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
+import DownloadDataButton from '../../../../components/dashboards/DownloadDataButton';
+import PeriodSelector from '../../../../components/dashboards/PeriodSelector';
+import { usePeriodSelectorState } from '../../../../components/dashboards/usePeriodSelectorState';
 import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
-import DownloadDataButton from '../dataView/DownloadDataButton';
-import PeriodSelector from '../dataView/PeriodSelector';
-import { usePeriodSelectorState } from '../dataView/usePeriodSelectorState';
 import { useUsersByTimeOfTheDay } from './useUsersByTimeOfTheDay';
 
 type UsersByTimeOfTheDaySectionProps = {
@@ -21,43 +21,30 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 
 	const utc = timezone === 'utc';
 
-	const { data } = useUsersByTimeOfTheDay({ period, utc });
+	const { data, isLoading } = useUsersByTimeOfTheDay({ period, utc });
 
 	const t = useTranslation();
 
 	const [dates, values] = useMemo(() => {
-		if (!data) {
+		if (!data || isLoading) {
 			return [];
 		}
 
-		const dates = Array.from(
-			{
-				length: utc ? moment(data.end).diff(data.start, 'days') + 1 : moment(data.end).diff(data.start, 'days') - 1,
-			},
-			(_, i) =>
-				utc
-					? moment.utc(data.start).endOf('day').add(i, 'days')
-					: moment(data.start)
-							.endOf('day')
-							.add(i + 1, 'days'),
-		);
+		const length = utc ? moment(data.end).diff(data.start, 'days') + 1 : moment(data.end).diff(data.start, 'days') - 1;
+		const start = utc ? moment.utc(data.start).endOf('day') : moment(data.start).endOf('day').add(1, 'days');
 
-		const values = Array.from(
-			{ length: 24 },
-			(
-				_,
-				hour,
-			): {
-				id: string;
-				data: {
-					x: string;
-					y: number;
-				}[];
-			} => ({
-				id: String(hour),
-				data: dates.map((date) => ({ x: date.toISOString(), y: 0 })),
-			}),
-		);
+		const dates = new Array(length);
+		for (let i = 0; i < length; i++) {
+			dates[i] = start.clone().add(i, 'days').toISOString();
+		}
+
+		const values = new Array(24);
+		for (let hour = 0; hour < 24; hour++) {
+			values[hour] = {
+				id: hour.toString(),
+				data: dates.map((x) => ({ x, y: 0 })),
+			};
+		}
 
 		const timezoneOffset = moment().utcOffset() / 60;
 
@@ -65,15 +52,17 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 			const date = utc ? moment.utc([year, month - 1, day, hour]) : moment([year, month - 1, day, hour]).add(timezoneOffset, 'hours');
 
 			if (utc || (!date.isSame(data.end) && !date.clone().startOf('day').isSame(data.start))) {
-				const dataPoint = values[date.hour()].data.find((point) => point.x === date.endOf('day').toISOString());
+				const dataPoint = values[date.hour()].data.find((point: { x: string }) => point.x === date.endOf('day').toISOString());
 				if (dataPoint) {
 					dataPoint.y += users;
 				}
 			}
 		}
 
-		return [dates.map((date) => date.toISOString()), values];
-	}, [data, utc]);
+		return [dates, values];
+	}, [data, isLoading, utc]);
+
+	const tooltip = useCallback(({ cell }): ReactElement => <Tooltip>{t('Value_users', { value: cell.data.y })}</Tooltip>, [t]);
 
 	return (
 		<>
@@ -95,7 +84,7 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 				/>
 			</EngagementDashboardCardFilter>
 
-			{values ? (
+			{!isLoading && values && dates ? (
 				<Box display='flex' style={{ height: 696 }}>
 					<Flex.Item align='stretch' grow={1} shrink={0}>
 						<Box style={{ position: 'relative' }}>
@@ -106,7 +95,7 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 									height: '100%',
 								}}
 							>
-								<ResponsiveHeatMap
+								<ResponsiveHeatMapCanvas
 									data={values}
 									xInnerPadding={0.1}
 									yInnerPadding={0.25}
@@ -119,13 +108,13 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 										type: 'quantize',
 										colors: [
 											// TODO: Get it from theme
-											colors.p100,
-											colors.p200,
-											colors.p300,
-											colors.p400,
-											colors.p500,
-											colors.p600,
-											colors.p700,
+											colors.b100,
+											colors.b200,
+											colors.b300,
+											colors.b400,
+											colors.b500,
+											colors.b600,
+											colors.b700,
 										],
 									}}
 									emptyColor='transparent'
@@ -176,7 +165,7 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 											},
 										},
 									}}
-									tooltip={({ cell }): ReactElement => <Tooltip>{t('Value_users', { value: cell.data.y })}</Tooltip>}
+									tooltip={tooltip}
 								/>
 							</Box>
 						</Box>

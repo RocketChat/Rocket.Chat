@@ -1,12 +1,11 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { callbacks } from '../../lib/callbacks';
-import { deleteUser } from '../../app/lib/server';
+import { deleteUser } from '../../app/lib/server/functions/deleteUser';
 import { AppEvents, Apps } from '../../ee/server/apps/orchestrator';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -50,9 +49,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		await deleteUser(userId, confirmRelinquish);
-
-		callbacks.run('afterDeleteUser', user);
+		await deleteUser(userId, confirmRelinquish, uid);
 
 		// App IPostUserDeleted event hook
 		await Apps.triggerEvent(AppEvents.IPostUserDeleted, { user, performedBy: await Meteor.userAsync() });

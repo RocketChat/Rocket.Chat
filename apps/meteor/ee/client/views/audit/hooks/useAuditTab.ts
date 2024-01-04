@@ -1,9 +1,8 @@
+import type { IAuditLog } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
 import type { SetStateAction } from 'react';
 import { useMemo } from 'react';
-
-import type { IAuditLog } from '../../../../definition/IAuditLog';
 
 const typeToTabMap: Record<IAuditLog['fields']['type'], string> = {
 	'': 'rooms',
@@ -18,7 +17,7 @@ export const useAuditTab = () => {
 	const tab = useRouteParameter('tab');
 	const type = useMemo(() => tabToTabMap.get(tab ?? 'rooms') ?? '', [tab]);
 
-	const auditRoute = useRoute('/audit/:tab?');
+	const auditRoute = useRoute('audit-home');
 
 	const setType = useMutableCallback((newType: SetStateAction<IAuditLog['fields']['type']>) => {
 		auditRoute.replace({ tab: typeToTabMap[typeof newType === 'function' ? newType(type) : newType] ?? 'rooms' });

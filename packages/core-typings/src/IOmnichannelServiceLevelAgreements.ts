@@ -6,6 +6,6 @@ export const DEFAULT_SLA_CONFIG = {
 
 export interface IOmnichannelServiceLevelAgreements extends IRocketChatRecord {
 	name: string;
-	description: string;
+	description?: string;
 	dueTimeInMinutes: number;
 }

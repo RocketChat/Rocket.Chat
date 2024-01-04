@@ -1,15 +1,25 @@
-/* eslint-env mocha */
-
 import fs from 'fs';
 import path from 'path';
 
-import { expect } from 'chai';
-import type { IOmnichannelRoom, ILivechatVisitor, IUser, IOmnichannelSystemMessage, ILivechatPriority } from '@rocket.chat/core-typings';
+import { faker } from '@faker-js/faker';
+import type {
+	IOmnichannelRoom,
+	ILivechatVisitor,
+	IUser,
+	IOmnichannelSystemMessage,
+	ILivechatPriority,
+	ILivechatDepartment,
+} from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
+import { expect } from 'chai';
+import { before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
-import faker from '@faker-js/faker';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data';
+import type { SuccessResult } from '../../../../app/api/server/definition';
+import { getCredentials, api, request, credentials, methodCall } from '../../../data/api-data';
+import { createCustomField } from '../../../data/livechat/custom-fields';
+import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
+import { createSLA, getRandomPriority } from '../../../data/livechat/priorities';
 import {
 	createVisitor,
 	createLivechatRoom,
@@ -18,19 +28,26 @@ import {
 	getLivechatRoomInfo,
 	sendMessage,
 	startANewLivechatRoomAndTakeIt,
-	closeOmnichanelRoom,
+	createManager,
+	closeOmnichannelRoom,
+	createDepartment,
+	fetchMessages,
 } from '../../../data/livechat/rooms';
-import { addPermissions, updateEEPermission, updatePermission, updateSetting } from '../../../data/permissions.helper';
-import { createUser, login } from '../../../data/users.helper.js';
-import { adminUsername, password } from '../../../data/user.js';
-import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
+import { saveTags } from '../../../data/livechat/tags';
 import type { DummyResponse } from '../../../data/livechat/utils';
-import type { SuccessResult } from '../../../../app/api/server/definition';
-import { sleep } from '../../../data/livechat/utils';
-import { IS_EE } from '../../../e2e/config/constants';
-import { createCustomField } from '../../../data/livechat/custom-fields';
-import { createSLA, getRandomPriority } from '../../../data/livechat/priorities';
+import { parseMethodResponse, sleep } from '../../../data/livechat/utils';
+import {
+	restorePermissionToRoles,
+	addPermissions,
+	removePermissionFromAllRoles,
+	updateEEPermission,
+	updatePermission,
+	updateSetting,
+} from '../../../data/permissions.helper';
 import { getSubscriptionForRoom } from '../../../data/subscriptions';
+import { adminUsername, password } from '../../../data/user';
+import { createUser, deleteUser, login } from '../../../data/users.helper.js';
+import { IS_EE } from '../../../e2e/config/constants';
 
 describe('LIVECHAT - rooms', function () {
 	this.retries(0);
@@ -111,7 +128,7 @@ describe('LIVECHAT - rooms', function () {
 
 	describe('livechat/rooms', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
-			await updatePermission('view-livechat-rooms', []);
+			await removePermissionFromAllRoles('view-livechat-rooms');
 			await request
 				.get(api('livechat/rooms'))
 				.set(credentials)
@@ -121,9 +138,10 @@ describe('LIVECHAT - rooms', function () {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.error).to.be.equal('unauthorized');
 				});
+
+			await restorePermissionToRoles('view-livechat-rooms');
 		});
 		it('should return an error when the "agents" query parameter is not valid', async () => {
-			await updatePermission('view-livechat-rooms', ['admin']);
 			await request
 				.get(api('livechat/rooms?agents=invalid'))
 				.set(credentials)
@@ -275,7 +293,7 @@ describe('LIVECHAT - rooms', function () {
 			// Create and close a room
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
-			await closeOmnichanelRoom(room._id);
+			await closeOmnichannelRoom(room._id);
 
 			const { body } = await request.get(api('livechat/rooms')).query({ open: false, roomName: room.fname }).set(credentials).expect(200);
 			expect(body.rooms.every((room: IOmnichannelRoom) => !!room.closedAt)).to.be.true;
@@ -285,7 +303,7 @@ describe('LIVECHAT - rooms', function () {
 			// Create and close a room
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
-			await closeOmnichanelRoom(room._id);
+			await closeOmnichannelRoom(room._id);
 
 			const { body } = await request.get(api('livechat/rooms')).query({ open: true, roomName: room.fname }).set(credentials).expect(200);
 			expect(body.rooms.every((room: IOmnichannelRoom) => room.open)).to.be.true;
@@ -295,21 +313,137 @@ describe('LIVECHAT - rooms', function () {
 			// Create and close a room
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
-			await closeOmnichanelRoom(room._id);
+			await closeOmnichannelRoom(room._id);
 
 			const { body } = await request.get(api('livechat/rooms')).set(credentials).expect(200);
 			expect(body.rooms.some((room: IOmnichannelRoom) => !!room.closedAt)).to.be.true;
 			expect(body.rooms.some((room: IOmnichannelRoom) => room.open)).to.be.true;
 		});
+		(IS_EE ? it : it.skip)('should return only rooms with the given department', async () => {
+			const { department } = await createDepartmentWithAnOnlineAgent();
+
+			const { room: expectedRoom } = await startANewLivechatRoomAndTakeIt({
+				departmentId: department._id,
+			});
+
+			const { body } = await request.get(api('livechat/rooms')).query({ departmentId: department._id }).set(credentials).expect(200);
+
+			expect(body.rooms.length).to.be.equal(1);
+			expect(body.rooms.some((room: IOmnichannelRoom) => room._id === expectedRoom._id)).to.be.true;
+		});
+		(IS_EE ? it : it.skip)('should return rooms with the given department and the given status', async () => {
+			const { department } = await createDepartmentWithAnOnlineAgent();
+
+			const { room: expectedRoom } = await startANewLivechatRoomAndTakeIt({
+				departmentId: department._id,
+			});
+
+			const { body } = await request
+				.get(api('livechat/rooms'))
+				.query({ departmentId: department._id, open: true })
+				.set(credentials)
+				.expect(200);
+
+			expect(body.rooms.length).to.be.equal(1);
+			expect(body.rooms.some((room: IOmnichannelRoom) => room._id === expectedRoom._id)).to.be.true;
+		});
+		(IS_EE ? it : it.skip)('should return no rooms with the given department and the given status (if none match the filter)', async () => {
+			const { department } = await createDepartmentWithAnOnlineAgent();
+
+			await startANewLivechatRoomAndTakeIt({
+				departmentId: department._id,
+			});
+
+			const { body } = await request
+				.get(api('livechat/rooms'))
+				.query({ departmentId: department._id, open: false })
+				.set(credentials)
+				.expect(200);
+
+			expect(body.rooms.length).to.be.equal(0);
+		});
+		(IS_EE ? it : it.skip)('should return only rooms served by the given agent', async () => {
+			const { department, agent } = await createDepartmentWithAnOnlineAgent();
+
+			const { room: expectedRoom } = await startANewLivechatRoomAndTakeIt({
+				departmentId: department._id,
+				agent: agent.credentials,
+			});
+
+			const { body } = await request
+				.get(api(`livechat/rooms?agents[]=${agent.user._id}`))
+				.set(credentials)
+				.expect(200);
+
+			expect(body.rooms.length).to.be.equal(1);
+			expect(body.rooms.some((room: IOmnichannelRoom) => room._id === expectedRoom._id)).to.be.true;
+		});
+		(IS_EE ? it : it.skip)('should return only rooms with the given tags', async () => {
+			const tag = await saveTags();
+
+			const { room: expectedRoom } = await startANewLivechatRoomAndTakeIt();
+			await closeOmnichannelRoom(expectedRoom._id, [tag.name]);
+
+			const { body } = await request
+				.get(api(`livechat/rooms?tags[]=${tag.name}`))
+				.set(credentials)
+				.expect(200);
+
+			expect(body.rooms.length).to.be.equal(1);
+			expect(body.rooms.some((room: IOmnichannelRoom) => room._id === expectedRoom._id)).to.be.true;
+		});
+		(IS_EE ? describe : describe.skip)('sort', () => {
+			let openRoom: IOmnichannelRoom;
+			let closeRoom: IOmnichannelRoom;
+			let department: ILivechatDepartment;
+
+			it('prepare data for further tests', async () => {
+				const { department: localDepartment } = await createDepartmentWithAnOnlineAgent();
+				department = localDepartment;
+
+				const { room: localOpenRoom } = await startANewLivechatRoomAndTakeIt({
+					departmentId: department._id,
+				});
+				openRoom = localOpenRoom;
+				const { room: localCloseRoom } = await startANewLivechatRoomAndTakeIt({
+					departmentId: department._id,
+				});
+				closeRoom = localCloseRoom;
+				await closeOmnichannelRoom(closeRoom._id);
+			});
+			it('should return only rooms in the asc order', async () => {
+				const { body } = await request
+					.get(api('livechat/rooms'))
+					.query({ sort: JSON.stringify({ open: 1 }), departmentId: department._id })
+					.set(credentials)
+					.expect(200);
+
+				expect(body.rooms.length).to.be.equal(2);
+				expect(body.rooms[0]._id).to.be.equal(closeRoom._id);
+				expect(body.rooms[1]._id).to.be.equal(openRoom._id);
+			});
+			it('should return only rooms in the desc order', async () => {
+				const { body } = await request
+					.get(api('livechat/rooms'))
+					.query({ sort: JSON.stringify({ open: -1 }), departmentId: department._id })
+					.set(credentials)
+					.expect(200);
+
+				expect(body.rooms.length).to.be.equal(2);
+				expect(body.rooms[0]._id).to.be.equal(openRoom._id);
+				expect(body.rooms[1]._id).to.be.equal(closeRoom._id);
+			});
+		});
 	});
 
 	describe('livechat/room.join', () => {
 		it('should fail if user doesnt have view-l-room permission', async () => {
-			await updatePermission('view-l-room', []);
+			await removePermissionFromAllRoles('view-l-room');
 			await request.get(api('livechat/room.join')).set(credentials).query({ roomId: '123' }).send().expect(403);
+
+			await restorePermissionToRoles('view-l-room');
 		});
 		it('should fail if no roomId is present on query params', async () => {
-			await updatePermission('view-l-room', ['admin', 'livechat-agent']);
 			await request.get(api('livechat/room.join')).set(credentials).expect(400);
 		});
 		it('should fail if room is present but invalid', async () => {
@@ -325,11 +459,13 @@ describe('LIVECHAT - rooms', function () {
 
 	describe('livechat/room.join', () => {
 		it('should fail if user doesnt have view-l-room permission', async () => {
-			await updatePermission('view-l-room', []);
+			await removePermissionFromAllRoles('view-l-room');
+
 			await request.get(api('livechat/room.join')).set(credentials).query({ roomId: '123' }).send().expect(403);
+
+			await restorePermissionToRoles('view-l-room');
 		});
 		it('should fail if no roomId is present on query params', async () => {
-			await updatePermission('view-l-room', ['admin', 'livechat-agent']);
 			await request.get(api('livechat/room.join')).set(credentials).expect(400);
 		});
 		it('should fail if room is present but invalid', async () => {
@@ -340,6 +476,26 @@ describe('LIVECHAT - rooms', function () {
 			const room = await createLivechatRoom(visitor.token);
 
 			await request.get(api('livechat/room.join')).set(credentials).query({ roomId: room._id }).send().expect(200);
+		});
+		it('should allow managers to join a room which is already being served by an agent', async () => {
+			await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
+			// delay for 1 second to make sure the routing queue gets stopped
+			await sleep(1000);
+
+			const {
+				room: { _id: roomId },
+			} = await startANewLivechatRoomAndTakeIt();
+
+			const manager: IUser = await createUser();
+			const managerCredentials = await login(manager.username, password);
+			await createManager(manager.username);
+
+			await request.get(api('livechat/room.join')).set(managerCredentials).query({ roomId }).send().expect(200);
+
+			await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
+
+			// cleanup
+			await deleteUser(manager);
 		});
 	});
 
@@ -416,9 +572,6 @@ describe('LIVECHAT - rooms', function () {
 
 				await request.post(api('livechat/room.close')).send({ rid: roomId, token: visitor.token }).expect(200);
 
-				// Wait for the pdf to be generated
-				await sleep(2000);
-
 				const latestRoom = await getLivechatRoomInfo(roomId);
 				expect(latestRoom).to.have.property('pdfTranscriptFileId').and.to.be.a('string');
 			},
@@ -452,7 +605,7 @@ describe('LIVECHAT - rooms', function () {
 	describe('livechat/room.forward', () => {
 		it('should return an "unauthorized error" when the user does not have "view-l-room" permission', async () => {
 			await updatePermission('transfer-livechat-guest', ['admin']);
-			await updatePermission('view-l-room', []);
+			await removePermissionFromAllRoles('view-l-room');
 
 			await request
 				.post(api('livechat/room.forward'))
@@ -469,7 +622,7 @@ describe('LIVECHAT - rooms', function () {
 		});
 
 		it('should return an "unauthorized error" when the user does not have "transfer-livechat-guest" permission', async () => {
-			await updatePermission('transfer-livechat-guest', []);
+			await removePermissionFromAllRoles('transfer-livechat-guest');
 			await updatePermission('view-l-room', ['admin']);
 
 			await request
@@ -484,12 +637,12 @@ describe('LIVECHAT - rooms', function () {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.error).to.have.string('unauthorized');
 				});
+
+			await restorePermissionToRoles('transfer-livechat-guest');
+			await restorePermissionToRoles('view-l-room');
 		});
 
 		it('should not be successful when no target (userId or departmentId) was specified', async () => {
-			await updatePermission('transfer-livechat-guest', ['admin']);
-			await updatePermission('view-l-room', ['admin', 'livechat-manager', 'livechat-agent']);
-
 			await request
 				.post(api('livechat/room.forward'))
 				.set(credentials)
@@ -542,6 +695,10 @@ describe('LIVECHAT - rooms', function () {
 			expect(lastMessage?.transferData?.comment).to.be.equal('test comment');
 			expect(lastMessage?.transferData?.scope).to.be.equal('agent');
 			expect(lastMessage?.transferData?.transferredTo?.username).to.be.equal(forwardChatToUser.username);
+
+			// cleanup
+			await deleteUser(initialAgentAssignedToChat);
+			await deleteUser(forwardChatToUser);
 		});
 		(IS_EE ? it : it.skip)('should return a success message when transferred successfully to a department', async () => {
 			const { department: initialDepartment } = await createDepartmentWithAnOnlineAgent();
@@ -576,6 +733,65 @@ describe('LIVECHAT - rooms', function () {
 			expect((latestRoom.lastMessage as any)?.transferData?.comment).to.be.equal('test comment');
 			expect((latestRoom.lastMessage as any)?.transferData?.scope).to.be.equal('department');
 			expect((latestRoom.lastMessage as any)?.transferData?.nextDepartment?._id).to.be.equal(forwardToDepartment._id);
+		});
+		let roomId: string;
+		let visitorToken: string;
+		(IS_EE ? it : it.skip)('should return a success message when transferring to a fallback department', async () => {
+			await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
+			const { department: initialDepartment } = await createDepartmentWithAnOnlineAgent();
+			const { department: forwardToDepartment } = await createDepartmentWithAnOnlineAgent();
+			const forwardToDepartment1 = await createDepartment(undefined, undefined, true, {
+				fallbackForwardDepartment: forwardToDepartment._id,
+			});
+
+			const newVisitor = await createVisitor(initialDepartment._id);
+			const newRoom = await createLivechatRoom(newVisitor.token);
+
+			await request
+				.post(api('livechat/room.forward'))
+				.set(credentials)
+				.send({
+					roomId: newRoom._id,
+					departmentId: forwardToDepartment1._id,
+					clientAction: true,
+					comment: 'test comment',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					console.log({ res: res.body });
+					expect(res.body).to.have.property('success', true);
+				});
+
+			const latestRoom = await getLivechatRoomInfo(newRoom._id);
+
+			expect(latestRoom).to.have.property('departmentId');
+			expect(latestRoom.departmentId).to.be.equal(forwardToDepartment._id);
+
+			expect(latestRoom).to.have.property('lastMessage');
+			expect(latestRoom.lastMessage?.t).to.be.equal('livechat_transfer_history');
+			expect(latestRoom.lastMessage?.u?.username).to.be.equal(adminUsername);
+			expect((latestRoom.lastMessage as any)?.transferData?.comment).to.be.equal('test comment');
+			expect((latestRoom.lastMessage as any)?.transferData?.scope).to.be.equal('department');
+			expect((latestRoom.lastMessage as any)?.transferData?.nextDepartment?._id).to.be.equal(forwardToDepartment._id);
+
+			roomId = newRoom._id;
+			visitorToken = newVisitor.token;
+		});
+		(IS_EE ? it : it.skip)('system messages sent on transfer should be properly generated', async () => {
+			const messagesList = await fetchMessages(roomId, visitorToken);
+
+			const fallbackMessages = messagesList.filter((m) => m.t === 'livechat_transfer_history_fallback');
+			expect(fallbackMessages.length).to.be.equal(1);
+
+			const userJoinedMessages = messagesList.filter((m) => m.t === 'uj');
+			expect(userJoinedMessages.length).to.be.equal(2);
+
+			const transferMessages = messagesList.filter((m) => m.t === 'livechat_transfer_history');
+			expect(transferMessages.length).to.be.equal(1);
+
+			const userLeavingMessages = messagesList.filter((m) => m.t === 'ul');
+			expect(userLeavingMessages.length).to.be.equal(1);
 		});
 	});
 
@@ -712,12 +928,13 @@ describe('LIVECHAT - rooms', function () {
 			await request.get(api('livechat/test/messages')).set(credentials).expect('Content-Type', 'application/json').expect(400);
 		});
 		it('should throw an error if user doesnt have permission view-l-room', async () => {
-			await updatePermission('view-l-room', []);
+			await removePermissionFromAllRoles('view-l-room');
 
 			await request.get(api('livechat/test/messages')).set(credentials).expect('Content-Type', 'application/json').expect(403);
+
+			await restorePermissionToRoles('view-l-room');
 		});
 		it('should return the messages of the room', async () => {
-			await updatePermission('view-l-room', ['admin']);
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
 			await sendMessage(room._id, 'Hello', visitor.token);
@@ -966,100 +1183,6 @@ describe('LIVECHAT - rooms', function () {
 		});
 	});
 
-	describe('livechat/messages.history/rid', () => {
-		it('should fail if token is not sent as query param', async () => {
-			await request.get(api('livechat/messages.history/test')).set(credentials).expect('Content-Type', 'application/json').expect(400);
-		});
-		it('should fail if token is not a valid guest token', async () => {
-			await request
-				.get(api('livechat/messages.history/test'))
-				.set(credentials)
-				.query({ token: 'test' })
-				.expect('Content-Type', 'application/json')
-				.expect(400);
-		});
-		it('should fail if token is good, but rid is not valid', async () => {
-			const visitor = await createVisitor();
-			await request
-				.get(api('livechat/messages.history/fadsfdsafads'))
-				.set(credentials)
-				.query({ token: visitor.token })
-				.expect('Content-Type', 'application/json')
-				.expect(400);
-		});
-		it('should return message history for a valid room', async () => {
-			const visitor = await createVisitor();
-			const room = await createLivechatRoom(visitor.token);
-			await sendMessage(room._id, 'Hello', visitor.token);
-
-			const { body } = await request
-				.get(api(`livechat/messages.history/${room._id}`))
-				.set(credentials)
-				.query({ token: visitor.token })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
-
-			expect(body).to.have.property('success', true);
-			expect(body).to.have.property('messages');
-			expect(body.messages).to.be.an('array');
-			expect(body.messages.length <= 3).to.be.true;
-			expect(body.messages[0]).to.have.property('msg', 'Hello');
-			expect(body.messages[1]).to.have.property('t');
-		});
-		it('should return message history for a valid room with pagination', async () => {
-			const visitor = await createVisitor();
-			const room = await createLivechatRoom(visitor.token);
-			await sendMessage(room._id, 'Hello', visitor.token);
-
-			const { body } = await request
-				.get(api(`livechat/messages.history/${room._id}`))
-				.set(credentials)
-				.query({ token: visitor.token, limit: 1 })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
-
-			expect(body).to.have.property('success', true);
-			expect(body).to.have.property('messages').of.length(1);
-			expect(body.messages[0]).to.have.property('msg', 'Hello');
-		});
-		it('should return message history for a valid room with pagination and offset', async () => {
-			const visitor = await createVisitor();
-			const room = await createLivechatRoom(visitor.token);
-			await sendMessage(room._id, 'Hello', visitor.token);
-
-			const { body } = await request
-				.get(api(`livechat/messages.history/${room._id}`))
-				.set(credentials)
-				.query({ token: visitor.token, limit: 1, offset: 1 })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
-
-			expect(body).to.have.property('success', true);
-			expect(body).to.have.property('messages').of.length(1);
-			expect(body.messages[0]).to.have.property('t');
-		});
-		it('should return message history for a valid date filtering (max date)', async () => {
-			const visitor = await createVisitor();
-			const room = await createLivechatRoom(visitor.token);
-			await sendMessage(room._id, 'Hello', visitor.token);
-			const sendMessageTs = new Date();
-			await sendMessage(room._id, 'Hello2', visitor.token);
-
-			const { body } = await request
-				.get(api(`livechat/messages.history/${room._id}`))
-				.set(credentials)
-				.query({ token: visitor.token, end: sendMessageTs.toISOString() })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
-
-			expect(body).to.have.property('success', true);
-			expect(body).to.have.property('messages').that.is.an('array');
-			expect(body.messages.length <= 3).to.be.true;
-			expect(body.messages[0]).to.have.property('msg', 'Hello');
-			expect(body.messages[1]).to.have.property('t');
-		});
-	});
-
 	describe('livechat/messages', () => {
 		it('should fail if visitor is not sent as body param', async () => {
 			await request.post(api('livechat/messages')).set(credentials).expect('Content-Type', 'application/json').expect(400);
@@ -1126,16 +1249,17 @@ describe('LIVECHAT - rooms', function () {
 
 	describe('livechat/transfer.history/:rid', () => {
 		it('should fail if user doesnt have "view-livechat-rooms" permission', async () => {
-			await updatePermission('view-livechat-rooms', []);
+			await removePermissionFromAllRoles('view-livechat-rooms');
 			const { body } = await request
 				.get(api(`livechat/transfer.history/test`))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(403);
 			expect(body).to.have.property('success', false);
+
+			await restorePermissionToRoles('view-livechat-rooms');
 		});
 		it('should fail if room is not a valid room id', async () => {
-			await updatePermission('view-livechat-rooms', ['admin', 'livechat-manager']);
 			const { body } = await request
 				.get(api(`livechat/transfer.history/test`))
 				.set(credentials)
@@ -1198,6 +1322,10 @@ describe('LIVECHAT - rooms', function () {
 			expect(body.history[0]).to.have.property('scope', 'agent');
 			expect(body.history[0]).to.have.property('comment', 'test comment');
 			expect(body.history[0]).to.have.property('transferredBy').that.is.an('object');
+
+			// cleanup
+			await deleteUser(initialAgentAssignedToChat);
+			await deleteUser(forwardChatToUser);
 		});
 	});
 
@@ -1449,6 +1577,75 @@ describe('LIVECHAT - rooms', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(400);
 		});
+		(IS_EE ? it : it.skip)('should throw an error if a valid custom field fails the check', async () => {
+			await request
+				.post(methodCall('livechat:saveCustomField'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'livechat:saveCustomField',
+						params: [
+							null,
+							{
+								field: 'intfield',
+								label: 'intfield',
+								scope: 'room',
+								visibility: 'visible',
+								regexp: '\\d+',
+								searchable: true,
+								type: 'input',
+								required: false,
+								defaultValue: '0',
+								options: '',
+								public: false,
+							},
+						],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect(200);
+			const newVisitor = await createVisitor();
+			const newRoom = await createLivechatRoom(newVisitor.token);
+
+			const response = await request
+				.post(api('livechat/room.saveInfo'))
+				.set(credentials)
+				.send({
+					roomData: {
+						_id: newRoom._id,
+						livechatData: { intfield: 'asdasd' },
+					},
+					guestData: {
+						_id: newVisitor._id,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+			expect(response.body).to.have.property('success', false);
+			expect(response.body).to.have.property('error', 'Invalid value for intfield field');
+		});
+		(IS_EE ? it : it.skip)('should not throw an error if a valid custom field passes the check', async () => {
+			const newVisitor = await createVisitor();
+			const newRoom = await createLivechatRoom(newVisitor.token);
+
+			const response2 = await request
+				.post(api('livechat/room.saveInfo'))
+				.set(credentials)
+				.send({
+					roomData: {
+						_id: newRoom._id,
+						livechatData: { intfield: '1' },
+					},
+					guestData: {
+						_id: newVisitor._id,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+			expect(response2.body).to.have.property('success', true);
+		});
+
 		(IS_EE ? it : it.skip)('should update room priority', async () => {
 			await addPermissions({
 				'save-others-livechat-room-info': ['admin', 'livechat-manager'],
@@ -1527,7 +1724,7 @@ describe('LIVECHAT - rooms', function () {
 					expect(res.body.priorities).to.have.length.greaterThan(0);
 				});
 			priorities = response.body.priorities;
-			const rnd = faker.datatype.number({ min: 0, max: priorities.length - 1 });
+			const rnd = faker.number.int({ min: 0, max: priorities.length - 1 });
 			chosenPriority = priorities[rnd];
 		});
 		it('should prioritize the room', async () => {
@@ -1616,21 +1813,37 @@ describe('LIVECHAT - rooms', function () {
 			const { _id } = await createLivechatRoom(visitor.token);
 			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id }).expect(400);
 		});
-		it('should close room if user has permission', async () => {
-			await updatePermission('close-others-livechat-room', ['admin']);
+		it('should not close a room without comment', async () => {
+			await restorePermissionToRoles('close-others-livechat-room');
 			const visitor = await createVisitor();
 			const { _id } = await createLivechatRoom(visitor.token);
-			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id }).expect(200);
+			const response = await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id }).expect(400);
+
+			expect(response.body).to.have.property('success', false);
+			expect(response.body).to.have.property('error', 'error-comment-is-required');
+		});
+		it('should not close a room when comment is an empty string', async () => {
+			await restorePermissionToRoles('close-others-livechat-room');
+			const visitor = await createVisitor();
+			const { _id } = await createLivechatRoom(visitor.token);
+			const response = await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id, comment: '' }).expect(400);
+
+			expect(response.body).to.have.property('success', false);
+		});
+		it('should close room if user has permission', async () => {
+			const visitor = await createVisitor();
+			const { _id } = await createLivechatRoom(visitor.token);
+			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id, comment: 'test' }).expect(200);
 		});
 		it('should fail if room is closed', async () => {
 			const visitor = await createVisitor();
 			const { _id } = await createLivechatRoom(visitor.token);
 
 			// close room
-			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id }).expect(200);
+			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id, comment: 'test' }).expect(200);
 
 			// try to close again
-			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id }).expect(400);
+			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id, comment: 'test' }).expect(400);
 		});
 
 		(IS_EE ? it : it.skip)('should close room and generate transcript pdf', async () => {
@@ -1638,7 +1851,11 @@ describe('LIVECHAT - rooms', function () {
 				room: { _id: roomId },
 			} = await startANewLivechatRoomAndTakeIt();
 
-			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: roomId, generateTranscriptPdf: true }).expect(200);
+			await request
+				.post(api('livechat/room.closeByUser'))
+				.set(credentials)
+				.send({ rid: roomId, comment: 'test', generateTranscriptPdf: true })
+				.expect(200);
 
 			// Wait for the pdf to be generated
 			await sleep(1500);
@@ -1652,7 +1869,11 @@ describe('LIVECHAT - rooms', function () {
 				room: { _id: roomId },
 			} = await startANewLivechatRoomAndTakeIt();
 
-			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: roomId, generateTranscriptPdf: false }).expect(200);
+			await request
+				.post(api('livechat/room.closeByUser'))
+				.set(credentials)
+				.send({ rid: roomId, comment: 'test', generateTranscriptPdf: false })
+				.expect(200);
 
 			// Wait for the pdf to not be generated
 			await sleep(1500);
@@ -1696,7 +1917,7 @@ describe('LIVECHAT - rooms', function () {
 		it('should return OK if no one is serving the room (queued)', async () => {
 			const visitor = await createVisitor();
 			const { _id } = await createLivechatRoom(visitor.token);
-			await closeOmnichanelRoom(_id);
+			await closeOmnichannelRoom(_id);
 			await request
 				.post(api(`omnichannel/${_id}/request-transcript`))
 				.set(credentials)
@@ -1709,7 +1930,7 @@ describe('LIVECHAT - rooms', function () {
 			} = await startANewLivechatRoomAndTakeIt();
 
 			// close room since pdf transcript is only generated for closed rooms
-			await closeOmnichanelRoom(roomId);
+			await closeOmnichannelRoom(roomId);
 
 			await request
 				.post(api(`omnichannel/${roomId}/request-transcript`))
@@ -1787,6 +2008,199 @@ describe('LIVECHAT - rooms', function () {
 		it("room's subscription should have correct unread count", async () => {
 			const { unread } = await getSubscriptionForRoom(room._id, departmentWithAgent.agent.credentials);
 			expect(unread).to.equal(totalMessagesSent);
+		});
+	});
+
+	describe('livechat/transcript/:rid', () => {
+		it('should fail if user is not logged in', async () => {
+			await request.delete(api('livechat/transcript/rid')).expect(401);
+		});
+		it('should fail if user doesnt have send-omnichannel-chat-transcript permission', async () => {
+			await updatePermission('send-omnichannel-chat-transcript', []);
+			await request.delete(api('livechat/transcript/rid')).set(credentials).expect(403);
+		});
+		it('should fail if :rid is not a valid room id', async () => {
+			await updatePermission('send-omnichannel-chat-transcript', ['admin']);
+			await request.delete(api('livechat/transcript/rid')).set(credentials).expect(400);
+		});
+		it('should fail if room is closed', async () => {
+			const visitor = await createVisitor();
+			const { _id } = await createLivechatRoom(visitor.token);
+			await closeOmnichannelRoom(_id);
+			await request
+				.delete(api(`livechat/transcript/${_id}`))
+				.set(credentials)
+				.expect(400);
+		});
+		it('should fail if room doesnt have a transcript request active', async () => {
+			const visitor = await createVisitor();
+			const { _id } = await createLivechatRoom(visitor.token);
+			await request
+				.delete(api(`livechat/transcript/${_id}`))
+				.set(credentials)
+				.expect(400);
+		});
+		it('should return OK if all conditions are met', async () => {
+			const visitor = await createVisitor();
+			const { _id } = await createLivechatRoom(visitor.token);
+			// First, request transcript with livechat:requestTranscript method
+			await request
+				.post(methodCall('livechat:requestTranscript'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'livechat:requestTranscript',
+						params: [_id, 'test@test.com', 'Transcript of your omnichannel conversation'],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect(200);
+
+			// Then, delete the transcript
+			await request
+				.delete(api(`livechat/transcript/${_id}`))
+				.set(credentials)
+				.expect(200);
+		});
+	});
+
+	describe('livechat:sendTranscript', () => {
+		it('should fail if user doesnt have send-omnichannel-chat-transcript permission', async () => {
+			await updatePermission('send-omnichannel-chat-transcript', []);
+			const { body } = await request
+				.post(methodCall('livechat:sendTranscript'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						msg: 'method',
+						id: '1091',
+						method: 'livechat:sendTranscript',
+						params: ['test', 'test', 'test', 'test'],
+					}),
+				})
+				.expect(200);
+
+			const result = parseMethodResponse(body);
+			expect(body.success).to.be.true;
+			expect(result).to.have.property('error').that.is.an('object').that.has.property('error', 'error-not-allowed');
+		});
+		it('should fail if not all params are provided', async () => {
+			await updatePermission('send-omnichannel-chat-transcript', ['admin']);
+			const { body } = await request
+				.post(methodCall('livechat:sendTranscript'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						msg: 'method',
+						id: '1091',
+						method: 'livechat:sendTranscript',
+						params: [],
+					}),
+				})
+				.expect(200);
+
+			const result = parseMethodResponse(body);
+			expect(body.success).to.be.true;
+			expect(result).to.have.property('error').that.is.an('object').that.has.property('errorType', 'Match.Error');
+		});
+		it('should fail if token is invalid', async () => {
+			const { body } = await request
+				.post(methodCall('livechat:sendTranscript'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						msg: 'method',
+						id: '1091',
+						method: 'livechat:sendTranscript',
+						params: ['invalid-token', 'test', 'test', 'test'],
+					}),
+				})
+				.expect(200);
+
+			const result = parseMethodResponse(body);
+			expect(body.success).to.be.true;
+			expect(result).to.have.property('error').that.is.an('object');
+		});
+		it('should fail if roomId is invalid', async () => {
+			const visitor = await createVisitor();
+			const { body } = await request
+				.post(methodCall('livechat:sendTranscript'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						msg: 'method',
+						id: '1091',
+						method: 'livechat:sendTranscript',
+						params: [visitor.token, 'invalid-room-id', 'test', 'test'],
+					}),
+				})
+				.expect(200);
+
+			const result = parseMethodResponse(body);
+			expect(body.success).to.be.true;
+			expect(result).to.have.property('error').that.is.an('object');
+		});
+		it('should fail if token is from another conversation', async () => {
+			const visitor = await createVisitor();
+			const visitor2 = await createVisitor();
+			const { _id } = await createLivechatRoom(visitor.token);
+			const { body } = await request
+				.post(methodCall('livechat:sendTranscript'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						msg: 'method',
+						id: '1091',
+						method: 'livechat:sendTranscript',
+						params: [visitor2.token, _id, 'test', 'test'],
+					}),
+				})
+				.expect(200);
+
+			const result = parseMethodResponse(body);
+			expect(body.success).to.be.true;
+			expect(result).to.have.property('error').that.is.an('object');
+		});
+		it('should fail if email provided is invalid', async () => {
+			const visitor = await createVisitor();
+			const { _id } = await createLivechatRoom(visitor.token);
+			const { body } = await request
+				.post(methodCall('livechat:sendTranscript'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						msg: 'method',
+						id: '1091',
+						method: 'livechat:sendTranscript',
+						params: [visitor.token, _id, 'invalid-email', 'test'],
+					}),
+				})
+				.expect(200);
+
+			const result = parseMethodResponse(body);
+			expect(body.success).to.be.true;
+			expect(result).to.have.property('error').that.is.an('object');
+		});
+		it('should work if all params are good', async () => {
+			const visitor = await createVisitor();
+			const { _id } = await createLivechatRoom(visitor.token);
+			const { body } = await request
+				.post(methodCall('livechat:sendTranscript'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						msg: 'method',
+						id: '1091',
+						method: 'livechat:sendTranscript',
+						params: [visitor.token, _id, 'test@test', 'test'],
+					}),
+				})
+				.expect(200);
+
+			const result = parseMethodResponse(body);
+			expect(body.success).to.be.true;
+			expect(result).to.have.property('result', true);
 		});
 	});
 });

@@ -1,10 +1,17 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 
+import { FederationMessageServiceReceiver } from '../application/room/message/receiver/MessageServiceReceiver';
+import { FederationMessageServiceSender } from '../application/room/message/sender/MessageServiceSender';
 import { FederationRoomServiceReceiver } from '../application/room/receiver/RoomServiceReceiver';
+import { FederationRoomInternalValidator } from '../application/room/sender/RoomInternalValidator';
 import { FederationRoomServiceSender } from '../application/room/sender/RoomServiceSender';
+import { FederationUserServiceReceiver } from '../application/user/receiver/UserServiceReceiver';
+import { FederationUserServiceSender } from '../application/user/sender/UserServiceSender';
+import type { IFederationBridge } from '../domain/IFederationBridge';
 import { MatrixBridge } from './matrix/Bridge';
 import { MatrixEventsHandler } from './matrix/handlers';
 import type { MatrixBaseEventHandler } from './matrix/handlers/BaseEvent';
+import { MatrixMessageReactedHandler } from './matrix/handlers/Message';
 import {
 	MatrixRoomCreatedHandler,
 	MatrixRoomEventRedactedHandler,
@@ -15,23 +22,16 @@ import {
 	MatrixRoomPowerLevelsChangedHandler,
 	MatrixRoomTopicChangedHandler,
 } from './matrix/handlers/Room';
+import { MatrixUserTypingStatusChangedHandler } from './matrix/handlers/User';
 import { InMemoryQueue } from './queue/InMemoryQueue';
+import { RocketChatFileAdapter } from './rocket-chat/adapters/File';
 import { RocketChatMessageAdapter } from './rocket-chat/adapters/Message';
+import { RocketChatNotificationAdapter } from './rocket-chat/adapters/Notification';
 import { RocketChatRoomAdapter } from './rocket-chat/adapters/Room';
 import { RocketChatSettingsAdapter } from './rocket-chat/adapters/Settings';
 import { RocketChatUserAdapter } from './rocket-chat/adapters/User';
-import type { IFederationBridge } from '../domain/IFederationBridge';
-import { FederationHooks } from './rocket-chat/hooks';
 import { FederationRoomSenderConverter } from './rocket-chat/converters/RoomSender';
-import { FederationRoomInternalValidator } from '../application/room/sender/RoomInternalValidator';
-import { RocketChatFileAdapter } from './rocket-chat/adapters/File';
-import { FederationMessageServiceReceiver } from '../application/room/message/receiver/MessageServiceReceiver';
-import { MatrixMessageReactedHandler } from './matrix/handlers/Message';
-import { FederationMessageServiceSender } from '../application/room/message/sender/MessageServiceSender';
-import { FederationUserServiceReceiver } from '../application/user/receiver/UserServiceReceiver';
-import { MatrixUserTypingStatusChangedHandler } from './matrix/handlers/User';
-import { FederationUserServiceSender } from '../application/user/sender/UserServiceSender';
-import { RocketChatNotificationAdapter } from './rocket-chat/adapters/Notification';
+import { FederationHooks } from './rocket-chat/hooks';
 
 export class FederationFactory {
 	public static buildInternalSettingsAdapter(): RocketChatSettingsAdapter {

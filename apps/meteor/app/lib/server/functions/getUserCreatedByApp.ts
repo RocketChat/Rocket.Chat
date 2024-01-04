@@ -1,7 +1,7 @@
-import type { FindOptions } from 'mongodb';
+import type { UserType } from '@rocket.chat/apps-engine/definition/users';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import type { UserType } from '@rocket.chat/apps-engine/definition/users';
+import type { FindOptions } from 'mongodb';
 
 export async function getUserCreatedByApp(
 	appId: string,

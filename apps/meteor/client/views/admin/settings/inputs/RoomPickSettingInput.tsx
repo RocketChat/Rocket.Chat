@@ -1,5 +1,5 @@
 import type { SettingValueRoomPick } from '@rocket.chat/core-typings';
-import { Box, Field, Flex } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -9,10 +9,11 @@ import ResetSettingButton from '../ResetSettingButton';
 type RoomPickSettingInputProps = {
 	_id: string;
 	label: string;
-	value?: SettingValueRoomPick;
+	value?: SettingValueRoomPick | '';
 	placeholder?: string;
 	readonly?: boolean;
 	disabled?: boolean;
+	required?: boolean;
 	hasResetButton?: boolean;
 	onChangeValue: (value: SettingValueRoomPick) => void;
 	onResetButtonClick?: () => void;
@@ -21,15 +22,16 @@ type RoomPickSettingInputProps = {
 function RoomPickSettingInput({
 	_id,
 	label,
-	value = [],
+	value,
 	placeholder,
 	readonly,
 	disabled,
+	required,
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
 }: RoomPickSettingInputProps): ReactElement {
-	const parsedValue = value.map(({ _id }) => _id);
+	const parsedValue = (value || []).map(({ _id }) => _id);
 
 	const handleChange = (value: string | string[]) => {
 		if (typeof value === 'object') {
@@ -39,16 +41,14 @@ function RoomPickSettingInput({
 	};
 
 	return (
-		<>
-			<Flex.Container>
-				<Box>
-					<Field.Label htmlFor={_id} title={_id}>
-						{label}
-					</Field.Label>
-					{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
-				</Box>
-			</Flex.Container>
-			<Field.Row>
+		<Field>
+			<FieldRow>
+				<FieldLabel htmlFor={_id} title={_id} required={required}>
+					{label}
+				</FieldLabel>
+				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+			</FieldRow>
+			<FieldRow>
 				<RoomAutoCompleteMultiple
 					readOnly={readonly}
 					placeholder={placeholder}
@@ -56,8 +56,8 @@ function RoomPickSettingInput({
 					value={parsedValue}
 					onChange={handleChange}
 				/>
-			</Field.Row>
-		</>
+			</FieldRow>
+		</Field>
 	);
 }
 

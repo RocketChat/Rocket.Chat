@@ -1,11 +1,11 @@
 import { FederationRoomEvents, Users, Subscriptions } from '@rocket.chat/models';
 
+import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
+import { checkRoomType, checkRoomDomainsLength } from '../functions/helpers';
+import { dispatchEvents } from '../handler';
+import { getFederationDomain } from '../lib/getFederationDomain';
 import { clientLogger } from '../lib/logger';
 import { normalizers } from '../normalizers';
-import { deleteRoom } from '../../../lib/server/functions';
-import { getFederationDomain } from '../lib/getFederationDomain';
-import { dispatchEvents } from '../handler';
-import { checkRoomType, checkRoomDomainsLength } from '../functions/helpers';
 
 export async function doAfterCreateRoom(room, users, subscriptions) {
 	const normalizedUsers = [];
@@ -94,7 +94,7 @@ async function afterCreateRoom(roomOwner, room) {
 
 		await doAfterCreateRoom(room, users, subscriptions);
 	} catch (err) {
-		deleteRoom(room._id);
+		await deleteRoom(room._id);
 
 		clientLogger.error({ msg: 'afterCreateRoom => Could not create federated room:', err });
 	}

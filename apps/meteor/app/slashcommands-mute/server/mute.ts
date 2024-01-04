@@ -1,10 +1,11 @@
-import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
+import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
-import { slashCommands } from '../../utils/lib/slashCommand';
+import { i18n } from '../../../server/lib/i18n';
+import { muteUserInRoom } from '../../../server/methods/muteUserInRoom';
 import { settings } from '../../settings/server';
+import { slashCommands } from '../../utils/lib/slashCommand';
 
 /*
  * Mute is a named function that will replace /mute commands
@@ -12,17 +13,16 @@ import { settings } from '../../settings/server';
 
 slashCommands.add({
 	command: 'mute',
-	callback: async function Mute(_command: 'mute', params, item): Promise<void> {
+	callback: async function Mute({ params, message, userId }: SlashCommandCallbackParams<'mute'>): Promise<void> {
 		const username = params.trim().replace('@', '');
 		if (username === '') {
 			return;
 		}
 
-		const userId = Meteor.userId() as string;
 		const mutedUser = await Users.findOneByUsernameIgnoringCase(username);
 		if (mutedUser == null) {
-			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-				msg: TAPi18n.__('Username_doesnt_exist', {
+			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
+				msg: i18n.t('Username_doesnt_exist', {
 					postProcess: 'sprintf',
 					sprintf: [username],
 					lng: settings.get('Language') || 'en',
@@ -30,8 +30,8 @@ slashCommands.add({
 			});
 		}
 
-		await Meteor.callAsync('muteUserInRoom', {
-			rid: item.rid,
+		await muteUserInRoom(userId, {
+			rid: message.rid,
 			username,
 		});
 	},

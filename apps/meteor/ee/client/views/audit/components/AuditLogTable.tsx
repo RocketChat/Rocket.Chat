@@ -1,33 +1,85 @@
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
+import { useTranslation, useMethod, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React from 'react';
+import React, { useState } from 'react';
 
-import GenericTable from '../../../../../client/components/GenericTable';
-import type { IAuditLog } from '../../../../definition/IAuditLog';
+import GenericNoResults from '../../../../../client/components/GenericNoResults';
+import {
+	GenericTable,
+	GenericTableHeaderCell,
+	GenericTableBody,
+	GenericTableLoadingRow,
+	GenericTableHeader,
+} from '../../../../../client/components/GenericTable';
+import { createEndOfToday, createStartOfToday } from '../utils/dateRange';
+import type { DateRange } from '../utils/dateRange';
 import AuditLogEntry from './AuditLogEntry';
+import DateRangePicker from './forms/DateRangePicker';
 
-type AuditLogTableProps = {
-	data: IAuditLog[] | undefined;
-};
-
-const AuditLogTable = ({ data }: AuditLogTableProps): ReactElement => {
+const AuditLogTable = (): ReactElement => {
 	const t = useTranslation();
 
+	const [dateRange, setDateRange] = useState<DateRange>(() => ({
+		start: createStartOfToday(),
+		end: createEndOfToday(),
+	}));
+
+	const dispatchToastMessage = useToastMessageDispatch();
+
+	const getAudits = useMethod('auditGetAuditions');
+
+	const { data, isLoading, isSuccess } = useQuery(
+		['audits', dateRange],
+		async () => {
+			const { start, end } = dateRange;
+			return getAudits({ startDate: start ?? new Date(0), endDate: end ?? new Date() });
+		},
+		{
+			onError: (error) => {
+				dispatchToastMessage({ type: 'error', message: error });
+			},
+		},
+	);
+
+	const headers = (
+		<>
+			<GenericTableHeaderCell>{t('User')}</GenericTableHeaderCell>
+			<GenericTableHeaderCell>{t('Looked_for')}</GenericTableHeaderCell>
+			<GenericTableHeaderCell>{t('When')}</GenericTableHeaderCell>
+			<GenericTableHeaderCell width={80}>{t('Results')}</GenericTableHeaderCell>
+			<GenericTableHeaderCell>{t('Filters_applied')}</GenericTableHeaderCell>
+		</>
+	);
+
 	return (
-		<GenericTable
-			header={
-				<>
-					<GenericTable.HeaderCell>{t('User')}</GenericTable.HeaderCell>
-					<GenericTable.HeaderCell>{t('Looked_for')}</GenericTable.HeaderCell>
-					<GenericTable.HeaderCell>{t('When')}</GenericTable.HeaderCell>
-					<GenericTable.HeaderCell width={80}>{t('Results')}</GenericTable.HeaderCell>
-					<GenericTable.HeaderCell>{t('Filters_applied')}</GenericTable.HeaderCell>
-				</>
-			}
-			results={data}
-		>
-			{(auditLog) => <AuditLogEntry key={auditLog._id} value={auditLog} />}
-		</GenericTable>
+		<>
+			<Field alignSelf='stretch'>
+				<FieldLabel>{t('Date')}</FieldLabel>
+				<FieldRow>
+					<DateRangePicker display='flex' flexGrow={1} value={dateRange} onChange={setDateRange} />
+				</FieldRow>
+			</Field>
+			{isLoading && (
+				<GenericTable>
+					<GenericTableHeader>{headers}</GenericTableHeader>
+					<GenericTableBody>
+						<GenericTableLoadingRow cols={4} />
+					</GenericTableBody>
+				</GenericTable>
+			)}
+			{isSuccess && data.length === 0 && <GenericNoResults />}
+			{isSuccess && data.length > 0 && (
+				<GenericTable>
+					<GenericTableHeader>{headers}</GenericTableHeader>
+					<GenericTableBody>
+						{data.map((auditLog) => (
+							<AuditLogEntry key={auditLog._id} value={auditLog} />
+						))}
+					</GenericTableBody>
+				</GenericTable>
+			)}
+		</>
 	);
 };
 

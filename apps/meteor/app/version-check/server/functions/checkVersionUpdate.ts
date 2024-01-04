@@ -1,15 +1,11 @@
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import semver from 'semver';
-import { Settings } from '@rocket.chat/models';
 import type { IUser } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
-import { getNewUpdates } from './getNewUpdates';
-import { settings } from '../../../settings/server';
-import { Info } from '../../../utils/server';
-import { Users } from '../../../models/server';
-import logger from '../logger';
+import { i18n } from '../../../../server/lib/i18n';
 import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
-// import getNewUpdates from '../sampleUpdateData';
+import logger from '../logger';
+import { buildVersionUpdateMessage } from './buildVersionUpdateMessage';
+import { getNewUpdates } from './getNewUpdates';
 
 const getMessagesToSendToAdmins = async (
 	alerts: {
@@ -29,10 +25,9 @@ const getMessagesToSendToAdmins = async (
 			continue;
 		}
 		msgs.push({
-			msg: `*${TAPi18n.__('Rocket_Chat_Alert', { ...(adminUser.language && { lng: adminUser.language }) })}:*\n\n*${TAPi18n.__(
-				alert.title,
-				{ ...(adminUser.language && { lng: adminUser.language }) },
-			)}*\n${TAPi18n.__(alert.text, {
+			msg: `*${i18n.t('Rocket_Chat_Alert', { ...(adminUser.language && { lng: adminUser.language }) })}:*\n\n*${i18n.t(alert.title, {
+				...(adminUser.language && { lng: adminUser.language }),
+			})}*\n${i18n.t(alert.text, {
 				...(adminUser.language && { lng: adminUser.language }),
 				...(Array.isArray(alert.textArguments) && {
 					postProcess: 'sprintf',
@@ -44,67 +39,43 @@ const getMessagesToSendToAdmins = async (
 	}
 	return msgs;
 };
-
+/**
+ * @deprecated
+ */
 export const checkVersionUpdate = async () => {
 	logger.info('Checking for version updates');
 
 	const { versions, alerts } = await getNewUpdates();
 
-	const lastCheckedVersion = settings.get<string>('Update_LatestAvailableVersion');
+	await buildVersionUpdateMessage(versions);
 
-	for await (const version of versions) {
-		if (!lastCheckedVersion) {
-			break;
-		}
-		if (semver.lte(version.version, lastCheckedVersion)) {
-			continue;
-		}
+	await showAlertsFromCloud(alerts);
+};
 
-		if (semver.lte(version.version, Info.version)) {
-			continue;
-		}
-
-		await Settings.updateValueById('Update_LatestAvailableVersion', version.version);
-
-		await sendMessagesToAdmins({
-			msgs: async ({ adminUser }) => [
-				{
-					msg: `*${TAPi18n.__('Update_your_RocketChat', { ...(adminUser.language && { lng: adminUser.language }) })}*\n${TAPi18n.__(
-						'New_version_available_(s)',
-						{
-							postProcess: 'sprintf',
-							sprintf: [version.version],
-						},
-					)}\n${version.infoUrl}`,
-				},
-			],
-			banners: [
-				{
-					id: `versionUpdate-${version.version}`.replace(/\./g, '_'),
-					priority: 10,
-					title: 'Update_your_RocketChat',
-					text: 'New_version_available_(s)',
-					textArguments: [version.version],
-					link: version.infoUrl,
-					modifiers: [],
-				},
-			],
-		});
-		break;
+const showAlertsFromCloud = async (
+	alerts?: {
+		id: string;
+		priority: number;
+		title: string;
+		text: string;
+		textArguments?: string[];
+		modifiers: string[];
+		infoUrl: string;
+	}[],
+) => {
+	if (!alerts?.length) {
+		return;
 	}
-
-	if (alerts?.length) {
-		await sendMessagesToAdmins({
-			msgs: async ({ adminUser }) => getMessagesToSendToAdmins(alerts, adminUser),
-			banners: alerts.map((alert) => ({
-				id: `alert-${alert.id}`.replace(/\./g, '_'),
-				priority: 10,
-				title: alert.title,
-				text: alert.text,
-				textArguments: alert.textArguments,
-				modifiers: alert.modifiers,
-				link: alert.infoUrl,
-			})),
-		});
-	}
+	return sendMessagesToAdmins({
+		msgs: async ({ adminUser }) => getMessagesToSendToAdmins(alerts, adminUser),
+		banners: alerts.map((alert) => ({
+			id: `alert-${alert.id}`.replace(/\./g, '_'),
+			priority: 10,
+			title: alert.title,
+			text: alert.text,
+			textArguments: alert.textArguments,
+			modifiers: alert.modifiers,
+			link: alert.infoUrl,
+		})),
+	});
 };

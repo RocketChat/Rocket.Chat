@@ -1,9 +1,5 @@
-import URL from 'url';
-import QueryString from 'querystring';
-
+import type { OEmbedMeta, OEmbedUrlContent, OEmbedProvider } from '@rocket.chat/core-typings';
 import { camelCase } from 'change-case';
-import _ from 'underscore';
-import type { OEmbedMeta, OEmbedUrlContent, ParsedUrl, OEmbedProvider } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../lib/callbacks';
 import { SystemLogger } from '../../../server/lib/logger/system';
@@ -16,10 +12,10 @@ class Providers {
 	}
 
 	static getConsumerUrl(provider: OEmbedProvider, url: string): string {
-		const urlObj = new URL.URL(provider.endPoint);
+		const urlObj = new URL(provider.endPoint);
 		urlObj.searchParams.set('url', url);
 
-		return URL.format(urlObj);
+		return urlObj.toString();
 	}
 
 	registerProvider(provider: OEmbedProvider): number {
@@ -31,9 +27,9 @@ class Providers {
 	}
 
 	getProviderForUrl(url: string): OEmbedProvider | undefined {
-		return this.providers?.find(function (provider) {
+		return this.providers?.find((provider) => {
 			return (
-				provider.urls?.some(function (re) {
+				provider.urls?.some((re) => {
 					return re.test(url);
 				}) ?? false
 			);
@@ -94,26 +90,21 @@ providers.registerProvider({
 
 callbacks.add(
 	'oembed:beforeGetUrlContent',
-	function (data) {
-		if (data.parsedUrl != null) {
-			const url = URL.format(data.parsedUrl);
-			const provider = providers.getProviderForUrl(url);
-			if (provider != null) {
-				const consumerUrl = Providers.getConsumerUrl(provider, url);
-
-				const parsedConsumerUrl = URL.parse(consumerUrl, true);
-				_.extend(data.parsedUrl, parsedConsumerUrl);
-
-				data.urlObj.port = parsedConsumerUrl.port;
-				data.urlObj.hostname = parsedConsumerUrl.hostname;
-				data.urlObj.pathname = parsedConsumerUrl.pathname;
-				data.urlObj.query = parsedConsumerUrl.query;
-
-				delete data.urlObj.search;
-				delete data.urlObj.host;
-			}
+	(data) => {
+		if (!data.urlObj) {
+			return data;
 		}
-		return data;
+
+		const url = data.urlObj.toString();
+		const provider = providers.getProviderForUrl(url);
+
+		if (!provider) {
+			return data;
+		}
+
+		const consumerUrl = Providers.getConsumerUrl(provider, url);
+
+		return { ...data, urlObj: new URL(consumerUrl) };
 	},
 	callbacks.priority.MEDIUM,
 	'oembed-providers-before',
@@ -123,13 +114,11 @@ const cleanupOembed = (data: {
 	url: string;
 	meta: OEmbedMeta;
 	headers: { [k: string]: string };
-	parsedUrl: ParsedUrl;
 	content: OEmbedUrlContent;
 }): {
 	url: string;
 	meta: Omit<OEmbedMeta, 'oembedHtml'>;
 	headers: { [k: string]: string };
-	parsedUrl: ParsedUrl;
 	content: OEmbedUrlContent;
 } => {
 	if (!data?.meta) {
@@ -147,25 +136,18 @@ const cleanupOembed = (data: {
 
 callbacks.add(
 	'oembed:afterParseContent',
-	function (data) {
-		if (!data?.url || !data.content?.body || !data.parsedUrl?.query) {
+	(data) => {
+		if (!data?.url || !data.content?.body) {
 			return cleanupOembed(data);
 		}
 
-		const queryString = typeof data.parsedUrl.query === 'string' ? QueryString.parse(data.parsedUrl.query) : data.parsedUrl.query;
+		const provider = providers.getProviderForUrl(data.url);
 
-		if (!queryString.url) {
-			return cleanupOembed(data);
-		}
-
-		const { url: originalUrl } = data;
-		const provider = providers.getProviderForUrl(originalUrl);
 		if (!provider) {
 			return cleanupOembed(data);
 		}
 
-		const { url } = queryString;
-		data.meta.oembedUrl = url;
+		data.meta.oembedUrl = data.url;
 
 		try {
 			const metas = JSON.parse(data.content.body);

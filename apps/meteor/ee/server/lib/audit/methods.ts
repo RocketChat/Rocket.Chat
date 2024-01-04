@@ -1,18 +1,17 @@
-import { Meteor } from 'meteor/meteor';
+import type { ILivechatAgent, ILivechatVisitor, IMessage, IRoom, IUser, IAuditLog } from '@rocket.chat/core-typings';
+import { LivechatRooms, Messages, Rooms, Users, AuditLog } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { ILivechatAgent, ILivechatVisitor, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
-import { LivechatRooms, Messages, Rooms, Users } from '@rocket.chat/models';
 
-import AuditLog from './AuditLog';
 import { hasPermissionAsync } from '../../../../app/authorization/server/functions/hasPermission';
 import { updateCounter } from '../../../../app/statistics/server';
-import type { IAuditLog } from '../../../definition/IAuditLog';
+import { callbacks } from '../../../../lib/callbacks';
 import { isTruthy } from '../../../../lib/isTruthy';
+import { i18n } from '../../../../server/lib/i18n';
 
 const getValue = (room: IRoom | null) => room && { rids: [room._id], name: room.name };
 
@@ -45,10 +44,16 @@ const getRoomInfoByAuditParams = async ({
 
 	if (type === 'l') {
 		console.warn('Deprecation Warning! This method will be removed in the next version (4.0.0)');
-		const rooms: IRoom[] = await LivechatRooms.findByVisitorIdAndAgentId(visitor, agent, {
-			projection: { _id: 1 },
-		}).toArray();
-		return rooms?.length ? { rids: rooms.map(({ _id }) => _id), name: TAPi18n.__('Omnichannel') } : undefined;
+		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+		const rooms: IRoom[] = await LivechatRooms.findByVisitorIdAndAgentId(
+			visitor,
+			agent,
+			{
+				projection: { _id: 1 },
+			},
+			extraQuery,
+		).toArray();
+		return rooms?.length ? { rids: rooms.map(({ _id }) => _id), name: i18n.t('Omnichannel') } : undefined;
 	}
 };
 
@@ -71,7 +76,7 @@ declare module '@rocket.chat/ui-contexts' {
 			endDate: Date;
 			users: NonNullable<IUser['username']>[];
 			msg: IMessage['msg'];
-			type: 'l';
+			type: string;
 			visitor?: ILivechatVisitor['_id'];
 			agent?: ILivechatAgent['_id'];
 		}) => IMessage[];
@@ -92,7 +97,7 @@ Meteor.methods<ServerMethods>({
 			projection: { _id: 1 },
 		}).toArray();
 		const rids = rooms?.length ? rooms.map(({ _id }) => _id) : undefined;
-		const name = TAPi18n.__('Omnichannel');
+		const name = i18n.t('Omnichannel');
 
 		const query: Filter<IMessage> = {
 			rid: { $in: rids },
@@ -110,7 +115,7 @@ Meteor.methods<ServerMethods>({
 
 		// Once the filter is applied, messages will be shown and a log containing all filters will be saved for further auditing.
 
-		AuditLog.insert({
+		await AuditLog.insertOne({
 			ts: new Date(),
 			results: messages.length,
 			u: user,
@@ -161,7 +166,7 @@ Meteor.methods<ServerMethods>({
 
 		// Once the filter is applied, messages will be shown and a log containing all filters will be saved for further auditing.
 
-		AuditLog.insert({
+		await AuditLog.insertOne({
 			ts: new Date(),
 			results: messages.length,
 			u: user,
@@ -184,7 +189,7 @@ Meteor.methods<ServerMethods>({
 				$gt: startDate,
 				$lt: endDate,
 			},
-		}).fetch();
+		}).toArray();
 	},
 });
 

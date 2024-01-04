@@ -1,7 +1,6 @@
+import { Messages, Rooms, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import { Messages, Rooms } from '@rocket.chat/models';
 
-import { Users } from '../../../models/server';
 import { transformMappedData } from '../../../../ee/lib/misc/transformMappedData';
 
 export class AppMessagesConverter {
@@ -42,7 +41,7 @@ export class AppMessagesConverter {
 				delete message.rid;
 				return result;
 			},
-			editor: (message) => {
+			editor: async (message) => {
 				const { editedBy } = message;
 				delete message.editedBy;
 
@@ -57,12 +56,12 @@ export class AppMessagesConverter {
 				delete message.attachments;
 				return result;
 			},
-			sender: (message) => {
+			sender: async (message) => {
 				if (!message.u || !message.u._id) {
 					return undefined;
 				}
 
-				let user = this.orch.getConverters().get('users').convertById(message.u._id);
+				let user = await this.orch.getConverters().get('users').convertById(message.u._id);
 
 				// When the sender of the message is a Guest (livechat) and not a user
 				if (!user) {
@@ -91,7 +90,7 @@ export class AppMessagesConverter {
 
 		let u;
 		if (message.sender && message.sender.id) {
-			const user = Users.findOneById(message.sender.id);
+			const user = await Users.findOneById(message.sender.id);
 
 			if (user) {
 				u = {
@@ -110,7 +109,7 @@ export class AppMessagesConverter {
 
 		let editedBy;
 		if (message.editor) {
-			const editor = Users.findOneById(message.editor.id);
+			const editor = await Users.findOneById(message.editor.id);
 			editedBy = {
 				_id: editor._id,
 				username: editor.username,

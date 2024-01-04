@@ -1,15 +1,15 @@
-import { Emitter } from '@rocket.chat/emitter';
-import { isEqual } from 'underscore';
 import type { ISetting, ISettingGroup, Optional, SettingValue } from '@rocket.chat/core-typings';
 import { isSettingEnterprise } from '@rocket.chat/core-typings';
+import { Emitter } from '@rocket.chat/emitter';
 import type { ISettingsModel } from '@rocket.chat/model-typings';
+import { isEqual } from 'underscore';
 
 import { SystemLogger } from '../../../server/lib/logger/system';
-import { overwriteSetting } from './functions/overwriteSetting';
-import { overrideSetting } from './functions/overrideSetting';
-import { getSettingDefaults } from './functions/getSettingDefaults';
-import { validateSetting } from './functions/validateSetting';
 import type { ICachedSettings } from './CachedSettings';
+import { getSettingDefaults } from './functions/getSettingDefaults';
+import { overrideSetting } from './functions/overrideSetting';
+import { overwriteSetting } from './functions/overwriteSetting';
+import { validateSetting } from './functions/validateSetting';
 
 const blockedSettings = new Set<string>();
 const hiddenSettings = new Set<string>();
@@ -54,15 +54,15 @@ const getGroupDefaults = (_id: string, options: ISettingAddGroupOptions = {}): I
 type ISettingAddGroupOptions = Partial<ISettingGroup>;
 
 type addSectionCallback = (this: {
-	add(id: string, value: SettingValue, options: ISettingAddOptions): void;
-	with(options: ISettingAddOptions, cb: addSectionCallback): void;
-}) => void;
+	add(id: string, value: SettingValue, options: ISettingAddOptions): Promise<void>;
+	with(options: ISettingAddOptions, cb: addSectionCallback): Promise<void>;
+}) => Promise<void>;
 
 type addGroupCallback = (this: {
-	add(id: string, value: SettingValue, options: ISettingAddOptions): void;
-	section(section: string, cb: addSectionCallback): void;
-	with(options: ISettingAddOptions, cb: addGroupCallback): void;
-}) => void;
+	add(id: string, value: SettingValue, options: ISettingAddOptions): Promise<void>;
+	section(section: string, cb: addSectionCallback): Promise<void>;
+	with(options: ISettingAddOptions, cb: addGroupCallback): Promise<void>;
+}) => Promise<void>;
 
 type ISettingAddOptions = Partial<ISetting>;
 
@@ -227,24 +227,24 @@ export class SettingsRegistry {
 
 		const addWith =
 			(preset: ISettingAddOptions) =>
-			(id: string, value: SettingValue, options: ISettingAddOptions = {}): void => {
+			(id: string, value: SettingValue, options: ISettingAddOptions = {}): Promise<void> => {
 				const mergedOptions = { ...preset, ...options };
-				void this.add(id, value, mergedOptions);
+				return this.add(id, value, mergedOptions);
 			};
 		const sectionSetWith =
 			(preset: ISettingAddOptions) =>
-			(options: ISettingAddOptions, cb: addSectionCallback): void => {
+			(options: ISettingAddOptions, cb: addSectionCallback): Promise<void> => {
 				const mergedOptions = { ...preset, ...options };
-				cb.call({
+				return cb.call({
 					add: addWith(mergedOptions),
 					with: sectionSetWith(mergedOptions),
 				});
 			};
 		const sectionWith =
 			(preset: ISettingAddOptions) =>
-			(section: string, cb: addSectionCallback): void => {
+			(section: string, cb: addSectionCallback): Promise<void> => {
 				const mergedOptions = { ...preset, section };
-				cb.call({
+				return cb.call({
 					add: addWith(mergedOptions),
 					with: sectionSetWith(mergedOptions),
 				});
@@ -252,10 +252,10 @@ export class SettingsRegistry {
 
 		const groupSetWith =
 			(preset: ISettingAddOptions) =>
-			(options: ISettingAddOptions, cb: addGroupCallback): void => {
+			(options: ISettingAddOptions, cb: addGroupCallback): Promise<void> => {
 				const mergedOptions = { ...preset, ...options };
 
-				cb.call({
+				return cb.call({
 					add: addWith(mergedOptions),
 					section: sectionWith(mergedOptions),
 					with: groupSetWith(mergedOptions),

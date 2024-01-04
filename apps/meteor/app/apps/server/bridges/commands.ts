@@ -1,18 +1,17 @@
-import { Meteor } from 'meteor/meteor';
 import type { ISlashCommand, ISlashCommandPreview, ISlashCommandPreviewItem } from '@rocket.chat/apps-engine/definition/slashcommands';
 import { SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands';
 import { CommandBridge } from '@rocket.chat/apps-engine/server/bridges/CommandBridge';
-import type { IMessage, RequiredField, SlashCommand } from '@rocket.chat/core-typings';
+import type { IMessage, RequiredField, SlashCommand, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
+import { Meteor } from 'meteor/meteor';
 
-import { slashCommands } from '../../../utils/server';
 import { Utilities } from '../../../../ee/lib/misc/Utilities';
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 import { parseParameters } from '../../../../lib/utils/parseParameters';
+import { slashCommands } from '../../../utils/server/slashCommand';
 
 export class AppCommandsBridge extends CommandBridge {
-	disabledCommands: Map<string, typeof slashCommands.commands[string]>;
+	disabledCommands: Map<string, (typeof slashCommands.commands)[string]>;
 
-	// eslint-disable-next-line no-empty-function
 	constructor(private readonly orch: AppServerOrchestrator) {
 		super();
 		this.disabledCommands = new Map();
@@ -42,7 +41,7 @@ export class AppCommandsBridge extends CommandBridge {
 			throw new Error(`The command is not currently disabled: "${cmd}"`);
 		}
 
-		slashCommands.commands[cmd] = this.disabledCommands.get(cmd) as typeof slashCommands.commands[string];
+		slashCommands.commands[cmd] = this.disabledCommands.get(cmd) as (typeof slashCommands.commands)[string];
 		this.disabledCommands.delete(cmd);
 
 		this.orch.getNotifier().commandUpdated(cmd);
@@ -93,7 +92,7 @@ export class AppCommandsBridge extends CommandBridge {
 		item.previewer = command.previewer ? this._appCommandPreviewer.bind(this) : item.previewer;
 		item.previewCallback = (
 			command.executePreviewItem ? this._appCommandPreviewExecutor.bind(this) : item.previewCallback
-		) as typeof slashCommands.commands[string]['previewCallback'];
+		) as (typeof slashCommands.commands)[string]['previewCallback'];
 
 		slashCommands.commands[cmd] = item;
 		this.orch.getNotifier().commandUpdated(cmd);
@@ -114,7 +113,7 @@ export class AppCommandsBridge extends CommandBridge {
 			providesPreview: command.providesPreview,
 			previewer: !command.previewer ? undefined : this._appCommandPreviewer.bind(this),
 			previewCallback: (!command.executePreviewItem ? undefined : this._appCommandPreviewExecutor.bind(this)) as
-				| typeof slashCommands.commands[string]['previewCallback']
+				| (typeof slashCommands.commands)[string]['previewCallback']
 				| undefined,
 		} as SlashCommand;
 
@@ -162,21 +161,16 @@ export class AppCommandsBridge extends CommandBridge {
 		}
 	}
 
-	private async _appCommandExecutor(
-		command: string,
-		parameters: any,
-		message: RequiredField<Partial<IMessage>, 'rid'>,
-		triggerId?: string,
-	): Promise<void> {
-		const user = this.orch.getConverters()?.get('users').convertById(Meteor.userId());
+	private async _appCommandExecutor({ command, message, params, triggerId, userId }: SlashCommandCallbackParams<string>): Promise<void> {
+		const user = await this.orch.getConverters()?.get('users').convertById(userId);
 		const room = await this.orch.getConverters()?.get('rooms').convertById(message.rid);
 		const threadId = message.tmid;
-		const params = parseParameters(parameters);
+		const parameters = parseParameters(params);
 
 		const context = new SlashCommandContext(
 			Object.freeze(user),
 			Object.freeze(room),
-			Object.freeze(params) as string[],
+			Object.freeze(parameters) as string[],
 			threadId,
 			triggerId,
 		);
@@ -189,7 +183,7 @@ export class AppCommandsBridge extends CommandBridge {
 		parameters: any,
 		message: RequiredField<Partial<IMessage>, 'rid'>,
 	): Promise<ISlashCommandPreview | undefined> {
-		const user = this.orch.getConverters()?.get('users').convertById(Meteor.userId());
+		const user = await this.orch.getConverters()?.get('users').convertById(Meteor.userId());
 		const room = await this.orch.getConverters()?.get('rooms').convertById(message.rid);
 		const threadId = message.tmid;
 		const params = parseParameters(parameters);
@@ -205,7 +199,7 @@ export class AppCommandsBridge extends CommandBridge {
 		preview: ISlashCommandPreviewItem,
 		triggerId: string,
 	): Promise<void> {
-		const user = this.orch.getConverters()?.get('users').convertById(Meteor.userId());
+		const user = await this.orch.getConverters()?.get('users').convertById(Meteor.userId());
 		const room = await this.orch.getConverters()?.get('rooms').convertById(message.rid);
 		const threadId = message.tmid;
 		const params = parseParameters(parameters);

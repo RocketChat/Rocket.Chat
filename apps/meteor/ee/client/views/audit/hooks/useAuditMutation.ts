@@ -1,7 +1,7 @@
+import type { IAuditLog } from '@rocket.chat/core-typings';
 import { useMethod } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 
-import type { IAuditLog } from '../../../../definition/IAuditLog';
 import type { AuditFields } from './useAuditForm';
 
 export const useAuditMutation = (type: IAuditLog['fields']['type']) => {

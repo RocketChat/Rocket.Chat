@@ -1,6 +1,6 @@
 import { cloneElement, Component, createContext, toChildArray } from 'preact';
 
-import { createClassName } from '../helpers';
+import { createClassName } from '../../helpers/createClassName';
 import styles from './styles.scss';
 
 const getPositioningStyle = (placement, { left, top, right, bottom }) => {
@@ -98,7 +98,7 @@ export class TooltipContainer extends Component {
 	}
 }
 
-export const TooltipTrigger = ({ children, content, placement }) => (
+export const TooltipTrigger = ({ children, content, placement = '' }) => (
 	<TooltipContext.Consumer>
 		{({ showTooltip, hideTooltip }) =>
 			toChildArray(children).map((child, index) =>

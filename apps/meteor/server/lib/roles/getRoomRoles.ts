@@ -1,6 +1,6 @@
-import _ from 'underscore';
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Roles, Subscriptions, Users } from '@rocket.chat/models';
+import _ from 'underscore';
 
 import { settings } from '../../../app/settings/server';
 

@@ -1,10 +1,12 @@
-import moment from 'moment';
-import { LivechatRooms, Users, LivechatVisitors, LivechatAgentActivity } from '@rocket.chat/models';
+import { OmnichannelAnalytics } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
+import { LivechatRooms, Users, LivechatVisitors, LivechatAgentActivity } from '@rocket.chat/models';
+import mem from 'mem';
+import moment from 'moment';
 
+import { secondsToHHMMSS } from '../../../../../lib/utils/secondsToHHMMSS';
 import { settings } from '../../../../settings/server';
-import { Livechat } from '../Livechat';
-import { secondsToHHMMSS } from '../../../../utils/server';
+import { getAnalyticsOverviewDataCachedForRealtime } from '../AnalyticsTyped';
 import {
 	findPercentageOfAbandonedRoomsAsync,
 	findAllAverageOfChatDurationTimeAsync,
@@ -13,15 +15,7 @@ import {
 	findAllAverageServiceTimeAsync,
 } from './departments';
 
-export const findAllChatsStatusAsync = async ({
-	start,
-	end,
-	departmentId = undefined,
-}: {
-	start: Date;
-	end: Date;
-	departmentId?: string;
-}) => {
+const findAllChatsStatusAsync = async ({ start, end, departmentId = undefined }: { start: Date; end: Date; departmentId?: string }) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
@@ -33,35 +27,36 @@ export const findAllChatsStatusAsync = async ({
 	};
 };
 
-export const getProductivityMetricsAsync = async ({
+const getProductivityMetricsAsync = async ({
 	start,
 	end,
 	departmentId = undefined,
 	user,
 }: {
-	start: Date;
-	end: Date;
+	start: string;
+	end: string;
 	departmentId?: string;
 	user: IUser;
 }) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
-	const totalizers = await Livechat.Analytics.getAnalyticsOverviewData({
-		daterange: {
-			from: start,
-			to: end,
-		},
-		analyticsOptions: {
-			name: 'Productivity',
-		},
-		departmentId,
-		utcOffset: user?.utcOffset,
-		language: user?.language || settings.get('Language') || 'en',
-	});
+	const totalizers =
+		(await OmnichannelAnalytics.getAnalyticsOverviewData({
+			daterange: {
+				from: start,
+				to: end,
+			},
+			analyticsOptions: {
+				name: 'Productivity',
+			},
+			departmentId,
+			utcOffset: user?.utcOffset,
+			language: user?.language || settings.get('Language') || 'en',
+		})) || [];
 	const averageWaitingTime = await findAllAverageWaitingTimeAsync({
-		start,
-		end,
+		start: new Date(start),
+		end: new Date(end),
 		departmentId,
 	});
 
@@ -78,14 +73,14 @@ export const getProductivityMetricsAsync = async ({
 	};
 };
 
-export const getAgentsProductivityMetricsAsync = async ({
+const getAgentsProductivityMetricsAsync = async ({
 	start,
 	end,
 	departmentId = undefined,
 	user,
 }: {
-	start: Date;
-	end: Date;
+	start: string;
+	end: string;
 	departmentId?: string;
 	user: IUser;
 }) => {
@@ -100,22 +95,23 @@ export const getAgentsProductivityMetricsAsync = async ({
 		})
 	)[0];
 	const averageOfServiceTime = await findAllAverageServiceTimeAsync({
-		start,
-		end,
+		start: new Date(start),
+		end: new Date(end),
 		departmentId,
 	});
-	const totalizers = await Livechat.Analytics.getAnalyticsOverviewData({
-		daterange: {
-			from: start,
-			to: end,
-		},
-		analyticsOptions: {
-			name: 'Conversations',
-		},
-		departmentId,
-		utcOffset: user.utcOffset,
-		language: user.language || settings.get('Language') || 'en',
-	});
+	const totalizers =
+		(await OmnichannelAnalytics.getAnalyticsOverviewData({
+			daterange: {
+				from: start,
+				to: end,
+			},
+			analyticsOptions: {
+				name: 'Conversations',
+			},
+			departmentId,
+			utcOffset: user.utcOffset,
+			language: user.language || settings.get('Language') || 'en',
+		})) || [];
 
 	const totalOfServiceTime = averageOfServiceTime.departments.length;
 
@@ -148,7 +144,7 @@ export const getAgentsProductivityMetricsAsync = async ({
 	};
 };
 
-export const getChatsMetricsAsync = async ({ start, end, departmentId = undefined }: { start: Date; end: Date; departmentId?: string }) => {
+const getChatsMetricsAsync = async ({ start, end, departmentId = undefined }: { start: Date; end: Date; departmentId?: string }) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
@@ -223,36 +219,37 @@ export const getChatsMetricsAsync = async ({ start, end, departmentId = undefine
 	};
 };
 
-export const getConversationsMetricsAsync = async ({
+const getConversationsMetricsAsync = async ({
 	start,
 	end,
 	departmentId,
 	user,
 }: {
-	start: Date;
-	end: Date;
+	start: string;
+	end: string;
 	departmentId?: string;
 	user: IUser;
 }) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
-	const totalizers = await Livechat.Analytics.getAnalyticsOverviewData({
-		daterange: {
-			from: start,
-			to: end,
-		},
-		analyticsOptions: {
-			name: 'Conversations',
-		},
-		...(departmentId && departmentId !== 'undefined' && { departmentId }),
-		utcOffset: user.utcOffset,
-		language: user.language || settings.get('Language') || 'en',
-	});
+	const totalizers =
+		(await getAnalyticsOverviewDataCachedForRealtime({
+			daterange: {
+				from: start,
+				to: end,
+			},
+			analyticsOptions: {
+				name: 'Conversations',
+			},
+			...(departmentId && departmentId !== 'undefined' && { departmentId }),
+			utcOffset: user.utcOffset,
+			language: user.language || settings.get('Language') || 'en',
+		})) || [];
 	const metrics = ['Total_conversations', 'Open_conversations', 'On_Hold_conversations', 'Total_messages'];
 	const visitorsCount = await LivechatVisitors.getVisitorsBetweenDate({
-		start,
-		end,
+		start: new Date(start),
+		end: new Date(end),
 		department: departmentId,
 	}).count();
 	return {
@@ -263,7 +260,7 @@ export const getConversationsMetricsAsync = async ({
 	};
 };
 
-export const findAllChatMetricsByAgentAsync = async ({
+const findAllChatMetricsByAgentAsync = async ({
 	start,
 	end,
 	departmentId = undefined,
@@ -311,10 +308,10 @@ export const findAllChatMetricsByAgentAsync = async ({
 	return result;
 };
 
-export const findAllAgentsStatusAsync = async ({ departmentId = undefined }: { departmentId?: string }) =>
+const findAllAgentsStatusAsync = async ({ departmentId = undefined }: { departmentId?: string }) =>
 	(await Users.countAllAgentsStatus({ departmentId }))[0];
 
-export const findAllChatMetricsByDepartmentAsync = async ({
+const findAllChatMetricsByDepartmentAsync = async ({
 	start,
 	end,
 	departmentId = undefined,
@@ -349,7 +346,7 @@ export const findAllChatMetricsByDepartmentAsync = async ({
 	return result;
 };
 
-export const findAllResponseTimeMetricsAsync = async ({
+const findAllResponseTimeMetricsAsync = async ({
 	start,
 	end,
 	departmentId = undefined,
@@ -380,3 +377,16 @@ export const findAllResponseTimeMetricsAsync = async ({
 		},
 	};
 };
+
+export const getConversationsMetricsAsyncCached = mem(getConversationsMetricsAsync, { maxAge: 5000, cacheKey: JSON.stringify });
+export const getAgentsProductivityMetricsAsyncCached = mem(getAgentsProductivityMetricsAsync, { maxAge: 5000, cacheKey: JSON.stringify });
+export const getChatsMetricsAsyncCached = mem(getChatsMetricsAsync, { maxAge: 5000, cacheKey: JSON.stringify });
+export const getProductivityMetricsAsyncCached = mem(getProductivityMetricsAsync, { maxAge: 5000, cacheKey: JSON.stringify });
+export const findAllChatsStatusAsyncCached = mem(findAllChatsStatusAsync, { maxAge: 5000, cacheKey: JSON.stringify });
+export const findAllChatMetricsByAgentAsyncCached = mem(findAllChatMetricsByAgentAsync, { maxAge: 5000, cacheKey: JSON.stringify });
+export const findAllAgentsStatusAsyncCached = mem(findAllAgentsStatusAsync, { maxAge: 5000, cacheKey: JSON.stringify });
+export const findAllChatMetricsByDepartmentAsyncCached = mem(findAllChatMetricsByDepartmentAsync, {
+	maxAge: 5000,
+	cacheKey: JSON.stringify,
+});
+export const findAllResponseTimeMetricsAsyncCached = mem(findAllResponseTimeMetricsAsync, { maxAge: 5000, cacheKey: JSON.stringify });

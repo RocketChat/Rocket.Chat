@@ -2,10 +2,19 @@ import { useMemo } from 'react';
 
 export const useCreateStyleContainer = (id: string) => {
 	return useMemo(() => {
-		const refElement = document.getElementById('css-theme') || document.head.lastChild;
+		const refElement = document.getElementById('rcx-styles') || document.head.lastChild;
+
+		const el = document.getElementById(id);
+
+		if (el) {
+			return el;
+		}
+
 		const styleElement = document.createElement('style');
 		styleElement.setAttribute('id', id);
+
 		document.head.insertBefore(styleElement, refElement);
-		return document.getElementById(id) || document.head.appendChild(document.createElement('style'));
+		document.head.appendChild(document.createElement('style'));
+		return styleElement;
 	}, [id]);
 };

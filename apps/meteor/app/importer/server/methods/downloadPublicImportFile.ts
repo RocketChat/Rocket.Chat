@@ -1,19 +1,20 @@
+import fs from 'fs';
 import http from 'http';
 import https from 'https';
-import fs from 'fs';
 
-import { Meteor } from 'meteor/meteor';
+import { Import } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
-import { RocketChatImportFileInstance } from '../startup/store';
-import { ProgressStep } from '../../lib/ImporterProgressStep';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Importers } from '..';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { ProgressStep } from '../../lib/ImporterProgressStep';
+import { RocketChatImportFileInstance } from '../startup/store';
 
 function downloadHttpFile(fileUrl: string, writeStream: fs.WriteStream): void {
 	const protocol = fileUrl.startsWith('https') ? https : http;
-	protocol.get(fileUrl, function (response) {
+	protocol.get(fileUrl, (response) => {
 		response.pipe(writeStream);
 	});
 }
@@ -34,14 +35,12 @@ export const executeDownloadPublicImportFile = async (userId: IUser['_id'], file
 		);
 	}
 	// Check if it's a valid url or path before creating a new import record
-	if (!isUrl) {
-		if (!fs.existsSync(fileUrl)) {
-			throw new Meteor.Error('error-import-file-missing', fileUrl, 'downloadPublicImportFile');
-		}
+	if (!isUrl && !fs.existsSync(fileUrl)) {
+		throw new Meteor.Error('error-import-file-missing', fileUrl, 'downloadPublicImportFile');
 	}
 
-	importer.instance = new importer.importer(importer); // eslint-disable-line new-cap
-	await importer.instance.build();
+	const operation = await Import.newOperation(userId, importer.name, importer.key);
+	const instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
 
 	const oldFileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1).split('?')[0];
 	const date = new Date();
@@ -49,32 +48,26 @@ export const executeDownloadPublicImportFile = async (userId: IUser['_id'], file
 	const newFileName = `${dateStr}_${userId}_${oldFileName}`;
 
 	// Store the file name on the imports collection
-	await importer.instance.startFileUpload(newFileName);
-	await importer.instance.updateProgress(ProgressStep.DOWNLOADING_FILE);
+	await instance.startFileUpload(newFileName);
+	await instance.updateProgress(ProgressStep.DOWNLOADING_FILE);
 
 	const writeStream = RocketChatImportFileInstance.createWriteStream(newFileName);
 
-	writeStream.on(
-		'error',
-		Meteor.bindEnvironment(() => {
-			void importer.instance.updateProgress(ProgressStep.ERROR);
-		}),
-	);
+	writeStream.on('error', () => {
+		void instance.updateProgress(ProgressStep.ERROR);
+	});
 
-	writeStream.on(
-		'end',
-		Meteor.bindEnvironment(() => {
-			void importer.instance.updateProgress(ProgressStep.FILE_LOADED);
-		}),
-	);
+	writeStream.on('end', () => {
+		void instance.updateProgress(ProgressStep.FILE_LOADED);
+	});
 
 	if (isUrl) {
 		downloadHttpFile(fileUrl, writeStream);
 	} else {
 		// If the url is actually a folder path on the current machine, skip moving it to the file store
 		if (fs.statSync(fileUrl).isDirectory()) {
-			await importer.instance.updateRecord({ file: fileUrl });
-			await importer.instance.updateProgress(ProgressStep.FILE_LOADED);
+			await instance.updateRecord({ file: fileUrl });
+			await instance.updateProgress(ProgressStep.FILE_LOADED);
 			return;
 		}
 

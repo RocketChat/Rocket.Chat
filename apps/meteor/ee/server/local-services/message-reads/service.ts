@@ -1,9 +1,9 @@
+import { ServiceClassInternal, api } from '@rocket.chat/core-services';
 import { Messages, MessageReads, Subscriptions } from '@rocket.chat/models';
-import { ServiceClassInternal } from '@rocket.chat/core-services';
 
-import type { IMessageReadsService } from '../../sdk/types/IMessageReadsService';
-import { ReadReceipt } from '../../lib/message-read-receipt/ReadReceipt';
 import { MAX_ROOM_SIZE_CHECK_INDIVIDUAL_READ_RECEIPTS } from '../../lib/constants';
+import { ReadReceipt } from '../../lib/message-read-receipt/ReadReceipt';
+import type { IMessageReadsService } from '../../sdk/types/IMessageReadsService';
 
 export class MessageReadsService extends ServiceClassInternal implements IMessageReadsService {
 	protected name = 'message-reads';
@@ -42,7 +42,10 @@ export class MessageReadsService extends ServiceClassInternal implements IMessag
 
 		const firstRead = await MessageReads.getMinimumLastSeenByThreadId(tmid);
 		if (firstRead?.ls) {
-			await Messages.setThreadMessagesAsRead(tmid, firstRead.ls);
+			const result = await Messages.setThreadMessagesAsRead(tmid, firstRead.ls);
+			if (result.modifiedCount > 0) {
+				void api.broadcast('notify.messagesRead', { rid: threadMessage.rid, tmid, until: firstRead.ls });
+			}
 		}
 	}
 }

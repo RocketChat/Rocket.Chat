@@ -1,62 +1,72 @@
-import { useSetting, useLoadLanguage, useLanguage, useLanguages } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
-import { Fragment, useMemo } from 'react';
-import { Trans } from 'react-i18next';
+import { Button } from '@rocket.chat/fuselage';
+import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { HorizontalWizardLayoutCaption } from '@rocket.chat/layout';
+import { normalizeLanguage } from '@rocket.chat/tools';
+import { type TranslationLanguage, useSetting, useLoadLanguage, useLanguage, useLanguages } from '@rocket.chat/ui-contexts';
+import { type ReactElement, type UIEvent, useMemo, useEffect } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 
-export const normalizeLanguage = (language: string): string => {
-	// Fix browsers having all-lowercase language settings eg. pt-br, en-us
-	const regex = /([a-z]{2,3})-([a-z]{2,4})/;
-	const matches = regex.exec(language);
-	if (matches) {
-		return `${matches[1]}-${matches[2].toUpperCase()}`;
-	}
-
-	return language;
-};
-
-const browserLanguage = normalizeLanguage(window.navigator.language ?? 'en');
-
-const LoginSwitchLanguageFooter = (): ReactElement | null => {
+const useSuggestedLanguages = ({
+	browserLanguage = normalizeLanguage(window.navigator.language ?? 'en'),
+}: {
+	browserLanguage?: string;
+}) => {
+	const availableLanguages = useLanguages();
 	const currentLanguage = useLanguage();
-
-	const languages = useLanguages();
-	const loadLanguage = useLoadLanguage();
-
-	const serverLanguage = normalizeLanguage((useSetting('Language') as string | undefined) || 'en');
+	const serverLanguage = normalizeLanguage(useSetting<string>('Language') || 'en');
 
 	const suggestions = useMemo(() => {
-		const potentialSuggestions = new Set([serverLanguage, browserLanguage, 'en'].map(normalizeLanguage));
-		return Array.from(potentialSuggestions).filter(
-			(language) => language && language !== currentLanguage && Boolean(languages.find(({ key }) => key === language)),
+		const potentialLanguages = new Set([serverLanguage, browserLanguage, 'en'].map(normalizeLanguage));
+		const potentialSuggestions = Array.from(potentialLanguages).map((potentialLanguageKey) =>
+			availableLanguages.find((language) => language.key === potentialLanguageKey),
 		);
-	}, [serverLanguage, browserLanguage, currentLanguage]);
+		return potentialSuggestions.filter((language): language is TranslationLanguage => {
+			return !!language && language.key !== currentLanguage;
+		});
+	}, [serverLanguage, browserLanguage, availableLanguages, currentLanguage]);
 
-	const handleSwitchLanguageClick = (language: string) => (): void => {
-		loadLanguage(language);
-	};
+	const { i18n } = useTranslation();
+
+	useEffect(() => {
+		i18n.loadLanguages(suggestions.map((suggestion) => suggestion.key));
+	}, [i18n, suggestions]);
+
+	return { suggestions };
+};
+
+type LoginSwitchLanguageFooterProps = {
+	browserLanguage?: string;
+};
+
+const LoginSwitchLanguageFooter = ({
+	browserLanguage = normalizeLanguage(window.navigator.language ?? 'en'),
+}: LoginSwitchLanguageFooterProps): ReactElement | null => {
+	const loadLanguage = useLoadLanguage();
+	const { suggestions } = useSuggestedLanguages({ browserLanguage });
+
+	const [, setPreferedLanguage] = useLocalStorage('preferedLanguage', '');
+	const handleSwitchLanguageClick =
+		(language: TranslationLanguage) =>
+		async (event: UIEvent): Promise<void> => {
+			event.preventDefault();
+			await loadLanguage(language.key);
+			setPreferedLanguage(language.key);
+		};
 
 	if (!suggestions.length) {
 		return null;
 	}
 
 	return (
-		<p className='switch-language' role='group'>
-			<Trans i18nKey='registration.component.switchLanguage'>
-				Switch to
-				<>
-					{suggestions.map((language, index) => {
-						return (
-							<Fragment key={language}>
-								{index > 0 ? <span aria-hidden='true'> | </span> : <></>}
-								<button onClick={handleSwitchLanguageClick(language)} className='js-switch-language'>
-									{language}
-								</button>
-							</Fragment>
-						);
-					})}
-				</>
-			</Trans>
-		</p>
+		<HorizontalWizardLayoutCaption>
+			{suggestions.map((suggestion) => (
+				<Button secondary small mie={8} key={suggestion.key} onClick={handleSwitchLanguageClick(suggestion)}>
+					<Trans i18nKey='registration.component.switchLanguage' tOptions={{ lng: suggestion.key }}>
+						Change to <strong>{{ name: suggestion.ogName }}</strong>
+					</Trans>
+				</Button>
+			))}
+		</HorizontalWizardLayoutCaption>
 	);
 };
 

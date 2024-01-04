@@ -1,13 +1,12 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
-import type { IFederationBridgeEE, IFederationPublicRoomsResult, IFederationSearchPublicRoomsParams } from '../../domain/IFederationBridge';
 import { MatrixBridge } from '../../../../../../server/services/federation/infrastructure/matrix/Bridge';
-import type { RocketChatSettingsAdapter } from '../../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Settings';
 import type { AbstractMatrixEvent } from '../../../../../../server/services/federation/infrastructure/matrix/definitions/AbstractMatrixEvent';
 import { MATRIX_POWER_LEVELS } from '../../../../../../server/services/federation/infrastructure/matrix/definitions/MatrixPowerLevels';
-import { MatrixRoomVisibility } from '../../../../../../server/services/federation/infrastructure/matrix/definitions/MatrixRoomVisibility';
 import { MatrixRoomType } from '../../../../../../server/services/federation/infrastructure/matrix/definitions/MatrixRoomType';
-import { formatExternalUserIdToInternalUsernameFormat } from '../../../../../../server/services/federation/infrastructure/matrix/converters/room/RoomReceiver';
+import { MatrixRoomVisibility } from '../../../../../../server/services/federation/infrastructure/matrix/definitions/MatrixRoomVisibility';
+import type { RocketChatSettingsAdapter } from '../../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Settings';
+import type { IFederationBridgeEE, IFederationPublicRoomsResult, IFederationSearchPublicRoomsParams } from '../../domain/IFederationBridge';
 
 const DEFAULT_TIMEOUT_IN_MS = 10000;
 
@@ -67,7 +66,7 @@ export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE 
 	}
 
 	public async searchPublicRooms(params: IFederationSearchPublicRoomsParams): Promise<IFederationPublicRoomsResult> {
-		const { serverName, limit = 100, roomName, pageToken } = params;
+		const { serverName, limit = 50, roomName, pageToken } = params;
 		try {
 			return await this.bridgeInstance.getIntent().matrixClient.doRequest(
 				'POST',
@@ -83,34 +82,5 @@ export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE 
 		} catch (error) {
 			throw new Error('invalid-server-name');
 		}
-	}
-
-	public async getRoomData(
-		externalUserId: string,
-		externalRoomId: string,
-	): Promise<{ creator: { id: string; username: string }; name: string } | undefined> {
-		const includeEvents = ['join'];
-		const excludeEvents = ['leave', 'ban'];
-		const members = await this.bridgeInstance
-			.getIntent(externalUserId)
-			.matrixClient.getRoomMembers(externalRoomId, undefined, includeEvents as any[], excludeEvents as any[]);
-
-		const oldestFirst = members.sort((a, b) => a.timestamp - b.timestamp).shift();
-		if (!oldestFirst) {
-			return;
-		}
-
-		const roomName = await this.getRoomName(externalRoomId, externalUserId);
-		if (!roomName) {
-			return;
-		}
-
-		return {
-			creator: {
-				id: oldestFirst.sender,
-				username: formatExternalUserIdToInternalUsernameFormat(oldestFirst.sender),
-			},
-			name: roomName,
-		};
 	}
 }

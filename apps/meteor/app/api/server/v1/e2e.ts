@@ -1,14 +1,14 @@
-import { Meteor } from 'meteor/meteor';
+import type { IUser } from '@rocket.chat/core-typings';
 import {
 	ise2eGetUsersOfRoomWithoutKeyParamsGET,
 	ise2eSetRoomKeyIDParamsPOST,
 	ise2eSetUserPublicAndPrivateKeysParamsPOST,
 	ise2eUpdateGroupKeyParamsPOST,
 } from '@rocket.chat/rest-typings';
-import type { IUser } from '@rocket.chat/core-typings';
+import { Meteor } from 'meteor/meteor';
 
-import { API } from '../api';
 import { handleSuggestedGroupKey } from '../../../e2e/server/functions/handleSuggestedGroupKey';
+import { API } from '../api';
 
 API.v1.addRoute(
 	'e2e.fetchMyKeys',

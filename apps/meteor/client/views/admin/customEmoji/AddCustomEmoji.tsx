@@ -1,11 +1,11 @@
-import { Box, Button, ButtonGroup, Margins, TextInput, Field, Icon } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Margins, TextInput, Field, FieldLabel, FieldRow, FieldError, Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent } from 'react';
 import React, { useCallback, useState } from 'react';
 
-import VerticalBar from '../../../components/VerticalBar';
+import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import { useEndpointUpload } from '../../../hooks/useEndpointUpload';
-import { useFileInput } from '../../../hooks/useFileInput';
+import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 
 type AddCustomEmojiProps = {
 	close: () => void;
@@ -56,7 +56,7 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 		}
 	}, [emojiFile, name, aliases, saveAction, onChange, close]);
 
-	const [clickUpload] = useFileInput(setEmojiPreview, 'emoji');
+	const [clickUpload] = useSingleFileInput(setEmojiPreview, 'emoji');
 
 	const handleChangeName = (e: ChangeEvent<HTMLInputElement>): void => {
 		if (e.currentTarget.value !== '') {
@@ -75,48 +75,49 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 	};
 
 	return (
-		<VerticalBar.ScrollableContent {...props}>
-			<Field>
-				<Field.Label>{t('Name')}</Field.Label>
-				<Field.Row>
-					<TextInput value={name} onChange={handleChangeName} placeholder={t('Name')} />
-				</Field.Row>
-				{errors.name && <Field.Error>{t('error-the-field-is-required', { field: t('Name') })}</Field.Error>}
-			</Field>
-			<Field>
-				<Field.Label>{t('Aliases')}</Field.Label>
-				<Field.Row>
-					<TextInput value={aliases} onChange={handleChangeAliases} placeholder={t('Aliases')} />
-				</Field.Row>
-				{errors.aliases && <Field.Error>{t('Custom_Emoji_Error_Same_Name_And_Alias')}</Field.Error>}
-			</Field>
-			<Field>
-				<Field.Label alignSelf='stretch' display='flex' justifyContent='space-between' alignItems='center'>
-					{t('Custom_Emoji')}
-					<Button square onClick={clickUpload}>
-						<Icon name='upload' size='x20' />
-					</Button>
-				</Field.Label>
-				{errors.emoji && <Field.Error>{t('error-the-field-is-required', { field: t('Custom_Emoji') })}</Field.Error>}
-				{newEmojiPreview && (
-					<Box display='flex' flexDirection='row' mi='neg-x4' justifyContent='center'>
-						<Margins inline='x4'>
-							<Box is='img' style={{ objectFit: 'contain' }} w='x120' h='x120' src={newEmojiPreview} />
-						</Margins>
-					</Box>
-				)}
-			</Field>
-			<Field>
-				<Field.Row>
-					<ButtonGroup stretch w='full'>
-						<Button onClick={close}>{t('Cancel')}</Button>
-						<Button primary onClick={handleSave}>
-							{t('Save')}
+		<>
+			<ContextualbarScrollableContent {...props}>
+				<Field>
+					<FieldLabel>{t('Name')}</FieldLabel>
+					<FieldRow>
+						<TextInput value={name} onChange={handleChangeName} placeholder={t('Name')} />
+					</FieldRow>
+					{errors.name && <FieldError>{t('error-the-field-is-required', { field: t('Name') })}</FieldError>}
+				</Field>
+				<Field>
+					<FieldLabel>{t('Aliases')}</FieldLabel>
+					<FieldRow>
+						<TextInput value={aliases} onChange={handleChangeAliases} placeholder={t('Aliases')} />
+					</FieldRow>
+					{errors.aliases && <FieldError>{t('Custom_Emoji_Error_Same_Name_And_Alias')}</FieldError>}
+				</Field>
+				<Field>
+					<FieldLabel alignSelf='stretch' display='flex' justifyContent='space-between' alignItems='center'>
+						{t('Custom_Emoji')}
+						{/* FIXME: replace to IconButton */}
+						<Button square onClick={clickUpload}>
+							<Icon name='upload' size='x20' />
 						</Button>
-					</ButtonGroup>
-				</Field.Row>
-			</Field>
-		</VerticalBar.ScrollableContent>
+					</FieldLabel>
+					{errors.emoji && <FieldError>{t('error-the-field-is-required', { field: t('Custom_Emoji') })}</FieldError>}
+					{newEmojiPreview && (
+						<Box display='flex' flexDirection='row' mi='neg-x4' justifyContent='center'>
+							<Margins inline={4}>
+								<Box is='img' style={{ objectFit: 'contain' }} w='x120' h='x120' src={newEmojiPreview} />
+							</Margins>
+						</Box>
+					)}
+				</Field>
+			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
+				<ButtonGroup stretch>
+					<Button onClick={close}>{t('Cancel')}</Button>
+					<Button primary onClick={handleSave}>
+						{t('Save')}
+					</Button>
+				</ButtonGroup>
+			</ContextualbarFooter>
+		</>
 	);
 };
 

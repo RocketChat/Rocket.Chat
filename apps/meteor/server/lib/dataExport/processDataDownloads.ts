@@ -1,23 +1,23 @@
 import { createWriteStream } from 'fs';
 import { access, mkdir, rm, writeFile } from 'fs/promises';
 
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import type { IExportOperation, IUser, RoomType } from '@rocket.chat/core-typings';
+import { Avatars, ExportOperations, UserDataFiles, Subscriptions } from '@rocket.chat/models';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
-import { Avatars, ExportOperations, UserDataFiles, Subscriptions } from '@rocket.chat/models';
-import type { IExportOperation, IUser, RoomType } from '@rocket.chat/core-typings';
 
-import { settings } from '../../../app/settings/server';
 import { FileUpload } from '../../../app/file-upload/server';
-import { getPath } from './getPath';
+import { settings } from '../../../app/settings/server';
+import { getURL } from '../../../app/utils/server/getURL';
 import { joinPath } from '../fileUtils';
-import { getURL } from '../../../app/utils/lib/getURL';
-import { getRoomData } from './getRoomData';
-import { sendEmail } from './sendEmail';
-import { makeZipFile } from './makeZipFile';
+import { i18n } from '../i18n';
 import { copyFileUpload } from './copyFileUpload';
-import { uploadZipFile } from './uploadZipFile';
 import { exportRoomMessagesToFile } from './exportRoomMessagesToFile';
+import { getPath } from './getPath';
+import { getRoomData } from './getRoomData';
+import { makeZipFile } from './makeZipFile';
+import { sendEmail } from './sendEmail';
+import { uploadZipFile } from './uploadZipFile';
 
 const loadUserSubscriptions = async (_exportOperation: IExportOperation, fileType: 'json' | 'html', userId: IUser['_id']) => {
 	const roomList: (
@@ -48,6 +48,8 @@ const generateUserFile = async (exportOperation: IExportOperation, userData?: IU
 	if (!userData) {
 		return;
 	}
+
+	await mkdir(exportOperation.exportPath, { recursive: true });
 
 	const { username, name, statusText, emails, roles, services } = userData;
 
@@ -101,6 +103,8 @@ const generateUserAvatarFile = async (exportOperation: IExportOperation, userDat
 		return;
 	}
 
+	await mkdir(exportOperation.exportPath, { recursive: true });
+
 	const file = await Avatars.findOneByName(userData.username);
 	if (!file) {
 		return;
@@ -116,6 +120,8 @@ const generateChannelsFile = async (type: 'json' | 'html', exportPath: string, e
 	if (type !== 'json') {
 		return;
 	}
+
+	await mkdir(exportOperation.exportPath, { recursive: true });
 
 	const fileName = joinPath(exportPath, 'channels.json');
 	await writeFile(
@@ -266,11 +272,11 @@ export async function processDataDownloads(): Promise<void> {
 			return;
 		}
 
-		const subject = TAPi18n.__('UserDataDownload_EmailSubject');
-		const body = TAPi18n.__('UserDataDownload_EmailBody', {
+		const subject = i18n.t('UserDataDownload_EmailSubject');
+		const body = i18n.t('UserDataDownload_EmailBody', {
 			download_link: getURL(getPath(file._id), { cdn: false, full: true }),
 		});
 
-		sendEmail(operation.userData, subject, body);
+		await sendEmail(operation.userData, subject, body);
 	}
 }

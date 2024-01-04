@@ -1,14 +1,14 @@
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
-import _ from 'underscore';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 import type { FindOptions } from 'mongodb';
+import _ from 'underscore';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { getUserPreference } from '../../app/utils/server';
 import { settings } from '../../app/settings/server';
+import { getUserPreference } from '../../app/utils/server/lib/getUserPreference';
 import { trim } from '../../lib/utils/stringUtils';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -87,6 +87,13 @@ Meteor.methods<ServerMethods>({
 					'settings.preferences.sidebarGroupByType': 1,
 				},
 			});
+
+			if (!user) {
+				throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+					method: 'channelsList',
+				});
+			}
+
 			const userPref = await getUserPreference(user, 'sidebarGroupByType');
 			// needs to negate globalPref because userPref represents its opposite
 			const groupByType = userPref !== undefined ? userPref : settings.get('UI_Group_Channels_By_Type');

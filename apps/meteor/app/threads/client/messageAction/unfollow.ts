@@ -1,14 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
+import { dispatchToastMessage } from '../../../../client/lib/toast';
+import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { Messages } from '../../../models/client';
 import { settings } from '../../../settings/client';
 import { MessageAction } from '../../../ui-utils/client';
-import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
-import { dispatchToastMessage } from '../../../../client/lib/toast';
+import { t } from '../../../utils/lib/i18n';
 
-Meteor.startup(function () {
+Meteor.startup(() => {
 	Tracker.autorun(() => {
 		if (!settings.get('Threads_enabled')) {
 			return MessageAction.removeButton('unfollow-message');
@@ -17,7 +17,8 @@ Meteor.startup(function () {
 			id: 'unfollow-message',
 			icon: 'bell-off',
 			label: 'Unfollow_message',
-			context: ['message', 'message-mobile', 'threads', 'federated'],
+			type: 'interaction',
+			context: ['message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
 			async action(_, { message }) {
 				if (!message) {
 					return;
@@ -26,7 +27,7 @@ Meteor.startup(function () {
 				await callWithErrorHandling('unfollowMessage', { mid: message._id });
 				dispatchToastMessage({
 					type: 'success',
-					message: TAPi18n.__('You_unfollowed_this_message'),
+					message: t('You_unfollowed_this_message'),
 				});
 			},
 			condition({ message: { _id, tmid, replies = [] }, user, context }) {

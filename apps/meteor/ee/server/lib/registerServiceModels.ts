@@ -1,4 +1,3 @@
-import type { Collection, Db } from 'mongodb';
 import type {
 	ILivechatDepartmentAgents,
 	ILivechatInquiryRecord,
@@ -7,29 +6,30 @@ import type {
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
 import { registerModel } from '@rocket.chat/models';
+import type { Collection, Db } from 'mongodb';
 
-import { RolesRaw } from '../../../server/models/raw/Roles';
-import { RoomsRaw } from '../../../server/models/raw/Rooms';
-import { SettingsRaw } from '../../../server/models/raw/Settings';
-import { TeamRaw } from '../../../server/models/raw/Team';
-import { TeamMemberRaw } from '../../../server/models/raw/TeamMember';
-import { SubscriptionsRaw } from '../../../server/models/raw/Subscriptions';
-import { UsersRaw } from '../../../server/models/raw/Users';
-import { MessagesRaw } from '../../../server/models/raw/Messages';
-import { LivechatInquiryRaw } from '../../../server/models/raw/LivechatInquiry';
-import { LivechatDepartmentAgentsRaw } from '../../../server/models/raw/LivechatDepartmentAgents';
-import { UsersSessionsRaw } from '../../../server/models/raw/UsersSessions';
-import { PermissionsRaw } from '../../../server/models/raw/Permissions';
-import { LoginServiceConfigurationRaw } from '../../../server/models/raw/LoginServiceConfiguration';
+import { EmailInboxRaw } from '../../../server/models/raw/EmailInbox';
 import { InstanceStatusRaw } from '../../../server/models/raw/InstanceStatus';
 import { IntegrationHistoryRaw } from '../../../server/models/raw/IntegrationHistory';
 import { IntegrationsRaw } from '../../../server/models/raw/Integrations';
-import { EmailInboxRaw } from '../../../server/models/raw/EmailInbox';
-import { PbxEventsRaw } from '../../../server/models/raw/PbxEvents';
-import { LivechatPriorityRaw } from '../models/raw/LivechatPriority';
+import { LivechatDepartmentAgentsRaw } from '../../../server/models/raw/LivechatDepartmentAgents';
+import { LivechatInquiryRaw } from '../../../server/models/raw/LivechatInquiry';
 import { LivechatRoomsRaw } from '../../../server/models/raw/LivechatRooms';
-import { UploadsRaw } from '../../../server/models/raw/Uploads';
 import { LivechatVisitorsRaw } from '../../../server/models/raw/LivechatVisitors';
+import { LoginServiceConfigurationRaw } from '../../../server/models/raw/LoginServiceConfiguration';
+import { MessagesRaw } from '../../../server/models/raw/Messages';
+import { PbxEventsRaw } from '../../../server/models/raw/PbxEvents';
+import { PermissionsRaw } from '../../../server/models/raw/Permissions';
+import { RolesRaw } from '../../../server/models/raw/Roles';
+import { RoomsRaw } from '../../../server/models/raw/Rooms';
+import { SettingsRaw } from '../../../server/models/raw/Settings';
+import { SubscriptionsRaw } from '../../../server/models/raw/Subscriptions';
+import { TeamRaw } from '../../../server/models/raw/Team';
+import { TeamMemberRaw } from '../../../server/models/raw/TeamMember';
+import { UploadsRaw } from '../../../server/models/raw/Uploads';
+import { UsersRaw } from '../../../server/models/raw/Users';
+import { UsersSessionsRaw } from '../../../server/models/raw/UsersSessions';
+import { LivechatPriorityRaw } from '../models/raw/LivechatPriority';
 
 // TODO add trash param to appropiate model instances
 export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecordDeleted<any>>): void {

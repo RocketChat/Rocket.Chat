@@ -3,9 +3,9 @@ import { Option, Menu } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey, Fields } from '@rocket.chat/ui-contexts';
 import {
+	useRouter,
 	useSetModal,
 	useToastMessageDispatch,
-	useRoute,
 	useUserSubscription,
 	useSetting,
 	usePermission,
@@ -77,7 +77,7 @@ const RoomMenu = ({
 
 	const closeModal = useMutableCallback(() => setModal());
 
-	const router = useRoute('home');
+	const router = useRouter();
 
 	const subscription = useUserSubscription(rid, fields);
 	const canFavorite = useSetting('Favorite_Rooms');
@@ -115,7 +115,7 @@ const RoomMenu = ({
 			try {
 				await leaveRoom({ roomId: rid });
 				if (roomOpen) {
-					router.push({});
+					router.navigate('/home');
 				}
 				LegacyRoomManager.close(rid);
 			} catch (error) {
@@ -184,7 +184,7 @@ const RoomMenu = ({
 			}
 			LegacyRoomManager.close(subscription.t + subscription.name);
 
-			router.push({});
+			router.navigate('/home');
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}

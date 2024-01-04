@@ -1,25 +1,22 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
-import { retrieveRegistrationStatus } from './functions/retrieveRegistrationStatus';
-import { connectWorkspace } from './functions/connectWorkspace';
-import { reconnectWorkspace } from './functions/reconnectWorkspace';
-import { getOAuthAuthorizationUrl } from './functions/getOAuthAuthorizationUrl';
-import { finishOAuthAuthorization } from './functions/finishOAuthAuthorization';
-import { startRegisterWorkspace } from './functions/startRegisterWorkspace';
-import { disconnectWorkspace } from './functions/disconnectWorkspace';
-import { syncWorkspace } from './functions/syncWorkspace';
-import { checkUserHasCloudLogin } from './functions/checkUserHasCloudLogin';
-import { userLogout } from './functions/userLogout';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { buildWorkspaceRegistrationData } from './functions/buildRegistrationData';
+import { checkUserHasCloudLogin } from './functions/checkUserHasCloudLogin';
+import { connectWorkspace } from './functions/connectWorkspace';
+import { finishOAuthAuthorization } from './functions/finishOAuthAuthorization';
+import { getOAuthAuthorizationUrl } from './functions/getOAuthAuthorizationUrl';
+import { retrieveRegistrationStatus } from './functions/retrieveRegistrationStatus';
+import { startRegisterWorkspace } from './functions/startRegisterWorkspace';
+import { syncWorkspace } from './functions/syncWorkspace';
+import { userLogout } from './functions/userLogout';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		'cloud:checkRegisterStatus': () => {
-			connectToCloud: boolean;
 			workspaceRegistered: boolean;
 			workspaceId: string;
 			uniqueId: string;
@@ -30,16 +27,18 @@ declare module '@rocket.chat/ui-contexts' {
 		'cloud:registerWorkspace': () => boolean;
 		'cloud:syncWorkspace': () => boolean;
 		'cloud:connectWorkspace': (token: string) => boolean | Error;
-		'cloud:reconnectWorkspace': () => boolean;
-		'cloud:disconnectWorkspace': () => boolean;
 		'cloud:getOAuthAuthorizationUrl': () => string;
 		'cloud:finishOAuthAuthorization': (code: string, state: string) => boolean;
 		'cloud:checkUserLoggedIn': () => boolean;
-		'cloud:logout': () => boolean | '';
+		'cloud:logout': () => Promise<boolean | string>;
 	}
 }
 
 Meteor.methods<ServerMethods>({
+	/**
+	 * @deprecated this method is deprecated and will be removed soon.
+	 * Prefer using cloud.registrationStatus rest api.
+	 */
 	async 'cloud:checkRegisterStatus'() {
 		const uid = Meteor.userId();
 
@@ -106,7 +105,9 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		return syncWorkspace();
+		await syncWorkspace();
+
+		return true;
 	},
 	async 'cloud:connectWorkspace'(token) {
 		check(token, String);
@@ -132,38 +133,6 @@ Meteor.methods<ServerMethods>({
 		}
 
 		return connectWorkspace(token);
-	},
-	async 'cloud:disconnectWorkspace'() {
-		const uid = Meteor.userId();
-		if (!uid) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'cloud:connectServer',
-			});
-		}
-
-		if (!(await hasPermissionAsync(uid, 'manage-cloud'))) {
-			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
-				method: 'cloud:connectServer',
-			});
-		}
-
-		return disconnectWorkspace();
-	},
-	async 'cloud:reconnectWorkspace'() {
-		const uid = Meteor.userId();
-		if (!uid) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'cloud:reconnectWorkspace',
-			});
-		}
-
-		if (!(await hasPermissionAsync(uid, 'manage-cloud'))) {
-			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
-				method: 'cloud:reconnectWorkspace',
-			});
-		}
-
-		return reconnectWorkspace();
 	},
 	// Currently unused but will link local account to Rocket.Chat Cloud account.
 	async 'cloud:getOAuthAuthorizationUrl'() {

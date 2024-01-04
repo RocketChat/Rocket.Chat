@@ -1,5 +1,5 @@
-import Ajv from 'ajv';
 import type { IPermission } from '@rocket.chat/core-typings';
+import Ajv from 'ajv';
 
 const ajv = new Ajv({
 	coerceTypes: true,

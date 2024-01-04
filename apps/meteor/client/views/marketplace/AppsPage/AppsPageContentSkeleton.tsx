@@ -3,18 +3,18 @@ import type { ReactElement } from 'react';
 import React from 'react';
 
 const AppsPageContentSkeleton = (): ReactElement => {
-	const loadingRows = Array.from({ length: 3 }, (_, i) => <Skeleton key={i} height='x56' mbe='x8' width='100%' variant='rect' />);
+	const loadingRows = Array.from({ length: 3 }, (_, i) => <Skeleton key={i} height='x56' mbe={8} width='100%' variant='rect' />);
 	return (
-		<Box pi='x24'>
-			<Box mbe='x36'>
-				<Skeleton height='x28' width='x150' mbe='x20' variant='rect' />
+		<Box pi={24}>
+			<Box mbe={36}>
+				<Skeleton height='x28' width='x150' mbe={20} variant='rect' />
 				{loadingRows}
 			</Box>
-			<Box mbe='x36'>
-				<Skeleton height='x28' width='x150' mbe='x20' variant='rect' />
+			<Box mbe={36}>
+				<Skeleton height='x28' width='x150' mbe={20} variant='rect' />
 				{loadingRows}
 			</Box>
-			<Skeleton height='x28' width='x150' mbe='x20' variant='rect' />
+			<Skeleton height='x28' width='x150' mbe={20} variant='rect' />
 			{loadingRows}
 		</Box>
 	);

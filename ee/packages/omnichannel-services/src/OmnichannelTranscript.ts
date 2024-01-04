@@ -1,10 +1,5 @@
-import { LivechatRooms, Messages, Uploads, Users, LivechatVisitors } from '@rocket.chat/models';
-import { PdfWorker } from '@rocket.chat/pdf-worker';
-import type { Templates } from '@rocket.chat/pdf-worker';
-import { parse } from '@rocket.chat/message-parser';
-import type { Root } from '@rocket.chat/message-parser';
-import type { IMessage, IUser, IRoom, IUpload, ILivechatVisitor, ILivechatAgent } from '@rocket.chat/core-typings';
-import { isQuoteAttachment, isFileAttachment, isFileImageAttachment } from '@rocket.chat/core-typings';
+import type { Readable } from 'stream';
+
 import {
 	ServiceClass,
 	Upload as uploadService,
@@ -13,12 +8,16 @@ import {
 	QueueWorker as queueService,
 	Translation as translationService,
 	Settings as settingsService,
-	License as licenseService,
 } from '@rocket.chat/core-services';
 import type { IOmnichannelTranscriptService } from '@rocket.chat/core-services';
-import { guessTimezone, guessTimezoneFromOffset } from '@rocket.chat/tools';
-
-import type { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';
+import type { IMessage, IUser, IRoom, IUpload, ILivechatVisitor, ILivechatAgent } from '@rocket.chat/core-typings';
+import { isQuoteAttachment, isFileAttachment, isFileImageAttachment } from '@rocket.chat/core-typings';
+import type { Logger } from '@rocket.chat/logger';
+import { parse } from '@rocket.chat/message-parser';
+import type { Root } from '@rocket.chat/message-parser';
+import { LivechatRooms, Messages, Uploads, Users, LivechatVisitors } from '@rocket.chat/models';
+import { PdfWorker } from '@rocket.chat/pdf-worker';
+import { guessTimezone, guessTimezoneFromOffset, streamToBuffer } from '@rocket.chat/tools';
 
 const isPromiseRejectedResult = (result: any): result is PromiseRejectedResult => result.status === 'rejected';
 
@@ -40,7 +39,7 @@ type MessageData = Pick<IMessage, '_id' | 'ts' | 'u' | 'msg' | 'md'> & {
 
 type WorkerData = {
 	siteName: string;
-	visitor: ILivechatVisitor | null;
+	visitor: Pick<ILivechatVisitor, '_id' | 'username' | 'name' | 'visitorEmails'> | null;
 	agent: ILivechatAgent | undefined;
 	closedAt?: Date;
 	messages: MessageData[];
@@ -61,27 +60,11 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 
 	currentJobNumber = 0;
 
-	shouldWork = false;
-
 	constructor(loggerClass: typeof Logger) {
 		super();
 		this.worker = new PdfWorker('chat-transcript');
 		// eslint-disable-next-line new-cap
 		this.log = new loggerClass('OmnichannelTranscript');
-
-		this.onEvent('license.module', ({ module, valid }) => {
-			if (module === 'scalability') {
-				this.shouldWork = valid;
-			}
-		});
-	}
-
-	async started(): Promise<void> {
-		try {
-			this.shouldWork = await licenseService.hasLicense('scalability');
-		} catch (e: unknown) {
-			// ignore
-		}
 	}
 
 	async getTimezone(user?: { utcOffset?: string | number }): Promise<string> {
@@ -109,10 +92,6 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	}
 
 	async requestTranscript({ details }: { details: WorkDetails }): Promise<void> {
-		if (!this.shouldWork) {
-			this.log.info(`Not requesting transcript for room ${details.rid} because scalability module is not enabled`);
-			return;
-		}
 		this.log.info(`Requesting transcript for room ${details.rid} by user ${details.userId}`);
 		const room = await LivechatRooms.findOneById(details.rid);
 		if (!room) {
@@ -136,12 +115,18 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 
 		await LivechatRooms.setTranscriptRequestedPdfById(details.rid);
 
+		// Make the whole process sync when running on test mode
+		// This will prevent the usage of timeouts on the tests of this functionality :)
+		if (process.env.TEST_MODE) {
+			await this.workOnPdf({ details: { ...details, from: this.name } });
+			return;
+		}
+
 		// Even when processing is done "in-house", we still need to queue the work
 		// to avoid blocking the request
 		this.log.info(`Queuing work for room ${details.rid}`);
 		await queueService.queueWork('work', `${this.name}.workOnPdf`, {
-			template: 'omnichannel-transcript',
-			details: { userId: details.userId, rid: details.rid, from: this.name },
+			details: { ...details, from: this.name },
 		});
 	}
 
@@ -174,7 +159,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	private async getMessagesData(userId: string, messages: IMessage[]): Promise<MessageData[]> {
 		const messagesData: MessageData[] = [];
 		for await (const message of messages) {
-			if (!message.attachments || !message.attachments.length) {
+			if (!message.attachments?.length) {
 				// If there's no attachment and no message, what was sent? lol
 				messagesData.push({
 					_id: message._id,
@@ -216,7 +201,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				}
 				let file = message.files?.map((v) => ({ _id: v._id, name: v.name })).find((file) => file.name === attachment.title);
 				if (!file) {
-					this.log.debug(`File ${attachment.title} not found in room ${message.rid}!`);
+					this.log.warn(`File ${attachment.title} not found in room ${message.rid}!`);
 					// For some reason, when an image is uploaded from clipboard, it doesn't have a file :(
 					// So, we'll try to get the FILE_ID from the `title_link` prop which has the format `/file-upload/FILE_ID/FILE_NAME` using a regex
 					const fileId = attachment.title_link?.match(/\/file-upload\/(.*)\/.*/)?.[1];
@@ -230,7 +215,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				}
 
 				if (!file) {
-					this.log.error(`File ${attachment.title} not found in room ${message.rid}!`);
+					this.log.warn(`File ${attachment.title} not found in room ${message.rid}!`);
 					// ignore attachments without file
 					files.push({ name: attachment.title, buffer: null });
 					continue;
@@ -279,11 +264,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		);
 	}
 
-	async workOnPdf({ template, details }: { template: Templates; details: WorkDetailsWithSource }): Promise<void> {
-		if (!this.shouldWork) {
-			this.log.info(`Processing transcript for room ${details.rid} by user ${details.userId} - Stopped (no scalability license found)`);
-			return;
-		}
+	async workOnPdf({ details }: { details: WorkDetailsWithSource }): Promise<void> {
 		this.log.info(`Processing transcript for room ${details.rid} by user ${details.userId} - Received from queue`);
 		if (this.maxNumberOfConcurrentJobs <= this.currentJobNumber) {
 			this.log.error(`Processing transcript for room ${details.rid} by user ${details.userId} - Too many concurrent jobs, queuing again`);
@@ -298,7 +279,8 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 			const messages = await this.getMessagesFromRoom({ rid: room._id });
 
 			const visitor =
-				room.v && (await LivechatVisitors.findOneById(room.v._id, { projection: { _id: 1, name: 1, username: 1, visitorEmails: 1 } }));
+				room.v &&
+				(await LivechatVisitors.findOneEnabledById(room.v._id, { projection: { _id: 1, name: 1, username: 1, visitorEmails: 1 } }));
 			const agent =
 				room.servedBy && (await Users.findOneAgentById(room.servedBy._id, { projection: { _id: 1, name: 1, username: 1, utcOffset: 1 } }));
 
@@ -323,7 +305,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				translations,
 			};
 
-			await this.doRender({ template, data, details });
+			await this.doRender({ data, details });
 		} catch (error) {
 			await this.pdfFailed({ details, e: error as Error });
 		} finally {
@@ -331,37 +313,32 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		}
 	}
 
-	async doRender({ template, data, details }: { template: Templates; data: WorkerData; details: WorkDetailsWithSource }): Promise<void> {
-		const buf: Uint8Array[] = [];
-		let outBuff = Buffer.alloc(0);
+	async doRender({ data, details }: { data: WorkerData; details: WorkDetailsWithSource }): Promise<void> {
 		const transcriptText = await translationService.translateToServerLanguage('Transcript');
 
-		const stream = await this.worker.renderToStream({ template, data });
-		stream.on('data', (chunk) => {
-			buf.push(chunk);
-		});
-		stream.on('end', () => {
-			outBuff = Buffer.concat(buf);
+		const stream = await this.worker.renderToStream({ data });
+		const outBuff = await streamToBuffer(stream as Readable);
 
-			return uploadService
-				.uploadFile({
-					userId: details.userId,
-					buffer: outBuff,
-					details: {
-						// transcript_{company-name)_{date}_{hour}.pdf
-						name: `${transcriptText}_${data.siteName}_${new Intl.DateTimeFormat('en-US').format(new Date())}_${
-							data.visitor?.name || data.visitor?.username || 'Visitor'
-						}.pdf`,
-						type: 'application/pdf',
-						rid: details.rid,
-						// Rocket.cat is the goat
-						userId: 'rocket.cat',
-						size: outBuff.length,
-					},
-				})
-				.then((file) => this.pdfComplete({ details, file }))
-				.catch((e) => this.pdfFailed({ details, e }));
-		});
+		try {
+			const file = await uploadService.uploadFile({
+				userId: details.userId,
+				buffer: outBuff,
+				details: {
+					// transcript_{company-name)_{date}_{hour}.pdf
+					name: `${transcriptText}_${data.siteName}_${new Intl.DateTimeFormat('en-US').format(new Date())}_${
+						data.visitor?.name || data.visitor?.username || 'Visitor'
+					}.pdf`,
+					type: 'application/pdf',
+					rid: details.rid,
+					// Rocket.cat is the goat
+					userId: 'rocket.cat',
+					size: outBuff.length,
+				},
+			});
+			await this.pdfComplete({ details, file });
+		} catch (e: any) {
+			this.pdfFailed({ details, e });
+		}
 	}
 
 	private async pdfFailed({ details, e }: { details: WorkDetailsWithSource; e: Error }): Promise<void> {

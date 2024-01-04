@@ -1,7 +1,7 @@
 import { FederationKeys } from '@rocket.chat/models';
 
-import { getFederationDomain } from './getFederationDomain';
 import { search } from './dns';
+import { getFederationDomain } from './getFederationDomain';
 import { cryptLogger } from './logger';
 
 async function decrypt(data, peerKey) {
@@ -40,7 +40,7 @@ export async function decryptIfNeeded(request, bodyParams) {
 	}
 	//
 	// Find the peer's public key
-	const { publicKey: peerKey } = search(remotePeerDomain);
+	const { publicKey: peerKey } = await search(remotePeerDomain);
 
 	if (!peerKey) {
 		throw new Error("Could not find the peer's public key to decrypt");

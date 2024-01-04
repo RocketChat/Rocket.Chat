@@ -1,2 +1,0 @@
-import './methods';
-import './rest';

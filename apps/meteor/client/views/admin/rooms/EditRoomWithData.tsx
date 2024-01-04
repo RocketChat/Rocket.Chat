@@ -1,15 +1,25 @@
-import { Box, Skeleton } from '@rocket.chat/fuselage';
-import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import type { IRoom } from '@rocket.chat/core-typings';
+import { useEndpoint, useRouter, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { FC } from 'react';
 import React from 'react';
 
+import {
+	Contextualbar,
+	ContextualbarHeader,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarSkeleton,
+} from '../../../components/Contextualbar';
 import EditRoom from './EditRoom';
 
-const EditRoomWithData: FC<{ rid?: string; onReload: () => void }> = ({ rid, onReload }) => {
-	const getAdminRooms = useEndpoint('GET', '/v1/rooms.adminRooms.getRoom');
+type EditRoomWithDataProps = { rid?: IRoom['_id']; onReload: () => void };
 
+const EditRoomWithData = ({ rid, onReload }: EditRoomWithDataProps) => {
+	const t = useTranslation();
+	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();
+
+	const getAdminRooms = useEndpoint('GET', '/v1/rooms.adminRooms.getRoom');
 
 	const { data, isLoading, refetch } = useQuery(
 		['rooms', rid, 'admin'],
@@ -25,16 +35,7 @@ const EditRoomWithData: FC<{ rid?: string; onReload: () => void }> = ({ rid, onR
 	);
 
 	if (isLoading) {
-		return (
-			<Box w='full' p='x24'>
-				<Skeleton mbe='x4' />
-				<Skeleton mbe='x8' />
-				<Skeleton mbe='x4' />
-				<Skeleton mbe='x8' />
-				<Skeleton mbe='x4' />
-				<Skeleton mbe='x8' />
-			</Box>
-		);
+		return <ContextualbarSkeleton />;
 	}
 
 	const handleChange = (): void => {
@@ -46,7 +47,15 @@ const EditRoomWithData: FC<{ rid?: string; onReload: () => void }> = ({ rid, onR
 		onReload();
 	};
 
-	return data ? <EditRoom room={data} onChange={handleChange} onDelete={handleDelete} /> : null;
+	return data ? (
+		<Contextualbar>
+			<ContextualbarHeader>
+				<ContextualbarTitle>{t('Room_Info')}</ContextualbarTitle>
+				<ContextualbarClose onClick={() => router.navigate('/admin/rooms')} />
+			</ContextualbarHeader>
+			<EditRoom room={data} onChange={handleChange} onDelete={handleDelete} />
+		</Contextualbar>
+	) : null;
 };
 
 export default EditRoomWithData;

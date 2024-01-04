@@ -6,12 +6,10 @@ export const asReactiveSource = <T>(subscribe: (cb: () => void) => () => void, g
 	}
 
 	const computation = Tracker.currentComputation;
-	const unsubscribe = subscribe(() => computation.invalidate());
-	// const id = new Error().stack?.split('\n')[2].trim();
-	// console.log('sub', id);
-	computation.onInvalidate(() => {
+	const unsubscribe = subscribe(() => computation?.invalidate());
+
+	computation?.onInvalidate(() => {
 		unsubscribe();
-		// console.log('unsub', id);
 	});
 
 	return getSnapshot();

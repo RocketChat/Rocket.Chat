@@ -1,8 +1,10 @@
 import type { IEmailInboxPayload } from '@rocket.chat/core-typings';
-import { Box, Button, TableCell, Icon } from '@rocket.chat/fuselage';
+import { Button } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+
+import { GenericTableCell } from '../../../components/GenericTable';
 
 const SendTestButton = ({ id }: { id: IEmailInboxPayload['_id'] }): ReactElement => {
 	const t = useTranslation();
@@ -28,14 +30,11 @@ const SendTestButton = ({ id }: { id: IEmailInboxPayload['_id'] }): ReactElement
 	};
 
 	return (
-		<TableCell withTruncatedText>
-			<Button small onClick={handleOnClick}>
-				<Box display='flex' alignItems='center'>
-					<Icon mie='x4' size='x16' name='send' />
-					{t('Send_Test_Email')}
-				</Box>
+		<GenericTableCell withTruncatedText>
+			<Button icon='send' small onClick={handleOnClick}>
+				{t('Send_Test_Email')}
 			</Button>
-		</TableCell>
+		</GenericTableCell>
 	);
 };
 

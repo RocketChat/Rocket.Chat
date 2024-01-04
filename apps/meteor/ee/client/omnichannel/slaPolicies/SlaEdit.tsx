@@ -1,12 +1,12 @@
 import type { IOmnichannelServiceLevelAgreements, Serialized } from '@rocket.chat/core-typings';
-import { Field, TextInput, Button, Margins, Box, NumberInput } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, FieldError, TextInput, Button, Margins, Box, NumberInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 import { useController, useForm } from 'react-hook-form';
 
-import VerticalBar from '../../../../client/components/VerticalBar';
+import { ContextualbarScrollableContent } from '../../../../client/components/Contextualbar';
 
 type SlaEditProps = {
 	isNew?: boolean;
@@ -76,48 +76,49 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactE
 	});
 
 	return (
-		<VerticalBar.ScrollableContent is='form' {...props}>
+		<ContextualbarScrollableContent is='form' {...props}>
 			<Field>
-				<Field.Label>{t('Name')}*</Field.Label>
-				<Field.Row>
+				<FieldLabel>{t('Name')}*</FieldLabel>
+				<FieldRow>
 					<TextInput placeholder={t('Name')} flexGrow={1} {...nameField} error={errors.name?.message} />
-				</Field.Row>
-				<Field.Error>{errors.name?.message}</Field.Error>
+				</FieldRow>
+				<FieldError>{errors.name?.message}</FieldError>
 			</Field>
 			<Field>
-				<Field.Label>{t('Description')}</Field.Label>
-				<Field.Row>
+				<FieldLabel>{t('Description')}</FieldLabel>
+				<FieldRow>
 					<TextInput placeholder={t('Description')} flexGrow={1} {...descField} />
-				</Field.Row>
+				</FieldRow>
 			</Field>
 			<Field>
-				<Field.Label>{t('Estimated_wait_time_in_minutes')}*</Field.Label>
-				<Field.Row>
+				<FieldLabel>{t('Estimated_wait_time_in_minutes')}*</FieldLabel>
+				<FieldRow>
 					<NumberInput
 						placeholder={t('Estimated_wait_time_in_minutes')}
 						flexGrow={1}
 						{...dueTimeField}
 						error={errors.dueTimeInMinutes?.message}
 					/>
-				</Field.Row>
-				<Field.Error>{errors.dueTimeInMinutes?.message}</Field.Error>
+				</FieldRow>
+				<FieldError>{errors.dueTimeInMinutes?.message}</FieldError>
 			</Field>
-
-			<Field.Row>
-				<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
-					<Margins inlineEnd='x4'>
-						{!isNew && (
-							<Button flexGrow={1} type='reset' disabled={!isDirty} onClick={(): void => reset()}>
-								{t('Reset')}
+			<Field>
+				<FieldRow>
+					<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
+						<Margins inlineEnd={4}>
+							{!isNew && (
+								<Button flexGrow={1} type='reset' disabled={!isDirty} onClick={(): void => reset()}>
+									{t('Reset')}
+								</Button>
+							)}
+							<Button primary mie='none' flexGrow={1} disabled={!isDirty || !isValid} onClick={handleSave}>
+								{t('Save')}
 							</Button>
-						)}
-						<Button primary mie='none' flexGrow={1} disabled={!isDirty || !isValid} onClick={handleSave}>
-							{t('Save')}
-						</Button>
-					</Margins>
-				</Box>
-			</Field.Row>
-		</VerticalBar.ScrollableContent>
+						</Margins>
+					</Box>
+				</FieldRow>
+			</Field>
+		</ContextualbarScrollableContent>
 	);
 }
 

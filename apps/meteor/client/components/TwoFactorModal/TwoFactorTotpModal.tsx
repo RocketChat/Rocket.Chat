@@ -1,7 +1,7 @@
-import { Box, TextInput } from '@rocket.chat/fuselage';
-import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import { Box, TextInput, Field, FieldGroup, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage';
+import { useAutoFocus, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ChangeEvent } from 'react';
+import type { ReactElement, ChangeEvent, SyntheticEvent } from 'react';
 import React, { useState } from 'react';
 
 import GenericModal from '../GenericModal';
@@ -11,14 +11,16 @@ import { Method } from './TwoFactorModal';
 type TwoFactorTotpModalProps = {
 	onConfirm: OnConfirm;
 	onClose: () => void;
+	invalidAttempt?: boolean;
 };
 
-const TwoFactorTotpModal = ({ onConfirm, onClose }: TwoFactorTotpModalProps): ReactElement => {
+const TwoFactorTotpModal = ({ onConfirm, onClose, invalidAttempt }: TwoFactorTotpModalProps): ReactElement => {
 	const t = useTranslation();
 	const [code, setCode] = useState<string>('');
 	const ref = useAutoFocus<HTMLInputElement>();
 
-	const onConfirmTotpCode = (): void => {
+	const onConfirmTotpCode = (e: SyntheticEvent): void => {
+		e.preventDefault();
 		onConfirm(code, Method.TOTP);
 	};
 
@@ -26,9 +28,10 @@ const TwoFactorTotpModal = ({ onConfirm, onClose }: TwoFactorTotpModalProps): Re
 		setCode(currentTarget.value);
 	};
 
+	const id = useUniqueId();
 	return (
 		<GenericModal
-			onConfirm={onConfirmTotpCode}
+			wrapperFunction={(props) => <Box is='form' onSubmit={onConfirmTotpCode} {...props} />}
 			onCancel={onClose}
 			confirmText={t('Verify')}
 			title={t('Two Factor Authentication')}
@@ -37,10 +40,17 @@ const TwoFactorTotpModal = ({ onConfirm, onClose }: TwoFactorTotpModalProps): Re
 			icon='info'
 			confirmDisabled={!code}
 		>
-			<Box mbe='x16'>{t('Open_your_authentication_app_and_enter_the_code')}</Box>
-			<Box mbe='x16' display='flex' justifyContent='stretch'>
-				<TextInput ref={ref} value={code} onChange={onChange} placeholder={t('Enter_authentication_code')}></TextInput>
-			</Box>
+			<FieldGroup>
+				<Field>
+					<FieldLabel alignSelf='stretch' htmlFor={id}>
+						{t('Open_your_authentication_app_and_enter_the_code')}
+					</FieldLabel>
+					<FieldRow>
+						<TextInput id={id} ref={ref} value={code} onChange={onChange} placeholder={t('Enter_authentication_code')}></TextInput>
+					</FieldRow>
+					{invalidAttempt && <FieldError>{t('Invalid_password')}</FieldError>}
+				</Field>
+			</FieldGroup>
 		</GenericModal>
 	);
 };

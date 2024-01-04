@@ -1,11 +1,13 @@
+import { api } from '@rocket.chat/core-services';
+import { Logger } from '@rocket.chat/logger';
 import type { Document } from 'mongodb';
 import polka from 'polka';
-import { api } from '@rocket.chat/core-services';
 
-import { broker } from '../../../../apps/meteor/ee/server/startup/broker';
-import { Collections, getCollection, getConnection } from '../../../../apps/meteor/ee/server/services/mongo';
 import { registerServiceModels } from '../../../../apps/meteor/ee/server/lib/registerServiceModels';
-import { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';
+import { Collections, getCollection, getConnection } from '../../../../apps/meteor/ee/server/services/mongo';
+import { broker } from '../../../../apps/meteor/ee/server/startup/broker';
+import { DatabaseWatcher } from '../../../../apps/meteor/server/database/DatabaseWatcher';
+import { StreamHub } from './StreamHub';
 
 const PORT = process.env.PORT || 3035;
 
@@ -17,10 +19,6 @@ const PORT = process.env.PORT || 3035;
 	registerServiceModels(db, trash);
 
 	api.setBroker(broker);
-
-	// need to import service after models are registered
-	const { StreamHub } = await import('./StreamHub');
-	const { DatabaseWatcher } = await import('../../../../apps/meteor/server/database/DatabaseWatcher');
 
 	// TODO having to import Logger to pass as a param is a temporary solution. logger should come from the service (either from broker or api)
 	const watcher = new DatabaseWatcher({ db, logger: Logger });
@@ -35,7 +33,7 @@ const PORT = process.env.PORT || 3035;
 				await api.nodeList();
 
 				if (watcher.isLastDocDelayed()) {
-					throw new Error('not healthy');
+					throw new Error('No real time data received recently');
 				}
 			} catch (err) {
 				console.error('Service not healthy', err);

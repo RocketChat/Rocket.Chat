@@ -1,6 +1,6 @@
 import { Button, Throbber } from '@rocket.chat/fuselage';
 import * as UiKit from '@rocket.chat/ui-kit';
-import type { ReactElement } from 'react';
+import type { MouseEventHandler, ReactElement } from 'react';
 
 import { useUiKitState } from '../hooks/useUiKitState';
 import type { BlockProps } from '../utils/BlockProps';
@@ -13,28 +13,32 @@ const ButtonElement = ({
   surfaceRenderer,
 }: ButtonElementProps): ReactElement => {
   const [{ loading }, action] = useUiKitState(block, context);
+  const { style, url, text, value, secondary } = block;
 
-  if (block.url) {
+  const handleClick: MouseEventHandler = (e) => {
+    action({ target: e.currentTarget });
+  };
+
+  if (url) {
     return (
       <Button
         is='a'
         target='_blank'
-        href={block.url}
-        disabled={loading}
-        primary={block.style === 'primary'}
-        danger={block.style === 'danger'}
-        minWidth='4ch'
         small
-        onClick={action}
+        minWidth='4ch'
+        disabled={loading}
+        href={url}
+        primary={style === 'primary'}
+        danger={style === 'danger'}
+        success={style === 'success'}
+        warning={style === 'warning'}
+        secondary={secondary}
+        onClick={handleClick}
       >
         {loading ? (
           <Throbber />
         ) : (
-          surfaceRenderer.renderTextObject(
-            block.text,
-            0,
-            UiKit.BlockContext.NONE
-          )
+          surfaceRenderer.renderTextObject(text, 0, UiKit.BlockContext.NONE)
         )}
       </Button>
     );
@@ -42,18 +46,21 @@ const ButtonElement = ({
 
   return (
     <Button
-      disabled={loading}
-      primary={block.style === 'primary'}
-      danger={block.style === 'danger'}
-      minWidth='4ch'
       small
-      value={block.value}
-      onClick={action}
+      minWidth='4ch'
+      disabled={loading}
+      primary={style === 'primary'}
+      danger={style === 'danger'}
+      success={style === 'success'}
+      warning={style === 'warning'}
+      secondary={secondary}
+      value={value}
+      onClick={handleClick}
     >
       {loading ? (
         <Throbber />
       ) : (
-        surfaceRenderer.renderTextObject(block.text, 0, UiKit.BlockContext.NONE)
+        surfaceRenderer.renderTextObject(text, 0, UiKit.BlockContext.NONE)
       )}
     </Button>
   );

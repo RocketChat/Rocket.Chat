@@ -1,6 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
-import { MessageBody, Box, Palette } from '@rocket.chat/fuselage';
-import React from 'react';
+import { MessageBody, Box, Palette, Skeleton } from '@rocket.chat/fuselage';
+import { Markup } from '@rocket.chat/gazzodown';
+import React, { Suspense } from 'react';
 
 import type { MessageWithMdEnforced } from '../../lib/parseMessageTextToAstMarkdown';
 import GazzodownText from '../GazzodownText';
@@ -45,7 +46,7 @@ const MessageContentBody = ({ mentions, channels, md, searchText }: MessageConte
 				text-decoration: underline;
 			}
 			&:focus {
-				border: 2px solid ${Palette.stroke['stroke-extra-light-highlight']};
+				box-shadow: 0 0 0 2px ${Palette.stroke['stroke-extra-light-highlight']};
 				border-radius: 2px;
 			}
 		}
@@ -54,7 +55,11 @@ const MessageContentBody = ({ mentions, channels, md, searchText }: MessageConte
 	return (
 		<MessageBody data-qa-type='message-body'>
 			<Box className={messageBodyAdditionalStyles}>
-				<GazzodownText tokens={md} channels={channels} mentions={mentions} searchText={searchText} />
+				<Suspense fallback={<Skeleton />}>
+					<GazzodownText channels={channels} mentions={mentions} searchText={searchText}>
+						<Markup tokens={md} />
+					</GazzodownText>
+				</Suspense>
 			</Box>
 		</MessageBody>
 	);

@@ -1,9 +1,9 @@
 import { EventEmitter } from 'events';
 
+import type { EventSignatures } from '../events/Events';
 import { asyncLocalStorage } from '../lib/asyncLocalStorage';
-import type { IBroker, IBrokerNode } from './IBroker';
-import type { EventSignatures } from '../Events';
 import type { IApiService } from './IApiService';
+import type { IBroker, IBrokerNode } from './IBroker';
 
 export interface IServiceContext {
 	id: string; // Context ID
@@ -30,7 +30,8 @@ export interface IServiceClass {
 	onNodeConnected?({ node, reconnected }: { node: IBrokerNode; reconnected: boolean }): void;
 	onNodeUpdated?({ node }: { node: IBrokerNode }): void;
 	onNodeDisconnected?({ node, unexpected }: { node: IBrokerNode; unexpected: boolean }): Promise<void>;
-	getEvents(): Array<keyof EventSignatures>;
+	getEvents(): { eventName: keyof EventSignatures; listeners: { (...args: any[]): void }[] }[];
+	removeAllListeners(): void;
 
 	setApi(api: IApiService): void;
 
@@ -61,8 +62,15 @@ export abstract class ServiceClass implements IServiceClass {
 		this.api = api;
 	}
 
-	getEvents(): Array<keyof EventSignatures> {
-		return this.events.eventNames() as unknown as Array<keyof EventSignatures>;
+	getEvents(): { eventName: keyof EventSignatures; listeners: { (...args: any[]): void }[] }[] {
+		return this.events.eventNames().map((eventName) => ({
+			eventName: eventName as unknown as keyof EventSignatures,
+			listeners: this.events.rawListeners(eventName) as { (...args: any[]): void }[],
+		}));
+	}
+
+	removeAllListeners(): void {
+		this.events.removeAllListeners();
 	}
 
 	getName(): string | undefined {

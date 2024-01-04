@@ -1,5 +1,5 @@
 import { Box, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
-import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -10,10 +10,10 @@ type NotFoundProps = {
 
 const NotFoundState = ({ title, subtitle }: NotFoundProps): ReactElement => {
 	const t = useTranslation();
-	const homeRoute = useRoute('home');
+	const router = useRouter();
 
-	const handleGoHomeClick = (): void => {
-		homeRoute.push();
+	const handleGoHomeClick = () => {
+		router.navigate('/home');
 	};
 
 	return (
@@ -22,7 +22,7 @@ const NotFoundState = ({ title, subtitle }: NotFoundProps): ReactElement => {
 				<StatesIcon name='magnifier' />
 				<StatesTitle>{title}</StatesTitle>
 				<StatesSubtitle>{subtitle}</StatesSubtitle>
-				<StatesActions mbs='x16'>
+				<StatesActions mbs={16}>
 					<StatesAction onClick={handleGoHomeClick}>{t('Homepage')}</StatesAction>
 				</StatesActions>
 			</States>

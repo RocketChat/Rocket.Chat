@@ -25,7 +25,7 @@ const AuthorizationFormPage = ({ oauthApp, redirectUri, user }: AuthorizationFor
 
 	const { t } = useTranslation();
 
-	const homeRoute = useRoute('/home');
+	const homeRoute = useRoute('home');
 
 	const handleCancelButtonClick = () => {
 		queueMicrotask(() => {
@@ -70,7 +70,7 @@ const AuthorizationFormPage = ({ oauthApp, redirectUri, user }: AuthorizationFor
 							<li>{t('core.access_your_basic_information')}</li>
 						</ul>
 					</Box>
-					<input type='hidden' name='token' value={token} />
+					<input type='hidden' name='access_token' value={token} />
 					<input type='hidden' name='client_id' value={oauthApp.clientId} />
 					<input type='hidden' name='redirect_uri' value={redirectUri} />
 					<input type='hidden' name='response_type' value='code' />

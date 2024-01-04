@@ -1,14 +1,14 @@
-import { Meteor } from 'meteor/meteor';
-import type { Filter, FindCursor } from 'mongodb';
 import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Rooms, Users } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
+import type { Filter, FindCursor } from 'mongodb';
 
-import { settings } from '../../settings/server';
+import { removeUserFromRoomMethod } from '../../../server/methods/removeUserFromRoom';
 import { hasRoleAsync } from '../../authorization/server/functions/hasRole';
-
-import './settings';
+import { addUsersToRoomMethod } from '../../lib/server/methods/addUsersToRoom';
+import { settings } from '../../settings/server';
 
 /**
  * BotHelpers helps bots
@@ -76,9 +76,13 @@ class BotHelpers {
 			throw new Meteor.Error('invalid-channel');
 		}
 
-		await Meteor.callAsync('addUserToRoom', {
+		const userId = Meteor.userId();
+		if (!userId) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'addUserToRoom' });
+		}
+		await addUsersToRoomMethod(userId, {
 			rid: foundRoom._id,
-			username: userName,
+			users: [userName],
 		});
 	}
 
@@ -88,11 +92,11 @@ class BotHelpers {
 		if (!foundRoom) {
 			throw new Meteor.Error('invalid-channel');
 		}
-
-		await Meteor.callAsync('removeUserFromRoom', {
-			rid: foundRoom._id,
-			username: userName,
-		});
+		const userId = Meteor.userId();
+		if (!userId) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user');
+		}
+		await removeUserFromRoomMethod(userId, { rid: foundRoom._id, username: userName });
 	}
 
 	// generic error whenever property access insufficient to fill request

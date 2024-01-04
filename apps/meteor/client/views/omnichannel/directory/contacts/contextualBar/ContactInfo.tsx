@@ -1,13 +1,15 @@
-import { Box, Margins, ButtonGroup, Button, Icon, Divider } from '@rocket.chat/fuselage';
+import { Box, Margins, ButtonGroup, Button, Divider } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useCurrentRoute, useRoute, useTranslation, useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
+import type { RouteName } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRoute, useTranslation, useEndpoint, usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
+import React, { useCallback } from 'react';
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { parseOutboundPhoneNumber } from '../../../../../../ee/client/lib/voip/parseOutboundPhoneNumber';
 import ContactManagerInfo from '../../../../../../ee/client/omnichannel/ContactManagerInfo';
+import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../../components/Contextualbar';
 import { UserStatus } from '../../../../../components/UserStatus';
-import VerticalBar from '../../../../../components/VerticalBar';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { useIsCallReady } from '../../../../../contexts/CallContext';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
@@ -22,16 +24,20 @@ import { FormSkeleton } from '../../components/FormSkeleton';
 type ContactInfoProps = {
 	id: string;
 	rid?: string;
-	route?: string;
+	route?: RouteName;
 };
 
 const ContactInfo = ({ id: contactId, rid: roomId = '', route }: ContactInfoProps) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const routePath = useRoute(route || 'omnichannel-directory');
+	const router = useRouter();
 	const liveRoute = useRoute('live');
-	const [currentRouteName] = useCurrentRoute();
+
+	const currentRouteName = useSyncExternalStore(
+		router.subscribeToRouteChange,
+		useCallback(() => router.getRouteName(), [router]),
+	);
 
 	const formatDate = useFormatDate();
 	const isCallReady = useIsCallReady();
@@ -56,31 +62,38 @@ const ContactInfo = ({ id: contactId, rid: roomId = '', route }: ContactInfoProp
 			return dispatchToastMessage({ type: 'error', message: t('Not_authorized') });
 		}
 
-		routePath.push(
-			route
-				? {
-						tab: 'contact-profile',
-						context: 'edit',
-						id: roomId,
-				  }
-				: {
-						page: 'contacts',
-						id: contactId,
-						bar: 'edit',
-				  },
-		);
+		if (route) {
+			router.navigate({
+				name: route,
+				params: {
+					tab: 'contact-profile',
+					context: 'edit',
+					id: roomId,
+				},
+			});
+			return;
+		}
+
+		router.navigate({
+			name: 'omnichannel-directory',
+			params: {
+				page: 'contacts',
+				id: contactId,
+				bar: 'edit',
+			},
+		});
 	});
 
 	if (isInitialLoading) {
 		return (
-			<Box pi='x24'>
+			<Box pi={24}>
 				<FormSkeleton />
 			</Box>
 		);
 	}
 
 	if (isError || !contact) {
-		return <Box mbs='x16'>{t('Contact_not_found')}</Box>;
+		return <Box mbs={16}>{t('Contact_not_found')}</Box>;
 	}
 
 	const { username, visitorEmails, phone, ts, livechatData, lastChat, contactManager, status } = contact;
@@ -107,21 +120,21 @@ const ContactInfo = ({ id: contactId, rid: roomId = '', route }: ContactInfoProp
 
 	return (
 		<>
-			<VerticalBar.ScrollableContent p='x24'>
-				<Margins block='x4'>
+			<ContextualbarScrollableContent p={24}>
+				<Margins block={4}>
 					{username && (
 						<Field>
 							<Label>{`${t('Name')} / ${t('Username')}`}</Label>
 							<Info style={{ display: 'flex' }}>
 								<UserAvatar size='x40' title={username} username={username} />
-								<AgentInfoDetails mis='x10' name={username} shortName={username} status={<UserStatus status={status} />} />
+								<AgentInfoDetails mis={10} name={username} shortName={username} status={<UserStatus status={status} />} />
 							</Info>
 						</Field>
 					)}
 					{email && (
 						<Field>
 							<Label>{t('Email')}</Label>
-							<Info>{email}</Info>
+							<Info data-qa-id='contactInfo-email'>{email}</Info>
 						</Field>
 					)}
 					{phoneNumber && (
@@ -156,8 +169,8 @@ const ContactInfo = ({ id: contactId, rid: roomId = '', route }: ContactInfoProp
 						</Field>
 					)}
 				</Margins>
-			</VerticalBar.ScrollableContent>
-			<VerticalBar.Footer>
+			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
 				<ButtonGroup stretch flexWrap='wrap'>
 					{isCallReady && (
 						<>
@@ -167,15 +180,15 @@ const ContactInfo = ({ id: contactId, rid: roomId = '', route }: ContactInfoProp
 					)}
 
 					{showContactHistory && (
-						<Button onClick={onChatHistory} mis={0} flexBasis='0'>
-							<Icon name='history' size='x20' /> {t('Chat_History')}
+						<Button icon='history' onClick={onChatHistory} mis={0} flexBasis='0'>
+							{t('Chat_History')}
 						</Button>
 					)}
-					<Button onClick={onEditButtonClick} flexBasis='0'>
-						<Icon name='pencil' size='x20' /> {t('Edit')}
+					<Button icon='pencil' onClick={onEditButtonClick} flexBasis='0'>
+						{t('Edit')}
 					</Button>
 				</ButtonGroup>
-			</VerticalBar.Footer>
+			</ContextualbarFooter>
 		</>
 	);
 };

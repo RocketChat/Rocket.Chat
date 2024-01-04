@@ -1,9 +1,8 @@
-import type { IMessage } from '@rocket.chat/core-typings';
-import { EJSON } from 'meteor/ejson';
-import { Meteor } from 'meteor/meteor';
+import type { IRoom, IMessage, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
+import EJSON from 'ejson';
+import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Tracker } from 'meteor/tracker';
 
 import GenericModal from '../../../client/components/GenericModal';
@@ -12,10 +11,11 @@ import { Presence } from '../../../client/lib/presence';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { getUidDirectMessage } from '../../../client/lib/utils/getUidDirectMessage';
 import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
-import { Notifications } from '../../notifications/client';
-import { APIClient } from '../../utils/client';
-import { otrSystemMessages } from '../lib/constants';
+import { sdk } from '../../utils/client/lib/SDKClient';
+import { t } from '../../utils/lib/i18n';
 import type { IOnUserStreamData, IOTRAlgorithm, IOTRDecrypt, IOTRRoom } from '../lib/IOTR';
+import { OtrRoomState } from '../lib/OtrRoomState';
+import { otrSystemMessages } from '../lib/constants';
 import {
 	decryptAES,
 	deriveBits,
@@ -27,7 +27,6 @@ import {
 	importKeyRaw,
 	joinEncryptedData,
 } from '../lib/functions';
-import { OtrRoomState } from '../lib/OtrRoomState';
 
 export class OTRRoom implements IOTRRoom {
 	private _userId: string;
@@ -48,13 +47,23 @@ export class OTRRoom implements IOTRRoom {
 
 	private isFirstOTR: boolean;
 
-	constructor(userId: string, roomId: string) {
-		this._userId = userId;
-		this._roomId = roomId;
+	protected constructor(uid: IUser['_id'], rid: IRoom['_id'], peerId: IUser['_id']) {
+		this._userId = uid;
+		this._roomId = rid;
 		this._keyPair = null;
 		this._sessionKey = null;
-		this.peerId = getUidDirectMessage(roomId) as string;
+		this.peerId = peerId;
 		this.isFirstOTR = true;
+	}
+
+	public static create(uid: IUser['_id'], rid: IRoom['_id']): OTRRoom | undefined {
+		const peerId = getUidDirectMessage(rid);
+
+		if (!peerId) {
+			return undefined;
+		}
+
+		return new OTRRoom(uid, rid, peerId);
 	}
 
 	getPeerId(): string {
@@ -75,66 +84,78 @@ export class OTRRoom implements IOTRRoom {
 
 	async handshake(refresh?: boolean): Promise<void> {
 		this.setState(OtrRoomState.ESTABLISHING);
-		try {
-			await this.generateKeyPair();
-			this.peerId &&
-				Notifications.notifyUser(this.peerId, 'otr', 'handshake', {
-					roomId: this._roomId,
-					userId: this._userId,
-					publicKey: EJSON.stringify(this._exportedPublicKey),
-					refresh,
-				});
-			if (refresh) {
-				await Meteor.callAsync(
-					'sendSystemMessages',
-					this._roomId,
-					await Meteor.userAsync(),
-					otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH,
-				);
-				this.isFirstOTR = false;
+
+		await this.generateKeyPair();
+		sdk.publish('notify-user', [
+			`${this.peerId}/otr`,
+			'handshake',
+			{
+				roomId: this._roomId,
+				userId: this._userId,
+				publicKey: EJSON.stringify(this._exportedPublicKey),
+				refresh,
+			},
+		]);
+
+		if (refresh) {
+			const user = Meteor.user();
+			if (!user) {
+				return;
 			}
-		} catch (e) {
-			throw e;
+			await sdk.rest.post('/v1/chat.otr', {
+				roomId: this._roomId,
+				type: otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH,
+			});
+			this.isFirstOTR = false;
 		}
 	}
 
 	acknowledge(): void {
-		void APIClient.post('/v1/statistics.telemetry', { params: [{ eventName: 'otrStats', timestamp: Date.now(), rid: this._roomId }] });
+		void sdk.rest.post('/v1/statistics.telemetry', { params: [{ eventName: 'otrStats', timestamp: Date.now(), rid: this._roomId }] });
 
-		this.peerId &&
-			Notifications.notifyUser(this.peerId, 'otr', 'acknowledge', {
+		sdk.publish('notify-user', [
+			`${this.peerId}/otr`,
+			'acknowledge',
+			{
 				roomId: this._roomId,
 				userId: this._userId,
 				publicKey: EJSON.stringify(this._exportedPublicKey),
-			});
+			},
+		]);
 	}
 
 	deny(): void {
 		this.reset();
 		this.setState(OtrRoomState.DECLINED);
-		this.peerId &&
-			Notifications.notifyUser(this.peerId, 'otr', 'deny', {
+		sdk.publish('notify-user', [
+			`${this.peerId}/otr`,
+			'deny',
+			{
 				roomId: this._roomId,
 				userId: this._userId,
-			});
+			},
+		]);
 	}
 
 	end(): void {
 		this.isFirstOTR = true;
 		this.reset();
 		this.setState(OtrRoomState.NOT_STARTED);
-		this.peerId &&
-			Notifications.notifyUser(this.peerId, 'otr', 'end', {
+		sdk.publish('notify-user', [
+			`${this.peerId}/otr`,
+			'end',
+			{
 				roomId: this._roomId,
 				userId: this._userId,
-			});
+			},
+		]);
 	}
 
 	reset(): void {
 		this._keyPair = null;
 		this._exportedPublicKey = {};
 		this._sessionKey = null;
-		Meteor.call('deleteOldOTRMessages', this._roomId);
+		void sdk.call('deleteOldOTRMessages', this._roomId);
 	}
 
 	async generateKeyPair(): Promise<void> {
@@ -143,14 +164,14 @@ export class OTRRoom implements IOTRRoom {
 		}
 
 		this._userOnlineComputation = Tracker.autorun(() => {
-			const $room = $(`#chat-window-${this._roomId}`);
-			const $title = $('.rc-header__title', $room);
+			const $room = document.querySelector(`#chat-window-${this._roomId}`);
+			const $title = $room?.querySelector('.rc-header__title');
 			if (this.getState() === OtrRoomState.ESTABLISHED) {
-				if ($room.length && $title.length && !$('.otr-icon', $title).length) {
+				if ($room && $title && !$title.querySelector('.otr-icon')) {
 					$title.prepend("<i class='otr-icon icon-key'></i>");
 				}
-			} else if ($title.length) {
-				$('.otr-icon', $title).remove();
+			} else if ($title) {
+				$title.querySelector('.otr-icon')?.remove();
 			}
 		});
 		try {
@@ -164,7 +185,7 @@ export class OTRRoom implements IOTRRoom {
 			this._exportedPublicKey = await exportKey(this._keyPair.publicKey);
 
 			// Once we have generated new keys, it's safe to delete old messages
-			Meteor.call('deleteOldOTRMessages', this._roomId);
+			void sdk.call('deleteOldOTRMessages', this._roomId);
 		} catch (e) {
 			this.setState(OtrRoomState.ERROR);
 			throw e;
@@ -251,27 +272,27 @@ export class OTRRoom implements IOTRRoom {
 	async onUserStream(type: string, data: IOnUserStreamData): Promise<void> {
 		switch (type) {
 			case 'handshake':
-				let timeout = 0;
+				let timeout: NodeJS.Timeout;
 
 				const establishConnection = async (): Promise<void> => {
 					this.setState(OtrRoomState.ESTABLISHING);
-					Meteor.clearTimeout(timeout);
+					clearTimeout(timeout);
 					try {
 						if (!data.publicKey) throw new Error('Public key is not generated');
 						await this.generateKeyPair();
 						await this.importPublicKey(data.publicKey);
 						await goToRoomById(data.roomId);
-						Meteor.defer(async () => {
+						setTimeout(async () => {
 							this.setState(OtrRoomState.ESTABLISHED);
 							this.acknowledge();
 
 							if (data.refresh) {
-								await APIClient.post('/v1/chat.otr', {
+								await sdk.rest.post('/v1/chat.otr', {
 									roomId: this._roomId,
 									type: otrSystemMessages.USER_KEY_REFRESHED_SUCCESSFULLY,
 								});
 							}
-						});
+						}, 0);
 					} catch (e) {
 						dispatchToastMessage({ type: 'error', message: e });
 						throw new Meteor.Error('establish-connection-error', 'Establish connection error.');
@@ -279,7 +300,7 @@ export class OTRRoom implements IOTRRoom {
 				};
 
 				const closeOrCancelModal = (): void => {
-					Meteor.clearTimeout(timeout);
+					clearTimeout(timeout);
 					this.deny();
 					imperativeModal.close();
 				};
@@ -294,19 +315,27 @@ export class OTRRoom implements IOTRRoom {
 						this.reset();
 						await establishConnection();
 					} else {
+						/* 	We have to check if there's an in progress handshake request because
+							Notifications.notifyUser will sometimes dispatch 2 events */
+						if (this.getState() === OtrRoomState.REQUESTED) {
+							return;
+						}
+
 						if (this.getState() === OtrRoomState.ESTABLISHED) {
 							this.reset();
 						}
+
+						this.setState(OtrRoomState.REQUESTED);
 						imperativeModal.open({
 							component: GenericModal,
 							props: {
 								variant: 'warning',
-								title: TAPi18n.__('OTR'),
-								children: TAPi18n.__('Username_wants_to_start_otr_Do_you_want_to_accept', {
+								title: t('OTR'),
+								children: t('Username_wants_to_start_otr_Do_you_want_to_accept', {
 									username: obj.username,
 								}),
-								confirmText: TAPi18n.__('Yes'),
-								cancelText: TAPi18n.__('No'),
+								confirmText: t('Yes'),
+								cancelText: t('No'),
 								onClose: (): void => closeOrCancelModal(),
 								onCancel: (): void => closeOrCancelModal(),
 								onConfirm: async (): Promise<void> => {
@@ -315,7 +344,7 @@ export class OTRRoom implements IOTRRoom {
 								},
 							},
 						});
-						timeout = Meteor.setTimeout(() => {
+						timeout = setTimeout(() => {
 							this.setState(OtrRoomState.TIMEOUT);
 							imperativeModal.close();
 						}, 10000);
@@ -333,7 +362,7 @@ export class OTRRoom implements IOTRRoom {
 					this.setState(OtrRoomState.ESTABLISHED);
 
 					if (this.isFirstOTR) {
-						await APIClient.post('/v1/chat.otr', {
+						await sdk.rest.post('/v1/chat.otr', {
 							roomId: this._roomId,
 							type: otrSystemMessages.USER_JOINED_OTR,
 						});
@@ -365,9 +394,9 @@ export class OTRRoom implements IOTRRoom {
 							component: GenericModal,
 							props: {
 								variant: 'warning',
-								title: TAPi18n.__('OTR'),
-								children: TAPi18n.__('Username_ended_the_OTR_session', { username: obj.username }),
-								confirmText: TAPi18n.__('Ok'),
+								title: t('OTR'),
+								children: t('Username_ended_the_OTR_session', { username: obj.username }),
+								confirmText: t('Ok'),
 								onClose: imperativeModal.close,
 								onConfirm: imperativeModal.close,
 							},

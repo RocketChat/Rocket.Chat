@@ -1,6 +1,3 @@
-import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
-import mem from 'mem';
 import type {
 	IRoom,
 	ISubscription,
@@ -10,21 +7,24 @@ import type {
 	MessageAttachmentDefault,
 } from '@rocket.chat/core-typings';
 import { isTranslatedMessageAttachment } from '@rocket.chat/core-typings';
+import mem from 'mem';
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 
-import { Subscriptions, Messages } from '../../../models/client';
-import { hasPermission } from '../../../authorization/client';
-import { call } from '../../../../client/lib/utils/call';
 import {
 	hasTranslationLanguageInAttachments,
 	hasTranslationLanguageInMessage,
 } from '../../../../client/views/room/MessageList/lib/autoTranslate';
+import { hasPermission } from '../../../authorization/client';
+import { Subscriptions, Messages } from '../../../models/client';
+import { sdk } from '../../../utils/client/lib/SDKClient';
 
 let userLanguage = 'en';
 let username = '';
 
 Meteor.startup(() => {
-	Tracker.autorun(async () => {
-		const user: Pick<IUser, 'language' | 'username'> | null = await Meteor.userAsync();
+	Tracker.autorun(() => {
+		const user: Pick<IUser, 'language' | 'username'> | null = Meteor.user();
 		if (!user) {
 			return;
 		}
@@ -110,8 +110,8 @@ export const AutoTranslate = {
 
 			try {
 				[this.providersMetadata, this.supportedLanguages] = await Promise.all([
-					call('autoTranslate.getProviderUiMetadata'),
-					call('autoTranslate.getSupportedLanguages', 'en'),
+					sdk.call('autoTranslate.getProviderUiMetadata'),
+					sdk.call('autoTranslate.getSupportedLanguages', 'en'),
 				]);
 			} catch (e: unknown) {
 				// Avoid unwanted error message on UI when autotranslate is disabled while fetching data

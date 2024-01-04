@@ -2,10 +2,10 @@ import type { IOmnichannelRoom, IOmnichannelSystemMessage, IMessage } from '@roc
 import { isEditedMessage, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms, Messages } from '@rocket.chat/models';
 
-import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { Livechat } from '../lib/Livechat';
+import { settings } from '../../../settings/server';
 import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
+import { Livechat as LivechatTyped } from '../lib/LivechatTyped';
 
 type AdditionalFields =
 	| Record<string, unknown>
@@ -86,12 +86,14 @@ async function sendToCRM(
 		return room;
 	}
 
-	const postData: Awaited<ReturnType<typeof Livechat.getLivechatRoomGuestInfo>> & { type: string; messages: IOmnichannelSystemMessage[] } =
-		{
-			...(await Livechat.getLivechatRoomGuestInfo(room)),
-			type,
-			messages: [],
-		};
+	const postData: Awaited<ReturnType<typeof LivechatTyped.getLivechatRoomGuestInfo>> & {
+		type: string;
+		messages: IOmnichannelSystemMessage[];
+	} = {
+		...(await LivechatTyped.getLivechatRoomGuestInfo(room)),
+		type,
+		messages: [],
+	};
 
 	let messages: IOmnichannelSystemMessage[] | null = null;
 	if (typeof includeMessages === 'boolean' && includeMessages) {
@@ -111,6 +113,7 @@ async function sendToCRM(
 				msg: message.msg || JSON.stringify(message.blocks),
 				...(message.blocks && message.blocks.length > 0 ? { blocks: message.blocks } : {}),
 				ts: message.ts,
+				rid: message.rid,
 				...(isEditedMessage(message) && { editedAt: message.editedAt }),
 				...(message.u.username !== postData.visitor.username && { agentId: message.u._id }),
 				...(isOmnichannelNavigationMessage(message) && { navigation: message.navigation }),
@@ -119,17 +122,18 @@ async function sendToCRM(
 			};
 
 			const { u } = message;
-			postData.messages.push(await normalizeMessageFileUpload({ u, ...msg }));
+			postData.messages.push({ ...(await normalizeMessageFileUpload({ u, ...msg })), ...{ _updatedAt: message._updatedAt } });
 		}
 	}
 
 	const additionalData = getAdditionalFieldsByType(type, room);
 	const responseData = Object.assign(postData, additionalData);
 
-	const response = Livechat.sendRequest(responseData);
+	const response = await LivechatTyped.sendRequest(responseData);
 
-	if (response?.data?.data) {
-		await LivechatRooms.saveCRMDataByRoomId(room._id, response.data.data);
+	if (response) {
+		const responseData = await response.text();
+		await LivechatRooms.saveCRMDataByRoomId(room._id, responseData);
 	}
 
 	return room;
@@ -255,7 +259,7 @@ callbacks.add(
 
 callbacks.add(
 	'afterSaveMessage',
-	async function (message, room) {
+	async (message, room) => {
 		// only call webhook if it is a livechat room
 		if (!isOmnichannelRoom(room) || !room?.v?.token) {
 			return message;
@@ -266,7 +270,7 @@ callbacks.add(
 		if (message.token && !settings.get('Livechat_webhook_on_visitor_message')) {
 			return message;
 		}
-		if (!settings.get('Livechat_webhook_on_agent_message')) {
+		if (!message.token && !settings.get('Livechat_webhook_on_agent_message')) {
 			return message;
 		}
 		// if the message has a type means it is a special message (like the closing comment), so skips

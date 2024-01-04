@@ -31,14 +31,15 @@ roomCoordinator.add(LivechatRoomType, {
 	},
 
 	async getNotificationDetails(room, _sender, notificationMessage, userId) {
-		const title = `[Omnichannel] ${this.roomName(room, userId)}`;
+		const roomName = await this.roomName(room, userId);
+		const title = `[Omnichannel] ${roomName}`;
 		const text = notificationMessage;
 
-		return { title, text };
+		return { title, text, name: roomName };
 	},
 
 	async getMsgSender(senderId) {
-		return LivechatVisitors.findOneById(senderId);
+		return LivechatVisitors.findOneEnabledById(senderId);
 	},
 
 	getReadReceiptsExtraData(message) {

@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { updatePermission } from '../../data/permissions.helper';
@@ -62,10 +63,36 @@ describe('[OAuthApps]', function () {
 				})
 				.end(done);
 		});
+		it('should return a 403 Forbidden error when the user does not have the necessary permission by client id', (done) => {
+			updatePermission('manage-oauth-apps', []).then(() => {
+				request
+					.get(api('oauth-apps.get?clientId=zapier'))
+					.set(credentials)
+					.expect(403)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.be.equal('unauthorized');
+					})
+					.end(done);
+			});
+		});
+		it('should return a 403 Forbidden error when the user does not have the necessary permission by app id', (done) => {
+			updatePermission('manage-oauth-apps', []).then(() => {
+				request
+					.get(api('oauth-apps.get?appId=zapier'))
+					.set(credentials)
+					.expect(403)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.be.equal('unauthorized');
+					})
+					.end(done);
+			});
+		});
 	});
 
-	describe('[/oauth-apps.create]', function () {
-		it('should return an error when the user does not have the necessary permission', async function () {
+	describe('[/oauth-apps.create]', () => {
+		it('should return an error when the user does not have the necessary permission', async () => {
 			await updatePermission('manage-oauth-apps', []);
 
 			await request
@@ -77,16 +104,11 @@ describe('[OAuthApps]', function () {
 					active: false,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-not-allowed');
-				});
-
+				.expect(403);
 			await updatePermission('manage-oauth-apps', ['admin']);
 		});
 
-		it("should return an error when the 'name' property is invalid", async function () {
+		it("should return an error when the 'name' property is invalid", async () => {
 			await request
 				.post(api('oauth-apps.create'))
 				.set(credentials)
@@ -103,7 +125,7 @@ describe('[OAuthApps]', function () {
 				});
 		});
 
-		it("should return an error when the 'redirectUri' property is invalid", async function () {
+		it("should return an error when the 'redirectUri' property is invalid", async () => {
 			await request
 				.post(api('oauth-apps.create'))
 				.set(credentials)
@@ -120,7 +142,7 @@ describe('[OAuthApps]', function () {
 				});
 		});
 
-		it("should return an error when the 'active' property is not a boolean", async function () {
+		it("should return an error when the 'active' property is not a boolean", async () => {
 			await request
 				.post(api('oauth-apps.create'))
 				.set(credentials)
@@ -137,7 +159,7 @@ describe('[OAuthApps]', function () {
 				});
 		});
 
-		it('should create an oauthApp', async function () {
+		it('should create an oauthApp', async () => {
 			const name = `new app ${Date.now()}`;
 			const redirectUri = 'http://localhost:3000';
 			const active = true;
@@ -157,6 +179,92 @@ describe('[OAuthApps]', function () {
 					expect(res.body).to.have.nested.property('application.name', name);
 					expect(res.body).to.have.nested.property('application.redirectUri', redirectUri);
 					expect(res.body).to.have.nested.property('application.active', active);
+				});
+		});
+	});
+
+	describe('[/oauth-apps.update]', () => {
+		let appId;
+
+		before((done) => {
+			const name = 'test-oauth-app';
+			const redirectUri = 'https://test.com';
+			const active = true;
+			request
+				.post(api('oauth-apps.create'))
+				.set(credentials)
+				.send({
+					name,
+					redirectUri,
+					active,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.end((err, res) => {
+					appId = res.body.application._id;
+					done();
+				});
+		});
+
+		it("should update an app's name, its Active and Redirect URI fields correctly by its id", async () => {
+			const name = `new app ${Date.now()}`;
+			const redirectUri = 'http://localhost:3000';
+			const active = false;
+
+			await request
+				.post(api(`oauth-apps.update`))
+				.set(credentials)
+				.send({
+					appId,
+					name,
+					redirectUri,
+					active,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('active', active);
+					expect(res.body).to.have.property('redirectUri', redirectUri);
+					expect(res.body).to.have.property('name', name);
+				});
+		});
+	});
+
+	describe('[/oauth-apps.delete]', () => {
+		let appId;
+
+		before((done) => {
+			const name = 'test-oauth-app';
+			const redirectUri = 'https://test.com';
+			const active = true;
+			request
+				.post(api('oauth-apps.create'))
+				.set(credentials)
+				.send({
+					name,
+					redirectUri,
+					active,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.end((err, res) => {
+					appId = res.body.application._id;
+					done();
+				});
+		});
+
+		it('should delete an app by its id', async () => {
+			await request
+				.post(api(`oauth-apps.delete`))
+				.set(credentials)
+				.send({
+					appId,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.equals(true);
 				});
 		});
 	});

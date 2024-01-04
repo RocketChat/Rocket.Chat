@@ -1,20 +1,20 @@
-import { Meteor } from 'meteor/meteor';
-import type { IUser } from '@rocket.chat/core-typings';
 import { api } from '@rocket.chat/core-services';
+import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../settings/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { settings } from '../../../settings/server';
 import { RateLimiter } from '../lib';
 
-export const _setRealName = async function (userId: string, name: string, fullUser: IUser): Promise<IUser | undefined> {
+export const _setRealName = async function (userId: string, name: string, fullUser?: IUser): Promise<IUser | undefined> {
 	name = name.trim();
 
 	if (!userId || (settings.get('Accounts_RequireNameForSignUp') && !name)) {
 		return;
 	}
 
-	const user = fullUser || Users.findOneById(userId);
+	const user = fullUser || (await Users.findOneById(userId));
 
 	if (!user) {
 		return;

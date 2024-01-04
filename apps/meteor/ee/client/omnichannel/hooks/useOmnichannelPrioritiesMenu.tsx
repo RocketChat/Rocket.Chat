@@ -21,6 +21,7 @@ export const useOmnichannelPrioritiesMenu = (rid: string): ComponentProps<typeof
 		try {
 			priorityId ? await updateRoomPriority({ priorityId }) : await removeRoomPriority();
 			queryClient.invalidateQueries(['current-chats']);
+			queryClient.invalidateQueries(['/v1/rooms.info', rid]);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -61,6 +62,6 @@ export const useOmnichannelPrioritiesMenu = (rid: string): ComponentProps<typeof
 			return items;
 		}, {});
 
-		return priorities.length ? { menuHeading, unprioritizedOption, ...options } : {};
+		return priorities.length ? { menuHeading, Unprioritized: unprioritizedOption, ...options } : {};
 	}, [t, handlePriorityChange, priorities, renderOption]);
 };

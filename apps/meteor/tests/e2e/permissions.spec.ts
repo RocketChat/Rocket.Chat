@@ -138,7 +138,7 @@ test.describe.serial('permissions', () => {
 
 		test('expect option (upload file) not be visible', async () => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
-			await expect(poHomeChannel.content.btnOptionFileUpload).toBeHidden();
+			await expect(poHomeChannel.content.btnOptionFileUpload).toBeDisabled();
 		});
 
 		test.afterAll(async ({ api }) => {
@@ -157,7 +157,7 @@ test.describe.serial('permissions', () => {
 
 		test('expect option (upload audio) not be visible', async () => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
-			await expect(poHomeChannel.content.btnRecordAudio).toBeHidden();
+			await expect(poHomeChannel.content.btnRecordAudio).toBeDisabled();
 		});
 
 		test.afterAll(async ({ api }) => {
@@ -176,7 +176,7 @@ test.describe.serial('permissions', () => {
 
 		test('expect option (upload video) not be visible', async () => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
-			await expect(poHomeChannel.content.btnVideoMessage).toBeHidden();
+			await expect(poHomeChannel.content.btnVideoMessage).toBeDisabled();
 		});
 
 		test.afterAll(async ({ api }) => {

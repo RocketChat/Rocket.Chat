@@ -1,17 +1,18 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
-import { Accounts } from 'meteor/accounts-base';
-import { OAuth } from 'meteor/oauth';
+import { Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Accounts } from 'meteor/accounts-base';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
+import { OAuth } from 'meteor/oauth';
 
-Accounts.registerLoginHandler('iframe', function (result) {
+Accounts.registerLoginHandler('iframe', async (result) => {
 	if (!result.iframe) {
 		return;
 	}
 
 	check(result.token, String);
 
-	const user = Meteor.users.findOne({
+	const user = await Users.findOne({
 		'services.iframe.token': result.token,
 	});
 

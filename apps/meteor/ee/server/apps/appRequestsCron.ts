@@ -1,13 +1,12 @@
-import { Meteor } from 'meteor/meteor';
-import { SyncedCron } from 'meteor/littledata:synced-cron';
+import { cronJobs } from '@rocket.chat/cron';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
-import { settings } from '../../../app/settings/server';
-import { Apps } from './orchestrator';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
+import { settings } from '../../../app/settings/server';
 import { appRequestNotififyForUsers } from './marketplace/appRequestNotifyUsers';
-import { fetch } from '../../../server/lib/http/fetch';
+import { Apps } from './orchestrator';
 
-const appsNotifyAppRequests = Meteor.bindEnvironment(async function _appsNotifyAppRequests() {
+const appsNotifyAppRequests = async function _appsNotifyAppRequests() {
 	try {
 		const installedApps = await Apps.installedApps({ enabled: true });
 		if (!installedApps || installedApps.length === 0) {
@@ -36,7 +35,7 @@ const appsNotifyAppRequests = Meteor.bindEnvironment(async function _appsNotifyA
 
 		const pendingSentUrl = `${baseUrl}/v1/app-request/sent/pending`;
 		const result = await fetch(pendingSentUrl, options);
-		const data = (await result.json()).data?.data;
+		const { data } = await result.json();
 		const filtered = installedApps.filter((app) => data.indexOf(app.getID()) !== -1);
 
 		for await (const app of filtered) {
@@ -62,13 +61,6 @@ const appsNotifyAppRequests = Meteor.bindEnvironment(async function _appsNotifyA
 	} catch (err) {
 		Apps.debugLog(err);
 	}
-});
+};
 
-// Scheduling as every 12 hours to avoid multiple instances hiting the marketplace at the same time
-SyncedCron.add({
-	name: 'Apps-Request-End-Users:notify',
-	schedule: (parser) => parser.text('every 12 hours'),
-	async job() {
-		await appsNotifyAppRequests();
-	},
-});
+await cronJobs.add('Apps-Request-End-Users:notify', '0 */12 * * *', async () => appsNotifyAppRequests());

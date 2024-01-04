@@ -39,6 +39,7 @@ export function convertChangeStreamPayload(
 				action: 'update',
 				clientAction: 'updated',
 				id: event.documentKey._id,
+				data: event.fullDocument,
 				diff,
 				unset,
 			};

@@ -1,5 +1,5 @@
-import { useContext } from 'react';
 import type { ISetting } from '@rocket.chat/core-typings';
+import { useContext } from 'react';
 
 import { SettingsContext } from '../SettingsContext';
 

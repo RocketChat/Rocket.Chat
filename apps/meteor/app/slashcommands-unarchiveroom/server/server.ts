@@ -1,23 +1,24 @@
-import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
 import { isRegisterUser } from '@rocket.chat/core-typings';
+import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { Users, Rooms } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
-import { slashCommands } from '../../utils/lib/slashCommand';
-import { settings } from '../../settings/server';
-import { roomCoordinator } from '../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
-import { unarchiveRoom } from '../../lib/server';
+import { i18n } from '../../../server/lib/i18n';
+import { roomCoordinator } from '../../../server/lib/rooms/roomCoordinator';
+import { unarchiveRoom } from '../../lib/server/functions/unarchiveRoom';
+import { settings } from '../../settings/server';
+import { slashCommands } from '../../utils/lib/slashCommand';
 
 slashCommands.add({
 	command: 'unarchive',
-	callback: async function Unarchive(_command: 'unarchive', params, item): Promise<void> {
+	callback: async function Unarchive({ params, message, userId }: SlashCommandCallbackParams<'unarchive'>): Promise<void> {
 		let channel = params.trim();
 		let room;
 
 		if (channel === '') {
-			room = await Rooms.findOneById(item.rid);
+			room = await Rooms.findOneById(message.rid);
 			if (room?.name) {
 				channel = room.name;
 			}
@@ -26,7 +27,6 @@ slashCommands.add({
 			room = await Rooms.findOneByName(channel);
 		}
 
-		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'archiveRoom' });
 		}
@@ -37,8 +37,8 @@ slashCommands.add({
 		}
 
 		if (!room) {
-			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-				msg: TAPi18n.__('Channel_doesnt_exist', {
+			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
+				msg: i18n.t('Channel_doesnt_exist', {
 					postProcess: 'sprintf',
 					sprintf: [channel],
 					lng: settings.get('Language') || 'en',
@@ -53,8 +53,8 @@ slashCommands.add({
 		}
 
 		if (!room.archived) {
-			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-				msg: TAPi18n.__('Channel_already_Unarchived', {
+			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
+				msg: i18n.t('Channel_already_Unarchived', {
 					postProcess: 'sprintf',
 					sprintf: [channel],
 					lng: settings.get('Language') || 'en',
@@ -65,8 +65,8 @@ slashCommands.add({
 
 		await unarchiveRoom(room._id, user);
 
-		void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-			msg: TAPi18n.__('Channel_Unarchived', {
+		void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
+			msg: i18n.t('Channel_Unarchived', {
 				postProcess: 'sprintf',
 				sprintf: [channel],
 				lng: settings.get('Language') || 'en',

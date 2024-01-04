@@ -4,22 +4,22 @@ import { isDeletedMessage, isEditedMessage, isMessageFromMatrixFederation, isQuo
 import { FederatedRoom, DirectMessageFederatedRoom } from '../../../domain/FederatedRoom';
 import { FederatedUser } from '../../../domain/FederatedUser';
 import type { IFederationBridge } from '../../../domain/IFederationBridge';
+import { MATRIX_POWER_LEVELS } from '../../../infrastructure/matrix/definitions/MatrixPowerLevels';
 import type { RocketChatFileAdapter } from '../../../infrastructure/rocket-chat/adapters/File';
 import type { RocketChatMessageAdapter } from '../../../infrastructure/rocket-chat/adapters/Message';
 import type { RocketChatNotificationAdapter } from '../../../infrastructure/rocket-chat/adapters/Notification';
 import type { RocketChatRoomAdapter } from '../../../infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatSettingsAdapter } from '../../../infrastructure/rocket-chat/adapters/Settings';
 import type { RocketChatUserAdapter } from '../../../infrastructure/rocket-chat/adapters/User';
-import { AbstractFederationApplicationService } from '../../AbstractFederationApplicationService';
-import { getExternalMessageSender } from '../message/sender/message-sender-helper';
-import { MATRIX_POWER_LEVELS } from '../../../infrastructure/matrix/definitions/MatrixPowerLevels';
 import { ROCKET_CHAT_FEDERATION_ROLES } from '../../../infrastructure/rocket-chat/definitions/FederatedRoomInternalRoles';
+import { AbstractFederationApplicationService } from '../../AbstractFederationApplicationService';
 import type {
 	FederationAfterLeaveRoomDto,
 	FederationAfterRemoveUserFromRoomDto,
 	FederationCreateDMAndInviteUserDto,
 	FederationRoomSendExternalMessageDto,
 } from '../input/RoomSenderDto';
+import { getExternalMessageSender } from '../message/sender/message-sender-helper';
 
 export class FederationRoomServiceSender extends AbstractFederationApplicationService {
 	constructor(
@@ -128,12 +128,19 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 			return;
 		}
 
+		const isUserFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
+			this.bridge.extractHomeserverOrigin(federatedUser.getExternalId()),
+			this.internalHomeServerDomain,
+		);
+		if (!isUserFromTheSameHomeServer) {
+			return;
+		}
+
 		await this.bridge.leaveRoom(federatedRoom.getExternalId(), federatedUser.getExternalId());
 	}
 
 	public async onUserRemovedFromRoom(afterLeaveRoomInput: FederationAfterRemoveUserFromRoomDto): Promise<void> {
 		const { internalRoomId, internalUserId, actionDoneByInternalId } = afterLeaveRoomInput;
-
 		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
 		if (!federatedRoom) {
 			return;
@@ -149,11 +156,19 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 			return;
 		}
 
+		const isUserFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
+			this.bridge.extractHomeserverOrigin(byWhom.getExternalId()),
+			this.internalHomeServerDomain,
+		);
+		if (!isUserFromTheSameHomeServer) {
+			return;
+		}
+
 		await this.bridge.kickUserFromRoom(federatedRoom.getExternalId(), federatedUser.getExternalId(), byWhom.getExternalId());
 	}
 
 	public async sendExternalMessage(roomSendExternalMessageInput: FederationRoomSendExternalMessageDto): Promise<void> {
-		const { internalRoomId, internalSenderId, message } = roomSendExternalMessageInput;
+		const { internalRoomId, internalSenderId, message, isThreadedMessage } = roomSendExternalMessageInput;
 		const federatedSender = await this.internalUserAdapter.getFederatedUserByInternalId(internalSenderId);
 		if (!federatedSender) {
 			throw new Error(`Could not find user id for ${internalSenderId}`);
@@ -187,23 +202,25 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 				return;
 			}
 
-			await getExternalMessageSender(
+			await getExternalMessageSender({
 				message,
-				this.bridge,
-				this.internalFileAdapter,
-				this.internalMessageAdapter,
-				this.internalUserAdapter,
-			).sendQuoteMessage(federatedRoom.getExternalId(), federatedSender.getExternalId(), message, messageToReplyTo);
+				isThreadedMessage,
+				bridge: this.bridge,
+				internalFileAdapter: this.internalFileAdapter,
+				internalMessageAdapter: this.internalMessageAdapter,
+				internalUserAdapter: this.internalUserAdapter,
+			}).sendQuoteMessage(federatedRoom.getExternalId(), federatedSender.getExternalId(), message, messageToReplyTo);
 			return;
 		}
 
-		await getExternalMessageSender(
+		await getExternalMessageSender({
 			message,
-			this.bridge,
-			this.internalFileAdapter,
-			this.internalMessageAdapter,
-			this.internalUserAdapter,
-		).sendMessage(federatedRoom.getExternalId(), federatedSender.getExternalId(), message);
+			isThreadedMessage,
+			bridge: this.bridge,
+			internalFileAdapter: this.internalFileAdapter,
+			internalMessageAdapter: this.internalMessageAdapter,
+			internalUserAdapter: this.internalUserAdapter,
+		}).sendMessage(federatedRoom.getExternalId(), federatedSender.getExternalId(), message);
 	}
 
 	public async afterMessageDeleted(internalMessage: IMessage, internalRoomId: string): Promise<void> {

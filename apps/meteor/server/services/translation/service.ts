@@ -1,9 +1,10 @@
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { Settings } from '@rocket.chat/models';
-import type { IUser } from '@rocket.chat/core-typings';
-import mem from 'mem';
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { ITranslationService } from '@rocket.chat/core-services';
+import type { IUser } from '@rocket.chat/core-typings';
+import { Settings } from '@rocket.chat/models';
+import mem from 'mem';
+
+import { i18n } from '../../lib/i18n';
 
 export class TranslationService extends ServiceClassInternal implements ITranslationService {
 	protected name = 'translation';
@@ -17,7 +18,7 @@ export class TranslationService extends ServiceClassInternal implements ITransla
 
 	// Use translateText when you already know the language, or want to translate to a predefined language
 	translateText(text: string, targetLanguage: string): Promise<string> {
-		return Promise.resolve(TAPi18n.__(text, { lng: targetLanguage }));
+		return Promise.resolve(i18n.t(text, { lng: targetLanguage }));
 	}
 
 	// Use translate when you want to translate to the user's language, or server's as a fallback

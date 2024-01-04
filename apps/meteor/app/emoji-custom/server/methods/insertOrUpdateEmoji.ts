@@ -1,13 +1,13 @@
+import { api } from '@rocket.chat/core-services';
+import { EmojiCustom } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import limax from 'limax';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
-import limax from 'limax';
-import { EmojiCustom } from '@rocket.chat/models';
-import { api } from '@rocket.chat/core-services';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
+import { trim } from '../../../../lib/utils/stringUtils';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { RocketChatFileEmojiCustomInstance } from '../startup/emoji-custom';
-import { trim } from '../../../../lib/utils/stringUtils';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -115,27 +115,24 @@ Meteor.methods<ServerMethods>({
 		}
 		// update emoji
 		if (emojiData.newFile) {
-			RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.name}.${emojiData.extension}`));
-			RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.name}.${emojiData.previousExtension}`));
-			RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.previousName}.${emojiData.extension}`));
-			RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.previousName}.${emojiData.previousExtension}`));
+			await RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.name}.${emojiData.extension}`));
+			await RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.name}.${emojiData.previousExtension}`));
+			await RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.previousName}.${emojiData.extension}`));
+			await RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.previousName}.${emojiData.previousExtension}`));
 
 			await EmojiCustom.setExtension(emojiData._id, emojiData.extension);
 		} else if (emojiData.name !== emojiData.previousName) {
-			const rs = RocketChatFileEmojiCustomInstance.getFileWithReadStream(
+			const rs = await RocketChatFileEmojiCustomInstance.getFileWithReadStream(
 				encodeURIComponent(`${emojiData.previousName}.${emojiData.previousExtension}`),
 			);
 			if (rs !== null) {
-				RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.name}.${emojiData.extension}`));
+				await RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.name}.${emojiData.extension}`));
 				const ws = RocketChatFileEmojiCustomInstance.createWriteStream(
 					encodeURIComponent(`${emojiData.name}.${emojiData.previousExtension}`),
 					rs.contentType,
 				);
-				ws.on(
-					'end',
-					Meteor.bindEnvironment(() =>
-						RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.previousName}.${emojiData.previousExtension}`)),
-					),
+				ws.on('end', () =>
+					RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.previousName}.${emojiData.previousExtension}`)),
 				);
 				rs.readStream.pipe(ws);
 			}

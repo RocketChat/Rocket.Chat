@@ -1,5 +1,5 @@
 import type { App } from '@rocket.chat/core-typings';
-import { Box, Button, Icon, Throbber, Tag, Margins } from '@rocket.chat/fuselage';
+import { Box, Button, Tag, Margins } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useRouteParameter, usePermission, useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
@@ -7,6 +7,7 @@ import type { ReactElement } from 'react';
 import React, { useCallback, useState, memo } from 'react';
 import semver from 'semver';
 
+import { useIsEnterprise } from '../../../../../hooks/useIsEnterprise';
 import type { appStatusSpanResponseProps } from '../../../helpers';
 import { appButtonProps, appMultiStatusProps } from '../../../helpers';
 import { marketplaceActions } from '../../../helpers/marketplaceActions';
@@ -37,7 +38,10 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	const shouldShowPriceDisplay = isAppDetailsPage && button && !app.isEnterpriseOnly;
 	const canUpdate = installed && app?.version && app?.marketplaceVersion && semver.lt(app?.version, app?.marketplaceVersion);
 
-	const statuses = appMultiStatusProps(app, isAppDetailsPage, context || '');
+	const { data } = useIsEnterprise();
+	const isEnterprise = data?.isEnterprise ?? false;
+
+	const statuses = appMultiStatusProps(app, isAppDetailsPage, context || '', isEnterprise);
 
 	const totalSeenRequests = app?.appRequestStats?.totalSeen;
 	const totalUnseenRequests = app?.appRequestStats?.totalUnseen;
@@ -113,7 +117,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	};
 
 	return (
-		<Box {...props} display='flex' alignItems='center' mie='x8'>
+		<Box {...props} display='flex' alignItems='center' mie={8}>
 			{button && isAppDetailsPage && (!installed || canUpdate) && (
 				<Box
 					display='flex'
@@ -124,20 +128,15 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 					invisible={!showStatus && !loading}
 				>
 					<Button
+						icon={button.icon}
 						primary
 						small
-						disabled={loading || (action === 'request' && (app?.requestedEndUser || endUserRequested))}
+						loading={loading}
+						disabled={action === 'request' && (app?.requestedEndUser || endUserRequested)}
 						onClick={handleAcquireApp}
-						mie='x8'
+						mie={8}
 					>
-						{loading ? (
-							<Throbber inheritColor />
-						) : (
-							<>
-								{button.icon && <Icon name={button.icon} size='x16' mie='x4' />}
-								{t(button.label.replace(' ', '_') as TranslationKey)}
-							</>
-						)}
+						{t(button.label.replace(' ', '_') as TranslationKey)}
 					</Button>
 
 					{shouldShowPriceDisplay && !installed && (
@@ -147,7 +146,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 			)}
 
 			{statuses?.map((status, index) => (
-				<Margins inlineEnd='x8' key={index}>
+				<Margins inlineEnd={index !== statuses.length - 1 ? 8 : undefined} key={index}>
 					<Tag variant={getStatusVariant(status)} title={status.tooltipText ? status.tooltipText : ''}>
 						{handleAppRequestsNumber(status)} {t(`${status.label}` as TranslationKey)}
 					</Tag>

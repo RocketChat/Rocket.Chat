@@ -1,6 +1,6 @@
-import type { FindOptions } from 'mongodb';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Messages, Users } from '@rocket.chat/models';
+import type { FindOptions } from 'mongodb';
 
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
 

@@ -1,11 +1,13 @@
 import os from 'os';
 
 import { Settings } from '@rocket.chat/models';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { check, Match } from 'meteor/check';
 
-import { Info } from '../../../utils/server';
 import { getWorkspaceAccessToken } from '../../../cloud/server';
-import { fetch } from '../../../../server/lib/http/fetch';
+import { Info } from '../../../utils/rocketchat.info';
+
+/** @deprecated */
 
 export const getNewUpdates = async () => {
 	try {
@@ -32,13 +34,13 @@ export const getNewUpdates = async () => {
 		const headers = {
 			...(token && { Authorization: `Bearer ${token}` }),
 		};
-		const url = 'https://releases.rocket.chat/updates/check?';
-		const qs = new URLSearchParams(params);
-		const response = await fetch(url + qs, {
+		const url = 'https://releases.rocket.chat/updates/check';
+		const response = await fetch(url, {
 			headers,
+			params,
 		});
 
-		const { data } = await response.json();
+		const data = await response.json();
 
 		check(
 			data,
@@ -50,18 +52,16 @@ export const getNewUpdates = async () => {
 						infoUrl: String,
 					}),
 				],
-				alerts: [
-					Match.Optional([
-						Match.ObjectIncluding({
-							id: String,
-							title: String,
-							text: String,
-							textArguments: [Match.Any],
-							modifiers: [String] as [StringConstructor],
-							infoUrl: String,
-						}),
-					]),
-				],
+				alerts: Match.Optional([
+					Match.ObjectIncluding({
+						id: String,
+						title: String,
+						text: String,
+						textArguments: [Match.Any],
+						modifiers: [String] as [StringConstructor],
+						infoUrl: String,
+					}),
+				]),
 			}),
 		);
 

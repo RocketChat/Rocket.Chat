@@ -1,11 +1,11 @@
-import type { IUser, IRole, AtLeast } from '@rocket.chat/core-typings';
-import { Users } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
+import type { IUser, IRole, AtLeast } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
+import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../../app/settings/server';
 import { addUserRolesAsync } from '../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../server/lib/roles/removeUserFromRoles';
-import { canAddNewUser } from '../../app/license/server/license';
 
 type setUserRolesOptions = {
 	// If specified, the function will not add nor remove any role that is not on this list.
@@ -30,7 +30,11 @@ function filterRoleList(
 	return filteredRoles.filter((roleId) => rolesToFilterIn.includes(roleId));
 }
 
-function broadcastRoleChange(type: string, roleList: Array<IRole['_id']>, user: AtLeast<IUser, '_id' | 'username'>): void {
+function broadcastRoleChange(
+	type: 'changed' | 'added' | 'removed',
+	roleList: Array<IRole['_id']>,
+	user: AtLeast<IUser, '_id' | 'username'>,
+): void {
 	if (!settings.get('UI_DisplayRoles')) {
 		return;
 	}
@@ -68,7 +72,7 @@ export async function syncUserRoles(
 	}
 
 	const wasGuest = existingRoles.length === 1 && existingRoles[0] === 'guest';
-	if (wasGuest && !(await canAddNewUser())) {
+	if (wasGuest && (await License.shouldPreventAction('activeUsers'))) {
 		throw new Error('error-license-user-limit-reached');
 	}
 

@@ -1,5 +1,4 @@
 import './livechat';
-import './config';
 import './startup';
 import '../lib/messageTypes';
 import './hooks/beforeDelegateAgent';
@@ -16,6 +15,7 @@ import './hooks/sendEmailTranscriptOnClose';
 import './hooks/saveContactLastChat';
 import './hooks/saveLastMessageToInquiry';
 import './hooks/afterUserActions';
+import './hooks/afterAgentRemoved';
 import './methods/addAgent';
 import './methods/addManager';
 import './methods/changeLivechatStatus';
@@ -64,7 +64,6 @@ import './methods/sendTranscript';
 import './methods/getFirstRoomMessage';
 import './methods/getTagsList';
 import './methods/getDepartmentForwardRestrictions';
-import './lib/Analytics';
 import './lib/QueueManager';
 import './lib/RoutingManager';
 import './lib/routing/External';
@@ -76,5 +75,3 @@ import './api';
 import './api/rest';
 import './externalFrame';
 import './methods/saveBusinessHour';
-
-export { Livechat } from './lib/Livechat';

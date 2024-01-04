@@ -1,27 +1,23 @@
-import { Meteor } from 'meteor/meteor';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Match, check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import type { IUser } from '@rocket.chat/core-typings';
-import { Users } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../app/settings/server';
-import { setUserAvatar } from '../../app/lib/server';
-import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
+import { setAvatarFromServiceWithValidation } from '../../app/lib/server/functions/setUserAvatar';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		setAvatarFromService(dataURI: Buffer | Blob, contentType?: string, service?: string, userId?: string): void;
+		setAvatarFromService(dataURI: Buffer | Blob, contentType?: string, service?: string, targetUserId?: string): void;
 	}
 }
 
 Meteor.methods<ServerMethods>({
-	async setAvatarFromService(dataURI, contentType, service, userId) {
+	async setAvatarFromService(dataURI, contentType, service, targetUserId) {
 		check(dataURI, String);
 		check(contentType, Match.Optional(String));
 		check(service, Match.Optional(String));
-		check(userId, Match.Optional(String));
+		check(targetUserId, Match.Optional(String));
 
 		const uid = Meteor.userId();
 
@@ -31,33 +27,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!settings.get('Accounts_AllowUserAvatarChange')) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'setAvatarFromService',
-			});
-		}
-
-		let user: IUser | null;
-
-		if (userId && userId !== uid) {
-			if (!(await hasPermissionAsync(uid, 'edit-other-user-avatar'))) {
-				throw new Meteor.Error('error-unauthorized', 'Unauthorized', {
-					method: 'setAvatarFromService',
-				});
-			}
-
-			user = await Users.findOneById(userId, { projection: { _id: 1, username: 1 } });
-		} else {
-			user = (await Meteor.userAsync()) as IUser | null;
-		}
-
-		if (!user) {
-			throw new Meteor.Error('error-invalid-desired-user', 'Invalid desired user', {
-				method: 'setAvatarFromService',
-			});
-		}
-
-		return setUserAvatar(user, dataURI, contentType, service);
+		return setAvatarFromServiceWithValidation(uid, dataURI, contentType, service, targetUserId);
 	},
 });
 

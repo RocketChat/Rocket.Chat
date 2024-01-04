@@ -1,15 +1,13 @@
-import { BlockType } from '@rocket.chat/apps-engine/definition/uikit/blocks/Blocks';
-import { TextObjectType } from '@rocket.chat/apps-engine/definition/uikit/blocks/Objects';
-import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import moment from 'moment';
 import type { IBanner } from '@rocket.chat/core-typings';
 import { BannerPlatform } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
+import moment from 'moment';
 
 import { settings } from '../../../app/settings/server';
+import { i18n } from '../../lib/i18n';
 import { sendMessagesToAdmins } from '../../lib/sendMessagesToAdmins';
 
-export const getBannerForAdmins = Meteor.bindEnvironment((expireAt: Date): Omit<IBanner, '_id'> => {
+export const getBannerForAdmins = (expireAt: Date): Omit<IBanner, '_id'> => {
 	const lng = settings.get<string>('Language') || 'en';
 
 	return {
@@ -23,16 +21,17 @@ export const getBannerForAdmins = Meteor.bindEnvironment((expireAt: Date): Omit<
 			username: 'rocket.cat',
 		},
 		_updatedAt: new Date(),
+		surface: 'banner',
 		view: {
-			viewId: '',
+			viewId: Random.id(),
 			appId: '',
 			blocks: [
 				{
-					type: BlockType.SECTION,
+					type: 'section',
 					blockId: 'attention',
 					text: {
-						type: TextObjectType.PLAINTEXT,
-						text: TAPi18n.__('NPS_survey_is_scheduled_to-run-at__date__for_all_users', {
+						type: 'plain_text',
+						text: i18n.t('NPS_survey_is_scheduled_to-run-at__date__for_all_users', {
 							date: moment(expireAt).format('YYYY-MM-DD'),
 							lng,
 						}),
@@ -42,12 +41,12 @@ export const getBannerForAdmins = Meteor.bindEnvironment((expireAt: Date): Omit<
 			],
 		},
 	};
-});
+};
 
 export const notifyAdmins = (expireAt: Date) =>
 	sendMessagesToAdmins({
 		msgs: async ({ adminUser }: { adminUser: any }): Promise<any> => ({
-			msg: TAPi18n.__('NPS_survey_is_scheduled_to-run-at__date__for_all_users', {
+			msg: i18n.t('NPS_survey_is_scheduled_to-run-at__date__for_all_users', {
 				date: moment(expireAt).format('YYYY-MM-DD'),
 				lng: adminUser.language,
 			}),

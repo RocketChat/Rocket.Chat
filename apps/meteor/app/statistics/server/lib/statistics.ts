@@ -1,8 +1,9 @@
-import os from 'os';
 import { log } from 'console';
+import os from 'os';
 
-import { MongoInternals } from 'meteor/mongo';
+import { Analytics, Team, VideoConf, Presence } from '@rocket.chat/core-services';
 import type { IRoom, IStats } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
 import {
 	NotificationQueue,
 	Rooms,
@@ -23,24 +24,24 @@ import {
 	LivechatCustomField,
 	Subscriptions,
 	Users,
+	LivechatRooms,
 } from '@rocket.chat/models';
-import { Analytics, Team, VideoConf } from '@rocket.chat/core-services';
-import { UserStatus } from '@rocket.chat/core-typings';
+import { MongoInternals } from 'meteor/mongo';
+import moment from 'moment';
 
-import { settings } from '../../../settings/server';
-import { Info, getMongoInfo } from '../../../utils/server';
-import { getControl } from '../../../../server/lib/migrations';
-import { getStatistics as federationGetStatistics } from '../../../federation/server/functions/dashboard';
+import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server/getStatistics';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
+import { isRunningMs } from '../../../../server/lib/isRunningMs';
+import { getControl } from '../../../../server/lib/migrations';
+import { getSettingsStatistics } from '../../../../server/lib/statistics/getSettingsStatistics';
+import { getMatrixFederationStatistics } from '../../../../server/services/federation/infrastructure/rocket-chat/adapters/Statistics';
+import { getStatistics as federationGetStatistics } from '../../../federation/server/functions/dashboard';
+import { settings } from '../../../settings/server';
+import { Info } from '../../../utils/rocketchat.info';
+import { getMongoInfo } from '../../../utils/server/functions/getMongoInfo';
 import { getAppsStatistics } from './getAppsStatistics';
 import { getImporterStatistics } from './getImporterStatistics';
 import { getServicesStatistics } from './getServicesStatistics';
-import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
-import { getSettingsStatistics } from '../../../../server/lib/statistics/getSettingsStatistics';
-import { isRunningMs } from '../../../../server/lib/isRunningMs';
-import { getMatrixFederationStatistics } from '../../../../server/services/federation/infrastructure/rocket-chat/adapters/statistics';
-
-const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
 
 const getUserLanguages = async (totalUsers: number): Promise<{ [key: string]: number }> => {
 	const result = await Users.getUserLanguages();
@@ -69,17 +70,29 @@ export const statistics = {
 		const statistics = {} as IStats;
 		const statsPms = [];
 
+		const fetchWizardSettingValue = async <T>(settingName: string): Promise<T | undefined> => {
+			return ((await Settings.findOne(settingName))?.value as T | undefined) ?? undefined;
+		};
+
 		// Setup Wizard
-		statistics.wizard = {};
-		await Promise.all(
-			wizardFields.map(async (field) => {
-				const record = await Settings.findOne(field);
-				if (record) {
-					const wizardField = field.replace(/_/g, '').replace(field[0], field[0].toLowerCase());
-					statistics.wizard[wizardField] = record.value;
-				}
-			}),
-		);
+		const [organizationType, industry, size, country, language, serverType, registerServer] = await Promise.all([
+			fetchWizardSettingValue<string>('Organization_Type'),
+			fetchWizardSettingValue<string>('Industry'),
+			fetchWizardSettingValue<string>('Size'),
+			fetchWizardSettingValue<string>('Country'),
+			fetchWizardSettingValue<string>('Language'),
+			fetchWizardSettingValue<string>('Server_Type'),
+			fetchWizardSettingValue<boolean>('Register_Server'),
+		]);
+		statistics.wizard = {
+			organizationType,
+			industry,
+			size,
+			country,
+			language,
+			serverType,
+			registerServer,
+		};
 
 		// Version
 		const uniqueID = await Settings.findOne('uniqueID');
@@ -87,6 +100,9 @@ export const statistics = {
 		if (uniqueID) {
 			statistics.installedAt = uniqueID.createdAt.toISOString();
 		}
+
+		statistics.deploymentFingerprintHash = settings.get('Deployment_FingerPrint_Hash');
+		statistics.deploymentFingerprintVerified = settings.get('Deployment_FingerPrint_Verified');
 
 		if (Info) {
 			statistics.version = Info.version;
@@ -121,11 +137,11 @@ export const statistics = {
 		statistics.totalThreads = await Messages.countThreads();
 
 		// livechat visitors
-		statistics.totalLivechatVisitors = await LivechatVisitors.col.estimatedDocumentCount();
+		statistics.totalLivechatVisitors = await LivechatVisitors.estimatedDocumentCount();
 
 		// livechat agents
 		statistics.totalLivechatAgents = await Users.countAgents();
-		statistics.totalLivechatManagers = await Users.col.countDocuments({ roles: 'livechat-manager' });
+		statistics.totalLivechatManagers = await Users.countDocuments({ roles: 'livechat-manager' });
 
 		// livechat enabled
 		statistics.livechatEnabled = settings.get('Livechat_enabled');
@@ -146,14 +162,14 @@ export const statistics = {
 
 		// Number of departments
 		statsPms.push(
-			LivechatDepartment.col.count().then((count) => {
+			LivechatDepartment.estimatedDocumentCount().then((count) => {
 				statistics.departments = count;
 			}),
 		);
 
 		// Number of archived departments
 		statsPms.push(
-			LivechatDepartment.col.countDocuments({ archived: true }).then((count) => {
+			LivechatDepartment.countArchived().then((count) => {
 				statistics.archivedDepartments = count;
 			}),
 		);
@@ -258,19 +274,61 @@ export const statistics = {
 			}),
 		);
 
+		const defaultValue = { contactsCount: 0, conversationsCount: 0, sources: [] };
+		const billablePeriod = moment.utc().format('YYYY-MM');
+		statsPms.push(
+			LivechatRooms.getMACStatisticsForPeriod(billablePeriod).then(([result]) => {
+				statistics.omnichannelContactsBySource = result || defaultValue;
+			}),
+		);
+
+		const monthAgo = moment.utc().subtract(30, 'days').toDate();
+		const today = moment.utc().toDate();
+		statsPms.push(
+			LivechatRooms.getMACStatisticsBetweenDates(monthAgo, today).then(([result]) => {
+				statistics.uniqueContactsOfLastMonth = result || defaultValue;
+			}),
+		);
+
+		const weekAgo = moment.utc().subtract(7, 'days').toDate();
+		statsPms.push(
+			LivechatRooms.getMACStatisticsBetweenDates(weekAgo, today).then(([result]) => {
+				statistics.uniqueContactsOfLastWeek = result || defaultValue;
+			}),
+		);
+
+		const yesterday = moment.utc().subtract(1, 'days').toDate();
+		statsPms.push(
+			LivechatRooms.getMACStatisticsBetweenDates(yesterday, today).then(([result]) => {
+				statistics.uniqueContactsOfYesterday = result || defaultValue;
+			}),
+		);
+
 		// Message statistics
-		statistics.totalChannelMessages = (await Rooms.findByType('c', { projection: { msgs: 1 } }).toArray()).reduce(
-			function _countChannelMessages(num: number, room: IRoom) {
+		const channels = await Rooms.findByType('c', { projection: { msgs: 1, prid: 1 } }).toArray();
+		const totalChannelDiscussionsMessages = await channels.reduce(function _countChannelDiscussionsMessages(num: number, room: IRoom) {
+			return num + (room.prid ? room.msgs : 0);
+		}, 0);
+		statistics.totalChannelMessages =
+			(await channels.reduce(function _countChannelMessages(num: number, room: IRoom) {
 				return num + room.msgs;
-			},
-			0,
-		);
-		statistics.totalPrivateGroupMessages = (await Rooms.findByType('p', { projection: { msgs: 1 } }).toArray()).reduce(
-			function _countPrivateGroupMessages(num: number, room: IRoom) {
+			}, 0)) - totalChannelDiscussionsMessages;
+
+		const privateGroups = await Rooms.findByType('p', { projection: { msgs: 1, prid: 1 } }).toArray();
+		const totalPrivateGroupsDiscussionsMessages = await privateGroups.reduce(function _countPrivateGroupsDiscussionsMessages(
+			num: number,
+			room: IRoom,
+		) {
+			return num + (room.prid ? room.msgs : 0);
+		},
+		0);
+		statistics.totalPrivateGroupMessages =
+			(await privateGroups.reduce(function _countPrivateGroupMessages(num: number, room: IRoom) {
 				return num + room.msgs;
-			},
-			0,
-		);
+			}, 0)) - totalPrivateGroupsDiscussionsMessages;
+
+		statistics.totalDiscussionsMessages = totalPrivateGroupsDiscussionsMessages + totalChannelDiscussionsMessages;
+
 		statistics.totalDirectMessages = (await Rooms.findByType('d', { projection: { msgs: 1 } }).toArray()).reduce(
 			function _countDirectMessages(num: number, room: IRoom) {
 				return num + room.msgs;
@@ -286,6 +344,7 @@ export const statistics = {
 		statistics.totalMessages =
 			statistics.totalChannelMessages +
 			statistics.totalPrivateGroupMessages +
+			statistics.totalDiscussionsMessages +
 			statistics.totalDirectMessages +
 			statistics.totalLivechatMessages;
 
@@ -350,7 +409,7 @@ export const statistics = {
 				}),
 		);
 
-		statistics.migration = getControl();
+		statistics.migration = await getControl();
 		statsPms.push(
 			InstanceStatus.col.countDocuments({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) } }).then((count) => {
 				statistics.instanceCount = count;
@@ -361,7 +420,7 @@ export const statistics = {
 		statistics.msEnabled = isRunningMs();
 		statistics.oplogEnabled = oplogEnabled;
 		statistics.mongoVersion = mongoVersion;
-		statistics.mongoStorageEngine = mongoStorageEngine;
+		statistics.mongoStorageEngine = mongoStorageEngine || '';
 
 		statsPms.push(
 			Sessions.getUniqueUsersOfYesterday().then((result) => {
@@ -506,6 +565,15 @@ export const statistics = {
 		statistics.totalWebRTCCalls = settings.get('WebRTC_Calls_Count');
 		statistics.uncaughtExceptionsCount = settings.get('Uncaught_Exceptions_Count');
 
+		const defaultGateway = (await Settings.findOneById('Push_gateway', { projection: { packageValue: 1 } }))?.packageValue;
+
+		// one bit for each of the following:
+		const pushEnabled = settings.get('Push_enable') ? 1 : 0;
+		const pushGatewayEnabled = settings.get('Push_enable_gateway') ? 2 : 0;
+		const pushGatewayChanged = settings.get('Push_gateway') !== defaultGateway ? 4 : 0;
+
+		statistics.push = pushEnabled | pushGatewayEnabled | pushGatewayChanged;
+
 		const defaultHomeTitle = (await Settings.findOneById('Layout_Home_Title'))?.packageValue;
 		statistics.homeTitleChanged = settings.get('Layout_Home_Title') !== defaultHomeTitle;
 
@@ -524,6 +592,11 @@ export const statistics = {
 		const defaultLoggedInCustomScript = (await Settings.findOneById('Custom_Script_Logged_In'))?.packageValue;
 		statistics.loggedInCustomScriptChanged = settings.get('Custom_Script_Logged_In') !== defaultLoggedInCustomScript;
 
+		statistics.dailyPeakConnections = await Presence.getPeakConnections(true);
+
+		const peak = await Statistics.findMonthlyPeakConnections();
+		statistics.maxMonthlyPeakConnections = Math.max(statistics.dailyPeakConnections, peak?.dailyPeakConnections || 0);
+
 		statistics.matrixFederation = await getMatrixFederationStatistics();
 
 		// Omnichannel call stats
@@ -538,7 +611,9 @@ export const statistics = {
 	async save(): Promise<IStats> {
 		const rcStatistics = await statistics.get();
 		rcStatistics.createdAt = new Date();
-		await Statistics.insertOne(rcStatistics);
+		const { insertedId } = await Statistics.insertOne(rcStatistics);
+		rcStatistics._id = insertedId;
+
 		return rcStatistics;
 	},
 };
