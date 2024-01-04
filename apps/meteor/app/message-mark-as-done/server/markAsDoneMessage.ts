@@ -42,16 +42,6 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'markAsDoneMessage' });
 		}
 
-		/*
-		if (isTheLastMessage(room, message)) {
-			await Rooms.updateLastMessageStar(room._id, uid, message.starred);
-		}
-		*/
-
-		/* This is for app event hooking, we don't need that.
-		await Apps.triggerEvent(AppEvents.IPostMessageStarred, message, await Meteor.userAsync(), message.starred);
-		*/
-
 		await Messages.updateUserMarkedAsDoneById(message._id, uid, message.markedAsDone);
 
 		return true;

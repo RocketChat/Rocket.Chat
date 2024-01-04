@@ -33,7 +33,7 @@ Meteor.methods<ServerMethods>({
 				},
 			);
 
-			dispatchToastMessage({ type: 'success', message: 'Message as been maked as done!' });
+			dispatchToastMessage({ type: 'success', message: 'Message has been marked as done!' });
 
 			return true;
 		}
@@ -47,7 +47,7 @@ Meteor.methods<ServerMethods>({
 			},
 		);
 
-		dispatchToastMessage({ type: 'success', message: 'Message as been maked as NOT done' });
+		dispatchToastMessage({ type: 'success', message: 'Message has been marked as NOT done' });
 		return true;
 	},
 });

@@ -185,6 +185,24 @@ const ChatMarkAsDoneMessageSchema = {
 
 export const isChatMarkAsDoneMessageProps = ajv.compile<ChatMarkAsDoneMessage>(ChatMarkAsDoneMessageSchema);
 
+type ChatMarkAsNotDoneMessage = {
+	messageId: IMessage['_id'];
+};
+
+const ChatMarkAsNotDoneMessageSchema = {
+	type: 'object',
+	properties: {
+		messageId: {
+			type: 'string',
+		},
+	},
+	required: ['messageId'],
+	additionalProperties: false,
+};
+
+export const isChatMarkAsNotDoneMessageProps = ajv.compile<ChatMarkAsNotDoneMessage>(ChatMarkAsNotDoneMessageSchema);
+
+
 type ChatPinMessage = {
 	messageId: IMessage['_id'];
 };
@@ -885,6 +903,9 @@ export type ChatEndpoints = {
 	};
 	'/v1/chat.markAsDoneMessage': {
 		POST: (params: ChatMarkAsDoneMessage) => void;
+	};
+	'/v1/chat.markAsNotDoneMessage': {
+		POST: (params: ChatMarkAsNotDoneMessage) => void;
 	};
 	'/v1/chat.pinMessage': {
 		POST: (params: ChatPinMessage) => {
