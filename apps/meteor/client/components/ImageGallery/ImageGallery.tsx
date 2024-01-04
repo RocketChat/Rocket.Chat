@@ -136,14 +136,12 @@ const ImageGallery = () => {
 		<FocusScope contain restoreFocus autoFocus>
 			<Box className={swiperStyle}>
 				<div className='swiper-container' onClick={onClose}>
-					<div className='rcx-swiper-controls' onClick={preventPropagation}>
-						<ButtonGroup>
-							{zoomScale !== 1 && <IconButton icon='arrow-collapse' title='Resize' rcx-swiper-zoom-out onClick={handleResize} />}
-							<IconButton icon='h-bar' title='Zoom out' rcx-swiper-zoom-out onClick={handleZoomOut} disabled={zoomScale === 1} />
-							<IconButton icon='plus' title='Zoom in' rcx-swiper-zoom-in onClick={handleZoomIn} />
-							<IconButton icon='cross' title='Close' aria-label='Close gallery' className='rcx-swiper-close-button' onClick={onClose} />
-						</ButtonGroup>
-					</div>
+					<ButtonGroup className='rcx-swiper-controls' onClick={preventPropagation}>
+						{zoomScale !== 1 && <IconButton icon='arrow-collapse' title='Resize' rcx-swiper-zoom-out onClick={handleResize} />}
+						<IconButton icon='h-bar' title='Zoom out' rcx-swiper-zoom-out onClick={handleZoomOut} disabled={zoomScale === 1} />
+						<IconButton icon='plus' title='Zoom in' rcx-swiper-zoom-in onClick={handleZoomIn} />
+						<IconButton icon='cross' title='Close' aria-label='Close gallery' className='rcx-swiper-close-button' onClick={onClose} />
+					</ButtonGroup>
 					<IconButton icon='chevron-right' className='rcx-swiper-prev-button' onClick={preventPropagation} />
 					<IconButton icon='chevron-left' className='rcx-swiper-next-button' onClick={preventPropagation} />
 					<Swiper
@@ -153,7 +151,7 @@ const ImageGallery = () => {
 							prevEl: '.rcx-swiper-prev-button',
 						}}
 						keyboard
-						zoom
+						zoom={{ toggle: false }}
 						lazyPreloaderClass='rcx-lazy-preloader'
 						runCallbacksOnInit
 						onKeyPress={(_, keyCode) => String(keyCode) === '27' && onClose()}
