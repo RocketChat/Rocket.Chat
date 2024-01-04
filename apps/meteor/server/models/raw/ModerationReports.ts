@@ -152,9 +152,6 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 				$lt: latest,
 				$gt: oldest,
 			},
-			message: {
-				$exists: false,
-			},
 			...this.getSearchQueryForSelectorUsers(selector),
 		};
 
@@ -211,8 +208,10 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 		};
 
 		const field = isMessageReports ? 'message.u._id' : 'reportedUser._id';
-		const ids = await this.col.distinct(field, query);
-		return ids.length;
+		const pipeline = [{ $match: query }, { $group: { _id: `$${field}` } }, { $group: { _id: null, count: { $sum: 1 } } }];
+
+		const result = await this.col.aggregate(pipeline).toArray();
+		return result[0]?.count || 0;
 	}
 
 	countMessageReportsInRange(latest: Date, oldest: Date, selector: string): Promise<number> {
@@ -416,10 +415,12 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 	}
 
 	private getSearchQueryForSelectorUsers(selector?: string): any {
+		const messageAbsentQuery = { message: { $exists: false } };
 		if (!selector) {
-			return {};
+			return messageAbsentQuery;
 		}
 		return {
+			...messageAbsentQuery,
 			$or: [
 				{
 					'reportedUser.username': {
