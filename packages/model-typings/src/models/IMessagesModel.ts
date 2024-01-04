@@ -260,6 +260,8 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		ignoreThreads: boolean,
 		selectedMessageIds?: string[],
 	): Promise<number>;
+	markAllMessagesAsDoneByRoomIdAndUserId(rid: string, userId: string): Promise<UpdateResult | Document>;
+
 	findByIdPinnedTimestampLimitAndUsers(
 		rid: string,
 		ignorePinned: boolean,

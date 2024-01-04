@@ -618,6 +618,13 @@ export type RoomsEndpoints = {
 		POST: (params: RoomsCleanHistoryProps) => { _id: IRoom['_id']; count: number; success: boolean };
 	};
 
+	'/v1/rooms.markAllMessagesAsDone': {
+		POST: (params: {
+			roomId: IRoom['_id'];
+			userId: IUser['_id'];
+		}) => void;
+	};
+
 	'/v1/rooms.createDiscussion': {
 		POST: (params: RoomsCreateDiscussionProps) => {
 			discussion: IRoom & { rid: IRoom['_id'] };

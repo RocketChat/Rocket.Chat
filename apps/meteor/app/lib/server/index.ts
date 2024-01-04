@@ -15,6 +15,7 @@ import './methods/blockUser';
 import './methods/checkRegistrationSecretURL';
 import './methods/checkUsernameAvailability';
 import './methods/cleanRoomHistory';
+import './methods/markAllMessagesAsDone';
 import './methods/createChannel';
 import './methods/createPrivateGroup';
 import './methods/createToken';

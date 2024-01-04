@@ -1529,6 +1529,22 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return count;
 	}
 
+	markAllMessagesAsDoneByRoomIdAndUserId(rid: string, userId: string): Promise<UpdateResult | Document> {
+		return this.updateMany(
+			{
+				rid,
+				'_hidden': { $ne: true },
+				t: { $exists: false },
+				// 'markedAsDone._id': { $ne: userId },
+			},
+			{
+				$addToSet: {
+					markedAsDone: { _id: userId },
+				},
+			},
+		);
+	}
+
 	removeByUserId(userId: string): Promise<DeleteResult> {
 		const query = { 'u._id': userId };
 

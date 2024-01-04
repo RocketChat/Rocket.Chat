@@ -405,6 +405,27 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
+	'rooms.markAllMessagesAsDone',
+	{ authRequired: true },
+	{
+		async post() {
+			const { _id } = await findRoomByIdOrName({ params: this.bodyParams });
+
+			const {
+				userId,
+			} = this.bodyParams;
+
+			await Meteor.callAsync('markAllMessagesAsDone', {
+				roomId: _id,
+				userId: userId,
+			});
+
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
 	'rooms.info',
 	{ authRequired: true },
 	{
