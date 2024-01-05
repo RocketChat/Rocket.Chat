@@ -24,7 +24,7 @@ const getSamlConfigs = function (service: string): SAMLConfiguration {
 		buttonLabelColor: settings.get(`${service}_button_label_color`),
 		buttonColor: settings.get(`${service}_button_color`),
 		clientConfig: {
-			provider: settings.get(`${service}_provider`),
+			provider: settings.get<string>(`${service}_provider`),
 		},
 		entryPoint: settings.get(`${service}_entry_point`),
 		idpSLORedirectURL: settings.get(`${service}_idp_slo_redirect_url`),
