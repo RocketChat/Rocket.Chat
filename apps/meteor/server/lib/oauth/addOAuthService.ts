@@ -2,7 +2,7 @@
 /* eslint comma-spacing: 0 */
 import { capitalize } from '@rocket.chat/string-helpers';
 
-import { settingsRegistry } from '../../../settings/server';
+import { settingsRegistry } from '../../../app/settings/server';
 
 export async function addOAuthService(name: string, values: { [k: string]: string | boolean | undefined } = {}): Promise<void> {
 	name = name.toLowerCase().replace(/[^a-z0-9_]/g, '');

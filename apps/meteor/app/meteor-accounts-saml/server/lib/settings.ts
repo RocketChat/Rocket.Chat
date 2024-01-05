@@ -1,3 +1,4 @@
+import type { SAMLConfiguration } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
@@ -17,8 +18,8 @@ import {
 	defaultMetadataCertificateTemplate,
 } from './constants';
 
-const getSamlConfigs = function (service: string): Record<string, any> {
-	const configs = {
+const getSamlConfigs = function (service: string): SAMLConfiguration {
+	const configs: SAMLConfiguration = {
 		buttonLabelText: settings.get(`${service}_button_label_text`),
 		buttonLabelColor: settings.get(`${service}_button_label_color`),
 		buttonColor: settings.get(`${service}_button_color`),
