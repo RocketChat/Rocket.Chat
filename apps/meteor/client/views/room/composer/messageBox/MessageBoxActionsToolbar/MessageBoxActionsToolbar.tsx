@@ -54,12 +54,7 @@ const MessageBoxActionsToolbar = ({
 		<>
 			<MessageComposerActionsDivider />
 			{featured.map((action) => (
-				<MessageComposerAction
-					key={action.id}
-					{...action}
-					data-qa-id={action.id}
-					icon={action.icon as ComponentProps<typeof MessageComposerAction>['icon']}
-				/>
+				<MessageComposerAction key={action.id} {...action} data-qa-id={action.id} icon={action.icon} />
 			))}
 			{menu.length > 0 && (
 				<ActionsToolbarDropdown disabled={isRecording}>
