@@ -76,7 +76,7 @@ export const useMessageboxAppsActionButtons = () => {
 					return applyButtonFilters(action);
 				})
 				.map((action) => {
-					const item: MessageBoxAction = {
+					const item: Omit<MessageBoxAction, 'icon'> = {
 						id: getIdForActionButton(action),
 						label: Utilities.getI18nKeyForApp(action.labelI18n, action.appId),
 						action: (params) => {

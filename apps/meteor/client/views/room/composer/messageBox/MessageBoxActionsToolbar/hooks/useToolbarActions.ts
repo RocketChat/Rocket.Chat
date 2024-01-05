@@ -80,12 +80,14 @@ export const useToolbarActions = ({ canSend, typing, isRecording, isMicrophoneDe
 		const messageBoxActions = Object.entries(groups).reduce<Array<string | ToolbarAction>>((acc, [name, group]) => {
 			const items = group
 				.filter((item) => !hiddenActions.includes(item.id))
-				.map((item) => ({
-					id: item.id,
-					icon: item.icon || '',
-					label: t(item.label),
-					onClick: item.action,
-				}));
+				.map(
+					(item): ToolbarAction => ({
+						id: item.id,
+						icon: item.icon,
+						label: t(item.label),
+						onClick: item.action,
+					}),
+				);
 
 			if (items.length === 0) {
 				return acc;

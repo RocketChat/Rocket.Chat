@@ -44,7 +44,7 @@ export const useWebdavActions = (): Array<ToolbarAction> => {
 					id: account._id,
 					disabled: false,
 					onClick: () => handleOpenWebdav(account),
-					icon: 'cloud-plus',
+					icon: 'cloud-plus' as const,
 					label: account.name,
 			  }))
 			: []),
