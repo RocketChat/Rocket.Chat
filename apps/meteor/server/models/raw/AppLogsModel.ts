@@ -13,7 +13,12 @@ export class AppsLogsModel extends BaseRaw<any> implements IAppLogsModel {
 	}
 
 	async resetTTLIndex(expireAfterSeconds: number): Promise<void> {
-		await this.col.dropIndex('_updatedAt_1');
-		await this.col.createIndex({ _updatedAt: 1 }, { expireAfterSeconds });
+		try {
+			await this.col.dropIndex('_updatedAt_1');
+			await this.col.createIndex({ _updatedAt: 1 }, { expireAfterSeconds });
+		} catch (e) {
+			// TODO: Fix this, just testing
+			console.log('Could not delete app logs indexes');
+		}
 	}
 }
