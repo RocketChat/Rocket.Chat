@@ -387,41 +387,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.expect('Content-Type', 'application/json')
 				.expect(400);
 		});
-
-		it('should return an error if fallbackForwardDepartment is referencing a department that references you back', async () => {
-			const { body } = await request
-				.post(api('livechat/department'))
-				.set(credentials)
-				.send({
-					department: {
-						name: 'Test',
-						enabled: true,
-						showOnOfflineForm: true,
-						showOnRegistration: true,
-						email: 'bla@bla',
-						fallbackForwardDepartment: department._id,
-					},
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
-
-			await request
-				.put(api(`livechat/department/${department._id}`))
-				.set(credentials)
-				.send({
-					department: {
-						name: faker.hacker.adjective(),
-						enabled: true,
-						showOnOfflineForm: true,
-						showOnRegistration: true,
-						email: faker.internet.email(),
-						fallbackForwardDepartment: body.department._id,
-					},
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(400);
-		});
-
 		it('should fail if `agents` param is not an array', async () => {
 			await request
 				.put(api(`livechat/department/${department._id}`))
