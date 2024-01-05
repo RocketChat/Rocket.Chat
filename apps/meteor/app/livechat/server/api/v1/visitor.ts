@@ -1,4 +1,4 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { ILivechatVisitor, IRoom } from '@rocket.chat/core-typings';
 import { LivechatVisitors as VisitorsRaw, LivechatCustomField, LivechatRooms } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -6,7 +6,6 @@ import { Meteor } from 'meteor/meteor';
 import { callbacks } from '../../../../../lib/callbacks';
 import { API } from '../../../../api/server';
 import { settings } from '../../../../settings/server';
-import { Livechat } from '../../lib/Livechat';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { findGuest, normalizeHttpHeaderData } from '../lib/livechat';
 
@@ -31,6 +30,11 @@ API.v1.addRoute('livechat/visitor', {
 		});
 
 		const { customFields, id, token, name, email, department, phone, username, connectionData } = this.bodyParams.visitor;
+
+		if (!token?.trim()) {
+			throw new Meteor.Error('error-invalid-token', 'Token cannot be empty', { method: 'livechat/visitor' });
+		}
+
 		const guest = {
 			token,
 			...(id && { id }),
@@ -45,12 +49,23 @@ API.v1.addRoute('livechat/visitor', {
 
 		const visitorId = await LivechatTyped.registerGuest(guest);
 
-		let visitor = await VisitorsRaw.findOneEnabledById(visitorId, {});
+		let visitor: ILivechatVisitor | null = await VisitorsRaw.findOneEnabledById(visitorId, {});
 		if (visitor) {
 			const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
 			// If it's updating an existing visitor, it must also update the roomInfo
 			const rooms = await LivechatRooms.findOpenByVisitorToken(visitor?.token, {}, extraQuery).toArray();
-			await Promise.all(rooms.map((room: IRoom) => Livechat.saveRoomInfo(room, visitor)));
+			await Promise.all(
+				rooms.map(
+					(room: IRoom) =>
+						visitor &&
+						LivechatTyped.saveRoomInfo(room, {
+							_id: visitor._id,
+							name: visitor.name,
+							phone: visitor.phone?.[0]?.phoneNumber,
+							livechatData: visitor.livechatData as { [k: string]: string },
+						}),
+				),
+			);
 		}
 
 		if (customFields && Array.isArray(customFields)) {
@@ -193,7 +208,7 @@ API.v1.addRoute('livechat/visitor.status', {
 			throw new Meteor.Error('invalid-token');
 		}
 
-		await Livechat.notifyGuestStatusChanged(token, status);
+		await LivechatTyped.notifyGuestStatusChanged(token, status);
 
 		return API.v1.success({ token, status });
 	},

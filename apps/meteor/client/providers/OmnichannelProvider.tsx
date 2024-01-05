@@ -19,8 +19,8 @@ import { useHasLicenseModule } from '../../ee/client/hooks/useHasLicenseModule';
 import { ClientLogger } from '../../lib/ClientLogger';
 import type { OmnichannelContextValue } from '../contexts/OmnichannelContext';
 import { OmnichannelContext } from '../contexts/OmnichannelContext';
-import { useLicense } from '../hooks/useLicense';
 import { useReactiveValue } from '../hooks/useReactiveValue';
+import { useShouldPreventAction } from '../hooks/useShouldPreventAction';
 
 const emptyContextValue: OmnichannelContextValue = {
 	inquiries: { enabled: false },
@@ -41,7 +41,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 	const omniChannelEnabled = useSetting('Livechat_enabled') as boolean;
 	const omnichannelRouting = useSetting('Livechat_Routing_Method');
 	const showOmnichannelQueueLink = useSetting('Livechat_show_queue_list_link') as boolean;
-	const omnichannelPoolMaxIncoming = useSetting('Livechat_guest_pool_max_number_incoming_livechats_displayed') as number;
+	const omnichannelPoolMaxIncoming = useSetting<number>('Livechat_guest_pool_max_number_incoming_livechats_displayed') ?? 0;
 	const omnichannelSortingMechanism = useSetting('Omnichannel_sorting_mechanism') as OmnichannelSortingMechanismSettingType;
 
 	const loggerRef = useRef(new ClientLogger('OmnichannelProvider'));
@@ -76,9 +76,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 		enabled: isPrioritiesEnabled,
 	});
 
-	const { data: { preventedActions } = {} } = useLicense();
-
-	const isOverMacLimit = Boolean(preventedActions?.monthlyActiveContacts);
+	const isOverMacLimit = useShouldPreventAction('monthlyActiveContacts');
 
 	useEffect(() => {
 		if (!isPrioritiesEnabled) {
@@ -132,16 +130,13 @@ const OmnichannelProvider: FC = ({ children }) => {
 			}
 
 			return LivechatInquiry.find(
-				{
-					status: 'queued',
-					$or: [{ defaultAgent: { $exists: false } }, { 'defaultAgent.agentId': user?._id }],
-				},
+				{ status: 'queued' },
 				{
 					sort: getOmniChatSortQuery(omnichannelSortingMechanism),
 					limit: omnichannelPoolMaxIncoming,
 				},
 			).fetch();
-		}, [manuallySelected, omnichannelPoolMaxIncoming, omnichannelSortingMechanism, user?._id]),
+		}, [manuallySelected, omnichannelPoolMaxIncoming, omnichannelSortingMechanism]),
 	);
 
 	queue?.map(({ rid }) => {

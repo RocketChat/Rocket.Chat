@@ -28,21 +28,3 @@ export function useStream<N extends StreamNames>(
 	const { getStream } = useContext(ServerContext);
 	return useMemo(() => getStream(streamName, options), [getStream, streamName, options]);
 }
-
-/*
- * @param streamName The name of the stream to subscribe to
- * @returns A function that can be used to subscribe to the stream
- * the main difference between this and useStream is that this function
- * will only subscribe to the `stream + key` only once, but you can still add multiple callbacks
- * to the same path
- */
-export function useSingleStream<N extends StreamNames>(
-	streamName: N,
-	options?: {
-		retransmit?: boolean;
-		retransmitToSelf?: boolean;
-	},
-): StreamerCallback<N> {
-	const { getSingleStream } = useContext(ServerContext);
-	return useMemo(() => getSingleStream(streamName, options), [getSingleStream, streamName, options]);
-}

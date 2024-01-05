@@ -2,7 +2,7 @@ import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useTranslation, useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import Page from '../../../../client/components/Page';
+import { Page, PageHeader, PageContent } from '../../../../client/components/Page';
 import UnitEdit from './UnitEdit';
 import UnitEditWithData from './UnitEditWithData';
 import UnitsTable from './UnitsTable';
@@ -17,16 +17,16 @@ const UnitsPage = () => {
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('Units')}>
+				<PageHeader title={t('Units')}>
 					<ButtonGroup>
 						<Button onClick={() => router.navigate('/omnichannel/units/new')} title={t('New_Unit')}>
 							{t('Create_unit')}
 						</Button>
 					</ButtonGroup>
-				</Page.Header>
-				<Page.Content>
+				</PageHeader>
+				<PageContent>
 					<UnitsTable />
-				</Page.Content>
+				</PageContent>
 			</Page>
 			{context === 'edit' && id && <UnitEditWithData unitId={id} />}
 			{context === 'new' && <UnitEdit />}

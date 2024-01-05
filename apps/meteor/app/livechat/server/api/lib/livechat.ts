@@ -58,6 +58,7 @@ export function findGuest(token: string): Promise<ILivechatVisitor | null> {
 			token: 1,
 			visitorEmails: 1,
 			department: 1,
+			activity: 1,
 		},
 	});
 }

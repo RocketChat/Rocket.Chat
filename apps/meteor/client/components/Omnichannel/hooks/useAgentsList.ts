@@ -29,7 +29,7 @@ export const useAgentsList = (
 	const reload = useCallback(() => setItemsList(new RecordList<AgentOption>()), []);
 
 	const getAgents = useEndpoint('GET', '/v1/livechat/users/agent');
-	const { text, onlyAvailable = false, showIdleAgents = false, excludeId, haveAll, haveNoAgentsSelectedOption } = options;
+	const { text, onlyAvailable = false, showIdleAgents = true, excludeId, haveAll, haveNoAgentsSelectedOption } = options;
 
 	useComponentDidUpdate(() => {
 		options && reload();

@@ -19,7 +19,7 @@ const DeviceManagementAdminRoute = (): ReactElement => {
 	const hasDeviceManagement = useHasLicenseModule('device-management') as boolean;
 	const canViewDeviceManagement = usePermission('view-device-management');
 
-	const { shouldShowUpsell, cloudWorkspaceHadTrial, handleGoFullyFeatured, handleTalkToSales } = useUpsellActions(hasDeviceManagement);
+	const { shouldShowUpsell, handleManageSubscription } = useUpsellActions(hasDeviceManagement);
 
 	useEffect(() => {
 		if (shouldShowUpsell) {
@@ -29,15 +29,13 @@ const DeviceManagementAdminRoute = (): ReactElement => {
 					img={getURL('images/device-management.png')}
 					subtitle={t('Ensure_secure_workspace_access')}
 					description={t('Manage_which_devices')}
-					cancelText={t('Talk_to_an_expert')}
-					confirmText={cloudWorkspaceHadTrial ? t('Learn_more') : t('Start_a_free_trial')}
 					onClose={() => setModal(null)}
-					onConfirm={handleGoFullyFeatured}
-					onCancel={handleTalkToSales}
+					onConfirm={handleManageSubscription}
+					onCancel={() => setModal(null)}
 				/>,
 			);
 		}
-	}, [shouldShowUpsell, router, setModal, t, cloudWorkspaceHadTrial, handleGoFullyFeatured, handleTalkToSales]);
+	}, [shouldShowUpsell, router, setModal, t, handleManageSubscription]);
 
 	if (isModalOpen) {
 		return <PageSkeleton />;

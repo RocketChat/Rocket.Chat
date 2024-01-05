@@ -8,7 +8,6 @@ import { hasAtLeastOnePermission, hasPermission } from '../../app/authorization/
 import { ChatMessage } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
 import { t } from '../../app/utils/lib/i18n';
-import { callbacks } from '../../lib/callbacks';
 import { dispatchToastMessage } from '../lib/toast';
 
 Meteor.methods<ServerMethods>({
@@ -74,7 +73,6 @@ Meteor.methods<ServerMethods>({
 				username: me.username,
 			};
 
-			message = (await callbacks.run('beforeSaveMessage', message)) as IEditedMessage;
 			const messageObject: Partial<IEditedMessage> = {
 				editedAt: message.editedAt,
 				editedBy: message.editedBy,

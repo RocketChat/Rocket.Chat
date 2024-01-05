@@ -1,3 +1,4 @@
+import type { OutgoingIntegrationEvent } from './IIntegration';
 import type { IMessage } from './IMessage';
 import type { IRocketChatRecord } from './IRocketChatRecord';
 
@@ -7,7 +8,7 @@ export interface IIntegrationHistory extends IRocketChatRecord {
 	integration: {
 		_id: string;
 	};
-	event: string;
+	event: OutgoingIntegrationEvent;
 	_createdAt: Date;
 	_updatedAt: Date;
 	data?: {

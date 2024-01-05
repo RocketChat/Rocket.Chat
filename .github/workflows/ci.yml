@@ -80,9 +80,49 @@ jobs:
           echo "DOCKER_TAG: ${DOCKER_TAG}"
           echo "gh-docker-tag=${DOCKER_TAG}" >> $GITHUB_OUTPUT
 
+  notify-draft-services:
+    name: 🚀 Notify external services - draft
+    runs-on: ubuntu-20.04
+    needs: [release-versions]
+    steps:
+      - uses: Bhacaz/checkout-files@v2
+        with:
+          files: package.json
+          branch: ${{ github.ref }}
+
+      - name: Register release on cloud as Draft
+        if: github.event_name == 'release'
+        env:
+          UPDATE_TOKEN: ${{ secrets.UPDATE_TOKEN }}
+        run: |
+          REPO_VERSION=$(node -p "require('./package.json').version")
+
+          if [[ '${{ github.event_name }}' = 'release' ]]; then
+            GIT_TAG="${GITHUB_REF#*tags/}"
+            GIT_BRANCH=""
+            ARTIFACT_NAME="${REPO_VERSION}"
+            RC_VERSION=$GIT_TAG
+
+            if [[ '${{ needs.release-versions.outputs.release }}' = 'release-candidate' ]]; then
+              RC_RELEASE=candidate
+            elif [[ '${{ needs.release-versions.outputs.release }}' = 'latest' ]]; then
+              RC_RELEASE=stable
+            fi
+          else
+            GIT_TAG=""
+            GIT_BRANCH="${GITHUB_REF#*heads/}"
+            ARTIFACT_NAME="${REPO_VERSION}.$GITHUB_SHA"
+            RC_VERSION="${REPO_VERSION}"
+            RC_RELEASE=develop
+          fi;
+
+          curl -H "Content-Type: application/json" -H "X-Update-Token: $UPDATE_TOKEN" -d \
+              "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"compatibleMongoVersions\": [\"4.4\", \"5.0\", \"6.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"draft\", \"draftAs\": \"$RC_RELEASE\"}" \
+              https://releases.rocket.chat/update
+
   packages-build:
     name: 📦 Build Packages
-    needs: [release-versions]
+    needs: [release-versions, notify-draft-services]
     runs-on: ubuntu-20.04
     steps:
       - name: Github Info
@@ -100,7 +140,7 @@ jobs:
         with:
           swap-size-gb: 4
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
@@ -138,12 +178,12 @@ jobs:
           echo "github.event_name: ${{ github.event_name }}"
           cat $GITHUB_EVENT_PATH
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: ./.github/actions/meteor-build
         with:
           node-version: ${{ needs.release-versions.outputs.node-version }}
-          coverage: true
+          coverage: ${{ github.event_name != 'release' }}
 
   build-prod:
     name: 📦 Meteor Build - official
@@ -162,12 +202,12 @@ jobs:
           echo "github.event_name: ${{ github.event_name }}"
           cat $GITHUB_EVENT_PATH
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: ./.github/actions/meteor-build
         with:
           node-version: ${{ needs.release-versions.outputs.node-version }}
-          coverage: false
+          coverage: ${{ github.event_name != 'release' }}
 
   build-gh-docker-coverage:
     name: 🚢 Build Docker Images for Testing
@@ -187,7 +227,7 @@ jobs:
         platform: ['official', 'alpine']
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # we only build and publish the actual docker images if not a PR from a fork
       - uses: ./.github/actions/build-docker
@@ -216,7 +256,7 @@ jobs:
         platform: ['official', 'alpine']
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: ./.github/actions/build-docker
         with:
@@ -415,7 +455,7 @@ jobs:
     needs: [build, checks, release-versions]
     if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Restore build
         uses: actions/download-artifact@v3

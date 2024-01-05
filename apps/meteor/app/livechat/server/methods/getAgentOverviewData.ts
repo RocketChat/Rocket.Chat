@@ -1,18 +1,16 @@
+import type { ConversationData } from '@rocket.chat/core-services';
+import { OmnichannelAnalytics } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
-import type { ServerMethods, TranslationKey } from '@rocket.chat/ui-contexts';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
-import { Livechat } from '../lib/Livechat';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		'livechat:getAgentOverviewData'(options: { chartOptions: { name: string } }): {
-			head: { name: TranslationKey }[];
-			data: { name: string; value: number | string }[];
-		};
+		'livechat:getAgentOverviewData'(options: { chartOptions: { name: string } }): ConversationData | void;
 	}
 }
 
@@ -28,11 +26,10 @@ Meteor.methods<ServerMethods>({
 		}
 
 		if (!options.chartOptions?.name) {
-			Livechat.logger.warn('Incorrect analytics options');
 			return;
 		}
 
 		const user = await Users.findOneById(uid, { projection: { _id: 1, utcOffset: 1 } });
-		return Livechat.Analytics.getAgentOverviewData({ ...options, utcOffset: user?.utcOffset || 0 });
+		return OmnichannelAnalytics.getAgentOverviewData({ ...options, utcOffset: user?.utcOffset || 0 });
 	},
 });

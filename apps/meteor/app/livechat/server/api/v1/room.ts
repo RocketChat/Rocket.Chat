@@ -24,7 +24,6 @@ import { hasPermissionAsync } from '../../../../authorization/server/functions/h
 import { addUserToRoom } from '../../../../lib/server/functions/addUserToRoom';
 import { settings as rcSettings } from '../../../../settings/server';
 import { normalizeTransferredByData } from '../../lib/Helper';
-import { Livechat } from '../../lib/Livechat';
 import type { CloseRoomParams } from '../../lib/LivechatTyped';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
@@ -455,7 +454,7 @@ API.v1.addRoute(
 			}
 
 			// We want this both operations to be concurrent, so we have to go with Promise.allSettled
-			const result = await Promise.allSettled([Livechat.saveGuest(guestData, this.userId), Livechat.saveRoomInfo(roomData)]);
+			const result = await Promise.allSettled([LivechatTyped.saveGuest(guestData, this.userId), LivechatTyped.saveRoomInfo(roomData)]);
 
 			const firstError = result.find((item) => item.status === 'rejected');
 			if (firstError) {

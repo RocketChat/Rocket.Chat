@@ -2,12 +2,12 @@ import { Box, Icon, Skeleton, Scrollable } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import { useAnalyticsObject } from './hooks/useAnalyticsObject';
+import { useStatistics } from '../../hooks/useStatistics';
 
 const AnalyticsReports = () => {
 	const t = useTranslation();
 
-	const { data, isLoading, isSuccess, isError } = useAnalyticsObject();
+	const { data, isLoading, isSuccess, isError } = useStatistics();
 
 	return (
 		<Box display='flex' flexDirection='column' overflow='hidden' height='100%'>
