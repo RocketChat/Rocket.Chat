@@ -110,6 +110,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 		await Promise.all([isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive()].filter(Boolean));
 	});
 
+	const formId = useUniqueId();
 	const roomNameField = useUniqueId();
 	const ownerField = useUniqueId();
 	const roomDescription = useUniqueId();
@@ -125,7 +126,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 
 	return (
 		<>
-			<ContextualbarScrollableContent is='form' onSubmit={handleSubmit(handleSave)}>
+			<ContextualbarScrollableContent id={formId} is='form' onSubmit={handleSubmit(handleSave)}>
 				{room.t !== 'd' && (
 					<Box pbe={24} display='flex' justifyContent='center'>
 						<Controller
@@ -249,7 +250,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 												{...field}
 												disabled={isDeleting || isRoomFederated(room)}
 												checked={value}
-												aria-aria-describedby={`${readOnlyField}-hint`}
+												aria-describedby={`${readOnlyField}-hint`}
 											/>
 										)}
 									/>
@@ -335,7 +336,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 					<Button type='reset' disabled={!isDirty || isDeleting} onClick={() => reset()}>
 						{t('Reset')}
 					</Button>
-					<Button type='submit' disabled={!isDirty || isDeleting}>
+					<Button form={formId} type='submit' disabled={!isDirty || isDeleting}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
