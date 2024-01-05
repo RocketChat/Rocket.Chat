@@ -915,7 +915,7 @@
   "Connection_Closed": "接続が閉じられました",
   "Connection_Reset": "接続のリセット",
   "Connection_error": "接続エラー",
-  "Connection_success": "LDAP接続に成功しました",
+  "LDAP_Connection_successful": "LDAP接続に成功しました",
   "Connection_failed": "LDAP接続が失敗しました",
   "Connectivity_Services": "接続サービス",
   "Consulting": "コンサルティング",

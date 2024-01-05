@@ -69,22 +69,45 @@ export class CROWD {
 	}
 
 	async checkConnection() {
-		await this.crowdClient.ping();
+		return new Promise((resolve, reject) =>
+			this.crowdClient.ping((err: any) => {
+				if (err) {
+					reject(err);
+				}
+				resolve();
+			}),
+		);
 	}
 
-	async fetchCrowdUser(crowdUsername: string) {
-		const userResponse = await this.crowdClient.user.find(crowdUsername);
-
-		return {
-			displayname: userResponse['display-name'],
-			username: userResponse.name,
-			email: userResponse.email,
-			active: userResponse.active,
-			crowd_username: crowdUsername,
-		};
+	async fetchCrowdUser(crowdUsername: string): Promise<Record<string, any>> {
+		return new Promise((resolve, reject) =>
+			this.crowdClient.user.find(crowdUsername, (err: any, userResponse: Record<string, any>) => {
+				if (err) {
+					reject(err);
+				}
+				resolve({
+					displayname: userResponse['display-name'],
+					username: userResponse.name,
+					email: userResponse.email,
+					active: userResponse.active,
+					crowd_username: crowdUsername,
+				});
+			}),
+		);
 	}
 
-	async authenticate(username: string, password: string) {
+	async searchForCrowdUserByMail(email?: string): Promise<Record<string, any> | undefined> {
+		return new Promise((resolve) =>
+			this.crowdClient.search('user', `email=" ${email} "`, (err: any, response: Record<string, any>) => {
+				if (err) {
+					resolve(undefined);
+				}
+				resolve(response);
+			}),
+		);
+	}
+
+	async authenticate(username: string, password: string): Promise<Record<string, any> | undefined> {
 		if (!username || !password) {
 			logger.error('No username or password');
 			return;
@@ -134,24 +157,30 @@ export class CROWD {
 			logger.debug('New user. User is not synced yet.');
 		}
 		logger.debug('Going to crowd:', crowdUsername);
-		const auth = await this.crowdClient.user.authenticate(crowdUsername, password);
 
-		if (!auth) {
-			return;
-		}
+		return new Promise((resolve, reject) =>
+			this.crowdClient.user.authenticate(crowdUsername, password, async (err: any, res: Record<string, any>) => {
+				if (err) {
+					reject(err);
+				}
+				const user = res;
+				try {
+					const crowdUser: Record<string, any> = await this.fetchCrowdUser(crowdUsername);
+					if (user && settings.get('CROWD_Allow_Custom_Username') === true) {
+						crowdUser.username = user.name;
+					}
 
-		const crowdUser: Record<string, any> = await this.fetchCrowdUser(crowdUsername);
+					if (user) {
+						crowdUser._id = user._id;
+					}
+					crowdUser.password = password;
 
-		if (user && settings.get('CROWD_Allow_Custom_Username') === true) {
-			crowdUser.username = user.username;
-		}
-
-		if (user) {
-			crowdUser._id = user._id;
-		}
-		crowdUser.password = password;
-
-		return crowdUser;
+					resolve(crowdUser);
+				} catch (err) {
+					reject(err);
+				}
+			}),
+		);
 	}
 
 	async syncDataToUser(crowdUser: Record<string, any>, id: string) {
@@ -219,7 +248,7 @@ export class CROWD {
 				const email = user.emails?.[0].address;
 				logger.info('Attempting to find for user by email', email);
 
-				const response = this.crowdClient.searchSync('user', `email=" ${email} "`);
+				const response = await this.searchForCrowdUserByMail(email);
 				if (!response || response.users.length === 0) {
 					logger.warn('Could not find user in CROWD with username or email:', crowdUsername, email);
 					if (settings.get('CROWD_Remove_Orphaned_Users') === true) {
@@ -321,16 +350,17 @@ Accounts.registerLoginHandler('crowd', async function (this: typeof Accounts, lo
 		}
 
 		if (!user) {
-			logger.debug(`User ${loginRequest.username} is not allowd to access Rocket.Chat`);
+			logger.debug(`User ${loginRequest.username} is not allowed to access Rocket.Chat`);
 			return new Meteor.Error('not-authorized', 'User is not authorized by crowd');
 		}
 
 		const result = await crowd.updateUserCollection(user);
 
 		return result;
-	} catch (err) {
+	} catch (err: any) {
 		logger.debug({ err });
 		logger.error('Crowd user not authenticated due to an error');
+		throw new Meteor.Error('user-not-found', err.message);
 	}
 });
 

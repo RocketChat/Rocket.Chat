@@ -1046,7 +1046,7 @@
   "Connection_Closed": "Verbindung geschlossen",
   "Connection_Reset": "Verbindung zurücksetzen",
   "Connection_error": "Verbindungsfehler",
-  "Connection_success": "LDAP-Verbindung erfolgreich",
+  "LDAP_Connection_successful": "LDAP-Verbindung erfolgreich",
   "Connection_failed": "LDAP-Verbindung fehlgeschlagen",
   "Connectivity_Services": "Verbindungsdienste",
   "Consulting": "Beratung",

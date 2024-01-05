@@ -753,7 +753,7 @@
   "Connect": "Připojit",
   "Connection_Closed": "Připojení bylo uzavřeno",
   "Connection_Reset": "Obnovit připojení",
-  "Connection_success": "LDAP připojení úspěšné",
+  "LDAP_Connection_successful": "LDAP připojení úspěšné",
   "Connectivity_Services": "Služby připojení",
   "Consulting": "Konzultace",
   "Contact": "Kontakt",

@@ -795,7 +795,7 @@
   "Connect": "연결",
   "Connection_Closed": "연결이 닫혔습니다.",
   "Connection_Reset": "연결 재설정",
-  "Connection_success": "LDAP 연결 성공",
+  "LDAP_Connection_successful": "LDAP 연결 성공",
   "Connectivity_Services": "연결 서비스",
   "Consulting": "컨설팅",
   "Contact": "연락처",

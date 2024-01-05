@@ -1007,7 +1007,7 @@
   "Connection_Closed": "Połączenie zamknięte",
   "Connection_Reset": "Reset połączenia",
   "Connection_error": "Błąd połączenia",
-  "Connection_success": "Nawiązano połączenie z LDAP",
+  "LDAP_Connection_successful": "Nawiązano połączenie z LDAP",
   "Connection_failed": "Nie można nawiązać połączenia z LDAP",
   "Connectivity_Services": "Usługi łączności",
   "Consulting": "Doradztwo",
