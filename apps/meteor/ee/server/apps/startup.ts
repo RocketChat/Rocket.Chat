@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Apps } from './orchestrator';
+import { Apps, createAppsSettings } from './orchestrator';
 
-Meteor.startup(function _appServerOrchestrator() {
+Meteor.startup(async function _appServerOrchestrator() {
+	await createAppsSettings();
 	Apps.initialize();
 
 	void Apps.load();

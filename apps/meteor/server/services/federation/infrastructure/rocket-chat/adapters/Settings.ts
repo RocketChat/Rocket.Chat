@@ -12,6 +12,7 @@ import type { IFederationBridgeRegistrationFile } from '../../../domain/IFederat
 
 const EVERYTHING_REGEX = '.*';
 const LISTEN_RULES = EVERYTHING_REGEX;
+let settingsStarted = false;
 
 export class RocketChatSettingsAdapter {
 	public async initialize() {
@@ -173,8 +174,11 @@ export class RocketChatSettingsAdapter {
 	}
 
 	private async addFederationSettings(): Promise<void> {
+		settingsStarted = true;
 		const preExistingConfiguration = this.getRegistrationFileFromHomeserver();
-
+		if (settingsStarted) {
+			return;
+		}
 		await createFederationV1Settings();
 
 		await settingsRegistry.add('Federation_Matrix_enabled', Boolean(preExistingConfiguration), {

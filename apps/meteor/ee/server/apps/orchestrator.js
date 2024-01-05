@@ -251,58 +251,58 @@ export class AppServerOrchestrator {
 
 export const AppEvents = AppInterface;
 export const Apps = new AppServerOrchestrator();
+export const createAppsSettings = () =>
+	settingsRegistry.addGroup('General', async function () {
+		await this.section('Apps', async function () {
+			await this.add('Apps_Logs_TTL', '30_days', {
+				type: 'select',
+				values: [
+					{
+						key: '7_days',
+						i18nLabel: 'Apps_Logs_TTL_7days',
+					},
+					{
+						key: '14_days',
+						i18nLabel: 'Apps_Logs_TTL_14days',
+					},
+					{
+						key: '30_days',
+						i18nLabel: 'Apps_Logs_TTL_30days',
+					},
+				],
+				public: true,
+				hidden: false,
+				alert: 'Apps_Logs_TTL_Alert',
+			});
 
-await settingsRegistry.addGroup('General', async function () {
-	await this.section('Apps', async function () {
-		await this.add('Apps_Logs_TTL', '30_days', {
-			type: 'select',
-			values: [
-				{
-					key: '7_days',
-					i18nLabel: 'Apps_Logs_TTL_7days',
-				},
-				{
-					key: '14_days',
-					i18nLabel: 'Apps_Logs_TTL_14days',
-				},
-				{
-					key: '30_days',
-					i18nLabel: 'Apps_Logs_TTL_30days',
-				},
-			],
-			public: true,
-			hidden: false,
-			alert: 'Apps_Logs_TTL_Alert',
-		});
+			await this.add('Apps_Framework_Source_Package_Storage_Type', 'gridfs', {
+				type: 'select',
+				values: [
+					{
+						key: 'gridfs',
+						i18nLabel: 'GridFS',
+					},
+					{
+						key: 'filesystem',
+						i18nLabel: 'FileSystem',
+					},
+				],
+				public: true,
+				hidden: false,
+				alert: 'Apps_Framework_Source_Package_Storage_Type_Alert',
+			});
 
-		await this.add('Apps_Framework_Source_Package_Storage_Type', 'gridfs', {
-			type: 'select',
-			values: [
-				{
-					key: 'gridfs',
-					i18nLabel: 'GridFS',
+			await this.add('Apps_Framework_Source_Package_Storage_FileSystem_Path', '', {
+				type: 'string',
+				public: true,
+				enableQuery: {
+					_id: 'Apps_Framework_Source_Package_Storage_Type',
+					value: 'filesystem',
 				},
-				{
-					key: 'filesystem',
-					i18nLabel: 'FileSystem',
-				},
-			],
-			public: true,
-			hidden: false,
-			alert: 'Apps_Framework_Source_Package_Storage_Type_Alert',
-		});
-
-		await this.add('Apps_Framework_Source_Package_Storage_FileSystem_Path', '', {
-			type: 'string',
-			public: true,
-			enableQuery: {
-				_id: 'Apps_Framework_Source_Package_Storage_Type',
-				value: 'filesystem',
-			},
-			alert: 'Apps_Framework_Source_Package_Storage_FileSystem_Alert',
+				alert: 'Apps_Framework_Source_Package_Storage_FileSystem_Alert',
+			});
 		});
 	});
-});
 
 settings.watch('Apps_Framework_Source_Package_Storage_Type', (value) => {
 	if (!Apps.isInitialized()) {
