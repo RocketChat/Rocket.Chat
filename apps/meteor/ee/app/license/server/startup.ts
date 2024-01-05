@@ -1,5 +1,5 @@
 import { api } from '@rocket.chat/core-services';
-import type { LicenseLimitKind } from '@rocket.chat/license';
+import type { LicenseLimitKind } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Subscriptions, Users, Settings, LivechatVisitors } from '@rocket.chat/models';
 import { wrapExceptions } from '@rocket.chat/tools';
@@ -8,6 +8,7 @@ import moment from 'moment';
 import { syncWorkspace } from '../../../../app/cloud/server/functions/syncWorkspace';
 import { settings } from '../../../../app/settings/server';
 import { callbacks } from '../../../../lib/callbacks';
+import { applyLicense, applyLicenseOrRemove } from './applyLicense';
 import { getAppCount } from './lib/getAppCount';
 
 settings.watch<string>('Site_Url', (value) => {
@@ -25,22 +26,10 @@ License.onInvalidateLicense(async () => {
 	await Settings.updateValueById('Enterprise_License_Status', 'Invalid');
 });
 
-const applyLicense = async (license: string, isNewLicense: boolean): Promise<boolean> => {
-	const enterpriseLicense = (license ?? '').trim();
-	if (!enterpriseLicense) {
-		return false;
-	}
-
-	if (enterpriseLicense === License.encryptedLicense) {
-		return false;
-	}
-
-	try {
-		return License.setLicense(enterpriseLicense, isNewLicense);
-	} catch {
-		return false;
-	}
-};
+License.onRemoveLicense(async () => {
+	await Settings.updateValueById('Enterprise_License', '');
+	await Settings.updateValueById('Enterprise_License_Status', 'Invalid');
+});
 
 /**
  * This is a debounced function that will sync the workspace data to the cloud.
@@ -99,7 +88,11 @@ const syncByTrigger = async (contexts: string[]) => {
 		}),
 	);
 
-	await syncWorkspace();
+	try {
+		await syncWorkspace();
+	} catch (error) {
+		console.error(error);
+	}
 };
 
 // When settings are loaded, apply the current license if there is one.
@@ -112,9 +105,15 @@ settings.onReady(async () => {
 	}
 
 	// After the current license is already loaded, watch the setting value to react to new licenses being applied.
-	settings.watch<string>('Enterprise_License', async (license) => applyLicense(license, true));
+	settings.change<string>('Enterprise_License', (license) => applyLicenseOrRemove(license, true));
 
-	callbacks.add('workspaceLicenseChanged', async (updatedLicense) => applyLicense(updatedLicense, true));
+	callbacks.add('workspaceLicenseRemoved', () => License.remove());
+
+	callbacks.add('workspaceLicenseChanged', (updatedLicense) => applyLicense(updatedLicense, true));
+
+	License.onInstall(async () => void api.broadcast('license.actions', {} as Record<Partial<LicenseLimitKind>, boolean>));
+
+	License.onInvalidate(async () => void api.broadcast('license.actions', {} as Record<Partial<LicenseLimitKind>, boolean>));
 
 	License.onBehaviorTriggered('prevent_action', (context) => syncByTriggerDebounced(`prevent_action_${context.limit}`));
 

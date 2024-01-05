@@ -2757,5 +2757,6 @@
   "registration.component.form.invalidConfirmPass": "கடவுச்சொல்லை உறுதிப்படுத்தும் கடவுச்சொல் பொருந்தவில்லை",
   "registration.component.form.confirmPassword": "உங்கள் கடவுச்சொல்லை உறுதிப்படுத்துக",
   "registration.component.form.sendConfirmationEmail": "உறுதிப்படுத்தும் மின்னஞ்சல் அனுப்பவும்",
+  "Enterprise": "நிறுவன",
   "UpgradeToGetMore_engagement-dashboard_Title": "அனலிட்டிக்ஸ்"
 }

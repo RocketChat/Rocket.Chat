@@ -2746,5 +2746,6 @@
   "registration.component.form.invalidConfirmPass": "Нууц үг баталгаажуулалт нь нууц үгтэй таарахгүй байна",
   "registration.component.form.confirmPassword": "Нууц үгээ батлах",
   "registration.component.form.sendConfirmationEmail": "Баталгаажуулах имэйл илгээх",
+  "Enterprise": "Аж ахуйн нэгж",
   "UpgradeToGetMore_engagement-dashboard_Title": "Аналитик"
 }

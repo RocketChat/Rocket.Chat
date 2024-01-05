@@ -1,13 +1,15 @@
-import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, Grid, Button } from '@rocket.chat/fuselage';
-import { Card, CardBody, CardTitle, FramedIcon } from '@rocket.chat/ui-client';
+import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, Button, ButtonGroup, CardGrid } from '@rocket.chat/fuselage';
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { GenericCard } from '../../../../components/GenericCard';
+import { useExternalLink } from '../../../../hooks/useExternalLink';
 import { PRICING_LINK } from '../utils/links';
 
 type UpgradeToGetMoreProps = {
 	activeModules: string[];
 	isEnterprise: boolean;
+	children: React.ReactNode;
 };
 
 const enterpriseModules = [
@@ -19,8 +21,9 @@ const enterpriseModules = [
 	'auditing',
 ];
 
-const UpgradeToGetMore = ({ activeModules }: UpgradeToGetMoreProps) => {
+const UpgradeToGetMore = ({ activeModules, children }: UpgradeToGetMoreProps) => {
 	const { t } = useTranslation();
+	const handleOpenLink = useExternalLink();
 
 	const upgradeModules = enterpriseModules
 		.filter((module) => !activeModules.includes(module))
@@ -32,40 +35,40 @@ const UpgradeToGetMore = ({ activeModules }: UpgradeToGetMoreProps) => {
 		});
 
 	if (upgradeModules?.length === 0) {
-		return null;
+		return (
+			<ButtonGroup large vertical>
+				{children}
+			</ButtonGroup>
+		);
 	}
 
 	return (
-		<Box w='full' textAlign='center' p={8} mbs={40}>
+		<Box w='full' p={8} mbs={40}>
 			<States>
 				<StatesIcon name='rocket' />
 				<StatesTitle>{t('UpgradeToGetMore_Headline')}</StatesTitle>
 				<StatesSubtitle>{t('UpgradeToGetMore_Subtitle')}</StatesSubtitle>
 			</States>
-			<Grid mbe={48} mbs={8}>
-				{upgradeModules.map(({ title, body }, index) => (
-					<Grid.Item lg={4} xs={4} p={8} key={index}>
-						<Card>
-							<CardTitle>
-								<Box display='flex' alignItems='center'>
-									<FramedIcon type='success' icon='check' />
-									<Box mis={8} is='h4'>
-										{title}
-									</Box>
-								</Box>
-							</CardTitle>
-							<CardBody>
-								<Box color='font-secondary-info' textAlign='left'>
-									{body}
-								</Box>
-							</CardBody>
-						</Card>
-					</Grid.Item>
-				))}
-			</Grid>
-			<Button is='a' external href={PRICING_LINK}>
-				{t('Compare_plans')}
-			</Button>
+			<CardGrid
+				breakpoints={{
+					xs: 4,
+					sm: 4,
+					md: 4,
+					lg: 6,
+					xl: 4,
+					p: 8,
+				}}
+			>
+				{upgradeModules.map((card, index) => {
+					return <GenericCard key={index} icon='check' type='success' height='full' {...card} />;
+				})}
+			</CardGrid>
+			<ButtonGroup large vertical pbs={24}>
+				<Button icon='new-window' onClick={() => handleOpenLink(PRICING_LINK)} role='link'>
+					{t('Compare_plans')}
+				</Button>
+				{children}
+			</ButtonGroup>
 		</Box>
 	);
 };

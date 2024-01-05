@@ -238,7 +238,7 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 			},
 		};
 
-		const agent = await this.col.findOneAndUpdate(query, update, { sort, returnDocument: 'after' });
+		const agent = await this.findOneAndUpdate(query, update, { sort, returnDocument: 'after' });
 		if (agent?.value) {
 			return {
 				agentId: agent.value.agentId,
@@ -336,7 +336,7 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 			},
 		};
 
-		const bot = await this.col.findOneAndUpdate(query, update, { sort, returnDocument: 'after' });
+		const bot = await this.findOneAndUpdate(query, update, { sort, returnDocument: 'after' });
 		if (bot?.value) {
 			return {
 				agentId: bot.value.agentId,

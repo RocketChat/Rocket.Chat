@@ -1,5 +1,96 @@
 # @rocket.chat/ui-video-conf
 
+## 3.0.2
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.2
+
+## 3.0.1
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.1
+
+## 3.0.0
+
+### Patch Changes
+
+- Updated dependencies [7da1edf866]
+  - @rocket.chat/ui-contexts@3.0.0
+
+## 3.0.0-rc.19
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.19
+
+## 3.0.0-rc.18
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.18
+
+## 3.0.0-rc.17
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.17
+
+## 3.0.0-rc.16
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.16
+
+## 3.0.0-rc.15
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.15
+
+## 3.0.0-rc.14
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.14
+
+## 3.0.0-rc.13
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.13
+
+## 3.0.0-rc.12
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.12
+
+## 3.0.0-rc.11
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.11
+
+## 3.0.0-rc.10
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.10
+
+## 3.0.0-rc.9
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.9
+
+## 3.0.0-rc.8
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.8
+
 ## 3.0.0-rc.7
 
 ### Patch Changes

@@ -19,7 +19,7 @@ export const useFilesList = (
 } => {
 	const [filesList, setFilesList] = useState(() => new FilesList(options));
 	const reload = useCallback(() => setFilesList(new FilesList(options)), [options]);
-	const room = useUserRoom(options.rid as string);
+	const room = useUserRoom(options.rid);
 	const uid = useUserId();
 
 	useComponentDidUpdate(() => {

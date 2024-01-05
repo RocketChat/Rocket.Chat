@@ -67,7 +67,6 @@ export async function getWorkspaceLicense() {
 		if (currentLicense.value && Date.parse(payload.updatedAt) <= currentLicense._updatedAt.getTime()) {
 			return;
 		}
-
 		await callbacks.run('workspaceLicenseChanged', payload.license);
 
 		return { updated: true, license: payload.license };

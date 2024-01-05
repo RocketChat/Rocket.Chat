@@ -2763,5 +2763,6 @@
   "registration.component.form.invalidConfirmPass": "Pengesahan kata laluan tidak sepadan dengan kata laluan",
   "registration.component.form.confirmPassword": "Sahkan kata laluan anda",
   "registration.component.form.sendConfirmationEmail": "Hantar e-mel pengesahan",
+  "Enterprise": "Enterprise",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analisis"
 }

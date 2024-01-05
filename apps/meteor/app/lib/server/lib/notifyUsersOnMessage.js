@@ -73,7 +73,7 @@ const incUserMentions = async (rid, roomType, uids, unreadCount) => {
 	await Subscriptions.incUserMentionsAndUnreadForRoomIdAndUserIds(rid, uids, 1, incUnread);
 };
 
-const getUserIdsFromHighlights = async (rid, message) => {
+export const getUserIdsFromHighlights = async (rid, message) => {
 	const highlightOptions = { projection: { 'userHighlights': 1, 'u._id': 1 } };
 	const subs = await Subscriptions.findByRoomWithUserHighlights(rid, highlightOptions).toArray();
 
@@ -191,4 +191,9 @@ export async function notifyUsersOnMessage(message, room) {
 	return message;
 }
 
-callbacks.add('afterSaveMessage', (message, room) => notifyUsersOnMessage(message, room), callbacks.priority.LOW, 'notifyUsersOnMessage');
+callbacks.add(
+	'afterSaveMessage',
+	(message, room) => notifyUsersOnMessage(message, room),
+	callbacks.priority.MEDIUM,
+	'notifyUsersOnMessage',
+);

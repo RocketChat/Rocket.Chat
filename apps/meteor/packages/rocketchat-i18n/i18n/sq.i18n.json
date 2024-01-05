@@ -2753,5 +2753,6 @@
   "registration.component.form.invalidConfirmPass": "Konfirmimi Fjalëkalimi nuk përputhet me fjalëkalimin",
   "registration.component.form.confirmPassword": "Konfirmoni fjalëkalimin tuaj",
   "registration.component.form.sendConfirmationEmail": "Dërgo email konfirmimi",
+  "Enterprise": "Ndërmarrje",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analitikë"
 }

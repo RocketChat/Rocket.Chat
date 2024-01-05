@@ -1,5 +1,186 @@
 # @rocket.chat/omnichannel-transcript
 
+## 0.3.2
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.2
+- @rocket.chat/omnichannel-services@0.1.2
+- @rocket.chat/pdf-worker@0.0.26
+- @rocket.chat/core-services@0.3.2
+- @rocket.chat/model-typings@0.2.2
+- @rocket.chat/models@0.0.26
+
+## 0.3.1
+
+### Patch Changes
+
+- Updated dependencies [c2b224fd82]
+  - @rocket.chat/core-typings@6.5.1
+  - @rocket.chat/omnichannel-services@0.1.1
+  - @rocket.chat/core-services@0.3.1
+  - @rocket.chat/pdf-worker@0.0.25
+  - @rocket.chat/model-typings@0.2.1
+  - @rocket.chat/models@0.0.25
+
+## 0.3.0
+
+### Minor Changes
+
+- 5f81a0f3cb: Implemented the License library, it is used to handle the functionality like expiration date, modules, limits, etc.
+  Also added a version v3 of the license, which contains an extended list of features.
+  v2 is still supported, since we convert it to v3 on the fly.
+
+### Patch Changes
+
+- Updated dependencies [dea1fe9191]
+- Updated dependencies [c0ef13a0bf]
+- Updated dependencies [223dce18a3]
+- Updated dependencies [5b9d6883bf]
+- Updated dependencies [92613680b7]
+- Updated dependencies [ec1b2b9846]
+- Updated dependencies [5f81a0f3cb]
+- Updated dependencies [dea1fe9191]
+  - @rocket.chat/core-typings@6.5.0
+  - @rocket.chat/model-typings@0.2.0
+  - @rocket.chat/core-services@0.3.0
+  - @rocket.chat/tools@0.2.0
+  - @rocket.chat/omnichannel-services@0.1.0
+  - @rocket.chat/pdf-worker@0.0.24
+  - @rocket.chat/models@0.0.24
+
+## 0.3.0-rc.19
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.19
+- @rocket.chat/omnichannel-services@0.1.0-rc.19
+- @rocket.chat/pdf-worker@0.0.24-rc.12
+- @rocket.chat/core-services@0.3.0-rc.19
+- @rocket.chat/model-typings@0.2.0-rc.19
+- @rocket.chat/models@0.0.24-rc.12
+
+## 0.3.0-rc.18
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.18
+- @rocket.chat/omnichannel-services@0.1.0-rc.18
+- @rocket.chat/pdf-worker@0.0.24-rc.11
+- @rocket.chat/core-services@0.3.0-rc.18
+- @rocket.chat/model-typings@0.2.0-rc.18
+- @rocket.chat/models@0.0.24-rc.11
+
+## 0.3.0-rc.17
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.17
+- @rocket.chat/omnichannel-services@0.1.0-rc.17
+- @rocket.chat/pdf-worker@0.0.24-rc.10
+- @rocket.chat/core-services@0.3.0-rc.17
+- @rocket.chat/model-typings@0.2.0-rc.17
+- @rocket.chat/models@0.0.24-rc.10
+
+## 0.3.0-rc.16
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.16
+- @rocket.chat/omnichannel-services@0.1.0-rc.16
+- @rocket.chat/pdf-worker@0.0.24-rc.9
+- @rocket.chat/core-services@0.3.0-rc.16
+- @rocket.chat/model-typings@0.2.0-rc.16
+- @rocket.chat/models@0.0.24-rc.9
+
+## 0.3.0-rc.15
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.15
+- @rocket.chat/omnichannel-services@0.1.0-rc.15
+- @rocket.chat/pdf-worker@0.0.24-rc.8
+- @rocket.chat/core-services@0.3.0-rc.15
+- @rocket.chat/model-typings@0.2.0-rc.15
+- @rocket.chat/models@0.0.24-rc.8
+
+## 0.3.0-rc.14
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.14
+- @rocket.chat/omnichannel-services@0.1.0-rc.14
+- @rocket.chat/pdf-worker@0.0.24-rc.7
+- @rocket.chat/core-services@0.3.0-rc.14
+- @rocket.chat/model-typings@0.2.0-rc.14
+- @rocket.chat/models@0.0.24-rc.7
+
+## 0.3.0-rc.13
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.13
+- @rocket.chat/omnichannel-services@0.1.0-rc.13
+- @rocket.chat/pdf-worker@0.0.24-rc.6
+- @rocket.chat/core-services@0.3.0-rc.13
+- @rocket.chat/model-typings@0.2.0-rc.13
+- @rocket.chat/models@0.0.24-rc.6
+
+## 0.3.0-rc.12
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.12
+- @rocket.chat/omnichannel-services@0.1.0-rc.12
+- @rocket.chat/pdf-worker@0.0.24-rc.5
+- @rocket.chat/core-services@0.3.0-rc.12
+- @rocket.chat/model-typings@0.2.0-rc.12
+- @rocket.chat/models@0.0.24-rc.5
+
+## 0.3.0-rc.11
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.11
+- @rocket.chat/omnichannel-services@0.1.0-rc.11
+- @rocket.chat/pdf-worker@0.0.24-rc.4
+- @rocket.chat/core-services@0.3.0-rc.11
+- @rocket.chat/model-typings@0.2.0-rc.11
+- @rocket.chat/models@0.0.24-rc.4
+
+## 0.3.0-rc.10
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.10
+- @rocket.chat/omnichannel-services@0.1.0-rc.10
+- @rocket.chat/pdf-worker@0.0.24-rc.3
+- @rocket.chat/core-services@0.3.0-rc.10
+- @rocket.chat/model-typings@0.2.0-rc.10
+- @rocket.chat/models@0.0.24-rc.3
+
+## 0.3.0-rc.9
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.9
+- @rocket.chat/omnichannel-services@0.1.0-rc.9
+- @rocket.chat/pdf-worker@0.0.24-rc.2
+- @rocket.chat/core-services@0.3.0-rc.9
+- @rocket.chat/model-typings@0.2.0-rc.9
+- @rocket.chat/models@0.0.24-rc.2
+
+## 0.3.0-rc.8
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.8
+- @rocket.chat/omnichannel-services@0.1.0-rc.8
+- @rocket.chat/pdf-worker@0.0.24-rc.1
+- @rocket.chat/core-services@0.3.0-rc.8
+- @rocket.chat/model-typings@0.2.0-rc.8
+- @rocket.chat/models@0.0.24-rc.1
+
 ## 0.3.0-rc.7
 
 ### Patch Changes
