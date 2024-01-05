@@ -294,7 +294,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				},
 			],
 			prid: { $exists: false },
-			$and: [{ $or: [{ federated: { $exists: false } }, { federated: false }] }],
+			$and: [
+				{ $or: [{ federated: { $exists: false } }, { federated: false }] },
+				{ $or: [{ archived: { $exists: false } }, { archived: false }] },
+			],
 		};
 
 		return this.find(query, options);
