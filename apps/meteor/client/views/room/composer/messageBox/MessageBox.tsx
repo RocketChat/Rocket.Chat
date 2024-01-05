@@ -38,7 +38,7 @@ import { useRoom } from '../../contexts/RoomContext';
 import ComposerUserActionIndicator from '../ComposerUserActionIndicator';
 import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
-import MessageBoxActionsToolbarBuilder from './MessageBoxActionsToolbar';
+import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxReplies from './MessageBoxReplies';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
@@ -411,7 +411,7 @@ const MessageBox = ({
 								disabled={isRecording || !canSend}
 							/>
 						)}
-						<MessageBoxActionsToolbarBuilder
+						<MessageBoxActionsToolbar
 							canSend={canSend}
 							typing={typing}
 							isMicrophoneDenied={isMicrophoneDenied}

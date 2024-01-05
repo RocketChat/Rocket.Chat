@@ -32,7 +32,7 @@ const LayoutProvider: FC = ({ children }) => {
 				return;
 			}
 
-			setHiddenActions({ ...hiddenActionsDefaultValue, ...event.data.actions });
+			setHiddenActions({ ...hiddenActionsDefaultValue, ...event.data.hideActions });
 		};
 		window.addEventListener('message', eventHandler);
 		return () => window.removeEventListener('message', eventHandler);
