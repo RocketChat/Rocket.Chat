@@ -68,7 +68,7 @@ export class CROWD {
 		this.crowdClient = new AtlassianCrowd(this.options);
 	}
 
-	async checkConnection() {
+	async checkConnection(): Promise<void> {
 		return new Promise((resolve, reject) =>
 			this.crowdClient.ping((err: any) => {
 				if (err) {
