@@ -4200,7 +4200,7 @@
   "Quote": "Quote",
   "Random": "Random",
   "Rate Limiter": "Rate Limiter",
-  "Rate Limiter_Description": "Control the rate of requests sent or recieved by your server to prevent cyber attacks and scraping.",
+  "Rate Limiter_Description": "Control the rate of requests sent or received by your server to prevent cyber attacks and scraping.",
   "Rate_Limiter_Limit_RegisterUser": "Default number calls to the rate limiter for registering a user",
   "Rate_Limiter_Limit_RegisterUser_Description": "Number of default calls for user registering endpoints(REST and real-time API's), allowed within the time range defined in the API Rate Limiter section.",
   "React_when_read_only": "Allow Reacting",
