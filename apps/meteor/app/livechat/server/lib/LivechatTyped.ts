@@ -360,6 +360,44 @@ class LivechatClass {
 		}
 	}
 
+	async getNewRoom(
+		guest: ILivechatVisitor,
+		message: Pick<IMessage, 'rid' | 'msg' | 'token'>,
+		roomInfo: {
+			source?: IOmnichannelRoom['source'];
+			[key: string]: unknown;
+		},
+		agent?: SelectedAgent,
+		extraData?: Record<string, unknown>,
+	) {
+		const defaultAgent = await callbacks.run('livechat.checkDefaultAgentOnNewRoom', agent, guest);
+		// if no department selected verify if there is at least one active and pick the first
+		if (!defaultAgent && !guest.department) {
+			const department = await this.getRequiredDepartment();
+			if (department) {
+				this.logger.debug({
+					msg: 'No department or default agent selected. Assigning to department',
+					visitorId: guest._id,
+					department,
+				});
+				guest.department = department._id;
+			}
+		}
+
+		// delegate room creation to QueueManager
+		this.logger.debug({
+			msg: 'Calling QueueManager to request a room',
+			visitorId: guest._id,
+		});
+		return QueueManager.requestRoom({
+			guest,
+			message,
+			roomInfo,
+			agent: defaultAgent,
+			extraData,
+		});
+	}
+
 	async getRoom(
 		guest: ILivechatVisitor,
 		message: Pick<IMessage, 'rid' | 'msg' | 'token'>,
@@ -373,14 +411,23 @@ class LivechatClass {
 		if (!this.enabled()) {
 			throw new Meteor.Error('error-omnichannel-is-disabled');
 		}
-		Livechat.logger.debug(`Attempting to find or create a room for visitor ${guest._id}`);
+
+		this.logger.debug({
+			msg: 'Getting room for visitor',
+			visitor: guest,
+		});
+
 		let room = await LivechatRooms.findOneById(message.rid);
 		let newRoom = false;
 
 		if (room && !room.open) {
-			Livechat.logger.debug(`Last room for visitor ${guest._id} closed. Creating new one`);
 			message.rid = Random.id();
 			room = null;
+
+			this.logger.debug({
+				msg: 'Room is closed. Opening new one',
+				room: message.rid,
+			});
 		}
 
 		if (
@@ -395,39 +442,18 @@ class LivechatClass {
 		}
 
 		if (room == null) {
-			const defaultAgent = await callbacks.run('livechat.checkDefaultAgentOnNewRoom', agent, guest);
-			// if no department selected verify if there is at least one active and pick the first
-			if (!defaultAgent && !guest.department) {
-				const department = await this.getRequiredDepartment();
-				Livechat.logger.debug(`No department or default agent selected for ${guest._id}`);
-
-				if (department) {
-					Livechat.logger.debug(`Assigning ${guest._id} to department ${department._id}`);
-					guest.department = department._id;
-				}
-			}
-
-			// delegate room creation to QueueManager
-			Livechat.logger.debug(`Calling QueueManager to request a room for visitor ${guest._id}`);
-			room = await QueueManager.requestRoom({
-				guest,
-				message,
-				roomInfo,
-				agent: defaultAgent,
-				extraData,
-			});
+			room = await this.getNewRoom(guest, message, roomInfo, agent, extraData);
+			await Messages.setRoomIdByToken(guest.token, room._id);
 			newRoom = true;
-
-			Livechat.logger.debug(`Room obtained for visitor ${guest._id} -> ${room._id}`);
 		}
 
 		if (!room || room.v.token !== guest.token) {
-			Livechat.logger.debug(`Visitor ${guest._id} trying to access another visitor's room`);
+			this.logger.error({
+				msg: 'Room does not exist or belongs to another visitor',
+				visitorId: guest._id,
+				roomId: room?._id,
+			});
 			throw new Meteor.Error('cannot-access-room');
-		}
-
-		if (newRoom) {
-			await Messages.setRoomIdByToken(guest.token, room._id);
 		}
 
 		return { room, newRoom };

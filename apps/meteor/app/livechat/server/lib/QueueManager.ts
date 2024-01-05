@@ -18,9 +18,13 @@ export const saveQueueInquiry = async (inquiry: ILivechatInquiryRecord) => {
 
 export const queueInquiry = async (inquiry: ILivechatInquiryRecord, defaultAgent?: SelectedAgent) => {
 	const inquiryAgent = await RoutingManager.delegateAgent(defaultAgent, inquiry);
-	logger.debug(`Delegating inquiry with id ${inquiry._id} to agent ${defaultAgent?.username}`);
+	logger.debug({
+		msg: 'Routing inquiry',
+		inquiryId: inquiry._id,
+		inquiryAgent,
+	});
 
-	await callbacks.run('livechat.beforeRouteChat', inquiry, inquiryAgent);
+	const dbInquiry = await callbacks.run('livechat.beforeRouteChat', inquiry, inquiryAgent);
 	const room = await LivechatRooms.findOneById(inquiry.rid, { projection: { v: 1 } });
 	if (!room || !(await Omnichannel.isWithinMACLimit(room))) {
 		logger.error({ msg: 'MAC limit reached, not routing inquiry', inquiry });
@@ -28,11 +32,6 @@ export const queueInquiry = async (inquiry: ILivechatInquiryRecord, defaultAgent
 		// Minimizing disruption
 		await saveQueueInquiry(inquiry);
 		return;
-	}
-	const dbInquiry = await LivechatInquiry.findOneById(inquiry._id);
-
-	if (!dbInquiry) {
-		throw new Error('inquiry-not-found');
 	}
 
 	if (dbInquiry.status === 'ready') {
@@ -85,10 +84,8 @@ export const QueueManager: queueManager = {
 
 		const room = await LivechatRooms.findOneById(await createLivechatRoom(rid, name, guest, roomInfo, extraData));
 		if (!room) {
-			logger.error(`Room for visitor ${guest._id} not found`);
 			throw new Error('room-not-found');
 		}
-		logger.debug(`Room for visitor ${guest._id} created with id ${room._id}`);
 
 		const inquiry = await LivechatInquiry.findOneById(
 			await createLivechatInquiry({
@@ -100,18 +97,25 @@ export const QueueManager: queueManager = {
 			}),
 		);
 		if (!inquiry) {
-			logger.error(`Inquiry for visitor ${guest._id} not found`);
 			throw new Error('inquiry-not-found');
 		}
+
+		logger.debug({
+			msg: 'New room created',
+			rid,
+			inquiryId: inquiry._id,
+		});
 
 		await LivechatRooms.updateRoomCount();
 
 		await queueInquiry(inquiry, agent);
-		logger.debug(`Inquiry ${inquiry._id} queued`);
+		logger.debug({
+			msg: 'Inquiry queued',
+			inquiryId: inquiry._id,
+		});
 
 		const newRoom = await LivechatRooms.findOneById(rid);
 		if (!newRoom) {
-			logger.error(`Room with id ${rid} not found`);
 			throw new Error('room-not-found');
 		}
 

@@ -14,6 +14,9 @@ import { cbLogger } from '../lib/logger';
 callbacks.add(
 	'livechat.beforeRouteChat',
 	async (inquiry, agent) => {
+		if (!inquiry) {
+			return inquiry;
+		}
 		// check here if department has fallback before queueing
 		if (inquiry?.department && !(await online(inquiry.department, true, true))) {
 			const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'fallbackForwardDepartment'>>(
@@ -31,22 +34,20 @@ callbacks.add(
 					`Inquiry ${inquiry._id} will be moved from department ${department._id} to fallback department ${department.fallbackForwardDepartment}`,
 				);
 				// update visitor
-				await Livechat.setDepartmentForGuest({
-					token: inquiry?.v?.token,
-					department: department.fallbackForwardDepartment,
-				});
-				// update inquiry
-				inquiry = (await LivechatInquiry.setDepartmentByInquiryId(inquiry._id, department.fallbackForwardDepartment)) ?? inquiry;
-				// update room
-				await LivechatRooms.setDepartmentByRoomId(inquiry.rid, department.fallbackForwardDepartment);
+
+				const [inq] = await Promise.all([
+					LivechatInquiry.setDepartmentByInquiryId(inquiry._id, department.fallbackForwardDepartment),
+					Livechat.setDepartmentForGuest({
+						token: inquiry?.v?.token,
+						department: department.fallbackForwardDepartment,
+					}),
+					LivechatRooms.setDepartmentByRoomId(inquiry.rid, department.fallbackForwardDepartment),
+				]);
+				inquiry = inq ?? inquiry;
 			}
 		}
 
 		if (!settings.get('Livechat_waiting_queue')) {
-			return inquiry;
-		}
-
-		if (!inquiry) {
 			return inquiry;
 		}
 
@@ -69,7 +70,7 @@ callbacks.add(
 				queueSortBy: getInquirySortMechanismSetting(),
 			});
 			if (inq) {
-				await dispatchInquiryPosition(inq);
+				void dispatchInquiryPosition(inq);
 			}
 		}
 

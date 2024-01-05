@@ -117,11 +117,10 @@ export const createLivechatRoom = async (
 	);
 
 	const roomId = (await Rooms.insertOne(room)).insertedId;
+	await sendMessage(guest, { t: 'livechat-started', msg: '', groupable: false }, room);
 
 	void Apps.triggerEvent(AppEvents.IPostLivechatRoomStarted, room);
-	await callbacks.run('livechat.newRoom', room);
-
-	await sendMessage(guest, { t: 'livechat-started', msg: '', groupable: false }, room);
+	void callbacks.run('livechat.newRoom', room);
 
 	return roomId;
 };
@@ -193,7 +192,6 @@ export const createLivechatInquiry = async ({
 	};
 
 	const result = (await LivechatInquiry.insertOne(inquiry)).insertedId;
-	logger.debug(`Inquiry ${result} created for visitor ${_id}`);
 
 	return result;
 };
@@ -338,7 +336,6 @@ export const dispatchInquiryQueued = async (inquiry: ILivechatInquiryRecord, age
 	if (!inquiry?._id) {
 		return;
 	}
-	logger.debug(`Notifying agents of new inquiry ${inquiry._id} queued`);
 
 	const { department, rid, v } = inquiry;
 	const room = await LivechatRooms.findOneById(rid);
@@ -358,12 +355,12 @@ export const dispatchInquiryQueued = async (inquiry: ILivechatInquiryRecord, age
 
 	// Alert only the online agents of the queued request
 	const onlineAgents = await LivechatTyped.getOnlineAgents(department, agent);
-	if (!onlineAgents) {
+	const total = await onlineAgents?.count();
+	if (!onlineAgents || !total) {
 		logger.debug('Cannot notify agents of queued inquiry. No online agents found');
 		return;
 	}
 
-	logger.debug(`Notifying ${await onlineAgents.count()} agents of new inquiry`);
 	const notificationUserName = v && (v.name || v.username);
 
 	for await (const agent of onlineAgents) {

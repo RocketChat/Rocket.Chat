@@ -5,9 +5,6 @@ import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingMa
 import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
 
-let contactManagerPreferred = false;
-let lastChattedAgentPreferred = false;
-
 const normalizeDefaultAgent = (agent?: Pick<IUser, '_id' | 'username'> | null): SelectedAgent | null => {
 	if (!agent) {
 		return null;
@@ -26,8 +23,7 @@ const getDefaultAgent = async (username?: string): Promise<SelectedAgent | null>
 };
 
 settings.watch<boolean>('Livechat_last_chatted_agent_routing', (value) => {
-	lastChattedAgentPreferred = value;
-	if (!lastChattedAgentPreferred) {
+	if (!value) {
 		callbacks.remove('livechat.onMaxNumberSimultaneousChatsReached', 'livechat-on-max-number-simultaneous-chats-reached');
 		callbacks.remove('livechat.afterTakeInquiry', 'livechat-save-default-agent-after-take-inquiry');
 		return;
@@ -78,10 +74,6 @@ settings.watch<boolean>('Livechat_last_chatted_agent_routing', (value) => {
 	);
 });
 
-settings.watch<boolean>('Omnichannel_contact_manager_routing', (value) => {
-	contactManagerPreferred = value;
-});
-
 callbacks.add(
 	'livechat.checkDefaultAgentOnNewRoom',
 	async (defaultAgent, defaultGuest) => {
@@ -98,12 +90,13 @@ callbacks.add(
 		}
 
 		const { lastAgent, token, contactManager } = guest;
-		const guestManager = contactManager?.username && contactManagerPreferred && getDefaultAgent(contactManager?.username);
+		const guestManager =
+			contactManager?.username && settings.get<boolean>('Omnichannel_contact_manager_routing') && getDefaultAgent(contactManager?.username);
 		if (guestManager) {
 			return guestManager;
 		}
 
-		if (!lastChattedAgentPreferred) {
+		if (!settings.get<boolean>('Livechat_last_chatted_agent_routing')) {
 			return defaultAgent;
 		}
 
@@ -125,9 +118,7 @@ callbacks.add(
 		if (!usernameByRoom) {
 			return defaultAgent;
 		}
-		const lastRoomAgent = normalizeDefaultAgent(
-			await Users.findOneOnlineAgentByUserList(usernameByRoom, { projection: { _id: 1, username: 1 } }),
-		);
+		const lastRoomAgent = getDefaultAgent(usernameByRoom);
 		return lastRoomAgent ?? defaultAgent;
 	},
 	callbacks.priority.MEDIUM,

@@ -36,7 +36,7 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 		this.logger = new Logger('VoIPService');
 		this.commandHandler = new CommandHandler(db);
 		if (!voipEnabled()) {
-			this.logger.warn({ msg: 'Voip is not enabled. Cant start the service' });
+			this.logger.debug({ msg: 'Voip is not enabled. Cant start the service' });
 			return;
 		}
 		// Init from constructor if we already have
@@ -45,9 +45,9 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 	}
 
 	async init(): Promise<void> {
-		this.logger.info('Starting VoIP service');
+		this.logger.debug('Starting VoIP service');
 		if (this.active) {
-			this.logger.warn({ msg: 'VoIP service already started' });
+			this.logger.debug({ msg: 'VoIP service already started' });
 			return;
 		}
 
@@ -62,9 +62,9 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 	}
 
 	async stop(): Promise<void> {
-		this.logger.info('Stopping VoIP service');
+		this.logger.debug('Stopping VoIP service');
 		if (!this.active) {
-			this.logger.warn({ msg: 'VoIP service already stopped' });
+			this.logger.debug({ msg: 'VoIP service already stopped' });
 			return;
 		}
 
@@ -79,7 +79,7 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 	}
 
 	async refresh(): Promise<void> {
-		this.logger.info('Restarting VoIP service due to settings changes');
+		this.logger.debug('Restarting VoIP service due to settings changes');
 		try {
 			// Disable voip service
 			await this.stop();
