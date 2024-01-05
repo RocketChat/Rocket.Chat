@@ -491,88 +491,117 @@ describe('[Channels]', function () {
 				.end(done);
 		});
 
-		it('should succeed when joining code-free channel without join code', (done) => {
-			request
-				.post(api('channels.join'))
-				.set(credentials)
-				.send({
-					roomId: testChannelNoCode._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('channel._id', testChannelNoCode._id);
-				})
-				.end(done);
-		});
-
-		it('should fail when joining code-needed channel without join code and no join-without-join-code permission', (done) => {
-			updatePermission('join-without-join-code', []).then(() => {
+		describe('code-free channel', () => {
+			it('should succeed when joining code-free channel without join code', (done) => {
 				request
 					.post(api('channels.join'))
 					.set(credentials)
 					.send({
-						roomId: testChannelWithCode._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.nested.property('errorType', 'error-code-invalid');
-					})
-					.end(done);
-			});
-		});
-
-		it('should succeed when joining code-needed channel without join code and with join-without-join-code permission', (done) => {
-			updatePermission('join-without-join-code', ['admin']).then(() => {
-				request
-					.post(api('channels.join'))
-					.set(credentials)
-					.send({
-						roomId: testChannelWithCode._id,
+						roomId: testChannelNoCode._id,
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.nested.property('channel._id', testChannelWithCode._id);
+						expect(res.body).to.have.nested.property('channel._id', testChannelNoCode._id);
 					})
 					.end(done);
 			});
 		});
 
-		it('leave channel', (done) => {
-			request
-				.post(api('channels.leave'))
-				.set(credentials)
-				.send({
-					roomId: testChannelWithCode._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
-		});
+		describe('code-needed channel', () => {
+			describe('without join-without-join-code permission', () => {
+				before('set join-without-join-code permission to false', async () => {
+					await updatePermission('join-without-join-code', []);
+				});
 
-		it('should succeed when joining code-needed channel with join code', (done) => {
-			request
-				.post(api('channels.join'))
-				.set(credentials)
-				.send({
-					roomId: testChannelWithCode._id,
-					joinCode: '123',
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('channel._id', testChannelWithCode._id);
-				})
-				.end(done);
+				it('should fail when joining code-needed channel without join code and no join-without-join-code permission', (done) => {
+					request
+						.post(api('channels.join'))
+						.set(credentials)
+						.send({
+							roomId: testChannelWithCode._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.nested.property('errorType', 'error-code-required');
+						})
+						.end(done);
+				});
+
+				it('should fail when joining code-needed channel with incorrect join code and no join-without-join-code permission', (done) => {
+					request
+						.post(api('channels.join'))
+						.set(credentials)
+						.send({
+							roomId: testChannelWithCode._id,
+							joinCode: 'WRONG_CODE',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.nested.property('errorType', 'error-code-invalid');
+						})
+						.end(done);
+				});
+
+				it('should succeed when joining code-needed channel with join code', (done) => {
+					request
+						.post(api('channels.join'))
+						.set(credentials)
+						.send({
+							roomId: testChannelWithCode._id,
+							joinCode: '123',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.nested.property('channel._id', testChannelWithCode._id);
+						})
+						.end(done);
+				});
+			});
+
+			describe('with join-without-join-code permission', () => {
+				before('set join-without-join-code permission to true', async () => {
+					await updatePermission('join-without-join-code', ['admin']);
+				});
+
+				before('leave channel', (done) => {
+					request
+						.post(api('channels.leave'))
+						.set(credentials)
+						.send({
+							roomId: testChannelWithCode._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+						})
+						.end(done);
+				});
+
+				it('should succeed when joining code-needed channel without join code and with join-without-join-code permission', (done) => {
+					request
+						.post(api('channels.join'))
+						.set(credentials)
+						.send({
+							roomId: testChannelWithCode._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.nested.property('channel._id', testChannelWithCode._id);
+						})
+						.end(done);
+				});
+			});
 		});
 	});
 
