@@ -1,12 +1,7 @@
-import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
+import type { ISetting, ISettingColor, LoginServiceConfiguration } from '@rocket.chat/core-typings';
 import { isSettingAction, isSettingColor } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
-import {
-	isOauthCustomConfiguration,
-	isSettingsUpdatePropDefault,
-	isSettingsUpdatePropsActions,
-	isSettingsUpdatePropsColor,
-} from '@rocket.chat/rest-typings';
+import { isSettingsUpdatePropDefault, isSettingsUpdatePropsActions, isSettingsUpdatePropsColor } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import type { FindOptions } from 'mongodb';
@@ -71,11 +66,13 @@ API.v1.addRoute(
 	{ authRequired: false },
 	{
 		async get() {
-			const oAuthServicesEnabled = await ServiceConfiguration.configurations.find({}, { fields: { secret: 0 } }).fetchAsync();
+			const oAuthServicesEnabled = (await ServiceConfiguration.configurations
+				.find({}, { fields: { secret: 0 } })
+				.fetchAsync()) as LoginServiceConfiguration[];
 
 			return API.v1.success({
 				services: oAuthServicesEnabled.map((service) => {
-					if (!isOauthCustomConfiguration(service)) {
+					if (!service) {
 						return service;
 					}
 
