@@ -157,7 +157,7 @@ export class DDPStreamer extends ServiceClass {
 		try {
 			const versions = await MeteorService.getAutoUpdateClientVersions();
 
-			Object.keys(versions).forEach((key) => {
+			Object.keys(versions || {}).forEach((key) => {
 				Autoupdate.updateVersion(versions[key]);
 			});
 
