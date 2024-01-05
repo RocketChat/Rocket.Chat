@@ -1,5 +1,81 @@
 # @rocket.chat/meteor
 
+## 6.5.2
+
+### Patch Changes
+
+- a075950e23: Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+- 84c4b0709e: Fixed conversations in queue being limited to 50 items
+- 886d92009e: Fix wrong value used for Workspace Registration
+  - @rocket.chat/core-typings@6.5.2
+  - @rocket.chat/rest-typings@6.5.2
+  - @rocket.chat/api-client@0.1.20
+  - @rocket.chat/license@0.1.2
+  - @rocket.chat/omnichannel-services@0.1.2
+  - @rocket.chat/pdf-worker@0.0.26
+  - @rocket.chat/presence@0.1.2
+  - @rocket.chat/core-services@0.3.2
+  - @rocket.chat/cron@0.0.22
+  - @rocket.chat/gazzodown@3.0.2
+  - @rocket.chat/model-typings@0.2.2
+  - @rocket.chat/ui-contexts@3.0.2
+  - @rocket.chat/server-cloud-communication@0.0.1
+  - @rocket.chat/fuselage-ui-kit@3.0.2
+  - @rocket.chat/models@0.0.26
+  - @rocket.chat/ui-theming@0.1.1
+  - @rocket.chat/ui-client@3.0.2
+  - @rocket.chat/ui-video-conf@3.0.2
+  - @rocket.chat/web-ui-registration@3.0.2
+  - @rocket.chat/instance-status@0.0.26
+
+## 6.5.1
+
+### Patch Changes
+
+- c2b224fd82: Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+- c2b224fd82: Security improvements
+- c2b224fd82: Fixed issue with the new `custom-roles` license module not being checked throughout the application
+- c2b224fd82: fix: stop refetching banner data each 5 minutes
+- c2b224fd82: Fixed an issue allowing admin user cancelling subscription when license's trial param is provided
+- c2b224fd82: Fixed Country select component at Organization form from `onboarding-ui` package
+- c2b224fd82: fix Federation Regression, builds service correctly
+- c2b224fd82: fix: Wrong `Message Roundtrip Time` metric
+
+  Removes the wrong metric gauge named `rocketchat_messages_roundtrip_time` and replace it by a new summary metric named `rocketchat_messages_roundtrip_time_summary`. Add new percentiles `0.5, 0.95 and 1` to all summary metrics.
+
+- c2b224fd82: Exceeding API calls when sending OTR messages
+- c2b224fd82: Fixed a problem with the subscription creation on Omnichannel rooms.
+  Rooms were being created as seen, causing sound notifications to not work
+- c2b224fd82: Fixed a problem where chained callbacks' return value was being overrided by some callbacks returning something different, causing callbacks with lower priority to operate on invalid values
+- c2b224fd82: Fix desktop notification routing for direct rooms
+- c2b224fd82: Improved the experience of receiving conference calls on the mobile app by disabling the push notification for the "new call" message if a push is already being sent to trigger the phone's ringing tone.
+- c2b224fd82: Fixed verify the account through email link
+- c2b224fd82: Fixed the filter for file type in the list of room files
+- Updated dependencies [c2b224fd82]
+- Updated dependencies [c2b224fd82]
+  - @rocket.chat/rest-typings@6.5.1
+  - @rocket.chat/core-typings@6.5.1
+  - @rocket.chat/api-client@0.1.19
+  - @rocket.chat/omnichannel-services@0.1.1
+  - @rocket.chat/presence@0.1.1
+  - @rocket.chat/core-services@0.3.1
+  - @rocket.chat/ui-contexts@3.0.1
+  - @rocket.chat/license@0.1.1
+  - @rocket.chat/pdf-worker@0.0.25
+  - @rocket.chat/cron@0.0.21
+  - @rocket.chat/gazzodown@3.0.1
+  - @rocket.chat/model-typings@0.2.1
+  - @rocket.chat/ui-theming@0.1.1
+  - @rocket.chat/fuselage-ui-kit@3.0.1
+  - @rocket.chat/ui-client@3.0.1
+  - @rocket.chat/ui-video-conf@3.0.1
+  - @rocket.chat/web-ui-registration@3.0.1
+  - @rocket.chat/server-cloud-communication@0.0.1
+  - @rocket.chat/models@0.0.25
+  - @rocket.chat/instance-status@0.0.25
+
 ## 6.5.0
 
 ### Minor Changes
