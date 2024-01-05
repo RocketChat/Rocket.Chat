@@ -72,10 +72,18 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 		reset,
 		handleSubmit,
 		formState: { isDirty, errors, dirtyFields },
-	} = useForm({ defaultValues: getInitialValues(room) });
+	} = useForm({ values: getInitialValues(room) });
 
-	const { canViewName, canViewTopic, canViewAnnouncement, canViewArchived, canViewDescription, canViewType, canViewReadOnly } =
-		useEditAdminRoomPermissions(room);
+	const {
+		canViewName,
+		canViewTopic,
+		canViewAnnouncement,
+		canViewArchived,
+		canViewDescription,
+		canViewType,
+		canViewReadOnly,
+		canViewReactWhenReadOnly,
+	} = useEditAdminRoomPermissions(room);
 
 	const { roomType, readOnly, archived } = watch();
 
@@ -258,7 +266,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 								<FieldHint id={`${readOnlyField}-hint`}>{t('Only_authorized_users_can_write_new_messages')}</FieldHint>
 							</Field>
 						)}
-						{readOnly && (
+						{canViewReactWhenReadOnly && readOnly && (
 							<Field>
 								<FieldRow>
 									<FieldLabel htmlFor={reactWhenReadOnly}>{t('React_when_read_only')}</FieldLabel>
