@@ -10,4 +10,3 @@ export * as UserStatus from './UserStatus';
 export * from './Header';
 export * from './MultiSelectCustom/MultiSelectCustom';
 export * from './FeaturePreview/FeaturePreview';
-export * from './FramedIcon';

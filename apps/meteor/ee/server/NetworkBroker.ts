@@ -60,6 +60,7 @@ export class NetworkBroker implements IBroker {
 			await this.broker.waitForServices(method.split('.')[0], waitForServicesTimeout);
 		} catch (err) {
 			console.error(err);
+			throw new Error('Dependent services not available');
 		}
 
 		const context = asyncLocalStorage.getStore();
