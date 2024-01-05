@@ -28,10 +28,16 @@ const PinMessageModal = ({ message, ...props }: PinMessageModalProps): ReactElem
 
 	return (
 		<GenericModal icon='pin' title={t('Pin_Message')} variant='warning' confirmText={t('Yes_pin_message')} {...props}>
-			<Box mbe={16}>{t('Are_you_sure_you_want_to_pin_this_message')}</Box>
+			<Box mbe={16} is='p'>
+				{t('Are_you_sure_you_want_to_pin_this_message')}
+			</Box>
 			<QuoteAttachment attachment={attachment} />
-			<Box mbs={16}>{t('Pinned_messages_are_visible_to_everyone')}</Box>
-			<Box>{t('Starred_messages_are_only_visible_to_you')}</Box>
+			<Box is='p' fontScale='c1' mbs={16}>
+				{t('Pinned_messages_are_visible_to_everyone')}
+			</Box>
+			<Box is='p' fontScale='c1'>
+				{t('Starred_messages_are_only_visible_to_you')}
+			</Box>
 		</GenericModal>
 	);
 };
