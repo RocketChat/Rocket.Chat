@@ -8,6 +8,8 @@ import type { IBroker, IBrokerNode } from './types/IBroker';
 import type { ServiceClass, IServiceClass } from './types/ServiceClass';
 
 export class LocalBroker implements IBroker {
+	private started = false;
+
 	private methods = new Map<string, (...params: any) => any>();
 
 	private events = new EventEmitter();
@@ -73,7 +75,9 @@ export class LocalBroker implements IBroker {
 
 			this.methods.set(`${namespace}.${method}`, i[method].bind(i));
 		}
-		void instance.started();
+		if (this.started) {
+			void instance.started();
+		}
 	}
 
 	onBroadcast(callback: (eventName: string, args: unknown[]) => void): void {
@@ -107,5 +111,6 @@ export class LocalBroker implements IBroker {
 
 	async start(): Promise<void> {
 		await Promise.all([...this.services].map((service) => service.started()));
+		this.started = true;
 	}
 }
