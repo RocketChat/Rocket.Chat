@@ -12,7 +12,7 @@ export const useMarkedAsDoneMessagesRoomAction = () => {
 			title: 'Done',
 			icon: 'checkmark-circled',
 			tabComponent: MarkedAsDoneMessagesTab,
-			order: 10,
+			order: 0,
 			type: 'organization',
 		}),
 		[],
