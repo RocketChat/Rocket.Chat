@@ -39,11 +39,11 @@ const MarkedAsDone = ({ message }: MarkedAsDoneProps): ReactElement => {
 			<div style={{color: color}}>
 				Marked as done ({numMarkedAsDone}/{numChannelUsers}): 
 			</div>
-			{data?.pages?.flatMap((page) => page.members).filter((marker : any) => marker.username && marker._id != message.u._id).map((member) => {
+			{data?.pages?.flatMap((page) => page.members).filter((member : any) => member.username && member._id != message.u._id).map((member) => {
 				const hasMarkedAsDone = message.markedAsDone ? message.markedAsDone.some((marker : any) => marker._id === member._id) : false;
 				const grayscale = hasMarkedAsDone ? "grayscale(0)" : "grayscale(1)";
 				const opacity = hasMarkedAsDone ? 1.0 : 0.3;
-				return (<UserAvatar key={member._id} size='x20' username={member.username} style={{filter: grayscale, opacity: opacity}}/>);
+				return (<UserAvatar key={member._id} size='x20' username={member.username!} style={{filter: grayscale, opacity: opacity}}/>);
 			})}
 		</div>
 	);

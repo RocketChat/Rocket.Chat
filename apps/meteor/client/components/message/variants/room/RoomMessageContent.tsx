@@ -1,5 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { isDiscussionMessage, isThreadMainMessage, isE2EEMessage, isQuoteAttachment, isPrivateMessage } from '@rocket.chat/core-typings';
+import { isDiscussionMessage, isThreadMainMessage, isE2EEMessage, isQuoteAttachment } from '@rocket.chat/core-typings';
 import { MessageBody } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useTranslation, useUserId } from '@rocket.chat/ui-contexts';

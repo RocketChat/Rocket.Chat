@@ -27,6 +27,9 @@ const MarkedAsDoneMessagesTab = () => {
 	const handleMarkAllAsDone = useMutableCallback((): void => {
 		const handleMarkAllAsDoneAction = async () => {
 			try {
+				if (!userId) {
+					throw new Error("Missing user id");
+				}
 				await markAllAsDoneAction({
 					roomId: room._id,
 					userId: userId
