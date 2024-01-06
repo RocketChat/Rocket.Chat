@@ -1,0 +1,8 @@
+.MarkedAsDoneContainer {
+    display: flex;
+    flex-flow: row wrap;
+    gap: 5px;
+    align-items: center;
+    font-style: italic;
+    font-size: 0.9em;
+}
