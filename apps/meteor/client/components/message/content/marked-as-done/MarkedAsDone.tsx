@@ -1,5 +1,4 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { MessageReactions, MessageReactionAction } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
@@ -29,8 +28,10 @@ const MarkedAsDone = ({ message }: MarkedAsDoneProps): ReactElement => {
 	const { data } = useMembersList(
 		useMemo(() => ({ rid: message.rid, type: "all", limit: 100, debouncedText: "", roomType: room.t as validRoomType }), [message.rid, room.t]),
 	);
-	const numChannelUsers = data?.pages[data.pages.length - 1].total ?? 0;
-	const numMarkedAsDone = message.markedAsDone ? message.markedAsDone.length : 0;
+
+	 // Note: We reduce by 1 because the message sender doesn't need to "acknowledge" the message.
+	const numChannelUsers = data?.pages[data.pages.length - 1].total ? data?.pages[data.pages.length - 1].total - 1 : 0;
+	const numMarkedAsDone = message.markedAsDone ? message.markedAsDone.filter((marker : any) => marker._id != message.u._id).length : 0;
 	const color = numMarkedAsDone >= numChannelUsers ? "green" : "#ff8c00"; 
 
 	return (
@@ -38,11 +39,7 @@ const MarkedAsDone = ({ message }: MarkedAsDoneProps): ReactElement => {
 			<div style={{color: color}}>
 				Marked as done ({numMarkedAsDone}/{numChannelUsers}): 
 			</div>
-			{data?.pages?.flatMap((page) => page.members).map((member) => {
-				if (!member.username) {
-					return <></>;
-				}
-
+			{data?.pages?.flatMap((page) => page.members).filter((marker : any) => marker.username && marker._id != message.u._id).map((member) => {
 				const hasMarkedAsDone = message.markedAsDone ? message.markedAsDone.some((marker : any) => marker._id === member._id) : false;
 				const grayscale = hasMarkedAsDone ? "grayscale(0)" : "grayscale(1)";
 				const opacity = hasMarkedAsDone ? 1.0 : 0.3;
