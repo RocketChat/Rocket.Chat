@@ -5,6 +5,7 @@ import type { ReactElement } from 'react';
 import React from 'react';
 
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
+import { useUserPreference } from '@rocket.chat/ui-contexts';
 import MessageContentBody from '../../MessageContentBody';
 import Attachments from '../Attachments';
 import AttachmentAuthor from './structure/AttachmentAuthor';
@@ -37,6 +38,7 @@ type QuoteAttachmentProps = {
 
 export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps): ReactElement => {
 	const formatTime = useTimeAgo();
+	const displayAvatarPreference = useUserPreference('displayAvatars');
 
 	return (
 		<>
@@ -50,7 +52,7 @@ export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps): ReactElem
 					borderInlineStartColor='light'
 				>
 					<AttachmentAuthor>
-						<AttachmentAuthorAvatar url={attachment.author_icon} />
+						{displayAvatarPreference && <AttachmentAuthorAvatar url={attachment.author_icon} />}
 						<AttachmentAuthorName
 							{...(attachment.author_link && { is: 'a', href: attachment.author_link, target: '_blank', color: 'hint' })}
 						>
