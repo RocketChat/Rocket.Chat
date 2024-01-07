@@ -340,10 +340,11 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 
 	watcher.on<ILoginServiceConfiguration>(LoginServiceConfiguration.getCollectionName(), async ({ clientAction, id }) => {
 		const data = await LoginServiceConfiguration.findOne<Omit<ILoginServiceConfiguration, 'secret'>>(id, { projection: { secret: 0 } });
+		if (clientAction === 'removed') {
+			void broadcast('watch.loginServiceConfiguration', { clientAction, id, data: { _id: id } });
+		}
+
 		if (!data) {
-			if (clientAction === 'removed') {
-				void broadcast('watch.loginServiceConfiguration', { clientAction, id });
-			}
 			return;
 		}
 
