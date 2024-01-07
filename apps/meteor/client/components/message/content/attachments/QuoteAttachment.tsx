@@ -1,7 +1,7 @@
 import type { MessageQuoteAttachment } from '@rocket.chat/core-typings';
-import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
+import { useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
