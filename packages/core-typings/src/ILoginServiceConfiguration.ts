@@ -103,9 +103,11 @@ export type SAMLConfiguration = {
 };
 
 export type LoginServiceConfiguration = ILoginServiceConfiguration &
-	Partial<OAuthConfiguration> &
-	Partial<FacebookOAuthConfiguration> &
-	Partial<TwitterOAuthConfiguration> &
-	Partial<LinkedinOAuthConfiguration> &
-	Partial<CASConfiguration> &
-	Partial<SAMLConfiguration>;
+	(
+		| Partial<OAuthConfiguration>
+		| Partial<FacebookOAuthConfiguration>
+		| Partial<TwitterOAuthConfiguration>
+		| Partial<LinkedinOAuthConfiguration>
+		| Partial<CASConfiguration>
+		| Partial<SAMLConfiguration>
+	);

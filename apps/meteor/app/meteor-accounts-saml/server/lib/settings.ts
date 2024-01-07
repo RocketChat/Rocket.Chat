@@ -1,6 +1,6 @@
 import type { SAMLConfiguration } from '@rocket.chat/core-typings';
+import { LoginServiceConfiguration } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
-import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { settings, settingsRegistry } from '../../../settings/server';
@@ -116,7 +116,7 @@ export const loadSamlServiceProviders = async function (): Promise<void> {
 				if (value === true) {
 					const samlConfigs = getSamlConfigs(key);
 					SAMLUtils.log(key);
-					await ServiceConfiguration.configurations.upsertAsync(
+					await LoginServiceConfiguration.updateOne(
 						{
 							service: serviceName.toLowerCase(),
 						},
@@ -126,7 +126,7 @@ export const loadSamlServiceProviders = async function (): Promise<void> {
 					);
 					return configureSamlService(samlConfigs);
 				}
-				await ServiceConfiguration.configurations.removeAsync({
+				await LoginServiceConfiguration.deleteOne({
 					service: serviceName.toLowerCase(),
 				});
 				return false;
