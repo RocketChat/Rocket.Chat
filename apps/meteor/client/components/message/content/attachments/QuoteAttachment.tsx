@@ -1,11 +1,11 @@
 import type { MessageQuoteAttachment } from '@rocket.chat/core-typings';
+import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import React from 'react';
 
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
-import { useUserPreference } from '@rocket.chat/ui-contexts';
 import MessageContentBody from '../../MessageContentBody';
 import Attachments from '../Attachments';
 import AttachmentAuthor from './structure/AttachmentAuthor';
