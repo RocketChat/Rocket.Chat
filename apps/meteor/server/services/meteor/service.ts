@@ -152,12 +152,9 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 					return;
 				}
 
-				// per the event definition, data will always be defined when clientAction is not 'removed'
-				if (data) {
-					serviceConfigCallbacks.forEach((callbacks) => {
-						callbacks[clientAction === 'inserted' ? 'added' : 'changed']?.(id, data);
-					});
-				}
+				serviceConfigCallbacks.forEach((callbacks) => {
+					callbacks[clientAction === 'inserted' ? 'added' : 'changed']?.(id, data);
+				});
 			});
 		}
 
