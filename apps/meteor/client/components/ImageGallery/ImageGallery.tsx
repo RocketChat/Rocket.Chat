@@ -109,10 +109,10 @@ const ImageGallery = () => {
 	return createPortal(
 		<FocusScope contain restoreFocus autoFocus>
 			<Box className={swiperStyle}>
-				<div className='swiper-container'>
+				<div className='swiper-container' onClick={onClose}>
 					<IconButton icon='cross' aria-label='Close gallery' className='rcx-swiper-close-button' onClick={onClose} />
-					<IconButton icon='chevron-right' className='rcx-swiper-prev-button' />
-					<IconButton icon='chevron-left' className='rcx-swiper-next-button' />
+					<IconButton icon='chevron-right' className='rcx-swiper-prev-button' onClick={(e) => e.stopPropagation()} />
+					<IconButton icon='chevron-left' className='rcx-swiper-next-button' onClick={(e) => e.stopPropagation()} />
 					<Swiper
 						ref={swiperRef}
 						navigation={{
@@ -131,7 +131,7 @@ const ImageGallery = () => {
 						{images?.map(({ _id, url }) => (
 							<SwiperSlide key={_id}>
 								<div className='swiper-zoom-container'>
-									<img src={url} loading='lazy' />
+									<img src={url} loading='lazy' onClick={(e) => e.stopPropagation()} />
 									<div className='rcx-lazy-preloader'>
 										<Throbber inheritColor />
 									</div>
