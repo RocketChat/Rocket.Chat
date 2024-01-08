@@ -15,7 +15,7 @@ callbacks.add(
 			return roomInfo;
 		}
 
-		const sla = await OmnichannelServiceLevelAgreements.findOneByIdOrName(searchTerm);
+		const sla = await OmnichannelServiceLevelAgreements.findOneByIdOrName(searchTerm, { projection: { _id: 1 } });
 		if (!sla) {
 			throw new Meteor.Error('error-invalid-sla', 'Invalid sla', {
 				function: 'livechat.beforeRoom',

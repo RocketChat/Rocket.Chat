@@ -213,7 +213,6 @@ export type Hook =
 	| 'beforeRemoveFromRoom'
 	| 'beforeValidateLogin'
 	| 'livechat.beforeForwardRoomToDepartment'
-	| 'livechat.beforeRoom'
 	| 'livechat.beforeRouteChat'
 	| 'livechat.chatQueued'
 	| 'livechat.checkAgentBeforeTakeInquiry'

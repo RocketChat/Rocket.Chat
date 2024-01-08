@@ -60,18 +60,6 @@ export const createLivechatRoom = async (
 	roomInfo: Partial<IOmnichannelRoom> = {},
 	extraData = {},
 ) => {
-	check(rid, String);
-	check(name, String);
-	check(
-		guest,
-		Match.ObjectIncluding({
-			_id: String,
-			username: String,
-			status: Match.Maybe(String),
-			department: Match.Maybe(String),
-		}),
-	);
-
 	const extraRoomInfo = await callbacks.run('livechat.beforeRoom', roomInfo, extraData);
 	const { _id, username, token, department: departmentId, status = 'online' } = guest;
 	const newRoomAt = new Date();
@@ -134,32 +122,17 @@ export const createLivechatInquiry = async ({
 	extraData,
 }: {
 	rid: string;
-	name?: string;
+	name: string;
 	guest?: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'department' | 'name' | 'token' | 'activity'>;
 	message?: Pick<IMessage, 'msg'>;
 	initialStatus?: LivechatInquiryStatus;
 	extraData?: Pick<ILivechatInquiryRecord, 'source'>;
 }) => {
-	check(rid, String);
-	check(name, String);
-	check(
-		guest,
-		Match.ObjectIncluding({
-			_id: String,
-			username: String,
-			status: Match.Maybe(String),
-			department: Match.Maybe(String),
-			activity: Match.Maybe([String]),
-		}),
-	);
-	check(
-		message,
-		Match.ObjectIncluding({
-			msg: String,
-		}),
-	);
-
 	const extraInquiryInfo = await callbacks.run('livechat.beforeInquiry', extraData);
+
+	if (!guest || !message) {
+		throw new Meteor.Error('error-invalid-params');
+	}
 
 	const { _id, username, token, department, status = UserStatus.ONLINE, activity } = guest;
 	const { msg } = message;

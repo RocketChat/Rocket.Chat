@@ -82,7 +82,7 @@ export const QueueManager: queueManager = {
 		const { rid } = message;
 		const name = (roomInfo?.fname as string) || guest.name || guest.username;
 
-		const room = await LivechatRooms.findOneById(await createLivechatRoom(rid, name, guest, roomInfo, extraData));
+		const room = await createLivechatRoom(rid, name, guest, roomInfo, extraData);
 		if (!room) {
 			throw new Error('room-not-found');
 		}
@@ -156,7 +156,9 @@ export const QueueManager: queueManager = {
 		if (!room) {
 			throw new Error('room-not-found');
 		}
-		const inquiry = await LivechatInquiry.findOneById(await createLivechatInquiry({ rid, name, guest, message, extraData: { source } }));
+		const inquiry = await LivechatInquiry.findOneById(
+			await createLivechatInquiry({ rid, name: name || guest.username, guest, message, extraData: { source } }),
+		);
 		if (!inquiry) {
 			throw new Error('inquiry-not-found');
 		}
