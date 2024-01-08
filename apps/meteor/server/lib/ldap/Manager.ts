@@ -213,8 +213,18 @@ export class LDAPManager {
 				}
 			}
 
-			if (!(await ldap.isUserAcceptedByGroupFilter(escapedUsername, ldapUser.dn))) {
-				throw new Error('User not in a valid group');
+			const adminLdap = new LDAPConnection();
+			try {
+				try {
+					await adminLdap.connect();
+					if (!(await adminLdap.isUserAcceptedByGroupFilter(escapedUsername, ldapUser.dn))) {
+						throw new Error('User not in a valid group');
+					}
+				} catch (error) {
+					logger.error(error);
+				}
+			} finally {
+				adminLdap.disconnect();
 			}
 
 			return ldapUser;

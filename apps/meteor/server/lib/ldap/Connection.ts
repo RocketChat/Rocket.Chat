@@ -48,7 +48,7 @@ export class LDAPConnection {
 
 	private _connectionCallback: ILDAPCallback;
 
-	private usingAdminAuthentication: boolean;
+	private usingAuthentication: boolean;
 
 	constructor() {
 		this.ldapjs = ldapjs;
@@ -107,7 +107,7 @@ export class LDAPConnection {
 	}
 
 	public disconnect(): void {
-		this.usingAdminAuthentication = false;
+		this.usingAuthentication = false;
 		this.connected = false;
 		connLogger.info('Disconnecting');
 
@@ -258,7 +258,6 @@ export class LDAPConnection {
 		authLogger.info({ msg: 'Authenticating', dn });
 
 		try {
-			this.usingAdminAuthentication = false;
 			await this.bindDN(dn, password);
 
 			authLogger.info({ msg: 'Authenticated', dn });
@@ -662,7 +661,7 @@ export class LDAPConnection {
 	}
 
 	protected async maybeBindDN(): Promise<void> {
-		if (this.usingAdminAuthentication) {
+		if (this.usingAuthentication) {
 			return;
 		}
 
@@ -678,14 +677,14 @@ export class LDAPConnection {
 		bindLogger.info({ msg: 'Binding UserDN', userDN: this.options.authenticationUserDN });
 		try {
 			await this.bindDN(this.options.authenticationUserDN, this.options.authenticationPassword);
-			this.usingAdminAuthentication = true;
+			this.usingAuthentication = true;
 		} catch (error) {
 			authLogger.error({
 				msg: 'Base Authentication Issue',
 				err: error,
 				dn: this.options.authenticationUserDN,
 			});
-			this.usingAdminAuthentication = false;
+			this.usingAuthentication = false;
 		}
 	}
 
