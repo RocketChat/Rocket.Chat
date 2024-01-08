@@ -1425,6 +1425,12 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query);
 	}
 
+	countOnlineAgentsFromList(userList, isLivechatEnabledWhenAgentIdle) {
+		const query = queryStatusAgentOnline({ username: { $in: [].concat(userList) } }, isLivechatEnabledWhenAgentIdle);
+
+		return this.countDocuments(query);
+	}
+
 	findOneOnlineAgentByUserList(userList, options, isLivechatEnabledWhenAgentIdle) {
 		// TODO:: Create class Agent
 		const username = {

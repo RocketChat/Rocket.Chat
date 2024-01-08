@@ -343,18 +343,17 @@ class LivechatClass {
 	}
 
 	async getRequiredDepartment(onlineRequired = true) {
-		const departments = LivechatDepartment.findEnabledWithAgents();
+		if (!onlineRequired) {
+			return LivechatDepartment.findOneEnabledWithAgentsAndAvailableOnRegistration();
+		}
 
+		const departments = LivechatDepartment.findEnabledWithAgentsAndAvailableOnRegistration();
 		for await (const dept of departments) {
-			if (!dept.showOnRegistration) {
-				continue;
-			}
-			if (!onlineRequired) {
-				return dept;
-			}
-
-			const onlineAgents = await LivechatDepartmentAgents.getOnlineForDepartment(dept._id);
-			if (onlineAgents && (await onlineAgents.count())) {
+			const onlineAgents = await LivechatDepartmentAgents.countOnlineForDepartment(
+				dept._id,
+				settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+			);
+			if (onlineAgents > 0) {
 				return dept;
 			}
 		}

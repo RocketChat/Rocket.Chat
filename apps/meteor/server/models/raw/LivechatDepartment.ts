@@ -169,6 +169,10 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		return this.find(query, options);
 	}
 
+	findOneEnabledWithAgentsAndAvailableOnRegistration(): Promise<ILivechatDepartment | null> {
+		return this.findOne({ enabled: true, numAgents: { $gt: 0 }, showOnRegistration: true });
+	}
+
 	addBusinessHourToDepartmentsByIds(ids: string[] = [], businessHourId: string): Promise<Document | UpdateResult> {
 		const query = {
 			_id: { $in: ids },
@@ -284,6 +288,17 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		const query = {
 			numAgents: { $gt: 0 },
 			enabled: true,
+		};
+		return this.find(query, projection && { projection });
+	}
+
+	findEnabledWithAgentsAndAvailableOnRegistration(
+		projection: FindOptions<ILivechatDepartment>['projection'] = {},
+	): FindCursor<ILivechatDepartment> {
+		const query = {
+			numAgents: { $gt: 0 },
+			enabled: true,
+			showOnRegistration: true,
 		};
 		return this.find(query, projection && { projection });
 	}

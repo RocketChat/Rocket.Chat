@@ -287,6 +287,19 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		return this.find(query);
 	}
 
+	async countOnlineForDepartment(departmentId: string, isLivechatEnabledWhenAgentIdle?: boolean): Promise<number> {
+		const agents = await this.findByDepartmentId(departmentId).toArray();
+
+		if (agents.length === 0) {
+			return 0;
+		}
+
+		return Users.countOnlineAgentsFromList(
+			agents.map((a) => a.username),
+			isLivechatEnabledWhenAgentIdle,
+		);
+	}
+
 	async getBotsForDepartment(departmentId: string): Promise<undefined | FindCursor<ILivechatDepartmentAgents>> {
 		const agents = await this.findByDepartmentId(departmentId).toArray();
 

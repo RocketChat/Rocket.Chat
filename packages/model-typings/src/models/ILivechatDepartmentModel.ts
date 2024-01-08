@@ -24,6 +24,8 @@ export interface ILivechatDepartmentModel extends IBaseModel<ILivechatDepartment
 		options: FindOptions<ILivechatDepartment>,
 	): FindCursor<ILivechatDepartment>;
 
+	findOneEnabledWithAgentsAndAvailableOnRegistration(): Promise<ILivechatDepartment | null>;
+
 	findActiveDepartmentsWithoutBusinessHour(options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;
 
 	addBusinessHourToDepartmentsByIds(ids: string[], businessHourId: string): Promise<Document | UpdateResult>;
@@ -53,6 +55,9 @@ export interface ILivechatDepartmentModel extends IBaseModel<ILivechatDepartment
 	updateNumAgentsById(_id: string, numAgents: number): Promise<Document | UpdateResult>;
 	decreaseNumberOfAgentsByIds(_ids: string[]): Promise<Document | UpdateResult>;
 	findEnabledWithAgents(projection?: FindOptions<ILivechatDepartment>['projection']): FindCursor<ILivechatDepartment>;
+	findEnabledWithAgentsAndAvailableOnRegistration(
+		projection?: FindOptions<ILivechatDepartment>['projection'],
+	): FindCursor<ILivechatDepartment>;
 	findEnabledWithAgentsAndBusinessUnit(
 		_: any,
 		projection: FindOptions<ILivechatDepartment>['projection'],

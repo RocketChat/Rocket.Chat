@@ -95,4 +95,5 @@ export interface ILivechatDepartmentAgentsModel extends IBaseModel<ILivechatDepa
 	disableAgentsByDepartmentId(departmentId: string): Promise<UpdateResult | Document>;
 	enableAgentsByDepartmentId(departmentId: string): Promise<UpdateResult | Document>;
 	findAllAgentsConnectedToListOfDepartments(departmentIds: string[]): Promise<string[]>;
+	countOnlineForDepartment(departmentId: string, isLivechatEnabledWhenAgentIdle?: boolean): Promise<number>;
 }
