@@ -1,11 +1,20 @@
+import type { IWebdavAccount } from '@rocket.chat/core-typings';
+import { WebdavAccounts } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import { createClient } from 'webdav';
-import { WebdavAccounts } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
 import { getWebdavCredentials } from '../lib/getWebdavCredentials';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		getWebdavFilePreview(accountId: IWebdavAccount['_id'], path: string): { success: true; data: ArrayBuffer } | undefined;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async getWebdavFilePreview(accountId, path) {
 		const userId = Meteor.userId();
 
@@ -36,7 +45,7 @@ Meteor.methods({
 				method: 'GET',
 				responseType: 'arraybuffer',
 			});
-			return { success: true, data: res.data };
+			return { success: true, data: res.data as ArrayBuffer };
 		} catch (error) {
 			// ignore error
 		}

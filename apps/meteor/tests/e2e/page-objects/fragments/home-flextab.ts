@@ -37,17 +37,23 @@ export class HomeFlextab {
 	}
 
 	get kebab(): Locator {
-		return this.page.locator('[data-qa-id=ToolBox-Menu]');
+		return this.page.locator('role=button[name="Options"]');
 	}
 
 	get btnNotificationPreferences(): Locator {
-		return this.page.locator('[data-qa-id=ToolBoxAction-bell]');
+		return this.page.locator('role=menuitem[name="Notifications Preferences"]');
+	}
+
+	get btnDisableE2E(): Locator {
+		return this.page.locator('role=menuitem[name="Disable E2E"]');
+	}
+
+	get btnEnableE2E(): Locator {
+		return this.page.locator('role=menuitem[name="Enable E2E"]');
 	}
 
 	get flexTabViewThreadMessage(): Locator {
-		return this.page.locator(
-			'div.thread-list.js-scroll-thread ul.thread [data-qa-type="message"]:last-child div.message-body-wrapper [data-qa-type="message-body"]',
-		);
+		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('[data-qa-type="message-body"]');
 	}
 
 	get userInfoUsername(): Locator {

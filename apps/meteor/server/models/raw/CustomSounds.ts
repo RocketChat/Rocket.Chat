@@ -14,7 +14,7 @@ export class CustomSoundsRaw extends BaseRaw<ICustomSound> implements ICustomSou
 	}
 
 	// find
-	findByName(name: string, options: FindOptions<ICustomSound>): FindCursor<ICustomSound> {
+	findByName(name: string, options?: FindOptions<ICustomSound>): FindCursor<ICustomSound> {
 		const query = {
 			name,
 		};
@@ -22,7 +22,7 @@ export class CustomSoundsRaw extends BaseRaw<ICustomSound> implements ICustomSou
 		return this.find(query, options);
 	}
 
-	findByNameExceptId(name: string, except: string, options: FindOptions<ICustomSound>): FindCursor<ICustomSound> {
+	findByNameExceptId(name: string, except: string, options?: FindOptions<ICustomSound>): FindCursor<ICustomSound> {
 		const query = {
 			_id: { $nin: [except] },
 			name,
@@ -43,7 +43,7 @@ export class CustomSoundsRaw extends BaseRaw<ICustomSound> implements ICustomSou
 	}
 
 	// INSERT
-	create(data: ICustomSound): Promise<InsertOneResult<WithId<ICustomSound>>> {
+	create(data: Omit<ICustomSound, '_id'>): Promise<InsertOneResult<WithId<ICustomSound>>> {
 		return this.insertOne(data);
 	}
 }

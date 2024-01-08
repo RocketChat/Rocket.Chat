@@ -1,12 +1,14 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Icon } from '@rocket.chat/fuselage';
-import React, { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import React from 'react';
 
 const colors = {
-	busy: 'danger-500',
-	away: 'warning-600',
-	online: 'success-500',
-	offline: 'neutral-600',
+	busy: 'status-font-on-danger',
+	away: 'status-font-on-warning',
+	online: 'status-font-on-success',
+	offline: 'annotation',
+	disabled: 'annotation',
 };
 
 const iconMap = {

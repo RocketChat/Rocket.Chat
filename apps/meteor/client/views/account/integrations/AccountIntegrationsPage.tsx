@@ -1,12 +1,14 @@
 import type { IWebdavAccountIntegration } from '@rocket.chat/core-typings';
-import { Box, Select, SelectOption, Field, Button } from '@rocket.chat/fuselage';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import { SelectLegacy, Box, Button, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { WebdavAccounts } from '../../../../app/models/client';
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { getWebdavServerName } from '../../../lib/getWebdavServerName';
 
@@ -32,26 +34,33 @@ const AccountIntegrationsPage = (): ReactElement => {
 
 	return (
 		<Page>
-			<Page.Header title={t('Integrations')} />
-			<Page.ScrollableContentWithShadow>
+			<PageHeader title={t('Integrations')} />
+			<PageScrollableContentWithShadow>
 				<Box maxWidth='x600' w='full' alignSelf='center'>
 					<Field>
-						<Field.Label>{t('WebDAV_Accounts')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('WebDAV_Accounts')}</FieldLabel>
+						<FieldRow>
 							<Controller
 								control={control}
 								name='accountSelected'
 								render={({ field: { onChange, value, name, ref } }): ReactElement => (
-									<Select ref={ref} name={name} options={options} onChange={onChange} value={value} placeholder={t('Select_an_option')} />
+									<SelectLegacy
+										ref={ref}
+										name={name}
+										options={options}
+										onChange={onChange}
+										value={value}
+										placeholder={t('Select_an_option')}
+									/>
 								)}
 							/>
 							<Button danger onClick={handleSubmit(handleClickRemove)}>
 								{t('Remove')}
 							</Button>
-						</Field.Row>
+						</FieldRow>
 					</Field>
 				</Box>
-			</Page.ScrollableContentWithShadow>
+			</PageScrollableContentWithShadow>
 		</Page>
 	);
 };

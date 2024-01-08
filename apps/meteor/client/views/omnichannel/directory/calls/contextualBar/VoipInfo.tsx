@@ -2,16 +2,24 @@ import type { IVoipRoom } from '@rocket.chat/core-typings';
 import { Box, Icon, Chip, ButtonGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
-import React, { ReactElement, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
 import { parseOutboundPhoneNumber } from '../../../../../../ee/client/lib/voip/parseOutboundPhoneNumber';
+import {
+	ContextualbarIcon,
+	ContextualbarHeader,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarScrollableContent,
+	ContextualbarFooter,
+} from '../../../../../components/Contextualbar';
 import InfoPanel from '../../../../../components/InfoPanel';
 import { UserStatus } from '../../../../../components/UserStatus';
-import VerticalBar from '../../../../../components/VerticalBar';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { useIsCallReady } from '../../../../../contexts/CallContext';
 import AgentInfoDetails from '../../../components/AgentInfoDetails';
-import AgentField from '../../chats/contextualBar/AgentField';
+import AgentField from '../../components/AgentField';
 import { InfoField } from './InfoField';
 import { VoipInfoCallButton } from './VoipInfoCallButton';
 
@@ -37,17 +45,17 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport  */ }: VoipInfo
 
 	return (
 		<>
-			<VerticalBar.Header>
-				<VerticalBar.Icon name='phone' />
-				<VerticalBar.Text>{t('Call_Information')}</VerticalBar.Text>
-				<VerticalBar.Close onClick={onClickClose} />
-			</VerticalBar.Header>
-			<VerticalBar.ScrollableContent>
+			<ContextualbarHeader expanded>
+				<ContextualbarIcon name='phone' />
+				<ContextualbarTitle>{t('Call_Information')}</ContextualbarTitle>
+				<ContextualbarClose onClick={onClickClose} />
+			</ContextualbarHeader>
+			<ContextualbarScrollableContent>
 				<InfoPanel>
 					<InfoPanel.Field>
 						<InfoPanel.Label>{t('Channel')}</InfoPanel.Label>
-						<Box>
-							<Icon size='x24' name='phone' />
+						<Box color='default'>
+							<Icon size='x24' name='phone' verticalAlign='middle' />
 							{t('Voice_Call')}
 						</Box>
 					</InfoPanel.Field>
@@ -57,7 +65,7 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport  */ }: VoipInfo
 							<InfoPanel.Label>{t('Contact')}</InfoPanel.Label>
 							<Box display='flex'>
 								<UserAvatar size='x28' username={_name} />
-								<AgentInfoDetails mis='x8' name={parseOutboundPhoneNumber(_name)} status={<UserStatus status={v?.status} />} />
+								<AgentInfoDetails mis={8} name={parseOutboundPhoneNumber(_name)} status={<UserStatus status={v?.status} />} />
 							</Box>
 						</InfoPanel.Field>
 					)}
@@ -74,7 +82,7 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport  */ }: VoipInfo
 							<InfoPanel.Text>
 								<Box display='flex' flexDirection='row' alignItems='center'>
 									{tags?.map((tag: string) => (
-										<Chip mie='x4' key={tag} value={tag}>
+										<Chip mie={4} key={tag} value={tag}>
 											{tag}
 										</Chip>
 									))}
@@ -83,8 +91,8 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport  */ }: VoipInfo
 						)}
 					</InfoPanel.Field>
 				</InfoPanel>
-			</VerticalBar.ScrollableContent>
-			<VerticalBar.Footer>
+			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
 				{/* TODO: Introduce this buttons [Not part of MVP] */}
 				<ButtonGroup stretch>
 					{/* <Button danger onClick={onClickReport}>
@@ -95,7 +103,7 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport  */ }: VoipInfo
 					</Button> */}
 					{isCallReady && <VoipInfoCallButton phoneNumber={phoneNumber} />}
 				</ButtonGroup>
-			</VerticalBar.Footer>
+			</ContextualbarFooter>
 		</>
 	);
 };

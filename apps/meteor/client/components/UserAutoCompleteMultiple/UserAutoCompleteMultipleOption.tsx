@@ -1,6 +1,7 @@
-import { IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import { Option, OptionDescription } from '@rocket.chat/fuselage';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import UserAvatar from '../avatar/UserAvatar';
 
@@ -21,10 +22,13 @@ const UserAutoCompleteMultipleOption = ({ label, ...props }: UserAutoCompleteMul
 			icon={_federated ? 'globe' : undefined}
 			key={username}
 			label={
-				<>
-					{name || username} {!_federated && <OptionDescription>({username})</OptionDescription>}
-				</>
+				(
+					<>
+						{name || username} {!_federated && <OptionDescription>({username})</OptionDescription>}
+					</>
+				) as any
 			}
+			children={undefined}
 		/>
 	);
 };

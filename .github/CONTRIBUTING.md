@@ -18,10 +18,10 @@ __Note:__ If there's a feature you'd like, there's a bug you'd like to fix, or y
 
 ## Development Guidelines
 
-Check out our Handbook for the [Development Guidelines](https://handbook.rocket.chat/product/development/development-guidelines) on how to setup your enviroment, do code, test and push your code. There you find our patterns on how to compose your Pull Requests' titles to have your contribution accepted.
+Check out our Handbook for the [Development Guidelines](https://handbook.rocket.chat/product/development/development-guidelines) on how to set up your environment, do code, test and push your code. There you find our patterns on how to compose your Pull Requests' titles to have your contribution accepted.
 
 ## Contributor License Agreement
 
-To have your contribution accepted you must sign our [Contributor License Agreement](https://cla-assistant.io/RocketChat/Rocket.Chat). In case you submit a Pull Request before sign the CLA GitHub will alert you with a new comment asking you to sign and will block the Pull Request from be merged by us.
+To have your contribution accepted you must sign our [Contributor License Agreement](https://cla-assistant.io/RocketChat/Rocket.Chat). In case you submit a Pull Request before signing the CLA GitHub will alert you with a new comment asking you to sign and will block the Pull Request from being merged by us.
 
 Please review and sign our CLA at https://cla-assistant.io/RocketChat/Rocket.Chat

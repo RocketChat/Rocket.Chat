@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { Notifications } from '../../app/notifications/client';
-import { APIClient } from '../../app/utils/client';
+import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { getConfig } from './utils/getConfig';
 
 const debug = !!(getConfig('debug') || getConfig('debug-VideoConf'));
@@ -18,17 +18,20 @@ const CALL_TIMEOUT = 10000;
 // How long are we gonna wait for a link after accepting an incoming call
 const ACCEPT_TIMEOUT = 5000;
 
-export type DirectCallParams = {
+type DirectCallParams = {
 	uid: IUser['_id'];
 	rid: IRoom['_id'];
 	callId: string;
-	dismissed?: boolean;
-	acceptTimeout?: ReturnType<typeof setTimeout> | undefined;
-	// TODO: improve this, nowadays there is not possible check if the video call has finished, but ist a nice improvement
-	// state: 'incoming' | 'outgoing' | 'connected' | 'disconnected' | 'dismissed';
 };
 
-type IncomingDirectCall = DirectCallParams & { timeout: number };
+export type DirectCallData = DirectCallParams & {
+	dismissed: boolean;
+};
+
+type IncomingDirectCall = DirectCallParams & {
+	timeout: ReturnType<typeof setTimeout> | undefined;
+	acceptTimeout?: ReturnType<typeof setTimeout> | undefined;
+};
 
 export type CallPreferences = {
 	mic?: boolean;
@@ -41,9 +44,10 @@ export type ProviderCapabilities = {
 	title?: boolean;
 };
 
-export type CurrentCallParams = {
+type CurrentCallParams = {
 	callId: string;
 	url: string;
+	providerName?: string;
 };
 
 type VideoConfEvents = {
@@ -87,6 +91,7 @@ type VideoConfEvents = {
 
 	'capabilities/changed': void;
 };
+
 export const VideoConfManager = new (class VideoConfManager extends Emitter<VideoConfEvents> {
 	private userId: string | undefined;
 
@@ -99,6 +104,8 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 	private hooks: (() => void)[] = [];
 
 	private incomingDirectCalls: Map<string, IncomingDirectCall>;
+
+	private dismissedCalls: Set<string>;
 
 	private _preferences: CallPreferences;
 
@@ -115,6 +122,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 	constructor() {
 		super();
 		this.incomingDirectCalls = new Map<string, IncomingDirectCall>();
+		this.dismissedCalls = new Set<string>();
 		this._preferences = { mic: true, cam: false };
 		this._capabilities = {};
 	}
@@ -128,7 +136,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 	}
 
 	public isRinging(): boolean {
-		return ![...this.incomingDirectCalls.values()].every(({ dismissed }) => Boolean(dismissed));
+		return [...this.incomingDirectCalls.values()].some(({ callId }) => !this.isCallDismissed(callId));
 	}
 
 	public isCalling(): boolean {
@@ -139,8 +147,13 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		return false;
 	}
 
-	public getIncomingDirectCalls(): DirectCallParams[] {
-		return [...this.incomingDirectCalls.values()].map(({ timeout: _, ...call }) => ({ ...call })).filter((call) => !call.acceptTimeout);
+	public getIncomingDirectCalls(): DirectCallData[] {
+		return (
+			[...this.incomingDirectCalls.values()]
+				// Filter out any calls that we're in the process of accepting, so they're already hidden from the UI
+				.filter((call) => !call.acceptTimeout)
+				.map(({ timeout: _, acceptTimeout: _t, ...call }) => ({ ...call, dismissed: this.isCallDismissed(call.callId) }))
+		);
 	}
 
 	public async startCall(roomId: IRoom['_id'], title?: string): Promise<void> {
@@ -152,7 +165,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		this.startingNewCall = true;
 		this.emit('calling/changed');
 
-		const { data } = await APIClient.post('/v1/video-conference.start', { roomId, title, allowRinging: true }).catch((e: any) => {
+		const { data } = await sdk.rest.post('/v1/video-conference.start', { roomId, title, allowRinging: true }).catch((e: any) => {
 			debug && console.error(`[VideoConf] Failed to start new call on room ${roomId}`);
 			this.startingNewCall = false;
 			this.emit('calling/changed');
@@ -170,7 +183,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 
 		switch (data.type) {
 			case 'direct':
-				return this.callUser({ uid: data.callee, rid: roomId, callId: data.callId });
+				return this.callUser({ uid: data.calleeId, rid: roomId, callId: data.callId });
 			case 'videoconference':
 				return this.joinCall(data.callId);
 			case 'livechat':
@@ -240,7 +253,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 	}
 
 	public async loadCapabilities(): Promise<void> {
-		const { capabilities } = await APIClient.get('/v1/video-conference.capabilities').catch((e: any) => {
+		const { capabilities } = await sdk.rest.get('/v1/video-conference.capabilities').catch((e: any) => {
 			debug && console.error(`[VideoConf] Failed to load video conference capabilities`);
 
 			return Promise.reject(e);
@@ -257,6 +270,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 	): void {
 		const callData = this.incomingDirectCalls.get(callId);
 		if (!callData) {
+			debug && console.error(`[VideoConf] Cannot change attribute "${attributeName}" of unknown call "${callId}".`);
 			return;
 		}
 
@@ -270,28 +284,30 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			newData[attributeName] = value;
 		}
 
+		debug && console.log(`[VideoConf] Updating attribute "${attributeName}" of call "${callId}".`);
 		this.incomingDirectCalls.set(callId, newData);
 	}
 
 	private dismissedIncomingCallHelper(callId: string): boolean {
 		// Muting will stop a callId from ringing, but it doesn't affect any part of the existing workflow
-		const callData = this.incomingDirectCalls.get(callId);
-		if (!callData) {
+		if (this.isCallDismissed(callId)) {
 			return false;
 		}
-		this.setIncomingCallAttribute(callId, 'dismissed', true);
-		setTimeout(() => this.setIncomingCallAttribute(callId, 'dismissed', undefined), CALL_TIMEOUT * 20);
-		return true;
+
+		debug && console.log(`[VideoConf] Dismissing call ${callId}`);
+		this.dismissedCalls.add(callId);
+		// We don't need to hold on to the dismissed callIds forever because the server won't let anyone call us with it for very long
+		setTimeout(() => this.dismissedCalls.delete(callId), CALL_TIMEOUT * 20);
+		// Only change the state if this call is actually in our list
+		return this.incomingDirectCalls.has(callId);
 	}
 
 	public dismissIncomingCall(callId: string): boolean {
 		if (this.dismissedIncomingCallHelper(callId)) {
-			debug && console.log(`[VideoConf] Dismissed call ${callId}`);
 			this.emit('ringing/changed');
 			this.emit('incoming/changed');
 			return true;
 		}
-		debug && console.log(`[VideoConf] Failed to dismiss call ${callId}`);
 		return false;
 	}
 
@@ -348,7 +364,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			},
 		};
 
-		const { url } = await APIClient.post('/v1/video-conference.join', params).catch((e) => {
+		const { url, providerName } = await sdk.rest.post('/v1/video-conference.join', params).catch((e) => {
 			debug && console.error(`[VideoConf] Failed to join call ${callId}`);
 			this.emit('join/error', { error: e?.xhr?.responseJSON?.error || 'unknown-error' });
 
@@ -360,7 +376,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		}
 
 		debug && console.log(`[VideoConf] Opening ${url}.`);
-		this.emit('call/join', { url, callId });
+		this.emit('call/join', { url, callId, providerName });
 	}
 
 	public abortCall(): void {
@@ -430,7 +446,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			return;
 		}
 
-		APIClient.post('/v1/video-conference.cancel', { callId });
+		sdk.rest.post('/v1/video-conference.cancel', { callId });
 	}
 
 	private disconnect(): void {
@@ -454,6 +470,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			}
 		});
 		this.incomingDirectCalls.clear();
+		this.dismissedCalls.clear();
 		this.currentCallData = undefined;
 		this._preferences = {};
 		this.emit('incoming/changed');
@@ -497,11 +514,11 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		debug && console.log(`[VideoConf] connecting user ${userId}`);
 		this.userId = userId;
 
-		this.hooks.push(
-			await Notifications.onUser('video-conference', (data: { action: string; params: DirectCallParams }) =>
-				this.onVideoConfNotification(data),
-			),
-		);
+		const { stop, ready } = Notifications.onUser('video-conference', (data) => this.onVideoConfNotification(data));
+
+		await ready();
+
+		this.hooks.push(stop);
 	}
 
 	private abortIncomingCall(callId: string): void {
@@ -528,6 +545,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 	}
 
 	private removeIncomingCall(callId: string): void {
+		debug && console.log(`[VideoConf] Removing call with id "${callId}" from Incoming Calls list.`);
 		if (!this.incomingDirectCalls.has(callId)) {
 			return;
 		}
@@ -547,8 +565,8 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		}
 	}
 
-	private createAbortTimeout(callId: string): number {
-		return setTimeout(() => this.abortIncomingCall(callId), CALL_TIMEOUT) as unknown as number;
+	private createAbortTimeout(callId: string): ReturnType<typeof setTimeout> {
+		return setTimeout(() => this.abortIncomingCall(callId), CALL_TIMEOUT);
 	}
 
 	private startNewIncomingCall({ callId, uid, rid }: DirectCallParams): void {
@@ -742,12 +760,12 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		this.emit('calling/changed');
 
 		if (!joined) {
-			APIClient.post('/v1/video-conference.cancel', { callId: params.callId });
+			sdk.rest.post('/v1/video-conference.cancel', { callId: params.callId });
 		}
 	}
 
 	private isCallDismissed(callId: string): boolean {
-		return Boolean(this.incomingDirectCalls.get(callId)?.dismissed);
+		return this.dismissedCalls.has(callId);
 	}
 })();
 

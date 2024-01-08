@@ -1,9 +1,17 @@
-import { Serialized, DeviceManagementPopulatedSession } from '@rocket.chat/core-typings';
+import type { Serialized, DeviceManagementPopulatedSession } from '@rocket.chat/core-typings';
 import { Box, States, StatesIcon, StatesTitle, StatesSubtitle } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
-import VerticalBar from '../../../../../../client/components/VerticalBar';
+import {
+	Contextualbar,
+	ContextualbarSkeleton,
+	ContextualbarHeader,
+	ContextualbarClose,
+	ContextualbarContent,
+	ContextualbarTitle,
+} from '../../../../../../client/components/Contextualbar';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../../../client/lib/asyncState';
 import DeviceManagementInfo from './DeviceManagementInfo';
@@ -25,27 +33,24 @@ const DeviceInfoWithData = ({ deviceId, onReload }: { deviceId: string; onReload
 		value: data,
 		phase,
 		error,
-	} = useEndpointData(
-		'/v1/sessions/info.admin',
-		useMemo(() => ({ sessionId: deviceId }), [deviceId]),
-	);
+	} = useEndpointData('/v1/sessions/info.admin', { params: useMemo(() => ({ sessionId: deviceId }), [deviceId]) });
 
 	if (phase === AsyncStatePhase.LOADING) {
 		return (
-			<VerticalBar>
-				<VerticalBar.Skeleton />
-			</VerticalBar>
+			<Contextualbar>
+				<ContextualbarSkeleton />
+			</Contextualbar>
 		);
 	}
 
 	if (error || !data) {
 		return (
-			<VerticalBar>
-				<VerticalBar.Header>
-					{t('Device_Info')}
-					<VerticalBar.Close />
-				</VerticalBar.Header>
-				<VerticalBar.Content>
+			<Contextualbar>
+				<ContextualbarHeader>
+					<ContextualbarTitle>{t('Device_Info')}</ContextualbarTitle>
+					<ContextualbarClose />
+				</ContextualbarHeader>
+				<ContextualbarContent>
 					<Box display='flex' justifyContent='center' alignItems='center' height='100%'>
 						<States>
 							<StatesIcon name='warning' variation='danger' />
@@ -54,8 +59,8 @@ const DeviceInfoWithData = ({ deviceId, onReload }: { deviceId: string; onReload
 							<StatesSubtitle>{error?.message}</StatesSubtitle>
 						</States>
 					</Box>
-				</VerticalBar.Content>
-			</VerticalBar>
+				</ContextualbarContent>
+			</Contextualbar>
 		);
 	}
 

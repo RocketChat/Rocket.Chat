@@ -1,0 +1,11 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"target": "ES2015",
+		"module": "ESNext",
+		"declaration": true,
+		"declarationMap": true,
+		"sourceMap": true,
+	},
+	"exclude": ["**/*.spec.ts", "**/*.spec.js"]
+}

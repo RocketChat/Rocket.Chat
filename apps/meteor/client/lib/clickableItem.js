@@ -8,9 +8,9 @@ export function clickableItem(Component) {
 		cursor: pointer;
 		&:hover,
 		&:focus {
-			background: ${Palette.surface['surface-tint']};
+			background: ${Palette.surface['surface-hover']};
 		}
-		border-bottom: 2px solid ${Palette.stroke['stroke-extra-light']} !important;
+		border-bottom: 1px solid ${Palette.stroke['stroke-extra-light']} !important;
 	`;
 	const WrappedComponent = (props) => <Component className={clickable} tabIndex={0} {...props} />;
 

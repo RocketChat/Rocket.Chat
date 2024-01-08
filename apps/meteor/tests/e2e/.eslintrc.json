@@ -1,0 +1,37 @@
+{
+	"root": true,
+	"extends": ["@rocket.chat/eslint-config/original", "@rocket.chat/eslint-config/react", "prettier", "plugin:@typescript-eslint/recommended"],
+	"parser": "@typescript-eslint/parser",
+	"plugins": ["prettier", "testing-library", "anti-trojan-source", "no-floating-promise"],
+	"rules": {
+		"@typescript-eslint/no-unused-vars": [
+			"error",
+			{
+				"argsIgnorePattern": "^_",
+				"ignoreRestSiblings": true
+			}
+		],
+		"@typescript-eslint/no-floating-promises": "error",
+		"import/named": "error",
+		"import/order": [
+			"error",
+			{
+				"newlines-between": "always",
+				"groups": ["builtin", "external", "internal", ["parent", "sibling", "index"]],
+				"alphabetize": {
+					"order": "asc"
+				}
+			}
+		]
+	},
+	"settings": {
+		"import/resolver": {
+			"node": {
+				"extensions": [".js", ".ts", ".tsx"]
+			}
+		}
+	},
+	"parserOptions": {
+		"project": ["./tsconfig.json"]
+	}
+}

@@ -1,6 +1,7 @@
 import { Box, Icon, IconButton, Tag } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, MouseEvent } from 'react';
+import type { ReactElement, MouseEvent } from 'react';
+import React from 'react';
 
 type FilePickerBreadcrumbsProps = {
 	parentFolders: string[];
@@ -12,7 +13,7 @@ const FilePickerBreadcrumbs = ({ parentFolders, handleBreadcrumb, handleBack }: 
 	const t = useTranslation();
 
 	return (
-		<Box display='flex' alignItems='center' overflowX='auto' mie='x8'>
+		<Box display='flex' alignItems='center' overflowX='auto' mie={8}>
 			<IconButton disabled={parentFolders.length === 0} title={t('Back')} aria-label='back' icon='arrow-back' small onClick={handleBack} />
 			<IconButton title={t('Root')} aria-label='home' icon='home' small data-index={-1} onClick={handleBreadcrumb} />
 			{parentFolders?.map((parentFolder, index) => (

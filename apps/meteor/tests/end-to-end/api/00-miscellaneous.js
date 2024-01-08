@@ -1,9 +1,12 @@
 import { expect } from 'chai';
+import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, login, request, credentials } from '../../data/api-data.js';
-import { adminEmail, adminUsername, adminPassword, password } from '../../data/user.js';
-import { createUser, login as doLogin } from '../../data/users.helper';
 import { updateSetting } from '../../data/permissions.helper';
+import { createRoom } from '../../data/rooms.helper';
+import { adminEmail, adminUsername, adminPassword, password } from '../../data/user';
+import { createUser, login as doLogin } from '../../data/users.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
 describe('miscellaneous', function () {
 	this.retries(0);
@@ -21,6 +24,7 @@ describe('miscellaneous', function () {
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res) => {
+						expect(res.body).to.have.property('version').and.to.be.a('string');
 						expect(res.body.info).to.have.property('version').and.to.be.a('string');
 						expect(res.body.info).to.have.property('build').and.to.be.an('object');
 						expect(res.body.info).to.have.property('commit').and.to.be.an('object');
@@ -141,6 +145,7 @@ describe('miscellaneous', function () {
 					// 'language',
 					'newRoomNotification',
 					'newMessageNotification',
+					'showThreadsInMainChannel',
 					// 'clockMode',
 					'useEmojis',
 					'convertAsciiEmoji',
@@ -150,13 +155,13 @@ describe('miscellaneous', function () {
 					'emailNotificationMode',
 					'unreadAlert',
 					'notificationsSoundVolume',
+					'omnichannelTranscriptEmail',
+					IS_EE ? 'omnichannelTranscriptPDF' : false,
 					'desktopNotifications',
 					'pushNotifications',
 					'enableAutoAway',
-					'useLegacyMessageTemplate',
 					// 'highlights',
 					'desktopNotificationRequireInteraction',
-					'messageViewMode',
 					'hideUsernames',
 					'hideRoles',
 					'displayAvatars',
@@ -165,12 +170,15 @@ describe('miscellaneous', function () {
 					'idleTimeLimit',
 					'sidebarShowFavorites',
 					'sidebarShowUnread',
+					'themeAppearence',
 					'sidebarSortby',
 					'sidebarViewMode',
 					'sidebarDisplayAvatar',
 					'sidebarGroupByType',
 					'muteFocusedConversations',
-				];
+					'notifyCalendarEvents',
+					'enableMobileRinging',
+				].filter((p) => Boolean(p));
 
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('_id', credentials['X-User-Id']);
@@ -211,7 +219,7 @@ describe('miscellaneous', function () {
 				.end(done);
 			user = undefined;
 		});
-		it('create an channel', (done) => {
+		it('create a channel', (done) => {
 			request
 				.post(api('channels.create'))
 				.set(credentials)
@@ -467,6 +475,7 @@ describe('miscellaneous', function () {
 
 		let userCredentials;
 		let testChannel;
+		let testTeam;
 		before((done) => {
 			request
 				.post(api('login'))
@@ -483,17 +492,25 @@ describe('miscellaneous', function () {
 				})
 				.end(done);
 		});
-		after((done) => {
-			request
-				.post(api('users.delete'))
-				.set(credentials)
-				.send({
-					userId: user._id,
+		let testChannelSpecialChars;
+		const fnameSpecialCharsRoom = `test ГДΕληνικά`;
+		before((done) => {
+			updateSetting('UI_Allow_room_names_with_special_chars', true)
+				.then(() => {
+					createRoom({ type: 'c', name: fnameSpecialCharsRoom, credentials: userCredentials }).end((err, res) => {
+						testChannelSpecialChars = res.body.channel;
+					});
 				})
-				.end(done);
-			user = undefined;
+				.then(done);
 		});
-		it('create an channel', (done) => {
+		after(async () => {
+			await request.post(api('users.delete')).set(credentials).send({
+				userId: user._id,
+			});
+			user = undefined;
+			await updateSetting('UI_Allow_room_names_with_special_chars', false);
+		});
+		it('create a channel', (done) => {
 			request
 				.post(api('channels.create'))
 				.set(userCredentials)
@@ -504,6 +521,16 @@ describe('miscellaneous', function () {
 					testChannel = res.body.channel;
 					done();
 				});
+		});
+		before('create a team', async () => {
+			const res = await request
+				.post(api('teams.create'))
+				.set(userCredentials)
+				.send({
+					name: `team-test-${Date.now()}`,
+					type: 0,
+				});
+			testTeam = res.body.team;
 		});
 		it('should fail when does not have query param', (done) => {
 			request
@@ -556,6 +583,45 @@ describe('miscellaneous', function () {
 				})
 				.end(done);
 		});
+		it('must return the teamMain property when searching for a valid team that the user is not a member of', (done) => {
+			request
+				.get(api('spotlight'))
+				.query({
+					query: `${testTeam.name}`,
+				})
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('users').and.to.be.an('array');
+					expect(res.body).to.have.property('rooms').and.to.be.an('array');
+					expect(res.body.rooms[0]).to.have.property('_id');
+					expect(res.body.rooms[0]).to.have.property('name');
+					expect(res.body.rooms[0]).to.have.property('t');
+					expect(res.body.rooms[0]).to.have.property('teamMain');
+				})
+				.end(done);
+		});
+		it('must return rooms when searching for a valid fname', (done) => {
+			request
+				.get(api('spotlight'))
+				.query({
+					query: `#${fnameSpecialCharsRoom}`,
+				})
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('users').and.to.be.an('array');
+					expect(res.body).to.have.property('rooms').and.to.be.an('array');
+					expect(res.body.rooms[0]).to.have.property('_id', testChannelSpecialChars._id);
+					expect(res.body.rooms[0]).to.have.property('name', testChannelSpecialChars.name);
+					expect(res.body.rooms[0]).to.have.property('t', testChannelSpecialChars.t);
+				})
+				.end(done);
+		});
 	});
 
 	describe('[/instances.get]', () => {
@@ -597,23 +663,38 @@ describe('miscellaneous', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
+
 					expect(res.body).to.have.property('instances').and.to.be.an('array').with.lengthOf(1);
 
-					const {
-						instances: [instance],
-					} = res.body;
+					const { instances } = res.body;
 
-					expect(instance).to.have.property('_id');
-					expect(instance).to.have.property('extraInformation');
-					expect(instance).to.have.property('name');
-					expect(instance).to.have.property('pid');
+					const instanceName = IS_EE ? 'ddp-streamer' : 'rocket.chat';
 
-					const { extraInformation } = instance;
+					const instance = instances.filter((i) => i.instanceRecord.name === instanceName)[0];
 
-					expect(extraInformation).to.have.property('host');
-					expect(extraInformation).to.have.property('port');
-					expect(extraInformation).to.have.property('os').and.to.have.property('cpus').to.be.a('number');
-					expect(extraInformation).to.have.property('nodeVersion');
+					expect(instance).to.have.property('instanceRecord');
+					expect(instance).to.have.property('currentStatus');
+
+					expect(instance.currentStatus).to.have.property('connected');
+
+					expect(instance.instanceRecord).to.have.property('_id');
+					expect(instance.instanceRecord).to.have.property('extraInformation');
+					expect(instance.instanceRecord).to.have.property('name');
+					expect(instance.instanceRecord).to.have.property('pid');
+
+					if (!IS_EE) {
+						expect(instance).to.have.property('address');
+
+						expect(instance.currentStatus).to.have.property('lastHeartbeatTime');
+						expect(instance.currentStatus).to.have.property('local');
+
+						const { extraInformation } = instance.instanceRecord;
+
+						expect(extraInformation).to.have.property('host');
+						expect(extraInformation).to.have.property('port');
+						expect(extraInformation).to.have.property('os').and.to.have.property('cpus').to.be.a('number');
+						expect(extraInformation).to.have.property('nodeVersion');
+					}
 				})
 				.end(done);
 		});
@@ -658,18 +739,6 @@ describe('miscellaneous', function () {
 	});
 
 	describe('/pw.getPolicy', () => {
-		it('should fail if not logged in', (done) => {
-			request
-				.get(api('pw.getPolicy'))
-				.expect('Content-Type', 'application/json')
-				.expect(401)
-				.expect((res) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message');
-				})
-				.end(done);
-		});
-
 		it('should return policies', (done) => {
 			request
 				.get(api('pw.getPolicy'))

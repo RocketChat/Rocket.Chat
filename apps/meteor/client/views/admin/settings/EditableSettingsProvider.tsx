@@ -1,14 +1,17 @@
-import { SettingId, GroupId, ISetting, TabId } from '@rocket.chat/core-typings';
+import type { SettingId, GroupId, ISetting, TabId } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSettings, SettingsContextQuery } from '@rocket.chat/ui-contexts';
+import type { SettingsContextQuery } from '@rocket.chat/ui-contexts';
+import { useSettings } from '@rocket.chat/ui-contexts';
 import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
 import type { FilterOperators } from 'mongodb';
-import React, { useEffect, useMemo, FunctionComponent, useRef, MutableRefObject } from 'react';
+import type { FunctionComponent, MutableRefObject } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import { createReactiveSubscriptionFactory } from '../../../lib/createReactiveSubscriptionFactory';
-import { EditableSettingsContext, EditableSetting, EditableSettingsContextValue } from '../EditableSettingsContext';
+import type { EditableSetting, EditableSettingsContextValue } from '../EditableSettingsContext';
+import { EditableSettingsContext } from '../EditableSettingsContext';
 
 const defaultQuery: SettingsContextQuery = {};
 
@@ -181,7 +184,9 @@ const EditableSettingsProvider: FunctionComponent<EditableSettingsProviderProps>
 		Tracker.flush();
 	});
 
-	const isEnterprise = useIsEnterprise();
+	const { data } = useIsEnterprise();
+
+	const isEnterprise = data?.isEnterprise ?? false;
 
 	const contextValue = useMemo<EditableSettingsContextValue>(
 		() => ({

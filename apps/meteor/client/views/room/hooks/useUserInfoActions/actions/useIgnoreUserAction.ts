@@ -1,4 +1,4 @@
-import { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	useTranslation,
@@ -10,10 +10,10 @@ import {
 } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import { Action } from '../../../../hooks/useActionSpread';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
+import type { UserInfoAction, UserInfoActionType } from '../useUserInfoActions';
 
-export const useIgnoreUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): Action | undefined => {
+export const useIgnoreUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): UserInfoAction | undefined => {
 	const t = useTranslation();
 	const room = useUserRoom(rid);
 	const { _id: uid } = user;
@@ -28,7 +28,7 @@ export const useIgnoreUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: 
 		throw Error('Room not provided');
 	}
 
-	const { roomCanIgnore } = getRoomDirectives(room);
+	const { roomCanIgnore } = getRoomDirectives({ room, showingUserId: uid, userSubscription: currentSubscription });
 
 	const ignoreUserAction = useMutableCallback(async () => {
 		try {
@@ -47,9 +47,10 @@ export const useIgnoreUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: 
 		() =>
 			roomCanIgnore && uid !== ownUserId
 				? {
-						label: t(isIgnored ? 'Unignore' : 'Ignore'),
-						icon: 'ban',
-						action: ignoreUserAction,
+						content: t(isIgnored ? 'Unignore' : 'Ignore'),
+						icon: 'ban' as const,
+						onClick: ignoreUserAction,
+						type: 'management' as UserInfoActionType,
 				  }
 				: undefined,
 		[ignoreUserAction, isIgnored, ownUserId, roomCanIgnore, t, uid],

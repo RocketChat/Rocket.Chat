@@ -1,7 +1,8 @@
-import moment from 'moment-timezone';
-import type { ILivechatBusinessHour, ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { ILivechatAgentStatus, ILivechatBusinessHour, ILivechatDepartment } from '@rocket.chat/core-typings';
 import type { ILivechatBusinessHoursModel, IUsersModel } from '@rocket.chat/model-typings';
 import { LivechatBusinessHours, Users } from '@rocket.chat/models';
+import moment from 'moment-timezone';
+import type { UpdateFilter } from 'mongodb';
 
 import type { IWorkHoursCronJobsWrapper } from '../../../../server/models/raw/LivechatBusinessHours';
 
@@ -10,13 +11,17 @@ export interface IBusinessHourBehavior {
 	openBusinessHoursByDayAndHour(day: string, hour: string): Promise<void>;
 	closeBusinessHoursByDayAndHour(day: string, hour: string): Promise<void>;
 	onDisableBusinessHours(): Promise<void>;
-	onAddAgentToDepartment(options?: Record<string, any>): Promise<any>;
+	onAddAgentToDepartment(options?: { departmentId: string; agentsId: string[] }): Promise<any>;
 	onRemoveAgentFromDepartment(options?: Record<string, any>): Promise<any>;
-	onRemoveDepartment(department?: ILivechatDepartment): Promise<any>;
+	onRemoveDepartment(options: { department: ILivechatDepartment; agentsIds: string[] }): Promise<any>;
+	onDepartmentDisabled(department?: ILivechatDepartment): Promise<any>;
+	onDepartmentArchived(department: Pick<ILivechatDepartment, '_id'>): Promise<void>;
 	onStartBusinessHours(): Promise<void>;
 	afterSaveBusinessHours(businessHourData: ILivechatBusinessHour): Promise<void>;
 	allowAgentChangeServiceStatus(agentId: string): Promise<boolean>;
 	changeAgentActiveStatus(agentId: string, status: string): Promise<any>;
+	// If a new agent is created, this callback will be called
+	onNewAgentCreated(agentId: string): Promise<void>;
 }
 
 export interface IBusinessHourType {
@@ -43,11 +48,13 @@ export abstract class AbstractBusinessHourBehavior {
 		return this.UsersRepository.isAgentWithinBusinessHours(agentId);
 	}
 
-	async changeAgentActiveStatus(agentId: string, status: string): Promise<any> {
+	async changeAgentActiveStatus(agentId: string, status: ILivechatAgentStatus): Promise<any> {
 		return this.UsersRepository.setLivechatStatusIf(
 			agentId,
 			status,
-			{ livechatStatusSystemModified: true },
+			// Why this works: statusDefault is the property set when a user manually changes their status
+			// So if it's set to offline, we can be sure the user will be offline after login and we can skip the update
+			{ livechatStatusSystemModified: true, statusDefault: { $ne: 'offline' } },
 			{ livechatStatusSystemModified: true },
 		);
 	}
@@ -62,7 +69,9 @@ export abstract class AbstractBusinessHourType {
 		businessHourData.active = Boolean(businessHourData.active);
 		businessHourData = this.convertWorkHours(businessHourData);
 		if (businessHourData._id) {
-			await this.BusinessHourRepository.updateOne({ _id: businessHourData._id }, { $set: businessHourData });
+			await this.BusinessHourRepository.updateOne({ _id: businessHourData._id }, {
+				$set: businessHourData,
+			} as UpdateFilter<ILivechatBusinessHour>); // TODO: Remove this cast when TypeScript is updated
 			return businessHourData._id;
 		}
 		const { insertedId } = await this.BusinessHourRepository.insertOne(businessHourData);
@@ -73,6 +82,15 @@ export abstract class AbstractBusinessHourType {
 		businessHourData.workHours.forEach((hour: any) => {
 			const startUtc = moment.tz(`${hour.day}:${hour.start}`, 'dddd:HH:mm', businessHourData.timezone.name).utc();
 			const finishUtc = moment.tz(`${hour.day}:${hour.finish}`, 'dddd:HH:mm', businessHourData.timezone.name).utc();
+
+			if (hour.open && finishUtc.isBefore(startUtc)) {
+				throw new Error('error-business-hour-finish-time-before-start-time');
+			}
+
+			if (hour.open && startUtc.isSame(finishUtc)) {
+				throw new Error('error-business-hour-finish-time-equals-start-time');
+			}
+
 			hour.start = {
 				time: hour.start,
 				utc: {

@@ -1,36 +1,41 @@
 import { Tabs } from '@rocket.chat/fuselage';
-import { useCurrentRoute, useRoute, useRouteParameter, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useEffect, useCallback, useState, ReactElement } from 'react';
+import { useRouteParameter, usePermission, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { useEffect, useCallback } from 'react';
 
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
+import { queryClient } from '../../../lib/queryClient';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import ContextualBar from './ContextualBar';
 import CallTab from './calls/CallTab';
 import ChatTab from './chats/ChatTab';
 import ContactTab from './contacts/ContactTab';
 
-const OmnichannelDirectoryPage = (): ReactElement => {
-	const defaultTab = 'contacts';
+const DEFAULT_TAB = 'contacts';
 
-	const [routeName] = useCurrentRoute();
-	const tab = useRouteParameter('page');
-	const directoryRoute = useRoute('omnichannel-directory');
+const OmnichannelDirectoryPage = (): ReactElement => {
+	const router = useRouter();
+	const page = useRouteParameter('page');
 	const canViewDirectory = usePermission('view-omnichannel-contact-center');
 
-	useEffect(() => {
-		if (routeName !== 'omnichannel-directory') {
-			return;
-		}
+	useEffect(
+		() =>
+			router.subscribeToRouteChange(() => {
+				if (router.getRouteName() !== 'omnichannel-directory' || !!router.getRouteParameters().page) {
+					return;
+				}
 
-		if (!tab) {
-			return directoryRoute.replace({ page: defaultTab });
-		}
-	}, [routeName, directoryRoute, tab, defaultTab]);
+				router.navigate({
+					name: 'omnichannel-directory',
+					params: { page: DEFAULT_TAB },
+				});
+			}),
+		[router],
+	);
 
-	const handleTabClick = useCallback((tab) => (): void => directoryRoute.push({ tab }), [directoryRoute]);
+	const handleTabClick = useCallback((tab) => () => router.navigate({ name: 'omnichannel-directory', params: { tab } }), [router]);
 
-	const [contactReload, setContactReload] = useState();
-	const [chatReload, setChatReload] = useState();
+	const chatReload = () => queryClient.invalidateQueries({ queryKey: ['current-chats'] });
 
 	const t = useTranslation();
 
@@ -41,25 +46,23 @@ const OmnichannelDirectoryPage = (): ReactElement => {
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('Omnichannel_Contact_Center')} />
+				<PageHeader title={t('Omnichannel_Contact_Center')} />
 				<Tabs flexShrink={0}>
-					<Tabs.Item selected={tab === 'contacts'} onClick={handleTabClick('contacts')}>
+					<Tabs.Item selected={page === 'contacts'} onClick={handleTabClick('contacts')}>
 						{t('Contacts')}
 					</Tabs.Item>
-					<Tabs.Item selected={tab === 'chats'} onClick={handleTabClick('chats')}>
+					<Tabs.Item selected={page === 'chats'} onClick={handleTabClick('chats')}>
 						{t('Chats' as 'color')}
 					</Tabs.Item>
-					<Tabs.Item selected={tab === 'calls'} onClick={handleTabClick('calls')}>
+					<Tabs.Item selected={page === 'calls'} onClick={handleTabClick('calls')}>
 						{t('Calls' as 'color')}
 					</Tabs.Item>
 				</Tabs>
-				<Page.Content>
-					{(tab === 'contacts' && <ContactTab setContactReload={setContactReload} />) ||
-						(tab === 'chats' && <ChatTab setChatReload={setChatReload} />) ||
-						(tab === 'calls' && <CallTab />)}
-				</Page.Content>
+				<PageContent>
+					{(page === 'contacts' && <ContactTab />) || (page === 'chats' && <ChatTab />) || (page === 'calls' && <CallTab />)}
+				</PageContent>
 			</Page>
-			<ContextualBar chatReload={chatReload} contactReload={contactReload} />
+			<ContextualBar chatReload={chatReload} />
 		</Page>
 	);
 };

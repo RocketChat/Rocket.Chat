@@ -58,10 +58,7 @@ export const useTeamsChannelList = (
 	const { loadMoreItems, initialItemCount } = useScrollableRecordList(
 		teamsChannelList,
 		fetchData,
-		useMemo(() => {
-			const filesListSize = getConfig('teamsChannelListSize');
-			return filesListSize ? parseInt(filesListSize, 10) : undefined;
-		}, []),
+		useMemo(() => parseInt(`${getConfig('teamsChannelListSize', 10)}`), []),
 	);
 
 	return {

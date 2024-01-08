@@ -1,9 +1,9 @@
 import { memo, useCallback } from 'preact/compat';
 
+import { createClassName } from '../../../../helpers/createClassName';
 import KebabIcon from '../../../../icons/kebab.svg';
 import { Button } from '../../../Button';
 import Menu, { PopoverMenu } from '../../../Menu';
-import { createClassName } from '../../../helpers';
 import { usePerformAction } from '../Block';
 import styles from './styles.scss';
 

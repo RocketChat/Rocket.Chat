@@ -1,10 +1,11 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import { ChangeEvent, RefCallback, useCallback, useEffect, useState } from 'react';
+import type { ChangeEvent, RefCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { useDialModal } from '../../../../../../client/hooks/useDialModal';
 import { useOutboundDialer } from '../../../../hooks/useOutboundDialer';
-import { PadDigit } from '../Pad';
+import type { PadDigit } from '../Pad';
 
 type DialPadStateHandlers = {
 	inputName: string;
@@ -38,7 +39,7 @@ export const useDialPad = ({ initialValue, initialErrorMessage }: DialPadProps):
 		formState: { errors, isDirty },
 	} = useForm<{ PhoneInput: string }>({
 		defaultValues: {
-			PhoneInput: initialValue,
+			PhoneInput: initialValue || '',
 		},
 	});
 

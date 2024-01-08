@@ -2,10 +2,10 @@ import type { IOAuthApp, IOAuthAppParams } from '@rocket.chat/apps-engine/defini
 import { OAuthAppsBridge } from '@rocket.chat/apps-engine/server/bridges/OAuthAppsBridge';
 import type { IOAuthApps } from '@rocket.chat/core-typings';
 import { OAuthApps, Users } from '@rocket.chat/models';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import { v4 as uuidv4 } from 'uuid';
 
-import type { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 
 export class AppOAuthAppsBridge extends OAuthAppsBridge {
 	constructor(private readonly orch: AppServerOrchestrator) {

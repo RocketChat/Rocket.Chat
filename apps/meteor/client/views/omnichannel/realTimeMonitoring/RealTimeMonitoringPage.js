@@ -1,10 +1,10 @@
 import { Box, Select, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useRef, useState, useMemo, useEffect } from 'react';
+import React, { useRef, useState, useMemo, useEffect, Fragment } from 'react';
 
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import { getDateRange } from '../../../lib/utils/getDateRange';
 import Label from '../components/Label';
 import AgentStatusChart from './charts/AgentStatusChart';
@@ -24,15 +24,15 @@ const RealTimeMonitoringPage = () => {
 	const t = useTranslation();
 
 	const [reloadFrequency, setReloadFrequency] = useState(5);
-	const [department, setDepartment] = useState('');
+	const [departmentId, setDepartment] = useState('');
 
 	const reloadRef = useRef({});
 
 	const departmentParams = useMemo(
 		() => ({
-			...(department?.value && { departmentId: department?.value }),
+			...(departmentId && { departmentId }),
 		}),
-		[department],
+		[departmentId],
 	);
 
 	const allParams = useMemo(
@@ -58,32 +58,32 @@ const RealTimeMonitoringPage = () => {
 
 	const reloadOptions = useMemo(
 		() => [
-			[5, <>5 {t('seconds')}</>],
-			[10, <>10 {t('seconds')}</>],
-			[30, <>30 {t('seconds')}</>],
-			[60, <>1 {t('minute')}</>],
+			[5, <Fragment key='5 seconds'>5 {t('seconds')}</Fragment>],
+			[10, <Fragment key='10 seconds'>10 {t('seconds')}</Fragment>],
+			[30, <Fragment key='30 seconds'>30 {t('seconds')}</Fragment>],
+			[60, <Fragment key='1 minute'>1 {t('minute')}</Fragment>],
 		],
 		[t],
 	);
 
 	return (
 		<Page>
-			<Page.Header title={t('Real_Time_Monitoring')}></Page.Header>
-			<Page.ScrollableContentWithShadow>
+			<PageHeader title={t('Real_Time_Monitoring')} />
+			<PageScrollableContentWithShadow>
 				<Margins block='x4'>
 					<Box flexDirection='row' display='flex' justifyContent='space-between' alignSelf='center' w='full'>
-						<Box maxWidth='50%' display='flex' mi='x4' flexGrow={1} flexDirection='column'>
-							<Label mb='x4'>{t('Departments')}</Label>
+						<Box maxWidth='50%' display='flex' mi={4} flexGrow={1} flexDirection='column'>
+							<Label mb={4}>{t('Departments')}</Label>
 							<AutoCompleteDepartment
-								value={department}
+								value={departmentId}
 								onChange={setDepartment}
 								placeholder={t('All')}
 								label={t('All')}
 								onlyMyDepartments
 							/>
 						</Box>
-						<Box maxWidth='50%' display='flex' mi='x4' flexGrow={1} flexDirection='column'>
-							<Label mb='x4'>{t('Update_every')}</Label>
+						<Box maxWidth='50%' display='flex' mi={4} flexGrow={1} flexDirection='column'>
+							<Label mb={4}>{t('Update_every')}</Label>
 							<Select options={reloadOptions} onChange={useMutableCallback((val) => setReloadFrequency(val))} value={reloadFrequency} />
 						</Box>
 					</Box>
@@ -91,15 +91,15 @@ const RealTimeMonitoringPage = () => {
 						<ConversationOverview flexGrow={1} flexShrink={1} width='50%' reloadRef={reloadRef} params={allParams} />
 					</Box>
 					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
-						<ChatsChart flexGrow={1} flexShrink={1} width='50%' mie='x2' reloadRef={reloadRef} params={allParams} />
-						<ChatsPerAgentChart flexGrow={1} flexShrink={1} width='50%' mis='x2' reloadRef={reloadRef} params={allParams} />
+						<ChatsChart flexGrow={1} flexShrink={1} width='50%' mie={2} reloadRef={reloadRef} params={allParams} />
+						<ChatsPerAgentChart flexGrow={1} flexShrink={1} width='50%' mis={2} reloadRef={reloadRef} params={allParams} />
 					</Box>
 					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
 						<ChatsOverview flexGrow={1} flexShrink={1} width='50%' reloadRef={reloadRef} params={allParams} />
 					</Box>
 					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
-						<AgentStatusChart flexGrow={1} flexShrink={1} width='50%' mie='x2' reloadRef={reloadRef} params={allParams} />
-						<ChatsPerDepartmentChart flexGrow={1} flexShrink={1} width='50%' mis='x2' reloadRef={reloadRef} params={allParams} />
+						<AgentStatusChart flexGrow={1} flexShrink={1} width='50%' mie={2} reloadRef={reloadRef} params={allParams} />
+						<ChatsPerDepartmentChart flexGrow={1} flexShrink={1} width='50%' mis={2} reloadRef={reloadRef} params={allParams} />
 					</Box>
 					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
 						<AgentsOverview flexGrow={1} flexShrink={1} reloadRef={reloadRef} params={allParams} />
@@ -114,7 +114,7 @@ const RealTimeMonitoringPage = () => {
 						<ResponseTimesChart flexGrow={1} flexShrink={1} w='100%' reloadRef={reloadRef} params={allParams} />
 					</Box>
 				</Margins>
-			</Page.ScrollableContentWithShadow>
+			</PageScrollableContentWithShadow>
 		</Page>
 	);
 };

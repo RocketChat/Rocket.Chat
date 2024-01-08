@@ -57,12 +57,22 @@ export type AppSubscriptionInfo = {
 
 export type AppPermission = {
 	name: string;
+	required?: boolean;
+};
+
+export type PurchaseType = 'buy' | 'subscription';
+
+export type AppRequestStats = {
+	appId: string;
+	totalSeen: number;
+	totalUnseen: number;
 };
 
 export type App = {
 	id: string;
 	iconFileData: string;
 	name: string;
+	appRequestStats: AppRequestStats;
 	author: {
 		name: string;
 		homepage: string;
@@ -81,8 +91,9 @@ export type App = {
 	};
 	categories: string[];
 	version: string;
+	versionIncompatible?: boolean;
 	price: number;
-	purchaseType: string;
+	purchaseType: PurchaseType;
 	pricingPlans: AppPricingPlan[];
 	iconFileContent: string;
 	installed?: boolean;
@@ -110,4 +121,8 @@ export type App = {
 	permissions: AppPermission[];
 	languages: string[];
 	createdDate: string;
+	requestedEndUser?: boolean;
+	private: boolean;
+	documentationUrl: string;
+	migrated: boolean;
 };

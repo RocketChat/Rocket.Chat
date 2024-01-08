@@ -1,8 +1,9 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { Field, TextInput, FieldGroup, Modal, Button } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { Field, TextInput, FieldGroup, Modal, Button, Box, FieldLabel, FieldRow, FieldError, FieldHint } from '@rocket.chat/fuselage';
+import { useLocalStorage, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useSetting, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useState, ChangeEvent, useCallback } from 'react';
+import type { ReactElement, ChangeEvent, ComponentProps, FormEvent } from 'react';
+import React, { useState, useCallback } from 'react';
 
 import UserStatusMenu from '../../components/UserStatusMenu';
 import { USER_STATUS_TEXT_MAX_LENGTH } from '../../lib/constants';
@@ -16,9 +17,11 @@ type EditStatusModalProps = {
 const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModalProps): ReactElement => {
 	const allowUserStatusMessageChange = useSetting('Accounts_AllowUserStatusMessageChange');
 	const dispatchToastMessage = useToastMessageDispatch();
+	const [customStatus, setCustomStatus] = useLocalStorage<string | undefined>('Local_Custom_Status', '');
+	const initialStatusText = customStatus || userStatusText;
 
 	const t = useTranslation();
-	const [statusText, setStatusText] = useState(userStatusText);
+	const [statusText, setStatusText] = useState(initialStatusText);
 	const [statusType, setStatusType] = useState(userStatus);
 	const [statusTextError, setStatusTextError] = useState<string | undefined>();
 
@@ -39,6 +42,7 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 	const handleSaveStatus = useCallback(async () => {
 		try {
 			await setUserStatus({ message: statusText, status: statusType });
+			setCustomStatus(statusText);
 			dispatchToastMessage({ type: 'success', message: t('StatusMessage_Changed_Successfully') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
@@ -48,7 +52,18 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 	}, [dispatchToastMessage, setUserStatus, statusText, statusType, onClose, t]);
 
 	return (
-		<Modal>
+		<Modal
+			wrapperFunction={(props: ComponentProps<typeof Box>) => (
+				<Box
+					is='form'
+					onSubmit={(e: FormEvent) => {
+						e.preventDefault();
+						handleSaveStatus();
+					}}
+					{...props}
+				/>
+			)}
+		>
 			<Modal.Header>
 				<Modal.Icon name='info' />
 				<Modal.Title>{t('Edit_Status')}</Modal.Title>
@@ -57,8 +72,8 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 			<Modal.Content fontScale='p2'>
 				<FieldGroup>
 					<Field>
-						<Field.Label>{t('StatusMessage')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('StatusMessage')}</FieldLabel>
+						<FieldRow>
 							<TextInput
 								error={statusTextError}
 								disabled={!allowUserStatusMessageChange}
@@ -68,9 +83,9 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 								placeholder={t('StatusMessage_Placeholder')}
 								addon={<UserStatusMenu margin='neg-x2' onChange={handleStatusType} initialStatus={statusType} />}
 							/>
-						</Field.Row>
-						{!allowUserStatusMessageChange && <Field.Hint>{t('StatusMessage_Change_Disabled')}</Field.Hint>}
-						<Field.Error>{statusTextError}</Field.Error>
+						</FieldRow>
+						{!allowUserStatusMessageChange && <FieldHint>{t('StatusMessage_Change_Disabled')}</FieldHint>}
+						<FieldError>{statusTextError}</FieldError>
 					</Field>
 				</FieldGroup>
 			</Modal.Content>
@@ -79,7 +94,7 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 					<Button secondary onClick={onClose}>
 						{t('Cancel')}
 					</Button>
-					<Button primary onClick={handleSaveStatus} disabled={!!statusTextError}>
+					<Button primary type='submit' disabled={!!statusTextError}>
 						{t('Save')}
 					</Button>
 				</Modal.FooterControllers>

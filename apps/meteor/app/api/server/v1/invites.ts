@@ -1,13 +1,18 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import type { IInvite } from '@rocket.chat/core-typings';
-import { isFindOrCreateInviteParams, isUseInviteTokenProps, isValidateInviteTokenProps } from '@rocket.chat/rest-typings';
+import {
+	isFindOrCreateInviteParams,
+	isUseInviteTokenProps,
+	isValidateInviteTokenProps,
+	isSendInvitationEmailParams,
+} from '@rocket.chat/rest-typings';
 
-import { API } from '../api';
 import { findOrCreateInvite } from '../../../invites/server/functions/findOrCreateInvite';
-import { removeInvite } from '../../../invites/server/functions/removeInvite';
 import { listInvites } from '../../../invites/server/functions/listInvites';
+import { removeInvite } from '../../../invites/server/functions/removeInvite';
+import { sendInvitationEmail } from '../../../invites/server/functions/sendInvitationEmail';
 import { useInviteToken } from '../../../invites/server/functions/useInviteToken';
 import { validateInviteToken } from '../../../invites/server/functions/validateInviteToken';
+import { API } from '../api';
 
 API.v1.addRoute(
 	'listInvites',
@@ -60,6 +65,7 @@ API.v1.addRoute(
 			const { token } = this.bodyParams;
 			// eslint-disable-next-line react-hooks/rules-of-hooks
 
+			// eslint-disable-next-line react-hooks/rules-of-hooks
 			return API.v1.success(await useInviteToken(this.userId, token));
 		},
 	},
@@ -78,6 +84,24 @@ API.v1.addRoute(
 				return API.v1.success({ valid: Boolean(await validateInviteToken(token)) });
 			} catch (_) {
 				return API.v1.success({ valid: false });
+			}
+		},
+	},
+);
+
+API.v1.addRoute(
+	'sendInvitationEmail',
+	{
+		authRequired: true,
+		validateParams: isSendInvitationEmailParams,
+	},
+	{
+		async post() {
+			const { emails } = this.bodyParams;
+			try {
+				return API.v1.success({ success: Boolean(await sendInvitationEmail(this.userId, emails)) });
+			} catch (e: any) {
+				return API.v1.failure({ error: e.message });
 			}
 		},
 	},

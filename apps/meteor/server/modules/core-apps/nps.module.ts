@@ -1,18 +1,23 @@
-import type { IUiKitCoreApp } from '../../sdk/types/IUiKitCoreApp';
-import { Banner, NPS } from '../../sdk';
+import type { IUiKitCoreApp, UiKitCoreAppPayload } from '@rocket.chat/core-services';
+import { Banner, NPS } from '@rocket.chat/core-services';
+
 import { createModal } from './nps/createModal';
 
 export class Nps implements IUiKitCoreApp {
 	appId = 'nps-core';
 
-	async blockAction(payload: any): Promise<any> {
+	async blockAction(payload: UiKitCoreAppPayload) {
 		const {
 			triggerId,
 			actionId,
-			container: { id: viewId },
+			container: { id: viewId } = {},
 			payload: { value: score, blockId: npsId },
 			user,
 		} = payload;
+
+		if (!viewId || !triggerId || !user || !npsId) {
+			throw new Error('Invalid payload');
+		}
 
 		const bannerId = viewId.replace(`${npsId}-`, '');
 
@@ -22,13 +27,13 @@ export class Nps implements IUiKitCoreApp {
 			appId: this.appId,
 			npsId,
 			triggerId,
-			score,
+			score: String(score),
 			user,
 		});
 	}
 
-	async viewSubmit(payload: any): Promise<any> {
-		if (!payload.payload?.view?.state) {
+	async viewSubmit(payload: UiKitCoreAppPayload) {
+		if (!payload.payload?.view?.state || !payload.payload?.view?.id) {
 			throw new Error('Invalid payload');
 		}
 
@@ -36,7 +41,7 @@ export class Nps implements IUiKitCoreApp {
 			payload: {
 				view: { state, id: viewId },
 			},
-			user: { _id: userId, roles },
+			user: { _id: userId, roles } = {},
 		} = payload;
 
 		const [npsId] = Object.keys(state);
@@ -50,10 +55,14 @@ export class Nps implements IUiKitCoreApp {
 		await NPS.vote({
 			npsId,
 			userId,
-			comment,
+			comment: String(comment),
 			roles,
-			score,
+			score: Number(score),
 		});
+
+		if (!userId) {
+			throw new Error('invalid user');
+		}
 
 		await Banner.dismiss(userId, bannerId);
 

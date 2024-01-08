@@ -1,8 +1,8 @@
+import { isMeteorError, MeteorError } from '@rocket.chat/core-services';
 import EJSON from 'ejson';
 import { Errors, Serializers, ServiceBroker } from 'moleculer';
 import { pino } from 'pino';
 
-import { isMeteorError, MeteorError } from '../../../server/sdk/errors';
 import { NetworkBroker } from '../NetworkBroker';
 
 const {

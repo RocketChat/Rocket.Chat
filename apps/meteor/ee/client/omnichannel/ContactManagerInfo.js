@@ -13,10 +13,7 @@ const wordBreak = css`
 `;
 
 function ContactManagerInfo({ username }) {
-	const { value: data, phase: state } = useEndpointData(
-		`/v1/users.info`,
-		useMemo(() => ({ username }), [username]),
-	);
+	const { value: data, phase: state } = useEndpointData('/v1/users.info', { params: useMemo(() => ({ username }), [username]) });
 	if (!data && state === AsyncStatePhase.LOADING) {
 		return null;
 	}
@@ -29,7 +26,7 @@ function ContactManagerInfo({ username }) {
 		<>
 			<Info className={wordBreak} style={{ display: 'flex' }}>
 				<UserAvatar title={username} username={username} />
-				<AgentInfoDetails mis='x10' name={name} shortName={username} status={<UserStatus status={status} />} />
+				<AgentInfoDetails mis={10} name={name} shortName={username} status={<UserStatus status={status} />} />
 			</Info>
 		</>
 	);

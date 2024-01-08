@@ -1,11 +1,5 @@
-import type { IUser } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useCallback, useMemo, useState } from 'react';
-
-import { useScrollableRecordList } from '../../hooks/lists/useScrollableRecordList';
-import { useComponentDidUpdate } from '../../hooks/useComponentDidUpdate';
-import { RecordList } from '../../lib/lists/RecordList';
-import { getConfig } from '../../lib/utils/getConfig';
+import { useInfiniteQuery } from '@tanstack/react-query';
 
 type MembersListOptions = {
 	rid: string;
@@ -21,56 +15,28 @@ const endpointsByRoomType = {
 	c: '/v1/channels.members',
 } as const;
 
-export const useMembersList = (
-	options: MembersListOptions,
-): {
-	membersList: RecordList<IUser>;
-	initialItemCount: number;
-	reload: () => void;
-	loadMoreItems: (start: number, end: number) => void;
-} => {
+export const useMembersList = (options: MembersListOptions) => {
 	const getMembers = useEndpoint('GET', endpointsByRoomType[options.roomType]);
-	const [membersList, setMembersList] = useState(() => new RecordList<IUser>());
-	const reload = useCallback(() => setMembersList(new RecordList<IUser>()), []);
 
-	useComponentDidUpdate(() => {
-		options && reload();
-	}, [options, reload]);
+	return useInfiniteQuery(
+		[options.roomType, 'members', options.rid, options.type, options.debouncedText],
+		async ({ pageParam }) => {
+			const start = pageParam ?? 0;
 
-	const fetchData = useCallback(
-		async (start, end) => {
-			const { members, total } = await getMembers({
+			return getMembers({
 				roomId: options.rid,
 				offset: start,
-				count: end,
+				count: 20,
 				...(options.debouncedText && { filter: options.debouncedText }),
 				...(options.type !== 'all' && { status: [options.type] }),
 			});
-
-			return {
-				items: members.map((members: any) => {
-					members._updatedAt = new Date(members._updatedAt);
-					return members;
-				}),
-				itemCount: total,
-			};
 		},
-		[getMembers, options],
+		{
+			getNextPageParam: (lastPage) => {
+				const offset = lastPage.offset + lastPage.count;
+				// if the offset is greater than the total, return undefined to stop the query from trying to fetch another page
+				return offset >= lastPage.total ? undefined : offset;
+			},
+		},
 	);
-
-	const { loadMoreItems, initialItemCount } = useScrollableRecordList(
-		membersList,
-		fetchData,
-		useMemo(() => {
-			const filesListSize = getConfig('teamsChannelListSize');
-			return filesListSize ? parseInt(filesListSize, 10) : undefined;
-		}, []),
-	);
-
-	return {
-		reload,
-		membersList,
-		loadMoreItems,
-		initialItemCount,
-	};
 };

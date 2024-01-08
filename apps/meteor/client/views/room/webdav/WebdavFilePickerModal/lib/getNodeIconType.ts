@@ -1,10 +1,20 @@
-export const getNodeIconType = (basename: string, fileType: string, mime: string): { icon: string; type: string; extension?: string } => {
-	let icon = 'clip';
+import type { Keys as IconName } from '@rocket.chat/icons';
+
+export const getNodeIconType = (
+	basename: string,
+	fileType: string,
+	mime?: string,
+): { icon: IconName; type: string; extension?: string } => {
+	let icon: IconName = 'clip';
 	let type = '';
 
 	let extension = basename?.split('.').pop();
 	if (extension === basename) {
 		extension = '';
+	}
+
+	if (!mime) {
+		throw new Error('mime is required');
 	}
 
 	if (fileType === 'directory') {

@@ -1,9 +1,9 @@
-import type { IRoomClosingInfo, IVoipRoom, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import { type IVoipRoomClosingInfo, type IVoipRoom, type RocketChatRecordDeleted, UserStatus } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import type { FindPaginated, IVoipRoomModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, Filter, FindOptions, UpdateResult, Document } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { Collection, FindCursor, Db, Filter, FindOptions, UpdateResult, Document } from 'mongodb';
 
-import { Logger } from '../../lib/logger/Logger';
 import { BaseRaw } from './BaseRaw';
 
 export class VoipRoomRaw extends BaseRaw<IVoipRoom> implements IVoipRoomModel {
@@ -81,7 +81,7 @@ export class VoipRoomRaw extends BaseRaw<IVoipRoom> implements IVoipRoomModel {
 		return this.findOne(query, options);
 	}
 
-	closeByRoomId(roomId: IVoipRoom['_id'], closeInfo: IRoomClosingInfo): Promise<Document | UpdateResult> {
+	closeByRoomId(roomId: IVoipRoom['_id'], closeInfo: IVoipRoomClosingInfo): Promise<Document | UpdateResult> {
 		const { closer, closedBy, closedAt, callDuration, serviceTimeDuration, ...extraData } = closeInfo;
 
 		return this.updateOne(
@@ -96,7 +96,7 @@ export class VoipRoomRaw extends BaseRaw<IVoipRoom> implements IVoipRoomModel {
 					closedAt,
 					callDuration,
 					'metrics.serviceTimeDuration': serviceTimeDuration,
-					'v.status': 'offline',
+					'v.status': UserStatus.OFFLINE,
 					...extraData,
 				},
 				$unset: {

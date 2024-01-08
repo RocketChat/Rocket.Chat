@@ -1,9 +1,9 @@
 import { WebApp } from 'meteor/webapp';
 import parser from 'ua-parser-js';
 
-import { getURL } from '../../../../app/utils/lib/getURL';
+import { getURL } from '../../../../app/utils/server/getURL';
 
-WebApp.connectHandlers.use(function (req, res, next) {
+WebApp.connectHandlers.use((req, res, next) => {
 	if (req.cookies.browser_version_check === 'bypass') {
 		return next();
 	}

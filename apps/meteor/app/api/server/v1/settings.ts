@@ -1,22 +1,23 @@
-import { Meteor } from 'meteor/meteor';
-import { ServiceConfiguration } from 'meteor/service-configuration';
-import _ from 'underscore';
 import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
 import { isSettingAction, isSettingColor } from '@rocket.chat/core-typings';
+import { Settings } from '@rocket.chat/models';
 import {
 	isOauthCustomConfiguration,
 	isSettingsUpdatePropDefault,
 	isSettingsUpdatePropsActions,
 	isSettingsUpdatePropsColor,
 } from '@rocket.chat/rest-typings';
-import { Settings } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
+import { ServiceConfiguration } from 'meteor/service-configuration';
 import type { FindOptions } from 'mongodb';
+import _ from 'underscore';
 
-import { hasPermission } from '../../../authorization/server';
-import type { ResultFor } from '../api';
-import { API } from '../api';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { SettingsEvents, settings } from '../../../settings/server';
 import { setValue } from '../../../settings/server/raw';
+import { API } from '../api';
+import type { ResultFor } from '../definition';
+import { getPaginationItems } from '../helpers/getPaginationItems';
 
 async function fetchSettings(
 	query: Parameters<typeof Settings.find>[0],
@@ -44,8 +45,8 @@ API.v1.addRoute(
 	{ authRequired: false },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort, fields, query } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, fields, query } = await this.parseJsonQuery();
 
 			const ourQuery = {
 				...query,
@@ -69,8 +70,8 @@ API.v1.addRoute(
 	'settings.oauth',
 	{ authRequired: false },
 	{
-		get() {
-			const oAuthServicesEnabled = ServiceConfiguration.configurations.find({}, { fields: { secret: 0 } }).fetch();
+		async get() {
+			const oAuthServicesEnabled = await ServiceConfiguration.configurations.find({}, { fields: { secret: 0 } }).fetchAsync();
 
 			return API.v1.success({
 				services: oAuthServicesEnabled.map((service) => {
@@ -106,7 +107,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-name-param-not-provided', 'The parameter "name" is required');
 			}
 
-			await Meteor.call('addOAuthService', this.bodyParams.name, this.userId);
+			await Meteor.callAsync('addOAuthService', this.bodyParams.name, this.userId);
 
 			return API.v1.success();
 		},
@@ -118,14 +119,14 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort, fields, query } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, fields, query } = await this.parseJsonQuery();
 
 			let ourQuery: Parameters<typeof Settings.find>[0] = {
 				hidden: { $ne: true },
 			};
 
-			if (!hasPermission(this.userId, 'view-privileged-setting')) {
+			if (!(await hasPermissionAsync(this.userId, 'view-privileged-setting'))) {
 				ourQuery.public = true;
 			}
 
@@ -148,7 +149,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			if (!hasPermission(this.userId, 'view-privileged-setting')) {
+			if (!(await hasPermissionAsync(this.userId, 'view-privileged-setting'))) {
 				return API.v1.unauthorized();
 			}
 			const setting = await Settings.findOneNotHiddenById(this.urlParams._id);
@@ -160,7 +161,7 @@ API.v1.addRoute(
 		post: {
 			twoFactorRequired: true,
 			async action(): Promise<ResultFor<'POST', '/v1/settings/:_id'>> {
-				if (!hasPermission(this.userId, 'edit-privileged-setting')) {
+				if (!(await hasPermissionAsync(this.userId, 'edit-privileged-setting'))) {
 					return API.v1.unauthorized();
 				}
 
@@ -177,15 +178,15 @@ API.v1.addRoute(
 
 				if (isSettingAction(setting) && isSettingsUpdatePropsActions(this.bodyParams) && this.bodyParams.execute) {
 					// execute the configured method
-					Meteor.call(setting.value);
+					await Meteor.callAsync(setting.value);
 					return API.v1.success();
 				}
 
 				if (isSettingColor(setting) && isSettingsUpdatePropsColor(this.bodyParams)) {
-					Settings.updateOptionsById<ISettingColor>(this.urlParams._id, {
+					await Settings.updateOptionsById<ISettingColor>(this.urlParams._id, {
 						editor: this.bodyParams.editor,
 					});
-					Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value);
+					await Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value);
 					return API.v1.success();
 				}
 
@@ -212,9 +213,9 @@ API.v1.addRoute(
 	'service.configurations',
 	{ authRequired: false },
 	{
-		get() {
+		async get() {
 			return API.v1.success({
-				configurations: ServiceConfiguration.configurations.find({}, { fields: { secret: 0 } }).fetch(),
+				configurations: await ServiceConfiguration.configurations.find({}, { fields: { secret: 0 } }).fetchAsync(),
 			});
 		},
 	},

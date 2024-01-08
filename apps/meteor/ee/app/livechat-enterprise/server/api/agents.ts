@@ -5,10 +5,11 @@ import {
 } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../../app/api/server';
+import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
 import {
-	findAllAverageServiceTime,
-	findAllServiceTime,
-	findAvailableServiceTimeHistory,
+	findAllAverageServiceTimeAsync,
+	findAllServiceTimeAsync,
+	findAvailableServiceTimeHistoryAsync,
 } from '../../../../../app/livechat/server/lib/analytics/agents';
 
 API.v1.addRoute(
@@ -16,8 +17,8 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isLivechatAnalyticsAgentsAverageServiceTimeProps },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { start, end } = this.requestParams();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { start, end } = this.queryParams;
 
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
@@ -29,7 +30,7 @@ API.v1.addRoute(
 			}
 			const endDate = new Date(end);
 
-			const { agents, total } = findAllAverageServiceTime({
+			const { agents, total } = await findAllAverageServiceTimeAsync({
 				start: startDate,
 				end: endDate,
 				options: { offset, count },
@@ -49,8 +50,8 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isLivechatAnalyticsAgentsTotalServiceTimeProps },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { start, end } = this.requestParams();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { start, end } = this.queryParams;
 
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
@@ -62,7 +63,7 @@ API.v1.addRoute(
 			}
 			const endDate = new Date(end);
 
-			const { agents, total } = findAllServiceTime({
+			const { agents, total } = await findAllServiceTimeAsync({
 				start: startDate,
 				end: endDate,
 				options: { offset, count },
@@ -86,24 +87,22 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { start, end } = this.requestParams();
-			const { fullReport } = this.requestParams();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { start, end } = this.queryParams;
+			const { fullReport } = this.queryParams;
 
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
-			const startDate = new Date(start);
 
 			if (isNaN(Date.parse(end))) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
-			const endDate = new Date(end);
 
-			const { agents, total } = findAvailableServiceTimeHistory({
-				start: startDate,
-				end: endDate,
-				fullReport: fullReport && fullReport === 'true',
+			const { agents, total } = await findAvailableServiceTimeHistoryAsync({
+				start,
+				end,
+				fullReport: fullReport === 'true',
 				options: { offset, count },
 			});
 			return API.v1.success({

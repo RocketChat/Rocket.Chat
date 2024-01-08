@@ -1,12 +1,11 @@
-import mem from 'mem';
-import type { IUser, IRole, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IAuthorization, RoomAccessValidator } from '@rocket.chat/core-services';
+import { License, ServiceClass } from '@rocket.chat/core-services';
+import type { IUser, IRole, IRoom, ISubscription, IRocketChatRecord } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms, Users, Roles, Permissions } from '@rocket.chat/models';
+import mem from 'mem';
 
-import type { IAuthorization, RoomAccessValidator } from '../../sdk/types/IAuthorization';
-import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { AuthorizationUtils } from '../../../app/authorization/lib/AuthorizationUtils';
 import { canAccessRoom } from './canAccessRoom';
-import { License } from '../../sdk';
 
 import './canAccessRoomLivechat';
 
@@ -40,16 +39,20 @@ export class Authorization extends ServiceClass implements IAuthorization {
 	}
 
 	async started(): Promise<void> {
-		if (!(await License.isEnterprise())) {
-			return;
-		}
+		try {
+			if (!(await License.hasValidLicense())) {
+				return;
+			}
 
-		const permissions = await License.getGuestPermissions();
-		if (!permissions) {
-			return;
-		}
+			const permissions = await License.getGuestPermissions();
+			if (!permissions) {
+				return;
+			}
 
-		AuthorizationUtils.addRolePermissionWhiteList('guest', permissions);
+			AuthorizationUtils.addRolePermissionWhiteList('guest', permissions);
+		} catch (error) {
+			console.error('Authorization Service did not start correctly', error);
+		}
 	}
 
 	async hasAllPermission(userId: string, permissions: string[], scope?: string): Promise<boolean> {
@@ -98,7 +101,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		AuthorizationUtils.addRolePermissionWhiteList(role, permissions);
 	}
 
-	async getUsersFromPublicRoles(): Promise<Pick<IUser, '_id' | 'username' | 'roles'>[]> {
+	async getUsersFromPublicRoles(): Promise<(IRocketChatRecord & Pick<IUser, '_id' | 'username' | 'roles'>)[]> {
 		const roleIds = await this.getPublicRoles();
 
 		return this.getUserFromRoles(roleIds);

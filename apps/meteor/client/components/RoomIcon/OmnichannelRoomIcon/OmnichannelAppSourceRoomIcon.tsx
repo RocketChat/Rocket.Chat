@@ -1,15 +1,17 @@
-import type { IOmnichannelRoomFromAppSource } from '@rocket.chat/core-typings';
+import { UserStatus, type IOmnichannelRoomFromAppSource } from '@rocket.chat/core-typings';
 import { Icon, Box } from '@rocket.chat/fuselage';
-import React, { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import React from 'react';
 
 import { AsyncStatePhase } from '../../../lib/asyncState/AsyncStatePhase';
 import { useOmnichannelRoomIcon } from './context/OmnichannelRoomIconContext';
 
-export const colors = {
-	busy: 'danger-500',
-	away: 'warning-600',
-	online: 'success-500',
-	offline: 'neutral-600',
+const colors = {
+	busy: 'status-font-on-danger',
+	away: 'status-font-on-warning',
+	online: 'status-font-on-success',
+	offline: 'annotation',
+	disabled: 'annotation',
 };
 
 const convertBoxSizeToNumber = (boxSize: ComponentProps<typeof Icon>['size']): number => {
@@ -36,7 +38,7 @@ export const OmnichannelAppSourceRoomIcon = ({
 	size: ComponentProps<typeof Icon>['size'];
 	placement: 'sidebar' | 'default';
 }): ReactElement => {
-	const color = colors[room.v.status || 'offline'];
+	const color = colors[room.v.status || UserStatus.OFFLINE];
 	const icon = (placement === 'sidebar' && room.source.sidebarIcon) || room.source.defaultIcon;
 	const { phase, value } = useOmnichannelRoomIcon(room.source.id, icon || '');
 	const fontSize = convertBoxSizeToNumber(size);

@@ -1,26 +1,18 @@
 // TODO: Lib imports should not exists inside the raw models
-import type { IUpload, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { IUploadsModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, DeleteResult, IndexDescription, InsertOneResult, UpdateResult, WithId } from 'mongodb';
+import type { IUpload, RocketChatRecordDeleted, IRoom } from '@rocket.chat/core-typings';
+import type { FindPaginated, IUploadsModel } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { Collection, FindCursor, Db, IndexDescription, WithId, Filter, FindOptions } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseUploadModelRaw } from './BaseUploadModel';
 
-const fillTypeGroup = (fileData: Partial<IUpload>): void => {
-	if (!fileData.type) {
-		return;
-	}
-
-	fileData.typeGroup = fileData.type.split('/').shift();
-};
-
-export class UploadsRaw extends BaseRaw<IUpload> implements IUploadsModel {
+export class UploadsRaw extends BaseUploadModelRaw implements IUploadsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IUpload>>) {
 		super(db, 'uploads', trash);
 	}
 
 	protected modelIndexes(): IndexDescription[] {
-		return [{ key: { rid: 1 } }, { key: { uploadedAt: 1 } }, { key: { typeGroup: 1 } }];
+		return [...super.modelIndexes(), { key: { uploadedAt: -1 } }, { key: { rid: 1, _hidden: 1, typeGroup: 1 } }];
 	}
 
 	findNotHiddenFilesOfRoom(roomId: string, searchText: string, fileType: string, limit: number): FindCursor<IUpload> {
@@ -55,48 +47,37 @@ export class UploadsRaw extends BaseRaw<IUpload> implements IUploadsModel {
 		});
 	}
 
-	async insertFileInit(userId: string, store: string, file: { name: string }, extra: object): Promise<InsertOneResult<WithId<IUpload>>> {
-		const fileData = {
-			userId,
-			store,
-			complete: false,
-			uploading: true,
-			progress: 0,
-			extension: file.name.split('.').pop(),
-			uploadedAt: new Date(),
-			...file,
-			...extra,
-		};
-
-		fillTypeGroup(fileData);
-		return this.insertOne(fileData);
-	}
-
-	async updateFileComplete(fileId: string, userId: string, file: object): Promise<UpdateResult | undefined> {
-		if (!fileId) {
-			return;
-		}
-
-		const filter = {
-			_id: fileId,
-			userId,
-		};
-
-		const update = {
-			$set: {
-				complete: true,
-				uploading: false,
-				progress: 1,
+	findPaginatedWithoutThumbs(query: Filter<IUpload> = {}, options?: FindOptions<IUpload>): FindPaginated<FindCursor<WithId<IUpload>>> {
+		return this.findPaginated(
+			{
+				typeGroup: { $ne: 'thumb' },
+				...query,
+				_hidden: { $ne: true },
 			},
-		};
-
-		update.$set = Object.assign(file, update.$set);
-
-		fillTypeGroup(update.$set);
-		return this.updateOne(filter, update);
+			options,
+		);
 	}
 
-	async deleteFile(fileId: string): Promise<DeleteResult> {
-		return this.deleteOne({ _id: fileId });
+	findImagesByRoomId(
+		rid: IRoom['_id'],
+		uploadedAt?: Date,
+		options: Omit<FindOptions<IUpload>, 'sort'> = {},
+	): FindPaginated<FindCursor<WithId<IUpload>>> {
+		return this.findPaginated(
+			{
+				rid,
+				_hidden: { $ne: true },
+				typeGroup: 'image',
+				...(Boolean(uploadedAt) && {
+					uploadedAt: {
+						$lte: uploadedAt,
+					},
+				}),
+			},
+			{
+				...options,
+				sort: { uploadedAt: -1 },
+			},
+		);
 	}
 }

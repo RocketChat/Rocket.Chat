@@ -1,7 +1,7 @@
-import faker from '@faker-js/faker';
-import { ILivechatTrigger } from '@rocket.chat/core-typings';
+import { faker } from '@faker-js/faker';
+import type { ILivechatTrigger } from '@rocket.chat/core-typings';
 import { api, credentials, methodCall, request } from '../api-data';
-import { DummyResponse } from './utils';
+import type { DummyResponse } from './utils';
 
 export const createTrigger = (name: string): Promise<boolean> => {
     return new Promise((resolve, reject) => {
@@ -11,7 +11,7 @@ export const createTrigger = (name: string): Promise<boolean> => {
 			.send({
 				message: JSON.stringify({
 					method: 'livechat:saveTrigger',
-					params: [{ name, description: faker.lorem.sentence(), enabled: true, runOnce: faker.datatype.boolean(), actions: [{ name: 'send-message', params: { msg: faker.lorem.sentence(), name: faker.name.firstName(), sender: faker.helpers.arrayElement(['queue', 'custom']) } }], conditions: [{ name: faker.lorem.word(), value: faker.datatype.number() }] }],
+					params: [{ name, description: faker.lorem.sentence(), enabled: true, runOnce: faker.datatype.boolean(), actions: [{ name: 'send-message', params: { msg: faker.lorem.sentence(), name: faker.person.firstName(), sender: faker.helpers.arrayElement(['queue', 'custom']) } }], conditions: [{ name: faker.lorem.word(), value: faker.number.int() }] }],
 					id: '101',
 					msg: 'method',
 				}),

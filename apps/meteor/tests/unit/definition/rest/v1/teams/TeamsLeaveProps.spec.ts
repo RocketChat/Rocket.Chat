@@ -1,5 +1,5 @@
-import { assert } from 'chai';
 import { isTeamsLeaveProps } from '@rocket.chat/rest-typings';
+import { assert } from 'chai';
 
 describe('TeamsLeaveProps (definition/rest/v1)', () => {
 	describe('isTeamsLeaveProps', () => {

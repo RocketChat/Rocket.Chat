@@ -1,3 +1,5 @@
+import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
+import { LivechatInquiry, LivechatDepartment, Users } from '@rocket.chat/models';
 import {
 	isGETLivechatInquiriesListParams,
 	isPOSTLivechatInquiriesTakeParams,
@@ -5,25 +7,23 @@ import {
 	isGETLivechatInquiriesQueuedForUserParams,
 	isGETLivechatInquiriesGetOneParams,
 } from '@rocket.chat/rest-typings';
-import { Meteor } from 'meteor/meteor';
-import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
-import { LivechatInquiry } from '@rocket.chat/models';
 
 import { API } from '../../../../api/server';
-import { Users, LivechatDepartment } from '../../../../models/server';
+import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 import { findInquiries, findOneInquiryByRoomId } from '../../../server/api/lib/inquiries';
+import { takeInquiry } from '../../../server/methods/takeInquiry';
 
 API.v1.addRoute(
 	'livechat/inquiries.list',
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isGETLivechatInquiriesListParams },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort } = this.parseJsonQuery();
-			const { department } = this.requestParams();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
+			const { department } = this.queryParams;
 			const ourQuery: { status: string; department?: string } = { status: 'queued' };
 			if (department) {
-				const departmentFromDB = LivechatDepartment.findOneByIdOrName(department);
+				const departmentFromDB = await LivechatDepartment.findOneByIdOrName(department);
 				if (departmentFromDB) {
 					ourQuery.department = departmentFromDB._id;
 				}
@@ -59,13 +59,11 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isPOSTLivechatInquiriesTakeParams },
 	{
 		async post() {
-			if (this.bodyParams.userId && !Users.findOneById(this.bodyParams.userId, { fields: { _id: 1 } })) {
+			if (this.bodyParams.userId && !(await Users.findOneById(this.bodyParams.userId, { projection: { _id: 1 } }))) {
 				return API.v1.failure('The user is invalid');
 			}
 			return API.v1.success({
-				inquiry: Meteor.runAsUser(this.bodyParams.userId || this.userId, () =>
-					Meteor.call('livechat:takeInquiry', this.bodyParams.inquiryId),
-				),
+				inquiry: await takeInquiry(this.bodyParams.userId || this.userId, this.bodyParams.inquiryId),
 			});
 		},
 	},
@@ -73,18 +71,23 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/inquiries.queued',
-	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isGETLivechatInquiriesQueuedParams },
+	{
+		authRequired: true,
+		permissionsRequired: ['view-l-room'],
+		validateParams: isGETLivechatInquiriesQueuedParams,
+		deprecationVersion: '7.0.0',
+	},
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort } = this.parseJsonQuery();
-			const { department } = this.requestParams();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
+			const { department } = this.queryParams;
 
 			return API.v1.success(
 				await findInquiries({
 					userId: this.userId,
 					department,
-					status: 'queued',
+					status: LivechatInquiryStatus.QUEUED,
 					pagination: {
 						offset,
 						count,
@@ -101,9 +104,9 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isGETLivechatInquiriesQueuedForUserParams },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort } = this.parseJsonQuery();
-			const { department } = this.requestParams();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
+			const { department } = this.queryParams;
 
 			return API.v1.success(
 				await findInquiries({

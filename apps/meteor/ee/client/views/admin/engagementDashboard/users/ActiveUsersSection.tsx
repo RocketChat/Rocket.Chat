@@ -3,12 +3,13 @@ import { Box, Flex, Skeleton, Tile } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
-import React, { ReactElement, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
 import CounterSet from '../../../../../../client/components/dataView/CounterSet';
 import { useFormatDate } from '../../../../../../client/hooks/useFormatDate';
+import DownloadDataButton from '../../../../components/dashboards/DownloadDataButton';
 import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
-import DownloadDataButton from '../dataView/DownloadDataButton';
 import LegendSymbol from '../dataView/LegendSymbol';
 import { useActiveUsers } from './useActiveUsers';
 
@@ -65,11 +66,11 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 		const distributeValueOverPoints = (
 			usersListsMap: { [x: number]: string[] },
 			dateOffset: number,
-			T: number,
+			count: number,
 			array: { x: Date; y: number }[],
 		): void => {
 			const usersSet = new Set();
-			for (let k = dateOffset; T > 0; k--, T--) {
+			for (let k = dateOffset; count > 0; k--, count--) {
 				if (usersListsMap[k]) {
 					usersListsMap[k].forEach((userId) => usersSet.add(userId));
 				}
@@ -126,7 +127,7 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 						variation: diffDailyActiveUsers ?? 0,
 						description: (
 							<>
-								<LegendSymbol color={colors.p200} /> {t('Daily_Active_Users')}
+								<LegendSymbol color={colors.b200} /> {t('Daily_Active_Users')}
 							</>
 						),
 					},
@@ -135,7 +136,7 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 						variation: diffWeeklyActiveUsers ?? 0,
 						description: (
 							<>
-								<LegendSymbol color={colors.p300} /> {t('Weekly_Active_Users')}
+								<LegendSymbol color={colors.b300} /> {t('Weekly_Active_Users')}
 							</>
 						),
 					},
@@ -202,7 +203,7 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 											right: 0,
 											left: 40,
 										}}
-										colors={[colors.p200, colors.p300, colors.p500]}
+										colors={[colors.b200, colors.b300, colors.b500]}
 										axisLeft={{
 											// TODO: Get it from theme
 											tickSize: 0,

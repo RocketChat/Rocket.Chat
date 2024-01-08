@@ -2,6 +2,18 @@ import { settings } from '../../settings/server';
 import { addScript } from './inject';
 
 const getContent = (): string => `
+
+${
+	process.env.BUGSNAG_CLIENT
+		? `window.__BUGSNAG_KEY__ = "${process.env.BUGSNAG_CLIENT}";\n
+window.addEventListener('load', function() {
+	const event = new Event('bugsnag-error-boundary');
+	window.dispatchEvent(event);
+});
+`
+		: ''
+}
+
 ${process.env.DISABLE_ANIMATION ? 'window.DISABLE_ANIMATION = true;\n' : ''}
 
 ${settings.get('API_Use_REST_For_DDP_Calls') ? 'window.USE_REST_FOR_DDP_CALLS = true;\n' : ''}

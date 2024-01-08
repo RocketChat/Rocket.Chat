@@ -1,18 +1,21 @@
-import { Box, TextInput, Icon } from '@rocket.chat/fuselage';
-import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import { Box, FieldGroup, TextInput, Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage';
+import { useAutoFocus, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useState, ChangeEvent } from 'react';
+import type { ReactElement, ChangeEvent, SyntheticEvent } from 'react';
+import React, { useState } from 'react';
 
 import GenericModal from '../GenericModal';
-import { Method, OnConfirm } from './TwoFactorModal';
+import type { OnConfirm } from './TwoFactorModal';
+import { Method } from './TwoFactorModal';
 
 type TwoFactorEmailModalProps = {
 	onConfirm: OnConfirm;
 	onClose: () => void;
 	emailOrUsername: string;
+	invalidAttempt?: boolean;
 };
 
-const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername }: TwoFactorEmailModalProps): ReactElement => {
+const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername, invalidAttempt }: TwoFactorEmailModalProps): ReactElement => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 	const [code, setCode] = useState<string>('');
@@ -32,7 +35,8 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername }: TwoFactorE
 		}
 	};
 
-	const onConfirmEmailCode = (): void => {
+	const onConfirmEmailCode = (e: SyntheticEvent): void => {
+		e.preventDefault();
 		onConfirm(code, Method.EMAIL);
 	};
 
@@ -40,21 +44,30 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername }: TwoFactorE
 		setCode(currentTarget.value);
 	};
 
+	const id = useUniqueId();
+
 	return (
 		<GenericModal
-			onConfirm={onConfirmEmailCode}
+			wrapperFunction={(props) => <Box is='form' onSubmit={onConfirmEmailCode} {...props} />}
 			onCancel={onClose}
 			confirmText={t('Verify')}
 			title={t('Two-factor_authentication_email')}
 			onClose={onClose}
 			variant='warning'
-			icon={<Icon size='x20' name='info' color='default' />}
+			icon='info'
 			confirmDisabled={!code}
 		>
-			<Box mbe='x16'>{t('Verify_your_email_for_the_code_we_sent')}</Box>
-			<Box mbe='x4' display='flex' justifyContent='stretch'>
-				<TextInput ref={ref} value={code} onChange={onChange} placeholder={t('Enter_authentication_code')} />
-			</Box>
+			<FieldGroup>
+				<Field>
+					<FieldLabel alignSelf='stretch' htmlFor={id}>
+						{t('Verify_your_email_with_the_code_we_sent')}
+					</FieldLabel>
+					<FieldRow>
+						<TextInput id={id} ref={ref} value={code} onChange={onChange} placeholder={t('Enter_authentication_code')} />
+					</FieldRow>
+					{invalidAttempt && <FieldError>{t('Invalid_password')}</FieldError>}
+				</Field>
+			</FieldGroup>
 			<Box display='flex' justifyContent='end' is='a' onClick={onClickResendCode}>
 				{t('Cloud_resend_email')}
 			</Box>

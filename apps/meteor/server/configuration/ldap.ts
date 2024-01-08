@@ -1,16 +1,16 @@
+import { LDAP } from '@rocket.chat/core-services';
 import { Accounts } from 'meteor/accounts-base';
 
-import { callbacks } from '../../lib/callbacks';
-import { LDAP } from '../sdk';
 import { settings } from '../../app/settings/server';
+import { callbacks } from '../../lib/callbacks';
 
 // Register ldap login handler
-Accounts.registerLoginHandler('ldap', function (loginRequest: Record<string, any>) {
+Accounts.registerLoginHandler('ldap', async (loginRequest: Record<string, any>) => {
 	if (!loginRequest.ldap || !loginRequest.ldapOptions) {
 		return undefined;
 	}
 
-	return Promise.await(LDAP.loginRequest(loginRequest.username, loginRequest.ldapPass));
+	return LDAP.loginRequest(loginRequest.username, loginRequest.ldapPass);
 });
 
 // Prevent password logins by LDAP users when LDAP is enabled

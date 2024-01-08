@@ -1,5 +1,7 @@
+import { memo } from 'preact/compat';
+
+import { createClassName } from '../../../helpers/createClassName';
 import { Avatar } from '../../Avatar';
-import { createClassName, memo } from '../../helpers';
 import styles from './styles.scss';
 
 export const MessageAvatars = memo(({ avatarResolver = () => null, usernames = [], className, style = {} }) => (

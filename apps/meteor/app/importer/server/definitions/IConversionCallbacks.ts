@@ -1,13 +1,16 @@
-import type { IImportUser, IImportMessage, IImportChannel } from '@rocket.chat/core-typings';
+import type { IImportRecord } from '@rocket.chat/core-typings';
 
 export type ImporterBeforeImportCallback = {
-	(data: IImportUser | IImportChannel | IImportMessage, type: string): boolean;
+	(data: IImportRecord): Promise<boolean>;
 };
+
 export type ImporterAfterImportCallback = {
-	(data: IImportUser | IImportChannel | IImportMessage, type: string, isNewRecord: boolean): void;
+	(data: IImportRecord, isNewRecord: boolean): Promise<void>;
 };
 
 export interface IConversionCallbacks {
 	beforeImportFn?: ImporterBeforeImportCallback;
 	afterImportFn?: ImporterAfterImportCallback;
+	onErrorFn?: () => Promise<void>;
+	afterBatchFn?: (successCount: number, errorCount: number) => Promise<void>;
 }

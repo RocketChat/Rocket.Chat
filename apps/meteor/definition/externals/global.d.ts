@@ -5,7 +5,36 @@ declare global {
 	interface Navigator {
 		/** @deprecated */
 		readonly userLanguage?: string;
+		getUserMedia?: (
+			this: Navigator,
+			constraints?: MediaStreamConstraints | undefined,
+			onSuccess?: (stream: MediaStream) => void,
+			onError?: (error: any) => void,
+		) => void;
+		webkitGetUserMedia?: (
+			this: Navigator,
+			constraints?: MediaStreamConstraints | undefined,
+			onSuccess?: (stream: MediaStream) => void,
+			onError?: (error: any) => void,
+		) => void;
+		mozGetUserMedia?: (
+			this: Navigator,
+			constraints?: MediaStreamConstraints | undefined,
+			onSuccess?: (stream: MediaStream) => void,
+			onError?: (error: any) => void,
+		) => void;
+		msGetUserMedia?: (
+			this: Navigator,
+			constraints?: MediaStreamConstraints | undefined,
+			onSuccess?: (stream: MediaStream) => void,
+			onError?: (error: any) => void,
+		) => void;
 	}
+
+	const __meteor_runtime_config__: {
+		ROOT_URL_PATH_PREFIX: string;
+		ROOT_URL: string;
+	};
 
 	interface Window {
 		setLanguage?: (language: string) => void;

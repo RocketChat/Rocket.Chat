@@ -12,7 +12,13 @@ export const isTotpInvalidError = (error: unknown): error is Meteor.Error & ({ e
 	(error as { error?: unknown } | undefined)?.error === 'totp-invalid' ||
 	(error as { errorType?: unknown } | undefined)?.errorType === 'totp-invalid';
 
-export const isLoginCancelledError = (error: unknown): error is Meteor.Error =>
+export const isTotpMaxAttemptsError = (
+	error: unknown,
+): error is Meteor.Error & ({ error: 'totp-max-attempts' } | { errorType: 'totp-max-attempts' }) =>
+	(error as { error?: unknown } | undefined)?.error === 'totp-max-attempts' ||
+	(error as { errorType?: unknown } | undefined)?.errorType === 'totp-max-attempts';
+
+const isLoginCancelledError = (error: unknown): error is Meteor.Error =>
 	error instanceof Meteor.Error && error.error === Accounts.LoginCancelledError.numericError;
 
 export const reportError = <T>(error: T, callback?: (error?: T) => void): void => {

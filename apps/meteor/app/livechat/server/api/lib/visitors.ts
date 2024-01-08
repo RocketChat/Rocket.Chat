@@ -2,10 +2,11 @@ import type { ILivechatVisitor, IMessage, IOmnichannelRoom, IRoom, IUser, IVisit
 import { LivechatVisitors, Messages, LivechatRooms, LivechatCustomField } from '@rocket.chat/models';
 import type { FindOptions } from 'mongodb';
 
+import { callbacks } from '../../../../../lib/callbacks';
 import { canAccessRoomAsync } from '../../../../authorization/server/functions/canAccessRoom';
 
 export async function findVisitorInfo({ visitorId }: { visitorId: IVisitor['_id'] }) {
-	const visitor = await LivechatVisitors.findOneById(visitorId);
+	const visitor = await LivechatVisitors.findOneEnabledById(visitorId);
 	if (!visitor) {
 		throw new Error('visitor-not-found');
 	}
@@ -61,11 +62,16 @@ export async function findChatHistory({
 		throw new Error('error-not-allowed');
 	}
 
-	const { cursor, totalCount } = LivechatRooms.findPaginatedByVisitorId(visitorId, {
-		sort: sort || { ts: -1 },
-		skip: offset,
-		limit: count,
-	});
+	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+	const { cursor, totalCount } = LivechatRooms.findPaginatedByVisitorId(
+		visitorId,
+		{
+			sort: sort || { ts: -1 },
+			skip: offset,
+			limit: count,
+		},
+		extraQuery,
+	);
 
 	const [history, total] = await Promise.all([cursor.toArray(), totalCount]);
 
@@ -84,6 +90,7 @@ export async function searchChats({
 	searchText,
 	closedChatsOnly,
 	servedChatsOnly: served,
+	source,
 	pagination: { offset, count, sort },
 }: {
 	userId: IUser['_id'];
@@ -92,6 +99,7 @@ export async function searchChats({
 	searchText?: string;
 	closedChatsOnly?: string;
 	servedChatsOnly?: string;
+	source?: string;
 	pagination: { offset: number; count: number; sort: FindOptions<IOmnichannelRoom>['sort'] };
 }) {
 	const room = await LivechatRooms.findOneById(roomId);
@@ -115,6 +123,7 @@ export async function searchChats({
 		served: served === 'true',
 		searchText,
 		onlyCount: true,
+		source,
 	}).toArray();
 	const cursor = await LivechatRooms.findRoomsByVisitorIdAndMessageWithCriteria({
 		visitorId,
@@ -122,6 +131,7 @@ export async function searchChats({
 		served: served === 'true',
 		searchText,
 		options,
+		source,
 	});
 
 	const history = await cursor.toArray();

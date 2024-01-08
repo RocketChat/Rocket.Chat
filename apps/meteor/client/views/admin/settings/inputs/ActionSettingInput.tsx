@@ -1,6 +1,8 @@
-import { Button, Field } from '@rocket.chat/fuselage';
-import { useMethod, ServerMethods, useToastMessageDispatch, useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import { Button, FieldRow, FieldHint } from '@rocket.chat/fuselage';
+import type { ServerMethods, TranslationKey } from '@rocket.chat/ui-contexts';
+import { useMethod, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 type ActionSettingInputProps = {
 	_id: string;
@@ -27,12 +29,12 @@ function ActionSettingInput({ _id, actionText, value, disabled, sectionChanged }
 
 	return (
 		<>
-			<Field.Row>
+			<FieldRow>
 				<Button data-qa-setting-id={_id} disabled={disabled || sectionChanged} primary onClick={handleClick}>
 					{t(actionText)}
 				</Button>
-			</Field.Row>
-			{sectionChanged && <Field.Hint>{t('Save_to_enable_this_action')}</Field.Hint>}
+			</FieldRow>
+			{sectionChanged && <FieldHint>{t('Save_to_enable_this_action')}</FieldHint>}
 		</>
 	);
 }

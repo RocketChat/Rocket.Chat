@@ -1,11 +1,11 @@
-import { Match, check } from 'meteor/check';
+import { Voip } from '@rocket.chat/core-services';
 import type { IVoipExtensionBase } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import { Match, check } from 'meteor/check';
 
-import { API } from '../../api';
-import { Voip } from '../../../../../server/sdk';
-import { generateJWT } from '../../../../utils/server/lib/JWTHelper';
 import { settings } from '../../../../settings/server';
+import { generateJWT } from '../../../../utils/server/lib/JWTHelper';
+import { API } from '../../api';
 import { logger } from './logger';
 
 // Get the connector version and type
@@ -43,12 +43,12 @@ API.v1.addRoute(
 	{
 		async get() {
 			check(
-				this.requestParams(),
+				this.queryParams,
 				Match.ObjectIncluding({
 					extension: String,
 				}),
 			);
-			const endpointDetails = await Voip.getExtensionDetails(this.requestParams());
+			const endpointDetails = await Voip.getExtensionDetails(this.queryParams);
 			return API.v1.success({ ...endpointDetails.result });
 		},
 	},
@@ -63,13 +63,13 @@ API.v1.addRoute(
 	{
 		async get() {
 			check(
-				this.requestParams(),
+				this.queryParams,
 				Match.ObjectIncluding({
 					extension: String,
 				}),
 			);
-			const endpointDetails = await Voip.getRegistrationInfo(this.requestParams());
-			const encKey = settings.get('VoIP_JWT_Secret');
+			const endpointDetails = await Voip.getRegistrationInfo(this.queryParams);
+			const encKey = settings.get<string>('VoIP_JWT_Secret');
 			if (!encKey) {
 				logger.warn('No JWT keys set. Sending registration info as plain text');
 				return API.v1.success({ ...endpointDetails.result });
@@ -87,12 +87,12 @@ API.v1.addRoute(
 	{
 		async get() {
 			check(
-				this.requestParams(),
+				this.queryParams,
 				Match.ObjectIncluding({
 					id: String,
 				}),
 			);
-			const { id } = this.requestParams();
+			const { id } = this.queryParams;
 
 			if (id !== this.userId) {
 				return API.v1.unauthorized();
@@ -112,7 +112,7 @@ API.v1.addRoute(
 			}
 
 			const endpointDetails = await Voip.getRegistrationInfo({ extension });
-			const encKey = settings.get('VoIP_JWT_Secret');
+			const encKey = settings.get<string>('VoIP_JWT_Secret');
 			if (!encKey) {
 				logger.warn('No JWT keys set. Sending registration info as plain text');
 				return API.v1.success({ ...endpointDetails.result });

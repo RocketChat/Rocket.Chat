@@ -1,12 +1,15 @@
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 
-import AttachmentProvider from '../components/message/Attachments/providers/AttachmentProvider';
+import { OmnichannelRoomIconProvider } from '../components/RoomIcon/OmnichannelRoomIcon/provider/OmnichannelRoomIconProvider';
+import ActionManagerProvider from './ActionManagerProvider';
 import AuthorizationProvider from './AuthorizationProvider';
 import AvatarUrlProvider from './AvatarUrlProvider';
 import { CallProvider } from './CallProvider';
 import ConnectionStatusProvider from './ConnectionStatusProvider';
 import CustomSoundProvider from './CustomSoundProvider';
 import { DeviceProvider } from './DeviceProvider/DeviceProvider';
+import EmojiPickerProvider from './EmojiPickerProvider';
 import LayoutProvider from './LayoutProvider';
 import ModalProvider from './ModalProvider';
 import OmnichannelProvider from './OmnichannelProvider';
@@ -17,6 +20,7 @@ import SettingsProvider from './SettingsProvider';
 import ToastMessagesProvider from './ToastMessagesProvider';
 import TooltipProvider from './TooltipProvider';
 import TranslationProvider from './TranslationProvider';
+import UserPresenceProvider from './UserPresenceProvider';
 import UserProvider from './UserProvider';
 import VideoConfProvider from './VideoConfProvider';
 
@@ -24,37 +28,43 @@ const MeteorProvider: FC = ({ children }) => (
 	<ConnectionStatusProvider>
 		<ServerProvider>
 			<RouterProvider>
-				<TranslationProvider>
-					<SessionProvider>
-						<TooltipProvider>
-							<ToastMessagesProvider>
-								<SettingsProvider>
+				<SettingsProvider>
+					<TranslationProvider>
+						<SessionProvider>
+							<TooltipProvider>
+								<ToastMessagesProvider>
 									<LayoutProvider>
 										<AvatarUrlProvider>
-											<CustomSoundProvider>
-												<UserProvider>
+											<UserProvider>
+												<CustomSoundProvider>
 													<DeviceProvider>
 														<ModalProvider>
 															<AuthorizationProvider>
-																<VideoConfProvider>
-																	<CallProvider>
-																		<OmnichannelProvider>
-																			<AttachmentProvider>{children}</AttachmentProvider>
-																		</OmnichannelProvider>
-																	</CallProvider>
-																</VideoConfProvider>
+																<EmojiPickerProvider>
+																	<OmnichannelRoomIconProvider>
+																		<UserPresenceProvider>
+																			<ActionManagerProvider>
+																				<VideoConfProvider>
+																					<CallProvider>
+																						<OmnichannelProvider>{children}</OmnichannelProvider>
+																					</CallProvider>
+																				</VideoConfProvider>
+																			</ActionManagerProvider>
+																		</UserPresenceProvider>
+																	</OmnichannelRoomIconProvider>
+																</EmojiPickerProvider>
 															</AuthorizationProvider>
 														</ModalProvider>
 													</DeviceProvider>
-												</UserProvider>
-											</CustomSoundProvider>
+												</CustomSoundProvider>
+											</UserProvider>
 										</AvatarUrlProvider>
 									</LayoutProvider>
-								</SettingsProvider>
-							</ToastMessagesProvider>
-						</TooltipProvider>
-					</SessionProvider>
-				</TranslationProvider>
+								</ToastMessagesProvider>
+							</TooltipProvider>
+						</SessionProvider>
+					</TranslationProvider>
+				</SettingsProvider>
 			</RouterProvider>
 		</ServerProvider>
 	</ConnectionStatusProvider>

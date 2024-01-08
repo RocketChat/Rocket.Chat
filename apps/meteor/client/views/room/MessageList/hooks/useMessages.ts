@@ -1,50 +1,49 @@
-import { IRoom, IMessage } from '@rocket.chat/core-typings';
-import { Mongo } from 'meteor/mongo';
+import type { IRoom, IMessage, MessageTypesValues } from '@rocket.chat/core-typings';
+import { useStableArray } from '@rocket.chat/fuselage-hooks';
+import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
+import type { Mongo } from 'meteor/mongo';
 import { useCallback, useMemo } from 'react';
 
 import { ChatMessage } from '../../../../../app/models/client';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
-import { useMessageListContext } from '../contexts/MessageListContext';
-import {
-	MessageWithMdEnforced,
-	parseMessageTextToAstMarkdown,
-	removePossibleNullMessageValues,
-} from '../lib/parseMessageTextToAstMarkdown';
+import { useRoom } from '../../contexts/RoomContext';
 
-const options = {
-	sort: {
-		ts: 1,
-	},
+const mergeHideSysMessages = (
+	sysMesArray1: Array<MessageTypesValues>,
+	sysMesArray2: Array<MessageTypesValues>,
+): Array<MessageTypesValues> => {
+	return Array.from(new Set([...sysMesArray1, ...sysMesArray2]));
 };
 
-export const useMessages = ({ rid }: { rid: IRoom['_id'] }): MessageWithMdEnforced[] => {
-	const { autoTranslateLanguage, katex, showColors, useShowTranslated } = useMessageListContext();
+export const useMessages = ({ rid }: { rid: IRoom['_id'] }): IMessage[] => {
+	const showThreadsInMainChannel = useUserPreference<boolean>('showThreadsInMainChannel', false);
+	const hideSysMesSetting = useSetting<MessageTypesValues[]>('Hide_System_Messages') ?? [];
+	const room = useRoom();
+	const hideRoomSysMes: Array<MessageTypesValues> = Array.isArray(room.sysMes) ? room.sysMes : [];
 
-	const normalizeMessage = useMemo(() => {
-		const parseOptions = {
-			colors: showColors,
-			emoticons: true,
-			...(Boolean(katex) && {
-				katex: {
-					dollarSyntax: katex?.dollarSyntaxEnabled,
-					parenthesisSyntax: katex?.parenthesisSyntaxEnabled,
-				},
-			}),
-		};
-		return (message: IMessage): MessageWithMdEnforced =>
-			parseMessageTextToAstMarkdown(removePossibleNullMessageValues(message), parseOptions, autoTranslateLanguage, useShowTranslated);
-	}, [autoTranslateLanguage, katex, showColors, useShowTranslated]);
+	const hideSysMessages = useStableArray(mergeHideSysMessages(hideSysMesSetting, hideRoomSysMes));
 
-	const query: Mongo.Query<IMessage> = useMemo(
+	const query: Mongo.Selector<IMessage> = useMemo(
 		() => ({
 			rid,
 			_hidden: { $ne: true },
-			$or: [{ tmid: { $exists: false } }, { tshow: { $eq: true } }],
+			t: { $nin: hideSysMessages },
+			...(!showThreadsInMainChannel && {
+				$or: [{ tmid: { $exists: false } }, { tshow: { $eq: true } }],
+			}),
 		}),
-		[rid],
+		[rid, hideSysMessages, showThreadsInMainChannel],
 	);
 
-	return useReactiveValue<MessageWithMdEnforced[]>(
-		useCallback(() => ChatMessage.find(query, options).fetch().map(normalizeMessage), [query, normalizeMessage]),
+	return useReactiveValue(
+		useCallback(
+			() =>
+				ChatMessage.find(query, {
+					sort: {
+						ts: 1,
+					},
+				}).fetch(),
+			[query],
+		),
 	);
 };

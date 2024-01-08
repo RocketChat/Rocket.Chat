@@ -1,5 +1,6 @@
-import { ComponentMeta, ComponentStory } from '@storybook/react';
-import React, { ReactElement, ReactNode } from 'react';
+import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { ReactElement, ReactNode } from 'react';
+import React from 'react';
 
 import ViewLogsPage from './ViewLogsPage';
 

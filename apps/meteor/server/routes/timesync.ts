@@ -4,7 +4,7 @@ import { WebApp } from 'meteor/webapp';
 
 const syncUrl = `${(global as any)?.ROOT_URL_PATH_PREFIX || ''}/_timesync`;
 
-WebApp.rawConnectHandlers.use(syncUrl, function (_req, res) {
+WebApp.rawConnectHandlers.use(syncUrl, (_req, res) => {
 	// Never ever cache this, otherwise weird times are shown on reload
 	// http://stackoverflow.com/q/18811286/586086
 	res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');

@@ -1,0 +1,27 @@
+{
+	"name": "@rocket.chat/instance-status",
+	"version": "0.0.26",
+	"private": true,
+	"devDependencies": {
+		"@rocket.chat/eslint-config": "workspace:^",
+		"eslint": "~8.45.0",
+		"mongodb": "^4.17.1",
+		"prettier": "~2.8.8",
+		"typescript": "~5.3.2"
+	},
+	"scripts": {
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"dev": "tsc --watch --preserveWatchOutput -p tsconfig.json",
+		"build": "rm -rf dist && tsc -p tsconfig.json"
+	},
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"dependencies": {
+		"@rocket.chat/models": "workspace:^"
+	}
+}

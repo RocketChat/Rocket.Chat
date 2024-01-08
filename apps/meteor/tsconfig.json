@@ -1,24 +1,19 @@
 {
+	"extends": "../../tsconfig.base.json",
 	"compilerOptions": {
-		"module": "CommonJS",
 		"target": "es2018",
+		"module": "esNext",
 		"lib": ["esnext", "dom"],
 
 		"allowJs": true,
 		"checkJs": false,
 		"jsx": "react",
-		// "incremental": true,
 		"noEmit": true,
 
 		/* Strict Type-Checking Options */
-		"strict": true,
-		"noImplicitAny": true,
-		"strictNullChecks": true,
 		"strictPropertyInitialization": false,
 
 		/* Additional Checks */
-		"noUnusedLocals": true,
-		"noUnusedParameters": true,
 		"noImplicitReturns": false,
 		"noFallthroughCasesInSwitch": false,
 
@@ -26,11 +21,12 @@
 		"baseUrl": ".",
 		"paths": {
 			/* Support absolute /imports/* with a leading '/' */
-			"/*": ["*"]
+			"/*": ["*"],
+			"meteor/*": [
+				"../../node_modules/@types/meteor/*",
+				".meteor/local/types/packages.d.ts"
+			]
 		},
-		"moduleResolution": "node",
-		"resolveJsonModule": true,
-		"esModuleInterop": true,
 		"preserveSymlinks": true
 
 		// "sourceMap": true,
@@ -42,13 +38,13 @@
 	"exclude": [
 		"**/node_modules/**",
 		"./.meteor/**",
-		"./packages/**",
 		"./imports/client/**",
 		"**/dist/**",
 		"./public/**"
 		// "./ee/server/services/**"
 	],
 	"ts-node": {
-		"files": true
+		"files": false,
+		"swc": true
 	}
 }

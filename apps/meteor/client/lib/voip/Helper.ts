@@ -1,4 +1,4 @@
-import { Session } from 'sip.js';
+import type { Session } from 'sip.js';
 import { SessionDescriptionHandler } from 'sip.js/lib/platform/web';
 
 /** Helper function to enable/disable media tracks. */

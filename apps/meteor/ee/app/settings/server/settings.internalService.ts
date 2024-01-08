@@ -1,7 +1,7 @@
+import { ServiceClassInternal } from '@rocket.chat/core-services';
+import type { IEnterpriseSettings } from '@rocket.chat/core-services';
 import type { ISetting } from '@rocket.chat/core-typings';
 
-import { ServiceClassInternal } from '../../../../server/sdk/types/ServiceClass';
-import type { IEnterpriseSettings } from '../../../../server/sdk/types/IEnterpriseSettings';
 import { changeSettingValue } from './settings';
 
 export class EnterpriseSettings extends ServiceClassInternal implements IEnterpriseSettings {

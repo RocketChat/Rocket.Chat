@@ -1,4 +1,5 @@
-import { PureComponent, ReactElement, ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
+import { PureComponent } from 'react';
 
 type PortalWrapperProps = {
 	portal: ReactElement;

@@ -1,19 +1,23 @@
-import { IRoom } from '@rocket.chat/core-typings';
-import { useRoute } from '@rocket.chat/ui-contexts';
-import React, { ReactNode, useMemo, memo, useEffect, ContextType, ReactElement, useCallback } from 'react';
+import type { IRoom } from '@rocket.chat/core-typings';
+import { useRouter } from '@rocket.chat/ui-contexts';
+import type { ReactNode, ContextType, ReactElement } from 'react';
+import React, { useMemo, memo, useEffect, useCallback } from 'react';
 
-import { UserAction } from '../../../../app/ui';
+import { ChatSubscription } from '../../../../app/models/client';
 import { RoomHistoryManager } from '../../../../app/ui-utils/client';
+import { UserAction } from '../../../../app/ui/client/lib/UserAction';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { RoomManager } from '../../../lib/RoomManager';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
+import ImageGalleryProvider from '../../../providers/ImageGalleryProvider';
 import RoomNotFound from '../RoomNotFound';
 import RoomSkeleton from '../RoomSkeleton';
-import { useRoomRolesManagement } from '../components/body/useRoomRolesManagement';
-import { RoomAPIContext } from '../contexts/RoomAPIContext';
+import { useRoomRolesManagement } from '../body/hooks/useRoomRolesManagement';
 import { RoomContext } from '../contexts/RoomContext';
-import ToolboxProvider from './ToolboxProvider';
+import ComposerPopupProvider from './ComposerPopupProvider';
+import RoomToolboxProvider from './RoomToolboxProvider';
+import { useRoomQuery } from './hooks/useRoomQuery';
 
 type RoomProviderProps = {
 	children: ReactNode;
@@ -23,29 +27,30 @@ type RoomProviderProps = {
 const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	useRoomRolesManagement(rid);
 
-	const roomQuery = useReactiveQuery(['rooms', rid], ({ rooms }) => rooms.findOne({ _id: rid }));
+	const { data: room, isSuccess } = useRoomQuery(rid);
 
 	// TODO: the following effect is a workaround while we don't have a general and definitive solution for it
-	const homeRoute = useRoute('home');
+	const router = useRouter();
 	useEffect(() => {
-		if (roomQuery.isSuccess && !roomQuery.data) {
-			homeRoute.push();
+		if (isSuccess && !room) {
+			router.navigate('/home');
 		}
-	}, [roomQuery.isSuccess, roomQuery.data, homeRoute]);
+	}, [isSuccess, room, router]);
 
-	const subscriptionQuery = useReactiveQuery(['subscriptions', { rid }], ({ subscriptions }) => subscriptions.findOne({ rid }) ?? null);
+	const subscriptionQuery = useReactiveQuery(['subscriptions', { rid }], () => ChatSubscription.findOne({ rid }) ?? null);
 
 	const pseudoRoom = useMemo(() => {
-		if (!roomQuery.data) {
+		if (!room) {
 			return null;
 		}
 
 		return {
 			...subscriptionQuery.data,
-			...roomQuery.data,
-			name: roomCoordinator.getRoomName(roomQuery.data.t, roomQuery.data),
+			...room,
+			name: roomCoordinator.getRoomName(room.t, room),
+			federationOriginalName: room.name,
 		};
-	}, [roomQuery.data, subscriptionQuery.data]);
+	}, [room, subscriptionQuery.data]);
 
 	const { hasMorePreviousMessages, hasMoreNextMessages, isLoadingMoreMessages } = useReactiveValue(
 		useCallback(() => {
@@ -81,29 +86,35 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 		};
 	}, [rid]);
 
+	const subscribed = !!subscriptionQuery.data;
+
 	useEffect(() => {
-		if (!subscriptionQuery.data) {
+		if (!subscribed) {
 			return;
 		}
 
 		UserAction.addStream(rid);
 		return (): void => {
-			UserAction.cancel(rid);
+			try {
+				UserAction.cancel(rid);
+			} catch (error) {
+				// Do nothing
+			}
 		};
-	}, [rid, subscriptionQuery.data]);
-
-	const api = useMemo(() => ({}), []);
+	}, [rid, subscribed]);
 
 	if (!pseudoRoom) {
-		return roomQuery.isSuccess ? <RoomNotFound /> : <RoomSkeleton />;
+		return isSuccess && !room ? <RoomNotFound /> : <RoomSkeleton />;
 	}
 
 	return (
-		<RoomAPIContext.Provider value={api}>
-			<RoomContext.Provider value={context}>
-				<ToolboxProvider room={pseudoRoom}>{children}</ToolboxProvider>
-			</RoomContext.Provider>
-		</RoomAPIContext.Provider>
+		<RoomContext.Provider value={context}>
+			<RoomToolboxProvider>
+				<ImageGalleryProvider>
+					<ComposerPopupProvider room={pseudoRoom}>{children}</ComposerPopupProvider>
+				</ImageGalleryProvider>
+			</RoomToolboxProvider>
+		</RoomContext.Provider>
 	);
 };
 

@@ -1,22 +1,24 @@
-import { Button, Box, Icon, Flex } from '@rocket.chat/fuselage';
-import { useRouteParameter, useQueryStringParameter } from '@rocket.chat/ui-contexts';
+import { Button, Box, Flex } from '@rocket.chat/fuselage';
+import { useRouteParameter, useSearchParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import React, { useEffect, useState, useCallback, FC } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 
-import { APIClient } from '../../../app/utils/client';
+import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import UserAvatar from '../../components/avatar/UserAvatar';
+import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
 import NotFoundPage from '../notFound/NotFoundPage';
 import PageLoading from '../root/PageLoading';
 import CallPage from './CallPage';
 import './styles.css';
 
-const MeetPage: FC = () => {
+const MeetPage = () => {
+	const t = useTranslation();
 	const [isRoomMember, setIsRoomMember] = useState(false);
 	const [status, setStatus] = useState(null);
 	const [visitorId, setVisitorId] = useState(null);
 	const roomId = useRouteParameter('rid');
-	const visitorToken = useQueryStringParameter('token');
-	const layout = useQueryStringParameter('layout');
+	const visitorToken = useSearchParameter('token');
+	const isLayoutEmbedded = useEmbeddedLayout();
 	const [visitorName, setVisitorName] = useState('');
 	const [agentName, setAgentName] = useState('');
 	const [callStartTime, setCallStartTime] = useState(undefined);
@@ -29,7 +31,7 @@ const MeetPage: FC = () => {
 			throw new Error('Missing parameters');
 		}
 
-		const room = (await APIClient.get('/v1/livechat/room', {
+		const room = (await sdk.rest.get('/v1/livechat/room', {
 			token: visitorToken,
 			rid: roomId,
 		})) as any;
@@ -48,7 +50,7 @@ const MeetPage: FC = () => {
 			throw new Error('Missing parameters');
 		}
 
-		const room = (await APIClient.get('/v1/rooms.info', { roomId })) as any;
+		const room = (await sdk.rest.get('/v1/rooms.info', { roomId })) as any;
 		if (room?.room?.servedBy?._id === Meteor.userId()) {
 			setVisitorName(room.room.fname);
 			room?.room?.responseBy?.username ? setAgentName(room.room.responseBy.username) : setAgentName(room.room.servedBy.username);
@@ -65,16 +67,19 @@ const MeetPage: FC = () => {
 		}
 		setupCallForAgent();
 	}, [setupCallForAgent, setupCallForVisitor, visitorToken]);
+
 	if (status === null) {
-		return <PageLoading></PageLoading>;
+		return <PageLoading />;
 	}
+
 	if (!isRoomMember) {
-		return <NotFoundPage></NotFoundPage>;
+		return <NotFoundPage />;
 	}
+
 	if (status === 'ended') {
 		return (
 			<Flex.Container direction='column' justifyContent='center'>
-				<Box width='full' minHeight='sh' alignItems='center' backgroundColor='neutral-900' overflow='hidden' position='relative'>
+				<Box width='full' minHeight='sh' alignItems='center' backgroundColor='dark' overflow='hidden' position='relative'>
 					<Box
 						position='absolute'
 						style={{
@@ -82,7 +87,7 @@ const MeetPage: FC = () => {
 							right: '2%',
 						}}
 						className='Self_Video'
-						backgroundColor='#2F343D'
+						backgroundColor='dark'
 						alignItems='center'
 					>
 						<UserAvatar
@@ -115,7 +120,7 @@ const MeetPage: FC = () => {
 							className='rcx-message__avatar'
 							size='x124'
 						/>
-						<p style={{ color: 'white', fontSize: 16, margin: 15 }}>{'Call Ended!'}</p>
+						<p style={{ color: 'white', fontSize: 16, margin: 15 }}>Call Ended!</p>
 						<p
 							style={{
 								color: 'white',
@@ -126,9 +131,14 @@ const MeetPage: FC = () => {
 						</p>
 					</Box>
 					<Box position='absolute' alignItems='center' style={{ bottom: '20%' }}>
-						<Button square title='Close Window' onClick={closeCallTab} backgroundColor='#2F343D' borderColor='#2F343D'>
-							<Icon name='cross' size='x16' color='white' />
-						</Button>
+						<Button
+							icon='cross'
+							square
+							title={t('Close_Window')}
+							onClick={closeCallTab}
+							backgroundColor='dark'
+							borderColor='extra-dark'
+						></Button>
 					</Box>
 				</Box>
 			</Flex.Container>
@@ -144,7 +154,7 @@ const MeetPage: FC = () => {
 			setStatus={setStatus}
 			visitorName={visitorName}
 			agentName={agentName}
-			layout={layout}
+			isLayoutEmbedded={isLayoutEmbedded}
 			callStartTime={callStartTime}
 		/>
 	);

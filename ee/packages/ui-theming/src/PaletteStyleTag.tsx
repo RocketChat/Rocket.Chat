@@ -1,10 +1,27 @@
-import React from 'react';
-import type { ReactElement } from 'react';
+import React, { memo } from 'react';
 import { createPortal } from 'react-dom';
 
-import { convertToCss } from './convertToCss';
-import { filterOnlyChangedColors } from './filterOnlyChangedColors';
+import { codeBlock } from './codeBlockStyles';
+import { convertToCss } from './helpers/convertToCss';
+import { useCreateStyleContainer } from './hooks/useCreateStyleContainer';
+import { useThemeMode } from './hooks/useThemeMode';
 import { defaultPalette } from './palette';
+import { darkPalette } from './paletteDark';
+import { paletteHighContrast } from './paletteHighContrast';
 
-export const PaletteStyleTag = ({ palette }: { palette: Record<string, string> }): ReactElement =>
-	createPortal(<style>{convertToCss(filterOnlyChangedColors(defaultPalette, palette))}</style>, document.head);
+export const PaletteStyleTag = memo(function PaletteStyleTag() {
+	const [, , theme] = useThemeMode();
+
+	const getPalette = () => {
+		if (theme === 'dark') {
+			return darkPalette;
+		}
+		if (theme === 'high-contrast') {
+			return paletteHighContrast;
+		}
+		return defaultPalette;
+	};
+	const palette = convertToCss(getPalette(), '.rcx-content--main, .rcx-tile');
+
+	return <>{createPortal(theme === 'dark' ? palette + codeBlock : palette, useCreateStyleContainer('main-palette'))}</>;
+});

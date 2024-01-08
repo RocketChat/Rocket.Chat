@@ -1,15 +1,18 @@
-import { Box, Field, TextInput, Select, ToggleSwitch, SelectOption } from '@rocket.chat/fuselage';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, FieldError, FieldHint, TextInput, Select, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
 
 type RoleFormProps = {
 	className?: string;
 	editing?: boolean;
 	isProtected?: boolean;
+	isDisabled?: boolean;
 };
 
-const RoleForm = ({ className, editing = false, isProtected = false }: RoleFormProps): ReactElement => {
+const RoleForm = ({ className, editing = false, isProtected = false, isDisabled = false }: RoleFormProps): ReactElement => {
 	const t = useTranslation();
 	const {
 		register,
@@ -28,40 +31,40 @@ const RoleForm = ({ className, editing = false, isProtected = false }: RoleFormP
 	return (
 		<>
 			<Field className={className}>
-				<Field.Label>{t('Role')}</Field.Label>
-				<Field.Row>
-					<TextInput disabled={editing} placeholder={t('Role')} {...register('name', { required: true })} />
-				</Field.Row>
-				{errors?.name && <Field.Error>{t('error-the-field-is-required', { field: t('Role') })}</Field.Error>}
+				<FieldLabel>{t('Role')}</FieldLabel>
+				<FieldRow>
+					<TextInput disabled={editing || isDisabled} placeholder={t('Role')} {...register('name', { required: true })} />
+				</FieldRow>
+				{errors?.name && <FieldError>{t('error-the-field-is-required', { field: t('Role') })}</FieldError>}
 			</Field>
 			<Field className={className}>
-				<Field.Label>{t('Description')}</Field.Label>
-				<Field.Row>
-					<TextInput placeholder={t('Description')} {...register('description')} />
-				</Field.Row>
-				<Field.Hint>{'Leave the description field blank if you dont want to show the role'}</Field.Hint>
+				<FieldLabel>{t('Description')}</FieldLabel>
+				<FieldRow>
+					<TextInput placeholder={t('Description')} disabled={isDisabled} {...register('description')} />
+				</FieldRow>
+				<FieldHint>Leave the description field blank if you dont want to show the role</FieldHint>
 			</Field>
 			<Field className={className}>
-				<Field.Label>{t('Scope')}</Field.Label>
-				<Field.Row>
+				<FieldLabel>{t('Scope')}</FieldLabel>
+				<FieldRow>
 					<Controller
 						name='scope'
 						control={control}
-						render={({ field }): ReactElement => <Select {...field} options={options} disabled={isProtected} placeholder={t('Scope')} />}
+						render={({ field }): ReactElement => (
+							<Select {...field} options={options} disabled={isProtected || isDisabled} placeholder={t('Scope')} />
+						)}
 					/>
-				</Field.Row>
+				</FieldRow>
 			</Field>
 			<Field className={className}>
-				<Box display='flex' flexDirection='row'>
-					<Field.Label>{t('Users must use Two Factor Authentication')}</Field.Label>
-					<Field.Row>
-						<Controller
-							name='mandatory2fa'
-							control={control}
-							render={({ field }): ReactElement => <ToggleSwitch {...field} checked={field.value} />}
-						/>
-					</Field.Row>
-				</Box>
+				<FieldRow>
+					<FieldLabel>{t('Users must use Two Factor Authentication')}</FieldLabel>
+					<Controller
+						name='mandatory2fa'
+						control={control}
+						render={({ field }): ReactElement => <ToggleSwitch {...field} checked={field.value} disabled={isDisabled} />}
+					/>
+				</FieldRow>
 			</Field>
 		</>
 	);

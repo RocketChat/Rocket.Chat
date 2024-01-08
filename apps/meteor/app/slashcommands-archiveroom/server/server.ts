@@ -1,35 +1,42 @@
+import { api } from '@rocket.chat/core-services';
+import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
+import { isRegisterUser } from '@rocket.chat/core-typings';
+import { Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { Rooms, Messages } from '../../models/server';
-import { slashCommands } from '../../utils/lib/slashCommand';
-import { api } from '../../../server/sdk/api';
+import { i18n } from '../../../server/lib/i18n';
+import { archiveRoom } from '../../lib/server/functions/archiveRoom';
 import { settings } from '../../settings/server';
+import { slashCommands } from '../../utils/lib/slashCommand';
 
 slashCommands.add({
 	command: 'archive',
-	callback: function Archive(_command, params, item): void {
+	callback: async function Archive({ params, message, userId }: SlashCommandCallbackParams<'archive'>): Promise<void> {
 		let channel = params.trim();
 
 		let room;
 
 		if (channel === '') {
-			room = Rooms.findOneById(item.rid);
-			channel = room.name;
+			room = await Rooms.findOneById(message.rid);
+			if (room?.name) {
+				channel = room.name;
+			}
 		} else {
 			channel = channel.replace('#', '');
-			room = Rooms.findOneByName(channel);
+			room = await Rooms.findOneByName(channel);
 		}
-
-		const userId = Meteor.userId();
-
 		if (!userId) {
 			return;
 		}
 
+		const user = await Users.findOneById(userId, { projection: { username: 1, name: 1 } });
+		if (!user || !isRegisterUser(user)) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'archiveRoom' });
+		}
+
 		if (!room) {
-			api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-				msg: TAPi18n.__('Channel_doesnt_exist', {
+			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
+				msg: i18n.t('Channel_doesnt_exist', {
 					postProcess: 'sprintf',
 					sprintf: [channel],
 					lng: settings.get('Language') || 'en',
@@ -44,8 +51,8 @@ slashCommands.add({
 		}
 
 		if (room.archived) {
-			api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-				msg: TAPi18n.__('Duplicate_archived_channel_name', {
+			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
+				msg: i18n.t('Duplicate_archived_channel_name', {
 					postProcess: 'sprintf',
 					sprintf: [channel],
 					lng: settings.get('Language') || 'en',
@@ -53,11 +60,11 @@ slashCommands.add({
 			});
 			return;
 		}
-		Meteor.call('archiveRoom', room._id);
 
-		Messages.createRoomArchivedByRoomIdAndUser(room._id, Meteor.user());
-		api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-			msg: TAPi18n.__('Channel_Archived', {
+		await archiveRoom(room._id, user);
+
+		void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
+			msg: i18n.t('Channel_Archived', {
 				postProcess: 'sprintf',
 				sprintf: [channel],
 				lng: settings.get('Language') || 'en',

@@ -1,12 +1,11 @@
+import { Random } from '@rocket.chat/random';
 import { capitalize } from '@rocket.chat/string-helpers';
-import { Meteor } from 'meteor/meteor';
-import { Match } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
-import { Random } from 'meteor/random';
-import { ServiceConfiguration } from 'meteor/service-configuration';
+import { Match } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
+import { ServiceConfiguration } from 'meteor/service-configuration';
 
-import './swapSessionStorage';
 import { isURL } from '../../../lib/utils/isURL';
 
 // Request custom OAuth credentials for the user
@@ -59,7 +58,7 @@ export class CustomOAuth {
 	configureLogin() {
 		const loginWithService = `loginWith${capitalize(String(this.name || ''))}`;
 
-		Meteor[loginWithService] = (options, callback) => {
+		Meteor[loginWithService] = async (options, callback) => {
 			// support a callback without options
 			if (!callback && typeof options === 'function') {
 				callback = options;
@@ -67,18 +66,18 @@ export class CustomOAuth {
 			}
 
 			const credentialRequestCompleteCallback = Accounts.oauth.credentialRequestCompleteHandler(callback);
-			this.requestCredential(options, credentialRequestCompleteCallback);
+			await this.requestCredential(options, credentialRequestCompleteCallback);
 		};
 	}
 
-	requestCredential(options, credentialRequestCompleteCallback) {
+	async requestCredential(options, credentialRequestCompleteCallback) {
 		// support both (options, callback) and (callback).
 		if (!credentialRequestCompleteCallback && typeof options === 'function') {
 			credentialRequestCompleteCallback = options;
 			options = {};
 		}
 
-		const config = ServiceConfiguration.configurations.findOne({ service: this.name });
+		const config = await ServiceConfiguration.configurations.findOneAsync({ service: this.name });
 		if (!config) {
 			if (credentialRequestCompleteCallback) {
 				credentialRequestCompleteCallback(new ServiceConfiguration.ConfigError());

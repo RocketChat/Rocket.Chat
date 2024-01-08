@@ -1,8 +1,9 @@
-import { test, expect } from './utils/test';
-import { HomeDiscussion } from './page-objects';
 import { IS_EE } from './config/constants';
+import { Users } from './fixtures/userStates';
+import { HomeDiscussion } from './page-objects';
+import { test, expect } from './utils/test';
 
-test.use({ storageState: 'admin-session.json' });
+test.use({ storageState: Users.admin.state });
 
 test.describe.serial('administration-menu', () => {
 	let poHomeDiscussion: HomeDiscussion;
@@ -13,14 +14,8 @@ test.describe.serial('administration-menu', () => {
 		await page.goto('/home');
 	});
 
-	test('expect open upgrade page', async ({ page }) => {
-		test.skip(IS_EE, 'Community Only');
-		await poHomeDiscussion.sidenav.openAdministrationByLabel('Go fully featured');
-
-		await expect(page).toHaveURL('admin/upgrade/go-fully-featured');
-	});
-
-	test('expect open info page', async ({ page }) => {
+	test('expect open Workspace page', async ({ page }) => {
+		test.skip(!IS_EE, 'Enterprise only');
 		await poHomeDiscussion.sidenav.openAdministrationByLabel('Workspace');
 
 		await expect(page).toHaveURL('admin/info');
@@ -32,20 +27,8 @@ test.describe.serial('administration-menu', () => {
 		await expect(page).toHaveURL('omnichannel/current');
 	});
 
-	test('expect open app marketplace page', async ({ page }) => {
-		await poHomeDiscussion.sidenav.openAdministrationByLabel('Marketplace');
-
-		await expect(page).toHaveURL('admin/marketplace');
-	});
-
-	test('expect open app installed page', async ({ page }) => {
-		await poHomeDiscussion.sidenav.openAdministrationByLabel('Installed');
-
-		await expect(page).toHaveURL('admin/marketplace/installed');
-	});
-
 	test.describe('user', () => {
-		test.use({ storageState: 'user1-session.json' });
+		test.use({ storageState: Users.user1.state });
 
 		test('expect to not render administration menu when no permission', async ({ page }) => {
 			await expect(page.locator('role=button[name="Administration"]')).not.toBeVisible();

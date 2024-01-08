@@ -6,11 +6,13 @@ import type { ReactNode, ReactElement, HTMLAttributes, Ref } from 'react';
 export const VideoConfPopupContainer = styled('div', ({ position: _position, ...props }: { position?: number }) => props)`
 	width: 100%;
 	position: absolute;
-	box-shadow: 0px 4px 32px rgba(0, 0, 0, 0.15);
+	box-shadow: 0px 0px 1px 0px ${Palette.shadow['shadow-elevation-2x'].toString()},
+		0px 0px 12px 0px ${Palette.shadow['shadow-elevation-2y'].toString()};
 	background-color: ${Palette.surface['surface-light'].toString()};
-	border-radius: 0.25rem;
+	border: 1px solid ${Palette.stroke['stroke-extra-light'].toString()};
 	top: ${(p): string => (p.position ? `${p.position}px` : '0')};
 	left: -${(p): string => (p.position ? `${p.position}px` : '0')};
+	border-radius: 0.25rem;
 `;
 
 type VideoConfPopupProps = {
@@ -24,7 +26,7 @@ const VideoConfPopup = forwardRef(function VideoConfPopup(
 ): ReactElement {
 	return (
 		<VideoConfPopupContainer ref={ref} position={position}>
-			<Box p='x24' maxWidth='x276'>
+			<Box p={24} maxWidth='x276' color='default'>
 				{children}
 			</Box>
 		</VideoConfPopupContainer>

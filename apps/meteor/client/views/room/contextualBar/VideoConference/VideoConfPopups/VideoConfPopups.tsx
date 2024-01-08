@@ -1,13 +1,10 @@
 import { useCustomSound } from '@rocket.chat/ui-contexts';
 import { VideoConfPopupBackdrop } from '@rocket.chat/ui-video-conf';
-import React, { ReactElement, useEffect, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
-import {
-	VideoConfPopupPayload,
-	useVideoConfIsCalling,
-	useVideoConfIsRinging,
-	useVideoConfIncomingCalls,
-} from '../../../../../contexts/VideoConfContext';
+import type { VideoConfPopupPayload } from '../../../../../contexts/VideoConfContext';
+import { useVideoConfIsCalling, useVideoConfIsRinging, useVideoConfIncomingCalls } from '../../../../../contexts/VideoConfContext';
 import VideoConfPopupPortal from '../../../../../portals/VideoConfPopupPortal';
 import VideoConfPopup from './VideoConfPopup';
 
@@ -35,8 +32,8 @@ const VideoConfPopups = ({ children }: { children?: VideoConfPopupPayload }): Re
 		}
 
 		return (): void => {
-			customSound.pause('ringtone');
-			customSound.pause('dialtone');
+			customSound.stop('ringtone');
+			customSound.stop('dialtone');
 		};
 	}, [customSound, isRinging, isCalling]);
 

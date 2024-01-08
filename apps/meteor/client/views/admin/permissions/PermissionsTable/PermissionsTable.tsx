@@ -1,18 +1,21 @@
-import { Margins, Icon, Tabs, Button, Pagination, Tile } from '@rocket.chat/fuselage';
+import { Margins, Tabs, Button, Pagination } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRoute, usePermission, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, ReactElement } from 'react';
+import { useRoute, usePermission, useMethod, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { useState } from 'react';
 
+import GenericNoResults from '../../../../components/GenericNoResults';
 import { GenericTable, GenericTableHeader, GenericTableHeaderCell, GenericTableBody } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
-import Page from '../../../../components/Page';
+import { Page, PageHeader, PageContent } from '../../../../components/Page';
+import CustomRoleUpsellModal from '../CustomRoleUpsellModal';
 import PermissionsContextBar from '../PermissionsContextBar';
 import { usePermissionsAndRoles } from '../hooks/usePermissionsAndRoles';
 import PermissionRow from './PermissionRow';
 import PermissionsTableFilter from './PermissionsTableFilter';
 import RoleHeader from './RoleHeader';
 
-const PermissionsTable = (): ReactElement => {
+const PermissionsTable = ({ isEnterprise }: { isEnterprise: boolean }): ReactElement => {
 	const t = useTranslation();
 	const [filter, setFilter] = useState('');
 	const canViewPermission = usePermission('access-permissions');
@@ -20,6 +23,7 @@ const PermissionsTable = (): ReactElement => {
 	const defaultType = canViewPermission ? 'permissions' : 'settings';
 	const [type, setType] = useState(defaultType);
 	const router = useRoute('admin-permissions');
+	const setModal = useSetModal();
 
 	const grantRole = useMethod('authorization:addPermissionToRole');
 	const removeRole = useMethod('authorization:removeRoleFromPermission');
@@ -42,6 +46,10 @@ const PermissionsTable = (): ReactElement => {
 	});
 
 	const handleAdd = useMutableCallback(() => {
+		if (!isEnterprise) {
+			setModal(<CustomRoleUpsellModal onClose={() => setModal(null)} />);
+			return;
+		}
 		router.push({
 			context: 'new',
 		});
@@ -50,12 +58,12 @@ const PermissionsTable = (): ReactElement => {
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('Permissions')}>
-					<Button primary onClick={handleAdd} aria-label={t('New')}>
-						<Icon name='plus' /> {t('New_role')}
+				<PageHeader title={t('Permissions')}>
+					<Button primary onClick={handleAdd} aria-label={t('New')} name={t('New_role')}>
+						{t('New_role')}
 					</Button>
-				</Page.Header>
-				<Margins blockEnd='x16'>
+				</PageHeader>
+				<Margins blockEnd={16}>
 					<Tabs>
 						<Tabs.Item
 							data-qa='PermissionTable-Permissions'
@@ -75,14 +83,10 @@ const PermissionsTable = (): ReactElement => {
 						</Tabs.Item>
 					</Tabs>
 				</Margins>
-				<Page.Content mb='neg-x8'>
-					<Margins block='x8'>
+				<PageContent mb='neg-x8'>
+					<Margins block={8}>
 						<PermissionsTableFilter onChange={setFilter} />
-						{permissions?.length === 0 && (
-							<Tile fontScale='p2' elevation='0' color='hint' textAlign='center'>
-								{t('No_data_found')}
-							</Tile>
-						)}
+						{permissions?.length === 0 && <GenericNoResults />}
 						{permissions?.length > 0 && (
 							<>
 								<GenericTable fixed={false}>
@@ -116,7 +120,7 @@ const PermissionsTable = (): ReactElement => {
 							</>
 						)}
 					</Margins>
-				</Page.Content>
+				</PageContent>
 			</Page>
 			<PermissionsContextBar />
 		</Page>

@@ -2,11 +2,11 @@
  * This class is responsible for handling ACD Queue summary
  * @remarks
  */
-import type { Db } from 'mongodb';
 import type { IVoipConnectorResult } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
+import type { Db } from 'mongodb';
 
 import { Command, CommandType } from '../Command';
-import { Logger } from '../../../../../lib/logger/Logger';
 import { Commands } from '../Commands';
 import { CallbackContext } from './CallbackContext';
 

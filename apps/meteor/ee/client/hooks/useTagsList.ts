@@ -1,4 +1,3 @@
-import type { ILivechatTagRecord } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
 
@@ -8,18 +7,23 @@ import { RecordList } from '../../../client/lib/lists/RecordList';
 
 type TagsListOptions = {
 	filter: string;
+	department?: string;
+	viewAll?: boolean;
 };
 
-export const useTagsList = (
-	options: TagsListOptions,
-): {
-	itemsList: RecordList<ILivechatTagRecord>;
+type TagListItem = { _id: string; label: string; value: string; _updatedAt: Date };
+
+type UseTagsListResult = {
+	itemsList: RecordList<TagListItem>;
 	initialItemCount: number;
 	reload: () => void;
 	loadMoreItems: (start: number, end: number) => void;
-} => {
-	const [itemsList, setItemsList] = useState(() => new RecordList<ILivechatTagRecord>());
-	const reload = useCallback(() => setItemsList(new RecordList<ILivechatTagRecord>()), []);
+};
+
+export const useTagsList = (options: TagsListOptions): UseTagsListResult => {
+	const { viewAll, department, filter } = options;
+	const [itemsList, setItemsList] = useState(() => new RecordList<TagListItem>());
+	const reload = useCallback(() => setItemsList(new RecordList<TagListItem>()), []);
 
 	const getTags = useEndpoint('GET', '/v1/livechat/tags');
 
@@ -30,21 +34,24 @@ export const useTagsList = (
 	const fetchData = useCallback(
 		async (start, end) => {
 			const { tags, total } = await getTags({
-				text: options.filter,
+				text: filter,
 				offset: start,
 				count: end + start,
+				...(viewAll && { viewAll: 'true' }),
+				...(department && { department }),
+				sort: JSON.stringify({ name: 1 }),
 			});
+
 			return {
-				items: tags.map((tag: any) => {
-					tag._updatedAt = new Date(tag._updatedAt);
-					tag.label = tag.name;
-					tag.value = { value: tag._id, label: tag.name };
-					return tag;
-				}),
+				items: tags.map<any>((tag: any) => ({
+					_id: tag._id,
+					label: tag.name,
+					value: tag.name,
+				})),
 				itemCount: total,
 			};
 		},
-		[getTags, options.filter],
+		[getTags, filter, viewAll, department],
 	);
 
 	const { loadMoreItems, initialItemCount } = useScrollableRecordList(itemsList, fetchData, 25);

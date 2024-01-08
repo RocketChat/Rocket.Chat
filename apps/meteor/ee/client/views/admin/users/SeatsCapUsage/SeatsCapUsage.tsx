@@ -1,6 +1,8 @@
-import { ProgressBar, Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
+
+import { GenericResourceUsage } from '../../../../../../client/components/GenericResourceUsage';
 
 type SeatsCapUsageProps = {
 	limit: number;
@@ -10,27 +12,9 @@ type SeatsCapUsageProps = {
 const SeatsCapUsage = ({ limit, members }: SeatsCapUsageProps): ReactElement => {
 	const t = useTranslation();
 	const percentage = Math.max(0, Math.min((100 / limit) * members, 100));
-	const closeToLimit = percentage >= 80;
-	const reachedLimit = percentage >= 100;
-	const color = closeToLimit ? 'danger-500' : 'success-500';
 	const seatsLeft = Math.max(0, limit - members);
 
-	return (
-		<Box display='flex' flexDirection='column' minWidth='x180'>
-			<Box
-				color={reachedLimit ? color : 'default'}
-				display='flex'
-				flexDirection='row'
-				justifyContent='space-between'
-				fontScale='c1'
-				mb='x8'
-			>
-				<div>{t('Seats_Available', { seatsLeft })}</div>
-				<Box color={reachedLimit ? color : 'hint'}>{`${members}/${limit}`}</Box>
-			</Box>
-			<ProgressBar borderRadius='x8' overflow='hidden' percentage={percentage} barColor={color} animated={false} w='full' />
-		</Box>
-	);
+	return <GenericResourceUsage title={t('Seats_Available', { seatsLeft })} value={members} max={limit} percentage={percentage} />;
 };
 
 export default SeatsCapUsage;

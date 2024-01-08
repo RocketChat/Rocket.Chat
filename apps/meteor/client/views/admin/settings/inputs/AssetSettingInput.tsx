@@ -1,7 +1,8 @@
-import { Button, Field, Icon } from '@rocket.chat/fuselage';
+import { Button, Field, FieldLabel, FieldRow, Icon } from '@rocket.chat/fuselage';
+import { Random } from '@rocket.chat/random';
 import { useToastMessageDispatch, useEndpoint, useTranslation, useUpload } from '@rocket.chat/ui-contexts';
-import { Random } from 'meteor/random';
-import React, { ChangeEventHandler, DragEvent, ReactElement } from 'react';
+import type { ChangeEventHandler, DragEvent, ReactElement, SyntheticEvent } from 'react';
+import React from 'react';
 
 import './AssetSettingInput.styles.css';
 
@@ -10,17 +11,18 @@ type AssetSettingInputProps = {
 	label: string;
 	value?: { url: string };
 	asset?: any;
+	required?: boolean;
 	fileConstraints?: { extensions: string[] };
 };
 
-function AssetSettingInput({ _id, label, value, asset, fileConstraints }: AssetSettingInputProps): ReactElement {
+function AssetSettingInput({ _id, label, value, asset, required, fileConstraints }: AssetSettingInputProps): ReactElement {
 	const t = useTranslation();
 
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setAsset = useUpload('/v1/assets.setAsset');
 	const unsetAsset = useEndpoint('POST', '/v1/assets.unsetAsset');
 
-	const isDataTransferEvent = <T,>(event: T): event is T & DragEvent<HTMLInputElement> =>
+	const isDataTransferEvent = <T extends SyntheticEvent>(event: T): event is T & DragEvent<HTMLInputElement> =>
 		Boolean('dataTransfer' in event && (event as any).dataTransfer.files);
 
 	const handleUpload: ChangeEventHandler<HTMLInputElement> = (event): void => {
@@ -56,11 +58,11 @@ function AssetSettingInput({ _id, label, value, asset, fileConstraints }: AssetS
 	};
 
 	return (
-		<>
-			<Field.Label htmlFor={_id} title={_id}>
+		<Field>
+			<FieldLabel htmlFor={_id} title={_id} required={required}>
 				{label}
-			</Field.Label>
-			<Field.Row>
+			</FieldLabel>
+			<FieldRow>
 				<div className='settings-file-preview'>
 					{value?.url ? (
 						<div
@@ -71,13 +73,12 @@ function AssetSettingInput({ _id, label, value, asset, fileConstraints }: AssetS
 						/>
 					) : (
 						<div className='preview no-file background-transparent-light secondary-font-color'>
-							<Icon name='upload' />
+							<Icon size='x16' name='upload' />
 						</div>
 					)}
 					<div className='action'>
 						{value?.url ? (
-							<Button onClick={handleDeleteButtonClick}>
-								<Icon name='trash' />
+							<Button icon='trash' onClick={handleDeleteButtonClick}>
 								{t('Delete')}
 							</Button>
 						) : (
@@ -93,8 +94,8 @@ function AssetSettingInput({ _id, label, value, asset, fileConstraints }: AssetS
 						)}
 					</div>
 				</div>
-			</Field.Row>
-		</>
+			</FieldRow>
+		</Field>
 	);
 }
 

@@ -1,32 +1,37 @@
-import type { IUser } from '@rocket.chat/core-typings';
 import { useUserId, useSetting } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, ReactNode, useCallback } from 'react';
+import type { ReactElement, ReactNode } from 'react';
+import React, { useCallback } from 'react';
 
-import { Users } from '../../../../app/models/client';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
-import BlazeTemplate from '../BlazeTemplate';
+import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
 import PasswordChangeCheck from './PasswordChangeCheck';
-import { useViewportScrolling } from './useViewportScrolling';
+import RegisterUsername from './RegisterUsername';
 
 const UsernameCheck = ({ children }: { children: ReactNode }): ReactElement => {
-	useViewportScrolling();
+	const userId = useUserId();
+	const { data: userData, isLoading } = useUserInfoQuery({ userId: userId || '' });
 
-	const uid = useUserId();
-	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
+	const allowAnonymousRead = useSetting<boolean>('Accounts_AllowAnonymousRead') ?? false;
 
-	const hasUsername = useReactiveValue(
+	const shouldRegisterUsername = useReactiveValue(
 		useCallback(() => {
-			if (!uid) {
-				return allowAnonymousRead;
+			const hasUserInCollection = !!userData?.user;
+			const hasUsername = !!userData?.user?.username;
+
+			if (!userId) {
+				return !allowAnonymousRead;
 			}
 
-			const user = uid ? (Users.findOneById(uid, { fields: { username: 1 } }) as IUser | null) : null;
-			return user?.username ?? false;
-		}, [uid, allowAnonymousRead]),
+			if (!hasUserInCollection) {
+				return true;
+			}
+
+			return !hasUsername;
+		}, [userData?.user, userId, allowAnonymousRead]),
 	);
 
-	if (!hasUsername) {
-		return <BlazeTemplate template='username' />;
+	if (!isLoading && shouldRegisterUsername) {
+		return <RegisterUsername />;
 	}
 
 	return <PasswordChangeCheck>{children}</PasswordChangeCheck>;

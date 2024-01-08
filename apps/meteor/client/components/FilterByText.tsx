@@ -1,13 +1,14 @@
-import { Box, Icon, TextInput, Button } from '@rocket.chat/fuselage';
+import { Box, Icon, TextInput, Button, Margins } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactNode, ChangeEvent, FormEvent, memo, useCallback, useEffect, useState, ReactElement } from 'react';
+import type { ReactNode, ChangeEvent, FormEvent, ReactElement } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 
 type FilterByTextCommonProps = {
 	children?: ReactNode | undefined;
 	placeholder?: string;
 	inputRef?: () => void;
-	shouldFiltersStack?: boolean;
 	onChange: (filter: { text: string }) => void;
+	autoFocus?: boolean;
 };
 
 type FilterByTextPropsWithButton = FilterByTextCommonProps & {
@@ -21,14 +22,7 @@ type FilterByTextProps = FilterByTextCommonProps | FilterByTextPropsWithButton;
 const isFilterByTextPropsWithButton = (props: any): props is FilterByTextPropsWithButton =>
 	'displayButton' in props && props.displayButton === true;
 
-const FilterByText = ({
-	placeholder,
-	onChange: setFilter,
-	inputRef,
-	children,
-	shouldFiltersStack,
-	...props
-}: FilterByTextProps): ReactElement => {
+const FilterByText = ({ placeholder, onChange: setFilter, inputRef, children, autoFocus, ...props }: FilterByTextProps): ReactElement => {
 	const t = useTranslation();
 
 	const [text, setText] = useState('');
@@ -46,24 +40,25 @@ const FilterByText = ({
 	}, []);
 
 	return (
-		<Box mb='x16' is='form' onSubmit={handleFormSubmit} display='flex' flexDirection={shouldFiltersStack ? 'column' : 'row'}>
-			<TextInput
-				placeholder={placeholder ?? t('Search')}
-				ref={inputRef}
-				addon={<Icon name='magnifier' size='x20' />}
-				onChange={handleInputChange}
-				value={text}
-			/>
+		<Box mb={16} mi='neg-x4' is='form' onSubmit={handleFormSubmit} display='flex' flexWrap='wrap' alignItems='center'>
+			<Box mi={4} display='flex' flexGrow={1}>
+				<TextInput
+					placeholder={placeholder ?? t('Search')}
+					ref={inputRef}
+					addon={<Icon name='magnifier' size='x20' />}
+					onChange={handleInputChange}
+					value={text}
+					autoFocus={autoFocus}
+					flexGrow={2}
+					minWidth='x220'
+				/>
+			</Box>
 			{isFilterByTextPropsWithButton(props) ? (
-				<Button onClick={props.onButtonClick} mis='x8' primary>
+				<Button onClick={props.onButtonClick} mis={8} primary>
 					{props.textButton}
 				</Button>
 			) : (
-				children && (
-					<Box mis={shouldFiltersStack ? '' : 'x8'} display='flex' flexDirection={shouldFiltersStack ? 'column' : 'row'}>
-						{children}
-					</Box>
-				)
+				children && <Margins all='x4'>{children}</Margins>
 			)}
 		</Box>
 	);

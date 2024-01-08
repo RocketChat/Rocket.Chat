@@ -1,27 +1,30 @@
-import type { IRoom, IVoipRoom } from '@rocket.chat/core-typings';
-import { Header as TemplateHeader } from '@rocket.chat/ui-client';
+import type { IRoom } from '@rocket.chat/core-typings';
+import { isVoipRoom } from '@rocket.chat/core-typings';
+import { HeaderToolbox } from '@rocket.chat/ui-client';
 import { useLayout } from '@rocket.chat/ui-contexts';
-import React, { memo, ReactElement, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import React, { lazy, memo, useMemo } from 'react';
 
 import BurgerMenu from '../../../components/BurgerMenu';
-import DirectRoomHeader from './DirectRoomHeader';
-import OmnichannelRoomHeader from './Omnichannel/OmnichannelRoomHeader';
-import VoipRoomHeader from './Omnichannel/VoipRoomHeader';
-import RoomHeader from './RoomHeader';
+
+const DirectRoomHeader = lazy(() => import('./DirectRoomHeader'));
+const OmnichannelRoomHeader = lazy(() => import('./Omnichannel/OmnichannelRoomHeader'));
+const VoipRoomHeader = lazy(() => import('./Omnichannel/VoipRoomHeader'));
+const RoomHeader = lazy(() => import('./RoomHeader'));
 
 type HeaderProps<T> = {
 	room: T;
 };
 
-const Header = ({ room }: HeaderProps<IRoom | IVoipRoom>): ReactElement | null => {
+const Header = ({ room }: HeaderProps<IRoom>): ReactElement | null => {
 	const { isMobile, isEmbedded, showTopNavbarEmbeddedLayout } = useLayout();
 
 	const slots = useMemo(
 		() => ({
 			start: isMobile && (
-				<TemplateHeader.ToolBox>
+				<HeaderToolbox>
 					<BurgerMenu />
-				</TemplateHeader.ToolBox>
+				</HeaderToolbox>
 			),
 		}),
 		[isMobile],
@@ -39,7 +42,7 @@ const Header = ({ room }: HeaderProps<IRoom | IVoipRoom>): ReactElement | null =
 		return <OmnichannelRoomHeader slots={slots} />;
 	}
 
-	if (room.t === 'v' && 'v' in room) {
+	if (isVoipRoom(room)) {
 		return <VoipRoomHeader slots={slots} room={room} />;
 	}
 

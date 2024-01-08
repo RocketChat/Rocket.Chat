@@ -1,6 +1,8 @@
-import { Box, Field, Flex, InputBox, Margins, TextInput, Select } from '@rocket.chat/fuselage';
-import { useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useCallback } from 'react';
+import { FieldLabel, FieldRow, FieldHint, Flex, InputBox, Margins, TextInput, Select, Field } from '@rocket.chat/fuselage';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { useCallback } from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 
@@ -14,6 +16,7 @@ type ColorSettingInputProps = {
 	readonly?: boolean;
 	autocomplete?: boolean;
 	disabled?: boolean;
+	required?: boolean;
 	hasResetButton?: boolean;
 	onChangeValue?: (value: string) => void;
 	onChangeEditor?: (value: string) => void;
@@ -29,6 +32,7 @@ function ColorSettingInput({
 	readonly,
 	autocomplete,
 	disabled,
+	required,
 	hasResetButton,
 	onChangeValue,
 	onChangeEditor,
@@ -51,18 +55,16 @@ function ColorSettingInput({
 	);
 
 	return (
-		<>
-			<Flex.Container>
-				<Box>
-					<Field.Label htmlFor={_id} title={_id}>
-						{label}
-					</Field.Label>
-					{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
-				</Box>
-			</Flex.Container>
-			<Margins inline='x4'>
-				<Field.Row>
-					<Margins inline='x4'>
+		<Field>
+			<FieldRow>
+				<FieldLabel htmlFor={_id} title={_id} required={required}>
+					{label}
+				</FieldLabel>
+				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+			</FieldRow>
+			<Margins inline={4}>
+				<FieldRow>
+					<Margins inline={4}>
 						<Flex.Item grow={2}>
 							{editor === 'color' && (
 								<InputBox
@@ -102,10 +104,10 @@ function ColorSettingInput({
 							options={allowedTypes.map((type) => [type, t(type)])}
 						/>
 					</Margins>
-				</Field.Row>
+				</FieldRow>
 			</Margins>
-			<Field.Hint>Variable name: {_id.replace(/theme-color-/, '@')}</Field.Hint>
-		</>
+			<FieldHint>Variable name: {_id.replace(/theme-color-/, '@')}</FieldHint>
+		</Field>
 	);
 }
 

@@ -1,6 +1,6 @@
 declare module 'meteor/oauth' {
-	import type { Mongo } from 'meteor/mongo';
 	import type { IRocketChatRecord } from '@rocket.chat/core-typings';
+	import type { Mongo } from 'meteor/mongo';
 
 	interface IOauthCredentials extends IRocketChatRecord {
 		key: string;
@@ -17,6 +17,7 @@ declare module 'meteor/oauth' {
 		function _retrieveCredentialSecret(credentialToken: string): string | null;
 		function _retrievePendingCredential(key: string, ...args: string[]): void;
 		function openSecret(secret: string): string;
+		function retrieveCredential(credentialToken: string, credentialSecret: string);
 		const _storageTokenPrefix: string;
 		const _pendingCredentials: Mongo.Collection<IOauthCredentials>;
 	}

@@ -1,15 +1,17 @@
-import { IRole, IRoom, IUserInRole } from '@rocket.chat/core-typings';
-import { Tile, Pagination } from '@rocket.chat/fuselage';
+import type { IRole, IRoom, IUserInRole } from '@rocket.chat/core-typings';
+import { Pagination } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
+import GenericNoResults from '../../../../../components/GenericNoResults';
 import { GenericTable, GenericTableHeader, GenericTableHeaderCell, GenericTableBody } from '../../../../../components/GenericTable';
-import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
+import type { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
 import UsersInRoleTableRow from './UsersInRoleTableRow';
 
-type UsersInRoleTable = {
+type UsersInRoleTableProps = {
 	users: IUserInRole[];
 	reload: () => void;
 	roleName: IRole['name'];
@@ -20,7 +22,17 @@ type UsersInRoleTable = {
 	paginationData: ReturnType<typeof usePagination>;
 };
 
-const UsersInRoleTable = ({ users, reload, roleName, roleId, description, total, rid, paginationData }: UsersInRoleTable): ReactElement => {
+// TODO: Missing error state
+const UsersInRoleTable = ({
+	users,
+	reload,
+	roleName,
+	roleId,
+	description,
+	total,
+	rid,
+	paginationData,
+}: UsersInRoleTableProps): ReactElement => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -51,11 +63,7 @@ const UsersInRoleTable = ({ users, reload, roleName, roleId, description, total,
 
 	return (
 		<>
-			{users.length === 0 && (
-				<Tile fontScale='p2' elevation='0' color='hint' textAlign='center'>
-					{t('No_data_found')}
-				</Tile>
-			)}
+			{users.length === 0 && <GenericNoResults />}
 			{users.length > 0 && (
 				<>
 					<GenericTable>

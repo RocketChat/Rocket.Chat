@@ -1,10 +1,11 @@
+import { memo } from 'preact/compat';
+
 import DocIcon from '../../../icons/doc.svg';
 import FileIcon from '../../../icons/file.svg';
 import PDFIcon from '../../../icons/pdf.svg';
 import PPTIcon from '../../../icons/ppt.svg';
 import SheetIcon from '../../../icons/sheet.svg';
 import ZipIcon from '../../../icons/zip.svg';
-import { memo } from '../../helpers';
 
 export const FileAttachmentIcon = memo(({ url }) => {
 	const extension = url ? url.split('.').pop() : null;

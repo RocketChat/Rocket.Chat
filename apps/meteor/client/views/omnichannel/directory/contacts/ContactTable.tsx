@@ -1,10 +1,13 @@
-import { Icon, Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle, Box } from '@rocket.chat/fuselage';
+import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle, Box } from '@rocket.chat/fuselage';
 import { useDebouncedState, useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, useEffect, ReactElement } from 'react';
+import { hashQueryKey } from '@tanstack/react-query';
+import type { ReactElement } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import { parseOutboundPhoneNumber } from '../../../../../ee/client/lib/voip/parseOutboundPhoneNumber';
 import FilterByText from '../../../../components/FilterByText';
+import GenericNoResults from '../../../../components/GenericNoResults';
 import {
 	GenericTable,
 	GenericTableHeader,
@@ -12,21 +15,16 @@ import {
 	GenericTableBody,
 	GenericTableRow,
 	GenericTableHeaderCell,
-	GenericTableLoadingTable,
+	GenericTableLoadingRow,
 } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import { useIsCallReady } from '../../../../contexts/CallContext';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
-import { AsyncStatePhase } from '../../../../lib/asyncState';
-import { CallDialpadButton } from '../CallDialpadButton';
+import { CallDialpadButton } from '../components/CallDialpadButton';
+import { useCurrentContacts } from './hooks/useCurrentContacts';
 
-type ContactTableProps = {
-	setContactReload(fn: () => void): void;
-};
-
-function ContactTable({ setContactReload }: ContactTableProps): ReactElement {
+function ContactTable(): ReactElement {
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'username' | 'phone' | 'name' | 'visitorEmails.address' | 'lastchat'>('username');
 	const isCallReady = useIsCallReady();
@@ -67,111 +65,122 @@ function ContactTable({ setContactReload }: ContactTableProps): ReactElement {
 			}),
 	);
 
-	const { reload, ...result } = useEndpointData('/v1/livechat/visitors.search', query);
+	const { data, isLoading, isError, isSuccess, refetch } = useCurrentContacts(query);
 
-	useEffect(() => {
-		setContactReload(() => reload);
-	}, [reload, setContactReload]);
+	const [defaultQuery] = useState(hashQueryKey([query]));
+	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
+
+	const headers = (
+		<>
+			<GenericTableHeaderCell key='username' direction={sortDirection} active={sortBy === 'username'} onClick={setSort} sort='username'>
+				{t('Username')}
+			</GenericTableHeaderCell>
+			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
+				{t('Name')}
+			</GenericTableHeaderCell>
+			<GenericTableHeaderCell key='phone' direction={sortDirection} active={sortBy === 'phone'} onClick={setSort} sort='phone'>
+				{t('Phone')}
+			</GenericTableHeaderCell>
+			<GenericTableHeaderCell
+				key='email'
+				direction={sortDirection}
+				active={sortBy === 'visitorEmails.address'}
+				onClick={setSort}
+				sort='visitorEmails.address'
+			>
+				{t('Email')}
+			</GenericTableHeaderCell>
+			<GenericTableHeaderCell key='lastchat' direction={sortDirection} active={sortBy === 'lastchat'} onClick={setSort} sort='lastchat'>
+				{t('Last_Chat')}
+			</GenericTableHeaderCell>
+			<GenericTableHeaderCell key='call' width={44} />
+		</>
+	);
 
 	return (
 		<>
-			<FilterByText
-				displayButton
-				textButton={t('New_Contact')}
-				onButtonClick={onButtonNewClick}
-				onChange={({ text }): void => setTerm(text)}
-			/>
-			<GenericTable>
-				<GenericTableHeader>
-					<GenericTableHeaderCell
-						key={'username'}
-						direction={sortDirection}
-						active={sortBy === 'username'}
-						onClick={setSort}
-						sort='username'
-					>
-						{t('Username')}
-					</GenericTableHeaderCell>
-					<GenericTableHeaderCell key={'name'} direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
-						{t('Name')}
-					</GenericTableHeaderCell>
-					<GenericTableHeaderCell key={'phone'} direction={sortDirection} active={sortBy === 'phone'} onClick={setSort} sort='phone'>
-						{t('Phone')}
-					</GenericTableHeaderCell>
-					<GenericTableHeaderCell
-						key={'email'}
-						direction={sortDirection}
-						active={sortBy === 'visitorEmails.address'}
-						onClick={setSort}
-						sort='visitorEmails.address'
-					>
-						{t('Email')}
-					</GenericTableHeaderCell>
-					<GenericTableHeaderCell
-						key={'lastchat'}
-						direction={sortDirection}
-						active={sortBy === 'lastchat'}
-						onClick={setSort}
-						sort='lastchat'
-					>
-						{t('Last_Chat')}
-					</GenericTableHeaderCell>
-					<GenericTableHeaderCell key='call' width={44} />
-				</GenericTableHeader>
-				{result.phase === AsyncStatePhase.RESOLVED && (
+			{((isSuccess && data?.visitors.length > 0) || queryHasChanged) && (
+				<FilterByText
+					displayButton
+					textButton={t('New_contact')}
+					onButtonClick={onButtonNewClick}
+					onChange={({ text }): void => setTerm(text)}
+				/>
+			)}
+			{isLoading && (
+				<GenericTable>
+					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
-						{result.value.visitors.map(({ _id, username, fname, name, visitorEmails, phone, lastChat }) => {
-							const phoneNumber = (phone?.length && phone[0].phoneNumber) || '';
-							const visitorEmail = visitorEmails?.length && visitorEmails[0].address;
-
-							return (
-								<GenericTableRow
-									action
-									key={_id}
-									tabIndex={0}
-									role='link'
-									height='40px'
-									qa-user-id={_id}
-									rcx-show-call-button-on-hover
-									onClick={onRowClick(_id)}
-								>
-									<GenericTableCell withTruncatedText>{username}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{parseOutboundPhoneNumber(fname || name)}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{parseOutboundPhoneNumber(phoneNumber)}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{visitorEmail}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{lastChat && formatDate(lastChat.ts)}</GenericTableCell>
-									<GenericTableCell>{isCallReady && <CallDialpadButton phoneNumber={phoneNumber} />}</GenericTableCell>
-								</GenericTableRow>
-							);
-						})}
+						<GenericTableLoadingRow cols={6} />
 					</GenericTableBody>
-				)}
-				{result.phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={6} />}
-			</GenericTable>
+				</GenericTable>
+			)}
+			{isSuccess && data?.visitors.length === 0 && queryHasChanged && <GenericNoResults />}
+			{isSuccess && data?.visitors.length === 0 && !queryHasChanged && (
+				<GenericNoResults
+					icon='user-plus'
+					title={t('No_contacts_yet')}
+					description={t('No_contacts_yet_description')}
+					buttonTitle={t('New_contact')}
+					buttonAction={onButtonNewClick}
+					linkHref='https://go.rocket.chat/omnichannel-docs'
+					linkText={t('Learn_more_about_contacts')}
+				/>
+			)}
+			{isSuccess && data?.visitors.length > 0 && (
+				<>
+					<GenericTable>
+						<GenericTableHeader>{headers}</GenericTableHeader>
+						<GenericTableBody>
+							{data?.visitors.map(({ _id, username, fname, name, visitorEmails, phone, lastChat }) => {
+								const phoneNumber = (phone?.length && phone[0].phoneNumber) || '';
+								const visitorEmail = visitorEmails?.length && visitorEmails[0].address;
 
-			{result.phase === AsyncStatePhase.REJECTED && (
-				<Box mbs='x20'>
+								return (
+									<GenericTableRow
+										action
+										key={_id}
+										tabIndex={0}
+										role='link'
+										height='40px'
+										qa-user-id={_id}
+										rcx-show-call-button-on-hover
+										onClick={onRowClick(_id)}
+									>
+										<GenericTableCell withTruncatedText>{username}</GenericTableCell>
+										<GenericTableCell withTruncatedText>{parseOutboundPhoneNumber(fname || name)}</GenericTableCell>
+										<GenericTableCell withTruncatedText>{parseOutboundPhoneNumber(phoneNumber)}</GenericTableCell>
+										<GenericTableCell withTruncatedText>{visitorEmail}</GenericTableCell>
+										<GenericTableCell withTruncatedText>{lastChat && formatDate(lastChat.ts)}</GenericTableCell>
+										<GenericTableCell>{isCallReady && <CallDialpadButton phoneNumber={phoneNumber} />}</GenericTableCell>
+									</GenericTableRow>
+								);
+							})}
+						</GenericTableBody>
+					</GenericTable>
+					<Pagination
+						divider
+						current={current}
+						itemsPerPage={itemsPerPage}
+						count={data?.total}
+						onSetItemsPerPage={setItemsPerPage}
+						onSetCurrent={setCurrent}
+						{...paginationProps}
+					/>
+				</>
+			)}
+			{isError && (
+				<Box mbs={20}>
 					<States>
 						<StatesIcon variation='danger' name='circle-exclamation' />
 						<StatesTitle>{t('Connection_error')}</StatesTitle>
 						<StatesActions>
-							<StatesAction onClick={reload}>
-								<Icon mie='x4' size='x20' name='reload' />
+							<StatesAction icon='reload' onClick={() => refetch()}>
 								{t('Reload_page')}
 							</StatesAction>
 						</StatesActions>
 					</States>
 				</Box>
-			)}
-			{result.phase === AsyncStatePhase.RESOLVED && (
-				<Pagination
-					current={current}
-					itemsPerPage={itemsPerPage}
-					count={result.value.total}
-					onSetItemsPerPage={setItemsPerPage}
-					onSetCurrent={setCurrent}
-					{...paginationProps}
-				/>
 			)}
 		</>
 	);

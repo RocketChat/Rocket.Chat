@@ -1,0 +1,46 @@
+name: 'Setup Node'
+
+inputs:
+  node-version:
+    required: true
+    type: string
+  cache-modules:
+    required: false
+    type: boolean
+  install:
+    required: false
+    type: boolean
+
+outputs:
+  node-version:
+    value: ${{ steps.node-version.outputs.node-version }}
+
+runs:
+  using: composite
+
+  steps:
+    - name: Cache Node Modules
+      if: inputs.cache-modules
+      id: cache-node-modules
+      uses: actions/cache@v3
+      with:
+        path: |
+          node_modules
+          apps/meteor/node_modules
+          apps/meteor/ee/server/services/node_modules
+        key: node-modules-${{ hashFiles('yarn.lock') }}
+    #
+    # Could use this command to list all paths to save:
+    # find . -name 'node_modules' -prune | grep -v "/\.meteor/" | grep -v "/meteor/packages/"
+
+    - name: Use Node.js ${{ inputs.node-version }}
+      id: node-version
+      uses: actions/setup-node@v3.7.0
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: 'yarn'
+
+    - name: yarn install
+      if: steps.cache-node-modules.outputs.cache-hit != 'true'
+      shell: bash
+      run: yarn

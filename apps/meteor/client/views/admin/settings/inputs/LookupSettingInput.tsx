@@ -1,8 +1,9 @@
-import { Box, Field, Flex, Select } from '@rocket.chat/fuselage';
-import type { PathFor } from '@rocket.chat/rest-typings';
-import React, { ReactElement } from 'react';
+import { Field, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
+import type { PathPattern } from '@rocket.chat/rest-typings';
+import type { ReactElement } from 'react';
+import React from 'react';
 
-import { AsyncState } from '../../../../hooks/useAsyncState';
+import type { AsyncState } from '../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import ResetSettingButton from '../ResetSettingButton';
 
@@ -10,11 +11,12 @@ type LookupSettingInputProps = {
 	_id: string;
 	label: string;
 	value?: string;
-	lookupEndpoint: PathFor<'GET'>;
+	lookupEndpoint: PathPattern extends `/${infer U}` ? U : PathPattern;
 	placeholder?: string;
 	readonly?: boolean;
 	autocomplete?: boolean;
 	disabled?: boolean;
+	required?: boolean;
 	hasResetButton?: boolean;
 	onChangeValue?: (value: string) => void;
 	onResetButtonClick?: () => void;
@@ -28,6 +30,7 @@ function LookupSettingInput({
 	readonly,
 	autocomplete,
 	disabled,
+	required,
 	lookupEndpoint,
 	hasResetButton,
 	onChangeValue,
@@ -41,16 +44,14 @@ function LookupSettingInput({
 	const values = options?.data || [];
 
 	return (
-		<>
-			<Flex.Container>
-				<Box>
-					<Field.Label htmlFor={_id} title={_id}>
-						{label}
-					</Field.Label>
-					{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
-				</Box>
-			</Flex.Container>
-			<Field.Row>
+		<Field>
+			<FieldRow>
+				<FieldLabel htmlFor={_id} title={_id} required={required}>
+					{label}
+				</FieldLabel>
+				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+			</FieldRow>
+			<FieldRow>
 				<Select
 					data-qa-setting-id={_id}
 					id={_id}
@@ -59,11 +60,11 @@ function LookupSettingInput({
 					disabled={disabled}
 					readOnly={readonly}
 					autoComplete={autocomplete === false ? 'off' : undefined}
-					onChange={handleChange}
+					onChange={(value) => handleChange(String(value))}
 					options={values.map(({ key, label }) => [key, label])}
 				/>
-			</Field.Row>
-		</>
+			</FieldRow>
+		</Field>
 	);
 }
 

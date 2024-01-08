@@ -1,8 +1,9 @@
 import { expect } from 'chai';
+import { before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
-import { password } from '../../data/user.js';
-import { createUser, login as doLogin } from '../../data/users.helper';
+import { password } from '../../data/user';
+import { createUser, login } from '../../data/users.helper';
 
 describe('licenses', function () {
 	this.retries(0);
@@ -12,7 +13,7 @@ describe('licenses', function () {
 
 	before(async () => {
 		const createdUser = await createUser();
-		unauthorizedUserCredentials = await doLogin(createdUser.username, password);
+		unauthorizedUserCredentials = await login(createdUser.username, password);
 	});
 
 	describe('[/licenses.add]', () => {
@@ -98,6 +99,52 @@ describe('licenses', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('licenses').and.to.be.an('array');
+				})
+
+				.end(done);
+		});
+	});
+
+	describe('[/licenses.info]', () => {
+		it('should fail if not logged in', (done) => {
+			request
+				.get(api('licenses.info'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('message');
+				})
+				.end(done);
+		});
+
+		it('should return limited information if user is unauthorized', (done) => {
+			request
+				.get(api('licenses.info'))
+				.set(unauthorizedUserCredentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('license').and.to.be.an('object');
+					expect(res.body.license).to.not.have.property('license');
+					expect(res.body.license).to.have.property('tags').and.to.be.an('array');
+				})
+				.end(done);
+		});
+
+		it('should return unrestricted info if user is logged in and is authorized', (done) => {
+			request
+				.get(api('licenses.info'))
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('license').and.to.be.an('object');
+					if (process.env.IS_EE) {
+						expect(res.body.license).to.have.property('license').and.to.be.an('object');
+					}
+					expect(res.body.license).to.have.property('tags').and.to.be.an('array');
 				})
 
 				.end(done);

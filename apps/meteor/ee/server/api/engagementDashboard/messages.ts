@@ -1,12 +1,50 @@
+import type { IDirectMessageRoom, IRoom } from '@rocket.chat/core-typings';
 import { check, Match } from 'meteor/check';
 
 import { API } from '../../../../app/api/server';
+import { isDateISOString, transformDatesForAPI } from '../../lib/engagementDashboard/date';
 import {
 	findWeeklyMessagesSentData,
 	findMessagesSentOrigin,
 	findTopFivePopularChannelsByMessageSentQuantity,
 } from '../../lib/engagementDashboard/messages';
-import { isDateISOString, transformDatesForAPI } from '../../lib/engagementDashboard/date';
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface Endpoints {
+		'/v1/engagement-dashboard/messages/origin': {
+			GET: (params: { start: string; end: string }) => {
+				origins: {
+					t: IRoom['t'];
+					messages: number;
+				}[];
+			};
+		};
+		'/v1/engagement-dashboard/messages/top-five-popular-channels': {
+			GET: (params: { start: string; end: string }) => {
+				channels: {
+					t: IRoom['t'];
+					messages: number;
+					name: IRoom['name'] | IRoom['fname'];
+					usernames?: IDirectMessageRoom['usernames'];
+				}[];
+			};
+		};
+		'/v1/engagement-dashboard/messages/messages-sent': {
+			GET: (params: { start: string; end: string }) => {
+				days: { day: Date; messages: number }[];
+				period: {
+					count: number;
+					variation: number;
+				};
+				yesterday: {
+					count: number;
+					variation: number;
+				};
+			};
+		};
+	}
+}
 
 API.v1.addRoute(
 	'engagement-dashboard/messages/messages-sent',

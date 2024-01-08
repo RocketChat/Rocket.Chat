@@ -4,3 +4,9 @@ export interface IOmnichannelQueueStatus {
 	stoppedAt?: Date;
 	locked: boolean;
 }
+
+export enum OmnichannelSortingMechanismSettingType {
+	Timestamp = 'Timestamp',
+	Priority = 'Priority',
+	SLAs = 'SLAs',
+}

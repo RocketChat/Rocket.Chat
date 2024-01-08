@@ -1,9 +1,10 @@
-import { Serialized } from '@rocket.chat/core-typings';
-import type { MatchPathPattern, Method, OperationParams, OperationResult, Path, PathFor } from '@rocket.chat/rest-typings';
-import { ServerContext, ServerMethodName, ServerMethodParameters, ServerMethodReturn, UploadResult } from '@rocket.chat/ui-contexts';
+import type { Serialized } from '@rocket.chat/core-typings';
+import type { Method, OperationParams, OperationResult, PathFor, PathPattern } from '@rocket.chat/rest-typings';
+import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn, UploadResult } from '@rocket.chat/ui-contexts';
+import { ServerContext } from '@rocket.chat/ui-contexts';
 import { action } from '@storybook/addon-actions';
-import { pathToRegexp } from 'path-to-regexp';
-import React, { ContextType, ReactElement, ReactNode, useContext, useMemo } from 'react';
+import type { ContextType, ReactElement, ReactNode } from 'react';
+import React, { useContext, useMemo } from 'react';
 
 const logAction = action('ServerContext');
 
@@ -36,19 +37,13 @@ const getStream = (
 type Operations = {
 	[TOperation in Method extends infer TMethod
 		? TMethod extends Method
-			? PathFor<TMethod> extends infer TPath
-				? TPath extends Path
+			? PathPattern extends infer TPathPattern
+				? TPathPattern extends PathPattern
 					? {
-							id: `${TMethod} ${TPath extends `/${string}` ? TPath : `/v1/${TPath}`}`;
+							id: `${TMethod} ${TPathPattern extends `/${string}` ? TPathPattern : `/v1/${TPathPattern}`}`;
 							fn: (
-								params: void extends OperationParams<TMethod, MatchPathPattern<TPath>>
-									? void
-									: OperationParams<TMethod, MatchPathPattern<TPath>>,
-							) => Promise<
-								void extends OperationResult<TMethod, MatchPathPattern<TPath>>
-									? Serialized<OperationResult<TMethod, MatchPathPattern<TPath>>>
-									: void
-							>;
+								params: void extends OperationParams<TMethod, TPathPattern> ? void : OperationParams<TMethod, TPathPattern>,
+							) => Promise<void extends OperationResult<TMethod, TPathPattern> ? Serialized<OperationResult<TMethod, TPathPattern>> : void>;
 					  }
 					: never
 				: never
@@ -92,41 +87,43 @@ const ServerContextMock = ({
 				match: (method: string, path: string) => boolean;
 				handler: ((params: any) => Promise<unknown>) | 'infinite' | 'errored' | undefined;
 			} => {
-				const [_method, pathPattern] = operationID.split(' ');
-				const pathRegexp = pathToRegexp(pathPattern[0] === '/' ? pathPattern : `/v1/${pathPattern}`);
-
+				const [_method, _pathPattern] = operationID.split(' ');
 				return {
-					match: (method: string, path: string): boolean => _method === method && pathRegexp.test(path[0] === '/' ? path : `/v1/${path}`),
+					match: (method: string, pathPattern: string): boolean => _method === method && _pathPattern === pathPattern,
 					handler: handler as any,
 				};
 			},
 		);
 
-		const _callEndpoint: ServerContextValue['callEndpoint'] = async <TMethod extends Method, TPath extends PathFor<TMethod>>(
-			method: TMethod,
-			path: TPath,
-			params: OperationParams<TMethod, MatchPathPattern<TPath>>,
-		): Promise<Serialized<OperationResult<TMethod, MatchPathPattern<TPath>>>> => {
-			const mockedEndpoint = mockedEndpoints.find((endpoint) => endpoint.match(method, path));
+		const _callEndpoint: ServerContextValue['callEndpoint'] = async <TMethod extends Method, TPathPattern extends PathPattern>({
+			method,
+			pathPattern,
+			params,
+		}: {
+			method: TMethod;
+			pathPattern: TPathPattern;
+			params: OperationParams<TMethod, TPathPattern>;
+		}): Promise<Serialized<OperationResult<TMethod, TPathPattern>>> => {
+			const mockedEndpoint = mockedEndpoints.find((endpoint) => endpoint.match(method, pathPattern));
 			const handler = mockedEndpoint?.handler;
 
 			if (!handler) {
-				logAction('callEndpoint (undefined)', method, path, params);
+				logAction('callEndpoint (undefined)', method, pathPattern, params);
 				return undefined as any;
 			}
 
 			if (handler === 'infinite') {
-				logAction('callEndpoint (infinite)', method, path, params);
+				logAction('callEndpoint (infinite)', method, pathPattern, params);
 				return new Promise(() => undefined);
 			}
 
 			if (handler === 'errored') {
-				logAction('callEndpoint (errored)', method, path, params);
-				throw new Error(`${method} ${path} failed`);
+				logAction('callEndpoint (errored)', method, pathPattern, params);
+				throw new Error(`${method} ${pathPattern} failed`);
 			}
 
-			logAction('callEndpoint (intercepted)', method, path, params);
-			return handler(params) as Promise<Serialized<OperationResult<TMethod, MatchPathPattern<TPath>>>>;
+			logAction('callEndpoint (intercepted)', method, pathPattern, params);
+			return handler(params) as Promise<Serialized<OperationResult<TMethod, TPathPattern>>>;
 		};
 
 		const _callMethod: ServerContextValue['callMethod'] = async <MethodName extends ServerMethodName>(
@@ -141,7 +138,7 @@ const ServerContextMock = ({
 
 			if (handler === 'infinite') {
 				logAction('callMethod (infinite)', methodName, ...args);
-				return new Promise(() => undefined);
+				return new Promise<any>(() => undefined);
 			}
 
 			if (handler === 'errored') {

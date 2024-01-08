@@ -1,59 +1,62 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
-type MessageBoxAction = {
-	label: string;
+import type { ChatAPI } from '../../../../client/lib/chats/ChatAPI';
+
+export type MessageBoxAction = {
+	label: TranslationKey;
 	id: string;
 	icon?: string;
-	action: (params: { rid: IRoom['_id']; tmid?: IMessage['_id']; event: Event; messageBox: HTMLElement }) => void;
+	action: (params: { rid: IRoom['_id']; tmid?: IMessage['_id']; event: Event; chat: ChatAPI }) => void;
 	condition?: () => boolean;
 };
 
-export class MessageBoxActions {
-	actions: Record<string, MessageBoxAction[]> = {};
+class MessageBoxActions {
+	actions: Map<TranslationKey, MessageBoxAction[]> = new Map();
 
-	add(group: string, label: string, config: Omit<MessageBoxAction, 'label'>) {
+	add(group: TranslationKey, label: TranslationKey, config: Omit<MessageBoxAction, 'label'>) {
 		if (!group && !label && !config) {
 			return;
 		}
 
-		if (!this.actions[group]) {
-			this.actions[group] = [];
+		if (!this.actions.has(group)) {
+			this.actions.set(group, []);
 		}
 
-		const actionExists = this.actions[group].find((action) => action.label === label);
+		const actionExists = this.actions.get(group)?.find((action) => action.label === label);
 
 		if (actionExists) {
 			return;
 		}
 
-		this.actions[group].push({ ...config, label });
+		this.actions.get(group)?.push({ ...config, label });
 	}
 
-	remove(group: string, expression: RegExp) {
-		if (!group || !this.actions[group]) {
+	remove(group: TranslationKey, expression: RegExp) {
+		if (!group || !this.actions.get(group)) {
 			return false;
 		}
 
-		this.actions[group] = this.actions[group].filter((action) => !expression.test(action.id));
-		return this.actions[group];
+		this.actions.set(group, this.actions.get(group)?.filter((action) => !expression.test(action.id)) || []);
+		return this.actions.get(group);
 	}
 
-	get(): Record<string, MessageBoxAction[]>;
+	get(): Record<TranslationKey, MessageBoxAction[]>;
 
-	get(group: string): MessageBoxAction[];
+	get(group: TranslationKey): MessageBoxAction[];
 
-	get(group?: string) {
+	get(group?: TranslationKey) {
 		if (!group) {
-			return Object.entries(this.actions).reduce<Record<string, MessageBoxAction[]>>((ret, [group, actions]) => {
+			return [...this.actions.entries()].reduce<Record<TranslationKey, MessageBoxAction[]>>((ret, [group, actions]) => {
 				const filteredActions = actions.filter((action) => !action.condition || action.condition());
 				if (filteredActions.length) {
 					ret[group] = filteredActions;
 				}
 				return ret;
-			}, {});
+			}, {} as Record<TranslationKey, MessageBoxAction[]>);
 		}
 
-		return this.actions[group].filter((action) => !action.condition || action.condition());
+		return this.actions.get(group)?.filter((action) => !action.condition || action.condition());
 	}
 
 	getById(id: MessageBoxAction['id']) {

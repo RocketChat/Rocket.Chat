@@ -5,3 +5,4 @@ export * from './MessageAttachmentAction';
 export * from './MessageAttachmentBase';
 export * from './MessageAttachmentDefault';
 export * from './MessageQuoteAttachment';
+export * from './TranslatedMessageAttachment';

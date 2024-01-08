@@ -1,5 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
+import { expect } from '../utils/test';
 import { HomeContent, HomeSidenav, HomeFlextab } from './fragments';
 
 export class HomeChannel {
@@ -22,7 +23,21 @@ export class HomeChannel {
 		return this.page.locator('.rcx-toastbar.rcx-toastbar--success');
 	}
 
-	get btnVerticalBarClose(): Locator {
-		return this.page.locator('[data-qa="VerticalBarActionClose"]');
+	get btnContextualbarClose(): Locator {
+		return this.page.locator('[data-qa="ContextualbarActionClose"]');
+	}
+
+	async waitForChannel(): Promise<void> {
+		await this.page.locator('role=main').waitFor();
+		await this.page.locator('role=main >> role=heading[level=1]').waitFor();
+
+		await expect(this.page.locator('role=main >> .rcx-skeleton')).toHaveCount(0);
+		await expect(this.page.locator('role=main >> role=list')).not.toHaveAttribute('aria-busy', 'true');
+	}
+
+	async dismissToast() {
+		// this is a workaround for when the toast is blocking the click of the button
+		await this.toastSuccess.locator('button >> i.rcx-icon--name-cross.rcx-icon').click();
+		await this.page.mouse.move(0, 0);
 	}
 }

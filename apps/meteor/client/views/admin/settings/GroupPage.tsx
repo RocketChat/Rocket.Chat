@@ -1,6 +1,7 @@
 import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
 import { Accordion, Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import {
 	useToastMessageDispatch,
 	useUser,
@@ -8,13 +9,14 @@ import {
 	useSettings,
 	useTranslation,
 	useLoadLanguage,
-	TranslationKey,
 	useRoute,
 } from '@rocket.chat/ui-contexts';
-import React, { useMemo, memo, FC, ReactNode, FormEvent, MouseEvent } from 'react';
+import type { FC, ReactNode, FormEvent, MouseEvent } from 'react';
+import React, { useMemo, memo } from 'react';
 
-import Page from '../../../components/Page';
-import { useEditableSettingsDispatch, useEditableSettings, EditableSetting } from '../EditableSettingsContext';
+import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
+import type { EditableSetting } from '../EditableSettingsContext';
+import { useEditableSettingsDispatch, useEditableSettings } from '../EditableSettingsContext';
 import GroupPageSkeleton from './GroupPageSkeleton';
 
 type GroupPageProps = {
@@ -158,10 +160,29 @@ const GroupPage: FC<GroupPageProps> = ({
 
 	return (
 		<Page is='form' action='#' method='post' onSubmit={handleSubmit}>
-			<Page.Header onClickBack={handleBack} title={i18nLabel && isTranslationKey(i18nLabel) && t(i18nLabel)}>
+			<PageHeader onClickBack={handleBack} title={i18nLabel && isTranslationKey(i18nLabel) && t(i18nLabel)}>
+				<ButtonGroup>{headerButtons}</ButtonGroup>
+			</PageHeader>
+			{tabs}
+			{isCustom ? (
+				children
+			) : (
+				<PageScrollableContentWithShadow>
+					<Box marginBlock='none' marginInline='auto' width='full' maxWidth='x580'>
+						{i18nDescription && isTranslationKey(i18nDescription) && t.has(i18nDescription) && (
+							<Box is='p' color='hint' fontScale='p2'>
+								{t(i18nDescription)}
+							</Box>
+						)}
+
+						<Accordion className='page-settings'>{children}</Accordion>
+					</Box>
+				</PageScrollableContentWithShadow>
+			)}
+			<PageFooter isDirty={!(changedEditableSettings.length === 0)}>
 				<ButtonGroup>
 					{changedEditableSettings.length > 0 && (
-						<Button primary type='reset' onClick={handleCancelClick}>
+						<Button type='reset' onClick={handleCancelClick}>
 							{t('Cancel')}
 						</Button>
 					)}
@@ -173,27 +194,8 @@ const GroupPage: FC<GroupPageProps> = ({
 						type='submit'
 						onClick={handleSaveClick}
 					/>
-					{headerButtons}
 				</ButtonGroup>
-			</Page.Header>
-
-			{tabs}
-
-			{isCustom ? (
-				children
-			) : (
-				<Page.ScrollableContentWithShadow>
-					<Box marginBlock='none' marginInline='auto' width='full' maxWidth='x580'>
-						{i18nDescription && isTranslationKey(i18nDescription) && t.has(i18nDescription) && (
-							<Box is='p' color='hint' fontScale='p2'>
-								{t(i18nDescription)}
-							</Box>
-						)}
-
-						<Accordion className='page-settings'>{children}</Accordion>
-					</Box>
-				</Page.ScrollableContentWithShadow>
-			)}
+			</PageFooter>
 		</Page>
 	);
 };

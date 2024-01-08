@@ -1,10 +1,10 @@
+import { LDAP } from '@rocket.chat/core-services';
 import { Match, check } from 'meteor/check';
 
-import { hasPermission } from '../../../authorization/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
 import { API } from '../api';
-import { SystemLogger } from '../../../../server/lib/logger/system';
-import { LDAP } from '../../../../server/sdk';
 
 API.v1.addRoute(
 	'ldap.testConnection',
@@ -15,7 +15,7 @@ API.v1.addRoute(
 				throw new Error('error-invalid-user');
 			}
 
-			if (!hasPermission(this.userId, 'test-admin-options')) {
+			if (!(await hasPermissionAsync(this.userId, 'test-admin-options'))) {
 				throw new Error('error-not-authorized');
 			}
 
@@ -53,7 +53,7 @@ API.v1.addRoute(
 				throw new Error('error-invalid-user');
 			}
 
-			if (!hasPermission(this.userId, 'test-admin-options')) {
+			if (!(await hasPermissionAsync(this.userId, 'test-admin-options'))) {
 				throw new Error('error-not-authorized');
 			}
 

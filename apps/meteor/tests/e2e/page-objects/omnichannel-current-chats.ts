@@ -1,106 +1,112 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { OmnichannelSidenav } from './fragments';
+import { HomeOmnichannelContent } from './fragments';
+import { OmnichannelAdministration } from './omnichannel-administration';
 
-export class OmnichannelCurrentChats {
-	private readonly page: Page;
-
-	readonly sidenav: OmnichannelSidenav;
+export class OmnichannelCurrentChats extends OmnichannelAdministration {
+	readonly content: HomeOmnichannelContent;
 
 	constructor(page: Page) {
-		this.page = page;
-		this.sidenav = new OmnichannelSidenav(page);
+		super(page);
+		this.content = new HomeOmnichannelContent(page);
 	}
 
-	get btnToastClose(): Locator {
-		return this.page.locator('.rcx-toastbar').locator('button');
-	}
-
-	get currentChatsLink(): Locator {
-		return this.page.locator('a[href="omnichannel/current"]');
-	}
-
-	get guestField(): Locator {
+	get inputGuest(): Locator {
 		return this.page.locator('[data-qa="current-chats-guest"]');
 	}
 
-	get servedByField(): Locator {
-		return this.page.locator('[data-qa="autocomplete-agent"]');
+	get inputServedBy(): Locator {
+		return this.page.locator('[data-qa="autocomplete-agent"] input');
 	}
 
-	get statusField(): Locator {
+	get inputStatus(): Locator {
 		return this.page.locator('[data-qa="current-chats-status"]');
 	}
 
-	get fromField(): Locator {
+	get inputFrom(): Locator {
 		return this.page.locator('[data-qa="current-chats-from"]');
 	}
 
-	get toField(): Locator {
+	get inputTo(): Locator {
 		return this.page.locator('[data-qa="current-chats-to"]');
 	}
 
-	get departmentField(): Locator {
-		return this.page.locator('[data-qa="autocomplete-department"]');
+	get inputDepartment(): Locator {
+		return this.page.locator('[data-qa="autocomplete-department"] input');
 	}
 
-	get tagsField(): Locator {
-		return this.page.locator('[data-qa="current-chats-tags"]');
+	get inputTags(): Locator {
+		return this.page.locator('[data-qa="current-chats-tags"] [role="listbox"]');
 	}
 
-	get formOptions(): Locator {
+	get btnFilterOptions(): Locator {
 		return this.page.locator('[data-qa="current-chats-options"]');
 	}
 
-	get clearFiltersOption(): Locator {
+	get optionClearFilter(): Locator {
 		return this.page.locator('[data-qa="current-chats-options-clearFilters"]');
 	}
 
-	get removeAllClosedOption(): Locator {
+	get optionRemoveAllClosed(): Locator {
 		return this.page.locator('[data-qa="current-chats-options-removeAllClosed"]');
 	}
 
-	get customFieldsOption(): Locator {
+	get modalConfirmRemove(): Locator {
+		return this.page.locator('[data-qa-id="current-chats-modal-remove"]');
+	}
+
+	get modalConfirmRemoveAllClosed(): Locator {
+		return this.page.locator('[data-qa-id="current-chats-modal-remove-all-closed"]');
+	}
+
+	get btnConfirmRemove(): Locator {
+		return this.modalConfirmRemove.locator('role=button[name="Delete"]');
+	}
+
+	get btnConfirmRemoveAllClosed(): Locator {
+		return this.modalConfirmRemoveAllClosed.locator('role=button[name="Delete"]');
+	}
+
+	get optionCustomFields(): Locator {
 		return this.page.locator('[data-qa="current-chats-options-customFields"]');
 	}
 
-	get table(): Locator {
-		return this.page.locator('.rcx-table');
+	async selectServedBy(option: string) {
+		await this.inputServedBy.click();
+		await this.inputServedBy.fill(option);
+		await this.page.locator(`[role='option'][value='${option}']`).click();
 	}
 
-	get tableHeaderName(): Locator {
-		return this.page.locator('[data-qa="current-chats-header-name"]');
+	async addTag(option: string) {
+		await this.inputTags.click();
+		await this.page.locator(`[role='option'][value='${option}']`).click();
+		await this.inputTags.click();
 	}
 
-	get tableHeaderDepartment(): Locator {
-		return this.page.locator('[data-qa="current-chats-header-department"]');
+	async removeTag(option: string) {
+		await this.page.locator(`role=option[name='${option}']`).click();
 	}
 
-	get tableHeaderServedBy(): Locator {
-		return this.page.locator('[data-qa="current-chats-header-servedBy"]');
+	async selectDepartment(option: string) {
+		await this.inputDepartment.click();
+		await this.inputDepartment.fill(option);
+		await this.page.locator(`role=option[name='${option}']`).click();
 	}
 
-	get tableHeaderStartedAt(): Locator {
-		return this.page.locator('[data-qa="current-chats-header-startedAt"]');
+	async selectStatus(option: string) {
+		await this.inputStatus.click();
+		await this.page.locator(`[role='option'][data-key='${option}']`).click();
 	}
 
-	get tableHeaderLastMessage(): Locator {
-		return this.page.locator('[data-qa="current-chats-header-lastMessage"]');
+	btnRemoveByName(name: string): Locator {
+		return this.findRowByName(name).locator('role=button[name="Remove"]');
 	}
 
-	get tableHeaderStatus(): Locator {
-		return this.page.locator('[data-qa="current-chats-header-status"]');
+	findRowByName(name: string) {
+		return this.page.locator(`tr[data-qa-id="${name}"]`);
 	}
 
-	get tableHeaderRemove(): Locator {
-		return this.page.locator('[data-qa="current-chats-header-remove"]');
-	}
-
-	get tableHeader(): Locator {
-		return this.page.locator('[data-qa=""]');
-	}
-
-	async doOpenOptions(): Promise<void> {
-		await this.formOptions.click();
+	findRowByServer(name: string) {
+		return this.page.locator('tr', { has: this.page.locator(`[data-qa="current-chats-cell-servedBy"] >> text=${name}`) });
 	}
 }

@@ -1,11 +1,12 @@
-import { Meteor } from 'meteor/meteor';
-import { UploadBridge } from '@rocket.chat/apps-engine/server/bridges/UploadBridge';
 import type { IUpload } from '@rocket.chat/apps-engine/definition/uploads';
 import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
+import { UploadBridge } from '@rocket.chat/apps-engine/server/bridges/UploadBridge';
 
+import { determineFileType } from '../../../../ee/lib/misc/determineFileType';
+import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 import { FileUpload } from '../../../file-upload/server';
-import { determineFileType } from '../../lib/misc/determineFileType';
-import type { AppServerOrchestrator } from '../orchestrator';
+import { sendFileMessage } from '../../../file-upload/server/methods/sendFileMessage';
+import { sendFileLivechatMessage } from '../../../livechat/server/methods/sendFileLivechatMessage';
 
 const getUploadDetails = (details: IUploadDetails): Partial<IUploadDetails> => {
 	if (details.visitorToken) {
@@ -15,7 +16,6 @@ const getUploadDetails = (details: IUploadDetails): Partial<IUploadDetails> => {
 	return details;
 };
 export class AppUploadBridge extends UploadBridge {
-	// eslint-disable-next-line no-empty-function
 	constructor(private readonly orch: AppServerOrchestrator) {
 		super();
 	}
@@ -31,15 +31,13 @@ export class AppUploadBridge extends UploadBridge {
 
 		const rocketChatUpload = this.orch.getConverters()?.get('uploads').convertToRocketChat(upload);
 
-		return new Promise((resolve, reject) => {
-			FileUpload.getBuffer(rocketChatUpload, (error: Error, result: Buffer) => {
-				if (error) {
-					return reject(error);
-				}
+		const result = await FileUpload.getBuffer(rocketChatUpload);
 
-				resolve(result);
-			});
-		});
+		if (!(result instanceof Buffer)) {
+			throw new Error('Unknown error');
+		}
+
+		return result;
 	}
 
 	protected async createUpload(details: IUploadDetails, buffer: Buffer, appId: string): Promise<IUpload> {
@@ -53,23 +51,13 @@ export class AppUploadBridge extends UploadBridge {
 
 		details.type = determineFileType(buffer, details.name);
 
-		return new Promise(
-			Meteor.bindEnvironment((resolve, reject) => {
-				try {
-					Meteor.runAsUser(details.userId, () => {
-						const uploadedFile = fileStore.insertSync(getUploadDetails(details), buffer);
-						this.orch.debugLog(`The App ${appId} has created an upload`, uploadedFile);
-						if (details.visitorToken) {
-							Meteor.call('sendFileLivechatMessage', details.rid, details.visitorToken, uploadedFile);
-						} else {
-							Meteor.call('sendFileMessage', details.rid, null, uploadedFile);
-						}
-						resolve(this.orch.getConverters()?.get('uploads').convertToApp(uploadedFile));
-					});
-				} catch (err) {
-					reject(err);
-				}
-			}),
-		);
+		const uploadedFile = await fileStore.insert(getUploadDetails(details), buffer);
+		this.orch.debugLog(`The App ${appId} has created an upload`, uploadedFile);
+		if (details.visitorToken) {
+			await sendFileLivechatMessage({ roomId: details.rid, visitorToken: details.visitorToken, file: uploadedFile });
+		} else {
+			await sendFileMessage(details.userId, { roomId: details.rid, file: uploadedFile });
+		}
+		return this.orch.getConverters()?.get('uploads').convertToApp(uploadedFile);
 	}
 }

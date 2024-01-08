@@ -1,8 +1,11 @@
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { isPOSTLivechatTranscriptParams } from '@rocket.chat/rest-typings';
+import { Omnichannel } from '@rocket.chat/core-services';
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { LivechatRooms, Users } from '@rocket.chat/models';
+import { isPOSTLivechatTranscriptParams, isPOSTLivechatTranscriptRequestParams } from '@rocket.chat/rest-typings';
 
+import { i18n } from '../../../../../server/lib/i18n';
 import { API } from '../../../../api/server';
-import { Livechat } from '../../lib/Livechat';
+import { Livechat } from '../../lib/LivechatTyped';
 
 API.v1.addRoute(
 	'livechat/transcript',
@@ -10,12 +13,61 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { token, rid, email } = this.bodyParams;
-			// @ts-expect-error -- typings on sendtranscript are wrong
 			if (!(await Livechat.sendTranscript({ token, rid, email }))) {
-				return API.v1.failure({ message: TAPi18n.__('Error_sending_livechat_transcript') });
+				return API.v1.failure({ message: i18n.t('Error_sending_livechat_transcript') });
 			}
 
-			return API.v1.success({ message: TAPi18n.__('Livechat_transcript_sent') });
+			return API.v1.success({ message: i18n.t('Livechat_transcript_sent') });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'livechat/transcript/:rid',
+	{
+		authRequired: true,
+		permissionsRequired: ['send-omnichannel-chat-transcript'],
+		validateParams: {
+			POST: isPOSTLivechatTranscriptRequestParams,
+		},
+	},
+	{
+		async delete() {
+			const { rid } = this.urlParams;
+			const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, 'open' | 'transcriptRequest' | 'v'>>(rid, {
+				projection: { open: 1, transcriptRequest: 1, v: 1 },
+			});
+
+			if (!room?.open) {
+				throw new Error('error-invalid-room');
+			}
+			if (!room.transcriptRequest) {
+				throw new Error('error-transcript-not-requested');
+			}
+
+			if (!(await Omnichannel.isWithinMACLimit(room))) {
+				throw new Error('error-mac-limit-reached');
+			}
+
+			await LivechatRooms.unsetEmailTranscriptRequestedByRoomId(rid);
+
+			return API.v1.success();
+		},
+		async post() {
+			const { rid } = this.urlParams;
+			const { email, subject } = this.bodyParams;
+
+			const user = await Users.findOneById(this.userId, {
+				projection: { _id: 1, username: 1, name: 1, utcOffset: 1 },
+			});
+
+			if (!user) {
+				throw new Error('error-invalid-user');
+			}
+
+			await Livechat.requestTranscript({ rid, email, subject, user });
+
+			return API.v1.success();
 		},
 	},
 );

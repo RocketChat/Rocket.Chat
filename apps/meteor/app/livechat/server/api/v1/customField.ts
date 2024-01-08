@@ -1,9 +1,10 @@
 import { isLivechatCustomFieldsProps, isPOSTLivechatCustomFieldParams, isPOSTLivechatCustomFieldsParams } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
-import { findGuest } from '../lib/livechat';
-import { Livechat } from '../../lib/Livechat';
+import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
+import { Livechat } from '../../lib/LivechatTyped';
 import { findLivechatCustomFields, findCustomFieldById } from '../lib/customFields';
+import { findGuest } from '../lib/livechat';
 
 API.v1.addRoute(
 	'livechat/custom.field',
@@ -38,14 +39,20 @@ API.v1.addRoute(
 			}
 
 			const fields = await Promise.all(
-				this.bodyParams.customFields.map(async (customField) => {
-					const data = Object.assign({ token }, customField);
-					if (!(await Livechat.setCustomFields(data))) {
-						throw new Error('error-setting-custom-field');
-					}
+				this.bodyParams.customFields.map(
+					async (customField: {
+						key: string;
+						value: string;
+						overwrite: boolean;
+					}): Promise<{ Key: string; value: string; overwrite: boolean }> => {
+						const data = Object.assign({ token }, customField);
+						if (!(await Livechat.setCustomFields(data))) {
+							throw new Error('error-setting-custom-field');
+						}
 
-					return { Key: customField.key, value: customField.value, overwrite: customField.overwrite };
-				}),
+						return { Key: customField.key, value: customField.value, overwrite: customField.overwrite };
+					},
+				),
 			);
 
 			return API.v1.success({ fields });
@@ -58,8 +65,8 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isLivechatCustomFieldsProps },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
 			const { text } = this.queryParams;
 
 			const customFields = await findLivechatCustomFields({

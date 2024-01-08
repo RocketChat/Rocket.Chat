@@ -1,20 +1,22 @@
-import { Box, Button, Field, Flex } from '@rocket.chat/fuselage';
-import { useToggle } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import { FieldLabel, FieldHint, FieldRow, Field } from '@rocket.chat/fuselage';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 import CodeMirror from './CodeMirror';
+import CodeMirrorBox from './CodeMirror/CodeMirrorBox';
 
 type CodeSettingInputProps = {
 	_id: string;
 	label: string;
+	hint: string;
 	value?: string;
 	code: string;
 	placeholder?: string;
 	readonly: boolean;
 	autocomplete: boolean;
 	disabled: boolean;
+	required?: boolean;
 	hasResetButton: boolean;
 	onChangeValue: (value: string) => void;
 	onResetButtonClick: () => void;
@@ -23,36 +25,32 @@ type CodeSettingInputProps = {
 function CodeSettingInput({
 	_id,
 	label,
+	hint,
 	value = '',
 	code,
 	placeholder,
 	readonly,
 	autocomplete,
 	disabled,
+	required,
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
 }: CodeSettingInputProps): ReactElement {
-	const t = useTranslation();
-
-	const [fullScreen, toggleFullScreen] = useToggle(false);
-
 	const handleChange = (value: string): void => {
 		onChangeValue(value);
 	};
 
 	return (
-		<>
-			<Flex.Container>
-				<Box>
-					<Field.Label htmlFor={_id} title={_id}>
-						{label}
-					</Field.Label>
-					{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
-				</Box>
-			</Flex.Container>
-			<div className={['code-mirror-box', fullScreen && 'code-mirror-box-fullscreen content-background-color'].filter(Boolean).join(' ')}>
-				<div className='title'>{label}</div>
+		<Field>
+			<FieldRow>
+				<FieldLabel htmlFor={_id} title={_id} required={required}>
+					{label}
+				</FieldLabel>
+				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+			</FieldRow>
+			{hint && <FieldHint>{hint}</FieldHint>}
+			<CodeMirrorBox label={label}>
 				<CodeMirror
 					data-qa-setting-id={_id}
 					id={_id}
@@ -64,13 +62,8 @@ function CodeSettingInput({
 					autoComplete={autocomplete === false ? 'off' : undefined}
 					onChange={handleChange}
 				/>
-				<div className='buttons'>
-					<Button primary onClick={(): void => toggleFullScreen()}>
-						{fullScreen ? t('Exit_Full_Screen') : t('Full_Screen')}
-					</Button>
-				</div>
-			</div>
-		</>
+			</CodeMirrorBox>
+		</Field>
 	);
 }
 

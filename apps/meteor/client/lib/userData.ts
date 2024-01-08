@@ -1,11 +1,9 @@
-import type { IUser, IUserDataEvent } from '@rocket.chat/core-typings';
-import { Serialized } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
+import type { ILivechatAgent, IUser, Serialized } from '@rocket.chat/core-typings';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import { Users } from '../../app/models/client';
 import { Notifications } from '../../app/notifications/client';
-import { APIClient } from '../../app/utils/client';
+import { sdk } from '../../app/utils/client/lib/SDKClient';
 
 export const isSyncReady = new ReactiveVar(false);
 
@@ -29,19 +27,18 @@ type RawUserData = Serialized<
 		| 'active'
 		| 'defaultRoom'
 		| 'customFields'
-		| 'statusLivechat'
 		| 'oauth'
 		| 'createdAt'
 		| '_updatedAt'
 		| 'avatarETag'
-	>
+	> & { statusLivechat?: ILivechatAgent['statusLivechat'] }
 >;
 
 const updateUser = (userData: IUser): void => {
-	const user: IUser = Users.findOne({ _id: userData._id });
+	const user = Users.findOne({ _id: userData._id }) as IUser | undefined;
 
-	if (!user || !user._updatedAt || user._updatedAt.getTime() < userData._updatedAt.getTime()) {
-		Meteor.users.upsert({ _id: userData._id }, userData as Meteor.User);
+	if (!user?._updatedAt || user._updatedAt.getTime() < userData._updatedAt.getTime()) {
+		Users.upsert({ _id: userData._id }, userData);
 		return;
 	}
 
@@ -49,39 +46,42 @@ const updateUser = (userData: IUser): void => {
 	Object.keys(user).forEach((key) => {
 		delete userData[key as keyof IUser];
 	});
-	Meteor.users.update({ _id: user._id }, { $set: userData as Meteor.User });
+	Users.update({ _id: user._id }, { $set: { ...userData } });
 };
 
 let cancel: undefined | (() => void);
-export const synchronizeUserData = async (uid: Meteor.User['_id']): Promise<RawUserData | void> => {
+export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserData | void> => {
 	if (!uid) {
 		return;
 	}
 
 	// Remove data from any other user that we may have retained
-	Meteor.users.remove({ _id: { $ne: uid } });
+	Users.remove({ _id: { $ne: uid } });
 
 	cancel?.();
 
-	cancel = await Notifications.onUser('userData', (data: IUserDataEvent) => {
+	const result = Notifications.onUser('userData', (data) => {
 		switch (data.type) {
 			case 'inserted':
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				const { type, id, ...user } = data;
-				Meteor.users.insert(user as Meteor.User);
+				Users.insert(user as unknown as IUser);
 				break;
 
 			case 'updated':
-				Meteor.users.upsert({ _id: uid }, { $set: data.diff as Meteor.User, $unset: data.unset });
+				Users.upsert({ _id: uid }, { $set: data.diff, $unset: data.unset as any });
 				break;
 
 			case 'removed':
-				Meteor.users.remove({ _id: uid });
+				Users.remove({ _id: uid });
 				break;
 		}
 	});
 
-	const { ldap, lastLogin, services: rawServices, ...userData } = await APIClient.get('/v1/me');
+	cancel = result.stop;
+	await result.ready();
+
+	const { ldap, lastLogin, services: rawServices, ...userData } = await sdk.rest.get('/v1/me');
 
 	// email?: {
 	// 	verificationTokens?: IUserEmailVerificationToken[];
@@ -93,7 +93,7 @@ export const synchronizeUserData = async (uid: Meteor.User['_id']): Promise<RawU
 	// }
 
 	if (userData) {
-		const { email, resume, email2fa, emailCode, ...services } = rawServices || {};
+		const { email, cloud, resume, email2fa, emailCode, ...services } = rawServices || {};
 
 		updateUser({
 			...userData,
@@ -106,15 +106,23 @@ export const synchronizeUserData = async (uid: Meteor.User['_id']): Promise<RawU
 									...(resume.loginTokens && {
 										loginTokens: resume.loginTokens.map((token) => ({
 											...token,
-											when: new Date(token.when),
-											createdAt: (token.createdAt ? new Date(token.createdAt) : undefined) as Date,
+											when: new Date('when' in token ? token.when : ''),
+											createdAt: ('createdAt' in token ? new Date(token.createdAt) : undefined) as Date,
 											twoFactorAuthorizedUntil: token.twoFactorAuthorizedUntil ? new Date(token.twoFactorAuthorizedUntil) : undefined,
 										})),
 									}),
 								},
 						  }
 						: {}),
-					emailCode: emailCode?.map(({ expire, ...data }) => ({ expire: new Date(expire), ...data })) || [],
+					...(cloud
+						? {
+								cloud: {
+									...cloud,
+									expiresAt: new Date(cloud.expiresAt),
+								},
+						  }
+						: {}),
+					...(emailCode ? { ...emailCode, expire: new Date(emailCode.expire) } : {}),
 					...(email2fa ? { email2fa: { ...email2fa, changedAt: new Date(email2fa.changedAt) } } : {}),
 					...(email?.verificationTokens && {
 						email: {
@@ -139,4 +147,4 @@ export const synchronizeUserData = async (uid: Meteor.User['_id']): Promise<RawU
 	return userData;
 };
 
-export const removeLocalUserData = (): number => Meteor.users.remove({});
+export const removeLocalUserData = (): number => Users.remove({});

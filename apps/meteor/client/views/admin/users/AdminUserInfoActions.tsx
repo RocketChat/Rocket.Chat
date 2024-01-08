@@ -1,7 +1,8 @@
-import { IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import { ButtonGroup, Menu, Option } from '@rocket.chat/fuselage';
 import { useRoute, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useMemo, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import UserInfo from '../../../components/UserInfo';
 import { useActionSpread } from '../../hooks/useActionSpread';
@@ -14,7 +15,7 @@ import { useResetTOTPAction } from './hooks/useResetTOTPAction';
 type AdminUserInfoActionsProps = {
 	username: IUser['username'];
 	userId: IUser['_id'];
-	isAFederatedUser: IUser['federated'];
+	isFederatedUser: IUser['federated'];
 	isActive: boolean;
 	isAdmin: boolean;
 	onChange: () => void;
@@ -24,7 +25,7 @@ type AdminUserInfoActionsProps = {
 const AdminUserInfoActions = ({
 	username,
 	userId,
-	isAFederatedUser,
+	isFederatedUser,
 	isActive,
 	isAdmin,
 	onChange,
@@ -64,7 +65,7 @@ const AdminUserInfoActions = ({
 		() => ({
 			...(canDirectMessage && {
 				directMessage: {
-					icon: 'balloon',
+					icon: 'balloon' as const,
 					label: t('Direct_Message'),
 					title: t('Direct_Message'),
 					action: directMessageClick,
@@ -72,18 +73,18 @@ const AdminUserInfoActions = ({
 			}),
 			...(canEditOtherUserInfo && {
 				editUser: {
-					icon: 'edit',
+					icon: 'edit' as const,
 					label: t('Edit'),
-					title: isAFederatedUser ? t('Edit_Federated_User_Not_Allowed') : t('Edit'),
+					title: isFederatedUser ? t('Edit_Federated_User_Not_Allowed') : t('Edit'),
 					action: editUserClick,
-					disabled: isAFederatedUser,
+					disabled: isFederatedUser,
 				},
 			}),
-			...(changeAdminStatusAction && { makeAdmin: changeAdminStatusAction }),
-			...(resetE2EKeyAction && { resetE2EKey: resetE2EKeyAction }),
-			...(resetTOTPAction && { resetTOTP: resetTOTPAction }),
+			...(changeAdminStatusAction && !isFederatedUser && { makeAdmin: changeAdminStatusAction }),
+			...(resetE2EKeyAction && !isFederatedUser && { resetE2EKey: resetE2EKeyAction }),
+			...(resetTOTPAction && !isFederatedUser && { resetTOTP: resetTOTPAction }),
 			...(deleteUserAction && { delete: deleteUserAction }),
-			...(changeUserStatusAction && { changeActiveStatus: changeUserStatusAction }),
+			...(changeUserStatusAction && !isFederatedUser && { changeActiveStatus: changeUserStatusAction }),
 		}),
 		[
 			t,
@@ -96,7 +97,7 @@ const AdminUserInfoActions = ({
 			deleteUserAction,
 			resetE2EKeyAction,
 			resetTOTPAction,
-			isAFederatedUser,
+			isFederatedUser,
 		],
 	);
 
@@ -109,7 +110,7 @@ const AdminUserInfoActions = ({
 
 		return (
 			<Menu
-				mi='x4'
+				mi={4}
 				placement='bottom-start'
 				small={false}
 				secondary
