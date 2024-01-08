@@ -377,9 +377,9 @@ const MessageBox = ({
 				</Box>
 			)}
 
-			{isRecordingVideo && <VideoMessageRecorder reference={messageComposerRef} rid={room._id} tmid={tmid} />}
+			{isRecordingVideo && <VideoMessageRecorder reference={messageComposerRef} rid={room._id} tmid={tmid} tshow={tshow} />}
 			<MessageComposer ref={messageComposerRef} variant={isEditing ? 'editing' : undefined}>
-				{isRecordingAudio && <AudioMessageRecorder rid={room._id} isMicrophoneDenied={isMicrophoneDenied} />}
+				{isRecordingAudio && <AudioMessageRecorder rid={room._id} isMicrophoneDenied={isMicrophoneDenied} tshow={tshow} />}
 				<MessageComposerInput
 					ref={mergedRefs}
 					aria-label={composerPlaceholder}
@@ -419,6 +419,7 @@ const MessageBox = ({
 							rid={room._id}
 							tmid={tmid}
 							isMicrophoneDenied={isMicrophoneDenied}
+							tshow={tshow}
 						/>
 					</MessageComposerToolbarActions>
 					<MessageComposerToolbarSubmit>

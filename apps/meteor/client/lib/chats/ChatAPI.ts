@@ -101,7 +101,7 @@ export type UploadsAPI = {
 	subscribe(callback: () => void): () => void;
 	wipeFailedOnes(): void;
 	cancel(id: Upload['id']): void;
-	send(file: File, { description, msg }: { description?: string; msg?: string }): Promise<void>;
+	send(file: File, { description, msg }: { description?: string; msg?: string; tshow?: boolean }): Promise<void>;
 };
 
 export type ChatAPI = {
@@ -145,7 +145,7 @@ export type ChatAPI = {
 	ActionManager: IActionManager;
 
 	readonly flows: {
-		readonly uploadFiles: (files: readonly File[], resetFileInput?: () => void) => Promise<void>;
+		readonly uploadFiles: (files: readonly File[], resetFileInput?: () => void, tshow?: boolean) => Promise<void>;
 		readonly sendMessage: ({ text, tshow }: { text: string; tshow?: boolean; previewUrls?: string[] }) => Promise<boolean>;
 		readonly processSlashCommand: (message: IMessage, userId: string | null) => Promise<boolean>;
 		readonly processTooLongMessage: (message: IMessage) => Promise<boolean>;

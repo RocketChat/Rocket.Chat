@@ -3,6 +3,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users } from '@rocket.chat/models';
 import type { Notifications } from '@rocket.chat/rest-typings';
 import { isGETRoomsNameExists } from '@rocket.chat/rest-typings';
+import Ajv from 'ajv';
 import { Meteor } from 'meteor/meteor';
 
 import { isTruthy } from '../../../../lib/isTruthy';
@@ -145,11 +146,22 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
+			const formDataSchema = {
+				type: 'object',
+				properties: {
+					tshow: { type: 'boolean' },
+					tmid: { type: 'string' },
+				},
+				additionalProperties: true,
+			};
+
+			const ajv = new Ajv({ coerceTypes: true });
+			const validateFormData = ajv.compile<Record<string, any>>(formDataSchema);
 			const file = await getUploadFormData(
 				{
 					request: this.request,
 				},
-				{ field: 'file', sizeLimit: settings.get<number>('FileUpload_MaxFileSize') },
+				{ field: 'file', sizeLimit: settings.get<number>('FileUpload_MaxFileSize'), validate: validateFormData },
 			);
 
 			if (!file) {

@@ -14,6 +14,7 @@ type MessageBoxActionsToolbarProps = {
 	rid: IRoom['_id'];
 	tmid?: IMessage['_id'];
 	isMicrophoneDenied?: boolean;
+	tshow?: boolean;
 };
 
 const MessageBoxActionsToolbar = ({
@@ -24,6 +25,7 @@ const MessageBoxActionsToolbar = ({
 	rid,
 	tmid,
 	isMicrophoneDenied,
+	tshow,
 	...props
 }: MessageBoxActionsToolbarProps) => {
 	const actions = [
@@ -34,7 +36,7 @@ const MessageBoxActionsToolbar = ({
 			isMicrophoneDenied={isMicrophoneDenied}
 			{...props}
 		/>,
-		<FileUploadAction key='file' collapsed={variant === 'small'} disabled={!canSend || isRecording} {...props} />,
+		<FileUploadAction key='file' collapsed={variant === 'small'} disabled={!canSend || isRecording} tshow={tshow} {...props} />,
 	];
 
 	let featuredAction;

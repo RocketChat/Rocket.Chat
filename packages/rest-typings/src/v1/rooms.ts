@@ -525,6 +525,7 @@ export type RoomsEndpoints = {
 			groupable?: boolean;
 			msg?: string;
 			tmid?: string;
+			tshow?: boolean;
 		}) => { message: IMessage | null };
 	};
 

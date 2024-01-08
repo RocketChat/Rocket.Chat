@@ -164,6 +164,7 @@ export const sendFileMessage = async (
 			groupable: Match.Optional(Boolean),
 			msg: Match.Optional(String),
 			tmid: Match.Optional(String),
+			tshow: Match.Optional(Boolean),
 		}),
 	);
 
