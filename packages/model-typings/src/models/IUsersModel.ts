@@ -216,6 +216,11 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	countFederatedExternalUsers(): Promise<number>;
 	findOnlineUserFromList(userList: string[], isLivechatEnabledWhenAgentIdle?: boolean): FindCursor<IUser>;
+	findOnlineUsersFromListExcludingUsernames(
+		userList: string[],
+		usernames: string[],
+		isLivechatEnabledWhenAgentIdle?: boolean,
+	): FindCursor<IUser>;
 	countOnlineAgentsFromList(userList: string[], isLivechatEnabledWhenAgentIdle?: boolean): Promise<number>;
 	getUnavailableAgents(
 		departmentId?: string,

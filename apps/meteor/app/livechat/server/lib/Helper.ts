@@ -561,16 +561,16 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 
 	if (chatQueued) {
 		logger.debug(`Forwarding succesful. Marking inquiry ${inquiry._id} as ready`);
-		await LivechatInquiry.readyInquiry(inquiry._id);
-		await LivechatRooms.removeAgentByRoomId(rid);
-		await dispatchAgentDelegated(rid);
+		await Promise.all([LivechatInquiry.readyInquiry(inquiry._id), LivechatRooms.removeAgentByRoomId(rid)]);
+		void dispatchAgentDelegated(rid);
+
 		const newInquiry = await LivechatInquiry.findOneById(inquiry._id);
 		if (!newInquiry) {
 			logger.debug(`Inquiry ${inquiry._id} not found`);
 			throw new Error('error-invalid-inquiry');
 		}
 
-		await queueInquiry(newInquiry);
+		await queueInquiry(newInquiry, room);
 		logger.debug(`Inquiry ${inquiry._id} queued succesfully`);
 	}
 

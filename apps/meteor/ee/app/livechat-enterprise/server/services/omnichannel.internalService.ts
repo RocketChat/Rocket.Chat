@@ -116,7 +116,7 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 		servingAgent,
 		clientAction,
 	}: {
-		room: Pick<IOmnichannelRoom, '_id'>;
+		room: IOmnichannelRoom;
 		inquiry: ILivechatInquiryRecord;
 		servingAgent: NonNullable<IOmnichannelRoom['servedBy']>;
 		clientAction: boolean;
@@ -151,7 +151,7 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 		if (!newInquiry) {
 			throw new Error('error-invalid-inquiry');
 		}
-		await queueInquiry(newInquiry);
+		await queueInquiry(newInquiry, room);
 	}
 
 	private async removeCurrentAgentFromRoom({

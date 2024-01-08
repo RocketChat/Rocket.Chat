@@ -48,7 +48,7 @@ type Routing = {
 		room?: IOmnichannelRoom | null,
 		options?: { clientAction?: boolean; forwardingToDepartment?: { oldDepartmentId?: string; transferData?: any } },
 	): Promise<(IOmnichannelRoom & { chatQueued?: boolean }) | null | void>;
-	assignAgent(inquiry: InquiryWithAgentInfo, agent: SelectedAgent, room: IOmnichannelRoom | null): Promise<InquiryWithAgentInfo>;
+	assignAgent(inquiry: InquiryWithAgentInfo, agent: SelectedAgent): Promise<InquiryWithAgentInfo>;
 	unassignAgent(inquiry: ILivechatInquiryRecord, departmentId?: string): Promise<boolean>;
 	takeInquiry(
 		inquiry: Omit<
@@ -122,7 +122,7 @@ export const RoutingManager: Routing = {
 	},
 
 	async delegateInquiry(inquiry, agent, room, options = {}) {
-		const { department, rid } = inquiry;
+		const { department } = inquiry;
 		logger.debug(`Attempting to delegate inquiry ${inquiry._id}`);
 		if (
 			!agent ||
@@ -144,18 +144,18 @@ export const RoutingManager: Routing = {
 			logger.debug(`No agents available. Unable to delegate inquiry ${inquiry._id}`);
 			// When an inqury reaches here on CE, it will stay here as 'ready' since on CE there's no mechanism to re queue it.
 			// When reaching this point, managers have to manually transfer the inquiry to another room. This is expected.
-			return LivechatRooms.findOneById(rid);
+			return room;
 		}
 
 		if (!room) {
-			return LivechatRooms.findOneById(rid);
+			return null;
 		}
 
 		logger.debug(`Inquiry ${inquiry._id} will be taken by agent ${agent.agentId}`);
 		return this.takeInquiry(inquiry, agent, room, options);
 	},
 
-	async assignAgent(inquiry, agent, room) {
+	async assignAgent(inquiry, agent) {
 		check(
 			agent,
 			Match.ObjectIncluding({
@@ -179,6 +179,11 @@ export const RoutingManager: Routing = {
 
 		if (user) {
 			await Promise.all([Message.saveSystemMessage('command', rid, 'connected', user), Message.saveSystemMessage('uj', rid, '', user)]);
+		}
+
+		const room = await LivechatRooms.findOneById(rid);
+		if (!room) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'assignAgent' });
 		}
 
 		void dispatchAgentDelegated(rid, agent.agentId);
@@ -272,8 +277,7 @@ export const RoutingManager: Routing = {
 			});
 		}
 
-		await LivechatInquiry.takeInquiry(_id);
-		const inq = await this.assignAgent(inquiry as InquiryWithAgentInfo, agent, room);
+		const [, inq] = await Promise.all([LivechatInquiry.takeInquiry(_id), this.assignAgent(inquiry as InquiryWithAgentInfo, agent)]);
 		logger.info(`Inquiry ${inquiry._id} taken by agent ${agent.agentId}`);
 
 		callbacks.runAsync('livechat.afterTakeInquiry', inq, agent);

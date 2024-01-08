@@ -1,6 +1,6 @@
 import type { InquiryWithAgentInfo, IOmnichannelQueue } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
-import { LivechatInquiry } from '@rocket.chat/models';
+import { LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 
 import { dispatchAgentDelegated } from '../../../app/livechat/server/lib/Helper';
 import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
@@ -129,7 +129,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 
 		queueLogger.debug(`Processing inquiry ${inquiry._id} from queue ${queue}`);
 		const { defaultAgent } = inquiry;
-		const room = await RoutingManager.delegateInquiry(inquiry, defaultAgent);
+		const room = await RoutingManager.delegateInquiry(inquiry, defaultAgent, await LivechatRooms.findOneById(inquiry.rid));
 
 		const propagateAgentDelegated = async (rid: string, agentId: string) => {
 			await dispatchAgentDelegated(rid, agentId);
