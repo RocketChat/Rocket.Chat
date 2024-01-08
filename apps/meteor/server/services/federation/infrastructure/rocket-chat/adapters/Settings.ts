@@ -174,11 +174,11 @@ export class RocketChatSettingsAdapter {
 	}
 
 	private async addFederationSettings(): Promise<void> {
-		settingsStarted = true;
 		const preExistingConfiguration = this.getRegistrationFileFromHomeserver();
 		if (settingsStarted) {
 			return;
 		}
+		settingsStarted = true;
 		await createFederationV1Settings();
 
 		await settingsRegistry.add('Federation_Matrix_enabled', Boolean(preExistingConfiguration), {
