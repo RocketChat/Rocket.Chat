@@ -116,19 +116,10 @@ export const loadSamlServiceProviders = async function (): Promise<void> {
 				if (value === true) {
 					const samlConfigs = getSamlConfigs(key);
 					SAMLUtils.log(key);
-					await LoginServiceConfiguration.updateOne(
-						{
-							service: serviceName.toLowerCase(),
-						},
-						{
-							$set: samlConfigs,
-						},
-					);
+					await LoginServiceConfiguration.createOrUpdateService(serviceName, samlConfigs);
 					return configureSamlService(samlConfigs);
 				}
-				await LoginServiceConfiguration.deleteOne({
-					service: serviceName.toLowerCase(),
-				});
+				await LoginServiceConfiguration.removeService(serviceName);
 				return false;
 			}),
 		)

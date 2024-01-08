@@ -6,7 +6,6 @@ import type {
 	TwitterOAuthConfiguration,
 } from '@rocket.chat/core-typings';
 import { LoginServiceConfiguration } from '@rocket.chat/models';
-import { getObjectKeys } from '@rocket.chat/tools';
 
 import { CustomOAuth } from '../../../app/custom-oauth/server/custom_oauth_server';
 import { settings } from '../../../app/settings/server/cached';
@@ -24,6 +23,8 @@ export async function updateOAuthServices(): Promise<void> {
 		if (/Accounts_OAuth_Custom-/.test(key)) {
 			serviceName = key.replace('Accounts_OAuth_Custom-', '');
 		}
+
+		const serviceKey = serviceName.toLowerCase();
 
 		if (value === true) {
 			const data: Partial<ILoginServiceConfiguration & Omit<OAuthConfiguration, '_id'>> = {
@@ -63,7 +64,7 @@ export async function updateOAuthServices(): Promise<void> {
 				data.rolesToSync = settings.get(`${key}-roles_to_sync`);
 				data.showButton = settings.get(`${key}-show_button`);
 
-				new CustomOAuth(serviceName.toLowerCase(), {
+				new CustomOAuth(serviceKey, {
 					serverURL: data.serverURL,
 					tokenPath: data.tokenPath,
 					identityPath: data.identityPath,
@@ -111,24 +112,9 @@ export async function updateOAuthServices(): Promise<void> {
 				data.buttonColor = settings.get('Accounts_OAuth_Nextcloud_button_color');
 			}
 
-			// If there's no data other than the service name, then put the service name in the data object so the operation won't fail
-			const keys = getObjectKeys(data).filter((key) => data[key] !== undefined);
-			if (!keys.length) {
-				data.service = serviceName.toLowerCase();
-			}
-
-			await LoginServiceConfiguration.updateOne(
-				{
-					service: serviceName.toLowerCase(),
-				},
-				{
-					$set: data,
-				},
-			);
+			await LoginServiceConfiguration.createOrUpdateService(serviceKey, data);
 		} else {
-			await LoginServiceConfiguration.deleteOne({
-				service: serviceName.toLowerCase(),
-			});
+			await LoginServiceConfiguration.removeService(serviceKey);
 		}
 	}
 }
