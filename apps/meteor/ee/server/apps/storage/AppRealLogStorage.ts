@@ -31,6 +31,6 @@ export class AppRealLogStorage extends AppLogStorage {
 	}
 
 	async removeEntriesFor(appId: string): Promise<void> {
-		await this.db.remove({ appId });
+		await this.db.deleteOne({ appId });
 	}
 }
