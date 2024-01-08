@@ -145,7 +145,7 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 
 		if (disableOplog) {
 			this.onEvent('watch.loginServiceConfiguration', ({ clientAction, id, data }) => {
-				console.log('DEBUGOAUTH', 'meteor service event', clientAction, id);
+				console.log('DEBUGOAUTH', new Date().toISOString(), 'meteor service event', clientAction, id);
 
 				if (clientAction === 'removed') {
 					serviceConfigCallbacks.forEach((callbacks) => {

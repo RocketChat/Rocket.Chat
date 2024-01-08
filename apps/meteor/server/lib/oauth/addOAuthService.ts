@@ -5,7 +5,7 @@ import { capitalize } from '@rocket.chat/string-helpers';
 import { settingsRegistry } from '../../../app/settings/server';
 
 export async function addOAuthService(name: string, values: { [k: string]: string | boolean | undefined } = {}): Promise<void> {
-	console.log('DEBUGOAUTH', 'addOAuthService', name);
+	console.log('DEBUGOAUTH', new Date().toISOString(), 'addOAuthService', name);
 
 	name = name.toLowerCase().replace(/[^a-z0-9_]/g, '');
 	name = capitalize(name);
