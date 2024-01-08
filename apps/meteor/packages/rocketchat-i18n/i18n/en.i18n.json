@@ -1133,7 +1133,6 @@
   "Connection_Closed": "Connection closed",
   "Connection_Reset": "Connection reset",
   "Connection_error": "Connection error",
-  
   "Connection_failed": "LDAP Connection Failed",
   "Connectivity_Services": "Connectivity Services",
   "Consulting": "Consulting",
