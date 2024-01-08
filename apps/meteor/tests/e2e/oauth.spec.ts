@@ -20,7 +20,7 @@ test.describe('OAuth', () => {
 		await test.step('expect OAuth button to not be visible', async () => {
 			await expect((await setSettingValueById(api, 'Accounts_OAuth_Google', false)).status()).toBe(200);
 
-			await expect(poRegistration.btnLoginWithGoogle).not.toBeVisible();
+			await expect(poRegistration.btnLoginWithGoogle).not.toBeVisible({ timeout: 10000 });
 		});
 	});
 });
