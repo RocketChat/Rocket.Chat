@@ -412,7 +412,7 @@ export class AppsRestApi {
 						});
 					}
 
-					info.status = aff.getApp().getStatus();
+					info.status = await aff.getApp().getStatus();
 
 					void notifyAppInstall(orchestrator.getMarketplaceUrl() as string, 'install', info);
 
@@ -763,7 +763,7 @@ export class AppsRestApi {
 						});
 					}
 
-					info.status = aff.getApp().getStatus();
+					info.status = await aff.getApp().getStatus();
 
 					void notifyAppInstall(orchestrator.getMarketplaceUrl() as string, 'update', info);
 
