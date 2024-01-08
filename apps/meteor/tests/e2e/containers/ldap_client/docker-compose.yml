@@ -1,0 +1,6 @@
+version: '3'
+services:
+  ldap_client:
+    build: .
+    ports:
+    - "389:389"

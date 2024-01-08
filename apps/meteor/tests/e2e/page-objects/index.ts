@@ -14,5 +14,6 @@ export * from './omnichannel-manager';
 export * from './omnichannel-custom-fields';
 export * from './omnichannel-units';
 export * from './home-omnichannel';
+export * from './admin-ldap';
 export * from './omnichannel-monitors';
 export * from './utils';

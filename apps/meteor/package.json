@@ -318,6 +318,7 @@
 		"date-fns": "^2.28.0",
 		"date.js": "~0.3.3",
 		"debug": "~4.1.1",
+		"docker-compose": "^0.24.3",
 		"dompurify": "^2.3.8",
 		"ejson": "^2.2.3",
 		"emailreplyparser": "^0.0.5",
