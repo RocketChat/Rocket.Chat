@@ -9,7 +9,7 @@ type WorkspaceCardSectionProps = {
 
 const WorkspaceCardSection = ({ title, body }: WorkspaceCardSectionProps) => {
 	return (
-		<Box fontScale='c1' mb={8}>
+		<Box fontScale='c1'>
 			<Box fontScale='c2'>{title}</Box>
 			{body && body}
 		</Box>

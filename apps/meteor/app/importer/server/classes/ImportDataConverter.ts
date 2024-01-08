@@ -715,7 +715,12 @@ export class ImportDataConverter {
 		return ImportData.getAllMessages().toArray();
 	}
 
-	async convertMessages({ beforeImportFn, afterImportFn, onErrorFn }: IConversionCallbacks = {}): Promise<void> {
+	async convertMessages({
+		beforeImportFn,
+		afterImportFn,
+		onErrorFn,
+		afterImportAllMessagesFn,
+	}: IConversionCallbacks & { afterImportAllMessagesFn?: (roomIds: string[]) => Promise<void> }): Promise<void> {
 		const rids: Array<string> = [];
 		const messages = await this.getMessagesToImport();
 
@@ -740,7 +745,6 @@ export class ImportDataConverter {
 					this._logger.warn(`Imported user not found: ${data.u._id}`);
 					throw new Error('importer-message-unknown-user');
 				}
-
 				const rid = await this.findImportedRoomId(data.rid);
 				if (!rid) {
 					throw new Error('importer-message-unknown-room');
@@ -807,11 +811,14 @@ export class ImportDataConverter {
 
 		for await (const rid of rids) {
 			try {
-				await Rooms.resetLastMessageById(rid);
+				await Rooms.resetLastMessageById(rid, null);
 			} catch (e) {
 				this._logger.warn(`Failed to update last message of room ${rid}`);
 				this._logger.error(e);
 			}
+		}
+		if (afterImportAllMessagesFn) {
+			await afterImportAllMessagesFn(rids);
 		}
 	}
 

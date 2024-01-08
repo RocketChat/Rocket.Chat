@@ -1,6 +1,6 @@
 import type { IUIActionButton, UIActionButtonContext } from '@rocket.chat/apps-engine/definition/ui';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useSingleStream, useToastMessageDispatch, useUserId } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useStream, useToastMessageDispatch, useUserId } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
@@ -19,7 +19,7 @@ const getIdForActionButton = ({ appId, actionId }: IUIActionButton): string => `
 export const useAppActionButtons = <TContext extends `${UIActionButtonContext}`>(context?: TContext) => {
 	const queryClient = useQueryClient();
 
-	const apps = useSingleStream('apps');
+	const apps = useStream('apps');
 	const uid = useUserId();
 
 	const getActionButtons = useEndpoint('GET', '/apps/actionButtons');
@@ -76,7 +76,7 @@ export const useMessageboxAppsActionButtons = () => {
 					return applyButtonFilters(action);
 				})
 				.map((action) => {
-					const item: MessageBoxAction = {
+					const item: Omit<MessageBoxAction, 'icon'> = {
 						id: getIdForActionButton(action),
 						label: Utilities.getI18nKeyForApp(action.labelI18n, action.appId),
 						action: (params) => {
