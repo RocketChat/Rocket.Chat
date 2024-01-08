@@ -1,18 +1,17 @@
 import type { IWebdavAccountIntegration } from '@rocket.chat/core-typings';
-import { Option, OptionIcon, OptionContent } from '@rocket.chat/fuselage';
 import { useTranslation, useSetting, useSetModal } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import { WebdavAccounts } from '../../../../../../../app/models/client';
 import { useReactiveValue } from '../../../../../../hooks/useReactiveValue';
-import type { ChatAPI } from '../../../../../../lib/chats/ChatAPI';
 import { useChat } from '../../../../contexts/ChatContext';
 import AddWebdavAccountModal from '../../../../webdav/AddWebdavAccountModal';
 import WebdavFilePickerModal from '../../../../webdav/WebdavFilePickerModal';
+import type { ToolbarAction } from './ToolbarAction';
 
 const getWebdavAccounts = (): IWebdavAccountIntegration[] => WebdavAccounts.find().fetch();
 
-const WebdavAction = ({ chatContext }: { chatContext?: ChatAPI }) => {
+export const useWebdavActions = (): Array<ToolbarAction> => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const webDavAccounts = useReactiveValue(getWebdavAccounts);
@@ -21,7 +20,7 @@ const WebdavAction = ({ chatContext }: { chatContext?: ChatAPI }) => {
 
 	const handleCreateWebDav = () => setModal(<AddWebdavAccountModal onClose={() => setModal(null)} onConfirm={() => setModal(null)} />);
 
-	const chat = useChat() ?? chatContext;
+	const chat = useChat();
 
 	const handleUpload = async (file: File, description?: string) =>
 		chat?.uploads.send(file, {
@@ -31,26 +30,23 @@ const WebdavAction = ({ chatContext }: { chatContext?: ChatAPI }) => {
 	const handleOpenWebdav = (account: IWebdavAccountIntegration) =>
 		setModal(<WebdavFilePickerModal account={account} onUpload={handleUpload} onClose={() => setModal(null)} />);
 
-	return (
-		<>
-			<Option
-				{...(!webDavEnabled && { title: t('WebDAV_Integration_Not_Allowed') })}
-				disabled={!webDavEnabled}
-				onClick={handleCreateWebDav}
-			>
-				<OptionIcon name='cloud-plus' />
-				<OptionContent>{t('Add_Server')}</OptionContent>
-			</Option>
-			{webDavEnabled &&
-				webDavAccounts.length > 0 &&
-				webDavAccounts.map((account) => (
-					<Option key={account._id} onClick={() => handleOpenWebdav(account)}>
-						<OptionIcon name='cloud-plus' />
-						<OptionContent>{account.name}</OptionContent>
-					</Option>
-				))}
-		</>
-	);
+	return [
+		{
+			id: 'webdav-add',
+			title: !webDavEnabled ? t('WebDAV_Integration_Not_Allowed') : undefined,
+			disabled: !webDavEnabled,
+			onClick: handleCreateWebDav,
+			icon: 'cloud-plus',
+			label: t('Add_Server'),
+		},
+		...(webDavEnabled && webDavAccounts.length > 0
+			? webDavAccounts.map((account) => ({
+					id: account._id,
+					disabled: false,
+					onClick: () => handleOpenWebdav(account),
+					icon: 'cloud-plus' as const,
+					label: account.name,
+			  }))
+			: []),
+	];
 };
-
-export default WebdavAction;

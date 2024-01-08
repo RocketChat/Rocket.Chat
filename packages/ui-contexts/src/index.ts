@@ -38,6 +38,7 @@ export { useLayout } from './hooks/useLayout';
 export { useLayoutContextualBarExpanded } from './hooks/useLayoutContextualBarExpanded';
 export { useLayoutContextualBarPosition } from './hooks/useLayoutContextualBarPosition';
 export { useLayoutSizes } from './hooks/useLayoutSizes';
+export { useLayoutHiddenActions } from './hooks/useLayoutHiddenActions';
 export { useLoadLanguage } from './hooks/useLoadLanguage';
 export { useLoginWithPassword } from './hooks/useLoginWithPassword';
 export { useLoginServices } from './hooks/useLoginServices';
