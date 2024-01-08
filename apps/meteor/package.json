@@ -205,7 +205,6 @@
 		"stylelint-order": "^5.0.0",
 		"supertest": "^6.2.3",
 		"template-file": "^6.0.1",
-		"testcontainers": "^8.14.0",
 		"ts-node": "^10.9.1",
 		"typescript": "~5.3.2"
 	},
@@ -319,6 +318,7 @@
 		"date-fns": "^2.28.0",
 		"date.js": "~0.3.3",
 		"debug": "~4.1.1",
+		"docker-compose": "^0.24.3",
 		"dompurify": "^2.3.8",
 		"ejson": "^2.2.3",
 		"emailreplyparser": "^0.0.5",

@@ -57,6 +57,26 @@ export default async function injectInitialData() {
 				_id: 'API_Enable_Rate_Limiter_Dev',
 				value: false,
 			},
+			{
+				_id: 'LDAP_Enable',
+				value: false,
+			},
+			{
+				_id: 'LDAP_Server_Type',
+				value: '',
+			},
+			{
+				_id: 'LDAP_Host',
+				value: 'localhost',
+			},
+			{
+				_id: 'LDAP_Reconnect',
+				value: true,
+			},
+			{
+				_id: 'LDAP_Login_Fallback',
+				value: true,
+			},
 		].map((setting) =>
 			connection
 				.db()

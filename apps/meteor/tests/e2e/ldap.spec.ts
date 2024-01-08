@@ -1,32 +1,41 @@
 import path from 'path';
 
-import type { StartedTestContainer } from 'testcontainers';
-import { GenericContainer } from 'testcontainers';
+import { v2 as compose } from 'docker-compose'
 
 import { IS_EE } from './config/constants';
+import { Users } from './fixtures/userStates';
 import { AdminLdap } from './page-objects/admin-ldap';
+import { removeDockerImage } from './utils/removeDockerImage';
+import { setSettingValueById } from './utils/setSettingValueById';
 import { expect, test } from './utils/test';
 
 test.skip(!IS_EE, 'LDAP > Enterprise Only');
-test.use({ storageState: 'admin-session.json' });
+test.use({ storageState: Users.admin.state });
 test.describe('ldap test', async () => {
-	let container: StartedTestContainer;
 	const ldapConnectionUrl = '/admin/settings/LDAP';
+	const containerPath = path.resolve(__dirname, 'containers', 'ldap_client');
 
 	let poAdminLdap: AdminLdap;
-	test.beforeAll(async () => {
-		const buildContext = path.resolve(__dirname, 'fixtures', 'ldap-client');
+	test.beforeAll(async ({ api }) => {
+		await compose.buildOne('ldap_client', {
+			cwd: containerPath,
+		});
 
-		container = await (await GenericContainer.fromDockerfile(buildContext).build())
-			.withName('ldap-test')
-			.withExposedPorts({ container: 10389, host: 389 })
-			.start();
+		await compose.upOne('ldap_client', {
+			cwd: containerPath,
+		});
 
-		console.log('container initialized');
+		await expect((await setSettingValueById(api, 'LDAP_Enable', true)).status()).toBe(200);
 	});
 
-	test.afterAll(async () => {
-		await container.stop();
+	test.afterAll(async ({ api }) => {
+		await compose.down({
+			cwd: containerPath,
+		});
+
+		removeDockerImage('ldap_client', containerPath);
+
+		await setSettingValueById(api, 'LDAP_Enable', false);
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -35,16 +44,6 @@ test.describe('ldap test', async () => {
 
 	test('expect connection is ok', async ({ page }) => {
 		await page.goto(ldapConnectionUrl);
-		const isChecked = await poAdminLdap.ldapConnection.inputCheck.isChecked();
-
-		if (!isChecked) {
-			await poAdminLdap.ldapConnection.btnEnable.click();
-			await poAdminLdap.ldapConnection.selectLdapServerType();
-			await poAdminLdap.ldapConnection.inputLdapHost.fill('localhost');
-			await poAdminLdap.ldapConnection.btnLdapReconnect.click();
-			await poAdminLdap.ldapConnection.btnLoginFallBack.click();
-			await poAdminLdap.ldapConnection.btnSaveChanges.click();
-		}
 
 		await poAdminLdap.ldapConnection.btnTestConnection.click();
 		await expect(poAdminLdap.toastSuccess).toBeVisible();

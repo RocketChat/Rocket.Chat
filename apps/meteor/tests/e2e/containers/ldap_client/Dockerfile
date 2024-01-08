@@ -1,6 +1,6 @@
 FROM openmicroscopy/apacheds
 
 WORKDIR /
-COPY ActorsAndWriters.ldif /
+COPY config/ActorsAndWriters.ldif /
 
 EXPOSE 389
