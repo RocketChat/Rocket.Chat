@@ -1,11 +1,6 @@
 import type { IRocketChatRecord } from './IRocketChatRecord';
 
-export enum ILivechatTriggerType {
-	TIME_ON_SITE = 'time-on-site',
-	PAGE_URL = 'page-url',
-	CHAT_OPENED_BY_VISITOR = 'chat-opened-by-visitor',
-	AFTER_GUEST_REGISTRATION = 'after-guest-registration',
-}
+export type ILivechatTriggerType = 'time-on-site' | 'page-url' | 'chat-opened-by-visitor' | 'after-guest-registration';
 
 export interface ILivechatTriggerCondition {
 	name: ILivechatTriggerType;
@@ -24,6 +19,8 @@ export interface ILivechatSendMessageAction {
 export interface ILivechatUseExternalServiceAction {
 	name: 'use-external-service';
 	params?: {
+		sender: 'queue' | 'custom';
+		name: string;
 		serviceUrl: string;
 		serviceTimeout: number;
 		serviceFallbackMessage: string;

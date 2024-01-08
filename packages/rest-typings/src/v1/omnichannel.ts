@@ -3126,6 +3126,14 @@ const POSTLivechatTriggersParamsSchema = {
 								type: 'object',
 								nullable: true,
 								properties: {
+									sender: {
+										type: 'string',
+										enum: ['queue', 'custom'],
+									},
+									name: {
+										type: 'string',
+										nullable: true,
+									},
 									serviceUrl: {
 										type: 'string',
 									},
