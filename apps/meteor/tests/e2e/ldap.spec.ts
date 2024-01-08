@@ -2,14 +2,12 @@ import path from 'path';
 
 import { v2 as compose } from 'docker-compose'
 
-import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { AdminLdap } from './page-objects/admin-ldap';
 import { removeDockerImage } from './utils/removeDockerImage';
 import { setSettingValueById } from './utils/setSettingValueById';
 import { expect, test } from './utils/test';
 
-test.skip(!IS_EE, 'LDAP > Enterprise Only');
 test.use({ storageState: Users.admin.state });
 test.describe('ldap test', async () => {
 	const ldapConnectionUrl = '/admin/settings/LDAP';
