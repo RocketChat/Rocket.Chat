@@ -562,6 +562,15 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findOne(query, options);
 	}
 
+	findOneByJoinCodeAndId(joinCode: string, rid: IRoom['_id'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
+		const query: Filter<IRoom> = {
+			_id: rid,
+			joinCode,
+		};
+
+		return this.findOne(query, options);
+	}
+
 	async findOneByNonValidatedName(name: NonNullable<IRoom['name'] | IRoom['fname']>, options: FindOptions<IRoom> = {}) {
 		const room = await this.findOneByNameOrFname(name, options);
 		if (room) {
