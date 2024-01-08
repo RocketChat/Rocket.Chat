@@ -1,8 +1,6 @@
 export interface ILoginServiceConfiguration {
 	_id: string;
 	service: string;
-	clientId: string;
-	secret: string;
 }
 
 export type OAuthConfiguration = {
@@ -48,7 +46,7 @@ export type TwitterOAuthConfiguration = Omit<Partial<OAuthConfiguration>, 'clien
 
 export type LinkedinOAuthConfiguration = Partial<OAuthConfiguration> & {
 	clientConfig: {
-		requestPermissions: string[];
+		requestPermissions?: string[];
 	};
 };
 
@@ -69,7 +67,7 @@ export type SAMLConfiguration = {
 	buttonLabelColor: string;
 	buttonColor: string;
 	clientConfig: {
-		provider: string;
+		provider?: string;
 	};
 	entryPoint: string;
 	idpSLORedirectURL: string;
@@ -105,9 +103,11 @@ export type SAMLConfiguration = {
 };
 
 export type LoginServiceConfiguration = ILoginServiceConfiguration &
-	Partial<OAuthConfiguration> &
-	Partial<FacebookOAuthConfiguration> &
-	Partial<TwitterOAuthConfiguration> &
-	Partial<LinkedinOAuthConfiguration> &
-	Partial<CASConfiguration> &
-	Partial<SAMLConfiguration>;
+	(
+		| Partial<OAuthConfiguration>
+		| Partial<FacebookOAuthConfiguration>
+		| Partial<TwitterOAuthConfiguration>
+		| Partial<LinkedinOAuthConfiguration>
+		| Partial<CASConfiguration>
+		| Partial<SAMLConfiguration>
+	);

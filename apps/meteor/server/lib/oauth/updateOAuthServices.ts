@@ -1,6 +1,12 @@
-import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
+import type {
+	FacebookOAuthConfiguration,
+	ILoginServiceConfiguration,
+	LinkedinOAuthConfiguration,
+	OAuthConfiguration,
+	TwitterOAuthConfiguration,
+} from '@rocket.chat/core-typings';
+import { LoginServiceConfiguration } from '@rocket.chat/models';
 import { getObjectKeys } from '@rocket.chat/tools';
-import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { CustomOAuth } from '../../../app/custom-oauth/server/custom_oauth_server';
 import { settings } from '../../../app/settings/server/cached';
@@ -20,7 +26,7 @@ export async function updateOAuthServices(): Promise<void> {
 		}
 
 		if (value === true) {
-			const data: Partial<Omit<LoginServiceConfiguration, '_id'>> = {
+			const data: Partial<ILoginServiceConfiguration & Omit<OAuthConfiguration, '_id'>> = {
 				clientId: settings.get(`${key}_id`),
 				secret: settings.get(`${key}_secret`),
 			};
@@ -85,16 +91,16 @@ export async function updateOAuthServices(): Promise<void> {
 				});
 			}
 			if (serviceName === 'Facebook') {
-				data.appId = data.clientId;
+				(data as FacebookOAuthConfiguration).appId = data.clientId as string;
 				delete data.clientId;
 			}
 			if (serviceName === 'Twitter') {
-				data.consumerKey = data.clientId;
+				(data as TwitterOAuthConfiguration).consumerKey = data.clientId as string;
 				delete data.clientId;
 			}
 
 			if (serviceName === 'Linkedin') {
-				data.clientConfig = {
+				(data as LinkedinOAuthConfiguration).clientConfig = {
 					requestPermissions: ['openid', 'email', 'profile'],
 				};
 			}
@@ -111,7 +117,7 @@ export async function updateOAuthServices(): Promise<void> {
 				data.service = serviceName.toLowerCase();
 			}
 
-			await ServiceConfiguration.configurations.upsertAsync(
+			await LoginServiceConfiguration.updateOne(
 				{
 					service: serviceName.toLowerCase(),
 				},
@@ -120,7 +126,7 @@ export async function updateOAuthServices(): Promise<void> {
 				},
 			);
 		} else {
-			await ServiceConfiguration.configurations.removeAsync({
+			await LoginServiceConfiguration.deleteOne({
 				service: serviceName.toLowerCase(),
 			});
 		}

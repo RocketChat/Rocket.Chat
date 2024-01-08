@@ -1,6 +1,6 @@
 import type { SAMLConfiguration } from '@rocket.chat/core-typings';
+import { LoginServiceConfiguration } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
-import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { settings, settingsRegistry } from '../../../settings/server';
@@ -24,7 +24,7 @@ const getSamlConfigs = function (service: string): SAMLConfiguration {
 		buttonLabelColor: settings.get(`${service}_button_label_color`),
 		buttonColor: settings.get(`${service}_button_color`),
 		clientConfig: {
-			provider: settings.get(`${service}_provider`),
+			provider: settings.get<string>(`${service}_provider`),
 		},
 		entryPoint: settings.get(`${service}_entry_point`),
 		idpSLORedirectURL: settings.get(`${service}_idp_slo_redirect_url`),
@@ -116,7 +116,7 @@ export const loadSamlServiceProviders = async function (): Promise<void> {
 				if (value === true) {
 					const samlConfigs = getSamlConfigs(key);
 					SAMLUtils.log(key);
-					await ServiceConfiguration.configurations.upsertAsync(
+					await LoginServiceConfiguration.updateOne(
 						{
 							service: serviceName.toLowerCase(),
 						},
@@ -126,7 +126,7 @@ export const loadSamlServiceProviders = async function (): Promise<void> {
 					);
 					return configureSamlService(samlConfigs);
 				}
-				await ServiceConfiguration.configurations.removeAsync({
+				await LoginServiceConfiguration.deleteOne({
 					service: serviceName.toLowerCase(),
 				});
 				return false;

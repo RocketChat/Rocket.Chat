@@ -1,4 +1,4 @@
-import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
+import type { ILoginServiceConfiguration, OAuthConfiguration } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
@@ -11,7 +11,7 @@ Meteor.startup(() => {
 		})
 		.observe({
 			async added(record) {
-				const service = record as LoginServiceConfiguration | undefined;
+				const service = record as unknown as (ILoginServiceConfiguration & OAuthConfiguration) | undefined;
 
 				if (!service?.custom) {
 					return;

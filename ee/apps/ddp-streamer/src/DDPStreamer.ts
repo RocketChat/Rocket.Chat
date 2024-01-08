@@ -44,7 +44,6 @@ export class DDPStreamer extends ServiceClass {
 				return;
 			}
 
-			// per the event definition, data will always be defined when clientAction is not 'removed'
 			if (data) {
 				events.emit('meteor.loginServiceConfiguration', clientAction === 'inserted' ? 'added' : 'changed', data);
 			}

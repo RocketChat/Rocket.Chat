@@ -1,4 +1,11 @@
-import type { ISetting, ISettingColor, LoginServiceConfiguration } from '@rocket.chat/core-typings';
+import type {
+	FacebookOAuthConfiguration,
+	ISetting,
+	ISettingColor,
+	LoginServiceConfiguration,
+	OAuthConfiguration,
+    TwitterOAuthConfiguration,
+} from '@rocket.chat/core-typings';
 import { isSettingAction, isSettingColor } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 import { isSettingsUpdatePropDefault, isSettingsUpdatePropsActions, isSettingsUpdatePropsColor } from '@rocket.chat/rest-typings';
@@ -68,7 +75,7 @@ API.v1.addRoute(
 		async get() {
 			const oAuthServicesEnabled = (await ServiceConfiguration.configurations
 				.find({}, { fields: { secret: 0 } })
-				.fetchAsync()) as LoginServiceConfiguration[];
+				.fetchAsync()) as unknown as LoginServiceConfiguration[];
 
 			return API.v1.success({
 				services: oAuthServicesEnabled.map((service) => {
@@ -76,14 +83,17 @@ API.v1.addRoute(
 						return service;
 					}
 
-					if (service.custom || (service.service && ['saml', 'cas', 'wordpress'].includes(service.service))) {
+					if ((service as OAuthConfiguration).custom || (service.service && ['saml', 'cas', 'wordpress'].includes(service.service))) {
 						return { ...service };
 					}
 
 					return {
 						_id: service._id,
 						name: service.service,
-						clientId: service.appId || service.clientId || service.consumerKey,
+						clientId:
+							(service as FacebookOAuthConfiguration).appId ||
+							(service as OAuthConfiguration).clientId ||
+							(service as TwitterOAuthConfiguration).consumerKey,
 						buttonLabelText: service.buttonLabelText || '',
 						buttonColor: service.buttonColor || '',
 						buttonLabelColor: service.buttonLabelColor || '',
