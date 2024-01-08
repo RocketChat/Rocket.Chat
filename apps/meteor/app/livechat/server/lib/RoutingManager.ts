@@ -45,6 +45,7 @@ type Routing = {
 	delegateInquiry(
 		inquiry: InquiryWithAgentInfo,
 		agent?: SelectedAgent | null,
+		room?: IOmnichannelRoom | null,
 		options?: { clientAction?: boolean; forwardingToDepartment?: { oldDepartmentId?: string; transferData?: any } },
 	): Promise<(IOmnichannelRoom & { chatQueued?: boolean }) | null | void>;
 	assignAgent(inquiry: InquiryWithAgentInfo, agent: SelectedAgent, room: IOmnichannelRoom | null): Promise<InquiryWithAgentInfo>;
@@ -55,6 +56,7 @@ type Routing = {
 			'estimatedInactivityCloseTimeAt' | 'message' | 't' | 'source' | 'estimatedWaitingTimeQueue' | 'priorityWeight' | '_updatedAt'
 		>,
 		agent: SelectedAgent | null,
+		room: IOmnichannelRoom | null,
 		options?: { clientAction?: boolean; forwardingToDepartment?: { oldDepartmentId?: string; transferData?: any } },
 	): Promise<IOmnichannelRoom | null | void>;
 	transferRoom(room: IOmnichannelRoom, guest: ILivechatVisitor, transferData: TransferData): Promise<boolean>;
@@ -119,7 +121,7 @@ export const RoutingManager: Routing = {
 		return this.getMethod().getNextAgent(department, ignoreAgentId);
 	},
 
-	async delegateInquiry(inquiry, agent, options = {}) {
+	async delegateInquiry(inquiry, agent, room, options = {}) {
 		const { department, rid } = inquiry;
 		logger.debug(`Attempting to delegate inquiry ${inquiry._id}`);
 		if (
@@ -145,8 +147,12 @@ export const RoutingManager: Routing = {
 			return LivechatRooms.findOneById(rid);
 		}
 
+		if (!room) {
+			return LivechatRooms.findOneById(rid);
+		}
+
 		logger.debug(`Inquiry ${inquiry._id} will be taken by agent ${agent.agentId}`);
-		return this.takeInquiry(inquiry, agent, options);
+		return this.takeInquiry(inquiry, agent, room, options);
 	},
 
 	async assignAgent(inquiry, agent, room) {
@@ -165,15 +171,14 @@ export const RoutingManager: Routing = {
 			throw new Meteor.Error('error-creating-subscription', 'Error creating subscription');
 		}
 
-		await Promise.all([LivechatRooms.changeAgentByRoomId(rid, agent), Rooms.incUsersCountById(rid, 1)]);
-		const user = await Users.findOneById(agent.agentId);
+		const [user] = await Promise.all([
+			Users.findOneById(agent.agentId),
+			LivechatRooms.changeAgentByRoomId(rid, agent),
+			Rooms.incUsersCountById(rid, 1),
+		]);
 
 		if (user) {
 			await Promise.all([Message.saveSystemMessage('command', rid, 'connected', user), Message.saveSystemMessage('uj', rid, '', user)]);
-		}
-
-		if (!room) {
-			throw new Meteor.Error('error-room-not-found', 'Room not found');
 		}
 
 		void dispatchAgentDelegated(rid, agent.agentId);
@@ -215,7 +220,7 @@ export const RoutingManager: Routing = {
 		return true;
 	},
 
-	async takeInquiry(inquiry, agent, options = { clientAction: false }) {
+	async takeInquiry(inquiry, agent, room, options = { clientAction: false }) {
 		check(
 			agent,
 			Match.ObjectIncluding({
@@ -236,7 +241,6 @@ export const RoutingManager: Routing = {
 		logger.debug(`Attempting to take Inquiry ${inquiry._id} [Agent ${agent.agentId}] `);
 
 		const { _id, rid } = inquiry;
-		const room = await LivechatRooms.findOneById(rid);
 		if (!room?.open) {
 			logger.debug(`Cannot take Inquiry ${inquiry._id}: Room is closed`);
 			return room;

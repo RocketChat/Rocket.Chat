@@ -73,7 +73,7 @@ Meteor.methods<ServerMethods>({
 		const {
 			servedBy: { _id: agentId, username },
 		} = room;
-		await RoutingManager.takeInquiry(inquiry, { agentId, username }, options);
+		await RoutingManager.takeInquiry(inquiry, { agentId, username }, room, options);
 
 		const onHoldChatResumedBy = options.clientAction ? await Meteor.userAsync() : await Users.findOneById('rocket.cat');
 		if (!onHoldChatResumedBy) {

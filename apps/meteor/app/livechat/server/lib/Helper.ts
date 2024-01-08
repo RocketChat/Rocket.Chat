@@ -406,7 +406,7 @@ export const forwardRoomToAgent = async (room: IOmnichannelRoom, transferData: T
 	// There are some Enterprise features that may interrupt the forwarding process
 	// Due to that we need to check whether the agent has been changed or not
 	logger.debug(`Forwarding inquiry ${inquiry._id} to agent ${agent.agentId}`);
-	const roomTaken = await RoutingManager.takeInquiry(inquiry, agent, {
+	const roomTaken = await RoutingManager.takeInquiry(inquiry, agent, room, {
 		...(clientAction && { clientAction }),
 	});
 	if (!roomTaken) {
@@ -519,7 +519,7 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 	// Fake the department to forward the inquiry - Case the forward process does not success
 	// the inquiry will stay in the same original department
 	inquiry.department = departmentId;
-	const roomTaken = await RoutingManager.delegateInquiry(inquiry, agent, {
+	const roomTaken = await RoutingManager.delegateInquiry(inquiry, agent, room, {
 		forwardingToDepartment: { oldDepartmentId },
 		...(clientAction && { clientAction }),
 	});
