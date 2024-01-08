@@ -20,9 +20,12 @@ MeteorService.getLoginServiceConfiguration()
 	.catch((err) => console.error('DDPStreamer not able to retrieve login services configuration', err));
 
 server.publish(loginServiceConfigurationPublication, async function () {
+	console.log('DEBUGOAUTH', 'publication');
 	loginServices.forEach((record) => this.added(loginServiceConfigurationCollection, record._id, record));
 
 	const fn = (action: string, record: any): void => {
+		console.log('DEBUGOAUTH', 'callback', action);
+
 		switch (action) {
 			case 'added':
 			case 'changed':
@@ -38,6 +41,7 @@ server.publish(loginServiceConfigurationPublication, async function () {
 	events.on(loginServiceConfigurationPublication, fn);
 
 	this.onStop(() => {
+		console.log('DEBUGOAUTH', 'remove listener');
 		events.removeListener(loginServiceConfigurationPublication, fn);
 	});
 

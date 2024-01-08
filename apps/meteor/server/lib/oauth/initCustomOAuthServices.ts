@@ -1,6 +1,8 @@
 import { addOAuthService } from './addOAuthService';
 
 export async function initCustomOAuthServices(): Promise<void> {
+	console.log('DEBUGOAUTH', 'initCustomOAuthServices');
+
 	// Add settings for custom OAuth providers to the settings so they get
 	// automatically added when they are defined in ENV variables
 	for await (const key of Object.keys(process.env)) {

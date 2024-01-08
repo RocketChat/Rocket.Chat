@@ -339,6 +339,7 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 	});
 
 	watcher.on<ILoginServiceConfiguration>(LoginServiceConfiguration.getCollectionName(), async ({ clientAction, id }) => {
+		console.log('DEBUGOAUTH', 'watcher', clientAction, id);
 		if (clientAction === 'removed') {
 			void broadcast('watch.loginServiceConfiguration', { clientAction, id });
 			return;

@@ -12,6 +12,8 @@ import { settings } from '../../../app/settings/server/cached';
 import { logger } from './logger';
 
 export async function updateOAuthServices(): Promise<void> {
+	console.log('DEBUGOAUTH', 'updateOAuthServices');
+
 	const services = settings.getByRegexp(/^(Accounts_OAuth_|Accounts_OAuth_Custom-)[a-z0-9_]+$/i);
 	const filteredServices = services.filter(([, value]) => typeof value === 'boolean');
 	for await (const [key, value] of filteredServices) {
