@@ -65,24 +65,27 @@ export const upsertMessage = async (message) => {
 	await processUnread();
 };
 
+export const removeMessage = async (messageId) => {
+	const { messages } = store.state;
+	await store.setState({ messages: messages.filter(({ _id }) => _id !== messageId) });
+};
+
 export const hasTriggerCondition = (conditionName) => (trigger) => {
 	return trigger.conditions.some((condition) => condition.name === conditionName);
 };
 
 export const isInIframe = () => window.self !== window.top;
 
-export const requestMessage = async (url, fallbackMessage) => {
+export const requestTriggerMessages = async ({ triggerId, token, metadata = {} }) => {
 	try {
-		const response = await new Promise((resolve) => {
-			setTimeout(() => resolve('message here'), 5000);
-		});
-
-		return response;
+		const extraData = Object.entries(metadata).reduce((acc, [key, value]) => [...acc, { key, value }], []);
+		const { response } = await Livechat.rest.post(`/v1/livechat/triggers/${triggerId}/call`, { extraData, token });
+		return response.contents;
 	} catch (error) {
-		if (!fallbackMessage) {
+		if (!error.fallbackMessage) {
 			throw Error('Unable to fetch message from external service.');
 		}
 
-		return fallbackMessage;
+		return [{ msg: error.fallbackMessage, order: 0 }];
 	}
 };

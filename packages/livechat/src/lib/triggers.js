@@ -90,7 +90,7 @@ class Triggers {
 		}
 
 		try {
-			await actions[action.name](action, params);
+			await actions[action.name](id, action, params);
 			this._updateRecord(id, { status: 'fired', action: action.name });
 		} catch (error) {
 			this._updateRecord(id, { status: 'error', error });
@@ -128,19 +128,6 @@ class Triggers {
 
 		const records = this._findRecordsByStatus(['scheduled', 'fired']);
 		return records.some((r) => r.condition !== 'after-guest-registration');
-	}
-
-	canRenderMessage(message) {
-		const { origin, scope } = message;
-
-		if (origin !== 'trigger' || !scope) {
-			return true;
-		}
-
-		const { user } = store.state;
-		const isRegistered = !!user?.token;
-
-		return (isRegistered && scope === 'after-registration') || (!isRegistered && scope === 'before-registration');
 	}
 
 	_listenParentUrlChanges() {

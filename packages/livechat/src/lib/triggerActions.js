@@ -2,10 +2,12 @@ import { route } from 'preact-router';
 
 import store from '../store';
 import { createToken } from './random';
-import { getAgent, requestMessage, upsertMessage } from './triggerUtils';
+import { getAgent, removeMessage, requestTriggerMessages, upsertMessage } from './triggerUtils';
+import Triggers from './triggers';
 
-export const sendMessageAction = async (action, params = {}) => {
+export const sendMessageAction = async (action, condition) => {
 	const { token, minimized } = store.state;
+
 	const agent = getAgent(action);
 
 	const message = {
@@ -14,8 +16,6 @@ export const sendMessageAction = async (action, params = {}) => {
 		u: agent,
 		ts: new Date().toISOString(),
 		_id: createToken(),
-		origin: 'trigger',
-		scope: params.scope || 'before-registration',
 	};
 
 	await upsertMessage(message);
@@ -24,32 +24,57 @@ export const sendMessageAction = async (action, params = {}) => {
 		route('/trigger-messages');
 		store.setState({ minimized: false });
 	}
+
+	if (condition.name !== 'after-registration') {
+		const onVisitorRegistered = async () => {
+			await removeMessage(message._id);
+			Triggers.callbacks.off('chat-visitor-registered', onVisitorRegistered);
+		};
+
+		Triggers.callbacks.on('chat-visitor-registered', onVisitorRegistered);
+	}
 };
 
-export const sendMessageExternalServiceAction = async (action, params = {}) => {
+export const sendMessageExternalServiceAction = async (triggerId, action, condition) => {
 	const { token, minimized, typing } = store.state;
-	const { value: url, fallbackMessage } = action.params;
-
+	const { serviceUrl, serviceFallbackMessage, serviceTimeout } = action.params;
+	console.log(serviceUrl, serviceFallbackMessage, serviceTimeout);
 	const agent = await getAgent(action);
 
 	store.setState({ typing: [...typing, agent.username] });
 
 	try {
-		const msg = await requestMessage(url, fallbackMessage);
-
-		await upsertMessage({
-			msg,
+		const triggerMessages = await requestTriggerMessages({
+			triggerId,
 			token,
-			u: agent,
-			ts: new Date().toISOString(),
-			_id: createToken(),
-			origin: 'trigger',
-			scope: params.scope || 'before-registration',
+			metadata: {},
 		});
+
+		const messages = triggerMessages
+			.sort((a, b) => a.order - b.order)
+			.map((item) => item.msg)
+			.map((msg) => ({
+				msg,
+				token,
+				u: agent,
+				ts: new Date().toISOString(),
+				_id: createToken(),
+			}));
+
+		await Promise.all(messages.map((message) => upsertMessage(message)));
 
 		if (minimized) {
 			route('/trigger-messages');
 			store.setState({ minimized: false });
+		}
+
+		if (condition.name !== 'after-registration') {
+			const onVisitorRegistered = async () => {
+				await Promise.all(messages.map((message) => removeMessage(message._id)));
+				Triggers.callbacks.off('chat-visitor-registered', onVisitorRegistered);
+			};
+
+			Triggers.callbacks.on('chat-visitor-registered', onVisitorRegistered);
 		}
 	} finally {
 		store.setState({
@@ -60,5 +85,5 @@ export const sendMessageExternalServiceAction = async (action, params = {}) => {
 
 export const actions = {
 	'send-message': sendMessageAction,
-	'send-message-external-service': sendMessageExternalServiceAction,
+	'use-external-service': sendMessageExternalServiceAction,
 };

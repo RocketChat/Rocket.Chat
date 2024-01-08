@@ -15,7 +15,6 @@ import { getLastReadMessage, loadConfig, processUnread, shouldMarkAsUnread } fro
 import { parentCall, runCallbackEventEmitter } from '../../lib/parentCall';
 import { createToken } from '../../lib/random';
 import { initRoom, closeChat, loadMessages, loadMoreMessages, defaultRoomParams, getGreetingMessages } from '../../lib/room';
-import Triggers from '../../lib/triggers';
 import { Consumer } from '../../store';
 import Chat from './component';
 
@@ -448,7 +447,7 @@ export const ChatConnector = ({ ref, t, ...props }) => (
 						: undefined
 				}
 				room={room}
-				messages={messages && messages.filter(canRenderMessage).filter(Triggers.canRenderMessage)}
+				messages={messages && messages.filter(canRenderMessage)}
 				noMoreMessages={noMoreMessages}
 				emoji={true}
 				uploads={uploads}
