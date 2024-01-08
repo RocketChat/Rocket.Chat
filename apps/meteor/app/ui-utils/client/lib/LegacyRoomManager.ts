@@ -7,9 +7,8 @@ import { RoomManager } from '../../../../client/lib/RoomManager';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
-import { router } from '../../../../client/providers/RouterProvider';
 import { callbacks } from '../../../../lib/callbacks';
-import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription, ChatRoom } from '../../../models/client';
+import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription } from '../../../models/client';
 import { Notifications } from '../../../notifications/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
@@ -79,41 +78,6 @@ function getOpenedRoomByRid(rid: IRoom['_id']) {
 		.map((typeName) => openedRooms[typeName])
 		.find((openedRoom) => openedRoom.rid === rid);
 }
-
-const handleTrackSettingsChange = (msg: IMessage) => {
-	const openedRoom = RoomManager.opened;
-	if (openedRoom !== msg.rid) {
-		return;
-	}
-
-	void Tracker.nonreactive(async () => {
-		if (msg.t === 'room_changed_privacy') {
-			const type = router.getRouteName() === 'channel' ? 'c' : 'p';
-			await close(type + router.getRouteParameters().name);
-
-			const subscription = ChatSubscription.findOne({ rid: msg.rid });
-			if (!subscription) {
-				throw new Error('Subscription not found');
-			}
-			router.navigate({
-				pattern: subscription.t === 'c' ? '/channel/:name/:tab?/:context?' : '/group/:name/:tab?/:context?',
-				params: { name: subscription.name },
-				search: router.getSearchParameters(),
-			});
-		}
-
-		if (msg.t === 'r') {
-			const room = ChatRoom.findOne(msg.rid);
-			if (!room) {
-				throw new Error('Room not found');
-			}
-			if (room.name !== router.getRouteParameters().name) {
-				await close(room.t + router.getRouteParameters().name);
-				roomCoordinator.openRouteLink(room.t, room, router.getSearchParameters());
-			}
-		}
-	});
-};
 
 const computation = Tracker.autorun(() => {
 	const ready = CachedChatRoom.ready.get() && mainReady.get();

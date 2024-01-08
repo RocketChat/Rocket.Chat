@@ -16,6 +16,18 @@ export class Admin {
 		return this.page.locator('input[placeholder ="Search rooms"]');
 	}
 
+	getRoomRow(name?: string): Locator {
+		return this.page.locator('[role="link"]', { hasText: name });
+	}
+
+	get btnSave(): Locator {
+		return this.page.locator('button >> text="Save"');
+	}
+
+	get privateLabel(): Locator {
+		return this.page.locator(`label >> text=Private`);
+	}
+
 	get inputSearchUsers(): Locator {
 		return this.page.locator('input[placeholder="Search Users"]');
 	}
