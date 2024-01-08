@@ -1,12 +1,16 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import { Option, OptionTitle, OptionIcon, OptionContent } from '@rocket.chat/fuselage';
 import { useSetting, useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import ShareLocationModal from '../../../../ShareLocation/ShareLocationModal';
+import type { ToolbarAction } from './ToolbarAction';
 
-const ShareLocationAction = ({ room, tmid }: { room: IRoom; tmid?: string }) => {
+export const useShareLocationAction = (room?: IRoom, tmid?: string): ToolbarAction => {
+	if (!room) {
+		throw new Error('Invalid room');
+	}
+
 	const t = useTranslation();
 	const setModal = useSetModal();
 
@@ -19,15 +23,12 @@ const ShareLocationAction = ({ room, tmid }: { room: IRoom; tmid?: string }) => 
 
 	const allowGeolocation = room && canGetGeolocation && !isRoomFederated(room);
 
-	return (
-		<>
-			<OptionTitle>{t('Share')}</OptionTitle>
-			<Option {...(!allowGeolocation && { title: t('Not_Available') })} disabled={!allowGeolocation} onClick={handleShareLocation}>
-				<OptionIcon name='map-pin' />
-				<OptionContent>{t('Location')}</OptionContent>
-			</Option>
-		</>
-	);
+	return {
+		id: 'share-location',
+		icon: 'map-pin',
+		label: t('Location'),
+		title: !allowGeolocation ? t('Not_Available') : undefined,
+		onClick: handleShareLocation,
+		disabled: !allowGeolocation,
+	};
 };
-
-export default ShareLocationAction;
