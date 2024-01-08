@@ -71,7 +71,7 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 				return;
 			}
 
-			if (await app.getStatus() === status) {
+			if ((await app.getStatus()) === status) {
 				Apps.getRocketChatLogger().info(`"apps.statusUpdate" event received for app "${appId}", but the status is the same`);
 				return;
 			}
