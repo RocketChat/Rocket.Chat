@@ -191,15 +191,15 @@ export class AppServerOrchestrator {
 
 		await this.getBridges().getSchedulerBridge().startScheduler();
 
-		this._rocketchatLogger.info(`Loaded the Apps Framework and loaded a total of ${this.getManager().get({ enabled: true }).length} Apps!`);
+		const appCount = (await this.getManager().get({ enabled: true })).length;
+
+		this._rocketchatLogger.info(`Loaded the Apps Framework and loaded a total of ${appCount} Apps!`);
 	}
 
 	async disableApps() {
-		await this.getManager()
-			.get()
-			.forEach((app) => {
-				this.getManager().disable(app.getID());
-			});
+		const apps = await this.getManager().get();
+
+		await Promise.all(apps.map((app) => this.getManager().disable(app.getID())));
 	}
 
 	async unload() {
