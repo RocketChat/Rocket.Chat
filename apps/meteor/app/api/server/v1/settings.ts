@@ -4,7 +4,7 @@ import type {
 	ISettingColor,
 	LoginServiceConfiguration,
 	OAuthConfiguration,
-    TwitterOAuthConfiguration,
+	TwitterOAuthConfiguration,
 } from '@rocket.chat/core-typings';
 import { isSettingAction, isSettingColor } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
