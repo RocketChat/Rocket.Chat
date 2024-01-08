@@ -45,7 +45,7 @@ type LoginServiceConfigurationEvent = {
 } & (
 	| {
 			clientAction: 'removed';
-			data?: Partial<ILoginServiceConfiguration>;
+			data?: never;
 	  }
 	| {
 			clientAction: Omit<ClientAction, 'removed'>;
