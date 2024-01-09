@@ -45,8 +45,7 @@ const createPermissionValidator =
 				}
 
 				if (hasIsUserInRole(model)) {
-					const hasRole = model.isUserInRole(userId, roleId, scope);
-					return hasRole;
+					return model.isUserInRole(userId, roleId, scope);
 				}
 
 				return undefined;
