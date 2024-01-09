@@ -23,8 +23,8 @@ async function translationDiff(source, target) {
 		return diff;
 	}
 
-	const sourceTranslations = JSON.parse(await readFile(`${translationDir}/${source}.i18n.json`, 'utf8'));
-	const targetTranslations = JSON.parse(await readFile(`${translationDir}/${target}.i18n.json`, 'utf8'));
+	const sourceTranslations = JSON.parse(await readFile(path.join(translationDir, $.source.i18n.json), 'utf8'));
+	const targetTranslations = JSON.parse(await readFile(path.join(translationDir, $.target.i18n.json), 'utf8'));
 
 	return diffKeys(sourceTranslations, targetTranslations);
 }
