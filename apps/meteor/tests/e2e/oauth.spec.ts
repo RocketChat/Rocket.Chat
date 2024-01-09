@@ -6,6 +6,13 @@ test.describe('OAuth', () => {
 	let poRegistration: Registration;
 
 	test.beforeEach(async ({ page }) => {
+		page.on('websocket', (ws) => {
+			console.log('DEBUGOAUTH', new Date().toISOString(), `WebSocket opened: ${ws.url()}>`);
+			// ws.on('framesent', event => console.log('DEBUGOAUTH', new Date().toISOString(), 'WebSocket Frame Sent', event.payload));
+			ws.on('framereceived', event => console.log('DEBUGOAUTH', new Date().toISOString(), 'WebSocket Frame Received', event.payload));
+			ws.on('close', () => console.log('DEBUGOAUTH', new Date().toISOString(), 'WebSocket closed'));
+		});
+
 		poRegistration = new Registration(page);
 
 		await page.goto('/home');
