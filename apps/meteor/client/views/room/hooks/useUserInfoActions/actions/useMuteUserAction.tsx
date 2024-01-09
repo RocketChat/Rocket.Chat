@@ -56,6 +56,8 @@ export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IR
 	const isMuted = getUserIsMuted(user, room, otherUserCanPostReadonly);
 	const roomName = room?.t && escapeHTML(roomCoordinator.getRoomName(room.t, room));
 
+	console.log({ isMuted, room, otherUserCanPostReadonly, userRoomRoles });
+
 	if (!room) {
 		throw Error('Room not provided');
 	}
