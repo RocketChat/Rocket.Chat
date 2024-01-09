@@ -129,15 +129,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		return result.insertedId;
 	}
 
-	async updateUserReferences({
-		username,
-		previousUsername,
-		userId,
-	}: {
-		username: string;
-		previousUsername: string;
-		userId: string;
-	}): Promise<void> {
+	async updateUserReferences(username: string, previousUsername: string, userId: string): Promise<void> {
 		await Messages.updateAllUsernamesByUserId(userId, username);
 		await Messages.updateUsernameOfEditByUserId(userId, username);
 
