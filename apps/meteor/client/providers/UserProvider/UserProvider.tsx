@@ -67,6 +67,32 @@ const find = (...args: any[]) => {
 	return results;
 };
 
+window.hudell_debug_func = () => {
+	console.log('DEBUGOAUTH', new Date().toISOString(), 'run debug query');
+
+	console.log(
+		'DEBUGOAUTH',
+		new Date().toISOString(),
+		'debug_func',
+		JSON.stringify(
+			ServiceConfiguration.configurations
+				.find(
+					{
+						showButton: { $ne: false },
+					},
+					{
+						sort: {
+							service: 1,
+						},
+					},
+				)
+				.fetch(),
+		),
+	);
+
+	console.log('DEBUGOAUTH', new Date().toISOString());
+};
+
 const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 	const isLdapEnabled = useSetting<boolean>('LDAP_Enable');
 	const isCrowdEnabled = useSetting<boolean>('CROWD_Enable');
