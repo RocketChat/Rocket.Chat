@@ -122,24 +122,22 @@ export const QueueManager: queueManager = {
 			throw new Error('inquiry-not-found');
 		}
 
+		if (!dbRoom) {
+			throw new Error('room-not-found');
+		}
+
 		logger.debug({
 			msg: 'New room created',
 			rid,
 			inquiryId: inquiry._id,
 		});
 
-		if (!dbRoom) {
-			throw new Error('room-not-found');
-		}
-
-		await queueInquiry(inquiry, dbRoom, agent);
+		const newRoom = await queueInquiry(inquiry, dbRoom, agent);
 		logger.debug({
 			msg: 'Inquiry queued',
 			inquiryId: inquiry._id,
 		});
 
-		// After all, we need the fresh room :)
-		const newRoom = await LivechatRooms.findOneById(rid);
 		if (!newRoom) {
 			throw new Error('room-not-found');
 		}
@@ -172,7 +170,7 @@ export const QueueManager: queueManager = {
 		};
 
 		let defaultAgent: SelectedAgent | undefined;
-		if (servedBy?.username && (await Users.findOneOnlineAgentByUserList(servedBy.username))) {
+		if (servedBy?.username && (await Users.findOneOnlineAgentByUserList(servedBy.username, { projection: { _id: 1 } }))) {
 			defaultAgent = { agentId: servedBy._id, username: servedBy.username };
 		}
 
