@@ -15,6 +15,7 @@ import { createReactiveSubscriptionFactory } from '../../lib/createReactiveSubsc
 import { useCreateFontStyleElement } from '../../views/account/accessibility/hooks/useCreateFontStyleElement';
 import { useEmailVerificationWarning } from './hooks/useEmailVerificationWarning';
 import { useLDAPAndCrowdCollisionWarning } from './hooks/useLDAPAndCrowdCollisionWarning';
+import { useUpdateCustomUserStatus } from './hooks/useUpdateCustomUserStatus';
 
 const getUserId = (): string | null => Meteor.userId();
 
@@ -77,6 +78,8 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 
 	useLDAPAndCrowdCollisionWarning();
 	useEmailVerificationWarning(user ?? undefined);
+
+	useUpdateCustomUserStatus();
 
 	const contextValue = useMemo(
 		(): ContextType<typeof UserContext> => ({
