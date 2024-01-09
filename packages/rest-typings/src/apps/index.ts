@@ -251,12 +251,6 @@ export type AppsEndpoints = {
 		};
 	};
 
-	'/apps/downloadFromUrl': {
-		GET: (params: { url: string }) => {
-			buff: { data: number[] };
-		};
-	};
-
 	'/apps/ui.interaction/:id': {
 		POST: (params: UiKit.UserInteraction) => any;
 	};

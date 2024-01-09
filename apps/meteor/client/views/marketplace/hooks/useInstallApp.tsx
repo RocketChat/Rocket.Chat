@@ -1,7 +1,7 @@
 import type { App, AppPermission } from '@rocket.chat/core-typings';
-import { useRouter, useSearchParameter, useSetModal, useUpload, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useRouter, useSetModal, useUpload, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import { AppClientOrchestratorInstance } from '../../../../ee/client/apps/orchestrator';
 import { useAppsReload } from '../../../contexts/hooks/useAppsReload';
@@ -19,8 +19,6 @@ export const useInstallApp = (file: File, url: string): { install: () => void; i
 	const reloadAppsList = useAppsReload();
 	const openExternalLink = useExternalLink();
 	const setModal = useSetModal();
-	const appFile = useRef<File>();
-	const manifest = useRef<string>();
 
 	const router = useRouter();
 
@@ -28,7 +26,9 @@ export const useInstallApp = (file: File, url: string): { install: () => void; i
 	const manageSubscriptionUrl = useCheckoutUrl()({ target: 'marketplace-app-install', action: 'Enable_unlimited_apps' });
 
 	const uploadAppEndpoint = useUpload('/apps');
-	const downloadPrivateAppFromUrl = useEndpoint('GET', '/apps/downloadFromUrl');
+
+	/** @deprecated */
+	const downloadPrivateAppFromUrl = useEndpoint('POST', '/apps');
 
 	const [isInstalling, setInstalling] = useState(false);
 
@@ -48,7 +48,7 @@ export const useInstallApp = (file: File, url: string): { install: () => void; i
 					params: {
 						context: 'private',
 						page: 'info',
-						id: appId || data.app.id,
+						id: data.app.id,
 					},
 				});
 			},
@@ -68,7 +68,7 @@ export const useInstallApp = (file: File, url: string): { install: () => void; i
 		setModal(null);
 	}, [setInstalling, setModal]);
 
-	const isAppInstalled = async (appId) => {
+	const isAppInstalled = async (appId: string) => {
 		try {
 			const app = await AppClientOrchestratorInstance.getApp(appId);
 			return !!app || false;
@@ -77,7 +77,7 @@ export const useInstallApp = (file: File, url: string): { install: () => void; i
 		}
 	};
 
-	const handleAppPermissionsReview = async (permissions, appFile) => {
+	const handleAppPermissionsReview = async (permissions: AppPermission[], appFile: File) => {
 		setModal(
 			<AppPermissionsReviewModal
 				appPermissions={permissions}
@@ -87,32 +87,36 @@ export const useInstallApp = (file: File, url: string): { install: () => void; i
 		);
 	};
 
-	const uploadFile = async (appFile, { id, permissions }) => {
+	const uploadFile = async (appFile: File, { id, permissions }: { id: string; permissions: AppPermission[] }) => {
 		const isInstalled = await isAppInstalled(id);
 
 		if (isInstalled) {
-			return setModal(<AppUpdateModal cancel={cancelAction} confirm={() => handleAppPermissionsReview(permissions, appFile, id)} />);
+			return setModal(<AppUpdateModal cancel={cancelAction} confirm={() => handleAppPermissionsReview(permissions, appFile)} />);
 		}
 
 		await handleAppPermissionsReview(permissions, appFile);
 	};
 
-	const getAppFile = async (): Promise<void> => {
+	/** @deprecated	*/
+	const getAppFile = async (): Promise<File | undefined> => {
 		try {
-			const { buff } = await downloadPrivateAppFromUrl({ url });
+			// @ts-ignore-next-line
+			const { buff } = await downloadPrivateAppFromUrl({ url, downloadOnly: true });
 
-			appFile.current = new File([Uint8Array.from(buff.data)], 'app.zip', { type: 'application/zip' });
+			return new File([Uint8Array.from(buff.data)], 'app.zip', { type: 'application/zip' });
 		} catch (error) {
-			handleInstallError(error);
+			handleInstallError(error as Error);
 		}
 	};
 
-	const extractManifestFromAppFile = async () => {
-		const manifest = await getManifestFromZippedApp(appFile.current);
+	const extractManifestFromAppFile = async (appFile: File) => {
+		const manifest = await getManifestFromZippedApp(appFile);
 		return manifest;
 	};
 
 	const install = async () => {
+		let appFile: File | undefined;
+
 		setInstalling(true);
 
 		if (!appCountQuery.data) {
@@ -120,19 +124,23 @@ export const useInstallApp = (file: File, url: string): { install: () => void; i
 		}
 
 		if (!file) {
-			await getAppFile();
+			appFile = await getAppFile();
 		} else {
-			appFile.current = file;
+			appFile = file;
 		}
 
-		const manifest = await extractManifestFromAppFile();
+		if (!appFile) {
+			return cancelAction();
+		}
 
-		if (!appFile.current || !manifest.current) {
+		const manifest = await extractManifestFromAppFile(appFile);
+
+		if (!manifest) {
 			return cancelAction();
 		}
 
 		if (appCountQuery.data.hasUnlimitedApps) {
-			return uploadFile(appFile.current, manifest.current);
+			return uploadFile(appFile, manifest);
 		}
 
 		setModal(
@@ -142,7 +150,7 @@ export const useInstallApp = (file: File, url: string): { install: () => void; i
 				limit={appCountQuery.data.limit}
 				appName={manifest.name}
 				handleClose={cancelAction}
-				handleConfirm={() => uploadFile(appFile, manifest)}
+				handleConfirm={() => uploadFile(appFile as File, manifest)}
 				handleEnableUnlimitedApps={() => {
 					openExternalLink(manageSubscriptionUrl);
 					setModal(null);
