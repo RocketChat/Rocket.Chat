@@ -1,6 +1,6 @@
 import { Team, api } from '@rocket.chat/core-services';
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
-import { Users, Subscriptions } from '@rocket.chat/models';
+import { Users, Subscriptions, Rooms } from '@rocket.chat/models';
 import {
 	isUserCreateParamsPOST,
 	isUserSetActiveStatusParamsPOST,
@@ -1239,6 +1239,41 @@ API.v1.addRoute(
 		},
 	},
 );
+
+API.v1.addRoute(
+	'users.isMuted',
+	{ authRequired: true },
+	{
+		async get() {
+			const user = await getUserFromParams(this.queryParams);
+			const room = await Rooms.findOne(this.queryParams.roomId);
+
+			const { username } = user;
+
+			if (room?.ro === true) {
+				if(!(await hasPermissionAsync(user._id, 'post-readonly', room._id))) {
+					// Unless the user was manually unmuted
+					if (username && !room?.unmuted?.includes(username)) {
+						// throw new Error("You can't send messages because the room is readonly.");
+						return API.v1.success({
+							isMuted: true,
+						});
+					}
+				}
+			}
+
+			if (username && room?.muted?.includes(username)) {
+				return API.v1.success({
+					isMuted: true,
+				});
+			}
+
+			return API.v1.success({
+				isMuted: false,
+			});
+		}
+	}
+)
 
 settings.watch<number>('Rate_Limiter_Limit_RegisterUser', (value) => {
 	const userRegisterRoute = '/api/v1/users.registerpost';

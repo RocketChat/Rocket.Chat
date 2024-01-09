@@ -1,7 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { PositionAnimated, AnimatedVisibility } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetting, useRolesDescription, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetting, useRolesDescription, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement, UIEvent } from 'react';
 import React, { useMemo, useRef } from 'react';
 
@@ -13,6 +13,7 @@ import UserCard from '../../../components/UserCard';
 import { ReactiveUserStatus } from '../../../components/UserStatus';
 import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
 import { useUserInfoActions } from '../hooks/useUserInfoActions';
+import { useQuery } from '@tanstack/react-query';
 
 type UserCardWithDataProps = {
 	username: string;
@@ -29,6 +30,8 @@ const UserCardWithData = ({ username, target, rid, open, onClose }: UserCardWith
 	const showRealNames = Boolean(useSetting('UI_Use_Real_Name'));
 
 	const { data, isLoading } = useUserInfoQuery({ username });
+	const getIsUserMuted = useEndpoint('GET', '/v1/users.isMuted');
+	const { data: isUserMuted } = useQuery(['users.isMuted', username, rid], () => getIsUserMuted({ username, roomId: rid }));
 
 	ref.current = target;
 
@@ -66,7 +69,7 @@ const UserCardWithData = ({ username, target, rid, open, onClose }: UserCardWith
 	});
 
 	const { actions: actionsDefinition, menuActions: menuOptions } = useUserInfoActions(
-		{ _id: user._id ?? '', username: user.username, name: user.name },
+		{ _id: user._id ?? '', username: user.username, name: user.name, isMuted: isUserMuted?.isMuted },
 		rid,
 	);
 
