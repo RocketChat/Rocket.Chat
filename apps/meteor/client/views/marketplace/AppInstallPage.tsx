@@ -41,8 +41,8 @@ const AppInstallPage = () => {
 			<PageScrollableContent>
 				<FieldGroup display='flex' flexDirection='column' alignSelf='center' maxWidth='x600' w='full'>
 					<Field>
-						<Callout type='warning' title={t('App_Installation_Deprecation')} />
 						<FieldLabel htmlFor={urlField}>{t('App_Url_to_Install_From')}</FieldLabel>
+						<Callout type='warning' title={t('App_Installation_Deprecation')} />
 						<FieldRow>
 							<Controller
 								name='url'
