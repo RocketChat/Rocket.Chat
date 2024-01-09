@@ -2,7 +2,6 @@ import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import {
-	useAllPermissions,
 	usePermission,
 	useSetModal,
 	useMethod,
@@ -18,26 +17,6 @@ import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 import type { UserInfoAction, UserInfoActionType } from '../useUserInfoActions';
 
-const getUserIsMuted = (
-	user: Pick<IUser, '_id' | 'username'>,
-	room: IRoom | undefined,
-	userCanPostReadonly: boolean,
-): boolean | undefined => {
-	if (room?.ro) {
-		if (Array.isArray(room.unmuted) && room.unmuted.indexOf(user.username ?? '') !== -1) {
-			return false;
-		}
-
-		if (userCanPostReadonly) {
-			return Array.isArray(room.muted) && room.muted.indexOf(user.username ?? '') !== -1;
-		}
-
-		return true;
-	}
-
-	return room && Array.isArray(room.muted) && room.muted.indexOf(user.username ?? '') > -1;
-};
-
 export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'> & { isMuted?: boolean }, rid: IRoom['_id']): UserInfoAction | undefined => {
 	const t = useTranslation();
 	const room = useUserRoom(rid);
@@ -45,10 +24,7 @@ export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'> & { isMu
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal(null));
-	const otherUserCanPostReadonly = useAllPermissions(
-		useMemo(() => ['post-readonly'], []),
-		rid,
-	);
+
 	const userSubscription = useUserSubscription(rid);
 
 	const isMuted = Boolean(user?.isMuted);
