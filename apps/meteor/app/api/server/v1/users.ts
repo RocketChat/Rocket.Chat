@@ -1251,7 +1251,7 @@ API.v1.addRoute(
 			const { username } = user;
 
 			if (room?.ro === true) {
-				if(!(await hasPermissionAsync(user._id, 'post-readonly', room._id))) {
+				if (!(await hasPermissionAsync(user._id, 'post-readonly', room._id))) {
 					// Unless the user was manually unmuted
 					if (username && !room?.unmuted?.includes(username)) {
 						// throw new Error("You can't send messages because the room is readonly.");
@@ -1271,9 +1271,9 @@ API.v1.addRoute(
 			return API.v1.success({
 				isMuted: false,
 			});
-		}
-	}
-)
+		},
+	},
+);
 
 settings.watch<number>('Rate_Limiter_Limit_RegisterUser', (value) => {
 	const userRegisterRoute = '/api/v1/users.registerpost';

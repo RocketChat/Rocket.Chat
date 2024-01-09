@@ -26,7 +26,10 @@ import { getLoggedInUser } from '../helpers/getLoggedInUser';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams, getUserListFromParams } from '../helpers/getUserFromParams';
 
-async function getRoomFromParams(params: { roomId?: string } | { roomName?: string }, roomFields: FindOptions<IRoom>['projection'] = {}): Promise<IRoom> {
+async function getRoomFromParams(
+	params: { roomId?: string } | { roomName?: string },
+	roomFields: FindOptions<IRoom>['projection'] = {},
+): Promise<IRoom> {
 	if (
 		(!('roomId' in params) && !('roomName' in params)) ||
 		('roomId' in params && !(params as { roomId?: string }).roomId && 'roomName' in params && !(params as { roomName?: string }).roomName)
@@ -705,10 +708,9 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-
 			const room = await getRoomFromParams(this.queryParams, { muted: 1, unmuted: 1 });
 
-			console.log({room})
+			console.log({ room });
 
 			const findResult = await findPrivateGroupByIdOrName({
 				params: this.queryParams,
@@ -743,26 +745,28 @@ API.v1.addRoute(
 
 			const [members, total] = await Promise.all<[Promise<IUser[]>, Promise<number>]>([cursor.toArray(), totalCount]);
 
-			const membersWithMuted = await Promise.all(members.map(async (member) => {
-				const { username, _id } = member;
+			const membersWithMuted = await Promise.all(
+				members.map(async (member) => {
+					const { username, _id } = member;
 
-				let isMuted = false;
+					let isMuted = false;
 
-				if (room.ro === true) {
-					if(!(await hasPermissionAsync(_id, 'post-readonly', room._id))) {
-						// Unless the user was manually unmuted
-						if (username && !room?.unmuted?.includes(username)) {
-							// throw new Error("You can't send messages because the room is readonly.");
-							isMuted = true;
+					if (room.ro === true) {
+						if (!(await hasPermissionAsync(_id, 'post-readonly', room._id))) {
+							// Unless the user was manually unmuted
+							if (username && !room?.unmuted?.includes(username)) {
+								// throw new Error("You can't send messages because the room is readonly.");
+								isMuted = true;
+							}
 						}
 					}
-				}
 
-				if (username && room?.muted?.includes(username)) {
-					isMuted = true;
-				}
-				return {...member, isMuted};
-			}));
+					if (username && room?.muted?.includes(username)) {
+						isMuted = true;
+					}
+					return { ...member, isMuted };
+				}),
+			);
 
 			return API.v1.success({
 				members: membersWithMuted,

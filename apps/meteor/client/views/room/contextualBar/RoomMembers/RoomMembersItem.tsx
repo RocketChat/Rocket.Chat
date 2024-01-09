@@ -28,7 +28,17 @@ type RoomMembersItemProps = {
 	isMuted: boolean;
 } & Pick<IUser, 'federated' | 'username' | 'name' | '_id'>;
 
-const RoomMembersItem = ({ _id, name, username, federated, onClickView, rid, reload, useRealName, isMuted }: RoomMembersItemProps): ReactElement => {
+const RoomMembersItem = ({
+	_id,
+	name,
+	username,
+	federated,
+	onClickView,
+	rid,
+	reload,
+	useRealName,
+	isMuted,
+}: RoomMembersItemProps): ReactElement => {
 	const [showButton, setShowButton] = useState();
 
 	const isReduceMotionEnabled = usePrefersReducedMotion();

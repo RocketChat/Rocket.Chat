@@ -1084,26 +1084,28 @@ API.v1.addRoute(
 
 			const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
 
-			const membersWithMuted = await Promise.all(members.map(async (member) => {
-				const { username, _id } = member;
+			const membersWithMuted = await Promise.all(
+				members.map(async (member) => {
+					const { username, _id } = member;
 
-				let isMuted = false;
+					let isMuted = false;
 
-				if (findResult.ro === true) {
-					if(!(await hasPermissionAsync(_id, 'post-readonly', findResult._id))) {
-						// Unless the user was manually unmuted
-						if (username && !findResult?.unmuted?.includes(username)) {
-							// throw new Error("You can't send messages because the room is readonly.");
-							isMuted = true;
+					if (findResult.ro === true) {
+						if (!(await hasPermissionAsync(_id, 'post-readonly', findResult._id))) {
+							// Unless the user was manually unmuted
+							if (username && !findResult?.unmuted?.includes(username)) {
+								// throw new Error("You can't send messages because the room is readonly.");
+								isMuted = true;
+							}
 						}
 					}
-				}
 
-				if (username && findResult?.muted?.includes(username)) {
-					isMuted = true;
-				}
-				return {...member, isMuted};
-			}));
+					if (username && findResult?.muted?.includes(username)) {
+						isMuted = true;
+					}
+					return { ...member, isMuted };
+				}),
+			);
 
 			return API.v1.success({
 				members: membersWithMuted,

@@ -17,7 +17,10 @@ import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 import type { UserInfoAction, UserInfoActionType } from '../useUserInfoActions';
 
-export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'> & { isMuted?: boolean }, rid: IRoom['_id']): UserInfoAction | undefined => {
+export const useMuteUserAction = (
+	user: Pick<IUser, '_id' | 'username'> & { isMuted?: boolean },
+	rid: IRoom['_id'],
+): UserInfoAction | undefined => {
 	const t = useTranslation();
 	const room = useUserRoom(rid);
 	const userCanMute = usePermission('mute-user', rid);

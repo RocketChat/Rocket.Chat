@@ -2,6 +2,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { PositionAnimated, AnimatedVisibility } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useRolesDescription, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { ReactElement, UIEvent } from 'react';
 import React, { useMemo, useRef } from 'react';
 
@@ -13,7 +14,6 @@ import UserCard from '../../../components/UserCard';
 import { ReactiveUserStatus } from '../../../components/UserStatus';
 import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
 import { useUserInfoActions } from '../hooks/useUserInfoActions';
-import { useQuery } from '@tanstack/react-query';
 
 type UserCardWithDataProps = {
 	username: string;
