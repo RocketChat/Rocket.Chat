@@ -826,41 +826,51 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 		);
 
 		const logout = async function (this: Restivus): Promise<{ status: string; data: { message: string } }> {
-			// Remove the given auth token from the user's account
-			const authToken = this.request.headers['x-auth-token'];
-			const hashedToken = Accounts._hashLoginToken(authToken);
-			const tokenLocation = self._config?.auth?.token;
-			const index = tokenLocation?.lastIndexOf('.') || 0;
-			const tokenPath = tokenLocation?.substring(0, index) || '';
-			const tokenFieldName = tokenLocation?.substring(index + 1) || '';
-			const tokenToRemove: Record<string, any> = {};
-			tokenToRemove[tokenFieldName] = hashedToken;
-			const tokenRemovalQuery: Record<string, any> = {};
-			tokenRemovalQuery[tokenPath] = tokenToRemove;
-
-			await Users.updateOne(
-				{ _id: this.user._id },
-				{
-					$pull: tokenRemovalQuery,
-				},
-			);
-
-			const response = {
-				status: 'success',
-				data: {
-					message: "You've been logged out!",
-				},
+			    // Remove the given auth token from the user's account
+			    const authToken = this.request.headers['x-auth-token'];
+			    const hashedToken = Accounts._hashLoginToken(authToken);
+			    const tokenLocation = self._config?.auth?.token;
+			    const index = tokenLocation?.lastIndexOf('.') || 0;
+			    const tokenPath = tokenLocation?.substring(0, index) || '';
+			    const tokenFieldName = tokenLocation?.substring(index + 1) || '';
+			    const tokenToRemove: Record<string, any> = {};
+			    tokenToRemove[tokenFieldName] = hashedToken;
+			
+			    const response = {
+			        status: 'success',
+			        data: {
+			            message: "You've been logged out!",
+			        },
+			    };
+			
+			    try {
+			        // Update the user document to remove the token
+			        await Users.updateOne(
+			            { _id: this.user._id },
+			            {
+			                $pull: { [tokenPath]: tokenToRemove },
+			            },
+			        );
+			
+			        // Call the logout hook with the authenticated user attached
+			        const extraData = self._config.onLoggedOut?.call(this);
+			        if (extraData != null) {
+			            _.extend(response.data, {
+			                extra: extraData,
+			            });
+			        }
+			    } catch (error) {
+			        console.error('Error removing token:', error);
+			        return {
+			            status: 'error',
+			            data: {
+			                message: 'Failed to log out. Please try again.',
+			            },
+			        };
+			    }
+			
+			    return response;
 			};
-
-			// Call the logout hook with the authenticated user attached
-			const extraData = self._config.onLoggedOut?.call(this);
-			if (extraData != null) {
-				_.extend(response.data, {
-					extra: extraData,
-				});
-			}
-			return response;
-		};
 
 		/*
 			Add a logout endpoint to the API
