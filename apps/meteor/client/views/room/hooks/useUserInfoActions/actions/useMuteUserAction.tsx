@@ -2,6 +2,7 @@ import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import {
+	useAllPermissions,
 	usePermission,
 	useSetModal,
 	useMethod,
@@ -9,14 +10,12 @@ import {
 	useTranslation,
 	useUserRoom,
 	useUserSubscription,
-	usePermissionWithScopedRoles,
 } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
-import { useUserRoomRoles } from '../../useUserRoomRoles';
 import type { UserInfoAction, UserInfoActionType } from '../useUserInfoActions';
 
 const getUserIsMuted = (
@@ -46,17 +45,14 @@ export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IR
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal(null));
-	const userRoomRoles = useUserRoomRoles(user._id, rid);
-	const otherUserCanPostReadonly = usePermissionWithScopedRoles(
-		useMemo(() => 'post-readonly', []),
-		userRoomRoles,
+	const otherUserCanPostReadonly = useAllPermissions(
+		useMemo(() => ['post-readonly'], []),
+		rid,
 	);
 	const userSubscription = useUserSubscription(rid);
 
 	const isMuted = getUserIsMuted(user, room, otherUserCanPostReadonly);
 	const roomName = room?.t && escapeHTML(roomCoordinator.getRoomName(room.t, room));
-
-	console.log({ isMuted, room, otherUserCanPostReadonly, userRoomRoles });
 
 	if (!room) {
 		throw Error('Room not provided');
@@ -106,7 +102,7 @@ export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IR
 		return roomCanMute && userCanMute
 			? {
 					content: t(isMuted ? 'Unmute_user' : 'Mute_user'),
-					icon: isMuted ? ('message' as const) : ('message-disabled' as const),
+					icon: isMuted ? ('mic' as const) : ('mic-off' as const),
 					onClick: action,
 					type: 'management' as UserInfoActionType,
 			  }

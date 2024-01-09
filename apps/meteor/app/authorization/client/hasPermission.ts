@@ -31,23 +31,6 @@ const createPermissionValidator =
 			});
 			const roles = permission?.roles ?? [];
 
-			if (scopedRoles) {
-				return roles.some((roleId) => {
-					const role = Models.Roles.findOne(roleId, { fields: { scope: 1 } });
-					const roleScope = role?.scope;
-
-					if (!isValidScope(roleScope)) {
-						return false;
-					}
-
-					if (scopedRoles?.includes(roleId)) {
-						return true;
-					}
-
-					return undefined;
-				});
-			}
-
 			return roles.some((roleId) => {
 				const role = Models.Roles.findOne(roleId, { fields: { scope: 1 } });
 				const roleScope = role?.scope;
@@ -58,9 +41,9 @@ const createPermissionValidator =
 
 				const model = Models[roleScope];
 
-				// if (scopedRoles?.includes(roleId)) {
-				// 	return true;
-				// }
+				if (scopedRoles?.includes(roleId)) {
+					return true;
+				}
 
 				if (hasIsUserInRole(model)) {
 					return model.isUserInRole(userId, roleId, scope);
