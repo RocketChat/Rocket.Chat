@@ -2,6 +2,7 @@ import type { ILivechatDepartment, ILivechatInquiryRecord, IOmnichannelAgent } f
 
 import { queryClient } from '../../../../../client/lib/queryClient';
 import { callWithErrorHandling } from '../../../../../client/lib/utils/callWithErrorHandling';
+import { settings } from '../../../../settings/client';
 import { sdk } from '../../../../utils/client/lib/SDKClient';
 import { LivechatInquiry } from '../../collections/LivechatInquiry';
 
@@ -39,7 +40,8 @@ const removeInquiry = async (inquiry: ILivechatInquiryRecord) => {
 };
 
 const getInquiriesFromAPI = async () => {
-	const { inquiries } = await sdk.rest.get('/v1/livechat/inquiries.queuedForUser', {});
+	const count = settings.get('Livechat_guest_pool_max_number_incoming_livechats_displayed') ?? 0;
+	const { inquiries } = await sdk.rest.get('/v1/livechat/inquiries.queuedForUser', { count });
 	return inquiries;
 };
 
@@ -96,9 +98,12 @@ const subscribe = async (userId: IOmnichannelAgent['_id']) => {
 	// Register to all depts + public queue always to match the inquiry list returned by backend
 	const cleanDepartmentListeners = addListenerForeachDepartment(agentDepartments);
 	const globalCleanup = addGlobalListener();
-	const inquiriesFromAPI = (await getInquiriesFromAPI()) as unknown as ILivechatInquiryRecord[];
 
-	await updateInquiries(inquiriesFromAPI);
+	const computation = Tracker.autorun(async () => {
+		const inquiriesFromAPI = (await getInquiriesFromAPI()) as unknown as ILivechatInquiryRecord[];
+
+		await updateInquiries(inquiriesFromAPI);
+	});
 
 	return () => {
 		LivechatInquiry.remove({});
@@ -106,14 +111,15 @@ const subscribe = async (userId: IOmnichannelAgent['_id']) => {
 		cleanDepartmentListeners?.();
 		globalCleanup?.();
 		departments.clear();
+		computation.stop();
 	};
 };
 
 export const initializeLivechatInquiryStream = (() => {
 	let cleanUp: (() => void) | undefined;
 
-	return async (...args: any[]) => {
+	return async (...args: Parameters<typeof subscribe>) => {
 		cleanUp?.();
-		cleanUp = await subscribe(...(args as [IOmnichannelAgent['_id']]));
+		cleanUp = await subscribe(...args);
 	};
 })();

@@ -108,18 +108,24 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		if (!username) {
 			throw new Error('The username cannot be empty.');
 		}
-		const result = await Messages.createWithTypeRoomIdMessageUserAndUnread(
-			type,
-			rid,
-			message,
-			{ _id: userId, username, name },
-			settings.get('Message_Read_Receipt_Enabled'),
-			extraData,
-		);
+
+		const [result] = await Promise.all([
+			Messages.createWithTypeRoomIdMessageUserAndUnread(
+				type,
+				rid,
+				message,
+				{ _id: userId, username, name },
+				settings.get('Message_Read_Receipt_Enabled'),
+				extraData,
+			),
+			Rooms.incMsgCountById(rid, 1),
+		]);
+
 		void broadcastMessageSentEvent({
 			id: result.insertedId,
 			broadcastCallback: async (message) => this.api?.broadcast('message.sent', message),
 		});
+
 		return result.insertedId;
 	}
 

@@ -10,7 +10,6 @@ import type {
 } from '@rocket.chat/core-typings';
 import type { Root } from '@rocket.chat/message-parser';
 import type { FindPaginated, IMessagesModel } from '@rocket.chat/model-typings';
-import { Rooms } from '@rocket.chat/models';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {
@@ -1344,8 +1343,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 		const data = Object.assign(record, extraData);
 
-		await Rooms.incMsgCountById(rid, 1);
-
 		return this.insertOne(data);
 	}
 
@@ -1468,10 +1465,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 		if (!limit) {
 			const count = (await this.deleteMany(query)).deletedCount - notCountedMessages;
-			if (count) {
-				// decrease message count
-				await Rooms.decreaseMessageCountById(rid, count);
-			}
 
 			return count;
 		}
@@ -1484,11 +1477,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 					},
 				})
 			).deletedCount - notCountedMessages;
-
-		if (count) {
-			// decrease message count
-			await Rooms.decreaseMessageCountById(rid, count);
-		}
 
 		return count;
 	}

@@ -1,4 +1,4 @@
-import { isE2EEMessage, isOTRMessage } from '@rocket.chat/core-typings';
+import { isE2EEMessage, isOTRMessage, isOTRAckMessage } from '@rocket.chat/core-typings';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
 
@@ -22,7 +22,7 @@ export class BeforeSaveMarkdownParser {
 			return message;
 		}
 
-		if (isE2EEMessage(message) || isOTRMessage(message)) {
+		if (isE2EEMessage(message) || isOTRMessage(message) || isOTRAckMessage(message)) {
 			return message;
 		}
 
