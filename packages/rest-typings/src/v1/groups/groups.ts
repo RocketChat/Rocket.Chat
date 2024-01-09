@@ -49,7 +49,7 @@ export type GroupsEndpoints = {
 		GET: (params: GroupsMembersProps) => {
 			count: number;
 			offset: number;
-			members: IUser[];
+			members: (IUser & { isMuted: boolean })[];
 			total: number;
 		};
 	};

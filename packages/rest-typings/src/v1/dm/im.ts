@@ -53,7 +53,7 @@ export type ImEndpoints = {
 
 	'/v1/im.members': {
 		GET: (params: DmMemberProps) => PaginatedResult<{
-			members: Pick<IUser, '_id' | 'status' | 'name' | 'username' | 'utcOffset'>[];
+			members: (Pick<IUser, '_id' | 'status' | 'name' | 'username' | 'utcOffset'> & { isMuted: boolean })[];
 		}>;
 	};
 	'/v1/im.messages': {

@@ -3,7 +3,7 @@ import type { IIntegration, IUser, IRoom, RoomType } from '@rocket.chat/core-typ
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import type { Filter } from 'mongodb';
+import type { Filter, FindOptions } from 'mongodb';
 
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
 import { hideRoomMethod } from '../../../../server/methods/hideRoom';
@@ -26,7 +26,7 @@ import { getLoggedInUser } from '../helpers/getLoggedInUser';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams, getUserListFromParams } from '../helpers/getUserFromParams';
 
-async function getRoomFromParams(params: { roomId?: string } | { roomName?: string }): Promise<IRoom> {
+async function getRoomFromParams(params: { roomId?: string } | { roomName?: string }, roomFields: FindOptions<IRoom>['projection'] = {}): Promise<IRoom> {
 	if (
 		(!('roomId' in params) && !('roomName' in params)) ||
 		('roomId' in params && !(params as { roomId?: string }).roomId && 'roomName' in params && !(params as { roomName?: string }).roomName)
@@ -37,6 +37,7 @@ async function getRoomFromParams(params: { roomId?: string } | { roomName?: stri
 	const roomOptions = {
 		projection: {
 			...roomAccessAttributes,
+			...roomFields,
 			t: 1,
 			ro: 1,
 			name: 1,
@@ -704,12 +705,17 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
+
+			const room = await getRoomFromParams(this.queryParams, { muted: 1, unmuted: 1 });
+
+			console.log({room})
+
 			const findResult = await findPrivateGroupByIdOrName({
 				params: this.queryParams,
 				userId: this.userId,
 			});
 
-			if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult.rid))) {
+			if (room?.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', room._id))) {
 				return API.v1.unauthorized();
 			}
 
@@ -727,7 +733,7 @@ API.v1.addRoute(
 			const { status, filter } = this.queryParams;
 
 			const { cursor, totalCount } = await findUsersOfRoom({
-				rid: findResult.rid,
+				rid: room._id,
 				...(status && { status: { $in: status } }),
 				skip,
 				limit,
@@ -735,10 +741,35 @@ API.v1.addRoute(
 				...(sort?.username && { sort: { username: sort.username } }),
 			});
 
-			const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
+			const [members, total] = await Promise.all<[Promise<IUser[]>, Promise<number>]>([cursor.toArray(), totalCount]);
+
+			const membersWithMuted = await Promise.all(members.map(async (member) => {
+				console.log({member});
+
+				const {username, _id } = member;
+
+				let isMuted = false;
+
+				if (room.ro === true) {
+					if(!(await hasPermissionAsync(_id, 'post-readonly', room._id))) {
+						// Unless the user was manually unmuted
+						if (username && !room?.unmuted?.includes(username)) {
+							// throw new Error("You can't send messages because the room is readonly.");
+							isMuted = true;
+						}
+					}
+				}
+
+				if (username && room?.muted?.includes(username)) {
+					isMuted = true;
+				}
+				return {...member, isMuted};
+			}))
+
+			console.log({membersWithMuted});
 
 			return API.v1.success({
-				members,
+				members: membersWithMuted,
 				count: members.length,
 				offset: skip,
 				total,

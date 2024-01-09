@@ -50,7 +50,7 @@ export type ChannelsEndpoints = {
 				{ roomId: string; filter?: string; status?: string[] } | { roomName: string; filter?: string; status?: string[] }
 			>,
 		) => PaginatedResult<{
-			members: IUser[];
+			members: (IUser & { isMuted: boolean })[];
 		}>;
 	};
 	'/v1/channels.history': {
