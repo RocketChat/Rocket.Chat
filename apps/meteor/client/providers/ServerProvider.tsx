@@ -1,5 +1,4 @@
 import type { Serialized } from '@rocket.chat/core-typings';
-import { Emitter } from '@rocket.chat/emitter';
 import type { Method, PathFor, OperationParams, OperationResult, UrlParams, PathPattern } from '@rocket.chat/rest-typings';
 import type {
 	ServerMethodName,
@@ -59,57 +58,16 @@ const callEndpoint = <TMethod extends Method, TPathPattern extends PathPattern>(
 
 const uploadToEndpoint = (endpoint: PathFor<'POST'>, formData: any): Promise<UploadResult> => sdk.rest.post(endpoint as any, formData);
 
-type EventMap<N extends StreamNames = StreamNames, K extends StreamKeys<N> = StreamKeys<N>> = {
-	[key in `${N}/${K}`]: StreamerCallbackArgs<N, K>;
-};
-
-const ee = new Emitter<EventMap>();
-
-const events = new Map<string, () => void>();
-
-const getStream = <N extends StreamNames>(
-	streamName: N,
-	_options?: {
-		retransmit?: boolean | undefined;
-		retransmitToSelf?: boolean | undefined;
-	},
-) => {
-	return <K extends StreamKeys<N>>(eventName: K, callback: (...args: StreamerCallbackArgs<N, K>) => void): (() => void) => {
-		const eventLiteral = `${streamName}/${eventName}` as const;
-		const emitterCallback = (args?: unknown): void => {
-			if (!args || !Array.isArray(args)) {
-				throw new Error('Invalid streamer callback');
-			}
-			callback(...(args as StreamerCallbackArgs<N, K>));
-		};
-
-		ee.on(eventLiteral, emitterCallback);
-
-		const streamHandler = (...args: StreamerCallbackArgs<N, K>): void => {
-			ee.emit(eventLiteral, args);
-		};
-
-		const stop = (): void => {
-			// If someone is still listening, don't unsubscribe
-			ee.off(eventLiteral, emitterCallback);
-
-			if (ee.has(eventLiteral)) {
-				return;
-			}
-
-			const unsubscribe = events.get(eventLiteral);
-			if (unsubscribe) {
-				unsubscribe();
-				events.delete(eventLiteral);
-			}
-		};
-
-		if (!events.has(eventLiteral)) {
-			events.set(eventLiteral, sdk.stream(streamName, [eventName], streamHandler).stop);
-		}
-		return stop;
-	};
-};
+const getStream =
+	<N extends StreamNames>(
+		streamName: N,
+		_options?: {
+			retransmit?: boolean | undefined;
+			retransmitToSelf?: boolean | undefined;
+		},
+	) =>
+	<K extends StreamKeys<N>>(eventName: K, callback: (...args: StreamerCallbackArgs<N, K>) => void): (() => void) =>
+		sdk.stream(streamName, [eventName], callback).stop;
 
 const contextValue = {
 	info,

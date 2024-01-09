@@ -468,7 +468,7 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 												id={imapPortField}
 												{...field}
 												error={errors.imapPort?.message}
-												aria-aria-describedby={`${imapPortField}-error`}
+												aria-describedby={`${imapPortField}-error`}
 												aria-required={true}
 												aria-invalid={Boolean(errors.email)}
 											/>
