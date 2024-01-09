@@ -67,7 +67,7 @@ const find = (...args: any[]) => {
 	return results;
 };
 
-window.hudell_debug_func = () => {
+(window as any).hudell_debug_func = () => {
 	console.log('DEBUGOAUTH', new Date().toISOString(), 'run debug query');
 
 	console.log(
