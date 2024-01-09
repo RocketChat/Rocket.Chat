@@ -42,8 +42,6 @@ export type OauthCustomConfiguration = {
 
 	clientConfig: unknown;
 	buttonLabelText: string;
-	buttonLabelColor: string;
-	buttonColor: string;
 };
 
 export const isOauthCustomConfiguration = (config: any): config is OauthCustomConfiguration => Boolean(config);

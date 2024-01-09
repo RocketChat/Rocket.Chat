@@ -44,8 +44,6 @@ Meteor.methods<ServerMethods>({
 			Settings.removeById(`Accounts_OAuth_Custom-${name}-id`),
 			Settings.removeById(`Accounts_OAuth_Custom-${name}-secret`),
 			Settings.removeById(`Accounts_OAuth_Custom-${name}-button_label_text`),
-			Settings.removeById(`Accounts_OAuth_Custom-${name}-button_label_color`),
-			Settings.removeById(`Accounts_OAuth_Custom-${name}-button_color`),
 			Settings.removeById(`Accounts_OAuth_Custom-${name}-login_style`),
 			Settings.removeById(`Accounts_OAuth_Custom-${name}-key_field`),
 			Settings.removeById(`Accounts_OAuth_Custom-${name}-username_field`),

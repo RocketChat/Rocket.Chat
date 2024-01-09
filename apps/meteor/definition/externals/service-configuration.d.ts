@@ -5,8 +5,6 @@ declare module 'meteor/service-configuration' {
 		service: string;
 
 		buttonLabelText?: string;
-		buttonLabelColor?: string;
-		buttonColor?: string;
 
 		clientConfig: unknown;
 	}

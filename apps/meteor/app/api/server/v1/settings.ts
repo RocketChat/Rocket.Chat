@@ -88,8 +88,6 @@ API.v1.addRoute(
 						name: service.service,
 						clientId: service.appId || service.clientId || service.consumerKey,
 						buttonLabelText: service.buttonLabelText || '',
-						buttonColor: service.buttonColor || '',
-						buttonLabelColor: service.buttonLabelColor || '',
 						custom: false,
 					};
 				}),

@@ -77,8 +77,6 @@
   "Accounts_LoginExpiration": "दिन में प्रवेश की समाप्ति",
   "Accounts_ManuallyApproveNewUsers": "नए उपयोगकर्ताओं को मैन्युअल रूप से अनुमोदित करें",
   "Accounts_OAuth_Custom_Authorize_Path": "पथ अधिकृत करें",
-  "Accounts_OAuth_Custom_Button_Color": "बटन का रंग",
-  "Accounts_OAuth_Custom_Button_Label_Color": "बटन टेक्स्ट का रंग",
   "Accounts_OAuth_Custom_Button_Label_Text": "बटन टेक्स्ट",
   "Accounts_OAuth_Custom_Enable": "सक्षम करें",
   "Accounts_OAuth_Custom_id": "Id",

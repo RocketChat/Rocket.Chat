@@ -20,8 +20,6 @@ async function updateServices(/* record*/) {
 			login_url: settings.get('CAS_login_url'),
 			// Rocketchat Visuals
 			buttonLabelText: settings.get('CAS_button_label_text'),
-			buttonLabelColor: settings.get('CAS_button_label_color'),
-			buttonColor: settings.get('CAS_button_color'),
 			width: settings.get('CAS_popup_width'),
 			height: settings.get('CAS_popup_height'),
 			autoclose: settings.get('CAS_autoclose'),

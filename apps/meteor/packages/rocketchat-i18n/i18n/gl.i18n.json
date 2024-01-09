@@ -75,8 +75,6 @@
   "Accounts_OAuth_Custom_Access_Token_Param": "Nome do parámetro para o token de acceso",
   "Accounts_OAuth_Custom_Authorize_Path": "Ruta de autorización",
   "Accounts_OAuth_Custom_Avatar_Field": "Campo de avatar",
-  "Accounts_OAuth_Custom_Button_Color": "Cor do botón",
-  "Accounts_OAuth_Custom_Button_Label_Color": "Cor do texto do botón",
   "Accounts_OAuth_Custom_Button_Label_Text": "Texto do botón",
   "Accounts_OAuth_Custom_Email_Field": "Campo de correo electrónico",
   "Accounts_OAuth_Custom_Enable": "Activar",

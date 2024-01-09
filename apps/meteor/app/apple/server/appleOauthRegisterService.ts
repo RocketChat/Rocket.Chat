@@ -71,8 +71,6 @@ settings.watchMultiple(
 					enabled: settings.get('Accounts_OAuth_Apple'),
 					loginStyle: 'popup',
 					clientId,
-					buttonColor: '#000',
-					buttonLabelColor: '#FFF',
 				},
 			},
 		);

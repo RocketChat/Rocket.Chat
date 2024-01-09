@@ -39,8 +39,6 @@ Meteor.startup(async () => {
 	if (settings.get('Accounts_OAuth_Dolphin_URL')) {
 		const data = {
 			buttonLabelText: settings.get<string>('Accounts_OAuth_Dolphin_button_label_text'),
-			buttonColor: settings.get<string>('Accounts_OAuth_Dolphin_button_color'),
-			buttonLabelColor: settings.get<string>('Accounts_OAuth_Dolphin_button_label_color'),
 			clientId: settings.get<string>('Accounts_OAuth_Dolphin_id'),
 			secret: settings.get<string>('Accounts_OAuth_Dolphin_secret'),
 			serverURL: settings.get<string>('Accounts_OAuth_Dolphin_URL'),

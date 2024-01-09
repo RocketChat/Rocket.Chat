@@ -20,8 +20,6 @@ import {
 const getSamlConfigs = function (service: string): Record<string, any> {
 	const configs = {
 		buttonLabelText: settings.get(`${service}_button_label_text`),
-		buttonLabelColor: settings.get(`${service}_button_label_color`),
-		buttonColor: settings.get(`${service}_button_color`),
 		clientConfig: {
 			provider: settings.get(`${service}_provider`),
 		},
@@ -214,14 +212,6 @@ export const addSettings = async function (name: string): Promise<void> {
 					await this.add(`SAML_Custom_${name}_button_label_text`, 'SAML', {
 						type: 'string',
 						i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Text',
-					});
-					await this.add(`SAML_Custom_${name}_button_label_color`, '#FFFFFF', {
-						type: 'string',
-						i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Color',
-					});
-					await this.add(`SAML_Custom_${name}_button_color`, '#1d74f5', {
-						type: 'string',
-						i18nLabel: 'Accounts_OAuth_Custom_Button_Color',
 					});
 				});
 

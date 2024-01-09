@@ -38,9 +38,7 @@ async function _OAuthServicesUpdate() {
 				data.scope = settings.get(`${key}-scope`);
 				data.accessTokenParam = settings.get(`${key}-access_token_param`);
 				data.buttonLabelText = settings.get(`${key}-button_label_text`);
-				data.buttonLabelColor = settings.get(`${key}-button_label_color`);
 				data.loginStyle = settings.get(`${key}-login_style`);
-				data.buttonColor = settings.get(`${key}-button_color`);
 				data.tokenSentVia = settings.get(`${key}-token_sent_via`);
 				data.identityTokenSentVia = settings.get(`${key}-identity_token_sent_via`);
 				data.keyField = settings.get(`${key}-key_field`);
@@ -103,8 +101,6 @@ async function _OAuthServicesUpdate() {
 
 			if (serviceName === 'Nextcloud') {
 				data.buttonLabelText = settings.get('Accounts_OAuth_Nextcloud_button_label_text');
-				data.buttonLabelColor = settings.get('Accounts_OAuth_Nextcloud_button_label_color');
-				data.buttonColor = settings.get('Accounts_OAuth_Nextcloud_button_color');
 			}
 
 			// If there's no data other than the service name, then put the service name in the data object so the operation won't fail
@@ -175,9 +171,7 @@ async function customOAuthServicesInit() {
 					scope: process.env[`${serviceKey}_scope`],
 					accessTokenParam: process.env[`${serviceKey}_access_token_param`],
 					buttonLabelText: process.env[`${serviceKey}_button_label_text`],
-					buttonLabelColor: process.env[`${serviceKey}_button_label_color`],
 					loginStyle: process.env[`${serviceKey}_login_style`],
-					buttonColor: process.env[`${serviceKey}_button_color`],
 					tokenSentVia: process.env[`${serviceKey}_token_sent_via`],
 					identityTokenSentVia: process.env[`${serviceKey}_identity_token_sent_via`],
 					keyField: process.env[`${serviceKey}_key_field`],

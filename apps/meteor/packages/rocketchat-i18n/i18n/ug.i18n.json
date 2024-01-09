@@ -38,8 +38,6 @@
   "Accounts_LoginExpiration": "كىرىش كۈچتىن قالغان ۋەقە",
   "Accounts_ManuallyApproveNewUsers": "يېڭى ئابونتنى ئاپتوماتسىز تەكشۈرۈش",
   "Accounts_OAuth_Custom_Authorize_Path": "نىڭ دەلىللەنگەن ئادرېسنى ئۆزلىكىدىن بېكىتىشOAuth ",
-  "Accounts_OAuth_Custom_Button_Color": "ئاستىنىڭ رەڭگى",
-  "Accounts_OAuth_Custom_Button_Label_Color": "ئاستى خېتىنىڭ رەڭگى",
   "Accounts_OAuth_Custom_Button_Label_Text": "ئاستى خېتى",
   "Accounts_OAuth_Custom_Enable": "ئىشلىتىشكە باشلىماق",
   "Accounts_OAuth_Custom_id": "ID تېرمىنال",
