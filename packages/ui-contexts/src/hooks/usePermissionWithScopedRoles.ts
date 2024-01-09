@@ -5,9 +5,9 @@ import { useSyncExternalStore } from 'use-sync-external-store/shim';
 import { AuthorizationContext } from '../AuthorizationContext';
 
 /**
- * Check if the user has the permission considering the user only has the scoped roles
+ * Check if the user has the permission considering the user have the scoped roles
  * @param permission The permission to check
- * @param scopedRoles The roles to be considered
+ * @param scopedRoles The roles to be also considered
  * @returns boolean
  */
 
