@@ -1,69 +1,130 @@
 import type { IRoom, IMessage } from '@rocket.chat/core-typings';
-import { MessageComposerAction } from '@rocket.chat/ui-composer';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { Icon } from '@rocket.chat/fuselage';
+import { MessageComposerAction, MessageComposerActionsDivider } from '@rocket.chat/ui-composer';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useUserRoom, useTranslation, useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
+import type { ComponentProps, MouseEvent } from 'react';
 import React, { memo } from 'react';
 
+import { messageBox } from '../../../../../../app/ui-utils/client';
+import { isTruthy } from '../../../../../../lib/isTruthy';
+import GenericMenu from '../../../../../components/GenericMenu/GenericMenu';
 import type { GenericMenuItemProps } from '../../../../../components/GenericMenu/GenericMenuItem';
-import ActionsToolbarDropdown from './ActionsToolbarDropdown';
-import { useAudioMessageAction } from './actions/useAudioMessageAction';
-import { useFileUploadAction } from './actions/useFileUploadAction';
-import useVideoMessageAction from './actions/useVideoMessageAction';
+import { useMessageboxAppsActionButtons } from '../../../../../hooks/useAppActionButtons';
+import { useChat } from '../../../contexts/ChatContext';
+import { useAudioMessageAction } from './hooks/useAudioMessageAction';
+import { useCreateDiscussionAction } from './hooks/useCreateDiscussionAction';
+import { useFileUploadAction } from './hooks/useFileUploadAction';
+import { useShareLocationAction } from './hooks/useShareLocationAction';
+import { useVideoMessageAction } from './hooks/useVideoMessageAction';
+import { useWebdavActions } from './hooks/useWebdavActions';
 
 type MessageBoxActionsToolbarProps = {
+	canSend: boolean;
+	typing: boolean;
+	isMicrophoneDenied: boolean;
 	variant: 'small' | 'large';
 	isRecording: boolean;
-	typing: boolean;
-	canSend: boolean;
 	rid: IRoom['_id'];
 	tmid?: IMessage['_id'];
-	isMicrophoneDenied?: boolean;
+};
+
+const isHidden = (hiddenActions: Array<string>, action: GenericMenuItemProps) => {
+	if (!action) {
+		return true;
+	}
+	return hiddenActions.includes(action.id);
 };
 
 const MessageBoxActionsToolbar = ({
-	variant = 'large',
-	isRecording,
-	typing,
 	canSend,
+	typing,
+	isRecording,
 	rid,
 	tmid,
+	variant = 'large',
 	isMicrophoneDenied,
 }: MessageBoxActionsToolbarProps) => {
 	const t = useTranslation();
+	const chatContext = useChat();
 
-	const { handleRecordButtonClick, audioTitle, isAudioAllowed } = useAudioMessageAction(isMicrophoneDenied);
-	const { handleOpenVideoMessage, videoTitle, isVideoAllowed } = useVideoMessageAction();
-	const { handleUpload, handleUploadChange, fileUploadEnabled, fileInputRef } = useFileUploadAction();
-
-	const audioMessageItem: GenericMenuItemProps = {
-		id: 'audio-record',
-		content: audioTitle,
-		icon: 'mic',
-		disabled: !isAudioAllowed || !canSend || typing || isRecording || isMicrophoneDenied,
-		onClick: () => handleRecordButtonClick(),
-	};
-
-	const videoMessageItem: GenericMenuItemProps = {
-		id: 'video-message',
-		content: videoTitle,
-		icon: 'video',
-		disabled: !isVideoAllowed || !canSend || typing || isRecording,
-		onClick: () => handleOpenVideoMessage(),
-	};
-
-	const fileUploadItem: GenericMenuItemProps = {
-		id: 'file-upload',
-		content: t('Upload_file'),
-		icon: 'clip',
-		disabled: !fileUploadEnabled || !canSend || isRecording,
-		onClick: () => handleUpload(),
-	};
-
-	const actions = [audioMessageItem, videoMessageItem, fileUploadItem];
-
-	let featuredAction;
-	if (variant === 'small') {
-		featuredAction = actions.splice(0, 1);
+	if (!chatContext) {
+		throw new Error('useChat must be used within a ChatProvider');
 	}
+
+	const room = useUserRoom(rid);
+
+	const audioMessageAction = useAudioMessageAction(!canSend || typing || isRecording || isMicrophoneDenied, isMicrophoneDenied);
+	const videoMessageAction = useVideoMessageAction(!canSend || typing || isRecording);
+	const fileUploadAction = useFileUploadAction(!canSend || typing || isRecording);
+	const webdavActions = useWebdavActions();
+	const createDiscussionAction = useCreateDiscussionAction(room);
+	const shareLocationAction = useShareLocationAction(room, tmid);
+
+	const apps = useMessageboxAppsActionButtons();
+	const { composerToolbox: hiddenActions } = useLayoutHiddenActions();
+
+	const allActions = {
+		...(!isHidden(hiddenActions, audioMessageAction) && { audioMessageAction }),
+		...(!isHidden(hiddenActions, videoMessageAction) && { videoMessageAction }),
+		...(!isHidden(hiddenActions, fileUploadAction) && { fileUploadAction }),
+		...(!isHidden(hiddenActions, createDiscussionAction) && { createDiscussionAction }),
+		...(!isHidden(hiddenActions, shareLocationAction) && { shareLocationAction }),
+		...(!hiddenActions.includes('webdav-add') && { webdavActions }),
+	};
+
+	const featured = [];
+	const createNew = [];
+	const share = [];
+
+	createNew.push(allActions.createDiscussionAction);
+
+	if (variant === 'small') {
+		featured.push(allActions.audioMessageAction);
+		createNew.push(allActions.videoMessageAction, allActions.fileUploadAction);
+	} else {
+		featured.push(allActions.audioMessageAction, allActions.videoMessageAction, allActions.fileUploadAction);
+	}
+
+	if (allActions.webdavActions) {
+		createNew.push(...allActions.webdavActions);
+	}
+
+	share.push(allActions.shareLocationAction);
+
+	const groups = {
+		...(apps.isSuccess &&
+			apps.data.length > 0 && {
+				Apps: apps.data,
+			}),
+		...messageBox.actions.get(),
+	};
+
+	const messageBoxActions = Object.entries(groups).map(([name, group]) => {
+		const items: GenericMenuItemProps[] = group
+			.filter((item) => !hiddenActions.includes(item.id))
+			.map((item) => ({
+				id: item.id,
+				icon: item.icon as ComponentProps<typeof Icon>['name'],
+				content: t(item.label),
+				onClick: (event?: MouseEvent<HTMLElement>) =>
+					item.action({
+						rid,
+						tmid,
+						event: event as unknown as Event,
+						chat: chatContext,
+					}),
+				gap: Boolean(!item.icon),
+			}));
+
+		return {
+			title: t(name as TranslationKey),
+			items: items || [],
+		};
+	});
+
+	const createNewFiltered = createNew.filter(isTruthy);
+	const shareFiltered = share.filter(isTruthy);
 
 	const renderAction = ({ id, icon, content, disabled, onClick }: GenericMenuItemProps) => {
 		if (!icon) {
@@ -75,10 +136,16 @@ const MessageBoxActionsToolbar = ({
 
 	return (
 		<>
-			{variant !== 'small' && actions.map((action) => renderAction(action))}
-			{variant === 'small' && featuredAction?.map((action) => renderAction(action))}
-			<ActionsToolbarDropdown actions={variant === 'small' ? actions : undefined} isRecording={isRecording} rid={rid} tmid={tmid} />
-			<input ref={fileInputRef} type='file' onChange={handleUploadChange} multiple style={{ display: 'none' }} />
+			<MessageComposerActionsDivider />
+			{featured.map((action) => action && renderAction(action))}
+			<GenericMenu
+				disabled={isRecording}
+				data-qa-id='menu-more-actions'
+				detached
+				icon='plus'
+				sections={[{ title: t('Create_new'), items: createNewFiltered }, { title: t('Share'), items: shareFiltered }, ...messageBoxActions]}
+				title={t('More_actions')}
+			/>
 		</>
 	);
 };
