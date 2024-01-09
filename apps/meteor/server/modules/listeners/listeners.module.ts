@@ -275,6 +275,11 @@ export class ListenersModule {
 				return;
 			}
 
+			if (setting._id === 'Livechat_Room_Count') {
+				// Ignore this setting, it's only used internally
+				return;
+			}
+
 			const value = {
 				_id: setting._id,
 				value: setting.value,
