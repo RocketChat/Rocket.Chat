@@ -55,7 +55,7 @@ const logout = (): Promise<void> =>
 		});
 	});
 
-export type LoginMethods = keyof typeof Meteor;
+export type LoginMethods = keyof typeof Meteor extends infer T ? (T extends `loginWith${string}` ? T : never) : never;
 
 type UserProviderProps = {
 	children: ReactNode;
@@ -112,7 +112,7 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 				),
 			loginWithPassword: (user: string | { username: string } | { email: string } | { id: string }, password: string): Promise<void> =>
 				new Promise((resolve, reject) => {
-					Meteor[loginMethod](user, password, (error: Error | Meteor.Error | Meteor.TypedError | undefined) => {
+					Meteor[loginMethod](user, password, (error) => {
 						if (error) {
 							reject(error);
 							return;
@@ -125,9 +125,9 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 			loginWithService: <T extends LoginService>({ service, clientConfig = {} }: T): (() => Promise<true>) => {
 				const loginMethods = {
 					'meteor-developer': 'MeteorDeveloperAccount',
-				};
+				} as const;
 
-				const loginWithService = `loginWith${(loginMethods as any)[service] || capitalize(String(service || ''))}`;
+				const loginWithService = `loginWith${loginMethods[service] || capitalize(String(service || ''))}`;
 
 				const method: (config: unknown, cb: (error: any) => void) => Promise<true> = (Meteor as any)[loginWithService] as any;
 
