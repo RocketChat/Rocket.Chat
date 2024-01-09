@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Icon, Field, FieldGroup, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Icon, Field, FieldGroup, FieldLabel, FieldRow, TextInput, Callout } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useRouter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
@@ -41,6 +41,7 @@ const AppInstallPage = () => {
 			<PageScrollableContent>
 				<FieldGroup display='flex' flexDirection='column' alignSelf='center' maxWidth='x600' w='full'>
 					<Field>
+						<Callout type='warning' title={t('App_Installation_Deprecation')} />
 						<FieldLabel htmlFor={urlField}>{t('App_Url_to_Install_From')}</FieldLabel>
 						<FieldRow>
 							<Controller
