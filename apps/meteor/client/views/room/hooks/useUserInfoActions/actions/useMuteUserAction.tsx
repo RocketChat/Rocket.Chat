@@ -38,7 +38,7 @@ const getUserIsMuted = (
 	return room && Array.isArray(room.muted) && room.muted.indexOf(user.username ?? '') > -1;
 };
 
-export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): UserInfoAction | undefined => {
+export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'> & { isMuted?: boolean }, rid: IRoom['_id']): UserInfoAction | undefined => {
 	const t = useTranslation();
 	const room = useUserRoom(rid);
 	const userCanMute = usePermission('mute-user', rid);
@@ -51,7 +51,7 @@ export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IR
 	);
 	const userSubscription = useUserSubscription(rid);
 
-	const isMuted = getUserIsMuted(user, room, otherUserCanPostReadonly);
+	const isMuted = Boolean(user?.isMuted);
 	const roomName = room?.t && escapeHTML(roomCoordinator.getRoomName(room.t, room));
 
 	if (!room) {

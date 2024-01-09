@@ -12,11 +12,12 @@ type RoomMembersActionsProps = {
 	_id: IUser['_id'];
 	rid: IRoom['_id'];
 	reload: () => void;
+	isUserMuted: boolean;
 };
 
-const RoomMembersActions = ({ username, _id, name, rid, reload }: RoomMembersActionsProps): ReactElement | null => {
+const RoomMembersActions = ({ username, _id, name, rid, isUserMuted, reload }: RoomMembersActionsProps): ReactElement | null => {
 	const t = useTranslation();
-	const { menuActions: menuOptions } = useUserInfoActions({ _id, username, name }, rid, reload, 0);
+	const { menuActions: menuOptions } = useUserInfoActions({ _id, username, name, isMuted: isUserMuted }, rid, reload, 0);
 	if (!menuOptions) {
 		return null;
 	}

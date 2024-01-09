@@ -36,8 +36,6 @@ const RoomMembersItem = ({ _id, name, username, federated, onClickView, rid, rel
 		[isReduceMotionEnabled ? 'onMouseEnter' : 'onTransitionEnd']: setShowButton,
 	};
 
-	console.log({ isMuted })
-
 	const preventPropagation = usePreventPropagation();
 
 	const [nameOrUsername, displayUsername] = getUserDisplayNames(name, username, useRealName);
@@ -53,7 +51,7 @@ const RoomMembersItem = ({ _id, name, username, federated, onClickView, rid, rel
 			</OptionContent>
 			<OptionMenu onClick={preventPropagation}>
 				{showButton ? (
-					<UserActions username={username} name={name} rid={rid} _id={_id} reload={reload} />
+					<UserActions username={username} name={name} rid={rid} _id={_id} isUserMuted={isMuted} reload={reload} />
 				) : (
 					<IconButton tiny icon='kebab' />
 				)}

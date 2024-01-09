@@ -744,9 +744,7 @@ API.v1.addRoute(
 			const [members, total] = await Promise.all<[Promise<IUser[]>, Promise<number>]>([cursor.toArray(), totalCount]);
 
 			const membersWithMuted = await Promise.all(members.map(async (member) => {
-				console.log({member});
-
-				const {username, _id } = member;
+				const { username, _id } = member;
 
 				let isMuted = false;
 
@@ -764,9 +762,7 @@ API.v1.addRoute(
 					isMuted = true;
 				}
 				return {...member, isMuted};
-			}))
-
-			console.log({membersWithMuted});
+			}));
 
 			return API.v1.success({
 				members: membersWithMuted,
