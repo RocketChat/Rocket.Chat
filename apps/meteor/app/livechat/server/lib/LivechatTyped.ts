@@ -397,6 +397,21 @@ class LivechatClass {
 		});
 	}
 
+	async validateGuestDepartment(guest: ILivechatVisitor) {
+		if (
+			guest.department &&
+			!(await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id'>>(guest.department, { projection: { _id: 1 } }))
+		) {
+			await LivechatVisitors.removeDepartmentById(guest._id);
+			const tmpGuest = await LivechatVisitors.findOneEnabledById(guest._id);
+			if (tmpGuest) {
+				guest = tmpGuest;
+			}
+		}
+
+		return guest;
+	}
+
 	async getRoom(
 		guest: ILivechatVisitor,
 		message: Pick<IMessage, 'rid' | 'msg' | 'token'>,
@@ -429,16 +444,7 @@ class LivechatClass {
 			});
 		}
 
-		if (
-			guest.department &&
-			!(await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id'>>(guest.department, { projection: { _id: 1 } }))
-		) {
-			await LivechatVisitors.removeDepartmentById(guest._id);
-			const tmpGuest = await LivechatVisitors.findOneEnabledById(guest._id);
-			if (tmpGuest) {
-				guest = tmpGuest;
-			}
-		}
+		guest = await this.validateGuestDepartment(guest);
 
 		if (room == null) {
 			room = await this.getNewRoom(guest, message, roomInfo, agent, extraData);

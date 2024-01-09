@@ -1,12 +1,5 @@
 import { Omnichannel } from '@rocket.chat/core-services';
-import type {
-	ILivechatInquiryRecord,
-	ILivechatVisitor,
-	IMessage,
-	IOmnichannelRoom,
-	ISetting,
-	SelectedAgent,
-} from '@rocket.chat/core-typings';
+import type { ILivechatInquiryRecord, ILivechatVisitor, IMessage, IOmnichannelRoom, SelectedAgent } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatInquiry, LivechatRooms, Users, Settings } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
@@ -20,7 +13,7 @@ const logger = new Logger('QueueManager');
 
 export const saveQueueInquiry = async (inquiry: ILivechatInquiryRecord) => {
 	await LivechatInquiry.queueInquiry(inquiry._id);
-	await callbacks.run('livechat.afterInquiryQueued', inquiry);
+	void callbacks.run('livechat.afterInquiryQueued', inquiry);
 };
 
 export const queueInquiry = async (inquiry: ILivechatInquiryRecord, room: IOmnichannelRoom, defaultAgent?: SelectedAgent) => {
@@ -46,6 +39,19 @@ export const queueInquiry = async (inquiry: ILivechatInquiryRecord, room: IOmnic
 	}
 };
 
+async function updateRoomCount() {
+	const livechatCount = await Settings.findOneAndUpdate(
+		{
+			_id: 'Livechat_Room_Count',
+		},
+		// @ts-expect-error - Caused by `OnlyFieldsOfType` on mongo which excludes `SettingValue` from $inc
+		{ $inc: { value: 1 } },
+		{ returnDocument: 'after' },
+	);
+
+	return livechatCount.value;
+}
+
 type queueManager = {
 	requestRoom: (params: {
 		guest: ILivechatVisitor;
@@ -58,24 +64,10 @@ type queueManager = {
 		extraData?: Record<string, unknown>;
 	}) => Promise<IOmnichannelRoom>;
 	unarchiveRoom: (archivedRoom?: IOmnichannelRoom) => Promise<IOmnichannelRoom>;
-	updateRoomCount: () => Promise<ISetting | null>;
 };
 
 export const QueueManager: queueManager = {
-	async updateRoomCount() {
-		const livechatCount = await Settings.findOneAndUpdate(
-			{
-				_id: 'Livechat_Room_Count',
-			},
-			// @ts-expect-error - Caused by `OnlyFieldsOfType` on mongo which excludes `SettingValue` from $inc
-			{ $inc: { value: 1 } },
-			{ returnDocument: 'after' },
-		);
-
-		return livechatCount.value;
-	},
 	async requestRoom({ guest, message, roomInfo, agent, extraData }) {
-		logger.debug(`Requesting a room for guest ${guest._id}`);
 		check(
 			message,
 			Match.ObjectIncluding({
@@ -115,7 +107,7 @@ export const QueueManager: queueManager = {
 		const [inquiry, dbRoom] = await Promise.all([
 			LivechatInquiry.findOneById(inquiryId),
 			LivechatRooms.findOneById(rid),
-			this.updateRoomCount(),
+			updateRoomCount(),
 		]);
 
 		if (!inquiry) {
