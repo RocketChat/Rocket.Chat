@@ -4,7 +4,7 @@ import { SystemLogger } from '../server/lib/logger/system';
 
 const { _redirectUri } = OAuth;
 
-OAuth._redirectUri = (serviceName: string, config: any, params: unknown, absoluteUrlOptions: unknown): string => {
+OAuth._redirectUri = (serviceName, config, params, absoluteUrlOptions) => {
 	const ret = _redirectUri(serviceName, config, params, absoluteUrlOptions);
 
 	// DEPRECATED: Remove in v5.0.0
