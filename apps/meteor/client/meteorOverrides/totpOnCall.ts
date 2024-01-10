@@ -52,7 +52,16 @@ const withAsyncTOTP = (callAsync: (name: string, ...args: any[]) => Promise<any>
 		} catch (error: unknown) {
 			return process2faAsyncReturn({
 				error,
-				onCode: (twoFactorCode, twoFactorMethod) => Meteor.callAsync(methodName, ...args, { twoFactorCode, twoFactorMethod }),
+				onCode: async (twoFactorCode, twoFactorMethod) => {
+					try {
+						await Meteor.callAsync(methodName, ...args, { twoFactorCode, twoFactorMethod });
+					} catch (error) {
+						if (isTotpInvalidError(error)) {
+							throw new Error(twoFactorMethod === 'password' ? t('Invalid_password') : t('Invalid_two_factor_code'));
+						}
+						throw error;
+					}
+				},
 				emailOrUsername: undefined,
 			});
 		}
