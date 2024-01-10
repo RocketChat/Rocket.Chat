@@ -138,9 +138,9 @@ const ImageGallery = () => {
 				<div className='swiper-container' onClick={onClose}>
 					<ButtonGroup className='rcx-swiper-controls' onClick={preventPropagation}>
 						{zoomScale !== 1 && <IconButton icon='arrow-collapse' title='Resize' rcx-swiper-zoom-out onClick={handleResize} />}
-						<IconButton icon='h-bar' title='Zoom out' rcx-swiper-zoom-out onClick={handleZoomOut} disabled={zoomScale === 1} />
-						<IconButton icon='plus' title='Zoom in' rcx-swiper-zoom-in onClick={handleZoomIn} />
-						<IconButton icon='cross' title='Close' aria-label='Close gallery' className='rcx-swiper-close-button' onClick={onClose} />
+						<IconButton small icon='h-bar' title='Zoom out' rcx-swiper-zoom-out onClick={handleZoomOut} disabled={zoomScale === 1} />
+						<IconButton small icon='plus' title='Zoom in' rcx-swiper-zoom-in onClick={handleZoomIn} />
+						<IconButton small icon='cross' title='Close' aria-label='Close gallery' className='rcx-swiper-close-button' onClick={onClose} />
 					</ButtonGroup>
 					<IconButton icon='chevron-right' className='rcx-swiper-prev-button' onClick={preventPropagation} />
 					<IconButton icon='chevron-left' className='rcx-swiper-next-button' onClick={preventPropagation} />
