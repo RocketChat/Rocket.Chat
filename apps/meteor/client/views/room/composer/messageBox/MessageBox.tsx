@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { Button, Tag, Box } from '@rocket.chat/fuselage';
 import { useContentBoxSize, useMutableCallback } from '@rocket.chat/fuselage-hooks';
@@ -126,7 +127,7 @@ const MessageBox = ({
 
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
 	const messageComposerRef = useRef<HTMLElement>(null);
-	const shadowRef = useRef(null);
+	const shadowRef = useRef<HTMLDivElement>(null);
 
 	const storageID = `messagebox_${room._id}${tmid ? `-${tmid}` : ''}`;
 
@@ -410,15 +411,14 @@ const MessageBox = ({
 								disabled={isRecording || !canSend}
 							/>
 						)}
-						<MessageComposerActionsDivider />
 						<MessageBoxActionsToolbar
-							variant={sizes.inlineSize < 480 ? 'small' : 'large'}
-							isRecording={isRecording}
-							typing={typing}
 							canSend={canSend}
+							typing={typing}
+							isMicrophoneDenied={isMicrophoneDenied}
 							rid={room._id}
 							tmid={tmid}
-							isMicrophoneDenied={isMicrophoneDenied}
+							isRecording={isRecording}
+							variant={sizes.inlineSize < 480 ? 'small' : 'large'}
 						/>
 					</MessageComposerToolbarActions>
 					<MessageComposerToolbarSubmit>

@@ -182,6 +182,10 @@ export class ListenersModule {
 			notifications.streamRoomMessage.emitWithoutBroadcast(message.rid, message);
 		});
 
+		service.onEvent('notify.messagesRead', ({ rid, until, tmid }): void => {
+			notifications.notifyRoomInThisInstance(rid, 'messagesRead', { tmid, until });
+		});
+
 		service.onEvent('watch.subscriptions', ({ clientAction, subscription }) => {
 			if (!subscription.u?._id) {
 				return;
@@ -414,6 +418,13 @@ export class ListenersModule {
 
 		service.onEvent('notify.calendar', (uid, data): void => {
 			notifications.notifyUserInThisInstance(uid, 'calendar', data);
+		});
+
+		service.onEvent('notify.importedMessages', ({ roomIds }): void => {
+			roomIds.forEach((rid) => {
+				// couldnt get TS happy by providing no data, so had to provide null
+				notifications.notifyRoomInThisInstance(rid, 'messagesImported', null);
+			});
 		});
 
 		service.onEvent('connector.statuschanged', (enabled): void => {
