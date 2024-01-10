@@ -9,7 +9,7 @@ export const Linkedin = {};
 // - expiresIn: lifetime of token in seconds
 const getTokenResponse = async function (query) {
 	const config = await ServiceConfiguration.configurations.findOneAsync({ service: 'linkedin' });
-	if (!config) throw new ServiceConfiguration.ConfigError('Service not configured');
+	if (!config) throw new Accounts.ConfigError('Service not configured');
 
 	let responseContent;
 	try {
