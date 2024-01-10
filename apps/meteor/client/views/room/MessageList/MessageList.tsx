@@ -58,7 +58,7 @@ export const MessageList = ({ rid, scrollMessageList }: MessageListProps): React
 					return (
 						<Fragment key={message._id}>
 							{showDivider && (
-								<Box style={{ position: 'sticky', top: '0' }}>
+								<Box style={{ position: 'sticky', top: '0' , zIndex: '999' }}>
 									<MessageDivider unreadLabel={showUnreadDivider ? t('Unread_Messages').toLowerCase() : undefined}>
 										{newDay && formatDate(message.ts)}
 									</MessageDivider>
