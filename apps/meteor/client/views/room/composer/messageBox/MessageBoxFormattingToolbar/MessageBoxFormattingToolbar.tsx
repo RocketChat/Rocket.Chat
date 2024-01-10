@@ -1,3 +1,4 @@
+import { Box } from '@rocket.chat/fuselage';
 import { MessageComposerAction } from '@rocket.chat/ui-composer';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
@@ -16,30 +17,27 @@ type MessageBoxFormattingToolbarProps = {
 const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer, ...props }: MessageBoxFormattingToolbarProps) => {
 	const t = useTranslation();
 
-	if (variant === 'small') {
+	if (variant === 'large') {
 		const collapsedItems = [...items];
 		const featuredFormatter = collapsedItems.splice(0, 1)[0];
 
 		return (
-			<>
+			<Box id='toolbar' style={{ display: 'flex', flexDirection: 'row', border: 0, padding: 0 }}>
 				{'icon' in featuredFormatter && (
-					<MessageComposerAction
-						{...props}
-						onClick={() => composer.wrapSelection(featuredFormatter.pattern)}
-						icon={featuredFormatter.icon}
-					/>
+					<MessageComposerAction {...props} className={featuredFormatter.buttonName} icon={featuredFormatter.icon} />
 				)}
 				<FormattingToolbarDropdown {...props} composer={composer} items={collapsedItems} />
-			</>
+			</Box>
 		);
 	}
 
 	return (
-		<>
-			{items.map((formatter) =>
+		<Box id='toolbar' style={{ display: 'flex', flexDirection: 'row', border: 0, padding: 0 }}>
+			{items.slice(0, 5).map((formatter) =>
 				'icon' in formatter ? (
 					<MessageComposerAction
 						{...props}
+						className={formatter.buttonName}
 						icon={formatter.icon}
 						key={formatter.label}
 						data-id={formatter.label}
@@ -47,9 +45,7 @@ const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer, ...pr
 						onClick={(): void => {
 							if ('link' in formatter) {
 								window.open(formatter.link, '_blank', 'rel=noreferrer noopener');
-								return;
 							}
-							composer.wrapSelection(formatter.pattern);
 						}}
 					/>
 				) : (
@@ -66,7 +62,7 @@ const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer, ...pr
 					</span>
 				),
 			)}
-		</>
+		</Box>
 	);
 };
 

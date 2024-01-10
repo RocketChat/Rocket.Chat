@@ -8,6 +8,7 @@ export type FormattingButton =
 			label: TranslationKey;
 			icon: IconName;
 			pattern: string;
+			buttonName?: string;
 			// text?: () => string | undefined;
 			command?: string;
 			link?: string;
@@ -24,28 +25,33 @@ export const formattingButtons: ReadonlyArray<FormattingButton> = [
 	{
 		label: 'Bold',
 		icon: 'bold',
+		buttonName: 'ql-bold',
 		pattern: '*{{text}}*',
 		command: 'b',
 	},
 	{
 		label: 'Italic',
 		icon: 'italic',
+		buttonName: 'ql-italic',
 		pattern: '_{{text}}_',
 		command: 'i',
 	},
 	{
 		label: 'Strike',
 		icon: 'strike',
+		buttonName: 'ql-strike',
 		pattern: '~{{text}}~',
 	},
 	{
 		label: 'Inline_code',
 		icon: 'code',
+		buttonName: 'ql-code',
 		pattern: '`{{text}}`',
 	},
 	{
 		label: 'Multi_line',
 		icon: 'multiline',
+		buttonName: 'ql-code-block',
 		pattern: '```\n{{text}}\n``` ',
 	},
 	{

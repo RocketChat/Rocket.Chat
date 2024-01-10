@@ -11,10 +11,10 @@ import {
 	MessageComposerActionsDivider,
 	MessageComposerToolbarSubmit,
 } from '@rocket.chat/ui-composer';
-import { useTranslation, useUserPreference, useLayout } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserPreference, useLayout, useQuill } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type { ReactElement, MouseEventHandler, FormEvent, KeyboardEventHandler, KeyboardEvent, ClipboardEventHandler } from 'react';
-import React, { memo, useRef, useReducer, useCallback } from 'react';
+import type { ReactElement, MouseEventHandler, KeyboardEventHandler, KeyboardEvent, Ref, ClipboardEventHandler } from 'react';
+import React, { memo, useRef, useCallback, useState } from 'react';
 import { useSubscription } from 'use-subscription';
 
 import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
@@ -27,7 +27,6 @@ import { useEnablePopupPreview } from '../../../../../app/ui-message/client/popu
 import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionFromMime';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
-import type { ComposerAPI } from '../../../../lib/chats/ChatAPI';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { keyCodes } from '../../../../lib/utils/keyCodes';
 import AudioMessageRecorder from '../../../composer/AudioMessageRecorder';
@@ -40,21 +39,13 @@ import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
+import { customIcons } from './MessageBoxFormattingToolbar/MessageBoxFormattingIcons';
 import MessageBoxReplies from './MessageBoxReplies';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
+import './MessageEditor.css';
 
-const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
-	const target = event.target as HTMLInputElement;
-
-	return Boolean(target.value.trim());
-};
-
-const handleFormattingShortcut = (
-	event: KeyboardEvent<HTMLTextAreaElement>,
-	formattingButtons: FormattingButton[],
-	composer: ComposerAPI,
-) => {
+const handleFormattingShortcut = (event: KeyboardEvent<HTMLTextAreaElement>, formattingButtons: FormattingButton[]) => {
 	const isMacOS = navigator.platform.indexOf('Mac') !== -1;
 	const isCmdOrCtrlPressed = (isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey);
 
@@ -70,7 +61,6 @@ const handleFormattingShortcut = (
 		return false;
 	}
 
-	composer.wrapSelection(formatter.pattern);
 	return true;
 };
 
@@ -115,7 +105,7 @@ const MessageBox = ({
 	const t = useTranslation();
 	const composerPlaceholder = useMessageBoxPlaceholder(t('Message'), room);
 
-	const [typing, setTyping] = useReducer(reducer, false);
+	const [typing, setTyping] = useState(false);
 
 	const { isMobile } = useLayout();
 	const sendOnEnterBehavior = useUserPreference<'normal' | 'alternative' | 'desktop'>('sendOnEnter') || isMobile;
@@ -125,6 +115,15 @@ const MessageBox = ({
 		throw new Error('Chat context not found');
 	}
 
+	const { quillRef, quill } = useQuill({
+		placeholder: composerPlaceholder,
+		customIcons,
+	});
+
+	quill?.on('text-change', () => {
+		setTyping(quill.root.innerText.length !== 0 && quill.root.innerText !== '\n');
+	});
+
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
 	const messageComposerRef = useRef<HTMLElement>(null);
 	const shadowRef = useRef<HTMLDivElement>(null);
@@ -132,7 +131,7 @@ const MessageBox = ({
 	const storageID = `messagebox_${room._id}${tmid ? `-${tmid}` : ''}`;
 
 	const callbackRef = useCallback(
-		(node: HTMLTextAreaElement) => {
+		(node: any) => {
 			if (node === null) {
 				return;
 			}
@@ -158,6 +157,7 @@ const MessageBox = ({
 	});
 
 	const handleSendMessage = useMutableCallback(() => {
+		chat.composer?.wrapSelectionV2();
 		const text = chat.composer?.text ?? '';
 		chat.composer?.clear();
 		clearPopup();
@@ -172,7 +172,7 @@ const MessageBox = ({
 	const handler: KeyboardEventHandler<HTMLTextAreaElement> = useMutableCallback((event) => {
 		const { which: keyCode } = event;
 
-		const input = event.target as HTMLTextAreaElement;
+		const input = event.target as any;
 
 		const isSubmitKey = keyCode === keyCodes.CARRIAGE_RETURN || keyCode === keyCodes.NEW_LINE;
 
@@ -189,7 +189,7 @@ const MessageBox = ({
 			return false;
 		}
 
-		if (chat.composer && handleFormattingShortcut(event, [...formattingButtons], chat.composer)) {
+		if (chat.composer && handleFormattingShortcut(event, [...formattingButtons])) {
 			return;
 		}
 
@@ -232,14 +232,15 @@ const MessageBox = ({
 			}
 
 			case 'ArrowDown': {
-				if (input.selectionEnd === input.value.length) {
+				console.log(input.selectionEnd, input.innerText.length);
+				if (input.selectionEnd === input.innerText.length) {
 					event.preventDefault();
 					event.stopPropagation();
 
 					onNavigateToNextMessage?.();
 
 					if (event.altKey) {
-						input.setSelectionRange(input.value.length, input.value.length);
+						input.setSelectionRange(input.innerText.length, input.innerText.length);
 					}
 				}
 			}
@@ -334,15 +335,15 @@ const MessageBox = ({
 		ariaActiveDescendant,
 		suspended,
 		select,
+		clearPopup,
 		commandsRef,
 		callbackRef: c,
 		filter,
-		clearPopup,
 	} = useComposerBoxPopup<{ _id: string; sort?: number }>({
 		configurations: composerPopupConfig,
 	});
 
-	const mergedRefs = useMessageComposerMergedRefs(c, textareaRef, callbackRef, autofocusRef);
+	const mergedRefs = useMessageComposerMergedRefs(c, quillRef, callbackRef, autofocusRef);
 
 	const shouldPopupPreview = useEnablePopupPreview(filter, popup);
 
@@ -382,11 +383,10 @@ const MessageBox = ({
 			<MessageComposer ref={messageComposerRef} variant={isEditing ? 'editing' : undefined}>
 				{isRecordingAudio && <AudioMessageRecorder rid={room._id} isMicrophoneDenied={isMicrophoneDenied} />}
 				<MessageComposerInput
-					ref={mergedRefs}
+					ref={mergedRefs as unknown as Ref<any>}
 					aria-label={composerPlaceholder}
 					name='msg'
 					disabled={isRecording || !canSend}
-					onChange={setTyping}
 					style={textAreaStyle}
 					placeholder={composerPlaceholder}
 					onKeyDown={handler}
