@@ -16,6 +16,7 @@ import { useCreateFontStyleElement } from '../../views/account/accessibility/hoo
 import { useDeleteUser } from './hooks/useDeleteUser';
 import { useEmailVerificationWarning } from './hooks/useEmailVerificationWarning';
 import { useLDAPAndCrowdCollisionWarning } from './hooks/useLDAPAndCrowdCollisionWarning';
+import { useUpdateAvatar } from './hooks/useUpdateAvatar';
 import { useUpdateCustomUserStatus } from './hooks/useUpdateCustomUserStatus';
 
 const getUserId = (): string | null => Meteor.userId();
@@ -82,6 +83,7 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 
 	useUpdateCustomUserStatus();
 	useDeleteUser();
+	useUpdateAvatar();
 
 	const contextValue = useMemo(
 		(): ContextType<typeof UserContext> => ({
