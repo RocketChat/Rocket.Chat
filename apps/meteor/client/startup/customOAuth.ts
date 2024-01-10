@@ -2,7 +2,7 @@ import type { ILoginServiceConfiguration, OAuthConfiguration } from '@rocket.cha
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
-import { CustomOAuth } from '../../app/custom-oauth/client/custom_oauth_client';
+import { CustomOAuth } from '../../app/custom-oauth/client/CustomOAuth';
 
 Meteor.startup(() => {
 	ServiceConfiguration.configurations
