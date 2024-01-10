@@ -1,6 +1,7 @@
 import http from 'http';
 import https from 'https';
 
+import { api } from '@rocket.chat/core-services';
 import type { IImport, MessageAttachment, IUpload } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
@@ -80,6 +81,7 @@ export class PendingFileImporter extends Importer {
 
 		try {
 			const pendingFileMessageList = Messages.findAllImportedMessagesWithFilesToDownload();
+			const importedRoomIds = new Set<string>();
 			for await (const message of pendingFileMessageList) {
 				try {
 					const { _importFile } = message;
@@ -140,6 +142,7 @@ export class PendingFileImporter extends Importer {
 
 								await Messages.setImportFileRocketChatAttachment(_importFile.id, url, attachment);
 								await completeFile(details);
+								importedRoomIds.add(message.rid);
 							} catch (error) {
 								await completeFile(details);
 								logError(error);
@@ -150,6 +153,8 @@ export class PendingFileImporter extends Importer {
 					this.logger.error(error);
 				}
 			}
+
+			void api.broadcast('notify.importedMessages', { roomIds: Array.from(importedRoomIds) });
 		} catch (error) {
 			// If the cursor expired, restart the method
 			if (this.isCursorNotFoundError(error)) {
