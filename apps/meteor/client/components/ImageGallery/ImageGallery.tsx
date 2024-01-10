@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, IconButton, Palette, Throbber } from '@rocket.chat/fuselage';
+import { Box, ButtonGroup, IconButton, Palette, Throbber } from '@rocket.chat/fuselage';
 import React, { useRef, useState } from 'react';
 import { FocusScope } from 'react-aria';
 import { createPortal } from 'react-dom';
@@ -13,6 +13,7 @@ import 'swiper/modules/navigation/navigation.min.css';
 import 'swiper/modules/keyboard/keyboard.min.css';
 import 'swiper/modules/zoom/zoom.min.css';
 
+import { usePreventPropagation } from '../../hooks/usePreventPropagation';
 import ImageGalleryLoader from './ImageGalleryLoader';
 import { useImageGallery } from './hooks/useImageGallery';
 
@@ -38,13 +39,6 @@ const swiperStyle = css`
 	.rcx-swiper-prev-button,
 	.rcx-swiper-next-button {
 		color: var(--rcx-color-font-pure-white, #ffffff) !important;
-	}
-
-	.rcx-swiper-close-button {
-		position: absolute;
-		z-index: 10;
-		top: 10px;
-		right: 10px;
 	}
 
 	.rcx-swiper-prev-button,
@@ -94,11 +88,43 @@ const swiperStyle = css`
 
 		color: ${Palette.text['font-pure-white']};
 	}
+
+	.rcx-swiper-controls {
+		position: absolute;
+		top: 0;
+		right: 0;
+		padding: 10px;
+		z-index: 2;
+
+		width: 100%;
+		display: flex;
+		justify-content: flex-end;
+		transition: background-color 0.2s;
+		&:hover {
+			background-color: ${Palette.surface['surface-overlay']};
+			transition: background-color 0.2s;
+		}
+	}
 `;
 
 const ImageGallery = () => {
 	const swiperRef = useRef<SwiperRef>(null);
 	const [, setSwiperInst] = useState<SwiperClass>();
+	const [zoomScale, setZoomScale] = useState(1);
+
+	const handleZoom = (ratio: number) => {
+		if (swiperRef.current?.swiper.zoom) {
+			const { scale, in: zoomIn } = swiperRef.current?.swiper.zoom;
+			setZoomScale(scale + ratio);
+			return zoomIn(scale + ratio);
+		}
+	};
+
+	const handleZoomIn = () => handleZoom(1);
+	const handleZoomOut = () => handleZoom(-1);
+	const handleResize = () => handleZoom(-(zoomScale - 1));
+
+	const preventPropagation = usePreventPropagation();
 
 	const { isLoading, loadMore, images, onClose } = useImageGallery();
 
@@ -110,9 +136,14 @@ const ImageGallery = () => {
 		<FocusScope contain restoreFocus autoFocus>
 			<Box className={swiperStyle}>
 				<div className='swiper-container' onClick={onClose}>
-					<IconButton icon='cross' aria-label='Close gallery' className='rcx-swiper-close-button' onClick={onClose} />
-					<IconButton icon='chevron-right' className='rcx-swiper-prev-button' onClick={(e) => e.stopPropagation()} />
-					<IconButton icon='chevron-left' className='rcx-swiper-next-button' onClick={(e) => e.stopPropagation()} />
+					<ButtonGroup className='rcx-swiper-controls' onClick={preventPropagation}>
+						{zoomScale !== 1 && <IconButton icon='arrow-collapse' title='Resize' rcx-swiper-zoom-out onClick={handleResize} />}
+						<IconButton small icon='h-bar' title='Zoom out' rcx-swiper-zoom-out onClick={handleZoomOut} disabled={zoomScale === 1} />
+						<IconButton small icon='plus' title='Zoom in' rcx-swiper-zoom-in onClick={handleZoomIn} />
+						<IconButton small icon='cross' title='Close' aria-label='Close gallery' className='rcx-swiper-close-button' onClick={onClose} />
+					</ButtonGroup>
+					<IconButton icon='chevron-right' className='rcx-swiper-prev-button' onClick={preventPropagation} />
+					<IconButton icon='chevron-left' className='rcx-swiper-next-button' onClick={preventPropagation} />
 					<Swiper
 						ref={swiperRef}
 						navigation={{
@@ -120,7 +151,7 @@ const ImageGallery = () => {
 							prevEl: '.rcx-swiper-prev-button',
 						}}
 						keyboard
-						zoom
+						zoom={{ toggle: false }}
 						lazyPreloaderClass='rcx-lazy-preloader'
 						runCallbacksOnInit
 						onKeyPress={(_, keyCode) => String(keyCode) === '27' && onClose()}
@@ -131,7 +162,7 @@ const ImageGallery = () => {
 						{images?.map(({ _id, url }) => (
 							<SwiperSlide key={_id}>
 								<div className='swiper-zoom-container'>
-									<img src={url} loading='lazy' onClick={(e) => e.stopPropagation()} />
+									<img src={url} loading='lazy' onClick={preventPropagation} />
 									<div className='rcx-lazy-preloader'>
 										<Throbber inheritColor />
 									</div>
