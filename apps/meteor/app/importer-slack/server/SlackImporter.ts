@@ -408,7 +408,7 @@ export class SlackImporter extends Importer {
 	parseMentions(newMessage: IImportMessage): void {
 		const mentionsParser = new MentionsParser({
 			pattern: () => '[0-9a-zA-Z]+',
-			useRealName: () => settings.get('UI_Use_Real_Name'),
+			useRealName: () => settings.get<boolean>('UI_Use_Real_Name'),
 			me: () => 'me',
 		});
 

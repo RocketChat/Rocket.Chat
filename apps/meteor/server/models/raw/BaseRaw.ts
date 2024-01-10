@@ -141,6 +141,7 @@ export abstract class BaseRaw<
 	}
 
 	public findOneAndUpdate(query: Filter<T>, update: UpdateFilter<T> | T, options?: FindOneAndUpdateOptions): Promise<ModifyResult<T>> {
+		this.setUpdatedAt(update);
 		return this.col.findOneAndUpdate(query, update, options || {});
 	}
 
