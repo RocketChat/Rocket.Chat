@@ -59,40 +59,6 @@ type UserProviderProps = {
 	children: ReactNode;
 };
 
-const find = (...args: any[]) => {
-	console.log('DEBUGOAUTH', new Date().toISOString(), 'find on service configurations');
-	const results = ServiceConfiguration.configurations.find(...args).fetch();
-
-	console.log('DEBUGOAUTH', new Date().toISOString(), 'results', results?.length);
-	return results;
-};
-
-(window as any).hudell_debug_func = () => {
-	console.log('DEBUGOAUTH', new Date().toISOString(), 'run debug query');
-
-	console.log(
-		'DEBUGOAUTH',
-		new Date().toISOString(),
-		'debug_func',
-		JSON.stringify(
-			ServiceConfiguration.configurations
-				.find(
-					{
-						showButton: { $ne: false },
-					},
-					{
-						sort: {
-							service: 1,
-						},
-					},
-				)
-				.fetch(),
-		),
-	);
-
-	console.log('DEBUGOAUTH', new Date().toISOString());
-};
-
 const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 	const isLdapEnabled = useSetting<boolean>('LDAP_Enable');
 	const isCrowdEnabled = useSetting<boolean>('CROWD_Enable');
@@ -176,23 +142,26 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 					});
 			},
 			queryAllServices: createReactiveSubscriptionFactory(() =>
-				find(
-					{
-						showButton: { $ne: false },
-					},
-					{
-						sort: {
-							service: 1,
+				ServiceConfiguration.configurations
+					.find(
+						{
+							showButton: { $ne: false },
 						},
-					},
-				).map(
-					({ appId: _, ...service }) =>
-						({
-							title: capitalize(String((service as any).service || '')),
-							...service,
-							...(config[(service as any).service] ?? {}),
-						} as any),
-				),
+						{
+							sort: {
+								service: 1,
+							},
+						},
+					)
+					.fetch()
+					.map(
+						({ appId: _, ...service }) =>
+							({
+								title: capitalize(String((service as any).service || '')),
+								...service,
+								...(config[(service as any).service] ?? {}),
+							} as any),
+					),
 			),
 		}),
 		[userId, user, loginMethod],

@@ -233,7 +233,6 @@ export class CachedCollection<T extends { _id: string }, U = T> extends Emitter<
 
 	async setupListener() {
 		(Notifications[this.eventType] as any)(this.eventName, async (action: 'removed' | 'changed', record: any) => {
-			this.log('record received', action, record);
 			const newRecord = this.handleReceived(record, action);
 
 			if (!hasId(newRecord)) {

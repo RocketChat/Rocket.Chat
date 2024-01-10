@@ -197,10 +197,6 @@ API.v1.addRoute(
 					return API.v1.success();
 				}
 
-				if (setting._id === 'Accounts_OAuth_Google') {
-					console.log('DEBUGOAUTH', new Date().toISOString(), 'change setting', (this.bodyParams as any)?.value);
-				}
-
 				if (
 					isSettingsUpdatePropDefault(this.bodyParams) &&
 					(await Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value))

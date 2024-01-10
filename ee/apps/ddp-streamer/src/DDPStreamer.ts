@@ -37,7 +37,6 @@ export class DDPStreamer extends ServiceClass {
 		});
 
 		this.onEvent('watch.loginServiceConfiguration', ({ clientAction, id, data }) => {
-			console.log('DEBUGOAUTH', new Date().toISOString(), 'ddp-streamer event', clientAction, id);
 			if (clientAction === 'removed') {
 				events.emit('meteor.loginServiceConfiguration', 'removed', {
 					_id: id,
