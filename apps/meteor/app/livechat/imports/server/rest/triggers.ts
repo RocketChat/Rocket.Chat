@@ -6,7 +6,7 @@ import { isLivechatTriggerWebhookTestParams } from '@rocket.chat/rest-typings/sr
 import { API } from '../../../../api/server';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 import { settings } from '../../../../settings/server';
-import { findTriggers, findTriggerById, deleteTrigger, callTriggerWebhook } from '../../../server/api/lib/triggers';
+import { findTriggers, findTriggerById, deleteTrigger, callTriggerExternalService } from '../../../server/api/lib/triggers';
 
 API.v1.addRoute(
 	'livechat/triggers',
@@ -48,7 +48,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'livechat/triggers/webhook-test',
+	'livechat/triggers/external-service/test',
 	{
 		authRequired: true,
 		permissionsRequired: ['view-livechat-manager'],
@@ -76,7 +76,7 @@ API.v1.addRoute(
 				'X-RocketChat-Livechat-Token': token,
 			};
 
-			const response = await callTriggerWebhook({
+			const response = await callTriggerExternalService({
 				url: webhookUrl,
 				timeout,
 				fallbackMessage,
@@ -123,7 +123,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'livechat/triggers/:_id/call',
+	'livechat/triggers/:_id/external-service/call',
 	{
 		authRequired: false,
 		rateLimiterOptions: {
@@ -173,7 +173,7 @@ API.v1.addRoute(
 				'X-RocketChat-Livechat-Token': token,
 			};
 
-			const response = await callTriggerWebhook({
+			const response = await callTriggerExternalService({
 				url: serviceUrl,
 				timeout: serviceTimeout,
 				fallbackMessage: serviceFallbackMessage,

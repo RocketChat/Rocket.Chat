@@ -35,7 +35,7 @@ export async function deleteTrigger({ triggerId }: { triggerId: string }): Promi
 	await LivechatTrigger.removeById(triggerId);
 }
 
-export async function callTriggerWebhook({
+export async function callTriggerExternalService({
 	url,
 	timeout,
 	fallbackMessage,
@@ -77,7 +77,7 @@ export async function callTriggerWebhook({
 	} catch (error: any) {
 		const isTimeout = error.message === 'The user aborted a request.';
 		return {
-			error: isTimeout ? 'timeout-error' : 'error-invalid-webhook-response',
+			error: isTimeout ? 'error-timeout' : 'error-invalid-webhook-response',
 			response: error.message,
 			fallbackMessage,
 		};

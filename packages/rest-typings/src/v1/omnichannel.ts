@@ -3846,10 +3846,10 @@ export type OmnichannelEndpoints = {
 	'/v1/livechat/sms-incoming/:service': {
 		POST: (params: unknown) => SMSProviderResponse;
 	};
-	'/v1/livechat/triggers/webhook-test': {
+	'/v1/livechat/triggers/external-service/test': {
 		POST: (params: LivechatTriggerWebhookTestParams) => ILivechatTriggerActionResponse;
 	};
-	'/v1/livechat/triggers/:_id/call': {
+	'/v1/livechat/triggers/:_id/external-service/call': {
 		POST: (params: LivechatTriggerWebhookCallParams) => ILivechatTriggerActionResponse;
 	};
 } & {

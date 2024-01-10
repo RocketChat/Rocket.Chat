@@ -79,7 +79,7 @@ export const isInIframe = () => window.self !== window.top;
 export const requestTriggerMessages = async ({ triggerId, token, metadata = {} }) => {
 	try {
 		const extraData = Object.entries(metadata).reduce((acc, [key, value]) => [...acc, { key, value }], []);
-		const { response } = await Livechat.rest.post(`/v1/livechat/triggers/${triggerId}/call`, { extraData, token });
+		const { response } = await Livechat.rest.post(`/v1/livechat/triggers/${triggerId}/external-service/call`, { extraData, token });
 		return response.contents;
 	} catch (error) {
 		if (!error.fallbackMessage) {

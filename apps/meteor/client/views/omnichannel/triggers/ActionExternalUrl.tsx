@@ -17,7 +17,7 @@ type ActionExternalUrlType = ComponentProps<typeof Field> & {
 
 export const ActionExternalUrl = ({ control, index, ...props }: ActionExternalUrlType) => {
 	const serviceUrlId = useUniqueId();
-	const sendTestEndpoint = useEndpoint('POST', '/v1/livechat/triggers/webhook-test');
+	const sendTestEndpoint = useEndpoint('POST', '/v1/livechat/triggers/external-service/test');
 	const name = `actions.${index}.params.serviceUrl` as const;
 	const serviceUrl = useWatch({ control, name });
 	const { t } = useTranslation();
