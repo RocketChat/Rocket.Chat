@@ -209,7 +209,7 @@ export class AppsRestApi {
 			{ authRequired: true },
 			{
 				async get() {
-					const apps = manager.get().map(formatAppInstanceForRest);
+					const apps = (await manager.get()).map(formatAppInstanceForRest);
 					return API.v1.success({ apps });
 				},
 			},
@@ -302,7 +302,7 @@ export class AppsRestApi {
 					}
 					apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, 'Use /apps/installed to get the installed apps list.');
 
-					const apps = manager.get().map(formatAppInstanceForRest);
+					const apps = (await manager.get()).map(formatAppInstanceForRest);
 
 					return API.v1.success({ apps });
 				},
@@ -506,8 +506,8 @@ export class AppsRestApi {
 			'languages',
 			{ authRequired: false },
 			{
-				get() {
-					const apps = manager.get().map((prl) => ({
+				async get() {
+					const apps = (await manager.get()).map((prl) => ({
 						id: prl.getID(),
 						languages: prl.getStorageItem().languageContent,
 					}));
@@ -788,7 +788,7 @@ export class AppsRestApi {
 					await manager.remove(prl.getID(), { user });
 
 					const info: IAppInfo & { status?: AppStatus } = prl.getInfo();
-					info.status = prl.getStatus();
+					info.status = await prl.getStatus();
 
 					void notifyAppInstall(orchestrator.getMarketplaceUrl() as string, 'uninstall', info);
 

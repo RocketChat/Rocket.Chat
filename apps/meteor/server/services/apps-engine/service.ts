@@ -111,9 +111,7 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 	}
 
 	async getApps(query: IGetAppsFilter): Promise<IAppInfo[] | undefined> {
-		return Apps.getManager()
-			?.get(query)
-			.map((app) => app.getApp().getInfo());
+		return (await Apps.getManager()?.get(query))?.map((app) => app.getInfo());
 	}
 
 	async getAppStorageItemById(appId: string): Promise<IAppStorageItem | undefined> {

@@ -57,7 +57,7 @@ const notifyAdminsAboutRenewedApps = async function _notifyAdminsAboutRenewedApp
 	}
 
 	const renewedApps = apps.filter(
-		(app) => app.getStatus() === AppStatus.DISABLED && app.getPreviousStatus() === AppStatus.INVALID_LICENSE_DISABLED,
+		async (app) => (await app.getStatus()) === AppStatus.DISABLED && app.getPreviousStatus() === AppStatus.INVALID_LICENSE_DISABLED,
 	);
 
 	if (renewedApps.length === 0) {
