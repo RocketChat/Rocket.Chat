@@ -29,7 +29,7 @@ export type LoginService = {
 	clientConfig: unknown;
 
 	title: string;
-	service: string;
+	service: 'meteor-developer';
 
 	buttonLabelText?: string;
 	icon?: string;

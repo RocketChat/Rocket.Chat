@@ -6,7 +6,11 @@ import { sdk } from '../../app/utils/client/lib/SDKClient';
 
 const bypassMethods: string[] = ['setUserStatus', 'logout'];
 
-function shouldBypass({ method, params }: Meteor.IDDPMessage): boolean {
+const shouldBypass = ({ msg, method, params }: Meteor.IDDPMessage): boolean => {
+	if (msg !== 'method') {
+		return true;
+	}
+
 	if (method === 'login' && params[0]?.resume) {
 		return true;
 	}
@@ -20,14 +24,12 @@ function shouldBypass({ method, params }: Meteor.IDDPMessage): boolean {
 	}
 
 	return false;
-}
+};
 
-function wrapMeteorDDPCalls(): void {
-	const { _send } = Meteor.connection;
-
-	Meteor.connection._send = function _DDPSendOverREST(message): void {
-		if (message.msg !== 'method' || shouldBypass(message)) {
-			return _send.call(Meteor.connection, message);
+const withDDPOverREST = (_send: (this: Meteor.IMeteorConnection, message: Meteor.IDDPMessage) => void) => {
+	return function _sendOverREST(this: Meteor.IMeteorConnection, message: Meteor.IDDPMessage): void {
+		if (shouldBypass(message)) {
+			return _send.call(this, message);
 		}
 
 		const endpoint = Tracker.nonreactive(() => (!Meteor.userId() ? 'method.callAnon' : 'method.call'));
@@ -36,19 +38,20 @@ function wrapMeteorDDPCalls(): void {
 			message: DDPCommon.stringifyDDP({ ...message }),
 		};
 
-		const processResult = (_message: any): void => {
+		const processResult = (_message: string): void => {
 			// Prevent error on reconnections and method retry.
 			// On those cases the API will be called 2 times but
 			// the handler will be deleted after the first execution.
-			if (!Meteor.connection._methodInvokers[message.id]) {
+			if (!this._methodInvokers[message.id]) {
 				return;
 			}
-			Meteor.connection._livedata_data({
+			this._livedata_data({
 				msg: 'updated',
 				methods: [message.id],
 			});
-			Meteor.connection.onMessage(_message);
+			this.onMessage(_message);
 		};
+
 		const method = encodeURIComponent(message.method.replace(/\//g, ':'));
 
 		sdk.rest
@@ -56,7 +59,7 @@ function wrapMeteorDDPCalls(): void {
 			.then(({ message: _message }) => {
 				processResult(_message);
 				if (message.method === 'login') {
-					const parsedMessage = DDPCommon.parseDDP(_message as any) as { result?: { token?: string } };
+					const parsedMessage = DDPCommon.parseDDP(_message) as { result?: { token?: string } };
 					if (parsedMessage.result?.token) {
 						Meteor.loginWithToken(parsedMessage.result.token);
 					}
@@ -66,6 +69,8 @@ function wrapMeteorDDPCalls(): void {
 				console.error(error);
 			});
 	};
-}
+};
 
-window.USE_REST_FOR_DDP_CALLS && wrapMeteorDDPCalls();
+if (window.USE_REST_FOR_DDP_CALLS) {
+	Meteor.connection._send = withDDPOverREST(Meteor.connection._send);
+}
