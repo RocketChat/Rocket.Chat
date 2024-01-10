@@ -41,19 +41,11 @@ export const FilesDropTarget = ({
 
 	const handleDragEnter = (event: DragEvent) => {
 		event.preventDefault();
-		if (disabled) {
-			return;
-		}
-
 		setDragLevel(dragLevel + 1);
 	};
 
 	const handleDragLeave = (event: DragEvent) => {
 		event.preventDefault();
-		if (disabled) {
-			return;
-		}
-
 		setDragLevel(dragLevel - 1);
 	};
 
@@ -64,10 +56,6 @@ export const FilesDropTarget = ({
 			return;
 		}
 
-		if (disabled) {
-			return;
-		}
-
 		setDragLevel(0);
 
 		handleUpload(event?.dataTransfer?.files);
@@ -75,10 +63,6 @@ export const FilesDropTarget = ({
 
 	const handleInputChange = (event: TargetedEvent<HTMLInputElement>) => {
 		if (!event?.currentTarget?.files?.length) {
-			return;
-		}
-
-		if (disabled) {
 			return;
 		}
 
@@ -116,9 +100,11 @@ export const FilesDropTarget = ({
 		filteredFiles.length && onUpload(filteredFiles);
 	};
 
-	return disabled ? (
-		children
-	) : (
+	if (disabled) {
+		return children;
+	}
+
+	return (
 		<div
 			data-overlay-text={overlayText}
 			onDragOver={handleDragOver}
