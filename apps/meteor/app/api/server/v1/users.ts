@@ -1,4 +1,4 @@
-import { Team, api } from '@rocket.chat/core-services';
+import { MeteorError, Team, api } from '@rocket.chat/core-services';
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions } from '@rocket.chat/models';
 import {
@@ -898,7 +898,22 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
+			const hasUnverifiedEmail = this.user.emails?.some((email) => !email.verified);
+			if (hasUnverifiedEmail) {
+				throw new MeteorError('error-invalid-user', 'You need to verify your emails before setting up 2FA');
+			}
+
 			await Users.enableEmail2FAByUserId(this.userId);
+
+			// When 2FA is enable we logout all other clients
+			const xAuthToken = this.request.headers['x-auth-token'] as string;
+			if (xAuthToken) {
+				const hashedToken = Accounts._hashLoginToken(xAuthToken);
+
+				if (!(await Users.removeNonPATLoginTokensExcept(this.userId, hashedToken))) {
+					throw new MeteorError('error-logging-out-other-clients', 'Error logging out other clients');
+				}
+			}
 
 			return API.v1.success();
 		},
