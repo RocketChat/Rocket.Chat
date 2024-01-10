@@ -27,19 +27,3 @@ Package.onUse(function (api) {
 		['client', 'server'],
 	);
 });
-
-// Package.onTest(function (api) {
-// 	api.use(['tinytest', 'check', 'mongo', 'accounts-password', 'dispatch:run-as-user']);
-
-// 	api.addFiles([
-// 		'tests/test.helpers.js',
-// 		'tests/check.environment.js',
-// 		'tests/test.js',
-// 		'tests/test.loggedin.js',
-// 		'tests/test.methods.js',
-// 		'tests/test.modifier.restrictions.js',
-// 		'tests/test.restrictions.js',
-// 		'tests/test.is.admin.js',
-// 		'tests/test.outside.invocation.js',
-// 	]);
-// });

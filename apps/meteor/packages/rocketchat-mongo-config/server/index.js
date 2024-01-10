@@ -25,8 +25,8 @@ Mongo.Collection.prototype.update = function () {
 // Temporal since still being used in some places
 Promise.await = Promise.await || ((promise) => promise);
 
-const shouldDisableOplog = ['yes', 'true'].includes(String(process.env.USE_NATIVE_OPLOG).toLowerCase());
-if (!shouldDisableOplog) {
+const shouldUseNativeOplog = ['yes', 'true'].includes(String(process.env.USE_NATIVE_OPLOG).toLowerCase());
+if (!shouldUseNativeOplog) {
 	Package['disable-oplog'] = {};
 }
 

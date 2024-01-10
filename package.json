@@ -50,7 +50,6 @@
 		"updateFiles": [
 			"package.json",
 			"apps/meteor/package.json",
-			"apps/meteor/.docker/Dockerfile.rhel",
 			"apps/meteor/app/utils/rocketchat.info"
 		]
 	},

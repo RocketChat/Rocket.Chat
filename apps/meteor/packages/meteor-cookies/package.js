@@ -13,10 +13,3 @@ Package.onUse((api) => {
 	api.mainModule('cookies.js', ['client', 'server']);
 });
 
-// Package.onTest((api) => {
-// 	api.use('blaze-html-templates');
-// 	api.use('tinytest');
-// 	api.use(['ecmascript', 'http'], ['client', 'server']);
-// 	api.use(['ejson', 'webapp'], 'server');
-// 	api.addFiles('cookies-tests.js', ['client', 'server']);
-// });
