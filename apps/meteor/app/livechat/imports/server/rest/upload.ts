@@ -14,6 +14,10 @@ API.v1.addRoute('livechat/upload/:rid', {
 			return API.v1.unauthorized();
 		}
 
+		if (!settings.get('Livechat_fileupload_enabled')) {
+			return API.v1.failure('error-fileupload-disabled');
+		}
+
 		const visitorToken = this.request.headers['x-visitor-token'];
 		const visitor = await LivechatVisitors.getVisitorByToken(visitorToken as string, {});
 
