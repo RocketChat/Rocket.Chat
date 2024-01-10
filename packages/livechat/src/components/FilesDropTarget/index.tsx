@@ -18,6 +18,7 @@ type FilesDropTargetProps = {
 	children?: ComponentChildren;
 	inputRef?: Ref<HTMLInputElement>;
 	onUpload?: (files: File[]) => void;
+	disabled?: boolean;
 };
 
 export const FilesDropTarget = ({
@@ -30,6 +31,7 @@ export const FilesDropTarget = ({
 	children,
 	inputRef,
 	onUpload,
+	disabled,
 }: FilesDropTargetProps) => {
 	const [dragLevel, setDragLevel] = useState(0);
 
@@ -39,11 +41,19 @@ export const FilesDropTarget = ({
 
 	const handleDragEnter = (event: DragEvent) => {
 		event.preventDefault();
+		if (disabled) {
+			return;
+		}
+
 		setDragLevel(dragLevel + 1);
 	};
 
 	const handleDragLeave = (event: DragEvent) => {
 		event.preventDefault();
+		if (disabled) {
+			return;
+		}
+
 		setDragLevel(dragLevel - 1);
 	};
 
@@ -54,6 +64,10 @@ export const FilesDropTarget = ({
 			return;
 		}
 
+		if (disabled) {
+			return;
+		}
+
 		setDragLevel(0);
 
 		handleUpload(event?.dataTransfer?.files);
@@ -61,6 +75,10 @@ export const FilesDropTarget = ({
 
 	const handleInputChange = (event: TargetedEvent<HTMLInputElement>) => {
 		if (!event?.currentTarget?.files?.length) {
+			return;
+		}
+
+		if (disabled) {
 			return;
 		}
 
@@ -98,7 +116,9 @@ export const FilesDropTarget = ({
 		filteredFiles.length && onUpload(filteredFiles);
 	};
 
-	return (
+	return disabled ? (
+		children
+	) : (
 		<div
 			data-overlay-text={overlayText}
 			onDragOver={handleDragOver}

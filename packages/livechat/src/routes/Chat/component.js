@@ -135,6 +135,7 @@ class Chat extends Component {
 			incomingCallAlert,
 			ongoingCall,
 			dispatch,
+			disableFileUploads = false,
 			...props
 		},
 		{ atBottom = true, text },
@@ -153,7 +154,13 @@ class Chat extends Component {
 			handleEmojiClick={this.handleEmojiClick}
 			{...props}
 		>
-			<FilesDropTarget inputRef={this.inputRef} overlayed overlayText={t('drop_here_to_upload_a_file')} onUpload={onUpload}>
+			<FilesDropTarget
+				inputRef={this.inputRef}
+				overlayed
+				overlayText={t('drop_here_to_upload_a_file')}
+				onUpload={onUpload}
+				disabled={disableFileUploads}
+			>
 				<Screen.Content nopadding>
 					{incomingCallAlert && !!incomingCallAlert.show && <CallNotification {...incomingCallAlert} dispatch={dispatch} />}
 					{incomingCallAlert?.show && ongoingCall && ongoingCall.callStatus === CallStatus.IN_PROGRESS_SAME_TAB ? (

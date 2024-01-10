@@ -166,6 +166,10 @@ class ChatContainer extends Component {
 	};
 
 	handleUpload = async (files) => {
+		if (!this.props.uploads) {
+			return;
+		}
+
 		await this.grantUser();
 		const { _id: rid } = await this.getRoom();
 
@@ -369,6 +373,7 @@ class ChatContainer extends Component {
 			onSoundStop={this.handleSoundStop}
 			registrationRequired={this.registrationRequired()}
 			onRegisterUser={this.onRegisterUser}
+			disableFileUploads={!props.uploads}
 		/>
 	);
 }
