@@ -23,10 +23,16 @@ async function translationDiff(source, target) {
 		return diff;
 	}
 
-	const sourceTranslations = JSON.parse(await readFile(`${translationDir}/${source}.i18n.json`, 'utf8'));
-	const targetTranslations = JSON.parse(await readFile(`${translationDir}/${target}.i18n.json`, 'utf8'));
+	try{
+		const sourceTranslations = JSON.parse(await readFile(path.join(translationDir, $.source.i18n.json), 'utf8'));
+		const targetTranslations = JSON.parse(await readFile(path.join(translationDir, $.target.i18n.json), 'utf8'));
 
-	return diffKeys(sourceTranslations, targetTranslations);
+		return diffKeys(sourceTranslations, targetTranslations);
+	}
+	catch(error){
+		console.error('Error reading translation files', error);
+		throw error;
+	}
 }
 
 console.log('Note: You can set the source and target language of the comparison with env-variables SOURCE/TARGET_LANGUAGE');
