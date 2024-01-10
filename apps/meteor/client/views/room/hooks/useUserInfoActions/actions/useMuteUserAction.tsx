@@ -1,20 +1,13 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { escapeHTML } from '@rocket.chat/string-helpers';
-import {
-	usePermission,
-	useSetModal,
-	useMethod,
-	useToastMessageDispatch,
-	useTranslation,
-	useUserRoom,
-	useUserSubscription,
-} from '@rocket.chat/ui-contexts';
+import { usePermission, useSetModal, useTranslation, useUserRoom, useUserSubscription } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
+import { useMuteUserMutation } from '../../useMuteUserMutation';
 import type { UserInfoAction, UserInfoActionType } from '../useUserInfoActions';
 
 export const useMuteUserAction = (
@@ -24,13 +17,12 @@ export const useMuteUserAction = (
 	const t = useTranslation();
 	const room = useUserRoom(rid);
 	const userCanMute = usePermission('mute-user', rid);
-	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal(null));
-
+	const isMuted = Boolean(user?.isMuted);
+	const muteUserMutation = useMuteUserMutation(isMuted, rid);
 	const userSubscription = useUserSubscription(rid);
 
-	const isMuted = Boolean(user?.isMuted);
 	const roomName = room?.t && escapeHTML(roomCoordinator.getRoomName(room.t, room));
 
 	if (!room) {
@@ -39,32 +31,15 @@ export const useMuteUserAction = (
 
 	const { roomCanMute } = getRoomDirectives({ room, showingUserId: user._id, userSubscription });
 
-	const mutedMessage = isMuted ? 'User__username__unmuted_in_room__roomName__' : 'User__username__muted_in_room__roomName__';
-
-	const muteUser = useMethod(isMuted ? 'unmuteUserInRoom' : 'muteUserInRoom');
-
 	const muteUserOption = useMemo(() => {
 		const action = (): Promise<void> | void => {
 			const onConfirm = async (): Promise<void> => {
-				try {
-					if (!user.username) {
-						throw new Error('User without username');
-					}
-
-					await muteUser({ rid, username: user.username });
-
-					return dispatchToastMessage({
-						type: 'success',
-						message: t(mutedMessage, {
-							username: user.username,
-							roomName,
-						}),
-					});
-				} catch (error: unknown) {
-					dispatchToastMessage({ type: 'error', message: error });
-				} finally {
-					closeModal();
+				if (!user.username) {
+					throw new Error('User without username');
 				}
+
+				muteUserMutation.mutate({ username: user.username, rid });
+				closeModal();
 			};
 
 			if (isMuted) {
@@ -86,20 +61,7 @@ export const useMuteUserAction = (
 					type: 'management' as UserInfoActionType,
 			  }
 			: undefined;
-	}, [
-		closeModal,
-		mutedMessage,
-		dispatchToastMessage,
-		isMuted,
-		muteUser,
-		rid,
-		roomCanMute,
-		roomName,
-		setModal,
-		t,
-		user.username,
-		userCanMute,
-	]);
+	}, [closeModal, isMuted, rid, roomCanMute, roomName, setModal, t, user.username, userCanMute, muteUserMutation]);
 
 	return muteUserOption;
 };
