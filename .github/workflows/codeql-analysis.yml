@@ -8,8 +8,8 @@ on:
 
 jobs:
   CodeQL-Build:
-    # CodeQL runs on ubuntu-latest and windows-latest
-    runs-on: ubuntu-latest
+    # CodeQL runs on ubuntu-22.04 and windows-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout repository

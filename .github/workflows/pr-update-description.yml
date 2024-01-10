@@ -9,7 +9,7 @@ concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
   update-pr:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     if: startsWith(github.head_ref, 'release-')
     steps:
       - name: Checkout Repo

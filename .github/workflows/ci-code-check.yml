@@ -12,7 +12,7 @@ env:
 
 jobs:
   code-check:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     name: ${{ matrix.check == 'ts' && 'TypeScript' || 'Code Lint' }}
 
