@@ -172,8 +172,7 @@ export class AppServerOrchestrator {
 		await this.getManager().load();
 
 		// Before enabling each app we verify if there is still room for it
-		await this.getManager()
-			.get()
+		(await this.getManager().get())
 			// We reduce everything to a promise chain so it runs sequentially
 			.reduce(
 				(control, app) =>
