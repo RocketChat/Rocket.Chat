@@ -40,6 +40,19 @@ import type { AutoUpdateRecord } from '../types/IMeteor';
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 
+type LoginServiceConfigurationEvent = {
+	id: string;
+} & (
+	| {
+			clientAction: 'removed';
+			data?: never;
+	  }
+	| {
+			clientAction: Omit<ClientAction, 'removed'>;
+			data: Partial<ILoginServiceConfiguration>;
+	  }
+);
+
 export type EventSignatures = {
 	'room.video-conference': (params: { rid: string; callId: string }) => void;
 	'shutdown': (params: Record<string, string[]>) => void;
@@ -95,6 +108,8 @@ export type EventSignatures = {
 	'notify.deleteCustomSound'(data: { soundData: ICustomSound }): void;
 	'notify.updateCustomSound'(data: { soundData: ICustomSound }): void;
 	'notify.calendar'(uid: string, data: ICalendarNotification): void;
+	'notify.messagesRead'(data: { rid: string; until: Date; tmid?: string }): void;
+	'notify.importedMessages'(data: { roomIds: string[] }): void;
 	'permission.changed'(data: { clientAction: ClientAction; data: any }): void;
 	'room'(data: { action: string; room: Partial<IRoom> }): void;
 	'room.avatarUpdate'(room: Pick<IRoom, '_id' | 'avatarETag'>): void;
@@ -233,7 +248,7 @@ export type EventSignatures = {
 			  }
 		),
 	): void;
-	'watch.loginServiceConfiguration'(data: { clientAction: ClientAction; data: Partial<ILoginServiceConfiguration>; id: string }): void;
+	'watch.loginServiceConfiguration'(data: LoginServiceConfigurationEvent): void;
 	'watch.instanceStatus'(data: {
 		clientAction: ClientAction;
 		data?: undefined | Partial<IInstanceStatus>;

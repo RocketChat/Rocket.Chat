@@ -7,9 +7,8 @@ import { RoomManager } from '../../../../client/lib/RoomManager';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
-import { router } from '../../../../client/providers/RouterProvider';
 import { callbacks } from '../../../../lib/callbacks';
-import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription, ChatRoom } from '../../../models/client';
+import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription } from '../../../models/client';
 import { Notifications } from '../../../notifications/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
@@ -80,41 +79,6 @@ function getOpenedRoomByRid(rid: IRoom['_id']) {
 		.find((openedRoom) => openedRoom.rid === rid);
 }
 
-const handleTrackSettingsChange = (msg: IMessage) => {
-	const openedRoom = RoomManager.opened;
-	if (openedRoom !== msg.rid) {
-		return;
-	}
-
-	void Tracker.nonreactive(async () => {
-		if (msg.t === 'room_changed_privacy') {
-			const type = router.getRouteName() === 'channel' ? 'c' : 'p';
-			await close(type + router.getRouteParameters().name);
-
-			const subscription = ChatSubscription.findOne({ rid: msg.rid });
-			if (!subscription) {
-				throw new Error('Subscription not found');
-			}
-			router.navigate({
-				pattern: subscription.t === 'c' ? '/channel/:name/:tab?/:context?' : '/group/:name/:tab?/:context?',
-				params: { name: subscription.name },
-				search: router.getSearchParameters(),
-			});
-		}
-
-		if (msg.t === 'r') {
-			const room = ChatRoom.findOne(msg.rid);
-			if (!room) {
-				throw new Error('Room not found');
-			}
-			if (room.name !== router.getRouteParameters().name) {
-				await close(room.t + router.getRouteParameters().name);
-				roomCoordinator.openRouteLink(room.t, room, router.getSearchParameters());
-			}
-		}
-	});
-};
-
 const computation = Tracker.autorun(() => {
 	const ready = CachedChatRoom.ready.get() && mainReady.get();
 	if (ready !== true) {
@@ -152,8 +116,6 @@ const computation = Tracker.autorun(() => {
 								}
 							}
 
-							handleTrackSettingsChange({ ...msg });
-
 							await callbacks.run('streamMessage', { ...msg, name: room.name || '' });
 
 							fireGlobalEvent('new-message', {
@@ -171,6 +133,13 @@ const computation = Tracker.autorun(() => {
 							record.streamActive = true;
 							openedRoomsDependency.changed();
 						});
+
+					// when we receive a messages imported event we just clear the room history and fetch it again
+					Notifications.onRoom(record.rid, 'messagesImported', async () => {
+						await RoomHistoryManager.clear(record.rid);
+						await RoomHistoryManager.getMore(record.rid);
+					});
+
 					Notifications.onRoom(record.rid, 'deleteMessage', (msg) => {
 						ChatMessage.remove({ _id: msg._id });
 
@@ -208,6 +177,35 @@ const computation = Tracker.autorun(() => {
 							return ChatMessage.remove(query);
 						},
 					);
+					Notifications.onRoom(record.rid, 'messagesRead', ({ tmid, until }) => {
+						if (tmid) {
+							return ChatMessage.update(
+								{
+									tmid,
+									unread: true,
+								},
+								{ $unset: { unread: 1 } },
+								{ multi: true },
+							);
+						}
+						ChatMessage.update(
+							{
+								rid: record.rid,
+								unread: true,
+								ts: { $lt: until },
+								$or: [
+									{
+										tmid: { $exists: false },
+									},
+									{
+										tshow: true,
+									},
+								],
+							},
+							{ $unset: { unread: 1 } },
+							{ multi: true },
+						);
+					});
 				}
 			}
 

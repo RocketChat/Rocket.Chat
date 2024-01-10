@@ -7,7 +7,7 @@ type EngagementDashboardCardFilterProps = {
 };
 
 const EngagementDashboardCardFilter = ({ children = <InputBox.Skeleton /> }: EngagementDashboardCardFilterProps): ReactElement => (
-	<Box display='flex' justifyContent='flex-end' alignItems='center' wrap='no-wrap' pbe={8}>
+	<Box rcx-card__row display='flex' justifyContent='flex-end' alignItems='center' wrap='no-wrap' pbe={8}>
 		{children && <Flex.Item grow={0}>{children}</Flex.Item>}
 	</Box>
 );
