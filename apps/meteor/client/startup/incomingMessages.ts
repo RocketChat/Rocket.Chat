@@ -23,8 +23,6 @@ Meteor.startup(() => {
 
 	CachedCollectionManager.onLogin(() => {
 		sdk.stream('notify-user', [`${Meteor.userId()}/subscriptions-changed`], (_action, sub) => {
-			console.log('subscriptions-changed', _action, sub);
-
 			ChatMessage.update(
 				{
 					rid: sub.rid,
