@@ -603,6 +603,21 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateOne(query, update);
 	}
 
+	updateAllAutoTranslateLanguagesByUserId(userId: IUser['_id'], language: string): Promise<UpdateResult | Document> {
+		const query = {
+			'u._id': userId,
+			'autoTranslate': true,
+		};
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				autoTranslateLanguage: language,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
 	disableAutoTranslateByRoomId(roomId: IRoom['_id']): Promise<UpdateResult | Document> {
 		const query = {
 			rid: roomId,
