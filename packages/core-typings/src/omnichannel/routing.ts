@@ -39,6 +39,8 @@ export type TransferData = {
 	scope?: 'agent' | 'department' | 'queue' | 'autoTransferUnansweredChatsToAgent' | 'autoTransferUnansweredChatsToQueue';
 	comment?: string;
 	hops?: number;
+	usingFallbackDep?: boolean;
+	originalDepartmentName?: string;
 };
 
 export type TransferByData = {

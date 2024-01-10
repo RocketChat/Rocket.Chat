@@ -1,4 +1,3 @@
-import { Message } from '@rocket.chat/core-services';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { IRoom, ILivechatVisitor, ILivechatDepartment, TransferData, AtLeast } from '@rocket.chat/core-typings';
 import { LivechatDepartment } from '@rocket.chat/models';
@@ -56,6 +55,7 @@ const onTransferFailure = async (
 
 	const transferDataFallback = {
 		...transferData,
+		usingFallbackDep: true,
 		prevDepartment: department.name,
 		departmentId: department.fallbackForwardDepartment,
 		department: fallbackDepartment,
@@ -73,14 +73,6 @@ const onTransferFailure = async (
 		return false;
 	}
 
-	const { _id, username } = transferData.transferredBy;
-	await Message.saveSystemMessage(
-		'livechat_transfer_history_fallback',
-		room._id,
-		'',
-		{ _id, username },
-		{ transferData: transferDataFallback },
-	);
 	cbLogger.info({
 		msg: 'Fallback forward success',
 		departmentId: department._id,
