@@ -70,7 +70,7 @@ export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps): ReactElem
 					{attachment.md ? <MessageContentBody md={attachment.md} /> : attachment.text.substring(attachment.text.indexOf('\n') + 1)}
 					{attachment.attachments && (
 						<AttachmentInner>
-							<Attachments attachments={attachment.attachments} />
+							<Attachments attachments={attachment.attachments} id={attachment.attachments[0].title_link} />
 						</AttachmentInner>
 					)}
 				</AttachmentDetails>

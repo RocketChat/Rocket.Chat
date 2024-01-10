@@ -822,6 +822,10 @@ API.v1.addRoute(
 				initialImage = await Uploads.findOneById(this.queryParams.startingFromId);
 			}
 
+			if (!initialImage) {
+				return API.v1.notFound('Image not found');
+			}
+
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			const { cursor, totalCount } = Uploads.findImagesByRoomId(room._id, initialImage?.uploadedAt, {
@@ -830,11 +834,6 @@ API.v1.addRoute(
 			});
 
 			const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			// If the initial image was not returned in the query, insert it as the first element of the list
-			if (initialImage && !files.find(({ _id }) => _id === (initialImage as IUpload)._id)) {
-				files.splice(0, 0, initialImage);
-			}
 
 			return API.v1.success({
 				files,
