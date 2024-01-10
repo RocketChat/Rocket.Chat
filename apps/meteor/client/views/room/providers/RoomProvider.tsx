@@ -96,14 +96,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 			return;
 		}
 
-		UserAction.addStream(rid);
-		return (): void => {
-			try {
-				UserAction.cancel(rid);
-			} catch (error) {
-				// Do nothing
-			}
-		};
+		return UserAction.addStream(rid);
 	}, [rid, subscribed]);
 
 	if (!pseudoRoom) {
