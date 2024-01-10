@@ -10,8 +10,6 @@ export async function getAppsStatistics() {
 		totalActive: Apps.isInitialized() && (await Apps.getManager().get({ enabled: true })).length,
 		totalFailed:
 			Apps.isInitialized() &&
-			Apps.getManager()
-				.get({ disabled: true })
-				.filter(({ app: { status } }) => status !== AppStatus.MANUALLY_DISABLED).length,
+			(await Apps.getManager().get({ disabled: true })).filter(({ app: { status } }) => status !== AppStatus.MANUALLY_DISABLED).length,
 	};
 }

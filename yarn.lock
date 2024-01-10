@@ -8349,6 +8349,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/apps-engine@npm:deno":
+  version: 1.42.0-deno.485
+  resolution: "@rocket.chat/apps-engine@npm:1.42.0-deno.485"
+  dependencies:
+    adm-zip: ^0.5.9
+    cryptiles: ^4.1.3
+    deno-bin: 1.37.1
+    jose: ^4.11.1
+    jsonrpc-lite: ^2.2.0
+    lodash.clonedeep: ^4.5.0
+    semver: ^5.7.1
+    stack-trace: 0.0.10
+    uuid: ~8.3.2
+    vm2: ^3.9.19
+  peerDependencies:
+    "@rocket.chat/ui-kit": "*"
+  checksum: 90cdc4cd45ef0a56c12987f49df0379c79d453de3bd67f6788860bcaa24fb7e714ce95ed098a45fdf6ede6d96b05bda275cb79357f0350d9142030c2ed835d80
+  languageName: node
+  linkType: hard
+
 "@rocket.chat/authorization-service@workspace:ee/apps/authorization-service":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/authorization-service@workspace:ee/apps/authorization-service"
@@ -9146,7 +9166,7 @@ __metadata:
     "@rocket.chat/account-utils": "workspace:^"
     "@rocket.chat/agenda": "workspace:^"
     "@rocket.chat/api-client": "workspace:^"
-    "@rocket.chat/apps-engine": 1.41.0
+    "@rocket.chat/apps-engine": deno
     "@rocket.chat/base64": "workspace:^"
     "@rocket.chat/cas-validate": "workspace:^"
     "@rocket.chat/core-services": "workspace:^"
@@ -20649,6 +20669,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"deno-bin@npm:1.37.1":
+  version: 1.37.1
+  resolution: "deno-bin@npm:1.37.1"
+  dependencies:
+    adm-zip: ^0.5.4
+    follow-redirects: ^1.10.0
+  bin:
+    deno: bin/deno.js
+    deno-bin: bin/deno.js
+  checksum: 1c985611aa67b4b72f68b5608644af73dbff75619ac4fba67fecf036763acf76c66a9bb537cf09865c855313ceec6af1190474fa0163a616620b8af705c82736
+  languageName: node
+  linkType: hard
+
 "depd@npm:2.0.0, depd@npm:~2.0.0":
   version: 2.0.0
   resolution: "depd@npm:2.0.0"
@@ -23436,6 +23469,16 @@ __metadata:
     debug:
       optional: true
   checksum: faa66059b66358ba65c234c2f2a37fcec029dc22775f35d9ad6abac56003268baf41e55f9ee645957b32c7d9f62baf1f0b906e68267276f54ec4b4c597c2b190
+  languageName: node
+  linkType: hard
+
+"follow-redirects@npm:^1.10.0":
+  version: 1.15.4
+  resolution: "follow-redirects@npm:1.15.4"
+  peerDependenciesMeta:
+    debug:
+      optional: true
+  checksum: e178d1deff8b23d5d24ec3f7a94cde6e47d74d0dc649c35fc9857041267c12ec5d44650a0c5597ef83056ada9ea6ca0c30e7c4f97dbf07d035086be9e6a5b7b6
   languageName: node
   linkType: hard
 
@@ -28230,6 +28273,13 @@ __metadata:
   dependencies:
     json-to-ast: ^2.1.0
   checksum: 00a11fff623e74e1b14d10dcda2846e25ccdf0a12ade911fcbc8a75b82f4d33429c22dd57b6f7d2fd8a8eb07bc6435f2c3e412cb7ec09f2c8f63f19381742483
+  languageName: node
+  linkType: hard
+
+"jsonrpc-lite@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "jsonrpc-lite@npm:2.2.0"
+  checksum: 3062101d3c93401d176c1c24b90e0feebdd063546f8ed89c299531dd792c4d37c6766666d160efb83b94f17f7e2deed4346cdd9124b99581ed4620779e8733bb
   languageName: node
   linkType: hard
 
