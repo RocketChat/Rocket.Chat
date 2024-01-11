@@ -85,9 +85,9 @@ export class CachedCollection<T extends { _id: string }, U = T> extends Emitter<
 		});
 	}
 
-	protected get eventName(): `${Name}-changed` | `${Name}-changed/${string}` {
+	protected get eventName(): `${Name}-changed` | `${string}/${Name}-changed` {
 		if (this.eventType === 'notify-user') {
-			return `${this.name}-changed/${Meteor.userId()}}`;
+			return `${Meteor.userId()}/${this.name}-changed`;
 		}
 		return `${this.name}-changed`;
 	}
