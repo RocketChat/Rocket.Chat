@@ -40,6 +40,19 @@ import type { AutoUpdateRecord } from '../types/IMeteor';
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 
+type LoginServiceConfigurationEvent = {
+	id: string;
+} & (
+	| {
+			clientAction: 'removed';
+			data?: never;
+	  }
+	| {
+			clientAction: Omit<ClientAction, 'removed'>;
+			data: Partial<ILoginServiceConfiguration>;
+	  }
+);
+
 export type EventSignatures = {
 	'room.video-conference': (params: { rid: string; callId: string }) => void;
 	'shutdown': (params: Record<string, string[]>) => void;
@@ -235,7 +248,7 @@ export type EventSignatures = {
 			  }
 		),
 	): void;
-	'watch.loginServiceConfiguration'(data: { clientAction: ClientAction; data: Partial<ILoginServiceConfiguration>; id: string }): void;
+	'watch.loginServiceConfiguration'(data: LoginServiceConfigurationEvent): void;
 	'watch.instanceStatus'(data: {
 		clientAction: ClientAction;
 		data?: undefined | Partial<IInstanceStatus>;
