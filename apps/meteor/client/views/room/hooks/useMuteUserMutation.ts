@@ -1,8 +1,18 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import { useMethod, useToastMessageDispatch, useTranslation, useUserRoom } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
+
+type MembersListQueryDataType = {
+	pages: {
+		count: number;
+		offset: number;
+		members: (IUser & { isMuted: boolean })[];
+		total: number;
+	}[];
+};
 
 export const useMuteUserMutation = (isUserMuted: boolean, rid: string) => {
 	const muteUser = useMethod(isUserMuted ? 'unmuteUserInRoom' : 'muteUserInRoom');
@@ -16,7 +26,6 @@ export const useMuteUserMutation = (isUserMuted: boolean, rid: string) => {
 	const roomName = room?.t && escapeHTML(roomCoordinator.getRoomName(room.t, room));
 
 	return useMutation(
-		['muteUser', 'unmuteUser'],
 		async ({ username, rid }: { username: string; rid: string }) => {
 			return muteUser({ username, rid });
 		},
@@ -27,19 +36,20 @@ export const useMuteUserMutation = (isUserMuted: boolean, rid: string) => {
 					message: t(dispatchMessage, { username, roomName }),
 				});
 
-				queryClient.setQueriesData(
+				queryClient.setQueriesData<MembersListQueryDataType>(
 					{
-						predicate: (query: any) => query.queryKey[1] === 'members' && query.queryKey[2] === rid,
+						predicate: (query) => query.queryKey[1] === 'members' && query.queryKey[2] === rid,
 					},
-					(data: any) => ({
-						...data,
-						pages: data.pages.map((page: any) => ({
-							...page,
-							members: page.members.map((member: any) =>
-								member.username === username ? { ...member, isMuted: !isUserMuted } : { ...member },
-							),
-						})),
-					}),
+					(data) =>
+						data && {
+							...data,
+							pages: data.pages.map((page) => ({
+								...page,
+								members: page.members.map((member) =>
+									member.username === username ? { ...member, isMuted: !isUserMuted } : { ...member },
+								),
+							})),
+						},
 				);
 			},
 			onError: (error) => {
