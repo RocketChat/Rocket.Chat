@@ -12,26 +12,25 @@ const ImageGalleryProvider = ({ children }: ImageGalleryProviderProps) => {
 	const [imageId, setImageId] = useState<string>();
 	const [quotedImageUrl, setQuotedImageUrl] = useState<string>();
 
-	const handleImageClick = (event: Event) => {
-		const target = event?.target as HTMLElement | null;
-
-		if (target?.closest('.rcx-attachment__details')) {
-			return setQuotedImageUrl(target.dataset.id);
-		}
-		if (target?.classList.contains('gallery-item')) {
-			const id = target.closest('.gallery-item-container')?.getAttribute('data-id') || undefined;
-			return setImageId(target.dataset.id || id);
-		}
-		if (target?.classList.contains('gallery-item-container')) {
-			return setImageId(target.dataset.id);
-		}
-		if (target?.classList.contains('rcx-avatar__element') && target.closest('.gallery-item')) {
-			const avatarTarget = target.closest('.gallery-item-container')?.getAttribute('data-id') || undefined;
-			return setImageId(avatarTarget);
-		}
-	};
-
 	useEffect(() => {
+		const handleImageClick = (event: Event) => {
+			const target = event?.target as HTMLElement | null;
+
+			if (target?.closest('.rcx-attachment__details')) {
+				return setQuotedImageUrl(target.dataset.id);
+			}
+			if (target?.classList.contains('gallery-item')) {
+				const id = target.closest('.gallery-item-container')?.getAttribute('data-id') || undefined;
+				return setImageId(target.dataset.id || id);
+			}
+			if (target?.classList.contains('gallery-item-container')) {
+				return setImageId(target.dataset.id);
+			}
+			if (target?.classList.contains('rcx-avatar__element') && target.closest('.gallery-item')) {
+				const avatarTarget = target.closest('.gallery-item-container')?.getAttribute('data-id') || undefined;
+				return setImageId(avatarTarget);
+			}
+		};
 		document.addEventListener('click', handleImageClick);
 
 		return () => document.removeEventListener('click', handleImageClick);
