@@ -46,7 +46,9 @@ export const ActionForm = ({ control, index, ...props }: SendMessageFormType) =>
 					<Controller
 						name={actionFieldName}
 						control={control}
-						render={({ field }) => <Select {...field} id={actionFieldId} options={actionOptions} />}
+						render={({ field }) => {
+							return <Select {...field} id={actionFieldId} options={actionOptions} placeholder={t('Select_an_option')} />;
+						}}
 					/>
 				</FieldRow>
 				{actionHint && <FieldHint>{t(actionHint)}</FieldHint>}

@@ -38,7 +38,7 @@ export const ActionSender = ({ control, index, ...props }: ActionSenderType) => 
 					name={senderFieldName}
 					defaultValue='queue'
 					render={({ field }) => {
-						return <Select id={senderFieldId} {...field} options={senderOptions} placeholder={t('Select_an_option')} />;
+						return <Select {...field} id={senderFieldId} options={senderOptions} placeholder={t('Select_an_option')} />;
 					}}
 				/>
 			</FieldRow>

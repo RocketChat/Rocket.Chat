@@ -33,13 +33,12 @@ export const ExternalServiceActionForm = ({ control, index, ...props }: SendMess
 			<ActionExternalUrl control={control} index={index} />
 
 			<Field>
-				<FieldLabel htmlFor={timeoutFieldId}>{t('Timeout_in_miliseconds')}</FieldLabel>
+				<FieldLabel htmlFor={timeoutFieldId}>{t('Timeout_in_miliseconds')}*</FieldLabel>
 				<FieldRow>
 					<Controller
 						control={control}
 						name={timeoutFieldName}
 						defaultValue={10000}
-						shouldUnregister
 						rules={{ required: t('The_field_is_required', t('Timeout_in_miliseconds')), min: { value: 0, message: t('Invalid_value') } }}
 						render={({ field }) => {
 							return (
@@ -47,7 +46,7 @@ export const ExternalServiceActionForm = ({ control, index, ...props }: SendMess
 									{...field}
 									error={timeoutError?.message}
 									aria-invalid={Boolean(timeoutError)}
-									aria-describedby={`${timeoutFieldId}-error`}
+									aria-describedby={`${timeoutFieldId}-hint`}
 									aria-required={true}
 									onChange={(v: FormEvent<HTMLInputElement>) => field.onChange(Number(v.currentTarget.value || 0))}
 									onFocus={(v: FocusEvent<HTMLInputElement>) => v.currentTarget.select()}
@@ -63,7 +62,7 @@ export const ExternalServiceActionForm = ({ control, index, ...props }: SendMess
 					</FieldError>
 				)}
 
-				<FieldHint>{t('Timeout_in_miliseconds_hint')}</FieldHint>
+				<FieldHint id={`${timeoutFieldId}-hint`}>{t('Timeout_in_miliseconds_hint')}</FieldHint>
 			</Field>
 
 			<Field>
@@ -73,15 +72,15 @@ export const ExternalServiceActionForm = ({ control, index, ...props }: SendMess
 						control={control}
 						name={fallbackMessageFieldName}
 						defaultValue=''
-						shouldUnregister
 						render={({ field }) => (
 							<TextAreaInput
 								{...field}
+								id={fallbackMessageFieldId}
 								rows={3}
 								placeholder={t('Fallback_message')}
 								error={fallbackMessageError?.message}
 								aria-invalid={Boolean(fallbackMessageError)}
-								aria-describedby={`${fallbackMessageFieldId}-error`}
+								aria-describedby={`${fallbackMessageFieldId}-hint`}
 								aria-required={true}
 							/>
 						)}
@@ -94,7 +93,7 @@ export const ExternalServiceActionForm = ({ control, index, ...props }: SendMess
 					</FieldError>
 				)}
 
-				<FieldHint>{t('Service_fallback_message_hint')}</FieldHint>
+				<FieldHint id={`${fallbackMessageFieldId}-hint`}>{t('Service_fallback_message_hint')}</FieldHint>
 			</Field>
 		</FieldGroup>
 	);

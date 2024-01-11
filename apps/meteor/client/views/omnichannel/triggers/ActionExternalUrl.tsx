@@ -56,7 +56,6 @@ export const ActionExternalUrl = ({ control, index, ...props }: ActionExternalUr
 				<Controller
 					name={serviceUrlFieldName}
 					control={control}
-					shouldUnregister
 					defaultValue=''
 					rules={{
 						required: t('The_field_is_required', t('External_service_url')),

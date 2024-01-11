@@ -47,7 +47,9 @@ export const ConditionForm = ({ control, index, ...props }: ConditionFormType) =
 					<Controller
 						name={`conditions.${index}.name`}
 						control={control}
-						render={({ field }) => <Select id={conditionFieldId} {...field} options={conditionOptions} />}
+						render={({ field }) => (
+							<Select {...field} id={conditionFieldId} options={conditionOptions} placeholder={t('Select_an_option')} />
+						)}
 					/>
 				</FieldRow>
 

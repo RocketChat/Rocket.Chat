@@ -32,7 +32,6 @@ export const SendMessageActionForm = ({ control, index, ...props }: SendMessageA
 						control={control}
 						name={name}
 						defaultValue=''
-						shouldUnregister
 						rules={{ required: t('The_field_is_required', t('Message')) }}
 						render={({ field }) => (
 							<TextAreaInput
