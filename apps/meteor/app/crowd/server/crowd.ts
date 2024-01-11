@@ -286,7 +286,7 @@ export class CROWD {
 	}
 
 	async updateUserCollection(crowdUser: Record<string, any>) {
-		const username = crowdUser.crow_username || crowdUser.username;
+		const username = crowdUser.crowd_username || crowdUser.username;
 		const mail = crowdUser.email;
 
 		// If id is not provided, user is linked by crowd_username or email address
