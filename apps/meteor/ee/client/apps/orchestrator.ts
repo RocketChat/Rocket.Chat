@@ -91,12 +91,12 @@ class AppClientOrchestrator {
 	}
 
 	public async installApp(appId: string, version: string, permissionsGranted?: IPermission[]): Promise<App> {
-		const { app } = await sdk.rest.post<'/apps'>('/apps', {
+		const { app } = (await sdk.rest.post<'/apps'>('/apps', {
 			appId,
 			marketplace: true,
 			version,
 			permissionsGranted,
-		});
+		})) as { app: App };
 		return app;
 	}
 

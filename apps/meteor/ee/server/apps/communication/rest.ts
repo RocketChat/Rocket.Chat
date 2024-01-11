@@ -217,7 +217,7 @@ export class AppsRestApi {
 
 		// WE NEED TO MOVE EACH ENDPOINT HANDLER TO IT'S OWN FILE
 		this.api.addRoute(
-			'' as '/apps', // this is the default route, but an empty path was confusing the type
+			'',
 			{ authRequired: true, permissionsRequired: ['manage-apps'] },
 			{
 				async get() {
@@ -332,7 +332,7 @@ export class AppsRestApi {
 
 							return API.v1.success({ buff });
 						}
-					} else if (this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
+					} else if ('appId' in this.bodyParams && this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
 						const baseUrl = orchestrator.getMarketplaceUrl();
 
 						const headers = getDefaultHeaders();

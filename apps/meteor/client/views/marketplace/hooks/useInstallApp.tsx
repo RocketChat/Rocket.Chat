@@ -100,8 +100,7 @@ export const useInstallApp = (file: File, url: string): { install: () => void; i
 	/** @deprecated	*/
 	const getAppFile = async (): Promise<File | undefined> => {
 		try {
-			// @ts-ignore-next-line
-			const { buff } = await downloadPrivateAppFromUrl({ url, downloadOnly: true });
+			const { buff } = (await downloadPrivateAppFromUrl({ url, downloadOnly: true })) as { buff: { data: ArrayLike<number> } };
 
 			return new File([Uint8Array.from(buff.data)], 'app.zip', { type: 'application/zip' });
 		} catch (error) {

@@ -239,15 +239,27 @@ export type AppsEndpoints = {
 			  }[])
 			| (() => { apps: App[] });
 
-		POST: (params: {
-			appId: string;
-			marketplace: boolean;
-			version: string;
-			permissionsGranted?: IPermission[];
-			url?: string;
-			downloadOnly?: boolean;
-		}) => {
-			app: App;
+		POST: {
+			(
+				params:
+					| {
+							appId: string;
+							marketplace: boolean;
+							version: string;
+							permissionsGranted?: IPermission[];
+							url?: string;
+							downloadOnly?: boolean;
+					  }
+					| { url: string; downloadOnly?: boolean },
+			):
+				| {
+						app: App;
+				  }
+				| {
+						buff: {
+							data: ArrayLike<number>;
+						};
+				  };
 		};
 	};
 
