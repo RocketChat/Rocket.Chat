@@ -77,7 +77,7 @@ export async function callTriggerExternalService({
 	} catch (error: any) {
 		const isTimeout = error.message === 'The user aborted a request.';
 		return {
-			error: isTimeout ? 'error-timeout' : 'error-invalid-webhook-response',
+			error: isTimeout ? 'error-timeout' : 'error-invalid-external-service-response',
 			response: error.message,
 			fallbackMessage,
 		};
