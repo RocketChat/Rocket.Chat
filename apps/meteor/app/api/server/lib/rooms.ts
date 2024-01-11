@@ -1,4 +1,4 @@
-import type { IRoom, ISubscription, RoomAdminFieldsType, RoomType } from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription, IUser, RoomAdminFieldsType, RoomType } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
 import type { FindOptions, Sort } from 'mongodb';
 
@@ -177,4 +177,24 @@ export async function findRoomsAvailableForTeams({ uid, name }: { uid: string; n
 	return {
 		items: rooms,
 	};
+}
+
+export async function isUserMutedInRoom(user: Pick<IUser, '_id' | 'username'>, room: IRoom) {
+	const { username, _id } = user;
+
+	if (room?.ro === true) {
+		if (!(await hasPermissionAsync(_id, 'post-readonly', room._id))) {
+			// Unless the user was manually unmuted
+			if (username && !room?.unmuted?.includes(username)) {
+				// throw new Error("You can't send messages because the room is readonly.");
+				return true;
+			}
+		}
+	}
+
+	if (username && room?.muted?.includes(username)) {
+		return true;
+	}
+
+	return false;
 }

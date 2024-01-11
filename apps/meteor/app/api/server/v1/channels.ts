@@ -41,6 +41,7 @@ import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessag
 import { getLoggedInUser } from '../helpers/getLoggedInUser';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams, getUserListFromParams } from '../helpers/getUserFromParams';
+import { isUserMutedInRoom } from '../lib/rooms';
 
 // Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 async function findChannelByIdOrName({
@@ -1082,33 +1083,17 @@ API.v1.addRoute(
 				...(sort?.username && { sort: { username: sort.username } }),
 			});
 
-			const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
+			const [membersList, total] = await Promise.all([cursor.toArray(), totalCount]);
 
-			const membersWithMuted = await Promise.all(
-				members.map(async (member) => {
-					const { username, _id } = member;
-
-					let isMuted = false;
-
-					if (findResult.ro === true) {
-						if (!(await hasPermissionAsync(_id, 'post-readonly', findResult._id))) {
-							// Unless the user was manually unmuted
-							if (username && !findResult?.unmuted?.includes(username)) {
-								// throw new Error("You can't send messages because the room is readonly.");
-								isMuted = true;
-							}
-						}
-					}
-
-					if (username && findResult?.muted?.includes(username)) {
-						isMuted = true;
-					}
+			const members = await Promise.all(
+				membersList.map(async (member) => {
+					const isMuted = await isUserMutedInRoom(member, findResult);
 					return { ...member, isMuted };
 				}),
 			);
 
 			return API.v1.success({
-				members: membersWithMuted,
+				members,
 				count: members.length,
 				offset: skip,
 				total,
