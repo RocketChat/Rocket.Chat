@@ -8,7 +8,7 @@ import { settings } from '../../app/settings/server';
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		OEmbedCacheCleanup(): { message: string; params: unknown[] };
+		OEmbedCacheCleanup(): { message: string };
 	}
 }
 
@@ -31,7 +31,6 @@ Meteor.methods<ServerMethods>({
 		await executeClearOEmbedCache();
 		return {
 			message: 'cache_cleared',
-			params: [],
 		};
 	},
 });
