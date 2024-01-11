@@ -506,7 +506,7 @@
   "App_Information": "App Information",
   "Apps_context_enterprise": "Enterprise",
   "App_Installation": "App Installation",
-	"App_Installation_Deprecation": "Install apps from URL is deprecated and will be removed in the next major release.",
+  "App_Installation_Deprecation": "Install apps from URL is deprecated and will be removed in the next major release.",
   "App_not_enabled": "App not enabled",
   "App_not_found": "App not found",
   "App_status_auto_enabled": "Enabled",
