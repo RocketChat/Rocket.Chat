@@ -27,7 +27,7 @@ export const useInstallApp = (file: File, url: string): { install: () => void; i
 
 	const uploadAppEndpoint = useUpload('/apps');
 
-	/** @deprecated */
+	// TODO: This function should not be called in a next major version, it will be changed by an endpoint deprecation.
 	const downloadPrivateAppFromUrl = useEndpoint('POST', '/apps');
 
 	const [isInstalling, setInstalling] = useState(false);
