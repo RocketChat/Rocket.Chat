@@ -14,9 +14,12 @@ type ActionSenderType = ComponentProps<typeof Field> & {
 };
 
 export const ActionSender = ({ control, index, ...props }: ActionSenderType) => {
-	const senderFieldId = useUniqueId();
 	const { t } = useTranslation();
-	const sender = useWatch({ control, name: `actions.${index}.params.sender` });
+
+	const senderFieldId = useUniqueId();
+	const senderFieldName = `actions.${index}.params.sender` as const;
+	const senderNameFieldName = `actions.${index}.params.name` as const;
+	const senderNameFieldValue = useWatch({ control, name: senderFieldName });
 
 	const senderOptions: SelectOption[] = useMemo(
 		() => [
@@ -31,19 +34,20 @@ export const ActionSender = ({ control, index, ...props }: ActionSenderType) => 
 			<FieldLabel htmlFor={senderFieldId}>{t('Sender')}</FieldLabel>
 			<FieldRow>
 				<Controller
-					name={`actions.${index}.params.sender`}
 					control={control}
+					name={senderFieldName}
+					defaultValue='queue'
 					render={({ field }) => {
 						return <Select id={senderFieldId} {...field} options={senderOptions} placeholder={t('Select_an_option')} />;
 					}}
 				/>
 			</FieldRow>
 
-			{sender === 'custom' && (
+			{senderNameFieldValue === 'custom' && (
 				<FieldRow>
 					<Controller
-						name={`actions.${index}.params.name`}
 						control={control}
+						name={senderNameFieldName}
 						render={({ field }) => {
 							return <TextInput {...field} placeholder={t('Name_of_agent')} />;
 						}}

@@ -3,8 +3,8 @@ import { FieldGroup, Button, ButtonGroup, Field, FieldLabel, FieldRow, FieldErro
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRouter, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import React from 'react';
-import { Controller, FormProvider, useFieldArray, useForm } from 'react-hook-form';
+import React, { useMemo } from 'react';
+import { Controller, FormProvider, get, useFieldArray, useForm } from 'react-hook-form';
 
 import {
 	ContextualbarScrollableContent,
@@ -33,7 +33,7 @@ const DEFAULT_SEND_MESSAGE_ACTION = {
 		name: '',
 		serviceUrl: '',
 		serviceFallbackMessage: '',
-		serviceTimeout: 0,
+		serviceTimeout: 10000,
 	},
 } as const;
 
@@ -90,12 +90,18 @@ const EditTrigger = ({ triggerData }: { triggerData?: Serialized<ILivechatTrigge
 	const nameField = useUniqueId();
 	const descriptionField = useUniqueId();
 
-	const methods = useForm<TriggersPayload>({ mode: 'onBlur', values: initValues });
+	const methods = useForm<TriggersPayload>({ mode: 'onBlur', reValidateMode: 'onBlur', values: initValues });
 	const {
 		control,
 		handleSubmit,
-		formState: { isDirty, errors },
+		formState: { isDirty, isSubmitting, errors },
+		watch,
 	} = methods;
+
+	// Alternative way of checking isValid in order to not trigger validation on every render
+	// https://github.com/react-hook-form/documentation/issues/944
+	const isValid = useMemo(() => Object.keys(errors).length === 0, [errors]);
+	const values = watch();
 
 	const { fields: conditionsFields } = useFieldArray({
 		control,
@@ -121,8 +127,10 @@ const EditTrigger = ({ triggerData }: { triggerData?: Serialized<ILivechatTrigge
 	});
 
 	const handleSave = async (data: TriggersPayload) => {
-		saveTriggerMutation.mutateAsync({ ...data, _id: triggerData?._id });
+		return saveTriggerMutation.mutateAsync({ ...data, _id: triggerData?._id });
 	};
+
+	console.log(get(values, 'actions.0.params'));
 
 	return (
 		<Contextualbar>
@@ -205,7 +213,7 @@ const EditTrigger = ({ triggerData }: { triggerData?: Serialized<ILivechatTrigge
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={() => router.navigate('/omnichannel/triggers')}>{t('Cancel')}</Button>
-					<Button form={formId} type='submit' primary disabled={!isDirty}>
+					<Button form={formId} type='submit' primary disabled={!isDirty || !isValid} loading={isSubmitting}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

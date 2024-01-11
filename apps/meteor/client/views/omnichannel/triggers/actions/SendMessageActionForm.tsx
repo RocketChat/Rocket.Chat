@@ -1,14 +1,14 @@
-import type { ILivechatSendMessageAction } from '@rocket.chat/core-typings';
 import { Field, FieldError, FieldLabel, FieldRow, TextAreaInput } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { ComponentProps } from 'react';
 import React from 'react';
-import type { Control, FieldErrorsImpl } from 'react-hook-form';
-import { Controller, useFormState } from 'react-hook-form';
+import type { Control } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { ActionSender } from '../ActionSender';
 import type { TriggersPayload } from '../EditTrigger';
+import { useFieldError } from '../hooks/useFieldError';
 
 type SendMessageActionFormType = ComponentProps<typeof Field> & {
 	index: number;
@@ -19,20 +19,20 @@ export const SendMessageActionForm = ({ control, index, ...props }: SendMessageA
 	const { t } = useTranslation();
 	const messageFieldId = useUniqueId();
 	const name = `actions.${index}.params.msg` as const;
-	const { errors } = useFormState<TriggersPayload>({ control, name });
-	const actionErrors = errors?.actions?.[index] as FieldErrorsImpl<Required<ILivechatSendMessageAction>>;
-	const messageError = actionErrors?.params?.msg;
+	const [messageError] = useFieldError({ control, name });
 
 	return (
 		<>
 			<ActionSender {...props} control={control} index={index} />
 
 			<Field {...props}>
-				<FieldLabel htmlFor={messageFieldId}>{t('Message')}</FieldLabel>
+				<FieldLabel htmlFor={messageFieldId}>{t('Message')}*</FieldLabel>
 				<FieldRow>
 					<Controller
-						name={name}
 						control={control}
+						name={name}
+						defaultValue=''
+						shouldUnregister
 						rules={{ required: t('The_field_is_required', t('Message')) }}
 						render={({ field }) => (
 							<TextAreaInput

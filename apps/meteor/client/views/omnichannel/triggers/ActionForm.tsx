@@ -1,4 +1,3 @@
-import type { ILivechatTriggerAction } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Field, FieldGroup, FieldHint, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
@@ -6,10 +5,10 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import React, { useMemo } from 'react';
 import type { Control } from 'react-hook-form';
-import { Controller, useFormContext, useWatch } from 'react-hook-form';
+import { Controller, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import { getDefaultAction, type TriggersPayload } from './EditTrigger';
+import { type TriggersPayload } from './EditTrigger';
 import { useActionForm } from './hooks/useActionForm';
 
 type SendMessageFormType = ComponentProps<typeof Field> & {
@@ -21,13 +20,13 @@ const ACTION_HINTS: Record<string, TranslationKey> = {
 	'use-external-service': 'External_service_action_hint',
 } as const;
 
-export const ActionForm = ({ index, ...props }: SendMessageFormType) => {
-	const { control, setValue } = useFormContext<TriggersPayload>();
+export const ActionForm = ({ control, index, ...props }: SendMessageFormType) => {
 	const { t } = useTranslation();
+
 	const actionFieldId = useUniqueId();
-	// const name = `actions.${index}.name` as const;
-	const action = useWatch({ control, name: `actions.${index}` });
-	const { name, params } = action || {};
+	const actionFieldName = `actions.${index}.name` as const;
+	const actionFieldValue = useWatch({ control, name: actionFieldName });
+
 	const actionOptions: SelectOption[] = useMemo(
 		() => [
 			['send-message', t('Send_a_message')],
@@ -36,8 +35,8 @@ export const ActionForm = ({ index, ...props }: SendMessageFormType) => {
 		[t],
 	);
 
-	const ActionFormParams = useActionForm(name);
-	const actionHint = useMemo(() => ACTION_HINTS[name] || '', [name]);
+	const ActionFormParams = useActionForm(actionFieldValue);
+	const actionHint = useMemo(() => ACTION_HINTS[actionFieldValue] || '', [actionFieldValue]);
 
 	return (
 		<FieldGroup {...props}>
@@ -45,20 +44,9 @@ export const ActionForm = ({ index, ...props }: SendMessageFormType) => {
 				<FieldLabel htmlFor={actionFieldId}>{t('Action')}</FieldLabel>
 				<FieldRow>
 					<Controller
-						name={`actions.${index}.name`}
+						name={actionFieldName}
 						control={control}
-						render={({ field }) => (
-							<Select
-								{...field}
-								id={actionFieldId}
-								options={actionOptions}
-								placeholder={t('Select_an_option')}
-								onChange={(v) => {
-									const newAction = { name: v, params } as ILivechatTriggerAction;
-									setValue(`actions.${index}`, getDefaultAction(newAction));
-								}}
-							/>
-						)}
+						render={({ field }) => <Select {...field} id={actionFieldId} options={actionOptions} />}
 					/>
 				</FieldRow>
 				{actionHint && <FieldHint>{t(actionHint)}</FieldHint>}
