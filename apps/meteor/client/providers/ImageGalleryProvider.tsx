@@ -19,18 +19,15 @@ const ImageGalleryProvider = ({ children }: ImageGalleryProviderProps) => {
 			return setQuotedImageUrl(target.dataset.id);
 		}
 		if (target?.classList.contains('gallery-item')) {
-			return setImageId(target.dataset.id || target?.parentElement?.parentElement?.dataset.id);
+			const id = target.closest('.gallery-item-container')?.getAttribute('data-id') || undefined;
+			return setImageId(target.dataset.id || id);
 		}
-
 		if (target?.classList.contains('gallery-item-container')) {
 			return setImageId(target.dataset.id);
 		}
-		if (target?.classList.contains('gallery-item') && target?.parentElement?.parentElement?.classList.contains('gallery-item-container')) {
-			return setImageId(target.dataset.id || target?.parentElement?.parentElement?.dataset.id);
-		}
-
-		if (target?.classList.contains('rcx-avatar__element') && target?.parentElement?.classList.contains('gallery-item')) {
-			return setImageId(target.dataset.id || target?.parentElement?.parentElement?.dataset.id);
+		if (target?.classList.contains('rcx-avatar__element') && target.closest('.gallery-item')) {
+			const avatarTarget = target.closest('.gallery-item-container')?.getAttribute('data-id') || undefined;
+			return setImageId(avatarTarget);
 		}
 	};
 
