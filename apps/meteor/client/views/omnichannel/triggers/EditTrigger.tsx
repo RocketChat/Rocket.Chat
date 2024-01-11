@@ -95,13 +95,11 @@ const EditTrigger = ({ triggerData }: { triggerData?: Serialized<ILivechatTrigge
 		control,
 		handleSubmit,
 		formState: { isDirty, isSubmitting, errors },
-		watch,
 	} = methods;
 
 	// Alternative way of checking isValid in order to not trigger validation on every render
 	// https://github.com/react-hook-form/documentation/issues/944
 	const isValid = useMemo(() => Object.keys(errors).length === 0, [errors]);
-	const values = watch();
 
 	const { fields: conditionsFields } = useFieldArray({
 		control,
@@ -129,8 +127,6 @@ const EditTrigger = ({ triggerData }: { triggerData?: Serialized<ILivechatTrigge
 	const handleSave = async (data: TriggersPayload) => {
 		return saveTriggerMutation.mutateAsync({ ...data, _id: triggerData?._id });
 	};
-
-	console.log(get(values, 'actions.0.params'));
 
 	return (
 		<Contextualbar>
