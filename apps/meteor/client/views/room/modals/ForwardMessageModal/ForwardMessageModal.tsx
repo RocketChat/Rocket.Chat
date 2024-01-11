@@ -37,17 +37,12 @@ const ForwardMessageModal = ({ onClose, permalink, message }: ForwardMessageProp
 		mutationFn: async () => {
 			const optionalMessage = '';
 			const curMsg = await prependReplies(optionalMessage, [message]);
+			const sendPayload = {
+				roomId: rooms,
+				text: curMsg,
+			};
 
-			return Promise.all(
-				rooms.map(async (roomId) => {
-					const sendPayload = {
-						roomId,
-						text: curMsg,
-					};
-
-					await sendMessage(sendPayload);
-				}),
-			);
+			return sendMessage(sendPayload);
 		},
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Message_has_been_forwarded') });
@@ -111,7 +106,7 @@ const ForwardMessageModal = ({ onClose, permalink, message }: ForwardMessageProp
 					<Button onClick={handleCopy} disabled={hasCopied}>
 						{hasCopied ? t('Copied') : t('Copy_Link')}
 					</Button>
-					<Button disabled={!rooms.length || sendMessageMutation.isLoading} onClick={() => sendMessageMutation.mutate()} primary>
+					<Button disabled={!rooms.length} loading={sendMessageMutation.isLoading} onClick={() => sendMessageMutation.mutate()} primary>
 						{t('Forward')}
 					</Button>
 				</ButtonGroup>

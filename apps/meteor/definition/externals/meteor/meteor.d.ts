@@ -110,20 +110,6 @@ declare module 'meteor/meteor' {
 		function _relativeToSiteRootUrl(path: string): string;
 		const _localStorage: Window['localStorage'];
 
-		function loginWithLDAP(
-			username: string | object,
-			password: string,
-			cb: (error?: Error | Meteor.Error | Meteor.TypedError) => void,
-		): void;
-
-		function loginWithCrowd(
-			username: string | object,
-			password: string,
-			cb: (error?: Error | Meteor.Error | Meteor.TypedError) => void,
-		): void;
-
-		function loginWithSamlToken(token: string, cb: (error?: Error | Meteor.Error | Meteor.TypedError) => void): void;
-
 		function methods<TServerMethods extends ServerMethods>(methods: {
 			[TMethodName in keyof TServerMethods]?: (
 				this: MethodThisType,
@@ -137,4 +123,9 @@ declare module 'meteor/meteor' {
 			  }
 			| undefined;
 	}
+
+	// eslint-disable-next-line no-var
+	var Meteor: {
+		[key: `loginWith${string}`]: any;
+	};
 }

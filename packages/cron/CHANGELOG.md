@@ -1,5 +1,237 @@
 # @rocket.chat/cron
 
+## 0.0.22
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.2
+- @rocket.chat/models@0.0.26
+
+## 0.0.21
+
+### Patch Changes
+
+- Updated dependencies [c2b224fd82]
+  - @rocket.chat/core-typings@6.5.1
+  - @rocket.chat/models@0.0.25
+
+## 0.0.20
+
+### Patch Changes
+
+- Updated dependencies [dea1fe9191]
+- Updated dependencies [c0ef13a0bf]
+- Updated dependencies [5b9d6883bf]
+- Updated dependencies [92613680b7]
+- Updated dependencies [ec1b2b9846]
+- Updated dependencies [5f81a0f3cb]
+- Updated dependencies [dea1fe9191]
+  - @rocket.chat/core-typings@6.5.0
+  - @rocket.chat/models@0.0.24
+
+## 0.0.20-rc.12
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.19
+- @rocket.chat/models@0.0.24-rc.12
+
+## 0.0.20-rc.11
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.18
+- @rocket.chat/models@0.0.24-rc.11
+
+## 0.0.20-rc.10
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.17
+- @rocket.chat/models@0.0.24-rc.10
+
+## 0.0.20-rc.9
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.16
+- @rocket.chat/models@0.0.24-rc.9
+
+## 0.0.20-rc.8
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.15
+- @rocket.chat/models@0.0.24-rc.8
+
+## 0.0.20-rc.7
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.14
+- @rocket.chat/models@0.0.24-rc.7
+
+## 0.0.20-rc.6
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.13
+- @rocket.chat/models@0.0.24-rc.6
+
+## 0.0.20-rc.5
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.12
+- @rocket.chat/models@0.0.24-rc.5
+
+## 0.0.20-rc.4
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.11
+- @rocket.chat/models@0.0.24-rc.4
+
+## 0.0.20-rc.3
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.10
+- @rocket.chat/models@0.0.24-rc.3
+
+## 0.0.20-rc.2
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.9
+- @rocket.chat/models@0.0.24-rc.2
+
+## 0.0.20-rc.1
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.8
+- @rocket.chat/models@0.0.24-rc.1
+
+## 0.0.17-rc.7
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.7
+- @rocket.chat/models@0.0.21-rc.7
+
+## 0.0.17-rc.6
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.6
+- @rocket.chat/models@0.0.21-rc.6
+
+## 0.0.17-rc.5
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.5
+- @rocket.chat/models@0.0.21-rc.5
+
+## 0.0.17-rc.4
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.4
+- @rocket.chat/models@0.0.21-rc.4
+
+## 0.0.17-rc.3
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.3
+- @rocket.chat/models@0.0.21-rc.3
+
+## 0.0.17-rc.2
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.2
+- @rocket.chat/models@0.0.21-rc.2
+
+## 0.0.17-rc.1
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.1
+- @rocket.chat/models@0.0.21-rc.1
+
+## 0.0.17-rc.0
+
+### Patch Changes
+
+- Updated dependencies [dea1fe9191]
+- Updated dependencies [c0ef13a0bf]
+- Updated dependencies [5b9d6883bf]
+- Updated dependencies [92613680b7]
+- Updated dependencies [ec1b2b9846]
+- Updated dependencies [5f81a0f3cb]
+- Updated dependencies [dea1fe9191]
+  - @rocket.chat/core-typings@6.5.0-rc.0
+  - @rocket.chat/models@0.0.21-rc.0
+
+## 0.0.19
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.8
+- @rocket.chat/models@0.0.23
+
+## 0.0.18
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.7
+- @rocket.chat/models@0.0.22
+
+## 0.0.17
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.6
+- @rocket.chat/models@0.0.21
+
+## 0.0.16
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.5
+- @rocket.chat/models@0.0.20
+
+## 0.0.15
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.4
+- @rocket.chat/models@0.0.19
+
+## 0.0.14
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.3
+- @rocket.chat/models@0.0.18
+
+## 0.0.13
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.2
+- @rocket.chat/models@0.0.17
+
+## 0.0.12
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.1
+- @rocket.chat/models@0.0.16
+
 ## 0.0.11
 
 ### Patch Changes

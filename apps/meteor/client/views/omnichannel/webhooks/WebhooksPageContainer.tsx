@@ -4,7 +4,7 @@ import { useEndpoint, usePermission, useTranslation } from '@rocket.chat/ui-cont
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import PageSkeleton from '../../../components/PageSkeleton';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import WebhooksPage from './WebhooksPage';
@@ -38,10 +38,10 @@ const WebhooksPageContainer = () => {
 	if (!data?.success || !data?.settings || isError) {
 		return (
 			<Page>
-				<Page.Header title={t('Webhooks')} />
-				<Page.ScrollableContentWithShadow>
+				<PageHeader title={t('Webhooks')} />
+				<PageScrollableContentWithShadow>
 					<Callout type='danger'>{t('Error')}</Callout>
-				</Page.ScrollableContentWithShadow>
+				</PageScrollableContentWithShadow>
 			</Page>
 		);
 	}

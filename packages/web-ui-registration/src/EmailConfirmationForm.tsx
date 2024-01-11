@@ -63,7 +63,7 @@ export const EmailConfirmationForm = ({ email, onBackToLogin }: { email?: string
 			</Form.Container>
 			<Form.Footer>
 				<ButtonGroup>
-					<Button disabled={sendEmail.isLoading} type='submit' primary>
+					<Button loading={sendEmail.isLoading} type='submit' primary>
 						{t('registration.component.form.sendConfirmationEmail')}
 					</Button>
 				</ButtonGroup>

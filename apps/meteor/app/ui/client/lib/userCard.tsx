@@ -68,7 +68,7 @@ export const openUserCard = (params: Omit<UserCardProps, 'onClose'>) => {
 
 	if (!unregisterPortal) {
 		const children = createElement(UserCardWithProps);
-		const portal = createPortal(children, container);
+		const portal = <>{createPortal(children, container)}</>;
 		unregisterPortal = registerPortal(container, portal);
 	}
 

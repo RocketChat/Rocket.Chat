@@ -82,7 +82,7 @@ const CreateDirectMessage = ({ onClose }: { onClose: () => void }) => {
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button disabled={!isDirty || isSubmitting || isValidating} type='submit' primary>
+					<Button disabled={!isDirty} loading={isSubmitting || isValidating} type='submit' primary>
 						{t('Create')}
 					</Button>
 				</Modal.FooterControllers>

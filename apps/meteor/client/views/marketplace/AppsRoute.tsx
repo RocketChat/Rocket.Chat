@@ -42,7 +42,7 @@ const AppsRoute = (): ReactElement => {
 	}, [marketplaceRoute, context]);
 
 	if (
-		(context === 'explore' || context === 'installed' || context === 'private' || context === 'enterprise') &&
+		(context === 'explore' || context === 'installed' || context === 'private' || context === 'premium') &&
 		!canAccessMarketplace &&
 		!isAdminUser
 	) {

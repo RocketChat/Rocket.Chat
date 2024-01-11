@@ -7,10 +7,10 @@ import type { AllHTMLAttributes, ComponentType, ReactElement, ReactNode } from '
 import React, { memo, useMemo } from 'react';
 
 import { useOmnichannelPriorities } from '../../../ee/client/omnichannel/hooks/useOmnichannelPriorities';
-import { PriorityIcon } from '../../../ee/client/omnichannel/priorities/PriorityIcon';
 import { RoomIcon } from '../../components/RoomIcon';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import RoomMenu from '../RoomMenu';
+import { OmnichannelBadges } from '../badges/OmnichannelBadges';
 import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { normalizeSidebarMessage } from './normalizeSidebarMessage';
 
@@ -170,7 +170,7 @@ function SideBarItemTemplateWithData({
 					{unread + tunread?.length}
 				</Badge>
 			)}
-			{isOmnichannelRoom(room) && isPriorityEnabled && <PriorityIcon level={room.priorityWeight} />}
+			{isOmnichannelRoom(room) && <OmnichannelBadges room={room} />}
 		</Margins>
 	);
 
