@@ -473,7 +473,8 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		await Rooms.setTeamDefaultById(rid, isDefault);
 
 		if (room.teamDefault) {
-			const teamMembers = await this.members(uid, room.teamId, true, undefined, undefined);
+			const MAX_NUMBER_OF_AUTO_JOIN_MEMBERS = 1000;
+			const teamMembers = await this.members(uid, room.teamId, true, { offset: 0, count: MAX_NUMBER_OF_AUTO_JOIN_MEMBERS });
 
 			for await (const m of teamMembers.records) {
 				await addUserToRoom(room._id, m.user, user);
