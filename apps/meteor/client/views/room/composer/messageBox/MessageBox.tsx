@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
-import { Button, Tag, Box } from '@rocket.chat/fuselage';
+import { Button } from '@rocket.chat/fuselage';
 import { useContentBoxSize, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	MessageComposerAction,
@@ -41,7 +41,7 @@ import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedR
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxReplies from './MessageBoxReplies';
-import MessageEditingInstruction from './MessageEditingInstruction';
+import ComposerHints from './MessageComposerHints/ComposerHints';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 
@@ -170,6 +170,18 @@ const MessageBox = ({
 		});
 	});
 
+	const closeEditing = (event: any) => {
+		if (chat.currentEditing) {
+			event.preventDefault();
+			event.stopPropagation();
+
+			chat.currentEditing.reset().then((reset) => {
+				if (!reset) {
+					chat.currentEditing?.cancel();
+				}
+			});
+		}
+	};
 	const handler: KeyboardEventHandler<HTMLTextAreaElement> = useMutableCallback((event) => {
 		const { which: keyCode } = event;
 
@@ -200,19 +212,7 @@ const MessageBox = ({
 
 		switch (event.key) {
 			case 'Escape': {
-				if (chat.currentEditing) {
-					event.preventDefault();
-					event.stopPropagation();
-
-					chat.currentEditing.reset().then((reset) => {
-						if (!reset) {
-							chat.currentEditing?.cancel();
-						}
-					});
-
-					return;
-				}
-
+				closeEditing(event);
 				if (!input.value.trim()) onEscape?.();
 				return;
 			}
@@ -350,7 +350,7 @@ const MessageBox = ({
 	return (
 		<>
 			{chat.composer?.quotedMessages && <MessageBoxReplies />}
-			{isEditing && <MessageEditingInstruction />}
+			<ComposerHints isEditing={isEditing} readOnly={readOnly} />
 
 			{shouldPopupPreview && popup && (
 				<ComposerBoxPopup select={select} items={items} focused={focused} title={popup.title} renderItem={popup.renderItem} />
@@ -372,12 +372,6 @@ const MessageBox = ({
 					tmid={tmid}
 					suspended={suspended}
 				/>
-			)}
-
-			{readOnly && (
-				<Box mbe={4} display='flex'>
-					<Tag title={t('Only_people_with_permission_can_send_messages_here')}>{t('This_room_is_read_only')}</Tag>
-				</Box>
 			)}
 
 			{isRecordingVideo && <VideoMessageRecorder reference={messageComposerRef} rid={room._id} tmid={tmid} />}
@@ -430,14 +424,17 @@ const MessageBox = ({
 							</Button>
 						)}
 						{canSend && (
-							<MessageComposerAction
-								aria-label={t('Send')}
-								icon='send'
-								disabled={!canSend || (!typing && !isEditing)}
-								onClick={handleSendMessage}
-								secondary={typing || isEditing}
-								info={typing || isEditing}
-							/>
+							<>
+								{isEditing && <Button onClick={(event) => closeEditing(event)}>Cancel</Button>}
+								<MessageComposerAction
+									aria-label={t('Send')}
+									icon='send'
+									disabled={!canSend || (!typing && !isEditing)}
+									onClick={handleSendMessage}
+									secondary={typing || isEditing}
+									info={typing || isEditing}
+								/>
+							</>
 						)}
 					</MessageComposerToolbarSubmit>
 				</MessageComposerToolbar>
