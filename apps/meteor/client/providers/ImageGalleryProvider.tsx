@@ -1,8 +1,8 @@
 import React, { type ReactNode, useEffect, useState } from 'react';
 
 import ImageGallery from '../components/ImageGallery/ImageGallery';
-import ImageGalleryData from '../components/ImageGallery/ImageGalleryData';
 import { ImageGalleryContext } from '../contexts/ImageGalleryContext';
+import ImageGalleryData from '../views/room/ImageGallery/ImageGalleryData';
 
 type ImageGalleryProviderProps = {
 	children: ReactNode;
