@@ -48,6 +48,7 @@ import { getUserFromParams } from '../helpers/getUserFromParams';
 import { isUserFromParams } from '../helpers/isUserFromParams';
 import { getUploadFormData } from '../lib/getUploadFormData';
 import { isValidQuery } from '../lib/isValidQuery';
+import { isUserMutedInRoom } from '../lib/rooms';
 import { findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
 
 API.v1.addRoute(
@@ -1248,28 +1249,14 @@ API.v1.addRoute(
 			const user = await getUserFromParams(this.queryParams);
 			const room = await Rooms.findOne(this.queryParams.roomId);
 
-			const { username } = user;
-
-			if (room?.ro === true) {
-				if (!(await hasPermissionAsync(user._id, 'post-readonly', room._id))) {
-					// Unless the user was manually unmuted
-					if (username && !room?.unmuted?.includes(username)) {
-						// throw new Error("You can't send messages because the room is readonly.");
-						return API.v1.success({
-							isMuted: true,
-						});
-					}
-				}
+			if (!room) {
+				throw new Error('invalid-room');
 			}
 
-			if (username && room?.muted?.includes(username)) {
-				return API.v1.success({
-					isMuted: true,
-				});
-			}
+			const isMuted = await isUserMutedInRoom(user, room);
 
 			return API.v1.success({
-				isMuted: false,
+				isMuted,
 			});
 		},
 	},
