@@ -21,7 +21,7 @@ import { AppThreadsConverter } from '../../../app/apps/server/converters/threads
 import { settings, settingsRegistry } from '../../../app/settings/server';
 import { canEnableApp } from '../../app/license/server/canEnableApp';
 import { AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
-import { AppRealLogsStorage, AppRealStorage, ConfigurableAppSourceStorage } from './storage';
+import { AppRealLogStorage, AppRealStorage, ConfigurableAppSourceStorage } from './storage';
 
 function isTesting() {
 	return process.env.TEST_MODE === 'true';
@@ -54,7 +54,7 @@ export class AppServerOrchestrator {
 		this._logModel = AppLogs;
 		this._persistModel = AppsPersistence;
 		this._storage = new AppRealStorage(this._model);
-		this._logStorage = new AppRealLogsStorage(this._logModel);
+		this._logStorage = new AppRealLogStorage(this._logModel);
 		this._appSourceStorage = new ConfigurableAppSourceStorage(appsSourceStorageType, appsSourceStorageFilesystemPath);
 
 		this._converters = new Map();
