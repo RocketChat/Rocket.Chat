@@ -32,6 +32,7 @@ import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { checkUsernameAvailability } from '../../../app/lib/server/functions/checkUsernameAvailability';
 import { getSubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
 import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
+import { MAX_NUMBER_OF_AUTO_JOIN_MEMBERS } from './lib/constants';
 
 export class TeamService extends ServiceClassInternal implements ITeamService {
 	protected name = 'team';
@@ -473,7 +474,6 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		await Rooms.setTeamDefaultById(rid, isDefault);
 
 		if (room.teamDefault) {
-			const MAX_NUMBER_OF_AUTO_JOIN_MEMBERS = 1000;
 			const teamMembers = await this.members(uid, room.teamId, true, { offset: 0, count: MAX_NUMBER_OF_AUTO_JOIN_MEMBERS });
 
 			for await (const m of teamMembers.records) {
