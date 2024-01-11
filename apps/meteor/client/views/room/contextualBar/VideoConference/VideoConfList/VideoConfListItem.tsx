@@ -94,7 +94,7 @@ const VideoConfListItem = ({
 								</Avatar.Stack>
 								<Box mis={4}>
 									{joinedUsers.length > VIDEOCONF_STACK_MAX_USERS
-										? t('__usersCount__member_joined', { counter: joinedUsers.length - VIDEOCONF_STACK_MAX_USERS })
+										? t('__usersCount__member_joined', { count: joinedUsers.length - VIDEOCONF_STACK_MAX_USERS })
 										: t('joined')}
 								</Box>
 							</Box>

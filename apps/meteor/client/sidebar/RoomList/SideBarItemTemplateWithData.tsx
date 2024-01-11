@@ -42,17 +42,17 @@ const getBadgeTitle = (
 ) => {
 	const title = [] as string[];
 	if (userMentions) {
-		title.push(t('mentions_counter', { counter: userMentions }));
+		title.push(t('mentions_counter', { count: userMentions }));
 	}
 	if (threadUnread) {
-		title.push(t('threads_counter', { counter: threadUnread }));
+		title.push(t('threads_counter', { count: threadUnread }));
 	}
 	if (groupMentions) {
-		title.push(t('group_mentions_counter', { counter: groupMentions }));
+		title.push(t('group_mentions_counter', { count: groupMentions }));
 	}
 	const count = unread - userMentions - groupMentions;
 	if (count > 0) {
-		title.push(t('unread_messages_counter', { counter: count }));
+		title.push(t('unread_messages_counter', { count }));
 	}
 	return title.join(', ');
 };

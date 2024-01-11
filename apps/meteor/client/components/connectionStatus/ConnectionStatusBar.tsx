@@ -1,6 +1,6 @@
 import { Icon } from '@rocket.chat/fuselage';
 import { useConnectionStatus, useTranslation } from '@rocket.chat/ui-contexts';
-import type { MouseEventHandler, FC } from 'react';
+import type { MouseEventHandler } from 'react';
 import React, { useEffect, useRef, useState } from 'react';
 
 import './ConnectionStatusBar.styles.css';
@@ -45,7 +45,7 @@ const useReconnectCountdown = (
 	return reconnectCountdown;
 };
 
-const ConnectionStatusBar: FC = function ConnectionStatusBar() {
+function ConnectionStatusBar() {
 	const { connected, retryTime, status, reconnect } = useConnectionStatus();
 	const reconnectCountdown = useReconnectCountdown(retryTime, status);
 	const t = useTranslation();
@@ -65,12 +65,7 @@ const ConnectionStatusBar: FC = function ConnectionStatusBar() {
 				<Icon name='warning' /> {t('meteor_status' as Parameters<typeof t>[0], { context: status })}
 			</strong>
 
-			{status === 'waiting' && (
-				<>
-					{' '}
-					{t(reconnectCountdown === 1 ? 'meteor_status_reconnect_in' : 'meteor_status_reconnect_in_plural', { count: reconnectCountdown })}
-				</>
-			)}
+			{status === 'waiting' && <> {t('meteor_status_reconnect_in', { count: reconnectCountdown })}</>}
 
 			{['waiting', 'offline'].includes(status) && (
 				<>
@@ -82,6 +77,6 @@ const ConnectionStatusBar: FC = function ConnectionStatusBar() {
 			)}
 		</div>
 	);
-};
+}
 
 export default ConnectionStatusBar;
