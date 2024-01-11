@@ -106,7 +106,7 @@ const swiperStyle = css`
 	}
 `;
 
-const ImageGallerySwiper = ({ images, onClose, loadMore }: { images: IUpload[]; onClose: () => void; loadMore?: () => void }) => {
+export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[]; onClose: () => void; loadMore?: () => void }) => {
 	const swiperRef = useRef<SwiperRef>(null);
 	const [, setSwiperInst] = useState<SwiperClass>();
 	const [zoomScale, setZoomScale] = useState(1);
@@ -169,5 +169,3 @@ const ImageGallerySwiper = ({ images, onClose, loadMore }: { images: IUpload[]; 
 		document.body,
 	);
 };
-
-export default ImageGallerySwiper;

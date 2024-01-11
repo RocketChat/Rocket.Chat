@@ -13,7 +13,7 @@ const closeButtonStyle = css`
 	right: 10px;
 `;
 
-const ImageGalleryLoading = ({ onClose }: { onClose: () => void }) => {
+export const ImageGalleryError = ({ onClose }: { onClose: () => void }) => {
 	const t = useTranslation();
 
 	return createPortal(
@@ -24,5 +24,3 @@ const ImageGalleryLoading = ({ onClose }: { onClose: () => void }) => {
 		document.body,
 	);
 };
-
-export default ImageGalleryLoading;

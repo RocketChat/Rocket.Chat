@@ -10,7 +10,7 @@ const closeButtonStyle = css`
 	right: 10px;
 `;
 
-const ImageGalleryLoading = ({ onClose }: { onClose: () => void }) =>
+export const ImageGalleryLoading = ({ onClose }: { onClose: () => void }) =>
 	createPortal(
 		<ModalBackdrop display='flex' justifyContent='center' color='pure-white'>
 			<IconButton icon='cross' aria-label='Close gallery' className={closeButtonStyle} onClick={onClose} />
@@ -18,5 +18,3 @@ const ImageGalleryLoading = ({ onClose }: { onClose: () => void }) =>
 		</ModalBackdrop>,
 		document.body,
 	);
-
-export default ImageGalleryLoading;

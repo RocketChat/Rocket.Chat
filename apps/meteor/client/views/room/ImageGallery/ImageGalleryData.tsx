@@ -1,8 +1,6 @@
 import React, { useContext, useMemo } from 'react';
 
-import ImageGallery from '../../../components/ImageGallery/ImageGallery';
-import ImageGalleryError from '../../../components/ImageGallery/ImageGalleryError';
-import ImageGalleryLoading from '../../../components/ImageGallery/ImageGalleryLoading';
+import { ImageGallery, ImageGalleryError, ImageGalleryLoading } from '../../../components/ImageGallery';
 import { ImageGalleryContext } from '../../../contexts/ImageGalleryContext';
 import { useRecordList } from '../../../hooks/lists/useRecordList';
 import { useRoom } from '../contexts/RoomContext';
