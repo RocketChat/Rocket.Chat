@@ -56,7 +56,6 @@ const uploadToEndpoint = async () => {
 	throw new Error('not implemented');
 }; // to be implemented
 const getStream = () => () => () => undefined; // to be implemented
-const getSingleStream = () => () => () => undefined; // to be implemented
 const callEndpoint = () => {
 	throw new Error('not implemented');
 }; // to be implemented
@@ -67,7 +66,6 @@ const contextValue = {
 	// callMethod,
 	callEndpoint,
 	uploadToEndpoint,
-	getSingleStream,
 	getStream,
 };
 

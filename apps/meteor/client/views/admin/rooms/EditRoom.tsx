@@ -72,10 +72,18 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 		reset,
 		handleSubmit,
 		formState: { isDirty, errors, dirtyFields },
-	} = useForm({ defaultValues: getInitialValues(room) });
+	} = useForm({ values: getInitialValues(room) });
 
-	const { canViewName, canViewTopic, canViewAnnouncement, canViewArchived, canViewDescription, canViewType, canViewReadOnly } =
-		useEditAdminRoomPermissions(room);
+	const {
+		canViewName,
+		canViewTopic,
+		canViewAnnouncement,
+		canViewArchived,
+		canViewDescription,
+		canViewType,
+		canViewReadOnly,
+		canViewReactWhenReadOnly,
+	} = useEditAdminRoomPermissions(room);
 
 	const { roomType, readOnly, archived } = watch();
 
@@ -110,6 +118,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 		await Promise.all([isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive()].filter(Boolean));
 	});
 
+	const formId = useUniqueId();
 	const roomNameField = useUniqueId();
 	const ownerField = useUniqueId();
 	const roomDescription = useUniqueId();
@@ -125,7 +134,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 
 	return (
 		<>
-			<ContextualbarScrollableContent is='form' onSubmit={handleSubmit(handleSave)}>
+			<ContextualbarScrollableContent id={formId} is='form' onSubmit={handleSubmit(handleSave)}>
 				{room.t !== 'd' && (
 					<Box pbe={24} display='flex' justifyContent='center'>
 						<Controller
@@ -249,7 +258,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 												{...field}
 												disabled={isDeleting || isRoomFederated(room)}
 												checked={value}
-												aria-aria-describedby={`${readOnlyField}-hint`}
+												aria-describedby={`${readOnlyField}-hint`}
 											/>
 										)}
 									/>
@@ -257,7 +266,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 								<FieldHint id={`${readOnlyField}-hint`}>{t('Only_authorized_users_can_write_new_messages')}</FieldHint>
 							</Field>
 						)}
-						{readOnly && (
+						{canViewReactWhenReadOnly && readOnly && (
 							<Field>
 								<FieldRow>
 									<FieldLabel htmlFor={reactWhenReadOnly}>{t('React_when_read_only')}</FieldLabel>
@@ -335,7 +344,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 					<Button type='reset' disabled={!isDirty || isDeleting} onClick={() => reset()}>
 						{t('Reset')}
 					</Button>
-					<Button type='submit' disabled={!isDirty || isDeleting}>
+					<Button form={formId} type='submit' disabled={!isDirty || isDeleting}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
