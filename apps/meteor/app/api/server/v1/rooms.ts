@@ -1,12 +1,14 @@
 import { Media } from '@rocket.chat/core-services';
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Messages, Rooms, Users } from '@rocket.chat/models';
+import { Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import type { Notifications } from '@rocket.chat/rest-typings';
 import { isGETRoomsNameExists, isRoomsIsUserMuted } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
+import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { isTruthy } from '../../../../lib/isTruthy';
 import * as dataExport from '../../../../server/lib/dataExport';
+import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { eraseRoom } from '../../../../server/methods/eraseRoom';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -648,6 +650,18 @@ API.v1.addRoute(
 
 			if (!room) {
 				throw new Error('invalid-room');
+			}
+
+			const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
+
+			if (!subscription) {
+				throw new Error('error-invalid-subscription');
+			}
+
+			const roomCanMute = await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.MUTE, user._id);
+
+			if (!roomCanMute) {
+				return API.v1.failure();
 			}
 
 			const isMuted = await isUserMutedInRoom(user, room);
