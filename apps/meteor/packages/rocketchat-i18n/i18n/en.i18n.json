@@ -28,7 +28,7 @@
   "@username": "@username",
   "@username_message": "@username <message>",
   "#channel": "#channel",
-  "%_of_conversations": "%% of Conversations",
+  "%_of_conversations": "% of Conversations",
   "0_Errors_Only": "0 - Errors Only",
   "1_Errors_and_Information": "1 - Errors and Information",
   "2_Erros_Information_and_Debug": "2 - Errors, Information and Debug",
