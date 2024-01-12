@@ -6,7 +6,7 @@ describe('VideoConfStartProps (definition/rest/v1)', () => {
 		it('should be a function', () => {
 			assert.isFunction(isVideoConfStartProps);
 		});
-		it('should return false when provided anything that is not an VideoConfStartProps', () => {
+		it('should return false when provided anything that is not a VideoConfStartProps', () => {
 			assert.isFalse(isVideoConfStartProps(undefined));
 			assert.isFalse(isVideoConfStartProps(null));
 			assert.isFalse(isVideoConfStartProps(''));

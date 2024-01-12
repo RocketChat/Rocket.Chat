@@ -6,7 +6,7 @@ describe('FederationRemoveServerProps (definition/rest/v1)', () => {
 		it('should be a function', () => {
 			assert.isFunction(isFederationRemoveServerProps);
 		});
-		it('should return false when provided anything that is not an FederationRemoveServerProps', () => {
+		it('should return false when provided anything that is not a FederationRemoveServerProps', () => {
 			assert.isFalse(isFederationRemoveServerProps(undefined));
 			assert.isFalse(isFederationRemoveServerProps(null));
 			assert.isFalse(isFederationRemoveServerProps(''));

@@ -6,7 +6,7 @@ describe('VideoConfListProps (definition/rest/v1)', () => {
 		it('should be a function', () => {
 			assert.isFunction(isVideoConfListProps);
 		});
-		it('should return false when provided anything that is not an VideoConfListProps', () => {
+		it('should return false when provided anything that is not a VideoConfListProps', () => {
 			assert.isFalse(isVideoConfListProps(undefined));
 			assert.isFalse(isVideoConfListProps(null));
 			assert.isFalse(isVideoConfListProps(''));

@@ -123,7 +123,7 @@ describe('AgentData Analytics', () => {
 	});
 
 	describe('Total_Conversations', () => {
-		it('should return an ConversationData object with empty data when model call returns empty array', async () => {
+		it('should return a ConversationData object with empty data when model call returns empty array', async () => {
 			const modelMock = {
 				getAnalyticsMetricsBetweenDateWithMessages(_params: ILivechatRoomsModel['getAnalyticsMetricsBetweenDate']) {
 					return [];
@@ -144,7 +144,7 @@ describe('AgentData Analytics', () => {
 				],
 			});
 		});
-		it('should return an ConversationData object with data when model call returns data', async () => {
+		it('should return a ConversationData object with data when model call returns data', async () => {
 			const modelMock = {
 				getAnalyticsMetricsBetweenDateWithMessages(_params: ILivechatRoomsModel['getAnalyticsMetricsBetweenDate']) {
 					return [
@@ -176,7 +176,7 @@ describe('AgentData Analytics', () => {
 				],
 			});
 		});
-		it('should return an ConversationData object with data when model call returns data with multiple agents', async () => {
+		it('should return a ConversationData object with data when model call returns data with multiple agents', async () => {
 			const modelMock = {
 				getAnalyticsMetricsBetweenDateWithMessages(_params: ILivechatRoomsModel['getAnalyticsMetricsBetweenDate']) {
 					return [
@@ -291,7 +291,7 @@ describe('AgentData Analytics', () => {
 	});
 
 	describe('Avg_chat_duration', () => {
-		it('should return an ConversationData object with empty data when model call returns empty array', async () => {
+		it('should return a ConversationData object with empty data when model call returns empty array', async () => {
 			const modelMock = {
 				getAnalyticsMetricsBetweenDate(_params: ILivechatRoomsModel['getAnalyticsMetricsBetweenDate']) {
 					return [];
@@ -312,7 +312,7 @@ describe('AgentData Analytics', () => {
 				],
 			});
 		});
-		it('should return an ConversationData object with data when model call returns data', async () => {
+		it('should return a ConversationData object with data when model call returns data', async () => {
 			const modelMock = {
 				getAnalyticsMetricsBetweenDate(_params: ILivechatRoomsModel['getAnalyticsMetricsBetweenDate']) {
 					return [
@@ -347,7 +347,7 @@ describe('AgentData Analytics', () => {
 				],
 			});
 		});
-		it('should return an ConversationData object with data when model call returns data with multiple agents', async () => {
+		it('should return a ConversationData object with data when model call returns data with multiple agents', async () => {
 			const modelMock = {
 				getAnalyticsMetricsBetweenDate(_params: ILivechatRoomsModel['getAnalyticsMetricsBetweenDate']) {
 					return [
@@ -513,7 +513,7 @@ describe('AgentData Analytics', () => {
 	});
 
 	describe('Total_messages', () => {
-		it('should return an ConversationData object with empty data when model call returns empty array', async () => {
+		it('should return a ConversationData object with empty data when model call returns empty array', async () => {
 			const modelMock = {
 				getAnalyticsMetricsBetweenDateWithMessages(_params: ILivechatRoomsModel['getAnalyticsMetricsBetweenDateWithMessages']) {
 					return [];
@@ -534,7 +534,7 @@ describe('AgentData Analytics', () => {
 				],
 			});
 		});
-		it('should return an ConversationData object with data when model call returns data', async () => {
+		it('should return a ConversationData object with data when model call returns data', async () => {
 			const modelMock = {
 				getAnalyticsMetricsBetweenDateWithMessages(_params: ILivechatRoomsModel['getAnalyticsMetricsBetweenDateWithMessages']) {
 					return [
@@ -567,7 +567,7 @@ describe('AgentData Analytics', () => {
 				],
 			});
 		});
-		it('should return an ConversationData object with data when model call returns data with multiple agents', async () => {
+		it('should return a ConversationData object with data when model call returns data with multiple agents', async () => {
 			const modelMock = {
 				getAnalyticsMetricsBetweenDateWithMessages(_params: ILivechatRoomsModel['getAnalyticsMetricsBetweenDateWithMessages']) {
 					return [
@@ -709,7 +709,7 @@ describe('AgentData Analytics', () => {
 	});
 
 	describe('Avg_first_response_time', () => {
-		it('should return an ConversationData object with empty data when model call returns empty array', async () => {
+		it('should return a ConversationData object with empty data when model call returns empty array', async () => {
 			const modelMock = {
 				getAnalyticsMetricsBetweenDate(_params: ILivechatRoomsModel['getAnalyticsMetricsBetweenDate']) {
 					return [];
@@ -730,7 +730,7 @@ describe('AgentData Analytics', () => {
 				],
 			});
 		});
-		it('should return an ConversationData object with data when model call returns data', async () => {
+		it('should return a ConversationData object with data when model call returns data', async () => {
 			const modelMock = {
 				getAnalyticsMetricsBetweenDate(_params: ILivechatRoomsModel['getAnalyticsMetricsBetweenDate']) {
 					return [
@@ -767,7 +767,7 @@ describe('AgentData Analytics', () => {
 				],
 			});
 		});
-		it('should return an ConversationData object with data when model call returns data with multiple agents', async () => {
+		it('should return a ConversationData object with data when model call returns data with multiple agents', async () => {
 			const modelMock = {
 				getAnalyticsMetricsBetweenDate(_params: ILivechatRoomsModel['getAnalyticsMetricsBetweenDate']) {
 					return [
@@ -940,7 +940,7 @@ describe('AgentData Analytics', () => {
 	});
 
 	describe('Best_first_response_time', () => {
-		it('should return an ConversationData object with empty data when model call returns empty array', async () => {
+		it('should return a ConversationData object with empty data when model call returns empty array', async () => {
 			const modelMock = {
 				getAnalyticsMetricsBetweenDate(_params: ILivechatRoomsModel['getAnalyticsMetricsBetweenDate']) {
 					return [];
@@ -961,7 +961,7 @@ describe('AgentData Analytics', () => {
 				],
 			});
 		});
-		it('should return an ConversationData object with data when model call returns data', async () => {
+		it('should return a ConversationData object with data when model call returns data', async () => {
 			const modelMock = {
 				getAnalyticsMetricsBetweenDate(_params: ILivechatRoomsModel['getAnalyticsMetricsBetweenDate']) {
 					return [
@@ -1194,7 +1194,7 @@ describe('AgentData Analytics', () => {
 	});
 
 	describe('Avg_response_time', () => {
-		it('should return an ConversationData object with empty data when model call returns empty array', async () => {
+		it('should return a ConversationData object with empty data when model call returns empty array', async () => {
 			const modelMock = {
 				getAnalyticsMetricsBetweenDate(_params: ILivechatRoomsModel['getAnalyticsMetricsBetweenDate']) {
 					return [];
@@ -1217,7 +1217,7 @@ describe('AgentData Analytics', () => {
 				],
 			});
 		});
-		it('should return an ConversationData object with data when model call returns data', async () => {
+		it('should return a ConversationData object with data when model call returns data', async () => {
 			const modelMock = {
 				getAnalyticsMetricsBetweenDate(_params: ILivechatRoomsModel['getAnalyticsMetricsBetweenDate']) {
 					return [
@@ -1251,7 +1251,7 @@ describe('AgentData Analytics', () => {
 				],
 			});
 		});
-		it('should return an ConversationData object with data when model call returns data with multiple agents', async () => {
+		it('should return a ConversationData object with data when model call returns data with multiple agents', async () => {
 			const modelMock = {
 				getAnalyticsMetricsBetweenDate(_params: ILivechatRoomsModel['getAnalyticsMetricsBetweenDate']) {
 					return [
@@ -1407,7 +1407,7 @@ describe('AgentData Analytics', () => {
 	});
 
 	describe('Avg_reaction_time', () => {
-		it('should return an ConversationData object with empty data when model call returns empty array', async () => {
+		it('should return a ConversationData object with empty data when model call returns empty array', async () => {
 			const modelMock = {
 				getAnalyticsMetricsBetweenDate(_params: ILivechatRoomsModel['getAnalyticsMetricsBetweenDate']) {
 					return [];
@@ -1430,7 +1430,7 @@ describe('AgentData Analytics', () => {
 				],
 			});
 		});
-		it('should return an ConversationData object with data when model call returns data', async () => {
+		it('should return a ConversationData object with data when model call returns data', async () => {
 			const modelMock = {
 				getAnalyticsMetricsBetweenDate(_params: ILivechatRoomsModel['getAnalyticsMetricsBetweenDate']) {
 					return [{ servedBy: { username: 'agent 1' }, metrics: { reaction: { ft: 100 } } }];
@@ -1453,7 +1453,7 @@ describe('AgentData Analytics', () => {
 				],
 			});
 		});
-		it('should return an ConversationData object with data when model call returns data with multiple agents', async () => {
+		it('should return a ConversationData object with data when model call returns data with multiple agents', async () => {
 			const modelMock = {
 				getAnalyticsMetricsBetweenDate(_params: ILivechatRoomsModel['getAnalyticsMetricsBetweenDate']) {
 					const data = [

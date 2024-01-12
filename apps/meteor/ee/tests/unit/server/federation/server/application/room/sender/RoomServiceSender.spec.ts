@@ -442,7 +442,7 @@ describe('FederationEE - Application - FederationRoomServiceSender', () => {
 			expect(createUsersLocallyOnlySpy.calledWith(validParams.invitees)).to.be.true;
 		});
 
-		it('should create the user locally if the inviter was provided and he/she is an moderator', async () => {
+		it('should create the user locally if the inviter was provided and he/she is a moderator', async () => {
 			const createUsersLocallyOnlySpy = sinon.spy(service, 'createUsersLocallyOnly');
 			userAdapter.getFederatedUserByInternalId.resolves({ getInternalId: () => 'differentId' });
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);

@@ -450,7 +450,7 @@ describe('Federation[Client] - Federation', () => {
 			).to.be.true;
 		});
 
-		it('should return true if the current room is federated one, a public one but the user is an moderator', () => {
+		it('should return true if the current room is federated one, a public one but the user is a moderator', () => {
 			expect(
 				Federation.canCreateInviteLinks(
 					{ _id: 'differentId' } as any,

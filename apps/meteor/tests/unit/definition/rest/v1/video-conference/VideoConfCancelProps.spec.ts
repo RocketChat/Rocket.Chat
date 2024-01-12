@@ -6,7 +6,8 @@ describe('VideoConfCancelProps (definition/rest/v1)', () => {
 		it('should be a function', () => {
 			assert.isFunction(isVideoConfCancelProps);
 		});
-		it('should return false when provided anything that is not an VideoConfCancelProps', () => {
+		it('should return false when provided anything that is not a
+		 VideoConfCancelProps', () => {
 			assert.isFalse(isVideoConfCancelProps(undefined));
 			assert.isFalse(isVideoConfCancelProps(null));
 			assert.isFalse(isVideoConfCancelProps(''));

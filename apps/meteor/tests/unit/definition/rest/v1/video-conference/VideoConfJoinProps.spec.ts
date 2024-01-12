@@ -6,7 +6,7 @@ describe('VideoConfJoinProps (definition/rest/v1)', () => {
 		it('should be a function', () => {
 			assert.isFunction(isVideoConfJoinProps);
 		});
-		it('should return false when provided anything that is not an VideoConfJoinProps', () => {
+		it('should return false when provided anything that is not a VideoConfJoinProps', () => {
 			assert.isFalse(isVideoConfJoinProps(undefined));
 			assert.isFalse(isVideoConfJoinProps(null));
 			assert.isFalse(isVideoConfJoinProps(''));

@@ -152,7 +152,7 @@ describe('LIVECHAT - inquiries', function () {
 					expect(res.body).to.have.property('success', false);
 				});
 		});
-		it('should throw an error if inquiryId is not an string', async () => {
+		it('should throw an error if inquiryId is not a string', async () => {
 			await updatePermission('view-l-room', ['admin', 'livechat-agent']);
 			await request
 				.post(api('livechat/inquiries.take'))

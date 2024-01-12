@@ -50,7 +50,7 @@ describe('[Rooms]', function () {
 
 	describe('/rooms.saveNotification:', () => {
 		let testChannel;
-		it('create an channel', (done) => {
+		it('create a channel', (done) => {
 			createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` }).end((err, res) => {
 				testChannel = res.body.channel;
 				done();
@@ -99,7 +99,7 @@ describe('[Rooms]', function () {
 
 		const testChannelName = `channel.test.upload.${Date.now()}-${Math.random()}`;
 
-		it('create an channel', (done) => {
+		it('create a channel', (done) => {
 			createRoom({ type: 'c', name: testChannelName }).end((err, res) => {
 				testChannel = res.body.channel;
 				done();
@@ -207,7 +207,7 @@ describe('[Rooms]', function () {
 	describe('/rooms.favorite', () => {
 		let testChannel;
 		const testChannelName = `channel.test.${Date.now()}-${Math.random()}`;
-		it('create an channel', (done) => {
+		it('create a channel', (done) => {
 			createRoom({ type: 'c', name: testChannelName }).end((err, res) => {
 				testChannel = res.body.channel;
 				done();
@@ -303,7 +303,7 @@ describe('[Rooms]', function () {
 		// eslint-disable-next-line no-unused-vars
 		let testChannel;
 		const testChannelName = `channel.test.${Date.now()}-${Math.random()}`;
-		it('create an channel', (done) => {
+		it('create a channel', (done) => {
 			createRoom({ type: 'c', name: testChannelName }).end((err, res) => {
 				testChannel = res.body.channel;
 				done();
@@ -582,7 +582,7 @@ describe('[Rooms]', function () {
 		after((done) => {
 			closeRoom({ type: 'd', roomId: testDM._id }).then(done);
 		});
-		it('create an channel', (done) => {
+		it('create a channel', (done) => {
 			createRoom({ type: 'c', name: testChannelName }).end((err, res) => {
 				testChannel = res.body.channel;
 				done();
@@ -702,7 +702,7 @@ describe('[Rooms]', function () {
 		after((done) => {
 			closeRoom({ type: 'd', roomId: testDM._id }).then(done);
 		});
-		it('create an channel', (done) => {
+		it('create a channel', (done) => {
 			createRoom({ type: 'c', name: testChannelName }).end((err, res) => {
 				testChannel = res.body.channel;
 				done();
@@ -1600,7 +1600,7 @@ describe('[Rooms]', function () {
 
 	describe('/rooms.delete', () => {
 		let testChannel;
-		before('create an channel', async () => {
+		before('create a channel', async () => {
 			const result = await createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` });
 			testChannel = result.body.channel;
 		});

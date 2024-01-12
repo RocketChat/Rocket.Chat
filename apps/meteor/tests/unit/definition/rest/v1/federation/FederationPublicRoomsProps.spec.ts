@@ -6,7 +6,7 @@ describe('FederationPublicRoomProps (definition/rest/v1)', () => {
 		it('should be a function', () => {
 			assert.isFunction(isFederationSearchPublicRoomsProps);
 		});
-		it('should return false when provided anything that is not an FederationPublicRoomProps', () => {
+		it('should return false when provided anything that is not a FederationPublicRoomProps', () => {
 			assert.isFalse(isFederationSearchPublicRoomsProps(''));
 			assert.isFalse(isFederationSearchPublicRoomsProps(123));
 		});

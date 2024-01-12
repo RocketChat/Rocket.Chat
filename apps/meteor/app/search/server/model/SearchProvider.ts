@@ -61,7 +61,7 @@ export abstract class SearchProvider<TPayload = any> {
 	 * @param text the search text
 	 * @param context the context (uid, rid)
 	 * @param payload custom payload (e.g. for paging)
-	 * @param callback is used to return result an can be called with (error,result)
+	 * @param callback is used to return result can be called with (error,result)
 	 */
 	public abstract search(
 		text: string,
@@ -75,7 +75,7 @@ export abstract class SearchProvider<TPayload = any> {
 	 * @param _text the search text
 	 * @param _context the context (uid, rid)
 	 * @param _payload custom payload (e.g. for paging)
-	 * @param callback is used to return result an can be called with (error,result)
+	 * @param callback is used to return result can be called with (error,result)
 	 */
 	suggest(
 		_text: string,

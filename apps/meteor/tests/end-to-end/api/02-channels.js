@@ -1156,7 +1156,7 @@ describe('[Channels]', function () {
 				.end(done);
 		});
 
-		it('should return an filtered array of members by channel', (done) => {
+		it('should return a filtered array of members by channel', (done) => {
 			request
 				.get(api('channels.members'))
 				.set(credentials)

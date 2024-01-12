@@ -313,7 +313,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 	}
 
 	/**
-	 * Sets up an listener handler for handling session's state change
+	 * Sets up a listener handler for handling session's state change
 	 * @remarks
 	 * Called for setting up various state listeners. These listeners will
 	 * decide the next action to be taken when the session state changes.

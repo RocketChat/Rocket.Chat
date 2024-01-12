@@ -6,7 +6,7 @@ describe('TeamsUpdateMemberProps (definition/rest/v1)', () => {
 		it('should be a function', () => {
 			assert.isFunction(isTeamsUpdateProps);
 		});
-		it('should return false when provided anything that is not an TeamsUpdateProps', () => {
+		it('should return false when provided anything that is not n TeamsUpdateProps', () => {
 			assert.isFalse(isTeamsUpdateProps(undefined));
 			assert.isFalse(isTeamsUpdateProps(null));
 			assert.isFalse(isTeamsUpdateProps(''));

@@ -207,10 +207,14 @@
 
 - auto link custom domain ([#28501](https://github.com/RocketChat/Rocket.Chat/pull/28501))
 
-  **Changes:**  
-  - Auto Link Custom Domain new setting under Message group  path: `/admin/settings/Message`  
-  - New translation keys for English  
-  - Adding types to message-parser `Options`  
+  **Changes:**
+  
+  - Auto Link Custom Domain new setting under Message group  path: `/admin/settings/Message`
+  
+  - New translation keys for English
+  
+  - Adding types to message-parser `Options`
+  
   - New hook `useAutoLinkDomains` to get the setting and return an array of domains
 
   **Current:** 
@@ -452,8 +456,10 @@
 
 - Invalid JSON in Custom Translations setting crashes the UI ([#28600](https://github.com/RocketChat/Rocket.Chat/pull/28600))
 
-  - Check if JSON code settings (with `type: code` and `code: application/json`) are valid before saving, or throw an error otherwise;  
-  - Dismiss custom settings when the custom translations JSON provided is invalid (instead of throwing an error and crashing the UI);  
+  - Check if JSON code settings (with `type: code` and `code: application/json`) are valid before saving, or throw an error otherwise;
+  
+  - Dismiss custom settings when the custom translations JSON provided is invalid (instead of throwing an error and crashing the UI);
+  
   - Fix the Custom Translations setting desciption so that the example is shown as a code snippet.
 
 - Leader Bar presence status alignment ([#28793](https://github.com/RocketChat/Rocket.Chat/pull/28793))
@@ -491,11 +497,16 @@
 
   The `MessageBoxReplies` component was not displaying the attachments previews in the correct way, it was using the `DefaultAttachment` instead.
 
-  To accomplish the expected behavior I had to do the following **changes**:  
-  - Edit the `MessageBoxReplies` to add a `collapsed` prop to the attachments to always start as collapsed  
-  - Add a new prop to the `MessageCollapsible` component to control the preview attachments in `MessageBoxReplies` to always start as collapsed  
-  - Edit the Attachment components to read the `collapsed` value and send it thought   
-  - Edited the `ShareMessageModal` to display the correct attachment and its previews  
+  To accomplish the expected behavior I had to do the following **changes**:
+  
+  - Edit the `MessageBoxReplies` to add a `collapsed` prop to the attachments to always start as collapsed
+  
+  - Add a new prop to the `MessageCollapsible` component to control the preview attachments in `MessageBoxReplies` to always start as collapsed
+  
+  - Edit the Attachment components to read the `collapsed` value and send it thought 
+  
+  - Edited the `ShareMessageModal` to display the correct attachment and its previews
+  
   - Edited the `useCollapse` hook prop as optional because was not making sense to put it as mandatory since it was getting the value from the user preferences as default and for the `MessageCollapsible` work in a dynamic way
 
   **Current Behavior:**
@@ -648,8 +659,10 @@
   The thread preview message was not displaying emojis and when the parent message was a quoted message it was not displaying the correct message.
 
   To fix the issues I did:
-  
-  - Emoji Issue:  I used the `<GazzodownText /> ` component to call `<PreviewMarkup />` conditionally when passed the prop `preview`. The  `<GazzodownText /> ` component it's necessary because it has the `MarkupInteractionContext.Provider` that has the context necessary to display the emoji and other elements  
+
+  
+  - Emoji Issue:  I used the `<GazzodownText /> ` component to call `<PreviewMarkup />` conditionally when passed the prop `preview`. The  `<GazzodownText /> ` component it's necessary because it has the `MarkupInteractionContext.Provider` that has the context necessary to display the emoji and other elements
+  
   - Empty parent message: Since the parent message it's a quote, the initial string from a quote message it's a link that references the original message followed by `\n` break line. I added a validation to check if it's a quoteAttachment message, if it is I remove the first markdown token responsible by the link
 
   **Before:**
@@ -672,8 +685,10 @@
 
   Sometimes when the user focuses on the window that is running the Rocket.Chat some queries are triggered again without a reason, to prevent this to happen I added a option to `useQuery` hook, `refetchOnWindowFocus: false`
 
-  **Queries impacted:**  
-  - useThreadMainMessageQuery.ts   - called when has to get the thread main message, for e.g in thread preview reply  
+  **Queries impacted:**
+  
+  - useThreadMainMessageQuery.ts   - called when has to get the thread main message, for e.g in thread preview reply
+  
   - useHasLicenseModule.ts   - called when the client starts to show/hide certain areas that are restricted by licenses, this don't change very often
 
 - use raw image url ([#28861](https://github.com/RocketChat/Rocket.Chat/pull/28861) by [@avelino](https://github.com/avelino))
@@ -811,8 +826,10 @@
 
 - Change price filters for Enterprise apps ([#27553](https://github.com/RocketChat/Rocket.Chat/pull/27553))
 
-  * Currently, Enterprise apps are classified as “Free apps”. Now, they have been moved to a new “Enterprise” category in the _Apps_ page of the Marketplace.  
-  * Created a new "Enterprise" pricing filter in the _Apps_ page.  
+  * Currently, Enterprise apps are classified as “Free apps”. Now, they have been moved to a new “Enterprise” category in the _Apps_ page of the Marketplace.
+  
+  * Created a new "Enterprise" pricing filter in the _Apps_ page.
+  
   * Removed the "Free" tag next to the _install_ button for enterprise apps, on the _App Info_ page.
 
   ![New-version](https://user-images.githubusercontent.com/84182706/208493531-11fc0153-2c94-4fab-baac-e359ba89ed72.gif)
@@ -1045,9 +1062,12 @@
 
 - Migrate SMS to Service ([#28123](https://github.com/RocketChat/Rocket.Chat/pull/28123))
 
-  - Moves everything related to SMS on Omnichannel to a service (Integrations)  
-  - Service left with broad name as it will contain more "integrations" (webhooks, for example)  
-  - Removed /app/sms folder  
+  - Moves everything related to SMS on Omnichannel to a service (Integrations)
+  
+  - Service left with broad name as it will contain more "integrations" (webhooks, for example)
+  
+  - Removed /app/sms folder
+  
   - Moved some files to typescript
 
 - Miscelaneous ([#28732](https://github.com/RocketChat/Rocket.Chat/pull/28732))
@@ -1200,7 +1220,8 @@
 
 - regression: name search not working in moderation console ([#29209](https://github.com/RocketChat/Rocket.Chat/pull/29209))
 
-  - Added back the search by-name feature  
+  - Added back the search by-name feature
+  
   - Fixed an incorrect Mongo filter key
 
 - regression: Opening DM through UserCard takes too long. ([#29190](https://github.com/RocketChat/Rocket.Chat/pull/29190))
@@ -16294,7 +16315,7 @@
 
 - Cannot create a discussion from top left sidebar as a user ([#22618](https://github.com/RocketChat/Rocket.Chat/pull/22618) by [@lucassartor](https://github.com/lucassartor))
 
-  When trying to create a discussion using the top left sidebar modal with an role that don't have the `view-other-user-channels ` permission, an empty list would be shown, which is a wrong behavior.
+  When trying to create a discussion using the top left sidebar modal with a role that don't have the `view-other-user-channels ` permission, an empty list would be shown, which is a wrong behavior.
   Also, when being able to use this modal, discussions were listed as options, which is also a wrong behavior as there can't be nested discussions.
 
   This PR looks to fix both these issues.
@@ -16722,7 +16743,7 @@
 
   https://user-images.githubusercontent.com/49413772/107253220-ddeb2f00-6a14-11eb-85b4-f770dbbe4970.mp4
 
-  Video showing an example of the setting being used and creating an new user with the default roles via API.
+  Video showing an example of the setting being used and creating a new user with the default roles via API.
 
 - Content-Security-Policy for inline scripts ([#20724](https://github.com/RocketChat/Rocket.Chat/pull/20724))
 
@@ -16820,7 +16841,7 @@
 
 - **ENTERPRISE:** Prevent Visitor Abandonment after forwarding chat ([#22243](https://github.com/RocketChat/Rocket.Chat/pull/22243))
 
-  Currently the Visitor Abandonment timer isn't affected when the chat is forwarded. However this is affecting the UX in certain situations like eg: A bot forwarding a chat to an human agent
+  Currently the Visitor Abandonment timer isn't affected when the chat is forwarded. However this is affecting the UX in certain situations like eg: A bot forwarding a chat to a human agent
   ![image](https://user-images.githubusercontent.com/34130764/120896383-e4925780-c63e-11eb-937e-ffd7c4836159.png)
 
   To solve this issue, we'll now be stoping the Visitor Abandonment timer once a chat is forwarded.

@@ -56,28 +56,28 @@ describe('LIVECHAT - triggers', function () {
 		it('should fail if invalid data is sent', async () => {
 			await request.post(api('livechat/triggers')).set(credentials).send({ name: 'test' }).expect(400);
 		});
-		it('should fail if name is not an string', async () => {
+		it('should fail if name is not a string', async () => {
 			await request
 				.post(api('livechat/triggers'))
 				.set(credentials)
 				.send({ name: 1, description: 'test', enabled: true, runOnce: true, conditions: [], actions: [] })
 				.expect(400);
 		});
-		it('should fail if description is not an string', async () => {
+		it('should fail if description is not a string', async () => {
 			await request
 				.post(api('livechat/triggers'))
 				.set(credentials)
 				.send({ name: 'test', description: 1, enabled: true, runOnce: true, conditions: [], actions: [] })
 				.expect(400);
 		});
-		it('should fail if enabled is not an boolean', async () => {
+		it('should fail if enabled is not a boolean', async () => {
 			await request
 				.post(api('livechat/triggers'))
 				.set(credentials)
 				.send({ name: 'test', description: 'test', enabled: 1, runOnce: true, conditions: [], actions: [] })
 				.expect(400);
 		});
-		it('should fail if runOnce is not an boolean', async () => {
+		it('should fail if runOnce is not a boolean', async () => {
 			await request
 				.post(api('livechat/triggers'))
 				.set(credentials)

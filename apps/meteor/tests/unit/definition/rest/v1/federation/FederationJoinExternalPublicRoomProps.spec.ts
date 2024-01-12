@@ -6,7 +6,7 @@ describe('FederationJoinExternalPublicRoomProps (definition/rest/v1)', () => {
 		it('should be a function', () => {
 			assert.isFunction(isFederationJoinExternalPublicRoomProps);
 		});
-		it('should return false when provided anything that is not an FederationJoinExternalPublicRoomProps', () => {
+		it('should return false when provided anything that is not a FederationJoinExternalPublicRoomProps', () => {
 			assert.isFalse(isFederationJoinExternalPublicRoomProps(undefined));
 			assert.isFalse(isFederationJoinExternalPublicRoomProps(null));
 			assert.isFalse(isFederationJoinExternalPublicRoomProps(''));

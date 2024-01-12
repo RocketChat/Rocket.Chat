@@ -127,7 +127,7 @@ export class CachedSettings
 
 	/**
 	 * Gets the current value of the setting
-	 * - In development mode if you are trying to get the value of a setting that is not defined, it will give an warning, in theory it makes sense, there no reason to do that
+	 * - In development mode if you are trying to get the value of a setting that is not defined, it will give a warning, in theory it makes sense, there no reason to do that
 	 * - The setting's value will be cached in memory so it won't call the DB every time you fetch a particular setting
 	 * @param _id - The setting id
 	 * @returns {SettingValue} - The current value of the setting
@@ -141,7 +141,7 @@ export class CachedSettings
 
 	/**
 	 * Gets the current value of the setting
-	 * - In development mode if you are trying to get the value of a setting that is not defined, it will give an warning, in theory it makes sense, there no reason to do that
+	 * - In development mode if you are trying to get the value of a setting that is not defined, it will give a warning, in theory it makes sense, there no reason to do that
 	 * @deprecated
 	 * @param _id - The setting id
 	 * @returns {SettingValue} - The current value of the setting

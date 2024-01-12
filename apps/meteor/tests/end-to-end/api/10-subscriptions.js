@@ -43,7 +43,7 @@ describe('[Subscriptions]', function () {
 
 	it('/subscriptions.getOne:', () => {
 		let testChannel;
-		it('create an channel', (done) => {
+		it('create a channel', (done) => {
 			request
 				.post(api('channels.create'))
 				.set(credentials)
@@ -332,7 +332,7 @@ describe('[Subscriptions]', function () {
 
 	describe('[/subscriptions.unread]', () => {
 		let testChannel;
-		it('create an channel', (done) => {
+		it('create a channel', (done) => {
 			request
 				.post(api('channels.create'))
 				.set(credentials)
@@ -344,7 +344,7 @@ describe('[Subscriptions]', function () {
 					done();
 				});
 		});
-		it('should fail when there are no messages on an channel', (done) => {
+		it('should fail when there are no messages on a channel', (done) => {
 			request
 				.post(api('subscriptions.unread'))
 				.set(credentials)

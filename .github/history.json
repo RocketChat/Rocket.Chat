@@ -61413,7 +61413,7 @@
           "pr": "20650",
           "title": "[NEW] Add setting to configure default role for user on manual registration",
           "userLogin": "lucassartor",
-          "description": "Add an `admin` setting to determine the initial `role` for new users who registered manually (through the register form and via API, not using an authentication service), normally all new users are assigned to the `user` role.\r\n\r\nThe setting can be found in `Admin`->`Accounts`->`Registration`.\r\n\r\n![image](https://user-images.githubusercontent.com/49413772/107252603-47b70900-6a14-11eb-9cc6-df76720b7365.png)\r\nThe setting initial value is false, so the default behaviour stays the same while creating a new server or upgrading one.\r\n\r\nhttps://user-images.githubusercontent.com/49413772/107253220-ddeb2f00-6a14-11eb-85b4-f770dbbe4970.mp4\r\n\r\nVideo showing an example of the setting being used and creating an new user with the default roles via API.",
+          "description": "Add an `admin` setting to determine the initial `role` for new users who registered manually (through the register form and via API, not using an authentication service), normally all new users are assigned to the `user` role.\r\n\r\nThe setting can be found in `Admin`->`Accounts`->`Registration`.\r\n\r\n![image](https://user-images.githubusercontent.com/49413772/107252603-47b70900-6a14-11eb-9cc6-df76720b7365.png)\r\nThe setting initial value is false, so the default behaviour stays the same while creating a new server or upgrading one.\r\n\r\nhttps://user-images.githubusercontent.com/49413772/107253220-ddeb2f00-6a14-11eb-85b4-f770dbbe4970.mp4\r\n\r\nVideo showing an example of the setting being used and creating a new user with the default roles via API.",
           "contributors": [
             "lucassartor",
             "sampaiodiego",
@@ -61791,7 +61791,7 @@
           "pr": "22243",
           "title": "[FIX][ENTERPRISE] Prevent Visitor Abandonment after forwarding chat",
           "userLogin": "murtaza98",
-          "description": "Currently the Visitor Abandonment timer isn't affected when the chat is forwarded. However this is affecting the UX in certain situations like eg: A bot forwarding a chat to an human agent\r\n![image](https://user-images.githubusercontent.com/34130764/120896383-e4925780-c63e-11eb-937e-ffd7c4836159.png)\r\n\r\nTo solve this issue, we'll now be stoping the Visitor Abandonment timer once a chat is forwarded.",
+          "description": "Currently the Visitor Abandonment timer isn't affected when the chat is forwarded. However this is affecting the UX in certain situations like eg: A bot forwarding a chat to a human agent\r\n![image](https://user-images.githubusercontent.com/34130764/120896383-e4925780-c63e-11eb-937e-ffd7c4836159.png)\r\n\r\nTo solve this issue, we'll now be stoping the Visitor Abandonment timer once a chat is forwarded.",
           "contributors": [
             "murtaza98",
             "renatobecker",
@@ -62411,7 +62411,7 @@
           "pr": "22618",
           "title": "[FIX] Cannot create a discussion from top left sidebar as a user",
           "userLogin": "lucassartor",
-          "description": "When trying to create a discussion using the top left sidebar modal with an role that don't have the `view-other-user-channels ` permission, an empty list would be shown, which is a wrong behavior.\r\nAlso, when being able to use this modal, discussions were listed as options, which is also a wrong behavior as there can't be nested discussions.\r\n\r\nThis PR looks to fix both these issues.\r\n\r\n**Old behavior:**\r\n![old](https://user-images.githubusercontent.com/49413772/124960017-3c333280-dff2-11eb-86cd-b2638311517e.png)\r\n\r\n**New behavior:**\r\n![image](https://user-images.githubusercontent.com/49413772/124958882-05a8e800-dff1-11eb-8203-b34a4f1c98a0.png)",
+          "description": "When trying to create a discussion using the top left sidebar modal with a role that don't have the `view-other-user-channels ` permission, an empty list would be shown, which is a wrong behavior.\r\nAlso, when being able to use this modal, discussions were listed as options, which is also a wrong behavior as there can't be nested discussions.\r\n\r\nThis PR looks to fix both these issues.\r\n\r\n**Old behavior:**\r\n![old](https://user-images.githubusercontent.com/49413772/124960017-3c333280-dff2-11eb-86cd-b2638311517e.png)\r\n\r\n**New behavior:**\r\n![image](https://user-images.githubusercontent.com/49413772/124958882-05a8e800-dff1-11eb-8203-b34a4f1c98a0.png)",
           "contributors": [
             "lucassartor",
             "web-flow",
@@ -66367,7 +66367,7 @@
           "pr": "23419",
           "title": "Chore: Partially migrate 2FA client code to TypeScript",
           "userLogin": "tassoevan",
-          "description": "Additionally, hides `toastr` behind an module to handle UI's toast notifications.",
+          "description": "Additionally, hides `toastr` behind a module to handle UI's toast notifications.",
           "contributors": [
             "tassoevan"
           ]

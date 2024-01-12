@@ -172,7 +172,7 @@ describe('LIVECHAT - Utils', function () {
 			const { body } = await request.post(api('livechat/page.visited')).set(credentials).send({});
 			expect(body).to.have.property('success', false);
 		});
-		it('should fail if rid is not an string', async () => {
+		it('should fail if rid is not a string', async () => {
 			const { body } = await request.post(api('livechat/page.visited')).set(credentials).send({ token: 'test', rid: {} });
 			expect(body).to.have.property('success', false);
 		});
