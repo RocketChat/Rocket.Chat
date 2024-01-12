@@ -37,7 +37,6 @@
 		"ejson": "^2.2.3",
 		"eventemitter3": "^4.0.7",
 		"express": "^4.17.3",
-		"fibers": "^5.0.3",
 		"jaeger-client": "^3.19.0",
 		"mem": "^8.1.1",
 		"moleculer": "^0.14.31",
