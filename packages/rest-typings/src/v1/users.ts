@@ -367,12 +367,6 @@ export type UsersEndpoints = {
 	'/v1/users.deleteOwnAccount': {
 		POST: (params: { password: string; confirmRelinquish?: boolean }) => void;
 	};
-
-	'/v1/users.isMuted': {
-		GET: (params: { userId?: string; username?: string; roomId: string }) => {
-			isMuted: boolean;
-		};
-	};
 };
 
 export * from './users/UserCreateParamsPOST';

@@ -423,6 +423,40 @@ const GETRoomsNameExistsSchema = {
 
 export const isGETRoomsNameExists = ajv.compile<GETRoomsNameExists>(GETRoomsNameExistsSchema);
 
+type RoomsIsUserMuted = { userId: string; roomId: string } | { username: string; roomId: string };
+
+const RoomsIsUserMutedSchema = {
+	type: 'object',
+	oneOf: [
+		{
+			properties: {
+				userId: {
+					type: 'string',
+				},
+				roomId: {
+					type: 'string',
+				},
+			},
+			required: ['userId', 'roomId'],
+			additionalProperties: false,
+		},
+		{
+			properties: {
+				username: {
+					type: 'string',
+				},
+				roomId: {
+					type: 'string',
+				},
+			},
+			required: ['username', 'roomId'],
+			additionalProperties: false,
+		},
+	],
+};
+
+export const isRoomsIsUserMuted = ajv.compile<RoomsIsUserMuted>(RoomsIsUserMutedSchema);
+
 export type Notifications = {
 	disableNotifications: string;
 	muteGroupMentions: string;
@@ -571,5 +605,11 @@ export type RoomsEndpoints = {
 		GET: (params: RoomsGetDiscussionsProps) => PaginatedResult<{
 			discussions: IRoom[];
 		}>;
+	};
+
+	'/v1/rooms.isUserMuted': {
+		GET: (params: { userId: string; roomId: string } | { username: string; roomId: string }) => {
+			isMuted: boolean;
+		};
 	};
 };
