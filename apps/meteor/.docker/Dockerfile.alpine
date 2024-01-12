@@ -1,4 +1,4 @@
-FROM node:14.21.3-alpine3.16
+FROM node:20.9.0-alpine3.18
 
 RUN apk add --no-cache ttf-dejavu
 
@@ -17,7 +17,7 @@ RUN set -x \
     # End hack for sharp
     # Start hack for isolated-vm...
     && rm -rf npm/node_modules/isolated-vm \
-    && npm install isolated-vm@4.4.2 \
+    && npm install isolated-vm@4.6.0 \
     && mv node_modules/isolated-vm npm/node_modules/isolated-vm \
     # End hack for isolated-vm
     && cd npm \

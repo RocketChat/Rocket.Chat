@@ -8,43 +8,41 @@
 
 rocketchat:ddp
 rocketchat:mongo-config
-rocketchat:oauth2-server
 rocketchat:restivus
 rocketchat:livechat
 rocketchat:streamer
 rocketchat:version
 rocketchat:user-presence
 
-accounts-base@2.2.10
-accounts-facebook@1.3.3
-accounts-github@1.5.0
-accounts-google@1.4.0
-accounts-meteor-developer@1.5.0
-accounts-oauth@1.4.3
-accounts-password@2.4.0
-accounts-twitter@1.5.0
+accounts-base@3.0.0-rc300.0
+accounts-facebook@1.3.4-rc300.0
+accounts-github@1.5.1-rc300.0
+accounts-google@1.4.1-rc300.0
+accounts-meteor-developer@1.5.1-rc300.0
+accounts-oauth@1.4.3-rc300.0
+accounts-password@3.0.0-rc300.0
+accounts-twitter@1.5.1-rc300.0
 
 pauli:accounts-linkedin
-google-oauth@1.4.4
-oauth@2.2.1
-oauth2@1.3.2
+google-oauth@1.4.5-rc300.0
+oauth@3.0.0-rc300.0
+oauth2@1.3.3-rc300.0
 
-check@1.3.2
-ddp-rate-limiter@1.2.1
-rate-limit@1.1.1
-email@2.2.5
-http@2.0.0
+check@1.3.3-rc300.0
+ddp-rate-limiter@1.2.1-rc300.0
+rate-limit@1.1.2-rc300.0
+email@3.0.0-rc300.0
 
-meteor-base@1.5.1
-ddp-common@1.4.0
-webapp@1.13.8
+meteor-base@1.5.2-rc300.0
+ddp-common@1.4.1-rc300.0
+webapp@2.0.0-rc300.0
 
-mongo@1.16.8
+mongo@2.0.0-rc300.0
 
-reload@1.3.1
-service-configuration@1.3.3
-session@1.2.1
-shell-server@0.5.0
+reload@1.3.2-rc300.0
+service-configuration@1.3.2-rc300.0
+session@1.2.2-rc300.0
+shell-server@0.6.0-rc300.0
 
 dispatch:run-as-user
 ostrio:cookies
@@ -53,22 +51,22 @@ kadira:flow-router
 
 meteorhacks:inject-initial
 
-routepolicy@1.1.1
+routepolicy@1.1.2-rc300.0
 
-webapp-hashing@1.1.1
-facts-base@1.0.1
+webapp-hashing@1.1.2-rc300.0
+facts-base@1.0.2-rc300.0
 
-tracker@1.3.3
-reactive-dict@1.3.1
-reactive-var@1.0.12
+tracker@1.3.3-rc300.0
+reactive-dict@1.3.2-rc300.0
+reactive-var@1.0.13-rc300.0
 
-babel-compiler@7.10.5
-standard-minifier-css@1.9.2
-dynamic-import@0.7.3
-ecmascript@0.16.8
-typescript@4.9.5
+babel-compiler@7.11.0-rc300.0
+standard-minifier-css@1.9.3-rc300.0
+dynamic-import@0.7.4-rc300.0
+ecmascript@0.16.8-rc300.0
+typescript@5.4.3-rc300.0
 
-autoupdate@1.8.0
+autoupdate@2.0.0-rc300.0
 
 # photoswipe
 
