@@ -1,11 +1,11 @@
 import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
 import type { LoginService } from '@rocket.chat/ui-contexts';
-import { AuthenticationContext, useSetting } from '@rocket.chat/ui-contexts';
+import { AuthenticationContext, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import { Meteor } from 'meteor/meteor';
 import type { ContextType, ReactElement, ReactNode } from 'react';
 import React, { useMemo } from 'react';
 
-import { createReactiveSubscriptionFactory } from '../lib/createReactiveSubscriptionFactory';
 import { useLDAPAndCrowdCollisionWarning } from './UserProvider/hooks/useLDAPAndCrowdCollisionWarning';
 
 const capitalize = (str: string): string => str.charAt(0).toUpperCase() + str.slice(1);
@@ -34,6 +34,12 @@ type UserProviderProps = {
 };
 
 const UserProvider = ({ children }: UserProviderProps): ReactElement => {
+	const getServiceConfigurations = useEndpoint('GET', '/v1/service.configurations');
+
+	const { data: services } = useQuery(['service.configurations'], () => getServiceConfigurations(), {
+		staleTime: Infinity,
+	});
+
 	const isLdapEnabled = useSetting<boolean>('LDAP_Enable');
 	const isCrowdEnabled = useSetting<boolean>('CROWD_Enable');
 
@@ -90,30 +96,30 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 						});
 					});
 			},
-			queryAllServices: createReactiveSubscriptionFactory(() =>
-				ServiceConfiguration.configurations
-					.find(
-						{
-							showButton: { $ne: false },
-						},
-						{
-							sort: {
-								service: 1,
-							},
-						},
-					)
-					.fetch()
-					.map(
-						({ appId: _, ...service }) =>
-							({
-								title: capitalize(String((service as any).service || '')),
-								...service,
-								...(config[(service as any).service] ?? {}),
-							} as any),
-					),
-			),
+			getLoginServices: () => {
+				const loginServices: LoginServiceConfiguration[] =
+					services?.configurations.filter((config) => !('showButton' in config) || config.showButton !== false) || [];
+
+				return loginServices
+					.sort(({ service: service1 }, { service: service2 }) => service1.localeCompare(service2))
+					.map((service) => {
+						const { appId: _, ...serviceData } = {
+							...service,
+							appId: undefined,
+						};
+
+						const serviceConfig = config[service.service] || {
+							title: capitalize(service.service),
+						};
+
+						return {
+							...serviceData,
+							...serviceConfig,
+						};
+					});
+			},
 		}),
-		[loginMethod],
+		[loginMethod, services],
 	);
 
 	return <AuthenticationContext.Provider children={children} value={contextValue} />;

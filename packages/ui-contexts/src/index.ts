@@ -42,7 +42,6 @@ export { useLayoutSizes } from './hooks/useLayoutSizes';
 export { useLayoutHiddenActions } from './hooks/useLayoutHiddenActions';
 export { useLoadLanguage } from './hooks/useLoadLanguage';
 export { useLoginWithPassword } from './hooks/useLoginWithPassword';
-export { useLoginServices } from './hooks/useLoginServices';
 export { useLoginWithService } from './hooks/useLoginWithService';
 export { useLoginWithToken } from './hooks/useLoginWithToken';
 export { useLogout } from './hooks/useLogout';
