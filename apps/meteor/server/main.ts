@@ -25,7 +25,7 @@ import './configuration/ldap';
 import './stream/stdout';
 import './features/EmailInbox/index';
 
-void (async () => {
+await (async () => {
 	await configureLogLevel();
 	await registerServices();
 	await import('../app/settings/server');
