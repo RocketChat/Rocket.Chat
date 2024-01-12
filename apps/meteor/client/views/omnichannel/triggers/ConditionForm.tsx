@@ -1,11 +1,11 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Field, FieldGroup, FieldLabel, FieldRow, Select, TextInput } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import React, { useMemo } from 'react';
 import type { Control } from 'react-hook-form';
 import { Controller, useWatch } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
 
 import type { TriggersPayload } from './EditTrigger';
 
@@ -16,7 +16,7 @@ type ConditionFormType = ComponentProps<typeof Field> & {
 
 export const ConditionForm = ({ control, index, ...props }: ConditionFormType) => {
 	const conditionFieldId = useUniqueId();
-	const { t } = useTranslation();
+	const t = useTranslation();
 	const conditionName = useWatch({ control, name: `conditions.${index}.name` });
 
 	const placeholders: { [conditionName: string]: string } = useMemo(

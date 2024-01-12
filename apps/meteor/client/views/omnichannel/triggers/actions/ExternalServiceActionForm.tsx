@@ -1,15 +1,15 @@
 import { FieldError, Field, FieldHint, FieldLabel, FieldRow, NumberInput, TextAreaInput, FieldGroup } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, FocusEvent, FormEvent } from 'react';
 import React from 'react';
 import type { Control } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
 
-import { ActionExternalUrl } from '../ActionExternalUrl';
-import { ActionSender } from '../ActionSender';
 import type { TriggersPayload } from '../EditTrigger';
 import { useFieldError } from '../hooks/useFieldError';
+import { ActionExternalUrl } from './ActionExternalUrl';
+import { ActionSender } from './ActionSender';
 
 type SendMessageActionFormType = ComponentProps<typeof Field> & {
 	index: number;
@@ -17,7 +17,7 @@ type SendMessageActionFormType = ComponentProps<typeof Field> & {
 };
 
 export const ExternalServiceActionForm = ({ control, index, ...props }: SendMessageActionFormType) => {
-	const { t } = useTranslation();
+	const t = useTranslation();
 
 	const timeoutFieldId = useUniqueId();
 	const timeoutFieldName = `actions.${index}.params.serviceTimeout` as const;
@@ -39,7 +39,10 @@ export const ExternalServiceActionForm = ({ control, index, ...props }: SendMess
 						control={control}
 						name={timeoutFieldName}
 						defaultValue={10000}
-						rules={{ required: t('The_field_is_required', t('Timeout_in_miliseconds')), min: { value: 0, message: t('Invalid_value') } }}
+						rules={{
+							required: t('The_field_is_required', t('Timeout_in_miliseconds')),
+							min: { value: 0, message: t('Timeout_in_miliseconds_cant_be_negative_number') },
+						}}
 						render={({ field }) => {
 							return (
 								<NumberInput

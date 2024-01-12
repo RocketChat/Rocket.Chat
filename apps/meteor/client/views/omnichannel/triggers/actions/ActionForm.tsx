@@ -2,14 +2,14 @@ import type { SelectOption } from '@rocket.chat/fuselage';
 import { Field, FieldGroup, FieldHint, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import React, { useMemo } from 'react';
 import type { Control } from 'react-hook-form';
 import { Controller, useWatch } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
 
-import { type TriggersPayload } from './EditTrigger';
-import { useActionForm } from './hooks/useActionForm';
+import { type TriggersPayload } from '../EditTrigger';
+import { useActionForm } from '../hooks/useActionForm';
 
 type SendMessageFormType = ComponentProps<typeof Field> & {
 	control: Control<TriggersPayload>;
@@ -21,7 +21,7 @@ const ACTION_HINTS: Record<string, TranslationKey> = {
 } as const;
 
 export const ActionForm = ({ control, index, ...props }: SendMessageFormType) => {
-	const { t } = useTranslation();
+	const t = useTranslation();
 
 	const actionFieldId = useUniqueId();
 	const actionFieldName = `actions.${index}.name` as const;

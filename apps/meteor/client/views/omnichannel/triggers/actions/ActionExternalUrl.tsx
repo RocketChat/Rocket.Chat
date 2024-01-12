@@ -1,16 +1,15 @@
 import { Button, Field, FieldError, FieldHint, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ComponentProps } from 'react';
 import React from 'react';
 import type { Control } from 'react-hook-form';
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
 
-import type { TriggersPayload } from './EditTrigger';
-import { useFieldError } from './hooks/useFieldError';
+import type { TriggersPayload } from '../EditTrigger';
+import { useFieldError } from '../hooks/useFieldError';
 
 type ActionExternalUrlType = ComponentProps<typeof Field> & {
 	control: Control<TriggersPayload>;
@@ -18,7 +17,7 @@ type ActionExternalUrlType = ComponentProps<typeof Field> & {
 };
 
 export const ActionExternalUrl = ({ control, index, ...props }: ActionExternalUrlType) => {
-	const { t } = useTranslation();
+	const t = useTranslation();
 	const { trigger } = useFormContext<TriggersPayload>();
 
 	const serviceUrlFieldId = useUniqueId();

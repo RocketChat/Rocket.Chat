@@ -4,7 +4,7 @@ import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRouter, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
-import { Controller, FormProvider, get, useFieldArray, useForm } from 'react-hook-form';
+import { Controller, FormProvider, useFieldArray, useForm } from 'react-hook-form';
 
 import {
 	ContextualbarScrollableContent,
@@ -14,8 +14,8 @@ import {
 	ContextualbarHeader,
 	ContextualbarClose,
 } from '../../../components/Contextualbar';
-import { ActionForm } from './ActionForm';
 import { ConditionForm } from './ConditionForm';
+import { ActionForm } from './actions/ActionForm';
 
 export type TriggersPayload = {
 	name: string;
@@ -125,7 +125,11 @@ const EditTrigger = ({ triggerData }: { triggerData?: Serialized<ILivechatTrigge
 	});
 
 	const handleSave = async (data: TriggersPayload) => {
-		return saveTriggerMutation.mutateAsync({ ...data, _id: triggerData?._id });
+		return saveTriggerMutation.mutateAsync({
+			...data,
+			_id: triggerData?._id,
+			actions: data.actions.map(getDefaultAction),
+		});
 	};
 
 	return (
