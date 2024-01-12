@@ -809,7 +809,7 @@
   "Connect_SSL_TLS": "使用 SSL/TLS 连接",
   "Connection_Closed": "连接关闭",
   "Connection_Reset": "连接重置",
-  "Connection_success": "LDAP 连接成功",
+  "LDAP_Connection_successful": "LDAP 连接成功",
   "Connectivity_Services": "连接性服务",
   "Consulting": "咨询",
   "Contact": "联系人",

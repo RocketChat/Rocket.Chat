@@ -1028,7 +1028,7 @@
   "Connection_Closed": "Соединение закрыто",
   "Connection_Reset": "Сброс соединения",
   "Connection_error": "Ошибка подключения",
-  "Connection_success": "Подключение к LDAP успешное",
+  "LDAP_Connection_successful": "Подключение к LDAP успешное",
   "Connection_failed": "Сбой подключения LDAP",
   "Connectivity_Services": "Connectivity Services",
   "Consulting": "Консалтинг",
