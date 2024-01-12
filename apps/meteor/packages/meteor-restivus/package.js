@@ -6,9 +6,6 @@ Package.describe({
 });
 
 Package.onUse(function (api) {
-	// Minimum Meteor version
-	api.versionsFrom('2.5');
-
 	// Meteor dependencies
 	api.use('check');
 	api.use('webapp');

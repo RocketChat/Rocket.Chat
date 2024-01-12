@@ -260,7 +260,7 @@ const onCreateUserAsync = async function (options, user = {}) {
 
 Accounts.onCreateUser(function (...args) {
 	// Depends on meteor support for Async
-	return Promise.await(onCreateUserAsync.call(this, ...args));
+	return onCreateUserAsync.call(this, ...args);
 });
 
 const { insertUserDoc } = Accounts;
@@ -367,7 +367,7 @@ const insertUserDocAsync = async function (options, user) {
 
 Accounts.insertUserDoc = function (...args) {
 	// Depends on meteor support for Async
-	return Promise.await(insertUserDocAsync.call(this, ...args));
+	return insertUserDocAsync.call(this, ...args);
 };
 
 const validateLoginAttemptAsync = async function (login) {
@@ -439,7 +439,7 @@ const validateLoginAttemptAsync = async function (login) {
 
 Accounts.validateLoginAttempt(function (...args) {
 	// Depends on meteor support for Async
-	return Promise.await(validateLoginAttemptAsync.call(this, ...args));
+	return validateLoginAttemptAsync.call(this, ...args);
 });
 
 Accounts.validateNewUser((user) => {

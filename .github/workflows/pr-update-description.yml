@@ -21,7 +21,7 @@ jobs:
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
         with:
-          node-version: 14.21.3
+          node-version: 20.9.0
           cache-modules: true
           install: true
 
@@ -36,4 +36,3 @@ jobs:
           action: update-pr-description
         env:
           GITHUB_TOKEN: ${{ secrets.CI_PAT }}
-
