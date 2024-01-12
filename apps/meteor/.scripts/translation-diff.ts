@@ -1,18 +1,14 @@
-#!/usr/bin/env node
+#!/usr/bin/env ts-node
 
-const fs = require('fs');
-const path = require('path');
-const util = require('util');
-
-// Convert fs.readFile into Promise version of same
-const readFile = util.promisify(fs.readFile);
+import { readFile } from 'fs/promises';
+import path from 'path';
 
 const translationDir = path.resolve(__dirname, '../packages/rocketchat-i18n/i18n/');
 
-async function translationDiff(source, target) {
+async function translationDiff(source: string, target: string) {
 	console.debug('loading translations from', translationDir);
 
-	function diffKeys(a, b) {
+	function diffKeys(a: Record<string, string>, b: Record<string, string>) {
 		const diff = {};
 		Object.keys(a).forEach((key) => {
 			if (!b[key]) {
@@ -29,10 +25,9 @@ async function translationDiff(source, target) {
 	return diffKeys(sourceTranslations, targetTranslations);
 }
 
-console.log('Note: You can set the source and target language of the comparison with env-variables SOURCE/TARGET_LANGUAGE');
-const sourceLang = process.env.SOURCE_LANGUAGE || 'en';
-const targetLang = process.env.TARGET_LANGUAGE || 'de';
+const sourceLang = process.argv[2] || 'en';
+const targetLang = process.argv[3] || 'de';
 translationDiff(sourceLang, targetLang).then((diff) => {
 	console.log('Diff between', sourceLang, 'and', targetLang);
-	console.log(JSON.stringify(diff, '', 2));
+	console.log(JSON.stringify(diff, undefined, 2));
 });
