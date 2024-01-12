@@ -1,6 +1,6 @@
 import { Team, api } from '@rocket.chat/core-services';
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
-import { Users, Subscriptions, Rooms } from '@rocket.chat/models';
+import { Users, Subscriptions } from '@rocket.chat/models';
 import {
 	isUserCreateParamsPOST,
 	isUserSetActiveStatusParamsPOST,
@@ -48,7 +48,6 @@ import { getUserFromParams } from '../helpers/getUserFromParams';
 import { isUserFromParams } from '../helpers/isUserFromParams';
 import { getUploadFormData } from '../lib/getUploadFormData';
 import { isValidQuery } from '../lib/isValidQuery';
-import { isUserMutedInRoom } from '../lib/rooms';
 import { findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
 
 API.v1.addRoute(
@@ -1236,27 +1235,6 @@ API.v1.addRoute(
 				_id: user._id,
 				// message: user.statusText,
 				status: (user.status || 'offline') as 'online' | 'offline' | 'away' | 'busy',
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'users.isMuted',
-	{ authRequired: true },
-	{
-		async get() {
-			const user = await getUserFromParams(this.queryParams);
-			const room = await Rooms.findOne(this.queryParams.roomId);
-
-			if (!room) {
-				throw new Error('invalid-room');
-			}
-
-			const isMuted = await isUserMutedInRoom(user, room);
-
-			return API.v1.success({
-				isMuted,
 			});
 		},
 	},

@@ -30,7 +30,7 @@ const UserCardWithData = ({ username, target, rid, open, onClose }: UserCardWith
 	const showRealNames = Boolean(useSetting('UI_Use_Real_Name'));
 
 	const { data, isLoading } = useUserInfoQuery({ username });
-	const getIsUserMuted = useEndpoint('GET', '/v1/users.isMuted');
+	const getIsUserMuted = useEndpoint('GET', '/v1/rooms.isUserMuted');
 	const { data: isUserMuted } = useQuery(['users.isMuted', username, rid], () => getIsUserMuted({ username, roomId: rid }));
 
 	ref.current = target;

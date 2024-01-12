@@ -2,7 +2,7 @@ import { Media } from '@rocket.chat/core-services';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users } from '@rocket.chat/models';
 import type { Notifications } from '@rocket.chat/rest-typings';
-import { isGETRoomsNameExists } from '@rocket.chat/rest-typings';
+import { isGETRoomsNameExists, isRoomsIsUserMuted } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { isTruthy } from '../../../../lib/isTruthy';
@@ -19,6 +19,7 @@ import { settings } from '../../../settings/server';
 import { API } from '../api';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getPaginationItems } from '../helpers/getPaginationItems';
+import { getUserFromParams } from '../helpers/getUserFromParams';
 import { getUploadFormData } from '../lib/getUploadFormData';
 import {
 	findAdminRoom,
@@ -27,6 +28,7 @@ import {
 	findChannelAndPrivateAutocomplete,
 	findChannelAndPrivateAutocompleteWithPagination,
 	findRoomsAvailableForTeams,
+	isUserMutedInRoom,
 } from '../lib/rooms';
 
 async function findRoomByIdOrName({
@@ -632,6 +634,27 @@ API.v1.addRoute(
 			}
 
 			return API.v1.failure();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'rooms.isUserMuted',
+	{ authRequired: true, validateParams: isRoomsIsUserMuted },
+	{
+		async get() {
+			const user = await getUserFromParams(this.queryParams);
+			const room = await Rooms.findOne(this.queryParams.roomId);
+
+			if (!room) {
+				throw new Error('invalid-room');
+			}
+
+			const isMuted = await isUserMutedInRoom(user, room);
+
+			return API.v1.success({
+				isMuted,
+			});
 		},
 	},
 );
