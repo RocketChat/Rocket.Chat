@@ -4657,7 +4657,7 @@
   "Selecting_users": "Selecting users",
   "Send": "Send",
   "Send_a_message": "Send a message",
-  "Send_a_message_using_external_service": "Send a message using external service",
+  "Send_a_message_external_service": "Send a message (external service)",
   "Send_a_test_mail_to_my_user": "Send a test mail to my user",
   "Send_a_test_push_to_my_user": "Send a test push to my user",
   "Send_confirmation_email": "Send confirmation email",

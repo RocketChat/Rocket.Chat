@@ -30,7 +30,7 @@ export const ActionForm = ({ control, index, ...props }: SendMessageFormType) =>
 	const actionOptions: SelectOption[] = useMemo(
 		() => [
 			['send-message', t('Send_a_message')],
-			['use-external-service', t('Send_a_message_using_external_service')],
+			['use-external-service', t('Send_a_message_external_service')],
 		],
 		[t],
 	);
