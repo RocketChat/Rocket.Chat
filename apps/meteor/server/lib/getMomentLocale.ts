@@ -4,10 +4,10 @@ export async function getMomentLocale(locale: string): Promise<string | undefine
 	const localeLower = locale.toLowerCase();
 
 	try {
-		return Assets.getTextAsync(`moment-locales/${localeLower}.js`);
+		return Assets.getText(`moment-locales/${localeLower}.js`);
 	} catch (error) {
 		try {
-			return Assets.getTextAsync(`moment-locales/${String(localeLower.split('-').shift())}.js`);
+			return Assets.getText(`moment-locales/${String(localeLower.split('-').shift())}.js`);
 		} catch (error) {
 			throw new Meteor.Error('moment-locale-not-found', `Moment locale not found: ${locale}`);
 		}
