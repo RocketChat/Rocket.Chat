@@ -27,8 +27,8 @@ import './features/EmailInbox/index';
 
 void (async () => {
 	await configureLogLevel();
-	await import('../app/settings/server');
 	await registerServices();
+	await import('../app/settings/server');
 	await registerEEBroker();
 	await startup();
 	await startLicense();
