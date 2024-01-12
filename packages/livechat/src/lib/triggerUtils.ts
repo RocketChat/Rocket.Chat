@@ -1,12 +1,15 @@
+import type { ILivechatTrigger, ILivechatTriggerAction, ILivechatTriggerType, Serialized } from '@rocket.chat/core-typings';
+import type { OperationResult } from '@rocket.chat/rest-typings';
+
 import { Livechat } from '../api';
 import { upsert } from '../helpers/upsert';
 import store from '../store';
 import { processUnread } from './main';
 
-let agentPromise;
+let agentPromise: Promise<{ username: string } | Serialized<OperationResult<'GET', '/v1/livechat/agent.next/:token'>>> | null;
 const agentCacheExpiry = 3600000;
 
-export const getAgent = (triggerAction) => {
+export const getAgent = (triggerAction: ILivechatTriggerAction) => {
 	if (agentPromise) {
 		return agentPromise;
 	}
@@ -14,7 +17,7 @@ export const getAgent = (triggerAction) => {
 	agentPromise = new Promise(async (resolve, reject) => {
 		const { params } = triggerAction;
 
-		if (params.sender === 'queue') {
+		if (params?.sender === 'queue') {
 			const { state } = store;
 			const {
 				defaultAgent,
@@ -22,7 +25,7 @@ export const getAgent = (triggerAction) => {
 					guest: { department },
 				},
 			} = state;
-			if (defaultAgent && defaultAgent.ts && Date.now() - defaultAgent.ts < agentCacheExpiry) {
+			if (defaultAgent?.ts && Date.now() - defaultAgent.ts < agentCacheExpiry) {
 				return resolve(defaultAgent); // cache valid for 1
 			}
 
@@ -35,7 +38,7 @@ export const getAgent = (triggerAction) => {
 
 			store.setState({ defaultAgent: { ...agent, department, ts: Date.now() } });
 			resolve(agent);
-		} else if (params.sender === 'custom') {
+		} else if (params?.sender === 'custom') {
 			resolve({
 				username: params.name,
 			});
@@ -52,7 +55,7 @@ export const getAgent = (triggerAction) => {
 	return agentPromise;
 };
 
-export const upsertMessage = async (message) => {
+export const upsertMessage = async (message: Record<string, unknown>) => {
 	await store.setState({
 		messages: upsert(
 			store.state.messages,
@@ -65,23 +68,36 @@ export const upsertMessage = async (message) => {
 	await processUnread();
 };
 
-export const removeMessage = async (messageId) => {
+export const removeMessage = async (messageId: string) => {
 	const { messages } = store.state;
 	await store.setState({ messages: messages.filter(({ _id }) => _id !== messageId) });
 };
 
-export const hasTriggerCondition = (conditionName) => (trigger) => {
+export const hasTriggerCondition = (conditionName: ILivechatTriggerType) => (trigger: ILivechatTrigger) => {
 	return trigger.conditions.some((condition) => condition.name === conditionName);
 };
 
 export const isInIframe = () => window.self !== window.top;
 
-export const requestTriggerMessages = async ({ triggerId, token, metadata = {} }) => {
+export const requestTriggerMessages = async ({
+	triggerId,
+	token,
+	metadata = {},
+}: {
+	triggerId: string;
+	token: string;
+	metadata: Record<string, string>;
+}) => {
 	try {
-		const extraData = Object.entries(metadata).reduce((acc, [key, value]) => [...acc, { key, value }], []);
+		const extraData = Object.entries(metadata).reduce<{ key: string; value: string }[]>(
+			(acc, [key, value]) => [...acc, { key, value }],
+			[],
+		);
+
 		const { response } = await Livechat.rest.post(`/v1/livechat/triggers/${triggerId}/external-service/call`, { extraData, token });
 		return response.contents;
-	} catch (error) {
+	} catch (e) {
+		const error = e as { fallbackMessage?: string };
 		if (!error.fallbackMessage) {
 			throw Error('Unable to fetch message from external service.');
 		}

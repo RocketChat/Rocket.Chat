@@ -7,7 +7,7 @@ import { parentCall } from '../lib/parentCall';
 import { createToken } from '../lib/random';
 import Store from './Store';
 
-type StoreState = {
+export type LivechatStoreState = {
 	token: string;
 	typing: string[];
 	config: {
@@ -66,9 +66,10 @@ type StoreState = {
 	lastReadMessageId?: any;
 	triggerAgent?: any;
 	queueInfo?: any;
+	defaultAgent?: any;
 };
 
-export const initialState = (): StoreState => ({
+export const initialState = (): LivechatStoreState => ({
 	token: createToken(),
 	typing: [],
 	config: {
@@ -144,9 +145,9 @@ if (process.env.NODE_ENV === 'development') {
 	});
 }
 
-export type Dispatch = (partialState: Partial<StoreState>) => void;
+export type Dispatch = (partialState: Partial<LivechatStoreState>) => void;
 
-type StoreContextValue = StoreState & { dispatch: Dispatch };
+type StoreContextValue = LivechatStoreState & { dispatch: Dispatch };
 
 export const StoreContext = createContext<StoreContextValue>({ ...store.state, dispatch: store.setState.bind(store) });
 

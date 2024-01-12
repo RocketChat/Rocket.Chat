@@ -1,3 +1,4 @@
+import type { ILivechatSendMessageAction, ILivechatTriggerCondition, ILivechatUseExternalServiceAction } from '@rocket.chat/core-typings';
 import { route } from 'preact-router';
 
 import store from '../store';
@@ -5,13 +6,13 @@ import { createToken } from './random';
 import { getAgent, removeMessage, requestTriggerMessages, upsertMessage } from './triggerUtils';
 import Triggers from './triggers';
 
-export const sendMessageAction = async (action, condition) => {
+export const sendMessageAction = async (_: string, action: ILivechatSendMessageAction, condition: ILivechatTriggerCondition) => {
 	const { token, minimized } = store.state;
 
 	const agent = getAgent(action);
 
 	const message = {
-		msg: action.params.msg,
+		msg: action.params?.msg,
 		token,
 		u: agent,
 		ts: new Date().toISOString(),
@@ -25,20 +26,24 @@ export const sendMessageAction = async (action, condition) => {
 		store.setState({ minimized: false });
 	}
 
-	if (condition.name !== 'after-registration') {
+	if (condition.name !== 'after-guest-registration') {
 		const onVisitorRegistered = async () => {
 			await removeMessage(message._id);
-			Triggers.callbacks.off('chat-visitor-registered', onVisitorRegistered);
+			Triggers.callbacks?.off('chat-visitor-registered', onVisitorRegistered);
 		};
 
-		Triggers.callbacks.on('chat-visitor-registered', onVisitorRegistered);
+		Triggers.callbacks?.on('chat-visitor-registered', onVisitorRegistered);
 	}
 };
 
-export const sendMessageExternalServiceAction = async (triggerId, action, condition) => {
+export const sendMessageExternalServiceAction = async (
+	triggerId: string,
+	action: ILivechatUseExternalServiceAction,
+	condition: ILivechatTriggerCondition,
+) => {
 	const { token, minimized, typing, iframe } = store.state;
 	const { metadata = {} } = iframe.guest || {};
-	const { serviceUrl, serviceFallbackMessage, serviceTimeout } = action.params;
+	const { serviceUrl, serviceFallbackMessage, serviceTimeout } = action.params || {};
 	console.log(serviceUrl, serviceFallbackMessage, serviceTimeout);
 	const agent = await getAgent(action);
 
@@ -69,13 +74,13 @@ export const sendMessageExternalServiceAction = async (triggerId, action, condit
 			store.setState({ minimized: false });
 		}
 
-		if (condition.name !== 'after-registration') {
+		if (condition.name !== 'after-guest-registration') {
 			const onVisitorRegistered = async () => {
 				await Promise.all(messages.map((message) => removeMessage(message._id)));
-				Triggers.callbacks.off('chat-visitor-registered', onVisitorRegistered);
+				Triggers.callbacks?.off('chat-visitor-registered', onVisitorRegistered);
 			};
 
-			Triggers.callbacks.on('chat-visitor-registered', onVisitorRegistered);
+			Triggers.callbacks?.on('chat-visitor-registered', onVisitorRegistered);
 		}
 	} finally {
 		store.setState({

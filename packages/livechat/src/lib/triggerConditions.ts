@@ -1,10 +1,13 @@
+import type { ILivechatTriggerCondition } from '@rocket.chat/core-typings';
+
+import type { LivechatStoreState } from '../store';
 import store from '../store';
 import Triggers from './triggers';
 
-export const pageUrlCondition = (condition) => {
+export const pageUrlCondition = (condition: ILivechatTriggerCondition) => {
 	const { parentUrl } = Triggers;
 
-	if (!parentUrl) {
+	if (!parentUrl || !condition.value) {
 		return Promise.reject(`condition ${condition.name} not met`);
 	}
 
@@ -15,12 +18,13 @@ export const pageUrlCondition = (condition) => {
 	}
 };
 
-export const timeOnSiteCondition = (condition) => {
+export const timeOnSiteCondition = (condition: ILivechatTriggerCondition) => {
 	return new Promise((resolve, reject) => {
-		const timeout = parseInt(condition.value, 10) * 1000;
+		const timeout = parseInt(condition?.value || '0', 10) * 1000;
 		const timeoutId = setTimeout(() => resolve({ condition: 'time-on-site' }), timeout);
 
-		const watchStateChange = ([{ minimized = true }]) => {
+		const watchStateChange = (event: [LivechatStoreState] | undefined) => {
+			const [{ minimized = true }] = event || [{}];
 			if (minimized) return;
 
 			clearTimeout(timeoutId);
@@ -35,22 +39,22 @@ export const timeOnSiteCondition = (condition) => {
 export const chatOpenedCondition = () => {
 	return new Promise((resolve) => {
 		const openFunc = async () => {
-			Triggers.callbacks.off('chat-opened-by-visitor', openFunc);
+			Triggers.callbacks?.off('chat-opened-by-visitor', openFunc);
 			resolve({ condition: 'chat-opened-by-visitor' });
 		};
 
-		Triggers.callbacks.on('chat-opened-by-visitor', openFunc);
+		Triggers.callbacks?.on('chat-opened-by-visitor', openFunc);
 	});
 };
 
 export const visitorRegisteredCondition = () => {
 	return new Promise((resolve) => {
 		const openFunc = async () => {
-			Triggers.callbacks.off('chat-visitor-registered', openFunc);
+			Triggers.callbacks?.off('chat-visitor-registered', openFunc);
 			resolve({ condition: 'after-guest-registration' });
 		};
 
-		Triggers.callbacks.on('chat-visitor-registered', openFunc);
+		Triggers.callbacks?.on('chat-visitor-registered', openFunc);
 	});
 };
 
