@@ -166,6 +166,12 @@ const getProjectionByFullDate = (): { day: string; month: string; year: string }
 	year: '$_id.year',
 });
 
+const getProjectionFullDate = (): { day: string; month: string; year: string } => ({
+	day: '$day',
+	month: '$month',
+	year: '$year',
+});
+
 export const aggregates = {
 	dailySessions(
 		collection: Collection<ISession>,
@@ -209,9 +215,7 @@ export const aggregates = {
 					_id: {
 						userId: '$userId',
 						device: '$device',
-						day: '$day',
-						month: '$month',
-						year: '$year',
+						...getProjectionFullDate(),
 					},
 					mostImportantRole: { $first: '$mostImportantRole' },
 					time: { $sum: '$time' },
@@ -227,9 +231,7 @@ export const aggregates = {
 				$group: {
 					_id: {
 						userId: '$_id.userId',
-						day: '$_id.day',
-						month: '$_id.month',
-						year: '$_id.year',
+						...getProjectionByFullDate(),
 					},
 					mostImportantRole: { $first: '$mostImportantRole' },
 					time: { $sum: '$time' },
@@ -253,9 +255,7 @@ export const aggregates = {
 					_id: 0,
 					type: { $literal: 'user_daily' },
 					_computedAt: { $literal: new Date() },
-					day: '$_id.day',
-					month: '$_id.month',
-					year: '$_id.year',
+					...getProjectionByFullDate(),
 					userId: '$_id.userId',
 					mostImportantRole: 1,
 					time: 1,
@@ -292,9 +292,7 @@ export const aggregates = {
 				{
 					$group: {
 						_id: {
-							day: '$day',
-							month: '$month',
-							year: '$year',
+							...getProjectionFullDate(),
 							mostImportantRole: '$mostImportantRole',
 						},
 						count: {
@@ -311,9 +309,7 @@ export const aggregates = {
 				{
 					$group: {
 						_id: {
-							day: '$day',
-							month: '$month',
-							year: '$year',
+							...getProjectionFullDate(),
 						},
 						roles: {
 							$push: {
@@ -1069,9 +1065,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 				{
 					$group: {
 						_id: {
-							day: '$day',
-							month: '$month',
-							year: '$year',
+							...getProjectionFullDate(),
 							userId: '$userId',
 						},
 					},
@@ -1079,9 +1073,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 				{
 					$group: {
 						_id: {
-							day: '$_id.day',
-							month: '$_id.month',
-							year: '$_id.year',
+							...getProjectionByFullDate(),
 						},
 						usersList: {
 							$addToSet: '$_id.userId',
@@ -1174,7 +1166,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 				},
 				{
 					$group: {
-						_id: { year: '$year', month: '$month', day: '$day' },
+						_id: { ...getProjectionFullDate() },
 						users: { $sum: 1 },
 					},
 				},
