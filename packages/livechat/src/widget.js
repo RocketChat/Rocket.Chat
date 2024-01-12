@@ -323,6 +323,14 @@ function setParentUrl(url) {
 	callHook('setParentUrl', url);
 }
 
+function setGuestMetadata(metadata) {
+	if (typeof metadata !== 'object') {
+		return;
+	}
+
+	callHook('setGuestMetadata', metadata);
+}
+
 function initialize(params) {
 	for (const method in params) {
 		if (!params.hasOwnProperty(method)) {
@@ -374,6 +382,9 @@ function initialize(params) {
 				continue;
 			case 'parentUrl':
 				setParentUrl(params[method]);
+				continue;
+			case 'setGuestMetadata':
+				setGuestMetadata(params[method]);
 				continue;
 			default:
 				continue;
@@ -467,6 +478,7 @@ window.RocketChat.livechat = {
 	setBusinessUnit,
 	clearBusinessUnit,
 	setParentUrl,
+	setGuestMetadata,
 
 	// callbacks
 	onChatMaximized(fn) {

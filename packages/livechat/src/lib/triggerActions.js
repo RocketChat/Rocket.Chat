@@ -36,7 +36,8 @@ export const sendMessageAction = async (action, condition) => {
 };
 
 export const sendMessageExternalServiceAction = async (triggerId, action, condition) => {
-	const { token, minimized, typing } = store.state;
+	const { token, minimized, typing, iframe } = store.state;
+	const { metadata = {} } = iframe.guest || {};
 	const { serviceUrl, serviceFallbackMessage, serviceTimeout } = action.params;
 	console.log(serviceUrl, serviceFallbackMessage, serviceTimeout);
 	const agent = await getAgent(action);
@@ -45,9 +46,9 @@ export const sendMessageExternalServiceAction = async (triggerId, action, condit
 
 	try {
 		const triggerMessages = await requestTriggerMessages({
-			triggerId,
 			token,
-			metadata: {},
+			triggerId,
+			metadata,
 		});
 
 		const messages = triggerMessages

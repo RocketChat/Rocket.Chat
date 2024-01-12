@@ -37,10 +37,6 @@ const updateIframeGuestData = (data) => {
 
 const api = {
 	pageVisited(info) {
-		if (info.change === 'url') {
-			Triggers.processRequest(info);
-		}
-
 		const { token, room } = store.state;
 		const { _id: rid } = room || {};
 
@@ -201,6 +197,9 @@ const api = {
 	},
 	setParentUrl(parentUrl) {
 		store.setState({ parentUrl });
+	},
+	setGuestMetadata(metadata) {
+		updateIframeGuestData({ metadata });
 	},
 };
 
