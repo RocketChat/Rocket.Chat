@@ -1,7 +1,7 @@
 import { Team } from '@rocket.chat/core-services';
 import type { ITeam, UserStatus } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
-import { Users, Rooms } from '@rocket.chat/models';
+import { Users, Rooms, TeamMember } from '@rocket.chat/models';
 import {
 	isTeamsConvertToChannelProps,
 	isTeamsRemoveRoomProps,
@@ -242,8 +242,9 @@ API.v1.addRoute(
 			const canUpdateAny = !!(await hasPermissionAsync(this.userId, 'view-all-team-channels', team.roomId));
 
 			const room = await Team.updateRoom(this.userId, roomId, isDefault, canUpdateAny);
+			const numberOfMembers = await TeamMember.countDocuments({ teamId: team._id });
 
-			return API.v1.success({ room });
+			return API.v1.success({ room, numberOfMembers });
 		},
 	},
 );
