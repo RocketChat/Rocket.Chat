@@ -1825,6 +1825,7 @@
   "error-no-owner-channel": "Apenas proprietários podem adicionar este canal à equipe",
   "error-you-are-last-owner": "Você é o último proprietário da sala. Defina um novo proprietário antes de sair.",
   "error-cannot-place-chat-on-hold": "Você não pode colocar a conversa em espera",
+  "error-timeout": "A solicitação atingiu o tempo limite",
   "Errors_and_Warnings": "Erros e avisos",
   "Esc_to": "Esc para",
   "Estimated_wait_time": "Tempo estimado de espera (tempo em minutos)",
