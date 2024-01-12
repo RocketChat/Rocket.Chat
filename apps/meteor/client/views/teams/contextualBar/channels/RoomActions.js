@@ -81,10 +81,25 @@ const RoomActions = ({ room, reload }) => {
 	const menuOptions = useMemo(() => {
 		const AutoJoinAction = async () => {
 			try {
-				await updateRoomEndpoint({
+				const { numberOfMembers } = await updateRoomEndpoint({
 					roomId: rid,
 					isDefault: !room.teamDefault,
 				});
+
+				const MAX_NUMBER_OF_AUTO_JOIN_MEMBERS = 1000;
+				if (!room.teamDefault) {
+					const messageType = numberOfMembers > MAX_NUMBER_OF_AUTO_JOIN_MEMBERS ? 'info' : 'success';
+					const message =
+						numberOfMembers > MAX_NUMBER_OF_AUTO_JOIN_MEMBERS ? 'Team_Auto-join_exceeded_user_limit' : 'Team_Auto-join_updated';
+
+					dispatchToastMessage({
+						type: messageType,
+						message: t(message, {
+							channelName: roomCoordinator.getRoomName(room.t, room),
+							numberOfMembers,
+						}),
+					});
+				}
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}

@@ -4995,6 +4995,8 @@
   "Team_Add_existing_channels": "Add Existing Channels",
   "Team_Add_existing": "Add Existing",
   "Team_Auto-join": "Auto-join",
+  "Team_Auto-join_exceeded_user_limit": "Auto-join has a limit of a {{numberOfMembers}} members, #{{channelName}} now has that amount of people",
+  "Team_Auto-join_updated": "#{{channelName}} now has {{numberOfMembers}} members",
   "Team_Channels": "Team Channels",
   "Team_Delete_Channel_modal_content_danger": "This can’t be undone.",
   "Team_Delete_Channel_modal_content": "Would you like to delete this Channel?",
