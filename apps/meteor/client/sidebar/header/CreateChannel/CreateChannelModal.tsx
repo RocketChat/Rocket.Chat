@@ -24,7 +24,7 @@ import {
 	usePermissionWithScopedRoles,
 } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
@@ -58,6 +58,7 @@ const getFederationHintKey = (licenseModule: ReturnType<typeof useHasLicenseModu
 };
 
 const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): ReactElement => {
+
 	const t = useTranslation();
 	const canSetReadOnly = usePermissionWithScopedRoles('set-readonly', ['owner']);
 	const e2eEnabled = useSetting('E2E_Enable');
@@ -192,6 +193,25 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 	const encryptedId = useUniqueId();
 	const broadcastId = useUniqueId();
 	const addMembersId = useUniqueId();
+
+  	const [dropdownVisible, setDropdownVisible] = useState(false);
+	const dropdownRef = useRef(null);
+
+	useEffect(() => {
+		const handleClickOutside = (e) => {
+			const { target } = e;
+
+			if (dropdownRef.current && !dropdownRef.current.contains(target)) {
+				setDropdownVisible(false);
+			}
+		};
+
+		document.addEventListener('mousedown', handleClickOutside);
+
+		return () => {
+			document.removeEventListener('mousedown', handleClickOutside);
+		};
+	}, [setDropdownVisible]);
 
 	return (
 		<Modal
@@ -347,14 +367,18 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 						<FieldHint id={`${broadcastId}-hint`}>{t('Broadcast_channel_Description')}</FieldHint>
 					</Field>
 					<Field>
-						<FieldLabel htmlFor={addMembersId}>{t('Add_members')}</FieldLabel>
-						<Controller
-							control={control}
-							name='members'
-							render={({ field: { onChange, value } }): ReactElement => (
-								<UserAutoCompleteMultipleFederated id={addMembersId} value={value} onChange={onChange} />
-							)}
-						/>
+						<FieldRow>
+							<FieldLabel htmlFor={addMembersId}>{t('Add_members')}</FieldLabel>
+							<div ref={dropdownRef} onClick={() => setDropdownVisible(!dropdownVisible)}>
+								<Controller
+									control={control}
+									name='members'
+									render={({ field: { onChange, value } }): ReactElement => (
+										<UserAutoCompleteMultipleFederated id={addMembersId} value={value} onChange={onChange} />
+									)}
+								/>
+							</div>
+						</FieldRow>
 					</Field>
 				</FieldGroup>
 			</Modal.Content>
