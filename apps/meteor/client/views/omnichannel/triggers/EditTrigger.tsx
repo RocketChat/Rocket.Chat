@@ -27,13 +27,11 @@ export type TriggersPayload = {
 };
 
 const DEFAULT_SEND_MESSAGE_ACTION = {
-	name: 'use-external-service',
+	name: 'send-message',
 	params: {
 		sender: 'queue',
 		name: '',
-		serviceUrl: '',
-		serviceFallbackMessage: '',
-		serviceTimeout: 10000,
+		msg: '',
 	},
 } as const;
 
