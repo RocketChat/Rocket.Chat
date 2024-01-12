@@ -8,7 +8,7 @@ export const filtered = (
 		supportSchemesForLink: 'http,https',
 	},
 ) => {
-	const schemes = options.supportSchemesForLink.split(',').join('|');
+	const schemes = (options.supportSchemesForLink || 'http,https').split(',').join('|');
 
 	// Remove block code backticks
 	message = message.replace(/```/g, '');
