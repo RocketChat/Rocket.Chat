@@ -32,6 +32,7 @@ export default {
 		accept: '',
 		multiple: false,
 		onUpload: action('upload'),
+		disabled: false,
 	},
 	parameters: {
 		layout: 'fullscreen',

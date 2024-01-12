@@ -101,7 +101,7 @@ export const FilesDropTarget = ({
 	};
 
 	if (disabled) {
-		return children;
+		return <>{children}</>;
 	}
 
 	return (
