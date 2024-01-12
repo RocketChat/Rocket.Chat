@@ -55,10 +55,7 @@ export type SettingsEndpoints = {
 
 	'/v1/service.configurations': {
 		GET: () => {
-			configurations: Array<{
-				appId: string;
-				secret: string;
-			}>;
+			configurations: Array<LoginServiceConfiguration>;
 		};
 	};
 };

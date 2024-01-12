@@ -7,7 +7,7 @@ import type {
 	TwitterOAuthConfiguration,
 } from '@rocket.chat/core-typings';
 import { isSettingAction, isSettingColor } from '@rocket.chat/core-typings';
-import { Settings } from '@rocket.chat/models';
+import { LoginServiceConfiguration as LoginServiceConfigurationModel, Settings } from '@rocket.chat/models';
 import { isSettingsUpdatePropDefault, isSettingsUpdatePropsActions, isSettingsUpdatePropsColor } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
@@ -222,7 +222,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			return API.v1.success({
-				configurations: await ServiceConfiguration.configurations.find({}, { fields: { secret: 0 } }).fetchAsync(),
+				configurations: await LoginServiceConfigurationModel.find({}, { projection: { secret: 0 } }).toArray(),
 			});
 		},
 	},
