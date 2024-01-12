@@ -19,7 +19,7 @@ const i18nHandler = async function (req: IncomingMessage, res: ServerResponse) {
 	const { lng } = match.params;
 
 	try {
-		const data = await Assets.getTextAsync(`i18n/${lng}.i18n.json`);
+		const data = await Assets.getText(`i18n/${lng}.i18n.json`);
 		if (!data) {
 			throw new Error();
 		}
