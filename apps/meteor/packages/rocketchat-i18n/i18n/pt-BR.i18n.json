@@ -1870,6 +1870,7 @@
   "External_service_url": "URL do serviço externo",
   "External_service_action_hint": "Envie uma mensagem personalizada usando serviço externo. Para mais detalhes, consulte nossa documentação.",
   "External_service_test_hint": "Clique em \"Enviar teste\" antes de salvar o gatilho.",
+  "External_service_returned_valid_response": "O serviço externo retornou uma resposta válida",
   "External_Users": "Usuários Externos",
   "Extremely_likely": "Muito provável",
   "Facebook": "Facebook",

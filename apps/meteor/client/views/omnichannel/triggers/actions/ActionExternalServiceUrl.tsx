@@ -1,7 +1,7 @@
 import { Button, Field, FieldError, FieldHint, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ComponentProps } from 'react';
 import React from 'react';
@@ -11,14 +11,15 @@ import { Controller, useFormContext, useWatch } from 'react-hook-form';
 import type { TriggersPayload } from '../EditTrigger';
 import { useFieldError } from '../hooks/useFieldError';
 
-type ActionExternalUrlType = ComponentProps<typeof Field> & {
+type ActionExternaServicelUrlType = ComponentProps<typeof Field> & {
 	control: Control<TriggersPayload>;
 	index: number;
 };
 
-export const ActionExternalUrl = ({ control, index, ...props }: ActionExternalUrlType) => {
+export const ActionExternalServiceUrl = ({ control, index, ...props }: ActionExternaServicelUrlType) => {
 	const t = useTranslation();
 	const { trigger } = useFormContext<TriggersPayload>();
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const serviceUrlFieldId = useUniqueId();
 	const serviceUrlFieldName = `actions.${index}.params.serviceUrl` as const;
@@ -28,7 +29,12 @@ export const ActionExternalUrl = ({ control, index, ...props }: ActionExternalUr
 	const [serviceUrlError] = useFieldError({ control, name: serviceUrlFieldName });
 
 	const webhookTestEndpoint = useEndpoint('POST', '/v1/livechat/triggers/external-service/test');
-	const webhookTest = useMutation({ mutationFn: webhookTestEndpoint });
+	const webhookTest = useMutation({
+		mutationFn: webhookTestEndpoint,
+		onSuccess: () => {
+			dispatchToastMessage({ type: 'success', message: t('External_service_returned_valid_response') });
+		},
+	});
 
 	const testExternalService = async (serviceUrl: string) => {
 		if (!serviceUrl) {

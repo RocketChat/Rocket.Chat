@@ -8,7 +8,7 @@ import { Controller } from 'react-hook-form';
 
 import type { TriggersPayload } from '../EditTrigger';
 import { useFieldError } from '../hooks/useFieldError';
-import { ActionExternalUrl } from './ActionExternalUrl';
+import { ActionExternalServiceUrl } from './ActionExternalServiceUrl';
 import { ActionSender } from './ActionSender';
 
 type SendMessageActionFormType = ComponentProps<typeof Field> & {
@@ -30,7 +30,7 @@ export const ExternalServiceActionForm = ({ control, index, ...props }: SendMess
 		<FieldGroup {...props}>
 			<ActionSender control={control} index={index} />
 
-			<ActionExternalUrl control={control} index={index} />
+			<ActionExternalServiceUrl control={control} index={index} />
 
 			<Field>
 				<FieldLabel htmlFor={timeoutFieldId}>{t('Timeout_in_miliseconds')}*</FieldLabel>
