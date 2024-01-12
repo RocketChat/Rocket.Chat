@@ -6,11 +6,14 @@ const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-export type UsersListStatusParamsGET = { role?: string } & PaginatedRequest;
+export type UsersListStatusParamsGET = { role?: string; searchTerm: string } & PaginatedRequest;
 
 const UsersListStatusParamsGetSchema = {
 	type: 'object',
 	properties: {
+		searchTerm: {
+			type: 'string',
+		},
 		role: {
 			type: 'string',
 		},

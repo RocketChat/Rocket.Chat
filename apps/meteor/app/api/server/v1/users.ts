@@ -19,6 +19,7 @@ import {
 	isUsersCheckUsernameAvailabilityParamsGET,
 	isUsersSendConfirmationEmailParamsPOST,
 } from '@rocket.chat/rest-typings';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -570,7 +571,7 @@ API.v1.addRoute(
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { status } = this.urlParams;
 			const { sort } = await this.parseJsonQuery();
-			const { role } = this.queryParams;
+			const { role, searchTerm } = this.queryParams;
 
 			const projection = {
 				name: 1,
@@ -604,6 +605,9 @@ API.v1.addRoute(
 						lastLogin: { $exists: true },
 					};
 					break;
+				case 'all':
+					match = {};
+					break;
 				case 'deactivated':
 					match = {
 						active: false,
@@ -617,15 +621,25 @@ API.v1.addRoute(
 					};
 					projection.reason = 1;
 					break;
-				case 'all':
-					match = {};
-					break;
 				default:
 					throw new Meteor.Error('error-invalid-status', 'Invalid status parameter');
 			}
 
+			const canSeeAllUserInfo = await hasPermissionAsync(this.userId, 'view-full-other-user-info');
+			match = {
+				...match,
+				$or: [
+					...(canSeeAllUserInfo ? [{ 'emails.address': { $regex: escapeRegExp(searchTerm), $options: 'i' } }] : []),
+					{ username: { $regex: escapeRegExp(searchTerm), $options: 'i' } },
+					{ name: { $regex: escapeRegExp(searchTerm), $options: 'i' } },
+				],
+			};
+
 			const result = await Users.findPaginated(
-				{ ...match, roles: role },
+				{
+					...match,
+					roles: role,
+				},
 				{
 					sort: actualSort,
 					skip: offset,

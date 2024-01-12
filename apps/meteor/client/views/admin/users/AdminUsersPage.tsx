@@ -76,9 +76,6 @@ const UsersPage = (): ReactElement => {
 						<TabsItem selected={tab === 'deactivated'} onClick={() => setTab('deactivated')}>
 							{t('Deactivated')}
 						</TabsItem>
-						<TabsItem selected={tab === 'invited'} onClick={() => setTab('invited')}>
-							{t('Invited')}
-						</TabsItem>
 					</Tabs>
 					<UsersTable reload={reload} tab={tab} onReload={handleReload} setPendingActionsCount={setPendingActionsCount} />
 				</PageContent>

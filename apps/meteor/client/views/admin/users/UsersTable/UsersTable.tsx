@@ -27,7 +27,7 @@ type UsersTableProps = {
 	setPendingActionsCount: React.Dispatch<React.SetStateAction<number>>;
 };
 
-const UsersTable = ({ reload, tab, onReload, setPendingActionsCount }: UsersTableProps): ReactElement | null => {
+const UsersTable = ({ reload, tab, onReload }: UsersTableProps): ReactElement | null => {
 	const t = useTranslation();
 	const router = useRouter();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
@@ -40,7 +40,7 @@ const UsersTable = ({ reload, tab, onReload, setPendingActionsCount }: UsersTabl
 	const searchTerm = useDebouncedValue(text, 500);
 	const prevSearchTerm = useRef('');
 
-	const { filteredUsers, isSuccess, refetch, isLoading, isError, paginationMetadata } = useFilteredUsers(
+	const { data, isSuccess, refetch, isLoading, isError } = useFilteredUsers(
 		searchTerm,
 		prevSearchTerm,
 		setCurrent,
@@ -48,7 +48,6 @@ const UsersTable = ({ reload, tab, onReload, setPendingActionsCount }: UsersTabl
 		sortDirection,
 		itemsPerPage,
 		current,
-		setPendingActionsCount,
 		tab,
 	);
 
@@ -160,14 +159,14 @@ const UsersTable = ({ reload, tab, onReload, setPendingActionsCount }: UsersTabl
 				</States>
 			)}
 
-			{isSuccess && filteredUsers.length === 0 && <GenericNoResults />}
+			{isSuccess && data.users?.length === 0 && <GenericNoResults />}
 
-			{isSuccess && !!filteredUsers && (
+			{isSuccess && !!data.users && (
 				<>
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
-							{filteredUsers.map((user) => (
+							{data.users.map((user) => (
 								<UsersTableRow
 									key={user._id}
 									onClick={handleClickOrKeyDown}
@@ -184,7 +183,7 @@ const UsersTable = ({ reload, tab, onReload, setPendingActionsCount }: UsersTabl
 						divider
 						current={current}
 						itemsPerPage={itemsPerPage}
-						count={paginationMetadata.total || 0}
+						count={data.total || 0}
 						onSetItemsPerPage={setItemsPerPage}
 						onSetCurrent={setCurrent}
 						{...paginationProps}
