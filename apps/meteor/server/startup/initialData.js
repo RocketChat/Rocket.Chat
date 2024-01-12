@@ -55,7 +55,7 @@ Meteor.startup(async () => {
 	}
 
 	try {
-		if (!(await Users.findOneById('rocket.cat'))) {
+		if (!(await Users.findOneById('rocket.cat', { projection: { _id: 1 } }))) {
 			await Users.create({
 				_id: 'rocket.cat',
 				name: 'Rocket.Cat',
