@@ -15,9 +15,7 @@ import {
 } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
-import { useFilterActiveUsers } from '../hooks/useFilterActiveUsers';
-import { useFilterPendingUsers } from '../hooks/useFilterPendingUsers';
-import { useListUsers } from '../hooks/useListUsers';
+import useFilteredUsers from '../hooks/useFilteredUsers';
 import UsersTableRow from './UsersTableRow';
 
 // TODO: remove bots from pending users + add "resend email" function
@@ -42,7 +40,7 @@ const UsersTable = ({ reload, tab, onReload, setPendingActionsCount }: UsersTabl
 	const searchTerm = useDebouncedValue(text, 500);
 	const prevSearchTerm = useRef('');
 
-	const { data, isLoading, isSuccess, isError, refetch } = useListUsers(
+	const { filteredUsers, isSuccess, refetch, isLoading, isError, paginationMetadata } = useFilteredUsers(
 		searchTerm,
 		prevSearchTerm,
 		setCurrent,
@@ -51,16 +49,13 @@ const UsersTable = ({ reload, tab, onReload, setPendingActionsCount }: UsersTabl
 		itemsPerPage,
 		current,
 		setPendingActionsCount,
+		tab,
 	);
-
-	const useAllUsers = () => (tab === 'all' && isSuccess ? data?.users : []);
-
-	const filteredUsers = [...useAllUsers(), ...useFilterActiveUsers(data?.users, tab), ...useFilterPendingUsers(data?.users, tab)];
 
 	useEffect(() => {
 		reload.current = refetch;
 		prevSearchTerm.current = searchTerm;
-	}, [reload, refetch, searchTerm]);
+	}, [reload, searchTerm, refetch]);
 
 	const isKeyboardEvent = (
 		event: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement>,
@@ -149,7 +144,9 @@ const UsersTable = ({ reload, tab, onReload, setPendingActionsCount }: UsersTabl
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
-					<GenericTableBody>{isLoading && <GenericTableLoadingTable headerCells={5} />}</GenericTableBody>
+					<GenericTableBody>
+						<GenericTableLoadingTable headerCells={5} />
+					</GenericTableBody>
 				</GenericTable>
 			)}
 
@@ -165,7 +162,7 @@ const UsersTable = ({ reload, tab, onReload, setPendingActionsCount }: UsersTabl
 
 			{isSuccess && filteredUsers.length === 0 && <GenericNoResults />}
 
-			{isSuccess && !!data && !!filteredUsers && (
+			{isSuccess && !!filteredUsers && (
 				<>
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
@@ -187,7 +184,7 @@ const UsersTable = ({ reload, tab, onReload, setPendingActionsCount }: UsersTabl
 						divider
 						current={current}
 						itemsPerPage={itemsPerPage}
-						count={data?.total || 0}
+						count={paginationMetadata.total || 0}
 						onSetItemsPerPage={setItemsPerPage}
 						onSetCurrent={setCurrent}
 						{...paginationProps}

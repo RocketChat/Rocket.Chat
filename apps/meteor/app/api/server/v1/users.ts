@@ -617,6 +617,9 @@ API.v1.addRoute(
 					};
 					projection.reason = 1;
 					break;
+				case 'all':
+					match = {};
+					break;
 				default:
 					throw new Meteor.Error('error-invalid-status', 'Invalid status parameter');
 			}

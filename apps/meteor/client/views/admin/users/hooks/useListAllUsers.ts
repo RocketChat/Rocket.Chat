@@ -8,7 +8,7 @@ import { useMemo } from 'react';
 import type { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import type { useSort } from '../../../../components/GenericTable/hooks/useSort';
 
-export const useListUsers = (
+export const useListAllUsers = (
 	searchTerm: string,
 	prevSearchTerm: MutableRefObject<string>,
 	setCurrent: ReturnType<typeof usePagination>['setCurrent'],
@@ -53,18 +53,11 @@ export const useListUsers = (
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const usersListQueryResult = useQuery(
-		['users', query],
-		async () => {
-			const users = await getUsers(query);
-			return users;
+	const usersListQueryResult = useQuery(['allUsers', query], async () => getUsers(query), {
+		onError: (error) => {
+			dispatchToastMessage({ type: 'error', message: error });
 		},
-		{
-			onError: (error) => {
-				dispatchToastMessage({ type: 'error', message: error });
-			},
-		},
-	);
+	});
 
 	if (usersListQueryResult.isSuccess) {
 		setPendingActionsCount(usersListQueryResult.data.users.filter((user) => !user.active).length);

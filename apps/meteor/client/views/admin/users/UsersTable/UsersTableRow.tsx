@@ -3,7 +3,6 @@ import type { IRole, IUser } from '@rocket.chat/core-typings';
 import { Box, Button, Menu, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -22,7 +21,7 @@ type UsersTableRowProps = {
 	user: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'emails' | 'active' | 'avatarETag' | 'roles'>;
 	onClick: (id: IUser['_id'], e: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement>) => void;
 	mediaQuery: boolean;
-	refetchUsers: ReturnType<typeof useQuery>['refetch'];
+	refetchUsers: () => void;
 	onReload: () => void;
 	tab: string;
 };
