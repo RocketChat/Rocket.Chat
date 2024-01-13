@@ -163,7 +163,6 @@ export const sendNoWrap = async ({
 	headers?: string;
 }) => {
 	if (!checkAddressFormat(to)) {
-
 		throw new Meteor.Error('invalid email');
 	}
 
@@ -180,6 +179,7 @@ export const sendNoWrap = async ({
 	const email = { to, from, replyTo, subject, html, text, headers };
 
 	const eventResult = await Apps.triggerEvent('IPreEmailSent', { email });
+	 
 	setImmediate(() => Email.sendAsync(eventResult || email).catch((e) => console.error(e)));
 };
 

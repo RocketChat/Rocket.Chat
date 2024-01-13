@@ -30,7 +30,6 @@ const _sendEmailChangeNotification = async function (to: string, newEmail: strin
 	try {
 		await Mailer.send(email);
 	} catch (error: any) {
-		console.log(error.message)
 		throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${error.message}`, {
 			function: 'setEmail',
 			message: error.message,
