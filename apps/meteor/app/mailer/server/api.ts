@@ -135,7 +135,15 @@ settings.watchMultiple(['Email_Header', 'Email_Footer'], () => {
 });
 
 export const checkAddressFormat = (adresses: string | string[]): boolean =>
-	([] as string[]).concat(adresses).every((address) => validateEmail(address));
+	([] as string[]).concat(adresses).every((address) => {
+		const parts = address.split('<');
+		if(parts.length < 2){
+			return validateEmail(address)
+		}
+		else{
+		return validateEmail(parts[1].replace('>', ''));
+		}
+	})
 
 export const sendNoWrap = async ({
 	to,
@@ -155,6 +163,7 @@ export const sendNoWrap = async ({
 	headers?: string;
 }) => {
 	if (!checkAddressFormat(to)) {
+
 		throw new Meteor.Error('invalid email');
 	}
 
@@ -171,7 +180,6 @@ export const sendNoWrap = async ({
 	const email = { to, from, replyTo, subject, html, text, headers };
 
 	const eventResult = await Apps.triggerEvent('IPreEmailSent', { email });
-
 	setImmediate(() => Email.sendAsync(eventResult || email).catch((e) => console.error(e)));
 };
 
