@@ -416,6 +416,10 @@ API.v1.addRoute(
 				throw new Error('error-invalid-room');
 			}
 
+			if (!room.open) {
+				throw new Error('room-closed');
+			}
+
 			if (!(await Omnichannel.isWithinMACLimit(room))) {
 				throw new Error('error-mac-limit-reached');
 			}
