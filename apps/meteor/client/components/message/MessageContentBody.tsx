@@ -53,7 +53,7 @@ const MessageContentBody = ({ mentions, channels, md, searchText }: MessageConte
 	`;
 
 	return (
-		<MessageBody data-qa-type='message-body'>
+		<MessageBody data-qa-type='message-body' dir='auto'>
 			<Box className={messageBodyAdditionalStyles}>
 				<Suspense fallback={<Skeleton />}>
 					<GazzodownText channels={channels} mentions={mentions} searchText={searchText}>
