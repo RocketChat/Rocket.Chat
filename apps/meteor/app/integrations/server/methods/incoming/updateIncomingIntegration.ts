@@ -173,6 +173,7 @@ Meteor.methods<ServerMethods>({
 					avatar: integration.avatar,
 					emoji: integration.emoji,
 					alias: integration.alias,
+					username: integration.username,
 					channel: channels,
 					...(isFrozen
 						? {}
