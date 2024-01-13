@@ -350,7 +350,11 @@ const MessageBox = ({
 	return (
 		<>
 			{chat.composer?.quotedMessages && <MessageBoxReplies />}
-			<ComposerHints isEditing={isEditing} readOnly={readOnly} />
+			{isEditing ? (
+				<ComposerHints leftTranslationText='Editing_message' leftIcon='pencil' rightTranslationText='Editing_message_hint' />
+			) : (
+				readOnly && <ComposerHints leftTranslationText='This_room_is_read_only' />
+			)}
 
 			{shouldPopupPreview && popup && (
 				<ComposerBoxPopup select={select} items={items} focused={focused} title={popup.title} renderItem={popup.renderItem} />
@@ -425,7 +429,11 @@ const MessageBox = ({
 						)}
 						{canSend && (
 							<>
-								{isEditing && <Button onClick={(event) => closeEditing(event)}>Cancel</Button>}
+								{isEditing && (
+									<Button small onClick={(event) => closeEditing(event)}>
+										{t('Cancel')}
+									</Button>
+								)}
 								<MessageComposerAction
 									aria-label={t('Send')}
 									icon='send'
