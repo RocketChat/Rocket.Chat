@@ -2,9 +2,9 @@ import type { ChannelsImagesProps } from '@rocket.chat/rest-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useState } from 'react';
 
-import { useScrollableRecordList } from '../../../hooks/lists/useScrollableRecordList';
-import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
-import { ImagesList } from '../../../lib/lists/ImagesList';
+import { useScrollableRecordList } from '../../../../hooks/lists/useScrollableRecordList';
+import { useComponentDidUpdate } from '../../../../hooks/useComponentDidUpdate';
+import { ImagesList } from '../../../../lib/lists/ImagesList';
 
 export const useImagesList = (
 	options: ChannelsImagesProps,
