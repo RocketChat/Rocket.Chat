@@ -200,6 +200,10 @@ export class LDAPManager {
 			}
 
 			const [ldapUser] = users;
+			if (!(await ldap.isUserAcceptedByGroupFilter(escapedUsername, ldapUser.dn))) {
+				throw new Error('User not found');
+			}
+
 			if (!(await ldap.authenticate(ldapUser.dn, password))) {
 				logger.debug(`Wrong password for ${escapedUsername}`);
 				throw new Error('Invalid user or wrong password');
@@ -212,11 +216,6 @@ export class LDAPManager {
 					authLogger.debug(`Bind successful but user ${ldapUser.dn} was not found via search`);
 				}
 			}
-
-			if (!(await ldap.isUserAcceptedByGroupFilter(escapedUsername, ldapUser.dn))) {
-				throw new Error('User not in a valid group');
-			}
-
 			return ldapUser;
 		} catch (error) {
 			logger.error(error);
