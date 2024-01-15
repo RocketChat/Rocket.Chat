@@ -25,6 +25,8 @@ import './configuration/ldap';
 import './stream/stdout';
 import './features/EmailInbox/index';
 
+import '../imports/personal-access-tokens/server/api/methods';
+
 await (async () => {
 	await configureLogLevel();
 	await registerServices();
