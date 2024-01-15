@@ -1,6 +1,7 @@
-import { ServiceConfiguration } from 'meteor/service-configuration';
 import { Random } from '@rocket.chat/random';
 import { OAuth } from 'meteor/oauth';
+
+import { loginServices } from '../../client/lib/loginServices';
 
 export const Linkedin = {};
 
@@ -16,7 +17,7 @@ Linkedin.requestCredential = async function (options, credentialRequestCompleteC
 		options = {};
 	}
 
-	const config = await ServiceConfiguration.configurations.findOneAsync({ service: 'linkedin' });
+	const config = await loginServices.loadLoginService('linkedin');
 	if (!config) {
 		throw new Accounts.ConfigError('Service not configured');
 	}

@@ -13,6 +13,7 @@ type LoginServicesEvents = {
 type LoadState = 'loaded' | 'loading' | 'error' | 'none';
 
 const maxRetries = 3;
+const timeout = 10000;
 
 class LoginServices extends Emitter<LoginServicesEvents> {
 	private retries = 0;
@@ -76,12 +77,26 @@ class LoginServices extends Emitter<LoginServicesEvents> {
 		this.emit('changed');
 	}
 
-	public getLoginService(serviceName: string): LoginServiceConfiguration | undefined {
+	public getLoginService<T extends Partial<LoginServiceConfiguration> = LoginServiceConfiguration>(serviceName: string): T | undefined {
 		if (!this.ready) {
 			return;
 		}
 
-		return this.services.find(({ service }) => service === serviceName);
+		return this.services.find(({ service }) => service === serviceName) as T | undefined;
+	}
+
+	public async loadLoginService<T extends Partial<LoginServiceConfiguration> = LoginServiceConfiguration>(
+		serviceName: string,
+	): Promise<T | undefined> {
+		if (this.ready) {
+			return this.getLoginService<T>(serviceName);
+		}
+
+		return new Promise((resolve, reject) => {
+			this.onLoad(() => resolve(this.getLoginService<T>(serviceName)));
+
+			setTimeout(() => reject(new Error('LoadLoginService timeout')), timeout);
+		});
 	}
 
 	public get ready() {

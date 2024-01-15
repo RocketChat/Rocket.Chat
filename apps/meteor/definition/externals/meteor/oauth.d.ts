@@ -1,7 +1,6 @@
 declare module 'meteor/oauth' {
 	import type { IRocketChatRecord } from '@rocket.chat/core-typings';
 	import type { Mongo } from 'meteor/mongo';
-	import type { Configuration } from 'meteor/service-configuration';
 
 	interface IOauthCredentials extends IRocketChatRecord {
 		key: string;
@@ -27,16 +26,21 @@ declare module 'meteor/oauth' {
 			loginUrl: string;
 			credentialRequestCompleteCallback?: (credentialTokenOrError?: string | Error) => void;
 			credentialToken: string;
-			popupOptions: {
-				width: number;
-				height: number;
+			popupOptions?: {
+				width?: number;
+				height?: number;
 			};
 		}): void;
 
 		function _stateParam(loginStyle: string, credentialToken: string, redirectUrl?: string): string;
 
-		function _redirectUri(serviceName: string, config: Configuration, params?: any, absoluteUrlOptions?: any): string;
+		function _redirectUri(
+			serviceName: string,
+			config: { loginStyle?: string },
+			params?: Record<string, any>,
+			absoluteUrlOptions?: Record<string, any>,
+		): string;
 
-		function _loginStyle(serviceName: string, config: Configuration, options?: Meteor.LoginWithExternalServiceOptions): string;
+		function _loginStyle(serviceName: string, config: { loginStyle?: string }, options?: Meteor.LoginWithExternalServiceOptions): string;
 	}
 }
