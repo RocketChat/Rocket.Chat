@@ -139,9 +139,8 @@ export const checkAddressFormat = (adresses: string | string[]): boolean =>
 		const parts = address.split('<');
 		if (parts.length < 2) {
 			return validateEmail(address);
-		} else {
-			return validateEmail(parts[1].replace('>', ''));
 		}
+		return validateEmail(parts[1].replace('>', ''));
 	});
 
 export const sendNoWrap = async ({
