@@ -363,7 +363,7 @@ describe('LIVECHAT - triggers', function () {
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'error-invalid-webhook-response');
+					expect(res.body).to.have.property('error', 'error-invalid-external-service-response');
 					expect(res.body).to.have.property('response').to.be.a('string');
 				});
 		});
@@ -387,7 +387,7 @@ describe('LIVECHAT - triggers', function () {
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'error-invalid-webhook-response');
+					expect(res.body).to.have.property('error', 'error-invalid-external-service-response');
 				});
 		});
 	});
