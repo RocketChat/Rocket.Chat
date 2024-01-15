@@ -1064,7 +1064,7 @@
   "Connection_Closed": "Anslutningen är stängd",
   "Connection_Reset": "Anslutning återställd",
   "Connection_error": "Anslutningsfel",
-  "Connection_success": "LDAP-anslutningen har upprättats",
+  "LDAP_Connection_successful": "LDAP-anslutningen har upprättats",
   "Connection_failed": "LDAP-anslutningen kunde inte upprättas",
   "Connectivity_Services": "Anslutningstjänster",
   "Consulting": "Consulting",

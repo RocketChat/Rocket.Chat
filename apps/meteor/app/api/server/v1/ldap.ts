@@ -31,7 +31,7 @@ API.v1.addRoute(
 			}
 
 			return API.v1.success({
-				message: 'Connection_success' as const,
+				message: 'LDAP_Connection_successful' as const,
 			});
 		},
 	},
