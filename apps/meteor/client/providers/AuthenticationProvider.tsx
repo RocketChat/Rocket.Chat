@@ -1,4 +1,5 @@
 import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
+import { capitalize } from '@rocket.chat/string-helpers';
 import { AuthenticationContext, useSetting } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import type { ContextType, ReactElement, ReactNode } from 'react';
@@ -51,7 +52,7 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 				const { service: serviceName } = serviceConfig;
 				const clientConfig = ('clientConfig' in serviceConfig && serviceConfig.clientConfig) || {};
 
-				const loginWithService = `loginWith${loginMethods[serviceName] || loginServices.capitalize(String(serviceName || ''))}`;
+				const loginWithService = `loginWith${loginMethods[serviceName] || capitalize(String(serviceName || ''))}`;
 
 				const method: (config: unknown, cb: (error: any) => void) => Promise<true> = (Meteor as any)[loginWithService] as any;
 

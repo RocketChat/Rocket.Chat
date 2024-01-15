@@ -1,5 +1,6 @@
 import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
+import { capitalize } from '@rocket.chat/string-helpers';
 import type { LoginService } from '@rocket.chat/ui-contexts';
 
 import { sdk } from '../../app/utils/client/lib/SDKClient';
@@ -63,7 +64,7 @@ class LoginServices extends Emitter<LoginServicesEvents> {
 
 			// Get the hardcoded title and icon, or fallback to capitalizing the service name
 			const serviceConfig = this.config[service.service] || {
-				title: this.capitalize(service.service),
+				title: capitalize(service.service),
 			};
 
 			return {
@@ -73,14 +74,6 @@ class LoginServices extends Emitter<LoginServicesEvents> {
 		});
 
 		this.emit('changed');
-	}
-
-	public capitalize(str: string): string {
-		if (!str) {
-			return str;
-		}
-
-		return str.charAt(0).toUpperCase() + str.slice(1);
 	}
 
 	public getLoginService(serviceName: string): LoginServiceConfiguration | undefined {
