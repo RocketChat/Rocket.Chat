@@ -618,7 +618,7 @@ API.v1.addRoute(
 				case 'pending':
 					match = {
 						lastLogin: { $exists: false },
-						type: { $ne: 'bot' },
+						type: { $nin: ['bot', 'app'] },
 					};
 					projection.reason = 1;
 					break;
