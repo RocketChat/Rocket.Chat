@@ -43,7 +43,7 @@ export type ActionOf<TElement extends ActionableElement> = TElement extends Butt
 	: TElement extends StaticSelectElement
 	? StaticSelectElement['initialValue']
 	: TElement extends UsersSelectElement
-	? unknown
+	? Option['value'][]
 	: TElement extends ToggleSwitchElement
 	? Option['value'][]
 	: TElement extends RadioButtonElement

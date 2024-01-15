@@ -3,6 +3,7 @@ import type { ReactElement } from 'react';
 
 import TabNavigationBlock from '../blocks/TabNavigationBlock';
 import { AppIdProvider } from '../contexts/AppIdContext';
+import UsersSelectElement from '../elements/UsersSelectElement/UsersSelectElement';
 import {
   FuselageSurfaceRenderer,
   renderTextObject,
@@ -26,6 +27,25 @@ export class ContextualBarSurfaceRenderer extends FuselageSurfaceRenderer {
   plain_text = renderTextObject;
 
   mrkdwn = renderTextObject;
+
+  users_select(
+    block: UiKit.UsersSelectElement,
+    context: UiKit.BlockContext,
+    index: number
+  ): ReactElement | null {
+    if (context === UiKit.BlockContext.FORM) {
+      return (
+        <UsersSelectElement
+          block={block}
+          context={context}
+          index={index}
+          surfaceRenderer={this}
+        />
+      );
+    }
+
+    return null;
+  }
 
   tab_navigation(
     block: UiKit.ExperimentalTabNavigationBlock,
