@@ -351,9 +351,9 @@ const MessageBox = ({
 		<>
 			{chat.composer?.quotedMessages && <MessageBoxReplies />}
 			{isEditing ? (
-				<ComposerHints leftTranslationText='Editing_message' leftIcon='pencil' rightTranslationText='Editing_message_hint' />
+				<ComposerHints actionText='Editing_message' actionIcon='pencil' helperText='Editing_message_hint' />
 			) : (
-				readOnly && <ComposerHints leftTranslationText='This_room_is_read_only' />
+				readOnly && <ComposerHints actionText='This_room_is_read_only' />
 			)}
 
 			{shouldPopupPreview && popup && (
