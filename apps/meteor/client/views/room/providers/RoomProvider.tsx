@@ -17,6 +17,7 @@ import { useRoomRolesManagement } from '../body/hooks/useRoomRolesManagement';
 import { RoomContext } from '../contexts/RoomContext';
 import ComposerPopupProvider from './ComposerPopupProvider';
 import RoomToolboxProvider from './RoomToolboxProvider';
+import { useRedirectOnSettingsChanged } from './hooks/useRedirectOnSettingsChanged';
 import { useRoomQuery } from './hooks/useRoomQuery';
 
 type RoomProviderProps = {
@@ -38,6 +39,8 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	}, [isSuccess, room, router]);
 
 	const subscriptionQuery = useReactiveQuery(['subscriptions', { rid }], () => ChatSubscription.findOne({ rid }) ?? null);
+
+	useRedirectOnSettingsChanged(subscriptionQuery.data);
 
 	const pseudoRoom = useMemo(() => {
 		if (!room) {
