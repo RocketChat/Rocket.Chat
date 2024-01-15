@@ -11,7 +11,7 @@ export const pageUrlCondition = (condition: ILivechatTriggerCondition) => {
 		return Promise.reject(`condition ${condition.name} not met`);
 	}
 
-	const hrefRegExp = new RegExp(condition.value, 'g');
+	const hrefRegExp = new RegExp(`${condition?.value}`, 'g');
 
 	if (hrefRegExp.test(parentUrl)) {
 		return Promise.resolve({ condition: 'page-url' });
@@ -20,7 +20,7 @@ export const pageUrlCondition = (condition: ILivechatTriggerCondition) => {
 
 export const timeOnSiteCondition = (condition: ILivechatTriggerCondition) => {
 	return new Promise((resolve, reject) => {
-		const timeout = parseInt(condition?.value || '0', 10) * 1000;
+		const timeout = parseInt(`${condition?.value || 0}`, 10) * 1000;
 		const timeoutId = setTimeout(() => resolve({ condition: 'time-on-site' }), timeout);
 
 		const watchStateChange = (event: [LivechatStoreState] | undefined) => {

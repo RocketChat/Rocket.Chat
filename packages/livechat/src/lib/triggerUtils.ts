@@ -1,20 +1,23 @@
-import type { ILivechatTrigger, ILivechatTriggerAction, ILivechatTriggerType, Serialized } from '@rocket.chat/core-typings';
-import type { OperationResult } from '@rocket.chat/rest-typings';
+import type { ILivechatAgent, ILivechatTrigger, ILivechatTriggerAction, ILivechatTriggerType, Serialized } from '@rocket.chat/core-typings';
 
 import { Livechat } from '../api';
 import { upsert } from '../helpers/upsert';
 import store from '../store';
 import { processUnread } from './main';
 
-let agentPromise: Promise<{ username: string } | Serialized<OperationResult<'GET', '/v1/livechat/agent.next/:token'>>> | null;
+type AgentPromise = { username: string } | Serialized<ILivechatAgent> | null;
+
+let agentPromise: Promise<AgentPromise> | null;
 const agentCacheExpiry = 3600000;
 
-export const getAgent = (triggerAction: ILivechatTriggerAction) => {
+const isAgentWithInfo = (agent: any): agent is Serialized<ILivechatAgent> => !agent.hiddenInfo;
+
+export const getAgent = (triggerAction: ILivechatTriggerAction): Promise<AgentPromise> => {
 	if (agentPromise) {
 		return agentPromise;
 	}
 
-	agentPromise = new Promise(async (resolve, reject) => {
+	agentPromise = new Promise<AgentPromise>(async (resolve, reject) => {
 		const { params } = triggerAction;
 
 		if (params?.sender === 'queue') {
@@ -29,9 +32,13 @@ export const getAgent = (triggerAction: ILivechatTriggerAction) => {
 				return resolve(defaultAgent); // cache valid for 1
 			}
 
-			let agent;
+			let agent = null;
 			try {
-				agent = await Livechat.nextAgent({ department });
+				const tempAgent = await Livechat.nextAgent({ department });
+
+				if (isAgentWithInfo(tempAgent?.agent)) {
+					agent = tempAgent.agent;
+				}
 			} catch (error) {
 				return reject(error);
 			}

@@ -43,11 +43,11 @@ export const sendMessageExternalServiceAction = async (
 ) => {
 	const { token, minimized, typing, iframe } = store.state;
 	const { metadata = {} } = iframe.guest || {};
-	const { serviceUrl, serviceFallbackMessage, serviceTimeout } = action.params || {};
-	console.log(serviceUrl, serviceFallbackMessage, serviceTimeout);
 	const agent = await getAgent(action);
 
-	store.setState({ typing: [...typing, agent.username] });
+	if (agent?.username) {
+		store.setState({ typing: [...typing, agent.username] });
+	}
 
 	try {
 		const triggerMessages = await requestTriggerMessages({
@@ -84,7 +84,7 @@ export const sendMessageExternalServiceAction = async (
 		}
 	} finally {
 		store.setState({
-			typing: store.state.typing.filter((u) => u !== agent.username),
+			typing: store.state.typing.filter((u) => u !== agent?.username),
 		});
 	}
 };
