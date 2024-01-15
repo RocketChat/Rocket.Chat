@@ -19,16 +19,16 @@ export const normalizeTransferHistoryMessage = (
 				return t('the_chat_was_transferred_to_another_agent');
 			}
 			const to = transferredTo && (transferredTo.name || transferredTo.username);
-			return t('from_transferred_the_chat_to_to', { from, to, interpolation: { escapeValue: false } });
+			return t('from_transferred_the_chat_to_to', { from, to });
 		},
 		department: () => {
 			const to = nextDepartment?.name;
 
 			if (!sender.username) {
-				return t('the_agent_transferred_the_chat_to_the_department_to', { to, interpolation: { escapeValue: false } });
+				return t('the_agent_transferred_the_chat_to_the_department_to', { to });
 			}
 
-			return t('from_transferred_the_chat_to_the_department_to', { from, to, interpolation: { escapeValue: false } });
+			return t('from_transferred_the_chat_to_the_department_to', { from, to });
 		},
 		queue: () => {
 			if (!sender.username) {
