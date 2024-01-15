@@ -6,9 +6,9 @@ import React from 'react';
 import type { Control } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 
-import { ActionSender } from './ActionSender';
 import type { TriggersPayload } from '../EditTrigger';
 import { useFieldError } from '../hooks/useFieldError';
+import { ActionSender } from './ActionSender';
 
 type SendMessageActionFormType = ComponentProps<typeof Field> & {
 	index: number;
