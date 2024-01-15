@@ -1,4 +1,3 @@
-import type { LoginService } from '@rocket.chat/ui-contexts';
 import { UserContext } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import type { ContextType } from 'react';
@@ -22,11 +21,6 @@ const userContextValue: ContextType<typeof UserContext> = {
 	querySubscriptions: () => [() => () => undefined, () => []],
 	querySubscription: () => [() => () => undefined, () => undefined],
 	queryRoom: () => [() => () => undefined, () => undefined],
-
-	queryAllServices: () => [() => (): void => undefined, (): LoginService[] => []],
-	loginWithService: () => () => Promise.reject('loginWithService not implemented'),
-	loginWithPassword: async () => Promise.reject('loginWithPassword not implemented'),
-	loginWithToken: async () => Promise.reject('loginWithToken not implemented'),
 	logout: () => Promise.resolve(),
 };
 
