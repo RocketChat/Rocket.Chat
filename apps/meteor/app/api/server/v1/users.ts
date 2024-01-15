@@ -570,7 +570,7 @@ API.v1.addRoute(
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { status } = this.urlParams;
-			const { sort } = await this.parseJsonQuery();
+			const { sort, fields } = await this.parseJsonQuery();
 			const { role, searchTerm } = this.queryParams;
 
 			const projection = {
@@ -584,6 +584,7 @@ API.v1.addRoute(
 				lastLogin: 1,
 				type: 1,
 				reason: 0,
+				...fields,
 			};
 
 			const actualSort = sort || { username: 1 };

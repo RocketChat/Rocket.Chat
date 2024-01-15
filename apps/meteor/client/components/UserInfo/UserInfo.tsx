@@ -66,6 +66,7 @@ const UserInfo = ({
 	customFields,
 	actions,
 	reason,
+	canViewAllInfo,
 	...props
 }: UserInfoProps): ReactElement => {
 	const t = useTranslation();
@@ -137,7 +138,7 @@ const UserInfo = ({
 						</InfoPanelField>
 					)}
 
-					{Number.isInteger(utcOffset) && (
+					{Number.isInteger(utcOffset) && canViewAllInfo && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Last_login')}</InfoPanelLabel>
 							<InfoPanelText>{lastLogin ? timeAgo(lastLogin) : t('Never')}</InfoPanelText>
