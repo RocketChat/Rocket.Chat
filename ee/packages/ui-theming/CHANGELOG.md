@@ -1,5 +1,11 @@
 # @rocket.chat/ui-theming
 
+## 0.1.1
+
+### Patch Changes
+
+- 8e89b5a3b0: fix: light-theme font-disabled color
+
 ## 0.1.1-rc.0
 
 ### Patch Changes

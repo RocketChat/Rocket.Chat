@@ -2767,5 +2767,6 @@
   "registration.component.form.invalidConfirmPass": "Kata sandi konfirmasi tidak cocok dengan kata sandi utama",
   "registration.component.form.confirmPassword": "Konfirmasikan kata sandi anda",
   "registration.component.form.sendConfirmationEmail": "Kirim email konfirmasi",
+  "Enterprise": "Perusahaan",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analytics"
 }

@@ -1,51 +1,28 @@
-import { Meteor } from 'meteor/meteor';
-import { ReactiveVar } from 'meteor/reactive-var';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 
-import { Subscriptions } from '../../models/client';
 import type { IOTR } from '../lib/IOTR';
 import { OTRRoom } from './OTRRoom';
 
 class OTR implements IOTR {
-	private enabled: ReactiveVar<boolean>;
-
 	private instancesByRoomId: { [rid: string]: OTRRoom };
 
 	constructor() {
-		this.enabled = new ReactiveVar(false);
 		this.instancesByRoomId = {};
 	}
 
-	isEnabled(): boolean {
-		return this.enabled.get();
-	}
-
-	setEnabled(enabled: boolean): void {
-		this.enabled.set(enabled);
-	}
-
-	getInstanceByRoomId(roomId: string): OTRRoom | undefined {
-		const userId = Meteor.userId();
-		if (!userId) {
-			return;
-		}
-		if (!this.enabled.get()) {
-			return;
+	getInstanceByRoomId(uid: IUser['_id'], rid: IRoom['_id']): OTRRoom | undefined {
+		if (this.instancesByRoomId[rid]) {
+			return this.instancesByRoomId[rid];
 		}
 
-		if (this.instancesByRoomId[roomId]) {
-			return this.instancesByRoomId[roomId];
+		const otrRoom = OTRRoom.create(uid, rid);
+
+		if (!otrRoom) {
+			return undefined;
 		}
 
-		const subscription = Subscriptions.findOne({
-			rid: roomId,
-		});
-
-		if (!subscription || subscription.t !== 'd') {
-			return;
-		}
-
-		this.instancesByRoomId[roomId] = new OTRRoom(userId, roomId);
-		return this.instancesByRoomId[roomId];
+		this.instancesByRoomId[rid] = otrRoom;
+		return this.instancesByRoomId[rid];
 	}
 }
 

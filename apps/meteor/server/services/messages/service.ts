@@ -1,8 +1,7 @@
 import type { IMessageService } from '@rocket.chat/core-services';
-import { ServiceClassInternal } from '@rocket.chat/core-services';
-import type { IMessage, MessageTypesValues, IUser, IRoom } from '@rocket.chat/core-typings';
-import { Messages } from '@rocket.chat/models';
-import type BadWordsFilter from 'bad-words';
+import { Authorization, ServiceClassInternal } from '@rocket.chat/core-services';
+import { type IMessage, type MessageTypesValues, type IUser, type IRoom, isEditedMessage } from '@rocket.chat/core-typings';
+import { Messages, Rooms } from '@rocket.chat/models';
 
 import { deleteMessage } from '../../../app/lib/server/functions/deleteMessage';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
@@ -10,14 +9,58 @@ import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
 import { executeSendMessage } from '../../../app/lib/server/methods/sendMessage';
 import { executeSetReaction } from '../../../app/reactions/server/setReaction';
 import { settings } from '../../../app/settings/server';
-import { configureBadWords } from './hooks/badwords';
+import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
+import { BeforeSaveCannedResponse } from '../../../ee/server/hooks/messages/BeforeSaveCannedResponse';
+import { broadcastMessageSentEvent } from '../../modules/watchers/lib/messages';
+import { BeforeSaveBadWords } from './hooks/BeforeSaveBadWords';
+import { BeforeSaveCheckMAC } from './hooks/BeforeSaveCheckMAC';
+import { BeforeSaveJumpToMessage } from './hooks/BeforeSaveJumpToMessage';
+import { BeforeSaveMarkdownParser } from './hooks/BeforeSaveMarkdownParser';
+import { mentionServer } from './hooks/BeforeSaveMentions';
+import { BeforeSavePreventMention } from './hooks/BeforeSavePreventMention';
+import { BeforeSaveSpotify } from './hooks/BeforeSaveSpotify';
+
+const disableMarkdownParser = ['yes', 'true'].includes(String(process.env.DISABLE_MESSAGE_PARSER).toLowerCase());
 
 export class MessageService extends ServiceClassInternal implements IMessageService {
 	protected name = 'message';
 
-	private badWordsFilter?: BadWordsFilter;
+	private preventMention: BeforeSavePreventMention;
+
+	private badWords: BeforeSaveBadWords;
+
+	private spotify: BeforeSaveSpotify;
+
+	private jumpToMessage: BeforeSaveJumpToMessage;
+
+	private cannedResponse: BeforeSaveCannedResponse;
+
+	private markdownParser: BeforeSaveMarkdownParser;
+
+	private checkMAC: BeforeSaveCheckMAC;
 
 	async created() {
+		this.preventMention = new BeforeSavePreventMention(this.api);
+		this.badWords = new BeforeSaveBadWords();
+		this.spotify = new BeforeSaveSpotify();
+		this.jumpToMessage = new BeforeSaveJumpToMessage({
+			getMessages(messageIds) {
+				return Messages.findVisibleByIds(messageIds).toArray();
+			},
+			getRooms(roomIds) {
+				return Rooms.findByIds(roomIds).toArray();
+			},
+			canAccessRoom(room: IRoom, user: IUser): Promise<boolean> {
+				return Authorization.canAccessRoom(room, user);
+			},
+			getUserAvatarURL(user?: string): string {
+				return (user && getUserAvatarURL(user)) || '';
+			},
+		});
+		this.cannedResponse = new BeforeSaveCannedResponse();
+		this.markdownParser = new BeforeSaveMarkdownParser(!disableMarkdownParser);
+		this.checkMAC = new BeforeSaveCheckMAC();
+
 		await this.configureBadWords();
 	}
 
@@ -26,10 +69,10 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 			['Message_AllowBadWordsFilter', 'Message_BadWordsFilterList', 'Message_BadWordsWhitelist'],
 			async ([enabled, badWordsList, whiteList]) => {
 				if (!enabled) {
-					this.badWordsFilter = undefined;
+					this.badWords.disable();
 					return;
 				}
-				this.badWordsFilter = await configureBadWords(badWordsList as string, whiteList as string);
+				await this.badWords.configure(badWordsList as string, whiteList as string);
 			},
 		);
 	}
@@ -65,54 +108,88 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		if (!username) {
 			throw new Error('The username cannot be empty.');
 		}
-		const result = await Messages.createWithTypeRoomIdMessageUserAndUnread(
-			type,
-			rid,
-			message,
-			{ _id: userId, username, name },
-			settings.get('Message_Read_Receipt_Enabled'),
-			extraData,
-		);
+
+		const [result] = await Promise.all([
+			Messages.createWithTypeRoomIdMessageUserAndUnread(
+				type,
+				rid,
+				message,
+				{ _id: userId, username, name },
+				settings.get('Message_Read_Receipt_Enabled'),
+				extraData,
+			),
+			Rooms.incMsgCountById(rid, 1),
+		]);
+
+		void broadcastMessageSentEvent({
+			id: result.insertedId,
+			broadcastCallback: async (message) => this.api?.broadcast('message.sent', message),
+		});
 
 		return result.insertedId;
 	}
 
 	async beforeSave({
 		message,
-		room: _room,
-		user: _user,
+		room,
+		user,
 	}: {
 		message: IMessage;
 		room: IRoom;
-		user: Pick<IUser, '_id' | 'username' | 'name'>;
+		user: Pick<IUser, '_id' | 'username' | 'name' | 'emails' | 'language'>;
 	}): Promise<IMessage> {
 		// TODO looks like this one was not being used (so I'll left it commented)
 		// await this.joinDiscussionOnMessage({ message, room, user });
 
-		// conditionals here should be fast, so they won't add up for each message
-		if (this.isBadWordsFilterEnabled()) {
-			message = await this.filterBadWords(message);
+		message = await mentionServer.execute(message);
+		message = await this.cannedResponse.replacePlaceholders({ message, room, user });
+		message = await this.markdownParser.parseMarkdown({ message, config: this.getMarkdownConfig() });
+		message = await this.badWords.filterBadWords({ message });
+		message = await this.spotify.convertSpotifyLinks({ message });
+		message = await this.jumpToMessage.createAttachmentForMessageURLs({
+			message,
+			user,
+			config: {
+				chainLimit: settings.get<number>('Message_QuoteChainLimit'),
+				siteUrl: settings.get<string>('Site_Url'),
+				useRealName: settings.get<boolean>('UI_Use_Real_Name'),
+			},
+		});
+
+		if (!this.isEditedOrOld(message)) {
+			await Promise.all([
+				this.checkMAC.isWithinLimits({ message, room }),
+				this.preventMention.preventMention({ message, user, mention: 'all', permission: 'mention-all' }),
+				this.preventMention.preventMention({ message, user, mention: 'here', permission: 'mention-here' }),
+			]);
 		}
 
 		return message;
 	}
 
-	private isBadWordsFilterEnabled() {
-		return !!settings.get('Message_AllowBadWordsFilter');
+	private getMarkdownConfig() {
+		const customDomains = settings.get<string>('Message_CustomDomain_AutoLink')
+			? settings
+					.get<string>('Message_CustomDomain_AutoLink')
+					.split(',')
+					.map((domain) => domain.trim())
+			: [];
+
+		return {
+			colors: settings.get<boolean>('HexColorPreview_Enabled'),
+			emoticons: true,
+			customDomains,
+			...(settings.get<boolean>('Katex_Enabled') && {
+				katex: {
+					dollarSyntax: settings.get<boolean>('Katex_Dollar_Syntax'),
+					parenthesisSyntax: settings.get<boolean>('Katex_Parenthesis_Syntax'),
+				},
+			}),
+		};
 	}
 
-	private async filterBadWords(message: IMessage): Promise<IMessage> {
-		if (!message.msg || !this.badWordsFilter) {
-			return message;
-		}
-
-		try {
-			message.msg = this.badWordsFilter.clean(message.msg);
-		} catch (error) {
-			// ignore
-		}
-
-		return message;
+	private isEditedOrOld(message: IMessage): boolean {
+		return isEditedMessage(message) || !message.ts || Math.abs(Date.now() - message.ts.getTime()) > 60000;
 	}
 
 	// joinDiscussionOnMessage

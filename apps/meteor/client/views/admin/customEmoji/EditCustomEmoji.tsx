@@ -19,7 +19,7 @@ import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../co
 import GenericModal from '../../../components/GenericModal';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useEndpointUpload } from '../../../hooks/useEndpointUpload';
-import { useFileInput } from '../../../hooks/useFileInput';
+import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 
 type EditCustomEmojiProps = {
 	close: () => void;
@@ -131,7 +131,7 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 		[setAliases, name],
 	);
 
-	const [clickUpload] = useFileInput(setEmojiFile, 'emoji');
+	const [clickUpload] = useSingleFileInput(setEmojiFile, 'emoji');
 
 	const handleChangeName = (e: ChangeEvent<HTMLInputElement>): void => {
 		if (e.currentTarget.value !== '') {

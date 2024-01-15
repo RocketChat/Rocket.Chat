@@ -21,7 +21,7 @@
   "24_Hour": "Orologio 24 ore",
   "A_new_owner_will_be_assigned_automatically_to__count__rooms": "Un nuovo proprietario verrà assegnato automaticamente a<span style=\"font-weight: bold;\">{{count}}</span>stanze.",
   "A_new_owner_will_be_assigned_automatically_to_the__roomName__room": "Un nuovo proprietario verrà assegnato automaticamente alla stanza <span style=\"font-weight: bold;\">{{roomName}}</span>.",
-  "A_new_owner_will_be_assigned_automatically_to_those__count__rooms__rooms__": "Un nuovo proprietario verrà assegnato automaticamente a queste<span style=\"font-weight: bold;\">_count__</span>stanze:<br/> __rooms__.",
+  "A_new_owner_will_be_assigned_automatically_to_those__count__rooms__rooms__": "Un nuovo proprietario verrà assegnato automaticamente a queste<span style=\"font-weight: bold;\">_count__</span>stanze:<br/> {{rooms}}.",
   "Accept_Call": "Accetta la chiamata",
   "Accept": "Accetta",
   "Accept_incoming_livechat_requests_even_if_there_are_no_online_agents": "Accetta richieste livechat in arrivo anche se non c'è alcun operatore online",
@@ -2860,5 +2860,6 @@
   "registration.component.form.invalidConfirmPass": "La password di conferma non corrisponde con la password",
   "registration.component.form.confirmPassword": "Conferma la tua password",
   "registration.component.form.sendConfirmationEmail": "Invia email di conferma",
+  "Enterprise": "impresa",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analytics"
 }

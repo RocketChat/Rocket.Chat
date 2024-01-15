@@ -1,5 +1,146 @@
 # @rocket.chat/uikit-playground
 
+## 0.2.11
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.2
+- @rocket.chat/fuselage-ui-kit@3.0.2
+
+## 0.2.10
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.1
+- @rocket.chat/fuselage-ui-kit@3.0.1
+
+## 0.2.9
+
+### Patch Changes
+
+- Updated dependencies [7da1edf866]
+  - @rocket.chat/ui-contexts@3.0.0
+  - @rocket.chat/fuselage-ui-kit@3.0.0
+
+## 0.2.9-rc.12
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.19
+- @rocket.chat/fuselage-ui-kit@3.0.0-rc.19
+
+## 0.2.9-rc.11
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.18
+- @rocket.chat/fuselage-ui-kit@3.0.0-rc.18
+
+## 0.2.9-rc.10
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.17
+- @rocket.chat/fuselage-ui-kit@3.0.0-rc.17
+
+## 0.2.9-rc.9
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.16
+- @rocket.chat/fuselage-ui-kit@3.0.0-rc.16
+
+## 0.2.9-rc.8
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.15
+- @rocket.chat/fuselage-ui-kit@3.0.0-rc.15
+
+## 0.2.9-rc.7
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.14
+- @rocket.chat/fuselage-ui-kit@3.0.0-rc.14
+
+## 0.2.9-rc.6
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.13
+- @rocket.chat/fuselage-ui-kit@3.0.0-rc.13
+
+## 0.2.9-rc.5
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.12
+- @rocket.chat/fuselage-ui-kit@3.0.0-rc.12
+
+## 0.2.9-rc.4
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.11
+- @rocket.chat/fuselage-ui-kit@3.0.0-rc.11
+
+## 0.2.9-rc.3
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.10
+- @rocket.chat/fuselage-ui-kit@3.0.0-rc.10
+
+## 0.2.9-rc.2
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.9
+- @rocket.chat/fuselage-ui-kit@3.0.0-rc.9
+
+## 0.2.9-rc.1
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.8
+- @rocket.chat/fuselage-ui-kit@3.0.0-rc.8
+
+## 0.2.6-rc.7
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.7
+- @rocket.chat/fuselage-ui-kit@3.0.0-rc.7
+
+## 0.2.6-rc.6
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.6
+- @rocket.chat/fuselage-ui-kit@3.0.0-rc.6
+
+## 0.2.6-rc.5
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.5
+- @rocket.chat/fuselage-ui-kit@3.0.0-rc.5
+
+## 0.2.6-rc.4
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.4
+- @rocket.chat/fuselage-ui-kit@3.0.0-rc.4
+
+## 0.2.6-rc.3
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.3
+- @rocket.chat/fuselage-ui-kit@3.0.0-rc.3
+
 ## 0.2.6-rc.2
 
 ### Patch Changes
@@ -21,6 +162,27 @@
 - Updated dependencies [7da1edf866]
   - @rocket.chat/ui-contexts@3.0.0-rc.0
   - @rocket.chat/fuselage-ui-kit@3.0.0-rc.0
+
+## 0.2.8
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@2.0.8
+- @rocket.chat/fuselage-ui-kit@2.0.8
+
+## 0.2.7
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@2.0.7
+- @rocket.chat/fuselage-ui-kit@2.0.7
+
+## 0.2.6
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@2.0.6
+- @rocket.chat/fuselage-ui-kit@2.0.6
 
 ## 0.2.5
 

@@ -1815,7 +1815,7 @@
   "Leave_the_current_channel": "ចាកចេញពីឆានែលបច្ចុប្បន្ន",
   "leave-c": "ចាកចេញពីឆានែល",
   "leave-p": "ចាកចេញពីក្រុមឯកជន",
-  "Lets_get_you_new_one": "ចូរយើងទទួលបានអ្នកថ្មី!",
+  "Lets_get_you_new_one_": "ចូរយើងទទួលបានអ្នកថ្មី!",
   "List_of_Channels": "បញ្ជីឆានែល",
   "List_of_Direct_Messages": "បញ្ជីនៃការផ្ញើសារដោយផ្ទាល់",
   "Livechat": "Livechat",
@@ -3113,6 +3113,7 @@
   "registration.component.form.confirmPassword": "បញ្ជាក់​ពាក្យ​សម្ងាត់",
   "registration.component.form.sendConfirmationEmail": "ផ្ញើរអ៊ីម៉ែល​បញ្ជាក់",
   "onboarding.form.registerOfflineForm.title": "ចុះឈ្មោះដោយដៃ",
+  "Enterprise": "សហគ្រាស",
   "UpgradeToGetMore_engagement-dashboard_Title": "វិភាគ",
   "UpgradeToGetMore_auditing_Title": "សវនកម្មសារ"
 }

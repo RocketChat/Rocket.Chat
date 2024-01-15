@@ -2894,5 +2894,6 @@
   "registration.component.form.invalidConfirmPass": "Potvrda lozinke se ne slaže sa lozinkom",
   "registration.component.form.confirmPassword": "Potvrdi svoju lozinku",
   "registration.component.form.sendConfirmationEmail": "Pošalji potvrdni email",
+  "Enterprise": "Poduzeće",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analitika"
 }

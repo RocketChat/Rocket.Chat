@@ -1,21 +1,19 @@
-import type { DistributiveOmit, UiKit } from '@rocket.chat/core-typings';
+import type { DistributiveOmit } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Random } from '@rocket.chat/random';
-import type { ActionManagerContext, RouterContext } from '@rocket.chat/ui-contexts';
+import type { RouterContext, IActionManager } from '@rocket.chat/ui-contexts';
+import type * as UiKit from '@rocket.chat/ui-kit';
 import type { ContextType } from 'react';
 import { lazy } from 'react';
 
 import * as banners from '../../../client/lib/banners';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
-import { router } from '../../../client/providers/RouterProvider';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { UiKitTriggerTimeoutError } from './UiKitTriggerTimeoutError';
 
 const UiKitModal = lazy(() => import('../../../client/views/modal/uikit/UiKitModal'));
 
-type ActionManagerType = Exclude<ContextType<typeof ActionManagerContext>, undefined>;
-
-export class ActionManager implements ActionManagerType {
+export class ActionManager implements IActionManager {
 	protected static TRIGGER_TIMEOUT = 5000;
 
 	protected static TRIGGER_TIMEOUT_ERROR = 'TRIGGER_TIMEOUT_ERROR';
@@ -58,6 +56,14 @@ export class ActionManager implements ActionManagerType {
 		return this.events.off(eventName, listener);
 	}
 
+	public notifyBusy() {
+		this.events.emit('busy', { busy: true });
+	}
+
+	public notifyIdle() {
+		this.events.emit('busy', { busy: false });
+	}
+
 	public generateTriggerId(appId: string | undefined) {
 		const triggerId = Random.id();
 		this.triggersId.set(triggerId, appId);
@@ -66,7 +72,7 @@ export class ActionManager implements ActionManagerType {
 	}
 
 	public async emitInteraction(appId: string, userInteraction: DistributiveOmit<UiKit.UserInteraction, 'triggerId'>) {
-		this.events.emit('busy', { busy: true });
+		this.notifyBusy();
 
 		const triggerId = this.generateTriggerId(appId);
 
@@ -84,7 +90,7 @@ export class ActionManager implements ActionManagerType {
 				.then((interaction) => this.handleServerInteraction(interaction)),
 		]).finally(() => {
 			if (timeout) clearTimeout(timeout);
-			this.events.emit('busy', { busy: false });
+			this.notifyIdle();
 		});
 	}
 
@@ -266,6 +272,3 @@ export class ActionManager implements ActionManagerType {
 		this.viewInstances.delete(viewId);
 	}
 }
-
-/** @deprecated consumer should use the context instead */
-export const actionManager = new ActionManager(router);

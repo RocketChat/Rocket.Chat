@@ -16,6 +16,18 @@ export class Admin {
 		return this.page.locator('input[placeholder ="Search rooms"]');
 	}
 
+	getRoomRow(name?: string): Locator {
+		return this.page.locator('[role="link"]', { hasText: name });
+	}
+
+	get btnSave(): Locator {
+		return this.page.locator('button >> text="Save"');
+	}
+
+	get privateLabel(): Locator {
+		return this.page.locator(`label >> text=Private`);
+	}
+
 	get inputSearchUsers(): Locator {
 		return this.page.locator('input[placeholder="Search Users"]');
 	}
@@ -122,7 +134,7 @@ export class Admin {
 	}
 
 	get btnAssetsSettings(): Locator {
-		return this.page.locator('[data-qa-id="Assets"] >> role=button[name="Open"]');
+		return this.page.locator('[data-qa-id="Assets"] >> role=link[name="Open"]');
 	}
 
 	get btnDeleteAssetsLogo(): Locator {

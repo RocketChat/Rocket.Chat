@@ -4,8 +4,8 @@ import { useSyncExternalStore } from 'use-sync-external-store/shim';
 import { useAnalytics } from '../../../app/analytics/client/loadScript';
 import { useAnalyticsEventTracking } from '../../hooks/useAnalyticsEventTracking';
 import { appLayout } from '../../lib/appLayout';
+import DocumentTitleWrapper from './DocumentTitleWrapper';
 import PageLoading from './PageLoading';
-import { useCloudAnnouncements } from './hooks/useCloudAnnouncements';
 import { useEscapeKeyStroke } from './hooks/useEscapeKeyStroke';
 import { useGoogleTagManager } from './hooks/useGoogleTagManager';
 import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
@@ -24,11 +24,14 @@ const AppLayout = () => {
 	useAnalytics();
 	useEscapeKeyStroke();
 	useAnalyticsEventTracking();
-	useCloudAnnouncements();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 
-	return <Suspense fallback={<PageLoading />}>{layout}</Suspense>;
+	return (
+		<Suspense fallback={<PageLoading />}>
+			<DocumentTitleWrapper>{layout}</DocumentTitleWrapper>
+		</Suspense>
+	);
 };
 
 export default AppLayout;

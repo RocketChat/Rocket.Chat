@@ -1102,7 +1102,7 @@
   "E2E_Encryption_Password_Change": "Şifreleme Parolasını Değiştir",
   "E2E_Encryption_Password_Explanation": "Artık şifrelenmiş özel gruplar ve doğrudan iletiler oluşturabilirsiniz. Mevcut özel grupları veya doğrudan iletileri de şifrelenmiş hale getirebilirsiniz.<br/><br/>Uçtan uca şifreleme ile, iletilerinizi şifreleme/şifresini çözme anahtarı sunucuda saklanmayacaktır. Bu nedenle şifrenizi güvenli bir yerde saklamanız gerekmektedir. Uçtan uca şifrelemeyi üzerinde kullanmak istediğiniz diğer aygıtta girmeniz gerekir.",
   "E2E_password_request_text": "Şifrelenmiş özel gruplarınıza ve doğrudan iletilerinize erişmek için, şifreleme parolanızını girin. <br/>Anahtar, sunucuda saklanmadığı için kullandığnız her istemcide iletilerinizi şifreleme/şifre çözme için bu parolayı girmeniz gerekmektedir.",
-  "E2E_password_reveal_text": "Artık şifrelenmiş özel gruplar ve doğrudan iletiler oluşturabilirsiniz. Mevcut özel gruplar ve doğrudan iletileri de şifrelenmiş hale getirebilirsiniz.<br/><br/>Uçtan uca şifreleme ile, iletilerinizi şifreleme/şifresini çözme anahtarı sunucuda saklanmayacaktır. Bu nedenle şifrenizi güvenli bir yerde saklamanız gerekmektedir. Uçtan uca şifrelemeyi üzerinde kullanmak istediğiniz diğer aygıtta girmeniz gerekir.<a href=\"https://rocket.chat/docs/user-guides/end-to-end-encryption/\" target=\"_blank\">Daha fazlasını buradan öğrenin!</a><br/><br/>Şifreniz: <span style=\"font-weight: bold;\">%s</span><br/><br/>Bu otomatik oluşturulan şifredir; istediğiniz zaman mevcut şifrenizle oturum açtığınız bir tarayıcıdan şifreleme anahtarınızı yenisi ile değiştirebilirsiniz.<br/>Bu şifre, siz saklayıncaya ve bu iletiyi reddedinceye kadar, yalnızca bu tarayıcıda saklanacaktır.",
+  "E2E_password_reveal_text": "Artık şifrelenmiş özel gruplar ve doğrudan iletiler oluşturabilirsiniz. Mevcut özel gruplar ve doğrudan iletileri de şifrelenmiş hale getirebilirsiniz.<br/><br/>Uçtan uca şifreleme ile, iletilerinizi şifreleme/şifresini çözme anahtarı sunucuda saklanmayacaktır. Bu nedenle şifrenizi güvenli bir yerde saklamanız gerekmektedir. Uçtan uca şifrelemeyi üzerinde kullanmak istediğiniz diğer aygıtta girmeniz gerekir.<a href=\"https://rocket.chat/docs/user-guides/end-to-end-encryption/\" target=\"_blank\">Daha fazlasını buradan öğrenin!</a><br/><br/>Şifreniz: <span style=\"font-weight: bold;\">{{randomPassword}}</span><br/><br/>Bu otomatik oluşturulan şifredir; istediğiniz zaman mevcut şifrenizle oturum açtığınız bir tarayıcıdan şifreleme anahtarınızı yenisi ile değiştirebilirsiniz.<br/>Bu şifre, siz saklayıncaya ve bu iletiyi reddedinceye kadar, yalnızca bu tarayıcıda saklanacaktır.",
   "Edit": "Düzenle",
   "Edit_Custom_Field": "Düzenleme Özel Alan",
   "Edit_Department": "Düzenleme Bölümü",
@@ -1833,7 +1833,7 @@
   "Leave_the_current_channel": "Geçerli kanalı bırak",
   "leave-c": "Kanallardan Çık",
   "leave-p": "Özel Grupları Bırak",
-  "Lets_get_you_new_one": "Size yeni bir tane verelim!",
+  "Lets_get_you_new_one_": "Size yeni bir tane verelim!",
   "List_of_Channels": "Kanal Listesi",
   "List_of_Direct_Messages": "Doğrudan İletiler Listesi",
   "Livechat": "Canlı Görüşme",
@@ -3264,5 +3264,6 @@
   "onboarding.component.form.action.pasteHere": "Buraya yapıştırın...",
   "onboarding.form.registerOfflineForm.title": "Manuel Kayıt",
   "RegisterWorkspace_Features_Omnichannel_Title": "Çoklu Kanal",
+  "Enterprise": "Kuruluş",
   "UpgradeToGetMore_engagement-dashboard_Title": "Mantıksal Analiz"
 }

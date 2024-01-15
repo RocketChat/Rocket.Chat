@@ -5,7 +5,6 @@ import { LivechatRooms, Messages } from '@rocket.chat/models';
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
 import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
-import { Livechat } from '../lib/Livechat';
 import { Livechat as LivechatTyped } from '../lib/LivechatTyped';
 
 type AdditionalFields =
@@ -87,12 +86,14 @@ async function sendToCRM(
 		return room;
 	}
 
-	const postData: Awaited<ReturnType<typeof Livechat.getLivechatRoomGuestInfo>> & { type: string; messages: IOmnichannelSystemMessage[] } =
-		{
-			...(await Livechat.getLivechatRoomGuestInfo(room)),
-			type,
-			messages: [],
-		};
+	const postData: Awaited<ReturnType<typeof LivechatTyped.getLivechatRoomGuestInfo>> & {
+		type: string;
+		messages: IOmnichannelSystemMessage[];
+	} = {
+		...(await LivechatTyped.getLivechatRoomGuestInfo(room)),
+		type,
+		messages: [],
+	};
 
 	let messages: IOmnichannelSystemMessage[] | null = null;
 	if (typeof includeMessages === 'boolean' && includeMessages) {

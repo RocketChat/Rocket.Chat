@@ -1,3 +1,5 @@
+import './startup/accounts';
+
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
 FlowRouter.wait();
@@ -7,7 +9,7 @@ FlowRouter.notFound = {
 };
 
 import('./polyfills')
-	.then(() => Promise.all([import('./lib/meteorCallWrapper'), import('../lib/oauthRedirectUriClient')]))
+	.then(() => import('./meteorOverrides'))
 	.then(() => import('../ee/client/ecdh'))
 	.then(() => import('./importPackages'))
 	.then(() => Promise.all([import('./methods'), import('./startup')]))

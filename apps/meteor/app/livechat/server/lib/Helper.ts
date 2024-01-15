@@ -1,5 +1,5 @@
 import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
-import { api, Message } from '@rocket.chat/core-services';
+import { api, Message, Omnichannel } from '@rocket.chat/core-services';
 import type {
 	ILivechatVisitor,
 	IOmnichannelRoom,
@@ -38,7 +38,6 @@ import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { sendNotification } from '../../../lib/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { settings } from '../../../settings/server';
-import { Livechat } from './Livechat';
 import { Livechat as LivechatTyped } from './LivechatTyped';
 import { queueInquiry, saveQueueInquiry } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
@@ -257,10 +256,8 @@ export const createLivechatSubscription = async (
 			status,
 		},
 		ts: new Date(),
-		lr: new Date(),
-		ls: new Date(),
 		...(department && { department }),
-	};
+	} as InsertionModel<ISubscription>;
 
 	return Subscriptions.insertOne(subscriptionData);
 };
@@ -296,7 +293,7 @@ export const parseAgentCustomFields = (customFields?: Record<string, any>) => {
 			const parseCustomFields = JSON.parse(accountCustomFields);
 			return Object.keys(parseCustomFields).filter((customFieldKey) => parseCustomFields[customFieldKey].sendToIntegrations === true);
 		} catch (error) {
-			Livechat.logger.error(error);
+			logger.error(error);
 			return [];
 		}
 	};
@@ -543,10 +540,8 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 		agent = { agentId, username };
 	}
 
-	if (!RoutingManager.getConfig()?.autoAssignAgent) {
-		logger.debug(
-			`Routing algorithm doesn't support auto assignment (using ${RoutingManager.methodName}). Chat will be on department queue`,
-		);
+	if (!RoutingManager.getConfig()?.autoAssignAgent || !(await Omnichannel.isWithinMACLimit(room))) {
+		logger.debug(`Room ${room._id} will be on department queue`);
 		await LivechatTyped.saveTransferHistory(room, transferData);
 		return RoutingManager.unassignAgent(inquiry, departmentId);
 	}
@@ -581,6 +576,8 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 			logger.debug(`Cannot forward room ${room._id}. Unable to delegate inquiry`);
 			return false;
 		}
+
+		return true;
 	}
 
 	await LivechatTyped.saveTransferHistory(room, transferData);
@@ -588,9 +585,6 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 		// if chat is queued then we don't ignore the new servedBy agent bcs at this
 		// point the chat is not assigned to him/her and it is still in the queue
 		await RoutingManager.removeAllRoomSubscriptions(room, !chatQueued ? servedBy : undefined);
-	}
-	if (!chatQueued && servedBy) {
-		await Message.saveSystemMessage('uj', rid, servedBy.username || '', servedBy);
 	}
 
 	await updateChatDepartment({ rid, newDepartmentId: departmentId, oldDepartmentId });
@@ -609,10 +603,6 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 		await queueInquiry(newInquiry);
 		logger.debug(`Inquiry ${inquiry._id} queued succesfully`);
 	}
-
-	const { token } = guest;
-	await LivechatTyped.setDepartmentForGuest({ token, department: departmentId });
-	logger.debug(`Department for visitor with token ${token} was updated to ${departmentId}`);
 
 	return true;
 };

@@ -2742,5 +2742,6 @@
   "registration.component.form.invalidConfirmPass": "Potrditev gesla se ne ujema z geslom",
   "registration.component.form.confirmPassword": "Potrdi geslo",
   "registration.component.form.sendConfirmationEmail": "Pošlji potrditveno e-poštno sporočilo",
+  "Enterprise": "Podjetje",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analiza"
 }

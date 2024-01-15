@@ -64,9 +64,15 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 			return;
 		}
 
+		if (await License.shouldPreventAction('monthlyActiveContacts', 1)) {
+			queueLogger.debug('MAC limit reached. Queue wont execute');
+			this.running = false;
+			return;
+		}
+
 		const queue = await this.nextQueue();
 		const queueDelayTimeout = this.delay();
-		queueLogger.info(`Executing queue ${queue || 'Public'} with timeout of ${queueDelayTimeout}`);
+		queueLogger.debug(`Executing queue ${queue || 'Public'} with timeout of ${queueDelayTimeout}`);
 
 		setTimeout(this.checkQueue.bind(this, queue), queueDelayTimeout);
 	}
@@ -86,8 +92,10 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 				// Note: this removes the "one-shot" behavior of queue, allowing it to take a conversation again in the future
 				// And sorting them by _updatedAt: -1 will make it so that the oldest inquiries are taken first
 				// preventing us from playing with the same inquiry over and over again
-				await LivechatInquiry.unlock(nextInquiry._id);
+				return await LivechatInquiry.unlockAndQueue(nextInquiry._id);
 			}
+
+			await LivechatInquiry.unlock(nextInquiry._id);
 		} catch (e) {
 			queueLogger.error({
 				msg: 'Error processing queue',
@@ -102,10 +110,6 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 	async shouldStart() {
 		if (!settings.get('Livechat_enabled')) {
 			void this.stop();
-			return;
-		}
-
-		if (await License.shouldPreventAction('monthlyActiveContacts')) {
 			return;
 		}
 

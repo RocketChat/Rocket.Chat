@@ -56,32 +56,32 @@ const PruneMessages = ({ callOutText, validateText, onClickClose, onClickPrune }
 				</Field>
 				<Field>
 					<FieldRow>
-						<CheckBox id={inclusiveCheckboxId} {...register('inclusive')} />
 						<FieldLabel htmlFor={inclusiveCheckboxId}>{t('Inclusive')}</FieldLabel>
+						<CheckBox id={inclusiveCheckboxId} {...register('inclusive')} />
 					</FieldRow>
 				</Field>
 				<Field>
 					<FieldRow>
-						<CheckBox id={pinnedCheckboxId} {...register('pinned')} />
 						<FieldLabel htmlFor={pinnedCheckboxId}>{t('RetentionPolicy_DoNotPrunePinned')}</FieldLabel>
+						<CheckBox id={pinnedCheckboxId} {...register('pinned')} />
 					</FieldRow>
 				</Field>
 				<Field>
 					<FieldRow>
-						<CheckBox id={discussionCheckboxId} {...register('discussion')} />
 						<FieldLabel htmlFor={discussionCheckboxId}>{t('RetentionPolicy_DoNotPruneDiscussion')}</FieldLabel>
+						<CheckBox id={discussionCheckboxId} {...register('discussion')} />
 					</FieldRow>
 				</Field>
 				<Field>
 					<FieldRow>
-						<CheckBox id={threadsCheckboxId} {...register('threads')} />
 						<FieldLabel htmlFor={threadsCheckboxId}>{t('RetentionPolicy_DoNotPruneThreads')}</FieldLabel>
+						<CheckBox id={threadsCheckboxId} {...register('threads')} />
 					</FieldRow>
 				</Field>
 				<Field>
 					<FieldRow>
-						<CheckBox id={attachedCheckboxId} {...register('attached')} />
 						<FieldLabel htmlFor={attachedCheckboxId}>{t('Files_only')}</FieldLabel>
+						<CheckBox id={attachedCheckboxId} {...register('attached')} />
 					</FieldRow>
 				</Field>
 				{callOutText && !validateText && <Callout type='warning'>{callOutText}</Callout>}

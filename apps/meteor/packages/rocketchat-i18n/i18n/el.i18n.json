@@ -2766,5 +2766,6 @@
   "registration.component.form.invalidConfirmPass": "Η επιβεβαίωση κωδικού δεν ταιριάζει με τον αρχικό κωδικό",
   "registration.component.form.confirmPassword": "Επιβεβαιώστε τον κωδικό σας",
   "registration.component.form.sendConfirmationEmail": "Αποστολή email επιβεβαίωσης",
+  "Enterprise": "Επιχείρηση",
   "UpgradeToGetMore_engagement-dashboard_Title": "Αναλυτικά στοιχεία"
 }
