@@ -40,6 +40,7 @@ import type {
 	ITeamCreateParams,
 	ITeamAutocompleteResult,
 	IListRoomsFilter,
+	ISetDefaultRoomForTeamUpdateInfo,
 } from './types/ITeamService';
 import type { ITelemetryEvent, TelemetryMap, TelemetryEvents } from './types/ITelemetryEvent';
 import type { ITranslationService } from './types/ITranslationService';
@@ -87,6 +88,7 @@ export {
 	ILDAPService,
 	ILicense,
 	IListRoomsFilter,
+	ISetDefaultRoomForTeamUpdateInfo,
 	ILoginResult,
 	IMediaService,
 	IMeteor,

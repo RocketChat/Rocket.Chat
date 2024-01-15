@@ -3,6 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
+import { MAX_NUMBER_OF_AUTO_JOIN_MEMBERS } from '../../../../../lib/team/constants';
 import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import ConfirmationModal from './ConfirmationModal';
@@ -86,7 +87,6 @@ const RoomActions = ({ room, reload }) => {
 					isDefault: !room.teamDefault,
 				});
 
-				const MAX_NUMBER_OF_AUTO_JOIN_MEMBERS = 1000;
 				if (!room.teamDefault) {
 					const messageType = numberOfMembers > MAX_NUMBER_OF_AUTO_JOIN_MEMBERS ? 'info' : 'success';
 					const message =

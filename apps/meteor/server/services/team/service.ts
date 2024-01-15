@@ -8,6 +8,7 @@ import type {
 	ITeamMemberParams,
 	ITeamService,
 	ITeamUpdateData,
+	ISetDefaultRoomForTeamUpdateInfo,
 } from '@rocket.chat/core-services';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import type {
@@ -32,7 +33,7 @@ import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { checkUsernameAvailability } from '../../../app/lib/server/functions/checkUsernameAvailability';
 import { getSubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
 import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
-import { MAX_NUMBER_OF_AUTO_JOIN_MEMBERS } from './lib/constants';
+import { MAX_NUMBER_OF_AUTO_JOIN_MEMBERS } from '../../../lib/team/constants';
 
 export class TeamService extends ServiceClassInternal implements ITeamService {
 	protected name = 'team';
@@ -443,7 +444,16 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		await Rooms.unsetTeamId(teamId);
 	}
 
-	async updateRoom(uid: string, rid: string, isDefault: boolean, canUpdateAnyRoom = false): Promise<IRoom> {
+	async updateRoom(uid: string, rid: string, isDefault: true, canUpdateAnyRoom?: boolean): Promise<ISetDefaultRoomForTeamUpdateInfo>;
+
+	async updateRoom(uid: string, rid: string, isDefault: false, canUpdateAnyRoom?: boolean): Promise<IRoom>;
+
+	async updateRoom(
+		uid: string,
+		rid: string,
+		isDefault: boolean,
+		canUpdateAnyRoom = false,
+	): Promise<IRoom | ISetDefaultRoomForTeamUpdateInfo> {
 		if (!rid) {
 			throw new Error('missing-roomId');
 		}
@@ -473,12 +483,16 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		room.teamDefault = isDefault;
 		await Rooms.setTeamDefaultById(rid, isDefault);
 
-		if (room.teamDefault) {
+		if (isDefault) {
 			const teamMembers = await this.members(uid, room.teamId, true, { offset: 0, count: MAX_NUMBER_OF_AUTO_JOIN_MEMBERS });
 
 			for await (const m of teamMembers.records) {
 				await addUserToRoom(room._id, m.user, user);
 			}
+			return {
+				room,
+				numberOfMembers: teamMembers.total,
+			};
 		}
 
 		return {
