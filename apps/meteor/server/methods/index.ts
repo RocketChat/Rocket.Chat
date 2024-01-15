@@ -1,3 +1,5 @@
+import '../../imports/personal-access-tokens/server/api/methods';
+
 import './OEmbedCacheCleanup';
 import './addAllUserToRoom';
 import './addRoomLeader';

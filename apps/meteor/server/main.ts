@@ -1,6 +1,9 @@
 import './models/startup';
+/**
+ * ./settings uses top level await, in theory the settings creation
+ * and the startup should be done in parallel
+ */
 import './settings';
-// import { initializeSettings } from '../app/settings/server';
 import { startLicense } from '../ee/app/license/server/startup';
 import { registerEEBroker } from '../ee/server';
 import { configureLogLevel } from './configureLogLevel';
@@ -24,8 +27,6 @@ import './configuration/ldap';
 
 import './stream/stdout';
 import './features/EmailInbox/index';
-
-import '../imports/personal-access-tokens/server/api/methods';
 
 await (async () => {
 	await configureLogLevel();
