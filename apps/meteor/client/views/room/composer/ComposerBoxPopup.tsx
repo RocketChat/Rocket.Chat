@@ -18,7 +18,7 @@ export type ComposerBoxPopupProps<
 	renderItem?: ({ item }: { item: T }) => ReactElement;
 };
 
-const ComposerBoxPopup = <
+function ComposerBoxPopup<
 	T extends {
 		_id: string;
 		sort?: number;
@@ -29,7 +29,7 @@ const ComposerBoxPopup = <
 	focused,
 	select,
 	renderItem = ({ item }: { item: T }) => <>{JSON.stringify(item)}</>,
-}: ComposerBoxPopupProps<T>): ReactElement | null => {
+}: ComposerBoxPopupProps<T>): ReactElement | null {
 	const t = useTranslation();
 	const id = useUniqueId();
 	const composerBoxPopupRef = useRef<HTMLElement>(null);
@@ -105,6 +105,6 @@ const ComposerBoxPopup = <
 			</Tile>
 		</Box>
 	);
-};
+}
 
 export default memo(ComposerBoxPopup);
