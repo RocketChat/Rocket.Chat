@@ -3,4 +3,4 @@
 "@rocket.chat/ui-composer": minor
 ---
 
-New feature to add some instructions to editing messages.
+New feature to support cancel message editing message and hints for shortcuts.
