@@ -3,8 +3,8 @@ import type { UseQueryResult } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
 import { useEffect, useCallback, useState, useRef } from 'react';
 
-import { useChat } from '../../../../../client/views/room/contexts/ChatContext';
-import type { ComposerPopupOption } from '../../../../../client/views/room/contexts/ComposerPopupContext';
+import { useChat } from '../../contexts/ChatContext';
+import type { ComposerPopupOption } from '../../contexts/ComposerPopupContext';
 import { useComposerBoxPopupQueries } from './useComposerBoxPopupQueries';
 
 type ComposerBoxPopupImperativeCommands<T> = MutableRefObject<

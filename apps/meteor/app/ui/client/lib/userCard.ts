@@ -1,14 +1,12 @@
 import type { ComponentProps } from 'react';
-import React, { Suspense, createElement, lazy } from 'react';
+import { createElement } from 'react';
 import { createPortal } from 'react-dom';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { registerPortal } from '../../../../client/lib/portals/portalsSubscription';
 import { queueMicrotask } from '../../../../client/lib/utils/queueMicrotask';
+import UserCardHolder from '../../../../client/views/room/UserCardHolder';
 
-const UserCard = lazy(() => import('../../../../client/views/room/UserCard'));
-
-type UserCardProps = ComponentProps<typeof UserCard>;
+type UserCardProps = ReturnType<ComponentProps<typeof UserCardHolder>['getProps']>;
 
 let props: UserCardProps;
 
@@ -27,16 +25,6 @@ const subscribeToProps = (callback: () => void) => {
 	return () => {
 		subscribers.delete(callback);
 	};
-};
-
-const UserCardWithProps = () => {
-	const props = useSyncExternalStore(subscribeToProps, getProps);
-
-	return (
-		<Suspense fallback={null}>
-			<UserCard {...props} />
-		</Suspense>
-	);
 };
 
 const createContainer = () => {
@@ -67,8 +55,8 @@ export const openUserCard = (params: Omit<UserCardProps, 'onClose'>) => {
 	}
 
 	if (!unregisterPortal) {
-		const children = createElement(UserCardWithProps);
-		const portal = <>{createPortal(children, container)}</>;
+		const children = createElement(UserCardHolder, { getProps, subscribeToProps });
+		const portal = createPortal(children, container);
 		unregisterPortal = registerPortal(container, portal);
 	}
 
