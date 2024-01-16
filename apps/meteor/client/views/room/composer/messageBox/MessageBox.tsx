@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { Button, Tag, Box } from '@rocket.chat/fuselage';
 import { useContentBoxSize, useMutableCallback } from '@rocket.chat/fuselage-hooks';
@@ -19,10 +20,6 @@ import { useSubscription } from 'use-subscription';
 import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
-import ComposerBoxPopup from '../../../../../app/ui-message/client/popup/ComposerBoxPopup';
-import ComposerBoxPopupPreview from '../../../../../app/ui-message/client/popup/components/composerBoxPopupPreview/ComposerBoxPopupPreview';
-import { useComposerBoxPopup } from '../../../../../app/ui-message/client/popup/hooks/useComposerBoxPopup';
-import { useEnablePopupPreview } from '../../../../../app/ui-message/client/popup/hooks/useEnablePopupPreview';
 import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionFromMime';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
@@ -34,8 +31,12 @@ import VideoMessageRecorder from '../../../composer/VideoMessageRecorder';
 import { useChat } from '../../contexts/ChatContext';
 import { useComposerPopup } from '../../contexts/ComposerPopupContext';
 import { useRoom } from '../../contexts/RoomContext';
+import ComposerBoxPopup from '../ComposerBoxPopup';
+import ComposerBoxPopupPreview from '../ComposerBoxPopupPreview';
 import ComposerUserActionIndicator from '../ComposerUserActionIndicator';
 import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
+import { useComposerBoxPopup } from '../hooks/useComposerBoxPopup';
+import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
@@ -410,15 +411,14 @@ const MessageBox = ({
 								disabled={isRecording || !canSend}
 							/>
 						)}
-						<MessageComposerActionsDivider />
 						<MessageBoxActionsToolbar
-							variant={sizes.inlineSize < 480 ? 'small' : 'large'}
-							isRecording={isRecording}
-							typing={typing}
 							canSend={canSend}
+							typing={typing}
+							isMicrophoneDenied={isMicrophoneDenied}
 							rid={room._id}
 							tmid={tmid}
-							isMicrophoneDenied={isMicrophoneDenied}
+							isRecording={isRecording}
+							variant={sizes.inlineSize < 480 ? 'small' : 'large'}
 						/>
 					</MessageComposerToolbarActions>
 					<MessageComposerToolbarSubmit>

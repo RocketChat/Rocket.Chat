@@ -3,8 +3,8 @@ import { debounce } from 'lodash';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveDict } from 'meteor/reactive-dict';
 
-import { Notifications } from '../../../notifications/client';
 import { settings } from '../../../settings/client';
+import { sdk } from '../../../utils/client/lib/SDKClient';
 
 const TIMEOUT = 15000;
 const RENEW = TIMEOUT / 3;
@@ -38,7 +38,7 @@ const shownName = function (user: IUser | null | undefined): string | undefined 
 
 const emitActivities = debounce(async (rid: string, extras: IExtras): Promise<void> => {
 	const activities = roomActivities.get(extras?.tmid || rid) || new Set();
-	Notifications.notifyRoom(rid, USER_ACTIVITY, shownName(Meteor.user() as unknown as IUser), [...activities], extras);
+	sdk.publish('notify-room', [`${rid}/${USER_ACTIVITY}`, shownName(Meteor.user() as unknown as IUser), [...activities], extras]);
 }, 500);
 
 function handleStreamAction(rid: string, username: string, activityTypes: string[], extras?: IExtras): void {
@@ -65,10 +65,11 @@ function handleStreamAction(rid: string, username: string, activityTypes: string
 	performingUsers.set(rid, roomActivities);
 }
 export const UserAction = new (class {
-	addStream(rid: string): void {
+	addStream(rid: string): () => void {
 		if (rooms.get(rid)) {
-			return;
+			throw new Error('UserAction - addStream should only be called once per room');
 		}
+
 		const handler = function (username: string, activityType: string[], extras?: object): void {
 			const user = Meteor.users.findOne(Meteor.userId() || undefined, {
 				fields: { name: 1, username: 1 },
@@ -79,7 +80,15 @@ export const UserAction = new (class {
 			handleStreamAction(rid, username, activityType, extras);
 		};
 		rooms.set(rid, handler);
-		Notifications.onRoom(rid, USER_ACTIVITY, handler);
+
+		const { stop } = sdk.stream('notify-room', [`${rid}/${USER_ACTIVITY}`], handler);
+		return () => {
+			if (!rooms.get(rid)) {
+				return;
+			}
+			stop();
+			rooms.delete(rid);
+		};
 	}
 
 	performContinuously(rid: string, activityType: string, extras: IExtras = {}): void {
@@ -154,15 +163,6 @@ export const UserAction = new (class {
 		activities.delete(activityType);
 		roomActivities.set(trid, activities);
 		void emitActivities(rid, extras);
-	}
-
-	cancel(rid: string): void {
-		if (!rooms.get(rid)) {
-			return;
-		}
-
-		Notifications.unRoom(rid, USER_ACTIVITY);
-		rooms.delete(rid);
 	}
 
 	get(roomId: string): IRoomActivity | undefined {

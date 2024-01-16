@@ -149,7 +149,7 @@ export class HomeContent {
 	}
 
 	get btnRecordAudio(): Locator {
-		return this.page.locator('[data-qa-id="audio-record"]');
+		return this.page.locator('[data-qa-id="audio-message"]');
 	}
 
 	get btnMenuMoreActions() {
