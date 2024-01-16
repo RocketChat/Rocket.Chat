@@ -152,7 +152,7 @@ export type UsersEndpoints = {
 	};
 
 	'/v1/users.sendWelcomeEmail': {
-		POST: (params: UsersSendWelcomeEmailParamsPOST) => void;
+		POST: (params: UsersSendWelcomeEmailParamsPOST) => { success: boolean };
 	};
 
 	'/v1/users.setAvatar': {

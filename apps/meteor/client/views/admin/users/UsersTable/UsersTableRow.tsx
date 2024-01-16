@@ -17,6 +17,7 @@ import { useChangeUserStatusAction } from '../hooks/useChangeUserStatusAction';
 import { useDeleteUserAction } from '../hooks/useDeleteUserAction';
 import { useResetE2EEKeyAction } from '../hooks/useResetE2EEKeyAction';
 import { useResetTOTPAction } from '../hooks/useResetTOTPAction';
+import { useSendWelcomeEmailMutation } from '../hooks/useSendWelcomeEmailMutation';
 
 type UsersTableRowProps = {
 	user: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'emails' | 'active' | 'avatarETag' | 'roles'>;
@@ -52,6 +53,7 @@ const UsersTableRow = ({ user, onClick, mediaQuery, refetchUsers, onReload, tab 
 	const deleteUserAction = useDeleteUserAction(userId, onChange, onReload);
 	const resetTOTPAction = useResetTOTPAction(userId);
 	const resetE2EKeyAction = useResetE2EEKeyAction(userId);
+	const resendWelcomeEmail = useSendWelcomeEmailMutation();
 
 	const menuOptions = {
 		...(tab !== 'pending' &&
@@ -87,11 +89,13 @@ const UsersTableRow = ({ user, onClick, mediaQuery, refetchUsers, onReload, tab 
 		}),
 	};
 
-	// TODO: create action for this?
-	// TODO: implement logic
 	const handleResendWelcomeEmail = () => {
-		console.log('Welcome email resent');
-		dispatchToastMessage({ type: 'success', message: t('Welcome_email_resent') });
+		if (!emails?.length) {
+			dispatchToastMessage({ type: 'error', message: t('Welcome_email_failed') });
+			return;
+		}
+
+		resendWelcomeEmail.mutateAsync({ email: emails[0].address });
 	};
 
 	const renderPendingButton = (): ReactElement => {

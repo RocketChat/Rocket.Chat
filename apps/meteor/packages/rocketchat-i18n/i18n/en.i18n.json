@@ -6203,6 +6203,7 @@
   "Users_who_are_pending": "Users who are pending activation or have been manually created but haven't logged in yet appear here.",
   "Deactivated_users_appear_here": "Deactivated users appear here.",
   "Welcome_email_resent": "Welcome email resent",
+  "Welcome_email_failed": "Failed to resend welcome email",
   "Reason_for_joining": "Reason for joining",
   "Theme_Appearence": "Theme Appearence",
   "mentions_counter": "{{count}} mention",
