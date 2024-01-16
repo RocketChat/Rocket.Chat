@@ -757,7 +757,7 @@
   "Connect": "Forbind",
   "Connection_Closed": "Forbindelse lukket",
   "Connection_Reset": "Nulstilning af forbindelse",
-  "Connection_success": "LDAP-forbindelse lykkedes",
+  "LDAP_Connection_successful": "LDAP-forbindelse lykkedes",
   "Connectivity_Services": "Connectivity Services",
   "Consulting": "Rådgivning",
   "Contact": "Kontakt",

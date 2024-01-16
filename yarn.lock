@@ -9047,7 +9047,7 @@ __metadata:
     "@babel/preset-typescript": ~7.22.15
     "@rocket.chat/apps-engine": 1.41.0
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/fuselage": ^0.41.0
+    "@rocket.chat/fuselage": ^0.42.0
     "@rocket.chat/fuselage-hooks": ~0.32.1
     "@rocket.chat/fuselage-polyfills": ~0.31.25
     "@rocket.chat/gazzodown": "workspace:^"
@@ -9100,9 +9100,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/fuselage@npm:^0.41.0":
-  version: 0.41.0
-  resolution: "@rocket.chat/fuselage@npm:0.41.0"
+"@rocket.chat/fuselage@npm:^0.42.0":
+  version: 0.42.0
+  resolution: "@rocket.chat/fuselage@npm:0.42.0"
   dependencies:
     "@rocket.chat/css-in-js": ^0.31.25
     "@rocket.chat/css-supports": ^0.31.25
@@ -9120,7 +9120,7 @@ __metadata:
     react: ^17.0.2
     react-dom: ^17.0.2
     react-virtuoso: 1.2.4
-  checksum: 8ee33c5626ff7fb8970714696332efc723ca0793470d0b4da9a169aa6b2528ec75068d775e8f149dd3a1ea401ff0240be892022b64bd80e5bd4fc04349e0c0aa
+  checksum: e9c5869a6b2918ad0490cbcd2b3d7777e8b76bcd9c8d772327af9c83136d99261fcd1266aaa1013b034cbe8a5b88adc3f1383a60c9c2051173c363d0eebae80e
   languageName: node
   linkType: hard
 
@@ -9131,7 +9131,7 @@ __metadata:
     "@babel/core": ~7.22.20
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": ~0.31.25
-    "@rocket.chat/fuselage": ^0.41.0
+    "@rocket.chat/fuselage": ^0.42.0
     "@rocket.chat/fuselage-tokens": ~0.32.0
     "@rocket.chat/message-parser": ~0.31.27
     "@rocket.chat/styled": ~0.31.25
@@ -9462,7 +9462,7 @@ __metadata:
     "@rocket.chat/favicon": "workspace:^"
     "@rocket.chat/forked-matrix-appservice-bridge": ^4.0.2
     "@rocket.chat/forked-matrix-bot-sdk": ^0.6.0-beta.3
-    "@rocket.chat/fuselage": ^0.41.0
+    "@rocket.chat/fuselage": ^0.42.0
     "@rocket.chat/fuselage-hooks": ~0.32.1
     "@rocket.chat/fuselage-polyfills": ~0.31.25
     "@rocket.chat/fuselage-toastbar": ~0.31.25
@@ -10304,7 +10304,7 @@ __metadata:
   dependencies:
     "@babel/core": ~7.22.20
     "@rocket.chat/css-in-js": ~0.31.25
-    "@rocket.chat/fuselage": ^0.41.0
+    "@rocket.chat/fuselage": ^0.42.0
     "@rocket.chat/fuselage-hooks": ~0.32.1
     "@rocket.chat/icons": ~0.32.0
     "@rocket.chat/mock-providers": "workspace:^"
@@ -10355,7 +10355,7 @@ __metadata:
   dependencies:
     "@babel/core": ~7.22.20
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/fuselage": ^0.41.0
+    "@rocket.chat/fuselage": ^0.42.0
     "@rocket.chat/icons": ~0.32.0
     "@storybook/addon-actions": ~6.5.16
     "@storybook/addon-docs": ~6.5.16
@@ -10446,7 +10446,7 @@ __metadata:
   resolution: "@rocket.chat/ui-theming@workspace:ee/packages/ui-theming"
   dependencies:
     "@rocket.chat/css-in-js": ~0.31.25
-    "@rocket.chat/fuselage": ^0.41.0
+    "@rocket.chat/fuselage": ^0.42.0
     "@rocket.chat/fuselage-hooks": ~0.32.1
     "@rocket.chat/icons": ~0.32.0
     "@rocket.chat/ui-contexts": "workspace:~"
@@ -10489,7 +10489,7 @@ __metadata:
     "@rocket.chat/css-in-js": ~0.31.25
     "@rocket.chat/emitter": ~0.31.25
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/fuselage": ^0.41.0
+    "@rocket.chat/fuselage": ^0.42.0
     "@rocket.chat/fuselage-hooks": ~0.32.1
     "@rocket.chat/icons": ~0.32.0
     "@rocket.chat/styled": ~0.31.25
@@ -10532,7 +10532,7 @@ __metadata:
     "@codemirror/tooltip": ^0.19.16
     "@lezer/highlight": ^1.1.6
     "@rocket.chat/css-in-js": ~0.31.25
-    "@rocket.chat/fuselage": ^0.41.0
+    "@rocket.chat/fuselage": ^0.42.0
     "@rocket.chat/fuselage-hooks": ~0.32.1
     "@rocket.chat/fuselage-polyfills": ~0.31.25
     "@rocket.chat/fuselage-tokens": ~0.32.0
@@ -35870,7 +35870,7 @@ __metadata:
     "@types/chart.js": ^2.9.39
     "@types/js-yaml": ^4.0.8
     node-gyp: ^9.4.1
-    turbo: ~1.10.16
+    turbo: ~1.11.2
   languageName: unknown
   linkType: soft
 
@@ -39368,58 +39368,58 @@ __metadata:
   languageName: node
   linkType: hard
 
-"turbo-darwin-64@npm:1.10.16":
-  version: 1.10.16
-  resolution: "turbo-darwin-64@npm:1.10.16"
+"turbo-darwin-64@npm:1.11.2":
+  version: 1.11.2
+  resolution: "turbo-darwin-64@npm:1.11.2"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-darwin-arm64@npm:1.10.16":
-  version: 1.10.16
-  resolution: "turbo-darwin-arm64@npm:1.10.16"
+"turbo-darwin-arm64@npm:1.11.2":
+  version: 1.11.2
+  resolution: "turbo-darwin-arm64@npm:1.11.2"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-linux-64@npm:1.10.16":
-  version: 1.10.16
-  resolution: "turbo-linux-64@npm:1.10.16"
+"turbo-linux-64@npm:1.11.2":
+  version: 1.11.2
+  resolution: "turbo-linux-64@npm:1.11.2"
   conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-linux-arm64@npm:1.10.16":
-  version: 1.10.16
-  resolution: "turbo-linux-arm64@npm:1.10.16"
+"turbo-linux-arm64@npm:1.11.2":
+  version: 1.11.2
+  resolution: "turbo-linux-arm64@npm:1.11.2"
   conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-windows-64@npm:1.10.16":
-  version: 1.10.16
-  resolution: "turbo-windows-64@npm:1.10.16"
+"turbo-windows-64@npm:1.11.2":
+  version: 1.11.2
+  resolution: "turbo-windows-64@npm:1.11.2"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-windows-arm64@npm:1.10.16":
-  version: 1.10.16
-  resolution: "turbo-windows-arm64@npm:1.10.16"
+"turbo-windows-arm64@npm:1.11.2":
+  version: 1.11.2
+  resolution: "turbo-windows-arm64@npm:1.11.2"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo@npm:~1.10.16":
-  version: 1.10.16
-  resolution: "turbo@npm:1.10.16"
+"turbo@npm:~1.11.2":
+  version: 1.11.2
+  resolution: "turbo@npm:1.11.2"
   dependencies:
-    turbo-darwin-64: 1.10.16
-    turbo-darwin-arm64: 1.10.16
-    turbo-linux-64: 1.10.16
-    turbo-linux-arm64: 1.10.16
-    turbo-windows-64: 1.10.16
-    turbo-windows-arm64: 1.10.16
+    turbo-darwin-64: 1.11.2
+    turbo-darwin-arm64: 1.11.2
+    turbo-linux-64: 1.11.2
+    turbo-linux-arm64: 1.11.2
+    turbo-windows-64: 1.11.2
+    turbo-windows-arm64: 1.11.2
   dependenciesMeta:
     turbo-darwin-64:
       optional: true
@@ -39435,7 +39435,7 @@ __metadata:
       optional: true
   bin:
     turbo: bin/turbo
-  checksum: 69d1892593449b264e0bd48b851317a743016ab62cf470e7293b2cc3781240e863c48232c89f65a5a4ce97eb791ca550b201593449350da073db07703a19cfa5
+  checksum: 427b31807fe39d83ce002fd8da92029ac7ff93f4891e1da7c3c1a2c9b15257e3f4a8d9688186bd0228bda70965c4bf7db15dfd1f5de2c1208e058efd5401c352
   languageName: node
   linkType: hard
 
