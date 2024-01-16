@@ -8,7 +8,7 @@ import { imperativeModal } from '../../../client/lib/imperativeModal';
 import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
 import { ChatSubscription } from '../../models/client';
 import { settings } from '../../settings/client';
-import { sdk } from '../../utils/client/lib/SDKClient.ts';
+import { sdk } from '../../utils/client/lib/SDKClient';
 import { t } from '../../utils/lib/i18n';
 import { WEB_RTC_EVENTS } from '../lib/constants';
 import { ChromeScreenShare } from './screenShare';
