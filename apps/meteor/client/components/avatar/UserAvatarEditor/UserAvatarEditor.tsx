@@ -54,6 +54,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, disabled, e
 				message: 'Not a Image URL',
 			});
 			return false;
+			
 		}
 		return true;
 	}
