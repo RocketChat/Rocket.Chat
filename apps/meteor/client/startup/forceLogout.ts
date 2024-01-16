@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 
-import { Notifications } from '../../app/notifications/client';
+import { sdk } from '../../app/utils/client/lib/SDKClient';
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {
@@ -12,7 +12,7 @@ Meteor.startup(() => {
 			return;
 		}
 		Session.set('force_logout', false);
-		Notifications.onUser('force_logout', () => {
+		sdk.stream('notify-user', [`${userId}/force_logout`], () => {
 			Session.set('force_logout', true);
 		});
 	});
