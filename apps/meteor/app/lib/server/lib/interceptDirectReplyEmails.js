@@ -21,7 +21,7 @@ export class DirectReplyIMAPInterceptor extends IMAPInterceptor {
 
 		super(imapConfig, options);
 
-		this.on('email', (email) => Promise.await(processDirectEmail(email)));
+		this.on('email', (email) => processDirectEmail(email));
 	}
 }
 
