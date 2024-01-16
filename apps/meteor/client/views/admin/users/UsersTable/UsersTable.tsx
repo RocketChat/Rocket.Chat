@@ -19,8 +19,6 @@ import type { IAdminUserTabs } from '../IAdminUserTabs';
 import useFilteredUsers from '../hooks/useFilteredUsers';
 import UsersTableRow from './UsersTableRow';
 
-// TODO: remove bots from pending users + add "resend email" function
-
 type UsersTableProps = {
 	reload: MutableRefObject<() => void>;
 	tab: IAdminUserTabs;
