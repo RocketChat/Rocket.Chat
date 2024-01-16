@@ -7,7 +7,6 @@ import { RoomManager } from '../../../client/lib/RoomManager';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 import { RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
 import { ChatRoom, Subscriptions, Messages } from '../../models/client';
-import { Notifications } from '../../notifications/client';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { E2ERoomState } from './E2ERoomState';
 import {
@@ -240,7 +239,7 @@ export class E2ERoom extends Emitter {
 
 			this.setState(E2ERoomState.WAITING_KEYS);
 			this.log('Requesting room key');
-			Notifications.notifyUsersOfRoom(this.roomId, 'e2ekeyRequest', this.roomId, room.e2eKeyId);
+			sdk.publish('notify-room-users', [`${this.roomId}/e2ekeyRequest`, this.roomId, room.e2eKeyId]);
 		} catch (error) {
 			// this.error = error;
 			this.setState(E2ERoomState.ERROR);
