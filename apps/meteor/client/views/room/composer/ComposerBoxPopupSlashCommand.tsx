@@ -7,7 +7,7 @@ export type ComposerBoxPopupSlashCommandProps = {
 	params?: string;
 };
 
-const ComposerPopupSlashCommand = ({ _id, description, params }: ComposerBoxPopupSlashCommandProps) => {
+function ComposerBoxPopupSlashCommand({ _id, description, params }: ComposerBoxPopupSlashCommandProps) {
 	return (
 		<>
 			<OptionContent>
@@ -18,6 +18,6 @@ const ComposerPopupSlashCommand = ({ _id, description, params }: ComposerBoxPopu
 			</OptionColumn>
 		</>
 	);
-};
+}
 
-export default ComposerPopupSlashCommand;
+export default ComposerBoxPopupSlashCommand;
