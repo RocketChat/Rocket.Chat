@@ -14,7 +14,15 @@ import {
 } from '@rocket.chat/ui-composer';
 import { useTranslation, useUserPreference, useLayout } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type { ReactElement, MouseEventHandler, FormEvent, KeyboardEventHandler, KeyboardEvent, ClipboardEventHandler } from 'react';
+import type {
+	ReactElement,
+	MouseEventHandler,
+	FormEvent,
+	KeyboardEventHandler,
+	KeyboardEvent,
+	ClipboardEventHandler,
+	MouseEvent,
+} from 'react';
 import React, { memo, useRef, useReducer, useCallback } from 'react';
 import { Trans } from 'react-i18next';
 import { useSubscription } from 'use-subscription';
@@ -171,7 +179,7 @@ const MessageBox = ({
 		});
 	});
 
-	const closeEditing = (event: any) => {
+	const closeEditing = (event: KeyboardEvent | MouseEvent<HTMLElement>) => {
 		if (chat.currentEditing) {
 			event.preventDefault();
 			event.stopPropagation();
@@ -183,6 +191,7 @@ const MessageBox = ({
 			});
 		}
 	};
+
 	const handler: KeyboardEventHandler<HTMLTextAreaElement> = useMutableCallback((event) => {
 		const { which: keyCode } = event;
 
@@ -438,7 +447,7 @@ const MessageBox = ({
 						)}
 						{canSend && (
 							<>
-								{isEditing && <MessageComposerButton onClick={(event) => closeEditing(event)}>{t('Cancel')}</MessageComposerButton>}
+								{isEditing && <MessageComposerButton onClick={closeEditing}>{t('Cancel')}</MessageComposerButton>}
 								<MessageComposerAction
 									aria-label={t('Send')}
 									icon='send'
