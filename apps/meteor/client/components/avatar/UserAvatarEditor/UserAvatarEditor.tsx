@@ -2,7 +2,8 @@ import type { IUser, AvatarObject } from '@rocket.chat/core-typings';
 import { Box, Button, TextInput, Avatar, IconButton } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent } from 'react';
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useContext } from 'react';
+import { ToastMessagesContext } from '@rocket.chat/ui-contexts';
 
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 import { isValidImageFormat } from '../../../lib/utils/isValidImageFormat';
@@ -44,9 +45,23 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, disabled, e
 
 	const [clickUpload] = useSingleFileInput(setUploadedPreview);
 
+	const { dispatch } = useContext(ToastMessagesContext);
+	const checkValidUrl = (url: string): boolean => {
+		const urlRegex = new RegExp('\\bhttps?://(?:www\\.)?[^\\s]+\\.(?:jpg|jpeg|png|gif|bmp|svg|webp)\\b');
+		if (!urlRegex.test(url)) {
+			dispatch({
+				type: 'error',
+				message: 'Not a Image URL',
+			});
+			return false;
+		}
+		return true;
+	}
 	const clickUrl = (): void => {
-		setNewAvatarSource(avatarFromUrl);
-		setAvatarObj({ avatarUrl: avatarFromUrl });
+		if (checkValidUrl(avatarFromUrl)) {
+			setNewAvatarSource(avatarFromUrl);
+			setAvatarObj({ avatarUrl: avatarFromUrl });
+		}
 	};
 
 	const clickReset = (): void => {
