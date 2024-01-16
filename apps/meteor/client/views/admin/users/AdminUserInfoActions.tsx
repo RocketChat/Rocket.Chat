@@ -6,6 +6,7 @@ import React, { useCallback, useMemo } from 'react';
 
 import UserInfo from '../../../components/UserInfo';
 import { useActionSpread } from '../../hooks/useActionSpread';
+import type { IAdminUserTabs } from './IAdminUserTabs';
 import { useChangeAdminStatusAction } from './hooks/useChangeAdminStatusAction';
 import { useChangeUserStatusAction } from './hooks/useChangeUserStatusAction';
 import { useDeleteUserAction } from './hooks/useDeleteUserAction';
@@ -20,7 +21,7 @@ type AdminUserInfoActionsProps = {
 	isAdmin: boolean;
 	onChange: () => void;
 	onReload: () => void;
-	tab: 'all' | 'invited' | 'active' | 'deactivated' | 'pending';
+	tab: IAdminUserTabs;
 };
 
 const AdminUserInfoActions = ({

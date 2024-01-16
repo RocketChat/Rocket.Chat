@@ -11,6 +11,7 @@ import { GenericTableRow, GenericTableCell } from '../../../../components/Generi
 import { UserStatus } from '../../../../components/UserStatus';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
 import { dispatchToastMessage } from '../../../../lib/toast';
+import type { IAdminUserTabs } from '../IAdminUserTabs';
 import { useChangeAdminStatusAction } from '../hooks/useChangeAdminStatusAction';
 import { useChangeUserStatusAction } from '../hooks/useChangeUserStatusAction';
 import { useDeleteUserAction } from '../hooks/useDeleteUserAction';
@@ -23,7 +24,7 @@ type UsersTableRowProps = {
 	mediaQuery: boolean;
 	refetchUsers: () => void;
 	onReload: () => void;
-	tab: string;
+	tab: IAdminUserTabs;
 };
 
 const UsersTableRow = ({ user, onClick, mediaQuery, refetchUsers, onReload, tab }: UsersTableRowProps): ReactElement => {

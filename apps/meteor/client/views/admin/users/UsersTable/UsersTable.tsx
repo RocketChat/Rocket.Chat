@@ -15,6 +15,7 @@ import {
 } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
+import type { IAdminUserTabs } from '../IAdminUserTabs';
 import useFilteredUsers from '../hooks/useFilteredUsers';
 import UsersTableRow from './UsersTableRow';
 
@@ -22,7 +23,7 @@ import UsersTableRow from './UsersTableRow';
 
 type UsersTableProps = {
 	reload: MutableRefObject<() => void>;
-	tab: string;
+	tab: IAdminUserTabs;
 	onReload: () => void;
 	setPendingActionsCount: React.Dispatch<React.SetStateAction<number>>;
 };

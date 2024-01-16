@@ -15,11 +15,12 @@ import UserInfo from '../../../components/UserInfo';
 import { UserStatus } from '../../../components/UserStatus';
 import { getUserEmailVerified } from '../../../lib/utils/getUserEmailVerified';
 import AdminUserInfoActions from './AdminUserInfoActions';
+import type { IAdminUserTabs } from './IAdminUserTabs';
 
 type AdminUserInfoWithDataProps = {
 	uid: IUser['_id'];
 	onReload: () => void;
-	tab: 'all' | 'invited' | 'active' | 'deactivated' | 'pending';
+	tab: IAdminUserTabs;
 };
 
 const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProps): ReactElement => {

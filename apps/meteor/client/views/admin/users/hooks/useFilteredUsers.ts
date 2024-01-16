@@ -6,6 +6,7 @@ import { useMemo } from 'react';
 
 import type { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import type { useSort } from '../../../../components/GenericTable/hooks/useSort';
+import type { IAdminUserTabs } from '../IAdminUserTabs';
 
 const useFilteredUsers = (
 	searchTerm: string,
@@ -15,7 +16,7 @@ const useFilteredUsers = (
 	sortDirection: ReturnType<typeof useSort>['sortDirection'],
 	itemsPerPage: ReturnType<typeof usePagination>['itemsPerPage'],
 	current: ReturnType<typeof usePagination>['current'],
-	tab: string,
+	tab: IAdminUserTabs,
 ) => {
 	const payload = useDebouncedValue(
 		useMemo(() => {
