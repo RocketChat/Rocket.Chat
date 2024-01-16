@@ -120,8 +120,11 @@ const OmnichannelProvider: FC = ({ children }) => {
 		};
 
 		initializeLivechatInquiryStream(user?._id);
+		if (!user?._id) {
+			return;
+		}
 		return streamNotifyUser(`${user._id}/departmentAgentData`, handleDepartmentAgentData);
-	}, [manuallySelected, streamNotifyUser, user._id]);
+	}, [manuallySelected, streamNotifyUser, user?._id]);
 
 	const queue = useReactiveValue<ILivechatInquiryRecord[] | undefined>(
 		useCallback(() => {
