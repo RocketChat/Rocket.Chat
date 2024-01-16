@@ -1,15 +1,14 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect, useMemo } from 'react';
 
 import { VideoRecorder } from '../../../../../../../app/ui/client/lib/recorderjs/videoRecorder';
+import type { GenericMenuItemProps } from '../../../../../../components/GenericMenu/GenericMenuItem';
 import { useChat } from '../../../../contexts/ChatContext';
 import { useMediaActionTitle } from '../../hooks/useMediaActionTitle';
 import { useMediaPermissions } from '../../hooks/useMediaPermissions';
-import type { ToolbarAction } from './ToolbarAction';
 
-export const useVideoMessageAction = (disabled: boolean): ToolbarAction => {
-	const t = useTranslation();
+export const useVideoMessageAction = (disabled: boolean): GenericMenuItemProps => {
 	const isFileUploadEnabled = useSetting('FileUpload_Enabled') as boolean;
 	const isVideoRecorderEnabled = useSetting('Message_VideoRecorderEnabled') as boolean;
 	const fileUploadMediaTypeBlackList = useSetting('FileUpload_MediaTypeBlackList') as string;
@@ -55,10 +54,9 @@ export const useVideoMessageAction = (disabled: boolean): ToolbarAction => {
 
 	return {
 		id: 'video-message',
-		title: getMediaActionTitle,
+		content: getMediaActionTitle,
+		icon: 'video',
 		disabled: !isAllowed || Boolean(disabled),
 		onClick: handleOpenVideoMessage,
-		icon: 'video',
-		label: t('Video_message'),
 	};
 };

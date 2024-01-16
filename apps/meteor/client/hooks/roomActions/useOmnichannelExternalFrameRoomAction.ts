@@ -3,7 +3,7 @@ import { lazy, useMemo } from 'react';
 
 import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
-const ExternalFrameContainer = lazy(() => import('../../../app/livechat/client/externalFrame/ExternalFrameContainer'));
+const ExternalFrameContainer = lazy(() => import('../../views/omnichannel/ExternalFrameContainer'));
 
 export const useOmnichannelExternalFrameRoomAction = () => {
 	const enabled = useSetting('Omnichannel_External_Frame_Enabled', false);
