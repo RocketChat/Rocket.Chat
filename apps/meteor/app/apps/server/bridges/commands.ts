@@ -155,10 +155,6 @@ export class AppCommandsBridge extends CommandBridge {
 		if (typeof command.providesPreview !== 'boolean') {
 			throw new Error('Invalid Slash Command parameter provided, it must be a valid ISlashCommand object.');
 		}
-
-		if (typeof command.executor !== 'function') {
-			throw new Error('Invalid Slash Command parameter provided, it must be a valid ISlashCommand object.');
-		}
 	}
 
 	private async _appCommandExecutor({ command, message, params, triggerId, userId }: SlashCommandCallbackParams<string>): Promise<void> {
