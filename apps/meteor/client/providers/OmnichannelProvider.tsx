@@ -13,7 +13,6 @@ import React, { useState, useEffect, useMemo, useCallback, memo, useRef } from '
 import { LivechatInquiry } from '../../app/livechat/client/collections/LivechatInquiry';
 import { initializeLivechatInquiryStream } from '../../app/livechat/client/lib/stream/queueManager';
 import { getOmniChatSortQuery } from '../../app/livechat/lib/inquiries';
-import { Notifications } from '../../app/notifications/client';
 import { KonchatNotification } from '../../app/ui/client/lib/KonchatNotification';
 import { useHasLicenseModule } from '../../ee/client/hooks/useHasLicenseModule';
 import { ClientLogger } from '../../lib/ClientLogger';
@@ -110,6 +109,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 	const manuallySelected =
 		enabled && canViewOmnichannelQueue && !!routeConfig && routeConfig.showQueue && !routeConfig.autoAssignAgent && agentAvailable;
 
+	const streamNotifyUser = useStream('notify-user');
 	useEffect(() => {
 		if (!manuallySelected) {
 			return;
@@ -120,8 +120,8 @@ const OmnichannelProvider: FC = ({ children }) => {
 		};
 
 		initializeLivechatInquiryStream(user?._id);
-		return Notifications.onUser('departmentAgentData', handleDepartmentAgentData).stop;
-	}, [manuallySelected, user?._id]);
+		return streamNotifyUser(`${user._id}/departmentAgentData`, handleDepartmentAgentData);
+	}, [manuallySelected, streamNotifyUser, user._id]);
 
 	const queue = useReactiveValue<ILivechatInquiryRecord[] | undefined>(
 		useCallback(() => {
