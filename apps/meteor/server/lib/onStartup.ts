@@ -5,7 +5,8 @@ let hasStarted = false;
 
 export const onStartup = (cb: StartupCallback): void => {
 	if (hasStarted) {
-		return Promise.await(cb());
+		void cb();
+		return;
 	}
 
 	callbackList.push(cb);
@@ -19,7 +20,7 @@ const runCallbacks = async (): Promise<void> => {
 	callbackList.splice(0, callbackList.length);
 };
 
-Meteor.startup(() => {
+Meteor.startup(async () => {
 	hasStarted = true;
-	Promise.await(runCallbacks());
+	await runCallbacks();
 });
