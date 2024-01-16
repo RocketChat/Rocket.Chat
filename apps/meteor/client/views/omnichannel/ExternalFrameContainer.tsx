@@ -2,11 +2,11 @@ import { useSetting, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
 
-import { useRoom } from '../../../../client/views/room/contexts/RoomContext';
-import { sdk } from '../../../utils/client/lib/SDKClient';
-import { encrypt, getKeyFromString } from './crypto';
+import { encrypt, getKeyFromString } from '../../../app/livechat/client/externalFrame/crypto';
+import { sdk } from '../../../app/utils/client/lib/SDKClient';
+import { useRoom } from '../room/contexts/RoomContext';
 
-const ExternalFrameContainer = () => {
+function ExternalFrameContainer() {
 	const uid = useUserId();
 	const room = useRoom();
 	const { 'X-Auth-Token': authToken } = sdk.rest.getCredentials() || {};
@@ -42,6 +42,6 @@ const ExternalFrameContainer = () => {
 			<iframe className='external-frame' src={externalFrameUrl} />
 		</div>
 	);
-};
+}
 
 export default ExternalFrameContainer;

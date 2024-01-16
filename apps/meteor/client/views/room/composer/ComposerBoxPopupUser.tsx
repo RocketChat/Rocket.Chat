@@ -2,8 +2,8 @@ import { OptionAvatar, OptionColumn, OptionContent, OptionInput } from '@rocket.
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import ReactiveUserStatus from '../../../../../../client/components/UserStatus/ReactiveUserStatus';
-import UserAvatar from '../../../../../../client/components/avatar/UserAvatar';
+import ReactiveUserStatus from '../../../components/UserStatus/ReactiveUserStatus';
+import UserAvatar from '../../../components/avatar/UserAvatar';
 
 export type ComposerBoxPopupUserProps = {
 	_id: string;
@@ -18,7 +18,7 @@ export type ComposerBoxPopupUserProps = {
 	variant?: 'small' | 'large';
 };
 
-const ComposerBoxPopupUser = ({ _id, system, username, name, nickname, outside, suggestion, variant }: ComposerBoxPopupUserProps) => {
+function ComposerBoxPopupUser({ _id, system, username, name, nickname, outside, suggestion, variant }: ComposerBoxPopupUserProps) {
 	const t = useTranslation();
 
 	return (
@@ -57,6 +57,6 @@ const ComposerBoxPopupUser = ({ _id, system, username, name, nickname, outside, 
 			)}
 		</>
 	);
-};
+}
 
 export default ComposerBoxPopupUser;
