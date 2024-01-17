@@ -1,9 +1,9 @@
 import { AvatarContainer } from '@rocket.chat/fuselage';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { VFC, CSSProperties, ComponentProps, HTMLAttributes } from 'react';
 import React from 'react';
 
 import Emoji from '../../Emoji';
-import UserAvatar from '../../avatar/UserAvatar';
 
 type MessageAvatarProps = {
 	emoji?: string;

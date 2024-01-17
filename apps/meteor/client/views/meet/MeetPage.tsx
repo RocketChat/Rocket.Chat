@@ -1,10 +1,10 @@
 import { Button, Box, Flex } from '@rocket.chat/fuselage';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useRouteParameter, useSearchParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import React, { useEffect, useState, useCallback } from 'react';
 
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
-import UserAvatar from '../../components/avatar/UserAvatar';
 import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
 import NotFoundPage from '../notFound/NotFoundPage';
 import PageLoading from '../root/PageLoading';

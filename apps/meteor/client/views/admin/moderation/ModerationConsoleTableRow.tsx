@@ -1,9 +1,9 @@
 import type { IModerationAudit, IUser } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import React from 'react';
 
 import { GenericTableCell, GenericTableRow } from '../../../components/GenericTable';
-import UserAvatar from '../../../components/avatar/UserAvatar';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import ModerationConsoleActions from './ModerationConsoleActions';
 

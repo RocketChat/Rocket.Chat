@@ -8,11 +8,11 @@ import {
 	MessageSystemBody,
 } from '@rocket.chat/fuselage';
 import type { VisitorSearchChatsResult } from '@rocket.chat/rest-typings';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { Dispatch, ReactElement, SetStateAction } from 'react';
 import React, { memo } from 'react';
 
-import UserAvatar from '../../../components/avatar/UserAvatar';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import { clickableItem } from '../../../lib/clickableItem';
 
