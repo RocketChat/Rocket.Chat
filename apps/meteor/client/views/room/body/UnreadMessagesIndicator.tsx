@@ -21,13 +21,12 @@ const indicatorStyle = css`
 const UnreadMessagesIndicator = ({ count, onJumpButtonClick, onMarkAsReadButtonClick }: UnreadMessagesIndicatorProps): ReactElement => {
 	const t = useTranslation();
 
-	// MISSING ARROW-UP ICON
 	return (
 		<Box className={indicatorStyle}>
 			<Bubble
 				onClick={onJumpButtonClick}
 				onDismiss={onMarkAsReadButtonClick}
-				icon='arrow-down'
+				icon='arrow-up'
 				dismissProps={{ 'title': t('Mark_as_read'), 'aria-label': `${t('Mark_as_read')}` }}
 			>
 				{t('S_new_messages', count)}
