@@ -64,6 +64,7 @@ export interface StreamerEvents {
 		{ key: `${string}/videoconf`; args: [id: string] },
 		{ key: `${string}/messagesRead`; args: [{ until: Date; tmid?: string }] },
 		{ key: `${string}/messagesImported`; args: [null] },
+		{ key: `${string}/webrtc`; args: unknown[] },
 		/* @deprecated over videoconf*/
 		// { key: `${string}/${string}`; args: [id: string] },
 	];
@@ -231,7 +232,7 @@ export interface StreamerEvents {
 				},
 			];
 		},
-		{ key: 'Users:NameChanged'; args: [Pick<IUser, '_id' | 'name'>] },
+		{ key: 'Users:NameChanged'; args: [Pick<IUser, '_id' | 'name' | 'username'>] },
 		{ key: 'private-settings-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
 		{ key: 'deleteCustomUserStatus'; args: [{ userStatusData: unknown }] },
 		{ key: 'user-status'; args: [[IUser['_id'], IUser['username'], 0 | 1 | 2 | 3, IUser['statusText'], IUser['name'], IUser['roles']]] },
