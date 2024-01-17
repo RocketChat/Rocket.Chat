@@ -116,10 +116,8 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 				return options;
 			}
 
-			await Promise.all([
-				this.UsersRepository.addBusinessHourByAgentIds(agentsId, defaultBusinessHour._id),
-				this.UsersRepository.makeAgentsWithinBusinessHourAvailable(agentsId),
-			]);
+			await this.UsersRepository.addBusinessHourByAgentIds(agentsId, defaultBusinessHour._id);
+			await this.UsersRepository.makeAgentsWithinBusinessHourAvailable(agentsId);
 
 			return options;
 		}
@@ -139,10 +137,8 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 			return options;
 		}
 
-		await Promise.all([
-			this.UsersRepository.addBusinessHourByAgentIds(agentsId, businessHour._id),
-			this.UsersRepository.makeAgentsWithinBusinessHourAvailable(agentsId),
-		]);
+		await this.UsersRepository.addBusinessHourByAgentIds(agentsId, businessHour._id);
+		await this.UsersRepository.makeAgentsWithinBusinessHourAvailable(agentsId);
 
 		return options;
 	}
@@ -158,7 +154,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		return this.handleRemoveAgentsFromDepartments(department, agentsId, options);
 	}
 
-	async onRemoveDepartment(options: { department: ILivechatDepartment; agentsIds: string[] }): Promise<any> {
+	async onRemoveDepartment(options: { department: AtLeast<ILivechatDepartment, '_id' | 'businessHourId'>; agentsIds: string[] }) {
 		const { department, agentsIds } = options;
 		if (!department || !agentsIds?.length) {
 			return options;
@@ -212,15 +208,11 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 			return;
 		}
 		const businessHourToOpen = await filterBusinessHoursThatMustBeOpened([businessHour, defaultBH]);
-		console.log('businessHourToOpen', businessHourToOpen);
 		for await (const bh of businessHourToOpen) {
 			await openBusinessHour(bh, false);
-			console.log('bh', bh);
 		}
 		await Users.updateLivechatStatusBasedOnBusinessHours();
 		await businessHourManager.restartCronJobsIfNecessary();
-
-		console.log('opened');
 	}
 
 	async onDepartmentArchived(department: Pick<ILivechatDepartment, '_id' | 'businessHourId'>): Promise<void> {

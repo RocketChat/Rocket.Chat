@@ -19,6 +19,7 @@ import type {
 	TransferData,
 	AtLeast,
 	UserStatus,
+	ILivechatDepartment,
 } from '@rocket.chat/core-typings';
 import type { FilterOperators } from 'mongodb';
 
@@ -149,8 +150,11 @@ type ChainedCallbackSignatures = {
 		oldDepartmentId: ILivechatDepartmentRecord['_id'];
 	};
 	'livechat.afterInquiryQueued': (inquiry: ILivechatInquiryRecord) => ILivechatInquiryRecord;
-	'livechat.afterRemoveDepartment': (params: { department: ILivechatDepartmentRecord; agentsId: ILivechatAgent['_id'][] }) => {
-		departmentId: ILivechatDepartmentRecord['_id'];
+	'livechat.afterRemoveDepartment': (params: {
+		department: AtLeast<ILivechatDepartment, '_id' | 'businessHourId'>;
+		agentsId: ILivechatAgent['_id'][];
+	}) => {
+		department: AtLeast<ILivechatDepartment, '_id' | 'businessHourId'>;
 		agentsId: ILivechatAgent['_id'][];
 	};
 	'livechat.applySimultaneousChatRestrictions': (_: undefined, params: { departmentId?: ILivechatDepartmentRecord['_id'] }) => undefined;
