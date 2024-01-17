@@ -1,6 +1,5 @@
 /* eslint-disable complexity */
 import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
-import { Button, Tag, Box } from '@rocket.chat/fuselage';
 import { useContentBoxSize, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	MessageComposerAction,
@@ -10,11 +9,22 @@ import {
 	MessageComposerToolbar,
 	MessageComposerActionsDivider,
 	MessageComposerToolbarSubmit,
+	MessageComposerHint,
+	MessageComposerButton,
 } from '@rocket.chat/ui-composer';
 import { useTranslation, useUserPreference, useLayout } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type { ReactElement, MouseEventHandler, FormEvent, KeyboardEventHandler, KeyboardEvent, ClipboardEventHandler } from 'react';
+import type {
+	ReactElement,
+	MouseEventHandler,
+	FormEvent,
+	KeyboardEventHandler,
+	KeyboardEvent,
+	ClipboardEventHandler,
+	MouseEvent,
+} from 'react';
 import React, { memo, useRef, useReducer, useCallback } from 'react';
+import { Trans } from 'react-i18next';
 import { useSubscription } from 'use-subscription';
 
 import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
@@ -169,6 +179,19 @@ const MessageBox = ({
 		});
 	});
 
+	const closeEditing = (event: KeyboardEvent | MouseEvent<HTMLElement>) => {
+		if (chat.currentEditing) {
+			event.preventDefault();
+			event.stopPropagation();
+
+			chat.currentEditing.reset().then((reset) => {
+				if (!reset) {
+					chat.currentEditing?.cancel();
+				}
+			});
+		}
+	};
+
 	const handler: KeyboardEventHandler<HTMLTextAreaElement> = useMutableCallback((event) => {
 		const { which: keyCode } = event;
 
@@ -199,19 +222,7 @@ const MessageBox = ({
 
 		switch (event.key) {
 			case 'Escape': {
-				if (chat.currentEditing) {
-					event.preventDefault();
-					event.stopPropagation();
-
-					chat.currentEditing.reset().then((reset) => {
-						if (!reset) {
-							chat.currentEditing?.cancel();
-						}
-					});
-
-					return;
-				}
-
+				closeEditing(event);
 				if (!input.value.trim()) onEscape?.();
 				return;
 			}
@@ -349,7 +360,6 @@ const MessageBox = ({
 	return (
 		<>
 			{chat.composer?.quotedMessages && <MessageBoxReplies />}
-
 			{shouldPopupPreview && popup && (
 				<ComposerBoxPopup select={select} items={items} focused={focused} title={popup.title} renderItem={popup.renderItem} />
 			)}
@@ -371,13 +381,21 @@ const MessageBox = ({
 					suspended={suspended}
 				/>
 			)}
-
-			{readOnly && (
-				<Box mbe={4} display='flex'>
-					<Tag title={t('Only_people_with_permission_can_send_messages_here')}>{t('This_room_is_read_only')}</Tag>
-				</Box>
+			{isEditing && (
+				<MessageComposerHint
+					icon='pencil'
+					helperText={
+						!isMobile ? (
+							<Trans i18nKey='Editing_message_hint'>
+								<strong>esc</strong> to cancel · <strong>enter</strong> to save
+							</Trans>
+						) : undefined
+					}
+				>
+					{t('Editing_message')}
+				</MessageComposerHint>
 			)}
-
+			{readOnly && !isEditing && <MessageComposerHint>{t('This_room_is_read_only')}</MessageComposerHint>}
 			{isRecordingVideo && <VideoMessageRecorder reference={messageComposerRef} rid={room._id} tmid={tmid} />}
 			<MessageComposer ref={messageComposerRef} variant={isEditing ? 'editing' : undefined}>
 				{isRecordingAudio && <AudioMessageRecorder rid={room._id} isMicrophoneDenied={isMicrophoneDenied} />}
@@ -423,19 +441,22 @@ const MessageBox = ({
 					</MessageComposerToolbarActions>
 					<MessageComposerToolbarSubmit>
 						{!canSend && (
-							<Button small primary onClick={onJoin} loading={joinMutation.isLoading}>
+							<MessageComposerButton primary onClick={onJoin} loading={joinMutation.isLoading}>
 								{t('Join')}
-							</Button>
+							</MessageComposerButton>
 						)}
 						{canSend && (
-							<MessageComposerAction
-								aria-label={t('Send')}
-								icon='send'
-								disabled={!canSend || (!typing && !isEditing)}
-								onClick={handleSendMessage}
-								secondary={typing || isEditing}
-								info={typing || isEditing}
-							/>
+							<>
+								{isEditing && <MessageComposerButton onClick={closeEditing}>{t('Cancel')}</MessageComposerButton>}
+								<MessageComposerAction
+									aria-label={t('Send')}
+									icon='send'
+									disabled={!canSend || (!typing && !isEditing)}
+									onClick={handleSendMessage}
+									secondary={typing || isEditing}
+									info={typing || isEditing}
+								/>
+							</>
 						)}
 					</MessageComposerToolbarSubmit>
 				</MessageComposerToolbar>
