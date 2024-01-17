@@ -71,7 +71,7 @@ test.describe('OC - Livechat API', () => {
 			page = await browser.newPage();
 			await expect((await api.post('/settings/Enable_CSP', { value: false })).status()).toBe(200);
 
-			poLiveChat = new OmnichannelLiveChatEmbedded(page, api);
+			poLiveChat = new OmnichannelLiveChatEmbedded(page);
 
 			const { page: pageCtx } = await createAuxContext(browser, Users.user1);
 			poAuxContext = { page: pageCtx, poHomeOmnichannel: new HomeOmnichannel(pageCtx) };
@@ -238,10 +238,10 @@ test.describe('OC - Livechat API', () => {
 			await expect((await api.post('/settings/Livechat_offline_email', { value: 'test@testing.com' })).status()).toBe(200);
 		});
 
-		test.beforeEach(async ({ browser, api }, testInfo) => {
+		test.beforeEach(async ({ browser }, testInfo) => {
 			page = await browser.newPage();
 
-			poLiveChat = new OmnichannelLiveChatEmbedded(page, api);
+			poLiveChat = new OmnichannelLiveChatEmbedded(page);
 
 			const { page: pageCtx } = await createAuxContext(browser, Users.user1);
 			poAuxContext = { page: pageCtx, poHomeOmnichannel: new HomeOmnichannel(pageCtx) };
@@ -488,10 +488,10 @@ test.describe('OC - Livechat API', () => {
 			await expect((await api.post('/settings/Livechat_offline_email', { value: 'test@testing.com' })).status()).toBe(200);
 		});
 
-		test.beforeEach(async ({ browser, api }, testInfo) => {
+		test.beforeEach(async ({ browser }, testInfo) => {
 			page = await browser.newPage();
 
-			poLiveChat = new OmnichannelLiveChatEmbedded(page, api);
+			poLiveChat = new OmnichannelLiveChatEmbedded(page);
 
 			const { page: pageCtx } = await createAuxContext(browser, Users.user1);
 			poAuxContext = { page: pageCtx, poHomeOmnichannel: new HomeOmnichannel(pageCtx) };

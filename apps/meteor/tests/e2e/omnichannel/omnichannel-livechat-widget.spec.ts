@@ -10,7 +10,7 @@ test.describe('Omnichannel - Livechat Widget Embedded', () => {
 
 		test.beforeAll(async ({ browser, api }) => {
 			page = await browser.newPage();
-			poLiveChat = new OmnichannelLiveChatEmbedded(page, api);
+			poLiveChat = new OmnichannelLiveChatEmbedded(page);
             await expect((await api.post('/settings/Enable_CSP', { value: false })).status()).toBe(200);
 
 			await page.goto('/packages/rocketchat_livechat/assets/demo.html');
