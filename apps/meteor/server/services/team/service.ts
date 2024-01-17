@@ -8,7 +8,6 @@ import type {
 	ITeamMemberParams,
 	ITeamService,
 	ITeamUpdateData,
-	ISetDefaultRoomForTeamUpdateInfo,
 } from '@rocket.chat/core-services';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import type {
@@ -444,16 +443,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		await Rooms.unsetTeamId(teamId);
 	}
 
-	async updateRoom(uid: string, rid: string, isDefault: true, canUpdateAnyRoom?: boolean): Promise<ISetDefaultRoomForTeamUpdateInfo>;
-
-	async updateRoom(uid: string, rid: string, isDefault: false, canUpdateAnyRoom?: boolean): Promise<IRoom>;
-
-	async updateRoom(
-		uid: string,
-		rid: string,
-		isDefault: boolean,
-		canUpdateAnyRoom = false,
-	): Promise<IRoom | ISetDefaultRoomForTeamUpdateInfo> {
+	async updateRoom(uid: string, rid: string, isDefault: boolean, canUpdateAnyRoom = false): Promise<IRoom> {
 		if (!rid) {
 			throw new Error('missing-roomId');
 		}
@@ -489,10 +479,6 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			for await (const m of teamMembers.records) {
 				await addUserToRoom(room._id, m.user, user);
 			}
-			return {
-				room,
-				numberOfMembers: teamMembers.total,
-			};
 		}
 
 		return {

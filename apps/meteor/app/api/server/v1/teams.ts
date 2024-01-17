@@ -1,6 +1,5 @@
 import { Team } from '@rocket.chat/core-services';
-import type { ISetDefaultRoomForTeamUpdateInfo } from '@rocket.chat/core-services';
-import type { IRoom, ITeam, UserStatus } from '@rocket.chat/core-typings';
+import type { ITeam, UserStatus } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import { Users, Rooms } from '@rocket.chat/models';
 import {
@@ -242,13 +241,8 @@ API.v1.addRoute(
 			}
 			const canUpdateAny = !!(await hasPermissionAsync(this.userId, 'view-all-team-channels', team.roomId));
 
-			const updateResult = await Team.updateRoom(this.userId, roomId, isDefault, canUpdateAny);
-			if (isDefault) {
-				const { room, numberOfMembers } = updateResult as ISetDefaultRoomForTeamUpdateInfo;
-				return API.v1.success({ room, numberOfMembers });
-			}
+			const room = await Team.updateRoom(this.userId, roomId, isDefault, canUpdateAny);
 
-			const room = updateResult as IRoom;
 			return API.v1.success({ room });
 		},
 	},
