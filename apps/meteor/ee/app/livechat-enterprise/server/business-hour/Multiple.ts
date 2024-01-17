@@ -315,7 +315,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		const agentIdsWithoutDepartment: string[] = [];
 		const agentIdsToRemoveCurrentBusinessHour: string[] = [];
 
-		const [agentsWithDepartment, [agentsOfDepartment]] = await Promise.all([
+		const [agentsWithDepartment, [agentsOfDepartment] = []] = await Promise.all([
 			LivechatDepartmentAgents.findByAgentIds(agentsIds, { projection: { agentId: 1 } }).toArray(),
 			LivechatDepartment.findAgentsByBusinessHourId(department.businessHourId).toArray(),
 		]);
