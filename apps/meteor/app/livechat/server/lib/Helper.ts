@@ -648,13 +648,24 @@ export const updateDepartmentAgents = async (
 	departmentEnabled: boolean,
 ) => {
 	check(departmentId, String);
-	check(
-		agents,
-		Match.ObjectIncluding({
-			upsert: Match.Maybe(Array),
-			remove: Match.Maybe(Array),
-		}),
-	);
+	check(agents, {
+		upsert: Match.Maybe([
+			Match.ObjectIncluding({
+				agentId: String,
+				username: String,
+				count: Match.Maybe(Match.Integer),
+				order: Match.Maybe(Match.Integer),
+			}),
+		]),
+		remove: Match.Maybe([
+			Match.ObjectIncluding({
+				agentId: String,
+				username: Match.Maybe(String),
+				count: Match.Maybe(Match.Integer),
+				order: Match.Maybe(Match.Integer),
+			}),
+		]),
+	});
 
 	const { upsert = [], remove = [] } = agents;
 	const agentsRemoved = [];
