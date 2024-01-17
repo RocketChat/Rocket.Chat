@@ -5,9 +5,9 @@
 	"devDependencies": {
 		"@babel/core": "~7.22.20",
 		"@rocket.chat/css-in-js": "~0.31.25",
-		"@rocket.chat/fuselage": "0.43.0",
-		"@rocket.chat/fuselage-hooks": "0.33.0",
-		"@rocket.chat/icons": "0.33.0",
+		"@rocket.chat/fuselage": "^0.43.0",
+		"@rocket.chat/fuselage-hooks": "^0.33.0",
+		"@rocket.chat/icons": "^0.33.0",
 		"@rocket.chat/mock-providers": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:~",
 		"@storybook/addon-actions": "~6.5.16",
