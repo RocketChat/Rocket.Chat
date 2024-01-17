@@ -1,0 +1,5 @@
+{
+	"extends": "../../../tsconfig.json",
+	"include": ["./**/*", "../../../definition/externals/meteor/rocketchat-streamer.d.ts", "../../../../../ee/apps/account-service/src/lib"],
+	"exclude": ["./dist", "./ecosystem.config.js", "../../../definition/methods"]
+}

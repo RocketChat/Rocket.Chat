@@ -1,0 +1,114 @@
+.rc-message-box {
+	position: relative;
+
+	width: 100%;
+	padding: 0 24px;
+
+	font-size: var(--message-box-text-size);
+
+	&__toolbar-formatting-item {
+		display: flex;
+
+		min-width: 16px;
+		margin: 0 4px;
+
+		transition: color 0.1s;
+
+		color: var(--message-box-markdown-color);
+		align-items: center;
+		justify-content: center;
+
+		&:hover,
+		&:focus,
+		&.active {
+			color: var(--message-box-markdown-hover-color);
+		}
+	}
+
+	&__toolbar-formatting-link {
+		color: currentColor;
+
+		font-size: 0.75rem;
+	}
+
+	&__audio-message {
+		display: flex;
+
+		&-mic {
+			display: flex;
+		}
+
+		&-done,
+		&-cancel,
+		&-timer {
+			display: none;
+		}
+
+		&-done {
+			color: var(--rc-color-success);
+		}
+
+		&-cancel {
+			color: var(--rc-color-error);
+		}
+
+		&-timer {
+			margin: 0 -0.25rem;
+			align-items: center;
+			justify-content: center;
+
+			&-dot,
+			&-text {
+				margin: 0 0.25rem;
+			}
+
+			&-text {
+				min-width: 3em;
+			}
+
+			&-dot {
+				flex: 0 0 auto;
+
+				width: 0.5rem;
+				height: 0.5rem;
+
+				border-radius: 50%;
+				background-color: red;
+			}
+		}
+
+		&--recording {
+			.rc-message-box__audio-message-mic,
+			.rc-message-box__audio-message-loading {
+				display: none;
+			}
+
+			.rc-message-box__audio-message-done,
+			.rc-message-box__audio-message-cancel,
+			.rc-message-box__audio-message-timer {
+				display: flex;
+			}
+		}
+
+		&--loading {
+			.rc-message-box__audio-message-mic,
+			.rc-message-box__audio-message-done,
+			.rc-message-box__audio-message-cancel,
+			.rc-message-box__audio-message-timer {
+				display: none;
+			}
+
+			.rc-message-box__audio-message-loading {
+				display: flex;
+			}
+		}
+
+		&--busy {
+			.rc-message-box__audio-message-mic {
+				cursor: not-allowed;
+
+				opacity: 0.5;
+			}
+		}
+	}
+}

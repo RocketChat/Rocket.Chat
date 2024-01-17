@@ -1,0 +1,14 @@
+{
+	"extends": "../../tsconfig.base.client.json",
+	"compilerOptions": {
+		"outDir": "./dist",
+		"allowJs": true,
+		"checkJs": false,
+		"jsxImportSource": "preact",
+	},
+	"include": ["./src", "./webpack.config.ts", "./svg-component-loader.ts"],
+	"exclude": [
+		"./node_modules",
+		"./dist"
+	]
+}

@@ -1,0 +1,67 @@
+.messages-container-wrapper {
+	position: relative;
+}
+
+.message-actions {
+	position: absolute;
+	z-index: 2;
+	top: -28px;
+	right: 0.4rem;
+
+	display: none;
+
+	box-sizing: border-box;
+
+	padding: 2px;
+
+	user-select: none;
+
+	color: var(--color-darkest);
+
+	border: 1px solid #f2f3f7;
+	border-radius: 4px;
+
+	background: var(rcx-surface, #ffffff);
+
+	font-size: 1.25rem;
+
+	&__buttons {
+		display: flex;
+	}
+
+	&__button,
+	&__menu {
+		padding: 2px;
+
+		cursor: pointer;
+
+		&:hover {
+			border-radius: 2px;
+			background: #eeeff1;
+		}
+
+		&-icon {
+			fill: currentColor;
+		}
+	}
+}
+
+.rc-ui-kit {
+	display: inline-block;
+
+	width: 100%;
+
+	max-width: 400px;
+}
+
+.rtl .message-actions {
+	right: auto;
+	left: 2px;
+}
+
+.message-popup .rcx-message-attachment {
+	overflow-y: auto !important;
+
+	max-width: 100% !important;
+	max-height: 200px !important;
+}

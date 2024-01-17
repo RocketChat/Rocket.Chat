@@ -1,0 +1,15 @@
+@import '../../styles/colors';
+
+.switch-department {
+	&__message {
+		margin: 0.5rem 0 1.5rem;
+
+		letter-spacing: 0;
+
+		color: $color-text-dark;
+
+		font-size: 1rem;
+		font-weight: 500;
+		line-height: 1.5rem;
+	}
+}

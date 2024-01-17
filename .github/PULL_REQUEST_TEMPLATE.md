@@ -1,12 +1,15 @@
 <!-- This is a pull request template, you do not need to uncomment or remove the comments, they won't show up in the PR text. -->
 
 <!-- Your Pull Request name should start with one of the following tags
-  [NEW] For new features
-  [IMPROVE] For a improvement (performance or little improvements) in existent features
-  [FIX] For bug fixes that affects the end user
-  [BREAK] For pull requests including breaking changes
-  Chore: For small tasks
-  Doc: For documentation
+  feat: Adding a new feature
+  refactor: A code change that doesn't change behavior (it doesn't add anything and doesn't fix anything)
+  fix: For bug fixes that affect the end-user
+  chore: For small tasks
+  docs: For documentation
+  ci: For updating CI configuration
+  test: For adding tests
+  i18n: For updating any translations
+  regression: Issues created/reported/fixed during the development phase. kind of problem that never existed in production and that we don't need to list in a changelog for the end user
 -->
 
 <!-- Checklist!!! If you're unsure about any of them, don't hesitate to ask. We're here to help! This is simply a reminder of what we are going to look for before merging your code. 
@@ -19,14 +22,12 @@
 -->
 
 ## Proposed changes (including videos or screenshots)
-<!-- CHANGELOG -->
 <!--
   Describe the big picture of your changes here to communicate to the maintainers why we should accept this pull request.
   If it fixes a bug or resolves a feature request, be sure to link to that issue below.
-  This description will appear in the release notes if we accept the contribution.
+  This description won't be displayed to our end users in the release notes, so feel free to add as much technical context as needed.
+  If the changes introduced in this pull request must be presented in the release notes, make sure to add a changeset file. Check our guidelines for adding a changeset to your pull request: https://developer.rocket.chat/contribute-to-rocket.chat/modes-of-contribution/participate-in-rocket.chat-development/development-workflow#4.-adding-changeset-to-your-pull-request 
 -->
-
-<!-- END CHANGELOG -->
 
 ## Issue(s)
 <!-- Link the issues being closed by or related to this PR. For example, you can use #594 if this PR closes issue number 594 -->

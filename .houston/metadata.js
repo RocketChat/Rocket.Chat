@@ -1,13 +1,15 @@
+const { execSync } = require('child_process');
+
 const getMongoVersion = async function({ version, git }) {
 	try {
-		const workflows = await git.show([`${ version }:.github/workflows/build_and_test.yml`]);
+		const workflows = await git.show([`${ version }:.github/workflows/ci.yml`]);
 
-		const mongoMatch = workflows.match(/mongodb\-version: \[([^\]]+)\]/);
+		const mongoMatch = workflows.match(/compatibleMongoVersions\\": \[([^\]]+)\]/);
 		if (!mongoMatch) {
 			return [];
 		}
 
-		return mongoMatch[1].replace(/"/g, '').replace(/ /g, '').split(',');
+		return mongoMatch[1].replace(/["'\\ ]/g, '').split(',');
 	} catch (e) {
 		console.error(e);
 	}
@@ -16,7 +18,7 @@ const getMongoVersion = async function({ version, git }) {
 
 const getNodeNpmVersions = async function({ version, git, request }) {
 	try {
-		const meteorRelease = await git.show([`${ version }:.meteor/release`]);
+		const meteorRelease = await git.show([`${ version }:apps/meteor/.meteor/release`]);
 		if (!/^METEOR@(\d+\.){1,2}\d/.test(meteorRelease)) {
 			return {};
 		}
@@ -26,8 +28,8 @@ const getNodeNpmVersions = async function({ version, git, request }) {
 		const requestResult = await request(`https://raw.githubusercontent.com/meteor/meteor/release/${ meteorVersion }/scripts/build-dev-bundle-common.sh`);
 
 		return {
-			node_version: requestResult.match(/NODE_VERSION=((?:\d+\.){2}\d)/m)[1],
-			npm_version: requestResult.match(/NPM_VERSION=((?:\d+\.){2}\d)/m)[1],
+			node_version: requestResult.match(/NODE_VERSION=((?:\d+\.){2}\d+)/m)[1],
+			npm_version: requestResult.match(/NPM_VERSION=((?:\d+\.){2}\d+)/m)[1],
 		};
 	} catch (e) {
 		console.error(e);
@@ -38,11 +40,14 @@ const getNodeNpmVersions = async function({ version, git, request }) {
 
 const getAppsEngineVersion = async function({ version, git }) {
 	try {
-		const packageJson = await git.show([`${ version }:package-lock.json`]);
-		const { dependencies } = JSON.parse(packageJson);
-		const { version: appsEngineVersion } = dependencies['@rocket.chat/apps-engine'];
+		const result = execSync('yarn why @rocket.chat/apps-engine --json');
 
-		return appsEngineVersion;
+		const resultString = result.toString();
+
+		const match = resultString.match(/"@rocket\.chat\/meteor@workspace:apps\/meteor".*"@rocket\.chat\/apps\-engine@[^#]+#npm:([^"]+)"/);
+		if (match) {
+			return match[1];
+		}
 	} catch (e) {
 		console.error(e);
 	}

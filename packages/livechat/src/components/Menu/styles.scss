@@ -1,0 +1,154 @@
+@use 'sass:math';
+
+@import '../../styles/colors';
+@import '../../styles/variables';
+
+.menu {
+	display: flex;
+	flex-direction: column;
+
+	padding: 16px 0;
+
+	user-select: none;
+	transition:
+		opacity $default-time-animation,
+		visibility $default-time-animation,
+		transform math.div($default-time-animation, 2);
+
+	border-radius: 4px;
+	background: $bg-color-white;
+	box-shadow:
+		0 0 2px 0 rgba($bg-color-dark, 0.08),
+		0 0 12px 0 rgba($bg-color-dark, 0.12);
+	align-items: stretch;
+
+	&:empty {
+		width: 32px;
+	}
+
+	&__group {
+		display: flex;
+		flex-direction: column;
+		align-items: stretch;
+
+		&-title {
+			margin: 2px 16px;
+
+			letter-spacing: 0;
+
+			color: $color-text-dark;
+
+			font-size: 12px;
+			font-weight: 600;
+			line-height: 16px;
+		}
+
+		& + &::before {
+			display: block;
+
+			margin: 14px 16px;
+
+			content: "";
+
+			border: 1px solid $bg-color-grey;
+		}
+	}
+
+	&__item {
+		display: flex;
+
+		padding: 12px 16px;
+
+		cursor: pointer;
+		text-align: initial;
+		white-space: nowrap;
+		letter-spacing: 0;
+
+		border: none;
+		outline: none;
+		background: none;
+
+		font-family: inherit;
+		font-size: 16px;
+		font-weight: 500;
+		line-height: 24px;
+
+		@mixin itemcolor($color) {
+			color: $color;
+
+			&:hover {
+				background-color: mix($color, $bg-color-white, 5%);
+			}
+
+			&:active {
+				background-color: mix($color, $bg-color-white, 10%);
+			}
+		}
+
+		@include itemcolor($color-text-dark);
+
+		&--primary {
+			@include itemcolor($color-blue);
+		}
+
+		&--danger {
+			@include itemcolor($color-red);
+		}
+
+		&--disabled {
+			pointer-events: none;
+
+			opacity: 0.5;
+		}
+
+		&__icon {
+			width: 24px;
+			height: 24px;
+			margin-right: 16px;
+		}
+	}
+
+	&--hidden {
+		visibility: hidden;
+
+		transform: scale(0);
+
+		opacity: 0;
+	}
+
+	&--placement {
+		position: absolute;
+
+		&-left-top {
+			right: 0;
+			bottom: 100%;
+
+			transform-origin: right bottom;
+		}
+
+		&-right-top {
+			bottom: 100%;
+			left: 0;
+
+			transform-origin: left bottom;
+		}
+
+		&-right-bottom {
+			top: 100%;
+			left: 0;
+
+			transform-origin: left top;
+		}
+
+		&-left-bottom {
+			top: 100%;
+			right: 0;
+
+			transform-origin: right top;
+		}
+	}
+}
+
+.popover-menu__overlay {
+	background-color: $overlay-bg-color;
+}

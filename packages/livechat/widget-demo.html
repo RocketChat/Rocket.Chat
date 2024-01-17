@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			width: 100vw;
+			min-height: 100vh;
+			display: flex;
+			flex-direction: column-reverse;
+			background-color: #333;
+			color: #ddd;
+		}
+
+		p {
+			margin: 1vh 1vw;
+			font-family: Georgia, 'Times New Roman', Times, serif;
+			text-align: right;
+		}
+	</style>
+</head>
+
+<body>
+	<p>
+		Lorem ipsum dolor sit amet consectetur adipisicing elit. Eos, inventore earum! Alias dolorum aliquam et quis iure, illo ipsum a voluptas repudiandae necessitatibus vitae accusamus at nobis asperiores sint eius?
+		Lorem ipsum dolor, sit amet consectetur adipisicing elit. Odit voluptate corporis atque quam a dolorum, libero quos quisquam delectus blanditiis. Magnam culpa aut, voluptate dolore odio neque tempora rem commodi.
+		Lorem ipsum, dolor sit amet consectetur adipisicing elit. Fugit officiis quidem ut cumque quaerat assumenda quisquam repellat molestias molestiae consectetur libero, laborum dicta doloribus dolor odio qui. Id, laboriosam impedit.
+		Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolorum labore minima quo omnis explicabo nulla corporis enim, autem pariatur ducimus id quasi nobis eius quidem tenetur beatae. Commodi, assumenda tempore.
+		Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laudantium at, accusantium dolor totam dignissimos tenetur maiores soluta unde provident reprehenderit deleniti sapiente nobis quod. Omnis inventore praesentium odit debitis expedita.
+		Lorem, ipsum dolor sit amet consectetur adipisicing elit. Dolor impedit inventore quod debitis possimus corporis eius tempora quaerat dolorem. Dicta atque dignissimos pariatur totam neque porro ad beatae delectus repudiandae!
+		Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam officia quos, dignissimos ducimus eius beatae corporis ratione omnis quaerat sunt in pariatur cum, tempore accusantium fugit aliquam doloribus voluptatum totam?
+		Lorem ipsum dolor sit amet consectetur adipisicing elit. Exercitationem cumque culpa eveniet inventore pariatur earum maxime numquam animi distinctio quasi, doloribus ipsam nihil explicabo, repellat dolorem repudiandae. Eaque, beatae asperiores?
+		Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quisquam vel exercitationem vero nihil error laborum in aliquid libero, laboriosam ea facere ad magnam? Repellat inventore rem earum voluptatum. Soluta, porro.
+		Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, inventore atque fugit amet est nesciunt illo maxime officia minus quod unde neque, veniam sint perspiciatis velit animi vel id dolores?
+		Lorem ipsum, dolor sit amet consectetur adipisicing elit. Neque eaque impedit veniam quia commodi. Commodi voluptatum placeat dolorum, officia itaque ducimus qui adipisci! Delectus numquam odio praesentium deleniti tempora provident.
+		Lorem ipsum dolor sit amet consectetur adipisicing elit. Dicta veniam, porro, ipsa ratione maxime itaque quas voluptates, saepe esse incidunt ducimus quae exercitationem praesentium eligendi nam assumenda voluptate at eius.
+		Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur, quibusdam recusandae repudiandae itaque ipsa molestias similique dolore cumque? Omnis neque voluptates magni rem molestiae earum! Voluptate amet laudantium quo ut?
+		Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit, nobis velit delectus commodi nisi itaque magnam praesentium ipsam. Suscipit accusamus eaque tenetur cumque soluta ea repellat, culpa magni consectetur. At!
+	</div>
+
+	<script>
+		(function(w, d, s, u) {
+			w.RocketChat = function(c) { w.RocketChat._.push(c) };
+			w.RocketChat._ = [];
+			w.RocketChat.url = u;
+			var h = d.getElementsByTagName(s)[0],
+				j = d.createElement(s);
+			j.async = true;
+			j.src = 'dist/rocketchat-livechat.min.js?_=' + Math.random();
+			h.parentNode.insertBefore(j, h);
+		})(window, document, 'script', 'http://localhost:8080');
+		RocketChat(function() {
+			this.setTheme({
+				color: '#04436A', // widget title background color
+				fontColor: '#FFFFFF', // widget title font color
+				iconColor: '#1d74f5', // widget icon color
+				title: "Welcome to Rocket.Chat", // default widget title when the status of service is online
+				offlineTitle: "Service is offline", // default widget title when the status of service is online
+			});
+		});
+	</script>
+</body>
+
+</html>

@@ -1,0 +1,20 @@
+.thread-empty {
+	padding: calc(2 * var(--default-padding));
+}
+
+.thread-list {
+	overflow-x: hidden;
+	overflow-y: auto;
+
+	word-wrap: break-word;
+	flex-grow: 1;
+	flex-shrink: 1;
+}
+
+.contextual-bar__content.thread,
+.contextual-bar__content.discussions,
+.contextual-bar__content.channel-settings,
+.contextual-bar__content.keyboard-shortcut-list,
+.contextual-bar__content.threads {
+	padding: 0;
+}

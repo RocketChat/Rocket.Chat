@@ -1,0 +1,70 @@
+{
+	"name": "@rocket.chat/ui-client",
+	"version": "3.0.2",
+	"private": true,
+	"devDependencies": {
+		"@babel/core": "~7.22.20",
+		"@rocket.chat/css-in-js": "~0.31.25",
+		"@rocket.chat/fuselage": "^0.42.0",
+		"@rocket.chat/fuselage-hooks": "~0.32.1",
+		"@rocket.chat/icons": "~0.32.0",
+		"@rocket.chat/mock-providers": "workspace:^",
+		"@rocket.chat/ui-contexts": "workspace:~",
+		"@storybook/addon-actions": "~6.5.16",
+		"@storybook/addon-docs": "~6.5.16",
+		"@storybook/addon-essentials": "~6.5.16",
+		"@storybook/addon-interactions": "~6.5.16",
+		"@storybook/addon-links": "~6.5.16",
+		"@storybook/addon-postcss": "~2.0.0",
+		"@storybook/builder-webpack4": "~6.5.16",
+		"@storybook/manager-webpack4": "~6.5.16",
+		"@storybook/react": "~6.5.16",
+		"@storybook/testing-library": "~0.0.13",
+		"@swc/jest": "^0.2.29",
+		"@testing-library/jest-dom": "~5.16.5",
+		"@testing-library/react": "^12.1.5",
+		"@testing-library/react-hooks": "^8.0.1",
+		"@types/babel__core": "~7.20.3",
+		"@types/jest": "~29.5.7",
+		"@types/react": "~17.0.69",
+		"@types/react-dom": "~17.0.22",
+		"eslint": "~8.45.0",
+		"eslint-plugin-anti-trojan-source": "~1.1.1",
+		"eslint-plugin-react": "~7.32.2",
+		"eslint-plugin-react-hooks": "~4.6.0",
+		"eslint-plugin-storybook": "~0.6.15",
+		"eslint-plugin-testing-library": "~5.11.1",
+		"jest": "~29.6.4",
+		"react": "^17.0.2",
+		"react-dom": "^17.0.2",
+		"react-hook-form": "~7.45.4",
+		"ts-jest": "~29.1.1",
+		"typescript": "~5.3.2"
+	},
+	"scripts": {
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"test": "jest",
+		"testunit": "jest",
+		"build": "rm -rf dist && tsc -p tsconfig-build.json",
+		"typecheck": "tsc -p tsconfig.json --noEmit",
+		"storybook": "start-storybook -p 6006",
+		"dev": "tsc -p tsconfig-build.json --watch --preserveWatchOutput"
+	},
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"peerDependencies": {
+		"@rocket.chat/css-in-js": "*",
+		"@rocket.chat/fuselage": "*",
+		"@rocket.chat/fuselage-hooks": "*",
+		"@rocket.chat/icons": "*",
+		"@rocket.chat/ui-contexts": "3.0.2",
+		"react": "~17.0.2"
+	},
+	"volta": {
+		"extends": "../../package.json"
+	}
+}

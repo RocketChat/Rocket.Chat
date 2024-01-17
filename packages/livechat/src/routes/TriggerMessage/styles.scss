@@ -1,0 +1,44 @@
+@import '../../styles/colors';
+
+.trigger-message {
+	&__message {
+		max-height: 192px;
+
+		margin: 0.4rem 0;
+
+		letter-spacing: 0;
+
+		font-size: 0.75rem;
+
+		line-height: 1rem;
+		overflow-wrap: normal;
+	}
+
+	&__footer {
+		text-align: center;
+	}
+
+	&__separator {
+		width: 90%;
+		height: 0.125rem;
+		margin-bottom: 0;
+
+		border: 0;
+		background: #f2f3f5;
+	}
+
+	&__link-reply {
+		margin: 1rem 0;
+		padding: 0;
+
+		cursor: pointer;
+		text-decoration: none;
+
+		color: $color-blue;
+		border: 0;
+		background: none;
+
+		font-size: 0.75rem;
+		font-weight: bold;
+	}
+}

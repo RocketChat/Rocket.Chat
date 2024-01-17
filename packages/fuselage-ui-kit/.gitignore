@@ -1,0 +1,4 @@
+/dist/*
+/storybook-static/
+/bundle-report.html
+/src/version.ts

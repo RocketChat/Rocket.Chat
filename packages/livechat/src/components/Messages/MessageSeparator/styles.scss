@@ -1,0 +1,58 @@
+@import '../../../styles/colors';
+@import '../../../styles/variables';
+
+$separator-text-font-size: 0.625rem;
+$separator-text-letter-spacing: 0.2px;
+$separator-line-width: 2px;
+$separator-date-text-color: $color-text-grey;
+$separator-date-line-color: $bg-color-grey;
+$separator-unread-text-color: $color-red;
+$separator-unread-line-color: $color-red;
+
+.separator {
+	display: flex;
+
+	margin: $default-gap 0;
+	align-items: center;
+	flex-flow: row nowrap;
+
+	&__text {
+		height: 1rem;
+		padding: 0 0.5rem;
+
+		text-align: center;
+		white-space: nowrap;
+		letter-spacing: $separator-text-letter-spacing;
+
+		font-size: $separator-text-font-size;
+		font-weight: bold;
+		line-height: 1rem;
+	}
+
+	&__line {
+		flex: 1 0 0;
+
+		min-width: 1rem;
+
+		border-width: 0;
+		border-top: $separator-line-width solid;
+	}
+
+	@mixin state($text-color, $line-color) {
+		.separator__text {
+			color: $text-color;
+		}
+
+		.separator__line {
+			border-color: $line-color;
+		}
+	}
+
+	&--date {
+		@include state($separator-date-text-color, $separator-date-line-color);
+	}
+
+	&--unread {
+		@include state($separator-unread-text-color, $separator-unread-line-color);
+	}
+}

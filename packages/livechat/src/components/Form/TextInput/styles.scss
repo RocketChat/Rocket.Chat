@@ -1,0 +1,5 @@
+@import '../mixins';
+
+.text-input {
+	@include form__input-box;
+}
