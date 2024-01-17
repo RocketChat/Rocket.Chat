@@ -4248,6 +4248,25 @@ describe('[Users]', function () {
 			await updatePermission('view-d-room', ['admin', 'owner', 'moderator', 'user']);
 		});
 
+		it('should list all users', async () => {
+			await login(user.username, password);
+
+			await request
+				.get(api('users.list/all'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('users');
+
+					const { users } = res.body;
+					const ids = users.map((user) => user._id);
+
+					expect(ids).to.include(user._id);
+				});
+		});
+
 		it('should list pending users', async () => {
 			await request
 				.get(api('users.list/pending'))
@@ -4314,6 +4333,26 @@ describe('[Users]', function () {
 			await request
 				.get(api('users.list/deactivated'))
 				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('users');
+
+					const { users } = res.body;
+					const ids = users.map((user) => user._id);
+
+					expect(ids).to.include(user._id);
+				});
+		});
+
+		it('should filter users by username', async () => {
+			await login(user.username, password);
+
+			await request
+				.get(api('users.list/all'))
+				.set(credentials)
+				.query({ searchTerm: user.username })
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {

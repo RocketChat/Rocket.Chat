@@ -679,9 +679,12 @@ API.v1.addRoute(
 		async post() {
 			const { email } = this.bodyParams;
 
-			await sendWelcomeEmail(email);
-
-			return API.v1.success();
+			try {
+				await sendWelcomeEmail(email);
+				return API.v1.success({ success: true });
+			} catch (e: any) {
+				return API.v1.failure({ error: e.message });
+			}
 		},
 	},
 );
