@@ -16,6 +16,7 @@ import {
 	ToggleSwitch,
 } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { ExternalLink } from '@rocket.chat/ui-client';
 import { useTranslation, useToastMessageDispatch, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
@@ -52,6 +53,7 @@ const AccessibilityPage = () => {
 	const clockModeId = useUniqueId();
 	const hideUsernamesId = useUniqueId();
 	const hideRolesId = useUniqueId();
+	const linkListId = useUniqueId();
 
 	const {
 		formState: { isDirty, dirtyFields, isSubmitting },
@@ -88,7 +90,25 @@ const AccessibilityPage = () => {
 			<PageScrollableContentWithShadow>
 				<Box is='form' id={pageFormId} onSubmit={handleSubmit(handleSaveData)} maxWidth='x600' w='full' alignSelf='center' mb={40} mi={36}>
 					<Box fontScale='p1' mbe={24}>
-						<Box pb={16}>{t('Accessibility_activation')}</Box>
+						<Box pb={16} is='p'>
+							{t('Accessibility_activation')}
+						</Box>
+						<p id={linkListId}>{t('Learn_more_about_accessibility')}</p>
+						<ul aria-labelledby={linkListId}>
+							<li>
+								<ExternalLink to='https://docs.rocket.chat/customer-center/legal-center/accessibility-statement'>
+									{t('Accessibility_statement')}
+								</ExternalLink>
+							</li>
+							<li>
+								<ExternalLink to='https://docs.rocket.chat/resources/glossary'>{t('Glossary_of_simplified_terms')}</ExternalLink>
+							</li>
+							<li>
+								<ExternalLink to='https://docs.rocket.chat/use-rocket.chat/user-guides/user-panel/accessibility-and-appearance'>
+									{t('Accessibility_feature_documentation')}
+								</ExternalLink>
+							</li>
+						</ul>
 					</Box>
 					<Accordion>
 						<Accordion.Item defaultExpanded={true} title={t('Theme')}>
