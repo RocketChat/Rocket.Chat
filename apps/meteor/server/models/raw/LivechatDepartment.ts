@@ -13,6 +13,7 @@ import type {
 	IndexDescription,
 	DeleteResult,
 	UpdateFilter,
+	AggregationCursor,
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -444,6 +445,10 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 	}
 
 	findByParentId(_parentId: string, _options?: FindOptions<ILivechatDepartment> | undefined): FindCursor<ILivechatDepartment> {
+		throw new Error('Method not implemented in CE');
+	}
+
+	findAgentsByBusinessHourId(_businessHourId: string): AggregationCursor<{ agents: string[] }> {
 		throw new Error('Method not implemented in CE');
 	}
 }

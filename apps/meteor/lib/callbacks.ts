@@ -84,7 +84,7 @@ interface EventLikeCallbackSignatures {
 	'afterValidateLogin': (login: { user: IUser }) => void;
 	'afterJoinRoom': (user: IUser, room: IRoom) => void;
 	'livechat.afterDepartmentDisabled': (department: ILivechatDepartmentRecord) => void;
-	'livechat.afterDepartmentArchived': (department: Pick<ILivechatDepartmentRecord, '_id'>) => void;
+	'livechat.afterDepartmentArchived': (department: Pick<ILivechatDepartmentRecord, '_id' | 'businessHourId'>) => void;
 	'beforeSaveUser': ({ user, oldUser }: { user: IUser; oldUser?: IUser }) => void;
 	'afterSaveUser': ({ user, oldUser }: { user: IUser; oldUser?: IUser | null }) => void;
 	'livechat.afterTagRemoved': (tag: ILivechatTagRecord) => void;

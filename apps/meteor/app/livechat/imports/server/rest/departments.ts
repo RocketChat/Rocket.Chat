@@ -119,11 +119,8 @@ API.v1.addRoute(
 
 			let success;
 			if (permissionToSave) {
-				success = await LivechatEnterprise.saveDepartment(_id, department);
-			}
-
-			if (success && agents && permissionToAddAgents) {
-				success = await LivechatTs.saveDepartmentAgents(_id, { upsert: agents });
+				const agentParam = permissionToAddAgents && agents ? { upsert: agents } : {};
+				success = await LivechatEnterprise.saveDepartment(_id, department, agentParam);
 			}
 
 			if (success) {
