@@ -571,7 +571,7 @@ API.v1.addRoute(
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { status } = this.urlParams;
 			const { sort, fields } = await this.parseJsonQuery();
-			const { role, searchTerm } = this.queryParams;
+			const { roles, searchTerm } = this.queryParams;
 
 			const projection = {
 				name: 1,
@@ -627,6 +627,7 @@ API.v1.addRoute(
 			}
 
 			const canSeeAllUserInfo = await hasPermissionAsync(this.userId, 'view-full-other-user-info');
+
 			match = {
 				...match,
 				$or: [
@@ -636,10 +637,16 @@ API.v1.addRoute(
 				],
 			};
 
+			if (roles?.length && !roles.includes('all')) {
+				match = {
+					...match,
+					roles: { $in: roles },
+				};
+			}
+
 			const result = await Users.findPaginated(
 				{
 					...match,
-					roles: role,
 				},
 				{
 					sort: actualSort,

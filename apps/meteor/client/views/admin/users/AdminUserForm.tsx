@@ -1,4 +1,5 @@
-import type { AvatarObject, IUser, Serialized } from '@rocket.chat/core-typings';
+import type { AvatarObject, IRole, IUser, Serialized } from '@rocket.chat/core-typings';
+import type { SelectOption } from '@rocket.chat/fuselage';
 import {
 	Field,
 	TextInput,
@@ -16,7 +17,6 @@ import {
 	FieldHint,
 	Icon,
 } from '@rocket.chat/fuselage';
-import type { SelectOption } from '@rocket.chat/fuselage';
 import { useUniqueId, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { UserCreateParamsPOST } from '@rocket.chat/rest-typings';
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
@@ -28,7 +28,7 @@ import {
 	useToastMessageDispatch,
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
@@ -49,6 +49,8 @@ type AdminUserFormProps = {
 	setCreatedUsersCount?: React.Dispatch<React.SetStateAction<number>>;
 	context: string;
 	refetchUserFormData?: () => void;
+	roleData: { roles: IRole[] } | undefined;
+	roleError: unknown;
 };
 
 export type userFormProps = Omit<UserCreateParamsPOST & { avatar: AvatarObject; passwordConfirmation: string }, 'fields'>;
@@ -82,7 +84,16 @@ const getInitialValue = ({
 	passwordConfirmation: '',
 });
 
-const AdminUserForm = ({ userData, onReload, setCreatedUsersCount, context, refetchUserFormData, ...props }: AdminUserFormProps) => {
+const AdminUserForm = ({
+	userData,
+	onReload,
+	setCreatedUsersCount,
+	context,
+	refetchUserFormData,
+	roleData,
+	roleError,
+	...props
+}: AdminUserFormProps) => {
 	const t = useTranslation();
 	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -112,9 +123,6 @@ const AdminUserForm = ({ userData, onReload, setCreatedUsersCount, context, refe
 	const eventStats = useEndpointAction('POST', '/v1/statistics.telemetry');
 	const updateUserAction = useEndpoint('POST', '/v1/users.update');
 	const createUserAction = useEndpoint('POST', '/v1/users.create');
-
-	const getRoles = useEndpoint('GET', '/v1/roles.list');
-	const { data: roleData, error: roleError } = useQuery(['roles'], async () => getRoles());
 
 	const availableRoles: SelectOption[] = roleData?.roles.map(({ _id, name, description }) => [_id, description || name]) || [];
 

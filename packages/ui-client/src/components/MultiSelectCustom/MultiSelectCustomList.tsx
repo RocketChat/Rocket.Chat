@@ -4,7 +4,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FormEvent } from 'react';
 import { Fragment, useCallback, useState } from 'react';
 
-import type { OptionProp } from './MultiSelectCustom';
+import { isCheckboxOptionProp, type OptionProp } from './MultiSelectCustom';
 import { useFilteredOptions } from './useFilteredOptions';
 
 const MultiSelectCustomList = ({
@@ -40,7 +40,7 @@ const MultiSelectCustomList = ({
 			)}
 			{filteredOptions.map((option) => (
 				<Fragment key={option.id}>
-					{option.isGroupTitle ? (
+					{!isCheckboxOptionProp(option) ? (
 						<Box mi='x12' mb='x4' fontScale='p2b' color='default'>
 							{t(option.text as TranslationKey)}
 						</Box>

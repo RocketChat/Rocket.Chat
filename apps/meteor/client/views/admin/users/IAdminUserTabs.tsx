@@ -1,1 +1,1 @@
-export type IAdminUserTabs = 'all' | 'invited' | 'active' | 'deactivated' | 'pending';
+export type IAdminUserTabs = 'all' | 'active' | 'deactivated' | 'pending';

@@ -8,16 +8,29 @@ import type { usePagination } from '../../../../components/GenericTable/hooks/us
 import type { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import type { IAdminUserTabs } from '../IAdminUserTabs';
 
-const useFilteredUsers = (
-	searchTerm: string,
-	prevSearchTerm: MutableRefObject<string>,
-	setCurrent: ReturnType<typeof usePagination>['setCurrent'],
-	sortBy: ReturnType<typeof useSort>['sortBy'],
-	sortDirection: ReturnType<typeof useSort>['sortDirection'],
-	itemsPerPage: ReturnType<typeof usePagination>['itemsPerPage'],
-	current: ReturnType<typeof usePagination>['current'],
-	tab: IAdminUserTabs,
-) => {
+type useFilteredUsersOptions = {
+	searchTerm: string;
+	prevSearchTerm: MutableRefObject<string>;
+	setCurrent: ReturnType<typeof usePagination>['setCurrent'];
+	sortBy: ReturnType<typeof useSort>['sortBy'];
+	sortDirection: ReturnType<typeof useSort>['sortDirection'];
+	itemsPerPage: ReturnType<typeof usePagination>['itemsPerPage'];
+	current: ReturnType<typeof usePagination>['current'];
+	tab: IAdminUserTabs;
+	selectedRoles: string[];
+};
+
+const useFilteredUsers = ({
+	searchTerm,
+	prevSearchTerm,
+	setCurrent,
+	sortBy,
+	sortDirection,
+	itemsPerPage,
+	current,
+	tab,
+	selectedRoles,
+}: useFilteredUsersOptions) => {
 	const payload = useDebouncedValue(
 		useMemo(() => {
 			if (searchTerm !== prevSearchTerm.current) {
@@ -26,11 +39,12 @@ const useFilteredUsers = (
 
 			return {
 				searchTerm,
+				roles: selectedRoles,
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
 				count: itemsPerPage,
 				offset: searchTerm === prevSearchTerm.current ? current : 0,
 			};
-		}, [current, itemsPerPage, prevSearchTerm, searchTerm, setCurrent, sortBy, sortDirection]),
+		}, [current, itemsPerPage, prevSearchTerm, searchTerm, selectedRoles, setCurrent, sortBy, sortDirection]),
 		500,
 	);
 
@@ -38,7 +52,7 @@ const useFilteredUsers = (
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const usersListQueryResult = useQuery(['tabUsers', payload, tab], async () => getUsers(payload), {
+	const usersListQueryResult = useQuery(['users.list', payload, tab], async () => getUsers(payload), {
 		onError: (error) => {
 			dispatchToastMessage({ type: 'error', message: error });
 		},

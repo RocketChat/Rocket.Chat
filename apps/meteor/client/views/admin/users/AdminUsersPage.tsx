@@ -1,5 +1,6 @@
 import { Button, ButtonGroup, ContextualbarIcon, Icon, Tabs, TabsItem } from '@rocket.chat/fuselage';
-import { usePermission, useRouteParameter, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
+import { usePermission, useRouteParameter, useTranslation, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useRef, useState } from 'react';
 
@@ -14,6 +15,7 @@ import AdminUserForm from './AdminUserForm';
 import AdminUserFormWithData from './AdminUserFormWithData';
 import AdminUserInfoWithData from './AdminUserInfoWithData';
 import AdminUserUpgrade from './AdminUserUpgrade';
+import type { IAdminUserTabs } from './IAdminUserTabs';
 import UsersTable from './UsersTable';
 
 const UsersPage = (): ReactElement => {
@@ -30,8 +32,7 @@ const UsersPage = (): ReactElement => {
 	const canBulkCreateUser = usePermission('bulk-register-user');
 	const isCreateUserDisabled = useShouldPreventAction('activeUsers');
 
-	const [tab, setTab] = useState<'all' | 'invited' | 'active' | 'deactivated' | 'pending'>('all');
-	const [pendingActionsCount, setPendingActionsCount] = useState<number>(0);
+	const [tab, setTab] = useState<IAdminUserTabs>('all');
 	const [createdUsersCount, setCreatedUsersCount] = useState(0);
 
 	const handleReload = (): void => {
@@ -40,6 +41,9 @@ const UsersPage = (): ReactElement => {
 	};
 
 	const isRoutePrevented = context && ['new', 'invite'].includes(context) && isCreateUserDisabled;
+
+	const getRoles = useEndpoint('GET', '/v1/roles.list');
+	const { data, error } = useQuery(['roles'], async () => getRoles());
 
 	return (
 		<Page flexDirection='row'>
@@ -68,7 +72,7 @@ const UsersPage = (): ReactElement => {
 							{t('All')}
 						</TabsItem>
 						<TabsItem selected={tab === 'pending'} onClick={() => setTab('pending')}>
-							{pendingActionsCount === 0 ? t('Pending') : `${t('Pending')} (${pendingActionsCount})`}
+							{t('Pending')}
 						</TabsItem>
 						<TabsItem selected={tab === 'active'} onClick={() => setTab('active')}>
 							{t('Active')}
@@ -77,7 +81,7 @@ const UsersPage = (): ReactElement => {
 							{t('Deactivated')}
 						</TabsItem>
 					</Tabs>
-					<UsersTable reload={reload} tab={tab} onReload={handleReload} setPendingActionsCount={setPendingActionsCount} />
+					<UsersTable reload={reload} tab={tab} roleData={data} onReload={handleReload} />
 				</PageContent>
 			</Page>
 			{context && (
@@ -97,9 +101,17 @@ const UsersPage = (): ReactElement => {
 						<ContextualbarClose onClick={() => router.navigate('/admin/users')} />
 					</ContextualbarHeader>
 					{context === 'info' && id && <AdminUserInfoWithData uid={id} onReload={handleReload} tab={tab} />}
-					{context === 'edit' && id && <AdminUserFormWithData uid={id} onReload={handleReload} context={context} />}
+					{context === 'edit' && id && (
+						<AdminUserFormWithData uid={id} onReload={handleReload} context={context} roleData={data} roleError={error} />
+					)}
 					{!isRoutePrevented && context === 'new' && (
-						<AdminUserForm onReload={handleReload} setCreatedUsersCount={setCreatedUsersCount} context={context} />
+						<AdminUserForm
+							onReload={handleReload}
+							setCreatedUsersCount={setCreatedUsersCount}
+							context={context}
+							roleData={data}
+							roleError={error}
+						/>
 					)}
 					{!isRoutePrevented && context === 'created' && id && <AdminUserCreated uid={id} createdUsersCount={createdUsersCount} />}
 					{!isRoutePrevented && context === 'invite' && <AdminInviteUsers />}

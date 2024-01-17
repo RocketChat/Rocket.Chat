@@ -1,10 +1,12 @@
+import type { IRole } from '@rocket.chat/core-typings';
 import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+// import { MultiSelectCustom } from '@rocket.chat/ui-client';
+import type { OptionProp } from '@rocket.chat/ui-client';
 import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, MutableRefObject } from 'react';
 import React, { useRef, useMemo, useState, useEffect } from 'react';
 
-import FilterByText from '../../../../components/FilterByText';
 import GenericNoResults from '../../../../components/GenericNoResults';
 import {
 	GenericTable,
@@ -17,31 +19,35 @@ import { usePagination } from '../../../../components/GenericTable/hooks/usePagi
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import type { IAdminUserTabs } from '../IAdminUserTabs';
 import useFilteredUsers from '../hooks/useFilteredUsers';
+import UsersTableFilters from './UsersTableFilters';
 import UsersTableRow from './UsersTableRow';
-
-// TODO: remove bots from pending users + add "resend email" function
 
 type UsersTableProps = {
 	reload: MutableRefObject<() => void>;
 	tab: IAdminUserTabs;
 	onReload: () => void;
-	setPendingActionsCount: React.Dispatch<React.SetStateAction<number>>;
+	roleData: { roles: IRole[] } | undefined;
 };
 
-const UsersTable = ({ reload, tab, onReload }: UsersTableProps): ReactElement | null => {
+export type UsersFilters = {
+	text: string;
+	roles: OptionProp[];
+};
+
+const UsersTable = ({ reload, tab, roleData, onReload }: UsersTableProps): ReactElement | null => {
 	const t = useTranslation();
 	const router = useRouter();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
-	const [text, setText] = useState('');
+	const [userFilters, setUserFilters] = useState<UsersFilters>({ text: '', roles: [] });
 
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'username' | 'emails.address' | 'status'>('name');
 
-	const searchTerm = useDebouncedValue(text, 500);
+	const searchTerm = useDebouncedValue(userFilters.text, 500);
 	const prevSearchTerm = useRef('');
 
-	const { data, isSuccess, refetch, isLoading, isError } = useFilteredUsers(
+	const { data, isSuccess, refetch, isLoading, isError } = useFilteredUsers({
 		searchTerm,
 		prevSearchTerm,
 		setCurrent,
@@ -50,12 +56,16 @@ const UsersTable = ({ reload, tab, onReload }: UsersTableProps): ReactElement | 
 		itemsPerPage,
 		current,
 		tab,
-	);
+		selectedRoles: useMemo(() => userFilters.roles.map((role) => role.id), [userFilters.roles]),
+	});
 
 	useEffect(() => {
 		reload.current = refetch;
+	}, [refetch, reload]);
+
+	useEffect(() => {
 		prevSearchTerm.current = searchTerm;
-	}, [reload, searchTerm, refetch]);
+	}, [searchTerm]);
 
 	const isKeyboardEvent = (
 		event: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement>,
@@ -139,7 +149,7 @@ const UsersTable = ({ reload, tab, onReload }: UsersTableProps): ReactElement | 
 
 	return (
 		<>
-			<FilterByText autoFocus placeholder={t('Search_Users')} onChange={({ text }): void => setText(text)} />
+			<UsersTableFilters roleData={roleData} setUsersFilters={setUserFilters} />
 
 			{isLoading && (
 				<GenericTable>

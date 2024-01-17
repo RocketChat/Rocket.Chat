@@ -1,4 +1,4 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IRole, IUser } from '@rocket.chat/core-typings';
 import { isUserFederated } from '@rocket.chat/core-typings';
 import { Box, Callout } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
@@ -13,9 +13,11 @@ type AdminUserFormWithDataProps = {
 	uid: IUser['_id'];
 	onReload: () => void;
 	context: string;
+	roleData: { roles: IRole[] } | undefined;
+	roleError: unknown;
 };
 
-const AdminUserFormWithData = ({ uid, onReload, context }: AdminUserFormWithDataProps): ReactElement => {
+const AdminUserFormWithData = ({ uid, onReload, context, roleData, roleError }: AdminUserFormWithDataProps): ReactElement => {
 	const t = useTranslation();
 	const { data, isLoading, isError, refetch } = useUserInfoQuery({ userId: uid });
 
@@ -51,6 +53,8 @@ const AdminUserFormWithData = ({ uid, onReload, context }: AdminUserFormWithData
 			refetchUserFormData={() => {
 				refetch();
 			}}
+			roleData={roleData}
+			roleError={roleError}
 		/>
 	);
 };
