@@ -652,7 +652,7 @@ export const updateDepartmentAgents = async (
 		upsert: Match.Maybe([
 			Match.ObjectIncluding({
 				agentId: String,
-				username: String,
+				username: Match.Maybe(String),
 				count: Match.Maybe(Match.Integer),
 				order: Match.Maybe(Match.Integer),
 			}),
