@@ -15,7 +15,7 @@ const indicatorStyle = css`
 	top: 8px;
 	left: 50%;
 	translate: -50%;
-	z-index: 10;
+	z-index: 1;
 `;
 
 const UnreadMessagesIndicator = ({ count, onJumpButtonClick, onMarkAsReadButtonClick }: UnreadMessagesIndicatorProps): ReactElement => {
