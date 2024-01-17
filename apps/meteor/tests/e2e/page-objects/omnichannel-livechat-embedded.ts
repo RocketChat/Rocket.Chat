@@ -7,8 +7,8 @@ export class OmnichannelLiveChatEmbedded {
 		this.page = page;
 	}
 
-	btnOpenLiveChat(label: string): Locator {
-		return this.page.frameLocator('#rocketchat-iframe').locator(`role=button[name="${label}"]`);
+	btnOpenLiveChat(): Locator {
+		return this.page.frameLocator('#rocketchat-iframe').locator(`[data-qa-id="chat-button"]`);
 	}
 
 	btnOpenOfflineLiveChat(): Locator {
@@ -49,12 +49,8 @@ export class OmnichannelLiveChatEmbedded {
 		await this.btnCloseChatConfirm.click();
 	}
 
-	async openLiveChat(offline: boolean): Promise<void> {
-		const { value: siteName } = await (await this.api.get('/settings/Site_Name')).json();
-		if (offline) {
-			return this.btnOpenOfflineLiveChat().click();
-		}
-		await this.btnOpenLiveChat(siteName).click();
+	async openLiveChat(): Promise<void> {
+		await this.btnOpenLiveChat().click();
 	}
 
 	unreadMessagesBadge(count: number): Locator {

@@ -559,7 +559,7 @@ test.describe('OC - Livechat API', () => {
 					}),
 				);
 
-				await poLiveChat.openLiveChat(false);
+				await poLiveChat.openLiveChat();
 				await poLiveChat.sendMessage(newVisitor, false);
 				await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
 				await poLiveChat.btnSendMessageToOnlineAgent.click();
@@ -601,7 +601,7 @@ test.describe('OC - Livechat API', () => {
 					}),
 				);
 
-				await poLiveChat.openLiveChat(false);
+				await poLiveChat.openLiveChat();
 				await poLiveChat.sendMessage(newVisitor, false);
 				await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
 				await poLiveChat.btnSendMessageToOnlineAgent.click();
@@ -631,7 +631,7 @@ test.describe('OC - Livechat API', () => {
 				email: faker.internet.email(),
 			};
 
-			await poLiveChat.openLiveChat(false);
+			await poLiveChat.openLiveChat();
 			await poLiveChat.sendMessage(newVisitor, false);
 			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
 			await poLiveChat.btnSendMessageToOnlineAgent.click();
@@ -669,7 +669,7 @@ test.describe('OC - Livechat API', () => {
 				}),
 			);
 
-			await poLiveChat.openLiveChat(true);
+			await poLiveChat.openLiveChat();
 			await poLiveChat.sendMessage(newVisitor, true);
 
 			await watchForTrigger;
