@@ -4,7 +4,7 @@ import { memo } from 'react';
 
 import Avatar, { UiAvatarProps } from './Avatar';
 
-type UserAvatarProps = Omit<UiAvatarProps, 'title'> & {
+type UserAvatarProps = Pick<UiAvatarProps, 'size'> & {
 	username: string;
 	etag?: string;
 	url?: string;
@@ -15,7 +15,7 @@ const UserAvatar: FC<UserAvatarProps> = ({ username, etag, size }) => {
 	const getUserAvatarPath = useUserAvatarPath();
 	const url = getUserAvatarPath(username, etag);
 
-	return <Avatar url={url} data-username={username} title={username} size={size} />;
+	return <Avatar url={url} data-username={username} title={username} size={size} objectFit />;
 };
 
 export default memo(UserAvatar);

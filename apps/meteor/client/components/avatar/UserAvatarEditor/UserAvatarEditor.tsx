@@ -1,7 +1,7 @@
 import type { IUser, AvatarObject } from '@rocket.chat/core-typings';
-import { Box, Button, TextInput, Avatar, IconButton } from '@rocket.chat/fuselage';
-import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useToastMessageDispatch, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { Box, Button, TextInput, IconButton } from '@rocket.chat/fuselage';
+import { Avatar, UserAvatar } from '@rocket.chat/ui-avatar';
+import { useToastMessageDispatch /* , useSetting*/, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent } from 'react';
 import React, { useState, useCallback } from 'react';
 
@@ -21,7 +21,7 @@ type UserAvatarEditorProps = {
 
 function UserAvatarEditor({ currentUsername, username, setAvatarObj, disabled, etag }: UserAvatarEditorProps): ReactElement {
 	const t = useTranslation();
-	const rotateImages = useSetting('FileUpload_RotateImages');
+	// const rotateImages = useSetting('FileUpload_RotateImages');
 	const [avatarFromUrl, setAvatarFromUrl] = useState('');
 	const [newAvatarSource, setNewAvatarSource] = useState<string>();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -77,10 +77,10 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, disabled, e
 					url={url}
 					username={currentUsername || ''}
 					etag={etag}
-					style={{
-						objectFit: 'contain',
-						imageOrientation: rotateImages ? 'from-image' : 'none',
-					}}
+					// TODO: Check this rotation necessity
+					// style={{
+					// 	imageOrientation: rotateImages ? 'from-image' : 'none',
+					// }}
 				/>
 				<Box display='flex' flexDirection='column' flexGrow='1' justifyContent='space-between' mis={4}>
 					<Box display='flex' flexDirection='row' mbs='none'>
