@@ -87,7 +87,7 @@ const RoomActions = ({ room, reload }) => {
 					isDefault: !room.teamDefault,
 				});
 
-				if (!room.teamDefault) {
+				if (!updatedRoom.teamDefault) {
 					const messageType = updatedRoom.usersCount > MAX_NUMBER_OF_AUTO_JOIN_MEMBERS ? 'info' : 'success';
 					const message =
 						updatedRoom.usersCount > MAX_NUMBER_OF_AUTO_JOIN_MEMBERS ? 'Team_Auto-join_exceeded_user_limit' : 'Team_Auto-join_updated';

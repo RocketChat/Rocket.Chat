@@ -83,6 +83,7 @@ export interface ITeamService {
 		showCanDeleteOnly: boolean,
 		pagination: IPaginationOptions,
 	): Promise<IRecordsWithTotal<IRoom>>;
+	updateRoom(uid: string, rid: string, isDefault: boolean, canUpdateAnyRoom: boolean): Promise<IRoom>;
 	list(uid: string, paginationOptions?: IPaginationOptions, queryOptions?: IQueryOptions<ITeam>): Promise<IRecordsWithTotal<ITeam>>;
 	listAll(options?: IPaginationOptions): Promise<IRecordsWithTotal<ITeam>>;
 	listByNames(names: Array<string>, options?: FindOptions<ITeam>): Promise<Array<ITeam>>;
