@@ -5362,6 +5362,7 @@
   "Unread_Count_DM": "Unread Count for Direct Messages",
   "Unread_Count_Omni": "Unread Count for Omnichannel Chats",
   "Unread_Messages": "Unread Messages",
+  "S_unread_messages": "%s unread messages",
   "Unread_on_top": "Unread on top",
   "Unread_Rooms": "Unread Rooms",
   "Unread_Rooms_Mode": "Unread Rooms Mode",
