@@ -217,15 +217,14 @@ const CallPage: FC<CallPageProps> = ({
 							display: isCameraOn ? 'block' : 'none',
 						}}
 					></video>
-					<UserAvatar
+					<Box
 						style={{
 							display: isCameraOn ? 'none' : 'block',
 							margin: 'auto',
 						}}
-						username={localAvatar}
-						className='rcx-message__avatar'
-						size={isLocalMobileDevice || callInIframe ? 'x32' : 'x48'}
-					/>
+					>
+						<UserAvatar username={localAvatar} size={isLocalMobileDevice || callInIframe ? 'x32' : 'x48'} />
+					</Box>
 				</Box>
 				<ButtonGroup
 					position='absolute'
@@ -291,15 +290,15 @@ const CallPage: FC<CallPageProps> = ({
 						top: isRemoteMobileDevice || isLocalMobileDevice ? '10%' : '30%',
 					}}
 				>
-					<UserAvatar
+					<Box
 						style={{
 							display: 'block',
 							margin: 'auto',
 						}}
-						username={remoteAvatar}
-						className='rcx-message__avatar'
-						size={!callInIframe ? 'x124' : avatarSize}
-					/>
+					>
+						<UserAvatar username={remoteAvatar} size={!callInIframe ? 'x124' : avatarSize} />
+					</Box>
+
 					<Box color='white' fontSize={callInIframe ? 12 : 18} textAlign='center' margin={3}>
 						<OngoingCallDuration counter={getCallDuration(callStartTime)} />
 					</Box>
@@ -334,15 +333,14 @@ const CallPage: FC<CallPageProps> = ({
 							backgroundColor='dark'
 							alignItems='center'
 						>
-							<UserAvatar
+							<Box
 								style={{
 									display: 'block',
 									margin: 'auto',
 								}}
-								username={agentName}
-								className='rcx-message__avatar'
-								size={isLocalMobileDevice ? 'x32' : 'x48'}
-							/>
+							>
+								<UserAvatar username={agentName} size={isLocalMobileDevice ? 'x32' : 'x48'} />
+							</Box>
 						</Box>
 						<Box
 							position='absolute'
@@ -355,15 +353,14 @@ const CallPage: FC<CallPageProps> = ({
 							}}
 							alignItems='center'
 						>
-							<UserAvatar
+							<Box
 								style={{
 									display: 'block',
 									margin: 'auto',
 								}}
-								username={visitorName}
-								className='rcx-message__avatar'
-								size='x124'
-							/>
+							>
+								<UserAvatar username={visitorName} size='x124' />
+							</Box>
 							<Box color='white' fontSize={16} margin={15}>
 								Calling...
 							</Box>
