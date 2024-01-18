@@ -56,7 +56,6 @@ const RoomMessage = ({
 	const selecting = useIsSelecting();
 	const toggleSelected = useToggleSelect(message._id);
 	const selected = useIsSelectedMessage(message._id);
-	console.log(message);
 
 	useCountSelected();
 
