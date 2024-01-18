@@ -31,6 +31,7 @@ const ChatButton = ({ text, minimized, badge, onClick, triggered = false, agent 
 		badge={badge}
 		onClick={onClick}
 		className={createClassName(styles, 'screen__chat-button')}
+		data-qa-id='chat-button'
 		img={triggered && agent && agent.avatar.src}
 	>
 		{text}
@@ -101,7 +102,12 @@ export const Screen = ({
 	<div className={createClassName(styles, 'screen', { minimized, expanded, windowed, triggered })}>
 		<CssVar theme={theme} />
 		{triggered && (
-			<Button onClick={onMinimize} className={createClassName(styles, 'screen__chat-close-button')} icon={<CloseIcon />}>
+			<Button
+				onClick={onMinimize}
+				data-qa-id='chat-close-button'
+				className={createClassName(styles, 'screen__chat-close-button')}
+				icon={<CloseIcon />}
+			>
 				Close
 			</Button>
 		)}
