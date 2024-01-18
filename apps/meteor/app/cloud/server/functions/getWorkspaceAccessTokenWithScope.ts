@@ -66,7 +66,7 @@ export async function getWorkspaceAccessTokenWithScope(scope = '', throwOnError 
 	} catch (err: any) {
 		if (err instanceof CloudWorkspaceAccessTokenError) {
 			SystemLogger.error('Server has been unregistered from cloud');
-			void removeWorkspaceRegistrationInfo();
+			// void removeWorkspaceRegistrationInfo();
 			if (throwOnError) {
 				throw err;
 			}

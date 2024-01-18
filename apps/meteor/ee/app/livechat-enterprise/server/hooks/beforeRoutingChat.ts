@@ -4,11 +4,8 @@ import { LivechatDepartment, LivechatInquiry, LivechatRooms } from '@rocket.chat
 import { online } from '../../../../../app/livechat/server/api/lib/livechat';
 import { allowAgentSkipQueue } from '../../../../../app/livechat/server/lib/Helper';
 import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
-import { saveQueueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
-import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
 import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
-import { dispatchInquiryPosition } from '../lib/Helper';
 import { cbLogger } from '../lib/logger';
 
 callbacks.add(
@@ -36,9 +33,12 @@ callbacks.add(
 					department: department.fallbackForwardDepartment,
 				});
 				// update inquiry
-				inquiry = (await LivechatInquiry.setDepartmentByInquiryId(inquiry._id, department.fallbackForwardDepartment)) ?? inquiry;
-				// update room
-				await LivechatRooms.setDepartmentByRoomId(inquiry.rid, department.fallbackForwardDepartment);
+
+				const [dbInquiry] = await Promise.all([
+					LivechatInquiry.setDepartmentByInquiryId(inquiry._id, department.fallbackForwardDepartment),
+					LivechatRooms.setDepartmentByRoomId(inquiry.rid, department.fallbackForwardDepartment),
+				]);
+				inquiry = dbInquiry || inquiry;
 			}
 		}
 
@@ -50,7 +50,7 @@ callbacks.add(
 			return inquiry;
 		}
 
-		const { _id, status, department } = inquiry;
+		const { _id, status } = inquiry;
 
 		if (status !== 'ready') {
 			return inquiry;
@@ -58,19 +58,6 @@ callbacks.add(
 
 		if (agent && (await allowAgentSkipQueue(agent))) {
 			return inquiry;
-		}
-
-		await saveQueueInquiry(inquiry);
-
-		if (settings.get('Omnichannel_calculate_dispatch_service_queue_statistics')) {
-			const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({
-				inquiryId: _id,
-				department,
-				queueSortBy: getInquirySortMechanismSetting(),
-			});
-			if (inq) {
-				await dispatchInquiryPosition(inq);
-			}
 		}
 
 		return LivechatInquiry.findOneById(_id);

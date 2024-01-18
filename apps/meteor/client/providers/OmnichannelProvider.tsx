@@ -88,13 +88,16 @@ const OmnichannelProvider: FC = ({ children }) => {
 	}, [isPrioritiesEnabled, queryClient, subscribe]);
 
 	useEffect(() => {
+		console.log('OmnichannelProvider useEffect');
 		if (!accessible) {
+			console.log('OmnichannelProvider useEffect !accessible');
 			return;
 		}
 
 		const update = async (): Promise<void> => {
 			try {
 				const routeConfig = await getRoutingConfig();
+				console.log('OmnichannelProvider useEffect update routeConfig', routeConfig);
 				setRouteConfig(routeConfig);
 			} catch (error) {
 				loggerRef.current.error(`update() error in routeConfig ${error}`);
@@ -111,7 +114,9 @@ const OmnichannelProvider: FC = ({ children }) => {
 
 	const streamNotifyUser = useStream('notify-user');
 	useEffect(() => {
+		console.log('OmnichannelProvider useEffect streamNotifyUser');
 		if (!manuallySelected) {
+			console.log('OmnichannelProvider useEffect !manuallySelected');
 			return;
 		}
 
@@ -119,6 +124,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 			initializeLivechatInquiryStream(user?._id);
 		};
 
+		console.log('OmnichannelProvider useEffect streamNotifyUser user?._id', user?._id);
 		initializeLivechatInquiryStream(user?._id);
 		if (!user?._id) {
 			return;

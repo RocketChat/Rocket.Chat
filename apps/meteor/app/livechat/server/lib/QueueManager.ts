@@ -1,4 +1,3 @@
-import { Omnichannel } from '@rocket.chat/core-services';
 import type { ILivechatInquiryRecord, ILivechatVisitor, IMessage, IOmnichannelRoom, SelectedAgent } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
@@ -18,27 +17,9 @@ export const saveQueueInquiry = async (inquiry: ILivechatInquiryRecord) => {
 
 export const queueInquiry = async (inquiry: ILivechatInquiryRecord, defaultAgent?: SelectedAgent) => {
 	const inquiryAgent = await RoutingManager.delegateAgent(defaultAgent, inquiry);
-	logger.debug(`Delegating inquiry with id ${inquiry._id} to agent ${defaultAgent?.username}`);
-
 	await callbacks.run('livechat.beforeRouteChat', inquiry, inquiryAgent);
-	const room = await LivechatRooms.findOneById(inquiry.rid, { projection: { v: 1 } });
-	if (!room || !(await Omnichannel.isWithinMACLimit(room))) {
-		logger.error({ msg: 'MAC limit reached, not routing inquiry', inquiry });
-		// We'll queue these inquiries so when new license is applied, they just start rolling again
-		// Minimizing disruption
-		await saveQueueInquiry(inquiry);
-		return;
-	}
-	const dbInquiry = await LivechatInquiry.findOneById(inquiry._id);
 
-	if (!dbInquiry) {
-		throw new Error('inquiry-not-found');
-	}
-
-	if (dbInquiry.status === 'ready') {
-		logger.debug(`Inquiry with id ${inquiry._id} is ready. Delegating to agent ${inquiryAgent?.username}`);
-		return RoutingManager.delegateInquiry(dbInquiry, inquiryAgent);
-	}
+	await saveQueueInquiry(inquiry);
 };
 
 type queueManager = {
