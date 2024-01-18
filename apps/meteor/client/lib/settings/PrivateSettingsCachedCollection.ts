@@ -7,7 +7,7 @@ class PrivateSettingsCachedCollection extends CachedCollection<ISetting> {
 	constructor() {
 		super({
 			name: 'private-settings',
-			eventType: 'onLogged',
+			eventType: 'notify-logged',
 		});
 	}
 

@@ -2088,7 +2088,7 @@
   "Jump_to_first_unread": "跳转到第一条未读消息",
   "Jump_to_message": "跳转到消息",
   "Jump_to_recent_messages": "跳转到最近的消息",
-  "Just_invited_people_can_access_this_channel": "刚刚被邀请的人可以访问这个频道。",
+  "Just_invited_people_can_access_this_channel": "只有被邀请的人可以访问这个频道。",
   "Katex_Dollar_Syntax": "允许美元符号语法",
   "Katex_Dollar_Syntax_Description": "允许使用 $$katex 段落$$ 和 $内嵌 katex$ 语法",
   "Katex_Enabled": "Katex 已启用 ",

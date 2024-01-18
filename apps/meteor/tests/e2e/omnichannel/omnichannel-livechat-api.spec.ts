@@ -71,7 +71,7 @@ test.describe('OC - Livechat API', () => {
 			page = await browser.newPage();
 			await expect((await api.post('/settings/Enable_CSP', { value: false })).status()).toBe(200);
 
-			poLiveChat = new OmnichannelLiveChatEmbedded(page, api);
+			poLiveChat = new OmnichannelLiveChatEmbedded(page);
 
 			const { page: pageCtx } = await createAuxContext(browser, Users.user1);
 			poAuxContext = { page: pageCtx, poHomeOmnichannel: new HomeOmnichannel(pageCtx) };
@@ -238,10 +238,10 @@ test.describe('OC - Livechat API', () => {
 			await expect((await api.post('/settings/Livechat_offline_email', { value: 'test@testing.com' })).status()).toBe(200);
 		});
 
-		test.beforeEach(async ({ browser, api }, testInfo) => {
+		test.beforeEach(async ({ browser }, testInfo) => {
 			page = await browser.newPage();
 
-			poLiveChat = new OmnichannelLiveChatEmbedded(page, api);
+			poLiveChat = new OmnichannelLiveChatEmbedded(page);
 
 			const { page: pageCtx } = await createAuxContext(browser, Users.user1);
 			poAuxContext = { page: pageCtx, poHomeOmnichannel: new HomeOmnichannel(pageCtx) };
@@ -421,6 +421,8 @@ test.describe('OC - Livechat API', () => {
 			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
 			await poLiveChat.btnSendMessageToOnlineAgent.click();
 
+			await poAuxContext.poHomeOmnichannel.sidenav.openChat(registerGuestVisitor.name);
+
 			await test.step('Expect setGuestEmail to change a guest email', async () => {
 				await poLiveChat.page.evaluate(
 					(registerGuestVisitor) => window.RocketChat.livechat.setGuestName(`changed${registerGuestVisitor.name}`),
@@ -429,9 +431,7 @@ test.describe('OC - Livechat API', () => {
 			});
 
 			await test.step('Expect registered guest to have valid info', async () => {
-				await poAuxContext.poHomeOmnichannel.sidenav.openChat(registerGuestVisitor.name);
-
-				await expect(poAuxContext.poHomeOmnichannel.content.infoContactName).toContainText(`changed${registerGuestVisitor.name}`);
+				await expect(poAuxContext.poHomeOmnichannel.content.infoHeaderName).toContainText(`changed${registerGuestVisitor.name}`);
 			});
 		});
 
@@ -488,10 +488,10 @@ test.describe('OC - Livechat API', () => {
 			await expect((await api.post('/settings/Livechat_offline_email', { value: 'test@testing.com' })).status()).toBe(200);
 		});
 
-		test.beforeEach(async ({ browser, api }, testInfo) => {
+		test.beforeEach(async ({ browser }, testInfo) => {
 			page = await browser.newPage();
 
-			poLiveChat = new OmnichannelLiveChatEmbedded(page, api);
+			poLiveChat = new OmnichannelLiveChatEmbedded(page);
 
 			const { page: pageCtx } = await createAuxContext(browser, Users.user1);
 			poAuxContext = { page: pageCtx, poHomeOmnichannel: new HomeOmnichannel(pageCtx) };
@@ -559,7 +559,7 @@ test.describe('OC - Livechat API', () => {
 					}),
 				);
 
-				await poLiveChat.openLiveChat(false);
+				await poLiveChat.openLiveChat();
 				await poLiveChat.sendMessage(newVisitor, false);
 				await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
 				await poLiveChat.btnSendMessageToOnlineAgent.click();
@@ -601,7 +601,7 @@ test.describe('OC - Livechat API', () => {
 					}),
 				);
 
-				await poLiveChat.openLiveChat(false);
+				await poLiveChat.openLiveChat();
 				await poLiveChat.sendMessage(newVisitor, false);
 				await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
 				await poLiveChat.btnSendMessageToOnlineAgent.click();
@@ -631,7 +631,7 @@ test.describe('OC - Livechat API', () => {
 				email: faker.internet.email(),
 			};
 
-			await poLiveChat.openLiveChat(false);
+			await poLiveChat.openLiveChat();
 			await poLiveChat.sendMessage(newVisitor, false);
 			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
 			await poLiveChat.btnSendMessageToOnlineAgent.click();
@@ -669,7 +669,7 @@ test.describe('OC - Livechat API', () => {
 				}),
 			);
 
-			await poLiveChat.openLiveChat(true);
+			await poLiveChat.openLiveChat();
 			await poLiveChat.sendMessage(newVisitor, true);
 
 			await watchForTrigger;
