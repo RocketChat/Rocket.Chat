@@ -1,4 +1,5 @@
 import type { FacebookOAuthConfiguration } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
 import { Facebook } from 'meteor/facebook-oauth';
 import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';

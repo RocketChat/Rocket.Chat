@@ -15,7 +15,7 @@ type RequestCredentialConfig<T extends Partial<OAuthConfiguration>> = {
 	credentialRequestCompleteCallback?: RequestCredentialCallback;
 };
 
-export async function wrapRequestCredentialFn<T extends Partial<OAuthConfiguration>>(
+export function wrapRequestCredentialFn<T extends Partial<OAuthConfiguration>>(
 	serviceName: string,
 	fn: (params: RequestCredentialConfig<T>) => void,
 ) {

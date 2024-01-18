@@ -1,4 +1,5 @@
 import type { TwitterOAuthConfiguration } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
 import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
 import { Twitter } from 'meteor/twitter-oauth';

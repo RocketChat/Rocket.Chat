@@ -1,3 +1,4 @@
+import { Random } from '@rocket.chat/random';
 import { Accounts } from 'meteor/accounts-base';
 import { Github } from 'meteor/github-oauth';
 import { Meteor } from 'meteor/meteor';
