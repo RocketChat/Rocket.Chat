@@ -27,7 +27,13 @@ type ItalicSpanProps = {
 const ItalicSpan = ({ children }: ItalicSpanProps): ReactElement => (
 	<>
 		{children.map((block, index) => {
-			if (block.type === 'LINK' || block.type === 'PLAIN_TEXT' || block.type === 'STRIKE' || block.type === 'BOLD' || block.type === 'INLINE_CODE') {
+			if (
+				block.type === 'LINK' ||
+				block.type === 'PLAIN_TEXT' ||
+				block.type === 'STRIKE' ||
+				block.type === 'BOLD' ||
+				block.type === 'INLINE_CODE'
+			) {
 				return <em key={index}>{renderBlockComponent(block, index)}</em>;
 			}
 			return renderBlockComponent(block, index);

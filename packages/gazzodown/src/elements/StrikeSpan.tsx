@@ -27,7 +27,13 @@ type StrikeSpanProps = {
 const StrikeSpan = ({ children }: StrikeSpanProps): ReactElement => (
 	<>
 		{children.map((block, index) => {
-			if (block.type === 'LINK' || block.type === 'PLAIN_TEXT' || block.type === 'ITALIC' || block.type === 'BOLD' || block.type === 'INLINE_CODE') {
+			if (
+				block.type === 'LINK' ||
+				block.type === 'PLAIN_TEXT' ||
+				block.type === 'ITALIC' ||
+				block.type === 'BOLD' ||
+				block.type === 'INLINE_CODE'
+			) {
 				return <del key={index}>{renderBlockComponent(block, index)}</del>;
 			}
 			return renderBlockComponent(block, index);
