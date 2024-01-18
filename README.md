@@ -93,7 +93,7 @@ Please refer to [Install Rocket.Chat](https://rocket.chat/install) to install yo
 **One-Click Deploy Options (Third-Party):**
  - [RepoCloud](https://repocloud.io/details/?app_id=169)
  - [DigitalOcean](https://marketplace.digitalocean.com/apps/rocket-chat)
- - [CloudCone](https://marketplace.digitalocean.com/apps/rocket-chat)
+ - [CloudCone](https://cloudcone.com/one-click-applications/rocketchat/)
  - [AWS Marketplace](https://aws.amazon.com/marketplace/pp/prodview-5gpclzxdjwvtc)
 
 # 📱 Mobile Apps
