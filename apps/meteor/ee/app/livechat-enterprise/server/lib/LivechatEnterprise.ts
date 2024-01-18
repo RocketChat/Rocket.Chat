@@ -283,7 +283,7 @@ export const LivechatEnterprise = {
 
 		// Disable event
 		if (department?.enabled && !departmentDB?.enabled) {
-			void callbacks.run('livechat.afterDepartmentDisabled', departmentDB);
+			await callbacks.run('livechat.afterDepartmentDisabled', departmentDB);
 		}
 
 		return departmentDB;
