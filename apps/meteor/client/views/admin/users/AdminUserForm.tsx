@@ -28,7 +28,7 @@ import {
 	useToastMessageDispatch,
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
@@ -97,6 +97,7 @@ const AdminUserForm = ({
 	const t = useTranslation();
 	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const queryClient = useQueryClient();
 
 	const customFieldsMetadata = useAccountsCustomFields();
 	const defaultRoles = useSetting<string>('Accounts_Registration_Users_Default_Roles') || '';
@@ -165,7 +166,15 @@ const AdminUserForm = ({
 			return handleUpdateUser.mutateAsync({ userId: userData?._id, data: userFormData });
 		}
 
-		return handleCreateUser.mutateAsync({ ...userFormData, fields: '' });
+		return handleCreateUser.mutateAsync(
+			{ ...userFormData, fields: '' },
+			{
+				onSuccess: () =>
+					queryClient.invalidateQueries(['pendingUsersCount'], {
+						refetchType: 'all',
+					}),
+			},
+		);
 	});
 
 	const nameId = useUniqueId();

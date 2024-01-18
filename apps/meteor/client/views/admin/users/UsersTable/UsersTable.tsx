@@ -61,7 +61,7 @@ const UsersTable = ({ reload, tab, roleData, onReload, setPendingUsersCount }: U
 		selectedRoles: useMemo(() => userFilters.roles.map((role) => role.id), [userFilters.roles]),
 	});
 
-	usePendingUsersCount({ tab, setPendingUsersCount, currentUsersTotal: data?.total });
+	usePendingUsersCount({ setPendingUsersCount, currentUsersTotal: data?.total });
 
 	useEffect(() => {
 		reload.current = refetch;
