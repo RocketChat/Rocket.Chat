@@ -9147,6 +9147,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/fuselage-hooks@npm:^0.33.0":
+  version: 0.33.0
+  resolution: "@rocket.chat/fuselage-hooks@npm:0.33.0"
+  dependencies:
+    use-sync-external-store: ~1.2.0
+  peerDependencies:
+    "@rocket.chat/fuselage-tokens": "*"
+    react: ^17.0.2
+  checksum: addf78db893c3185d4d5fc347e1aa81710e0939505a08db77e524740d05555c5e8556d2b6f0e6425270621bdd7230d13278add77ce38197c048af30207cce853
+  languageName: node
+  linkType: hard
+
 "@rocket.chat/fuselage-polyfills@npm:~0.31.25":
   version: 0.31.25
   resolution: "@rocket.chat/fuselage-polyfills@npm:0.31.25"
