@@ -5,7 +5,6 @@ import { useState } from 'react';
 
 export type UiAvatarProps = Omit<AvatarProps, 'is'>;
 
-// TODO: check spreading props necessity
 const Avatar: FC<UiAvatarProps> = (props) => {
 	const [error, setError] = useState<unknown>(false);
 

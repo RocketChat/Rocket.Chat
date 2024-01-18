@@ -3,14 +3,14 @@ import type { IRoom, RoomAdminFieldsType } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 import { getAvatarURL } from '../../../app/utils/client/getAvatarURL';
 import { useSingleFileInput } from '../../hooks/useSingleFileInput';
 import { isValidImageFormat } from '../../lib/utils/isValidImageFormat';
-import RoomAvatar from '../RoomAvatar';
 
 type RoomAvatarEditorProps = {
 	room: Pick<IRoom, RoomAdminFieldsType>;
