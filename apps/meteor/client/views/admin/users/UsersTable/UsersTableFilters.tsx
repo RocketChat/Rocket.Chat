@@ -64,6 +64,7 @@ const UsersTableFilters = ({ roleData, setUsersFilters }: UsersTableFiltersProps
 				selectedOptionsTitle='Roles'
 				setSelectedOptions={handleRolesChange}
 				selectedOptions={selectedRoles}
+				searchBarText='Search_roles'
 			/>
 		</FilterByText>
 	);

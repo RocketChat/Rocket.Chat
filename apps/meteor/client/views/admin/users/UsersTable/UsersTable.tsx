@@ -19,6 +19,7 @@ import { usePagination } from '../../../../components/GenericTable/hooks/usePagi
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import type { IAdminUserTabs } from '../IAdminUserTabs';
 import useFilteredUsers from '../hooks/useFilteredUsers';
+import usePendingUsersCount from '../hooks/usePendingUsersCount';
 import UsersTableFilters from './UsersTableFilters';
 import UsersTableRow from './UsersTableRow';
 
@@ -27,6 +28,7 @@ type UsersTableProps = {
 	tab: IAdminUserTabs;
 	onReload: () => void;
 	roleData: { roles: IRole[] } | undefined;
+	setPendingUsersCount: React.Dispatch<React.SetStateAction<number>>;
 };
 
 export type UsersFilters = {
@@ -34,7 +36,7 @@ export type UsersFilters = {
 	roles: OptionProp[];
 };
 
-const UsersTable = ({ reload, tab, roleData, onReload }: UsersTableProps): ReactElement | null => {
+const UsersTable = ({ reload, tab, roleData, onReload, setPendingUsersCount }: UsersTableProps): ReactElement | null => {
 	const t = useTranslation();
 	const router = useRouter();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
@@ -58,6 +60,8 @@ const UsersTable = ({ reload, tab, roleData, onReload }: UsersTableProps): React
 		tab,
 		selectedRoles: useMemo(() => userFilters.roles.map((role) => role.id), [userFilters.roles]),
 	});
+
+	usePendingUsersCount({ tab, setPendingUsersCount, currentUsersTotal: data?.total });
 
 	useEffect(() => {
 		reload.current = refetch;

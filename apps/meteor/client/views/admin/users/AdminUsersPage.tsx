@@ -18,7 +18,7 @@ import AdminUserUpgrade from './AdminUserUpgrade';
 import type { IAdminUserTabs } from './IAdminUserTabs';
 import UsersTable from './UsersTable';
 
-const UsersPage = (): ReactElement => {
+const AdminUsersPage = (): ReactElement => {
 	const t = useTranslation();
 
 	const seatsCap = useSeatsCap();
@@ -34,6 +34,7 @@ const UsersPage = (): ReactElement => {
 
 	const [tab, setTab] = useState<IAdminUserTabs>('all');
 	const [createdUsersCount, setCreatedUsersCount] = useState(0);
+	const [pendingUsersCount, setPendingUsersCount] = useState(0);
 
 	const handleReload = (): void => {
 		seatsCap?.reload();
@@ -72,7 +73,7 @@ const UsersPage = (): ReactElement => {
 							{t('All')}
 						</TabsItem>
 						<TabsItem selected={tab === 'pending'} onClick={() => setTab('pending')}>
-							{t('Pending')}
+							{pendingUsersCount ? `${t('Pending')} (${pendingUsersCount})` : t('Pending')}
 						</TabsItem>
 						<TabsItem selected={tab === 'active'} onClick={() => setTab('active')}>
 							{t('Active')}
@@ -81,7 +82,7 @@ const UsersPage = (): ReactElement => {
 							{t('Deactivated')}
 						</TabsItem>
 					</Tabs>
-					<UsersTable reload={reload} tab={tab} roleData={data} onReload={handleReload} />
+					<UsersTable reload={reload} tab={tab} roleData={data} onReload={handleReload} setPendingUsersCount={setPendingUsersCount} />
 				</PageContent>
 			</Page>
 			{context && (
@@ -122,4 +123,4 @@ const UsersPage = (): ReactElement => {
 	);
 };
 
-export default UsersPage;
+export default AdminUsersPage;
