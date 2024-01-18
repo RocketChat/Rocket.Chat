@@ -1,11 +1,11 @@
 {
 	"name": "@rocket.chat/ui-contexts",
-	"version": "3.0.2",
+	"version": "3.0.3",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/emitter": "~0.31.25",
-		"@rocket.chat/fuselage-hooks": "~0.32.1",
+		"@rocket.chat/fuselage-hooks": "^0.33.0",
 		"@rocket.chat/i18n": "workspace:~",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@types/jest": "~29.5.7",
