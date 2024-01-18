@@ -421,6 +421,8 @@ test.describe('OC - Livechat API', () => {
 			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
 			await poLiveChat.btnSendMessageToOnlineAgent.click();
 
+			await poAuxContext.poHomeOmnichannel.sidenav.openChat(registerGuestVisitor.name);
+
 			await test.step('Expect setGuestEmail to change a guest email', async () => {
 				await poLiveChat.page.evaluate(
 					(registerGuestVisitor) => window.RocketChat.livechat.setGuestName(`changed${registerGuestVisitor.name}`),
@@ -429,9 +431,7 @@ test.describe('OC - Livechat API', () => {
 			});
 
 			await test.step('Expect registered guest to have valid info', async () => {
-				await poAuxContext.poHomeOmnichannel.sidenav.openChat(registerGuestVisitor.name);
-
-				await expect(poAuxContext.poHomeOmnichannel.content.infoContactName).toContainText(`changed${registerGuestVisitor.name}`);
+				await expect(poAuxContext.poHomeOmnichannel.content.infoHeaderName).toContainText(`changed${registerGuestVisitor.name}`);
 			});
 		});
 
