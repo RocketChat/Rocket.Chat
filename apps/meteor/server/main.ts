@@ -24,6 +24,7 @@ await import('../lib/oauthRedirectUriServer');
 await import('./lib/pushConfig');
 
 await import('./configuration/accounts_meld');
+await import('./configuration/cas');
 await import('./configuration/ldap');
 
 await import('./stream/stdout');
