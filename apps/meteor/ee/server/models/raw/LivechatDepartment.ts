@@ -94,7 +94,7 @@ export class LivechatDepartmentEE extends LivechatDepartmentRaw implements ILive
 	}
 
 	findAgentsByBusinessHourId(businessHourId: string): AggregationCursor<{ agentIds: string[] }> {
-		return this.col.aggregate<{ agents: string[] }>([
+		return this.col.aggregate<{ agentIds: string[] }>([
 			[
 				{
 					$match: {
