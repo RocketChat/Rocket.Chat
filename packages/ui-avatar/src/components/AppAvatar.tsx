@@ -9,9 +9,5 @@ type AppAvatarProps = Pick<UiAvatarProps, 'size'> & {
 };
 
 export default function AppAvatar({ iconFileContent, iconFileData, size }: AppAvatarProps): ReactElement {
-	return (
-		// <Box {...props}>
-		<Avatar size={size} objectFit url={iconFileContent || `data:image/png;base64,${iconFileData}`} />
-		// </Box>
-	);
+	return <Avatar size={size} objectFit url={iconFileContent || `data:image/png;base64,${iconFileData}`} />;
 }
