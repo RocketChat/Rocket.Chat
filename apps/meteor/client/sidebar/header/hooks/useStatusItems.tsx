@@ -12,8 +12,9 @@ import MarkdownText from '../../../components/MarkdownText';
 import { UserStatus } from '../../../components/UserStatus';
 import { useStatusDisabledModal } from '../../../views/admin/customUserStatus/hooks/useStatusDisabledModal';
 import { useCustomStatusModalHandler } from './useCustomStatusModalHandler';
+import { STATUS_MAP } from '../../../../app/user-status/client/lib/userStatus';
 
-const isDefaultStatus = (id: string): boolean => (Object.values(UserStatusEnum) as string[]).includes(id);
+const isDefaultStatus = (id: string): boolean => (STATUS_MAP as string[]).includes(id);
 const isDefaultStatusName = (_name: string, id: string): _name is UserStatusEnum => isDefaultStatus(id);
 const translateStatusName = (t: ReturnType<typeof useTranslation>, status: (typeof userStatus.list)['']): string => {
 	if (isDefaultStatusName(status.name, status.id)) {

@@ -1,31 +1,29 @@
+import { ICustomUserStatus } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { sdk } from '../../../utils/client/lib/SDKClient';
 import { userStatus } from './userStatus';
+import { UserStatus } from '@rocket.chat/core-typings';
 
-userStatus.packages.customUserStatus = {
-	list: [],
-};
-
-export const deleteCustomUserStatus = function (customUserStatusData) {
+export const deleteCustomUserStatus = function (customUserStatusData: ICustomUserStatus) {
 	delete userStatus.list[customUserStatusData._id];
 
-	const arrayIndex = userStatus.packages.customUserStatus.list.indexOf(customUserStatusData._id);
+	const arrayIndex = userStatus.packages.customUserStatus.list.findIndex((x) => x.id === customUserStatusData._id);
 	if (arrayIndex !== -1) {
-		userStatus.packages.customUserStatusData.list.splice(arrayIndex, 1);
+		userStatus.packages.customUserStatus.list.splice(arrayIndex, 1);
 	}
 };
 
-export const updateCustomUserStatus = function (customUserStatusData) {
+export const updateCustomUserStatus = function (customUserStatusData: ICustomUserStatus) {
 	const newUserStatus = {
 		name: customUserStatusData.name,
 		id: customUserStatusData._id,
-		statusType: customUserStatusData.statusType,
+		statusType: customUserStatusData.statusType as UserStatus,
 		localizeName: false,
 	};
 
-	const arrayIndex = userStatus.packages.customUserStatus.list.indexOf(newUserStatus.id);
+	const arrayIndex = userStatus.packages.customUserStatus.list.findIndex(x => x.id === newUserStatus.id);
 	if (arrayIndex === -1) {
 		userStatus.packages.customUserStatus.list.push(newUserStatus);
 	} else {
@@ -50,7 +48,7 @@ Meteor.startup(() => {
 				const newUserStatus = {
 					name: customStatus.name,
 					id: customStatus._id,
-					statusType: customStatus.statusType,
+					statusType: customStatus.statusType as UserStatus,
 					localizeName: false,
 				};
 

@@ -1,26 +1,37 @@
 import { UserStatus } from '@rocket.chat/core-typings';
 
+export const STATUS_MAP = Object.values(UserStatus);
+
 type Status = {
 	name: string;
-	localizeName: boolean;
 	id: string;
 	statusType: UserStatus;
+	localizeName: boolean;
+};
+
+type CustomStatus = {
+	name: string;
+	id: string;
+	statusType: UserStatus;
+	localizeName: boolean;
 };
 
 type UserStatusTypes = {
-	packages: any;
+	packages: {
+		customUserStatus: {
+			list: CustomStatus[];
+		};
+	};
 	list: {
-		[status: string]: Status;
+		[status: string]: Status | CustomStatus;
 	};
 };
 
 export const userStatus: UserStatusTypes = {
 	packages: {
-		base: {
-			render(html: string): string {
-				return html;
-			},
-		},
+		customUserStatus: {
+			list: [],
+		}
 	},
 
 	list: {
@@ -49,4 +60,5 @@ export const userStatus: UserStatusTypes = {
 			statusType: UserStatus.OFFLINE,
 		},
 	},
-} as const;
+};
+

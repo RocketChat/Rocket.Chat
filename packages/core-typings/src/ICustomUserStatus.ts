@@ -1,6 +1,5 @@
-import type { IRocketChatRecord } from './IRocketChatRecord';
+import { IUserStatus } from './IUserStatus';
 
-export interface ICustomUserStatus extends IRocketChatRecord {
-	name: string;
-	statusType: string;
+export interface ICustomUserStatus extends IUserStatus {
+  _updatedAt?: Date;
 }
