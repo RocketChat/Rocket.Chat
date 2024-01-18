@@ -111,7 +111,9 @@ export async function cleanRoomHistory({
 
 	if (count) {
 		const lastMessage = await Messages.getLastVisibleMessageSentWithNoTypeByRoomId(rid);
-		await Rooms.resetLastMessageById(rid, lastMessage);
+
+		await Rooms.resetLastMessageById(rid, lastMessage, -count);
+
 		void api.broadcast('notify.deleteMessageBulk', rid, {
 			rid,
 			excludePinned,

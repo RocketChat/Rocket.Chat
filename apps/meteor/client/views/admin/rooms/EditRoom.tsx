@@ -11,20 +11,20 @@ import {
 	FieldHint,
 	ToggleSwitch,
 	TextAreaInput,
+	FieldError,
 } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch, useRoute, usePermission, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
-import React, { useState, useMemo } from 'react';
+import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import React from 'react';
+import { useForm, Controller } from 'react-hook-form';
 
-import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
-import GenericModal from '../../../components/GenericModal';
 import RoomAvatarEditor from '../../../components/avatar/RoomAvatarEditor';
-import { useEndpointAction } from '../../../hooks/useEndpointAction';
-import { useForm } from '../../../hooks/useForm';
+import { getDirtyFields } from '../../../lib/getDirtyFields';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
-import DeleteTeamModalWithRooms from '../../teams/contextualBar/info/DeleteTeam';
+import { useArchiveRoom } from '../../hooks/roomActions/useArchiveRoom';
+import { useDeleteRoom } from '../../hooks/roomActions/useDeleteRoom';
+import { useEditAdminRoomPermissions } from './useEditAdminRoomPermissions';
 
 type EditRoomProps = {
 	room: Pick<IRoom, RoomAdminFieldsType>;
@@ -62,301 +62,294 @@ const getInitialValues = (room: Pick<IRoom, RoomAdminFieldsType>): EditRoomFormV
 	roomAvatar: undefined,
 });
 
-const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => {
+const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 	const t = useTranslation();
-
-	const [deleting, setDeleting] = useState(false);
-
-	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const { values, handlers, hasUnsavedChanges, reset } = useForm(getInitialValues(room));
-
-	const [canViewName, canViewTopic, canViewAnnouncement, canViewArchived, canViewDescription, canViewType, canViewReadOnly] =
-		useMemo(() => {
-			const isAllowed = roomCoordinator.getRoomDirectives(room.t).allowRoomSettingChange;
-			return [
-				isAllowed?.(room, RoomSettingsEnum.NAME),
-				isAllowed?.(room, RoomSettingsEnum.TOPIC),
-				isAllowed?.(room, RoomSettingsEnum.ANNOUNCEMENT),
-				isAllowed?.(room, RoomSettingsEnum.ARCHIVE_OR_UNARCHIVE),
-				isAllowed?.(room, RoomSettingsEnum.DESCRIPTION),
-				isAllowed?.(room, RoomSettingsEnum.TYPE),
-				isAllowed?.(room, RoomSettingsEnum.READ_ONLY),
-				isAllowed?.(room, RoomSettingsEnum.REACT_WHEN_READ_ONLY),
-			];
-		}, [room]);
+	const {
+		control,
+		watch,
+		reset,
+		handleSubmit,
+		formState: { isDirty, errors, dirtyFields },
+	} = useForm({ values: getInitialValues(room) });
 
 	const {
-		roomName,
-		roomType,
-		readOnly,
-		reactWhenReadOnly,
-		archived,
-		isDefault,
-		favorite,
-		featured,
-		roomTopic,
-		roomAvatar,
-		roomDescription,
-		roomAnnouncement,
-	} = values as EditRoomFormValues;
+		canViewName,
+		canViewTopic,
+		canViewAnnouncement,
+		canViewArchived,
+		canViewDescription,
+		canViewType,
+		canViewReadOnly,
+		canViewReactWhenReadOnly,
+	} = useEditAdminRoomPermissions(room);
 
-	const {
-		handleIsDefault,
-		handleFavorite,
-		handleFeatured,
-		handleRoomName,
-		handleRoomType,
-		handleReadOnly,
-		handleReactWhenReadOnly,
-		handleArchived,
-		handleRoomAvatar,
-		handleRoomTopic,
-		handleRoomDescription,
-		handleRoomAnnouncement,
-	} = handlers;
+	const { roomType, readOnly, archived } = watch();
 
-	const changeArchivation = archived !== !!room.archived;
+	const changeArchiving = archived !== !!room.archived;
 
-	const roomsRoute = useRoute('admin-rooms');
+	const { handleDelete, canDeleteRoom, isDeleting } = useDeleteRoom(room, { reload: onDelete });
 
-	const canDelete = usePermission(`delete-${room.t}`);
+	const saveAction = useEndpoint('POST', '/v1/rooms.saveRoomSettings');
 
-	const archiveSelector = room.archived ? 'unarchive' : 'archive';
-	const archiveMessage = room.archived ? 'Room_has_been_unarchived' : 'Room_has_been_archived';
+	const handleArchive = useArchiveRoom(room);
 
-	const saveAction = useEndpointAction('POST', '/v1/rooms.saveRoomSettings', {
-		successMessage: t('Room_updated_successfully'),
-	});
-	const archiveAction = useEndpointAction('POST', '/v1/rooms.changeArchivationState', { successMessage: t(archiveMessage) });
+	const handleUpdateRoomData = useMutableCallback(async ({ isDefault, roomName, favorite, ...formData }) => {
+		const data = getDirtyFields(formData, dirtyFields);
 
-	const handleSave = useMutableCallback(async () => {
-		const save = (): Promise<{ success: boolean; rid: string }> =>
-			saveAction({
+		try {
+			await saveAction({
 				rid: room._id,
 				roomName: roomType === 'd' ? undefined : roomName,
-				roomTopic,
-				roomType,
-				readOnly,
 				default: isDefault,
 				favorite: { defaultValue: isDefault, favorite },
-				featured,
-				reactWhenReadOnly,
-				roomDescription,
-				roomAnnouncement,
-				roomAvatar,
+				...data,
 			});
 
-		const archive = (): Promise<{ success: boolean }> => archiveAction({ rid: room._id, action: archiveSelector });
-
-		const promises = [];
-		hasUnsavedChanges && promises.push(save());
-		changeArchivation && promises.push(archive());
-		await Promise.all(promises);
-		onChange();
-	});
-
-	const changeRoomType = useMutableCallback(() => {
-		handleRoomType(roomType === 'p' ? 'c' : 'p');
-	});
-
-	const deleteRoom = useEndpoint('POST', '/v1/rooms.delete');
-	const deleteTeam = useEndpoint('POST', '/v1/teams.delete');
-
-	const handleDelete = useMutableCallback(() => {
-		const handleDeleteTeam = async (roomsToRemove: IRoom['_id'][]) => {
-			try {
-				setDeleting(true);
-				setModal(null);
-				await deleteTeam({ teamId: room.teamId as string, ...(roomsToRemove.length && { roomsToRemove }) });
-				dispatchToastMessage({ type: 'success', message: t('Team_has_been_deleted') });
-				roomsRoute.push({});
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
-				setDeleting(false);
-			} finally {
-				onDelete();
-			}
-		};
-
-		if (room.teamMain) {
-			setModal(
-				<DeleteTeamModalWithRooms onConfirm={handleDeleteTeam} onCancel={(): void => setModal(null)} teamId={room.teamId as string} />,
-			);
-
-			return;
+			dispatchToastMessage({ type: 'success', message: t('Room_updated_successfully') });
+			onChange();
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
 		}
-
-		const handleDeleteRoom = async (): Promise<void> => {
-			try {
-				setDeleting(true);
-				setModal(null);
-				await deleteRoom({ roomId: room._id });
-				dispatchToastMessage({ type: 'success', message: t('Room_has_been_deleted') });
-				roomsRoute.push({});
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
-				setDeleting(false);
-			} finally {
-				onDelete();
-			}
-		};
-
-		setModal(
-			<GenericModal
-				variant='danger'
-				onConfirm={handleDeleteRoom}
-				onClose={(): void => setModal(null)}
-				onCancel={(): void => setModal(null)}
-				confirmText={t('Yes_delete_it')}
-			>
-				{t('Delete_Room_Warning')}
-			</GenericModal>,
-		);
 	});
+
+	const handleSave = useMutableCallback(async (data) => {
+		await Promise.all([isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive()].filter(Boolean));
+	});
+
+	const formId = useUniqueId();
+	const roomNameField = useUniqueId();
+	const ownerField = useUniqueId();
+	const roomDescription = useUniqueId();
+	const roomAnnouncement = useUniqueId();
+	const roomTopicField = useUniqueId();
+	const roomTypeField = useUniqueId();
+	const readOnlyField = useUniqueId();
+	const reactWhenReadOnly = useUniqueId();
+	const archivedField = useUniqueId();
+	const isDefaultField = useUniqueId();
+	const favoriteField = useUniqueId();
+	const featuredField = useUniqueId();
 
 	return (
 		<>
-			<ContextualbarScrollableContent is='form' onSubmit={useMutableCallback((e) => e.preventDefault())}>
+			<ContextualbarScrollableContent id={formId} is='form' onSubmit={handleSubmit(handleSave)}>
 				{room.t !== 'd' && (
 					<Box pbe={24} display='flex' justifyContent='center'>
-						<RoomAvatarEditor disabled={isRoomFederated(room)} roomAvatar={roomAvatar} room={room} onChangeAvatar={handleRoomAvatar} />
+						<Controller
+							name='roomAvatar'
+							control={control}
+							render={({ field: { value, onChange } }) => (
+								<RoomAvatarEditor disabled={isRoomFederated(room)} roomAvatar={value} room={room} onChangeAvatar={onChange} />
+							)}
+						/>
 					</Box>
 				)}
 				<Field>
-					<FieldLabel required>{t('Name')}</FieldLabel>
+					<FieldLabel htmlFor={roomNameField} required>
+						{t('Name')}
+					</FieldLabel>
 					<FieldRow>
-						<TextInput disabled={deleting || !canViewName} value={roomName} onChange={handleRoomName} flexGrow={1} />
+						<Controller
+							name='roomName'
+							rules={{ required: t('The_field_is_required', t('Name')) }}
+							control={control}
+							render={({ field }) => (
+								<TextInput
+									id={roomNameField}
+									{...field}
+									disabled={isDeleting || !canViewName}
+									aria-required={true}
+									aria-invalid={Boolean(errors?.roomName)}
+									aria-describedby={`${roomNameField}-error`}
+								/>
+							)}
+						/>
 					</FieldRow>
+					{errors?.roomName && (
+						<FieldError aria-live='assertive' id={`${roomNameField}-error`}>
+							{errors.roomName.message}
+						</FieldError>
+					)}
 				</Field>
 				{room.t !== 'd' && (
 					<>
 						{room.u && (
 							<Field>
-								<FieldLabel>{t('Owner')}</FieldLabel>
+								<FieldLabel htmlFor={ownerField}>{t('Owner')}</FieldLabel>
 								<FieldRow>
-									<Box fontScale='p2'>{room.u?.username}</Box>
+									<TextInput id={ownerField} readOnly value={room.u?.username} />
 								</FieldRow>
 							</Field>
 						)}
 						{canViewDescription && (
 							<Field>
-								<FieldLabel>{t('Description')}</FieldLabel>
+								<FieldLabel htmlFor={roomDescription}>{t('Description')}</FieldLabel>
 								<FieldRow>
-									<TextAreaInput
-										rows={4}
-										disabled={deleting || isRoomFederated(room)}
-										value={roomDescription}
-										onChange={handleRoomDescription}
-										flexGrow={1}
+									<Controller
+										name='roomDescription'
+										control={control}
+										render={({ field }) => (
+											<TextAreaInput id={roomDescription} {...field} rows={4} disabled={isDeleting || isRoomFederated(room)} />
+										)}
 									/>
 								</FieldRow>
 							</Field>
 						)}
 						{canViewAnnouncement && (
 							<Field>
-								<FieldLabel>{t('Announcement')}</FieldLabel>
+								<FieldLabel htmlFor={roomAnnouncement}>{t('Announcement')}</FieldLabel>
 								<FieldRow>
-									<TextAreaInput
-										rows={4}
-										disabled={deleting || isRoomFederated(room)}
-										value={roomAnnouncement}
-										onChange={handleRoomAnnouncement}
-										flexGrow={1}
+									<Controller
+										name='roomAnnouncement'
+										control={control}
+										render={({ field }) => (
+											<TextAreaInput id={roomAnnouncement} {...field} rows={4} disabled={isDeleting || isRoomFederated(room)} />
+										)}
 									/>
 								</FieldRow>
 							</Field>
 						)}
 						{canViewTopic && (
 							<Field>
-								<FieldLabel>{t('Topic')}</FieldLabel>
+								<FieldLabel htmlFor={roomTopicField}>{t('Topic')}</FieldLabel>
 								<FieldRow>
-									<TextAreaInput rows={4} disabled={deleting} value={roomTopic} onChange={handleRoomTopic} flexGrow={1} />
+									<Controller
+										name='roomTopic'
+										control={control}
+										render={({ field }) => <TextAreaInput id={roomTopicField} {...field} rows={4} disabled={isDeleting} />}
+									/>
 								</FieldRow>
 							</Field>
 						)}
 						{canViewType && (
 							<Field>
-								<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-									<FieldLabel>{t('Private')}</FieldLabel>
-									<FieldRow>
-										<ToggleSwitch disabled={deleting || isRoomFederated(room)} checked={roomType === 'p'} onChange={changeRoomType} />
-									</FieldRow>
-								</Box>
-								<FieldHint>{t('Just_invited_people_can_access_this_channel')}</FieldHint>
+								<FieldRow>
+									<FieldLabel htmlFor={roomTypeField}>{t('Private')}</FieldLabel>
+									<Controller
+										name='roomType'
+										control={control}
+										render={({ field: { value, onChange, ...field } }) => (
+											<ToggleSwitch
+												{...field}
+												id={roomTypeField}
+												disabled={isDeleting || isRoomFederated(room)}
+												checked={roomType === 'p'}
+												onChange={() => onChange(value === 'p' ? 'c' : 'p')}
+												aria-describedby={`${roomTypeField}-hint`}
+											/>
+										)}
+									/>
+								</FieldRow>
+								<FieldHint id={`${roomTypeField}-hint`}>{t('Just_invited_people_can_access_this_channel')}</FieldHint>
 							</Field>
 						)}
 						{canViewReadOnly && (
 							<Field>
-								<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-									<FieldLabel>{t('Read_only')}</FieldLabel>
-									<FieldRow>
-										<ToggleSwitch disabled={deleting || isRoomFederated(room)} checked={readOnly} onChange={handleReadOnly} />
-									</FieldRow>
-								</Box>
-								<FieldHint>{t('Only_authorized_users_can_write_new_messages')}</FieldHint>
+								<FieldRow>
+									<FieldLabel htmlFor={readOnlyField}>{t('Read_only')}</FieldLabel>
+									<Controller
+										name='readOnly'
+										control={control}
+										render={({ field: { value, ...field } }) => (
+											<ToggleSwitch
+												id={readOnlyField}
+												{...field}
+												disabled={isDeleting || isRoomFederated(room)}
+												checked={value}
+												aria-describedby={`${readOnlyField}-hint`}
+											/>
+										)}
+									/>
+								</FieldRow>
+								<FieldHint id={`${readOnlyField}-hint`}>{t('Only_authorized_users_can_write_new_messages')}</FieldHint>
 							</Field>
 						)}
-						{readOnly && (
+						{canViewReactWhenReadOnly && readOnly && (
 							<Field>
-								<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-									<FieldLabel>{t('React_when_read_only')}</FieldLabel>
-									<FieldRow>
-										<ToggleSwitch checked={reactWhenReadOnly || isRoomFederated(room)} onChange={handleReactWhenReadOnly} />
-									</FieldRow>
-								</Box>
-								<FieldHint>{t('React_when_read_only_changed_successfully')}</FieldHint>
+								<FieldRow>
+									<FieldLabel htmlFor={reactWhenReadOnly}>{t('React_when_read_only')}</FieldLabel>
+									<Controller
+										name='reactWhenReadOnly'
+										control={control}
+										render={({ field: { value, ...field } }) => (
+											<ToggleSwitch
+												id={reactWhenReadOnly}
+												{...field}
+												checked={value || isRoomFederated(room)}
+												aria-describedby={`${reactWhenReadOnly}-hint`}
+											/>
+										)}
+									/>
+								</FieldRow>
+								<FieldHint id={`${reactWhenReadOnly}-hint`}>{t('React_when_read_only_changed_successfully')}</FieldHint>
 							</Field>
 						)}
 						{canViewArchived && (
 							<Field>
-								<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-									<FieldLabel>{t('Room_archivation_state_true')}</FieldLabel>
-									<FieldRow>
-										<ToggleSwitch disabled={deleting || isRoomFederated(room)} checked={archived} onChange={handleArchived} />
-									</FieldRow>
-								</Box>
+								<FieldRow>
+									<FieldLabel htmlFor={archivedField}>{t('Room_archivation_state_true')}</FieldLabel>
+									<Controller
+										name='archived'
+										control={control}
+										render={({ field: { value, ...field } }) => (
+											<ToggleSwitch id={archivedField} {...field} disabled={isDeleting || isRoomFederated(room)} checked={value} />
+										)}
+									/>
+								</FieldRow>
 							</Field>
 						)}
 					</>
 				)}
 				<Field>
-					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-						<FieldLabel>{t('Default')}</FieldLabel>
-						<FieldRow>
-							<ToggleSwitch disabled={deleting || isRoomFederated(room)} checked={isDefault} onChange={handleIsDefault} />
-						</FieldRow>
-					</Box>
+					<FieldRow>
+						<FieldLabel htmlFor={isDefaultField}>{t('Default')}</FieldLabel>
+						<Controller
+							name='isDefault'
+							control={control}
+							render={({ field: { value, ...field } }) => (
+								<ToggleSwitch id={isDefaultField} {...field} disabled={isDeleting || isRoomFederated(room)} checked={value} />
+							)}
+						/>
+					</FieldRow>
 				</Field>
 				<Field>
-					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-						<FieldLabel>{t('Favorite')}</FieldLabel>
-						<FieldRow>
-							<ToggleSwitch disabled={deleting} checked={favorite} onChange={handleFavorite} />
-						</FieldRow>
-					</Box>
+					<FieldRow>
+						<FieldLabel htmlFor={favoriteField}>{t('Favorite')}</FieldLabel>
+						<Controller
+							name='favorite'
+							control={control}
+							render={({ field: { value, ...field } }) => (
+								<ToggleSwitch id={favoriteField} {...field} disabled={isDeleting} checked={value} />
+							)}
+						/>
+					</FieldRow>
 				</Field>
 				<Field>
-					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-						<FieldLabel>{t('Featured')}</FieldLabel>
-						<FieldRow>
-							<ToggleSwitch disabled={deleting || isRoomFederated(room)} checked={featured} onChange={handleFeatured} />
-						</FieldRow>
-					</Box>
+					<FieldRow>
+						<FieldLabel htmlFor={featuredField}>{t('Featured')}</FieldLabel>
+						<Controller
+							name='featured'
+							control={control}
+							render={({ field: { value, ...field } }) => (
+								<ToggleSwitch id={featuredField} {...field} disabled={isDeleting || isRoomFederated(room)} checked={value} />
+							)}
+						/>
+					</FieldRow>
 				</Field>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button type='reset' disabled={!hasUnsavedChanges || deleting} onClick={reset}>
+					<Button type='reset' disabled={!isDirty || isDeleting} onClick={() => reset()}>
 						{t('Reset')}
 					</Button>
-					<Button disabled={!hasUnsavedChanges || deleting} onClick={handleSave}>
+					<Button form={formId} type='submit' disabled={!isDirty || isDeleting}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
 				<ButtonGroup mbs={8} stretch>
-					<Button icon='trash' danger disabled={deleting || !canDelete || isRoomFederated(room)} onClick={handleDelete}>
+					<Button icon='trash' danger loading={isDeleting} disabled={!canDeleteRoom || isRoomFederated(room)} onClick={handleDelete}>
 						{t('Delete')}
 					</Button>
 				</ButtonGroup>

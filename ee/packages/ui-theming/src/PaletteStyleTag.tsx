@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import React, { memo } from 'react';
 import { createPortal } from 'react-dom';
 
 import { codeBlock } from './codeBlockStyles';
@@ -23,5 +23,5 @@ export const PaletteStyleTag = memo(function PaletteStyleTag() {
 	};
 	const palette = convertToCss(getPalette(), '.rcx-content--main, .rcx-tile');
 
-	return createPortal(theme === 'dark' ? palette + codeBlock : palette, useCreateStyleContainer('main-palette'));
+	return <>{createPortal(theme === 'dark' ? palette + codeBlock : palette, useCreateStyleContainer('main-palette'))}</>;
 });

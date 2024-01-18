@@ -3,14 +3,12 @@ import { Settings } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { v, compile } from 'suretype';
 
-import { CloudWorkspaceAccessError } from '../../../../../lib/errors/CloudWorkspaceAccessError';
 import { CloudWorkspaceConnectionError } from '../../../../../lib/errors/CloudWorkspaceConnectionError';
 import { CloudWorkspaceRegistrationError } from '../../../../../lib/errors/CloudWorkspaceRegistrationError';
-import { SystemLogger } from '../../../../../server/lib/logger/system';
 import { settings } from '../../../../settings/server';
 import type { WorkspaceRegistrationData } from '../buildRegistrationData';
 import { buildWorkspaceRegistrationData } from '../buildRegistrationData';
-import { getWorkspaceAccessToken } from '../getWorkspaceAccessToken';
+import { CloudWorkspaceAccessTokenEmptyError, getWorkspaceAccessToken } from '../getWorkspaceAccessToken';
 import { getWorkspaceLicense } from '../getWorkspaceLicense';
 import { retrieveRegistrationStatus } from '../retrieveRegistrationStatus';
 import { handleBannerOnWorkspaceSync, handleNpsOnWorkspaceSync } from './handleCommsSync';
@@ -100,6 +98,7 @@ const fetchWorkspaceClientPayload = async ({
 			Authorization: `Bearer ${token}`,
 		},
 		body: workspaceRegistrationData,
+		timeout: 3000,
 	});
 
 	if (!response.ok) {
@@ -146,37 +145,25 @@ const consumeWorkspaceSyncPayload = async (result: Serialized<Cloud.WorkspaceSyn
 
 /** @deprecated */
 export async function legacySyncWorkspace() {
-	try {
-		const { workspaceRegistered } = await retrieveRegistrationStatus();
-		if (!workspaceRegistered) {
-			throw new CloudWorkspaceRegistrationError('Workspace is not registered');
-		}
-
-		const token = await getWorkspaceAccessToken(true);
-		if (!token) {
-			throw new CloudWorkspaceAccessError('Workspace does not have a valid access token');
-		}
-
-		const workspaceRegistrationData = await buildWorkspaceRegistrationData(undefined);
-
-		const payload = await fetchWorkspaceClientPayload({ token, workspaceRegistrationData });
-
-		if (!payload) {
-			return true;
-		}
-
-		await consumeWorkspaceSyncPayload(payload);
-
-		return true;
-	} catch (err) {
-		SystemLogger.error({
-			msg: 'Failed to sync with Rocket.Chat Cloud',
-			url: '/client',
-			err,
-		});
-
-		return false;
-	} finally {
-		await getWorkspaceLicense();
+	const { workspaceRegistered } = await retrieveRegistrationStatus();
+	if (!workspaceRegistered) {
+		throw new CloudWorkspaceRegistrationError('Workspace is not registered');
 	}
+
+	const token = await getWorkspaceAccessToken(true);
+	if (!token) {
+		throw new CloudWorkspaceAccessTokenEmptyError();
+	}
+
+	const workspaceRegistrationData = await buildWorkspaceRegistrationData(undefined);
+
+	const payload = await fetchWorkspaceClientPayload({ token, workspaceRegistrationData });
+
+	if (payload) {
+		await consumeWorkspaceSyncPayload(payload);
+	}
+
+	await getWorkspaceLicense();
+
+	return true;
 }

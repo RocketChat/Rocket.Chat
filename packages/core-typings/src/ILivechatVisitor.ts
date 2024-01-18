@@ -7,7 +7,7 @@ export interface IVisitorPhone {
 
 export interface IVisitorLastChat {
 	_id: string;
-	ts: string;
+	ts: Date;
 }
 
 export interface ILivechatVisitorConnectionData {

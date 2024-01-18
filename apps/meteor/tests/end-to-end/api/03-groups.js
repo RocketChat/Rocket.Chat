@@ -171,6 +171,21 @@ describe('[Groups]', function () {
 					});
 			});
 		});
+
+		it(`should fail when trying to use an existing room's name`, async () => {
+			await request
+				.post(api('groups.create'))
+				.set(credentials)
+				.send({
+					name: 'general',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.nested.property('errorType', 'error-duplicate-channel-name');
+				});
+		});
 	});
 
 	describe('/groups.info', () => {
@@ -481,21 +496,181 @@ describe('[Groups]', function () {
 	});
 
 	describe('/groups.kick', () => {
-		it('should remove user from group', (done) => {
-			request
-				.post(api('groups.kick'))
-				.set(credentials)
+		let testUserModerator;
+		let credsModerator;
+		let testUserOwner;
+		let credsOwner;
+		let testUserMember;
+		let groupTest;
+
+		const inviteUser = async (userId) => {
+			await request
+				.post(api('groups.invite'))
+				.set(credsOwner)
 				.send({
-					roomId: group._id,
-					userId: 'rocket.cat',
+					roomId: groupTest._id,
+					userId,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+		};
+
+		before(async () => {
+			// had to do them in serie because calling them with Promise.all was failing some times
+			testUserModerator = await createUser();
+			testUserOwner = await createUser();
+			testUserMember = await createUser();
+
+			credsModerator = await login(testUserModerator.username, password);
+			credsOwner = await login(testUserOwner.username, password);
+
+			await request
+				.post(api('groups.create'))
+				.set(credsOwner)
+				.send({
+					name: `kick-test-group-${Date.now()}`,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('group._id');
+					expect(res.body).to.have.nested.property('group.t', 'p');
+					expect(res.body).to.have.nested.property('group.msgs', 0);
+					groupTest = res.body.group;
+				});
+
+			await inviteUser(testUserModerator._id);
+
+			await request
+				.post(api('groups.addModerator'))
+				.set(credsOwner)
+				.send({
+					roomId: groupTest._id,
+					userId: testUserModerator._id,
 				})
-				.end(done);
+				.expect('Content-Type', 'application/json')
+				.expect(200);
 		});
+
+		after(async () => {
+			await Promise.all([
+				request
+					.post(api('groups.delete'))
+					.set(credsOwner)
+					.send({
+						roomId: groupTest._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200),
+				// updatePermission('kick-user-from-any-p-room', []),
+				updatePermission('remove-user', ['admin', 'owner', 'moderator']),
+				deleteUser(testUserModerator),
+				deleteUser(testUserOwner),
+				deleteUser(testUserMember),
+			]);
+		});
+
+		it("should return an error when user is not a member of the group and doesn't have permission", async () => {
+			await request
+				.post(api('groups.kick'))
+				.set(credentials)
+				.send({
+					roomId: groupTest._id,
+					userId: testUserMember._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-room-not-found');
+				});
+		});
+
+		it('should allow a moderator to remove user from group', async () => {
+			await inviteUser(testUserMember._id);
+
+			await request
+				.post(api('groups.kick'))
+				.set(credsModerator)
+				.send({
+					roomId: groupTest._id,
+					userId: testUserMember._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+		});
+
+		it('should allow an owner to remove user from group', async () => {
+			await inviteUser(testUserMember._id);
+
+			await request
+				.post(api('groups.kick'))
+				.set(credsOwner)
+				.send({
+					roomId: groupTest._id,
+					userId: testUserMember._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+		});
+
+		it.skip('should kick user from group if not a member of the room but has the required permission', async () => {
+			await updatePermission('kick-user-from-any-p-room', ['admin']);
+			await inviteUser(testUserMember._id);
+
+			await request
+				.post(api('groups.kick'))
+				.set(credentials)
+				.send({
+					roomId: group._id,
+					userId: testUserMember._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+		});
+
+		it("should return an error when the owner doesn't have the required permission", async () => {
+			await updatePermission('remove-user', ['admin', 'moderator']);
+			await inviteUser(testUserMember._id);
+
+			await request
+				.post(api('groups.kick'))
+				.set(credsOwner)
+				.send({
+					roomId: groupTest._id,
+					userId: testUserMember._id,
+				})
+				.expect('Content-Type', 'application/json')
+
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-not-allowed');
+				});
+		});
+
+		it('should return an error when trying to kick the last owner from a group', async () => {
+			await updatePermission('kick-user-from-any-p-room', ['admin']);
+
+			await request
+				.post(api('groups.kick'))
+				.set(credentials)
+				.send({
+					roomId: groupTest._id,
+					userId: testUserOwner._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-you-are-last-owner');
+				});
+		});
+
+		it('should return an error when trying to kick user that does not exist');
+		it('should return an error when trying to kick user from a group that does not exist');
+		it('should return an error when trying to kick user from a group that the user is not in the room');
 	});
 
 	describe('/groups.setDescription', () => {

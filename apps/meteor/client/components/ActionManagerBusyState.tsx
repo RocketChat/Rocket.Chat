@@ -3,7 +3,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useState } from 'react';
 
-import { useUiKitActionManager } from '../hooks/useUiKitActionManager';
+import { useUiKitActionManager } from '../uikit/hooks/useUiKitActionManager';
 
 const ActionManagerBusyState = () => {
 	const t = useTranslation();
@@ -15,10 +15,12 @@ const ActionManagerBusyState = () => {
 			return;
 		}
 
-		actionManager.on('busy', ({ busy }: { busy: boolean }) => setBusy(busy));
+		const handleBusyStateChange = ({ busy }: { busy: boolean }) => setBusy(busy);
+
+		actionManager.on('busy', handleBusyStateChange);
 
 		return () => {
-			actionManager.off('busy');
+			actionManager.off('busy', handleBusyStateChange);
 		};
 	}, [actionManager]);
 

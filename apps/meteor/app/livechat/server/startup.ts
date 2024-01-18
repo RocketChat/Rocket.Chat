@@ -1,5 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { ILivechatAgentStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { LivechatRooms } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
@@ -12,10 +13,12 @@ import { hasPermissionAsync } from '../../authorization/server/functions/hasPerm
 import { settings } from '../../settings/server';
 import { businessHourManager } from './business-hour';
 import { createDefaultBusinessHourIfNotExists } from './business-hour/Helper';
-import { Livechat } from './lib/Livechat';
+import { Livechat as LivechatTyped } from './lib/LivechatTyped';
 import { RoutingManager } from './lib/RoutingManager';
 import { LivechatAgentActivityMonitor } from './statistics/LivechatAgentActivityMonitor';
 import './roomAccessValidator.internalService';
+
+const logger = new Logger('LivechatStartup');
 
 Meteor.startup(async () => {
 	roomCoordinator.setRoomFind('l', (_id) => LivechatRooms.findOneById(_id));
@@ -62,7 +65,7 @@ Meteor.startup(async () => {
 	await createDefaultBusinessHourIfNotExists();
 
 	settings.watch<boolean>('Livechat_enable_business_hours', async (value) => {
-		Livechat.logger.info(`Changing business hour type to ${value}`);
+		logger.info(`Changing business hour type to ${value}`);
 		if (value) {
 			await businessHourManager.startManager();
 			return;
@@ -79,6 +82,11 @@ Meteor.startup(async () => {
 		({ user }: { user: IUser }) =>
 			user?.roles?.includes('livechat-agent') &&
 			!user?.roles?.includes('bot') &&
-			void Livechat.setUserStatusLivechatIf(user._id, 'not-available', {}, { livechatStatusSystemModified: true }).catch(),
+			void LivechatTyped.setUserStatusLivechatIf(
+				user._id,
+				ILivechatAgentStatus.NOT_AVAILABLE,
+				{},
+				{ livechatStatusSystemModified: true },
+			).catch(),
 	);
 });

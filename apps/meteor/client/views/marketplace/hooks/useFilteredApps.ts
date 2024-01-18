@@ -39,8 +39,9 @@ export const useFilteredApps = ({
 	sortingMethod: string;
 	status: string;
 	context?: string;
-}): AsyncState<
-	{ items: App[] } & { shouldShowSearchText: boolean } & PaginatedResult & { allApps: App[] } & { totalAppsLength: number }
+}): Omit<
+	AsyncState<{ items: App[] } & { shouldShowSearchText: boolean } & PaginatedResult & { allApps: App[] } & { totalAppsLength: number }>,
+	'error'
 > => {
 	const value = useMemo(() => {
 		if (appsData.value === undefined) {

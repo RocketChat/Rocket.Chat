@@ -2,7 +2,7 @@ import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import ManagersTable from './ManagersTable';
 
@@ -17,10 +17,10 @@ const ManagersRoute = (): ReactElement => {
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('Managers')} />
-				<Page.Content>
+				<PageHeader title={t('Managers')} />
+				<PageContent>
 					<ManagersTable />
-				</Page.Content>
+				</PageContent>
 			</Page>
 		</Page>
 	);

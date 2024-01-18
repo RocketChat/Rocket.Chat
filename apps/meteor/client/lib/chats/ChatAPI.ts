@@ -1,4 +1,5 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IActionManager } from '@rocket.chat/ui-contexts';
 import type { UIEvent } from 'react';
 
 import type { FormattingButton } from '../../../app/ui-message/client/messageBox/messageBoxFormatting';
@@ -141,7 +142,7 @@ export type ChatAPI = {
 		performContinuously(action: 'recording' | 'uploading' | 'playing'): void;
 	};
 
-	ActionManager: any;
+	ActionManager: IActionManager;
 
 	readonly flows: {
 		readonly uploadFiles: (files: readonly File[], resetFileInput?: () => void) => Promise<void>;

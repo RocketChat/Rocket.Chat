@@ -5,7 +5,7 @@ import React, { useCallback, useState, useMemo, useEffect } from 'react';
 
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import GenericModal from '../../../components/GenericModal';
-import { useFileInput } from '../../../hooks/useFileInput';
+import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 import { validate, createSoundData } from './lib';
 
 type EditSoundProps = {
@@ -114,7 +114,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 		));
 	}, [_id, close, deleteCustomSound, dispatchToastMessage, onChange, setModal, t]);
 
-	const [clickUpload] = useFileInput(handleChangeFile, 'audio/mp3');
+	const [clickUpload] = useSingleFileInput(handleChangeFile, 'audio/mp3');
 
 	return (
 		<>

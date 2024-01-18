@@ -1,3 +1,5 @@
+import type { IWorkspaceInfo } from '@rocket.chat/core-typings';
+
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import {
 	getCachedSupportedVersionsToken,
@@ -5,16 +7,9 @@ import {
 } from '../../../cloud/server/functions/supportedVersionsToken/supportedVersionsToken';
 import { Info, minimumClientVersions } from '../../../utils/rocketchat.info';
 
-type ServerInfo = {
-	info?: typeof Info;
-	supportedVersions?: { signed: string };
-	minimumClientVersions: typeof minimumClientVersions;
-	version: string;
-};
-
 const removePatchInfo = (version: string): string => version.replace(/(\d+\.\d+).*/, '$1');
 
-export async function getServerInfo(userId?: string): Promise<ServerInfo> {
+export async function getServerInfo(userId?: string): Promise<IWorkspaceInfo> {
 	const hasPermissionToViewStatistics = userId && (await hasPermissionAsync(userId, 'view-statistics'));
 	const supportedVersionsToken = await wrapPromise(getCachedSupportedVersionsToken());
 

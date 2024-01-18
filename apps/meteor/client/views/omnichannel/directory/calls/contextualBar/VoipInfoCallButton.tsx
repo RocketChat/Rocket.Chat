@@ -25,7 +25,7 @@ export const VoipInfoCallButton = ({ phoneNumber, ...props }: VoipInfoCallButton
 			{...props} // this props are injected by ButtonGroup
 			onClick={(): void => openDialModal({ initialValue: phoneNumber })}
 			disabled={!outBoundCallsEnabledForUser || !phoneNumber}
-			title={outBoundCallsAllowed ? t('Call_number') : t('Call_number_enterprise_only')}
+			title={outBoundCallsAllowed ? t('Call_number') : t('Call_number_premium_only')}
 			display='flex'
 			justifyContent='center'
 			fontSize='p2'

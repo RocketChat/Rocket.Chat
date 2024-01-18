@@ -1,5 +1,5 @@
 import { createReadStream } from 'fs';
-import { open, stat } from 'fs/promises';
+import { stat } from 'fs/promises';
 
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
@@ -28,9 +28,7 @@ export const uploadZipFile = async (filePath: string, userId: IUser['_id'], expo
 		name: newFileName,
 	};
 
-	const { fd } = await open(filePath);
-
-	const stream = createReadStream('', { fd }); // @todo once upgrades to Node.js v16.x, use createReadStream from fs.promises.open
+	const stream = createReadStream(filePath);
 
 	const userDataStore = FileUpload.getStore('UserDataFiles');
 

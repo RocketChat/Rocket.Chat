@@ -4,7 +4,7 @@ import { test, expect } from '../utils/test';
 
 test.use({ storageState: Users.admin.state });
 
-test.describe.serial('omnichannel-agents', () => {
+test.describe('omnichannel-customFields', () => {
 	let poOmnichannelCustomFields: OmnichannelCustomFields;
 	const newField = 'any_field';
 	test.beforeEach(async ({ page }) => {
@@ -32,14 +32,16 @@ test.describe.serial('omnichannel-agents', () => {
 		await poOmnichannelCustomFields.firstRowInTable(newField).click();
 
 		await poOmnichannelCustomFields.inputLabel.fill('new_any_label');
-		await poOmnichannelCustomFields.btnEditSave.click();
+		await poOmnichannelCustomFields.visibleLabel.click();
+		await poOmnichannelCustomFields.btnSave.click();
 
 		await expect(page.locator(`[qa-user-id="${newField}"] td:nth-child(2)`)).toHaveText(newLabel);
 	});
 
 	test('expect remove "new_field"', async () => {
 		await poOmnichannelCustomFields.inputSearch.fill(newField);
-		await poOmnichannelCustomFields.btnDeletefirstRowInTable.click();
+		await poOmnichannelCustomFields.firstRowInTable(newField).click();
+		await poOmnichannelCustomFields.btnDeleteCustomField.click();
 		await poOmnichannelCustomFields.btnModalRemove.click();
 
 		await poOmnichannelCustomFields.inputSearch.fill(newField);

@@ -110,10 +110,6 @@ async function validateUserData(userId, userData) {
 		});
 	}
 
-	if (userData.roles) {
-		await callbacks.run('validateUserRoles', userData);
-	}
-
 	let nameValidation;
 
 	try {
@@ -336,11 +332,18 @@ const saveNewUser = async function (userData, sendPassword) {
 };
 
 export const saveUser = async function (userId, userData) {
-	const oldUserData = await Users.findOneById(userData._id);
+	const oldUserData = userData._id && (await Users.findOneById(userData._id));
 	if (oldUserData && isUserFederated(oldUserData)) {
 		throw new Meteor.Error('Edit_Federated_User_Not_Allowed', 'Not possible to edit a federated user');
 	}
+
 	await validateUserData(userId, userData);
+
+	await callbacks.run('beforeSaveUser', {
+		user: userData,
+		oldUser: oldUserData,
+	});
+
 	let sendPassword = false;
 
 	if (userData.hasOwnProperty('setRandomPassword')) {
@@ -366,6 +369,7 @@ export const saveUser = async function (userId, userData) {
 				_id: userData._id,
 				username: userData.username,
 				name: userData.name,
+				updateUsernameInBackground: true,
 			}))
 		) {
 			throw new Meteor.Error('error-could-not-save-identity', 'Could not save user identity', {
