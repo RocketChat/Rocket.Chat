@@ -1,31 +1,12 @@
 import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
-import type { LoginService } from '@rocket.chat/ui-contexts';
-import { AuthenticationContext, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { capitalize } from '@rocket.chat/string-helpers';
+import { AuthenticationContext, useSetting } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import type { ContextType, ReactElement, ReactNode } from 'react';
 import React, { useMemo } from 'react';
 
+import { loginServices } from '../lib/loginServices';
 import { useLDAPAndCrowdCollisionWarning } from './UserProvider/hooks/useLDAPAndCrowdCollisionWarning';
-
-const capitalize = (str: string): string => str.charAt(0).toUpperCase() + str.slice(1);
-
-const config: Record<string, Partial<LoginService>> = {
-	'apple': { title: 'Apple', icon: 'apple' },
-	'facebook': { title: 'Facebook', icon: 'facebook' },
-	'twitter': { title: 'Twitter', icon: 'twitter' },
-	'google': { title: 'Google', icon: 'google' },
-	'github': { title: 'Github', icon: 'github' },
-	'github_enterprise': { title: 'Github Enterprise', icon: 'github' },
-	'gitlab': { title: 'Gitlab', icon: 'gitlab' },
-	'dolphin': { title: 'Dolphin', icon: 'dophin' },
-	'drupal': { title: 'Drupal', icon: 'drupal' },
-	'nextcloud': { title: 'Nextcloud', icon: 'nextcloud' },
-	'tokenpass': { title: 'Tokenpass', icon: 'tokenpass' },
-	'meteor-developer': { title: 'Meteor', icon: 'meteor' },
-	'wordpress': { title: 'WordPress', icon: 'wordpress' },
-	'linkedin': { title: 'Linkedin', icon: 'linkedin' },
-};
 
 export type LoginMethods = keyof typeof Meteor extends infer T ? (T extends `loginWith${string}` ? T : never) : never;
 
@@ -34,12 +15,6 @@ type UserProviderProps = {
 };
 
 const UserProvider = ({ children }: UserProviderProps): ReactElement => {
-	const getServiceConfigurations = useEndpoint('GET', '/v1/service.configurations');
-
-	const { data: services } = useQuery(['service.configurations'], () => getServiceConfigurations(), {
-		staleTime: Infinity,
-	});
-
 	const isLdapEnabled = useSetting<boolean>('LDAP_Enable');
 	const isCrowdEnabled = useSetting<boolean>('CROWD_Enable');
 
@@ -96,30 +71,13 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 						});
 					});
 			},
-			getLoginServices: () => {
-				const loginServices: LoginServiceConfiguration[] =
-					services?.configurations.filter((config) => !('showButton' in config) || config.showButton !== false) || [];
 
-				return loginServices
-					.sort(({ service: service1 }, { service: service2 }) => service1.localeCompare(service2))
-					.map((service) => {
-						const { appId: _, ...serviceData } = {
-							...service,
-							appId: undefined,
-						};
-
-						const serviceConfig = config[service.service] || {
-							title: capitalize(service.service),
-						};
-
-						return {
-							...serviceData,
-							...serviceConfig,
-						};
-					});
+			queryLoginServices: {
+				getCurrentValue: () => loginServices.getLoginServiceButtons(),
+				subscribe: (onStoreChange: () => void) => loginServices.on('changed', onStoreChange),
 			},
 		}),
-		[loginMethod, services],
+		[loginMethod],
 	);
 
 	return <AuthenticationContext.Provider children={children} value={contextValue} />;
