@@ -27,7 +27,13 @@ type BoldSpanProps = {
 const BoldSpan = ({ children }: BoldSpanProps): ReactElement => (
 	<>
 		{children.map((block, index) => {
-			if (block.type === 'LINK' || block.type === 'PLAIN_TEXT' || block.type === 'STRIKE' || block.type === 'ITALIC' || block.type === 'INLINE_CODE' ) {
+			if (
+				block.type === 'LINK' ||
+				block.type === 'PLAIN_TEXT' ||
+				block.type === 'STRIKE' ||
+				block.type === 'ITALIC' ||
+				block.type === 'INLINE_CODE'
+			) {
 				return <strong key={index}>{renderBlockComponent(block, index)}</strong>;
 			}
 			return renderBlockComponent(block, index);
