@@ -46,5 +46,8 @@
   ],
   "volta": {
     "extends": "../../package.json"
+  },
+  "dependencies": {
+    "@react-aria/toolbar": "^3.0.0-beta.1"
   }
 }
