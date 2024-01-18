@@ -11,9 +11,12 @@ type VersionTagProps = {
 
 export const VersionTag = ({ versionStatus, title }: VersionTagProps) => {
 	const { t } = useTranslation();
+	const tagStyle = {
+		marginTop: '4px',
+	};
 	if (versionStatus === 'outdated') {
 		return (
-			<Tag title={title} variant='danger'>
+			<Tag title={title} variant='danger' style={{ ...tagStyle }}>
 				{t('Outdated')}
 			</Tag>
 		);
@@ -21,14 +24,14 @@ export const VersionTag = ({ versionStatus, title }: VersionTagProps) => {
 
 	if (versionStatus === 'latest') {
 		return (
-			<Tag title={title} variant='primary'>
+			<Tag title={title} variant='primary' style={{ ...tagStyle }}>
 				{t('Latest')}
 			</Tag>
 		);
 	}
 
 	return (
-		<Tag title={title} variant='secondary'>
+		<Tag title={title} variant='secondary' style={{ ...tagStyle }}>
 			{t('New_version_available')}
 		</Tag>
 	);
