@@ -324,7 +324,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 			if (!agentsWithDepartment.find((agent) => agent.agentId === agentId)) {
 				agentIdsWithoutDepartment.push(agentId);
 			}
-			if (!agentsOfDepartment?.agents?.find((agent) => agent === agentId)) {
+			if (!agentsOfDepartment?.agentIds?.find((agent) => agent === agentId)) {
 				agentIdsToRemoveCurrentBusinessHour.push(agentId);
 			}
 		}

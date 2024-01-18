@@ -448,7 +448,7 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		throw new Error('Method not implemented in CE');
 	}
 
-	findAgentsByBusinessHourId(_businessHourId: string): AggregationCursor<{ agents: string[] }> {
+	findAgentsByBusinessHourId(_businessHourId: string): AggregationCursor<{ agentIds: string[] }> {
 		throw new Error('Method not implemented in CE');
 	}
 }

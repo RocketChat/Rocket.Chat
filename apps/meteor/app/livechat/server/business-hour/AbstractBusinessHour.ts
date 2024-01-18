@@ -14,7 +14,7 @@ export interface IBusinessHourBehavior {
 	onAddAgentToDepartment(options?: { departmentId: string; agentsId: string[] }): Promise<any>;
 	onRemoveAgentFromDepartment(options?: Record<string, any>): Promise<any>;
 	onRemoveDepartment(options: { department: ILivechatDepartment; agentsIds: string[] }): Promise<any>;
-	onDepartmentDisabled(department?: AtLeast<ILivechatDepartment, '_id' | 'businessHourId'>): Promise<any>;
+	onDepartmentDisabled(department?: AtLeast<ILivechatDepartment, '_id' | 'businessHourId'>): Promise<void>;
 	onDepartmentArchived(department: Pick<ILivechatDepartment, '_id' | 'businessHourId'>): Promise<void>;
 	onStartBusinessHours(): Promise<void>;
 	afterSaveBusinessHours(businessHourData: ILivechatBusinessHour): Promise<void>;

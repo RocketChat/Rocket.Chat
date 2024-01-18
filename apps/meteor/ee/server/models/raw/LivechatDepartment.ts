@@ -33,7 +33,7 @@ declare module '@rocket.chat/model-typings' {
 			projection: FindOptions<ILivechatDepartment>['projection'],
 		): Promise<FindCursor<ILivechatDepartment>>;
 		findByParentId(parentId: string, options?: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;
-		findAgentsByBusinessHourId(businessHourId: string): AggregationCursor<{ agents: string[] }>;
+		findAgentsByBusinessHourId(businessHourId: string): AggregationCursor<{ agentIds: string[] }>;
 	}
 }
 
@@ -93,7 +93,7 @@ export class LivechatDepartmentEE extends LivechatDepartmentRaw implements ILive
 		return this.col.find({ parentId }, options);
 	}
 
-	findAgentsByBusinessHourId(businessHourId: string): AggregationCursor<{ agents: string[] }> {
+	findAgentsByBusinessHourId(businessHourId: string): AggregationCursor<{ agentIds: string[] }> {
 		return this.col.aggregate<{ agents: string[] }>([
 			[
 				{
@@ -115,7 +115,7 @@ export class LivechatDepartmentEE extends LivechatDepartmentRaw implements ILive
 				{
 					$group: {
 						_id: null,
-						agents: {
+						agentIds: {
 							$addToSet: '$agents.agentId',
 						},
 					},
