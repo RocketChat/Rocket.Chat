@@ -1,6 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Message, MessageLeftContainer, MessageContainer, CheckBox } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
+import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import { useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useRef, memo } from 'react';
@@ -15,11 +16,11 @@ import {
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import { useJumpToMessage } from '../../../views/room/MessageList/hooks/useJumpToMessage';
 import { useChat } from '../../../views/room/contexts/ChatContext';
+import Emoji from '../../Emoji';
 import IgnoredContent from '../IgnoredContent';
 import MessageHeader from '../MessageHeader';
 import MessageToolboxHolder from '../MessageToolboxHolder';
 import StatusIndicators from '../StatusIndicators';
-import MessageAvatar from '../header/MessageAvatar';
 import RoomMessageContent from './room/RoomMessageContent';
 
 type RoomMessageProps = {
@@ -55,6 +56,7 @@ const RoomMessage = ({
 	const selecting = useIsSelecting();
 	const toggleSelected = useToggleSelect(message._id);
 	const selected = useIsSelectedMessage(message._id);
+	console.log(message);
 
 	useCountSelected();
 
@@ -81,14 +83,11 @@ const RoomMessage = ({
 			<MessageLeftContainer>
 				{!sequential && message.u.username && !selecting && showUserAvatar && (
 					<MessageAvatar
-						emoji={message.emoji}
+						{...{ emoji: message.emoji ? <Emoji emojiHandle={message.emoji} fillContainer /> : undefined }}
 						avatarUrl={message.avatar}
 						username={message.u.username}
 						size='x36'
-						{...(chat?.userCard && {
-							onClick: chat?.userCard.open(message.u.username),
-							style: { cursor: 'pointer' },
-						})}
+						onClick={() => chat?.userCard.open(message.u.username)}
 					/>
 				)}
 				{selecting && <CheckBox checked={selected} onChange={toggleSelected} />}
