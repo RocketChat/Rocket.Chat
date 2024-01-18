@@ -1,5 +1,6 @@
 import type { IVideoConferenceUser, Serialized } from '@rocket.chat/core-typings';
-import { Avatar, Box } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
+import { Avatar } from '@rocket.chat/ui-avatar';
 import { useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import { ReactElement, memo } from 'react';
 

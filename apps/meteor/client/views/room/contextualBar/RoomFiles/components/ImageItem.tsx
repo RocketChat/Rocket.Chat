@@ -1,4 +1,5 @@
-import { Avatar, Box } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
+import { Avatar } from '@rocket.chat/ui-avatar';
 import React from 'react';
 
 type ImageItemProps = {

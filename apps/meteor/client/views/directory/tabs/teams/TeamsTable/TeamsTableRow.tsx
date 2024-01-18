@@ -1,5 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Box, Avatar } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
+import { Avatar } from '@rocket.chat/ui-avatar';
 import React from 'react';
 
 import { GenericTableRow, GenericTableCell } from '../../../../../components/GenericTable';

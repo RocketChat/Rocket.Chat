@@ -1,5 +1,6 @@
 import type { IVoipRoom } from '@rocket.chat/core-typings';
-import { Avatar, Box, Tag } from '@rocket.chat/fuselage';
+import { Box, Tag } from '@rocket.chat/fuselage';
+import { Avatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';

@@ -1,7 +1,9 @@
 /* eslint-disable new-cap */
-import { Message, Avatar } from '@rocket.chat/fuselage';
+import { Message } from '@rocket.chat/fuselage';
+import { Avatar } from '@rocket.chat/ui-avatar';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { action } from '@storybook/addon-actions';
+import React from 'react';
 
 import { UiKitContext, UiKitMessage } from '..';
 import * as payloads from './payloads';
@@ -54,10 +56,6 @@ const createStory = (blocks: readonly UiKit.LayoutBlock[]) => {
             value={{
               action: action('action'),
               updateState: action('updateState'),
-              payload: {
-                appId: 'appId',
-                viewId: 'viewId',
-              },
               values: {},
               errors,
             }}

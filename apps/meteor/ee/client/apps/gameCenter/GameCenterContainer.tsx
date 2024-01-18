@@ -1,4 +1,4 @@
-import { Avatar } from '@rocket.chat/fuselage';
+import { Avatar } from '@rocket.chat/ui-avatar';
 import type { ReactElement } from 'react';
 import React from 'react';
 

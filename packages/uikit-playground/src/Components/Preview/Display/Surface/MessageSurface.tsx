@@ -1,13 +1,14 @@
-import { Message, Avatar } from '@rocket.chat/fuselage';
+import { Message } from '@rocket.chat/fuselage';
+import { Avatar } from '@rocket.chat/ui-avatar';
 
 import DraggableList from '../../../Draggable/DraggableList';
 import type { DraggableListProps } from '../../../Draggable/DraggableList';
 
 const MessageSurface = ({ blocks, onDragEnd }: DraggableListProps) => (
-  <Message clickable>
-    <Message.LeftContainer>
-      <Avatar
-        url='data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC
+	<Message clickable>
+		<Message.LeftContainer>
+			<Avatar
+				url='data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC
               4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
               IyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAA
               AAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAg
@@ -18,32 +19,31 @@ const MessageSurface = ({ blocks, onDragEnd }: DraggableListProps) => (
               6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkB
               SuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlP
               UH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z'
-        size={'x36'}
-      />
-    </Message.LeftContainer>
-    <Message.Container>
-      <Message.Header>
-        <Message.NameContainer>
-          <Message.Name>Haylie George</Message.Name>{' '}
-          <Message.Username>@haylie.george</Message.Username>
-        </Message.NameContainer>
-        <Message.Role>Admin</Message.Role>
-        <Message.Role>User</Message.Role>
-        <Message.Role>Owner</Message.Role>
-        <Message.Timestamp>12:00 PM</Message.Timestamp>
-      </Message.Header>
-      <Message.Body>
-        <DraggableList surface={1} blocks={blocks} onDragEnd={onDragEnd} />
-      </Message.Body>
-    </Message.Container>
-    <Message.Toolbox.Wrapper>
-      <Message.Toolbox>
-        <Message.Toolbox.Item icon='quote' />
-        <Message.Toolbox.Item icon='clock' />
-        <Message.Toolbox.Item icon='thread' />
-      </Message.Toolbox>
-    </Message.Toolbox.Wrapper>
-  </Message>
+				size={'x36'}
+			/>
+		</Message.LeftContainer>
+		<Message.Container>
+			<Message.Header>
+				<Message.NameContainer>
+					<Message.Name>Haylie George</Message.Name> <Message.Username>@haylie.george</Message.Username>
+				</Message.NameContainer>
+				<Message.Role>Admin</Message.Role>
+				<Message.Role>User</Message.Role>
+				<Message.Role>Owner</Message.Role>
+				<Message.Timestamp>12:00 PM</Message.Timestamp>
+			</Message.Header>
+			<Message.Body>
+				<DraggableList surface={1} blocks={blocks} onDragEnd={onDragEnd} />
+			</Message.Body>
+		</Message.Container>
+		<Message.Toolbox.Wrapper>
+			<Message.Toolbox>
+				<Message.Toolbox.Item icon='quote' />
+				<Message.Toolbox.Item icon='clock' />
+				<Message.Toolbox.Item icon='thread' />
+			</Message.Toolbox>
+		</Message.Toolbox.Wrapper>
+	</Message>
 );
 
 export default MessageSurface;

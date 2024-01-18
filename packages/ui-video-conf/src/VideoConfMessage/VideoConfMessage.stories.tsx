@@ -1,4 +1,5 @@
-import { MessageDivider, Message, Avatar, Box } from '@rocket.chat/fuselage';
+import { MessageDivider, Message, Box } from '@rocket.chat/fuselage';
+import { Avatar } from '@rocket.chat/ui-avatar';
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import type { ReactElement } from 'react';
 
@@ -22,7 +23,7 @@ export default {
 				<MessageDivider>May, 24, 2020</MessageDivider>
 				<Message className='customclass'>
 					<Message.LeftContainer>
-						<Avatar url={avatarUrl} size={'x36'} />
+						<Avatar url={avatarUrl} size='x36' />
 					</Message.LeftContainer>
 					<Message.Container>
 						<Message.Header>

@@ -1,5 +1,6 @@
 import type { IOmnichannelGenericRoom, IVisitor } from '@rocket.chat/core-typings';
-import { Avatar, Box } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
+import { Avatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';

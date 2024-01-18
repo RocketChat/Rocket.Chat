@@ -1,4 +1,4 @@
-import { Avatar, Box, Button, ButtonGroup, ContextualbarFooter, ContextualbarHeader, ContextualbarTitle } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, ContextualbarFooter, ContextualbarHeader, ContextualbarTitle } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	UiKitComponent,
@@ -6,6 +6,7 @@ import {
 	contextualBarParser,
 	UiKitContext,
 } from '@rocket.chat/fuselage-ui-kit';
+import { Avatar } from '@rocket.chat/ui-avatar';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { BlockContext } from '@rocket.chat/ui-kit';
 import type { FormEvent, UIEvent } from 'react';

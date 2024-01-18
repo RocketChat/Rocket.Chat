@@ -35,6 +35,7 @@
 		"@rocket.chat/fuselage-hooks": "*",
 		"@rocket.chat/icons": "*",
 		"@rocket.chat/styled": "*",
+		"@rocket.chat/ui-avatar": "*",
 		"@rocket.chat/ui-contexts": "3.0.2",
 		"react": "^17.0.2",
 		"react-dom": "^17.0.2"
@@ -53,6 +54,7 @@
 		"/dist"
 	],
 	"dependencies": {
+		"@rocket.chat/ui-avatar": "workspace:^",
 		"@rocket.chat/emitter": "~0.31.25"
 	},
 	"volta": {
