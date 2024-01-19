@@ -5,8 +5,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { settings, settingsRegistry } from '../../app/settings/server';
 
 export const createMatrixFederationSettings = async () => {
-
-
 	await settingsRegistry.add('Federation_Matrix_enabled', false, {
 		readonly: false,
 		type: 'boolean',
@@ -21,7 +19,6 @@ export const createMatrixFederationSettings = async () => {
 	const uniqueId = settings.get('uniqueID') || uuidv4().slice(0, 15).replace(new RegExp('-', 'g'), '_');
 	const homeserverToken = crypto.createHash('sha256').update(`hs_${uniqueId}`).digest('hex');
 	const applicationServiceToken = crypto.createHash('sha256').update(`as_${uniqueId}`).digest('hex');
-
 
 	await settingsRegistry.add('Federation_Matrix_id', `rocketchat_${uniqueId}`, {
 		readonly: true,
@@ -50,29 +47,23 @@ export const createMatrixFederationSettings = async () => {
 		section: 'Matrix Bridge',
 	});
 
-	await settingsRegistry.add('Federation_Matrix_homeserver_url', 'http://localhost:8008',
-		{
-			type: 'string',
-			i18nLabel: 'Federation_Matrix_homeserver_url',
-			i18nDescription: 'Federation_Matrix_homeserver_url_desc',
-			alert: 'Federation_Matrix_homeserver_url_alert',
-			group: 'Federation',
-			section: 'Matrix Bridge',
-		},
-	);
+	await settingsRegistry.add('Federation_Matrix_homeserver_url', 'http://localhost:8008', {
+		type: 'string',
+		i18nLabel: 'Federation_Matrix_homeserver_url',
+		i18nDescription: 'Federation_Matrix_homeserver_url_desc',
+		alert: 'Federation_Matrix_homeserver_url_alert',
+		group: 'Federation',
+		section: 'Matrix Bridge',
+	});
 
-	await settingsRegistry.add(
-		'Federation_Matrix_homeserver_domain',
-		'local.rocket.chat',
-		{
-			type: 'string',
-			i18nLabel: 'Federation_Matrix_homeserver_domain',
-			i18nDescription: 'Federation_Matrix_homeserver_domain_desc',
-			alert: 'Federation_Matrix_homeserver_domain_alert',
-			group: 'Federation',
-			section: 'Matrix Bridge',
-		},
-	);
+	await settingsRegistry.add('Federation_Matrix_homeserver_domain', 'local.rocket.chat', {
+		type: 'string',
+		i18nLabel: 'Federation_Matrix_homeserver_domain',
+		i18nDescription: 'Federation_Matrix_homeserver_domain_desc',
+		alert: 'Federation_Matrix_homeserver_domain_alert',
+		group: 'Federation',
+		section: 'Matrix Bridge',
+	});
 
 	await settingsRegistry.add('Federation_Matrix_bridge_url', 'http://host.docker.internal:3300', {
 		type: 'string',
