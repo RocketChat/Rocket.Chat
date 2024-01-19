@@ -18,6 +18,7 @@ import type {
 	TransferData,
 	AtLeast,
 	UserStatus,
+	ILivechatDepartment,
 } from '@rocket.chat/core-typings';
 import type { FilterOperators } from 'mongodb';
 
@@ -79,7 +80,7 @@ interface EventLikeCallbackSignatures {
 	'afterValidateLogin': (login: { user: IUser }) => void;
 	'afterJoinRoom': (user: IUser, room: IRoom) => void;
 	'livechat.afterDepartmentDisabled': (department: ILivechatDepartmentRecord) => void;
-	'livechat.afterDepartmentArchived': (department: Pick<ILivechatDepartmentRecord, '_id'>) => void;
+	'livechat.afterDepartmentArchived': (department: Pick<ILivechatDepartmentRecord, '_id' | 'businessHourId'>) => void;
 	'beforeSaveUser': ({ user, oldUser }: { user: IUser; oldUser?: IUser }) => void;
 	'afterSaveUser': ({ user, oldUser }: { user: IUser; oldUser?: IUser | null }) => void;
 	'livechat.afterTagRemoved': (tag: ILivechatTagRecord) => void;
@@ -144,8 +145,11 @@ type ChainedCallbackSignatures = {
 		oldDepartmentId: ILivechatDepartmentRecord['_id'];
 	};
 	'livechat.afterInquiryQueued': (inquiry: ILivechatInquiryRecord) => ILivechatInquiryRecord;
-	'livechat.afterRemoveDepartment': (params: { department: ILivechatDepartmentRecord; agentsId: ILivechatAgent['_id'][] }) => {
-		departmentId: ILivechatDepartmentRecord['_id'];
+	'livechat.afterRemoveDepartment': (params: {
+		department: AtLeast<ILivechatDepartment, '_id' | 'businessHourId'>;
+		agentsId: ILivechatAgent['_id'][];
+	}) => {
+		department: AtLeast<ILivechatDepartment, '_id' | 'businessHourId'>;
 		agentsId: ILivechatAgent['_id'][];
 	};
 	'livechat.applySimultaneousChatRestrictions': (_: undefined, params: { departmentId?: ILivechatDepartmentRecord['_id'] }) => undefined;
