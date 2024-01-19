@@ -188,6 +188,7 @@ export const createLivechatInquiry = async ({
 		t: 'l',
 		priorityWeight: LivechatPriorityWeight.NOT_SPECIFIED,
 		estimatedWaitingTimeQueue: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
+		_createdAt: new Date(),
 
 		...extraInquiryInfo,
 	};
