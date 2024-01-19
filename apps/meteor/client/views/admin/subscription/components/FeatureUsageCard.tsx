@@ -1,4 +1,4 @@
-import { Card, CardBody, CardColSection, CardFooter, CardTitle } from '@rocket.chat/ui-client';
+import { Box, Card, CardBody, CardControls, CardTitle } from '@rocket.chat/fuselage';
 import type { ReactElement, ReactNode } from 'react';
 import React, { memo } from 'react';
 
@@ -18,16 +18,16 @@ export type CardProps = {
 const FeatureUsageCard = ({ children, card }: FeatureUsageCardProps): ReactElement => {
 	const { title, infoText, upgradeButton } = card;
 	return (
-		<Card>
+		<Card height='full'>
 			<CardTitle>
 				{title} {infoText && <InfoTextIconModal title={title} infoText={infoText} />}
 			</CardTitle>
-			<CardBody minHeight='x184'>
-				<CardColSection display='flex' flexDirection='row' justifyContent='center' alignItems='center' fontScale='p2' h='full' w='full'>
+			<CardBody>
+				<Box h='full' w='full'>
 					{children}
-				</CardColSection>
+				</Box>
 			</CardBody>
-			{upgradeButton && <CardFooter>{upgradeButton}</CardFooter>}
+			{upgradeButton && <CardControls>{upgradeButton}</CardControls>}
 		</Card>
 	);
 };

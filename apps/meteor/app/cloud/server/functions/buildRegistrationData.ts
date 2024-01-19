@@ -65,7 +65,7 @@ export async function buildWorkspaceRegistrationData<T extends string | undefine
 	const language = settings.get<string>('Language');
 	const organizationType = settings.get<string>('Organization_Type');
 	const industry = settings.get<string>('Industry');
-	const orgSize = settings.get<string>('Organization_Size');
+	const orgSize = settings.get<string>('Size');
 	const workspaceType = settings.get<string>('Server_Type');
 
 	const seats = await Users.getActiveLocalUserCount();

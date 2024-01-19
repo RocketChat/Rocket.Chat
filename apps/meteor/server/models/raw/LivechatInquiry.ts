@@ -137,7 +137,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 
 	async findNextAndLock(queueSortBy: OmnichannelSortingMechanismSettingType, department?: string): Promise<ILivechatInquiryRecord | null> {
 		const date = new Date();
-		const result = await this.col.findOneAndUpdate(
+		const result = await this.findOneAndUpdate(
 			{
 				status: LivechatInquiryStatus.QUEUED,
 				...(department ? { department } : { department: { $exists: false } }),

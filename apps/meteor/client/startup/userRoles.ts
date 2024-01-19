@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { UserRoles, ChatMessage } from '../../app/models/client';
-import { Notifications } from '../../app/notifications/client';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { dispatchToastMessage } from '../lib/toast';
 
@@ -20,7 +19,7 @@ Meteor.startup(() => {
 					dispatchToastMessage({ type: 'error', message: error });
 				});
 
-			Notifications.onLogged('roles-change', (role) => {
+			sdk.stream('notify-logged', ['roles-change'], (role) => {
 				if (role.type === 'added') {
 					if (!role.scope) {
 						if (!role.u) {

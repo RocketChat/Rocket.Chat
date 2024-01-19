@@ -47,16 +47,29 @@ export interface StreamerEvents {
 		{ key: `${string}/typing`; args: [username: string, typing: boolean] },
 		{
 			key: `${string}/deleteMessageBulk`;
-			args: [args: { rid: IMessage['rid']; excludePinned: boolean; ignoreDiscussion: boolean; ts: Record<string, Date>; users: string[] }];
+			args: [
+				args: {
+					rid: IMessage['rid'];
+					excludePinned: boolean;
+					ignoreDiscussion: boolean;
+					ts: Record<string, Date>;
+					users: string[];
+					ids?: string[]; // message ids have priority over ts
+					showDeletedStatus?: boolean;
+				},
+			];
 		},
 		{ key: `${string}/deleteMessage`; args: [{ _id: IMessage['_id'] }] },
 		{ key: `${string}/e2e.keyRequest`; args: [unknown] },
 		{ key: `${string}/videoconf`; args: [id: string] },
+		{ key: `${string}/messagesRead`; args: [{ until: Date; tmid?: string }] },
+		{ key: `${string}/messagesImported`; args: [null] },
+		{ key: `${string}/webrtc`; args: unknown[] },
 		/* @deprecated over videoconf*/
 		// { key: `${string}/${string}`; args: [id: string] },
 	];
 
-	'room-messages': [{ key: '__my_messages__'; args: [IMessage] }, { key: string; args: [IMessage] }];
+	'room-messages': [{ key: '__my_messages__'; args: [IMessage] }, { key: string; args: [message: IMessage, user?: IUser, room?: IRoom] }];
 
 	'notify-all': [
 		{
@@ -219,7 +232,7 @@ export interface StreamerEvents {
 				},
 			];
 		},
-		{ key: 'Users:NameChanged'; args: [Pick<IUser, '_id' | 'name'>] },
+		{ key: 'Users:NameChanged'; args: [Pick<IUser, '_id' | 'name' | 'username'>] },
 		{ key: 'private-settings-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
 		{ key: 'deleteCustomUserStatus'; args: [{ userStatusData: unknown }] },
 		{ key: 'user-status'; args: [[IUser['_id'], IUser['username'], 0 | 1 | 2 | 3, IUser['statusText'], IUser['name'], IUser['roles']]] },
