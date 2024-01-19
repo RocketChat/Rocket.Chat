@@ -97,6 +97,7 @@ const RoomActions = ({ room, reload }) => {
 						message: t(message, {
 							channelName: roomCoordinator.getRoomName(room.t, room),
 							numberOfMembers: updatedRoom.usersCount,
+							limit: MAX_NUMBER_OF_AUTO_JOIN_MEMBERS,
 						}),
 					});
 				}
