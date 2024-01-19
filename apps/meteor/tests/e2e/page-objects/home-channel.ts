@@ -40,4 +40,8 @@ export class HomeChannel {
 		await this.toastSuccess.locator('button >> i.rcx-icon--name-cross.rcx-icon').click();
 		await this.page.mouse.move(0, 0);
 	}
+
+	get composerToolboxActions(): Locator {
+		return this.page.locator('[role=toolbar][aria-label="Composer Primary Actions"] button');
+	}
 }

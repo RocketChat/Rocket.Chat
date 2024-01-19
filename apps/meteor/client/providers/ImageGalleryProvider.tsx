@@ -1,7 +1,8 @@
 import React, { type ReactNode, useEffect, useState } from 'react';
 
-import ImageGallery from '../components/ImageGallery/ImageGallery';
+import { ImageGallery } from '../components/ImageGallery';
 import { ImageGalleryContext } from '../contexts/ImageGalleryContext';
+import ImageGalleryData from '../views/room/ImageGallery/ImageGalleryData';
 
 type ImageGalleryProviderProps = {
 	children: ReactNode;
@@ -9,34 +10,39 @@ type ImageGalleryProviderProps = {
 
 const ImageGalleryProvider = ({ children }: ImageGalleryProviderProps) => {
 	const [imageId, setImageId] = useState<string>();
+	const [quotedImageUrl, setQuotedImageUrl] = useState<string>();
 
 	useEffect(() => {
-		document.addEventListener('click', (event: Event) => {
+		const handleImageClick = (event: Event) => {
 			const target = event?.target as HTMLElement | null;
-			if (target?.classList.contains('gallery-item')) {
-				return setImageId(target.dataset.id || target?.parentElement?.parentElement?.dataset.id);
-			}
 
+			if (target?.closest('.rcx-attachment__details')) {
+				return setQuotedImageUrl(target.dataset.id);
+			}
+			if (target?.classList.contains('gallery-item')) {
+				const id = target.closest('.gallery-item-container')?.getAttribute('data-id') || undefined;
+				return setImageId(target.dataset.id || id);
+			}
 			if (target?.classList.contains('gallery-item-container')) {
 				return setImageId(target.dataset.id);
 			}
-			if (
-				target?.classList.contains('gallery-item') &&
-				target?.parentElement?.parentElement?.classList.contains('gallery-item-container')
-			) {
-				return setImageId(target.dataset.id || target?.parentElement?.parentElement?.dataset.id);
+			if (target?.classList.contains('rcx-avatar__element') && target.closest('.gallery-item')) {
+				const avatarTarget = target.closest('.gallery-item-container')?.getAttribute('data-id') || undefined;
+				return setImageId(avatarTarget);
 			}
+		};
+		document.addEventListener('click', handleImageClick);
 
-			if (target?.classList.contains('rcx-avatar__element') && target?.parentElement?.classList.contains('gallery-item')) {
-				return setImageId(target.dataset.id || target?.parentElement?.parentElement?.dataset.id);
-			}
-		});
+		return () => document.removeEventListener('click', handleImageClick);
 	}, []);
 
 	return (
 		<ImageGalleryContext.Provider value={{ imageId: imageId || '', isOpen: !!imageId, onClose: () => setImageId(undefined) }}>
 			{children}
-			{!!imageId && <ImageGallery />}
+			{!!quotedImageUrl && (
+				<ImageGallery images={[{ _id: quotedImageUrl, url: quotedImageUrl }]} onClose={() => setQuotedImageUrl(undefined)} />
+			)}
+			{!!imageId && <ImageGalleryData />}
 		</ImageGalleryContext.Provider>
 	);
 };
