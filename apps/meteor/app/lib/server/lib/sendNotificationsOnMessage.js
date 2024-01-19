@@ -146,7 +146,7 @@ export const sendNotification = async ({
 			isThread,
 		})
 	) {
-		const messageWithUnicode = emojione.shortnameToUnicode(message.msg);
+		const messageWithUnicode = message.msg ? emojione.shortnameToUnicode(message.msg) : message.msg;
 		const firstAttachment = message.attachments?.length > 0 && message.attachments.shift();
 		firstAttachment.description =
 			typeof firstAttachment.description === 'string' ? emojione.shortnameToUnicode(firstAttachment.description) : undefined;
