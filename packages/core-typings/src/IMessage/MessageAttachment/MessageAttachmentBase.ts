@@ -1,7 +1,7 @@
 import type { Root } from '@rocket.chat/message-parser';
 
 export type MessageAttachmentBase = {
-	id: string | undefined;
+	id?: string;
 	title?: string;
 	ts?: Date;
 	collapsed?: boolean;
