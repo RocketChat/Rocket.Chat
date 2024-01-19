@@ -8,11 +8,7 @@ export class AppRolesConverter {
 	async convertById(roleId: string): Promise<AppsEngineRole | undefined> {
 		const role = await Roles.findOneById(roleId);
 
-		if (!role) {
-			return;
-		}
-		return this.convertRole(role);
-	}
+    if (role !== null) return this.convertRole(role);
 
 	async convertRole(role: IRole): Promise<AppsEngineRole> {
 		const map = {
