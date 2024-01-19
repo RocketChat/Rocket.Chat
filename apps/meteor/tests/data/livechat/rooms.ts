@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import type {
-	IInquiry,
+	ILivechatInquiryRecord,
 	ILivechatAgent,
 	ILivechatDepartment,
 	ILivechatVisitor,
@@ -68,12 +68,12 @@ export const takeInquiry = async (inquiryId: string, agentCredentials?: IUserCre
     await request.post(api('livechat/inquiries.take')).set(agentCredentials || credentials).send({ userId, inquiryId }).expect(200);
 };
 
-export const fetchInquiry = (roomId: string): Promise<IInquiry> => {
+export const fetchInquiry = (roomId: string): Promise<ILivechatInquiryRecord> => {
 	return new Promise((resolve, reject) => {
 		request
 			.get(api(`livechat/inquiries.getOne?roomId=${roomId}`))
 			.set(credentials)
-			.end((err: Error, res: DummyResponse<IInquiry>) => {
+			.end((err: Error, res: DummyResponse<ILivechatInquiryRecord>) => {
 				if (err) {
 					return reject(err);
 				}
@@ -82,7 +82,7 @@ export const fetchInquiry = (roomId: string): Promise<IInquiry> => {
 	});
 };
 
-export const createDepartment = (agents?: { agentId: string }[], name?: string, enabled = true): Promise<ILivechatDepartment> => {
+export const createDepartment = (agents?: { agentId: string }[], name?: string, enabled = true, opts: Record<string, any> = {}): Promise<ILivechatDepartment> => {
 	return new Promise((resolve, reject) => {
 		request
 			.post(api('livechat/department'))
@@ -94,6 +94,7 @@ export const createDepartment = (agents?: { agentId: string }[], name?: string, 
 					showOnOfflineForm: true,
 					showOnRegistration: true,
 					email: 'a@b.com',
+					...opts,
 				},
 				agents,
 			})
@@ -313,3 +314,19 @@ export const placeRoomOnHold = async (roomId: string): Promise<void> => {
         .send({ roomId })
         .expect(200);
 }
+
+export const moveBackToQueue = async (roomId: string, overrideCredentials?: IUserCredentialsHeader): Promise<void> => {
+	await request
+		.post(methodCall('livechat:returnAsInquiry'))
+		.set(overrideCredentials || credentials)
+		.send({
+			message: JSON.stringify({
+				method: 'livechat:returnAsInquiry',
+				params: [roomId],
+				id: 'id',
+				msg: 'method',
+			}),
+		})
+		.expect('Content-Type', 'application/json')
+		.expect(200);
+};

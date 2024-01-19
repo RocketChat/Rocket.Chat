@@ -6,7 +6,7 @@ import React from 'react';
 
 import { GenericTableCell, GenericTableRow } from '../../../../../../client/components/GenericTable';
 import { useFormatDateAndTime } from '../../../../../../client/hooks/useFormatDateAndTime';
-import DeviceIcon from '../../../../deviceManagement/components/DeviceIcon';
+import DeviceIcon from '../../../../components/deviceManagement/DeviceIcon';
 import { useDeviceLogout } from '../../../../hooks/useDeviceLogout';
 
 type DevicesRowProps = {

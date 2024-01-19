@@ -1,6 +1,7 @@
 import { proxify, proxifyWithWait } from './lib/proxify';
 import type { IAccount, ILoginResult } from './types/IAccount';
 import type { IAnalyticsService } from './types/IAnalyticsService';
+import { IApiService } from './types/IApiService';
 import type { IAppsEngineService } from './types/IAppsEngineService';
 import type { IAuthorization, RoomAccessValidator } from './types/IAuthorization';
 import type { IAuthorizationLivechat } from './types/IAuthorizationLivechat';
@@ -18,6 +19,7 @@ import type { IMessageReadsService } from './types/IMessageReadsService';
 import type { IMessageService } from './types/IMessageService';
 import type { IMeteor, AutoUpdateRecord } from './types/IMeteor';
 import type { INPSService, NPSCreatePayload, NPSVotePayload } from './types/INPSService';
+import type { IOmnichannelAnalyticsService } from './types/IOmnichannelAnalyticsService';
 import type { IOmnichannelEEService } from './types/IOmnichannelEEService';
 import type { IOmnichannelIntegrationService } from './types/IOmnichannelIntegrationService';
 import type { IOmnichannelService } from './types/IOmnichannelService';
@@ -49,7 +51,8 @@ import type { IVoipService } from './types/IVoipService';
 export { asyncLocalStorage } from './lib/asyncLocalStorage';
 export { MeteorError, isMeteorError } from './MeteorError';
 export { api } from './api';
-export { EventSignatures } from './Events';
+export { EventSignatures } from './events/Events';
+export { listenToMessageSentEvent, dbWatchersDisabled } from './events/listeners';
 export { LocalBroker } from './LocalBroker';
 
 export { IBroker, IBrokerNode, BaseMetricOptions, IServiceMetrics } from './types/IBroker';
@@ -59,10 +62,20 @@ export { IServiceContext, ServiceClass, IServiceClass, ServiceClassInternal } fr
 export { IFederationService, IFederationJoinExternalPublicRoomInput, IFederationStatistics } from './types/IFederationService';
 
 export {
+	ConversationData,
+	AgentOverviewDataOptions,
+	ChartDataOptions,
+	AnalyticsOverviewDataOptions,
+	ChartDataResult,
+	AnalyticsOverviewDataResult,
+} from './types/IOmnichannelAnalyticsService';
+
+export {
 	AutoUpdateRecord,
 	FindVoipRoomsParams,
 	IAccount,
 	IAnalyticsService,
+	IApiService,
 	IAppsEngineService,
 	IAuthorization,
 	IAuthorizationLivechat,
@@ -121,6 +134,7 @@ export {
 	IOmnichannelEEService,
 	IOmnichannelIntegrationService,
 	IImportService,
+	IOmnichannelAnalyticsService,
 };
 
 // TODO think in a way to not have to pass the service name to proxify here as well
@@ -156,6 +170,7 @@ export const Federation = proxifyWithWait<IFederationService>('federation');
 export const Omnichannel = proxifyWithWait<IOmnichannelService>('omnichannel');
 export const OmnichannelEEService = proxifyWithWait<IOmnichannelEEService>('omnichannel-ee');
 export const Import = proxifyWithWait<IImportService>('import');
+export const OmnichannelAnalytics = proxifyWithWait<IOmnichannelAnalyticsService>('omnichannel-analytics');
 
 // Calls without wait. Means that the service is optional and the result may be an error
 // of service/method not available

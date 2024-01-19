@@ -242,7 +242,7 @@ describe('Event License behaviors', () => {
 			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(false);
 
 			await expect(fn).toBeCalledTimes(2);
-			await expect(toggleFn).toBeCalledTimes(1);
+			await expect(toggleFn).toBeCalledTimes(0);
 
 			await expect(fn).toBeCalledWith({
 				reason: 'limit',
@@ -277,7 +277,7 @@ describe('Event License behaviors', () => {
 			expect(preventFn).toBeCalledTimes(0);
 			expect(preventToggleFn).toBeCalledTimes(0);
 			expect(allowFn).toBeCalledTimes(1);
-			expect(allowToggleFn).toBeCalledTimes(1);
+			expect(allowToggleFn).toBeCalledTimes(0);
 
 			preventFn.mockClear();
 			preventToggleFn.mockClear();

@@ -40,6 +40,7 @@ async function createUsersSubscriptions({
 		const extra: Partial<ISubscriptionExtraData> = options?.subscriptionExtra || {};
 		extra.open = true;
 		extra.ls = now;
+		extra.roles = ['owner'];
 
 		if (room.prid) {
 			extra.prid = room.prid;

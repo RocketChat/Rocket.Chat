@@ -72,6 +72,7 @@ export const QueueManager: queueManager = {
 				status: Match.Maybe(String),
 				department: Match.Maybe(String),
 				name: Match.Maybe(String),
+				activity: Match.Maybe([String]),
 			}),
 		);
 

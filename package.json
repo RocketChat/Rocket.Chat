@@ -1,11 +1,10 @@
 {
 	"name": "rocket.chat",
-	"version": "6.5.0-develop",
+	"version": "6.6.0-develop",
 	"description": "Rocket.Chat Monorepo",
 	"main": "index.js",
 	"private": true,
 	"scripts": {
-		"postinstall": "husky install",
 		"build": "turbo run build",
 		"build:services": "turbo run build --filter=rocketchat-services...",
 		"build:ci": "turbo run build:ci",
@@ -17,11 +16,10 @@
 		"fuselage": "./fuselage.sh"
 	},
 	"devDependencies": {
-		"@changesets/cli": "^2.26.1",
-		"@types/chart.js": "^2.9.37",
-		"@types/js-yaml": "^4.0.5",
-		"husky": "^7.0.4",
-		"turbo": "~1.10.15"
+		"@changesets/cli": "^2.26.2",
+		"@types/chart.js": "^2.9.39",
+		"@types/js-yaml": "^4.0.8",
+		"turbo": "~1.11.2"
 	},
 	"workspaces": [
 		"apps/*",
@@ -41,17 +39,15 @@
 	},
 	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
 	"engines": {
-		"yarn": "3.2.2",
+		"yarn": "3.5.0",
 		"node": "14.21.3",
 		"npm": "Use yarn instead"
 	},
-	"packageManager": "yarn@3.2.2",
+	"packageManager": "yarn@3.5.0",
 	"houston": {
 		"minTag": "0.55.0-rc.0",
 		"updateFiles": [
 			"package.json",
-			"apps/meteor/package.json",
-			"apps/meteor/.docker/Dockerfile.rhel",
 			"apps/meteor/app/utils/rocketchat.info"
 		]
 	},
@@ -64,6 +60,12 @@
 		"adm-zip": "0.5.9",
 		"preact@10.15.1": "patch:preact@npm:10.15.1#.yarn/patches/preact-npm-10.15.1-bd458de913.patch",
 		"@storybook/react-docgen-typescript-plugin@1.0.2-canary.6.9d540b91e815f8fc2f8829189deb00553559ff63.0": "patch:@storybook/react-docgen-typescript-plugin@npm%3A1.0.2-canary.6.9d540b91e815f8fc2f8829189deb00553559ff63.0#./.yarn/patches/@storybook-react-docgen-typescript-plugin-npm-1.0.2-canary.6.9d540b91e815f8fc2f8829189deb00553559ff63.0-b31cc57c40.patch",
-		"mongodb@^4.17.1": "patch:mongodb@npm:4.17.1#.yarn/patches/mongodb-npm-4.17.1-a2fe811ff1.patch"
+		"mongodb@^4.17.1": "patch:mongodb@npm:4.17.1#.yarn/patches/mongodb-npm-4.17.1-a2fe811ff1.patch",
+		"@rocket.chat/forked-matrix-sdk-crypto-nodejs": "0.1.0-beta.13",
+		"typia@5.3.3": "patch:typia@npm:5.3.3#.yarn/patches/typia-npm-5.3.3-21d3e18463.patch",
+		"typia@~5.3.3": "patch:typia@npm%3A5.3.3#./.yarn/patches/typia-npm-5.3.3-21d3e18463.patch"
+	},
+	"dependencies": {
+		"node-gyp": "^9.4.1"
 	}
 }

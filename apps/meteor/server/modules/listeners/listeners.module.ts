@@ -1,7 +1,7 @@
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { IServiceClass } from '@rocket.chat/core-services';
-import { EnterpriseSettings, api } from '@rocket.chat/core-services';
+import { api, EnterpriseSettings, listenToMessageSentEvent } from '@rocket.chat/core-services';
 import { UserStatus, isSettingColor, isSettingEnterprise } from '@rocket.chat/core-typings';
 import type { IUser, IRoom, VideoConference, ISetting, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
@@ -99,9 +99,10 @@ export class ListenersModule {
 			});
 		});
 
-		service.onEvent('user.deleted', ({ _id: userId }) => {
+		service.onEvent('user.deleted', ({ _id: userId }, data) => {
 			notifications.notifyLoggedInThisInstance('Users:Deleted', {
 				userId,
+				...data,
 			});
 		});
 
@@ -166,7 +167,7 @@ export class ListenersModule {
 			});
 		});
 
-		service.onEvent('watch.messages', ({ message }) => {
+		listenToMessageSentEvent(service, async (message) => {
 			if (!message.rid) {
 				return;
 			}
@@ -179,6 +180,10 @@ export class ListenersModule {
 			);
 
 			notifications.streamRoomMessage.emitWithoutBroadcast(message.rid, message);
+		});
+
+		service.onEvent('notify.messagesRead', ({ rid, until, tmid }): void => {
+			notifications.notifyRoomInThisInstance(rid, 'messagesRead', { tmid, until });
 		});
 
 		service.onEvent('watch.subscriptions', ({ clientAction, subscription }) => {
@@ -415,6 +420,13 @@ export class ListenersModule {
 			notifications.notifyUserInThisInstance(uid, 'calendar', data);
 		});
 
+		service.onEvent('notify.importedMessages', ({ roomIds }): void => {
+			roomIds.forEach((rid) => {
+				// couldnt get TS happy by providing no data, so had to provide null
+				notifications.notifyRoomInThisInstance(rid, 'messagesImported', null);
+			});
+		});
+
 		service.onEvent('connector.statuschanged', (enabled): void => {
 			notifications.notifyLoggedInThisInstance('voip.statuschanged', enabled);
 		});
@@ -474,15 +486,6 @@ export class ListenersModule {
 			notifications.streamApps.emitWithoutBroadcast('actions/changed');
 			notifications.streamApps.emitWithoutBroadcast('apps', ['actions/changed', []]);
 		});
-
-		service.onEvent('mac.limitReached', () => {
-			notifications.notifyLoggedInThisInstance('mac.limit', { limitReached: true });
-		});
-
-		service.onEvent('mac.limitRestored', () => {
-			notifications.notifyLoggedInThisInstance('mac.limit', { limitReached: false });
-		});
-
 		this.federationEvents(service, notifications);
 	}
 

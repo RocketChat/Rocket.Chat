@@ -46,7 +46,7 @@ export class FederationRoomInternalValidator extends AbstractFederationApplicati
 			return;
 		}
 		if (this.isAddingANewExternalUser(internalUser) && !isDirectMessageRoom(internalRoom)) {
-			throw new Error('error-this-is-an-ee-feature');
+			throw new Error('error-this-is-a-premium-feature');
 		}
 
 		const inviter = await this.internalUserAdapter.getFederatedUserByInternalId(internalInviter._id);
@@ -72,7 +72,7 @@ export class FederationRoomInternalValidator extends AbstractFederationApplicati
 		const addingAnExternalUser = invitee?.isRemote();
 		const addingExternalUserToNonDirectMessageRoom = addingAnExternalUser && !isDirectMessageRoom(internalRoom);
 		if (addingExternalUserToNonDirectMessageRoom) {
-			throw new Error('error-this-is-an-ee-feature');
+			throw new Error('error-this-is-a-premium-feature');
 		}
 	}
 
@@ -93,7 +93,7 @@ export class FederationRoomInternalValidator extends AbstractFederationApplicati
 					),
 			) || internalUsers.filter((user) => !this.isAddingANewExternalUser(user)).some((user) => isUserFederated(user as IUser));
 		if (atLeastOneExternalUser) {
-			throw new Error('error-this-is-an-ee-feature');
+			throw new Error('error-this-is-a-premium-feature');
 		}
 	}
 

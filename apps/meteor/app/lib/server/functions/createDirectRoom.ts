@@ -19,6 +19,7 @@ const generateSubscription = (
 	extra: MatchKeysAndValues<ISubscription>,
 ): MatchKeysAndValues<ISubscription> => ({
 	_id: Random.id(),
+	ts: new Date(),
 	alert: false,
 	unread: 0,
 	userMentions: 0,
