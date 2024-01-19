@@ -39,7 +39,7 @@ export interface ILivechatInquiryRecord extends IRocketChatRecord {
 	status: LivechatInquiryStatus;
 	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token' | 'phone' | 'activity'> & { lastMessageTs?: Date };
 	t: 'l';
-	_createdAt: Date;
+	_createdAt?: Date;
 
 	department?: string;
 	estimatedInactivityCloseTimeAt?: Date;
@@ -58,10 +58,7 @@ export interface ILivechatInquiryRecord extends IRocketChatRecord {
 	estimatedWaitingTimeQueue: IOmnichannelServiceLevelAgreements['dueTimeInMinutes'];
 }
 
-export type InquiryWithAgentInfo = Pick<
-	ILivechatInquiryRecord,
-	'_id' | 'rid' | 'name' | 'ts' | 'status' | 'department' | 'v' | '_createdAt'
-> & {
+export type InquiryWithAgentInfo = Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department' | 'v'> & {
 	position?: number;
 	defaultAgent?: SelectedAgent;
 };
