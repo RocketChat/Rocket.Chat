@@ -74,13 +74,13 @@ export interface ISlashCommands {
 	add<T extends string>({
 		command,
 		callback,
-		options = {},
+		options,
 		result,
-		providesPreview = false,
+		providesPreview,
 		previewer,
 		previewCallback,
 		appId,
-		description = '',
+		description,
 	}: ISlashCommandAddParams<T>): void;
 	run({
 		command,
