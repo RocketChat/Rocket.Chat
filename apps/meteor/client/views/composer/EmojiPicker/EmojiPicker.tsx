@@ -195,7 +195,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 						aria-label={t('Search')}
 					/>
 				</EmojiPickerHeader>
-				<EmojiPickerCategoryHeader role='tablist' {...(scrollCategories && { overflowX: 'scroll', h: 'x64' })}>
+				<EmojiPickerCategoryHeader role='tablist' {...(scrollCategories && { style: { overflowX: 'scroll' } })}>
 					{emojiCategories.map((category, index) => (
 						<EmojiPickerCategoryItem
 							key={category.key}
