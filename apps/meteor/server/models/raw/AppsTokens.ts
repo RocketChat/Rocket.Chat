@@ -9,25 +9,30 @@ export class AppsTokens extends BaseRaw<IAppsTokens> implements IAppsTokensModel
 		super(db, '_raix_push_app_tokens', undefined, { collectionNameResolver: (name) => name });
 	}
 
-	countTokensByClientType(apn: boolean, gcm: boolean, userId?: IUser['_id']) {
-		const apnQuery = apn && {
-			'token.apn': {
-				$exists: true,
-			},
-		};
-		const gcmQuery = gcm && {
-			'token.gcm': {
-				$exists: true,
-			},
+	countApnTokens() {
+		const query = {
+			'token.apn': { $exists: true },
 		};
 
+		return this.countDocuments(query);
+	}
+
+	countGcmTokens() {
+		const query = {
+			'token.gcm': { $exists: true },
+		};
+
+		return this.countDocuments(query);
+	}
+
+	countTokensByUserId(userId: IUser['_id']) {
 		const query = {
 			$and: [
 				{
 					userId,
 				},
 				{
-					...((apn || gcm) && { $or: [apnQuery, gcmQuery] }),
+					$or: [{ 'token.apn': { $exists: true } }, { 'token.gcm': { $exists: true } }],
 				},
 			],
 		};

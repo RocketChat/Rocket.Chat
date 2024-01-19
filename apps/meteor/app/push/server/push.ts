@@ -283,11 +283,11 @@ class PushClass {
 					logger.debug('GUIDE: The "AppsTokens" is empty - No clients have registered on the server yet...');
 				}
 			} else if (!countApn.length) {
-				if ((await AppsTokens.countTokensByClientType(true, false)) === 0) {
+				if ((await AppsTokens.countApnTokens()) === 0) {
 					logger.debug('GUIDE: The "AppsTokens" - No APN clients have registered on the server yet...');
 				}
 			} else if (!countGcm.length) {
-				if ((await AppsTokens.countTokensByClientType(false, true)) === 0) {
+				if ((await AppsTokens.countGcmTokens()) === 0) {
 					logger.debug('GUIDE: The "AppsTokens" - No GCM clients have registered on the server yet...');
 				}
 			}
