@@ -6,6 +6,7 @@ import React from 'react';
 import type { Control } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 
+import { useHasLicenseModule } from '../../../../../ee/client/hooks/useHasLicenseModule';
 import type { TriggersPayload } from '../EditTrigger';
 import { useFieldError } from '../hooks/useFieldError';
 import { ActionExternalServiceUrl } from './ActionExternalServiceUrl';
@@ -19,6 +20,8 @@ type SendMessageActionFormType = ComponentProps<typeof Field> & {
 export const ExternalServiceActionForm = ({ control, index, ...props }: SendMessageActionFormType) => {
 	const t = useTranslation();
 
+	const hasLicense = useHasLicenseModule('livechat-enterprise');
+
 	const timeoutFieldId = useUniqueId();
 	const timeoutFieldName = `actions.${index}.params.serviceTimeout` as const;
 	const fallbackMessageFieldId = useUniqueId();
@@ -28,9 +31,9 @@ export const ExternalServiceActionForm = ({ control, index, ...props }: SendMess
 
 	return (
 		<FieldGroup {...props}>
-			<ActionSender control={control} index={index} />
+			<ActionSender disabled={!hasLicense} control={control} index={index} />
 
-			<ActionExternalServiceUrl control={control} index={index} />
+			<ActionExternalServiceUrl disabled={!hasLicense} control={control} index={index} />
 
 			<Field>
 				<FieldLabel htmlFor={timeoutFieldId}>{t('Timeout_in_miliseconds')}*</FieldLabel>
@@ -53,6 +56,7 @@ export const ExternalServiceActionForm = ({ control, index, ...props }: SendMess
 									aria-required={true}
 									onChange={(v: FormEvent<HTMLInputElement>) => field.onChange(Number(v.currentTarget.value || 0))}
 									onFocus={(v: FocusEvent<HTMLInputElement>) => v.currentTarget.select()}
+									disabled={!hasLicense}
 								/>
 							);
 						}}
@@ -85,6 +89,7 @@ export const ExternalServiceActionForm = ({ control, index, ...props }: SendMess
 								aria-invalid={Boolean(fallbackMessageError)}
 								aria-describedby={`${fallbackMessageFieldId}-hint`}
 								aria-required={true}
+								disabled={!hasLicense}
 							/>
 						)}
 					/>

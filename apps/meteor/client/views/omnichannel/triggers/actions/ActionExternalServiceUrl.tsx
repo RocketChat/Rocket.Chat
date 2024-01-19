@@ -14,9 +14,10 @@ import { useFieldError } from '../hooks/useFieldError';
 type ActionExternaServicelUrlType = ComponentProps<typeof Field> & {
 	control: Control<TriggersPayload>;
 	index: number;
+	disabled?: boolean;
 };
 
-export const ActionExternalServiceUrl = ({ control, index, ...props }: ActionExternaServicelUrlType) => {
+export const ActionExternalServiceUrl = ({ control, index, disabled, ...props }: ActionExternaServicelUrlType) => {
 	const t = useTranslation();
 	const { trigger } = useFormContext<TriggersPayload>();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -68,7 +69,7 @@ export const ActionExternalServiceUrl = ({ control, index, ...props }: ActionExt
 						deps: serviceTimeoutFieldName,
 					}}
 					render={({ field }) => {
-						return <TextInput {...field} disabled={webhookTest.isLoading} error={serviceUrlError?.message} />;
+						return <TextInput {...field} disabled={webhookTest.isLoading || disabled} error={serviceUrlError?.message} />;
 					}}
 				/>
 			</FieldRow>
@@ -77,7 +78,7 @@ export const ActionExternalServiceUrl = ({ control, index, ...props }: ActionExt
 
 			<FieldHint>{t('External_service_test_hint')}</FieldHint>
 
-			<Button loading={webhookTest.isLoading} onClick={() => trigger(serviceUrlFieldName)}>
+			<Button disabled={disabled} loading={webhookTest.isLoading} onClick={() => trigger(serviceUrlFieldName)}>
 				{t('Send_Test')}
 			</Button>
 		</Field>

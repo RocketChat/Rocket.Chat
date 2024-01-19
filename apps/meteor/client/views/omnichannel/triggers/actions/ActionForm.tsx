@@ -8,6 +8,7 @@ import React, { useMemo } from 'react';
 import type { Control } from 'react-hook-form';
 import { Controller, useWatch } from 'react-hook-form';
 
+import { useHasLicenseModule } from '../../../../../ee/client/hooks/useHasLicenseModule';
 import { type TriggersPayload } from '../EditTrigger';
 import { useActionForm } from '../hooks/useActionForm';
 
@@ -27,12 +28,14 @@ export const ActionForm = ({ control, index, ...props }: SendMessageFormType) =>
 	const actionFieldName = `actions.${index}.name` as const;
 	const actionFieldValue = useWatch({ control, name: actionFieldName });
 
+	const hasLicense = useHasLicenseModule('livechat-enterprise');
+
 	const actionOptions: SelectOption[] = useMemo(
 		() => [
 			['send-message', t('Send_a_message')],
-			['use-external-service', t('Send_a_message_external_service')],
+			hasLicense ? ['use-external-service', t('Send_a_message_external_service')] : ['', t('Send_a_message_external_service_premium')],
 		],
-		[t],
+		[hasLicense, t],
 	);
 
 	const ActionFormParams = useActionForm(actionFieldValue);

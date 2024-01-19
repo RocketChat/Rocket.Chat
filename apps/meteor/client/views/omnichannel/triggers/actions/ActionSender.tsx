@@ -11,9 +11,10 @@ import type { TriggersPayload } from '../EditTrigger';
 type ActionSenderType = ComponentProps<typeof Field> & {
 	control: Control<TriggersPayload>;
 	index: number;
+	disabled?: boolean;
 };
 
-export const ActionSender = ({ control, index, ...props }: ActionSenderType) => {
+export const ActionSender = ({ control, index, disabled, ...props }: ActionSenderType) => {
 	const t = useTranslation();
 
 	const senderFieldId = useUniqueId();
@@ -38,7 +39,7 @@ export const ActionSender = ({ control, index, ...props }: ActionSenderType) => 
 					name={senderFieldName}
 					defaultValue='queue'
 					render={({ field }) => {
-						return <Select {...field} id={senderFieldId} options={senderOptions} placeholder={t('Select_an_option')} />;
+						return <Select {...field} id={senderFieldId} options={senderOptions} placeholder={t('Select_an_option')} disabled={disabled} />;
 					}}
 				/>
 			</FieldRow>
@@ -49,7 +50,7 @@ export const ActionSender = ({ control, index, ...props }: ActionSenderType) => 
 						control={control}
 						name={senderNameFieldName}
 						render={({ field }) => {
-							return <TextInput {...field} placeholder={t('Name_of_agent')} aria-label={t('Name_of_agent')} />;
+							return <TextInput {...field} placeholder={t('Name_of_agent')} aria-label={t('Name_of_agent')} disabled={disabled} />;
 						}}
 					/>
 				</FieldRow>
