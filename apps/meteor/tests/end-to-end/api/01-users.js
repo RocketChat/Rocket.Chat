@@ -4230,7 +4230,7 @@ describe('[Users]', function () {
 		});
 	});
 
-	describe.only('[/users.list/:status]', () => {
+	describe('[/users.list/:status]', () => {
 		let user;
 		let otherUser;
 		let otherUserCredentials;
