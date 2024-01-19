@@ -22,6 +22,7 @@ import CloseChatModalData from '../../../../../../components/Omnichannel/modals/
 import ForwardChatModal from '../../../../../../components/Omnichannel/modals/ForwardChatModal';
 import ReturnChatQueueModal from '../../../../../../components/Omnichannel/modals/ReturnChatQueueModal';
 import TranscriptModal from '../../../../../../components/Omnichannel/modals/TranscriptModal';
+import { useIsRoomOverMacLimit } from '../../../../../../hooks/omnichannel/useIsRoomOverMacLimit';
 import { useOmnichannelRouteConfig } from '../../../../../../hooks/omnichannel/useOmnichannelRouteConfig';
 import { quickActionHooks } from '../../../../../../ui';
 import { useOmnichannelRoom } from '../../../../contexts/RoomContext';
@@ -310,20 +311,24 @@ export const useQuickActions = (): {
 	const canSendTranscriptPDF = usePermission('request-pdf-transcript');
 	const canCloseRoom = usePermission('close-livechat-room');
 	const canCloseOthersRoom = usePermission('close-others-livechat-room');
-	const canPlaceChatOnHold = Boolean(!room.onHold && room.u && !(room as any).lastMessage?.token && manualOnHoldAllowed);
+	const restrictedOnHold = useSetting('Livechat_allow_manual_on_hold_upon_agent_engagement_only');
+	const canRoomBePlacedOnHold = !room.onHold && room.u;
+	const canAgentPlaceOnHold = !room.lastMessage?.token;
+	const canPlaceChatOnHold = Boolean(manualOnHoldAllowed && canRoomBePlacedOnHold && (!restrictedOnHold || canAgentPlaceOnHold));
+	const isRoomOverMacLimit = useIsRoomOverMacLimit(room);
 
 	const hasPermissionButtons = (id: string): boolean => {
 		switch (id) {
 			case QuickActionsEnum.MoveQueue:
-				return !!roomOpen && canMoveQueue;
+				return !isRoomOverMacLimit && !!roomOpen && canMoveQueue;
 			case QuickActionsEnum.ChatForward:
-				return !!roomOpen && canForwardGuest;
+				return !isRoomOverMacLimit && !!roomOpen && canForwardGuest;
 			case QuickActionsEnum.Transcript:
-				return canSendTranscriptEmail || (hasLicense && canSendTranscriptPDF);
+				return !isRoomOverMacLimit && (canSendTranscriptEmail || (hasLicense && canSendTranscriptPDF));
 			case QuickActionsEnum.TranscriptEmail:
-				return canSendTranscriptEmail;
+				return !isRoomOverMacLimit && canSendTranscriptEmail;
 			case QuickActionsEnum.TranscriptPDF:
-				return hasLicense && canSendTranscriptPDF;
+				return hasLicense && !isRoomOverMacLimit && canSendTranscriptPDF;
 			case QuickActionsEnum.CloseChat:
 				return !!roomOpen && (canCloseRoom || canCloseOthersRoom);
 			case QuickActionsEnum.OnHoldChat:

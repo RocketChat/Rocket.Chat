@@ -1,3 +1,4 @@
+import { UserStatus } from '@rocket.chat/core-typings';
 import { api, credentials, request } from './api-data';
 import { password } from './user';
 
@@ -33,15 +34,9 @@ export const login = (username, password) =>
 			});
 	});
 
-export const deleteUser = (user) =>
-	new Promise((resolve) => {
-		request
-			.post(api('users.delete'))
-			.set(credentials)
-			.send({
-				userId: user._id,
-			})
-			.end(resolve);
+export const deleteUser = async (user) =>
+	request.post(api('users.delete')).set(credentials).send({
+		userId: user._id,
 	});
 
 export const getUserByUsername = (username) =>
@@ -88,4 +83,10 @@ export const setUserActiveStatus = (userId, activeStatus = true) =>
 				activeStatus,
 			})
 			.end(resolve);
+	});
+
+export const setUserStatus = (overrideCredentials = credentials, status = UserStatus.ONLINE) =>
+	request.post(api('users.setStatus')).set(overrideCredentials).send({
+		message: '',
+		status,
 	});

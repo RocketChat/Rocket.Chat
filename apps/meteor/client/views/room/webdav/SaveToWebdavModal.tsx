@@ -114,8 +114,8 @@ const SaveToWebdavModal = ({ onClose, data }: SaveToWebdavModalProps): ReactElem
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button primary type='submit' disabled={isLoading}>
-						{isLoading ? t('Please_wait') : t('Save_To_Webdav')}
+					<Button primary type='submit' loading={isLoading}>
+						{t('Save_To_Webdav')}
 					</Button>
 				</Modal.FooterControllers>
 			</Modal.Footer>

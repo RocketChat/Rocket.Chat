@@ -77,7 +77,19 @@ export const _getURL = (
 export const getURLWithoutSettings = (
 	path: string,
 	// eslint-disable-next-line @typescript-eslint/naming-convention
-	{ cdn = true, full = false, cloud = false, cloud_route = '', cloud_params = {} }: Record<string, any> = {},
+	{
+		cdn = true,
+		full = false,
+		cloud = false,
+		cloud_route = '',
+		cloud_params = {},
+	}: {
+		cdn?: boolean;
+		full?: boolean;
+		cloud?: boolean;
+		cloud_route?: string;
+		cloud_params?: Record<string, string>;
+	},
 	cdnPrefix: string,
 	siteUrl: string,
 	cloudDeepLinkUrl?: string,

@@ -34,7 +34,7 @@ const getAgent = (triggerAction) => {
 
 			let agent;
 			try {
-				agent = await Livechat.nextAgent(department);
+				agent = await Livechat.nextAgent({ department });
 			} catch (error) {
 				return reject(error);
 			}

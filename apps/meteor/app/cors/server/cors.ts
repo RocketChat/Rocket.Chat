@@ -88,23 +88,24 @@ declare module 'meteor/webapp' {
 	}
 }
 
-// These routes already handle cache control on their own
-const cacheControlledRoutes: Array<RegExp> = ['/assets', '/custom-sounds', '/emoji-custom', '/avatar', '/file-upload'].map(
-	(route) => new RegExp(`^${route}`, 'i'),
-);
+let cachingVersion = '';
+settings.watch<string>('Troubleshoot_Force_Caching_Version', (value) => {
+	cachingVersion = String(value).trim();
+});
 
 // @ts-expect-error - accessing internal property of webapp
 WebAppInternals.staticFilesMiddleware = function (
 	staticFiles: StaticFiles,
-	req: http.IncomingMessage,
-	res: http.ServerResponse,
+	req: http.IncomingMessage & { cookies: Record<string, string> },
+	res: http.ServerResponse & { cookie: (cookie: string, value: string) => void },
 	next: NextFunction,
 ) {
 	res.setHeader('Access-Control-Allow-Origin', '*');
 	const { arch, path, url } = WebApp.categorizeRequest(req);
 
-	if (Meteor.isProduction && !cacheControlledRoutes.some((regexp) => regexp.test(path))) {
-		res.setHeader('Cache-Control', 'public, max-age=31536000');
+	if (cachingVersion && req.cookies.cache_version !== cachingVersion) {
+		res.cookie('cache_version', cachingVersion);
+		res.setHeader('Clear-Site-Data', '"cache"');
 	}
 
 	// Prevent meteor_runtime_config.js to load from a different expected hash possibly causing
@@ -126,7 +127,10 @@ WebAppInternals.staticFilesMiddleware = function (
 			res.writeHead(404);
 			return res.end();
 		}
+
+		res.setHeader('Cache-Control', 'public, max-age=3600');
 	}
+
 	return _staticFilesMiddleware(staticFiles, req, res, next);
 };
 

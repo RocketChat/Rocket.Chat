@@ -27,7 +27,7 @@ jobs:
         with:
           swap-size-gb: 4
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node

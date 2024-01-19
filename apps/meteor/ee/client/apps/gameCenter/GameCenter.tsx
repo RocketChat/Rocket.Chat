@@ -1,22 +1,15 @@
 import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState } from 'react';
-import type { ReactElement, SyntheticEvent } from 'react';
+import type { ReactElement } from 'react';
 
+import { preventSyntheticEvent } from '../../../../client/lib/utils/preventSyntheticEvent';
 import { useRoomToolbox } from '../../../../client/views/room/contexts/RoomToolboxContext';
 import GameCenterContainer from './GameCenterContainer';
 import GameCenterList from './GameCenterList';
 import { useExternalComponentsQuery } from './hooks/useExternalComponentsQuery';
 
 export type IGame = IExternalComponent;
-
-const prevent = (e: SyntheticEvent): void => {
-	if (e) {
-		(e.nativeEvent || e).stopImmediatePropagation();
-		e.stopPropagation();
-		e.preventDefault();
-	}
-};
 
 const GameCenter = (): ReactElement => {
 	const [openedGame, setOpenedGame] = useState<IGame>();
@@ -26,13 +19,13 @@ const GameCenter = (): ReactElement => {
 	const result = useExternalComponentsQuery();
 
 	const handleClose = useMutableCallback((e) => {
-		prevent(e);
+		preventSyntheticEvent(e);
 		closeTab();
 	});
 
 	const handleBack = useMutableCallback((e) => {
 		setOpenedGame(undefined);
-		prevent(e);
+		preventSyntheticEvent(e);
 	});
 
 	return (

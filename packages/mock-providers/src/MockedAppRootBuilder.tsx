@@ -48,7 +48,6 @@ export class MockedAppRootBuilder {
 		}): Promise<Serialized<OperationResult<TMethod, TPathPattern>>> => {
 			throw new Error('not implemented');
 		},
-		getSingleStream: () => () => () => undefined,
 		getStream: () => () => () => undefined,
 		uploadToEndpoint: () => Promise.reject(new Error('not implemented')),
 		callMethod: () => Promise.reject(new Error('not implemented')),
@@ -430,16 +429,16 @@ export class MockedAppRootBuilder {
 																		<UserPresenceProvider>*/}
 														<ActionManagerContext.Provider
 															value={{
-																triggerAction: () => Promise.reject(new Error('not implemented')),
 																generateTriggerId: () => '',
-																getUserInteractionPayloadByViewId: () => undefined,
-																handlePayloadUserInteraction: () => undefined,
+																emitInteraction: () => Promise.reject(new Error('not implemented')),
+																getInteractionPayloadByViewId: () => undefined,
+																handleServerInteraction: () => undefined,
 																off: () => undefined,
 																on: () => undefined,
-																triggerActionButtonAction: () => Promise.reject(new Error('not implemented')),
-																triggerBlockAction: () => Promise.reject(new Error('not implemented')),
-																triggerCancel: () => Promise.reject(new Error('not implemented')),
-																triggerSubmitView: () => Promise.reject(new Error('not implemented')),
+																openView: () => undefined,
+																disposeView: () => undefined,
+																notifyBusy: () => undefined,
+																notifyIdle: () => undefined,
 															}}
 														>
 															{/* <VideoConfProvider>

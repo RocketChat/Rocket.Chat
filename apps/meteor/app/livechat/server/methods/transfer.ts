@@ -1,3 +1,4 @@
+import { Omnichannel } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms, Subscriptions, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
@@ -47,6 +48,10 @@ Meteor.methods<ServerMethods>({
 
 		if (!room.open) {
 			throw new Meteor.Error('room-closed', 'Room closed', { method: 'livechat:transfer' });
+		}
+
+		if (!(await Omnichannel.isWithinMACLimit(room))) {
+			throw new Meteor.Error('error-mac-limit-reached', 'MAC limit reached', { method: 'livechat:transfer' });
 		}
 
 		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, uid, {

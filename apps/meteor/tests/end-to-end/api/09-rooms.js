@@ -7,7 +7,7 @@ import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
-import { imgURL } from '../../data/interactions.js';
+import { imgURL } from '../../data/interactions';
 import { updateEEPermission, updatePermission, updateSetting } from '../../data/permissions.helper';
 import { closeRoom, createRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
@@ -174,7 +174,8 @@ describe('[Rooms]', function () {
 			await request.get(fileOldUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
 		});
 
-		it('should be able to get the file when no access to the room', async () => {
+		it('should be able to get the file when no access to the room if setting allows it', async () => {
+			await updateSetting('FileUpload_Restrict_to_room_members', false);
 			await request.get(fileNewUrl).set(userCredentials).expect('Content-Type', 'image/png').expect(200);
 			await request.get(fileOldUrl).set(userCredentials).expect('Content-Type', 'image/png').expect(200);
 		});
@@ -1570,29 +1571,30 @@ describe('[Rooms]', function () {
 				});
 		});
 
-		it('should update group name if user changes name', (done) => {
-			updateSetting('UI_Use_Real_Name', true).then(() => {
-				request
-					.post(api('users.update'))
-					.set(credentials)
-					.send({
-						userId: testUser._id,
-						data: {
-							name: `changed.name.${testUser.username}`,
-						},
-					})
-					.end(() => {
-						request
-							.get(api('subscriptions.getOne'))
-							.set(credentials)
-							.query({ roomId })
-							.end((err, res) => {
-								const { subscription } = res.body;
-								expect(subscription.fname).to.equal(`changed.name.${testUser.username}, Rocket.Cat`);
-								done();
-							});
-					});
-			});
+		it('should update group name if user changes name', async () => {
+			await updateSetting('UI_Use_Real_Name', true);
+			await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: testUser._id,
+					data: {
+						name: `changed.name.${testUser.username}`,
+					},
+				});
+
+			// need to wait for the name update finish
+			await sleep(300);
+
+			await request
+				.get(api('subscriptions.getOne'))
+				.set(credentials)
+				.query({ roomId })
+				.send()
+				.expect((res) => {
+					const { subscription } = res.body;
+					expect(subscription.fname).to.equal(`changed.name.${testUser.username}, Rocket.Cat`);
+				});
 		});
 	});
 
