@@ -116,7 +116,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 		const routingSupportsAutoAssign = RoutingManager.getConfig()?.autoAssignAgent;
 		queueLogger.debug({
 			msg: 'Routing method supports auto assignment',
-			method: RoutingManager.methodName,
+			method: settings.get('Livechat_Routing_Method'),
 			status: routingSupportsAutoAssign ? 'Starting' : 'Stopping',
 		});
 

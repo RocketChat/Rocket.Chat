@@ -58,7 +58,10 @@ export interface ILivechatInquiryRecord extends IRocketChatRecord {
 	estimatedWaitingTimeQueue: IOmnichannelServiceLevelAgreements['dueTimeInMinutes'];
 }
 
-export type InquiryWithAgentInfo = Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department' | 'v'> & {
+export type InquiryWithAgentInfo = Pick<
+	ILivechatInquiryRecord,
+	'_id' | 'rid' | 'name' | 'ts' | 'status' | 'department' | 'v' | '_createdAt'
+> & {
 	position?: number;
 	defaultAgent?: SelectedAgent;
 };
