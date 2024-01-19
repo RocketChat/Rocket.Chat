@@ -33,7 +33,7 @@
 		"@types/polka": "^0.5.4",
 		"eslint": "~8.45.0",
 		"ts-node": "^10.9.1",
-		"typescript": "~5.2.2"
+		"typescript": "^5.3.3"
 	},
 	"main": "./dist/ee/service.js",
 	"files": [
