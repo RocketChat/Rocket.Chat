@@ -290,11 +290,17 @@ class LivechatClass {
 
 		this.logger.debug(`Updating DB for room ${room._id} with close data`);
 
-		await Promise.all([
-			LivechatRooms.closeRoomById(rid, closeData),
-			LivechatInquiry.removeByRoomId(rid),
-			Subscriptions.removeByRoomId(rid),
-		]);
+		const removedInquiry = await LivechatInquiry.removeByRoomId(rid);
+		if (removedInquiry && removedInquiry.deletedCount !== 1) {
+			throw new Error('Error removing inquiry');
+		}
+
+		const updatedRoom = await LivechatRooms.closeRoomById(rid, closeData);
+		if (!updatedRoom || updatedRoom.modifiedCount !== 1) {
+			throw new Error('Error closing room');
+		}
+
+		await Subscriptions.removeByRoomId(rid);
 
 		this.logger.debug(`DB updated for room ${room._id}`);
 
