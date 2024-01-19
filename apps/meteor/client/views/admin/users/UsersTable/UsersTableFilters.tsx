@@ -80,7 +80,7 @@ const UsersTableFilters = ({ roleData, setUsersFilters }: UsersTableFiltersProps
 			<Box minWidth='x224' m='x4'>
 				<MultiSelectCustom
 					dropdownOptions={userRolesFilterStructure}
-					defaultTitle='All_rooms'
+					defaultTitle='All_roles'
 					selectedOptionsTitle='Roles'
 					setSelectedOptions={handleRolesChange}
 					selectedOptions={selectedRoles}

@@ -3,4 +3,4 @@
 "@rocket.chat/rest-typings": minor
 ---
 
-Add a new endpoint to list users and resend the welcome message
+New admin user panel to manage users in different status, such as: All, Pending, Active, Deactivated
