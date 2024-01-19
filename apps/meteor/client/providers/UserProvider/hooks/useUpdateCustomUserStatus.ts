@@ -1,13 +1,17 @@
 import { useStream } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { updateCustomUserStatus, deleteCustomUserStatus } from '../../../../app/user-status/client/lib/customUserStatus';
+import { userStatuses } from '../../../lib/userStatuses';
 
 export const useUpdateCustomUserStatus = () => {
 	const notify = useStream('notify-logged');
 	useEffect(() => {
-		const unsubUpdate = notify('updateCustomUserStatus', (data) => updateCustomUserStatus(data.userStatusData));
-		const unsubDelete = notify('deleteCustomUserStatus', (data) => deleteCustomUserStatus(data.userStatusData));
+		const unsubUpdate = notify('updateCustomUserStatus', (data) => {
+			userStatuses.put(userStatuses.createFromCustom(data.userStatusData));
+		});
+		const unsubDelete = notify('deleteCustomUserStatus', (data) => {
+			userStatuses.delete(data.userStatusData._id);
+		});
 
 		return () => {
 			unsubUpdate();

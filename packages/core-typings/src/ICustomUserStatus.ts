@@ -1,5 +1,5 @@
-import { IUserStatus } from './IUserStatus';
+import type { IUserStatus } from './IUserStatus';
 
 export interface ICustomUserStatus extends IUserStatus {
-  _updatedAt?: Date;
+	_updatedAt?: Date;
 }

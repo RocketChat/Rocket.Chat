@@ -1,22 +1,21 @@
-import type { IUser, ValueOf } from '@rocket.chat/core-typings';
-import { UserStatus as UserStatusEnum } from '@rocket.chat/core-typings';
+import type { IUser, UserStatus as UserStatusEnum } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import { userStatus } from '../../../../app/user-status/client';
 import { callbacks } from '../../../../lib/callbacks';
 import type { GenericMenuItemProps } from '../../../components/GenericMenu/GenericMenuItem';
 import MarkdownText from '../../../components/MarkdownText';
 import { UserStatus } from '../../../components/UserStatus';
+import { userStatuses } from '../../../lib/userStatuses';
+import type { UserStatusDescriptor } from '../../../lib/userStatuses';
 import { useStatusDisabledModal } from '../../../views/admin/customUserStatus/hooks/useStatusDisabledModal';
 import { useCustomStatusModalHandler } from './useCustomStatusModalHandler';
-import { STATUS_MAP } from '../../../../app/user-status/client/lib/userStatus';
 
-const isDefaultStatus = (id: string): boolean => (STATUS_MAP as string[]).includes(id);
+const isDefaultStatus = (id: string): boolean => userStatuses.isValidType(id);
 const isDefaultStatusName = (_name: string, id: string): _name is UserStatusEnum => isDefaultStatus(id);
-const translateStatusName = (t: ReturnType<typeof useTranslation>, status: (typeof userStatus.list)['']): string => {
+const translateStatusName = (t: ReturnType<typeof useTranslation>, status: UserStatusDescriptor): string => {
 	if (isDefaultStatusName(status.name, status.id)) {
 		return t(status.name as TranslationKey);
 	}
@@ -26,16 +25,16 @@ const translateStatusName = (t: ReturnType<typeof useTranslation>, status: (type
 
 export const useStatusItems = (user: IUser): GenericMenuItemProps[] => {
 	const t = useTranslation();
-	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
+	const presenceDisabled = useSetting('Presence_broadcast_disabled', false);
 	const setStatus = useEndpoint('POST', '/v1/users.setStatus');
 
-	const setStatusAction = (status: (typeof userStatus.list)['']): void => {
+	const setStatusAction = (status: UserStatusDescriptor): void => {
 		setStatus({ status: status.statusType, message: !isDefaultStatus(status.id) ? status.name : '' });
 		void callbacks.run('userStatusManuallySet', status);
 	};
 
 	const filterInvisibleStatus = !useSetting('Accounts_AllowInvisibleStatusOption')
-		? (status: ValueOf<(typeof userStatus)['list']>): boolean => status.name !== 'invisible'
+		? (status: UserStatusDescriptor): boolean => status.name !== 'invisible'
 		: (): boolean => true;
 
 	const handleCustomStatus = useCustomStatusModalHandler();
@@ -56,7 +55,7 @@ export const useStatusItems = (user: IUser): GenericMenuItemProps[] => {
 		),
 	};
 
-	const statusItems = Object.values(userStatus.list)
+	const statusItems = Array.from(userStatuses)
 		.filter(filterInvisibleStatus)
 		.map((status) => {
 			const name = status.localizeName ? translateStatusName(t, status) : status.name;
