@@ -18,7 +18,7 @@ Linkedin.requestCredential = async function (options, credentialRequestCompleteC
 
 	const config = await ServiceConfiguration.configurations.findOneAsync({ service: 'linkedin' });
 	if (!config) {
-		throw new ServiceConfiguration.ConfigError('Service not configured');
+		throw new Accounts.ConfigError('Service not configured');
 	}
 
 	const credentialToken = Random.secret();
