@@ -26,6 +26,7 @@ export const useInstallApp = (file: File, url: string): { install: () => void; i
 	const manageSubscriptionUrl = useCheckoutUrl()({ target: 'marketplace-app-install', action: 'Enable_unlimited_apps' });
 
 	const uploadAppEndpoint = useUpload('/apps');
+	const uploadUpdateEndpoint = useUpload('/apps/update');
 
 	// TODO: This function should not be called in a next major version, it will be changed by an endpoint deprecation.
 	const downloadPrivateAppFromUrl = useEndpoint('POST', '/apps');
@@ -34,10 +35,14 @@ export const useInstallApp = (file: File, url: string): { install: () => void; i
 
 	const { mutate: sendFile } = useMutation(
 		['apps/installPrivateApp'],
-		({ permissionsGranted, appFile }: { permissionsGranted: AppPermission[]; appFile: File }) => {
+		({ permissionsGranted, appFile, appId }: { permissionsGranted: AppPermission[]; appFile: File; appId?: string }) => {
 			const fileData = new FormData();
 			fileData.append('app', appFile, appFile.name);
 			fileData.append('permissions', JSON.stringify(permissionsGranted));
+
+			if (appId) {
+				return uploadUpdateEndpoint(fileData);
+			}
 
 			return uploadAppEndpoint(fileData) as any;
 		},
@@ -77,12 +82,12 @@ export const useInstallApp = (file: File, url: string): { install: () => void; i
 		}
 	};
 
-	const handleAppPermissionsReview = async (permissions: AppPermission[], appFile: File) => {
+	const handleAppPermissionsReview = async (permissions: AppPermission[], appFile: File, appId?: string) => {
 		setModal(
 			<AppPermissionsReviewModal
 				appPermissions={permissions}
 				onCancel={cancelAction}
-				onConfirm={(permissionsGranted) => sendFile({ permissionsGranted, appFile })}
+				onConfirm={(permissionsGranted) => sendFile({ permissionsGranted, appFile, appId })}
 			/>,
 		);
 	};
@@ -91,7 +96,7 @@ export const useInstallApp = (file: File, url: string): { install: () => void; i
 		const isInstalled = await isAppInstalled(id);
 
 		if (isInstalled) {
-			return setModal(<AppUpdateModal cancel={cancelAction} confirm={() => handleAppPermissionsReview(permissions, appFile)} />);
+			return setModal(<AppUpdateModal cancel={cancelAction} confirm={() => handleAppPermissionsReview(permissions, appFile, id)} />);
 		}
 
 		await handleAppPermissionsReview(permissions, appFile);

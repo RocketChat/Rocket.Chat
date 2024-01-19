@@ -42,7 +42,9 @@ const AppInstallPage = () => {
 				<FieldGroup display='flex' flexDirection='column' alignSelf='center' maxWidth='x600' w='full'>
 					<Field>
 						<FieldLabel htmlFor={urlField}>{t('App_Url_to_Install_From')}</FieldLabel>
-						<Callout type='warning' title={t('App_Installation_Deprecation')} />
+						<Callout type='warning' title={t('App_Installation_Deprecation_Title')}>
+							{t('App_Installation_Deprecation')}
+						</Callout>
 						<FieldRow>
 							<Controller
 								name='url'
@@ -77,7 +79,7 @@ const AppInstallPage = () => {
 					</Field>
 					<Field>
 						<ButtonGroup>
-							<Button disabled={!url || !file?.name} loading={isInstalling} onClick={install}>
+							<Button disabled={!url && !file?.name} loading={isInstalling} onClick={install}>
 								{t('Install')}
 							</Button>
 							<Button onClick={handleCancel}>{t('Cancel')}</Button>
