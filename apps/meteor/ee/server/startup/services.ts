@@ -1,8 +1,8 @@
 import { api } from '@rocket.chat/core-services';
+import { License } from '@rocket.chat/license';
 
 import { isRunningMs } from '../../../server/lib/isRunningMs';
 import { FederationService } from '../../../server/services/federation/service';
-import { isEnterprise, onLicense } from '../../app/license/server';
 import { LicenseService } from '../../app/license/server/license.internalService';
 import { OmnichannelEE } from '../../app/livechat-enterprise/server/services/omnichannel.internalService';
 import { EnterpriseSettings } from '../../app/settings/server/settings.internalService';
@@ -25,15 +25,13 @@ if (!isRunningMs()) {
 
 let federationService: FederationService;
 
-void (async () => {
-	if (!isEnterprise()) {
-		federationService = await FederationService.createFederationService();
-		api.registerService(federationService);
-	}
-})();
+if (!License.hasValidLicense()) {
+	federationService = await FederationService.createFederationService();
+	api.registerService(federationService);
+}
 
-await onLicense('federation', async () => {
-	const federationServiceEE = new FederationServiceEE();
+void License.onLicense('federation', async () => {
+	const federationServiceEE = await FederationServiceEE.createFederationService();
 	if (federationService) {
 		api.destroyService(federationService);
 	}

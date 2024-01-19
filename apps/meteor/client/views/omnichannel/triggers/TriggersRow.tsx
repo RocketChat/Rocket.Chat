@@ -1,7 +1,7 @@
 import type { ILivechatTrigger } from '@rocket.chat/core-typings';
 import { IconButton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch, useRoute, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
 import GenericModal from '../../../components/GenericModal';
@@ -13,7 +13,7 @@ const TriggersRow = ({ _id, name, description, enabled, reload }: TriggersRowPro
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const triggersRoute = useRoute('omnichannel-triggers');
-	const deleteTrigger = useMethod('livechat:removeTrigger');
+	const deleteTrigger = useEndpoint('DELETE', '/v1/livechat/triggers/:_id', { _id });
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const handleClick = useMutableCallback(() => {
@@ -35,7 +35,7 @@ const TriggersRow = ({ _id, name, description, enabled, reload }: TriggersRowPro
 		e.stopPropagation();
 		const onDeleteTrigger = async () => {
 			try {
-				await deleteTrigger(_id);
+				await deleteTrigger();
 				dispatchToastMessage({ type: 'success', message: t('Trigger_removed') });
 				reload();
 			} catch (error) {

@@ -101,11 +101,11 @@ const ContactHistoryMessage: FC<{
 						</MessageHeaderTemplate>
 					)}
 					{!message.blocks && message.md && (
-						<MessageBody data-qa-type='message-body'>
+						<MessageBody data-qa-type='message-body' dir='auto'>
 							<MessageContentBody md={message.md} mentions={message.mentions} channels={message.channels} />
 						</MessageBody>
 					)}
-					{message.blocks && <UiKitMessageBlock mid={message._id} blocks={message.blocks} appId rid={message.rid} />}
+					{message.blocks && <UiKitMessageBlock rid={message.rid} mid={message._id} blocks={message.blocks} />}
 					{message.attachments && <Attachments attachments={message.attachments} />}
 				</MessageContainer>
 			</MessageTemplate>

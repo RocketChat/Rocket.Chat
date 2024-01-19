@@ -3,6 +3,7 @@ import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import { AppInstallationSource } from '@rocket.chat/apps-engine/server/storage';
 import type { IUser, IMessage } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { Settings, Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Meteor } from 'meteor/meteor';
@@ -17,7 +18,7 @@ import { settings } from '../../../../app/settings/server';
 import { Info } from '../../../../app/utils/rocketchat.info';
 import { i18n } from '../../../../server/lib/i18n';
 import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
-import { canEnableApp, isEnterprise } from '../../../app/license/server/license';
+import { canEnableApp } from '../../../app/license/server/canEnableApp';
 import { formatAppInstanceForRest } from '../../../lib/misc/formatAppInstanceForRest';
 import { appEnableCheck } from '../marketplace/appEnableCheck';
 import { notifyAppInstall } from '../marketplace/appInstall';
@@ -164,8 +165,7 @@ export class AppsRestApi {
 						}
 						result = await request.json();
 					} catch (e: any) {
-						orchestrator.getRocketChatLogger().error('Error getting the categories from the Marketplace:', e.response.data);
-						return API.v1.internalError();
+						return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
 					}
 
 					return API.v1.success(result);
@@ -855,6 +855,7 @@ export class AppsRestApi {
 									user_name: `@${this.user.username}`,
 									message: message || '',
 									learn_more: learnMore,
+									interpolation: { escapeValue: false },
 								}),
 							};
 						};
@@ -1149,7 +1150,7 @@ export class AppsRestApi {
 					const storedApp = prl.getStorageItem();
 					const { installationSource, marketplaceInfo } = storedApp;
 
-					if (!isEnterprise() && installationSource === AppInstallationSource.MARKETPLACE) {
+					if (!License.hasValidLicense() && installationSource === AppInstallationSource.MARKETPLACE) {
 						try {
 							const baseUrl = orchestrator.getMarketplaceUrl() as string;
 							const headers = getDefaultHeaders();

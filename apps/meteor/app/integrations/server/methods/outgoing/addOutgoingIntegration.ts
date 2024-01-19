@@ -6,6 +6,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { validateOutgoingIntegration } from '../../lib/validateOutgoingIntegration';
+import { validateScriptEngine } from '../../lib/validateScriptEngine';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -13,8 +14,6 @@ declare module '@rocket.chat/ui-contexts' {
 		addOutgoingIntegration(integration: INewOutgoingIntegration): Promise<IOutgoingIntegration>;
 	}
 }
-
-const FREEZE_INTEGRATION_SCRIPTS = ['yes', 'true'].includes(String(process.env.FREEZE_INTEGRATION_SCRIPTS).toLowerCase());
 
 export const addOutgoingIntegration = async (userId: string, integration: INewOutgoingIntegration): Promise<IOutgoingIntegration> => {
 	check(
@@ -29,6 +28,7 @@ export const addOutgoingIntegration = async (userId: string, integration: INewOu
 			emoji: Match.Maybe(String),
 			scriptEnabled: Boolean,
 			script: Match.Maybe(String),
+			scriptEngine: Match.Maybe(String),
 			urls: Match.Maybe([String]),
 			event: Match.Maybe(String),
 			triggerWords: Match.Maybe([String]),
@@ -52,8 +52,8 @@ export const addOutgoingIntegration = async (userId: string, integration: INewOu
 		throw new Meteor.Error('not_authorized');
 	}
 
-	if (FREEZE_INTEGRATION_SCRIPTS && integration.script?.trim()) {
-		throw new Meteor.Error('integration-scripts-disabled');
+	if (integration.script?.trim()) {
+		validateScriptEngine(integration.scriptEngine ?? 'isolated-vm');
 	}
 
 	const integrationData = await validateOutgoingIntegration(integration, userId);

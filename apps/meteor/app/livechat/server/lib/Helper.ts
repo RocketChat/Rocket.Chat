@@ -1,5 +1,5 @@
 import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
-import { api, Message } from '@rocket.chat/core-services';
+import { api, Message, Omnichannel } from '@rocket.chat/core-services';
 import type {
 	ILivechatVisitor,
 	IOmnichannelRoom,
@@ -38,7 +38,6 @@ import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { sendNotification } from '../../../lib/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { settings } from '../../../settings/server';
-import { Livechat } from './Livechat';
 import { Livechat as LivechatTyped } from './LivechatTyped';
 import { queueInquiry, saveQueueInquiry } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
@@ -77,7 +76,11 @@ export const createLivechatRoom = async (
 	const { _id, username, token, department: departmentId, status = 'online' } = guest;
 	const newRoomAt = new Date();
 
-	logger.debug(`Creating livechat room for visitor ${_id}`);
+	const { activity } = guest;
+	logger.debug({
+		msg: `Creating livechat room for visitor ${_id}`,
+		visitor: { _id, username, departmentId, status, activity },
+	});
 
 	const room: InsertionModel<IOmnichannelRoom> = Object.assign(
 		{
@@ -94,6 +97,7 @@ export const createLivechatRoom = async (
 				username,
 				token,
 				status,
+				...(activity?.length && { activity }),
 			},
 			cl: false,
 			open: true,
@@ -132,7 +136,7 @@ export const createLivechatInquiry = async ({
 }: {
 	rid: string;
 	name?: string;
-	guest?: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'department' | 'name' | 'token'>;
+	guest?: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'department' | 'name' | 'token' | 'activity'>;
 	message?: Pick<IMessage, 'msg'>;
 	initialStatus?: LivechatInquiryStatus;
 	extraData?: Pick<ILivechatInquiryRecord, 'source'>;
@@ -146,6 +150,7 @@ export const createLivechatInquiry = async ({
 			username: String,
 			status: Match.Maybe(String),
 			department: Match.Maybe(String),
+			activity: Match.Maybe([String]),
 		}),
 	);
 	check(
@@ -157,11 +162,14 @@ export const createLivechatInquiry = async ({
 
 	const extraInquiryInfo = await callbacks.run('livechat.beforeInquiry', extraData);
 
-	const { _id, username, token, department, status = UserStatus.ONLINE } = guest;
+	const { _id, username, token, department, status = UserStatus.ONLINE, activity } = guest;
 	const { msg } = message;
 	const ts = new Date();
 
-	logger.debug(`Creating livechat inquiry for visitor ${_id}`);
+	logger.debug({
+		msg: `Creating livechat inquiry for visitor ${_id}`,
+		visitor: { _id, username, department, status, activity },
+	});
 
 	const inquiry: InsertionModel<ILivechatInquiryRecord> = {
 		rid,
@@ -175,6 +183,7 @@ export const createLivechatInquiry = async ({
 			username,
 			token,
 			status,
+			...(activity?.length && { activity }),
 		},
 		t: 'l',
 		priorityWeight: LivechatPriorityWeight.NOT_SPECIFIED,
@@ -247,10 +256,8 @@ export const createLivechatSubscription = async (
 			status,
 		},
 		ts: new Date(),
-		lr: new Date(),
-		ls: new Date(),
 		...(department && { department }),
-	};
+	} as InsertionModel<ISubscription>;
 
 	return Subscriptions.insertOne(subscriptionData);
 };
@@ -286,7 +293,7 @@ export const parseAgentCustomFields = (customFields?: Record<string, any>) => {
 			const parseCustomFields = JSON.parse(accountCustomFields);
 			return Object.keys(parseCustomFields).filter((customFieldKey) => parseCustomFields[customFieldKey].sendToIntegrations === true);
 		} catch (error) {
-			Livechat.logger.error(error);
+			logger.error(error);
 			return [];
 		}
 	};
@@ -402,6 +409,9 @@ export const forwardRoomToAgent = async (room: IOmnichannelRoom, transferData: T
 	logger.debug(`Forwarding room ${room._id} to agent ${transferData.userId}`);
 
 	const { userId: agentId, clientAction } = transferData;
+	if (!agentId) {
+		throw new Error('error-invalid-agent');
+	}
 	const user = await Users.findOneOnlineAgentById(agentId);
 	if (!user) {
 		logger.debug(`Agent ${agentId} is offline. Cannot forward`);
@@ -434,7 +444,7 @@ export const forwardRoomToAgent = async (room: IOmnichannelRoom, transferData: T
 		return false;
 	}
 
-	await Livechat.saveTransferHistory(room, transferData);
+	await LivechatTyped.saveTransferHistory(room, transferData);
 
 	const { servedBy } = roomTaken;
 	if (servedBy) {
@@ -530,11 +540,9 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 		agent = { agentId, username };
 	}
 
-	if (!RoutingManager.getConfig()?.autoAssignAgent) {
-		logger.debug(
-			`Routing algorithm doesn't support auto assignment (using ${RoutingManager.methodName}). Chat will be on department queue`,
-		);
-		await Livechat.saveTransferHistory(room, transferData);
+	if (!RoutingManager.getConfig()?.autoAssignAgent || !(await Omnichannel.isWithinMACLimit(room))) {
+		logger.debug(`Room ${room._id} will be on department queue`);
+		await LivechatTyped.saveTransferHistory(room, transferData);
 		return RoutingManager.unassignAgent(inquiry, departmentId);
 	}
 
@@ -568,16 +576,15 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 			logger.debug(`Cannot forward room ${room._id}. Unable to delegate inquiry`);
 			return false;
 		}
+
+		return true;
 	}
 
-	await Livechat.saveTransferHistory(room, transferData);
+	await LivechatTyped.saveTransferHistory(room, transferData);
 	if (oldServedBy) {
 		// if chat is queued then we don't ignore the new servedBy agent bcs at this
 		// point the chat is not assigned to him/her and it is still in the queue
 		await RoutingManager.removeAllRoomSubscriptions(room, !chatQueued ? servedBy : undefined);
-	}
-	if (!chatQueued && servedBy) {
-		await Message.saveSystemMessage('uj', rid, servedBy.username || '', servedBy);
 	}
 
 	await updateChatDepartment({ rid, newDepartmentId: departmentId, oldDepartmentId });
@@ -596,10 +603,6 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 		await queueInquiry(newInquiry);
 		logger.debug(`Inquiry ${inquiry._id} queued succesfully`);
 	}
-
-	const { token } = guest;
-	await LivechatTyped.setDepartmentForGuest({ token, department: departmentId });
-	logger.debug(`Department for visitor with token ${token} was updated to ${departmentId}`);
 
 	return true;
 };
@@ -645,13 +648,24 @@ export const updateDepartmentAgents = async (
 	departmentEnabled: boolean,
 ) => {
 	check(departmentId, String);
-	check(
-		agents,
-		Match.ObjectIncluding({
-			upsert: Match.Maybe(Array),
-			remove: Match.Maybe(Array),
-		}),
-	);
+	check(agents, {
+		upsert: Match.Maybe([
+			Match.ObjectIncluding({
+				agentId: String,
+				username: Match.Maybe(String),
+				count: Match.Maybe(Match.Integer),
+				order: Match.Maybe(Match.Integer),
+			}),
+		]),
+		remove: Match.Maybe([
+			Match.ObjectIncluding({
+				agentId: String,
+				username: Match.Maybe(String),
+				count: Match.Maybe(Match.Integer),
+				order: Match.Maybe(Match.Integer),
+			}),
+		]),
+	});
 
 	const { upsert = [], remove = [] } = agents;
 	const agentsRemoved = [];

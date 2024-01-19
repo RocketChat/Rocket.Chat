@@ -37,7 +37,7 @@ export class AppRoomsConverter {
 
 		let v;
 		if (room.visitor) {
-			const visitor = await LivechatVisitors.findOneById(room.visitor.id);
+			const visitor = await LivechatVisitors.findOneEnabledById(room.visitor.id);
 
 			const { lastMessageTs, phone } = room.visitorChannelInfo;
 

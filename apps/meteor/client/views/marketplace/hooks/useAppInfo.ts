@@ -36,7 +36,7 @@ export const useAppInfo = (appId: string, context: string): AppInfo | undefined 
 			}
 
 			let appResult: App | undefined;
-			const marketplaceAppsContexts = ['explore', 'enterprise', 'requested'];
+			const marketplaceAppsContexts = ['explore', 'premium', 'requested'];
 
 			if (marketplaceAppsContexts.includes(context)) appResult = marketplaceApps.value?.apps.find((app) => app.id === appId);
 

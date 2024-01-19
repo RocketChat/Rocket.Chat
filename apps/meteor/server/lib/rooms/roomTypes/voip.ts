@@ -16,7 +16,7 @@ roomCoordinator.add(VoipRoomType, {
 		const title = `[Omnichannel] ${this.roomName(room, userId)}`;
 		const text = notificationMessage;
 
-		return { title, text };
+		return { title, text, name: room.name };
 	},
 
 	async getMsgSender(senderId) {

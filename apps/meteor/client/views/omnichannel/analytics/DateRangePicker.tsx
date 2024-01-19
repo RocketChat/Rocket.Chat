@@ -1,10 +1,12 @@
-import { Box, InputBox, Menu, Field } from '@rocket.chat/fuselage';
+import { Box, InputBox, Menu, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { Moment } from 'moment';
 import moment from 'moment';
 import type { ComponentProps } from 'react';
 import React, { useState, useMemo, useEffect } from 'react';
+
+moment.locale('en');
 
 type DateRangePickerProps = Omit<ComponentProps<typeof Box>, 'onChange'> & {
 	onChange(range: { start: string; end: string }): void;
@@ -112,21 +114,21 @@ const DateRangePicker = ({ onChange = () => undefined, ...props }: DateRangePick
 		<Box {...props}>
 			<Box mi='neg-x4' height='full' display='flex' flexDirection='row'>
 				<Field mi={4} flexShrink={1} flexGrow={1}>
-					<Field.Label>{t('Start')}</Field.Label>
-					<Field.Row>
+					<FieldLabel>{t('Start')}</FieldLabel>
+					<FieldRow>
 						<Box height='x40' display='flex' width='full'>
 							<InputBox type='date' onChange={handleStart} max={todayDate} value={start} />
 						</Box>
-					</Field.Row>
+					</FieldRow>
 				</Field>
 				<Field mi={4} flexShrink={1} flexGrow={1}>
-					<Field.Label>{t('End')}</Field.Label>
-					<Field.Row>
+					<FieldLabel>{t('End')}</FieldLabel>
+					<FieldRow>
 						<Box height='x40' display='flex' width='full'>
 							<InputBox type='date' onChange={handleEnd} min={start} max={todayDate} value={end} />
 						</Box>
 						<Menu mis={8} options={options} />
-					</Field.Row>
+					</FieldRow>
 				</Field>
 			</Box>
 		</Box>

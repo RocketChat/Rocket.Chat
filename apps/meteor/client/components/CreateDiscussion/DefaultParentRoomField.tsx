@@ -1,38 +1,42 @@
 import { Skeleton, TextInput, Callout } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
-import { AsyncStatePhase } from '../../hooks/useAsyncState';
-import { useEndpointData } from '../../hooks/useEndpointData';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 
 const DefaultParentRoomField = ({ defaultParentRoom }: { defaultParentRoom: string }): ReactElement => {
 	const t = useTranslation();
-	const { value, phase } = useEndpointData('/v1/rooms.info', {
-		params: useMemo(
-			() => ({
-				roomId: defaultParentRoom,
-			}),
-			[defaultParentRoom],
-		),
+
+	const query = useMemo(
+		() => ({
+			roomId: defaultParentRoom,
+		}),
+		[defaultParentRoom],
+	);
+
+	const roomsInfoEndpoint = useEndpoint('GET', '/v1/rooms.info');
+
+	const { data, isLoading, isError } = useQuery(['defaultParentRoomInfo', query], async () => roomsInfoEndpoint(query), {
+		refetchOnWindowFocus: false,
 	});
 
-	if (phase === AsyncStatePhase.LOADING) {
+	if (isLoading) {
 		return <Skeleton width='full' />;
 	}
 
-	if (!value || !value.room) {
+	if (!data?.room || isError) {
 		return <Callout type='danger'>{t('Error')}</Callout>;
 	}
 
 	return (
 		<TextInput
-			defaultValue={roomCoordinator.getRoomName(value.room.t, {
-				_id: value.room._id,
-				fname: value.room.fname,
-				name: value.room.name,
-				prid: value.room.prid,
+			defaultValue={roomCoordinator.getRoomName(data.room.t, {
+				_id: data.room._id,
+				fname: data.room.fname,
+				name: data.room.name,
+				prid: data.room.prid,
 			})}
 			disabled
 		/>

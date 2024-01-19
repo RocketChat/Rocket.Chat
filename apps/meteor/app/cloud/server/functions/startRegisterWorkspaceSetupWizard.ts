@@ -7,22 +7,22 @@ import { buildWorkspaceRegistrationData } from './buildRegistrationData';
 
 export async function startRegisterWorkspaceSetupWizard(resend = false, email: string): Promise<CloudRegistrationIntentData> {
 	const regInfo = await buildWorkspaceRegistrationData(email);
-	const cloudUrl = settings.get('Cloud_Url');
 
-	let result;
+	let payload;
 	try {
-		const request = await fetch(`${cloudUrl}/api/v2/register/workspace/intent`, {
+		const cloudUrl = settings.get<string>('Cloud_Url');
+		const response = await fetch(`${cloudUrl}/api/v2/register/workspace/intent`, {
 			body: regInfo,
 			method: 'POST',
 			params: {
 				resent: resend,
 			},
 		});
-		if (!request.ok) {
-			throw new Error((await request.json()).error);
+		if (!response.ok) {
+			throw new Error((await response.json()).error);
 		}
 
-		result = await request.json();
+		payload = await response.json();
 	} catch (err: any) {
 		SystemLogger.error({
 			msg: 'Failed to register workspace intent with Rocket.Chat Cloud',
@@ -33,9 +33,9 @@ export async function startRegisterWorkspaceSetupWizard(resend = false, email: s
 		throw err;
 	}
 
-	if (!result) {
+	if (!payload) {
 		throw new Error('Failed to fetch registration intent endpoint');
 	}
 
-	return result;
+	return payload;
 }

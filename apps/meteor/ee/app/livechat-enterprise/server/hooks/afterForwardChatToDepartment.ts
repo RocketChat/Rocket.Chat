@@ -1,4 +1,4 @@
-import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../../lib/callbacks';
@@ -13,23 +13,20 @@ callbacks.add(
 			projection: { departmentAncestors: 1 },
 		});
 		if (!room) {
-			cbLogger.debug('Skipping callback. No room found');
 			return options;
 		}
 		await LivechatRooms.unsetPredictedVisitorAbandonmentByRoomId(room._id);
 
-		const department = await LivechatDepartment.findOneById(newDepartmentId, {
+		const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'ancestors'>>(newDepartmentId, {
 			projection: { ancestors: 1 },
 		});
 		if (!department) {
-			cbLogger.debug('Skipping callback. No department found');
 			return options;
 		}
 
 		const { departmentAncestors } = room;
 		const { ancestors } = department;
 		if (!ancestors && !departmentAncestors) {
-			cbLogger.debug('Skipping callback. No ancestors found for department');
 			return options;
 		}
 

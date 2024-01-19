@@ -1,4 +1,4 @@
-import type { IRoom, AtLeast } from '@rocket.chat/core-typings';
+import type { AtLeast } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Subscriptions } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
@@ -42,7 +42,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 		}
 	},
 
-	async allowMemberAction(room: IRoom, action, userId) {
+	async allowMemberAction(room, action, userId) {
 		if (isRoomFederated(room)) {
 			return Federation.actionAllowed(room, action, userId);
 		}
@@ -94,16 +94,20 @@ roomCoordinator.add(DirectMessageRoomType, {
 	async getNotificationDetails(room, sender, notificationMessage, userId) {
 		const useRealName = settings.get<boolean>('UI_Use_Real_Name');
 
+		const displayRoomName = await this.roomName(room, userId);
+
 		if (this.isGroupChat(room)) {
 			return {
-				title: await this.roomName(room, userId),
+				title: displayRoomName,
 				text: `${(useRealName && sender.name) || sender.username}: ${notificationMessage}`,
+				name: room.name || displayRoomName,
 			};
 		}
 
 		return {
 			title: (useRealName && sender.name) || sender.username,
 			text: notificationMessage,
+			name: room.name || displayRoomName,
 		};
 	},
 

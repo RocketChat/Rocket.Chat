@@ -973,7 +973,6 @@
   "Enter_name_here": "Bura ad daxil edin",
   "Enter_Normal": "Normal rejim (Enter ilə göndərin)",
   "Enter_to": "Daxil ol",
-  "Enterprise": "Müəssisə",
   "Entertainment": "Əyləncə",
   "Error": "Səhv",
   "Error_404": "Hata: 404",
@@ -2757,5 +2756,7 @@
   "registration.component.form.reasonToJoin": "Qoşulma səbəbi",
   "registration.component.form.invalidConfirmPass": "Şifrənin təsdiqlənməsi şifrə uyğun gəlmir",
   "registration.component.form.confirmPassword": "Şifrənizi təsdiqləyin",
-  "registration.component.form.sendConfirmationEmail": "Təsdiq e-poçt göndər"
+  "registration.component.form.sendConfirmationEmail": "Təsdiq e-poçt göndər",
+  "Enterprise": "Müəssisə",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Analytics"
 }

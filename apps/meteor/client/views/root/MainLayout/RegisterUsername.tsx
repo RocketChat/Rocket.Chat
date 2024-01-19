@@ -1,5 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { TextInput, ButtonGroup, Button, FieldGroup, Field, Box } from '@rocket.chat/fuselage';
+import { TextInput, ButtonGroup, Button, FieldGroup, Field, FieldLabel, FieldRow, FieldError, Box } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { VerticalWizardLayout, Form } from '@rocket.chat/layout';
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
@@ -18,6 +18,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
+import MarkdownText from '../../../components/MarkdownText';
 import { queryClient } from '../../../lib/queryClient';
 
 type RegisterUsernamePayload = {
@@ -102,11 +103,15 @@ const RegisterUsername = () => {
 					{!isLoading && (
 						<FieldGroup>
 							<Field>
-								<Field.Label id='username-label'>{t('Username')}</Field.Label>
-								<Field.Row>
+								<FieldLabel id='username-label'>{t('Username')}</FieldLabel>
+								<FieldRow>
 									<TextInput aria-labelledby='username-label' {...register('username', { required: t('Username_cant_be_empty') })} />
-								</Field.Row>
-								{errors.username && <Field.Error>{errors.username.message}</Field.Error>}
+								</FieldRow>
+								{errors.username && (
+									<FieldError>
+										<MarkdownText content={errors.username.message} />
+									</FieldError>
+								)}
 							</Field>
 						</FieldGroup>
 					)}

@@ -980,7 +980,6 @@
   "Enter_name_here": "Πληκτρολογήστε το όνομα εδώ",
   "Enter_Normal": "Κανονική λειτουργία (αποστολή με Enter)",
   "Enter_to": "Enter για να",
-  "Enterprise": "Επιχείρηση",
   "Entertainment": "Ψυχαγωγία",
   "Error": "Λάθος",
   "Error_404": "Σφάλμα 404",
@@ -2766,5 +2765,7 @@
   "registration.component.form.reasonToJoin": "Λόγος για συμμετοχή",
   "registration.component.form.invalidConfirmPass": "Η επιβεβαίωση κωδικού δεν ταιριάζει με τον αρχικό κωδικό",
   "registration.component.form.confirmPassword": "Επιβεβαιώστε τον κωδικό σας",
-  "registration.component.form.sendConfirmationEmail": "Αποστολή email επιβεβαίωσης"
+  "registration.component.form.sendConfirmationEmail": "Αποστολή email επιβεβαίωσης",
+  "Enterprise": "Επιχείρηση",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Αναλυτικά στοιχεία"
 }

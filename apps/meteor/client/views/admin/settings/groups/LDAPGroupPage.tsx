@@ -1,5 +1,5 @@
 import type { ISetting } from '@rocket.chat/core-typings';
-import { Button, Box, TextInput, Field } from '@rocket.chat/fuselage';
+import { Button, Box, TextInput, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useSetting, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import type { FormEvent } from 'react';
@@ -110,12 +110,12 @@ function LDAPGroupPage({ _id, ...group }: ISetting): JSX.Element {
 				>
 					<Field>
 						<Box display='flex'>
-							<Field.Label>{t('LDAP_Username_To_Search')}</Field.Label>
+							<FieldLabel>{t('LDAP_Username_To_Search')}</FieldLabel>
 						</Box>
 
-						<Field.Row>
+						<FieldRow>
 							<TextInput onChange={handleChangeUsername} />
-						</Field.Row>
+						</FieldRow>
 					</Field>
 				</GenericModal>,
 			);

@@ -26,7 +26,6 @@ class AutoCloseOnHoldSchedulerClass {
 
 	public async init(): Promise<void> {
 		if (this.running) {
-			this.logger.debug('Already running');
 			return;
 		}
 
@@ -38,7 +37,7 @@ class AutoCloseOnHoldSchedulerClass {
 
 		await this.scheduler.start();
 		this.running = true;
-		this.logger.debug('Started');
+		this.logger.info('Service started');
 	}
 
 	public async scheduleRoom(roomId: string, timeout: number, comment: string): Promise<void> {
@@ -75,7 +74,6 @@ class AutoCloseOnHoldSchedulerClass {
 			comment,
 		};
 
-		this.logger.debug(`Closing room ${roomId}`);
 		await Livechat.closeRoom(payload);
 	}
 

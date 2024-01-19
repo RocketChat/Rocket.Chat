@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Accordion, Field, Select, FieldGroup, ToggleSwitch, Tooltip, Box } from '@rocket.chat/fuselage';
+import { Accordion, Field, FieldLabel, FieldRow, Select, FieldGroup, ToggleSwitch, Tooltip, Box } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useCustomSound } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
@@ -23,8 +23,8 @@ const PreferencesSoundSection = () => {
 		<Accordion.Item title={t('Sound')}>
 			<FieldGroup>
 				<Field>
-					<Field.Label htmlFor={newRoomNotificationId}>{t('New_Room_Notification')}</Field.Label>
-					<Field.Row>
+					<FieldLabel htmlFor={newRoomNotificationId}>{t('New_Room_Notification')}</FieldLabel>
+					<FieldRow>
 						<Controller
 							name='newRoomNotification'
 							control={control}
@@ -40,11 +40,11 @@ const PreferencesSoundSection = () => {
 								/>
 							)}
 						/>
-					</Field.Row>
+					</FieldRow>
 				</Field>
 				<Field>
-					<Field.Label htmlFor={newMessageNotificationId}>{t('New_Message_Notification')}</Field.Label>
-					<Field.Row>
+					<FieldLabel htmlFor={newMessageNotificationId}>{t('New_Message_Notification')}</FieldLabel>
+					<FieldRow>
 						<Controller
 							name='newMessageNotification'
 							control={control}
@@ -60,11 +60,11 @@ const PreferencesSoundSection = () => {
 								/>
 							)}
 						/>
-					</Field.Row>
+					</FieldRow>
 				</Field>
-				<Field display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-					<Field.Label htmlFor={muteFocusedConversationsId}>{t('Mute_Focused_Conversations')}</Field.Label>
-					<Field.Row>
+				<Field>
+					<FieldRow>
+						<FieldLabel htmlFor={muteFocusedConversationsId}>{t('Mute_Focused_Conversations')}</FieldLabel>
 						<Controller
 							name='muteFocusedConversations'
 							control={control}
@@ -72,11 +72,11 @@ const PreferencesSoundSection = () => {
 								<ToggleSwitch id={muteFocusedConversationsId} ref={ref} checked={value} onChange={onChange} />
 							)}
 						/>
-					</Field.Row>
+					</FieldRow>
 				</Field>
 				<Field>
-					<Field.Label htmlFor={notificationsSoundVolumeId}>{t('Notifications_Sound_Volume')}</Field.Label>
-					<Field.Row>
+					<FieldLabel htmlFor={notificationsSoundVolumeId}>{t('Notifications_Sound_Volume')}</FieldLabel>
+					<FieldRow>
 						<Controller
 							name='notificationsSoundVolume'
 							control={control}
@@ -100,7 +100,7 @@ const PreferencesSoundSection = () => {
 						<Tooltip placement='right' mis={8}>
 							{notificationsSoundVolume}
 						</Tooltip>
-					</Field.Row>
+					</FieldRow>
 				</Field>
 			</FieldGroup>
 		</Accordion.Item>

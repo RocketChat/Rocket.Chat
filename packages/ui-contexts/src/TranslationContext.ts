@@ -1,8 +1,5 @@
+import type { RocketchatI18nKeys } from '@rocket.chat/i18n';
 import { createContext } from 'react';
-
-import type keys from './en.json';
-
-export { keys };
 
 export type TranslationLanguage = {
 	en: string;
@@ -11,7 +8,7 @@ export type TranslationLanguage = {
 	key: string;
 };
 
-export type TranslationKey = keyof typeof keys;
+export type TranslationKey = RocketchatI18nKeys | `app-${string}.${string}`;
 
 export type TranslationContextValue = {
 	languages: TranslationLanguage[];

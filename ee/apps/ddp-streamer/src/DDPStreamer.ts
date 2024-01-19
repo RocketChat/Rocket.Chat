@@ -44,7 +44,9 @@ export class DDPStreamer extends ServiceClass {
 				return;
 			}
 
-			events.emit('meteor.loginServiceConfiguration', clientAction === 'inserted' ? 'added' : 'changed', data);
+			if (data) {
+				events.emit('meteor.loginServiceConfiguration', clientAction === 'inserted' ? 'added' : 'changed', data);
+			}
 		});
 
 		this.onEvent('meteor.clientVersionUpdated', (versions): void => {
@@ -73,6 +75,15 @@ export class DDPStreamer extends ServiceClass {
 		}
 
 		metrics.register({
+			name: 'rocketchat_subscription',
+			type: 'histogram',
+			labelNames: ['subscription'],
+			description: 'Client subscriptions to Rocket.Chat',
+			unit: 'millisecond',
+			quantiles: true,
+		});
+
+		metrics.register({
 			name: 'users_connected',
 			type: 'gauge',
 			labelNames: ['nodeID'],
@@ -85,6 +96,8 @@ export class DDPStreamer extends ServiceClass {
 			labelNames: ['nodeID'],
 			description: 'Users logged by streamer',
 		});
+
+		server.setMetrics(metrics);
 
 		server.on(DDP_EVENTS.CONNECTED, () => {
 			metrics.increment('users_connected', { nodeID }, 1);
@@ -143,44 +156,50 @@ export class DDPStreamer extends ServiceClass {
 
 	async started(): Promise<void> {
 		// TODO this call creates a dependency to MeteorService, should it be a hard dependency? or can this call fail and be ignored?
-		const versions = await MeteorService.getAutoUpdateClientVersions();
+		try {
+			const versions = await MeteorService.getAutoUpdateClientVersions();
 
-		Object.keys(versions).forEach((key) => {
-			Autoupdate.updateVersion(versions[key]);
-		});
+			Object.keys(versions || {}).forEach((key) => {
+				Autoupdate.updateVersion(versions[key]);
+			});
 
-		this.app = polka()
-			.use(proxy())
-			.get('/health', async (_req, res) => {
-				try {
-					if (!this.api) {
-						throw new Error('API not available');
+			this.app = polka()
+				.use(proxy())
+				.get('/health', async (_req, res) => {
+					try {
+						if (!this.api) {
+							throw new Error('API not available');
+						}
+
+						await this.api.nodeList();
+						res.end('ok');
+					} catch (err) {
+						console.error('Service not healthy', err);
+
+						res.writeHead(500);
+						res.end('not healthy');
 					}
+				})
+				.get('*', function (_req, res) {
+					res.setHeader('Access-Control-Allow-Origin', '*');
+					res.setHeader('Content-Type', 'application/json');
 
-					await this.api.nodeList();
-					res.end('ok');
-				} catch (err) {
-					console.error('Service not healthy', err);
+					res.writeHead(200);
 
-					res.writeHead(500);
-					res.end('not healthy');
-				}
-			})
-			.get('*', function (_req, res) {
-				res.setHeader('Access-Control-Allow-Origin', '*');
-				res.setHeader('Content-Type', 'application/json');
+					res.end(
+						`{"websocket":true,"origins":["*:*"],"cookie_needed":false,"entropy":${crypto.randomBytes(4).readUInt32LE(0)},"ms":true}`,
+					);
+				})
+				.listen(PORT);
 
-				res.writeHead(200);
+			this.wss = new WebSocket.Server({ server: this.app.server });
 
-				res.end(`{"websocket":true,"origins":["*:*"],"cookie_needed":false,"entropy":${crypto.randomBytes(4).readUInt32LE(0)},"ms":true}`);
-			})
-			.listen(PORT);
+			this.wss.on('connection', (ws, req) => new Client(ws, req.url !== '/websocket', req));
 
-		this.wss = new WebSocket.Server({ server: this.app.server });
-
-		this.wss.on('connection', (ws, req) => new Client(ws, req.url !== '/websocket', req));
-
-		InstanceStatus.registerInstance('ddp-streamer', {});
+			InstanceStatus.registerInstance('ddp-streamer', {});
+		} catch (err) {
+			console.error('DDPStreamer did not start correctly', err);
+		}
 	}
 
 	async stopped(): Promise<void> {

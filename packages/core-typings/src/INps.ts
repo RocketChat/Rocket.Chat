@@ -27,7 +27,7 @@ export interface INpsVote extends IRocketChatRecord {
 	npsId: INps['_id'];
 	ts: Date;
 	identifier: string; // voter identifier
-	roles: IUser['roles']; // voter roles
+	roles?: IUser['roles']; // voter roles
 	score: number;
 	comment: string;
 	status: INpsVoteStatus;

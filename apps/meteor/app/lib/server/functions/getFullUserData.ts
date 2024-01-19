@@ -21,6 +21,7 @@ const defaultFields = {
 	avatarETag: 1,
 	extension: 1,
 	federated: 1,
+	statusLivechat: 1,
 } as const;
 
 const fullFields = {

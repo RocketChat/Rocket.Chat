@@ -8,7 +8,6 @@ import { filterBusinessHoursThatMustBeOpened, openBusinessHourDefault } from './
 
 export class SingleBusinessHourBehavior extends AbstractBusinessHourBehavior implements IBusinessHourBehavior {
 	async openBusinessHoursByDayAndHour(): Promise<void> {
-		businessHourLogger.debug('opening single business hour');
 		return openBusinessHourDefault();
 	}
 
@@ -23,7 +22,6 @@ export class SingleBusinessHourBehavior extends AbstractBusinessHourBehavior imp
 	}
 
 	async onStartBusinessHours(): Promise<void> {
-		businessHourLogger.debug('Starting Single Business Hours');
 		return openBusinessHourDefault();
 	}
 

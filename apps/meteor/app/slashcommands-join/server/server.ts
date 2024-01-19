@@ -1,10 +1,9 @@
-import { api } from '@rocket.chat/core-services';
+import { api, Room } from '@rocket.chat/core-services';
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { i18n } from '../../../server/lib/i18n';
-import { joinRoomMethod } from '../../lib/server/methods/joinRoom';
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
 
@@ -16,13 +15,13 @@ slashCommands.add({
 			return;
 		}
 
-		channel = channel.replace('#', '');
-		const room = await Rooms.findOneByNameAndType(channel, 'c');
-
 		if (!userId) {
 			return;
 		}
 
+		channel = channel.replace('#', '');
+
+		const room = await Rooms.findOneByNameAndType(channel, 'c');
 		if (!room) {
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 				msg: i18n.t('Channel_doesnt_exist', {
@@ -44,7 +43,7 @@ slashCommands.add({
 			});
 		}
 
-		await joinRoomMethod(userId, room._id);
+		await Room.join({ room, user: { _id: userId } });
 	},
 	options: {
 		description: 'Join_the_given_channel',

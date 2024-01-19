@@ -33,14 +33,15 @@ export const useFilteredApps = ({
 	text: string;
 	current: number;
 	itemsPerPage: number;
-	categories?: string[];
-	purchaseType?: string;
+	categories: string[];
+	purchaseType: string;
 	isEnterpriseOnly?: boolean;
-	sortingMethod?: string;
-	status?: string;
+	sortingMethod: string;
+	status: string;
 	context?: string;
-}): AsyncState<
-	{ items: App[] } & { shouldShowSearchText: boolean } & PaginatedResult & { allApps: App[] } & { totalAppsLength: number }
+}): Omit<
+	AsyncState<{ items: App[] } & { shouldShowSearchText: boolean } & PaginatedResult & { allApps: App[] } & { totalAppsLength: number }>,
+	'error'
 > => {
 	const value = useMemo(() => {
 		if (appsData.value === undefined) {
@@ -48,72 +49,58 @@ export const useFilteredApps = ({
 		}
 
 		const { apps } = appsData.value;
+		const fallback = (apps: App[]) => apps;
 
-		let filtered: App[] = apps;
-		let shouldShowSearchText = true;
-
-		const sortingMethods: Record<string, () => App[]> = {
-			urf: () =>
-				filtered.sort(
-					(firstApp, secondApp) => (secondApp?.appRequestStats?.totalUnseen || 0) - (firstApp?.appRequestStats?.totalUnseen || 0),
-				),
-			url: () =>
-				filtered.sort(
-					(firstApp, secondApp) => (firstApp?.appRequestStats?.totalUnseen || 0) - (secondApp?.appRequestStats?.totalUnseen || 0),
-				),
-			az: () => filtered.sort((firstApp, secondApp) => sortAppsByAlphabeticalOrInverseOrder(firstApp.name, secondApp.name)),
-			za: () => filtered.sort((firstApp, secondApp) => sortAppsByAlphabeticalOrInverseOrder(secondApp.name, firstApp.name)),
-			mru: () =>
-				filtered.sort((firstApp, secondApp) => sortAppsByClosestOrFarthestModificationDate(firstApp.modifiedAt, secondApp.modifiedAt)),
-			lru: () =>
-				filtered.sort((firstApp, secondApp) => sortAppsByClosestOrFarthestModificationDate(secondApp.modifiedAt, firstApp.modifiedAt)),
+		const sortingMethods: Record<string, (apps: App[]) => App[]> = {
+			urf: (apps: App[]) =>
+				apps.sort((firstApp, secondApp) => (secondApp?.appRequestStats?.totalUnseen || 0) - (firstApp?.appRequestStats?.totalUnseen || 0)),
+			url: (apps: App[]) =>
+				apps.sort((firstApp, secondApp) => (firstApp?.appRequestStats?.totalUnseen || 0) - (secondApp?.appRequestStats?.totalUnseen || 0)),
+			az: (apps: App[]) => apps.sort((firstApp, secondApp) => sortAppsByAlphabeticalOrInverseOrder(firstApp.name, secondApp.name)),
+			za: (apps: App[]) => apps.sort((firstApp, secondApp) => sortAppsByAlphabeticalOrInverseOrder(secondApp.name, firstApp.name)),
+			mru: (apps: App[]) =>
+				apps.sort((firstApp, secondApp) => sortAppsByClosestOrFarthestModificationDate(firstApp.modifiedAt, secondApp.modifiedAt)),
+			lru: (apps: App[]) =>
+				apps.sort((firstApp, secondApp) => sortAppsByClosestOrFarthestModificationDate(secondApp.modifiedAt, firstApp.modifiedAt)),
 		};
 
-		if (context && context === 'enterprise') {
-			filtered = apps.filter(({ categories }) => categories.includes('Enterprise'));
-		}
-
-		if (sortingMethod) {
-			filtered = sortingMethods[sortingMethod]();
-		}
-
-		const filterByPurchaseType: Record<string, () => App[]> = {
-			paid: () => filtered.filter(filterAppsByPaid),
-			enterprise: () => filtered.filter(filterAppsByEnterprise),
-			free: () => filtered.filter(filterAppsByFree),
+		const filterByPurchaseType: Record<string, (apps: App[]) => App[]> = {
+			all: fallback,
+			paid: (apps: App[]) => apps.filter(filterAppsByPaid),
+			premium: (apps: App[]) => apps.filter(filterAppsByEnterprise),
+			free: (apps: App[]) => apps.filter(filterAppsByFree),
 		};
 
-		if (purchaseType && purchaseType !== 'all') {
-			filtered = filterByPurchaseType[purchaseType]();
+		const filterByStatus: Record<string, (apps: App[]) => App[]> = {
+			all: fallback,
+			enabled: (apps: App[]) => apps.filter(filterAppsByEnabled),
+			disabled: (apps: App[]) => apps.filter(filterAppsByDisabled),
+		};
 
-			if (!filtered.length) shouldShowSearchText = false;
-		}
+		const filterByContext: Record<string, (apps: App[]) => App[]> = {
+			explore: fallback,
+			installed: fallback,
+			private: fallback,
+			premium: (apps: App[]) => apps.filter(({ categories }) => categories.includes('Premium')),
+			requested: (apps: App[]) => apps.filter(({ appRequestStats, installed }) => Boolean(appRequestStats) && !installed),
+		};
 
-		if (status && status !== 'all') {
-			filtered = status === 'enabled' ? filtered.filter(filterAppsByEnabled) : filtered.filter(filterAppsByDisabled);
+		type appsFilterFunction = (apps: App[]) => App[];
+		const pipeAppsFilter =
+			(...functions: appsFilterFunction[]) =>
+			(initialValue: App[]) =>
+				functions.reduce((currentAppsList, currentFilterFunction) => currentFilterFunction(currentAppsList), initialValue);
 
-			if (!filtered.length) shouldShowSearchText = false;
-		}
+		const filtered = pipeAppsFilter(
+			context ? filterByContext[context] : fallback,
+			filterByPurchaseType[purchaseType],
+			filterByStatus[status],
+			categories.length ? (apps: App[]) => apps.filter((app) => filterAppsByCategories(app, categories)) : fallback,
+			text ? (apps: App[]) => apps.filter(({ name }) => filterAppsByText(name, text)) : fallback,
+			sortingMethods[sortingMethod],
+		)(apps);
 
-		if (Boolean(categories.length) && Boolean(text)) {
-			filtered = filtered.filter((app) => filterAppsByCategories(app, categories)).filter(({ name }) => filterAppsByText(name, text));
-			shouldShowSearchText = true;
-		}
-
-		if (Boolean(categories.length) && !text) {
-			filtered = filtered.filter((app) => filterAppsByCategories(app, categories));
-			shouldShowSearchText = false;
-		}
-
-		if (!categories.length && Boolean(text)) {
-			filtered = filtered.filter(({ name }) => filterAppsByText(name, text));
-			shouldShowSearchText = true;
-		}
-
-		if (context && context === 'requested') {
-			filtered = apps.filter(({ appRequestStats, installed }) => Boolean(appRequestStats) && !installed);
-		}
-
+		const shouldShowSearchText = !!text;
 		const total = filtered.length;
 		const offset = current > total ? 0 : current;
 		const end = current + itemsPerPage;

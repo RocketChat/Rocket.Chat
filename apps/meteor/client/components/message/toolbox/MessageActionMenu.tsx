@@ -97,10 +97,14 @@ const MessageActionMenu = ({ options, onChangeMenuVisibility, ...props }: Messag
 										id={option.id}
 										icon={option.icon as ComponentProps<typeof Option>['icon']}
 										label={t(option.label)}
-										onClick={option.action}
+										onClick={(e) => {
+											handleClose();
+											option.action(e);
+										}}
 										data-qa-type='message-action'
 										data-qa-id={option.id}
 										role={option.role ? option.role : 'button'}
+										gap={!option.icon && option.type === 'apps'}
 									/>
 								))}
 								{index !== arr.length - 1 && <OptionDivider />}

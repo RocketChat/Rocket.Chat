@@ -228,6 +228,7 @@ export * from './v1/invites';
 export * from './v1/dm';
 export * from './v1/dm/DmHistoryProps';
 export * from './v1/integrations';
+export * from './v1/licenses';
 export * from './v1/omnichannel';
 export * from './v1/oauthapps';
 export * from './v1/oauthapps/UpdateOAuthAppParamsPOST';

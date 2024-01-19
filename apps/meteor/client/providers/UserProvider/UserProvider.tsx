@@ -10,12 +10,14 @@ import { Subscriptions, ChatRoom } from '../../../app/models/client';
 import { getUserPreference } from '../../../app/utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { afterLogoutCleanUpCallback } from '../../../lib/callbacks/afterLogoutCleanUpCallback';
-import { useIsEnterprise } from '../../hooks/useIsEnterprise';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { createReactiveSubscriptionFactory } from '../../lib/createReactiveSubscriptionFactory';
 import { useCreateFontStyleElement } from '../../views/account/accessibility/hooks/useCreateFontStyleElement';
+import { useDeleteUser } from './hooks/useDeleteUser';
 import { useEmailVerificationWarning } from './hooks/useEmailVerificationWarning';
 import { useLDAPAndCrowdCollisionWarning } from './hooks/useLDAPAndCrowdCollisionWarning';
+import { useUpdateAvatar } from './hooks/useUpdateAvatar';
+import { useUpdateCustomUserStatus } from './hooks/useUpdateCustomUserStatus';
 
 const getUserId = (): string | null => Meteor.userId();
 
@@ -54,7 +56,7 @@ const logout = (): Promise<void> =>
 		});
 	});
 
-export type LoginMethods = keyof typeof Meteor;
+export type LoginMethods = keyof typeof Meteor extends infer T ? (T extends `loginWith${string}` ? T : never) : never;
 
 type UserProviderProps = {
 	children: ReactNode;
@@ -78,6 +80,10 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 
 	useLDAPAndCrowdCollisionWarning();
 	useEmailVerificationWarning(user ?? undefined);
+
+	useUpdateCustomUserStatus();
+	useDeleteUser();
+	useUpdateAvatar();
 
 	const contextValue = useMemo(
 		(): ContextType<typeof UserContext> => ({
@@ -108,7 +114,7 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 				),
 			loginWithPassword: (user: string | { username: string } | { email: string } | { id: string }, password: string): Promise<void> =>
 				new Promise((resolve, reject) => {
-					Meteor[loginMethod](user, password, (error: Error | Meteor.Error | Meteor.TypedError | undefined) => {
+					Meteor[loginMethod](user, password, (error) => {
 						if (error) {
 							reject(error);
 							return;
@@ -121,9 +127,9 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 			loginWithService: <T extends LoginService>({ service, clientConfig = {} }: T): (() => Promise<true>) => {
 				const loginMethods = {
 					'meteor-developer': 'MeteorDeveloperAccount',
-				};
+				} as const;
 
-				const loginWithService = `loginWith${(loginMethods as any)[service] || capitalize(String(service || ''))}`;
+				const loginWithService = `loginWith${loginMethods[service] || capitalize(String(service || ''))}`;
 
 				const method: (config: unknown, cb: (error: any) => void) => Promise<true> = (Meteor as any)[loginWithService] as any;
 
@@ -179,14 +185,6 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 			setPreferedLanguage(user.language);
 		}
 	}, [preferedLanguage, setPreferedLanguage, setUserLanguage, user?.language, userLanguage, userId, setUserPreferences]);
-
-	const { data: license } = useIsEnterprise({ enabled: !!userId });
-
-	useEffect(() => {
-		if (!license?.isEnterprise && user?.settings?.preferences?.themeAppearence === 'high-contrast') {
-			setUserPreferences({ data: { themeAppearence: 'light' } });
-		}
-	}, [license?.isEnterprise, setUserPreferences, user?.settings?.preferences?.themeAppearence]);
 
 	return <UserContext.Provider children={children} value={contextValue} />;
 };

@@ -7,9 +7,9 @@ import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { userLoggedOut } from './userLoggedOut';
 
 export async function userLogout(userId: string): Promise<string | boolean> {
-	const { connectToCloud, workspaceRegistered } = await retrieveRegistrationStatus();
+	const { workspaceRegistered } = await retrieveRegistrationStatus();
 
-	if (!connectToCloud || !workspaceRegistered) {
+	if (!workspaceRegistered) {
 		return '';
 	}
 
@@ -26,10 +26,11 @@ export async function userLogout(userId: string): Promise<string | boolean> {
 				return '';
 			}
 
-			const cloudUrl = settings.get('Cloud_Url');
 			const clientSecret = settings.get('Cloud_Workspace_Client_Secret');
 
 			const { refreshToken } = user.services.cloud;
+
+			const cloudUrl = settings.get<string>('Cloud_Url');
 			await fetch(`${cloudUrl}/api/oauth/revoke`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

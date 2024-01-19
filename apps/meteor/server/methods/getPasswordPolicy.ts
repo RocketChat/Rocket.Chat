@@ -28,6 +28,9 @@ Meteor.methods<ServerMethods>({
 				method: 'getPasswordPolicy',
 			});
 		}
-		return passwordPolicy.getPasswordPolicy();
+		return passwordPolicy.getPasswordPolicy() as {
+			enabled: boolean;
+			policy: [name: TranslationKey, options?: Record<string, unknown>][];
+		};
 	},
 });

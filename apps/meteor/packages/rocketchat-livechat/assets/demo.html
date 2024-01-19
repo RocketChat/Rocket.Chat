@@ -2,18 +2,6 @@
 
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-	<script type="text/javascript">
-	(function(w, d, s, u) {
-		w.RocketChat = function(c) { w.RocketChat._.push(c) };
-		w.RocketChat._ = [];
-		w.RocketChat.url = u;
-		var h = d.getElementsByTagName(s)[0],
-			j = d.createElement(s);
-		j.async = true;
-		j.src = '/packages/rocketchat_livechat/assets/rocketchat-livechat.min.js?_=201702160944';
-		h.parentNode.insertBefore(j, h);
-	})(window, document, 'script', '/livechat');
-	</script>
 </head>
 
 <!-- Access: http://localhost:3000/packages/rocketchat_livechat/assets/demo.html -->
@@ -21,6 +9,16 @@
 <body style="background-color: #EFEFEF">
 	<h1 style="color:#000">test</h1>
 	<p style="color:#000">Talk to us.</p>
+
+	<!-- Start of Rocket.Chat Livechat Script -->
+	<script type="text/javascript">
+	(function(w, d, s, u) {
+		w.RocketChat = function(c) { w.RocketChat._.push(c) }; w.RocketChat._ = []; w.RocketChat.url = u;
+		var h = d.getElementsByTagName(s)[0], j = d.createElement(s);
+		j.async = true; j.src = `${window.location.origin}/livechat/rocketchat-livechat.min.js?_=${Math.random()}`;
+		h.parentNode.insertBefore(j, h);
+	})(window, document, 'script', `${window.location.origin}/livechat`);
+	</script>
 
 	<h2>changing page title</h2>
 	<a href="#page-0" onclick="document.title='page-0'">page 0</a><br>
@@ -35,9 +33,12 @@
 	<a href="#page-7">page 7</a><br>
 
 	<script type="text/javascript">
-		RocketChat(function() {
-			this.setCustomField('key-test', 'value test');
-		});
+	(function(w, d, s, u) {
+		w.RocketChat = function(c) { w.RocketChat._.push(c) }; w.RocketChat._ = []; w.RocketChat.url = u;
+		var h = d.getElementsByTagName(s)[0], j = d.createElement(s);
+		j.async = true; j.src = `${window.location.origin}/livechat/rocketchat-livechat.min.js?_=201903270000`;
+		h.parentNode.insertBefore(j, h);
+	})(window, document, 'script', `${window.location.origin}/livechat`);
 	</script>
 </body>
 

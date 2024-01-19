@@ -1,13 +1,14 @@
 import crypto from 'crypto';
 
 import type { IUser } from '@rocket.chat/core-typings';
-import { Users } from '@rocket.chat/models';
+import { Settings, Users } from '@rocket.chat/models';
 import {
 	isShieldSvgProps,
 	isSpotlightProps,
 	isDirectoryProps,
 	isMethodCallProps,
 	isMethodCallAnonProps,
+	isFingerprintProps,
 	isMeteorCall,
 	validateParamsPwGetPolicyRest,
 } from '@rocket.chat/rest-typings';
@@ -16,6 +17,7 @@ import EJSON from 'ejson';
 import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
+import { v4 as uuidv4 } from 'uuid';
 
 import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
@@ -536,7 +538,7 @@ API.v1.addRoute(
 				this.token ||
 				crypto
 					.createHash('md5')
-					.update(this.requestIp + this.request.headers['user-agent'])
+					.update(this.requestIp + this.user._id)
 					.digest('hex');
 
 			const rateLimiterInput = {
@@ -592,12 +594,7 @@ API.v1.addRoute(
 
 			const { method, params, id } = data;
 
-			const connectionId =
-				this.token ||
-				crypto
-					.createHash('md5')
-					.update(this.requestIp + this.request.headers['user-agent'])
-					.digest('hex');
+			const connectionId = this.token || crypto.createHash('md5').update(this.requestIp).digest('hex');
 
 			const rateLimiterInput = {
 				userId: this.userId || undefined,
@@ -640,6 +637,78 @@ API.v1.addRoute(
 			const isMailURLSet = !(process.env.MAIL_URL === 'undefined' || process.env.MAIL_URL === undefined);
 			const isSMTPConfigured = Boolean(settings.get('SMTP_Host')) || isMailURLSet;
 			return API.v1.success({ isSMTPConfigured });
+		},
+	},
+);
+
+/**
+ * @openapi
+ *  /api/v1/fingerprint:
+ *    post:
+ *      description: Update Fingerprint definition as a new workspace or update of configuration
+ *      security:
+ *        $ref: '#/security/authenticated'
+ *      requestBody:
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                setDeploymentAs:
+ *                  type: string
+ *            example: |
+ *              {
+ *                 "setDeploymentAs": "new-workspace"
+ *              }
+ *      responses:
+ *        200:
+ *          description: Workspace successfully configured
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ApiSuccessV1'
+ *        default:
+ *          description: Unexpected error
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ApiFailureV1'
+ */
+API.v1.addRoute(
+	'fingerprint',
+	{
+		authRequired: true,
+		validateParams: isFingerprintProps,
+	},
+	{
+		async post() {
+			check(this.bodyParams, {
+				setDeploymentAs: String,
+			});
+
+			if (this.bodyParams.setDeploymentAs === 'new-workspace') {
+				await Promise.all([
+					Settings.resetValueById('uniqueID', process.env.DEPLOYMENT_ID || uuidv4()),
+					// Settings.resetValueById('Cloud_Url'),
+					Settings.resetValueById('Cloud_Service_Agree_PrivacyTerms'),
+					Settings.resetValueById('Cloud_Workspace_Id'),
+					Settings.resetValueById('Cloud_Workspace_Name'),
+					Settings.resetValueById('Cloud_Workspace_Client_Id'),
+					Settings.resetValueById('Cloud_Workspace_Client_Secret'),
+					Settings.resetValueById('Cloud_Workspace_Client_Secret_Expires_At'),
+					Settings.resetValueById('Cloud_Workspace_Registration_Client_Uri'),
+					Settings.resetValueById('Cloud_Workspace_PublicKey'),
+					Settings.resetValueById('Cloud_Workspace_License'),
+					Settings.resetValueById('Cloud_Workspace_Had_Trial'),
+					Settings.resetValueById('Cloud_Workspace_Access_Token'),
+					Settings.resetValueById('Cloud_Workspace_Access_Token_Expires_At', new Date(0)),
+					Settings.resetValueById('Cloud_Workspace_Registration_State'),
+				]);
+			}
+
+			await Settings.updateValueById('Deployment_FingerPrint_Verified', true);
+
+			return API.v1.success({});
 		},
 	},
 );
