@@ -16,7 +16,7 @@
 	"dependencies": {
 		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/federation": "workspace:^",
-		"@types/node": "^14.18.21",
+		"@types/node": "^14.18.63",
 		"ejson": "^2.2.2",
 		"eventemitter3": "^4.0.7",
 		"fibers": "^5.0.3",
@@ -29,11 +29,10 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
-		"@types/eslint": "^8.4.10",
-		"@types/polka": "^0.5.4",
+		"@types/polka": "^0.5.6",
 		"eslint": "~8.45.0",
 		"ts-node": "^10.9.1",
-		"typescript": "^5.3.3"
+		"typescript": "^5.3.2"
 	},
 	"main": "./dist/ee/service.js",
 	"files": [
