@@ -5,4 +5,4 @@ export const WEB_RTC_EVENTS = {
 	JOIN: 'join',
 	CANDIDATE: 'candidate',
 	DESCRIPTION: 'description',
-};
+} as const;

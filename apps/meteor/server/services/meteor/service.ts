@@ -152,9 +152,11 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 					return;
 				}
 
-				serviceConfigCallbacks.forEach((callbacks) => {
-					callbacks[clientAction === 'inserted' ? 'added' : 'changed']?.(id, data);
-				});
+				if (data) {
+					serviceConfigCallbacks.forEach((callbacks) => {
+						callbacks[clientAction === 'inserted' ? 'added' : 'changed']?.(id, data);
+					});
+				}
 			});
 		}
 

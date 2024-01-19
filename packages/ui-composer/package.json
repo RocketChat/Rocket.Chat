@@ -5,8 +5,8 @@
   "devDependencies": {
     "@babel/core": "~7.22.20",
     "@rocket.chat/eslint-config": "workspace:^",
-    "@rocket.chat/fuselage": "^0.40.0",
-    "@rocket.chat/icons": "~0.32.0",
+    "@rocket.chat/fuselage": "^0.43.0",
+    "@rocket.chat/icons": "^0.33.0",
     "@storybook/addon-actions": "~6.5.16",
     "@storybook/addon-docs": "~6.5.16",
     "@storybook/addon-essentials": "~6.5.16",
@@ -46,5 +46,8 @@
   ],
   "volta": {
     "extends": "../../package.json"
+  },
+  "dependencies": {
+    "@react-aria/toolbar": "^3.0.0-beta.1"
   }
 }
