@@ -1432,7 +1432,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 	}
 
 	private isValidData(data: Omit<ISession, '_id' | 'createdAt' | '_updatedAt'>): boolean {
-		return data.year && data.month && data.day && data.sessionId && data.instanceId;
+		return Boolean(data.year && data.month && data.day && data.sessionId && data.instanceId);
 	}
 
 	async createOrUpdate(data: Omit<ISession, '_id' | 'createdAt' | '_updatedAt'>): Promise<UpdateResult | undefined> {
