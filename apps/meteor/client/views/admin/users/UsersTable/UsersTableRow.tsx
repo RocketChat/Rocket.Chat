@@ -1,10 +1,11 @@
 import { UserStatus as Status, isUserFederated } from '@rocket.chat/core-typings';
-import type { IRole, IUser } from '@rocket.chat/core-typings';
+import type { IRole, IUser, Serialized } from '@rocket.chat/core-typings';
 import { Box, Button, Menu, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import type { PickedUser } from '@rocket.chat/rest-typings';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { Roles } from '../../../../../app/models/client';
 import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
@@ -20,7 +21,7 @@ import { useResetTOTPAction } from '../hooks/useResetTOTPAction';
 import { useSendWelcomeEmailMutation } from '../hooks/useSendWelcomeEmailMutation';
 
 type UsersTableRowProps = {
-	user: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'emails' | 'active' | 'avatarETag' | 'roles'>;
+	user: Serialized<PickedUser>;
 	onClick: (id: IUser['_id'], e: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement>) => void;
 	mediaQuery: boolean;
 	refetchUsers: () => void;
@@ -30,8 +31,22 @@ type UsersTableRowProps = {
 
 const UsersTableRow = ({ user, onClick, mediaQuery, refetchUsers, onReload, tab }: UsersTableRowProps): ReactElement => {
 	const t = useTranslation();
-	const { _id, emails, username, name, status, roles, active, avatarETag } = user;
-	const registrationStatusText = active ? t('Active') : t('Deactivated');
+	const { _id, emails, username, name, status, roles, active, avatarETag, lastLogin, type } = user;
+	const registrationStatusText = useMemo(() => {
+		const usersExcludedFromPending = ['bot', 'app'];
+
+		if (!lastLogin && !usersExcludedFromPending.includes(type)) {
+			return t('Pending');
+		}
+
+		if (active && lastLogin) {
+			return t('Active');
+		}
+
+		if (!active && lastLogin) {
+			return t('Deactivated');
+		}
+	}, [active, lastLogin, t, type]);
 
 	const roleNames = (roles || [])
 		.map((roleId) => (Roles.findOne(roleId, { fields: { name: 1 } }) as IRole | undefined)?.name)
@@ -55,26 +70,21 @@ const UsersTableRow = ({ user, onClick, mediaQuery, refetchUsers, onReload, tab 
 	const resetE2EKeyAction = useResetE2EEKeyAction(userId);
 	const resendWelcomeEmail = useSendWelcomeEmailMutation();
 
+	const isNotPendingDeactivatedNorFederated = tab !== 'pending' && tab !== 'deactivated' && !isFederatedUser;
 	const menuOptions = {
-		...(tab !== 'pending' &&
-			tab !== 'deactivated' &&
-			changeAdminStatusAction &&
-			!isFederatedUser && {
+		...(isNotPendingDeactivatedNorFederated &&
+			changeAdminStatusAction && {
 				makeAdmin: {
 					label: { label: changeAdminStatusAction.label, icon: changeAdminStatusAction.icon },
 					action: changeAdminStatusAction.action,
 				},
 			}),
-		...(tab !== 'pending' &&
-			tab !== 'deactivated' &&
-			resetE2EKeyAction &&
-			!isFederatedUser && {
+		...(isNotPendingDeactivatedNorFederated &&
+			resetE2EKeyAction && {
 				resetE2EKey: { label: { label: resetE2EKeyAction.label, icon: resetE2EKeyAction.icon }, action: resetE2EKeyAction.action },
 			}),
-		...(tab !== 'pending' &&
-			tab !== 'deactivated' &&
-			resetTOTPAction &&
-			!isFederatedUser && {
+		...(isNotPendingDeactivatedNorFederated &&
+			resetTOTPAction && {
 				resetTOTP: { label: { label: resetTOTPAction.label, icon: resetTOTPAction.icon }, action: resetTOTPAction.action },
 			}),
 		...(changeUserStatusAction &&

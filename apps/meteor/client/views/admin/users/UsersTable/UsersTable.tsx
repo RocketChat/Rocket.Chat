@@ -1,7 +1,6 @@
 import type { IRole } from '@rocket.chat/core-typings';
 import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-// import { MultiSelectCustom } from '@rocket.chat/ui-client';
 import type { OptionProp } from '@rocket.chat/ui-client';
 import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, MutableRefObject } from 'react';

@@ -112,6 +112,11 @@ export type UserPresence = Readonly<
 
 export type UserPersonalTokens = Pick<IPersonalAccessToken, 'name' | 'lastTokenPart' | 'bypassTwoFactor'> & { createdAt: string };
 
+export type PickedUser = Pick<
+	IUser,
+	'_id' | 'username' | 'name' | 'status' | 'roles' | 'emails' | 'active' | 'avatarETag' | 'lastLogin' | 'type'
+>;
+
 export type UsersEndpoints = {
 	'/v1/users.2fa.enableEmail': {
 		POST: () => void;
@@ -141,13 +146,13 @@ export type UsersEndpoints = {
 
 	'/v1/users.list': {
 		GET: (params: PaginatedRequest<{ fields: string }>) => PaginatedResult<{
-			users: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'roles' | 'emails' | 'active' | 'avatarETag'>[];
+			users: PickedUser[];
 		}>;
 	};
 
 	'/v1/users.list/:status': {
 		GET: (params: UsersListStatusParamsGET) => PaginatedResult<{
-			users: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'roles' | 'emails' | 'active' | 'avatarETag'>[];
+			users: PickedUser[];
 		}>;
 	};
 

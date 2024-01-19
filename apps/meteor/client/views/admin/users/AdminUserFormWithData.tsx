@@ -37,7 +37,7 @@ const AdminUserFormWithData = ({ uid, onReload, context, roleData, roleError }: 
 		);
 	}
 
-	if (data?.user && isUserFederated(data?.user as unknown as IUser)) {
+	if (data?.user && isUserFederated(data?.user)) {
 		return (
 			<Callout m={16} type='danger'>
 				{t('Edit_Federated_User_Not_Allowed')}

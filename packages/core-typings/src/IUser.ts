@@ -1,5 +1,6 @@
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IRole } from './IRole';
+import type { Serialized } from './Serialized';
 import type { UserStatus } from './UserStatus';
 
 export interface ILoginToken {
@@ -188,7 +189,7 @@ export interface IRegisterUser extends IUser {
 }
 
 export const isRegisterUser = (user: IUser): user is IRegisterUser => user.username !== undefined && user.name !== undefined;
-export const isUserFederated = (user: Partial<IUser>) => 'federated' in user && user.federated === true;
+export const isUserFederated = (user: Partial<IUser> | Partial<Serialized<IUser>>) => 'federated' in user && user.federated === true;
 
 export type IUserDataEvent = {
 	id: unknown;
