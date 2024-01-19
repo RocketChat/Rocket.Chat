@@ -161,7 +161,7 @@ const UsersTableRow = ({ user, onClick, mediaQuery, refetchUsers, onReload, tab 
 				</GenericTableCell>
 			)}
 
-			<GenericTableCell withTruncatedText>{emails?.length && emails[0].address}</GenericTableCell>
+			{mediaQuery && <GenericTableCell withTruncatedText>{emails?.length && emails[0].address}</GenericTableCell>}
 			{mediaQuery && <GenericTableCell withTruncatedText>{roleNames}</GenericTableCell>}
 			{tab === 'all' && (
 				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>

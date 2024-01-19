@@ -98,7 +98,7 @@ const UsersTable = ({ reload, tab, roleData, onReload, setPendingUsersCount }: U
 
 	const headers = useMemo(
 		() => [
-			<GenericTableHeaderCell w='x200' key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
+			<GenericTableHeaderCell w='x240' key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
 				{t('Name')}
 			</GenericTableHeaderCell>,
 			mediaQuery && (
@@ -113,16 +113,18 @@ const UsersTable = ({ reload, tab, roleData, onReload, setPendingUsersCount }: U
 					{t('Username')}
 				</GenericTableHeaderCell>
 			),
-			<GenericTableHeaderCell
-				w='x120'
-				key='email'
-				direction={sortDirection}
-				active={sortBy === 'emails.address'}
-				onClick={setSort}
-				sort='emails.address'
-			>
-				{t('Email')}
-			</GenericTableHeaderCell>,
+			mediaQuery && (
+				<GenericTableHeaderCell
+					w='x120'
+					key='email'
+					direction={sortDirection}
+					active={sortBy === 'emails.address'}
+					onClick={setSort}
+					sort='emails.address'
+				>
+					{t('Email')}
+				</GenericTableHeaderCell>
+			),
 			mediaQuery && (
 				<GenericTableHeaderCell w='x120' key='roles' onClick={setSort}>
 					{t('Roles')}
@@ -145,7 +147,7 @@ const UsersTable = ({ reload, tab, roleData, onReload, setPendingUsersCount }: U
 					{t('Pending_action')}
 				</GenericTableHeaderCell>
 			),
-			<GenericTableHeaderCell key='actions' w='x176' />,
+			<GenericTableHeaderCell key='actions' w='x170' />,
 		],
 		[mediaQuery, setSort, sortBy, sortDirection, t, tab],
 	);
