@@ -28,7 +28,15 @@ export const useRemoveUnit = () => {
 			}
 		};
 
-		setModal(<GenericModal variant='danger' onConfirm={onDeleteAgent} onCancel={() => setModal()} confirmText={t('Delete')} />);
+		setModal(
+			<GenericModal
+				data-qa-id='units-confirm-delete-modal'
+				variant='danger'
+				onConfirm={onDeleteAgent}
+				onCancel={() => setModal()}
+				confirmText={t('Delete')}
+			/>,
+		);
 	});
 
 	return handleDelete;

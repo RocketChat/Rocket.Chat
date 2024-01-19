@@ -4,6 +4,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { getWorkspaceAccessToken } from '../../app/cloud/server';
+import { RateLimiter } from '../../app/lib/server/lib';
 import { Push } from '../../app/push/server';
 import { settings } from '../../app/settings/server';
 import { i18n } from './i18n';
@@ -25,7 +26,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!(await hasPermissionAsync(user._id, 'test-admin-options'))) {
+		if (!(await hasPermissionAsync(user._id, 'test-push-notifications'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'push_test',
 			});
@@ -80,6 +81,10 @@ Meteor.methods<ServerMethods>({
 			params: [tokens],
 		};
 	},
+});
+
+RateLimiter.limitMethod('push_test', 1, 1000, {
+	userId: () => true,
 });
 
 settings.watch<boolean>('Push_enable', async (enabled) => {

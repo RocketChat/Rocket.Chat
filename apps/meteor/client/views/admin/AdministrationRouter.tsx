@@ -6,7 +6,6 @@ import PageSkeleton from '../../components/PageSkeleton';
 import type { Item, SidebarDivider, SidebarItem } from '../../lib/createSidebarItems';
 import { isGoRocketChatLink } from '../../lib/createSidebarItems';
 import SettingsProvider from '../../providers/SettingsProvider';
-import { useUpgradeTabParams } from '../hooks/useUpgradeTabParams';
 import AdministrationLayout from './AdministrationLayout';
 import { getAdminSidebarItems } from './sidebarItems';
 
@@ -28,7 +27,6 @@ type AdministrationRouterProps = {
 
 const AdministrationRouter = ({ children }: AdministrationRouterProps): ReactElement => {
 	const router = useRouter();
-	const { tabType, trialEndDate, isLoading } = useUpgradeTabParams();
 
 	useEffect(
 		() =>
@@ -37,19 +35,7 @@ const AdministrationRouter = ({ children }: AdministrationRouterProps): ReactEle
 					return;
 				}
 
-				if (tabType && !isLoading) {
-					router.navigate(
-						{
-							name: 'upgrade',
-							params: { type: tabType },
-							search: trialEndDate ? { trialEndDate } : undefined,
-						},
-						{ replace: true },
-					);
-					return;
-				}
-
-				const defaultRoutePath = getAdminSidebarItems().find(firstSidebarPage)?.href ?? '/admin/info';
+				const defaultRoutePath = getAdminSidebarItems().find(firstSidebarPage)?.href ?? '/admin/workspace';
 
 				if (isGoRocketChatLink(defaultRoutePath)) {
 					window.open(defaultRoutePath, '_blank');
@@ -58,7 +44,7 @@ const AdministrationRouter = ({ children }: AdministrationRouterProps): ReactEle
 
 				router.navigate(defaultRoutePath, { replace: true });
 			}),
-		[tabType, trialEndDate, isLoading, router],
+		[router],
 	);
 
 	return (

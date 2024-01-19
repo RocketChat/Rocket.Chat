@@ -44,9 +44,7 @@ class DepartmentHelperClass {
 			}
 		});
 
-		setImmediate(() => {
-			void callbacks.run('livechat.afterRemoveDepartment', { department, agentsIds });
-		});
+		await callbacks.run('livechat.afterRemoveDepartment', { department, agentsIds });
 
 		return ret;
 	}

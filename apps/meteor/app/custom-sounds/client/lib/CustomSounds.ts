@@ -1,8 +1,6 @@
 import type { ICustomSound } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 
-import { CachedCollectionManager } from '../../../ui-cached-collection/client';
 import { getURL } from '../../../utils/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 
@@ -28,8 +26,11 @@ const defaultSounds = [
 class CustomSoundsClass {
 	list: ReactiveVar<Record<string, ICustomSound>>;
 
+	initialFetchDone: boolean;
+
 	constructor() {
 		this.list = new ReactiveVar({});
+		this.initialFetchDone = false;
 		defaultSounds.forEach((sound) => this.add(sound));
 	}
 
@@ -130,15 +131,17 @@ class CustomSoundsClass {
 
 		return audio && audio.duration > 0 && !audio.paused;
 	};
+
+	fetchCustomSoundList = async () => {
+		if (this.initialFetchDone) {
+			return;
+		}
+		const result = await sdk.call('listCustomSounds');
+		for (const sound of result) {
+			this.add(sound);
+		}
+		this.initialFetchDone = true;
+	};
 }
 
 export const CustomSounds = new CustomSoundsClass();
-
-Meteor.startup(() =>
-	CachedCollectionManager.onLogin(async () => {
-		const result = await sdk.call('listCustomSounds');
-		for (const sound of result) {
-			CustomSounds.add(sound);
-		}
-	}),
-);

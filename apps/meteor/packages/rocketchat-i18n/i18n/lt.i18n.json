@@ -1028,7 +1028,6 @@
   "Enter_name_here": "Įveskite pavadinimą čia",
   "Enter_Normal": "Normalus režimas (siųsti su \"Enter\")",
   "Enter_to": "Įeiti į",
-  "Enterprise": "Įmonė",
   "Entertainment": "Pramogos",
   "Error": "Klaida",
   "Error_404": "Klaida: 404",
@@ -2812,5 +2811,7 @@
   "registration.component.form.reasonToJoin": "Priežastys prisijungti",
   "registration.component.form.invalidConfirmPass": "Slaptažodžio patvirtinimas nesutampa su slaptažodžiu",
   "registration.component.form.confirmPassword": "Patvirtinkite savo slaptažodį",
-  "registration.component.form.sendConfirmationEmail": "Siųsti patvirtinimo el. Laišką"
+  "registration.component.form.sendConfirmationEmail": "Siųsti patvirtinimo el. Laišką",
+  "Enterprise": "Įmonė",
+  "UpgradeToGetMore_engagement-dashboard_Title": "\"Analytics\""
 }

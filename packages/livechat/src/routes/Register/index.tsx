@@ -81,22 +81,24 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 			...(department && { department }),
 		};
 
-		await dispatch({ loading: true, department });
+		dispatch({ loading: true, department });
 		try {
 			const { visitor: user } = await Livechat.grantVisitor({ visitor: { ...fields, token } });
-			await dispatch({ user });
+			dispatch({ user });
 			parentCall('callback', ['pre-chat-form-submit', fields]);
 			registerCustomFields(customFields);
 		} finally {
-			await dispatch({ loading: false });
+			dispatch({ loading: false });
 		}
 	};
 
 	const getDepartmentDefault = () => {
-		if (departments?.some((dept) => dept._id === guestDepartment)) {
+		if (departments.some((dept) => dept._id === guestDepartment)) {
 			return guestDepartment;
 		}
 	};
+
+	const availableDepartments = departments.filter((dept) => dept.showOnRegistration);
 
 	useEffect(() => {
 		if (user?._id) {
@@ -157,7 +159,7 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 							</FormField>
 						) : null}
 
-						{departments?.some((dept) => dept.showOnRegistration) ? (
+						{availableDepartments.length ? (
 							<FormField label={t('i_need_help_with')} error={errors.department?.message?.toString()}>
 								<Controller
 									name='department'
@@ -165,7 +167,7 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 									defaultValue={getDepartmentDefault()}
 									render={({ field }) => (
 										<SelectInput
-											options={sortArrayByColumn(departments, 'name').map(({ _id, name }: { _id: string; name: string }) => ({
+											options={sortArrayByColumn(availableDepartments, 'name').map(({ _id, name }: { _id: string; name: string }) => ({
 												value: _id,
 												label: name,
 											}))}

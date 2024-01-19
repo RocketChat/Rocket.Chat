@@ -48,7 +48,6 @@ export class MockedAppRootBuilder {
 		}): Promise<Serialized<OperationResult<TMethod, TPathPattern>>> => {
 			throw new Error('not implemented');
 		},
-		getSingleStream: () => () => () => undefined,
 		getStream: () => () => () => undefined,
 		uploadToEndpoint: () => Promise.reject(new Error('not implemented')),
 		callMethod: () => Promise.reject(new Error('not implemented')),
@@ -436,7 +435,10 @@ export class MockedAppRootBuilder {
 																handleServerInteraction: () => undefined,
 																off: () => undefined,
 																on: () => undefined,
+																openView: () => undefined,
 																disposeView: () => undefined,
+																notifyBusy: () => undefined,
+																notifyIdle: () => undefined,
 															}}
 														>
 															{/* <VideoConfProvider>

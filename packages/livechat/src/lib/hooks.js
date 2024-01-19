@@ -14,6 +14,7 @@ const createOrUpdateGuest = async (guest) => {
 	token && (await store.setState({ token }));
 	const { visitor: user } = await Livechat.grantVisitor({ visitor: { ...guest } });
 	store.setState({ user });
+	await loadConfig();
 };
 
 const updateIframeGuestData = (data) => {
@@ -141,8 +142,7 @@ const api = {
 		if (token === localToken) {
 			return;
 		}
-		createOrUpdateGuest({ token });
-		await loadConfig();
+		await createOrUpdateGuest({ token });
 	},
 
 	setGuestName(name) {
@@ -153,8 +153,8 @@ const api = {
 		updateIframeGuestData({ email });
 	},
 
-	registerGuest(data = {}) {
-		if (typeof data !== 'object') {
+	async registerGuest(data) {
+		if (!data || typeof data !== 'object') {
 			return;
 		}
 
@@ -166,7 +166,9 @@ const api = {
 			api.setDepartment(data.department);
 		}
 
-		createOrUpdateGuest(data);
+		Livechat.unsubscribeAll();
+
+		await createOrUpdateGuest(data);
 	},
 
 	async setLanguage(language) {

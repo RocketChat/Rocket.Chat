@@ -43,8 +43,8 @@ Meteor.methods<ServerMethods>({
 		}
 
 		await callbacks.run('beforeReadMessages', thread.rid, user?._id);
-		await readThread({ userId: user?._id, rid: thread.rid, tmid });
 		if (user?._id) {
+			await readThread({ userId: user._id, rid: thread.rid, tmid });
 			callbacks.runAsync('afterReadMessages', room._id, { uid: user._id, tmid });
 		}
 	},

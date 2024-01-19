@@ -29,8 +29,8 @@ const GenericUpsellModal = ({
 	confirmText,
 	icon,
 	description,
-	onCancel,
 	onClose,
+	onCancel,
 	onConfirm,
 	annotation,
 	...props
@@ -66,12 +66,12 @@ const GenericUpsellModal = ({
 					<Modal.FooterControllers>
 						{onCancel && (
 							<Button secondary onClick={onCancel}>
-								{cancelText ?? t('Close')}
+								{cancelText ?? t('Cancel')}
 							</Button>
 						)}
 						{onConfirm && (
 							<Button primary onClick={onConfirm}>
-								{confirmText ?? t('Talk_to_sales')}
+								{confirmText ?? t('Upgrade')}
 							</Button>
 						)}
 					</Modal.FooterControllers>

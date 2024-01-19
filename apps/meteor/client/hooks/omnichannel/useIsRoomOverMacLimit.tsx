@@ -12,7 +12,7 @@ export const useIsRoomOverMacLimit = (room: IRoom) => {
 		return false;
 	}
 
-	if (!room.open) {
+	if (room.closedAt) {
 		return false;
 	}
 

@@ -80,7 +80,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 		handleSubmit,
 		setValue,
 		watch,
-		formState: { isDirty, errors },
+		formState: { isDirty, errors, isSubmitting },
 	} = useForm<CreateTeamModalInputs>({
 		defaultValues: {
 			isPrivate: true,
@@ -207,13 +207,8 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 						</FieldRow>
 					</Field>
 					<Field>
-						<Box display='flex' justifyContent='space-between' alignItems='start'>
-							<Box display='flex' flexDirection='column' width='full'>
-								<FieldLabel htmlFor={privateId}>{t('Teams_New_Private_Label')}</FieldLabel>
-								<FieldDescription id={`${privateId}-hint`}>
-									{isPrivate ? t('Teams_New_Private_Description_Enabled') : t('Teams_New_Private_Description_Disabled')}
-								</FieldDescription>
-							</Box>
+						<FieldRow>
+							<FieldLabel htmlFor={privateId}>{t('Teams_New_Private_Label')}</FieldLabel>
 							<Controller
 								control={control}
 								name='isPrivate'
@@ -221,16 +216,14 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 									<ToggleSwitch id={privateId} aria-describedby={`${privateId}-hint`} onChange={onChange} checked={value} ref={ref} />
 								)}
 							/>
-						</Box>
+						</FieldRow>
+						<FieldDescription id={`${privateId}-hint`}>
+							{isPrivate ? t('Teams_New_Private_Description_Enabled') : t('Teams_New_Private_Description_Disabled')}
+						</FieldDescription>
 					</Field>
 					<Field>
-						<Box display='flex' justifyContent='space-between' alignItems='start'>
-							<Box display='flex' flexDirection='column' width='full'>
-								<FieldLabel htmlFor={readOnlyId}>{t('Teams_New_Read_only_Label')}</FieldLabel>
-								<FieldDescription id={`${readOnlyId}-hint`}>
-									{readOnly ? t('Only_authorized_users_can_write_new_messages') : t('Teams_New_Read_only_Description')}
-								</FieldDescription>
-							</Box>
+						<FieldRow>
+							<FieldLabel htmlFor={readOnlyId}>{t('Teams_New_Read_only_Label')}</FieldLabel>
 							<Controller
 								control={control}
 								name='readOnly'
@@ -245,16 +238,14 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 									/>
 								)}
 							/>
-						</Box>
+						</FieldRow>
+						<FieldDescription id={`${readOnlyId}-hint`}>
+							{readOnly ? t('Only_authorized_users_can_write_new_messages') : t('Teams_New_Read_only_Description')}
+						</FieldDescription>
 					</Field>
 					<Field>
-						<Box display='flex' justifyContent='space-between' alignItems='start'>
-							<Box display='flex' flexDirection='column' width='full'>
-								<FieldLabel htmlFor={encryptedId}>{t('Teams_New_Encrypted_Label')}</FieldLabel>
-								<FieldDescription id={`${encryptedId}-hint`}>
-									{isPrivate ? t('Teams_New_Encrypted_Description_Enabled') : t('Teams_New_Encrypted_Description_Disabled')}
-								</FieldDescription>
-							</Box>
+						<FieldRow>
+							<FieldLabel htmlFor={encryptedId}>{t('Teams_New_Encrypted_Label')}</FieldLabel>
 							<Controller
 								control={control}
 								name='encrypted'
@@ -269,14 +260,14 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 									/>
 								)}
 							/>
-						</Box>
+						</FieldRow>
+						<FieldDescription id={`${encryptedId}-hint`}>
+							{isPrivate ? t('Teams_New_Encrypted_Description_Enabled') : t('Teams_New_Encrypted_Description_Disabled')}
+						</FieldDescription>
 					</Field>
 					<Field>
-						<Box display='flex' justifyContent='space-between' alignItems='start'>
-							<Box display='flex' flexDirection='column' width='full'>
-								<FieldLabel htmlFor={broadcastId}>{t('Teams_New_Broadcast_Label')}</FieldLabel>
-								<FieldDescription d={`${broadcastId}-hint`}>{t('Teams_New_Broadcast_Description')}</FieldDescription>
-							</Box>
+						<FieldRow>
+							<FieldLabel htmlFor={broadcastId}>{t('Teams_New_Broadcast_Label')}</FieldLabel>
 							<Controller
 								control={control}
 								name='broadcast'
@@ -284,7 +275,8 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 									<ToggleSwitch aria-describedby={`${broadcastId}-hint`} id={broadcastId} onChange={onChange} checked={value} ref={ref} />
 								)}
 							/>
-						</Box>
+						</FieldRow>
+						<FieldDescription d={`${broadcastId}-hint`}>{t('Teams_New_Broadcast_Description')}</FieldDescription>
 					</Field>
 					<Field>
 						<FieldLabel htmlFor={addMembersId}>
@@ -304,7 +296,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button disabled={!isButtonEnabled} type='submit' primary>
+					<Button disabled={!isButtonEnabled} loading={isSubmitting} type='submit' primary>
 						{t('Create')}
 					</Button>
 				</Modal.FooterControllers>

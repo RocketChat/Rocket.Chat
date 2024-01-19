@@ -71,10 +71,10 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const maxActiveUsers = License.getMaxActiveUsers() || null;
+			const maxActiveUsers = License.getMaxActiveUsers();
 			const activeUsers = await Users.getActiveLocalUserCount();
 
-			return API.v1.success({ maxActiveUsers, activeUsers });
+			return API.v1.success({ maxActiveUsers: maxActiveUsers > 0 ? maxActiveUsers : null, activeUsers });
 		},
 	},
 );

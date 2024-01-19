@@ -27,7 +27,7 @@ const AutoCompleteAgent = ({
 	haveAll = false,
 	haveNoAgentsSelectedOption = false,
 	excludeId,
-	showIdleAgents = false,
+	showIdleAgents = true,
 	onlyAvailable = false,
 	withTitle = false,
 	onChange,
