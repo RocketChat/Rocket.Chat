@@ -131,7 +131,7 @@ type ChainedCallbackSignatures = {
 		params: {
 			guest: ILivechatVisitor;
 			transferData: TransferData;
-			department: AtLeast<ILivechatDepartmentRecord, '_id' | 'fallbackForwardDepartment'>;
+			department: AtLeast<ILivechatDepartmentRecord, '_id' | 'fallbackForwardDepartment' | 'name'>;
 		},
 	) => IOmnichannelRoom | Promise<boolean>;
 	'livechat.afterForwardChatToAgent': (params: {

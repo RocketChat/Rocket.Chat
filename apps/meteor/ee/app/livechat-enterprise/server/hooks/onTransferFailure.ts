@@ -16,7 +16,7 @@ const onTransferFailure = async (
 	}: {
 		guest: ILivechatVisitor;
 		transferData: TransferData;
-		department: AtLeast<ILivechatDepartment, '_id' | 'fallbackForwardDepartment'>;
+		department: AtLeast<ILivechatDepartment, '_id' | 'fallbackForwardDepartment' | 'name'>;
 	},
 ) => {
 	if (!isOmnichannelRoom(room)) {
