@@ -46,7 +46,6 @@ import { useSmtpQuery } from './hooks/useSmtpQuery';
 type AdminUserFormProps = {
 	userData?: Serialized<IUser>;
 	onReload: () => void;
-	setCreatedUsersCount?: React.Dispatch<React.SetStateAction<number>>;
 	context: string;
 	refetchUserFormData?: () => void;
 	roleData: { roles: IRole[] } | undefined;
@@ -84,16 +83,7 @@ const getInitialValue = ({
 	passwordConfirmation: '',
 });
 
-const AdminUserForm = ({
-	userData,
-	onReload,
-	setCreatedUsersCount,
-	context,
-	refetchUserFormData,
-	roleData,
-	roleError,
-	...props
-}: AdminUserFormProps) => {
+const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleData, roleError, ...props }: AdminUserFormProps) => {
 	const t = useTranslation();
 	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -150,7 +140,6 @@ const AdminUserForm = ({
 			await eventStats({
 				params: [{ eventName: 'updateCounter', settingsId: 'Manual_Entry_User_Count' }],
 			});
-			setCreatedUsersCount?.((prevUsersCount) => prevUsersCount + 1);
 			router.navigate(`/admin/users/created/${_id}`);
 			onReload();
 		},

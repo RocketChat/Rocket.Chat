@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { ContextualbarEmptyContent } from '../../../components/Contextualbar';
 
-const AdminUserCreated = ({ uid, createdUsersCount }: { uid: string; createdUsersCount: number }) => {
+const AdminUserCreated = ({ uid }: { uid: string }) => {
 	const { t } = useTranslation();
 	const router = useRouter();
 
@@ -13,7 +13,7 @@ const AdminUserCreated = ({ uid, createdUsersCount }: { uid: string; createdUser
 
 	return (
 		<>
-			<ContextualbarEmptyContent icon='user' title={t('You_have_created_user', { count: createdUsersCount })} />
+			<ContextualbarEmptyContent icon='user' title={t('You_have_created_user', { count: 1 })} />
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button type='reset' w='50%' onClick={() => router.navigate(`/admin/users/new`)}>
