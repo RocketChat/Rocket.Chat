@@ -4230,7 +4230,7 @@ describe('[Users]', function () {
 		});
 	});
 
-	describe('[/users.list/:status]', () => {
+	describe.only('[/users.list/:status]', () => {
 		let user;
 		let otherUser;
 		let otherUserCredentials;
@@ -4248,12 +4248,11 @@ describe('[Users]', function () {
 			await updatePermission('view-d-room', ['admin', 'owner', 'moderator', 'user']);
 		});
 
-		it('should list all users', async () => {
-			await login(user.username, password);
-
+		it('should list pending users', async () => {
 			await request
-				.get(api('users.list/all'))
+				.get(api('users.list/pending'))
 				.set(credentials)
+				.query({ count: 50 })
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
@@ -4267,9 +4266,11 @@ describe('[Users]', function () {
 				});
 		});
 
-		it('should list pending users', async () => {
+		it('should list all users', async () => {
+			await login(user.username, password);
+
 			await request
-				.get(api('users.list/pending'))
+				.get(api('users.list/all'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -4309,7 +4310,7 @@ describe('[Users]', function () {
 			await request
 				.get(api('users.list/active'))
 				.set(credentials)
-				.query({ role: 'admin' })
+				.query({ 'roles[]': 'admin' })
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
@@ -4347,8 +4348,6 @@ describe('[Users]', function () {
 		});
 
 		it('should filter users by username', async () => {
-			await login(user.username, password);
-
 			await request
 				.get(api('users.list/all'))
 				.set(credentials)
