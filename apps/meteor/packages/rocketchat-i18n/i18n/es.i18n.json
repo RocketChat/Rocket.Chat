@@ -933,7 +933,7 @@
   "Connection_Closed": "Conexión cerrada",
   "Connection_Reset": "Conexión restablecida",
   "Connection_error": "Error de conexión",
-  "Connection_success": "Conexión LDAP correcta",
+  "LDAP_Connection_successful": "Conexión LDAP correcta",
   "Connection_failed": "Error de conexión LDAP",
   "Connectivity_Services": "Servicios de conectividad",
   "Consulting": "Consultoría",

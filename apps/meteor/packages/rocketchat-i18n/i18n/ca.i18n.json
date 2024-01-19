@@ -920,7 +920,7 @@
   "Connection_Closed": "Connexió tancada",
   "Connection_Reset": "Connexió restablerta",
   "Connection_error": "Error de connexió",
-  "Connection_success": "Connexió LDAP correcta",
+  "LDAP_Connection_successful": "Connexió LDAP correcta",
   "Connection_failed": "Error de connexió LDAP",
   "Connectivity_Services": "Serveis de connectivitat",
   "Consulting": "Consultant",

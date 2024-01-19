@@ -914,7 +914,7 @@
   "Connection_Closed": "連接關閉",
   "Connection_Reset": "連線重置",
   "Connection_error": "連線錯誤",
-  "Connection_success": "LDAP 連接成功",
+  "LDAP_Connection_successful": "LDAP 連接成功",
   "Connection_failed": "LDAP 連線失敗",
   "Connectivity_Services": "連線的服務",
   "Consulting": "諮詢",

@@ -969,7 +969,7 @@
   "Connection_Closed": "Conexão fechada",
   "Connection_Reset": "Redefinição de conexão",
   "Connection_error": "Erro de conexão",
-  "Connection_success": "Conexão com LDAP bem-sucedida",
+  "LDAP_Connection_successful": "Conexão com LDAP bem-sucedida",
   "Connection_failed": "Falha na conexão com o LDAP",
   "Connectivity_Services": "Serviços de conectividade",
   "Consulting": "Consultoria",

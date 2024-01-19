@@ -928,7 +928,7 @@
   "Connection_Closed": "تم إغلاق الاتصال",
   "Connection_Reset": "إعادة تعيين الاتصال",
   "Connection_error": "خطأ في الاتصال",
-  "Connection_success": "اتصال LDAP ناجح",
+  "LDAP_Connection_successful": "اتصال LDAP ناجح",
   "Connection_failed": "فشل اتصال LDAP",
   "Connectivity_Services": "خدمات الاتصال",
   "Consulting": "الاستشارات",

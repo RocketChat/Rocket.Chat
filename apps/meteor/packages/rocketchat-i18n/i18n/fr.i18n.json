@@ -929,7 +929,7 @@
   "Connection_Closed": "Connexion fermée",
   "Connection_Reset": "Connexion réinitialisée",
   "Connection_error": "Erreur de connexion",
-  "Connection_success": "Connexion LDAP réussie",
+  "LDAP_Connection_successful": "Connexion LDAP réussie",
   "Connection_failed": "Échec de la connexion LDAP",
   "Connectivity_Services": "Services de connectivité",
   "Consulting": "Conseil",

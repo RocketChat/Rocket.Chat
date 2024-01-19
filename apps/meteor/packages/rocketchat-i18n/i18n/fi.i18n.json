@@ -1067,7 +1067,7 @@
   "Connection_Closed": "Yhteys katkaistu",
   "Connection_Reset": "Yhteyden nollaus",
   "Connection_error": "Yhteysvirhe",
-  "Connection_success": "LDAP-yhteys onnistui",
+  "LDAP_Connection_successful": "LDAP-yhteys onnistui",
   "Connection_failed": "LDAP-yhteys epäonnistui",
   "Connectivity_Services": "Yhteyspalvelut",
   "Consulting": "Konsultointi",
