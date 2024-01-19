@@ -27,14 +27,8 @@ export class AppsTokens extends BaseRaw<IAppsTokens> implements IAppsTokensModel
 
 	countTokensByUserId(userId: IUser['_id']) {
 		const query = {
-			$and: [
-				{
-					userId,
-				},
-				{
-					$or: [{ 'token.apn': { $exists: true } }, { 'token.gcm': { $exists: true } }],
-				},
-			],
+			userId,
+			$or: [{ 'token.apn': { $exists: true } }, { 'token.gcm': { $exists: true } }],
 		};
 
 		return this.countDocuments(query);
