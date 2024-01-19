@@ -33,7 +33,6 @@ const AdminUsersPage = (): ReactElement => {
 	const isCreateUserDisabled = useShouldPreventAction('activeUsers');
 
 	const [tab, setTab] = useState<IAdminUserTabs>('all');
-	const [createdUsersCount, setCreatedUsersCount] = useState(0);
 	const [pendingUsersCount, setPendingUsersCount] = useState(0);
 
 	const handleReload = (): void => {
@@ -106,15 +105,9 @@ const AdminUsersPage = (): ReactElement => {
 						<AdminUserFormWithData uid={id} onReload={handleReload} context={context} roleData={data} roleError={error} />
 					)}
 					{!isRoutePrevented && context === 'new' && (
-						<AdminUserForm
-							onReload={handleReload}
-							setCreatedUsersCount={setCreatedUsersCount}
-							context={context}
-							roleData={data}
-							roleError={error}
-						/>
+						<AdminUserForm onReload={handleReload} context={context} roleData={data} roleError={error} />
 					)}
-					{!isRoutePrevented && context === 'created' && id && <AdminUserCreated uid={id} createdUsersCount={createdUsersCount} />}
+					{!isRoutePrevented && context === 'created' && id && <AdminUserCreated uid={id} />}
 					{!isRoutePrevented && context === 'invite' && <AdminInviteUsers />}
 					{isRoutePrevented && <AdminUserUpgrade />}
 				</Contextualbar>
