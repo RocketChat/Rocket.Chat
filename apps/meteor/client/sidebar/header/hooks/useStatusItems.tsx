@@ -1,8 +1,8 @@
-import type { IUser, UserStatus as UserStatusEnum } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useEndpoint, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import { useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { callbacks } from '../../../../lib/callbacks';
 import type { GenericMenuItemProps } from '../../../components/GenericMenu/GenericMenuItem';
@@ -13,65 +13,75 @@ import type { UserStatusDescriptor } from '../../../lib/userStatuses';
 import { useStatusDisabledModal } from '../../../views/admin/customUserStatus/hooks/useStatusDisabledModal';
 import { useCustomStatusModalHandler } from './useCustomStatusModalHandler';
 
-const isDefaultStatus = (id: string): boolean => userStatuses.isValidType(id);
-const isDefaultStatusName = (_name: string, id: string): _name is UserStatusEnum => isDefaultStatus(id);
-const translateStatusName = (t: ReturnType<typeof useTranslation>, status: UserStatusDescriptor): string => {
-	if (isDefaultStatusName(status.name, status.id)) {
-		return t(status.name as TranslationKey);
-	}
+export const useStatusItems = (): GenericMenuItemProps[] => {
+	// We should lift this up to somewhere else if we want to use it in other places
 
-	return status.name;
-};
+	userStatuses.invisibleAllowed = useSetting('Accounts_AllowInvisibleStatusOption', true);
 
-export const useStatusItems = (user: IUser): GenericMenuItemProps[] => {
-	const t = useTranslation();
-	const presenceDisabled = useSetting('Presence_broadcast_disabled', false);
+	const queryClient = useQueryClient();
+
+	useEffect(
+		() =>
+			userStatuses.watch(() => {
+				queryClient.setQueryData(['user-statuses'], Array.from(userStatuses));
+			}),
+		[queryClient],
+	);
+
+	const { t } = useTranslation();
+
 	const setStatus = useEndpoint('POST', '/v1/users.setStatus');
+	const setStatusMutation = useMutation({
+		mutationFn: async (status: UserStatusDescriptor) => {
+			void setStatus({ status: status.statusType, message: userStatuses.isValidType(status.id) ? '' : status.name });
+			void callbacks.run('userStatusManuallySet', status);
+		},
+	});
 
-	const setStatusAction = (status: UserStatusDescriptor): void => {
-		setStatus({ status: status.statusType, message: !isDefaultStatus(status.id) ? status.name : '' });
-		void callbacks.run('userStatusManuallySet', status);
-	};
+	const presenceDisabled = useSetting('Presence_broadcast_disabled', false);
 
-	const filterInvisibleStatus = !useSetting('Accounts_AllowInvisibleStatusOption')
-		? (status: UserStatusDescriptor): boolean => status.name !== 'invisible'
-		: (): boolean => true;
-
-	const handleCustomStatus = useCustomStatusModalHandler();
+	const { data: statuses } = useQuery({
+		queryKey: ['user-statuses'],
+		queryFn: async () => {
+			await userStatuses.sync();
+			return Array.from(userStatuses);
+		},
+		staleTime: Infinity,
+		select: (statuses) =>
+			statuses.map((status): GenericMenuItemProps => {
+				const content = status.localizeName ? t(status.name) : status.name;
+				return {
+					id: status.id,
+					status: <UserStatus status={status.statusType} />,
+					content: <MarkdownText content={content} parseEmoji={true} variant='inline' />,
+					disabled: presenceDisabled,
+					onClick: () => setStatusMutation.mutate(status),
+				};
+			}),
+	});
 
 	const handleStatusDisabledModal = useStatusDisabledModal();
-
-	const presenceDisabledItem = {
-		id: 'presence-disabled',
-		content: (
-			<Box fontScale='p2'>
-				<Box mbe={4} wordBreak='break-word' style={{ whiteSpace: 'normal' }}>
-					{t('User_status_disabled')}
-				</Box>
-				<Box is='a' color='info' onClick={handleStatusDisabledModal}>
-					{t('Learn_more')}
-				</Box>
-			</Box>
-		),
-	};
-
-	const statusItems = Array.from(userStatuses)
-		.filter(filterInvisibleStatus)
-		.map((status) => {
-			const name = status.localizeName ? translateStatusName(t, status) : status.name;
-			const modifier = status.statusType || user?.status;
-			return {
-				id: status.id,
-				status: <UserStatus status={modifier} />,
-				content: <MarkdownText content={name} parseEmoji={true} variant='inline' />,
-				onClick: () => setStatusAction(status),
-				disabled: presenceDisabled,
-			};
-		});
+	const handleCustomStatus = useCustomStatusModalHandler();
 
 	return [
-		...(presenceDisabled ? [presenceDisabledItem] : []),
-		...statusItems,
+		...(presenceDisabled
+			? [
+					{
+						id: 'presence-disabled',
+						content: (
+							<Box fontScale='p2'>
+								<Box mbe={4} wordBreak='break-word' style={{ whiteSpace: 'normal' }}>
+									{t('User_status_disabled')}
+								</Box>
+								<Box is='a' color='info' onClick={handleStatusDisabledModal}>
+									{t('Learn_more')}
+								</Box>
+							</Box>
+						),
+					},
+			  ]
+			: []),
+		...(statuses ?? []),
 		{ id: 'custom-status', icon: 'emoji', content: t('Custom_Status'), onClick: handleCustomStatus, disabled: presenceDisabled },
 	];
 };

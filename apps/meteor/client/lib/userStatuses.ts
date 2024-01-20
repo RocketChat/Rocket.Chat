@@ -1,6 +1,8 @@
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { ICustomUserStatus } from '@rocket.chat/core-typings';
 
+import { sdk } from '../../app/utils/client/lib/SDKClient';
+
 export type UserStatusDescriptor = {
 	id: string;
 	name: string;
@@ -9,14 +11,16 @@ export type UserStatusDescriptor = {
 };
 
 export class UserStatuses implements Iterable<UserStatusDescriptor> {
+	public invisibleAllowed = true;
+
 	private store: Map<UserStatusDescriptor['id'], UserStatusDescriptor> = new Map(
-		Object.values(UserStatus).map((status) => [
+		[UserStatus.ONLINE, UserStatus.AWAY, UserStatus.BUSY, UserStatus.OFFLINE].map((status) => [
 			status,
 			{
 				id: status,
 				name: status,
-				localizeName: true,
 				statusType: status,
+				localizeName: true,
 			},
 		]),
 	);
@@ -43,11 +47,43 @@ export class UserStatuses implements Iterable<UserStatusDescriptor> {
 	}
 
 	public isValidType(type: string): type is UserStatus {
-		return type in UserStatus;
+		return (Object.values(UserStatus) as string[]).includes(type);
 	}
 
-	public [Symbol.iterator](): Iterator<UserStatusDescriptor> {
-		return this.store.values();
+	public *[Symbol.iterator]() {
+		for (const value of this.store.values()) {
+			if (this.invisibleAllowed || value.statusType !== UserStatus.OFFLINE) {
+				yield value;
+			}
+		}
+	}
+
+	public async sync() {
+		const result = await sdk.call('listCustomUserStatus');
+		if (!result) {
+			return;
+		}
+
+		for (const customStatus of result) {
+			this.put(this.createFromCustom(customStatus));
+		}
+	}
+
+	public watch(cb?: () => void) {
+		const updateSubscription = sdk.stream('notify-logged', ['updateCustomUserStatus'], (data) => {
+			this.put(this.createFromCustom(data.userStatusData));
+			cb?.();
+		});
+
+		const deleteSubscription = sdk.stream('notify-logged', ['deleteCustomUserStatus'], (data) => {
+			this.delete(data.userStatusData._id);
+			cb?.();
+		});
+
+		return () => {
+			updateSubscription.stop();
+			deleteSubscription.stop();
+		};
 	}
 }
 
