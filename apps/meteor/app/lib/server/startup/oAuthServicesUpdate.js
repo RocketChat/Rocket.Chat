@@ -148,7 +148,7 @@ settings.watchByRegex(/^Accounts_OAuth_Custom-[a-z0-9_]+/, (key, value) => {
 	}
 });
 
-async function customOAuthServicesInit() {
+export async function customOAuthServicesInit() {
 	// Add settings for custom OAuth providers to the settings so they get
 	// automatically added when they are defined in ENV variables
 	for await (const key of Object.keys(process.env)) {
@@ -202,5 +202,3 @@ async function customOAuthServicesInit() {
 		}
 	}
 }
-
-await customOAuthServicesInit();
