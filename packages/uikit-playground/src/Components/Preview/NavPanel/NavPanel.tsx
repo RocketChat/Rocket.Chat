@@ -30,13 +30,8 @@ const NavPanel: FC = () => {
 			<Box flexGrow={0}>
 				<SurfaceSelect />
 			</Box>
-			<Box display='flex' height='100%' alignContent={'center'}>
-				<ButtonGroup
-					pis={'20px'}
-					className={css`
-						column-gap: 10px;
-					`}
-				>
+			<Box display='flex' height='100%' alignContent='center' pis={20}>
+				<ButtonGroup>
 					<PanelBtn icon={<Icon name='file' width={16} />} name={'Clear Blocks'} isSmall={isTablet} />
 					<PanelBtn icon={<Icon name='copy' width={16} />} name={'Copy Payload'} isSmall={isTablet} />
 				</ButtonGroup>

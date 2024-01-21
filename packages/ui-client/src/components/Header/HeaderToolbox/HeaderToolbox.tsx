@@ -1,6 +1,10 @@
-import { ButtonGroup } from '@rocket.chat/fuselage';
+import { Box, ButtonGroup } from '@rocket.chat/fuselage';
 import type { FC, ComponentProps } from 'react';
 
-const HeaderToolbox: FC<ComponentProps<typeof ButtonGroup>> = (props) => <ButtonGroup role='toolbar' mi={4} {...props} />;
+const HeaderToolbox: FC<ComponentProps<typeof ButtonGroup>> = (props) => (
+	<Box mi={4}>
+		<ButtonGroup role='toolbar' {...props} />
+	</Box>
+);
 
 export default HeaderToolbox;
