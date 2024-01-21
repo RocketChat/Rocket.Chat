@@ -1,11 +1,11 @@
+import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { settings } from '../../../app/settings/server/cached';
 import { logger } from './logger';
 
 export async function updateCasServices(): Promise<void> {
-	// #TODO: switch type to `Partial<LoginServiceConfiguration>` once #31491 is merged
-	const data: Record<string, any> = {
+	const data: Partial<LoginServiceConfiguration> = {
 		// These will pe passed to 'node-cas' as options
 		enabled: settings.get('CAS_enabled'),
 		base_url: settings.get('CAS_base_url'),
