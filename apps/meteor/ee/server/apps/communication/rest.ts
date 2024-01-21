@@ -321,16 +321,18 @@ export class AppsRestApi {
 								});
 							}
 
-							buff = Buffer.from(await response.arrayBuffer());
+							buff = await response.buffer();
 						} catch (e: any) {
 							orchestrator.getRocketChatLogger().error('Error getting the app from url:', e.response.data);
 							return API.v1.internalError();
 						}
 
 						if (this.bodyParams.downloadOnly) {
+							apiDeprecationLogger.parameter(this.request.route, 'downloadOnly', '7.0.0', this.response);
+
 							return API.v1.success({ buff });
 						}
-					} else if (this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
+					} else if ('appId' in this.bodyParams && this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
 						const baseUrl = orchestrator.getMarketplaceUrl();
 
 						const headers = getDefaultHeaders();
@@ -855,6 +857,7 @@ export class AppsRestApi {
 									user_name: `@${this.user.username}`,
 									message: message || '',
 									learn_more: learnMore,
+									interpolation: { escapeValue: false },
 								}),
 							};
 						};

@@ -9,7 +9,8 @@ import MessageContentBody from '../../../MessageContentBody';
 import AttachmentImage from '../structure/AttachmentImage';
 import { useLoadImage } from './hooks/useLoadImage';
 
-export const ImageAttachment: FC<ImageAttachmentProps> = ({
+export const ImageAttachment: FC<ImageAttachmentProps & { id: string | undefined }> = ({
+	id,
 	title,
 	image_url: url,
 	image_preview: imagePreview,
@@ -38,6 +39,7 @@ export const ImageAttachment: FC<ImageAttachmentProps> = ({
 					dataSrc={getURL(link || url)}
 					src={getURL(url)}
 					previewUrl={`data:image/png;base64,${imagePreview}`}
+					id={id}
 				/>
 			</MessageCollapsible>
 		</>

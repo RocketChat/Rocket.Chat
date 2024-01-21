@@ -1163,6 +1163,8 @@
   "Email_Placeholder_any": "សូមបញ្ចូលអាសយដ្ឋានអ៊ីមែល ...",
   "email_style_label": "រចនាប័ទ្មអ៊ីម៉ែល",
   "Email_subject": "ប្រធានបទ",
+  "Enterprise_License": "អាជ្ញាប័ណ្ណសហគ្រាស",
+  "Enterprise_License_Description": "ប្រសិនបើកន្លែងធ្វើការរបស់អ្នកត្រូវបានចុះឈ្មោះហើយអាជ្ញាប័ណ្ណត្រូវបានផ្តល់ដោយ Rocket.Chat Cloud អ្នកមិនចាំបាច់ធ្វើបច្ចុប្បន្នភាពអាជ្ញាប័ណ្ណដោយដៃនៅទីនេះទេ។",
   "Email_verified": "អ៊ីម៉ែល​បញ្ជាក់",
   "Emoji": "សញ្ញា​អារម្មណ៍",
   "EmojiCustomFilesystem": "ប្រព័ន្ធឯកសារសញ្ញាអារម្មណ៍ផ្ទាល់ខ្លួន",
@@ -1192,9 +1194,6 @@
   "Enter_Normal": "របៀបធម្មតា (ផ្ញើជាមួយបញ្ចូល)",
   "Enter_to": "បញ្ចូល",
   "Enter_your_E2E_password": "បញ្ចូលពាក្យសម្ងាត់ E2E របស់អ្នក",
-  "Enterprise": "សហគ្រាស",
-  "Enterprise_License": "អាជ្ញាប័ណ្ណសហគ្រាស",
-  "Enterprise_License_Description": "ប្រសិនបើកន្លែងធ្វើការរបស់អ្នកត្រូវបានចុះឈ្មោះហើយអាជ្ញាប័ណ្ណត្រូវបានផ្តល់ដោយ Rocket.Chat Cloud អ្នកមិនចាំបាច់ធ្វើបច្ចុប្បន្នភាពអាជ្ញាប័ណ្ណដោយដៃនៅទីនេះទេ។",
   "Entertainment": "ការកំសាន្ត",
   "Error": "កំហុសក្នុងការ",
   "Error_404": "កំហុស: 404",
@@ -1816,7 +1815,7 @@
   "Leave_the_current_channel": "ចាកចេញពីឆានែលបច្ចុប្បន្ន",
   "leave-c": "ចាកចេញពីឆានែល",
   "leave-p": "ចាកចេញពីក្រុមឯកជន",
-  "Lets_get_you_new_one": "ចូរយើងទទួលបានអ្នកថ្មី!",
+  "Lets_get_you_new_one_": "ចូរយើងទទួលបានអ្នកថ្មី!",
   "List_of_Channels": "បញ្ជីឆានែល",
   "List_of_Direct_Messages": "បញ្ជីនៃការផ្ញើសារដោយផ្ទាល់",
   "Livechat": "Livechat",
@@ -3112,5 +3111,9 @@
   "registration.component.form.reasonToJoin": "ហេតុផលដើម្បីចូលរួម",
   "registration.component.form.invalidConfirmPass": "ពាក្យ​សម្ងាត់​បញ្ជាក់​មិន​ដូច​ពាក្យ​សម្ងាត់​បាន​បញ្ចូល​",
   "registration.component.form.confirmPassword": "បញ្ជាក់​ពាក្យ​សម្ងាត់",
-  "registration.component.form.sendConfirmationEmail": "ផ្ញើរអ៊ីម៉ែល​បញ្ជាក់"
+  "registration.component.form.sendConfirmationEmail": "ផ្ញើរអ៊ីម៉ែល​បញ្ជាក់",
+  "onboarding.form.registerOfflineForm.title": "ចុះឈ្មោះដោយដៃ",
+  "Enterprise": "សហគ្រាស",
+  "UpgradeToGetMore_engagement-dashboard_Title": "វិភាគ",
+  "UpgradeToGetMore_auditing_Title": "សវនកម្មសារ"
 }

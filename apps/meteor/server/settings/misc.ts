@@ -46,10 +46,6 @@ const verifyFingerPrint = async function () {
 	await updateFingerprint(fingerprint, false);
 };
 
-settings.watch('Site_Url', () => {
-	void verifyFingerPrint();
-});
-
 // Insert server unique id if it doesn't exist
 export const createMiscSettings = async () => {
 	await settingsRegistry.add('uniqueID', process.env.DEPLOYMENT_ID || uuidv4(), {
@@ -61,10 +57,14 @@ export const createMiscSettings = async () => {
 		readonly: true,
 	});
 
-	await settingsRegistry.add('Deployment_FingerPrint_Verified', false, {
+	await settingsRegistry.add('Deployment_FingerPrint_Verified', true, {
 		type: 'boolean',
 		public: true,
 		readonly: true,
+	});
+
+	settings.watch('Site_Url', () => {
+		void verifyFingerPrint();
 	});
 
 	await settingsRegistry.add('Initial_Channel_Created', false, {

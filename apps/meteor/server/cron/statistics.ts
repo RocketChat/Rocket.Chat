@@ -5,15 +5,10 @@ import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Meteor } from 'meteor/meteor';
 
 import { getWorkspaceAccessToken } from '../../app/cloud/server';
-import { settings } from '../../app/settings/server';
 import { statistics } from '../../app/statistics/server';
 
 async function generateStatistics(logger: Logger): Promise<void> {
 	const cronStatistics = await statistics.save();
-
-	if (!settings.get('Statistics_reporting')) {
-		return;
-	}
 
 	try {
 		const token = await getWorkspaceAccessToken();

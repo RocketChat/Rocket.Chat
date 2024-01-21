@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, IconButton, Skeleton } from '@rocket.chat/fuselage';
+import { Box, Button, IconButton, Skeleton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ComponentProps, MouseEvent } from 'react';
 import React, { forwardRef } from 'react';
@@ -69,7 +69,7 @@ const UserCard = forwardRef(function UserCard(
 	const isLayoutEmbedded = useEmbeddedLayout();
 
 	return (
-		<UserCardContainer data-qa='UserCard' className={className} ref={ref} style={style} height='x228'>
+		<UserCardContainer data-qa='UserCard' className={className} ref={ref} style={style} minHeight='x214'>
 			<Box>
 				{!isLoading && username ? (
 					<UserAvatar username={username} etag={etag} size='x124' />
@@ -88,7 +88,7 @@ const UserCard = forwardRef(function UserCard(
 					)}
 				</Box>
 			</Box>
-			<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} mis={24} width='1px'>
+			<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} mis={16} width='1px'>
 				<Box mbe={4} withTruncatedText display='flex' alignItems='center'>
 					{isLoading ? <Skeleton width='100%' /> : <UserCardUsername status={status} name={name} />}
 					{nickname && (
@@ -113,13 +113,15 @@ const UserCard = forwardRef(function UserCard(
 						{typeof bio === 'string' ? <MarkdownText variant='inline' content={bio} /> : bio}
 					</UserCardInfo>
 				)}
-				{!isLoading && open && !isLayoutEmbedded && <a onClick={open}>{t('See_full_profile')}</a>}
+				{!isLoading && open && !isLayoutEmbedded && (
+					<div>
+						<Button small onClick={open}>
+							{t('See_full_profile')}
+						</Button>
+					</div>
+				)}
 			</Box>
-			{onClose && (
-				<Box>
-					<IconButton small title={t('Close')} icon='cross' onClick={onClose} />
-				</Box>
-			)}
+			{onClose && <IconButton mis={16} small aria-label={t('Close')} icon='cross' onClick={onClose} />}
 		</UserCardContainer>
 	);
 });

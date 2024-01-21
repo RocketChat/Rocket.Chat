@@ -10,10 +10,13 @@ import {
 	isDownloadPendingFilesParamsPOST,
 	isDownloadPendingAvatarsParamsPOST,
 	isGetCurrentImportOperationParamsGET,
+	isImportersListParamsGET,
 	isImportAddUsersParamsPOST,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
+import { PendingAvatarImporter } from '../../../importer-pending-avatars/server/PendingAvatarImporter';
+import { PendingFileImporter } from '../../../importer-pending-files/server/PendingFileImporter';
 import { Importers } from '../../../importer/server';
 import {
 	executeUploadImportFile,
@@ -136,9 +139,8 @@ API.v1.addRoute(
 			}
 
 			const operation = await Import.newOperation(this.userId, importer.name, importer.key);
-
-			importer.instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
-			const count = await importer.instance.prepareFileCount();
+			const instance = new PendingFileImporter(importer, operation);
+			const count = await instance.prepareFileCount();
 
 			return API.v1.success({
 				count,
@@ -162,8 +164,8 @@ API.v1.addRoute(
 			}
 
 			const operation = await Import.newOperation(this.userId, importer.name, importer.key);
-			importer.instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
-			const count = await importer.instance.prepareFileCount();
+			const instance = new PendingAvatarImporter(importer, operation);
+			const count = await instance.prepareFileCount();
 
 			return API.v1.success({
 				count,
@@ -185,6 +187,22 @@ API.v1.addRoute(
 			return API.v1.success({
 				operation,
 			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'importers.list',
+	{
+		authRequired: true,
+		validateParams: isImportersListParamsGET,
+		permissionsRequired: ['run-import'],
+	},
+	{
+		async get() {
+			const importers = Importers.getAllVisible().map(({ key, name }) => ({ key, name }));
+
+			return API.v1.success(importers);
 		},
 	},
 );

@@ -16,7 +16,6 @@ import {
 	findArchivedDepartments,
 } from '../../../server/api/lib/departments';
 import { DepartmentHelper } from '../../../server/lib/Departments';
-import { Livechat } from '../../../server/lib/Livechat';
 import { Livechat as LivechatTs } from '../../../server/lib/LivechatTyped';
 
 API.v1.addRoute(
@@ -110,10 +109,6 @@ API.v1.addRoute(
 			const permissionToSave = await hasPermissionAsync(this.userId, 'manage-livechat-departments');
 			const permissionToAddAgents = await hasPermissionAsync(this.userId, 'add-livechat-department-agents');
 
-			check(this.urlParams, {
-				_id: String,
-			});
-
 			check(this.bodyParams, {
 				department: Object,
 				agents: Match.Maybe(Array),
@@ -122,23 +117,17 @@ API.v1.addRoute(
 			const { _id } = this.urlParams;
 			const { department, agents } = this.bodyParams;
 
-			let success;
-			if (permissionToSave) {
-				success = await LivechatEnterprise.saveDepartment(_id, department);
+			if (!permissionToSave) {
+				throw new Error('error-not-allowed');
 			}
 
-			if (success && agents && permissionToAddAgents) {
-				success = Livechat.saveDepartmentAgents(_id, { upsert: agents });
-			}
+			const agentParam = permissionToAddAgents && agents ? { upsert: agents } : {};
+			await LivechatEnterprise.saveDepartment(_id, department, agentParam);
 
-			if (success) {
-				return API.v1.success({
-					department: await LivechatDepartment.findOneById(_id),
-					agents: await LivechatDepartmentAgents.find({ departmentId: _id }).toArray(),
-				});
-			}
-
-			return API.v1.failure();
+			return API.v1.success({
+				department: await LivechatDepartment.findOneById(_id),
+				agents: await LivechatDepartmentAgents.findByDepartmentId(_id).toArray(),
+			});
 		},
 		async delete() {
 			check(this.urlParams, {
@@ -266,10 +255,6 @@ API.v1.addRoute(
 			return API.v1.success(agents);
 		},
 		async post() {
-			check(this.urlParams, {
-				_id: String,
-			});
-
 			check(
 				this.bodyParams,
 				Match.ObjectIncluding({
@@ -277,7 +262,7 @@ API.v1.addRoute(
 					remove: Array,
 				}),
 			);
-			await Livechat.saveDepartmentAgents(this.urlParams._id, this.bodyParams);
+			await LivechatTs.saveDepartmentAgents(this.urlParams._id, this.bodyParams);
 
 			return API.v1.success();
 		},

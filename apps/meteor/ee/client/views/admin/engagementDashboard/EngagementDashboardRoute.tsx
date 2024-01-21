@@ -1,4 +1,4 @@
-import { usePermission, useRouter, useSetModal, useCurrentModal, useTranslation } from '@rocket.chat/ui-contexts';
+import { usePermission, useRouter, useSetModal, useCurrentModal, useTranslation, useRouteParameter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect } from 'react';
 
@@ -21,12 +21,12 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 	const isModalOpen = useCurrentModal() !== null;
 
 	const router = useRouter();
-	const { tab } = router.getRouteParameters();
+	const tab = useRouteParameter('tab');
 	const eventStats = useEndpointAction('POST', '/v1/statistics.telemetry');
 
 	const hasEngagementDashboard = useHasLicenseModule('engagement-dashboard') as boolean;
 
-	const { shouldShowUpsell, cloudWorkspaceHadTrial, handleGoFullyFeatured, handleTalkToSales } = useUpsellActions(hasEngagementDashboard);
+	const { shouldShowUpsell, handleManageSubscription } = useUpsellActions(hasEngagementDashboard);
 
 	useEffect(() => {
 		if (shouldShowUpsell) {
@@ -37,24 +37,24 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 					subtitle={t('Analyze_practical_usage')}
 					description={t('Enrich_your_workspace')}
 					onClose={() => setModal(null)}
-					onConfirm={handleGoFullyFeatured}
-					confirmText={cloudWorkspaceHadTrial ? t('Learn_more') : t('Start_a_free_trial')}
-					onCancel={handleTalkToSales}
-					cancelText={t('Talk_to_an_expert')}
+					onConfirm={handleManageSubscription}
+					onCancel={() => setModal(null)}
 				/>,
 			);
 		}
 
-		if (!isValidTab(tab)) {
-			router.navigate(
-				{
-					pattern: '/admin/engagement/:tab?',
-					params: { tab: 'users' },
-				},
-				{ replace: true },
-			);
-		}
-	}, [shouldShowUpsell, router, tab, setModal, t, handleGoFullyFeatured, cloudWorkspaceHadTrial, handleTalkToSales]);
+		router.subscribeToRouteChange(() => {
+			if (!isValidTab(tab)) {
+				router.navigate(
+					{
+						pattern: '/admin/engagement/:tab?',
+						params: { tab: 'users' },
+					},
+					{ replace: true },
+				);
+			}
+		});
+	}, [shouldShowUpsell, router, tab, setModal, t, handleManageSubscription]);
 
 	if (isModalOpen) {
 		return <PageSkeleton />;

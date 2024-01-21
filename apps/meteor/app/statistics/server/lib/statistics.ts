@@ -305,18 +305,30 @@ export const statistics = {
 		);
 
 		// Message statistics
-		statistics.totalChannelMessages = (await Rooms.findByType('c', { projection: { msgs: 1 } }).toArray()).reduce(
-			function _countChannelMessages(num: number, room: IRoom) {
+		const channels = await Rooms.findByType('c', { projection: { msgs: 1, prid: 1 } }).toArray();
+		const totalChannelDiscussionsMessages = await channels.reduce(function _countChannelDiscussionsMessages(num: number, room: IRoom) {
+			return num + (room.prid ? room.msgs : 0);
+		}, 0);
+		statistics.totalChannelMessages =
+			(await channels.reduce(function _countChannelMessages(num: number, room: IRoom) {
 				return num + room.msgs;
-			},
-			0,
-		);
-		statistics.totalPrivateGroupMessages = (await Rooms.findByType('p', { projection: { msgs: 1 } }).toArray()).reduce(
-			function _countPrivateGroupMessages(num: number, room: IRoom) {
+			}, 0)) - totalChannelDiscussionsMessages;
+
+		const privateGroups = await Rooms.findByType('p', { projection: { msgs: 1, prid: 1 } }).toArray();
+		const totalPrivateGroupsDiscussionsMessages = await privateGroups.reduce(function _countPrivateGroupsDiscussionsMessages(
+			num: number,
+			room: IRoom,
+		) {
+			return num + (room.prid ? room.msgs : 0);
+		},
+		0);
+		statistics.totalPrivateGroupMessages =
+			(await privateGroups.reduce(function _countPrivateGroupMessages(num: number, room: IRoom) {
 				return num + room.msgs;
-			},
-			0,
-		);
+			}, 0)) - totalPrivateGroupsDiscussionsMessages;
+
+		statistics.totalDiscussionsMessages = totalPrivateGroupsDiscussionsMessages + totalChannelDiscussionsMessages;
+
 		statistics.totalDirectMessages = (await Rooms.findByType('d', { projection: { msgs: 1 } }).toArray()).reduce(
 			function _countDirectMessages(num: number, room: IRoom) {
 				return num + room.msgs;
@@ -332,6 +344,7 @@ export const statistics = {
 		statistics.totalMessages =
 			statistics.totalChannelMessages +
 			statistics.totalPrivateGroupMessages +
+			statistics.totalDiscussionsMessages +
 			statistics.totalDirectMessages +
 			statistics.totalLivechatMessages;
 
@@ -542,7 +555,7 @@ export const statistics = {
 		statistics.totalLinkInvitationUses = await Invites.countUses();
 		statistics.totalEmailInvitation = settings.get('Invitation_Email_Count');
 		statistics.totalE2ERooms = await Rooms.findByE2E({ readPreference }).count();
-		statistics.logoChange = Object.keys(settings.get('Assets_logo')).includes('url');
+		statistics.logoChange = Object.keys(settings.get('Assets_logo') || {}).includes('url');
 		statistics.showHomeButton = settings.get('Layout_Show_Home_Button');
 		statistics.totalEncryptedMessages = await Messages.countByType('e2e', { readPreference });
 		statistics.totalManuallyAddedUsers = settings.get('Manual_Entry_User_Count');
@@ -579,7 +592,11 @@ export const statistics = {
 		const defaultLoggedInCustomScript = (await Settings.findOneById('Custom_Script_Logged_In'))?.packageValue;
 		statistics.loggedInCustomScriptChanged = settings.get('Custom_Script_Logged_In') !== defaultLoggedInCustomScript;
 
-		statistics.dailyPeakConnections = await Presence.getPeakConnections(true);
+		try {
+			statistics.dailyPeakConnections = await Presence.getPeakConnections(true);
+		} catch {
+			statistics.dailyPeakConnections = 0;
+		}
 
 		const peak = await Statistics.findMonthlyPeakConnections();
 		statistics.maxMonthlyPeakConnections = Math.max(statistics.dailyPeakConnections, peak?.dailyPeakConnections || 0);

@@ -2,6 +2,7 @@ import type { IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import {
+	FieldError,
 	Field,
 	FieldRow,
 	FieldLabel,
@@ -37,6 +38,7 @@ import {
 import RawText from '../../../../../components/RawText';
 import RoomAvatarEditor from '../../../../../components/avatar/RoomAvatarEditor';
 import { getDirtyFields } from '../../../../../lib/getDirtyFields';
+import { useArchiveRoom } from '../../../../hooks/roomActions/useArchiveRoom';
 import { useDeleteRoom } from '../../../../hooks/roomActions/useDeleteRoom';
 import { useEditRoomInitialValues } from './useEditRoomInitialValues';
 import { useEditRoomPermissions } from './useEditRoomPermissions';
@@ -61,7 +63,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		reset,
 		control,
 		handleSubmit,
-		formState: { isDirty, dirtyFields, errors },
+		formState: { isDirty, dirtyFields, errors, isSubmitting },
 	} = useForm({ mode: 'onBlur', defaultValues });
 
 	const sysMesOptions: SelectOption[] = useMemo(
@@ -93,10 +95,12 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const changeArchiving = archived !== !!room.archived;
 
 	const saveAction = useEndpoint('POST', '/v1/rooms.saveRoomSettings');
-	const archiveAction = useEndpoint('POST', '/v1/rooms.changeArchivationState');
 
-	const handleUpdateRoomData = useMutableCallback(async ({ hideSysMes, ...formData }) => {
+	const handleArchive = useArchiveRoom(room);
+
+	const handleUpdateRoomData = useMutableCallback(async ({ hideSysMes, joinCodeRequired, ...formData }) => {
 		const data = getDirtyFields(formData, dirtyFields);
+		delete data.archived;
 
 		try {
 			await saveAction({
@@ -110,15 +114,6 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 
 			dispatchToastMessage({ type: 'success', message: t('Room_updated_successfully') });
 			onClickClose();
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	});
-
-	const handleArchive = useMutableCallback(async () => {
-		try {
-			await archiveAction({ rid: room._id, action: room.archived ? 'unarchive' : 'archive' });
-			dispatchToastMessage({ type: 'success', message: room.archived ? t('Room_has_been_unarchived') : t('Room_has_been_archived') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -175,7 +170,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 									render={({ field }) => <TextInput id={roomNameField} {...field} disabled={!canViewName} />}
 								/>
 							</FieldRow>
-							{errors.roomName && <Field.Error>{errors.roomName.message}</Field.Error>}
+							{errors.roomName && <FieldError>{errors.roomName.message}</FieldError>}
 						</Field>
 						{canViewDescription && (
 							<Field>
@@ -215,106 +210,96 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 						)}
 						{canViewType && (
 							<Field>
-								<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+								<FieldRow>
 									<FieldLabel htmlFor={roomTypeField}>{t('Private')}</FieldLabel>
-									<FieldRow>
-										<Controller
-											control={control}
-											name='roomType'
-											render={({ field: { name, onBlur, onChange, value, ref } }) => (
-												<ToggleSwitch
-													id={roomTypeField}
-													ref={ref}
-													name={name}
-													onBlur={onBlur}
-													disabled={!canChangeType || isFederated}
-													checked={value === 'p'}
-													onChange={() => onChange(value === 'p' ? 'c' : 'p')}
-													aria-describedby={`${roomTypeField}-hint`}
-												/>
-											)}
-										/>
-									</FieldRow>
-								</Box>
+									<Controller
+										control={control}
+										name='roomType'
+										render={({ field: { name, onBlur, onChange, value, ref } }) => (
+											<ToggleSwitch
+												id={roomTypeField}
+												ref={ref}
+												name={name}
+												onBlur={onBlur}
+												disabled={!canChangeType || isFederated}
+												checked={value === 'p'}
+												onChange={() => onChange(value === 'p' ? 'c' : 'p')}
+												aria-describedby={`${roomTypeField}-hint`}
+											/>
+										)}
+									/>
+								</FieldRow>
 								<FieldHint id={`${roomTypeField}-hint`}>{t('Teams_New_Private_Description_Enabled')}</FieldHint>
 							</Field>
 						)}
 						{canViewReadOnly && (
 							<Field>
-								<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+								<FieldRow>
 									<FieldLabel htmlFor={readOnlyField}>{t('Read_only')}</FieldLabel>
-									<FieldRow>
-										<Controller
-											control={control}
-											name='readOnly'
-											render={({ field: { value, ...field } }) => (
-												<ToggleSwitch
-													id={readOnlyField}
-													{...field}
-													checked={value}
-													disabled={!canSetReadOnly || isFederated}
-													aria-describedby={`${readOnlyField}-hint`}
-												/>
-											)}
-										/>
-									</FieldRow>
-								</Box>
+									<Controller
+										control={control}
+										name='readOnly'
+										render={({ field: { value, ...field } }) => (
+											<ToggleSwitch
+												id={readOnlyField}
+												{...field}
+												checked={value}
+												disabled={!canSetReadOnly || isFederated}
+												aria-describedby={`${readOnlyField}-hint`}
+											/>
+										)}
+									/>
+								</FieldRow>
 								<FieldHint id={`${readOnlyField}-hint`}>{t('Only_authorized_users_can_write_new_messages')}</FieldHint>
 							</Field>
 						)}
 						{readOnly && (
 							<Field>
-								<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+								<FieldRow>
 									<FieldLabel htmlFor={reactWhenReadOnlyField}>{t('React_when_read_only')}</FieldLabel>
-									<FieldRow>
-										<Controller
-											control={control}
-											name='reactWhenReadOnly'
-											render={({ field: { value, ...field } }) => (
-												<ToggleSwitch
-													id={reactWhenReadOnlyField}
-													{...field}
-													disabled={!canSetReactWhenReadOnly}
-													checked={value}
-													aria-describedby={`${reactWhenReadOnlyField}-hint`}
-												/>
-											)}
-										/>
-									</FieldRow>
-								</Box>
+									<Controller
+										control={control}
+										name='reactWhenReadOnly'
+										render={({ field: { value, ...field } }) => (
+											<ToggleSwitch
+												id={reactWhenReadOnlyField}
+												{...field}
+												disabled={!canSetReactWhenReadOnly}
+												checked={value}
+												aria-describedby={`${reactWhenReadOnlyField}-hint`}
+											/>
+										)}
+									/>
+								</FieldRow>
 								<FieldHint id={`${reactWhenReadOnlyField}-hint`}>{t('Only_authorized_users_can_react_to_messages')}</FieldHint>
 							</Field>
 						)}
 						{canViewArchived && (
 							<Field>
-								<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+								<FieldRow>
 									<FieldLabel htmlFor={archivedField}>{t('Room_archivation_state_true')}</FieldLabel>
-									<FieldRow>
-										<Controller
-											control={control}
-											name='archived'
-											render={({ field: { value, ...field } }) => (
-												<ToggleSwitch id={archivedField} {...field} disabled={!canArchiveOrUnarchive} checked={value} />
-											)}
-										/>
-									</FieldRow>
-								</Box>
+									<Controller
+										control={control}
+										name='archived'
+										render={({ field: { value, ...field } }) => (
+											<ToggleSwitch id={archivedField} {...field} disabled={!canArchiveOrUnarchive} checked={value} />
+										)}
+									/>
+								</FieldRow>
 							</Field>
 						)}
 						{canViewJoinCode && (
 							<Field>
-								<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+								<FieldRow>
 									<FieldLabel htmlFor={joinCodeRequiredField}>{t('Password_to_access')}</FieldLabel>
-									<FieldRow>
-										<Controller
-											control={control}
-											name='joinCodeRequired'
-											render={({ field: { value, ...field } }) => (
-												<ToggleSwitch id={joinCodeRequiredField} {...field} disabled={isFederated} checked={value} />
-											)}
-										/>
-									</FieldRow>
-								</Box>
+									<Controller
+										control={control}
+										name='joinCodeRequired'
+										render={({ field: { value, ...field } }) => (
+											<ToggleSwitch id={joinCodeRequiredField} {...field} disabled={isFederated} checked={value} />
+										)}
+									/>
+								</FieldRow>
 								<FieldRow>
 									<Controller
 										name='joinCode'
@@ -326,18 +311,16 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 						)}
 						{canViewHideSysMes && (
 							<Field>
-								<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+								<FieldRow>
 									<FieldLabel htmlFor={hideSysMesField}>{t('Hide_System_Messages')}</FieldLabel>
-									<FieldRow>
-										<Controller
-											control={control}
-											name='hideSysMes'
-											render={({ field: { value, ...field } }) => (
-												<ToggleSwitch id={hideSysMesField} {...field} checked={value} disabled={isFederated} />
-											)}
-										/>
-									</FieldRow>
-								</Box>
+									<Controller
+										control={control}
+										name='hideSysMes'
+										render={({ field: { value, ...field } }) => (
+											<ToggleSwitch id={hideSysMesField} {...field} checked={value} disabled={isFederated} />
+										)}
+									/>
+								</FieldRow>
 								<FieldRow>
 									<Controller
 										control={control}
@@ -356,18 +339,16 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 						)}
 						{canViewEncrypted && (
 							<Field>
-								<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+								<FieldRow>
 									<FieldLabel htmlFor={encryptedField}>{t('Encrypted')}</FieldLabel>
-									<FieldRow>
-										<Controller
-											control={control}
-											name='encrypted'
-											render={({ field: { value, ...field } }) => (
-												<ToggleSwitch id={encryptedField} {...field} disabled={!canToggleEncryption || isFederated} checked={value} />
-											)}
-										/>
-									</FieldRow>
-								</Box>
+									<Controller
+										control={control}
+										name='encrypted'
+										render={({ field: { value, ...field } }) => (
+											<ToggleSwitch id={encryptedField} {...field} disabled={!canToggleEncryption || isFederated} checked={value} />
+										)}
+									/>
+								</FieldRow>
 							</Field>
 						)}
 					</FieldGroup>
@@ -376,37 +357,31 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 							<Accordion.Item title={t('Prune')}>
 								<FieldGroup>
 									<Field>
-										<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+										<FieldRow>
 											<FieldLabel htmlFor={retentionEnabledField}>{t('RetentionPolicyRoom_Enabled')}</FieldLabel>
-											<FieldRow>
-												<Controller
-													control={control}
-													name='retentionEnabled'
-													render={({ field: { value, ...field } }) => (
-														<ToggleSwitch id={retentionEnabledField} {...field} checked={value} />
-													)}
-												/>
-											</FieldRow>
-										</Box>
+											<Controller
+												control={control}
+												name='retentionEnabled'
+												render={({ field: { value, ...field } }) => <ToggleSwitch id={retentionEnabledField} {...field} checked={value} />}
+											/>
+										</FieldRow>
 									</Field>
 									<Field>
-										<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+										<FieldRow>
 											<FieldLabel htmlFor={retentionOverrideGlobalField}>{t('RetentionPolicyRoom_OverrideGlobal')}</FieldLabel>
-											<FieldRow>
-												<Controller
-													control={control}
-													name='retentionOverrideGlobal'
-													render={({ field: { value, ...field } }) => (
-														<ToggleSwitch
-															id={retentionOverrideGlobalField}
-															{...field}
-															disabled={!retentionEnabled || !canEditRoomRetentionPolicy}
-															checked={value}
-														/>
-													)}
-												/>
-											</FieldRow>
-										</Box>
+											<Controller
+												control={control}
+												name='retentionOverrideGlobal'
+												render={({ field: { value, ...field } }) => (
+													<ToggleSwitch
+														id={retentionOverrideGlobalField}
+														{...field}
+														disabled={!retentionEnabled || !canEditRoomRetentionPolicy}
+														checked={value}
+													/>
+												)}
+											/>
+										</FieldRow>
 									</Field>
 									{retentionOverrideGlobal && (
 										<>
@@ -430,32 +405,28 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 												</FieldRow>
 											</Field>
 											<Field>
-												<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+												<FieldRow>
 													<FieldLabel htmlFor={retentionExcludePinnedField}>{t('RetentionPolicyRoom_ExcludePinned')}</FieldLabel>
-													<FieldRow>
-														<Controller
-															control={control}
-															name='retentionExcludePinned'
-															render={({ field: { value, ...field } }) => (
-																<ToggleSwitch id={retentionExcludePinnedField} {...field} checked={value} />
-															)}
-														/>
-													</FieldRow>
-												</Box>
+													<Controller
+														control={control}
+														name='retentionExcludePinned'
+														render={({ field: { value, ...field } }) => (
+															<ToggleSwitch id={retentionExcludePinnedField} {...field} checked={value} />
+														)}
+													/>
+												</FieldRow>
 											</Field>
 											<Field>
-												<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+												<FieldRow>
 													<FieldLabel htmlFor={retentionFilesOnlyField}>{t('RetentionPolicyRoom_FilesOnly')}</FieldLabel>
-													<FieldRow>
-														<Controller
-															control={control}
-															name='retentionFilesOnly'
-															render={({ field: { value, ...field } }) => (
-																<ToggleSwitch id={retentionFilesOnlyField} {...field} checked={value} />
-															)}
-														/>
-													</FieldRow>
-												</Box>
+													<Controller
+														control={control}
+														name='retentionFilesOnly'
+														render={({ field: { value, ...field } }) => (
+															<ToggleSwitch id={retentionFilesOnlyField} {...field} checked={value} />
+														)}
+													/>
+												</FieldRow>
 											</Field>
 										</>
 									)}
@@ -467,18 +438,20 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button type='reset' disabled={!isDirty} onClick={() => reset(defaultValues)}>
+					<Button type='reset' disabled={!isDirty || isSubmitting} onClick={() => reset(defaultValues)}>
 						{t('Reset')}
 					</Button>
-					<Button form={formId} type='submit' disabled={!isDirty}>
+					<Button form={formId} type='submit' loading={isSubmitting} disabled={!isDirty}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
-				<ButtonGroup stretch mbs={8}>
-					<Button icon='trash' danger disabled={!canDeleteRoom || isFederated} onClick={handleDelete}>
-						{t('Delete')}
-					</Button>
-				</ButtonGroup>
+				<Box mbs={8}>
+					<ButtonGroup stretch>
+						<Button icon='trash' danger disabled={!canDeleteRoom || isFederated || isSubmitting} onClick={handleDelete}>
+							{t('Delete')}
+						</Button>
+					</ButtonGroup>
+				</Box>
 			</ContextualbarFooter>
 		</>
 	);

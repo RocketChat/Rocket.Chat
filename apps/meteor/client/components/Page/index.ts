@@ -1,14 +1,6 @@
-import Page from './Page';
-import PageContent from './PageContent';
-import PageFooter from './PageFooter';
-import PageHeader from './PageHeader';
-import PageScrollableContent from './PageScrollableContent';
-import PageScrollableContentWithShadow from './PageScrollableContentWithShadow';
-
-export default Object.assign(Page, {
-	Header: PageHeader,
-	Content: PageContent,
-	ScrollableContent: PageScrollableContent,
-	ScrollableContentWithShadow: PageScrollableContentWithShadow,
-	Footer: PageFooter,
-});
+export { default as Page } from './Page';
+export { default as PageContent } from './PageContent';
+export { default as PageFooter } from './PageFooter';
+export { default as PageHeader } from './PageHeader';
+export { default as PageScrollableContent } from './PageScrollableContent';
+export { default as PageScrollableContentWithShadow } from './PageScrollableContentWithShadow';

@@ -4,7 +4,7 @@ import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-context
 import type { ChangeEvent, ReactElement } from 'react';
 import React, { useMemo, useState } from 'react';
 
-import { useFormsSubscription } from '../../views/omnichannel/additionalForms';
+import { CurrentChatTags } from '../../views/omnichannel/additionalForms';
 import { FormSkeleton } from './Skeleton';
 import { useLivechatTags } from './hooks/useLivechatTags';
 
@@ -18,12 +18,6 @@ type TagsProps = {
 
 const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps): ReactElement => {
 	const t = useTranslation();
-	const forms = useFormsSubscription() as any;
-
-	// TODO: Refactor the formsSubscription to use components instead of hooks (since the only thing the hook does is return a component)
-	const { useCurrentChatTags } = forms;
-	// Conditional hook was required since the whole formSubscription uses hooks in an incorrect manner
-	const EETagsComponent = useCurrentChatTags?.();
 
 	const { data: tagsResult, isInitialLoading } = useLivechatTags({
 		department,
@@ -75,9 +69,9 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 				{t('Tags')}
 			</FieldLabel>
 
-			{EETagsComponent && tagsResult?.tags && tagsResult?.tags.length ? (
+			{tagsResult?.tags && tagsResult?.tags.length ? (
 				<FieldRow>
-					<EETagsComponent
+					<CurrentChatTags
 						value={paginatedTagValue}
 						handler={(tags: { label: string; value: string }[]): void => {
 							handler(tags.map((tag) => tag.label));
