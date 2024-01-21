@@ -1,6 +1,8 @@
 import { ButtonGroup } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
 
-const MessageComposerToolbarActions = ({ ...props }): ReactElement => <ButtonGroup role='toolbar' small mis={4} {...props} />;
+const MessageComposerToolbarActions = (props: ComponentProps<typeof ButtonGroup>): ReactElement => (
+	<ButtonGroup role='toolbar' small {...props} />
+);
 
 export default MessageComposerToolbarActions;
