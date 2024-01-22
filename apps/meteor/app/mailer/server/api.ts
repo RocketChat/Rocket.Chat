@@ -140,7 +140,7 @@ export const checkAddressFormat = (adresses: string | string[]): boolean =>
 		if (parts.length < 2) {
 			return validateEmail(address);
 		}
-		return validateEmail(parts[1].replace('>', ''));
+		return validateEmail(parts[1].replace(/>/g, ''));
 	});
 
 export const sendNoWrap = async ({
