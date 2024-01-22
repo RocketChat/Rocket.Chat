@@ -371,11 +371,7 @@ export type UsersEndpoints = {
 
 	'/v1/users.getNames': {
 		GET: (params: UsersGetNamesParamsGET) => {
-			users: {
-				userId: string;
-				username: string;
-				name: string;
-			}[];
+			users: Pick<IUser, '_id' | 'username' | 'name'>[];
 		};
 	};
 };

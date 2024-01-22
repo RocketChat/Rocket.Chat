@@ -7,7 +7,7 @@ const ajv = new Ajv({
 export type UsersGetNamesParamsGET = { userIds: string[] } | { usernames: string[] };
 
 const UsersGetNamesParamsGETSchema = {
-	anyOf: [
+	oneOf: [
 		{
 			type: 'object',
 			properties: {
@@ -19,7 +19,6 @@ const UsersGetNamesParamsGETSchema = {
 				},
 			},
 			required: ['userIds'],
-			additionalProperties: false,
 		},
 		{
 			type: 'object',
@@ -32,7 +31,6 @@ const UsersGetNamesParamsGETSchema = {
 				},
 			},
 			required: ['usernames'],
-			additionalProperties: false,
 		},
 	],
 };
