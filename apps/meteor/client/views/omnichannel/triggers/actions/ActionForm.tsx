@@ -1,10 +1,9 @@
-import type { SelectOption } from '@rocket.chat/fuselage';
-import { Field, FieldGroup, FieldHint, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
+import { Box, Field, FieldGroup, FieldHint, FieldLabel, FieldRow, Option, Options, SelectLegacy, Tag } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
-import React, { useMemo } from 'react';
+import React, { forwardRef, useCallback, useMemo } from 'react';
 import type { Control } from 'react-hook-form';
 import { Controller, useWatch } from 'react-hook-form';
 
@@ -30,16 +29,42 @@ export const ActionForm = ({ control, index, ...props }: SendMessageFormType) =>
 
 	const hasLicense = useHasLicenseModule('livechat-enterprise');
 
-	const actionOptions: SelectOption[] = useMemo(
-		() => [
+	const actionOptions: any[] = useMemo(() => {
+		return [
 			['send-message', t('Send_a_message')],
-			hasLicense ? ['use-external-service', t('Send_a_message_external_service')] : ['', t('Send_a_message_external_service_premium')],
-		],
-		[hasLicense, t],
-	);
+			['use-external-service', t('Send_a_message_external_service')],
+		];
+	}, [t]);
 
 	const ActionFormParams = useActionForm(actionFieldValue);
 	const actionHint = useMemo(() => ACTION_HINTS[actionFieldValue] || '', [actionFieldValue]);
+
+	// TODO: Remove legacySelect once we have a new Select component
+
+	const renderOption = useCallback(
+		(label: TranslationKey, value: string) => {
+			return (
+				<>
+					{!hasLicense && value === 'use-external-service' ? (
+						<Option disabled>
+							<Box justifyContent='space-between' flexDirection='row' display='flex' width='100%'>
+								{t(label)}
+								<Tag variant='featured'>{t('Premium')}</Tag>
+							</Box>
+						</Option>
+					) : (
+						<Option>{t(label)}</Option>
+					)}
+				</>
+			);
+		},
+		[hasLicense, t],
+	);
+
+	// eslint-disable-next-line react/no-multi-comp
+	const renderOptions = forwardRef<HTMLElement, ComponentProps<typeof Options>>(function OptionsWrapper(props, ref) {
+		return <Options ref={ref} {...props} maxHeight={200} />;
+	});
 
 	return (
 		<FieldGroup {...props}>
@@ -50,7 +75,15 @@ export const ActionForm = ({ control, index, ...props }: SendMessageFormType) =>
 						name={actionFieldName}
 						control={control}
 						render={({ field }) => {
-							return <Select {...field} id={actionFieldId} options={actionOptions} placeholder={t('Select_an_option')} />;
+							return (
+								<SelectLegacy
+									{...field}
+									options={actionOptions}
+									renderOptions={renderOptions}
+									renderSelected={({ label, value }) => <Box flexGrow='1'>{renderOption(label, value)}</Box>}
+									renderItem={({ label, value }) => renderOption(label, value)}
+								/>
+							);
 						}}
 					/>
 				</FieldRow>
