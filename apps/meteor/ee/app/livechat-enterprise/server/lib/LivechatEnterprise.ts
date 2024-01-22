@@ -103,7 +103,7 @@ export const LivechatEnterprise = {
 
 		let ancestors: string[] = [];
 		if (_id) {
-			const unit = await LivechatUnit.findOneById(_id);
+			const unit = await LivechatUnit.findOneById(_id, { projection: { _id: 1, ancestors: 1 } });
 			if (!unit) {
 				throw new Meteor.Error('error-unit-not-found', 'Unit not found', {
 					method: 'livechat:saveUnit',
@@ -119,12 +119,20 @@ export const LivechatEnterprise = {
 			{ projection: { _id: 1, username: 1 } },
 		).toArray();
 
+		// Prevent changing the unit of a department unintentionally
+		const validDepartments = (
+			await LivechatDepartmentRaw.find({
+				_id: { $in: unitDepartments.map(({ departmentId }) => departmentId) },
+				$or: [{ parentId: { $exists: false } }, { parentId: null }, ...(_id ? [{ parentId: _id }] : [])],
+			}).toArray()
+		).map(({ _id: departmentId }) => ({ departmentId }));
+
 		const monitors = validUserMonitors.map(({ _id: monitorId, username }) => ({
 			monitorId,
 			username,
 		})) as { monitorId: string; username: string }[];
 
-		return LivechatUnit.createOrUpdateUnit(_id, unitData, ancestors, monitors, unitDepartments);
+		return LivechatUnit.createOrUpdateUnit(_id, unitData, ancestors, monitors, validDepartments);
 	},
 
 	async removeTag(_id: string) {

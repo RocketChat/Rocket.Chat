@@ -9746,6 +9746,7 @@ __metadata:
     adm-zip: 0.5.10
     ajv: ^8.11.0
     ajv-formats: ~2.1.1
+    ajv-keywords: ^5.1.0
     apn: 2.2.0
     archiver: ^3.1.1
     asterisk-manager: ^0.2.0
@@ -15432,7 +15433,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ajv-keywords@npm:^5.0.0":
+"ajv-keywords@npm:^5.0.0, ajv-keywords@npm:^5.1.0":
   version: 5.1.0
   resolution: "ajv-keywords@npm:5.1.0"
   dependencies:
