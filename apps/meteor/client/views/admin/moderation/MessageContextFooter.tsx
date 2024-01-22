@@ -16,7 +16,7 @@ const MessageContextFooter: FC<{ userId: string; deleted: boolean }> = ({ userId
 	const deleteMessagesAction = useDeleteMessagesAction(userId);
 
 	return (
-		<ButtonGroup width='full' stretch>
+		<ButtonGroup stretch>
 			<Button onClick={dismissUserAction.onClick} title={t('Moderation_Dismiss_all_reports')} aria-label={t('Moderation_Dismiss_reports')}>
 				{t('Moderation_Dismiss_all_reports')}
 			</Button>

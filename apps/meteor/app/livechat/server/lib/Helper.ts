@@ -561,16 +561,20 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 	const { servedBy, chatQueued } = roomTaken;
 	if (!chatQueued && oldServedBy && servedBy && oldServedBy._id === servedBy._id) {
 		const department = departmentId
-			? await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'fallbackForwardDepartment'>>(departmentId, {
-					projection: { fallbackForwardDepartment: 1 },
+			? await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'fallbackForwardDepartment' | 'name'>>(departmentId, {
+					projection: { fallbackForwardDepartment: 1, name: 1 },
 			  })
 			: null;
 		if (!department?.fallbackForwardDepartment?.length) {
 			logger.debug(`Cannot forward room ${room._id}. Chat assigned to agent ${servedBy._id} (Previous was ${oldServedBy._id})`);
 			throw new Error('error-no-agents-online-in-department');
 		}
+
+		if (!transferData.originalDepartmentName) {
+			transferData.originalDepartmentName = department.name;
+		}
 		// if a chat has a fallback department, attempt to redirect chat to there [EE]
-		const transferSuccess = !!(await callbacks.run('livechat:onTransferFailure', room, { guest, transferData }));
+		const transferSuccess = !!(await callbacks.run('livechat:onTransferFailure', room, { guest, transferData, department }));
 		// On CE theres no callback so it will return the room
 		if (typeof transferSuccess !== 'boolean' || !transferSuccess) {
 			logger.debug(`Cannot forward room ${room._id}. Unable to delegate inquiry`);
@@ -578,6 +582,23 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 		}
 
 		return true;
+	}
+
+	// Send just 1 message to the room to inform the user that the chat was transferred
+	if (transferData.usingFallbackDep) {
+		const { _id, username } = transferData.transferredBy;
+		await Message.saveSystemMessage(
+			'livechat_transfer_history_fallback',
+			room._id,
+			'',
+			{ _id, username },
+			{
+				transferData: {
+					...transferData,
+					prevDepartment: transferData.originalDepartmentName,
+				},
+			},
+		);
 	}
 
 	await LivechatTyped.saveTransferHistory(room, transferData);
@@ -648,13 +669,24 @@ export const updateDepartmentAgents = async (
 	departmentEnabled: boolean,
 ) => {
 	check(departmentId, String);
-	check(
-		agents,
-		Match.ObjectIncluding({
-			upsert: Match.Maybe(Array),
-			remove: Match.Maybe(Array),
-		}),
-	);
+	check(agents, {
+		upsert: Match.Maybe([
+			Match.ObjectIncluding({
+				agentId: String,
+				username: Match.Maybe(String),
+				count: Match.Maybe(Match.Integer),
+				order: Match.Maybe(Match.Integer),
+			}),
+		]),
+		remove: Match.Maybe([
+			Match.ObjectIncluding({
+				agentId: String,
+				username: Match.Maybe(String),
+				count: Match.Maybe(Match.Integer),
+				order: Match.Maybe(Match.Integer),
+			}),
+		]),
+	});
 
 	const { upsert = [], remove = [] } = agents;
 	const agentsRemoved = [];

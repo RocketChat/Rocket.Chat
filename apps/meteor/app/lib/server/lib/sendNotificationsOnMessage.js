@@ -1,4 +1,5 @@
 import { Subscriptions, Users } from '@rocket.chat/models';
+import emojione from 'emojione';
 import moment from 'moment';
 
 import { callbacks } from '../../../../lib/callbacks';
@@ -145,12 +146,23 @@ export const sendNotification = async ({
 			isThread,
 		})
 	) {
+		const messageWithUnicode = message.msg ? emojione.shortnameToUnicode(message.msg) : message.msg;
+		const firstAttachment = message.attachments?.length > 0 && message.attachments.shift();
+		firstAttachment.description =
+			typeof firstAttachment.description === 'string' ? emojione.shortnameToUnicode(firstAttachment.description) : undefined;
+		firstAttachment.text = typeof firstAttachment.text === 'string' ? emojione.shortnameToUnicode(firstAttachment.text) : undefined;
+
+		const attachments = firstAttachment ? [firstAttachment, ...message.attachments].filter(Boolean) : [];
 		for await (const email of receiver.emails) {
 			if (email.verified) {
 				queueItems.push({
 					type: 'email',
 					data: await getEmailData({
-						message,
+						message: {
+							...message,
+							msg: messageWithUnicode,
+							...(attachments.length > 0 ? { attachments } : {}),
+						},
 						receiver,
 						sender,
 						subscription,

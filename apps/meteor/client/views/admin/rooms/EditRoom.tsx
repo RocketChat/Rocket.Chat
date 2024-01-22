@@ -348,11 +348,13 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
-				<ButtonGroup mbs={8} stretch>
-					<Button icon='trash' danger loading={isDeleting} disabled={!canDeleteRoom || isRoomFederated(room)} onClick={handleDelete}>
-						{t('Delete')}
-					</Button>
-				</ButtonGroup>
+				<Box mbs={8}>
+					<ButtonGroup stretch>
+						<Button icon='trash' danger loading={isDeleting} disabled={!canDeleteRoom || isRoomFederated(room)} onClick={handleDelete}>
+							{t('Delete')}
+						</Button>
+					</ButtonGroup>
+				</Box>
 			</ContextualbarFooter>
 		</>
 	);
