@@ -1,6 +1,7 @@
 import { MessageReaction as MessageReactionTemplate, MessageReactionEmoji, MessageReactionCounter } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useTooltipClose, useTooltipOpen, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useContext, useRef } from 'react';
 
@@ -52,6 +53,24 @@ const Reaction = ({ hasReacted, counter, name, names, ...props }: ReactionProps)
 
 	const getNames = useEndpoint('GET', '/v1/users.getNames');
 
+	const { refetch } = useQuery(
+		['users.getNames', names],
+		async () => {
+			if (!names) {
+				return undefined;
+			}
+
+			const users: string[] = showRealName
+				? (await getNames({ usernames: names }))?.users?.map((user) => user.name) || []
+				: names.map((name) => `@${name}`);
+
+			return users;
+		},
+		{
+			enabled: false,
+		},
+	);
+
 	return (
 		<MessageReactionTemplate
 			ref={ref}
@@ -63,20 +82,14 @@ const Reaction = ({ hasReacted, counter, name, names, ...props }: ReactionProps)
 				e.stopPropagation();
 				e.preventDefault();
 
-				const users = showRealName
-					? (
-							await getNames({
-								usernames: names,
-							})
-					  )?.users?.map((user) => user.name) || []
-					: names.map((name) => `@${name}`);
+				const users = (await refetch()).data;
 
 				ref.current &&
 					openTooltip(
 						<MarkdownText
 							content={t(key, {
 								counter: names.length > 10 ? names.length - 10 : names.length,
-								users: users.slice(0, 10).join(', '),
+								users: users?.slice(0, 10).join(', ') || '',
 								emoji: name,
 							})}
 							variant='inline'
