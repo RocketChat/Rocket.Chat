@@ -4404,4 +4404,80 @@ describe('[Users]', function () {
 				});
 		});
 	});
+
+	describe('[/users.sendWelcomeEmail]', async () => {
+		let user;
+		let otherUser;
+
+		before(async () => {
+			user = await createUser();
+			otherUser = await createUser();
+		});
+
+		after(async () => {
+			await deleteUser(user);
+			await deleteUser(otherUser);
+		});
+
+		it('should send Welcome Email to user', async () => {
+			await updateSetting('SMTP_Host', 'localhost');
+
+			await request
+				.post(api('users.sendWelcomeEmail'))
+				.set(credentials)
+				.send({ email: user.emails[0].address })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+
+		it('should fail to send Welcome Email due to SMTP settings missing', async () => {
+			await updateSetting('SMTP_Host', '');
+
+			await request
+				.post(api('users.sendWelcomeEmail'))
+				.set(credentials)
+				.send({ email: user.emails[0].address })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal('SMTP is not configured [error-email-send-failed]');
+				});
+		});
+
+		it('should fail to send Welcome Email due to missing param', async () => {
+			await updateSetting('SMTP_Host', '');
+
+			await request
+				.post(api('users.sendWelcomeEmail'))
+				.set(credentials)
+				.send({})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('error', "must have required property 'email' [invalid-params]");
+				});
+		});
+
+		it('should fail to send Welcome Email due missing user', async () => {
+			await updateSetting('SMTP_Host', 'localhost');
+
+			await request
+				.post(api('users.sendWelcomeEmail'))
+				.set(credentials)
+				.send({ email: 'fake_user32132131231@rocket.chat' })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-user');
+					expect(res.body).to.have.property('error', 'Invalid user [error-invalid-user]');
+				});
+		});
+	});
 });
