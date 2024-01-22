@@ -16,7 +16,7 @@ export type CasCallbackExtendedData = {
 	username: string;
 	attributes: Record<string, string[]>;
 	// eslint-disable-next-line @typescript-eslint/naming-convention
-	PGTIOU?: string;
+	PGTIOU: string | undefined;
 	ticket: string;
 	proxies: string[];
 };

@@ -22,7 +22,6 @@ export async function configureCAS() {
 		middlewareCAS(req, res, next);
 	});
 
-	// #TODO: Fix registerLoginHandler's type definitions (it accepts promises)
 	/*
 	 * Register a server-side login handler.
 	 * It is called after Accounts.callLoginMethod() is called from client.
@@ -31,6 +30,8 @@ export async function configureCAS() {
 	Accounts.registerLoginHandler('cas', (options) => {
 		const promise = loginHandlerCAS(options);
 
+		// Pretend the promise has been awaited so the types will match -
+		// #TODO: Fix registerLoginHandler's type definitions (it accepts promises)
 		return promise as unknown as Awaited<typeof promise>;
 	});
 }

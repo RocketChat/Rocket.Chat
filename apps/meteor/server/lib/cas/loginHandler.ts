@@ -1,5 +1,5 @@
 import { CredentialTokens, Users } from '@rocket.chat/models';
-import { getObjectKeys } from '@rocket.chat/tools';
+import { getObjectKeys, wrapExceptions } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 
 import { _setRealName } from '../../../app/lib/server/functions/setRealName';
@@ -55,7 +55,10 @@ export const loginHandlerCAS = async (options: any): Promise<undefined | Account
 	if (syncUserDataFieldMap) {
 		// Our mapping table: key(int_attr) -> value(ext_attr)
 		// Spoken: Source this internal attribute from these external attributes
-		const attributeMap = JSON.parse(syncUserDataFieldMap) as Record<string, any>;
+		const attributeMap = wrapExceptions(() => JSON.parse(syncUserDataFieldMap) as Record<string, any>).catch((err) => {
+			logger.error({ msg: 'Invalid JSON for attribute mapping', err });
+			throw err;
+		});
 
 		for await (const [internalName, source] of Object.entries(attributeMap)) {
 			if (!source || typeof source.valueOf() !== 'string') {
