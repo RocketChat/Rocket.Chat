@@ -13,11 +13,11 @@ import type { IUser } from '../IUser';
 import type { FileProp } from './MessageAttachment/Files/FileProp';
 import type { MessageAttachment } from './MessageAttachment/MessageAttachment';
 
-type MessageUrl = {
+export type MessageUrl = {
 	url: string;
 	source?: string;
 	meta: Record<string, string>;
-	headers?: { contentLength: string } | { contentType: string } | { contentLength: string; contentType: string };
+	headers?: { contentLength?: string; contentType?: string };
 	ignoreParse?: boolean;
 	parsedUrl?: Pick<UrlWithStringQuery, 'host' | 'hash' | 'pathname' | 'protocol' | 'port' | 'query' | 'search' | 'hostname'>;
 };
