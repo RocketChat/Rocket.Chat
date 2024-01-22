@@ -1,11 +1,11 @@
 import { useContext, useMemo } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
-import type { LoginService } from '../UserContext';
-import { UserContext } from '../UserContext';
+import type { LoginService } from '../AuthenticationContext';
+import { AuthenticationContext } from '../AuthenticationContext';
 
 export const useLoginServices = (): LoginService[] => {
-	const { queryAllServices } = useContext(UserContext);
+	const { queryAllServices } = useContext(AuthenticationContext);
 	const [subscribe, getSnapshot] = useMemo(() => queryAllServices(), [queryAllServices]);
 	return useSyncExternalStore(subscribe, getSnapshot);
 };
