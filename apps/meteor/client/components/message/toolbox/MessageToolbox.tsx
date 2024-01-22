@@ -2,7 +2,7 @@ import type { IMessage, IRoom, ISubscription, ITranslatedMessage } from '@rocket
 import { isThreadMessage, isRoomFederated, isVideoConfMessage } from '@rocket.chat/core-typings';
 import { MessageToolbox as FuselageMessageToolbox, MessageToolboxItem } from '@rocket.chat/fuselage';
 import { useFeaturePreview } from '@rocket.chat/ui-client';
-import { useUser, useSettings, useTranslation, useMethod } from '@rocket.chat/ui-contexts';
+import { useUser, useSettings, useTranslation, useMethod, useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { memo, useMemo } from 'react';
@@ -70,13 +70,18 @@ const MessageToolbox = ({
 
 	const actionButtonApps = useMessageActionAppsActionButtons(context);
 
+	const { messageToolbox: hiddenActions } = useLayoutHiddenActions();
+
 	const actionsQueryResult = useQuery(['rooms', room._id, 'messages', message._id, 'actions'] as const, async () => {
 		const props = { message, room, user, subscription, settings: mapSettings, chat };
 
 		const toolboxItems = await MessageAction.getAll(props, context, 'message');
 		const menuItems = await MessageAction.getAll(props, context, 'menu');
 
-		return { message: toolboxItems, menu: menuItems };
+		return {
+			message: toolboxItems.filter((action) => !hiddenActions.includes(action.id)),
+			menu: menuItems.filter((action) => !hiddenActions.includes(action.id)),
+		};
 	});
 
 	const toolbox = useRoomToolbox();
@@ -85,7 +90,7 @@ const MessageToolbox = ({
 
 	const autoTranslateOptions = useAutoTranslate(subscription);
 
-	if (selecting) {
+	if (selecting || (!actionsQueryResult.data?.message.length && !actionsQueryResult.data?.menu.length)) {
 		return null;
 	}
 
