@@ -636,7 +636,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const smtpConfigured = isSMTPConfigured();
-			return API.v1.success({ smtpConfigured });
+			return API.v1.success({ isSMTPConfigured: smtpConfigured });
 		},
 	},
 );
