@@ -14,4 +14,4 @@ export const makeModerationApiRequest = async (url: string, method: 'get' | 'pos
 
 export const reportUser = (userId: string, reason: string) => makeModerationApiRequest('moderation.reportUser', 'post', { userId, reason });
 
-export const getUsersReports = (userId: string) => makeModerationApiRequest('moderation.user.reportsByUserId', 'get', { userId });
+export const getUsersReports = (userId: string) => makeModerationApiRequest('moderation-user.reportsByUserId', 'get', { userId });

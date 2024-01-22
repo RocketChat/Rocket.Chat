@@ -251,7 +251,7 @@ describe('[Moderation]', function () {
 		});
 	});
 
-	describe('[/moderation.user.reportsByUserId]', () => {
+	describe('[/moderation-user.reportsByUserId]', () => {
 		let reportedUser: IUser;
 
 		before(async () => {
@@ -265,7 +265,7 @@ describe('[Moderation]', function () {
 
 		it('should return an array of reports', async () => {
 			await request
-				.get(api('moderation.user.reportsByUserId'))
+				.get(api('moderation-user.reportsByUserId'))
 				.set(credentials)
 				.query({
 					userId: reportedUser._id,
@@ -282,7 +282,7 @@ describe('[Moderation]', function () {
 
 		it('should return an error when the userId is not provided', async () => {
 			await request
-				.get(api('moderation.user.reportsByUserId'))
+				.get(api('moderation-user.reportsByUserId'))
 				.set(credentials)
 				.query({
 					userId: '',

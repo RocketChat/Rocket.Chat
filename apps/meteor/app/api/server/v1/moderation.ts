@@ -11,7 +11,6 @@ import {
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
-import { SystemLogger } from '../../../../server/lib/logger/system';
 import { deleteReportedMessages } from '../../../../server/lib/moderation/deleteReportedMessages';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
@@ -73,47 +72,42 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			try {
-				const { latest: _latest, oldest: _oldest, selector = '' } = this.queryParams;
+			const { latest: _latest, oldest: _oldest, selector = '' } = this.queryParams;
 
-				const { count = 20, offset = 0 } = await getPaginationItems(this.queryParams);
+			const { count = 20, offset = 0 } = await getPaginationItems(this.queryParams);
 
-				const { sort } = await this.parseJsonQuery();
+			const { sort } = await this.parseJsonQuery();
 
-				const latest = _latest ? new Date(_latest) : new Date();
+			const latest = _latest ? new Date(_latest) : new Date();
 
-				const oldest = _oldest ? new Date(_oldest) : new Date(0);
+			const oldest = _oldest ? new Date(_oldest) : new Date(0);
 
-				const escapedSelector = escapeRegExp(selector);
+			const escapedSelector = escapeRegExp(selector);
 
-				const reports = await ModerationReports.findUserReports(latest, oldest, escapedSelector, {
-					offset,
-					count,
-					sort,
-				}).toArray();
+			const reports = await ModerationReports.findUserReports(latest, oldest, escapedSelector, {
+				offset,
+				count,
+				sort,
+			}).toArray();
 
-				if (reports.length === 0) {
-					return API.v1.success({
-						reports,
-						count: 0,
-						offset,
-						total: 0,
-					});
-				}
-
-				const total = await ModerationReports.getTotalUniqueReportedUsers(latest, oldest, escapedSelector);
-
-				const result = {
+			if (reports.length === 0) {
+				return API.v1.success({
 					reports,
-					count: reports.length,
+					count: 0,
 					offset,
-					total,
-				};
-				return API.v1.success(result);
-			} catch (error) {
-				SystemLogger.error(error);
-				return API.v1.failure('Error while fetching user reports');
+					total: 0,
+				});
 			}
+
+			const total = await ModerationReports.getTotalUniqueReportedUsers(latest, oldest, escapedSelector);
+
+			const result = {
+				reports,
+				count: reports.length,
+				offset,
+				total,
+			};
+			return API.v1.success(result);
 		},
 	},
 );
@@ -169,7 +163,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'moderation.user.reportsByUserId',
+	'moderation-user.reportsByUserId',
 	{
 		authRequired: true,
 		validateParams: isGetUserReportsParams,
@@ -177,56 +171,51 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			try {
-				const { userId, selector = '' } = this.queryParams;
-				const { sort } = await this.parseJsonQuery();
-				const { count = 50, offset = 0 } = await getPaginationItems(this.queryParams);
+			const { userId, selector = '' } = this.queryParams;
+			const { sort } = await this.parseJsonQuery();
+			const { count = 50, offset = 0 } = await getPaginationItems(this.queryParams);
 
-				const user = await Users.findOneById<IUser>(userId, {
-					projection: {
-						_id: 1,
-						username: 1,
-						name: 1,
-						avatarETag: 1,
-						active: 1,
-						roles: 1,
-						emails: 1,
-						createdAt: 1,
-					},
-				});
+			const user = await Users.findOneById<IUser>(userId, {
+				projection: {
+					_id: 1,
+					username: 1,
+					name: 1,
+					avatarETag: 1,
+					active: 1,
+					roles: 1,
+					emails: 1,
+					createdAt: 1,
+				},
+			});
 
-				const escapedSelector = escapeRegExp(selector);
-				const { cursor, totalCount } = ModerationReports.findUserReportsByReportedUserId(userId, escapedSelector, {
-					offset,
-					count,
-					sort,
-				});
+			const escapedSelector = escapeRegExp(selector);
+			const { cursor, totalCount } = ModerationReports.findUserReportsByReportedUserId(userId, escapedSelector, {
+				offset,
+				count,
+				sort,
+			});
 
-				const [reports, total] = await Promise.all([cursor.toArray(), totalCount]);
+			const [reports, total] = await Promise.all([cursor.toArray(), totalCount]);
 
-				const emailSet = new Map<IUserEmail['address'], IUserEmail>();
+			const emailSet = new Map<IUserEmail['address'], IUserEmail>();
 
-				reports.forEach((report) => {
-					const email = report.reportedUser?.emails?.[0];
-					if (email) {
-						emailSet.set(email.address, email);
-					}
-				});
-				if (user) {
-					user.emails = Array.from(emailSet.values());
+			reports.forEach((report) => {
+				const email = report.reportedUser?.emails?.[0];
+				if (email) {
+					emailSet.set(email.address, email);
 				}
-
-				return API.v1.success({
-					user,
-					reports,
-					count: reports.length,
-					total,
-					offset,
-				});
-			} catch (error) {
-				SystemLogger.error(error);
-				return API.v1.failure('Error while fetching user reports');
+			});
+			if (user) {
+				user.emails = Array.from(emailSet.values());
 			}
+
+			return API.v1.success({
+				user,
+				reports,
+				count: reports.length,
+				total,
+				offset,
+			});
 		},
 	},
 );
