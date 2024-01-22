@@ -52,10 +52,6 @@ const Reaction = ({ hasReacted, counter, name, names, ...props }: ReactionProps)
 
 	const getNames = useEndpoint('GET', '/v1/users.getNames');
 
-	// const getUserNames = () => new Promise((resolve, reject) => {
-	// 	setTimeout(() => resolve(['test', 'testing', 'testUser1']), 1000);
-	// })
-
 	return (
 		<MessageReactionTemplate
 			ref={ref}
@@ -71,7 +67,6 @@ const Reaction = ({ hasReacted, counter, name, names, ...props }: ReactionProps)
 					? (
 							await getNames({
 								usernames: names,
-								userIds: [],
 							})
 					  ).users.map((user) => user.name)
 					: names.map((name) => `@${name}`);
