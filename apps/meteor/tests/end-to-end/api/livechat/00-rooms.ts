@@ -49,7 +49,7 @@ import { adminUsername, password } from '../../../data/user';
 import { createUser, deleteUser, login } from '../../../data/users.helper.js';
 import { IS_EE } from '../../../e2e/config/constants';
 
-describe('LIVECHAT - rooms', function () {
+describe.only('LIVECHAT - rooms', function () {
 	this.retries(0);
 	let visitor: ILivechatVisitor;
 	let room: IOmnichannelRoom;
@@ -58,6 +58,7 @@ describe('LIVECHAT - rooms', function () {
 
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
+		await updateSetting('Omnichannel_queue_delay_timeout', 2);
 		await createAgent();
 		await makeAgentAvailable();
 		visitor = await createVisitor();
@@ -746,6 +747,7 @@ describe('LIVECHAT - rooms', function () {
 
 			const newVisitor = await createVisitor(initialDepartment._id);
 			const newRoom = await createLivechatRoom(newVisitor.token);
+			await sleep(5000);
 
 			await request
 				.post(api('livechat/room.forward'))

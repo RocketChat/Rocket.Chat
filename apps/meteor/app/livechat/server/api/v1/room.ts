@@ -348,6 +348,7 @@ API.v1.addRoute(
 				}
 			}
 
+			console.log(room);
 			const chatForwardedResult = await LivechatTyped.transfer(room, guest, transferData);
 			if (!chatForwardedResult) {
 				throw new Error('error-forwarding-chat');

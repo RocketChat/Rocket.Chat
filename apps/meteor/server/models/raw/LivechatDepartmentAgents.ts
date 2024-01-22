@@ -204,6 +204,7 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 	): Promise<{ agentId: string; username: string } | null | undefined> {
 		const agents = await this.findByDepartmentId(departmentId).toArray();
 
+		console.log('agents', agents);
 		if (agents.length === 0) {
 			return;
 		}
@@ -212,12 +213,14 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 			agents.map((agent) => agent.username),
 			isLivechatEnabledWhenAgentIdle,
 		).toArray();
-
+		
+		console.log('onlineUsers', onlineUsers);
 		const onlineUsernames = onlineUsers.map((user) => user.username).filter(isStringValue);
 
 		// get fully booked agents, to ignore them from the query
 		const currentUnavailableAgents = (await Users.getUnavailableAgents(departmentId, extraQuery)).map((u) => u.username);
 
+		console.log('currentUnavailableAgents', currentUnavailableAgents);
 		const query: Filter<ILivechatDepartmentAgents> = {
 			departmentId,
 			username: {
@@ -238,6 +241,7 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 			},
 		};
 
+		console.log(JSON.stringify(query), JSON.stringify(sort), JSON.stringify(update));
 		const agent = await this.findOneAndUpdate(query, update, { sort, returnDocument: 'after' });
 		if (agent?.value) {
 			return {

@@ -560,6 +560,10 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 	}
 
 	const { servedBy, chatQueued } = roomTaken;
+	console.log('roomTaken', roomTaken);
+	console.log('chatQueued', chatQueued);
+	console.log('oldServedBy', oldServedBy);
+	console.log('servedBy', servedBy);
 	if (!chatQueued && oldServedBy && servedBy && oldServedBy._id === servedBy._id) {
 		const department = departmentId
 			? await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'fallbackForwardDepartment'>>(departmentId, {
