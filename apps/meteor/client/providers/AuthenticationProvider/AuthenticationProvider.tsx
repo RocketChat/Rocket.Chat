@@ -10,11 +10,11 @@ import { useLDAPAndCrowdCollisionWarning } from './hooks/useLDAPAndCrowdCollisio
 
 export type LoginMethods = keyof typeof Meteor extends infer T ? (T extends `loginWith${string}` ? T : never) : never;
 
-type UserProviderProps = {
+type AuthenticationProviderProps = {
 	children: ReactNode;
 };
 
-const UserProvider = ({ children }: UserProviderProps): ReactElement => {
+const AuthenticationProvider = ({ children }: AuthenticationProviderProps): ReactElement => {
 	const isLdapEnabled = useSetting<boolean>('LDAP_Enable');
 	const isCrowdEnabled = useSetting<boolean>('CROWD_Enable');
 
@@ -83,4 +83,4 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 	return <AuthenticationContext.Provider children={children} value={contextValue} />;
 };
 
-export default UserProvider;
+export default AuthenticationProvider;
