@@ -19,7 +19,7 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 
 	modelIndexes(): IndexDescription[] | undefined {
 		return [
-			// deprecated
+			// TODO deprecated. remove within a migration in v7.0
 			// { key: { 'ts': 1, 'reports.ts': 1 } },
 			// { key: { 'message.u._id': 1, 'ts': 1 } },
 			// { key: { 'reportedUser._id': 1, 'ts': 1 } },
