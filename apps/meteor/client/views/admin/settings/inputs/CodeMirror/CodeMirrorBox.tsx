@@ -40,11 +40,13 @@ const CodeMirrorBox = ({ label, children }: { label: string; children: ReactElem
 				</Box>
 			)}
 			{children}
-			<ButtonGroup mbs={8}>
-				<Button primary onClick={(): void => toggleFullScreen()}>
-					{fullScreen ? t('Exit_Full_Screen') : t('Full_Screen')}
-				</Button>
-			</ButtonGroup>
+			<Box mbs={8}>
+				<ButtonGroup>
+					<Button primary onClick={(): void => toggleFullScreen()}>
+						{fullScreen ? t('Exit_Full_Screen') : t('Full_Screen')}
+					</Button>
+				</ButtonGroup>
+			</Box>
 		</Box>
 	);
 };
