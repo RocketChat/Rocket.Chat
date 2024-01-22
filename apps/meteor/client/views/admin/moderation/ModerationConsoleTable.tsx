@@ -1,9 +1,10 @@
 import { Pagination, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useToastMessageDispatch, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch, useRoute } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { FC } from 'react';
 import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import FilterByText from '../../../components/FilterByText';
 import GenericNoResults from '../../../components/GenericNoResults';
@@ -23,7 +24,7 @@ import DateRangePicker from './helpers/DateRangePicker';
 const ModerationConsoleTable: FC = () => {
 	const [text, setText] = useState('');
 	const moderationRoute = useRoute('moderation-console');
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const isDesktopOrLarger = useMediaQuery('(min-width: 1024px)');
 
 	const { sortBy, sortDirection, setSort } = useSort<'reports.ts' | 'reports.message.u.username' | 'reports.description' | 'count'>(
@@ -110,7 +111,7 @@ const ModerationConsoleTable: FC = () => {
 				{t('Moderation_Report_date')}
 			</GenericTableHeaderCell>,
 			<GenericTableHeaderCell key='reports' direction={sortDirection} active={sortBy === 'count'} onClick={setSort} sort='count'>
-				{t('Moderation_Report_plural')}
+				{t('Moderation_Report_reports')}
 			</GenericTableHeaderCell>,
 			<GenericTableHeaderCell key='actions' width='x48' />,
 		],
