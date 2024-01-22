@@ -11,6 +11,7 @@ import {
 	Select,
 	TextInput,
 	ToggleSwitch,
+	Box,
 } from '@rocket.chat/fuselage';
 import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
@@ -207,11 +208,13 @@ const EditCustomFields = ({ customFieldData }: { customFieldData?: Serialized<IL
 					</Button>
 				</ButtonGroup>
 				{customFieldData?._id && (
-					<ButtonGroup stretch mbs={8}>
-						<Button icon='trash' danger onClick={() => handleDelete(customFieldData._id)}>
-							{t('Delete')}
-						</Button>
-					</ButtonGroup>
+					<Box mbs={8}>
+						<ButtonGroup stretch>
+							<Button icon='trash' danger onClick={() => handleDelete(customFieldData._id)}>
+								{t('Delete')}
+							</Button>
+						</ButtonGroup>
+					</Box>
 				)}
 			</ContextualbarFooter>
 		</Contextualbar>

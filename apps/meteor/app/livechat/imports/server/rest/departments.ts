@@ -117,23 +117,17 @@ API.v1.addRoute(
 			const { _id } = this.urlParams;
 			const { department, agents } = this.bodyParams;
 
-			let success;
-			if (permissionToSave) {
-				success = await LivechatEnterprise.saveDepartment(_id, department);
+			if (!permissionToSave) {
+				throw new Error('error-not-allowed');
 			}
 
-			if (success && agents && permissionToAddAgents) {
-				success = await LivechatTs.saveDepartmentAgents(_id, { upsert: agents });
-			}
+			const agentParam = permissionToAddAgents && agents ? { upsert: agents } : {};
+			await LivechatEnterprise.saveDepartment(_id, department, agentParam);
 
-			if (success) {
-				return API.v1.success({
-					department: await LivechatDepartment.findOneById(_id),
-					agents: await LivechatDepartmentAgents.findByDepartmentId(_id).toArray(),
-				});
-			}
-
-			return API.v1.failure();
+			return API.v1.success({
+				department: await LivechatDepartment.findOneById(_id),
+				agents: await LivechatDepartmentAgents.findByDepartmentId(_id).toArray(),
+			});
 		},
 		async delete() {
 			check(this.urlParams, {

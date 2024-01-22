@@ -186,7 +186,7 @@ export type MatchPathPattern<TPath extends Path> = TPath extends any ? Extract<O
 
 export type JoinPathPattern<TBasePath extends string, TSubPathPattern extends string> = Extract<
 	PathPattern,
-	`${TBasePath}/${TSubPathPattern}` | TSubPathPattern
+	`${TBasePath}${TSubPathPattern extends '' ? TSubPathPattern : `/${TSubPathPattern}`}` | TSubPathPattern
 >;
 
 type GetParams<TOperation> = TOperation extends (...args: any) => any ? Parameters<TOperation>[0] : never;
