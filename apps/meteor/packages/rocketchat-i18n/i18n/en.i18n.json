@@ -5003,7 +5003,7 @@
   "Team_Add_existing_channels": "Add Existing Channels",
   "Team_Add_existing": "Add Existing",
   "Team_Auto-join": "Auto-join",
-  "Team_Auto-join_exceeded_user_limit": "Auto-join has a limit of {{limit}} members, #{{channelName}} now has that {{numberOfMembers}} members",
+  "Team_Auto-join_exceeded_user_limit": "Auto-join has a limit of {{limit}} members, #{{channelName}} now has {{numberOfMembers}} members",
   "Team_Auto-join_updated": "#{{channelName}} now has {{numberOfMembers}} members",
   "Team_Channels": "Team Channels",
   "Team_Delete_Channel_modal_content_danger": "This can’t be undone.",
