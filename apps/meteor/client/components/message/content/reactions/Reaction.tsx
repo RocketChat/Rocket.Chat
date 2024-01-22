@@ -61,7 +61,7 @@ const Reaction = ({ hasReacted, counter, name, names, ...props }: ReactionProps)
 			}
 
 			const users: string[] = showRealName
-				? (await getNames({ usernames: names }))?.users?.map((user) => user.name) || names.map((name) => `@${name}`)
+				? (await getNames({ usernames: names }))?.users?.map((user) => user.name || '') || names.map((name) => `@${name}`)
 				: names.map((name) => `@${name}`);
 
 			return users;
