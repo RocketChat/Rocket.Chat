@@ -56,7 +56,7 @@ const Reaction = ({ hasReacted, counter, name, names, ...props }: ReactionProps)
 	const { refetch } = useQuery(
 		['users.getNames', names],
 		async () => {
-			if (!names) {
+			if (names.length === 0) {
 				return undefined;
 			}
 
