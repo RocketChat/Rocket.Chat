@@ -644,7 +644,7 @@ API.v1.addRoute(
 				};
 			}
 
-			const result = await Users.findPaginated(
+			const { cursor, totalCount } = await Users.findPaginated(
 				{
 					...match,
 				},
@@ -656,7 +656,7 @@ API.v1.addRoute(
 				},
 			);
 
-			const [users, total] = await Promise.all([result.cursor.toArray(), result.totalCount]);
+			const [users, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				users,
@@ -679,7 +679,7 @@ API.v1.addRoute(
 			const { email } = this.bodyParams;
 			await sendWelcomeEmail(email);
 
-			return API.v1.success({ success: true });
+			return API.v1.success();
 		},
 	},
 );
