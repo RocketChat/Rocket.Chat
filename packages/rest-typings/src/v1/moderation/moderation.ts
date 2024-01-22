@@ -33,7 +33,7 @@ export type ModerationEndpoints = {
 			messages: Pick<MessageReport, 'message' | 'ts' | 'room' | '_id'>[];
 		}>;
 	};
-	'/v1/moderation-user.reportsByUserId': {
+	'/v1/moderation.user.reportsByUserId': {
 		GET: (params: GetUserReportsParamsGET) => PaginatedResult<{
 			user: IUser | null;
 			reports: Omit<UserReport, 'moderationInfo'>[];

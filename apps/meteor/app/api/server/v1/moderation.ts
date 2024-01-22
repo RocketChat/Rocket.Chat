@@ -163,7 +163,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'moderation-user.reportsByUserId',
+	'moderation.user.reportsByUserId',
 	{
 		authRequired: true,
 		validateParams: isGetUserReportsParams,

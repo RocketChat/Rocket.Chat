@@ -26,7 +26,7 @@ import UserContextFooter from './UserContextFooter';
 
 const UserReportInfo = ({ userId }: { userId: string }) => {
 	const t = useTranslation();
-	const getUserReports = useEndpoint('GET', '/v1/moderation-user.reportsByUserId');
+	const getUserReports = useEndpoint('GET', '/v1/moderation.user.reportsByUserId');
 	const formatDateAndTime = useFormatDate();
 
 	const {
