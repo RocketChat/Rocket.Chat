@@ -656,8 +656,7 @@ API.v1.addRoute(
 				},
 			);
 
-			const users = await result.cursor.toArray();
-			const total = await result.totalCount;
+			const [users, total] = await Promise.all([result.cursor.toArray(), result.totalCount]);
 
 			return API.v1.success({
 				users,
@@ -678,13 +677,9 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { email } = this.bodyParams;
+			await sendWelcomeEmail(email);
 
-			try {
-				await sendWelcomeEmail(email);
-				return API.v1.success({ success: true });
-			} catch (e: any) {
-				return API.v1.failure({ error: e.message });
-			}
+			return API.v1.success({ success: true });
 		},
 	},
 );
