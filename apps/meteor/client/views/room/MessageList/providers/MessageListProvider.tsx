@@ -1,5 +1,4 @@
-import type { IMessage } from '@rocket.chat/core-typings';
-import { isMessageReactionsNormalized, isThreadMainMessage } from '@rocket.chat/core-typings';
+import { isThreadMainMessage } from '@rocket.chat/core-typings';
 import { useLayout, useUser, useUserPreference, useSetting, useEndpoint, useSearchParameter } from '@rocket.chat/ui-contexts';
 import type { VFC, ReactNode } from 'react';
 import React, { useMemo, memo } from 'react';
@@ -60,37 +59,6 @@ const MessageListProvider: VFC<MessageListProviderProps> = ({ children, scrollMe
 	const context: MessageListContextValue = useMemo(
 		() => ({
 			showColors,
-			useReactionsFilter: (message: IMessage): ((reaction: string) => string[]) => {
-				const { reactions } = message;
-				return !showRealName
-					? (reaction: string): string[] =>
-							reactions?.[reaction]?.usernames.filter((user) => user !== username).map((username) => `@${username}`) || []
-					: (reaction: string): string[] => {
-							if (!reactions?.[reaction]) {
-								return [];
-							}
-							if (!isMessageReactionsNormalized(message)) {
-								if (reactions?.[reaction]?.names) {
-									return (
-										(reactions?.[reaction]
-											?.names!.filter((_user, i) => reactions?.[reaction]?.usernames[i] !== username)
-											.filter((name) => name !== undefined) as string[]) || []
-									);
-								}
-
-								return reactions?.[reaction]?.usernames.filter((user) => user !== username).map((username) => `@${username}`) || [];
-							}
-							if (!username) {
-								return message.reactions[reaction].names;
-							}
-							const index = message.reactions[reaction].usernames.indexOf(username);
-							if (index === -1) {
-								return message.reactions[reaction].names;
-							}
-
-							return message.reactions[reaction].names.splice(index, 1);
-					  };
-			},
 			useUserHasReacted: username
 				? (message) =>
 						(reaction): boolean =>

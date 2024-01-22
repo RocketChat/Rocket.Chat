@@ -1,11 +1,12 @@
 import { MessageReaction as MessageReactionTemplate, MessageReactionEmoji, MessageReactionCounter } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useTooltipClose, useTooltipOpen, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useTooltipClose, useTooltipOpen, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useRef } from 'react';
+import React, { useContext, useRef } from 'react';
 
 import { getEmojiClassNameAndDataTitle } from '../../../../lib/utils/renderEmoji';
 import MarkdownText from '../../../MarkdownText';
+import { MessageListContext } from '../../list/MessageListContext';
 
 // TODO: replace it with proper usage of i18next plurals
 const getTranslationKey = (users: string[], mine: boolean): TranslationKey => {
@@ -41,12 +42,19 @@ const Reaction = ({ hasReacted, counter, name, names, ...props }: ReactionProps)
 	const ref = useRef<HTMLDivElement>(null);
 	const openTooltip = useTooltipOpen();
 	const closeTooltip = useTooltipClose();
+	const { showRealName } = useContext(MessageListContext);
 
 	const mine = hasReacted(name);
 
 	const key = getTranslationKey(names, mine);
 
 	const emojiProps = getEmojiClassNameAndDataTitle(name);
+
+	const getNames = useEndpoint('GET', '/v1/users.getNames');
+
+	// const getUserNames = () => new Promise((resolve, reject) => {
+	// 	setTimeout(() => resolve(['test', 'testing', 'testUser1']), 1000);
+	// })
 
 	return (
 		<MessageReactionTemplate
@@ -55,15 +63,25 @@ const Reaction = ({ hasReacted, counter, name, names, ...props }: ReactionProps)
 			mine={mine}
 			tabIndex={0}
 			role='button'
-			onMouseOver={(e): void => {
+			onMouseOver={async (e) => {
 				e.stopPropagation();
 				e.preventDefault();
+
+				const users = showRealName
+					? (
+							await getNames({
+								usernames: names,
+								userIds: [],
+							})
+					  ).users.map((user) => user.name)
+					: names.map((name) => `@${name}`);
+
 				ref.current &&
 					openTooltip(
 						<MarkdownText
 							content={t(key, {
 								counter: names.length > 10 ? names.length - 10 : names.length,
-								users: names.slice(0, 10).join(', '),
+								users: users.slice(0, 10).join(', '),
 								emoji: name,
 							})}
 							variant='inline'
