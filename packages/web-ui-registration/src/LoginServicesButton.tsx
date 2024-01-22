@@ -11,7 +11,6 @@ const LoginServicesButton = <T extends LoginService>({
 	buttonLabelText,
 	icon,
 	title,
-	clientConfig,
 	service,
 	className,
 	disabled,
@@ -23,7 +22,7 @@ const LoginServicesButton = <T extends LoginService>({
 	setError?: Dispatch<SetStateAction<LoginErrors | undefined>>;
 }): ReactElement => {
 	const t = useTranslation();
-	const handler = useLoginWithService({ service, buttonLabelText, title, clientConfig, ...props });
+	const handler = useLoginWithService({ service, buttonLabelText, ...props });
 
 	const handleOnClick = useCallback(() => {
 		handler().catch((e: { error?: LoginErrors }) => {
