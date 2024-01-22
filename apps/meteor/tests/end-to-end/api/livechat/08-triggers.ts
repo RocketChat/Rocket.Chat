@@ -5,6 +5,7 @@ import type { Response } from 'supertest';
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createTrigger, fetchTriggers } from '../../../data/livechat/triggers';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { IS_EE } from '../../../e2e/config/constants';
 
 describe('LIVECHAT - triggers', function () {
 	this.retries(0);
@@ -296,7 +297,7 @@ describe('LIVECHAT - triggers', function () {
 		});
 	});
 
-	describe('POST livechat/triggers/external-service/test', () => {
+	(IS_EE ? describe : describe.skip)('POST livechat/triggers/external-service/test', () => {
 		const webhookUrl = process.env.WEBHOOK_TEST_URL || 'https://httpbin.org';
 
 		it('should fail if user is not logged in', async () => {
