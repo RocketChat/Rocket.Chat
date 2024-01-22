@@ -2321,8 +2321,6 @@
   "Replied_on": "Antwortete auf",
   "Replies": "Antworten",
   "Reply": "Antwort",
-  "reply_counter": "{{counter}} Antwort",
-  "reply_counter_plural": "{{counter}} Antworten",
   "Reply_in_direct_message": "Mit Direktnachricht antworten",
   "Reply_in_thread": "Mit Thread antworten",
   "ReplyTo": "Antwort an",
