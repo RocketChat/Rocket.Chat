@@ -6,6 +6,7 @@ import type {
 	IOmnichannelRoom,
 	SelectedAgent,
 } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { EmojiCustom, LivechatTrigger, LivechatVisitors, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { Meteor } from 'meteor/meteor';
@@ -207,6 +208,7 @@ export async function settings({ businessUnit = '' }: { businessUnit?: string } 
 		},
 		triggers,
 		departments,
+		premiumCapabilities: License.hasModule('livechat-enterprise'),
 		resources: {
 			sound,
 			emojis,
