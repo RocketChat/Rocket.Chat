@@ -4,10 +4,10 @@ import { Tracker } from 'meteor/tracker';
 import { lazy } from 'react';
 
 import { CachedChatSubscription } from '../../../app/models/client';
-import { Notifications } from '../../../app/notifications/client';
 import { settings } from '../../../app/settings/client';
 import { KonchatNotification } from '../../../app/ui/client/lib/KonchatNotification';
 import { getUserPreference } from '../../../app/utils/client';
+import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { RoomManager } from '../../lib/RoomManager';
 import { imperativeModal } from '../../lib/imperativeModal';
 import { fireGlobalEvent } from '../../lib/utils/fireGlobalEvent';
@@ -71,17 +71,18 @@ Meteor.startup(() => {
 	};
 	Tracker.autorun(() => {
 		if (!Meteor.userId() || !settings.get('Outlook_Calendar_Enabled')) {
-			return Notifications.unUser('calendar');
+			sdk.stop('notify-user', `${Meteor.userId()}/calendar`);
 		}
 
-		Notifications.onUser('calendar', notifyUserCalendar);
+		sdk.stream('notify-user', [`${Meteor.userId()}/calendar`], notifyUserCalendar);
 	});
 
 	Tracker.autorun(() => {
 		if (!Meteor.userId()) {
 			return;
 		}
-		Notifications.onUser('notification', (notification) => {
+
+		sdk.stream('notify-user', [`${Meteor.userId()}/notification`], (notification) => {
 			const openedRoomId = ['channel', 'group', 'direct'].includes(router.getRouteName()!) ? RoomManager.opened : undefined;
 
 			// This logic is duplicated in /client/startup/unread.coffee.
@@ -111,7 +112,7 @@ Meteor.startup(() => {
 			void notifyNewRoom(sub);
 		});
 
-		Notifications.onUser('subscriptions-changed', (action, sub) => {
+		sdk.stream('notify-user', [`${Meteor.userId()}/subscriptions-changed`], (action, sub) => {
 			if (action === 'removed') {
 				return;
 			}

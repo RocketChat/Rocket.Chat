@@ -143,12 +143,16 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 
 		await InstanceStatus.registerInstance('rocket.chat', instance);
 
-		const hasLicense = await License.hasModule('scalability');
-		if (!hasLicense) {
-			return;
-		}
+		try {
+			const hasLicense = await License.hasModule('scalability');
+			if (!hasLicense) {
+				return;
+			}
 
-		await this.startBroadcast();
+			await this.startBroadcast();
+		} catch (error) {
+			console.error('Instance service did not start correctly', error);
+		}
 	}
 
 	private async startBroadcast() {

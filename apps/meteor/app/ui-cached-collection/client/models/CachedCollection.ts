@@ -1,4 +1,5 @@
 import { Emitter } from '@rocket.chat/emitter';
+import type { StreamNames } from '@rocket.chat/ui-contexts';
 import localforage from 'localforage';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
@@ -10,11 +11,10 @@ import { baseURI } from '../../../../client/lib/baseURI';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
-import Notifications from '../../../notifications/client/lib/Notifications';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 import { CachedCollectionManager } from './CachedCollectionManager';
 
-export type EventType = Extract<keyof typeof Notifications, `on${string}`>;
+export type EventType = 'notify-logged' | 'notify-all' | 'notify-user';
 
 type Name = 'rooms' | 'subscriptions' | 'permissions' | 'public-settings' | 'private-settings';
 
@@ -48,7 +48,7 @@ export class CachedCollection<T extends { _id: string }, U = T> extends Emitter<
 
 	public name: Name;
 
-	public eventType: EventType;
+	public eventType: StreamNames;
 
 	public version = 18;
 
@@ -60,7 +60,7 @@ export class CachedCollection<T extends { _id: string }, U = T> extends Emitter<
 
 	public timer: ReturnType<typeof setTimeout>;
 
-	constructor({ name, eventType = 'onUser', userRelated = true }: { name: Name; eventType?: EventType; userRelated?: boolean }) {
+	constructor({ name, eventType = 'notify-user', userRelated = true }: { name: Name; eventType?: StreamNames; userRelated?: boolean }) {
 		super();
 
 		this.collection = new Mongo.Collection(null) as MinimongoCollection<T>;
@@ -85,7 +85,10 @@ export class CachedCollection<T extends { _id: string }, U = T> extends Emitter<
 		});
 	}
 
-	protected get eventName(): `${Name}-changed` {
+	protected get eventName(): `${Name}-changed` | `${string}/${Name}-changed` {
+		if (this.eventType === 'notify-user') {
+			return `${Meteor.userId()}/${this.name}-changed`;
+		}
 		return `${this.name}-changed`;
 	}
 
@@ -232,7 +235,7 @@ export class CachedCollection<T extends { _id: string }, U = T> extends Emitter<
 	}
 
 	async setupListener() {
-		(Notifications[this.eventType] as any)(this.eventName, async (action: 'removed' | 'changed', record: any) => {
+		sdk.stream(this.eventType, [this.eventName], (async (action: 'removed' | 'changed', record: any) => {
 			this.log('record received', action, record);
 			const newRecord = this.handleReceived(record, action);
 
@@ -250,7 +253,7 @@ export class CachedCollection<T extends { _id: string }, U = T> extends Emitter<
 				this.collection.upsert({ _id } as any, newRecord);
 			}
 			await this.save();
-		});
+		}) as (...args: unknown[]) => void);
 	}
 
 	trySync(delay = 10) {

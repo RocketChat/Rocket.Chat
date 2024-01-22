@@ -1,5 +1,5 @@
 import { normalizeLanguage } from '@rocket.chat/tools';
-import { useEndpoint, useSingleStream, useUserId } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useStream, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -32,7 +32,7 @@ export const useTranslationsForApps = () => {
 	}, [i18n, data, isSuccess]);
 
 	const queryClient = useQueryClient();
-	const subscribeToApps = useSingleStream('apps');
+	const subscribeToApps = useStream('apps');
 	const uid = useUserId();
 
 	useEffect(() => {

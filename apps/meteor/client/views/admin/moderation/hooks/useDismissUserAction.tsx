@@ -1,12 +1,13 @@
-import { useEndpoint, useRouter, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouter, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
 import GenericModal from '../../../../components/GenericModal';
 
 const useDismissUserAction = (userId: string): GenericMenuItemProps => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const moderationRoute = useRouter();
@@ -20,7 +21,7 @@ const useDismissUserAction = (userId: string): GenericMenuItemProps => {
 			dispatchToastMessage({ type: 'error', message: error });
 		},
 		onSuccess: () => {
-			dispatchToastMessage({ type: 'success', message: t('Moderation_Reports_dismissed_plural') });
+			dispatchToastMessage({ type: 'success', message: t('Moderation_Reports_all_dismissed') });
 		},
 	});
 

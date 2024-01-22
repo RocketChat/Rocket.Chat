@@ -20,6 +20,12 @@ export type LayoutContextValue = {
 	size: SizeLayout;
 	contextualBarExpanded: boolean;
 	contextualBarPosition: 'absolute' | 'relative' | 'fixed';
+	hiddenActions: {
+		roomToolbox: Array<string>;
+		messageToolbox: Array<string>;
+		composerToolbox: Array<string>;
+		userToolbox: Array<string>;
+	};
 };
 
 export const LayoutContext = createContext<LayoutContextValue>({
@@ -40,4 +46,10 @@ export const LayoutContext = createContext<LayoutContextValue>({
 	},
 	contextualBarPosition: 'relative',
 	contextualBarExpanded: false,
+	hiddenActions: {
+		roomToolbox: [],
+		messageToolbox: [],
+		composerToolbox: [],
+		userToolbox: [],
+	},
 });

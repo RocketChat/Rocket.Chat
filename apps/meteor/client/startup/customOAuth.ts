@@ -1,7 +1,8 @@
+import type { ILoginServiceConfiguration, OAuthConfiguration } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
-import { CustomOAuth } from '../../app/custom-oauth/client/custom_oauth_client';
+import { CustomOAuth } from '../../app/custom-oauth/client/CustomOAuth';
 
 Meteor.startup(() => {
 	ServiceConfiguration.configurations
@@ -10,15 +11,16 @@ Meteor.startup(() => {
 		})
 		.observe({
 			async added(record) {
-				const { isOauthCustomConfiguration } = await import('@rocket.chat/rest-typings');
-				if (!isOauthCustomConfiguration(record)) {
+				const service = record as unknown as (ILoginServiceConfiguration & OAuthConfiguration) | undefined;
+
+				if (!service) {
 					return;
 				}
 
-				new CustomOAuth(record.service, {
-					serverURL: record.serverURL,
-					authorizePath: record.authorizePath,
-					scope: record.scope,
+				new CustomOAuth(service.service, {
+					serverURL: service.serverURL,
+					authorizePath: service.authorizePath,
+					scope: service.scope,
 				});
 			},
 		});
