@@ -1261,12 +1261,25 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isUsersGetNamesParamsGETProps },
 	{
 		async get() {
-			const users = await Users.findByUsernames(this.queryParams.usernames, {
-				projection: {
-					name: 1,
-					username: 1,
-				},
-			}).toArray();
+			let users: Pick<IUser, '_id' | 'username' | 'name'>[] = [];
+
+			if ('userIds' in this.queryParams) {
+				users = await Users.findByIds(this.queryParams.userIds, {
+					projection: {
+						name: 1,
+						username: 1,
+					},
+				}).toArray();
+			}
+
+			if ('usernames' in this.queryParams) {
+				users = await Users.findByUsernames(this.queryParams.usernames, {
+					projection: {
+						name: 1,
+						username: 1,
+					},
+				}).toArray();
+			}
 
 			return API.v1.success({
 				users,
