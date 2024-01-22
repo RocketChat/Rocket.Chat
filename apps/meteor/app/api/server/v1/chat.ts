@@ -1,7 +1,7 @@
 import { Message } from '@rocket.chat/core-services';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
-import { isChatReportMessageProps } from '@rocket.chat/rest-typings';
+import { isChatReportMessageProps, isChatGetURLPreviewProps } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -15,6 +15,7 @@ import { deleteMessageValidatingPermission } from '../../../lib/server/functions
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import { executeUpdateMessage } from '../../../lib/server/methods/updateMessage';
+import { OEmbed } from '../../../oembed/server/server';
 import { executeSetReaction } from '../../../reactions/server/setReaction';
 import { settings } from '../../../settings/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
@@ -819,6 +820,25 @@ API.v1.addRoute(
 			await Message.saveSystemMessage(otrType, roomId, username, { _id: this.userId, username });
 
 			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'chat.getURLPreview',
+	{ authRequired: true, validateParams: isChatGetURLPreviewProps },
+	{
+		async get() {
+			const { roomId, url } = this.queryParams;
+
+			if (!(await canAccessRoomIdAsync(roomId, this.userId))) {
+				throw new Meteor.Error('error-not-allowed', 'Not allowed');
+			}
+
+			const { urlPreview } = await OEmbed.parseUrl(url);
+			urlPreview.ignoreParse = true;
+
+			return API.v1.success({ urlPreview });
 		},
 	},
 );

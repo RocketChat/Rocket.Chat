@@ -1,11 +1,12 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
 import { useConnectionStatus } from '@rocket.chat/ui-contexts';
-import React, { type MouseEventHandler } from 'react';
+import type { MouseEvent } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useReconnectCountdown } from './useReconnectCountdown';
 
-const ConnectionStatusBar = function ConnectionStatusBar() {
+function ConnectionStatusBar() {
 	const { connected, retryTime, status, reconnect } = useConnectionStatus();
 	const reconnectCountdown = useReconnectCountdown(retryTime, status);
 	const { t } = useTranslation();
@@ -14,7 +15,7 @@ const ConnectionStatusBar = function ConnectionStatusBar() {
 		return null;
 	}
 
-	const handleRetryClick: MouseEventHandler<HTMLAnchorElement> = (event) => {
+	const handleRetryClick = (event: MouseEvent<HTMLAnchorElement>) => {
 		event.preventDefault();
 		reconnect?.();
 	};
@@ -47,6 +48,6 @@ const ConnectionStatusBar = function ConnectionStatusBar() {
 			</Box>
 		</Box>
 	);
-};
+}
 
 export default ConnectionStatusBar;
