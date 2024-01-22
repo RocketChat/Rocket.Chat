@@ -1,9 +1,10 @@
 import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { FC } from 'react';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import GenericNoResults from '../../../../components/GenericNoResults';
 import {
@@ -21,7 +22,7 @@ import ModConsoleUserTableRow from './ModConsoleUserTableRow';
 const ModConsoleUsersTable: FC = () => {
 	const [text, setText] = useState('');
 	const router = useRouter();
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const isDesktopOrLarger = useMediaQuery('(min-width: 1024px)');
 
 	const { sortBy, sortDirection, setSort } = useSort<

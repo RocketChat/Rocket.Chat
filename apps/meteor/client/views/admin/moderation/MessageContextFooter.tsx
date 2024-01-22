@@ -16,7 +16,7 @@ const MessageContextFooter: FC<{ userId: string; deleted: boolean }> = ({ userId
 	const deleteMessagesAction = useDeleteMessagesAction(userId);
 
 	return (
-		<ButtonGroup width='full' stretch>
+		<ButtonGroup stretch>
 			<Button onClick={dismissUserAction.onClick}>{t('Moderation_Dismiss_all_reports')}</Button>
 			<Button onClick={deleteMessagesAction.onClick} secondary danger>
 				{t('Moderation_Delete_all_messages')}

@@ -15,7 +15,7 @@ const UserContextFooter: FC<{ userId: string; deleted: boolean }> = ({ userId, d
 	const deactivateUserAction = useDeactivateUserAction(userId, true);
 
 	return (
-		<ButtonGroup width='full' stretch>
+		<ButtonGroup stretch>
 			<Button onClick={dismissUserAction.onClick}>{t('Moderation_Dismiss_all_reports')}</Button>
 			<Button disabled={deleted} onClick={deactivateUserAction.onClick} secondary danger>
 				{t('Moderation_Deactivate_User')}
