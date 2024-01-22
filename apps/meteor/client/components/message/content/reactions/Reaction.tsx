@@ -68,7 +68,7 @@ const Reaction = ({ hasReacted, counter, name, names, ...props }: ReactionProps)
 							await getNames({
 								usernames: names,
 							})
-					  ).users.map((user) => user.name)
+					  )?.users?.map((user) => user.name) || []
 					: names.map((name) => `@${name}`);
 
 				ref.current &&
