@@ -1,35 +1,39 @@
 import url from 'url';
 
 import jsdom from 'jsdom';
+import mem from 'mem';
 import { WebApp } from 'meteor/webapp';
 
 import { settings } from '../../settings/server';
 import { addServerUrlToIndex } from '../lib/Assets';
 
-let indexHtmlWithServerURL = addServerUrlToIndex((await Assets.getTextAsync('livechat/index.html')) || '');
-const domParser = new jsdom.JSDOM(indexHtmlWithServerURL);
-const doc = domParser.window.document;
-const head = doc.querySelector('head');
-const body = doc.querySelector('body');
+const indexHtmlWithServerURL = addServerUrlToIndex((await Assets.getTextAsync('livechat/index.html')) || '');
 
-const liveChatAdditionalScripts = settings.get<string>('Livechat_AdditionalWidgetScripts');
-if (liveChatAdditionalScripts) {
+function parseExtraAttributes(widgetData: string): string {
+	const domParser = new jsdom.JSDOM(widgetData);
+	const doc = domParser.window.document;
+	const head = doc.querySelector('head');
+	const body = doc.querySelector('body');
+
+	const liveChatAdditionalScripts = settings.get<string>('Livechat_AdditionalWidgetScripts');
 	liveChatAdditionalScripts.split(',').forEach((script) => {
 		const scriptElement = doc.createElement('script');
 		scriptElement.src = script;
 		body?.appendChild(scriptElement);
 	});
-}
 
-const additionalClass = settings.get<string>('Livechat_WidgetLayoutClasses');
-if (additionalClass) {
+	const additionalClass = settings.get<string>('Livechat_WidgetLayoutClasses');
 	additionalClass.split(',').forEach((css) => {
 		const linkElement = doc.createElement('link');
 		linkElement.rel = 'stylesheet';
 		linkElement.href = css;
 		head?.appendChild(linkElement);
 	});
+
+	return doc.documentElement.innerHTML;
 }
+
+const memoizedParseExtraAttributes = mem(parseExtraAttributes, { maxAge: 60000 });
 
 WebApp.connectHandlers.use('/livechat', (req, res, next) => {
 	if (!req.url) {
@@ -56,7 +60,7 @@ WebApp.connectHandlers.use('/livechat', (req, res, next) => {
 		// TODO need to remove inline scripts from this route to be able to enable CSP here as well
 		res.removeHeader('Content-Security-Policy');
 	}
-	indexHtmlWithServerURL = doc.documentElement.innerHTML;
-	res.write(indexHtmlWithServerURL);
+
+	res.write(memoizedParseExtraAttributes(indexHtmlWithServerURL));
 	res.end();
 });
