@@ -18,7 +18,6 @@ import type {
 	ISocketConnection,
 	ISubscription,
 	IUser,
-	IUserStatus,
 	IInvite,
 	IWebdavAccount,
 	ICustomSound,
@@ -34,6 +33,7 @@ import type {
 	IBanner,
 	ILivechatVisitor,
 	LicenseLimitKind,
+	ICustomUserStatus,
 } from '@rocket.chat/core-typings';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
@@ -142,7 +142,7 @@ export type EventSignatures = {
 					replaceByUser: { _id: IUser['_id']; username: IUser['username']; alias: string };
 			  },
 	): void;
-	'user.deleteCustomStatus'(userStatus: IUserStatus): void;
+	'user.deleteCustomStatus'(userStatus: Omit<ICustomUserStatus, '_updatedAt'>): void;
 	'user.nameChanged'(user: Pick<IUser, '_id' | 'name' | 'username'>): void;
 	'user.realNameChanged'(user: Partial<IUser>): void;
 	'user.roleUpdate'(update: {
@@ -151,7 +151,7 @@ export type EventSignatures = {
 		u?: { _id: IUser['_id']; username: IUser['username']; name?: IUser['name'] };
 		scope?: string;
 	}): void;
-	'user.updateCustomStatus'(userStatus: IUserStatus): void;
+	'user.updateCustomStatus'(userStatus: Omit<ICustomUserStatus, '_updatedAt'>): void;
 	'user.typing'(data: { user: Partial<IUser>; isTyping: boolean; roomId: string }): void;
 	'federated-user.typing'(data: { user: Partial<IUser>; isTyping: boolean; roomId: string }): void;
 	'federated-room.listen-typing-events'(roomId: string): void;
