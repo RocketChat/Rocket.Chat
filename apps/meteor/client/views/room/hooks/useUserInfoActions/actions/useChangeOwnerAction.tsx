@@ -32,7 +32,6 @@ const getWarningModalForFederatedRooms = (
 	</GenericModal>
 );
 
-// TODO: Remove endpoint concatenation
 export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): UserInfoAction | undefined => {
 	const t = useTranslation();
 	const room = useUserRoom(rid);
@@ -49,14 +48,13 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 		throw Error('Room not provided');
 	}
 
-	const endpointPrefix = room.t === 'p' ? '/v1/groups' : '/v1/channels';
 	const { roomCanSetOwner } = getRoomDirectives({ room, showingUserId: uid, userSubscription });
 	const roomName = room?.t && escapeHTML(roomCoordinator.getRoomName(room.t, room));
 
+	const endpointPrefix = room.t === 'p' ? '/v1/groups' : '/v1/channels';
 	const changeOwnerEndpoint = isOwner ? 'removeOwner' : 'addOwner';
 	const changeOwnerMessage = isOwner ? 'User__username__removed_from__room_name__owners' : 'User__username__is_now_an_owner_of__room_name_';
-
-	const changeOwner = useEndpointAction('POST', `${endpointPrefix}.${changeOwnerEndpoint}` as const, {
+	const changeOwner = useEndpointAction('POST', `${endpointPrefix}.${changeOwnerEndpoint}`, {
 		successMessage: t(changeOwnerMessage, { username: user.username, room_name: roomName }),
 	});
 

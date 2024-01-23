@@ -2,7 +2,7 @@ import { useSetting } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import { useEffect } from 'react';
 
-import type { LoginMethods } from '../UserProvider';
+import type { LoginMethods } from '../AuthenticationProvider';
 
 export function useLDAPAndCrowdCollisionWarning() {
 	const isLdapEnabled = useSetting<boolean>('LDAP_Enable');
