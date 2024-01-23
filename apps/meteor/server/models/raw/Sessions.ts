@@ -1423,11 +1423,15 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		};
 	}
 
+	private isValidData(data: Omit<ISession, '_id' | 'createdAt' | '_updatedAt'>): boolean {
+		return Boolean(data.year && data.month && data.day && data.sessionId && data.instanceId);
+	}
+
 	async createOrUpdate(data: Omit<ISession, '_id' | 'createdAt' | '_updatedAt'>): Promise<UpdateResult | undefined> {
 		// TODO: check if we should create a session when there is no loginToken or not
 		const { year, month, day, sessionId, instanceId } = data;
 
-		if (!year || !month || !day || !sessionId || !instanceId) {
+		if (!this.isValidData(data)) {
 			return;
 		}
 
@@ -1580,16 +1584,17 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		sessions.forEach((doc) => {
 			const { year, month, day, sessionId, instanceId } = doc;
 			delete doc._id;
-
-			ops.push({
-				updateOne: {
-					filter: { year, month, day, sessionId, instanceId },
-					update: {
-						$set: doc,
+			if (this.isValidData(doc)) {
+				ops.push({
+					updateOne: {
+						filter: { year, month, day, sessionId, instanceId },
+						update: {
+							$set: doc,
+						},
+						upsert: true,
 					},
-					upsert: true,
-				},
-			});
+				});
+			}
 		});
 
 		return this.col.bulkWrite(ops, { ordered: false });

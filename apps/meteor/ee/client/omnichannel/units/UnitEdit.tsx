@@ -302,11 +302,13 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 					</Button>
 				</ButtonGroup>
 				{_id && (
-					<ButtonGroup stretch mbs={8}>
-						<Button icon='trash' danger onClick={() => handleDeleteUnit(_id)}>
-							{t('Delete')}
-						</Button>
-					</ButtonGroup>
+					<Box mbs={8}>
+						<ButtonGroup stretch>
+							<Button icon='trash' danger onClick={() => handleDeleteUnit(_id)}>
+								{t('Delete')}
+							</Button>
+						</ButtonGroup>
+					</Box>
 				)}
 			</ContextualbarFooter>
 		</Contextualbar>

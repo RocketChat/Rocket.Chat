@@ -19,7 +19,7 @@
 		"@changesets/cli": "^2.26.2",
 		"@types/chart.js": "^2.9.39",
 		"@types/js-yaml": "^4.0.8",
-		"turbo": "~1.10.16"
+		"turbo": "~1.11.2"
 	},
 	"workspaces": [
 		"apps/*",
@@ -48,7 +48,6 @@
 		"minTag": "0.55.0-rc.0",
 		"updateFiles": [
 			"package.json",
-			"apps/meteor/package.json",
 			"apps/meteor/app/utils/rocketchat.info"
 		]
 	},

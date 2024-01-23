@@ -22,6 +22,8 @@ declare module 'meteor/meteor' {
 			const instances: {
 				[name: string]: IStreamer;
 			};
+
+			function on(name: string, callback: (...args: any[]) => void): void;
 		}
 
 		interface ErrorStatic {
