@@ -2,8 +2,8 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { addOAuthService } from '../../../../server/lib/oauth/addOAuthService';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { addOAuthService } from '../functions/addOAuthService';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

@@ -54,34 +54,41 @@ Meteor.startup(async () => {
 		Settings.updateValueById('Initial_Channel_Created', true);
 	}
 
-	if (!(await Users.findOneById('rocket.cat'))) {
-		await Users.create({
-			_id: 'rocket.cat',
-			name: 'Rocket.Cat',
-			username: 'rocket.cat',
-			status: 'online',
-			statusDefault: 'online',
-			utcOffset: 0,
-			active: true,
-			type: 'bot',
-		});
+	try {
+		if (!(await Users.findOneById('rocket.cat', { projection: { _id: 1 } }))) {
+			await Users.create({
+				_id: 'rocket.cat',
+				name: 'Rocket.Cat',
+				username: 'rocket.cat',
+				status: 'online',
+				statusDefault: 'online',
+				utcOffset: 0,
+				active: true,
+				type: 'bot',
+			});
 
-		await addUserRolesAsync('rocket.cat', ['bot']);
+			await addUserRolesAsync('rocket.cat', ['bot']);
 
-		const buffer = Buffer.from(await Assets.getBinaryAsync('avatars/rocketcat.png'));
+			const buffer = Buffer.from(await Assets.getBinaryAsync('avatars/rocketcat.png'));
 
-		const rs = RocketChatFile.bufferToStream(buffer, 'utf8');
-		const fileStore = FileUpload.getStore('Avatars');
-		await fileStore.deleteByName('rocket.cat');
+			const rs = RocketChatFile.bufferToStream(buffer, 'utf8');
+			const fileStore = FileUpload.getStore('Avatars');
+			await fileStore.deleteByName('rocket.cat');
 
-		const file = {
-			userId: 'rocket.cat',
-			type: 'image/png',
-			size: buffer.length,
-		};
+			const file = {
+				userId: 'rocket.cat',
+				type: 'image/png',
+				size: buffer.length,
+			};
 
-		const upload = await fileStore.insert(file, rs);
-		await Users.setAvatarData('rocket.cat', 'local', upload.etag);
+			const upload = await fileStore.insert(file, rs);
+			await Users.setAvatarData('rocket.cat', 'local', upload.etag);
+		}
+	} catch (error) {
+		console.log(
+			'Error creating default `rocket.cat` user, if you created a user with this username please remove it and restart the server',
+		);
+		throw error;
 	}
 
 	if (process.env.ADMIN_PASS) {

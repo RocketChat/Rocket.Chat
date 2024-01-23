@@ -1,4 +1,4 @@
-import { Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import type { FC } from 'react';
@@ -17,27 +17,22 @@ const MessageContextFooter: FC<{ userId: string; deleted: boolean }> = ({ userId
 
 	return (
 		<ButtonGroup stretch>
-			<Button onClick={dismissUserAction.onClick} title={t('Moderation_Dismiss_all_reports')} aria-label={t('Moderation_Dismiss_reports')}>
-				{t('Moderation_Dismiss_all_reports')}
-			</Button>
-			<Button
-				onClick={deleteMessagesAction.onClick}
-				title={t('delete-message')}
-				aria-label={t('Moderation_Delete_all_messages')}
-				secondary
-				danger
-			>
+			<Button onClick={dismissUserAction.onClick}>{t('Moderation_Dismiss_all_reports')}</Button>
+			<Button onClick={deleteMessagesAction.onClick} secondary danger>
 				{t('Moderation_Delete_all_messages')}
 			</Button>
 
-			<GenericMenu
-				title={t('More')}
-				items={[
-					{ ...useDeactivateUserAction(userId), ...(deleted && { disabled: true }) },
-					{ ...useResetAvatarAction(userId), ...(deleted && { disabled: true }) },
-				]}
-				placement='top-end'
-			/>
+			<Box flexGrow={0} marginInlineStart={8}>
+				<GenericMenu
+					large
+					title={t('More')}
+					items={[
+						{ ...useDeactivateUserAction(userId), ...(deleted && { disabled: true }) },
+						{ ...useResetAvatarAction(userId), ...(deleted && { disabled: true }) },
+					]}
+					placement='top-end'
+				/>
+			</Box>
 		</ButtonGroup>
 	);
 };
