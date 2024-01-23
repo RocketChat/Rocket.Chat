@@ -16,7 +16,6 @@ import { useCreateFontStyleElement } from '../../views/account/accessibility/hoo
 import { useDeleteUser } from './hooks/useDeleteUser';
 import { useEmailVerificationWarning } from './hooks/useEmailVerificationWarning';
 import { useUpdateAvatar } from './hooks/useUpdateAvatar';
-import { useUpdateCustomUserStatus } from './hooks/useUpdateCustomUserStatus';
 
 const getUserId = (): string | null => Meteor.userId();
 
@@ -53,7 +52,6 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 
 	useEmailVerificationWarning(user ?? undefined);
 
-	useUpdateCustomUserStatus();
 	useDeleteUser();
 	useUpdateAvatar();
 

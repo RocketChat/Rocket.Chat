@@ -63,11 +63,11 @@ const RoomHeader = ({ room, topic = '', slots = {} }: RoomHeaderProps) => {
 			</HeaderContent>
 			{slots?.posContent}
 			<Suspense fallback={null}>
-				<HeaderToolbox aria-label={t('Toolbox_room_actions')}>
+				<HeaderToolbar aria-label={t('Toolbox_room_actions')}>
 					{slots?.toolbox?.pre}
 					{slots?.toolbox?.content || <RoomToolbox />}
 					{slots?.toolbox?.pos}
-				</HeaderToolbox>
+				</HeaderToolbar>
 			</Suspense>
 			{slots?.end}
 		</Header>
