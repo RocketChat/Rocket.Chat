@@ -44,7 +44,9 @@ export class DDPStreamer extends ServiceClass {
 				return;
 			}
 
-			events.emit('meteor.loginServiceConfiguration', clientAction === 'inserted' ? 'added' : 'changed', data);
+			if (data) {
+				events.emit('meteor.loginServiceConfiguration', clientAction === 'inserted' ? 'added' : 'changed', data);
+			}
 		});
 
 		this.onEvent('meteor.clientVersionUpdated', (versions): void => {
