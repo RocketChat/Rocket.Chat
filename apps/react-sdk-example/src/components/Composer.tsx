@@ -10,7 +10,7 @@ export default function Composer({ onSend }: { onSend: (msg: string) => Promise<
 		}
 	};
 	return (
-		<Box w='full' p={16}>
+		<Box w='full' p={16} h={150}>
 			<TextInput w='full' placeholder='Type a message' onKeyDown={send} />
 		</Box>
 	);
