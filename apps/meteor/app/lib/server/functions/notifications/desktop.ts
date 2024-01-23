@@ -27,7 +27,7 @@ export async function notifyDesktopUser({
 	user: IUser;
 	message: IMessage;
 	room: IRoom;
-	duration: number;
+	duration?: number;
 	notificationMessage: string;
 }): Promise<void> {
 	const { title, text, name } = await roomCoordinator

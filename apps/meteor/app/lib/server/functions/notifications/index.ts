@@ -11,7 +11,7 @@ import { settings } from '../../../../settings/server';
  *
  * @param {object} message the message to be parsed
  */
-export async function parseMessageTextPerUser(messageText: string, message: IMessage, receiver: IUser): Promise<string> {
+export async function parseMessageTextPerUser(messageText: string, message: IMessage, receiver: Pick<IUser, 'language'>): Promise<string> {
 	const lng = receiver.language || settings.get('Language') || 'en';
 
 	const firstAttachment = message.attachments?.[0];
@@ -36,9 +36,6 @@ export async function parseMessageTextPerUser(messageText: string, message: IMes
  * @returns {string}
  */
 export function replaceMentionedUsernamesWithFullNames(message: string, mentions: NonNullable<IMessage['mentions']>): string {
-	if (!mentions?.length) {
-		return message;
-	}
 	mentions.forEach((mention) => {
 		if (mention.name) {
 			message = message.replace(new RegExp(escapeRegExp(`@${mention.username}`), 'g'), mention.name);
@@ -55,7 +52,7 @@ export function replaceMentionedUsernamesWithFullNames(message: string, mentions
  *
  * @returns {boolean}
  */
-export function messageContainsHighlight(message: IMessage, highlights: string[]): boolean {
+export function messageContainsHighlight(message: IMessage, highlights: string[] | undefined): boolean {
 	if (!highlights || highlights.length === 0) {
 		return false;
 	}
