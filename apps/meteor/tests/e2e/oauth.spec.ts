@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Registration } from './page-objects';
 import { setSettingValueById } from './utils/setSettingValueById';
 import { test, expect } from './utils/test';

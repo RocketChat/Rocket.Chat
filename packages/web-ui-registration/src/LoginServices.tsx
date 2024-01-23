@@ -1,6 +1,5 @@
 import { ButtonGroup, Divider } from '@rocket.chat/fuselage';
-import { AuthenticationContext, useSetting } from '@rocket.chat/ui-contexts';
-import { useContext } from 'react';
+import { useLoginServices, useSetting } from '@rocket.chat/ui-contexts';
 import type { Dispatch, ReactElement, SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -15,8 +14,7 @@ const LoginServices = ({
 	setError: Dispatch<SetStateAction<LoginErrors | undefined>>;
 }): ReactElement | null => {
 	const { t } = useTranslation();
-	const { getLoginServices } = useContext(AuthenticationContext);
-	const services = getLoginServices();
+	const services = useLoginServices();
 	const showFormLogin = useSetting('Accounts_ShowFormLogin');
 
 	if (services.length === 0) {

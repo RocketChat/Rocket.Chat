@@ -1,10 +1,9 @@
 import { api, ServiceClassInternal, listenToMessageSentEvent } from '@rocket.chat/core-services';
 import type { AutoUpdateRecord, IMeteor } from '@rocket.chat/core-services';
-import type { ILivechatAgent, UserStatus } from '@rocket.chat/core-typings';
-import { Users } from '@rocket.chat/models';
+import type { ILivechatAgent, LoginServiceConfiguration, UserStatus } from '@rocket.chat/core-typings';
+import { LoginServiceConfiguration as LoginServiceConfigurationModel, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
-import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { triggerHandler } from '../../../app/integrations/server/lib/triggerHandler';
 import { Livechat } from '../../../app/livechat/server/lib/LivechatTyped';
@@ -258,8 +257,8 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		return Object.fromEntries(clientVersionsStore);
 	}
 
-	async getLoginServiceConfiguration(): Promise<any[]> {
-		return ServiceConfiguration.configurations.find({}, { fields: { secret: 0 } }).fetchAsync();
+	async getLoginServiceConfiguration(): Promise<LoginServiceConfiguration[]> {
+		return LoginServiceConfigurationModel.find({}, { projection: { secret: 0 } }).toArray();
 	}
 
 	async callMethodWithToken(userId: string, token: string, method: string, args: any[]): Promise<void | any> {

@@ -345,6 +345,7 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 		}
 
 		const data = await LoginServiceConfiguration.findOne<Omit<ILoginServiceConfiguration, 'secret'>>(id, { projection: { secret: 0 } });
+
 		if (!data) {
 			return;
 		}

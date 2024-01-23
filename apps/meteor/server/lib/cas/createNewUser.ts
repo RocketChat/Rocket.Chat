@@ -15,7 +15,7 @@ type CASUserOptions = {
 export const createNewUser = async (username: string, { attributes, casVersion, flagEmailAsVerified }: CASUserOptions): Promise<IUser> => {
 	// Define new user
 	const newUser = {
-		username: attributes.username ? attributes.username : username,
+		username: attributes.username || username,
 		active: true,
 		globalRoles: ['user'],
 		emails: [attributes.email]

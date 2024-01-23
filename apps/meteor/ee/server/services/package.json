@@ -1,7 +1,7 @@
 {
 	"name": "rocketchat-services",
 	"private": true,
-	"version": "1.1.20",
+	"version": "1.1.21",
 	"description": "Rocket.Chat Authorization service",
 	"main": "index.js",
 	"scripts": {
@@ -50,7 +50,7 @@
 		"ws": "^8.8.1"
 	},
 	"devDependencies": {
-		"@rocket.chat/icons": "~0.32.0",
+		"@rocket.chat/icons": "^0.33.0",
 		"@types/cookie": "^0.5.3",
 		"@types/cookie-parser": "^1.4.5",
 		"@types/ejson": "^2.2.1",

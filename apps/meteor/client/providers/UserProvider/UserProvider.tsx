@@ -13,7 +13,9 @@ import { afterLogoutCleanUpCallback } from '../../../lib/callbacks/afterLogoutCl
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { createReactiveSubscriptionFactory } from '../../lib/createReactiveSubscriptionFactory';
 import { useCreateFontStyleElement } from '../../views/account/accessibility/hooks/useCreateFontStyleElement';
+import { useDeleteUser } from './hooks/useDeleteUser';
 import { useEmailVerificationWarning } from './hooks/useEmailVerificationWarning';
+import { useUpdateAvatar } from './hooks/useUpdateAvatar';
 
 const getUserId = (): string | null => Meteor.userId();
 
@@ -49,6 +51,9 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 	createFontStyleElement(user?.settings?.preferences?.fontSize);
 
 	useEmailVerificationWarning(user ?? undefined);
+
+	useDeleteUser();
+	useUpdateAvatar();
 
 	const contextValue = useMemo(
 		(): ContextType<typeof UserContext> => ({
