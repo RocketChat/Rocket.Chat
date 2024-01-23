@@ -38,17 +38,18 @@ const useFilteredUsers = ({
 			}
 
 			return {
+				status: tab,
 				searchTerm,
 				roles: selectedRoles,
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
 				count: itemsPerPage,
 				offset: searchTerm === prevSearchTerm.current ? current : 0,
 			};
-		}, [current, itemsPerPage, prevSearchTerm, searchTerm, selectedRoles, setCurrent, sortBy, sortDirection]),
+		}, [current, itemsPerPage, prevSearchTerm, searchTerm, selectedRoles, setCurrent, sortBy, sortDirection, tab]),
 		500,
 	);
 
-	const getUsers = useEndpoint('GET', '/v1/users.list/:status', { status: tab });
+	const getUsers = useEndpoint('GET', '/v1/users.listByStatus');
 
 	const dispatchToastMessage = useToastMessageDispatch();
 

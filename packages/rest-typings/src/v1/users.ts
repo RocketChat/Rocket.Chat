@@ -150,7 +150,7 @@ export type UsersEndpoints = {
 		}>;
 	};
 
-	'/v1/users.list/:status': {
+	'/v1/users.listByStatus': {
 		GET: (params: UsersListStatusParamsGET) => PaginatedResult<{
 			users: PickedUser[];
 		}>;

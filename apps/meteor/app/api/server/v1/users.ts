@@ -560,7 +560,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'users.list/:status',
+	'users.listByStatus',
 	{
 		authRequired: true,
 		validateParams: isUsersListStatusProps,
@@ -569,9 +569,8 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { status } = this.urlParams;
 			const { sort, fields } = await this.parseJsonQuery();
-			const { roles, searchTerm } = this.queryParams;
+			const { status, roles, searchTerm } = this.queryParams;
 
 			const projection = {
 				name: 1,

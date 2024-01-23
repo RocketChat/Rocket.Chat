@@ -4230,7 +4230,7 @@ describe('[Users]', function () {
 		});
 	});
 
-	describe('[/users.list/:status]', () => {
+	describe('[/users.listByStatus]', () => {
 		let user;
 		let otherUser;
 		let otherUserCredentials;
@@ -4250,9 +4250,9 @@ describe('[Users]', function () {
 
 		it('should list pending users', async () => {
 			await request
-				.get(api('users.list/pending'))
+				.get(api('users.listByStatus'))
 				.set(credentials)
-				.query({ count: 50 })
+				.query({ status: 'pending', count: 50 })
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
@@ -4270,7 +4270,7 @@ describe('[Users]', function () {
 			await login(user.username, password);
 
 			await request
-				.get(api('users.list/all'))
+				.get(api('users.listByStatus'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -4289,8 +4289,9 @@ describe('[Users]', function () {
 			await login(user.username, password);
 
 			await request
-				.get(api('users.list/active'))
+				.get(api('users.listByStatus'))
 				.set(credentials)
+				.query({ status: 'active' })
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
@@ -4308,9 +4309,9 @@ describe('[Users]', function () {
 			await login(user.username, password);
 
 			await request
-				.get(api('users.list/active'))
+				.get(api('users.listByStatus'))
 				.set(credentials)
-				.query({ 'roles[]': 'admin' })
+				.query({ 'status': 'active', 'roles[]': 'admin' })
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
@@ -4332,8 +4333,9 @@ describe('[Users]', function () {
 			});
 
 			await request
-				.get(api('users.list/deactivated'))
+				.get(api('users.listByStatus'))
 				.set(credentials)
+				.query({ status: 'deactivated' })
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
@@ -4349,9 +4351,9 @@ describe('[Users]', function () {
 
 		it('should filter users by username', async () => {
 			await request
-				.get(api('users.list/all'))
+				.get(api('users.listByStatus'))
 				.set(credentials)
-				.query({ searchTerm: user.username })
+				.query({ status: 'all', searchTerm: user.username })
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
@@ -4367,8 +4369,9 @@ describe('[Users]', function () {
 
 		it('should return error for invalid status params', async () => {
 			await request
-				.get(api('users.list/abcd'))
+				.get(api('users.listByStatus'))
 				.set(credentials)
+				.query({ status: 'abcd' })
 				.expect('Content-Type', 'application/json')
 				.expect(400)
 				.expect((res) => {
@@ -4381,8 +4384,9 @@ describe('[Users]', function () {
 		it('should throw unauthorized error to user without "view-d-room" permission', async () => {
 			await updatePermission('view-d-room', ['admin']);
 			await request
-				.get(api('users.list/active'))
+				.get(api('users.listByStatus'))
 				.set(otherUserCredentials)
+				.query({ status: 'active' })
 				.expect('Content-Type', 'application/json')
 				.expect(403)
 				.expect((res) => {
@@ -4394,8 +4398,9 @@ describe('[Users]', function () {
 		it('should throw unauthorized error to user without "view-outside-room" permission', async () => {
 			await updatePermission('view-outside-room', ['admin']);
 			await request
-				.get(api('users.list/active'))
+				.get(api('users.listByStatus'))
 				.set(otherUserCredentials)
+				.query({ status: 'active' })
 				.expect('Content-Type', 'application/json')
 				.expect(403)
 				.expect((res) => {

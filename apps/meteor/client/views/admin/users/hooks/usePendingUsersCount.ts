@@ -7,12 +7,12 @@ type usePendingUsersCountProps = {
 };
 
 const usePendingUsersCount = ({ setPendingUsersCount, currentUsersTotal }: usePendingUsersCountProps) => {
-	const getUsers = useEndpoint('GET', '/v1/users.list/:status', { status: 'pending' });
+	const getUsers = useEndpoint('GET', '/v1/users.listByStatus');
 
 	useQuery(
 		['pendingUsersCount', currentUsersTotal],
 		async () => {
-			const payload = { count: 1, roles: [], searchTerm: '' };
+			const payload = { status: 'pending', count: 1, roles: [], searchTerm: '' };
 			return getUsers(payload);
 		},
 		{
