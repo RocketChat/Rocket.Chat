@@ -9591,6 +9591,7 @@ __metadata:
     "@nivo/pie": 0.84.0
     "@playwright/test": ^1.40.1
     "@react-aria/color": ^3.0.0-beta.15
+    "@react-aria/toolbar": ^3.0.0-beta.1
     "@react-pdf/renderer": ^3.1.14
     "@rocket.chat/account-utils": "workspace:^"
     "@rocket.chat/agenda": "workspace:^"
@@ -10448,6 +10449,7 @@ __metadata:
   resolution: "@rocket.chat/ui-client@workspace:packages/ui-client"
   dependencies:
     "@babel/core": ~7.22.20
+    "@react-aria/toolbar": ^3.0.0-beta.1
     "@rocket.chat/css-in-js": ~0.31.25
     "@rocket.chat/fuselage": ^0.44.2
     "@rocket.chat/fuselage-hooks": ^0.33.0
@@ -10485,6 +10487,7 @@ __metadata:
     ts-jest: ~29.1.1
     typescript: ~5.3.2
   peerDependencies:
+    "@react-aria/toolbar": "*"
     "@rocket.chat/css-in-js": "*"
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-hooks": "*"
@@ -10521,6 +10524,7 @@ __metadata:
     ts-jest: ~29.1.1
     typescript: ~5.3.2
   peerDependencies:
+    "@react-aria/toolbar": "*"
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/icons": "*"
     react: ^17.0.2
