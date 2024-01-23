@@ -4272,6 +4272,7 @@ describe('[Users]', function () {
 			await request
 				.get(api('users.listByStatus'))
 				.set(credentials)
+				.query({ status: 'all' })
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
