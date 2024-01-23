@@ -33,4 +33,7 @@ export default i18next
 			bindI18n: 'loaded languageChanged',
 			bindI18nStore: 'added',
 		},
+		interpolation: {
+			escapeValue: false,
+		},
 	});

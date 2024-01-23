@@ -2,7 +2,7 @@ import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { IServiceClass } from '@rocket.chat/core-services';
 import { EnterpriseSettings, listenToMessageSentEvent } from '@rocket.chat/core-services';
-import { UserStatus, isSettingColor, isSettingEnterprise } from '@rocket.chat/core-typings';
+import { isSettingColor, isSettingEnterprise } from '@rocket.chat/core-typings';
 import type { IUser, IRoom, VideoConference, ISetting, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { parse } from '@rocket.chat/message-parser';
@@ -11,13 +11,6 @@ import { settings } from '../../../app/settings/server/cached';
 import type { NotificationsModule } from '../notifications/notifications.module';
 
 const isMessageParserDisabled = process.env.DISABLE_MESSAGE_PARSER === 'true';
-
-const STATUS_MAP = {
-	[UserStatus.OFFLINE]: 0,
-	[UserStatus.ONLINE]: 1,
-	[UserStatus.AWAY]: 2,
-	[UserStatus.BUSY]: 3,
-} as const;
 
 const minimongoChangeMap: Record<string, string> = {
 	inserted: 'added',
@@ -152,12 +145,10 @@ export class ListenersModule {
 				return;
 			}
 
-			const statusChanged = (STATUS_MAP as any)[status] as 0 | 1 | 2 | 3;
-
-			notifications.notifyLoggedInThisInstance('user-status', [_id, username, statusChanged, statusText, name, roles]);
+			notifications.notifyLoggedInThisInstance('user-status', [_id, username, status, statusText, name, roles]);
 
 			if (_id) {
-				notifications.sendPresence(_id, username, statusChanged, statusText);
+				notifications.sendPresence(_id, username, status, statusText);
 			}
 		});
 
@@ -180,6 +171,10 @@ export class ListenersModule {
 			);
 
 			notifications.streamRoomMessage.emitWithoutBroadcast(message.rid, message);
+		});
+
+		service.onEvent('notify.messagesRead', ({ rid, until, tmid }): void => {
+			notifications.notifyRoomInThisInstance(rid, 'messagesRead', { tmid, until });
 		});
 
 		service.onEvent('watch.subscriptions', ({ clientAction, subscription }) => {
@@ -414,6 +409,13 @@ export class ListenersModule {
 
 		service.onEvent('notify.calendar', (uid, data): void => {
 			notifications.notifyUserInThisInstance(uid, 'calendar', data);
+		});
+
+		service.onEvent('notify.importedMessages', ({ roomIds }): void => {
+			roomIds.forEach((rid) => {
+				// couldnt get TS happy by providing no data, so had to provide null
+				notifications.notifyRoomInThisInstance(rid, 'messagesImported', null);
+			});
 		});
 
 		service.onEvent('connector.statuschanged', (enabled): void => {

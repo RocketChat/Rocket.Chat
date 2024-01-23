@@ -146,7 +146,7 @@ export class SAUMonitorClass {
 
 		const searchTerm = this._getSearchTerm(data);
 
-		await Sessions.insertOne({ ...data, searchTerm, createdAt: new Date() });
+		await Sessions.createOrUpdate({ ...data, searchTerm });
 	}
 
 	private async _finishSessionsFromDate(yesterday: Date, today: Date): Promise<void> {

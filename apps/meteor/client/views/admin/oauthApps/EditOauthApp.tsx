@@ -153,7 +153,7 @@ const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps): ReactEle
 				</Field>
 				<Field>
 					<FieldRow>
-						<ButtonGroup stretch w='full'>
+						<ButtonGroup stretch>
 							<Button onClick={close}>{t('Cancel')}</Button>
 							<Button primary onClick={handleSubmit(onSubmit)}>
 								{t('Save')}
@@ -163,7 +163,7 @@ const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps): ReactEle
 				</Field>
 				<Field>
 					<FieldRow>
-						<ButtonGroup stretch w='full'>
+						<ButtonGroup stretch>
 							<Button icon='trash' danger onClick={openConfirmDelete}>
 								{t('Delete')}
 							</Button>

@@ -47,6 +47,18 @@ export class HomeOmnichannelContent extends HomeContent {
 		return this.page.locator('[data-qa-id="ToolBoxAction-balloon-close-top-right"]');
 	}
 
+	get btnGuestInfo(): Locator {
+		return this.page.locator('[data-qa-id="ToolBoxAction-user"]');
+	}
+
+	get infoContactEmail(): Locator {
+		return this.page.locator('[data-qa-id="contactInfo-email"]');
+	}
+
+	get infoContactName(): Locator {
+		return this.page.locator('[data-qa-id="contactInfo-name"]');
+	}
+	
 	get btnReturn(): Locator {
 		return this.page.locator('[data-qa-id="ToolBoxAction-back"]');
 	}
@@ -65,5 +77,9 @@ export class HomeOmnichannelContent extends HomeContent {
 
 	get btnOnHoldConfirm(): Locator {
 		return this.modalOnHold.locator('role=button[name="Place chat On-Hold"]');
+	}
+
+	get infoHeaderName(): Locator {
+		return this.page.locator('.rcx-room-header').getByRole('heading');
 	}
 }

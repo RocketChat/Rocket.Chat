@@ -59,14 +59,16 @@ const AuditForm = ({ type, onSubmit }: AuditFormProps) => {
 				{type === 'u' && <UsersTab form={form} />}
 				{type === 'd' && <DirectTab form={form} />}
 				{type === 'l' && <OmnichannelTab form={form} />}
-				<ButtonGroup align='end' flexShrink={0} marginBlockStart={28} marginInlineStart={8}>
-					<Button secondary onClick={() => window.print()}>
-						{t('Export')} {t('PDF')}
-					</Button>
-					<Button primary type='submit'>
-						{t('Apply')}
-					</Button>
-				</ButtonGroup>
+				<Box flexShrink={0} mbs={28} mis={8}>
+					<ButtonGroup align='end'>
+						<Button secondary onClick={() => window.print()}>
+							{t('Export')} {t('PDF')}
+						</Button>
+						<Button primary type='submit'>
+							{t('Apply')}
+						</Button>
+					</ButtonGroup>
+				</Box>
 			</Box>
 		</form>
 	);

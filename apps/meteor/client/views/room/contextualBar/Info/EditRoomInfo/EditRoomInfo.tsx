@@ -106,7 +106,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 			await saveAction({
 				rid: room._id,
 				...data,
-				...(data.joinCode && { joinCode: joinCodeRequired ? data.joinCode : '' }),
+				...((data.joinCode || 'joinCodeRequired' in data) && { joinCode: joinCodeRequired ? data.joinCode : '' }),
 				...((data.systemMessages || !hideSysMes) && {
 					systemMessages: hideSysMes && data.systemMessages,
 				}),
@@ -445,11 +445,13 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
-				<ButtonGroup stretch mbs={8}>
-					<Button icon='trash' danger disabled={!canDeleteRoom || isFederated || isSubmitting} onClick={handleDelete}>
-						{t('Delete')}
-					</Button>
-				</ButtonGroup>
+				<Box mbs={8}>
+					<ButtonGroup stretch>
+						<Button icon='trash' danger disabled={!canDeleteRoom || isFederated || isSubmitting} onClick={handleDelete}>
+							{t('Delete')}
+						</Button>
+					</ButtonGroup>
+				</Box>
 			</ContextualbarFooter>
 		</>
 	);
