@@ -1,5 +1,5 @@
 import { api } from '@rocket.chat/core-services';
-import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser, AtLeast } from '@rocket.chat/core-typings';
 
 import { roomCoordinator } from '../../../../../server/lib/rooms/roomCoordinator';
 import { metrics } from '../../../../metrics/server';
@@ -24,8 +24,8 @@ export async function notifyDesktopUser({
 	notificationMessage,
 }: {
 	userId: string;
-	user: IUser;
-	message: IMessage;
+	user: AtLeast<IUser, '_id' | 'name' | 'username'>;
+	message: IMessage | Pick<IMessage, 'u'>;
 	room: IRoom;
 	duration?: number;
 	notificationMessage: string;
@@ -39,14 +39,22 @@ export async function notifyDesktopUser({
 		text,
 		duration,
 		payload: {
-			_id: message._id,
-			rid: message.rid,
-			tmid: message.tmid,
+			_id: '',
+			rid: '',
+			tmid: '',
+			...('_id' in message && {
+				// TODO: omnichannel is not sending _id, rid, tmid
+				_id: message._id,
+				rid: message.rid,
+				tmid: message.tmid,
+			}),
 			sender: message.u,
 			type: room.t,
 			message: {
-				msg: message.msg,
-				t: message.t,
+				msg: 'msg' in message ? message.msg : '',
+				...('t' in message && {
+					t: message.t,
+				}),
 			},
 			name,
 		},

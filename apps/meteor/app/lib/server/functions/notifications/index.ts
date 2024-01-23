@@ -11,7 +11,11 @@ import { settings } from '../../../../settings/server';
  *
  * @param {object} message the message to be parsed
  */
-export async function parseMessageTextPerUser(messageText: string, message: IMessage, receiver: Pick<IUser, 'language'>): Promise<string> {
+export async function parseMessageTextPerUser(
+	messageText: string,
+	message: Pick<IMessage, 'u' | 'msg' | 't' | 'attachments'>,
+	receiver: Pick<IUser, 'language'>,
+): Promise<string> {
 	const lng = receiver.language || settings.get('Language') || 'en';
 
 	const firstAttachment = message.attachments?.[0];
@@ -52,7 +56,7 @@ export function replaceMentionedUsernamesWithFullNames(message: string, mentions
  *
  * @returns {boolean}
  */
-export function messageContainsHighlight(message: IMessage, highlights: string[] | undefined): boolean {
+export function messageContainsHighlight(message: Pick<IMessage, 'msg'>, highlights: string[] | undefined): boolean {
 	if (!highlights || highlights.length === 0) {
 		return false;
 	}

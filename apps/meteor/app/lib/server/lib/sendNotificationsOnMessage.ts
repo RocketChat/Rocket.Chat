@@ -5,6 +5,7 @@ import {
 	type IRoom,
 	type NotificationItem,
 	isEditedMessage,
+	type AtLeast,
 } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import emojione from 'emojione';
@@ -46,12 +47,12 @@ export const sendNotification = async ({
 	disableAllMessageNotifications,
 }: {
 	subscription: SubscriptionAggregation;
-	sender: IUser;
+	sender: Pick<IUser, '_id' | 'name' | 'username'>;
 
 	hasReplyToThread: boolean;
 	hasMentionToAll: boolean;
 	hasMentionToHere: boolean;
-	message: IMessage;
+	message: AtLeast<IMessage, '_id' | 'u' | 'msg' | 't' | 'attachments'>;
 	notificationMessage: string;
 	room: IRoom;
 	mentionIds: string[];
