@@ -10,6 +10,7 @@ or:
 > Tip: The whole project is typed using typescript. For that reason, references to interfaces and objects will be kept to a minimum.
 
 ## Setting up the SDK
+ >This works out of the box for browsers. if you want to use it on NodeJS, you need to offer a `WebSocket`  implementation and a `fetch` implementation.
 
  First things first, let's import the SDK:
  `import  { DDPSDK }  from  '@rocket.chat/ddp-client';`
@@ -24,6 +25,27 @@ or:
 
 > If you're feeling fancy, you can create and connect in a single function call:
 > `const  sdk  =  DDPSDK.createAndConnect('http://localhost:3000');`
+
+## SDK Modules
+### Connection
+
+Responsible for the connection to the server, status and connection states.
+
+### Account
+
+Responsible for the account management, login, logout, handle credentials, get user information, etc.
+
+### ClientStream
+
+Responsible for the DDP communication, method calls, subscriptions, etc.
+
+### TimeoutControl
+
+Responsible for the Reconnection control
+
+### RestClient
+
+Responsible for the REST API communication for more info [see here](https://developer.rocket.chat/reference/api/rest-api)
 
 ## Login handling
 
@@ -66,4 +88,3 @@ stream.stop();
 ```
 
 > TIP: always unsubscribe from publications when you're done with them. This saves bandwidth and server resources
-
