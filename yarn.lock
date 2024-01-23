@@ -22446,7 +22446,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^8.55.0":
+"eslint@npm:^8.56.0":
   version: 8.56.0
   resolution: "eslint@npm:8.56.0"
   dependencies:
@@ -35506,7 +35506,7 @@ __metadata:
     "@typescript-eslint/parser": ^6.14.0
     "@vitejs/plugin-react": ^4.0.0
     "@vitejs/plugin-react-swc": ^3.5.0
-    eslint: ^8.55.0
+    eslint: ^8.56.0
     eslint-plugin-react-hooks: ^4.6.0
     eslint-plugin-react-refresh: ^0.4.5
     path-to-regexp: ^6.2.1
