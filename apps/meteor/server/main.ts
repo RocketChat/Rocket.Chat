@@ -9,7 +9,7 @@ import '../app/lib/server/startup';
 
 import { startLicense } from '../ee/app/license/server/startup';
 import { registerEEBroker } from '../ee/server';
-import { configurationsInit } from './configuration';
+import { configureLoginServices } from './configuration';
 import { configureLogLevel } from './configureLogLevel';
 import { registerServices } from './services/startup';
 import { startup } from './startup';
@@ -30,7 +30,7 @@ await import('./features/EmailInbox/index');
 await configureLogLevel();
 await registerServices();
 await import('../app/settings/server');
-await configurationsInit();
+await configureLoginServices();
 await registerEEBroker();
 await startup();
 await startLicense();
