@@ -1,44 +1,64 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, ButtonGroup, Icon } from '@rocket.chat/fuselage';
-import { useContext } from 'react';
+import { Box, Button } from '@rocket.chat/fuselage';
 import type { FC } from 'react';
+import { useContext } from 'react';
 
-import { context } from '../../../Context';
+import {
+  context,
+  previewTabsToggleAction,
+  templatesToggleAction,
+} from '../../../Context';
 import SurfaceSelect from '../../SurfaceSelect';
-import PanelBtn from './PanelBtn';
-import TabChange from './TabChange';
+import ToggleTabs from '../../ToggleTabs';
 
 const NavPanel: FC = () => {
-	const {
-		state: { isMobile, isTablet },
-	} = useContext(context);
+  const {
+    state: { isMobile, isTablet, previewTabsToggle },
+    dispatch,
+  } = useContext(context);
 
-	const tabsItem: string[] = ['Preview', 'Editor'];
-	return (
-		<Box
-			borderBlockEnd='var(--default-border)'
-			display={'flex'}
-			alignItems={'center'}
-			zIndex={1}
-			justifyContent={isMobile ? 'flex-end' : 'space-between'}
-			bg='light'
-			className={css`
-				user-select: none;
-			`}
-			p={16}
-		>
-			<Box flexGrow={0}>
-				<SurfaceSelect />
-			</Box>
-			<Box display='flex' height='100%' alignContent='center' pis={20}>
-				<ButtonGroup>
-					<PanelBtn icon={<Icon name='file' width={16} />} name={'Clear Blocks'} isSmall={isTablet} />
-					<PanelBtn icon={<Icon name='copy' width={16} />} name={'Copy Payload'} isSmall={isTablet} />
-				</ButtonGroup>
-			</Box>
-			{isTablet && <TabChange tabsItem={tabsItem} />}
-		</Box>
-	);
+  const toggleTabsHandler = (index: number) => {
+    dispatch(previewTabsToggleAction(index));
+  };
+
+  const tabsItem: string[] = ['Preview', 'Editor'];
+  return (
+    <Box
+      width={'100%'}
+      height={'40px'}
+      borderBlockEnd={'var(--default-border)'}
+      display={'flex'}
+      alignItems={'center'}
+      zIndex={1}
+      justifyContent={isMobile ? 'flex-end' : 'space-between'}
+      bg={'alternative'}
+      className={css`
+        user-select: none;
+      `}
+    >
+      {!isMobile && (
+        <Box display="flex" alignItems="center" flexGrow={0} pis={4}>
+          <SurfaceSelect />
+          <Button
+            mis="10px"
+            small
+            warning
+            height={'max-content'}
+            onClick={() => dispatch(templatesToggleAction(true))}
+          >
+            Templates
+          </Button>
+        </Box>
+      )}
+      {isTablet && (
+        <ToggleTabs
+          tabsItem={tabsItem}
+          onChange={toggleTabsHandler}
+          selectedTab={previewTabsToggle}
+        />
+      )}
+    </Box>
+  );
 };
 
 export default NavPanel;
