@@ -8,7 +8,6 @@ import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 import { useUserHasRoomRole } from '../../useUserHasRoomRole';
 import type { UserInfoAction, UserInfoActionType } from '../useUserInfoActions';
 
-// TODO: Remove endpoint concatenation
 export const useChangeLeaderAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): UserInfoAction | undefined => {
 	const t = useTranslation();
 	const room = useUserRoom(rid);
@@ -20,10 +19,10 @@ export const useChangeLeaderAction = (user: Pick<IUser, '_id' | 'username'>, rid
 		throw Error('Room not provided');
 	}
 
-	const endpointPrefix = room.t === 'p' ? '/v1/groups' : '/v1/channels';
 	const { roomCanSetLeader } = getRoomDirectives({ room, showingUserId: uid, userSubscription });
 	const isLeader = useUserHasRoomRole(uid, rid, 'leader');
 
+	const endpointPrefix = room.t === 'p' ? '/v1/groups' : '/v1/channels';
 	const changeLeaderEndpoint = isLeader ? 'removeLeader' : 'addLeader';
 	const changeLeaderMessage = isLeader ? 'removed__username__as__role_' : 'set__username__as__role_';
 	const changeLeader = useEndpointAction('POST', `${endpointPrefix}.${changeLeaderEndpoint}`, {
