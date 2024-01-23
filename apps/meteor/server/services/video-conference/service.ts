@@ -618,7 +618,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await Push.send({
 			from: 'push',
 			badge: 0,
-			sound: 'default',
+			sound: 'ringtone.mp3',
 			priority: 10,
 			title: `@${call.createdBy.username}`,
 			text: i18n.t('Video_Conference'),

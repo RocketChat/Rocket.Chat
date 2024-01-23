@@ -123,7 +123,11 @@ const AppsProvider: FC = ({ children }) => {
 				};
 
 				if (installedApp) {
-					installedApps.push(record);
+					if (installedApp.private) {
+						privateApps.push(record);
+					} else {
+						installedApps.push(record);
+					}
 				}
 
 				marketplaceApps.push(record);

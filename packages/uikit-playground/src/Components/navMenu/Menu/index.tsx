@@ -1,12 +1,25 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
-import type { FC } from 'react';
+import { useContext, type FC } from 'react';
 
 import SurfaceSelect from '../../SurfaceSelect';
 import MenuItem from './MenuItem';
 import Wrapper from './Wrapper';
+import {
+  context,
+  templatesToggleAction,
+  updatePayloadAction,
+} from '../../../Context';
+import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
 
 const Menu: FC<{ isOpen: boolean }> = ({ isOpen }) => {
+  const {
+    state: { screens, activeScreen },
+    dispatch,
+  } = useContext(context);
+
+  const toast = useToastBarDispatch();
+
   const basicStyle = css`
     right: max(-85%, -280px);
     transition: 0.3s ease;
@@ -23,11 +36,10 @@ const Menu: FC<{ isOpen: boolean }> = ({ isOpen }) => {
 
   return (
     <Box
-      position='absolute'
-      width='min(85%, 280px)'
-      height='100%'
-      bg='default'
-      elevation='2'
+      position="absolute"
+      width="min(85%, 280px)"
+      height="100%"
+      bg="default"
       className={[basicStyle, toggleStyle]}
       onClick={(e) => {
         e.stopPropagation();
@@ -37,8 +49,37 @@ const Menu: FC<{ isOpen: boolean }> = ({ isOpen }) => {
         <Box alignSelf={'flex-start'}>
           <SurfaceSelect />
         </Box>
-        <MenuItem name={'Clear Blocks'} />
-        <MenuItem name={'Copy Payload'} />
+        <MenuItem
+          name={'Templates'}
+          onClick={() => dispatch(templatesToggleAction(true))}
+        />
+        <MenuItem
+          name={'Clear Blocks'}
+          onClick={() => {
+            dispatch(
+              updatePayloadAction({
+                blocks: [],
+                changedByEditor: false,
+              })
+            );
+            toast({
+              type: 'success',
+              message: 'All Blocks Cleared',
+            });
+          }}
+        />
+        <MenuItem
+          name={'Copy Payload'}
+          onClick={() => {
+            navigator.clipboard.writeText(
+              JSON.stringify(screens[activeScreen]?.payload)
+            );
+            toast({
+              type: 'success',
+              message: 'Payload Copied',
+            });
+          }}
+        />
         <MenuItem name={'Send to RocketChat'} />
       </Wrapper>
     </Box>
