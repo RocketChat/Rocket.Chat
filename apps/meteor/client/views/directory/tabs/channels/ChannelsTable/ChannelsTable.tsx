@@ -96,7 +96,7 @@ const ChannelsTable = () => {
 
 	return (
 		<>
-			<FilterByText autoFocus placeholder={t('Search_Channels')} onChange={({ text }): void => setText(text)} />
+			<FilterByText placeholder={t('Search_Channels')} onChange={({ text }): void => setText(text)} />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

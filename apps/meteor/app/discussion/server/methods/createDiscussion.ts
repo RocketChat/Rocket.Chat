@@ -186,12 +186,12 @@ const create = async ({
 		discussionMsg = await createDiscussionMessage(prid, user, discussion._id, discussionName);
 	}
 
-	if (discussionMsg) {
-		callbacks.runAsync('afterSaveMessage', discussionMsg, parentRoom);
-	}
-
 	if (reply) {
 		await sendMessage(user, { msg: reply }, discussion);
+	}
+
+	if (discussionMsg) {
+		callbacks.runAsync('afterSaveMessage', discussionMsg, parentRoom);
 	}
 	return discussion;
 };

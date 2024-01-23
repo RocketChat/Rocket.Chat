@@ -1,4 +1,5 @@
 export { AttachmentContext, AttachmentContextValue } from './AttachmentContext';
+export { AuthenticationContext, AuthenticationContextValue, LoginService } from './AuthenticationContext';
 export { AuthorizationContext, AuthorizationContextValue } from './AuthorizationContext';
 export { AvatarUrlContext, AvatarUrlContextValue } from './AvatarUrlContext';
 export { ConnectionStatusContext, ConnectionStatusContextValue } from './ConnectionStatusContext';
@@ -12,9 +13,9 @@ export { SettingsContext, SettingsContextValue, SettingsContextQuery } from './S
 export { ToastMessagesContext, ToastMessagesContextValue } from './ToastMessagesContext';
 export { TooltipContext, TooltipContextValue } from './TooltipContext';
 export { TranslationContext, TranslationContextValue } from './TranslationContext';
-export { UserContext, UserContextValue, LoginService } from './UserContext';
+export { UserContext, UserContextValue } from './UserContext';
 export { DeviceContext, Device, IExperimentalHTMLAudioElement, DeviceContextValue } from './DeviceContext';
-export { ActionManagerContext } from './ActionManagerContext';
+export { ActionManagerContext, IActionManager } from './ActionManagerContext';
 
 export { useAbsoluteUrl } from './hooks/useAbsoluteUrl';
 export { useAllPermissions } from './hooks/useAllPermissions';
@@ -38,6 +39,7 @@ export { useLayout } from './hooks/useLayout';
 export { useLayoutContextualBarExpanded } from './hooks/useLayoutContextualBarExpanded';
 export { useLayoutContextualBarPosition } from './hooks/useLayoutContextualBarPosition';
 export { useLayoutSizes } from './hooks/useLayoutSizes';
+export { useLayoutHiddenActions } from './hooks/useLayoutHiddenActions';
 export { useLoadLanguage } from './hooks/useLoadLanguage';
 export { useLoginWithPassword } from './hooks/useLoginWithPassword';
 export { useLoginServices } from './hooks/useLoginServices';
@@ -66,7 +68,7 @@ export { useSettings } from './hooks/useSettings';
 export { useSettingsDispatch } from './hooks/useSettingsDispatch';
 export { useSettingSetValue } from './hooks/useSettingSetValue';
 export { useSettingStructure } from './hooks/useSettingStructure';
-export { useStream, useSingleStream } from './hooks/useStream';
+export { useStream } from './hooks/useStream';
 export { useToastMessageDispatch } from './hooks/useToastMessageDispatch';
 export { useTooltipClose } from './hooks/useTooltipClose';
 export { useTooltipOpen } from './hooks/useTooltipOpen';

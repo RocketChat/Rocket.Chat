@@ -4,6 +4,7 @@ import React from 'react';
 
 import {
 	Contextualbar,
+	ContextualbarTitle,
 	ContextualbarHeader,
 	ContextualbarClose,
 	ContextualbarScrollableContent,
@@ -24,7 +25,7 @@ const PriorityList = ({ priorityId, onClose, onSave }: PriorityListProps): React
 	return (
 		<Contextualbar>
 			<ContextualbarHeader>
-				{t('Edit_Priority')}
+				<ContextualbarTitle>{t('Edit_Priority')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent height='100%'>

@@ -81,7 +81,7 @@ const Surface: FC = () => {
             preview.action = a;
             dispatch(actionPreviewAction({ ...preview }));
           },
-          state: (s) => {
+          updateState: (s) => {
             preview.state = s;
             dispatch(actionPreviewAction({ ...preview }));
           },

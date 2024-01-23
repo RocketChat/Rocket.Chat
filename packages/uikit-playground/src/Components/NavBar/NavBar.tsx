@@ -68,12 +68,7 @@ const NabBar: FC = () => {
         >
           <Box display="flex" height="100%">
             {!isMobile && (
-              <ButtonGroup
-                pie={'20px'}
-                className={css`
-                  column-gap: 5px;
-                `}
-              >
+              <ButtonGroup>
                 <Button
                   secondary
                   success

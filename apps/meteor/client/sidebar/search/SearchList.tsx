@@ -55,7 +55,7 @@ const shortcut = ((): string => {
 	if (window.navigator.platform.toLowerCase().includes('mac')) {
 		return '(\u2318+K)';
 	}
-	return '(\u2303+K)';
+	return '(Ctrl+K)';
 })();
 
 const LIMIT = parseInt(String(getConfig('Sidebar_Search_Spotlight_LIMIT', 20)));
@@ -255,14 +255,14 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 	});
 
 	const resetCursor = useMutableCallback(() => {
-		itemIndexRef.current = 0;
-		listRef.current?.scrollToIndex({ index: itemIndexRef.current });
-
-		selectedElement.current = boxRef.current?.querySelector('a.rcx-sidebar-item');
-
-		if (selectedElement.current) {
-			toggleSelectionState(selectedElement.current, undefined, cursorRef?.current || undefined);
-		}
+		setTimeout(() => {
+			itemIndexRef.current = 0;
+			listRef.current?.scrollToIndex({ index: itemIndexRef.current });
+			selectedElement.current = boxRef.current?.querySelector('a.rcx-sidebar-item');
+			if (selectedElement.current) {
+				toggleSelectionState(selectedElement.current, undefined, cursorRef?.current || undefined);
+			}
+		}, 0);
 	});
 
 	usePreventDefault(boxRef);
@@ -303,9 +303,12 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 				listRef.current?.scrollToIndex({ index: itemIndexRef.current });
 				selectedElement.current = currentElement;
 			},
-			Enter: () => {
-				if (selectedElement.current) {
+			Enter: (event) => {
+				event.preventDefault();
+				if (selectedElement.current && items.length > 0) {
 					selectedElement.current.click();
+				} else {
+					onClose();
 				}
 			},
 		});

@@ -8,5 +8,5 @@ export default {
 	component: AppearanceForm,
 } as ComponentMeta<typeof AppearanceForm>;
 
-export const Default: ComponentStory<typeof AppearanceForm> = (args) => <AppearanceForm {...args} />;
+export const Default: ComponentStory<typeof AppearanceForm> = () => <AppearanceForm />;
 Default.storyName = 'AppearanceForm';

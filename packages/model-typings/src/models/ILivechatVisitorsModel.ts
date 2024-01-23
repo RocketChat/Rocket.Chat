@@ -60,4 +60,8 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 	findEnabled(query: Filter<ILivechatVisitor>, options?: FindOptions<ILivechatVisitor>): FindCursor<ILivechatVisitor>;
 
 	countVisitorsOnPeriod(period: string): Promise<number>;
+	saveGuestById(
+		_id: string,
+		data: { name?: string; username?: string; email?: string; phone?: string; livechatData: { [k: string]: any } },
+	): Promise<UpdateResult | Document | boolean>;
 }

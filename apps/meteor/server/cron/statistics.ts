@@ -1,30 +1,33 @@
 import { cronJobs } from '@rocket.chat/cron';
 import type { Logger } from '@rocket.chat/logger';
+import { Statistics } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Meteor } from 'meteor/meteor';
 
 import { getWorkspaceAccessToken } from '../../app/cloud/server';
-import { settings } from '../../app/settings/server';
 import { statistics } from '../../app/statistics/server';
 
 async function generateStatistics(logger: Logger): Promise<void> {
-	const cronStatistics: Record<string, any> = await statistics.save();
-
-	cronStatistics.host = Meteor.absoluteUrl();
-
-	if (!settings.get('Statistics_reporting')) {
-		return;
-	}
+	const cronStatistics = await statistics.save();
 
 	try {
 		const token = await getWorkspaceAccessToken();
 		const headers = { ...(token && { Authorization: `Bearer ${token}` }) };
 
-		await fetch('https://collector.rocket.chat/', {
+		const response = await fetch('https://collector.rocket.chat/', {
 			method: 'POST',
-			body: cronStatistics,
+			body: {
+				...cronStatistics,
+				host: Meteor.absoluteUrl(),
+			},
 			headers,
 		});
+
+		const { statsToken } = await response.json();
+
+		if (statsToken != null) {
+			await Statistics.updateOne({ _id: cronStatistics._id }, { $set: { statsToken } });
+		}
 	} catch (error) {
 		/* error*/
 		logger.warn('Failed to send usage report');

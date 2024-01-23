@@ -34,6 +34,17 @@ export const createSettings = async (): Promise<void> => {
 		modules: ['livechat-enterprise'],
 	});
 
+	await settingsRegistry.add('Omnichannel_max_fallback_forward_depth', 3, {
+		type: 'int',
+		group: 'Omnichannel',
+		section: 'Routing',
+		i18nLabel: 'Omnichannel_max_fallback_forward_depth',
+		enterprise: true,
+		invalidValue: 0,
+		modules: ['livechat-enterprise'],
+		enableQuery: omnichannelEnabledQuery,
+	});
+
 	await settingsRegistry.add('Livechat_last_chatted_agent_routing', false, {
 		type: 'boolean',
 		group: 'Omnichannel',
@@ -196,6 +207,17 @@ export const createSettings = async (): Promise<void> => {
 		public: true,
 		modules: ['livechat-enterprise'],
 		enableQuery: omnichannelEnabledQuery,
+	});
+
+	await settingsRegistry.add('Livechat_allow_manual_on_hold_upon_agent_engagement_only', true, {
+		type: 'boolean',
+		group: 'Omnichannel',
+		section: 'Sessions',
+		enterprise: true,
+		invalidValue: false,
+		public: true,
+		modules: ['livechat-enterprise'],
+		enableQuery: { _id: 'Livechat_allow_manual_on_hold', value: true },
 	});
 
 	await settingsRegistry.add('Livechat_auto_transfer_chat_timeout', 0, {

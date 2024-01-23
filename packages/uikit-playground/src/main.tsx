@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import '@rocket.chat/icons/dist/rocketchat.css';
+import '@rocket.chat/fuselage/dist/fuselage.css';
 
 import './index.css';
 import App from './App';
