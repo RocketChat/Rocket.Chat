@@ -1,6 +1,16 @@
+import {
+	type IMessage,
+	type ISubscription,
+	type IUser,
+	type IRoom,
+	type NotificationItem,
+	isEditedMessage,
+	type AtLeast,
+} from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import emojione from 'emojione';
 import moment from 'moment';
+import type { Filter, RootFilterOperators } from 'mongodb';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
@@ -13,7 +23,16 @@ import { getEmailData, shouldNotifyEmail } from '../functions/notifications/emai
 import { getPushData, shouldNotifyMobile } from '../functions/notifications/mobile';
 import { getMentions } from './notifyUsersOnMessage';
 
-let TroubleshootDisableNotifications;
+type SubscriptionAggregation = {
+	receiver: [Pick<IUser, 'active' | 'emails' | 'language' | 'status' | 'statusConnection' | 'username' | 'settings'> | null];
+} & Pick<
+	ISubscription,
+	'desktopNotifications' | 'emailNotifications' | 'mobilePushNotifications' | 'muteGroupMentions' | 'name' | 'rid' | 'userHighlights' | 'u'
+>;
+
+type WithRequiredProperty<Type, Key extends keyof Type> = Type & {
+	[Property in Key]-?: Type[Property];
+};
 
 export const sendNotification = async ({
 	subscription,
@@ -26,8 +45,20 @@ export const sendNotification = async ({
 	room,
 	mentionIds,
 	disableAllMessageNotifications,
+}: {
+	subscription: SubscriptionAggregation;
+	sender: Pick<IUser, '_id' | 'name' | 'username'>;
+
+	hasReplyToThread: boolean;
+	hasMentionToAll: boolean;
+	hasMentionToHere: boolean;
+	message: AtLeast<IMessage, '_id' | 'u' | 'msg' | 't' | 'attachments'>;
+	notificationMessage: string;
+	room: IRoom;
+	mentionIds: string[];
+	disableAllMessageNotifications: boolean;
 }) => {
-	if (TroubleshootDisableNotifications === true) {
+	if (settings.get<boolean>('Troubleshoot_Disable_Notifications') === true) {
 		return;
 	}
 
@@ -61,6 +92,10 @@ export const sendNotification = async ({
 
 	const [receiver] = subscription.receiver;
 
+	if (!receiver) {
+		throw new Error('receiver not found');
+	}
+
 	const roomType = room.t;
 	// If the user doesn't have permission to view direct messages, don't send notification of direct messages.
 	if (roomType === 'd' && !(await hasPermissionAsync(subscription.u._id, 'view-d-room'))) {
@@ -80,9 +115,9 @@ export const sendNotification = async ({
 	if (
 		shouldNotifyDesktop({
 			disableAllMessageNotifications,
-			status: receiver.status,
-			statusConnection: receiver.statusConnection,
-			desktopNotifications,
+			status: receiver.status ?? 'offline',
+			statusConnection: receiver.statusConnection ?? 'offline',
+			desktopNotifications: desktopNotifications ?? 'default',
 			hasMentionToAll,
 			hasMentionToHere,
 			isHighlighted,
@@ -101,7 +136,7 @@ export const sendNotification = async ({
 		});
 	}
 
-	const queueItems = [];
+	const queueItems: NotificationItem[] = [];
 
 	if (
 		shouldNotifyMobile({
@@ -147,14 +182,15 @@ export const sendNotification = async ({
 		})
 	) {
 		const messageWithUnicode = message.msg ? emojione.shortnameToUnicode(message.msg) : message.msg;
-		const firstAttachment = message.attachments?.length > 0 && message.attachments.shift();
+		const firstAttachment = message.attachments?.length && message.attachments.shift();
+
 		if (firstAttachment) {
 			firstAttachment.description =
 				typeof firstAttachment.description === 'string' ? emojione.shortnameToUnicode(firstAttachment.description) : undefined;
 			firstAttachment.text = typeof firstAttachment.text === 'string' ? emojione.shortnameToUnicode(firstAttachment.text) : undefined;
 		}
 
-		const attachments = firstAttachment ? [firstAttachment, ...message.attachments].filter(Boolean) : [];
+		const attachments = firstAttachment ? [firstAttachment, ...(message.attachments ?? [])].filter(Boolean) : [];
 		for await (const email of receiver.emails) {
 			if (email.verified) {
 				queueItems.push({
@@ -180,7 +216,7 @@ export const sendNotification = async ({
 	}
 
 	if (queueItems.length) {
-		Notification.scheduleItem({
+		void Notification.scheduleItem({
 			user: receiver,
 			uid: subscription.u._id,
 			rid: room._id,
@@ -208,13 +244,13 @@ const project = {
 		'receiver.username': 1,
 		'receiver.settings.preferences.enableMobileRinging': 1,
 	},
-};
+} as const;
 
 const filter = {
 	$match: {
 		'receiver.active': true,
 	},
-};
+} as const;
 
 const lookup = {
 	$lookup: {
@@ -223,10 +259,10 @@ const lookup = {
 		foreignField: '_id',
 		as: 'receiver',
 	},
-};
+} as const;
 
-export async function sendMessageNotifications(message, room, usersInThread = []) {
-	if (TroubleshootDisableNotifications === true) {
+export async function sendMessageNotifications(message: IMessage, room: IRoom, usersInThread: string[] = []) {
+	if (settings.get<boolean>('Troubleshoot_Disable_Notifications') === true) {
 		return;
 	}
 
@@ -252,25 +288,25 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 
 	let notificationMessage = await callbacks.run('beforeSendMessageNotifications', message.msg);
 	if (mentionIds.length > 0 && settings.get('UI_Use_Real_Name')) {
-		notificationMessage = replaceMentionedUsernamesWithFullNames(message.msg, message.mentions);
+		notificationMessage = replaceMentionedUsernamesWithFullNames(message.msg, message.mentions ?? []);
 	}
 
 	// Don't fetch all users if room exceeds max members
-	const maxMembersForNotification = settings.get('Notifications_Max_Room_Members');
+	const maxMembersForNotification = settings.get<number>('Notifications_Max_Room_Members');
 	const roomMembersCount = await Users.countRoomMembers(room._id);
 	const disableAllMessageNotifications = roomMembersCount > maxMembersForNotification && maxMembersForNotification !== 0;
 
-	const query = {
+	const query: WithRequiredProperty<RootFilterOperators<ISubscription>, '$or'> = {
 		rid: room._id,
 		ignored: { $ne: sender._id },
 		disableNotifications: { $ne: true },
 		$or: [{ 'userHighlights.0': { $exists: 1 } }, ...(usersInThread.length > 0 ? [{ 'u._id': { $in: usersInThread } }] : [])],
-	};
+	} as const;
 
-	['audio', 'desktop', 'mobile', 'email'].forEach((kind) => {
+	(['desktop', 'mobile', 'email'] as const).forEach((kind) => {
 		const notificationField = `${kind === 'mobile' ? 'mobilePush' : kind}Notifications`;
 
-		const filter = { [notificationField]: 'all' };
+		const filter: Filter<ISubscription> = { [notificationField]: 'all' };
 
 		if (disableAllMessageNotifications) {
 			filter[`${kind}PrefOrigin`] = { $ne: 'user' };
@@ -309,7 +345,7 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 	// the find below is crucial. All subscription records returned will receive at least one kind of notification.
 	// the query is defined by the server's default values and Notifications_Max_Room_Members setting.
 
-	const subscriptions = await Subscriptions.col.aggregate([{ $match: query }, lookup, filter, project]).toArray();
+	const subscriptions = await Subscriptions.col.aggregate<SubscriptionAggregation>([{ $match: query }, lookup, filter, project]).toArray();
 
 	subscriptions.forEach(
 		(subscription) =>
@@ -323,7 +359,7 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 				room,
 				mentionIds,
 				disableAllMessageNotifications,
-				hasReplyToThread: usersInThread && usersInThread.includes(subscription.u._id),
+				hasReplyToThread: usersInThread?.includes(subscription.u._id),
 			}),
 	);
 
@@ -337,8 +373,8 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 	};
 }
 
-export async function sendAllNotifications(message, room) {
-	if (TroubleshootDisableNotifications === true) {
+export async function sendAllNotifications(message: IMessage, room: IRoom) {
+	if (settings.get<boolean>('Troubleshoot_Disable_Notifications') === true) {
 		return message;
 	}
 
@@ -347,11 +383,11 @@ export async function sendAllNotifications(message, room) {
 		return message;
 	}
 	// skips this callback if the message was edited
-	if (message.editedAt) {
+	if (isEditedMessage(message)) {
 		return message;
 	}
 
-	if (message.ts && Math.abs(moment(message.ts).diff()) > 60000) {
+	if (message.ts && Math.abs(moment(message.ts).diff(new Date())) > 60000) {
 		return message;
 	}
 
@@ -365,11 +401,6 @@ export async function sendAllNotifications(message, room) {
 }
 
 settings.watch('Troubleshoot_Disable_Notifications', (value) => {
-	if (TroubleshootDisableNotifications === value) {
-		return;
-	}
-	TroubleshootDisableNotifications = value;
-
 	if (value) {
 		return callbacks.remove('afterSaveMessage', 'sendNotificationsOnMessage');
 	}
