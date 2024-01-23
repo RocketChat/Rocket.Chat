@@ -13,12 +13,12 @@ export type CasOptions = {
 };
 
 export type CasCallbackExtendedData = {
-	username: string;
-	attributes: Record<string, string[]>;
+	username?: string;
+	attributes?: Record<string, string[]>;
 	// eslint-disable-next-line @typescript-eslint/naming-convention
-	PGTIOU: string | undefined;
-	ticket: string;
-	proxies: string[];
+	PGTIOU?: string;
+	ticket?: string;
+	proxies?: string[];
 };
 
 export type CasCallback = (err: any, status?: unknown, username?: string, extended?: CasCallbackExtendedData) => void;
