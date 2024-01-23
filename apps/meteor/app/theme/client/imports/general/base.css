@@ -34,7 +34,7 @@ body {
 }
 
 :focus {
-	outline: 0 !important;
+	outline: 0;
 	outline-style: none;
 	outline-color: transparent;
 }
