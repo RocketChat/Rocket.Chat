@@ -148,9 +148,11 @@ export const sendNotification = async ({
 	) {
 		const messageWithUnicode = message.msg ? emojione.shortnameToUnicode(message.msg) : message.msg;
 		const firstAttachment = message.attachments?.length > 0 && message.attachments.shift();
-		firstAttachment.description =
-			typeof firstAttachment.description === 'string' ? emojione.shortnameToUnicode(firstAttachment.description) : undefined;
-		firstAttachment.text = typeof firstAttachment.text === 'string' ? emojione.shortnameToUnicode(firstAttachment.text) : undefined;
+		if (firstAttachment) {
+			firstAttachment.description =
+				typeof firstAttachment.description === 'string' ? emojione.shortnameToUnicode(firstAttachment.description) : undefined;
+			firstAttachment.text = typeof firstAttachment.text === 'string' ? emojione.shortnameToUnicode(firstAttachment.text) : undefined;
+		}
 
 		const attachments = firstAttachment ? [firstAttachment, ...message.attachments].filter(Boolean) : [];
 		for await (const email of receiver.emails) {
