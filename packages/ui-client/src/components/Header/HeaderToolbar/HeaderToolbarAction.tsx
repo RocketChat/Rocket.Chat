@@ -1,7 +1,7 @@
 import { IconButton } from '@rocket.chat/fuselage';
 import { forwardRef } from 'react';
 
-const HeaderToolboxAction = forwardRef<HTMLButtonElement, any>(function HeaderToolboxAction(
+const HeaderToolbarAction = forwardRef<HTMLButtonElement, any>(function HeaderToolbarAction(
 	{ id, icon, action, index, title, 'data-tooltip': tooltip, ...props },
 	ref,
 ) {
@@ -22,4 +22,4 @@ const HeaderToolboxAction = forwardRef<HTMLButtonElement, any>(function HeaderTo
 	);
 });
 
-export default HeaderToolboxAction;
+export default HeaderToolbarAction;
