@@ -259,6 +259,24 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.expect(400);
 		});
 
+		it('should return an error if fallbackForwardDepartment is referencing a department that does not exist', async () => {
+			await request
+				.post(api('livechat/department'))
+				.set(credentials)
+				.send({
+					department: {
+						name: 'Test',
+						enabled: true,
+						showOnOfflineForm: true,
+						showOnRegistration: true,
+						email: 'bla@bla',
+						fallbackForwardDepartment: 'not a department id',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+
 		it('should create a new department', async () => {
 			const { body } = await request
 				.post(api('livechat/department'))

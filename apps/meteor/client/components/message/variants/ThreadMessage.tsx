@@ -11,7 +11,7 @@ import { useJumpToMessage } from '../../../views/room/MessageList/hooks/useJumpT
 import { useChat } from '../../../views/room/contexts/ChatContext';
 import IgnoredContent from '../IgnoredContent';
 import MessageHeader from '../MessageHeader';
-import MessageToolboxHolder from '../MessageToolboxHolder';
+import MessageToolbarHolder from '../MessageToolbarHolder';
 import StatusIndicators from '../StatusIndicators';
 import MessageAvatar from '../header/MessageAvatar';
 import ThreadMessageContent from './thread/ThreadMessageContent';
@@ -72,7 +72,7 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar }: ThreadMe
 
 				{ignored ? <IgnoredContent onShowMessageIgnored={toggleIgnoring} /> : <ThreadMessageContent message={message} />}
 			</MessageContainer>
-			{!message.private && <MessageToolboxHolder message={message} context={messageContext} />}
+			{!message.private && <MessageToolbarHolder message={message} context={messageContext} />}
 		</Message>
 	);
 };
