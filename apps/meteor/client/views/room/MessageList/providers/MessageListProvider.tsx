@@ -102,6 +102,7 @@ const MessageListProvider: VFC<MessageListProviderProps> = ({ children, scrollMe
 							chat?.emojiPicker.open(e.currentTarget, (emoji: string) => reactToMessage({ messageId: message._id, reaction: emoji }));
 						}
 				: () => (): void => undefined,
+			username,
 		}),
 		[
 			username,

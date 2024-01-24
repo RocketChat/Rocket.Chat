@@ -1,11 +1,12 @@
 import { MessageReaction as MessageReactionTemplate, MessageReactionEmoji, MessageReactionCounter } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useEndpoint, useTooltipClose, useTooltipOpen, useTranslation } from '@rocket.chat/ui-contexts';
+import { useTooltipClose, useTooltipOpen, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useContext, useRef } from 'react';
 
 import { getEmojiClassNameAndDataTitle } from '../../../../lib/utils/renderEmoji';
+import { useGetMessageByID } from '../../../../views/room/contextualBar/Threads/hooks/useGetMessageByID';
 import MarkdownText from '../../../MarkdownText';
 import { MessageListContext } from '../../list/MessageListContext';
 
@@ -35,15 +36,16 @@ type ReactionProps = {
 	counter: number;
 	name: string;
 	names: string[];
+	messageId: string;
 	onClick: () => void;
 };
 
-const Reaction = ({ hasReacted, counter, name, names, ...props }: ReactionProps): ReactElement => {
+const Reaction = ({ hasReacted, counter, name, names, messageId, ...props }: ReactionProps): ReactElement => {
 	const t = useTranslation();
 	const ref = useRef<HTMLDivElement>(null);
 	const openTooltip = useTooltipOpen();
 	const closeTooltip = useTooltipClose();
-	const { showRealName } = useContext(MessageListContext);
+	const { showRealName, username } = useContext(MessageListContext);
 
 	const mine = hasReacted(name);
 
@@ -51,24 +53,38 @@ const Reaction = ({ hasReacted, counter, name, names, ...props }: ReactionProps)
 
 	const emojiProps = getEmojiClassNameAndDataTitle(name);
 
-	const getNames = useEndpoint('GET', '/v1/users.getNames');
+	const getMessage = useGetMessageByID();
 
 	const { refetch } = useQuery(
-		['users.getNames', names],
+		['chat.getMessage', 'reactions', messageId],
 		async () => {
 			if (names.length === 0) {
-				return undefined;
+				return [];
 			}
 
-			const users: string[] = showRealName
-				? (await getNames({ usernames: names }))?.users?.map((user) => user.name || '') || names.map((name) => `@${name}`)
-				: names.map((name) => `@${name}`);
+			if (!showRealName) {
+				return names;
+			}
 
-			return users;
+			const message = await getMessage(messageId);
+			const { reactions } = message;
+
+			if (!reactions) {
+				return [];
+			}
+
+			if (!username) {
+				return reactions[name].names || names;
+			}
+
+			const index = reactions[name].usernames.indexOf(username);
+			if (index === -1) {
+				return reactions[name].names || names;
+			}
+			reactions[name].names?.splice(index, 1);
+			return (reactions[name].names || names).filter(Boolean);
 		},
-		{
-			enabled: false,
-		},
+		{ enabled: false },
 	);
 
 	return (

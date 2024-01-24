@@ -24,6 +24,7 @@ export type MessageListContextValue = {
 	autoTranslateLanguage?: string;
 	showColors: boolean;
 	jumpToMessageParam?: string;
+	username: string | undefined;
 	scrollMessageList?: (callback: (wrapper: HTMLDivElement | null) => ScrollToOptions | void) => void;
 };
 
@@ -42,6 +43,7 @@ export const MessageListContext = createContext<MessageListContextValue>({
 	showUsername: false,
 	showColors: false,
 	scrollMessageList: () => undefined,
+	username: undefined,
 });
 
 export const useShowTranslated: MessageListContextValue['useShowTranslated'] = (...args) =>
