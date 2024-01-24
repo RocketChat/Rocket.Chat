@@ -1,4 +1,4 @@
-import type { IModerationReport, IMessage, IModerationAudit, MessageReport } from '@rocket.chat/core-typings';
+import type { IModerationReport, IMessage, IModerationAudit, MessageReport, UserReport } from '@rocket.chat/core-typings';
 import type { AggregationCursor, Document, FindCursor, FindOptions, UpdateResult } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
@@ -30,6 +30,15 @@ export interface IModerationReportsModel extends IBaseModel<IModerationReport> {
 		pagination: PaginationParams<IModerationReport>,
 	): AggregationCursor<IModerationAudit>;
 
+	findUserReports(
+		latest: Date,
+		oldest: Date,
+		selector: string,
+		pagination: PaginationParams<IModerationReport>,
+	): AggregationCursor<Pick<UserReport, '_id' | 'reportedUser' | 'ts'> & { count: number }>;
+
+	getTotalUniqueReportedUsers(latest: Date, oldest: Date, selector: string, isMessageReports?: boolean): Promise<number>;
+
 	countMessageReportsInRange(latest: Date, oldest: Date, selector: string): Promise<number>;
 
 	findReportsByMessageId(
@@ -46,6 +55,13 @@ export interface IModerationReportsModel extends IBaseModel<IModerationReport> {
 		options?: FindOptions<IModerationReport>,
 	): FindPaginated<FindCursor<Pick<MessageReport, '_id' | 'message' | 'ts' | 'room'>>>;
 
+	findUserReportsByReportedUserId(
+		userId: string,
+		selector: string,
+		pagination: PaginationParams<IModerationReport>,
+		options?: FindOptions<IModerationReport>,
+	): FindPaginated<FindCursor<Omit<UserReport, 'moderationInfo'>>>;
+
 	hideMessageReportsByMessageId(
 		messageId: IMessage['_id'],
 		userId: string,
@@ -54,4 +70,6 @@ export interface IModerationReportsModel extends IBaseModel<IModerationReport> {
 	): Promise<UpdateResult | Document>;
 
 	hideMessageReportsByUserId(userId: string, moderatorId: string, reason: string, action: string): Promise<UpdateResult | Document>;
+
+	hideUserReportsByUserId(userId: string, moderatorId: string, reason: string, action: string): Promise<UpdateResult | Document>;
 }

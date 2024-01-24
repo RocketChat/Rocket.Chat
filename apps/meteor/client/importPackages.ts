@@ -35,7 +35,6 @@ import '../app/wordpress/client';
 import '../app/e2e/client';
 import '../app/discussion/client';
 import '../app/threads/client';
-import '../app/user-status/client';
 import '../app/utils/client';
 import '../app/settings/client';
 import '../app/models/client';

@@ -8,7 +8,7 @@ const TagList: FC<{
 	categories: (CategoryDropdownItem & { checked: true })[];
 	onClick: CategoryDropDownListProps['onSelected'];
 }> = ({ categories, onClick }) => (
-	<ButtonGroup small flexWrap='wrap'>
+	<ButtonGroup wrap small>
 		{categories.map((category) => (
 			<Chip flexShrink={0} key={category.id} onClick={(): void => onClick(category)} disabled={undefined} mbe={8}>
 				{category.label}
