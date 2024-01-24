@@ -2,8 +2,7 @@ import type { IUser, AvatarObject } from '@rocket.chat/core-typings';
 import { Box, Button, TextInput, Avatar, IconButton } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent } from 'react';
-import React, { useState, useCallback, useContext } from 'react';
-import { ToastMessagesContext } from '@rocket.chat/ui-contexts';
+import React, { useState, useCallback } from 'react';
 
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 import { isValidImageFormat } from '../../../lib/utils/isValidImageFormat';
@@ -19,6 +18,8 @@ type UserAvatarEditorProps = {
 	disabled?: boolean;
 	etag: IUser['avatarETag'];
 };
+
+const IMG_URL_REGEX = new RegExp('\\bhttps?://(?:www\\.)?[^\\s]+\\.(?:jpg|jpeg|png|gif|bmp|svg|webp|tiff|ico)\\b');
 
 function UserAvatarEditor({ currentUsername, username, setAvatarObj, disabled, etag }: UserAvatarEditorProps): ReactElement {
 	const t = useTranslation();
@@ -45,24 +46,14 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, disabled, e
 
 	const [clickUpload] = useSingleFileInput(setUploadedPreview);
 
-	const { dispatch } = useContext(ToastMessagesContext);
-	const checkValidUrl = (url: string): boolean => {
-		const urlRegex = new RegExp('\\bhttps?://(?:www\\.)?[^\\s]+\\.(?:jpg|jpeg|png|gif|bmp|svg|webp)\\b');
-		if (!urlRegex.test(url)) {
-			dispatch({
-				type: 'error',
-				message: 'Not a Image URL',
-			});
-			return false;
-			
+	const handleAddUrl = (): void => {
+		const isValidURL = !IMG_URL_REGEX.test(avatarFromUrl);
+		if (isValidURL) {
+			return dispatchToastMessage({ type: 'error', message: t('error-invalid-image-url') });
 		}
-		return true;
-	}
-	const clickUrl = (): void => {
-		if (checkValidUrl(avatarFromUrl)) {
-			setNewAvatarSource(avatarFromUrl);
-			setAvatarObj({ avatarUrl: avatarFromUrl });
-		}
+
+		setNewAvatarSource(avatarFromUrl);
+		setAvatarObj({ avatarUrl: avatarFromUrl });
 	};
 
 	const clickReset = (): void => {
@@ -110,7 +101,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, disabled, e
 							disabled={disabled || !avatarFromUrl}
 							title={t('Add_URL')}
 							mi={4}
-							onClick={clickUrl}
+							onClick={handleAddUrl}
 							data-qa-id='UserAvatarEditorSetAvatarLink'
 						/>
 						<UserAvatarSuggestions disabled={disabled} onSelectOne={handleSelectSuggestion} />

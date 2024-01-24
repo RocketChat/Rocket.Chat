@@ -1,16 +1,12 @@
 import type { AvatarProps } from '@rocket.chat/fuselage';
 import { Avatar, Skeleton } from '@rocket.chat/fuselage';
 import type { FC } from 'react';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 export type BaseAvatarProps = Omit<AvatarProps, 'is'>;
 
 const BaseAvatar: FC<BaseAvatarProps> = ({ size, ...props }) => {
 	const [error, setError] = useState<unknown>(false);
-
-	useEffect(() => {
-		setError(false);
-	}, [props.url]);
 
 	if (error) {
 		return <Skeleton aria-hidden variant='rect' {...props} />;
