@@ -106,7 +106,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 			await saveAction({
 				rid: room._id,
 				...data,
-				...(data.joinCode && { joinCode: joinCodeRequired ? data.joinCode : '' }),
+				...((data.joinCode || 'joinCodeRequired' in data) && { joinCode: joinCodeRequired ? data.joinCode : '' }),
 				...((data.systemMessages || !hideSysMes) && {
 					systemMessages: hideSysMes && data.systemMessages,
 				}),

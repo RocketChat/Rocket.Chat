@@ -129,7 +129,11 @@ type ChainedCallbackSignatures = {
 	'livechat:afterOnHoldChatResumed': (room: Pick<IOmnichannelRoom, '_id'>) => Pick<IOmnichannelRoom, '_id'>;
 	'livechat:onTransferFailure': (
 		room: IRoom,
-		params: { guest: ILivechatVisitor; transferData: TransferData },
+		params: {
+			guest: ILivechatVisitor;
+			transferData: TransferData;
+			department: AtLeast<ILivechatDepartmentRecord, '_id' | 'fallbackForwardDepartment' | 'name'>;
+		},
 	) => IOmnichannelRoom | Promise<boolean>;
 	'livechat.afterForwardChatToAgent': (params: {
 		rid: IRoom['_id'];
