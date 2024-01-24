@@ -11,7 +11,7 @@ import { goToRoomById } from '../../lib/utils/goToRoomById';
 
 const CreateDirectMessage = ({ onClose }: { onClose: () => void }) => {
 	const t = useTranslation();
-	const directMaxUsers = (useSetting<number>('DirectMesssage_maxUsers') || 1) - 1;
+	const directMaxUsers = useSetting<number>('DirectMesssage_maxUsers') || 1;
 	const membersFieldId = useUniqueId();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -59,7 +59,9 @@ const CreateDirectMessage = ({ onClose }: { onClose: () => void }) => {
 								rules={{
 									required: t('error-the-field-is-required', { field: t('Members') }),
 									validate: (users) =>
-										users.length > directMaxUsers ? t('error-direct-message-max-user-exceeded', { maxUsers: directMaxUsers }) : undefined,
+										users.length + 1 > directMaxUsers
+											? t('error-direct-message-max-user-exceeded', { maxUsers: directMaxUsers })
+											: undefined,
 								}}
 								control={control}
 								render={({ field: { name, onChange, value, onBlur } }) => (

@@ -1990,7 +1990,7 @@
   "error-delete-protected-role": "Cannot delete a protected role",
   "error-department-not-found": "Department not found",
   "error-department-removal-disabled": "Department removal is disabled by administration, please contact your administrator",
-  "error-direct-message-max-user-exceeded": "You cannot add more than {{maxUsers}} users to a direct message",
+  "error-direct-message-max-user-exceeded": "You cannot add more than {{maxUsers}} users, including yourself to a direct message",
   "error-direct-message-file-upload-not-allowed": "File sharing not allowed in direct messages",
   "error-duplicate-channel-name": "A channel with name '{{channel_name}}' exists",
   "error-duplicate-priority-name": "A priority with the same name already exists",
