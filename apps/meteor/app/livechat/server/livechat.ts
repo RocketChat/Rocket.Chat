@@ -38,7 +38,7 @@ function parseExtraAttributes(widgetData: string): string {
 	return doc.documentElement.innerHTML;
 }
 
-const memoizedParseExtraAttributes = mem(parseExtraAttributes, { maxAge: 60000 });
+const memoizedParseExtraAttributes = mem(parseExtraAttributes, { maxAge: process.env.TEST_MODE === 'true' ? 1 : 60000 });
 
 WebApp.connectHandlers.use('/livechat', (req, res, next) => {
 	if (!req.url) {
