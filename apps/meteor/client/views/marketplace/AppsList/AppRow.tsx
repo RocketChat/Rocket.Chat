@@ -66,7 +66,7 @@ const AppRow = ({ className, ...props }: App & { className?: string }): ReactEle
 							<CardTitle variant='h5' id={`${id}-title`}>
 								{name}
 							</CardTitle>
-							{Boolean(bundledIn.length) && <BundleChips bundledIn={bundledIn} />}
+							{Boolean(bundledIn?.length) && <BundleChips bundledIn={bundledIn} />}
 						</CardHeader>
 						{shortDescription && <CardBody id={`${id}-description`}>{shortDescription}</CardBody>}
 					</CardCol>

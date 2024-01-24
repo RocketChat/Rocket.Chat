@@ -18,12 +18,13 @@ import type {
 	IIntegrationHistory,
 	IUserDataEvent,
 	ICalendarNotification,
-	IUserStatus,
 	ILivechatInquiryRecord,
 	ILivechatAgent,
 	IImportProgress,
 	IBanner,
 	LicenseLimitKind,
+	ICustomUserStatus,
+	UserStatus,
 } from '@rocket.chat/core-typings';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
@@ -64,6 +65,7 @@ export interface StreamerEvents {
 		{ key: `${string}/videoconf`; args: [id: string] },
 		{ key: `${string}/messagesRead`; args: [{ until: Date; tmid?: string }] },
 		{ key: `${string}/messagesImported`; args: [null] },
+		{ key: `${string}/webrtc`; args: unknown[] },
 		/* @deprecated over videoconf*/
 		// { key: `${string}/${string}`; args: [id: string] },
 	];
@@ -197,7 +199,7 @@ export interface StreamerEvents {
 			key: 'updateCustomUserStatus';
 			args: [
 				{
-					userStatusData: IUserStatus;
+					userStatusData: Omit<ICustomUserStatus, '_updatedAt'>;
 				},
 			];
 		},
@@ -231,10 +233,22 @@ export interface StreamerEvents {
 				},
 			];
 		},
-		{ key: 'Users:NameChanged'; args: [Pick<IUser, '_id' | 'name'>] },
+		{ key: 'Users:NameChanged'; args: [Pick<IUser, '_id' | 'name' | 'username'>] },
 		{ key: 'private-settings-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
-		{ key: 'deleteCustomUserStatus'; args: [{ userStatusData: unknown }] },
-		{ key: 'user-status'; args: [[IUser['_id'], IUser['username'], 0 | 1 | 2 | 3, IUser['statusText'], IUser['name'], IUser['roles']]] },
+		{ key: 'deleteCustomUserStatus'; args: [{ userStatusData: Omit<ICustomUserStatus, '_updatedAt'> }] },
+		{
+			key: 'user-status';
+			args: [
+				[
+					uid: IUser['_id'],
+					username: IUser['username'],
+					status: UserStatus,
+					statusText: IUser['statusText'],
+					name: IUser['name'],
+					roles: IUser['roles'],
+				],
+			];
+		},
 		{
 			key: 'Users:Deleted';
 			args: [
@@ -310,7 +324,7 @@ export interface StreamerEvents {
 		},
 	];
 
-	'user-presence': [{ key: string; args: [[username: string, statusChanged?: 0 | 1 | 2 | 3, statusText?: string]] }];
+	'user-presence': [{ key: string; args: [[username: string, statusChanged?: UserStatus, statusText?: string]] }];
 
 	// TODO: rename to 'integration-history'
 	'integrationHistory': [

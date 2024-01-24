@@ -88,15 +88,21 @@ const tds = `export interface RocketchatI18n {
 	${keys.map((key) => `${JSON.stringify(key)}: string;`).join('\n\t')}
 }
 
-export declare const dict: Record<string, RocketchatI18nKeys>;
+const dict: {
+	[language: string]: RocketchatI18n;
+};
 
 export type RocketchatI18nKeys = keyof RocketchatI18n;
+
+export = dict;
 `;
 
 const languages = files.map((file) => path.basename(file, '.i18n.json'));
 
 // write the files
-fs.rmdirSync(`./dist`, { recursive: true });
+if (fs.existsSync(`./dist`)) {
+	fs.rmdirSync(`./dist`, { recursive: true });
+}
 fs.mkdirSync(`./dist`, { recursive: true });
 
 fs.writeFileSync(`./dist/languages.js`, `module.exports = ${JSON.stringify(languages, null, 2)}`);
