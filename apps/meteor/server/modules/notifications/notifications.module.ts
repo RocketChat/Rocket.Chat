@@ -1,5 +1,5 @@
 import { Authorization, VideoConf } from '@rocket.chat/core-services';
-import type { ISubscription, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
+import type { ISubscription, IOmnichannelRoom, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users, Settings } from '@rocket.chat/models';
 import type { StreamerCallbackArgs, StreamKeys, StreamNames } from '@rocket.chat/ui-contexts';
 import type { IStreamer, IStreamerConstructor, IPublication } from 'meteor/rocketchat:streamer';
@@ -531,7 +531,7 @@ export class NotificationsModule {
 		return this.streamUser.emitWithoutBroadcast(`${userId}/${eventName}`, ...args);
 	}
 
-	sendPresence(uid: string, ...args: [username: string, statusChanged: 0 | 1 | 2 | 3, statusText: string | undefined]): void {
+	sendPresence(uid: string, ...args: [username: string, status?: UserStatus, statusText?: string]): void {
 		emit(uid, [args]);
 		return this.streamPresence.emitWithoutBroadcast(uid, args);
 	}
