@@ -1,11 +1,11 @@
-import { MessageToolboxItem, Option, OptionDivider, OptionTitle } from '@rocket.chat/fuselage';
+import { MessageToolbarItem, Option, OptionDivider, OptionTitle } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, MouseEvent, MouseEventHandler, ReactElement } from 'react';
 import React, { Fragment, useCallback, useRef, useState } from 'react';
 
 import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
-import ToolboxDropdown from './ToolboxDropdown';
+import ToolbarDropdown from './ToolbarDropdown';
 
 type MessageActionConfigOption = Omit<MessageActionConfig, 'condition' | 'context' | 'order' | 'action'> & {
 	action: ((event: MouseEvent<HTMLElement, MouseEvent>) => void) & MouseEventHandler<HTMLElement>;
@@ -76,7 +76,7 @@ const MessageActionMenu = ({ options, onChangeMenuVisibility, ...props }: Messag
 	}, [handleChangeMenuVisibility]);
 	return (
 		<>
-			<MessageToolboxItem
+			<MessageToolbarItem
 				ref={buttonRef}
 				icon='kebab'
 				onClick={(): void => handleChangeMenuVisibility(!visible)}
@@ -86,7 +86,7 @@ const MessageActionMenu = ({ options, onChangeMenuVisibility, ...props }: Messag
 			/>
 			{visible && (
 				<>
-					<ToolboxDropdown handleClose={handleClose} reference={buttonRef} {...props}>
+					<ToolbarDropdown handleClose={handleClose} reference={buttonRef} {...props}>
 						{groupOptions.map(([section, options], index, arr) => (
 							<Fragment key={index}>
 								{section === 'apps' && <OptionTitle>Apps</OptionTitle>}
@@ -110,7 +110,7 @@ const MessageActionMenu = ({ options, onChangeMenuVisibility, ...props }: Messag
 								{index !== arr.length - 1 && <OptionDivider />}
 							</Fragment>
 						))}
-					</ToolboxDropdown>
+					</ToolbarDropdown>
 				</>
 			)}
 		</>
