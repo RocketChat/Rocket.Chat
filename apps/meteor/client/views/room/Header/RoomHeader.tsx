@@ -56,7 +56,7 @@ const RoomHeader = ({ room, topic = '', slots = {} }: RoomHeaderProps) => {
 				{topic && (
 					<HeaderContentRow>
 						<HeaderSubtitle is='h2'>
-							<MarkdownText pi={2} mi={-2} parseEmoji={true} variant='inlineWithoutBreaks' withTruncatedText content={topic} />
+							<MarkdownText pi={2} parseEmoji={true} variant='inlineWithoutBreaks' withTruncatedText content={topic} />
 						</HeaderSubtitle>
 					</HeaderContentRow>
 				)}
