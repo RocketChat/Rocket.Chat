@@ -10,19 +10,24 @@ import { addServerUrlToIndex } from '../lib/Assets';
 const indexHtmlWithServerURL = addServerUrlToIndex((await Assets.getTextAsync('livechat/index.html')) || '');
 
 function parseExtraAttributes(widgetData: string): string {
+	const liveChatAdditionalScripts = settings.get<string>('Livechat_AdditionalWidgetScripts');
+	const additionalClass = settings.get<string>('Livechat_WidgetLayoutClasses');
+
+	if (liveChatAdditionalScripts == null || additionalClass == null) {
+		return widgetData;
+	}
+
 	const domParser = new jsdom.JSDOM(widgetData);
 	const doc = domParser.window.document;
 	const head = doc.querySelector('head');
 	const body = doc.querySelector('body');
 
-	const liveChatAdditionalScripts = settings.get<string>('Livechat_AdditionalWidgetScripts');
 	liveChatAdditionalScripts.split(',').forEach((script) => {
 		const scriptElement = doc.createElement('script');
 		scriptElement.src = script;
 		body?.appendChild(scriptElement);
 	});
 
-	const additionalClass = settings.get<string>('Livechat_WidgetLayoutClasses');
 	additionalClass.split(',').forEach((css) => {
 		const linkElement = doc.createElement('link');
 		linkElement.rel = 'stylesheet';
