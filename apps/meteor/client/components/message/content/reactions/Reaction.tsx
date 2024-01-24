@@ -1,7 +1,7 @@
 import { MessageReaction as MessageReactionTemplate, MessageReactionEmoji, MessageReactionCounter } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTooltipClose, useTooltipOpen, useTranslation } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useContext, useRef } from 'react';
 
@@ -55,37 +55,39 @@ const Reaction = ({ hasReacted, counter, name, names, messageId, ...props }: Rea
 
 	const getMessage = useGetMessageByID();
 
-	const { refetch } = useQuery(
-		['chat.getMessage', 'reactions', messageId],
-		async () => {
-			if (names.length === 0) {
-				return [];
-			}
+	const queryClient = useQueryClient();
 
-			if (!showRealName) {
-				return names;
-			}
+	const getNames = async () => {
+		return queryClient.fetchQuery(
+			['chat.getMessage', 'reactions', messageId, names],
+			async () => {
+				// This happens if the only reaction is from the current user
+				if (!names.length) {
+					return [];
+				}
 
-			const message = await getMessage(messageId);
-			const { reactions } = message;
+				if (!showRealName) {
+					return names;
+				}
 
-			if (!reactions) {
-				return [];
-			}
+				const data = await getMessage(messageId);
 
-			if (!username) {
+				const { reactions } = data;
+				if (!reactions) {
+					return [];
+				}
+
+				if (username) {
+					const index = reactions[name].usernames.indexOf(username);
+					index >= 0 && reactions[name].names?.splice(index, 1);
+					return (reactions[name].names || names).filter(Boolean);
+				}
+
 				return reactions[name].names || names;
-			}
-
-			const index = reactions[name].usernames.indexOf(username);
-			if (index === -1) {
-				return reactions[name].names || names;
-			}
-			reactions[name].names?.splice(index, 1);
-			return (reactions[name].names || names).filter(Boolean);
-		},
-		{ enabled: false },
-	);
+			},
+			{ staleTime: 1000 * 60 * 5 },
+		);
+	};
 
 	return (
 		<MessageReactionTemplate
@@ -94,11 +96,13 @@ const Reaction = ({ hasReacted, counter, name, names, messageId, ...props }: Rea
 			mine={mine}
 			tabIndex={0}
 			role='button'
-			onMouseOver={async (e) => {
+			// if data-tooltip is not set, the tooltip will close on first mouse enter
+			data-tooltip
+			onMouseEnter={async (e) => {
 				e.stopPropagation();
 				e.preventDefault();
 
-				const users = (await refetch()).data;
+				const users = await getNames();
 
 				ref.current &&
 					openTooltip(
