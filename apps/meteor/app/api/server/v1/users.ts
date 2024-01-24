@@ -16,7 +16,6 @@ import {
 	isUsersSetPreferencesParamsPOST,
 	isUsersCheckUsernameAvailabilityParamsGET,
 	isUsersSendConfirmationEmailParamsPOST,
-	isUsersGetNamesParamsGETProps,
 } from '@rocket.chat/rest-typings';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
@@ -1251,31 +1250,6 @@ API.v1.addRoute(
 				_id: user._id,
 				// message: user.statusText,
 				status: (user.status || 'offline') as 'online' | 'offline' | 'away' | 'busy',
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'users.getNames',
-	{ authRequired: true, validateParams: isUsersGetNamesParamsGETProps },
-	{
-		async get() {
-			const options = {
-				projection: {
-					name: 1,
-					username: 1,
-				},
-			};
-
-			if ('userIds' in this.queryParams) {
-				return API.v1.success({
-					users: await Users.findByIds(this.queryParams.userIds, options).toArray(),
-				});
-			}
-
-			return API.v1.success({
-				users: await Users.findByUsernames(this.queryParams.usernames, options).toArray(),
 			});
 		},
 	},
