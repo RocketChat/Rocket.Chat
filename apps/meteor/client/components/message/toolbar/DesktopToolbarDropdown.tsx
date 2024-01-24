@@ -2,13 +2,13 @@ import { Tile, PositionAnimated } from '@rocket.chat/fuselage';
 import type { ReactNode, Ref, RefObject } from 'react';
 import React, { forwardRef } from 'react';
 
-type DesktopToolboxDropdownProps = {
+type DesktopToolbarDropdownProps = {
 	children: ReactNode;
 	reference: RefObject<HTMLElement>;
 };
 
-const DesktopToolboxDropdown = forwardRef(function ToolboxDropdownDesktop(
-	{ reference, children }: DesktopToolboxDropdownProps,
+const DesktopToolbarDropdown = forwardRef(function DesktopToolbarDropdown(
+	{ reference, children }: DesktopToolbarDropdownProps,
 	ref: Ref<HTMLElement>,
 ) {
 	return (
@@ -20,4 +20,4 @@ const DesktopToolboxDropdown = forwardRef(function ToolboxDropdownDesktop(
 	);
 });
 
-export default DesktopToolboxDropdown;
+export default DesktopToolbarDropdown;
