@@ -86,8 +86,6 @@
 	font-size: smaller;
 
 	& a {
-		text-decoration: underline;
-
 		font-weight: bold !important;
 	}
 }
