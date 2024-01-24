@@ -48,6 +48,7 @@ export async function getMessageToBroadcast({ id, data }: { id: IMessage['_id'];
 // TODO once the broadcast from file apps/meteor/server/modules/watchers/watchers.module.ts is removed
 // this function can be renamed to broadcastMessage
 export async function broadcastMessageFromData({ id, data }: { id: IMessage['_id']; data?: IMessage }): Promise<void> {
+	// if db watchers are active, the event will be triggered automatically so we don't need to broadcast it here.
 	if (!dbWatchersDisabled) {
 		return;
 	}
