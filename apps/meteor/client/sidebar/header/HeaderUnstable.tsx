@@ -15,7 +15,7 @@ const HeaderUnstable = (): ReactElement => {
 
 	return (
 		<Sidebar.TopBar.Section>
-			<Sidebar.TopBar.Actions justifyContent='end' width='100%'>
+			<Sidebar.TopBar.Actions align='end'>
 				<Search title={t('Search')} />
 				{uid && (
 					<>

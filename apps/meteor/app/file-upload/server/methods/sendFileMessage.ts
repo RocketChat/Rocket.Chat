@@ -1,4 +1,4 @@
-import type { MessageAttachment, FileAttachmentProps, IUser, IUpload, AtLeast } from '@rocket.chat/core-typings';
+import type { MessageAttachment, FileAttachmentProps, IUser, IUpload, AtLeast, FilesAndAttachments } from '@rocket.chat/core-typings';
 import { Rooms, Uploads, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Match, check } from 'meteor/check';
@@ -25,7 +25,7 @@ export const parseFileIntoMessageAttachments = async (
 	file: Partial<IUpload>,
 	roomId: string,
 	user: IUser,
-): Promise<Record<string, any>> => {
+): Promise<FilesAndAttachments> => {
 	validateFileRequiredFields(file);
 
 	await Uploads.updateFileComplete(file._id, user._id, omit(file, '_id'));
@@ -37,8 +37,10 @@ export const parseFileIntoMessageAttachments = async (
 	const files = [
 		{
 			_id: file._id,
-			name: file.name,
-			type: file.type,
+			name: file.name || '',
+			type: file.type || 'file',
+			size: file.size || 0,
+			format: file.identify?.format || '',
 		},
 	];
 
@@ -73,8 +75,10 @@ export const parseFileIntoMessageAttachments = async (
 				};
 				files.push({
 					_id: thumbnail._id,
-					name: file.name,
-					type: thumbnail.type,
+					name: file.name || '',
+					type: thumbnail.type || 'file',
+					size: thumbnail.size || 0,
+					format: thumbnail.identify?.format || '',
 				});
 			}
 		} catch (e) {
