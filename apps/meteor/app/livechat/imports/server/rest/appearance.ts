@@ -52,8 +52,39 @@ API.v1.addRoute(
 				throw new Error('invalid-setting');
 			}
 
+			const dbSettings = await Settings.find({ _id: { $in: validSettingList } }, { projection: { _id: 1, value: 1, type: 1 } }).toArray();
+
+			const settingsToSave: typeof this.bodyParams = [];
+			dbSettings.forEach((dbSetting) => {
+				const setting = settings.find(({ _id }) => _id === dbSetting._id);
+				if (!setting || dbSetting.value === setting.value) {
+					return;
+				}
+
+				switch (dbSetting?.type) {
+					case 'boolean':
+						settingsToSave.push({
+							_id: dbSetting._id,
+							value: coerceValue(setting?.value, 'boolean'),
+						});
+						break;
+					case 'int':
+						settingsToSave.push({
+							_id: dbSetting._id,
+							value: coerceValue(setting?.value, 'int'),
+						});
+						break;
+					default:
+						settingsToSave.push({
+							_id: dbSetting._id,
+							value: setting?.value,
+						});
+						break;
+				}
+			});
+
 			await Promise.all(
-				settings.map((setting) => {
+				settingsToSave.map((setting) => {
 					return Settings.updateValueById(setting._id, setting.value);
 				}),
 			);
@@ -62,3 +93,17 @@ API.v1.addRoute(
 		},
 	},
 );
+
+type ReturnType<T> = T extends 'boolean' ? boolean : T extends 'int' ? number : string;
+
+function coerceValue<T extends 'boolean' | 'int'>(value: string | number | boolean, type: T): ReturnType<T> {
+	if (type === 'boolean') {
+		return (value === 'true' || value === true) as ReturnType<T>;
+	}
+
+	if (type === 'int') {
+		return parseInt((value as string) ?? '0', 10) as ReturnType<T>;
+	}
+
+	return value as ReturnType<T>;
+}
