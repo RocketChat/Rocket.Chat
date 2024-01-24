@@ -1,6 +1,7 @@
 import { Settings } from '@rocket.chat/models';
 import { isPOSTLivechatAppearanceParams } from '@rocket.chat/rest-typings';
 
+import { isTruthy } from '../../../../../lib/isTruthy';
 import { API } from '../../../../api/server';
 import { findAppearance } from '../../../server/api/lib/appearance';
 
@@ -54,34 +55,32 @@ API.v1.addRoute(
 
 			const dbSettings = await Settings.find({ _id: { $in: validSettingList } }, { projection: { _id: 1, value: 1, type: 1 } }).toArray();
 
-			const settingsToSave: typeof this.bodyParams = [];
-			dbSettings.forEach((dbSetting) => {
-				const setting = settings.find(({ _id }) => _id === dbSetting._id);
-				if (!setting || dbSetting.value === setting.value) {
-					return;
-				}
+			const settingsToSave = dbSettings
+				.map((dbSetting) => {
+					const setting = settings.find(({ _id }) => _id === dbSetting._id);
+					if (!setting || dbSetting.value === setting.value) {
+						return;
+					}
 
-				switch (dbSetting?.type) {
-					case 'boolean':
-						settingsToSave.push({
-							_id: dbSetting._id,
-							value: coerceValue(setting?.value, 'boolean'),
-						});
-						break;
-					case 'int':
-						settingsToSave.push({
-							_id: dbSetting._id,
-							value: coerceValue(setting?.value, 'int'),
-						});
-						break;
-					default:
-						settingsToSave.push({
-							_id: dbSetting._id,
-							value: setting?.value,
-						});
-						break;
-				}
-			});
+					switch (dbSetting?.type) {
+						case 'boolean':
+							return {
+								_id: dbSetting._id,
+								value: setting.value === 'true' || setting.value === true,
+							};
+						case 'int':
+							return {
+								_id: dbSetting._id,
+								value: parseInt((setting.value as string) ?? '0', 10),
+							};
+						default:
+							return {
+								_id: dbSetting._id,
+								value: setting?.value,
+							};
+					}
+				})
+				.filter(isTruthy);
 
 			await Promise.all(
 				settingsToSave.map((setting) => {
@@ -93,17 +92,3 @@ API.v1.addRoute(
 		},
 	},
 );
-
-type ReturnType<T> = T extends 'boolean' ? boolean : T extends 'int' ? number : string;
-
-function coerceValue<T extends 'boolean' | 'int'>(value: string | number | boolean, type: T): ReturnType<T> {
-	if (type === 'boolean') {
-		return (value === 'true' || value === true) as ReturnType<T>;
-	}
-
-	if (type === 'int') {
-		return parseInt((value as string) ?? '0', 10) as ReturnType<T>;
-	}
-
-	return value as ReturnType<T>;
-}
