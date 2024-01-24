@@ -1,3 +1,4 @@
+import { api, dbWatchersDisabled } from '@rocket.chat/core-services';
 import type { IMessage, SettingValue, IUser } from '@rocket.chat/core-typings';
 import { Messages, Settings, Users } from '@rocket.chat/models';
 import mem from 'mem';
@@ -12,41 +13,47 @@ const getUserNameCached = mem(
 	{ maxAge: 10000 },
 );
 
-export const broadcastMessageSentEvent = async ({
-	id,
-	data,
-	broadcastCallback,
-}: {
-	id: IMessage['_id'];
-	broadcastCallback: (message: IMessage) => Promise<void>;
-	data?: IMessage;
-}): Promise<void> => {
+export async function getMessageToBroadcast({ id, data }: { id: IMessage['_id']; data?: IMessage }): Promise<IMessage | void> {
 	const message = data ?? (await Messages.findOneById(id));
 	if (!message) {
 		return;
 	}
 
-	if (message._hidden !== true && message.imported == null) {
-		const UseRealName = (await getSettingCached('UI_Use_Real_Name')) === true;
+	if (message._hidden || message.imported != null) {
+		return;
+	}
 
-		if (UseRealName) {
-			if (message.u?._id) {
-				const name = await getUserNameCached(message.u._id);
-				if (name) {
-					message.u.name = name;
-				}
-			}
-
-			if (message.mentions?.length) {
-				for await (const mention of message.mentions) {
-					const name = await getUserNameCached(mention._id);
-					if (name) {
-						mention.name = name;
-					}
-				}
+	const UseRealName = (await getSettingCached('UI_Use_Real_Name')) === true;
+	if (UseRealName) {
+		if (message.u?._id) {
+			const name = await getUserNameCached(message.u._id);
+			if (name) {
+				message.u.name = name;
 			}
 		}
 
-		void broadcastCallback(message);
+		if (message.mentions?.length) {
+			for await (const mention of message.mentions) {
+				const name = await getUserNameCached(mention._id);
+				if (name) {
+					mention.name = name;
+				}
+			}
+		}
 	}
-};
+
+	return message;
+}
+
+// TODO once the broadcast from file apps/meteor/server/modules/watchers/watchers.module.ts is removed
+// this function can be renamed to broadcastMessage
+export async function broadcastMessageFromData({ id, data }: { id: IMessage['_id']; data?: IMessage }): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+	const message = await getMessageToBroadcast({ id, data });
+	if (!message) {
+		return;
+	}
+	void api.broadcast('watch.messages', { message });
+}

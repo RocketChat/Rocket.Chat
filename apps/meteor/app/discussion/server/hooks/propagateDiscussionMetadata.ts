@@ -1,9 +1,8 @@
-import { api } from '@rocket.chat/core-services';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { broadcastMessageSentEvent } from '../../../../server/modules/watchers/lib/messages';
+import { broadcastMessageFromData } from '../../../../server/modules/watchers/lib/messages';
 import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
 
 const updateAndNotifyParentRoomWithParentMessage = async (room: IRoom): Promise<void> => {
@@ -11,10 +10,9 @@ const updateAndNotifyParentRoomWithParentMessage = async (room: IRoom): Promise<
 	if (!parentMessage) {
 		return;
 	}
-	void broadcastMessageSentEvent({
+	void broadcastMessageFromData({
 		id: parentMessage._id,
 		data: parentMessage,
-		broadcastCallback: (message) => api.broadcast('message.sent', message),
 	});
 };
 

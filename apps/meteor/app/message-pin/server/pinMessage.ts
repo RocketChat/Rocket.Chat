@@ -1,4 +1,4 @@
-import { Message, api } from '@rocket.chat/core-services';
+import { Message } from '@rocket.chat/core-services';
 import { isQuoteAttachment, isRegisterUser } from '@rocket.chat/core-typings';
 import type { IMessage, MessageAttachment, MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Subscriptions, Users, ReadReceipts } from '@rocket.chat/models';
@@ -8,7 +8,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { Apps, AppEvents } from '../../../ee/server/apps/orchestrator';
 import { isTruthy } from '../../../lib/isTruthy';
-import { broadcastMessageSentEvent } from '../../../server/modules/watchers/lib/messages';
+import { broadcastMessageFromData } from '../../../server/modules/watchers/lib/messages';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { isTheLastMessage } from '../../lib/server/functions/isTheLastMessage';
@@ -222,9 +222,8 @@ Meteor.methods<ServerMethods>({
 		if (settings.get('Message_Read_Receipt_Store_Users')) {
 			await ReadReceipts.setPinnedByMessageId(originalMessage._id, originalMessage.pinned);
 		}
-		void broadcastMessageSentEvent({
+		void broadcastMessageFromData({
 			id: message._id,
-			broadcastCallback: (message) => api.broadcast('message.sent', message),
 		});
 
 		return true;
