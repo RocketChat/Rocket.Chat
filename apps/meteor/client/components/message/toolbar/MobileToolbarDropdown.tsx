@@ -4,12 +4,12 @@ import React, { forwardRef } from 'react';
 
 import ScrollableContentWrapper from '../../ScrollableContentWrapper';
 
-type MobileToolboxDropdownProps = {
+type MobileToolbarDropdownProps = {
 	children: ReactNode;
 };
 
-const MobileToolboxDropdown = forwardRef(function MobileToolboxDropdown(
-	{ children, ...props }: MobileToolboxDropdownProps,
+const MobileToolbarDropdown = forwardRef(function MobileToolbarDropdown(
+	{ children, ...props }: MobileToolbarDropdownProps,
 	ref: Ref<HTMLElement>,
 ) {
 	return (
@@ -35,4 +35,4 @@ const MobileToolboxDropdown = forwardRef(function MobileToolboxDropdown(
 	);
 });
 
-export default MobileToolboxDropdown;
+export default MobileToolbarDropdown;
