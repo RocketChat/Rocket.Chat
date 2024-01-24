@@ -17,7 +17,7 @@ import { useJumpToMessage } from '../../../views/room/MessageList/hooks/useJumpT
 import { useChat } from '../../../views/room/contexts/ChatContext';
 import IgnoredContent from '../IgnoredContent';
 import MessageHeader from '../MessageHeader';
-import MessageToolboxHolder from '../MessageToolboxHolder';
+import MessageToolbarHolder from '../MessageToolbarHolder';
 import StatusIndicators from '../StatusIndicators';
 import MessageAvatar from '../header/MessageAvatar';
 import RoomMessageContent from './room/RoomMessageContent';
@@ -104,7 +104,7 @@ const RoomMessage = ({
 					<RoomMessageContent message={message} unread={unread} mention={mention} all={all} searchText={searchText} />
 				)}
 			</MessageContainer>
-			{!message.private && <MessageToolboxHolder message={message} context={context} />}
+			{!message.private && <MessageToolbarHolder message={message} context={context} />}
 		</Message>
 	);
 };
