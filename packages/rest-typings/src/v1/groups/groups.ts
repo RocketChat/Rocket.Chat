@@ -53,6 +53,9 @@ export type GroupsEndpoints = {
 			total: number;
 		};
 	};
+	'/v1/groups.memberExists': {
+		GET: (params: { roomId: string; roomName: string }) => { exists: boolean };
+	};
 	'/v1/groups.history': {
 		GET: (params: GroupsHistoryProps) => PaginatedResult<{
 			messages: IMessage[];

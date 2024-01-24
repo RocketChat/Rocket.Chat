@@ -1095,6 +1095,38 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
+	'channels.memberExists',
+	{ authRequired: true },
+	{
+		async get() {
+			check(
+				this.queryParams,
+				Match.ObjectIncluding({
+					username: String,
+					roomId: String,
+				}),
+			);
+
+			const { username, roomId } = this.queryParams;
+
+			const findResult = await findChannelByIdOrName({
+				params: { roomId },
+				checkedArchived: false,
+			});
+
+			if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult._id))) {
+				return API.v1.unauthorized();
+			}
+
+			const options = { projection: { username: 1 } };
+			const user = await Users.findOneByUsernameAndRoom(username, findResult._id, options);
+
+			return API.v1.success({ exists: !!user });
+		},
+	},
+);
+
+API.v1.addRoute(
 	'channels.online',
 	{ authRequired: true },
 	{

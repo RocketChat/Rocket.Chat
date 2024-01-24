@@ -56,6 +56,11 @@ export type ImEndpoints = {
 			members: Pick<IUser, '_id' | 'status' | 'name' | 'username' | 'utcOffset'>[];
 		}>;
 	};
+
+	'/v1/im.memberExists': {
+		GET: (params: { username: string; roomId: string }) => { exists: boolean };
+	};
+
 	'/v1/im.messages': {
 		GET: (params: DmMessagesProps) => PaginatedResult<{
 			messages: IMessage[];

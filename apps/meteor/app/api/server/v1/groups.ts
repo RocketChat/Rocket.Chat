@@ -748,6 +748,38 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
+	'groups.memberExists',
+	{ authRequired: true },
+	{
+		async get() {
+			check(
+				this.queryParams,
+				Match.ObjectIncluding({
+					username: String,
+					roomId: String,
+				}),
+			);
+
+			const { username, roomId } = this.queryParams;
+
+			const findResult = await findPrivateGroupByIdOrName({
+				params: { roomId },
+				userId: this.userId,
+			});
+
+			if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult.rid))) {
+				return API.v1.unauthorized();
+			}
+
+			const options = { projection: { username: 1 } };
+			const user = await Users.findOneByUsernameAndRoom(username, findResult.rid, options);
+
+			return API.v1.success({ exists: !!user });
+		},
+	},
+);
+
+API.v1.addRoute(
 	'groups.messages',
 	{ authRequired: true },
 	{

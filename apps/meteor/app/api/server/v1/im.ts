@@ -354,6 +354,44 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
+	['dm.memberExists', 'im.memberExists'],
+	{
+		authRequired: true,
+	},
+	{
+		async get() {
+			check(
+				this.queryParams,
+				Match.ObjectIncluding({
+					username: String,
+					roomId: String,
+				}),
+			);
+
+			const { username, roomId } = this.queryParams;
+
+			const { room } = await findDirectMessageRoom({ roomId }, this.userId);
+
+			const canAccess = await canAccessRoomIdAsync(room._id, this.userId);
+			if (!canAccess) {
+				return API.v1.unauthorized();
+			}
+
+			const query = {
+				_id: { $in: room.uids },
+				username,
+			};
+
+			const options = { projection: { _id: 1 } };
+
+			const user = await Users.findOne(query, options);
+
+			return API.v1.success({ exists: !!user });
+		},
+	},
+);
+
+API.v1.addRoute(
 	['dm.messages', 'im.messages'],
 	{
 		authRequired: true,
