@@ -4,25 +4,25 @@ import { useLayout } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ReactElement } from 'react';
 import React, { useRef } from 'react';
 
-import DesktopToolboxDropdown from './DesktopToolboxDropdown';
-import MobileToolboxDropdown from './MobileToolboxDropdown';
+import DesktopToolbarDropdown from './DesktopToolbarDropdown';
+import MobileToolbarDropdown from './MobileToolbarDropdown';
 
-type ToolboxDropdownProps<R> = {
+type ToolbarDropdownProps<R> = {
 	children: ReactNode;
 	reference: React.RefObject<R>;
 	handleClose: () => void;
 };
 
-const ToolboxDropdown = <TReferenceElement extends HTMLElement>({
+const ToolbarDropdown = <TReferenceElement extends HTMLElement>({
 	children,
 	handleClose,
 	reference,
-}: ToolboxDropdownProps<TReferenceElement>): ReactElement => {
+}: ToolbarDropdownProps<TReferenceElement>): ReactElement => {
 	const { isMobile } = useLayout();
 	const target = useRef<HTMLButtonElement>(null);
 	const boxRef = useRef<HTMLDivElement>(null);
 
-	const Dropdown = isMobile ? MobileToolboxDropdown : DesktopToolboxDropdown;
+	const Dropdown = isMobile ? MobileToolbarDropdown : DesktopToolbarDropdown;
 
 	useOutsideClick([boxRef], handleClose);
 
@@ -35,4 +35,4 @@ const ToolboxDropdown = <TReferenceElement extends HTMLElement>({
 	);
 };
 
-export default ToolboxDropdown;
+export default ToolbarDropdown;

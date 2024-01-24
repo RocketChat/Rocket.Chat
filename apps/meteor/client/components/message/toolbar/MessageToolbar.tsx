@@ -1,6 +1,6 @@
 import type { IMessage, IRoom, ISubscription, ITranslatedMessage } from '@rocket.chat/core-typings';
 import { isThreadMessage, isRoomFederated, isVideoConfMessage } from '@rocket.chat/core-typings';
-import { MessageToolbox as FuselageMessageToolbox, MessageToolboxItem } from '@rocket.chat/fuselage';
+import { MessageToolbar as FuselageMessageToolbar, MessageToolbarItem } from '@rocket.chat/fuselage';
 import { useFeaturePreview } from '@rocket.chat/ui-client';
 import { useUser, useSettings, useTranslation, useMethod, useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -38,7 +38,7 @@ const getMessageContext = (message: IMessage, room: IRoom, context?: MessageActi
 	return 'message';
 };
 
-type MessageToolboxProps = {
+type MessageToolbarProps = {
 	message: IMessage & Partial<ITranslatedMessage>;
 	messageContext?: MessageActionContext;
 	room: IRoom;
@@ -46,13 +46,13 @@ type MessageToolboxProps = {
 	onChangeMenuVisibility: (visible: boolean) => void;
 };
 
-const MessageToolbox = ({
+const MessageToolbar = ({
 	message,
 	messageContext,
 	room,
 	subscription,
 	onChangeMenuVisibility,
-}: MessageToolboxProps): ReactElement | null => {
+}: MessageToolbarProps): ReactElement | null => {
 	const t = useTranslation();
 	const user = useUser() ?? undefined;
 	const settings = useSettings();
@@ -102,7 +102,7 @@ const MessageToolbox = ({
 	};
 
 	return (
-		<FuselageMessageToolbox>
+		<FuselageMessageToolbar>
 			{quickReactionsEnabled &&
 				isReactionAllowed &&
 				quickReactions.slice(0, 3).map(({ emoji, image }) => {
@@ -110,7 +110,7 @@ const MessageToolbox = ({
 				})}
 			{actionsQueryResult.isSuccess &&
 				actionsQueryResult.data.message.map((action) => (
-					<MessageToolboxItem
+					<MessageToolbarItem
 						onClick={(e): void => action.action(e, { message, tabbar: toolbox, room, chat, autoTranslateOptions })}
 						key={action.id}
 						icon={action.icon}
@@ -129,8 +129,8 @@ const MessageToolbox = ({
 					data-qa-type='message-action-menu-options'
 				/>
 			)}
-		</FuselageMessageToolbox>
+		</FuselageMessageToolbar>
 	);
 };
 
-export default memo(MessageToolbox);
+export default memo(MessageToolbar);
