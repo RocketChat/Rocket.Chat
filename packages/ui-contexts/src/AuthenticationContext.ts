@@ -2,15 +2,15 @@ import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
 import { createContext } from 'react';
 
 export type LoginService = LoginServiceConfiguration & {
-	title?: string;
 	icon?: string;
+	title?: string;
 };
 
 export type AuthenticationContextValue = {
 	loginWithPassword: (user: string | { username: string } | { email: string } | { id: string }, password: string) => Promise<void>;
 	loginWithToken: (user: string) => Promise<void>;
 
-	loginWithService<T extends LoginService>(service: T): () => Promise<true>;
+	loginWithService<T extends LoginServiceConfiguration>(service: T): () => Promise<true>;
 
 	queryLoginServices: {
 		getCurrentValue: () => LoginService[];
