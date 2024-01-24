@@ -1,7 +1,7 @@
 import { Team, isMeteorError } from '@rocket.chat/core-services';
 import type { IIntegration, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
-import { check, Match } from 'meteor/check';
+import { isGroupsMembersProps, isGroupsSetEncryptedProps } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
@@ -9,11 +9,7 @@ import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
 import { hideRoomMethod } from '../../../../server/methods/hideRoom';
 import { removeUserFromRoomMethod } from '../../../../server/methods/removeUserFromRoom';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
-import {
-	hasAllPermissionAsync,
-	hasAtLeastOnePermissionAsync,
-	hasPermissionAsync,
-} from '../../../authorization/server/functions/hasPermission';
+import { hasAllPermissionAsync, hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { createPrivateGroupMethod } from '../../../lib/server/methods/createPrivateGroup';
@@ -412,20 +408,22 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'groups.getIntegrations',
-	{ authRequired: true },
 	{
-		async get() {
-			if (
-				!(await hasAtLeastOnePermissionAsync(this.userId, [
+		authRequired: true,
+		permissionsRequired: {
+			GET: {
+				permissions: [
 					'manage-outgoing-integrations',
 					'manage-own-outgoing-integrations',
 					'manage-incoming-integrations',
 					'manage-own-incoming-integrations',
-				]))
-			) {
-				return API.v1.unauthorized();
-			}
-
+				],
+				operation: 'hasAny',
+			},
+		},
+	},
+	{
+		async get() {
 			const findResult = await findPrivateGroupByIdOrName({
 				params: this.queryParams,
 				userId: this.userId,
@@ -670,12 +668,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'groups.listAll',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-room-administration'] },
 	{
 		async get() {
-			if (!(await hasPermissionAsync(this.userId, 'view-room-administration'))) {
-				return API.v1.unauthorized();
-			}
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
 			const ourQuery = Object.assign({}, query, { t: 'p' as RoomType });
@@ -701,7 +696,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'groups.members',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isGroupsMembersProps },
 	{
 		async get() {
 			const findResult = await findPrivateGroupByIdOrName({
@@ -715,14 +710,6 @@ API.v1.addRoute(
 
 			const { offset: skip, count: limit } = await getPaginationItems(this.queryParams);
 			const { sort = {} } = await this.parseJsonQuery();
-
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					status: Match.Maybe([String]),
-					filter: Match.Maybe(String),
-				}),
-			);
 
 			const { status, filter } = this.queryParams;
 
@@ -1192,12 +1179,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'groups.setEncrypted',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isGroupsSetEncryptedProps },
 	{
 		async post() {
-			if (!Match.test(this.bodyParams, Match.ObjectIncluding({ encrypted: Boolean }))) {
-				return API.v1.failure('The bodyParam "encrypted" is required');
-			}
 			const { encrypted, ...params } = this.bodyParams;
 
 			const findResult = await findPrivateGroupByIdOrName({

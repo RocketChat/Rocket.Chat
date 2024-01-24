@@ -1,20 +1,12 @@
 import { isMailerProps, isMailerUnsubscribeProps } from '@rocket.chat/rest-typings';
 
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { API } from '../api';
 
 API.v1.addRoute(
 	'mailer',
-	{
-		authRequired: true,
-		validateParams: isMailerProps,
-	},
+	{ authRequired: true, validateParams: isMailerProps, permissionsRequired: ['send-mail'] },
 	{
 		async post() {
-			if (!(await hasPermissionAsync(this.userId, 'send-mail'))) {
-				throw new Error('error-not-allowed');
-			}
-
 			const { from, subject, body, dryrun, query } = this.bodyParams;
 
 			const result = await Meteor.callAsync('Mailer.sendMail', from, subject, body, Boolean(dryrun), query);

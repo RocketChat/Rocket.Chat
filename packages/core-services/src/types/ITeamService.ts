@@ -14,8 +14,9 @@ import type { Document, Filter, FindOptions } from 'mongodb';
 
 import type { ICreateRoomParams } from './IRoomService';
 
-export interface ITeamCreateRoom extends Omit<ICreateRoomParams, 'type'> {
+export interface ITeamCreateRoom extends Omit<ICreateRoomParams, 'type' | 'name'> {
 	id?: string;
+	name?: string;
 }
 
 export interface ITeamCreateParams {

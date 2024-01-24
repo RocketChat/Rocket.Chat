@@ -1,9 +1,14 @@
 import { Message } from '@rocket.chat/core-services';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
-import { isChatReportMessageProps, isChatGetURLPreviewProps } from '@rocket.chat/rest-typings';
+import {
+	isChatReportMessageProps,
+	isChatGetURLPreviewProps,
+	isChatUpdateProps,
+	isChatGetThreadsListProps,
+	isChatDeleteProps,
+} from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { reportMessage } from '../../../../server/lib/moderation/reportMessage';
@@ -25,18 +30,9 @@ import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } f
 
 API.v1.addRoute(
 	'chat.delete',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChatDeleteProps },
 	{
 		async post() {
-			check(
-				this.bodyParams,
-				Match.ObjectIncluding({
-					msgId: String,
-					roomId: String,
-					asUser: Match.Maybe(Boolean),
-				}),
-			);
-
 			const msg = await Messages.findOneById(this.bodyParams.msgId, { projection: { u: 1, rid: 1 } });
 
 			if (!msg) {
@@ -303,19 +299,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.update',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChatUpdateProps },
 	{
 		async post() {
-			check(
-				this.bodyParams,
-				Match.ObjectIncluding({
-					roomId: String,
-					msgId: String,
-					text: String, // Using text to be consistant with chat.postMessage
-					previewUrls: Match.Maybe([String]),
-				}),
-			);
-
 			const msg = await Messages.findOneById(this.bodyParams.msgId);
 
 			// Ensure the message exists
@@ -489,14 +475,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.getThreadsList',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChatGetThreadsListProps },
 	{
 		async get() {
 			const { rid, type, text } = this.queryParams;
-			check(rid, String);
-			check(type, Match.Maybe(String));
-			check(text, Match.Maybe(String));
-
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
 

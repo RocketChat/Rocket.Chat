@@ -1,6 +1,5 @@
 import { Team } from '@rocket.chat/core-services';
 import type { ITeam, UserStatus } from '@rocket.chat/core-typings';
-import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import { Users, Rooms } from '@rocket.chat/models';
 import {
 	isTeamsConvertToChannelProps,
@@ -11,9 +10,16 @@ import {
 	isTeamsDeleteProps,
 	isTeamsLeaveProps,
 	isTeamsUpdateProps,
+	isTeamsCreateProps,
+	isTeamsAddRoomsProps,
+	isTeamsUpdateRoomProps,
+	isTeamsListRoomsProps,
+	isTeamsListRoomsOfUserProps,
+	isTeamsMembersProps,
+	isTeamsInfoProps,
+	isTeamsAutocompleteProps,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomAsync } from '../../../authorization/server';
@@ -44,13 +50,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'teams.listAll',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-all-teams'] },
 	{
 		async get() {
-			if (!(await hasPermissionAsync(this.userId, 'view-all-teams'))) {
-				return API.v1.unauthorized();
-			}
-
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			const { records, total } = await Team.listAll({ offset, count });
@@ -67,24 +69,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'teams.create',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['create-team'], validateParams: isTeamsCreateProps },
 	{
 		async post() {
-			if (!(await hasPermissionAsync(this.userId, 'create-team'))) {
-				return API.v1.unauthorized();
-			}
-
-			check(
-				this.bodyParams,
-				Match.ObjectIncluding({
-					name: String,
-					type: Match.OneOf(TEAM_TYPE.PRIVATE, TEAM_TYPE.PUBLIC),
-					members: Match.Maybe([String]),
-					room: Match.Maybe(Match.Any),
-					owner: Match.Maybe(String),
-				}),
-			);
-
 			const { name, type, members, room, owner } = this.bodyParams;
 
 			const team = await Team.create(this.userId, {
@@ -153,23 +140,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'teams.addRooms',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isTeamsAddRoomsProps },
 	{
 		async post() {
-			check(
-				this.bodyParams,
-				Match.OneOf(
-					Match.ObjectIncluding({
-						teamId: String,
-						rooms: [String] as [StringConstructor],
-					}),
-					Match.ObjectIncluding({
-						teamName: String,
-						rooms: [String] as [StringConstructor],
-					}),
-				),
-			);
-
 			const team = await getTeamByIdOrName(this.bodyParams);
 			if (!team) {
 				return API.v1.failure('team-does-not-exist');
@@ -218,17 +191,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'teams.updateRoom',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isTeamsUpdateRoomProps },
 	{
 		async post() {
-			check(
-				this.bodyParams,
-				Match.ObjectIncluding({
-					roomId: String,
-					isDefault: Boolean,
-				}),
-			);
-
 			const { roomId, isDefault } = this.bodyParams;
 
 			const team = await Team.getOneByRoomId(roomId);
@@ -250,31 +215,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'teams.listRooms',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isTeamsListRoomsProps },
 	{
 		async get() {
-			check(
-				this.queryParams,
-				Match.OneOf(
-					Match.ObjectIncluding({
-						teamId: String,
-					}),
-					Match.ObjectIncluding({
-						teamName: String,
-					}),
-				),
-			);
-
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					filter: Match.Maybe(String),
-					type: Match.Maybe(String),
-					offset: Match.Maybe(String),
-					count: Match.Maybe(String),
-				}),
-			);
-
 			const { filter, type } = this.queryParams;
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
@@ -285,10 +228,7 @@ API.v1.addRoute(
 
 			const allowPrivateTeam: boolean = await hasPermissionAsync(this.userId, 'view-all-teams', team.roomId);
 
-			let getAllRooms = false;
-			if (await hasPermissionAsync(this.userId, 'view-all-team-channels', team.roomId)) {
-				getAllRooms = true;
-			}
+			const getAllRooms = await hasPermissionAsync(this.userId, 'view-all-team-channels', team.roomId);
 
 			const listFilter = {
 				name: filter ?? undefined,
@@ -314,31 +254,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'teams.listRoomsOfUser',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isTeamsListRoomsOfUserProps },
 	{
 		async get() {
-			check(
-				this.queryParams,
-				Match.OneOf(
-					Match.ObjectIncluding({
-						teamId: String,
-					}),
-					Match.ObjectIncluding({
-						teamName: String,
-					}),
-				),
-			);
-
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					userId: String,
-					canUserDelete: Match.Maybe(String),
-					offset: Match.Maybe(String),
-					count: Match.Maybe(String),
-				}),
-			);
-
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			const team = await getTeamByIdOrName(this.queryParams);
@@ -372,31 +290,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'teams.members',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isTeamsMembersProps },
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
-
-			check(
-				this.queryParams,
-				Match.OneOf(
-					Match.ObjectIncluding({
-						teamId: String,
-					}),
-					Match.ObjectIncluding({
-						teamName: String,
-					}),
-				),
-			);
-
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					status: Match.Maybe([String]),
-					username: Match.Maybe(String),
-					name: Match.Maybe(String),
-				}),
-			);
 
 			const { status, username, name } = this.queryParams;
 
@@ -557,21 +454,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'teams.info',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isTeamsInfoProps },
 	{
 		async get() {
-			check(
-				this.queryParams,
-				Match.OneOf(
-					Match.ObjectIncluding({
-						teamId: String,
-					}),
-					Match.ObjectIncluding({
-						teamName: String,
-					}),
-				),
-			);
-
 			const teamInfo = await getTeamByIdOrName(this.queryParams);
 			if (!teamInfo) {
 				return API.v1.failure('Team not found');
@@ -642,16 +527,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'teams.autocomplete',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isTeamsAutocompleteProps },
 	{
 		async get() {
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					name: String,
-				}),
-			);
-
 			const { name } = this.queryParams;
 
 			const teams = await Team.autocomplete(this.userId, name);

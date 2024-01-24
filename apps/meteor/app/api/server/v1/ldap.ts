@@ -1,22 +1,17 @@
 import { LDAP } from '@rocket.chat/core-services';
-import { Match, check } from 'meteor/check';
 
+import { isLdapTestSearch } from '@rocket.chat/rest-typings/dist/v1/ldap';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
 import { API } from '../api';
 
 API.v1.addRoute(
 	'ldap.testConnection',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['test-admin-options'] },
 	{
 		async post() {
 			if (!this.userId) {
 				throw new Error('error-invalid-user');
-			}
-
-			if (!(await hasPermissionAsync(this.userId, 'test-admin-options'))) {
-				throw new Error('error-not-authorized');
 			}
 
 			if (settings.get<boolean>('LDAP_Enable') !== true) {
@@ -39,22 +34,11 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'ldap.testSearch',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['test-admin-options'], validateParams: isLdapTestSearch },
 	{
 		async post() {
-			check(
-				this.bodyParams,
-				Match.ObjectIncluding({
-					username: String,
-				}),
-			);
-
 			if (!this.userId) {
 				throw new Error('error-invalid-user');
-			}
-
-			if (!(await hasPermissionAsync(this.userId, 'test-admin-options'))) {
-				throw new Error('error-not-authorized');
 			}
 
 			if (settings.get('LDAP_Enable') !== true) {

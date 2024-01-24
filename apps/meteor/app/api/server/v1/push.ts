@@ -1,6 +1,6 @@
 import { Messages, AppsTokens, Users, Rooms, Settings } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import { Match, check } from 'meteor/check';
+import { isPushGetProps } from '@rocket.chat/rest-typings/dist/v1/push';
 import { Meteor } from 'meteor/meteor';
 
 import { executePushTest } from '../../../../server/lib/pushConfig';
@@ -76,16 +76,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'push.get',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isPushGetProps },
 	{
 		async get() {
 			const params = this.queryParams;
-			check(
-				params,
-				Match.ObjectIncluding({
-					id: String,
-				}),
-			);
 
 			const receiver = await Users.findOneById(this.userId);
 			if (!receiver) {

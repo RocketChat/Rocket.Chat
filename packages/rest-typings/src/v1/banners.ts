@@ -15,7 +15,7 @@ const BannersGetNewSchema = {
 	properties: {
 		platform: {
 			type: 'string',
-			enum: ['1', '2'],
+			enum: ['web', 'mobile'],
 		},
 		bid: {
 			type: 'string',
@@ -53,6 +53,7 @@ const BannersSchema = {
 	properties: {
 		platform: {
 			type: 'string',
+			enum: ['web', 'mobile'],
 		},
 	},
 	required: ['platform'],
@@ -70,6 +71,7 @@ const BannersDismissSchema = {
 	properties: {
 		bannerId: {
 			type: 'string',
+			isNotEmpty: true,
 		},
 	},
 	required: ['bannerId'],

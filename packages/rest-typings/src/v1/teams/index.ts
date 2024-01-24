@@ -1,15 +1,22 @@
-import type { IRole, IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
+import type { IRole, IRoom, ITeam } from '@rocket.chat/core-typings';
 
-import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
 import type { TeamsAddMembersProps } from './TeamsAddMembersProps';
+import type { TeamsAddRoomsProps } from './TeamsAddRoomsProps';
+import type { TeamsAutocompleteProps } from './TeamsAutocompleteProps';
 import type { TeamsConvertToChannelProps } from './TeamsConvertToChannelProps';
+import type { TeamsCreateProps } from './TeamsCreateProps';
 import type { TeamsDeleteProps } from './TeamsDeleteProps';
+import type { TeamsInfoProps } from './TeamsInfoProps';
 import type { TeamsLeaveProps } from './TeamsLeaveProps';
+import type { TeamsListRoomsOfUserProps } from './TeamsListRoomsOfUserProps';
+import type { TeamsListRoomsProps } from './TeamsListRoomsProps';
+import type { TeamsMembersProps } from './TeamsMembersProps';
 import type { TeamsRemoveMemberProps } from './TeamsRemoveMemberProps';
 import type { TeamsRemoveRoomProps } from './TeamsRemoveRoomProps';
 import type { TeamsUpdateMemberProps } from './TeamsUpdateMemberProps';
 import type { TeamsUpdateProps } from './TeamsUpdateProps';
+import type { TeamsUpdateRoomProps } from './TeamsUpdateRoomProps';
 
 export * from './TeamsAddMembersProps';
 export * from './TeamsConvertToChannelProps';
@@ -19,6 +26,14 @@ export * from './TeamsRemoveMemberProps';
 export * from './TeamsRemoveRoomProps';
 export * from './TeamsUpdateMemberProps';
 export * from './TeamsUpdateProps';
+export * from './TeamsCreateProps';
+export * from './TeamsAddRoomsProps';
+export * from './TeamsUpdateRoomProps';
+export * from './TeamsListRoomsProps';
+export * from './TeamsListRoomsOfUserProps';
+export * from './TeamsMembersProps';
+export * from './TeamsInfoProps';
+export * from './TeamsAutocompleteProps';
 
 type ITeamAutocompleteResult = Pick<IRoom, '_id' | 'fname' | 'teamId' | 'name' | 't' | 'avatarETag'>;
 
@@ -44,7 +59,15 @@ type TeamProps =
 	| TeamsRemoveMemberProps
 	| TeamsDeleteProps
 	| TeamsLeaveProps
-	| TeamsUpdateProps;
+	| TeamsUpdateProps
+	| TeamsAddRoomsProps
+	| TeamsCreateProps
+	| TeamsUpdateRoomProps
+	| TeamsListRoomsProps
+	| TeamsListRoomsOfUserProps
+	| TeamsMembersProps
+	| TeamsInfoProps
+	| TeamsAutocompleteProps;
 
 export const isTeamPropsWithTeamName = <T extends TeamProps>(props: T): props is T & { teamName: string } => 'teamName' in props;
 
@@ -58,39 +81,7 @@ export type TeamsEndpoints = {
 		GET: () => { teams: ITeam[] } & PaginatedResult;
 	};
 	'/v1/teams.create': {
-		POST: (params: {
-			name: ITeam['name'];
-			type: ITeam['type'];
-			members?: IUser['_id'][];
-			room: {
-				id?: string;
-				name?: IRoom['name'];
-				members?: IUser['_id'][];
-				readOnly?: boolean;
-				extraData?: {
-					teamId?: string;
-					teamMain?: boolean;
-				} & { [key: string]: string | boolean };
-				options?: {
-					nameValidationRegex?: string;
-					creator: string;
-					subscriptionExtra?: {
-						open: boolean;
-						ls: Date;
-						prid: IRoom['_id'];
-					};
-				} & {
-					[key: string]:
-						| string
-						| {
-								open: boolean;
-								ls: Date;
-								prid: IRoom['_id'];
-						  };
-				};
-			};
-			owner?: IUser['_id'];
-		}) => {
+		POST: (params: TeamsCreateProps) => {
 			team: ITeam;
 		};
 	};
@@ -100,7 +91,7 @@ export type TeamsEndpoints = {
 	};
 
 	'/v1/teams.addRooms': {
-		POST: (params: { rooms: IRoom['_id'][]; teamId: string } | { rooms: IRoom['_id'][]; teamName: string }) => { rooms: IRoom[] };
+		POST: (params: TeamsAddRoomsProps) => { rooms: IRoom[] };
 	};
 
 	'/v1/teams.removeRoom': {
@@ -108,13 +99,7 @@ export type TeamsEndpoints = {
 	};
 
 	'/v1/teams.members': {
-		GET: (
-			params: ({ teamId: string } | { teamName: string }) & {
-				status?: string[];
-				username?: string;
-				name?: string;
-			},
-		) => PaginatedResult & { members: ITeamMemberInfo[] };
+		GET: (params: TeamsMembersProps) => PaginatedResult & { members: ITeamMemberInfo[] };
 	};
 
 	'/v1/teams.addMembers': {
@@ -134,13 +119,11 @@ export type TeamsEndpoints = {
 	};
 
 	'/v1/teams.info': {
-		GET: (params: ({ teamId: string } | { teamName: string }) & Record<string, string | number | boolean | object>) => {
-			teamInfo: Partial<ITeam>;
-		};
+		GET: (params: TeamsInfoProps) => { teamInfo: Partial<ITeam> };
 	};
 
 	'/v1/teams.autocomplete': {
-		GET: (params: { name: string }) => { teams: ITeamAutocompleteResult[] };
+		GET: (params: TeamsAutocompleteProps) => { teams: ITeamAutocompleteResult[] };
 	};
 
 	'/v1/teams.update': {
@@ -152,35 +135,15 @@ export type TeamsEndpoints = {
 	};
 
 	'/v1/teams.listRoomsOfUser': {
-		GET: (
-			params: PaginatedRequest<
-				| {
-						teamId: ITeam['_id'];
-						userId: IUser['_id'];
-						canUserDelete?: string;
-				  }
-				| {
-						teamName: ITeam['name'];
-						userId: IUser['_id'];
-						canUserDelete?: string;
-				  }
-			>,
-		) => PaginatedResult & { rooms: IRoom[] };
+		GET: (params: TeamsListRoomsOfUserProps) => PaginatedResult & { rooms: IRoom[] };
 	};
 
 	'/v1/teams.listRooms': {
-		GET: (
-			params: PaginatedRequest<
-				({ teamId: string } | { teamName: string }) & {
-					filter?: string;
-					type?: string;
-				}
-			>,
-		) => PaginatedResult & { rooms: IRoom[] };
+		GET: (params: TeamsListRoomsProps) => PaginatedResult & { rooms: IRoom[] };
 	};
 
 	'/v1/teams.updateRoom': {
-		POST: (params: { roomId: IRoom['_id']; isDefault: boolean }) => {
+		POST: (params: TeamsUpdateRoomProps) => {
 			room: IRoom;
 		};
 	};

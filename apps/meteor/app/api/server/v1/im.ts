@@ -11,7 +11,6 @@ import {
 	isDmCreateProps,
 	isDmHistoryProps,
 } from '@rocket.chat/rest-typings';
-import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
@@ -312,14 +311,6 @@ API.v1.addRoute(
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort } = await this.parseJsonQuery();
-
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					status: Match.Maybe([String]),
-					filter: Match.Maybe(String),
-				}),
-			);
 			const { status, filter } = this.queryParams;
 
 			const extraQuery = {
@@ -395,17 +386,13 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	['dm.messages.others', 'im.messages.others'],
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-room-administration'] },
 	{
 		async get() {
 			if (settings.get('API_Enable_Direct_Message_History_EndPoint') !== true) {
 				throw new Meteor.Error('error-endpoint-disabled', 'This endpoint is disabled', {
 					route: '/api/v1/im.messages.others',
 				});
-			}
-
-			if (!(await hasPermissionAsync(this.userId, 'view-room-administration'))) {
-				return API.v1.unauthorized();
 			}
 
 			const { roomId } = this.queryParams;
@@ -483,13 +470,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	['dm.list.everyone', 'im.list.everyone'],
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-room-administration'] },
 	{
 		async get() {
-			if (!(await hasPermissionAsync(this.userId, 'view-room-administration'))) {
-				return API.v1.unauthorized();
-			}
-
 			const { offset, count }: { offset: number; count: number } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
 

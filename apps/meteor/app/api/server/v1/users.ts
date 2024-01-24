@@ -16,9 +16,12 @@ import {
 	isUsersSetPreferencesParamsPOST,
 	isUsersCheckUsernameAvailabilityParamsGET,
 	isUsersSendConfirmationEmailParamsPOST,
+	isUsersSetStatusParamsPOST,
+	isUsersDeleteOwnAccountParamsPOST,
+	isUsersGetAvatarParamsGET,
+	isUsersDeleteParamsPOST,
 } from '@rocket.chat/rest-typings';
 import { Accounts } from 'meteor/accounts-base';
-import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
@@ -52,7 +55,7 @@ import { findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonE
 
 API.v1.addRoute(
 	'users.getAvatar',
-	{ authRequired: false },
+	{ authRequired: false, validateParams: isUsersGetAvatarParamsGET },
 	{
 		async get() {
 			const user = await getUserFromParams(this.queryParams);
@@ -70,9 +73,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.getAvatarSuggestion',
-	{
-		authRequired: true,
-	},
+	{ authRequired: true },
 	{
 		async get() {
 			const suggestions = await Meteor.callAsync('getAvatarSuggestion');
@@ -304,13 +305,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.delete',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['delete-user'], validateParams: isUsersDeleteParamsPOST },
 	{
 		async post() {
-			if (!(await hasPermissionAsync(this.userId, 'delete-user'))) {
-				return API.v1.unauthorized();
-			}
-
 			const user = await getUserFromParams(this.bodyParams);
 			const { confirmRelinquish = false } = this.bodyParams;
 
@@ -323,13 +320,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.deleteOwnAccount',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isUsersDeleteOwnAccountParamsPOST },
 	{
 		async post() {
 			const { password } = this.bodyParams;
-			if (!password) {
-				return API.v1.failure('Body parameter "password" is required.');
-			}
 			if (!settings.get('Accounts_AllowDeleteOwnAccount')) {
 				throw new Meteor.Error('error-not-allowed', 'Not allowed');
 			}
@@ -345,16 +339,15 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.setActiveStatus',
-	{ authRequired: true, validateParams: isUserSetActiveStatusParamsPOST },
+	{
+		authRequired: true,
+		validateParams: isUserSetActiveStatusParamsPOST,
+		permissionsRequired: {
+			POST: { permissions: ['edit-other-user-active-status', 'manage-moderation-actions'], operation: 'hasAny' },
+		},
+	},
 	{
 		async post() {
-			if (
-				!(await hasPermissionAsync(this.userId, 'edit-other-user-active-status')) &&
-				!(await hasPermissionAsync(this.userId, 'manage-moderation-actions'))
-			) {
-				return API.v1.unauthorized();
-			}
-
 			const { userId, activeStatus, confirmRelinquish = false } = this.bodyParams;
 			await Meteor.callAsync('setUserActiveStatus', userId, activeStatus, confirmRelinquish);
 
@@ -371,13 +364,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.deactivateIdle',
-	{ authRequired: true, validateParams: isUserDeactivateIdleParamsPOST },
+	{ authRequired: true, validateParams: isUserDeactivateIdleParamsPOST, permissionsRequired: ['edit-other-user-active-status'] },
 	{
 		async post() {
-			if (!(await hasPermissionAsync(this.userId, 'edit-other-user-active-status'))) {
-				return API.v1.unauthorized();
-			}
-
 			const { daysIdle, role = 'user' } = this.bodyParams;
 
 			const lastLoggedIn = new Date();
@@ -448,13 +437,10 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		queryOperations: ['$or', '$and'],
+		permissionsRequired: ['view-d-room'],
 	},
 	{
 		async get() {
-			if (!(await hasPermissionAsync(this.userId, 'view-d-room'))) {
-				return API.v1.unauthorized();
-			}
-
 			if (
 				settings.get('API_Apply_permission_view-outside-room_on_users-list') &&
 				!(await hasPermissionAsync(this.userId, 'view-outside-room'))
@@ -744,13 +730,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.getPersonalAccessTokens',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['create-personal-access-tokens'] },
 	{
 		async get() {
-			if (!(await hasPermissionAsync(this.userId, 'create-personal-access-tokens'))) {
-				throw new Meteor.Error('not-authorized', 'Not Authorized');
-			}
-
 			const user = (await Users.getLoginTokensByUserId(this.userId).toArray())[0] as unknown as IUser | undefined;
 
 			const isPersonalAccessToken = (loginToken: ILoginToken | IPersonalAccessToken): loginToken is IPersonalAccessToken =>
@@ -1075,13 +1057,6 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isUsersListTeamsProps },
 	{
 		async get() {
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					userId: Match.Maybe(String),
-				}),
-			);
-
 			const { userId } = this.queryParams;
 
 			// If the caller has permission to view all teams, there's no need to filter the teams
@@ -1144,23 +1119,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.setStatus',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isUsersSetStatusParamsPOST },
 	{
 		async post() {
-			check(
-				this.bodyParams,
-				Match.OneOf(
-					Match.ObjectIncluding({
-						status: Match.Maybe(String),
-						message: String,
-					}),
-					Match.ObjectIncluding({
-						status: String,
-						message: Match.Maybe(String),
-					}),
-				),
-			);
-
 			if (!settings.get('Accounts_AllowUserStatusMessageChange')) {
 				throw new Meteor.Error('error-not-allowed', 'Change status is not allowed', {
 					method: 'users.setStatus',

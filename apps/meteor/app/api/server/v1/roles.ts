@@ -1,8 +1,7 @@
 import { api } from '@rocket.chat/core-services';
 import type { IRole } from '@rocket.chat/core-typings';
 import { Roles, Users } from '@rocket.chat/models';
-import { isRoleAddUserToRoleProps, isRoleDeleteProps, isRoleRemoveUserFromRoleProps } from '@rocket.chat/rest-typings';
-import { check, Match } from 'meteor/check';
+import { isRoleAddUserToRoleProps, isRoleDeleteProps, isRoleRemoveUserFromRoleProps, isRolesSyncProps } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { getUsersInRolePaginated } from '../../../authorization/server/functions/getUsersInRole';
@@ -28,16 +27,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'roles.sync',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isRolesSyncProps },
 	{
 		async get() {
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					updatedSince: Match.Where((value: unknown): value is string => typeof value === 'string' && !Number.isNaN(Date.parse(value))),
-				}),
-			);
-
 			const { updatedSince } = this.queryParams;
 
 			return API.v1.success({
@@ -90,7 +82,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'roles.getUsersInRole',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['access-permissions'] },
 	{
 		async get() {
 			const { roomId, role } = this.queryParams;
@@ -107,9 +99,6 @@ API.v1.addRoute(
 
 			if (!role) {
 				throw new Meteor.Error('error-param-not-provided', 'Query param "role" is required');
-			}
-			if (!(await hasPermissionAsync(this.userId, 'access-permissions'))) {
-				throw new Meteor.Error('error-not-allowed', 'Not allowed');
 			}
 			if (roomId && !(await hasPermissionAsync(this.userId, 'view-other-user-channels'))) {
 				throw new Meteor.Error('error-not-allowed', 'Not allowed');
@@ -149,16 +138,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'roles.delete',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['access-permissions'] },
 	{
 		async post() {
 			const { bodyParams } = this;
 			if (!isRoleDeleteProps(bodyParams)) {
 				throw new Meteor.Error('error-invalid-role-properties', 'The role properties are invalid.');
-			}
-
-			if (!(await hasPermissionAsync(this.userId, 'access-permissions'))) {
-				throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed');
 			}
 
 			const role = await Roles.findOneByIdOrName(bodyParams.roleId);
@@ -186,7 +171,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'roles.removeUserFromRole',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['access-permissions'] },
 	{
 		async post() {
 			const { bodyParams } = this;
@@ -195,10 +180,6 @@ API.v1.addRoute(
 			}
 
 			const { roleId, roleName, username, scope } = bodyParams;
-
-			if (!(await hasPermissionAsync(this.userId, 'access-permissions'))) {
-				throw new Meteor.Error('error-not-allowed', 'Accessing permissions is not allowed');
-			}
 
 			if (!roleId) {
 				if (!roleName) {

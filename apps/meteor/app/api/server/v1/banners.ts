@@ -3,6 +3,7 @@ import { BannerPlatform } from '@rocket.chat/core-typings';
 import { Match, check } from 'meteor/check';
 
 import { API } from '../api';
+import { isBannersDismissProps, isBannersGetNewProps, isBannersIdProps, isBannersProps } from '@rocket.chat/rest-typings';
 
 /**
  * @deprecated
@@ -52,18 +53,10 @@ import { API } from '../api';
  */
 API.v1.addRoute(
 	'banners.getNew',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isBannersGetNewProps },
 	{
 		// deprecated
 		async get() {
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					platform: Match.OneOf(...Object.values(BannerPlatform)),
-					bid: Match.Maybe(String),
-				}),
-			);
-
 			const { platform, bid: bannerId } = this.queryParams;
 
 			const banners = await Banner.getBannersForUser(this.userId, platform, bannerId ?? undefined);
@@ -121,7 +114,7 @@ API.v1.addRoute(
  */
 API.v1.addRoute(
 	'banners/:id',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isBannersIdProps },
 	{
 		// TODO: move to users/:id/banners
 		async get() {
@@ -129,12 +122,6 @@ API.v1.addRoute(
 				this.urlParams,
 				Match.ObjectIncluding({
 					id: Match.Where((id: unknown): id is string => typeof id === 'string' && Boolean(id.trim())),
-				}),
-			);
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					platform: Match.OneOf(...Object.values(BannerPlatform)),
 				}),
 			);
 
@@ -187,16 +174,9 @@ API.v1.addRoute(
  */
 API.v1.addRoute(
 	'banners',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isBannersProps },
 	{
 		async get() {
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					platform: Match.OneOf(...Object.values(BannerPlatform)),
-				}),
-			);
-
 			const { platform } = this.queryParams;
 
 			const banners = await Banner.getBannersForUser(this.userId, platform);
@@ -241,16 +221,9 @@ API.v1.addRoute(
  */
 API.v1.addRoute(
 	'banners.dismiss',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isBannersDismissProps },
 	{
 		async post() {
-			check(
-				this.bodyParams,
-				Match.ObjectIncluding({
-					bannerId: Match.Where((id: unknown): id is string => typeof id === 'string' && Boolean(id.trim())),
-				}),
-			);
-
 			const { bannerId } = this.bodyParams;
 
 			await Banner.dismiss(this.userId, bannerId);

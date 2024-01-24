@@ -14,7 +14,6 @@ import {
 } from '@rocket.chat/rest-typings';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import EJSON from 'ejson';
-import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 import { v4 as uuidv4 } from 'uuid';
@@ -22,7 +21,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { getLogs } from '../../../../server/stream/stdout';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { passwordPolicy } from '../../../lib/server';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { settings } from '../../../settings/server';
@@ -413,12 +411,6 @@ API.v1.addRoute(
 	{
 		async get() {
 			apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, ' Use pw.getPolicy instead.');
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					token: String,
-				}),
-			);
 			const { token } = this.queryParams;
 
 			const user = await Users.findOneByResetToken(token, { projection: { _id: 1 } });
@@ -469,12 +461,9 @@ API.v1.addRoute(
  */
 API.v1.addRoute(
 	'stdout.queue',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-logs'] },
 	{
 		async get() {
-			if (!(await hasPermissionAsync(this.userId, 'view-logs'))) {
-				return API.v1.unauthorized();
-			}
 			return API.v1.success({ queue: getLogs() });
 		},
 	},
@@ -522,10 +511,6 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			check(this.bodyParams, {
-				message: String,
-			});
-
 			const data = EJSON.parse(this.bodyParams.message);
 
 			if (!isMethodCallProps(data)) {
@@ -582,10 +567,6 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			check(this.bodyParams, {
-				message: String,
-			});
-
 			const data = EJSON.parse(this.bodyParams.message);
 
 			if (!isMethodCallAnonProps(data)) {
@@ -682,10 +663,6 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			check(this.bodyParams, {
-				setDeploymentAs: String,
-			});
-
 			if (this.bodyParams.setDeploymentAs === 'new-workspace') {
 				await Promise.all([
 					Settings.resetValueById('uniqueID', process.env.DEPLOYMENT_ID || uuidv4()),

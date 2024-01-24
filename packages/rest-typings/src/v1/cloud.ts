@@ -56,7 +56,6 @@ const CloudConfirmationPollSchema = {
 		},
 		resend: {
 			type: 'string',
-			nullable: true,
 		},
 	},
 	required: ['deviceCode'],

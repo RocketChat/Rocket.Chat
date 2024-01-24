@@ -249,6 +249,10 @@ export * from './v1/users/UsersUpdateParamsPOST';
 export * from './v1/users/UsersCheckUsernameAvailabilityParamsGET';
 export * from './v1/users/UsersGetAvatarSuggestionParamsGET';
 export * from './v1/users/UsersSendConfirmationEmailParamsPOST';
+export * from './v1/users/UsersSetStatusParamsPOST';
+export * from './v1/users/UsersDeleteOwnAccountParamsPOST';
+export * from './v1/users/UsersGetAvatarParamsGET';
+export * from './v1/users/UsersDeleteParamsPOST';
 export * from './v1/moderation';
 
 export * from './v1/autotranslate/AutotranslateGetSupportedLanguagesParamsGET';
@@ -265,5 +269,7 @@ export * from './v1/calendar';
 export * from './v1/federation';
 export * from './v1/rooms';
 export * from './v1/groups';
+export * from './v1/banners';
 export * from './v1/chat';
+export * from './v1/cloud';
 export * from './v1/auth';
