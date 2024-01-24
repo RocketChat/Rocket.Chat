@@ -23,8 +23,8 @@ export async function getMessageToBroadcast({ id, data }: { id: IMessage['_id'];
 		return;
 	}
 
-	const UseRealName = (await getSettingCached('UI_Use_Real_Name')) === true;
-	if (UseRealName) {
+	const useRealName = (await getSettingCached('UI_Use_Real_Name')) === true;
+	if (useRealName) {
 		if (message.u?._id) {
 			const name = await getUserNameCached(message.u._id);
 			if (name) {
