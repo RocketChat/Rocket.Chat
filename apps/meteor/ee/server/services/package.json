@@ -41,7 +41,7 @@
 		"jaeger-client": "^3.19.0",
 		"mem": "^8.1.1",
 		"moleculer": "^0.14.31",
-		"mongodb": "^4.17.1",
+		"mongodb": "^4.17.2",
 		"nats": "^2.6.1",
 		"pino": "^8.15.0",
 		"sodium-native": "^3.3.0",

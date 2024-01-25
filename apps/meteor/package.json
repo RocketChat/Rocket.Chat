@@ -377,7 +377,7 @@
 		"moment": "^2.29.4",
 		"moment-timezone": "^0.5.43",
 		"mongo-message-queue": "^1.0.0",
-		"mongodb": "^4.17.1",
+		"mongodb": "^4.17.2",
 		"nats": "^2.6.1",
 		"node-abort-controller": "^3.1.1",
 		"node-dogstatsd": "^0.0.7",
