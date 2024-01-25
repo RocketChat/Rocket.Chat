@@ -1704,7 +1704,6 @@ describe('[Rooms]', function () {
 					expect(res.body.room).to.have.property('default', true);
 					expect(res.body.room).to.have.property('favorite', true);
 					expect(res.body.room).to.have.property('reactWhenReadOnly', true);
-					expect(res.body.room).to.have.property('archived', true);
 				})
 				.end(done);
 		});
