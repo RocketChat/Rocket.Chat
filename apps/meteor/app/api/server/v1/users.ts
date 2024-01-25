@@ -586,7 +586,7 @@ API.v1.addRoute(
 				...fields,
 			};
 
-			const actualSort = sort || { username: 1 };
+			const actualSort: Record<string, 1 | -1> = sort || { username: 1 };
 
 			if (sort?.status) {
 				actualSort.active = sort.status;
@@ -596,7 +596,7 @@ API.v1.addRoute(
 				actualSort.nameInsensitive = sort.name;
 			}
 
-			let match;
+			let match: Filter<IUser>;
 
 			switch (status) {
 				case 'active':
@@ -622,7 +622,7 @@ API.v1.addRoute(
 					projection.reason = 1;
 					break;
 				default:
-					throw new Meteor.Error('error-invalid-status', 'Invalid status parameter');
+					throw new Meteor.Error('invalid-params', 'Invalid status parameter');
 			}
 
 			const canSeeAllUserInfo = await hasPermissionAsync(this.userId, 'view-full-other-user-info');
