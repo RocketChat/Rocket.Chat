@@ -23,7 +23,7 @@ import type {
 	ClipboardEventHandler,
 	MouseEvent,
 } from 'react';
-import React, { memo, useRef, useReducer, useCallback } from 'react';
+import React, { memo, useRef, useReducer, useCallback, useState } from 'react';
 import { Trans } from 'react-i18next';
 import { useSubscription } from 'use-subscription';
 
@@ -31,6 +31,7 @@ import { createComposerAPI } from '../../../../../app/ui-message/client/messageB
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionFromMime';
+import { getMessageUrlRegex } from '../../../../../lib/getMessageUrlRegex';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import type { ComposerAPI } from '../../../../lib/chats/ChatAPI';
@@ -51,6 +52,7 @@ import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedR
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxReplies from './MessageBoxReplies';
+import MessageURLPreviewList from './MessageURLPreviewList';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 
@@ -124,6 +126,7 @@ const MessageBox = ({
 	const room = useRoom();
 	const t = useTranslation();
 	const composerPlaceholder = useMessageBoxPlaceholder(t('Message'), room);
+	const [urls, setUrls] = useState<string[]>([]);
 
 	const [typing, setTyping] = useReducer(reducer, false);
 
@@ -193,6 +196,10 @@ const MessageBox = ({
 	};
 
 	const handler: KeyboardEventHandler<HTMLTextAreaElement> = useMutableCallback((event) => {
+		// TODO: Find a better place to put this, maybe in the composer API?
+		//       because now it's a hacky way to get the urls from the message
+		setUrls(chat.composer?.text.match(getMessageUrlRegex()) ?? []);
+
 		const { which: keyCode } = event;
 
 		const input = event.target as HTMLTextAreaElement;
@@ -411,6 +418,8 @@ const MessageBox = ({
 					onPaste={handlePaste}
 					aria-activedescendant={ariaActiveDescendant}
 				/>
+				<MessageURLPreviewList urls={urls} />
+
 				<div ref={shadowRef} style={shadowStyle} />
 				<MessageComposerToolbar>
 					<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
