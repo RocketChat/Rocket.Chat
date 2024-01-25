@@ -3,7 +3,7 @@ import type { Meta, Story } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import Alert from '.';
-import { loremIpsum, screenDecorator } from '../../helpers.stories';
+import { loremIpsum, screenDecorator } from '../../../.storybook/helpers';
 
 export default {
 	title: 'Components/Alert',

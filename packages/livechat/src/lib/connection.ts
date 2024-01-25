@@ -6,12 +6,11 @@ import constants from './constants';
 import { loadConfig } from './main';
 import { loadMessages } from './room';
 
-let self;
-let connectedListener;
-let disconnectedListener;
+let connectedListener: Promise<() => void> | false;
+let disconnectedListener: Promise<() => void> | false;
 let initiated = false;
 const { livechatDisconnectedAlertId, livechatConnectedAlertId } = constants;
-const removeListener = (l) => l.stop();
+const removeListener = (l: any) => l.stop();
 
 const Connection = {
 	async init() {
@@ -20,7 +19,6 @@ const Connection = {
 		}
 
 		initiated = true;
-		self = this;
 		await this.connect();
 	},
 
@@ -65,24 +63,29 @@ const Connection = {
 	},
 
 	async handleConnected() {
-		await self.clearAlerts();
-		await self.displayAlert({ id: livechatConnectedAlertId, children: i18next.t('livechat_connected'), success: true });
+		await Connection.clearAlerts();
+		await Connection.displayAlert({ id: livechatConnectedAlertId, children: i18next.t('livechat_connected'), success: true });
 		await loadMessages();
 	},
 
 	async handleDisconnected() {
-		await self.clearAlerts();
-		await self.displayAlert({ id: livechatDisconnectedAlertId, children: i18next.t('livechat_is_not_connected'), error: true, timeout: 0 });
+		await Connection.clearAlerts();
+		await Connection.displayAlert({
+			id: livechatDisconnectedAlertId,
+			children: i18next.t('livechat_is_not_connected'),
+			error: true,
+			timeout: 0,
+		});
 		// self.reconnect();
 	},
 
 	addListeners() {
 		if (!connectedListener) {
-			connectedListener = Livechat.connection.on('connected', this.handleConnected);
+			connectedListener = Promise.resolve(Livechat.connection.on('connected', this.handleConnected));
 		}
 
 		if (!disconnectedListener) {
-			disconnectedListener = Livechat.connection.on('disconnected', this.handleDisconnected);
+			disconnectedListener = Promise.resolve(Livechat.connection.on('disconnected', this.handleDisconnected));
 		}
 	},
 

@@ -1,3 +1,6 @@
+import type * as uikit from '@rocket.chat/ui-kit';
+import type { ComponentChild } from 'preact';
+import type { TargetedEvent } from 'preact/compat';
 import { memo, useCallback, useMemo } from 'preact/compat';
 
 import { createClassName } from '../../../../helpers/createClassName';
@@ -5,11 +8,22 @@ import { SelectInput } from '../../../Form/SelectInput';
 import { usePerformAction } from '../Block';
 import styles from './styles.scss';
 
-const StaticSelectElement = ({ actionId, confirm, placeholder, options /* , optionGroups */, initialOption, parser }) => {
+type StaticSelectElementProps = uikit.StaticSelectElement & {
+	parser: uikit.SurfaceRenderer<ComponentChild>;
+};
+
+const StaticSelectElement = ({
+	actionId,
+	confirm,
+	placeholder,
+	options /* , optionGroups */,
+	initialOption,
+	parser,
+}: StaticSelectElementProps) => {
 	const [performAction, performingAction] = usePerformAction(actionId);
 
 	const handleChange = useCallback(
-		async (event) => {
+		async (event: TargetedEvent<HTMLSelectElement>) => {
 			event.preventDefault();
 
 			if (confirm) {
@@ -17,7 +31,7 @@ const StaticSelectElement = ({ actionId, confirm, placeholder, options /* , opti
 			}
 
 			await performAction({
-				value: event.target.value,
+				value: event.currentTarget?.value,
 			});
 		},
 		[confirm, performAction],
@@ -39,7 +53,7 @@ const StaticSelectElement = ({ actionId, confirm, placeholder, options /* , opti
 			options={selectOptions}
 			placeholder={placeholder && parser.text(placeholder)}
 			small
-			value={(initialOption && initialOption.value) || ''}
+			value={initialOption?.value ?? ''}
 			onChange={handleChange}
 		/>
 	);

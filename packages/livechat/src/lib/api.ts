@@ -1,10 +1,12 @@
+import type { IOmnichannelAgent } from '@rocket.chat/core-typings';
 import i18next from 'i18next';
 
 import { getDateFnsLocale } from './locale';
 
-export const normalizeAgent = (agentData) => agentData && { name: agentData.name, username: agentData.username, status: agentData.status };
+export const normalizeAgent = (agentData: IOmnichannelAgent) =>
+	agentData && { name: agentData.name, username: agentData.username, status: agentData.status };
 
-export const normalizeQueueAlert = async (queueInfo) => {
+export const normalizeQueueAlert = async (queueInfo: any) => {
 	if (!queueInfo) {
 		return;
 	}

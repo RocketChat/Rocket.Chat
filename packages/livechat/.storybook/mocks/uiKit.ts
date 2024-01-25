@@ -18,7 +18,7 @@ export const UIKitIncomingInteractionContainerType = {
 	VIEW: 'view',
 };
 
-export const triggerAction = async (payload) => {
+export const triggerAction = async (payload: unknown) => {
 	await new Promise((resolve) => setTimeout(resolve, 1000));
 	action('dispatchAction')(payload);
 };

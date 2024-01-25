@@ -9594,6 +9594,7 @@ __metadata:
     sass: ~1.62.1
     sass-loader: ~10.4.1
     serve: ^11.3.2
+    storybook-dark-mode: ~3.0.1
     style-loader: ^1.2.1
     stylelint: ^14.9.1
     stylelint-order: ^5.0.0
