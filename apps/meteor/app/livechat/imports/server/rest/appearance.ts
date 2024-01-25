@@ -53,9 +53,7 @@ API.v1.addRoute(
 				throw new Error('invalid-setting');
 			}
 
-			const dbSettings = await Settings.findByIds(validSettingList, { projection: { _id: 1, value: 1, type: 1 } }).toArray();
-
-			const settingsToSave = dbSettings
+			const dbSettings = await Settings.findByIds(validSettingList, { projection: { _id: 1, value: 1, type: 1 } })
 				.map((dbSetting) => {
 					const setting = settings.find(({ _id }) => _id === dbSetting._id);
 					if (!setting || dbSetting.value === setting.value) {
@@ -80,10 +78,10 @@ API.v1.addRoute(
 							};
 					}
 				})
-				.filter(isTruthy);
+				.toArray();
 
 			await Promise.all(
-				settingsToSave.map((setting) => {
+				dbSettings.filter(isTruthy).map((setting) => {
 					return Settings.updateValueById(setting._id, setting.value);
 				}),
 			);
