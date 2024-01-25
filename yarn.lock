@@ -9811,6 +9811,7 @@ __metadata:
     "@types/lodash.get": ^4.4.8
     "@types/mailparser": ^3.4.3
     "@types/marked": ^4.0.8
+    "@types/meteor": ^2.9.8
     "@types/meteor-collection-hooks": ^0.8.8
     "@types/mkdirp": ^1.0.2
     "@types/mocha": "github:whitecolor/mocha-types"
