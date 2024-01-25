@@ -1,7 +1,6 @@
 import type { ISetting, ISettingColor, ISettingSelectOption, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ISettingsModel } from '@rocket.chat/model-typings';
-import type { FindOptions } from '@rocket.chat/ui-contexts/dist/UserContext';
-import type { Collection, FindCursor, Db, Filter, UpdateFilter, UpdateResult, Document } from 'mongodb';
+import type { Collection, FindCursor, Db, Filter, UpdateFilter, UpdateResult, Document, FindOptions } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
