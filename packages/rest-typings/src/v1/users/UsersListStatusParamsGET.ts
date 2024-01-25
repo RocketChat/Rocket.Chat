@@ -8,8 +8,8 @@ const ajv = new Ajv({
 
 export type UsersListStatusParamsGET = PaginatedRequest<{
 	status: 'active' | 'all' | 'deactivated' | 'pending';
-	roles: string[];
-	searchTerm: string;
+	roles?: string[];
+	searchTerm?: string;
 }>;
 
 const UsersListStatusParamsGetSchema = {
@@ -43,6 +43,7 @@ const UsersListStatusParamsGetSchema = {
 			nullable: true,
 		},
 	},
+	required: ['status'],
 	additionalProperties: false,
 };
 

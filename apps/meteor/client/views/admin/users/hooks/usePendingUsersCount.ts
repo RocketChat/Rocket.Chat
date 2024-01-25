@@ -16,8 +16,6 @@ const usePendingUsersCount = ({ setPendingUsersCount, currentUsersTotal }: usePe
 			const payload: UsersListStatusParamsGET = {
 				status: 'pending',
 				count: 1,
-				roles: [],
-				searchTerm: '',
 			};
 
 			return getUsers(payload);
