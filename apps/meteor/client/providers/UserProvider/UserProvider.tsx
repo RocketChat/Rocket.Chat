@@ -1,12 +1,13 @@
 import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import { UserContext, useEndpoint } from '@rocket.chat/ui-contexts';
+import { UserContext, useEndpoint, useStream } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import type { ContextType, ReactElement, ReactNode } from 'react';
 import React, { useEffect, useMemo } from 'react';
 
 import { Subscriptions, ChatRoom } from '../../../app/models/client';
+import { RoomHistoryManager } from '../../../app/ui-utils/client';
 import { getUserPreference } from '../../../app/utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { afterLogoutCleanUpCallback } from '../../../lib/callbacks/afterLogoutCleanUpCallback';
@@ -44,6 +45,7 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 	const user = useReactiveValue(getUser);
 	const [userLanguage, setUserLanguage] = useLocalStorage('userLanguage', '');
 	const [preferedLanguage, setPreferedLanguage] = useLocalStorage('preferedLanguage', '');
+	const subscribeToNotifyUser = useStream('notify-user');
 
 	const setUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 
@@ -89,6 +91,18 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 			setPreferedLanguage(user.language);
 		}
 	}, [preferedLanguage, setPreferedLanguage, setUserLanguage, user?.language, userLanguage, userId, setUserPreferences]);
+
+	useEffect(() => {
+		if (!userId) {
+			return;
+		}
+
+		return subscribeToNotifyUser(`${userId}/subscriptions-changed`, (event, data) => {
+			if (event === 'removed' && data.rid) {
+				RoomHistoryManager.clear(data.rid);
+			}
+		});
+	}, [userId, subscribeToNotifyUser]);
 
 	return <UserContext.Provider children={children} value={contextValue} />;
 };
