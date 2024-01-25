@@ -96,7 +96,7 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 	}
 
 	// Registers the actual workers, the actions lib will try to fetch elements to work on
-	async registerWorkers(): Promise<void> {
+	private registerWorkers(): void {
 		this.logger.info('Registering workers of type "work"');
 		this.queue.registerWorker('work', this.workerCallback.bind(this));
 
