@@ -1,3 +1,4 @@
+import type { UsersListStatusParamsGET } from '@rocket.chat/rest-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
@@ -12,7 +13,13 @@ const usePendingUsersCount = ({ setPendingUsersCount, currentUsersTotal }: usePe
 	useQuery(
 		['pendingUsersCount', currentUsersTotal],
 		async () => {
-			const payload = { status: 'pending', count: 1, roles: [], searchTerm: '' };
+			const payload: UsersListStatusParamsGET = {
+				status: 'pending',
+				count: 1,
+				roles: [],
+				searchTerm: '',
+			};
+
 			return getUsers(payload);
 		},
 		{
