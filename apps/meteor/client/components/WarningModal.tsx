@@ -6,10 +6,10 @@ import React from 'react';
 type WarningModalProps = {
 	text: string;
 	confirmText: string;
-	close: () => void;
-	cancel: () => void;
-	cancelText: string;
+	cancelText?: string;
 	confirm: () => Promise<void>;
+	cancel?: () => void;
+	close: () => void;
 };
 
 const WarningModal = ({ text, confirmText, close, cancel, cancelText, confirm, ...props }: WarningModalProps): ReactElement => {

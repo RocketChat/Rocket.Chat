@@ -1,4 +1,5 @@
-import { Box, Icon, Menu, Skeleton } from '@rocket.chat/fuselage';
+import type { App } from '@rocket.chat/core-typings';
+import type { Menu } from '@rocket.chat/fuselage';
 import {
 	useSetModal,
 	useEndpoint,
@@ -8,53 +9,55 @@ import {
 	usePermission,
 	useRouter,
 } from '@rocket.chat/ui-contexts';
+import type { ComponentProps } from 'react';
 import React, { useMemo, useCallback, useState } from 'react';
-import semver from 'semver';
 
-import WarningModal from '../../components/WarningModal';
-import { useIsEnterprise } from '../../hooks/useIsEnterprise';
-import IframeModal from './IframeModal';
-import UninstallGrandfatheredAppModal from './components/UninstallGrandfatheredAppModal/UninstallGrandfatheredAppModal';
-import { appEnabledStatuses, appButtonProps } from './helpers';
-import { handleAPIError } from './helpers/handleAPIError';
-import { marketplaceActions } from './helpers/marketplaceActions';
-import { warnEnableDisableApp } from './helpers/warnEnableDisableApp';
-import { useAppInstallationHandler } from './hooks/useAppInstallationHandler';
-import { useAppsCountQuery } from './hooks/useAppsCountQuery';
-import { useOpenAppPermissionsReviewModal } from './hooks/useOpenAppPermissionsReviewModal';
-import { useOpenIncompatibleModal } from './hooks/useOpenIncompatibleModal';
+import WarningModal from '../../../components/WarningModal';
+import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
+import IframeModal from '../IframeModal';
+import UninstallGrandfatheredAppModal from '../components/UninstallGrandfatheredAppModal/UninstallGrandfatheredAppModal';
+import { appEnabledStatuses, appButtonProps } from '../helpers';
+import { handleAPIError } from '../helpers/handleAPIError';
+import { marketplaceActions } from '../helpers/marketplaceActions';
+import { warnEnableDisableApp } from '../helpers/warnEnableDisableApp';
+import { useAppInstallationHandler } from './useAppInstallationHandler';
+import type { MarketplaceRouteContext } from './useAppsCountQuery';
+import { useAppsCountQuery } from './useAppsCountQuery';
+import { useOpenAppPermissionsReviewModal } from './useOpenAppPermissionsReviewModal';
+import { useOpenIncompatibleModal } from './useOpenIncompatibleModal';
 
-function AppMenu({ app, isAppDetailsPage, ...props }) {
+type UseAppMenuReturn = { isLoading: boolean; isAdminUser: boolean; menuOptions: ComponentProps<typeof Menu>['options'] };
+
+export const useAppMenu = (app: App, isAppDetailsPage: boolean): UseAppMenuReturn => {
 	const t = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
-	const setModal = useSetModal();
 	const router = useRouter();
+	const setModal = useSetModal();
+	const dispatchToastMessage = useToastMessageDispatch();
+	const openIncompatibleModal = useOpenIncompatibleModal();
 
-	const context = useRouteParameter('context');
+	const context = useRouteParameter('context') as MarketplaceRouteContext;
 	const currentTab = useRouteParameter('tab');
+	const appCountQuery = useAppsCountQuery(context);
+
+	const isAdminUser = usePermission('manage-apps');
+	const { data } = useIsEnterprise();
+	const isEnterpriseLicense = !!data?.isEnterprise;
+
+	const [isLoading, setLoading] = useState(false);
+	const [requestedEndUser, setRequestedEndUser] = useState(app.requestedEndUser);
+	const [isAppPurchased, setPurchased] = useState(app?.isPurchased);
+
+	const button = appButtonProps({ ...app, isAdminUser });
+	const action = button?.action || '';
 
 	const setAppStatus = useEndpoint('POST', `/apps/${app.id}/status`);
 	const buildExternalUrl = useEndpoint('GET', '/apps');
 	const syncApp = useEndpoint('POST', `/apps/${app.id}/sync`);
 	const uninstallApp = useEndpoint('DELETE', `/apps/${app.id}`);
-	const { data } = useIsEnterprise();
-
-	const isEnterpriseLicense = !!data?.isEnterprise;
-
-	const [loading, setLoading] = useState(false);
-	const [requestedEndUser, setRequestedEndUser] = useState(app.requestedEndUser);
 
 	const canAppBeSubscribed = app.purchaseType === 'subscription';
 	const isSubscribed = app.subscriptionInfo && ['active', 'trialing'].includes(app.subscriptionInfo.status);
 	const isAppEnabled = appEnabledStatuses.includes(app.status);
-	const [isAppPurchased, setPurchased] = useState(app?.isPurchased);
-
-	const isAdminUser = usePermission('manage-apps');
-	const appCountQuery = useAppsCountQuery(context);
-	const openIncompatibleModal = useOpenIncompatibleModal();
-
-	const button = appButtonProps({ ...app, isAdminUser });
-	const action = button?.action || '';
 
 	const closeModal = useCallback(() => {
 		setModal(null);
@@ -417,15 +420,5 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		handleUninstall,
 	]);
 
-	if (loading) {
-		return <Skeleton variant='rect' height='x28' width='x28' />;
-	}
-
-	if (!isAdminUser && app?.installed) {
-		return null;
-	}
-
-	return <Menu title={t('More_options')} options={menuOptions} placement='bottom-start' maxHeight='initial' {...props} />;
-}
-
-export default AppMenu;
+	return { isLoading, isAdminUser, menuOptions };
+};
