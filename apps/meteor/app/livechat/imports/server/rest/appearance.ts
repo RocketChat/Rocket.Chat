@@ -53,7 +53,7 @@ API.v1.addRoute(
 				throw new Error('invalid-setting');
 			}
 
-			const dbSettings = await Settings.find({ _id: { $in: validSettingList } }, { projection: { _id: 1, value: 1, type: 1 } }).toArray();
+			const dbSettings = await Settings.findByIds(validSettingList, { projection: { _id: 1, value: 1, type: 1 } }).toArray();
 
 			const settingsToSave = dbSettings
 				.map((dbSetting) => {
@@ -71,7 +71,7 @@ API.v1.addRoute(
 						case 'int':
 							return {
 								_id: dbSetting._id,
-								value: parseInt((setting.value as string) ?? '0', 10),
+								value: coerceInt(setting.value),
 							};
 						default:
 							return {
@@ -92,3 +92,20 @@ API.v1.addRoute(
 		},
 	},
 );
+
+function coerceInt(value: string | number | boolean): number {
+	if (typeof value === 'number') {
+		return value;
+	}
+
+	if (typeof value === 'boolean') {
+		return 0;
+	}
+
+	const parsedValue = parseInt(value, 10);
+	if (Number.isNaN(parsedValue)) {
+		return 0;
+	}
+
+	return parsedValue;
+}

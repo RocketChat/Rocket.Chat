@@ -1,5 +1,6 @@
 import type { ISetting, ISettingColor, ISettingSelectOption, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ISettingsModel } from '@rocket.chat/model-typings';
+import type { FindOptions } from '@rocket.chat/ui-contexts/dist/UserContext';
 import type { Collection, FindCursor, Db, Filter, UpdateFilter, UpdateResult, Document } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -36,7 +37,7 @@ export class SettingsRaw extends BaseRaw<ISetting> implements ISettingsModel {
 		return this.findOne(query);
 	}
 
-	findByIds(_id: string[] | string = []): FindCursor<ISetting> {
+	findByIds(_id: string[] | string = [], options?: FindOptions<ISetting>): FindCursor<ISetting> {
 		if (typeof _id === 'string') {
 			_id = [_id];
 		}
@@ -47,7 +48,7 @@ export class SettingsRaw extends BaseRaw<ISetting> implements ISettingsModel {
 			},
 		};
 
-		return this.find(query);
+		return this.find(query, options);
 	}
 
 	updateValueById(
