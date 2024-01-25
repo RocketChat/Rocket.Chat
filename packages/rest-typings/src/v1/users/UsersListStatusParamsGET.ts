@@ -24,18 +24,23 @@ const UsersListStatusParamsGetSchema = {
 			items: {
 				type: 'string',
 			},
+			nullable: true,
 		},
 		searchTerm: {
 			type: 'string',
+			nullable: true,
 		},
 		sort: {
 			type: 'string',
+			nullable: true,
 		},
 		count: {
 			type: 'number',
+			nullable: true,
 		},
 		offset: {
 			type: 'number',
+			nullable: true,
 		},
 	},
 	additionalProperties: false,
