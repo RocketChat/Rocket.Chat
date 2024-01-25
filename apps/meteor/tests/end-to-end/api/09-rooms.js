@@ -1669,7 +1669,6 @@ describe('[Rooms]', function () {
 					roomType: 'p',
 					readOnly: true,
 					reactWhenReadOnly: true,
-					archived: true,
 					default: true,
 					favorite: {
 						favorite: true,
