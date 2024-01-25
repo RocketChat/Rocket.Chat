@@ -61,6 +61,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			{ key: { prid: 1 } },
 			{ key: { 'u._id': 1, 'open': 1, 'department': 1 } },
 			{ key: { rid: 1, ls: 1 } },
+			{ key: { 'u._id': 1, 'autotranslate': 1 } },
 		];
 	}
 
