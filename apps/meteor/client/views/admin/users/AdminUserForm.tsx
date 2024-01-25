@@ -140,6 +140,9 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 			await eventStats({
 				params: [{ eventName: 'updateCounter', settingsId: 'Manual_Entry_User_Count' }],
 			});
+			queryClient.invalidateQueries(['pendingUsersCount'], {
+				refetchType: 'all',
+			});
 			router.navigate(`/admin/users/created/${_id}`);
 			onReload();
 		},
@@ -155,15 +158,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 			return handleUpdateUser.mutateAsync({ userId: userData?._id, data: userFormData });
 		}
 
-		return handleCreateUser.mutateAsync(
-			{ ...userFormData, fields: '' },
-			{
-				onSuccess: () =>
-					queryClient.invalidateQueries(['pendingUsersCount'], {
-						refetchType: 'all',
-					}),
-			},
-		);
+		return handleCreateUser.mutateAsync({ ...userFormData, fields: '' });
 	});
 
 	const nameId = useUniqueId();
