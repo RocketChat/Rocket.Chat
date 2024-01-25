@@ -2,7 +2,7 @@ import type { Meta, Story } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import MessageBlocks from '.';
-import { accessoryImage, imageBlock } from '../../../helpers.stories';
+import { accessoryImage, imageBlock } from '../../../../.storybook/helpers';
 import { PopoverContainer } from '../../Popover';
 
 export default {

@@ -468,7 +468,7 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 												id={imapPortField}
 												{...field}
 												error={errors.imapPort?.message}
-												aria-aria-describedby={`${imapPortField}-error`}
+												aria-describedby={`${imapPortField}-error`}
 												aria-required={true}
 												aria-invalid={Boolean(errors.email)}
 											/>
@@ -576,7 +576,7 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 					</Accordion.Item>
 					<Field>
 						<FieldRow>
-							<ButtonGroup stretch w='full'>
+							<ButtonGroup stretch>
 								<Button onClick={handleBack}>{t('Cancel')}</Button>
 								<Button disabled={!isDirty} primary onClick={handleSubmit(handleSave)}>
 									{t('Save')}
@@ -585,7 +585,7 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 						</FieldRow>
 						<FieldRow>
 							<Margins blockStart={16}>
-								<ButtonGroup stretch w='full'>
+								<ButtonGroup stretch>
 									{inboxData?._id && (
 										<Button danger onClick={handleDelete}>
 											{t('Delete')}

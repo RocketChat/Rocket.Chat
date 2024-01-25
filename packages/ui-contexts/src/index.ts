@@ -1,4 +1,5 @@
 export { AttachmentContext, AttachmentContextValue } from './AttachmentContext';
+export { AuthenticationContextValue, AuthenticationContext, LoginService } from './AuthenticationContext';
 export { AuthorizationContext, AuthorizationContextValue } from './AuthorizationContext';
 export { AvatarUrlContext, AvatarUrlContextValue } from './AvatarUrlContext';
 export { ConnectionStatusContext, ConnectionStatusContextValue } from './ConnectionStatusContext';
@@ -12,7 +13,7 @@ export { SettingsContext, SettingsContextValue, SettingsContextQuery } from './S
 export { ToastMessagesContext, ToastMessagesContextValue } from './ToastMessagesContext';
 export { TooltipContext, TooltipContextValue } from './TooltipContext';
 export { TranslationContext, TranslationContextValue } from './TranslationContext';
-export { UserContext, UserContextValue, LoginService } from './UserContext';
+export { UserContext, UserContextValue } from './UserContext';
 export { DeviceContext, Device, IExperimentalHTMLAudioElement, DeviceContextValue } from './DeviceContext';
 export { ActionManagerContext, IActionManager } from './ActionManagerContext';
 
@@ -38,6 +39,7 @@ export { useLayout } from './hooks/useLayout';
 export { useLayoutContextualBarExpanded } from './hooks/useLayoutContextualBarExpanded';
 export { useLayoutContextualBarPosition } from './hooks/useLayoutContextualBarPosition';
 export { useLayoutSizes } from './hooks/useLayoutSizes';
+export { useLayoutHiddenActions } from './hooks/useLayoutHiddenActions';
 export { useLoadLanguage } from './hooks/useLoadLanguage';
 export { useLoginWithPassword } from './hooks/useLoginWithPassword';
 export { useLoginServices } from './hooks/useLoginServices';

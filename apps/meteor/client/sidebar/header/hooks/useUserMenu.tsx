@@ -11,7 +11,7 @@ import { useStatusItems } from './useStatusItems';
 export const useUserMenu = (user: IUser) => {
 	const t = useTranslation();
 
-	const statusItems = useStatusItems(user);
+	const statusItems = useStatusItems();
 	const accountItems = useAccountItems();
 
 	const logout = useLogout();

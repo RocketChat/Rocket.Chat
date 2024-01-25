@@ -703,4 +703,34 @@ describe('LIVECHAT - Utils', function () {
 			expect(body.messages[0]).to.have.property('t');
 		});
 	});
+
+	(IS_EE ? describe : describe.skip)('[EE] livechat widget', () => {
+		it('should include additional css when provided via Livechat_WidgetLayoutClasses setting', async () => {
+			await updateSetting('Livechat_WidgetLayoutClasses', 'http://my.css.com/my.css');
+			const x = await request.get('/livechat').expect(200);
+
+			expect(x.text.includes('http://my.css.com/my.css')).to.be.true;
+		});
+
+		it('should remove additional css when setting Livechat_WidgetLayoutClasses is empty', async () => {
+			await updateSetting('Livechat_WidgetLayoutClasses', '');
+			const x = await request.get('/livechat').expect(200);
+
+			expect(x.text.includes('http://my.css.com/my.css')).to.be.false;
+		});
+
+		it('should include additional js when provided via Livechat_AdditionalWidgetScripts setting', async () => {
+			await updateSetting('Livechat_AdditionalWidgetScripts', 'http://my.js.com/my.js');
+			const x = await request.get('/livechat').expect(200);
+
+			expect(x.text.includes('http://my.js.com/my.js')).to.be.true;
+		});
+
+		it('should remove additional js when setting Livechat_AdditionalWidgetScripts is empty', async () => {
+			await updateSetting('Livechat_AdditionalWidgetScripts', '');
+			const x = await request.get('/livechat').expect(200);
+
+			expect(x.text.includes('http://my.js.com/my.js')).to.be.false;
+		});
+	});
 });
