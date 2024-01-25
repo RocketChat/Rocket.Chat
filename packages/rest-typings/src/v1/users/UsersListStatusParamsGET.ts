@@ -6,11 +6,11 @@ const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-export type UsersListStatusParamsGET = {
+export type UsersListStatusParamsGET = PaginatedRequest<{
 	status: 'active' | 'all' | 'deactivated' | 'pending';
 	roles: string[];
 	searchTerm: string;
-} & PaginatedRequest;
+}>;
 
 const UsersListStatusParamsGetSchema = {
 	type: 'object',

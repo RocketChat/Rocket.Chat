@@ -1,6 +1,6 @@
 import { Button, ButtonGroup, ContextualbarFooter } from '@rocket.chat/fuselage';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import React, { useCallback } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ContextualbarEmptyContent } from '../../../components/Contextualbar';
@@ -8,8 +8,6 @@ import { ContextualbarEmptyContent } from '../../../components/Contextualbar';
 const AdminUserCreated = ({ uid }: { uid: string }) => {
 	const { t } = useTranslation();
 	const router = useRouter();
-
-	const goToUser = useCallback((id) => router.navigate(`/admin/users/info/${id}`), [router]);
 
 	return (
 		<>
@@ -19,7 +17,7 @@ const AdminUserCreated = ({ uid }: { uid: string }) => {
 					<Button type='reset' w='50%' onClick={() => router.navigate(`/admin/users/new`)}>
 						{t('Add_more_users')}
 					</Button>
-					<Button primary w='50%' onClick={() => goToUser(uid)}>
+					<Button primary w='50%' onClick={() => router.navigate(`/admin/users/info/${uid}`)}>
 						{t('Done')}
 					</Button>
 				</ButtonGroup>
