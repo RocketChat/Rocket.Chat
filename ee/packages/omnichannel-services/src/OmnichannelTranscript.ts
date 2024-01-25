@@ -10,7 +10,7 @@ import {
 	Settings as settingsService,
 } from '@rocket.chat/core-services';
 import type { IOmnichannelTranscriptService } from '@rocket.chat/core-services';
-import type { IMessage, IUser, IRoom, IUpload, ILivechatVisitor, ILivechatAgent } from '@rocket.chat/core-typings';
+import type { IMessage, IUser, IRoom, IUpload, ILivechatVisitor, ILivechatAgent, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { isQuoteAttachment, isFileAttachment, isFileImageAttachment } from '@rocket.chat/core-typings';
 import type { Logger } from '@rocket.chat/logger';
 import { parse } from '@rocket.chat/message-parser';
@@ -93,7 +93,10 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 
 	async requestTranscript({ details }: { details: WorkDetails }): Promise<void> {
 		this.log.info(`Requesting transcript for room ${details.rid} by user ${details.userId}`);
-		const room = await LivechatRooms.findOneById(details.rid);
+		const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id' | 'open' | 'v' | 'pdfTranscriptRequested'>>(details.rid, {
+			projection: { _id: 1, open: 1, v: 1, pdfTranscriptRequested: 1 },
+		});
+
 		if (!room) {
 			throw new Error('room-not-found');
 		}
@@ -120,6 +123,11 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		if (process.env.TEST_MODE) {
 			await this.workOnPdf({ details: { ...details, from: this.name } });
 			return;
+		}
+
+		if (!(await queueService.isQueueStarted())) {
+			// Delay start of queue until you use the feature
+			await queueService.registerWorkers();
 		}
 
 		// Even when processing is done "in-house", we still need to queue the work
