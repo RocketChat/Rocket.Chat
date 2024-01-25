@@ -120,6 +120,10 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 	// This is a "generic" job that allows you to call any service
 	async queueWork<T extends Record<string, unknown>>(queue: Actions, to: string, data: T): Promise<void> {
 		this.logger.info(`Queueing work for ${to}`);
+		if (!this.queueStarted) {
+			this.registerWorkers();
+		}
+
 		if (!this.matchServiceCall(to)) {
 			// We don't want to queue calls to invalid service names
 			throw new Error(`Invalid service name ${to}`);

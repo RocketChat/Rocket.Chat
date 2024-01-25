@@ -125,11 +125,6 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 			return;
 		}
 
-		if (!(await queueService.isQueueStarted())) {
-			// Delay start of queue until you use the feature
-			await queueService.registerWorkers();
-		}
-
 		// Even when processing is done "in-house", we still need to queue the work
 		// to avoid blocking the request
 		this.log.info(`Queuing work for room ${details.rid}`);
