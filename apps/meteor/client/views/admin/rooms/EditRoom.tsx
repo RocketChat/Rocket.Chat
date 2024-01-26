@@ -106,7 +106,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 				rid: room._id,
 				roomName: roomType === 'd' ? undefined : roomName,
 				default: isDefault,
-				favorite: { favorite, defaultValue: isDefault  },
+				favorite: { defaultValue: isDefault, favorite },
 				...data,
 			});
 
@@ -118,14 +118,13 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 		}
 	});
 
-    const handleSave = useMutableCallback(async (data) => {
-			const { favorite } = data;
+	const handleSave = useMutableCallback(async (data) => {
+		const { favorite } = data;
 
-			await Promise.all(
-				[isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive(), toggleFavorite(room._id, favorite)].filter(Boolean),
-			);
-		});
-
+		await Promise.all(
+			[isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive(), toggleFavorite(room._id, favorite)].filter(Boolean),
+		);
+	});
 
 	const formId = useUniqueId();
 	const roomNameField = useUniqueId();
