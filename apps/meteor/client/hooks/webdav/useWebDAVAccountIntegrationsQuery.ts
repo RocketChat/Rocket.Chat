@@ -39,15 +39,7 @@ export const useWebDAVAccountIntegrationsQuery = ({ enabled = true, ...options }
 		return subscribeToNotifyUser(`${uid}/webdav`, ({ type, account }) => {
 			switch (type) {
 				case 'changed':
-					queryClient.setQueryData<IWebdavAccountIntegration[]>(queryKey, (old = []) => {
-						const idx = old.findIndex((oldAccount) => oldAccount._id === account._id);
-
-						if (idx === -1) {
-							return [...old, account];
-						}
-
-						return [...old.slice(0, idx), account, ...old.slice(idx + 1)];
-					});
+					queryClient.invalidateQueries(queryKey);
 					break;
 
 				case 'removed':

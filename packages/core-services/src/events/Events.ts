@@ -32,7 +32,7 @@ import type {
 	ILivechatVisitor,
 	LicenseLimitKind,
 	ICustomUserStatus,
-	IWebdavAccountIntegration,
+	IWebdavAccount,
 } from '@rocket.chat/core-typings';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
@@ -84,11 +84,11 @@ export type EventSignatures = {
 		data:
 			| {
 					type: 'changed';
-					account: IWebdavAccountIntegration;
+					account: Partial<IWebdavAccount>;
 			  }
 			| {
 					type: 'removed';
-					account: { _id: IWebdavAccountIntegration['_id'] };
+					account: { _id: IWebdavAccount['_id'] };
 			  },
 	): void;
 	'notify.e2e.keyRequest'(rid: string, data: IRoom['e2eKeyId']): void;
