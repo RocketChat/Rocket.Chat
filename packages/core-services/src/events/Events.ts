@@ -19,7 +19,6 @@ import type {
 	ISubscription,
 	IUser,
 	IInvite,
-	IWebdavAccount,
 	ICustomSound,
 	VoipEventDataSignature,
 	UserStatus,
@@ -33,6 +32,7 @@ import type {
 	ILivechatVisitor,
 	LicenseLimitKind,
 	ICustomUserStatus,
+	IWebdavAccountIntegration,
 } from '@rocket.chat/core-typings';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
@@ -84,11 +84,11 @@ export type EventSignatures = {
 		data:
 			| {
 					type: 'changed';
-					account: Partial<IWebdavAccount>;
+					account: IWebdavAccountIntegration;
 			  }
 			| {
 					type: 'removed';
-					account: { _id: IWebdavAccount['_id'] };
+					account: { _id: IWebdavAccountIntegration['_id'] };
 			  },
 	): void;
 	'notify.e2e.keyRequest'(rid: string, data: IRoom['e2eKeyId']): void;

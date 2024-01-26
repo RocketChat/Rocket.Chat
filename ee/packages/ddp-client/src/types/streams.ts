@@ -9,7 +9,6 @@ import type {
 	IEmoji,
 	ICustomSound,
 	INotificationDesktop,
-	IWebdavAccount,
 	VoipEventDataSignature,
 	IUser,
 	IOmnichannelRoom,
@@ -25,6 +24,7 @@ import type {
 	LicenseLimitKind,
 	ICustomUserStatus,
 	UserStatus,
+	IWebdavAccountIntegration,
 } from '@rocket.chat/core-typings';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
@@ -158,7 +158,9 @@ export interface StreamerEvents {
 		{ key: `${string}/force_logout`; args: [] },
 		{
 			key: `${string}/webdav`;
-			args: [{ type: 'changed'; account: Partial<IWebdavAccount> } | { type: 'removed'; account: { _id: IWebdavAccount['_id'] } }];
+			args: [
+				{ type: 'changed'; account: IWebdavAccountIntegration } | { type: 'removed'; account: { _id: IWebdavAccountIntegration['_id'] } },
+			];
 		},
 		{ key: `${string}/e2ekeyRequest`; args: [string, string] },
 		{ key: `${string}/notification`; args: [INotificationDesktop] },
