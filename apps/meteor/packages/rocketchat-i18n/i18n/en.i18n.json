@@ -2036,6 +2036,7 @@
   "error-invalid-file-width": "Invalid file width",
   "error-invalid-from-address": "You informed an invalid FROM address.",
   "error-invalid-inquiry": "Invalid inquiry",
+  "error-invalid-image-url": "Invalid image URL",
   "error-invalid-integration": "Invalid integration",
   "error-invalid-message": "Invalid message",
   "error-invalid-method": "Invalid method",
