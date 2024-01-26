@@ -28,6 +28,14 @@ export class Admin {
 		return this.page.locator(`label >> text=Private`);
 	}
 
+	get archivedLabel(): Locator {
+		return this.page.locator('label >> text=Archived');
+	}
+
+	get archivedInput(): Locator {
+		return this.page.locator('input[name="archived"]');
+	}
+
 	get inputSearchUsers(): Locator {
 		return this.page.locator('input[placeholder="Search Users"]');
 	}
