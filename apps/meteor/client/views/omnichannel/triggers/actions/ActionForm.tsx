@@ -3,7 +3,7 @@ import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
-import React, { forwardRef, useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import type { Control } from 'react-hook-form';
 import { Controller, useWatch } from 'react-hook-form';
 
@@ -46,25 +46,18 @@ export const ActionForm = ({ control, index, ...props }: SendMessageFormType) =>
 			return (
 				<>
 					{!hasLicense && value === 'use-external-service' ? (
-						<Option disabled>
-							<Box justifyContent='space-between' flexDirection='row' display='flex' width='100%'>
-								{t(label)}
-								<Tag variant='featured'>{t('Premium')}</Tag>
-							</Box>
-						</Option>
+						<Box justifyContent='space-between' flexDirection='row' display='flex' width='100%'>
+							{t(label)}
+							<Tag variant='featured'>{t('Premium')}</Tag>
+						</Box>
 					) : (
-						<Option>{t(label)}</Option>
+						t(label)
 					)}
 				</>
 			);
 		},
 		[hasLicense, t],
 	);
-
-	// eslint-disable-next-line react/no-multi-comp
-	const renderOptions = forwardRef<HTMLElement, ComponentProps<typeof Options>>(function OptionsWrapper(props, ref) {
-		return <Options ref={ref} {...props} maxHeight={200} />;
-	});
 
 	return (
 		<FieldGroup {...props}>
@@ -74,14 +67,24 @@ export const ActionForm = ({ control, index, ...props }: SendMessageFormType) =>
 					<Controller
 						name={actionFieldName}
 						control={control}
-						render={({ field }) => {
+						render={({ field: { onChange, value, name, ref } }) => {
 							return (
 								<SelectLegacy
-									{...field}
+									ref={ref}
+									name={name}
+									onChange={onChange}
+									value={value}
 									options={actionOptions}
-									renderOptions={renderOptions}
 									renderSelected={({ label, value }) => <Box flexGrow='1'>{renderOption(label, value)}</Box>}
-									renderItem={({ label, value }) => renderOption(label, value)}
+									renderItem={({ label, value, ...props }) => (
+										<Option
+											{...props}
+											// TODO: Remove this once we have a new Select component
+											onMouseDown={!hasLicense && value === 'use-external-service' ? (e) => e.preventDefault : props?.onMouseDown}
+											disabled={!hasLicense && value === 'use-external-service'}
+											label={renderOption(label, value)}
+										/>
+									)}
 								/>
 							);
 						}}
