@@ -169,5 +169,16 @@ describe('LIVECHAT - appearance', function () {
 			const { body } = await request.get(api('livechat/config')).set(credentials).expect(200);
 			expect(body.config.settings.limitTextLength).to.be.equal(5000);
 		});
+		it('should coerce a non boolean value on a boolean setting to false', async () => {
+			await request
+				.post(api('livechat/appearance'))
+				.set(credentials)
+				.send([{ _id: 'Livechat_enable_message_character_limit', value: 'xxxx' }])
+				.expect(200);
+
+			// Get data from livechat/config
+			const { body } = await request.get(api('livechat/config')).set(credentials).expect(200);
+			expect(body.config.settings.limitTextLength).to.be.false;
+		});
 	});
 });
