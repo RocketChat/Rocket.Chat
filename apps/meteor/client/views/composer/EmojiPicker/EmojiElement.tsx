@@ -30,7 +30,6 @@ const EmojiElement = ({ emoji, image, onClick, small = false, ...props }: EmojiE
 
 	return (
 		<IconButton
-			{...props}
 			{...(small && { className: emojiSmallClass })}
 			small={small}
 			medium={!small}
@@ -38,8 +37,8 @@ const EmojiElement = ({ emoji, image, onClick, small = false, ...props }: EmojiE
 			onMouseLeave={handleRemovePreview}
 			onClick={onClick}
 			data-emoji={emoji}
-			aria-label={emoji}
 			icon={emojiElement}
+			{...props}
 		/>
 	);
 };

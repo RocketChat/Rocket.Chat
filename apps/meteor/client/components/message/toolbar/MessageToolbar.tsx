@@ -1,11 +1,12 @@
+import { useToolbar } from '@react-aria/toolbar';
 import type { IMessage, IRoom, ISubscription, ITranslatedMessage } from '@rocket.chat/core-typings';
 import { isThreadMessage, isRoomFederated, isVideoConfMessage } from '@rocket.chat/core-typings';
 import { MessageToolbar as FuselageMessageToolbar, MessageToolbarItem } from '@rocket.chat/fuselage';
 import { useFeaturePreview } from '@rocket.chat/ui-client';
 import { useUser, useSettings, useTranslation, useMethod, useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
-import React, { memo, useMemo } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import React, { memo, useMemo, useRef } from 'react';
 
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
@@ -44,7 +45,7 @@ type MessageToolbarProps = {
 	room: IRoom;
 	subscription?: ISubscription;
 	onChangeMenuVisibility: (visible: boolean) => void;
-};
+} & ComponentProps<typeof FuselageMessageToolbar>;
 
 const MessageToolbar = ({
 	message,
@@ -52,10 +53,14 @@ const MessageToolbar = ({
 	room,
 	subscription,
 	onChangeMenuVisibility,
+	...props
 }: MessageToolbarProps): ReactElement | null => {
 	const t = useTranslation();
 	const user = useUser() ?? undefined;
 	const settings = useSettings();
+
+	const toolbarRef = useRef(null);
+	const { toolbarProps } = useToolbar(props, toolbarRef);
 
 	const quickReactionsEnabled = useFeaturePreview('quickReactions');
 
@@ -102,7 +107,7 @@ const MessageToolbar = ({
 	};
 
 	return (
-		<FuselageMessageToolbar>
+		<FuselageMessageToolbar ref={toolbarRef} {...toolbarProps}>
 			{quickReactionsEnabled &&
 				isReactionAllowed &&
 				quickReactions.slice(0, 3).map(({ emoji, image }) => {
