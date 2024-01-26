@@ -3,7 +3,7 @@ import type { Meta, Story } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import { Screen } from '.';
-import { gazzoAvatar, screenDecorator } from '../../helpers.stories';
+import { gazzoAvatar, screenDecorator } from '../../../.storybook/helpers';
 
 export default {
 	title: 'Components/Screen',
