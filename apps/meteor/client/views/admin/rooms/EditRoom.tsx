@@ -97,6 +97,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 
 	const handleUpdateRoomData = useMutableCallback(async ({ isDefault, roomName, favorite, ...formData }) => {
 		const data = getDirtyFields(formData, dirtyFields);
+		delete data.archived;
 
 		try {
 			await saveAction({
@@ -115,8 +116,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 	});
 
 	const handleSave = useMutableCallback(async (data) => {
-		const { archived, ...formData } = data;
-		await Promise.all([isDirty && handleUpdateRoomData(formData), changeArchiving && handleArchive()].filter(Boolean));
+		await Promise.all([isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive()].filter(Boolean));
 	});
 
 	const formId = useUniqueId();

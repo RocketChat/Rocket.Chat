@@ -120,8 +120,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	});
 
 	const handleSave = useMutableCallback(async (data) => {
-		const { archived, ...formData } = data;
-		await Promise.all([isDirty && handleUpdateRoomData(formData), changeArchiving && handleArchive()].filter(Boolean));
+		await Promise.all([isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive()].filter(Boolean));
 	});
 
 	const formId = useUniqueId();
