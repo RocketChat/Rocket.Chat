@@ -470,6 +470,14 @@ describe('AutoTranslate', function () {
 				expect(sub).to.have.property('autoTranslate');
 				expect(sub).to.have.property('autoTranslateLanguage').and.to.be.equal('en');
 			});
+
+			it('should change the auto translate language when the user changes his language preference', async () => {
+				await setLanguagePref('es', credA);
+				const subscription = await getSub(channel._id, credA);
+
+				expect(subscription).to.have.property('autoTranslate', true);
+				expect(subscription).to.have.property('autoTranslateLanguage', 'es');
+			});
 		});
 	});
 });
