@@ -2,7 +2,7 @@
 	"name": "@rocket.chat/random",
 	"private": true,
 	"description": "Random number generator and utilities; Fork of Meteor's Random package",
-	"version": "1.2.1",
+	"version": "1.2.2-rc.0",
 	"main": "./dist/main.server.js",
 	"browser": "./dist/main.client.js",
 	"types": "./dist/main.server.d.ts",

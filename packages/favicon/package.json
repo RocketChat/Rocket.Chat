@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/favicon",
-	"version": "0.0.1",
+	"version": "0.0.2-rc.0",
 	"private": true,
 	"devDependencies": {
 		"eslint": "~8.45.0",

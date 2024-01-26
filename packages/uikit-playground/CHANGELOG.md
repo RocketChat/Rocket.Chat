@@ -1,5 +1,15 @@
 # @rocket.chat/uikit-playground
 
+## 0.2.13-rc.0
+
+### Patch Changes
+
+- b223cbde14: feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+- Updated dependencies [b223cbde14]
+- Updated dependencies [b2b0035162]
+  - @rocket.chat/fuselage-ui-kit@4.0.0-rc.0
+  - @rocket.chat/ui-contexts@4.0.0-rc.0
+
 ## 0.2.12
 
 ### Patch Changes

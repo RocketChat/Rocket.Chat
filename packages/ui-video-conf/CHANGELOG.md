@@ -1,5 +1,14 @@
 # @rocket.chat/ui-video-conf
 
+## 4.0.0-rc.0
+
+### Patch Changes
+
+- b223cbde14: feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+- Updated dependencies [b223cbde14]
+- Updated dependencies [b2b0035162]
+  - @rocket.chat/ui-contexts@4.0.0-rc.0
+
 ## 3.0.3
 
 ### Patch Changes

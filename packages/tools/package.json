@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/tools",
-	"version": "0.2.0",
+	"version": "0.2.1-rc.0",
 	"private": true,
 	"devDependencies": {
 		"@types/jest": "~29.5.7",

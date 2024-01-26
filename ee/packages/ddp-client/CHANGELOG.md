@@ -1,5 +1,20 @@
 # @rocket.chat/ddp-client
 
+## 0.2.13-rc.0
+
+### Patch Changes
+
+- b223cbde14: feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+- 97cd497e5e: chore: Add readme to ddp-client package
+- Updated dependencies [b223cbde14]
+- Updated dependencies [dbb08ef948]
+- Updated dependencies [748e57984d]
+- Updated dependencies [7c6198f49f]
+- Updated dependencies [fdd9852079]
+- Updated dependencies [2260c04ec6]
+  - @rocket.chat/api-client@0.1.22-rc.0
+  - @rocket.chat/rest-typings@6.6.0-rc.0
+
 ## 0.2.12
 
 ### Patch Changes

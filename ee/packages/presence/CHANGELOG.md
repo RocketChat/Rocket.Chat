@@ -1,5 +1,19 @@
 # @rocket.chat/presence
 
+## 0.1.4-rc.0
+
+### Patch Changes
+
+- b223cbde14: feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+- Updated dependencies [b223cbde14]
+- Updated dependencies [dbb08ef948]
+- Updated dependencies [9a6e9b4e28]
+- Updated dependencies [fdd9852079]
+- Updated dependencies [b4b2cd20a8]
+  - @rocket.chat/core-services@0.3.4-rc.0
+  - @rocket.chat/core-typings@6.6.0-rc.0
+  - @rocket.chat/models@0.0.28-rc.0
+
 ## 0.1.3
 
 ### Patch Changes
