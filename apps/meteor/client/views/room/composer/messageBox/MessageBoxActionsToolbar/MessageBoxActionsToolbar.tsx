@@ -2,7 +2,7 @@ import type { IRoom, IMessage } from '@rocket.chat/core-typings';
 import type { Icon } from '@rocket.chat/fuselage';
 import { MessageComposerAction, MessageComposerActionsDivider } from '@rocket.chat/ui-composer';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useUserRoom, useTranslation, useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
+import { useTranslation, useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, MouseEvent } from 'react';
 import React, { memo } from 'react';
 
@@ -12,6 +12,7 @@ import GenericMenu from '../../../../../components/GenericMenu/GenericMenu';
 import type { GenericMenuItemProps } from '../../../../../components/GenericMenu/GenericMenuItem';
 import { useMessageboxAppsActionButtons } from '../../../../../hooks/useAppActionButtons';
 import { useChat } from '../../../contexts/ChatContext';
+import { useRoom } from '../../../contexts/RoomContext';
 import { useAudioMessageAction } from './hooks/useAudioMessageAction';
 import { useCreateDiscussionAction } from './hooks/useCreateDiscussionAction';
 import { useFileUploadAction } from './hooks/useFileUploadAction';
@@ -52,7 +53,7 @@ const MessageBoxActionsToolbar = ({
 		throw new Error('useChat must be used within a ChatProvider');
 	}
 
-	const room = useUserRoom(rid);
+	const room = useRoom();
 
 	const audioMessageAction = useAudioMessageAction(!canSend || typing || isRecording || isMicrophoneDenied, isMicrophoneDenied);
 	const videoMessageAction = useVideoMessageAction(!canSend || typing || isRecording);
