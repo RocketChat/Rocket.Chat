@@ -14,7 +14,7 @@ import {
 	FieldError,
 } from '@rocket.chat/fuselage';
 import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useRouter, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useMethod, useRouter, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
@@ -95,6 +95,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 	const saveAction = useEndpoint('POST', '/v1/rooms.saveRoomSettings');
 
 	const handleArchive = useArchiveRoom(room);
+	const toggleFavorite = useMethod('toggleFavorite');
 
 	const handleUpdateRoomData = useMutableCallback(async ({ isDefault, roomName, favorite, ...formData }) => {
 		const data = getDirtyFields(formData, dirtyFields);
@@ -105,7 +106,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 				rid: room._id,
 				roomName: roomType === 'd' ? undefined : roomName,
 				default: isDefault,
-				favorite: { defaultValue: isDefault, favorite },
+				favorite: { favorite, defaultValue: isDefault  },
 				...data,
 			});
 
@@ -117,9 +118,14 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 		}
 	});
 
-	const handleSave = useMutableCallback(async (data) => {
-		await Promise.all([isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive()].filter(Boolean));
-	});
+    const handleSave = useMutableCallback(async (data) => {
+			const { favorite } = data;
+
+			await Promise.all(
+				[isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive(), toggleFavorite(room._id, favorite)].filter(Boolean),
+			);
+		});
+
 
 	const formId = useUniqueId();
 	const roomNameField = useUniqueId();
