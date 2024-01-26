@@ -23,6 +23,7 @@ export const useWebDAVAccountIntegrationsQuery = ({ enabled = true, ...options }
 			return accounts;
 		},
 		enabled: !!uid && enabled,
+		staleTime: Infinity,
 		...options,
 	});
 
