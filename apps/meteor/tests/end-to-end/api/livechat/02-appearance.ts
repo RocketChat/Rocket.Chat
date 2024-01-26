@@ -140,5 +140,34 @@ describe('LIVECHAT - appearance', function () {
 			const { body } = await request.get(api('livechat/config')).set(credentials).expect(200);
 			expect(body.config.settings.registrationForm).to.be.true;
 		});
+		it('should coerce an invalid number value to zero', async () => {
+			await request
+				.post(api('livechat/appearance'))
+				.set(credentials)
+				.send([
+					{ _id: 'Livechat_message_character_limit', value: 'xxxx' },
+					{ _id: 'Livechat_enable_message_character_limit', value: true },
+				])
+				.expect(200);
+
+			// Get data from livechat/config
+			const { body } = await request.get(api('livechat/config')).set(credentials).expect(200);
+			// When setting is 0, we default to Message_MaxAllowedSize value
+			expect(body.config.settings.limitTextLength).to.be.equal(5000);
+		});
+		it('should coerce a boolean value on an int setting to 0', async () => {
+			await request
+				.post(api('livechat/appearance'))
+				.set(credentials)
+				.send([
+					{ _id: 'Livechat_message_character_limit', value: true },
+					{ _id: 'Livechat_enable_message_character_limit', value: true },
+				])
+				.expect(200);
+
+			// Get data from livechat/config
+			const { body } = await request.get(api('livechat/config')).set(credentials).expect(200);
+			expect(body.config.settings.limitTextLength).to.be.equal(5000);
+		});
 	});
 });
