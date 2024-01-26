@@ -35,6 +35,7 @@ import RoomComposer from '../composer/RoomComposer/RoomComposer';
 import { useChat } from '../contexts/ChatContext';
 import { useRoom, useRoomSubscription, useRoomMessages } from '../contexts/RoomContext';
 import { useRoomToolbox } from '../contexts/RoomToolboxContext';
+import { useRoomNavigation } from '../hooks/useRoomNavigation';
 import { useScrollMessageList } from '../hooks/useScrollMessageList';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
@@ -531,6 +532,7 @@ const RoomBody = (): ReactElement => {
 	);
 
 	useReadMessageWindowEvents();
+	const { roomListRef } = useRoomNavigation();
 
 	return (
 		<>
@@ -539,7 +541,6 @@ const RoomBody = (): ReactElement => {
 				<section
 					className={`messages-container flex-tab-main-content ${admin ? 'admin' : ''}`}
 					id={`chat-window-${room._id}`}
-					aria-label={t('Channel')}
 					onClick={hideFlexTab && handleCloseFlexTab}
 				>
 					<div className='messages-container-wrapper'>
@@ -600,7 +601,7 @@ const RoomBody = (): ReactElement => {
 								>
 									<MessageListErrorBoundary>
 										<ScrollableContentWrapper ref={wrapperRef}>
-											<ul className='messages-list' aria-live='polite' aria-busy={isLoadingMoreMessages}>
+											<ul ref={roomListRef} className='messages-list' aria-live='polite' aria-busy={isLoadingMoreMessages}>
 												{canPreview ? (
 													<>
 														{hasMorePreviousMessages ? (

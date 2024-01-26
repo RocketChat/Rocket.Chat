@@ -2,7 +2,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { Message, MessageLeftContainer, MessageContainer, CheckBox } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { useUserId } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
 import React, { useRef, memo } from 'react';
 
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
@@ -32,7 +32,7 @@ type RoomMessageProps = {
 	context?: MessageActionContext;
 	ignoredUser?: boolean;
 	searchText?: string;
-};
+} & ComponentProps<typeof Message>;
 
 const RoomMessage = ({
 	message,
@@ -44,6 +44,7 @@ const RoomMessage = ({
 	context,
 	ignoredUser,
 	searchText,
+	...props
 }: RoomMessageProps): ReactElement => {
 	const uid = useUserId();
 	const editing = useIsMessageHighlight(message._id);
@@ -59,10 +60,13 @@ const RoomMessage = ({
 	useCountSelected();
 
 	useJumpToMessage(message._id, messageRef);
+
 	return (
 		<Message
 			ref={messageRef}
 			id={message._id}
+			role='listitem'
+			tabIndex={0}
 			onClick={selecting ? toggleSelected : undefined}
 			isSelected={selected}
 			isEditing={editing}
@@ -77,6 +81,7 @@ const RoomMessage = ({
 			data-own={message.u._id === uid}
 			data-qa-type='message'
 			aria-busy={message.temp}
+			{...props}
 		>
 			<MessageLeftContainer>
 				{!sequential && message.u.username && !selecting && showUserAvatar && (
@@ -94,10 +99,8 @@ const RoomMessage = ({
 				{selecting && <CheckBox checked={selected} onChange={toggleSelected} />}
 				{sequential && <StatusIndicators message={message} />}
 			</MessageLeftContainer>
-
 			<MessageContainer>
 				{!sequential && <MessageHeader message={message} />}
-
 				{ignored ? (
 					<IgnoredContent onShowMessageIgnored={toggleDisplayIgnoredMessage} />
 				) : (

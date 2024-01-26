@@ -1,6 +1,6 @@
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { createElement, lazy, memo, Suspense } from 'react';
+import { FocusScope } from 'react-aria';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import { ContextualbarSkeleton } from '../../components/Contextualbar';
@@ -17,7 +17,6 @@ import { SelectedMessagesProvider } from './providers/SelectedMessagesProvider';
 const UiKitContextualBar = lazy(() => import('./contextualBar/uikit/UiKitContextualBar'));
 
 const Room = (): ReactElement => {
-	const t = useTranslation();
 	const room = useRoom();
 	const toolbox = useRoomToolbox();
 	const contextualBarView = useAppsContextualBar();
@@ -25,30 +24,32 @@ const Room = (): ReactElement => {
 	return (
 		<ChatProvider>
 			<MessageHighlightProvider>
-				<RoomLayout
-					aria-label={t('Channel')}
-					data-qa-rc-room={room._id}
-					header={<Header room={room} />}
-					body={<RoomBody />}
-					aside={
-						(toolbox.tab?.tabComponent && (
-							<ErrorBoundary fallback={null}>
-								<SelectedMessagesProvider>
-									<Suspense fallback={<ContextualbarSkeleton />}>{createElement(toolbox.tab.tabComponent)}</Suspense>
-								</SelectedMessagesProvider>
-							</ErrorBoundary>
-						)) ||
-						(contextualBarView && (
-							<ErrorBoundary fallback={null}>
-								<SelectedMessagesProvider>
-									<Suspense fallback={<ContextualbarSkeleton />}>
-										<UiKitContextualBar key={contextualBarView.id} initialView={contextualBarView} />
-									</Suspense>
-								</SelectedMessagesProvider>
-							</ErrorBoundary>
-						))
-					}
-				/>
+				<FocusScope contain>
+					<RoomLayout
+						data-qa-rc-room={room._id}
+						aria-label={room.t === 'd' ? `Conversation with ${room.name}` : `Channel ${room.name}`}
+						header={<Header room={room} />}
+						body={<RoomBody />}
+						aside={
+							(toolbox.tab?.tabComponent && (
+								<ErrorBoundary fallback={null}>
+									<SelectedMessagesProvider>
+										<Suspense fallback={<ContextualbarSkeleton />}>{createElement(toolbox.tab.tabComponent)}</Suspense>
+									</SelectedMessagesProvider>
+								</ErrorBoundary>
+							)) ||
+							(contextualBarView && (
+								<ErrorBoundary fallback={null}>
+									<SelectedMessagesProvider>
+										<Suspense fallback={<ContextualbarSkeleton />}>
+											<UiKitContextualBar key={contextualBarView.id} initialView={contextualBarView} />
+										</Suspense>
+									</SelectedMessagesProvider>
+								</ErrorBoundary>
+							))
+						}
+					/>
+				</FocusScope>
 			</MessageHighlightProvider>
 		</ChatProvider>
 	);
