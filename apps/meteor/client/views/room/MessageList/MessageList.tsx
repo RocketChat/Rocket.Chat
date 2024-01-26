@@ -1,6 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isThreadMessage } from '@rocket.chat/core-typings';
-import { MessageDivider } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { MessageDivider, Box, Bubble } from '@rocket.chat/fuselage';
 import { useSetting, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ComponentProps } from 'react';
 import React, { Fragment, memo } from 'react';
@@ -23,6 +24,19 @@ type MessageListProps = {
 	scrollMessageList: ComponentProps<typeof MessageListProvider>['scrollMessageList'];
 };
 
+const dateBubbleStyle = css`
+	position: sticky;
+	top: 4px;
+	z-index: 10;
+	display: flex;
+	justify-content: center;
+`;
+
+const dividerPosition = css`
+	position: relative;
+	top: 10px;
+`;
+
 export const MessageList = ({ rid, scrollMessageList }: MessageListProps): ReactElement => {
 	const t = useTranslation();
 	const messages = useMessages({ rid });
@@ -43,8 +57,6 @@ export const MessageList = ({ rid, scrollMessageList }: MessageListProps): React
 
 					const showUnreadDivider = firstUnreadMessageId === message._id;
 
-					const showDivider = newDay || showUnreadDivider;
-
 					const shouldShowAsSequential = sequential && !newDay;
 
 					const system = MessageTypes.isSystemMessage(message);
@@ -57,12 +69,19 @@ export const MessageList = ({ rid, scrollMessageList }: MessageListProps): React
 
 					return (
 						<Fragment key={message._id}>
-							{showDivider && (
-								<MessageDivider unreadLabel={showUnreadDivider ? t('Unread_Messages').toLowerCase() : undefined}>
-									{newDay && formatDate(message.ts)}
-								</MessageDivider>
+							{showUnreadDivider && <MessageDivider unreadLabel={t('Unread_Messages').toLowerCase()} />}
+							{newDay && (
+								<>
+									<Box className={dividerPosition}>
+										<MessageDivider />
+									</Box>
+									<Box className={dateBubbleStyle}>
+										<Bubble small secondary>
+											{formatDate(message.ts)}
+										</Bubble>
+									</Box>
+								</>
 							)}
-
 							{visible && (
 								<RoomMessage
 									message={message}
