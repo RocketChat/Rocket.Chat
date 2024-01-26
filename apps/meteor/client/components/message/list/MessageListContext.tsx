@@ -7,7 +7,6 @@ export type MessageListContextValue = {
 	useShowFollowing: ({ message }: { message: IMessage }) => boolean;
 	useMessageDateFormatter: () => (date: Date) => string;
 	useUserHasReacted: (message: IMessage) => (reaction: string) => boolean;
-	useReactionsFilter: (message: IMessage) => (reaction: string) => string[];
 	useOpenEmojiPicker: (message: IMessage) => (event: React.MouseEvent) => void;
 	showRoles: boolean;
 	showRealName: boolean;
@@ -25,6 +24,7 @@ export type MessageListContextValue = {
 	autoTranslateLanguage?: string;
 	showColors: boolean;
 	jumpToMessageParam?: string;
+	username: string | undefined;
 	scrollMessageList?: (callback: (wrapper: HTMLDivElement | null) => ScrollToOptions | void) => void;
 };
 
@@ -38,15 +38,12 @@ export const MessageListContext = createContext<MessageListContextValue>({
 		(date: Date): string =>
 			date.toString(),
 	useOpenEmojiPicker: () => (): void => undefined,
-	useReactionsFilter:
-		(message) =>
-		(reaction: string): string[] =>
-			message.reactions ? message.reactions[reaction]?.usernames || [] : [],
 	showRoles: false,
 	showRealName: false,
 	showUsername: false,
 	showColors: false,
 	scrollMessageList: () => undefined,
+	username: undefined,
 });
 
 export const useShowTranslated: MessageListContextValue['useShowTranslated'] = (...args) =>
@@ -69,5 +66,3 @@ export const useUserHasReacted: MessageListContextValue['useUserHasReacted'] = (
 	useContext(MessageListContext).useUserHasReacted(message);
 export const useOpenEmojiPicker: MessageListContextValue['useOpenEmojiPicker'] = (...args) =>
 	useContext(MessageListContext).useOpenEmojiPicker(...args);
-export const useReactionsFilter: MessageListContextValue['useReactionsFilter'] = (message: IMessage) =>
-	useContext(MessageListContext).useReactionsFilter(message);

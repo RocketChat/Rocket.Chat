@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import { Header, HeaderAvatar, HeaderContent, HeaderContentRow, HeaderSubtitle, HeaderToolbox } from '@rocket.chat/ui-client';
+import { Header, HeaderAvatar, HeaderContent, HeaderContentRow, HeaderSubtitle, HeaderToolbar } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { Suspense } from 'react';
 
@@ -56,18 +56,18 @@ const RoomHeader = ({ room, topic = '', slots = {} }: RoomHeaderProps) => {
 				{topic && (
 					<HeaderContentRow>
 						<HeaderSubtitle is='h2'>
-							<MarkdownText parseEmoji={true} variant='inlineWithoutBreaks' withTruncatedText content={topic} />
+							<MarkdownText pi={2} parseEmoji={true} variant='inlineWithoutBreaks' withTruncatedText content={topic} />
 						</HeaderSubtitle>
 					</HeaderContentRow>
 				)}
 			</HeaderContent>
 			{slots?.posContent}
 			<Suspense fallback={null}>
-				<HeaderToolbox aria-label={t('Toolbox_room_actions')}>
+				<HeaderToolbar aria-label={t('Toolbox_room_actions')}>
 					{slots?.toolbox?.pre}
 					{slots?.toolbox?.content || <RoomToolbox />}
 					{slots?.toolbox?.pos}
-				</HeaderToolbox>
+				</HeaderToolbar>
 			</Suspense>
 			{slots?.end}
 		</Header>
