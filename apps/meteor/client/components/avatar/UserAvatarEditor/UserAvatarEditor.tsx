@@ -78,6 +78,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, disabled, e
 					size='x124'
 					url={url}
 					key={url}
+					data-qa-id='UserAvatarEditor'
 					username={currentUsername || ''}
 					etag={etag}
 					onError={() => dispatchToastMessage({ type: 'error', message: t('error-invalid-image-url') })}
