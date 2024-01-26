@@ -303,7 +303,8 @@ export class AppsRestApi {
 					}
 					apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, 'Use /apps/installed to get the installed apps list.');
 
-					const apps = (await manager.get()).map(formatAppInstanceForRest);
+					const proxiedApps = await manager.get();
+					const apps = await Promise.all(proxiedApps.map(formatAppInstanceForRest));
 
 					return API.v1.success({ apps });
 				},
