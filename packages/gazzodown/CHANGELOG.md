@@ -1,5 +1,13 @@
 # @rocket.chat/gazzodown
 
+## 4.0.0-rc.1
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.1
+- @rocket.chat/ui-contexts@4.0.0-rc.1
+- @rocket.chat/ui-client@4.0.0-rc.1
+
 ## 4.0.0-rc.0
 
 ### Patch Changes
