@@ -15,7 +15,7 @@ const shortURLInMessage = (md: Root) => {
 									if (typeof labelItem.value === 'string') {
 										return {
 											...labelItem,
-											value: labelItem.value.length > 100 ? labelItem.value.substring(0, 100) + '...' : labelItem.value,
+											value: labelItem.value.length > 100 ? `${labelItem.value.substring(0, 100)}...` : labelItem.value,
 										};
 									}
 									return labelItem;
