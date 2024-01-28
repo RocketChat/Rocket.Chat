@@ -1,6 +1,6 @@
 import type { Root } from '@rocket.chat/message-parser';
 
-const ShortURLInMessage = (md: Root) => {
+const shortURLInMessage = (md: Root) => {
 	return md?.map((mdItem) => {
 		if (mdItem.value && Array.isArray(mdItem.value)) {
 			return {
@@ -31,4 +31,4 @@ const ShortURLInMessage = (md: Root) => {
 	}) as Root;
 };
 
-export default ShortURLInMessage;
+export default shortURLInMessage;

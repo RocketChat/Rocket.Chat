@@ -4,7 +4,7 @@ import React, { Suspense } from 'react';
 
 import type { MessageWithMdEnforced } from '../../lib/parseMessageTextToAstMarkdown';
 import GazzodownText from '../GazzodownText';
-import ShortURLInMessage from './content/actions/MessageURLShortner';
+import shortURLInMessage from './content/actions/MessageURLShortner';
 
 type MessageContentBodyProps = Pick<MessageWithMdEnforced, 'mentions' | 'channels' | 'md'> & {
 	searchText?: string;
@@ -14,7 +14,7 @@ const MessageContentBody = ({ mentions, channels, md, searchText }: MessageConte
 	<MessageBody data-qa-type='message-body' dir='auto'>
 		<Suspense fallback={<Skeleton />}>
 			<GazzodownText channels={channels} mentions={mentions} searchText={searchText}>
-				<Markup tokens={ShortURLInMessage(md)} />
+				<Markup tokens={shortURLInMessage(md)} />
 			</GazzodownText>
 		</Suspense>
 	</MessageBody>
