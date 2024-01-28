@@ -2,7 +2,6 @@ import type { ILivechatCustomField, Serialized } from '@rocket.chat/core-typings
 import type { SelectOption } from '@rocket.chat/fuselage';
 import {
 	FieldError,
-	Box,
 	Button,
 	ButtonGroup,
 	Field,
@@ -12,6 +11,7 @@ import {
 	Select,
 	TextInput,
 	ToggleSwitch,
+	Box,
 } from '@rocket.chat/fuselage';
 import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
@@ -170,28 +170,24 @@ const EditCustomFields = ({ customFieldData }: { customFieldData?: Serialized<IL
 								</FieldRow>
 							</Field>
 							<Field>
-								<Box display='flex' flexDirection='row'>
+								<FieldRow>
 									<FieldLabel htmlFor={visibilityField}>{t('Visible')}</FieldLabel>
-									<FieldRow>
-										<Controller
-											name='visibility'
-											control={control}
-											render={({ field: { value, ...field } }) => <ToggleSwitch id={visibilityField} {...field} checked={value} />}
-										/>
-									</FieldRow>
-								</Box>
+									<Controller
+										name='visibility'
+										control={control}
+										render={({ field: { value, ...field } }) => <ToggleSwitch id={visibilityField} {...field} checked={value} />}
+									/>
+								</FieldRow>
 							</Field>
 							<Field>
-								<Box display='flex' flexDirection='row'>
+								<FieldRow>
 									<FieldLabel htmlFor={searchableField}>{t('Searchable')}</FieldLabel>
-									<FieldRow>
-										<Controller
-											name='searchable'
-											control={control}
-											render={({ field: { value, ...field } }) => <ToggleSwitch id={searchableField} {...field} checked={value} />}
-										/>
-									</FieldRow>
-								</Box>
+									<Controller
+										name='searchable'
+										control={control}
+										render={({ field: { value, ...field } }) => <ToggleSwitch id={searchableField} {...field} checked={value} />}
+									/>
+								</FieldRow>
 							</Field>
 							<Field>
 								<FieldLabel htmlFor={regexpField}>{t('Validation')}</FieldLabel>
@@ -212,11 +208,13 @@ const EditCustomFields = ({ customFieldData }: { customFieldData?: Serialized<IL
 					</Button>
 				</ButtonGroup>
 				{customFieldData?._id && (
-					<ButtonGroup stretch mbs={8}>
-						<Button icon='trash' danger onClick={() => handleDelete(customFieldData._id)}>
-							{t('Delete')}
-						</Button>
-					</ButtonGroup>
+					<Box mbs={8}>
+						<ButtonGroup stretch>
+							<Button icon='trash' danger onClick={() => handleDelete(customFieldData._id)}>
+								{t('Delete')}
+							</Button>
+						</ButtonGroup>
+					</Box>
 				)}
 			</ContextualbarFooter>
 		</Contextualbar>

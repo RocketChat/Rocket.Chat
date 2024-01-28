@@ -21,7 +21,7 @@ export const DepartmentBusinessHours = ({ bhId }: { bhId: string | undefined }) 
 		<Field>
 			<FieldLabel>{t('Business_Hour')}</FieldLabel>
 			<FieldRow>
-				<TextInput disabled value={name || ''} />
+				<TextInput readOnly value={name || ''} />
 			</FieldRow>
 		</Field>
 	);

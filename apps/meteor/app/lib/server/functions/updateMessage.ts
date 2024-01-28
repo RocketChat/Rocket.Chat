@@ -1,11 +1,11 @@
-import { Message, api } from '@rocket.chat/core-services';
+import { Message } from '@rocket.chat/core-services';
 import type { IEditedMessage, IMessage, IUser, AtLeast } from '@rocket.chat/core-typings';
 import { Messages, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
-import { broadcastMessageSentEvent } from '../../../../server/modules/watchers/lib/messages';
+import { broadcastMessageFromData } from '../../../../server/modules/watchers/lib/messages';
 import { settings } from '../../../settings/server';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 
@@ -55,8 +55,6 @@ export const updateMessage = async function (
 		return;
 	}
 
-	message = await callbacks.run('beforeSaveMessage', message);
-
 	// TODO remove type cast
 	message = await Message.beforeSave({ message: message as IMessage, room, user });
 
@@ -87,10 +85,9 @@ export const updateMessage = async function (
 		const msg = await Messages.findOneById(_id);
 		if (msg) {
 			await callbacks.run('afterSaveMessage', msg, room, user._id);
-			void broadcastMessageSentEvent({
+			void broadcastMessageFromData({
 				id: msg._id,
 				data: msg,
-				broadcastCallback: (message) => api.broadcast('message.sent', message),
 			});
 		}
 	});

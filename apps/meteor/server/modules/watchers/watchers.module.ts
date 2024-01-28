@@ -39,7 +39,7 @@ import {
 
 import { subscriptionFields, roomFields } from '../../../lib/publishFields';
 import type { DatabaseWatcher } from '../../database/DatabaseWatcher';
-import { broadcastMessageSentEvent } from './lib/messages';
+import { getMessageToBroadcast } from './lib/messages';
 
 type BroadcastCallback = <T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>) => Promise<void>;
 
@@ -64,25 +64,21 @@ export function isWatcherRunning(): boolean {
 	return watcherStarted;
 }
 
-const messageWatcher = (watcher: DatabaseWatcher, broadcast: BroadcastCallback): void => {
-	watcher.on<IMessage>(Messages.getCollectionName(), async ({ clientAction, id, data }) => {
-		switch (clientAction) {
-			case 'inserted':
-			case 'updated':
-				void broadcastMessageSentEvent({
-					id,
-					data,
-					broadcastCallback: (message) => broadcast('watch.messages', { clientAction, message }),
-				});
-				break;
-		}
-	});
-};
-
 export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallback): void {
-	const dbWatchersEnabled = !dbWatchersDisabled;
-	if (dbWatchersEnabled) {
-		messageWatcher(watcher, broadcast);
+	// watch for changes on the database and broadcast them to the other instances
+	if (!dbWatchersDisabled) {
+		watcher.on<IMessage>(Messages.getCollectionName(), async ({ clientAction, id, data }) => {
+			switch (clientAction) {
+				case 'inserted':
+				case 'updated':
+					const message = await getMessageToBroadcast({ id, data });
+					if (!message) {
+						return;
+					}
+					void broadcast('watch.messages', { message });
+					break;
+			}
+		});
 	}
 
 	watcher.on<ISubscription>(Subscriptions.getCollectionName(), async ({ clientAction, id, data, diff }) => {
@@ -339,7 +335,13 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 	});
 
 	watcher.on<ILoginServiceConfiguration>(LoginServiceConfiguration.getCollectionName(), async ({ clientAction, id }) => {
+		if (clientAction === 'removed') {
+			void broadcast('watch.loginServiceConfiguration', { clientAction, id });
+			return;
+		}
+
 		const data = await LoginServiceConfiguration.findOne<Omit<ILoginServiceConfiguration, 'secret'>>(id, { projection: { secret: 0 } });
+
 		if (!data) {
 			return;
 		}

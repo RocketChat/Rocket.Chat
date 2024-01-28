@@ -40,7 +40,21 @@ export const useFileUploadDropTarget = (): readonly [
 	const onFileDrop = useMutableCallback(async (files: File[]) => {
 		const { mime } = await import('../../../../../app/utils/lib/mimeTypes');
 
-		const uploads = Array.from(files).map((file) => {
+		const getUniqueFiles = () => {
+			const uniqueFiles: File[] = [];
+			const st: Set<number> = new Set();
+			files.forEach((file) => {
+				const key = file.size;
+				if (!st.has(key)) {
+					uniqueFiles.push(file);
+					st.add(key);
+				}
+			});
+			return uniqueFiles;
+		};
+		const uniqueFiles = getUniqueFiles();
+
+		const uploads = Array.from(uniqueFiles).map((file) => {
 			Object.defineProperty(file, 'type', { value: mime.lookup(file.name) });
 			return file;
 		});

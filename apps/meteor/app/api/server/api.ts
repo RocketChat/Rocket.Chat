@@ -108,6 +108,22 @@ const getRequestIP = (req: Request): string | null => {
 	return forwardedFor[forwardedFor.length - httpForwardedCount];
 };
 
+const generateConnection = (
+	ipAddress: string,
+	httpHeaders: Record<string, any>,
+): {
+	id: string;
+	close: () => void;
+	clientAddress: string;
+	httpHeaders: Record<string, any>;
+} => ({
+	id: Random.id(),
+	// eslint-disable-next-line @typescript-eslint/no-empty-function
+	close() {},
+	httpHeaders,
+	clientAddress: ipAddress,
+});
+
 let prometheusAPIUserAgent = false;
 
 export class APIClass<TBasePath extends string = ''> extends Restivus {
@@ -322,7 +338,7 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 		}
 
 		rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.increment(objectForRateLimitMatch);
-		const attemptResult = rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.check(objectForRateLimitMatch);
+		const attemptResult = await rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.check(objectForRateLimitMatch);
 		const timeToResetAttempsInSeconds = Math.ceil(attemptResult.timeToReset / 1000);
 		response.setHeader('X-RateLimit-Limit', rateLimiterDictionary[objectForRateLimitMatch.route].options.numRequestsAllowed);
 		response.setHeader('X-RateLimit-Remaining', attemptResult.numInvocationsLeft);
@@ -569,14 +585,7 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 
 						let result;
 
-						const connection = {
-							id: Random.id(),
-							// eslint-disable-next-line @typescript-eslint/no-empty-function
-							close() {},
-							token: this.token,
-							httpHeaders: this.request.headers,
-							clientAddress: this.requestIp,
-						};
+						const connection = { ...generateConnection(this.requestIp, this.request.headers), token: this.token };
 
 						try {
 							if (options.deprecationVersion) {
@@ -761,12 +770,7 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 					const args = loginCompatibility(this.bodyParams, request);
 
 					const invocation = new DDPCommon.MethodInvocation({
-						connection: {
-							// eslint-disable-next-line @typescript-eslint/no-empty-function
-							close() {},
-							httpHeaders: this.request.headers,
-							clientAddress: getRequestIP(request) || '',
-						},
+						connection: generateConnection(getRequestIP(request) || '', this.request.headers),
 					});
 
 					let auth;

@@ -1,14 +1,14 @@
 {
 	"name": "@rocket.chat/ui-video-conf",
-	"version": "3.0.0",
+	"version": "3.0.3",
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.22.20",
 		"@rocket.chat/css-in-js": "~0.31.25",
 		"@rocket.chat/eslint-config": "workspace:^",
-		"@rocket.chat/fuselage": "~0.38.1",
-		"@rocket.chat/fuselage-hooks": "~0.32.1",
-		"@rocket.chat/icons": "~0.32.0",
+		"@rocket.chat/fuselage": "^0.45.0",
+		"@rocket.chat/fuselage-hooks": "^0.33.0",
+		"@rocket.chat/icons": "^0.33.0",
 		"@rocket.chat/styled": "~0.31.25",
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"@storybook/addon-actions": "~6.5.16",
@@ -35,7 +35,7 @@
 		"@rocket.chat/fuselage-hooks": "*",
 		"@rocket.chat/icons": "*",
 		"@rocket.chat/styled": "*",
-		"@rocket.chat/ui-contexts": "3.0.0",
+		"@rocket.chat/ui-contexts": "3.0.3",
 		"react": "^17.0.2",
 		"react-dom": "^17.0.2"
 	},

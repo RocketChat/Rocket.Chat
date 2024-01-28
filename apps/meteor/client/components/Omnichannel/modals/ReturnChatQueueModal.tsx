@@ -12,7 +12,7 @@ const ReturnChatQueueModal: FC<ReturnChatQueueModalProps> = ({ onCancel, onMoveC
 	const t = useTranslation();
 
 	return (
-		<Modal {...props}>
+		<Modal {...props} data-qa-id='return-to-queue-modal'>
 			<Modal.Header>
 				<Modal.Icon name='burger-arrow-left' />
 				<Modal.Title>{t('Return_to_the_queue')}</Modal.Title>

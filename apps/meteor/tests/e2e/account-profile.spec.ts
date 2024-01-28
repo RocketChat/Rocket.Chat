@@ -41,27 +41,31 @@ test.describe.serial('settings-account-profile', () => {
 	
 			await expect(poHomeChannel.tabs.userInfoUsername).toHaveText(newUsername);
 		})
-		
-		test('change avatar', async ({ page }) => {	
-			await test.step('expect change avatar image by upload', async () => {
+
+		test.describe('Avatar', () => {
+			test('should change avatar image by uploading file', async () => {	
 				await poAccountProfile.inputImageFile.setInputFiles('./tests/e2e/fixtures/files/test-image.jpeg');
-	
 				await poAccountProfile.btnSubmit.click();
-				await expect(page.locator('.rcx-toastbar.rcx-toastbar--success').first()).toBeVisible();
+			
+				await expect(poAccountProfile.userAvatarEditor).toHaveAttribute('src');
 			});
-	
-			await test.step('expect to close toastbar', async () => {
-				await page.locator('.rcx-toastbar.rcx-toastbar--success').first().click();
-			});
-	
-			await test.step('expect set image from url', async () => {
+
+			test('should change avatar image from url', async () => {	
 				await poAccountProfile.inputAvatarLink.fill('https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50');
 				await poAccountProfile.btnSetAvatarLink.click();
 	
 				await poAccountProfile.btnSubmit.click();
-				await expect(page.locator('.rcx-toastbar.rcx-toastbar--success').first()).toBeVisible();
+				await expect(poAccountProfile.userAvatarEditor).toHaveAttribute('src');
 			});
-		});
+
+			test('should display a skeleton if the image url is not valid', async () => {	
+				await poAccountProfile.inputAvatarLink.fill('https://invalidUrl');
+				await poAccountProfile.btnSetAvatarLink.click();
+	
+				await poAccountProfile.btnSubmit.click();
+				await expect(poAccountProfile.userAvatarEditor).not.toHaveAttribute('src');
+			});
+		})
 	});
 
 	test.describe('Security', () => {
