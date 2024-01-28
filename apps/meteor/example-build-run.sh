@@ -12,7 +12,7 @@ DEPLOY_DIR=/var/www/rocket.chat
 meteor npm install
 meteor npm run postinstall
 
-# on the very first build, meteor build command should fail due to a bug on emojione package (related to phantomjs installation)
+# on the very first build, meteor build command should fail due to a bug on joypixels package (related to phantomjs installation)
 # the command below forces the error to happen before build command (not needed on subsequent builds)
 set +e
 meteor add rocketchat:lib

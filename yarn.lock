@@ -9896,8 +9896,8 @@ __metadata:
     ejson: ^2.2.3
     emailreplyparser: ^0.0.5
     emoji-toolkit: ^7.0.1
-    emojione: ^4.5.0
-    emojione-assets: ^4.5.0
+    joypixels: ^4.5.0
+    joypixels-assets: ^4.5.0
     eslint: ~8.45.0
     eslint-config-prettier: ~8.8.0
     eslint-plugin-anti-trojan-source: ~1.1.1
@@ -10231,7 +10231,7 @@ __metadata:
     "@storybook/react": ~6.5.16
     "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ~13.4.0
-    "@types/emojione": ^2.2.8
+    "@types/joypixels": ^2.2.8
     "@types/jest": ~29.5.7
     "@types/react": ~17.0.69
     "@types/react-dom": ~17.0.22
@@ -13728,9 +13728,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/emojione@npm:^2.2.8":
+"@types/joypixels@npm:^2.2.8":
   version: 2.2.8
-  resolution: "@types/emojione@npm:2.2.8"
+  resolution: "@types/joypixels@npm:2.2.8"
   checksum: 3342fd3fbcbc7e7429c7a23330f559d0f41f4fcba5a699035fddb53efba8c7c5ed3af54024011643aa338792d8fd963768766877bc115e093bef193a391abb05
   languageName: node
   linkType: hard
@@ -21690,16 +21690,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"emojione-assets@npm:^4.5.0":
+"joypixels-assets@npm:^4.5.0":
   version: 4.5.0
-  resolution: "emojione-assets@npm:4.5.0"
+  resolution: "joypixels-assets@npm:4.5.0"
   checksum: 1d5c2215356f33865b965822021bcf6b386e427eb70d178f929b0e7b708417b6e175dbcf7b370151f63ce797339c5fd428a7023510a44f3da800d5cdab3366d1
   languageName: node
   linkType: hard
 
-"emojione@npm:^4.5.0":
+"joypixels@npm:^4.5.0":
   version: 4.5.0
-  resolution: "emojione@npm:4.5.0"
+  resolution: "joypixels@npm:4.5.0"
   checksum: 52d77d0a1fa62b41225c1cfc15bf596b7a2a0d1083b1d580012e4ba6b7bb70d3dd4080d4ab307044ee32539068e925cdf6482057e0e7cb986153fa9418dcd333
   languageName: node
   linkType: hard

@@ -27,13 +27,13 @@ const emojiParser = (message) => {
 
 	checkEmojiOnly.innerHTML = html;
 
-	const emojis = Array.from(checkEmojiOnly.querySelectorAll('.emoji:not(:empty), .emojione:not(:empty)'));
+	const emojis = Array.from(checkEmojiOnly.querySelectorAll('.emoji:not(:empty), .joypixels:not(:empty)'));
 
 	let hasText = false;
 
 	if (!isIE11) {
 		const filter = (node) => {
-			if (node.nodeType === Node.ELEMENT_NODE && (node.classList.contains('emojione') || node.classList.contains('emoji'))) {
+			if (node.nodeType === Node.ELEMENT_NODE && (node.classList.contains('joypixels') || node.classList.contains('emoji'))) {
 				return NodeFilter.FILTER_REJECT;
 			}
 			return NodeFilter.FILTER_ACCEPT;

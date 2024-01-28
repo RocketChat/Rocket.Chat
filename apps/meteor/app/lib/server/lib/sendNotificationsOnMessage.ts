@@ -8,7 +8,7 @@ import {
 	type AtLeast,
 } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
-import emojione from 'emojione';
+import joypixels from 'joypixels';
 import moment from 'moment';
 import type { Filter, RootFilterOperators } from 'mongodb';
 
@@ -181,13 +181,13 @@ export const sendNotification = async ({
 			isThread,
 		})
 	) {
-		const messageWithUnicode = message.msg ? emojione.shortnameToUnicode(message.msg) : message.msg;
+		const messageWithUnicode = message.msg ? joypixels.shortnameToUnicode(message.msg) : message.msg;
 		const firstAttachment = message.attachments?.length && message.attachments.shift();
 
 		if (firstAttachment) {
 			firstAttachment.description =
-				typeof firstAttachment.description === 'string' ? emojione.shortnameToUnicode(firstAttachment.description) : undefined;
-			firstAttachment.text = typeof firstAttachment.text === 'string' ? emojione.shortnameToUnicode(firstAttachment.text) : undefined;
+				typeof firstAttachment.description === 'string' ? joypixels.shortnameToUnicode(firstAttachment.description) : undefined;
+			firstAttachment.text = typeof firstAttachment.text === 'string' ? joypixels.shortnameToUnicode(firstAttachment.text) : undefined;
 		}
 
 		const attachments = firstAttachment ? [firstAttachment, ...(message.attachments ?? [])].filter(Boolean) : [];

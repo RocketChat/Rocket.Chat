@@ -1,2 +1,2 @@
 import './lib';
-import './emojione-sprites.css';
+import './joypixels-sprites.css';

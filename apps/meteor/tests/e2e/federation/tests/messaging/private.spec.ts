@@ -577,13 +577,13 @@ test.describe.parallel('Federation - Group Messaging', () => {
 				const reactionsServer1 = await poFederationChannelServer1.content.getAllReactions();
 				const reactionListExcludingTheActionServer1 = (await reactionsServer1.count()) - 1;
 				for (let i = 0; i < reactionListExcludingTheActionServer1; i++) {
-					await expect(reactionsServer1.nth(i).locator('span.rcx-message-reactions__emoji.emojione')).toContainText('🙂');
+					await expect(reactionsServer1.nth(i).locator('span.rcx-message-reactions__emoji.joypixels')).toContainText('🙂');
 					await expect(reactionsServer1.nth(i).locator('div.rcx-message-reactions__counter')).toContainText('1');
 				}
 				const reactionsServer2 = await poFederationChannelServer2.content.getAllReactions();
 				const reactionListExcludingTheActionServer2 = (await reactionsServer2.count()) - 1;
 				for (let i = 0; i < reactionListExcludingTheActionServer2; i++) {
-					await expect(reactionsServer2.nth(i).locator('span.rcx-message-reactions__emoji.emojione')).toContainText('🙂');
+					await expect(reactionsServer2.nth(i).locator('span.rcx-message-reactions__emoji.joypixels')).toContainText('🙂');
 					await expect(reactionsServer2.nth(i).locator('div.rcx-message-reactions__counter')).toContainText('1');
 				}
 			});
@@ -604,13 +604,13 @@ test.describe.parallel('Federation - Group Messaging', () => {
 				const reactionsServer1 = await poFederationChannelServer1.content.getAllReactions();
 				const reactionListExcludingTheActionServer1 = (await reactionsServer1.count()) - 1;
 				for (let i = 0; i < reactionListExcludingTheActionServer1; i++) {
-					await expect(reactionsServer1.nth(i).locator('span.rcx-message-reactions__emoji.emojione')).toContainText('🙂');
+					await expect(reactionsServer1.nth(i).locator('span.rcx-message-reactions__emoji.joypixels')).toContainText('🙂');
 					await expect(reactionsServer1.nth(i).locator('div.rcx-message-reactions__counter')).toContainText('1');
 				}
 				const reactionsServer2 = await poFederationChannelServer2.content.getAllReactions();
 				const reactionListExcludingTheActionServer2 = (await reactionsServer2.count()) - 1;
 				for (let i = 0; i < reactionListExcludingTheActionServer2; i++) {
-					await expect(reactionsServer2.nth(i).locator('span.rcx-message-reactions__emoji.emojione')).toContainText('🙂');
+					await expect(reactionsServer2.nth(i).locator('span.rcx-message-reactions__emoji.joypixels')).toContainText('🙂');
 					await expect(reactionsServer2.nth(i).locator('div.rcx-message-reactions__counter')).toContainText('1');
 				}
 			});
@@ -643,13 +643,13 @@ test.describe.parallel('Federation - Group Messaging', () => {
 					},
 				};
 				for (let i = 0; i < reactionListExcludingTheActionServer1; i++) {
-					await expect(reactionsServer1.nth(i).locator('span.rcx-message-reactions__emoji.emojione')).toContainText(reactionsMap[i].emoji);
+					await expect(reactionsServer1.nth(i).locator('span.rcx-message-reactions__emoji.joypixels')).toContainText(reactionsMap[i].emoji);
 					await expect(reactionsServer1.nth(i).locator('div.rcx-message-reactions__counter')).toContainText(reactionsMap[i].count);
 				}
 				let reactionsServer2 = await poFederationChannelServer2.content.getAllReactions();
 				let reactionListExcludingTheActionServer2 = (await reactionsServer2.count()) - 1;
 				for (let i = 0; i < reactionListExcludingTheActionServer2; i++) {
-					await expect(reactionsServer2.nth(i).locator('span.rcx-message-reactions__emoji.emojione')).toContainText(reactionsMap[i].emoji);
+					await expect(reactionsServer2.nth(i).locator('span.rcx-message-reactions__emoji.joypixels')).toContainText(reactionsMap[i].emoji);
 					await expect(reactionsServer2.nth(i).locator('div.rcx-message-reactions__counter')).toContainText(reactionsMap[i].count);
 				}
 
@@ -666,7 +666,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 					},
 				};
 				for (let i = 0; i < reactionListExcludingTheActionServer1; i++) {
-					await expect(reactionsServer1.nth(i).locator('span.rcx-message-reactions__emoji.emojione')).toContainText(
+					await expect(reactionsServer1.nth(i).locator('span.rcx-message-reactions__emoji.joypixels')).toContainText(
 						reactionsMapAfterUnreaction[i].emoji,
 					);
 					await expect(reactionsServer1.nth(i).locator('div.rcx-message-reactions__counter')).toContainText(
@@ -676,7 +676,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 				reactionsServer2 = await poFederationChannelServer2.content.getAllReactions();
 				reactionListExcludingTheActionServer2 = (await reactionsServer2.count()) - 1;
 				for (let i = 0; i < reactionListExcludingTheActionServer2; i++) {
-					await expect(reactionsServer2.nth(i).locator('span.rcx-message-reactions__emoji.emojione')).toContainText(
+					await expect(reactionsServer2.nth(i).locator('span.rcx-message-reactions__emoji.joypixels')).toContainText(
 						reactionsMapAfterUnreaction[i].emoji,
 					);
 					await expect(reactionsServer2.nth(i).locator('div.rcx-message-reactions__counter')).toContainText(
@@ -713,13 +713,13 @@ test.describe.parallel('Federation - Group Messaging', () => {
 					},
 				};
 				for (let i = 0; i < reactionListExcludingTheActionServer2; i++) {
-					await expect(reactionsServer2.nth(i).locator('span.rcx-message-reactions__emoji.emojione')).toContainText(reactionsMap[i].emoji);
+					await expect(reactionsServer2.nth(i).locator('span.rcx-message-reactions__emoji.joypixels')).toContainText(reactionsMap[i].emoji);
 					await expect(reactionsServer2.nth(i).locator('div.rcx-message-reactions__counter')).toContainText(reactionsMap[i].count);
 				}
 				let reactionsServer1 = await poFederationChannelServer1.content.getAllReactions();
 				let reactionListExcludingTheActionServer1 = (await reactionsServer1.count()) - 1;
 				for (let i = 0; i < reactionListExcludingTheActionServer1; i++) {
-					await expect(reactionsServer1.nth(i).locator('span.rcx-message-reactions__emoji.emojione')).toContainText(reactionsMap[i].emoji);
+					await expect(reactionsServer1.nth(i).locator('span.rcx-message-reactions__emoji.joypixels')).toContainText(reactionsMap[i].emoji);
 					await expect(reactionsServer1.nth(i).locator('div.rcx-message-reactions__counter')).toContainText(reactionsMap[i].count);
 				}
 
@@ -736,7 +736,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 					},
 				};
 				for (let i = 0; i < reactionListExcludingTheActionServer2; i++) {
-					await expect(reactionsServer2.nth(i).locator('span.rcx-message-reactions__emoji.emojione')).toContainText(
+					await expect(reactionsServer2.nth(i).locator('span.rcx-message-reactions__emoji.joypixels')).toContainText(
 						reactionsMapAfterUnreaction[i].emoji,
 					);
 					await expect(reactionsServer2.nth(i).locator('div.rcx-message-reactions__counter')).toContainText(
@@ -746,7 +746,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 				reactionsServer1 = await poFederationChannelServer1.content.getAllReactions();
 				reactionListExcludingTheActionServer1 = (await reactionsServer1.count()) - 1;
 				for (let i = 0; i < reactionListExcludingTheActionServer1; i++) {
-					await expect(reactionsServer1.nth(i).locator('span.rcx-message-reactions__emoji.emojione')).toContainText(
+					await expect(reactionsServer1.nth(i).locator('span.rcx-message-reactions__emoji.joypixels')).toContainText(
 						reactionsMapAfterUnreaction[i].emoji,
 					);
 					await expect(reactionsServer1.nth(i).locator('div.rcx-message-reactions__counter')).toContainText(

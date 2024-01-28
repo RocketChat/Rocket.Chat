@@ -1,5 +1,5 @@
-declare module 'emojione' {
-	export as namespace emojione;
+declare module 'joypixels' {
+	export as namespace joypixels;
 
 	export let sprites: boolean;
 	export let imagePathSVG: string;
@@ -9,7 +9,7 @@ declare module 'emojione' {
 	export let ascii: boolean;
 	export let unicodeRegexp: string;
 	export let cacheBustParam: string;
-	export let emojioneList: {
+	export let joypixelsList: {
 		[key: string]: {
 			uc_base: string;
 			uc_output: string;

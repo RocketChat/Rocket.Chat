@@ -1,4 +1,4 @@
-import emojione from 'emojione';
+import joypixels from 'joypixels';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../lib/callbacks';
@@ -6,8 +6,8 @@ import { callbacks } from '../../../lib/callbacks';
 Meteor.startup(() => {
 	callbacks.add(
 		'beforeSendMessageNotifications',
-		(message) => emojione.shortnameToUnicode(message),
+		(message) => joypixels.shortnameToUnicode(message),
 		callbacks.priority.MEDIUM,
-		'emojione-shortnameToUnicode',
+		'joypixels-shortnameToUnicode',
 	);
 });

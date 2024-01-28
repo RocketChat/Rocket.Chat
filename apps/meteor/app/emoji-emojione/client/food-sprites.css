@@ -1,7 +1,7 @@
 /* stylelint-disable */
 
-.emojione-food {
-  background-image: url('/packages/emojione/food-sprites.png');
+.joypixels-food {
+  background-image: url('/packages/joypixels/food-sprites.png');
 
   &._1f35d {
     background-repeat: no-repeat;

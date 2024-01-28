@@ -20,7 +20,7 @@ const EmojiElement = ({ emoji, image, onClick, small = false, ...props }: EmojiE
 
 	const emojiSmallClass = css`
 		> .emoji,
-		.emojione {
+		.joypixels {
 			width: 1.125rem;
 			height: 1.125rem;
 		}

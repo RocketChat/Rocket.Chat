@@ -2,7 +2,7 @@
 #/tests/e2e/
 /tests/data/
 /packages/
-/app/emoji-emojione/generateEmojiIndex.js
+/app/emoji-joypixels/generateEmojiIndex.js
 /public/
 /private/moment-locales/
 /imports/
