@@ -1,3 +1,4 @@
+import type { AtLeast } from '@rocket.chat/core-typings';
 import { type ILivechatDepartment, type ILivechatBusinessHour, LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.chat/models';
 import moment from 'moment';
@@ -80,8 +81,8 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 
 	async afterSaveBusinessHours(businessHourData: IBusinessHoursExtraProperties): Promise<void> {
 		const departments = businessHourData.departmentsToApplyBusinessHour?.split(',').filter(Boolean);
-		const currentDepartments = businessHourData.departments?.map((dept: any) => dept._id);
-		const toRemove = [...(currentDepartments || []).filter((dept: Record<string, any>) => !departments.includes(dept._id))];
+		const currentDepartments = businessHourData.departments?.map((dept) => dept._id);
+		const toRemove = [...(currentDepartments || []).filter((dept) => !departments.includes(dept))];
 		await this.removeBusinessHourFromRemovedDepartmentsUsersIfNeeded(businessHourData._id, toRemove);
 		const businessHour = await this.BusinessHourRepository.findOneById(businessHourData._id);
 		if (!businessHour) {
@@ -135,6 +136,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		if (!businessHourToOpen.length) {
 			return options;
 		}
+
 		await this.UsersRepository.addBusinessHourByAgentIds(agentsId, businessHour._id);
 		await this.UsersRepository.makeAgentsWithinBusinessHourAvailable(agentsId);
 
@@ -152,7 +154,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		return this.handleRemoveAgentsFromDepartments(department, agentsId, options);
 	}
 
-	async onRemoveDepartment(options: { department: ILivechatDepartment; agentsIds: string[] }): Promise<any> {
+	async onRemoveDepartment(options: { department: AtLeast<ILivechatDepartment, '_id' | 'businessHourId'>; agentsIds: string[] }) {
 		const { department, agentsIds } = options;
 		if (!department || !agentsIds?.length) {
 			return options;
@@ -160,7 +162,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		return this.onDepartmentDisabled(department);
 	}
 
-	async onDepartmentDisabled(department: ILivechatDepartment): Promise<void> {
+	async onDepartmentDisabled(department: AtLeast<ILivechatDepartment, 'businessHourId' | '_id'>): Promise<void> {
 		if (!department.businessHourId) {
 			return;
 		}
@@ -209,22 +211,13 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		for await (const bh of businessHourToOpen) {
 			await openBusinessHour(bh, false);
 		}
-
 		await Users.updateLivechatStatusBasedOnBusinessHours();
-
 		await businessHourManager.restartCronJobsIfNecessary();
 	}
 
-	async onDepartmentArchived(department: Pick<ILivechatDepartment, '_id'>): Promise<void> {
+	async onDepartmentArchived(department: Pick<ILivechatDepartment, '_id' | 'businessHourId'>): Promise<void> {
 		bhLogger.debug('Processing department archived event on multiple business hours', department);
-		const dbDepartment = await LivechatDepartment.findOneById(department._id, { projection: { businessHourId: 1, _id: 1 } });
-
-		if (!dbDepartment) {
-			bhLogger.error(`No department found with id: ${department._id} when archiving it`);
-			return;
-		}
-
-		return this.onDepartmentDisabled(dbDepartment);
+		return this.onDepartmentDisabled(department);
 	}
 
 	allowAgentChangeServiceStatus(agentId: string): Promise<boolean> {
@@ -321,12 +314,17 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 	private async handleRemoveAgentsFromDepartments(department: Record<string, any>, agentsIds: string[], options: any): Promise<any> {
 		const agentIdsWithoutDepartment: string[] = [];
 		const agentIdsToRemoveCurrentBusinessHour: string[] = [];
-		for await (const agentId of agentsIds) {
-			if ((await LivechatDepartmentAgents.findByAgentId(agentId).count()) === 0) {
+
+		const [agentsWithDepartment, [agentsOfDepartment] = []] = await Promise.all([
+			LivechatDepartmentAgents.findByAgentIds(agentsIds, { projection: { agentId: 1 } }).toArray(),
+			LivechatDepartment.findAgentsByBusinessHourId(department.businessHourId).toArray(),
+		]);
+
+		for (const agentId of agentsIds) {
+			if (!agentsWithDepartment.find((agent) => agent.agentId === agentId)) {
 				agentIdsWithoutDepartment.push(agentId);
 			}
-			// TODO: We're doing a full fledged aggregation with lookups and getting the whole array just for getting the length? :(
-			if (!(await LivechatDepartmentAgents.findAgentsByAgentIdAndBusinessHourId(agentId, department.businessHourId)).length) {
+			if (!agentsOfDepartment?.agentIds?.find((agent) => agent === agentId)) {
 				agentIdsToRemoveCurrentBusinessHour.push(agentId);
 			}
 		}
@@ -359,7 +357,9 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		if (!departmentsToRemove.length) {
 			return;
 		}
-		const agentIds = (await LivechatDepartmentAgents.findByDepartmentIds(departmentsToRemove).toArray()).map((dept: any) => dept.agentId);
+		const agentIds = (
+			await LivechatDepartmentAgents.findByDepartmentIds(departmentsToRemove, { projection: { agentId: 1 } }).toArray()
+		).map((dept) => dept.agentId);
 		await removeBusinessHourByAgentIds(agentIds, businessHourId);
 	}
 

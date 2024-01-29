@@ -25,6 +25,13 @@ import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 import { updateGroupDMsName } from './updateGroupDMsName';
 
 export async function deleteUser(userId: string, confirmRelinquish = false, deletedBy?: IUser['_id']): Promise<void> {
+	if (userId === 'rocket.cat') {
+		throw new Meteor.Error('error-action-not-allowed', 'Deleting the rocket.cat user is not allowed', {
+			method: 'deleteUser',
+			action: 'Delete_user',
+		});
+	}
+
 	const user = await Users.findOneById(userId, {
 		projection: { username: 1, avatarOrigin: 1, roles: 1, federated: 1 },
 	});
