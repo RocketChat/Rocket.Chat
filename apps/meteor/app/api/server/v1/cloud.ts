@@ -2,7 +2,6 @@ import { check } from 'meteor/check';
 
 import { CloudWorkspaceRegistrationError } from '../../../../lib/errors/CloudWorkspaceRegistrationError';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { getCheckoutUrl } from '../../../cloud/server/functions/getCheckoutUrl';
 import { getConfirmationPoll } from '../../../cloud/server/functions/getConfirmationPoll';
@@ -20,16 +19,12 @@ import { API } from '../api';
 
 API.v1.addRoute(
 	'cloud.manualRegister',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['register-on-cloud'] },
 	{
 		async post() {
 			check(this.bodyParams, {
 				cloudBlob: String,
 			});
-
-			if (!(await hasPermissionAsync(this.userId, 'register-on-cloud'))) {
-				return API.v1.unauthorized();
-			}
 
 			const registrationInfo = await retrieveRegistrationStatus();
 
@@ -48,17 +43,13 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'cloud.createRegistrationIntent',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['manage-cloud'] },
 	{
 		async post() {
 			check(this.bodyParams, {
 				resend: Boolean,
 				email: String,
 			});
-
-			if (!(await hasPermissionAsync(this.userId, 'manage-cloud'))) {
-				return API.v1.unauthorized();
-			}
 
 			const intentData = await startRegisterWorkspaceSetupWizard(this.bodyParams.resend, this.bodyParams.email);
 
@@ -73,13 +64,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'cloud.registerPreIntent',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['manage-cloud'] },
 	{
 		async post() {
-			if (!(await hasPermissionAsync(this.userId, 'manage-cloud'))) {
-				return API.v1.unauthorized();
-			}
-
 			return API.v1.success({ offline: !(await registerPreIntentWorkspaceWizard()) });
 		},
 	},
@@ -87,17 +74,13 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'cloud.confirmationPoll',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['manage-cloud'] },
 	{
 		async get() {
 			const { deviceCode } = this.queryParams;
 			check(this.queryParams, {
 				deviceCode: String,
 			});
-
-			if (!(await hasPermissionAsync(this.userId, 'manage-cloud'))) {
-				return API.v1.unauthorized();
-			}
 
 			if (!deviceCode) {
 				return API.v1.failure('Invalid query');
