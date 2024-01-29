@@ -1,4 +1,4 @@
-import { Box, Field, FieldGroup, FieldHint, FieldLabel, FieldRow, Option, Options, SelectLegacy, Tag } from '@rocket.chat/fuselage';
+import { Box, Field, FieldGroup, FieldHint, FieldLabel, FieldRow, Option, SelectLegacy, Tag } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';

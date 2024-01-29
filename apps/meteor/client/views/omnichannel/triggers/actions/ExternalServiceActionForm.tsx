@@ -54,7 +54,6 @@ export const ExternalServiceActionForm = ({ control, index, ...props }: SendMess
 									aria-invalid={Boolean(timeoutError)}
 									aria-describedby={`${timeoutFieldId}-hint`}
 									aria-required={true}
-									onChange={(v: FormEvent<HTMLInputElement>) => field.onChange(Number(v.currentTarget.value || 0))}
 									onFocus={(v: FocusEvent<HTMLInputElement>) => v.currentTarget.select()}
 									disabled={!hasLicense}
 								/>
