@@ -158,7 +158,7 @@ export class ListenersModule {
 			});
 		});
 
-		listenToMessageSentEvent(service, async (message) => {
+		service.onEvent('watch.messages', async ({ message }) => {
 			if (!message.rid) {
 				return;
 			}

@@ -1,4 +1,4 @@
-import { Message, api } from '@rocket.chat/core-services';
+import { Message } from '@rocket.chat/core-services';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
@@ -7,7 +7,7 @@ import { Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 import { isRelativeURL } from '../../../../lib/utils/isRelativeURL';
 import { isURL } from '../../../../lib/utils/isURL';
-import { broadcastMessageSentEvent } from '../../../../server/modules/watchers/lib/messages';
+import { broadcastMessageFromData } from '../../../../server/modules/watchers/lib/messages';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { FileUpload } from '../../../file-upload/server';
 import notifications from '../../../notifications/server/lib/Notifications';
@@ -285,9 +285,8 @@ export const sendMessage = async function (user: any, message: any, room: any, u
 
 	// Execute all callbacks
 	await callbacks.run('afterSaveMessage', message, room);
-	void broadcastMessageSentEvent({
+	void broadcastMessageFromData({
 		id: message._id,
-		broadcastCallback: (message) => api.broadcast('message.sent', message),
 	});
 	await api.broadcast('room.afterSaveMessage', message, room);
 	return message;

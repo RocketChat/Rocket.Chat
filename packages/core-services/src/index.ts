@@ -52,7 +52,6 @@ export { asyncLocalStorage } from './lib/asyncLocalStorage';
 export { MeteorError, isMeteorError } from './MeteorError';
 export { api } from './api';
 export { EventSignatures } from './events/Events';
-export { listenToMessageSentEvent, dbWatchersDisabled } from './events/listeners';
 export { LocalBroker } from './LocalBroker';
 
 export { IBroker, IBrokerNode, BaseMetricOptions, IServiceMetrics } from './types/IBroker';
@@ -136,6 +135,8 @@ export {
 	IImportService,
 	IOmnichannelAnalyticsService,
 };
+
+export const dbWatchersDisabled = ['yes', 'true'].includes(String(process.env.DISABLE_DB_WATCHERS).toLowerCase());
 
 // TODO think in a way to not have to pass the service name to proxify here as well
 export const Authorization = proxifyWithWait<IAuthorization>('authorization');

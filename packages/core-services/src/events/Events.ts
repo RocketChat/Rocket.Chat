@@ -168,7 +168,7 @@ export type EventSignatures = {
 		user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'name' | 'roles'>;
 		previousStatus: UserStatus | undefined;
 	}): void;
-	'watch.messages'(data: { clientAction: ClientAction; message: IMessage }): void;
+	'watch.messages'(data: { message: IMessage }): void;
 	'watch.roles'(
 		data:
 			| { clientAction: Exclude<ClientAction, 'removed'>; role: IRole }
@@ -316,5 +316,4 @@ export type EventSignatures = {
 	'command.updated'(command: string): void;
 	'command.removed'(command: string): void;
 	'actions.changed'(): void;
-	'message.sent'(message: IMessage): void;
 };

@@ -871,6 +871,10 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 							$exists: true,
 							$ne: '',
 						},
+						sessionId: {
+							$exists: true,
+							$ne: '',
+						},
 					},
 					{
 						logoutAt: {
