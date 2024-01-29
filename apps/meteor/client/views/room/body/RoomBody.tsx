@@ -35,7 +35,7 @@ import RoomComposer from '../composer/RoomComposer/RoomComposer';
 import { useChat } from '../contexts/ChatContext';
 import { useRoom, useRoomSubscription, useRoomMessages } from '../contexts/RoomContext';
 import { useRoomToolbox } from '../contexts/RoomToolboxContext';
-import { useRoomNavigation } from '../hooks/useRoomNavigation';
+import { useMessageListNavigation } from '../hooks/useMessageListNavigation';
 import { useScrollMessageList } from '../hooks/useScrollMessageList';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
@@ -532,7 +532,8 @@ const RoomBody = (): ReactElement => {
 	);
 
 	useReadMessageWindowEvents();
-	const { roomListRef } = useRoomNavigation();
+	const roomListRef = useRef(null);
+	const { messageListProps } = useMessageListNavigation(roomListRef);
 
 	return (
 		<>
@@ -601,7 +602,14 @@ const RoomBody = (): ReactElement => {
 								>
 									<MessageListErrorBoundary>
 										<ScrollableContentWrapper ref={wrapperRef}>
-											<ul ref={roomListRef} className='messages-list' aria-live='polite' aria-busy={isLoadingMoreMessages}>
+											<ul
+												ref={roomListRef}
+												className='messages-list'
+												aria-orientation='vertical'
+												aria-live='polite'
+												aria-busy={isLoadingMoreMessages}
+												{...messageListProps}
+											>
 												{canPreview ? (
 													<>
 														{hasMorePreviousMessages ? (

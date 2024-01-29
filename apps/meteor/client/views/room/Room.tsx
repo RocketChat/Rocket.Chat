@@ -24,7 +24,7 @@ const Room = (): ReactElement => {
 	return (
 		<ChatProvider>
 			<MessageHighlightProvider>
-				<FocusScope contain>
+				<FocusScope>
 					<RoomLayout
 						data-qa-rc-room={room._id}
 						aria-label={room.t === 'd' ? `Conversation with ${room.name}` : `Channel ${room.name}`}
