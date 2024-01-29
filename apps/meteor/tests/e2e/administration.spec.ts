@@ -88,16 +88,31 @@ test.describe.parallel('administration', () => {
 			await expect(poAdmin.archivedInput).toBeChecked();
 		});
 
-		test('should mark target default channel as "favorite by default"', async () => {
-			await poAdmin.inputSearchRooms.type(targetChannel);
-			await poAdmin.getRoomRow(targetChannel).click();
-			await poAdmin.defaultLabel.click();
-			await poAdmin.favoriteLabel.click();
-			await poAdmin.btnSave.click();
+		test.describe.serial('Default rooms', () => {
+			test('expect target channell to be default', async () => {
+				await poAdmin.inputSearchRooms.type(targetChannel);
+				await poAdmin.getRoomRow(targetChannel).click();
+				await poAdmin.defaultLabel.click();
+				await poAdmin.btnSave.click();
+	
+				// The contextual bar closes after the save, because of that it has to be opened again
+				// Also, this flow assumes the data is not stale which can cause false positives
+				// TODO: If this feature is not removed in the future, Use api to check if the room is default for test optimization
+				await poAdmin.getRoomRow(targetChannel).click();
+				await expect(poAdmin.defaultInput).toBeChecked();
+			});
 
-			await poAdmin.getRoomRow(targetChannel).click();
-			await expect(poAdmin.favoriteInput).toBeChecked();
-			await expect(poAdmin.defaultInput).toBeChecked();
+			test('should mark target default channel as "favorite by default"', async () => {
+				await poAdmin.inputSearchRooms.type(targetChannel);
+				await poAdmin.getRoomRow(targetChannel).click();
+				await poAdmin.favoriteLabel.click();
+				await poAdmin.btnSave.click();
+	
+				// Same as the previous test
+				// TODO: If this feature is not removed in the future, Use api to check if the room is default for test optimization
+				await poAdmin.getRoomRow(targetChannel).click();
+				await expect(poAdmin.favoriteInput).toBeChecked();
+			});
 		});
 	});
 
