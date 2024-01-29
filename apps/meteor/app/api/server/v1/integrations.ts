@@ -11,7 +11,6 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
-import { hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import {
 	mountIntegrationHistoryQueryBasedOnPermissions,
 	mountIntegrationQueryBasedOnPermissions,
@@ -43,14 +42,16 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'integrations.history',
-	{ authRequired: true, validateParams: isIntegrationsHistoryProps },
+	{
+		authRequired: true,
+		validateParams: isIntegrationsHistoryProps,
+		permissionsRequired: {
+			GET: { permissions: ['manage-outgoing-integrations', 'manage-own-outgoing-integrations'], operation: 'hasAny' },
+		},
+	},
 	{
 		async get() {
 			const { userId, queryParams } = this;
-
-			if (!(await hasAtLeastOnePermissionAsync(userId, ['manage-outgoing-integrations', 'manage-own-outgoing-integrations']))) {
-				return API.v1.unauthorized();
-			}
 
 			if (!queryParams.id || queryParams.id.trim() === '') {
 				return API.v1.failure('Invalid integration id.');
@@ -83,20 +84,22 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'integrations.list',
-	{ authRequired: true },
 	{
-		async get() {
-			if (
-				!(await hasAtLeastOnePermissionAsync(this.userId, [
+		authRequired: true,
+		permissionsRequired: {
+			GET: {
+				permissions: [
 					'manage-outgoing-integrations',
 					'manage-own-outgoing-integrations',
 					'manage-incoming-integrations',
 					'manage-own-incoming-integrations',
-				]))
-			) {
-				return API.v1.unauthorized();
-			}
-
+				],
+				operation: 'hasAny',
+			},
+		},
+	},
+	{
+		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields: projection, query } = await this.parseJsonQuery();
 
@@ -124,20 +127,23 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'integrations.remove',
-	{ authRequired: true, validateParams: isIntegrationsRemoveProps },
 	{
-		async post() {
-			if (
-				!(await hasAtLeastOnePermissionAsync(this.userId, [
+		authRequired: true,
+		validateParams: isIntegrationsRemoveProps,
+		permissionsRequired: {
+			GET: {
+				permissions: [
 					'manage-outgoing-integrations',
 					'manage-own-outgoing-integrations',
 					'manage-incoming-integrations',
 					'manage-own-incoming-integrations',
-				]))
-			) {
-				return API.v1.unauthorized();
-			}
-
+				],
+				operation: 'hasAny',
+			},
+		},
+	},
+	{
+		async post() {
 			const { bodyParams } = this;
 
 			let integration: IIntegration | null = null;
