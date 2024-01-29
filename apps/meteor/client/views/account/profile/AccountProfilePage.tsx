@@ -119,16 +119,18 @@ const AccountProfilePage = (): ReactElement => {
 					<FormProvider {...methods}>
 						<AccountProfileForm id={profileFormId} />
 					</FormProvider>
-					<ButtonGroup stretch mb={12}>
-						<Button onClick={handleLogoutOtherLocations} flexGrow={0} loading={loggingOut}>
-							{t('Logout_Others')}
-						</Button>
-						{allowDeleteOwnAccount && (
-							<Button icon='trash' danger onClick={handleDeleteOwnAccount}>
-								{t('Delete_my_account')}
+					<Box mb={12}>
+						<ButtonGroup stretch>
+							<Button onClick={handleLogoutOtherLocations} flexGrow={0} loading={loggingOut}>
+								{t('Logout_Others')}
 							</Button>
-						)}
-					</ButtonGroup>
+							{allowDeleteOwnAccount && (
+								<Button icon='trash' danger onClick={handleDeleteOwnAccount}>
+									{t('Delete_my_account')}
+								</Button>
+							)}
+						</ButtonGroup>
+					</Box>
 				</Box>
 			</PageScrollableContentWithShadow>
 			<PageFooter isDirty={isDirty}>

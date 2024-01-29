@@ -3,7 +3,7 @@ import { eventTypes } from '@rocket.chat/core-typings';
 import { FederationServers, FederationRoomEvents, Rooms, Messages, Subscriptions, Users, ReadReceipts } from '@rocket.chat/models';
 import EJSON from 'ejson';
 
-import { broadcastMessageSentEvent } from '../../../../server/modules/watchers/lib/messages';
+import { broadcastMessageFromData } from '../../../../server/modules/watchers/lib/messages';
 import { API } from '../../../api/server';
 import { FileUpload } from '../../../file-upload/server';
 import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
@@ -284,10 +284,9 @@ const eventHandlers = {
 				}
 			}
 			if (messageForNotification) {
-				void broadcastMessageSentEvent({
+				void broadcastMessageFromData({
 					id: messageForNotification._id,
 					data: messageForNotification,
-					broadcastCallback: (message) => api.broadcast('message.sent', message),
 				});
 			}
 		}
@@ -316,14 +315,13 @@ const eventHandlers = {
 			} else {
 				// Update the message
 				await Messages.updateOne({ _id: persistedMessage._id }, { $set: { msg: message.msg, federation: message.federation } });
-				void broadcastMessageSentEvent({
+				void broadcastMessageFromData({
 					id: persistedMessage._id,
 					data: {
 						...persistedMessage,
 						msg: message.msg,
 						federation: message.federation,
 					},
-					broadcastCallback: (message) => api.broadcast('message.sent', message),
 				});
 			}
 		}
@@ -387,7 +385,7 @@ const eventHandlers = {
 
 			// Update the property
 			await Messages.updateOne({ _id: messageId }, { $set: { [`reactions.${reaction}`]: reactionObj } });
-			void broadcastMessageSentEvent({
+			void broadcastMessageFromData({
 				id: persistedMessage._id,
 				data: {
 					...persistedMessage,
@@ -396,7 +394,6 @@ const eventHandlers = {
 						[reaction]: reactionObj,
 					},
 				},
-				broadcastCallback: (message) => api.broadcast('message.sent', message),
 			});
 		}
 
@@ -446,7 +443,7 @@ const eventHandlers = {
 				// Otherwise, update the property
 				await Messages.updateOne({ _id: messageId }, { $set: { [`reactions.${reaction}`]: reactionObj } });
 			}
-			void broadcastMessageSentEvent({
+			void broadcastMessageFromData({
 				id: persistedMessage._id,
 				data: {
 					...persistedMessage,
@@ -455,7 +452,6 @@ const eventHandlers = {
 						[reaction]: reactionObj,
 					},
 				},
-				broadcastCallback: (message) => api.broadcast('message.sent', message),
 			});
 		}
 
