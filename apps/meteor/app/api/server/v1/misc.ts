@@ -22,7 +22,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { getLogs } from '../../../../server/stream/stdout';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { passwordPolicy } from '../../../lib/server';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { settings } from '../../../settings/server';
@@ -469,12 +468,9 @@ API.v1.addRoute(
  */
 API.v1.addRoute(
 	'stdout.queue',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-logs'] },
 	{
 		async get() {
-			if (!(await hasPermissionAsync(this.userId, 'view-logs'))) {
-				return API.v1.unauthorized();
-			}
 			return API.v1.success({ queue: getLogs() });
 		},
 	},
