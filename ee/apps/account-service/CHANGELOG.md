@@ -1,5 +1,15 @@
 # @rocket.chat/account-service
 
+## 0.3.4-rc.3
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.3
+- @rocket.chat/rest-typings@6.6.0-rc.3
+- @rocket.chat/core-services@0.3.4-rc.3
+- @rocket.chat/model-typings@0.3.0-rc.3
+- @rocket.chat/models@0.0.28-rc.3
+
 ## 0.3.4-rc.2
 
 ### Patch Changes

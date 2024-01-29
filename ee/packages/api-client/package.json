@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/api-client",
-	"version": "0.1.22-rc.2",
+	"version": "0.1.22-rc.3",
 	"devDependencies": {
 		"@swc/core": "^1.3.95",
 		"@swc/jest": "^0.2.29",
