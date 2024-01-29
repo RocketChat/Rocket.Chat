@@ -97,7 +97,7 @@ const Reaction = ({ hasReacted, counter, name, names, messageId, ...props }: Rea
 			tabIndex={0}
 			role='button'
 			// if data-tooltip is not set, the tooltip will close on first mouse enter
-			data-tooltip
+			data-tooltip=''
 			onMouseEnter={async (e) => {
 				e.stopPropagation();
 				e.preventDefault();
