@@ -101,7 +101,6 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const handleUpdateRoomData = useMutableCallback(async ({ hideSysMes, joinCodeRequired, ...formData }) => {
 		const data = getDirtyFields(formData, dirtyFields);
 		delete data.archived;
-		delete data.favorite;
 
 		try {
 			await saveAction({
