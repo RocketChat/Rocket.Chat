@@ -976,7 +976,6 @@
   "Enter_name_here": "Namen hier eingeben",
   "Enter_Normal": "Normaler Modus (mit Eingabetaste senden)",
   "Enter_to": "Enter-Taste: ",
-  "Enterprise": "Unternehmen",
   "Entertainment": "Unterhaltung",
   "Error": "Fehler",
   "Error_404": "Fehler 404",
@@ -1834,6 +1833,8 @@
   "Offline_success_message": "Nachricht, dass Offline Nachricht erfolgreich",
   "Offline_unavailable": "offline - nicht verfügbar",
   "Older_than": "Älter als",
+  "Omnichannel_Reports_Status_Open": "Öffnen",
+  "Omnichannel_Reports_Status_Closed": "Geschlossen",
   "On": "Ein",
   "online": "online",
   "Online": "Online",
@@ -2755,5 +2756,7 @@
   "registration.component.form.reasonToJoin": "Grund zu Join",
   "registration.component.form.invalidConfirmPass": "Die Passwörter stimmen nicht überein.",
   "registration.component.form.confirmPassword": "Bestätigen Sie Ihr Passwort.",
-  "registration.component.form.sendConfirmationEmail": "Bestätigungsmail versenden"
+  "registration.component.form.sendConfirmationEmail": "Bestätigungsmail versenden",
+  "Enterprise": "Unternehmen",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Analytics"
 }

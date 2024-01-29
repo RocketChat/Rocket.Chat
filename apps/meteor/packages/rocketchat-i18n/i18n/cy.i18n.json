@@ -972,7 +972,6 @@
   "Enter_name_here": "Rhowch enw yma",
   "Enter_Normal": "Modd arferol (anfonwch â Enter)",
   "Enter_to": "Rhowch i",
-  "Enterprise": "Menter",
   "Entertainment": "Adloniant",
   "Error": "Gwall",
   "Error_404": "Gwall: 404",
@@ -1826,6 +1825,8 @@
   "Offline_success_message": "Neges Llwyddiant All-lein",
   "Offline_unavailable": "All-lein ddim ar gael",
   "Older_than": "Yn hŷn na",
+  "Omnichannel_Reports_Status_Open": "Agor",
+  "Omnichannel_Reports_Status_Closed": "Ar gau",
   "On": "Ar",
   "online": "ar-lein",
   "Online": "Ar-lein",
@@ -2746,5 +2747,7 @@
   "registration.component.form.reasonToJoin": "Rheswm i Ymuno",
   "registration.component.form.invalidConfirmPass": "Nid yw'r cadarnhad cyfrinair yn cyfateb i'r cyfrinair",
   "registration.component.form.confirmPassword": "Cadarnhau eich cyfrinair",
-  "registration.component.form.sendConfirmationEmail": "Anfon ebost cadarnhad"
+  "registration.component.form.sendConfirmationEmail": "Anfon ebost cadarnhad",
+  "Enterprise": "Menter",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Dadansoddiadau"
 }

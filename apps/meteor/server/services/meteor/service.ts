@@ -1,13 +1,12 @@
 import { api, ServiceClassInternal } from '@rocket.chat/core-services';
 import type { AutoUpdateRecord, IMeteor } from '@rocket.chat/core-services';
-import type { ILivechatAgent } from '@rocket.chat/core-typings';
-import { Users } from '@rocket.chat/models';
+import type { ILivechatAgent, LoginServiceConfiguration, UserStatus } from '@rocket.chat/core-typings';
+import { LoginServiceConfiguration as LoginServiceConfigurationModel, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
-import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { triggerHandler } from '../../../app/integrations/server/lib/triggerHandler';
-import { Livechat } from '../../../app/livechat/server';
+import { Livechat } from '../../../app/livechat/server/lib/LivechatTyped';
 import { onlineAgents, monitorAgents } from '../../../app/livechat/server/lib/stream/agentStatus';
 import { metrics } from '../../../app/metrics/server';
 import notifications from '../../../app/notifications/server/lib/Notifications';
@@ -152,9 +151,11 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 					return;
 				}
 
-				serviceConfigCallbacks.forEach((callbacks) => {
-					callbacks[clientAction === 'inserted' ? 'added' : 'changed']?.(id, data);
-				});
+				if (data) {
+					serviceConfigCallbacks.forEach((callbacks) => {
+						callbacks[clientAction === 'inserted' ? 'added' : 'changed']?.(id, data);
+					});
+				}
 			});
 		}
 
@@ -221,9 +222,9 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		});
 
 		if (!disableMsgRoundtripTracking) {
-			this.onEvent('watch.messages', ({ message }) => {
-				if (message?._updatedAt) {
-					metrics.messageRoundtripTime.set(Date.now() - message._updatedAt.getDate());
+			this.onEvent('watch.messages', async ({ message }) => {
+				if (message?._updatedAt instanceof Date) {
+					metrics.messageRoundtripTime.observe(Date.now() - message._updatedAt.getTime());
 				}
 			});
 		}
@@ -256,8 +257,8 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		return Object.fromEntries(clientVersionsStore);
 	}
 
-	async getLoginServiceConfiguration(): Promise<any[]> {
-		return ServiceConfiguration.configurations.find({}, { fields: { secret: 0 } }).fetchAsync();
+	async getLoginServiceConfiguration(): Promise<LoginServiceConfiguration[]> {
+		return LoginServiceConfigurationModel.find({}, { projection: { secret: 0 } }).toArray();
 	}
 
 	async callMethodWithToken(userId: string, token: string, method: string, args: any[]): Promise<void | any> {
@@ -275,7 +276,7 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		};
 	}
 
-	async notifyGuestStatusChanged(token: string, status: string): Promise<void> {
+	async notifyGuestStatusChanged(token: string, status: UserStatus): Promise<void> {
 		return Livechat.notifyGuestStatusChanged(token, status);
 	}
 

@@ -973,7 +973,6 @@
   "Enter_name_here": "Masukkan nama di sini",
   "Enter_Normal": "Mode normal (kirim dengan Enter)",
   "Enter_to": "Masuk ke",
-  "Enterprise": "Perusahaan",
   "Entertainment": "Hiburan",
   "Error": "Kesalahan",
   "Error_404": "Kesalahan 404",
@@ -1719,8 +1718,7 @@
   "meteor_status_connecting": "Menghubungkan...",
   "meteor_status_failed": "Koneksi server gagal",
   "meteor_status_offline": "Mode luar jaringan.",
-  "meteor_status_reconnect_in": "mencoba lagi dalam waktu satu detik...",
-  "meteor_status_reconnect_in_plural": "mencoba lagi dalam waktu {{count}} detik...",
+  "meteor_status_reconnect_in_other": "mencoba lagi dalam waktu {{count}} detik...",
   "meteor_status_try_now_offline": "Hubungkan lagi",
   "meteor_status_try_now_waiting": "Coba sekarang",
   "meteor_status_waiting": "Menunggu koneksi server,",
@@ -1839,6 +1837,8 @@
   "Offline_success_message": "pesan sukses Offline",
   "Offline_unavailable": "Offline tidak tersedia",
   "Older_than": "Lebih tua dari",
+  "Omnichannel_Reports_Status_Open": "Buka",
+  "Omnichannel_Reports_Status_Closed": "Tutup",
   "On": "Di",
   "online": "on line",
   "Online": "Online",
@@ -2765,5 +2765,7 @@
   "registration.component.form.reasonToJoin": "Alasan untuk bergabung",
   "registration.component.form.invalidConfirmPass": "Kata sandi konfirmasi tidak cocok dengan kata sandi utama",
   "registration.component.form.confirmPassword": "Konfirmasikan kata sandi anda",
-  "registration.component.form.sendConfirmationEmail": "Kirim email konfirmasi"
+  "registration.component.form.sendConfirmationEmail": "Kirim email konfirmasi",
+  "Enterprise": "Perusahaan",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Analytics"
 }

@@ -1,3 +1,4 @@
+import { Team } from '@rocket.chat/core-services';
 import { Users, Subscriptions as SubscriptionsRaw, Rooms } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
@@ -133,8 +134,31 @@ export class Spotlight {
 		}
 	}
 
-	async _performExtraUserSearches(/* userId, searchParams */) {
-		// Overwrite this method to include extra searches
+	mapTeams(teams) {
+		return teams.map((t) => {
+			t.isTeam = true;
+			t.username = t.name;
+			t.status = 'online';
+			return t;
+		});
+	}
+
+	async _searchTeams(userId, { text, options, users, mentions }) {
+		if (!mentions || settings.get('Troubleshoot_Disable_Teams_Mention')) {
+			return users;
+		}
+
+		options.limit -= users.length;
+
+		if (options.limit <= 0) {
+			return users;
+		}
+
+		const teamOptions = { ...options, projection: { name: 1, type: 1 } };
+		const teams = await Team.search(userId, text, teamOptions);
+		users.push(...this.mapTeams(teams));
+
+		return users;
 	}
 
 	async searchUsers({ userId, rid, text, usernames, mentions }) {
@@ -212,7 +236,7 @@ export class Spotlight {
 			}
 		}
 
-		if (users.length === 0 && canListOutsiders) {
+		if (users.length === 0 && canListOutsiders && text) {
 			const exactMatch = await Users.findOneByUsernameIgnoringCase(text, {
 				projection: options.projection,
 				readPreference: options.readPreference,
@@ -241,11 +265,11 @@ export class Spotlight {
 			if (await this._searchOutsiderUsers(searchParams)) {
 				return users;
 			}
-		} else if (await this._searchConnectedUsers(userId, searchParams)) {
+		} else if (await this._searchConnectedUsers(userId, searchParams, 'd')) {
 			return users;
 		}
 
-		if (await this._performExtraUserSearches(userId, searchParams)) {
+		if (await this._searchTeams(userId, searchParams)) {
 			return users;
 		}
 

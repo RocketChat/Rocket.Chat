@@ -2,7 +2,7 @@ import type { Meta, Story } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import { Avatar } from '.';
-import { gazzoAvatar } from '../../helpers.stories';
+import { gazzoAvatar } from '../../../.storybook/helpers';
 
 export default {
 	title: 'Components/Avatar',

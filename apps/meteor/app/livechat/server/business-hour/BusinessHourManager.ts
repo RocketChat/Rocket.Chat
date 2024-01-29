@@ -7,7 +7,6 @@ import moment from 'moment';
 import { closeBusinessHour } from '../../../../ee/app/livechat-enterprise/server/business-hour/Helper';
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
-import { businessHourLogger } from '../lib/logger';
 import type { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
 
 export class BusinessHourManager {
@@ -27,7 +26,6 @@ export class BusinessHourManager {
 
 	async startManager(): Promise<void> {
 		await this.createCronJobsForWorkHours();
-		businessHourLogger.debug('Cron jobs created, setting up callbacks');
 		this.setupCallbacks();
 		await this.cleanupDisabledDepartmentReferences();
 		await this.behavior.onStartBusinessHours();

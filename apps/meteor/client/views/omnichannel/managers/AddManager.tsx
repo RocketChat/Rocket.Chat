@@ -1,4 +1,4 @@
-import { Button, Box, Field } from '@rocket.chat/fuselage';
+import { Button, Box, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -34,13 +34,13 @@ const AddManager = ({ reload }: { reload: () => void }): ReactElement => {
 	return (
 		<Box display='flex' alignItems='center'>
 			<Field>
-				<Field.Label>{t('Username')}</Field.Label>
-				<Field.Row>
+				<FieldLabel>{t('Username')}</FieldLabel>
+				<FieldRow>
 					<UserAutoComplete value={username} onChange={handleChange} />
 					<Button disabled={!username} onClick={handleSave} mis={8} primary>
 						{t('Add_manager')}
 					</Button>
-				</Field.Row>
+				</FieldRow>
 			</Field>
 		</Box>
 	);

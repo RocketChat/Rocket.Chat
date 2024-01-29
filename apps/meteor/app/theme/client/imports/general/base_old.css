@@ -86,8 +86,6 @@
 	font-size: smaller;
 
 	& a {
-		text-decoration: underline;
-
 		font-weight: bold !important;
 	}
 }
@@ -605,7 +603,7 @@
 	overflow: hidden;
 	flex-direction: column;
 
-	margin: 5px 10px 0;
+	margin: 8px 10px 0;
 
 	transition: transform 0.4s ease, visibility 0.3s ease, opacity 0.3s ease;
 	transform: translateY(-10px);
@@ -987,10 +985,6 @@
 
 			font-size: 12px;
 			font-weight: 300;
-		}
-
-		& div.switch-language {
-			margin-top: 20px;
 		}
 	}
 

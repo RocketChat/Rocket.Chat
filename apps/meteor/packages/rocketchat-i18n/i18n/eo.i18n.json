@@ -973,7 +973,6 @@
   "Enter_name_here": "Enmetu nomon ĉi tie",
   "Enter_Normal": "Normala reĝimo (sendu kun Eniri)",
   "Enter_to": "Eniri al",
-  "Enterprise": "Entrepreno",
   "Entertainment": "Amuzaĵo",
   "Error": "Eraro",
   "Error_404": "Eraro: 404",
@@ -1831,6 +1830,8 @@
   "Offline_success_message": "Senkonekta Sukcesa Mesaĝo",
   "Offline_unavailable": "Senkonekta ne disponebla",
   "Older_than": "Pli maljuna ol",
+  "Omnichannel_Reports_Status_Open": "Malfermita",
+  "Omnichannel_Reports_Status_Closed": "Fermita",
   "On": "Sur",
   "online": "enreta",
   "Online": "Enreta",
@@ -2756,5 +2757,7 @@
   "registration.component.form.reasonToJoin": "Kialo por aliĝi",
   "registration.component.form.invalidConfirmPass": "La konfirmilo de pasvorto ne kongruas kun pasvorto",
   "registration.component.form.confirmPassword": "Konfirmu vian pasvorton",
-  "registration.component.form.sendConfirmationEmail": "Sendu konfirman retpoŝton"
+  "registration.component.form.sendConfirmationEmail": "Sendu konfirman retpoŝton",
+  "Enterprise": "Entrepreno",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Analitiko"
 }

@@ -1,3 +1,4 @@
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import { Fragment, memo, ReactElement, useContext, useMemo } from 'react';
 
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
@@ -7,6 +8,7 @@ type PlainSpanProps = {
 };
 
 const PlainSpan = ({ text }: PlainSpanProps): ReactElement => {
+	const t = useTranslation();
 	const { highlightRegex, markRegex } = useContext(MarkupInteractionContext);
 
 	const content = useMemo(() => {
@@ -20,7 +22,7 @@ const PlainSpan = ({ text }: PlainSpanProps): ReactElement => {
 					{chunks.map((chunk, i) => {
 						if (i % 2 === 0) {
 							return (
-								<mark key={i} className='highlight-text'>
+								<mark title={t('Highlighted_chosen_word')} key={i} className='highlight-text'>
 									{chunk}
 								</mark>
 							);
@@ -51,7 +53,7 @@ const PlainSpan = ({ text }: PlainSpanProps): ReactElement => {
 		}
 
 		return text;
-	}, [text, highlightRegex, markRegex]);
+	}, [highlightRegex, markRegex, text, t]);
 
 	return <>{content}</>;
 };

@@ -26,7 +26,7 @@ const CurrentChatsRoute = (): ReactElement => {
 	}
 
 	// TODO: Missing error state
-	return <CurrentChatsPage onRowClick={onRowClick} />;
+	return <CurrentChatsPage onRowClick={onRowClick} id={id} />;
 };
 
 export default memo(CurrentChatsRoute);

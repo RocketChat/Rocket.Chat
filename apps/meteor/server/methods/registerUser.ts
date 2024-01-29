@@ -95,15 +95,7 @@ Meteor.methods<ServerMethods>({
 
 		let userId;
 		try {
-			// Check if user has already been imported and never logged in. If so, set password and let it through
-			const importedUser = await Users.findOneByEmailAddress(formData.email);
-
-			if (importedUser?.importIds?.length && !importedUser.lastLogin) {
-				await Accounts.setPasswordAsync(importedUser._id, userData.password);
-				userId = importedUser._id;
-			} else {
-				userId = await Accounts.createUserAsync(userData);
-			}
+			userId = await Accounts.createUserAsync(userData);
 		} catch (e) {
 			if (e instanceof Meteor.Error) {
 				throw e;

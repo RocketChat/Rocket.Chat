@@ -98,7 +98,7 @@ export class TooltipContainer extends Component {
 	}
 }
 
-export const TooltipTrigger = ({ children, content, placement }) => (
+export const TooltipTrigger = ({ children, content, placement = '' }) => (
 	<TooltipContext.Consumer>
 		{({ showTooltip, hideTooltip }) =>
 			toChildArray(children).map((child, index) =>

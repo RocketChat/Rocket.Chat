@@ -1,9 +1,13 @@
 import { ButtonGroup, Button, Box, Accordion } from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useSetting, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import type { MutableRefObject, ReactElement } from 'react';
-import React, { useState, useCallback, useRef } from 'react';
+import { useMutation } from '@tanstack/react-query';
+import type { ReactElement } from 'react';
+import React from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
+import { getDirtyFields } from '../../../lib/getDirtyFields';
 import PreferencesGlobalSection from './PreferencesGlobalSection';
 import PreferencesHighlightsSection from './PreferencesHighlightsSection';
 import PreferencesLocalizationSection from './PreferencesLocalizationSection';
@@ -12,146 +16,90 @@ import PreferencesMyDataSection from './PreferencesMyDataSection';
 import PreferencesNotificationsSection from './PreferencesNotificationsSection';
 import PreferencesSoundSection from './PreferencesSoundSection';
 import PreferencesUserPresenceSection from './PreferencesUserPresenceSection';
-
-type CurrentData = {
-	enableNewMessageTemplate: boolean;
-	language: string;
-	newRoomNotification: string;
-	newMessageNotification: string;
-	clockMode: number;
-	useEmojis: boolean;
-	convertAsciiEmoji: boolean;
-	saveMobileBandwidth: boolean;
-	collapseMediaByDefault: boolean;
-	autoImageLoad: boolean;
-	emailNotificationMode: string;
-	unreadAlert: boolean;
-	notificationsSoundVolume: number;
-	desktopNotifications: string;
-	pushNotifications: string;
-	enableAutoAway: boolean;
-	highlights: string;
-	hideUsernames: boolean;
-	hideRoles: boolean;
-	displayAvatars: boolean;
-	hideFlexTab: boolean;
-	sendOnEnter: string;
-	idleTimeLimit: number;
-	sidebarShowFavorites: boolean;
-	sidebarShowUnread: boolean;
-	sidebarSortby: string;
-	sidebarViewMode: string;
-	sidebarDisplayAvatar: boolean;
-	sidebarGroupByType: boolean;
-	muteFocusedConversations: boolean;
-	receiveLoginDetectionEmail: boolean;
-	dontAskAgainList: [action: string, label: string][];
-	notifyCalendarEvents: boolean;
-	enableMobileRinging: boolean;
-};
-
-export type FormSectionProps = {
-	onChange: any;
-	commitRef: MutableRefObject<Record<string, () => void>>;
-};
-
-type FormatedData = { data: Omit<Partial<CurrentData>, 'dontAskAgainList' | 'highlights'> };
+import type { AccountPreferencesData } from './useAccountPreferencesValues';
+import { useAccountPreferencesValues } from './useAccountPreferencesValues';
 
 const AccountPreferencesPage = (): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-
-	const [hasAnyChange, setHasAnyChange] = useState(false);
-
-	const saveData = useRef<Partial<CurrentData>>({});
-	const commitRef = useRef({});
-
 	const dataDownloadEnabled = useSetting('UserData_EnableDownload');
+	const preferencesValues = useAccountPreferencesValues();
 
-	const onChange = useCallback(
-		<K extends keyof CurrentData, I extends CurrentData[K], V extends CurrentData[K]>({
-			initialValue,
-			value,
-			key,
-		}: {
-			initialValue: I;
-			value: V;
-			key: K;
-		}) => {
-			const { current } = saveData;
-			if (current) {
-				if (JSON.stringify(initialValue) !== JSON.stringify(value)) {
-					current[key] = value;
-				} else {
-					delete current[key];
-				}
-			}
+	const methods = useForm({ defaultValues: preferencesValues });
+	const {
+		handleSubmit,
+		reset,
+		watch,
+		formState: { isDirty, dirtyFields },
+	} = methods;
 
-			const anyChange = !!Object.values(current).length;
-			if (anyChange !== hasAnyChange) {
-				setHasAnyChange(anyChange);
-			}
+	const currentData = watch();
+
+	const setPreferencesEndpoint = useEndpoint('POST', '/v1/users.setPreferences');
+	const setPreferencesAction = useMutation({
+		mutationFn: setPreferencesEndpoint,
+		onSuccess: () => {
+			dispatchToastMessage({ type: 'success', message: t('Preferences_saved') });
 		},
-		[hasAnyChange],
-	);
+		onError: (error) => {
+			dispatchToastMessage({ type: 'error', message: error });
+		},
+		onSettled: () => reset(currentData),
+	});
 
-	const saveFn = useEndpoint('POST', '/v1/users.setPreferences');
-
-	const handleSave = useCallback(async () => {
-		try {
-			const { current: data } = saveData;
-			if (data?.highlights || data?.highlights === '') {
-				Object.assign(data, {
-					highlights: data.highlights
+	const handleSaveData = async (formData: AccountPreferencesData) => {
+		const { highlights, dontAskAgainList, ...data } = getDirtyFields(formData, dirtyFields);
+		if (highlights || highlights === '') {
+			Object.assign(data, {
+				highlights:
+					typeof highlights === 'string' &&
+					highlights
 						.split(/,|\n/)
 						.map((val) => val.trim())
 						.filter(Boolean),
-				});
-			}
-
-			if (data?.dontAskAgainList) {
-				const list =
-					Array.isArray(data.dontAskAgainList) && data.dontAskAgainList.length > 0
-						? data.dontAskAgainList.map(([action, label]) => ({ action, label }))
-						: [];
-				Object.assign(data, { dontAskAgainList: list });
-			}
-
-			await saveFn({ data } as FormatedData);
-			saveData.current = {};
-			setHasAnyChange(false);
-			Object.values(commitRef.current).forEach((fn) => (fn as () => void)());
-
-			dispatchToastMessage({ type: 'success', message: t('Preferences_saved') });
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			});
 		}
-	}, [dispatchToastMessage, saveFn, t]);
+
+		if (dontAskAgainList) {
+			const list =
+				Array.isArray(dontAskAgainList) && dontAskAgainList.length > 0
+					? dontAskAgainList.map(([action, label]) => ({ action, label }))
+					: [];
+			Object.assign(data, { dontAskAgainList: list });
+		}
+
+		setPreferencesAction.mutateAsync({ data });
+	};
+
+	const preferencesFormId = useUniqueId();
 
 	return (
 		<Page>
-			<Page.Header title={t('Preferences')} />
-			<Page.ScrollableContentWithShadow>
-				<Box maxWidth='x600' w='full' alignSelf='center'>
-					<Accordion>
-						<PreferencesLocalizationSection commitRef={commitRef} onChange={onChange} defaultExpanded />
-						<PreferencesGlobalSection commitRef={commitRef} onChange={onChange} />
-						<PreferencesUserPresenceSection commitRef={commitRef} onChange={onChange} />
-						<PreferencesNotificationsSection commitRef={commitRef} onChange={onChange} />
-						<PreferencesMessagesSection commitRef={commitRef} onChange={onChange} />
-						<PreferencesHighlightsSection commitRef={commitRef} onChange={onChange} />
-						<PreferencesSoundSection commitRef={commitRef} onChange={onChange} />
-						{dataDownloadEnabled && <PreferencesMyDataSection onChange={onChange} />}
-					</Accordion>
-				</Box>
-			</Page.ScrollableContentWithShadow>
-			<Page.Footer isDirty={hasAnyChange}>
+			<PageHeader title={t('Preferences')} />
+			<PageScrollableContentWithShadow>
+				<FormProvider {...methods}>
+					<Box id={preferencesFormId} is='form' maxWidth='x600' w='full' alignSelf='center' onSubmit={handleSubmit(handleSaveData)}>
+						<Accordion>
+							<PreferencesLocalizationSection />
+							<PreferencesGlobalSection />
+							<PreferencesUserPresenceSection />
+							<PreferencesNotificationsSection />
+							<PreferencesMessagesSection />
+							<PreferencesHighlightsSection />
+							<PreferencesSoundSection />
+							{dataDownloadEnabled && <PreferencesMyDataSection />}
+						</Accordion>
+					</Box>
+				</FormProvider>
+			</PageScrollableContentWithShadow>
+			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
-					<Button primary disabled={!hasAnyChange} onClick={handleSave}>
+					<Button onClick={() => reset(preferencesValues)}>{t('Cancel')}</Button>
+					<Button form={preferencesFormId} primary type='submit'>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>
-			</Page.Footer>
+			</PageFooter>
 		</Page>
 	);
 };

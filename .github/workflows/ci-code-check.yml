@@ -27,7 +27,7 @@ jobs:
         with:
           swap-size-gb: 4
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
@@ -43,6 +43,17 @@ jobs:
       #     df -h
 
       - uses: dtinth/setup-github-actions-caching-for-turbo@v1
+
+      - name: Cache TypeCheck
+        uses: actions/cache@v3
+        if: matrix.check == 'ts'
+        with:
+          path: ./apps/meteor/tsconfig.typecheck.tsbuildinfo
+          key: typecheck-cache-${{ runner.OS }}-${{ hashFiles('yarn.lock') }}-${{ github.event.issue.number }}
+          restore-keys: |
+            typecheck-cache-${{ runner.OS }}-${{ hashFiles('yarn.lock') }}
+            typecheck-cache-${{ runner.OS }}
+            typecheck-cache
 
       - name: TS TypeCheck
         if: matrix.check == 'ts'

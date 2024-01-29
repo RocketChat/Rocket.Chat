@@ -175,7 +175,8 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		Messages.upsert({ _id: message._id }, { $set: { ...message, rid, ...(tmid && { tmid }) } });
 	};
 
-	const updateMessage = async (message: IEditedMessage): Promise<void> => sdk.call('updateMessage', message);
+	const updateMessage = async (message: IEditedMessage, previewUrls?: string[]): Promise<void> =>
+		sdk.call('updateMessage', message, previewUrls);
 
 	const canDeleteMessage = async (message: IMessage): Promise<boolean> => {
 		const uid = Meteor.userId();
@@ -216,7 +217,6 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 
 	const deleteMessage = async (mid: IMessage['_id']): Promise<void> => {
 		await sdk.call('deleteMessage', { _id: mid });
-		Messages.remove({ _id: mid });
 	};
 
 	const drafts = new Map<IMessage['_id'] | undefined, string>();

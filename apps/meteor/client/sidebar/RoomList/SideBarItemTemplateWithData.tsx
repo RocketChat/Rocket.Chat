@@ -7,10 +7,10 @@ import type { AllHTMLAttributes, ComponentType, ReactElement, ReactNode } from '
 import React, { memo, useMemo } from 'react';
 
 import { useOmnichannelPriorities } from '../../../ee/client/omnichannel/hooks/useOmnichannelPriorities';
-import { PriorityIcon } from '../../../ee/client/omnichannel/priorities/PriorityIcon';
 import { RoomIcon } from '../../components/RoomIcon';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import RoomMenu from '../RoomMenu';
+import { OmnichannelBadges } from '../badges/OmnichannelBadges';
 import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { normalizeSidebarMessage } from './normalizeSidebarMessage';
 
@@ -31,6 +31,30 @@ const getMessage = (room: IRoom, lastMessage: IMessage | undefined, t: ReturnTyp
 		return normalizeSidebarMessage(lastMessage, t);
 	}
 	return `${lastMessage.u.name || lastMessage.u.username}: ${normalizeSidebarMessage(lastMessage, t)}`;
+};
+
+const getBadgeTitle = (
+	userMentions: number,
+	threadUnread: number,
+	groupMentions: number,
+	unread: number,
+	t: ReturnType<typeof useTranslation>,
+) => {
+	const title = [] as string[];
+	if (userMentions) {
+		title.push(t('mentions_counter', { count: userMentions }));
+	}
+	if (threadUnread) {
+		title.push(t('threads_counter', { count: threadUnread }));
+	}
+	if (groupMentions) {
+		title.push(t('group_mentions_counter', { count: groupMentions }));
+	}
+	const count = unread - userMentions - groupMentions;
+	if (count > 0) {
+		title.push(t('unread_messages_counter', { count }));
+	}
+	return title.join(', ');
 };
 
 type RoomListRowProps = {
@@ -137,14 +161,16 @@ function SideBarItemTemplateWithData({
 	const isUnread = unread > 0 || threadUnread;
 	const showBadge = !hideUnreadStatus || (!hideMentionStatus && (Boolean(userMentions) || tunreadUser.length > 0));
 
+	const badgeTitle = getBadgeTitle(userMentions, tunread.length, groupMentions, unread, t);
+
 	const badges = (
 		<Margins inlineStart={8}>
 			{showBadge && isUnread && (
-				<Badge {...({ style: { display: 'inline-flex', flexShrink: 0 } } as any)} variant={variant}>
+				<Badge {...({ style: { display: 'inline-flex', flexShrink: 0 } } as any)} variant={variant} title={badgeTitle}>
 					{unread + tunread?.length}
 				</Badge>
 			)}
-			{isOmnichannelRoom(room) && isPriorityEnabled && <PriorityIcon level={room.priorityWeight} />}
+			{isOmnichannelRoom(room) && <OmnichannelBadges room={room} />}
 		</Margins>
 	);
 

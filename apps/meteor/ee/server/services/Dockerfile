@@ -10,6 +10,7 @@ COPY ./yarn.lock .
 COPY ./.yarnrc.yml .
 COPY ./.yarn/plugins .yarn/plugins
 COPY ./.yarn/releases .yarn/releases
+COPY ./.yarn/patches .yarn/patches
 
 COPY ./packages/core-services packages/core-services
 COPY ./packages/core-typings packages/core-typings
@@ -48,6 +49,9 @@ COPY --from=build /app/packages/model-typings/dist /app/packages/model-typings/d
 COPY --from=build /app/packages/models/package.json /app/packages/models/package.json
 COPY --from=build /app/packages/models/dist /app/packages/models/dist
 
+COPY --from=build /app/packages/ui-kit/package.json /app/packages/ui-kit/package.json
+COPY --from=build /app/packages/ui-kit/dist /app/packages/ui-kit/dist
+
 # add dist/ folder from tsc so we don't need to add all rocket.chat repo
 COPY ./apps/meteor/ee/server/services/dist ./apps/meteor/
 
@@ -56,6 +60,7 @@ COPY ./yarn.lock .
 COPY ./.yarnrc.yml .
 COPY ./.yarn/plugins .yarn/plugins
 COPY ./.yarn/releases .yarn/releases
+COPY ./.yarn/patches .yarn/patches
 COPY ./apps/meteor/ee/server/services/package.json ./apps/meteor/ee/server/services/package.json
 
 ENV NODE_ENV=production \

@@ -86,6 +86,10 @@ export const Users = {
 	user1: generateContext('user1'),
 	user2: generateContext('user2'),
 	user3: generateContext('user3'),
+	samluser1: generateContext('samluser1'),
+	samluser2: generateContext('samluser2'),
+	userForSamlMerge: generateContext('user_for_saml_merge'),
+	userForSamlMerge2: generateContext('user_for_saml_merge2'),
 	admin: generateContext('rocketchat.internal.admin.test'),
 };
 
@@ -99,9 +103,11 @@ export async function restoreState(page: Page, user: IUserState, options: { exce
 		ls = ls.filter(({ name }) => !options.except?.includes(name));
 	}
 
-	return page.evaluate((items) => {
+	await page.evaluate((items) => {
 		items.forEach(({ name, value }) => {
 			window.localStorage.setItem(name, value);
 		});
 	}, ls);
+
+	await page.waitForTimeout(2000); // Wait for the login to be completed
 }

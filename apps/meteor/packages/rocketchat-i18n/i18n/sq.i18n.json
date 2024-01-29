@@ -974,7 +974,6 @@
   "Enter_name_here": "Shkruani emrin këtu",
   "Enter_Normal": "Modaliteti normal (dërgoni me Enter)",
   "Enter_to": "Enter për të",
-  "Enterprise": "Ndërmarrje",
   "Entertainment": "argëtim",
   "Error": "gabim",
   "Error_404": "Error: 404",
@@ -1830,6 +1829,8 @@
   "Offline_success_message": "Mesazhi Offline sukses",
   "Offline_unavailable": "Offline padisponueshëm",
   "Older_than": "Më të vjetër se",
+  "Omnichannel_Reports_Status_Open": "hapur",
+  "Omnichannel_Reports_Status_Closed": "Mbyllur",
   "On": "në",
   "online": "Online",
   "Online": "Në linjë",
@@ -2751,5 +2752,7 @@
   "registration.component.form.reasonToJoin": "Arsyeja për t'u bashkuar",
   "registration.component.form.invalidConfirmPass": "Konfirmimi Fjalëkalimi nuk përputhet me fjalëkalimin",
   "registration.component.form.confirmPassword": "Konfirmoni fjalëkalimin tuaj",
-  "registration.component.form.sendConfirmationEmail": "Dërgo email konfirmimi"
+  "registration.component.form.sendConfirmationEmail": "Dërgo email konfirmimi",
+  "Enterprise": "Ndërmarrje",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Analitikë"
 }

@@ -2,7 +2,6 @@ import { Box, Callout, Chip, Margins } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import React from 'react';
 
 import ScreenshotCarouselAnchor from '../../../components/ScreenshotCarouselAnchor';
@@ -10,10 +9,17 @@ import type { AppInfo } from '../../../definitions/AppInfo';
 import AppDetailsAPIs from './AppDetailsAPIs';
 import { normalizeUrl } from './normalizeUrl';
 
-const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
+type AppDetailsProps = {
+	app: Omit<AppInfo, 'author' | 'documentationUrl'> & {
+		author?: Partial<AppInfo['author']>;
+		documentationUrl?: AppInfo['documentationUrl'];
+	};
+};
+
+const AppDetails = ({ app }: AppDetailsProps) => {
 	const t = useTranslation();
 	const {
-		author: { homepage, support },
+		author: { homepage, support } = {},
 		detailedDescription,
 		description,
 		categories = [],
@@ -25,9 +31,9 @@ const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 	const isMarkdown = detailedDescription && Object.keys(detailedDescription).length !== 0 && detailedDescription.rendered;
 	const isCarouselVisible = screenshots && Boolean(screenshots.length);
 
-	const normalizedHomepageUrl = normalizeUrl(homepage);
-	const normalizedSupportUrl = normalizeUrl(support);
-	const normalizedDocumentationUrl = normalizeUrl(documentation);
+	const normalizedHomepageUrl = homepage ? normalizeUrl(homepage) : undefined;
+	const normalizedSupportUrl = support ? normalizeUrl(support) : undefined;
+	const normalizedDocumentationUrl = documentation ? normalizeUrl(documentation) : undefined;
 
 	return (
 		<Box maxWidth='x640' w='full' marginInline='auto' color='default'>

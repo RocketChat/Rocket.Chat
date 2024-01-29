@@ -5,6 +5,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
+import { broadcastMessageFromData } from '../../../../server/modules/watchers/lib/messages';
 import { canDeleteMessageAsync } from '../../../authorization/server/functions/canDeleteMessage';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
@@ -68,7 +69,6 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 			file?._id && (await FileUpload.getStore('Uploads').deleteById(file._id));
 		}
 	}
-
 	if (showDeletedStatus) {
 		// TODO is there a better way to tell TS "IUser[username]" is not undefined?
 		await Messages.setAsDeletedByIdAndUser(message._id, user as Required<Pick<IUser, '_id' | 'username' | 'name'>>);
@@ -79,17 +79,21 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 	const room = await Rooms.findOneById(message.rid, { projection: { lastMessage: 1, prid: 1, mid: 1, federated: 1 } });
 
 	// update last message
-	if (settings.get('Store_Last_Message')) {
-		if (!room?.lastMessage || room.lastMessage._id === message._id) {
-			const lastMessageNotDeleted = await Messages.getLastVisibleMessageSentWithNoTypeByRoomId(message.rid);
-			await Rooms.resetLastMessageById(message.rid, lastMessageNotDeleted);
-		}
+	if (settings.get('Store_Last_Message') && (!room?.lastMessage || room.lastMessage._id === message._id)) {
+		const lastMessageNotDeleted = await Messages.getLastVisibleMessageSentWithNoTypeByRoomId(message.rid);
+		await Rooms.resetLastMessageById(message.rid, lastMessageNotDeleted, -1);
+	} else {
+		// decrease message count
+		await Rooms.decreaseMessageCountById(message.rid, 1);
 	}
 
 	await callbacks.run('afterDeleteMessage', deletedMsg, room);
 
-	// decrease message count
-	await Rooms.decreaseMessageCountById(message.rid, 1);
+	if (keepHistory || showDeletedStatus) {
+		void broadcastMessageFromData({
+			id: message._id,
+		});
+	}
 
 	if (bridges) {
 		void bridges.getListenerBridge().messageEvent('IPostMessageDeleted', deletedMsg, user);

@@ -1,4 +1,19 @@
-import { Box, Modal, Button, TextInput, Icon, Field, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
+import {
+	Box,
+	Modal,
+	Button,
+	TextInput,
+	Icon,
+	Field,
+	ToggleSwitch,
+	FieldGroup,
+	FieldLabel,
+	FieldRow,
+	FieldError,
+	FieldHint,
+	FieldDescription,
+} from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import {
 	useSetting,
@@ -34,7 +49,7 @@ type CreateChannelModalPayload = {
 
 const getFederationHintKey = (licenseModule: ReturnType<typeof useHasLicenseModule>, featureToggle: boolean): TranslationKey => {
 	if (licenseModule === 'loading' || !licenseModule) {
-		return 'error-this-is-an-ee-feature';
+		return 'error-this-is-a-premium-feature';
 	}
 	if (!featureToggle) {
 		return 'Federation_Matrix_Federated_Description_disabled';
@@ -48,18 +63,20 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 	const e2eEnabled = useSetting('E2E_Enable');
 	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
-	const federationEnabled = useSetting('Federation_Matrix_enabled');
-	const channelNameExists = useEndpoint('GET', '/v1/rooms.nameExists');
+	const federationEnabled = useSetting<boolean>('Federation_Matrix_enabled') || false;
+	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms');
+
+	const canCreateChannel = usePermission('create-c');
+	const canCreatePrivateChannel = usePermission('create-p');
 
 	const channelNameRegex = useMemo(() => new RegExp(`^${namesValidation}$`), [namesValidation]);
 	const federatedModule = useHasLicenseModule('federation');
 	const canUseFederation = federatedModule !== 'loading' && federatedModule && federationEnabled;
 
+	const channelNameExists = useEndpoint('GET', '/v1/rooms.nameExists');
 	const createChannel = useEndpoint('POST', '/v1/channels.create');
 	const createPrivateChannel = useEndpoint('POST', '/v1/groups.create');
-	const canCreateChannel = usePermission('create-c');
-	const canCreatePrivateChannel = usePermission('create-p');
-	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms');
+
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const canOnlyCreateOneType = useMemo(() => {
@@ -74,12 +91,13 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 
 	const {
 		register,
-		formState: { isDirty, errors },
+		formState: { errors },
 		handleSubmit,
 		control,
 		setValue,
 		watch,
 	} = useForm({
+		mode: 'onBlur',
 		defaultValues: {
 			members: [],
 			name: '',
@@ -165,22 +183,37 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 		[e2eEnabled, e2eEnabledForPrivateByDefault, broadcast, isPrivate],
 	);
 
+	const createChannelFormId = useUniqueId();
+	const nameId = useUniqueId();
+	const topicId = useUniqueId();
+	const privateId = useUniqueId();
+	const federatedId = useUniqueId();
+	const readOnlyId = useUniqueId();
+	const encryptedId = useUniqueId();
+	const broadcastId = useUniqueId();
+	const addMembersId = useUniqueId();
+
 	return (
 		<Modal
 			data-qa='create-channel-modal'
-			aria-label={t('Create_channel')}
-			wrapperFunction={(props: ComponentProps<typeof Box>) => <Box is='form' onSubmit={handleSubmit(handleCreateChannel)} {...props} />}
+			aria-labelledby={`${createChannelFormId}-title`}
+			wrapperFunction={(props: ComponentProps<typeof Box>) => (
+				<Box is='form' id={createChannelFormId} onSubmit={handleSubmit(handleCreateChannel)} {...props} />
+			)}
 		>
 			<Modal.Header>
-				<Modal.Title>{t('Create_channel')}</Modal.Title>
-				<Modal.Close title={t('Close')} onClick={onClose} />
+				<Modal.Title id={`${createChannelFormId}-title`}>{t('Create_channel')}</Modal.Title>
+				<Modal.Close tabIndex={-1} title={t('Close')} onClick={onClose} />
 			</Modal.Header>
 			<Modal.Content mbe={2}>
 				<FieldGroup>
 					<Field>
-						<Field.Label>{t('Name')}</Field.Label>
-						<Field.Row>
+						<FieldLabel required htmlFor={nameId}>
+							{t('Channel_name')}
+						</FieldLabel>
+						<FieldRow>
 							<TextInput
+								id={nameId}
 								data-qa-type='channel-name-input'
 								{...register('name', {
 									required: t('error-the-field-is-required', { field: t('Name') }),
@@ -188,138 +221,147 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 								})}
 								error={errors.name?.message}
 								addon={<Icon name={isPrivate ? 'hashtag-lock' : 'hashtag'} size='x20' />}
-								placeholder={t('Channel_name')}
+								aria-invalid={errors.name ? 'true' : 'false'}
+								aria-describedby={`${nameId}-error`}
+								aria-required='true'
 							/>
-						</Field.Row>
-						{errors.name && <Field.Error>{errors.name.message}</Field.Error>}
+						</FieldRow>
+						{errors.name && (
+							<FieldError aria-live='assertive' id={`${nameId}-error`}>
+								{errors.name.message}
+							</FieldError>
+						)}
 					</Field>
 					<Field>
-						<Field.Label>
-							{t('Topic')}{' '}
-							<Box is='span' color='annotation'>
-								({t('optional')})
-							</Box>
-						</Field.Label>
-						<Field.Row>
-							<TextInput {...register('topic')} placeholder={t('Channel_what_is_this_channel_about')} data-qa-type='channel-topic-input' />
-						</Field.Row>
+						<FieldLabel htmlFor={topicId}>{t('Topic')}</FieldLabel>
+						<FieldRow>
+							<TextInput id={topicId} aria-describedby={`${topicId}-hint`} {...register('topic')} data-qa-type='channel-topic-input' />
+						</FieldRow>
+						<FieldHint id={`${topicId}-hint`}>{t('Channel_what_is_this_channel_about')}</FieldHint>
 					</Field>
 					<Field>
-						<Box display='flex' justifyContent='space-between' alignItems='start'>
-							<Box display='flex' flexDirection='column' width='full'>
-								<Field.Label>{t('Private')}</Field.Label>
-								<Field.Description>
-									{isPrivate ? t('Only_invited_users_can_acess_this_channel') : t('Everyone_can_access_this_channel')}
-								</Field.Description>
-							</Box>
+						<FieldRow>
+							<FieldLabel htmlFor={privateId}>{t('Private')}</FieldLabel>
 							<Controller
 								control={control}
 								name='isPrivate'
 								render={({ field: { onChange, value, ref } }): ReactElement => (
 									<ToggleSwitch
+										id={privateId}
+										aria-describedby={`${privateId}-hint`}
 										ref={ref}
 										checked={value}
 										disabled={!!canOnlyCreateOneType}
 										onChange={onChange}
-										data-qa-type='channel-private-toggle'
 									/>
 								)}
 							/>
-						</Box>
+						</FieldRow>
+						<FieldHint id={`${privateId}-hint`}>
+							{isPrivate ? t('Only_invited_users_can_acess_this_channel') : t('Everyone_can_access_this_channel')}
+						</FieldHint>
 					</Field>
 					<Field>
-						<Box display='flex' justifyContent='space-between' alignItems='start'>
-							<Box display='flex' flexDirection='column' width='full'>
-								<Field.Label>{t('Federation_Matrix_Federated')}</Field.Label>
-								<Field.Description>{t(getFederationHintKey(federatedModule, Boolean(federationEnabled)))}</Field.Description>
-							</Box>
+						<FieldRow>
+							<FieldLabel htmlFor={federatedId}>{t('Federation_Matrix_Federated')}</FieldLabel>
 							<Controller
 								control={control}
 								name='federated'
 								render={({ field: { onChange, value, ref } }): ReactElement => (
-									<ToggleSwitch ref={ref} checked={value} disabled={!canUseFederation} onChange={onChange} />
+									<ToggleSwitch
+										aria-describedby={`${federatedId}-hint`}
+										id={federatedId}
+										ref={ref}
+										checked={value}
+										disabled={!canUseFederation}
+										onChange={onChange}
+									/>
 								)}
 							/>
-						</Box>
+						</FieldRow>
+						<FieldHint id={`${federatedId}-hint`}>{t(getFederationHintKey(federatedModule, federationEnabled))}</FieldHint>
 					</Field>
 					<Field>
-						<Box display='flex' justifyContent='space-between' alignItems='start'>
-							<Box display='flex' flexDirection='column' width='full'>
-								<Field.Label>{t('Read_only')}</Field.Label>
-								<Field.Description>
-									{readOnly ? t('Only_authorized_users_can_write_new_messages') : t('All_users_in_the_channel_can_write_new_messages')}
-								</Field.Description>
-							</Box>
+						<FieldRow>
+							<FieldLabel htmlFor={readOnlyId}>{t('Read_only')}</FieldLabel>
 							<Controller
 								control={control}
 								name='readOnly'
 								render={({ field: { onChange, value, ref } }): ReactElement => (
-									<ToggleSwitch ref={ref} checked={value} disabled={!canSetReadOnly || broadcast || federated} onChange={onChange} />
+									<ToggleSwitch
+										id={readOnlyId}
+										aria-describedby={`${readOnlyId}-hint`}
+										ref={ref}
+										checked={value}
+										disabled={!canSetReadOnly || broadcast || federated}
+										onChange={onChange}
+									/>
 								)}
 							/>
-						</Box>
+						</FieldRow>
+						<FieldHint id={`${readOnlyId}-hint`}>
+							{readOnly ? t('Only_authorized_users_can_write_new_messages') : t('All_users_in_the_channel_can_write_new_messages')}
+						</FieldHint>
 					</Field>
 					<Field>
-						<Box display='flex' justifyContent='space-between' alignItems='start'>
-							<Box display='flex' flexDirection='column' width='full'>
-								<Field.Label id='Encrypted_channel_Label'>{t('Encrypted')}</Field.Label>
-								<Field.Description id='Encrypted_channel_Description'>
-									{isPrivate ? t('Encrypted_channel_Description') : t('Encrypted_not_available')}
-								</Field.Description>
-							</Box>
+						<FieldRow>
+							<FieldLabel htmlFor={encryptedId}>{t('Encrypted')}</FieldLabel>
 							<Controller
 								control={control}
 								name='encrypted'
 								render={({ field: { onChange, value, ref } }): ReactElement => (
 									<ToggleSwitch
+										id={encryptedId}
 										ref={ref}
 										checked={value}
 										disabled={e2eDisabled || federated}
 										onChange={onChange}
-										aria-describedby='Encrypted_channel_Description'
+										aria-describedby={`${encryptedId}-hint`}
 										aria-labelledby='Encrypted_channel_Label'
 									/>
 								)}
 							/>
-						</Box>
+						</FieldRow>
+						<FieldDescription id={`${encryptedId}-hint`}>
+							{isPrivate ? t('Encrypted_channel_Description') : t('Encrypted_not_available')}
+						</FieldDescription>
 					</Field>
 					<Field>
-						<Box display='flex' justifyContent='space-between' alignItems='start'>
-							<Box display='flex' flexDirection='column' width='full'>
-								<Field.Label>{t('Broadcast')}</Field.Label>
-								<Field.Description>{t('Broadcast_channel_Description')}</Field.Description>
-							</Box>
+						<FieldRow>
+							<FieldLabel htmlFor={broadcastId}>{t('Broadcast')}</FieldLabel>
 							<Controller
 								control={control}
 								name='broadcast'
 								render={({ field: { onChange, value, ref } }): ReactElement => (
-									<ToggleSwitch ref={ref} checked={value} disabled={!!federated} onChange={onChange} />
+									<ToggleSwitch
+										aria-describedby={`${broadcastId}-hint`}
+										id={broadcastId}
+										ref={ref}
+										checked={value}
+										disabled={!!federated}
+										onChange={onChange}
+									/>
 								)}
 							/>
-						</Box>
+						</FieldRow>
+						<FieldHint id={`${broadcastId}-hint`}>{t('Broadcast_channel_Description')}</FieldHint>
 					</Field>
 					<Field>
-						<Field.Label>
-							{t('Add_members')}{' '}
-							<Box is='span' color='annotation'>
-								({t('optional')})
-							</Box>
-						</Field.Label>
+						<FieldLabel htmlFor={addMembersId}>{t('Add_members')}</FieldLabel>
 						<Controller
 							control={control}
 							name='members'
 							render={({ field: { onChange, value } }): ReactElement => (
-								<UserAutoCompleteMultipleFederated value={value} onChange={onChange} />
+								<UserAutoCompleteMultipleFederated id={addMembersId} value={value} onChange={onChange} />
 							)}
 						/>
 					</Field>
 				</FieldGroup>
 			</Modal.Content>
-
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button disabled={!isDirty} type='submit' primary data-qa-type='create-channel-confirm-button'>
+					<Button type='submit' primary data-qa-type='create-channel-confirm-button'>
 						{t('Create')}
 					</Button>
 				</Modal.FooterControllers>

@@ -57,6 +57,19 @@ export const createAccountSettings = () =>
 				],
 			});
 
+			await this.add('Accounts_TwoFactorAuthentication_Max_Invalid_Email_Code_Attempts', 5, {
+				type: 'int',
+				enableQuery: [
+					enable2FA,
+					{
+						_id: 'Accounts_TwoFactorAuthentication_By_Email_Enabled',
+						value: true,
+					},
+				],
+				i18nLabel: 'Accounts_TwoFactorAuthentication_Max_Invalid_Email_Code_Attempts',
+				i18nDescription: 'Accounts_TwoFactorAuthentication_Max_Invalid_Email_Code_Attempts_Description',
+			});
+
 			await this.add('Accounts_TwoFactorAuthentication_RememberFor', 1800, {
 				type: 'int',
 				enableQuery: enable2FA,
@@ -72,7 +85,7 @@ export const createAccountSettings = () =>
 		const enableQueryCollectData = { _id: 'Block_Multiple_Failed_Logins_Enabled', value: true };
 
 		await this.section('Login_Attempts', async function () {
-			await this.add('Block_Multiple_Failed_Logins_Enabled', false, {
+			await this.add('Block_Multiple_Failed_Logins_Enabled', true, {
 				type: 'boolean',
 			});
 
@@ -282,13 +295,6 @@ export const createAccountSettings = () =>
 			await this.add('Accounts_EmailVerification', false, {
 				type: 'boolean',
 				public: true,
-				enableQuery: {
-					_id: 'SMTP_Host',
-					value: {
-						$exists: true,
-						$ne: '',
-					},
-				},
 			});
 			await this.add('Accounts_Verify_Email_For_External_Accounts', true, {
 				type: 'boolean',
@@ -745,50 +751,60 @@ export const createAccountSettings = () =>
 		await this.section('Password_Policy', async function () {
 			await this.add('Accounts_Password_Policy_Enabled', false, {
 				type: 'boolean',
+				public: true,
 			});
 
 			const enableQuery = {
 				_id: 'Accounts_Password_Policy_Enabled',
 				value: true,
+				public: true,
 			};
 
 			await this.add('Accounts_Password_Policy_MinLength', 7, {
 				type: 'int',
+				public: true,
 				enableQuery,
 			});
 
 			await this.add('Accounts_Password_Policy_MaxLength', -1, {
 				type: 'int',
+				public: true,
 				enableQuery,
 			});
 
 			await this.add('Accounts_Password_Policy_ForbidRepeatingCharacters', true, {
 				type: 'boolean',
+				public: true,
 				enableQuery,
 			});
 
 			await this.add('Accounts_Password_Policy_ForbidRepeatingCharactersCount', 3, {
 				type: 'int',
+				public: true,
 				enableQuery,
 			});
 
 			await this.add('Accounts_Password_Policy_AtLeastOneLowercase', true, {
 				type: 'boolean',
+				public: true,
 				enableQuery,
 			});
 
 			await this.add('Accounts_Password_Policy_AtLeastOneUppercase', true, {
 				type: 'boolean',
+				public: true,
 				enableQuery,
 			});
 
 			await this.add('Accounts_Password_Policy_AtLeastOneNumber', true, {
 				type: 'boolean',
+				public: true,
 				enableQuery,
 			});
 
 			await this.add('Accounts_Password_Policy_AtLeastOneSpecialCharacter', true, {
 				type: 'boolean',
+				public: true,
 				enableQuery,
 			});
 		});

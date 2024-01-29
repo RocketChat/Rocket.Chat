@@ -36,6 +36,10 @@ export class AccountProfile {
 		return this.page.locator('.avatar-file-input');
 	}
 
+	get userAvatarEditor(): Locator {
+		return this.page.locator('[data-qa-id="UserAvatarEditor"]');
+	}
+
 	get emailTextInput(): Locator {
 		return this.page.locator('//label[contains(text(), "Email")]/..//input');
 	}
@@ -57,7 +61,7 @@ export class AccountProfile {
 	}
 
 	get tokenAddedModal(): Locator {
-		return this.page.locator("//div[text()='Personal Access Token successfully generated']");
+		return this.page.locator('role=dialog[name="Personal Access Token successfully generated"]');
 	}
 
 	tokenInTable(name: string): Locator {

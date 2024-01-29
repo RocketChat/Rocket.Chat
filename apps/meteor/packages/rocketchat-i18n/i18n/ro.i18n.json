@@ -974,7 +974,6 @@
   "Enter_name_here": "Introdu numele aici",
   "Enter_Normal": "Modul normal (trimiteți cu Enter)",
   "Enter_to": "Enter pentru a",
-  "Enterprise": "Afacere",
   "Entertainment": "Divertisment",
   "Error": "Eroare",
   "Error_404": "Eroare 404",
@@ -1830,6 +1829,8 @@
   "Offline_success_message": "Mesajul de succes offline",
   "Offline_unavailable": "offline nu sunt disponibile",
   "Older_than": "Mai vechi de",
+  "Omnichannel_Reports_Status_Open": "Deschis",
+  "Omnichannel_Reports_Status_Closed": "Închis",
   "On": "Pe",
   "online": "pe net",
   "Online": "Activ",
@@ -2750,5 +2751,7 @@
   "registration.component.form.reasonToJoin": "Motivul de a te alătura",
   "registration.component.form.invalidConfirmPass": "Confirmarea parolei nu se potrivește cu parola introdusă",
   "registration.component.form.confirmPassword": "Confirmați parola",
-  "registration.component.form.sendConfirmationEmail": "Trimite email de confirmare"
+  "registration.component.form.sendConfirmationEmail": "Trimite email de confirmare",
+  "Enterprise": "Afacere",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Analytics"
 }

@@ -15,7 +15,7 @@ import { useMessageListHighlights } from './message/list/MessageListContext';
 type GazzodownTextProps = {
 	children: JSX.Element;
 	mentions?: {
-		type: 'user' | 'team';
+		type?: 'user' | 'team';
 		_id: string;
 		username?: string;
 		name?: string;
@@ -49,6 +49,7 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 	const useEmoji = Boolean(useUserPreference('useEmojis'));
 	const useRealName = Boolean(useSetting('UI_Use_Real_Name'));
 	const ownUserId = useUserId();
+	const showMentionSymbol = Boolean(useUserPreference<boolean>('mentionsWithSymbol'));
 
 	const chat = useChat();
 
@@ -122,6 +123,7 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 				useRealName,
 				isMobile,
 				ownUserId,
+				showMentionSymbol,
 			}}
 		>
 			{children}

@@ -11,13 +11,9 @@ test.use({ storageState: Users.admin.state });
 test.describe.serial('channel-management', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
-	let regularUserPage: Page;
 
-	test.beforeAll(async ({ api, browser }) => {
+	test.beforeAll(async ({ api }) => {
 		targetChannel = await createTargetChannel(api);
-		regularUserPage = await browser.newPage({ storageState: Users.user2.state });
-		await regularUserPage.goto('/home');
-		await regularUserPage.waitForSelector('[data-qa-id="home-header"]');
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -26,8 +22,27 @@ test.describe.serial('channel-management', () => {
 		await page.goto('/home');
 	});
 
-	test.afterAll(async () => {
-		await regularUserPage.close();
+	test('should navigate on toolbar using arrow keys', async ({ page }) => {
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.content.sendMessage('hello composer');
+		await poHomeChannel.roomHeaderFavoriteBtn.focus();
+
+		await page.keyboard.press('Tab');
+		await page.keyboard.press('ArrowRight');
+		await page.keyboard.press('ArrowRight');
+
+		await expect(poHomeChannel.roomHeaderToolbar.getByRole('button', { name: 'Threads' })).toBeFocused();
+	});
+
+	test('should move the focus away from toolbar using tab key', async ({ page }) => {
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.content.sendMessage('hello composer');
+		await poHomeChannel.roomHeaderFavoriteBtn.focus();
+
+		await page.keyboard.press('Tab');
+		await page.keyboard.press('Tab');
+
+		await expect(poHomeChannel.roomHeaderToolbar.getByRole('button', { name: 'Call' })).not.toBeFocused();
 	});
 
 	test('expect add "user1" to "targetChannel"', async () => {
@@ -113,7 +128,8 @@ test.describe.serial('channel-management', () => {
 		await expect(poHomeChannel.toastSuccess).toBeVisible();
 	});
 
-	test('expect "readOnlyChannel" to show join button', async () => {
+	let regularUserPage: Page;
+	test('expect "readOnlyChannel" to show join button', async ({ browser }) => {
 		const channelName = faker.string.uuid();
 
 		await poHomeChannel.sidenav.openNewByLabel('Channel');
@@ -122,8 +138,15 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.sidenav.checkboxReadOnly.click();
 		await poHomeChannel.sidenav.btnCreate.click();
 
+		regularUserPage = await browser.newPage({ storageState: Users.user2.state });
+
+		const channel = new HomeChannel(regularUserPage);
+
 		await regularUserPage.goto(`/channel/${channelName}`);
-		await expect(regularUserPage.locator('button', { hasText: 'Join' })).toBeVisible();
+		await channel.waitForChannel();
+		await expect(regularUserPage.locator('button >> text="Join"')).toBeVisible();
+
+		await regularUserPage.close();
 	});
 
 	test.skip('expect all notification preferences of "targetChannel" to be "Mentions"', async () => {

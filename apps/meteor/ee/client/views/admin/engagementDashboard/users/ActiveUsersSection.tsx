@@ -8,8 +8,8 @@ import React, { useMemo } from 'react';
 
 import CounterSet from '../../../../../../client/components/dataView/CounterSet';
 import { useFormatDate } from '../../../../../../client/hooks/useFormatDate';
+import DownloadDataButton from '../../../../components/dashboards/DownloadDataButton';
 import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
-import DownloadDataButton from '../dataView/DownloadDataButton';
 import LegendSymbol from '../dataView/LegendSymbol';
 import { useActiveUsers } from './useActiveUsers';
 
@@ -37,18 +37,18 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 		}
 
 		const createPoint = (i: number): { x: Date; y: number } => ({
-			x: moment(data.start).add(i, 'days').toDate(),
+			x: moment(data.start).add(i, 'days').startOf('day').toDate(),
 			y: 0,
 		});
 
 		const createPoints = (): { x: Date; y: number }[] =>
-			Array.from({ length: moment(data.end).diff(data.start, 'days') + 1 }, (_, i) => createPoint(i));
+			Array.from({ length: moment(data.end).diff(data.start, 'days') }, (_, i) => createPoint(i));
 
-		const dauValues = createPoints();
+		const dauValuesLocal = createPoints();
 		const prevDauValue = createPoint(-1);
-		const wauValues = createPoints();
+		const wauValuesLocal = createPoints();
 		const prevWauValue = createPoint(-1);
-		const mauValues = createPoints();
+		const mauValuesLocal = createPoints();
 		const prevMauValue = createPoint(-1);
 
 		const usersListsMap = data.month.reduce<{ [x: number]: string[] }>((map, dayData) => {
@@ -56,9 +56,9 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 				? moment.utc({ year: dayData.year, month: dayData.month - 1, day: dayData.day }).endOf('day')
 				: moment({ year: dayData.year, month: dayData.month - 1, day: dayData.day }).endOf('day');
 			const dateOffset = date.diff(data.start, 'days');
-			if (dateOffset >= 0) {
+			if (dateOffset >= 0 && dauValuesLocal[dateOffset]) {
 				map[dateOffset] = dayData.usersList;
-				dauValues[dateOffset].y = dayData.users;
+				dauValuesLocal[dateOffset].y = dayData.users;
 			}
 			return map;
 		}, {});
@@ -72,30 +72,31 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 			const usersSet = new Set();
 			for (let k = dateOffset; count > 0; k--, count--) {
 				if (usersListsMap[k]) {
-					usersListsMap[k].forEach((userId) => usersSet.add(userId));
+					usersListsMap[k].map((userId) => usersSet.add(userId));
 				}
 			}
+
 			array[dateOffset].y = usersSet.size;
 		};
 
-		for (let i = 0; i < 30; i++) {
-			distributeValueOverPoints(usersListsMap, i, 7, wauValues);
-			distributeValueOverPoints(usersListsMap, i, 30, mauValues);
+		for (let i = 0; i < dauValuesLocal.length; i++) {
+			distributeValueOverPoints(usersListsMap, i, 7, wauValuesLocal);
+			distributeValueOverPoints(usersListsMap, i, 30, mauValuesLocal);
 		}
-		prevWauValue.y = wauValues[28].y;
-		prevMauValue.y = mauValues[28].y;
-		prevDauValue.y = dauValues[28].y;
+		prevWauValue.y = wauValuesLocal[dauValuesLocal.length - 2].y;
+		prevMauValue.y = mauValuesLocal[dauValuesLocal.length - 2].y;
+		prevDauValue.y = dauValuesLocal[dauValuesLocal.length - 2].y;
 
 		return [
-			dauValues[dauValues.length - 1].y,
-			dauValues[dauValues.length - 1].y - prevDauValue.y,
-			wauValues[wauValues.length - 1].y,
-			wauValues[wauValues.length - 1].y - prevWauValue.y,
-			mauValues[mauValues.length - 1].y,
-			mauValues[mauValues.length - 1].y - prevMauValue.y,
-			dauValues,
-			wauValues,
-			mauValues,
+			dauValuesLocal[dauValuesLocal.length - 1].y,
+			dauValuesLocal[dauValuesLocal.length - 1].y - prevDauValue.y,
+			wauValuesLocal[wauValuesLocal.length - 1].y,
+			wauValuesLocal[wauValuesLocal.length - 1].y - prevWauValue.y,
+			mauValuesLocal[mauValuesLocal.length - 1].y,
+			mauValuesLocal[mauValuesLocal.length - 1].y - prevMauValue.y,
+			dauValuesLocal,
+			wauValuesLocal,
+			mauValuesLocal,
 		];
 	}, [data, utc]);
 
@@ -106,7 +107,7 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 		<>
 			<EngagementDashboardCardFilter>
 				<DownloadDataButton
-					attachmentName={`ActiveUsersSection_start_${data?.start}_end_${data?.end}`}
+					attachmentName={`ActiveUsersSection_start_${data?.start}_end_${moment(data?.end).subtract(1, 'day')}`}
 					headers={['Date', 'DAU', 'WAU', 'MAU']}
 					dataAvailable={!!data}
 					dataExtractor={(): unknown[][] | undefined => {
@@ -127,7 +128,7 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 						variation: diffDailyActiveUsers ?? 0,
 						description: (
 							<>
-								<LegendSymbol color={colors.p200} /> {t('Daily_Active_Users')}
+								<LegendSymbol color={colors.b200} /> {t('Daily_Active_Users')}
 							</>
 						),
 					},
@@ -136,7 +137,7 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 						variation: diffWeeklyActiveUsers ?? 0,
 						description: (
 							<>
-								<LegendSymbol color={colors.p300} /> {t('Weekly_Active_Users')}
+								<LegendSymbol color={colors.b300} /> {t('Weekly_Active_Users')}
 							</>
 						),
 					},
@@ -203,7 +204,7 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 											right: 0,
 											left: 40,
 										}}
-										colors={[colors.p200, colors.p300, colors.p500]}
+										colors={[colors.b200, colors.b300, colors.b500]}
 										axisLeft={{
 											// TODO: Get it from theme
 											tickSize: 0,
@@ -217,7 +218,7 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 											tickPadding: 4,
 											tickRotation: 0,
 											tickValues: 'every 3 days',
-											format: (date): string => moment(date).format(dauValues.length === 7 ? 'dddd' : 'L'),
+											format: (date): string => moment(date).format('DD/MM'),
 										}}
 										animate={true}
 										motionConfig='stiff'

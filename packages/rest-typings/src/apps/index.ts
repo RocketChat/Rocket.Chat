@@ -13,6 +13,7 @@ import type {
 	AppRequestsStats,
 	PaginatedAppRequests,
 } from '@rocket.chat/core-typings';
+import type * as UiKit from '@rocket.chat/ui-kit';
 
 export type AppsEndpoints = {
 	'/apps/count': {
@@ -52,15 +53,8 @@ export type AppsEndpoints = {
 		GET: () => {
 			apps: {
 				id: string;
-				languages: {
-					[key: string]: {
-						Params: string;
-						Description: string;
-						Setting_Name: string;
-						Setting_Description: string;
-					};
-				};
-			};
+				languages: { [language: string]: { [key: string]: string } };
+			}[];
 		};
 	};
 
@@ -91,7 +85,12 @@ export type AppsEndpoints = {
 	'/apps/:id/languages': {
 		GET: () => {
 			languages: {
-				[key: string]: object;
+				[key: string]: {
+					Params: string;
+					Description: string;
+					Setting_Name: string;
+					Setting_Description: string;
+				};
 			};
 		};
 	};
@@ -210,7 +209,7 @@ export type AppsEndpoints = {
 		};
 	};
 
-	'/apps/': {
+	'/apps': {
 		GET:
 			| ((params: { buildExternalUrl: 'true'; purchaseType?: 'buy' | 'subscription'; appId?: string; details?: 'true' | 'false' }) => {
 					url: string;
@@ -240,28 +239,31 @@ export type AppsEndpoints = {
 			  }[])
 			| (() => { apps: App[] });
 
-		POST: (params: {
-			appId: string;
-			marketplace: boolean;
-			version: string;
-			permissionsGranted?: IPermission[];
-			url?: string;
-			downloadOnly?: boolean;
-		}) => {
-			app: App;
+		POST: {
+			(
+				params:
+					| {
+							appId: string;
+							marketplace: boolean;
+							version: string;
+							permissionsGranted?: IPermission[];
+							url?: string;
+							downloadOnly?: boolean;
+					  }
+					| { url: string; downloadOnly?: boolean },
+			):
+				| {
+						app: App;
+				  }
+				| {
+						buff: {
+							data: ArrayLike<number>;
+						};
+				  };
 		};
 	};
 
 	'/apps/ui.interaction/:id': {
-		POST: (params: {
-			type: string;
-			actionId: string;
-			rid: string;
-			mid: string;
-			viewId: string;
-			container: string;
-			triggerId: string;
-			payload: any;
-		}) => any;
+		POST: (params: UiKit.UserInteraction) => any;
 	};
 };

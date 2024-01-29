@@ -1,4 +1,5 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IActionManager } from '@rocket.chat/ui-contexts';
 import type { UIEvent } from 'react';
 
 import type { FormattingButton } from '../../../app/ui-message/client/messageBox/messageBoxFormatting';
@@ -77,7 +78,7 @@ export type DataAPI = {
 	getNextOwnMessage(message: IMessage): Promise<IMessage>;
 	pushEphemeralMessage(message: Omit<IMessage, 'rid' | 'tmid'>): Promise<void>;
 	canUpdateMessage(message: IMessage): Promise<boolean>;
-	updateMessage(message: Pick<IMessage, '_id' | 't'> & Partial<Omit<IMessage, '_id' | 't'>>): Promise<void>;
+	updateMessage(message: Pick<IMessage, '_id' | 't'> & Partial<Omit<IMessage, '_id' | 't'>>, previewUrls?: string[]): Promise<void>;
 	canDeleteMessage(message: IMessage): Promise<boolean>;
 	deleteMessage(mid: IMessage['_id']): Promise<void>;
 	getDraft(mid: IMessage['_id'] | undefined): Promise<string | undefined>;
@@ -105,7 +106,6 @@ export type UploadsAPI = {
 
 export type ChatAPI = {
 	readonly uid: string | null;
-
 	readonly composer?: ComposerAPI;
 	readonly setComposerAPI: (composer: ComposerAPI) => void;
 	readonly data: DataAPI;
@@ -142,12 +142,17 @@ export type ChatAPI = {
 		performContinuously(action: 'recording' | 'uploading' | 'playing'): void;
 	};
 
+	ActionManager: IActionManager;
+
 	readonly flows: {
-		readonly uploadFiles: (files: readonly File[]) => Promise<void>;
-		readonly sendMessage: ({ text, tshow }: { text: string; tshow?: boolean }) => Promise<boolean>;
+		readonly uploadFiles: (files: readonly File[], resetFileInput?: () => void) => Promise<void>;
+		readonly sendMessage: ({ text, tshow }: { text: string; tshow?: boolean; previewUrls?: string[] }) => Promise<boolean>;
 		readonly processSlashCommand: (message: IMessage, userId: string | null) => Promise<boolean>;
 		readonly processTooLongMessage: (message: IMessage) => Promise<boolean>;
-		readonly processMessageEditing: (message: Pick<IMessage, '_id' | 't'> & Partial<Omit<IMessage, '_id' | 't'>>) => Promise<boolean>;
+		readonly processMessageEditing: (
+			message: Pick<IMessage, '_id' | 't'> & Partial<Omit<IMessage, '_id' | 't'>>,
+			previewUrls?: string[],
+		) => Promise<boolean>;
 		readonly processSetReaction: (message: Pick<IMessage, 'msg'>) => Promise<boolean>;
 		readonly requestMessageDeletion: (message: IMessage) => Promise<void>;
 		readonly replyBroadcast: (message: IMessage) => Promise<void>;

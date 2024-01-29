@@ -1,4 +1,4 @@
-import { Field } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useTranslation, useMethod, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
@@ -55,10 +55,10 @@ const AuditLogTable = (): ReactElement => {
 	return (
 		<>
 			<Field alignSelf='stretch'>
-				<Field.Label>{t('Date')}</Field.Label>
-				<Field.Row>
+				<FieldLabel>{t('Date')}</FieldLabel>
+				<FieldRow>
 					<DateRangePicker display='flex' flexGrow={1} value={dateRange} onChange={setDateRange} />
-				</Field.Row>
+				</FieldRow>
 			</Field>
 			{isLoading && (
 				<GenericTable>

@@ -1,13 +1,13 @@
-import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
+import { ILivechatAgentStatus, LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
+import { LivechatBusinessHours, Users } from '@rocket.chat/models';
 
 import { businessHourLogger } from '../lib/logger';
 import type { IBusinessHourBehavior } from './AbstractBusinessHour';
 import { AbstractBusinessHourBehavior } from './AbstractBusinessHour';
-import { openBusinessHourDefault } from './Helper';
+import { filterBusinessHoursThatMustBeOpened, openBusinessHourDefault } from './Helper';
 
 export class SingleBusinessHourBehavior extends AbstractBusinessHourBehavior implements IBusinessHourBehavior {
 	async openBusinessHoursByDayAndHour(): Promise<void> {
-		businessHourLogger.debug('opening single business hour');
 		return openBusinessHourDefault();
 	}
 
@@ -22,8 +22,36 @@ export class SingleBusinessHourBehavior extends AbstractBusinessHourBehavior imp
 	}
 
 	async onStartBusinessHours(): Promise<void> {
-		businessHourLogger.debug('Starting Single Business Hours');
 		return openBusinessHourDefault();
+	}
+
+	async onNewAgentCreated(agentId: string): Promise<void> {
+		const defaultBusinessHour = await LivechatBusinessHours.findOneDefaultBusinessHour();
+		if (!defaultBusinessHour) {
+			businessHourLogger.debug('No default business hour found for agentId', {
+				agentId,
+			});
+			return;
+		}
+
+		const businessHourToOpen = await filterBusinessHoursThatMustBeOpened([defaultBusinessHour]);
+		if (!businessHourToOpen.length) {
+			businessHourLogger.debug({
+				msg: 'No business hours found. Moving agent to NOT_AVAILABLE status',
+				agentId,
+				newStatus: ILivechatAgentStatus.NOT_AVAILABLE,
+			});
+			await Users.setLivechatStatus(agentId, ILivechatAgentStatus.NOT_AVAILABLE);
+			return;
+		}
+
+		await Users.addBusinessHourByAgentIds([agentId], defaultBusinessHour._id);
+
+		businessHourLogger.debug({
+			msg: 'Business hours found. Moving agent to AVAILABLE status',
+			agentId,
+			newStatus: ILivechatAgentStatus.AVAILABLE,
+		});
 	}
 
 	afterSaveBusinessHours(): Promise<void> {

@@ -973,7 +973,6 @@
   "Enter_name_here": "Въведете име тук",
   "Enter_Normal": "Нормален режим (изпратете с Enter)",
   "Enter_to": "Влезте в",
-  "Enterprise": "начинание",
   "Entertainment": "забавление",
   "Error": "Грешка",
   "Error_404": "Грешка: 404",
@@ -1828,6 +1827,8 @@
   "Offline_success_message": "Съобщение за успешно офлайн",
   "Offline_unavailable": "Офлайн не е налице",
   "Older_than": "По-стари от",
+  "Omnichannel_Reports_Status_Open": "Отвори",
+  "Omnichannel_Reports_Status_Closed": "Затворен",
   "On": "На",
   "online": "на линия",
   "Online": "На линия",
@@ -2747,5 +2748,7 @@
   "registration.component.form.reasonToJoin": "Причина за присъединяване",
   "registration.component.form.invalidConfirmPass": "Потвърждението на паролата не съвпада с паролата",
   "registration.component.form.confirmPassword": "Потвърдите паролата",
-  "registration.component.form.sendConfirmationEmail": "Изпратете имейл за потвърждение"
+  "registration.component.form.sendConfirmationEmail": "Изпратете имейл за потвърждение",
+  "Enterprise": "начинание",
+  "UpgradeToGetMore_engagement-dashboard_Title": "анализ"
 }

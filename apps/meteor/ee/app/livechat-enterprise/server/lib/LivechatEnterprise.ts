@@ -1,11 +1,6 @@
-import type {
-	IOmnichannelBusinessUnit,
-	IOmnichannelServiceLevelAgreements,
-	LivechatDepartmentDTO,
-	InquiryWithAgentInfo,
-} from '@rocket.chat/core-typings';
+import type { IOmnichannelBusinessUnit, IOmnichannelServiceLevelAgreements, LivechatDepartmentDTO } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import {
-	LivechatInquiry,
 	Users,
 	LivechatDepartment as LivechatDepartmentRaw,
 	OmnichannelServiceLevelAgreements,
@@ -17,16 +12,11 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { updateDepartmentAgents } from '../../../../../app/livechat/server/lib/Helper';
-import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
-import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
-import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
 import { addUserRolesAsync } from '../../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../../server/lib/roles/removeUserFromRoles';
-import { hasLicense } from '../../../license/server/license';
-import { processWaitingQueue, updateSLAInquiries } from './Helper';
+import { updateSLAInquiries } from './Helper';
 import { removeSLAFromRooms } from './SlaHelper';
-import { queueLogger } from './logger';
 
 export const LivechatEnterprise = {
 	async addMonitor(username: string) {
@@ -123,7 +113,18 @@ export const LivechatEnterprise = {
 			ancestors = unit.ancestors || [];
 		}
 
-		return LivechatUnit.createOrUpdateUnit(_id, unitData, ancestors, unitMonitors, unitDepartments);
+		const validUserMonitors = await Users.findUsersInRolesWithQuery(
+			'livechat-monitor',
+			{ _id: { $in: unitMonitors.map(({ monitorId }) => monitorId) } },
+			{ projection: { _id: 1, username: 1 } },
+		).toArray();
+
+		const monitors = validUserMonitors.map(({ _id: monitorId, username }) => ({
+			monitorId,
+			username,
+		})) as { monitorId: string; username: string }[];
+
+		return LivechatUnit.createOrUpdateUnit(_id, unitData, ancestors, monitors, unitDepartments);
 	},
 
 	async removeTag(_id: string) {
@@ -205,7 +206,7 @@ export const LivechatEnterprise = {
 
 		const department = _id ? await LivechatDepartmentRaw.findOneById(_id, { projection: { _id: 1, archived: 1, enabled: 1 } }) : null;
 
-		if (!hasLicense('livechat-enterprise')) {
+		if (!License.hasModule('livechat-enterprise')) {
 			const totalDepartments = await LivechatDepartmentRaw.countTotal();
 			if (!department && totalDepartments >= 1) {
 				throw new Meteor.Error('error-max-departments-number-reached', 'Maximum number of departments reached', {
@@ -271,8 +272,15 @@ export const LivechatEnterprise = {
 			);
 		}
 
-		if (fallbackForwardDepartment && !(await LivechatDepartmentRaw.findOneById(fallbackForwardDepartment))) {
-			throw new Meteor.Error('error-fallback-department-not-found', 'Fallback department not found', { method: 'livechat:saveDepartment' });
+		if (fallbackForwardDepartment) {
+			const fallbackDep = await LivechatDepartmentRaw.findOneById(fallbackForwardDepartment, {
+				projection: { _id: 1, fallbackForwardDepartment: 1 },
+			});
+			if (!fallbackDep) {
+				throw new Meteor.Error('error-fallback-department-not-found', 'Fallback department not found', {
+					method: 'livechat:saveDepartment',
+				});
+			}
 		}
 
 		const departmentDB = await LivechatDepartmentRaw.createOrUpdateDepartment(_id, departmentData);
@@ -282,126 +290,13 @@ export const LivechatEnterprise = {
 
 		// Disable event
 		if (department?.enabled && !departmentDB?.enabled) {
-			void callbacks.run('livechat.afterDepartmentDisabled', departmentDB);
+			await callbacks.run('livechat.afterDepartmentDisabled', departmentDB);
 		}
 
 		return departmentDB;
 	},
 
 	async isDepartmentCreationAvailable() {
-		return hasLicense('livechat-enterprise') || (await LivechatDepartmentRaw.countTotal()) === 0;
+		return License.hasModule('livechat-enterprise') || (await LivechatDepartmentRaw.countTotal()) === 0;
 	},
 };
-
-const DEFAULT_RACE_TIMEOUT = 5000;
-let queueDelayTimeout = DEFAULT_RACE_TIMEOUT;
-
-type QueueWorker = {
-	running: boolean;
-	queues: (string | undefined)[];
-	start(): Promise<void>;
-	stop(): Promise<void>;
-	getActiveQueues(): Promise<(string | undefined)[]>;
-	nextQueue(): Promise<string | undefined>;
-	execute(): Promise<void>;
-	checkQueue(queue: string | undefined): Promise<void>;
-};
-
-const queueWorker: QueueWorker = {
-	running: false,
-	queues: [],
-	async start() {
-		queueLogger.debug('Starting queue');
-		if (this.running) {
-			queueLogger.debug('Queue already running');
-			return;
-		}
-
-		const activeQueues = await this.getActiveQueues();
-		queueLogger.debug(`Active queues: ${activeQueues.length}`);
-
-		this.running = true;
-		return this.execute();
-	},
-	async stop() {
-		queueLogger.debug('Stopping queue');
-		await LivechatInquiry.unlockAll();
-
-		this.running = false;
-	},
-	async getActiveQueues() {
-		// undefined = public queue(without department)
-		return ([undefined] as (undefined | string)[]).concat(await LivechatInquiry.getDistinctQueuedDepartments({}));
-	},
-	async nextQueue() {
-		if (!this.queues.length) {
-			queueLogger.debug('No more registered queues. Refreshing');
-			this.queues = await this.getActiveQueues();
-		}
-
-		return this.queues.shift();
-	},
-	async execute() {
-		if (!this.running) {
-			queueLogger.debug('Queue stopped. Cannot execute');
-			return;
-		}
-
-		const queue = await this.nextQueue();
-		queueLogger.debug(`Executing queue ${queue || 'Public'} with timeout of ${queueDelayTimeout}`);
-
-		setTimeout(this.checkQueue.bind(this, queue), queueDelayTimeout);
-	},
-
-	async checkQueue(queue) {
-		queueLogger.debug(`Processing items for queue ${queue || 'Public'}`);
-		try {
-			const nextInquiry = await LivechatInquiry.findNextAndLock(getInquirySortMechanismSetting(), queue);
-			if (!nextInquiry) {
-				queueLogger.debug(`No more items for queue ${queue || 'Public'}`);
-				return;
-			}
-
-			const result = await processWaitingQueue(queue, nextInquiry as InquiryWithAgentInfo);
-
-			if (!result) {
-				await LivechatInquiry.unlock(nextInquiry._id);
-			}
-		} catch (e) {
-			queueLogger.error({
-				msg: `Error processing queue ${queue || 'public'}`,
-				err: e,
-			});
-		} finally {
-			void this.execute();
-		}
-	},
-};
-
-let omnichannelIsEnabled = false;
-function shouldQueueStart() {
-	if (!omnichannelIsEnabled) {
-		void queueWorker.stop();
-		return;
-	}
-
-	const routingSupportsAutoAssign = RoutingManager.getConfig()?.autoAssignAgent;
-	queueLogger.debug(
-		`Routing method ${RoutingManager.methodName} supports auto assignment: ${routingSupportsAutoAssign}. ${
-			routingSupportsAutoAssign ? 'Starting' : 'Stopping'
-		} queue`,
-	);
-
-	void (routingSupportsAutoAssign ? queueWorker.start() : queueWorker.stop());
-}
-
-RoutingManager.startQueue = shouldQueueStart;
-
-settings.watch<boolean>('Livechat_enabled', (enabled) => {
-	omnichannelIsEnabled = enabled;
-	void (omnichannelIsEnabled && RoutingManager.isMethodSet() ? shouldQueueStart() : queueWorker.stop());
-});
-
-settings.watch<number>('Omnichannel_queue_delay_timeout', (timeout) => {
-	queueDelayTimeout = timeout < 1 ? DEFAULT_RACE_TIMEOUT : timeout * 1000;
-});

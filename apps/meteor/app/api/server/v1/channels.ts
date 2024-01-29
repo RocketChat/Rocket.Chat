@@ -1,5 +1,5 @@
-import { Team } from '@rocket.chat/core-services';
-import type { IRoom, ISubscription, IUser, RoomType } from '@rocket.chat/core-typings';
+import { Team, Room } from '@rocket.chat/core-services';
+import type { IRoom, ISubscription, IUser, RoomType, IUpload } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
 import {
 	isChannelsAddAllProps,
@@ -18,6 +18,7 @@ import {
 	isChannelsConvertToTeamProps,
 	isChannelsSetReadOnlyProps,
 	isChannelsDeleteProps,
+	isChannelsImagesProps,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
@@ -31,7 +32,6 @@ import { saveRoomSettings } from '../../../channel-settings/server/methods/saveR
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { addUsersToRoomMethod } from '../../../lib/server/methods/addUsersToRoom';
 import { createChannelMethod } from '../../../lib/server/methods/createChannel';
-import { joinRoomMethod } from '../../../lib/server/methods/joinRoom';
 import { leaveRoomMethod } from '../../../lib/server/methods/leaveRoom';
 import { settings } from '../../../settings/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
@@ -209,7 +209,7 @@ API.v1.addRoute(
 			const { joinCode, ...params } = this.bodyParams;
 			const findResult = await findChannelByIdOrName({ params });
 
-			await joinRoomMethod(this.userId, findResult._id, joinCode);
+			await Room.join({ room: findResult, user: this.user, joinCode });
 
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params, userId: this.userId }),
@@ -671,7 +671,14 @@ async function createChannelValidator(params: {
 
 async function createChannel(
 	userId: string,
-	params: { name?: string; members?: string[]; customFields?: Record<string, any>; extraData?: Record<string, any>; readOnly?: boolean },
+	params: {
+		name?: string;
+		members?: string[];
+		customFields?: Record<string, any>;
+		extraData?: Record<string, any>;
+		readOnly?: boolean;
+		excludeSelf?: boolean;
+	},
 ): Promise<{ channel: IRoom }> {
 	const readOnly = typeof params.readOnly !== 'undefined' ? params.readOnly : false;
 	const id = await createChannelMethod(
@@ -681,6 +688,7 @@ async function createChannel(
 		readOnly,
 		params.customFields,
 		params.extraData,
+		params.excludeSelf,
 	);
 
 	return {
@@ -789,6 +797,48 @@ API.v1.addRoute(
 			return API.v1.success({
 				files: await addUserToFileObj(files),
 				count: files.length,
+				offset,
+				total,
+			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'channels.images',
+	{ authRequired: true, validateParams: isChannelsImagesProps },
+	{
+		async get() {
+			const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'teamId' | 'prid'>>(this.queryParams.roomId, {
+				projection: { t: 1, teamId: 1, prid: 1 },
+			});
+
+			if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
+				return API.v1.unauthorized();
+			}
+
+			let initialImage: IUpload | null = null;
+			if (this.queryParams.startingFromId) {
+				initialImage = await Uploads.findOneById(this.queryParams.startingFromId);
+			}
+
+			const { offset, count } = await getPaginationItems(this.queryParams);
+
+			const { cursor, totalCount } = Uploads.findImagesByRoomId(room._id, initialImage?.uploadedAt, {
+				skip: offset,
+				limit: count,
+			});
+
+			const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+			// If the initial image was not returned in the query, insert it as the first element of the list
+			if (initialImage && !files.find(({ _id }) => _id === (initialImage as IUpload)._id)) {
+				files.splice(0, 0, initialImage);
+			}
+
+			return API.v1.success({
+				files,
+				count,
 				offset,
 				total,
 			});

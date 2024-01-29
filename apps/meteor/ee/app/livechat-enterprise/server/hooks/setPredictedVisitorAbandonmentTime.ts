@@ -1,4 +1,7 @@
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { isEditedMessage, isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { LivechatRooms } from '@rocket.chat/models';
+import moment from 'moment';
 
 import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
@@ -22,21 +25,33 @@ callbacks.add(
 		if (isEditedMessage(message)) {
 			return message;
 		}
-
-		// message valid only if it is a livechat room
-		if (!room.v?.token) {
-			return message;
-		}
 		// if the message has a type means it is a special message (like the closing comment), so skip it
 		if (message.t) {
 			return message;
 		}
-		const sentByAgent = !message.token;
-		if (sentByAgent) {
-			await setPredictedVisitorAbandonmentTime(room);
+		// message from visitor
+		if (message.token) {
+			return message;
 		}
+
+		const latestRoom = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id' | 'responseBy' | 'departmentId'>>(room._id, {
+			projection: {
+				_id: 1,
+				responseBy: 1,
+				departmentId: 1,
+			},
+		});
+
+		if (!latestRoom?.responseBy) {
+			return message;
+		}
+
+		if (moment(latestRoom.responseBy.firstResponseTs).isSame(moment(message.ts))) {
+			await setPredictedVisitorAbandonmentTime(latestRoom);
+		}
+
 		return message;
 	},
 	callbacks.priority.MEDIUM,
 	'save-visitor-inactivity',
-); // This hook priority should always be less than the priority of hook "save-last-visitor-message-timestamp" bcs, the room.v.lastMessage property set there is being used here for determining visitor abandonment
+); // This hook priority should always be less than the priority of hook "markRoomResponded" bcs, the room.responseBy.firstMessage property set there is being used here for determining visitor abandonment

@@ -1,7 +1,11 @@
-import type { ISetting, Serialized, SettingValue } from '@rocket.chat/core-typings';
-import type { Method, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
-import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn, TranslationKey } from '@rocket.chat/ui-contexts';
+import { type ISetting, type Serialized, type SettingValue } from '@rocket.chat/core-typings';
+import languages from '@rocket.chat/i18n/dist/languages';
+import { type Method, type OperationParams, type OperationResult, type PathPattern, type UrlParams } from '@rocket.chat/rest-typings';
 import {
+	type ServerMethodName,
+	type ServerMethodParameters,
+	type ServerMethodReturn,
+	type TranslationKey,
 	AuthorizationContext,
 	ConnectionStatusContext,
 	RouterContext,
@@ -12,11 +16,13 @@ import {
 	ActionManagerContext,
 	ModalContext,
 } from '@rocket.chat/ui-contexts';
+import { type DecoratorFn } from '@storybook/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import type { WrapperComponent } from '@testing-library/react-hooks';
-import type { ObjectId } from 'mongodb';
-import type { ContextType, ReactNode } from 'react';
-import React from 'react';
+import { type WrapperComponent } from '@testing-library/react-hooks';
+import { createInstance } from 'i18next';
+import { type ObjectId } from 'mongodb';
+import React, { type ContextType, type ReactNode, useEffect, useReducer } from 'react';
+import { I18nextProvider, initReactI18next } from 'react-i18next';
 
 type Mutable<T> = {
 	-readonly [P in keyof T]: T[P];
@@ -42,7 +48,6 @@ export class MockedAppRootBuilder {
 		}): Promise<Serialized<OperationResult<TMethod, TPathPattern>>> => {
 			throw new Error('not implemented');
 		},
-		getSingleStream: () => () => () => undefined,
 		getStream: () => () => () => undefined,
 		uploadToEndpoint: () => Promise.reject(new Error('not implemented')),
 		callMethod: () => Promise.reject(new Error('not implemented')),
@@ -71,27 +76,8 @@ export class MockedAppRootBuilder {
 		dispatch: async () => undefined,
 	};
 
-	private translation: ContextType<typeof TranslationContext> = {
-		language: 'en',
-		languages: [
-			{
-				en: 'English',
-				key: 'en',
-				name: 'English',
-			},
-		],
-		loadLanguage: () => Promise.resolve(),
-		translate: Object.assign((key: string) => key, {
-			has: (_key: string | number | symbol): _key is TranslationKey => true,
-		}),
-	};
-
 	private user: ContextType<typeof UserContext> = {
-		loginWithPassword: () => Promise.reject(new Error('not implemented')),
 		logout: () => Promise.reject(new Error('not implemented')),
-		loginWithService: () => () => Promise.reject(new Error('not implemented')),
-		loginWithToken: () => Promise.reject(new Error('not implemented')),
-		queryAllServices: () => [() => () => undefined, () => []],
 		queryPreference: () => [() => () => undefined, () => undefined],
 		queryRoom: () => [() => () => undefined, () => undefined],
 		querySubscription: () => [() => () => undefined, () => undefined],
@@ -322,6 +308,40 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
+	private i18n = createInstance(
+		{
+			// debug: true,
+			lng: 'en',
+			fallbackLng: 'en',
+			ns: ['core'],
+			nsSeparator: '.',
+			partialBundledLanguages: true,
+			defaultNS: 'core',
+			interpolation: {
+				escapeValue: false,
+			},
+			initImmediate: false,
+		},
+		() => undefined,
+	).use(initReactI18next);
+
+	withTranslations(lng: string, ns: string, resources: Record<string, string>): this {
+		const addResources = () => {
+			this.i18n.addResources(lng, ns, resources);
+			for (const [key, value] of Object.entries(resources)) {
+				this.i18n.addResource(lng, ns, key, value);
+			}
+		};
+
+		if (this.i18n.isInitialized) {
+			addResources();
+			return this;
+		}
+
+		this.i18n.on('initialized', addResources);
+		return this;
+	}
+
 	build(): WrapperComponent<{ children: ReactNode }> {
 		const queryClient = new QueryClient({
 			defaultOptions: {
@@ -330,65 +350,116 @@ export class MockedAppRootBuilder {
 			},
 		});
 
-		const { connectionStatus, server, router, settings, translation, user, modal, authorization, wrappers } = this;
+		const { connectionStatus, server, router, settings, user, modal, i18n, authorization, wrappers } = this;
+
+		const reduceTranslation = (translation?: ContextType<typeof TranslationContext>): ContextType<typeof TranslationContext> => {
+			return {
+				...translation,
+				language: i18n.isInitialized ? i18n.language : 'en',
+				languages: [
+					{
+						en: 'Default',
+						name: i18n.isInitialized ? i18n.t('Default') : 'Default',
+						ogName: i18n.isInitialized ? i18n.t('Default') : 'Default',
+						key: '',
+					},
+					...(i18n.isInitialized
+						? [...new Set([...i18n.languages, ...languages])].map((key) => ({
+								en: key,
+								name: new Intl.DisplayNames([key], { type: 'language' }).of(key) ?? key,
+								ogName: new Intl.DisplayNames([key], { type: 'language' }).of(key) ?? key,
+								key,
+						  }))
+						: []),
+				],
+				loadLanguage: async (language) => {
+					if (!i18n.isInitialized) {
+						return;
+					}
+
+					await i18n.changeLanguage(language);
+				},
+				translate: Object.assign(
+					(key: TranslationKey, options?: unknown) => (i18n.isInitialized ? i18n.t(key, options as { lng?: string }) : ''),
+					{
+						has: (key: string, options?: { lng?: string }): key is TranslationKey =>
+							!!key && i18n.isInitialized && i18n.exists(key, options),
+					},
+				),
+			};
+		};
 
 		return function MockedAppRoot({ children }) {
+			const [translation, updateTranslation] = useReducer(reduceTranslation, undefined, () => reduceTranslation());
+
+			useEffect(() => {
+				i18n.on('initialized', updateTranslation);
+				i18n.on('languageChanged', updateTranslation);
+
+				return () => {
+					i18n.off('initialized', updateTranslation);
+					i18n.off('languageChanged', updateTranslation);
+				};
+			}, []);
+
 			return (
 				<QueryClientProvider client={queryClient}>
 					<ConnectionStatusContext.Provider value={connectionStatus}>
 						<ServerContext.Provider value={server}>
 							<RouterContext.Provider value={router}>
 								<SettingsContext.Provider value={settings}>
-									<TranslationContext.Provider value={translation}>
-										{/* <SessionProvider>
+									<I18nextProvider i18n={i18n}>
+										<TranslationContext.Provider value={translation}>
+											{/* <SessionProvider>
 												<TooltipProvider>
 														<ToastMessagesProvider>
 																<LayoutProvider>
 																		<AvatarUrlProvider>
 																				<CustomSoundProvider> */}
-										<UserContext.Provider value={user}>
-											{/* <DeviceProvider>*/}
-											<ModalContext.Provider value={modal}>
-												<AuthorizationContext.Provider value={authorization}>
-													{/* <EmojiPickerProvider>
+											<UserContext.Provider value={user}>
+												{/* <DeviceProvider>*/}
+												<ModalContext.Provider value={modal}>
+													<AuthorizationContext.Provider value={authorization}>
+														{/* <EmojiPickerProvider>
 																<OmnichannelRoomIconProvider>
 																		<UserPresenceProvider>*/}
-													<ActionManagerContext.Provider
-														value={{
-															triggerAction: () => Promise.reject(new Error('not implemented')),
-															generateTriggerId: () => '',
-															getUserInteractionPayloadByViewId: () => undefined,
-															handlePayloadUserInteraction: () => undefined,
-															off: () => undefined,
-															on: () => undefined,
-															triggerActionButtonAction: () => Promise.reject(new Error('not implemented')),
-															triggerBlockAction: () => Promise.reject(new Error('not implemented')),
-															triggerCancel: () => Promise.reject(new Error('not implemented')),
-															triggerSubmitView: () => Promise.reject(new Error('not implemented')),
-														}}
-													>
-														{/* <VideoConfProvider>
+														<ActionManagerContext.Provider
+															value={{
+																generateTriggerId: () => '',
+																emitInteraction: () => Promise.reject(new Error('not implemented')),
+																getInteractionPayloadByViewId: () => undefined,
+																handleServerInteraction: () => undefined,
+																off: () => undefined,
+																on: () => undefined,
+																openView: () => undefined,
+																disposeView: () => undefined,
+																notifyBusy: () => undefined,
+																notifyIdle: () => undefined,
+															}}
+														>
+															{/* <VideoConfProvider>
 																	<CallProvider>
 																		<OmnichannelProvider> */}
-														{wrappers.reduce((children, wrapper) => wrapper(children), children)}
-														{/* 		</OmnichannelProvider>
+															{wrappers.reduce((children, wrapper) => wrapper(children), children)}
+															{/* 		</OmnichannelProvider>
 																	</CallProvider>
 																</VideoConfProvider>*/}
-													</ActionManagerContext.Provider>
-													{/* 		</UserPresenceProvider>
+														</ActionManagerContext.Provider>
+														{/* 		</UserPresenceProvider>
 																</OmnichannelRoomIconProvider>
 															</EmojiPickerProvider>*/}
-												</AuthorizationContext.Provider>
-											</ModalContext.Provider>
-											{/* </DeviceProvider>*/}
-										</UserContext.Provider>
-										{/* 					</CustomSoundProvider>
+													</AuthorizationContext.Provider>
+												</ModalContext.Provider>
+												{/* </DeviceProvider>*/}
+											</UserContext.Provider>
+											{/* 					</CustomSoundProvider>
 																</AvatarUrlProvider>
 															</LayoutProvider>
 														</ToastMessagesProvider>
 													</TooltipProvider>
 												</SessionProvider> */}
-									</TranslationContext.Provider>
+										</TranslationContext.Provider>
+									</I18nextProvider>
 								</SettingsContext.Provider>
 							</RouterContext.Provider>
 						</ServerContext.Provider>
@@ -396,5 +467,12 @@ export class MockedAppRootBuilder {
 				</QueryClientProvider>
 			);
 		};
+	}
+
+	buildStoryDecorator(): DecoratorFn {
+		const WrapperComponent = this.build();
+
+		// eslint-disable-next-line react/display-name, react/no-multi-comp
+		return (fn) => <WrapperComponent>{fn()}</WrapperComponent>;
 	}
 }

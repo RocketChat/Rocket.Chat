@@ -7,6 +7,10 @@ export class Utils {
 		this.page = page;
 	}
 
+	get mainContent(): Locator {
+		return this.page.locator('main.main-content');
+	}
+
 	get toastBar(): Locator {
 		return this.page.locator('.rcx-toastbar');
 	}

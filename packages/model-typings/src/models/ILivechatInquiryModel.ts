@@ -19,6 +19,7 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 	setLastMessageByRoomId(rid: string, message: IMessage): Promise<UpdateResult>;
 	findNextAndLock(queueSortBy: OmnichannelSortingMechanismSettingType, department?: string): Promise<ILivechatInquiryRecord | null>;
 	unlock(inquiryId: string): Promise<UpdateResult>;
+	unlockAndQueue(inquiryId: string): Promise<UpdateResult>;
 	unlockAll(): Promise<UpdateResult | Document>;
 	getCurrentSortedQueueAsync(props: {
 		inquiryId?: string;
@@ -40,4 +41,5 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 	findOneByToken(token: string): Promise<ILivechatInquiryRecord | null>;
 	removeDefaultAgentById(inquiryId: string): Promise<UpdateResult | Document>;
 	removeByVisitorToken(token: string): Promise<void>;
+	markInquiryActiveForPeriod(rid: string, period: string): Promise<UpdateResult>;
 }

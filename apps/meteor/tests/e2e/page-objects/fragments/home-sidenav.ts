@@ -10,17 +10,15 @@ export class HomeSidenav {
 	}
 
 	get checkboxPrivateChannel(): Locator {
-		return this.page.locator('#modal-root [data-qa="create-channel-modal"] [data-qa-type="channel-private-toggle"]');
+		return this.page.locator('role=dialog[name="Create Channel"] >> label >> text="Private"');
 	}
 
 	get checkboxEncryption(): Locator {
-		return this.page.locator('role=dialog[name="Create Channel"] >> role=checkbox[name="Encrypted"]').locator('..');
+		return this.page.locator('role=dialog[name="Create Channel"] >> label >> text="Encrypted"');
 	}
 
 	get checkboxReadOnly(): Locator {
-		return this.page.locator(
-			'//*[@id="modal-root"]//*[contains(@class, "rcx-field") and contains(text(), "Read Only")]/../following-sibling::label/i',
-		);
+		return this.page.locator('role=dialog[name="Create Channel"] >> label >> text="Read Only"');
 	}
 
 	get inputChannelName(): Locator {
@@ -41,8 +39,8 @@ export class HomeSidenav {
 
 	async selectPriority(name: string, priority: string) {
 		const sidebarItem = this.getSidebarItemByName(name);
-		await sidebarItem.hover();
-		await sidebarItem.locator(`[data-testid="menu"]`).click();
+		await sidebarItem.focus();
+		await sidebarItem.locator('.rcx-sidebar-item__menu').click();
 		await this.page.locator(`li[value="${priority}"]`).click();
 	}
 
@@ -75,7 +73,10 @@ export class HomeSidenav {
 		await this.page.locator('role=navigation >> role=button[name=Search]').click();
 		await this.page.locator('role=search >> role=searchbox').type(name);
 		await this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`).click();
+		await this.waitForChannel();
+	}
 
+	async waitForChannel(): Promise<void> {
 		await this.page.locator('role=main').waitFor();
 		await this.page.locator('role=main >> role=heading[level=1]').waitFor();
 

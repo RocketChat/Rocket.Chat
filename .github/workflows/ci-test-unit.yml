@@ -6,6 +6,9 @@ on:
       node-version:
         required: true
         type: string
+    secrets:
+      CODECOV_TOKEN:
+        required: false
 
 env:
   MONGO_URL: mongodb://localhost:27017/rocketchat?replicaSet=rs0&directConnection=true
@@ -18,7 +21,7 @@ jobs:
     name: Unit Tests
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
@@ -36,3 +39,4 @@ jobs:
         with:
           flags: unit
           verbose: true
+          token: ${{ secrets.CODECOV_TOKEN }}

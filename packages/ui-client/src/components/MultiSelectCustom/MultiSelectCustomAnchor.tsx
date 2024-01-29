@@ -26,36 +26,42 @@ const MultiSelectCustomAnchor = forwardRef<HTMLElement, MultiSelectCustomAnchorP
 				&:hover,
 				&:active,
 				&:focus {
-					border-color: ${Palette.stroke['stroke-highlight'].toString()};
-					border-width: 2px;
+					cursor: pointer;
+					border-color: ${Palette.stroke['stroke-highlight'].toString()}!important;
 					box-shadow: 0 0 0 2px ${Palette.shadow['shadow-highlight'].toString()};
 				}
 		  `
-		: '';
+		: css`
+				& {
+					cursor: pointer;
+				}
+		  `;
+
+	const isDirty = selectedOptionsCount > 0 && selectedOptionsCount !== maxCount - 1;
 
 	return (
-		<Button
+		<Box
 			ref={ref}
 			onClick={onClick}
 			display='flex'
 			justifyContent='space-between'
+			alignItems='center'
 			flexDirection='row'
-			flexGrow='1'
-			flexShrink='1'
-			borderColor='none'
+			borderColor={Palette.stroke['stroke-light'].toString()}
 			borderWidth='x1'
-			bg='surface-light'
+			borderRadius={4}
+			bg={Palette.surface['surface-light'].toString()}
 			h='x40'
+			w='full'
+			pb={10}
+			pi={16}
+			color={isDirty ? Palette.text['font-default'].toString() : Palette.text['font-annotation'].toString()}
 			className={inputStyle}
 			{...props}
 		>
-			{selectedOptionsCount > 0 && selectedOptionsCount !== maxCount - 1
-				? `${t(selectedOptionsTitle)} (${selectedOptionsCount})`
-				: t(defaultTitle)}
-			<Box mi='x4' display='flex' alignItems='center' justifyContent='center'>
-				<Icon name='chevron-down' fontSize='x20' color='hint' />
-			</Box>
-		</Button>
+			{isDirty ? `${t(selectedOptionsTitle)} (${selectedOptionsCount})` : t(defaultTitle)}
+			<Icon name='chevron-down' fontSize='x20' color='hint' />
+		</Box>
 	);
 });
 

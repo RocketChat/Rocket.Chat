@@ -1068,7 +1068,6 @@
   "Enter_name_here": "Nhập tên ở đây",
   "Enter_Normal": "Chế độ thông thường (gửi kèm với Enter)",
   "Enter_to": "Nhập vào",
-  "Enterprise": "Doanh nghiệp",
   "Entertainment": "Giải trí",
   "Error": "lỗi",
   "Error_404": "Lỗi: 404",
@@ -1811,8 +1810,7 @@
   "meteor_status_connecting": "Đang kết nối...",
   "meteor_status_failed": "Kết nối tới máy chủ thất bại",
   "meteor_status_offline": "Chế độ ngoại tuyến.",
-  "meteor_status_reconnect_in": "Thử kết nối lại trong một giây...",
-  "meteor_status_reconnect_in_plural": "Thử kết nối lại trong {{count}} giây...",
+  "meteor_status_reconnect_in_other": "Thử kết nối lại trong {{count}} giây...",
   "meteor_status_try_now_offline": "Kết nối lại lần nữa",
   "meteor_status_try_now_waiting": "Thử ngay bây giờ",
   "meteor_status_waiting": "Đang đợi kết nối tới máy chủ,",
@@ -1931,6 +1929,8 @@
   "Offline_success_message": "Tin nhắn ngoại tuyến thành công",
   "Offline_unavailable": "Không khả dụng ngoại tuyến",
   "Older_than": "Lớn tuổi hơn",
+  "Omnichannel_Reports_Status_Open": "Mở",
+  "Omnichannel_Reports_Status_Closed": "Đóng",
   "On": "Trên",
   "online": "Trực tuyến",
   "Online": "Trực tuyến",
@@ -2849,5 +2849,7 @@
   "registration.component.form.reasonToJoin": "Lý do tham gia",
   "registration.component.form.invalidConfirmPass": "Xác nhận mật khẩu không khớp với mật khẩu",
   "registration.component.form.confirmPassword": "Xác nhận mật khẩu của bạn",
-  "registration.component.form.sendConfirmationEmail": "Gửi email xác nhận"
+  "registration.component.form.sendConfirmationEmail": "Gửi email xác nhận",
+  "Enterprise": "Doanh nghiệp",
+  "UpgradeToGetMore_engagement-dashboard_Title": "phân tích"
 }

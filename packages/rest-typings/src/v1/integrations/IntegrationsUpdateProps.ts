@@ -9,7 +9,8 @@ export type IntegrationsUpdateProps =
 			integrationId: string;
 			channel: string;
 			scriptEnabled: boolean;
-			overrideDestinationChannelEnabled: boolean;
+			scriptEngine: 'isolated-vm' | 'vm2';
+			overrideDestinationChannelEnabled?: boolean;
 			script?: string;
 			name: string;
 			enabled: boolean;
@@ -32,6 +33,7 @@ export type IntegrationsUpdateProps =
 			token?: string;
 
 			scriptEnabled: boolean;
+			scriptEngine: 'isolated-vm' | 'vm2';
 			script?: string;
 			runOnEdits?: boolean;
 
@@ -70,9 +72,13 @@ const integrationsUpdateSchema = {
 					type: 'boolean',
 					nullable: false,
 				},
+				scriptEngine: {
+					type: 'string',
+					nullable: false,
+				},
 				overrideDestinationChannelEnabled: {
 					type: 'boolean',
-					nullable: false,
+					nullable: true,
 				},
 				script: {
 					type: 'string',
@@ -99,7 +105,7 @@ const integrationsUpdateSchema = {
 					nullable: true,
 				},
 			},
-			required: ['integrationId', 'type', 'channel', 'scriptEnabled', 'overrideDestinationChannelEnabled', 'name', 'enabled'],
+			required: ['integrationId', 'type', 'channel', 'scriptEnabled', 'name', 'enabled'],
 			additionalProperties: true,
 		},
 		{
@@ -162,8 +168,8 @@ const integrationsUpdateSchema = {
 					type: 'boolean',
 					nullable: false,
 				},
-				overrideDestinationChannelEnabled: {
-					type: 'boolean',
+				scriptEngine: {
+					type: 'string',
 					nullable: false,
 				},
 				script: {
@@ -211,7 +217,7 @@ const integrationsUpdateSchema = {
 					nullable: true,
 				},
 			},
-			required: ['type', 'username', 'channel', 'event', 'scriptEnabled', 'overrideDestinationChannelEnabled', 'name', 'enabled'],
+			required: ['type', 'username', 'channel', 'event', 'scriptEnabled', 'name', 'enabled'],
 			additionalProperties: false,
 		},
 	],

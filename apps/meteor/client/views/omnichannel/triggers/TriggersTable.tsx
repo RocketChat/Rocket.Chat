@@ -1,11 +1,11 @@
-import { Callout, Pagination } from '@rocket.chat/fuselage';
+import { Pagination } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, hashQueryKey } from '@tanstack/react-query';
-import type { MutableRefObject } from 'react';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
-import GenericNoResults from '../../../components/GenericNoResults/GenericNoResults';
+import GenericError from '../../../components/GenericError';
+import GenericNoResults from '../../../components/GenericNoResults';
 import {
 	GenericTable,
 	GenericTableHeader,
@@ -16,7 +16,7 @@ import {
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import TriggersRow from './TriggersRow';
 
-const TriggersTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
+const TriggersTable = () => {
 	const t = useTranslation();
 	const router = useRouter();
 
@@ -34,20 +34,12 @@ const TriggersTable = ({ reload }: { reload: MutableRefObject<() => void> }) => 
 	const [defaultQuery] = useState(hashQueryKey([query]));
 	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
 
-	useEffect(() => {
-		reload.current = refetch;
-	}, [reload, refetch]);
-
-	if (isError) {
-		return <Callout>{t('Error')}</Callout>;
-	}
-
 	const headers = (
 		<>
 			<GenericTableHeaderCell>{t('Name')}</GenericTableHeaderCell>
 			<GenericTableHeaderCell>{t('Description')}</GenericTableHeaderCell>
 			<GenericTableHeaderCell>{t('Enabled')}</GenericTableHeaderCell>
-			<GenericTableHeaderCell width='x60'>{t('Remove')}</GenericTableHeaderCell>
+			<GenericTableHeaderCell width='x60' />
 		</>
 	);
 
@@ -94,6 +86,7 @@ const TriggersTable = ({ reload }: { reload: MutableRefObject<() => void> }) => 
 					/>
 				</>
 			)}
+			{isError && <GenericError buttonAction={refetch} />}
 		</>
 	);
 };

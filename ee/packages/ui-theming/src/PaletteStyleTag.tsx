@@ -1,9 +1,8 @@
-import { memo } from 'react';
+import React, { memo } from 'react';
 import { createPortal } from 'react-dom';
 
 import { codeBlock } from './codeBlockStyles';
 import { convertToCss } from './helpers/convertToCss';
-import { filterOnlyChangedColors } from './helpers/filterOnlyChangedColors';
 import { useCreateStyleContainer } from './hooks/useCreateStyleContainer';
 import { useThemeMode } from './hooks/useThemeMode';
 import { defaultPalette } from './palette';
@@ -20,9 +19,9 @@ export const PaletteStyleTag = memo(function PaletteStyleTag() {
 		if (theme === 'high-contrast') {
 			return paletteHighContrast;
 		}
-		return {};
+		return defaultPalette;
 	};
-	const palette = convertToCss(filterOnlyChangedColors(defaultPalette, getPalette()), '.rcx-content--main');
+	const palette = convertToCss(getPalette(), '.rcx-content--main, .rcx-tile');
 
-	return createPortal(theme === 'dark' ? palette + codeBlock : palette, useCreateStyleContainer('main-palette'));
+	return <>{createPortal(theme === 'dark' ? palette + codeBlock : palette, useCreateStyleContainer('main-palette'))}</>;
 });

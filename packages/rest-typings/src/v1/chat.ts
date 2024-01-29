@@ -1,4 +1,4 @@
-import type { IMessage, IRoom, MessageAttachment, ReadReceipt, OtrSystemMessages } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, MessageAttachment, ReadReceipt, OtrSystemMessages, MessageUrl } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
@@ -9,6 +9,7 @@ const ajv = new Ajv({
 
 type ChatSendMessage = {
 	message: Partial<IMessage>;
+	previewUrls?: string[];
 };
 
 const chatSendMessageSchema = {
@@ -63,6 +64,13 @@ const chatSendMessageSchema = {
 					nullable: true,
 				},
 			},
+		},
+		previewUrls: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+			nullable: true,
 		},
 	},
 	required: ['message'],
@@ -430,6 +438,7 @@ type ChatUpdate = {
 	roomId: IRoom['_id'];
 	msgId: string;
 	text: string;
+	previewUrls?: string[];
 };
 
 const ChatUpdateSchema = {
@@ -443,6 +452,13 @@ const ChatUpdateSchema = {
 		},
 		text: {
 			type: 'string',
+		},
+		previewUrls: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+			nullable: true,
 		},
 	},
 	required: ['roomId', 'msgId', 'text'],
@@ -681,8 +697,8 @@ const ChatGetDeletedMessagesSchema = {
 export const isChatGetDeletedMessagesProps = ajv.compile<ChatGetDeletedMessages>(ChatGetDeletedMessagesSchema);
 
 type ChatPostMessage =
-	| { roomId: string; text?: string; alias?: string; emoji?: string; avatar?: string; attachments?: MessageAttachment[] }
-	| { channel: string; text?: string; alias?: string; emoji?: string; avatar?: string; attachments?: MessageAttachment[] };
+	| { roomId: string | string[]; text?: string; alias?: string; emoji?: string; avatar?: string; attachments?: MessageAttachment[] }
+	| { channel: string | string[]; text?: string; alias?: string; emoji?: string; avatar?: string; attachments?: MessageAttachment[] };
 
 const ChatPostMessageSchema = {
 	oneOf: [
@@ -690,7 +706,15 @@ const ChatPostMessageSchema = {
 			type: 'object',
 			properties: {
 				roomId: {
-					type: 'string',
+					oneOf: [
+						{ type: 'string' },
+						{
+							type: 'array',
+							items: {
+								type: 'string',
+							},
+						},
+					],
 				},
 				text: {
 					type: 'string',
@@ -723,7 +747,15 @@ const ChatPostMessageSchema = {
 			type: 'object',
 			properties: {
 				channel: {
-					type: 'string',
+					oneOf: [
+						{ type: 'string' },
+						{
+							type: 'array',
+							items: {
+								type: 'string',
+							},
+						},
+					],
 				},
 				text: {
 					type: 'string',
@@ -756,6 +788,27 @@ const ChatPostMessageSchema = {
 };
 
 export const isChatPostMessageProps = ajv.compile<ChatPostMessage>(ChatPostMessageSchema);
+
+type ChatGetURLPreview = {
+	roomId: IRoom['_id'];
+	url: string;
+};
+
+const ChatGetURLPreviewSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+		url: {
+			type: 'string',
+		},
+	},
+	required: ['roomId', 'url'],
+	additionalProperties: false,
+};
+
+export const isChatGetURLPreviewProps = ajv.compile<ChatGetURLPreview>(ChatGetURLPreviewSchema);
 
 export type ChatEndpoints = {
 	'/v1/chat.sendMessage': {
@@ -902,5 +955,8 @@ export type ChatEndpoints = {
 	};
 	'/v1/chat.otr': {
 		POST: (params: { roomId: string; type: OtrSystemMessages }) => void;
+	};
+	'/v1/chat.getURLPreview': {
+		GET: (params: ChatGetURLPreview) => { urlPreview: MessageUrl };
 	};
 };

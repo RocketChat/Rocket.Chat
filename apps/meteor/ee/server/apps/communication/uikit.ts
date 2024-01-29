@@ -1,6 +1,6 @@
-import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
-import { UIKitIncomingInteractionType } from '@rocket.chat/apps-engine/definition/uikit';
+import type { UiKitCoreAppPayload } from '@rocket.chat/core-services';
 import { UiKitCoreApp } from '@rocket.chat/core-services';
+import type { OperationParams, UrlParams } from '@rocket.chat/rest-typings';
 import cors from 'cors';
 import type { Request, Response } from 'express';
 import express from 'express';
@@ -91,41 +91,60 @@ const corsOptions: cors.CorsOptions = {
 
 apiServer.use('/api/apps/ui.interaction/', cors(corsOptions), router); // didn't have the rateLimiter option
 
-const getPayloadForType = (type: UIKitIncomingInteractionType, req: Request) => {
-	if (type === UIKitIncomingInteractionType.BLOCK) {
-		const { type, actionId, triggerId, mid, rid, payload, container } = req.body;
+type UiKitUserInteractionRequest = Request<
+	UrlParams<'/apps/ui.interaction/:id'>,
+	any,
+	OperationParams<'POST', '/apps/ui.interaction/:id'> & {
+		visitor?: {
+			id: string;
+			username: string;
+			name?: string;
+			department?: string;
+			updatedAt?: Date;
+			token: string;
+			phone?: { phoneNumber: string }[] | null;
+			visitorEmails?: { address: string }[];
+			livechatData?: Record<string, unknown>;
+			status?: 'online' | 'away' | 'offline' | 'busy' | 'disabled';
+		};
+	}
+>;
 
-		const { visitor } = req.body;
+const getCoreAppPayload = (req: UiKitUserInteractionRequest): UiKitCoreAppPayload => {
+	const { id: appId } = req.params;
+
+	if (req.body.type === 'blockAction') {
 		const { user } = req;
-
-		const room = rid; // orch.getConverters().get('rooms').convertById(rid);
-		const message = mid;
+		const { type, actionId, triggerId, payload, container, visitor } = req.body;
+		const message = 'mid' in req.body ? req.body.mid : undefined;
+		const room = 'rid' in req.body ? req.body.rid : undefined;
 
 		return {
+			appId,
 			type,
-			container,
 			actionId,
-			message,
 			triggerId,
+			container,
+			message,
 			payload,
 			user,
 			visitor,
 			room,
-		} as const;
+		};
 	}
 
-	if (type === UIKitIncomingInteractionType.VIEW_CLOSED) {
+	if (req.body.type === 'viewClosed') {
+		const { user } = req;
 		const {
 			type,
-			actionId,
 			payload: { view, isCleared },
+			triggerId,
 		} = req.body;
 
-		const { user } = req;
-
 		return {
+			appId,
+			triggerId,
 			type,
-			actionId,
 			user,
 			payload: {
 				view,
@@ -134,12 +153,12 @@ const getPayloadForType = (type: UIKitIncomingInteractionType, req: Request) => 
 		};
 	}
 
-	if (type === UIKitIncomingInteractionType.VIEW_SUBMIT) {
+	if (req.body.type === 'viewSubmit') {
+		const { user } = req;
 		const { type, actionId, triggerId, payload } = req.body;
 
-		const { user } = req;
-
 		return {
+			appId,
 			type,
 			actionId,
 			triggerId,
@@ -151,24 +170,18 @@ const getPayloadForType = (type: UIKitIncomingInteractionType, req: Request) => 
 	throw new Error('Type not supported');
 };
 
-router.post('/:appId', async (req, res, next) => {
-	const { appId } = req.params;
+router.post('/:id', async (req: UiKitUserInteractionRequest, res, next) => {
+	const { id: appId } = req.params;
 
-	const isCore = await UiKitCoreApp.isRegistered(appId);
-	if (!isCore) {
+	const isCoreApp = await UiKitCoreApp.isRegistered(appId);
+	if (!isCoreApp) {
 		return next();
 	}
 
-	// eslint-disable-next-line prefer-destructuring
-	const type: UIKitIncomingInteractionType = req.body.type;
-
 	try {
-		const payload = {
-			...getPayloadForType(type, req),
-			appId,
-		};
+		const payload = getCoreAppPayload(req);
 
-		const result = await (UiKitCoreApp as any)[type](payload); // TO-DO: fix type
+		const result = await UiKitCoreApp[payload.type](payload);
 
 		// Using ?? to always send something in the response, even if the app had no result.
 		res.send(result ?? {});
@@ -178,16 +191,24 @@ router.post('/:appId', async (req, res, next) => {
 	}
 });
 
-const appsRoutes =
-	(orch: AppServerOrchestrator) =>
-	async (req: Request, res: Response): Promise<void> => {
-		const { appId } = req.params;
+export class AppUIKitInteractionApi {
+	orch: AppServerOrchestrator;
 
-		const { type } = req.body;
+	constructor(orch: AppServerOrchestrator) {
+		this.orch = orch;
 
-		switch (type) {
-			case UIKitIncomingInteractionType.BLOCK: {
-				const { type, actionId, triggerId, mid, rid, payload, container } = req.body;
+		router.post('/:id', this.routeHandler);
+	}
+
+	private routeHandler = async (req: UiKitUserInteractionRequest, res: Response): Promise<void> => {
+		const { orch } = this;
+		const { id: appId } = req.params;
+
+		switch (req.body.type) {
+			case 'blockAction': {
+				const { type, actionId, triggerId, payload, container } = req.body;
+				const mid = 'mid' in req.body ? req.body.mid : undefined;
+				const rid = 'rid' in req.body ? req.body.rid : undefined;
 
 				const { visitor } = req.body;
 				const room = await orch.getConverters()?.get('rooms').convertById(rid);
@@ -208,7 +229,7 @@ const appsRoutes =
 				};
 
 				try {
-					const eventInterface = !visitor ? AppInterface.IUIKitInteractionHandler : AppInterface.IUIKitLivechatInteractionHandler;
+					const eventInterface = !visitor ? 'IUIKitInteractionHandler' : 'IUIKitLivechatInteractionHandler';
 
 					const result = await orch.triggerEvent(eventInterface, action);
 
@@ -220,10 +241,9 @@ const appsRoutes =
 				break;
 			}
 
-			case UIKitIncomingInteractionType.VIEW_CLOSED: {
+			case 'viewClosed': {
 				const {
 					type,
-					actionId,
 					payload: { view, isCleared },
 				} = req.body;
 
@@ -232,7 +252,6 @@ const appsRoutes =
 				const action = {
 					type,
 					appId,
-					actionId,
 					user,
 					payload: {
 						view,
@@ -251,7 +270,7 @@ const appsRoutes =
 				break;
 			}
 
-			case UIKitIncomingInteractionType.VIEW_SUBMIT: {
+			case 'viewSubmit': {
 				const { type, actionId, triggerId, payload } = req.body;
 
 				const user = orch.getConverters()?.get('users').convertToApp(req.user);
@@ -276,7 +295,7 @@ const appsRoutes =
 				break;
 			}
 
-			case UIKitIncomingInteractionType.ACTION_BUTTON: {
+			case 'actionButton': {
 				const {
 					type,
 					actionId,
@@ -302,7 +321,7 @@ const appsRoutes =
 					tmid,
 					payload: {
 						context,
-						...(msgText && { message: msgText }),
+						...(msgText ? { message: msgText } : {}),
 					},
 				};
 
@@ -324,13 +343,4 @@ const appsRoutes =
 
 		// TODO: validate payloads per type
 	};
-
-export class AppUIKitInteractionApi {
-	orch: AppServerOrchestrator;
-
-	constructor(orch: AppServerOrchestrator) {
-		this.orch = orch;
-
-		router.post('/:appId', appsRoutes(orch));
-	}
 }

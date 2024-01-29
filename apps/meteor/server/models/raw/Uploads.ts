@@ -1,5 +1,5 @@
 // TODO: Lib imports should not exists inside the raw models
-import type { IUpload, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { IUpload, RocketChatRecordDeleted, IRoom } from '@rocket.chat/core-typings';
 import type { FindPaginated, IUploadsModel } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { Collection, FindCursor, Db, IndexDescription, WithId, Filter, FindOptions } from 'mongodb';
@@ -50,11 +50,34 @@ export class UploadsRaw extends BaseUploadModelRaw implements IUploadsModel {
 	findPaginatedWithoutThumbs(query: Filter<IUpload> = {}, options?: FindOptions<IUpload>): FindPaginated<FindCursor<WithId<IUpload>>> {
 		return this.findPaginated(
 			{
+				typeGroup: { $ne: 'thumb' },
 				...query,
 				_hidden: { $ne: true },
-				typeGroup: { $ne: 'thumb' },
 			},
 			options,
+		);
+	}
+
+	findImagesByRoomId(
+		rid: IRoom['_id'],
+		uploadedAt?: Date,
+		options: Omit<FindOptions<IUpload>, 'sort'> = {},
+	): FindPaginated<FindCursor<WithId<IUpload>>> {
+		return this.findPaginated(
+			{
+				rid,
+				_hidden: { $ne: true },
+				typeGroup: 'image',
+				...(Boolean(uploadedAt) && {
+					uploadedAt: {
+						$lte: uploadedAt,
+					},
+				}),
+			},
+			{
+				...options,
+				sort: { uploadedAt: -1 },
+			},
 		);
 	}
 }

@@ -1,12 +1,17 @@
-import type { ILivechatDepartment, ILivechatBusinessHour } from '@rocket.chat/core-typings';
+import type { AtLeast } from '@rocket.chat/core-typings';
+import { type ILivechatDepartment, type ILivechatBusinessHour, LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.chat/models';
 import moment from 'moment';
 
 import { businessHourManager } from '../../../../../app/livechat/server/business-hour';
 import type { IBusinessHourBehavior } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
 import { AbstractBusinessHourBehavior } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
-import { filterBusinessHoursThatMustBeOpened } from '../../../../../app/livechat/server/business-hour/Helper';
+import {
+	filterBusinessHoursThatMustBeOpened,
+	filterBusinessHoursThatMustBeOpenedByDay,
+} from '../../../../../app/livechat/server/business-hour/Helper';
 import { settings } from '../../../../../app/settings/server';
+import { isTruthy } from '../../../../../lib/isTruthy';
 import { bhLogger } from '../lib/logger';
 import { closeBusinessHour, openBusinessHour, removeBusinessHourByAgentIds } from './Helper';
 
@@ -40,7 +45,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 			},
 		});
 		const businessHoursToOpen = await filterBusinessHoursThatMustBeOpened(activeBusinessHours);
-		bhLogger.debug({
+		bhLogger.info({
 			msg: 'Starting Multiple Business Hours',
 			totalBusinessHoursToOpen: businessHoursToOpen.length,
 			top10BusinessHoursToOpen: businessHoursToOpen.slice(0, 10),
@@ -76,8 +81,8 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 
 	async afterSaveBusinessHours(businessHourData: IBusinessHoursExtraProperties): Promise<void> {
 		const departments = businessHourData.departmentsToApplyBusinessHour?.split(',').filter(Boolean);
-		const currentDepartments = businessHourData.departments?.map((dept: any) => dept._id);
-		const toRemove = [...(currentDepartments || []).filter((dept: Record<string, any>) => !departments.includes(dept._id))];
+		const currentDepartments = businessHourData.departments?.map((dept) => dept._id);
+		const toRemove = [...(currentDepartments || []).filter((dept) => !departments.includes(dept))];
 		await this.removeBusinessHourFromRemovedDepartmentsUsersIfNeeded(businessHourData._id, toRemove);
 		const businessHour = await this.BusinessHourRepository.findOneById(businessHourData._id);
 		if (!businessHour) {
@@ -131,6 +136,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		if (!businessHourToOpen.length) {
 			return options;
 		}
+
 		await this.UsersRepository.addBusinessHourByAgentIds(agentsId, businessHour._id);
 		await this.UsersRepository.makeAgentsWithinBusinessHourAvailable(agentsId);
 
@@ -148,8 +154,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		return this.handleRemoveAgentsFromDepartments(department, agentsId, options);
 	}
 
-	async onRemoveDepartment(options: { department: ILivechatDepartment; agentsIds: string[] }): Promise<any> {
-		bhLogger.debug(`onRemoveDepartment: department ${options.department._id} removed`);
+	async onRemoveDepartment(options: { department: AtLeast<ILivechatDepartment, '_id' | 'businessHourId'>; agentsIds: string[] }) {
 		const { department, agentsIds } = options;
 		if (!department || !agentsIds?.length) {
 			return options;
@@ -157,12 +162,8 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		return this.onDepartmentDisabled(department);
 	}
 
-	async onDepartmentDisabled(department: ILivechatDepartment): Promise<void> {
+	async onDepartmentDisabled(department: AtLeast<ILivechatDepartment, 'businessHourId' | '_id'>): Promise<void> {
 		if (!department.businessHourId) {
-			bhLogger.debug({
-				msg: 'onDepartmentDisabled: department has no business hour',
-				departmentId: department._id,
-			});
 			return;
 		}
 
@@ -182,7 +183,6 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		// cleanup user's cache for default business hour and this business hour
 		const defaultBH = await this.BusinessHourRepository.findOneDefaultBusinessHour();
 		if (!defaultBH) {
-			bhLogger.error('onDepartmentDisabled: default business hour not found');
 			throw new Error('Default business hour not found');
 		}
 		await this.UsersRepository.closeAgentsBusinessHoursByBusinessHourIds([businessHour._id, defaultBH._id]);
@@ -199,64 +199,132 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 
 			businessHour = await this.BusinessHourRepository.findOneById(department.businessHourId);
 			if (!businessHour) {
-				bhLogger.error({
-					msg: 'onDepartmentDisabled: business hour not found',
-					businessHourId: department.businessHourId,
-				});
-
 				throw new Error(`Business hour ${department.businessHourId} not found`);
 			}
 		}
 
 		// start default business hour and this BH if needed
 		if (!settings.get('Livechat_enable_business_hours')) {
-			bhLogger.debug(`onDepartmentDisabled: business hours are disabled. skipping`);
 			return;
 		}
 		const businessHourToOpen = await filterBusinessHoursThatMustBeOpened([businessHour, defaultBH]);
 		for await (const bh of businessHourToOpen) {
-			bhLogger.debug({
-				msg: 'onDepartmentDisabled: opening business hour',
-				businessHourId: bh._id,
-			});
 			await openBusinessHour(bh, false);
 		}
-
 		await Users.updateLivechatStatusBasedOnBusinessHours();
-
 		await businessHourManager.restartCronJobsIfNecessary();
-
-		bhLogger.debug({
-			msg: 'onDepartmentDisabled: successfully processed department disabled event',
-			departmentId: department._id,
-		});
 	}
 
-	async onDepartmentArchived(department: Pick<ILivechatDepartment, '_id'>): Promise<void> {
+	async onDepartmentArchived(department: Pick<ILivechatDepartment, '_id' | 'businessHourId'>): Promise<void> {
 		bhLogger.debug('Processing department archived event on multiple business hours', department);
-		const dbDepartment = await LivechatDepartment.findOneById(department._id, { projection: { businessHourId: 1, _id: 1 } });
-
-		if (!dbDepartment) {
-			bhLogger.error(`No department found with id: ${department._id} when archiving it`);
-			return;
-		}
-
-		return this.onDepartmentDisabled(dbDepartment);
+		return this.onDepartmentDisabled(department);
 	}
 
 	allowAgentChangeServiceStatus(agentId: string): Promise<boolean> {
 		return this.UsersRepository.isAgentWithinBusinessHours(agentId);
 	}
 
+	async onNewAgentCreated(agentId: string): Promise<void> {
+		await this.applyAnyOpenBusinessHourToAgent(agentId);
+
+		await Users.updateLivechatStatusBasedOnBusinessHours([agentId]);
+	}
+
+	private async applyAnyOpenBusinessHourToAgent(agentId: string): Promise<void> {
+		const currentTime = moment().utc();
+		const day = currentTime.format('dddd');
+		const allActiveBusinessHoursForEntireWeek = await this.BusinessHourRepository.findActiveBusinessHours({
+			projection: {
+				workHours: 1,
+				timezone: 1,
+				type: 1,
+				active: 1,
+			},
+		});
+		const openedBusinessHours = await filterBusinessHoursThatMustBeOpenedByDay(allActiveBusinessHoursForEntireWeek, day);
+		if (!openedBusinessHours.length) {
+			bhLogger.debug({
+				msg: 'Business hour status check failed for agent. No opened business hour found for the current day',
+				agentId,
+			});
+			return;
+		}
+
+		const agentDepartments = await LivechatDepartmentAgents.find(
+			{ departmentEnabled: true, agentId },
+			{ projection: { agentId: 1, departmentId: 1 } },
+		).toArray();
+
+		if (!agentDepartments.length) {
+			// check if default businessHour is active
+			const isDefaultBHActive = openedBusinessHours.find(({ type }) => type === LivechatBusinessHourTypes.DEFAULT);
+			if (isDefaultBHActive?._id) {
+				await Users.openAgentBusinessHoursByBusinessHourIdsAndAgentId([isDefaultBHActive._id], agentId);
+				return;
+			}
+
+			bhLogger.debug({
+				msg: 'Business hour status check failed for agent. Found default business hour to be inactive',
+				agentId,
+			});
+			return;
+		}
+
+		// check if any one these departments have a opened business hour linked to it
+		const departments = (await LivechatDepartment.findInIds(
+			agentDepartments.map(({ departmentId }) => departmentId),
+			{ projection: { _id: 1, businessHourId: 1 } },
+		).toArray()) as Pick<ILivechatDepartment, '_id' | 'businessHourId'>[];
+
+		const departmentsWithActiveBH = departments.filter(
+			({ businessHourId }) => businessHourId && openedBusinessHours.findIndex(({ _id }) => _id === businessHourId) !== -1,
+		);
+
+		if (!departmentsWithActiveBH.length) {
+			// No opened business hour found for any of the departments connected to the agent
+			// check if this agent has any departments that is connected to any non-default business hour
+			// if no such departments found then check default BH and if it is active, then allow the agent to change service status
+			const hasAtLeastOneDepartmentWithNonDefaultBH = departments.some(({ businessHourId }) => {
+				// check if business hour is active
+				return businessHourId && allActiveBusinessHoursForEntireWeek.findIndex(({ _id }) => _id === businessHourId) !== -1;
+			});
+			if (!hasAtLeastOneDepartmentWithNonDefaultBH) {
+				const isDefaultBHActive = openedBusinessHours.find(({ type }) => type === LivechatBusinessHourTypes.DEFAULT);
+				if (isDefaultBHActive?._id) {
+					await Users.openAgentBusinessHoursByBusinessHourIdsAndAgentId([isDefaultBHActive._id], agentId);
+					return;
+				}
+			}
+			bhLogger.debug({
+				msg: 'Business hour status check failed for agent. No opened business hour found for any of the departments connected to the agent',
+				agentId,
+			});
+			return;
+		}
+
+		const activeBusinessHoursForAgent = departmentsWithActiveBH.map(({ businessHourId }) => businessHourId).filter(isTruthy);
+		await Users.openAgentBusinessHoursByBusinessHourIdsAndAgentId(activeBusinessHoursForAgent, agentId);
+
+		bhLogger.debug({
+			msg: `Business hour status check passed for agent. Found opened business hour for departments connected to the agent`,
+			activeBusinessHoursForAgent,
+		});
+	}
+
 	private async handleRemoveAgentsFromDepartments(department: Record<string, any>, agentsIds: string[], options: any): Promise<any> {
 		const agentIdsWithoutDepartment: string[] = [];
 		const agentIdsToRemoveCurrentBusinessHour: string[] = [];
-		for await (const agentId of agentsIds) {
-			if ((await LivechatDepartmentAgents.findByAgentId(agentId).count()) === 0) {
+
+		const [agentsWithDepartment, [agentsOfDepartment] = []] = await Promise.all([
+			LivechatDepartmentAgents.findByAgentIds(agentsIds, { projection: { agentId: 1 } }).toArray(),
+			LivechatDepartment.findAgentsByBusinessHourId(department.businessHourId).toArray(),
+		]);
+
+		for (const agentId of agentsIds) {
+			if (!agentsWithDepartment.find((agent) => agent.agentId === agentId)) {
 				agentIdsWithoutDepartment.push(agentId);
 			}
-			// TODO: We're doing a full fledged aggregation with lookups and getting the whole array just for getting the length? :(
-			if (!(await LivechatDepartmentAgents.findAgentsByAgentIdAndBusinessHourId(agentId, department.businessHourId)).length) {
+			if (!agentsOfDepartment?.agentIds?.find((agent) => agent === agentId)) {
 				agentIdsToRemoveCurrentBusinessHour.push(agentId);
 			}
 		}
@@ -289,7 +357,9 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		if (!departmentsToRemove.length) {
 			return;
 		}
-		const agentIds = (await LivechatDepartmentAgents.findByDepartmentIds(departmentsToRemove).toArray()).map((dept: any) => dept.agentId);
+		const agentIds = (
+			await LivechatDepartmentAgents.findByDepartmentIds(departmentsToRemove, { projection: { agentId: 1 } }).toArray()
+		).map((dept) => dept.agentId);
 		await removeBusinessHourByAgentIds(agentIds, businessHourId);
 	}
 

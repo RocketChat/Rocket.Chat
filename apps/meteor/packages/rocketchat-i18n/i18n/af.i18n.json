@@ -973,7 +973,6 @@
   "Enter_name_here": "Voer naam hier in",
   "Enter_Normal": "Normale modus (stuur met Enter)",
   "Enter_to": "Tik in",
-  "Enterprise": "onderneming",
   "Entertainment": "Vermaak",
   "Error": "fout",
   "Error_404": "Fout: 404",
@@ -1831,6 +1830,8 @@
   "Offline_success_message": "Vanlyn Sukses Boodskap",
   "Offline_unavailable": "Vanlyn is nie beskikbaar nie",
   "Older_than": "Ouer as",
+  "Omnichannel_Reports_Status_Open": "oop",
+  "Omnichannel_Reports_Status_Closed": "gesluit",
   "On": "op",
   "online": "aanlyn",
   "Online": "Online",
@@ -2755,5 +2756,7 @@
   "registration.component.form.reasonToJoin": "Rede om deel te neem",
   "registration.component.form.invalidConfirmPass": "Die wagwoord bevestiging pas nie by die wagwoord nie",
   "registration.component.form.confirmPassword": "Bevestig jou wagwoord",
-  "registration.component.form.sendConfirmationEmail": "Stuur bevestiging e-pos"
+  "registration.component.form.sendConfirmationEmail": "Stuur bevestiging e-pos",
+  "Enterprise": "onderneming",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Analytics"
 }

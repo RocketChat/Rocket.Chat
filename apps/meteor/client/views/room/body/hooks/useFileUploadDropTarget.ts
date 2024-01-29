@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import type React from 'react';
 import { useCallback, useMemo } from 'react';
 
+import { useIsRoomOverMacLimit } from '../../../../hooks/omnichannel/useIsRoomOverMacLimit';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { useChat } from '../../contexts/ChatContext';
@@ -24,6 +25,8 @@ export const useFileUploadDropTarget = (): readonly [
 	const room = useRoom();
 	const { triggerProps, overlayProps } = useDropTarget();
 
+	const isRoomOverMacLimit = useIsRoomOverMacLimit(room);
+
 	const t = useTranslation();
 
 	const fileUploadEnabled = useSetting('FileUpload_Enabled') as boolean;
@@ -37,7 +40,21 @@ export const useFileUploadDropTarget = (): readonly [
 	const onFileDrop = useMutableCallback(async (files: File[]) => {
 		const { mime } = await import('../../../../../app/utils/lib/mimeTypes');
 
-		const uploads = Array.from(files).map((file) => {
+		const getUniqueFiles = () => {
+			const uniqueFiles: File[] = [];
+			const st: Set<number> = new Set();
+			files.forEach((file) => {
+				const key = file.size;
+				if (!st.has(key)) {
+					uniqueFiles.push(file);
+					st.add(key);
+				}
+			});
+			return uniqueFiles;
+		};
+		const uniqueFiles = getUniqueFiles();
+
+		const uploads = Array.from(uniqueFiles).map((file) => {
 			Object.defineProperty(file, 'type', { value: mime.lookup(file.name) });
 			return file;
 		});
@@ -46,7 +63,7 @@ export const useFileUploadDropTarget = (): readonly [
 	});
 
 	const allOverlayProps = useMemo(() => {
-		if (!fileUploadEnabled) {
+		if (!fileUploadEnabled || isRoomOverMacLimit) {
 			return {
 				enabled: false,
 				reason: t('FileUpload_Disabled'),
@@ -67,7 +84,7 @@ export const useFileUploadDropTarget = (): readonly [
 			onFileDrop,
 			...overlayProps,
 		} as const;
-	}, [fileUploadAllowedForUser, fileUploadEnabled, onFileDrop, overlayProps, t]);
+	}, [fileUploadAllowedForUser, fileUploadEnabled, isRoomOverMacLimit, onFileDrop, overlayProps, t]);
 
 	return [triggerProps, allOverlayProps] as const;
 };

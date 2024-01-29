@@ -54,9 +54,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				sparse: true,
 			},
 			{
-				key: { t: 1 },
-			},
-			{
 				key: { 'u._id': 1 },
 			},
 			{
@@ -95,6 +92,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				},
 				sparse: true,
 			},
+			{ key: { t: 1, ts: 1 } },
 		];
 	}
 
@@ -564,6 +562,15 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findOne(query, options);
 	}
 
+	findOneByJoinCodeAndId(joinCode: string, rid: IRoom['_id'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
+		const query: Filter<IRoom> = {
+			_id: rid,
+			joinCode,
+		};
+
+		return this.findOne(query, options);
+	}
+
 	async findOneByNonValidatedName(name: NonNullable<IRoom['name'] | IRoom['fname']>, options: FindOptions<IRoom> = {}) {
 		const room = await this.findOneByNameOrFname(name, options);
 		if (room) {
@@ -671,6 +678,16 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	findByE2E(options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
 		return this.find(
 			{
+				encrypted: true,
+			},
+			options,
+		);
+	}
+
+	findE2ERoomById(roomId: IRoom['_id'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
+		return this.findOne(
+			{
+				_id: roomId,
 				encrypted: true,
 			},
 			options,
@@ -1348,7 +1365,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			t: {
 				$in: types,
 			},
-			...(defaultValue ? { default: true } : { default: { $exists: false } }),
+			...(defaultValue ? { default: true } : { default: { $ne: true } }),
 		};
 
 		return this.find(query, options);
@@ -1558,20 +1575,13 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	async resetLastMessageById(_id: IRoom['_id'], lastMessage: IRoom['lastMessage']): Promise<UpdateResult> {
+	async resetLastMessageById(_id: IRoom['_id'], lastMessage: IRoom['lastMessage'] | null, msgCountDelta?: number): Promise<UpdateResult> {
 		const query: Filter<IRoom> = { _id };
 
-		const update: UpdateFilter<IRoom> = lastMessage
-			? {
-					$set: {
-						lastMessage,
-					},
-			  }
-			: {
-					$unset: {
-						lastMessage: 1,
-					},
-			  };
+		const update = {
+			...(lastMessage ? { $set: { lastMessage } } : { $unset: { lastMessage: 1 as const } }),
+			...(msgCountDelta ? { $inc: { msgs: msgCountDelta } } : {}),
+		};
 
 		return this.updateOne(query, update);
 	}
@@ -1707,8 +1717,32 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	unmuteUsernameByRoomId(_id: IRoom['_id'], username: IUser['username']): Promise<UpdateResult> {
+	muteReadOnlyUsernameByRoomId(_id: IRoom['_id'], username: IUser['username']): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id, ro: true };
+
+		const update: UpdateFilter<IRoom> = {
+			$pull: {
+				unmuted: username,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	unmuteMutedUsernameByRoomId(_id: IRoom['_id'], username: IUser['username']): Promise<UpdateResult> {
 		const query: Filter<IRoom> = { _id };
+
+		const update: UpdateFilter<IRoom> = {
+			$pull: {
+				muted: username,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	unmuteReadOnlyUsernameByRoomId(_id: string, username: string): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id, ro: true };
 
 		const update: UpdateFilter<IRoom> = {
 			$pull: {
@@ -1738,17 +1772,11 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	saveDefaultById(_id: IRoom['_id'], defaultValue: boolean): Promise<UpdateResult> {
 		const query: Filter<IRoom> = { _id };
 
-		const update: UpdateFilter<IRoom> = defaultValue
-			? {
-					$set: {
-						default: true,
-					},
-			  }
-			: {
-					$unset: {
-						default: 1,
-					},
-			  };
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				default: defaultValue,
+			},
+		};
 
 		return this.updateOne(query, update);
 	}

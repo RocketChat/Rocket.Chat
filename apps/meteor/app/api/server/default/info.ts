@@ -8,7 +8,6 @@ API.default.addRoute(
 	{
 		async get() {
 			const user = await getLoggedInUser(this.request);
-
 			return API.v1.success(await getServerInfo(user?._id));
 		},
 	},

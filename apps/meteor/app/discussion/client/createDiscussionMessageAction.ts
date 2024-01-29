@@ -19,6 +19,7 @@ Meteor.startup(() => {
 			id: 'start-discussion',
 			icon: 'discussion',
 			label: 'Discussion_start',
+			type: 'communication',
 			context: ['message', 'message-mobile', 'videoconf'],
 			async action(_, props) {
 				const { message = messageArgs(this).msg, room } = props;
@@ -58,7 +59,7 @@ Meteor.startup(() => {
 					return false;
 				}
 
-				return uid !== user._id ? hasPermission('start-discussion-other-user') : hasPermission('start-discussion');
+				return uid !== user._id ? hasPermission('start-discussion-other-user', room._id) : hasPermission('start-discussion', room._id);
 			},
 			order: 1,
 			group: 'menu',

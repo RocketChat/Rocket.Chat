@@ -995,7 +995,6 @@
   "Enter_name_here": "在此输入姓名",
   "Enter_Normal": "普通模式（使用回车发送）",
   "Enter_to": "进入",
-  "Enterprise": "企业",
   "Entertainment": "娱乐",
   "Error": "错误",
   "Error_404": "错误：404",
@@ -1855,6 +1854,8 @@
   "Offline_success_message": "离线成功消息",
   "Offline_unavailable": "离线不可用",
   "Older_than": "年长过",
+  "Omnichannel_Reports_Status_Open": "开放",
+  "Omnichannel_Reports_Status_Closed": "关闭",
   "On": "上",
   "online": "在线",
   "Online": "在线",
@@ -2770,5 +2771,7 @@
   "registration.component.form.reasonToJoin": "加入的理由",
   "registration.component.form.invalidConfirmPass": "第二次密码输入与第一次不匹配",
   "registration.component.form.confirmPassword": "确认密码",
-  "registration.component.form.sendConfirmationEmail": "已发送确认电子邮件"
+  "registration.component.form.sendConfirmationEmail": "已发送确认电子邮件",
+  "Enterprise": "企业",
+  "UpgradeToGetMore_engagement-dashboard_Title": "分析"
 }

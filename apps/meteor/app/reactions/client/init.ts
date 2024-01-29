@@ -40,6 +40,6 @@ Meteor.startup(() => {
 			return true;
 		},
 		order: -3,
-		group: ['message', 'menu'],
+		group: 'message',
 	});
 });

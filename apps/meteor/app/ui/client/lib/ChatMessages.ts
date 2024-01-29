@@ -1,5 +1,6 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { isVideoConfMessage } from '@rocket.chat/core-typings';
+import type { IActionManager } from '@rocket.chat/ui-contexts';
 import type { UIEvent } from 'react';
 
 import type { ChatAPI, ComposerAPI, DataAPI, UploadsAPI } from '../../../../client/lib/chats/ChatAPI';
@@ -41,6 +42,8 @@ export class ChatMessages implements ChatAPI {
 	public readStateManager: ReadStateManager;
 
 	public uploads: UploadsAPI;
+
+	public ActionManager: any;
 
 	public userCard: { open(username: string): (event: UIEvent) => void; close(): void };
 
@@ -141,12 +144,14 @@ export class ChatMessages implements ChatAPI {
 			rid: IRoom['_id'];
 			tmid?: IMessage['_id'];
 			uid: IUser['_id'] | null;
+			actionManager: IActionManager;
 		},
 	) {
 		const { rid, tmid } = params;
 		this.uid = params.uid;
 		this.data = createDataAPI({ rid, tmid });
 		this.uploads = createUploadsAPI({ rid, tmid });
+		this.ActionManager = params.actionManager;
 
 		const unimplemented = () => {
 			throw new Error('Flow is not implemented');

@@ -3,7 +3,7 @@ import { useRouter, useRouteParameter, useSetting, useTranslation } from '@rocke
 import type { ReactElement } from 'react';
 import React, { useEffect, useCallback } from 'react';
 
-import Page from '../../components/Page';
+import { Page, PageHeader, PageContent } from '../../components/Page';
 import ChannelsTab from './tabs/channels/ChannelsTab';
 import TeamsTab from './tabs/teams/TeamsTab';
 import UsersTab from './tabs/users/UsersTab';
@@ -38,7 +38,7 @@ const DirectoryPage = (): ReactElement => {
 
 	return (
 		<Page background='room'>
-			<Page.Header title={t('Directory')} />
+			<PageHeader title={t('Directory')} />
 			<Tabs flexShrink={0}>
 				<Tabs.Item selected={tab === 'channels'} onClick={handleTabClick('channels')}>
 					{t('Channels')}
@@ -55,12 +55,12 @@ const DirectoryPage = (): ReactElement => {
 					</Tabs.Item>
 				)}
 			</Tabs>
-			<Page.Content>
-				{tab === 'users' && <UsersTab />}
+			<PageContent>
 				{tab === 'channels' && <ChannelsTab />}
+				{tab === 'users' && <UsersTab />}
 				{tab === 'teams' && <TeamsTab />}
 				{federationEnabled && tab === 'external' && <UsersTab workspace='external' />}
-			</Page.Content>
+			</PageContent>
 		</Page>
 	);
 };

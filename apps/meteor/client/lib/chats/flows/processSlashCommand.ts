@@ -4,7 +4,6 @@ import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { settings } from '../../../../app/settings/client';
-import { generateTriggerId } from '../../../../app/ui-message/client/ActionManager';
 import { slashCommands } from '../../../../app/utils/client';
 import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 import { t } from '../../../../app/utils/lib/i18n';
@@ -78,7 +77,7 @@ export const processSlashCommand = async (chat: ChatAPI, message: IMessage): Pro
 		params: [{ eventName: 'slashCommandsStats', timestamp: Date.now(), command: commandName }],
 	});
 
-	const triggerId = generateTriggerId(appId);
+	const triggerId = chat.ActionManager.generateTriggerId(appId);
 
 	const data = {
 		cmd: commandName,
@@ -88,11 +87,20 @@ export const processSlashCommand = async (chat: ChatAPI, message: IMessage): Pro
 	} as const;
 
 	try {
+		if (appId) {
+			chat.ActionManager.notifyBusy();
+		}
+
 		const result = await sdk.call('slashCommand', { cmd: commandName, params, msg: message, triggerId });
+
 		handleResult?.(undefined, result, data);
 	} catch (error: unknown) {
 		await warnUnrecognizedSlashCommand(chat, t('Something_went_wrong_while_executing_command', { command: commandName }));
 		handleResult?.(error, undefined, data);
+	}
+
+	if (appId) {
+		chat.ActionManager.notifyIdle();
 	}
 
 	return true;

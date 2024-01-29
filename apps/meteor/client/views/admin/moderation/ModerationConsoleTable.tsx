@@ -1,11 +1,11 @@
-import { Pagination, Field } from '@rocket.chat/fuselage';
+import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useToastMessageDispatch, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { FC } from 'react';
 import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import FilterByText from '../../../components/FilterByText';
 import GenericNoResults from '../../../components/GenericNoResults';
 import {
 	GenericTable,
@@ -17,13 +17,13 @@ import {
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import ModerationConsoleTableRow from './ModerationConsoleTableRow';
-import DateRangePicker from './helpers/DateRangePicker';
+import ModerationFilter from './helpers/ModerationFilter';
 
 // TODO: Missing error state
 const ModerationConsoleTable: FC = () => {
 	const [text, setText] = useState('');
-	const moderationRoute = useRoute('moderation-console');
-	const t = useTranslation();
+	const router = useRouter();
+	const { t } = useTranslation();
 	const isDesktopOrLarger = useMediaQuery('(min-width: 1024px)');
 
 	const { sortBy, sortDirection, setSort } = useSort<'reports.ts' | 'reports.message.u.username' | 'reports.description' | 'count'>(
@@ -56,7 +56,7 @@ const ModerationConsoleTable: FC = () => {
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const { data, isLoading, isSuccess } = useQuery(['moderation.reports', query], async () => getReports(query), {
+	const { data, isLoading, isSuccess } = useQuery(['moderation', 'msgReports', 'fetchAll', query], async () => getReports(query), {
 		onError: (error) => {
 			dispatchToastMessage({ type: 'error', message: error });
 		},
@@ -64,13 +64,16 @@ const ModerationConsoleTable: FC = () => {
 	});
 
 	const handleClick = useMutableCallback((id): void => {
-		moderationRoute.push({
-			context: 'info',
-			id,
+		router.navigate({
+			pattern: '/admin/moderation/:tab?/:context?/:id?',
+			params: {
+				tab: 'messages',
+				context: 'info',
+				id,
+			},
 		});
 	});
 
-	// header sequence would be: name, reportedMessage, room, postdate, reports, actions
 	const headers = useMemo(
 		() => [
 			<GenericTableHeaderCell
@@ -80,20 +83,9 @@ const ModerationConsoleTable: FC = () => {
 				onClick={setSort}
 				sort='reports.message.u.username'
 			>
-				{t('Name')}
+				{t('User')}
 			</GenericTableHeaderCell>,
-			isDesktopOrLarger && (
-				<GenericTableHeaderCell
-					w='x140'
-					key='username'
-					direction={sortDirection}
-					active={sortBy === 'reports.message.u.username'}
-					onClick={setSort}
-					sort='reports.message.u.username'
-				>
-					{t('Username')}
-				</GenericTableHeaderCell>
-			),
+
 			<GenericTableHeaderCell
 				key='reportedMessage'
 				direction={sortDirection}
@@ -110,22 +102,16 @@ const ModerationConsoleTable: FC = () => {
 				{t('Moderation_Report_date')}
 			</GenericTableHeaderCell>,
 			<GenericTableHeaderCell key='reports' direction={sortDirection} active={sortBy === 'count'} onClick={setSort} sort='count'>
-				{t('Moderation_Report_plural')}
+				{t('Moderation_Report_reports')}
 			</GenericTableHeaderCell>,
 			<GenericTableHeaderCell key='actions' width='x48' />,
 		],
-		[sortDirection, sortBy, setSort, t, isDesktopOrLarger],
+		[sortDirection, sortBy, setSort, t],
 	);
 
 	return (
 		<>
-			<FilterByText autoFocus placeholder={t('Search')} onChange={({ text }): void => setText(text)} />
-			<Field alignSelf='stretch'>
-				<Field.Label>{t('Date')}</Field.Label>
-				<Field.Row>
-					<DateRangePicker display='flex' flexGrow={1} onChange={setDateRange} />
-				</Field.Row>
-			</Field>
+			<ModerationFilter setText={setText} setDateRange={setDateRange} />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

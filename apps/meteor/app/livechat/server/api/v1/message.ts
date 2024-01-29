@@ -17,7 +17,6 @@ import { isWidget } from '../../../../api/server/helpers/isWidget';
 import { loadMessageHistory } from '../../../../lib/server/functions/loadMessageHistory';
 import { settings } from '../../../../settings/server';
 import { normalizeMessageFileUpload } from '../../../../utils/server/functions/normalizeMessageFileUpload';
-import { Livechat } from '../../lib/Livechat';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { findGuest, findRoom, normalizeHttpHeaderData } from '../lib/livechat';
 
@@ -67,7 +66,7 @@ API.v1.addRoute(
 				},
 			};
 
-			const result = await Livechat.sendMessage(sendMessage);
+			const result = await LivechatTyped.sendMessage(sendMessage);
 			if (result) {
 				const message = await Messages.findOneById(_id);
 				if (!message) {
@@ -134,9 +133,9 @@ API.v1.addRoute(
 				throw new Error('invalid-message');
 			}
 
-			const result = await Livechat.updateMessage({
+			const result = await LivechatTyped.updateMessage({
 				guest,
-				message: { _id: msg._id, msg: this.bodyParams.msg },
+				message: { _id: msg._id, msg: this.bodyParams.msg, rid: msg.rid },
 			});
 			if (!result) {
 				return API.v1.failure();
@@ -176,7 +175,7 @@ API.v1.addRoute(
 				throw new Error('invalid-message');
 			}
 
-			const result = await Livechat.deleteMessage({ guest, message });
+			const result = await LivechatTyped.deleteMessage({ guest, message });
 			if (result) {
 				return API.v1.success({
 					message: {
@@ -269,13 +268,18 @@ API.v1.addRoute(
 				guest.connectionData = normalizeHttpHeaderData(this.request.headers);
 
 				const visitorId = await LivechatTyped.registerGuest(guest);
-				visitor = await LivechatVisitors.findOneById(visitorId);
+				visitor = await LivechatVisitors.findOneEnabledById(visitorId);
+			}
+
+			const guest = visitor;
+			if (!guest) {
+				throw new Error('error-invalid-token');
 			}
 
 			const sentMessages = await Promise.all(
 				this.bodyParams.messages.map(async (message: { msg: string }): Promise<{ username: string; msg: string; ts: number }> => {
 					const sendMessage = {
-						guest: visitor,
+						guest,
 						message: {
 							_id: Random.id(),
 							rid,
@@ -288,8 +292,8 @@ API.v1.addRoute(
 							},
 						},
 					};
-					// @ts-expect-error -- Typings on sendMessage are wrong
-					const sentMessage = await Livechat.sendMessage(sendMessage);
+
+					const sentMessage = await LivechatTyped.sendMessage(sendMessage);
 					return {
 						username: sentMessage.u.username,
 						msg: sentMessage.msg,

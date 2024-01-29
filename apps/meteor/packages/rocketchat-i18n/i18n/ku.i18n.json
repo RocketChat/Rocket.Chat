@@ -972,7 +972,6 @@
   "Enter_name_here": "name li vir binivîse",
   "Enter_Normal": "Modeya Normal (Ji Bi Enter bişîne)",
   "Enter_to": "binivîse",
-  "Enterprise": "Enterprise",
   "Entertainment": "Axaftin",
   "Error": "Şaşî",
   "Error_404": "Çewt: 404",
@@ -1826,6 +1825,8 @@
   "Offline_success_message": "message serkeftina is offline",
   "Offline_unavailable": "Ne girêdayî ne amade ye",
   "Older_than": "Mezintirîn",
+  "Omnichannel_Reports_Status_Open": "Vekirî",
+  "Omnichannel_Reports_Status_Closed": "Girtî",
   "On": "Li",
   "online": "online",
   "Online": "bike",
@@ -2745,5 +2746,7 @@
   "registration.component.form.reasonToJoin": "Reason to join",
   "registration.component.form.invalidConfirmPass": "دووبارەکراوەی تێپەڕەوشە یەکناگرێتەوە لەگەڵ تێپەڕەوشە",
   "registration.component.form.confirmPassword": "تێپەڕەوشەکەت پشتڕاستکەوە",
-  "registration.component.form.sendConfirmationEmail": "ئیمەیڵی پشتڕاستکردنەوە بنێرە"
+  "registration.component.form.sendConfirmationEmail": "ئیمەیڵی پشتڕاستکردنەوە بنێرە",
+  "Enterprise": "Enterprise",
+  "UpgradeToGetMore_engagement-dashboard_Title": "analytics"
 }

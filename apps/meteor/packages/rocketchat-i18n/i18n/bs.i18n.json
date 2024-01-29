@@ -970,7 +970,6 @@
   "Enter_name_here": "Unesite ime",
   "Enter_Normal": "Normalni način rada (pošalji s Enterom)",
   "Enter_to": "Uđi u ",
-  "Enterprise": "Poduzeće",
   "Entertainment": "Zabava",
   "Error": "Pogreška",
   "Error_404": "Pogreška: 404",
@@ -1824,6 +1823,8 @@
   "Offline_success_message": "Izvanmrežna poruka uspjeha",
   "Offline_unavailable": "Nedostupnost izvanmrežnosti",
   "Older_than": "Stariji od",
+  "Omnichannel_Reports_Status_Open": "Otvori",
+  "Omnichannel_Reports_Status_Closed": "Zatvoreno",
   "On": "Uključeno",
   "online": "na liniji",
   "Online": "Online",
@@ -2743,5 +2744,7 @@
   "registration.component.form.reasonToJoin": "Razlog pridruživanja",
   "registration.component.form.invalidConfirmPass": "Potvrda lozinke se ne slaže sa lozinkom",
   "registration.component.form.confirmPassword": "Potvrdi svoju lozinku",
-  "registration.component.form.sendConfirmationEmail": "Pošalji potvrdni email"
+  "registration.component.form.sendConfirmationEmail": "Pošalji potvrdni email",
+  "Enterprise": "Poduzeće",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Analitika"
 }

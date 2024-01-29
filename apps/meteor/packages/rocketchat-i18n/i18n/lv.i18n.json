@@ -962,6 +962,8 @@
   "Email_Placeholder": "Lūdzu ievadiet savu e-pasta adresi...",
   "Email_Placeholder_any": "Lūdzu, ievadiet e-pasta adreses ...",
   "Email_subject": "Temats",
+  "Enterprise_License": "Uzņēmuma licence",
+  "Enterprise_License_Description": "Ja jūsu darbvieta ir reģistrēta un licenci nodrošina Rocket.Chat Mākulis, jums šeit licence nav manuāli jāaktualalizē.",
   "Email_verified": "E-pasts ir apstiprināts",
   "Emoji": "Emoji",
   "EmojiCustomFilesystem": "Pielāgota Emoji failu sistēma",
@@ -986,9 +988,6 @@
   "Enter_name_here": "Ievadiet nosaukumu šeit",
   "Enter_Normal": "Normāls režīms (nosūtīt ar 'Enter')",
   "Enter_to": "Enter uz",
-  "Enterprise": "Uzņēmums",
-  "Enterprise_License": "Uzņēmuma licence",
-  "Enterprise_License_Description": "Ja jūsu darbvieta ir reģistrēta un licenci nodrošina Rocket.Chat Mākulis, jums šeit licence nav manuāli jāaktualalizē.",
   "Entertainment": "Izklaide",
   "Error": "Kļūda",
   "Error_404": "Kļūda: 404",
@@ -1844,6 +1843,8 @@
   "Offline_success_message": "Bezsaistes vēstule veiksmīga",
   "Offline_unavailable": "Bezsaiste nav pieejama",
   "Older_than": "Vecāki par",
+  "Omnichannel_Reports_Status_Open": "Atvērt",
+  "Omnichannel_Reports_Status_Closed": "Aizvērts",
   "On": "Ieslēgts",
   "online": "tiešsaistē",
   "Online": "Tiešsaistē",
@@ -2751,5 +2752,7 @@
   "registration.component.form.reasonToJoin": "Iemesls pievienoties",
   "registration.component.form.invalidConfirmPass": "Paroles apstiprinājums neatbilst parolei",
   "registration.component.form.confirmPassword": "Apstipriniet savu paroli",
-  "registration.component.form.sendConfirmationEmail": "Nosūtīt apstiprinājuma e-pastu"
+  "registration.component.form.sendConfirmationEmail": "Nosūtīt apstiprinājuma e-pastu",
+  "Enterprise": "Uzņēmums",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Analītika"
 }

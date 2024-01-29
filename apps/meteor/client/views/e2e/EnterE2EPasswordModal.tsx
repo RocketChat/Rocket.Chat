@@ -1,4 +1,4 @@
-import { Box, PasswordInput, Field, FieldGroup } from '@rocket.chat/fuselage';
+import { Box, PasswordInput, Field, FieldGroup, FieldRow, FieldError } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -50,7 +50,7 @@ const EnterE2EPasswordModal = ({
 			<Box dangerouslySetInnerHTML={{ __html: t('E2E_password_request_text') }} />
 			<FieldGroup mbs={24} w='full'>
 				<Field>
-					<Field.Row>
+					<FieldRow>
 						<PasswordInput
 							autoFocus
 							error={passwordError}
@@ -58,8 +58,8 @@ const EnterE2EPasswordModal = ({
 							onChange={handleChange}
 							placeholder={t('New_Password_Placeholder')}
 						/>
-					</Field.Row>
-					<Field.Error>{passwordError}</Field.Error>
+					</FieldRow>
+					<FieldError>{passwordError}</FieldError>
 				</Field>
 			</FieldGroup>
 		</GenericModal>
