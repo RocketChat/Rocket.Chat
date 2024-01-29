@@ -87,6 +87,18 @@ test.describe.parallel('administration', () => {
 			await poAdmin.getRoomRow(targetChannel).click();
 			await expect(poAdmin.archivedInput).toBeChecked();
 		});
+
+		test('should mark target default channel as "favorite by default"', async () => {
+			await poAdmin.inputSearchRooms.type(targetChannel);
+			await poAdmin.getRoomRow(targetChannel).click();
+			await poAdmin.defaultLabel.click();
+			await poAdmin.favoriteLabel.click();
+			await poAdmin.btnSave.click();
+
+			await poAdmin.getRoomRow(targetChannel).click();
+			await expect(poAdmin.favoriteInput).toBeChecked();
+			await expect(poAdmin.defaultInput).toBeChecked();
+		});
 	});
 
 	test.describe('Permissions', () => {
