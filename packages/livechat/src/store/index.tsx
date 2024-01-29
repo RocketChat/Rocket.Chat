@@ -67,6 +67,7 @@ export type LivechatStoreState = {
 	triggerAgent?: any;
 	queueInfo?: any;
 	defaultAgent?: any;
+	connecting?: boolean;
 };
 
 export const initialState = (): LivechatStoreState => ({

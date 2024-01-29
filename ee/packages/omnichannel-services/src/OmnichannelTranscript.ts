@@ -156,7 +156,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		return quotes;
 	}
 
-	private async getMessagesData(userId: string, messages: IMessage[]): Promise<MessageData[]> {
+	private async getMessagesData(messages: IMessage[]): Promise<MessageData[]> {
 		const messagesData: MessageData[] = [];
 		for await (const message of messages) {
 			if (!message.attachments?.length) {
@@ -229,7 +229,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 					continue;
 				}
 
-				const fileBuffer = await uploadService.getFileBuffer({ userId, file: uploadedFile });
+				const fileBuffer = await uploadService.getFileBuffer({ file: uploadedFile });
 				files.push({ name: file.name, buffer: fileBuffer, extension: uploadedFile.extension });
 			}
 
@@ -284,7 +284,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 			const agent =
 				room.servedBy && (await Users.findOneAgentById(room.servedBy._id, { projection: { _id: 1, name: 1, username: 1, utcOffset: 1 } }));
 
-			const messagesData = await this.getMessagesData(details.userId, messages);
+			const messagesData = await this.getMessagesData(messages);
 
 			const [siteName, dateFormat, timeAndDateFormat, timezone, translations] = await Promise.all([
 				settingsService.get<string>('Site_Name'),

@@ -1,6 +1,7 @@
 import { Settings } from '@rocket.chat/models';
 import { isPOSTLivechatAppearanceParams } from '@rocket.chat/rest-typings';
 
+import { isTruthy } from '../../../../../lib/isTruthy';
 import { API } from '../../../../api/server';
 import { findAppearance } from '../../../server/api/lib/appearance';
 
@@ -52,8 +53,35 @@ API.v1.addRoute(
 				throw new Error('invalid-setting');
 			}
 
+			const dbSettings = await Settings.findByIds(validSettingList, { projection: { _id: 1, value: 1, type: 1 } })
+				.map((dbSetting) => {
+					const setting = settings.find(({ _id }) => _id === dbSetting._id);
+					if (!setting || dbSetting.value === setting.value) {
+						return;
+					}
+
+					switch (dbSetting?.type) {
+						case 'boolean':
+							return {
+								_id: dbSetting._id,
+								value: setting.value === 'true' || setting.value === true,
+							};
+						case 'int':
+							return {
+								_id: dbSetting._id,
+								value: coerceInt(setting.value),
+							};
+						default:
+							return {
+								_id: dbSetting._id,
+								value: setting?.value,
+							};
+					}
+				})
+				.toArray();
+
 			await Promise.all(
-				settings.map((setting) => {
+				dbSettings.filter(isTruthy).map((setting) => {
 					return Settings.updateValueById(setting._id, setting.value);
 				}),
 			);
@@ -62,3 +90,20 @@ API.v1.addRoute(
 		},
 	},
 );
+
+function coerceInt(value: string | number | boolean): number {
+	if (typeof value === 'number') {
+		return value;
+	}
+
+	if (typeof value === 'boolean') {
+		return 0;
+	}
+
+	const parsedValue = parseInt(value, 10);
+	if (Number.isNaN(parsedValue)) {
+		return 0;
+	}
+
+	return parsedValue;
+}

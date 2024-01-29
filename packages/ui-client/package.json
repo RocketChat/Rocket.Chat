@@ -4,8 +4,9 @@
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.22.20",
+		"@react-aria/toolbar": "^3.0.0-beta.1",
 		"@rocket.chat/css-in-js": "~0.31.25",
-		"@rocket.chat/fuselage": "^0.44.2",
+		"@rocket.chat/fuselage": "^0.45.0",
 		"@rocket.chat/fuselage-hooks": "^0.33.0",
 		"@rocket.chat/icons": "^0.33.0",
 		"@rocket.chat/mock-providers": "workspace:^",
@@ -57,6 +58,7 @@
 		"/dist"
 	],
 	"peerDependencies": {
+		"@react-aria/toolbar": "*",
 		"@rocket.chat/css-in-js": "*",
 		"@rocket.chat/fuselage": "*",
 		"@rocket.chat/fuselage-hooks": "*",
