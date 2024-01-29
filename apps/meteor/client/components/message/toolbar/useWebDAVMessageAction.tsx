@@ -8,8 +8,7 @@ import { messageArgs } from '../../../lib/utils/messageArgs';
 import SaveToWebdavModal from '../../../views/room/webdav/SaveToWebdavModal';
 
 export const useWebDAVMessageAction = () => {
-	const enabled = true;
-	useSetting<boolean>('Webdav_Integration_Enabled', false);
+	const enabled = useSetting<boolean>('Webdav_Integration_Enabled', false);
 
 	const { data } = useWebDAVAccountIntegrationsQuery({ enabled });
 

@@ -32,8 +32,7 @@ const SaveToWebdavModal = ({ onClose, data }: SaveToWebdavModalProps): ReactElem
 		formState: { errors },
 	} = useForm<{ accountId: string }>();
 
-	const enabled = true;
-	useSetting<boolean>('Webdav_Integration_Enabled', false);
+	const enabled = useSetting<boolean>('Webdav_Integration_Enabled', false);
 
 	const { data: value } = useWebDAVAccountIntegrationsQuery({ enabled });
 
