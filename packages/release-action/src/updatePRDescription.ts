@@ -6,7 +6,7 @@ import { exec } from '@actions/exec';
 import * as github from '@actions/github';
 
 import { setupOctokit } from './setupOctokit';
-import { getChangelogEntry, getEngineVersionsMd, readPackageJson } from './utils';
+import { createTempReleaseNotes, getChangelogEntry, getEngineVersionsMd, isPreRelease, readPackageJson } from './utils';
 
 export async function updatePRDescription({
 	githubToken,
@@ -18,6 +18,11 @@ export async function updatePRDescription({
 	cwd?: string;
 }) {
 	const octokit = setupOctokit(githubToken);
+
+	// in case it is a pre release we exit to get the changelog of the final version
+	if (isPreRelease(cwd)) {
+		await exec('yarn', ['changeset', 'pre', 'exit']);
+	}
 
 	// generate change logs from changesets
 	await exec('yarn', ['changeset', 'version']);
@@ -48,17 +53,7 @@ export async function updatePRDescription({
 
 	const cleanBody = originalBody?.replace(/<!-- release-notes-start -->.*<!-- release-notes-end -->/s, '').trim() || '';
 
-	const bodyUpdated = `${cleanBody}
-
-<!-- release-notes-start -->
-<!-- This content is automatically generated. Changing this will not reflect on the final release log -->
-
-_You can see below a preview of the release change log:_
-
-# ${newVersion}
-
-${releaseBody}
-<!-- release-notes-end -->`;
+	const bodyUpdated = `${cleanBody}\n${createTempReleaseNotes(newVersion, releaseBody)}`;
 
 	if (bodyUpdated === originalBody) {
 		core.info('no changes to PR description');
