@@ -40,18 +40,17 @@ export async function updatePRDescription({
 		throw new Error('Could not find changelog entry for version newVersion');
 	}
 
-	const releaseBody = (await getEngineVersionsMd(cwd)) + changelogEntry.content;
-
 	core.info('get PR description');
 	const result = await octokit.rest.pulls.get({
 		pull_number: github.context.issue.number,
-		body: releaseBody,
 		...github.context.repo,
 	});
 
 	const { body: originalBody = '' } = result.data;
 
 	const cleanBody = originalBody?.replace(/<!-- release-notes-start -->.*<!-- release-notes-end -->/s, '').trim() || '';
+
+	const releaseBody = (await getEngineVersionsMd(cwd)) + changelogEntry.content;
 
 	const bodyUpdated = `${cleanBody}\n${createTempReleaseNotes(newVersion, releaseBody)}`;
 
