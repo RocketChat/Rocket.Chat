@@ -2264,7 +2264,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		);
 	}
 
-	countOpenByAgent(userId: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
+	countOpenByAgent(userId: string, extraQuery?: Filter<IOmnichannelRoom> = {}) {
 		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
 			'open': true,
@@ -2275,7 +2275,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.col.countDocuments(query);
 	}
 
-	findOpenByAgent(userId: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
+	findOpenByAgent(userId: string, extraQuery?: Filter<IOmnichannelRoom> = {}) {
 		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
 			'open': true,
