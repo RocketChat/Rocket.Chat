@@ -8,7 +8,7 @@ import React, { useCallback, useState, memo } from 'react';
 import semver from 'semver';
 
 import { useIsEnterprise } from '../../../../../hooks/useIsEnterprise';
-import type { appStatusSpanResponseProps } from '../../../helpers';
+import type { Actions, appStatusSpanResponseProps } from '../../../helpers';
 import { appButtonProps, appMultiStatusProps } from '../../../helpers';
 import { marketplaceActions } from '../../../helpers/marketplaceActions';
 import type { AppInstallationHandlerParams } from '../../../hooks/useAppInstallationHandler';
@@ -49,12 +49,14 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	const action = button?.action;
 
 	const confirmAction = useCallback<AppInstallationHandlerParams['onSuccess']>(
-		async (action, permissionsGranted) => {
-			if (action !== 'request') {
-				setPurchased(true);
-				await marketplaceActions[action]({ ...app, permissionsGranted });
-			} else {
-				setEndUserRequested(true);
+		async (action: Actions | '', permissionsGranted) => {
+			if (action) {
+				if (action !== 'request') {
+					setPurchased(true);
+					await marketplaceActions[action]({ ...app, permissionsGranted });
+				} else {
+					setEndUserRequested(true);
+				}
 			}
 
 			setLoading(false);
