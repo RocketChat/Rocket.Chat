@@ -101,6 +101,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const handleUpdateRoomData = useMutableCallback(async ({ hideSysMes, joinCodeRequired, ...formData }) => {
 		const data = getDirtyFields(formData, dirtyFields);
 		delete data.archived;
+		delete data.favorite;
 
 		try {
 			await saveAction({
@@ -119,9 +120,9 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		}
 	});
 
-	const handleSave = useMutableCallback(async (data) => {
-		await Promise.all([isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive()].filter(Boolean));
-	});
+	const handleSave = useMutableCallback(async (data) =>
+		Promise.all([isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive()].filter(Boolean)),
+	);
 
 	const formId = useUniqueId();
 	const roomNameField = useUniqueId();
