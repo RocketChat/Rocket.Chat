@@ -217,7 +217,7 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 			agents.map((agent) => agent.username),
 			isLivechatEnabledWhenAgentIdle,
 		).toArray();
-		
+
 		console.log('onlineUsers', onlineUsers);
 		const onlineUsernames = onlineUsers.map((user) => user.username).filter(isStringValue);
 
