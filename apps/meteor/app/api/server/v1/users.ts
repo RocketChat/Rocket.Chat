@@ -17,6 +17,7 @@ import {
 	isUsersCheckUsernameAvailabilityParamsGET,
 	isUsersSendConfirmationEmailParamsPOST,
 	isUsersSetStatusParamsPOST,
+	isUsersDeleteOwnAccountParamsPOST,
 } from '@rocket.chat/rest-typings';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
@@ -324,13 +325,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.deleteOwnAccount',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isUsersDeleteOwnAccountParamsPOST },
 	{
 		async post() {
 			const { password } = this.bodyParams;
-			if (!password) {
-				return API.v1.failure('Body parameter "password" is required.');
-			}
 			if (!settings.get('Accounts_AllowDeleteOwnAccount')) {
 				throw new Meteor.Error('error-not-allowed', 'Not allowed');
 			}

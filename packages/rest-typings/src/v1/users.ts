@@ -9,6 +9,7 @@ import type { UserLogoutParamsPOST } from './users/UserLogoutParamsPOST';
 import type { UserRegisterParamsPOST } from './users/UserRegisterParamsPOST';
 import type { UserSetActiveStatusParamsPOST } from './users/UserSetActiveStatusParamsPOST';
 import type { UsersAutocompleteParamsGET } from './users/UsersAutocompleteParamsGET';
+import type { UsersDeleteOwnAccountParamsPOST } from './users/UsersDeleteOwnAccountParamsPOST';
 import type { UsersInfoParamsGet } from './users/UsersInfoParamsGet';
 import type { UsersListTeamsParamsGET } from './users/UsersListTeamsParamsGET';
 import type { UsersSendConfirmationEmailParamsPOST } from './users/UsersSendConfirmationEmailParamsPOST';
@@ -366,7 +367,7 @@ export type UsersEndpoints = {
 	};
 
 	'/v1/users.deleteOwnAccount': {
-		POST: (params: { password: string; confirmRelinquish?: boolean }) => void;
+		POST: (params: UsersDeleteOwnAccountParamsPOST) => void;
 	};
 };
 
