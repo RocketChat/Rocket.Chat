@@ -261,11 +261,6 @@ export type AppsEndpoints = {
 						};
 				  };
 		};
-		DELETE: {
-			(): {
-				app: App;
-			};
-		};
 	};
 
 	'/apps/ui.interaction/:id': {
