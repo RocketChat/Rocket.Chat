@@ -53,6 +53,7 @@ const CloudConfirmationPollSchema = {
 	properties: {
 		deviceCode: {
 			type: 'string',
+			minLength: 1,
 		},
 		resend: {
 			type: 'string',

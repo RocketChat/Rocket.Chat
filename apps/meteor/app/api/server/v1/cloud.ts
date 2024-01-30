@@ -1,4 +1,4 @@
-import { check } from 'meteor/check';
+import { isCloudConfirmationPollProps, isCloudCreateRegistrationIntentProps, isCloudManualRegisterProps } from '@rocket.chat/rest-typings';
 
 import { CloudWorkspaceRegistrationError } from '../../../../lib/errors/CloudWorkspaceRegistrationError';
 import { SystemLogger } from '../../../../server/lib/logger/system';
@@ -20,13 +20,9 @@ import { API } from '../api';
 
 API.v1.addRoute(
 	'cloud.manualRegister',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isCloudManualRegisterProps },
 	{
 		async post() {
-			check(this.bodyParams, {
-				cloudBlob: String,
-			});
-
 			if (!(await hasPermissionAsync(this.userId, 'register-on-cloud'))) {
 				return API.v1.unauthorized();
 			}
@@ -48,14 +44,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'cloud.createRegistrationIntent',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isCloudCreateRegistrationIntentProps },
 	{
 		async post() {
-			check(this.bodyParams, {
-				resend: Boolean,
-				email: String,
-			});
-
 			if (!(await hasPermissionAsync(this.userId, 'manage-cloud'))) {
 				return API.v1.unauthorized();
 			}
@@ -87,20 +78,13 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'cloud.confirmationPoll',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isCloudConfirmationPollProps },
 	{
 		async get() {
 			const { deviceCode } = this.queryParams;
-			check(this.queryParams, {
-				deviceCode: String,
-			});
 
 			if (!(await hasPermissionAsync(this.userId, 'manage-cloud'))) {
 				return API.v1.unauthorized();
-			}
-
-			if (!deviceCode) {
-				return API.v1.failure('Invalid query');
 			}
 
 			const pollData = await getConfirmationPoll(deviceCode);
