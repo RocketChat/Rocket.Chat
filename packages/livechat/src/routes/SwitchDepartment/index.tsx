@@ -15,6 +15,7 @@ import Screen from '../../components/Screen';
 import { createClassName } from '../../helpers/createClassName';
 import { loadConfig } from '../../lib/main';
 import { createToken } from '../../lib/random';
+import type { StoreState } from '../../store';
 import { StoreContext } from '../../store';
 import styles from './styles.scss';
 
@@ -60,7 +61,8 @@ const SwitchDepartment = ({ screenProps }: { screenProps: { [key: string]: unkno
 
 		if (!room) {
 			const { visitor: user } = await Livechat.grantVisitor({ visitor: { department, token } });
-			await dispatch({ user, alerts: (alerts.push({ id: createToken(), children: t('department_switched'), success: true }), alerts) });
+			await dispatch({ user } as Omit<StoreState['user'], 'ts'>);
+			await dispatch({ alerts: (alerts.push({ id: createToken(), children: t('department_switched'), success: true }), alerts) });
 			return route('/');
 		}
 
@@ -84,7 +86,11 @@ const SwitchDepartment = ({ screenProps }: { screenProps: { [key: string]: unkno
 				throw t('no_available_agents_to_transfer');
 			}
 
-			await dispatch({ iframe: { ...iframe, guest: { ...guest, department } }, loading: false });
+			await dispatch({ iframe: { ...iframe, guest: { ...guest, department } }, loading: false } as {
+				iframe: StoreState['iframe'];
+				guest: StoreState['iframe']['guest'];
+				loading: boolean;
+			});
 			await loadConfig();
 
 			await ModalManager.alert({

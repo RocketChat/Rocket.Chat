@@ -16,6 +16,7 @@ import CustomFields from '../../lib/customFields';
 import { validateEmail } from '../../lib/email';
 import { parentCall } from '../../lib/parentCall';
 import { StoreContext } from '../../store';
+import type { StoreState } from '../../store';
 import styles from './styles.scss';
 
 // Custom field as in the form payload
@@ -42,7 +43,7 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 			customFields = [],
 		},
 		iframe: {
-			guest: { department: guestDepartment, name: guestName, email: guestEmail },
+			guest: { department: guestDepartment = undefined, name: guestName = undefined, email: guestEmail = undefined } = {},
 			theme: { color: customColor, fontColor: customFontColor, iconColor: customIconColor, title: customTitle },
 		},
 		loading = false,
@@ -84,7 +85,8 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 		await dispatch({ loading: true, department });
 		try {
 			const { visitor: user } = await Livechat.grantVisitor({ visitor: { ...fields, token } });
-			await dispatch({ user });
+			await dispatch({ user } as Omit<StoreState['user'], 'ts'>);
+
 			parentCall('callback', ['pre-chat-form-submit', fields]);
 			registerCustomFields(customFields);
 		} finally {
