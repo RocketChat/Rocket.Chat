@@ -23,7 +23,7 @@ import type {
 	ClipboardEventHandler,
 	MouseEvent,
 } from 'react';
-import React, { memo, useRef, useReducer, useCallback, useState } from 'react';
+import React, { memo, useRef, useReducer, useCallback } from 'react';
 import { Trans } from 'react-i18next';
 import { useSubscription } from 'use-subscription';
 
@@ -31,7 +31,6 @@ import { createComposerAPI } from '../../../../../app/ui-message/client/messageB
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionFromMime';
-import { getMessageUrlRegex } from '../../../../../lib/getMessageUrlRegex';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import type { ComposerAPI } from '../../../../lib/chats/ChatAPI';
@@ -126,7 +125,6 @@ const MessageBox = ({
 	const room = useRoom();
 	const t = useTranslation();
 	const composerPlaceholder = useMessageBoxPlaceholder(t('Message'), room);
-	const [urls, setUrls] = useState<string[]>([]);
 
 	const [typing, setTyping] = useReducer(reducer, false);
 
@@ -196,10 +194,6 @@ const MessageBox = ({
 	};
 
 	const handler: KeyboardEventHandler<HTMLTextAreaElement> = useMutableCallback((event) => {
-		// TODO: Find a better place to put this, maybe in the composer API?
-		//       because now it's a hacky way to get the urls from the message
-		setUrls(chat.composer?.text.match(getMessageUrlRegex()) ?? []);
-
 		const { which: keyCode } = event;
 
 		const input = event.target as HTMLTextAreaElement;
@@ -418,7 +412,8 @@ const MessageBox = ({
 					onPaste={handlePaste}
 					aria-activedescendant={ariaActiveDescendant}
 				/>
-				<MessageURLPreviewList urls={urls} />
+
+				{chat.composer?.urls && <MessageURLPreviewList />}
 
 				<div ref={shadowRef} style={shadowStyle} />
 				<MessageComposerToolbar>
