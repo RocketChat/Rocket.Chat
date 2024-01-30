@@ -19,9 +19,9 @@ import {
 	isUsersSetStatusParamsPOST,
 	isUsersDeleteOwnAccountParamsPOST,
 	isUsersGetAvatarParamsGET,
+	isUsersDeleteParamsPOST,
 } from '@rocket.chat/rest-typings';
 import { Accounts } from 'meteor/accounts-base';
-import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
@@ -307,7 +307,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.delete',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isUsersDeleteParamsPOST },
 	{
 		async post() {
 			if (!(await hasPermissionAsync(this.userId, 'delete-user'))) {

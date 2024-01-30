@@ -10,6 +10,7 @@ import type { UserRegisterParamsPOST } from './users/UserRegisterParamsPOST';
 import type { UserSetActiveStatusParamsPOST } from './users/UserSetActiveStatusParamsPOST';
 import type { UsersAutocompleteParamsGET } from './users/UsersAutocompleteParamsGET';
 import type { UsersDeleteOwnAccountParamsPOST } from './users/UsersDeleteOwnAccountParamsPOST';
+import type { UsersDeleteParamsPOST } from './users/UsersDeleteParamsPOST';
 import type { UsersGetAvatarParamsGET } from './users/UsersGetAvatarParamsGET';
 import type { UsersInfoParamsGet } from './users/UsersInfoParamsGet';
 import type { UsersListTeamsParamsGET } from './users/UsersListTeamsParamsGET';
@@ -354,7 +355,7 @@ export type UsersEndpoints = {
 	};
 
 	'/v1/users.delete': {
-		POST: (params: { userId: IUser['_id']; confirmRelinquish?: boolean }) => void;
+		POST: (params: UsersDeleteParamsPOST) => void;
 	};
 
 	'/v1/users.getAvatar': {

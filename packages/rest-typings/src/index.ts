@@ -252,6 +252,7 @@ export * from './v1/users/UsersSendConfirmationEmailParamsPOST';
 export * from './v1/users/UsersSetStatusParamsPOST';
 export * from './v1/users/UsersDeleteOwnAccountParamsPOST';
 export * from './v1/users/UsersGetAvatarParamsGET';
+export * from './v1/users/UsersDeleteParamsPOST';
 export * from './v1/moderation';
 
 export * from './v1/autotranslate/AutotranslateGetSupportedLanguagesParamsGET';
