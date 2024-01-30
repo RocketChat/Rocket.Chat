@@ -1,6 +1,5 @@
 import { Team } from '@rocket.chat/core-services';
 import type { ITeam, UserStatus } from '@rocket.chat/core-typings';
-import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import { Users, Rooms } from '@rocket.chat/models';
 import {
 	isTeamsConvertToChannelProps,
@@ -11,6 +10,7 @@ import {
 	isTeamsDeleteProps,
 	isTeamsLeaveProps,
 	isTeamsUpdateProps,
+	isTeamsCreateProps,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Match, check } from 'meteor/check';
@@ -67,23 +67,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'teams.create',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isTeamsCreateProps },
 	{
 		async post() {
 			if (!(await hasPermissionAsync(this.userId, 'create-team'))) {
 				return API.v1.unauthorized();
 			}
-
-			check(
-				this.bodyParams,
-				Match.ObjectIncluding({
-					name: String,
-					type: Match.OneOf(TEAM_TYPE.PRIVATE, TEAM_TYPE.PUBLIC),
-					members: Match.Maybe([String]),
-					room: Match.Maybe(Match.Any),
-					owner: Match.Maybe(String),
-				}),
-			);
 
 			const { name, type, members, room, owner } = this.bodyParams;
 

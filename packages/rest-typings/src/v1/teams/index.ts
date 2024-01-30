@@ -4,6 +4,7 @@ import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
 import type { TeamsAddMembersProps } from './TeamsAddMembersProps';
 import type { TeamsConvertToChannelProps } from './TeamsConvertToChannelProps';
+import type { TeamsCreateProps } from './TeamsCreateProps';
 import type { TeamsDeleteProps } from './TeamsDeleteProps';
 import type { TeamsLeaveProps } from './TeamsLeaveProps';
 import type { TeamsRemoveMemberProps } from './TeamsRemoveMemberProps';
@@ -19,6 +20,7 @@ export * from './TeamsRemoveMemberProps';
 export * from './TeamsRemoveRoomProps';
 export * from './TeamsUpdateMemberProps';
 export * from './TeamsUpdateProps';
+export * from './TeamsCreateProps';
 
 type ITeamAutocompleteResult = Pick<IRoom, '_id' | 'fname' | 'teamId' | 'name' | 't' | 'avatarETag'>;
 
@@ -44,7 +46,8 @@ type TeamProps =
 	| TeamsRemoveMemberProps
 	| TeamsDeleteProps
 	| TeamsLeaveProps
-	| TeamsUpdateProps;
+	| TeamsUpdateProps
+	| TeamsCreateProps;
 
 export const isTeamPropsWithTeamName = <T extends TeamProps>(props: T): props is T & { teamName: string } => 'teamName' in props;
 
@@ -58,39 +61,7 @@ export type TeamsEndpoints = {
 		GET: () => { teams: ITeam[] } & PaginatedResult;
 	};
 	'/v1/teams.create': {
-		POST: (params: {
-			name: ITeam['name'];
-			type: ITeam['type'];
-			members?: IUser['_id'][];
-			room: {
-				id?: string;
-				name?: IRoom['name'];
-				members?: IUser['_id'][];
-				readOnly?: boolean;
-				extraData?: {
-					teamId?: string;
-					teamMain?: boolean;
-				} & { [key: string]: string | boolean };
-				options?: {
-					nameValidationRegex?: string;
-					creator: string;
-					subscriptionExtra?: {
-						open: boolean;
-						ls: Date;
-						prid: IRoom['_id'];
-					};
-				} & {
-					[key: string]:
-						| string
-						| {
-								open: boolean;
-								ls: Date;
-								prid: IRoom['_id'];
-						  };
-				};
-			};
-			owner?: IUser['_id'];
-		}) => {
+		POST: (params: TeamsCreateProps) => {
 			team: ITeam;
 		};
 	};
