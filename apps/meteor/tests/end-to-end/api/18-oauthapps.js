@@ -18,7 +18,7 @@ describe('[OAuthApps]', function () {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('error-not-allowed');
+						expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
 					})
 					.end(done);
 			});
