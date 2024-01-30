@@ -87,6 +87,8 @@ describe('AutoTranslate', function () {
 
 		describe('[/autotranslate.saveSettings', () => {
 			let testGroupId;
+			let testChannelId;
+
 			before(async () => {
 				await Promise.all([
 					resetAutoTranslateDefaults(),
@@ -94,11 +96,17 @@ describe('AutoTranslate', function () {
 					updateSetting('E2E_Enabled_Default_PrivateRooms', true),
 				]);
 
-				const res = await createRoom({ type: 'p', name: `e2etest-autotranslate-${Date.now()}` });
-				testGroupId = res.body.group._id;
+				testGroupId = (await createRoom({ type: 'p', name: `e2etest-autotranslate-${Date.now()}` })).body.group._id;
+				testChannelId = (await createRoom({ type: 'c', name: `test-autotranslate-${Date.now()}` })).body.channel._id;
 			});
+
 			after(async () => {
-				await Promise.all([resetAutoTranslateDefaults(), resetE2EDefaults(), deleteRoom({ type: 'p', roomId: testGroupId })]);
+				await Promise.all([
+					resetAutoTranslateDefaults(),
+					resetE2EDefaults(),
+					deleteRoom({ type: 'p', roomId: testGroupId }),
+					deleteRoom({ type: 'c', roomId: testChannelId }),
+				]);
 			});
 
 			it('should throw an error when the "AutoTranslate_Enabled" setting is disabled', (done) => {
@@ -106,7 +114,7 @@ describe('AutoTranslate', function () {
 					.post(api('autotranslate.saveSettings'))
 					.set(credentials)
 					.send({
-						roomId: 'GENERAL',
+						roomId: testChannelId,
 						field: 'autoTranslate',
 						defaultLanguage: 'en',
 						value: true,
@@ -126,7 +134,7 @@ describe('AutoTranslate', function () {
 							.post(api('autotranslate.saveSettings'))
 							.set(credentials)
 							.send({
-								roomId: 'GENERAL',
+								roomId: testChannelId,
 								defaultLanguage: 'en',
 								field: 'autoTranslateLanguage',
 								value: 'en',
@@ -161,7 +169,7 @@ describe('AutoTranslate', function () {
 					.post(api('autotranslate.saveSettings'))
 					.set(credentials)
 					.send({
-						roomId: 'GENERAL',
+						roomId: testChannelId,
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -175,7 +183,7 @@ describe('AutoTranslate', function () {
 					.post(api('autotranslate.saveSettings'))
 					.set(credentials)
 					.send({
-						roomId: 'GENERAL',
+						roomId: testChannelId,
 						field: 'autoTranslate',
 					})
 					.expect('Content-Type', 'application/json')
@@ -190,7 +198,7 @@ describe('AutoTranslate', function () {
 					.post(api('autotranslate.saveSettings'))
 					.set(credentials)
 					.send({
-						roomId: 'GENERAL',
+						roomId: testChannelId,
 						field: 'autoTranslate',
 						value: 'test',
 					})
@@ -206,7 +214,7 @@ describe('AutoTranslate', function () {
 					.post(api('autotranslate.saveSettings'))
 					.set(credentials)
 					.send({
-						roomId: 'GENERAL',
+						roomId: testChannelId,
 						field: 'autoTranslateLanguage',
 						value: 12,
 					})
@@ -222,7 +230,7 @@ describe('AutoTranslate', function () {
 					.post(api('autotranslate.saveSettings'))
 					.set(credentials)
 					.send({
-						roomId: 'GENERAL',
+						roomId: testChannelId,
 						field: 'invalid',
 						value: 12,
 					})
@@ -273,7 +281,7 @@ describe('AutoTranslate', function () {
 					.post(api('autotranslate.saveSettings'))
 					.set(credentials)
 					.send({
-						roomId: 'GENERAL',
+						roomId: testChannelId,
 						field: 'autoTranslateLanguage',
 						value: 'en',
 					})
@@ -288,17 +296,22 @@ describe('AutoTranslate', function () {
 
 		describe('[/autotranslate.translateMessage', () => {
 			let messageSent;
+			let testChannelId;
 
 			before(async () => {
 				await resetAutoTranslateDefaults();
+
+				testChannelId = (await createRoom({ type: 'c', name: `test-autotranslate-message-${Date.now()}` })).body.channel._id;
 				const res = await sendSimpleMessage({
-					roomId: 'GENERAL',
+					roomId: testChannelId,
 					text: 'Isso é um teste',
 				});
 				messageSent = res.body.message;
 			});
 
-			after(() => resetAutoTranslateDefaults());
+			after(async () => {
+				await Promise.all([resetAutoTranslateDefaults(), deleteRoom({ type: 'c', roomId: testChannelId })]);
+			});
 
 			it('should throw an error when the "AutoTranslate_Enabled" setting is disabled', (done) => {
 				request
