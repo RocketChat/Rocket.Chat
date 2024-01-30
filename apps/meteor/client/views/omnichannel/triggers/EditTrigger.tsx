@@ -4,7 +4,7 @@ import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRouter, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
-import { Controller, FormProvider, useFieldArray, useForm } from 'react-hook-form';
+import { Controller, useFieldArray, useForm } from 'react-hook-form';
 
 import {
 	ContextualbarScrollableContent,
@@ -88,12 +88,12 @@ const EditTrigger = ({ triggerData }: { triggerData?: Serialized<ILivechatTrigge
 	const nameField = useUniqueId();
 	const descriptionField = useUniqueId();
 
-	const methods = useForm<TriggersPayload>({ mode: 'onBlur', reValidateMode: 'onBlur', values: initValues });
 	const {
 		control,
 		handleSubmit,
+		trigger,
 		formState: { isDirty, isSubmitting, errors },
-	} = methods;
+	} = useForm<TriggersPayload>({ mode: 'onBlur', reValidateMode: 'onBlur', values: initValues });
 
 	// Alternative way of checking isValid in order to not trigger validation on every render
 	// https://github.com/react-hook-form/documentation/issues/944
@@ -138,74 +138,72 @@ const EditTrigger = ({ triggerData }: { triggerData?: Serialized<ILivechatTrigge
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent>
 				<form id={formId} onSubmit={handleSubmit(handleSave)}>
-					<FormProvider {...methods}>
-						<FieldGroup>
-							<Field>
-								<FieldRow>
-									<FieldLabel htmlFor={enabledField}>{t('Enabled')}</FieldLabel>
-									<Controller
-										name='enabled'
-										control={control}
-										render={({ field: { value, ...field } }) => <ToggleSwitch id={enabledField} {...field} checked={value} />}
-									/>
-								</FieldRow>
-							</Field>
+					<FieldGroup>
+						<Field>
+							<FieldRow>
+								<FieldLabel htmlFor={enabledField}>{t('Enabled')}</FieldLabel>
+								<Controller
+									name='enabled'
+									control={control}
+									render={({ field: { value, ...field } }) => <ToggleSwitch id={enabledField} {...field} checked={value} />}
+								/>
+							</FieldRow>
+						</Field>
 
-							<Field>
-								<FieldRow>
-									<FieldLabel htmlFor={runOnceField}>{t('Run_only_once_for_each_visitor')}</FieldLabel>
-									<Controller
-										name='runOnce'
-										control={control}
-										render={({ field: { value, ...field } }) => <ToggleSwitch id={runOnceField} {...field} checked={value} />}
-									/>
-								</FieldRow>
-							</Field>
+						<Field>
+							<FieldRow>
+								<FieldLabel htmlFor={runOnceField}>{t('Run_only_once_for_each_visitor')}</FieldLabel>
+								<Controller
+									name='runOnce'
+									control={control}
+									render={({ field: { value, ...field } }) => <ToggleSwitch id={runOnceField} {...field} checked={value} />}
+								/>
+							</FieldRow>
+						</Field>
 
-							<Field>
-								<FieldLabel htmlFor={nameField} required>
-									{t('Name')}
-								</FieldLabel>
-								<FieldRow>
-									<Controller
-										name='name'
-										control={control}
-										rules={{ required: t('The_field_is_required', t('Name')) }}
-										render={({ field }) => (
-											<TextInput
-												{...field}
-												id={nameField}
-												error={errors?.name?.message}
-												aria-required={true}
-												aria-invalid={Boolean(errors?.name)}
-												aria-describedby={`${nameField}-error`}
-											/>
-										)}
-									/>
-								</FieldRow>
-								{errors?.name && (
-									<FieldError aria-live='assertive' id={`${nameField}-error`}>
-										{errors?.name.message}
-									</FieldError>
-								)}
-							</Field>
+						<Field>
+							<FieldLabel htmlFor={nameField} required>
+								{t('Name')}
+							</FieldLabel>
+							<FieldRow>
+								<Controller
+									name='name'
+									control={control}
+									rules={{ required: t('The_field_is_required', t('Name')) }}
+									render={({ field }) => (
+										<TextInput
+											{...field}
+											id={nameField}
+											error={errors?.name?.message}
+											aria-required={true}
+											aria-invalid={Boolean(errors?.name)}
+											aria-describedby={`${nameField}-error`}
+										/>
+									)}
+								/>
+							</FieldRow>
+							{errors?.name && (
+								<FieldError aria-live='assertive' id={`${nameField}-error`}>
+									{errors?.name.message}
+								</FieldError>
+							)}
+						</Field>
 
-							<Field>
-								<FieldLabel htmlFor={descriptionField}>{t('Description')}</FieldLabel>
-								<FieldRow>
-									<Controller name='description' control={control} render={({ field }) => <TextInput id={descriptionField} {...field} />} />
-								</FieldRow>
-							</Field>
+						<Field>
+							<FieldLabel htmlFor={descriptionField}>{t('Description')}</FieldLabel>
+							<FieldRow>
+								<Controller name='description' control={control} render={({ field }) => <TextInput id={descriptionField} {...field} />} />
+							</FieldRow>
+						</Field>
 
-							{conditionsFields.map((field, index) => (
-								<ConditionForm key={field.id} control={control} index={index} />
-							))}
+						{conditionsFields.map((field, index) => (
+							<ConditionForm key={field.id} control={control} index={index} />
+						))}
 
-							{actionsFields.map((field, index) => (
-								<ActionForm key={field.id} control={control} index={index} />
-							))}
-						</FieldGroup>
-					</FormProvider>
+						{actionsFields.map((field, index) => (
+							<ActionForm key={field.id} control={control} trigger={trigger} index={index} />
+						))}
+					</FieldGroup>
 				</form>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>

@@ -1,9 +1,9 @@
 import { FieldError, Field, FieldHint, FieldLabel, FieldRow, NumberInput, TextAreaInput, FieldGroup } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, FocusEvent, FormEvent } from 'react';
+import type { ComponentProps, FocusEvent } from 'react';
 import React from 'react';
-import type { Control } from 'react-hook-form';
+import type { Control, UseFormTrigger } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 
 import { useHasLicenseModule } from '../../../../../ee/client/hooks/useHasLicenseModule';
@@ -15,9 +15,10 @@ import { ActionSender } from './ActionSender';
 type SendMessageActionFormType = ComponentProps<typeof Field> & {
 	index: number;
 	control: Control<TriggersPayload>;
+	trigger: UseFormTrigger<TriggersPayload>;
 };
 
-export const ExternalServiceActionForm = ({ control, index, ...props }: SendMessageActionFormType) => {
+export const ExternalServiceActionForm = ({ control, trigger, index, ...props }: SendMessageActionFormType) => {
 	const t = useTranslation();
 
 	const hasLicense = useHasLicenseModule('livechat-enterprise');
@@ -33,7 +34,7 @@ export const ExternalServiceActionForm = ({ control, index, ...props }: SendMess
 		<FieldGroup {...props}>
 			<ActionSender disabled={!hasLicense} control={control} index={index} />
 
-			<ActionExternalServiceUrl disabled={!hasLicense} control={control} index={index} />
+			<ActionExternalServiceUrl disabled={!hasLicense} control={control} trigger={trigger} index={index} />
 
 			<Field>
 				<FieldLabel htmlFor={timeoutFieldId}>{t('Timeout_in_miliseconds')}*</FieldLabel>

@@ -4,23 +4,24 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import React, { useCallback, useMemo } from 'react';
-import type { Control } from 'react-hook-form';
+import type { Control, UseFormTrigger } from 'react-hook-form';
 import { Controller, useWatch } from 'react-hook-form';
 
 import { useHasLicenseModule } from '../../../../../ee/client/hooks/useHasLicenseModule';
 import { type TriggersPayload } from '../EditTrigger';
-import { useActionForm } from '../hooks/useActionForm';
+import { useActionFormFields } from '../hooks/useActionFormFields';
 
 type SendMessageFormType = ComponentProps<typeof Field> & {
-	control: Control<TriggersPayload>;
 	index: number;
+	control: Control<TriggersPayload>;
+	trigger: UseFormTrigger<TriggersPayload>;
 };
 
 const ACTION_HINTS: Record<string, TranslationKey> = {
 	'use-external-service': 'External_service_action_hint',
 } as const;
 
-export const ActionForm = ({ control, index, ...props }: SendMessageFormType) => {
+export const ActionForm = ({ control, index, trigger, ...props }: SendMessageFormType) => {
 	const t = useTranslation();
 
 	const actionFieldId = useUniqueId();
@@ -36,7 +37,7 @@ export const ActionForm = ({ control, index, ...props }: SendMessageFormType) =>
 		];
 	}, [t]);
 
-	const ActionFormParams = useActionForm(actionFieldValue);
+	const ActionFormFields = useActionFormFields(actionFieldValue);
 	const actionHint = useMemo(() => ACTION_HINTS[actionFieldValue] || '', [actionFieldValue]);
 
 	// TODO: Remove legacySelect once we have a new Select component
@@ -93,7 +94,7 @@ export const ActionForm = ({ control, index, ...props }: SendMessageFormType) =>
 				{actionHint && <FieldHint>{t(actionHint)}</FieldHint>}
 			</Field>
 
-			<ActionFormParams control={control} index={index} />
+			<ActionFormFields control={control} trigger={trigger} index={index} />
 		</FieldGroup>
 	);
 };

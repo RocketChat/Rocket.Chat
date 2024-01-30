@@ -8,6 +8,6 @@ const actionForms = {
 	'use-external-service': ExternalServiceActionForm,
 } as const;
 
-export const useActionForm = (actionName: TriggerActions) => {
+export const useActionFormFields = (actionName: TriggerActions) => {
 	return actionForms[actionName] || actionForms['send-message'];
 };

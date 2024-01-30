@@ -5,21 +5,21 @@ import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.ch
 import { useMutation } from '@tanstack/react-query';
 import type { ComponentProps } from 'react';
 import React from 'react';
-import type { Control } from 'react-hook-form';
-import { Controller, useFormContext, useWatch } from 'react-hook-form';
+import type { Control, UseFormTrigger } from 'react-hook-form';
+import { Controller, useWatch } from 'react-hook-form';
 
 import type { TriggersPayload } from '../EditTrigger';
 import { useFieldError } from '../hooks/useFieldError';
 
 type ActionExternaServicelUrlType = ComponentProps<typeof Field> & {
-	control: Control<TriggersPayload>;
 	index: number;
+	control: Control<TriggersPayload>;
+	trigger: UseFormTrigger<TriggersPayload>;
 	disabled?: boolean;
 };
 
-export const ActionExternalServiceUrl = ({ control, index, disabled, ...props }: ActionExternaServicelUrlType) => {
+export const ActionExternalServiceUrl = ({ control, trigger, index, disabled, ...props }: ActionExternaServicelUrlType) => {
 	const t = useTranslation();
-	const { trigger } = useFormContext<TriggersPayload>();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const serviceUrlFieldId = useUniqueId();
