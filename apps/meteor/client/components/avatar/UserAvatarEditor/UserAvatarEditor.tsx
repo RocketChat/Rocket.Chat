@@ -1,5 +1,6 @@
 import type { IUser, AvatarObject } from '@rocket.chat/core-typings';
-import { Box, Button, TextInput, Margins, Avatar, IconButton } from '@rocket.chat/fuselage';
+import { Box, Button, TextInput, Avatar, IconButton, Label } from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent } from 'react';
 import React, { useState, useCallback } from 'react';
@@ -7,17 +8,11 @@ import React, { useState, useCallback } from 'react';
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 import { isValidImageFormat } from '../../../lib/utils/isValidImageFormat';
 import UserAvatar from '../UserAvatar';
+import type { UserAvatarSuggestion } from './UserAvatarSuggestion';
 import UserAvatarSuggestions from './UserAvatarSuggestions';
+import { readFileAsDataURL } from './readFileAsDataURL';
 
-const toDataURL = (file: File, callback: (result: FileReader['result']) => void): void => {
-	const reader = new FileReader();
-	reader.onloadend = function (e): void {
-		callback(e?.target?.result || null);
-	};
-	reader.readAsDataURL(file);
-};
-
-type UserAvatarEditorType = {
+type UserAvatarEditorProps = {
 	currentUsername: IUser['username'];
 	username: IUser['username'];
 	setAvatarObj: (obj: AvatarObject) => void;
@@ -25,31 +20,33 @@ type UserAvatarEditorType = {
 	etag: IUser['avatarETag'];
 };
 
-function UserAvatarEditor({ currentUsername, username, setAvatarObj, disabled, etag }: UserAvatarEditorType): ReactElement {
+function UserAvatarEditor({ currentUsername, username, setAvatarObj, disabled, etag }: UserAvatarEditorProps): ReactElement {
 	const t = useTranslation();
 	const rotateImages = useSetting('FileUpload_RotateImages');
 	const [avatarFromUrl, setAvatarFromUrl] = useState('');
 	const [newAvatarSource, setNewAvatarSource] = useState<string>();
+	const imageUrlField = useUniqueId();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const setUploadedPreview = useCallback(
 		async (file, avatarObj) => {
 			setAvatarObj(avatarObj);
-			toDataURL(file, async (dataURL) => {
-				if (typeof dataURL === 'string' && (await isValidImageFormat(dataURL))) {
-					setNewAvatarSource(dataURL);
-					return;
-				}
+			try {
+				const dataURL = await readFileAsDataURL(file);
 
+				if (await isValidImageFormat(dataURL)) {
+					setNewAvatarSource(dataURL);
+				}
+			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: t('Avatar_format_invalid') });
-			});
+			}
 		},
 		[setAvatarObj, t, dispatchToastMessage],
 	);
 
 	const [clickUpload] = useSingleFileInput(setUploadedPreview);
 
-	const clickUrl = (): void => {
+	const handleAddUrl = (): void => {
 		setNewAvatarSource(avatarFromUrl);
 		setAvatarObj({ avatarUrl: avatarFromUrl });
 	};
@@ -65,6 +62,14 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, disabled, e
 		setAvatarFromUrl(event.currentTarget.value);
 	};
 
+	const handleSelectSuggestion = useCallback(
+		(suggestion: UserAvatarSuggestion) => {
+			setAvatarObj(suggestion as unknown as AvatarObject);
+			setNewAvatarSource(suggestion.blob);
+		},
+		[setAvatarObj, setNewAvatarSource],
+	);
+
 	return (
 		<Box display='flex' flexDirection='column' fontScale='p2m' color='default'>
 			{t('Profile_picture')}
@@ -72,8 +77,11 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, disabled, e
 				<UserAvatar
 					size='x124'
 					url={url}
+					key={url}
+					data-qa-id='UserAvatarEditor'
 					username={currentUsername || ''}
 					etag={etag}
+					onError={() => dispatchToastMessage({ type: 'error', message: t('error-invalid-image-url') })}
 					style={{
 						objectFit: 'contain',
 						imageOrientation: rotateImages ? 'from-image' : 'none',
@@ -81,32 +89,33 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, disabled, e
 				/>
 				<Box display='flex' flexDirection='column' flexGrow='1' justifyContent='space-between' mis={4}>
 					<Box display='flex' flexDirection='row' mbs='none'>
-						<Margins inline={4}>
-							<Button square mis='none' onClick={clickReset} disabled={disabled} mie={4} title={t('Accounts_SetDefaultAvatar')}>
-								<Avatar url={`/avatar/%40${username}`} />
-							</Button>
-							<IconButton icon='upload' secondary onClick={clickUpload} disabled={disabled} title={t('Upload')} />
-							<IconButton
-								data-qa-id='UserAvatarEditorSetAvatarLink'
-								icon='permalink'
-								secondary
-								onClick={clickUrl}
-								disabled={disabled || !avatarFromUrl}
-								title={t('Add_URL')}
-							/>
-							<UserAvatarSuggestions setAvatarObj={setAvatarObj} setNewAvatarSource={setNewAvatarSource} disabled={disabled} />
-						</Margins>
-					</Box>
-					<Margins inlineStart={4}>
-						<Box>{t('Use_url_for_avatar')}</Box>
-						<TextInput
-							data-qa-id='UserAvatarEditorLink'
-							flexGrow={0}
-							placeholder={t('Use_url_for_avatar')}
-							value={avatarFromUrl}
-							onChange={handleAvatarFromUrlChange}
+						<Button square disabled={disabled} mi={4} title={t('Accounts_SetDefaultAvatar')} onClick={clickReset}>
+							<Avatar url={`/avatar/%40${username}`} />
+						</Button>
+						<IconButton icon='upload' secondary disabled={disabled} title={t('Upload')} mi={4} onClick={clickUpload} />
+						<IconButton
+							icon='permalink'
+							secondary
+							disabled={disabled || !avatarFromUrl}
+							title={t('Add_URL')}
+							mi={4}
+							onClick={handleAddUrl}
+							data-qa-id='UserAvatarEditorSetAvatarLink'
 						/>
-					</Margins>
+						<UserAvatarSuggestions disabled={disabled} onSelectOne={handleSelectSuggestion} />
+					</Box>
+					<Label htmlFor={imageUrlField} mis={4}>
+						{t('Use_url_for_avatar')}
+					</Label>
+					<TextInput
+						data-qa-id='UserAvatarEditorLink'
+						id={imageUrlField}
+						flexGrow={0}
+						placeholder={t('Use_url_for_avatar')}
+						value={avatarFromUrl}
+						mis={4}
+						onChange={handleAvatarFromUrlChange}
+					/>
 				</Box>
 			</Box>
 		</Box>

@@ -35,7 +35,12 @@ const EngagementDashboardPage = ({ tab = 'users', onSelectTab }: EngagementDashb
 	return (
 		<Page background='tint'>
 			<PageHeader title={t('Engagement')}>
-				<Select options={timezoneOptions} value={timezoneId} onChange={(value) => handleTimezoneChange(String(value))} />
+				<Select
+					options={timezoneOptions}
+					value={timezoneId}
+					onChange={(value) => handleTimezoneChange(String(value))}
+					aria-label={t('Default_Timezone_For_Reporting')}
+				/>
 			</PageHeader>
 			<Tabs>
 				<Tabs.Item selected={tab === 'users'} onClick={handleTabClick('users')}>

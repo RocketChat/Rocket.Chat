@@ -11,7 +11,7 @@ import { executeSetReaction } from '../../../app/reactions/server/setReaction';
 import { settings } from '../../../app/settings/server';
 import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
 import { BeforeSaveCannedResponse } from '../../../ee/server/hooks/messages/BeforeSaveCannedResponse';
-import { broadcastMessageSentEvent } from '../../modules/watchers/lib/messages';
+import { broadcastMessageFromData } from '../../modules/watchers/lib/messages';
 import { BeforeSaveBadWords } from './hooks/BeforeSaveBadWords';
 import { BeforeSaveCheckMAC } from './hooks/BeforeSaveCheckMAC';
 import { BeforeSaveJumpToMessage } from './hooks/BeforeSaveJumpToMessage';
@@ -108,18 +108,23 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		if (!username) {
 			throw new Error('The username cannot be empty.');
 		}
-		const result = await Messages.createWithTypeRoomIdMessageUserAndUnread(
-			type,
-			rid,
-			message,
-			{ _id: userId, username, name },
-			settings.get('Message_Read_Receipt_Enabled'),
-			extraData,
-		);
-		void broadcastMessageSentEvent({
+
+		const [result] = await Promise.all([
+			Messages.createWithTypeRoomIdMessageUserAndUnread(
+				type,
+				rid,
+				message,
+				{ _id: userId, username, name },
+				settings.get('Message_Read_Receipt_Enabled'),
+				extraData,
+			),
+			Rooms.incMsgCountById(rid, 1),
+		]);
+
+		void broadcastMessageFromData({
 			id: result.insertedId,
-			broadcastCallback: async (message) => this.api?.broadcast('message.sent', message),
 		});
+
 		return result.insertedId;
 	}
 

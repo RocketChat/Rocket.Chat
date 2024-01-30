@@ -1,4 +1,4 @@
-import type { ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, Serialized } from '@rocket.chat/core-typings';
 import {
 	Field,
 	FieldGroup,
@@ -29,7 +29,7 @@ const CloseChatModal = ({
 	onCancel,
 	onConfirm,
 }: {
-	department?: ILivechatDepartment | null;
+	department?: Serialized<ILivechatDepartment | null>;
 	visitorEmail?: string;
 	onCancel: () => void;
 	onConfirm: (
