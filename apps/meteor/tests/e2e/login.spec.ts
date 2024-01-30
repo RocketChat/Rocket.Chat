@@ -22,18 +22,18 @@ test.describe.parallel('Login', () => {
 
 	test('Login with invalid credentials', async () => {
 		await test.step('expect to have username and password marked as invalid', async () => {
-			await poRegistration.usernameOrEmail.type(faker.internet.email());
+			await poRegistration.username.type(faker.internet.email());
 			await poRegistration.inputPassword.type('any_password');
 			await poRegistration.btnLogin.click();
 
-			await expect(poRegistration.usernameOrEmail).toBeInvalid();
+			await expect(poRegistration.username).toBeInvalid();
 			await expect(poRegistration.inputPassword).toBeInvalid();
 		});
 	});
 
 	test('Login with valid username and password', async () => {
 		await test.step('expect successful login', async () => {
-			await poRegistration.usernameOrEmail.type('user1');
+			await poRegistration.username.type('user1');
 			await poRegistration.inputPassword.type(DEFAULT_USER_CREDENTIALS.password);
 			await poRegistration.btnLogin.click();
 
@@ -43,7 +43,7 @@ test.describe.parallel('Login', () => {
 
 	test('Login with valid email and password', async () => {
 		await test.step('expect successful login', async () => {
-			await poRegistration.usernameOrEmail.type('user1@email.com');
+			await poRegistration.username.type('user1@email.com');
 			await poRegistration.inputPassword.type(DEFAULT_USER_CREDENTIALS.password);
 			await poRegistration.btnLogin.click();
 

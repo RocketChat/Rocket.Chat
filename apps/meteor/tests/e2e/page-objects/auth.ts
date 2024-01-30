@@ -15,7 +15,6 @@ export class Registration {
 		return this.page.locator('role=button[name="Reset"]');
 	}
 
-
 	get btnLogin(): Locator {
 		return this.page.locator('role=button[name="Login"]');
 	}
@@ -50,10 +49,6 @@ export class Registration {
 
 	get username(): Locator {
 		return this.page.locator('role=textbox[name=/username/i]');
-	}
-
-	get usernameOrEmail(): Locator {
-		return this.page.locator('role=textbox[name=/usernameOrEmail/i]');
 	}
 
 	get inputName(): Locator {
