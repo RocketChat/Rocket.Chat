@@ -1,5 +1,15 @@
 # @rocket.chat/authorization-service
 
+## 0.3.4-rc.4
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.4
+- @rocket.chat/rest-typings@6.6.0-rc.4
+- @rocket.chat/core-services@0.3.4-rc.4
+- @rocket.chat/model-typings@0.3.0-rc.4
+- @rocket.chat/models@0.0.28-rc.4
+
 ## 0.3.4-rc.3
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # @rocket.chat/api-client
 
+## 0.1.22-rc.4
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.4
+- @rocket.chat/rest-typings@6.6.0-rc.4
+
 ## 0.1.22-rc.3
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # Change Log
 
+## 4.0.0-rc.4
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@4.0.0-rc.4
+- @rocket.chat/ui-contexts@4.0.0-rc.4
+- @rocket.chat/ui-video-conf@4.0.0-rc.4
+
 ## 4.0.0-rc.3
 
 ### Patch Changes
