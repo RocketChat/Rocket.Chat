@@ -49,7 +49,7 @@ export class Registration {
 	}
 
 	get username(): Locator {
-		return this.page.locator('role=textbox[name=/username/i]');
+		return this.page.locator('role=textbox[name=/usernameOrEmail/i]');
 	}
 
 	get inputName(): Locator {
