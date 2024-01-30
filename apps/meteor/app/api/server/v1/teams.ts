@@ -540,7 +540,6 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isTeamsAutocompleteProps },
 	{
 		async get() {
-
 			const { name } = this.queryParams;
 
 			const teams = await Team.autocomplete(this.userId, name);

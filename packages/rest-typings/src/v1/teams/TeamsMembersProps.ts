@@ -7,6 +7,8 @@ export type TeamsMembersProps = ({ teamId: string } | { teamName: string }) & {
 	status?: UserStatus[];
 	username?: string;
 	name?: string;
+	count?: number;
+	offset?: number;
 };
 
 const teamsMembersPropsSchema = {
