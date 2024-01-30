@@ -18,6 +18,7 @@ import {
 	isUsersSendConfirmationEmailParamsPOST,
 	isUsersSetStatusParamsPOST,
 	isUsersDeleteOwnAccountParamsPOST,
+	isUsersGetAvatarParamsGET,
 } from '@rocket.chat/rest-typings';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
@@ -54,7 +55,7 @@ import { findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonE
 
 API.v1.addRoute(
 	'users.getAvatar',
-	{ authRequired: false },
+	{ authRequired: false, validateParams: isUsersGetAvatarParamsGET },
 	{
 		async get() {
 			const user = await getUserFromParams(this.queryParams);

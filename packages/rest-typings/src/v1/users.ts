@@ -10,6 +10,7 @@ import type { UserRegisterParamsPOST } from './users/UserRegisterParamsPOST';
 import type { UserSetActiveStatusParamsPOST } from './users/UserSetActiveStatusParamsPOST';
 import type { UsersAutocompleteParamsGET } from './users/UsersAutocompleteParamsGET';
 import type { UsersDeleteOwnAccountParamsPOST } from './users/UsersDeleteOwnAccountParamsPOST';
+import type { UsersGetAvatarParamsGET } from './users/UsersGetAvatarParamsGET';
 import type { UsersInfoParamsGet } from './users/UsersInfoParamsGet';
 import type { UsersListTeamsParamsGET } from './users/UsersListTeamsParamsGET';
 import type { UsersSendConfirmationEmailParamsPOST } from './users/UsersSendConfirmationEmailParamsPOST';
@@ -357,7 +358,7 @@ export type UsersEndpoints = {
 	};
 
 	'/v1/users.getAvatar': {
-		GET: (params: { userId?: string; username?: string; user?: string }) => void;
+		GET: (params: UsersGetAvatarParamsGET) => void;
 	};
 
 	'/v1/users.updateOwnBasicInfo': {
