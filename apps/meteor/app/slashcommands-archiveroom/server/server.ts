@@ -4,7 +4,10 @@ import { isRegisterUser } from '@rocket.chat/core-typings';
 import { Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { i18n } from '../../../server/lib/i18n';
+import { roomCoordinator } from '../../../server/lib/rooms/roomCoordinator';
+import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { archiveRoom } from '../../lib/server/functions/archiveRoom';
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
@@ -59,6 +62,14 @@ slashCommands.add({
 				}),
 			});
 			return;
+		}
+
+		if (!(await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.ARCHIVE, userId))) {
+			throw new Meteor.Error('error-direct-message-room', `rooms type: ${room.t} can not be archived`, { method: 'archiveRoom' });
+		}
+
+		if (!(await hasPermissionAsync(userId, 'archive-room', room._id))) {
+			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'archiveRoom' });
 		}
 
 		await archiveRoom(room._id, user);
