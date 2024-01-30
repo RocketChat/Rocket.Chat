@@ -240,6 +240,7 @@ export * from './helpers/PaginatedResult';
 export * from './helpers/ReplacePlaceholders';
 export * from './helpers/WithItemCount';
 export * from './v1/emojiCustom';
+export * from './v1/customUserStatus';
 export * from './v1/instances';
 export * from './v1/users';
 export * from './v1/users/UsersSetAvatarParamsPOST';
