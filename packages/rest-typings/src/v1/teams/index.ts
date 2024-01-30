@@ -1,6 +1,5 @@
-import type { IRole, IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
+import type { IRole, IRoom, ITeam } from '@rocket.chat/core-typings';
 
-import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
 import type { TeamsAddMembersProps } from './TeamsAddMembersProps';
 import type { TeamsAddRoomsProps } from './TeamsAddRoomsProps';
@@ -8,6 +7,7 @@ import type { TeamsConvertToChannelProps } from './TeamsConvertToChannelProps';
 import type { TeamsCreateProps } from './TeamsCreateProps';
 import type { TeamsDeleteProps } from './TeamsDeleteProps';
 import type { TeamsLeaveProps } from './TeamsLeaveProps';
+import type { TeamsListRoomsOfUserProps } from './TeamsListRoomsOfUserProps';
 import type { TeamsListRoomsProps } from './TeamsListRoomsProps';
 import type { TeamsRemoveMemberProps } from './TeamsRemoveMemberProps';
 import type { TeamsRemoveRoomProps } from './TeamsRemoveRoomProps';
@@ -27,6 +27,7 @@ export * from './TeamsCreateProps';
 export * from './TeamsAddRoomsProps';
 export * from './TeamsUpdateRoomProps';
 export * from './TeamsListRoomsProps';
+export * from './TeamsListRoomsOfUserProps';
 
 type ITeamAutocompleteResult = Pick<IRoom, '_id' | 'fname' | 'teamId' | 'name' | 't' | 'avatarETag'>;
 
@@ -56,7 +57,8 @@ type TeamProps =
 	| TeamsCreateProps
 	| TeamsAddRoomsProps
 	| TeamsUpdateRoomProps
-	| TeamsListRoomsProps;
+	| TeamsListRoomsProps
+	| TeamsListRoomsOfUserProps;
 
 export const isTeamPropsWithTeamName = <T extends TeamProps>(props: T): props is T & { teamName: string } => 'teamName' in props;
 
@@ -132,20 +134,7 @@ export type TeamsEndpoints = {
 	};
 
 	'/v1/teams.listRoomsOfUser': {
-		GET: (
-			params: PaginatedRequest<
-				| {
-						teamId: ITeam['_id'];
-						userId: IUser['_id'];
-						canUserDelete?: string;
-				  }
-				| {
-						teamName: ITeam['name'];
-						userId: IUser['_id'];
-						canUserDelete?: string;
-				  }
-			>,
-		) => PaginatedResult & { rooms: IRoom[] };
+		GET: (params: TeamsListRoomsOfUserProps) => PaginatedResult & { rooms: IRoom[] };
 	};
 
 	'/v1/teams.listRooms': {

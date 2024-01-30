@@ -14,6 +14,7 @@ import {
 	isTeamsAddRoomsProps,
 	isTeamsUpdateRoomProps,
 	isTeamsListRoomsProps,
+	isTeamsListRoomsOfUserProps,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Match, check } from 'meteor/check';
@@ -262,31 +263,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'teams.listRoomsOfUser',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isTeamsListRoomsOfUserProps },
 	{
 		async get() {
-			check(
-				this.queryParams,
-				Match.OneOf(
-					Match.ObjectIncluding({
-						teamId: String,
-					}),
-					Match.ObjectIncluding({
-						teamName: String,
-					}),
-				),
-			);
-
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					userId: String,
-					canUserDelete: Match.Maybe(String),
-					offset: Match.Maybe(String),
-					count: Match.Maybe(String),
-				}),
-			);
-
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			const team = await getTeamByIdOrName(this.queryParams);
