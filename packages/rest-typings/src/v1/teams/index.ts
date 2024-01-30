@@ -12,6 +12,7 @@ import type { TeamsRemoveMemberProps } from './TeamsRemoveMemberProps';
 import type { TeamsRemoveRoomProps } from './TeamsRemoveRoomProps';
 import type { TeamsUpdateMemberProps } from './TeamsUpdateMemberProps';
 import type { TeamsUpdateProps } from './TeamsUpdateProps';
+import type { TeamsUpdateRoomProps } from './TeamsUpdateRoomProps';
 
 export * from './TeamsAddMembersProps';
 export * from './TeamsConvertToChannelProps';
@@ -23,6 +24,7 @@ export * from './TeamsUpdateMemberProps';
 export * from './TeamsUpdateProps';
 export * from './TeamsCreateProps';
 export * from './TeamsAddRoomsProps';
+export * from './TeamsUpdateRoomProps';
 
 type ITeamAutocompleteResult = Pick<IRoom, '_id' | 'fname' | 'teamId' | 'name' | 't' | 'avatarETag'>;
 
@@ -50,7 +52,8 @@ type TeamProps =
 	| TeamsLeaveProps
 	| TeamsUpdateProps
 	| TeamsCreateProps
-	| TeamsAddRoomsProps;
+	| TeamsAddRoomsProps
+	| TeamsUpdateRoomProps;
 
 export const isTeamPropsWithTeamName = <T extends TeamProps>(props: T): props is T & { teamName: string } => 'teamName' in props;
 
@@ -154,7 +157,7 @@ export type TeamsEndpoints = {
 	};
 
 	'/v1/teams.updateRoom': {
-		POST: (params: { roomId: IRoom['_id']; isDefault: boolean }) => {
+		POST: (params: TeamsUpdateRoomProps) => {
 			room: IRoom;
 		};
 	};

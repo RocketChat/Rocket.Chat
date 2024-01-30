@@ -12,6 +12,7 @@ import {
 	isTeamsUpdateProps,
 	isTeamsCreateProps,
 	isTeamsAddRoomsProps,
+	isTeamsUpdateRoomProps,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Match, check } from 'meteor/check';
@@ -194,17 +195,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'teams.updateRoom',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isTeamsUpdateRoomProps },
 	{
 		async post() {
-			check(
-				this.bodyParams,
-				Match.ObjectIncluding({
-					roomId: String,
-					isDefault: Boolean,
-				}),
-			);
-
 			const { roomId, isDefault } = this.bodyParams;
 
 			const team = await Team.getOneByRoomId(roomId);
