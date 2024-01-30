@@ -55,6 +55,28 @@ const CustomUserStatusCreateSchema = {
 
 export const isCustomUserStatusCreateProps = ajv.compile<CustomUserStatusCreateProps>(CustomUserStatusCreateSchema);
 
+type CustomUserStatusUpdateProps = { _id: string; name: string; statusType?: UserStatus };
+
+const CustomUserStatusUpdateSchema = {
+	type: 'object',
+	properties: {
+		_id: {
+			type: 'string',
+		},
+		name: {
+			type: 'string',
+		},
+		statusType: {
+			type: 'string',
+			enum: Object.values(UserStatus),
+		},
+	},
+	required: ['_id', 'name'],
+	additionalProperties: false,
+};
+
+export const isCustomUserStatusUpdateProps = ajv.compile<CustomUserStatusUpdateProps>(CustomUserStatusUpdateSchema);
+
 export type CustomUserStatusEndpoints = {
 	'/v1/custom-user-status.list': {
 		GET: (params: CustomUserStatusListProps) => PaginatedResult<{

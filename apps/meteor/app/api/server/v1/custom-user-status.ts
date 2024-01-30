@@ -1,6 +1,5 @@
 import { CustomUserStatus } from '@rocket.chat/models';
-import { isCustomUserStatusCreateProps } from '@rocket.chat/rest-typings';
-import { Match, check } from 'meteor/check';
+import { isCustomUserStatusCreateProps, isCustomUserStatusUpdateProps } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { API } from '../api';
@@ -75,15 +74,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'custom-user-status.update',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isCustomUserStatusUpdateProps },
 	{
 		async post() {
-			check(this.bodyParams, {
-				_id: String,
-				name: String,
-				statusType: Match.Maybe(String),
-			});
-
 			const userStatusData = {
 				_id: this.bodyParams._id,
 				name: this.bodyParams.name,
