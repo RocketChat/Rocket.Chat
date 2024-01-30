@@ -95,9 +95,6 @@ test.describe.parallel('administration', () => {
 				await poAdmin.defaultLabel.click();
 				await poAdmin.btnSave.click();
 	
-				// The contextual bar closes after the save, because of that it has to be opened again
-				// Also, this flow assumes the data is not stale which can cause false positives
-				// TODO: If this feature is not removed in the future, Use api to check if the room is default for test optimization
 				await poAdmin.getRoomRow(targetChannel).click();
 				await expect(poAdmin.defaultInput).toBeChecked();
 			});
@@ -107,9 +104,7 @@ test.describe.parallel('administration', () => {
 				await poAdmin.getRoomRow(targetChannel).click();
 				await poAdmin.favoriteLabel.click();
 				await poAdmin.btnSave.click();
-	
-				// Same as the previous test
-				// TODO: If this feature is not removed in the future, Use api to check if the room is default for test optimization
+
 				await poAdmin.getRoomRow(targetChannel).click();
 				await expect(poAdmin.favoriteInput).toBeChecked();
 			});

@@ -20,7 +20,7 @@ import {
 	Box,
 	TextAreaInput,
 } from '@rocket.chat/fuselage';
-import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useTranslation, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
@@ -98,7 +98,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 
 	const handleArchive = useArchiveRoom(room);
 
-	const handleUpdateRoomData = useMutableCallback(async ({ hideSysMes, joinCodeRequired, ...formData }) => {
+	const handleUpdateRoomData = useEffectEvent(async ({ hideSysMes, joinCodeRequired, ...formData }) => {
 		const data = getDirtyFields(formData, dirtyFields);
 		delete data.archived;
 
@@ -119,7 +119,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		}
 	});
 
-	const handleSave = useMutableCallback(async (data) =>
+	const handleSave = useEffectEvent((data) =>
 		Promise.all([isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive()].filter(Boolean)),
 	);
 
