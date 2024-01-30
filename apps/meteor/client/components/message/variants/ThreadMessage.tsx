@@ -55,7 +55,7 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar }: ThreadMe
 			<MessageLeftContainer>
 				{!sequential && message.u.username && showUserAvatar && (
 					<MessageAvatar
-						{...{ emoji: message.emoji ? <Emoji emojiHandle={message.emoji} fillContainer /> : undefined }}
+						emoji={message.emoji ? <Emoji emojiHandle={message.emoji} fillContainer /> : undefined}
 						avatarUrl={message.avatar}
 						username={message.u.username}
 						size='x36'
