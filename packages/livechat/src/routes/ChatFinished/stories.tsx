@@ -2,7 +2,7 @@ import { action } from '@storybook/addon-actions';
 import type { Meta, Story } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
-import { screenProps, loremIpsum, screenDecorator } from '../../helpers.stories';
+import { screenProps, loremIpsum, screenDecorator } from '../../../.storybook/helpers';
 import ChatFinished from './component';
 
 export default {

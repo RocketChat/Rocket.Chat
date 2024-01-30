@@ -1,5 +1,5 @@
 import type { Box } from '@rocket.chat/fuselage';
-import { HeaderToolbox, HeaderToolboxAction, HeaderToolboxDivider } from '@rocket.chat/ui-client';
+import { HeaderToolbar, HeaderToolbarAction, HeaderToolbarDivider } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import React, { memo } from 'react';
@@ -18,7 +18,7 @@ const QuickActions = ({ className }: QuickActionsProps) => {
 	const { quickActions, actionDefault } = useQuickActions();
 
 	return (
-		<HeaderToolbox aria-label={t('Omnichannel_quick_actions')}>
+		<HeaderToolbar aria-label={t('Omnichannel_quick_actions')}>
 			{quickActions.map(({ id, color, icon, title, action = actionDefault, options }, index) => {
 				const props = {
 					id,
@@ -36,10 +36,10 @@ const QuickActions = ({ className }: QuickActionsProps) => {
 					return <QuickActionOptions options={options} {...props} key={id} />;
 				}
 
-				return <HeaderToolboxAction {...props} key={id} />;
+				return <HeaderToolbarAction {...props} key={id} />;
 			})}
-			{quickActions.length > 0 && <HeaderToolboxDivider />}
-		</HeaderToolbox>
+			{quickActions.length > 0 && <HeaderToolbarDivider />}
+		</HeaderToolbar>
 	);
 };
 

@@ -36,6 +36,10 @@ export class AccountProfile {
 		return this.page.locator('.avatar-file-input');
 	}
 
+	get userAvatarEditor(): Locator {
+		return this.page.locator('[data-qa-id="UserAvatarEditor"]');
+	}
+
 	get emailTextInput(): Locator {
 		return this.page.locator('//label[contains(text(), "Email")]/..//input');
 	}
