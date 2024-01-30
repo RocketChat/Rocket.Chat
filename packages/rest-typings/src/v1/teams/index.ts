@@ -3,6 +3,7 @@ import type { IRole, IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
 import type { TeamsAddMembersProps } from './TeamsAddMembersProps';
+import type { TeamsAddRoomsProps } from './TeamsAddRoomsProps';
 import type { TeamsConvertToChannelProps } from './TeamsConvertToChannelProps';
 import type { TeamsCreateProps } from './TeamsCreateProps';
 import type { TeamsDeleteProps } from './TeamsDeleteProps';
@@ -21,6 +22,7 @@ export * from './TeamsRemoveRoomProps';
 export * from './TeamsUpdateMemberProps';
 export * from './TeamsUpdateProps';
 export * from './TeamsCreateProps';
+export * from './TeamsAddRoomsProps';
 
 type ITeamAutocompleteResult = Pick<IRoom, '_id' | 'fname' | 'teamId' | 'name' | 't' | 'avatarETag'>;
 
@@ -47,7 +49,8 @@ type TeamProps =
 	| TeamsDeleteProps
 	| TeamsLeaveProps
 	| TeamsUpdateProps
-	| TeamsCreateProps;
+	| TeamsCreateProps
+	| TeamsAddRoomsProps;
 
 export const isTeamPropsWithTeamName = <T extends TeamProps>(props: T): props is T & { teamName: string } => 'teamName' in props;
 
@@ -71,7 +74,7 @@ export type TeamsEndpoints = {
 	};
 
 	'/v1/teams.addRooms': {
-		POST: (params: { rooms: IRoom['_id'][]; teamId: string } | { rooms: IRoom['_id'][]; teamName: string }) => { rooms: IRoom[] };
+		POST: (params: TeamsAddRoomsProps) => { rooms: IRoom[] };
 	};
 
 	'/v1/teams.removeRoom': {

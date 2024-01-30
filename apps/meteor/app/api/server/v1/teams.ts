@@ -11,6 +11,7 @@ import {
 	isTeamsLeaveProps,
 	isTeamsUpdateProps,
 	isTeamsCreateProps,
+	isTeamsAddRoomsProps,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Match, check } from 'meteor/check';
@@ -142,23 +143,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'teams.addRooms',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isTeamsAddRoomsProps },
 	{
 		async post() {
-			check(
-				this.bodyParams,
-				Match.OneOf(
-					Match.ObjectIncluding({
-						teamId: String,
-						rooms: [String] as [StringConstructor],
-					}),
-					Match.ObjectIncluding({
-						teamName: String,
-						rooms: [String] as [StringConstructor],
-					}),
-				),
-			);
-
 			const team = await getTeamByIdOrName(this.bodyParams);
 			if (!team) {
 				return API.v1.failure('team-does-not-exist');
