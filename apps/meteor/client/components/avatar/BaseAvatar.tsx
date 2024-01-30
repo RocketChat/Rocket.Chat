@@ -15,8 +15,6 @@ const BaseAvatar: FC<BaseAvatarProps> = ({ onError, ...props }) => {
 	}
 	const toolbox = useRoomToolbox();
 	const { actions, openTab } = toolbox;
-	console.log(actions);
-	console.log(props);
 	const handleClick = () => {
 		openTab(actions[0]?.id);
 	}
