@@ -24,12 +24,11 @@ type UsersTableRowProps = {
 	user: Serialized<PickedUser>;
 	onClick: (id: IUser['_id'], e: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement>) => void;
 	mediaQuery: boolean;
-	refetchUsers: () => void;
 	onReload: () => void;
 	tab: IAdminUserTabs;
 };
 
-const UsersTableRow = ({ user, onClick, mediaQuery, refetchUsers, onReload, tab }: UsersTableRowProps): ReactElement => {
+const UsersTableRow = ({ user, onClick, mediaQuery, onReload, tab }: UsersTableRowProps): ReactElement => {
 	const t = useTranslation();
 	const { _id, emails, username, name, status, roles, active, avatarETag, lastLogin, type } = user;
 	const registrationStatusText = useMemo(() => {
@@ -60,7 +59,6 @@ const UsersTableRow = ({ user, onClick, mediaQuery, refetchUsers, onReload, tab 
 
 	const onChange = useMutableCallback(() => {
 		onReload();
-		refetchUsers();
 	});
 
 	const changeAdminStatusAction = useChangeAdminStatusAction(userId, isAdmin, onChange);

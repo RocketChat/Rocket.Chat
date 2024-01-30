@@ -2,15 +2,10 @@ import type { UsersListStatusParamsGET } from '@rocket.chat/rest-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
-type usePendingUsersCountProps = {
-	setPendingUsersCount: React.Dispatch<React.SetStateAction<number>>;
-	currentUsersTotal: number | undefined;
-};
-
-const usePendingUsersCount = ({ setPendingUsersCount, currentUsersTotal }: usePendingUsersCountProps) => {
+const usePendingUsersCount = (currentUsersTotal: number | undefined) => {
 	const getUsers = useEndpoint('GET', '/v1/users.listByStatus');
 
-	useQuery(
+	return useQuery(
 		['pendingUsersCount', currentUsersTotal],
 		async () => {
 			const payload: UsersListStatusParamsGET = {
@@ -20,12 +15,8 @@ const usePendingUsersCount = ({ setPendingUsersCount, currentUsersTotal }: usePe
 
 			return getUsers(payload);
 		},
-		{
-			onSuccess: (data) => {
-				setPendingUsersCount(data ? data.total : 0);
-			},
-		},
-	);
+		{ select: (data) => data?.total },
+	).data;
 };
 
 export default usePendingUsersCount;

@@ -1,10 +1,11 @@
-import type { IRole } from '@rocket.chat/core-typings';
+import type { IRole, Serialized } from '@rocket.chat/core-typings';
 import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
-import { useMediaQuery, useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import type { OptionProp } from '@rocket.chat/ui-client';
+import { useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import type { PaginatedResult, PickedUser } from '@rocket.chat/rest-typings';
 import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement, MutableRefObject } from 'react';
-import React, { useRef, useMemo, useState, useEffect } from 'react';
+import type { UseQueryResult } from '@tanstack/react-query';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
 import GenericNoResults from '../../../../components/GenericNoResults';
 import {
@@ -14,61 +15,39 @@ import {
 	GenericTableBody,
 	GenericTableLoadingTable,
 } from '../../../../components/GenericTable';
-import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
-import { useSort } from '../../../../components/GenericTable/hooks/useSort';
+import type { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
+import type { useSort } from '../../../../components/GenericTable/hooks/useSort';
+import type { UsersFilters } from '../AdminUsersPage';
 import type { IAdminUserTabs } from '../IAdminUserTabs';
-import useFilteredUsers from '../hooks/useFilteredUsers';
-import usePendingUsersCount from '../hooks/usePendingUsersCount';
 import UsersTableFilters from './UsersTableFilters';
 import UsersTableRow from './UsersTableRow';
 
 type UsersTableProps = {
-	reload: MutableRefObject<() => void>;
 	tab: IAdminUserTabs;
-	onReload: () => void;
 	roleData: { roles: IRole[] } | undefined;
-	setPendingUsersCount: React.Dispatch<React.SetStateAction<number>>;
+	onReload: () => void;
+	setUserFilters: React.Dispatch<React.SetStateAction<UsersFilters>>;
+	filteredUsersQueryResult: UseQueryResult<PaginatedResult<{ users: Serialized<PickedUser>[] }>>;
+	paginationData: ReturnType<typeof usePagination>;
+	sortData: ReturnType<typeof useSort<'name' | 'username' | 'emails.address' | 'status'>>;
 };
 
-export type UsersFilters = {
-	text: string;
-	roles: OptionProp[];
-};
-
-const UsersTable = ({ reload, tab, roleData, onReload, setPendingUsersCount }: UsersTableProps): ReactElement | null => {
+const UsersTable = ({
+	filteredUsersQueryResult,
+	setUserFilters,
+	roleData,
+	tab,
+	onReload,
+	paginationData,
+	sortData,
+}: UsersTableProps): ReactElement | null => {
 	const t = useTranslation();
 	const router = useRouter();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
-	const [userFilters, setUserFilters] = useState<UsersFilters>({ text: '', roles: [] });
-
-	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
-	const { sortBy, sortDirection, setSort } = useSort<'name' | 'username' | 'emails.address' | 'status'>('name');
-
-	const searchTerm = useDebouncedValue(userFilters.text, 500);
-	const prevSearchTerm = useRef('');
-
-	const { data, isSuccess, refetch, isLoading, isError } = useFilteredUsers({
-		searchTerm,
-		prevSearchTerm,
-		setCurrent,
-		sortBy,
-		sortDirection,
-		itemsPerPage,
-		current,
-		tab,
-		selectedRoles: useMemo(() => userFilters.roles.map((role) => role.id), [userFilters.roles]),
-	});
-
-	usePendingUsersCount({ setPendingUsersCount, currentUsersTotal: data?.total });
-
-	useEffect(() => {
-		reload.current = refetch;
-	}, [refetch, reload]);
-
-	useEffect(() => {
-		prevSearchTerm.current = searchTerm;
-	}, [searchTerm]);
+	const { data, isLoading, isError, isSuccess } = filteredUsersQueryResult;
+	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = paginationData;
+	const { sortBy, sortDirection, setSort } = sortData;
 
 	const isKeyboardEvent = (
 		event: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement>,
@@ -170,12 +149,12 @@ const UsersTable = ({ reload, tab, roleData, onReload, setPendingUsersCount }: U
 					<StatesIcon name='warning' variation='danger' />
 					<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
 					<StatesActions>
-						<StatesAction onClick={() => refetch()}>{t('Reload_page')}</StatesAction>
+						<StatesAction onClick={onReload}>{t('Reload_page')}</StatesAction>
 					</StatesActions>
 				</States>
 			)}
 
-			{isSuccess && data.users?.length === 0 && <GenericNoResults />}
+			{isSuccess && data.users.length === 0 && <GenericNoResults />}
 
 			{isSuccess && !!data.users && (
 				<>
@@ -188,7 +167,6 @@ const UsersTable = ({ reload, tab, roleData, onReload, setPendingUsersCount }: U
 									onClick={handleClickOrKeyDown}
 									mediaQuery={mediaQuery}
 									user={user}
-									refetchUsers={refetch}
 									onReload={onReload}
 									tab={tab}
 								/>
