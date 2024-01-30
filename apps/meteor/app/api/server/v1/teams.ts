@@ -16,6 +16,7 @@ import {
 	isTeamsListRoomsProps,
 	isTeamsListRoomsOfUserProps,
 	isTeamsMembersProps,
+	isTeamsInfoProps,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Match, check } from 'meteor/check';
@@ -463,21 +464,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'teams.info',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isTeamsInfoProps },
 	{
 		async get() {
-			check(
-				this.queryParams,
-				Match.OneOf(
-					Match.ObjectIncluding({
-						teamId: String,
-					}),
-					Match.ObjectIncluding({
-						teamName: String,
-					}),
-				),
-			);
-
 			const teamInfo = await getTeamByIdOrName(this.queryParams);
 			if (!teamInfo) {
 				return API.v1.failure('Team not found');

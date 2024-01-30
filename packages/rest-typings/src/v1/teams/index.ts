@@ -6,6 +6,7 @@ import type { TeamsAddRoomsProps } from './TeamsAddRoomsProps';
 import type { TeamsConvertToChannelProps } from './TeamsConvertToChannelProps';
 import type { TeamsCreateProps } from './TeamsCreateProps';
 import type { TeamsDeleteProps } from './TeamsDeleteProps';
+import type { TeamsInfoProps } from './TeamsInfoProps';
 import type { TeamsLeaveProps } from './TeamsLeaveProps';
 import type { TeamsListRoomsOfUserProps } from './TeamsListRoomsOfUserProps';
 import type { TeamsListRoomsProps } from './TeamsListRoomsProps';
@@ -30,6 +31,7 @@ export * from './TeamsUpdateRoomProps';
 export * from './TeamsListRoomsProps';
 export * from './TeamsListRoomsOfUserProps';
 export * from './TeamsMembersProps';
+export * from './TeamsInfoProps';
 
 type ITeamAutocompleteResult = Pick<IRoom, '_id' | 'fname' | 'teamId' | 'name' | 't' | 'avatarETag'>;
 
@@ -61,7 +63,8 @@ type TeamProps =
 	| TeamsUpdateRoomProps
 	| TeamsListRoomsProps
 	| TeamsListRoomsOfUserProps
-	| TeamsMembersProps;
+	| TeamsMembersProps
+	| TeamsInfoProps;
 
 export const isTeamPropsWithTeamName = <T extends TeamProps>(props: T): props is T & { teamName: string } => 'teamName' in props;
 
@@ -113,9 +116,7 @@ export type TeamsEndpoints = {
 	};
 
 	'/v1/teams.info': {
-		GET: (params: ({ teamId: string } | { teamName: string }) & Record<string, string | number | boolean | object>) => {
-			teamInfo: Partial<ITeam>;
-		};
+		GET: (params: TeamsInfoProps) => { teamInfo: Partial<ITeam> };
 	};
 
 	'/v1/teams.autocomplete': {
