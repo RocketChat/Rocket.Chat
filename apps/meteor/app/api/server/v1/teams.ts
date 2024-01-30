@@ -17,9 +17,9 @@ import {
 	isTeamsListRoomsOfUserProps,
 	isTeamsMembersProps,
 	isTeamsInfoProps,
+	isTeamsAutocompleteProps,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomAsync } from '../../../authorization/server';
@@ -537,15 +537,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'teams.autocomplete',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isTeamsAutocompleteProps },
 	{
 		async get() {
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					name: String,
-				}),
-			);
 
 			const { name } = this.queryParams;
 

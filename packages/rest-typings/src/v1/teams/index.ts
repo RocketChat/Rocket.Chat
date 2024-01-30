@@ -3,6 +3,7 @@ import type { IRole, IRoom, ITeam } from '@rocket.chat/core-typings';
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
 import type { TeamsAddMembersProps } from './TeamsAddMembersProps';
 import type { TeamsAddRoomsProps } from './TeamsAddRoomsProps';
+import type { TeamsAutocompleteProps } from './TeamsAutocompleteProps';
 import type { TeamsConvertToChannelProps } from './TeamsConvertToChannelProps';
 import type { TeamsCreateProps } from './TeamsCreateProps';
 import type { TeamsDeleteProps } from './TeamsDeleteProps';
@@ -32,6 +33,7 @@ export * from './TeamsListRoomsProps';
 export * from './TeamsListRoomsOfUserProps';
 export * from './TeamsMembersProps';
 export * from './TeamsInfoProps';
+export * from './TeamsAutocompleteProps';
 
 type ITeamAutocompleteResult = Pick<IRoom, '_id' | 'fname' | 'teamId' | 'name' | 't' | 'avatarETag'>;
 
@@ -64,7 +66,8 @@ type TeamProps =
 	| TeamsListRoomsProps
 	| TeamsListRoomsOfUserProps
 	| TeamsMembersProps
-	| TeamsInfoProps;
+	| TeamsInfoProps
+	| TeamsAutocompleteProps;
 
 export const isTeamPropsWithTeamName = <T extends TeamProps>(props: T): props is T & { teamName: string } => 'teamName' in props;
 
@@ -120,7 +123,7 @@ export type TeamsEndpoints = {
 	};
 
 	'/v1/teams.autocomplete': {
-		GET: (params: { name: string }) => { teams: ITeamAutocompleteResult[] };
+		GET: (params: TeamsAutocompleteProps) => { teams: ITeamAutocompleteResult[] };
 	};
 
 	'/v1/teams.update': {
