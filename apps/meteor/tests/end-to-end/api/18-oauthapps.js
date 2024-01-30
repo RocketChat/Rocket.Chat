@@ -71,7 +71,7 @@ describe('[OAuthApps]', function () {
 					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('unauthorized');
+						expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
 					})
 					.end(done);
 			});
@@ -84,7 +84,7 @@ describe('[OAuthApps]', function () {
 					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('unauthorized');
+						expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
 					})
 					.end(done);
 			});

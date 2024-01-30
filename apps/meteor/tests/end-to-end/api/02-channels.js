@@ -1326,7 +1326,10 @@ describe('[Channels]', function () {
 								.expect(403)
 								.expect((res) => {
 									expect(res.body).to.have.property('success', false);
-									expect(res.body).to.have.property('error', 'unauthorized');
+									expect(res.body).to.have.property(
+										'error',
+										'User does not have the permissions required for this action [error-unauthorized]',
+									);
 								})
 								.end(done);
 						});
