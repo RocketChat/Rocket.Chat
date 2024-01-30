@@ -13,10 +13,18 @@ const lastNDays =
 		start: Date;
 		end: Date;
 	}) =>
-	(utc): { start: Date; end: Date } => ({
-		start: utc ? moment.utc().startOf('day').subtract(n, 'days').toDate() : moment().startOf('day').subtract(n, 'days').toDate(),
-		end: utc ? moment.utc().endOf('day').toDate() : moment().endOf('day').toDate(),
-	});
+	(utc): { start: Date; end: Date } => {
+		const date = new Date();
+		const offsetForMoment = -(date.getTimezoneOffset() / 60);
+
+		const start = utc
+			? moment.utc().startOf('day').subtract(n, 'days').toDate()
+			: moment().subtract(n, 'days').startOf('day').utcOffset(offsetForMoment).toDate();
+
+		const end = utc ? moment.utc().endOf('day').toDate() : moment().endOf('day').utcOffset(offsetForMoment).toDate();
+
+		return { start, end };
+	};
 
 const periods = [
 	{

@@ -6,13 +6,22 @@ import { useState } from 'react';
 export type UiAvatarProps = Omit<AvatarProps, 'is'>;
 
 const Avatar: FC<UiAvatarProps> = (props) => {
-	const [error, setError] = useState<unknown>(false);
+	const [isLoading, setIsLoading] = useState<unknown>(false);
 
-	if (error) {
+	if (isLoading) {
 		return <Skeleton aria-hidden variant='rect' {...props} />;
 	}
 
-	return <FuselageAvatar aria-hidden onError={setError} {...props} />;
+	return (
+		<FuselageAvatar
+			aria-hidden
+			onError={(event) => {
+				setIsLoading(true);
+				props.onError?.(event);
+			}}
+			{...props}
+		/>
+	);
 };
 
 export default Avatar;

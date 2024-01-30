@@ -1,9 +1,9 @@
+import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
 import { useContext, useMemo } from 'react';
 
-import type { LoginService } from '../AuthenticationContext';
 import { AuthenticationContext } from '../AuthenticationContext';
 
-export const useLoginWithService = <T extends LoginService>(service: T): (() => Promise<true>) => {
+export const useLoginWithService = <T extends LoginServiceConfiguration>(service: T): (() => Promise<true>) => {
 	const { loginWithService } = useContext(AuthenticationContext);
 
 	return useMemo(() => {

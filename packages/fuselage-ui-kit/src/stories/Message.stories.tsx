@@ -64,13 +64,13 @@ const createStory = (blocks: readonly UiKit.LayoutBlock[]) => {
           </UiKitContext.Provider>
         </Message.Body>
       </Message.Container>
-      <Message.Toolbox.Wrapper>
-        <Message.Toolbox>
-          <Message.Toolbox.Item icon='quote' />
-          <Message.Toolbox.Item icon='clock' />
-          <Message.Toolbox.Item icon='thread' />
-        </Message.Toolbox>
-      </Message.Toolbox.Wrapper>
+      <Message.Toolbar.Wrapper>
+        <Message.Toolbar>
+          <Message.Toolbar.Item icon='quote' />
+          <Message.Toolbar.Item icon='clock' />
+          <Message.Toolbar.Item icon='thread' />
+        </Message.Toolbar>
+      </Message.Toolbar.Wrapper>
     </Message>
   );
   story.args = {

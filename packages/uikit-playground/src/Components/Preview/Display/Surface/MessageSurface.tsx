@@ -1,49 +1,34 @@
 import { Message } from '@rocket.chat/fuselage';
 import { Avatar } from '@rocket.chat/ui-avatar';
+import type { ReactNode } from 'react';
 
-import DraggableList from '../../../Draggable/DraggableList';
-import type { DraggableListProps } from '../../../Draggable/DraggableList';
-
-const MessageSurface = ({ blocks, onDragEnd }: DraggableListProps) => (
-	<Message clickable>
-		<Message.LeftContainer>
-			<Avatar
-				url='data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC
-              4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-              IyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAA
-              AAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAg
-              MREiExE0HR/9oADAMBAAIRAxEAPwBuXuIkhBuMe5ib/AHQP49q4L3mLitryTLTSpOiHQI5k/HzXa/qbFOEudVTu1dumWvcTaNCZYZ7vU6g6L
-              xqjOU/24dfs1Ouh9FnkMpd3Reeyx83hAxZZEhkdV9/MBrX71WGPvJcqrJBGveKATtuXXqNU0pu02bTHXD/AGvJAluyxxRd6F4x00o+NdKoVr
-              jbzJdvVe1t5cVLc2ck8qjnohgpPtz2v7G6JtPQ2VJwjlcw+37mchpnK6GtIuv5NFWeTsLNPvxWTvpfjvOEfwKKzEVkSct2vscS/BIzSN0YRk
-              eX81UpPqO8masJETu7OOccY4dswYFQeftv096XV5knuJGdm2T1+agvMXj8jEaHX905QihabvcbuS7X566mLWLwSY8PuRnk/u4eZ0deTl71Ef
-              6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkB
-              SuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlP
-              UH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z'
-				size={'x36'}
-			/>
-		</Message.LeftContainer>
-		<Message.Container>
-			<Message.Header>
-				<Message.NameContainer>
-					<Message.Name>Haylie George</Message.Name> <Message.Username>@haylie.george</Message.Username>
-				</Message.NameContainer>
-				<Message.Role>Admin</Message.Role>
-				<Message.Role>User</Message.Role>
-				<Message.Role>Owner</Message.Role>
-				<Message.Timestamp>12:00 PM</Message.Timestamp>
-			</Message.Header>
-			<Message.Body>
-				<DraggableList surface={1} blocks={blocks} onDragEnd={onDragEnd} />
-			</Message.Body>
-		</Message.Container>
-		<Message.Toolbox.Wrapper>
-			<Message.Toolbox>
-				<Message.Toolbox.Item icon='quote' />
-				<Message.Toolbox.Item icon='clock' />
-				<Message.Toolbox.Item icon='thread' />
-			</Message.Toolbox>
-		</Message.Toolbox.Wrapper>
-	</Message>
+const MessageSurface = ({ children }: { children: ReactNode }) => (
+  <Message>
+    <Message.LeftContainer>
+      <Avatar
+        url="data:image/jpeg;base64,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"
+        size={'x36'}
+      />
+    </Message.LeftContainer>
+    <Message.Container>
+      <Message.Header>
+        <Message.Name>Vivek Srivastava</Message.Name>
+        <Message.Username>@vivek.srivastava</Message.Username>
+        <Message.Role>Admin</Message.Role>
+        <Message.Role>User</Message.Role>
+        <Message.Role>Owner</Message.Role>
+        <Message.Timestamp>12:00 PM</Message.Timestamp>
+      </Message.Header>
+      <Message.Body>{children}</Message.Body>
+    </Message.Container>
+    <Message.Toolbar.Wrapper>
+      <Message.Toolbar>
+        <Message.Toolbar.Item icon="quote" />
+        <Message.Toolbar.Item icon="clock" />
+        <Message.Toolbar.Item icon="thread" />
+      </Message.Toolbar>
+    </Message.Toolbar.Wrapper>
+  </Message>
 );
 
 export default MessageSurface;
