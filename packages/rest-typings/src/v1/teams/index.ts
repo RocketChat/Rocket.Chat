@@ -8,6 +8,7 @@ import type { TeamsConvertToChannelProps } from './TeamsConvertToChannelProps';
 import type { TeamsCreateProps } from './TeamsCreateProps';
 import type { TeamsDeleteProps } from './TeamsDeleteProps';
 import type { TeamsLeaveProps } from './TeamsLeaveProps';
+import type { TeamsListRoomsProps } from './TeamsListRoomsProps';
 import type { TeamsRemoveMemberProps } from './TeamsRemoveMemberProps';
 import type { TeamsRemoveRoomProps } from './TeamsRemoveRoomProps';
 import type { TeamsUpdateMemberProps } from './TeamsUpdateMemberProps';
@@ -25,6 +26,7 @@ export * from './TeamsUpdateProps';
 export * from './TeamsCreateProps';
 export * from './TeamsAddRoomsProps';
 export * from './TeamsUpdateRoomProps';
+export * from './TeamsListRoomsProps';
 
 type ITeamAutocompleteResult = Pick<IRoom, '_id' | 'fname' | 'teamId' | 'name' | 't' | 'avatarETag'>;
 
@@ -53,7 +55,8 @@ type TeamProps =
 	| TeamsUpdateProps
 	| TeamsCreateProps
 	| TeamsAddRoomsProps
-	| TeamsUpdateRoomProps;
+	| TeamsUpdateRoomProps
+	| TeamsListRoomsProps;
 
 export const isTeamPropsWithTeamName = <T extends TeamProps>(props: T): props is T & { teamName: string } => 'teamName' in props;
 
@@ -146,14 +149,7 @@ export type TeamsEndpoints = {
 	};
 
 	'/v1/teams.listRooms': {
-		GET: (
-			params: PaginatedRequest<
-				({ teamId: string } | { teamName: string }) & {
-					filter?: string;
-					type?: string;
-				}
-			>,
-		) => PaginatedResult & { rooms: IRoom[] };
+		GET: (params: TeamsListRoomsProps) => PaginatedResult & { rooms: IRoom[] };
 	};
 
 	'/v1/teams.updateRoom': {
