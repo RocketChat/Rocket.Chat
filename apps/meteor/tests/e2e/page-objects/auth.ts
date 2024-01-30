@@ -49,6 +49,10 @@ export class Registration {
 	}
 
 	get username(): Locator {
+		return this.page.locator('role=textbox[name=/username/i]');
+	}
+
+	get usernameOrEmail(): Locator {
 		return this.page.locator('role=textbox[name=/usernameOrEmail/i]');
 	}
 
