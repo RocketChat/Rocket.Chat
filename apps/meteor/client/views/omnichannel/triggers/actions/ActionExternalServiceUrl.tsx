@@ -1,10 +1,10 @@
-import { Button, Field, FieldError, FieldHint, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage';
+import { Box, Button, Field, FieldError, FieldHint, FieldLabel, FieldRow, Icon, Palette, TextInput } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ComponentProps } from 'react';
-import React from 'react';
+import React, { useState } from 'react';
 import type { Control, UseFormTrigger } from 'react-hook-form';
 import { Controller, useWatch } from 'react-hook-form';
 
@@ -18,9 +18,10 @@ type ActionExternaServicelUrlType = ComponentProps<typeof Field> & {
 	disabled?: boolean;
 };
 
+const SUCCESS_COLOR = Palette.statusColor['status-font-on-success'].toString();
+
 export const ActionExternalServiceUrl = ({ control, trigger, index, disabled, ...props }: ActionExternaServicelUrlType) => {
 	const t = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
 
 	const serviceUrlFieldId = useUniqueId();
 	const serviceUrlFieldName = `actions.${index}.params.serviceUrl` as const;
@@ -28,13 +29,17 @@ export const ActionExternalServiceUrl = ({ control, trigger, index, disabled, ..
 
 	const serviceTimeoutValue = useWatch({ control, name: serviceTimeoutFieldName });
 	const [serviceUrlError] = useFieldError({ control, name: serviceUrlFieldName });
-
+	const [isSuccessMessageVisible, setSuccessMessageVisible] = useState(false);
 	const webhookTestEndpoint = useEndpoint('POST', '/v1/livechat/triggers/external-service/test');
+
+	const showSuccessMesssage = () => {
+		setSuccessMessageVisible(true);
+		setTimeout(() => setSuccessMessageVisible(false), 3000);
+	};
+
 	const webhookTest = useMutation({
 		mutationFn: webhookTestEndpoint,
-		onSuccess: () => {
-			dispatchToastMessage({ type: 'success', message: t('External_service_returned_valid_response') });
-		},
+		onSuccess: showSuccessMesssage,
 	});
 
 	const testExternalService = async (serviceUrl: string) => {
@@ -78,8 +83,14 @@ export const ActionExternalServiceUrl = ({ control, trigger, index, disabled, ..
 
 			<FieldHint>{t('External_service_test_hint')}</FieldHint>
 
-			<Button disabled={disabled} loading={webhookTest.isLoading} onClick={() => trigger(serviceUrlFieldName)}>
-				{t('Send_Test')}
+			<Button loading={webhookTest.isLoading} disabled={disabled || isSuccessMessageVisible} onClick={() => trigger(serviceUrlFieldName)}>
+				{isSuccessMessageVisible ? (
+					<Box is='span' color={SUCCESS_COLOR}>
+						<Icon name='success-circle' size='x20' verticalAlign='middle' /> {t('Success')}!
+					</Box>
+				) : (
+					t('Send_Test')
+				)}
 			</Button>
 		</Field>
 	);
