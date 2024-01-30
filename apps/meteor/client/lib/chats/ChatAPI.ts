@@ -46,6 +46,8 @@ export type ComposerAPI = {
 	dismissAllQuotedMessages(): Promise<void>;
 	readonly quotedMessages: Subscribable<IMessage[]>;
 
+	readonly urls: Subscribable<string[]>;
+
 	setEditingMode(editing: boolean): void;
 	readonly editing: Subscribable<boolean>;
 

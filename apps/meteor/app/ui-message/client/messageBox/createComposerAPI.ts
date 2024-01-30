@@ -1,8 +1,10 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
 
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
+import { getMessageUrlRegex } from '../../../../lib/getMessageUrlRegex';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 import type { FormattingButton } from './messageBoxFormatting';
 import { formattingButtons } from './messageBoxFormatting';
@@ -20,6 +22,7 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 
 	const emitter = new Emitter<{
 		quotedMessagesUpdate: void;
+		citedUrlsUpdate: void;
 		editing: void;
 		recording: void;
 		recordingVideo: void;
@@ -38,11 +41,25 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		Meteor._localStorage.removeItem(storageID);
 	});
 
+	let _citedUrls: string[] = [];
+
+	const findCitedUrls = withDebouncing({ wait: 30 })(() => {
+		const newCitedUrls = [...new Set(input.value.match(getMessageUrlRegex()) ?? [])];
+
+		if (!_.isEqual(_citedUrls, newCitedUrls)) {
+			_citedUrls = newCitedUrls;
+			emitter.emit('citedUrlsUpdate');
+		}
+
+		return newCitedUrls;
+	});
+
 	const notifyQuotedMessagesUpdate = (): void => {
 		emitter.emit('quotedMessagesUpdate');
 	};
 
 	input.addEventListener('input', persist);
+	input.addEventListener('input', findCitedUrls);
 
 	const setText = (
 		text: string,
@@ -126,6 +143,13 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 	const quotedMessages = {
 		get: () => _quotedMessages,
 		subscribe: (callback: () => void) => emitter.on('quotedMessagesUpdate', callback),
+	};
+
+	const urls = {
+		get: () => {
+			return _citedUrls;
+		},
+		subscribe: (callback: () => void) => emitter.on('citedUrlsUpdate', callback),
 	};
 
 	const [editing, setEditing] = (() => {
@@ -338,6 +362,7 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		quoteMessage,
 		dismissQuotedMessage,
 		dismissAllQuotedMessages,
+		urls,
 		quotedMessages,
 		formatters,
 		isMicrophoneDenied,
