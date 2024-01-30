@@ -1,5 +1,6 @@
 import { EmailInbox, Users } from '@rocket.chat/models';
-import { check, Match } from 'meteor/check';
+import { isEmailInbox } from '@rocket.chat/rest-typings';
+import { check } from 'meteor/check';
 
 import { sendTestEmailToInbox } from '../../../../server/features/EmailInbox/EmailInbox_Outgoing';
 import { API } from '../api';
@@ -22,34 +23,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'email-inbox',
-	{ authRequired: true, permissionsRequired: ['manage-email-inbox'] },
+	{ authRequired: true, permissionsRequired: ['manage-email-inbox'], validateParams: isEmailInbox },
 	{
 		async post() {
-			check(this.bodyParams, {
-				_id: Match.Maybe(String),
-				active: Boolean,
-				name: String,
-				email: String,
-				description: Match.Maybe(String),
-				senderInfo: Match.Maybe(String),
-				department: Match.Maybe(String),
-				smtp: Match.ObjectIncluding({
-					server: String,
-					port: Number,
-					username: String,
-					password: String,
-					secure: Boolean,
-				}),
-				imap: Match.ObjectIncluding({
-					server: String,
-					port: Number,
-					username: String,
-					password: String,
-					secure: Boolean,
-					maxRetries: Number,
-				}),
-			});
-
 			const emailInboxParams = this.bodyParams;
 
 			let _id: string;
