@@ -3,5 +3,3 @@ declare module '*.svg' {
   const src: unknown;
   export default src;
 }
-
-declare module 'eslint4b-prebuilt';

@@ -14,7 +14,7 @@ import {
 	FieldError,
 } from '@rocket.chat/fuselage';
 import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouter, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
@@ -64,6 +64,7 @@ const getInitialValues = (room: Pick<IRoom, RoomAdminFieldsType>): EditRoomFormV
 
 const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 	const t = useTranslation();
+	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const {
@@ -97,6 +98,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 
 	const handleUpdateRoomData = useMutableCallback(async ({ isDefault, roomName, favorite, ...formData }) => {
 		const data = getDirtyFields(formData, dirtyFields);
+		delete data.archived;
 
 		try {
 			await saveAction({
@@ -109,6 +111,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 
 			dispatchToastMessage({ type: 'success', message: t('Room_updated_successfully') });
 			onChange();
+			router.navigate('/admin/rooms');
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
