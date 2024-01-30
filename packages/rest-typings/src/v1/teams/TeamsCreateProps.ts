@@ -1,9 +1,24 @@
-import type { ITeamCreateRoom } from '@rocket.chat/core-services';
-import type { ITeam, IUser } from '@rocket.chat/core-typings';
+import type { ITeam, IUser, IRoom } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 const ajv = new Ajv();
+
+type ISubscriptionExtraData = {
+	open: boolean;
+	ls?: Date;
+	prid?: string;
+	roles?: string[];
+};
+
+type ITeamCreateRoom = {
+	id?: string;
+	name: IRoom['name'];
+	members?: Array<string>;
+	readOnly?: boolean;
+	extraData?: { teamId?: string; teamMain?: boolean };
+	options?: { nameValidationRegex?: string; creator: string; subscriptionExtra?: ISubscriptionExtraData };
+};
 
 export type TeamsCreateProps = {
 	name: ITeam['name'];
