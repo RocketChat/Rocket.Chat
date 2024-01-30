@@ -12,16 +12,18 @@ import { type TriggersPayload } from '../EditTrigger';
 import { useActionFormFields } from '../hooks/useActionFormFields';
 
 type SendMessageFormType = ComponentProps<typeof Field> & {
-	index: number;
 	control: Control<TriggersPayload>;
 	trigger: UseFormTrigger<TriggersPayload>;
+	index: number;
 };
 
 const ACTION_HINTS: Record<string, TranslationKey> = {
 	'use-external-service': 'External_service_action_hint',
 } as const;
 
-export const ActionForm = ({ control, index, trigger, ...props }: SendMessageFormType) => {
+const PREMIUM_ACTIONS = ['use-external-service'];
+
+export const ActionForm = ({ control, trigger, index, ...props }: SendMessageFormType) => {
 	const t = useTranslation();
 
 	const actionFieldId = useUniqueId();
@@ -39,14 +41,13 @@ export const ActionForm = ({ control, index, trigger, ...props }: SendMessageFor
 
 	const ActionFormFields = useActionFormFields(actionFieldValue);
 	const actionHint = useMemo(() => ACTION_HINTS[actionFieldValue] || '', [actionFieldValue]);
-
-	// TODO: Remove legacySelect once we have a new Select component
+	const isOptionDisabled = useCallback((value: string) => !hasLicense && PREMIUM_ACTIONS.includes(value), [hasLicense]);
 
 	const renderOption = useCallback(
 		(label: TranslationKey, value: string) => {
 			return (
 				<>
-					{!hasLicense && value === 'use-external-service' ? (
+					{isOptionDisabled(value) ? (
 						<Box justifyContent='space-between' flexDirection='row' display='flex' width='100%'>
 							{t(label)}
 							<Tag variant='featured'>{t('Premium')}</Tag>
@@ -57,7 +58,7 @@ export const ActionForm = ({ control, index, trigger, ...props }: SendMessageFor
 				</>
 			);
 		},
-		[hasLicense, t],
+		[isOptionDisabled, t],
 	);
 
 	return (
@@ -70,6 +71,7 @@ export const ActionForm = ({ control, index, trigger, ...props }: SendMessageFor
 						control={control}
 						render={({ field: { onChange, value, name, ref } }) => {
 							return (
+								// TODO: Remove SelectLegacy once we have a new Select component
 								<SelectLegacy
 									ref={ref}
 									name={name}
@@ -77,12 +79,11 @@ export const ActionForm = ({ control, index, trigger, ...props }: SendMessageFor
 									value={value}
 									options={actionOptions}
 									renderSelected={({ label, value }) => <Box flexGrow='1'>{renderOption(label, value)}</Box>}
-									renderItem={({ label, value, ...props }) => (
+									renderItem={({ label, value, onMouseDown, ...props }) => (
 										<Option
 											{...props}
-											// TODO: Remove this once we have a new Select component
-											onMouseDown={!hasLicense && value === 'use-external-service' ? (e) => e.preventDefault : props?.onMouseDown}
-											disabled={!hasLicense && value === 'use-external-service'}
+											onMouseDown={isOptionDisabled(value) ? (e) => e.preventDefault() : onMouseDown}
+											disabled={isOptionDisabled(value)}
 											label={renderOption(label, value)}
 										/>
 									)}
