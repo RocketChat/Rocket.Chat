@@ -565,22 +565,36 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			const findResult = await findChannelByIdOrName({
-				params: this.bodyParams,
-				checkedArchived: false,
-			});
+			let roomId = 'roomId' in this.bodyParams ? this.bodyParams.roomId : undefined;
+			let roomName = 'roomName' in this.bodyParams ? this.bodyParams.roomName : undefined;
 
-			const sub = await Subscriptions.findOneByRoomIdAndUserId(findResult._id, this.userId);
+			try {
+				const findResult = await findChannelByIdOrName({
+					params: this.bodyParams,
+					checkedArchived: false,
+				});
+				roomName = findResult.name;
+
+				if (findResult._id) {
+					roomId = findResult._id;
+				}
+			} catch (e) {}
+
+			if (!roomId) {
+				return API.v1.failure('Could not find the channel or any subscription linked to it');
+			}
+
+			const sub = await Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId);
 
 			if (!sub) {
-				return API.v1.failure(`The user/callee is not in the channel "${findResult.name}.`);
+				return API.v1.failure(`The user/callee is not in the channel "${roomName}.`);
 			}
 
 			if (!sub.open) {
-				return API.v1.failure(`The channel, ${findResult.name}, is already closed to the sender`);
+				return API.v1.failure(`The channel, ${roomName}, is already closed to the sender`);
 			}
 
-			await hideRoomMethod(this.userId, findResult._id);
+			await hideRoomMethod(this.userId, roomId);
 
 			return API.v1.success();
 		},
