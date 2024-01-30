@@ -12,7 +12,7 @@ export type URLMeta = {
 
 const MessageURLPreview = ({ meta }: { meta: URLMeta }): ReactElement => {
 	// TODO: Use meta to render a preview of the URL
-	console.log(meta);
+	meta;
 	// TODO: Style this component
 	return <h1>hello world</h1>;
 };

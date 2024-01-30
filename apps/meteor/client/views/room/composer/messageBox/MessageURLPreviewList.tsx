@@ -1,14 +1,13 @@
+import { Box } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import React, { memo, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { ReactElement } from 'react';
+import { useSubscription } from 'use-subscription';
 
+import { useChat } from '../../contexts/ChatContext';
 import { useRoom } from '../../contexts/RoomContext';
 import type { URLMeta } from './MessageURLPreview';
 import MessageURLPreview from './MessageURLPreview';
-
-type MessageURLPreviewListProps = {
-	urls: string[];
-};
 
 const MAX_URLS_TO_PREVIEW = 5;
 
@@ -17,10 +16,22 @@ function isInternalURL(url: string): boolean {
 	return hostname === window.location.hostname;
 }
 
-const MessageURLPreviewList = ({ urls }: MessageURLPreviewListProps): ReactElement => {
+function useURLMetadatas(): URLMeta[] | undefined {
+	const chat = useChat();
+	const urlsSubscribable = chat?.composer?.urls;
+
+	if (!urlsSubscribable) {
+		throw new Error('Chat context not found');
+	}
+
+	const urls = useSubscription({
+		getCurrentValue: urlsSubscribable.get,
+		subscribe: urlsSubscribable.subscribe,
+	});
+
 	const room = useRoom();
 	const getURLMetadataEndpoint = useEndpoint('GET', '/v1/chat.getURLPreview');
-	const [urlsMetadata, setURLMetadatas] = useState<URLMeta[]>([]);
+	const [urlsMetadata, setURLMetadatas] = useState<URLMeta[]>();
 
 	useEffect(() => {
 		// We should only fetch metadata for external URLs
@@ -33,18 +44,27 @@ const MessageURLPreviewList = ({ urls }: MessageURLPreviewListProps): ReactEleme
 				.filter((meta) => Object.keys(meta).length > 0)
 				.slice(0, MAX_URLS_TO_PREVIEW);
 		};
-
 		fetchURLMetadata().then((result) => setURLMetadatas(result));
 	}, [getURLMetadataEndpoint, setURLMetadatas, urls, room._id]);
 
-	// TODO: Align all previews to the left and add a margin between them
+	return urlsMetadata;
+}
+
+const MessageURLPreviewList = (): ReactElement | null => {
+	const urlsMetadata = useURLMetadatas();
+
+	if (!urlsMetadata) {
+		return null;
+	}
+
+	// TODO: Add a margin between them
 	return (
-		<>
+		<Box display='flex' flexDirection='row'>
 			{urlsMetadata.map((meta, i) => (
 				<MessageURLPreview key={i} meta={meta} />
 			))}
-		</>
+		</Box>
 	);
 };
 
-export default memo(MessageURLPreviewList);
+export default MessageURLPreviewList;
