@@ -1,0 +1,64 @@
+@import url('./cssVariables.css');
+
+.react-flow__edges{
+    z-index: 1000 !important;
+}
+
+.react-flow__nodes{
+    z-index: 1 !important;
+}
+
+.react-flow-targetHandle{
+    width: 8px !important; height: 12px !important;
+    border-radius: 2px !important;
+    background: rgb(125, 161, 185) !important;
+}
+
+.react-flow-sourceHandle{
+    
+}
+
+.react-flow__controls {
+    transform: translateX(25%) translateY(-25%) scale(1.5);
+    background: white;
+    display: flex;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;;
+  }
+
+/* .react-flow-sourceHandle{
+    width: 8px !important; height: 12px !important;
+    border-radius: 2px !important;
+    background: rgb(125, 161, 185) !important;
+} */
+
+/* .react-flow-sourceHandle-message-left{
+    left: -82px !important;
+}
+
+.react-flow-sourceHandle-message-right{
+    right: -38px !important;
+}
+
+.react-flow-sourceHandle-banner-left{
+    left: -60px !important;
+}
+
+.react-flow-sourceHandle-banner-right{
+    right: -30px !important;
+}
+
+.react-flow-sourceHandle-modal-left{
+    left: -38px !important;
+}
+
+.react-flow-sourceHandle-modal-right{
+    right: -38px !important;
+} */
+
+.rcx-modal:has(.uiKitWrapper){
+    padding: 0px !important
+}
+
+.rcx-modal__content:has(.uiKitWrapper){
+    overflow: visible !important
+}

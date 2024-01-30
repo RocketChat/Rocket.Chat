@@ -73,6 +73,7 @@ export type StoreState = {
 	queueInfo?: any;
 	defaultAgent?: Agent;
 	parentUrl?: string;
+	connecting?: boolean;
 };
 
 export const initialState = (): StoreState => ({

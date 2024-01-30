@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/cron",
-	"version": "0.0.21",
+	"version": "0.0.23",
 	"private": true,
 	"devDependencies": {
 		"@types/jest": "~29.5.7",
@@ -26,6 +26,6 @@
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/random": "workspace:^",
-		"mongodb": "^4.17.1"
+		"mongodb": "^4.17.2"
 	}
 }

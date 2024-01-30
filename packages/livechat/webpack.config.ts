@@ -167,7 +167,7 @@ const config = (_env: any, args: webpack.WebpackOptionsNormalized): webpack.Conf
 		output: {
 			path: _('./dist'),
 			publicPath: args.mode === 'production' ? 'livechat/' : '/',
-			filename: 'rocketchat-livechat.min.js',
+			filename: '[name].js',
 		},
 		module: {
 			rules: [

@@ -1,6 +1,6 @@
 {
   "500": "Ralat Pelayan Dalaman",
-  "__username__was_set__role__by__user_by_": "__nama pengguna__ ditubuhkan __role__ oleh __user_by__",
+  "__username__was_set__role__by__user_by_": "__nama pengguna__ ditubuhkan {{role}} oleh {{user_by}}",
   "@username": "@pengguna",
   "@username_message": "@username <message>",
   "#channel": "#channel",
@@ -1717,8 +1717,7 @@
   "meteor_status_connecting": "Menyambung...",
   "meteor_status_failed": "Sambungan pelayan gagal",
   "meteor_status_offline": "Mod LuarTalian.",
-  "meteor_status_reconnect_in": "cuba lagi dalam masa satu saat...",
-  "meteor_status_reconnect_in_plural": "cuba lagi dalam masa {{count}} saat...",
+  "meteor_status_reconnect_in_other": "cuba lagi dalam masa {{count}} saat...",
   "meteor_status_try_now_offline": "Sambung semula",
   "meteor_status_try_now_waiting": "Cuba sekarang",
   "meteor_status_waiting": "Menunggu sambungan pelayan,",
