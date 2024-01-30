@@ -104,7 +104,7 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 				<ThreadMessageLeftContainer>
 					{!isSelecting && showUserAvatar && (
 						<MessageAvatar
-							{...{ emoji: message.emoji ? <Emoji emojiHandle={message.emoji} fillContainer /> : undefined }}
+							emoji={message.emoji ? <Emoji emojiHandle={message.emoji} fillContainer /> : undefined}
 							username={message.u.username}
 							size='x18'
 						/>
