@@ -9,15 +9,16 @@ import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper.js';
 
 const resetAutoTranslateDefaults = async () => {
-	await updateSetting('AutoTranslate_Enabled', false);
-	await updateSetting('AutoTranslate_AutoEnableOnJoinRoom', false);
-	await updateSetting('Language', '');
-	await updatePermission('auto-translate', ['admin']);
+	await Promise.all([
+		updateSetting('AutoTranslate_Enabled', false),
+		updateSetting('AutoTranslate_AutoEnableOnJoinRoom', false),
+		updateSetting('Language', ''),
+		updatePermission('auto-translate', ['admin']),
+	]);
 };
 
 const resetE2EDefaults = async () => {
-	await updateSetting('E2E_Enabled_Default_PrivateRooms', false);
-	await updateSetting('E2E_Enable', false);
+	await Promise.all([updateSetting('E2E_Enabled_Default_PrivateRooms', false), updateSetting('E2E_Enable', false)]);
 };
 
 describe('AutoTranslate', function () {
@@ -87,16 +88,17 @@ describe('AutoTranslate', function () {
 		describe('[/autotranslate.saveSettings', () => {
 			let testGroupId;
 			before(async () => {
-				await resetAutoTranslateDefaults();
-				await updateSetting('E2E_Enable', true);
-				await updateSetting('E2E_Enabled_Default_PrivateRooms', true);
+				await Promise.all([
+					resetAutoTranslateDefaults(),
+					updateSetting('E2E_Enable', true),
+					updateSetting('E2E_Enabled_Default_PrivateRooms', true),
+				]);
+
 				const res = await createRoom({ type: 'p', name: `e2etest-autotranslate-${Date.now()}` });
 				testGroupId = res.body.group._id;
 			});
 			after(async () => {
-				await resetAutoTranslateDefaults();
-				await resetE2EDefaults();
-				await deleteRoom({ type: 'p', roomId: testGroupId });
+				await Promise.all([resetAutoTranslateDefaults(), resetE2EDefaults(), deleteRoom({ type: 'p', roomId: testGroupId })]);
 			});
 
 			it('should throw an error when the "AutoTranslate_Enabled" setting is disabled', (done) => {
@@ -401,9 +403,11 @@ describe('AutoTranslate', function () {
 				).body.subscription;
 
 			before(async () => {
-				await updateSetting('AutoTranslate_Enabled', true);
-				await updateSetting('AutoTranslate_AutoEnableOnJoinRoom', true);
-				await updateSetting('Language', 'pt-BR');
+				await Promise.all([
+					updateSetting('AutoTranslate_Enabled', true),
+					updateSetting('AutoTranslate_AutoEnableOnJoinRoom', true),
+					updateSetting('Language', 'pt-BR'),
+				]);
 
 				userA = await createUser();
 				userB = await createUser();
@@ -418,12 +422,14 @@ describe('AutoTranslate', function () {
 			});
 
 			after(async () => {
-				await updateSetting('AutoTranslate_AutoEnableOnJoinRoom', false);
-				await updateSetting('AutoTranslate_Enabled', false);
-				await updateSetting('Language', '');
-				await deleteUser(userA);
-				await deleteUser(userB);
-				await Promise.all(channelsToRemove.map(() => deleteRoom({ type: 'c', roomId: channel._id })));
+				await Promise.all([
+					updateSetting('AutoTranslate_AutoEnableOnJoinRoom', false),
+					updateSetting('AutoTranslate_Enabled', false),
+					updateSetting('Language', ''),
+					deleteUser(userA),
+					deleteUser(userB),
+					channelsToRemove.map(() => deleteRoom({ type: 'c', roomId: channel._id })),
+				]);
 			});
 
 			it("should do nothing if the user hasn't changed his language preference", async () => {
