@@ -62,6 +62,8 @@ class Triggers {
 
 		this._triggers = triggers;
 
+		this._syncTriggerRecords();
+
 		this._listenParentUrlChanges();
 	}
 
@@ -162,6 +164,19 @@ class Triggers {
 		const { triggersRecords = {} } = store.state;
 
 		return triggersRecords[id];
+	}
+
+	_syncTriggerRecords() {
+		const { triggersRecords = {} } = store.state;
+
+		const syncedTriggerRecords = this._triggers
+			.filter((trigger) => trigger.id in triggersRecords)
+			.reduce((acc, trigger) => {
+				acc[trigger.id] = triggersRecords[trigger.id];
+				return acc;
+			}, {});
+
+		store.setState({ triggersRecords: syncedTriggerRecords });
 	}
 }
 
