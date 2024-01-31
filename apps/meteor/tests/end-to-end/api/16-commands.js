@@ -1,4 +1,3 @@
-import type { IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, describe, it } from 'mocha';
 
@@ -243,22 +242,19 @@ describe('[Commands]', function () {
 		});
 	});
 
-	describe('Command archive', () => {
+	describe('Command archive', function () {
 		describe('unauthorized cases', () => {
-			let user: IUser;
-			let credentials: {
-				'X-Auth-Token': string;
-				'X-User-Id': string;
-			};
+			let user;
+			let credentials;
 
-			beforeAll(async () => {
-				user = (await createUser({
+			this.beforeAll(async () => {
+				user = await createUser({
 					joinDefaultChannels: true,
-				})) as IUser;
+				});
 				credentials = await login(user.username, password);
 			});
 
-			afterAll(async () => {
+			this.afterAll(async () => {
 				await deleteUser(user);
 			});
 
@@ -267,7 +263,7 @@ describe('[Commands]', function () {
 					.post(api('commands.run'))
 					.send({ command: 'archive', roomId: 'GENERAL' })
 					.expect(401)
-					.expect((res: Response) => {
+					.expect((res) => {
 						expect(res.body).to.have.property('status', 'error');
 					});
 			});
@@ -282,15 +278,15 @@ describe('[Commands]', function () {
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(400)
-					.expect((res: Response) => {
+					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('errorType', 'error-not-authorized');
 					});
 			});
 		});
 
-		describe('authorized cases', () => {
-			afterAll(async () => {
+		describe('authorized cases', function () {
+			this.afterAll(async () => {
 				await request
 					.post(api('commands.run'))
 					.set(credentials)
@@ -300,7 +296,7 @@ describe('[Commands]', function () {
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
-					.expect((res: Response) => {
+					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 					});
 			});
@@ -315,28 +311,25 @@ describe('[Commands]', function () {
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
-					.expect((res: Response) => {
+					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 					});
 			});
 		});
 	});
 
-	describe('Command unarchive', () => {
+	describe('Command unarchive', function () {
 		describe('unauthorized cases', () => {
-			let user: IUser;
-			let credentials: {
-				'X-Auth-Token': string;
-				'X-User-Id': string;
-			};
-			beforeAll(async () => {
-				user = (await createUser({
+			let user;
+			let credentials;
+			this.beforeAll(async () => {
+				user = await createUser({
 					joinDefaultChannels: true,
-				})) as IUser;
+				});
 				credentials = await login(user.username, password);
 			});
 
-			afterAll(async () => {
+			this.afterAll(async () => {
 				await deleteUser(user);
 			});
 
@@ -345,7 +338,7 @@ describe('[Commands]', function () {
 					.post(api('commands.run'))
 					.send({ command: 'unarchive', roomId: 'GENERAL' })
 					.expect(401)
-					.expect((res: Response) => {
+					.expect((res) => {
 						expect(res.body).to.have.property('status', 'error');
 					});
 			});
@@ -360,7 +353,7 @@ describe('[Commands]', function () {
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(400)
-					.expect((res: Response) => {
+					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('errorType', 'error-not-authorized');
 					});
@@ -368,7 +361,7 @@ describe('[Commands]', function () {
 		});
 
 		describe('authorized cases', () => {
-			beforeAll(async () => {
+			before(async () => {
 				await request
 					.post(api('commands.run'))
 					.set(credentials)
@@ -378,7 +371,7 @@ describe('[Commands]', function () {
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
-					.expect((res: Response) => {
+					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 					});
 			});
@@ -392,7 +385,7 @@ describe('[Commands]', function () {
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
-					.expect((res: Response) => {
+					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 					});
 			});
