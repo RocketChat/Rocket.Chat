@@ -131,7 +131,7 @@ API.v1.addRoute(
 		authRequired: true,
 		validateParams: isIntegrationsRemoveProps,
 		permissionsRequired: {
-			GET: {
+			POST: {
 				permissions: [
 					'manage-outgoing-integrations',
 					'manage-own-outgoing-integrations',
