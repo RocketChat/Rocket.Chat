@@ -1258,7 +1258,7 @@ const POSTOmnichannelContactSchema = {
 			},
 		},
 	},
-	required: ['token', 'name', 'username'],
+	required: ['token', 'name'],
 	additionalProperties: false,
 };
 
