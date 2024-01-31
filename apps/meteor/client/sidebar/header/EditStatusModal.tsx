@@ -1,6 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Field, TextInput, FieldGroup, Modal, Button, Box, FieldLabel, FieldRow, FieldError, FieldHint } from '@rocket.chat/fuselage';
 import { useLocalStorage, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import type { UsersSetStatusParamsPOST } from '@rocket.chat/rest-typings';
 import { useToastMessageDispatch, useSetting, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent, ComponentProps, FormEvent } from 'react';
 import React, { useState, useCallback } from 'react';
@@ -41,7 +42,7 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 
 	const handleSaveStatus = useCallback(async () => {
 		try {
-			await setUserStatus({ message: statusText, status: statusType });
+			await setUserStatus({ message: statusText, status: statusType } as UsersSetStatusParamsPOST);
 			setCustomStatus(statusText);
 			dispatchToastMessage({ type: 'success', message: t('StatusMessage_Changed_Successfully') });
 		} catch (error) {
@@ -49,13 +50,14 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 		}
 
 		onClose();
-	}, [dispatchToastMessage, setUserStatus, statusText, statusType, onClose, t]);
+	}, [onClose, setUserStatus, statusText, statusType, setCustomStatus, dispatchToastMessage, t]);
 
 	return (
 		<Modal
 			wrapperFunction={(props: ComponentProps<typeof Box>) => (
 				<Box
 					is='form'
+					disabled={!statusText && !statusType}
 					onSubmit={(e: FormEvent) => {
 						e.preventDefault();
 						handleSaveStatus();

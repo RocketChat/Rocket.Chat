@@ -1,8 +1,10 @@
 import type { ITeam, IUser, IRoom } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
+import addFormats from 'ajv-formats';
 
 const ajv = new Ajv();
+addFormats(ajv);
 
 type ISubscriptionExtraData = {
 	open: boolean;
@@ -11,12 +13,17 @@ type ISubscriptionExtraData = {
 	roles?: string[];
 };
 
+interface ICreateTeamRoomExtraData extends Record<string, string | boolean> {
+	teamId: string;
+	teamMain: boolean;
+}
+
 type ITeamCreateRoom = {
 	id?: string;
-	name: IRoom['name'];
+	name?: IRoom['name'];
 	members?: Array<string>;
 	readOnly?: boolean;
-	extraData?: { teamId?: string; teamMain?: boolean };
+	extraData?: Partial<ICreateTeamRoomExtraData>;
 	options?: { nameValidationRegex?: string; creator: string; subscriptionExtra?: ISubscriptionExtraData };
 };
 
