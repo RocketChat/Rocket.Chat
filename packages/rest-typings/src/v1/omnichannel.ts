@@ -1319,7 +1319,7 @@ const GETOmnichannelContactSearchSchema = {
 			type: 'string',
 		},
 	},
-	oneOf: [{ required: ['email'] }, { required: 'phone' }],
+	oneOf: [{ required: ['email'] }, { required: ['phone'] }],
 	additionalProperties: false,
 };
 
