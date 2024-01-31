@@ -53,7 +53,7 @@ export class OmnichannelTriggers {
 	}
 
 	get conditionLabel(): Locator {
-		return this.page.locator('label >> text="Condition"')
+		return this.page.locator('label >> text="Condition"');
 	}
 
 	get inputConditionValue(): Locator {
@@ -61,7 +61,11 @@ export class OmnichannelTriggers {
 	}
 
 	get actionLabel(): Locator {
-		return this.page.locator('label >> text="Action"')
+		return this.page.locator('label >> text="Action"');
+	}
+
+	get senderLabel(): Locator {
+		return this.page.locator('label >> text="Sender"');
 	}
 
 	get inputAgentName(): Locator {
@@ -78,7 +82,7 @@ export class OmnichannelTriggers {
 	}
 
 	async selectSender(sender: 'queue' | 'custom') {
-		await this.actionLabel.click();
+		await this.senderLabel.click();
 		await this.page.locator(`li.rcx-option[data-key="${sender}"]`).click();
 	}
 
