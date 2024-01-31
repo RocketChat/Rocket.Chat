@@ -1,5 +1,5 @@
 import { EmailInbox, Users } from '@rocket.chat/models';
-import { isEmailInbox } from '@rocket.chat/rest-typings';
+import { isEmailInbox, isEmailInboxSearch } from '@rocket.chat/rest-typings';
 import { check } from 'meteor/check';
 
 import { sendTestEmailToInbox } from '../../../../server/features/EmailInbox/EmailInbox_Outgoing';
@@ -77,13 +77,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'email-inbox.search',
-	{ authRequired: true, permissionsRequired: ['manage-email-inbox'] },
+	{ authRequired: true, permissionsRequired: ['manage-email-inbox'], validateParams: isEmailInboxSearch },
 	{
 		async get() {
-			check(this.queryParams, {
-				email: String,
-			});
-
 			const { email } = this.queryParams;
 
 			// TODO: Chapter day backend - check if user has permission to view this email inbox instead of null values
