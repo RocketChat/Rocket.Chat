@@ -1304,7 +1304,8 @@ export const isLivechatAnalyticsAgentsAverageServiceTimeProps = ajv.compile<Live
 
 type GETOmnichannelContactSearchProps =
 	| { email: string; phone?: string; custom?: string }
-	| { phone: string; email?: string; custom?: string };
+	| { phone: string; email?: string; custom?: string }
+	| { custom: string; email?: string; phone?: string };
 
 const GETOmnichannelContactSearchSchema = {
 	type: 'object',
@@ -1321,7 +1322,7 @@ const GETOmnichannelContactSearchSchema = {
 			type: 'string',
 		},
 	},
-	oneOf: [{ required: ['email'] }, { required: ['phone'] }],
+	oneOf: [{ required: ['email'] }, { required: ['phone'] }, { required: ['custom'] }],
 	additionalProperties: false,
 };
 

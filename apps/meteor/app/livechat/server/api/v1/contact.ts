@@ -41,6 +41,10 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-params-custom');
 			}
 
+			if (!email && !phone && !Object.keys(customCF).length) {
+				throw new Error('error-invalid-params');
+			}
+
 			const foundCF = await (async () => {
 				if (!custom) {
 					return {};
