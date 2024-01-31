@@ -96,15 +96,13 @@ const AccessibilityPage = () => {
 						<p id={linkListId}>{t('Learn_more_about_accessibility')}</p>
 						<ul aria-labelledby={linkListId}>
 							<li>
-								<ExternalLink to='https://go.rocket.chat/customer-center/legal-center/accessibility-statement'>
-									{t('Accessibility_statement')}
-								</ExternalLink>
+								<ExternalLink to='https://go.rocket.chat/accessibility-statement'>{t('Accessibility_statement')}</ExternalLink>
 							</li>
 							<li>
-								<ExternalLink to='https://go.rocket.chat/resources/glossary'>{t('Glossary_of_simplified_terms')}</ExternalLink>
+								<ExternalLink to='https://go.rocket.chat/glossary'>{t('Glossary_of_simplified_terms')}</ExternalLink>
 							</li>
 							<li>
-								<ExternalLink to='https://go.rocket.chat/use-rocket.chat/user-guides/user-panel/accessibility-and-appearance'>
+								<ExternalLink to='https://go.rocket.chat/accessibility-and-appearance'>
 									{t('Accessibility_feature_documentation')}
 								</ExternalLink>
 							</li>
