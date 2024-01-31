@@ -754,7 +754,7 @@ describe('[Users]', function () {
 		});
 	});
 
-	describe('[/users.setAvatar]', () => {
+	describe('Avatars', () => {
 		let user;
 		let userCredentials;
 
@@ -775,154 +775,114 @@ describe('[Users]', function () {
 			]);
 		});
 
-		it('should set the avatar of the logged user by a local image', (done) => {
-			request
-				.post(api('users.setAvatar'))
-				.set(userCredentials)
-				.attach('image', imgURL)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
-		});
-		it('should update the avatar of another user by userId when the logged user has the necessary permission (edit-other-user-avatar)', (done) => {
-			request
-				.post(api('users.setAvatar'))
-				.set(userCredentials)
-				.attach('image', imgURL)
-				.field({ userId: credentials['X-User-Id'] })
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
-		});
-		it('should set the avatar of another user by username and local image when the logged user has the necessary permission (edit-other-user-avatar)', (done) => {
-			request
-				.post(api('users.setAvatar'))
-				.set(credentials)
-				.attach('image', imgURL)
-				.field({ username: adminUsername })
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
-		});
-		it("should prevent from updating someone else's avatar when the logged user doesn't have the necessary permission(edit-other-user-avatar)", (done) => {
-			updatePermission('edit-other-user-avatar', []).then(() => {
+		describe('[/users.setAvatar]', () => {
+			it('should set the avatar of the logged user by a local image', (done) => {
+				request
+					.post(api('users.setAvatar'))
+					.set(userCredentials)
+					.attach('image', imgURL)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					})
+					.end(done);
+			});
+			it('should update the avatar of another user by userId when the logged user has the necessary permission (edit-other-user-avatar)', (done) => {
 				request
 					.post(api('users.setAvatar'))
 					.set(userCredentials)
 					.attach('image', imgURL)
 					.field({ userId: credentials['X-User-Id'] })
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(200)
 					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('success', true);
 					})
 					.end(done);
 			});
-		});
-		it('should allow users with the edit-other-user-avatar permission to update avatars when the Accounts_AllowUserAvatarChange setting is off', (done) => {
-			updateSetting('Accounts_AllowUserAvatarChange', false).then(() => {
-				updatePermission('edit-other-user-avatar', ['admin']).then(() => {
+			it('should set the avatar of another user by username and local image when the logged user has the necessary permission (edit-other-user-avatar)', (done) => {
+				request
+					.post(api('users.setAvatar'))
+					.set(credentials)
+					.attach('image', imgURL)
+					.field({ username: adminUsername })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					})
+					.end(done);
+			});
+			it("should prevent from updating someone else's avatar when the logged user doesn't have the necessary permission(edit-other-user-avatar)", (done) => {
+				updatePermission('edit-other-user-avatar', []).then(() => {
 					request
 						.post(api('users.setAvatar'))
-						.set(credentials)
+						.set(userCredentials)
 						.attach('image', imgURL)
-						.field({ userId: userCredentials['X-User-Id'] })
+						.field({ userId: credentials['X-User-Id'] })
 						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.expect(400)
 						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('success', false);
 						})
 						.end(done);
 				});
 			});
-		});
-	});
-
-	describe('[/users.resetAvatar]', () => {
-		let user;
-		let userCredentials;
-		before(async () => {
-			user = await createUser();
-			userCredentials = await login(user.username, password);
-			await Promise.all([
-				updateSetting('Accounts_AllowUserAvatarChange', true),
-				updatePermission('edit-other-user-avatar', ['admin', 'user']),
-			]);
-		});
-
-		after(async () => {
-			await Promise.all([
-				updateSetting('Accounts_AllowUserAvatarChange', true),
-				deleteUser(user),
-				updatePermission('edit-other-user-avatar', ['admin']),
-			]);
+			it('should allow users with the edit-other-user-avatar permission to update avatars when the Accounts_AllowUserAvatarChange setting is off', (done) => {
+				updateSetting('Accounts_AllowUserAvatarChange', false).then(() => {
+					updatePermission('edit-other-user-avatar', ['admin']).then(() => {
+						request
+							.post(api('users.setAvatar'))
+							.set(credentials)
+							.attach('image', imgURL)
+							.field({ userId: userCredentials['X-User-Id'] })
+							.expect('Content-Type', 'application/json')
+							.expect(200)
+							.expect((res) => {
+								expect(res.body).to.have.property('success', true);
+							})
+							.end(done);
+					});
+				});
+			});
 		});
 
-		it('should set the avatar of the logged user by a local image', (done) => {
-			request
-				.post(api('users.setAvatar'))
-				.set(userCredentials)
-				.attach('image', imgURL)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
-		});
-		it('should reset the avatar of the logged user', (done) => {
-			request
-				.post(api('users.resetAvatar'))
-				.set(userCredentials)
-				.expect('Content-Type', 'application/json')
-				.send({
-					userId: userCredentials['X-User-Id'],
-				})
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
-		});
-		it('should reset the avatar of another user by userId when the logged user has the necessary permission (edit-other-user-avatar)', (done) => {
-			request
-				.post(api('users.resetAvatar'))
-				.set(userCredentials)
-				.send({
-					userId: credentials['X-User-Id'],
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
-		});
-		it('should reset the avatar of another user by username and local image when the logged user has the necessary permission (edit-other-user-avatar)', (done) => {
-			request
-				.post(api('users.resetAvatar'))
-				.set(credentials)
-				.send({
-					username: adminUsername,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
-		});
-		it("should prevent from resetting someone else's avatar when the logged user doesn't have the necessary permission(edit-other-user-avatar)", (done) => {
-			updatePermission('edit-other-user-avatar', []).then(() => {
+		describe('[/users.resetAvatar]', () => {
+			before(async () => {
+				await Promise.all([
+					updateSetting('Accounts_AllowUserAvatarChange', true),
+					updatePermission('edit-other-user-avatar', ['admin', 'user']),
+				]);
+			});
+
+			it('should set the avatar of the logged user by a local image', (done) => {
+				request
+					.post(api('users.setAvatar'))
+					.set(userCredentials)
+					.attach('image', imgURL)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					})
+					.end(done);
+			});
+			it('should reset the avatar of the logged user', (done) => {
+				request
+					.post(api('users.resetAvatar'))
+					.set(userCredentials)
+					.expect('Content-Type', 'application/json')
+					.send({
+						userId: userCredentials['X-User-Id'],
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					})
+					.end(done);
+			});
+			it('should reset the avatar of another user by userId when the logged user has the necessary permission (edit-other-user-avatar)', (done) => {
 				request
 					.post(api('users.resetAvatar'))
 					.set(userCredentials)
@@ -930,98 +890,104 @@ describe('[Users]', function () {
 						userId: credentials['X-User-Id'],
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(200)
 					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('success', true);
 					})
 					.end(done);
 			});
-		});
-		it('should allow users with the edit-other-user-avatar permission to reset avatars when the Accounts_AllowUserAvatarChange setting is off', (done) => {
-			updateSetting('Accounts_AllowUserAvatarChange', false).then(() => {
-				updatePermission('edit-other-user-avatar', ['admin']).then(() => {
+			it('should reset the avatar of another user by username and local image when the logged user has the necessary permission (edit-other-user-avatar)', (done) => {
+				request
+					.post(api('users.resetAvatar'))
+					.set(credentials)
+					.send({
+						username: adminUsername,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					})
+					.end(done);
+			});
+			it("should prevent from resetting someone else's avatar when the logged user doesn't have the necessary permission(edit-other-user-avatar)", (done) => {
+				updatePermission('edit-other-user-avatar', []).then(() => {
 					request
 						.post(api('users.resetAvatar'))
-						.set(credentials)
+						.set(userCredentials)
 						.send({
-							userId: userCredentials['X-User-Id'],
+							userId: credentials['X-User-Id'],
 						})
 						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.expect(400)
 						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('success', false);
 						})
 						.end(done);
 				});
 			});
-		});
-	});
-
-	describe('[/users.getAvatar]', () => {
-		let user;
-		let userCredentials;
-
-		before(async () => {
-			user = await createUser();
-			userCredentials = await login(user.username, password);
-		});
-
-		after(async () => {
-			await Promise.all([deleteUser(user), updatePermission('edit-other-user-avatar', ['admin'])]);
-		});
-
-		it('should get the url of the avatar of the logged user via userId', (done) => {
-			request
-				.get(api('users.getAvatar'))
-				.set(userCredentials)
-				.query({
-					userId: userCredentials['X-User-Id'],
-				})
-				.expect(307)
-				.end(done);
-		});
-		it('should get the url of the avatar of the logged user via username', (done) => {
-			request
-				.get(api('users.getAvatar'))
-				.set(userCredentials)
-				.query({
-					username: user.username,
-				})
-				.expect(307)
-				.end(done);
-		});
-	});
-
-	describe('[/users.getAvatarSuggestion]', () => {
-		let user;
-		let userCredentials;
-
-		before(async () => {
-			user = await createUser();
-			userCredentials = await login(user.username, password);
+			it('should allow users with the edit-other-user-avatar permission to reset avatars when the Accounts_AllowUserAvatarChange setting is off', (done) => {
+				updateSetting('Accounts_AllowUserAvatarChange', false).then(() => {
+					updatePermission('edit-other-user-avatar', ['admin']).then(() => {
+						request
+							.post(api('users.resetAvatar'))
+							.set(credentials)
+							.send({
+								userId: userCredentials['X-User-Id'],
+							})
+							.expect('Content-Type', 'application/json')
+							.expect(200)
+							.expect((res) => {
+								expect(res.body).to.have.property('success', true);
+							})
+							.end(done);
+					});
+				});
+			});
 		});
 
-		after(async () => {
-			await deleteUser(user);
+		describe('[/users.getAvatar]', () => {
+			it('should get the url of the avatar of the logged user via userId', (done) => {
+				request
+					.get(api('users.getAvatar'))
+					.set(userCredentials)
+					.query({
+						userId: userCredentials['X-User-Id'],
+					})
+					.expect(307)
+					.end(done);
+			});
+			it('should get the url of the avatar of the logged user via username', (done) => {
+				request
+					.get(api('users.getAvatar'))
+					.set(userCredentials)
+					.query({
+						username: user.username,
+					})
+					.expect(307)
+					.end(done);
+			});
 		});
 
-		it('should return 401 unauthorized when user is not logged in', (done) => {
-			request.get(api('users.getAvatarSuggestion')).expect('Content-Type', 'application/json').expect(401).end(done);
-		});
+		describe('[/users.getAvatarSuggestion]', () => {
+			it('should return 401 unauthorized when user is not logged in', (done) => {
+				request.get(api('users.getAvatarSuggestion')).expect('Content-Type', 'application/json').expect(401).end(done);
+			});
 
-		it('should get avatar suggestion of the logged user via userId', (done) => {
-			request
-				.get(api('users.getAvatarSuggestion'))
-				.set(userCredentials)
-				.query({
-					userId: userCredentials['X-User-Id'],
-				})
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('suggestions').and.to.be.an('object');
-				})
-				.end(done);
+			it('should get avatar suggestion of the logged user via userId', (done) => {
+				request
+					.get(api('users.getAvatarSuggestion'))
+					.set(userCredentials)
+					.query({
+						userId: userCredentials['X-User-Id'],
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('suggestions').and.to.be.an('object');
+					})
+					.end(done);
+			});
 		});
 	});
 
