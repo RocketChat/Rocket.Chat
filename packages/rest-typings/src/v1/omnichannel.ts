@@ -1279,8 +1279,6 @@ const GETOmnichannelContactSchema = {
 
 export const isGETOmnichannelContactProps = ajv.compile<GETOmnichannelContactProps>(GETOmnichannelContactSchema);
 
-type GETOmnichannelContactSearchProps = { email: string } | { phone: string };
-
 type LivechatAnalyticsAgentsAverageServiceTimeProps = PaginatedRequest<{
 	start: string;
 	end: string;
@@ -1304,29 +1302,25 @@ export const isLivechatAnalyticsAgentsAverageServiceTimeProps = ajv.compile<Live
 	LivechatAnalyticsAgentsAverageServiceTimeSchema,
 );
 
+type GETOmnichannelContactSearchProps =
+	| { email: string; phone?: string; custom?: string }
+	| { phone: string; email?: string; custom?: string };
+
 const GETOmnichannelContactSearchSchema = {
-	anyOf: [
-		{
-			type: 'object',
-			properties: {
-				email: {
-					type: 'string',
-				},
-			},
-			required: ['email'],
-			additionalProperties: false,
+	type: 'object',
+	properties: {
+		email: {
+			type: 'string',
 		},
-		{
-			type: 'object',
-			properties: {
-				phone: {
-					type: 'string',
-				},
-			},
-			required: ['phone'],
-			additionalProperties: false,
+		phone: {
+			type: 'string',
 		},
-	],
+		custom: {
+			type: 'string',
+		},
+	},
+	oneOf: [{ required: ['email'] }, { required: 'phone' }],
+	additionalProperties: false,
 };
 
 export const isGETOmnichannelContactSearchProps = ajv.compile<GETOmnichannelContactSearchProps>(GETOmnichannelContactSearchSchema);
