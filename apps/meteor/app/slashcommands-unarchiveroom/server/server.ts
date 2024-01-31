@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { i18n } from '../../../server/lib/i18n';
 import { roomCoordinator } from '../../../server/lib/rooms/roomCoordinator';
+import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { unarchiveRoom } from '../../lib/server/functions/unarchiveRoom';
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
@@ -61,6 +62,14 @@ slashCommands.add({
 				}),
 			});
 			return;
+		}
+
+		if (!(await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.ARCHIVE, userId))) {
+			throw new Meteor.Error('error-direct-message-room', `rooms type: ${room.t} can not be unarchive`, { method: 'unarchiveRoom' });
+		}
+
+		if (!(await hasPermissionAsync(userId, 'unarchive-room', room._id))) {
+			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'unarchiveRoom' });
 		}
 
 		await unarchiveRoom(room._id, user);
