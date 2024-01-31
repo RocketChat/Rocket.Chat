@@ -65,3 +65,7 @@ function actionRoom({ action, type, roomId }) {
 export const deleteRoom = ({ type, roomId }) => actionRoom({ action: 'delete', type, roomId });
 
 export const closeRoom = ({ type, roomId }) => actionRoom({ action: 'close', type, roomId });
+
+export const joinChannel = ({ credentials, roomId }) => request.post(api('channels.join')).set(credentials).send({
+	roomId,
+});;

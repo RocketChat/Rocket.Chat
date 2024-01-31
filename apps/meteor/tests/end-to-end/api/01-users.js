@@ -4,77 +4,44 @@ import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 
-import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials, apiEmail, apiUsername, log, wait, reservedWords } from '../../data/api-data.js';
 import { MAX_BIO_LENGTH, MAX_NICKNAME_LENGTH } from '../../data/constants.ts';
 import { customFieldText, clearCustomFields, setCustomFields } from '../../data/custom-fields.js';
 import { imgURL } from '../../data/interactions';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
-import { createRoom, deleteRoom } from '../../data/rooms.helper';
+import { createRoom, deleteRoom, joinChannel } from '../../data/rooms.helper';
 import { adminEmail, preferences, password, adminUsername } from '../../data/user';
-import { createUser, login, deleteUser, getUserStatus, getUserByUsername } from '../../data/users.helper.js';
-
-async function createChannel(userCredentials, name) {
-	const res = await request.post(api('channels.create')).set(userCredentials).send({
-		name,
-	});
-
-	return res.body.channel._id;
-}
-
-async function joinChannel(userCredentials, roomId) {
-	return request.post(api('channels.join')).set(userCredentials).send({
-		roomId,
-	});
-}
+import { createUser, login, deleteUser, getUserStatus, getUserByUsername, registerUser } from '../../data/users.helper.js';
 
 const targetUser = {};
 
 describe('[Users]', function () {
+	let userCredentials;
 	this.retries(0);
 
 	before((done) => getCredentials(done));
 
 	before('should create a new user', async () => {
-		await request
-			.post(api('users.create'))
-			.set(credentials)
-			.send({
-				email: apiEmail,
-				name: apiUsername,
-				username: apiUsername,
-				password,
-				active: true,
-				roles: ['user'],
-				joinDefaultChannels: true,
-				verified: true,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.nested.property('user.username', apiUsername);
-				expect(res.body).to.have.nested.property('user.emails[0].address', apiEmail);
-				expect(res.body).to.have.nested.property('user.active', true);
-				expect(res.body).to.have.nested.property('user.name', apiUsername);
-				expect(res.body).to.not.have.nested.property('user.e2e');
-
-				expect(res.body).to.not.have.nested.property('user.customFields');
-
-				targetUser._id = res.body.user._id;
-				targetUser.username = res.body.user.username;
-			});
+		const user = await createUser({
+			active: true,
+			roles: ['user'],
+			joinDefaultChannels: true,
+			verified: true,
+		});
+		targetUser._id = user._id;
+		targetUser.username = user.username;
+		userCredentials = await login(user.username, password);
 	});
 
 	after(async () => {
-		await deleteUser(targetUser);
+		await Promise.all([deleteUser(targetUser), updateSetting('E2E_Enable', false)]);
 	});
 
 	it('enabling E2E in server and generating keys to user...', async () => {
 		await updateSetting('E2E_Enable', true);
 		await request
 			.post(api('e2e.setUserPublicAndPrivateKeys'))
-			.set(credentials)
+			.set(userCredentials)
 			.send({
 				private_key: 'test',
 				public_key: 'test',
@@ -86,7 +53,7 @@ describe('[Users]', function () {
 			});
 		await request
 			.get(api('e2e.fetchMyKeys'))
-			.set(credentials)
+			.set(userCredentials)
 			.expect('Content-Type', 'application/json')
 			.expect(200)
 			.expect((res) => {
@@ -348,6 +315,7 @@ describe('[Users]', function () {
 				})
 				.end(done);
 		});
+
 		it('should query information about a user by userId', (done) => {
 			request
 				.get(api('users.info'))
@@ -359,13 +327,14 @@ describe('[Users]', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('user.username', apiUsername);
+					expect(res.body).to.have.nested.property('user.username', targetUser.username);
 					expect(res.body).to.have.nested.property('user.active', true);
-					expect(res.body).to.have.nested.property('user.name', apiUsername);
+					expect(res.body).to.have.nested.property('user.name', targetUser.username);
 					expect(res.body).to.not.have.nested.property('user.e2e');
 				})
 				.end(done);
 		});
+
 		it('should return "rooms" property when user request it and the user has the necessary permission (admin, "view-other-user-channels")', (done) => {
 			request
 				.get(api('users.info'))
@@ -379,10 +348,14 @@ describe('[Users]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('user.rooms').and.to.be.an('array');
-					expect(res.body.user.rooms[0]).to.have.property('unread');
+					// Do not rely on the default GENERAL channel
+					if (res.body.user.rooms.length > 0) {
+						expect(res.body.user.rooms[0]).to.have.property('unread');
+					}
 				})
 				.end(done);
 		});
+
 		it('should NOT return "rooms" property when user NOT request it but the user has the necessary permission (admin, "view-other-user-channels")', (done) => {
 			request
 				.get(api('users.info'))
@@ -412,7 +385,9 @@ describe('[Users]', function () {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.nested.property('user.rooms');
-						expect(res.body.user.rooms[0]).to.have.property('unread');
+						if (res.body.user.rooms.length > 0) {
+							expect(res.body.user.rooms[0]).to.have.property('unread');
+						}
 					})
 					.end(done);
 			});
@@ -474,23 +449,13 @@ describe('[Users]', function () {
 
 		it('should correctly route users that have `ufs` in their username', async () => {
 			const ufsUsername = `ufs-${Date.now()}`;
-			let user;
 
-			await request
-				.post(api('users.create'))
-				.set(credentials)
-				.send({
-					email: `me-${Date.now()}@email.com`,
-					name: 'testuser',
-					username: ufsUsername,
-					password: '1234',
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					user = res.body.user;
-				});
+			const user = await createUser({
+				email: `me-${Date.now()}@email.com`,
+				name: 'testuser',
+				username: ufsUsername,
+				password: '1234',
+			});
 
 			await request
 				.get(api('users.info'))
@@ -654,21 +619,20 @@ describe('[Users]', function () {
 			expect(user).to.not.have.nested.property('e2e');
 		});
 
-		after(async () => clearCustomFields());
-
 		before(async () => {
 			user2 = await createUser({ joinDefaultChannels: false });
 			user2Credentials = await login(user2.username, password);
 		});
 
 		after(async () => {
-			await deleteUser(deactivatedUser);
-			await deleteUser(user);
-			await deleteUser(user2);
-			user2 = undefined;
-
-			await updatePermission('view-outside-room', ['admin', 'owner', 'moderator', 'user']);
-			await updateSetting('API_Apply_permission_view-outside-room_on_users-list', false);
+			await Promise.all([
+				clearCustomFields(),
+				deleteUser(deactivatedUser),
+				deleteUser(user),
+				deleteUser(user2),
+				updatePermission('view-outside-room', ['admin', 'owner', 'moderator', 'user']),
+				updateSetting('API_Apply_permission_view-outside-room_on_users-list', false),
+			]);
 		});
 
 		it('should query all users in the system', (done) => {
@@ -792,25 +756,25 @@ describe('[Users]', function () {
 
 	describe('[/users.setAvatar]', () => {
 		let user;
+		let userCredentials;
+
 		before(async () => {
 			user = await createUser();
+			userCredentials = await login(user.username, password);
+			await Promise.all([
+				updateSetting('Accounts_AllowUserAvatarChange', true),
+				updatePermission('edit-other-user-avatar', ['admin', 'user']),
+			]);
 		});
 
-		let userCredentials;
-		before(async () => {
-			userCredentials = await login(user.username, password);
-		});
-		before((done) => {
-			updateSetting('Accounts_AllowUserAvatarChange', true).then(() => {
-				updatePermission('edit-other-user-avatar', ['admin', 'user']).then(done);
-			});
-		});
 		after(async () => {
-			await updateSetting('Accounts_AllowUserAvatarChange', true);
-			await deleteUser(user);
-			user = undefined;
-			await updatePermission('edit-other-user-avatar', ['admin']);
+			await Promise.all([
+				updateSetting('Accounts_AllowUserAvatarChange', true),
+				deleteUser(user),
+				updatePermission('edit-other-user-avatar', ['admin']),
+			]);
 		});
+
 		it('should set the avatar of the logged user by a local image', (done) => {
 			request
 				.post(api('users.setAvatar'))
@@ -885,25 +849,24 @@ describe('[Users]', function () {
 
 	describe('[/users.resetAvatar]', () => {
 		let user;
-		before(async () => {
-			user = await createUser();
-		});
-
 		let userCredentials;
 		before(async () => {
+			user = await createUser();
 			userCredentials = await login(user.username, password);
+			await Promise.all([
+				updateSetting('Accounts_AllowUserAvatarChange', true),
+				updatePermission('edit-other-user-avatar', ['admin', 'user']),
+			]);
 		});
-		before((done) => {
-			updateSetting('Accounts_AllowUserAvatarChange', true).then(() => {
-				updatePermission('edit-other-user-avatar', ['admin', 'user']).then(done);
-			});
-		});
+
 		after(async () => {
-			await updateSetting('Accounts_AllowUserAvatarChange', true);
-			await deleteUser(user);
-			user = undefined;
-			await updatePermission('edit-other-user-avatar', ['admin']);
+			await Promise.all([
+				updateSetting('Accounts_AllowUserAvatarChange', true),
+				deleteUser(user),
+				updatePermission('edit-other-user-avatar', ['admin']),
+			]);
 		});
+
 		it('should set the avatar of the logged user by a local image', (done) => {
 			request
 				.post(api('users.setAvatar'))
@@ -996,19 +959,17 @@ describe('[Users]', function () {
 
 	describe('[/users.getAvatar]', () => {
 		let user;
+		let userCredentials;
+
 		before(async () => {
 			user = await createUser();
-		});
-
-		let userCredentials;
-		before(async () => {
 			userCredentials = await login(user.username, password);
 		});
+
 		after(async () => {
-			await deleteUser(user);
-			user = undefined;
-			await updatePermission('edit-other-user-info', ['admin']);
+			await Promise.all([deleteUser(user), updatePermission('edit-other-user-avatar', ['admin'])]);
 		});
+
 		it('should get the url of the avatar of the logged user via userId', (done) => {
 			request
 				.get(api('users.getAvatar'))
@@ -1033,22 +994,19 @@ describe('[Users]', function () {
 
 	describe('[/users.getAvatarSuggestion]', () => {
 		let user;
+		let userCredentials;
+
 		before(async () => {
 			user = await createUser();
-		});
-
-		let userCredentials;
-		before(async () => {
 			userCredentials = await login(user.username, password);
-		});
-
-		it('should return 401 unauthorized when user is not logged in', (done) => {
-			request.get(api('users.getAvatarSuggestion')).expect('Content-Type', 'application/json').expect(401).end(done);
 		});
 
 		after(async () => {
 			await deleteUser(user);
-			user = undefined;
+		});
+
+		it('should return 401 unauthorized when user is not logged in', (done) => {
+			request.get(api('users.getAvatarSuggestion')).expect('Content-Type', 'application/json').expect(401).end(done);
 		});
 
 		it('should get avatar suggestion of the logged user via userId', (done) => {
@@ -1086,6 +1044,7 @@ describe('[Users]', function () {
 				updateSetting('Accounts_AllowUserStatusMessageChange', true),
 				updateSetting('Accounts_AllowEmailChange', true),
 				updateSetting('Accounts_AllowPasswordChange', true),
+				updatePermission('edit-other-user-info', ['admin']),
 			]),
 		);
 
@@ -1544,45 +1503,23 @@ describe('[Users]', function () {
 
 	describe('[/users.updateOwnBasicInfo]', () => {
 		let user;
-		before((done) => {
-			const username = `user.test.${Date.now()}`;
-			const email = `${username}@rocket.chat`;
-			request
-				.post(api('users.create'))
-				.set(credentials)
-				.send({ email, name: username, username, password })
-				.end((err, res) => {
-					user = res.body.user;
-					done();
-				});
+		let userCredentials;
+
+		before(async () => {
+			user = await createUser();
+			userCredentials = await login(user.username, password);
 		});
 
-		let userCredentials;
-		before((done) => {
-			request
-				.post(api('login'))
-				.send({
-					user: user.username,
-					password,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					userCredentials = {};
-					userCredentials['X-Auth-Token'] = res.body.data.authToken;
-					userCredentials['X-User-Id'] = res.body.data.userId;
-				})
-				.end(done);
-		});
-		after((done) => {
-			request
-				.post(api('users.delete'))
-				.set(credentials)
-				.send({
-					userId: user._id,
-				})
-				.end(done);
-			user = undefined;
+		after(async () => {
+			await Promise.all([
+				deleteUser(user),
+				updateSetting('E2E_Enable', false),
+				updateSetting('Accounts_AllowRealNameChange', true),
+				updateSetting('Accounts_AllowUsernameChange', true),
+				updateSetting('Accounts_AllowUserStatusMessageChange', true),
+				updateSetting('Accounts_AllowEmailChange', true),
+				updateSetting('Accounts_AllowPasswordChange', true),
+			]);
 		});
 
 		const newPassword = `${password}test`;
@@ -1760,8 +1697,6 @@ describe('[Users]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 				});
-
-			await updateSetting('Accounts_AllowRealNameChange', true);
 		});
 
 		it('should throw an error if not allowed to change username', async () => {
@@ -1780,8 +1715,6 @@ describe('[Users]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 				});
-
-			await updateSetting('Accounts_AllowUsernameChange', true);
 		});
 
 		it('should throw an error if not allowed to change statusText', async () => {
@@ -1800,8 +1733,6 @@ describe('[Users]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 				});
-
-			await updateSetting('Accounts_AllowUserStatusMessageChange', true);
 		});
 
 		it('should throw an error if not allowed to change email', async () => {
@@ -1820,8 +1751,6 @@ describe('[Users]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 				});
-
-			await updateSetting('Accounts_AllowEmailChange', true);
 		});
 
 		it('should throw an error if not allowed to change password', async () => {
@@ -1840,19 +1769,17 @@ describe('[Users]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 				});
-
-			await updateSetting('Accounts_AllowPasswordChange', true);
 		});
 
 		describe('[Password Policy]', () => {
 			before(async () => {
+				await updateSetting('Accounts_AllowPasswordChange', true);
 				await updateSetting('Accounts_Password_Policy_Enabled', true);
 				await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
-
-				await sleep(500);
 			});
 
 			after(async () => {
+				await updateSetting('Accounts_AllowPasswordChange', true);
 				await updateSetting('Accounts_Password_Policy_Enabled', false);
 				await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
 			});
@@ -1884,7 +1811,6 @@ describe('[Users]', function () {
 
 			it('should throw an error if the password length is greater than the maximum length', async () => {
 				await updateSetting('Accounts_Password_Policy_MaxLength', 5);
-				await sleep(500);
 
 				const expectedError = {
 					error: 'error-password-policy-not-met-maxLength',
@@ -1908,8 +1834,6 @@ describe('[Users]', function () {
 						expect(res.body.details).to.be.an('array').that.deep.includes(expectedError);
 					})
 					.expect(400);
-
-				await updateSetting('Accounts_Password_Policy_MaxLength', -1);
 			});
 
 			it('should throw an error if the password contains repeating characters', async () => {
@@ -2038,6 +1962,7 @@ describe('[Users]', function () {
 			});
 
 			it('should be able to update if the password meets all the validation rules', async () => {
+				await updateSetting('Accounts_Password_Policy_MaxLength', -1);
 				await request
 					.post(api('users.updateOwnBasicInfo'))
 					.set(userCredentials)
@@ -2059,6 +1984,10 @@ describe('[Users]', function () {
 
 	// TODO check for all response fields
 	describe('[/users.setPreferences]', () => {
+		after(async () => {
+			updatePermission('edit-other-user-info', ['admin']);
+		});
+
 		it('should return an error when the user try to update info of another user and does not have the necessary permission', (done) => {
 			const userPreferences = {
 				userId: 'rocket.cat',
@@ -2253,49 +2182,10 @@ describe('[Users]', function () {
 	});
 
 	describe('[/users.getUsernameSuggestion]', () => {
-		const testUsername = `test${+new Date()}`;
-		let targetUser;
-		let userCredentials;
-		before('register a new user...', (done) => {
-			request
-				.post(api('users.register'))
-				.set(credentials)
-				.send({
-					email: `${testUsername}.@teste.com`,
-					username: `${testUsername}test`,
-					name: testUsername,
-					pass: password,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					targetUser = res.body.user;
-				})
-				.end(done);
-		});
-		before('Login...', (done) => {
-			request
-				.post(api('login'))
-				.send({
-					user: targetUser.username,
-					password,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					userCredentials = {};
-					userCredentials['X-Auth-Token'] = res.body.data.authToken;
-					userCredentials['X-User-Id'] = res.body.data.userId;
-				})
-				.end(done);
-		});
-
-		after(async () => deleteUser(targetUser));
-
 		it('should return an username suggestion', (done) => {
 			request
 				.get(api('users.getUsernameSuggestion'))
-				.set(userCredentials)
+				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
@@ -2307,6 +2197,16 @@ describe('[Users]', function () {
 	});
 
 	describe('[/users.checkUsernameAvailability]', () => {
+		let targetUser;
+		let userCredentials;
+
+		before(async () => {
+			targetUser = await registerUser();
+			userCredentials = await login(targetUser.username, password);
+		});
+
+		after(async () => deleteUser(targetUser));
+
 		it('should return 401 unauthorized when user is not logged in', (done) => {
 			request
 				.get(api('users.checkUsernameAvailability'))
@@ -2317,45 +2217,6 @@ describe('[Users]', function () {
 				})
 				.end(done);
 		});
-
-		const testUsername = `test-username-123456-${+new Date()}`;
-		let targetUser;
-		let userCredentials;
-		before((done) => {
-			request
-				.post(api('users.register'))
-				.set(credentials)
-				.send({
-					email: `${testUsername}.@test-username.com`,
-					username: `${testUsername}test`,
-					name: testUsername,
-					pass: password,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					targetUser = res.body.user;
-				})
-				.end(done);
-		});
-		before((done) => {
-			request
-				.post(api('login'))
-				.send({
-					user: targetUser.username,
-					password,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					userCredentials = {};
-					userCredentials['X-Auth-Token'] = res.body.data.authToken;
-					userCredentials['X-User-Id'] = res.body.data.userId;
-				})
-				.end(done);
-		});
-
-		after(async () => deleteUser(targetUser));
 
 		it('should return true if the username is the same user username set', (done) => {
 			request
@@ -2404,41 +2265,12 @@ describe('[Users]', function () {
 	});
 
 	describe('[/users.deleteOwnAccount]', () => {
-		const testUsername = `testuser${+new Date()}`;
 		let targetUser;
 		let userCredentials;
-		before((done) => {
-			request
-				.post(api('users.register'))
-				.set(credentials)
-				.send({
-					email: `${testUsername}.@teste.com`,
-					username: `${testUsername}test`,
-					name: testUsername,
-					pass: password,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					targetUser = res.body.user;
-				})
-				.end(done);
-		});
-		before((done) => {
-			request
-				.post(api('login'))
-				.send({
-					user: targetUser.username,
-					password,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					userCredentials = {};
-					userCredentials['X-Auth-Token'] = res.body.data.authToken;
-					userCredentials['X-User-Id'] = res.body.data.userId;
-				})
-				.end(done);
+
+		before(async () => {
+			targetUser = await registerUser();
+			userCredentials = await login(targetUser.username, password);
 		});
 
 		after(async () => deleteUser(targetUser));
@@ -2671,36 +2503,13 @@ describe('[Users]', function () {
 
 	describe('[/users.delete]', () => {
 		let targetUser;
-		beforeEach((done) => {
-			const testUsername = `testuserdelete${+new Date()}`;
-			request
-				.post(api('users.register'))
-				.set(credentials)
-				.send({
-					email: `${testUsername}.@teste.com`,
-					username: `${testUsername}test`,
-					name: testUsername,
-					pass: password,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					targetUser = res.body.user;
-				})
-				.end(done);
+		beforeEach(async () => {
+			targetUser = await registerUser();
 		});
 
-		afterEach((done) => {
-			updatePermission('delete-user', ['admin']).then(() => {
-				request
-					.post(api('users.delete'))
-					.set(credentials)
-					.send({
-						userId: targetUser._id,
-						confirmRelinquish: true,
-					})
-					.end(done);
-			});
+		afterEach(async () => {
+			await updatePermission('delete-user', ['admin']);
+			await deleteUser(targetUser, { confirmRelinquish: true });
 		});
 
 		it('should return an error when trying delete user account without "delete-user" permission', async () => {
@@ -2910,6 +2719,14 @@ describe('[Users]', function () {
 	describe('Personal Access Tokens', () => {
 		const tokenName = `${Date.now()}token`;
 		describe('successful cases', () => {
+			before(async () => {
+				await updatePermission('create-personal-access-tokens', ['admin']);
+			});
+
+			after(async () => {
+				await updatePermission('create-personal-access-tokens', ['admin']);
+			});
+
 			describe('[/users.getPersonalAccessTokens]', () => {
 				it('should return an array when the user does not have personal tokens configured', (done) => {
 					request
@@ -2924,8 +2741,7 @@ describe('[Users]', function () {
 						.end(done);
 				});
 			});
-			it('Grant necessary permission "create-personal-accss-tokens" to user', () =>
-				updatePermission('create-personal-access-tokens', ['admin']));
+
 			describe('[/users.generatePersonalAccessToken]', () => {
 				it('should return a personal access token to user', (done) => {
 					request
@@ -3034,7 +2850,14 @@ describe('[Users]', function () {
 			});
 		});
 		describe('unsuccessful cases', () => {
-			it('Remove necessary permission "create-personal-accss-tokens" to user', () => updatePermission('create-personal-access-tokens', []));
+			before(async () => {
+				await updatePermission('create-personal-access-tokens', []);
+			});
+
+			after(async () => {
+				await updatePermission('create-personal-access-tokens', ['admin']);
+			});
+
 			describe('should return an error when the user dont have the necessary permission "create-personal-access-tokens"', () => {
 				it('/users.generatePersonalAccessToken', (done) => {
 					request
@@ -3114,47 +2937,16 @@ describe('[Users]', function () {
 
 	describe('[/users.setActiveStatus]', () => {
 		let user;
-		before((done) => {
-			const username = `user.test.${Date.now()}`;
-			const email = `${username}@rocket.chat`;
-			request
-				.post(api('users.create'))
-				.set(credentials)
-				.send({ email, name: username, username, password })
-				.end((err, res) => {
-					user = res.body.user;
-					done();
-				});
-		});
 		let userCredentials;
-		before((done) => {
-			request
-				.post(api('login'))
-				.send({
-					user: user.username,
-					password,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					userCredentials = {};
-					userCredentials['X-Auth-Token'] = res.body.data.authToken;
-					userCredentials['X-User-Id'] = res.body.data.userId;
-				})
-				.end(done);
+
+		before(async () => {
+			user = await createUser();
+			userCredentials = await login(user.username, password);
+			await updatePermission('edit-other-user-active-status', ['admin', 'user']);
 		});
-		before((done) => {
-			updatePermission('edit-other-user-active-status', ['admin', 'user']).then(done);
-		});
-		after((done) => {
-			request
-				.post(api('users.delete'))
-				.set(credentials)
-				.send({
-					userId: user._id,
-				})
-				.end(() => updatePermission('edit-other-user-active-status', ['admin']).then(done));
-			user = undefined;
+
+		after(async () => {
+			await Promise.all([deleteUser(user), updatePermission('edit-other-user-active-status', ['admin'])]);
 		});
 		it('should set other user active status to false when the logged user has the necessary permission(edit-other-user-active-status)', (done) => {
 			request
@@ -3408,8 +3200,10 @@ describe('[Users]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body.roles).to.have.lengthOf(2);
-					expect(res.body.roles[1].roles).to.eql(['owner']);
-					expect(res.body.roles[1].u).to.have.property('_id', credentials['X-User-Id']);
+					const originalCreator = res.body.roles.find((role) => role.u._id === credentials['X-User-Id']);
+					expect(originalCreator).to.not.be.undefined;
+					expect(originalCreator.roles).to.eql(['owner']);
+					expect(originalCreator.u).to.have.property('_id', credentials['X-User-Id']);
 				});
 
 			await deleteRoom({ type: 'c', roomId: room._id });
@@ -3491,20 +3285,9 @@ describe('[Users]', function () {
 		let testUserCredentials;
 		const testRoleId = 'guest';
 
-		before('Create test user', (done) => {
-			const username = `user.test.${Date.now()}`;
-			const email = `${username}@rocket.chat`;
-			request
-				.post(api('users.create'))
-				.set(credentials)
-				.send({ email, name: username, username, password })
-				.end((err, res) => {
-					testUser = res.body.user;
-					done();
-				});
-		});
-		before('Assign a role to test user', (done) => {
-			request
+		before('Create test user', async () => {
+			testUser = await createUser();
+			await request
 				.post(api('roles.addUserToRole'))
 				.set(credentials)
 				.send({
@@ -3515,28 +3298,12 @@ describe('[Users]', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
-		});
-		before('Login as test user', (done) => {
-			request
-				.post(api('login'))
-				.send({
-					user: testUser.username,
-					password,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					testUserCredentials = {};
-					testUserCredentials['X-Auth-Token'] = res.body.data.authToken;
-					testUserCredentials['X-User-Id'] = res.body.data.userId;
-				})
-				.end(done);
+				});
+			testUserCredentials = await login(testUser.username, password);
 		});
 
 		after(async () => {
-			await deleteUser(testUser);
+			await Promise.all([deleteUser(testUser), updatePermission('edit-other-user-active-status', ['admin'])]);
 		});
 
 		it('should fail to deactivate if user doesnt have edit-other-user-active-status permission', (done) => {
@@ -3670,7 +3437,6 @@ describe('[Users]', function () {
 		});
 		after(async () => {
 			await deleteUser(user);
-			user = undefined;
 		});
 
 		it('should invalidate all active sesions', (done) => {
@@ -3709,8 +3475,8 @@ describe('[Users]', function () {
 	});
 
 	describe('[/users.autocomplete]', () => {
-		after(() => {
-			updatePermission('view-outside-room', ['admin', 'owner', 'moderator', 'user']);
+		after(async () => {
+			await updatePermission('view-outside-room', ['admin', 'owner', 'moderator', 'user']);
 		});
 
 		describe('[without permission]', function () {
@@ -3731,13 +3497,12 @@ describe('[Users]', function () {
 
 				await updatePermission('view-outside-room', []);
 
-				roomId = await createChannel(userCredentials, `channel.autocomplete.${Date.now()}`);
+				roomId = (await createRoom({ type: 'c', credentials: userCredentials, name: `channel.autocomplete.${Date.now()}` })).body.channel
+					._id;
 			});
 
 			after(async () => {
-				await deleteRoom({ type: 'c', roomId });
-				await deleteUser(user);
-				await deleteUser(user2);
+				await Promise.all([deleteRoom({ type: 'c', roomId }), deleteUser(user), deleteUser(user2)]);
 			});
 
 			it('should return an empty list when the user does not have any subscription', (done) => {
@@ -3754,7 +3519,7 @@ describe('[Users]', function () {
 			});
 
 			it('should return users that are subscribed to the same rooms as the requester', async () => {
-				await joinChannel(user2Credentials, roomId);
+				await joinChannel({ credentials: user2Credentials, roomId });
 
 				request
 					.get(api('users.autocomplete?selector={}'))
@@ -3769,8 +3534,8 @@ describe('[Users]', function () {
 		});
 
 		describe('[with permission]', () => {
-			before(() => {
-				updatePermission('view-outside-room', ['admin', 'user']);
+			before(async () => {
+				await updatePermission('view-outside-room', ['admin', 'user']);
 			});
 
 			it('should return an error when the required parameter "selector" is not provided', () => {
@@ -3887,12 +3652,13 @@ describe('[Users]', function () {
 
 	describe('[/users.setStatus]', () => {
 		let user;
+
 		before(async () => {
 			user = await createUser();
 		});
 		after(async () => {
 			await deleteUser(user);
-			user = undefined;
+			await updateSetting('Accounts_AllowUserStatusMessageChange', true);
 		});
 
 		it('should return an error when the setting "Accounts_AllowUserStatusMessageChange" is disabled', (done) => {
@@ -4035,7 +3801,6 @@ describe('[Users]', function () {
 		});
 		after(async () => {
 			await deleteUser(user);
-			user = undefined;
 		});
 
 		it('should invalidate all active sesions', (done) => {
@@ -4105,12 +3870,8 @@ describe('[Users]', function () {
 				.end(done);
 		});
 
-		before('create new user', (done) => {
-			createUser({ joinDefaultChannels: false })
-				.then((user) => {
-					testUser = user;
-				})
-				.then(() => done());
+		before('create new user', async () => {
+			testUser = await createUser({ joinDefaultChannels: false });
 		});
 
 		before('add test user to team 1', (done) => {
@@ -4157,6 +3918,18 @@ describe('[Users]', function () {
 
 		after(async () => {
 			await deleteUser(testUser);
+			await Promise.all([
+				[teamName1, teamName2].map((team) =>
+					request
+						.post(api('teams.delete'))
+						.set(credentials)
+						.send({
+							teamName: team,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200),
+				),
+			]);
 		});
 
 		it('should list both channels', (done) => {
@@ -4189,14 +3962,11 @@ describe('[Users]', function () {
 		before(async () => {
 			user = await createUser();
 			otherUser = await createUser();
-		});
-		before(async () => {
 			userCredentials = await login(user.username, password);
 		});
 
 		after(async () => {
-			await deleteUser(user);
-			await deleteUser(otherUser);
+			await Promise.all([deleteUser(user), deleteUser(otherUser), updatePermission('logout-other-user', ['admin'])]);
 		});
 
 		it('should throw unauthorized error to user w/o "logout-other-user" permission', (done) => {

@@ -4,8 +4,8 @@ import { password } from './user';
 
 export const createUser = (userData = {}) =>
 	new Promise((resolve) => {
-		const username = `user.test.${Date.now()}`;
-		const email = `${username}@rocket.chat`;
+		const username = userData.username || `user.test.${Date.now()}`;
+		const email = userData.email || `${username}@rocket.chat`;
 		request
 			.post(api('users.create'))
 			.set(credentials)
@@ -34,9 +34,10 @@ export const login = (username, password) =>
 			});
 	});
 
-export const deleteUser = async (user) =>
+export const deleteUser = async (user, extraData = {}) =>
 	request.post(api('users.delete')).set(credentials).send({
 		userId: user._id,
+		...extraData,
 	});
 
 export const getUserByUsername = (username) =>
@@ -90,3 +91,18 @@ export const setUserStatus = (overrideCredentials = credentials, status = UserSt
 		message: '',
 		status,
 	});
+
+export const registerUser = (userData = {}, overrideCredentials = credentials) => new Promise((resolve) => {
+	const username = userData.username || `user.test.${Date.now()}`;
+	const email = userData.email || `${username}@rocket.chat`;
+	request
+		.post(api('users.register'))
+		.set(overrideCredentials)
+		.send({ email, name: username, username, pass: password, ...userData })
+		.end((err, res) => {
+			if (err) {
+				return reject(err);
+			}
+			resolve(res.body.user);
+		});
+});
