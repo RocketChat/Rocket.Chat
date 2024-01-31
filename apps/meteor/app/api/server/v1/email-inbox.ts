@@ -1,6 +1,5 @@
 import { EmailInbox, Users } from '@rocket.chat/models';
 import { isEmailInbox, isEmailInboxSearch } from '@rocket.chat/rest-typings';
-import { check } from 'meteor/check';
 
 import { sendTestEmailToInbox } from '../../../../server/features/EmailInbox/EmailInbox_Outgoing';
 import { API } from '../api';
@@ -96,10 +95,6 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['manage-email-inbox'] },
 	{
 		async post() {
-			check(this.urlParams, {
-				_id: String,
-			});
-
 			const { _id } = this.urlParams;
 			if (!_id) {
 				throw new Error('error-invalid-param');
