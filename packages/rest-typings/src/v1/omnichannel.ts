@@ -6,7 +6,6 @@ import type {
 	ILivechatMonitor,
 	ILivechatTag,
 	ILivechatVisitor,
-	ILivechatVisitorDTO,
 	IMessage,
 	IOmnichannelRoom,
 	IRoom,
@@ -268,6 +267,61 @@ const LivechatVisitorCallStatusSchema = {
 };
 
 export const isLivechatVisitorCallStatusProps = ajv.compile<LivechatVisitorCallStatus>(LivechatVisitorCallStatusSchema);
+
+type LivechatVisitorProps = {
+	visitor: {
+		id?: string;
+		token: string;
+		name?: string;
+		email?: string;
+		department?: string;
+		phone?: string;
+		username?: string;
+		customFields?: {
+			key: string;
+			value: string;
+			overwrite: boolean;
+		}[];
+		connectionData?: {
+			httpHeaders: Record<string, string | string[] | undefined>;
+		};
+	};
+};
+
+const LivechatVisitorSchema = {
+	type: 'object',
+	properties: {
+		visitor: {
+			type: 'object',
+			properties: {
+				token: { type: 'string' },
+				id: { type: 'string' },
+				name: { type: 'string' },
+				email: { type: 'string' },
+				department: { type: 'string' },
+				phone: { type: 'string' },
+				username: { type: 'string' },
+				customFields: {
+					type: 'array',
+					items: {
+						type: 'object',
+						properties: {
+							key: { type: 'string' },
+							value: { type: 'string' },
+							overwrite: { type: 'boolean' },
+						},
+						required: ['key', 'value', 'overwrite'],
+					},
+				},
+			},
+			required: ['token'],
+		},
+	},
+	required: ['visitor'],
+	additionalProperties: false,
+};
+
+export const isLivechatVisitorProps = ajv.compile<LivechatVisitorProps>(LivechatVisitorSchema);
 
 type LivechatVisitorStatus = {
 	token: string;
@@ -3421,7 +3475,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'/v1/livechat/visitor': {
-		POST: (params: { visitor: ILivechatVisitorDTO }) => {
+		POST: (params: LivechatVisitorProps) => {
 			visitor: ILivechatVisitor;
 		};
 	};
