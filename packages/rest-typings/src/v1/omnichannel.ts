@@ -1311,9 +1311,11 @@ const GETOmnichannelContactSearchSchema = {
 	properties: {
 		email: {
 			type: 'string',
+			minLength: 1,
 		},
 		phone: {
 			type: 'string',
+			minLength: 1,
 		},
 		custom: {
 			type: 'string',
