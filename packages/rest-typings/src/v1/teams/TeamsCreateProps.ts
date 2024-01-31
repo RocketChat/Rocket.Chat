@@ -66,7 +66,7 @@ export const teamsCreatePropsSchema = {
 							type: 'object',
 							properties: {
 								open: { type: 'boolean' },
-								ls: { type: 'string', format: 'iso-date-time' },
+								ls: { type: 'string', format: 'date-time' },
 								prid: { type: 'string' },
 								roles: { type: 'array', item: { type: 'string' } },
 							},

@@ -138,7 +138,7 @@ type RoleSyncProps = { updatedSince?: string };
 const RolesSyncPropsSchema = {
 	type: 'object',
 	properties: {
-		updatedSince: { type: 'string', format: 'iso-date-time' },
+		updatedSince: { type: 'string', format: 'date-time' },
 	},
 	additionalProperties: false,
 };
