@@ -1,7 +1,7 @@
 import { LivechatVoip } from '@rocket.chat/core-services';
 import type { IUser, IVoipExtensionWithAgentInfo } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import { Match, check } from 'meteor/check';
+import { isOmnichannelAgentExtensionPOSTProps, isOmnichannelExtensionProps, isOmnichannelExtensionsProps } from '@rocket.chat/rest-typings';
 
 import { API } from '../../api';
 import { getPaginationItems } from '../../helpers/getPaginationItems';
@@ -31,23 +31,9 @@ const isUserIdndTypeParams = (p: any): p is { userId: string; type: 'free' | 'al
 
 API.v1.addRoute(
 	'omnichannel/agent/extension',
-	{ authRequired: true, permissionsRequired: ['manage-agent-extension-association'] },
+	{ authRequired: true, permissionsRequired: ['manage-agent-extension-association'], validateParams: isOmnichannelAgentExtensionPOSTProps },
 	{
 		async post() {
-			check(
-				this.bodyParams,
-				Match.OneOf(
-					Match.ObjectIncluding({
-						username: String,
-						extension: String,
-					}),
-					Match.ObjectIncluding({
-						userId: String,
-						extension: String,
-					}),
-				),
-			);
-
 			const { extension } = this.bodyParams;
 			let user: IUser | null = null;
 
@@ -100,13 +86,11 @@ API.v1.addRoute(
 	{
 		// Get the extensions associated with the agent passed as request params.
 		async get() {
-			check(
-				this.urlParams,
-				Match.ObjectIncluding({
-					username: String,
-				}),
-			);
 			const { username } = this.urlParams;
+			if (!username) {
+				throw new Error('error-invalid-param');
+			}
+
 			const user = await Users.findOneByAgentUsername(username, {
 				projection: { _id: 1 },
 			});
@@ -127,13 +111,11 @@ API.v1.addRoute(
 		},
 
 		async delete() {
-			check(
-				this.urlParams,
-				Match.ObjectIncluding({
-					username: String,
-				}),
-			);
 			const { username } = this.urlParams;
+			if (!username) {
+				throw new Error('error-invalid-param');
+			}
+
 			const user = await Users.findOneByAgentUsername(username, {
 				projection: {
 					_id: 1,
@@ -158,23 +140,9 @@ API.v1.addRoute(
 // Get free extensions
 API.v1.addRoute(
 	'omnichannel/extension',
-	{ authRequired: true, permissionsRequired: ['manage-agent-extension-association'] },
+	{ authRequired: true, permissionsRequired: ['manage-agent-extension-association'], validateParams: isOmnichannelExtensionProps },
 	{
 		async get() {
-			check(
-				this.queryParams,
-				Match.OneOf(
-					Match.ObjectIncluding({
-						type: Match.OneOf('free', 'allocated', 'available'),
-						userId: String,
-					}),
-					Match.ObjectIncluding({
-						type: Match.OneOf('free', 'allocated', 'available'),
-						username: String,
-					}),
-				),
-			);
-
 			switch (this.queryParams.type.toLowerCase()) {
 				case 'free': {
 					const extensions = await LivechatVoip.getFreeExtensions();
@@ -215,16 +183,11 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'omnichannel/extensions',
-	{ authRequired: true, permissionsRequired: ['manage-agent-extension-association'] },
+	{ authRequired: true, permissionsRequired: ['manage-agent-extension-association'], validateParams: isOmnichannelExtensionsProps },
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { status, agentId, queues, extension } = this.queryParams;
-
-			check(status, Match.Maybe(String));
-			check(agentId, Match.Maybe(String));
-			check(queues, Match.Maybe([String]));
-			check(extension, Match.Maybe(String));
 
 			const extensions = await LivechatVoip.getExtensionListWithAgentData();
 			const filteredExts = filter(extensions, {
