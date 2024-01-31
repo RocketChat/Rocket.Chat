@@ -9895,7 +9895,7 @@ __metadata:
     dompurify: ^2.3.8
     ejson: ^2.2.3
     emailreplyparser: ^0.0.5
-    emoji-toolkit: ^7.0.1
+    emoji-toolkit: ^8.0.0
     emojione: ^4.5.0
     emojione-assets: ^4.5.0
     eslint: ~8.45.0
@@ -21687,6 +21687,13 @@ __metadata:
   version: 7.0.1
   resolution: "emoji-toolkit@npm:7.0.1"
   checksum: 6a63ae7986d4a55f94e187368268f881813f7ee971927be4f4ed701c7bc82febdf506fe20c1082d20159c808f0a75d597e7f25af11b57e0d5c8e239c0b392268
+  languageName: node
+  linkType: hard
+
+"emoji-toolkit@npm:^8.0.0":
+  version: 8.0.0
+  resolution: "emoji-toolkit@npm:8.0.0"
+  checksum: 9ca0fcf9101d496a25c82e4d7cea6d992259e456d2d8ef93249bdf836f15a0301facf68df25905998fb0e348c5658c1a361b28ecd4d9678e3866398959635342
   languageName: node
   linkType: hard
 
