@@ -47,10 +47,6 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['manage-email-inbox'] },
 	{
 		async get() {
-			check(this.urlParams, {
-				_id: String,
-			});
-
 			const { _id } = this.urlParams;
 			if (!_id) {
 				throw new Error('error-invalid-param');
@@ -64,10 +60,6 @@ API.v1.addRoute(
 			return API.v1.success(emailInbox);
 		},
 		async delete() {
-			check(this.urlParams, {
-				_id: String,
-			});
-
 			const { _id } = this.urlParams;
 			if (!_id) {
 				throw new Error('error-invalid-param');

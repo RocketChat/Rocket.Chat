@@ -130,7 +130,7 @@ const EmailInboxPropsSchema = {
 				},
 				maxRetries: {
 					type: 'number',
-				}
+				},
 			},
 			required: ['password', 'port', 'secure', 'server', 'username'],
 			additionalProperties: false,
