@@ -123,7 +123,7 @@ function ContactTable(): ReactElement {
 					description={t('No_contacts_yet_description')}
 					buttonTitle={t('New_contact')}
 					buttonAction={onButtonNewClick}
-					linkHref='https://go.rocket.chat/omnichannel-docs'
+					linkHref='https://go.rocket.chat/i/omnichannel-docs'
 					linkText={t('Learn_more_about_contacts')}
 				/>
 			)}
