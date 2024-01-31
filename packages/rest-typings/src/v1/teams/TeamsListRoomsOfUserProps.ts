@@ -1,9 +1,7 @@
 import type { ITeam, IUser } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
 
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
-
-const ajv = new Ajv();
+import { ajv } from '../Ajv';
 
 export type TeamsListRoomsOfUserProps = PaginatedRequest<
 	| {

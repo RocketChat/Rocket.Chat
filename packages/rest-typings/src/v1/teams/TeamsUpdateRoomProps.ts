@@ -1,7 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
 
-const ajv = new Ajv();
+import { ajv } from '../Ajv';
 
 export type TeamsUpdateRoomProps = { roomId: IRoom['_id']; isDefault: boolean };
 

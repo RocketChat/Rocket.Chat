@@ -1,8 +1,5 @@
-import Ajv from 'ajv';
-
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
-
-const ajv = new Ajv();
+import { ajv } from '../Ajv';
 
 export type TeamsListRoomsProps = PaginatedRequest<
 	({ teamId: string } | { teamName: string }) & {

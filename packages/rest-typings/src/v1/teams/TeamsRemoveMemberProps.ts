@@ -1,6 +1,8 @@
 import Ajv from 'ajv';
 
-const ajv = new Ajv();
+const ajv = new Ajv({
+	coerceTypes: true,
+});
 
 export type TeamsRemoveMemberProps = ({ teamId: string } | { teamName: string }) & {
 	userId: string;

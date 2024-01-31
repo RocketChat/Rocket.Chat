@@ -1,10 +1,7 @@
 import type { ITeam, IUser, IRoom } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
-import addFormats from 'ajv-formats';
 
-const ajv = new Ajv();
-addFormats(ajv);
+import { ajv } from '../Ajv';
 
 type ISubscriptionExtraData = {
 	open: boolean;

@@ -1,7 +1,6 @@
 import { UserStatus } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
 
-const ajv = new Ajv();
+import { ajv } from '../Ajv';
 
 export type TeamsMembersProps = ({ teamId: string } | { teamName: string }) & {
 	status?: UserStatus[];
