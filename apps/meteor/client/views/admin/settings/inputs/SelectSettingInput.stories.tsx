@@ -1,8 +1,8 @@
 import { Field } from '@rocket.chat/fuselage';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
-import type keys from '../../../../../packages/rocketchat-i18n/i18n/en.i18n.json';
 import SelectSettingInput from './SelectSettingInput';
 
 export default {
@@ -24,9 +24,9 @@ Default.args = {
 	label: 'Label',
 	placeholder: 'Placeholder',
 	values: [
-		{ key: '1', i18nLabel: '1' as keyof typeof keys },
-		{ key: '2', i18nLabel: '2' as keyof typeof keys },
-		{ key: '3', i18nLabel: '3' as keyof typeof keys },
+		{ key: '1', i18nLabel: '1' as TranslationKey },
+		{ key: '2', i18nLabel: '2' as TranslationKey },
+		{ key: '3', i18nLabel: '3' as TranslationKey },
 	],
 };
 
@@ -36,9 +36,9 @@ Disabled.args = {
 	label: 'Label',
 	placeholder: 'Placeholder',
 	values: [
-		{ key: '1', i18nLabel: '1' as keyof typeof keys },
-		{ key: '2', i18nLabel: '2' as keyof typeof keys },
-		{ key: '3', i18nLabel: '3' as keyof typeof keys },
+		{ key: '1', i18nLabel: '1' as TranslationKey },
+		{ key: '2', i18nLabel: '2' as TranslationKey },
+		{ key: '3', i18nLabel: '3' as TranslationKey },
 	],
 	disabled: true,
 };
@@ -50,9 +50,9 @@ WithValue.args = {
 	placeholder: 'Placeholder',
 	value: '2',
 	values: [
-		{ key: '1', i18nLabel: '1' as keyof typeof keys },
-		{ key: '2', i18nLabel: '2' as keyof typeof keys },
-		{ key: '3', i18nLabel: '3' as keyof typeof keys },
+		{ key: '1', i18nLabel: '1' as TranslationKey },
+		{ key: '2', i18nLabel: '2' as TranslationKey },
+		{ key: '3', i18nLabel: '3' as TranslationKey },
 	],
 };
 
@@ -62,9 +62,9 @@ WithResetButton.args = {
 	label: 'Label',
 	placeholder: 'Placeholder',
 	values: [
-		{ key: '1', i18nLabel: '1' as keyof typeof keys },
-		{ key: '2', i18nLabel: '2' as keyof typeof keys },
-		{ key: '3', i18nLabel: '3' as keyof typeof keys },
+		{ key: '1', i18nLabel: '1' as TranslationKey },
+		{ key: '2', i18nLabel: '2' as TranslationKey },
+		{ key: '3', i18nLabel: '3' as TranslationKey },
 	],
 	hasResetButton: true,
 };

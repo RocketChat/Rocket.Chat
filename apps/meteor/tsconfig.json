@@ -22,10 +22,7 @@
 		"paths": {
 			/* Support absolute /imports/* with a leading '/' */
 			"/*": ["*"],
-			"meteor/*": [
-				"../../node_modules/@types/meteor/*",
-				".meteor/local/types/packages.d.ts"
-			]
+			"meteor/*": ["./node_modules/@types/meteor/*", ".meteor/local/types/packages.d.ts"]
 		},
 		"preserveSymlinks": true
 
