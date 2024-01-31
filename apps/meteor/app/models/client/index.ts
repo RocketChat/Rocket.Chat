@@ -14,7 +14,6 @@ import { RoomRoles } from './models/RoomRoles';
 import { UserAndRoom } from './models/UserAndRoom';
 import { UserRoles } from './models/UserRoles';
 import { Users } from './models/Users';
-import { WebdavAccounts } from './models/WebdavAccounts';
 
 export {
 	Base,
@@ -30,7 +29,6 @@ export {
 	ChatPermissions,
 	CustomSounds,
 	EmojiCustom,
-	WebdavAccounts,
 	/** @deprecated */
 	Users,
 	/** @deprecated */
