@@ -485,7 +485,7 @@ function onNewMessage<T extends ApiMethods>(msg: MessageEvent<{ src?: string; fn
 
 	const { fn } = msg.data;
 
-	const args = !Array.isArray(msg.data.args) ? [msg.data.args] : msg.data.args;
+	const args = msg.data.args && !Array.isArray(msg.data.args) ? [msg.data.args] : msg.data.args;
 
 	// There is an existing issue with overload resolution with type union arguments please see https://github.com/microsoft/TypeScript/issues/14107
 	// @ts-expect-error: A spread argument must either have a tuple type or be passed to a rest parameter

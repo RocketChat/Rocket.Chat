@@ -241,7 +241,7 @@ const api = {
 
 function onNewMessage<T extends ApiMethods>(event: ApiMethodsAndArgs<T>) {
 	const fn = api[event.fn];
-	const args = !Array.isArray(event.args) ? [event.args] : event.args;
+	const args = event.args && !Array.isArray(event.args) ? [event.args] : event.args;
 
 	// There is an existing issue with overload resolution with type union arguments please see https://github.com/microsoft/TypeScript/issues/14107
 	// @ts-expect-error: A spread argument must either have a tuple type or be passed to a rest parameter
