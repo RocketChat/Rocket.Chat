@@ -137,7 +137,7 @@ const EmailInboxPropsSchema = {
 		},
 	},
 
-	required: ['name', 'email', 'active', 'description', 'senderInfo', 'department', 'smtp', 'imap'],
+	required: ['name', 'email', 'active', 'smtp', 'imap'],
 	additionalProperties: false,
 };
 
