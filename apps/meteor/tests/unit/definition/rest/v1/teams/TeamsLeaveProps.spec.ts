@@ -51,12 +51,12 @@ describe('TeamsLeaveProps (definition/rest/v1)', () => {
 			assert.isFalse(isTeamsLeaveProps({ teamName: 'teamName', rooms: {} }));
 		});
 
-		it('should return false if teamId and rooms are provided, but rooms is not an array of strings', () => {
-			assert.isFalse(isTeamsLeaveProps({ teamId: 'teamId', rooms: [1] }));
+		it('should return true if teamId and rooms are provided, but rooms is not an array of strings (due to type coercion)', () => {
+			assert.isTrue(isTeamsLeaveProps({ teamId: 'teamId', rooms: [1] }));
 		});
 
-		it('should return false if teamName and rooms are provided, but rooms is not an array of strings', () => {
-			assert.isFalse(isTeamsLeaveProps({ teamName: 'teamName', rooms: [1] }));
+		it('should return true if teamName and rooms are provided, but rooms is not an array of strings (due to type coercion)', () => {
+			assert.isTrue(isTeamsLeaveProps({ teamName: 'teamName', rooms: [1] }));
 		});
 
 		it('should return false if teamName and rooms are provided but an extra property is provided', () => {

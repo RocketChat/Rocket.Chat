@@ -22,12 +22,12 @@ describe('TeamsConvertToChannelProps (definition/rest/v1)', () => {
 			assert.isFalse(isTeamsConvertToChannelProps({ teamName: 'teamName', teamId: 'teamId' }));
 		});
 
-		it('should return false if teamName is not a string', () => {
-			assert.isFalse(isTeamsConvertToChannelProps({ teamName: 1 }));
+		it('should return true even if teamName is not a string due to type coercion', () => {
+			assert.isTrue(isTeamsConvertToChannelProps({ teamName: 1 }));
 		});
 
-		it('should return false if teamId is not a string', () => {
-			assert.isFalse(isTeamsConvertToChannelProps({ teamId: 1 }));
+		it('should return true even if teamId is not a string due to type coercion', () => {
+			assert.isTrue(isTeamsConvertToChannelProps({ teamId: 1 }));
 		});
 
 		it('should return false if an additionalProperties is provided', () => {
