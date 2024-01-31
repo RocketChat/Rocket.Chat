@@ -5,7 +5,7 @@ import { MultiSelectCustom } from '@rocket.chat/ui-client';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { UsersFilters } from './UsersTable';
+import type { UsersFilters } from '../AdminUsersPage';
 
 type UsersTableFiltersProps = {
 	setUsersFilters: React.Dispatch<React.SetStateAction<UsersFilters>>;
