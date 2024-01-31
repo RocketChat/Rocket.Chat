@@ -77,6 +77,7 @@ export const ActionForm = ({ control, trigger, index, ...props }: SendMessageFor
 									name={name}
 									onChange={onChange}
 									value={value}
+									id={actionFieldId}
 									options={actionOptions}
 									renderSelected={({ label, value }) => <Box flexGrow='1'>{renderOption(label, value)}</Box>}
 									renderItem={({ label, value, onMouseDown, ...props }) => (
