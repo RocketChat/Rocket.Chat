@@ -1,4 +1,4 @@
-import { TextInput, Chip, Button, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
+import { TextInput, Chip, Button, FieldLabel, FieldRow, Field, FieldError } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, ReactElement } from 'react';
@@ -12,11 +12,11 @@ type TagsProps = {
 	tags?: string[];
 	handler: (value: string[]) => void;
 	error?: string;
-	tagRequired?: boolean;
+	required?: boolean;
 	department?: string;
 };
 
-const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps): ReactElement => {
+const Tags = ({ tags = [], handler, error, required = false, department }: TagsProps): ReactElement => {
 	const t = useTranslation();
 
 	const { data: tagsResult, isInitialLoading } = useLivechatTags({
@@ -64,8 +64,8 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 	}
 
 	return (
-		<>
-			<FieldLabel required={tagRequired} mb={4}>
+		<Field>
+			<FieldLabel required={required} mb={4}>
 				{t('Tags')}
 			</FieldLabel>
 
@@ -73,28 +73,27 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 				<FieldRow>
 					<CurrentChatTags
 						value={paginatedTagValue}
+						department={department}
+						viewAll={!department}
+						error={Boolean(error)}
 						handler={(tags: { label: string; value: string }[]): void => {
 							handler(tags.map((tag) => tag.label));
 						}}
-						department={department}
-						viewAll={!department}
 					/>
 				</FieldRow>
 			) : (
-				<>
-					<FieldRow>
-						<TextInput
-							error={error}
-							value={tagValue}
-							onChange={({ currentTarget }: ChangeEvent<HTMLInputElement>): void => handleTagValue(currentTarget.value)}
-							flexGrow={1}
-							placeholder={t('Enter_a_tag')}
-						/>
-						<Button disabled={!tagValue} mis={8} title={t('Add')} onClick={handleTagTextSubmit}>
-							{t('Add')}
-						</Button>
-					</FieldRow>
-				</>
+				<FieldRow>
+					<TextInput
+						error={error}
+						value={tagValue}
+						flexGrow={1}
+						placeholder={t('Enter_a_tag')}
+						onChange={({ currentTarget }: ChangeEvent<HTMLInputElement>): void => handleTagValue(currentTarget.value)}
+					/>
+					<Button disabled={!tagValue} mis={8} title={t('Add')} onClick={handleTagTextSubmit}>
+						{t('Add')}
+					</Button>
+				</FieldRow>
 			)}
 
 			{customTags.length > 0 && (
@@ -106,7 +105,9 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 					))}
 				</FieldRow>
 			)}
-		</>
+
+			{error && <FieldError>{error}</FieldError>}
+		</Field>
 	);
 };
 

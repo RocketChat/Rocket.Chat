@@ -14,6 +14,7 @@ type AutoCompleteTagsMultipleProps = {
 	onChange?: (value: PaginatedMultiSelectOption[]) => void;
 	department?: string;
 	viewAll?: boolean;
+	error?: boolean;
 };
 
 const AutoCompleteTagsMultiple = ({
@@ -22,6 +23,7 @@ const AutoCompleteTagsMultiple = ({
 	onChange = () => undefined,
 	department,
 	viewAll = false,
+	error,
 }: AutoCompleteTagsMultipleProps) => {
 	const t = useTranslation();
 	const [tagsFilter, setTagsFilter] = useState('');
@@ -51,6 +53,7 @@ const AutoCompleteTagsMultiple = ({
 			setFilter={setTagsFilter}
 			options={tagsOptions}
 			width='100%'
+			error={error}
 			flexShrink={0}
 			flexGrow={0}
 			placeholder={t('Select_an_option')}
