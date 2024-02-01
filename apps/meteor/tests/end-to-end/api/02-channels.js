@@ -1,11 +1,11 @@
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
-import { getCredentials, api, request, credentials, apiPublicChannelName, reservedWords } from '../../data/api-data.js';
+import { getCredentials, api, request, credentials, reservedWords } from '../../data/api-data.js';
 import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
-import { createRoom } from '../../data/rooms.helper';
+import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { testFileUploads } from '../../data/uploads.helper';
 import { adminUsername, password } from '../../data/user';
 import { createUser, login, deleteUser } from '../../data/users.helper';
@@ -27,6 +27,8 @@ function getRoomInfo(roomId) {
 const channel = {};
 
 describe.only('[Channels]', function () {
+	const apiPublicChannelName = `api-channel-test-${Date.now()}`;
+
 	this.retries(0);
 
 	before((done) => getCredentials(done));
@@ -50,6 +52,10 @@ describe.only('[Channels]', function () {
 				channel.name = res.body.channel.name;
 			})
 			.end(done);
+	});
+
+	after(async () => {
+		await deleteRoom({ type: 'c', roomId: channel._id });
 	});
 
 	it('/channels.invite', async () => {
@@ -569,9 +575,9 @@ describe.only('[Channels]', function () {
 		it('should not add guest users to more rooms than defined in the license', async function () {
 			// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
 			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
-			// if (!process.env.IS_EE) {
-			// 	this.skip();
-			// }
+			if (!process.env.IS_EE) {
+				this.skip();
+			}
 
 			const promises = [];
 			for (let i = 0; i < maxRoomsPerGuest; i++) {
@@ -583,7 +589,7 @@ describe.only('[Channels]', function () {
 					}),
 				);
 			}
-			console.log(await Promise.all(promises));
+			const channelIds = (await Promise.all(promises)).map((r) => r.body.channel).map((channel) => channel._id);
 
 			request
 				.post(api('channels.create'))
@@ -613,17 +619,25 @@ describe.only('[Channels]', function () {
 							expect(res.body.members).to.have.lengthOf(1);
 						});
 				});
+
+			await Promise.all(channelIds.map((id) => deleteRoom({ type: 'c', roomId: id })));
 		});
 	});
 	describe('[/channels.info]', () => {
+		const testChannelName = `api-channel-test-${Date.now()}`;
 		let testChannel = {};
 		let channelMessage = {};
+
+		after(async () => {
+			await deleteRoom({ type: 'c', roomId: testChannel._id });
+		});
+
 		it('creating new channel...', (done) => {
 			request
 				.post(api('channels.create'))
 				.set(credentials)
 				.send({
-					name: apiPublicChannelName,
+					name: testChannelName,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -637,7 +651,7 @@ describe.only('[Channels]', function () {
 				.post(api('channels.create'))
 				.set(credentials)
 				.send({
-					name: apiPublicChannelName,
+					name: testChannelName,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -659,7 +673,7 @@ describe.only('[Channels]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel._id');
-					expect(res.body).to.have.nested.property('channel.name', apiPublicChannelName);
+					expect(res.body).to.have.nested.property('channel.name', testChannelName);
 					expect(res.body).to.have.nested.property('channel.t', 'c');
 					expect(res.body).to.have.nested.property('channel.msgs', 0);
 				})
@@ -791,9 +805,13 @@ describe.only('[Channels]', function () {
 	});
 
 	describe('[/channels.online]', () => {
+		const createdChannels = [];
+		const createdUsers = [];
+
 		const createUserAndChannel = async () => {
 			const testUser = await createUser();
 			const testUserCredentials = await login(testUser.username, password);
+			createdUsers.push(testUser);
 
 			await request.post(api('users.setStatus')).set(testUserCredentials).send({
 				message: '',
@@ -807,6 +825,7 @@ describe.only('[Channels]', function () {
 				type: 'c',
 				members: [testUser.username],
 			});
+			createdChannels.push(roomResponse.body.channel);
 
 			return {
 				testUser,
@@ -814,6 +833,13 @@ describe.only('[Channels]', function () {
 				room: roomResponse.body.channel,
 			};
 		};
+
+		after(async () => {
+			await Promise.all([
+				createdUsers.map((user) => deleteUser(user)),
+				createdChannels.map((channel) => deleteRoom({ type: 'c', roomId: channel._id })),
+			]);
+		});
 
 		it('should return an error if no query', () =>
 			request
@@ -885,7 +911,7 @@ describe.only('[Channels]', function () {
 	});
 
 	describe('[/channels.files]', async () => {
-		await testFileUploads('channels.files', channel);
+		await testFileUploads('channels.files', 'c');
 	});
 
 	describe('[/channels.join]', () => {
@@ -893,62 +919,28 @@ describe.only('[Channels]', function () {
 		let testChannelWithCode;
 		let testUser;
 		let testUserCredentials;
-		before('Create test user', (done) => {
-			const username = `user.test.${Date.now()}`;
-			const email = `${username}@rocket.chat`;
-			request
-				.post(api('users.create'))
-				.set(credentials)
-				.send({ email, name: username, username, password })
-				.end((err, res) => {
-					testUser = res.body.user;
-					done();
-				});
+
+		before('Create test user', async () => {
+			testUser = await createUser();
+			testUserCredentials = await login(testUser.username, password);
+			testChannelNoCode = (await createRoom({ type: 'c', credentials: testUserCredentials, name: `${apiPublicChannelName}-nojoincode` }))
+				.body.channel;
+			testChannelWithCode = (
+				await createRoom({ type: 'c', credentials: testUserCredentials, name: `${apiPublicChannelName}-withjoincode` })
+			).body.channel;
+			await updatePermission('edit-room', ['admin', 'owner', 'moderator']);
 		});
-		before('Login as test user', (done) => {
-			request
-				.post(api('login'))
-				.send({
-					user: testUser.username,
-					password,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					testUserCredentials = {};
-					testUserCredentials['X-Auth-Token'] = res.body.data.authToken;
-					testUserCredentials['X-User-Id'] = res.body.data.userId;
-				})
-				.end(done);
+
+		after(async () => {
+			await Promise.all([
+				deleteRoom({ type: 'c', roomId: testChannelNoCode._id }),
+				deleteRoom({ type: 'c', roomId: testChannelWithCode._id }),
+				deleteUser(testUser),
+				updatePermission('edit-room', ['admin', 'owner', 'moderator']),
+				updatePermission('join-without-join-code', ['admin', 'bot', 'app']),
+			]);
 		});
-		before('Create no code channel', (done) => {
-			request
-				.post(api('channels.create'))
-				.set(testUserCredentials)
-				.send({
-					name: `${apiPublicChannelName}-nojoincode`,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					testChannelNoCode = res.body.channel;
-				})
-				.end(done);
-		});
-		before('Create code channel', (done) => {
-			request
-				.post(api('channels.create'))
-				.set(testUserCredentials)
-				.send({
-					name: `${apiPublicChannelName}-withjoincode`,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					testChannelWithCode = res.body.channel;
-				})
-				.end(done);
-		});
+
 		before('Set code for channel', (done) => {
 			request
 				.post(api('channels.setJoinCode'))
@@ -1272,6 +1264,26 @@ describe.only('[Channels]', function () {
 	});
 
 	describe('/channels.members', () => {
+		let testUser;
+
+		before(async () => {
+			testUser = await createUser();
+			await updateSetting('Accounts_SearchFields', 'username, name, bio, nickname');
+			await request
+				.post(api('channels.invite'))
+				.set(credentials)
+				.send({
+					roomId: channel._id,
+					userId: testUser._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+		});
+
+		after(async () => {
+			await Promise.all([updateSetting('Accounts_SearchFields', 'username, name, bio, nickname'), deleteUser(testUser)]);
+		});
+
 		it('should return an array of members by channel', (done) => {
 			request
 				.get(api('channels.members'))
@@ -1318,15 +1330,16 @@ describe.only('[Channels]', function () {
 				.set(credentials)
 				.query({
 					roomId: channel._id,
-					filter: 'rocket.cat',
+					filter: testUser.username,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('members').and.to.be.an('array');
-					expect(res.body).to.have.property('count');
 					expect(res.body).to.have.property('count', 1);
+					expect(res.body.members[0]._id).to.be.equal(testUser._id);
+					expect(res.body).to.have.property('count');
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('offset');
 				})
@@ -1338,11 +1351,13 @@ describe.only('[Channels]', function () {
 		let integrationCreatedByAnUser;
 		let userCredentials;
 		let createdChannel;
+		let user;
+
 		before((done) => {
 			createRoom({ name: `test-integration-channel-${Date.now()}`, type: 'c' }).end((err, res) => {
 				createdChannel = res.body.channel;
 				createUser().then((createdUser) => {
-					const user = createdUser;
+					user = createdUser;
 					login(user.username, password).then((credentials) => {
 						userCredentials = credentials;
 						updatePermission('manage-incoming-integrations', ['user']).then(() => {
@@ -1370,8 +1385,14 @@ describe.only('[Channels]', function () {
 			});
 		});
 
-		after((done) => {
-			removeIntegration(integrationCreatedByAnUser._id, 'incoming').then(done);
+		after(async () => {
+			await Promise.all([
+				deleteRoom({ type: 'c', roomId: createdChannel._id }),
+				removeIntegration(integrationCreatedByAnUser._id, 'incoming'),
+				updatePermission('manage-incoming-integrations', ['admin']),
+				updatePermission('manage-own-incoming-integrations', ['admin']),
+				deleteUser(user),
+			]);
 		});
 
 		it('should return the list of integrations of created channel and it should contain the integration created by user when the admin DOES have the permission', (done) => {
@@ -1449,7 +1470,13 @@ describe.only('[Channels]', function () {
 	});
 
 	describe('/channels.setCustomFields:', () => {
-		let cfchannel;
+		let withCFChannel;
+		let withoutCFChannel;
+
+		after(async () => {
+			await deleteRoom({ type: 'c', roomId: withCFChannel._id });
+		});
+
 		it('create channel with customFields', (done) => {
 			const customFields = { field0: 'value0' };
 			request
@@ -1460,7 +1487,7 @@ describe.only('[Channels]', function () {
 					customFields,
 				})
 				.end((err, res) => {
-					cfchannel = res.body.channel;
+					withCFChannel = res.body.channel;
 					done();
 				});
 		});
@@ -1469,7 +1496,7 @@ describe.only('[Channels]', function () {
 				.get(api('channels.info'))
 				.set(credentials)
 				.query({
-					roomId: cfchannel._id,
+					roomId: withCFChannel._id,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -1485,7 +1512,7 @@ describe.only('[Channels]', function () {
 				.post(api('channels.setCustomFields'))
 				.set(credentials)
 				.send({
-					roomId: cfchannel._id,
+					roomId: withCFChannel._id,
 					customFields,
 				})
 				.expect('Content-Type', 'application/json')
@@ -1493,7 +1520,7 @@ describe.only('[Channels]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel._id');
-					expect(res.body).to.have.nested.property('channel.name', cfchannel.name);
+					expect(res.body).to.have.nested.property('channel.name', withCFChannel.name);
 					expect(res.body).to.have.nested.property('channel.t', 'c');
 					expect(res.body).to.have.nested.property('channel.customFields.field9', 'value9');
 					expect(res.body).to.have.not.nested.property('channel.customFields.field0', 'value0');
@@ -1504,7 +1531,7 @@ describe.only('[Channels]', function () {
 				.get(api('channels.info'))
 				.set(credentials)
 				.query({
-					roomId: cfchannel._id,
+					roomId: withCFChannel._id,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -1519,7 +1546,7 @@ describe.only('[Channels]', function () {
 				.post(api('channels.delete'))
 				.set(credentials)
 				.send({
-					roomName: cfchannel.name,
+					roomName: withCFChannel.name,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -1536,7 +1563,7 @@ describe.only('[Channels]', function () {
 					name: `channel.cf.${Date.now()}`,
 				})
 				.end((err, res) => {
-					cfchannel = res.body.channel;
+					withoutCFChannel = res.body.channel;
 					done();
 				});
 		});
@@ -1546,7 +1573,7 @@ describe.only('[Channels]', function () {
 				.post(api('channels.setCustomFields'))
 				.set(credentials)
 				.send({
-					roomId: cfchannel._id,
+					roomId: withoutCFChannel._id,
 					customFields,
 				})
 				.expect('Content-Type', 'application/json')
@@ -1554,7 +1581,7 @@ describe.only('[Channels]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel._id');
-					expect(res.body).to.have.nested.property('channel.name', cfchannel.name);
+					expect(res.body).to.have.nested.property('channel.name', withoutCFChannel.name);
 					expect(res.body).to.have.nested.property('channel.t', 'c');
 					expect(res.body).to.have.nested.property('channel.customFields.field1', 'value1');
 				});
@@ -1566,7 +1593,7 @@ describe.only('[Channels]', function () {
 				.post(api('channels.setCustomFields'))
 				.set(credentials)
 				.send({
-					roomName: cfchannel.name,
+					roomName: withoutCFChannel.name,
 					customFields,
 				})
 				.expect('Content-Type', 'application/json')
@@ -1574,7 +1601,7 @@ describe.only('[Channels]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel._id');
-					expect(res.body).to.have.nested.property('channel.name', cfchannel.name);
+					expect(res.body).to.have.nested.property('channel.name', withoutCFChannel.name);
 					expect(res.body).to.have.nested.property('channel.t', 'c');
 					expect(res.body).to.have.nested.property('channel.customFields.field2', 'value2');
 					expect(res.body).to.have.nested.property('channel.customFields.field3', 'value3');
@@ -1589,7 +1616,7 @@ describe.only('[Channels]', function () {
 				.post(api('channels.setCustomFields'))
 				.set(credentials)
 				.send({
-					roomName: cfchannel.name,
+					roomName: withoutCFChannel.name,
 					customFields,
 				})
 				.expect('Content-Type', 'application/json')
@@ -1597,7 +1624,7 @@ describe.only('[Channels]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel._id');
-					expect(res.body).to.have.nested.property('channel.name', cfchannel.name);
+					expect(res.body).to.have.nested.property('channel.name', withoutCFChannel.name);
 					expect(res.body).to.have.nested.property('channel.t', 'c');
 					expect(res.body).to.have.not.nested.property('channel.customFields.field2', 'value2');
 					expect(res.body).to.have.not.nested.property('channel.customFields.field3', 'value3');
@@ -1612,7 +1639,7 @@ describe.only('[Channels]', function () {
 				.post(api('channels.setCustomFields'))
 				.set(credentials)
 				.send({
-					roomName: cfchannel.name,
+					roomName: withoutCFChannel.name,
 					customFields,
 				})
 				.expect('Content-Type', 'application/json')
@@ -1627,7 +1654,7 @@ describe.only('[Channels]', function () {
 				.post(api('channels.delete'))
 				.set(credentials)
 				.send({
-					roomName: cfchannel.name,
+					roomName: withoutCFChannel.name,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -1639,14 +1666,25 @@ describe.only('[Channels]', function () {
 	});
 
 	describe('/channels.setDefault', () => {
+		let testChannel;
+		const name = `setDefault-${Date.now()}`;
+
+		before(async () => {
+			testChannel = (await createRoom({ type: 'c', name })).body.channel;
+		});
+
+		after(async () => {
+			await deleteRoom({ type: 'c', roomId: testChannel._id });
+		});
+
 		it('should set channel as default', async () => {
-			const roomInfo = await getRoomInfo(channel._id);
+			const roomInfo = await getRoomInfo(testChannel._id);
 
 			return request
 				.post(api('channels.setDefault'))
 				.set(credentials)
 				.send({
-					roomId: channel._id,
+					roomId: testChannel._id,
 					default: true,
 				})
 				.expect('Content-Type', 'application/json')
@@ -1654,20 +1692,20 @@ describe.only('[Channels]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel._id');
-					expect(res.body).to.have.nested.property('channel.name', `EDITED${apiPublicChannelName}`);
+					expect(res.body).to.have.nested.property('channel.name', name);
 					expect(res.body).to.have.nested.property('channel.t', 'c');
 					expect(res.body).to.have.nested.property('channel.msgs', roomInfo.channel.msgs);
 					expect(res.body).to.have.nested.property('channel.default', true);
 				});
 		});
 		it('should unset channel as default', async () => {
-			const roomInfo = await getRoomInfo(channel._id);
+			const roomInfo = await getRoomInfo(testChannel._id);
 
 			return request
 				.post(api('channels.setDefault'))
 				.set(credentials)
 				.send({
-					roomId: channel._id,
+					roomId: testChannel._id,
 					default: false,
 				})
 				.expect('Content-Type', 'application/json')
@@ -1675,7 +1713,7 @@ describe.only('[Channels]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel._id');
-					expect(res.body).to.have.nested.property('channel.name', `EDITED${apiPublicChannelName}`);
+					expect(res.body).to.have.nested.property('channel.name', name);
 					expect(res.body).to.have.nested.property('channel.t', 'c');
 					expect(res.body).to.have.nested.property('channel.msgs', roomInfo.channel.msgs);
 					expect(res.body).to.have.nested.property('channel.default', false);
@@ -1684,8 +1722,19 @@ describe.only('[Channels]', function () {
 	});
 
 	describe('/channels.setType', () => {
+		let testChannel;
+		const name = `setType-${Date.now()}`;
+
+		before(async () => {
+			testChannel = (await createRoom({ type: 'c', name })).body.channel;
+		});
+
+		after(async () => {
+			await deleteRoom({ type: 'c', roomId: testChannel._id });
+		});
+
 		it('should change the type public channel to private', async () => {
-			const roomInfo = await getRoomInfo(channel._id);
+			const roomInfo = await getRoomInfo(testChannel._id);
 
 			request
 				.post(api('channels.setType'))
@@ -1699,7 +1748,7 @@ describe.only('[Channels]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel._id');
-					expect(res.body).to.have.nested.property('channel.name', `EDITED${apiPublicChannelName}`);
+					expect(res.body).to.have.nested.property('channel.name', name);
 					expect(res.body).to.have.nested.property('channel.t', 'p');
 					expect(res.body).to.have.nested.property('channel.msgs', roomInfo.channel.msgs + 1);
 				});
@@ -1708,18 +1757,15 @@ describe.only('[Channels]', function () {
 
 	describe('/channels.delete:', () => {
 		let testChannel;
-		it('/channels.create', (done) => {
-			request
-				.post(api('channels.create'))
-				.set(credentials)
-				.send({
-					name: `channel.test.${Date.now()}`,
-				})
-				.end((err, res) => {
-					testChannel = res.body.channel;
-					done();
-				});
+
+		before(async () => {
+			testChannel = (await createRoom({ type: 'c', name: `channel.test.${Date.now()}` })).body.channel;
 		});
+
+		after(async () => {
+			await deleteRoom({ type: 'c', roomId: testChannel._id });
+		});
+
 		it('/channels.delete', (done) => {
 			request
 				.post(api('channels.delete'))
@@ -1794,18 +1840,15 @@ describe.only('[Channels]', function () {
 
 	describe('/channels.roles', () => {
 		let testChannel;
-		it('/channels.create', (done) => {
-			request
-				.post(api('channels.create'))
-				.set(credentials)
-				.send({
-					name: `channel.roles.test.${Date.now()}`,
-				})
-				.end((err, res) => {
-					testChannel = res.body.channel;
-					done();
-				});
+
+		before(async () => {
+			testChannel = (await createRoom({ type: 'c', name: `channel.roles.test.${Date.now()}` })).body.channel;
 		});
+
+		after(async () => {
+			await deleteRoom({ type: 'c', roomId: testChannel._id });
+		});
+
 		it('/channels.invite', (done) => {
 			request
 				.post(api('channels.invite'))
@@ -1869,18 +1912,15 @@ describe.only('[Channels]', function () {
 
 	describe('/channels.moderators', () => {
 		let testChannel;
-		it('/channels.create', (done) => {
-			request
-				.post(api('channels.create'))
-				.set(credentials)
-				.send({
-					name: `channel.roles.test.${Date.now()}`,
-				})
-				.end((err, res) => {
-					testChannel = res.body.channel;
-					done();
-				});
+
+		before(async () => {
+			testChannel = (await createRoom({ type: 'c', name: `channel.moderators.test.${Date.now()}` })).body.channel;
 		});
+
+		after(async () => {
+			await deleteRoom({ type: 'c', roomId: testChannel._id });
+		});
+
 		it('/channels.invite', (done) => {
 			request
 				.post(api('channels.invite'))
@@ -1918,14 +1958,24 @@ describe.only('[Channels]', function () {
 				.end(done);
 		});
 	});
+
 	describe('/channels.anonymousread', () => {
-		after(() => updateSetting('Accounts_AllowAnonymousRead', false));
+		let testChannel;
+
+		before(async () => {
+			testChannel = (await createRoom({ type: 'c', name: `channel.anonymousread.test.${Date.now()}` })).body.channel;
+		});
+
+		after(async () => {
+			await Promise.all([updateSetting('Accounts_AllowAnonymousRead', false), deleteRoom({ type: 'c', roomId: testChannel._id })]);
+		});
+
 		it('should return an error when the setting "Accounts_AllowAnonymousRead" is disabled', (done) => {
 			updateSetting('Accounts_AllowAnonymousRead', false).then(() => {
 				request
 					.get(api('channels.anonymousread'))
 					.query({
-						roomId: 'GENERAL',
+						roomId: testChannel._id,
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -1944,7 +1994,7 @@ describe.only('[Channels]', function () {
 				request
 					.get(api('channels.anonymousread'))
 					.query({
-						roomId: 'GENERAL',
+						roomId: testChannel._id,
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -1960,7 +2010,7 @@ describe.only('[Channels]', function () {
 				request
 					.get(api('channels.anonymousread'))
 					.query({
-						roomId: 'GENERAL',
+						roomId: testChannel._id,
 						count: 5,
 						offset: 0,
 					})
@@ -1976,15 +2026,18 @@ describe.only('[Channels]', function () {
 	});
 
 	describe('/channels.convertToTeam', () => {
-		before((done) => {
-			request
-				.post(api('channels.create'))
-				.set(credentials)
-				.send({ name: `channel-${Date.now()}` })
-				.then((response) => {
-					this.newChannel = response.body.channel;
-				})
-				.then(() => done());
+		let testChannel;
+
+		before(async () => {
+			testChannel = (await createRoom({ type: 'c', name: `channel.convertToTeam.test.${Date.now()}` })).body.channel;
+		});
+
+		after(async () => {
+			await Promise.all([
+				updatePermission('create-team', ['admin', 'user']),
+				updatePermission('edit-room', ['admin', 'owner', 'moderator']),
+				deleteRoom({ type: 'c', roomId: testChannel._id }),
+			]);
 		});
 
 		it('should fail to convert channel if lacking edit-room permission', async () => {
@@ -1994,7 +2047,7 @@ describe.only('[Channels]', function () {
 			await request
 				.post(api('channels.convertToTeam'))
 				.set(credentials)
-				.send({ channelId: this.newChannel._id })
+				.send({ channelId: testChannel._id })
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', false);
@@ -2008,7 +2061,7 @@ describe.only('[Channels]', function () {
 			await request
 				.post(api('channels.convertToTeam'))
 				.set(credentials)
-				.send({ channelId: this.newChannel._id })
+				.send({ channelId: testChannel._id })
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', false);
@@ -2020,8 +2073,8 @@ describe.only('[Channels]', function () {
 				.post(api('channels.convertToTeam'))
 				.set(credentials)
 				.send({
-					channelName: this.newChannel.name,
-					channelId: this.newChannel._id,
+					channelName: testChannel.name,
+					channelId: testChannel._id,
 				})
 				.expect(400)
 				.expect((res) => {
@@ -2038,7 +2091,7 @@ describe.only('[Channels]', function () {
 			await request
 				.post(api('channels.convertToTeam'))
 				.set(credentials)
-				.send({ channelId: this.newChannel._id })
+				.send({ channelId: testChannel._id })
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
@@ -2049,7 +2102,7 @@ describe.only('[Channels]', function () {
 			await request
 				.post(api('teams.convertToChannel'))
 				.set(credentials)
-				.send({ teamName: this.newChannel.name })
+				.send({ teamName: testChannel.name })
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
@@ -2058,7 +2111,7 @@ describe.only('[Channels]', function () {
 			await request
 				.post(api('channels.convertToTeam'))
 				.set(credentials)
-				.send({ channelName: this.newChannel.name })
+				.send({ channelName: testChannel.name })
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
@@ -2073,7 +2126,7 @@ describe.only('[Channels]', function () {
 			request
 				.post(api('channels.convertToTeam'))
 				.set(credentials)
-				.send({ channelId: this.newChannel._id })
+				.send({ channelId: testChannel._id })
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', false);
@@ -2140,6 +2193,11 @@ describe.only('[Channels]', function () {
 	});
 
 	describe("Setting: 'Use Real Name': true", () => {
+		let testChannel;
+
+		before(async () => {
+			testChannel = (await createRoom({ type: 'c', name: `channel.anonymousread.test.${Date.now()}` })).body.channel;
+		});
 		before(async () => {
 			await updateSetting('UI_Use_Real_Name', true);
 
@@ -2147,13 +2205,13 @@ describe.only('[Channels]', function () {
 				.post(api('channels.join'))
 				.set(credentials)
 				.send({
-					roomId: channel._id,
+					roomId: testChannel._id,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('channel._id', channel._id);
+					expect(res.body).to.have.nested.property('channel._id', testChannel._id);
 				});
 
 			await request
@@ -2162,7 +2220,7 @@ describe.only('[Channels]', function () {
 				.send({
 					message: {
 						text: 'Sample message',
-						rid: channel._id,
+						rid: testChannel._id,
 					},
 				})
 				.expect('Content-Type', 'application/json')
@@ -2171,21 +2229,13 @@ describe.only('[Channels]', function () {
 					expect(res.body).to.have.property('success', true);
 				});
 		});
-		after(async () => {
-			await updateSetting('UI_Use_Real_Name', false);
 
-			await request
-				.post(api('channels.leave'))
-				.set(credentials)
-				.send({
-					roomId: channel._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('channel._id', channel._id);
-				});
+		after(async () => {
+			await Promise.all([
+				updateSetting('Accounts_AllowAnonymousRead', false),
+				updateSetting('UI_Use_Real_Name', false),
+				deleteRoom({ type: 'c', roomId: testChannel._id }),
+			]);
 		});
 
 		it('/channels.list', (done) => {
@@ -2200,7 +2250,7 @@ describe.only('[Channels]', function () {
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('channels').and.to.be.an('array');
 
-					const retChannel = res.body.channels.find(({ _id }) => _id === channel._id);
+					const retChannel = res.body.channels.find(({ _id }) => _id === testChannel._id);
 
 					expect(retChannel).to.have.nested.property('lastMessage.u.name', 'RocketChat Internal Admin Test');
 				})
@@ -2219,7 +2269,7 @@ describe.only('[Channels]', function () {
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('channels').and.to.be.an('array');
 
-					const retChannel = res.body.channels.find(({ _id }) => _id === channel._id);
+					const retChannel = res.body.channels.find(({ _id }) => _id === testChannel._id);
 
 					expect(retChannel).to.have.nested.property('lastMessage.u.name', 'RocketChat Internal Admin Test');
 				})

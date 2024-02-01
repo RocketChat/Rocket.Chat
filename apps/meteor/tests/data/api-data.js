@@ -15,7 +15,6 @@ export function wait(cb, time) {
 
 export const apiUsername = `api${username}-${Date.now()}`;
 export const apiEmail = `api${email}-${Date.now()}`;
-export const apiPublicChannelName = `api${publicChannelName}-${Date.now()}`;
 export const apiPrivateChannelName = `api${privateChannelName}-${Date.now()}`;
 
 export const apiRoleNameUsers = `api${roleNameUsers}`;
