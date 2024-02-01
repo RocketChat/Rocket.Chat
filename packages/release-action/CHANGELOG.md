@@ -1,5 +1,14 @@
 # @rocket.chat/release-action
 
+## 2.2.1-rc.0
+
+### Patch Changes
+
+- b223cbde14: feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+- Updated dependencies [642745f289]
+- Updated dependencies [b223cbde14]
+  - @rocket.chat/eslint-config@0.6.1-rc.0
+
 ## 2.2.0
 
 ### Minor Changes

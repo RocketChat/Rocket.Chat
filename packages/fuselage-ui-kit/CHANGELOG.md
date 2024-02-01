@@ -1,5 +1,52 @@
 # Change Log
 
+## 4.0.0-rc.4
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@4.0.0-rc.4
+- @rocket.chat/ui-contexts@4.0.0-rc.4
+- @rocket.chat/ui-video-conf@4.0.0-rc.4
+
+## 4.0.0-rc.3
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@4.0.0-rc.3
+- @rocket.chat/ui-contexts@4.0.0-rc.3
+- @rocket.chat/ui-video-conf@4.0.0-rc.3
+
+## 4.0.0-rc.2
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@4.0.0-rc.2
+- @rocket.chat/ui-contexts@4.0.0-rc.2
+- @rocket.chat/ui-video-conf@4.0.0-rc.2
+
+## 4.0.0-rc.1
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@4.0.0-rc.1
+- @rocket.chat/ui-contexts@4.0.0-rc.1
+- @rocket.chat/ui-video-conf@4.0.0-rc.1
+
+## 4.0.0-rc.0
+
+### Patch Changes
+
+- b223cbde14: feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+- Updated dependencies [642745f289]
+- Updated dependencies [b223cbde14]
+- Updated dependencies [b2b0035162]
+- Updated dependencies [dbb08ef948]
+  - @rocket.chat/eslint-config@0.6.1-rc.0
+  - @rocket.chat/ui-kit@0.33.0-rc.0
+  - @rocket.chat/ui-video-conf@4.0.0-rc.0
+  - @rocket.chat/ui-contexts@4.0.0-rc.0
+  - @rocket.chat/gazzodown@4.0.0-rc.0
+
 ## 3.0.3
 
 ### Patch Changes

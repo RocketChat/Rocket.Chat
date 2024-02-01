@@ -1,5 +1,251 @@
 # @rocket.chat/meteor
 
+## 6.6.0-rc.4
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+  - @rocket.chat/core-typings@6.6.0-rc.4
+  - @rocket.chat/rest-typings@6.6.0-rc.4
+  - @rocket.chat/api-client@0.1.22-rc.4
+  - @rocket.chat/license@0.1.4-rc.4
+  - @rocket.chat/omnichannel-services@0.1.4-rc.4
+  - @rocket.chat/pdf-worker@0.0.28-rc.4
+  - @rocket.chat/presence@0.1.4-rc.4
+  - @rocket.chat/core-services@0.3.4-rc.4
+  - @rocket.chat/cron@0.0.24-rc.4
+  - @rocket.chat/gazzodown@4.0.0-rc.4
+  - @rocket.chat/model-typings@0.3.0-rc.4
+  - @rocket.chat/ui-contexts@4.0.0-rc.4
+  - @rocket.chat/server-cloud-communication@0.0.2-rc.0
+  - @rocket.chat/fuselage-ui-kit@4.0.0-rc.4
+  - @rocket.chat/models@0.0.28-rc.4
+  - @rocket.chat/ui-theming@0.1.2-rc.0
+  - @rocket.chat/ui-client@4.0.0-rc.4
+  - @rocket.chat/ui-video-conf@4.0.0-rc.4
+  - @rocket.chat/web-ui-registration@4.0.0-rc.4
+  - @rocket.chat/instance-status@0.0.28-rc.4
+
+## 6.6.0-rc.3
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+  - @rocket.chat/core-typings@6.6.0-rc.3
+  - @rocket.chat/rest-typings@6.6.0-rc.3
+  - @rocket.chat/api-client@0.1.22-rc.3
+  - @rocket.chat/license@0.1.4-rc.3
+  - @rocket.chat/omnichannel-services@0.1.4-rc.3
+  - @rocket.chat/pdf-worker@0.0.28-rc.3
+  - @rocket.chat/presence@0.1.4-rc.3
+  - @rocket.chat/core-services@0.3.4-rc.3
+  - @rocket.chat/cron@0.0.24-rc.3
+  - @rocket.chat/gazzodown@4.0.0-rc.3
+  - @rocket.chat/model-typings@0.3.0-rc.3
+  - @rocket.chat/ui-contexts@4.0.0-rc.3
+  - @rocket.chat/server-cloud-communication@0.0.2-rc.0
+  - @rocket.chat/fuselage-ui-kit@4.0.0-rc.3
+  - @rocket.chat/models@0.0.28-rc.3
+  - @rocket.chat/ui-theming@0.1.2-rc.0
+  - @rocket.chat/ui-client@4.0.0-rc.3
+  - @rocket.chat/ui-video-conf@4.0.0-rc.3
+  - @rocket.chat/web-ui-registration@4.0.0-rc.3
+  - @rocket.chat/instance-status@0.0.28-rc.3
+
+## 6.6.0-rc.2
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+  - @rocket.chat/core-typings@6.6.0-rc.2
+  - @rocket.chat/rest-typings@6.6.0-rc.2
+  - @rocket.chat/api-client@0.1.22-rc.2
+  - @rocket.chat/license@0.1.4-rc.2
+  - @rocket.chat/omnichannel-services@0.1.4-rc.2
+  - @rocket.chat/pdf-worker@0.0.28-rc.2
+  - @rocket.chat/presence@0.1.4-rc.2
+  - @rocket.chat/core-services@0.3.4-rc.2
+  - @rocket.chat/cron@0.0.24-rc.2
+  - @rocket.chat/gazzodown@4.0.0-rc.2
+  - @rocket.chat/model-typings@0.3.0-rc.2
+  - @rocket.chat/ui-contexts@4.0.0-rc.2
+  - @rocket.chat/server-cloud-communication@0.0.2-rc.0
+  - @rocket.chat/fuselage-ui-kit@4.0.0-rc.2
+  - @rocket.chat/models@0.0.28-rc.2
+  - @rocket.chat/ui-theming@0.1.2-rc.0
+  - @rocket.chat/ui-client@4.0.0-rc.2
+  - @rocket.chat/ui-video-conf@4.0.0-rc.2
+  - @rocket.chat/web-ui-registration@4.0.0-rc.2
+  - @rocket.chat/instance-status@0.0.28-rc.2
+
+## 6.6.0-rc.1
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+  - @rocket.chat/core-typings@6.6.0-rc.1
+  - @rocket.chat/rest-typings@6.6.0-rc.1
+  - @rocket.chat/api-client@0.1.22-rc.1
+  - @rocket.chat/license@0.1.4-rc.1
+  - @rocket.chat/omnichannel-services@0.1.4-rc.1
+  - @rocket.chat/pdf-worker@0.0.28-rc.1
+  - @rocket.chat/presence@0.1.4-rc.1
+  - @rocket.chat/core-services@0.3.4-rc.1
+  - @rocket.chat/cron@0.0.24-rc.1
+  - @rocket.chat/gazzodown@4.0.0-rc.1
+  - @rocket.chat/model-typings@0.3.0-rc.1
+  - @rocket.chat/ui-contexts@4.0.0-rc.1
+  - @rocket.chat/server-cloud-communication@0.0.2-rc.0
+  - @rocket.chat/fuselage-ui-kit@4.0.0-rc.1
+  - @rocket.chat/models@0.0.28-rc.1
+  - @rocket.chat/ui-theming@0.1.2-rc.0
+  - @rocket.chat/ui-client@4.0.0-rc.1
+  - @rocket.chat/ui-video-conf@4.0.0-rc.1
+  - @rocket.chat/web-ui-registration@4.0.0-rc.1
+  - @rocket.chat/instance-status@0.0.28-rc.1
+
+## 6.6.0-rc.0
+
+### Minor Changes
+
+- b2b0035162: Add the possibility to hide some elements through postMessage events.
+- 9cb97965ba: Room header keyboard navigability
+
+  ![Kapture 2024-01-22 at 11 33 14](https://github.com/RocketChat/Rocket.Chat/assets/27704687/f116c1e6-4ec7-4175-a01b-fa98eade2416)
+
+- 748e57984d: Added `push.info` endpoint to enable users to retrieve info about the workspace's push gateway
+- 4c2771fd0c: Composer keyboard navigability
+
+  ![Kapture 2024-01-22 at 11 33 14](https://github.com/RocketChat/Rocket.Chat/assets/27704687/f116c1e6-4ec7-4175-a01b-fa98eade2416)
+
+- 44dd24da73: Mentioning users that are not in the channel now dispatches a warning message with actions
+- 8c69edd01f: feat: add `ImageGallery` zoom controls
+- d6165ad77f: Fixes an issue where avatars are not being disabled based on preference on quote attachments
+- dd5fd6d2c8: feat: Skip to main content shortcut and useDocumentTitle
+- caa7707bba: fix: Loading state for `Marketplace` related lists
+- e1fa2b84fb: New feature to support cancel message editing message and hints for shortcuts.
+- 2260c04ec6: **Added ‘Reported Users’ Tab to Moderation Console:** Enhances user monitoring by displaying reported users.
+- e7d3cdeef0: Added feature to sync the user's language preference with the autotranslate setting.
+- 0ed84cb3b9: feat: `Bubble` on new messages indicators
+  <img width="825" alt="image" src="https://github.com/RocketChat/Rocket.Chat/assets/60678893/6fabd9a9-c3af-446c-b523-045b06615cf7">
+- 47331bacc3: Added a modal to confirm the intention to pin a message, preventing users from doing it by mistake
+
+### Patch Changes
+
+- 87bba6d039: Fixed Attachments not respecting collapse property when using incoming webhook
+- b223cbde14: feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+- 319f05ec79: Fix user being logged out after using 2FA
+- 371698ef5a: Improved support for higlighted words in threads (rooms are now marked as unread and notifications are sent)
+- 5c145e3170: Clear message box related items from local storage on logout
+- dbb08ef948: feat: Implemented InlineCode handling in Bold, Italic and Strike
+- fae558bd5d: Fixed issue with notifications for thread messages still being sent after thread has been read
+- 1345ce4bf3: fix: OAuth login by redirect failing on firefox
+- 631f6a4fa6: Fixed an issue displaying the language selection preference empty when it should display 'Default' on the initial value
+- f4664f00a0: Fixed an issue that caused Omnichannel Business Units to be saved even when the "monitors" list passed on the endpoint included users without monitor role
+- 7a187dcbaa: Fixed image dropping from another browser window creates two upload dialogs in some OS and browsers
+- 36d793a375: Fixed a bug where some sessions were being saved without a sessionId
+- a202542140: Fixed issue with read receipts for older messages not being created on the first time a user reads a DM
+- 2f8c98f7a8: Fixes an issue where texts are not being displayed in the correct direction on messages
+- 1ccfc5d1a0: Fixed a problem with the Fallback Forward Department functionality when transferring rooms, caused by a missing return. This provoked the system to transfer to fallback department, as expected, but then continue the process and transfer to the department with no agents anyways. Also, a duplicated "user joined" message was removed from "Forward to department" functionality.
+- 62bd2788dd: fixed UI crashing for users reading a room when it's deleted.
+- 92ee9fa284: fix: Discussion messages deleted despite the "Do not delete discussion messages" retention policy enabled
+- f126ecd56a: fix: Resolved Search List Issue when pressing ENTER
+- 8aa1ac2d34: Fixed an issue not allowing users to remove the password to join the room on room edit
+- c5693fb8c8: fix: multiple indexes creation error during 304 migration
+- 37086095cf: Fixed values discrepancy with downloaded report from Active users at Engagement Dashboard
+- f340139d87: Fixed an `UnhandledPromiseRejection` error on `PUT livechat/departments/:_id` endpoint when `agents` array failed validation
+- 78c3dc3d6a: fix: Off the record feature was calling a deprecated and useless method.
+- 9217c4fcf7: notification emails should now show emojis properly
+- eee67dc412: Fixed toolbox sub-menu not being displayed when in smaller resolutions
+- 0d04eb9691: Apply plural translations at a few places.
+- da410efa10: Show marketplace apps installed as private in the right place (private tab)
+- 7c6198f49f: Added `push.test` POST endpoint for sending test push notification to user (requires `test-push-notifications` permission)
+- 9ef1442e07: Fixed error message when uploading a file that is not allowed
+- 9a6e9b4e28: Fixed an issue that caused login buttons to not be reactively removed from the login page when the related authentication service was disabled by an admin.
+- 6000b63a91: fix: Visitor message not being sent to webhook due to wrong validation of settings
+- faf4121927: Fixed a problem that caused the wrong system message to be sent when a chat was resumed from on hold status.
+  Note: This fix is not retroactive so rooms where a wrong message was already sent will still show the wrong message. New calls to the resume actions will have the proper message.
+- fdd9852079: Added `chat.getURLPreview` endpoint to enable users to retrieve previews for URL (ready to be provided in message send/update)
+- 54bdda3743: Fixed SHIFT+ESCAPE inconsistency for clearing unread messages across browsers.
+- 4e138ea5b2: Fixed an issue where the webclient didn't properly clear the message caches from memory when a room is deleted. When this happened to basic DMs and the user started a new DM with the same target user, the client would show the old messages in the room history even though they no longer existed in the server.
+- 43335c8385: fixed an issue when editing a channel's type or name sometimes showing "Room not found" error.
+- 83bcf04664: Fixed issue searching connected users on spotlight
+- 18a9d658b2: Fixed Engagement Dashboard timezone selector freezing UI
+- c8ab6583dc: Fixed issue with OEmbed cache not being cleared daily
+- 9310e8495d: Fixed using real names on messages reactions
+- d71876ccc8: fix: mention channel redirecting to own DM
+- e3252f5448: fix: quote image gallery
+- 4212491b71: Fixes the `overview` endpoint to show busiest time of the day in users timezone instead of UTC.
+- 334a723e5b: Improved the experience of receiving conference calls on the mobile app by disabling the push notification for the "new call" message if a push is already being sent to trigger the phone's ringing tone.
+- c8ec364733: Fix multi-instance data formats being lost
+- 9c59a87c45: Fixed an issue where room access and creation were hindered due to join codes not being fetched correctly in the API.
+- 75d235ada7: Added missing labels to "Users by time of the day" card at Engagement Dashboard page
+- 74cad8411a: Fixed the problem of not being possible to add a join code to a public room
+- 132853aa96: Fixed the problem of displaying the wrong composer for archived room
+- b6b719856f: Removed an old behavior that allowed visitors to be created with an empty token on `livechat/visitor` endpoint.
+- 4a9d37cba0: Fixed conversations in queue being limited to 50 items
+- b4b2cd20a8: Fixed an issue caused by the `Fallback Forward Department` feature. Feature could be configured by admins in a way that mimis a loop, causing a chat to be forwarded "infinitely" between those departments. System will now prevent Self & 1-level deep circular references from being saved, and a new setting is added to control the maximum number of hops that the system will do between fallback departments before considering a transfer failure.
+- 61a655fc5d: Fix an issue that breaks the avatar if you hit the button adding an invalid link
+- 097f64b36f: Fixed the filter for file type in the list of room files
+- afd5fdd521: Fixed LDAP "Group filter" malfunction, which prevented LDAP users from logging in.
+- 224e194089: Fixed issue with user presence displayed as offline on SAML login
+- 1499e89500: Fixed Atlassian Crowd integration with Rocket.Chat not working
+- 1726b50132: fix: change the push sound sent when the push is from video conference
+- Updated dependencies [b223cbde14]
+- Updated dependencies [b2b0035162]
+- Updated dependencies [9cb97965ba]
+- Updated dependencies [dbb08ef948]
+- Updated dependencies [fae558bd5d]
+- Updated dependencies [748e57984d]
+- Updated dependencies [4c2771fd0c]
+- Updated dependencies [dd5fd6d2c8]
+- Updated dependencies [7c6198f49f]
+- Updated dependencies [9a6e9b4e28]
+- Updated dependencies [fdd9852079]
+- Updated dependencies [e1fa2b84fb]
+- Updated dependencies [2260c04ec6]
+- Updated dependencies [c8ab6583dc]
+- Updated dependencies [e7d3cdeef0]
+- Updated dependencies [b4b2cd20a8]
+- Updated dependencies [db2551906c]
+  - @rocket.chat/ui-kit@0.33.0-rc.0
+  - @rocket.chat/server-cloud-communication@0.0.2-rc.0
+  - @rocket.chat/omnichannel-services@0.1.4-rc.0
+  - @rocket.chat/web-ui-registration@4.0.0-rc.0
+  - @rocket.chat/password-policies@0.0.2-rc.0
+  - @rocket.chat/fuselage-ui-kit@4.0.0-rc.0
+  - @rocket.chat/instance-status@0.0.28-rc.0
+  - @rocket.chat/api-client@0.1.22-rc.0
+  - @rocket.chat/pdf-worker@0.0.28-rc.0
+  - @rocket.chat/ui-theming@0.1.2-rc.0
+  - @rocket.chat/account-utils@0.0.2-rc.0
+  - @rocket.chat/core-services@0.3.4-rc.0
+  - @rocket.chat/model-typings@0.3.0-rc.0
+  - @rocket.chat/ui-video-conf@4.0.0-rc.0
+  - @rocket.chat/cas-validate@0.0.2-rc.0
+  - @rocket.chat/core-typings@6.6.0-rc.0
+  - @rocket.chat/rest-typings@6.6.0-rc.0
+  - @rocket.chat/server-fetch@0.0.3-rc.0
+  - @rocket.chat/presence@0.1.4-rc.0
+  - @rocket.chat/poplib@0.0.2-rc.0
+  - @rocket.chat/ui-composer@0.1.0-rc.0
+  - @rocket.chat/ui-contexts@4.0.0-rc.0
+  - @rocket.chat/license@0.1.4-rc.0
+  - @rocket.chat/log-format@0.0.2-rc.0
+  - @rocket.chat/gazzodown@4.0.0-rc.0
+  - @rocket.chat/ui-client@4.0.0-rc.0
+  - @rocket.chat/favicon@0.0.2-rc.0
+  - @rocket.chat/agenda@0.1.0-rc.0
+  - @rocket.chat/base64@1.0.13-rc.0
+  - @rocket.chat/logger@0.0.2-rc.0
+  - @rocket.chat/models@0.0.28-rc.0
+  - @rocket.chat/random@1.2.2-rc.0
+  - @rocket.chat/sha256@1.0.10-rc.0
+  - @rocket.chat/tools@0.2.1-rc.0
+  - @rocket.chat/cron@0.0.24-rc.0
+  - @rocket.chat/i18n@0.1.0-rc.0
+  - @rocket.chat/jwt@0.1.1-rc.0
+
 ## 6.5.3
 
 ### Patch Changes

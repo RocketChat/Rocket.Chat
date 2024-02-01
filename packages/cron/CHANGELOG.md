@@ -1,5 +1,48 @@
 # @rocket.chat/cron
 
+## 0.0.24-rc.4
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.4
+- @rocket.chat/models@0.0.28-rc.4
+
+## 0.0.24-rc.3
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.3
+- @rocket.chat/models@0.0.28-rc.3
+
+## 0.0.24-rc.2
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.2
+- @rocket.chat/models@0.0.28-rc.2
+
+## 0.0.24-rc.1
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.1
+- @rocket.chat/models@0.0.28-rc.1
+
+## 0.0.24-rc.0
+
+### Patch Changes
+
+- b223cbde14: feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+- Updated dependencies [b223cbde14]
+- Updated dependencies [dbb08ef948]
+- Updated dependencies [fdd9852079]
+- Updated dependencies [b4b2cd20a8]
+- Updated dependencies [db2551906c]
+  - @rocket.chat/core-typings@6.6.0-rc.0
+  - @rocket.chat/agenda@0.1.0-rc.0
+  - @rocket.chat/models@0.0.28-rc.0
+  - @rocket.chat/random@1.2.2-rc.0
+
 ## 0.0.23
 
 ### Patch Changes
