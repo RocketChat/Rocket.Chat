@@ -26,7 +26,7 @@ function getRoomInfo(roomId) {
 
 const channel = {};
 
-describe.only('[Channels]', function () {
+describe('[Channels]', function () {
 	const apiPublicChannelName = `api-channel-test-${Date.now()}`;
 
 	this.retries(0);
