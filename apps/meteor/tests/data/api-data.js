@@ -25,7 +25,6 @@ export const apiRoleScopeSubscriptions = `${roleScopeSubscriptions}`;
 export const apiRoleDescription = `api${roleDescription}`;
 export const reservedWords = ['admin', 'administrator', 'system', 'user'];
 
-export const channel = {};
 export const group = {};
 export const message = {};
 export const directMessage = {};
