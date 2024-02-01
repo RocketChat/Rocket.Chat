@@ -23,7 +23,7 @@ import { createUser, login, deleteUser, getUserStatus, getUserByUsername, regist
 
 const targetUser = {};
 
-describe.only('[Users]', function () {
+describe('[Users]', function () {
 	let userCredentials;
 	this.retries(0);
 
@@ -709,7 +709,6 @@ describe.only('[Users]', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
-					console.log(res.body);
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count');
 					expect(res.body).to.have.property('total');
@@ -2319,7 +2318,7 @@ describe.only('[Users]', function () {
 			});
 
 			afterEach(async () => {
-				await deleteRoom({ type: 'c', roomId: room._id })
+				await deleteRoom({ type: 'c', roomId: room._id });
 				await deleteUser(user);
 			});
 
@@ -2962,7 +2961,6 @@ describe.only('[Users]', function () {
 
 	describe('[/users.deactivateIdle]', () => {
 		let testUser;
-		let testUserCredentials;
 		const testRoleId = 'guest';
 
 		before('Create test user', async () => {
@@ -2979,7 +2977,6 @@ describe.only('[Users]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				});
-			testUserCredentials = await login(testUser.username, password);
 		});
 
 		after(async () => {
@@ -3338,10 +3335,7 @@ describe.only('[Users]', function () {
 			user = await createUser();
 		});
 		after(async () => {
-			await Promise.all([
-				deleteUser(user),
-				updateSetting('Accounts_AllowUserStatusMessageChange', true),
-			]);
+			await Promise.all([deleteUser(user), updateSetting('Accounts_AllowUserStatusMessageChange', true)]);
 		});
 
 		it('should return an error when the setting "Accounts_AllowUserStatusMessageChange" is disabled', (done) => {
