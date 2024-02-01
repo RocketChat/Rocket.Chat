@@ -88,7 +88,7 @@ const AgentsTable = () => {
 					icon='headset'
 					title={t('No_agents_yet')}
 					description={t('No_agents_yet_description')}
-					linkHref='https://go.rocket.chat/omnichannel-docs'
+					linkHref='https://go.rocket.chat/i/omnichannel-docs'
 					linkText={t('Learn_more_about_agents')}
 				/>
 			)}
