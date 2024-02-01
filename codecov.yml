@@ -12,13 +12,17 @@ coverage:
         flags:
           - client
 flags:
+  unit:
+    carryforward: true
   e2e:
     paths:
       - apps/meteor/
+    carryforward: true
 
   client:
     paths:
       - apps/meteor/client
+    carryforward: true
 
 comment:
   layout: 'reach, diff, flags'
