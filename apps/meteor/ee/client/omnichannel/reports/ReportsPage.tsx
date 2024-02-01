@@ -1,4 +1,4 @@
-import { Box, CardGrid, Grid, GridItem } from '@rocket.chat/fuselage';
+import { Box, Grid, GridItem } from '@rocket.chat/fuselage';
 import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
