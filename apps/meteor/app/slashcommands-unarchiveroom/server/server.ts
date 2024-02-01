@@ -49,11 +49,11 @@ slashCommands.add({
 		}
 
 		if (!(await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.ARCHIVE, userId))) {
-			throw new Meteor.Error('error-direct-message-room', `rooms type: ${room.t} can not be unarchive`, { method: 'unarchiveRoom' });
+			throw new Meteor.Error('error-room-type-not-unarchivable', `Room type: ${room.t} can not be unarchived`);
 		}
 
 		if (!(await hasPermissionAsync(userId, 'unarchive-room', room._id))) {
-			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'unarchiveRoom' });
+			throw new Meteor.Error('error-not-authorized', 'Not authorized');
 		}
 
 		if (!room.archived) {
