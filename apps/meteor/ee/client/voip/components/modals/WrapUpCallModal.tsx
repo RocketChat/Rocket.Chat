@@ -1,9 +1,10 @@
 import { Box, Button, Field, FieldLabel, FieldRow, FieldHint, Modal, TextAreaInput } from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useEffect } from 'react';
+import React from 'react';
 import type { SubmitHandler } from 'react-hook-form';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 
 import Tags from '../../../../../client/components/Omnichannel/Tags';
 
@@ -18,21 +19,13 @@ type WrapUpCallModalProps = {
 
 export const WrapUpCallModal = ({ closeRoom }: WrapUpCallModalProps): ReactElement => {
 	const setModal = useSetModal();
+	const notesId = useUniqueId();
+	const notesDescId = useUniqueId();
 
 	const closeModal = (): void => setModal(null);
 	const t = useTranslation();
 
-	const { register, handleSubmit, setValue, watch } = useForm<WrapUpCallPayload>();
-
-	const tags = watch('tags');
-
-	useEffect(() => {
-		register('tags');
-	}, [register]);
-
-	const handleTags = (value: string[]): void => {
-		setValue('tags', value);
-	};
+	const { register, handleSubmit, control } = useForm<WrapUpCallPayload>();
 
 	const onSubmit: SubmitHandler<WrapUpCallPayload> = (data: { comment?: string; tags?: string[] }): void => {
 		closeRoom(data);
@@ -50,16 +43,21 @@ export const WrapUpCallModal = ({ closeRoom }: WrapUpCallModalProps): ReactEleme
 				<Modal.Title>{t('Wrap_up_the_call')}</Modal.Title>
 				<Modal.Close onClick={closeModal} />
 			</Modal.Header>
+
 			<Modal.Content>
 				<Field mbe='24px'>
-					<FieldLabel>{t('Notes')}</FieldLabel>
+					<FieldLabel aria-labelledby={notesId} aria-describedby={notesDescId}>
+						{t('Notes')}
+					</FieldLabel>
 					<FieldRow>
-						<TextAreaInput placeholder={t('Do_you_have_any_notes_for_this_conversation')} {...register('comment')} />
+						<TextAreaInput id={notesId} placeholder={t('Do_you_have_any_notes_for_this_conversation')} {...register('comment')} />
 					</FieldRow>
-					<FieldHint>{t('These_notes_will_be_available_in_the_call_summary')}</FieldHint>
+					<FieldHint id={notesDescId}>{t('These_notes_will_be_available_in_the_call_summary')}</FieldHint>
 				</Field>
-				<Tags tags={tags} handler={handleTags as () => void} />
+
+				<Controller name='tags' control={control} render={({ field: { onChange, value } }) => <Tags tags={value} handler={onChange} />} />
 			</Modal.Content>
+
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button secondary onClick={onCancel}>
