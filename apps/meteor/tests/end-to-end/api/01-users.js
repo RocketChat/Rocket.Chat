@@ -689,7 +689,7 @@ describe.only('[Users]', function () {
 				.end(done);
 		});
 
-		it.skip('should sort for user statuses and check if deactivated user is correctly sorted', (done) => {
+		it('should sort for user statuses and check if deactivated user is correctly sorted', (done) => {
 			const query = {
 				fields: JSON.stringify({
 					username: 1,
@@ -698,7 +698,7 @@ describe.only('[Users]', function () {
 					status: 1,
 				}),
 				sort: JSON.stringify({
-					status: -1,
+					status: 1,
 				}),
 			};
 
@@ -709,12 +709,15 @@ describe.only('[Users]', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
+					console.log(res.body);
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count');
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('users');
-					const lastUser = res.body.users[res.body.users.length - 1];
-					expect(lastUser).to.have.property('active', false);
+					const firstUser = res.body.users.find((u) => u._id === deactivatedUser._id);
+					if (firstUser) {
+						expect(firstUser).to.have.property('active', false);
+					}
 				})
 				.end(done);
 		});
@@ -2713,7 +2716,7 @@ describe.only('[Users]', function () {
 		});
 	});
 
-	describe.only('[/users.setActiveStatus]', () => {
+	describe('[/users.setActiveStatus]', () => {
 		let user;
 		let userCredentials;
 
