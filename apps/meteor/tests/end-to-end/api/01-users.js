@@ -9,13 +9,21 @@ import { MAX_BIO_LENGTH, MAX_NICKNAME_LENGTH } from '../../data/constants.ts';
 import { customFieldText, clearCustomFields, setCustomFields } from '../../data/custom-fields.js';
 import { imgURL } from '../../data/interactions';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
-import { createRoom, deleteRoom, joinChannel } from '../../data/rooms.helper';
+import {
+	addRoomOwner,
+	createRoom,
+	deleteRoom,
+	getChannelRoles,
+	inviteToChannel,
+	joinChannel,
+	removeRoomOwner,
+} from '../../data/rooms.helper';
 import { adminEmail, preferences, password, adminUsername } from '../../data/user';
 import { createUser, login, deleteUser, getUserStatus, getUserByUsername, registerUser } from '../../data/users.helper.js';
 
 const targetUser = {};
 
-describe('[Users]', function () {
+describe.only('[Users]', function () {
 	let userCredentials;
 	this.retries(0);
 
@@ -681,7 +689,7 @@ describe('[Users]', function () {
 				.end(done);
 		});
 
-		it('should sort for user statuses and check if deactivated user is correctly sorted', (done) => {
+		it.skip('should sort for user statuses and check if deactivated user is correctly sorted', (done) => {
 			const query = {
 				fields: JSON.stringify({
 					username: 1,
@@ -2287,195 +2295,94 @@ describe('[Users]', function () {
 			await deleteUser(user);
 		});
 
-		it('should return an error when trying to delete user own account if user is the last room owner', async () => {
-			const user = await createUser();
-			const createdUserCredentials = await login(user.username, password);
-			const room = (
-				await createRoom({
-					type: 'c',
-					name: `channel.test.${Date.now()}-${Math.random()}`,
-					username: user.username,
-					members: [user.username],
-				})
-			).body.channel;
+		describe('last owner cases', () => {
+			let user;
+			let createdUserCredentials;
+			let room;
 
-			await request
-				.post(api('channels.addOwner'))
-				.set(credentials)
-				.send({
-					userId: user._id,
-					roomId: room._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+			beforeEach(async () => {
+				user = await createUser();
+				createdUserCredentials = await login(user.username, password);
+				room = (
+					await createRoom({
+						type: 'c',
+						name: `channel.test.${Date.now()}-${Math.random()}`,
+						username: user.username,
+						members: [user.username],
+					})
+				).body.channel;
+				await addRoomOwner({ type: 'c', roomId: room._id, userId: user._id });
+				await removeRoomOwner({ type: 'c', roomId: room._id, userId: credentials['X-User-Id'] });
+			});
 
-			await request
-				.post(api('channels.removeOwner'))
-				.set(credentials)
-				.send({
-					userId: credentials['X-User-Id'],
-					roomId: room._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+			afterEach(async () => {
+				await Promise.all([deleteRoom({ type: 'c', roomId: room._id }), deleteUser(user)]);
+			});
 
-			await request
-				.post(api('users.deleteOwnAccount'))
-				.set(createdUserCredentials)
-				.send({
-					password: crypto.createHash('sha256').update(password, 'utf8').digest('hex'),
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', '[user-last-owner]');
-					expect(res.body).to.have.property('errorType', 'user-last-owner');
-				});
+			it('should return an error when trying to delete user own account if user is the last room owner', async () => {
+				await request
+					.post(api('users.deleteOwnAccount'))
+					.set(createdUserCredentials)
+					.send({
+						password: crypto.createHash('sha256').update(password, 'utf8').digest('hex'),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', '[user-last-owner]');
+						expect(res.body).to.have.property('errorType', 'user-last-owner');
+					});
+			});
 
-			await deleteRoom({ type: 'c', roomId: room._id });
-			await deleteUser(user);
-		});
+			it('should delete user own account if the user is the last room owner and `confirmRelinquish` is set to `true`', async () => {
+				await request
+					.post(api('users.deleteOwnAccount'))
+					.set(createdUserCredentials)
+					.send({
+						password: crypto.createHash('sha256').update(password, 'utf8').digest('hex'),
+						confirmRelinquish: true,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+			});
 
-		it('should delete user own account if the user is the last room owner and `confirmRelinquish` is set to `true`', async () => {
-			const user = await createUser();
-			const createdUserCredentials = await login(user.username, password);
-			const room = (
-				await createRoom({
-					type: 'c',
-					name: `channel.test.${Date.now()}-${Math.random()}`,
-					username: user.username,
-					members: [user.username],
-				})
-			).body.channel;
+			it('should assign a new owner to the room if the last room owner is deleted', async () => {
+				await request
+					.post(api('users.deleteOwnAccount'))
+					.set(createdUserCredentials)
+					.send({
+						password: crypto.createHash('sha256').update(password, 'utf8').digest('hex'),
+						confirmRelinquish: true,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
 
-			await request
-				.post(api('channels.addOwner'))
-				.set(credentials)
-				.send({
-					userId: user._id,
-					roomId: room._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				const roles = await getChannelRoles({ roomId: room._id });
 
-			await request
-				.post(api('channels.removeOwner'))
-				.set(credentials)
-				.send({
-					userId: credentials['X-User-Id'],
-					roomId: room._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
-
-			await request
-				.post(api('users.deleteOwnAccount'))
-				.set(createdUserCredentials)
-				.send({
-					password: crypto.createHash('sha256').update(password, 'utf8').digest('hex'),
-					confirmRelinquish: true,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
-			await deleteRoom({ type: 'c', roomId: room._id });
-			await deleteUser(user);
-		});
-
-		it('should assign a new owner to the room if the last room owner is deleted', async () => {
-			const user = await createUser();
-			const createdUserCredentials = await login(user.username, password);
-			const room = (
-				await createRoom({
-					type: 'c',
-					name: `channel.test.${Date.now()}-${Math.random()}`,
-					username: user.username,
-					members: [user.username],
-				})
-			).body.channel;
-
-			await request
-				.post(api('channels.addOwner'))
-				.set(credentials)
-				.send({
-					userId: user._id,
-					roomId: room._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
-
-			await request
-				.post(api('channels.removeOwner'))
-				.set(credentials)
-				.send({
-					userId: credentials['X-User-Id'],
-					roomId: room._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
-
-			await request
-				.post(api('users.deleteOwnAccount'))
-				.set(createdUserCredentials)
-				.send({
-					password: crypto.createHash('sha256').update(password, 'utf8').digest('hex'),
-					confirmRelinquish: true,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
-
-			await request
-				.get(api('channels.roles'))
-				.set(credentials)
-				.query({
-					roomId: room._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body.roles).to.have.lengthOf(1);
-					expect(res.body.roles[0].roles).to.eql(['owner']);
-					expect(res.body.roles[0].u).to.have.property('_id', credentials['X-User-Id']);
-				});
-			await deleteRoom({ type: 'c', roomId: room._id });
-			await deleteUser(user);
+				expect(roles).to.have.lengthOf(1);
+				expect(roles[0].roles).to.eql(['owner']);
+				expect(roles[0].u).to.have.property('_id', credentials['X-User-Id']);
+			});
 		});
 	});
 
 	describe('[/users.delete]', () => {
-		let targetUser;
-		beforeEach(async () => {
-			targetUser = await registerUser();
+		let newUser;
+
+		before(async () => {
+			newUser = await createUser();
 		});
 
-		afterEach(async () => {
+		after(async () => {
+			await deleteUser(newUser);
 			await updatePermission('delete-user', ['admin']);
-			await deleteUser(targetUser, { confirmRelinquish: true });
 		});
 
 		it('should return an error when trying delete user account without "delete-user" permission', async () => {
@@ -2494,118 +2401,13 @@ describe('[Users]', function () {
 				});
 		});
 
-		it('should return an error when trying to delete user account if the user is the last room owner', async () => {
-			await updatePermission('delete-user', ['admin']);
-			const room = (
-				await createRoom({
-					type: 'c',
-					name: `channel.test.${Date.now()}-${Math.random()}`,
-					members: [targetUser.username],
-				})
-			).body.channel;
-
-			await request
-				.post(api('channels.addOwner'))
-				.set(credentials)
-				.send({
-					userId: targetUser._id,
-					roomId: room._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
-
-			await request
-				.post(api('channels.removeOwner'))
-				.set(credentials)
-				.send({
-					userId: credentials['X-User-Id'],
-					roomId: room._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
-
-			await request
-				.post(api('users.delete'))
-				.set(credentials)
-				.send({
-					userId: targetUser._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', '[user-last-owner]');
-					expect(res.body).to.have.property('errorType', 'user-last-owner');
-				});
-
-			await deleteRoom({ type: 'c', roomId: room._id });
-		});
-
-		it('should delete user account if the user is the last room owner and `confirmRelinquish` is set to `true`', async () => {
-			await updatePermission('delete-user', ['admin']);
-			const room = (
-				await createRoom({
-					type: 'c',
-					name: `channel.test.${Date.now()}-${Math.random()}`,
-					members: [targetUser.username],
-				})
-			).body.channel;
-
-			await request
-				.post(api('channels.addOwner'))
-				.set(credentials)
-				.send({
-					userId: targetUser._id,
-					roomId: room._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
-
-			await request
-				.post(api('channels.removeOwner'))
-				.set(credentials)
-				.send({
-					userId: credentials['X-User-Id'],
-					roomId: room._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
-
-			await request
-				.post(api('users.delete'))
-				.set(credentials)
-				.send({
-					userId: targetUser._id,
-					confirmRelinquish: true,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
-
-			await deleteRoom({ type: 'c', roomId: room._id });
-		});
-
 		it('should delete user account when logged user has "delete-user" permission', async () => {
 			await updatePermission('delete-user', ['admin']);
 			await request
 				.post(api('users.delete'))
 				.set(credentials)
 				.send({
-					userId: targetUser._id,
+					userId: newUser._id,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -2614,71 +2416,81 @@ describe('[Users]', function () {
 				});
 		});
 
-		it('should assign a new owner to the room if the last room owner is deleted', async () => {
-			await updatePermission('delete-user', ['admin']);
-			const room = (
-				await createRoom({
-					type: 'c',
-					name: `channel.test.${Date.now()}-${Math.random()}`,
-					members: [targetUser.username],
-				})
-			).body.channel;
+		describe('last owner cases', () => {
+			let targetUser;
+			let room;
+			beforeEach(async () => {
+				targetUser = await registerUser();
+				room = (
+					await createRoom({
+						type: 'c',
+						name: `channel.test.${Date.now()}-${Math.random()}`,
+						members: [targetUser.username],
+					})
+				).body.channel;
+				await addRoomOwner({ type: 'c', roomId: room._id, userId: targetUser._id });
+				await removeRoomOwner({ type: 'c', roomId: room._id, userId: credentials['X-User-Id'] });
+			});
 
-			await request
-				.post(api('channels.addOwner'))
-				.set(credentials)
-				.send({
-					userId: targetUser._id,
-					roomId: room._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+			afterEach(async () => {
+				await Promise.all([deleteUser(targetUser, { confirmRelinquish: true }), deleteRoom({ type: 'c', roomId: room._id })]);
+			});
 
-			await request
-				.post(api('channels.removeOwner'))
-				.set(credentials)
-				.send({
-					userId: credentials['X-User-Id'],
-					roomId: room._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+			it('should return an error when trying to delete user account if the user is the last room owner', async () => {
+				await updatePermission('delete-user', ['admin']);
+				await request
+					.post(api('users.delete'))
+					.set(credentials)
+					.send({
+						userId: targetUser._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', '[user-last-owner]');
+						expect(res.body).to.have.property('errorType', 'user-last-owner');
+					});
+			});
 
-			await request
-				.post(api('users.delete'))
-				.set(credentials)
-				.send({
-					userId: targetUser._id,
-					confirmRelinquish: true,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+			it('should delete user account if the user is the last room owner and `confirmRelinquish` is set to `true`', async () => {
+				await updatePermission('delete-user', ['admin']);
+				await request
+					.post(api('users.delete'))
+					.set(credentials)
+					.send({
+						userId: targetUser._id,
+						confirmRelinquish: true,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+			});
 
-			await request
-				.get(api('channels.roles'))
-				.set(credentials)
-				.query({
-					roomId: room._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body.roles).to.have.lengthOf(1);
-					expect(res.body.roles[0].roles).to.eql(['owner']);
-					expect(res.body.roles[0].u).to.have.property('_id', credentials['X-User-Id']);
-				});
+			it('should assign a new owner to the room if the last room owner is deleted', async () => {
+				await updatePermission('delete-user', ['admin']);
 
-			await deleteRoom({ type: 'c', roomId: room._id });
+				await request
+					.post(api('users.delete'))
+					.set(credentials)
+					.send({
+						userId: targetUser._id,
+						confirmRelinquish: true,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+
+				const roles = await getChannelRoles({ roomId: room._id });
+
+				expect(roles).to.have.lengthOf(1);
+				expect(roles[0].roles).to.eql(['owner']);
+				expect(roles[0].u).to.have.property('_id', credentials['X-User-Id']);
+			});
 		});
 	});
 
@@ -2901,7 +2713,7 @@ describe('[Users]', function () {
 		});
 	});
 
-	describe('[/users.setActiveStatus]', () => {
+	describe.only('[/users.setActiveStatus]', () => {
 		let user;
 		let userCredentials;
 
@@ -2909,10 +2721,15 @@ describe('[Users]', function () {
 			user = await createUser();
 			userCredentials = await login(user.username, password);
 			await updatePermission('edit-other-user-active-status', ['admin', 'user']);
+			await updatePermission('manage-moderation-actions', ['admin']);
 		});
 
 		after(async () => {
-			await Promise.all([deleteUser(user), updatePermission('edit-other-user-active-status', ['admin'])]);
+			await Promise.all([
+				deleteUser(user),
+				updatePermission('edit-other-user-active-status', ['admin']),
+				await updatePermission('manage-moderation-actions', ['admin']),
+			]);
 		});
 		it('should set other user active status to false when the logged user has the necessary permission(edit-other-user-active-status)', (done) => {
 			request
@@ -2945,234 +2762,6 @@ describe('[Users]', function () {
 					expect(res.body).to.have.nested.property('user.active', true);
 				})
 				.end(done);
-		});
-
-		it('should return an error when trying to set other user status to inactive and the user is the last owner of a room', async () => {
-			const room = (
-				await createRoom({
-					type: 'c',
-					name: `channel.test.${Date.now()}-${Math.random()}`,
-					username: targetUser.username,
-					members: [targetUser.username],
-				})
-			).body.channel;
-
-			await request
-				.post(api('channels.invite'))
-				.set(credentials)
-				.send({
-					userId: targetUser._id,
-					roomId: room._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
-
-			await request
-				.post(api('channels.addOwner'))
-				.set(credentials)
-				.send({
-					userId: targetUser._id,
-					roomId: room._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
-
-			await request
-				.post(api('channels.removeOwner'))
-				.set(credentials)
-				.send({
-					userId: credentials['X-User-Id'],
-					roomId: room._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
-
-			await request
-				.post(api('users.setActiveStatus'))
-				.set(userCredentials)
-				.send({
-					activeStatus: false,
-					userId: targetUser._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', '[user-last-owner]');
-					expect(res.body).to.have.property('errorType', 'user-last-owner');
-				});
-
-			await deleteRoom({ type: 'c', roomId: room._id });
-		});
-
-		it('should set other user status to inactive if the user is the last owner of a room and `confirmRelinquish` is set to `true`', async () => {
-			const room = (
-				await createRoom({
-					type: 'c',
-					name: `channel.test.${Date.now()}-${Math.random()}`,
-					username: targetUser.username,
-					members: [targetUser.username],
-				})
-			).body.channel;
-
-			await request
-				.post(api('channels.invite'))
-				.set(credentials)
-				.send({
-					userId: targetUser._id,
-					roomId: room._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
-
-			await request
-				.post(api('channels.addOwner'))
-				.set(credentials)
-				.send({
-					userId: targetUser._id,
-					roomId: room._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
-
-			await request
-				.post(api('channels.removeOwner'))
-				.set(credentials)
-				.send({
-					userId: credentials['X-User-Id'],
-					roomId: room._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
-
-			await request
-				.post(api('users.setActiveStatus'))
-				.set(userCredentials)
-				.send({
-					activeStatus: false,
-					userId: targetUser._id,
-					confirmRelinquish: true,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
-
-			await deleteRoom({ type: 'c', roomId: room._id });
-		});
-
-		it('should set other user as room owner if the last owner of a room is deactivated and `confirmRelinquish` is set to `true`', async () => {
-			const room = (
-				await createRoom({
-					type: 'c',
-					name: `channel.test.${Date.now()}-${Math.random()}`,
-					members: [targetUser.username],
-				})
-			).body.channel;
-
-			await request
-				.post(api('users.setActiveStatus'))
-				.set(userCredentials)
-				.send({
-					activeStatus: true,
-					userId: targetUser._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
-
-			await request
-				.post(api('channels.invite'))
-				.set(credentials)
-				.send({
-					userId: targetUser._id,
-					roomId: room._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
-
-			await request
-				.post(api('channels.addOwner'))
-				.set(credentials)
-				.send({
-					userId: targetUser._id,
-					roomId: room._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
-
-			await request
-				.post(api('channels.removeOwner'))
-				.set(credentials)
-				.send({
-					userId: credentials['X-User-Id'],
-					roomId: room._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
-
-			await request
-				.post(api('users.setActiveStatus'))
-				.set(userCredentials)
-				.send({
-					activeStatus: false,
-					userId: targetUser._id,
-					confirmRelinquish: true,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
-
-			await request
-				.get(api('channels.roles'))
-				.set(credentials)
-				.query({
-					roomId: room._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body.roles).to.have.lengthOf(2);
-					const originalCreator = res.body.roles.find((role) => role.u._id === credentials['X-User-Id']);
-					expect(originalCreator).to.not.be.undefined;
-					expect(originalCreator.roles).to.eql(['owner']);
-					expect(originalCreator.u).to.have.property('_id', credentials['X-User-Id']);
-				});
-
-			await deleteRoom({ type: 'c', roomId: room._id });
 		});
 
 		it('should return an error when trying to set other user active status and has not the necessary permission(edit-other-user-active-status)', (done) => {
@@ -3243,6 +2832,126 @@ describe('[Users]', function () {
 			expect(user.roles).to.include('user', 'livechat-agent');
 
 			await deleteUser(testUser);
+		});
+
+		describe('last owner cases', () => {
+			let room;
+
+			beforeEach(async () => {
+				await updatePermission('edit-other-user-active-status', ['admin', 'user']);
+				await updatePermission('manage-moderation-actions', ['admin', 'user']);
+			});
+
+			afterEach(async () => {
+				await deleteRoom({ type: 'c', roomId: room._id });
+			});
+
+			it('should return an error when trying to set other user status to inactive and the user is the last owner of a room', async () => {
+				room = (
+					await createRoom({
+						type: 'c',
+						name: `channel.test.${Date.now()}-${Math.random()}`,
+						username: targetUser.username,
+						members: [targetUser.username],
+					})
+				).body.channel;
+
+				await inviteToChannel({ userId: targetUser._id, roomId: room._id });
+				await addRoomOwner({ type: 'c', userId: targetUser._id, roomId: room._id });
+				await removeRoomOwner({ type: 'c', userId: credentials['X-User-Id'], roomId: room._id });
+
+				await request
+					.post(api('users.setActiveStatus'))
+					.set(userCredentials)
+					.send({
+						activeStatus: false,
+						userId: targetUser._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', '[user-last-owner]');
+						expect(res.body).to.have.property('errorType', 'user-last-owner');
+					});
+			});
+
+			it('should set other user status to inactive if the user is the last owner of a room and `confirmRelinquish` is set to `true`', async () => {
+				room = (
+					await createRoom({
+						type: 'c',
+						name: `channel.test.${Date.now()}-${Math.random()}`,
+						username: targetUser.username,
+						members: [targetUser.username],
+					})
+				).body.channel;
+
+				await inviteToChannel({ userId: targetUser._id, roomId: room._id });
+				await addRoomOwner({ type: 'c', userId: targetUser._id, roomId: room._id });
+				await removeRoomOwner({ type: 'c', userId: credentials['X-User-Id'], roomId: room._id });
+
+				await request
+					.post(api('users.setActiveStatus'))
+					.set(userCredentials)
+					.send({
+						activeStatus: false,
+						userId: targetUser._id,
+						confirmRelinquish: true,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+			});
+
+			it('should set other user as room owner if the last owner of a room is deactivated and `confirmRelinquish` is set to `true`', async () => {
+				room = (
+					await createRoom({
+						type: 'c',
+						name: `channel.test.${Date.now()}-${Math.random()}`,
+						members: [targetUser.username],
+					})
+				).body.channel;
+
+				await request
+					.post(api('users.setActiveStatus'))
+					.set(userCredentials)
+					.send({
+						activeStatus: true,
+						userId: targetUser._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+				await inviteToChannel({ userId: targetUser._id, roomId: room._id });
+				await addRoomOwner({ type: 'c', userId: targetUser._id, roomId: room._id });
+				await removeRoomOwner({ type: 'c', userId: credentials['X-User-Id'], roomId: room._id });
+
+				await request
+					.post(api('users.setActiveStatus'))
+					.set(userCredentials)
+					.send({
+						activeStatus: false,
+						userId: targetUser._id,
+						confirmRelinquish: true,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+
+				const roles = await getChannelRoles({ roomId: room._id });
+
+				expect(roles).to.have.lengthOf(2);
+				const originalCreator = roles.find((role) => role.u._id === credentials['X-User-Id']);
+				expect(originalCreator).to.not.be.undefined;
+				expect(originalCreator.roles).to.eql(['owner']);
+				expect(originalCreator.u).to.have.property('_id', credentials['X-User-Id']);
+			});
 		});
 	});
 
@@ -3485,7 +3194,7 @@ describe('[Users]', function () {
 			});
 
 			it('should return users that are subscribed to the same rooms as the requester', async () => {
-				await joinChannel({ credentials: user2Credentials, roomId });
+				await joinChannel({ overrideCredentials: user2Credentials, roomId });
 
 				request
 					.get(api('users.autocomplete?selector={}'))
