@@ -10,6 +10,7 @@ import {
 	isDmMessagesProps,
 	isDmCreateProps,
 	isDmHistoryProps,
+	isDmMemberExistsProps,
 } from '@rocket.chat/rest-typings';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -357,6 +358,7 @@ API.v1.addRoute(
 	['dm.memberExists', 'im.memberExists'],
 	{
 		authRequired: true,
+		validateParams: isDmMemberExistsProps,
 	},
 	{
 		async get() {

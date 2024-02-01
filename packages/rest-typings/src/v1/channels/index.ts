@@ -18,3 +18,4 @@ export * from './ChannelsRolesProps';
 export * from './ChannelsSetAnnouncementProps';
 export * from './ChannelsSetReadOnlyProps';
 export * from './ChannelsUnarchiveProps';
+export * from './ChannelsMemberExistsProps';

@@ -1,6 +1,7 @@
 import { Team, isMeteorError } from '@rocket.chat/core-services';
 import type { IIntegration, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
+import { isGroupsMemberExistsProps } from '@rocket.chat/rest-typings';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
@@ -749,7 +750,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'groups.memberExists',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isGroupsMemberExistsProps },
 	{
 		async get() {
 			check(

@@ -19,6 +19,7 @@ import {
 	isChannelsSetReadOnlyProps,
 	isChannelsDeleteProps,
 	isChannelsImagesProps,
+	isChannelsMemberExistsProps,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
@@ -1096,17 +1097,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'channels.memberExists',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isChannelsMemberExistsProps,
+	},
 	{
 		async get() {
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					username: String,
-					roomId: String,
-				}),
-			);
-
 			const { username, roomId } = this.queryParams;
 
 			const findResult = await findChannelByIdOrName({
