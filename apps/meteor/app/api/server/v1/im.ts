@@ -362,14 +362,6 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					username: String,
-					roomId: String,
-				}),
-			);
-
 			const { username, roomId } = this.queryParams;
 
 			const { room } = await findDirectMessageRoom({ roomId }, this.userId);

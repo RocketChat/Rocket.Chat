@@ -753,14 +753,6 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isGroupsMemberExistsProps },
 	{
 		async get() {
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					username: String,
-					roomId: String,
-				}),
-			);
-
 			const { username, roomId } = this.queryParams;
 
 			const findResult = await findPrivateGroupByIdOrName({
