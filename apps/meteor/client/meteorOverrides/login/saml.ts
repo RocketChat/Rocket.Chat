@@ -1,9 +1,10 @@
+import type { SAMLConfiguration } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
-import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { type LoginCallback, callLoginMethod, handleLogin } from '../../lib/2fa/overrideLoginMethod';
+import { loginServices } from '../../lib/loginServices';
 
 declare module 'meteor/meteor' {
 	// eslint-disable-next-line @typescript-eslint/no-namespace
@@ -40,7 +41,8 @@ const { logout } = Meteor;
 
 Meteor.logout = async function (...args) {
 	const { sdk } = await import('../../../app/utils/client/lib/SDKClient');
-	const samlService = await ServiceConfiguration.configurations.findOneAsync({ service: 'saml' });
+	// #TODO: Use SAML settings directly instead of relying on the login service
+	const samlService = await loginServices.loadLoginService<SAMLConfiguration>('saml');
 	if (samlService) {
 		const provider = (samlService.clientConfig as { provider?: string } | undefined)?.provider;
 		if (provider) {

@@ -1,3 +1,4 @@
+import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../../lib/callbacks';
@@ -9,7 +10,7 @@ callbacks.add(
 			return room;
 		}
 
-		const department = await LivechatDepartment.findOneById(room.departmentId, {
+		const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'ancestors'>>(room.departmentId, {
 			projection: { ancestors: 1 },
 		});
 

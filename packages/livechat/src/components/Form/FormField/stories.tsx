@@ -3,7 +3,7 @@ import type { ComponentProps } from 'preact';
 
 import { FormField } from '.';
 import { Form, TextInput } from '..';
-import { loremIpsum } from '../../../helpers.stories';
+import { loremIpsum } from '../../../../.storybook/helpers';
 
 export default {
 	title: 'Forms/FormField',
