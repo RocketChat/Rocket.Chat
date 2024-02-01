@@ -20,7 +20,7 @@ const useReactModal = (Component, props) => {
 	});
 };
 
-const RoomActions = ({ room, reload }) => {
+const RoomActions = ({ room, mainRoom, reload }) => {
 	const t = useTranslation();
 	const rid = room._id;
 	const type = room.t;
@@ -88,9 +88,11 @@ const RoomActions = ({ room, reload }) => {
 				});
 
 				if (updatedRoom.teamDefault) {
-					const messageType = updatedRoom.usersCount > MAX_NUMBER_OF_AUTO_JOIN_MEMBERS ? 'info' : 'success';
+					// If the number of members in the mainRoom (the team) is greater than the limit, show an info message
+					// informing that not all members will be auto-joined to the channel
+					const messageType = mainRoom.usersCount > MAX_NUMBER_OF_AUTO_JOIN_MEMBERS ? 'info' : 'success';
 					const message =
-						updatedRoom.usersCount > MAX_NUMBER_OF_AUTO_JOIN_MEMBERS ? 'Team_Auto-join_exceeded_user_limit' : 'Team_Auto-join_updated';
+						mainRoom.usersCount > MAX_NUMBER_OF_AUTO_JOIN_MEMBERS ? 'Team_Auto-join_exceeded_user_limit' : 'Team_Auto-join_updated';
 
 					dispatchToastMessage({
 						type: messageType,
@@ -132,18 +134,19 @@ const RoomActions = ({ room, reload }) => {
 			},
 		].filter(Boolean);
 	}, [
-		DeleteChannelAction,
-		RemoveFromTeamAction,
-		rid,
-		type,
-		room.teamDefault,
-		t,
-		updateRoomEndpoint,
-		reload,
-		dispatchToastMessage,
-		canDeleteTeamChannel,
-		canRemoveTeamChannel,
 		canEditTeamChannel,
+		t,
+		type,
+		canRemoveTeamChannel,
+		RemoveFromTeamAction,
+		canDeleteTeamChannel,
+		DeleteChannelAction,
+		reload,
+		updateRoomEndpoint,
+		rid,
+		room,
+		mainRoom.usersCount,
+		dispatchToastMessage,
 	]);
 
 	return (

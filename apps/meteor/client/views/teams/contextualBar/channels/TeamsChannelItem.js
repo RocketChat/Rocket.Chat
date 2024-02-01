@@ -19,7 +19,7 @@ import { usePreventPropagation } from '../../../../hooks/usePreventPropagation';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import RoomActions from './RoomActions';
 
-const TeamsChannelItem = ({ room, onClickView, reload }) => {
+const TeamsChannelItem = ({ room, onClickView, reload, mainRoom }) => {
 	const t = useTranslation();
 	const rid = room._id;
 	const type = room.t;
@@ -57,7 +57,7 @@ const TeamsChannelItem = ({ room, onClickView, reload }) => {
 			</OptionContent>
 			{(canRemoveTeamChannel || canEditTeamChannel || canDeleteTeamChannel) && (
 				<OptionMenu onClick={onClick}>
-					{showButton ? <RoomActions room={room} reload={reload} /> : <IconButton tiny icon='kebab' />}
+					{showButton ? <RoomActions room={room} mainRoom={mainRoom} reload={reload} /> : <IconButton tiny icon='kebab' />}
 				</OptionMenu>
 			)}
 		</Option>
