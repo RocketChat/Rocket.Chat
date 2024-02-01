@@ -2319,7 +2319,8 @@ describe.only('[Users]', function () {
 			});
 
 			afterEach(async () => {
-				await Promise.all([deleteRoom({ type: 'c', roomId: room._id }), deleteUser(user)]);
+				await deleteRoom({ type: 'c', roomId: room._id })
+				await deleteUser(user);
 			});
 
 			it('should return an error when trying to delete user own account if user is the last room owner', async () => {
@@ -2436,7 +2437,8 @@ describe.only('[Users]', function () {
 			});
 
 			afterEach(async () => {
-				await Promise.all([deleteUser(targetUser, { confirmRelinquish: true }), deleteRoom({ type: 'c', roomId: room._id })]);
+				await deleteRoom({ type: 'c', roomId: room._id });
+				await deleteUser(targetUser, { confirmRelinquish: true });
 			});
 
 			it('should return an error when trying to delete user account if the user is the last room owner', async () => {
@@ -2731,7 +2733,7 @@ describe.only('[Users]', function () {
 			await Promise.all([
 				deleteUser(user),
 				updatePermission('edit-other-user-active-status', ['admin']),
-				await updatePermission('manage-moderation-actions', ['admin']),
+				updatePermission('manage-moderation-actions', ['admin']),
 			]);
 		});
 		it('should set other user active status to false when the logged user has the necessary permission(edit-other-user-active-status)', (done) => {
@@ -3180,7 +3182,8 @@ describe.only('[Users]', function () {
 			});
 
 			after(async () => {
-				await Promise.all([deleteRoom({ type: 'c', roomId }), deleteUser(user), deleteUser(user2)]);
+				await deleteRoom({ type: 'c', roomId });
+				await Promise.all([deleteUser(user), deleteUser(user2)]);
 			});
 
 			it('should return an empty list when the user does not have any subscription', (done) => {
@@ -3335,8 +3338,10 @@ describe.only('[Users]', function () {
 			user = await createUser();
 		});
 		after(async () => {
-			await deleteUser(user);
-			await updateSetting('Accounts_AllowUserStatusMessageChange', true);
+			await Promise.all([
+				deleteUser(user),
+				updateSetting('Accounts_AllowUserStatusMessageChange', true),
+			]);
 		});
 
 		it('should return an error when the setting "Accounts_AllowUserStatusMessageChange" is disabled', (done) => {
@@ -3595,7 +3600,6 @@ describe.only('[Users]', function () {
 		});
 
 		after(async () => {
-			await deleteUser(testUser);
 			await Promise.all([
 				[teamName1, teamName2].map((team) =>
 					request
@@ -3607,6 +3611,7 @@ describe.only('[Users]', function () {
 						.expect('Content-Type', 'application/json')
 						.expect(200),
 				),
+				deleteUser(testUser),
 			]);
 		});
 
