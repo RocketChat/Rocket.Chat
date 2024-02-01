@@ -26,8 +26,8 @@ type MessageListProps = {
 
 const dateBubbleStyle = css`
 	position: sticky;
-	top: 4px;
-	z-index: 10;
+	top: 8px;
+	z-index: 1;
 	display: flex;
 	justify-content: center;
 `;
