@@ -149,7 +149,7 @@ const ChatTable = () => {
 					icon='message'
 					title={t('No_chats_yet')}
 					description={t('No_chats_yet_description')}
-					linkHref='https://go.rocket.chat/omnichannel-docs'
+					linkHref='https://go.rocket.chat/i/omnichannel-docs'
 					linkText={t('Learn_more_about_conversations')}
 				/>
 			)}
