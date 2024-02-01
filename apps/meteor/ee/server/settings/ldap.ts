@@ -118,7 +118,7 @@ export function addSettings(): Promise<void> {
 						invalidValue: false,
 					});
 
-					await this.add('LDAP_Sync_AutoLogout_Interval', 'Every 5 minutes', {
+					await this.add('LDAP_Sync_AutoLogout_Interval', '*/5 * * * *', {
 						type: 'string',
 						enableQuery: [enableQuery, { _id: 'LDAP_Sync_AutoLogout_Enabled', value: true }],
 						invalidValue: '',
