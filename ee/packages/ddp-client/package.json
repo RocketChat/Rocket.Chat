@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ddp-client",
-	"version": "0.2.13-rc.4",
+	"version": "0.2.13-rc.5",
 	"devDependencies": {
 		"@swc/core": "^1.3.95",
 		"@swc/jest": "^0.2.29",
