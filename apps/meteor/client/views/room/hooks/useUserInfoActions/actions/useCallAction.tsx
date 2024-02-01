@@ -25,7 +25,7 @@ export const useCallAction = (user: Pick<IUser, '_id' | 'username'>): UserInfoAc
 
 	const videoCallOption = useMemo(() => {
 		const action = async (): Promise<void> => {
-			if (isCalling || isRinging || !room || !enabledForDMs) {
+			if (isCalling || isRinging || !room) {
 				return;
 			}
 
