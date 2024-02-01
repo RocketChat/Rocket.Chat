@@ -141,7 +141,7 @@ const CannedResponsesTable = () => {
 					description={t('No_Canned_Responses_Yet-description')}
 					buttonTitle={t('Create_canned_response')}
 					buttonAction={handleAddNew}
-					linkHref='https://go.rocket.chat/omnichannel-docs'
+					linkHref='https://go.rocket.chat/i/omnichannel-docs'
 					linkText={t('Learn_more_about_canned_responses')}
 				/>
 			)}
