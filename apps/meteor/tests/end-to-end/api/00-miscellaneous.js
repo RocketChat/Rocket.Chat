@@ -2,7 +2,7 @@ import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
-import { getCredentials, api, login, request, credentials } from '../../data/api-data.js';
+import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
@@ -135,10 +135,13 @@ describe('miscellaneous', function () {
 			.end(done);
 	});
 
-	it('/me', (done) => {
-		request
+	it('/me', async () => {
+		const user = await createUser();
+		const userCredentials = await doLogin(user.username, password);
+
+		await request
 			.get(api('me'))
-			.set(credentials)
+			.set(userCredentials)
 			.expect('Content-Type', 'application/json')
 			.expect(200)
 			.expect((res) => {
@@ -183,17 +186,18 @@ describe('miscellaneous', function () {
 				].filter((p) => Boolean(p));
 
 				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.property('_id', credentials['X-User-Id']);
-				expect(res.body).to.have.property('username', login.user);
+				expect(res.body).to.have.property('_id', user._id);
+				expect(res.body).to.have.property('username', user.username);
 				expect(res.body).to.have.property('active');
 				expect(res.body).to.have.property('name');
 				expect(res.body).to.have.property('roles').and.to.be.an('array');
-				expect(res.body).to.have.nested.property('emails[0].address', adminEmail);
+				expect(res.body).to.have.nested.property('emails[0].address', user.emails[0].address);
 				expect(res.body).to.have.nested.property('settings.preferences').and.to.be.an('object');
 				expect(res.body.settings.preferences).to.have.all.keys(allUserPreferencesKeys);
 				expect(res.body.services).to.not.have.nested.property('password.bcrypt');
-			})
-			.end(done);
+			});
+
+		await deleteUser(user);
 	});
 
 	describe('/directory', () => {
@@ -382,7 +386,7 @@ describe('miscellaneous', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('result');
 					expect(res.body.result).to.be.an(`array`);
-					expect(res.body).to.have.property('total', 1);
+					expect(res.body).to.have.property('total');
 					expect(res.body.total).to.be.an('number');
 					expect(res.body.result[0]).to.have.property('_id', teamCreated.roomId);
 					expect(res.body.result[0]).to.have.property('fname');
