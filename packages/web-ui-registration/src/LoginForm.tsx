@@ -66,7 +66,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 		clearErrors,
 		getValues,
 		formState: { errors },
-	} = useForm<{ username: string; password: string }>({
+	} = useForm<{ usernameOrEmail: string; password: string }>({
 		mode: 'onBlur',
 	});
 
@@ -83,12 +83,12 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 	useDocumentTitle(t('registration.component.login'), false);
 
 	const loginMutation = useMutation({
-		mutationFn: (formData: { username: string; password: string }) => {
-			return login(formData.username, formData.password);
+		mutationFn: (formData: { usernameOrEmail: string; password: string }) => {
+			return login(formData.usernameOrEmail, formData.password);
 		},
 		onError: (error: any) => {
 			if ([error.error, error.errorType].includes('error-invalid-email')) {
-				setError('username', { type: 'invalid-email', message: t('registration.page.login.errors.invalidEmail') });
+				setError('usernameOrEmail', { type: 'invalid-email', message: t('registration.page.login.errors.invalidEmail') });
 			}
 
 			if ('error' in error && error.error !== 403) {
@@ -119,8 +119,8 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 		);
 	};
 
-	if (errors.username?.type === 'invalid-email') {
-		return <EmailConfirmationForm onBackToLogin={() => clearErrors('username')} email={getValues('username')} />;
+	if (errors.usernameOrEmail?.type === 'invalid-email') {
+		return <EmailConfirmationForm onBackToLogin={() => clearErrors('usernameOrEmail')} email={getValues('usernameOrEmail')} />;
 	}
 
 	return (
@@ -144,19 +144,19 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 								</FieldLabel>
 								<FieldRow>
 									<TextInput
-										{...register('username', {
+										{...register('usernameOrEmail', {
 											required: t('registration.component.form.requiredField'),
 										})}
 										placeholder={usernameOrEmailPlaceholder || t('registration.component.form.emailPlaceholder')}
-										error={errors.username?.message}
-										aria-invalid={errors.username || errorOnSubmit ? 'true' : 'false'}
+										error={errors.usernameOrEmail?.message}
+										aria-invalid={errors.usernameOrEmail || errorOnSubmit ? 'true' : 'false'}
 										aria-describedby={`${usernameId}-error`}
 										id={usernameId}
 									/>
 								</FieldRow>
-								{errors.username && (
+								{errors.usernameOrEmail && (
 									<FieldError aria-live='assertive' id={`${usernameId}-error`}>
-										{errors.username.message}
+										{errors.usernameOrEmail.message}
 									</FieldError>
 								)}
 							</Field>
@@ -199,7 +199,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 						{errorOnSubmit && <FieldGroup disabled={loginMutation.isLoading}>{renderErrorOnSubmit(errorOnSubmit)}</FieldGroup>}
 					</Form.Container>
 					<Form.Footer>
-						<ButtonGroup stretch>
+						<ButtonGroup>
 							<Button loading={loginMutation.isLoading} type='submit' primary>
 								{t('registration.component.login')}
 							</Button>
