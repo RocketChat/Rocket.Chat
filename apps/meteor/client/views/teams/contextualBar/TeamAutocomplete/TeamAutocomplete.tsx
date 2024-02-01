@@ -31,12 +31,14 @@ const TeamAutocomplete = ({ value, onChange, ...props }: TeamAutocompleteProps) 
 			onChange={onChange}
 			filter={filter}
 			setFilter={setFilter}
-			renderSelected={({ selected: { value, label } }) => (
+			renderSelected={({ selected: { value, label: room } }) => (
 				<Box value={value}>
-					<RoomAvatar size='x20' {...label} /> {label.name}
+					<RoomAvatar size='x20' room={room} /> {room.name}
 				</Box>
 			)}
-			renderItem={({ value, label, ...props }) => <Option key={value} {...props} label={label.name} avatar={<RoomAvatar {...label} />} />}
+			renderItem={({ value, label: room, ...props }) => (
+				<Option key={value} {...props} label={room.name} avatar={<RoomAvatar room={room} />} />
+			)}
 			options={options}
 		/>
 	);
