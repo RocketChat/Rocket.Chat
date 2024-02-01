@@ -28,6 +28,7 @@ slashCommands.add({
 			channel = channel.replace('#', '');
 			room = await Rooms.findOneByName(channel);
 		}
+
 		if (!userId) {
 			return;
 		}
@@ -48,9 +49,12 @@ slashCommands.add({
 			return;
 		}
 
-		// You can not archive direct messages.
-		if (room.t === 'd') {
-			return;
+		if (!(await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.ARCHIVE, userId))) {
+			throw new Meteor.Error('error-direct-message-room', `rooms type: ${room.t} can not be archived`, { method: 'archiveRoom' });
+		}
+
+		if (!(await hasPermissionAsync(userId, 'archive-room', room._id))) {
+			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'archiveRoom' });
 		}
 
 		if (room.archived) {
@@ -62,14 +66,6 @@ slashCommands.add({
 				}),
 			});
 			return;
-		}
-
-		if (!(await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.ARCHIVE, userId))) {
-			throw new Meteor.Error('error-direct-message-room', `rooms type: ${room.t} can not be archived`, { method: 'archiveRoom' });
-		}
-
-		if (!(await hasPermissionAsync(userId, 'archive-room', room._id))) {
-			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'archiveRoom' });
 		}
 
 		await archiveRoom(room._id, user);
