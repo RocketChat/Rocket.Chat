@@ -84,10 +84,10 @@ export function addSettings(): Promise<void> {
 						invalidValue: false,
 					});
 
-					await this.add('LDAP_Background_Sync_Avatars_Interval', 'Every 24 hours', {
+					await this.add('LDAP_Background_Sync_Avatars_Interval', '0 0 * * *', {
 						type: 'string',
 						enableQuery: [enableQuery, { _id: 'LDAP_Background_Sync_Avatars', value: true }],
-						invalidValue: 'Every 24 hours',
+						invalidValue: '0 0 * * *',
 					});
 				});
 
