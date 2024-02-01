@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Box,
   Button,
   ButtonGroup,
@@ -8,7 +9,6 @@ import {
   ContextualbarHeader,
   ContextualbarTitle,
 } from '@rocket.chat/fuselage';
-import { Avatar } from '@rocket.chat/ui-avatar';
 import { Scrollbars } from 'rc-scrollbars';
 import { ReactNode } from 'react';
 

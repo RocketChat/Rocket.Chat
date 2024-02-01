@@ -1,5 +1,4 @@
-import { MessageDivider, Message, Box } from '@rocket.chat/fuselage';
-import { Avatar } from '@rocket.chat/ui-avatar';
+import { MessageDivider, Message, Box, Avatar } from '@rocket.chat/fuselage';
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import type { ReactElement } from 'react';
 

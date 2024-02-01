@@ -1,5 +1,4 @@
-import { Icon, Table, TableBody, TableCell, TableHead, TableRow } from '@rocket.chat/fuselage';
-import { Avatar } from '@rocket.chat/ui-avatar';
+import { Avatar, Icon, Table, TableBody, TableCell, TableHead, TableRow } from '@rocket.chat/fuselage';
 import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';

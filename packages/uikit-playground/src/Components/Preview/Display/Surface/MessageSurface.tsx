@@ -1,5 +1,4 @@
-import { Message } from '@rocket.chat/fuselage';
-import { Avatar } from '@rocket.chat/ui-avatar';
+import { Avatar, Message } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
 const MessageSurface = ({ children }: { children: ReactNode }) => (

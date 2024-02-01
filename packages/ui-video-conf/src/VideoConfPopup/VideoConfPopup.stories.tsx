@@ -1,5 +1,4 @@
-import { Icon } from '@rocket.chat/fuselage';
-import { Avatar } from '@rocket.chat/ui-avatar';
+import { Avatar, Icon } from '@rocket.chat/fuselage';
 import { action } from '@storybook/addon-actions';
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import type { ReactElement } from 'react';
