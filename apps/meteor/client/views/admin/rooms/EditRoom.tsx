@@ -25,6 +25,7 @@ import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { useArchiveRoom } from '../../hooks/roomActions/useArchiveRoom';
 import { useDeleteRoom } from '../../hooks/roomActions/useDeleteRoom';
 import { useEditAdminRoomPermissions } from './useEditAdminRoomPermissions';
+import { hasEmptyOrWhitespaceFields } from '/client/lib/hasEmptyOrWhitespaceFields';
 
 type EditRoomProps = {
 	room: Pick<IRoom, RoomAdminFieldsType>;
@@ -118,7 +119,19 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 	});
 
 	const handleSave = useMutableCallback(async (data) => {
-		await Promise.all([isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive()].filter(Boolean));
+		const requiredFields = {
+			roomDescription: true,
+			roomAnnouncement: true,
+			roomTopic: true,
+		};
+		const isFieldsEmptyOrWhitespace = hasEmptyOrWhitespaceFields(data, requiredFields);
+
+		if (!isFieldsEmptyOrWhitespace) {
+			await Promise.all([isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive()].filter(Boolean));
+		} else {
+			// Handle the case where fields are empty or contain only whitespace
+			dispatchToastMessage({ type: 'error', message: 'Please remove empty spaces' });
+		}
 	});
 
 	const formId = useUniqueId();
@@ -347,7 +360,15 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 					<Button type='reset' disabled={!isDirty || isDeleting} onClick={() => reset()}>
 						{t('Reset')}
 					</Button>
-					<Button form={formId} type='submit' disabled={!isDirty || isDeleting}>
+					<Button
+						form={formId}
+						type='submit'
+						disabled={
+							!isDirty ||
+							isDeleting ||
+							hasEmptyOrWhitespaceFields(watch(), { roomDescription: true, roomAnnouncement: true, roomTopic: true })
+						}
+					>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
