@@ -18,12 +18,12 @@ Meteor.methods<ServerMethods>({
 	async sendForgotPasswordEmail(to) {
 		check(to, String);
 
-		const email = to.trim().toLowerCase();
+		const email = to.trim();
 
 		const user = await Users.findOneByEmailAddress(email, { projection: { _id: 1 } });
 
 		if (!user) {
-			return true;
+			return false;
 		}
 
 		if (user.services && !user.services.password) {
