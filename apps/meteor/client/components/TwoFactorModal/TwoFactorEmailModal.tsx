@@ -49,7 +49,6 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername, invalidAttem
 		try {
 			if (typeof onClose === 'function') {
 				onClose();
-				// Change the URL without triggering a full page reload
 				window.location.href = 'http://localhost:3000';
 			}
 		} catch (error) {
@@ -60,11 +59,10 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername, invalidAttem
 	return (
 		<GenericModal
 			wrapperFunction={(props) => <Box is='form' onSubmit={onConfirmEmailCode} {...props} />}
-			onCancel={onClose}
+			onCancel={onCloseHandler}
 			confirmText={t('Verify')}
 			title={t('Two-factor_authentication_email')}
-			onClose={onClose}
-			onClick={onCloseHandler}
+			onClose={onCloseHandler}
 			variant='warning'
 			icon='info'
 			confirmDisabled={!code}
