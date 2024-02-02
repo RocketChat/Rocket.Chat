@@ -1,9 +1,8 @@
 import { Box, CheckBox, Menu, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, usePermission, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
-import { MAX_NUMBER_OF_AUTO_JOIN_MEMBERS } from '../../../../../lib/team/constants';
 import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import ConfirmationModal from './ConfirmationModal';
@@ -79,6 +78,8 @@ const RoomActions = ({ room, mainRoom, reload }) => {
 		),
 	});
 
+	const maxNumberOfAutoJoinMembers = useSetting('API_User_Limit');
+
 	const menuOptions = useMemo(() => {
 		const AutoJoinAction = async () => {
 			try {
@@ -90,16 +91,16 @@ const RoomActions = ({ room, mainRoom, reload }) => {
 				if (updatedRoom.teamDefault) {
 					// If the number of members in the mainRoom (the team) is greater than the limit, show an info message
 					// informing that not all members will be auto-joined to the channel
-					const messageType = mainRoom.usersCount > MAX_NUMBER_OF_AUTO_JOIN_MEMBERS ? 'info' : 'success';
+					const messageType = mainRoom.usersCount > maxNumberOfAutoJoinMembers ? 'info' : 'success';
 					const message =
-						mainRoom.usersCount > MAX_NUMBER_OF_AUTO_JOIN_MEMBERS ? 'Team_Auto-join_exceeded_user_limit' : 'Team_Auto-join_updated';
+						mainRoom.usersCount > maxNumberOfAutoJoinMembers ? 'Team_Auto-join_exceeded_user_limit' : 'Team_Auto-join_updated';
 
 					dispatchToastMessage({
 						type: messageType,
 						message: t(message, {
 							channelName: roomCoordinator.getRoomName(room.t, room),
 							numberOfMembers: updatedRoom.usersCount,
-							limit: MAX_NUMBER_OF_AUTO_JOIN_MEMBERS,
+							limit: maxNumberOfAutoJoinMembers,
 						}),
 					});
 				}
@@ -146,6 +147,7 @@ const RoomActions = ({ room, mainRoom, reload }) => {
 		rid,
 		room,
 		mainRoom.usersCount,
+		maxNumberOfAutoJoinMembers,
 		dispatchToastMessage,
 	]);
 

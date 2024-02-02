@@ -1,1 +1,0 @@
-export const MAX_NUMBER_OF_AUTO_JOIN_MEMBERS = 1000;
