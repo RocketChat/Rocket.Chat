@@ -45,6 +45,17 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername, invalidAttem
 	};
 
 	const id = useUniqueId();
+	const onCloseHandler = () => {
+		try {
+			if (typeof onClose === 'function') {
+				onClose();
+				// Change the URL without triggering a full page reload
+				window.location.href = 'http://localhost:3000';
+			}
+		} catch (error) {
+			console.error('Error in onClose function:', error);
+		}
+	};
 
 	return (
 		<GenericModal
@@ -53,6 +64,7 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername, invalidAttem
 			confirmText={t('Verify')}
 			title={t('Two-factor_authentication_email')}
 			onClose={onClose}
+			onClick={onCloseHandler}
 			variant='warning'
 			icon='info'
 			confirmDisabled={!code}
@@ -68,7 +80,7 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername, invalidAttem
 					{invalidAttempt && <FieldError>{t('Invalid_password')}</FieldError>}
 				</Field>
 			</FieldGroup>
-			<Box display='flex' justifyContent='end' is='a' onClick={onClickResendCode}>
+			<Box style={{ cursor: 'pointer' }} display='flex' justifyContent='end' is='a' onClick={onClickResendCode}>
 				{t('Cloud_resend_email')}
 			</Box>
 		</GenericModal>
