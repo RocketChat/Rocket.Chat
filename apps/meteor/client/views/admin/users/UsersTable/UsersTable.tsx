@@ -5,7 +5,7 @@ import { useEndpoint, useRoute, useToastMessageDispatch, useTranslation } from '
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement, MutableRefObject } from 'react';
 import React, { useRef, useMemo, useState, useEffect } from 'react';
-
+import { Flex } from '@rocket.chat/fuselage';
 import FilterByText from '../../../../components/FilterByText';
 import GenericNoResults from '../../../../components/GenericNoResults';
 import {
@@ -15,6 +15,7 @@ import {
 	GenericTableBody,
 	GenericTableLoadingTable,
 } from '../../../../components/GenericTable';
+import { BaseSelect } from '../../../../components/roleSelect';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import UsersTableRow from './UsersTableRow';
@@ -29,6 +30,8 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 	const usersRoute = useRoute('admin-users');
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 	const [text, setText] = useState('');
+	const [userRole, setUserRole] = useState('');
+	const [filteredUserRole, setFilteredUserRole] = useState([]);
 
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'username' | 'emails.address' | 'status'>('name');
@@ -70,11 +73,11 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 	const getUsers = useEndpoint('GET', '/v1/users.list');
 
 	const dispatchToastMessage = useToastMessageDispatch();
-
 	const { data, isLoading, error, isSuccess, refetch } = useQuery(
 		['users', query],
 		async () => {
 			const users = await getUsers(query);
+			users;
 			return users;
 		},
 		{
@@ -83,6 +86,29 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 			},
 		},
 	);
+	useEffect(() => {
+		let roleValue: string;
+
+		switch (userRole) {
+			case '1':
+				roleValue = 'all';
+				break;
+			case '2':
+				roleValue = 'user';
+				break;
+			case '3':
+				roleValue = 'admin';
+				break;
+			case '4':
+				roleValue = 'moderator';
+				break;
+			default:
+				roleValue = 'Unknown Role';
+				break;
+		}
+		if (roleValue == 'Unknown Role' || roleValue == 'all') setFilteredUserRole(data?.users as []);
+		else setFilteredUserRole(data?.users.filter((user) => user.roles.includes(roleValue)) as []);
+	}, [userRole, data]);
 
 	useEffect(() => {
 		reload.current = refetch;
@@ -137,14 +163,29 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 		],
 		[mediaQuery, setSort, sortBy, sortDirection, t],
 	);
-
 	if (error) {
 		return null;
 	}
 
 	return (
 		<>
-			<FilterByText autoFocus placeholder={t('Search_Users')} onChange={({ text }): void => setText(text)} />
+			<Flex.Container direction='row' alignItems='center' justifyContent='center' wrap='wrap'>
+				<Flex.Item>
+					<FilterByText autoFocus placeholder={t('Search_Users')} onChange={({ text }): void => setText(text)} />
+				</Flex.Item>
+				<Flex.Item>
+					<BaseSelect
+						options={[
+							['1', 'All'],
+							['2', 'User'],
+							['3', 'Admin'],
+							['4', 'Moderator'],
+						]}
+						onChange={(value) => setUserRole(value)}
+					/>
+				</Flex.Item>
+			</Flex.Container>
+
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
@@ -156,8 +197,8 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
-							{data?.users.map((user) => (
-								<UsersTableRow key={user._id} onClick={handleClick} mediaQuery={mediaQuery} user={user} />
+							{filteredUserRole?.map((user, idx) => (
+								<UsersTableRow key={idx} onClick={handleClick} mediaQuery={mediaQuery} user={user} />
 							))}
 						</GenericTableBody>
 					</GenericTable>
