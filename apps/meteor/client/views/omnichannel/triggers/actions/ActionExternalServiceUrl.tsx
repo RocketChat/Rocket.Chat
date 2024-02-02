@@ -62,7 +62,9 @@ export const ActionExternalServiceUrl = ({ control, trigger, index, disabled, ..
 
 	return (
 		<Field {...props}>
-			<FieldLabel htmlFor={serviceUrlFieldId}>{t('External_service_url')}*</FieldLabel>
+			<FieldLabel required htmlFor={serviceUrlFieldId}>
+				{t('External_service_url')}
+			</FieldLabel>
 			<FieldRow>
 				<Controller
 					name={serviceUrlFieldName}

@@ -26,7 +26,9 @@ export const SendMessageActionForm = ({ control, index, ...props }: SendMessageA
 			<ActionSender {...props} control={control} index={index} />
 
 			<Field {...props}>
-				<FieldLabel htmlFor={messageFieldId}>{t('Message')}*</FieldLabel>
+				<FieldLabel required htmlFor={messageFieldId}>
+					{t('Message')}
+				</FieldLabel>
 				<FieldRow>
 					<Controller
 						control={control}

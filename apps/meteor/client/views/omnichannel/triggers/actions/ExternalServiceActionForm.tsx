@@ -37,7 +37,9 @@ export const ExternalServiceActionForm = ({ control, trigger, index, ...props }:
 			<ActionExternalServiceUrl disabled={!hasLicense} control={control} trigger={trigger} index={index} />
 
 			<Field>
-				<FieldLabel htmlFor={timeoutFieldId}>{t('Timeout_in_miliseconds')}*</FieldLabel>
+				<FieldLabel required htmlFor={timeoutFieldId}>
+					{t('Timeout_in_miliseconds')}
+				</FieldLabel>
 				<FieldRow>
 					<Controller
 						control={control}
