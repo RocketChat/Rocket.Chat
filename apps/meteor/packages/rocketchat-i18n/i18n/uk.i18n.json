@@ -2164,6 +2164,8 @@
   "Message_BadWordsFilterList": "Додати погані слова в чорний список",
   "Message_BadWordsFilterListDescription": "Додати список розділених комами список поганих слів, щоб фільтрувати",
   "message_counter_one": "{{count}} повідомлення",
+  "message_counter_few": "{{count}} повідомлень",
+  "message_counter_many": "{{count}} повідомлень",
   "message_counter_other": "{{count}} повідомлень",
   "Message_DateFormat": "Формат дати",
   "Message_DateFormat_Description": "Дивіться також: [Moment.js](http://momentjs.com/docs/#/displaying/format/)",
