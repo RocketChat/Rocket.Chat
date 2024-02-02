@@ -3,9 +3,9 @@ import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useTranslation, useUserRoom, useUserId, useUserSubscriptionByName } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import { closeUserCard } from '../../../../../../app/ui/client/lib/userCard';
 import { useVideoConfDispatchOutgoing, useVideoConfIsCalling, useVideoConfIsRinging } from '../../../../../contexts/VideoConfContext';
 import { VideoConfManager } from '../../../../../lib/VideoConfManager';
+import { useUserCard } from '../../../contexts/UserCardContext';
 import { useVideoConfWarning } from '../../../contextualBar/VideoConference/hooks/useVideoConfWarning';
 import type { UserInfoAction, UserInfoActionType } from '../useUserInfoActions';
 
@@ -13,6 +13,7 @@ export const useCallAction = (user: Pick<IUser, '_id' | 'username'>): UserInfoAc
 	const t = useTranslation();
 	const usernameSubscription = useUserSubscriptionByName(user.username ?? '');
 	const room = useUserRoom(usernameSubscription?.rid || '');
+	const { closeUserCard } = useUserCard();
 
 	const dispatchWarning = useVideoConfWarning();
 	const dispatchPopup = useVideoConfDispatchOutgoing();
@@ -43,7 +44,7 @@ export const useCallAction = (user: Pick<IUser, '_id' | 'username'>): UserInfoAc
 					type: 'communication' as UserInfoActionType,
 			  }
 			: undefined;
-	}, [t, room, dispatchPopup, dispatchWarning, isCalling, isRinging, ownUserId, user._id]);
+	}, [t, room, dispatchPopup, closeUserCard, dispatchWarning, isCalling, isRinging, ownUserId, user._id]);
 
 	return videoCallOption;
 };
