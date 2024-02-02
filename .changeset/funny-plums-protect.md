@@ -2,4 +2,4 @@
 "@rocket.chat/meteor": minor
 ---
 
-Change the numbers of members that can be added using the autojoin feature in a team's channel to 1000
+This feature introduces the use of the API_User_Limit whenever we set a channel as to be autojoined in a team, so it follows a config value insted of a hard-coded value of 50 (which could look like a bug)
