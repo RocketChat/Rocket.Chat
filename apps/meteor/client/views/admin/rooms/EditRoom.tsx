@@ -25,7 +25,7 @@ import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { useArchiveRoom } from '../../hooks/roomActions/useArchiveRoom';
 import { useDeleteRoom } from '../../hooks/roomActions/useDeleteRoom';
 import { useEditAdminRoomPermissions } from './useEditAdminRoomPermissions';
-import { hasEmptyOrWhitespaceFields } from '/client/lib/hasEmptyOrWhitespaceFields';
+import { hasEmptyOrWhitespaceFields } from '../../../lib/hasEmptyOrWhitespaceFields';
 
 type EditRoomProps = {
 	room: Pick<IRoom, RoomAdminFieldsType>;

@@ -42,7 +42,7 @@ import { useArchiveRoom } from '../../../../hooks/roomActions/useArchiveRoom';
 import { useDeleteRoom } from '../../../../hooks/roomActions/useDeleteRoom';
 import { useEditRoomInitialValues } from './useEditRoomInitialValues';
 import { useEditRoomPermissions } from './useEditRoomPermissions';
-import { hasEmptyOrWhitespaceFields } from '/client/lib/hasEmptyOrWhitespaceFields';
+import { hasEmptyOrWhitespaceFields } from '../../../../../lib/hasEmptyOrWhitespaceFields';
 
 type EditRoomInfoProps = {
 	room: IRoomWithRetentionPolicy;
