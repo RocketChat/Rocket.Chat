@@ -71,6 +71,7 @@ export interface IUserServices {
 		enabled: boolean;
 		hashedBackup: string[];
 		secret: string;
+		tempSecret?: string;
 	};
 	email2fa?: {
 		enabled: boolean;

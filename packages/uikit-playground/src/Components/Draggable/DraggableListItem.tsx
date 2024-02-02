@@ -1,6 +1,8 @@
 import { Draggable } from 'react-beautiful-dnd';
 
-import RenderPayload from '../Preview/Display/RenderPayload/RenderPayload';
+import DeleteElementBtn from '../Preview/Display/UiKitElementWrapper/DeleteElementBtn';
+import UiKitElementWrapper from '../Preview/Display/UiKitElementWrapper/UiKitElementWrapper';
+import RenderPayload from '../RenderPayload/RenderPayload';
 import type { Block } from './DraggableList';
 
 export type DraggableListItemProps = {
@@ -21,11 +23,10 @@ const DraggableListItem = ({
         {...provided.draggableProps}
         {...provided.dragHandleProps}
       >
-        <RenderPayload
-          surface={surface}
-          payload={[block.payload]}
-          index={index}
-        />
+        <UiKitElementWrapper key={index}>
+          <DeleteElementBtn elementIndex={index} />
+          <RenderPayload surface={surface} blocks={[block.payload]} />
+        </UiKitElementWrapper>
       </div>
     )}
   </Draggable>
