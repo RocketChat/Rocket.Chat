@@ -38,11 +38,11 @@ import {
 import RawText from '../../../../../components/RawText';
 import RoomAvatarEditor from '../../../../../components/avatar/RoomAvatarEditor';
 import { getDirtyFields } from '../../../../../lib/getDirtyFields';
+import { hasEmptyOrWhitespaceFields } from '../../../../../lib/hasEmptyOrWhitespaceFields';
 import { useArchiveRoom } from '../../../../hooks/roomActions/useArchiveRoom';
 import { useDeleteRoom } from '../../../../hooks/roomActions/useDeleteRoom';
 import { useEditRoomInitialValues } from './useEditRoomInitialValues';
 import { useEditRoomPermissions } from './useEditRoomPermissions';
-import { hasEmptyOrWhitespaceFields } from '../../../../../lib/hasEmptyOrWhitespaceFields';
 
 type EditRoomInfoProps = {
 	room: IRoomWithRetentionPolicy;

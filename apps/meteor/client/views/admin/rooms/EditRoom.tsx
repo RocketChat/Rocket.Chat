@@ -21,11 +21,11 @@ import { useForm, Controller } from 'react-hook-form';
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import RoomAvatarEditor from '../../../components/avatar/RoomAvatarEditor';
 import { getDirtyFields } from '../../../lib/getDirtyFields';
+import { hasEmptyOrWhitespaceFields } from '../../../lib/hasEmptyOrWhitespaceFields';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { useArchiveRoom } from '../../hooks/roomActions/useArchiveRoom';
 import { useDeleteRoom } from '../../hooks/roomActions/useDeleteRoom';
 import { useEditAdminRoomPermissions } from './useEditAdminRoomPermissions';
-import { hasEmptyOrWhitespaceFields } from '../../../lib/hasEmptyOrWhitespaceFields';
 
 type EditRoomProps = {
 	room: Pick<IRoom, RoomAdminFieldsType>;
