@@ -9,7 +9,6 @@ const EmojiPickerPreview = ({ emoji, name, ...props }: { emoji: string; name: st
 			height: 40px;
 		}
 	`;
-
 	return (
 		<Box {...props} display='flex' alignItems='center'>
 			<Box className={previewEmojiClass} dangerouslySetInnerHTML={{ __html: emoji }}></Box>

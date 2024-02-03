@@ -28,7 +28,7 @@ import ToneSelectorWrapper from './ToneSelector/ToneSelectorWrapper';
 type EmojiPickerProps = {
 	reference: Element;
 	onClose: () => void;
-	onPickEmoji: (emoji: string) => void;
+	onPickEmoji: (emoji: string, image?: string) => void;
 };
 
 const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
@@ -104,6 +104,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 		event.stopPropagation();
 
 		const _emoji = event.currentTarget.dataset?.emoji;
+		const _image = event.currentTarget.textContent;
 
 		if (!_emoji) {
 			return;
@@ -121,7 +122,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 
 		setSearchTerm('');
 
-		onPickEmoji(_emoji + tone);
+		onPickEmoji(_emoji + tone, _image || undefined);
 		addRecentEmoji(_emoji + tone);
 		onClose();
 	};

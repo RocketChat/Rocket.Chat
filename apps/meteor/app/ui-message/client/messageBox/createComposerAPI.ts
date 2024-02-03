@@ -84,6 +84,32 @@ export const createComposerAPI = (input: any, storageID: string): ComposerAPI =>
 		!skipFocus && focus();
 	};
 
+	const setTextV2 = (text: string) => {
+		const selection = window.getSelection();
+
+		if (selection && selection.rangeCount > 0) {
+			const range = selection?.getRangeAt(0);
+			console.log(range);
+
+			const textNode = document.createTextNode(text);
+			console.log(textNode);
+
+			range?.deleteContents();
+			range?.insertNode(textNode);
+
+			range?.setStartAfter(textNode);
+			range?.setEndAfter(textNode);
+
+			selection?.removeAllRanges();
+
+			selection?.addRange(range);
+			console.log('here');
+		} else {
+			input.innerHTML += text;
+			console.log('here2');
+		}
+	};
+
 	const insertText = (text: string): void => {
 		setText(text, {
 			selection: ({ start, end }) => ({
@@ -91,6 +117,10 @@ export const createComposerAPI = (input: any, storageID: string): ComposerAPI =>
 				end: end + text.length,
 			}),
 		});
+	};
+
+	const insertTextV2 = (text: string): void => {
+		setTextV2(text);
 	};
 
 	const clear = (): void => {
@@ -341,6 +371,8 @@ export const createComposerAPI = (input: any, storageID: string): ComposerAPI =>
 		setRecordingVideo,
 		insertText,
 		setText,
+		setTextV2,
+		insertTextV2,
 		clear,
 		focus,
 		replyWith,

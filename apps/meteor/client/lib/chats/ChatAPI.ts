@@ -19,9 +19,11 @@ export type ComposerAPI = {
 				| ((previous: { readonly start: number; readonly end: number }) => { readonly start?: number; readonly end?: number });
 		},
 	): void;
+	setTextV2(text: string): void;
 	wrapSelection(pattern: string): void;
 	wrapSelectionV2(pattern?: string): void;
 	insertText(text: string): void;
+	insertTextV2(text: string): void;
 	insertNewLine(): void;
 	clear(): void;
 	focus(): void;

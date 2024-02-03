@@ -120,6 +120,8 @@ const MessageBox = ({
 		customIcons,
 	});
 
+	console.log(window.getSelection()?.getRangeAt(0), 'idhr');
+
 	quill?.on('text-change', () => {
 		setTyping(quill.root.innerText.length !== 0 && quill.root.innerText !== '\n');
 	});
@@ -153,7 +155,7 @@ const MessageBox = ({
 		}
 
 		const ref = messageComposerRef.current as HTMLElement;
-		chat.emojiPicker.open(ref, (emoji: string) => chat.composer?.insertText(` :${emoji}: `));
+		chat.emojiPicker.open(ref, (_emoji: string, image?: string) => chat.composer?.insertTextV2(` ${image}`));
 	});
 
 	const handleSendMessage = useMutableCallback(() => {
