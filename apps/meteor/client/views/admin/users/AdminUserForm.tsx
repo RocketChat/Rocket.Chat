@@ -213,7 +213,10 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 							<Controller
 								control={control}
 								name='username'
-								rules={{ required: t('The_field_is_required', t('Username')) }}
+								rules={{
+									required: t('The_field_is_required', t('Username')),
+									validate: (username) => (new RegExp('^[0-9a-zA-Z-_.]+$').test(username) ? undefined : t('error-invalid-username')),
+								}}
 								render={({ field }) => (
 									<TextInput
 										{...field}
