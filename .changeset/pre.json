@@ -53,7 +53,8 @@
     "@rocket.chat/ui-kit": "0.32.1",
     "@rocket.chat/ui-video-conf": "3.0.3",
     "@rocket.chat/uikit-playground": "0.2.12",
-    "@rocket.chat/web-ui-registration": "3.0.3"
+    "@rocket.chat/web-ui-registration": "3.0.3",
+    "@rocket.chat/release-changelog": "0.1.0"
   },
   "changesets": [
     "angry-llamas-retire",
@@ -68,6 +69,7 @@
     "bump-patch-1706484656068",
     "bump-patch-1706563313767",
     "bump-patch-1706649941758",
+    "bump-patch-1706823023262",
     "calm-carrots-judge",
     "calm-rules-dance",
     "chatty-schools-notice",
@@ -109,6 +111,7 @@
     "message-composer-hint",
     "mighty-shirts-sell",
     "nice-points-notice",
+    "polite-donkeys-cheer",
     "pretty-eyes-sleep",
     "rare-eels-fetch",
     "rude-spoons-pump",
