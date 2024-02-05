@@ -1,7 +1,6 @@
 import { Message } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUser, MessageAttachmentDefault } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users } from '@rocket.chat/models';
-import { Random } from '@rocket.chat/random';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
@@ -15,45 +14,6 @@ import { attachMessage } from '../../../lib/server/functions/attachMessage';
 import { createRoom } from '../../../lib/server/functions/createRoom';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { settings } from '../../../settings/server';
-
-const MAX_SLUGIFY_ATTEMPTS = 100;
-const MAX_SLUG_LENGTH = 100;
-
-function truncateSlug(slug: string) {
-	if (slug.length <= MAX_SLUG_LENGTH) return slug;
-
-	const truncated = slug.slice(0, MAX_SLUG_LENGTH);
-	const lastDash = truncated.lastIndexOf('-');
-
-	// Avoid truncating if the last word is too small
-	return lastDash > MAX_SLUG_LENGTH - 10 ? truncated.slice(0, lastDash) : truncated;
-}
-
-const slugifyName = (name: string): string => {
-	const slug = name
-		.replace(/[^a-zA-Z0-9 -]/g, '') // remove non-alphanumeric characters
-		.replace(/\s+|-+/g, '-') // replace spaces and duplicated hyphens with a single hyphen
-		.replace(/^-+|-+$/g, ''); // remove leading and trailing hyphens
-	return truncateSlug(slug);
-};
-
-async function createUniqueName(discussionName: string, attempts = 0): Promise<string> {
-	let name = slugifyName(discussionName);
-	let count = '0';
-
-	if (attempts >= MAX_SLUGIFY_ATTEMPTS) {
-		// Although we should never reach this point, it's better to have a fallback
-		return `${name}-${Random.id()}`;
-	}
-
-	const room = await Rooms.findOne({ name }, { projection: { _id: 1 } });
-	if (!room) {
-		return name;
-	}
-	[name, count] = (name.match(/(.*)-(\d+)$/) || [name, '0']).slice(-2);
-	const nextCount = parseInt(count, 10) + 1;
-	return createUniqueName(`${name}-${nextCount}`, attempts + 1);
-}
 
 const getParentRoom = async (rid: IRoom['_id']) => {
 	const room = await Rooms.findOne(rid);
@@ -177,8 +137,6 @@ const create = async ({
 		}
 	}
 
-	const name = await createUniqueName(discussionName);
-
 	// auto invite the replied message owner
 	const invitedUsers = message ? [message.u.username, ...users] : users;
 
@@ -194,7 +152,7 @@ const create = async ({
 
 	const discussion = await createRoom(
 		type,
-		name,
+		discussionName,
 		user,
 		[...new Set(invitedUsers)].filter(Boolean),
 		false,

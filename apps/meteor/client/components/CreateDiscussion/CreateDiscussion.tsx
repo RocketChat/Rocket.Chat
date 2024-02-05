@@ -63,6 +63,7 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 	const { encrypted } = watch();
 
 	const createDiscussion = useEndpoint('POST', '/v1/rooms.createDiscussion');
+	const channelNameExists = useEndpoint('GET', '/v1/rooms.nameExists');
 
 	const createDiscussionMutation = useMutation({
 		mutationFn: createDiscussion,
@@ -80,6 +81,21 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 			reply: encrypted ? undefined : firstMessage,
 			...(parentMessageId && { pmid: parentMessageId }),
 		});
+	};
+
+	const validateDiscussionName = async (name: string): Promise<string | undefined> => {
+		if (!name) {
+			return;
+		}
+
+		// if (!allowSpecialNames && !channelNameRegex.test(name)) {
+		// 	return t('error-invalid-name');
+		// }
+
+		const { exists } = await channelNameExists({ roomName: name });
+		if (exists) {
+			return t('Channel_already_exist', name);
+		}
 	};
 
 	const targetChannelField = useUniqueId();
@@ -160,7 +176,7 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 							<Controller
 								name='name'
 								control={control}
-								rules={{ required: t('Field_required') }}
+								rules={{ required: t('Field_required'), validate: (name) => validateDiscussionName(name) }}
 								render={({ field }) => (
 									<TextInput
 										id={discussionField}
