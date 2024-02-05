@@ -1,6 +1,7 @@
 import { Message } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUser, MessageAttachmentDefault } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
@@ -137,6 +138,8 @@ const create = async ({
 		}
 	}
 
+	const name = Random.id();
+
 	// auto invite the replied message owner
 	const invitedUsers = message ? [message.u.username, ...users] : users;
 
@@ -152,7 +155,7 @@ const create = async ({
 
 	const discussion = await createRoom(
 		type,
-		discussionName,
+		name,
 		user,
 		[...new Set(invitedUsers)].filter(Boolean),
 		false,
