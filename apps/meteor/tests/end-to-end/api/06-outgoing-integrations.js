@@ -5,7 +5,7 @@ import { getCredentials, api, request, credentials } from '../../data/api-data.j
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
 import { updatePermission } from '../../data/permissions.helper';
 import { password } from '../../data/user';
-import { createUser, login } from '../../data/users.helper';
+import { createUser, deleteUser, login } from '../../data/users.helper';
 
 describe('[Outgoing Integrations]', function () {
 	this.retries(0);
@@ -16,6 +16,8 @@ describe('[Outgoing Integrations]', function () {
 	let userCredentials;
 
 	before((done) => getCredentials(done));
+
+	after(() => deleteUser(user));
 
 	before((done) => {
 		updatePermission('manage-incoming-integrations', [])
@@ -183,6 +185,7 @@ describe('[Outgoing Integrations]', function () {
 		});
 
 		it('should create an outgoing integration successfully', (done) => {
+			let integrationId;
 			request
 				.post(api('integrations.create'))
 				.set(credentials)
@@ -204,14 +207,14 @@ describe('[Outgoing Integrations]', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					integration._id = res.body.integration._id;
 					expect(res.body).to.have.nested.property('integration.name', 'Guggy');
 					expect(res.body).to.have.nested.property('integration.type', 'webhook-outgoing');
 					expect(res.body).to.have.nested.property('integration.enabled', true);
 					expect(res.body).to.have.nested.property('integration.username', 'rocket.cat');
 					expect(res.body).to.have.nested.property('integration.event', 'sendMessage');
+					integrationId = res.body.integration._id;
 				})
-				.end(done);
+				.end(() => removeIntegration(integrationId, 'outgoing').then(done));
 		});
 	});
 
