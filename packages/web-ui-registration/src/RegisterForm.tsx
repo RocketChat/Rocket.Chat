@@ -192,6 +192,10 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 							<TextInput
 								{...register('username', {
 									required: t('registration.component.form.requiredField'),
+									pattern: {
+									value: /^[0-9a-zA-Z-_.]+$/,
+                                    message: t('registration.component.form.invalidUsername'),
+								    }
 								})}
 								error={errors?.username?.message}
 								aria-required='true'
