@@ -2522,6 +2522,7 @@
   "Running_Instances": "Örneklerini Çalıştırma",
   "Runtime_Environment": "Çalışma Zamanı Ortamı",
   "S_new_messages_since_s": "%s yeni ileti (%s'den beri)",
+  "S_new_messages": "%s yeni ileti",
   "Same_As_Token_Sent_Via": "\"Token Sent Via\" ile aynı",
   "Same_Style_For_Mentions": "Bahisler için aynı tarz",
   "SAML": "SAML",
