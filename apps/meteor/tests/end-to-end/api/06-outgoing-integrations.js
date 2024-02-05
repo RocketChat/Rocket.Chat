@@ -16,24 +16,24 @@ describe('[Outgoing Integrations]', function () {
 	let userCredentials;
 
 	before((done) => getCredentials(done));
-
-	after(() => deleteUser(user));
-
-	before((done) => {
-		updatePermission('manage-incoming-integrations', [])
-			.then(() => updatePermission('manage-own-incoming-integrations', []))
-			.then(() => updatePermission('manage-own-outgoing-integrations', []))
-			.then(() => updatePermission('manage-outgoing-integrations', []))
-			.then(done);
+	before(async () => {
+		await Promise.all([
+			updatePermission('manage-incoming-integrations', []),
+			updatePermission('manage-own-incoming-integrations', []),
+			updatePermission('manage-own-outgoing-integrations', []),
+			updatePermission('manage-outgoing-integrations', []),
+		]);
 	});
 
-	after((done) => {
-		updatePermission('manage-incoming-integrations', ['admin'])
-			.then(() => updatePermission('manage-own-incoming-integrations', ['admin']))
-			.then(() => updatePermission('manage-own-outgoing-integrations', ['admin']))
-			.then(() => updatePermission('manage-outgoing-integrations', ['admin']))
-			.then(done);
-	});
+	after(async () =>
+		Promise.all([
+			updatePermission('manage-incoming-integrations', ['admin']),
+			updatePermission('manage-own-incoming-integrations', ['admin']),
+			updatePermission('manage-own-outgoing-integrations', ['admin']),
+			updatePermission('manage-outgoing-integrations', ['admin']),
+			deleteUser(user),
+		]),
+	);
 
 	describe('[/integrations.create]', () => {
 		it('should return an error when the user DOES NOT have the permission "manage-outgoing-integrations" to add an outgoing integration', (done) => {
