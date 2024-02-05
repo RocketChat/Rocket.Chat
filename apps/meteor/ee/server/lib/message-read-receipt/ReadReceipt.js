@@ -5,7 +5,7 @@ import { Random } from '@rocket.chat/random';
 import { settings } from '../../../../app/settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
-import { broadcastMessageSentEvent } from '../../../../server/modules/watchers/lib/messages';
+import { broadcastMessageFromData } from '../../../../server/modules/watchers/lib/messages';
 
 // debounced function by roomId, so multiple calls within 2 seconds to same roomId runs only once
 const list = {};
@@ -68,9 +68,8 @@ export const ReadReceipt = {
 		if (isUserAlone) {
 			const result = await Messages.setAsReadById(message._id);
 			if (result.modifiedCount > 0) {
-				void broadcastMessageSentEvent({
+				void broadcastMessageFromData({
 					id: message._id,
-					broadcastCallback: (message) => api.broadcast('message.sent', message),
 				});
 			}
 		}

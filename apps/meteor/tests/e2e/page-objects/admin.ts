@@ -16,6 +16,42 @@ export class Admin {
 		return this.page.locator('input[placeholder ="Search rooms"]');
 	}
 
+	getRoomRow(name?: string): Locator {
+		return this.page.locator('[role="link"]', { hasText: name });
+	}
+
+	get btnSave(): Locator {
+		return this.page.locator('button >> text="Save"');
+	}
+
+	get privateLabel(): Locator {
+		return this.page.locator(`label >> text=Private`);
+	}
+
+	get archivedLabel(): Locator {
+		return this.page.locator('label >> text=Archived');
+	}
+
+	get archivedInput(): Locator {
+		return this.page.locator('input[name="archived"]');
+	}
+
+	get favoriteLabel(): Locator {
+		return this.page.locator('label >> text=Favorite');
+	}
+
+	get favoriteInput(): Locator {
+		return this.page.locator('input[name="favorite"]');
+	}
+
+	get defaultLabel(): Locator {
+		return this.page.locator('label >> text=Default');
+	}
+
+	get defaultInput(): Locator {
+		return this.page.locator('input[name="isDefault"]');
+	}
+
 	get inputSearchUsers(): Locator {
 		return this.page.locator('input[placeholder="Search Users"]');
 	}

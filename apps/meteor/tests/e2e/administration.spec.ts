@@ -3,12 +3,14 @@ import { faker } from '@faker-js/faker';
 import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { Admin } from './page-objects';
+import { createTargetChannel } from './utils';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
 
 test.describe.parallel('administration', () => {
 	let poAdmin: Admin;
+	let targetChannel: string;
 
 	test.beforeEach(async ({ page }) => {
 		poAdmin = new Admin(page);
@@ -56,13 +58,56 @@ test.describe.parallel('administration', () => {
 	});
 
 	test.describe('Rooms', () => {
+		test.beforeAll(async ({ api }) => {
+			targetChannel = await createTargetChannel(api);
+		});
 		test.beforeEach(async ({ page }) => {
 			await page.goto('/admin/rooms');
 		});
 
-		test('expect find "general" channel', async ({ page }) => {
+		test('should find "general" channel', async ({ page }) => {
 			await poAdmin.inputSearchRooms.type('general');
 			await page.waitForSelector('[qa-room-id="GENERAL"]');
+		});
+
+		test('should edit target channel', async () => {
+			await poAdmin.inputSearchRooms.type(targetChannel);
+			await poAdmin.getRoomRow(targetChannel).click();
+			await poAdmin.privateLabel.click();
+			await poAdmin.btnSave.click();
+			await expect(poAdmin.getRoomRow(targetChannel)).toContainText('Private Channel');
+		});
+
+		test('should archive target channel', async () => {
+			await poAdmin.inputSearchRooms.type(targetChannel);
+			await poAdmin.getRoomRow(targetChannel).click();
+			await poAdmin.archivedLabel.click();
+			await poAdmin.btnSave.click();
+
+			await poAdmin.getRoomRow(targetChannel).click();
+			await expect(poAdmin.archivedInput).toBeChecked();
+		});
+
+		test.describe.serial('Default rooms', () => {
+			test('expect target channell to be default', async () => {
+				await poAdmin.inputSearchRooms.type(targetChannel);
+				await poAdmin.getRoomRow(targetChannel).click();
+				await poAdmin.defaultLabel.click();
+				await poAdmin.btnSave.click();
+	
+				await poAdmin.getRoomRow(targetChannel).click();
+				await expect(poAdmin.defaultInput).toBeChecked();
+			});
+
+			test('should mark target default channel as "favorite by default"', async () => {
+				await poAdmin.inputSearchRooms.type(targetChannel);
+				await poAdmin.getRoomRow(targetChannel).click();
+				await poAdmin.favoriteLabel.click();
+				await poAdmin.btnSave.click();
+
+				await poAdmin.getRoomRow(targetChannel).click();
+				await expect(poAdmin.favoriteInput).toBeChecked();
+			});
 		});
 	});
 

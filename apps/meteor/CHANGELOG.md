@@ -1,5 +1,63 @@
 # @rocket.chat/meteor
 
+## 6.5.3
+
+### Patch Changes
+
+- b1e72a84d9: Fix user being logged out after using 2FA
+- de2658e874: Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+- 2a04cc850b: fix: multiple indexes creation error during 304 migration
+  - @rocket.chat/core-typings@6.5.3
+  - @rocket.chat/rest-typings@6.5.3
+  - @rocket.chat/api-client@0.1.21
+  - @rocket.chat/license@0.1.3
+  - @rocket.chat/omnichannel-services@0.1.3
+  - @rocket.chat/pdf-worker@0.0.27
+  - @rocket.chat/presence@0.1.3
+  - @rocket.chat/core-services@0.3.3
+  - @rocket.chat/cron@0.0.23
+  - @rocket.chat/gazzodown@3.0.3
+  - @rocket.chat/model-typings@0.2.3
+  - @rocket.chat/ui-contexts@3.0.3
+  - @rocket.chat/server-cloud-communication@0.0.1
+  - @rocket.chat/fuselage-ui-kit@3.0.3
+  - @rocket.chat/models@0.0.27
+  - @rocket.chat/ui-theming@0.1.1
+  - @rocket.chat/ui-client@3.0.3
+  - @rocket.chat/ui-video-conf@3.0.3
+  - @rocket.chat/web-ui-registration@3.0.3
+  - @rocket.chat/instance-status@0.0.27
+
+## 6.5.2
+
+### Patch Changes
+
+- a075950e23: Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+- 84c4b0709e: Fixed conversations in queue being limited to 50 items
+- 886d92009e: Fix wrong value used for Workspace Registration
+  - @rocket.chat/core-typings@6.5.2
+  - @rocket.chat/rest-typings@6.5.2
+  - @rocket.chat/api-client@0.1.20
+  - @rocket.chat/license@0.1.2
+  - @rocket.chat/omnichannel-services@0.1.2
+  - @rocket.chat/pdf-worker@0.0.26
+  - @rocket.chat/presence@0.1.2
+  - @rocket.chat/core-services@0.3.2
+  - @rocket.chat/cron@0.0.22
+  - @rocket.chat/gazzodown@3.0.2
+  - @rocket.chat/model-typings@0.2.2
+  - @rocket.chat/ui-contexts@3.0.2
+  - @rocket.chat/server-cloud-communication@0.0.1
+  - @rocket.chat/fuselage-ui-kit@3.0.2
+  - @rocket.chat/models@0.0.26
+  - @rocket.chat/ui-theming@0.1.1
+  - @rocket.chat/ui-client@3.0.2
+  - @rocket.chat/ui-video-conf@3.0.2
+  - @rocket.chat/web-ui-registration@3.0.2
+  - @rocket.chat/instance-status@0.0.26
+
 ## 6.5.1
 
 ### Patch Changes

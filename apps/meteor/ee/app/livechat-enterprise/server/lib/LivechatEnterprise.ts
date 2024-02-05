@@ -272,8 +272,15 @@ export const LivechatEnterprise = {
 			);
 		}
 
-		if (fallbackForwardDepartment && !(await LivechatDepartmentRaw.findOneById(fallbackForwardDepartment))) {
-			throw new Meteor.Error('error-fallback-department-not-found', 'Fallback department not found', { method: 'livechat:saveDepartment' });
+		if (fallbackForwardDepartment) {
+			const fallbackDep = await LivechatDepartmentRaw.findOneById(fallbackForwardDepartment, {
+				projection: { _id: 1, fallbackForwardDepartment: 1 },
+			});
+			if (!fallbackDep) {
+				throw new Meteor.Error('error-fallback-department-not-found', 'Fallback department not found', {
+					method: 'livechat:saveDepartment',
+				});
+			}
 		}
 
 		const departmentDB = await LivechatDepartmentRaw.createOrUpdateDepartment(_id, departmentData);
@@ -283,7 +290,7 @@ export const LivechatEnterprise = {
 
 		// Disable event
 		if (department?.enabled && !departmentDB?.enabled) {
-			void callbacks.run('livechat.afterDepartmentDisabled', departmentDB);
+			await callbacks.run('livechat.afterDepartmentDisabled', departmentDB);
 		}
 
 		return departmentDB;

@@ -101,7 +101,7 @@ const ContactHistoryMessage: FC<{
 						</MessageHeaderTemplate>
 					)}
 					{!message.blocks && message.md && (
-						<MessageBody data-qa-type='message-body'>
+						<MessageBody data-qa-type='message-body' dir='auto'>
 							<MessageContentBody md={message.md} mentions={message.mentions} channels={message.channels} />
 						</MessageBody>
 					)}
