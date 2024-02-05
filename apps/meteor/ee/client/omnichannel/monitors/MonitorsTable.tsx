@@ -159,7 +159,7 @@ const MonitorsTable = () => {
 					icon='shield-blank'
 					title={t('No_monitors_yet')}
 					description={t('No_monitors_yet_description')}
-					linkHref='https://go.rocket.chat/omnichannel-docs'
+					linkHref='https://go.rocket.chat/i/omnichannel-docs'
 					linkText={t('Learn_more_about_monitors')}
 				/>
 			)}
