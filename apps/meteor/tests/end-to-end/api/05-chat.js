@@ -1129,6 +1129,29 @@ describe('[Chat]', function () {
 				})
 				.end(done);
 		});
+
+		it('should erase old quote attachments when updating a message', async () => {
+			const siteUrl = process.env.SITE_URL || process.env.TEST_API_URL || 'http://localhost:3000';
+
+			const quotedMsgLink = `${siteUrl}/channel/${message.rid}?msg=${message._id}`;
+			const originalMessage = (await sendSimpleMessage({ roomId: 'GENERAL', text: `Testing quotes ${quotedMsgLink}` })).body.message;
+			expect(originalMessage).to.have.property('attachments').that.is.an('array').that.has.lengthOf(1);
+			await request
+				.post(api('chat.update'))
+				.set(credentials)
+				.send({
+					roomId: 'GENERAL',
+					msgId: originalMessage._id,
+					text: 'This message was edited via API',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('message.msg', 'This message was edited via API');
+					expect(res.body.message).to.have.property('attachments').that.is.an('array').that.has.lengthOf(0);
+				});
+		});
 	});
 
 	describe('[/chat.delete]', () => {

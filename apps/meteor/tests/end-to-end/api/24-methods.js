@@ -1955,6 +1955,7 @@ describe('Meteor.methods', function () {
 
 	describe('[@updateMessage]', () => {
 		let rid = false;
+		let roomName = false;
 		let messageId;
 		let messageWithMarkdownId;
 		let channelName = false;
@@ -1976,6 +1977,7 @@ describe('Meteor.methods', function () {
 					expect(res.body).to.have.nested.property('group.t', 'p');
 					expect(res.body).to.have.nested.property('group.msgs', 0);
 					rid = res.body.group._id;
+					roomName = res.body.group.fname;
 				})
 				.end(done);
 		});
@@ -2063,6 +2065,57 @@ describe('Meteor.methods', function () {
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 					const data = JSON.parse(res.body.message);
 					expect(data).to.have.a.property('msg').that.is.an('string');
+				})
+				.end(done);
+		});
+
+		it('should add a quote attachment to a message', async () => {
+			const siteUrl = process.env.SITE_URL || process.env.TEST_API_URL || 'http://localhost:3000';
+
+			const quotedMsgLink = `${siteUrl}/group/${roomName}?msg=${messageWithMarkdownId}`;
+			await request
+				.post(methodCall('updateMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'updateMessage',
+						params: [{ _id: messageId, rid, msg: `${quotedMsgLink} updated` }],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.property('msg').that.is.a('string');
+					expect(data).to.have.property('attachments').that.is.an('array').that.has.lengthOf(1);
+					expect(data.attachments[0]).to.have.property('message_link').that.is.a('string');
+				});
+		});
+
+		it('should remove a quote attachment from a message', (done) => {
+			request
+				.post(methodCall('updateMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'updateMessage',
+						params: [{ _id: messageId, rid, msg: 'updated' }],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.property('msg').that.is.a('string');
+					expect(data).to.have.property('attachments').that.is.an('array').that.has.lengthOf(0);
 				})
 				.end(done);
 		});
