@@ -2460,6 +2460,7 @@
   "Running_Instances": "Instâncias em execução",
   "Runtime_Environment": "Ambiente de execução",
   "S_new_messages_since_s": "%s novas mensagens desde %s",
+  "S_new_messages": "%s novas mensagens",
   "Same_As_Token_Sent_Via": "O mesmo que \"Token Sent Via\"",
   "Same_Style_For_Mentions": "O mesmo estilo para menções",
   "SAML": "SAML",
