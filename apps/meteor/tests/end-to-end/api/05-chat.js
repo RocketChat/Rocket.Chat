@@ -1133,7 +1133,7 @@ describe('[Chat]', function () {
 		it('should erase old quote attachments when updating a message', async () => {
 			const siteUrl = process.env.SITE_URL || process.env.TEST_API_URL || 'http://localhost:3000';
 
-			const quotedMsgLink = `${siteUrl}/channel/${message.rid}?msg=${message._id}`;
+			const quotedMsgLink = `${siteUrl}/channel/general?msg=${message._id}`;
 			const originalMessage = (await sendSimpleMessage({ roomId: 'GENERAL', text: `Testing quotes ${quotedMsgLink}` })).body.message;
 			expect(originalMessage).to.have.property('attachments').that.is.an('array').that.has.lengthOf(1);
 			await request
