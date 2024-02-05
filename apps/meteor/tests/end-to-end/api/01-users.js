@@ -2970,7 +2970,6 @@ describe('[Users]', function () {
 				expect(originalCreator.roles).to.eql(['owner']);
 				expect(originalCreator.u).to.have.property('_id', credentials['X-User-Id']);
 			});
-			});
 		});
 	});
 
