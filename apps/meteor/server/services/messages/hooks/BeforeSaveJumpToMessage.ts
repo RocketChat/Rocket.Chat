@@ -71,6 +71,10 @@ export class BeforeSaveJumpToMessage {
 			useRealName: boolean;
 		};
 	}): Promise<IMessage> {
+		if (message) {
+			// Do not keep old quote attachments since they may not still be linked to the message
+			message.attachments = message.attachments?.filter((attachment) => !isQuoteAttachment(attachment));
+		}
 		// if no message is present, or the message doesn't have any URL, skip
 		if (!message?.urls?.length) {
 			return message;
@@ -143,18 +147,12 @@ export class BeforeSaveJumpToMessage {
 
 			item.ignoreParse = true;
 
-			// Only QuoteAttachments have "message_link" property
-			const index = message.attachments?.findIndex((a) => isQuoteAttachment(a) && a.message_link === item.url);
-			if (index !== undefined && index > -1) {
-				message.attachments?.splice(index, 1);
-			}
-
 			quotes.push(createQuoteAttachment(messageFromUrl, item.url, useRealName, this.getUserAvatarURL(messageFromUrl.u.username)));
 		}
 
 		if (quotes.length > 0) {
-			message.attachments = message.attachments || [];
-			message.attachments.push(...quotes);
+			const currentAttachments = message.attachments || [];
+			message.attachments = [...currentAttachments, ...quotes];
 		}
 
 		return message;
