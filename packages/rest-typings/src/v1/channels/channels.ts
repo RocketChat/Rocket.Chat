@@ -32,6 +32,7 @@ import type { ChannelsSetReadOnlyProps } from './ChannelsSetReadOnlyProps';
 import type { ChannelsSetTopicProps } from './ChannelsSetTopicProps';
 import type { ChannelsSetTypeProps } from './ChannelsSetTypeProps';
 import type { ChannelsUnarchiveProps } from './ChannelsUnarchiveProps';
+import type { ChannelsCloseProps } from './ChannelsCloseProps';
 
 export type ChannelsEndpoints = {
 	'/v1/channels.files': {
@@ -94,7 +95,7 @@ export type ChannelsEndpoints = {
 		};
 	};
 	'/v1/channels.close': {
-		POST: (params: { roomId: string } | { roomName: string }) => void;
+		POST: (params: ChannelsCloseProps) => void;
 	};
 	'/v1/channels.kick': {
 		POST: (params: ChannelsKickProps) => {

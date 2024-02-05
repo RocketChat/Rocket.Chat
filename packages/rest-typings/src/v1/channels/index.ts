@@ -2,6 +2,7 @@ export * from './channels';
 
 export * from './ChannelsAddAllProps';
 export * from './ChannelsArchiveProps';
+export * from './ChannelsCloseProps';
 export * from './ChannelsConvertToTeamProps';
 export * from './ChannelsCreateProps';
 export * from './ChannelsDeleteProps';

@@ -4,6 +4,7 @@ import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@r
 import {
 	isChannelsAddAllProps,
 	isChannelsArchiveProps,
+	isChannelsCloseProps,
 	isChannelsHistoryProps,
 	isChannelsUnarchiveProps,
 	isChannelsRolesProps,
@@ -562,7 +563,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'channels.close',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChannelsCloseProps },
 	{
 		async post() {
 			let roomId = 'roomId' in this.bodyParams ? this.bodyParams.roomId : undefined;
