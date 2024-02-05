@@ -105,7 +105,7 @@ class Triggers {
 		const [condition] = trigger.conditions;
 		const [action] = trigger.actions;
 
-		return this.when(id, condition).then((params) => this.fire(id, action, params));
+		return this.when(id, condition).then(() => this.fire(id, action, condition));
 	}
 
 	scheduleAll(triggers) {

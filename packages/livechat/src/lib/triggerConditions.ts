@@ -14,14 +14,14 @@ export const pageUrlCondition = (condition: ILivechatTriggerCondition) => {
 	const hrefRegExp = new RegExp(`${condition?.value}`, 'g');
 
 	if (hrefRegExp.test(parentUrl)) {
-		return Promise.resolve({ condition: 'page-url' });
+		return Promise.resolve();
 	}
 };
 
 export const timeOnSiteCondition = (condition: ILivechatTriggerCondition) => {
-	return new Promise((resolve, reject) => {
+	return new Promise<void>((resolve, reject) => {
 		const timeout = parseInt(`${condition?.value || 0}`, 10) * 1000;
-		const timeoutId = setTimeout(() => resolve({ condition: 'time-on-site' }), timeout);
+		const timeoutId = setTimeout(() => resolve(), timeout);
 
 		const watchStateChange = (event: [LivechatStoreState] | undefined) => {
 			const [{ minimized = true }] = event || [{}];
@@ -37,10 +37,10 @@ export const timeOnSiteCondition = (condition: ILivechatTriggerCondition) => {
 };
 
 export const chatOpenedCondition = () => {
-	return new Promise((resolve) => {
+	return new Promise<void>((resolve) => {
 		const openFunc = async () => {
 			Triggers.callbacks?.off('chat-opened-by-visitor', openFunc);
-			resolve({ condition: 'chat-opened-by-visitor' });
+			resolve();
 		};
 
 		Triggers.callbacks?.on('chat-opened-by-visitor', openFunc);
@@ -48,10 +48,10 @@ export const chatOpenedCondition = () => {
 };
 
 export const visitorRegisteredCondition = () => {
-	return new Promise((resolve) => {
+	return new Promise<void>((resolve) => {
 		const openFunc = async () => {
 			Triggers.callbacks?.off('chat-visitor-registered', openFunc);
-			resolve({ condition: 'after-guest-registration' });
+			resolve();
 		};
 
 		Triggers.callbacks?.on('chat-visitor-registered', openFunc);
