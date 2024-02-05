@@ -2335,7 +2335,7 @@ describe('Threads', () => {
 
 		before(async () => {
 			testChannel = (await createRoom({ type: 'c', name: `channel.test.threads.${Date.now()}` })).body.channel;
-			const message = (
+			const { message } = (
 				await request
 					.post(api('chat.sendMessage'))
 					.set(credentials)
@@ -2347,7 +2347,7 @@ describe('Threads', () => {
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
-			).body.message;
+			).body;
 
 			threadMessage = (
 				await request
