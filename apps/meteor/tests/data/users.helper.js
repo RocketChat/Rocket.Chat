@@ -35,10 +35,13 @@ export const login = (username, password) =>
 	});
 
 export const deleteUser = async (user, extraData = {}) =>
-	request.post(api('users.delete')).set(credentials).send({
-		userId: user._id,
-		...extraData,
-	});
+	request
+		.post(api('users.delete'))
+		.set(credentials)
+		.send({
+			userId: user._id,
+			...extraData,
+		});
 
 export const getUserByUsername = (username) =>
 	new Promise((resolve) => {
@@ -92,17 +95,13 @@ export const setUserStatus = (overrideCredentials = credentials, status = UserSt
 		status,
 	});
 
-export const registerUser = (userData = {}, overrideCredentials = credentials) => new Promise((resolve) => {
+export const registerUser = async (userData = {}, overrideCredentials = credentials) => {
 	const username = userData.username || `user.test.${Date.now()}`;
 	const email = userData.email || `${username}@rocket.chat`;
-	request
+	const result = await request
 		.post(api('users.register'))
 		.set(overrideCredentials)
-		.send({ email, name: username, username, pass: password, ...userData })
-		.end((err, res) => {
-			if (err) {
-				return reject(err);
-			}
-			resolve(res.body.user);
-		});
-});
+		.send({ email, name: username, username, pass: password, ...userData });
+
+	return result.body.user;
+};

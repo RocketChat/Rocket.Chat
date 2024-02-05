@@ -1960,9 +1960,7 @@ describe('[Users]', function () {
 
 	// TODO check for all response fields
 	describe('[/users.setPreferences]', () => {
-		after(async () => {
-			updatePermission('edit-other-user-info', ['admin']);
-		});
+		after(() => updatePermission('edit-other-user-info', ['admin']));
 
 		it('should return an error when the user try to update info of another user and does not have the necessary permission', (done) => {
 			const userPreferences = {
@@ -2158,10 +2156,26 @@ describe('[Users]', function () {
 	});
 
 	describe('[/users.getUsernameSuggestion]', () => {
+		const testUsername = `test${+new Date()}`;
+		let targetUser;
+		let userCredentials;
+
+		before(async () => {
+			targetUser = await registerUser({
+				email: `${testUsername}.@test.com`,
+				username: `${testUsername}test`,
+				name: testUsername,
+				pass: password,
+			});
+			userCredentials = await login(targetUser.username, password);
+		});
+
+		after(() => deleteUser(targetUser));
+
 		it('should return an username suggestion', (done) => {
 			request
 				.get(api('users.getUsernameSuggestion'))
-				.set(credentials)
+				.set(userCredentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
@@ -2955,6 +2969,7 @@ describe('[Users]', function () {
 				expect(originalCreator).to.not.be.undefined;
 				expect(originalCreator.roles).to.eql(['owner']);
 				expect(originalCreator.u).to.have.property('_id', credentials['X-User-Id']);
+			});
 			});
 		});
 	});
