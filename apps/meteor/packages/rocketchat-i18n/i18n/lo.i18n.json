@@ -2158,6 +2158,7 @@
   "Running_Instances": "ແລ່ນກໍລະນີ",
   "Runtime_Environment": "Runtime Environment",
   "S_new_messages_since_s": "%s ຂໍ້ຄວາມໃຫມ່ນັບຕັ້ງແ​​ຕ່ %s",
+  "S_new_messages": "%s ຂໍ້ຄວາມໃຫມ່",
   "Same_As_Token_Sent_Via": "ຄືກັນກັບ \"Token Sent ຜ່ານ\"",
   "Same_Style_For_Mentions": "ແບບດຽວກັນສໍາລັບຄໍາແນະນໍາ",
   "SAML": "SAML",
