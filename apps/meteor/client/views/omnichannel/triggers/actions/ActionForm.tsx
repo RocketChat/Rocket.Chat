@@ -1,4 +1,15 @@
-import { Box, Field, FieldGroup, FieldHint, FieldLabel, FieldRow, Option, SelectLegacy, Tag } from '@rocket.chat/fuselage';
+import {
+	Box,
+	Field,
+	FieldGroup,
+	FieldHint,
+	FieldLabel,
+	FieldRow,
+	Option,
+	SelectLegacy,
+	Tag,
+	type SelectOption,
+} from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
@@ -32,7 +43,7 @@ export const ActionForm = ({ control, trigger, index, ...props }: SendMessageFor
 
 	const hasLicense = useHasLicenseModule('livechat-enterprise');
 
-	const actionOptions: any[] = useMemo(() => {
+	const actionOptions = useMemo<SelectOption[]>(() => {
 		return [
 			['send-message', t('Send_a_message')],
 			['use-external-service', t('Send_a_message_external_service')],
