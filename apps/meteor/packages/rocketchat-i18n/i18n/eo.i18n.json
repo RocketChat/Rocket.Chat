@@ -2758,5 +2758,6 @@
   "registration.component.form.invalidConfirmPass": "La konfirmilo de pasvorto ne kongruas kun pasvorto",
   "registration.component.form.confirmPassword": "Konfirmu vian pasvorton",
   "registration.component.form.sendConfirmationEmail": "Sendu konfirman retpoŝton",
+  "Enterprise": "Entrepreno",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analitiko"
 }

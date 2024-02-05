@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/presence-service",
 	"private": true,
-	"version": "0.3.0-rc.7",
+	"version": "0.3.4-rc.4",
 	"description": "Rocket.Chat Presence service",
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
@@ -17,11 +17,11 @@
 	"dependencies": {
 		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
-		"@rocket.chat/emitter": "next",
+		"@rocket.chat/emitter": "~0.31.25",
 		"@rocket.chat/model-typings": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/presence": "workspace:^",
-		"@rocket.chat/string-helpers": "next",
+		"@rocket.chat/string-helpers": "~0.31.25",
 		"@types/node": "^14.18.63",
 		"ejson": "^2.2.3",
 		"event-loop-stats": "^1.4.1",
@@ -30,7 +30,7 @@
 		"gc-stats": "^1.4.0",
 		"mem": "^8.1.1",
 		"moleculer": "^0.14.31",
-		"mongodb": "^4.17.1",
+		"mongodb": "^4.17.2",
 		"nats": "^2.4.0",
 		"pino": "^8.15.0",
 		"polka": "^0.5.2"
@@ -41,7 +41,7 @@
 		"@types/polka": "^0.5.6",
 		"eslint": "~8.45.0",
 		"ts-node": "^10.9.1",
-		"typescript": "~5.2.2"
+		"typescript": "~5.3.2"
 	},
 	"main": "./dist/ee/apps/presence-service/src/service.js",
 	"files": [

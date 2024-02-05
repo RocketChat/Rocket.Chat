@@ -5,7 +5,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useMemo, useState } from 'react';
 
-import Page from '../../../../client/components/Page';
+import { Page, PageHeader, PageContent } from '../../../../client/components/Page';
 import { useOmnichannelPriorities } from '../hooks/useOmnichannelPriorities';
 import { PrioritiesResetModal } from './PrioritiesResetModal';
 import { PrioritiesTable } from './PrioritiesTable';
@@ -75,16 +75,16 @@ export const PrioritiesPage = ({ priorityId, context }: PrioritiesPageProps): Re
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('Priorities')}>
+				<PageHeader title={t('Priorities')}>
 					<ButtonGroup>
 						<Button onClick={handleReset} title={t('Reset')} disabled={!isPrioritiesDirty} loading={isResetting}>
 							{t('Reset')}
 						</Button>
 					</ButtonGroup>
-				</Page.Header>
-				<Page.Content>
+				</PageHeader>
+				<PageContent>
 					<PrioritiesTable priorities={priorities} isLoading={isLoading} onRowClick={onRowClick} />
-				</Page.Content>
+				</PageContent>
 			</Page>
 
 			{context === 'edit' && (

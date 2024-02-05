@@ -1,5 +1,140 @@
 # @rocket.chat/livechat Change Log
 
+## 1.14.13-rc.4
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@4.0.0-rc.4
+
+## 1.14.13-rc.3
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@4.0.0-rc.3
+
+## 1.14.13-rc.2
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@4.0.0-rc.2
+
+## 1.14.13-rc.1
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@4.0.0-rc.1
+
+## 1.14.13-rc.0
+
+### Patch Changes
+
+- b223cbde14: feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+- dbb08ef948: feat: Implemented InlineCode handling in Bold, Italic and Strike
+- bc28633c69: Fixed an issue with translations that caused text containing special characters to be shown escaped on UI
+- 5d73947a4f: Fixed a problem that caused Livechat Widget registration page to ignore the `showOnRegistration` flag for departments, showing all items.
+- Updated dependencies [b223cbde14]
+- Updated dependencies [dbb08ef948]
+  - @rocket.chat/ui-kit@0.33.0-rc.0
+  - @rocket.chat/gazzodown@4.0.0-rc.0
+  - @rocket.chat/random@1.2.2-rc.0
+
+## 1.14.12
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.3
+
+## 1.14.11
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.2
+
+## 1.14.10
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.1
+
+## 1.14.9
+
+### Patch Changes
+
+- Updated dependencies [c2f337664e]
+  - @rocket.chat/gazzodown@3.0.0
+
+## 1.14.9-rc.12
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.19
+
+## 1.14.9-rc.11
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.18
+
+## 1.14.9-rc.10
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.17
+
+## 1.14.9-rc.9
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.16
+
+## 1.14.9-rc.8
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.15
+
+## 1.14.9-rc.7
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.14
+
+## 1.14.9-rc.6
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.13
+
+## 1.14.9-rc.5
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.12
+
+## 1.14.9-rc.4
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.11
+
+## 1.14.9-rc.3
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.10
+
+## 1.14.9-rc.2
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.9
+
+## 1.14.9-rc.1
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.8
+
 ## 1.14.6-rc.7
 
 ### Patch Changes

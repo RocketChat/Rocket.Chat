@@ -31,13 +31,13 @@ test.describe.serial('e2e-encryption initial setup', () => {
 	test.beforeAll(async ({ api }) => {
 		const statusCode = (await api.post('/settings/E2E_Enable', { value: true })).status();
 
-		await expect(statusCode).toBe(200);
+		expect(statusCode).toBe(200);
 	});
 
 	test.afterAll(async ({ api }) => {
 		const statusCode = (await api.post('/settings/E2E_Enable', { value: false })).status();
 
-		await expect(statusCode).toBe(200);
+		expect(statusCode).toBe(200);
 	});
 
 	test.afterEach(async ({ api }) => {
@@ -131,7 +131,7 @@ test.describe.serial('e2e-encryption', () => {
 	test.beforeEach(async ({ page, api }) => {
 		const statusCode = (await api.post('/settings/E2E_Enable', { value: true })).status();
 
-		await expect(statusCode).toBe(200);
+		expect(statusCode).toBe(200);
 
 		poHomeChannel = new HomeChannel(page);
 

@@ -503,6 +503,7 @@ class RocketChatIntegrationHandler {
 			{
 				method: opts.method,
 				headers: opts.headers,
+				...(opts.timeout && { timeout: opts.timeout }),
 				...(opts.data && { body: opts.data }),
 			},
 			settings.get('Allow_Invalid_SelfSigned_Certs'),

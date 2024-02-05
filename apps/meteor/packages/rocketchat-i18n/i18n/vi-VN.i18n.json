@@ -1810,8 +1810,7 @@
   "meteor_status_connecting": "Đang kết nối...",
   "meteor_status_failed": "Kết nối tới máy chủ thất bại",
   "meteor_status_offline": "Chế độ ngoại tuyến.",
-  "meteor_status_reconnect_in": "Thử kết nối lại trong một giây...",
-  "meteor_status_reconnect_in_plural": "Thử kết nối lại trong {{count}} giây...",
+  "meteor_status_reconnect_in_other": "Thử kết nối lại trong {{count}} giây...",
   "meteor_status_try_now_offline": "Kết nối lại lần nữa",
   "meteor_status_try_now_waiting": "Thử ngay bây giờ",
   "meteor_status_waiting": "Đang đợi kết nối tới máy chủ,",
@@ -2851,5 +2850,6 @@
   "registration.component.form.invalidConfirmPass": "Xác nhận mật khẩu không khớp với mật khẩu",
   "registration.component.form.confirmPassword": "Xác nhận mật khẩu của bạn",
   "registration.component.form.sendConfirmationEmail": "Gửi email xác nhận",
+  "Enterprise": "Doanh nghiệp",
   "UpgradeToGetMore_engagement-dashboard_Title": "phân tích"
 }

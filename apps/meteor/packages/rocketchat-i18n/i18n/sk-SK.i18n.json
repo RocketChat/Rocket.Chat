@@ -2762,5 +2762,6 @@
   "registration.component.form.invalidConfirmPass": "Potvrdenie hesla sa nezhoduje s heslom",
   "registration.component.form.confirmPassword": "Potvrďte svoje heslo",
   "registration.component.form.sendConfirmationEmail": "Pošlite potvrdzovací e-mail",
+  "Enterprise": "podnik",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analytika"
 }

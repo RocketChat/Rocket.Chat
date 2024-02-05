@@ -11,6 +11,10 @@ const MarkdownTextElement = ({ textObject }: { textObject: TextObject }) => {
     ? t(textObject.i18n.key, { ...textObject.i18n.args })
     : textObject.text;
 
+  if (!text) {
+    return null;
+  }
+
   return <Markup tokens={parse(text, { emoticons: false })} />;
 };
 

@@ -1,5 +1,182 @@
 # Change Log
 
+## 4.0.0-rc.4
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@4.0.0-rc.4
+- @rocket.chat/ui-contexts@4.0.0-rc.4
+- @rocket.chat/ui-video-conf@4.0.0-rc.4
+
+## 4.0.0-rc.3
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@4.0.0-rc.3
+- @rocket.chat/ui-contexts@4.0.0-rc.3
+- @rocket.chat/ui-video-conf@4.0.0-rc.3
+
+## 4.0.0-rc.2
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@4.0.0-rc.2
+- @rocket.chat/ui-contexts@4.0.0-rc.2
+- @rocket.chat/ui-video-conf@4.0.0-rc.2
+
+## 4.0.0-rc.1
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@4.0.0-rc.1
+- @rocket.chat/ui-contexts@4.0.0-rc.1
+- @rocket.chat/ui-video-conf@4.0.0-rc.1
+
+## 4.0.0-rc.0
+
+### Patch Changes
+
+- b223cbde14: feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+- Updated dependencies [642745f289]
+- Updated dependencies [b223cbde14]
+- Updated dependencies [b2b0035162]
+- Updated dependencies [dbb08ef948]
+  - @rocket.chat/eslint-config@0.6.1-rc.0
+  - @rocket.chat/ui-kit@0.33.0-rc.0
+  - @rocket.chat/ui-video-conf@4.0.0-rc.0
+  - @rocket.chat/ui-contexts@4.0.0-rc.0
+  - @rocket.chat/gazzodown@4.0.0-rc.0
+
+## 3.0.3
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.3
+- @rocket.chat/ui-contexts@3.0.3
+- @rocket.chat/ui-video-conf@3.0.3
+
+## 3.0.2
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.2
+- @rocket.chat/ui-contexts@3.0.2
+- @rocket.chat/ui-video-conf@3.0.2
+
+## 3.0.1
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.1
+- @rocket.chat/gazzodown@3.0.1
+- @rocket.chat/ui-video-conf@3.0.1
+
+## 3.0.0
+
+### Patch Changes
+
+- Updated dependencies [7da1edf866]
+- Updated dependencies [c2f337664e]
+  - @rocket.chat/ui-contexts@3.0.0
+  - @rocket.chat/gazzodown@3.0.0
+  - @rocket.chat/ui-video-conf@3.0.0
+
+## 3.0.0-rc.19
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.19
+- @rocket.chat/ui-contexts@3.0.0-rc.19
+- @rocket.chat/ui-video-conf@3.0.0-rc.19
+
+## 3.0.0-rc.18
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.18
+- @rocket.chat/ui-contexts@3.0.0-rc.18
+- @rocket.chat/ui-video-conf@3.0.0-rc.18
+
+## 3.0.0-rc.17
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.17
+- @rocket.chat/ui-contexts@3.0.0-rc.17
+- @rocket.chat/ui-video-conf@3.0.0-rc.17
+
+## 3.0.0-rc.16
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.16
+- @rocket.chat/ui-contexts@3.0.0-rc.16
+- @rocket.chat/ui-video-conf@3.0.0-rc.16
+
+## 3.0.0-rc.15
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.15
+- @rocket.chat/ui-contexts@3.0.0-rc.15
+- @rocket.chat/ui-video-conf@3.0.0-rc.15
+
+## 3.0.0-rc.14
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.14
+- @rocket.chat/ui-contexts@3.0.0-rc.14
+- @rocket.chat/ui-video-conf@3.0.0-rc.14
+
+## 3.0.0-rc.13
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.13
+- @rocket.chat/ui-contexts@3.0.0-rc.13
+- @rocket.chat/ui-video-conf@3.0.0-rc.13
+
+## 3.0.0-rc.12
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.12
+- @rocket.chat/ui-contexts@3.0.0-rc.12
+- @rocket.chat/ui-video-conf@3.0.0-rc.12
+
+## 3.0.0-rc.11
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.11
+- @rocket.chat/ui-contexts@3.0.0-rc.11
+- @rocket.chat/ui-video-conf@3.0.0-rc.11
+
+## 3.0.0-rc.10
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.10
+- @rocket.chat/ui-contexts@3.0.0-rc.10
+- @rocket.chat/ui-video-conf@3.0.0-rc.10
+
+## 3.0.0-rc.9
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.9
+- @rocket.chat/ui-contexts@3.0.0-rc.9
+- @rocket.chat/ui-video-conf@3.0.0-rc.9
+
+## 3.0.0-rc.8
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.8
+- @rocket.chat/ui-contexts@3.0.0-rc.8
+- @rocket.chat/ui-video-conf@3.0.0-rc.8
+
 ## 3.0.0-rc.7
 
 ### Patch Changes

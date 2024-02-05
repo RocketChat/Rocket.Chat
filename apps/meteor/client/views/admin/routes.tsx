@@ -68,10 +68,6 @@ declare module '@rocket.chat/ui-contexts' {
 			pathname: '/admin/invites';
 			pattern: '/admin/invites';
 		};
-		'cloud': {
-			pathname: `/admin/registration${`/${string}` | ''}`;
-			pattern: '/admin/registration/:page?';
-		};
 		'admin-view-logs': {
 			pathname: '/admin/reports';
 			pattern: '/admin/reports';
@@ -101,8 +97,8 @@ declare module '@rocket.chat/ui-contexts' {
 			pattern: '/admin/engagement/:tab?';
 		};
 		'moderation-console': {
-			pathname: `/admin/moderation${`/${string}` | ''}${`/${string}` | ''}`;
-			pattern: '/admin/moderation/:context?/:id?';
+			pathname: `/admin/moderation${`/${string}` | ''}${`/${string}` | ''}${`/${string}` | ''}`;
+			pattern: '/admin/moderation/:tab?/:context?/:id?';
 		};
 		'subscription': {
 			pathname: `/admin/subscription`;
@@ -197,11 +193,6 @@ registerAdminRoute('/invites', {
 	component: lazy(() => import('./invites/InvitesRoute')),
 });
 
-registerAdminRoute('/registration/:page?', {
-	name: 'cloud',
-	component: lazy(() => import('./cloud/CloudRoute')),
-});
-
 registerAdminRoute('/reports', {
 	name: 'admin-view-logs',
 	component: lazy(() => import('./viewLogs/ViewLogsRoute')),
@@ -227,7 +218,7 @@ registerAdminRoute('/settings/:group?', {
 	component: lazy(() => import('./settings/SettingsRoute')),
 });
 
-registerAdminRoute('/moderation/:context?/:id?', {
+registerAdminRoute('/moderation/:tab?/:context?/:id?', {
 	name: 'moderation-console',
 	component: lazy(() => import('./moderation/ModerationConsoleRoute')),
 });

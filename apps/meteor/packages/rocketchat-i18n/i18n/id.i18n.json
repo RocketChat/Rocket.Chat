@@ -1718,8 +1718,7 @@
   "meteor_status_connecting": "Menghubungkan...",
   "meteor_status_failed": "Koneksi server gagal",
   "meteor_status_offline": "Mode luar jaringan.",
-  "meteor_status_reconnect_in": "mencoba lagi dalam waktu satu detik...",
-  "meteor_status_reconnect_in_plural": "mencoba lagi dalam waktu {{count}} detik...",
+  "meteor_status_reconnect_in_other": "mencoba lagi dalam waktu {{count}} detik...",
   "meteor_status_try_now_offline": "Hubungkan lagi",
   "meteor_status_try_now_waiting": "Coba sekarang",
   "meteor_status_waiting": "Menunggu koneksi server,",
@@ -2767,5 +2766,6 @@
   "registration.component.form.invalidConfirmPass": "Kata sandi konfirmasi tidak cocok dengan kata sandi utama",
   "registration.component.form.confirmPassword": "Konfirmasikan kata sandi anda",
   "registration.component.form.sendConfirmationEmail": "Kirim email konfirmasi",
+  "Enterprise": "Perusahaan",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analytics"
 }

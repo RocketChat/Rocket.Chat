@@ -1,5 +1,202 @@
 # @rocket.chat/core-services
 
+## 0.3.4-rc.4
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.4
+- @rocket.chat/rest-typings@6.6.0-rc.4
+- @rocket.chat/models@0.0.28-rc.4
+
+## 0.3.4-rc.3
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.3
+- @rocket.chat/rest-typings@6.6.0-rc.3
+- @rocket.chat/models@0.0.28-rc.3
+
+## 0.3.4-rc.2
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.2
+- @rocket.chat/rest-typings@6.6.0-rc.2
+- @rocket.chat/models@0.0.28-rc.2
+
+## 0.3.4-rc.1
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.1
+- @rocket.chat/rest-typings@6.6.0-rc.1
+- @rocket.chat/models@0.0.28-rc.1
+
+## 0.3.4-rc.0
+
+### Patch Changes
+
+- b223cbde14: feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+- dbb08ef948: feat: Implemented InlineCode handling in Bold, Italic and Strike
+- 9a6e9b4e28: Fixed an issue that caused login buttons to not be reactively removed from the login page when the related authentication service was disabled by an admin.
+- Updated dependencies [b223cbde14]
+- Updated dependencies [dbb08ef948]
+- Updated dependencies [748e57984d]
+- Updated dependencies [7c6198f49f]
+- Updated dependencies [fdd9852079]
+- Updated dependencies [2260c04ec6]
+- Updated dependencies [b4b2cd20a8]
+  - @rocket.chat/ui-kit@0.33.0-rc.0
+  - @rocket.chat/core-typings@6.6.0-rc.0
+  - @rocket.chat/rest-typings@6.6.0-rc.0
+  - @rocket.chat/models@0.0.28-rc.0
+
+## 0.3.3
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.3
+- @rocket.chat/rest-typings@6.5.3
+- @rocket.chat/models@0.0.27
+
+## 0.3.2
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.2
+- @rocket.chat/rest-typings@6.5.2
+- @rocket.chat/models@0.0.26
+
+## 0.3.1
+
+### Patch Changes
+
+- Updated dependencies [c2b224fd82]
+- Updated dependencies [c2b224fd82]
+  - @rocket.chat/rest-typings@6.5.1
+  - @rocket.chat/core-typings@6.5.1
+  - @rocket.chat/models@0.0.25
+
+## 0.3.0
+
+### Minor Changes
+
+- 5f81a0f3cb: Implemented the License library, it is used to handle the functionality like expiration date, modules, limits, etc.
+  Also added a version v3 of the license, which contains an extended list of features.
+  v2 is still supported, since we convert it to v3 on the fly.
+
+### Patch Changes
+
+- 5b9d6883bf: feat: Improve UI when MAC limits are reached
+  feat: Limit endpoints on MAC limit reached
+- Updated dependencies [dea1fe9191]
+- Updated dependencies [c0ef13a0bf]
+- Updated dependencies [5b9d6883bf]
+- Updated dependencies [92613680b7]
+- Updated dependencies [ec1b2b9846]
+- Updated dependencies [a98f3ff303]
+- Updated dependencies [5f81a0f3cb]
+- Updated dependencies [dea1fe9191]
+  - @rocket.chat/core-typings@6.5.0
+  - @rocket.chat/rest-typings@6.5.0
+  - @rocket.chat/models@0.0.24
+
+## 0.3.0-rc.19
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.19
+- @rocket.chat/rest-typings@6.5.0-rc.19
+- @rocket.chat/models@0.0.24-rc.12
+
+## 0.3.0-rc.18
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.18
+- @rocket.chat/rest-typings@6.5.0-rc.18
+- @rocket.chat/models@0.0.24-rc.11
+
+## 0.3.0-rc.17
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.17
+- @rocket.chat/rest-typings@6.5.0-rc.17
+- @rocket.chat/models@0.0.24-rc.10
+
+## 0.3.0-rc.16
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.16
+- @rocket.chat/rest-typings@6.5.0-rc.16
+- @rocket.chat/models@0.0.24-rc.9
+
+## 0.3.0-rc.15
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.15
+- @rocket.chat/rest-typings@6.5.0-rc.15
+- @rocket.chat/models@0.0.24-rc.8
+
+## 0.3.0-rc.14
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.14
+- @rocket.chat/rest-typings@6.5.0-rc.14
+- @rocket.chat/models@0.0.24-rc.7
+
+## 0.3.0-rc.13
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.13
+- @rocket.chat/rest-typings@6.5.0-rc.13
+- @rocket.chat/models@0.0.24-rc.6
+
+## 0.3.0-rc.12
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.12
+- @rocket.chat/rest-typings@6.5.0-rc.12
+- @rocket.chat/models@0.0.24-rc.5
+
+## 0.3.0-rc.11
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.11
+- @rocket.chat/rest-typings@6.5.0-rc.11
+- @rocket.chat/models@0.0.24-rc.4
+
+## 0.3.0-rc.10
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.10
+- @rocket.chat/rest-typings@6.5.0-rc.10
+- @rocket.chat/models@0.0.24-rc.3
+
+## 0.3.0-rc.9
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.9
+- @rocket.chat/rest-typings@6.5.0-rc.9
+- @rocket.chat/models@0.0.24-rc.2
+
+## 0.3.0-rc.8
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.8
+- @rocket.chat/rest-typings@6.5.0-rc.8
+- @rocket.chat/models@0.0.24-rc.1
+
 ## 0.3.0-rc.7
 
 ### Patch Changes

@@ -15,6 +15,7 @@ import {
 } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { callbacks } from '../../../../lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
@@ -24,6 +25,13 @@ import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 import { updateGroupDMsName } from './updateGroupDMsName';
 
 export async function deleteUser(userId: string, confirmRelinquish = false, deletedBy?: IUser['_id']): Promise<void> {
+	if (userId === 'rocket.cat') {
+		throw new Meteor.Error('error-action-not-allowed', 'Deleting the rocket.cat user is not allowed', {
+			method: 'deleteUser',
+			action: 'Delete_user',
+		});
+	}
+
 	const user = await Users.findOneById(userId, {
 		projection: { username: 1, avatarOrigin: 1, roles: 1, federated: 1 },
 	});
@@ -126,4 +134,6 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 
 	// Refresh the servers list
 	await FederationServers.refreshServers();
+
+	await callbacks.run('afterDeleteUser', user);
 }

@@ -72,7 +72,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 
 		const queue = await this.nextQueue();
 		const queueDelayTimeout = this.delay();
-		queueLogger.info(`Executing queue ${queue || 'Public'} with timeout of ${queueDelayTimeout}`);
+		queueLogger.debug(`Executing queue ${queue || 'Public'} with timeout of ${queueDelayTimeout}`);
 
 		setTimeout(this.checkQueue.bind(this, queue), queueDelayTimeout);
 	}

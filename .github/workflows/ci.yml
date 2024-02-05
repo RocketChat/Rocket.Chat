@@ -80,9 +80,49 @@ jobs:
           echo "DOCKER_TAG: ${DOCKER_TAG}"
           echo "gh-docker-tag=${DOCKER_TAG}" >> $GITHUB_OUTPUT
 
+  notify-draft-services:
+    name: 🚀 Notify external services - draft
+    runs-on: ubuntu-20.04
+    needs: [release-versions]
+    steps:
+      - uses: Bhacaz/checkout-files@v2
+        with:
+          files: package.json
+          branch: ${{ github.ref }}
+
+      - name: Register release on cloud as Draft
+        if: github.event_name == 'release'
+        env:
+          UPDATE_TOKEN: ${{ secrets.UPDATE_TOKEN }}
+        run: |
+          REPO_VERSION=$(node -p "require('./package.json').version")
+
+          if [[ '${{ github.event_name }}' = 'release' ]]; then
+            GIT_TAG="${GITHUB_REF#*tags/}"
+            GIT_BRANCH=""
+            ARTIFACT_NAME="${REPO_VERSION}"
+            RC_VERSION=$GIT_TAG
+
+            if [[ '${{ needs.release-versions.outputs.release }}' = 'release-candidate' ]]; then
+              RC_RELEASE=candidate
+            elif [[ '${{ needs.release-versions.outputs.release }}' = 'latest' ]]; then
+              RC_RELEASE=stable
+            fi
+          else
+            GIT_TAG=""
+            GIT_BRANCH="${GITHUB_REF#*heads/}"
+            ARTIFACT_NAME="${REPO_VERSION}.$GITHUB_SHA"
+            RC_VERSION="${REPO_VERSION}"
+            RC_RELEASE=develop
+          fi;
+
+          curl -H "Content-Type: application/json" -H "X-Update-Token: $UPDATE_TOKEN" -d \
+              "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"compatibleMongoVersions\": [\"4.4\", \"5.0\", \"6.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"draft\", \"draftAs\": \"$RC_RELEASE\"}" \
+              https://releases.rocket.chat/update
+
   packages-build:
     name: 📦 Build Packages
-    needs: [release-versions]
+    needs: [release-versions, notify-draft-services]
     runs-on: ubuntu-20.04
     steps:
       - name: Github Info
@@ -143,7 +183,7 @@ jobs:
       - uses: ./.github/actions/meteor-build
         with:
           node-version: ${{ needs.release-versions.outputs.node-version }}
-          coverage: true
+          coverage: ${{ github.event_name != 'release' }}
 
   build-prod:
     name: 📦 Meteor Build - official
@@ -167,7 +207,7 @@ jobs:
       - uses: ./.github/actions/meteor-build
         with:
           node-version: ${{ needs.release-versions.outputs.node-version }}
-          coverage: false
+          coverage: ${{ github.event_name != 'release' }}
 
   build-gh-docker-coverage:
     name: 🚢 Build Docker Images for Testing
@@ -683,21 +723,6 @@ jobs:
 
           # Makes build fail if the release isn't there
           curl --fail https://releases.rocket.chat/$RC_VERSION/info
-
-      - name: RedHat Registry
-        if: github.event_name == 'release'
-        env:
-          REDHAT_REGISTRY_PID: ${{ secrets.REDHAT_REGISTRY_PID }}
-          REDHAT_REGISTRY_KEY: ${{ secrets.REDHAT_REGISTRY_KEY }}
-        run: |
-          GIT_TAG="${GITHUB_REF#*tags/}"
-
-          curl -X POST \
-            https://connect.redhat.com/api/v2/projects/$REDHAT_REGISTRY_PID/build \
-            -H "Authorization: Bearer $REDHAT_REGISTRY_KEY" \
-            -H 'Cache-Control: no-cache' \
-            -H 'Content-Type: application/json' \
-            -d '{"tag":"'$GIT_TAG'"}'
 
   trigger-dependent-workflows:
     runs-on: ubuntu-latest

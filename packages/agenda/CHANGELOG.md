@@ -1,5 +1,15 @@
 # @rocket.chat/agenda
 
+## 0.1.0-rc.0
+
+### Minor Changes
+
+- db2551906c: Remove `@ts-ignore` directives and unused code from Agenda code
+
+### Patch Changes
+
+- b223cbde14: feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+
 ## 0.0.2
 
 ### Patch Changes

@@ -148,6 +148,28 @@ import { IS_EE } from '../../../e2e/config/constants';
 			// cleanup
 			await deleteUser(user);
 		});
+
+		it('should return a unit with no monitors if a user who is not a monitor is passed', async () => {
+			await updatePermission('manage-livechat-units', ['admin']);
+			const user = await createUser();
+			const department = await createDepartment();
+
+			const { body } = await request
+				.post(api('livechat/units'))
+				.set(credentials)
+				.send({
+					unitData: { name: 'test', visibility: 'public', enabled: true, description: 'test' },
+					unitMonitors: [{ monitorId: user._id, username: user.username }],
+					unitDepartments: [{ departmentId: department._id }],
+				})
+				.expect(200);
+
+			expect(body).to.have.property('numMonitors', 0);
+			expect(body).to.have.property('name', 'test');
+
+			// cleanup
+			await deleteUser(user);
+		});
 	});
 
 	describe('[GET] livechat/units/:id', () => {

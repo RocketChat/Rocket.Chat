@@ -3,7 +3,7 @@ import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo, useState } from 'react';
 
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import PageSkeleton from '../../../components/PageSkeleton';
 import { useWorkspaceInfo } from '../../../hooks/useWorkspaceInfo';
 import { downloadJsonAs } from '../../../lib/download';
@@ -30,26 +30,26 @@ const WorkspaceRoute = (): ReactElement => {
 		statisticsQuery.refetch();
 	};
 
+	const handleClickDownloadInfo = (): void => {
+		downloadJsonAs(statisticsQuery.data, 'statistics');
+	};
+
 	if (serverInfoQuery.isError || instancesQuery.isError || statisticsQuery.isError) {
 		return (
 			<Page>
-				<Page.Header title={t('Workspace')}>
+				<PageHeader title={t('Workspace')}>
 					<ButtonGroup>
 						<Button icon='reload' primary type='button' onClick={handleClickRefreshButton} loading={statisticsQuery.isLoading}>
 							{t('Refresh')}
 						</Button>
 					</ButtonGroup>
-				</Page.Header>
-				<Page.ScrollableContentWithShadow>
+				</PageHeader>
+				<PageScrollableContentWithShadow>
 					<Callout type='danger'>{t('Error_loading_pages')}</Callout>
-				</Page.ScrollableContentWithShadow>
+				</PageScrollableContentWithShadow>
 			</Page>
 		);
 	}
-
-	const handleClickDownloadInfo = (): void => {
-		downloadJsonAs(statisticsQuery.data, 'statistics');
-	};
 
 	return (
 		<WorkspacePage

@@ -1,17 +1,21 @@
-import type { Cloud, UiKit } from '@rocket.chat/core-typings';
+import type { IBanner } from '@rocket.chat/core-typings';
+import type * as UiKit from '@rocket.chat/ui-kit';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { exhaustiveCheck } from '../../../lib/utils/exhaustiveCheck';
 import { useUiKitActionManager } from '../../uikit/hooks/useUiKitActionManager';
 
-type CloudAnnouncementHandlerProps = Pick<Cloud.Announcement, 'dictionary' | 'surface' | 'view'>;
+type CloudAnnouncementHandlerProps = Pick<IBanner, 'dictionary' | 'surface' | 'view'>;
 
 const CloudAnnouncementHandler = ({ dictionary = {}, surface, view }: CloudAnnouncementHandlerProps) => {
 	const { i18n } = useTranslation();
 
 	useEffect(() => {
 		const appNs = `app-cloud-announcements-core`;
+		if (!dictionary) {
+			return;
+		}
 
 		for (const [language, translations] of Object.entries(dictionary)) {
 			i18n.addResources(language, appNs, translations);
@@ -20,13 +24,14 @@ const CloudAnnouncementHandler = ({ dictionary = {}, surface, view }: CloudAnnou
 
 	const actionManager = useUiKitActionManager();
 
-	const viewRef = useRef({ ...view, appId: 'cloud-announcements-core' });
-	viewRef.current = { ...view, appId: 'cloud-announcements-core' };
+	const viewRef = useRef({ ...view, appId: view.appId || 'cloud-announcements-core' });
+	viewRef.current = { ...view, appId: view.appId || 'cloud-announcements-core' };
 
 	useEffect(() => {
 		switch (surface) {
 			case 'modal': {
-				const modalView = viewRef.current as UiKit.ModalView;
+				// TODO fixme
+				const modalView = viewRef.current as unknown as UiKit.ModalView;
 
 				actionManager.openView('modal', modalView);
 

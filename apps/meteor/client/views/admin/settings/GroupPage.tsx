@@ -14,7 +14,7 @@ import {
 import type { FC, ReactNode, FormEvent, MouseEvent } from 'react';
 import React, { useMemo, memo } from 'react';
 
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
 import type { EditableSetting } from '../EditableSettingsContext';
 import { useEditableSettingsDispatch, useEditableSettings } from '../EditableSettingsContext';
 import GroupPageSkeleton from './GroupPageSkeleton';
@@ -160,14 +160,14 @@ const GroupPage: FC<GroupPageProps> = ({
 
 	return (
 		<Page is='form' action='#' method='post' onSubmit={handleSubmit}>
-			<Page.Header onClickBack={handleBack} title={i18nLabel && isTranslationKey(i18nLabel) && t(i18nLabel)}>
+			<PageHeader onClickBack={handleBack} title={i18nLabel && isTranslationKey(i18nLabel) && t(i18nLabel)}>
 				<ButtonGroup>{headerButtons}</ButtonGroup>
-			</Page.Header>
+			</PageHeader>
 			{tabs}
 			{isCustom ? (
 				children
 			) : (
-				<Page.ScrollableContentWithShadow>
+				<PageScrollableContentWithShadow>
 					<Box marginBlock='none' marginInline='auto' width='full' maxWidth='x580'>
 						{i18nDescription && isTranslationKey(i18nDescription) && t.has(i18nDescription) && (
 							<Box is='p' color='hint' fontScale='p2'>
@@ -177,9 +177,9 @@ const GroupPage: FC<GroupPageProps> = ({
 
 						<Accordion className='page-settings'>{children}</Accordion>
 					</Box>
-				</Page.ScrollableContentWithShadow>
+				</PageScrollableContentWithShadow>
 			)}
-			<Page.Footer isDirty={!(changedEditableSettings.length === 0)}>
+			<PageFooter isDirty={!(changedEditableSettings.length === 0)}>
 				<ButtonGroup>
 					{changedEditableSettings.length > 0 && (
 						<Button type='reset' onClick={handleCancelClick}>
@@ -195,7 +195,7 @@ const GroupPage: FC<GroupPageProps> = ({
 						onClick={handleSaveClick}
 					/>
 				</ButtonGroup>
-			</Page.Footer>
+			</PageFooter>
 		</Page>
 	);
 };

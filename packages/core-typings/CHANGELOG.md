@@ -1,5 +1,86 @@
 # @rocket.chat/core-typings
 
+## 6.6.0-rc.4
+
+## 6.6.0-rc.3
+
+## 6.6.0-rc.2
+
+## 6.6.0-rc.1
+
+## 6.6.0-rc.0
+
+### Patch Changes
+
+- b223cbde14: feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+- dbb08ef948: feat: Implemented InlineCode handling in Bold, Italic and Strike
+- fdd9852079: Added `chat.getURLPreview` endpoint to enable users to retrieve previews for URL (ready to be provided in message send/update)
+- b4b2cd20a8: Fixed an issue caused by the `Fallback Forward Department` feature. Feature could be configured by admins in a way that mimis a loop, causing a chat to be forwarded "infinitely" between those departments. System will now prevent Self & 1-level deep circular references from being saved, and a new setting is added to control the maximum number of hops that the system will do between fallback departments before considering a transfer failure.
+- Updated dependencies [b223cbde14]
+  - @rocket.chat/ui-kit@0.33.0-rc.0
+
+## 6.5.3
+
+## 6.5.2
+
+## 6.5.1
+
+### Patch Changes
+
+- c2b224fd82: Exceeding API calls when sending OTR messages
+
+## 6.5.0
+
+### Minor Changes
+
+- c0ef13a0bf: Added `push` statistic, containing three bits. Each bit represents a boolean:
+  ```
+  1 1 1
+  | | |
+  | | +- push enabled = 0b1 = 1
+  | +--- push gateway enabled = 0b10 = 2
+  +----- push gateway changed = 0b100 = 4
+  ```
+- 92613680b7: Added option to select between two script engine options for the integrations
+- ec1b2b9846: Create a deployment fingerprint to identify possible deployment changes caused by database cloning. A question to the admin will confirm if it's a regular deployment change or an intent of a new deployment and correct identification values as needed.
+  The fingerprint is composed by `${siteUrl}${dbConnectionString}` and hashed via `sha256` in `base64`.
+  An environment variable named `AUTO_ACCEPT_FINGERPRINT`, when set to `true`, can be used to auto-accept an expected fingerprint change as a regular deployment update.
+- 5f81a0f3cb: Implemented the License library, it is used to handle the functionality like expiration date, modules, limits, etc.
+  Also added a version v3 of the license, which contains an extended list of features.
+  v2 is still supported, since we convert it to v3 on the fly.
+
+### Patch Changes
+
+- dea1fe9191: chore: Calculate & Store MAC stats
+  Added new info to the stats: `omnichannelContactsBySource`, `uniqueContactsOfLastMonth`, `uniqueContactsOfLastWeek`, `uniqueContactsOfYesterday`
+- 5b9d6883bf: feat: Improve UI when MAC limits are reached
+  feat: Limit endpoints on MAC limit reached
+- dea1fe9191: feat: Disable and annonimize visitors instead of removing
+
+## 6.5.0-rc.19
+
+## 6.5.0-rc.18
+
+## 6.5.0-rc.17
+
+## 6.5.0-rc.16
+
+## 6.5.0-rc.15
+
+## 6.5.0-rc.14
+
+## 6.5.0-rc.13
+
+## 6.5.0-rc.12
+
+## 6.5.0-rc.11
+
+## 6.5.0-rc.10
+
+## 6.5.0-rc.9
+
+## 6.5.0-rc.8
+
 ## 6.5.0-rc.7
 
 ## 6.5.0-rc.6

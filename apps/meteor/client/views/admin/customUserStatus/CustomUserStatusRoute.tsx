@@ -4,7 +4,7 @@ import type { ReactElement } from 'react';
 import React, { useCallback, useRef, useEffect } from 'react';
 
 import { Contextualbar, ContextualbarHeader, ContextualbarClose, ContextualbarTitle } from '../../../components/Contextualbar';
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import CustomUserActiveConnections from './CustomUserActiveConnections';
@@ -57,16 +57,16 @@ const CustomUserStatusRoute = (): ReactElement => {
 	return (
 		<Page flexDirection='row'>
 			<Page name='admin-user-status'>
-				<Page.Header title={t('User_Status')}>
+				<PageHeader title={t('User_Status')}>
 					{!license?.isEnterprise && <CustomUserActiveConnections />}
 					<ButtonGroup>
 						<Button onClick={handlePresenceServiceClick}>{t('Presence_service')}</Button>
 						<Button onClick={handleNewButtonClick}>{t('New_custom_status')}</Button>
 					</ButtonGroup>
-				</Page.Header>
-				<Page.Content>
+				</PageHeader>
+				<PageContent>
 					<CustomUserStatusTable reload={reload} onClick={handleItemClick} />
-				</Page.Content>
+				</PageContent>
 			</Page>
 			{context && (
 				<Contextualbar bg='light' flexShrink={0}>
