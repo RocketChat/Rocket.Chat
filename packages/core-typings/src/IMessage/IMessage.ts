@@ -124,6 +124,10 @@ export type MessageMention = {
 	_id: string;
 	name?: string;
 	username?: string;
+<<<<<<< Updated upstream
+=======
+	fname?: string; // incase of channel mentions
+>>>>>>> Stashed changes
 };
 
 export interface IMessage extends IRocketChatRecord {
