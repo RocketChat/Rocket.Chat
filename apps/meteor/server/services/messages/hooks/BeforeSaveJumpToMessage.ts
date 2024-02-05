@@ -71,7 +71,7 @@ export class BeforeSaveJumpToMessage {
 			useRealName: boolean;
 		};
 	}): Promise<IMessage> {
-		if (message) {
+		if (message?.attachments) {
 			// Do not keep old quote attachments since they may not still be linked to the message
 			message.attachments = message.attachments?.filter((attachment) => !isQuoteAttachment(attachment));
 		}
