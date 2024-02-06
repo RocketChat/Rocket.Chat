@@ -1130,18 +1130,33 @@ describe('[Chat]', function () {
 				.end(done);
 		});
 
-		it('should erase old quote attachments when updating a message', async () => {
+		it('should add quote attachments to a message', async () => {
 			const siteUrl = process.env.SITE_URL || process.env.TEST_API_URL || 'http://localhost:3000';
-
 			const quotedMsgLink = `${siteUrl}/channel/general?msg=${message._id}`;
-			const originalMessage = (await sendSimpleMessage({ roomId: 'GENERAL', text: `Testing quotes ${quotedMsgLink}` })).body.message;
-			expect(originalMessage).to.have.property('attachments').that.is.an('array').that.has.lengthOf(1);
+			request
+				.post(api('chat.update'))
+				.set(credentials)
+				.send({
+					roomId: 'GENERAL',
+					msgId: message._id,
+					text: `Testing quotes ${quotedMsgLink}`,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('message.msg', `Testing quotes ${quotedMsgLink}`);
+					expect(res.body.message).to.have.property('attachments').that.is.an('array').that.has.lengthOf(1);
+				});
+		});
+
+		it('should erase old quote attachments when updating a message', async () => {
 			await request
 				.post(api('chat.update'))
 				.set(credentials)
 				.send({
 					roomId: 'GENERAL',
-					msgId: originalMessage._id,
+					msgId: message._id,
 					text: 'This message was edited via API',
 				})
 				.expect('Content-Type', 'application/json')
