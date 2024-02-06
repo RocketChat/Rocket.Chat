@@ -393,15 +393,11 @@ const RoomBody = (): ReactElement => {
 		wrapper.addEventListener('scroll', updateUnreadCount);
 		wrapper.addEventListener('scroll', handleWrapperScroll);
 		wrapper.addEventListener('scroll', () => handleDividerRefScroll(refsArray));
-		wrapper.addEventListener('scroll', () => handleDividerRefScroll(refsArray));
-
-		// wrapper.addEventListener('scroll', () => {
-		// 	console.log('element 0', getElementFromPoint(0));
-		// });
 
 		return () => {
 			wrapper.removeEventListener('scroll', updateUnreadCount);
 			wrapper.removeEventListener('scroll', handleWrapperScroll);
+			wrapper.removeEventListener('scroll', () => handleDividerRefScroll(refsArray));
 		};
 	}, [_isAtBottom, room._id, setUnreadCount]);
 
