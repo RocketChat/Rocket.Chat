@@ -1,15 +1,13 @@
 import { isDirectMessageRoom } from '@rocket.chat/core-typings';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
-import type { ReactElement } from 'react';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 
-import GenericModal from '../../../../components/GenericModal';
 import { useRoom } from '../../contexts/RoomContext';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import PruneMessages from './PruneMessages';
+import PruneMessagesModal from './PruneMessagesModal';
 
 const getTimeZoneOffset = (): string => {
 	const offset = new Date().getTimezoneOffset();
@@ -34,29 +32,19 @@ export const initialValues = {
 	attached: false,
 };
 
-const DEFAULT_PRUNE_LIMIT = 2000;
-
-const PruneMessagesWithData = (): ReactElement => {
+const PruneMessagesWithData = () => {
 	const t = useTranslation();
 	const room = useRoom();
 	const setModal = useSetModal();
-	const { closeTab: close } = useRoomToolbox();
-	const closeModal = useCallback(() => setModal(null), [setModal]);
-	const dispatchToastMessage = useToastMessageDispatch();
-	const pruneMessagesAction = useEndpoint('POST', '/v1/rooms.cleanHistory');
+	const { closeTab } = useRoomToolbox();
 
-	const [counter, setCounter] = useState(0);
-
-	const methods = useForm({ defaultValues: initialValues });
+	const methods = useForm({ values: initialValues });
 
 	const {
 		newer: { date: newerDate, time: newerTime },
 		older: { date: olderDate, time: olderTime },
 		users,
-		inclusive,
 		pinned,
-		discussion,
-		threads,
 		attached,
 	} = methods.watch();
 
@@ -68,55 +56,13 @@ const PruneMessagesWithData = (): ReactElement => {
 		return new Date(`${olderDate || '9999-12-31'}T${olderTime || '23:59'}:59${getTimeZoneOffset()}`);
 	}, [olderDate, olderTime]);
 
-	const handlePrune = useMutableCallback((): void => {
-		const handlePruneAction = async () => {
-			const limit = DEFAULT_PRUNE_LIMIT;
-
-			try {
-				if (counter === limit) {
-					return;
-				}
-
-				const { count } = await pruneMessagesAction({
-					roomId: room._id,
-					latest: toDate.toISOString(),
-					oldest: fromDate.toISOString(),
-					inclusive,
-					limit,
-					excludePinned: pinned,
-					filesOnly: attached,
-					ignoreDiscussion: discussion,
-					ignoreThreads: threads,
-					users,
-				});
-
-				setCounter(count);
-
-				if (count < 1) {
-					throw new Error(t('No_messages_found_to_prune'));
-				}
-
-				dispatchToastMessage({ type: 'success', message: t('__count__message_pruned', { count }) });
-				methods.reset();
-			} catch (error: unknown) {
-				dispatchToastMessage({ type: 'error', message: error });
-			} finally {
-				closeModal();
-			}
-		};
-
+	const handlePrune = (): void => {
 		return setModal(
-			<GenericModal
-				variant='danger'
-				onClose={closeModal}
-				onCancel={closeModal}
-				onConfirm={handlePruneAction}
-				confirmText={t('Yes_prune_them')}
-			>
-				{t('Prune_Modal')}
-			</GenericModal>,
+			<FormProvider {...methods}>
+				<PruneMessagesModal room={room} fromDate={fromDate} toDate={toDate} />
+			</FormProvider>,
 		);
-	});
+	};
 
 	const callOutText = useMemo(() => {
 		const exceptPinned = pinned ? ` ${t('except_pinned', {})}` : '';
@@ -191,7 +137,7 @@ const PruneMessagesWithData = (): ReactElement => {
 
 	return (
 		<FormProvider {...methods}>
-			<PruneMessages callOutText={callOutText} validateText={validateText} users={users} onClickClose={close} onClickPrune={handlePrune} />
+			<PruneMessages callOutText={callOutText} validateText={validateText} onClickClose={closeTab} onClickPrune={handlePrune} />
 		</FormProvider>
 	);
 };

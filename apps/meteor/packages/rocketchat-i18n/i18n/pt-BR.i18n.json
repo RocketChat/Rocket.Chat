@@ -3429,6 +3429,8 @@
   "Prune": "Remoção",
   "Prune_finished": "Remoção terminada",
   "Prune_Messages": "Remoção de mensagens",
+  "Prune_messages_limit": "Limite de remoção de mensagens",
+  "Prune_messages_limit_description": "Se você não deseja criar um limite deixe este campo em '-1'",
   "Prune_Modal": "Tem certeza de que deseja remover estas mensagens? As mensagens removidas não poderão ser recuperadas.",
   "Prune_Warning_after": "Isso excluirá todos os %s em %s depois de %s.",
   "Prune_Warning_all": "Isso excluirá todos os %s em %s!",

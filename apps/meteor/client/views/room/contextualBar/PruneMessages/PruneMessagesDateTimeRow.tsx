@@ -1,7 +1,7 @@
 import { Field, FieldLabel, InputBox, Box, Margins } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import React from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, Controller } from 'react-hook-form';
 
 type PruneMessagesDateTimeRowProps = {
 	label: string;
@@ -9,15 +9,23 @@ type PruneMessagesDateTimeRowProps = {
 };
 
 const PruneMessagesDateTimeRow = ({ label, field }: PruneMessagesDateTimeRowProps): ReactElement => {
-	const { register } = useFormContext();
+	const { control } = useFormContext();
 
 	return (
 		<Field>
 			<FieldLabel flexGrow={0}>{label}</FieldLabel>
 			<Box display='flex' mi='neg-x4'>
 				<Margins inline={4}>
-					<InputBox type='date' flexGrow={1} h='x20' {...register(`${field}.date`)} />
-					<InputBox type='time' flexGrow={1} h='x20' {...register(`${field}.time`)} />
+					<Controller
+						name={`${field}.date`}
+						control={control}
+						render={({ field }) => <InputBox type='date' flexGrow={1} h='x20' {...field} />}
+					/>
+					<Controller
+						name={`${field}.time`}
+						control={control}
+						render={({ field }) => <InputBox type='time' flexGrow={1} h='x20' {...field} />}
+					/>
 				</Margins>
 			</Box>
 		</Field>
