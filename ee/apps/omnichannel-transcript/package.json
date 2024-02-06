@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/omnichannel-transcript",
 	"private": true,
-	"version": "0.3.4-rc.6",
+	"version": "0.3.4-rc.7",
 	"description": "Rocket.Chat service",
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
