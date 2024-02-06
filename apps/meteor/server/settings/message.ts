@@ -385,4 +385,10 @@ export const createMessageSettings = () =>
 			type: 'boolean',
 			public: true,
 		});
+		await this.add('Prune_message_limit', 2000, {
+			type: 'int',
+			public: true,
+			i18nDescription: 'Prune_message_limit_description',
+			alert: 'Prune_message_limit_alert',
+		});
 	});

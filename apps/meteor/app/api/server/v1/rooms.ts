@@ -264,6 +264,10 @@ API.v1.addRoute(
 				return API.v1.failure('Body parameter "oldest" is required.');
 			}
 
+			if (limit > settings.get<number>('Prune_message_limit')) {
+				return API.v1.failure('The limit of messages to prune has been reached');
+			}
+
 			const count = await Meteor.callAsync('cleanRoomHistory', {
 				roomId: _id,
 				latest: new Date(latest),
@@ -276,6 +280,10 @@ API.v1.addRoute(
 				ignoreDiscussion: [true, 'true', 1, '1'].includes(ignoreDiscussion ?? false),
 				fromUsers: users,
 			});
+
+			if (count < 1) {
+				return API.v1.failure('No messages to prune');
+			}
 
 			return API.v1.success({ _id, count });
 		},
