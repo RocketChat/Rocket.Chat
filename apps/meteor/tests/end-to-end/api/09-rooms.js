@@ -462,6 +462,25 @@ describe('[Rooms]', function () {
 					expect(res.body).to.have.property('count', 0);
 				});
 		});
+		it('should return error if limit is higher than setting', async () => {
+			await updateSetting('Prune_message_limit', 1);
+			const res = await sendSimpleMessage({ roomId: publicChannel._id });
+			await deleteMessage({ roomId: publicChannel._id, msgId: res.body.message._id });
+			await request
+				.post(api('rooms.cleanHistory'))
+				.set(credentials)
+				.send({
+					roomId: publicChannel._id,
+					latest: '9999-12-31T23:59:59.000Z',
+					oldest: '0001-01-01T00:00:00.000Z',
+					limit: 2,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
 		it('should successfully delete an image and thumbnail from public channel', (done) => {
 			request
 				.post(api(`rooms.upload/${publicChannel._id}`))
