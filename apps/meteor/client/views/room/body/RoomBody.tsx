@@ -1,5 +1,7 @@
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
+import { css } from '@rocket.chat/css-in-js';
+import { Box, Bubble } from '@rocket.chat/fuselage';
 import {
 	usePermission,
 	useRole,
@@ -10,7 +12,7 @@ import {
 	useUser,
 	useUserPreference,
 } from '@rocket.chat/ui-contexts';
-import type { MouseEventHandler, ReactElement, UIEvent } from 'react';
+import type { MouseEventHandler, MutableRefObject, ReactElement, UIEvent } from 'react';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
@@ -28,14 +30,17 @@ import type { Upload } from '../../../lib/chats/Upload';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { setMessageJumpQueryStringParameter } from '../../../lib/utils/setMessageJumpQueryStringParameter';
 import Announcement from '../Announcement';
-import { MessageList } from '../MessageList/MessageList';
+import { MessageList } from '../MessageList';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
+import { useMessages } from '../MessageList/hooks/useMessages';
+import MessageListProvider from '../MessageList/providers/MessageListProvider';
 import ComposerContainer from '../composer/ComposerContainer';
 import RoomComposer from '../composer/RoomComposer/RoomComposer';
 import { useChat } from '../contexts/ChatContext';
 import { useRoom, useRoomSubscription, useRoomMessages } from '../contexts/RoomContext';
 import { useRoomToolbox } from '../contexts/RoomToolboxContext';
 import { useScrollMessageList } from '../hooks/useScrollMessageList';
+import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
 import LeaderBar from './LeaderBar';
@@ -377,6 +382,12 @@ const RoomBody = (): ReactElement => {
 
 		wrapper.addEventListener('scroll', updateUnreadCount);
 		wrapper.addEventListener('scroll', handleWrapperScroll);
+		wrapper.addEventListener('scroll', () => handleDividerRefScroll(refsArray));
+		wrapper.addEventListener('scroll', () => handleDividerRefScroll(refsArray));
+
+		// wrapper.addEventListener('scroll', () => {
+		// 	console.log('element 0', getElementFromPoint(0));
+		// });
 
 		return () => {
 			wrapper.removeEventListener('scroll', updateUnreadCount);
@@ -532,6 +543,53 @@ const RoomBody = (): ReactElement => {
 
 	useReadMessageWindowEvents();
 
+	// Handle the sticky timestamp bubble
+	const messages = useMessages({ rid: room._id });
+	const refsArray = useRef<MutableRefObject<HTMLElement>[]>([]);
+
+	// set the ref's current value to be an array of mapped refs
+	// new refs to be created as needed
+	refsArray.current = messages.map((_, i) => refsArray.current[i] ?? React.createRef());
+
+	const [currentTimestamp, setCurrentTimestamp] = useState<string>();
+
+	const handleDividerRefScroll = (refsArray: MutableRefObject<MutableRefObject<HTMLElement>[]>) => {
+		const dividerRefs = [...refsArray?.current]
+			.filter((item) => item.current)
+			.map((item) => ({ id: item.current?.dataset.id, top: item.current?.getBoundingClientRect().top })) as {
+			id: string | undefined;
+			top: number | undefined;
+		}[];
+
+		if (dividerRefs.every((item) => item.top && item.top < 81)) {
+			return setCurrentTimestamp(dividerRefs[dividerRefs.length - 1].id);
+		}
+
+		if (dividerRefs.every((item) => item.top && item.top > 81)) {
+			return setCurrentTimestamp(dividerRefs[0].id);
+		}
+
+		dividerRefs.forEach((message: { id: string | undefined; top: number | undefined }, i: number, arr) => {
+			const previous = arr[i - 1];
+			if (message.top && message.top === 81) {
+				return setCurrentTimestamp(message.id);
+			}
+			if (message.top && previous?.top && message.top > 81 && previous.top < 81) {
+				return setCurrentTimestamp(previous.id);
+			}
+		});
+	};
+
+	console.log(refsArray);
+
+	const dateBubbleStyle = css`
+		position: sticky;
+		top: 8px;
+		z-index: 1;
+		display: flex;
+		justify-content: center;
+	`;
+
 	return (
 		<>
 			{!isLayoutEmbedded && room.announcement && <Announcement announcement={room.announcement} announcementDetails={undefined} />}
@@ -557,6 +615,11 @@ const RoomBody = (): ReactElement => {
 									/>
 								))}
 							</div>
+							<Box className={dateBubbleStyle}>
+								<Bubble small secondary>
+									{currentTimestamp}
+								</Bubble>
+							</Box>
 							{unread && (
 								<UnreadMessagesIndicator
 									count={unread.count}
@@ -600,7 +663,7 @@ const RoomBody = (): ReactElement => {
 								>
 									<MessageListErrorBoundary>
 										<ScrollableContentWrapper ref={wrapperRef}>
-											<ul className='messages-list' aria-live='polite' aria-busy={isLoadingMoreMessages}>
+											<ul className='messages-list' aria-live='polite' aria-busy={isLoadingMoreMessages} onScroll={(e) => console.log(e)}>
 												{canPreview ? (
 													<>
 														{hasMorePreviousMessages ? (
@@ -613,7 +676,13 @@ const RoomBody = (): ReactElement => {
 														)}
 													</>
 												) : null}
-												<MessageList rid={room._id} scrollMessageList={scrollMessageList} />
+												<MessageListProvider scrollMessageList={scrollMessageList}>
+													<SelectedMessagesProvider>
+														{messages.map((message, index, { [index - 1]: previous }) => {
+															return <MessageList key={message._id} message={message} previous={previous} ref={refsArray.current[index]} />;
+														})}
+													</SelectedMessagesProvider>
+												</MessageListProvider>
 												{hasMoreNextMessages ? (
 													<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
 												) : null}
