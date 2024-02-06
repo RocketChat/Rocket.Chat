@@ -2129,6 +2129,7 @@
   "Running_Instances": "Εκτέλεση παρουσιών",
   "Runtime_Environment": "Περιβάλλον χρόνου εκτέλεσης",
   "S_new_messages_since_s": "%s νέα μηνύματα από το %s",
+  "S_new_messages": "%s νέα μηνύματα",
   "Same_As_Token_Sent_Via": "Το ίδιο με το \"Token Sent Via\"",
   "Same_Style_For_Mentions": "Το ίδιο στυλ για τις αναφορές",
   "SAML": "SAML",

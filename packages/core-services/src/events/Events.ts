@@ -19,7 +19,6 @@ import type {
 	ISubscription,
 	IUser,
 	IInvite,
-	IWebdavAccount,
 	ICustomSound,
 	VoipEventDataSignature,
 	UserStatus,
@@ -33,6 +32,7 @@ import type {
 	ILivechatVisitor,
 	LicenseLimitKind,
 	ICustomUserStatus,
+	IWebdavAccount,
 } from '@rocket.chat/core-typings';
 import type * as UiKit from '@rocket.chat/ui-kit';
 

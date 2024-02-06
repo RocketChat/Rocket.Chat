@@ -13,7 +13,7 @@ describe('Mailer', () => {
 				.post(api('mailer'))
 				.set(credentials)
 				.send({
-					from: 'test-email@example.com',
+					from: 'rocketchat.internal.admin.test@rocket.chat',
 					subject: 'Test email subject',
 					body: 'Test email body [unsubscribe]',
 					dryrun: true,
