@@ -56,6 +56,16 @@ import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
 import { useRetentionPolicy } from './hooks/useRetentionPolicy';
 import { useUnreadMessages } from './hooks/useUnreadMessages';
 
+const dateBubbleStyle = css`
+	position: absolute;
+	top: 8px;
+	left: 50%;
+	translate: -50%;
+	z-index: 1;
+`;
+
+const BUBBLE_OFFSET = 64;
+
 const RoomBody = (): ReactElement => {
 	const t = useTranslation();
 	const isLayoutEmbedded = useEmbeddedLayout();
@@ -561,34 +571,24 @@ const RoomBody = (): ReactElement => {
 			top: number | undefined;
 		}[];
 
-		if (dividerRefs.every((item) => item.top && item.top < 81)) {
-			return setCurrentTimestamp(dividerRefs[dividerRefs.length - 1].id);
+		if (dividerRefs.every((item) => item.top && item.top < BUBBLE_OFFSET)) {
+			return setCurrentTimestamp(dividerRefs[dividerRefs.length - 1]?.id);
 		}
 
-		if (dividerRefs.every((item) => item.top && item.top > 81)) {
+		if (dividerRefs.every((item) => item.top && item.top > BUBBLE_OFFSET)) {
 			return setCurrentTimestamp(dividerRefs[0].id);
 		}
 
 		dividerRefs.forEach((message: { id: string | undefined; top: number | undefined }, i: number, arr) => {
 			const previous = arr[i - 1];
-			if (message.top && message.top === 81) {
+			if (message.top && message.top === BUBBLE_OFFSET) {
 				return setCurrentTimestamp(message.id);
 			}
-			if (message.top && previous?.top && message.top > 81 && previous.top < 81) {
+			if (message.top && previous?.top && message.top > BUBBLE_OFFSET && previous.top < BUBBLE_OFFSET) {
 				return setCurrentTimestamp(previous.id);
 			}
 		});
 	};
-
-	console.log(refsArray);
-
-	const dateBubbleStyle = css`
-		position: sticky;
-		top: 8px;
-		z-index: 1;
-		display: flex;
-		justify-content: center;
-	`;
 
 	return (
 		<>
