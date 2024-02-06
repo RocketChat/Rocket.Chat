@@ -225,6 +225,7 @@ export type EventSignatures = {
 						_id: string;
 						u?: Pick<IUser, '_id' | 'username' | 'name'>;
 						rid?: string;
+						t?: string;
 					};
 			  },
 	): void;
