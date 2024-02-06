@@ -409,8 +409,9 @@ describe('[Rooms]', function () {
 				done(err);
 			});
 		});
-		it('should return success when send a valid public channel', (done) => {
-			request
+		it('should return success when pruning a room with message', async (done) => {
+			await sendSimpleMessage({ roomId: publicChannel._id });
+			await request
 				.post(api('rooms.cleanHistory'))
 				.set(credentials)
 				.send({
@@ -422,6 +423,22 @@ describe('[Rooms]', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('should return an error when pruning a room with any message', (done) => {
+			request
+				.post(api('rooms.cleanHistory'))
+				.set(credentials)
+				.send({
+					roomId: publicChannel._id,
+					latest: '2016-12-09T13:42:25.304Z',
+					oldest: '2016-08-30T13:42:25.304Z',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
 				})
 				.end(done);
 		});
