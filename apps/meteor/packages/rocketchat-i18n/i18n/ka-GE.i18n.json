@@ -2833,6 +2833,7 @@
   "Running_Instances": "მიმდინარე პროცესები",
   "Runtime_Environment": "მიმდინარე გარემო",
   "S_new_messages_since_s": "%s ახალი მესიჯი %s -დან",
+  "S_new_messages": "%s ახალი შეტყობინებები",
   "Same_As_Token_Sent_Via": "იგივეა რაც \"ტოკენი გაგზავნილია\" __-ით",
   "Same_Style_For_Mentions": "იგივე სტილი ხსენებებისთვის",
   "SAML_Allowed_Clock_Drift": "პირადობის წარმომდგენისგან დროის დასაშვები ცდომილება",
