@@ -59,4 +59,16 @@ export class HomeFlextab {
 	get userInfoUsername(): Locator {
 		return this.page.locator('[data-qa="UserInfoUserName"]');
 	}
+
+	get pruneMessagesMenuItem(): Locator {
+		return this.page.locator('role=menuitem[name="Prune Messages"]');
+	}
+
+	get btnPruneMessages(): Locator {
+		return this.page.locator('button >> text=Prune');
+	}
+
+	get btnConfirmPrune(): Locator {
+		return this.page.locator('button >> text=Yes, prune them!');
+	}
 }
