@@ -3050,6 +3050,7 @@
   "Running_Instances": "Running Instances",
   "Runtime_Environment": "Runtime Environment",
   "S_new_messages_since_s": "%s nye meddelelser siden%s",
+  "S_new_messages": "%s nye meddelelser",
   "Same_As_Token_Sent_Via": "Samme som \"Token Send Via\"",
   "Same_Style_For_Mentions": "Samme stil til navne",
   "SAML": "SAML",

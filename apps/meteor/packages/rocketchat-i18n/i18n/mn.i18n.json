@@ -2115,6 +2115,7 @@
   "Running_Instances": "Ажиллаж байгаа тохиолдлууд",
   "Runtime_Environment": "Ажиллах орчин",
   "S_new_messages_since_s": "%s-с хойших %s шинэ зурвасууд",
+  "S_new_messages": "%s шинэ зурвасууд",
   "Same_As_Token_Sent_Via": "\"Токенаар дамжуулан илгээсэн\" адил",
   "Same_Style_For_Mentions": "Сэтгэгдлийн хувьд ижил хэв маяг",
   "SAML": "SAML",

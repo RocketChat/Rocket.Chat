@@ -2253,6 +2253,7 @@
   "Running_Instances": "Pokrenuta instanca",
   "Runtime_Environment": "Runtime Environment",
   "S_new_messages_since_s": "%s novih poruka od %s",
+  "S_new_messages": "%s novih poruka",
   "Same_As_Token_Sent_Via": "Isto kao i \"Token poslan putem\"",
   "Same_Style_For_Mentions": "Isti stil za spominjanje",
   "SAML": "SAML",

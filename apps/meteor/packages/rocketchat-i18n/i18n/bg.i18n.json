@@ -2116,6 +2116,7 @@
   "Running_Instances": "Изпълняващи потребителски модели",
   "Runtime_Environment": "По време на работа",
   "S_new_messages_since_s": "%s нови съобщения от %s",
+  "S_new_messages": "%s нови съобщения",
   "Same_As_Token_Sent_Via": "Същото като \"Token Sent Via\"",
   "Same_Style_For_Mentions": "Същият стил за споменаванията",
   "SAML": "SAML",

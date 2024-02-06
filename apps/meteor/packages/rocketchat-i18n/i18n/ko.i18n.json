@@ -3090,6 +3090,7 @@
   "Running_Instances": "실행 중인 인스턴스",
   "Runtime_Environment": "실행 환경",
   "S_new_messages_since_s": "%s 개의 새 메시지 (%s 이후)",
+  "S_new_messages": "%의 새 메시지",
   "Same_As_Token_Sent_Via": "\"Token Sent Via\"와 동일합니다.",
   "Same_Style_For_Mentions": "언급과 같은 스타일",
   "SAML": "SAML",

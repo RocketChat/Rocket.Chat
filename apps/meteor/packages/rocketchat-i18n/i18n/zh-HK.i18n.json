@@ -2140,6 +2140,7 @@
   "Running_Instances": "运行实例",
   "Runtime_Environment": "运行环境",
   "S_new_messages_since_s": "%s 新消息，自从 %s",
+  "S_new_messages": "％s条新消息",
   "Same_As_Token_Sent_Via": "与“通过发送的令牌”相同",
   "Same_Style_For_Mentions": "同样的风格提及",
   "SAML": "SAML",

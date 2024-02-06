@@ -2112,6 +2112,7 @@
   "Running_Instances": "การใช้งานอินสแตนซ์",
   "Runtime_Environment": "สภาพแวดล้อมรันไทม์",
   "S_new_messages_since_s": "%s ข้อความใหม่นับตั้งแต่%s",
+  "S_new_messages": "%s ข้อความใหม่",
   "Same_As_Token_Sent_Via": "เหมือนกับ \"Token Sent Via\"",
   "Same_Style_For_Mentions": "สไตล์เดียวกันสำหรับการพูดถึง",
   "SAML": "SAML",

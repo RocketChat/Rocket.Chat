@@ -2122,6 +2122,7 @@
   "Running_Instances": "Laufende Instanzen",
   "Runtime_Environment": "Laufzeitumgebung",
   "S_new_messages_since_s": "%s neue Nachrichten seit %s",
+  "S_new_messages": "%s neue Nachrichten",
   "Same_As_Token_Sent_Via": "Wie \"Token Sent Via\"",
   "Same_Style_For_Mentions": "Gleicher Stil für Erwähnungen",
   "SAML": "SAML",
