@@ -1,10 +1,10 @@
 {
 	"name": "@rocket.chat/eslint-config",
-	"version": "0.6.0",
+	"version": "0.6.1-rc.0",
 	"description": "Rocket.Chat's JS/TS ESLint config",
 	"dependencies": {
 		"@babel/core": "^7.20.7",
-		"@babel/eslint-parser": "~7.22.15",
+		"@babel/eslint-parser": "~7.23.3",
 		"@types/eslint": "~8.44.6",
 		"@types/prettier": "^2.6.3",
 		"@typescript-eslint/eslint-plugin": "~5.60.1",
@@ -31,6 +31,7 @@
 		"/imports",
 		"/node",
 		"/style",
-		"/variables"
+		"/variables",
+		"/react"
 	]
 }

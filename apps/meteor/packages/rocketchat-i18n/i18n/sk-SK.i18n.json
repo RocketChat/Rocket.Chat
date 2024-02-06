@@ -959,6 +959,7 @@
   "Email_Placeholder": "Prosím, zadajte svoju e-mailovú adresu...",
   "Email_Placeholder_any": "Zadajte e-mailové adresy ...",
   "Email_subject": "predmet",
+  "Enterprise_License": "Enterprise licencia",
   "Email_verified": "E-mail bol overený",
   "Emoji": "Emoji",
   "EmojiCustomFilesystem": "Vlastný súborový systém Emoji",
@@ -2760,5 +2761,7 @@
   "registration.component.form.reasonToJoin": "Dôvod pripojenia",
   "registration.component.form.invalidConfirmPass": "Potvrdenie hesla sa nezhoduje s heslom",
   "registration.component.form.confirmPassword": "Potvrďte svoje heslo",
-  "registration.component.form.sendConfirmationEmail": "Pošlite potvrdzovací e-mail"
+  "registration.component.form.sendConfirmationEmail": "Pošlite potvrdzovací e-mail",
+  "Enterprise": "podnik",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Analytika"
 }

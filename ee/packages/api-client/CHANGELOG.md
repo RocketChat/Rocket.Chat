@@ -1,5 +1,78 @@
 # @rocket.chat/api-client
 
+## 0.1.22-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.0-rc.7
+  - @rocket.chat/rest-typings@6.6.0-rc.7
+  </details>
+
+## 0.1.22-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.0-rc.6
+  - @rocket.chat/rest-typings@6.6.0-rc.6
+  </details>
+
+## 0.1.22-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.0-rc.5
+  - @rocket.chat/rest-typings@6.6.0-rc.5
+  </details>
+
+## 0.1.22-rc.4
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.4
+- @rocket.chat/rest-typings@6.6.0-rc.4
+
+## 0.1.22-rc.3
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.3
+- @rocket.chat/rest-typings@6.6.0-rc.3
+
+## 0.1.22-rc.2
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.2
+- @rocket.chat/rest-typings@6.6.0-rc.2
+
+## 0.1.22-rc.1
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.1
+- @rocket.chat/rest-typings@6.6.0-rc.1
+
+## 0.1.22-rc.0
+
+### Patch Changes
+
+- b223cbde14: feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+- Updated dependencies [b223cbde14]
+- Updated dependencies [dbb08ef948]
+- Updated dependencies [748e57984d]
+- Updated dependencies [7c6198f49f]
+- Updated dependencies [fdd9852079]
+- Updated dependencies [2260c04ec6]
+- Updated dependencies [b4b2cd20a8]
+  - @rocket.chat/core-typings@6.6.0-rc.0
+  - @rocket.chat/rest-typings@6.6.0-rc.0
+
 ## 0.1.21
 
 ### Patch Changes

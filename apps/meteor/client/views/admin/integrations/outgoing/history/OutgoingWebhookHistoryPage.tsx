@@ -6,7 +6,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 
 import { sdk } from '../../../../../../app/utils/client/lib/SDKClient';
 import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
-import Page from '../../../../../components/Page';
+import { Page, PageHeader, PageContent } from '../../../../../components/Page';
 import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
 import HistoryContent from './HistoryContent';
 
@@ -106,17 +106,17 @@ const OutgoingWebhookHistoryPage = (props: ComponentProps<typeof Page>) => {
 
 	return (
 		<Page flexDirection='column' {...props}>
-			<Page.Header title={t('Integration_Outgoing_WebHook_History')}>
+			<PageHeader
+				title={t('Integration_Outgoing_WebHook_History')}
+				onClickBack={() => router.navigate(`/admin/integrations/edit/outgoing/${id}`)}
+			>
 				<ButtonGroup>
-					<Button icon='back' onClick={() => router.navigate(`/admin/integrations/edit/outgoing/${id}`)}>
-						{t('Back')}
-					</Button>
 					<Button icon='trash' danger onClick={handleClearHistory} disabled={total === 0}>
 						{t('clear_history')}
 					</Button>
 				</ButtonGroup>
-			</Page.Header>
-			<Page.Content>
+			</PageHeader>
+			<PageContent>
 				<ScrollableContentWrapper>
 					<HistoryContent key='historyContent' data={data?.history || []} isLoading={isLoading} />
 				</ScrollableContentWrapper>
@@ -129,7 +129,7 @@ const OutgoingWebhookHistoryPage = (props: ComponentProps<typeof Page>) => {
 					onSetItemsPerPage={setItemsPerPage}
 					onSetCurrent={setCurrent}
 				/>
-			</Page.Content>
+			</PageContent>
 		</Page>
 	);
 };

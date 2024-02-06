@@ -2756,5 +2756,7 @@
   "registration.component.form.reasonToJoin": "Qoşulma səbəbi",
   "registration.component.form.invalidConfirmPass": "Şifrənin təsdiqlənməsi şifrə uyğun gəlmir",
   "registration.component.form.confirmPassword": "Şifrənizi təsdiqləyin",
-  "registration.component.form.sendConfirmationEmail": "Təsdiq e-poçt göndər"
+  "registration.component.form.sendConfirmationEmail": "Təsdiq e-poçt göndər",
+  "Enterprise": "Müəssisə",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Analytics"
 }

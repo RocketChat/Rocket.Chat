@@ -2811,5 +2811,7 @@
   "registration.component.form.reasonToJoin": "Priežastys prisijungti",
   "registration.component.form.invalidConfirmPass": "Slaptažodžio patvirtinimas nesutampa su slaptažodžiu",
   "registration.component.form.confirmPassword": "Patvirtinkite savo slaptažodį",
-  "registration.component.form.sendConfirmationEmail": "Siųsti patvirtinimo el. Laišką"
+  "registration.component.form.sendConfirmationEmail": "Siųsti patvirtinimo el. Laišką",
+  "Enterprise": "Įmonė",
+  "UpgradeToGetMore_engagement-dashboard_Title": "\"Analytics\""
 }

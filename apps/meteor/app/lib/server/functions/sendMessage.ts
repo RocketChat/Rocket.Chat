@@ -7,6 +7,7 @@ import { Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 import { isRelativeURL } from '../../../../lib/utils/isRelativeURL';
 import { isURL } from '../../../../lib/utils/isURL';
+import { broadcastMessageFromData } from '../../../../server/modules/watchers/lib/messages';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { FileUpload } from '../../../file-upload/server';
 import notifications from '../../../notifications/server/lib/Notifications';
@@ -249,8 +250,6 @@ export const sendMessage = async function (user: any, message: any, room: any, u
 
 	message = await Message.beforeSave({ message, room, user });
 
-	message = await callbacks.run('beforeSaveMessage', message, room);
-
 	if (!message) {
 		return;
 	}
@@ -286,5 +285,8 @@ export const sendMessage = async function (user: any, message: any, room: any, u
 
 	// Execute all callbacks
 	await callbacks.run('afterSaveMessage', message, room);
+	void broadcastMessageFromData({
+		id: message._id,
+	});
 	return message;
 };

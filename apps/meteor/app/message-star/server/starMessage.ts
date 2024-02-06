@@ -4,6 +4,7 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { Apps, AppEvents } from '../../../ee/server/apps/orchestrator';
+import { broadcastMessageFromData } from '../../../server/modules/watchers/lib/messages';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization/server';
 import { isTheLastMessage } from '../../lib/server/functions/isTheLastMessage';
 import { settings } from '../../settings/server';
@@ -59,6 +60,10 @@ Meteor.methods<ServerMethods>({
 		await Apps.triggerEvent(AppEvents.IPostMessageStarred, message, await Meteor.userAsync(), message.starred);
 
 		await Messages.updateUserStarById(message._id, uid, message.starred);
+
+		void broadcastMessageFromData({
+			id: message._id,
+		});
 
 		return true;
 	},

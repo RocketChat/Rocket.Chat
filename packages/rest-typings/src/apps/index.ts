@@ -12,8 +12,8 @@ import type {
 	AppRequestFilter,
 	AppRequestsStats,
 	PaginatedAppRequests,
-	UiKit,
 } from '@rocket.chat/core-typings';
+import type * as UiKit from '@rocket.chat/ui-kit';
 
 export type AppsEndpoints = {
 	'/apps/count': {
@@ -209,7 +209,7 @@ export type AppsEndpoints = {
 		};
 	};
 
-	'/apps/': {
+	'/apps': {
 		GET:
 			| ((params: { buildExternalUrl: 'true'; purchaseType?: 'buy' | 'subscription'; appId?: string; details?: 'true' | 'false' }) => {
 					url: string;
@@ -239,15 +239,27 @@ export type AppsEndpoints = {
 			  }[])
 			| (() => { apps: App[] });
 
-		POST: (params: {
-			appId: string;
-			marketplace: boolean;
-			version: string;
-			permissionsGranted?: IPermission[];
-			url?: string;
-			downloadOnly?: boolean;
-		}) => {
-			app: App;
+		POST: {
+			(
+				params:
+					| {
+							appId: string;
+							marketplace: boolean;
+							version: string;
+							permissionsGranted?: IPermission[];
+							url?: string;
+							downloadOnly?: boolean;
+					  }
+					| { url: string; downloadOnly?: boolean },
+			):
+				| {
+						app: App;
+				  }
+				| {
+						buff: {
+							data: ArrayLike<number>;
+						};
+				  };
 		};
 	};
 

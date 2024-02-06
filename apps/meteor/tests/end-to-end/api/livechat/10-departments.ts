@@ -259,6 +259,24 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.expect(400);
 		});
 
+		it('should return an error if fallbackForwardDepartment is referencing a department that does not exist', async () => {
+			await request
+				.post(api('livechat/department'))
+				.set(credentials)
+				.send({
+					department: {
+						name: 'Test',
+						enabled: true,
+						showOnOfflineForm: true,
+						showOnRegistration: true,
+						email: 'bla@bla',
+						fallbackForwardDepartment: 'not a department id',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+
 		it('should create a new department', async () => {
 			const { body } = await request
 				.post(api('livechat/department'))
@@ -344,8 +362,15 @@ import { IS_EE } from '../../../e2e/config/constants';
 	});
 
 	describe('PUT livechat/departments/:_id', () => {
+		let department: ILivechatDepartment;
+		before(async () => {
+			department = await createDepartment();
+		});
+		after(async () => {
+			await deleteDepartment(department._id);
+		});
+
 		it('should return an error if fallbackForwardDepartment points to same department', async () => {
-			const department = await createDepartment();
 			await request
 				.put(api(`livechat/department/${department._id}`))
 				.set(credentials)
@@ -361,7 +386,58 @@ import { IS_EE } from '../../../e2e/config/constants';
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400);
-			await deleteDepartment(department._id);
+		});
+		it('should fail if `agents` param is not an array', async () => {
+			await request
+				.put(api(`livechat/department/${department._id}`))
+				.set(credentials)
+				.send({
+					department: {
+						name: faker.hacker.adjective(),
+						enabled: true,
+						showOnOfflineForm: true,
+						showOnRegistration: true,
+						email: faker.internet.email(),
+					},
+					agents: 'not an array',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+		it('should throw an error if user has permission to add agents and agents array has invalid format', async () => {
+			await updatePermission('add-livechat-department-agents', ['admin']);
+			await request
+				.put(api(`livechat/department/${department._id}`))
+				.set(credentials)
+				.send({
+					department: {
+						name: faker.hacker.adjective(),
+						enabled: true,
+						showOnOfflineForm: true,
+						showOnRegistration: true,
+						email: faker.internet.email(),
+					},
+					agents: [{ notAValidKey: 'string' }],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+		it('should throw an error if user has permission to add agents and agents array has invalid internal format', async () => {
+			await request
+				.put(api(`livechat/department/${department._id}`))
+				.set(credentials)
+				.send({
+					department: {
+						name: faker.hacker.adjective(),
+						enabled: true,
+						showOnOfflineForm: true,
+						showOnRegistration: true,
+						email: faker.internet.email(),
+					},
+					agents: [{ upsert: [{ notAValidKey: 'string' }] }],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
 		});
 	});
 

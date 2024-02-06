@@ -2774,5 +2774,7 @@
   "registration.component.form.reasonToJoin": "прычына рэгістрацыі",
   "registration.component.form.invalidConfirmPass": "Пацвярджэнне пароля не супадае пароль",
   "registration.component.form.confirmPassword": "Пацвердзіць пароль",
-  "registration.component.form.sendConfirmationEmail": "Адправіць па электроннай пошце пацвярджэнне"
+  "registration.component.form.sendConfirmationEmail": "Адправіць па электроннай пошце пацвярджэнне",
+  "Enterprise": "прадпрыемства",
+  "UpgradeToGetMore_engagement-dashboard_Title": "аналітыка"
 }

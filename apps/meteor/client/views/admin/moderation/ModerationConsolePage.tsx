@@ -1,37 +1,62 @@
+import { Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { useTranslation, useRouteParameter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import React, { useCallback } from 'react';
 
-import { Contextualbar } from '../../../components/Contextualbar';
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 import { getPermaLink } from '../../../lib/getPermaLink';
+import ModConsoleReportDetails from './ModConsoleReportDetails';
 import ModerationConsoleTable from './ModerationConsoleTable';
-import UserMessages from './UserMessages';
+import ModConsoleUsersTable from './UserReports/ModConsoleUsersTable';
 
-const ModerationConsolePage = () => {
+type TabType = 'users' | 'messages';
+
+type ModerationConsolePageProps = {
+	tab: TabType;
+	onSelectTab?: (tab: TabType) => void;
+};
+
+const ModerationConsolePage = ({ tab = 'messages', onSelectTab }: ModerationConsolePageProps) => {
 	const t = useTranslation();
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const handleRedirect = async (mid: string) => {
-		try {
-			const permalink = await getPermaLink(mid);
-			// open the permalink in same tab
-			window.open(permalink, '_self');
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	};
+	const handleRedirect = useCallback(
+		async (mid: string) => {
+			try {
+				const permalink = await getPermaLink(mid);
+				window.open(permalink, '_self');
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
+		},
+		[dispatchToastMessage],
+	);
+
+	const handleTabClick = useCallback(
+		(tab: TabType): undefined | (() => void) => (onSelectTab ? (): void => onSelectTab(tab) : undefined),
+		[onSelectTab],
+	);
 
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('Moderation')} />
-				<Page.Content>
-					<ModerationConsoleTable />
-				</Page.Content>
+				<PageHeader title={t('Moderation')} />
+
+				<Tabs>
+					<TabsItem selected={tab === 'messages'} onClick={handleTabClick('messages')}>
+						{t('Reported_Messages')}
+					</TabsItem>
+					<TabsItem selected={tab === 'users'} onClick={handleTabClick('users')}>
+						{t('Reported_Users')}
+					</TabsItem>
+				</Tabs>
+				<PageContent>
+					{tab === 'messages' && <ModerationConsoleTable />}
+					{tab === 'users' && <ModConsoleUsersTable />}
+				</PageContent>
 			</Page>
-			{context && <Contextualbar>{context === 'info' && id && <UserMessages userId={id} onRedirect={handleRedirect} />}</Contextualbar>}
+			{context === 'info' && id && <ModConsoleReportDetails userId={id} onRedirect={handleRedirect} default={tab} />}
 		</Page>
 	);
 };

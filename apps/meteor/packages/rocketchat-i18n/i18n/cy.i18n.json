@@ -2747,5 +2747,7 @@
   "registration.component.form.reasonToJoin": "Rheswm i Ymuno",
   "registration.component.form.invalidConfirmPass": "Nid yw'r cadarnhad cyfrinair yn cyfateb i'r cyfrinair",
   "registration.component.form.confirmPassword": "Cadarnhau eich cyfrinair",
-  "registration.component.form.sendConfirmationEmail": "Anfon ebost cadarnhad"
+  "registration.component.form.sendConfirmationEmail": "Anfon ebost cadarnhad",
+  "Enterprise": "Menter",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Dadansoddiadau"
 }

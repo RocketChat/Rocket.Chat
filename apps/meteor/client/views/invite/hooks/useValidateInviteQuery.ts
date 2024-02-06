@@ -37,7 +37,7 @@ export const useValidateInviteQuery = (userId: string | null, token: string | un
 				}
 
 				if (registrationForm !== 'Disabled') {
-					setLoginDefaultState('register');
+					setLoginDefaultState('invite-register');
 				} else {
 					setLoginDefaultState('login');
 				}

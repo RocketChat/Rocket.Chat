@@ -151,7 +151,7 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 	const monitorsField = useUniqueId();
 
 	return (
-		<Contextualbar>
+		<Contextualbar data-qa-id='units-contextual-bar'>
 			<ContextualbarHeader>
 				<ContextualbarTitle>{_id ? t('Edit_Unit') : t('New_Unit')}</ContextualbarTitle>
 				<ContextualbarClose onClick={() => router.navigate('/omnichannel/units')}></ContextualbarClose>
@@ -302,11 +302,13 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 					</Button>
 				</ButtonGroup>
 				{_id && (
-					<ButtonGroup stretch mbs={8}>
-						<Button icon='trash' danger onClick={() => handleDeleteUnit(_id)}>
-							{t('Delete')}
-						</Button>
-					</ButtonGroup>
+					<Box mbs={8}>
+						<ButtonGroup stretch>
+							<Button icon='trash' danger onClick={() => handleDeleteUnit(_id)}>
+								{t('Delete')}
+							</Button>
+						</ButtonGroup>
+					</Box>
 				)}
 			</ContextualbarFooter>
 		</Contextualbar>

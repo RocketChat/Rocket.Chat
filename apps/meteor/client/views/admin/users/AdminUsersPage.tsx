@@ -6,7 +6,7 @@ import React, { useRef } from 'react';
 import UserPageHeaderContentWithSeatsCap from '../../../../ee/client/views/admin/users/UserPageHeaderContentWithSeatsCap';
 import { useSeatsCap } from '../../../../ee/client/views/admin/users/useSeatsCap';
 import { Contextualbar, ContextualbarHeader, ContextualbarTitle, ContextualbarClose } from '../../../components/Contextualbar';
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 import { useShouldPreventAction } from '../../../hooks/useShouldPreventAction';
 import AdminInviteUsers from './AdminInviteUsers';
 import AdminUserForm from './AdminUserForm';
@@ -40,7 +40,7 @@ const UsersPage = (): ReactElement => {
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('Users')}>
+				<PageHeader title={t('Users')}>
 					{seatsCap && seatsCap.maxActiveUsers < Number.POSITIVE_INFINITY ? (
 						<UserPageHeaderContentWithSeatsCap {...seatsCap} />
 					) : (
@@ -57,10 +57,10 @@ const UsersPage = (): ReactElement => {
 							)}
 						</ButtonGroup>
 					)}
-				</Page.Header>
-				<Page.Content>
+				</PageHeader>
+				<PageContent>
 					<UsersTable reload={reload} />
-				</Page.Content>
+				</PageContent>
 			</Page>
 			{context && (
 				<Contextualbar is='aside' aria-labelledby=''>

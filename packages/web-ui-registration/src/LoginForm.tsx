@@ -13,6 +13,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { Form, ActionLink } from '@rocket.chat/layout';
+import { useDocumentTitle } from '@rocket.chat/ui-client';
 import { useLoginWithPassword, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
@@ -78,6 +79,8 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 
 	const usernameOrEmailPlaceholder = String(useSetting('Accounts_EmailOrUsernamePlaceholder'));
 	const passwordPlaceholder = String(useSetting('Accounts_PasswordPlaceholder'));
+
+	useDocumentTitle(t('registration.component.login'), false);
 
 	const loginMutation = useMutation({
 		mutationFn: (formData: { username: string; password: string }) => {
@@ -196,7 +199,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 						{errorOnSubmit && <FieldGroup disabled={loginMutation.isLoading}>{renderErrorOnSubmit(errorOnSubmit)}</FieldGroup>}
 					</Form.Container>
 					<Form.Footer>
-						<ButtonGroup stretch>
+						<ButtonGroup>
 							<Button loading={loginMutation.isLoading} type='submit' primary>
 								{t('registration.component.login')}
 							</Button>

@@ -2562,5 +2562,7 @@
   "registration.component.form.reasonToJoin": "Разлог за придруживање",
   "registration.component.form.invalidConfirmPass": "Потврдна лозинка се не поклапа са лозинком",
   "registration.component.form.confirmPassword": "Потврдите лозинку",
-  "registration.component.form.sendConfirmationEmail": "Пошаљи потврдну поруку"
+  "registration.component.form.sendConfirmationEmail": "Пошаљи потврдну поруку",
+  "Enterprise": "Предузеће",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Аналитика"
 }

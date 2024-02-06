@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/pdf-worker",
-	"version": "0.0.27",
+	"version": "0.0.28-rc.7",
 	"private": true,
 	"devDependencies": {
 		"@storybook/addon-essentials": "~6.5.16",
@@ -15,8 +15,8 @@
 		"jest": "~29.6.4",
 		"jest-environment-jsdom": "~29.6.4",
 		"react-dom": "^18.2.0",
-		"ts-jest": "~29.0.5",
-		"typescript": "~5.2.2"
+		"ts-jest": "~29.1.1",
+		"typescript": "~5.3.2"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",

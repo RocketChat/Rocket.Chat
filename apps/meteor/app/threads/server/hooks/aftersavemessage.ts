@@ -4,6 +4,7 @@ import { Messages } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';
+import { broadcastMessageFromData } from '../../../../server/modules/watchers/lib/messages';
 import { updateThreadUsersSubscriptions, getMentions } from '../../../lib/server/lib/notifyUsersOnMessage';
 import { sendMessageNotifications } from '../../../lib/server/lib/sendNotificationsOnMessage';
 import { settings } from '../../../settings/server';
@@ -61,6 +62,9 @@ export async function processThreads(message: IMessage, room: IRoom) {
 	await notifyUsersOnReply(message, replies, room);
 	await metaData(message, parentMessage, replies);
 	await notification(message, room, replies);
+	void broadcastMessageFromData({
+		id: message.tmid,
+	});
 
 	return message;
 }

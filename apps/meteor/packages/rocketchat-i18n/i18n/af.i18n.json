@@ -2756,5 +2756,7 @@
   "registration.component.form.reasonToJoin": "Rede om deel te neem",
   "registration.component.form.invalidConfirmPass": "Die wagwoord bevestiging pas nie by die wagwoord nie",
   "registration.component.form.confirmPassword": "Bevestig jou wagwoord",
-  "registration.component.form.sendConfirmationEmail": "Stuur bevestiging e-pos"
+  "registration.component.form.sendConfirmationEmail": "Stuur bevestiging e-pos",
+  "Enterprise": "onderneming",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Analytics"
 }

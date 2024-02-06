@@ -2748,5 +2748,7 @@
   "registration.component.form.reasonToJoin": "Причина за присъединяване",
   "registration.component.form.invalidConfirmPass": "Потвърждението на паролата не съвпада с паролата",
   "registration.component.form.confirmPassword": "Потвърдите паролата",
-  "registration.component.form.sendConfirmationEmail": "Изпратете имейл за потвърждение"
+  "registration.component.form.sendConfirmationEmail": "Изпратете имейл за потвърждение",
+  "Enterprise": "начинание",
+  "UpgradeToGetMore_engagement-dashboard_Title": "анализ"
 }

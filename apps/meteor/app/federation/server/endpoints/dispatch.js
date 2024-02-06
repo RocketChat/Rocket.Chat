@@ -3,6 +3,7 @@ import { eventTypes } from '@rocket.chat/core-typings';
 import { FederationServers, FederationRoomEvents, Rooms, Messages, Subscriptions, Users, ReadReceipts } from '@rocket.chat/models';
 import EJSON from 'ejson';
 
+import { broadcastMessageFromData } from '../../../../server/modules/watchers/lib/messages';
 import { API } from '../../../api/server';
 import { FileUpload } from '../../../file-upload/server';
 import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
@@ -214,11 +215,13 @@ const eventHandlers = {
 
 			// Check if message exists
 			const persistedMessage = await Messages.findOne({ _id: message._id });
+			let messageForNotification;
 
 			if (persistedMessage) {
 				// Update the federation
 				if (!persistedMessage.federation) {
 					await Messages.updateOne({ _id: persistedMessage._id }, { $set: { federation: message.federation } });
+					messageForNotification = { ...persistedMessage, federation: message.federation };
 				}
 			} else {
 				// Load the room
@@ -275,9 +278,16 @@ const eventHandlers = {
 					// Notify users
 					await notifyUsersOnMessage(denormalizedMessage, room);
 					sendAllNotifications(denormalizedMessage, room);
+					messageForNotification = denormalizedMessage;
 				} catch (err) {
 					serverLogger.debug(`Error on creating message: ${message._id}`);
 				}
+			}
+			if (messageForNotification) {
+				void broadcastMessageFromData({
+					id: messageForNotification._id,
+					data: messageForNotification,
+				});
 			}
 		}
 
@@ -305,6 +315,14 @@ const eventHandlers = {
 			} else {
 				// Update the message
 				await Messages.updateOne({ _id: persistedMessage._id }, { $set: { msg: message.msg, federation: message.federation } });
+				void broadcastMessageFromData({
+					id: persistedMessage._id,
+					data: {
+						...persistedMessage,
+						msg: message.msg,
+						federation: message.federation,
+					},
+				});
 			}
 		}
 
@@ -367,6 +385,16 @@ const eventHandlers = {
 
 			// Update the property
 			await Messages.updateOne({ _id: messageId }, { $set: { [`reactions.${reaction}`]: reactionObj } });
+			void broadcastMessageFromData({
+				id: persistedMessage._id,
+				data: {
+					...persistedMessage,
+					reactions: {
+						...persistedMessage.reactions,
+						[reaction]: reactionObj,
+					},
+				},
+			});
 		}
 
 		return eventResult;
@@ -415,6 +443,16 @@ const eventHandlers = {
 				// Otherwise, update the property
 				await Messages.updateOne({ _id: messageId }, { $set: { [`reactions.${reaction}`]: reactionObj } });
 			}
+			void broadcastMessageFromData({
+				id: persistedMessage._id,
+				data: {
+					...persistedMessage,
+					reactions: {
+						...persistedMessage.reactions,
+						[reaction]: reactionObj,
+					},
+				},
+			});
 		}
 
 		return eventResult;

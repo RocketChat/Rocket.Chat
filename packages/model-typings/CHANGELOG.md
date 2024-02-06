@@ -1,5 +1,75 @@
 # @rocket.chat/model-typings
 
+## 0.3.0-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.0-rc.7
+  </details>
+
+## 0.3.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.0-rc.6
+  </details>
+
+## 0.3.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.0-rc.5
+  </details>
+
+## 0.3.0-rc.4
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.4
+
+## 0.3.0-rc.3
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.3
+
+## 0.3.0-rc.2
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.2
+
+## 0.3.0-rc.1
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.1
+
+## 0.3.0-rc.0
+
+### Minor Changes
+
+- 2260c04ec6: **Added ‘Reported Users’ Tab to Moderation Console:** Enhances user monitoring by displaying reported users.
+- e7d3cdeef0: Added feature to sync the user's language preference with the autotranslate setting.
+
+### Patch Changes
+
+- b223cbde14: feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+- fae558bd5d: Fixed issue with notifications for thread messages still being sent after thread has been read
+- c8ab6583dc: Fixed issue with OEmbed cache not being cleared daily
+- b4b2cd20a8: Fixed an issue caused by the `Fallback Forward Department` feature. Feature could be configured by admins in a way that mimis a loop, causing a chat to be forwarded "infinitely" between those departments. System will now prevent Self & 1-level deep circular references from being saved, and a new setting is added to control the maximum number of hops that the system will do between fallback departments before considering a transfer failure.
+- Updated dependencies [b223cbde14]
+- Updated dependencies [dbb08ef948]
+- Updated dependencies [fdd9852079]
+- Updated dependencies [b4b2cd20a8]
+  - @rocket.chat/core-typings@6.6.0-rc.0
+
 ## 0.2.3
 
 ### Patch Changes
