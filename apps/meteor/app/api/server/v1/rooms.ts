@@ -264,7 +264,7 @@ API.v1.addRoute(
 				return API.v1.failure('Body parameter "oldest" is required.');
 			}
 
-			if (limit > settings.get<number>('Prune_message_limit')) {
+			if (limit && limit > settings.get<number>('Prune_message_limit')) {
 				return API.v1.failure('The limit of messages to prune has been reached');
 			}
 
