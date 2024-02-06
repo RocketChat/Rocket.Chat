@@ -416,8 +416,8 @@ describe('[Rooms]', function () {
 				.set(credentials)
 				.send({
 					roomId: publicChannel._id,
-					latest: '2016-12-09T13:42:25.304Z',
-					oldest: '2016-08-30T13:42:25.304Z',
+					latest: '9999-12-31T23:59:59.000Z',
+					oldest: '0001-01-01T00:00:00.000Z',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -432,8 +432,8 @@ describe('[Rooms]', function () {
 				.set(credentials)
 				.send({
 					roomId: publicChannel._id,
-					latest: '2016-12-09T13:42:25.304Z',
-					oldest: '2016-08-30T13:42:25.304Z',
+					latest: '9999-12-31T23:59:59.000Z',
+					oldest: '0001-01-01T00:00:00.000Z',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -549,8 +549,8 @@ describe('[Rooms]', function () {
 				.set(credentials)
 				.send({
 					roomId: privateChannel._id,
-					latest: '2016-12-09T13:42:25.304Z',
-					oldest: '2016-08-30T13:42:25.304Z',
+					latest: '9999-12-31T23:59:59.000Z',
+					oldest: '0001-01-01T00:00:00.000Z',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -565,8 +565,8 @@ describe('[Rooms]', function () {
 				.set(credentials)
 				.send({
 					roomId: directMessageChannel,
-					latest: '2016-12-09T13:42:25.304Z',
-					oldest: '2016-08-30T13:42:25.304Z',
+					latest: '9999-12-31T23:59:59.000Z',
+					oldest: '0001-01-01T00:00:00.000Z',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -581,8 +581,8 @@ describe('[Rooms]', function () {
 				.set(userCredentials)
 				.send({
 					roomId: directMessageChannel,
-					latest: '2016-12-09T13:42:25.304Z',
-					oldest: '2016-08-30T13:42:25.304Z',
+					latest: '9999-12-31T23:59:59.000Z',
+					oldest: '0001-01-01T00:00:00.000Z',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
