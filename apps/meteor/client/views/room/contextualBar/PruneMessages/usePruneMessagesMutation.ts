@@ -9,6 +9,10 @@ export const usePruneMessagesMutation = () => {
 	return useMutation({
 		mutationFn: pruneMessagesAction,
 		onSuccess: ({ count }) => {
+			if (count < 1) {
+				throw new Error(t('No_messages_found_to_prune'));
+			}
+
 			dispatchToastMessage({ type: 'success', message: t('__count__message_pruned', { count }) });
 		},
 		onError: (error) => {

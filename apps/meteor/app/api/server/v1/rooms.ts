@@ -281,10 +281,6 @@ API.v1.addRoute(
 				fromUsers: users,
 			});
 
-			if (count < 1) {
-				return API.v1.failure('No messages to prune');
-			}
-
 			return API.v1.success({ _id, count });
 		},
 	},
