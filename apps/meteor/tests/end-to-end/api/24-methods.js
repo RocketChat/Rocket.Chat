@@ -1977,7 +1977,7 @@ describe('Meteor.methods', function () {
 					expect(res.body).to.have.nested.property('group.t', 'p');
 					expect(res.body).to.have.nested.property('group.msgs', 0);
 					rid = res.body.group._id;
-					roomName = res.body.group.fname;
+					roomName = res.body.group.name;
 				})
 				.end(done);
 		});
@@ -2089,15 +2089,23 @@ describe('Meteor.methods', function () {
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.property('msg').that.is.a('string');
-					expect(data).to.have.property('attachments').that.is.an('array').that.has.lengthOf(1);
-					expect(data.attachments[0]).to.have.property('message_link').that.is.a('string');
+				});
+
+			await request
+				.get(api(`chat.getMessage?msgId=${messageId}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('message').that.is.an('object');
+					expect(res.body.message).to.have.property('msg', `${quotedMsgLink} updated`);
+					expect(res.body.message).to.have.property('attachments').that.is.an('array').that.has.lengthOf(1);
+					expect(res.body.message.attachments[0]).to.have.property('message_link').that.is.a('string');
 				});
 		});
 
-		it('should remove a quote attachment from a message', (done) => {
-			request
+		it('should remove a quote attachment from a message', async () => {
+			await request
 				.post(methodCall('updateMessage'))
 				.set(credentials)
 				.send({
@@ -2113,11 +2121,18 @@ describe('Meteor.methods', function () {
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.property('msg').that.is.a('string');
-					expect(data).to.have.property('attachments').that.is.an('array').that.has.lengthOf(0);
-				})
-				.end(done);
+				});
+
+			await request
+				.get(api(`chat.getMessage?msgId=${messageId}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('message').that.is.an('object');
+					expect(res.body.message).to.have.property('msg', 'updated');
+					expect(res.body.message).to.have.property('attachments').that.is.an('array').that.has.lengthOf(0);
+				});
 		});
 
 		it('should update a message when bypass time limits permission is enabled', async () => {
