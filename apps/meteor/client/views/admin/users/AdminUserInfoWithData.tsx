@@ -10,7 +10,7 @@ import React, { useMemo } from 'react';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import { ContextualbarContent } from '../../../components/Contextualbar';
 import { FormSkeleton } from '../../../components/Skeleton';
-import UserCard from '../../../components/UserCard';
+import { UserCardRole } from '../../../components/UserCard';
 import UserInfo from '../../../components/UserInfo';
 import { UserStatus } from '../../../components/UserStatus';
 import { getUserEmailVerified } from '../../../lib/utils/getUserEmailVerified';
@@ -76,7 +76,7 @@ const AdminUserInfoWithData = ({ uid, onReload }: AdminUserInfoWithDataProps): R
 			name,
 			username,
 			lastLogin,
-			roles: getRoles(roles).map((role, index) => <UserCard.Role key={index}>{role}</UserCard.Role>),
+			roles: getRoles(roles).map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
 			bio,
 			canViewAllInfo,
 			phone,
