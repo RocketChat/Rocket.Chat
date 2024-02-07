@@ -1,6 +1,6 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import type { Icon } from '@rocket.chat/fuselage';
-import { useLayoutHiddenActions, useUserRoom } from '@rocket.chat/ui-contexts';
+import { useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { useCallback, useMemo } from 'react';
 
@@ -36,19 +36,13 @@ type UserMenuAction = {
 	items: GenericMenuItemProps[];
 }[];
 
-type validRoomType = 'd' | 'p' | 'c';
-
 export const useUserInfoActions = (
 	user: Pick<IUser, '_id' | 'username' | 'name'>,
 	rid: IRoom['_id'],
 	reload?: () => void,
 	size = 2,
 ): { actions: [string, UserInfoAction][]; menuActions: any | undefined } => {
-	const room = useUserRoom(rid);
-
-	const { data, refetch } = useMemberExists(
-		useMemo(() => ({ rid, roomType: room?.t as validRoomType, username: user.username || '' }), [rid, room?.t, user?.username]),
-	);
+	const { data, refetch } = useMemberExists(useMemo(() => ({ rid, username: user.username || '' }), [rid, user.username]));
 	const memberChangeReload = useCallback(async () => {
 		await reload?.();
 		await refetch();

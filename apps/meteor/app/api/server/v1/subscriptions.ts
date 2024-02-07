@@ -5,19 +5,14 @@ import {
 	isSubscriptionsReadProps,
 	isSubscriptionsUnreadProps,
 } from '@rocket.chat/rest-typings';
+import { isSubscriptionsExistsProps } from '@rocket.chat/rest-typings/src';
 import { Meteor } from 'meteor/meteor';
 
 import { readMessages } from '../../../../server/lib/readMessages';
+import { canAccessRoomAsync } from '../../../authorization/server';
+import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { API } from '../api';
-
-import { hasAlreadyJoinedRoom } from '/server/services/authorization/hasAlreadyJoinedRoom';
-
-import { Authorization } from '@rocket.chat/core-services';
-
-import { hasPermissionAsync } from '/app/authorization/server/functions/hasPermission';
-import { canAccessRoomIdAsync } from '/app/authorization/server/functions/canAccessRoom';
-import { canAccessRoom } from '/server/services/authorization/canAccessRoom';
-import { isSubscriptionsExistsProps } from '@rocket.chat/rest-typings/src';
 
 API.v1.addRoute(
 	'subscriptions.get',
@@ -137,7 +132,7 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			if ((await canAccessRoom(room, this.user)) || (await canAccessRoomIdAsync(room._id, this.userId))) {
+			if ((await canAccessRoomAsync(room, this.user)) || (await canAccessRoomIdAsync(room._id, this.userId))) {
 				return API.v1.success({ exists: !!(await Subscriptions.countByRoomIdAndUserId(room._id, user._id)) });
 			}
 			return API.v1.unauthorized();
