@@ -1,10 +1,10 @@
 import { AvatarContainer } from '@rocket.chat/fuselage';
-import type { ComponentProps, HTMLAttributes, ReactNode, VFC } from 'react';
+import type { ComponentProps, HTMLAttributes, ReactElement, VFC } from 'react';
 
 import UserAvatar from './UserAvatar';
 
 type MessageAvatarProps = {
-	emoji?: ReactNode;
+	emoji?: ReactElement;
 	avatarUrl?: string;
 	username: string;
 	size?: ComponentProps<typeof UserAvatar>['size'];
