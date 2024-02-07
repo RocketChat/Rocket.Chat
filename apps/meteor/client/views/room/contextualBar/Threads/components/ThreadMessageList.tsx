@@ -1,5 +1,5 @@
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
-import { MessageDivider } from '@rocket.chat/fuselage';
+import { Bubble, MessageDivider } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import { differenceInSeconds } from 'date-fns';
@@ -97,7 +97,11 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 									<Fragment key={message._id}>
 										{showDivider && (
 											<MessageDivider unreadLabel={firstUnread ? t('Unread_Messages').toLowerCase() : undefined}>
-												{newDay && formatDate(message.ts)}
+												{newDay && (
+													<Bubble small secondary>
+														{formatDate(message.ts)}
+													</Bubble>
+												)}
 											</MessageDivider>
 										)}
 										<li>
