@@ -55,15 +55,16 @@ test.describe.serial('channel-management', () => {
 		await expect(poHomeChannel.toastSuccess).toBeVisible();
 	});
 
-	// FIXME: This test doesn't test anything
 	test('expect create invite to the room', async () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnTabMembers.click();
 		await poHomeChannel.tabs.members.inviteUser();
 
+		// FIXME: bad assertion
 		await expect(poHomeChannel.toastSuccess).toBeVisible();
 	});
 
+	// FIXME: This test doesn't test anything
 	test('expect mute "user1"', async () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnTabMembers.click();
@@ -71,6 +72,7 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.tabs.members.muteUser('user1');
 	});
 
+	// FIXME: This test doesn't test anything
 	test('expect set "user1" as owner', async () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnTabMembers.click();
@@ -78,50 +80,13 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.tabs.members.setUserAsOwner('user1');
 	});
 
+	// FIXME: This test doesn't test anything
 	test('expect set "user1" as moderator', async () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnTabMembers.click();
 		await poHomeChannel.tabs.members.showAllUsers();
 		await poHomeChannel.tabs.members.setUserAsModerator('user1');
 	});
-
-	test.describe('Room info', () => {
-		test('expect edit topic of "targetChannel"', async () => {
-			await poHomeChannel.sidenav.openChat(targetChannel);
-			await poHomeChannel.tabs.btnRoomInfo.click();
-			await poHomeChannel.tabs.room.btnEdit.click();
-			await poHomeChannel.tabs.room.inputTopic.fill('hello-topic-edited');
-			await poHomeChannel.tabs.room.btnSave.click();
-		});
-
-		test('expect edit announcement of "targetChannel"', async () => {
-			await poHomeChannel.sidenav.openChat(targetChannel);
-			await poHomeChannel.tabs.btnRoomInfo.click();
-			await poHomeChannel.tabs.room.btnEdit.click();
-			await poHomeChannel.tabs.room.inputAnnouncement.fill('hello-announcement-edited');
-			await poHomeChannel.tabs.room.btnSave.click();
-		});
-	
-		test('expect edit description of "targetChannel"', async () => {
-			await poHomeChannel.sidenav.openChat(targetChannel);
-			await poHomeChannel.tabs.btnRoomInfo.click();
-			await poHomeChannel.tabs.room.btnEdit.click();
-			await poHomeChannel.tabs.room.inputDescription.fill('hello-description-edited');
-			await poHomeChannel.tabs.room.btnSave.click();
-		});
-	
-		test('expect edit name of "targetChannel"', async ({ page }) => {
-			await poHomeChannel.sidenav.openChat(targetChannel);
-			await poHomeChannel.tabs.btnRoomInfo.click();
-			await poHomeChannel.tabs.room.btnEdit.click();
-			await poHomeChannel.tabs.room.inputName.fill(`NAME-EDITED-${targetChannel}`);
-			await poHomeChannel.tabs.room.btnSave.click();
-			await poHomeChannel.sidenav.openChat(`NAME-EDITED-${targetChannel}`);
-	
-			await expect(page).toHaveURL(`/channel/NAME-EDITED-${targetChannel}`);
-		});
-	});
-	
 
 	test.skip('expect edit notification preferences of "targetChannel"', async () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
@@ -199,4 +164,44 @@ test.describe.serial('channel-management', () => {
 			await expect(page.locator('[data-qa-type="message"]')).toHaveCount(1);
 		});
 	})
+
+	test.describe('Room info', () => {
+		// FIXME: This test doesn't test anything
+		test('expect edit topic of "targetChannel"', async () => {
+			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.tabs.btnRoomInfo.click();
+			await poHomeChannel.tabs.room.btnEdit.click();
+			await poHomeChannel.tabs.room.inputTopic.fill('hello-topic-edited');
+			await poHomeChannel.tabs.room.btnSave.click();
+		});
+
+		// FIXME: This test doesn't test anything
+		test('expect edit announcement of "targetChannel"', async () => {
+			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.tabs.btnRoomInfo.click();
+			await poHomeChannel.tabs.room.btnEdit.click();
+			await poHomeChannel.tabs.room.inputAnnouncement.fill('hello-announcement-edited');
+			await poHomeChannel.tabs.room.btnSave.click();
+		});
+	
+		// FIXME: This test doesn't test anything
+		test('expect edit description of "targetChannel"', async () => {
+			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.tabs.btnRoomInfo.click();
+			await poHomeChannel.tabs.room.btnEdit.click();
+			await poHomeChannel.tabs.room.inputDescription.fill('hello-description-edited');
+			await poHomeChannel.tabs.room.btnSave.click();
+		});
+	
+		test('expect edit name of "targetChannel"', async ({ page }) => {
+			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.tabs.btnRoomInfo.click();
+			await poHomeChannel.tabs.room.btnEdit.click();
+			await poHomeChannel.tabs.room.inputName.fill(`NAME-EDITED-${targetChannel}`);
+			await poHomeChannel.tabs.room.btnSave.click();
+			await poHomeChannel.sidenav.openChat(`NAME-EDITED-${targetChannel}`);
+	
+			await expect(page).toHaveURL(`/channel/NAME-EDITED-${targetChannel}`);
+		});
+	});
 });
