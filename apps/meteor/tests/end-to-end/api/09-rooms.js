@@ -9,7 +9,8 @@ import { getCredentials, api, request, credentials } from '../../data/api-data.j
 import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
 import { imgURL } from '../../data/interactions';
 import { updateEEPermission, updatePermission, updateSetting } from '../../data/permissions.helper';
-import { closeRoom, createRoom } from '../../data/rooms.helper';
+import { createRoom, deleteRoom } from '../../data/rooms.helper';
+import { deleteTeam } from '../../data/teams.helper';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE } from '../../e2e/config/constants';
@@ -50,12 +51,13 @@ describe('[Rooms]', function () {
 
 	describe('/rooms.saveNotification:', () => {
 		let testChannel;
-		it('create an channel', (done) => {
-			createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` }).end((err, res) => {
-				testChannel = res.body.channel;
-				done();
-			});
+
+		before(async () => {
+			testChannel = (await createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` })).body.channel;
 		});
+
+		after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
+
 		it('/rooms.saveNotification:', (done) => {
 			request
 				.post(api('rooms.saveNotification'))
@@ -83,28 +85,23 @@ describe('[Rooms]', function () {
 		let testChannel;
 		let user;
 		let userCredentials;
+		const testChannelName = `channel.test.upload.${Date.now()}-${Math.random()}`;
 
 		before(async () => {
 			user = await createUser({ joinDefaultChannels: false });
 			userCredentials = await login(user.username, password);
+			testChannel = (await createRoom({ type: 'c', name: testChannelName })).body.channel;
 		});
 
-		after(async () => {
-			await deleteUser(user);
-			user = undefined;
+		after(() =>
+			Promise.all([
+				deleteRoom({ type: 'c', roomId: testChannel._id }),
+				deleteUser(user),
+				updateSetting('FileUpload_Restrict_to_room_members', true),
+				updateSetting('FileUpload_ProtectFiles', true),
+			]),
+		);
 
-			await updateSetting('FileUpload_Restrict_to_room_members', false);
-			await updateSetting('FileUpload_ProtectFiles', true);
-		});
-
-		const testChannelName = `channel.test.upload.${Date.now()}-${Math.random()}`;
-
-		it('create an channel', (done) => {
-			createRoom({ type: 'c', name: testChannelName }).end((err, res) => {
-				testChannel = res.body.channel;
-				done();
-			});
-		});
 		it("don't upload a file to room with file field other than file", (done) => {
 			request
 				.post(api(`rooms.upload/${testChannel._id}`))
@@ -207,12 +204,13 @@ describe('[Rooms]', function () {
 	describe('/rooms.favorite', () => {
 		let testChannel;
 		const testChannelName = `channel.test.${Date.now()}-${Math.random()}`;
-		it('create an channel', (done) => {
-			createRoom({ type: 'c', name: testChannelName }).end((err, res) => {
-				testChannel = res.body.channel;
-				done();
-			});
+
+		before(async () => {
+			testChannel = (await createRoom({ type: 'c', name: testChannelName })).body.channel;
 		});
+
+		after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
+
 		it('should favorite the room when send favorite: true by roomName', (done) => {
 			request
 				.post(api('rooms.favorite'))
@@ -289,6 +287,15 @@ describe('[Rooms]', function () {
 	});
 
 	describe('/rooms.nameExists', () => {
+		let testChannel;
+		const testChannelName = `channel.test.${Date.now()}-${Math.random()}`;
+
+		before(async () => {
+			testChannel = (await createRoom({ type: 'c', name: testChannelName })).body.channel;
+		});
+
+		after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
+
 		it('should return 401 unauthorized when user is not logged in', (done) => {
 			request
 				.get(api('rooms.nameExists'))
@@ -300,15 +307,6 @@ describe('[Rooms]', function () {
 				.end(done);
 		});
 
-		// eslint-disable-next-line no-unused-vars
-		let testChannel;
-		const testChannelName = `channel.test.${Date.now()}-${Math.random()}`;
-		it('create an channel', (done) => {
-			createRoom({ type: 'c', name: testChannelName }).end((err, res) => {
-				testChannel = res.body.channel;
-				done();
-			});
-		});
 		it('should return true if this room name exists', (done) => {
 			request
 				.get(api('rooms.nameExists'))
@@ -343,72 +341,31 @@ describe('[Rooms]', function () {
 	describe('[/rooms.cleanHistory]', () => {
 		let publicChannel;
 		let privateChannel;
-		let directMessageChannel;
+		let directMessageChannelId;
 		let user;
-		beforeEach((done) => {
-			const username = `user.test.${Date.now()}`;
-			const email = `${username}@rocket.chat`;
-			request
-				.post(api('users.create'))
-				.set(credentials)
-				.send({ email, name: username, username, password })
-				.end((err, res) => {
-					user = res.body.user;
-					done(err);
-				});
+		let userCredentials;
+
+		beforeEach(async () => {
+			user = await createUser();
+			userCredentials = await login(user.username, password);
+			await updateSetting('Message_ShowDeletedStatus', true);
+
+			publicChannel = (await createRoom({ type: 'c', name: `testeChannel${+new Date()}` })).body.channel;
+			privateChannel = (await createRoom({ type: 'p', name: `testPrivateChannel${+new Date()}` })).body.group;
+			directMessageChannelId = (await createRoom({ type: 'd', username: 'rocket.cat' })).body.room.rid;
 		});
 
-		let userCredentials;
-		beforeEach((done) => {
-			request
-				.post(api('login'))
-				.send({
-					user: user.username,
-					password,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					userCredentials = {};
-					userCredentials['X-Auth-Token'] = res.body.data.authToken;
-					userCredentials['X-User-Id'] = res.body.data.userId;
-				})
-				.end(done);
-		});
-		afterEach((done) => {
-			request
-				.post(api('users.delete'))
-				.set(credentials)
-				.send({
-					userId: user._id,
-				})
-				.end(done);
-			user = undefined;
-		});
-		before(async () => {
-			await updateSetting('Message_ShowDeletedStatus', true);
-		});
-		after(async () => {
-			await updateSetting('Message_ShowDeletedStatus', false);
-		});
-		it('create a public channel', (done) => {
-			createRoom({ type: 'c', name: `testeChannel${+new Date()}` }).end((err, res) => {
-				publicChannel = res.body.channel;
-				done();
-			});
-		});
-		it('create a private channel', (done) => {
-			createRoom({ type: 'p', name: `testPrivateChannel${+new Date()}` }).end((err, res) => {
-				privateChannel = res.body.group;
-				done(err);
-			});
-		});
-		it('create a direct message', (done) => {
-			createRoom({ type: 'd', username: 'rocket.cat' }).end((err, res) => {
-				directMessageChannel = res.body.room.rid;
-				done(err);
-			});
-		});
+		afterEach(() =>
+			Promise.all([
+				deleteUser(user),
+				deleteRoom({ type: 'c', roomId: publicChannel._id }),
+				deleteRoom({ type: 'p', roomId: privateChannel._id }),
+				deleteRoom({ type: 'd', roomId: directMessageChannelId }),
+			]),
+		);
+
+		after(() => updateSetting('Message_ShowDeletedStatus', false));
+
 		it('should return success when send a valid public channel', (done) => {
 			request
 				.post(api('rooms.cleanHistory'))
@@ -528,7 +485,7 @@ describe('[Rooms]', function () {
 				.post(api('rooms.cleanHistory'))
 				.set(credentials)
 				.send({
-					roomId: directMessageChannel,
+					roomId: directMessageChannelId,
 					latest: '2016-12-09T13:42:25.304Z',
 					oldest: '2016-08-30T13:42:25.304Z',
 				})
@@ -544,7 +501,7 @@ describe('[Rooms]', function () {
 				.post(api('rooms.cleanHistory'))
 				.set(userCredentials)
 				.send({
-					roomId: directMessageChannel,
+					roomId: directMessageChannelId,
 					latest: '2016-12-09T13:42:25.304Z',
 					oldest: '2016-08-30T13:42:25.304Z',
 				})
@@ -579,27 +536,21 @@ describe('[Rooms]', function () {
 		];
 		const testChannelName = `channel.test.${Date.now()}-${Math.random()}`;
 		const testGroupName = `group.test.${Date.now()}-${Math.random()}`;
-		after((done) => {
-			closeRoom({ type: 'd', roomId: testDM._id }).then(done);
+
+		before(async () => {
+			testChannel = (await createRoom({ type: 'c', name: testChannelName })).body.channel;
+			testGroup = (await createRoom({ type: 'p', name: testGroupName })).body.group;
+			testDM = (await createRoom({ type: 'd', username: 'rocket.cat' })).body.room;
 		});
-		it('create an channel', (done) => {
-			createRoom({ type: 'c', name: testChannelName }).end((err, res) => {
-				testChannel = res.body.channel;
-				done();
-			});
-		});
-		it('create a group', (done) => {
-			createRoom({ type: 'p', name: testGroupName }).end((err, res) => {
-				testGroup = res.body.group;
-				done();
-			});
-		});
-		it('create a Direct message room with rocket.cat', (done) => {
-			createRoom({ type: 'd', username: 'rocket.cat' }).end((err, res) => {
-				testDM = res.body.room;
-				done();
-			});
-		});
+
+		after(() =>
+			Promise.all([
+				deleteRoom({ type: 'd', roomId: testDM._id }),
+				deleteRoom({ type: 'c', roomId: testChannel._id }),
+				deleteRoom({ type: 'p', roomId: testGroup._id }),
+			]),
+		);
+
 		it('should return the info about the created channel correctly searching by roomId', (done) => {
 			request
 				.get(api('rooms.info'))
@@ -697,29 +648,30 @@ describe('[Rooms]', function () {
 		let testChannel;
 		let testGroup;
 		let testDM;
-		const testChannelName = `channel.test.${Date.now()}-${Math.random()}`;
-		const testGroupName = `group.test.${Date.now()}-${Math.random()}`;
-		after((done) => {
-			closeRoom({ type: 'd', roomId: testDM._id }).then(done);
+		let user2;
+		let user2Credentials;
+		const testChannelName = `channel.leave.${Date.now()}-${Math.random()}`;
+		const testGroupName = `group.leave.${Date.now()}-${Math.random()}`;
+
+		before(async () => {
+			user2 = await createUser();
+			user2Credentials = await login(user2.username, password);
+			testChannel = (await createRoom({ type: 'c', name: testChannelName })).body.channel;
+			testGroup = (await createRoom({ type: 'p', name: testGroupName })).body.group;
+			testDM = (await createRoom({ type: 'd', username: user2.username })).body.room;
 		});
-		it('create an channel', (done) => {
-			createRoom({ type: 'c', name: testChannelName }).end((err, res) => {
-				testChannel = res.body.channel;
-				done();
-			});
-		});
-		it('create a group', (done) => {
-			createRoom({ type: 'p', name: testGroupName }).end((err, res) => {
-				testGroup = res.body.group;
-				done();
-			});
-		});
-		it('create a Direct message room with rocket.cat', (done) => {
-			createRoom({ type: 'd', username: 'rocket.cat' }).end((err, res) => {
-				testDM = res.body.room;
-				done();
-			});
-		});
+
+		after(() =>
+			Promise.all([
+				deleteRoom({ type: 'd', roomId: testDM._id }),
+				deleteRoom({ type: 'c', roomId: testChannel._id }),
+				deleteRoom({ type: 'p', roomId: testGroup._id }),
+				updatePermission('leave-c', ['admin', 'user', 'bot', 'anonymous', 'app']),
+				updatePermission('leave-p', ['admin', 'user', 'bot', 'anonymous', 'app']),
+				deleteUser(user2),
+			]),
+		);
+
 		it('should return an Error when trying leave a DM room', (done) => {
 			request
 				.post(api('rooms.leave'))
@@ -794,69 +746,52 @@ describe('[Rooms]', function () {
 					.end(done);
 			});
 		});
-		it('should leave the public channel when the room has at least another owner and the user has the necessary permission(leave-c)', (done) => {
-			updatePermission('leave-c', ['admin']).then(() => {
-				request
-					.post(api('channels.addAll'))
-					.set(credentials)
-					.send({
-						roomId: testChannel._id,
-					})
-					.end(() => {
-						request
-							.post(api('channels.addOwner'))
-							.set(credentials)
-							.send({
-								roomId: testChannel._id,
-								userId: 'rocket.cat',
-							})
-							.end(() => {
-								request
-									.post(api('rooms.leave'))
-									.set(credentials)
-									.send({
-										roomId: testChannel._id,
-									})
-									.expect(200)
-									.expect((res) => {
-										expect(res.body).to.have.property('success', true);
-									})
-									.end(done);
-							});
-					});
+		it('should leave the public channel when the room has at least another owner and the user has the necessary permission(leave-c)', async () => {
+			await updatePermission('leave-c', ['admin']);
+			await request.post(api('channels.addAll')).set(credentials).send({
+				roomId: testChannel._id,
+			});
+
+			await request.post(api('channels.addOwner')).set(credentials).send({
+				roomId: testChannel._id,
+				userId: user2._id,
+			});
+
+			await request
+				.post(api('rooms.leave'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request.post(api('channels.addOwner')).set(user2Credentials).send({
+				roomId: testChannel._id,
+				userId: credentials['X-User-Id'],
 			});
 		});
-		it('should leave the private group when the room has at least another owner and the user has the necessary permission(leave-p)', (done) => {
-			updatePermission('leave-p', ['admin']).then(() => {
-				request
-					.post(api('groups.addAll'))
-					.set(credentials)
-					.send({
-						roomId: testGroup._id,
-					})
-					.end(() => {
-						request
-							.post(api('groups.addOwner'))
-							.set(credentials)
-							.send({
-								roomId: testGroup._id,
-								userId: 'rocket.cat',
-							})
-							.end(() => {
-								request
-									.post(api('rooms.leave'))
-									.set(credentials)
-									.send({
-										roomId: testGroup._id,
-									})
-									.expect(200)
-									.expect((res) => {
-										expect(res.body).to.have.property('success', true);
-									})
-									.end(done);
-							});
-					});
+		it('should leave the private group when the room has at least another owner and the user has the necessary permission(leave-p)', async () => {
+			await updatePermission('leave-p', ['user']);
+			await request.post(api('groups.addAll')).set(credentials).send({
+				roomId: testGroup._id,
 			});
+			await request.post(api('groups.addOwner')).set(credentials).send({
+				roomId: testGroup._id,
+				userId: user2._id,
+			});
+			await request
+				.post(api('rooms.leave'))
+				.set(user2Credentials)
+				.send({
+					roomId: testGroup._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
 		});
 	});
 
@@ -864,17 +799,27 @@ describe('[Rooms]', function () {
 		let testChannel;
 		const testChannelName = `channel.test.${Date.now()}-${Math.random()}`;
 		let messageSent;
-		before((done) => {
-			createRoom({ type: 'c', name: testChannelName }).end((err, res) => {
-				testChannel = res.body.channel;
-				sendSimpleMessage({
+		let privateTeam;
+
+		before(async () => {
+			testChannel = (await createRoom({ type: 'c', name: testChannelName })).body.channel;
+			messageSent = (
+				await sendSimpleMessage({
 					roomId: testChannel._id,
-				}).end((err, res) => {
-					messageSent = res.body.message;
-					done();
-				});
-			});
+				})
+			).body.message;
 		});
+
+		after(() =>
+			Promise.all([
+				deleteRoom({ type: 'c', roomId: testChannel._id }),
+				updateSetting('Discussion_enabled', true),
+				updatePermission('start-discussion', ['admin', 'user', 'guest', 'app']),
+				updatePermission('start-discussion-other-user', ['admin', 'user', 'guest', 'app']),
+				deleteTeam(credentials, privateTeam.name),
+			]),
+		);
+
 		it('should throw an error when the user tries to create a discussion and the feature is disabled', (done) => {
 			updateSetting('Discussion_enabled', false).then(() => {
 				request
@@ -1064,8 +1009,6 @@ describe('[Rooms]', function () {
 		});
 
 		describe('it should create a *private* discussion if the parent channel is public and inside a private team', async () => {
-			let privateTeam;
-
 			it('should create a team', (done) => {
 				request
 					.post(api('teams.create'))
@@ -1125,24 +1068,25 @@ describe('[Rooms]', function () {
 	describe('/rooms.getDiscussions', () => {
 		let testChannel;
 		const testChannelName = `channel.test.getDiscussions${Date.now()}-${Math.random()}`;
-		let discussion;
-		before((done) => {
-			createRoom({ type: 'c', name: testChannelName }).end((err, res) => {
-				testChannel = res.body.channel;
-				request
-					.post(api('rooms.createDiscussion'))
-					.set(credentials)
-					.send({
-						prid: testChannel._id,
-						t_name: `discussion-create-from-tests-${testChannel.name}`,
-					})
-					.end((err, res) => {
-						discussion = res.body.discussion;
-						done();
-					});
-			});
+
+		before(async () => {
+			testChannel = (await createRoom({ type: 'c', name: testChannelName })).body.channel;
+			await request
+				.post(api('rooms.createDiscussion'))
+				.set(credentials)
+				.send({
+					prid: testChannel._id,
+					t_name: `discussion-create-from-tests-${testChannel.name}`,
+				});
 		});
-		after(() => closeRoom({ type: 'p', roomId: discussion._id }));
+
+		after(() =>
+			Promise.all([
+				deleteRoom({ type: 'c', roomId: testChannel._id }),
+				updatePermission('view-c-room', ['admin', 'user', 'bot', 'app', 'anonymous']),
+			]),
+		);
+
 		it('should throw an error when the user tries to gets a list of discussion without a required parameter "roomId"', (done) => {
 			request
 				.get(api('rooms.getDiscussions'))
@@ -1213,6 +1157,7 @@ describe('[Rooms]', function () {
 				.end(done);
 		});
 	});
+
 	describe('[/rooms.autocomplete.channelAndPrivate.withPagination]', () => {
 		it('should return an error when the required parameter "selector" is not provided', (done) => {
 			request
@@ -1285,25 +1230,27 @@ describe('[Rooms]', function () {
 				.end(done);
 		});
 	});
+
 	describe('[/rooms.autocomplete.adminRooms]', () => {
 		let testGroup;
 		const testGroupName = `channel.test.adminRoom${Date.now()}-${Math.random()}`;
 		const name = {
 			name: testGroupName,
 		};
-		before((done) => {
-			createRoom({ type: 'p', name: testGroupName }).end((err, res) => {
-				testGroup = res.body.group;
-				request
-					.post(api('rooms.createDiscussion'))
-					.set(credentials)
-					.send({
-						prid: testGroup._id,
-						t_name: `${testGroupName}-discussion`,
-					})
-					.end(done);
-			});
+
+		before(async () => {
+			testGroup = (await createRoom({ type: 'p', name: testGroupName })).body.group;
+			await request
+				.post(api('rooms.createDiscussion'))
+				.set(credentials)
+				.send({
+					prid: testGroup._id,
+					t_name: `${testGroupName}-discussion`,
+				});
 		});
+
+		after(() => Promise.all([deleteRoom({ type: 'p', roomId: testGroup._id }), updateEEPermission('can-audit', ['admin', 'auditor'])]));
+
 		(IS_EE ? it : it.skip)('should return an error when the required parameter "selector" is not provided', (done) => {
 			updateEEPermission('can-audit', ['admin']).then(() => {
 				request
@@ -1331,7 +1278,7 @@ describe('[Rooms]', function () {
 				})
 				.end(done);
 		});
-		it('should return FIX	 the rooms to fill auto complete', (done) => {
+		it('should return the rooms to fill auto complete', (done) => {
 			request
 				.get(api('rooms.autocomplete.adminRooms?'))
 				.set(credentials)
@@ -1348,6 +1295,7 @@ describe('[Rooms]', function () {
 				.end(done);
 		});
 	});
+
 	describe('/rooms.adminRooms', () => {
 		const suffix = `test-${Date.now()}`;
 		const fnameRoom = `Ελληνικά-${suffix}`;
@@ -1356,21 +1304,22 @@ describe('[Rooms]', function () {
 
 		let testGroup;
 
-		before((done) => {
-			updateSetting('UI_Allow_room_names_with_special_chars', true).then(() => {
-				createRoom({ type: 'p', name: fnameRoom }).end((err, res) => {
-					testGroup = res.body.group;
-					request
-						.post(api('rooms.createDiscussion'))
-						.set(credentials)
-						.send({
-							prid: testGroup._id,
-							t_name: discussionRoomName,
-						})
-						.end(done);
-				});
+		before(async () => {
+			await updateSetting('UI_Allow_room_names_with_special_chars', true);
+			testGroup = (await createRoom({ type: 'p', name: fnameRoom })).body.group;
+			await request.post(api('rooms.createDiscussion')).set(credentials).send({
+				prid: testGroup._id,
+				t_name: discussionRoomName,
 			});
 		});
+
+		after(() =>
+			Promise.all([
+				updateSetting('UI_Allow_room_names_with_special_chars', false),
+				deleteRoom({ type: 'p', roomId: testGroup._id }),
+				updatePermission('view-room-administration', ['admin']),
+			]),
+		);
 
 		it('should throw an error when the user tries to gets a list of discussion and he cannot access the room', (done) => {
 			updatePermission('view-room-administration', []).then(() => {
@@ -1545,6 +1494,8 @@ describe('[Rooms]', function () {
 			roomId = result.body.room.rid;
 		});
 
+		after(async () => Promise.all([updateSetting('UI_Use_Real_Name', false), deleteRoom({ type: 'd', roomId }), deleteUser(testUser)]));
+
 		it('should update group name if user changes username', async () => {
 			await updateSetting('UI_Use_Real_Name', false);
 			await request
@@ -1600,10 +1551,14 @@ describe('[Rooms]', function () {
 
 	describe('/rooms.delete', () => {
 		let testChannel;
+
 		before('create an channel', async () => {
 			const result = await createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` });
 			testChannel = result.body.channel;
 		});
+
+		after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
+
 		it('should throw an error when roomId is not provided', (done) => {
 			request
 				.post(api('rooms.delete'))
@@ -1651,6 +1606,8 @@ describe('[Rooms]', function () {
 			const result = await createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` });
 			testChannel = result.body.channel;
 		});
+
+		after(() => deleteRoom({ type: 'p', roomId: testChannel._id }));
 
 		it('should update the room settings', (done) => {
 			const imageDataUri = `data:image/png;base64,${fs.readFileSync(path.join(process.cwd(), imgURL)).toString('base64')}`;

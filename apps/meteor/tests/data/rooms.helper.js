@@ -39,7 +39,7 @@ export const asyncCreateRoom = ({ name, type, username, members = [] }) =>
 		createRoom({ name, type, username, members }).end(resolve);
 	});
 
-function actionRoom({ action, type, roomId }) {
+function actionRoom({ action, type, roomId, overrideCredentials = credentials }) {
 	if (!type) {
 		throw new Error(`"type" is required in "${action}Room" test helper`);
 	}
@@ -54,7 +54,7 @@ function actionRoom({ action, type, roomId }) {
 	return new Promise((resolve) => {
 		request
 			.post(api(`${endpoints[type]}.${action}`))
-			.set(credentials)
+			.set(overrideCredentials)
 			.send({
 				roomId,
 			})
@@ -62,6 +62,6 @@ function actionRoom({ action, type, roomId }) {
 	});
 }
 
-export const deleteRoom = ({ type, roomId }) => actionRoom({ action: 'delete', type, roomId });
+export const deleteRoom = ({ type, roomId, overrideCredentials }) => actionRoom({ action: 'delete', type, roomId, overrideCredentials });
 
 export const closeRoom = ({ type, roomId }) => actionRoom({ action: 'close', type, roomId });
