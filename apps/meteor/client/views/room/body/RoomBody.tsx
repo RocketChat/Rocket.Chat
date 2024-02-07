@@ -175,13 +175,13 @@ const RoomBody = (): ReactElement => {
 		};
 	});
 
-	const handleOpenUserCardButtonClick = useCallback(
+	const handleOpenUserCard = useCallback(
 		(event: UIEvent, username: IUser['username']) => {
 			if (!username) {
 				return;
 			}
 
-			chat?.userCard.open(username)(event);
+			chat?.userCard.openUserCard(event, username);
 		},
 		[chat?.userCard],
 	);
@@ -587,7 +587,7 @@ const RoomBody = (): ReactElement => {
 										username={roomLeader.username}
 										name={roomLeader.name}
 										visible={!hideLeaderHeader}
-										onAvatarClick={handleOpenUserCardButtonClick}
+										onAvatarClick={handleOpenUserCard}
 									/>
 								) : null}
 								<div

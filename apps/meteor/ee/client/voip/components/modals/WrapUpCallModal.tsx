@@ -58,7 +58,9 @@ export const WrapUpCallModal = ({ closeRoom }: WrapUpCallModalProps): ReactEleme
 					</FieldRow>
 					<FieldHint>{t('These_notes_will_be_available_in_the_call_summary')}</FieldHint>
 				</Field>
-				<Tags tags={tags} handler={handleTags as () => void} />
+				<Field>
+					<Tags tags={tags} handler={handleTags as () => void} />
+				</Field>
 			</Modal.Content>
 			<Modal.Footer>
 				<Modal.FooterControllers>

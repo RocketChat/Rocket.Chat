@@ -51,9 +51,9 @@ const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
 				aria-label={getUserDisplayName(user.name, user.username, showRealName)}
 				{...(user.username !== undefined &&
 					chat?.userCard && {
-						onClick: chat?.userCard.open(message.u.username),
+						onClick: (e) => chat?.userCard.openUserCard(e, message.u.username),
 						onKeyDown: (e: KeyboardEvent<HTMLSpanElement>) => {
-							(e.code === 'Enter' || e.code === 'Space') && chat?.userCard.open(message.u.username)(e);
+							(e.code === 'Enter' || e.code === 'Space') && chat?.userCard.openUserCard(e, message.u.username);
 						},
 						style: { cursor: 'pointer' },
 					})}

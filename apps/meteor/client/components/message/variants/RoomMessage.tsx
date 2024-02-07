@@ -91,7 +91,7 @@ const RoomMessage = ({
 						username={message.u.username}
 						size='x36'
 						{...(chat?.userCard && {
-							onClick: chat?.userCard.open(message.u.username),
+							onClick: (e) => chat?.userCard.openUserCard(e, message.u.username),
 							style: { cursor: 'pointer' },
 						})}
 					/>

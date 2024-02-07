@@ -18,6 +18,7 @@ import { useAutoTranslate } from '../../../views/room/MessageList/hooks/useAutoT
 import { useChat } from '../../../views/room/contexts/ChatContext';
 import { useRoomToolbox } from '../../../views/room/contexts/RoomToolboxContext';
 import MessageActionMenu from './MessageActionMenu';
+import { useWebDAVMessageAction } from './useWebDAVMessageAction';
 
 const getMessageContext = (message: IMessage, room: IRoom, context?: MessageActionContext): MessageActionContext => {
 	if (context) {
@@ -76,6 +77,9 @@ const MessageToolbar = ({
 	const actionButtonApps = useMessageActionAppsActionButtons(context);
 
 	const { messageToolbox: hiddenActions } = useLayoutHiddenActions();
+
+	// TODO: move this to another place
+	useWebDAVMessageAction();
 
 	const actionsQueryResult = useQuery(['rooms', room._id, 'messages', message._id, 'actions'] as const, async () => {
 		const props = { message, room, user, subscription, settings: mapSettings, chat };

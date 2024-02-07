@@ -45,7 +45,10 @@ export class ChatMessages implements ChatAPI {
 
 	public ActionManager: any;
 
-	public userCard: { open(username: string): (event: UIEvent) => void; close(): void };
+	public userCard: {
+		openUserCard(event: UIEvent, username: string): void;
+		closeUserCard(): void;
+	};
 
 	public emojiPicker: {
 		open(el: Element, cb: (emoji: string) => void): void;
@@ -160,8 +163,8 @@ export class ChatMessages implements ChatAPI {
 		this.readStateManager = new ReadStateManager(rid);
 
 		this.userCard = {
-			open: unimplemented,
-			close: unimplemented,
+			openUserCard: unimplemented,
+			closeUserCard: unimplemented,
 		};
 
 		this.emojiPicker = {
