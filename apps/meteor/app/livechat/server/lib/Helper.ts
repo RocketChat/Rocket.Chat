@@ -372,7 +372,6 @@ export const dispatchInquiryQueued = async (inquiry: ILivechatInquiryRecord, age
 			// fake a subscription in order to make use of the function defined above
 			subscription: {
 				rid,
-				t: 'l',
 				u: {
 					_id,
 				},
@@ -386,13 +385,14 @@ export const dispatchInquiryQueued = async (inquiry: ILivechatInquiryRecord, age
 						username,
 					},
 				],
+				name: '',
 			},
 			sender: v,
 			hasMentionToAll: true, // consider all agents to be in the room
 			hasReplyToThread: false,
 			disableAllMessageNotifications: false,
 			hasMentionToHere: false,
-			message: Object.assign({}, { u: v }),
+			message: { _id: '', u: v, msg: '' },
 			// we should use server's language for this type of messages instead of user's
 			notificationMessage: i18n.t('User_started_a_new_conversation', { username: notificationUserName }, language),
 			room: Object.assign(room, { name: i18n.t('New_chat_in_queue', {}, language) }),

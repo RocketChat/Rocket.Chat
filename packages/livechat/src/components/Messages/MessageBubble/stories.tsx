@@ -2,7 +2,7 @@ import type { Meta, Story } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import { MessageBubble } from '.';
-import { loremIpsum } from '../../../helpers.stories';
+import { loremIpsum } from '../../../../.storybook/helpers';
 
 const text = loremIpsum({ count: 1, units: 'sentences' });
 
