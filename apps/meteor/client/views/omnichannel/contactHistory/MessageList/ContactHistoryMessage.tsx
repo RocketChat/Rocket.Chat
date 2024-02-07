@@ -16,7 +16,6 @@ import {
 	MessageSystemName,
 	MessageSystemBody,
 	MessageSystemTimestamp,
-	Box,
 } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from '@rocket.chat/ui-contexts';
@@ -49,9 +48,13 @@ const ContactHistoryMessage: FC<{
 			<MessageSystem>
 				<MessageSystemLeftContainer>
 					{showUserAvatar && (
-						<Box onClick={chat?.userCard.open(message.u.username)}>
-							<UserAvatar url={message.avatar} username={message.u.username} size='x18' />
-						</Box>
+						<UserAvatar
+							url={message.avatar}
+							username={message.u.username}
+							size='x18'
+							onClick={chat?.userCard.open(message.u.username)}
+							style={{ cursor: 'pointer' }}
+						/>
 					)}
 				</MessageSystemLeftContainer>
 				<MessageSystemContainer>
@@ -73,9 +76,13 @@ const ContactHistoryMessage: FC<{
 			<MessageTemplate isPending={message.temp} sequential={sequential} role='listitem' data-qa='chat-history-message'>
 				<MessageLeftContainer>
 					{!sequential && message.u.username && showUserAvatar && (
-						<Box onClick={chat?.userCard.open(message.u.username)}>
-							<UserAvatar url={message.avatar} username={message.u.username} size='x36' />
-						</Box>
+						<UserAvatar
+							url={message.avatar}
+							username={message.u.username}
+							size='x36'
+							onClick={chat?.userCard.open(message.u.username)}
+							style={{ cursor: 'pointer' }}
+						/>
 					)}
 					{sequential && <StatusIndicators message={message} />}
 				</MessageLeftContainer>

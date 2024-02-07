@@ -1,5 +1,4 @@
-import { Box } from '@rocket.chat/fuselage';
-import { Avatar } from '@rocket.chat/ui-avatar';
+import { Box, Avatar } from '@rocket.chat/fuselage';
 import type { FC } from 'react';
 import React, { memo } from 'react';
 
