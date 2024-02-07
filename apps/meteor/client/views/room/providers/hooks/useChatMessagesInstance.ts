@@ -7,8 +7,8 @@ import { useEmojiPicker } from '../../../../contexts/EmojiPickerContext';
 import type { ChatAPI } from '../../../../lib/chats/ChatAPI';
 import { useUiKitActionManager } from '../../../../uikit/hooks/useUiKitActionManager';
 import { useRoomSubscription } from '../../contexts/RoomContext';
+import { useUserCard } from '../../contexts/UserCardContext';
 import { useInstance } from './useInstance';
-import { useUserCard } from './useUserCard';
 
 export function useChatMessagesInstance({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }): ChatAPI {
 	const uid = useUserId();
@@ -26,8 +26,8 @@ export function useChatMessagesInstance({ rid, tmid }: { rid: IRoom['_id']; tmid
 		}
 	}, [subscription, chatMessages?.readStateManager]);
 
-	chatMessages.userCard = useUserCard();
 	chatMessages.emojiPicker = useEmojiPicker();
+	chatMessages.userCard = useUserCard();
 
 	return chatMessages;
 }

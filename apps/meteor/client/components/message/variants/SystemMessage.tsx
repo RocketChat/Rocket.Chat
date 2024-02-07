@@ -75,7 +75,7 @@ const SystemMessage = ({ message, showUserAvatar }: SystemMessageProps): ReactEl
 						<MessageSystemName
 							{...(user.username !== undefined &&
 								chat?.userCard && {
-									onClick: chat?.userCard.open(user.username),
+									onClick: (e) => user.username && chat?.userCard.openUserCard(e, user.username),
 									style: { cursor: 'pointer' },
 								})}
 						>
@@ -88,7 +88,7 @@ const SystemMessage = ({ message, showUserAvatar }: SystemMessageProps): ReactEl
 									data-username={user.username}
 									{...(user.username !== undefined &&
 										chat?.userCard && {
-											onClick: chat?.userCard.open(user.username),
+											onClick: (e) => user.username && chat?.userCard.openUserCard(e, user.username),
 											style: { cursor: 'pointer' },
 										})}
 								>
