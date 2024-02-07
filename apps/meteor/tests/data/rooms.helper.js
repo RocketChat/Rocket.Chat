@@ -39,7 +39,7 @@ export const asyncCreateRoom = ({ name, type, username, members = [] }) =>
 		createRoom({ name, type, username, members }).end(resolve);
 	});
 
-function actionRoom({ action, type, roomId, overrideCredentials = credentials }) {
+function actionRoom({ action, type, roomId, overrideCredentials }) {
 	if (!type) {
 		throw new Error(`"type" is required in "${action}Room" test helper`);
 	}
@@ -62,6 +62,6 @@ function actionRoom({ action, type, roomId, overrideCredentials = credentials })
 	});
 }
 
-export const deleteRoom = ({ type, roomId, overrideCredentials }) => actionRoom({ action: 'delete', type, roomId, overrideCredentials });
+export const deleteRoom = ({ type, roomId, overrideCredentials = credentials }) => actionRoom({ action: 'delete', type, roomId, overrideCredentials });
 
 export const closeRoom = ({ type, roomId }) => actionRoom({ action: 'close', type, roomId });
