@@ -63,8 +63,8 @@ const dateBubbleStyle = css`
 	translate: -50%;
 	z-index: 1;
 
-	transition: opacity 1s;
 	opacity: 0;
+	transition: opacity 0.6s;
 
 	&.bubble-visible {
 		opacity: 1;
@@ -426,7 +426,7 @@ const RoomBody = (): ReactElement => {
 			setShowBubble(true);
 			setTimeout(() => {
 				setShowBubble(false);
-			}, 1000);
+			}, 2000);
 		};
 
 		wrapper.addEventListener('scroll', updateUnreadCount);
