@@ -566,12 +566,12 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isChannelsCloseProps },
 	{
 		async post() {
-			const receivedRoomId = 'roomId' in this.bodyParams ? this.bodyParams.roomId : undefined
-			const receivedRoomName = 'roomName' in this.bodyParams ? this.bodyParams.roomName : undefined
+			const receivedRoomId = 'roomId' in this.bodyParams ? this.bodyParams.roomId : undefined;
+			const receivedRoomName = 'roomName' in this.bodyParams ? this.bodyParams.roomName : undefined;
 			const findResult = await Rooms.findOneByIdOrName(receivedRoomId || receivedRoomName, {
 				projection: {
 					name: 1,
-				}
+				},
 			});
 
 			const roomId = findResult?._id || receivedRoomId;
