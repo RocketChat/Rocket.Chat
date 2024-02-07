@@ -76,7 +76,7 @@ const AuthorizationFormPage = ({ oauthApp, redirectUri, user }: AuthorizationFor
 					<input type='hidden' name='response_type' value='code' />
 				</Form.Container>
 				<Form.Footer>
-					<ButtonGroup stretch flexGrow={1}>
+					<ButtonGroup stretch>
 						<Button ref={submitRef} type='submit' primary name='allow' value='yes'>
 							{t('core.Authorize')}
 						</Button>

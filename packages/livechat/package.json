@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/livechat",
-	"version": "1.14.12",
+	"version": "1.14.13",
 	"files": [
 		"/build"
 	],
@@ -11,6 +11,7 @@
 		"url": "https://github.com/RocketChat/Rocket.Chat",
 		"directory": "packages/livechat"
 	},
+	"homepage": "https://rocket.chat",
 	"scripts": {
 		"clean": "rimraf dist",
 		"build": "cross-env TS_NODE_PROJECT=\"tsconfig.webpack.json\" webpack-cli --mode production",
@@ -94,7 +95,7 @@
 	},
 	"dependencies": {
 		"@rocket.chat/gazzodown": "workspace:^",
-		"@rocket.chat/message-parser": "~0.31.27",
+		"@rocket.chat/message-parser": "~0.31.28",
 		"@rocket.chat/random": "workspace:~",
 		"@rocket.chat/sdk": "^1.0.0-alpha.42",
 		"@rocket.chat/ui-kit": "workspace:~",
@@ -111,6 +112,7 @@
 		"query-string": "^7.1.3",
 		"react-hook-form": "~7.45.4",
 		"react-i18next": "~13.2.2",
+		"storybook-dark-mode": "~3.0.1",
 		"whatwg-fetch": "^3.6.19"
 	},
 	"browserslist": [
