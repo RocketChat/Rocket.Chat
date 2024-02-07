@@ -52,7 +52,7 @@ const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
 					data-username={user.username}
 					{...(user.username !== undefined &&
 						chat?.userCard && {
-							onClick: chat?.userCard.open(message.u.username),
+							onClick: (e) => chat?.userCard.openUserCard(e, message.u.username),
 							style: { cursor: 'pointer' },
 						})}
 				>
@@ -66,7 +66,7 @@ const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
 							data-qa-type='username'
 							{...(user.username !== undefined &&
 								chat?.userCard && {
-									onClick: chat?.userCard.open(message.u.username),
+									onClick: (e) => chat?.userCard.openUserCard(e, message.u.username),
 									style: { cursor: 'pointer' },
 								})}
 						>
@@ -75,7 +75,6 @@ const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
 					</>
 				)}
 			</MessageNameContainer>
-
 			{shouldShowRolesList && <MessageRoles roles={roles} isBot={message.bot} />}
 			<MessageTimestamp title={formatDateAndTime(message.ts)}>{formatTime(message.ts)}</MessageTimestamp>
 			{message.private && <MessageStatusPrivateIndicator>{t('Only_you_can_see_this_message')}</MessageStatusPrivateIndicator>}
