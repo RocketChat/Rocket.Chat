@@ -56,7 +56,7 @@ const LOGIN_SUBMIT_ERRORS = {
 	},
 } as const;
 
-export type LoginErrors = keyof typeof LOGIN_SUBMIT_ERRORS;
+export type LoginErrors = keyof typeof LOGIN_SUBMIT_ERRORS | 'totp-canceled';
 
 export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }): ReactElement => {
 	const {
@@ -111,7 +111,12 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 	}, [errorOnSubmit]);
 
 	const renderErrorOnSubmit = (error: LoginErrors) => {
+		if (error === 'totp-canceled') {
+			return null;
+		}
+
 		const { type, i18n } = LOGIN_SUBMIT_ERRORS[error];
+
 		return (
 			<Callout id={`${usernameId}-error`} aria-live='assertive' type={type}>
 				{t(i18n)}
