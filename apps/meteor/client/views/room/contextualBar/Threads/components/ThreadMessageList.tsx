@@ -1,10 +1,11 @@
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
-import { Bubble, MessageDivider } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { Box, Bubble, MessageDivider } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import { differenceInSeconds } from 'date-fns';
-import type { ReactElement } from 'react';
-import React, { Fragment } from 'react';
+import type { MutableRefObject, ReactElement } from 'react';
+import React, { useState, useRef, Fragment } from 'react';
 
 import { MessageTypes } from '../../../../../../app/ui-utils/client';
 import { isTruthy } from '../../../../../../lib/isTruthy';
@@ -20,6 +21,23 @@ import { useScrollMessageList } from '../../../hooks/useScrollMessageList';
 import { useLegacyThreadMessageJump } from '../hooks/useLegacyThreadMessageJump';
 import { useLegacyThreadMessageListScrolling } from '../hooks/useLegacyThreadMessageListScrolling';
 import { useLegacyThreadMessages } from '../hooks/useLegacyThreadMessages';
+
+const BUBBLE_OFFSET = 120;
+
+const dateBubbleStyle = css`
+	position: absolute;
+	top: 64px;
+	left: 50%;
+	translate: -50%;
+	z-index: 1;
+
+	opacity: 0;
+	transition: opacity 0.6s;
+
+	&.bubble-visible {
+		opacity: 1;
+	}
+`;
 
 const isMessageSequential = (current: IMessage, previous: IMessage | undefined, groupingRange: number): boolean => {
 	if (!previous) {
@@ -49,6 +67,9 @@ type ThreadMessageListProps = {
 };
 
 const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElement => {
+	const [bubbleDate, setBubbleDate] = useState<string>();
+	const [showBubble, setShowBubble] = useState(false);
+
 	const { messages, loading } = useLegacyThreadMessages(mainMessage._id);
 	const {
 		listWrapperRef: listWrapperScrollRef,
@@ -60,6 +81,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 	const listRef = useMergedRefs<HTMLElement | null>(listScrollRef, listJumpRef);
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
+	const dividerRefs = useRef<{ [key: number]: MutableRefObject<HTMLElement> }>({});
 
 	const formatDate = useFormatDate();
 	const t = useTranslation();
@@ -69,11 +91,50 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 
 	const firstUnreadMessageId = useFirstUnreadMessageId();
 
+	const handleDateOnScroll = (refsObject: MutableRefObject<{ [key: number]: MutableRefObject<HTMLElement> }>) => {
+		Object.values(refsObject.current).forEach((message, i: number, arr) => {
+			if (!message.current?.getBoundingClientRect() || !message.current.dataset.id) return;
+			const { top } = message.current.getBoundingClientRect();
+			const { id } = message.current.dataset;
+
+			if (top < BUBBLE_OFFSET) {
+				setBubbleDate(id);
+			}
+			if (top === BUBBLE_OFFSET) {
+				return setBubbleDate(id);
+			}
+
+			const previous = arr[i - 1];
+			if (!previous?.current?.getBoundingClientRect() || !previous?.current.dataset.id) return;
+			const { top: previousTop } = previous?.current.getBoundingClientRect();
+			const { id: previousId } = previous?.current.dataset;
+
+			if (top > BUBBLE_OFFSET && previousTop < BUBBLE_OFFSET) {
+				return setBubbleDate(previousId);
+			}
+			if (top < BUBBLE_OFFSET) {
+				setBubbleDate(id);
+			}
+		});
+	};
+
 	return (
 		<div className={['thread-list js-scroll-thread', hideUsernames && 'hide-usernames'].filter(isTruthy).join(' ')}>
+			{bubbleDate && (
+				<Box className={[dateBubbleStyle, showBubble && 'bubble-visible']}>
+					<Bubble small secondary>
+						{bubbleDate}
+					</Bubble>
+				</Box>
+			)}
 			<ScrollableContentWrapper
 				ref={listWrapperScrollRef}
-				onScroll={handleScroll}
+				onScroll={(args) => {
+					handleScroll(args);
+					handleDateOnScroll(dividerRefs);
+					setShowBubble(true);
+					setTimeout(() => setShowBubble(false), 2000);
+				}}
 				style={{ scrollBehavior: 'smooth', overflowX: 'hidden' }}
 			>
 				<ul className='thread' ref={listRef} style={{ scrollBehavior: 'smooth', overflowX: 'hidden' }}>
@@ -93,16 +154,22 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 
 								const system = MessageTypes.isSystemMessage(message);
 
+								if (newDay) {
+									dividerRefs.current[index] = dividerRefs.current[index] ?? React.createRef();
+								}
+
 								return (
 									<Fragment key={message._id}>
 										{showDivider && (
-											<MessageDivider unreadLabel={firstUnread ? t('Unread_Messages').toLowerCase() : undefined}>
-												{newDay && (
-													<Bubble small secondary>
-														{formatDate(message.ts)}
-													</Bubble>
-												)}
-											</MessageDivider>
+											<Box ref={dividerRefs.current[index]} data-id={formatDate(message.ts)}>
+												<MessageDivider unreadLabel={firstUnread ? t('Unread_Messages').toLowerCase() : undefined}>
+													{newDay && (
+														<Bubble small secondary>
+															{formatDate(message.ts)}
+														</Bubble>
+													)}
+												</MessageDivider>
+											</Box>
 										)}
 										<li>
 											{system ? (

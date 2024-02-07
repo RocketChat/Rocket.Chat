@@ -97,9 +97,9 @@ const RoomBody = (): ReactElement => {
 	const messagesBoxRef = useRef<HTMLDivElement | null>(null);
 	const atBottomRef = useRef(true);
 	const lastScrollTopRef = useRef(0);
-	const refsArray = useRef<MutableRefObject<HTMLElement>[]>([]);
+	const messageRefsArray = useRef<MutableRefObject<HTMLElement>[]>([]);
 
-	refsArray.current = messages.map((_, i) => refsArray.current[i] ?? React.createRef());
+	// messageRefsArray.current = messages.map((_, i) => messageRefsArray.current[i] ?? React.createRef());
 
 	const chat = useChat();
 
@@ -432,13 +432,13 @@ const RoomBody = (): ReactElement => {
 		wrapper.addEventListener('scroll', updateUnreadCount);
 		wrapper.addEventListener('scroll', handleWrapperScroll);
 		wrapper.addEventListener('scroll', handleToggleBubble);
-		wrapper.addEventListener('scroll', () => handleDateOnScroll(refsArray));
+		wrapper.addEventListener('scroll', () => handleDateOnScroll(messageRefsArray));
 
 		return () => {
 			wrapper.removeEventListener('scroll', updateUnreadCount);
 			wrapper.removeEventListener('scroll', handleWrapperScroll);
 			wrapper.removeEventListener('scroll', handleToggleBubble);
-			wrapper.removeEventListener('scroll', () => handleDateOnScroll(refsArray));
+			wrapper.removeEventListener('scroll', () => handleDateOnScroll(messageRefsArray));
 		};
 	}, [_isAtBottom, room._id, setUnreadCount]);
 
@@ -681,7 +681,16 @@ const RoomBody = (): ReactElement => {
 												<MessageListProvider scrollMessageList={scrollMessageList}>
 													<SelectedMessagesProvider>
 														{messages.map((message, index, { [index - 1]: previous }) => {
-															return <MessageList key={message._id} message={message} previous={previous} ref={refsArray.current[index]} />;
+															messageRefsArray.current[index] = messageRefsArray.current[index] ?? React.createRef();
+
+															return (
+																<MessageList
+																	key={message._id}
+																	message={message}
+																	previous={previous}
+																	ref={messageRefsArray.current[index]}
+																/>
+															);
 														})}
 													</SelectedMessagesProvider>
 												</MessageListProvider>
