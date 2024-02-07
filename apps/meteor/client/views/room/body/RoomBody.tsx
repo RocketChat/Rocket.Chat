@@ -74,10 +74,12 @@ const RoomBody = (): ReactElement => {
 	const toolbox = useRoomToolbox();
 	const admin = useRole('admin');
 	const subscription = useRoomSubscription();
+	const messages = useMessages({ rid: room._id });
 
 	const [lastMessageDate, setLastMessageDate] = useState<Date | undefined>();
 	const [hideLeaderHeader, setHideLeaderHeader] = useState(false);
 	const [hasNewMessages, setHasNewMessages] = useState(false);
+	const [bubbleDate, setBubbleDate] = useState<string>();
 
 	const hideFlexTab = useUserPreference<boolean>('hideFlexTab') || undefined;
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
@@ -87,6 +89,10 @@ const RoomBody = (): ReactElement => {
 	const messagesBoxRef = useRef<HTMLDivElement | null>(null);
 	const atBottomRef = useRef(true);
 	const lastScrollTopRef = useRef(0);
+	const bubbleRef = useRef<HTMLDivElement>(null);
+	const refsArray = useRef<MutableRefObject<HTMLElement>[]>([]);
+
+	refsArray.current = messages.map((_, i) => refsArray.current[i] ?? React.createRef());
 
 	const chat = useChat();
 
@@ -390,14 +396,33 @@ const RoomBody = (): ReactElement => {
 			}
 		});
 
+		const handleDateOnScroll = (refsArray: MutableRefObject<MutableRefObject<HTMLElement>[]>) => {
+			const dividerRefs = [...refsArray?.current]
+				.filter((item) => item.current)
+				.map((item) => ({ id: item.current?.dataset.id, top: item.current?.getBoundingClientRect().top }));
+
+			dividerRefs.forEach((message: { id: string | undefined; top: number | undefined }, i: number, arr) => {
+				const previous = arr[i - 1];
+				if (message.top && message.top === BUBBLE_OFFSET) {
+					return setBubbleDate(message.id);
+				}
+				if (message.top && previous?.top && message.top > BUBBLE_OFFSET && previous.top < BUBBLE_OFFSET) {
+					return setBubbleDate(previous.id);
+				}
+				if (message.top && message.top < BUBBLE_OFFSET) {
+					setBubbleDate(message.id);
+				}
+			});
+		};
+
 		wrapper.addEventListener('scroll', updateUnreadCount);
 		wrapper.addEventListener('scroll', handleWrapperScroll);
-		wrapper.addEventListener('scroll', () => handleDividerRefScroll(refsArray));
+		wrapper.addEventListener('scroll', () => handleDateOnScroll(refsArray));
 
 		return () => {
 			wrapper.removeEventListener('scroll', updateUnreadCount);
 			wrapper.removeEventListener('scroll', handleWrapperScroll);
-			wrapper.removeEventListener('scroll', () => handleDividerRefScroll(refsArray));
+			wrapper.removeEventListener('scroll', () => handleDateOnScroll(refsArray));
 		};
 	}, [_isAtBottom, room._id, setUnreadCount]);
 
@@ -549,43 +574,6 @@ const RoomBody = (): ReactElement => {
 
 	useReadMessageWindowEvents();
 
-	// Handle the sticky timestamp bubble
-	const messages = useMessages({ rid: room._id });
-	const refsArray = useRef<MutableRefObject<HTMLElement>[]>([]);
-
-	// set the ref's current value to be an array of mapped refs
-	// new refs to be created as needed
-	refsArray.current = messages.map((_, i) => refsArray.current[i] ?? React.createRef());
-
-	const [currentTimestamp, setCurrentTimestamp] = useState<string>();
-
-	const handleDividerRefScroll = (refsArray: MutableRefObject<MutableRefObject<HTMLElement>[]>) => {
-		const dividerRefs = [...refsArray?.current]
-			.filter((item) => item.current)
-			.map((item) => ({ id: item.current?.dataset.id, top: item.current?.getBoundingClientRect().top })) as {
-			id: string | undefined;
-			top: number | undefined;
-		}[];
-
-		if (dividerRefs.every((item) => item.top && item.top < BUBBLE_OFFSET)) {
-			return setCurrentTimestamp(dividerRefs[dividerRefs.length - 1]?.id);
-		}
-
-		if (dividerRefs.every((item) => item.top && item.top > BUBBLE_OFFSET)) {
-			return setCurrentTimestamp(dividerRefs[0].id);
-		}
-
-		dividerRefs.forEach((message: { id: string | undefined; top: number | undefined }, i: number, arr) => {
-			const previous = arr[i - 1];
-			if (message.top && message.top === BUBBLE_OFFSET) {
-				return setCurrentTimestamp(message.id);
-			}
-			if (message.top && previous?.top && message.top > BUBBLE_OFFSET && previous.top < BUBBLE_OFFSET) {
-				return setCurrentTimestamp(previous.id);
-			}
-		});
-	};
-
 	return (
 		<>
 			{!isLayoutEmbedded && room.announcement && <Announcement announcement={room.announcement} announcementDetails={undefined} />}
@@ -611,11 +599,13 @@ const RoomBody = (): ReactElement => {
 									/>
 								))}
 							</div>
-							<Box className={dateBubbleStyle}>
-								<Bubble small secondary>
-									{currentTimestamp}
-								</Bubble>
-							</Box>
+							{bubbleDate && (
+								<Box className={dateBubbleStyle} ref={bubbleRef}>
+									<Bubble small secondary>
+										{bubbleDate}
+									</Bubble>
+								</Box>
+							)}
 							{unread && (
 								<UnreadMessagesIndicator
 									count={unread.count}
@@ -659,7 +649,7 @@ const RoomBody = (): ReactElement => {
 								>
 									<MessageListErrorBoundary>
 										<ScrollableContentWrapper ref={wrapperRef}>
-											<ul className='messages-list' aria-live='polite' aria-busy={isLoadingMoreMessages} onScroll={(e) => console.log(e)}>
+											<ul className='messages-list' aria-live='polite' aria-busy={isLoadingMoreMessages}>
 												{canPreview ? (
 													<>
 														{hasMorePreviousMessages ? (

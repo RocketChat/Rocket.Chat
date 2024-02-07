@@ -1,6 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isThreadMessage } from '@rocket.chat/core-typings';
-import { css } from '@rocket.chat/css-in-js';
 import { MessageDivider, Box, Bubble } from '@rocket.chat/fuselage';
 import { useSetting, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ForwardedRef } from 'react';
@@ -15,11 +14,6 @@ import { useRoomSubscription } from '../contexts/RoomContext';
 import { useFirstUnreadMessageId } from '../hooks/useFirstUnreadMessageId';
 import { isMessageNewDay } from './lib/isMessageNewDay';
 import { isMessageSequential } from './lib/isMessageSequential';
-
-const dividerPosition = css`
-	position: relative;
-	top: 10px;
-`;
 
 type MessageListProps = {
 	message: IMessage;
@@ -41,6 +35,7 @@ export const MessageList = forwardRef(function MessageList({ message, previous }
 	const newDay = isMessageNewDay(message, previous);
 
 	const showUnreadDivider = firstUnreadMessageId === message._id;
+	const showDivider = newDay || showUnreadDivider;
 
 	const shouldShowAsSequential = sequential && !newDay;
 
@@ -54,13 +49,14 @@ export const MessageList = forwardRef(function MessageList({ message, previous }
 
 	return (
 		<Fragment key={message._id}>
-			{showUnreadDivider && <MessageDivider unreadLabel={t('Unread_Messages').toLowerCase()} />}
-			{newDay && (
-				<Box className={dividerPosition} ref={ref} data-id={formatDate(message.ts)}>
-					<MessageDivider>
-						<Bubble small secondary>
-							{formatDate(message.ts)}
-						</Bubble>
+			{showDivider && (
+				<Box ref={ref} data-id={formatDate(message.ts)}>
+					<MessageDivider unreadLabel={showUnreadDivider ? t('Unread_Messages').toLowerCase() : undefined}>
+						{newDay && (
+							<Bubble small secondary>
+								{formatDate(message.ts)}
+							</Bubble>
+						)}
 					</MessageDivider>
 				</Box>
 			)}
