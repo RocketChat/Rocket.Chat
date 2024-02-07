@@ -1,7 +1,6 @@
 import { Team, isMeteorError } from '@rocket.chat/core-services';
 import type { IIntegration, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
-import { isGroupsMemberExistsProps } from '@rocket.chat/rest-typings';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
@@ -744,30 +743,6 @@ API.v1.addRoute(
 				offset: skip,
 				total,
 			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'groups.memberExists',
-	{ authRequired: true, validateParams: isGroupsMemberExistsProps },
-	{
-		async get() {
-			const { username, roomId } = this.queryParams;
-
-			const findResult = await findPrivateGroupByIdOrName({
-				params: { roomId },
-				userId: this.userId,
-			});
-
-			if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult.rid))) {
-				return API.v1.unauthorized();
-			}
-
-			const options = { projection: { username: 1 } };
-			const user = await Users.findOneByUsernameAndRoom(username, findResult.rid, options);
-
-			return API.v1.success({ exists: !!user });
 		},
 	},
 );

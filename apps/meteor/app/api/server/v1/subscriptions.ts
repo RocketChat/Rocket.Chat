@@ -1,4 +1,4 @@
-import { Subscriptions } from '@rocket.chat/models';
+import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import {
 	isSubscriptionsGetProps,
 	isSubscriptionsGetOneProps,
@@ -9,6 +9,15 @@ import { Meteor } from 'meteor/meteor';
 
 import { readMessages } from '../../../../server/lib/readMessages';
 import { API } from '../api';
+
+import { hasAlreadyJoinedRoom } from '/server/services/authorization/hasAlreadyJoinedRoom';
+
+import { Authorization } from '@rocket.chat/core-services';
+
+import { hasPermissionAsync } from '/app/authorization/server/functions/hasPermission';
+import { canAccessRoomIdAsync } from '/app/authorization/server/functions/canAccessRoom';
+import { canAccessRoom } from '/server/services/authorization/canAccessRoom';
+import { isSubscriptionsExistsProps } from '@rocket.chat/rest-typings/src';
 
 API.v1.addRoute(
 	'subscriptions.get',
@@ -100,6 +109,38 @@ API.v1.addRoute(
 			await Meteor.callAsync('unreadMessages', (this.bodyParams as any).firstUnreadMessage, (this.bodyParams as any).roomId);
 
 			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'subscriptions.exists',
+	{
+		authRequired: true,
+		validateParams: isSubscriptionsExistsProps,
+	},
+	{
+		async get() {
+			const { username, roomId, userId, roomName } = this.queryParams;
+			const [room, user] = await Promise.all([
+				Rooms.findOneByIdOrName(roomId || roomName),
+				Users.findOneByIdOrUsername(userId || username),
+			]);
+			if (!room?._id) {
+				return API.v1.failure('error-room-not-found');
+			}
+			if (!user?._id) {
+				return API.v1.failure('error-user-not-found');
+			}
+
+			if (room.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', room._id))) {
+				return API.v1.unauthorized();
+			}
+
+			if ((await canAccessRoom(room, this.user)) || (await canAccessRoomIdAsync(room._id, this.userId))) {
+				return API.v1.success({ exists: !!(await Subscriptions.countByRoomIdAndUserId(room._id, user._id)) });
+			}
+			return API.v1.unauthorized();
 		},
 	},
 );

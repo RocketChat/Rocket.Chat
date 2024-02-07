@@ -5,4 +5,3 @@ export * from './DmDeleteProps';
 export * from './DmFileProps';
 export * from './DmMembersProps';
 export * from './DmMessagesProps';
-export * from './DmMemberExistsProps';

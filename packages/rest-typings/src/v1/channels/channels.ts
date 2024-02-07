@@ -53,9 +53,6 @@ export type ChannelsEndpoints = {
 			members: IUser[];
 		}>;
 	};
-	'/v1/channels.memberExists': {
-		GET: (params: { roomId: string } | { roomName: string }) => { exists: boolean };
-	};
 	'/v1/channels.history': {
 		GET: (params: ChannelsHistoryProps) => PaginatedResult<{
 			messages: IMessage[];

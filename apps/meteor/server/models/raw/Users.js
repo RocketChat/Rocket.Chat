@@ -244,15 +244,6 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	findOneByUsernameAndRoom(username, rid, options) {
-		const query = {
-			__rooms: rid,
-			username,
-		};
-
-		return this.findOne(query, options);
-	}
-
 	findOneByIdAndLoginHashedToken(_id, token, options = {}) {
 		const query = {
 			_id,

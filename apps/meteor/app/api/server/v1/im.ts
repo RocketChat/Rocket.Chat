@@ -10,7 +10,6 @@ import {
 	isDmMessagesProps,
 	isDmCreateProps,
 	isDmHistoryProps,
-	isDmMemberExistsProps,
 } from '@rocket.chat/rest-typings';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -350,37 +349,6 @@ API.v1.addRoute(
 				offset,
 				total,
 			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	['dm.memberExists', 'im.memberExists'],
-	{
-		authRequired: true,
-		validateParams: isDmMemberExistsProps,
-	},
-	{
-		async get() {
-			const { username, roomId } = this.queryParams;
-
-			const { room } = await findDirectMessageRoom({ roomId }, this.userId);
-
-			const canAccess = await canAccessRoomIdAsync(room._id, this.userId);
-			if (!canAccess) {
-				return API.v1.unauthorized();
-			}
-
-			const query = {
-				_id: { $in: room.uids },
-				username,
-			};
-
-			const options = { projection: { _id: 1 } };
-
-			const user = await Users.findOne(query, options);
-
-			return API.v1.success({ exists: !!user });
 		},
 	},
 );

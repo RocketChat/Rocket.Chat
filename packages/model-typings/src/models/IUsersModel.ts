@@ -27,7 +27,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		options: any,
 	): FindPaginated<FindCursor<T>>;
 	findOneByUsernameAndRoomIgnoringCase<T = IUser>(username: string, rid: IRoom['_id'], options: any): FindCursor<T>;
-	findOneByUsernameAndRoom<T = IUser>(username: string, rid: IRoom['_id'], options: any): FindCursor<T>;
 	findOneByIdAndLoginHashedToken<T = IUser>(_id: string, token: any, options?: any): FindCursor<T>;
 	findByActiveUsersExcept<T = IUser>(
 		searchTerm: any,
