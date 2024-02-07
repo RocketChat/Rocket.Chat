@@ -41,7 +41,19 @@ export class HomeChannel {
 		await this.page.mouse.move(0, 0);
 	}
 
-	get composerToolboxActions(): Locator {
+	get composerToolbar(): Locator {
+		return this.page.locator('[role=toolbar][aria-label="Composer Primary Actions"]');
+	}
+
+	get composerToolbarActions(): Locator {
 		return this.page.locator('[role=toolbar][aria-label="Composer Primary Actions"] button');
+	}
+
+	get roomHeaderFavoriteBtn(): Locator {
+		return this.page.getByRole('button', { name: 'Favorite' });
+	}
+
+	get roomHeaderToolbar(): Locator {
+		return this.page.locator('[role=toolbar][aria-label="Primary Room actions"]');
 	}
 }

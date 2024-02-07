@@ -34,19 +34,20 @@ const TwoFactorTotpModal = ({ onConfirm, onClose, invalidAttempt }: TwoFactorTot
 			wrapperFunction={(props) => <Box is='form' onSubmit={onConfirmTotpCode} {...props} />}
 			onCancel={onClose}
 			confirmText={t('Verify')}
-			title={t('Two Factor Authentication')}
+			title={t('Enter_TOTP_password')}
 			onClose={onClose}
 			variant='warning'
-			icon='info'
 			confirmDisabled={!code}
+			tagline={t('Two-factor_authentication')}
+			icon={null}
 		>
 			<FieldGroup>
 				<Field>
 					<FieldLabel alignSelf='stretch' htmlFor={id}>
-						{t('Open_your_authentication_app_and_enter_the_code')}
+						{t('Enter_the_code_provided_by_your_authentication_app_to_continue')}
 					</FieldLabel>
 					<FieldRow>
-						<TextInput id={id} ref={ref} value={code} onChange={onChange} placeholder={t('Enter_authentication_code')}></TextInput>
+						<TextInput id={id} ref={ref} value={code} onChange={onChange} placeholder={t('Enter_code_here')}></TextInput>
 					</FieldRow>
 					{invalidAttempt && <FieldError>{t('Invalid_password')}</FieldError>}
 				</Field>
