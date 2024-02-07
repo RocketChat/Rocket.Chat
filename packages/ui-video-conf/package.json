@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-video-conf",
-	"version": "3.0.3",
+	"version": "4.0.0",
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.22.20",
@@ -36,7 +36,7 @@
 		"@rocket.chat/icons": "*",
 		"@rocket.chat/styled": "*",
 		"@rocket.chat/ui-avatar": "*",
-		"@rocket.chat/ui-contexts": "3.0.3",
+		"@rocket.chat/ui-contexts": "4.0.0",
 		"react": "^17.0.2",
 		"react-dom": "^17.0.2"
 	},
