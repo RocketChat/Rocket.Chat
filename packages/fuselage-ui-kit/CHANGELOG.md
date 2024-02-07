@@ -1,5 +1,20 @@
 # Change Log
 
+## 4.0.0
+
+### Patch Changes
+
+- ([#31138](https://github.com/RocketChat/Rocket.Chat/pull/31138)) feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+
+- <details><summary>Updated dependencies [642745f289, b223cbde14, b2b0035162, dbb08ef948]:</summary>
+
+  - @rocket.chat/eslint-config@0.6.1
+  - @rocket.chat/ui-kit@0.33.0
+  - @rocket.chat/ui-video-conf@4.0.0
+  - @rocket.chat/ui-contexts@4.0.0
+  - @rocket.chat/gazzodown@4.0.0
+  </details>
+
 ## 4.0.0-rc.7
 
 ### Patch Changes

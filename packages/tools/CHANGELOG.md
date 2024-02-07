@@ -1,5 +1,11 @@
 # @rocket.chat/tools
 
+## 0.2.1
+
+### Patch Changes
+
+- ([#31138](https://github.com/RocketChat/Rocket.Chat/pull/31138)) feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+
 ## 0.2.1-rc.0
 
 ### Patch Changes

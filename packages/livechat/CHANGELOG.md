@@ -1,5 +1,24 @@
 # @rocket.chat/livechat Change Log
 
+## 1.14.13
+
+### Patch Changes
+
+- ([#31138](https://github.com/RocketChat/Rocket.Chat/pull/31138)) feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+
+- ([#31349](https://github.com/RocketChat/Rocket.Chat/pull/31349) by [@Subhojit-Dey1234](https://github.com/Subhojit-Dey1234)) feat: Implemented InlineCode handling in Bold, Italic and Strike
+
+- ([#31454](https://github.com/RocketChat/Rocket.Chat/pull/31454)) Fixed an issue with translations that caused text containing special characters to be shown escaped on UI
+
+- ([#31302](https://github.com/RocketChat/Rocket.Chat/pull/31302)) Fixed a problem that caused Livechat Widget registration page to ignore the `showOnRegistration` flag for departments, showing all items.
+
+- <details><summary>Updated dependencies [b223cbde14, dbb08ef948]:</summary>
+
+  - @rocket.chat/ui-kit@0.33.0
+  - @rocket.chat/gazzodown@4.0.0
+  - @rocket.chat/random@1.2.2
+  </details>
+
 ## 1.14.13-rc.7
 
 ### Patch Changes

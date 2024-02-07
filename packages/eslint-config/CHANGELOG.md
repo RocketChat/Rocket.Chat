@@ -1,5 +1,13 @@
 # @rocket.chat/eslint-config
 
+## 0.6.1
+
+### Patch Changes
+
+- ([#30977](https://github.com/RocketChat/Rocket.Chat/pull/30977)) Include missing ESLint configuration for React
+
+- ([#31138](https://github.com/RocketChat/Rocket.Chat/pull/31138)) feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+
 ## 0.6.1-rc.0
 
 ### Patch Changes

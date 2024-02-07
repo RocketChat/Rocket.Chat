@@ -1,5 +1,17 @@
 # @rocket.chat/api-client
 
+## 0.1.22
+
+### Patch Changes
+
+- ([#31138](https://github.com/RocketChat/Rocket.Chat/pull/31138)) feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+
+- <details><summary>Updated dependencies [b223cbde14, dbb08ef948, 748e57984d, 7c6198f49f, fdd9852079, 2260c04ec6, b4b2cd20a8]:</summary>
+
+  - @rocket.chat/core-typings@6.6.0
+  - @rocket.chat/rest-typings@6.6.0
+  </details>
+
 ## 0.1.22-rc.7
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/jwt",
-	"version": "0.1.1-rc.0",
+	"version": "0.1.1",
 	"private": true,
 	"devDependencies": {
 		"@types/jest": "~29.5.7",

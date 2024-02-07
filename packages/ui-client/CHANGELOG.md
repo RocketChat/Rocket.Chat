@@ -1,5 +1,24 @@
 # @rocket.chat/ui-client
 
+## 4.0.0
+
+### Minor Changes
+
+- ([#31516](https://github.com/RocketChat/Rocket.Chat/pull/31516)) Room header keyboard navigability
+
+  ![Kapture 2024-01-22 at 11 33 14](https://github.com/RocketChat/Rocket.Chat/assets/27704687/f116c1e6-4ec7-4175-a01b-fa98eade2416)
+
+- ([#30680](https://github.com/RocketChat/Rocket.Chat/pull/30680)) feat: Skip to main content shortcut and useDocumentTitle
+
+### Patch Changes
+
+- ([#31138](https://github.com/RocketChat/Rocket.Chat/pull/31138)) feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+
+- <details><summary>Updated dependencies [b223cbde14, b2b0035162]:</summary>
+
+  - @rocket.chat/ui-contexts@4.0.0
+  </details>
+
 ## 4.0.0-rc.7
 
 ### Patch Changes

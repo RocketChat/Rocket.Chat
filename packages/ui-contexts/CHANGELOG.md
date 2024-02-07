@@ -1,5 +1,24 @@
 # @rocket.chat/ui-contexts
 
+## 4.0.0
+
+### Minor Changes
+
+- ([#31184](https://github.com/RocketChat/Rocket.Chat/pull/31184)) Add the possibility to hide some elements through postMessage events.
+
+### Patch Changes
+
+- ([#31138](https://github.com/RocketChat/Rocket.Chat/pull/31138)) feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+
+- <details><summary>Updated dependencies [b223cbde14, dbb08ef948, 97cd497e5e, 748e57984d, 7c6198f49f, fdd9852079, 2260c04ec6, b4b2cd20a8]:</summary>
+
+  - @rocket.chat/password-policies@0.0.2
+  - @rocket.chat/ddp-client@0.2.13
+  - @rocket.chat/core-typings@6.6.0
+  - @rocket.chat/rest-typings@6.6.0
+  - @rocket.chat/i18n@0.1.0
+  </details>
+
 ## 4.0.0-rc.7
 
 ### Patch Changes

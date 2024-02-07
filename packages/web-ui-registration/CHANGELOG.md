@@ -1,5 +1,21 @@
 # @rocket.chat/web-ui-registration
 
+## 4.0.0
+
+### Minor Changes
+
+- ([#30680](https://github.com/RocketChat/Rocket.Chat/pull/30680)) feat: Skip to main content shortcut and useDocumentTitle
+
+### Patch Changes
+
+- ([#31138](https://github.com/RocketChat/Rocket.Chat/pull/31138)) feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+
+- <details><summary>Updated dependencies [b223cbde14, b2b0035162]:</summary>
+
+  - @rocket.chat/ui-contexts@4.0.0
+  - @rocket.chat/tools@0.2.1
+  </details>
+
 ## 4.0.0-rc.7
 
 ### Patch Changes

@@ -1,5 +1,16 @@
 # @rocket.chat/models
 
+## 0.0.28
+
+### Patch Changes
+
+- ([#31138](https://github.com/RocketChat/Rocket.Chat/pull/31138)) feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+
+- <details><summary>Updated dependencies [b223cbde14, fae558bd5d, 2260c04ec6, c8ab6583dc, e7d3cdeef0, b4b2cd20a8]:</summary>
+
+  - @rocket.chat/model-typings@0.3.0
+  </details>
+
 ## 0.0.28-rc.7
 
 ### Patch Changes

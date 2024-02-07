@@ -1,5 +1,19 @@
 # @rocket.chat/cron
 
+## 0.0.24
+
+### Patch Changes
+
+- ([#31138](https://github.com/RocketChat/Rocket.Chat/pull/31138)) feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+
+- <details><summary>Updated dependencies [b223cbde14, dbb08ef948, fdd9852079, b4b2cd20a8, db2551906c]:</summary>
+
+  - @rocket.chat/core-typings@6.6.0
+  - @rocket.chat/agenda@0.1.0
+  - @rocket.chat/models@0.0.28
+  - @rocket.chat/random@1.2.2
+  </details>
+
 ## 0.0.24-rc.7
 
 ### Patch Changes

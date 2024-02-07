@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/queue-worker",
 	"private": true,
-	"version": "0.3.4-rc.7",
+	"version": "0.3.4",
 	"description": "Rocket.Chat service",
 	"scripts": {
 		"build": "tsc -p tsconfig.json",

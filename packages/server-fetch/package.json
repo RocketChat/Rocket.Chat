@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/server-fetch",
-	"version": "0.0.3-rc.0",
+	"version": "0.0.3",
 	"private": true,
 	"devDependencies": {
 		"@types/jest": "~29.5.7",

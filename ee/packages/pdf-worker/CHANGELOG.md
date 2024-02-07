@@ -1,5 +1,18 @@
 # @rocket.chat/pdf-worker
 
+## 0.0.28
+
+### Patch Changes
+
+- ([#31138](https://github.com/RocketChat/Rocket.Chat/pull/31138)) feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+
+- ([#31349](https://github.com/RocketChat/Rocket.Chat/pull/31349) by [@Subhojit-Dey1234](https://github.com/Subhojit-Dey1234)) feat: Implemented InlineCode handling in Bold, Italic and Strike
+
+- <details><summary>Updated dependencies [b223cbde14, dbb08ef948, fdd9852079, b4b2cd20a8]:</summary>
+
+  - @rocket.chat/core-typings@6.6.0
+  </details>
+
 ## 0.0.28-rc.7
 
 ### Patch Changes
