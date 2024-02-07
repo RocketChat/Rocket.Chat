@@ -1,7 +1,8 @@
 {
 	"$schema": "https://json.schemastore.org/package",
 	"name": "@rocket.chat/core-typings",
-	"version": "6.6.0-develop",
+	"private": true,
+	"version": "6.6.0",
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
 		"eslint": "~8.45.0",

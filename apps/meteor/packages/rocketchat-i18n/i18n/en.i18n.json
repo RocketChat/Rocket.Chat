@@ -3618,7 +3618,7 @@
   "Moderation_Duplicate_messages": "Duplicated messages",
   "Moderation_Duplicate_messages_warning": "Following may contain same messages sent in multiple rooms.",
   "Moderation_Report_date": "Report date",
-  "Moderation_Report_reports": "Reports",
+  "Moderation_Reports": "Reports",
   "Moderation_Reported_message": "Reported message",
   "Moderation_Reports_dismissed": "Reports dismissed",
   "Moderation_Reports_all_dismissed": "All reports dismissed",
