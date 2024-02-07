@@ -1,12 +1,12 @@
 import type { AvatarProps } from '@rocket.chat/fuselage';
-import { Avatar as FuselageAvatar, Skeleton } from '@rocket.chat/fuselage';
+import { Avatar, Skeleton } from '@rocket.chat/fuselage';
 import { useEffectEvent, usePrevious } from '@rocket.chat/fuselage-hooks';
 import type { SyntheticEvent } from 'react';
 import { useState } from 'react';
 
-export type UiAvatarProps = Omit<AvatarProps, 'is'>;
+export type BaseAvatarProps = Omit<AvatarProps, 'is'>;
 
-const Avatar = ({ url, onLoad, onError, ...props }: UiAvatarProps) => {
+const BaseAvatar = ({ url, onLoad, onError, ...props }: BaseAvatarProps) => {
 	const [unloaded, setUnloaded] = useState(false);
 	const prevUrl = usePrevious(url);
 
@@ -24,7 +24,7 @@ const Avatar = ({ url, onLoad, onError, ...props }: UiAvatarProps) => {
 		return <Skeleton aria-hidden='true' variant='rect' {...props} />;
 	}
 
-	return <FuselageAvatar aria-hidden='true' onLoad={handleLoad} onError={handleError} url={url} {...props} />;
+	return <Avatar aria-hidden='true' onLoad={handleLoad} onError={handleError} url={url} {...props} />;
 };
 
-export default Avatar;
+export default BaseAvatar;

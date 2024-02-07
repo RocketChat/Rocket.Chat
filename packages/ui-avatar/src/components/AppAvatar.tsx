@@ -1,13 +1,12 @@
 import type { ReactElement } from 'react';
 
-import { Avatar } from '..';
-import { UiAvatarProps } from './Avatar';
+import BaseAvatar, { BaseAvatarProps } from './BaseAvatar';
 
-type AppAvatarProps = Pick<UiAvatarProps, 'size'> & {
+type AppAvatarProps = Pick<BaseAvatarProps, 'size'> & {
 	iconFileContent: string;
 	iconFileData: string;
 };
 
 export default function AppAvatar({ iconFileContent, iconFileData, size }: AppAvatarProps): ReactElement {
-	return <Avatar size={size} url={iconFileContent || `data:image/png;base64,${iconFileData}`} />;
+	return <BaseAvatar size={size} url={iconFileContent || `data:image/png;base64,${iconFileData}`} />;
 }

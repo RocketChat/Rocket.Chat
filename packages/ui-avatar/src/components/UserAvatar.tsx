@@ -1,9 +1,9 @@
 import { useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 
-import Avatar, { UiAvatarProps } from './Avatar';
+import Avatar, { BaseAvatarProps } from './BaseAvatar';
 
-type UserAvatarProps = Omit<UiAvatarProps, 'url' | 'title'> & {
+type UserAvatarProps = Omit<BaseAvatarProps, 'url' | 'title'> & {
 	username: string;
 	etag?: string;
 	url?: string;
