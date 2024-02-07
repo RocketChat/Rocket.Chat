@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/password-policies",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"private": true,
 	"devDependencies": {
 		"@types/chai": "^4.3.9",
