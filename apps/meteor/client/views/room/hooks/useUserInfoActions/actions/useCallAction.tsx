@@ -1,6 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import { useTranslation, useUserRoom, useUserId, useUserSubscriptionByName } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserRoom, useUserId, useUserSubscriptionByName, useSetting, usePermission } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
 import { useVideoConfDispatchOutgoing, useVideoConfIsCalling, useVideoConfIsRinging } from '../../../../../contexts/VideoConfContext';
@@ -21,6 +21,9 @@ export const useCallAction = (user: Pick<IUser, '_id' | 'username'>): UserInfoAc
 	const isRinging = useVideoConfIsRinging();
 	const ownUserId = useUserId();
 
+	const enabledForDMs = useSetting('VideoConf_Enable_DMs');
+	const permittedToCallManagement = usePermission('call-management', room?._id);
+
 	const videoCallOption = useMemo(() => {
 		const action = async (): Promise<void> => {
 			if (isCalling || isRinging || !room) {
@@ -36,7 +39,10 @@ export const useCallAction = (user: Pick<IUser, '_id' | 'username'>): UserInfoAc
 			}
 		};
 
-		return room && !isRoomFederated(room) && user._id !== ownUserId
+		const shouldShowStartCall =
+			room && !isRoomFederated(room) && user._id !== ownUserId && enabledForDMs && permittedToCallManagement && !isCalling && !isRinging;
+
+		return shouldShowStartCall
 			? {
 					content: t('Start_call'),
 					icon: 'phone' as const,
@@ -44,7 +50,19 @@ export const useCallAction = (user: Pick<IUser, '_id' | 'username'>): UserInfoAc
 					type: 'communication' as UserInfoActionType,
 			  }
 			: undefined;
-	}, [t, room, dispatchPopup, closeUserCard, dispatchWarning, isCalling, isRinging, ownUserId, user._id]);
+	}, [
+		room,
+		user._id,
+		ownUserId,
+		enabledForDMs,
+		permittedToCallManagement,
+		isCalling,
+		isRinging,
+		t,
+		dispatchPopup,
+		dispatchWarning,
+		closeUserCard,
+	]);
 
 	return videoCallOption;
 };
