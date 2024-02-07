@@ -566,10 +566,16 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isChannelsCloseProps },
 	{
 		async post() {
-            const findResult = await Rooms.findByTypeAndNameOrId('c', this.bodyParams?.roomId || this.bodyParams?.roomName);
+			const receivedRoomId = 'roomId' in this.bodyParams ? this.bodyParams.roomId : undefined
+			const receivedRoomName = 'roomName' in this.bodyParams ? this.bodyParams.roomName : undefined
+			const findResult = await Rooms.findOneByIdOrName(receivedRoomId || receivedRoomName, {
+				projection: {
+					name: 1,
+				}
+			});
 
-            const roomId = findResult?._id || this.bodyParams?.roomId;
-            const roomName = findResult?.name || this.bodyParams?.roomName;
+			const roomId = findResult?._id || receivedRoomId;
+			const roomName = findResult?.name || receivedRoomName;
 
 			if (!roomId) {
 				return API.v1.failure('Could not find the channel or any subscription linked to it');
