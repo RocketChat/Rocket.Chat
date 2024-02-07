@@ -97,7 +97,6 @@ const RoomBody = (): ReactElement => {
 	const messagesBoxRef = useRef<HTMLDivElement | null>(null);
 	const atBottomRef = useRef(true);
 	const lastScrollTopRef = useRef(0);
-	const bubbleRef = useRef<HTMLDivElement>(null);
 	const refsArray = useRef<MutableRefObject<HTMLElement>[]>([]);
 
 	refsArray.current = messages.map((_, i) => refsArray.current[i] ?? React.createRef());
@@ -617,7 +616,7 @@ const RoomBody = (): ReactElement => {
 								))}
 							</div>
 							{bubbleDate && (
-								<Box className={[dateBubbleStyle, showBubble && 'bubble-visible']} ref={bubbleRef}>
+								<Box className={[dateBubbleStyle, showBubble && 'bubble-visible']}>
 									<Bubble small secondary>
 										{bubbleDate}
 									</Bubble>
