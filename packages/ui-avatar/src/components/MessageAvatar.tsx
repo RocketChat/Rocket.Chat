@@ -1,18 +1,16 @@
-import { AvatarContainer, Box } from '@rocket.chat/fuselage';
-import type { ReactElement, VFC } from 'react';
+import { AvatarContainer } from '@rocket.chat/fuselage';
+import type { ComponentProps, HTMLAttributes, VFC } from 'react';
 
-import { UiAvatarProps } from './Avatar';
 import UserAvatar from './UserAvatar';
 
 type MessageAvatarProps = {
-	emoji?: ReactElement;
+	emoji?: string;
 	avatarUrl?: string;
 	username: string;
-	onClick?: (e: any) => void;
-	size?: UiAvatarProps['size'];
-};
+	size?: ComponentProps<typeof UserAvatar>['size'];
+} & Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
-const MessageAvatar: VFC<MessageAvatarProps> = ({ emoji, avatarUrl, username, size = 'x36', onClick, ...props }) => {
+const MessageAvatar: VFC<MessageAvatarProps> = ({ emoji, username, size = 'x36', ...props }) => {
 	if (emoji) {
 		return (
 			<AvatarContainer size={size} {...props}>
@@ -21,11 +19,7 @@ const MessageAvatar: VFC<MessageAvatarProps> = ({ emoji, avatarUrl, username, si
 		);
 	}
 
-	return (
-		<Box onClick={onClick} {...props}>
-			<UserAvatar url={avatarUrl} username={username} size={size} />
-		</Box>
-	);
+	return <UserAvatar username={username} size={size} {...props} />;
 };
 
 export default MessageAvatar;
