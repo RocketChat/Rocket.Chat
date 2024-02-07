@@ -24,7 +24,9 @@ const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer, disab
 			<>
 				{'icon' in featuredFormatter && (
 					<MessageComposerAction
-						onClick={() => composer.wrapSelection(featuredFormatter.pattern)}
+						onClick={() =>
+							featuredFormatter.prompt ? featuredFormatter.prompt(composer) : composer.wrapSelection(featuredFormatter.pattern)
+						}
 						icon={featuredFormatter.icon}
 						disabled={disabled}
 					/>
@@ -45,6 +47,10 @@ const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer, disab
 						data-id={formatter.label}
 						title={t(formatter.label)}
 						onClick={(): void => {
+							if ('prompt' in formatter) {
+								formatter.prompt(composer);
+								return;
+							}
 							if ('link' in formatter) {
 								window.open(formatter.link, '_blank', 'rel=noreferrer noopener');
 								return;

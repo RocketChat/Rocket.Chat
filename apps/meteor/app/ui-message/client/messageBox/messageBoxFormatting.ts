@@ -1,7 +1,10 @@
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
+import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
+import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import { settings } from '../../../settings/client';
+import AddLinkComposerActionModal from './AddLinkComposerActionModal';
 
 export type FormattingButton =
 	| {
@@ -18,6 +21,12 @@ export type FormattingButton =
 			text: () => string | undefined;
 			link: string;
 			condition?: () => boolean;
+	  }
+	| {
+			label: TranslationKey;
+			prompt: (composer: ComposerAPI) => void;
+			condition?: () => boolean;
+			icon: IconName;
 	  };
 
 export const formattingButtons: ReadonlyArray<FormattingButton> = [
@@ -47,6 +56,28 @@ export const formattingButtons: ReadonlyArray<FormattingButton> = [
 		label: 'Multi_line',
 		icon: 'multiline',
 		pattern: '```\n{{text}}\n``` ',
+	},
+	{
+		label: 'Link',
+		icon: 'link',
+		prompt: (composerApi: ComposerAPI) => {
+			const { selection } = composerApi;
+
+			const selectedText = composerApi.substring(selection.start, selection.end);
+
+			const onClose = () => {
+				imperativeModal.close();
+				composerApi.focus();
+			};
+
+			const onConfirm = (url: string, title: string) => {
+				onClose();
+				composerApi.replaceText(`[${title}](${url}) `, selection);
+				composerApi.setCursorToEnd();
+			};
+
+			imperativeModal.open({ component: AddLinkComposerActionModal, props: { onConfirm, selectedText, onClose } });
+		},
 	},
 	{
 		label: 'KaTeX' as TranslationKey,
