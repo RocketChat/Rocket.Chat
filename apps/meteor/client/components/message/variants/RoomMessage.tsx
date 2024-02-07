@@ -86,7 +86,10 @@ const RoomMessage = ({
 						avatarUrl={message.avatar}
 						username={message.u.username}
 						size='x36'
-						onClick={() => chat?.userCard.open(message.u.username)}
+						{...(chat?.userCard && {
+							onClick: (e) => chat?.userCard.openUserCard(e, message.u.username),
+							style: { cursor: 'pointer' },
+						})}
 					/>
 				)}
 				{selecting && <CheckBox checked={selected} onChange={toggleSelected} />}
