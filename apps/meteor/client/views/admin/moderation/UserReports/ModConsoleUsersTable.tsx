@@ -91,7 +91,7 @@ const ModConsoleUsersTable: FC = () => {
 				{t('Moderation_Report_date')}
 			</GenericTableHeaderCell>
 			<GenericTableHeaderCell key='reports' direction={sortDirection} active={sortBy === 'count'} onClick={setSort} sort='count'>
-				{t('Moderation_Report_plural')}
+				{t('Moderation_Reports')}
 			</GenericTableHeaderCell>
 			<GenericTableHeaderCell key='actions' width='x48' />
 		</>
