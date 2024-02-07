@@ -10,7 +10,7 @@ type MessageAvatarProps = {
 	size?: ComponentProps<typeof UserAvatar>['size'];
 } & Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
-const MessageAvatar: VFC<MessageAvatarProps> = ({ emoji, username, size = 'x36', ...props }) => {
+const MessageAvatar: VFC<MessageAvatarProps> = ({ emoji, avatarUrl, username, size = 'x36', ...props }) => {
 	if (emoji) {
 		return (
 			<AvatarContainer size={size} {...props}>
@@ -19,7 +19,7 @@ const MessageAvatar: VFC<MessageAvatarProps> = ({ emoji, username, size = 'x36',
 		);
 	}
 
-	return <UserAvatar username={username} size={size} {...props} />;
+	return <UserAvatar url={avatarUrl} username={username} size={size} {...props} />;
 };
 
 export default MessageAvatar;

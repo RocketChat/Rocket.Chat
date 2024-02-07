@@ -37,7 +37,7 @@ const TeamAutocomplete = ({ value, onChange, ...props }: TeamAutocompleteProps) 
 				</Box>
 			)}
 			renderItem={({ value, label: room, ...props }) => (
-				<Option key={value} {...props} label={room.name} avatar={<RoomAvatar room={room} />} />
+				<Option key={value} {...props} label={room.name} avatar={<RoomAvatar size='x20' room={room} />} />
 			)}
 			options={options}
 		/>

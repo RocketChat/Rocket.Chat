@@ -1,7 +1,7 @@
 import type { IUser, AvatarObject } from '@rocket.chat/core-typings';
-import { Box, Button, TextInput, IconButton, Label } from '@rocket.chat/fuselage';
+import { Box, Button, Avatar, TextInput, IconButton, Label } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { Avatar, UserAvatar } from '@rocket.chat/ui-avatar';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useToastMessageDispatch, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent } from 'react';
 import React, { useState, useCallback } from 'react';
@@ -83,6 +83,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, disabled, e
 					etag={etag}
 					style={{
 						imageOrientation: rotateImages ? 'from-image' : 'none',
+						objectFit: 'contain',
 					}}
 					onError={() => dispatchToastMessage({ type: 'error', message: t('error-invalid-image-url') })}
 				/>
