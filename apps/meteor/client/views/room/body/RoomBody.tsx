@@ -62,6 +62,13 @@ const dateBubbleStyle = css`
 	left: 50%;
 	translate: -50%;
 	z-index: 1;
+
+	transition: opacity 1s;
+	opacity: 0;
+
+	&.bubble-visible {
+		opacity: 1;
+	}
 `;
 
 const BUBBLE_OFFSET = 64;
@@ -80,6 +87,7 @@ const RoomBody = (): ReactElement => {
 	const [hideLeaderHeader, setHideLeaderHeader] = useState(false);
 	const [hasNewMessages, setHasNewMessages] = useState(false);
 	const [bubbleDate, setBubbleDate] = useState<string>();
+	const [showBubble, setShowBubble] = useState(false);
 
 	const hideFlexTab = useUserPreference<boolean>('hideFlexTab') || undefined;
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
@@ -415,13 +423,22 @@ const RoomBody = (): ReactElement => {
 			});
 		};
 
+		const handleToggleBubble = () => {
+			setShowBubble(true);
+			setTimeout(() => {
+				setShowBubble(false);
+			}, 1000);
+		};
+
 		wrapper.addEventListener('scroll', updateUnreadCount);
 		wrapper.addEventListener('scroll', handleWrapperScroll);
+		wrapper.addEventListener('scroll', handleToggleBubble);
 		wrapper.addEventListener('scroll', () => handleDateOnScroll(refsArray));
 
 		return () => {
 			wrapper.removeEventListener('scroll', updateUnreadCount);
 			wrapper.removeEventListener('scroll', handleWrapperScroll);
+			wrapper.removeEventListener('scroll', handleToggleBubble);
 			wrapper.removeEventListener('scroll', () => handleDateOnScroll(refsArray));
 		};
 	}, [_isAtBottom, room._id, setUnreadCount]);
@@ -600,7 +617,7 @@ const RoomBody = (): ReactElement => {
 								))}
 							</div>
 							{bubbleDate && (
-								<Box className={dateBubbleStyle} ref={bubbleRef}>
+								<Box className={[dateBubbleStyle, showBubble && 'bubble-visible']} ref={bubbleRef}>
 									<Bubble small secondary>
 										{bubbleDate}
 									</Bubble>
