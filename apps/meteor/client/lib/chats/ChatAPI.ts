@@ -101,7 +101,7 @@ export type UploadsAPI = {
 	subscribe(callback: () => void): () => void;
 	wipeFailedOnes(): void;
 	cancel(id: Upload['id']): void;
-	send(file: File, { description, msg }: { description?: string; msg?: string }): Promise<void>;
+	send(file: File, { altDescription, description, msg }: { altDescription?: string; description?: string; msg?: string }): Promise<void>;
 };
 
 export type ChatAPI = {

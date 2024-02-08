@@ -32,11 +32,13 @@ const wipeFailedOnes = (): void => {
 const send = async (
 	file: File,
 	{
+		altDescription,
 		description,
 		msg,
 		rid,
 		tmid,
 	}: {
+		altDescription?: string;
 		description?: string;
 		msg?: string;
 		rid: string;
@@ -60,9 +62,10 @@ const send = async (
 				`/v1/rooms.upload/${rid}`,
 				{
 					msg,
+					altDescription,
+					description,
 					tmid,
 					file,
-					description,
 				},
 				{
 					load: (event) => {
@@ -146,6 +149,8 @@ export const createUploadsAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMes
 	subscribe,
 	wipeFailedOnes,
 	cancel,
-	send: (file: File, { description, msg }: { description?: string; msg?: string }): Promise<void> =>
-		send(file, { description, msg, rid, tmid }),
+	send: (
+		file: File,
+		{ altDescription, description, msg }: { altDescription?: string; description?: string; msg?: string },
+	): Promise<void> => send(file, { altDescription, description, msg, rid, tmid }),
 });
