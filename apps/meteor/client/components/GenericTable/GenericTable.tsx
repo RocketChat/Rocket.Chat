@@ -1,12 +1,13 @@
 import { Box, Table } from '@rocket.chat/fuselage';
-import React, { type ForwardedRef, type ReactNode, type TableHTMLAttributes, forwardRef } from 'react';
+import type { ComponentProps } from 'react';
+import React, { type ForwardedRef, type ReactNode, forwardRef } from 'react';
 
 import ScrollableContentWrapper from '../ScrollableContentWrapper';
 
 type GenericTableProps = {
 	fixed?: boolean;
 	children: ReactNode;
-} & Omit<TableHTMLAttributes<HTMLTableElement>, 'is'>;
+} & ComponentProps<typeof Table>;
 
 export const GenericTable = forwardRef(function GenericTable(
 	{ fixed = true, children, ...props }: GenericTableProps,
