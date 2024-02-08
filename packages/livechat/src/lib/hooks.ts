@@ -3,6 +3,7 @@ import i18next from 'i18next';
 import { Livechat } from '../api';
 import type { StoreState } from '../store';
 import { initialState, store } from '../store';
+import type { LivechatMessageEventData } from '../widget';
 import CustomFields from './customFields';
 import { loadConfig, updateBusinessUnit } from './main';
 import { parentCall } from './parentCall';
@@ -45,18 +46,7 @@ const updateIframeGuestData = (data: Partial<StoreState['guest']>) => {
 	createOrUpdateGuest(guestData);
 };
 
-export type Api = typeof api;
-
-export type ApiMethods = keyof Api;
-
-type ApiParams<T extends ApiMethods> = Parameters<Api[T]>;
-
-export type ApiArgs<N extends ApiMethods> = ApiParams<N> extends infer U ? (U extends any[] ? U : never) : never;
-
-export type ApiMethodsAndArgs<N extends ApiMethods> = {
-	fn: N;
-	args: ApiArgs<N>;
-};
+export type HooksWidgetAPI = typeof api;
 
 const api = {
 	pageVisited: (info: { change: string; title: string; location: { href: string } }) => {
@@ -239,16 +229,7 @@ const api = {
 	},
 };
 
-function onNewMessage<T extends ApiMethods>(event: ApiMethodsAndArgs<T>) {
-	const fn = api[event.fn];
-	const args = event.args && !Array.isArray(event.args) ? [event.args] : event.args;
-
-	// There is an existing issue with overload resolution with type union arguments please see https://github.com/microsoft/TypeScript/issues/14107
-	// @ts-expect-error: A spread argument must either have a tuple type or be passed to a rest parameter
-	fn(...args);
-}
-
-function onNewMessageHandler<T extends ApiMethods>(event: MessageEvent) {
+function onNewMessageHandler(event: MessageEvent<LivechatMessageEventData<HooksWidgetAPI>>) {
 	if (event.source === event.target) {
 		return;
 	}
@@ -261,7 +242,15 @@ function onNewMessageHandler<T extends ApiMethods>(event: MessageEvent) {
 		return;
 	}
 
-	return onNewMessage(event.data as { fn: T; args: ApiArgs<T> });
+	const { fn, args } = event.data;
+
+	if (!api.hasOwnProperty(fn)) {
+		return;
+	}
+
+	// There is an existing issue with overload resolution with type union arguments please see https://github.com/microsoft/TypeScript/issues/14107
+	// @ts-expect-error: A spread argument must either have a tuple type or be passed to a rest parameter
+	api[fn](...args);
 }
 
 class Hooks {
