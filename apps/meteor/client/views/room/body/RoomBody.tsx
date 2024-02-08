@@ -33,12 +33,14 @@ import Announcement from '../Announcement';
 import { MessageList } from '../MessageList';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
 import { useMessages } from '../MessageList/hooks/useMessages';
+import { isMessageNewDay } from '../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../MessageList/providers/MessageListProvider';
 import ComposerContainer from '../composer/ComposerContainer';
 import RoomComposer from '../composer/RoomComposer/RoomComposer';
 import { useChat } from '../contexts/ChatContext';
 import { useRoom, useRoomSubscription, useRoomMessages } from '../contexts/RoomContext';
 import { useRoomToolbox } from '../contexts/RoomToolboxContext';
+import { useRoomBubleDate } from '../hooks/useRoomBubbleDate';
 import { useScrollMessageList } from '../hooks/useScrollMessageList';
 import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
 import DropTargetOverlay from './DropTargetOverlay';
@@ -82,11 +84,11 @@ const RoomBody = (): ReactElement => {
 	const admin = useRole('admin');
 	const subscription = useRoomSubscription();
 	const messages = useMessages({ rid: room._id });
+	const { bubbleDate, onScroll: handleDateOnScroll } = useRoomBubleDate(BUBBLE_OFFSET);
 
 	const [lastMessageDate, setLastMessageDate] = useState<Date | undefined>();
 	const [hideLeaderHeader, setHideLeaderHeader] = useState(false);
 	const [hasNewMessages, setHasNewMessages] = useState(false);
-	const [bubbleDate, setBubbleDate] = useState<string>();
 	const [showBubble, setShowBubble] = useState(false);
 
 	const hideFlexTab = useUserPreference<boolean>('hideFlexTab') || undefined;
@@ -97,9 +99,7 @@ const RoomBody = (): ReactElement => {
 	const messagesBoxRef = useRef<HTMLDivElement | null>(null);
 	const atBottomRef = useRef(true);
 	const lastScrollTopRef = useRef(0);
-	const messageRefsArray = useRef<MutableRefObject<HTMLElement>[]>([]);
-
-	// messageRefsArray.current = messages.map((_, i) => messageRefsArray.current[i] ?? React.createRef());
+	const dividerRefs = useRef<{ [key: number]: MutableRefObject<HTMLElement> }>({});
 
 	const chat = useChat();
 
@@ -403,25 +403,6 @@ const RoomBody = (): ReactElement => {
 			}
 		});
 
-		const handleDateOnScroll = (refsArray: MutableRefObject<MutableRefObject<HTMLElement>[]>) => {
-			const dividerRefs = [...refsArray?.current]
-				.filter((item) => item.current)
-				.map((item) => ({ id: item.current?.dataset.id, top: item.current?.getBoundingClientRect().top }));
-
-			dividerRefs.forEach((message: { id: string | undefined; top: number | undefined }, i: number, arr) => {
-				const previous = arr[i - 1];
-				if (message.top && message.top === BUBBLE_OFFSET) {
-					return setBubbleDate(message.id);
-				}
-				if (message.top && previous?.top && message.top > BUBBLE_OFFSET && previous.top < BUBBLE_OFFSET) {
-					return setBubbleDate(previous.id);
-				}
-				if (message.top && message.top < BUBBLE_OFFSET) {
-					setBubbleDate(message.id);
-				}
-			});
-		};
-
 		const handleToggleBubble = () => {
 			setShowBubble(true);
 			setTimeout(() => {
@@ -432,15 +413,15 @@ const RoomBody = (): ReactElement => {
 		wrapper.addEventListener('scroll', updateUnreadCount);
 		wrapper.addEventListener('scroll', handleWrapperScroll);
 		wrapper.addEventListener('scroll', handleToggleBubble);
-		wrapper.addEventListener('scroll', () => handleDateOnScroll(messageRefsArray));
+		wrapper.addEventListener('scroll', () => handleDateOnScroll(dividerRefs));
 
 		return () => {
 			wrapper.removeEventListener('scroll', updateUnreadCount);
 			wrapper.removeEventListener('scroll', handleWrapperScroll);
 			wrapper.removeEventListener('scroll', handleToggleBubble);
-			wrapper.removeEventListener('scroll', () => handleDateOnScroll(messageRefsArray));
+			wrapper.removeEventListener('scroll', () => handleDateOnScroll(dividerRefs));
 		};
-	}, [_isAtBottom, room._id, setUnreadCount]);
+	}, [_isAtBottom, handleDateOnScroll, room._id, setUnreadCount]);
 
 	useEffect(() => {
 		const wrapper = wrapperRef.current;
@@ -681,15 +662,12 @@ const RoomBody = (): ReactElement => {
 												<MessageListProvider scrollMessageList={scrollMessageList}>
 													<SelectedMessagesProvider>
 														{messages.map((message, index, { [index - 1]: previous }) => {
-															messageRefsArray.current[index] = messageRefsArray.current[index] ?? React.createRef();
-
+															const newDay = isMessageNewDay(message, previous);
+															if (newDay) {
+																dividerRefs.current[index] = dividerRefs.current[index] ?? React.createRef();
+															}
 															return (
-																<MessageList
-																	key={message._id}
-																	message={message}
-																	previous={previous}
-																	ref={messageRefsArray.current[index]}
-																/>
+																<MessageList key={message._id} message={message} previous={previous} ref={dividerRefs.current[index]} />
 															);
 														})}
 													</SelectedMessagesProvider>

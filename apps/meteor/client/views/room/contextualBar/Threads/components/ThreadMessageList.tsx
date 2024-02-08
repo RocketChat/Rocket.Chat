@@ -17,6 +17,7 @@ import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../../../MessageList/providers/MessageListProvider';
 import LoadingMessagesIndicator from '../../../body/LoadingMessagesIndicator';
 import { useFirstUnreadMessageId } from '../../../hooks/useFirstUnreadMessageId';
+import { useRoomBubleDate } from '../../../hooks/useRoomBubbleDate';
 import { useScrollMessageList } from '../../../hooks/useScrollMessageList';
 import { useLegacyThreadMessageJump } from '../hooks/useLegacyThreadMessageJump';
 import { useLegacyThreadMessageListScrolling } from '../hooks/useLegacyThreadMessageListScrolling';
@@ -67,8 +68,9 @@ type ThreadMessageListProps = {
 };
 
 const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElement => {
-	const [bubbleDate, setBubbleDate] = useState<string>();
 	const [showBubble, setShowBubble] = useState(false);
+
+	const { bubbleDate, onScroll: handleDateOnScroll } = useRoomBubleDate(BUBBLE_OFFSET);
 
 	const { messages, loading } = useLegacyThreadMessages(mainMessage._id);
 	const {
@@ -90,33 +92,6 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 	const scrollMessageList = useScrollMessageList(listWrapperScrollRef);
 
 	const firstUnreadMessageId = useFirstUnreadMessageId();
-
-	const handleDateOnScroll = (refsObject: MutableRefObject<{ [key: number]: MutableRefObject<HTMLElement> }>) => {
-		Object.values(refsObject.current).forEach((message, i: number, arr) => {
-			if (!message.current?.getBoundingClientRect() || !message.current.dataset.id) return;
-			const { top } = message.current.getBoundingClientRect();
-			const { id } = message.current.dataset;
-
-			if (top < BUBBLE_OFFSET) {
-				setBubbleDate(id);
-			}
-			if (top === BUBBLE_OFFSET) {
-				return setBubbleDate(id);
-			}
-
-			const previous = arr[i - 1];
-			if (!previous?.current?.getBoundingClientRect() || !previous?.current.dataset.id) return;
-			const { top: previousTop } = previous?.current.getBoundingClientRect();
-			const { id: previousId } = previous?.current.dataset;
-
-			if (top > BUBBLE_OFFSET && previousTop < BUBBLE_OFFSET) {
-				return setBubbleDate(previousId);
-			}
-			if (top < BUBBLE_OFFSET) {
-				setBubbleDate(id);
-			}
-		});
-	};
 
 	return (
 		<div className={['thread-list js-scroll-thread', hideUsernames && 'hide-usernames'].filter(isTruthy).join(' ')}>
