@@ -1,38 +1,25 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import type { ReactElement, UIEvent } from 'react';
 import React from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
-import { useChat } from '../../contexts/ChatContext';
 import Reactions from './Reactions';
 
-type ReactionListProps = {
+type ReactionListModalProps = {
 	reactions: Required<IMessage>['reactions'];
+	onOpenUserCard?: (e: UIEvent, username: string) => void;
 	onClose: () => void;
 };
 
-const ReactionList = ({ reactions, onClose }: ReactionListProps): ReactElement => {
+const ReactionListModal = ({ reactions, onOpenUserCard, onClose }: ReactionListModalProps): ReactElement => {
 	const t = useTranslation();
 
-	const chat = useChat();
-
-	const onClick = useMutableCallback((e) => {
-		const { username } = e.currentTarget.dataset;
-
-		if (!username) {
-			return;
-		}
-
-		chat?.userCard.open(username)(e);
-	});
-
 	return (
-		<GenericModal variant='info' title={t('Users_reacted')} onClose={onClose} onConfirm={onClose}>
-			<Reactions reactions={reactions} onClick={onClick} />
+		<GenericModal variant='info' title={t('Users_reacted')} onClose={onClose} onConfirm={onClose} confirmText={t('Close')}>
+			<Reactions reactions={reactions} onOpenUserCard={onOpenUserCard} />
 		</GenericModal>
 	);
 };
 
-export default ReactionList;
+export default ReactionListModal;
