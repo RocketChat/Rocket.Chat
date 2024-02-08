@@ -127,8 +127,8 @@ export type ChatAPI = {
 		| undefined;
 
 	readonly userCard: {
-		open(username: string): (event: UIEvent) => void;
-		close(): void;
+		openUserCard(event: UIEvent, username: string): void;
+		closeUserCard(): void;
 	};
 
 	readonly emojiPicker: {
