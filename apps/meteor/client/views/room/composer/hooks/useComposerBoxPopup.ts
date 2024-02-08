@@ -3,6 +3,7 @@ import type { UseQueryResult } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
 import { useEffect, useCallback, useState, useRef } from 'react';
 
+import type { ComposerAPI } from '../../../../lib/chats/ChatAPI';
 import { useChat } from '../../contexts/ChatContext';
 import type { ComposerPopupOption } from '../../contexts/ComposerPopupContext';
 import { useComposerBoxPopupQueries } from './useComposerBoxPopupQueries';
@@ -55,8 +56,10 @@ const keys = {
 
 export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 	configurations,
+	composerApi,
 }: {
 	configurations: ComposerBoxPopupOptions<T>[];
+	composerApi?: ComposerAPI;
 }): ComposerBoxPopupResult<T> => {
 	const [popup, setPopup] = useState<ComposerBoxPopupOptions<T> | undefined>(undefined);
 	const [focused, setFocused] = useState<T | undefined>(undefined);
@@ -70,6 +73,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 	};
 
 	const chat = useChat();
+	const composer = chat?.composer || composerApi;
 
 	const ariaActiveDescendant = focused ? `popup-item-${focused._id}` : undefined;
 
@@ -99,7 +103,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 		if (commandsRef.current?.select) {
 			commandsRef.current.select(item);
 		} else {
-			const value = chat?.composer?.substring(0, chat?.composer?.selection.start);
+			const value = composer?.substring(0, composer?.selection.start);
 			const selector =
 				popup.matchSelectorRegex ??
 				(popup.triggerAnywhere ? new RegExp(`(?:^| |\n)(${popup.trigger})([^\\s]*$)`) : new RegExp(`(?:^)(${popup.trigger})([^\\s]*$)`));
@@ -109,9 +113,9 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 				return;
 			}
 
-			chat?.composer?.replaceText((popup.prefix ?? popup.trigger ?? '') + popup.getValue(item) + (popup.suffix ?? ''), {
+			composer?.replaceText((popup.prefix ?? popup.trigger ?? '') + popup.getValue(item) + (popup.suffix ?? ''), {
 				start: value.lastIndexOf(result[1] + result[2]),
-				end: chat?.composer?.selection.start,
+				end: composer?.selection.start,
 			});
 		}
 		setPopup(undefined);
@@ -119,7 +123,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 	});
 
 	const setConfigByInput = useMutableCallback((): ComposerBoxPopupOptions<T> | undefined => {
-		const value = chat?.composer?.substring(0, chat?.composer?.selection.start);
+		const value = composer?.substring(0, composer?.selection.start);
 
 		if (!value) {
 			setPopup(undefined);

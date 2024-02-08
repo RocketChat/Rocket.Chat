@@ -1,3 +1,4 @@
+import type { IRoom } from '@rocket.chat/core-typings';
 import { Modal, Box, Field, FieldGroup, FieldLabel, FieldRow, FieldError, TextInput, Button } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
@@ -5,14 +6,17 @@ import fileSize from 'filesize';
 import type { ReactElement, ChangeEvent, FormEventHandler, ComponentProps } from 'react';
 import React, { memo, useState, useEffect } from 'react';
 
+import TextMessageBox from '../../composer/messageBox/TextMessageBox';
+import ComposerPopupProvider from '../../providers/ComposerPopupProvider';
 import FilePreview from './FilePreview';
 
 type FileUploadModalProps = {
 	onClose: () => void;
-	onSubmit: (name: string, description?: string) => void;
+	onSubmit: (name: string, message?: string, description?: string) => void;
 	file: File;
 	fileName: string;
-	fileDescription?: string;
+	room: IRoom;
+	fileMessage?: string;
 	invalidContentType: boolean;
 	showDescription?: boolean;
 };
@@ -21,16 +25,19 @@ const FileUploadModal = ({
 	onClose,
 	file,
 	fileName,
-	fileDescription,
+	room,
+	fileMessage,
 	onSubmit,
 	invalidContentType,
 	showDescription = true,
 }: FileUploadModalProps): ReactElement => {
 	const [name, setName] = useState<string>(fileName);
-	const [description, setDescription] = useState<string>(fileDescription || '');
+	const [message, setMessage] = useState<string>(fileMessage || '');
+	const [description, setDescription] = useState<string>('');
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const maxFileSize = useSetting('FileUpload_MaxFileSize') as number;
+	const isImage = file.type.indexOf('image') > -1;
 
 	const ref = useAutoFocus<HTMLInputElement>();
 
@@ -40,6 +47,10 @@ const FileUploadModal = ({
 
 	const handleDescription = (e: ChangeEvent<HTMLInputElement>): void => {
 		setDescription(e.currentTarget.value);
+	};
+
+	const handleMessage = (e: ChangeEvent<HTMLInputElement>): void => {
+		setMessage(e.currentTarget.value);
 	};
 
 	const handleSubmit: FormEventHandler<HTMLFormElement> = (e): void => {
@@ -60,7 +71,7 @@ const FileUploadModal = ({
 			});
 		}
 
-		onSubmit(name, description);
+		onSubmit(name, message, description);
 	};
 
 	useEffect(() => {
@@ -101,11 +112,28 @@ const FileUploadModal = ({
 							</FieldRow>
 							{!name && <FieldError>{t('error-the-field-is-required', { field: t('Name') })}</FieldError>}
 						</Field>
+						{isImage && (
+							<Field>
+								<FieldLabel>{t('Upload_alt_description')}</FieldLabel>
+								<FieldRow>
+									<TextInput
+										value={description}
+										onChange={handleDescription}
+										placeholder={t('Upload_alt_description_placeholder')}
+										ref={ref}
+									/>
+								</FieldRow>
+							</Field>
+						)}
 						{showDescription && (
 							<Field>
-								<FieldLabel>{t('Upload_file_description')}</FieldLabel>
+								<FieldLabel>{t('Message')}</FieldLabel>
 								<FieldRow>
-									<TextInput value={description} onChange={handleDescription} placeholder={t('Description')} ref={ref} />
+									<Box is='section' display='flex' flexDirection='column' flexGrow={1} flexShrink={1} flexBasis='auto' height='full'>
+										<ComposerPopupProvider room={room}>
+											<TextMessageBox showFormattingTips rid={room._id} onChange={handleMessage} />
+										</ComposerPopupProvider>
+									</Box>
 								</FieldRow>
 							</Field>
 						)}

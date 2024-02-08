@@ -9,6 +9,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { fileUploadIsValidContentType } from '../../../../../app/utils/client';
 import FilterByText from '../../../../components/FilterByText';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
+import { useRoom } from '../../contexts/RoomContext';
 import FileUploadModal from '../../modals/FileUploadModal';
 import FilePickerBreadcrumbs from './FilePickerBreadcrumbs';
 import WebdavFilePickerGrid from './WebdavFilePickerGrid';
@@ -24,6 +25,7 @@ type WebdavFilePickerModalProps = {
 };
 
 const WebdavFilePickerModal = ({ onUpload, onClose, account }: WebdavFilePickerModalProps): ReactElement => {
+	const room = useRoom();
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const getWebdavFilePreview = useMethod('getWebdavFilePreview');
@@ -152,6 +154,7 @@ const WebdavFilePickerModal = ({ onUpload, onClose, account }: WebdavFilePickerM
 					fileName={webdavNode.basename}
 					onSubmit={(_, description): Promise<void> => uploadFile(file, description)}
 					file={file}
+					room={room}
 					onClose={(): void => setModal(null)}
 					invalidContentType={Boolean(file.type && !fileUploadIsValidContentType(file.type))}
 				/>,

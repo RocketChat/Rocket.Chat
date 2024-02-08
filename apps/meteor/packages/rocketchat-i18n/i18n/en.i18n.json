@@ -5403,6 +5403,8 @@
   "Upgrade_tab_upgrade_your_plan": "Upgrade your plan",
   "Upload": "Upload",
   "Uploads": "Uploads",
+  "Upload_alt_description": "ALT Description",
+  "Upload_alt_description_placeholder": "Describe what's happening in the image",
   "Upload_private_app": "Upload private app",
   "Upload_file_description": "File description",
   "Upload_file": "Upload file",
