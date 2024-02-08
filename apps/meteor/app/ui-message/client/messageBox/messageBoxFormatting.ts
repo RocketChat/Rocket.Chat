@@ -70,9 +70,9 @@ export const formattingButtons: ReadonlyArray<FormattingButton> = [
 				composerApi.focus();
 			};
 
-			const onConfirm = (url: string, title: string) => {
+			const onConfirm = (url: string, text: string) => {
 				onClose();
-				composerApi.replaceText(`[${title}](${url}) `, selection);
+				composerApi.replaceText(`[${text}](${url}) `, selection);
 				composerApi.setCursorToEnd();
 			};
 

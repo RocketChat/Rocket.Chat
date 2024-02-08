@@ -7,7 +7,7 @@ import GenericModal from '../../../../client/components/GenericModal';
 
 type AddLinkComposerActionModalProps = {
 	selectedText?: string;
-	onConfirm: (url: string, title: string) => void;
+	onConfirm: (url: string, text: string) => void;
 	onClose: () => void;
 };
 
@@ -22,37 +22,46 @@ const AddLinkComposerActionModal = ({ selectedText, onClose, onConfirm }: AddLin
 	} = useForm({
 		mode: 'onBlur',
 		defaultValues: {
-			url: selectedText || '',
-			title: '',
+			text: selectedText || '',
+			url: '',
 		},
 	});
 
 	useEffect(() => {
-		setFocus(selectedText ? 'title' : 'url');
+		setFocus(selectedText ? 'url' : 'text');
 	}, [selectedText, setFocus]);
 
-	const onClickConfirm = ({ url, title }: { url: string; title: string }) => {
-		onConfirm(url, title);
+	const onClickConfirm = ({ url, text }: { url: string; text: string }) => {
+		onConfirm(url, text);
 	};
 
 	const submit = handleSubmit(onClickConfirm);
 
 	return (
-		<GenericModal onConfirm={submit} confirmDisabled={!isValid} onClose={onClose} onCancel={onClose} title={t('Link')}>
+		<GenericModal
+			variant='warning'
+			icon={null}
+			confirmText={t('Add')}
+			onConfirm={submit}
+			confirmDisabled={!isValid}
+			onClose={onClose}
+			onCancel={onClose}
+			title={t('Add_link')}
+		>
 			<FieldGroup is='form' name='xxx' onSubmit={(e) => void submit(e)} method='post'>
+				<Field>
+					<FieldLabel>{t('Text')}</FieldLabel>
+					<FieldRow>
+						<TextInput {...register('text', { required: t('The_field_is_required', t('Text')) })} />
+					</FieldRow>
+					{errors?.text && <FieldError>{t('The_field_is_required', t('Text'))}</FieldError>}
+				</Field>
 				<Field>
 					<FieldLabel>{t('URL')}</FieldLabel>
 					<FieldRow>
 						<TextInput {...register('url', { required: t('The_field_is_required', t('URL')) })} />
 					</FieldRow>
 					{errors?.url && <FieldError>{t('The_field_is_required', t('URL'))}</FieldError>}
-				</Field>
-				<Field>
-					<FieldLabel>{t('Title')}</FieldLabel>
-					<FieldRow>
-						<TextInput {...register('title', { required: t('The_field_is_required', t('Title')) })} />
-					</FieldRow>
-					{errors?.title && <FieldError>{t('The_field_is_required', t('Title'))}</FieldError>}
 				</Field>
 				<input type='submit' hidden />
 			</FieldGroup>
