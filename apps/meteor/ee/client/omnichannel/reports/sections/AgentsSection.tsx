@@ -1,4 +1,3 @@
-/* eslint-disable react/no-multi-comp */
 import { Box } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
