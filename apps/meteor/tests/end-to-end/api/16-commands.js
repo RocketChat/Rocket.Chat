@@ -1,9 +1,9 @@
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
+import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { sendSimpleMessage } from '../../data/chat.helper.js';
-import { createRoom } from '../../data/rooms.helper.js';
+import { createRoom, deleteRoom } from '../../data/rooms.helper.js';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper.js';
 
@@ -97,24 +97,23 @@ describe('[Commands]', function () {
 		let testChannel;
 		let threadMessage;
 
-		before((done) => {
-			createRoom({ type: 'c', name: `channel.test.commands.${Date.now()}` }).end((err, res) => {
-				testChannel = res.body.channel;
-				sendSimpleMessage({
-					roomId: testChannel._id,
-					text: 'Message to create thread',
-				}).end((err, message) => {
-					sendSimpleMessage({
-						roomId: testChannel._id,
-						text: 'Thread Message',
-						tmid: message.body.message._id,
-					}).end((err, res) => {
-						threadMessage = res.body.message;
-						done();
-					});
-				});
+		before(async () => {
+			testChannel = (await createRoom({ type: 'c', name: `channel.test.commands.${Date.now()}` })).body.channel;
+			const { body: { message } = {} } = await sendSimpleMessage({
+				roomId: testChannel._id,
+				text: 'Message to create thread',
 			});
+
+			threadMessage = (
+				await sendSimpleMessage({
+					roomId: testChannel._id,
+					text: 'Thread Message',
+					tmid: message._id,
+				})
+			).body.message;
 		});
+
+		after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
 
 		it('should return an error when call the endpoint without "command" required parameter', (done) => {
 			request
