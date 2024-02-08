@@ -4,6 +4,7 @@ import type { FileAttachmentProps } from './FileAttachmentProps';
 import type { FileProp } from './FileProp';
 
 export type ImageAttachmentProps = {
+	alt_description?: string;
 	image_dimensions?: Dimensions;
 	image_preview?: string;
 	image_url: string;

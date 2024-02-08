@@ -3,6 +3,7 @@ import type { IUser } from './IUser';
 export interface IUpload {
 	_id: string;
 	typeGroup?: string;
+	altDescription?: string;
 	description?: string;
 	type?: string;
 	name?: string;

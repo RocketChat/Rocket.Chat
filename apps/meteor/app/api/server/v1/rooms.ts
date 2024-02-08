@@ -177,8 +177,10 @@ API.v1.addRoute(
 			const uploadedFile = await fileStore.insert(details, fileBuffer);
 
 			uploadedFile.description = fields.description;
+			uploadedFile.altDescription = fields.altDescription;
 
 			delete fields.description;
+			delete fields.altDescription;
 
 			await sendFileMessage(this.userId, { roomId: this.urlParams.rid, file: uploadedFile, msgData: fields });
 
