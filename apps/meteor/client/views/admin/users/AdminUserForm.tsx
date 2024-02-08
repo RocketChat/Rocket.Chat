@@ -161,7 +161,7 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 	const rolesId = useUniqueId();
 	const joinDefaultChannelsId = useUniqueId();
 	const sendWelcomeEmailId = useUniqueId();
-
+    const usernamePattern = /^[a-zA-Z0-9_-]{3,16}$/;
 	return (
 		<>
 			<ContextualbarScrollableContent {...props}>
@@ -213,7 +213,10 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 							<Controller
 								control={control}
 								name='username'
-								rules={{ required: t('The_field_is_required', t('Username')) }}
+								rules={{
+									required: t('The_field_is_required', t('Username')),
+									validate: (value) => usernamePattern.test(value) || t('Invalid_username'),
+								}}
 								render={({ field }) => (
 									<TextInput
 										{...field}
