@@ -174,80 +174,102 @@ export class RocketChatSettingsAdapter {
 	private async addFederationSettings(): Promise<void> {
 		const preExistingConfiguration = this.getRegistrationFileFromHomeserver();
 
-		await settingsRegistry.addGroup('Federation', async function () {
-			await this.section('Matrix Bridge', async function () {
-				await this.add('Federation_Matrix_enabled', Boolean(preExistingConfiguration), {
-					readonly: false,
-					type: 'boolean',
-					i18nLabel: 'Federation_Matrix_enabled',
-					i18nDescription: 'Federation_Matrix_enabled_desc',
-					alert: 'Federation_Matrix_Enabled_Alert',
-					public: true,
-				});
-
-				const uniqueId = settings.get('uniqueID') || uuidv4().slice(0, 15).replace(new RegExp('-', 'g'), '_');
-				const homeserverToken = crypto.createHash('sha256').update(`hs_${uniqueId}`).digest('hex');
-				const applicationServiceToken = crypto.createHash('sha256').update(`as_${uniqueId}`).digest('hex');
-
-				await this.add('Federation_Matrix_id', preExistingConfiguration?.id || `rocketchat_${uniqueId}`, {
-					readonly: true,
-					type: 'string',
-					i18nLabel: 'Federation_Matrix_id',
-					i18nDescription: 'Federation_Matrix_id_desc',
-				});
-
-				await this.add('Federation_Matrix_hs_token', preExistingConfiguration?.homeserverToken || homeserverToken, {
-					readonly: true,
-					type: 'string',
-					i18nLabel: 'Federation_Matrix_hs_token',
-					i18nDescription: 'Federation_Matrix_hs_token_desc',
-				});
-
-				await this.add('Federation_Matrix_as_token', preExistingConfiguration?.applicationServiceToken || applicationServiceToken, {
-					readonly: true,
-					type: 'string',
-					i18nLabel: 'Federation_Matrix_as_token',
-					i18nDescription: 'Federation_Matrix_as_token_desc',
-				});
-
-				await this.add('Federation_Matrix_homeserver_url', preExistingConfiguration?.rocketchat?.homeServerUrl || 'http://localhost:8008', {
-					type: 'string',
-					i18nLabel: 'Federation_Matrix_homeserver_url',
-					i18nDescription: 'Federation_Matrix_homeserver_url_desc',
-					alert: 'Federation_Matrix_homeserver_url_alert',
-				});
-
-				await this.add('Federation_Matrix_homeserver_domain', preExistingConfiguration?.rocketchat?.domainName || 'local.rocket.chat', {
-					type: 'string',
-					i18nLabel: 'Federation_Matrix_homeserver_domain',
-					i18nDescription: 'Federation_Matrix_homeserver_domain_desc',
-					alert: 'Federation_Matrix_homeserver_domain_alert',
-				});
-
-				await this.add('Federation_Matrix_bridge_url', preExistingConfiguration?.bridgeUrl || 'http://host.docker.internal:3300', {
-					type: 'string',
-					i18nLabel: 'Federation_Matrix_bridge_url',
-					i18nDescription: 'Federation_Matrix_bridge_url_desc',
-				});
-
-				await this.add('Federation_Matrix_bridge_localpart', preExistingConfiguration?.botName || 'rocket.cat', {
-					type: 'string',
-					i18nLabel: 'Federation_Matrix_bridge_localpart',
-					i18nDescription: 'Federation_Matrix_bridge_localpart_desc',
-				});
-
-				await this.add('Federation_Matrix_registration_file', '', {
-					readonly: true,
-					hidden: Boolean(preExistingConfiguration),
-					type: 'code',
-					i18nLabel: 'Federation_Matrix_registration_file',
-					i18nDescription: 'Federation_Matrix_registration_file_desc',
-					alert: 'Federation_Matrix_registration_file_Alert',
-				});
-			});
+		await settingsRegistry.add('Federation_Matrix_enabled', Boolean(preExistingConfiguration), {
+			readonly: false,
+			type: 'boolean',
+			i18nLabel: 'Federation_Matrix_enabled',
+			i18nDescription: 'Federation_Matrix_enabled_desc',
+			alert: 'Federation_Matrix_Enabled_Alert',
+			public: true,
+			group: 'Federation',
+			section: 'Matrix Bridge',
 		});
 
-		void settingsRegistry.add('Federation_Matrix_max_size_of_public_rooms_users', 100, {
+		const uniqueId = settings.get('uniqueID') || uuidv4().slice(0, 15).replace(new RegExp('-', 'g'), '_');
+		const homeserverToken = crypto.createHash('sha256').update(`hs_${uniqueId}`).digest('hex');
+		const applicationServiceToken = crypto.createHash('sha256').update(`as_${uniqueId}`).digest('hex');
+
+		await settingsRegistry.add('Federation_Matrix_id', preExistingConfiguration?.id || `rocketchat_${uniqueId}`, {
+			readonly: true,
+			type: 'string',
+			i18nLabel: 'Federation_Matrix_id',
+			i18nDescription: 'Federation_Matrix_id_desc',
+			group: 'Federation',
+			section: 'Matrix Bridge',
+		});
+
+		await settingsRegistry.add('Federation_Matrix_hs_token', preExistingConfiguration?.homeserverToken || homeserverToken, {
+			readonly: true,
+			type: 'string',
+			i18nLabel: 'Federation_Matrix_hs_token',
+			i18nDescription: 'Federation_Matrix_hs_token_desc',
+			group: 'Federation',
+			section: 'Matrix Bridge',
+		});
+
+		await settingsRegistry.add('Federation_Matrix_as_token', preExistingConfiguration?.applicationServiceToken || applicationServiceToken, {
+			readonly: true,
+			type: 'string',
+			i18nLabel: 'Federation_Matrix_as_token',
+			i18nDescription: 'Federation_Matrix_as_token_desc',
+			group: 'Federation',
+			section: 'Matrix Bridge',
+		});
+
+		await settingsRegistry.add(
+			'Federation_Matrix_homeserver_url',
+			preExistingConfiguration?.rocketchat?.homeServerUrl || 'http://localhost:8008',
+			{
+				type: 'string',
+				i18nLabel: 'Federation_Matrix_homeserver_url',
+				i18nDescription: 'Federation_Matrix_homeserver_url_desc',
+				alert: 'Federation_Matrix_homeserver_url_alert',
+				group: 'Federation',
+				section: 'Matrix Bridge',
+			},
+		);
+
+		await settingsRegistry.add(
+			'Federation_Matrix_homeserver_domain',
+			preExistingConfiguration?.rocketchat?.domainName || 'local.rocket.chat',
+			{
+				type: 'string',
+				i18nLabel: 'Federation_Matrix_homeserver_domain',
+				i18nDescription: 'Federation_Matrix_homeserver_domain_desc',
+				alert: 'Federation_Matrix_homeserver_domain_alert',
+				group: 'Federation',
+				section: 'Matrix Bridge',
+			},
+		);
+
+		await settingsRegistry.add('Federation_Matrix_bridge_url', preExistingConfiguration?.bridgeUrl || 'http://host.docker.internal:3300', {
+			type: 'string',
+			i18nLabel: 'Federation_Matrix_bridge_url',
+			i18nDescription: 'Federation_Matrix_bridge_url_desc',
+			group: 'Federation',
+			section: 'Matrix Bridge',
+		});
+
+		await settingsRegistry.add('Federation_Matrix_bridge_localpart', preExistingConfiguration?.botName || 'rocket.cat', {
+			type: 'string',
+			i18nLabel: 'Federation_Matrix_bridge_localpart',
+			i18nDescription: 'Federation_Matrix_bridge_localpart_desc',
+			group: 'Federation',
+			section: 'Matrix Bridge',
+		});
+
+		await settingsRegistry.add('Federation_Matrix_registration_file', '', {
+			readonly: true,
+			hidden: Boolean(preExistingConfiguration),
+			type: 'code',
+			i18nLabel: 'Federation_Matrix_registration_file',
+			i18nDescription: 'Federation_Matrix_registration_file_desc',
+			alert: 'Federation_Matrix_registration_file_Alert',
+			group: 'Federation',
+			section: 'Matrix Bridge',
+		});
+
+		await settingsRegistry.add('Federation_Matrix_max_size_of_public_rooms_users', 100, {
 			readonly: false,
 			type: 'int',
 			i18nLabel: 'Federation_Matrix_max_size_of_public_rooms_users',

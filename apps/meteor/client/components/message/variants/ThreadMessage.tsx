@@ -1,6 +1,7 @@
 import { type IThreadMessage, type IThreadMainMessage, isVideoConfMessage } from '@rocket.chat/core-typings';
 import { Message, MessageLeftContainer, MessageContainer } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
+import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import { useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo, useRef } from 'react';
@@ -9,11 +10,11 @@ import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/M
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
 import { useJumpToMessage } from '../../../views/room/MessageList/hooks/useJumpToMessage';
 import { useChat } from '../../../views/room/contexts/ChatContext';
+import Emoji from '../../Emoji';
 import IgnoredContent from '../IgnoredContent';
 import MessageHeader from '../MessageHeader';
-import MessageToolboxHolder from '../MessageToolboxHolder';
+import MessageToolbarHolder from '../MessageToolbarHolder';
 import StatusIndicators from '../StatusIndicators';
-import MessageAvatar from '../header/MessageAvatar';
 import ThreadMessageContent from './thread/ThreadMessageContent';
 
 type ThreadMessageProps = {
@@ -54,12 +55,12 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar }: ThreadMe
 			<MessageLeftContainer>
 				{!sequential && message.u.username && showUserAvatar && (
 					<MessageAvatar
-						emoji={message.emoji}
+						emoji={message.emoji ? <Emoji emojiHandle={message.emoji} fillContainer /> : undefined}
 						avatarUrl={message.avatar}
 						username={message.u.username}
 						size='x36'
 						{...(chat?.userCard && {
-							onClick: chat?.userCard.open(message.u.username),
+							onClick: (e) => chat?.userCard.openUserCard(e, message.u.username),
 							style: { cursor: 'pointer' },
 						})}
 					/>
@@ -72,7 +73,7 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar }: ThreadMe
 
 				{ignored ? <IgnoredContent onShowMessageIgnored={toggleIgnoring} /> : <ThreadMessageContent message={message} />}
 			</MessageContainer>
-			{!message.private && <MessageToolboxHolder message={message} context={messageContext} />}
+			{!message.private && <MessageToolbarHolder message={message} context={messageContext} />}
 		</Message>
 	);
 };

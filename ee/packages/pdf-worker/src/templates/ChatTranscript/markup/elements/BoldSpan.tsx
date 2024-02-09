@@ -17,7 +17,8 @@ type MessageBlock =
 	| MessageParser.ChannelMention
 	| MessageParser.UserMention
 	| MessageParser.Link
-	| MessageParser.MarkupExcluding<MessageParser.Bold>;
+	| MessageParser.MarkupExcluding<MessageParser.Bold>
+	| MessageParser.InlineCode;
 
 type BoldSpanProps = {
 	children: MessageBlock[];

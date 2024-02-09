@@ -1,6 +1,5 @@
 import type { ImageAttachmentProps } from '@rocket.chat/core-typings';
 import { useMediaUrl } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
 import React from 'react';
 
 import MarkdownText from '../../../../MarkdownText';
@@ -9,7 +8,7 @@ import MessageContentBody from '../../../MessageContentBody';
 import AttachmentImage from '../structure/AttachmentImage';
 import { useLoadImage } from './hooks/useLoadImage';
 
-export const ImageAttachment: FC<ImageAttachmentProps & { id: string | undefined }> = ({
+const ImageAttachment = ({
 	id,
 	title,
 	image_url: url,
@@ -24,7 +23,7 @@ export const ImageAttachment: FC<ImageAttachmentProps & { id: string | undefined
 	title_link: link,
 	title_link_download: hasDownload,
 	collapsed,
-}) => {
+}: ImageAttachmentProps) => {
 	const [loadImage, setLoadImage] = useLoadImage();
 	const getURL = useMediaUrl();
 
@@ -45,3 +44,5 @@ export const ImageAttachment: FC<ImageAttachmentProps & { id: string | undefined
 		</>
 	);
 };
+
+export default ImageAttachment;
