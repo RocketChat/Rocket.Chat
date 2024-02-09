@@ -66,11 +66,11 @@ const api = {
 		Livechat.sendVisitorNavigation({ token, rid, pageInfo: { change, title, location: { href } } });
 	},
 
-	setCustomField: (key: string, value = '', overwrite: boolean) => {
+	setCustomField: (key: string, value = '', overwrite = true) => {
 		CustomFields.setCustomField(key, value, overwrite);
 	},
 
-	setTheme: ({ theme: { color, fontColor, iconColor, title, offlineTitle } }: { theme: StoreState['iframe']['theme'] }) => {
+	setTheme: ({ color, fontColor, iconColor, title, offlineTitle }: StoreState['iframe']['theme']) => {
 		const {
 			iframe,
 			iframe: { theme },
@@ -196,7 +196,7 @@ const api = {
 		await createOrUpdateGuest(data);
 	},
 
-	setLanguage: async ({ language }: { language: StoreState['iframe']['language'] }) => {
+	setLanguage: async (language: StoreState['iframe']['language']) => {
 		const { iframe } = store.state;
 		await store.setState({ iframe: { ...iframe, language } });
 		i18next.changeLanguage(language);

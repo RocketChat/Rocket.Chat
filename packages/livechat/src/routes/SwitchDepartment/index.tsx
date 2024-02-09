@@ -61,8 +61,10 @@ const SwitchDepartment = ({ screenProps }: { screenProps: { [key: string]: unkno
 
 		if (!room) {
 			const { visitor: user } = await Livechat.grantVisitor({ visitor: { department, token } });
-			await dispatch({ user } as Omit<StoreState['user'], 'ts'>);
-			await dispatch({ alerts: (alerts.push({ id: createToken(), children: t('department_switched'), success: true }), alerts) });
+			await dispatch({
+				user: user as StoreState['user'],
+				alerts: (alerts.push({ id: createToken(), children: t('department_switched'), success: true }), alerts),
+			});
 			return route('/');
 		}
 
@@ -86,11 +88,7 @@ const SwitchDepartment = ({ screenProps }: { screenProps: { [key: string]: unkno
 				throw t('no_available_agents_to_transfer');
 			}
 
-			await dispatch({ iframe: { ...iframe, guest: { ...guest, department } }, loading: false } as {
-				iframe: StoreState['iframe'];
-				guest: StoreState['iframe']['guest'];
-				loading: boolean;
-			});
+			await dispatch({ iframe: { ...iframe, guest: { ...guest, department } }, loading: false } as Pick<StoreState, 'iframe' | 'loading'>);
 			await loadConfig();
 
 			await ModalManager.alert({

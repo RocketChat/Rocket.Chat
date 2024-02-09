@@ -1,4 +1,4 @@
-import type { ILivechatVisitor, ILivechatVisitorDTO } from '@rocket.chat/core-typings';
+import type { ILivechatVisitor, ILivechatVisitorDTO, Serialized } from '@rocket.chat/core-typings';
 import type { ComponentChildren } from 'preact';
 import { Component, createContext } from 'preact';
 
@@ -34,15 +34,15 @@ export type StoreState = {
 		enabled?: boolean;
 	};
 	messages: any[];
-	user?: ILivechatVisitor;
-	guest?: ILivechatVisitorDTO;
+	user?: Serialized<ILivechatVisitor>;
+	guest?: Serialized<ILivechatVisitorDTO>;
 	sound: {
 		src?: string;
 		play?: boolean;
 		enabled: boolean;
 	};
 	iframe: {
-		guest?: ILivechatVisitorDTO;
+		guest?: Serialized<ILivechatVisitorDTO>;
 		theme?: any;
 		visible?: boolean;
 		department?: string;
