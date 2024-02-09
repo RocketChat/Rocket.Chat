@@ -2,7 +2,7 @@ import QueryString from 'querystring';
 import URL from 'url';
 
 import type { MessageAttachment, IMessage, IUser, IOmnichannelRoom, IRoom } from '@rocket.chat/core-typings';
-import { isEditedMessage, isOmnichannelRoom, isQuoteAttachment } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom, isQuoteAttachment } from '@rocket.chat/core-typings';
 
 import { createQuoteAttachment } from '../../../../lib/createQuoteAttachment';
 
@@ -78,10 +78,9 @@ export class BeforeSaveJumpToMessage {
 			useRealName: boolean;
 		};
 	}): Promise<IMessage> {
-		if (isEditedMessage(message)) {
-			// Do not keep old quote attachments since they may not still be linked to the message
-			removeQuoteAttachments(message);
-		}
+		// Quote attachments are always rebuilt. Do not keep old ones since they may not still be linked to the message
+		removeQuoteAttachments(message);
+
 		// if no message is present, or the message doesn't have any URL, skip
 		if (!message?.urls?.length) {
 			return message;
