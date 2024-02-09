@@ -16,8 +16,8 @@ import { useFormatDate } from '../../../../../hooks/useFormatDate';
 import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../../../MessageList/providers/MessageListProvider';
 import LoadingMessagesIndicator from '../../../body/LoadingMessagesIndicator';
+import { useDateScroll } from '../../../hooks/useDateScroll';
 import { useFirstUnreadMessageId } from '../../../hooks/useFirstUnreadMessageId';
-import { useRoomBubleDate } from '../../../hooks/useRoomBubbleDate';
 import { useScrollMessageList } from '../../../hooks/useScrollMessageList';
 import { useLegacyThreadMessageJump } from '../hooks/useLegacyThreadMessageJump';
 import { useLegacyThreadMessageListScrolling } from '../hooks/useLegacyThreadMessageListScrolling';
@@ -70,7 +70,7 @@ type ThreadMessageListProps = {
 const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElement => {
 	const [showBubble, setShowBubble] = useState(false);
 
-	const { bubbleDate, onScroll: handleDateOnScroll } = useRoomBubleDate(BUBBLE_OFFSET);
+	const { bubbleDate, onScroll: handleDateOnScroll } = useDateScroll(BUBBLE_OFFSET);
 
 	const { messages, loading } = useLegacyThreadMessages(mainMessage._id);
 	const {

@@ -40,7 +40,7 @@ import RoomComposer from '../composer/RoomComposer/RoomComposer';
 import { useChat } from '../contexts/ChatContext';
 import { useRoom, useRoomSubscription, useRoomMessages } from '../contexts/RoomContext';
 import { useRoomToolbox } from '../contexts/RoomToolboxContext';
-import { useRoomBubleDate } from '../hooks/useRoomBubbleDate';
+import { useDateScroll } from '../hooks/useDateScroll';
 import { useScrollMessageList } from '../hooks/useScrollMessageList';
 import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
 import DropTargetOverlay from './DropTargetOverlay';
@@ -84,7 +84,7 @@ const RoomBody = (): ReactElement => {
 	const admin = useRole('admin');
 	const subscription = useRoomSubscription();
 	const messages = useMessages({ rid: room._id });
-	const { bubbleDate, onScroll: handleDateOnScroll } = useRoomBubleDate(BUBBLE_OFFSET);
+	const { bubbleDate, onScroll: handleDateOnScroll } = useDateScroll(BUBBLE_OFFSET);
 
 	const [lastMessageDate, setLastMessageDate] = useState<Date | undefined>();
 	const [hideLeaderHeader, setHideLeaderHeader] = useState(false);

@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 import type { MutableRefObject } from 'react';
 import type React from 'react';
 
-export const useRoomBubleDate = (
+export const useDateScroll = (
 	offset = 0,
 ): {
 	bubbleDate: string | undefined;
