@@ -1957,8 +1957,10 @@ describe('Meteor.methods', function () {
 		let rid = false;
 		let roomName = false;
 		let messageId;
+		let simpleMessageId;
 		let messageWithMarkdownId;
 		let channelName = false;
+		const siteUrl = process.env.SITE_URL || process.env.TEST_API_URL || 'http://localhost:3000';
 
 		before('create room', (done) => {
 			channelName = `methods-test-channel-${Date.now()}`;
@@ -1980,6 +1982,11 @@ describe('Meteor.methods', function () {
 					roomName = res.body.group.name;
 				})
 				.end(done);
+		});
+
+		before('send simple message', async () => {
+			const res = await sendSimpleMessage({ roomId: rid });
+			simpleMessageId = res.body.message._id;
 		});
 
 		before('send message with URL', (done) => {
@@ -2070,8 +2077,6 @@ describe('Meteor.methods', function () {
 		});
 
 		it('should add a quote attachment to a message', async () => {
-			const siteUrl = process.env.SITE_URL || process.env.TEST_API_URL || 'http://localhost:3000';
-
 			const quotedMsgLink = `${siteUrl}/group/${roomName}?msg=${messageWithMarkdownId}`;
 			await request
 				.post(methodCall('updateMessage'))
@@ -2100,7 +2105,75 @@ describe('Meteor.methods', function () {
 					expect(res.body).to.have.property('message').that.is.an('object');
 					expect(res.body.message).to.have.property('msg', `${quotedMsgLink} updated`);
 					expect(res.body.message).to.have.property('attachments').that.is.an('array').that.has.lengthOf(1);
-					expect(res.body.message.attachments[0]).to.have.property('message_link').that.is.a('string');
+					expect(res.body.message.attachments[0]).to.have.property('message_link', quotedMsgLink);
+				});
+		});
+
+		it('should replace a quote attachment in a message', async () => {
+			const quotedMsgLink = `${siteUrl}/group/${roomName}?msg=${simpleMessageId}`;
+			await request
+				.post(methodCall('updateMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'updateMessage',
+						params: [{ _id: messageId, rid, msg: `${quotedMsgLink} updated` }],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+				});
+
+			await request
+				.get(api(`chat.getMessage?msgId=${messageId}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('message').that.is.an('object');
+					expect(res.body.message).to.have.property('msg', `${quotedMsgLink} updated`);
+					expect(res.body.message).to.have.property('attachments').that.is.an('array').that.has.lengthOf(1);
+					expect(res.body.message.attachments[0]).to.have.property('message_link', quotedMsgLink);
+				});
+		});
+
+		it('should add multiple quote attachments in a single message', async () => {
+			const quotedMsgLink = `${siteUrl}/group/${roomName}?msg=${simpleMessageId}`;
+			const newQuotedMsgLink = `${siteUrl}/group/${roomName}?msg=${messageWithMarkdownId}`;
+			await request
+				.post(methodCall('updateMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'updateMessage',
+						params: [{ _id: messageId, rid, msg: `${newQuotedMsgLink} ${quotedMsgLink} updated` }],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+				});
+
+			await request
+				.get(api(`chat.getMessage?msgId=${messageId}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('message').that.is.an('object');
+					expect(res.body.message).to.have.property('msg', `${newQuotedMsgLink} ${quotedMsgLink} updated`);
+					expect(res.body.message).to.have.property('attachments').that.is.an('array').that.has.lengthOf(2);
+					expect(res.body.message.attachments[0]).to.have.property('message_link', newQuotedMsgLink);
+					expect(res.body.message.attachments[1]).to.have.property('message_link', quotedMsgLink);
 				});
 		});
 
