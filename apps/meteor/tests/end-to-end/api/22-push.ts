@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
+import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { updateSetting } from '../../data/permissions.helper';
@@ -193,11 +193,21 @@ describe('[Push]', function () {
 	});
 
 	describe('[/push.info]', () => {
-		before(async () => {
-			await updateSetting('Push_enable', true);
-			await updateSetting('Push_enable_gateway', true);
-			await updateSetting('Push_gateway', 'https://random-gateway.rocket.chat');
-		});
+		before(async () =>
+			Promise.all([
+				updateSetting('Push_enable', true),
+				updateSetting('Push_enable_gateway', true),
+				updateSetting('Push_gateway', 'https://random-gateway.rocket.chat'),
+			]),
+		);
+
+		after(async () =>
+			Promise.all([
+				updateSetting('Push_enable', true),
+				updateSetting('Push_enable_gateway', true),
+				updateSetting('Push_gateway', 'https://gateway.rocket.chat'),
+			]),
+		);
 
 		it('should fail if not logged in', async () => {
 			await request
@@ -234,9 +244,9 @@ describe('[Push]', function () {
 	});
 
 	describe('[/push.test]', () => {
-		before(async () => {
-			await updateSetting('Push_enable', false);
-		});
+		before(() => updateSetting('Push_enable', false));
+
+		after(() => updateSetting('Push_enable', true));
 
 		it('should fail if not logged in', async () => {
 			await request
