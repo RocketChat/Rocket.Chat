@@ -1,11 +1,11 @@
 import type { App } from '@rocket.chat/core-typings';
 import { Box, Tag } from '@rocket.chat/fuselage';
+import { AppAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import AppAvatar from '../../../components/avatar/AppAvatar';
 import AppMenu from '../AppMenu';
 import BundleChips from '../BundleChips';
 import { appIncompatibleStatusProps } from '../helpers';
@@ -37,7 +37,9 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 
 	return (
 		<Box color='default' display='flex' flexDirection='row' mbe={20} w='full'>
-			<AppAvatar size='x124' mie={32} iconFileContent={iconFileContent} iconFileData={iconFileData} />
+			<Box mie={32}>
+				<AppAvatar size='x124' iconFileContent={iconFileContent} iconFileData={iconFileData} />
+			</Box>
 			<Box display='flex' flexDirection='column'>
 				<Box display='flex' flexDirection='row' alignItems='center' mbe={8}>
 					<Box fontScale='h1' mie={8}>
