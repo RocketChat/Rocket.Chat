@@ -1,11 +1,10 @@
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
-import { css } from '@rocket.chat/css-in-js';
 import { Box, Bubble, MessageDivider } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import { differenceInSeconds } from 'date-fns';
 import type { MutableRefObject, ReactElement } from 'react';
-import React, { useState, useRef, Fragment } from 'react';
+import React, { useRef, Fragment } from 'react';
 
 import { MessageTypes } from '../../../../../../app/ui-utils/client';
 import { isTruthy } from '../../../../../../lib/isTruthy';
@@ -23,22 +22,7 @@ import { useLegacyThreadMessageJump } from '../hooks/useLegacyThreadMessageJump'
 import { useLegacyThreadMessageListScrolling } from '../hooks/useLegacyThreadMessageListScrolling';
 import { useLegacyThreadMessages } from '../hooks/useLegacyThreadMessages';
 
-const BUBBLE_OFFSET = 120;
-
-const dateBubbleStyle = css`
-	position: absolute;
-	top: 64px;
-	left: 50%;
-	translate: -50%;
-	z-index: 1;
-
-	opacity: 0;
-	transition: opacity 0.6s;
-
-	&.bubble-visible {
-		opacity: 1;
-	}
-`;
+const BUBBLE_OFFSET = 64;
 
 const isMessageSequential = (current: IMessage, previous: IMessage | undefined, groupingRange: number): boolean => {
 	if (!previous) {
@@ -68,9 +52,7 @@ type ThreadMessageListProps = {
 };
 
 const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElement => {
-	const [showBubble, setShowBubble] = useState(false);
-
-	const { bubbleDate, onScroll: handleDateOnScroll } = useDateScroll(BUBBLE_OFFSET);
+	const { bubbleDate, onScroll: handleDateOnScroll, showBubble, style: bubbleDateStyle } = useDateScroll(BUBBLE_OFFSET);
 
 	const { messages, loading } = useLegacyThreadMessages(mainMessage._id);
 	const {
@@ -96,7 +78,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 	return (
 		<div className={['thread-list js-scroll-thread', hideUsernames && 'hide-usernames'].filter(isTruthy).join(' ')}>
 			{bubbleDate && (
-				<Box className={[dateBubbleStyle, showBubble && 'bubble-visible']}>
+				<Box className={[bubbleDateStyle, showBubble && 'bubble-visible']}>
 					<Bubble small secondary>
 						{bubbleDate}
 					</Bubble>
@@ -107,8 +89,6 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 				onScroll={(args) => {
 					handleScroll(args);
 					handleDateOnScroll(dividerRefs);
-					setShowBubble(true);
-					setTimeout(() => setShowBubble(false), 2000);
 				}}
 				style={{ scrollBehavior: 'smooth', overflowX: 'hidden' }}
 			>

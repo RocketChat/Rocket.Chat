@@ -1,6 +1,5 @@
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
-import { css } from '@rocket.chat/css-in-js';
 import { Box, Bubble } from '@rocket.chat/fuselage';
 import {
 	usePermission,
@@ -58,22 +57,7 @@ import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
 import { useRetentionPolicy } from './hooks/useRetentionPolicy';
 import { useUnreadMessages } from './hooks/useUnreadMessages';
 
-const dateBubbleStyle = css`
-	position: absolute;
-	top: 8px;
-	left: 50%;
-	translate: -50%;
-	z-index: 1;
-
-	opacity: 0;
-	transition: opacity 0.6s;
-
-	&.bubble-visible {
-		opacity: 1;
-	}
-`;
-
-const BUBBLE_OFFSET = 64;
+const BUBBLE_OFFSET = 8;
 
 const RoomBody = (): ReactElement => {
 	const t = useTranslation();
@@ -84,12 +68,11 @@ const RoomBody = (): ReactElement => {
 	const admin = useRole('admin');
 	const subscription = useRoomSubscription();
 	const messages = useMessages({ rid: room._id });
-	const { bubbleDate, onScroll: handleDateOnScroll } = useDateScroll(BUBBLE_OFFSET);
+	const { bubbleDate, onScroll: handleDateOnScroll, showBubble, style: bubbleDateStyle } = useDateScroll(BUBBLE_OFFSET);
 
 	const [lastMessageDate, setLastMessageDate] = useState<Date | undefined>();
 	const [hideLeaderHeader, setHideLeaderHeader] = useState(false);
 	const [hasNewMessages, setHasNewMessages] = useState(false);
-	const [showBubble, setShowBubble] = useState(false);
 
 	const hideFlexTab = useUserPreference<boolean>('hideFlexTab') || undefined;
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
@@ -403,22 +386,13 @@ const RoomBody = (): ReactElement => {
 			}
 		});
 
-		const handleToggleBubble = () => {
-			setShowBubble(true);
-			setTimeout(() => {
-				setShowBubble(false);
-			}, 2000);
-		};
-
 		wrapper.addEventListener('scroll', updateUnreadCount);
 		wrapper.addEventListener('scroll', handleWrapperScroll);
-		wrapper.addEventListener('scroll', handleToggleBubble);
 		wrapper.addEventListener('scroll', () => handleDateOnScroll(dividerRefs));
 
 		return () => {
 			wrapper.removeEventListener('scroll', updateUnreadCount);
 			wrapper.removeEventListener('scroll', handleWrapperScroll);
-			wrapper.removeEventListener('scroll', handleToggleBubble);
 			wrapper.removeEventListener('scroll', () => handleDateOnScroll(dividerRefs));
 		};
 	}, [_isAtBottom, handleDateOnScroll, room._id, setUnreadCount]);
@@ -597,7 +571,7 @@ const RoomBody = (): ReactElement => {
 								))}
 							</div>
 							{bubbleDate && (
-								<Box className={[dateBubbleStyle, showBubble && 'bubble-visible']}>
+								<Box className={[bubbleDateStyle, showBubble && 'bubble-visible']}>
 									<Bubble small secondary>
 										{bubbleDate}
 									</Bubble>
