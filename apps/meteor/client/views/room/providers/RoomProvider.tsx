@@ -17,6 +17,7 @@ import { useRoomRolesManagement } from '../body/hooks/useRoomRolesManagement';
 import { RoomContext } from '../contexts/RoomContext';
 import ComposerPopupProvider from './ComposerPopupProvider';
 import RoomToolboxProvider from './RoomToolboxProvider';
+import UserCardProvider from './UserCardProvider';
 import { useRedirectOnSettingsChanged } from './hooks/useRedirectOnSettingsChanged';
 import { useRoomQuery } from './hooks/useRoomQuery';
 import { useUsersNameChanged } from './hooks/useUsersNameChanged';
@@ -110,7 +111,9 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 		<RoomContext.Provider value={context}>
 			<RoomToolboxProvider>
 				<ImageGalleryProvider>
-					<ComposerPopupProvider room={pseudoRoom}>{children}</ComposerPopupProvider>
+					<UserCardProvider>
+						<ComposerPopupProvider room={pseudoRoom}>{children}</ComposerPopupProvider>
+					</UserCardProvider>
 				</ImageGalleryProvider>
 			</RoomToolboxProvider>
 		</RoomContext.Provider>
