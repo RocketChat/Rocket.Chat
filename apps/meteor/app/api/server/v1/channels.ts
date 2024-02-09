@@ -566,32 +566,31 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isChannelsCloseProps },
 	{
 		async post() {
-			const receivedRoomId = 'roomId' in this.bodyParams ? this.bodyParams.roomId : undefined;
-			const receivedRoomName = 'roomName' in this.bodyParams ? this.bodyParams.roomName : undefined;
-			const findResult = await Rooms.findOneByIdOrName(receivedRoomId || receivedRoomName, {
+			const { roomId, roomName } = this.bodyParams;
+			const findResult = await Rooms.findOneByIdOrName(roomId || roomName, {
 				projection: {
 					name: 1,
 				},
 			});
 
-			const roomId = findResult?._id || receivedRoomId;
-			const roomName = findResult?.name || receivedRoomName;
+			const foundRoomId = findResult?._id || roomId;
+			const foundRoomName = findResult?.name || roomName;
 
-			if (!roomId) {
+			if (!foundRoomId) {
 				return API.v1.failure('Could not find the channel or any subscription linked to it');
 			}
 
-			const sub = await Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId);
+			const sub = await Subscriptions.findOneByRoomIdAndUserId(foundRoomId, this.userId);
 
 			if (!sub) {
-				return API.v1.failure(`The user/callee is not in the channel "${roomName}.`);
+				return API.v1.failure(`The user/callee is not in the channel "${foundRoomName}.`);
 			}
 
 			if (!sub.open) {
-				return API.v1.failure(`The channel, ${roomName}, is already closed to the sender`);
+				return API.v1.failure(`The channel, ${foundRoomName}, is already closed to the sender`);
 			}
 
-			await hideRoomMethod(this.userId, roomId);
+			await hideRoomMethod(this.userId, foundRoomId);
 
 			return API.v1.success();
 		},

@@ -2,7 +2,7 @@ import Ajv from 'ajv';
 
 const ajv = new Ajv();
 
-export type ChannelsCloseProps = { roomId: string } | { roomName: string };
+export type ChannelsCloseProps = { roomId: string; roomName?: string } | { roomId?: string; roomName: string };
 
 const ChannelsClosePropsSchema = {
 	type: 'object',
@@ -10,7 +10,7 @@ const ChannelsClosePropsSchema = {
 		roomId: { type: 'string' },
 		roomName: { type: 'string' },
 	},
-	oneOf: [{ required: ['roomId'] }, { required: ['roomName'] }],
+	anyOf: [{ required: ['roomId'] }, { required: ['roomName'] }],
 	additionalProperties: false,
 };
 
