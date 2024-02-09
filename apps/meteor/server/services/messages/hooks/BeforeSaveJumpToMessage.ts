@@ -2,7 +2,7 @@ import QueryString from 'querystring';
 import URL from 'url';
 
 import type { MessageAttachment, IMessage, IUser, IOmnichannelRoom, IRoom } from '@rocket.chat/core-typings';
-import { isOmnichannelRoom, isQuoteAttachment } from '@rocket.chat/core-typings';
+import { isEditedMessage, isOmnichannelRoom, isQuoteAttachment } from '@rocket.chat/core-typings';
 
 import { createQuoteAttachment } from '../../../../lib/createQuoteAttachment';
 
@@ -30,6 +30,13 @@ const validateAttachmentDeepness = (message: IMessage, quoteChainLimit: number):
 	message.attachments = message.attachments?.map((attachment) => recursiveRemoveAttachments(attachment, 1, quoteChainLimit));
 
 	return message;
+};
+
+const removeQuoteAttachments = (message: IMessage) => {
+	if (!message.attachments) {
+		return;
+	}
+	message.attachments = message.attachments.filter((attachment) => !isQuoteAttachment(attachment));
 };
 
 type JumpToMessageInit = {
@@ -71,9 +78,9 @@ export class BeforeSaveJumpToMessage {
 			useRealName: boolean;
 		};
 	}): Promise<IMessage> {
-		if (message?.attachments) {
+		if (isEditedMessage(message)) {
 			// Do not keep old quote attachments since they may not still be linked to the message
-			message.attachments = message.attachments?.filter((attachment) => !isQuoteAttachment(attachment));
+			removeQuoteAttachments(message);
 		}
 		// if no message is present, or the message doesn't have any URL, skip
 		if (!message?.urls?.length) {
