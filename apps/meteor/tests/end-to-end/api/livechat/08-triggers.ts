@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
+import { before, describe, it, after } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
@@ -299,6 +299,8 @@ describe('LIVECHAT - triggers', function () {
 
 	(IS_EE ? describe : describe.skip)('POST livechat/triggers/external-service/test', () => {
 		const webhookUrl = process.env.WEBHOOK_TEST_URL || 'https://httpbin.org';
+
+		after(() => Promise.all([updateSetting('Livechat_secret_token', ''), restorePermissionToRoles('view-livechat-manager')]));
 
 		it('should fail if user is not logged in', async () => {
 			await request.post(api('livechat/triggers/external-service/test')).send({}).expect(401);
