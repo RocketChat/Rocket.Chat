@@ -475,7 +475,14 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 		if (isDefault) {
 			const maxNumberOfAutoJoinMembers = settings.get<number>('API_User_Limit');
-			const teamMembers = await this.members(uid, room.teamId, true, { offset: 0, count: maxNumberOfAutoJoinMembers });
+			const teamMembers = await this.members(
+				uid,
+				room.teamId,
+				true,
+				{ offset: 0, count: maxNumberOfAutoJoinMembers },
+				// We should not get the owner of the room, since he is already a member
+				{ _id: { $ne: room.u._id } },
+			);
 
 			for await (const m of teamMembers.records) {
 				if (await addUserToRoom(room._id, m.user, user)) {
