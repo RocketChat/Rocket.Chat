@@ -244,7 +244,27 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 								name='email'
 								rules={{
 									required: t('The_field_is_required', t('Email')),
-									validate: (email) => (validateEmail(email) ? undefined : t('error-invalid-email-address')),
+									validate: {
+										validUsername: value => {
+											const minLength = 3;
+											const maxLength = 16;
+											const allowedChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-';
+											
+											// Check if the length is within the allowed range
+											if (value.length < minLength || value.length > maxLength) {
+												return t('Invalid_username');
+											}
+							
+											// Check if each character is within the allowed characters
+											for (let i = 0; i < value.length; i++) {
+												if (!allowedChars.includes(value[i])) {
+													return t('Invalid_username');
+												}
+											}
+							
+											return true;
+										}
+									}
 								}}
 								render={({ field }) => (
 									<TextInput
