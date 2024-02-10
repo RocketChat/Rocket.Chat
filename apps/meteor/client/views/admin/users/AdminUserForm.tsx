@@ -161,7 +161,6 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 	const rolesId = useUniqueId();
 	const joinDefaultChannelsId = useUniqueId();
 	const sendWelcomeEmailId = useUniqueId();
-    const usernamePattern = /^[a-zA-Z0-9_-]{3,16}$/;
 	return (
 		<>
 			<ContextualbarScrollableContent {...props}>
