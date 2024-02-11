@@ -61,6 +61,11 @@ export type ComposerAPI = {
 	readonly formatters: Subscribable<FormattingButton[]>;
 };
 
+export type QuillComposerAPI = {
+	text: string;
+	setQuillDeltaToText(getDelta: any): void;
+};
+
 export type DataAPI = {
 	composeMessage(
 		text: string,
@@ -107,7 +112,9 @@ export type UploadsAPI = {
 export type ChatAPI = {
 	readonly uid: string | null;
 	readonly composer?: ComposerAPI;
+	readonly quillComposer?: QuillComposerAPI;
 	readonly setComposerAPI: (composer: ComposerAPI) => void;
+	readonly setQuillComposerAPI: (quillComposer: QuillComposerAPI) => void;
 	readonly data: DataAPI;
 	readonly uploads: UploadsAPI;
 	readonly readStateManager: ReadStateManager;

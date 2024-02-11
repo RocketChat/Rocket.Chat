@@ -1,3 +1,4 @@
+import { Box } from '@rocket.chat/fuselage';
 import { MessageComposerAction } from '@rocket.chat/ui-composer';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
@@ -21,7 +22,7 @@ const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer, disab
 		const featuredFormatter = collapsedItems.splice(0, 1)[0];
 
 		return (
-			<>
+			<Box id='toolbar'>
 				{'icon' in featuredFormatter && (
 					<MessageComposerAction
 						onClick={() => composer.wrapSelection(featuredFormatter.pattern)}
@@ -30,12 +31,12 @@ const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer, disab
 					/>
 				)}
 				<FormattingToolbarDropdown composer={composer} items={collapsedItems} disabled={disabled} />
-			</>
+			</Box>
 		);
 	}
 
 	return (
-		<>
+		<Box id='toolbar'>
 			{items.map((formatter) =>
 				'icon' in formatter ? (
 					<MessageComposerAction
@@ -65,7 +66,7 @@ const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer, disab
 					</span>
 				),
 			)}
-		</>
+		</Box>
 	);
 };
 

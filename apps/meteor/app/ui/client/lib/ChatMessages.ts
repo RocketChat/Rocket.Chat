@@ -3,7 +3,7 @@ import { isVideoConfMessage } from '@rocket.chat/core-typings';
 import type { IActionManager } from '@rocket.chat/ui-contexts';
 import type { UIEvent } from 'react';
 
-import type { ChatAPI, ComposerAPI, DataAPI, UploadsAPI } from '../../../../client/lib/chats/ChatAPI';
+import type { ChatAPI, ComposerAPI, DataAPI, QuillComposerAPI, UploadsAPI } from '../../../../client/lib/chats/ChatAPI';
 import { createDataAPI } from '../../../../client/lib/chats/data';
 import { processMessageEditing } from '../../../../client/lib/chats/flows/processMessageEditing';
 import { processSetReaction } from '../../../../client/lib/chats/flows/processSetReaction';
@@ -32,9 +32,15 @@ export class ChatMessages implements ChatAPI {
 
 	public composer: ComposerAPI | undefined;
 
+	public quillComposer?: QuillComposerAPI | undefined;
+
 	public setComposerAPI = (composer: ComposerAPI): void => {
 		this.composer?.release();
 		this.composer = composer;
+	};
+
+	public setQuillComposerAPI = (quillComposer: QuillComposerAPI): void => {
+		this.quillComposer = quillComposer;
 	};
 
 	public data: DataAPI;

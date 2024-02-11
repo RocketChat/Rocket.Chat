@@ -5,6 +5,7 @@ import MessageComposerButton from './MessageComposerButton';
 import MessageComposerHint from './MessageComposerHint';
 import MessageComposerIcon from './MessageComposerIcon';
 import MessageComposerInput from './MessageComposerInput';
+import MessageComposerQuillInput from './MessageComposerQuillInput';
 import MessageComposerSkeleton from './MessageComposerSkeleton';
 import MessageComposerToolbar from './MessageComposerToolbar';
 import MessageComposerToolbarActions from './MessageComposerToolbarActions';
@@ -22,4 +23,5 @@ export {
 	MessageComposerIcon,
 	MessageComposerHint,
 	MessageComposerButton,
+	MessageComposerQuillInput,
 };
