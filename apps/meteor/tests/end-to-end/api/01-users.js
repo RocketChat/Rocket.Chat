@@ -37,7 +37,7 @@ async function createTeam(userCredentials, teamName) {
 	return res.body.team._id;
 }
 
-async function deleteGroup(groupId) {
+function deleteGroup(groupId) {
 	return request.post(api('groups.delete')).set(credentials).query({ roomId: groupId });
 }
 
