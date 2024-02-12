@@ -9,7 +9,6 @@ import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { callbacks } from '../../../../lib/callbacks';
 import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription } from '../../../models/client';
-import { Notifications } from '../../../notifications/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
 import { mainReady } from './mainReady';
@@ -37,8 +36,8 @@ function close(typeName: string) {
 	if (openedRooms[typeName]) {
 		if (openedRooms[typeName].rid) {
 			sdk.stop('room-messages', openedRooms[typeName].rid);
-			Notifications.unRoom(openedRooms[typeName].rid, 'deleteMessage');
-			Notifications.unRoom(openedRooms[typeName].rid, 'deleteMessageBulk');
+			sdk.stop('notify-room', `${openedRooms[typeName].rid}/deleteMessage`);
+			sdk.stop('notify-room', `${openedRooms[typeName].rid}/deleteMessageBulk`);
 		}
 
 		openedRooms[typeName].ready = false;
@@ -135,20 +134,21 @@ const computation = Tracker.autorun(() => {
 						});
 
 					// when we receive a messages imported event we just clear the room history and fetch it again
-					Notifications.onRoom(record.rid, 'messagesImported', async () => {
+					sdk.stream('notify-room', [`${record.rid}/messagesImported`], async () => {
 						await RoomHistoryManager.clear(record.rid);
 						await RoomHistoryManager.getMore(record.rid);
 					});
 
-					Notifications.onRoom(record.rid, 'deleteMessage', (msg) => {
+					sdk.stream('notify-room', [`${record.rid}/deleteMessage`], (msg) => {
 						ChatMessage.remove({ _id: msg._id });
 
 						// remove thread refenrece from deleted message
 						ChatMessage.update({ tmid: msg._id }, { $unset: { tmid: 1 } }, { multi: true });
 					});
-					Notifications.onRoom(
-						record.rid,
-						'deleteMessageBulk',
+
+					sdk.stream(
+						'notify-room',
+						[`${record.rid}/deleteMessageBulk`],
 						({ rid, ts, excludePinned, ignoreDiscussion, users, ids, showDeletedStatus }) => {
 							const query: Mongo.Selector<IMessage> = { rid };
 
@@ -177,7 +177,8 @@ const computation = Tracker.autorun(() => {
 							return ChatMessage.remove(query);
 						},
 					);
-					Notifications.onRoom(record.rid, 'messagesRead', ({ tmid, until }) => {
+
+					sdk.stream('notify-room', [`${record.rid}/messagesRead`], ({ tmid, until }) => {
 						if (tmid) {
 							return ChatMessage.update(
 								{

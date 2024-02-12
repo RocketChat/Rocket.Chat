@@ -1,7 +1,7 @@
 import type { Meta } from '@storybook/preact';
 
 import { renderMessageBlocks } from '.';
-import { accessoryImage } from '../../../helpers.stories';
+import { accessoryImage } from '../../../../.storybook/helpers';
 
 export default {
 	title: 'UiKit/Message/Context block',
