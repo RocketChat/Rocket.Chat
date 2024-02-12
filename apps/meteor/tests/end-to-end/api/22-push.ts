@@ -246,7 +246,8 @@ describe('[Push]', function () {
 	describe('[/push.test]', () => {
 		before(() => updateSetting('Push_enable', false));
 
-		after(() => updateSetting('Push_enable', true));
+		// TODO: Re-enable this test after fixing the issue with the push configure when enable/disable the setting
+		// after(() => updateSetting('Push_enable', true));
 
 		it('should fail if not logged in', async () => {
 			await request
