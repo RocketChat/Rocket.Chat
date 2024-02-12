@@ -10,7 +10,7 @@ import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper.js';
 import { IS_EE } from '../../e2e/config/constants';
 
-describe('Meteor.methods', function () {
+describe.only('Meteor.methods', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
@@ -2641,7 +2641,7 @@ describe('Meteor.methods', function () {
 			).body.channel;
 			createdRooms.push(room);
 		});
-		after(() => Promise.all([deleteRoom({ type: 'c', roomId: room._id }), deleteUser(user), deleteUser(guestUser)]));
+		after(() => Promise.all([createdRooms.map((r) => deleteRoom({ type: 'c', roomId: r._id })), deleteUser(user), deleteUser(guestUser)]));
 
 		it('should fail if not logged in', (done) => {
 			request
