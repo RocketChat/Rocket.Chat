@@ -10,7 +10,7 @@ import { MAX_BIO_LENGTH, MAX_NICKNAME_LENGTH } from '../../data/constants.ts';
 import { customFieldText, clearCustomFields, setCustomFields } from '../../data/custom-fields.js';
 import { imgURL } from '../../data/interactions';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
-import { createRoom, deleteRoom } from '../../data/rooms.helper';
+import { createRoom, deleteRoom, setDefaultRoom } from '../../data/rooms.helper';
 import { adminEmail, preferences, password, adminUsername } from '../../data/user';
 import { createUser, login, deleteUser, getUserStatus, getUserByUsername } from '../../data/users.helper.js';
 
@@ -26,6 +26,19 @@ async function joinChannel(userCredentials, roomId) {
 	return request.post(api('channels.join')).set(userCredentials).send({
 		roomId,
 	});
+}
+
+async function createTeam(userCredentials, teamName) {
+	const res = await request.post(api('teams.create')).set(userCredentials).send({
+		name: teamName,
+		type: 0,
+	});
+
+	return res.body.team._id;
+}
+
+async function deleteGroup(groupId) {
+	return request.post(api('groups.delete')).set(credentials).query({ roomId: groupId });
 }
 
 const targetUser = {};
@@ -275,6 +288,75 @@ describe('[Users]', function () {
 						users.push(res.body.user);
 					})
 					.end(done);
+			});
+		});
+
+		describe('auto join default channels', () => {
+			let defaultTeamId;
+			let group;
+			let user;
+
+			before(async () => {
+				const teamName = `defaultTeam_${Date.now()}`;
+				user = await createUser({ joinDefaultChannels: true });
+
+				defaultTeamId = await createTeam(credentials, teamName);
+
+				await setDefaultRoom({ roomId: defaultTeamId, roomName: teamName });
+			});
+
+			after(async () => {
+				if (group) {
+					await deleteGroup(group.body.group._id);
+				}
+				await deleteRoom({ roomId: defaultTeamId, type: 'c' });
+				await deleteUser(user);
+			});
+
+			it('should create a subscription for the user in the default channels if the joinDefaultChannels is true', async () => {
+				await request
+					.get(api('subscriptions.getOne'))
+					.set(credentials)
+					.query({ roomId: defaultTeamId })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+			});
+
+			it('should create a subscription for the user in all the auto join channels of the team', async () => {
+				group = await request
+					.post(api('groups.create'))
+					.set(credentials)
+					.send({
+						name: `defaultGroup_${Date.now()}`,
+						readonly: false,
+						members: [user.username],
+						extraData: {
+							broadcast: false,
+							encrypted: false,
+							teamId: defaultTeamId,
+							topic: '',
+						},
+					});
+				await request.post(api('teams.updateRoom')).set(credentials).send({
+					roomId: group.body.group._id,
+					isDefault: true,
+				});
+
+				const user2 = await createUser({ joinDefaultChannels: true });
+				const user2Credentials = await login(user2.username, password);
+
+				await request
+					.get(api('subscriptions.getOne'))
+					.set(user2Credentials)
+					.query({ roomId: group.body.group._id })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
 			});
 		});
 	});

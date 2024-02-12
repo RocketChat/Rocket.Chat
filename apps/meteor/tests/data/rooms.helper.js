@@ -65,3 +65,17 @@ function actionRoom({ action, type, roomId }) {
 export const deleteRoom = ({ type, roomId }) => actionRoom({ action: 'delete', type, roomId });
 
 export const closeRoom = ({ type, roomId }) => actionRoom({ action: 'close', type, roomId });
+
+export const setDefaultRoom = ({ roomId }) => {
+	return request
+		.post(api('rooms.saveRoomSettings'))
+		.set(credentials)
+		.send({
+			rid: roomId,
+			default: true,
+			favorite: {
+				defaultValue: true,
+				favorite: false
+			}
+		});
+};
