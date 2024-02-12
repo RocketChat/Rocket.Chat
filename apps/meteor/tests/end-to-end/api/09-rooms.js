@@ -16,7 +16,6 @@ import { IS_EE } from '../../e2e/config/constants';
 
 describe('[Rooms]', function () {
 	this.retries(0);
-
 	before((done) => getCredentials(done));
 
 	it('/rooms.get', (done) => {
@@ -1643,68 +1642,90 @@ describe('[Rooms]', function () {
 		});
 	});
 
-	describe('/rooms.saveRoomSettings', () => {
+	describe('rooms.isUserMuted', () => {
 		let testChannel;
-		const randomString = `randomString${Date.now()}`;
-
-		before('create a channel', async () => {
+		before('create an channel', async () => {
 			const result = await createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` });
 			testChannel = result.body.channel;
+			await request.post(api('channels.addAll')).set(credentials).send({
+				roomId: testChannel._id,
+			});
 		});
 
-		it('should update the room settings', (done) => {
-			const imageDataUri = `data:image/png;base64,${fs.readFileSync(path.join(process.cwd(), imgURL)).toString('base64')}`;
+		it('should return user is not muted', async () => {
+			await request
+				.get(api('rooms.isUserMuted'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					username: 'rocket.cat',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('isMuted', false);
+				});
+		});
 
-			request
+		it('should convert room to read only', async () => {
+			await request
 				.post(api('rooms.saveRoomSettings'))
 				.set(credentials)
 				.send({
 					rid: testChannel._id,
-					roomAvatar: imageDataUri,
-					featured: true,
-					roomName: randomString,
-					roomTopic: randomString,
-					roomAnnouncement: randomString,
-					roomDescription: randomString,
-					roomType: 'p',
 					readOnly: true,
-					reactWhenReadOnly: true,
-					default: true,
-					favorite: {
-						favorite: true,
-						defaultValue: true,
-					},
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-				.end(done);
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
 		});
 
-		it('should have reflected on rooms.info', (done) => {
-			request
-				.get(api('rooms.info'))
+		it('should return user is now muted', async () => {
+			await request
+				.get(api('rooms.isUserMuted'))
 				.set(credentials)
 				.query({
 					roomId: testChannel._id,
+					username: 'rocket.cat',
 				})
+				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('room').and.to.be.an('object');
+					expect(res.body).to.have.property('isMuted', true);
+				});
+		});
 
-					expect(res.body.room).to.have.property('_id', testChannel._id);
-					expect(res.body.room).to.have.property('name', randomString);
-					expect(res.body.room).to.have.property('topic', randomString);
-					expect(res.body.room).to.have.property('announcement', randomString);
-					expect(res.body.room).to.have.property('description', randomString);
-					expect(res.body.room).to.have.property('t', 'p');
-					expect(res.body.room).to.have.property('featured', true);
-					expect(res.body.room).to.have.property('ro', true);
-					expect(res.body.room).to.have.property('default', true);
-					expect(res.body.room).to.have.property('favorite', true);
-					expect(res.body.room).to.have.property('reactWhenReadOnly', true);
+		it('should update rocket.cat user as room-owner and return not muted in read-only channel', async () => {
+			await request
+				.post(api('channels.addOwner'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					username: 'rocket.cat',
 				})
-				.end(done);
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					console.log(res.body);
+					expect(res.body).to.have.property('success', true);
+				});
+			await request
+				.get(api('rooms.isUserMuted'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					username: 'rocket.cat',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('isMuted', false);
+				});
 		});
 	});
 });
