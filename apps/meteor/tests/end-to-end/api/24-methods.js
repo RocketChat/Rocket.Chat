@@ -10,7 +10,7 @@ import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper.js';
 import { IS_EE } from '../../e2e/config/constants';
 
-describe.only('Meteor.methods', function () {
+describe('Meteor.methods', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
