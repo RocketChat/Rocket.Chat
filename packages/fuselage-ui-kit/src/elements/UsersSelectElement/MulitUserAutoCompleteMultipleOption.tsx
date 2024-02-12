@@ -1,5 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Option, OptionDescription } from '@rocket.chat/fuselage';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { ReactElement } from 'react';
 
 type UserAutoCompleteMultipleOptionProps = {
@@ -18,6 +19,7 @@ const UserAutoCompleteMultipleOption = ({
     <Option
       {...props}
       data-qa-type='autocomplete-user-option'
+      avatar={<UserAvatar username={username || ''} size='x20' />}
       icon={_federated ? 'globe' : undefined}
       key={username}
       label={

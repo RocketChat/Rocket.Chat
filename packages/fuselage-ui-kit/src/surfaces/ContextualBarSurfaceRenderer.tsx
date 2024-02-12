@@ -3,6 +3,7 @@ import type { ReactElement } from 'react';
 
 import TabNavigationBlock from '../blocks/TabNavigationBlock';
 import { AppIdProvider } from '../contexts/AppIdContext';
+import MultiUsersSelectElement from '../elements/UsersSelectElement/MultiUsersSelectElement';
 import UsersSelectElement from '../elements/UsersSelectElement/UsersSelectElement';
 import {
   FuselageSurfaceRenderer,
@@ -36,6 +37,25 @@ export class ContextualBarSurfaceRenderer extends FuselageSurfaceRenderer {
     if (context === UiKit.BlockContext.FORM) {
       return (
         <UsersSelectElement
+          block={block}
+          context={context}
+          index={index}
+          surfaceRenderer={this}
+        />
+      );
+    }
+
+    return null;
+  }
+
+  multi_users_select(
+    block: UiKit.MultiUsersSelectElement,
+    context: UiKit.BlockContext,
+    index: number
+  ): ReactElement | null {
+    if (context === UiKit.BlockContext.FORM) {
+      return (
+        <MultiUsersSelectElement
           block={block}
           context={context}
           index={index}

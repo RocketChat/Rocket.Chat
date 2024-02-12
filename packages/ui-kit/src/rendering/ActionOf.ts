@@ -35,7 +35,7 @@ export type ActionOf<TElement extends ActionableElement> = TElement extends Butt
 	: TElement extends MultiStaticSelectElement
 	? MultiStaticSelectElement['initialValue']
 	: TElement extends MultiUsersSelectElement
-	? unknown
+	? Option['value'][]
 	: TElement extends OverflowElement
 	? OverflowElement['options'][number]['value']
 	: TElement extends PlainTextInputElement
@@ -43,7 +43,7 @@ export type ActionOf<TElement extends ActionableElement> = TElement extends Butt
 	: TElement extends StaticSelectElement
 	? StaticSelectElement['initialValue']
 	: TElement extends UsersSelectElement
-	? Option['value'][]
+	? Option['value']
 	: TElement extends ToggleSwitchElement
 	? Option['value'][]
 	: TElement extends RadioButtonElement
