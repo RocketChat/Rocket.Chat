@@ -455,7 +455,7 @@ const RoomsIsUserMutedSchema = {
 	],
 };
 
-export const isRoomsIsUserMuted = ajv.compile<RoomsIsUserMuted>(RoomsIsUserMutedSchema);
+export const isRoomsIsUserMutedProps = ajv.compile<RoomsIsUserMuted>(RoomsIsUserMutedSchema);
 
 export type Notifications = {
 	disableNotifications: string;
@@ -608,7 +608,7 @@ export type RoomsEndpoints = {
 	};
 
 	'/v1/rooms.isUserMuted': {
-		GET: (params: { userId: string; roomId: string } | { username: string; roomId: string }) => {
+		GET: (params: RoomsIsUserMuted) => {
 			isMuted: boolean;
 		};
 	};

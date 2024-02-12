@@ -20,7 +20,7 @@ import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import RoomMembersRow from './RoomMembersRow';
 
-type RoomMemberUser = Pick<IUser, 'username' | '_id' | 'name' | 'status'> & { isMuted: boolean };
+type RoomMemberUser = Pick<IUser, 'username' | '_id' | 'name' | 'status'> & { isMuted?: boolean };
 
 type RoomMembersProps = {
 	rid: IRoom['_id'];
