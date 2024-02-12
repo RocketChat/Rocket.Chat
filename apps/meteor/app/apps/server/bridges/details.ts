@@ -1,10 +1,9 @@
+import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import { AppDetailChangesBridge as DetailChangesBridge } from '@rocket.chat/apps-engine/server/bridges/AppDetailChangesBridge';
 
-import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
-
 export class AppDetailChangesBridge extends DetailChangesBridge {
-	constructor(private readonly orch: AppServerOrchestrator) {
+	constructor(private readonly orch: IAppServerOrchestrator) {
 		super();
 	}
 

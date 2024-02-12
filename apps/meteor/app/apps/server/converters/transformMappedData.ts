@@ -12,7 +12,7 @@ import cloneDeep from 'lodash.clonedeep';
  *
  * ```javascript
  * const data = { _id: 'abcde123456', size: 10 };
- * const map = { id: '_id' }
+ * const map = Object.freeze({ id: '_id' });
  *
  * transformMappedData(data, map);
  * // { id: 'abcde123456', _unmappedProperties_: { size: 10 } }
@@ -43,14 +43,14 @@ import cloneDeep from 'lodash.clonedeep';
  * // { id: 'abcde123456', newSize: 20, _unmappedProperties_: { size: 10 } }
  *
  * // You need to explicitly remove it from the original `data`
- * const map = {
+ * const map = Object.freeze({
  *     id: '_id',
  *     newSize: (data) => {
  *         const result = data.size + 10;
  *         delete data.size;
  *         return result;
  *     }
- * };
+ * });
  *
  * transformMappedData(data, map);
  * // { id: 'abcde123456', newSize: 20, _unmappedProperties_: {} }
@@ -62,9 +62,26 @@ import cloneDeep from 'lodash.clonedeep';
  * @returns Object The data after transformations have been applied
  */
 
-export const transformMappedData = async (data, map) => {
-	const originalData = cloneDeep(data);
-	const transformedData = {};
+export const transformMappedData = async <
+	ResultType extends {
+		-readonly [p in keyof MapType]: MapType[p] extends keyof DataType
+			? DataType[MapType[p]]
+			: MapType[p] extends (...args: any[]) => any
+			? Awaited<ReturnType<MapType[p]>>
+			: never;
+	},
+	DataType extends Record<string, any>,
+	// #TODO: #AppsEngineTypes - The last `unknown` in the following line is only here because of the unexpected `room` param on the thread converter's convertMessage function
+	MapType extends { [p in string]: string | ((data: DataType) => Promise<unknown>) | unknown },
+	UnmappedProperties extends {
+		[p in keyof DataType as Exclude<p, MapType[keyof MapType]>]: DataType[p];
+	},
+>(
+	data: DataType,
+	map: MapType,
+): Promise<ResultType & { _unmappedProperties_: UnmappedProperties }> => {
+	const originalData: DataType = cloneDeep(data);
+	const transformedData: Record<string, any> = {};
 
 	for await (const [to, from] of Object.entries(map)) {
 		if (typeof from === 'function') {
@@ -81,7 +98,8 @@ export const transformMappedData = async (data, map) => {
 		}
 	}
 
-	transformedData._unmappedProperties_ = originalData;
-
-	return transformedData;
+	return {
+		...(transformedData as ResultType),
+		_unmappedProperties_: originalData as unknown as UnmappedProperties,
+	};
 };
