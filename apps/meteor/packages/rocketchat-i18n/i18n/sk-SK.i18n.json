@@ -2472,6 +2472,7 @@
   "Turn_OFF": "Vypnúť",
   "Turn_ON": "Zapnúť",
   "Two-factor_authentication": "Dvojfaktorové overenie",
+  "Two-factor_authentication_via_TOTP": "Dvojfaktorové overenie",
   "Two-factor_authentication_disabled": "Zablokovanie dvoch faktorov",
   "Two-factor_authentication_enabled": "Dvojfaktorové overovanie povolené",
   "Two-factor_authentication_is_currently_disabled": "Dvojfaktorové overenie je momentálne zakázané",

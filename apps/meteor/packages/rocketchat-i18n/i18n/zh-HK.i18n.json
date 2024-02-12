@@ -2487,6 +2487,7 @@
   "Turn_OFF": "关掉",
   "Turn_ON": "打开",
   "Two-factor_authentication": "双因素认证",
+  "Two-factor_authentication_via_TOTP": "双因素认证",
   "Two-factor_authentication_disabled": "双因素身份验证被禁用",
   "Two-factor_authentication_enabled": "启用双因素身份验证",
   "Two-factor_authentication_is_currently_disabled": "双因素认证目前被禁用",
