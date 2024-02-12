@@ -791,40 +791,44 @@ describe('[Chat]', function () {
 			});
 
 			it('should have an iframe oembed with style max-width', (done) => {
-				request
-					.get(api('chat.getMessage'))
-					.set(credentials)
-					.query({
-						msgId: ytEmbedMsgId,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.is.not.empty;
+				setTimeout(() => {
+					request
+						.get(api('chat.getMessage'))
+						.set(credentials)
+						.query({
+							msgId: ytEmbedMsgId,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.is.not.empty;
 
-						expect(res.body.message.urls[0])
-							.to.have.property('meta')
-							.to.have.property('oembedHtml')
-							.to.have.string('<iframe style="max-width: 100%;width:400px;height:225px"');
-					})
-					.end(done);
+							expect(res.body.message.urls[0])
+								.to.have.property('meta')
+								.to.have.property('oembedHtml')
+								.to.have.string('<iframe style="max-width: 100%;width:400px;height:225px"');
+						})
+						.end(done);
+				}, 1000);
 			});
 
 			it('should embed an image preview if message has an image url', (done) => {
-				request
-					.get(api('chat.getMessage'))
-					.set(credentials)
-					.query({
-						msgId: imgUrlMsgId,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.is.not.empty;
+				setTimeout(() => {
+					request
+						.get(api('chat.getMessage'))
+						.set(credentials)
+						.query({
+							msgId: imgUrlMsgId,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.is.not.empty;
 
-						expect(res.body.message.urls[0]).to.have.property('headers').to.have.property('contentType', 'image/png');
-					})
-					.end(done);
+							expect(res.body.message.urls[0]).to.have.property('headers').to.have.property('contentType', 'image/png');
+						})
+						.end(done);
+				}, 200);
 			});
 
 			it('should not generate previews if an empty array of URL to preview is provided', async () => {
@@ -2172,17 +2176,7 @@ describe('[Chat]', function () {
 			).body.discussion;
 		});
 
-		after(() =>
-			Promise.all([
-				deleteRoom({ type: 'c', roomId: testChannel._id }),
-				request
-					.post(api('rooms.delete'))
-					.set(credentials)
-					.send({ roomId: testChannel._id })
-					.expect('Content-Type', 'application/json')
-					.expect(200),
-			]),
-		);
+		after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
 
 		it('should return an error when the required "roomId" parameter is not sent', (done) => {
 			request
