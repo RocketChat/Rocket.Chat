@@ -193,7 +193,7 @@ describe('[Push]', function () {
 	});
 
 	describe('[/push.info]', () => {
-		before(async () =>
+		before(() =>
 			Promise.all([
 				updateSetting('Push_enable', true),
 				updateSetting('Push_enable_gateway', true),
@@ -201,7 +201,7 @@ describe('[Push]', function () {
 			]),
 		);
 
-		after(async () =>
+		after(() =>
 			Promise.all([
 				updateSetting('Push_enable', true),
 				updateSetting('Push_enable_gateway', true),
