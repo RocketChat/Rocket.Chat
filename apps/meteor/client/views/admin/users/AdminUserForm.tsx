@@ -161,6 +161,7 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 	const rolesId = useUniqueId();
 	const joinDefaultChannelsId = useUniqueId();
 	const sendWelcomeEmailId = useUniqueId();
+	
 	return (
 		<>
 			<ContextualbarScrollableContent {...props}>
@@ -215,17 +216,13 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 								rules={{
 									required: t('The_field_is_required', t('Username')),
 									validate: {
-										validUsername: value => {
+										validUsername: (value) => {
 											const minLength = 3;
 											const maxLength = 16;
 											const allowedChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-';
-											
-											// Check if the length is within the allowed range
 											if (value.length < minLength || value.length > maxLength) {
 												return t('Invalid_username');
 											}
-							
-											// Check if each character is within the allowed characters
 											for (let i = 0; i < value.length; i++) {
 												if (!allowedChars.includes(value[i])) {
 													return t('Invalid_username');
@@ -233,8 +230,8 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 											}
 							
 											return true;
-										}
-									}
+										},
+									},
 								}}
 								render={({ field }) => (
 									<TextInput
