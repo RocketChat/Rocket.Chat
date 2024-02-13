@@ -139,19 +139,20 @@ export class AppLivechatBridge extends LivechatBridge {
 		this.orch.debugLog(`The App ${appId} is looking for livechat rooms associated with agent ${agentId}`);
 
 		if (!agentId) {
-			return [];
+			throw new Error('Invalid agentId');
 		}
 
-		const result = await LivechatRooms.findOpenByAgent(agentId).toArray();
+		const rooms = await LivechatRooms.findOpenByAgent(agentId).toArray();
+		const convertedRooms = rooms.map((room) => this.orch.getConverters()?.get('rooms').convertRoom(room) as ILivechatRoom);
 
-		return Promise.all((result as unknown as ILivechatRoom[]).map((room) => this.orch.getConverters()?.get('rooms').convertRoom(room)));
+		return Promise.all(convertedRooms);
 	}
 
 	protected async countRoomsByAgentId(agentId: string, appId: string): Promise<number> {
 		this.orch.debugLog(`The App ${appId} is counting livechat rooms associated with agent ${agentId}`);
 
 		if (!agentId) {
-			return 0;
+			throw new Error('Invalid agentId');
 		}
 
 		return LivechatRooms.countOpenByAgent(agentId);
