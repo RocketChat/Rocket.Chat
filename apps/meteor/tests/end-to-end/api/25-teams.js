@@ -9,11 +9,11 @@ import { createTeam, deleteTeam } from '../../data/teams.helper';
 import { adminUsername, password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 
-describe('[Teams]', () => {
+describe.only('[Teams]', () => {
 	before((done) => getCredentials(done));
 
 	describe('/teams.create', () => {
-		const name = `test-team-${Date.now()}`;
+		const name = `test-team-create-${Date.now()}`;
 		const createdTeams = [];
 		let testUser;
 
@@ -86,7 +86,7 @@ describe('[Teams]', () => {
 				.post(api('teams.create'))
 				.set(credentials)
 				.send({
-					name: `test-team-${Date.now()}`,
+					name: `test-team-private-owner-${Date.now()}`,
 					type: 1,
 				})
 				.expect('Content-Type', 'application/json')
@@ -322,7 +322,7 @@ describe('[Teams]', () => {
 
 	describe('/teams.addMembers', () => {
 		let testTeam;
-		const teamName = `test-team-${Date.now()}`;
+		const teamName = `test-team-add-members-${Date.now()}`;
 		let testUser;
 		let testUser2;
 
@@ -415,7 +415,7 @@ describe('[Teams]', () => {
 
 	describe('/teams.members', () => {
 		let testTeam;
-		const teamName = `test-team-${Date.now()}`;
+		const teamName = `test-team-members-${Date.now()}`;
 		let testUser;
 		let testUser2;
 
@@ -492,7 +492,7 @@ describe('[Teams]', () => {
 	});
 
 	describe('/teams.list', () => {
-		const teamName = `test-team-${Date.now()}`;
+		const teamName = `test-team-list-${Date.now()}`;
 		before('Create test team', (done) => {
 			request
 				.post(api('teams.create'))
@@ -537,7 +537,7 @@ describe('[Teams]', () => {
 
 	describe('/teams.updateMember', () => {
 		let testTeam;
-		const teamName = `test-team-${Date.now()}`;
+		const teamName = `test-team-update-member-${Date.now()}`;
 		let testUser;
 		let testUser2;
 
@@ -633,7 +633,7 @@ describe('[Teams]', () => {
 
 	describe('/teams.removeMember', () => {
 		let testTeam;
-		const teamName = `test-team-${Date.now()}`;
+		const teamName = `test-team-remove-member-${Date.now()}`;
 		let testUser;
 		let testUser2;
 
@@ -750,7 +750,7 @@ describe('[Teams]', () => {
 
 	describe('/teams.leave', () => {
 		let testTeam;
-		const teamName = `test-team-${Date.now()}`;
+		const teamName = `test-team-leave-${Date.now()}`;
 		let testUser;
 		let testUser2;
 
@@ -849,7 +849,7 @@ describe('[Teams]', () => {
 	});
 
 	describe('/teams.info', () => {
-		const teamName = `test-team-${Date.now()}`;
+		const teamName = `test-team-info-${Date.now()}`;
 		let testTeam;
 		let testTeam2;
 		let testUser;
@@ -1177,13 +1177,13 @@ describe('[Teams]', () => {
 		before(async () => {
 			testUser = await createUser();
 			testUserCredentials = await login(testUser.username, password);
-			privateRoom = (await createRoom({ type: 'p', name: `community-channel-private${Date.now()}` })).body.group;
-			privateRoom2 = (await createRoom({ type: 'p', name: `community-channel-private${Date.now()}` })).body.group;
-			privateRoom3 = (await createRoom({ type: 'p', name: `community-channel-private${Date.now()}` })).body.group;
-			publicRoom = (await createRoom({ type: 'c', name: `community-channel-public${Date.now()}` })).body.channel;
-			publicRoom2 = (await createRoom({ type: 'c', name: `community-channel-public${Date.now()}` })).body.channel;
-			publicTeam = await createTeam(credentials, `team-name${Date.now()}`, TEAM_TYPE.PUBLIC);
-			privateTeam = await createTeam(credentials, `team-namep${Date.now()}`, TEAM_TYPE.PRIVATE);
+			privateRoom = (await createRoom({ type: 'p', name: `community-channel-private-1-${Date.now()}` })).body.group;
+			privateRoom2 = (await createRoom({ type: 'p', name: `community-channel-private-2-${Date.now()}` })).body.group;
+			privateRoom3 = (await createRoom({ type: 'p', name: `community-channel-private-3-${Date.now()}` })).body.group;
+			publicRoom = (await createRoom({ type: 'c', name: `community-channel-public-1-${Date.now()}` })).body.channel;
+			publicRoom2 = (await createRoom({ type: 'c', name: `community-channel-public-2-${Date.now()}` })).body.channel;
+			publicTeam = await createTeam(credentials, `team-name-c-${Date.now()}`, TEAM_TYPE.PUBLIC);
+			privateTeam = await createTeam(credentials, `team-name-p-${Date.now()}`, TEAM_TYPE.PRIVATE);
 		});
 
 		after(async () => {
@@ -1358,12 +1358,12 @@ describe('[Teams]', () => {
 		before(async () => {
 			testUser = await createUser();
 			testUserCredentials = await login(testUser.username, password);
-			privateTeam = await createTeam(credentials, `teamName-${Date.now()}`, TEAM_TYPE.PRIVATE);
-			publicTeam = await createTeam(testUserCredentials, `teamName-${Date.now()}`, TEAM_TYPE.PUBLIC);
+			privateTeam = await createTeam(credentials, `teamName-private-${Date.now()}`, TEAM_TYPE.PRIVATE);
+			publicTeam = await createTeam(testUserCredentials, `teamName-public-${Date.now()}`, TEAM_TYPE.PUBLIC);
 
 			privateRoom = (await createRoom({ type: 'p', name: `test-p-${Date.now()}` })).body.group;
 			publicRoom = (await createRoom({ type: 'c', name: `test-c-${Date.now()}` })).body.channel;
-			publicRoom2 = (await createRoom({ type: 'c', name: `test-c-${Date.now()}` })).body.channel;
+			publicRoom2 = (await createRoom({ type: 'c', name: `test-c2-${Date.now()}` })).body.channel;
 
 			await request
 				.post(api('teams.addRooms'))
@@ -1532,10 +1532,10 @@ describe('[Teams]', () => {
 	describe('/teams.updateRoom', () => {
 		let publicRoom;
 		let publicTeam;
-		const name = `teamName-2-${Date.now()}`;
+		const name = `teamName-update-room-${Date.now()}`;
 
 		before(async () => {
-			publicRoom = (await createRoom({ type: 'c', name: `public-${Date.now()}` })).body.channel;
+			publicRoom = (await createRoom({ type: 'c', name: `public-update-room-${Date.now()}` })).body.channel;
 			publicTeam = await createTeam(credentials, name, TEAM_TYPE.PUBLIC);
 			await request
 				.post(api('teams.addRooms'))
@@ -1599,10 +1599,10 @@ describe('[Teams]', () => {
 	describe('/teams.removeRoom', () => {
 		let publicRoom;
 		let publicTeam;
-		const name = `teamName-2-${Date.now()}`;
+		const name = `teamName-remove-room-${Date.now()}`;
 
 		before(async () => {
-			publicRoom = (await createRoom({ type: 'c', name: `public-${Date.now()}` })).body.channel;
+			publicRoom = (await createRoom({ type: 'c', name: `public-remove-room-${Date.now()}` })).body.channel;
 			publicTeam = await createTeam(credentials, name, TEAM_TYPE.PUBLIC);
 			await request
 				.post(api('teams.addRooms'))
