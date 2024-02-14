@@ -1,3 +1,4 @@
+import { Skeleton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -42,7 +43,7 @@ const ReactionTooltip = ({ emojiName, usernames, mine, messageId, showRealName, 
 
 	const getMessage = useGetMessageByID();
 
-	const { data: users } = useQuery(
+	const { data: users, isLoading } = useQuery(
 		['chat.getMessage', 'reactions', messageId, usernames],
 		async () => {
 			// This happens if the only reaction is from the current user
@@ -72,6 +73,17 @@ const ReactionTooltip = ({ emojiName, usernames, mine, messageId, showRealName, 
 		},
 		{ staleTime: 1000 * 60 * 5 },
 	);
+
+	if (isLoading) {
+		return (
+			<>
+				<Skeleton width='x200' variant='text' backgroundColor='black' />
+				<Skeleton width='x200' variant='text' backgroundColor='black' />
+				{usernames.length > 5 && <Skeleton width='x200' variant='text' backgroundColor='black' />}
+				{usernames.length > 8 && <Skeleton width='x200' variant='text' backgroundColor='black' />}
+			</>
+		);
+	}
 
 	return (
 		<MarkdownText
