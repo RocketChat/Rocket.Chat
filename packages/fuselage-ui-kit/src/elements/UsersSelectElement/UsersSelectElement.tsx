@@ -24,14 +24,14 @@ const UsersSelectElement = ({ block, context }: UsersSelectElementProps) => {
   const getUsers = useEndpoint('GET', '/v1/users.autocomplete');
 
   const { data } = useQuery(
-    ['users.autocomplete', debouncedFilter],
+    ['users.autoComplete', debouncedFilter],
     async () => {
       const users = await getUsers({
         selector: JSON.stringify({ term: debouncedFilter }),
       });
       const options = users.items.map(
         (item): UserAutoCompleteOptionType => ({
-          value: item._id,
+          value: item.username,
           label: item.name,
         })
       );
