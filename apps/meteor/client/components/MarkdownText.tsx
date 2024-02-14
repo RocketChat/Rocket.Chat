@@ -88,7 +88,7 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 
 	let markedOptions: marked.MarkedOptions;
 
-	const schemes = 'http,https,Notes,ftp,ftps,tel,mailto,sms,cid';
+	const schemes = 'http,https,notes,ftp,ftps,tel,mailto,sms,cid';
 
 	switch (variant) {
 		case 'inline':
