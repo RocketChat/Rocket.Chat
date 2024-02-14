@@ -38,9 +38,16 @@ const OEmbedPreviewContent = ({
 			{(showSiteName || showAuthorName) && (
 				<MessageGenericPreviewFooter>
 					<Box display='flex' justifyContent='flex-start'>
-						{showSiteName && <MarkdownText variant='inline' content={`[${siteName}](${siteUrl})`} />}
-						{showFooterSeparator && <Box marginInline={4}>|</Box>}
-						{showAuthorName && <MarkdownText variant='inline' content={`[${authorName}](${authorUrl})`} />}
+						<Box>
+							{url && (
+								<>
+									<MarkdownText variant='inline' content={url} fontSize={13} />
+								</>
+							)}
+							{showSiteName && <MarkdownText variant='inline' content={`[${siteName}](${siteUrl})`} />}
+							{showFooterSeparator && <Box marginInline={4}></Box>}
+							{showAuthorName && <MarkdownText variant='inline' content={`[${authorName}](${authorUrl})`} />}
+						</Box>
 					</Box>
 				</MessageGenericPreviewFooter>
 			)}

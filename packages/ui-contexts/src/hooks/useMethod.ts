@@ -17,3 +17,8 @@ export const useMethod = <MethodName extends keyof ServerMethods>(methodName: Me
 		[callMethod, methodName],
 	);
 };
+
+
+
+
+
