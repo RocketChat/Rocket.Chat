@@ -182,7 +182,7 @@ describe('Meteor.methods', function () {
 
 			const roomName = `methods-test-channel-${Date.now()}`;
 			before(async () => {
-				await Promise.await([updateSetting('Message_Read_Receipt_Enabled', true), updateSetting('Message_Read_Receipt_Store_Users', true)]);
+				await Promise.all([updateSetting('Message_Read_Receipt_Enabled', true), updateSetting('Message_Read_Receipt_Store_Users', true)]);
 
 				user = await createUser();
 				userCredentials = await login(user.username, password);
