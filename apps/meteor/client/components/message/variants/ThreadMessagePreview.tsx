@@ -12,6 +12,7 @@ import {
 	CheckBox,
 	MessageStatusIndicatorItem,
 } from '@rocket.chat/fuselage';
+import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
@@ -27,7 +28,7 @@ import { useMessageBody } from '../../../views/room/MessageList/hooks/useMessage
 import { useParentMessage } from '../../../views/room/MessageList/hooks/useParentMessage';
 import { isParsedMessage } from '../../../views/room/MessageList/lib/isParsedMessage';
 import { useGoToThread } from '../../../views/room/hooks/useGoToThread';
-import MessageAvatar from '../header/MessageAvatar';
+import Emoji from '../../Emoji';
 import { useShowTranslated } from '../list/MessageListContext';
 import ThreadMessagePreviewBody from './threadPreview/ThreadMessagePreviewBody';
 
@@ -101,7 +102,13 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 			)}
 			<ThreadMessageRow onClick={!isSelecting ? () => goToThread({ rid: message.rid, tmid: message.tmid, msg: message._id }) : undefined}>
 				<ThreadMessageLeftContainer>
-					{!isSelecting && showUserAvatar && <MessageAvatar username={message.u.username} emoji={message.emoji} size='x18' />}
+					{!isSelecting && showUserAvatar && (
+						<MessageAvatar
+							emoji={message.emoji ? <Emoji emojiHandle={message.emoji} fillContainer /> : undefined}
+							username={message.u.username}
+							size='x18'
+						/>
+					)}
 					{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
 				</ThreadMessageLeftContainer>
 				<ThreadMessageContainer>
