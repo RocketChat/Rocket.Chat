@@ -32,7 +32,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		
 		return hideRoomMethod(uid, rid);
 	},
 });

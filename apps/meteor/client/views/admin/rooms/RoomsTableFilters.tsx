@@ -41,12 +41,6 @@ const roomTypeFilterStructure = [
 		text: 'Teams',
 		checked: false,
 	},
-
-	{
-		id: 'h',
-		text: 'Hidden',
-		checked: false,
-	},
 ] as OptionProp[];
 
 const RoomsTableFilters = ({ setFilters }: { setFilters: Dispatch<SetStateAction<any>> }): ReactElement => {
