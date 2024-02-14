@@ -5,14 +5,13 @@ import { RoomHistoryManager } from '../../../../app/ui-utils/client';
 
 export const useClearRemovedRoomsHistory = (userId: string | null) => {
 	const subscribeToNotifyUser = useStream('notify-user');
-
 	useEffect(() => {
 		if (!userId) {
 			return;
 		}
 
 		return subscribeToNotifyUser(`${userId}/subscriptions-changed`, (event, data) => {
-			if (event === 'removed' && data.rid) {
+			if (data.t !== 'l' && event === 'removed' && data.rid) {
 				RoomHistoryManager.clear(data.rid);
 			}
 		});

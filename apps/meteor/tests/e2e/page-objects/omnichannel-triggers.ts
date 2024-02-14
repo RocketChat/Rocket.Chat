@@ -88,7 +88,7 @@ export class OmnichannelTriggers {
 			name: triggersName,
 			description: 'Creating a fresh trigger',
 			condition: 'time-on-site',
-			conditionValue: '5s',
+			conditionValue: 5,
 			triggerMessage,
 		});
 		await this.btnSave.click();
@@ -110,7 +110,7 @@ export class OmnichannelTriggers {
 			name: string;
 			description: string;
 			condition: 'time-on-site' | 'chat-opened-by-visitor' | 'after-guest-registration';
-			conditionValue?: string;
+			conditionValue?: string | number;
 			sender: 'queue' | 'custom';
 			agentName?: string;
 			triggerMessage: string;
@@ -121,7 +121,7 @@ export class OmnichannelTriggers {
 		data.condition && (await this.selectCondition(data.condition));
 
 		if (data.conditionValue) {
-			await this.inputConditionValue.fill(data.conditionValue);
+			await this.inputConditionValue.fill(data.conditionValue.toString());
 		}
 
 		data.sender && (await this.selectSender(data.sender));
