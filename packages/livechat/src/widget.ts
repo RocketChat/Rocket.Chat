@@ -355,6 +355,15 @@ function setGuestMetadata(metadata: StoreState['iframe']['guestMetadata']) {
 	callHook('setGuestMetadata', metadata);
 }
 
+function setHiddenSystemMessages(hidden: StoreState['iframe']['hiddenSystemMessages']) {
+	if (!Array.isArray(hidden)) {
+		console.log('Error: Invalid parameters. Value must be an array of strings');
+		return;
+	}
+
+	callHook('setHiddenSystemMessages', hidden);
+}
+
 function initialize(initParams: Partial<InitializeParams>) {
 	for (const initKey in initParams) {
 		if (!initParams.hasOwnProperty(initKey)) {
@@ -506,6 +515,7 @@ const livechatWidgetAPI = {
 	setParentUrl,
 	setGuestMetadata,
 	clearAllCallbacks,
+	setHiddenSystemMessages,
 
 	// callbacks
 	onChatMaximized(fn: () => void) {
