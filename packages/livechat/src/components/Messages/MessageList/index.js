@@ -145,7 +145,7 @@ export class MessageList extends MemoizedComponent {
 	}) => {
 		const items = [];
 		const { incomingCallAlert, ongoingCall } = store.state;
-		const { hidePrimaryAvatar = false, hideSecondaryAvatar = false } = this.props || {};
+		const { hideSenderAvatar = false, hideReceiverAvatar = false } = this.props || {};
 
 		for (let i = 0; i < messages.length; ++i) {
 			const previousMessage = messages[i - 1];
@@ -189,7 +189,7 @@ export class MessageList extends MemoizedComponent {
 						avatarResolver={avatarResolver}
 						use='li'
 						me={isMe}
-						hideAvatar={(isMe && hidePrimaryAvatar) || (!isMe && hideSecondaryAvatar)}
+						hideAvatar={(isMe && hideSenderAvatar) || (!isMe && hideReceiverAvatar)}
 						compact={nextMessage && message.u && nextMessage.u && message.u._id === nextMessage.u._id && !nextMessage.t}
 						conversationFinishedMessage={conversationFinishedMessage}
 						type={message.t}

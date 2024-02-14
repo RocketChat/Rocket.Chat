@@ -168,8 +168,8 @@ class Chat extends Component {
 							lastReadMessageId={lastReadMessageId}
 							handleEmojiClick={this.handleEmojiClick}
 							dispatch={dispatch}
-							hidePrimaryAvatar={theme.hideGuestAvatar}
-							hideSecondaryAvatar={theme.hideAgentAvatar}
+							hideSenderAvatar={theme.hideGuestAvatar}
+							hideReceiverAvatar={theme.hideAgentAvatar}
 							onScrollTo={this.handleScrollTo}
 						/>
 						{this.state.emojiPickerActive && (
