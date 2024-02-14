@@ -2641,7 +2641,9 @@ describe('Meteor.methods', function () {
 			).body.channel;
 			createdRooms.push(room);
 		});
-		after(() => Promise.all([createdRooms.map((r) => deleteRoom({ type: 'c', roomId: r._id })), deleteUser(user), deleteUser(guestUser)]));
+		after(() =>
+			Promise.all([...createdRooms.map((r) => deleteRoom({ type: 'c', roomId: r._id })), deleteUser(user), deleteUser(guestUser)]),
+		);
 
 		it('should fail if not logged in', (done) => {
 			request
@@ -2707,7 +2709,7 @@ describe('Meteor.methods', function () {
 					}),
 				);
 			}
-			createdRooms = [...createdRooms, ...(await Promise.all(promises))];
+			createdRooms = [...createdRooms, ...(await Promise.all(promises)).map((res) => res.body.channel)];
 
 			request
 				.post(methodCall('addUsersToRoom'))
