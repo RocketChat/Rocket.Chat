@@ -17,7 +17,8 @@ type MessageBlock =
 	| MessageParser.ChannelMention
 	| MessageParser.UserMention
 	| MessageParser.Link
-	| MessageParser.MarkupExcluding<MessageParser.Strike>;
+	| MessageParser.MarkupExcluding<MessageParser.Strike>
+	| MessageParser.InlineCode;
 
 type StrikeSpanProps = {
 	children: MessageBlock[];

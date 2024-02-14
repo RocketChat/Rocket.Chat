@@ -11,6 +11,7 @@ import {
 	MessageUsername,
 	MessageNameContainer,
 } from '@rocket.chat/fuselage';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -29,7 +30,6 @@ import {
 	useCountSelected,
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import { useChat } from '../../../views/room/contexts/ChatContext';
-import UserAvatar from '../../avatar/UserAvatar';
 import Attachments from '../content/Attachments';
 import MessageActions from '../content/MessageActions';
 import { useMessageListShowRealName, useMessageListShowUsername } from '../list/MessageListContext';
@@ -75,7 +75,7 @@ const SystemMessage = ({ message, showUserAvatar }: SystemMessageProps): ReactEl
 						<MessageSystemName
 							{...(user.username !== undefined &&
 								chat?.userCard && {
-									onClick: chat?.userCard.open(user.username),
+									onClick: (e) => user.username && chat?.userCard.openUserCard(e, user.username),
 									style: { cursor: 'pointer' },
 								})}
 						>
@@ -88,7 +88,7 @@ const SystemMessage = ({ message, showUserAvatar }: SystemMessageProps): ReactEl
 									data-username={user.username}
 									{...(user.username !== undefined &&
 										chat?.userCard && {
-											onClick: chat?.userCard.open(user.username),
+											onClick: (e) => user.username && chat?.userCard.openUserCard(e, user.username),
 											style: { cursor: 'pointer' },
 										})}
 								>

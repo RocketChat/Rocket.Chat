@@ -12,7 +12,7 @@ import { ContextualbarScrollableContent } from '../Contextualbar';
 import InfoPanel from '../InfoPanel';
 import MarkdownText from '../MarkdownText';
 import UTCClock from '../UTCClock';
-import UserCard from '../UserCard';
+import { UserCardRoles } from '../UserCard';
 import UserInfoAvatar from './UserInfoAvatar';
 
 type UserInfoDataProps = Serialized<
@@ -90,7 +90,7 @@ const UserInfo = ({
 					{roles.length !== 0 && (
 						<InfoPanel.Field>
 							<InfoPanel.Label>{t('Roles')}</InfoPanel.Label>
-							<UserCard.Roles>{roles}</UserCard.Roles>
+							<UserCardRoles>{roles}</UserCardRoles>
 						</InfoPanel.Field>
 					)}
 
