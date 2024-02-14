@@ -169,7 +169,7 @@ const UserInfo = ({
 								<InfoPanel.Field key={customField.value}>
 									<InfoPanel.Label>{t(customField.label as TranslationKey)}</InfoPanel.Label>
 									<InfoPanel.Text>
-										<MarkdownText content={customField.value} variant='inline' preserveHtml />
+										<MarkdownText content={customField.value} variant='inline' />
 									</InfoPanel.Text>
 								</InfoPanel.Field>
 							),
