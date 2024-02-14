@@ -357,16 +357,16 @@ class ChatContainer extends Component {
 			{...props}
 			avatarResolver={getAvatarUrl}
 			uid={user && user._id}
+			registrationRequired={this.registrationRequired()}
+			options={this.showOptionsMenu()}
 			onTop={this.handleTop}
 			onChangeText={this.handleChangeText}
 			onSubmit={this.handleSubmit}
 			onUpload={this.handleUpload}
-			options={this.showOptionsMenu()}
 			onChangeDepartment={(this.canSwitchDepartment() && this.onChangeDepartment) || null}
 			onFinishChat={(this.canFinishChat() && this.onFinishChat) || null}
 			onRemoveUserData={(this.canRemoveUserData() && this.onRemoveUserData) || null}
 			onSoundStop={this.handleSoundStop}
-			registrationRequired={this.registrationRequired()}
 			onRegisterUser={this.onRegisterUser}
 		/>
 	);

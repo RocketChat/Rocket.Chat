@@ -34,6 +34,8 @@ export type ScreenContextValue = {
 		guestBubbleBackgroundColor?: string;
 		agentBubbleBackgroundColor?: string;
 		background?: string;
+		hideGuestAvatar?: boolean;
+		hideAgentAvatar?: boolean;
 	};
 };
 
@@ -42,6 +44,8 @@ export const ScreenContext = createContext<ScreenContextValue>({
 		color: '',
 		fontColor: '',
 		iconColor: '',
+		hideAgentAvatar: false,
+		hideGuestAvatar: false,
 	},
 	notificationsEnabled: true,
 	minimized: true,
@@ -57,6 +61,7 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 	const { dispatch, config, sound, minimized = true, undocked, expanded = false, alerts, modal, iframe } = useContext(StoreContext);
 	const { department, name, email } = iframe.guest || {};
 	const { color, position, background } = config.theme || {};
+
 	const {
 		color: customColor,
 		fontColor: customFontColor,
@@ -65,6 +70,8 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 		agentBubbleBackgroundColor,
 		position: customPosition,
 		background: customBackground,
+		hideAgentAvatar = false,
+		hideGuestAvatar = false,
 	} = iframe.theme || {};
 
 	const [poppedOut, setPopedOut] = useState(false);
@@ -134,6 +141,8 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 			guestBubbleBackgroundColor,
 			agentBubbleBackgroundColor,
 			background: customBackground || background,
+			hideAgentAvatar,
+			hideGuestAvatar,
 		},
 		notificationsEnabled: sound?.enabled,
 		minimized: !poppedOut && (minimized || undocked),
