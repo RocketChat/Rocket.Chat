@@ -29,7 +29,9 @@ export const closeChat = async ({ transcriptRequested } = {}) => {
 
 	if (clearLocalStorageWhenChatEnded) {
 		// exclude UI-affecting flags
+		const { iframe: currentIframe } = store.state;
 		const { minimized, visible, undocked, expanded, businessUnit, config, iframe, ...initial } = initialState();
+		initial.iframe = { ...currentIframe, guest: {} };
 		await store.setState(initial);
 	}
 
