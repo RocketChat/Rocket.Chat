@@ -142,10 +142,10 @@ export class AppLivechatBridge extends LivechatBridge {
 			throw new Error('Invalid agentId');
 		}
 
-		const rooms = await LivechatRooms.findOpenByAgent(agentId).toArray();
+		const rooms = LivechatRooms.findOpenByAgent(agentId);
 		const convertedRooms = rooms.map((room) => this.orch.getConverters()?.get('rooms').convertRoom(room) as ILivechatRoom);
 
-		return Promise.all(convertedRooms);
+		return convertedRooms.toArray();
 	}
 
 	protected async countRoomsByAgentId(agentId: string, appId: string): Promise<number> {
