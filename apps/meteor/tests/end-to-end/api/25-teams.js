@@ -9,7 +9,7 @@ import { createTeam, deleteTeam } from '../../data/teams.helper';
 import { adminUsername, password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 
-describe.only('[Teams]', () => {
+describe('[Teams]', () => {
 	before((done) => getCredentials(done));
 
 	describe('/teams.create', () => {
