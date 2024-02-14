@@ -32,7 +32,7 @@ const UsersSelectElement = ({ block, context }: UsersSelectElementProps) => {
       const options = users.items.map(
         (item): UserAutoCompleteOptionType => ({
           value: item.username,
-          label: item.name,
+          label: item.name || item.username,
         })
       );
 
