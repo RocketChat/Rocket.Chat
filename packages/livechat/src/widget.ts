@@ -31,7 +31,7 @@ export type LivechatMessageEventData<ApiType extends Record<string, any>> = {
 type InitializeParams = {
 	customField: [key: string, value: string, overwrite?: boolean];
 	setCustomFields: [key: string, value: string, overwrite?: boolean][];
-	theme: { theme: StoreState['iframe']['theme'] };
+	theme: StoreState['iframe']['theme'];
 	department: string;
 	businessUnit: string;
 	guestToken: string;
@@ -278,7 +278,7 @@ function setCustomFields(fields: [key: string, value: string, overwrite?: boolea
 	});
 }
 
-function setTheme(theme: { theme: StoreState['iframe']['theme'] }) {
+function setTheme(theme: StoreState['iframe']['theme']) {
 	callHook('setTheme', theme);
 }
 
