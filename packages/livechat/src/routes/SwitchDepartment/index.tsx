@@ -1,4 +1,5 @@
 import type { IOmnichannelRoom, Serialized } from '@rocket.chat/core-typings';
+import type { FunctionalComponent } from 'preact';
 import { route } from 'preact-router';
 import { useContext } from 'preact/hooks';
 import type { JSXInternal } from 'preact/src/jsx';
@@ -19,14 +20,13 @@ import type { StoreState } from '../../store';
 import { StoreContext } from '../../store';
 import styles from './styles.scss';
 
-const SwitchDepartment = ({ screenProps }: { screenProps: { [key: string]: unknown }; path: string }) => {
+const SwitchDepartment: FunctionalComponent<{ path: string }> = () => {
 	const { t } = useTranslation();
 
 	const {
 		config: {
 			messages: { switchDepartmentMessage },
 			departments: deps = [],
-			theme: { color },
 		},
 		iframe: { guest },
 		iframe,
@@ -114,7 +114,7 @@ const SwitchDepartment = ({ screenProps }: { screenProps: { [key: string]: unkno
 	const defaultMessage = t('choose_a_department_1');
 
 	return (
-		<Screen {...screenProps} color={color} theme={{ color }} title={defaultTitle} className={createClassName(styles, 'switch-department')}>
+		<Screen title={defaultTitle} className={createClassName(styles, 'switch-department')}>
 			<Screen.Content>
 				<p className={createClassName(styles, 'switch-department__message')}>{switchDepartmentMessage || defaultMessage}</p>
 

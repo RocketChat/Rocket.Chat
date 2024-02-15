@@ -97,6 +97,7 @@ export type StoreState = {
 	defaultAgent?: Agent;
 	parentUrl?: string;
 	connecting?: boolean;
+	messageListPosition?: 'top' | 'bottom' | 'free';
 };
 
 export const initialState = (): StoreState => ({
@@ -175,16 +176,30 @@ if (process.env.NODE_ENV === 'development') {
 	});
 }
 
-export type Dispatch = (partialState: Partial<StoreState>) => void;
+export type Dispatch = typeof store.setState;
 
-type StoreContextValue = StoreState & { dispatch: Dispatch };
+type StoreContextValue = StoreState & {
+	dispatch: Dispatch;
+	on: typeof store.on;
+	off: typeof store.off;
+};
 
-export const StoreContext = createContext<StoreContextValue>({ ...store.state, dispatch: store.setState.bind(store) });
+export const StoreContext = createContext<StoreContextValue>({
+	...store.state,
+	dispatch: store.setState.bind(store),
+	on: store.on.bind(store),
+	off: store.off.bind(store),
+});
 
 export class Provider extends Component {
 	static displayName = 'StoreProvider';
 
-	state = { ...store.state, dispatch: store.setState.bind(store) };
+	state = {
+		...store.state,
+		dispatch: store.setState.bind(store),
+		on: store.on.bind(store),
+		off: store.off.bind(store),
+	};
 
 	handleStoreChange = () => {
 		this.setState({ ...store.state });
@@ -198,7 +213,9 @@ export class Provider extends Component {
 		store.off('change', this.handleStoreChange);
 	}
 
-	render = ({ children }: { children: ComponentChildren }) => <StoreContext.Provider value={this.state}>{children}</StoreContext.Provider>;
+	render = ({ children }: { children: ComponentChildren }) => {
+		return <StoreContext.Provider value={this.state}>{children}</StoreContext.Provider>;
+	};
 }
 
 export const { Consumer } = StoreContext;
