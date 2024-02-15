@@ -15,7 +15,7 @@ import { useMessageListHighlights } from './message/list/MessageListContext';
 type GazzodownTextProps = {
 	children: JSX.Element;
 	mentions?: {
-		type: 'user' | 'team';
+		type?: 'user' | 'team';
 		_id: string;
 		username?: string;
 		name?: string;
@@ -25,7 +25,9 @@ type GazzodownTextProps = {
 };
 
 const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTextProps) => {
+	const chat = useChat();
 	const highlights = useMessageListHighlights();
+
 	const highlightRegex = useMemo(() => {
 		if (!highlights?.length) {
 			return;
@@ -51,8 +53,6 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 	const ownUserId = useUserId();
 	const showMentionSymbol = Boolean(useUserPreference<boolean>('mentionsWithSymbol'));
 
-	const chat = useChat();
-
 	const resolveUserMention = useCallback(
 		(mention: string) => {
 			if (mention === 'all' || mention === 'here') {
@@ -75,7 +75,7 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 
 			return (event: UIEvent): void => {
 				event.stopPropagation();
-				chat?.userCard.open(username)(event);
+				chat?.userCard.openUserCard(event, username);
 			};
 		},
 		[chat?.userCard],

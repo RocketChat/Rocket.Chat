@@ -4,7 +4,7 @@ import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
 
 import { GenericResourceUsageSkeleton } from '../../../components/GenericResourceUsage';
-import Page from '../../../components/Page';
+import { PageHeader } from '../../../components/Page';
 import UnlimitedAppsUpsellModal from '../UnlimitedAppsUpsellModal';
 import { useAppsCountQuery } from '../hooks/useAppsCountQuery';
 import EnabledAppsCount from './EnabledAppsCount';
@@ -26,8 +26,8 @@ const MarketplaceHeader = ({ title }: { title: string }): ReactElement | null =>
 	}
 
 	return (
-		<Page.Header title={title}>
-			<ButtonGroup flexWrap='wrap' justifyContent='flex-end'>
+		<PageHeader title={title}>
+			<ButtonGroup wrap align='end'>
 				{result.isLoading && <GenericResourceUsageSkeleton />}
 				{result.isSuccess && !result.data.hasUnlimitedApps && <EnabledAppsCount {...result.data} context={context} />}
 				{isAdmin && result.isSuccess && !result.data.hasUnlimitedApps && (
@@ -41,7 +41,7 @@ const MarketplaceHeader = ({ title }: { title: string }): ReactElement | null =>
 				)}
 				{isAdmin && context === 'private' && <Button onClick={handleUploadButtonClick}>{t('Upload_private_app')}</Button>}
 			</ButtonGroup>
-		</Page.Header>
+		</PageHeader>
 	);
 };
 

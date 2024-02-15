@@ -1845,7 +1845,6 @@
   "Open_channel_user_search": "`%s` - Open kanaal / gebruikers soek",
   "Open_days_of_the_week": "Open Dae van die Week",
   "Open_Livechats": "Open Livechats",
-  "Open_your_authentication_app_and_enter_the_code": "Maak jou verifikasieprogram oop en voer die kode in. U kan ook een van u rugsteunkodes gebruik.",
   "Opened": "geopen",
   "Opened_in_a_new_window": "Geopen in 'n nuwe venster.",
   "Opens_a_channel_group_or_direct_message": "Maak 'n kanaal-, groep- of direkte boodskap oop",
@@ -2121,6 +2120,7 @@
   "Running_Instances": "Running Instances",
   "Runtime_Environment": "Runtime Environment",
   "S_new_messages_since_s": "%s nuwe boodskappe sedert%s",
+  "S_new_messages": "%s nuwe boodskappe",
   "Same_As_Token_Sent_Via": "Dieselfde as \"Token Sent Via\"",
   "Same_Style_For_Mentions": "Dieselfde styl vir verwysings",
   "SAML": "SAML",
@@ -2757,5 +2757,6 @@
   "registration.component.form.invalidConfirmPass": "Die wagwoord bevestiging pas nie by die wagwoord nie",
   "registration.component.form.confirmPassword": "Bevestig jou wagwoord",
   "registration.component.form.sendConfirmationEmail": "Stuur bevestiging e-pos",
+  "Enterprise": "onderneming",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analytics"
 }

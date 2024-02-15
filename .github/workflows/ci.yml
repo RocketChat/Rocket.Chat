@@ -183,7 +183,7 @@ jobs:
       - uses: ./.github/actions/meteor-build
         with:
           node-version: ${{ needs.release-versions.outputs.node-version }}
-          coverage: true
+          coverage: ${{ github.event_name != 'release' }}
 
   build-prod:
     name: 📦 Meteor Build - official
@@ -207,7 +207,7 @@ jobs:
       - uses: ./.github/actions/meteor-build
         with:
           node-version: ${{ needs.release-versions.outputs.node-version }}
-          coverage: false
+          coverage: ${{ github.event_name != 'release' }}
 
   build-gh-docker-coverage:
     name: 🚢 Build Docker Images for Testing
@@ -723,21 +723,6 @@ jobs:
 
           # Makes build fail if the release isn't there
           curl --fail https://releases.rocket.chat/$RC_VERSION/info
-
-      - name: RedHat Registry
-        if: github.event_name == 'release'
-        env:
-          REDHAT_REGISTRY_PID: ${{ secrets.REDHAT_REGISTRY_PID }}
-          REDHAT_REGISTRY_KEY: ${{ secrets.REDHAT_REGISTRY_KEY }}
-        run: |
-          GIT_TAG="${GITHUB_REF#*tags/}"
-
-          curl -X POST \
-            https://connect.redhat.com/api/v2/projects/$REDHAT_REGISTRY_PID/build \
-            -H "Authorization: Bearer $REDHAT_REGISTRY_KEY" \
-            -H 'Cache-Control: no-cache' \
-            -H 'Content-Type: application/json' \
-            -d '{"tag":"'$GIT_TAG'"}'
 
   trigger-dependent-workflows:
     runs-on: ubuntu-latest

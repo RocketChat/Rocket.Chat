@@ -3105,4 +3105,71 @@ describe('Threads', () => {
 			});
 		});
 	});
+
+	describe('[/chat.getURLPreview]', () => {
+		const url = 'https://www.youtube.com/watch?v=no050HN4ojo';
+		it('should return the URL preview with metadata and headers', async () => {
+			await request
+				.get(api('chat.getURLPreview'))
+				.set(credentials)
+				.query({
+					roomId: 'GENERAL',
+					url,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('urlPreview').and.to.be.an('object').that.is.not.empty;
+					expect(res.body.urlPreview).to.have.property('url', url);
+					expect(res.body.urlPreview).to.have.property('headers').and.to.be.an('object').that.is.not.empty;
+				});
+		});
+
+		describe('when an error occurs', () => {
+			it('should return statusCode 400 and an error when "roomId" is not provided', async () => {
+				await request
+					.get(api('chat.getURLPreview'))
+					.set(credentials)
+					.query({
+						url,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.errorType).to.be.equal('invalid-params');
+					});
+			});
+			it('should return statusCode 400 and an error when "url" is not provided', async () => {
+				await request
+					.get(api('chat.getURLPreview'))
+					.set(credentials)
+					.query({
+						roomId: 'GENERAL',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.errorType).to.be.equal('invalid-params');
+					});
+			});
+			it('should return statusCode 400 and an error when "roomId" is provided but user is not in the room', async () => {
+				await request
+					.get(api('chat.getURLPreview'))
+					.set(credentials)
+					.query({
+						roomId: 'undefined',
+						url,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.errorType).to.be.equal('error-not-allowed');
+					});
+			});
+		});
+	});
 });

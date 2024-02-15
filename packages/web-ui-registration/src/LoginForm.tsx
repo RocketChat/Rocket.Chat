@@ -13,6 +13,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { Form, ActionLink } from '@rocket.chat/layout';
+import { useDocumentTitle } from '@rocket.chat/ui-client';
 import { useLoginWithPassword, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
@@ -55,7 +56,7 @@ const LOGIN_SUBMIT_ERRORS = {
 	},
 } as const;
 
-export type LoginErrors = keyof typeof LOGIN_SUBMIT_ERRORS;
+export type LoginErrors = keyof typeof LOGIN_SUBMIT_ERRORS | 'totp-canceled';
 
 export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }): ReactElement => {
 	const {
@@ -65,7 +66,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 		clearErrors,
 		getValues,
 		formState: { errors },
-	} = useForm<{ username: string; password: string }>({
+	} = useForm<{ usernameOrEmail: string; password: string }>({
 		mode: 'onBlur',
 	});
 
@@ -79,13 +80,15 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 	const usernameOrEmailPlaceholder = String(useSetting('Accounts_EmailOrUsernamePlaceholder'));
 	const passwordPlaceholder = String(useSetting('Accounts_PasswordPlaceholder'));
 
+	useDocumentTitle(t('registration.component.login'), false);
+
 	const loginMutation = useMutation({
-		mutationFn: (formData: { username: string; password: string }) => {
-			return login(formData.username, formData.password);
+		mutationFn: (formData: { usernameOrEmail: string; password: string }) => {
+			return login(formData.usernameOrEmail, formData.password);
 		},
 		onError: (error: any) => {
 			if ([error.error, error.errorType].includes('error-invalid-email')) {
-				setError('username', { type: 'invalid-email', message: t('registration.page.login.errors.invalidEmail') });
+				setError('usernameOrEmail', { type: 'invalid-email', message: t('registration.page.login.errors.invalidEmail') });
 			}
 
 			if ('error' in error && error.error !== 403) {
@@ -108,7 +111,12 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 	}, [errorOnSubmit]);
 
 	const renderErrorOnSubmit = (error: LoginErrors) => {
+		if (error === 'totp-canceled') {
+			return null;
+		}
+
 		const { type, i18n } = LOGIN_SUBMIT_ERRORS[error];
+
 		return (
 			<Callout id={`${usernameId}-error`} aria-live='assertive' type={type}>
 				{t(i18n)}
@@ -116,8 +124,8 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 		);
 	};
 
-	if (errors.username?.type === 'invalid-email') {
-		return <EmailConfirmationForm onBackToLogin={() => clearErrors('username')} email={getValues('username')} />;
+	if (errors.usernameOrEmail?.type === 'invalid-email') {
+		return <EmailConfirmationForm onBackToLogin={() => clearErrors('usernameOrEmail')} email={getValues('usernameOrEmail')} />;
 	}
 
 	return (
@@ -141,19 +149,19 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 								</FieldLabel>
 								<FieldRow>
 									<TextInput
-										{...register('username', {
+										{...register('usernameOrEmail', {
 											required: t('registration.component.form.requiredField'),
 										})}
 										placeholder={usernameOrEmailPlaceholder || t('registration.component.form.emailPlaceholder')}
-										error={errors.username?.message}
-										aria-invalid={errors.username || errorOnSubmit ? 'true' : 'false'}
+										error={errors.usernameOrEmail?.message}
+										aria-invalid={errors.usernameOrEmail || errorOnSubmit ? 'true' : 'false'}
 										aria-describedby={`${usernameId}-error`}
 										id={usernameId}
 									/>
 								</FieldRow>
-								{errors.username && (
+								{errors.usernameOrEmail && (
 									<FieldError aria-live='assertive' id={`${usernameId}-error`}>
-										{errors.username.message}
+										{errors.usernameOrEmail.message}
 									</FieldError>
 								)}
 							</Field>
@@ -196,7 +204,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 						{errorOnSubmit && <FieldGroup disabled={loginMutation.isLoading}>{renderErrorOnSubmit(errorOnSubmit)}</FieldGroup>}
 					</Form.Container>
 					<Form.Footer>
-						<ButtonGroup stretch>
+						<ButtonGroup>
 							<Button loading={loginMutation.isLoading} type='submit' primary>
 								{t('registration.component.login')}
 							</Button>

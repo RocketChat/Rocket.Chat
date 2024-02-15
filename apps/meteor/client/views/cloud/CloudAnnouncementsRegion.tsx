@@ -16,7 +16,7 @@ const CloudAnnouncementsRegion = () => {
 		select: (data) => data.banners,
 		enabled: !!uid,
 		staleTime: 0,
-		refetchInterval: 1000 * 60 * 5,
+		refetchInterval: 1000 * 60 * 60 * 24,
 	});
 
 	const subscribeToNotifyLoggedIn = useStream('notify-logged');

@@ -18,6 +18,11 @@ flags:
     paths:
       - apps/meteor/
     carryforward: true
+  
+  e2e-api:
+    paths:
+      - apps/meteor/server
+    carryforward: true
 
   client:
     paths:

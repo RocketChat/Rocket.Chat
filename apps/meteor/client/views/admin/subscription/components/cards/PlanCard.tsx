@@ -1,4 +1,4 @@
-import type { ILicenseV3 } from '@rocket.chat/license';
+import type { ILicenseV3 } from '@rocket.chat/core-typings';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -17,12 +17,11 @@ type PlanCardProps = {
 const PlanCard = ({ licenseInformation, licenseLimits }: PlanCardProps): ReactElement => {
 	const isTrial = licenseInformation.trial;
 
-	switch (true) {
-		case isTrial:
-			return <PlanCardTrial licenseInformation={licenseInformation} />;
-		default:
-			return <PlanCardPremium licenseInformation={licenseInformation} licenseLimits={licenseLimits} />;
-	}
+	return isTrial ? (
+		<PlanCardTrial licenseInformation={licenseInformation} />
+	) : (
+		<PlanCardPremium licenseInformation={licenseInformation} licenseLimits={licenseLimits} />
+	);
 };
 
 export default PlanCard;

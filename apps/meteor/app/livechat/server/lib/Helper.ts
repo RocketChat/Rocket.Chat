@@ -38,7 +38,6 @@ import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { sendNotification } from '../../../lib/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { settings } from '../../../settings/server';
-import { Livechat } from './Livechat';
 import { Livechat as LivechatTyped } from './LivechatTyped';
 import { queueInquiry, saveQueueInquiry } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
@@ -257,10 +256,8 @@ export const createLivechatSubscription = async (
 			status,
 		},
 		ts: new Date(),
-		lr: new Date(),
-		ls: new Date(),
 		...(department && { department }),
-	};
+	} as InsertionModel<ISubscription>;
 
 	return Subscriptions.insertOne(subscriptionData);
 };
@@ -296,7 +293,7 @@ export const parseAgentCustomFields = (customFields?: Record<string, any>) => {
 			const parseCustomFields = JSON.parse(accountCustomFields);
 			return Object.keys(parseCustomFields).filter((customFieldKey) => parseCustomFields[customFieldKey].sendToIntegrations === true);
 		} catch (error) {
-			Livechat.logger.error(error);
+			logger.error(error);
 			return [];
 		}
 	};
@@ -375,7 +372,6 @@ export const dispatchInquiryQueued = async (inquiry: ILivechatInquiryRecord, age
 			// fake a subscription in order to make use of the function defined above
 			subscription: {
 				rid,
-				t: 'l',
 				u: {
 					_id,
 				},
@@ -389,13 +385,14 @@ export const dispatchInquiryQueued = async (inquiry: ILivechatInquiryRecord, age
 						username,
 					},
 				],
+				name: '',
 			},
 			sender: v,
 			hasMentionToAll: true, // consider all agents to be in the room
 			hasReplyToThread: false,
 			disableAllMessageNotifications: false,
 			hasMentionToHere: false,
-			message: Object.assign({}, { u: v }),
+			message: { _id: '', u: v, msg: '' },
 			// we should use server's language for this type of messages instead of user's
 			notificationMessage: i18n.t('User_started_a_new_conversation', { username: notificationUserName }, language),
 			room: Object.assign(room, { name: i18n.t('New_chat_in_queue', {}, language) }),
@@ -564,21 +561,44 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 	const { servedBy, chatQueued } = roomTaken;
 	if (!chatQueued && oldServedBy && servedBy && oldServedBy._id === servedBy._id) {
 		const department = departmentId
-			? await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'fallbackForwardDepartment'>>(departmentId, {
-					projection: { fallbackForwardDepartment: 1 },
+			? await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'fallbackForwardDepartment' | 'name'>>(departmentId, {
+					projection: { fallbackForwardDepartment: 1, name: 1 },
 			  })
 			: null;
 		if (!department?.fallbackForwardDepartment?.length) {
 			logger.debug(`Cannot forward room ${room._id}. Chat assigned to agent ${servedBy._id} (Previous was ${oldServedBy._id})`);
 			throw new Error('error-no-agents-online-in-department');
 		}
+
+		if (!transferData.originalDepartmentName) {
+			transferData.originalDepartmentName = department.name;
+		}
 		// if a chat has a fallback department, attempt to redirect chat to there [EE]
-		const transferSuccess = !!(await callbacks.run('livechat:onTransferFailure', room, { guest, transferData }));
+		const transferSuccess = !!(await callbacks.run('livechat:onTransferFailure', room, { guest, transferData, department }));
 		// On CE theres no callback so it will return the room
 		if (typeof transferSuccess !== 'boolean' || !transferSuccess) {
 			logger.debug(`Cannot forward room ${room._id}. Unable to delegate inquiry`);
 			return false;
 		}
+
+		return true;
+	}
+
+	// Send just 1 message to the room to inform the user that the chat was transferred
+	if (transferData.usingFallbackDep) {
+		const { _id, username } = transferData.transferredBy;
+		await Message.saveSystemMessage(
+			'livechat_transfer_history_fallback',
+			room._id,
+			'',
+			{ _id, username },
+			{
+				transferData: {
+					...transferData,
+					prevDepartment: transferData.originalDepartmentName,
+				},
+			},
+		);
 	}
 
 	await LivechatTyped.saveTransferHistory(room, transferData);
@@ -586,9 +606,6 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 		// if chat is queued then we don't ignore the new servedBy agent bcs at this
 		// point the chat is not assigned to him/her and it is still in the queue
 		await RoutingManager.removeAllRoomSubscriptions(room, !chatQueued ? servedBy : undefined);
-	}
-	if (!chatQueued && servedBy) {
-		await Message.saveSystemMessage('uj', rid, servedBy.username || '', servedBy);
 	}
 
 	await updateChatDepartment({ rid, newDepartmentId: departmentId, oldDepartmentId });
@@ -607,10 +624,6 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 		await queueInquiry(newInquiry);
 		logger.debug(`Inquiry ${inquiry._id} queued succesfully`);
 	}
-
-	const { token } = guest;
-	await LivechatTyped.setDepartmentForGuest({ token, department: departmentId });
-	logger.debug(`Department for visitor with token ${token} was updated to ${departmentId}`);
 
 	return true;
 };
@@ -656,13 +669,24 @@ export const updateDepartmentAgents = async (
 	departmentEnabled: boolean,
 ) => {
 	check(departmentId, String);
-	check(
-		agents,
-		Match.ObjectIncluding({
-			upsert: Match.Maybe(Array),
-			remove: Match.Maybe(Array),
-		}),
-	);
+	check(agents, {
+		upsert: Match.Maybe([
+			Match.ObjectIncluding({
+				agentId: String,
+				username: Match.Maybe(String),
+				count: Match.Maybe(Match.Integer),
+				order: Match.Maybe(Match.Integer),
+			}),
+		]),
+		remove: Match.Maybe([
+			Match.ObjectIncluding({
+				agentId: String,
+				username: Match.Maybe(String),
+				count: Match.Maybe(Match.Integer),
+				order: Match.Maybe(Match.Integer),
+			}),
+		]),
+	});
 
 	const { upsert = [], remove = [] } = agents;
 	const agentsRemoved = [];

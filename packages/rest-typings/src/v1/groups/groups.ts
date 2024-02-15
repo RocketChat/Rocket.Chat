@@ -4,7 +4,7 @@ import type {
 	ITeam,
 	IGetRoomRoles,
 	IUser,
-	IUpload,
+	IUploadWithUser,
 	IIntegration,
 	ISubscription,
 	IUserWithRoleInfo,
@@ -52,7 +52,7 @@ import type { GroupsUnarchiveProps } from './GroupsUnarchiveProps';
 export type GroupsEndpoints = {
 	'/v1/groups.files': {
 		GET: (params: GroupsFilesProps) => PaginatedResult<{
-			files: IUpload[];
+			files: IUploadWithUser[];
 		}>;
 	};
 	'/v1/groups.members': {

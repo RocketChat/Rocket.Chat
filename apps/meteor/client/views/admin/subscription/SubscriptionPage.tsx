@@ -5,7 +5,7 @@ import { t } from 'i18next';
 import React, { memo, useCallback, useEffect } from 'react';
 import tinykeys from 'tinykeys';
 
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import { useInvalidateLicense, useLicense } from '../../../hooks/useLicense';
 import { useRegistrationStatus } from '../../../hooks/useRegistrationStatus';
@@ -99,7 +99,7 @@ const SubscriptionPage = () => {
 
 	return (
 		<Page bg='tint'>
-			<Page.Header title={t('Subscription')}>
+			<PageHeader title={t('Subscription')}>
 				<ButtonGroup>
 					{isRegistered && (
 						<Button loading={syncLicenseUpdate.isLoading} icon='reload' onClick={() => handleSyncLicenseUpdate()}>
@@ -110,9 +110,8 @@ const SubscriptionPage = () => {
 						{t(isEnterprise ? 'Manage_subscription' : 'Upgrade')}
 					</UpgradeButton>
 				</ButtonGroup>
-			</Page.Header>
-
-			<Page.ScrollableContentWithShadow p={16}>
+			</PageHeader>
+			<PageScrollableContentWithShadow p={16}>
 				{(showSubscriptionCallout || syncLicenseUpdate.isLoading) && (
 					<Callout type='info' title={t('Sync_license_update_Callout_Title')} m={8}>
 						{t('Sync_license_update_Callout')}
@@ -177,7 +176,7 @@ const SubscriptionPage = () => {
 								)}
 							</Grid>
 							<UpgradeToGetMore activeModules={activeModules} isEnterprise={isEnterprise}>
-								{Boolean(licensesData?.trial || licensesData?.license?.information.cancellable) && (
+								{Boolean(licensesData?.license?.information.cancellable) && (
 									<Button loading={removeLicense.isLoading} secondary danger onClick={() => removeLicense.mutate()}>
 										{t('Cancel_subscription')}
 									</Button>
@@ -186,7 +185,7 @@ const SubscriptionPage = () => {
 						</Box>
 					</>
 				)}
-			</Page.ScrollableContentWithShadow>
+			</PageScrollableContentWithShadow>
 		</Page>
 	);
 };

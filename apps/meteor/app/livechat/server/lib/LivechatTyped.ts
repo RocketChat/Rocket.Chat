@@ -103,29 +103,23 @@ type OfflineMessageData = {
 	host?: string;
 };
 
+type UploadedFile = {
+	_id: string;
+	name?: string;
+	type?: string;
+	size?: number;
+	description?: string;
+	identify?: { size: { width: number; height: number } };
+	format?: string;
+};
+
 export interface ILivechatMessage {
 	token: string;
 	_id: string;
 	rid: string;
 	msg: string;
-	file?: {
-		_id: string;
-		name?: string;
-		type?: string;
-		size?: number;
-		description?: string;
-		identify?: { size: { width: number; height: number } };
-		format?: string;
-	};
-	files?: {
-		_id: string;
-		name?: string;
-		type?: string;
-		size?: number;
-		description?: string;
-		identify?: { size: { width: number; height: number } };
-		format?: string;
-	}[];
+	file?: UploadedFile;
+	files?: UploadedFile[];
 	attachments?: MessageAttachment[];
 	alias?: string;
 	groupable?: boolean;
@@ -296,11 +290,17 @@ class LivechatClass {
 
 		this.logger.debug(`Updating DB for room ${room._id} with close data`);
 
-		await Promise.all([
-			LivechatRooms.closeRoomById(rid, closeData),
-			LivechatInquiry.removeByRoomId(rid),
-			Subscriptions.removeByRoomId(rid),
-		]);
+		const removedInquiry = await LivechatInquiry.removeByRoomId(rid);
+		if (removedInquiry && removedInquiry.deletedCount !== 1) {
+			throw new Error('Error removing inquiry');
+		}
+
+		const updatedRoom = await LivechatRooms.closeRoomById(rid, closeData);
+		if (!updatedRoom || updatedRoom.modifiedCount !== 1) {
+			throw new Error('Error closing room');
+		}
+
+		await Subscriptions.removeByRoomId(rid);
 
 		this.logger.debug(`DB updated for room ${room._id}`);
 
@@ -368,7 +368,7 @@ class LivechatClass {
 
 	async getRoom(
 		guest: ILivechatVisitor,
-		message: Pick<IMessage, 'rid' | 'msg'>,
+		message: Pick<IMessage, 'rid' | 'msg' | 'token'>,
 		roomInfo: {
 			source?: IOmnichannelRoom['source'];
 			[key: string]: unknown;
@@ -475,7 +475,7 @@ class LivechatClass {
 			},
 		};
 
-		const dep = await LivechatDepartment.findOneById(department);
+		const dep = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id'>>(department, { projection: { _id: 1 } });
 		if (!dep) {
 			throw new Meteor.Error('invalid-department', 'Provided department does not exists');
 		}
@@ -987,7 +987,9 @@ class LivechatClass {
 	}
 
 	async archiveDepartment(_id: string) {
-		const department = await LivechatDepartment.findOneById(_id, { projection: { _id: 1 } });
+		const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'businessHourId'>>(_id, {
+			projection: { _id: 1, businessHourId: 1 },
+		});
 
 		if (!department) {
 			throw new Error('department-not-found');
@@ -1053,7 +1055,7 @@ class LivechatClass {
 		}
 
 		if (transferData.departmentId) {
-			const department = await LivechatDepartment.findOneById(transferData.departmentId, {
+			const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, 'name' | '_id'>>(transferData.departmentId, {
 				projection: { name: 1 },
 			});
 			if (!department) {

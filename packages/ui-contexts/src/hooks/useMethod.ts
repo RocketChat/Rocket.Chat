@@ -3,6 +3,7 @@ import { useCallback, useContext } from 'react';
 
 import { ServerContext } from '../ServerContext';
 
+/* @deprecated prefer the use of api endpoints (useEndpoint) */
 export const useMethod = <MethodName extends keyof ServerMethods>(methodName: MethodName): ServerMethodFunction<MethodName> => {
 	const { callMethod } = useContext(ServerContext);
 

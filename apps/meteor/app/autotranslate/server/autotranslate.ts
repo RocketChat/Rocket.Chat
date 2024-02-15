@@ -15,6 +15,7 @@ import _ from 'underscore';
 
 import { callbacks } from '../../../lib/callbacks';
 import { isTruthy } from '../../../lib/isTruthy';
+import { broadcastMessageFromData } from '../../../server/modules/watchers/lib/messages';
 import { Markdown } from '../../markdown/server';
 import { settings } from '../../settings/server';
 
@@ -305,6 +306,7 @@ export abstract class AutoTranslate {
 				const translations = await this._translateMessage(targetMessage, targetLanguages);
 				if (!_.isEmpty(translations)) {
 					await Messages.addTranslations(message._id, translations, TranslationProviderRegistry[Provider] || '');
+					this.notifyTranslatedMessage(message._id);
 				}
 			});
 		}
@@ -320,12 +322,19 @@ export abstract class AutoTranslate {
 
 						if (!_.isEmpty(translations)) {
 							await Messages.addAttachmentTranslations(message._id, String(index), translations);
+							this.notifyTranslatedMessage(message._id);
 						}
 					}
 				}
 			});
 		}
 		return Messages.findOneById(message._id);
+	}
+
+	private notifyTranslatedMessage(messageId: string): void {
+		void broadcastMessageFromData({
+			id: messageId,
+		});
 	}
 
 	/**

@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/mock-providers",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"private": true,
 	"dependencies": {
 		"@rocket.chat/i18n": "workspace:~",
@@ -15,8 +15,8 @@
 		"eslint": "~8.45.0",
 		"jest": "~29.6.4",
 		"react": "~17.0.2",
-		"ts-jest": "~29.0.5",
-		"typescript": "~5.2.2"
+		"ts-jest": "~29.1.1",
+		"typescript": "~5.3.2"
 	},
 	"peerDependencies": {
 		"@tanstack/react-query": "*",
