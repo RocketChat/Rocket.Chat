@@ -111,7 +111,7 @@ const MessageToolbar = ({
 	};
 
 	return (
-		<FuselageMessageToolbar ref={toolbarRef} {...toolbarProps}>
+		<FuselageMessageToolbar ref={toolbarRef} {...toolbarProps} {...props}>
 			{quickReactionsEnabled &&
 				isReactionAllowed &&
 				quickReactions.slice(0, 3).map(({ emoji, image }) => {
