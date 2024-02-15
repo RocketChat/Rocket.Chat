@@ -11,6 +11,7 @@ import {
 	MessageUsername,
 	MessageNameContainer,
 } from '@rocket.chat/fuselage';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
@@ -29,7 +30,6 @@ import {
 	useCountSelected,
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import { useChat } from '../../../views/room/contexts/ChatContext';
-import UserAvatar from '../../avatar/UserAvatar';
 import Attachments from '../content/Attachments';
 import MessageActions from '../content/MessageActions';
 import { useMessageListShowRealName, useMessageListShowUsername } from '../list/MessageListContext';
