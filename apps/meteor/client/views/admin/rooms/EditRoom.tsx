@@ -100,7 +100,6 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 		const data = getDirtyFields(formData, dirtyFields);
 		delete data.archived;
 		delete data.favorite;
-		delete data.roomName;
 
 		try {
 			await saveAction({
