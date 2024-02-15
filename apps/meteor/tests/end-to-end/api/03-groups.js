@@ -1880,7 +1880,7 @@ describe('[Groups]', function () {
 				});
 		});
 
-		after(async () =>
+		after(() =>
 			Promise.all([
 				request
 					.post(api('groups.delete'))
