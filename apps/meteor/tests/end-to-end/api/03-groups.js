@@ -1880,16 +1880,19 @@ describe('[Groups]', function () {
 				});
 		});
 
-		after(async () => {
-			await request
-				.post(api('groups.delete'))
-				.set(credentials)
-				.send({
-					roomName: newGroup.name,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
-		});
+		after(async () =>
+			Promise.all([
+				request
+					.post(api('groups.delete'))
+					.set(credentials)
+					.send({
+						roomName: newGroup.name,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200),
+				updatePermission('create-team', ['admin', 'user']),
+			]),
+		);
 
 		it('should fail to convert group if lacking edit-room permission', (done) => {
 			updatePermission('create-team', []).then(() => {
