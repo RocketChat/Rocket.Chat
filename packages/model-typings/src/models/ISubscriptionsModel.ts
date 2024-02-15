@@ -92,7 +92,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 		searchFields: string[],
 		options?: FindOptions<IUser>,
 		extraQuery?: Filter<IUser & { __rooms: IRoom['_id'][] }>,
-		{ startsWith = false, endsWith = false }?: { startsWith?: string | false; endsWith?: string | false },
+		{ startsWith, endsWith }?: { startsWith?: string | false; endsWith?: string | false },
 	): Promise<{ members: IUserWithRoleInfo[]; totalCount: { total: number }; ids: { allMembersIds: string[] } }[]>;
 
 	incUnreadForRoomIdExcludingUserIds(roomId: IRoom['_id'], userIds: IUser['_id'][], inc: number): Promise<UpdateResult | Document>;
