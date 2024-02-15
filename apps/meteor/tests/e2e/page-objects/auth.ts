@@ -28,6 +28,10 @@ export class Registration {
 		return this.page.locator('role=button[name="Sign in with Google"]');
 	}
 
+	get btnLoginWithCustomOAuth(): Locator {
+		return this.page.locator('role=button[name="Sign in with Test"]');
+	}
+
 	get goToRegister(): Locator {
 		return this.page.locator('role=link[name="Create an account"]');
 	}
