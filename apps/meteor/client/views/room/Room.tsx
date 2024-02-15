@@ -1,3 +1,4 @@
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { createElement, lazy, memo, Suspense } from 'react';
 import { FocusScope } from 'react-aria';
@@ -17,6 +18,7 @@ import { SelectedMessagesProvider } from './providers/SelectedMessagesProvider';
 const UiKitContextualBar = lazy(() => import('./contextualBar/uikit/UiKitContextualBar'));
 
 const Room = (): ReactElement => {
+	const t = useTranslation();
 	const room = useRoom();
 	const toolbox = useRoomToolbox();
 	const contextualBarView = useAppsContextualBar();
@@ -27,7 +29,11 @@ const Room = (): ReactElement => {
 				<FocusScope>
 					<RoomLayout
 						data-qa-rc-room={room._id}
-						aria-label={room.t === 'd' ? `Conversation with ${room.name}` : `Channel ${room.name}`}
+						aria-label={
+							room.t === 'd'
+								? t('Conversation_with__roomName__', { roomName: room.name })
+								: t('Channel__roomName__', { roomName: room.name })
+						}
 						header={<Header room={room} />}
 						body={<RoomBody />}
 						aside={
