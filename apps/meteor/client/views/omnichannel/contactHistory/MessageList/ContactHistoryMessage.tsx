@@ -17,12 +17,12 @@ import {
 	MessageSystemBody,
 	MessageSystemTimestamp,
 } from '@rocket.chat/fuselage';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React, { memo } from 'react';
 
 import { getUserDisplayName } from '../../../../../lib/getUserDisplayName';
-import UserAvatar from '../../../../components/avatar/UserAvatar';
 import MessageContentBody from '../../../../components/message/MessageContentBody';
 import StatusIndicators from '../../../../components/message/StatusIndicators';
 import Attachments from '../../../../components/message/content/Attachments';
@@ -52,7 +52,7 @@ const ContactHistoryMessage: FC<{
 							url={message.avatar}
 							username={message.u.username}
 							size='x18'
-							onClick={chat?.userCard.open(message.u.username)}
+							onClick={(e) => chat?.userCard.openUserCard(e, message.u.username)}
 							style={{ cursor: 'pointer' }}
 						/>
 					)}
@@ -80,7 +80,7 @@ const ContactHistoryMessage: FC<{
 							url={message.avatar}
 							username={message.u.username}
 							size='x36'
-							onClick={chat?.userCard.open(message.u.username)}
+							onClick={(e) => chat?.userCard.openUserCard(e, message.u.username)}
 							style={{ cursor: 'pointer' }}
 						/>
 					)}
@@ -101,7 +101,7 @@ const ContactHistoryMessage: FC<{
 						</MessageHeaderTemplate>
 					)}
 					{!message.blocks && message.md && (
-						<MessageBody data-qa-type='message-body'>
+						<MessageBody data-qa-type='message-body' dir='auto'>
 							<MessageContentBody md={message.md} mentions={message.mentions} channels={message.channels} />
 						</MessageBody>
 					)}

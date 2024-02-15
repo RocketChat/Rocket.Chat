@@ -13,8 +13,8 @@ import {
 	TextAreaInput,
 	FieldError,
 } from '@rocket.chat/fuselage';
-import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useEndpoint, useRouter, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
@@ -64,6 +64,7 @@ const getInitialValues = (room: Pick<IRoom, RoomAdminFieldsType>): EditRoomFormV
 
 const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 	const t = useTranslation();
+	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const {
@@ -72,10 +73,18 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 		reset,
 		handleSubmit,
 		formState: { isDirty, errors, dirtyFields },
-	} = useForm({ defaultValues: getInitialValues(room) });
+	} = useForm({ values: getInitialValues(room) });
 
-	const { canViewName, canViewTopic, canViewAnnouncement, canViewArchived, canViewDescription, canViewType, canViewReadOnly } =
-		useEditAdminRoomPermissions(room);
+	const {
+		canViewName,
+		canViewTopic,
+		canViewAnnouncement,
+		canViewArchived,
+		canViewDescription,
+		canViewType,
+		canViewReadOnly,
+		canViewReactWhenReadOnly,
+	} = useEditAdminRoomPermissions(room);
 
 	const { roomType, readOnly, archived } = watch();
 
@@ -87,13 +96,14 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 
 	const handleArchive = useArchiveRoom(room);
 
-	const handleUpdateRoomData = useMutableCallback(async ({ isDefault, roomName, favorite, ...formData }) => {
+	const handleUpdateRoomData = useEffectEvent(async ({ isDefault, favorite, ...formData }) => {
 		const data = getDirtyFields(formData, dirtyFields);
+		delete data.archived;
+		delete data.favorite;
 
 		try {
 			await saveAction({
 				rid: room._id,
-				roomName: roomType === 'd' ? undefined : roomName,
 				default: isDefault,
 				favorite: { defaultValue: isDefault, favorite },
 				...data,
@@ -101,15 +111,17 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 
 			dispatchToastMessage({ type: 'success', message: t('Room_updated_successfully') });
 			onChange();
+			router.navigate('/admin/rooms');
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
 
-	const handleSave = useMutableCallback(async (data) => {
-		await Promise.all([isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive()].filter(Boolean));
-	});
+	const handleSave = useEffectEvent((data) =>
+		Promise.all([isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive()].filter(Boolean)),
+	);
 
+	const formId = useUniqueId();
 	const roomNameField = useUniqueId();
 	const ownerField = useUniqueId();
 	const roomDescription = useUniqueId();
@@ -125,7 +137,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 
 	return (
 		<>
-			<ContextualbarScrollableContent is='form' onSubmit={handleSubmit(handleSave)}>
+			<ContextualbarScrollableContent id={formId} is='form' onSubmit={handleSubmit(handleSave)}>
 				{room.t !== 'd' && (
 					<Box pbe={24} display='flex' justifyContent='center'>
 						<Controller
@@ -249,7 +261,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 												{...field}
 												disabled={isDeleting || isRoomFederated(room)}
 												checked={value}
-												aria-aria-describedby={`${readOnlyField}-hint`}
+												aria-describedby={`${readOnlyField}-hint`}
 											/>
 										)}
 									/>
@@ -257,7 +269,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 								<FieldHint id={`${readOnlyField}-hint`}>{t('Only_authorized_users_can_write_new_messages')}</FieldHint>
 							</Field>
 						)}
-						{readOnly && (
+						{canViewReactWhenReadOnly && readOnly && (
 							<Field>
 								<FieldRow>
 									<FieldLabel htmlFor={reactWhenReadOnly}>{t('React_when_read_only')}</FieldLabel>
@@ -335,15 +347,17 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 					<Button type='reset' disabled={!isDirty || isDeleting} onClick={() => reset()}>
 						{t('Reset')}
 					</Button>
-					<Button type='submit' disabled={!isDirty || isDeleting}>
+					<Button form={formId} type='submit' disabled={!isDirty || isDeleting}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
-				<ButtonGroup mbs={8} stretch>
-					<Button icon='trash' danger loading={isDeleting} disabled={!canDeleteRoom || isRoomFederated(room)} onClick={handleDelete}>
-						{t('Delete')}
-					</Button>
-				</ButtonGroup>
+				<Box mbs={8}>
+					<ButtonGroup stretch>
+						<Button icon='trash' danger loading={isDeleting} disabled={!canDeleteRoom || isRoomFederated(room)} onClick={handleDelete}>
+							{t('Delete')}
+						</Button>
+					</ButtonGroup>
+				</Box>
 			</ContextualbarFooter>
 		</>
 	);

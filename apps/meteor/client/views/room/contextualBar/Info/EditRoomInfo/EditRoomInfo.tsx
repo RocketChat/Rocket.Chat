@@ -20,7 +20,7 @@ import {
 	Box,
 	TextAreaInput,
 } from '@rocket.chat/fuselage';
-import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useTranslation, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
@@ -98,7 +98,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 
 	const handleArchive = useArchiveRoom(room);
 
-	const handleUpdateRoomData = useMutableCallback(async ({ hideSysMes, joinCodeRequired, ...formData }) => {
+	const handleUpdateRoomData = useEffectEvent(async ({ hideSysMes, joinCodeRequired, ...formData }) => {
 		const data = getDirtyFields(formData, dirtyFields);
 		delete data.archived;
 
@@ -106,7 +106,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 			await saveAction({
 				rid: room._id,
 				...data,
-				...(data.joinCode && { joinCode: joinCodeRequired ? data.joinCode : '' }),
+				...((data.joinCode || 'joinCodeRequired' in data) && { joinCode: joinCodeRequired ? data.joinCode : '' }),
 				...((data.systemMessages || !hideSysMes) && {
 					systemMessages: hideSysMes && data.systemMessages,
 				}),
@@ -119,9 +119,9 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		}
 	});
 
-	const handleSave = useMutableCallback(async (data) => {
-		await Promise.all([isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive()].filter(Boolean));
-	});
+	const handleSave = useEffectEvent((data) =>
+		Promise.all([isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive()].filter(Boolean)),
+	);
 
 	const formId = useUniqueId();
 	const roomNameField = useUniqueId();
@@ -445,11 +445,13 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
-				<ButtonGroup stretch mbs={8}>
-					<Button icon='trash' danger disabled={!canDeleteRoom || isFederated || isSubmitting} onClick={handleDelete}>
-						{t('Delete')}
-					</Button>
-				</ButtonGroup>
+				<Box mbs={8}>
+					<ButtonGroup stretch>
+						<Button icon='trash' danger disabled={!canDeleteRoom || isFederated || isSubmitting} onClick={handleDelete}>
+							{t('Delete')}
+						</Button>
+					</ButtonGroup>
+				</Box>
 			</ContextualbarFooter>
 		</>
 	);

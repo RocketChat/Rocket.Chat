@@ -235,13 +235,13 @@ export type MiscEndpoints = {
 
 	'/v1/method.call/:method': {
 		POST: (params: { message: string }) => {
-			message: unknown;
+			message: string;
 		};
 	};
 
 	'/v1/method.callAnon/:method': {
 		POST: (params: { message: string }) => {
-			message: unknown;
+			message: string;
 		};
 	};
 

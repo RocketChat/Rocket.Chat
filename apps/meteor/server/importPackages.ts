@@ -6,7 +6,6 @@ import '../app/assets/server';
 import '../app/authorization/server';
 import '../app/autotranslate/server';
 import '../app/bot-helpers/server';
-import '../app/cas/server';
 import '../app/channel-settings/server';
 import '../app/cloud/server';
 import '../app/crowd/server';

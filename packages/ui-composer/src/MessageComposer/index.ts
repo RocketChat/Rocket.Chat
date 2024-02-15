@@ -1,6 +1,8 @@
 import MessageComposer from './MessageComposer';
 import MessageComposerAction from './MessageComposerAction';
 import MessageComposerActionsDivider from './MessageComposerActionsDivider';
+import MessageComposerButton from './MessageComposerButton';
+import MessageComposerHint from './MessageComposerHint';
 import MessageComposerIcon from './MessageComposerIcon';
 import MessageComposerInput from './MessageComposerInput';
 import MessageComposerSkeleton from './MessageComposerSkeleton';
@@ -18,4 +20,6 @@ export {
 	MessageComposerToolbarSubmit,
 	MessageComposerSkeleton,
 	MessageComposerIcon,
+	MessageComposerHint,
+	MessageComposerButton,
 };

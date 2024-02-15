@@ -2,7 +2,13 @@ import type * as MessageParser from '@rocket.chat/message-parser';
 import { ReactElement, useMemo } from 'react';
 
 const flattenMarkup = (
-	markup: MessageParser.Markup | MessageParser.Link | MessageParser.Emoji | MessageParser.ChannelMention | MessageParser.UserMention,
+	markup:
+		| MessageParser.Markup
+		| MessageParser.InlineCode
+		| MessageParser.Link
+		| MessageParser.Emoji
+		| MessageParser.ChannelMention
+		| MessageParser.UserMention,
 ): string => {
 	switch (markup.type) {
 		case 'PLAIN_TEXT':
@@ -12,6 +18,9 @@ const flattenMarkup = (
 		case 'BOLD':
 		case 'STRIKE':
 			return markup.value.map(flattenMarkup).join('');
+
+		case 'INLINE_CODE':
+			return flattenMarkup(markup.value);
 
 		case 'LINK': {
 			const label = flattenMarkup(markup.value.label as MessageParser.Markup);

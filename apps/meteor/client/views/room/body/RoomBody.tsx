@@ -174,13 +174,13 @@ const RoomBody = (): ReactElement => {
 		};
 	});
 
-	const handleOpenUserCardButtonClick = useCallback(
+	const handleOpenUserCard = useCallback(
 		(event: UIEvent, username: IUser['username']) => {
 			if (!username) {
 				return;
 			}
 
-			chat?.userCard.open(username)(event);
+			chat?.userCard.openUserCard(event, username);
 		},
 		[chat?.userCard],
 	);
@@ -545,16 +545,7 @@ const RoomBody = (): ReactElement => {
 					<div className='messages-container-wrapper'>
 						<div className='messages-container-main' {...fileUploadTriggerProps}>
 							<DropTargetOverlay {...fileUploadOverlayProps} />
-							<div className={['container-bars', (unread || uploads.length) && 'show'].filter(isTruthy).join(' ')}>
-								{unread && (
-									<UnreadMessagesIndicator
-										count={unread.count}
-										since={unread.since}
-										onJumpButtonClick={handleUnreadBarJumpToButtonClick}
-										onMarkAsReadButtonClick={handleMarkAsReadButtonClick}
-									/>
-								)}
-
+							<div className={['container-bars', uploads.length && 'show'].filter(isTruthy).join(' ')}>
 								{uploads.map((upload) => (
 									<UploadProgressIndicator
 										key={upload.id}
@@ -566,6 +557,13 @@ const RoomBody = (): ReactElement => {
 									/>
 								))}
 							</div>
+							{unread && (
+								<UnreadMessagesIndicator
+									count={unread.count}
+									onJumpButtonClick={handleUnreadBarJumpToButtonClick}
+									onMarkAsReadButtonClick={handleMarkAsReadButtonClick}
+								/>
+							)}
 							<div
 								ref={messagesBoxRef}
 								className={['messages-box', roomLeader && !hideLeaderHeader && 'has-leader'].filter(isTruthy).join(' ')}
@@ -587,7 +585,7 @@ const RoomBody = (): ReactElement => {
 										username={roomLeader.username}
 										name={roomLeader.name}
 										visible={!hideLeaderHeader}
-										onAvatarClick={handleOpenUserCardButtonClick}
+										onAvatarClick={handleOpenUserCard}
 									/>
 								) : null}
 								<div
