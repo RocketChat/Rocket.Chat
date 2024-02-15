@@ -1707,4 +1707,91 @@ describe('[Rooms]', function () {
 				.end(done);
 		});
 	});
+
+	describe('rooms.isUserMuted', () => {
+		let testChannel;
+		before('create an channel', async () => {
+			const result = await createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` });
+			testChannel = result.body.channel;
+			await request.post(api('channels.addAll')).set(credentials).send({
+				roomId: testChannel._id,
+			});
+		});
+
+		it('should return user is not muted', async () => {
+			await request
+				.get(api('rooms.isUserMuted'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					username: 'rocket.cat',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('isMuted', false);
+				});
+		});
+
+		it('should convert room to read only', async () => {
+			await request
+				.post(api('rooms.saveRoomSettings'))
+				.set(credentials)
+				.send({
+					rid: testChannel._id,
+					readOnly: true,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+
+		it('should return user is now muted', async () => {
+			await request
+				.get(api('rooms.isUserMuted'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					username: 'rocket.cat',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('isMuted', true);
+				});
+		});
+
+		it('should update rocket.cat user as room-owner and return not muted in read-only channel', async () => {
+			await request
+				.post(api('channels.addOwner'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					username: 'rocket.cat',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					console.log(res.body);
+					expect(res.body).to.have.property('success', true);
+				});
+			await request
+				.get(api('rooms.isUserMuted'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					username: 'rocket.cat',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('isMuted', false);
+				});
+		});
+	});
 });
