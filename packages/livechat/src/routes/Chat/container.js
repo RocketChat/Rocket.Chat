@@ -5,7 +5,7 @@ import { withTranslation } from 'react-i18next';
 import { Livechat } from '../../api';
 import { ModalManager } from '../../components/Modal';
 import { getAvatarUrl } from '../../helpers/baseUrl';
-import { canRenderMessage, canRenderTriggerMessage } from '../../helpers/canRenderMessage';
+import { canRenderMessage } from '../../helpers/canRenderMessage';
 import { debounce } from '../../helpers/debounce';
 import { throttle } from '../../helpers/throttle';
 import { upsert } from '../../helpers/upsert';
@@ -15,7 +15,7 @@ import { getLastReadMessage, loadConfig, processUnread, shouldMarkAsUnread } fro
 import { parentCall, runCallbackEventEmitter } from '../../lib/parentCall';
 import { createToken } from '../../lib/random';
 import { initRoom, closeChat, loadMessages, loadMoreMessages, defaultRoomParams, getGreetingMessages } from '../../lib/room';
-import { Consumer } from '../../store';
+import store, { Consumer } from '../../store';
 import Chat from './component';
 
 class ChatContainer extends Component {
@@ -166,6 +166,20 @@ class ChatContainer extends Component {
 	};
 
 	handleUpload = async (files) => {
+		const {
+			config: {
+				settings: { fileUpload },
+			},
+		} = store.state;
+
+		const { dispatch, alerts, i18n } = this.props;
+
+		if (!fileUpload) {
+			const alert = { id: createToken(), children: i18n.t('file_upload_disabled'), error: true, timeout: 5000 };
+			await dispatch({ alerts: (alerts.push(alert), alerts) });
+			return;
+		}
+
 		await this.grantUser();
 		const { _id: rid } = await this.getRoom();
 

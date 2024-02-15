@@ -32,6 +32,7 @@
         "expand_chat": "Expand chat",
         "field_required": "Field required",
         "file_exceeds_allowed_size_of_size": "File exceeds allowed size of {{size}}.",
+        "file_upload_disabled": "File upload is disabled",
         "fileupload_error": "FileUpload Error",
         "finish_this_chat": "Finish this chat",
         "forget_remove_my_data": "Forget/Remove my data",

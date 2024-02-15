@@ -28,6 +28,7 @@
         "expand_chat": "Expandir chat",
         "field_required": "Campo obrigatório",
         "file_exceeds_allowed_size_of_size": "Arquivo excede o tamanho permitido de {{size}}.",
+        "file_upload_disabled": "Upload de arquivos está desabilitado",
         "fileupload_error": "Erro no upload do arquivo",
         "finish_this_chat": "Encerrar este chat",
         "forget_remove_my_data": "Esquecer/remover meus dados pessoais",
