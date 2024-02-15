@@ -104,9 +104,6 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 		try {
 			await saveAction({
 				rid: room._id,
-				...(data.roomName && {
-					roomName: roomType === 'd' ? undefined : data.roomName,
-				}),
 				default: isDefault,
 				favorite: { defaultValue: isDefault, favorite },
 				...data,
