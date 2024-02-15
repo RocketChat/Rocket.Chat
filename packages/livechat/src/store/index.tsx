@@ -14,7 +14,24 @@ export type StoreState = {
 	typing: string[];
 	config: {
 		messages: any;
-		theme: any;
+		theme: {
+			title?: string;
+			color?: string;
+			offlineTitle?: string;
+			offlineColor?: string;
+			actionLinks?: {
+				webrtc: {
+					actionLinksAlignment: string;
+					i18nLabel: string;
+					label: string;
+					method_id: string;
+				}[];
+				jitsi: {
+					icon: string;
+					i18nLabel: string;
+				}[];
+			};
+		};
 		triggers: any[];
 		resources: any;
 		settings: {
@@ -43,7 +60,13 @@ export type StoreState = {
 	};
 	iframe: {
 		guest?: Serialized<ILivechatVisitorDTO>;
-		theme?: any;
+		theme: {
+			title?: string;
+			color?: string;
+			fontColor?: string;
+			iconColor?: string;
+			offlineTitle?: string;
+		};
 		visible?: boolean;
 		department?: string;
 		language?: string;
