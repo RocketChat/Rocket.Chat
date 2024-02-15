@@ -1,5 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, IconButton } from '@rocket.chat/fuselage';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ComponentProps } from 'react';
 import React, { forwardRef } from 'react';
@@ -7,7 +8,6 @@ import React, { forwardRef } from 'react';
 import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
 import MarkdownText from '../MarkdownText';
 import * as Status from '../UserStatus';
-import UserAvatar from '../avatar/UserAvatar';
 import UserCardActions from './UserCardActions';
 import UserCardContainer from './UserCardContainer';
 import UserCardInfo from './UserCardInfo';
