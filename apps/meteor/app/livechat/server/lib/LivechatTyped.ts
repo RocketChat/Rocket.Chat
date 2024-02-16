@@ -1129,6 +1129,7 @@ class LivechatClass {
 			'Livechat_show_agent_info',
 			'Livechat_clear_local_storage_when_chat_ended',
 			'Livechat_widget_position',
+			'Livechat_background',
 		]).forEach((setting) => {
 			rcSettings[setting._id] = setting.value;
 		});
