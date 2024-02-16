@@ -2684,6 +2684,7 @@
   "Livechat_offline": "Omnichannel offline",
   "Livechat_offline_message_sent": "Mensagem offline do livechat enviada",
   "Livechat_OfflineMessageToChannel_enabled": "Envie mensagens offline do livechat para um canal",
+  "Livechat_widget_position_on_the_screen": "Posição do livechat widget na tela",
   "Omnichannel_on_hold_chat_resumed": "Conversa em espera retomada: {{comment}}",
   "Omnichannel_on_hold_chat_automatically": "A conversa foi automaticamente retomada de em espera após receber uma nova mensagem de {{guest}}",
   "Omnichannel_on_hold_chat_resumed_manually": "A conversa foi manualmente retomada de em espera por {{user}}",
