@@ -219,17 +219,14 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 											const minLength = 3;
 											const maxLength = 16;
 											const allowedChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-';
-											if (value.length < minLength || value.length > maxLength) {
+											if (
+												value.length < minLength ||
+												value.length > maxLength ||
+												![...value].every((char) => allowedChars.includes(char))
+											) {
 												return t('Invalid_username');
 											}
-											for (let i = 0; i < value.length; i++) {
-												if (!allowedChars.includes(value[i])) {
-													return t('Invalid_username');
-												}
-											}
-							
 											return true;
-										},
 									},
 								}}
 								render={({ field }) => (
