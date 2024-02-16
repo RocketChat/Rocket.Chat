@@ -921,6 +921,7 @@ describe('LIVECHAT - rooms', function () {
 				.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
 				.expect('Content-Type', 'application/json')
 				.expect(400);
+			await updateSetting('Livechat_fileupload_enabled', true);
 		});
 
 		it('should upload an image on the room if all params are valid', async () => {
