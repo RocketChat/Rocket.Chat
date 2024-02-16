@@ -95,7 +95,15 @@ export const Screen = ({ title, agent, children, className, unread, triggered = 
 	} = useContext(ScreenContext);
 
 	return (
-		<div className={createClassName(styles, 'screen', { minimized, expanded, windowed, triggered })}>
+		<div
+			className={createClassName(styles, 'screen', {
+				minimized,
+				expanded,
+				windowed,
+				triggered,
+				'position-left': theme.position === 'left',
+			})}
+		>
 			<CssVar theme={theme} />
 			{triggered && (
 				<Button

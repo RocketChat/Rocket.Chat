@@ -632,6 +632,19 @@ export const createOmniSettings = () =>
 			i18nLabel: 'Call_provider',
 			enableQuery: omnichannelEnabledQuery,
 		});
+
+		await this.add('Livechat_widget_position', 'right', {
+			type: 'select',
+			group: 'Omnichannel',
+			section: 'Livechat',
+			i18nLabel: 'Livechat_widget_position_on_the_screen',
+			public: true,
+			values: [
+				{ key: 'left', i18nLabel: 'Left' },
+				{ key: 'right', i18nLabel: 'Right' },
+			],
+			enableQuery: omnichannelEnabledQuery,
+		});
 	});
 await settingsRegistry.addGroup('SMS', async function () {
 	await this.add('SMS_Enabled', false, {

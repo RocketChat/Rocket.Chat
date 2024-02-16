@@ -19,6 +19,7 @@ export type StoreState = {
 			color?: string;
 			offlineTitle?: string;
 			offlineColor?: string;
+			position: 'left' | 'right';
 			actionLinks?: {
 				webrtc: {
 					actionLinksAlignment: string;
@@ -66,6 +67,7 @@ export type StoreState = {
 			fontColor?: string;
 			iconColor?: string;
 			offlineTitle?: string;
+			position?: 'left' | 'right';
 		};
 		visible?: boolean;
 		department?: string;
@@ -106,7 +108,9 @@ export const initialState = (): StoreState => ({
 	config: {
 		messages: {},
 		settings: {},
-		theme: {},
+		theme: {
+			position: 'right',
+		},
 		triggers: [],
 		departments: [],
 		resources: {},

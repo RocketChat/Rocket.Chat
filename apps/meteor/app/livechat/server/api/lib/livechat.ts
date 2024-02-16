@@ -170,6 +170,7 @@ export async function settings({ businessUnit = '' }: { businessUnit?: string } 
 			color: initSettings.Livechat_title_color,
 			offlineTitle: initSettings.Livechat_offline_title,
 			offlineColor: initSettings.Livechat_offline_title_color,
+			position: initSettings.Livechat_widget_position || 'right',
 			actionLinks: {
 				webrtc: [
 					{
