@@ -1,4 +1,4 @@
-	import type { MarkdownFields, MessageAttachmentDefault } from '@rocket.chat/core-typings';
+import type { MarkdownFields, MessageAttachmentDefault } from '@rocket.chat/core-typings';
 import { isActionAttachment } from '@rocket.chat/core-typings';
 import type { ReactNode, ComponentProps, ReactElement } from 'react';
 import React from 'react';
@@ -55,19 +55,19 @@ const DefaultAttachment = (attachment: DefaultAttachmentProps): ReactElement => 
 						</AttachmentAuthorName>
 					</AttachmentAuthor>
 				)}
-					<AttachmentRow>
-						<AttachmentTitle
-							{...(attachment.title_link && {
-								is: 'a',
-								href: attachment.title_link,
-								target: '_blank',
-								color: undefined,
-							})}
-						>
-							{attachment.title}
-						</AttachmentTitle>{' '}
-						{collapse}
-					</AttachmentRow>
+				<AttachmentRow>
+					<AttachmentTitle
+						{...(attachment.title_link && {
+							is: 'a',
+							href: attachment.title_link,
+							target: '_blank',
+							color: undefined,
+						})}
+					>
+						{attachment.title}
+					</AttachmentTitle>{' '}
+					{collapse}
+				</AttachmentRow>
 				{!collapsed && (
 					<>
 						{attachment.text && (
