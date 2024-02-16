@@ -42,15 +42,15 @@ test.describe.serial('Messaging', () => {
 		await page.keyboard.press('Tab');
 		await expect(page.locator('[data-qa-type="message"]:has-text("msg1")')).toBeFocused();
 
-		// TODO: Check why this test doesn't work
 		// move focus to the message toolbar
-		// await page.keyboard.press('Tab');
-		// await page.keyboard.press('Tab');
-		// await page.keyboard.press('ArrowRight');
-		// await expect(page.locator('[data-qa-type="message"]:has-text("msg1")').locator('[role=toolbar][aria-label="Message actions"]').getByRole('button', { name: 'Quote' })).toBeFocused();
+		await page.locator('[data-qa-type="message"]:has-text("msg1")').locator('[role=toolbar][aria-label="Message actions"]').getByRole('button', { name: 'Add reaction' }).waitFor();
+		
+		await page.keyboard.press('Tab');
+		await page.keyboard.press('Tab');
+		await expect(page.locator('[data-qa-type="message"]:has-text("msg1")').locator('[role=toolbar][aria-label="Message actions"]').getByRole('button', { name: 'Add reaction' })).toBeFocused();
 
 		// move focus to the first system message
-		await page.keyboard.press('ArrowDown');
+		await page.keyboard.press('Tab');
 		await page.keyboard.press('ArrowDown');
 		await expect(page.locator('[data-qa="system-message"]').first()).toBeFocused();
 
