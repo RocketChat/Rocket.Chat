@@ -1,3 +1,4 @@
+import { Apps, AppEvents } from '@rocket.chat/apps';
 import { Message, Omnichannel } from '@rocket.chat/core-services';
 import type {
 	ILivechatInquiryRecord,
@@ -16,7 +17,6 @@ import { LivechatInquiry, LivechatRooms, Subscriptions, Rooms, Users } from '@ro
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 import {
 	createLivechatSubscription,
@@ -172,7 +172,7 @@ export const RoutingManager: Routing = {
 		await dispatchAgentDelegated(rid, agent.agentId);
 		logger.debug(`Agent ${agent.agentId} assigned to inquriy ${inquiry._id}. Instances notified`);
 
-		void Apps.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatAgentAssigned, { room, user });
+		void Apps?.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatAgentAssigned, { room, user });
 		return inquiry;
 	},
 
