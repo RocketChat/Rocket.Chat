@@ -1,6 +1,5 @@
 import { createFocusManager } from '@react-aria/focus';
-import type { RefObject, FocusEvent } from 'react';
-import { type KeyboardEvent, useRef } from 'react';
+import { useCallback } from 'react';
 import { useFocusManager } from 'react-aria';
 
 const isListItem = (node: EventTarget) =>
@@ -13,65 +12,91 @@ const isThreadMessage = (node: EventTarget) => (node as HTMLElement).classList.c
  * Custom hook to provide the room navigation by keyboard.
  * @param ref - A ref to the message list DOM element.
  */
-export const useMessageListNavigation = (ref: RefObject<HTMLDivElement>) => {
-	const lastMessageFocused = useRef<HTMLElement | null>(null);
-	const massageListFocusManager = createFocusManager(ref);
+export const useMessageListNavigation = () => {
 	const roomFocusManager = useFocusManager();
 
-	const handleKeyDown = (e: KeyboardEvent) => {
-		if (!isListItem(e.target)) {
-			return;
-		}
+	const ref = useCallback(
+		(node: HTMLElement | null) => {
+			let lastMessageFocused: HTMLElement | null = null;
 
-		if (e.key === 'Tab') {
-			if (e.shiftKey) {
-				e.preventDefault();
-				e.stopPropagation();
-
-				roomFocusManager.focusFirst({
-					from: document.getElementsByClassName('rcx-room-header')[0],
-				});
-			} else if (isThreadMessage(e.target) || isSystemMessage(e.target) || isMessageToolbarAction(e.target)) {
-				e.preventDefault();
-				e.stopPropagation();
-
-				roomFocusManager.focusNext({
-					accept: (node) => node.tagName === 'TEXTAREA',
-				});
+			if (!node) {
+				return;
 			}
-		}
+			const massageListFocusManager = createFocusManager({
+				current: node,
+			});
 
-		if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-			if (e.key === 'ArrowUp') {
-				massageListFocusManager.focusPrevious({ wrap: true, accept: (node) => isListItem(node) });
-			}
+			node.addEventListener('keydown', (e) => {
+				if (!e.target) {
+					return;
+				}
 
-			if (e.key === 'ArrowDown') {
-				massageListFocusManager.focusNext({ wrap: true, accept: (node) => isListItem(node) });
-			}
+				if (!isListItem(e.target)) {
+					return;
+				}
 
-			lastMessageFocused.current = document.activeElement as HTMLElement;
-		}
-	};
+				if (e.key === 'Tab') {
+					if (e.shiftKey) {
+						e.preventDefault();
+						e.stopPropagation();
 
-	const handleOnBlur = (e: FocusEvent<HTMLElement>) => {
-		if (!e.currentTarget.contains(e.relatedTarget) && !lastMessageFocused.current) {
-			lastMessageFocused.current = e.target;
-		}
-	};
+						roomFocusManager.focusFirst({
+							from: document.getElementsByClassName('rcx-room-header')[0],
+						});
+					} else if (isThreadMessage(e.target) || isSystemMessage(e.target) || isMessageToolbarAction(e.target)) {
+						e.preventDefault();
+						e.stopPropagation();
 
-	const handleFocus = (e: FocusEvent<HTMLElement>) => {
-		if (lastMessageFocused.current && !e.currentTarget.contains(e.relatedTarget) && ref.current?.contains(e.target)) {
-			lastMessageFocused.current?.focus();
-			lastMessageFocused.current = null;
-		}
-	};
+						roomFocusManager.focusNext({
+							accept: (node) => node.tagName === 'TEXTAREA',
+						});
+					}
+				}
+
+				if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+					if (e.key === 'ArrowUp') {
+						massageListFocusManager.focusPrevious({ wrap: true, accept: (node) => isListItem(node) });
+					}
+
+					if (e.key === 'ArrowDown') {
+						massageListFocusManager.focusNext({ wrap: true, accept: (node) => isListItem(node) });
+					}
+
+					lastMessageFocused = document.activeElement as HTMLElement;
+				}
+			});
+			node.addEventListener(
+				'blur',
+				(e) => {
+					if (!(e.currentTarget instanceof HTMLElement && e.relatedTarget instanceof HTMLElement)) {
+						return;
+					}
+
+					if (!e.currentTarget.contains(e.relatedTarget) && !lastMessageFocused) {
+						lastMessageFocused = e.target as HTMLElement;
+					}
+				},
+				{ capture: true },
+			);
+			node.addEventListener(
+				'focus',
+				(e) => {
+					if (!(e.currentTarget instanceof HTMLElement && e.relatedTarget instanceof HTMLElement)) {
+						return;
+					}
+					if (lastMessageFocused && !e.currentTarget.contains(e.relatedTarget) && node.contains(e.target as HTMLElement)) {
+						lastMessageFocused?.focus();
+						lastMessageFocused = null;
+					}
+				},
+				{ capture: true },
+			);
+		},
+		[roomFocusManager],
+	);
 
 	return {
-		messageListProps: {
-			onBlurCapture: handleOnBlur,
-			onFocusCapture: handleFocus,
-			onKeyDownCapture: handleKeyDown,
-		},
+		ref,
+		messageListProps: {},
 	};
 };

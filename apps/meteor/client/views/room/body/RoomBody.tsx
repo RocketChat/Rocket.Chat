@@ -532,8 +532,8 @@ const RoomBody = (): ReactElement => {
 	);
 
 	useReadMessageWindowEvents();
-	const roomListRef = useRef(null);
-	const { messageListProps } = useMessageListNavigation(roomListRef);
+
+	const { messageListProps, ref } = useMessageListNavigation();
 
 	return (
 		<>
@@ -603,7 +603,7 @@ const RoomBody = (): ReactElement => {
 									<MessageListErrorBoundary>
 										<ScrollableContentWrapper ref={wrapperRef}>
 											<ul
-												ref={roomListRef}
+												ref={ref}
 												className='messages-list'
 												aria-orientation='vertical'
 												aria-live='polite'

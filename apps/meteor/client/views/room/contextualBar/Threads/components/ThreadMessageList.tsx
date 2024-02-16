@@ -58,7 +58,6 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 	} = useLegacyThreadMessageListScrolling(mainMessage);
 	const { parentRef: listJumpRef } = useLegacyThreadMessageJump({ enabled: !loading });
 
-	const listRef = useMergedRefs<HTMLElement | null>(listScrollRef, listJumpRef);
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 
@@ -69,7 +68,9 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 	const scrollMessageList = useScrollMessageList(listWrapperScrollRef);
 
 	const firstUnreadMessageId = useFirstUnreadMessageId();
-	const { messageListProps } = useMessageListNavigation(listWrapperScrollRef);
+	const { messageListProps, ref: navigationListRef } = useMessageListNavigation();
+
+	const listRef = useMergedRefs<HTMLElement | null>(listScrollRef, listJumpRef, navigationListRef);
 
 	return (
 		<div className={['thread-list js-scroll-thread', hideUsernames && 'hide-usernames'].filter(isTruthy).join(' ')}>
