@@ -71,6 +71,7 @@ const CssVar = ({ theme }) => {
 			${theme.iconColor ? `--icon-color: ${theme.iconColor};` : ''}
 			${theme.guestBubbleBackgroundColor ? `--sender-bubble-background-color: ${theme.guestBubbleBackgroundColor};` : ''}
 			${theme.agentBubbleBackgroundColor ? `--receiver-bubble-background-color: ${theme.agentBubbleBackgroundColor};` : ''}
+			${theme.background ? `--message-list-background: ${theme.background};` : ''}
 		}
 	`}</style>
 	);

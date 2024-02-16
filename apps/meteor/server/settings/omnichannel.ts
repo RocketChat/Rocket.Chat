@@ -645,6 +645,14 @@ export const createOmniSettings = () =>
 			],
 			enableQuery: omnichannelEnabledQuery,
 		});
+
+		await this.add('Livechat_background', '', {
+			type: 'string',
+			group: 'Omnichannel',
+			section: 'Livechat',
+			public: true,
+			enableQuery: omnichannelEnabledQuery,
+		});
 	});
 await settingsRegistry.addGroup('SMS', async function () {
 	await this.add('SMS_Enabled', false, {
