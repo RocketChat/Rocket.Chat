@@ -112,44 +112,17 @@ const SubscriptionsUnreadSchema = {
 export const isSubscriptionsUnreadProps = ajv.compile<SubscriptionsUnread>(SubscriptionsUnreadSchema);
 
 const SubscriptionsExistsPropsSchema = {
-	oneOf: [
-		{
+	{
 			type: 'object',
 			properties: {
 				roomId: { type: 'string' },
-				userId: { type: 'string' },
-			},
-			required: ['roomId', 'userId'],
-			additionalProperties: false,
-		},
-		{
-			type: 'object',
-			properties: {
-				roomId: { type: 'string' },
-				username: { type: 'string' },
-			},
-			required: ['roomId', 'username'],
-			additionalProperties: false,
-		},
-		{
-			type: 'object',
-			properties: {
 				roomName: { type: 'string' },
 				userId: { type: 'string' },
-			},
-			required: ['roomName', 'userId'],
-			additionalProperties: false,
-		},
-		{
-			type: 'object',
-			properties: {
-				roomName: { type: 'string' },
 				username: { type: 'string' },
 			},
-			required: ['roomName', 'username'],
+			oneOf: [{required: ['roomId', 'userId']}, {required: ['roomName', 'userId']}, {required: ['roomId', 'username']}, {required: ['roomName', 'username']}],
 			additionalProperties: false,
 		},
-	],
 };
 
 export const isSubscriptionsExistsProps = ajv.compile<SubscriptionsExistsProps>(SubscriptionsExistsPropsSchema);
