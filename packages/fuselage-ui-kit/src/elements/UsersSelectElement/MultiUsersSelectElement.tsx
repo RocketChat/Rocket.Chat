@@ -10,19 +10,19 @@ import { memo, useState, useCallback, useMemo } from 'react';
 import { useStringFromTextObject } from '../../hooks/useStringFromTextObject';
 import { useUiKitState } from '../../hooks/useUiKitState';
 import type { BlockProps } from '../../utils/BlockProps';
-import AutocompleteOptions, {
+import MultiUsersSelectOptions, {
   OptionsContext,
-} from './MultiUserAutoCompleteMultipleOptions';
+} from './MultiUsersSelectOptions';
 
 type MultiUsersSelectElementProps = BlockProps<UiKit.MultiUsersSelectElement>;
 
-type MultiUserAutoCompleteOptionType = {
+type MultiUserSelectOptionType = {
   name: string;
   username: string;
 };
 
-type MultiUserAutoCompleteOptions = {
-  [k: string]: MultiUserAutoCompleteOptionType;
+type MultiUserSelectOptions = {
+  [k: string]: MultiUserSelectOptionType;
 };
 
 const MultiUsersSelectElement = ({
@@ -32,8 +32,9 @@ const MultiUsersSelectElement = ({
   const [{ loading, value, error }, action] = useUiKitState(block, context);
   const fromTextObjectToString = useStringFromTextObject();
   const [filter, setFilter] = useState('');
-  const [selectedCache, setSelectedCache] =
-    useState<MultiUserAutoCompleteOptions>({});
+  const [selectedCache, setSelectedCache] = useState<MultiUserSelectOptions>(
+    {}
+  );
 
   const debouncedFilter = useDebouncedValue(filter, 500);
   const getUsers = useEndpoint('GET', '/v1/users.autocomplete');
@@ -45,10 +46,7 @@ const MultiUsersSelectElement = ({
         selector: JSON.stringify({ term: debouncedFilter }),
       });
       const options = users.items.map(
-        (item): [string, MultiUserAutoCompleteOptionType] => [
-          item.username,
-          item,
-        ]
+        (item): [string, MultiUserSelectOptionType] => [item.username, item]
       );
 
       return options;
@@ -144,7 +142,7 @@ const MultiUsersSelectElement = ({
             </Chip>
           );
         }}
-        renderOptions={AutocompleteOptions}
+        renderOptions={MultiUsersSelectOptions}
         options={options
           .concat(Object.entries(selectedCache))
           .map(([, item]) => [item.username, item.name || item.username])}

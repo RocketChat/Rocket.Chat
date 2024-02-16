@@ -3,30 +3,27 @@ import { Option, OptionDescription } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { ReactElement } from 'react';
 
-type UserAutoCompleteMultipleOptionProps = {
-  label: {
-    _federated?: boolean;
-  } & Pick<IUser, 'username' | 'name'>;
+type MulitUserSelectOptionProps = {
+  label: Pick<IUser, 'username' | 'name'>;
 };
 
-const UserAutoCompleteMultipleOption = ({
+const MulitUserSelectOption = ({
   label,
   ...props
-}: UserAutoCompleteMultipleOptionProps): ReactElement => {
-  const { name, username, _federated } = label;
+}: MulitUserSelectOptionProps): ReactElement => {
+  const { name, username } = label;
 
   return (
     <Option
       {...props}
       data-qa-type='autocomplete-user-option'
       avatar={<UserAvatar username={username || ''} size='x20' />}
-      icon={_federated ? 'globe' : undefined}
       key={username}
       label={
         (
           <>
             {name || username}{' '}
-            {!_federated && <OptionDescription>({username})</OptionDescription>}
+            <OptionDescription>({username})</OptionDescription>
           </>
         ) as any
       }
@@ -35,4 +32,4 @@ const UserAutoCompleteMultipleOption = ({
   );
 };
 
-export default UserAutoCompleteMultipleOption;
+export default MulitUserSelectOption;
