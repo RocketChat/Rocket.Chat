@@ -68,6 +68,8 @@ export type StoreState = {
 			iconColor?: string;
 			offlineTitle?: string;
 			position?: 'left' | 'right';
+			guestBubbleBackgroundColor?: string;
+			agentBubbleBackgroundColor?: string;
 		};
 		visible?: boolean;
 		department?: string;
