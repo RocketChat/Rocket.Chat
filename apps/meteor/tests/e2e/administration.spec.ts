@@ -70,7 +70,18 @@ test.describe.parallel('administration', () => {
 			await page.waitForSelector('[qa-room-id="GENERAL"]');
 		});
 
-		test('should edit target channel', async () => {
+		test('should edit target channel name', async () => {
+			await poAdmin.inputSearchRooms.fill(targetChannel);
+			await poAdmin.getRoomRow(targetChannel).click();
+			await poAdmin.roomNameInput.fill(`${targetChannel}-edited`);
+			await poAdmin.btnSave.click();
+
+			await expect(poAdmin.getRoomRow(targetChannel)).toContainText(`${targetChannel}-edited`);
+
+			targetChannel = `${targetChannel}-edited`;
+		});
+
+		test('should edit target channel type', async () => {
 			await poAdmin.inputSearchRooms.type(targetChannel);
 			await poAdmin.getRoomRow(targetChannel).click();
 			await poAdmin.privateLabel.click();
@@ -89,7 +100,7 @@ test.describe.parallel('administration', () => {
 		});
 
 		test.describe.serial('Default rooms', () => {
-			test('expect target channell to be default', async () => {
+			test('expect target channel to be default', async () => {
 				await poAdmin.inputSearchRooms.type(targetChannel);
 				await poAdmin.getRoomRow(targetChannel).click();
 				await poAdmin.defaultLabel.click();
