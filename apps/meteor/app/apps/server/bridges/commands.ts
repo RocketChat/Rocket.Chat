@@ -44,7 +44,7 @@ export class AppCommandsBridge extends CommandBridge {
 		slashCommands.commands[cmd] = this.disabledCommands.get(cmd) as (typeof slashCommands.commands)[string];
 		this.disabledCommands.delete(cmd);
 
-		this.orch.getNotifier().commandUpdated(cmd);
+		void this.orch.getNotifier().commandUpdated(cmd);
 	}
 
 	protected async disableCommand(command: string, appId: string): Promise<void> {
@@ -69,7 +69,7 @@ export class AppCommandsBridge extends CommandBridge {
 		this.disabledCommands.set(cmd, commandObj);
 		delete slashCommands.commands[cmd];
 
-		this.orch.getNotifier().commandDisabled(cmd);
+		void this.orch.getNotifier().commandDisabled(cmd);
 	}
 
 	// command: { command, paramsExample, i18nDescription, executor: function }
@@ -95,7 +95,7 @@ export class AppCommandsBridge extends CommandBridge {
 		) as (typeof slashCommands.commands)[string]['previewCallback'];
 
 		slashCommands.commands[cmd] = item;
-		this.orch.getNotifier().commandUpdated(cmd);
+		void this.orch.getNotifier().commandUpdated(cmd);
 	}
 
 	protected async registerCommand(command: ISlashCommand, appId: string): Promise<void> {
@@ -118,7 +118,7 @@ export class AppCommandsBridge extends CommandBridge {
 		} as SlashCommand;
 
 		slashCommands.commands[command.command.toLowerCase()] = item;
-		this.orch.getNotifier().commandAdded(command.command.toLowerCase());
+		void this.orch.getNotifier().commandAdded(command.command.toLowerCase());
 	}
 
 	protected async unregisterCommand(command: string, appId: string): Promise<void> {
@@ -132,7 +132,7 @@ export class AppCommandsBridge extends CommandBridge {
 		this.disabledCommands.delete(cmd);
 		delete slashCommands.commands[cmd];
 
-		this.orch.getNotifier().commandRemoved(cmd);
+		void this.orch.getNotifier().commandRemoved(cmd);
 	}
 
 	private _verifyCommand(command: ISlashCommand): void {

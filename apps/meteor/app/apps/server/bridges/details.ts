@@ -8,10 +8,12 @@ export class AppDetailChangesBridge extends DetailChangesBridge {
 	}
 
 	protected onAppSettingsChange(appId: string, setting: ISetting): void {
+		const logFailure = () => console.warn('failed to notify about the setting change.', appId);
+
 		try {
-			this.orch.getNotifier().appSettingsChange(appId, setting);
+			this.orch.getNotifier().appSettingsChange(appId, setting).catch(logFailure);
 		} catch (e) {
-			console.warn('failed to notify about the setting change.', appId);
+			logFailure();
 		}
 	}
 }
