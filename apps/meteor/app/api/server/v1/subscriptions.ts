@@ -133,7 +133,7 @@ API.v1.addRoute(
 			}
 
 			if ((await canAccessRoomAsync(room, this.user)) || (await canAccessRoomIdAsync(room._id, this.userId))) {
-				return API.v1.success({ exists: !!(await Subscriptions.countByRoomIdAndUserId(room._id, user._id)) });
+				return API.v1.success({ exists: (await Subscriptions.countByRoomIdAndUserId(room._id, user._id)) > 0 });
 			}
 			return API.v1.unauthorized();
 		},
