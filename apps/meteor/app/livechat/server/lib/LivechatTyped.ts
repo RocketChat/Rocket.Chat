@@ -1128,6 +1128,7 @@ class LivechatClass {
 			'Livechat_history_monitor_type',
 			'Livechat_hide_system_messages',
 			'Livechat_widget_position',
+			'Livechat_background',
 		] as const;
 
 		type SettingTypes = (typeof validSettings)[number] | 'Livechat_Show_Connecting';

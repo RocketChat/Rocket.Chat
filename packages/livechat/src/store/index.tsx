@@ -28,6 +28,7 @@ export type StoreState = {
 			offlineTitle?: string;
 			offlineColor?: string;
 			position: 'left' | 'right';
+			background?: string;
 			actionLinks?: {
 				webrtc: {
 					actionLinksAlignment: string;
@@ -80,6 +81,7 @@ export type StoreState = {
 			position?: 'left' | 'right';
 			guestBubbleBackgroundColor?: string;
 			agentBubbleBackgroundColor?: string;
+			background?: string;
 		};
 		visible?: boolean;
 		department?: string;
