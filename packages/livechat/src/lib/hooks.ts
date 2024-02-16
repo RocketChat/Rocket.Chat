@@ -70,21 +70,17 @@ const api = {
 		CustomFields.setCustomField(key, value, overwrite);
 	},
 
-	setTheme: ({ color, fontColor, iconColor, title, offlineTitle }: StoreState['iframe']['theme']) => {
+	setTheme: (theme: StoreState['iframe']['theme']) => {
 		const {
 			iframe,
-			iframe: { theme },
+			iframe: { theme: currentTheme },
 		} = store.state;
 		store.setState({
 			iframe: {
 				...iframe,
 				theme: {
+					...currentTheme,
 					...theme,
-					color,
-					fontColor,
-					iconColor,
-					title,
-					offlineTitle,
 				},
 			},
 		});
