@@ -1,17 +1,13 @@
-import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import { Subscriptions } from '@rocket.chat/models';
 import {
 	isSubscriptionsGetProps,
 	isSubscriptionsGetOneProps,
 	isSubscriptionsReadProps,
 	isSubscriptionsUnreadProps,
 } from '@rocket.chat/rest-typings';
-import { isSubscriptionsExistsProps } from '@rocket.chat/rest-typings/src';
 import { Meteor } from 'meteor/meteor';
 
 import { readMessages } from '../../../../server/lib/readMessages';
-import { canAccessRoomAsync } from '../../../authorization/server';
-import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { API } from '../api';
 
 API.v1.addRoute(
@@ -104,38 +100,6 @@ API.v1.addRoute(
 			await Meteor.callAsync('unreadMessages', (this.bodyParams as any).firstUnreadMessage, (this.bodyParams as any).roomId);
 
 			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'subscriptions.exists',
-	{
-		authRequired: true,
-		validateParams: isSubscriptionsExistsProps,
-	},
-	{
-		async get() {
-			const { username, roomId, userId, roomName } = this.queryParams;
-			const [room, user] = await Promise.all([
-				Rooms.findOneByIdOrName(roomId || roomName),
-				Users.findOneByIdOrUsername(userId || username),
-			]);
-			if (!room?._id) {
-				return API.v1.failure('error-room-not-found');
-			}
-			if (!user?._id) {
-				return API.v1.failure('error-user-not-found');
-			}
-
-			if (room.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', room._id))) {
-				return API.v1.unauthorized();
-			}
-
-			if ((await canAccessRoomAsync(room, this.user)))) {
-				return API.v1.success({ exists: (await Subscriptions.countByRoomIdAndUserId(room._id, user._id)) > 0 });
-			}
-			return API.v1.unauthorized();
 		},
 	},
 );

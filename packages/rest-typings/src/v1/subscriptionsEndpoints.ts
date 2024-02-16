@@ -9,8 +9,6 @@ type SubscriptionsRead = { rid: IRoom['_id']; readThreads?: boolean } | { roomId
 
 type SubscriptionsUnread = { roomId: IRoom['_id'] } | { firstUnreadMessage: Pick<IMessage, '_id'> };
 
-type SubscriptionsExistsProps = { roomId: string; username: string };
-
 const ajv = new Ajv({
 	coerceTypes: true,
 });
@@ -111,22 +109,6 @@ const SubscriptionsUnreadSchema = {
 
 export const isSubscriptionsUnreadProps = ajv.compile<SubscriptionsUnread>(SubscriptionsUnreadSchema);
 
-const SubscriptionsExistsPropsSchema = {
-	{
-			type: 'object',
-			properties: {
-				roomId: { type: 'string' },
-				roomName: { type: 'string' },
-				userId: { type: 'string' },
-				username: { type: 'string' },
-			},
-			oneOf: [{required: ['roomId', 'userId']}, {required: ['roomName', 'userId']}, {required: ['roomId', 'username']}, {required: ['roomName', 'username']}],
-			additionalProperties: false,
-		},
-};
-
-export const isSubscriptionsExistsProps = ajv.compile<SubscriptionsExistsProps>(SubscriptionsExistsPropsSchema);
-
 export type SubscriptionsEndpoints = {
 	'/v1/subscriptions.get': {
 		GET: (params: SubscriptionsGet) => {
@@ -147,8 +129,5 @@ export type SubscriptionsEndpoints = {
 
 	'/v1/subscriptions.unread': {
 		POST: (params: SubscriptionsUnread) => void;
-	};
-	'/v1/subscriptions.exists': {
-		GET: (params: SubscriptionsExistsProps) => { exists: boolean };
 	};
 };

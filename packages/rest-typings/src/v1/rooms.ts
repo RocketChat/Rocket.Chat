@@ -423,6 +423,27 @@ const GETRoomsNameExistsSchema = {
 
 export const isGETRoomsNameExists = ajv.compile<GETRoomsNameExists>(GETRoomsNameExistsSchema);
 
+type RoomsIsMemberProps = ({ roomId: string } | { roomName: string }) & ({ username: string } | { userId: string });
+
+const RoomsIsMemberPropsSchema = {
+	type: 'object',
+	properties: {
+		roomId: { type: 'string' },
+		roomName: { type: 'string' },
+		userId: { type: 'string' },
+		username: { type: 'string' },
+	},
+	oneOf: [
+		{ required: ['roomId', 'userId'] },
+		{ required: ['roomName', 'userId'] },
+		{ required: ['roomId', 'username'] },
+		{ required: ['roomName', 'username'] },
+	],
+	additionalProperties: false,
+};
+
+export const isRoomsIsMemberProps = ajv.compile<RoomsIsMemberProps>(RoomsIsMemberPropsSchema);
+
 export type Notifications = {
 	disableNotifications: string;
 	muteGroupMentions: string;
@@ -571,5 +592,9 @@ export type RoomsEndpoints = {
 		GET: (params: RoomsGetDiscussionsProps) => PaginatedResult<{
 			discussions: IRoom[];
 		}>;
+	};
+
+	'/v1/rooms.isMember': {
+		GET: (params: RoomsIsMemberProps) => { exists: boolean };
 	};
 };

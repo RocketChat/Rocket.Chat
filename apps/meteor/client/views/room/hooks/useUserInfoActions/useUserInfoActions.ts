@@ -42,12 +42,12 @@ export const useUserInfoActions = (
 	reload?: () => void,
 	size = 2,
 ): { actions: [string, UserInfoAction][]; menuActions: any | undefined } => {
-	const { data, refetch } = useMemberExists(useMemo(() => ({ rid, username: user.username || '' }), [rid, user.username]));
+	const { data, refetch } = useMemberExists(rid, user.username as string);
 	const memberChangeReload = useCallback(async () => {
 		await reload?.();
 		await refetch();
 	}, [reload, refetch]);
-	const isMember = !!useMemo(() => data?.exists, [data?.exists]);
+	const isMember = data?.exists as boolean;
 
 	const addUser = useAddUserAction(user, rid, memberChangeReload);
 	const blockUser = useBlockUserAction(user, rid);
