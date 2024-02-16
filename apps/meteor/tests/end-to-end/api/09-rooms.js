@@ -1707,4 +1707,225 @@ describe('[Rooms]', function () {
 				.end(done);
 		});
 	});
+	describe('/rooms.isMember', async () => {
+		let testChannel;
+		let testGroup;
+		let testDM;
+
+		const fakeRoomId = `room.test.${Date.now()}-${Math.random()}`;
+		const fakeUserId = `user.test.${Date.now()}-${Math.random()}`;
+
+		const testChannelName = `channel.test.${Date.now()}-${Math.random()}`;
+		const testGroupName = `group.test.${Date.now()}-${Math.random()}`;
+
+		let testUser1;
+		let testUser2;
+		let testUserNonMember;
+		let testUser1Credentials;
+		let testUserNonMemberCredentials;
+
+		it('create users', async () => {
+			testUser1 = await createUser();
+			testUser2 = await createUser();
+			testUserNonMember = await createUser();
+			testUser1Credentials = await login(testUser1.username, password);
+			testUserNonMemberCredentials = await login(testUserNonMember.username, password);
+		});
+
+		it('create a channel', (done) => {
+			createRoom({
+				type: 'c',
+				name: testChannelName,
+				members: [testUser1.username, testUser2.username],
+			}).end((err, res) => {
+				testChannel = res.body.channel;
+				done();
+			});
+		});
+		it('create a group', (done) => {
+			createRoom({
+				type: 'p',
+				name: testGroupName,
+				members: [testUser1.username, testUser2.username],
+			}).end((err, res) => {
+				testGroup = res.body.group;
+				done();
+			});
+		});
+		it('create a direct message room', (done) => {
+			createRoom({
+				type: 'd',
+				username: testUser2.username,
+				credentials: testUser1Credentials,
+			}).end((err, res) => {
+				testDM = res.body.room;
+				done();
+			});
+		});
+		after(async () => {
+			await closeRoom({ type: 'c', roomId: testChannel._id });
+			await closeRoom({ type: 'p', roomId: testGroup._id });
+			await closeRoom({ type: 'd', roomId: testDM._id });
+		});
+
+		it('should return error if room not found', (done) => {
+			request
+				.get(api('rooms.isMember'))
+				.set(testUser1Credentials)
+				.query({
+					roomId: fakeRoomId,
+					userId: testUser1._id,
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'error-room-not-found');
+				})
+				.end(done);
+		});
+
+		it('should return error if user not found', (done) => {
+			request
+				.get(api('rooms.isMember'))
+				.set(testUser1Credentials)
+				.query({
+					roomId: testChannel._id,
+					userId: fakeUserId,
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'error-user-not-found');
+				})
+				.end(done);
+		});
+
+		it('should return success with exists=true if user is a member of the channel', (done) => {
+			request
+				.get(api('rooms.isMember'))
+				.set(testUser1Credentials)
+				.query({
+					roomId: testChannel._id,
+					userId: testUser2._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('exists', true);
+				})
+				.end(done);
+		});
+
+		it('should return success with exists=false if user is not a member of the channel', (done) => {
+			request
+				.get(api('rooms.isMember'))
+				.set(testUser1Credentials)
+				.query({
+					roomId: testChannel._id,
+					userId: testUserNonMember._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('exists', false);
+				})
+				.end(done);
+		});
+
+		it('should return success with exists=true if user is a member of the group', (done) => {
+			request
+				.get(api('rooms.isMember'))
+				.set(testUser1Credentials)
+				.query({
+					roomId: testGroup._id,
+					userId: testUser2._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('exists', true);
+				})
+				.end(done);
+		});
+
+		it('should return success with exists=false if user is not a member of the group', (done) => {
+			request
+				.get(api('rooms.isMember'))
+				.set(testUser1Credentials)
+				.query({
+					roomId: testGroup._id,
+					userId: testUserNonMember._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('exists', false);
+				})
+				.end(done);
+		});
+
+		it('should return unauthorized if caller cannot access the group', (done) => {
+			request
+				.get(api('rooms.isMember'))
+				.set(testUserNonMemberCredentials)
+				.query({
+					roomId: testGroup._id,
+					userId: testUser1._id,
+				})
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'unauthorized');
+				})
+				.end(done);
+		});
+
+		it('should return success with exists=true if user is a member of the DM', (done) => {
+			request
+				.get(api('rooms.isMember'))
+				.set(testUser1Credentials)
+				.query({
+					roomId: testDM._id,
+					userId: testUser2._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('exists', true);
+				})
+				.end(done);
+		});
+
+		it('should return success with exists=false if user is not a member of the DM', (done) => {
+			request
+				.get(api('rooms.isMember'))
+				.set(testUser1Credentials)
+				.query({
+					roomId: testDM._id,
+					userId: testUserNonMember._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('exists', false);
+				})
+				.end(done);
+		});
+
+		it('should return unauthorized if caller cannot access the DM', (done) => {
+			request
+				.get(api('rooms.isMember'))
+				.set(testUserNonMemberCredentials)
+				.query({
+					roomId: testDM._id,
+					userId: testUser1._id,
+				})
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'unauthorized');
+				})
+				.end(done);
+		});
+	});
 });
