@@ -910,6 +910,19 @@ describe('LIVECHAT - rooms', function () {
 				.expect(400);
 		});
 
+		it('should throw and error if file uploads are disabled', async () => {
+			await updateSetting('Livechat_fileupload_enabled', false);
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			await request
+				.post(api(`livechat/upload/${room._id}`))
+				.set(credentials)
+				.set('x-visitor-token', visitor.token)
+				.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+
 		it('should upload an image on the room if all params are valid', async () => {
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
