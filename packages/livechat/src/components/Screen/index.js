@@ -69,6 +69,8 @@ const CssVar = ({ theme }) => {
 			${theme.color ? `--color: ${theme.color};` : ''}
 			${theme.fontColor ? `--font-color: ${theme.fontColor};` : ''}
 			${theme.iconColor ? `--icon-color: ${theme.iconColor};` : ''}
+			${theme.guestBubbleBackgroundColor ? `--sender-bubble-background-color: ${theme.guestBubbleBackgroundColor};` : ''}
+			${theme.agentBubbleBackgroundColor ? `--receiver-bubble-background-color: ${theme.agentBubbleBackgroundColor};` : ''}
 		}
 	`}</style>
 	);

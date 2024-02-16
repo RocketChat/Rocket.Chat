@@ -308,3 +308,4 @@ class Hooks {
 
 const instance = new Hooks();
 export default instance;
+console.log(api);
