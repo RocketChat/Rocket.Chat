@@ -68,9 +68,9 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 	const scrollMessageList = useScrollMessageList(listWrapperScrollRef);
 
 	const firstUnreadMessageId = useFirstUnreadMessageId();
-	const { messageListProps, ref: navigationListRef } = useMessageListNavigation();
+	const { messageListRef, messageListProps } = useMessageListNavigation();
 
-	const listRef = useMergedRefs<HTMLElement | null>(listScrollRef, listJumpRef, navigationListRef);
+	const listRef = useMergedRefs<HTMLElement | null>(listScrollRef, listJumpRef, messageListRef);
 
 	return (
 		<div className={['thread-list js-scroll-thread', hideUsernames && 'hide-usernames'].filter(isTruthy).join(' ')}>

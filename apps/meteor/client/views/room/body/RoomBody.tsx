@@ -533,7 +533,7 @@ const RoomBody = (): ReactElement => {
 
 	useReadMessageWindowEvents();
 
-	const { messageListProps, ref } = useMessageListNavigation();
+	const { messageListRef, messageListProps } = useMessageListNavigation();
 
 	return (
 		<>
@@ -603,9 +603,8 @@ const RoomBody = (): ReactElement => {
 									<MessageListErrorBoundary>
 										<ScrollableContentWrapper ref={wrapperRef}>
 											<ul
-												ref={ref}
+												ref={messageListRef}
 												className='messages-list'
-												aria-orientation='vertical'
 												aria-live='polite'
 												aria-busy={isLoadingMoreMessages}
 												{...messageListProps}

@@ -1,6 +1,11 @@
 import { createFocusManager } from '@react-aria/focus';
+import type { RefCallback } from 'react';
 import { useCallback } from 'react';
 import { useFocusManager } from 'react-aria';
+
+type MessageListProps = {
+	'aria-orientation': 'vertical' | 'horizontal';
+};
 
 const isListItem = (node: EventTarget) =>
 	(node as HTMLElement).getAttribute('role') === 'listitem' || (node as HTMLElement).getAttribute('role') === 'link';
@@ -12,16 +17,17 @@ const isThreadMessage = (node: EventTarget) => (node as HTMLElement).classList.c
  * Custom hook to provide the room navigation by keyboard.
  * @param ref - A ref to the message list DOM element.
  */
-export const useMessageListNavigation = () => {
+export const useMessageListNavigation = (): { messageListRef: RefCallback<HTMLElement>; messageListProps: MessageListProps } => {
 	const roomFocusManager = useFocusManager();
 
-	const ref = useCallback(
+	const messageListRef = useCallback(
 		(node: HTMLElement | null) => {
 			let lastMessageFocused: HTMLElement | null = null;
 
 			if (!node) {
 				return;
 			}
+
 			const massageListFocusManager = createFocusManager({
 				current: node,
 			});
@@ -65,6 +71,7 @@ export const useMessageListNavigation = () => {
 					lastMessageFocused = document.activeElement as HTMLElement;
 				}
 			});
+
 			node.addEventListener(
 				'blur',
 				(e) => {
@@ -78,6 +85,7 @@ export const useMessageListNavigation = () => {
 				},
 				{ capture: true },
 			);
+
 			node.addEventListener(
 				'focus',
 				(e) => {
@@ -96,7 +104,9 @@ export const useMessageListNavigation = () => {
 	);
 
 	return {
-		ref,
-		messageListProps: {},
+		messageListRef,
+		messageListProps: {
+			'aria-orientation': 'vertical',
+		},
 	};
 };
