@@ -10,7 +10,7 @@ type MembersExistsOptions = {
 export const useMemberExists = (options: MembersExistsOptions) => {
 	const checkMember = useEndpoint('GET', '/v1/subscriptions.exists');
 
-	return useQuery(['roomMembershipCheck', options.rid, options.username], () =>
+	return useQuery(['subscriptions/exists', options.rid, options.username], () =>
 		checkMember({ roomId: options.rid, username: options.username }),
 	);
 };
