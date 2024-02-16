@@ -27,9 +27,10 @@ export type ScreenContextValue = {
 	onDismissAlert: () => unknown;
 	dismissNotification: () => void;
 	theme?: {
-		color: string;
-		fontColor: string;
-		iconColor: string;
+		color?: string;
+		fontColor?: string;
+		iconColor?: string;
+		position?: 'left' | 'right';
 	};
 };
 
@@ -118,6 +119,7 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 			color: customColor || color,
 			fontColor: customFontColor,
 			iconColor: customIconColor,
+			position: iframe.theme.position || config.theme.position || 'right',
 		},
 		notificationsEnabled: sound?.enabled,
 		minimized: !poppedOut && (minimized || undocked),

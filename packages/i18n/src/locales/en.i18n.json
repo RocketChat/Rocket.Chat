@@ -3176,6 +3176,7 @@
   "Livechat_offline_message_sent": "Livechat offline message sent",
   "Livechat_OfflineMessageToChannel_enabled": "Send Livechat offline messages to a channel",
   "Livechat_hide_system_messages": "Hide system messages",
+  "Livechat_widget_position_on_the_screen": "Livechat widget position on the screen",
   "Omnichannel_chat_closed_due_to_inactivity": "The chat was automatically closed because we haven't received any reply from {{guest}} in {{timeout}} seconds",
   "Omnichannel_actions": "Omnichannel actions",
   "Omnichannel_on_hold_chat_resumed": "On Hold Chat Resumed: {{comment}}",
