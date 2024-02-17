@@ -9,7 +9,7 @@ import { createNpmFile } from './createNpmFile';
 import { fixWorkspaceVersionsBeforePublish } from './fixWorkspaceVersionsBeforePublish';
 import { checkoutBranch, commitChanges, createTag, getCurrentBranch, mergeBranch, pushChanges } from './gitUtils';
 import { setupOctokit } from './setupOctokit';
-import { bumpFileVersions, createBumpFile, getChangelogEntry, getEngineVersionsMd, readPackageJson } from './utils';
+import { bumpFileVersions, createBumpFile, getChangelogEntry, getEngineVersionsMd, isPreRelease, readPackageJson } from './utils';
 
 export async function publishRelease({
 	githubToken,
@@ -35,20 +35,9 @@ export async function publishRelease({
 
 	const { version: currentVersion } = await readPackageJson(cwd);
 
-	if (mergeFinal) {
-		let preRelease = false;
-		try {
-			fs.accessSync(path.resolve(cwd, '.changeset', 'pre.json'));
-
-			preRelease = true;
-		} catch (e) {
-			// nothing to do, not a pre release
-		}
-
-		if (preRelease) {
-			// finish release candidate
-			await exec('yarn', ['changeset', 'pre', 'exit']);
-		}
+	if (mergeFinal && isPreRelease(cwd)) {
+		// finish release candidate
+		await exec('yarn', ['changeset', 'pre', 'exit']);
 	}
 
 	const { name: mainPkgName } = await readPackageJson(mainPackagePath);

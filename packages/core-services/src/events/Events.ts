@@ -19,7 +19,6 @@ import type {
 	ISubscription,
 	IUser,
 	IInvite,
-	IWebdavAccount,
 	ICustomSound,
 	VoipEventDataSignature,
 	UserStatus,
@@ -33,6 +32,7 @@ import type {
 	ILivechatVisitor,
 	LicenseLimitKind,
 	ICustomUserStatus,
+	IWebdavAccount,
 } from '@rocket.chat/core-typings';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
@@ -225,6 +225,7 @@ export type EventSignatures = {
 						_id: string;
 						u?: Pick<IUser, '_id' | 'username' | 'name'>;
 						rid?: string;
+						t?: string;
 					};
 			  },
 	): void;
