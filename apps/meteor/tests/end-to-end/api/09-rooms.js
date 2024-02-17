@@ -1725,11 +1725,11 @@ describe('[Rooms]', function () {
 		let testUserNonMemberCredentials;
 
 		it('create users', async () => {
-			testUser1 = await createUser();
-			testUser2 = await createUser();
-			testUserNonMember = await createUser();
-			testUser1Credentials = await login(testUser1.username, password);
-			testUserNonMemberCredentials = await login(testUserNonMember.username, password);
+			[testUser1, testUser2, testUserNonMember] = await Promise.all([createUser(), createUser(), createUser()]);
+			[testUser1Credentials, testUserNonMemberCredentials] = await Promise.all([
+				login(testUser1.username, password),
+				login(testUserNonMember.username, password),
+			]);
 		});
 
 		it('create a channel', (done) => {
@@ -1763,9 +1763,14 @@ describe('[Rooms]', function () {
 			});
 		});
 		after(async () => {
-			await closeRoom({ type: 'c', roomId: testChannel._id });
-			await closeRoom({ type: 'p', roomId: testGroup._id });
-			await closeRoom({ type: 'd', roomId: testDM._id });
+			await Promise.all([
+				closeRoom({ type: 'c', roomId: testChannel._id }),
+				closeRoom({ type: 'p', roomId: testGroup._id }),
+				closeRoom({ type: 'd', roomId: testDM._id }),
+				deleteUser(testUser1),
+				deleteUser(testUser2),
+				deleteUser(testUserNonMember),
+			]);
 		});
 
 		it('should return error if room not found', (done) => {
