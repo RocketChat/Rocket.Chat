@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-fix: dynamic slug during search
+fix: Jump to message only works once
