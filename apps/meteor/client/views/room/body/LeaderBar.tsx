@@ -1,13 +1,13 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button } from '@rocket.chat/fuselage';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, UIEvent } from 'react';
 import React, { memo, useCallback, useMemo } from 'react';
 
 import { isTruthy } from '../../../../lib/isTruthy';
 import { ReactiveUserStatus } from '../../../components/UserStatus';
-import UserAvatar from '../../../components/avatar/UserAvatar';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 
 type LeaderBarProps = {

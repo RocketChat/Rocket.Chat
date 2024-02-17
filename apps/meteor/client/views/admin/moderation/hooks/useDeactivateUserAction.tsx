@@ -46,7 +46,7 @@ const useDeactivateUserAction = (userId: string, isUserReport?: boolean): Generi
 			dispatchToastMessage({ type: 'error', message: error });
 		},
 		onSuccess: () => {
-			dispatchToastMessage({ type: 'success', message: t('Moderation_Reports_dismissed_plural') });
+			dispatchToastMessage({ type: 'success', message: t('Moderation_Reports_dismissed') });
 		},
 	});
 

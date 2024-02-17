@@ -10,7 +10,7 @@ import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { messageArgs } from '../../../../client/lib/utils/messageArgs';
 import { router } from '../../../../client/providers/RouterProvider';
 import ForwardMessageModal from '../../../../client/views/room/modals/ForwardMessageModal/ForwardMessageModal';
-import ReactionList from '../../../../client/views/room/modals/ReactionListModal';
+import ReactionListModal from '../../../../client/views/room/modals/ReactionListModal';
 import ReportMessageModal from '../../../../client/views/room/modals/ReportMessageModal';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/client';
 import { ChatRoom, Subscriptions } from '../../../models/client';
@@ -266,10 +266,10 @@ Meteor.startup(async () => {
 		label: 'Reactions',
 		context: ['message', 'message-mobile', 'threads', 'videoconf', 'videoconf-threads'],
 		type: 'interaction',
-		action(this: unknown, _, { message: { reactions = {} } = messageArgs(this).msg }) {
+		action(this: unknown, _, { message: { reactions = {} } = messageArgs(this).msg, chat }) {
 			imperativeModal.open({
-				component: ReactionList,
-				props: { reactions, onClose: imperativeModal.close },
+				component: ReactionListModal,
+				props: { reactions, onOpenUserCard: chat?.userCard.openUserCard, onClose: imperativeModal.close },
 			});
 		},
 		condition({ message: { reactions } }) {
