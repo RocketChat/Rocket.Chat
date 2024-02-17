@@ -6,9 +6,9 @@ import {
 	useUser,
 	useUserRoom,
 	useUserSubscription,
-	useMethod,
 	useToastMessageDispatch,
 	useAtLeastOnePermission,
+	useEndpoint,
 } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
@@ -16,6 +16,11 @@ import * as Federation from '../../../../../lib/federation/Federation';
 import { useAddMatrixUsers } from '../../../contextualBar/RoomMembers/AddUsers/AddMatrixUsers/useAddMatrixUsers';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 import type { UserInfoAction } from '../useUserInfoActions';
+
+const inviteUserEndpoints = {
+	c: '/v1/channels.invite',
+	p: '/v1/groups.invite',
+} as const;
 
 export const useAddUserAction = (
 	user: Pick<IUser, '_id' | 'username'>,
@@ -46,10 +51,11 @@ export const useAddUserAction = (
 
 	const { roomCanInvite } = getRoomDirectives({ room, showingUserId: uid, userSubscription: subscription });
 
-	const addUsersToRooms = useMethod('addUsersToRoom');
+	const inviteUser = useEndpoint('POST', inviteUserEndpoints[room.t === 'p' ? 'p' : 'c']);
 
 	const handleAddUser = useEffectEvent(async ({ users }) => {
-		await addUsersToRooms({ rid, users });
+		const [username] = users;
+		await inviteUser({ roomId: rid, username });
 		reload?.();
 	});
 
