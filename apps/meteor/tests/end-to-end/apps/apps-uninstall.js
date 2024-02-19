@@ -16,6 +16,8 @@ describe('Apps - Uninstall', function () {
 		app = await installTestApp();
 	});
 
+	after(() => cleanupApps());
+
 	describe('[Uninstall]', () => {
 		it('should throw an error when trying to uninstall an invalid app', (done) => {
 			request
