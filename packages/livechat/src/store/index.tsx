@@ -74,6 +74,8 @@ export type StoreState = {
 			guestBubbleBackgroundColor?: string;
 			agentBubbleBackgroundColor?: string;
 			background?: string;
+			hideGuestAvatar?: boolean;
+			hideAgentAvatar?: boolean;
 		};
 		visible?: boolean;
 		department?: string;
@@ -131,7 +133,10 @@ export const initialState = (): StoreState => ({
 	},
 	iframe: {
 		guest: {},
-		theme: {},
+		theme: {
+			hideGuestAvatar: false,
+			hideAgentAvatar: false,
+		},
 		visible: true,
 	},
 	gdpr: {
