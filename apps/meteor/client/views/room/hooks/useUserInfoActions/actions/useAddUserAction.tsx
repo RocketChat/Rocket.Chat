@@ -82,7 +82,7 @@ export const useAddUserAction = (
 		() =>
 			roomCanInvite && userCanAdd
 				? {
-						content: t('Add_User'),
+						content: t('add-to-room'),
 						icon: 'user-plus' as const,
 						onClick: addUserOptionAction,
 						type: 'management' as const,
