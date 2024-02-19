@@ -1,5 +1,6 @@
 import { Box, Margins, ButtonGroup, Button, Divider } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { RouteName } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useRoute, useTranslation, useEndpoint, usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -10,7 +11,6 @@ import { parseOutboundPhoneNumber } from '../../../../../../ee/client/lib/voip/p
 import ContactManagerInfo from '../../../../../../ee/client/omnichannel/ContactManagerInfo';
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../../components/Contextualbar';
 import { UserStatus } from '../../../../../components/UserStatus';
-import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { useIsCallReady } from '../../../../../contexts/CallContext';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
 import AgentInfoDetails from '../../../components/AgentInfoDetails';
