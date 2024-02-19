@@ -928,8 +928,8 @@ describe('LIVECHAT - rooms', function () {
 			await deleteVisitor(visitor.token);
 		});
 
-		it('should throw and error if livechat file uploads are disabled', async () => {
-			await updateSetting('Livechat_fileupload_enabled', false);
+		it('should throw and error if livechat file uploads are enabled but file uploads are disabled', async () => {
+			await updateSetting('FileUpload_Enabled', false);
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
 			await request
@@ -939,11 +939,31 @@ describe('LIVECHAT - rooms', function () {
 				.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
 				.expect('Content-Type', 'application/json')
 				.expect(400);
+			await updateSetting('FileUpload_Enabled', true);
+			await deleteVisitor(visitor.token);
+		});
+
+		it('should throw and error if both file uploads are disabled', async () => {
+			await updateSetting('Livechat_fileupload_enabled', false);
+			await updateSetting('FileUpload_Enabled', false);
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			await request
+				.post(api(`livechat/upload/${room._id}`))
+				.set(credentials)
+				.set('x-visitor-token', visitor.token)
+				.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+			await updateSetting('FileUpload_Enabled', true);
 			await updateSetting('Livechat_fileupload_enabled', true);
+
 			await deleteVisitor(visitor.token);
 		});
 
 		it('should upload an image on the room if all params are valid', async () => {
+			await updateSetting('FileUpload_Enabled', true);
+			await updateSetting('Livechat_fileupload_enabled', true);
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
 			await request
