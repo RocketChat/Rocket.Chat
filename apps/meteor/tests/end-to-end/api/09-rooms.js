@@ -1710,15 +1710,46 @@ describe('[Rooms]', function () {
 
 	describe('rooms.isUserMuted', () => {
 		let testChannel;
+		let testChannelReadOnly;
 		before('create an channel', async () => {
 			const result = await createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` });
 			testChannel = result.body.channel;
+			testChannelReadOnly = (await createRoom({ type: 'c', name: `channel.test.read.only.${Date.now()}-${Math.random()}` })).body.channel;
 			await request.post(api('channels.addAll')).set(credentials).send({
 				roomId: testChannel._id,
 			});
+			await request.post(api('channels.addAll')).set(credentials).send({
+				roomId: testChannelReadOnly._id,
+			});
+			// convert channel to read-only
+			await request
+				.post(api('rooms.saveRoomSettings'))
+				.set(credentials)
+				.send({
+					rid: testChannelReadOnly._id,
+					readOnly: true,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+			// make rocket.cat user as owner of read-only room
+			await request
+				.post(api('channels.addOwner'))
+				.set(credentials)
+				.send({
+					roomId: testChannelReadOnly._id,
+					username: 'rocket.cat',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
 		});
 
-		it('should return user is not muted', async () => {
+		it('should return user is not muted in normal channel', async () => {
 			await request
 				.get(api('rooms.isUserMuted'))
 				.set(credentials)
@@ -1734,7 +1765,7 @@ describe('[Rooms]', function () {
 				});
 		});
 
-		it('should convert room to read only', async () => {
+		it('should convert channel to read-only and should return user is now muted', async () => {
 			await request
 				.post(api('rooms.saveRoomSettings'))
 				.set(credentials)
@@ -1747,9 +1778,6 @@ describe('[Rooms]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				});
-		});
-
-		it('should return user is now muted', async () => {
 			await request
 				.get(api('rooms.isUserMuted'))
 				.set(credentials)
@@ -1765,25 +1793,12 @@ describe('[Rooms]', function () {
 				});
 		});
 
-		it('should update rocket.cat user as room-owner and return not muted in read-only channel', async () => {
-			await request
-				.post(api('channels.addOwner'))
-				.set(credentials)
-				.send({
-					roomId: testChannel._id,
-					username: 'rocket.cat',
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					console.log(res.body);
-					expect(res.body).to.have.property('success', true);
-				});
+		it('should return room-owner is not muted in a read-only channel', async () => {
 			await request
 				.get(api('rooms.isUserMuted'))
 				.set(credentials)
 				.query({
-					roomId: testChannel._id,
+					roomId: testChannelReadOnly._id,
 					username: 'rocket.cat',
 				})
 				.expect('Content-Type', 'application/json')
