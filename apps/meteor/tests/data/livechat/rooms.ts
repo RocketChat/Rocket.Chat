@@ -64,7 +64,7 @@ export const createVisitor = (department?: string): Promise<ILivechatVisitor> =>
 
 export const deleteVisitor = (token: string): Promise<ILivechatVisitor> =>
 	new Promise((resolve, reject) => {
-		request.get(api(`livechat/visitor/${token}`)).end((err: Error, res: DummyResponse<ILivechatVisitor>) => {
+		request.get(api(`livechat/visitor/${token}`)).end((err: Error) => {
 			if (err) {
 				return reject(err);
 			}
