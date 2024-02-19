@@ -12,6 +12,8 @@ describe('Apps - Slash Command "test-with-arguments"', function () {
 		await cleanupApps();
 		await installTestApp();
 	});
+	
+	after(() => cleanupApps());
 
 	describe('[Slash command "test-with-arguments"]', () => {
 		const params = 'argument';
