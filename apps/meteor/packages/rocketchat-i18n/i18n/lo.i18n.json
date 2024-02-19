@@ -2500,6 +2500,7 @@
   "Turn_OFF": "ປິດ",
   "Turn_ON": "ເປີດ",
   "Two-factor_authentication": "ການກວດສອບສອງປັດໄຈ",
+  "Two-factor_authentication_via_TOTP": "ການກວດສອບສອງປັດໄຈ",
   "Two-factor_authentication_disabled": "ການກວດສອບສອງປັດໃຈຖືກປະຕິເສດ",
   "Two-factor_authentication_enabled": "ການກວດສອບສອງປັດໄຈທີ່ຖືກເປີດໃຊ້",
   "Two-factor_authentication_is_currently_disabled": "ການກວດສອບສອງປັດໄຈແມ່ນຖືກປິດໃຊ້ໃນປະຈຸບັນ",

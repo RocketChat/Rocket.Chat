@@ -2471,6 +2471,7 @@
   "Turn_OFF": "Matikan",
   "Turn_ON": "Nyalakan",
   "Two-factor_authentication": "Autentikasi dua faktor",
+  "Two-factor_authentication_via_TOTP": "Autentikasi dua faktor",
   "Two-factor_authentication_disabled": "Autentikasi dua faktor dinonaktifkan",
   "Two-factor_authentication_enabled": "Autentikasi dua faktor diaktifkan",
   "Two-factor_authentication_is_currently_disabled": "Autentikasi dua faktor saat ini dinonaktifkan",
