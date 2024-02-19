@@ -57,7 +57,7 @@ const changelogFunctions: ChangelogFunctions = {
 		})();
 
 		const prefix = [
-			links?.pull ? `#${links?.pull?.number}` : '',
+			links?.pull ? `[#${links?.pull?.number}](${links?.pull?.url})` : '',
 			// links.commit === null ? '' : links.commit,
 			users ? `by ${users}` : '',
 		]
