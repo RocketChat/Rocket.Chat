@@ -62,6 +62,22 @@ export const createVisitor = (department?: string): Promise<ILivechatVisitor> =>
 		});
 	});
 
+export const deleteVisitor = (token: string): Promise<ILivechatVisitor> =>
+	new Promise((resolve, reject) => {
+		request.get(api(`livechat/visitor/${token}`)).end((err: Error, res: DummyResponse<ILivechatVisitor>) => {
+			if (err) {
+				return reject(err);
+			}
+			request
+				.delete(api(`livechat/visitor/${token}`)).end((err: Error, res: DummyResponse<ILivechatVisitor>) => {
+					if (err) {
+						return reject(err);
+					}
+					resolve(res.body.visitor);
+				});
+		});
+	});
+
 export const takeInquiry = async (inquiryId: string, agentCredentials?: IUserCredentialsHeader): Promise<void> => {
     const userId = agentCredentials ? agentCredentials['X-User-Id'] : credentials['X-User-Id'];
 
