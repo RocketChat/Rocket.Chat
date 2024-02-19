@@ -8,7 +8,7 @@ import { updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { adminUsername } from '../../data/user';
 
-describe.only('Apps - Video Conferences', function () {
+describe('Apps - Video Conferences', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
@@ -30,11 +30,7 @@ describe.only('Apps - Video Conferences', function () {
 		roomId = res.body.group._id;
 	});
 
-	after(() => Promise.all([
-		cleanupApps(),
-		deleteRoom({ type: 'p', roomId }),
-		updateSetting('VideoConf_Default_Provider', ''),
-	]))
+	after(() => Promise.all([cleanupApps(), deleteRoom({ type: 'p', roomId }), updateSetting('VideoConf_Default_Provider', '')]));
 
 	describe('[With No App]', () => {
 		before(async () => {

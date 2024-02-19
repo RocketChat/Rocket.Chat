@@ -7,9 +7,9 @@ import { cleanupApps, installTestApp } from '../../data/apps/helper.js';
 import { getMessageById } from '../../data/chat.helper.js';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { adminUsername, password } from '../../data/user';
-import { createUser, login } from '../../data/users.helper.js';
+import { createUser, deleteUser, login } from '../../data/users.helper.js';
 
-describe.only('Apps - Send Messages As User', function () {
+describe('Apps - Send Messages As User', function () {
 	this.retries(0);
 	let app;
 
@@ -93,7 +93,7 @@ describe.only('Apps - Send Messages As User', function () {
 				userCredentials = await login(user.username, password);
 			});
 
-			after(() => deleteRoom({ type: 'p', roomId: group._id }));
+			after(() => Promise.all([deleteRoom({ type: 'p', roomId: group._id }), deleteUser(user)]));
 
 			it('should send a message as app user', (done) => {
 				request

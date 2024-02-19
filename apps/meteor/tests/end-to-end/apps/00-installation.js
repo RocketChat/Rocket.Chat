@@ -7,17 +7,14 @@ import { cleanupApps } from '../../data/apps/helper.js';
 import { updatePermission } from '../../data/permissions.helper';
 import { getUserByUsername } from '../../data/users.helper.js';
 
-describe.only('Apps - Installation', function () {
+describe('Apps - Installation', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
 
 	before(async () => cleanupApps());
 
-	after(() => Promise.all([
-		cleanupApps(),
-		updatePermission('manage-apps', ['admin']),
-	]))
+	after(() => Promise.all([cleanupApps(), updatePermission('manage-apps', ['admin'])]));
 
 	describe('[Installation]', () => {
 		it('should throw an error when trying to install an app and the apps framework is enabled but the user does not have the permission', (done) => {
