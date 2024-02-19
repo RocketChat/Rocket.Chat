@@ -1,6 +1,6 @@
 import type { ChangelogFunctions } from '@changesets/types';
 
-import { getInfo, getInfoFromPullRequest } from './getGitHubInfo';
+import { getCommitInfo } from './getGitHubInfo';
 
 const changelogFunctions: ChangelogFunctions = {
 	getReleaseLine: async (changeset, _type, options) => {
@@ -33,41 +33,17 @@ const changelogFunctions: ChangelogFunctions = {
 		const [firstLine, ...futureLines] = replacedChangelog.split('\n').map((l) => l.trimEnd());
 
 		const links = await (async () => {
-			if (prFromSummary !== undefined) {
-				const result = await getInfoFromPullRequest({
-					repo: options.repo,
-					pull: prFromSummary,
-				});
-
-				let { links } = result;
-				if (commitFromSummary) {
-					const shortCommitId = commitFromSummary.slice(0, 7);
-					links = {
-						...links,
-						commit: `[\`${shortCommitId}\`](https://github.com/${options.repo}/commit/${commitFromSummary})`,
-					};
-				}
-
-				const { user } = result;
-
-				return {
-					...links,
-					user,
-				};
-			}
 			const commitToFetchFrom = commitFromSummary || changeset.commit;
-			if (commitToFetchFrom) {
-				const { links, user } = await getInfo({
-					repo: options.repo,
-					commit: commitToFetchFrom,
-				});
-				return { ...links, user };
+			if (!commitToFetchFrom) {
+				return;
 			}
-			return {
-				commit: null,
-				pull: null,
-				user: null,
-			};
+
+			const { author, pull } = await getCommitInfo({
+				repo: options.repo,
+				commit: commitToFetchFrom,
+				pr: prFromSummary,
+			});
+			return { pull, author };
 		})();
 
 		const users = (() => {
@@ -75,13 +51,13 @@ const changelogFunctions: ChangelogFunctions = {
 				return usersFromSummary.map((userFromSummary) => `[@${userFromSummary}](https://github.com/${userFromSummary})`).join(', ');
 			}
 
-			if (links.user?.association === 'CONTRIBUTOR') {
-				return `[@${links.user.login}](https://github.com/${links.user.login})`;
+			if (links?.author?.association === 'CONTRIBUTOR') {
+				return `[@${links.author.login}](https://github.com/${links.author.login})`;
 			}
 		})();
 
 		const prefix = [
-			links.pull === null ? '' : links.pull,
+			links?.pull ? `#${links?.pull?.number}` : '',
 			// links.commit === null ? '' : links.commit,
 			users ? `by ${users}` : '',
 		]
