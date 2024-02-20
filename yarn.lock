@@ -36590,7 +36590,7 @@ __metadata:
     "@types/chart.js": ^2.9.39
     "@types/js-yaml": ^4.0.8
     node-gyp: ^9.4.1
-    turbo: latest
+    turbo: ^1.12.4
   languageName: unknown
   linkType: soft
 
@@ -40130,7 +40130,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"turbo@npm:latest":
+"turbo@npm:^1.12.4":
   version: 1.12.4
   resolution: "turbo@npm:1.12.4"
   dependencies:
