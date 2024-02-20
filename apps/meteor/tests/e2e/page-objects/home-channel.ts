@@ -41,6 +41,10 @@ export class HomeChannel {
 		await this.page.mouse.move(0, 0);
 	}
 
+	get composer(): Locator {
+		return this.page.locator('textarea[name="msg"]');
+	}
+
 	get composerToolbar(): Locator {
 		return this.page.locator('[role=toolbar][aria-label="Composer Primary Actions"]');
 	}

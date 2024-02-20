@@ -103,8 +103,7 @@ export class AppThreadsConverter implements IAppThreadsConverter {
 			groupable: 'groupable',
 			token: 'token',
 			blocks: 'blocks',
-			// #ToDo: #AppsEngineTypes - bug? - This "room" object won't be properly mapped to the app object
-			room,
+			room: () => room,
 			editor: async (message: IMessage) => {
 				if (!isEditedMessage(message)) {
 					return undefined;

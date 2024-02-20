@@ -173,6 +173,7 @@ test.describe('SAML', () => {
 			await expect((await setSettingValueById(api, 'SAML_Custom_Default_logout_behaviour', 'Local')).status()).toBe(200);
 		});
 
+		await page.goto('/home');
 		await doLoginStep(page, 'samluser1');
 		await doLogoutStep(page);
 
@@ -188,6 +189,7 @@ test.describe('SAML', () => {
 			await expect((await setSettingValueById(api, 'SAML_Custom_Default_logout_behaviour', 'SAML')).status()).toBe(200);
 		})
 
+		await page.goto('/home');
 		await doLoginStep(page, 'samluser1');
 		await doLogoutStep(page);
 

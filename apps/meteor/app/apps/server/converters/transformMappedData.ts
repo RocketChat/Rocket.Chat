@@ -71,8 +71,7 @@ export const transformMappedData = async <
 			: never;
 	},
 	DataType extends Record<string, any>,
-	// #TODO: #AppsEngineTypes - The last `unknown` in the following line is only here because of the unexpected `room` param on the thread converter's convertMessage function
-	MapType extends { [p in string]: string | ((data: DataType) => Promise<unknown>) | unknown },
+	MapType extends { [p in string]: string | ((data: DataType) => Promise<unknown>) },
 	UnmappedProperties extends {
 		[p in keyof DataType as Exclude<p, MapType[keyof MapType]>]: DataType[p];
 	},

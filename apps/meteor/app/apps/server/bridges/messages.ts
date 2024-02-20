@@ -64,12 +64,10 @@ export class AppMessageBridge extends MessageBridge {
 			throw new Error('Invalid message id');
 		}
 
-		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
-		const convertedMsg: IMessage | undefined = await this.orch.getConverters()?.get('messages').convertAppMessage(message);
-		const convertedUser: IAppsUser | undefined = await this.orch.getConverters()?.get('users').convertById(user.id);
+		const convertedMsg = await this.orch.getConverters()?.get('messages').convertAppMessage(message);
+		const convertedUser = (await Users.findOneById(user.id)) || this.orch.getConverters()?.get('users').convertToRocketChat(user);
 
-		// #TODO: #AppsEngineTypes - deleteMessage expects an IUser but is receiving an IAppsUser - this is probably a bug
-		await deleteMessage(convertedMsg as IMessage, convertedUser as unknown as IUser);
+		await deleteMessage(convertedMsg as IMessage, convertedUser);
 	}
 
 	protected async notifyUser(user: IAppsUser, message: IAppsMessage, appId: string): Promise<void> {
