@@ -15,7 +15,7 @@ export type IUserState = {
 };
 
 function generateContext(username: string): IUserState {
-	const date = new Date('2023-02-17T20:38:12.306Z');
+	const date = new Date();
 	date.setFullYear(date.getFullYear() + 1);
 
 	const token = {
