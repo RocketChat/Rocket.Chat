@@ -80,6 +80,8 @@ describe('Meteor.methods', function () {
 				.end(done);
 		});
 
+		after(() => deleteRoom({ type: 'p', roomId: rid }));
+
 		it('should fail if not logged in', (done) => {
 			request
 				.post(methodCall('getThreadMessages'))
@@ -180,8 +182,7 @@ describe('Meteor.methods', function () {
 
 			const roomName = `methods-test-channel-${Date.now()}`;
 			before(async () => {
-				await updateSetting('Message_Read_Receipt_Enabled', true);
-				await updateSetting('Message_Read_Receipt_Store_Users', true);
+				await Promise.all([updateSetting('Message_Read_Receipt_Enabled', true), updateSetting('Message_Read_Receipt_Store_Users', true)]);
 
 				user = await createUser();
 				userCredentials = await login(user.username, password);
@@ -190,10 +191,14 @@ describe('Meteor.methods', function () {
 				firstThreadMessage = (await sendSimpleMessage({ roomId: room._id, tmid: firstMessage._id })).body.message;
 			});
 
-			after(async () => {
-				await deleteRoom({ type: 'p', roomId: room._id });
-				await deleteUser(user);
-			});
+			after(() =>
+				Promise.all([
+					deleteRoom({ type: 'p', roomId: room._id }),
+					deleteUser(user),
+					updateSetting('Message_Read_Receipt_Enabled', false),
+					updateSetting('Message_Read_Receipt_Store_Users', false),
+				]),
+			);
 
 			describe('simple message and thread that nobody has read yet', () => {
 				it("should return only the sender's read receipt for a message sent in the main room", async () => {
@@ -508,6 +513,8 @@ describe('Meteor.methods', function () {
 				.end(done);
 		});
 
+		after(() => deleteRoom({ type: 'p', roomId: rid }));
+
 		it('should fail if not logged in', (done) => {
 			request
 				.post(methodCall('getMessages'))
@@ -667,6 +674,8 @@ describe('Meteor.methods', function () {
 				.end(done);
 		});
 
+		after(() => deleteRoom({ type: 'p', roomId: rid }));
+
 		it('should not change the _updatedAt value when nothing is changed on the room', async () => {
 			const roomBefore = await request.get(api('groups.info')).set(credentials).query({
 				roomId: rid,
@@ -791,6 +800,8 @@ describe('Meteor.methods', function () {
 				})
 				.end(done);
 		});
+
+		after(() => deleteRoom({ type: 'p', roomId: rid }));
 
 		it('should fail if not logged in', (done) => {
 			request
@@ -1008,6 +1019,8 @@ describe('Meteor.methods', function () {
 				.end(done);
 		});
 
+		after(() => deleteRoom({ type: 'p', roomId: rid }));
+
 		it('should fail if not logged in', (done) => {
 			request
 				.post(methodCall('loadNextMessages'))
@@ -1185,6 +1198,8 @@ describe('Meteor.methods', function () {
 				.expect(200)
 				.end(done);
 		});
+
+		after(() => Promise.all([deleteRoom({ type: 'p', roomId: rid }), deleteUser(testUser)]));
 
 		it('should fail if not logged in', (done) => {
 			request
@@ -1491,6 +1506,8 @@ describe('Meteor.methods', function () {
 				.end(done);
 		});
 
+		after(() => deleteRoom({ type: 'p', roomId: rid }));
+
 		it('should fail if not logged in', (done) => {
 			request
 				.post(methodCall('loadMissedMessages'))
@@ -1683,6 +1700,14 @@ describe('Meteor.methods', function () {
 		const date = {
 			$date: 0,
 		};
+
+		after(() =>
+			Promise.all([
+				updatePermission('view-privileged-setting', ['admin']),
+				updatePermission('edit-privileged-setting', ['admin']),
+				updatePermission('manage-selected-settings', ['admin']),
+			]),
+		);
 
 		it('should fail if not logged in', (done) => {
 			request
@@ -1895,6 +1920,8 @@ describe('Meteor.methods', function () {
 				.end(done);
 		});
 
+		after(() => deleteRoom({ type: 'p', roomId: rid }));
+
 		it('should send a message', (done) => {
 			request
 				.post(methodCall('sendMessage'))
@@ -2043,6 +2070,14 @@ describe('Meteor.methods', function () {
 				})
 				.end(done);
 		});
+
+		after(() =>
+			Promise.all([
+				deleteRoom({ type: 'p', roomId: rid }),
+				updatePermission('bypass-time-limit-edit-and-delete', ['bot', 'app']),
+				updateSetting('Message_AllowEditing_BlockEditInMinutes', 0),
+			]),
+		);
 
 		it('should update a message with a URL', (done) => {
 			request
@@ -2261,6 +2296,14 @@ describe('Meteor.methods', function () {
 				.end(done);
 		});
 
+		after(() =>
+			Promise.all([
+				deleteRoom({ type: 'p', roomId: rid }),
+				updatePermission('bypass-time-limit-edit-and-delete', ['bot', 'app']),
+				updateSetting('Message_AllowEditing_BlockEditInMinutes', 0),
+			]),
+		);
+
 		it('should delete a message', (done) => {
 			request
 				.post(methodCall('deleteMessage'))
@@ -2322,50 +2365,14 @@ describe('Meteor.methods', function () {
 	describe('[@setUserActiveStatus]', () => {
 		let testUser;
 		let testUser2;
-		const testUserCredentials = {};
+		let testUserCredentials;
 		let dmId;
 		let dmTestId;
 
-		before('create test user', (done) => {
-			const username = `user.test.${Date.now()}`;
-			const email = `${username}@rocket.chat`;
-			request
-				.post(api('users.create'))
-				.set(credentials)
-				.send({ email, name: username, username, password: username, roles: ['user'] })
-				.end((err, res) => {
-					testUser = res.body.user;
-					done();
-				});
-		});
-
-		before('create test user 2', (done) => {
-			const username = `user.test.${Date.now()}`;
-			const email = `${username}@rocket.chat`;
-			request
-				.post(api('users.create'))
-				.set(credentials)
-				.send({ email, name: username, username, password: username, roles: ['user'] })
-				.end((err, res) => {
-					testUser2 = res.body.user;
-					done();
-				});
-		});
-
-		before('login testUser', (done) => {
-			request
-				.post(api('login'))
-				.send({
-					user: testUser.username,
-					password: testUser.username,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					testUserCredentials['X-Auth-Token'] = res.body.data.authToken;
-					testUserCredentials['X-User-Id'] = res.body.data.userId;
-				})
-				.end(done);
+		before(async () => {
+			testUser = await createUser();
+			testUser2 = await createUser();
+			testUserCredentials = await login(testUser.username, password);
 		});
 
 		before('create direct conversation with user', (done) => {
@@ -2411,6 +2418,15 @@ describe('Meteor.methods', function () {
 					done();
 				});
 		});
+
+		after(() =>
+			Promise.all([
+				deleteRoom({ type: 'd', roomId: dmId }),
+				deleteRoom({ type: 'd', roomId: dmTestId }),
+				deleteUser(testUser),
+				deleteUser(testUser2),
+			]),
+		);
 
 		it('should deactivate a user', (done) => {
 			request
@@ -2517,7 +2533,7 @@ describe('Meteor.methods', function () {
 				.post(api('login'))
 				.send({
 					user: testUser.username,
-					password: testUser.username,
+					password,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -2612,6 +2628,7 @@ describe('Meteor.methods', function () {
 		let guestUser;
 		let user;
 		let room;
+		let createdRooms = [];
 
 		before(async () => {
 			guestUser = await createUser({ roles: ['guest'] });
@@ -2622,12 +2639,11 @@ describe('Meteor.methods', function () {
 					name: `channel.test.${Date.now()}-${Math.random()}`,
 				})
 			).body.channel;
+			createdRooms.push(room);
 		});
-		after(async () => {
-			await deleteUser(user);
-			await deleteUser(guestUser);
-			user = undefined;
-		});
+		after(() =>
+			Promise.all([...createdRooms.map((r) => deleteRoom({ type: 'c', roomId: r._id })), deleteUser(user), deleteUser(guestUser)]),
+		);
 
 		it('should fail if not logged in', (done) => {
 			request
@@ -2693,7 +2709,7 @@ describe('Meteor.methods', function () {
 					}),
 				);
 			}
-			await Promise.all(promises);
+			createdRooms = [...createdRooms, ...(await Promise.all(promises)).map((res) => res.body.channel)];
 
 			request
 				.post(methodCall('addUsersToRoom'))
@@ -2738,6 +2754,8 @@ describe('Meteor.methods', function () {
 		before('login testUser', async () => {
 			testUserCredentials = await login(testUser.username, testUser.username);
 		});
+
+		after(() => Promise.all([deleteRoom({ type: 'c', roomId: rid }), deleteUser(testUser)]));
 
 		describe('-> standard room', () => {
 			describe('- when muting a user in a standard room', () => {
