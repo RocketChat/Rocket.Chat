@@ -67,7 +67,9 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 			Apps?.getRocketChatLogger().debug(`"apps.statusUpdate" event received for app "${appId}" with status "${status}"`);
 			const app = Apps?.getManager()?.getOneById(appId);
 			if (!app) {
-				Apps?.getRocketChatLogger().info(`"apps.statusUpdate" event received for app "${appId}", but it couldn't be found in this instance`);
+				Apps?.getRocketChatLogger().info(
+					`"apps.statusUpdate" event received for app "${appId}", but it couldn't be found in this instance`,
+				);
 				return;
 			}
 
