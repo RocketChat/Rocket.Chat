@@ -2,14 +2,14 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { PositionAnimated, AnimatedVisibility } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useRolesDescription, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement, UIEvent } from 'react';
+import type { ReactElement } from 'react';
 import React, { useMemo, useRef } from 'react';
 
 import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
 import { Backdrop } from '../../../components/Backdrop';
 import GenericMenu from '../../../components/GenericMenu/GenericMenu';
 import LocalTime from '../../../components/LocalTime';
-import UserCard from '../../../components/UserCard';
+import { UserCard, UserCardAction, UserCardRole, UserCardSkeleton } from '../../../components/UserCard';
 import { ReactiveUserStatus } from '../../../components/UserStatus';
 import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
 import { useUserInfoActions } from '../hooks/useUserInfoActions';
@@ -18,11 +18,11 @@ type UserCardWithDataProps = {
 	username: string;
 	target: Element;
 	rid: IRoom['_id'];
-	open: (e: UIEvent) => void;
+	onOpenUserInfo: () => void;
 	onClose: () => void;
 };
 
-const UserCardWithData = ({ username, target, rid, open, onClose }: UserCardWithDataProps): ReactElement => {
+const UserCardWithData = ({ username, target, rid, onOpenUserInfo, onClose }: UserCardWithDataProps) => {
 	const t = useTranslation();
 	const ref = useRef(target);
 	const getRoles = useRolesDescription();
@@ -50,7 +50,7 @@ const UserCardWithData = ({ username, target, rid, open, onClose }: UserCardWith
 			_id,
 			name: getUserDisplayName(name, username, showRealNames),
 			username,
-			roles: roles && getRoles(roles).map((role, index) => <UserCard.Role key={index}>{role}</UserCard.Role>),
+			roles: roles && getRoles(roles).map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
 			bio,
 			etag: avatarETag,
 			localTime: utcOffset && Number.isInteger(utcOffset) && <LocalTime utcOffset={utcOffset} />,
@@ -60,9 +60,9 @@ const UserCardWithData = ({ username, target, rid, open, onClose }: UserCardWith
 		};
 	}, [data, username, showRealNames, isLoading, getRoles]);
 
-	const handleOpen = useMutableCallback((e: UIEvent) => {
-		open?.(e);
-		onClose?.();
+	const handleOpenUserInfo = useMutableCallback(() => {
+		onOpenUserInfo();
+		onClose();
 	});
 
 	const { actions: actionsDefinition, menuActions: menuOptions } = useUserInfoActions(
@@ -80,7 +80,7 @@ const UserCardWithData = ({ username, target, rid, open, onClose }: UserCardWith
 
 	const actions = useMemo(() => {
 		const mapAction = ([key, { content, icon, onClick }]: any): ReactElement => (
-			<UserCard.Action key={key} label={content} aria-label={content} onClick={onClick} icon={icon} />
+			<UserCardAction key={key} label={content} aria-label={content} onClick={onClick} icon={icon} />
 		);
 
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
@@ -90,7 +90,7 @@ const UserCardWithData = ({ username, target, rid, open, onClose }: UserCardWith
 		<>
 			<Backdrop bg='transparent' onClick={onClose} />
 			<PositionAnimated anchor={ref} placement='top-start' margin={8} visible={AnimatedVisibility.UNHIDING}>
-				<UserCard {...user} onClose={onClose} open={handleOpen} actions={actions} isLoading={isLoading} />
+				{isLoading ? <UserCardSkeleton /> : <UserCard {...user} onClose={onClose} onOpenUserInfo={handleOpenUserInfo} actions={actions} />}
 			</PositionAnimated>
 		</>
 	);
