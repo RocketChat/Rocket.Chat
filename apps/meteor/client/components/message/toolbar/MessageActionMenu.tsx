@@ -1,5 +1,5 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { MouseEvent, MouseEventHandler, ReactElement } from 'react';
+import type { MouseEvent, ReactElement } from 'react';
 import React from 'react';
 
 import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
@@ -7,7 +7,7 @@ import GenericMenu from '../../GenericMenu/GenericMenu';
 import type { GenericMenuItemProps } from '../../GenericMenu/GenericMenuItem';
 
 type MessageActionConfigOption = Omit<MessageActionConfig, 'condition' | 'context' | 'order' | 'action'> & {
-	action: ((event: MouseEvent<HTMLElement, MouseEvent>) => void) & MouseEventHandler<HTMLElement>;
+	action: (e?: MouseEvent<HTMLElement>) => void;
 };
 
 type MessageActionSection = {
@@ -30,7 +30,7 @@ const MessageActionMenu = ({ options, onChangeMenuVisibility }: MessageActionMen
 			id: option.id,
 			icon: option.icon,
 			content: t(option.label),
-			onClick: option.action as any,
+			onClick: option.action,
 			type: option.type,
 		}))
 		.reduce((acc, option) => {

@@ -134,7 +134,7 @@ const MessageToolbar = ({
 				<MessageActionMenu
 					options={[...actionsQueryResult.data?.menu, ...(actionButtonApps.data ?? [])].filter(Boolean).map((action) => ({
 						...action,
-						action: (e): void => action.action(e, { message, tabbar: toolbox, room, chat, autoTranslateOptions }),
+						action: (e) => action.action(e, { message, tabbar: toolbox, room, chat, autoTranslateOptions }),
 					}))}
 					onChangeMenuVisibility={onChangeMenuVisibility}
 					data-qa-type='message-action-menu-options'
