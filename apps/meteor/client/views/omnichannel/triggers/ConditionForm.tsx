@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Field, FieldGroup, FieldLabel, FieldRow, Select, TextInput } from '@rocket.chat/fuselage';
+import { Field, FieldGroup, FieldLabel, FieldRow, NumberInput, Select, TextInput } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
@@ -37,7 +37,7 @@ export const ConditionForm = ({ control, index, ...props }: ConditionFormType) =
 		[t],
 	);
 
-	const valuePlaceholder = placeholders[conditionName];
+	const conditionValuePlaceholder = placeholders[conditionName];
 
 	return (
 		<FieldGroup {...props}>
@@ -53,12 +53,18 @@ export const ConditionForm = ({ control, index, ...props }: ConditionFormType) =
 					/>
 				</FieldRow>
 
-				{valuePlaceholder && (
+				{conditionValuePlaceholder && (
 					<FieldRow>
 						<Controller
 							name={`conditions.${index}.value`}
 							control={control}
-							render={({ field }) => <TextInput {...field} placeholder={valuePlaceholder} />}
+							render={({ field }) => {
+								if (conditionName === 'time-on-site') {
+									return <NumberInput {...field} placeholder={conditionValuePlaceholder} />;
+								}
+
+								return <TextInput {...field} placeholder={conditionValuePlaceholder} />;
+							}}
 						/>
 					</FieldRow>
 				)}
