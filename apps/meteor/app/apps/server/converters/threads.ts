@@ -1,5 +1,5 @@
-import type { IAppRoomsConverter, IAppThreadsConverter, IAppUsersConverter, IAppsUser } from '@rocket.chat/apps';
-import type { IMessage as AppsEngineMessage } from '@rocket.chat/apps-engine/definition/messages';
+import type { IAppRoomsConverter, IAppThreadsConverter, IAppUsersConverter, IAppsMessage, IAppsUser } from '@rocket.chat/apps';
+import type { IMessage as AppsEngineMessage, IMessageAttachment } from '@rocket.chat/apps-engine/definition/messages';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import type { IUser } from '@rocket.chat/core-typings';
 import { isEditedMessage, type IMessage } from '@rocket.chat/core-typings';
@@ -113,7 +113,7 @@ export class AppThreadsConverter implements IAppThreadsConverter {
 
 				return convertUserById(editedBy._id);
 			},
-			attachments: async (message: IMessage) => {
+			attachments: async (message: IMessage): Promise<IAppsMessage['attachments']> => {
 				if (!message.attachments) {
 					return undefined;
 				}
@@ -147,7 +147,7 @@ export class AppThreadsConverter implements IAppThreadsConverter {
 		return transformMappedData(msgData, map);
 	}
 
-	async _convertAttachmentsToApp(attachments: NonNullable<IMessage['attachments']>) {
+	async _convertAttachmentsToApp(attachments: NonNullable<IMessage['attachments']>): Promise<NonNullable<IAppsMessage['attachments']>> {
 		const map = {
 			collapsed: 'collapsed',
 			color: 'color',
@@ -170,7 +170,7 @@ export class AppThreadsConverter implements IAppThreadsConverter {
 			actions: 'actions',
 			type: 'type',
 			description: 'description',
-			author: (attachment: NonNullable<IMessage['attachments']>[number]) => {
+			author: (attachment: NonNullable<IMessage['attachments']>[number]): IMessageAttachment['author'] => {
 				if (!('author_name' in attachment)) {
 					return;
 				}
@@ -197,7 +197,7 @@ export class AppThreadsConverter implements IAppThreadsConverter {
 				delete attachment.ts;
 				return result;
 			},
-		};
+		} as const;
 
 		return Promise.all(attachments.map(async (attachment) => transformMappedData(attachment, map)));
 	}

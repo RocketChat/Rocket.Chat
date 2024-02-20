@@ -3,7 +3,7 @@ import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import type { ITypingDescriptor } from '@rocket.chat/apps-engine/server/bridges/MessageBridge';
 import { MessageBridge } from '@rocket.chat/apps-engine/server/bridges/MessageBridge';
 import { api } from '@rocket.chat/core-services';
-import type { IMessage, IUser } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { Users, Subscriptions, Messages } from '@rocket.chat/models';
 
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
