@@ -3,76 +3,34 @@ import type { MouseEvent, MouseEventHandler, ReactElement } from 'react';
 import React from 'react';
 
 import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
-// import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import GenericMenu from '../../GenericMenu/GenericMenu';
-// import ToolbarDropdown from './ToolbarDropdown';
+import type { GenericMenuItemProps } from '../../GenericMenu/GenericMenuItem';
 
 type MessageActionConfigOption = Omit<MessageActionConfig, 'condition' | 'context' | 'order' | 'action'> & {
 	action: ((event: MouseEvent<HTMLElement, MouseEvent>) => void) & MouseEventHandler<HTMLElement>;
 };
 
-// const getSectionOrder = (section: string): number => {
-// 	switch (section) {
-// 		case 'communication':
-// 			return 0;
-// 		case 'interaction':
-// 			return 1;
-// 		case 'duplication':
-// 			return 2;
-// 		case 'apps':
-// 			return 3;
-// 		case 'management':
-// 			return 4;
-// 		default:
-// 			return 5;
-// 	}
-// };
+type MessageActionSection = {
+	id: string;
+	title: string;
+	items: GenericMenuItemProps[];
+};
 
-const MessageActionMenu = ({ options }: { options: MessageActionConfigOption[] }): ReactElement => {
-	// const buttonRef = useRef<HTMLButtonElement | null>(null);
+type MessageActionMenuProps = {
+	onChangeMenuVisibility: (visible: boolean) => void;
+	options: MessageActionConfigOption[];
+};
+
+const MessageActionMenu = ({ options, onChangeMenuVisibility }: MessageActionMenuProps): ReactElement => {
 	const t = useTranslation();
-	// const [visible, setVisible] = useState(false);
-	// const isLayoutEmbedded = useEmbeddedLayout();
-
-	// const handleChangeMenuVisibility = useCallback(
-	// 	(visible: boolean): void => {
-	// 		setVisible(visible);
-	// 		onChangeMenuVisibility(visible);
-	// 	},
-	// 	[onChangeMenuVisibility],
-	// );
-
-	// const groupOptions = options.reduce((acc, option) => {
-	// 	const { type = '' } = option;
-
-	// 	if (option.color === 'alert') {
-	// 		option.variant = 'danger' as const;
-	// 	}
-
-	// 	const order = getSectionOrder(type);
-
-	// 	const [sectionType, options] = acc[getSectionOrder(type)] ?? [type, []];
-
-	// 	if (!(isLayoutEmbedded && option.id === 'reply-directly')) {
-	// 		options.push(option);
-	// 	}
-
-	// 	if (options.length === 0) {
-	// 		return acc;
-	// 	}
-
-	// 	acc[order] = [sectionType, options];
-
-	// 	return acc;
-	// }, [] as unknown as [section: string, options: Array<MessageActionConfigOption>][]);
 
 	const groupOptions = options
 		.map((option) => ({
-			variant: option.color === 'alert' && 'danger',
+			variant: option.color === 'alert' ? 'danger' : '',
 			id: option.id,
 			icon: option.icon,
 			content: t(option.label),
-			onClick: option.action,
+			onClick: option.action as any,
 			type: option.type,
 		}))
 		.reduce((acc, option) => {
@@ -86,10 +44,11 @@ const MessageActionMenu = ({ options }: { options: MessageActionConfigOption[] }
 			acc.push(newSection);
 
 			return acc;
-		}, [] as any);
+		}, [] as unknown as MessageActionSection[]);
 
 	return (
 		<GenericMenu
+			onOpenChange={onChangeMenuVisibility}
 			detached
 			title={t('More')}
 			data-qa-id='menu'

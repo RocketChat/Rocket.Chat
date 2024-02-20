@@ -2,7 +2,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { MessageToolbarWrapper } from '@rocket.chat/fuselage';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { Suspense, lazy, memo } from 'react';
+import React, { Suspense, lazy, memo, useState } from 'react';
 
 import type { MessageActionContext } from '../../../app/ui-utils/client/lib/MessageAction';
 import { useChat } from '../../views/room/contexts/ChatContext';
@@ -16,6 +16,7 @@ const MessageToolbar = lazy(() => import('./toolbar/MessageToolbar'));
 
 const MessageToolbarHolder = ({ message, context }: MessageToolbarHolderProps): ReactElement => {
 	const chat = useChat();
+	const [showToolbar, setShowToolbar] = useState(false);
 
 	const depsQueryResult = useQuery(['toolbox', message._id, context], async () => {
 		const room = await chat?.data.findRoom();
@@ -27,7 +28,7 @@ const MessageToolbarHolder = ({ message, context }: MessageToolbarHolderProps): 
 	});
 
 	return (
-		<MessageToolbarWrapper>
+		<MessageToolbarWrapper visible={showToolbar}>
 			{depsQueryResult.isSuccess && depsQueryResult.data.room && (
 				<Suspense fallback={null}>
 					<MessageToolbar
@@ -35,6 +36,7 @@ const MessageToolbarHolder = ({ message, context }: MessageToolbarHolderProps): 
 						messageContext={context}
 						room={depsQueryResult.data.room}
 						subscription={depsQueryResult.data.subscription}
+						onChangeMenuVisibility={setShowToolbar}
 					/>
 				</Suspense>
 			)}

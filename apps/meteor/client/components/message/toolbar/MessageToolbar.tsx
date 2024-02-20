@@ -12,6 +12,7 @@ import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/M
 import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
 import { useMessageActionAppsActionButtons } from '../../../hooks/useAppActionButtons';
+import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import EmojiElement from '../../../views/composer/EmojiPicker/EmojiElement';
 import { useIsSelecting } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import { useAutoTranslate } from '../../../views/room/MessageList/hooks/useAutoTranslate';
@@ -45,12 +46,21 @@ type MessageToolbarProps = {
 	messageContext?: MessageActionContext;
 	room: IRoom;
 	subscription?: ISubscription;
+	onChangeMenuVisibility: (visible: boolean) => void;
 } & ComponentProps<typeof FuselageMessageToolbar>;
 
-const MessageToolbar = ({ message, messageContext, room, subscription, ...props }: MessageToolbarProps): ReactElement | null => {
+const MessageToolbar = ({
+	message,
+	messageContext,
+	room,
+	subscription,
+	onChangeMenuVisibility,
+	...props
+}: MessageToolbarProps): ReactElement | null => {
 	const t = useTranslation();
 	const user = useUser() ?? undefined;
 	const settings = useSettings();
+	const isLayoutEmbedded = useEmbeddedLayout();
 
 	const toolbarRef = useRef(null);
 	const { toolbarProps } = useToolbar(props, toolbarRef);
@@ -81,7 +91,7 @@ const MessageToolbar = ({ message, messageContext, room, subscription, ...props 
 
 		return {
 			message: toolboxItems.filter((action) => !hiddenActions.includes(action.id)),
-			menu: menuItems.filter((action) => !hiddenActions.includes(action.id)),
+			menu: menuItems.filter((action) => !(isLayoutEmbedded && action.id === 'reply-directly') && !hiddenActions.includes(action.id)),
 		};
 	});
 
@@ -126,6 +136,7 @@ const MessageToolbar = ({ message, messageContext, room, subscription, ...props 
 						...action,
 						action: (e): void => action.action(e, { message, tabbar: toolbox, room, chat, autoTranslateOptions }),
 					}))}
+					onChangeMenuVisibility={onChangeMenuVisibility}
 					data-qa-type='message-action-menu-options'
 				/>
 			)}
