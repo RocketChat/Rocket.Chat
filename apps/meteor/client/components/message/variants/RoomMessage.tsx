@@ -1,8 +1,9 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Message, MessageLeftContainer, MessageContainer, CheckBox } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
+import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import { useUserId } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
 import React, { useRef, memo } from 'react';
 
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
@@ -15,11 +16,11 @@ import {
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import { useJumpToMessage } from '../../../views/room/MessageList/hooks/useJumpToMessage';
 import { useChat } from '../../../views/room/contexts/ChatContext';
+import Emoji from '../../Emoji';
 import IgnoredContent from '../IgnoredContent';
 import MessageHeader from '../MessageHeader';
 import MessageToolbarHolder from '../MessageToolbarHolder';
 import StatusIndicators from '../StatusIndicators';
-import MessageAvatar from '../header/MessageAvatar';
 import RoomMessageContent from './room/RoomMessageContent';
 
 type RoomMessageProps = {
@@ -32,7 +33,7 @@ type RoomMessageProps = {
 	context?: MessageActionContext;
 	ignoredUser?: boolean;
 	searchText?: string;
-};
+} & ComponentProps<typeof Message>;
 
 const RoomMessage = ({
 	message,
@@ -44,6 +45,7 @@ const RoomMessage = ({
 	context,
 	ignoredUser,
 	searchText,
+	...props
 }: RoomMessageProps): ReactElement => {
 	const uid = useUserId();
 	const editing = useIsMessageHighlight(message._id);
@@ -59,10 +61,13 @@ const RoomMessage = ({
 	useCountSelected();
 
 	useJumpToMessage(message._id, messageRef);
+
 	return (
 		<Message
 			ref={messageRef}
 			id={message._id}
+			role='listitem'
+			tabIndex={0}
 			onClick={selecting ? toggleSelected : undefined}
 			isSelected={selected}
 			isEditing={editing}
@@ -77,16 +82,17 @@ const RoomMessage = ({
 			data-own={message.u._id === uid}
 			data-qa-type='message'
 			aria-busy={message.temp}
+			{...props}
 		>
 			<MessageLeftContainer>
 				{!sequential && message.u.username && !selecting && showUserAvatar && (
 					<MessageAvatar
-						emoji={message.emoji}
+						emoji={message.emoji ? <Emoji emojiHandle={message.emoji} fillContainer /> : undefined}
 						avatarUrl={message.avatar}
 						username={message.u.username}
 						size='x36'
 						{...(chat?.userCard && {
-							onClick: chat?.userCard.open(message.u.username),
+							onClick: (e) => chat?.userCard.openUserCard(e, message.u.username),
 							style: { cursor: 'pointer' },
 						})}
 					/>
@@ -94,10 +100,8 @@ const RoomMessage = ({
 				{selecting && <CheckBox checked={selected} onChange={toggleSelected} />}
 				{sequential && <StatusIndicators message={message} />}
 			</MessageLeftContainer>
-
 			<MessageContainer>
 				{!sequential && <MessageHeader message={message} />}
-
 				{ignored ? (
 					<IgnoredContent onShowMessageIgnored={toggleDisplayIgnoredMessage} />
 				) : (

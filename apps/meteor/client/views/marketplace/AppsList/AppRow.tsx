@@ -1,11 +1,11 @@
 import type { App } from '@rocket.chat/core-typings';
 import { Badge, Card, CardBody, CardCol, CardControls, CardHeader, CardRow, CardTitle } from '@rocket.chat/fuselage';
+import { AppAvatar } from '@rocket.chat/ui-avatar';
 import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import type { KeyboardEvent, MouseEvent, ReactElement } from 'react';
 import React, { memo } from 'react';
 import semver from 'semver';
 
-import AppAvatar from '../../../components/avatar/AppAvatar';
 import AppStatus from '../AppDetailsPage/tabs/AppStatus/AppStatus';
 import AppMenu from '../AppMenu';
 import BundleChips from '../BundleChips';

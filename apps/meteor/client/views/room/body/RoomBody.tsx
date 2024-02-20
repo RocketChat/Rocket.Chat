@@ -35,6 +35,7 @@ import RoomComposer from '../composer/RoomComposer/RoomComposer';
 import { useChat } from '../contexts/ChatContext';
 import { useRoom, useRoomSubscription, useRoomMessages } from '../contexts/RoomContext';
 import { useRoomToolbox } from '../contexts/RoomToolboxContext';
+import { useMessageListNavigation } from '../hooks/useMessageListNavigation';
 import { useScrollMessageList } from '../hooks/useScrollMessageList';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
@@ -174,13 +175,13 @@ const RoomBody = (): ReactElement => {
 		};
 	});
 
-	const handleOpenUserCardButtonClick = useCallback(
+	const handleOpenUserCard = useCallback(
 		(event: UIEvent, username: IUser['username']) => {
 			if (!username) {
 				return;
 			}
 
-			chat?.userCard.open(username)(event);
+			chat?.userCard.openUserCard(event, username);
 		},
 		[chat?.userCard],
 	);
@@ -532,6 +533,8 @@ const RoomBody = (): ReactElement => {
 
 	useReadMessageWindowEvents();
 
+	const { messageListRef, messageListProps } = useMessageListNavigation();
+
 	return (
 		<>
 			{!isLayoutEmbedded && room.announcement && <Announcement announcement={room.announcement} announcementDetails={undefined} />}
@@ -539,7 +542,6 @@ const RoomBody = (): ReactElement => {
 				<section
 					className={`messages-container flex-tab-main-content ${admin ? 'admin' : ''}`}
 					id={`chat-window-${room._id}`}
-					aria-label={t('Channel')}
 					onClick={hideFlexTab && handleCloseFlexTab}
 				>
 					<div className='messages-container-wrapper'>
@@ -585,7 +587,7 @@ const RoomBody = (): ReactElement => {
 										username={roomLeader.username}
 										name={roomLeader.name}
 										visible={!hideLeaderHeader}
-										onAvatarClick={handleOpenUserCardButtonClick}
+										onAvatarClick={handleOpenUserCard}
 									/>
 								) : null}
 								<div
@@ -600,7 +602,13 @@ const RoomBody = (): ReactElement => {
 								>
 									<MessageListErrorBoundary>
 										<ScrollableContentWrapper ref={wrapperRef}>
-											<ul className='messages-list' aria-live='polite' aria-busy={isLoadingMoreMessages}>
+											<ul
+												ref={messageListRef}
+												className='messages-list'
+												aria-live='polite'
+												aria-busy={isLoadingMoreMessages}
+												{...messageListProps}
+											>
 												{canPreview ? (
 													<>
 														{hasMorePreviousMessages ? (

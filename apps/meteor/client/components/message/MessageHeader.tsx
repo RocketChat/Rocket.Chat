@@ -8,7 +8,7 @@ import {
 	MessageNameContainer,
 } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import type { KeyboardEvent, ReactElement } from 'react';
 import React, { memo } from 'react';
 
 import { getUserDisplayName } from '../../../lib/getUserDisplayName';
@@ -45,37 +45,35 @@ const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
 
 	return (
 		<FuselageMessageHeader>
-			<MessageNameContainer>
+			<MessageNameContainer
+				tabIndex={0}
+				role='button'
+				aria-label={getUserDisplayName(user.name, user.username, showRealName)}
+				{...(user.username !== undefined &&
+					chat?.userCard && {
+						onClick: (e) => chat?.userCard.openUserCard(e, message.u.username),
+						onKeyDown: (e: KeyboardEvent<HTMLSpanElement>) => {
+							(e.code === 'Enter' || e.code === 'Space') && chat?.userCard.openUserCard(e, message.u.username);
+						},
+						style: { cursor: 'pointer' },
+					})}
+			>
 				<MessageName
 					{...(!showUsername && { 'data-qa-type': 'username' })}
 					title={!showUsername && !usernameAndRealNameAreSame ? `@${user.username}` : undefined}
 					data-username={user.username}
-					{...(user.username !== undefined &&
-						chat?.userCard && {
-							onClick: chat?.userCard.open(message.u.username),
-							style: { cursor: 'pointer' },
-						})}
 				>
 					{message.alias || getUserDisplayName(user.name, user.username, showRealName)}
 				</MessageName>
 				{showUsername && (
 					<>
 						{' '}
-						<MessageUsername
-							data-username={user.username}
-							data-qa-type='username'
-							{...(user.username !== undefined &&
-								chat?.userCard && {
-									onClick: chat?.userCard.open(message.u.username),
-									style: { cursor: 'pointer' },
-								})}
-						>
+						<MessageUsername data-username={user.username} data-qa-type='username'>
 							@{user.username}
 						</MessageUsername>
 					</>
 				)}
 			</MessageNameContainer>
-
 			{shouldShowRolesList && <MessageRoles roles={roles} isBot={message.bot} />}
 			<MessageTimestamp title={formatDateAndTime(message.ts)}>{formatTime(message.ts)}</MessageTimestamp>
 			{message.private && <MessageStatusPrivateIndicator>{t('Only_you_can_see_this_message')}</MessageStatusPrivateIndicator>}

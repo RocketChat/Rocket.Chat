@@ -1,5 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom, isMultipleDirectMessageRoom } from '@rocket.chat/core-typings';
+import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useUser, useUserSubscription } from '@rocket.chat/ui-contexts';
 import { VideoConfPopupInfo } from '@rocket.chat/ui-video-conf';
 import type { ReactElement } from 'react';
@@ -7,7 +8,6 @@ import React from 'react';
 
 import { RoomIcon } from '../../../../../../components/RoomIcon';
 import ReactiveUserStatus from '../../../../../../components/UserStatus/ReactiveUserStatus';
-import RoomAvatar from '../../../../../../components/avatar/RoomAvatar';
 import { useUserDisplayName } from '../../../../../../hooks/useUserDisplayName';
 
 const VideoConfPopupRoomInfo = ({ room }: { room: IRoom }): ReactElement => {

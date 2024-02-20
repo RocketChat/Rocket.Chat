@@ -1,6 +1,7 @@
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import type { RocketChatAssociationRecord } from '@rocket.chat/apps-engine/definition/metadata';
 import { PersistenceBridge } from '@rocket.chat/apps-engine/server/bridges/PersistenceBridge';
+import type { InsertOneResult } from 'mongodb';
 
 export class AppPersistenceBridge extends PersistenceBridge {
 	constructor(private readonly orch: IAppServerOrchestrator) {
@@ -20,8 +21,10 @@ export class AppPersistenceBridge extends PersistenceBridge {
 			throw new Error('Attempted to store an invalid data type, it must be an object.');
 		}
 
-		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
-		return this.orch.getPersistenceModel().insertOne({ appId, data }) as Promise<unknown> as Promise<string>;
+		return this.orch
+			.getPersistenceModel()
+			.insertOne({ appId, data })
+			.then(({ insertedId }: InsertOneResult) => (insertedId as unknown as string) || '');
 	}
 
 	protected async createWithAssociations(data: object, associations: Array<RocketChatAssociationRecord>, appId: string): Promise<string> {
@@ -35,8 +38,10 @@ export class AppPersistenceBridge extends PersistenceBridge {
 			throw new Error('Attempted to store an invalid data type, it must be an object.');
 		}
 
-		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
-		return this.orch.getPersistenceModel().insertOne({ appId, associations, data }) as Promise<unknown> as Promise<string>;
+		return this.orch
+			.getPersistenceModel()
+			.insertOne({ appId, associations, data })
+			.then(({ insertedId }: InsertOneResult) => (insertedId as unknown as string) || '');
 	}
 
 	protected async readById(id: string, appId: string): Promise<object> {
@@ -126,7 +131,9 @@ export class AppPersistenceBridge extends PersistenceBridge {
 			associations,
 		};
 
-		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
-		return this.orch.getPersistenceModel().update(query, { $set: { data } }, { upsert }) as Promise<unknown> as Promise<string>;
+		return this.orch
+			.getPersistenceModel()
+			.update(query, { $set: { data } }, { upsert })
+			.then(({ upsertedId }: any) => upsertedId || '');
 	}
 }
