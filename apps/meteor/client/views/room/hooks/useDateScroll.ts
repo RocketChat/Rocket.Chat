@@ -1,49 +1,81 @@
 import { css } from '@rocket.chat/css-in-js';
+import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useCallback, useState } from 'react';
 import type { MutableRefObject } from 'react';
 import type React from 'react';
 
+import { withThrottling } from '../../../../lib/utils/highOrderFunctions';
+
 type useDateScrollReturn = {
 	bubbleDate: string | undefined;
-	onScroll: (refsObject: React.MutableRefObject<{ [key: number]: React.MutableRefObject<HTMLElement> }>) => void;
+	onScroll: (refsObject: React.MutableRefObject<React.MutableRefObject<HTMLElement>[]>) => void;
 	style: ReturnType<typeof css>;
 	showBubble: boolean;
 };
 
+function fromRefObjectToArray<T extends MutableRefObject<any[]>, E = T extends MutableRefObject<Array<infer U>> ? U : never>(
+	fn: (elements: E[]) => void,
+) {
+	return (refsObject: T) => {
+		fn(Object.values(refsObject.current));
+	};
+}
+
 export const useDateScroll = (offset = 0): useDateScrollReturn => {
-	const [bubbleDate, setBubbleDate] = useState<string>();
-	const [showBubble, setShowBubble] = useState(false);
+	const [bubbleDate, setBubbleDate] = useSafely(
+		useState<{
+			date: string;
+			show: boolean;
+		}>({
+			date: '',
+			show: false,
+		}),
+	);
 
 	const onScroll = useCallback(
-		(refsObject: MutableRefObject<{ [key: number]: MutableRefObject<HTMLElement> }>) => {
-			Object.values(refsObject.current).forEach((message, i: number, arr) => {
-				if (!message.current?.getBoundingClientRect() || !message.current.dataset.id) return;
-				const { top } = message.current.getBoundingClientRect();
-				const { id } = message.current.dataset;
-				const bubbleOffset = offset + 56;
+		withThrottling({ wait: 50 })(
+			fromRefObjectToArray<MutableRefObject<MutableRefObject<HTMLElement>[]>>(
+				(() => {
+					let timeout: ReturnType<typeof setTimeout>;
+					return (elements) => {
+						clearTimeout(timeout);
 
-				if (top < bubbleOffset) {
-					setBubbleDate(id);
-				}
-				if (top === bubbleOffset) {
-					return setBubbleDate(id);
-				}
+						// Gets the first non visible message date and sets the bubble date to it
+						const date = elements.reduce((date, message) => {
+							// Sanitize elements
+							if (!message.current?.dataset.id) {
+								return date;
+							}
 
-				const previous = arr[i - 1];
-				if (!previous?.current?.getBoundingClientRect() || !previous?.current.dataset.id) return;
-				const { top: previousTop } = previous?.current.getBoundingClientRect();
-				const { id: previousId } = previous?.current.dataset;
+							const { top } = message.current.getBoundingClientRect();
+							const { id } = message.current.dataset;
+							const bubbleOffset = offset + 56;
 
-				if (top > bubbleOffset && previousTop < bubbleOffset) {
-					return setBubbleDate(previousId);
-				}
-				if (top < bubbleOffset) {
-					setBubbleDate(id);
-				}
-			});
-			setShowBubble(true);
-			setTimeout(() => setShowBubble(false), 2000);
-		},
+							if (top <= bubbleOffset) {
+								return id;
+							}
+							return date;
+						}, undefined as string | undefined);
+
+						// We always keep the previous date if we don't have a new one, so when the bubble disappears it doesn't flicker
+						setBubbleDate(() => ({
+							date: '',
+							...(date && { date }),
+							show: Boolean(date),
+						}));
+
+						timeout = setTimeout(
+							() =>
+								setBubbleDate((current) => ({
+									...current,
+									show: false,
+								})),
+							1000,
+						);
+					};
+				})(),
+			),
+		),
 		[offset],
 	);
 
@@ -62,5 +94,5 @@ export const useDateScroll = (offset = 0): useDateScrollReturn => {
 		}
 	`;
 
-	return { bubbleDate, onScroll, style: dateBubbleStyle, showBubble };
+	return { bubbleDate: bubbleDate.date, onScroll, style: dateBubbleStyle, showBubble: Boolean(bubbleDate.show) };
 };
