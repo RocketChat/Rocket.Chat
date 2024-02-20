@@ -2464,6 +2464,7 @@
   "Turn_OFF": "Skakel af",
   "Turn_ON": "Sit aan",
   "Two-factor_authentication": "Twee-faktor-verifikasie",
+  "Two-factor_authentication_via_TOTP": "Twee-faktor-verifikasie",
   "Two-factor_authentication_disabled": "Tweefaktor-verifikasie gedeaktiveer",
   "Two-factor_authentication_enabled": "Tweefaktor-verifikasie aangeskakel",
   "Two-factor_authentication_is_currently_disabled": "Tweefaktor-verifikasie is tans gedeaktiveer",

@@ -3717,6 +3717,7 @@
   "Turn_ON": "打开",
   "Two Factor Authentication": "两步验证",
   "Two-factor_authentication": "基于 TOTP 的两步验证",
+  "Two-factor_authentication_via_TOTP": "基于 TOTP 的两步验证",
   "Two-factor_authentication_disabled": "两步验证被禁用",
   "Two-factor_authentication_email": "基于邮件的两步验证",
   "Two-factor_authentication_email_is_currently_disabled": "基于邮件的两步验证当前被禁用",
