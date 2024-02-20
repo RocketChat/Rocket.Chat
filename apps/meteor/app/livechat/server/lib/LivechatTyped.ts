@@ -1682,6 +1682,14 @@ class LivechatClass {
 		return false;
 	}
 
+	async afterAgentUserActivated(user: IUser) {
+		if (!user.roles.includes('livechat-agent')) {
+			throw new Meteor.Error('invalid-user-role');
+		}
+		await Users.setOperator(user._id, true);
+		callbacks.runAsync('livechat.onNewAgentCreated', user._id);
+	}
+
 	async addManager(username: string) {
 		check(username, String);
 
