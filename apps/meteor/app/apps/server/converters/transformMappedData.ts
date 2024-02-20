@@ -71,7 +71,7 @@ export const transformMappedData = async <
 			: never;
 	},
 	DataType extends Record<string, any>,
-	MapType extends { [p in string]: string | ((data: DataType) => Promise<unknown>) },
+	MapType extends { [p in string]: string | ((data: DataType) => Promise<unknown>) | ((data: DataType) => unknown) },
 	UnmappedProperties extends {
 		[p in keyof DataType as Exclude<p, MapType[keyof MapType]>]: DataType[p];
 	},
