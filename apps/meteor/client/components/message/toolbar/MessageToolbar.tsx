@@ -45,17 +45,9 @@ type MessageToolbarProps = {
 	messageContext?: MessageActionContext;
 	room: IRoom;
 	subscription?: ISubscription;
-	onChangeMenuVisibility: (visible: boolean) => void;
 } & ComponentProps<typeof FuselageMessageToolbar>;
 
-const MessageToolbar = ({
-	message,
-	messageContext,
-	room,
-	subscription,
-	onChangeMenuVisibility,
-	...props
-}: MessageToolbarProps): ReactElement | null => {
+const MessageToolbar = ({ message, messageContext, room, subscription, ...props }: MessageToolbarProps): ReactElement | null => {
 	const t = useTranslation();
 	const user = useUser() ?? undefined;
 	const settings = useSettings();
@@ -130,7 +122,6 @@ const MessageToolbar = ({
 				))}
 			{actionsQueryResult.isSuccess && actionsQueryResult.data.menu.length > 0 && (
 				<MessageActionMenu
-					onChangeMenuVisibility={onChangeMenuVisibility}
 					options={[...actionsQueryResult.data?.menu, ...(actionButtonApps.data ?? [])].filter(Boolean).map((action) => ({
 						...action,
 						action: (e): void => action.action(e, { message, tabbar: toolbox, room, chat, autoTranslateOptions }),
