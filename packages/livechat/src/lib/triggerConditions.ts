@@ -15,6 +15,8 @@ export const pageUrlCondition = (condition: ILivechatTriggerCondition) => {
 	if (hrefRegExp.test(parentUrl)) {
 		return Promise.resolve();
 	}
+
+	return Promise.reject();
 };
 
 export const timeOnSiteCondition = (condition: ILivechatTriggerCondition) => {

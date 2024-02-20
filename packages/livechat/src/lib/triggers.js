@@ -105,22 +105,19 @@ class Triggers {
 		const [condition] = trigger.conditions;
 		const [action] = trigger.actions;
 
-		return this.when(id, condition).then(() => this.fire(id, action, condition));
+		return this.when(id, condition)
+			.then(() => this.fire(id, action, condition))
+			.catch((error) => console.error(`[Livechat Triggers]: ${error}`));
 	}
 
 	scheduleAll(triggers) {
-		const promises = triggers.map((trigger) => this.schedule(trigger));
-		return Promise.all(promises);
+		triggers.map((trigger) => this.schedule(trigger));
 	}
 
 	async processTriggers({ force = false, filter = () => true } = {}) {
 		const triggers = this._triggers.filter((trigger) => force || this._isValid(trigger)).filter(filter);
 
-		try {
-			await this.scheduleAll(triggers);
-		} catch (error) {
-			console.error(`[Livechat Triggers]: ${error}`);
-		}
+		this.scheduleAll(triggers);
 	}
 
 	hasTriggersBeforeRegistration() {

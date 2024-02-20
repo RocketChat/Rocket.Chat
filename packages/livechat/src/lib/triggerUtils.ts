@@ -7,59 +7,50 @@ import { processUnread } from './main';
 
 type AgentPromise = { username: string } | Serialized<ILivechatAgent> | null;
 
-let agentPromise: Promise<AgentPromise> | null;
 const agentCacheExpiry = 3600000;
 
 const isAgentWithInfo = (agent: any): agent is Serialized<ILivechatAgent> => !agent.hiddenInfo;
 
-export const getAgent = (triggerAction: ILivechatTriggerAction): Promise<AgentPromise> => {
-	if (agentPromise) {
-		return agentPromise;
+const getNextAgentFromQueue = async () => {
+	const {
+		defaultAgent,
+		iframe: {
+			guest: { department },
+		},
+	} = store.state;
+
+	if (defaultAgent?.ts && Date.now() - defaultAgent.ts < agentCacheExpiry) {
+		return defaultAgent; // cache valid for 1 hour
 	}
 
-	agentPromise = new Promise<AgentPromise>(async (resolve, reject) => {
-		const { params } = triggerAction;
+	let agent = null;
+	try {
+		const tempAgent = await Livechat.nextAgent({ department });
 
-		if (params?.sender === 'queue') {
-			const { state } = store;
-			const {
-				defaultAgent,
-				iframe: {
-					guest: { department },
-				},
-			} = state;
-			if (defaultAgent?.ts && Date.now() - defaultAgent.ts < agentCacheExpiry) {
-				return resolve(defaultAgent); // cache valid for 1
-			}
-
-			let agent = null;
-			try {
-				const tempAgent = await Livechat.nextAgent({ department });
-
-				if (isAgentWithInfo(tempAgent?.agent)) {
-					agent = tempAgent.agent;
-				}
-			} catch (error) {
-				return reject(error);
-			}
-
-			store.setState({ defaultAgent: { ...agent, department, ts: Date.now() } });
-			resolve(agent);
-		} else if (params?.sender === 'custom') {
-			resolve({
-				username: params.name,
-			});
-		} else {
-			reject('Unknown sender');
+		if (isAgentWithInfo(tempAgent?.agent)) {
+			agent = tempAgent.agent;
 		}
-	});
+	} catch (error) {
+		return Promise.reject(error);
+	}
 
-	// expire the promise cache as well
-	setTimeout(() => {
-		agentPromise = null;
-	}, agentCacheExpiry);
+	store.setState({ defaultAgent: { ...agent, department, ts: Date.now() } });
 
-	return agentPromise;
+	return agent;
+};
+
+export const getAgent = async (triggerAction: ILivechatTriggerAction): Promise<AgentPromise> => {
+	const { sender, name = '' } = triggerAction.params || {};
+
+	if (sender === 'custom') {
+		return { username: name };
+	}
+
+	if (sender === 'queue') {
+		return getNextAgentFromQueue();
+	}
+
+	return Promise.reject('Unknown sender');
 };
 
 export const upsertMessage = async (message: Record<string, unknown>) => {
