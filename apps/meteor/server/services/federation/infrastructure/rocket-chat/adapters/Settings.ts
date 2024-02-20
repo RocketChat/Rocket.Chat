@@ -237,6 +237,8 @@ export class RocketChatSettingsAdapter {
 				i18nLabel: 'Federation_Matrix_homeserver_domain',
 				i18nDescription: 'Federation_Matrix_homeserver_domain_desc',
 				alert: 'Federation_Matrix_homeserver_domain_alert',
+				group: 'Federation',
+				section: 'Matrix Bridge',
 			},
 		);
 

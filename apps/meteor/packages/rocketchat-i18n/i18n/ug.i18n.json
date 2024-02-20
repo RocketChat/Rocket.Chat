@@ -911,6 +911,7 @@
   "Rooms": "ئۆي",
   "Running_Instances": "ھازىر يۈرگۈزۈلىۋاتقان مىسال",
   "S_new_messages_since_s": "دىن كەلگەن%s يېڭى ئۇچۇر %s",
+  "S_new_messages": "تال يېڭى ئۇچۇر%s",
   "SAML": "SAML",
   "SAML_Custom_Cert": "ئۆزلۈكىدىن بېكىتىش ئىسپاتى",
   "SAML_Custom_Entry_point": "ئۆزلۈكىدىن بېكىتىش ئېغىزى",

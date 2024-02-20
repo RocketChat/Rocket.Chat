@@ -8,6 +8,8 @@ import { Presence } from '../../../../client/lib/presence';
 
 new Meteor.Streamer('user-presence');
 
-Meteor.StreamerCentral.on('stream-user-presence', (uid: string, username: string, statusChanged?: UserStatus, statusText?: string) => {
+type args = [username: string, statusChanged?: UserStatus, statusText?: string];
+
+Meteor.StreamerCentral.on('stream-user-presence', (uid: string, [username, statusChanged, statusText]: args) => {
 	Presence.notify({ _id: uid, username, status: statusChanged, statusText });
 });

@@ -1,10 +1,9 @@
-import type { SAMLConfiguration } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
+import { settings } from '../../../app/settings/client';
 import { type LoginCallback, callLoginMethod, handleLogin } from '../../lib/2fa/overrideLoginMethod';
-import { loginServices } from '../../lib/loginServices';
 
 declare module 'meteor/meteor' {
 	// eslint-disable-next-line @typescript-eslint/no-namespace
@@ -40,41 +39,43 @@ if (!Accounts.saml) {
 const { logout } = Meteor;
 
 Meteor.logout = async function (...args) {
-	const { sdk } = await import('../../../app/utils/client/lib/SDKClient');
-	// #TODO: Use SAML settings directly instead of relying on the login service
-	const samlService = await loginServices.loadLoginService<SAMLConfiguration>('saml');
-	if (samlService) {
-		const provider = (samlService.clientConfig as { provider?: string } | undefined)?.provider;
-		if (provider) {
-			if (samlService.logoutBehaviour == null || samlService.logoutBehaviour === 'SAML') {
-				if (samlService.idpSLORedirectURL) {
-					console.info('SAML session terminated via SLO');
-					sdk
-						.call('samlLogout', provider)
-						.then((result) => {
-							if (!result) {
-								logout.apply(Meteor);
-								return;
-							}
+	const standardLogout = () => logout.apply(Meteor, args);
 
-							// Remove the userId from the client to prevent calls to the server while the logout is processed.
-							// If the logout fails, the userId will be reloaded on the resume call
-							Meteor._localStorage.removeItem(Accounts.USER_ID_KEY);
+	if (!settings.get('SAML_Custom_Default')) {
+		return standardLogout();
+	}
 
-							// A nasty bounce: 'result' has the SAML LogoutRequest but we need a proper 302 to redirected from the server.
-							window.location.replace(Meteor.absoluteUrl(`_saml/sloRedirect/${provider}/?redirect=${encodeURIComponent(result)}`));
-						})
-						.catch(() => logout.apply(Meteor));
+	if (settings.get('SAML_Custom_Default_logout_behaviour') === 'Local') {
+		console.info('SAML session not terminated, only the Rocket.Chat session is going to be killed');
+		return standardLogout();
+	}
+
+	const provider = settings.get('SAML_Custom_Default_provider');
+
+	if (provider && settings.get('SAML_Custom_Default_idp_slo_redirect_url')) {
+		console.info('SAML session terminated via SLO');
+
+		const { sdk } = await import('../../../app/utils/client/lib/SDKClient');
+		sdk
+			.call('samlLogout', provider)
+			.then((result) => {
+				if (!result) {
+					logout.apply(Meteor);
 					return;
 				}
-			}
 
-			if (samlService.logoutBehaviour === 'Local') {
-				console.info('SAML session not terminated, only the Rocket.Chat session is going to be killed');
-			}
-		}
+				// Remove the userId from the client to prevent calls to the server while the logout is processed.
+				// If the logout fails, the userId will be reloaded on the resume call
+				Meteor._localStorage.removeItem(Accounts.USER_ID_KEY);
+
+				// A nasty bounce: 'result' has the SAML LogoutRequest but we need a proper 302 to redirected from the server.
+				window.location.replace(Meteor.absoluteUrl(`_saml/sloRedirect/${provider}/?redirect=${encodeURIComponent(result)}`));
+			})
+			.catch(() => logout.apply(Meteor));
+		return;
 	}
-	return logout.apply(Meteor, args);
+
+	return standardLogout();
 };
 
 Meteor.loginWithSaml = (options) => {

@@ -1,12 +1,13 @@
 import type { IUser, AvatarObject } from '@rocket.chat/core-typings';
-import { Box, Button, TextInput, Avatar, IconButton } from '@rocket.chat/fuselage';
+import { Box, Button, Avatar, TextInput, IconButton, Label } from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useToastMessageDispatch, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent } from 'react';
 import React, { useState, useCallback } from 'react';
 
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 import { isValidImageFormat } from '../../../lib/utils/isValidImageFormat';
-import UserAvatar from '../UserAvatar';
 import type { UserAvatarSuggestion } from './UserAvatarSuggestion';
 import UserAvatarSuggestions from './UserAvatarSuggestions';
 import { readFileAsDataURL } from './readFileAsDataURL';
@@ -24,6 +25,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, disabled, e
 	const rotateImages = useSetting('FileUpload_RotateImages');
 	const [avatarFromUrl, setAvatarFromUrl] = useState('');
 	const [newAvatarSource, setNewAvatarSource] = useState<string>();
+	const imageUrlField = useUniqueId();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const setUploadedPreview = useCallback(
@@ -44,7 +46,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, disabled, e
 
 	const [clickUpload] = useSingleFileInput(setUploadedPreview);
 
-	const clickUrl = (): void => {
+	const handleAddUrl = (): void => {
 		setNewAvatarSource(avatarFromUrl);
 		setAvatarObj({ avatarUrl: avatarFromUrl });
 	};
@@ -75,12 +77,15 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, disabled, e
 				<UserAvatar
 					size='x124'
 					url={url}
+					key={url}
+					data-qa-id='UserAvatarEditor'
 					username={currentUsername || ''}
 					etag={etag}
 					style={{
-						objectFit: 'contain',
 						imageOrientation: rotateImages ? 'from-image' : 'none',
+						objectFit: 'contain',
 					}}
+					onError={() => dispatchToastMessage({ type: 'error', message: t('error-invalid-image-url') })}
 				/>
 				<Box display='flex' flexDirection='column' flexGrow='1' justifyContent='space-between' mis={4}>
 					<Box display='flex' flexDirection='row' mbs='none'>
@@ -94,14 +99,17 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, disabled, e
 							disabled={disabled || !avatarFromUrl}
 							title={t('Add_URL')}
 							mi={4}
-							onClick={clickUrl}
+							onClick={handleAddUrl}
 							data-qa-id='UserAvatarEditorSetAvatarLink'
 						/>
 						<UserAvatarSuggestions disabled={disabled} onSelectOne={handleSelectSuggestion} />
 					</Box>
-					<Box mis={4}>{t('Use_url_for_avatar')}</Box>
+					<Label htmlFor={imageUrlField} mis={4}>
+						{t('Use_url_for_avatar')}
+					</Label>
 					<TextInput
 						data-qa-id='UserAvatarEditorLink'
+						id={imageUrlField}
 						flexGrow={0}
 						placeholder={t('Use_url_for_avatar')}
 						value={avatarFromUrl}

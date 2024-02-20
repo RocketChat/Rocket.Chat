@@ -1,8 +1,9 @@
 import { UserStatus as Status, isUserFederated } from '@rocket.chat/core-typings';
 import type { IRole, IUser, Serialized } from '@rocket.chat/core-typings';
 import { Box, Button, Menu, Option } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { PickedUser } from '@rocket.chat/rest-typings';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
@@ -10,7 +11,6 @@ import React, { useMemo } from 'react';
 import { Roles } from '../../../../../app/models/client';
 import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
 import { UserStatus } from '../../../../components/UserStatus';
-import UserAvatar from '../../../../components/avatar/UserAvatar';
 import { dispatchToastMessage } from '../../../../lib/toast';
 import type { IAdminUserTabs } from '../IAdminUserTabs';
 import { useChangeAdminStatusAction } from '../hooks/useChangeAdminStatusAction';
@@ -57,7 +57,7 @@ const UsersTableRow = ({ user, onClick, mediaQuery, onReload, tab }: UsersTableR
 	const isActive = user.active;
 	const isFederatedUser = isUserFederated(user);
 
-	const onChange = useMutableCallback(() => {
+	const onChange = useEffectEvent(() => {
 		onReload();
 	});
 

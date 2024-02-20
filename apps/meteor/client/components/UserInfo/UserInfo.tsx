@@ -18,7 +18,7 @@ import InfoPanelText from '../InfoPanel/InfoPanelText';
 import InfoPanelTitle from '../InfoPanel/InfoPanelTitle';
 import MarkdownText from '../MarkdownText';
 import UTCClock from '../UTCClock';
-import UserCard from '../UserCard';
+import { UserCardRoles } from '../UserCard';
 import UserInfoAvatar from './UserInfoAvatar';
 
 type UserInfoDataProps = Serialized<
@@ -111,7 +111,14 @@ const UserInfo = ({
 					{roles.length !== 0 && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Roles')}</InfoPanelLabel>
-							<UserCard.Roles>{roles}</UserCard.Roles>
+							<UserCardRoles>{roles}</UserCardRoles>
+						</InfoPanelField>
+					)}
+
+					{Number.isInteger(utcOffset) && (
+						<InfoPanelField>
+							<InfoPanelLabel>{t('Local_Time')}</InfoPanelLabel>
+							<InfoPanelText>{utcOffset && <UTCClock utcOffset={utcOffset} />}</InfoPanelText>
 						</InfoPanelField>
 					)}
 

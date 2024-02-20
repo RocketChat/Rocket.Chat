@@ -1148,6 +1148,7 @@
   "Rooms": "חדרים",
   "Running_Instances": "הפעלת מופעים",
   "S_new_messages_since_s": "%s הודעות חדשות מאז %s",
+  "S_new_messages": "הודעות חדשות %s",
   "SAML": "SAML",
   "SAML_Custom_Cert": "תעודה מותאמת אישית",
   "SAML_Custom_Entry_point": "Entry Point מותאם אישית",

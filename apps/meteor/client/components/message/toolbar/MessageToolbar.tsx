@@ -1,11 +1,12 @@
+import { useToolbar } from '@react-aria/toolbar';
 import type { IMessage, IRoom, ISubscription, ITranslatedMessage } from '@rocket.chat/core-typings';
 import { isThreadMessage, isRoomFederated, isVideoConfMessage } from '@rocket.chat/core-typings';
 import { MessageToolbar as FuselageMessageToolbar, MessageToolbarItem } from '@rocket.chat/fuselage';
 import { useFeaturePreview } from '@rocket.chat/ui-client';
 import { useUser, useSettings, useTranslation, useMethod, useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
-import React, { memo, useMemo } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import React, { memo, useMemo, useRef } from 'react';
 
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
@@ -17,6 +18,7 @@ import { useAutoTranslate } from '../../../views/room/MessageList/hooks/useAutoT
 import { useChat } from '../../../views/room/contexts/ChatContext';
 import { useRoomToolbox } from '../../../views/room/contexts/RoomToolboxContext';
 import MessageActionMenu from './MessageActionMenu';
+import { useWebDAVMessageAction } from './useWebDAVMessageAction';
 
 const getMessageContext = (message: IMessage, room: IRoom, context?: MessageActionContext): MessageActionContext => {
 	if (context) {
@@ -44,7 +46,7 @@ type MessageToolbarProps = {
 	room: IRoom;
 	subscription?: ISubscription;
 	onChangeMenuVisibility: (visible: boolean) => void;
-};
+} & ComponentProps<typeof FuselageMessageToolbar>;
 
 const MessageToolbar = ({
 	message,
@@ -52,10 +54,14 @@ const MessageToolbar = ({
 	room,
 	subscription,
 	onChangeMenuVisibility,
+	...props
 }: MessageToolbarProps): ReactElement | null => {
 	const t = useTranslation();
 	const user = useUser() ?? undefined;
 	const settings = useSettings();
+
+	const toolbarRef = useRef(null);
+	const { toolbarProps } = useToolbar(props, toolbarRef);
 
 	const quickReactionsEnabled = useFeaturePreview('quickReactions');
 
@@ -71,6 +77,9 @@ const MessageToolbar = ({
 	const actionButtonApps = useMessageActionAppsActionButtons(context);
 
 	const { messageToolbox: hiddenActions } = useLayoutHiddenActions();
+
+	// TODO: move this to another place
+	useWebDAVMessageAction();
 
 	const actionsQueryResult = useQuery(['rooms', room._id, 'messages', message._id, 'actions'] as const, async () => {
 		const props = { message, room, user, subscription, settings: mapSettings, chat };
@@ -102,7 +111,7 @@ const MessageToolbar = ({
 	};
 
 	return (
-		<FuselageMessageToolbar>
+		<FuselageMessageToolbar ref={toolbarRef} {...toolbarProps} aria-label={t('Message_actions')} {...props}>
 			{quickReactionsEnabled &&
 				isReactionAllowed &&
 				quickReactions.slice(0, 3).map(({ emoji, image }) => {
