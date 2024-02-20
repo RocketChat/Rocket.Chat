@@ -39,6 +39,8 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar }: ThreadMe
 
 	return (
 		<Message
+			role='listitem'
+			tabIndex={0}
 			id={message._id}
 			ref={messageRef}
 			isEditing={editing}
