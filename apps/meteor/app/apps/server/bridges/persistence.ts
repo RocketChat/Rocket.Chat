@@ -25,7 +25,7 @@ export class AppPersistenceBridge extends PersistenceBridge {
 		return this.orch
 			.getPersistenceModel()
 			.insertOne({ appId, data })
-			.then(({ insertedId }: InsertOneResult) => insertedId || appId);
+			.then(({ insertedId }: InsertOneResult) => insertedId || '');
 	}
 
 	protected async createWithAssociations(data: object, associations: Array<RocketChatAssociationRecord>, appId: string): Promise<string> {
@@ -42,7 +42,7 @@ export class AppPersistenceBridge extends PersistenceBridge {
 		return this.orch
 			.getPersistenceModel()
 			.insertOne({ appId, associations, data })
-			.then(({ insertedId }: InsertOneResult) => insertedId || appId);
+			.then(({ insertedId }: InsertOneResult) => insertedId || '');
 	}
 
 	protected async readById(id: string, appId: string): Promise<object> {
@@ -135,6 +135,6 @@ export class AppPersistenceBridge extends PersistenceBridge {
 		return this.orch
 			.getPersistenceModel()
 			.update(query, { $set: { data } }, { upsert })
-			.then(({ upsertedId }: UpdateResult) => upsertedId || appId);
+			.then(({ upsertedId }: UpdateResult) => upsertedId || '');
 	}
 }
