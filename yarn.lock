@@ -8944,11 +8944,11 @@ __metadata:
     "@rocket.chat/apps-engine": ^1.41.0
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/model-typings": "workspace:^"
-    "@types/jest": ~29.5.3
+    "@types/jest": ~29.5.7
     eslint: ~8.45.0
-    jest: ~29.6.1
-    ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    jest: ~29.6.4
+    ts-jest: ~29.1.1
+    typescript: ~5.3.2
   languageName: unknown
   linkType: soft
 
@@ -14060,16 +14060,6 @@ __metadata:
     expect: ^29.0.0
     pretty-format: ^29.0.0
   checksum: ef385905787db528de9b6beb2688865c0bb276e64256ed60b9a1a6ffc0b75737456cb5e27e952a3241c5845b6a1da487470010dd30f3ca59c8581624c564a823
-  languageName: node
-  linkType: hard
-
-"@types/jest@npm:~29.5.3":
-  version: 29.5.12
-  resolution: "@types/jest@npm:29.5.12"
-  dependencies:
-    expect: ^29.0.0
-    pretty-format: ^29.0.0
-  checksum: 19b1efdeed9d9a60a81edc8226cdeae5af7479e493eaed273e01243891c9651f7b8b4c08fc633a7d0d1d379b091c4179bbaa0807af62542325fd72f2dd17ce1c
   languageName: node
   linkType: hard
 
@@ -28255,7 +28245,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest@npm:~29.6.1, jest@npm:~29.6.4":
+"jest@npm:~29.6.4":
   version: 29.6.4
   resolution: "jest@npm:29.6.4"
   dependencies:
@@ -37131,17 +37121,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:7.x":
-  version: 7.6.0
-  resolution: "semver@npm:7.6.0"
-  dependencies:
-    lru-cache: ^6.0.0
-  bin:
-    semver: bin/semver.js
-  checksum: 7427f05b70786c696640edc29fdd4bc33b2acf3bbe1740b955029044f80575fc664e1a512e4113c3af21e767154a94b4aa214bf6cd6e42a1f6dba5914e0b208c
-  languageName: node
-  linkType: hard
-
 "semver@npm:^6.0.0, semver@npm:^6.1.1, semver@npm:^6.1.2, semver@npm:^6.3.0, semver@npm:^6.3.1":
   version: 6.3.1
   resolution: "semver@npm:6.3.1"
@@ -39907,39 +39886,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-jest@npm:~29.0.5":
-  version: 29.0.5
-  resolution: "ts-jest@npm:29.0.5"
-  dependencies:
-    bs-logger: 0.x
-    fast-json-stable-stringify: 2.x
-    jest-util: ^29.0.0
-    json5: ^2.2.3
-    lodash.memoize: 4.x
-    make-error: 1.x
-    semver: 7.x
-    yargs-parser: ^21.0.1
-  peerDependencies:
-    "@babel/core": ">=7.0.0-beta.0 <8"
-    "@jest/types": ^29.0.0
-    babel-jest: ^29.0.0
-    jest: ^29.0.0
-    typescript: ">=4.3"
-  peerDependenciesMeta:
-    "@babel/core":
-      optional: true
-    "@jest/types":
-      optional: true
-    babel-jest:
-      optional: true
-    esbuild:
-      optional: true
-  bin:
-    ts-jest: cli.js
-  checksum: f60f129c2287f4c963d9ee2677132496c5c5a5d39c27ad234199a1140c26318a7d5bda34890ab0e30636ec42a8de28f84487c09e9dcec639c9c67812b3a38373
-  languageName: node
-  linkType: hard
-
 "ts-loader@npm:~9.4.2":
   version: 9.4.4
   resolution: "ts-loader@npm:9.4.4"
@@ -40479,16 +40425,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:~5.1.6":
-  version: 5.1.6
-  resolution: "typescript@npm:5.1.6"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: b2f2c35096035fe1f5facd1e38922ccb8558996331405eb00a5111cc948b2e733163cc22fab5db46992aba7dd520fff637f2c1df4996ff0e134e77d3249a7350
-  languageName: node
-  linkType: hard
-
 "typescript@patch:typescript@^5.3.2#~builtin<compat/typescript>, typescript@patch:typescript@~5.3.2#~builtin<compat/typescript>":
   version: 5.3.2
   resolution: "typescript@patch:typescript@npm%3A5.3.2#~builtin<compat/typescript>::version=5.3.2&hash=85af82"
@@ -40496,16 +40432,6 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: c034461079fbfde3cb584ddee52afccb15b6e32a0ce186d0b2719968786f7ca73e1b07f71fac4163088790b16811c6ccf79680de190664ef66ff0ba9c1fe4a23
-  languageName: node
-  linkType: hard
-
-"typescript@patch:typescript@~5.1.6#~builtin<compat/typescript>":
-  version: 5.1.6
-  resolution: "typescript@patch:typescript@npm%3A5.1.6#~builtin<compat/typescript>::version=5.1.6&hash=85af82"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 21e88b0a0c0226f9cb9fd25b9626fb05b4c0f3fddac521844a13e1f30beb8f14e90bd409a9ac43c812c5946d714d6e0dee12d5d02dfc1c562c5aacfa1f49b606
   languageName: node
   linkType: hard
 
