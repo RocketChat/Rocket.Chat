@@ -9,7 +9,7 @@ import Triggers from './triggers';
 export const sendMessageAction = async (_: string, action: ILivechatSendMessageAction, condition: ILivechatTriggerCondition) => {
 	const { token, minimized } = store.state;
 
-	const agent = getAgent(action);
+	const agent = await getAgent(action);
 
 	const message = {
 		msg: action.params?.msg,
