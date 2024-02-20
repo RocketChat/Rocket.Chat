@@ -75,18 +75,24 @@ test.describe.serial('message-actions', () => {
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('Message to star');
 	});
 
-	// FIXME: missing expect assertion
-	test('expect copy the message', async ({ page }) => {
+	test('expect copy the message content to clipboard', async ({ page, context }) => {
+		await context.grantPermissions(['clipboard-read', 'clipboard-write']);
 		await poHomeChannel.content.sendMessage('Message to copy');
 		await poHomeChannel.content.openLastMessageMenu();
-		await page.locator('role=menuitem[name="Copy"]').click();
+		await page.locator('role=menuitem[name="Copy text"]').click();
+
+		const clipboardText = await page.evaluate("navigator.clipboard.readText()");
+		expect(clipboardText).toBe('Message to copy');
 	});
 
-	// FIXME: missing expect assertion
-	test('expect permalink the message', async ({ page }) => {
+	test('expect copy the message link to clipboard', async ({ page, context }) => {
+		await context.grantPermissions(['clipboard-read', 'clipboard-write']);
 		await poHomeChannel.content.sendMessage('Message to permalink');
 		await poHomeChannel.content.openLastMessageMenu();
-		await page.locator('role=menuitem[name="Get Link"]').click();
+		await page.locator('role=menuitem[name="Copy link"]').click();
+
+		const clipboardText = await page.evaluate('navigator.clipboard.readText()');
+		expect(clipboardText).toContain('http');
 	});
 
 	test.describe('Preference Hide Contextual Bar by clicking outside of it Enabled', () => {

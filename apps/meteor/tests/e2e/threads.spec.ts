@@ -62,7 +62,7 @@ test.describe.serial('Threads', () => {
 			await expect(poHomeChannel.content.lastThreadMessageText).toContainText('This is a thread message also sent in channel');
 
 			await poHomeChannel.content.openLastMessageMenu();
-			await page.locator('role=menuitem[name="Copy"]').click();
+			await page.locator('role=menuitem[name="Copy text"]').click();
 
 			await expect(page).toHaveURL(/.*thread/);
 			await expect(poHomeChannel.content.lastThreadMessageText).toContainText('This is a thread message also sent in channel');
@@ -124,16 +124,22 @@ test.describe.serial('Threads', () => {
 			await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('this is a message for reply');
 		});
 
-		// FIXME: missing assertion
-		test('expect copy the message', async ({ page }) => {
+		test('expect copy the thread message content to clipboard', async ({ page, context }) => {
+			await context.grantPermissions(['clipboard-read', 'clipboard-write']);
 			await poHomeChannel.content.openLastThreadMessageMenu();
-			await page.locator('role=menuitem[name="Copy"]').click();
+			await page.locator('role=menuitem[name="Copy text"]').click();
+			
+			const clipboardText = await page.evaluate("navigator.clipboard.readText()");
+			expect(clipboardText).toBe('this is a message for reply');
 		});
 
-		// FIXME: missing assertion
-		test('expect permalink the thread message', async ({ page }) => {
+		test('expect copy the thread message link to clipboard', async ({ page, context }) => {
+			await context.grantPermissions(['clipboard-read', 'clipboard-write']);
 			await poHomeChannel.content.openLastThreadMessageMenu();
-			await page.locator('role=menuitem[name="Get Link"]').click();
+			await page.locator('role=menuitem[name="Copy link"]').click();
+
+			const clipboardText = await page.evaluate("navigator.clipboard.readText()");
+			expect(clipboardText).toContain('http');
 		});
 
 		test('expect close thread if has only one message and user press escape', async ({ page }) => {
