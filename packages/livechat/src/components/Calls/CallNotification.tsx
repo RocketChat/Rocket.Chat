@@ -75,7 +75,7 @@ const CallNotification = ({ callProvider, callerUsername, url, dispatch, time, r
 		await Livechat.updateCallStatus(CallStatus.DECLINED, rid, callId);
 		await Livechat.notifyCallDeclined(rid);
 		dispatch({
-			incomingCallAlert: null,
+			incomingCallAlert: undefined,
 			ongoingCall: {
 				callStatus: CallStatus.DECLINED,
 				time: { time },

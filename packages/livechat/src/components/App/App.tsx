@@ -1,11 +1,9 @@
-import type { ILivechatTrigger } from '@rocket.chat/core-typings';
 import i18next from 'i18next';
 import { Component } from 'preact';
 import Router, { route } from 'preact-router';
 import { parse } from 'query-string';
 import { withTranslation } from 'react-i18next';
 
-import type { Department } from '../../definitions/departments';
 import { setInitCookies } from '../../helpers/cookies';
 import { isActiveSession } from '../../helpers/isActiveSession';
 import { isRTL } from '../../helpers/isRTL';
@@ -24,49 +22,31 @@ import LeaveMessage from '../../routes/LeaveMessage';
 import Register from '../../routes/Register';
 import SwitchDepartment from '../../routes/SwitchDepartment';
 import TriggerMessage from '../../routes/TriggerMessage';
-import type { Dispatch } from '../../store';
+import type { Dispatch, StoreState } from '../../store';
 import store from '../../store';
 
+declare module '../../store' {
+	export interface StoreState {
+		undocked?: boolean;
+		expanded?: boolean;
+	}
+}
+
 type AppProps = {
-	config: {
-		settings: {
-			registrationForm?: boolean;
-			nameFieldRegistrationForm?: boolean;
-			emailFieldRegistrationForm?: boolean;
-			forceAcceptDataProcessingConsent?: boolean;
-		};
-		online?: boolean;
-		departments: Department[];
-		enabled?: boolean;
-		triggers: ILivechatTrigger[];
-	};
-	gdpr: {
-		accepted: boolean;
-	};
-	triggered?: boolean;
-	user: {
-		token: string;
-	};
+	// Store Props
+	config: StoreState['config'];
+	gdpr: StoreState['gdpr'];
+	triggered?: StoreState['triggered'];
+	user?: StoreState['user'];
+	sound?: StoreState['sound'];
+	alerts?: StoreState['alerts'];
+	modal?: StoreState['modal'];
+	iframe: StoreState['iframe'];
+	undocked: StoreState['undocked'];
+	minimized: StoreState['minimized'];
+	expanded: StoreState['expanded'];
+	// Normal Props
 	dispatch: Dispatch;
-	sound: {
-		enabled: boolean;
-	};
-	minimized: boolean;
-	undocked?: boolean;
-	expanded: boolean;
-	modal: boolean;
-	alerts: {
-		id: string;
-	}[];
-	iframe: {
-		visible: boolean;
-		guest?: {
-			token: string;
-			department: string;
-			name: string;
-			email: string;
-		};
-	};
 	i18n: typeof i18next;
 };
 

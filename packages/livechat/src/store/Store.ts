@@ -1,6 +1,8 @@
 import type { Emitter, EventHandlerMap, EventType, Handler, WildcardHandler } from 'mitt';
 import mitt from 'mitt';
 
+import type { StoreState, StoreStateKey } from '.';
+
 function getLocalStorage() {
 	try {
 		return window.localStorage;
@@ -17,13 +19,12 @@ function getLocalStorage() {
 	}
 }
 const localStorage = getLocalStorage();
-
-export default class Store<T extends Record<string, unknown>> implements Emitter {
+export default class Store<T extends StoreState> implements Emitter {
 	private _state: T;
 
 	private localStorageKey: string;
 
-	private dontPersist: string[];
+	private dontPersist: StoreStateKey[];
 
 	all: EventHandlerMap;
 
@@ -49,7 +50,7 @@ export default class Store<T extends Record<string, unknown>> implements Emitter
 			dontPersist = [],
 		}: {
 			localStorageKey?: string;
-			dontPersist?: string[];
+			dontPersist?: StoreStateKey[];
 		} = {},
 	) {
 		const emitter = mitt();
@@ -110,7 +111,7 @@ export default class Store<T extends Record<string, unknown>> implements Emitter
 		this.emit('change', [this._state, prevState, partialState]);
 	}
 
-	unsetSinglePropInStateByName(propName: string) {
+	unsetSinglePropInStateByName(propName: StoreStateKey) {
 		const prevState = this._state;
 		delete prevState[propName];
 		this._state = { ...prevState };

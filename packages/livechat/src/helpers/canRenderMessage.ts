@@ -24,7 +24,6 @@ const msgTypesNotRendered = [
 	MESSAGE_TYPE_SLA_CHANGE,
 ];
 
-export const canRenderMessage = ({ t }: { t: string }) => !msgTypesNotRendered.includes(t);
-
+export const canRenderMessage = ({ t }: { t?: string }) => t && !msgTypesNotRendered.includes(t);
 export const canRenderTriggerMessage = (user: { token: string }) => (message: { trigger?: boolean; triggerAfterRegistration?: boolean }) =>
 	!message.trigger || (!user && !message.triggerAfterRegistration) || (user && message.triggerAfterRegistration);

@@ -6,7 +6,7 @@ import { getDateFnsLocale } from './locale';
 export const normalizeAgent = (agentData: IOmnichannelAgent) =>
 	agentData && { name: agentData.name, username: agentData.username, status: agentData.status };
 
-export const normalizeQueueAlert = async (queueInfo: any) => {
+export const normalizeQueueAlert = async (queueInfo: { spot: number; estimatedWaitTimeSeconds: number }) => {
 	if (!queueInfo) {
 		return;
 	}

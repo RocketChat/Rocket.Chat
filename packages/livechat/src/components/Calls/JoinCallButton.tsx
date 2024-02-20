@@ -20,6 +20,10 @@ type JoinCallButtonProps = {
 export const JoinCallButton = ({ t, ...props }: JoinCallButtonProps) => {
 	const { token, room } = store.state;
 
+	if (!room) {
+		return null;
+	}
+
 	const clickJoinCall = () => {
 		switch (props.callProvider) {
 			case 'video-conference': {

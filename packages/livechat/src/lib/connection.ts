@@ -1,6 +1,7 @@
 import i18next from 'i18next';
 
 import { Livechat } from '../api';
+import type { Alert } from '../definitions/alert';
 import store from '../store';
 import constants from './constants';
 import { loadConfig } from './main';
@@ -54,10 +55,20 @@ const Connection = {
 
 	async clearAlerts() {
 		const { alerts } = store.state;
-		await store.setState({ alerts: alerts.filter((alert) => ![livechatDisconnectedAlertId, livechatConnectedAlertId].includes(alert.id)) });
+
+		const filteredAlerts = alerts.filter(
+			(alert) =>
+				![livechatDisconnectedAlertId, livechatConnectedAlertId].includes(alert.id as 'LIVECHAT_CONNECTED' | 'LIVECHAT_DISCONNECTED'),
+		);
+		await store.setState({
+			alerts: filteredAlerts,
+		});
 	},
 
-	async displayAlert(alert = {}) {
+	async displayAlert(alert: Alert) {
+		if (!alert?.id) {
+			throw new Error('alert.id is required');
+		}
 		const { alerts } = store.state;
 		await store.setState({ alerts: (alerts.push(alert), alerts) });
 	},

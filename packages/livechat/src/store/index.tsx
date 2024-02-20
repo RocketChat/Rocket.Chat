@@ -1,87 +1,146 @@
+import type { ILivechatTrigger, ILivechatVisitor, IMessage, Serialized } from '@rocket.chat/core-typings';
+import type { ILivechatRoomAPI } from '@rocket.chat/sdk/interfaces';
 import type { ComponentChildren } from 'preact';
 import { Component, createContext } from 'preact';
 
 import type { CustomField } from '../components/Form/CustomFields';
+import type { Agent } from '../definitions/agents';
+import type { Alert } from '../definitions/alert';
 import type { Department } from '../definitions/departments';
+import type { Guest } from '../definitions/guest';
 import { parentCall } from '../lib/parentCall';
 import { createToken } from '../lib/random';
 import Store from './Store';
 
-type StoreState = {
-	token: string;
-	typing: string[];
-	config: {
-		messages: any;
-		theme: any;
-		triggers: any[];
-		resources: any;
-		settings: {
-			registrationForm?: boolean;
-			nameFieldRegistrationForm?: boolean;
-			emailFieldRegistrationForm?: boolean;
-			forceAcceptDataProcessingConsent?: boolean;
-			fileUpload?: any;
-			allowSwitchingDepartments?: any;
-			showConnecting?: any;
-			limitTextLength?: any;
-			displayOfflineForm?: boolean;
-		};
-		online?: boolean;
-		departments: Department[];
-		customFields?: CustomField[];
-		enabled?: boolean;
+export type StoreStateKey = keyof StoreState;
+
+// TODO: create proper `widget` types on core-typings (e.g. `IWidgetLivechatAgent`)
+interface Messages {
+	conversationFinishedMessage: string;
+	conversationFinishedText: string;
+	dataProcessingConsentText: string;
+	offlineMessage: string;
+	offlineSuccessMessage: string;
+	offlineUnavailableMessage: string;
+	registrationFormMessage: string;
+	transcriptMessage: string;
+	switchDepartmentMessage?: string;
+}
+
+interface ActionLinks {
+	webrtc: {
+		actionLinksAlignment: string;
+		i18nLabel: string;
+		label: string;
+		method_id: string;
+	}[];
+	jitsi: {
+		icon: string;
+		i18nLabel: string;
+	}[];
+}
+
+interface Theme {
+	title?: string;
+	color?: string;
+	offlineTitle?: string;
+	offlineColor?: string;
+	actionLinks?: ActionLinks;
+}
+
+interface Settings {
+	registrationForm?: boolean;
+	nameFieldRegistrationForm?: boolean;
+	emailFieldRegistrationForm?: boolean;
+	forceAcceptDataProcessingConsent?: boolean;
+	fileUpload?: boolean;
+	allowSwitchingDepartments?: boolean;
+	showConnecting?: boolean;
+	limitTextLength?: number;
+	displayOfflineForm?: boolean;
+}
+
+interface Config {
+	messages: Messages;
+	theme: Theme;
+	triggers: ILivechatTrigger[];
+	resources?: { src: string };
+	settings: Settings;
+	online?: boolean;
+	departments: Department[];
+	customFields?: CustomField[];
+	enabled?: boolean;
+}
+
+interface Iframe {
+	guest: Partial<Guest>;
+	theme: {
+		title?: string;
+		color?: string;
+		fontColor?: string;
+		iconColor?: string;
+		offlineTitle?: string;
 	};
-	messages: any[];
-	user: any;
+	visible?: boolean;
+	department?: string;
+	language?: string;
+}
+export interface StoreState {
+	activeTriggers?: { [key: string]: { name: string; value: string } };
+	agent?: Agent;
+	config: Config;
+	connecting?: boolean;
+	defaultAgent?: { agent: Agent; success: boolean; ts: string } | string;
+	department?: string;
+	gdpr: { accepted: boolean };
+	iframe: Iframe;
+	typing: string[];
+	messages: IMessage[];
+	messageListPosition?: 'bottom' | 'top' | 'free';
+	minimized: boolean;
+	user?: Serialized<ILivechatVisitor>;
 	sound: {
 		src?: string;
 		play?: boolean;
 		enabled: boolean;
 	};
-	iframe: {
-		guest: any;
-		theme: any;
-		visible: boolean;
-	};
-	gdpr: {
-		accepted: boolean;
-	};
-	alerts: any[];
+	alerts: Alert[];
 	visible: boolean;
-	minimized: boolean;
-	unread: any;
-	incomingCallAlert: any;
-	ongoingCall: any;
-	businessUnit: any;
+	unread?: number;
+	businessUnit?: string;
 	openSessionIds?: string[];
 	triggered?: boolean;
-	undocked?: boolean;
-	expanded?: boolean;
-	modal?: any;
-	agent?: any;
-	room?: any;
+	modal?: Component;
+	room?: ILivechatRoomAPI;
 	noMoreMessages?: boolean;
 	loading?: boolean;
-	department?: string;
-	lastReadMessageId?: any;
-	triggerAgent?: any;
-	queueInfo?: any;
-	connecting?: boolean;
-};
+	lastReadMessageId?: string;
+	queueInfo?: { spot: number; estimatedWaitTimeSeconds: number; message?: string };
+	token: string;
+}
 
 export const initialState = (): StoreState => ({
 	token: createToken(),
 	typing: [],
 	config: {
-		messages: {},
+		messages: {
+			conversationFinishedMessage: '',
+			conversationFinishedText: '',
+			dataProcessingConsentText: '',
+			offlineMessage: '',
+			offlineSuccessMessage: '',
+			offlineUnavailableMessage: '',
+			registrationFormMessage: '',
+			transcriptMessage: '',
+		},
 		settings: {},
 		theme: {},
 		triggers: [],
 		departments: [],
-		resources: {},
+		resources: undefined,
 	},
 	messages: [],
-	user: null,
+	user: undefined,
 	sound: {
 		src: '',
 		enabled: true,
@@ -98,10 +157,10 @@ export const initialState = (): StoreState => ({
 	alerts: [],
 	visible: true,
 	minimized: true,
-	unread: null,
-	incomingCallAlert: null,
-	ongoingCall: null, // TODO: store call info like url, startTime, timeout, etc here
-	businessUnit: null,
+	unread: undefined,
+	incomingCallAlert: undefined,
+	ongoingCall: undefined, // TODO: store call info like url, startTime, timeout, etc here
+	businessUnit: undefined,
 });
 
 const dontPersist = [
@@ -115,9 +174,9 @@ const dontPersist = [
 	'incomingCallAlert',
 	'ongoingCall',
 	'parentUrl',
-];
+] as StoreStateKey[];
 
-export const store = new Store(initialState(), { dontPersist });
+export const store = new Store<StoreState>(initialState(), { dontPersist });
 
 const { sessionStorage } = window;
 

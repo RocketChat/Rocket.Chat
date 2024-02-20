@@ -26,9 +26,7 @@ type screenHeaderProps = {
 	onMinimize: () => unknown;
 	onRestore: () => unknown;
 	onOpenWindow: () => unknown;
-	queueInfo: {
-		spot: number;
-	};
+	queueInfo: { spot: number; estimatedWaitTimeSeconds: number };
 	title: string;
 };
 

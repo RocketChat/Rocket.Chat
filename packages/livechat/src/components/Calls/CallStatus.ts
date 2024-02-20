@@ -11,3 +11,24 @@ export const isCallOngoing = (callStatus: CallStatus) =>
 	callStatus === CallStatus.IN_PROGRESS ||
 	callStatus === CallStatus.IN_PROGRESS_DIFFERENT_TAB ||
 	callStatus === CallStatus.IN_PROGRESS_SAME_TAB;
+
+interface IncomingCallAlert {
+	show?: boolean;
+	callProvider?: string;
+	callerUsername?: string;
+	rid?: string;
+	time?: { time: number };
+	callId?: string;
+	url?: string;
+}
+interface OngoingCall {
+	callStatus: CallStatus;
+	time?: { time: number };
+}
+
+declare module '../../store' {
+	export interface StoreState {
+		ongoingCall?: OngoingCall;
+		incomingCallAlert?: IncomingCallAlert;
+	}
+}

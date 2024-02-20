@@ -409,7 +409,6 @@ export const ChatConnector = ({ ref, t, ...props }) => (
 			visible,
 			unread,
 			lastReadMessageId,
-			triggerAgent,
 			queueInfo,
 			incomingCallAlert,
 			ongoingCall,
@@ -465,7 +464,6 @@ export const ChatConnector = ({ ref, t, ...props }) => (
 				unread={unread}
 				lastReadMessageId={lastReadMessageId}
 				guest={guest}
-				triggerAgent={triggerAgent}
 				queueInfo={
 					queueInfo
 						? {

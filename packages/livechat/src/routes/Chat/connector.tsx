@@ -33,7 +33,6 @@ type ChatConnectorProps = Omit<
 	| 'unread'
 	| 'lastReadMessageId'
 	| 'guest'
-	| 'triggerAgent'
 	| 'queueInfo'
 	| 'registrationFormEnabled'
 	| 'nameFieldRegistrationForm'
@@ -77,7 +76,6 @@ const ChatConnector = ({ ref, ...props }: ChatConnectorProps) => (
 			visible,
 			unread,
 			lastReadMessageId,
-			triggerAgent,
 			queueInfo,
 		}) => (
 			<ChatContainer
@@ -130,7 +128,6 @@ const ChatConnector = ({ ref, ...props }: ChatConnectorProps) => (
 				unread={unread}
 				lastReadMessageId={lastReadMessageId}
 				guest={guest}
-				triggerAgent={triggerAgent}
 				queueInfo={
 					queueInfo
 						? {
