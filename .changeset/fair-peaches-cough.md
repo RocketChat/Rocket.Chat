@@ -3,4 +3,4 @@
 "@rocket.chat/livechat": patch
 ---
 
-fix: Livechat allowing file upload when setting is false
+Fixes the livechat client ignoring the `livechat_fileuploads_enabled` setting when uploading files
