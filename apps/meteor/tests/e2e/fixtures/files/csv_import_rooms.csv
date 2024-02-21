@@ -1,0 +1,4 @@
+"imported-csv-group","billy.bob","private",""
+"imported-csv-channel","billy.bob","public",""
+"imported-csv-group-with-members","billy.bob","private","billy.bob;billy.joe"
+"imported-csv-channel-with-members","billy.bob","public","billy.bob;billy.joe"

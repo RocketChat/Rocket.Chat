@@ -182,7 +182,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 							<Field>
 								<FieldLabel htmlFor={ownerField}>{t('Owner')}</FieldLabel>
 								<FieldRow>
-									<TextInput id={ownerField} readOnly value={room.u?.username} />
+									<TextInput id={ownerField} name='roomOwner' readOnly value={room.u?.username} />
 								</FieldRow>
 							</Field>
 						)}
