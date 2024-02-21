@@ -74,7 +74,7 @@ export class AppHttpBridge extends HttpBridge {
 		this.orch.debugLog(`The App ${info.appId} is requesting from the outter webs:`, info);
 
 		const response = await fetch(
-			info.url,
+			url.href,
 			{
 				method,
 				body: content,
