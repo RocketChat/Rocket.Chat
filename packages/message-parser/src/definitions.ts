@@ -120,6 +120,7 @@ export type Strike = {
     | ChannelMention
     | InlineCode
     | Italic
+    | Timestamp
   >;
 };
 
@@ -174,6 +175,14 @@ export type ChannelMention = {
   value: Plain;
 };
 
+export type Timestamp = {
+  type: 'TIMESTAMP';
+  value: {
+    timestamp: string;
+    format: 't' | 'T' | 'd' | 'D' | 'f' | 'F' | 'R';
+  };
+};
+
 export type Types = {
   BOLD: Bold;
   PARAGRAPH: Paragraph;
@@ -222,6 +231,7 @@ export type ASTNode =
 export type TypesKeys = keyof Types;
 
 export type Inlines =
+  | Timestamp
   | Bold
   | Plain
   | Italic
