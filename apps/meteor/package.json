@@ -14,7 +14,7 @@
 	],
 	"scripts": {
 		"start": "meteor",
-		"build:ci": "METEOR_DISABLE_OPTIMISTIC_CACHING=1 meteor build --server-only",
+		"build:ci": "METEOR_DISABLE_OPTIMISTIC_CACHING=1 meteor build --server-only --directory /tmp/dist",
 		"dev": "meteor --exclude-archs \"web.browser.legacy, web.cordova\"",
 		"dsv": "meteor npm run dev",
 		"ha": "meteor npm run ha:start",
