@@ -4746,6 +4746,7 @@
   "Turn_off_video": "Videó kikapcsolása",
   "Two Factor Authentication": "Kétfaktoros hitelesítés",
   "Two-factor_authentication": "Időalapú, egyszer használatos jelszóval történő kétfaktoros hitelesítés",
+  "Two-factor_authentication_via_TOTP": "Kétlépcsős azonosítás",
   "Two-factor_authentication_disabled": "A kétfaktoros hitelesítés le van tiltva",
   "Two-factor_authentication_email": "E-mailen keresztüli kétfaktoros hitelesítés",
   "Two-factor_authentication_email_is_currently_disabled": "Az e-mailen keresztüli kétfaktoros hitelesítés jelenleg le van tiltva",

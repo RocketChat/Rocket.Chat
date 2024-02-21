@@ -4224,6 +4224,7 @@
   "Turn_off_video": "Desactivar el vídeo",
   "Two Factor Authentication": "Autenticació de dos factors",
   "Two-factor_authentication": "Autenticació de dos factors a través de TOTP",
+  "Two-factor_authentication_via_TOTP": "Autenticació de dos factors a través de TOTP",
   "Two-factor_authentication_disabled": "Autenticació de dos factors desactivada",
   "Two-factor_authentication_email": "Autenticació de dos factors via correu electrònic",
   "Two-factor_authentication_email_is_currently_disabled": "L'autenticació en 2 passos via correu electrònic està inhabilitada",

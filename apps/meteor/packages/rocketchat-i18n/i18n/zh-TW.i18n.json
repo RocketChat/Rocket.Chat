@@ -4067,6 +4067,7 @@
   "Turn_ON": "打開",
   "Two Factor Authentication": "2步驟驗證",
   "Two-factor_authentication": "透過 TOTP 2步驟驗證",
+  "Two-factor_authentication_via_TOTP": "透過 TOTP 2步驟驗證",
   "Two-factor_authentication_disabled": "2步驟驗證被停用",
   "Two-factor_authentication_email": "通過電子郵件進行2步驟驗證",
   "Two-factor_authentication_email_is_currently_disabled": "目前已停用透過電子郵件進行的2步驟驗證",
