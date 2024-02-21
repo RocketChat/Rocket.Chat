@@ -2457,6 +2457,7 @@
   "Turn_OFF": "Хаах",
   "Turn_ON": "Асаах",
   "Two-factor_authentication": "Хоёр хүчин зүйлийн баталгаажилт",
+  "Two-factor_authentication_via_TOTP": "Хоёр хүчин зүйлийн баталгаажилт",
   "Two-factor_authentication_disabled": "Хоёр хүчин зүйлийн баталгаажуулалт идэвхгүй",
   "Two-factor_authentication_enabled": "Хоёр хүчин зүйлийн баталгаажуулалт идэвхжсэн",
   "Two-factor_authentication_is_currently_disabled": "Хоёр хүчин зүйл таньж баталгаажуулах боломжгүй байна",

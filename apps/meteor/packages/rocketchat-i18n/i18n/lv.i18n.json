@@ -2471,6 +2471,7 @@
   "Turn_OFF": "Izslēgt",
   "Turn_ON": "Ieslēgt",
   "Two-factor_authentication": "Divu faktoru autentifikācija",
+  "Two-factor_authentication_via_TOTP": "Divu faktoru autentifikācija",
   "Two-factor_authentication_disabled": "Divu faktoru autentifikācija ir atspējota",
   "Two-factor_authentication_enabled": "Divu faktoru autentifikācija ir iespējota",
   "Two-factor_authentication_is_currently_disabled": "Divu faktoru autentifikācija pašlaik ir atspējota",

@@ -4255,6 +4255,7 @@
   "Turn_off_video": "ビデオをオフ",
   "Two Factor Authentication": "2要素認証",
   "Two-factor_authentication": "TOTPによる2要素認証",
+  "Two-factor_authentication_via_TOTP": "TOTPによる2要素認証",
   "Two-factor_authentication_disabled": "2要素認証が無効です",
   "Two-factor_authentication_email": "メールによる2要素認証",
   "Two-factor_authentication_email_is_currently_disabled": "メールによる2要素認証は現在無効になっています",
