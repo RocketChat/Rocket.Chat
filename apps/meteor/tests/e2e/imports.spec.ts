@@ -106,7 +106,7 @@ test.describe.serial('imports', () => {
 		const poAdmin: Admin = new Admin(page);
 		await page.goto('/admin/rooms');
 
-		importedRooms.forEach(async (room) => {
+		for await (const room of importedRooms) {
 			await poAdmin.inputSearchRooms.fill(room.name);
 
 			const expectedMembersCount = room.members.split(';').filter((username) => username !== room.ownerUsername).length + 1;
@@ -115,6 +115,6 @@ test.describe.serial('imports', () => {
 			await poAdmin.getRoomRow(room.name).click();
 			room.visibility === 'private' ? await expect(poAdmin.privateInput).toBeChecked() : await expect(poAdmin.privateInput).not.toBeChecked();
 			await expect(poAdmin.roomOwnerInput).toHaveText(room.ownerUsername);
-		});
+		}
 	});
 });
