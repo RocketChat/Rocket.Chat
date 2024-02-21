@@ -35,12 +35,7 @@ const usersCsvsToJson = (): void => {
 	fs.createReadStream(usersCsvDir)
 		.pipe(parse({ delimiter: ',' }))
 		.on('data', (rows) => {
-			importedRooms.push({
-				name: rows[0],
-				ownerUsername: rows[1],
-				visibility: rows[2],
-				members: rows[3],
-			});
+			rowUserName.push(rows[0]);
 		});
 };
 
@@ -48,7 +43,12 @@ const roomsCsvToJson = (): void => {
 	fs.createReadStream(roomsCsvDir)
 		.pipe(parse({ delimiter: ',' }))
 		.on('data', (rows) => {
-			rowUserName.push(rows[0]);
+			importedRooms.push({
+				name: rows[0],
+				ownerUsername: rows[1],
+				visibility: rows[2],
+				members: rows[3],
+			});
 		});
 };
 
