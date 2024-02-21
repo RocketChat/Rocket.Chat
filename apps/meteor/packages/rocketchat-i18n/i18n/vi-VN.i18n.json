@@ -2562,6 +2562,7 @@
   "Turn_OFF": "Tắt",
   "Turn_ON": "Bật",
   "Two-factor_authentication": "Xác thực hai yếu tố",
+  "Two-factor_authentication_via_TOTP": "Xác thực hai yếu tố",
   "Two-factor_authentication_disabled": "Xác thực hai yếu tố bị vô hiệu hoá",
   "Two-factor_authentication_enabled": "Xác thực hai yếu tố được kích hoạt",
   "Two-factor_authentication_is_currently_disabled": "Xác thực hai yếu tố hiện đang bị vô hiệu hóa",

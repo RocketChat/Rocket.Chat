@@ -2462,6 +2462,7 @@
   "Turn_OFF": "Fillo",
   "Turn_ON": "Ndez",
   "Two-factor_authentication": "Authentication me dy faktorë",
+  "Two-factor_authentication_via_TOTP": "Authentication me dy faktorë",
   "Two-factor_authentication_disabled": "Autentifikimi me dy faktorë është i paaftë",
   "Two-factor_authentication_enabled": "Aktivizimi i legalizimit me dy faktorë",
   "Two-factor_authentication_is_currently_disabled": "Vertetimi me dy faktorë është aktualisht i çaktivizuar",

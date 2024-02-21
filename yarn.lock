@@ -9304,7 +9304,7 @@ __metadata:
     "@babel/preset-typescript": ~7.22.15
     "@rocket.chat/apps-engine": 1.41.0
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/fuselage": ^0.45.0
+    "@rocket.chat/fuselage": ^0.47.0
     "@rocket.chat/fuselage-hooks": ^0.33.0
     "@rocket.chat/fuselage-polyfills": ~0.31.25
     "@rocket.chat/gazzodown": "workspace:^"
@@ -9359,9 +9359,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/fuselage@npm:^0.41.0":
-  version: 0.41.0
-  resolution: "@rocket.chat/fuselage@npm:0.41.0"
+"@rocket.chat/fuselage@npm:^0.47.0":
+  version: 0.47.0
+  resolution: "@rocket.chat/fuselage@npm:0.47.0"
   dependencies:
     "@rocket.chat/css-in-js": ^0.31.25
     "@rocket.chat/css-supports": ^0.31.25
@@ -9379,31 +9379,7 @@ __metadata:
     react: ^17.0.2
     react-dom: ^17.0.2
     react-virtuoso: 1.2.4
-  checksum: 8ee33c5626ff7fb8970714696332efc723ca0793470d0b4da9a169aa6b2528ec75068d775e8f149dd3a1ea401ff0240be892022b64bd80e5bd4fc04349e0c0aa
-  languageName: node
-  linkType: hard
-
-"@rocket.chat/fuselage@npm:^0.45.0":
-  version: 0.45.0
-  resolution: "@rocket.chat/fuselage@npm:0.45.0"
-  dependencies:
-    "@rocket.chat/css-in-js": ^0.31.25
-    "@rocket.chat/css-supports": ^0.31.25
-    "@rocket.chat/fuselage-tokens": ^0.32.0
-    "@rocket.chat/memo": ^0.31.25
-    "@rocket.chat/styled": ^0.31.25
-    invariant: ^2.2.4
-    react-aria: ~3.23.1
-    react-keyed-flatten-children: ^1.3.0
-    react-stately: ~3.17.0
-  peerDependencies:
-    "@rocket.chat/fuselage-hooks": "*"
-    "@rocket.chat/fuselage-polyfills": "*"
-    "@rocket.chat/icons": "*"
-    react: ^17.0.2
-    react-dom: ^17.0.2
-    react-virtuoso: 1.2.4
-  checksum: 84611983e263c0016687100c342c4256d6aff2a221c9d7ce86ecd7d49fd1c5fb5cb4d7d79aedd53fd4a1b29ad89efb4bb50357a8e24997822fb249fa78a5ac70
+  checksum: 4ca06bd467db88b5c4c3eed70bbd8879923cfbe7f5a92bd934ed0f800b37825592d84753e124a3f2c70d4e9d82bf5dac6bc2735ea93ccfa26fddc6ab49ea8094
   languageName: node
   linkType: hard
 
@@ -9414,7 +9390,7 @@ __metadata:
     "@babel/core": ~7.22.20
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": ~0.31.25
-    "@rocket.chat/fuselage": ^0.45.0
+    "@rocket.chat/fuselage": ^0.47.0
     "@rocket.chat/fuselage-tokens": ~0.32.0
     "@rocket.chat/message-parser": ~0.31.28
     "@rocket.chat/styled": ~0.31.25
@@ -9747,7 +9723,7 @@ __metadata:
     "@rocket.chat/favicon": "workspace:^"
     "@rocket.chat/forked-matrix-appservice-bridge": ^4.0.2
     "@rocket.chat/forked-matrix-bot-sdk": ^0.6.0-beta.3
-    "@rocket.chat/fuselage": ^0.45.0
+    "@rocket.chat/fuselage": ^0.47.0
     "@rocket.chat/fuselage-hooks": ^0.33.0
     "@rocket.chat/fuselage-polyfills": ~0.31.25
     "@rocket.chat/fuselage-toastbar": ~0.31.25
@@ -10605,7 +10581,7 @@ __metadata:
   resolution: "@rocket.chat/ui-avatar@workspace:packages/ui-avatar"
   dependencies:
     "@babel/core": ~7.22.20
-    "@rocket.chat/fuselage": ^0.41.0
+    "@rocket.chat/fuselage": ^0.47.0
     "@rocket.chat/ui-contexts": "workspace:^"
     "@types/babel__core": ~7.20.3
     "@types/react": ~17.0.69
@@ -10631,7 +10607,7 @@ __metadata:
     "@babel/core": ~7.22.20
     "@react-aria/toolbar": ^3.0.0-beta.1
     "@rocket.chat/css-in-js": ~0.31.25
-    "@rocket.chat/fuselage": ^0.45.0
+    "@rocket.chat/fuselage": ^0.47.0
     "@rocket.chat/fuselage-hooks": ^0.33.0
     "@rocket.chat/icons": ^0.33.0
     "@rocket.chat/mock-providers": "workspace:^"
@@ -10684,7 +10660,7 @@ __metadata:
     "@babel/core": ~7.22.20
     "@react-aria/toolbar": ^3.0.0-beta.1
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/fuselage": ^0.45.0
+    "@rocket.chat/fuselage": ^0.47.0
     "@rocket.chat/icons": ^0.33.0
     "@storybook/addon-actions": ~6.5.16
     "@storybook/addon-docs": ~6.5.16
@@ -10776,7 +10752,7 @@ __metadata:
   resolution: "@rocket.chat/ui-theming@workspace:ee/packages/ui-theming"
   dependencies:
     "@rocket.chat/css-in-js": ~0.31.25
-    "@rocket.chat/fuselage": ^0.45.0
+    "@rocket.chat/fuselage": ^0.47.0
     "@rocket.chat/fuselage-hooks": ^0.33.0
     "@rocket.chat/icons": ^0.33.0
     "@rocket.chat/ui-contexts": "workspace:~"
@@ -10819,7 +10795,7 @@ __metadata:
     "@rocket.chat/css-in-js": ~0.31.25
     "@rocket.chat/emitter": ~0.31.25
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/fuselage": ^0.45.0
+    "@rocket.chat/fuselage": ^0.47.0
     "@rocket.chat/fuselage-hooks": ^0.33.0
     "@rocket.chat/icons": ^0.33.0
     "@rocket.chat/styled": ~0.31.25
@@ -10864,7 +10840,7 @@ __metadata:
     "@codemirror/tooltip": ^0.19.16
     "@lezer/highlight": ^1.1.6
     "@rocket.chat/css-in-js": ~0.31.25
-    "@rocket.chat/fuselage": ^0.45.0
+    "@rocket.chat/fuselage": ^0.47.0
     "@rocket.chat/fuselage-hooks": ^0.33.0
     "@rocket.chat/fuselage-polyfills": ~0.31.25
     "@rocket.chat/fuselage-toastbar": ^0.31.25
@@ -36614,7 +36590,7 @@ __metadata:
     "@types/chart.js": ^2.9.39
     "@types/js-yaml": ^4.0.8
     node-gyp: ^9.4.1
-    turbo: ~1.11.2
+    turbo: ^1.12.4
   languageName: unknown
   linkType: soft
 
@@ -40112,58 +40088,58 @@ __metadata:
   languageName: node
   linkType: hard
 
-"turbo-darwin-64@npm:1.11.2":
-  version: 1.11.2
-  resolution: "turbo-darwin-64@npm:1.11.2"
+"turbo-darwin-64@npm:1.12.4":
+  version: 1.12.4
+  resolution: "turbo-darwin-64@npm:1.12.4"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-darwin-arm64@npm:1.11.2":
-  version: 1.11.2
-  resolution: "turbo-darwin-arm64@npm:1.11.2"
+"turbo-darwin-arm64@npm:1.12.4":
+  version: 1.12.4
+  resolution: "turbo-darwin-arm64@npm:1.12.4"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-linux-64@npm:1.11.2":
-  version: 1.11.2
-  resolution: "turbo-linux-64@npm:1.11.2"
+"turbo-linux-64@npm:1.12.4":
+  version: 1.12.4
+  resolution: "turbo-linux-64@npm:1.12.4"
   conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-linux-arm64@npm:1.11.2":
-  version: 1.11.2
-  resolution: "turbo-linux-arm64@npm:1.11.2"
+"turbo-linux-arm64@npm:1.12.4":
+  version: 1.12.4
+  resolution: "turbo-linux-arm64@npm:1.12.4"
   conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-windows-64@npm:1.11.2":
-  version: 1.11.2
-  resolution: "turbo-windows-64@npm:1.11.2"
+"turbo-windows-64@npm:1.12.4":
+  version: 1.12.4
+  resolution: "turbo-windows-64@npm:1.12.4"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-windows-arm64@npm:1.11.2":
-  version: 1.11.2
-  resolution: "turbo-windows-arm64@npm:1.11.2"
+"turbo-windows-arm64@npm:1.12.4":
+  version: 1.12.4
+  resolution: "turbo-windows-arm64@npm:1.12.4"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo@npm:~1.11.2":
-  version: 1.11.2
-  resolution: "turbo@npm:1.11.2"
+"turbo@npm:^1.12.4":
+  version: 1.12.4
+  resolution: "turbo@npm:1.12.4"
   dependencies:
-    turbo-darwin-64: 1.11.2
-    turbo-darwin-arm64: 1.11.2
-    turbo-linux-64: 1.11.2
-    turbo-linux-arm64: 1.11.2
-    turbo-windows-64: 1.11.2
-    turbo-windows-arm64: 1.11.2
+    turbo-darwin-64: 1.12.4
+    turbo-darwin-arm64: 1.12.4
+    turbo-linux-64: 1.12.4
+    turbo-linux-arm64: 1.12.4
+    turbo-windows-64: 1.12.4
+    turbo-windows-arm64: 1.12.4
   dependenciesMeta:
     turbo-darwin-64:
       optional: true
@@ -40179,7 +40155,7 @@ __metadata:
       optional: true
   bin:
     turbo: bin/turbo
-  checksum: 427b31807fe39d83ce002fd8da92029ac7ff93f4891e1da7c3c1a2c9b15257e3f4a8d9688186bd0228bda70965c4bf7db15dfd1f5de2c1208e058efd5401c352
+  checksum: d387fb91af6ed0ea925201d3858180353c5d93be564829de2e22f48fe57124d1347d2abb8b99215901a305d4c6da4a0daf4c28afeec20fa1bc1ae2762c3b8d3d
   languageName: node
   linkType: hard
 

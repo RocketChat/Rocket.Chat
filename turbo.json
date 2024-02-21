@@ -2,10 +2,6 @@
 	"$schema": "https://turborepo.org/schema.json",
 	"globalDependencies": ["tsconfig.base.json", "tsconfig.base.server.json", "tsconfig.base.client.json"],
 	"pipeline": {
-		"build:ci": {
-			"dependsOn": ["^build"],
-			"outputs": ["dist/**"]
-		},
 		"build": {
 			"dependsOn": ["^build"],
 			"outputs": ["dist/**"]
