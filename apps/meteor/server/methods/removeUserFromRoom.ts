@@ -45,7 +45,7 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 	// did this way so a ctrl-f would find the permission being used
 	const kickAnyUserPermission = room.t === 'c' ? 'kick-user-from-any-c-room' : 'kick-user-from-any-p-room';
 
-	const canKickAnyUser = await hasPermissionAsync(fromId, kickAnyUserPermission);
+	const canKickAnyUser = await hasPermissionAsync(fromId, kickAnyUserPermission, data.rid);
 	if (!canKickAnyUser && !(await canAccessRoomAsync(room, fromUser))) {
 		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 	}
