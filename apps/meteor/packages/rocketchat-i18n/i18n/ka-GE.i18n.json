@@ -3308,6 +3308,7 @@
   "Turn_ON": "ჩართვა",
   "Two Factor Authentication": "ორ ფაქტორიანი ავტენტიფიკაცია",
   "Two-factor_authentication": "ორ ფაქტორიანი ავტენტიფიკაცია TOTP-ით",
+  "Two-factor_authentication_via_TOTP": "ორ ფაქტორიანი ავტენტიფიკაცია TOTP-ით",
   "Two-factor_authentication_disabled": "ორ ფაქტორიანი ავტენტიფიკაცია გამორთულია",
   "Two-factor_authentication_email": "ორ ფაქტორიანი ავტენტიფიკაცია ელ.ფოსტით",
   "Two-factor_authentication_email_is_currently_disabled": "ორ ფაქტორიანი ავტენტიფიკაცია ელ.ფოსტით ამჟამად გამორთულია",

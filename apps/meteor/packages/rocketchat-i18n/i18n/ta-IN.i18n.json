@@ -2463,6 +2463,7 @@
   "Turn_OFF": "அணைக்க",
   "Turn_ON": "திரும்பவும்",
   "Two-factor_authentication": "இரண்டு காரணி அங்கீகாரம்",
+  "Two-factor_authentication_via_TOTP": "இரண்டு காரணி அங்கீகாரம்",
   "Two-factor_authentication_disabled": "இரண்டு-காரணி அங்கீகாரம் முடக்கப்பட்டது",
   "Two-factor_authentication_enabled": "இரண்டு-காரணி அங்கீகாரம் இயக்கப்பட்டது",
   "Two-factor_authentication_is_currently_disabled": "இரண்டு-காரணி அங்கீகாரம் தற்போது முடக்கப்பட்டுள்ளது",
