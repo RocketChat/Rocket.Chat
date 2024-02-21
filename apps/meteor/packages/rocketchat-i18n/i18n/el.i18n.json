@@ -2471,6 +2471,7 @@
   "Turn_OFF": "Σβήνω",
   "Turn_ON": "Ανάβω",
   "Two-factor_authentication": "Έλεγχος ταυτότητας δύο παραγόντων",
+  "Two-factor_authentication_via_TOTP": "Έλεγχος ταυτότητας δύο παραγόντων",
   "Two-factor_authentication_disabled": "Ο έλεγχος ταυτότητας δύο στοιχείων είναι απενεργοποιημένος",
   "Two-factor_authentication_enabled": "Έχει ενεργοποιηθεί ο έλεγχος ταυτότητας δύο παραγόντων",
   "Two-factor_authentication_is_currently_disabled": "Ο έλεγχος ταυτότητας δύο στοιχείων είναι επί του παρόντος απενεργοποιημένος",

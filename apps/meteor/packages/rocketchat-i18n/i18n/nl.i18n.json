@@ -4293,6 +4293,7 @@
   "Turn_off_video": "Video uitschakelen",
   "Two Factor Authentication": "Twee-factorenauthenticatie",
   "Two-factor_authentication": "Tweefactorauthenticatie via TOTP",
+  "Two-factor_authentication_via_TOTP": "Tweefactorauthenticatie via TOTP",
   "Two-factor_authentication_disabled": "Tweefactorauthenticatie uitgeschakeld",
   "Two-factor_authentication_email": "Tweefactorauthenticatie via e-mail",
   "Two-factor_authentication_email_is_currently_disabled": "Tweefactorauthentificatie via e-mail is momenteel uitgeschakeld",

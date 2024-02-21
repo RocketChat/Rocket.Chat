@@ -2452,6 +2452,7 @@
   "Turn_OFF": "Izklopi",
   "Turn_ON": "Vklopi",
   "Two-factor_authentication": "Dvojno preverjanje pristnosti",
+  "Two-factor_authentication_via_TOTP": "Dvojno preverjanje pristnosti",
   "Two-factor_authentication_disabled": "Dvojno preverjanje pristnosti je onemogočeno",
   "Two-factor_authentication_enabled": "Dvojno preverjanje pristnosti je omogočeno",
   "Two-factor_authentication_is_currently_disabled": "Dvojno preverjanje pristnosti je trenutno onemogočeno",

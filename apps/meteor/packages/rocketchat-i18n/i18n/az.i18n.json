@@ -2464,6 +2464,7 @@
   "Turn_OFF": "Söndür",
   "Turn_ON": "İşə sal",
   "Two-factor_authentication": "İki faktorlu identifikasiya",
+  "Two-factor_authentication_via_TOTP": "İki faktorlu identifikasiya",
   "Two-factor_authentication_disabled": "İki faktorlu kimlik doğrulaması aradan qaldırıldı",
   "Two-factor_authentication_enabled": "İki faktorlu autentifikasiya effektivdir",
   "Two-factor_authentication_is_currently_disabled": "İki faktorlu kimlik doğrulaması hazırda əlil",
