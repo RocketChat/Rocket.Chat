@@ -8,13 +8,7 @@ import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
 import { imgURL } from '../../data/interactions';
-import {
-	removePermissionFromAllRoles,
-	restorePermissionToRoles,
-	updateEEPermission,
-	updatePermission,
-	updateSetting,
-} from '../../data/permissions.helper';
+import { updateEEPermission, updatePermission, updateSetting } from '../../data/permissions.helper';
 import { closeRoom, createRoom, deleteRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
@@ -1776,7 +1770,6 @@ describe('[Rooms]', function () {
 				deleteUser(testUser1),
 				deleteUser(testUser2),
 				deleteUser(testUserNonMember),
-				restorePermissionToRoles('view-broadcast-member-list'),
 			]),
 		);
 
@@ -1831,13 +1824,29 @@ describe('[Rooms]', function () {
 				.end(done);
 		});
 
-		it('should return success with exists=true if user is a member of the channel', (done) => {
+		it('should return success with exists=true if given userId is a member of the channel', (done) => {
 			request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
 				.query({
 					roomId: testChannel._id,
 					userId: testUser2._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('exists', true);
+				})
+				.end(done);
+		});
+
+		it('should return success with exists=true if given username is a member of the channel', (done) => {
+			request
+				.get(api('rooms.isMember'))
+				.set(testUser1Credentials)
+				.query({
+					roomId: testChannel._id,
+					userId: testUser2.username,
 				})
 				.expect(200)
 				.expect((res) => {
@@ -1863,13 +1872,29 @@ describe('[Rooms]', function () {
 				.end(done);
 		});
 
-		it('should return success with exists=true if user is a member of the group', (done) => {
+		it('should return success with exists=true if given userId is a member of the group', (done) => {
 			request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
 				.query({
 					roomId: testGroup._id,
 					userId: testUser2._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('exists', true);
+				})
+				.end(done);
+		});
+
+		it('should return success with exists=true if given username is a member of the group', (done) => {
+			request
+				.get(api('rooms.isMember'))
+				.set(testUser1Credentials)
+				.query({
+					roomId: testGroup._id,
+					userId: testUser2.username,
 				})
 				.expect(200)
 				.expect((res) => {
@@ -1911,13 +1936,29 @@ describe('[Rooms]', function () {
 				.end(done);
 		});
 
-		it('should return success with exists=true if user is a member of the DM', (done) => {
+		it('should return success with exists=true if given userId is a member of the DM', (done) => {
 			request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
 				.query({
 					roomId: testDM._id,
 					userId: testUser2._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('exists', true);
+				})
+				.end(done);
+		});
+
+		it('should return success with exists=true if given username is a member of the DM', (done) => {
+			request
+				.get(api('rooms.isMember'))
+				.set(testUser1Credentials)
+				.query({
+					roomId: testDM._id,
+					userId: testUser2.username,
 				})
 				.expect(200)
 				.expect((res) => {
@@ -1957,24 +1998,6 @@ describe('[Rooms]', function () {
 					expect(res.body).to.have.property('error', 'unauthorized');
 				})
 				.end(done);
-		});
-
-		it('should return unauthorized if caller does not have view-broadcast-member-list permission', (done) => {
-			removePermissionFromAllRoles('view-broadcast-member-list').then(() => {
-				request
-					.get(api('rooms.isMember'))
-					.set(testUserNonMemberCredentials)
-					.query({
-						roomId: testDM._id,
-						userId: testUser1._id,
-					})
-					.expect(403)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'unauthorized');
-					})
-					.end(done);
-			});
 		});
 	});
 });

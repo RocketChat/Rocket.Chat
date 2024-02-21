@@ -42,12 +42,12 @@ export const useUserInfoActions = (
 	reload?: () => void,
 	size = 2,
 ): { actions: [string, UserInfoAction][]; menuActions: any | undefined } => {
-	const { data, refetch } = useMemberExists(rid, user.username as string);
+	const { data, refetch, isSuccess: membershipCheckSuccess } = useMemberExists(rid, user.username as string);
 	const memberChangeReload = useCallback(async () => {
 		await reload?.();
 		await refetch();
 	}, [reload, refetch]);
-	const isMember = data?.exists as boolean;
+	const showAddMember = (data?.exists as boolean) && membershipCheckSuccess;
 
 	const addUser = useAddUserAction(user, rid, memberChangeReload);
 	const blockUser = useBlockUserAction(user, rid);
@@ -68,16 +68,16 @@ export const useUserInfoActions = (
 		() => ({
 			...(openDirectMessage && !isLayoutEmbedded && { openDirectMessage }),
 			...(call && { call }),
-			...(!isMember && addUser && { addUser }),
-			...(isMember && changeOwner && { changeOwner }),
-			...(isMember && changeLeader && { changeLeader }),
-			...(isMember && changeModerator && { changeModerator }),
-			...(isMember && openModerationConsole && { openModerationConsole }),
-			...(isMember && ignoreUser && { ignoreUser }),
-			...(isMember && muteUser && { muteUser }),
+			...(!showAddMember && addUser && { addUser }),
+			...(showAddMember && changeOwner && { changeOwner }),
+			...(showAddMember && changeLeader && { changeLeader }),
+			...(showAddMember && changeModerator && { changeModerator }),
+			...(showAddMember && openModerationConsole && { openModerationConsole }),
+			...(showAddMember && ignoreUser && { ignoreUser }),
+			...(showAddMember && muteUser && { muteUser }),
 			...(blockUser && { toggleBlock: blockUser }),
 			...(reportUserOption && { reportUser: reportUserOption }),
-			...(isMember && removeUser && { removeUser }),
+			...(showAddMember && removeUser && { removeUser }),
 		}),
 		[
 			openDirectMessage,
@@ -93,7 +93,7 @@ export const useUserInfoActions = (
 			reportUserOption,
 			openModerationConsole,
 			addUser,
-			isMember,
+			showAddMember,
 		],
 	);
 

@@ -80,7 +80,7 @@ export const useAddUserAction = (
 
 	const addUserOption = useMemo(
 		() =>
-			roomCanInvite && userCanAdd
+			roomCanInvite && userCanAdd && room.archived !== true
 				? {
 						content: t('add-to-room'),
 						icon: 'user-plus' as const,
@@ -88,7 +88,7 @@ export const useAddUserAction = (
 						type: 'management' as const,
 				  }
 				: undefined,
-		[roomCanInvite, userCanAdd, t, addUserOptionAction],
+		[roomCanInvite, userCanAdd, room.archived, t, addUserOptionAction],
 	);
 
 	return addUserOption;

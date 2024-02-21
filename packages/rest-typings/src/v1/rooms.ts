@@ -423,22 +423,16 @@ const GETRoomsNameExistsSchema = {
 
 export const isGETRoomsNameExists = ajv.compile<GETRoomsNameExists>(GETRoomsNameExistsSchema);
 
-type RoomsIsMemberProps = ({ roomId: string } | { roomName: string }) & ({ username: string } | { userId: string });
+type RoomsIsMemberProps = { roomId: string } & ({ username: string } | { userId: string });
 
 const RoomsIsMemberPropsSchema = {
 	type: 'object',
 	properties: {
 		roomId: { type: 'string' },
-		roomName: { type: 'string' },
 		userId: { type: 'string' },
 		username: { type: 'string' },
 	},
-	oneOf: [
-		{ required: ['roomId', 'userId'] },
-		{ required: ['roomName', 'userId'] },
-		{ required: ['roomId', 'username'] },
-		{ required: ['roomName', 'username'] },
-	],
+	oneOf: [{ required: ['roomId', 'userId'] }, { required: ['roomId', 'username'] }],
 	additionalProperties: false,
 };
 

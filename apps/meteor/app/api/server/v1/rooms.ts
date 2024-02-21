@@ -644,20 +644,16 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { username, roomId, userId, roomName } = this.queryParams;
+			const { roomId, userId, username } = this.queryParams;
 			const [room, user] = await Promise.all([
-				Rooms.findOneByIdOrName(roomId || roomName),
+				findRoomByIdOrName({
+					params: { roomId },
+				}) as Promise<IRoom>,
 				Users.findOneByIdOrUsername(userId || username),
 			]);
-			if (!room?._id) {
-				return API.v1.failure('error-room-not-found');
-			}
+
 			if (!user?._id) {
 				return API.v1.failure('error-user-not-found');
-			}
-
-			if (room.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', room._id))) {
-				return API.v1.unauthorized();
 			}
 
 			if (await canAccessRoomAsync(room, this.user)) {
