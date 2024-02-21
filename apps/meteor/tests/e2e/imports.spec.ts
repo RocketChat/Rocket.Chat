@@ -114,7 +114,7 @@ test.describe.serial('imports', () => {
 
 			await poAdmin.getRoomRow(room.name).click();
 			room.visibility === 'private' ? await expect(poAdmin.privateInput).toBeChecked() : await expect(poAdmin.privateInput).not.toBeChecked();
-			await expect(poAdmin.roomOwnerInput).toHaveText(room.ownerUsername);
+			await expect(poAdmin.roomOwnerInput).toHaveValue(room.ownerUsername);
 		}
 	});
 });
