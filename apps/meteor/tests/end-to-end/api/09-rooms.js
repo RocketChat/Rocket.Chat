@@ -8,8 +8,14 @@ import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
 import { imgURL } from '../../data/interactions';
-import { updateEEPermission, updatePermission, updateSetting } from '../../data/permissions.helper';
-import { closeRoom, createRoom } from '../../data/rooms.helper';
+import {
+	removePermissionFromAllRoles,
+	restorePermissionToRoles,
+	updateEEPermission,
+	updatePermission,
+	updateSetting,
+} from '../../data/permissions.helper';
+import { closeRoom, createRoom, deleteRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE } from '../../e2e/config/constants';
@@ -1762,16 +1768,17 @@ describe('[Rooms]', function () {
 				done();
 			});
 		});
-		after(async () => {
-			await Promise.all([
-				closeRoom({ type: 'c', roomId: testChannel._id }),
-				closeRoom({ type: 'p', roomId: testGroup._id }),
-				closeRoom({ type: 'd', roomId: testDM._id }),
+		after(() =>
+			Promise.all([
+				deleteRoom({ type: 'c', roomId: testChannel._id }),
+				deleteRoom({ type: 'p', roomId: testGroup._id }),
+				deleteRoom({ type: 'd', roomId: testDM._id }),
 				deleteUser(testUser1),
 				deleteUser(testUser2),
 				deleteUser(testUserNonMember),
-			]);
-		});
+				restorePermissionToRoles('view-broadcast-member-list'),
+			]),
+		);
 
 		it('should return error if room not found', (done) => {
 			request
@@ -1784,18 +1791,37 @@ describe('[Rooms]', function () {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'error-room-not-found');
+					expect(res.body).to.have.property(
+						'error',
+						'The required "roomId" or "roomName" param provided does not match any channel [error-room-not-found]',
+					);
 				})
 				.end(done);
 		});
 
-		it('should return error if user not found', (done) => {
+		it('should return error if user not found with the given userId', (done) => {
 			request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
 				.query({
 					roomId: testChannel._id,
 					userId: fakeUserId,
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'error-user-not-found');
+				})
+				.end(done);
+		});
+
+		it('should return error if user not found with the given username', (done) => {
+			request
+				.get(api('rooms.isMember'))
+				.set(testUser1Credentials)
+				.query({
+					roomId: testChannel._id,
+					username: fakeUserId,
 				})
 				.expect(400)
 				.expect((res) => {
@@ -1931,6 +1957,24 @@ describe('[Rooms]', function () {
 					expect(res.body).to.have.property('error', 'unauthorized');
 				})
 				.end(done);
+		});
+
+		it('should return unauthorized if caller does not have view-broadcast-member-list permission', (done) => {
+			removePermissionFromAllRoles('view-broadcast-member-list').then(() => {
+				request
+					.get(api('rooms.isMember'))
+					.set(testUserNonMemberCredentials)
+					.query({
+						roomId: testDM._id,
+						userId: testUser1._id,
+					})
+					.expect(403)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'unauthorized');
+					})
+					.end(done);
+			});
 		});
 	});
 });
