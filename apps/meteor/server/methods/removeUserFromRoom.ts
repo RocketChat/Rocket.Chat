@@ -73,6 +73,8 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 		}
 	}
 
+	await Rooms.removeUsernameFromMutedAndUnmutedByRoomId(room._id, data.username);
+
 	await callbacks.run('beforeRemoveFromRoom', { removedUser, userWhoRemoved: fromUser }, room);
 
 	await Subscriptions.removeByRoomIdAndUserId(data.rid, removedUser._id);
