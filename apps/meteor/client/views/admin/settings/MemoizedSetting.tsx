@@ -55,12 +55,13 @@ type MemoizedSettingProps = {
 	onResetButtonClick?: () => void;
 	className?: string;
 	invisible?: boolean;
-	label?: string;
+	label?: ReactNode;
 	sectionChanged?: boolean;
 	hasResetButton?: boolean;
 	disabled?: boolean;
 	required?: boolean;
 	showUpgradeButton?: ReactNode;
+	tag?: ReactNode;
 	actionText?: string;
 };
 

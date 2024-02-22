@@ -1,12 +1,12 @@
 import { Box, Field, FieldLabel, FieldRow, ToggleSwitch } from '@rocket.chat/fuselage';
-import type { ReactElement, SyntheticEvent } from 'react';
+import type { ReactElement, ReactNode, SyntheticEvent } from 'react';
 import React from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 
 type BooleanSettingInputProps = {
 	_id: string;
-	label: string;
+	label: ReactNode;
 	disabled?: boolean;
 	readonly?: boolean;
 	required?: boolean;

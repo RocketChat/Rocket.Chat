@@ -1,14 +1,14 @@
 import { FieldLabel, FieldRow, FieldHint, Flex, InputBox, Margins, TextInput, Select, Field } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import React, { useCallback } from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 
 type ColorSettingInputProps = {
 	_id: string;
-	label: string;
+	label: ReactNode;
 	value: string;
 	editor: string;
 	allowedTypes?: TranslationKey[];
