@@ -17,14 +17,17 @@ type csvRoomSpec = {
 };
 
 const rowUserName: string[] = [];
+const csvImportedUsernames: string[] = [];
+const dmMessages: string[] = [];
 const importedRooms: csvRoomSpec[] = [];
 const slackCsvDir = path.resolve(__dirname, 'fixtures', 'files', 'slack_export_users.csv');
 const zipCsvImportDir = path.resolve(__dirname, 'fixtures', 'files', 'csv_import.zip');
 
-// These files have the same content from users.csv and channels.csv from the zip file
+// These files have the same content from users.csv, channels.csv and messages1.csv from the zip file
 // They have been extracted just so that we don't need to do that on the fly
 const usersCsvDir = path.resolve(__dirname, 'fixtures', 'files', 'csv_import_users.csv');
 const roomsCsvDir = path.resolve(__dirname, 'fixtures', 'files', 'csv_import_rooms.csv');
+const dmMessagesCsvDir = path.resolve(__dirname, 'fixtures', 'files', 'dm_messages.csv');
 
 const usersCsvsToJson = (): void => {
 	fs.createReadStream(slackCsvDir)
@@ -36,11 +39,20 @@ const usersCsvsToJson = (): void => {
 		.pipe(parse({ delimiter: ',' }))
 		.on('data', (rows) => {
 			rowUserName.push(rows[0]);
+			csvImportedUsernames.push(rows[0]);
 		});
 };
 
 const roomsCsvToJson = (): void => {
 	fs.createReadStream(roomsCsvDir)
+		.pipe(parse({ delimiter: ',' }))
+		.on('data', (rows) => {
+			dmMessages.push(rows[3]);
+		});
+};
+
+const countDmMessages = (): void => {
+	fs.createReadStream(dmMessagesCsvDir)
 		.pipe(parse({ delimiter: ',' }))
 		.on('data', (rows) => {
 			importedRooms.push({
@@ -56,6 +68,7 @@ test.describe.serial('imports', () => {
 	test.beforeAll(() => {
 		usersCsvsToJson();
 		roomsCsvToJson();
+		countDmMessages();
 	});
 
 	test('expect import users data from slack', async ({ page }) => {
@@ -125,5 +138,21 @@ test.describe.serial('imports', () => {
 			room.visibility === 'private' ? await expect(poAdmin.privateInput).toBeChecked() : await expect(poAdmin.privateInput).not.toBeChecked();
 			await expect(poAdmin.roomOwnerInput).toHaveValue(room.ownerUsername);
 		}
+	});
+
+	test('expect imported DM to be actually listed as a room with correct members and messages count', async ({ page }) => {
+		const poAdmin: Admin = new Admin(page);
+		await page.goto('/admin/rooms');
+
+		for await (const user of csvImportedUsernames) {
+			await poAdmin.inputSearchRooms.fill(user);
+			expect(page.locator(`tbody tr td:first-child >> text="${user}"`));
+
+			const expectedMembersCount = 2;
+			expect(page.locator(`tbody tr td:nth-child(2) >> text="${ expectedMembersCount }"`));
+
+			const expectedMessagesCount = dmMessages.length;
+			expect(page.locator(`tbody tr td:nth-child(3) >> text="${ expectedMessagesCount }"`));
+		}		
 	});
 });
