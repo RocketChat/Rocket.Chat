@@ -1720,8 +1720,8 @@ describe('[Rooms]', function () {
 			await deleteRoom({ type: 'c', roomId: testChannel._id });
 		});
 
-		it('should invite rocket.cat user to room', (done) => {
-			request
+		it('should invite rocket.cat user to room', () => {
+			return request
 				.post(api('channels.invite'))
 				.set(credentials)
 				.send({
@@ -1733,12 +1733,11 @@ describe('[Rooms]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel.name', testChannel.name);
-				})
-				.end(done);
+				});
 		});
 
-		it('should mute the rocket.cat user', (done) => {
-			request
+		it('should mute the rocket.cat user', () => {
+			return request
 				.post(api('rooms.muteUser'))
 				.set(credentials)
 				.send({
@@ -1749,12 +1748,11 @@ describe('[Rooms]', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				});
 		});
 
-		it('should contain rocket.cat user in mute list', (done) => {
-			request
+		it('should contain rocket.cat user in mute list', () => {
+			return request
 				.get(api('channels.info'))
 				.set(credentials)
 				.query({
@@ -1768,8 +1766,7 @@ describe('[Rooms]', function () {
 					expect(res.body.channel).to.have.property('muted').and.to.be.an('array');
 					expect(res.body.channel.muted).to.have.lengthOf(1);
 					expect(res.body.channel.muted[0]).to.be.equal('rocket.cat');
-				})
-				.end(done);
+				});
 		});
 	});
 
@@ -1812,8 +1809,8 @@ describe('[Rooms]', function () {
 			await deleteRoom({ type: 'c', roomId: testChannel._id });
 		});
 
-		it('should unmute the rocket.cat user in read-only room', (done) => {
-			request
+		it('should unmute the rocket.cat user in read-only room', () => {
+			return request
 				.post(api('rooms.unmuteUser'))
 				.set(credentials)
 				.send({
@@ -1824,12 +1821,11 @@ describe('[Rooms]', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				});
 		});
 
-		it('should contain rocket.cat user in unmute list', (done) => {
-			request
+		it('should contain rocket.cat user in unmute list', () => {
+			return request
 				.get(api('channels.info'))
 				.set(credentials)
 				.query({
@@ -1843,8 +1839,7 @@ describe('[Rooms]', function () {
 					expect(res.body.channel).to.have.property('unmuted').and.to.be.an('array');
 					expect(res.body.channel.unmuted).to.have.lengthOf(1);
 					expect(res.body.channel.unmuted[0]).to.be.equal('rocket.cat');
-				})
-				.end(done);
+				});
 		});
 	});
 });
