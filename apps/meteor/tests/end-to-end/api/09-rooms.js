@@ -1724,7 +1724,7 @@ describe('[Rooms]', function () {
 		let testUser1Credentials;
 		let testUserNonMemberCredentials;
 
-		it('create users', async () => {
+		before(async () => {
 			[testUser1, testUser2, testUserNonMember] = await Promise.all([createUser(), createUser(), createUser()]);
 			[testUser1Credentials, testUserNonMemberCredentials] = await Promise.all([
 				login(testUser1.username, password),
@@ -1732,36 +1732,33 @@ describe('[Rooms]', function () {
 			]);
 		});
 
-		it('create a channel', (done) => {
-			createRoom({
+		before(async () => {
+			const response = await createRoom({
 				type: 'c',
 				name: testChannelName,
 				members: [testUser1.username, testUser2.username],
-			}).end((err, res) => {
-				testChannel = res.body.channel;
-				done();
 			});
+			testChannel = response.body.channel;
 		});
-		it('create a group', (done) => {
-			createRoom({
+
+		before(async () => {
+			const response = await createRoom({
 				type: 'p',
 				name: testGroupName,
 				members: [testUser1.username, testUser2.username],
-			}).end((err, res) => {
-				testGroup = res.body.group;
-				done();
 			});
+			testGroup = response.body.group;
 		});
-		it('create a direct message room', (done) => {
-			createRoom({
+
+		before(async () => {
+			const response = await createRoom({
 				type: 'd',
 				username: testUser2.username,
 				credentials: testUser1Credentials,
-			}).end((err, res) => {
-				testDM = res.body.room;
-				done();
 			});
+			testDM = response.body.room;
 		});
+
 		after(() =>
 			Promise.all([
 				deleteRoom({ type: 'c', roomId: testChannel._id }),
