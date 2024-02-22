@@ -3,13 +3,13 @@ import { Box, Button, IconButton } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ComponentProps } from 'react';
-import React, { forwardRef } from 'react';
+import React from 'react';
 
 import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
 import MarkdownText from '../MarkdownText';
 import * as Status from '../UserStatus';
 import UserCardActions from './UserCardActions';
-import UserCardContainer from './UserCardContainer';
+import UserCardDialog from './UserCardDialog';
 import UserCardInfo from './UserCardInfo';
 import UserCardRoles from './UserCardRoles';
 import UserCardUsername from './UserCardUsername';
@@ -35,31 +35,28 @@ type UserCardProps = {
 	localTime?: ReactNode;
 	onClose?: () => void;
 	nickname?: string;
-} & ComponentProps<typeof UserCardContainer>;
+} & ComponentProps<typeof UserCardDialog>;
 
-const UserCard = forwardRef<HTMLElement, UserCardProps>(function UserCard(
-	{
-		onOpenUserInfo,
-		name,
-		username,
-		etag,
-		customStatus,
-		roles,
-		bio,
-		status = <Status.Offline />,
-		actions,
-		localTime,
-		onClose,
-		nickname,
-		...props
-	},
-	ref,
-) {
+const UserCard = ({
+	onOpenUserInfo,
+	name,
+	username,
+	etag,
+	customStatus,
+	roles,
+	bio,
+	status = <Status.Offline />,
+	actions,
+	localTime,
+	onClose,
+	nickname,
+	...props
+}: UserCardProps) => {
 	const t = useTranslation();
 	const isLayoutEmbedded = useEmbeddedLayout();
 
 	return (
-		<UserCardContainer data-qa='UserCard' ref={ref} {...props}>
+		<UserCardDialog data-qa='UserCard' {...props}>
 			<div>
 				{username && <UserAvatar username={username} etag={etag} size='x124' />}
 				<Box flexGrow={0} display='flex' mbs={12} alignItems='center' justifyContent='center'>
@@ -100,8 +97,8 @@ const UserCard = forwardRef<HTMLElement, UserCardProps>(function UserCard(
 				)}
 			</Box>
 			{onClose && <IconButton mis={16} small aria-label={t('Close')} icon='cross' onClick={onClose} />}
-		</UserCardContainer>
+		</UserCardDialog>
 	);
-});
+};
 
 export default UserCard;
