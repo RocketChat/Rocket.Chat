@@ -88,13 +88,13 @@ const AgentsTable = () => {
 					icon='headset'
 					title={t('No_agents_yet')}
 					description={t('No_agents_yet_description')}
-					linkHref='https://go.rocket.chat/omnichannel-docs'
+					linkHref='https://go.rocket.chat/i/omnichannel-docs'
 					linkText={t('Learn_more_about_agents')}
 				/>
 			)}
 			{isSuccess && data?.users.length > 0 && (
 				<>
-					<GenericTable aria-busy={filter !== debouncedFilter}>
+					<GenericTable aria-busy={filter !== debouncedFilter} data-qa-id='agents-table'>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody data-qa='GenericTableAgentInfoBody'>
 							{data?.users.map((user) => (

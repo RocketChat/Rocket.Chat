@@ -27,7 +27,7 @@ const MarketplaceHeader = ({ title }: { title: string }): ReactElement | null =>
 
 	return (
 		<PageHeader title={title}>
-			<ButtonGroup flexWrap='wrap' justifyContent='flex-end'>
+			<ButtonGroup wrap align='end'>
 				{result.isLoading && <GenericResourceUsageSkeleton />}
 				{result.isSuccess && !result.data.hasUnlimitedApps && <EnabledAppsCount {...result.data} context={context} />}
 				{isAdmin && result.isSuccess && !result.data.hasUnlimitedApps && (

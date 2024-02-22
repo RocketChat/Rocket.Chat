@@ -28,7 +28,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 	const statusOptions: [string, string][] = [
 		['all', t('All')],
 		['closed', t('Closed')],
-		['opened', t('Open')],
+		['opened', t('Room_Status_Open')],
 		['onhold', t('On_Hold_Chats')],
 	];
 
@@ -98,7 +98,14 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 		};
 
 		setModal(
-			<GenericModal variant='danger' onConfirm={onDeleteAll} onClose={handleClose} onCancel={handleClose} confirmText={t('Delete')} />,
+			<GenericModal
+				variant='danger'
+				data-qa-id='current-chats-modal-remove-all-closed'
+				onConfirm={onDeleteAll}
+				onClose={handleClose}
+				onCancel={handleClose}
+				confirmText={t('Delete')}
+			/>,
 		);
 	});
 
@@ -114,8 +121,17 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 					<AutoCompleteAgent haveAll value={servedBy} onChange={handleServedBy} />
 				</Box>
 				<Box display='flex' mie={8} flexGrow={1} flexDirection='column'>
-					<Label mb={4}>{t('Status')}</Label>
-					<Select options={statusOptions} value={status} onChange={handleStatus} placeholder={t('Status')} data-qa='current-chats-status' />
+					<Label mb={4} id='current-chats-status'>
+						{t('Status')}
+					</Label>
+					<Select
+						options={statusOptions}
+						value={status}
+						onChange={handleStatus}
+						placeholder={t('Status')}
+						aria-labelledby='current-chats-status'
+						data-qa='current-chats-status'
+					/>
 				</Box>
 				<Box display='flex' mie={8} flexGrow={0} flexDirection='column'>
 					<Label mb={4}>{t('From')}</Label>
@@ -140,7 +156,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 			</Box>
 			{CurrentChatTags && (
 				<Box display='flex' flexDirection='row' marginBlockStart={8} {...props}>
-					<Box display='flex' mie={8} flexGrow={1} flexDirection='column'>
+					<Box display='flex' mie={8} flexGrow={1} flexDirection='column' data-qa='current-chats-tags'>
 						<Label mb={4}>{t('Tags')}</Label>
 						<CurrentChatTags value={tags} handler={handleTags} viewAll />
 					</Box>

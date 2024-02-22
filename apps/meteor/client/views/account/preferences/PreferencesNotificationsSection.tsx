@@ -1,6 +1,6 @@
 import type { INotificationDesktop } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Accordion, Field, FieldLabel, FieldRow, FieldHint, Select, FieldGroup, ToggleSwitch, Button, Box } from '@rocket.chat/fuselage';
+import { Accordion, Field, FieldLabel, FieldRow, FieldHint, Select, FieldGroup, ToggleSwitch, Button } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserPreference, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
@@ -113,24 +113,22 @@ const PreferencesNotificationsSection = () => {
 					</FieldRow>
 				</Field>
 				<Field>
-					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+					<FieldRow>
 						<FieldLabel htmlFor={notificationRequireId}>{t('Notification_RequireInteraction')}</FieldLabel>
-						<FieldRow>
-							<Controller
-								name='desktopNotificationRequireInteraction'
-								control={control}
-								render={({ field: { ref, value, onChange } }) => (
-									<ToggleSwitch
-										aria-describedby={`${notificationRequireId}-hint`}
-										id={notificationRequireId}
-										ref={ref}
-										checked={value}
-										onChange={onChange}
-									/>
-								)}
-							/>
-						</FieldRow>
-					</Box>
+						<Controller
+							name='desktopNotificationRequireInteraction'
+							control={control}
+							render={({ field: { ref, value, onChange } }) => (
+								<ToggleSwitch
+									aria-describedby={`${notificationRequireId}-hint`}
+									id={notificationRequireId}
+									ref={ref}
+									checked={value}
+									onChange={onChange}
+								/>
+							)}
+						/>
+					</FieldRow>
 					<FieldHint id={`${notificationRequireId}-hint`}>{t('Only_works_with_chrome_version_greater_50')}</FieldHint>
 				</Field>
 				<Field>
@@ -182,57 +180,51 @@ const PreferencesNotificationsSection = () => {
 				</Field>
 				{showNewLoginEmailPreference && (
 					<Field>
-						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+						<FieldRow>
 							<FieldLabel htmlFor={receiveLoginDetectionEmailId}>{t('Receive_Login_Detection_Emails')}</FieldLabel>
-							<FieldRow>
-								<Controller
-									name='receiveLoginDetectionEmail'
-									control={control}
-									render={({ field: { ref, value, onChange } }) => (
-										<ToggleSwitch
-											aria-describedby={`${receiveLoginDetectionEmailId}-hint`}
-											id={receiveLoginDetectionEmailId}
-											ref={ref}
-											checked={value}
-											onChange={onChange}
-										/>
-									)}
-								/>
-							</FieldRow>
-						</Box>
+							<Controller
+								name='receiveLoginDetectionEmail'
+								control={control}
+								render={({ field: { ref, value, onChange } }) => (
+									<ToggleSwitch
+										aria-describedby={`${receiveLoginDetectionEmailId}-hint`}
+										id={receiveLoginDetectionEmailId}
+										ref={ref}
+										checked={value}
+										onChange={onChange}
+									/>
+								)}
+							/>
+						</FieldRow>
 						<FieldHint id={`${receiveLoginDetectionEmailId}-hint`}>{t('Receive_Login_Detection_Emails_Description')}</FieldHint>
 					</Field>
 				)}
 				{showCalendarPreference && (
 					<Field>
-						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+						<FieldRow>
 							<FieldLabel htmlFor={notifyCalendarEventsId}>{t('Notify_Calendar_Events')}</FieldLabel>
-							<FieldRow>
-								<Controller
-									name='notifyCalendarEvents'
-									control={control}
-									render={({ field: { ref, value, onChange } }) => (
-										<ToggleSwitch id={notifyCalendarEventsId} ref={ref} checked={value} onChange={onChange} />
-									)}
-								/>
-							</FieldRow>
-						</Box>
+							<Controller
+								name='notifyCalendarEvents'
+								control={control}
+								render={({ field: { ref, value, onChange } }) => (
+									<ToggleSwitch id={notifyCalendarEventsId} ref={ref} checked={value} onChange={onChange} />
+								)}
+							/>
+						</FieldRow>
 					</Field>
 				)}
 				{showMobileRinging && (
 					<Field>
-						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+						<FieldRow>
 							<FieldLabel htmlFor={enableMobileRingingId}>{t('VideoConf_Mobile_Ringing')}</FieldLabel>
-							<FieldRow>
-								<Controller
-									name='enableMobileRinging'
-									control={control}
-									render={({ field: { ref, value, onChange } }) => (
-										<ToggleSwitch id={enableMobileRingingId} ref={ref} checked={value} onChange={onChange} />
-									)}
-								/>
-							</FieldRow>
-						</Box>
+							<Controller
+								name='enableMobileRinging'
+								control={control}
+								render={({ field: { ref, value, onChange } }) => (
+									<ToggleSwitch id={enableMobileRingingId} ref={ref} checked={value} onChange={onChange} />
+								)}
+							/>
+						</FieldRow>
 					</Field>
 				)}
 			</FieldGroup>

@@ -14,20 +14,6 @@ import { RoomRoles } from './models/RoomRoles';
 import { UserAndRoom } from './models/UserAndRoom';
 import { UserRoles } from './models/UserRoles';
 import { Users } from './models/Users';
-import { WebdavAccounts } from './models/WebdavAccounts';
-
-// overwrite Meteor.users collection so records on it don't get erased whenever the client reconnects to websocket
-const meteorUserOverwrite = () => {
-	const uid = Meteor.userId();
-
-	if (!uid) {
-		return null;
-	}
-
-	return (Users.findOne({ _id: uid }) ?? null) as Meteor.User | null;
-};
-Meteor.users = Users as typeof Meteor.users;
-Meteor.user = meteorUserOverwrite;
 
 export {
 	Base,
@@ -43,7 +29,6 @@ export {
 	ChatPermissions,
 	CustomSounds,
 	EmojiCustom,
-	WebdavAccounts,
 	/** @deprecated */
 	Users,
 	/** @deprecated */

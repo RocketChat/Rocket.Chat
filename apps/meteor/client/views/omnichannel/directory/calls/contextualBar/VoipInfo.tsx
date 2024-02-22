@@ -1,5 +1,6 @@
 import type { IVoipRoom } from '@rocket.chat/core-typings';
 import { Box, Icon, Chip, ButtonGroup } from '@rocket.chat/fuselage';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import type { ReactElement } from 'react';
@@ -15,7 +16,6 @@ import {
 } from '../../../../../components/Contextualbar';
 import InfoPanel from '../../../../../components/InfoPanel';
 import { UserStatus } from '../../../../../components/UserStatus';
-import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { useIsCallReady } from '../../../../../contexts/CallContext';
 import { parseOutboundPhoneNumber } from '../../../../../lib/voip/parseOutboundPhoneNumber';
 import AgentInfoDetails from '../../../components/AgentInfoDetails';

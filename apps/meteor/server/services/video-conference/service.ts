@@ -46,9 +46,10 @@ import { callbacks } from '../../../lib/callbacks';
 import { availabilityErrors } from '../../../lib/videoConference/constants';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { i18n } from '../../lib/i18n';
+import { isRoomCompatibleWithVideoConfRinging } from '../../lib/isRoomCompatibleWithVideoConfRinging';
 import { videoConfProviders } from '../../lib/videoConfProviders';
 import { videoConfTypes } from '../../lib/videoConfTypes';
-import { broadcastMessageSentEvent } from '../../modules/watchers/lib/messages';
+import { broadcastMessageFromData } from '../../modules/watchers/lib/messages';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -74,7 +75,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		if (type === 'direct') {
-			if (room.t !== 'd' || !room.uids || room.uids.length > 2) {
+			if (!isRoomCompatibleWithVideoConfRinging(room.t, room.uids)) {
 				throw new Error('type-and-room-not-compatible');
 			}
 
@@ -327,9 +328,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			const text = i18n.t('video_livechat_missed', { username: name });
 			await Messages.setBlocksById(call.messages.started, [this.buildMessageBlock(text)]);
 
-			await broadcastMessageSentEvent({
+			await broadcastMessageFromData({
 				id: call.messages.started,
-				broadcastCallback: (message) => api.broadcast('message.sent', message),
 			});
 		}
 
@@ -500,13 +500,18 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			msg: '',
 			groupable: false,
 			blocks: customBlocks || [this.buildVideoConfBlock(call._id)],
-		};
+		} satisfies Partial<IMessage>;
 
 		const room = await Rooms.findOneById(call.rid);
 		const appId = videoConfProviders.getProviderAppId(call.providerName);
 		const user = createdBy || (appId && (await Users.findOneByAppId(appId))) || (await Users.findOneById('rocket.cat'));
 
 		const message = await sendMessage(user, record, room, false);
+
+		if (!message) {
+			throw new Error('failed-to-create-message');
+		}
+
 		return message._id;
 	}
 
@@ -612,7 +617,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await Push.send({
 			from: 'push',
 			badge: 0,
-			sound: 'default',
+			sound: 'ringtone.mp3',
 			priority: 10,
 			title: `@${call.createdBy.username}`,
 			text: i18n.t('Video_Conference'),

@@ -1,10 +1,10 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
 import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
-import UserAvatar from '../../../../components/avatar/UserAvatar';
 import { useRemoveAgent } from '../hooks/useRemoveAgent';
 
 const AgentsTableRow = ({
@@ -27,7 +27,7 @@ const AgentsTableRow = ({
 	const handleDelete = useRemoveAgent(_id);
 
 	return (
-		<GenericTableRow action onClick={() => router.navigate(`/omnichannel/agents/info/${_id}`)}>
+		<GenericTableRow data-qa-id={username} action onClick={() => router.navigate(`/omnichannel/agents/info/${_id}`)}>
 			<GenericTableCell>
 				<Box display='flex' alignItems='center'>
 					{username && <UserAvatar size={mediaQuery ? 'x28' : 'x40'} title={username} username={username} etag={avatarETag} />}

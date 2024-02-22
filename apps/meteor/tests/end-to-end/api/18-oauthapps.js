@@ -1,13 +1,25 @@
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
+import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { updatePermission } from '../../data/permissions.helper';
 
 describe('[OAuthApps]', function () {
+	const createdAppsIds = [];
 	this.retries(0);
 
 	before((done) => getCredentials(done));
+
+	after(() =>
+		Promise.all([
+			updatePermission('manage-oauth-apps', ['admin']),
+			...createdAppsIds.map((appId) =>
+				request.post(api(`oauth-apps.delete`)).set(credentials).send({
+					appId,
+				}),
+			),
+		]),
+	);
 
 	describe('[/oauth-apps.list]', () => {
 		it('should return an error when the user does not have the necessary permission', (done) => {
@@ -62,6 +74,32 @@ describe('[OAuthApps]', function () {
 					expect(res.body.oauthApp._id).to.be.equal('zapier');
 				})
 				.end(done);
+		});
+		it('should return a 403 Forbidden error when the user does not have the necessary permission by client id', (done) => {
+			updatePermission('manage-oauth-apps', []).then(() => {
+				request
+					.get(api('oauth-apps.get?clientId=zapier'))
+					.set(credentials)
+					.expect(403)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.be.equal('unauthorized');
+					})
+					.end(done);
+			});
+		});
+		it('should return a 403 Forbidden error when the user does not have the necessary permission by app id', (done) => {
+			updatePermission('manage-oauth-apps', []).then(() => {
+				request
+					.get(api('oauth-apps.get?appId=zapier'))
+					.set(credentials)
+					.expect(403)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.be.equal('unauthorized');
+					})
+					.end(done);
+			});
 		});
 	});
 
@@ -153,6 +191,7 @@ describe('[OAuthApps]', function () {
 					expect(res.body).to.have.nested.property('application.name', name);
 					expect(res.body).to.have.nested.property('application.redirectUri', redirectUri);
 					expect(res.body).to.have.nested.property('application.active', active);
+					createdAppsIds.push(res.body.application._id);
 				});
 		});
 	});
@@ -176,6 +215,7 @@ describe('[OAuthApps]', function () {
 				.expect(200)
 				.end((err, res) => {
 					appId = res.body.application._id;
+					createdAppsIds.push(appId);
 					done();
 				});
 		});

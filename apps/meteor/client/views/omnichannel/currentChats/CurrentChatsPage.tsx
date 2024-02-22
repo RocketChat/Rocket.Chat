@@ -172,11 +172,11 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 			const { _id, fname, servedBy, ts, lm, department, open, onHold, priorityWeight } = room;
 			const getStatusText = (open: boolean, onHold: boolean): string => {
 				if (!open) return t('Closed');
-				return onHold ? t('On_Hold_Chats') : t('Open');
+				return onHold ? t('On_Hold_Chats') : t('Room_Status_Open');
 			};
 
 			return (
-				<GenericTableRow key={_id} onClick={(): void => onRowClick(_id)} action>
+				<GenericTableRow key={_id} onClick={(): void => onRowClick(_id)} action data-qa-id={fname}>
 					{isPriorityEnabled && (
 						<GenericTableCell withTruncatedText data-qa='current-chats-cell-priority'>
 							<PriorityIcon level={priorityWeight} />
@@ -321,7 +321,7 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 							icon='discussion'
 							title={t('No_chats_yet')}
 							description={t('No_chats_yet_description')}
-							linkHref='https://go.rocket.chat/omnichannel-docs'
+							linkHref='https://go.rocket.chat/i/omnichannel-docs'
 							linkText={t('Learn_more_about_current_chats')}
 						/>
 					)}

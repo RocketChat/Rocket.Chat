@@ -1,5 +1,6 @@
 import { Box, Margins, ButtonGroup, Button, Divider } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { RouteName } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useRoute, useTranslation, useEndpoint, usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -9,7 +10,6 @@ import { useSyncExternalStore } from 'use-sync-external-store/shim';
 import ContactManagerInfo from '../../../../../../ee/client/omnichannel/ContactManagerInfo';
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../../components/Contextualbar';
 import { UserStatus } from '../../../../../components/UserStatus';
-import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { useIsCallReady } from '../../../../../contexts/CallContext';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
 import { parseOutboundPhoneNumber } from '../../../../../lib/voip/parseOutboundPhoneNumber';
@@ -134,7 +134,7 @@ const ContactInfo = ({ id: contactId, rid: roomId = '', route }: ContactInfoProp
 					{email && (
 						<Field>
 							<Label>{t('Email')}</Label>
-							<Info>{email}</Info>
+							<Info data-qa-id='contactInfo-email'>{email}</Info>
 						</Field>
 					)}
 					{phoneNumber && (
@@ -171,20 +171,21 @@ const ContactInfo = ({ id: contactId, rid: roomId = '', route }: ContactInfoProp
 				</Margins>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
-				<ButtonGroup stretch flexWrap='wrap'>
-					{isCallReady && (
+				{isCallReady && (
+					<ButtonGroup stretch>
 						<>
-							<VoipInfoCallButton phoneNumber={phoneNumber} mi={0} flexBasis='0' />
+							<VoipInfoCallButton phoneNumber={phoneNumber} />
 							{showContactHistory && <Divider width='100%' />}
 						</>
-					)}
-
+					</ButtonGroup>
+				)}
+				<ButtonGroup stretch>
 					{showContactHistory && (
-						<Button icon='history' onClick={onChatHistory} mis={0} flexBasis='0'>
+						<Button icon='history' onClick={onChatHistory}>
 							{t('Chat_History')}
 						</Button>
 					)}
-					<Button icon='pencil' onClick={onEditButtonClick} flexBasis='0'>
+					<Button icon='pencil' onClick={onEditButtonClick}>
 						{t('Edit')}
 					</Button>
 				</ButtonGroup>

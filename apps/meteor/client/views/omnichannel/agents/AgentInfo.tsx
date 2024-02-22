@@ -42,7 +42,7 @@ const AgentInfo = ({ uid }: AgentInfoProps) => {
 	const { username, statusLivechat, status: userStatus } = data?.user;
 
 	return (
-		<Contextualbar>
+		<Contextualbar data-qa-id='agent-info-contextual-bar'>
 			<ContextualbarHeader>
 				<ContextualbarTitle>{t('User_Info')}</ContextualbarTitle>
 				<ContextualbarClose onClick={() => router.navigate('/omnichannel/agents')} />
@@ -53,7 +53,7 @@ const AgentInfo = ({ uid }: AgentInfoProps) => {
 						<UserInfo.Avatar data-qa='AgentUserInfoAvatar' username={username} />
 					</Box>
 				)}
-				<ButtonGroup mi='neg-x4' flexShrink={0} flexWrap='nowrap' withTruncatedText justifyContent='center'>
+				<ButtonGroup align='center'>
 					<AgentInfoAction
 						key={t('Edit')}
 						title={t('Edit')}

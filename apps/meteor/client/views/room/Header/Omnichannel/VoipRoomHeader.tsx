@@ -1,5 +1,5 @@
 import type { IVoipRoom } from '@rocket.chat/core-typings';
-import { HeaderToolbox } from '@rocket.chat/ui-client';
+import { HeaderToolbar } from '@rocket.chat/ui-client';
 import { useLayout, useRouter } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React, { useCallback, useMemo } from 'react';
@@ -29,10 +29,10 @@ const VoipRoomHeader: FC<VoipRoomHeaderProps> = ({ slots: parentSlot, room }) =>
 		() => ({
 			...parentSlot,
 			start: (!!isMobile || currentRouteName === 'omnichannel-directory') && (
-				<HeaderToolbox>
+				<HeaderToolbar>
 					{isMobile && <BurgerMenu />}
 					{currentRouteName === 'omnichannel-directory' && <BackButton />}
-				</HeaderToolbox>
+				</HeaderToolbar>
 			),
 		}),
 		[isMobile, currentRouteName, parentSlot],

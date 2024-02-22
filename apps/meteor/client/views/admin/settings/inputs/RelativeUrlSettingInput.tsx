@@ -1,4 +1,4 @@
-import { Box, FieldLabel, Flex, UrlInput } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, UrlInput } from '@rocket.chat/fuselage';
 import { useAbsoluteUrl } from '@rocket.chat/ui-contexts';
 import type { EventHandler, ReactElement, SyntheticEvent } from 'react';
 import React from 'react';
@@ -13,6 +13,7 @@ type RelativeUrlSettingInputProps = {
 	readonly?: boolean;
 	autocomplete?: boolean;
 	disabled?: boolean;
+	required?: boolean;
 	hasResetButton?: boolean;
 	onChangeValue?: (value: string) => void;
 	onResetButtonClick?: () => void;
@@ -26,6 +27,7 @@ function RelativeUrlSettingInput({
 	readonly,
 	autocomplete,
 	disabled,
+	required,
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
@@ -37,15 +39,13 @@ function RelativeUrlSettingInput({
 	};
 
 	return (
-		<>
-			<Flex.Container>
-				<Box>
-					<FieldLabel htmlFor={_id} title={_id}>
-						{label}
-					</FieldLabel>
-					{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
-				</Box>
-			</Flex.Container>
+		<Field>
+			<FieldRow>
+				<FieldLabel htmlFor={_id} title={_id} required={required}>
+					{label}
+				</FieldLabel>
+				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+			</FieldRow>
 			<UrlInput
 				data-qa-setting-id={_id}
 				id={_id}
@@ -56,7 +56,7 @@ function RelativeUrlSettingInput({
 				autoComplete={autocomplete === false ? 'off' : undefined}
 				onChange={handleChange}
 			/>
-		</>
+		</Field>
 	);
 }
 

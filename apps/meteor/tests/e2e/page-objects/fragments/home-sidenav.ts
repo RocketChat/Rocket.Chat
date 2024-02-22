@@ -18,9 +18,7 @@ export class HomeSidenav {
 	}
 
 	get checkboxReadOnly(): Locator {
-		return this.page.locator(
-			'//*[@id="modal-root"]//*[contains(@class, "rcx-field") and contains(text(), "Read Only")]/../following-sibling::label/i',
-		);
+		return this.page.locator('role=dialog[name="Create Channel"] >> label >> text="Read Only"');
 	}
 
 	get inputChannelName(): Locator {
@@ -33,6 +31,10 @@ export class HomeSidenav {
 
 	get btnCreate(): Locator {
 		return this.page.locator('role=button[name="Create"]');
+	}
+
+	get inputSearch(): Locator {
+		return this.page.locator('[placeholder="Search (Ctrl+K)"]').first();
 	}
 
 	getSidebarItemByName(name: string): Locator {
@@ -59,6 +61,10 @@ export class HomeSidenav {
 	async openNewByLabel(text: string): Promise<void> {
 		await this.page.locator('role=button[name="Create new"]').click();
 		await this.page.locator(`role=menuitem[name="${text}"]`).click();
+	}
+
+	async openSearch(): Promise<void> {
+		await this.page.locator('role=button[name="Search"]').click();
 	}
 
 	async logout(): Promise<void> {
