@@ -143,7 +143,7 @@ export const initialState = (): StoreState => ({
 	iframe: {
 		guest: {},
 		theme: {
-			hideGuestAvatar: false,
+			hideGuestAvatar: true,
 			hideAgentAvatar: false,
 		},
 		visible: true,

@@ -45,7 +45,7 @@ export const ScreenContext = createContext<ScreenContextValue>({
 		fontColor: '',
 		iconColor: '',
 		hideAgentAvatar: false,
-		hideGuestAvatar: false,
+		hideGuestAvatar: true,
 	},
 	notificationsEnabled: true,
 	minimized: true,
@@ -71,7 +71,7 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 		position: customPosition,
 		background: customBackground,
 		hideAgentAvatar = false,
-		hideGuestAvatar = false,
+		hideGuestAvatar = true,
 	} = iframe.theme || {};
 
 	const [poppedOut, setPopedOut] = useState(false);
