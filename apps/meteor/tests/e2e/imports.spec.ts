@@ -102,7 +102,7 @@ test.describe.serial('imports', () => {
 		}
 	});
 
-	test('expect all imported rooms to be actually listed as rooms', async ({ page }) => {
+	test('expect all imported rooms to be actually listed as rooms with correct members count', async ({ page }) => {
 		const poAdmin: Admin = new Admin(page);
 		await page.goto('/admin/rooms');
 
@@ -111,8 +111,17 @@ test.describe.serial('imports', () => {
 
 			const expectedMembersCount = room.members.split(';').filter((username) => username !== room.ownerUsername).length + 1;
 			expect(page.locator(`tbody tr td:nth-child(2) >> text="${ expectedMembersCount }"`));
+		}
+	});
 
+	test('expect all imported rooms to have correct room type and owner', async ({ page }) => {
+		const poAdmin: Admin = new Admin(page);
+		await page.goto('/admin/rooms');
+
+		for await (const room of importedRooms) {
+			await poAdmin.inputSearchRooms.fill(room.name);
 			await poAdmin.getRoomRow(room.name).click();
+
 			room.visibility === 'private' ? await expect(poAdmin.privateInput).toBeChecked() : await expect(poAdmin.privateInput).not.toBeChecked();
 			await expect(poAdmin.roomOwnerInput).toHaveValue(room.ownerUsername);
 		}
