@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
+import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { updateSetting } from '../../data/permissions.helper';
@@ -87,9 +87,9 @@ describe('[Settings]', function () {
 		});
 
 		describe('With OAuth enabled', () => {
-			before((done) => {
-				updateSetting('Accounts_OAuth_Google', true).then(done);
-			});
+			before(() => updateSetting('Accounts_OAuth_Google', true));
+
+			after(() => updateSetting('Accounts_OAuth_Google', false));
 
 			it('should include the OAuth service in the response', (done) => {
 				// wait 3 seconds before getting the service list so the server has had time to update it
@@ -111,9 +111,9 @@ describe('[Settings]', function () {
 		});
 
 		describe('With OAuth disabled', () => {
-			before((done) => {
-				updateSetting('Accounts_OAuth_Google', false).then(done);
-			});
+			before(() => updateSetting('Accounts_OAuth_Google', false));
+
+			after(() => updateSetting('Accounts_OAuth_Google', false));
 
 			it('should not include the OAuth service in the response', (done) => {
 				// wait 3 seconds before getting the service list so the server has had time to update it

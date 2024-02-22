@@ -16,6 +16,7 @@ import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../../../MessageList/providers/MessageListProvider';
 import LoadingMessagesIndicator from '../../../body/LoadingMessagesIndicator';
 import { useFirstUnreadMessageId } from '../../../hooks/useFirstUnreadMessageId';
+import { useMessageListNavigation } from '../../../hooks/useMessageListNavigation';
 import { useScrollMessageList } from '../../../hooks/useScrollMessageList';
 import { useLegacyThreadMessageJump } from '../hooks/useLegacyThreadMessageJump';
 import { useLegacyThreadMessageListScrolling } from '../hooks/useLegacyThreadMessageListScrolling';
@@ -57,7 +58,6 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 	} = useLegacyThreadMessageListScrolling(mainMessage);
 	const { parentRef: listJumpRef } = useLegacyThreadMessageJump({ enabled: !loading });
 
-	const listRef = useMergedRefs<HTMLElement | null>(listScrollRef, listJumpRef);
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 
@@ -68,6 +68,9 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 	const scrollMessageList = useScrollMessageList(listWrapperScrollRef);
 
 	const firstUnreadMessageId = useFirstUnreadMessageId();
+	const { messageListRef, messageListProps } = useMessageListNavigation();
+
+	const listRef = useMergedRefs<HTMLElement | null>(listScrollRef, listJumpRef, messageListRef);
 
 	return (
 		<div className={['thread-list js-scroll-thread', hideUsernames && 'hide-usernames'].filter(isTruthy).join(' ')}>
@@ -76,7 +79,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 				onScroll={handleScroll}
 				style={{ scrollBehavior: 'smooth', overflowX: 'hidden' }}
 			>
-				<ul className='thread' ref={listRef} style={{ scrollBehavior: 'smooth', overflowX: 'hidden' }}>
+				<ul className='thread' ref={listRef} style={{ scrollBehavior: 'smooth', overflowX: 'hidden' }} {...messageListProps}>
 					{loading ? (
 						<li className='load-more'>
 							<LoadingMessagesIndicator />

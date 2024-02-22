@@ -48,7 +48,7 @@ export type MessageActionConfig = {
 	context?: MessageActionContext[];
 	action: (
 		this: any,
-		e: Pick<Event, 'preventDefault' | 'stopPropagation' | 'currentTarget'>,
+		e: Pick<Event, 'preventDefault' | 'stopPropagation' | 'currentTarget'> | undefined,
 		{
 			message,
 			tabbar,
