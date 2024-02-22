@@ -6,6 +6,7 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
 import { callbacks } from '../../lib/callbacks';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
@@ -82,6 +83,8 @@ export const unmuteUserInRoom = async (fromId: string, data: { rid: IRoom['_id']
 
 Meteor.methods<ServerMethods>({
 	async unmuteUserInRoom(data) {
+		methodDeprecationLogger.method('unmuteUserInRoom', '7.0.0');
+
 		const fromId = Meteor.userId();
 
 		check(
