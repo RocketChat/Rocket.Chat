@@ -633,6 +633,18 @@ export const createOmniSettings = () =>
 			enableQuery: omnichannelEnabledQuery,
 		});
 
+		await this.add('Livechat_hide_watermark', false, {
+			type: 'boolean',
+			group: 'Omnichannel',
+			section: 'Livechat',
+			invalidValue: false,
+			public: true,
+			enableQuery: omnichannelEnabledQuery,
+			i18nDescription: 'Livechat_hide_watermark_description',
+			enterprise: true,
+			modules: ['livechat-enterprise'],
+		});
+
 		await this.add(
 			'Assets_livechat_widget_logo',
 			{ defaultUrl: undefined },

@@ -74,7 +74,7 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 	} = useContext(StoreContext);
 	const { department, name, email } = iframe.guest || {};
 	const { color, position: configPosition, background } = config.theme || {};
-	const { logoUrl } = config.settings || {};
+	const { logoUrl, hideWatermark = false } = config.settings || {};
 
 	const {
 		color: customColor,
@@ -169,6 +169,7 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 		expanded: !minimized && expanded,
 		windowed: !minimized && poppedOut,
 		logoUrl,
+		hideWatermark,
 		sound,
 		alerts,
 		modal,

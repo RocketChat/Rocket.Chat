@@ -1130,6 +1130,7 @@ class LivechatClass {
 			'Livechat_widget_position',
 			'Livechat_background',
 			'Assets_livechat_widget_logo',
+			'Livechat_hide_watermark',
 		] as const;
 
 		type SettingTypes = (typeof validSettings)[number] | 'Livechat_Show_Connecting';
