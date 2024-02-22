@@ -3218,6 +3218,7 @@
   "Livechat_Calls": "Livechat Calls",
   "Livechat_visitor_email_and_transcript_email_do_not_match": "Visitor's email and transcript's email do not match",
   "Livechat_visitor_transcript_request": "{{guest}} requested the chat transcript",
+  "Assets_livechat_widget_logo": "Livechat widget logo",
   "LiveStream & Broadcasting": "LiveStream & Broadcasting",
   "LiveStream & Broadcasting_Description": "This integration between Rocket.Chat and YouTube Live allows channel owners to broadcast their camera feed live to livestream inside a channel.",
   "Livestream": "Livestream",

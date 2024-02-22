@@ -9,6 +9,8 @@ import Triggers from '../../lib/triggers';
 import store, { StoreContext } from '../../store';
 
 export type ScreenContextValue = {
+	hideWatermark: boolean;
+	logoUrl: string;
 	notificationsEnabled: boolean;
 	minimized: boolean;
 	expanded: boolean;
@@ -54,6 +56,7 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 	const { department, name, email } = iframe.guest || {};
 	const { color } = config.theme || {};
 	const { color: customColor, fontColor: customFontColor, iconColor: customIconColor } = iframe.theme || {};
+	const { logoUrl } = config.settings || {};
 
 	const [poppedOut, setPopedOut] = useState(false);
 
@@ -123,6 +126,7 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 		minimized: !poppedOut && (minimized || undocked),
 		expanded: !minimized && expanded,
 		windowed: !minimized && poppedOut,
+		logoUrl,
 		sound,
 		alerts,
 		modal,
