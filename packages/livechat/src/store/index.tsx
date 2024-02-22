@@ -55,6 +55,7 @@ export type StoreState = {
 			limitTextLength?: any;
 			displayOfflineForm?: boolean;
 			hiddenSystemMessages?: LivechatHiddenSytemMessageType[];
+			logoUrl?: string;
 		};
 		online?: boolean;
 		departments: Department[];

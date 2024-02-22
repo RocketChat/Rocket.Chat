@@ -9,6 +9,8 @@ import Triggers from '../../lib/triggers';
 import { StoreContext } from '../../store';
 
 export type ScreenContextValue = {
+	hideWatermark: boolean;
+	logoUrl: string;
 	notificationsEnabled: boolean;
 	minimized: boolean;
 	expanded: boolean;
@@ -72,6 +74,7 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 	} = useContext(StoreContext);
 	const { department, name, email } = iframe.guest || {};
 	const { color, position: configPosition, background } = config.theme || {};
+	const { logoUrl } = config.settings || {};
 
 	const {
 		color: customColor,
@@ -165,6 +168,7 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 		minimized: !poppedOut && (minimized || undocked),
 		expanded: !minimized && expanded,
 		windowed: !minimized && poppedOut,
+		logoUrl,
 		sound,
 		alerts,
 		modal,

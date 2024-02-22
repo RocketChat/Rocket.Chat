@@ -189,7 +189,16 @@ const assets: IRocketChatAssets = {
 			extensions: ['svg'],
 		},
 	},
+	livechat_widget_logo: {
+		label: 'widget logo (svg, png, jpg)',
+		constraints: {
+			type: 'image',
+			extensions: ['svg', 'png', 'jpg', 'jpeg'],
+		},
+	},
 };
+
+const ignoredKeys = ['livechat_widget_logo'];
 
 function getAssetByKey(key: string): IRocketChatAsset {
 	return assets[key as keyof IRocketChatAssets];
@@ -354,6 +363,10 @@ async function addAssetToSetting(asset: string, value: IRocketChatAsset): Promis
 
 void (async () => {
 	for await (const key of Object.keys(assets)) {
+		if (ignoredKeys.includes(key)) {
+			continue;
+		}
+
 		const value = getAssetByKey(key);
 		await addAssetToSetting(key, value);
 	}

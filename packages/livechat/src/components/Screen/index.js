@@ -1,12 +1,12 @@
 import { useContext, useEffect } from 'preact/hooks';
 
 import { createClassName } from '../../helpers/createClassName';
-import ChatIcon from '../../icons/chat.svg';
 import CloseIcon from '../../icons/close.svg';
 import { Button } from '../Button';
 import { Footer, FooterContent, PoweredBy } from '../Footer';
 import { PopoverContainer } from '../Popover';
 import { Sound } from '../Sound';
+import { ChatButton } from './ChatButton';
 import ScreenHeader from './Header';
 import { ScreenContext } from './ScreenProvider';
 import styles from './styles.scss';
@@ -24,19 +24,6 @@ export const ScreenFooter = ({ children, options, limit }) => (
 			<PoweredBy />
 		</FooterContent>
 	</Footer>
-);
-
-const ChatButton = ({ text, minimized, badge, onClick, triggered = false, agent }) => (
-	<Button
-		icon={minimized || triggered ? <ChatIcon /> : <CloseIcon />}
-		badge={badge}
-		onClick={onClick}
-		className={createClassName(styles, 'screen__chat-button')}
-		data-qa-id='chat-button'
-		img={triggered && agent && agent.avatar.src}
-	>
-		{text}
-	</Button>
 );
 
 const CssVar = ({ theme }) => {
@@ -81,6 +68,7 @@ const CssVar = ({ theme }) => {
 export const Screen = ({ title, color, agent, children, className, unread, triggered = false, queueInfo, onSoundStop }) => {
 	const {
 		theme = {},
+		logoUrl,
 		notificationsEnabled,
 		minimized = false,
 		expanded = false,
@@ -150,6 +138,8 @@ export const Screen = ({ title, color, agent, children, className, unread, trigg
 				text={title}
 				badge={unread}
 				minimized={minimized}
+				logoUrl={logoUrl}
+				className={createClassName(styles, 'screen__chat-button')}
 				onClick={minimized ? onRestore : onMinimize}
 			/>
 
