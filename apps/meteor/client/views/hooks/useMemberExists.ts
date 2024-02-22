@@ -4,5 +4,5 @@ import { useQuery } from '@tanstack/react-query';
 export const useMemberExists = (roomId: string, username: string) => {
 	const checkMember = useEndpoint('GET', '/v1/rooms.isMember');
 
-	return useQuery(['subscriptions/exists', roomId, username], () => checkMember({ roomId, username }));
+	return useQuery(['rooms/isMember', roomId, username], () => checkMember({ roomId, username }));
 };
