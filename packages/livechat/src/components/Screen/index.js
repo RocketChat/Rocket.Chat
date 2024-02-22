@@ -15,16 +15,20 @@ export const ScreenContent = ({ children, nopadding, triggered = false, full = f
 	<main className={createClassName(styles, 'screen__main', { nopadding, triggered, full })}>{children}</main>
 );
 
-export const ScreenFooter = ({ children, options, limit }) => (
-	<Footer>
-		{children && <FooterContent>{children}</FooterContent>}
-		<FooterContent>
-			{options}
-			{limit}
-			<PoweredBy />
-		</FooterContent>
-	</Footer>
-);
+export const ScreenFooter = ({ children, options, limit }) => {
+	const { hideWatermark } = useContext(ScreenContext);
+
+	return (
+		<Footer>
+			{children && <FooterContent>{children}</FooterContent>}
+			<FooterContent>
+				{options}
+				{limit}
+				{!hideWatermark && <PoweredBy />}
+			</FooterContent>
+		</Footer>
+	);
+};
 
 const CssVar = ({ theme }) => {
 	useEffect(() => {

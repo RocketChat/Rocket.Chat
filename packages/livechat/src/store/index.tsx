@@ -45,6 +45,7 @@ export type StoreState = {
 			showConnecting?: any;
 			limitTextLength?: any;
 			displayOfflineForm?: boolean;
+			hideWatermark?: boolean;
 			logoUrl?: string;
 		};
 		online?: boolean;
