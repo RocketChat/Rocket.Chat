@@ -16,11 +16,11 @@ type BoldSpanProps = {
 // | `F`    | Full date and time (long) | Thursday, December 31, 2020 12:00:00 AM |
 // | `R`    | Relative time             | 1 year ago                              |
 
-const Timestamp = ({ children }: BoldSpanProps) => {
+const Timestamp = ({ children }: BoldSpanProps): ReactElement => {
 	const { enableTimestamp } = useContext(MarkupInteractionContext);
 
 	if (!enableTimestamp) {
-		return `<t:${children.value.timestamp}:${children.value.format}>`;
+		return <>{`<t:${children.value.timestamp}:${children.value.format}>`}</>;
 	}
 
 	switch (children.value.format) {
