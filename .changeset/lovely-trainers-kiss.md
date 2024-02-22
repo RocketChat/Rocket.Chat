@@ -1,6 +1,6 @@
 ---
-'@rocket.chat/rest-typings': patch
-'@rocket.chat/meteor': patch
+'@rocket.chat/rest-typings': minor
+'@rocket.chat/meteor': minor
 ---
 
 Convert mute/unmute meteor methods to endpoints
