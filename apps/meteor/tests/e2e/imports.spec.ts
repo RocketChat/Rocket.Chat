@@ -43,7 +43,7 @@ const usersCsvsToJson = (): void => {
 		});
 };
 
-const roomsCsvToJson = (): void => {
+const countDmMessages = (): void => {
 	fs.createReadStream(roomsCsvDir)
 		.pipe(parse({ delimiter: ',' }))
 		.on('data', (rows) => {
@@ -51,7 +51,7 @@ const roomsCsvToJson = (): void => {
 		});
 };
 
-const countDmMessages = (): void => {
+const roomsCsvToJson = (): void => {
 	fs.createReadStream(dmMessagesCsvDir)
 		.pipe(parse({ delimiter: ',' }))
 		.on('data', (rows) => {
