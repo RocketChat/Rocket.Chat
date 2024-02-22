@@ -2464,6 +2464,7 @@
   "Turn_OFF": "Malŝalti",
   "Turn_ON": "Ŝalti",
   "Two-factor_authentication": "Du-faktora aŭtentigo",
+  "Two-factor_authentication_via_TOTP": "Du-faktora aŭtentigo",
   "Two-factor_authentication_disabled": "Du-faktora aŭtentigo malŝaltita",
   "Two-factor_authentication_enabled": "Du faktoro aŭtentigo ebligita",
   "Two-factor_authentication_is_currently_disabled": "Du-faktora aŭtentigo estas nuntempe malebligita",

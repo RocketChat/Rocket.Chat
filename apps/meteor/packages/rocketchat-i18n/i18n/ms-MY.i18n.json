@@ -2470,6 +2470,7 @@
   "Turn_OFF": "Matikan",
   "Turn_ON": "Hidupkan",
   "Two-factor_authentication": "Pengesahan dua faktor",
+  "Two-factor_authentication_via_TOTP": "Pengesahan dua faktor",
   "Two-factor_authentication_disabled": "Pengesahan dua faktor dilumpuhkan",
   "Two-factor_authentication_enabled": "Pengesahan dua faktor didayakan",
   "Two-factor_authentication_is_currently_disabled": "Pengesahan dua faktor kini dilumpuhkan",

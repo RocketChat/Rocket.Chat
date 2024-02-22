@@ -2599,6 +2599,7 @@
   "Turn_OFF": "Isključiti",
   "Turn_ON": "Upaliti",
   "Two-factor_authentication": "Provjera autentičnosti s dva faktora",
+  "Two-factor_authentication_via_TOTP": "Provjera autentičnosti s dva faktora",
   "Two-factor_authentication_disabled": "Autentifikacija s dva faktora je onemogućena",
   "Two-factor_authentication_enabled": "Omogućena je autentifikacija s dva faktora",
   "Two-factor_authentication_is_currently_disabled": "Trenutačno je onemogućena autentikacija s dva faktora",

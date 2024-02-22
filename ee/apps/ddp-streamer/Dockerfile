@@ -16,6 +16,13 @@ COPY ./packages/core-typings/dist packages/core-typings/dist
 COPY ./packages/rest-typings/package.json packages/rest-typings/package.json
 COPY ./packages/rest-typings/dist packages/rest-typings/dist
 
+COPY ./packages/message-parser/package.json packages/message-parser/package.json
+COPY ./packages/message-parser/dist packages/message-parser/dist
+COPY ./packages/message-parser/messageParser.js packages/message-parser/messageParser.js
+
+COPY ./packages/peggy-loader/package.json packages/peggy-loader/package.json
+COPY ./packages/peggy-loader/dist packages/peggy-loader/dist
+
 COPY ./packages/password-policies/package.json packages/password-policies/package.json
 COPY ./packages/password-policies/dist packages/password-policies/dist
 
