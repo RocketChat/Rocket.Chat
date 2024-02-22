@@ -24,6 +24,13 @@ export const createBotAgent = async (): Promise<{
 
 export const getRandomVisitorToken = (): string => faker.string.alphanumeric(17);
 
+export const getAgent = async (userId: string): Promise<IUser> => {
+    const { body } = await request.get(api(`livechat/users/agent/${userId}`))
+        .set(credentials)
+        .expect(200);
+    return body.user;
+}
+
 export const removeAgent = async (userId: string): Promise<void> => {
     await request.delete(api(`livechat/users/agent/${userId}`))
         .set(credentials)
