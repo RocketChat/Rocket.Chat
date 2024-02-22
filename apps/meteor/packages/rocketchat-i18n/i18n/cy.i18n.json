@@ -2458,6 +2458,7 @@
   "Turn_OFF": "Trowch i ODDI",
   "Turn_ON": "Trowch AR",
   "Two-factor_authentication": "Dilysu dau ffactor",
+  "Two-factor_authentication_via_TOTP": "Dilysu dau ffactor",
   "Two-factor_authentication_disabled": "Dilysu dau ffactor anabl",
   "Two-factor_authentication_enabled": "Gall dilysu dau ffactor alluogi",
   "Two-factor_authentication_is_currently_disabled": "Mae dilysiad dau ffactor ar hyn o bryd yn anabl",
