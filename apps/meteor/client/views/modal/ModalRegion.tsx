@@ -7,10 +7,10 @@ import ModalPortal from '../../components/modal/ModalPortal';
 
 const FocusScope = lazy(() => import('react-aria').then((module) => ({ default: module.FocusScope })));
 
-const ModalRegion = (): ReactElement | null => {
-	const currentModal = useCurrentModal();
+const ModalRegion = ({ region = 'default' }): ReactElement | null => {
+	const currentModal = useCurrentModal(region);
 	const { setModal } = useModal();
-	const handleDismiss = useCallback(() => setModal(null), [setModal]);
+	const handleDismiss = useCallback(() => setModal(null, region), [setModal, region]);
 
 	if (!currentModal) {
 		return null;

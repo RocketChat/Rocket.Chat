@@ -3,9 +3,9 @@ import { createContext } from 'react';
 
 export type ModalContextValue = {
 	modal: {
-		setModal(modal: ReactNode): void;
+		setModal(modal?: ReactNode, region?: string): void;
 	};
-	currentModal: ReactNode;
+	currentModal: { component: ReactNode; region: string };
 };
 
 export const ModalContext = createContext<ModalContextValue | undefined>(undefined);
