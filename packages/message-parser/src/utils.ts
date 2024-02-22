@@ -246,5 +246,6 @@ export const timestamp = (
       timestamp: value,
       format: type || 't',
     },
+    fallback: plain(`<t:${value}:${type || 't'}>`),
   };
 };

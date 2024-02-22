@@ -7,6 +7,7 @@ import outdent from 'outdent';
 import { ReactElement, Suspense } from 'react';
 
 import Markup from './Markup';
+import { MarkupInteractionContext } from './MarkupInteractionContext';
 
 export default {
 	title: 'Markup',
@@ -14,46 +15,48 @@ export default {
 	decorators: [
 		(Story): ReactElement => (
 			<Suspense fallback={null}>
-				<MessageContainer>
-					<MessageBody>
-						<Box
-							className={css`
-								> blockquote {
-									padding-inline: 8px;
-									border-radius: 2px;
-									border-width: 2px;
-									border-style: solid;
-									background-color: var(--rcx-color-neutral-100, ${colors.n100});
-									border-color: var(--rcx-color-neutral-200, ${colors.n200});
-									border-inline-start-color: var(--rcx-color-neutral-600, ${colors.n600});
-
-									&:hover,
-									&:focus {
-										background-color: var(--rcx-color-neutral-200, ${colors.n200});
-										border-color: var(--rcx-color-neutral-300, ${colors.n300});
+				<MarkupInteractionContext.Provider value={{ enableTimestamp: true }}>
+					<MessageContainer>
+						<MessageBody>
+							<Box
+								className={css`
+									> blockquote {
+										padding-inline: 8px;
+										border-radius: 2px;
+										border-width: 2px;
+										border-style: solid;
+										background-color: var(--rcx-color-neutral-100, ${colors.n100});
+										border-color: var(--rcx-color-neutral-200, ${colors.n200});
 										border-inline-start-color: var(--rcx-color-neutral-600, ${colors.n600});
-									}
-								}
 
-								> ul.task-list {
-									> li::before {
-										display: none;
-									}
-
-									> li > .rcx-check-box > .rcx-check-box__input:focus + .rcx-check-box__fake {
-										z-index: 1;
+										&:hover,
+										&:focus {
+											background-color: var(--rcx-color-neutral-200, ${colors.n200});
+											border-color: var(--rcx-color-neutral-300, ${colors.n300});
+											border-inline-start-color: var(--rcx-color-neutral-600, ${colors.n600});
+										}
 									}
 
-									list-style: none;
-									margin-inline-start: 0;
-									padding-inline-start: 0;
-								}
-							`}
-						>
-							<Story />
-						</Box>
-					</MessageBody>
-				</MessageContainer>
+									> ul.task-list {
+										> li::before {
+											display: none;
+										}
+
+										> li > .rcx-check-box > .rcx-check-box__input:focus + .rcx-check-box__fake {
+											z-index: 1;
+										}
+
+										list-style: none;
+										margin-inline-start: 0;
+										padding-inline-start: 0;
+									}
+								`}
+							>
+								<Story />
+							</Box>
+						</MessageBody>
+					</MessageContainer>
+				</MarkupInteractionContext.Provider>
 				{/* workaround? */}
 				<Box />
 			</Suspense>
@@ -73,6 +76,35 @@ const Template: ComponentStoryFn<typeof Markup> = (args) => <Markup {...args} />
 export const Empty = Template.bind({});
 Empty.args = {
 	tokens: [],
+};
+
+export const Timestamp = Template.bind({});
+
+Timestamp.args = {
+	tokens: parse(`Short time: <t:1708551317642:t>
+	Long time: <t:1708551317642:T>
+	Short date: <t:1708551317642:d>
+	Long date: <t:1708551317642:D>
+	Full date: <t:1708551317642:f>
+	Full date (long): <t:1708551317642:F>
+	Relative time from past: <t:${((): number => {
+		const date = new Date();
+		date.setHours(date.getHours() - 1);
+		return date.getTime();
+	})()}:R>
+	Relative to Future: <t:${((): number => {
+		const date = new Date();
+		date.setHours(date.getHours() + 1);
+		return date.getTime();
+	})()}:R>
+
+	Relative Seconds: <t:${((): number => {
+		const date = new Date();
+		date.setSeconds(date.getSeconds() - 1);
+		return date.getTime();
+	})()}:R>
+
+`),
 };
 
 export const BigEmoji = Template.bind({});

@@ -181,6 +181,7 @@ export type Timestamp = {
     timestamp: string;
     format: 't' | 'T' | 'd' | 'D' | 'f' | 'F' | 'R';
   };
+  fallback?: Plain;
 };
 
 export type Types = {
