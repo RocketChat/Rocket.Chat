@@ -60,7 +60,7 @@ const UserCard = ({
 			<div>
 				{username && <UserAvatar username={username} etag={etag} size='x124' />}
 				<Box flexGrow={0} display='flex' mbs={12} alignItems='center' justifyContent='center'>
-					<UserCardActions>{actions}</UserCardActions>
+					<UserCardActions aria-label={t('User_card_actions')}>{actions}</UserCardActions>
 				</Box>
 			</div>
 			<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} mis={16} width='1px'>
