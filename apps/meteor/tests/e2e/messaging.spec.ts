@@ -59,6 +59,18 @@ test.describe.serial('Messaging', () => {
 		await expect(poHomeChannel.composer).toBeFocused();
 	});
 
+	test('should not restore focus on the last focused if it was triggered by click', async ({ page }) => {
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.content.sendMessage('msg1');
+		await poHomeChannel.content.sendMessage('msg2');
+
+		await page.locator('[data-qa-type="message"]:has-text("msg1")').click();	
+		await poHomeChannel.composer.click();
+		await page.locator('[data-qa-type="message"]:has-text("msg2")').click();
+		
+		await expect(page.locator('[data-qa-type="message"]:has-text("msg2")')).toBeFocused();
+	});
+
 	test('expect show "hello word" in both contexts (targetChannel)', async ({ browser }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		const { page } = await createAuxContext(browser, Users.user2);
