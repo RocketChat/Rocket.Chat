@@ -20,7 +20,7 @@ import { Controller, useWatch } from 'react-hook-form';
 
 import { useHasLicenseModule } from '../../../../../ee/client/hooks/useHasLicenseModule';
 import { type TriggersPayload } from '../EditTrigger';
-import { useActionFormFields } from '../hooks/useActionFormFields';
+import { getActionFormFields } from '../utils';
 
 type SendMessageFormType = ComponentProps<typeof Field> & {
 	control: Control<TriggersPayload>;
@@ -50,7 +50,7 @@ export const ActionForm = ({ control, trigger, index, ...props }: SendMessageFor
 		];
 	}, [t]);
 
-	const ActionFormFields = useActionFormFields(actionFieldValue);
+	const ActionFormFields = getActionFormFields(actionFieldValue);
 	const actionHint = useMemo(() => ACTION_HINTS[actionFieldValue] || '', [actionFieldValue]);
 	const isOptionDisabled = useCallback((value: string) => !hasLicense && PREMIUM_ACTIONS.includes(value), [hasLicense]);
 
