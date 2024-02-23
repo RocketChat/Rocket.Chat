@@ -1089,6 +1089,30 @@ describe('[Users]', function () {
 			]),
 		);
 
+		it('should fail when an empty userId is provided', (done) => {
+			request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: '',
+					data: {
+						email: apiEmail,
+						name: `edited${apiUsername}`,
+						username: `edited${apiUsername}`,
+						password,
+						active: true,
+						roles: ['user'],
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+				})
+				.end(done);
+		});
+
 		it("should update a user's info by userId", (done) => {
 			request
 				.post(api('users.update'))
