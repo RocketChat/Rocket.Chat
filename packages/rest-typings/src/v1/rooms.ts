@@ -428,9 +428,9 @@ type RoomsIsMemberProps = { roomId: string } & ({ username: string } | { userId:
 const RoomsIsMemberPropsSchema = {
 	type: 'object',
 	properties: {
-		roomId: { type: 'string' },
-		userId: { type: 'string' },
-		username: { type: 'string' },
+		roomId: { type: 'string', minLength: 1 },
+		userId: { type: 'string', minLength: 1 },
+		username: { type: 'string', minLength: 1 },
 	},
 	oneOf: [{ required: ['roomId', 'userId'] }, { required: ['roomId', 'username'] }],
 	additionalProperties: false,
