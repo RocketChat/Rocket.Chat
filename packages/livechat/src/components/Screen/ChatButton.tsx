@@ -13,7 +13,7 @@ type ChatButtonProps = {
 };
 
 export const ChatButton = ({ text, minimized, badge, onClick, triggered = false, className, logoUrl }: ChatButtonProps) => {
-	const openIcon = logoUrl ? <img src={logoUrl} /> : <ChatIcon />;
+	const openIcon = logoUrl ? <img src={logoUrl} width={30} height={30} alt='Livechat' /> : <ChatIcon />;
 
 	return (
 		<Button
