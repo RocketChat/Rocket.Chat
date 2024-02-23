@@ -71,16 +71,16 @@ async function _sendUserEmail(subject: string, html: string, userData: RequiredF
 
 async function validateUserData(userId: IUser['_id'], userData: ISaveUserDataParams) {
 	const existingRoles = _.pluck(await getRoles(), '_id');
-	const isCreateUserParams = '_id' in userData;
+	const isUpdateUserParams = '_id' in userData;
 
-	if (isCreateUserParams && userId !== userData._id && !(await hasPermissionAsync(userId, 'edit-other-user-info'))) {
+	if (isUpdateUserParams && userId !== userData._id && !(await hasPermissionAsync(userId, 'edit-other-user-info'))) {
 		throw new Meteor.Error('error-action-not-allowed', 'Editing user is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Editing_user',
 		});
 	}
 
-	if (!isCreateUserParams && !(await hasPermissionAsync(userId, 'create-user'))) {
+	if (!isUpdateUserParams && !(await hasPermissionAsync(userId, 'create-user'))) {
 		throw new Meteor.Error('error-action-not-allowed', 'Adding user is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Adding_user',
@@ -101,14 +101,14 @@ async function validateUserData(userId: IUser['_id'], userData: ISaveUserDataPar
 		});
 	}
 
-	if (settings.get('Accounts_RequireNameForSignUp') && !isCreateUserParams && !trim(userData.name)) {
+	if (settings.get('Accounts_RequireNameForSignUp') && !isUpdateUserParams && !trim(userData.name)) {
 		throw new Meteor.Error('error-the-field-is-required', 'The field Name is required', {
 			method: 'insertOrUpdateUser',
 			field: 'Name',
 		});
 	}
 
-	if (!isCreateUserParams && !trim(userData.username)) {
+	if (!isUpdateUserParams && !trim(userData.username)) {
 		throw new Meteor.Error('error-the-field-is-required', 'The field Username is required', {
 			method: 'insertOrUpdateUser',
 			field: 'Username',
@@ -131,14 +131,14 @@ async function validateUserData(userId: IUser['_id'], userData: ISaveUserDataPar
 		});
 	}
 
-	if (!isCreateUserParams && !userData.password && !userData.setRandomPassword) {
+	if (!isUpdateUserParams && !userData.password && !userData.setRandomPassword) {
 		throw new Meteor.Error('error-the-field-is-required', 'The field Password is required', {
 			method: 'insertOrUpdateUser',
 			field: 'Password',
 		});
 	}
 
-	if (!isCreateUserParams) {
+	if (!isUpdateUserParams) {
 		if (!(await checkUsernameAvailability(userData.username))) {
 			throw new Meteor.Error('error-field-unavailable', `${_.escape(userData.username)} is already in use :(`, {
 				method: 'insertOrUpdateUser',
