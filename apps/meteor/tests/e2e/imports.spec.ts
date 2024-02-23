@@ -29,46 +29,59 @@ const usersCsvDir = path.resolve(__dirname, 'fixtures', 'files', 'csv_import_use
 const roomsCsvDir = path.resolve(__dirname, 'fixtures', 'files', 'csv_import_rooms.csv');
 const dmMessagesCsvDir = path.resolve(__dirname, 'fixtures', 'files', 'dm_messages.csv');
 
-const usersCsvsToJson = (): void => {
-	fs.createReadStream(slackCsvDir)
-		.pipe(parse({ delimiter: ',', from_line: 2 }))
-		.on('data', (rows) => {
-			rowUserName.push(rows[0]);
-		});
-	fs.createReadStream(usersCsvDir)
-		.pipe(parse({ delimiter: ',' }))
-		.on('data', (rows) => {
-			rowUserName.push(rows[0]);
-			csvImportedUsernames.push(rows[0]);
-		});
+const usersCsvsToJson = async (): Promise<void> => {
+	await new Promise((resolve) =>
+		fs.createReadStream(slackCsvDir)
+			.pipe(parse({ delimiter: ',', from_line: 2 }))
+			.on('data', (rows) => {
+				rowUserName.push(rows[0]);
+			})
+			.on('end', resolve)
+	);
+
+	await new Promise((resolve) =>
+		fs.createReadStream(usersCsvDir)
+			.pipe(parse({ delimiter: ',' }))
+			.on('data', (rows) => {
+				rowUserName.push(rows[0]);
+				csvImportedUsernames.push(rows[0]);
+			})
+			.on('end', resolve)
+	);
 };
 
-const countDmMessages = (): void => {
-	fs.createReadStream(dmMessagesCsvDir)
-		.pipe(parse({ delimiter: ',' }))
-		.on('data', (rows) => {
-			dmMessages.push(rows[3]);
-		});
-};
+const countDmMessages = async (): Promise<void> => (
+	new Promise((resolve) =>
+		fs.createReadStream(dmMessagesCsvDir)
+			.pipe(parse({ delimiter: ',' }))
+			.on('data', (rows) => {
+				dmMessages.push(rows[3]);
+			})
+			.on('end', resolve)
+	)
+);
 
-const roomsCsvToJson = (): void => {
-	fs.createReadStream(roomsCsvDir)
-		.pipe(parse({ delimiter: ',' }))
-		.on('data', (rows) => {
-			importedRooms.push({
-				name: rows[0],
-				ownerUsername: rows[1],
-				visibility: rows[2],
-				members: rows[3],
-			});
-		});
-};
+const roomsCsvToJson = async (): Promise<void> => (
+	new Promise((resolve) =>
+		fs.createReadStream(roomsCsvDir)
+			.pipe(parse({ delimiter: ',' }))
+			.on('data', (rows) => {
+				importedRooms.push({
+					name: rows[0],
+					ownerUsername: rows[1],
+					visibility: rows[2],
+					members: rows[3],
+				});
+			})
+			.on('end', resolve)
+	)
+);
 
 test.describe.serial('imports', () => {
-	test.beforeAll(() => {
-		usersCsvsToJson();
-		roomsCsvToJson();
-		countDmMessages();
+	test.beforeAll(async () => {
+		await usersCsvsToJson();
+		await roomsCsvToJson();
+		await countDmMessages();
 	});
 
 	test('expect import users data from slack', async ({ page }) => {
