@@ -209,8 +209,9 @@ export class AppsRestApi {
 			{ authRequired: true },
 			{
 				async get() {
-					const apps = (await manager.get()).map(formatAppInstanceForRest);
-					return API.v1.success({ apps });
+					const apps = await manager.get();
+					const formatted = await Promise.all(apps.map(formatAppInstanceForRest));
+					return API.v1.success({ apps: formatted });
 				},
 			},
 		);
@@ -302,7 +303,8 @@ export class AppsRestApi {
 					}
 					apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, 'Use /apps/installed to get the installed apps list.');
 
-					const apps = (await manager.get()).map(formatAppInstanceForRest);
+					const proxiedApps = await manager.get();
+					const apps = await Promise.all(proxiedApps.map(formatAppInstanceForRest));
 
 					return API.v1.success({ apps });
 				},
