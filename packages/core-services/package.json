@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/core-services",
-	"version": "0.3.4",
+	"version": "0.3.5",
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.22.20",
@@ -37,7 +37,7 @@
 		"@rocket.chat/apps-engine": "1.41.0",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/icons": "^0.33.0",
-		"@rocket.chat/message-parser": "~0.31.28",
+		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/ui-kit": "workspace:~",

@@ -2462,6 +2462,7 @@
   "Turn_OFF": "Opriți",
   "Turn_ON": "Aprinde",
   "Two-factor_authentication": "Autentificare în două factori",
+  "Two-factor_authentication_via_TOTP": "Autentificare în două factori",
   "Two-factor_authentication_disabled": "Autentificarea cu două factori este dezactivată",
   "Two-factor_authentication_enabled": "Autentificare cu două factori activată",
   "Two-factor_authentication_is_currently_disabled": "Verificarea în doi factori este dezactivată în prezent",

@@ -2519,6 +2519,7 @@
   "Turn_OFF": "Išjunk",
   "Turn_ON": "Įjungti",
   "Two-factor_authentication": "Dviejų veiksnių autentifikavimas",
+  "Two-factor_authentication_via_TOTP": "Dviejų veiksnių autentifikavimas",
   "Two-factor_authentication_disabled": "Dviejų veiksnių autentifikavimas išjungtas",
   "Two-factor_authentication_enabled": "Dviejų veiksnių autentifikavimas įjungtas",
   "Two-factor_authentication_is_currently_disabled": "Dviejų veiksnių autentifikavimas šiuo metu yra išjungtas",

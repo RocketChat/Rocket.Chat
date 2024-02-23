@@ -2803,6 +2803,7 @@
   "Turn_OFF": "បិទ",
   "Turn_ON": "បើក",
   "Two-factor_authentication": "ការផ្ទៀងផ្ទាត់ពីរកត្តា",
+  "Two-factor_authentication_via_TOTP": "ការផ្ទៀងផ្ទាត់ពីរកត្តា",
   "Two-factor_authentication_disabled": "ការផ្ទៀងផ្ទាត់ពីរកត្តាត្រូវបានបិទ",
   "Two-factor_authentication_enabled": "ការផ្ទៀងផ្ទាត់ពីរកត្តាត្រូវបានបើក",
   "Two-factor_authentication_is_currently_disabled": "ការសម្គាល់អត្តសញ្ញាណកត្តាពីរត្រូវបានបិទនាពេលបច្ចុប្បន្ន",

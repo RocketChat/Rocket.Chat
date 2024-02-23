@@ -34,6 +34,7 @@ export class Spotlight {
 				joinCodeRequired: 1,
 				lastMessage: 1,
 				federated: true,
+				prid: 1,
 			},
 			sort: {
 				name: 1,
