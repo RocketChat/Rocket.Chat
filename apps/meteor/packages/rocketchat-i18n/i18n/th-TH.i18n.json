@@ -2454,6 +2454,7 @@
   "Turn_OFF": "ปิด",
   "Turn_ON": "เปิด",
   "Two-factor_authentication": "การตรวจสอบสิทธิ์แบบสองปัจจัย",
+  "Two-factor_authentication_via_TOTP": "การตรวจสอบสิทธิ์แบบสองปัจจัย",
   "Two-factor_authentication_disabled": "การปิดใช้งานการพิสูจน์ตัวตนแบบสองปัจจัย",
   "Two-factor_authentication_enabled": "การเปิดใช้งานการตรวจสอบสิทธิ์แบบสองปัจจัย",
   "Two-factor_authentication_is_currently_disabled": "การตรวจสอบสิทธิ์แบบสองปัจจัยถูกปิดใช้อยู่ในขณะนี้",

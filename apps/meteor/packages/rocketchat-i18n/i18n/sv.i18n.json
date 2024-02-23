@@ -4936,6 +4936,7 @@
   "Turn_off_video": "Stäng av video",
   "Two Factor Authentication": "Tvåfaktorsautentisering",
   "Two-factor_authentication": "Tvåfaktorsautentisering via TOTP",
+  "Two-factor_authentication_via_TOTP": "Tvåfaktorsautentisering",
   "Two-factor_authentication_disabled": "Tvåfaktorautentisering inaktiverad",
   "Two-factor_authentication_email": "Tvåfaktorsautentisering via e-post",
   "Two-factor_authentication_email_is_currently_disabled": "Tvåfaktorsautentisering via e-post är inaktiverat",
