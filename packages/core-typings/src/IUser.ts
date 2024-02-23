@@ -105,7 +105,7 @@ export interface IUserEmail {
 }
 
 export interface IUserSettings {
-	profile: any;
+	profile?: any;
 	preferences?: {
 		[key: string]: any;
 	};
