@@ -325,6 +325,32 @@ describe('[Users]', function () {
 				]),
 			);
 
+			it('should NOT create create subscriptions to non default teams or rooms', async () => {
+				userNoDefault = await createUser({ joinDefaultChannels: true });
+				const noDefaultUserCredentials = await login(userNoDefault.username, password);
+				await request
+					.get(api('subscriptions.getOne'))
+					.set(noDefaultUserCredentials)
+					.query({ roomId: defaultTeamRoomId })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('subscription').that.is.null;
+					});
+
+				await request
+					.get(api('subscriptions.getOne'))
+					.set(noDefaultUserCredentials)
+					.query({ roomId: group._id })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('subscription').that.is.null;
+					});
+			});
+
 			it('should create a subscription for a default team room if joinDefaultChannels is true', async () => {
 				await setDefaultRoom({ roomId: defaultTeamRoomId, roomName: teamName });
 
@@ -379,11 +405,11 @@ describe('[Users]', function () {
 			});
 
 			it('should create a subscription for a default room inside a non default team', async () => {
-				await unsetDefaultRoom({ roomId: defaultTeamRoomId, roomName: teamName });
-				await setDefaultRoom({ roomId: group._id, roomName: teamName });
+				await unsetDefaultRoom({ roomId: defaultTeamRoomId });
+				await setDefaultRoom({ roomId: group._id });
 
 				user3 = await createUser({ joinDefaultChannels: true });
-				const user3Credentials = await login(user2.username, password);
+				const user3Credentials = await login(user3.username, password);
 
 				// New user should be subscribed to the default room inside a team
 				await request
@@ -407,8 +433,7 @@ describe('[Users]', function () {
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('subscription');
-						expect(res.body.subscription).to.have.property('rid').that.is.null;
+						expect(res.body).to.have.property('subscription').that.is.null;
 					});
 			});
 		});
