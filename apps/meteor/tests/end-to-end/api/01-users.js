@@ -281,6 +281,7 @@ describe('[Users]', function () {
 
 		describe('auto join default channels', () => {
 			let defaultTeamRoomId;
+			let defaultTeamId;
 			let group;
 			let user;
 			let user2;
@@ -291,6 +292,7 @@ describe('[Users]', function () {
 
 				const defaultTeam = await createTeam(credentials, teamName, 0);
 				defaultTeamRoomId = defaultTeam.roomId;
+				defaultTeamId = defaultTeam._id;
 
 				await setDefaultRoom({ roomId: defaultTeamRoomId, roomName: teamName });
 			});
@@ -306,7 +308,7 @@ describe('[Users]', function () {
 						extraData: {
 							broadcast: false,
 							encrypted: false,
-							teamId: defaultTeamRoomId,
+							teamId: defaultTeamId,
 							topic: '',
 						},
 					});
