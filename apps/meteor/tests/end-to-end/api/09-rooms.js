@@ -1771,7 +1771,7 @@ describe('[Rooms]', function () {
 		);
 
 		it('should return error if room not found', () => {
-			request
+			return request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
 				.query({
@@ -1789,7 +1789,7 @@ describe('[Rooms]', function () {
 		});
 
 		it('should return error if user not found with the given userId', () => {
-			request
+			return request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
 				.query({
@@ -1804,7 +1804,7 @@ describe('[Rooms]', function () {
 		});
 
 		it('should return error if user not found with the given username', () => {
-			request
+			return request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
 				.query({
@@ -1819,7 +1819,7 @@ describe('[Rooms]', function () {
 		});
 
 		it('should return success with exists=true if given userId is a member of the channel', () => {
-			request
+			return request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
 				.query({
@@ -1834,7 +1834,7 @@ describe('[Rooms]', function () {
 		});
 
 		it('should return success with exists=true if given username is a member of the channel', () => {
-			request
+			return request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
 				.query({
@@ -1849,7 +1849,7 @@ describe('[Rooms]', function () {
 		});
 
 		it('should return success with exists=false if user is not a member of the channel', () => {
-			request
+			return request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
 				.query({
@@ -1864,7 +1864,7 @@ describe('[Rooms]', function () {
 		});
 
 		it('should return success with exists=true if given userId is a member of the group', () => {
-			request
+			return request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
 				.query({
@@ -1879,7 +1879,7 @@ describe('[Rooms]', function () {
 		});
 
 		it('should return success with exists=true if given username is a member of the group', () => {
-			request
+			return request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
 				.query({
@@ -1894,7 +1894,7 @@ describe('[Rooms]', function () {
 		});
 
 		it('should return success with exists=false if user is not a member of the group', () => {
-			request
+			return request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
 				.query({
@@ -1909,7 +1909,7 @@ describe('[Rooms]', function () {
 		});
 
 		it('should return unauthorized if caller cannot access the group', () => {
-			request
+			return request
 				.get(api('rooms.isMember'))
 				.set(testUserNonMemberCredentials)
 				.query({
@@ -1924,7 +1924,7 @@ describe('[Rooms]', function () {
 		});
 
 		it('should return success with exists=true if given userId is a member of the DM', () => {
-			request
+			return request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
 				.query({
@@ -1939,7 +1939,7 @@ describe('[Rooms]', function () {
 		});
 
 		it('should return success with exists=true if given username is a member of the DM', () => {
-			request
+			return request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
 				.query({
@@ -1954,7 +1954,7 @@ describe('[Rooms]', function () {
 		});
 
 		it('should return success with exists=false if user is not a member of the DM', () => {
-			request
+			return request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
 				.query({
@@ -1969,7 +1969,7 @@ describe('[Rooms]', function () {
 		});
 
 		it('should return unauthorized if caller cannot access the DM', () => {
-			request
+			return request
 				.get(api('rooms.isMember'))
 				.set(testUserNonMemberCredentials)
 				.query({
