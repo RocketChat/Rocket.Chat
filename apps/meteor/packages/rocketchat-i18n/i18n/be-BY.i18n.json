@@ -2482,6 +2482,7 @@
   "Turn_OFF": "Выключыць",
   "Turn_ON": "Уключыць",
   "Two-factor_authentication": "двухфакторную аўтэнтыфікацыя",
+  "Two-factor_authentication_via_TOTP": "двухфакторную аўтэнтыфікацыя",
   "Two-factor_authentication_disabled": "Двухфакторную аўтэнтыфікацыя адключаная",
   "Two-factor_authentication_enabled": "ўключана праверка сапраўднасці двухфакторную",
   "Two-factor_authentication_is_currently_disabled": "Двухфакторную аўтэнтыфікацыя ў цяперашні час адключана",
