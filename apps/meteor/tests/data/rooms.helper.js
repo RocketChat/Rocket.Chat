@@ -79,3 +79,13 @@ export const setDefaultRoom = ({ roomId }) => {
 			}
 		});
 };
+
+export const unsetDefaultRoom = ({ roomId }) => {
+	return request
+		.post(api('rooms.saveRoomSettings'))
+		.set(credentials)
+		.send({
+			rid: roomId,
+			default: false,
+		});
+};
