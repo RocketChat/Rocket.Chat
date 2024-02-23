@@ -284,12 +284,11 @@ describe('[Users]', function () {
 			let defaultTeamId;
 			let group;
 			let user;
+			let userCredentials;
 			let user2;
 			const teamName = `defaultTeam_${Date.now()}`;
 
 			before(async () => {
-				user = await createUser({ joinDefaultChannels: true });
-
 				const defaultTeam = await createTeam(credentials, teamName, 0);
 				defaultTeamRoomId = defaultTeam.roomId;
 				defaultTeamId = defaultTeam._id;
@@ -304,7 +303,7 @@ describe('[Users]', function () {
 					.send({
 						name: `defaultGroup_${Date.now()}`,
 						readonly: false,
-						members: [user.username],
+						members: [],
 						extraData: {
 							broadcast: false,
 							encrypted: false,
@@ -319,10 +318,12 @@ describe('[Users]', function () {
 				Promise.all([deleteRoom({ roomId: group._id, type: 'p' }), deleteTeam(credentials, teamName), deleteUser(user), deleteUser(user2)]),
 			);
 
-			it('should create a subscription for the user in the default channels if joinDefaultChannels is true', async () => {
+			it('should create a subscription for a default team room if joinDefaultChannels is true', async () => {
+				user = await createUser({ joinDefaultChannels: true });
+				userCredentials = await login(user.username, password);
 				await request
 					.get(api('subscriptions.getOne'))
-					.set(credentials)
+					.set(userCredentials)
 					.query({ roomId: defaultTeamRoomId })
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -333,7 +334,20 @@ describe('[Users]', function () {
 					});
 			});
 
-			it('should create a subscription for the user in all the auto join channels of the team', async () => {
+			it('should not create a subscription for non auto-join rooms inside a default team', async () => {
+				await request
+					.get(api('subscriptions.getOne'))
+					.set(userCredentials)
+					.query({ roomId: group._id })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('subscription', null);
+					});
+			});
+
+			it('should create a subscription for the user in all the auto join rooms of the team', async () => {
 				await request.post(api('teams.updateRoom')).set(credentials).send({
 					roomId: group._id,
 					isDefault: true,
