@@ -7,6 +7,8 @@ import { processUnread } from './main';
 
 type AgentPromise = { username: string } | Serialized<ILivechatAgent> | null;
 
+let agentPromise: Promise<AgentPromise> | null = null;
+
 const agentCacheExpiry = 3600000;
 
 const isAgentWithInfo = (agent: any): agent is Serialized<ILivechatAgent> => !agent.hiddenInfo;
@@ -40,17 +42,35 @@ const getNextAgentFromQueue = async () => {
 };
 
 export const getAgent = async (triggerAction: ILivechatTriggerAction): Promise<AgentPromise> => {
-	const { sender, name = '' } = triggerAction.params || {};
-
-	if (sender === 'custom') {
-		return { username: name };
+	if (agentPromise) {
+		return agentPromise;
 	}
 
-	if (sender === 'queue') {
-		return getNextAgentFromQueue();
-	}
+	agentPromise = new Promise(async (resolve, reject) => {
+		const { sender, name = '' } = triggerAction.params || {};
 
-	return Promise.reject('Unknown sender');
+		if (sender === 'custom') {
+			resolve({ username: name });
+		}
+
+		if (sender === 'queue') {
+			try {
+				const agent = await getNextAgentFromQueue();
+				resolve(agent);
+			} catch (_) {
+				resolve({ username: 'rocket.cat' });
+			}
+		}
+
+		return reject('Unknown sender type.');
+	});
+
+	// expire the promise cache as well
+	setTimeout(() => {
+		agentPromise = null;
+	}, agentCacheExpiry);
+
+	return agentPromise;
 };
 
 export const upsertMessage = async (message: Record<string, unknown>) => {
