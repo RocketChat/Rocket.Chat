@@ -50,7 +50,7 @@ const usersCsvsToJson = async (): Promise<void> => {
 	);
 };
 
-const countDmMessages = async (): Promise<void> => (
+const countDmMessages = (): Promise<void> => (
 	new Promise((resolve) =>
 		fs.createReadStream(dmMessagesCsvDir)
 			.pipe(parse({ delimiter: ',' }))
@@ -61,7 +61,7 @@ const countDmMessages = async (): Promise<void> => (
 	)
 );
 
-const roomsCsvToJson = async (): Promise<void> => (
+const roomsCsvToJson = (): Promise<void> => (
 	new Promise((resolve) =>
 		fs.createReadStream(roomsCsvDir)
 			.pipe(parse({ delimiter: ',' }))
