@@ -10,7 +10,7 @@ import { MAX_BIO_LENGTH, MAX_NICKNAME_LENGTH } from '../../data/constants.ts';
 import { customFieldText, clearCustomFields, setCustomFields } from '../../data/custom-fields.js';
 import { imgURL } from '../../data/interactions';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
-import { createRoom, deleteRoom, setDefaultRoom } from '../../data/rooms.helper';
+import { createRoom, deleteRoom, setDefaultRoom, unsetDefaultRoom } from '../../data/rooms.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
 import { adminEmail, preferences, password, adminUsername } from '../../data/user';
 import { createUser, login, deleteUser, getUserStatus, getUserByUsername } from '../../data/users.helper.js';
@@ -286,14 +286,14 @@ describe('[Users]', function () {
 			let user;
 			let userCredentials;
 			let user2;
+			let user3;
+			let userNoDefault;
 			const teamName = `defaultTeam_${Date.now()}`;
 
 			before(async () => {
 				const defaultTeam = await createTeam(credentials, teamName, 0);
 				defaultTeamRoomId = defaultTeam.roomId;
 				defaultTeamId = defaultTeam._id;
-
-				await setDefaultRoom({ roomId: defaultTeamRoomId, roomName: teamName });
 			});
 
 			before(async () => {
@@ -315,10 +315,19 @@ describe('[Users]', function () {
 			});
 
 			after(async () =>
-				Promise.all([deleteRoom({ roomId: group._id, type: 'p' }), deleteTeam(credentials, teamName), deleteUser(user), deleteUser(user2)]),
+				Promise.all([
+					deleteRoom({ roomId: group._id, type: 'p' }),
+					deleteTeam(credentials, teamName),
+					deleteUser(user),
+					deleteUser(user2),
+					deleteUser(user3),
+					deleteUser(userNoDefault),
+				]),
 			);
 
 			it('should create a subscription for a default team room if joinDefaultChannels is true', async () => {
+				await setDefaultRoom({ roomId: defaultTeamRoomId, roomName: teamName });
+
 				user = await createUser({ joinDefaultChannels: true });
 				userCredentials = await login(user.username, password);
 				await request
@@ -334,7 +343,7 @@ describe('[Users]', function () {
 					});
 			});
 
-			it('should not create a subscription for non auto-join rooms inside a default team', async () => {
+			it('should NOT create a subscription for non auto-join rooms inside a default team', async () => {
 				await request
 					.get(api('subscriptions.getOne'))
 					.set(userCredentials)
@@ -343,7 +352,7 @@ describe('[Users]', function () {
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('subscription', null);
+						expect(res.body).to.have.property('subscription').that.is.null;
 					});
 			});
 
@@ -366,6 +375,40 @@ describe('[Users]', function () {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('subscription');
 						expect(res.body.subscription).to.have.property('rid', group._id);
+					});
+			});
+
+			it('should create a subscription for a default room inside a non default team', async () => {
+				await unsetDefaultRoom({ roomId: defaultTeamRoomId, roomName: teamName });
+				await setDefaultRoom({ roomId: group._id, roomName: teamName });
+
+				user3 = await createUser({ joinDefaultChannels: true });
+				const user3Credentials = await login(user2.username, password);
+
+				// New user should be subscribed to the default room inside a team
+				await request
+					.get(api('subscriptions.getOne'))
+					.set(user3Credentials)
+					.query({ roomId: group._id })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('subscription');
+						expect(res.body.subscription).to.have.property('rid', group._id);
+					});
+
+				// New user should not be subscribed to the parent team
+				await request
+					.get(api('subscriptions.getOne'))
+					.set(user3Credentials)
+					.query({ roomId: defaultTeamRoomId })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('subscription');
+						expect(res.body.subscription).to.have.property('rid').that.is.null;
 					});
 			});
 		});
