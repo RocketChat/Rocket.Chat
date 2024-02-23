@@ -1770,7 +1770,7 @@ describe('[Rooms]', function () {
 			]),
 		);
 
-		it('should return error if room not found', (done) => {
+		it('should return error if room not found', () => {
 			request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
@@ -1785,11 +1785,10 @@ describe('[Rooms]', function () {
 						'error',
 						'The required "roomId" or "roomName" param provided does not match any channel [error-room-not-found]',
 					);
-				})
-				.end(done);
+				});
 		});
 
-		it('should return error if user not found with the given userId', (done) => {
+		it('should return error if user not found with the given userId', () => {
 			request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
@@ -1801,11 +1800,10 @@ describe('[Rooms]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'error-user-not-found');
-				})
-				.end(done);
+				});
 		});
 
-		it('should return error if user not found with the given username', (done) => {
+		it('should return error if user not found with the given username', () => {
 			request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
@@ -1817,11 +1815,10 @@ describe('[Rooms]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'error-user-not-found');
-				})
-				.end(done);
+				});
 		});
 
-		it('should return success with exists=true if given userId is a member of the channel', (done) => {
+		it('should return success with exists=true if given userId is a member of the channel', () => {
 			request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
@@ -1833,11 +1830,10 @@ describe('[Rooms]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('exists', true);
-				})
-				.end(done);
+				});
 		});
 
-		it('should return success with exists=true if given username is a member of the channel', (done) => {
+		it('should return success with exists=true if given username is a member of the channel', () => {
 			request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
@@ -1849,11 +1845,10 @@ describe('[Rooms]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('exists', true);
-				})
-				.end(done);
+				});
 		});
 
-		it('should return success with exists=false if user is not a member of the channel', (done) => {
+		it('should return success with exists=false if user is not a member of the channel', () => {
 			request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
@@ -1865,11 +1860,10 @@ describe('[Rooms]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('exists', false);
-				})
-				.end(done);
+				});
 		});
 
-		it('should return success with exists=true if given userId is a member of the group', (done) => {
+		it('should return success with exists=true if given userId is a member of the group', () => {
 			request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
@@ -1881,11 +1875,10 @@ describe('[Rooms]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('exists', true);
-				})
-				.end(done);
+				});
 		});
 
-		it('should return success with exists=true if given username is a member of the group', (done) => {
+		it('should return success with exists=true if given username is a member of the group', () => {
 			request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
@@ -1897,11 +1890,10 @@ describe('[Rooms]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('exists', true);
-				})
-				.end(done);
+				});
 		});
 
-		it('should return success with exists=false if user is not a member of the group', (done) => {
+		it('should return success with exists=false if user is not a member of the group', () => {
 			request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
@@ -1913,11 +1905,10 @@ describe('[Rooms]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('exists', false);
-				})
-				.end(done);
+				});
 		});
 
-		it('should return unauthorized if caller cannot access the group', (done) => {
+		it('should return unauthorized if caller cannot access the group', () => {
 			request
 				.get(api('rooms.isMember'))
 				.set(testUserNonMemberCredentials)
@@ -1929,11 +1920,10 @@ describe('[Rooms]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'unauthorized');
-				})
-				.end(done);
+				});
 		});
 
-		it('should return success with exists=true if given userId is a member of the DM', (done) => {
+		it('should return success with exists=true if given userId is a member of the DM', () => {
 			request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
@@ -1945,11 +1935,10 @@ describe('[Rooms]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('exists', true);
-				})
-				.end(done);
+				});
 		});
 
-		it('should return success with exists=true if given username is a member of the DM', (done) => {
+		it('should return success with exists=true if given username is a member of the DM', () => {
 			request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
@@ -1961,11 +1950,10 @@ describe('[Rooms]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('exists', true);
-				})
-				.end(done);
+				});
 		});
 
-		it('should return success with exists=false if user is not a member of the DM', (done) => {
+		it('should return success with exists=false if user is not a member of the DM', () => {
 			request
 				.get(api('rooms.isMember'))
 				.set(testUser1Credentials)
@@ -1977,11 +1965,10 @@ describe('[Rooms]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('exists', false);
-				})
-				.end(done);
+				});
 		});
 
-		it('should return unauthorized if caller cannot access the DM', (done) => {
+		it('should return unauthorized if caller cannot access the DM', () => {
 			request
 				.get(api('rooms.isMember'))
 				.set(testUserNonMemberCredentials)
@@ -1993,8 +1980,7 @@ describe('[Rooms]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'unauthorized');
-				})
-				.end(done);
+				});
 		});
 	});
 });
