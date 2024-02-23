@@ -1,6 +1,7 @@
 import type { MessageMention } from '@rocket.chat/core-typings';
 import type * as MessageParser from '@rocket.chat/message-parser';
 import { createContext, FormEvent, UIEvent } from 'react';
+import { AriaButtonProps } from 'react-aria';
 
 export type UserMention = MessageMention;
 export type ChannelMention = MessageMention;
@@ -20,6 +21,7 @@ type MarkupInteractionContextValue = {
 	isMobile?: boolean;
 	ownUserId?: string | null;
 	showMentionSymbol?: boolean;
+	triggerProps?: AriaButtonProps<'button'>;
 };
 
 export const MarkupInteractionContext = createContext<MarkupInteractionContextValue>({});

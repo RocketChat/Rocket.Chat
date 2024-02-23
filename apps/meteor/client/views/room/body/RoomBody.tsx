@@ -35,6 +35,7 @@ import RoomComposer from '../composer/RoomComposer/RoomComposer';
 import { useChat } from '../contexts/ChatContext';
 import { useRoom, useRoomSubscription, useRoomMessages } from '../contexts/RoomContext';
 import { useRoomToolbox } from '../contexts/RoomToolboxContext';
+import { useUserCard } from '../contexts/UserCardContext';
 import { useMessageListNavigation } from '../hooks/useMessageListNavigation';
 import { useScrollMessageList } from '../hooks/useScrollMessageList';
 import DropTargetOverlay from './DropTargetOverlay';
@@ -75,6 +76,7 @@ const RoomBody = (): ReactElement => {
 	const lastScrollTopRef = useRef(0);
 
 	const chat = useChat();
+	const { openUserCard, triggerProps } = useUserCard();
 
 	if (!chat) {
 		throw new Error('No ChatContext provided');
@@ -181,9 +183,9 @@ const RoomBody = (): ReactElement => {
 				return;
 			}
 
-			chat?.userCard.openUserCard(event, username);
+			openUserCard(event, username);
 		},
-		[chat?.userCard],
+		[openUserCard],
 	);
 
 	const handleUnreadBarJumpToButtonClick = useCallback(() => {
@@ -588,6 +590,7 @@ const RoomBody = (): ReactElement => {
 										name={roomLeader.name}
 										visible={!hideLeaderHeader}
 										onAvatarClick={handleOpenUserCard}
+										triggerProps={triggerProps}
 									/>
 								) : null}
 								<div

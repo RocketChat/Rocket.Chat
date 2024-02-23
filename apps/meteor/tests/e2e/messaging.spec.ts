@@ -61,6 +61,32 @@ test.describe.serial('Messaging', () => {
 		await expect(poHomeChannel.composer).toBeFocused();
 	});
 
+	test('should navigate properly on the user card', async ({ page }) => {
+		await poHomeChannel.sidenav.openChat(targetChannel);
+
+		// open UserCard
+		await page.keyboard.press('Shift+Tab');
+		await page.keyboard.press('ArrowUp');
+		await page.keyboard.press('Tab');
+		await page.keyboard.press('Space');
+		await expect(poHomeChannel.userCardToolbar).toBeVisible();
+
+		// close UserCard with Esc
+		await page.keyboard.press('Escape');
+		await expect(poHomeChannel.userCardToolbar).not.toBeVisible();
+
+		// with focus restored reopen toolbar
+		await page.keyboard.press('Space');
+		await expect(poHomeChannel.userCardToolbar).toBeVisible();
+
+		// close UserCard with button
+		await page.keyboard.press('Tab');
+		await page.keyboard.press('Tab');
+		await page.keyboard.press('Tab');
+		await page.keyboard.press('Space');
+		await expect(poHomeChannel.userCardToolbar).not.toBeVisible();
+	})
+
 	test('should not restore focus on the last focused if it was triggered by click', async ({ page }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await page.locator('[data-qa-type="message"]:has-text("msg1")').click();	
