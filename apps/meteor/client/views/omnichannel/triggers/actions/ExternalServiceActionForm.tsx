@@ -8,7 +8,7 @@ import { Controller } from 'react-hook-form';
 
 import { useHasLicenseModule } from '../../../../../ee/client/hooks/useHasLicenseModule';
 import type { TriggersPayload } from '../EditTrigger';
-import { useFieldError } from '../hooks/useFieldError';
+import { useFieldError } from '../hooks';
 import { ActionExternalServiceUrl } from './ActionExternalServiceUrl';
 import { ActionSender } from './ActionSender';
 

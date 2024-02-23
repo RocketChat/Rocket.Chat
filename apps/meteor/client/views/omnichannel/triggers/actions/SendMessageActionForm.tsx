@@ -7,7 +7,7 @@ import type { Control } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 
 import type { TriggersPayload } from '../EditTrigger';
-import { useFieldError } from '../hooks/useFieldError';
+import { useFieldError } from '../hooks';
 import { ActionSender } from './ActionSender';
 
 type SendMessageActionFormType = ComponentProps<typeof Field> & {

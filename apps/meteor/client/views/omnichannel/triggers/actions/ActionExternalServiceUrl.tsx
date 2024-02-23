@@ -9,7 +9,7 @@ import type { Control, UseFormTrigger } from 'react-hook-form';
 import { Controller, useWatch } from 'react-hook-form';
 
 import type { TriggersPayload } from '../EditTrigger';
-import { useFieldError } from '../hooks/useFieldError';
+import { useFieldError } from '../hooks';
 
 type ActionExternaServicelUrlType = ComponentProps<typeof Field> & {
 	index: number;
