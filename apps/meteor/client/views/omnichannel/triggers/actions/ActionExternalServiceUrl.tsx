@@ -1,5 +1,5 @@
 import { Box, Button, Field, FieldError, FieldHint, FieldLabel, FieldRow, Icon, Palette, TextInput } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useSafely, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
@@ -18,8 +18,6 @@ type ActionExternaServicelUrlType = ComponentProps<typeof Field> & {
 	disabled?: boolean;
 };
 
-const SUCCESS_COLOR = Palette.statusColor['status-font-on-success'].toString();
-
 export const ActionExternalServiceUrl = ({ control, trigger, index, disabled, ...props }: ActionExternaServicelUrlType) => {
 	const t = useTranslation();
 
@@ -29,7 +27,7 @@ export const ActionExternalServiceUrl = ({ control, trigger, index, disabled, ..
 
 	const serviceTimeoutValue = useWatch({ control, name: serviceTimeoutFieldName });
 	const [serviceUrlError] = useFieldError({ control, name: serviceUrlFieldName });
-	const [isSuccessMessageVisible, setSuccessMessageVisible] = useState(false);
+	const [isSuccessMessageVisible, setSuccessMessageVisible] = useSafely(useState(false));
 	const webhookTestEndpoint = useEndpoint('POST', '/v1/livechat/triggers/external-service/test');
 
 	const showSuccessMesssage = () => {
@@ -87,7 +85,7 @@ export const ActionExternalServiceUrl = ({ control, trigger, index, disabled, ..
 
 			<Button loading={webhookTest.isLoading} disabled={disabled || isSuccessMessageVisible} onClick={() => trigger(serviceUrlFieldName)}>
 				{isSuccessMessageVisible ? (
-					<Box is='span' color={SUCCESS_COLOR}>
+					<Box is='span' color='status-font-on-success'>
 						<Icon name='success-circle' size='x20' verticalAlign='middle' /> {t('Success')}!
 					</Box>
 				) : (
