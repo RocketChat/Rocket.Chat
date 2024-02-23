@@ -77,7 +77,7 @@ export const useMessageListNavigation = (): { messageListRef: RefCallback<HTMLEl
 			node.addEventListener(
 				'blur',
 				(e) => {
-					if (!(e.currentTarget instanceof HTMLElement && e.relatedTarget instanceof HTMLElement) || !triggeredByKeyboard) {
+					if (!triggeredByKeyboard || !(e.currentTarget instanceof HTMLElement && e.relatedTarget instanceof HTMLElement)) {
 						return;
 					}
 
@@ -91,7 +91,7 @@ export const useMessageListNavigation = (): { messageListRef: RefCallback<HTMLEl
 			node.addEventListener(
 				'focus',
 				(e) => {
-					if (!(e.currentTarget instanceof HTMLElement && e.relatedTarget instanceof HTMLElement) || !triggeredByKeyboard) {
+					if (!triggeredByKeyboard || !(e.currentTarget instanceof HTMLElement && e.relatedTarget instanceof HTMLElement)) {
 						return;
 					}
 
