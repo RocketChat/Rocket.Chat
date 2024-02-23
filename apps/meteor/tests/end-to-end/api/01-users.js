@@ -140,6 +140,47 @@ describe('[Users]', function () {
 			await deleteUser(user);
 		});
 
+		it('should create a new user with language preferences', async () => {
+			await setCustomFields({ customFieldText });
+
+			const username = `languagepref_${apiUsername}`;
+			const email = `languagepref_${apiEmail}`;
+
+			let user;
+
+			await request
+				.post(api('users.create'))
+				.set(credentials)
+				.send({
+					email,
+					name: username,
+					username,
+					password,
+					active: true,
+					roles: ['user'],
+					joinDefaultChannels: true,
+					verified: true,
+					settings: {
+						preferences: { language: 'en' },
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.username', username);
+					expect(res.body).to.have.nested.property('user.emails[0].address', email);
+					expect(res.body).to.have.nested.property('user.active', true);
+					expect(res.body).to.have.nested.property('user.name', username);
+					expect(res.body).to.have.nested.property('user.settings.preferences.language', 'en');
+					expect(res.body).to.not.have.nested.property('user.e2e');
+
+					user = res.body.user;
+				});
+
+			await deleteUser(user);
+		});
+
 		function failCreateUser(name) {
 			it(`should not create a new user if username is the reserved word ${name}`, (done) => {
 				request
@@ -1198,6 +1239,46 @@ describe('[Users]', function () {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('user.nickname', 'edited-nickname-test');
 					expect(res.body).to.not.have.nested.property('user.e2e');
+				})
+				.end(done);
+		});
+
+		it("should update a user's preference by userId", (done) => {
+			request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						settings: {
+							preferences: { testPreference: 'test' },
+						},
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.settings.preferences.testPreference', 'test');
+				})
+				.end(done);
+		});
+
+		it("should update a user's language by userId", (done) => {
+			request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						language: 'en',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.language', 'en');
 				})
 				.end(done);
 		});
