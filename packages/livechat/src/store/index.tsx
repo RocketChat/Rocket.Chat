@@ -46,7 +46,7 @@ export type StoreState = {
 			limitTextLength?: any;
 			displayOfflineForm?: boolean;
 			hideWatermark?: boolean;
-			logoUrl?: string;
+			livechatLogo?: { url: string };
 		};
 		online?: boolean;
 		departments: Department[];

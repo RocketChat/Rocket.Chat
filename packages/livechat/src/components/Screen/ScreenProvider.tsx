@@ -10,7 +10,7 @@ import store, { StoreContext } from '../../store';
 
 export type ScreenContextValue = {
 	hideWatermark: boolean;
-	logoUrl: string;
+	livechatLogo: { url: string } | undefined;
 	notificationsEnabled: boolean;
 	minimized: boolean;
 	expanded: boolean;
@@ -56,7 +56,7 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 	const { department, name, email } = iframe.guest || {};
 	const { color } = config.theme || {};
 	const { color: customColor, fontColor: customFontColor, iconColor: customIconColor } = iframe.theme || {};
-	const { logoUrl, hideWatermark = false } = config.settings || {};
+	const { livechatLogo, hideWatermark = false } = config.settings || {};
 
 	const [poppedOut, setPopedOut] = useState(false);
 
@@ -126,7 +126,7 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 		minimized: !poppedOut && (minimized || undocked),
 		expanded: !minimized && expanded,
 		windowed: !minimized && poppedOut,
-		logoUrl,
+		livechatLogo,
 		hideWatermark,
 		sound,
 		alerts,

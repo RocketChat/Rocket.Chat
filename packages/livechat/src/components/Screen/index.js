@@ -69,7 +69,7 @@ const CssVar = ({ theme }) => {
 export const Screen = ({ title, color, agent, children, className, unread, triggered = false, queueInfo, onSoundStop }) => {
 	const {
 		theme = {},
-		logoUrl,
+		livechatLogo,
 		notificationsEnabled,
 		minimized = false,
 		expanded = false,
@@ -131,7 +131,7 @@ export const Screen = ({ title, color, agent, children, className, unread, trigg
 				text={title}
 				badge={unread}
 				minimized={minimized}
-				logoUrl={logoUrl}
+				logoUrl={livechatLogo.url}
 				className={createClassName(styles, 'screen__chat-button')}
 				onClick={minimized ? onRestore : onMinimize}
 			/>
