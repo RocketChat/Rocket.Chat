@@ -1,7 +1,6 @@
 import { Message, Omnichannel } from '@rocket.chat/core-services';
 import type {
 	ILivechatInquiryRecord,
-	ILivechatVisitor,
 	IOmnichannelRoom,
 	IRoutingMethod,
 	IRoutingMethodConstructor,
@@ -9,6 +8,7 @@ import type {
 	SelectedAgent,
 	InquiryWithAgentInfo,
 	TransferData,
+	ILivechatVisitor,
 } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
@@ -47,7 +47,7 @@ type Routing = {
 		options?: { clientAction?: boolean; forwardingToDepartment?: { oldDepartmentId?: string; transferData?: any } },
 	): Promise<(IOmnichannelRoom & { chatQueued?: boolean }) | null | void>;
 	assignAgent(inquiry: InquiryWithAgentInfo, agent: SelectedAgent): Promise<InquiryWithAgentInfo>;
-	unassignAgent(inquiry: ILivechatInquiryRecord, departmentId?: string): Promise<boolean>;
+	unassignAgent(inquiry: ILivechatInquiryRecord, departmentId?: string, agent?: SelectedAgent): Promise<boolean>;
 	takeInquiry(
 		inquiry: Omit<
 			ILivechatInquiryRecord,
@@ -176,7 +176,7 @@ export const RoutingManager: Routing = {
 		return inquiry;
 	},
 
-	async unassignAgent(inquiry, departmentId) {
+	async unassignAgent(inquiry: ILivechatInquiryRecord, departmentId?: string, agent?: SelectedAgent) {
 		const { rid, department } = inquiry;
 		const room = await LivechatRooms.findOneById(rid);
 
@@ -200,12 +200,10 @@ export const RoutingManager: Routing = {
 		const { servedBy } = room;
 
 		if (servedBy) {
-			await LivechatRooms.removeAgentByRoomId(rid);
-			await this.removeAllRoomSubscriptions(room);
-			await dispatchAgentDelegated(rid);
+			await Promise.all([LivechatRooms.removeAgentByRoomId(rid), this.removeAllRoomSubscriptions(room), dispatchAgentDelegated(rid)]);
 		}
 
-		await dispatchInquiryQueued(inquiry);
+		await dispatchInquiryQueued(inquiry, agent);
 		return true;
 	},
 
@@ -272,16 +270,17 @@ export const RoutingManager: Routing = {
 		return LivechatRooms.findOneById(rid);
 	},
 
-	async transferRoom(room, guest, transferData) {
-		logger.debug(`Transfering room ${room._id} by ${transferData.transferredBy._id}`);
-		if (transferData.departmentId) {
-			logger.debug(`Transfering room ${room._id} to department ${transferData.departmentId}`);
-			return forwardRoomToDepartment(room, guest, transferData);
+	async transferRoom(room, _guest, transferData) {
+		logger.debug(`Transferring room ${room._id} by ${transferData.transferredBy._id}`);
+
+		if (transferData.userId || (transferData.userId && transferData.departmentId)) {
+			logger.debug(`Transferring room ${room._id} to user ${transferData.userId}`);
+			return forwardRoomToAgent(room, transferData);
 		}
 
-		if (transferData.userId) {
-			logger.debug(`Transfering room ${room._id} to user ${transferData.userId}`);
-			return forwardRoomToAgent(room, transferData);
+		if (transferData.departmentId) {
+			logger.debug(`Transferring room ${room._id} to department ${transferData.departmentId}`);
+			return forwardRoomToDepartment(room, transferData);
 		}
 
 		logger.debug(`Unable to transfer room ${room._id}: No target provided`);

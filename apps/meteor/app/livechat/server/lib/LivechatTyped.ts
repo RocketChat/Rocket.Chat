@@ -230,6 +230,10 @@ class LivechatClass {
 		return Users.findOnlineAgents();
 	}
 
+	async getAgentById(agentId: string): Promise<ILivechatAgent | undefined> {
+		return Users.findOneAgentById<ILivechatAgent>(agentId, {});
+	}
+
 	async closeRoom(params: CloseRoomParams): Promise<void> {
 		const { comment } = params;
 		const { room } = params;

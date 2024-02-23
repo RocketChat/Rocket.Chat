@@ -39,6 +39,8 @@ export const useQuickActions = (): {
 	const setModal = useSetModal();
 	const router = useRouter();
 
+	const allowForwardToOfflineAgent = useSetting('Livechat_allow_forward_inquiry_to_offline_department_agents') as boolean;
+
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -138,7 +140,7 @@ export const useQuickActions = (): {
 
 	const handleForwardChat = useCallback(
 		async (departmentId?: string, userId?: string, comment?: string) => {
-			if (departmentId && userId) {
+			if (!allowForwardToOfflineAgent && departmentId && userId) {
 				return;
 			}
 			const transferData: {

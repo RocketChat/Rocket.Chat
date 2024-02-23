@@ -51,6 +51,8 @@
   "Accept_incoming_livechat_requests_even_if_there_are_no_online_agents": "Accept incoming omnichannel requests even if there are no online agents",
   "Accept_new_livechats_when_agent_is_idle": "Accept new omnichannel requests when the agent is idle",
   "Accept_with_no_online_agents": "Accept with No Online Agents",
+  "Allow_forward_inquiry_to_offline_department_agents": "Accept forwarding with No Online Agents",
+  "Allow_forward_inquiry_to_offline_department_agents_description": "Allows forwarding inquiries to offline department agents when no online agents are available.",
   "Access_not_authorized": "Access not authorized",
   "Access_Token_URL": "Access Token URL",
   "Access_Your_Account": "Access Your Account",

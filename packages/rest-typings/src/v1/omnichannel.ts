@@ -307,7 +307,7 @@ const LiveChatRoomJoinSchema = {
 
 export const isLiveChatRoomJoinProps = ajv.compile<LiveChatRoomJoin>(LiveChatRoomJoinSchema);
 
-type LiveChatRoomForward = {
+export type LiveChatRoomForward = {
 	roomId: string;
 	userId?: string;
 	departmentId?: string;

@@ -632,6 +632,16 @@ export const createOmniSettings = () =>
 			i18nLabel: 'Call_provider',
 			enableQuery: omnichannelEnabledQuery,
 		});
+
+		await this.add('Livechat_allow_forward_inquiry_to_offline_department_agents', false, {
+			type: 'boolean',
+			group: 'Omnichannel',
+			section: 'Routing',
+			public: true,
+			i18nLabel: 'Allow_forward_inquiry_to_offline_department_agents',
+			i18nDescription: 'Allow_forward_inquiry_to_offline_department_agents_description',
+			enableQuery: omnichannelEnabledQuery,
+		});
 	});
 await settingsRegistry.addGroup('SMS', async function () {
 	await this.add('SMS_Enabled', false, {

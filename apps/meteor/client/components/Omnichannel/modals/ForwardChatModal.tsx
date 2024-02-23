@@ -34,7 +34,9 @@ const ForwardChatModal = ({
 }): ReactElement => {
 	const t = useTranslation();
 	const getUserData = useEndpoint('GET', '/v1/users.info');
+
 	const idleAgentsAllowedForForwarding = useSetting('Livechat_enabled_when_agent_idle') as boolean;
+	const allowForwardToOfflineAgent = useSetting('Livechat_allow_forward_inquiry_to_offline_department_agents') as boolean;
 
 	const { getValues, handleSubmit, register, setFocus, setValue, watch } = useForm();
 
@@ -119,7 +121,7 @@ const ForwardChatModal = ({
 						<FieldRow>
 							<AutoCompleteAgent
 								withTitle
-								onlyAvailable
+								onlyAvailable={!allowForwardToOfflineAgent}
 								value={getValues().username}
 								excludeId={room.servedBy?._id}
 								showIdleAgents={idleAgentsAllowedForForwarding}

@@ -16,7 +16,6 @@ import type {
 	SelectedAgent,
 	InquiryWithAgentInfo,
 	ILivechatTagRecord,
-	TransferData,
 	AtLeast,
 	UserStatus,
 	ILivechatDepartment,
@@ -127,14 +126,6 @@ type ChainedCallbackSignatures = {
 	'afterDeleteRoom': (rid: IRoom['_id']) => IRoom['_id'];
 	'livechat:afterOnHold': (room: Pick<IOmnichannelRoom, '_id'>) => Pick<IOmnichannelRoom, '_id'>;
 	'livechat:afterOnHoldChatResumed': (room: Pick<IOmnichannelRoom, '_id'>) => Pick<IOmnichannelRoom, '_id'>;
-	'livechat:onTransferFailure': (
-		room: IRoom,
-		params: {
-			guest: ILivechatVisitor;
-			transferData: TransferData;
-			department: AtLeast<ILivechatDepartmentRecord, '_id' | 'fallbackForwardDepartment' | 'name'>;
-		},
-	) => IOmnichannelRoom | Promise<boolean>;
 	'livechat.afterForwardChatToAgent': (params: {
 		rid: IRoom['_id'];
 		servedBy: { _id: string; ts: Date; username?: string };
