@@ -20,7 +20,7 @@ export const canRenderSystemMessage = (message: { t: string }) => {
 	const { config, iframe } = store.state;
 	const configHiddenSystemMessages = config.settings.hiddenSystemMessages || [];
 	const localHiddenSystemMessages = iframe.hiddenSystemMessages || [];
-	const hiddenSystemMessages = [...configHiddenSystemMessages, ...localHiddenSystemMessages]; 
+	const hiddenSystemMessages = [...configHiddenSystemMessages, ...localHiddenSystemMessages];
 
 	return !hiddenSystemMessages.includes(message.t as LivechatSytemMessageType);
 };
