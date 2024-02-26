@@ -22,12 +22,17 @@ export function online(department: string, skipSettingCheck = false, skipFallbac
 
 async function findTriggers(): Promise<Pick<ILivechatTrigger, '_id' | 'actions' | 'conditions' | 'runOnce'>[]> {
 	const triggers = await LivechatTrigger.findEnabled().toArray();
-	return triggers.map(({ _id, actions, conditions, runOnce }) => ({
-		_id,
-		actions,
-		conditions,
-		runOnce,
-	}));
+	const hasLicense = License.hasModule('livechat-enterprise');
+	const premiumActions = ['use-external-service'];
+
+	return triggers
+		.filter(({ actions }) => hasLicense || actions.some((c) => !premiumActions.includes(c.name)))
+		.map(({ _id, actions, conditions, runOnce }) => ({
+			_id,
+			actions,
+			conditions,
+			runOnce,
+		}));
 }
 
 async function findDepartments(
@@ -208,7 +213,6 @@ export async function settings({ businessUnit = '' }: { businessUnit?: string } 
 		},
 		triggers,
 		departments,
-		premiumCapabilities: License.hasModule('livechat-enterprise'),
 		resources: {
 			sound,
 			emojis,
