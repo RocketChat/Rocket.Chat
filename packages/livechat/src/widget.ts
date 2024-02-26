@@ -293,10 +293,6 @@ function setCustomFields(fields: [key: string, value: string, overwrite?: boolea
 }
 
 function setTheme(theme: StoreState['iframe']['theme']) {
-	if (theme.hasOwnProperty('position')) {
-		setWidgetPosition(theme.position);
-	}
-
 	callHook('setTheme', theme);
 }
 

@@ -1,12 +1,12 @@
 import type { FunctionalComponent } from 'preact';
 import { createContext } from 'preact';
-import { useCallback, useContext, useEffect, useState } from 'preact/hooks';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'preact/hooks';
 import { parse } from 'query-string';
 
 import { isActiveSession } from '../../helpers/isActiveSession';
 import { parentCall } from '../../lib/parentCall';
 import Triggers from '../../lib/triggers';
-import store, { StoreContext } from '../../store';
+import { StoreContext } from '../../store';
 
 export type ScreenContextValue = {
 	notificationsEnabled: boolean;
@@ -58,9 +58,20 @@ export const ScreenContext = createContext<ScreenContextValue>({
 } as ScreenContextValue);
 
 export const ScreenProvider: FunctionalComponent = ({ children }) => {
-	const { dispatch, config, sound, minimized = true, undocked, expanded = false, alerts, modal, iframe } = useContext(StoreContext);
+	const {
+		dispatch,
+		config,
+		sound,
+		minimized = true,
+		undocked,
+		expanded = false,
+		alerts,
+		modal,
+		iframe,
+		...store
+	} = useContext(StoreContext);
 	const { department, name, email } = iframe.guest || {};
-	const { color, position, background } = config.theme || {};
+	const { color, position: configPosition, background } = config.theme || {};
 
 	const {
 		color: customColor,
@@ -75,6 +86,12 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 	} = iframe.theme || {};
 
 	const [poppedOut, setPopedOut] = useState(false);
+
+	const position = customPosition || configPosition || 'right';
+
+	useEffect(() => {
+		parentCall('setWidgetPosition', position || 'right');
+	}, [position]);
 
 	const handleEnableNotifications = () => {
 		dispatch({ sound: { ...sound, enabled: true } });
@@ -137,7 +154,7 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 			color: customColor || color,
 			fontColor: customFontColor,
 			iconColor: customIconColor,
-			position: customPosition || position || 'right',
+			position,
 			guestBubbleBackgroundColor,
 			agentBubbleBackgroundColor,
 			background: customBackground || background,
