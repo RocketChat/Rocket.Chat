@@ -169,7 +169,7 @@ const OverviewData = {
 	 *
 	 * @returns {Array[Object]}
 	 */
-	async Productivity(from, to, departmentId, extraQuery) {
+	async Productivity(from, to, departmentId, _timezone, _t, extraQuery) {
 		let avgResponseTime = 0;
 		let firstResponseTime = 0;
 		let avgReactionTime = 0;
