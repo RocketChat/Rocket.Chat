@@ -5,9 +5,11 @@
 	display: flex;
 	overflow-y: scroll;
 	flex: 1 1 0;
+
+	background: var(--message-list-background, transparent);
+
 	align-items: stretch;
 	flex-flow: column nowrap;
-	background: var(--message-list-background, transparent);
 
 	&::-webkit-scrollbar {
 		&-track {
