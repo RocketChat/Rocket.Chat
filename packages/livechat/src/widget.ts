@@ -230,13 +230,13 @@ const openWidget = () => {
 	emitCallback('chat-maximized');
 };
 
-const setWidgetPosition = (position: 'left' | 'right') => {
+const setWidgetPosition = (position: 'left' | 'right' = 'right') => {
 	if (!widget) {
 		throw new Error('Widget is not initialized');
 	}
 
 	widget.style.left = position === 'left' ? '0' : 'auto';
-	widget.style.right = position === 'right' ? '0' : 'auto';
+	widget.style.right = position !== 'left' ? '0' : 'auto';
 };
 
 const resizeWidget = (height: number) => {
@@ -293,7 +293,7 @@ function setCustomFields(fields: [key: string, value: string, overwrite?: boolea
 }
 
 function setTheme(theme: StoreState['iframe']['theme']) {
-	if (theme.position) {
+	if (theme.hasOwnProperty('position')) {
 		setWidgetPosition(theme.position);
 	}
 
