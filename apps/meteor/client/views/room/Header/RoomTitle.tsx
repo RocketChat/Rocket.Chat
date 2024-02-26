@@ -1,22 +1,46 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { HeaderTitle, useDocumentTitle } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { HeaderTitle, HeaderTitleButton, useDocumentTitle } from '@rocket.chat/ui-client';
+import type { KeyboardEvent, ReactElement } from 'react';
 import React from 'react';
 
+import { useRoomToolbox } from '../contexts/RoomToolboxContext';
 import HeaderIconWithRoom from './HeaderIconWithRoom';
 
-type RoomTitleProps = {
-	room: IRoom;
-};
-
-const RoomTitle = ({ room }: RoomTitleProps): ReactElement => {
+const RoomTitle = ({ room }: { room: IRoom }): ReactElement => {
 	useDocumentTitle(room.name, false);
+	const { openTab } = useRoomToolbox();
+
+	const handleOpenRoomInfo = useEffectEvent(() => {
+		switch (room.t) {
+			case 'l':
+				openTab('room-info');
+				break;
+
+			case 'v':
+				openTab('voip-room-info');
+				break;
+
+			case 'd':
+				(room.uids?.length ?? 0) > 2 ? openTab('user-info-group') : openTab('user-info');
+				break;
+
+			default:
+				openTab('channel-settings');
+				break;
+		}
+	});
 
 	return (
-		<>
+		<HeaderTitleButton
+			onKeyDown={(e: KeyboardEvent) => (e.code === 'Enter' || e.code === 'Space') && handleOpenRoomInfo()}
+			onClick={() => handleOpenRoomInfo()}
+			tabIndex={0}
+			role='button'
+		>
 			<HeaderIconWithRoom room={room} />
 			<HeaderTitle is='h1'>{room.name}</HeaderTitle>
-		</>
+		</HeaderTitleButton>
 	);
 };
 

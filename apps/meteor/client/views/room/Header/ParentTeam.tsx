@@ -41,8 +41,11 @@ const ParentTeam = ({ room }: { room: IRoom }): ReactElement | null => {
 
 	const redirectToMainRoom = (): void => {
 		const rid = teamInfoData?.teamInfo.roomId;
-
 		if (!rid) {
+			return;
+		}
+
+		if (!(isTeamPublic || userBelongsToTeam)) {
 			return;
 		}
 
@@ -58,7 +61,12 @@ const ParentTeam = ({ room }: { room: IRoom }): ReactElement | null => {
 	}
 
 	return (
-		<HeaderTag onClick={isTeamPublic || userBelongsToTeam ? redirectToMainRoom : undefined}>
+		<HeaderTag
+			role='button'
+			tabIndex={0}
+			onKeyDown={(e) => (e.code === 'Space' || e.code === 'Enter') && redirectToMainRoom}
+			onClick={redirectToMainRoom}
+		>
 			<HeaderTagIcon icon={{ name: isTeamPublic ? 'team' : 'team-lock' }} />
 			{teamInfoData?.teamInfo.name}
 		</HeaderTag>

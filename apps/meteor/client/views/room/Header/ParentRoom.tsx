@@ -13,10 +13,15 @@ type ParentRoomProps = {
 const ParentRoom = ({ room }: ParentRoomProps): ReactElement => {
 	const icon = useRoomIcon(room);
 
-	const handleClick = (): void => roomCoordinator.openRouteLink(room.t, { rid: room._id, ...room });
+	const handleRedirect = (): void => roomCoordinator.openRouteLink(room.t, { rid: room._id, ...room });
 
 	return (
-		<HeaderTag onClick={handleClick}>
+		<HeaderTag
+			role='button'
+			tabIndex={0}
+			onKeyDown={(e) => (e.code === 'Space' || e.code === 'Enter') && handleRedirect}
+			onClick={handleRedirect}
+		>
 			<HeaderTagIcon icon={icon} />
 			{roomCoordinator.getRoomName(room.t, room)}
 		</HeaderTag>
