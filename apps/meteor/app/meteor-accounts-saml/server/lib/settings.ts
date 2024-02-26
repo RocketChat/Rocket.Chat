@@ -142,10 +142,12 @@ export const addSettings = async function (name: string): Promise<void> {
 				await this.add(`SAML_Custom_${name}`, false, {
 					type: 'boolean',
 					i18nLabel: 'Accounts_OAuth_Custom_Enable',
+					public: true,
 				});
 				await this.add(`SAML_Custom_${name}_provider`, 'provider-name', {
 					type: 'string',
 					i18nLabel: 'SAML_Custom_Provider',
+					public: true,
 				});
 				await this.add(`SAML_Custom_${name}_entry_point`, 'https://example.com/simplesaml/saml2/idp/SSOService.php', {
 					type: 'string',
@@ -154,6 +156,7 @@ export const addSettings = async function (name: string): Promise<void> {
 				await this.add(`SAML_Custom_${name}_idp_slo_redirect_url`, 'https://example.com/simplesaml/saml2/idp/SingleLogoutService.php', {
 					type: 'string',
 					i18nLabel: 'SAML_Custom_IDP_SLO_Redirect_URL',
+					public: true,
 				});
 				await this.add(`SAML_Custom_${name}_issuer`, 'https://your-rocket-chat/_saml/metadata/provider-name', {
 					type: 'string',
@@ -254,6 +257,7 @@ export const addSettings = async function (name: string): Promise<void> {
 							{ key: 'Local', i18nLabel: 'SAML_Custom_Logout_Behaviour_End_Only_RocketChat' },
 						],
 						i18nLabel: 'SAML_Custom_Logout_Behaviour',
+						public: true,
 					});
 					await this.add(`SAML_Custom_${name}_channels_update`, false, {
 						type: 'boolean',

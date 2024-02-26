@@ -1,10 +1,9 @@
 import { AutoComplete, Option, Box } from '@rocket.chat/fuselage';
+import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ComponentProps } from 'react';
 import React, { memo, useMemo, useState } from 'react';
-
-import Avatar from './Avatar';
 
 type TeamAutocompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'>;
 
@@ -32,12 +31,14 @@ const TeamAutocomplete = ({ value, onChange, ...props }: TeamAutocompleteProps) 
 			onChange={onChange}
 			filter={filter}
 			setFilter={setFilter}
-			renderSelected={({ selected: { value, label } }) => (
+			renderSelected={({ selected: { value, label: room } }) => (
 				<Box value={value}>
-					<Avatar size='x20' {...label} /> {label.name}
+					<RoomAvatar size='x20' room={room} /> {room.name}
 				</Box>
 			)}
-			renderItem={({ value, label, ...props }) => <Option key={value} {...props} label={label.name} avatar={<Avatar {...label} />} />}
+			renderItem={({ value, label: room, ...props }) => (
+				<Option key={value} {...props} label={room.name} avatar={<RoomAvatar size='x20' room={room} />} />
+			)}
 			options={options}
 		/>
 	);
