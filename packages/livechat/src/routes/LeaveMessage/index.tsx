@@ -67,7 +67,7 @@ const LeaveMessage: FunctionalComponent<{ path: string }> = () => {
 			await ModalManager.alert({
 				text: offlineSuccessMessage || text,
 			});
-			parentCall('callback', ['offline-form-submit', fields]);
+			parentCall('callback', 'offline-form-submit', fields);
 			return true;
 		} catch (error: unknown) {
 			const errorMessage = (error as { error: string })?.error;

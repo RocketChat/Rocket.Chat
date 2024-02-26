@@ -86,7 +86,7 @@ export const Register: FunctionalComponent<{ path: string }> = () => {
 			const { visitor: user } = await Livechat.grantVisitor({ visitor: { ...fields, token } });
 			await dispatch({ user } as Omit<StoreState['user'], 'ts'>);
 
-			parentCall('callback', ['pre-chat-form-submit', fields]);
+			parentCall('callback', 'pre-chat-form-submit', fields);
 			registerCustomFields(customFields);
 		} finally {
 			dispatch({ loading: false });
