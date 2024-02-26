@@ -102,7 +102,9 @@ test.describe('SAML', () => {
 		await expect((await setSettingValueById(api, 'SAML_Custom_Default', true)).status()).toBe(200);
 
 		// Create a new custom role
-		samlRoleId = await setupCustomRole(api)
+		if (constants.IS_EE) {
+			samlRoleId = await setupCustomRole(api)
+		}
 
 		await compose.buildOne('testsamlidp_idp', {
 			cwd: containerPath,
@@ -131,7 +133,9 @@ test.describe('SAML', () => {
 		await resetTestData(true);
 
 		// Remove created custom role
-		expect((await deleteCustomRole(api, 'saml-role')).status()).toBe(200);
+		if (constants.IS_EE) {
+			expect((await deleteCustomRole(api, 'saml-role')).status()).toBe(200);
+		}
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -291,6 +295,8 @@ test.describe('SAML', () => {
 	});
 
 	test('User Mapping - Custom Role', async ({ page, api }) => {
+		test.skip(!constants.IS_EE);
+
 		await doLoginStep(page, 'samluser4');
 
 		await test.step('expect users role to have been mapped correctly', async () => {
