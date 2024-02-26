@@ -9,10 +9,10 @@ import * as constants from './config/constants';
 import { createUserFixture } from './fixtures/collections/users';
 import { Users } from './fixtures/userStates';
 import { Registration } from './page-objects';
+import { createCustomRole, deleteCustomRole } from './utils/custom-role';
 import { getUserInfo } from './utils/getUserInfo';
 import { setSettingValueById } from './utils/setSettingValueById';
 import { test, expect, BaseTest } from './utils/test';
-import { createCustomRole, deleteCustomRole } from './utils/custom-role';
 
 const resetTestData = async (cleanupOnly = false) => {
 	// Reset saml users' data on mongo in the beforeAll hook to allow re-running the tests within the same playwright session
