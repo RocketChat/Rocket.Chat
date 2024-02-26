@@ -115,7 +115,7 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 
 	const screenProps = {
 		theme: {
-			color: color || customColor,
+			color: customColor || color,
 			fontColor: customFontColor,
 			iconColor: customIconColor,
 		},
