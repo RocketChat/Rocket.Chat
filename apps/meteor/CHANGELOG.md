@@ -1,5 +1,33 @@
 # @rocket.chat/meteor
 
+## 6.5.4
+
+### Patch Changes
+
+- d230532e8c: Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+- 3c85603e25: fixed an issue displaying Omnichannel analytics page productivity overview
+  - @rocket.chat/core-typings@6.5.4
+  - @rocket.chat/rest-typings@6.5.4
+  - @rocket.chat/api-client@0.1.22
+  - @rocket.chat/license@0.1.4
+  - @rocket.chat/omnichannel-services@0.1.4
+  - @rocket.chat/pdf-worker@0.0.28
+  - @rocket.chat/presence@0.1.4
+  - @rocket.chat/core-services@0.3.4
+  - @rocket.chat/cron@0.0.24
+  - @rocket.chat/gazzodown@3.0.4
+  - @rocket.chat/model-typings@0.2.4
+  - @rocket.chat/ui-contexts@3.0.4
+  - @rocket.chat/server-cloud-communication@0.0.1
+  - @rocket.chat/fuselage-ui-kit@3.0.4
+  - @rocket.chat/models@0.0.28
+  - @rocket.chat/ui-theming@0.1.1
+  - @rocket.chat/ui-client@3.0.4
+  - @rocket.chat/ui-video-conf@3.0.4
+  - @rocket.chat/web-ui-registration@3.0.4
+  - @rocket.chat/instance-status@0.0.28
+
 ## 6.5.3
 
 ### Patch Changes
