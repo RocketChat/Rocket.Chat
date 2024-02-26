@@ -1,4 +1,4 @@
-import { Box, Button, Field, FieldError, FieldHint, FieldLabel, FieldRow, Icon, Palette, TextInput } from '@rocket.chat/fuselage';
+import { Box, Button, Field, FieldError, FieldHint, FieldLabel, FieldRow, Icon, TextInput } from '@rocket.chat/fuselage';
 import { useSafely, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
