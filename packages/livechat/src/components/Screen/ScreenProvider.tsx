@@ -1,6 +1,6 @@
 import type { FunctionalComponent } from 'preact';
 import { createContext } from 'preact';
-import { useCallback, useContext, useEffect, useMemo, useState } from 'preact/hooks';
+import { useCallback, useContext, useEffect, useState } from 'preact/hooks';
 import { parse } from 'query-string';
 
 import { isActiveSession } from '../../helpers/isActiveSession';
