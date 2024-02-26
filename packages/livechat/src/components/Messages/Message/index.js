@@ -105,9 +105,7 @@ const Message = ({
 	...message
 }) => (
 	<MessageContainer id={message._id} compact={compact} reverse={me} use={use} className={className} style={style} system={!!message.type}>
-		{!message.type && !hideAvatar && (
-			<MessageAvatars avatarResolver={avatarResolver} usernames={getMessageUsernames(compact, message)} className='my-banana' />
-		)}
+		{!message.type && !hideAvatar && <MessageAvatars avatarResolver={avatarResolver} usernames={getMessageUsernames(compact, message)} />}
 		<MessageContent reverse={me}>
 			{renderContent({
 				text: message.type ? getSystemMessageText(message, t) : message.msg,
