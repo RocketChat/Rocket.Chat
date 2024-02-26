@@ -261,7 +261,7 @@
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback": "Pakota salasana varatoiminnoksi",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback_Description": "Käyttäjien on annettava salasanansa käyttäessään tärkeitä toimintoja, jos hänelle ei ole määritetty muuta kaksivaiheista tunnistautumista ja hänelle on asetettu salasana.",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Suurin väli",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Suurin väli määrittää, miten monta tunnusta on voimassa kerralla. Tunnuksia luodaan 30 sekunnin välein, ja ne ovat voimassa (30 * suurin väli) sekuntia.  \nEsimerkki: Suurin väli -arvoksi on asetettu 10, kutakin tunnusta voidaan käyttää enintään 300 sekuntia ennen tai jälkeen sen aikaleiman. Tämä on hyödyllistä, kun asiakkaan kelloa ei ole synkronoitu asianmukaisesti palvelimen kanssa.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Suurin väli määrittää, miten monta tunnusta on voimassa kerralla. Tunnuksia luodaan 30 sekunnin välein, ja ne ovat voimassa (30 * suurin väli) sekuntia.  \nEsimerkki: Suurin väli -arvoksi on asetettu 10, kutakin tunnusta voidaan käyttää enintään 300 sekuntia ennen tai jälkeen sen aikaleiman. Tämä on hyödyllistä, kun asiakkaan kelloa ei ole synkronoitu asianmukaisesti palvelimen kanstotott",
   "Accounts_TwoFactorAuthentication_RememberFor": "Muista kaksivaiheinen (sekuntia)",
   "Accounts_TwoFactorAuthentication_RememberFor_Description": "Älä pyydä kaksivaiheisen tunnistautumisen koodia, jos se on jo annettu aiemmin asetetun ajan puitteissa.",
   "Accounts_UseDefaultBlockedDomainsList": "Käytä oletusarvoista estettyjen toimialueiden luetteloa",
