@@ -19,7 +19,7 @@ const ParentRoom = ({ room }: ParentRoomProps): ReactElement => {
 		<HeaderTag
 			role='button'
 			tabIndex={0}
-			onKeyDown={(e) => (e.code === 'Space' || e.code === 'Enter') && handleRedirect}
+			onKeyDown={(e) => (e.code === 'Space' || e.code === 'Enter') && handleRedirect()}
 			onClick={handleRedirect}
 		>
 			<HeaderTagIcon icon={icon} />

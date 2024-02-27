@@ -64,7 +64,7 @@ const ParentTeam = ({ room }: { room: IRoom }): ReactElement | null => {
 		<HeaderTag
 			role='button'
 			tabIndex={0}
-			onKeyDown={(e) => (e.code === 'Space' || e.code === 'Enter') && redirectToMainRoom}
+			onKeyDown={(e) => (e.code === 'Space' || e.code === 'Enter') && redirectToMainRoom()}
 			onClick={redirectToMainRoom}
 		>
 			<HeaderTagIcon icon={{ name: isTeamPublic ? 'team' : 'team-lock' }} />
