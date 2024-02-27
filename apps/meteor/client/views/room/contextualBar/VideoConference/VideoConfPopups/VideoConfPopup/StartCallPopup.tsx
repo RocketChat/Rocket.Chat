@@ -39,7 +39,8 @@ const StartCallPopup = ({ id, loading, room, onClose, onConfirm }: StartCallPopu
 	const capabilities = useVideoConfCapabilities();
 	const roomName = useVideoConfRoomName(room);
 
-	const dialogLabel = room.t === 'd' ? `${t('Start_a_call_with')} ${roomName}` : `${t('Start_a_call_in')} ${roomName}`;
+	const dialogLabel =
+		room.t === 'd' ? `${t('Start_a_call_with__roomName__', { roomName })}` : `${t('Start_a_call_in__roomName__', { roomName })}`;
 
 	const showCam = !!capabilities.cam;
 	const showMic = !!capabilities.mic;
