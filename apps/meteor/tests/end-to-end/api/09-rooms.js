@@ -1725,11 +1725,17 @@ describe('[Rooms]', function () {
 		let testUserNonMemberCredentials;
 
 		before(async () => {
-			[testUser1, testUser2, testUserNonMember] = await Promise.all([createUser(), createUser(), createUser()]);
-			[testUser1Credentials, testUserNonMemberCredentials] = await Promise.all([
-				login(testUser1.username, password),
-				login(testUserNonMember.username, password),
-			]);
+			testUser1 = await createUser();
+			testUser1Credentials = await login(testUser1.username, password);
+		});
+
+		before(async () => {
+			testUser2 = await createUser();
+		});
+
+		before(async () => {
+			testUserNonMember = await createUser();
+			testUserNonMemberCredentials = await login(testUserNonMember.username, password);
 		});
 
 		before(async () => {
