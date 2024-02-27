@@ -9,6 +9,7 @@ type AppMenuProps = {
 	app: App;
 	isAppDetailsPage: boolean;
 };
+
 const AppMenu = ({ app, isAppDetailsPage }: AppMenuProps) => {
 	const t = useTranslation();
 

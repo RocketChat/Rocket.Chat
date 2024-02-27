@@ -21,11 +21,12 @@ import UninstallGrandfatheredAppModal from '../components/UninstallGrandfathered
 import type { Actions } from '../helpers';
 import { appEnabledStatuses, appButtonProps } from '../helpers';
 import { handleAPIError } from '../helpers/handleAPIError';
-import { marketplaceActions } from '../helpers/marketplaceActions';
+// import { marketplaceActions } from '../helpers/marketplaceActions';
 import { warnEnableDisableApp } from '../helpers/warnEnableDisableApp';
 import { useAppInstallationHandler } from './useAppInstallationHandler';
 import type { MarketplaceRouteContext } from './useAppsCountQuery';
 import { useAppsCountQuery } from './useAppsCountQuery';
+import { useMarketplaceActions } from './useMarketplaceActions';
 import { useOpenAppPermissionsReviewModal } from './useOpenAppPermissionsReviewModal';
 import { useOpenIncompatibleModal } from './useOpenIncompatibleModal';
 
@@ -76,6 +77,8 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean): UseAppMenuRetur
 		setLoading(false);
 	}, [setModal, setLoading]);
 
+	const marketplaceActions = useMarketplaceActions();
+
 	const installationSuccess = useCallback(
 		async (action: Actions | '', permissionsGranted) => {
 			if (action) {
@@ -92,7 +95,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean): UseAppMenuRetur
 
 			setLoading(false);
 		},
-		[app, setLoading],
+		[app, marketplaceActions, setLoading],
 	);
 
 	const openPermissionModal = useOpenAppPermissionsReviewModal({
