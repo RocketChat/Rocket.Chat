@@ -1,18 +1,13 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useSetting } from '@rocket.chat/ui-contexts';
-import type { ReactElement, UIEvent } from 'react';
+import type { ReactElement } from 'react';
 import React from 'react';
 
 import Emoji from '../../../../components/Emoji';
 import ReactionUserTag from './ReactionUserTag';
 
-type ReactionsProps = {
-	reactions: Required<IMessage>['reactions'];
-	onOpenUserCard?: (e: UIEvent, username: string) => void;
-};
-
-const Reactions = ({ reactions, onOpenUserCard }: ReactionsProps): ReactElement => {
+const Reactions = ({ reactions }: { reactions: Required<IMessage>['reactions'] }): ReactElement => {
 	const useRealName = useSetting('UI_Use_Real_Name');
 
 	return (
@@ -22,12 +17,7 @@ const Reactions = ({ reactions, onOpenUserCard }: ReactionsProps): ReactElement 
 					<Emoji emojiHandle={reaction} />
 					<Box display='flex' flexWrap='wrap' paddingBlock={4} mis={4}>
 						{usernames.map((username, i: number) => (
-							<ReactionUserTag
-								key={username}
-								displayName={useRealName ? names[i] || username : username}
-								username={username}
-								onOpenUserCard={onOpenUserCard}
-							/>
+							<ReactionUserTag key={username} displayName={useRealName ? names[i] || username : username} />
 						))}
 					</Box>
 				</Box>
