@@ -418,7 +418,9 @@ class E2E extends Emitter {
 			return message;
 		}
 
-		const data = await e2eRoom.decrypt(message.msg);
+		const attachmentDescription = message.attachments?.[0]?.description;
+
+		const data = await e2eRoom.decrypt(attachmentDescription || message.msg);
 
 		if (!data) {
 			return message;
@@ -426,7 +428,15 @@ class E2E extends Emitter {
 
 		const decryptedMessage: IE2EEMessage = {
 			...message,
-			msg: data.text,
+			...(!attachmentDescription && { msg: data.text }),
+			...(attachmentDescription && {
+				attachments: [
+					{
+						...message?.attachments?.[0],
+						description: data.text,
+					},
+				],
+			}),
 			e2e: 'done',
 		};
 

@@ -5,6 +5,7 @@ import { Random } from '@rocket.chat/random';
 import { UserAction, USER_ACTIVITIES } from '../../../app/ui/client/lib/UserAction';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { getErrorMessage } from '../errorHandling';
+import { onClientBeforeSendMessage } from '../onClientBeforeSendMessage';
 import type { UploadsAPI } from './ChatAPI';
 import type { Upload } from './Upload';
 
@@ -54,7 +55,22 @@ const send = async (
 		},
 	]);
 
+	console.log('upload', { description, msg });
+
 	try {
+		// Assuming that only description is available in case of attachments
+		const message = description
+			? await onClientBeforeSendMessage({
+					_id: id,
+					msg: description,
+					rid,
+			  })
+			: ({
+					msg: description,
+			  } as IMessage);
+
+		console.log('attachment encrypted, ', message);
+
 		await new Promise((resolve, reject) => {
 			const xhr = sdk.rest.upload(
 				`/v1/rooms.upload/${rid}`,
@@ -62,7 +78,9 @@ const send = async (
 					msg,
 					tmid,
 					file,
-					description,
+					description: message.msg,
+					...(message.t && { t: message.t }),
+					...(message.e2e && { e2e: message.e2e }),
 				},
 				{
 					load: (event) => {
