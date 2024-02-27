@@ -633,18 +633,14 @@ export const createOmniSettings = () =>
 			enableQuery: omnichannelEnabledQuery,
 		});
 
-		await this.add('Livechat_hide_system_messages', ['au', 'uj', 'ul', 'livechat-close', 'livechat_webrtc_video_call'], {
+		await this.add('Livechat_hide_system_messages', ['uj', 'ul', 'livechat-close', 'livechat_webrtc_video_call'], {
 			type: 'multiSelect',
 			group: 'Omnichannel',
 			section: 'Livechat',
 			public: true,
 			values: [
-				{ key: 'r', i18nLabel: 'Message_HideType_r' },
-				{ key: 'au', i18nLabel: 'Message_HideType_au' },
-				{ key: 'ru', i18nLabel: 'Message_HideType_ru' },
 				{ key: 'uj', i18nLabel: 'Message_HideType_uj' },
 				{ key: 'ul', i18nLabel: 'Message_HideType_ul' },
-				{ key: 'wm', i18nLabel: 'Message_HideType_wm' },
 				{ key: 'livechat-close', i18nLabel: 'Message_HideType_livechat_closed' },
 				{ key: 'livechat-started', i18nLabel: 'Message_HideType_livechat_started' },
 				{ key: 'livechat_transfer_history', i18nLabel: 'Message_HideType_livechat_transfer_history' },
