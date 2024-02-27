@@ -336,6 +336,6 @@ export class FederationService extends AbstractBaseFederationService implements 
 	}
 
 	public async created(): Promise<void> {
-		return super.created()
+		return super.created();
 	}
 }
