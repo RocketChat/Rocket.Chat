@@ -330,4 +330,12 @@ export class FederationService extends AbstractBaseFederationService implements 
 		await federationService.initialize();
 		return federationService;
 	}
+
+	public async stopped(): Promise<void> {
+		return super.stopped();
+	}
+
+	public async created(): Promise<void> {
+		return super.created()
+	}
 }
