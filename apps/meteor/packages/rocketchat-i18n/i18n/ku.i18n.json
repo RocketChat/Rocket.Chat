@@ -2456,6 +2456,7 @@
   "Turn_OFF": "Temirandin",
   "Turn_ON": "Vekirin",
   "Two-factor_authentication": "Çewtiya du-faktorê",
+  "Two-factor_authentication_via_TOTP": "Çewtiya du-faktorê",
   "Two-factor_authentication_disabled": "Çewtiya du-faktîf hate qedexekirin",
   "Two-factor_authentication_enabled": "Guherîna du-faktorê çalak kirin",
   "Two-factor_authentication_is_currently_disabled": "Çewtiya duyem-faktîk niha hate qedexekirin",
