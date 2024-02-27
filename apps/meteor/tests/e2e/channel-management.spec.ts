@@ -73,24 +73,22 @@ test.describe.serial('channel-management', () => {
 		await expect(poHomeChannel.toastSuccess).toBeVisible();
 	});
 
-	// FIXME: it doesn't test anything
-	test('should mute "user1"', async () => {
+	test.fixme('should mute "user1"', async () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnTabMembers.click();
 		await poHomeChannel.tabs.members.showAllUsers();
 		await poHomeChannel.tabs.members.muteUser('user1');
 	});
 
-	// FIXME: it doesn't test anything
-	test('should set "user1" as owner', async () => {
+	test.fixme('should set "user1" as owner', async () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnTabMembers.click();
 		await poHomeChannel.tabs.members.showAllUsers();
 		await poHomeChannel.tabs.members.setUserAsOwner('user1');
 	});
 
-	// FIXME: it doesn't test anything
-	test('should set "user1" as moderator', async () => {
+
+	test.fixme('should set "user1" as moderator', async () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnTabMembers.click();
 		await poHomeChannel.tabs.members.showAllUsers();
