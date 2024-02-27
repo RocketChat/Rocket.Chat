@@ -2466,6 +2466,7 @@
   "Turn_OFF": "Abschalten",
   "Turn_ON": "Anmachen",
   "Two-factor_authentication": "Zwei-Faktor-Authentifizierung",
+  "Two-factor_authentication_via_TOTP": "Zwei-Faktor-Authentifizierung",
   "Two-factor_authentication_disabled": "Zwei-Faktor-Authentifizierung deaktiviert",
   "Two-factor_authentication_enabled": "Zwei-Faktor-Authentifizierung aktiviert",
   "Two-factor_authentication_is_currently_disabled": "Die Zwei-Faktor-Authentifizierung ist derzeit deaktiviert",
