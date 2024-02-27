@@ -25,7 +25,7 @@ export async function configureAccounts() {
 
 		if (serviceData.email) {
 			const user = await Users.findOneByEmailAddress(serviceData.email);
-			if (user != null) {
+			if (user != null && user.services?.[serviceName]?.id !== serviceData.id) {
 				const findQuery = {
 					address: serviceData.email,
 					verified: true,

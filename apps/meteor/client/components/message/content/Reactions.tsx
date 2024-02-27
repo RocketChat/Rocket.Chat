@@ -26,7 +26,7 @@ const Reactions = ({ message }: ReactionsProps): ReactElement => {
 						counter={reactions.usernames.length}
 						hasReacted={hasReacted}
 						name={name}
-						names={reactions.usernames.filter((user) => user !== username)}
+						names={reactions.usernames.filter((user) => user !== username).map((username) => `@${username}`)}
 						messageId={message._id}
 						onClick={() => toggleReactionMutation.mutate({ mid: message._id, reaction: name })}
 					/>
