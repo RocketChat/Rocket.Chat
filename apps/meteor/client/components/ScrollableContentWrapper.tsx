@@ -1,7 +1,7 @@
 import type { ScrollValues } from 'rc-scrollbars';
 import { Scrollbars } from 'rc-scrollbars';
 import type { MutableRefObject, CSSProperties, ReactNode, ReactElement } from 'react';
-import React, { useMemo, memo, forwardRef } from 'react';
+import React, { useMemo, memo, forwardRef, useCallback } from 'react';
 
 const styleDefault: CSSProperties = {
 	width: '100%',
@@ -27,6 +27,21 @@ const ScrollableContentWrapper = forwardRef<HTMLElement, CustomScrollbarsProps>(
 ) {
 	const scrollbarsStyle = useMemo((): CSSProperties => ({ ...style, ...styleDefault }), [style]);
 
+	const refSetter = useCallback(
+		(scrollbarRef) => {
+			console.log(ref);
+			if (ref && scrollbarRef) {
+				if (typeof ref === 'function') {
+					ref(scrollbarRef.container ?? null);
+					return;
+				}
+
+				(ref as MutableRefObject<HTMLElement | undefined>).current = scrollbarRef.container;
+			}
+		},
+		[ref],
+	);
+
 	return (
 		<Scrollbars
 			{...props}
@@ -43,16 +58,7 @@ const ScrollableContentWrapper = forwardRef<HTMLElement, CustomScrollbarsProps>(
 				<div {...props} style={{ ...style, backgroundColor: 'rgba(0, 0, 0, 0.5)', borderRadius: '7px' }} />
 			)}
 			children={children}
-			ref={(sRef): void => {
-				if (ref && sRef) {
-					if (typeof ref === 'function') {
-						ref(sRef.view ?? null);
-						return;
-					}
-
-					(ref as MutableRefObject<HTMLElement | undefined>).current = sRef.view;
-				}
-			}}
+			ref={refSetter}
 		/>
 	);
 });

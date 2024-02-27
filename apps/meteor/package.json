@@ -408,7 +408,7 @@
 		"react-hook-form": "~7.45.4",
 		"react-i18next": "~13.2.2",
 		"react-keyed-flatten-children": "^1.3.0",
-		"react-virtuoso": "^1.11.1",
+		"react-virtuoso": "^4.7.1",
 		"redis": "^4.0.6",
 		"sanitize-html": "^2.7.2",
 		"semver": "^7.3.7",
