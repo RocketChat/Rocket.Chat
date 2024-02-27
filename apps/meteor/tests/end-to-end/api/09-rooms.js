@@ -1707,7 +1707,7 @@ describe('[Rooms]', function () {
 				.end(done);
 		});
 	});
-	describe('/rooms.isMember', async () => {
+	describe('/rooms.isMember', () => {
 		let testChannel;
 		let testGroup;
 		let testDM;
