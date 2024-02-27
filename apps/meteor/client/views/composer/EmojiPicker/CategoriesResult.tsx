@@ -15,7 +15,7 @@ type CategoriesResultProps = {
 	customItemsLimit: number;
 	handleLoadMore: () => void;
 	handleSelectEmoji: (event: MouseEvent<HTMLElement>) => void;
-	handleScroll: UIEventHandler<'div'>;
+	handleScroll: UIEventHandler<HTMLDivElement>;
 };
 
 const CategoriesResult = forwardRef<VirtuosoHandle, CategoriesResultProps>(function CategoriesResult(
