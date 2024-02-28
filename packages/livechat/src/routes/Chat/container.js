@@ -9,6 +9,7 @@ import { canRenderMessage, canRenderTriggerMessage } from '../../helpers/canRend
 import { debounce } from '../../helpers/debounce';
 import { throttle } from '../../helpers/throttle';
 import { upsert } from '../../helpers/upsert';
+import { useRoomSubscription } from '../../hooks/useRoomSubscription';
 import { normalizeQueueAlert } from '../../lib/api';
 import constants from '../../lib/constants';
 import { getLastReadMessage, loadConfig, processUnread, shouldMarkAsUnread } from '../../lib/main';
@@ -17,6 +18,14 @@ import { createToken } from '../../lib/random';
 import { initRoom, closeChat, loadMessages, loadMoreMessages, defaultRoomParams, getGreetingMessages } from '../../lib/room';
 import { Consumer } from '../../store';
 import Chat from './component';
+
+const ChatWrapper = ({ children, rid }) => {
+	const notifyUserStream = useRoomSubscription(rid);
+
+	console.log('notifyUserStream', notifyUserStream);
+
+	return children;
+};
 
 class ChatContainer extends Component {
 	state = {
@@ -353,23 +362,25 @@ class ChatContainer extends Component {
 		this.handleConnectingAgentAlert(false);
 	}
 
-	render = ({ user, ...props }) => (
-		<Chat
-			{...props}
-			avatarResolver={getAvatarUrl}
-			uid={user && user._id}
-			onTop={this.handleTop}
-			onChangeText={this.handleChangeText}
-			onSubmit={this.handleSubmit}
-			onUpload={this.handleUpload}
-			options={this.showOptionsMenu()}
-			onChangeDepartment={(this.canSwitchDepartment() && this.onChangeDepartment) || null}
-			onFinishChat={(this.canFinishChat() && this.onFinishChat) || null}
-			onRemoveUserData={(this.canRemoveUserData() && this.onRemoveUserData) || null}
-			onSoundStop={this.handleSoundStop}
-			registrationRequired={this.registrationRequired()}
-			onRegisterUser={this.onRegisterUser}
-		/>
+	render = ({ user, rid, ...props }) => (
+		<ChatWrapper rid={rid}>
+			<Chat
+				{...props}
+				avatarResolver={getAvatarUrl}
+				uid={user && user._id}
+				onTop={this.handleTop}
+				onChangeText={this.handleChangeText}
+				onSubmit={this.handleSubmit}
+				onUpload={this.handleUpload}
+				options={this.showOptionsMenu()}
+				onChangeDepartment={(this.canSwitchDepartment() && this.onChangeDepartment) || null}
+				onFinishChat={(this.canFinishChat() && this.onFinishChat) || null}
+				onRemoveUserData={(this.canRemoveUserData() && this.onRemoveUserData) || null}
+				onSoundStop={this.handleSoundStop}
+				registrationRequired={this.registrationRequired()}
+				onRegisterUser={this.onRegisterUser}
+			/>
+		</ChatWrapper>
 	);
 }
 

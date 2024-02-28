@@ -19,7 +19,7 @@ import { handleTranscript } from './transcript';
 const commands = new Commands();
 
 export const closeChat = async ({ transcriptRequested } = {}) => {
-	Livechat.unsubscribeAll();
+	Livechat.unsubscribeRoom();
 
 	if (!transcriptRequested) {
 		await handleTranscript();
@@ -134,6 +134,7 @@ export const initRoom = async () => {
 		queueInfo,
 		room: { _id: rid, servedBy },
 	} = state;
+
 	Livechat.subscribeRoom(rid);
 
 	let roomAgent = agent;

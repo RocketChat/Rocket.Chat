@@ -1,3 +1,5 @@
+import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { ComponentChildren } from 'preact';
 import { useRef } from 'preact/hooks';
 import { useTranslation, withTranslation } from 'react-i18next';
@@ -50,6 +52,10 @@ const ScreenHeader = ({
 }: screenHeaderProps) => {
 	const { t } = useTranslation();
 	const headerRef = useRef<HTMLElement>(null);
+
+	const endpoint = useEndpoint('GET', '/v1/livechat/config');
+
+	useQuery([], () => endpoint({ token: 'lero' }));
 
 	const largeHeader = () => {
 		return !!(agent?.email && agent.phone);

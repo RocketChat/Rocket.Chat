@@ -41,6 +41,7 @@ export class DDPSDK implements SDK {
 	}
 
 	stream(name: string, data: unknown, cb: (...data: PublicationPayloads['fields']['args']) => void) {
+		console.log('stream', name, data, cb);
 		const [key, args] = Array.isArray(data) ? data : [data];
 		const subscription = this.client.subscribe(`stream-${name}`, key, { useCollection: false, args: [args] });
 
@@ -88,6 +89,7 @@ export class DDPSDK implements SDK {
 	 * ```
 	 */
 	static create(url: string, retryOptions = { retryCount: 1, retryTime: 100 }): DDPSDK {
+		console.log(url, retryOptions);
 		const ddp = new DDPDispatcher();
 
 		const connection = ConnectionImpl.create(url, WebSocket, ddp, retryOptions);
@@ -111,6 +113,12 @@ export class DDPSDK implements SDK {
 		})({ baseUrl: url });
 
 		const sdk = new DDPSDK(connection, stream, account, timeoutControl, rest);
+		console.log('stream', stream);
+		console.log('account', account);
+		console.log('timeoutControl', timeoutControl);
+		console.log('rest', rest);
+		console.log('sdk', sdk);
+		console.log('connection', connection);
 
 		connection.on('connected', () => {
 			if (account.user?.token) {
