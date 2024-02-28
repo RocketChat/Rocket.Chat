@@ -1,6 +1,6 @@
 import { api, credentials, request } from './api-data';
 
-export const createRoom = ({ name, type, username, token, agentId, members, credentials: customCredentials, voipCallDirection = 'inbound' }) => {
+export const createRoom = ({ name, type, username, token, agentId, members, extraData, credentials: customCredentials, voipCallDirection = 'inbound' }) => {
 	if (!type) {
 		throw new Error('"type" is required in "createRoom.ts" test helper');
 	}
@@ -31,6 +31,7 @@ export const createRoom = ({ name, type, username, token, agentId, members, cred
 		.send({
 			...params,
 			...(members && { members }),
+			...(extraData && { extraData }),
 		});
 };
 
@@ -66,17 +67,31 @@ export const deleteRoom = ({ type, roomId }) => actionRoom({ action: 'delete', t
 
 export const closeRoom = ({ type, roomId }) => actionRoom({ action: 'close', type, roomId });
 
-export const setDefaultRoom = ({ roomId }) => {
+export const setRoomConfig = ({ roomId, favorite, isDefault }) => {
+	return request
+		.post(api('rooms.saveRoomSettings'))
+		.set(credentials)
+		.send({
+			rid: roomId,
+			default: isDefault,
+			favorite: favorite ? {
+				defaultValue: true,
+				favorite: false
+			} : undefined
+		});
+};
+
+export const setDefaultRoom = ({ roomId, favorite }) => {
 	return request
 		.post(api('rooms.saveRoomSettings'))
 		.set(credentials)
 		.send({
 			rid: roomId,
 			default: true,
-			favorite: {
+			favorite: favorite ? {
 				defaultValue: true,
 				favorite: false
-			}
+			} : undefined
 		});
 };
 

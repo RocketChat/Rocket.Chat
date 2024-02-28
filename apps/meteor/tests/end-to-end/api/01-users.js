@@ -10,7 +10,7 @@ import { MAX_BIO_LENGTH, MAX_NICKNAME_LENGTH } from '../../data/constants.ts';
 import { customFieldText, clearCustomFields, setCustomFields } from '../../data/custom-fields.js';
 import { imgURL } from '../../data/interactions';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
-import { createRoom, deleteRoom, setDefaultRoom, unsetDefaultRoom } from '../../data/rooms.helper';
+import { createRoom, deleteRoom, setRoomConfig } from '../../data/rooms.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
 import { adminEmail, preferences, password, adminUsername } from '../../data/user';
 import { createUser, login, deleteUser, getUserStatus, getUserByUsername } from '../../data/users.helper.js';
@@ -297,24 +297,21 @@ describe('[Users]', function () {
 			});
 
 			before(async () => {
-				const { body } = await request
-					.post(api('groups.create'))
-					.set(credentials)
-					.send({
-						name: `defaultGroup_${Date.now()}`,
-						readonly: false,
-						members: [],
-						extraData: {
-							broadcast: false,
-							encrypted: false,
-							teamId: defaultTeamId,
-							topic: '',
-						},
-					});
+				const { body } = await createRoom({
+					name: `defaultGroup_${Date.now()}`,
+					type: 'p',
+					credentials,
+					extraData: {
+						broadcast: false,
+						encrypted: false,
+						teamId: defaultTeamId,
+						topic: '',
+					},
+				});
 				group = body.group;
 			});
 
-			after(async () =>
+			after(() =>
 				Promise.all([
 					deleteRoom({ roomId: group._id, type: 'p' }),
 					deleteTeam(credentials, teamName),
@@ -325,7 +322,7 @@ describe('[Users]', function () {
 				]),
 			);
 
-			it('should NOT create create subscriptions to non default teams or rooms', async () => {
+			it('should not create subscriptions to non default teams or rooms even if joinDefaultChannels is true', async () => {
 				userNoDefault = await createUser({ joinDefaultChannels: true });
 				const noDefaultUserCredentials = await login(userNoDefault.username, password);
 				await request
@@ -352,7 +349,7 @@ describe('[Users]', function () {
 			});
 
 			it('should create a subscription for a default team room if joinDefaultChannels is true', async () => {
-				await setDefaultRoom({ roomId: defaultTeamRoomId, roomName: teamName });
+				await setRoomConfig({ roomId: defaultTeamRoomId, favorite: true, isDefault: true });
 
 				user = await createUser({ joinDefaultChannels: true });
 				userCredentials = await login(user.username, password);
@@ -405,8 +402,8 @@ describe('[Users]', function () {
 			});
 
 			it('should create a subscription for a default room inside a non default team', async () => {
-				await unsetDefaultRoom({ roomId: defaultTeamRoomId });
-				await setDefaultRoom({ roomId: group._id });
+				await setRoomConfig({ roomId: defaultTeamRoomId, isDefault: false });
+				await setRoomConfig({ roomId: group._id, favorite: true, isDefault: true });
 
 				user3 = await createUser({ joinDefaultChannels: true });
 				const user3Credentials = await login(user3.username, password);
