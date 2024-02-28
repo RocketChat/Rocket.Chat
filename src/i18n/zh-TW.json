@@ -1,0 +1,16 @@
+{
+  "%{locale}": {
+    "cancel_caeb1e68": "取消",
+    "departments_3826b025": "部門",
+    "email_22a7d52d": "電子郵件",
+    "field_required_fc5c6b05": "必填字段",
+    "invalid_value_12ca12c2": "無效的值",
+    "message_5c38209d": "訊息",
+    "name_1aed4a1b": "姓名",
+    "no_available_agents_to_transfer_3ae30cec": "沒有可用的代理進行傳輸",
+    "no_e16d9132": "否",
+    "options_3ab0ea65": "選項",
+    "send_e3bd0ed0": "傳送",
+    "yes_dde87d5": "是"
+  }
+}

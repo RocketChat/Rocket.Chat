@@ -1,0 +1,15 @@
+{
+  "%{locale}": {
+    "cancel_caeb1e68": "ยกเลิก",
+    "departments_3826b025": "หน่วยงาน",
+    "email_22a7d52d": "อีเมล์",
+    "field_required_fc5c6b05": "ต้องระบุฟิลด์",
+    "message_5c38209d": "ข่าวสาร",
+    "name_1aed4a1b": "ชื่อ",
+    "no_available_agents_to_transfer_3ae30cec": "ไม่มีตัวแทนที่จะโอน",
+    "no_e16d9132": "ไม่",
+    "options_3ab0ea65": "ตัวเลือก",
+    "send_e3bd0ed0": "ส่ง",
+    "yes_dde87d5": "ใช่"
+  }
+}
