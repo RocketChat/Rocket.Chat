@@ -1,5 +1,139 @@
 # @rocket.chat/ui-contexts
 
+## 4.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.1
+  - @rocket.chat/rest-typings@6.6.1
+  - @rocket.chat/ddp-client@0.2.14
+  </details>
+
+## 4.0.0
+
+### Minor Changes
+
+- ([#31184](https://github.com/RocketChat/Rocket.Chat/pull/31184)) Add the possibility to hide some elements through postMessage events.
+
+### Patch Changes
+
+- ([#31138](https://github.com/RocketChat/Rocket.Chat/pull/31138)) feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+
+- <details><summary>Updated dependencies [b223cbde14, dbb08ef948, 97cd497e5e, 748e57984d, 7c6198f49f, fdd9852079, 2260c04ec6, b4b2cd20a8]:</summary>
+
+  - @rocket.chat/password-policies@0.0.2
+  - @rocket.chat/ddp-client@0.2.13
+  - @rocket.chat/core-typings@6.6.0
+  - @rocket.chat/rest-typings@6.6.0
+  - @rocket.chat/i18n@0.1.0
+  </details>
+
+## 4.0.0-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.0-rc.7
+  - @rocket.chat/rest-typings@6.6.0-rc.7
+  - @rocket.chat/ddp-client@0.2.13-rc.7
+  </details>
+
+## 4.0.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.0-rc.6
+  - @rocket.chat/rest-typings@6.6.0-rc.6
+  - @rocket.chat/ddp-client@0.2.13-rc.6
+  </details>
+
+## 4.0.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.0-rc.5
+  - @rocket.chat/rest-typings@6.6.0-rc.5
+  - @rocket.chat/ddp-client@0.2.13-rc.5
+  </details>
+
+## 4.0.0-rc.4
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.4
+- @rocket.chat/rest-typings@6.6.0-rc.4
+- @rocket.chat/ddp-client@0.2.13-rc.4
+
+## 4.0.0-rc.3
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.3
+- @rocket.chat/rest-typings@6.6.0-rc.3
+- @rocket.chat/ddp-client@0.2.13-rc.3
+
+## 4.0.0-rc.2
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.2
+- @rocket.chat/rest-typings@6.6.0-rc.2
+- @rocket.chat/ddp-client@0.2.13-rc.2
+
+## 4.0.0-rc.1
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.1
+- @rocket.chat/rest-typings@6.6.0-rc.1
+- @rocket.chat/ddp-client@0.2.13-rc.1
+
+## 4.0.0-rc.0
+
+### Minor Changes
+
+- b2b0035162: Add the possibility to hide some elements through postMessage events.
+
+### Patch Changes
+
+- b223cbde14: feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+- Updated dependencies [b223cbde14]
+- Updated dependencies [dbb08ef948]
+- Updated dependencies [97cd497e5e]
+- Updated dependencies [748e57984d]
+- Updated dependencies [7c6198f49f]
+- Updated dependencies [fdd9852079]
+- Updated dependencies [2260c04ec6]
+- Updated dependencies [b4b2cd20a8]
+  - @rocket.chat/password-policies@0.0.2-rc.0
+  - @rocket.chat/ddp-client@0.2.13-rc.0
+  - @rocket.chat/core-typings@6.6.0-rc.0
+  - @rocket.chat/rest-typings@6.6.0-rc.0
+  - @rocket.chat/i18n@0.1.0-rc.0
+
+## 3.0.3
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.3
+- @rocket.chat/rest-typings@6.5.3
+- @rocket.chat/ddp-client@0.2.12
+
+## 3.0.2
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.2
+- @rocket.chat/rest-typings@6.5.2
+- @rocket.chat/ddp-client@0.2.11
+
 ## 3.0.1
 
 ### Patch Changes

@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/omnichannel-transcript",
 	"private": true,
-	"version": "0.3.1",
+	"version": "0.3.5",
 	"description": "Rocket.Chat service",
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
@@ -36,7 +36,7 @@
 		"moleculer": "^0.14.31",
 		"moment-timezone": "^0.5.43",
 		"mongo-message-queue": "^1.0.0",
-		"mongodb": "^4.17.1",
+		"mongodb": "^4.17.2",
 		"nats": "^2.4.0",
 		"pino": "^8.15.0",
 		"polka": "^0.5.2"

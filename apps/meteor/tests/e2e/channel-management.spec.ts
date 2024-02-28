@@ -22,6 +22,40 @@ test.describe.serial('channel-management', () => {
 		await page.goto('/home');
 	});
 
+	test('should navigate on toolbar using arrow keys', async ({ page }) => {
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.content.sendMessage('hello composer');
+		await poHomeChannel.roomHeaderFavoriteBtn.focus();
+
+		await page.keyboard.press('Tab');
+		await page.keyboard.press('ArrowRight');
+		await page.keyboard.press('ArrowRight');
+
+		await expect(poHomeChannel.roomHeaderToolbar.getByRole('button', { name: 'Threads' })).toBeFocused();
+	});
+
+	test('should move the focus away from toolbar using tab key', async ({ page }) => {
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.roomHeaderFavoriteBtn.focus();
+
+		await page.keyboard.press('Tab');
+		await page.keyboard.press('Tab');
+
+		await expect(poHomeChannel.roomHeaderToolbar.getByRole('button', { name: 'Call' })).not.toBeFocused();
+	});
+
+	test('should be able to navigate on call popup with keyboard', async ({ page }) => {
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.roomHeaderFavoriteBtn.focus();
+
+		await page.keyboard.press('Tab');
+		await page.keyboard.press('Space');
+		await poHomeChannel.content.btnStartCall.waitFor();
+		await page.keyboard.press('Tab');
+
+		await expect(page.getByRole('button', { name: 'Start call' })).toBeFocused();
+	});
+
 	test('expect add "user1" to "targetChannel"', async () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnTabMembers.click();

@@ -35,6 +35,8 @@ import RoomComposer from '../composer/RoomComposer/RoomComposer';
 import { useChat } from '../contexts/ChatContext';
 import { useRoom, useRoomSubscription, useRoomMessages } from '../contexts/RoomContext';
 import { useRoomToolbox } from '../contexts/RoomToolboxContext';
+import { useUserCard } from '../contexts/UserCardContext';
+import { useMessageListNavigation } from '../hooks/useMessageListNavigation';
 import { useScrollMessageList } from '../hooks/useScrollMessageList';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
@@ -74,6 +76,7 @@ const RoomBody = (): ReactElement => {
 	const lastScrollTopRef = useRef(0);
 
 	const chat = useChat();
+	const { openUserCard, triggerProps } = useUserCard();
 
 	if (!chat) {
 		throw new Error('No ChatContext provided');
@@ -174,15 +177,15 @@ const RoomBody = (): ReactElement => {
 		};
 	});
 
-	const handleOpenUserCardButtonClick = useCallback(
+	const handleOpenUserCard = useCallback(
 		(event: UIEvent, username: IUser['username']) => {
 			if (!username) {
 				return;
 			}
 
-			chat?.userCard.open(username)(event);
+			openUserCard(event, username);
 		},
-		[chat?.userCard],
+		[openUserCard],
 	);
 
 	const handleUnreadBarJumpToButtonClick = useCallback(() => {
@@ -532,6 +535,8 @@ const RoomBody = (): ReactElement => {
 
 	useReadMessageWindowEvents();
 
+	const { messageListRef, messageListProps } = useMessageListNavigation();
+
 	return (
 		<>
 			{!isLayoutEmbedded && room.announcement && <Announcement announcement={room.announcement} announcementDetails={undefined} />}
@@ -539,22 +544,12 @@ const RoomBody = (): ReactElement => {
 				<section
 					className={`messages-container flex-tab-main-content ${admin ? 'admin' : ''}`}
 					id={`chat-window-${room._id}`}
-					aria-label={t('Channel')}
 					onClick={hideFlexTab && handleCloseFlexTab}
 				>
 					<div className='messages-container-wrapper'>
 						<div className='messages-container-main' {...fileUploadTriggerProps}>
 							<DropTargetOverlay {...fileUploadOverlayProps} />
-							<div className={['container-bars', (unread || uploads.length) && 'show'].filter(isTruthy).join(' ')}>
-								{unread && (
-									<UnreadMessagesIndicator
-										count={unread.count}
-										since={unread.since}
-										onJumpButtonClick={handleUnreadBarJumpToButtonClick}
-										onMarkAsReadButtonClick={handleMarkAsReadButtonClick}
-									/>
-								)}
-
+							<div className={['container-bars', uploads.length && 'show'].filter(isTruthy).join(' ')}>
 								{uploads.map((upload) => (
 									<UploadProgressIndicator
 										key={upload.id}
@@ -566,6 +561,13 @@ const RoomBody = (): ReactElement => {
 									/>
 								))}
 							</div>
+							{unread && (
+								<UnreadMessagesIndicator
+									count={unread.count}
+									onJumpButtonClick={handleUnreadBarJumpToButtonClick}
+									onMarkAsReadButtonClick={handleMarkAsReadButtonClick}
+								/>
+							)}
 							<div
 								ref={messagesBoxRef}
 								className={['messages-box', roomLeader && !hideLeaderHeader && 'has-leader'].filter(isTruthy).join(' ')}
@@ -587,7 +589,8 @@ const RoomBody = (): ReactElement => {
 										username={roomLeader.username}
 										name={roomLeader.name}
 										visible={!hideLeaderHeader}
-										onAvatarClick={handleOpenUserCardButtonClick}
+										onAvatarClick={handleOpenUserCard}
+										triggerProps={triggerProps}
 									/>
 								) : null}
 								<div
@@ -602,7 +605,13 @@ const RoomBody = (): ReactElement => {
 								>
 									<MessageListErrorBoundary>
 										<ScrollableContentWrapper ref={wrapperRef}>
-											<ul className='messages-list' aria-live='polite' aria-busy={isLoadingMoreMessages}>
+											<ul
+												ref={messageListRef}
+												className='messages-list'
+												aria-live='polite'
+												aria-busy={isLoadingMoreMessages}
+												{...messageListProps}
+											>
 												{canPreview ? (
 													<>
 														{hasMorePreviousMessages ? (

@@ -1,5 +1,142 @@
 # @rocket.chat/stream-hub-service
 
+## 0.3.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.1
+  - @rocket.chat/core-services@0.3.5
+  - @rocket.chat/model-typings@0.3.1
+  - @rocket.chat/models@0.0.29
+  </details>
+
+## 0.3.4
+
+### Patch Changes
+
+- ([#31138](https://github.com/RocketChat/Rocket.Chat/pull/31138)) feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+
+- <details><summary>Updated dependencies [b223cbde14, dbb08ef948, fae558bd5d, 9a6e9b4e28, fdd9852079, 2260c04ec6, c8ab6583dc, e7d3cdeef0, b4b2cd20a8]:</summary>
+
+  - @rocket.chat/core-services@0.3.4
+  - @rocket.chat/model-typings@0.3.0
+  - @rocket.chat/core-typings@6.6.0
+  - @rocket.chat/logger@0.0.2
+  - @rocket.chat/models@0.0.28
+  </details>
+
+## 0.3.4-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.0-rc.7
+  - @rocket.chat/core-services@0.3.4-rc.7
+  - @rocket.chat/model-typings@0.3.0-rc.7
+  - @rocket.chat/models@0.0.28-rc.7
+  </details>
+
+## 0.3.4-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.0-rc.6
+  - @rocket.chat/core-services@0.3.4-rc.6
+  - @rocket.chat/model-typings@0.3.0-rc.6
+  - @rocket.chat/models@0.0.28-rc.6
+  </details>
+
+## 0.3.4-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.0-rc.5
+  - @rocket.chat/core-services@0.3.4-rc.5
+  - @rocket.chat/model-typings@0.3.0-rc.5
+  - @rocket.chat/models@0.0.28-rc.5
+  </details>
+
+## 0.3.4-rc.4
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.4
+- @rocket.chat/core-services@0.3.4-rc.4
+- @rocket.chat/model-typings@0.3.0-rc.4
+- @rocket.chat/models@0.0.28-rc.4
+
+## 0.3.4-rc.3
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.3
+- @rocket.chat/core-services@0.3.4-rc.3
+- @rocket.chat/model-typings@0.3.0-rc.3
+- @rocket.chat/models@0.0.28-rc.3
+
+## 0.3.4-rc.2
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.2
+- @rocket.chat/core-services@0.3.4-rc.2
+- @rocket.chat/model-typings@0.3.0-rc.2
+- @rocket.chat/models@0.0.28-rc.2
+
+## 0.3.4-rc.1
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.1
+- @rocket.chat/core-services@0.3.4-rc.1
+- @rocket.chat/model-typings@0.3.0-rc.1
+- @rocket.chat/models@0.0.28-rc.1
+
+## 0.3.4-rc.0
+
+### Patch Changes
+
+- b223cbde14: feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+- Updated dependencies [b223cbde14]
+- Updated dependencies [dbb08ef948]
+- Updated dependencies [fae558bd5d]
+- Updated dependencies [9a6e9b4e28]
+- Updated dependencies [fdd9852079]
+- Updated dependencies [2260c04ec6]
+- Updated dependencies [c8ab6583dc]
+- Updated dependencies [e7d3cdeef0]
+- Updated dependencies [b4b2cd20a8]
+  - @rocket.chat/core-services@0.3.4-rc.0
+  - @rocket.chat/model-typings@0.3.0-rc.0
+  - @rocket.chat/core-typings@6.6.0-rc.0
+  - @rocket.chat/logger@0.0.2-rc.0
+  - @rocket.chat/models@0.0.28-rc.0
+
+## 0.3.3
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.3
+- @rocket.chat/core-services@0.3.3
+- @rocket.chat/model-typings@0.2.3
+- @rocket.chat/models@0.0.27
+
+## 0.3.2
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.2
+- @rocket.chat/core-services@0.3.2
+- @rocket.chat/model-typings@0.2.2
+- @rocket.chat/models@0.0.26
+
 ## 0.3.1
 
 ### Patch Changes

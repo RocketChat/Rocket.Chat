@@ -101,7 +101,7 @@ export class AppThreadsConverter {
 			groupable: 'groupable',
 			token: 'token',
 			blocks: 'blocks',
-			room,
+			room: () => room,
 			editor: async (message: IMessage) => {
 				if (!isEditedMessage(message)) {
 					return undefined;
