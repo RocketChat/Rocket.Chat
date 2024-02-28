@@ -56,6 +56,7 @@ test.describe.serial('channel-management', () => {
 		await expect(page.getByRole('button', { name: 'Start call' })).toBeFocused();
 	});
 
+	// FIXME: bad assertion
 	test('should add "user1" to "targetChannel"', async () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnTabMembers.click();
@@ -65,6 +66,7 @@ test.describe.serial('channel-management', () => {
 		await expect(poHomeChannel.toastSuccess).toBeVisible();
 	});
 
+	// FIXME: bad assertion
 	test('should create invite to the room', async () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnTabMembers.click();
@@ -125,9 +127,11 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.tabs.room.btnEdit.click();
 		await poHomeChannel.tabs.room.inputName.fill(`NAME-EDITED-${targetChannel}`);
 		await poHomeChannel.tabs.room.btnSave.click();
-		await poHomeChannel.sidenav.openChat(`NAME-EDITED-${targetChannel}`);
 
-		await expect(page).toHaveURL(`/channel/NAME-EDITED-${targetChannel}`);
+		targetChannel = `NAME-EDITED-${targetChannel}`;
+		await poHomeChannel.sidenav.openChat(targetChannel);
+
+		await expect(page).toHaveURL(`/channel/${targetChannel}`);
 	});
 
 	test('should truncate the room name for small screens', async ({ page }) => {
@@ -137,6 +141,7 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.tabs.room.btnEdit.click();
 		await poHomeChannel.tabs.room.inputName.fill(hugeName);
 		await poHomeChannel.tabs.room.btnSave.click();
+		targetChannel = hugeName;
 
 		await page.setViewportSize({ width: 640, height: 460 });
 		await expect(page.getByRole('heading', { name: hugeName })).toHaveCSS('width', '423px');
