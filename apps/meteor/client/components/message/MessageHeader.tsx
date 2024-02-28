@@ -16,7 +16,7 @@ import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
 import { useFormatTime } from '../../hooks/useFormatTime';
 import { useUserData } from '../../hooks/useUserData';
 import type { UserPresence } from '../../lib/presence';
-import { useChat } from '../../views/room/contexts/ChatContext';
+import { useUserCard } from '../../views/room/contexts/UserCardContext';
 import StatusIndicators from './StatusIndicators';
 import MessageRoles from './header/MessageRoles';
 import { useMessageRoles } from './header/hooks/useMessageRoles';
@@ -31,6 +31,7 @@ const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
 
 	const formatTime = useFormatTime();
 	const formatDateAndTime = useFormatDateAndTime();
+	const { triggerProps, openUserCard } = useUserCard();
 
 	const showRealName = useMessageListShowRealName();
 	const user: UserPresence = { ...message.u, roles: [], ...useUserData(message.u._id) };
@@ -41,22 +42,18 @@ const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
 	const roles = useMessageRoles(message.u._id, message.rid, showRoles);
 	const shouldShowRolesList = roles.length > 0;
 
-	const chat = useChat();
-
 	return (
 		<FuselageMessageHeader>
 			<MessageNameContainer
 				tabIndex={0}
 				role='button'
 				aria-label={getUserDisplayName(user.name, user.username, showRealName)}
-				{...(user.username !== undefined &&
-					chat?.userCard && {
-						onClick: (e) => chat?.userCard.openUserCard(e, message.u.username),
-						onKeyDown: (e: KeyboardEvent<HTMLSpanElement>) => {
-							(e.code === 'Enter' || e.code === 'Space') && chat?.userCard.openUserCard(e, message.u.username);
-						},
-						style: { cursor: 'pointer' },
-					})}
+				onClick={(e) => openUserCard(e, message.u.username)}
+				onKeyDown={(e: KeyboardEvent<HTMLSpanElement>) => {
+					(e.code === 'Enter' || e.code === 'Space') && openUserCard(e, message.u.username);
+				}}
+				style={{ cursor: 'pointer' }}
+				{...triggerProps}
 			>
 				<MessageName
 					{...(!showUsername && { 'data-qa-type': 'username' })}
