@@ -3181,6 +3181,8 @@
   "Users_added": "L'utente è stato aggiunto",
   "Users_in_role": "Utenti nel ruolo",
   "UTF8_Names_Slugify": "UTF8 Names Slugify",
+  "UTF8_User_Names_Validation": "Validazione Usernames UTF8",
+  "UTF8_User_Names_Validation_Description": "RegExp utilizzata per validare usernames",
   "Videocall_enabled": "Chiamata video abilitata",
   "Validate_email_address": "Verifica indirizzo email",
   "Verification": "Verifica",

@@ -119,7 +119,7 @@ async function validateUserData(userId, userData) {
 	}
 
 	if (userData.username && !nameValidation.test(userData.username)) {
-		throw new Meteor.Error('error-input-is-not-a-valid-field', `${_.escape(userData.username)} is not a valid username`, {
+		throw new Meteor.Error('error-input-is-not-a-valid-field', `${_.escape(userData.username)} is not a valid username, use only letters, numbers, dots, hyphens and underscores`, {
 			method: 'insertOrUpdateUser',
 			input: userData.username,
 			field: 'Username',
