@@ -1,1 +1,1 @@
-export { default } from './ThreadList';
+export { default } from './Threads';

@@ -11,10 +11,10 @@ import {
 	Tag,
 } from '@rocket.chat/fuselage';
 import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
+import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState } from 'react';
 
-import RoomAvatar from '../../../../components/avatar/RoomAvatar';
 import { usePreventPropagation } from '../../../../hooks/usePreventPropagation';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import RoomActions from './RoomActions';
@@ -47,7 +47,7 @@ const TeamsChannelItem = ({ room, onClickView, reload }) => {
 				<Box display='inline-flex' alignItems='center'>
 					{roomCoordinator.getRoomName(room.t, room)}{' '}
 					{room.teamDefault ? (
-						<Box mi='x4'>
+						<Box mi={4}>
 							<Tag>{t('Team_Auto-join')}</Tag>
 						</Box>
 					) : (

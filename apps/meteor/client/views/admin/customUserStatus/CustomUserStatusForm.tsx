@@ -1,11 +1,14 @@
-import { IUserStatus } from '@rocket.chat/core-typings';
-import { Button, ButtonGroup, TextInput, Field, Select, Icon, SelectOption } from '@rocket.chat/fuselage';
+import type { IUserStatus } from '@rocket.chat/core-typings';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import { FieldGroup, Button, ButtonGroup, TextInput, Field, FieldLabel, FieldRow, FieldError, Select, Box } from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useRoute, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import React, { useCallback, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
+import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import GenericModal from '../../../components/GenericModal';
-import VerticalBar from '../../../components/VerticalBar';
 
 type CustomUserStatusFormProps = {
 	onClose: () => void;
@@ -17,8 +20,9 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 	const t = useTranslation();
 	const { _id, name, statusType } = status || {};
 	const setModal = useSetModal();
-	const route = useRoute('custom-user-status');
+	const route = useRoute('user-status');
 	const dispatchToastMessage = useToastMessageDispatch();
+	const formId = useUniqueId();
 
 	const {
 		register,
@@ -84,49 +88,48 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 	];
 
 	return (
-		<VerticalBar.ScrollableContent>
-			<Field>
-				<Field.Label>{t('Name')}</Field.Label>
-				<Field.Row>
-					<TextInput {...register('name', { required: true })} placeholder={t('Name')} />
-				</Field.Row>
-				{errors?.name && <Field.Error>{t('error-the-field-is-required', { field: t('Name') })}</Field.Error>}
-			</Field>
-			<Field>
-				<Field.Label>{t('Presence')}</Field.Label>
-				<Field.Row>
-					<Controller
-						name='statusType'
-						control={control}
-						rules={{ required: true }}
-						render={({ field }): ReactElement => <Select {...field} placeholder={t('Presence')} options={presenceOptions} />}
-					/>
-				</Field.Row>
-				{errors?.statusType && <Field.Error>{t('error-the-field-is-required', { field: t('Presence') })}</Field.Error>}
-			</Field>
-			<Field>
-				<Field.Row>
-					<ButtonGroup stretch w='full'>
-						<Button onClick={onClose}>{t('Cancel')}</Button>
-						<Button primary onClick={handleSubmit(handleSave)} disabled={!isDirty}>
-							{t('Save')}
-						</Button>
-					</ButtonGroup>
-				</Field.Row>
-			</Field>
-			{_id && (
-				<Field>
-					<Field.Row>
-						<ButtonGroup stretch w='full'>
-							<Button danger onClick={handleDeleteStatus}>
-								<Icon name='trash' mie='x4' />
+		<>
+			<ContextualbarScrollableContent>
+				<FieldGroup id={formId} is='form' onSubmit={handleSubmit(handleSave)}>
+					<Field>
+						<FieldLabel>{t('Name')}</FieldLabel>
+						<FieldRow>
+							<TextInput {...register('name', { required: true })} placeholder={t('Name')} />
+						</FieldRow>
+						{errors?.name && <FieldError>{t('error-the-field-is-required', { field: t('Name') })}</FieldError>}
+					</Field>
+					<Field>
+						<FieldLabel>{t('Presence')}</FieldLabel>
+						<FieldRow>
+							<Controller
+								name='statusType'
+								control={control}
+								rules={{ required: true }}
+								render={({ field }): ReactElement => <Select {...field} placeholder={t('Presence')} options={presenceOptions} />}
+							/>
+						</FieldRow>
+						{errors?.statusType && <FieldError>{t('error-the-field-is-required', { field: t('Presence') })}</FieldError>}
+					</Field>
+				</FieldGroup>
+			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
+				<ButtonGroup stretch>
+					<Button onClick={onClose}>{t('Cancel')}</Button>
+					<Button form={formId} primary type='submit' disabled={!isDirty}>
+						{t('Save')}
+					</Button>
+				</ButtonGroup>
+				{_id && (
+					<Box mbs={8}>
+						<ButtonGroup stretch>
+							<Button icon='trash' danger onClick={handleDeleteStatus}>
 								{t('Delete')}
 							</Button>
 						</ButtonGroup>
-					</Field.Row>
-				</Field>
-			)}
-		</VerticalBar.ScrollableContent>
+					</Box>
+				)}
+			</ContextualbarFooter>
+		</>
 	);
 };
 

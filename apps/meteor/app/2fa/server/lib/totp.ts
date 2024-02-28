@@ -1,8 +1,8 @@
-import { SHA256 } from 'meteor/sha';
-import { Random } from 'meteor/random';
+import { Users } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
+import { SHA256 } from '@rocket.chat/sha256';
 import speakeasy from 'speakeasy';
 
-import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
 
 export const TOTP = {
@@ -17,17 +17,27 @@ export const TOTP = {
 		});
 	},
 
-	verify({ secret, token, backupTokens, userId }: { secret: string; token: string; backupTokens?: string[]; userId?: string }): boolean {
+	async verify({
+		secret,
+		token,
+		backupTokens,
+		userId,
+	}: {
+		secret: string;
+		token: string;
+		backupTokens?: string[];
+		userId?: string;
+	}): Promise<boolean> {
 		// validates a backup code
 		if (token.length === 8 && backupTokens) {
 			const hashedCode = SHA256(token);
 			const usedCode = backupTokens.indexOf(hashedCode);
 
-			if (usedCode !== -1) {
+			if (usedCode !== -1 && userId) {
 				backupTokens.splice(usedCode, 1);
 
 				// mark the code as used (remove it from the list)
-				Users.update2FABackupCodesByUserId(userId, backupTokens);
+				await Users.update2FABackupCodesByUserId(userId, backupTokens);
 				return true;
 			}
 

@@ -2,7 +2,8 @@ import mitt from 'mitt';
 import { route } from 'preact-router';
 
 import { Livechat } from '../api';
-import { upsert, asyncForEach } from '../components/helpers';
+import { asyncForEach } from '../helpers/asyncForEach';
+import { upsert } from '../helpers/upsert';
 import store from '../store';
 import { normalizeAgent } from './api';
 import { processUnread } from './main';
@@ -33,12 +34,12 @@ const getAgent = (triggerAction) => {
 
 			let agent;
 			try {
-				agent = await Livechat.nextAgent(department);
+				agent = await Livechat.nextAgent({ department });
 			} catch (error) {
 				return reject(error);
 			}
 
-			store.setState({ defaultAgent: { ...agent, ts: Date.now() } });
+			store.setState({ defaultAgent: { ...agent, department, ts: Date.now() } });
 			resolve(agent);
 		} else if (params.sender === 'custom') {
 			resolve({
@@ -57,7 +58,21 @@ const getAgent = (triggerAction) => {
 	return agentPromise;
 };
 
+const isInIframe = () => window.self !== window.top;
+
 class Triggers {
+	/** @property {Triggers} instance*/
+
+	/** @property {boolean} _started */
+
+	/** @property {Array} _requests */
+
+	/** @property {Array} _triggers */
+
+	/** @property {boolean} _enabled */
+
+	/** @property {import('mitt').Emitter} callbacks */
+
 	constructor() {
 		if (!Triggers.instance) {
 			this._started = false;
@@ -90,21 +105,27 @@ class Triggers {
 		this._started = true;
 		this._triggers = [...triggers];
 
-		firedTriggers.forEach((triggerId) => {
-			this._triggers.forEach((trigger) => {
-				if (trigger._id === triggerId) {
-					trigger.skip = true;
-				}
-			});
+		this._triggers.forEach((trigger) => {
+			if (firedTriggers.includes(trigger._id)) {
+				trigger.skip = true;
+			}
+		});
+
+		store.on('change', ([state, prevState]) => {
+			if (prevState.parentUrl !== state.parentUrl) {
+				this.processPageUrlTriggers();
+			}
 		});
 	}
 
 	async fire(trigger) {
-		const { token, firedTriggers = [], user } = store.state;
+		const { token, user } = store.state;
+
 		if (!this._enabled || user) {
 			return;
 		}
-		const { actions } = trigger;
+
+		const { actions, conditions } = trigger;
 		await asyncForEach(actions, (action) => {
 			if (action.name === 'send-message') {
 				trigger.skip = true;
@@ -119,6 +140,7 @@ class Triggers {
 						ts: ts.toISOString(),
 						_id: createToken(),
 						trigger: true,
+						triggerAfterRegistration: conditions.some((c) => c.name === 'after-guest-registration'),
 					};
 
 					await store.setState({
@@ -127,9 +149,10 @@ class Triggers {
 							store.state.messages,
 							message,
 							({ _id }) => _id === message._id,
-							({ ts }) => ts,
+							({ ts }) => new Date(ts).getTime(),
 						),
 					});
+
 					await processUnread();
 
 					if (agent && agent._id) {
@@ -137,10 +160,11 @@ class Triggers {
 						parentCall('callback', ['assign-agent', normalizeAgent(agent)]);
 					}
 
-					const foundCondition = trigger.conditions.find((c) => c.name === 'chat-opened-by-visitor');
+					const foundCondition = trigger.conditions.find((c) => ['chat-opened-by-visitor', 'after-guest-registration'].includes(c.name));
 					if (!foundCondition) {
 						route('/trigger-messages');
 					}
+
 					store.setState({ minimized: false });
 				});
 			}
@@ -148,8 +172,7 @@ class Triggers {
 
 		if (trigger.runOnce) {
 			trigger.skip = true;
-			firedTriggers.push(trigger._id);
-			store.setState({ firedTriggers });
+			store.setState({ firedTriggers: [...store.state.firedTriggers, trigger._id] });
 		}
 	}
 
@@ -157,29 +180,51 @@ class Triggers {
 		this._requests.push(request);
 	}
 
+	ready(triggerId, condition) {
+		const { activeTriggers = [] } = store.state;
+		store.setState({ activeTriggers: { ...activeTriggers, [triggerId]: condition } });
+	}
+
+	showTriggerMessages() {
+		const { activeTriggers = [] } = store.state;
+
+		const triggers = Object.entries(activeTriggers);
+
+		if (!triggers.length) {
+			return false;
+		}
+
+		return triggers.some(([, condition]) => condition.name !== 'after-guest-registration');
+	}
+
 	processTriggers() {
 		this._triggers.forEach((trigger) => {
 			if (trigger.skip) {
 				return;
 			}
+
 			trigger.conditions.forEach((condition) => {
 				switch (condition.name) {
 					case 'page-url':
 						const hrefRegExp = new RegExp(condition.value, 'g');
-						if (hrefRegExp.test(window.location.href)) {
+						if (this.parentUrl && hrefRegExp.test(this.parentUrl)) {
+							this.ready(trigger._id, condition);
 							this.fire(trigger);
 						}
 						break;
 					case 'time-on-site':
+						this.ready(trigger._id, condition);
 						trigger.timeout = setTimeout(() => {
 							this.fire(trigger);
 						}, parseInt(condition.value, 10) * 1000);
 						break;
 					case 'chat-opened-by-visitor':
+					case 'after-guest-registration':
 						const openFunc = () => {
 							this.fire(trigger);
 							this.callbacks.off('chat-opened-by-visitor', openFunc);
 						};
+						this.ready(trigger._id, condition);
 						this.callbacks.on('chat-opened-by-visitor', openFunc);
 						break;
 				}
@@ -188,12 +233,33 @@ class Triggers {
 		this._requests = [];
 	}
 
+	processPageUrlTriggers() {
+		if (!this.parentUrl) return;
+
+		this._triggers.forEach((trigger) => {
+			if (trigger.skip) return;
+
+			trigger.conditions.forEach((condition) => {
+				if (condition.name !== 'page-url') return;
+
+				const hrefRegExp = new RegExp(condition.value, 'g');
+				if (hrefRegExp.test(this.parentUrl)) {
+					this.fire(trigger);
+				}
+			});
+		});
+	}
+
 	set triggers(newTriggers) {
 		this._triggers = [...newTriggers];
 	}
 
 	set enabled(value) {
 		this._enabled = value;
+	}
+
+	get parentUrl() {
+		return isInIframe() ? store.state.parentUrl : window.location.href;
 	}
 }
 

@@ -1,12 +1,12 @@
-import { IGroupVideoConference } from '@rocket.chat/core-typings';
+import type { IGroupVideoConference } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Button, Message, Box, Avatar } from '@rocket.chat/fuselage';
+import { Button, Message, Box, Avatar, Palette } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import colors from '@rocket.chat/fuselage-tokens/colors';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
-import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { useVideoConfJoinCall } from '../../../../../contexts/VideoConfContext';
 import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
 import { VIDEOCONF_STACK_MAX_USERS } from '../../../../../lib/constants';
@@ -39,12 +39,11 @@ const VideoConfListItem = ({
 	const hovered = css`
 		&:hover,
 		&:focus {
-			background: ${colors.n100};
+			background: ${Palette.surface['surface-tint']};
 			.rcx-message {
-				background: ${colors.n100};
+				background: ${Palette.surface['surface-tint']};
 			}
 		}
-		border-bottom: 2px solid ${colors.n300} !important;
 	`;
 
 	const handleJoinConference = useMutableCallback((): void => {
@@ -53,11 +52,16 @@ const VideoConfListItem = ({
 	});
 
 	return (
-		<Box className={[...className, hovered].filter(Boolean)} pb='x8'>
+		<Box
+			color='default'
+			borderBlockEndWidth={2}
+			borderBlockEndColor='stroke-extra-light'
+			borderBlockEndStyle='solid'
+			className={[...className, hovered].filter(Boolean)}
+			pb={8}
+		>
 			<Message {...props}>
-				<Message.LeftContainer>
-					{username && <UserAvatar username={username} className='rcx-message__avatar' size='x36' />}
-				</Message.LeftContainer>
+				<Message.LeftContainer>{username && <UserAvatar username={username} size='x36' />}</Message.LeftContainer>
 				<Message.Container>
 					<Message.Header>
 						<Message.Name title={username}>{showRealName ? name : username}</Message.Name>
@@ -70,7 +74,7 @@ const VideoConfListItem = ({
 							{endedAt ? t('Call_ended') : t('Join_call')}
 						</Button>
 						{joinedUsers.length > 0 && (
-							<Box mis='x8' fontScale='c1' display='flex' alignItems='center'>
+							<Box mis={8} fontScale='c1' display='flex' alignItems='center'>
 								<Avatar.Stack>
 									{joinedUsers.map(
 										(user, index) =>
@@ -86,15 +90,15 @@ const VideoConfListItem = ({
 											),
 									)}
 								</Avatar.Stack>
-								<Box mis='x4'>
+								<Box mis={4}>
 									{joinedUsers.length > VIDEOCONF_STACK_MAX_USERS
-										? t('__usersCount__members_joined', { usersCount: joinedUsers.length - VIDEOCONF_STACK_MAX_USERS })
+										? t('__usersCount__member_joined', { count: joinedUsers.length - VIDEOCONF_STACK_MAX_USERS })
 										: t('joined')}
 								</Box>
 							</Box>
 						)}
 						{joinedUsers.length === 0 && !endedAt && (
-							<Box mis='x8' fontScale='c1'>
+							<Box mis={8} fontScale='c1'>
 								{t('Be_the_first_to_join')}
 							</Box>
 						)}

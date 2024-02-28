@@ -1,15 +1,11 @@
 import type { ISetting } from '@rocket.chat/core-typings';
-import { Settings } from '@rocket.chat/models';
-
-import { Users } from '../../../../app/models/server';
+import { Settings, Users } from '@rocket.chat/models';
 
 type WizardSettings = Array<ISetting>;
 
-const url = 'https://go.rocket.chat/i/seats-cap-upgrade';
-
-export const getSeatsRequestLink = async (): Promise<string> => {
+export const getSeatsRequestLink = async (url: string, params?: Record<string, string>): Promise<string> => {
 	const workspaceId = await Settings.findOneById('Cloud_Workspace_Id');
-	const activeUsers = Users.getActiveLocalUserCount();
+	const activeUsers = await Users.getActiveLocalUserCount();
 	const wizardSettings: WizardSettings = await Settings.findSetupWizardSettings().toArray();
 
 	const newUrl = new URL(url);
@@ -27,6 +23,12 @@ export const getSeatsRequestLink = async (): Promise<string> => {
 		.forEach((setting) => {
 			newUrl.searchParams.append(setting._id.toLowerCase(), String(setting.value));
 		});
+
+	if (params) {
+		Object.entries(params).forEach(([key, value]) => {
+			newUrl.searchParams.append(key, String(value));
+		});
+	}
 
 	return newUrl.toString();
 };

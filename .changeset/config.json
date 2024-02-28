@@ -1,0 +1,13 @@
+{
+	"$schema": "https://unpkg.com/@changesets/config@2.3.0/schema.json",
+	"changelog": ["@rocket.chat/release-changelog", { "repo": "RocketChat/Rocket.Chat" }],
+	"commit": false,
+	"fixed": [
+		["@rocket.chat/meteor", "@rocket.chat/core-typings", "@rocket.chat/rest-typings"]
+	],
+	"linked": [],
+	"access": "public",
+	"baseBranch": "develop",
+	"updateInternalDependencies": "patch",
+	"ignore": []
+}

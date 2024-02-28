@@ -1,0 +1,61 @@
+.loading__animation {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.loading__animation__bounce {
+	display: inline-block;
+
+	width: 1rem;
+	height: 1rem;
+	margin: 2px;
+
+	animation: loading-bouncedelay 1.4s infinite ease-in-out both;
+
+	-webkit-animation-delay: -0.32s;
+	animation-delay: -0.32s;
+
+	border-radius: 100%;
+	background-color: var(--loading-bounce-color-light);
+
+	@media (prefers-color-scheme: dark) {
+		background: var(--loading-bounce-color-dark);
+	}
+}
+
+.loading__animation__bounce--medium {
+	display: inline-block;
+
+	width: 1.25rem;
+	height: 1.25rem;
+}
+
+.loading__animation__bounce--large {
+	display: inline-block;
+
+	width: 1.5rem;
+	height: 1.5rem;
+}
+
+.loading__animation__bounce + .loading__animation__bounce {
+	-webkit-animation-delay: -0.16s;
+	animation-delay: -0.16s;
+}
+
+.loading__animation__bounce + .loading__animation__bounce + .loading__animation__bounce {
+	-webkit-animation-delay: 0s;
+	animation-delay: 0s;
+}
+
+@keyframes loading-bouncedelay {
+	0%,
+	80%,
+	100% {
+		transform: scale(0);
+	}
+
+	40% {
+		transform: scale(1);
+	}
+}

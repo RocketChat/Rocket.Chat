@@ -1,4 +1,4 @@
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 
 type SetHighlightFn = (_id: IMessage['_id']) => void;
 type ClearHighlightFn = () => void;

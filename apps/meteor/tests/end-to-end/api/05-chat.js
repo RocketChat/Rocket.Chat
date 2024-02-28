@@ -1,10 +1,11 @@
 import { expect } from 'chai';
+import { after, before, beforeEach, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials, message } from '../../data/api-data.js';
-import { password } from '../../data/user';
-import { createRoom } from '../../data/rooms.helper.js';
 import { sendSimpleMessage, deleteMessage, pinMessage } from '../../data/chat.helper.js';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
+import { createRoom } from '../../data/rooms.helper.js';
+import { password } from '../../data/user';
 import { createUser, login } from '../../data/users.helper';
 
 describe('[Chat]', function () {
@@ -750,26 +751,36 @@ describe('[Chat]', function () {
 			let imgUrlMsgId;
 
 			before(async () => {
+				await Promise.all([updateSetting('API_EmbedIgnoredHosts', ''), updateSetting('API_EmbedSafePorts', '80, 443, 3000')]);
+			});
+			after(async () => {
+				await Promise.all([
+					updateSetting('API_EmbedIgnoredHosts', 'localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16'),
+					updateSetting('API_EmbedSafePorts', '80, 443'),
+				]);
+			});
+
+			before(async () => {
 				const ytEmbedMsgPayload = {
 					_id: `id-${Date.now()}`,
 					rid: 'GENERAL',
 					msg: 'https://www.youtube.com/watch?v=T2v29gK8fP4',
 					emoji: ':smirk:',
 				};
+				const ytPostResponse = await request.post(api('chat.sendMessage')).set(credentials).send({ message: ytEmbedMsgPayload });
+				ytEmbedMsgId = ytPostResponse.body.message._id;
+			});
 
+			before(async () => {
 				const imgUrlMsgPayload = {
 					_id: `id-${Date.now()}1`,
 					rid: 'GENERAL',
-					msg: 'https://i.picsum.photos/id/671/200/200.jpg?hmac=F8KUqkSzkLxagDZW5rOEHLjzFVxRZWnkrFPvq2BlnhE',
+					msg: 'http://localhost:3000/images/logo/logo.png',
 					emoji: ':smirk:',
 				};
 
-				const ytPostResponse = await request.post(api('chat.sendMessage')).set(credentials).send({ message: ytEmbedMsgPayload });
-
 				const imgUrlResponse = await request.post(api('chat.sendMessage')).set(credentials).send({ message: imgUrlMsgPayload });
 
-				ytEmbedMsgId = ytPostResponse.body.message._id;
-				imgUrlMsgId = imgUrlResponse.body.message._id;
 				imgUrlMsgId = imgUrlResponse.body.message._id;
 			});
 
@@ -808,10 +819,130 @@ describe('[Chat]', function () {
 						.expect((res) => {
 							expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.is.not.empty;
 
-							expect(res.body.message.urls[0]).to.have.property('headers').to.have.property('contentType', 'image/jpeg');
+							expect(res.body.message.urls[0]).to.have.property('headers').to.have.property('contentType', 'image/png');
 						})
 						.end(done);
 				}, 200);
+			});
+
+			it('should not generate previews if an empty array of URL to preview is provided', async () => {
+				let msgId;
+				await request
+					.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({
+						message: {
+							rid: 'GENERAL',
+							msg: 'https://www.youtube.com/watch?v=T2v29gK8fP4',
+						},
+						previewUrls: [],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.is.not.empty;
+						expect(res.body.message.urls[0]).to.have.property('ignoreParse', true);
+						msgId = res.body.message._id;
+					});
+
+				await request
+					.get(api('chat.getMessage'))
+					.set(credentials)
+					.query({
+						msgId,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.has.lengthOf(1);
+
+						expect(res.body.message.urls[0]).to.have.property('meta').to.deep.equals({});
+					});
+			});
+
+			it('should generate previews of chosen URL when the previewUrls array is provided', async () => {
+				let msgId;
+				await request
+					.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({
+						message: {
+							rid: 'GENERAL',
+							msg: 'https://www.youtube.com/watch?v=T2v29gK8fP4 https://www.rocket.chat/',
+						},
+						previewUrls: ['https://www.rocket.chat/'],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.has.lengthOf(2);
+						expect(res.body.message.urls[0]).to.have.property('ignoreParse', true);
+						expect(res.body.message.urls[1]).to.not.have.property('ignoreParse');
+						msgId = res.body.message._id;
+					});
+
+				await request
+					.get(api('chat.getMessage'))
+					.set(credentials)
+					.query({
+						msgId,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.has.lengthOf(2);
+
+						expect(res.body.message.urls[0]).to.have.property('meta').that.is.an('object').that.is.empty;
+						expect(res.body.message.urls[1]).to.have.property('meta').that.is.an('object').that.is.not.empty;
+					});
+			});
+
+			it('should not generate previews if the message contains more than five external URL', async () => {
+				let msgId;
+				const urls = [
+					'https://www.youtube.com/watch?v=no050HN4ojo',
+					'https://www.youtube.com/watch?v=9iaSd13mqXA',
+					'https://www.youtube.com/watch?v=MW_qsbgt1KQ',
+					'https://www.youtube.com/watch?v=hLF1XwH5rd4',
+					'https://www.youtube.com/watch?v=Eo-F9hRBbTk',
+					'https://www.youtube.com/watch?v=08ms3W7adFI',
+				];
+				await request
+					.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({
+						message: {
+							rid: 'GENERAL',
+							msg: urls.join(' '),
+						},
+						previewUrls: urls,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.has.lengthOf(urls.length);
+						msgId = res.body.message._id;
+					});
+
+				await request
+					.get(api('chat.getMessage'))
+					.set(credentials)
+					.query({
+						msgId,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.has.lengthOf(urls.length);
+
+						res.body.message.urls.forEach((url) => {
+							expect(url).to.not.have.property('ignoreParse');
+							expect(url).to.have.property('meta').that.is.an('object').that.is.empty;
+						});
+					});
 			});
 		});
 
@@ -1337,11 +1468,19 @@ describe('[Chat]', function () {
 	});
 
 	describe('[/chat.getMessageReadReceipts]', () => {
+		const isEnterprise = typeof process.env.IS_EE === 'string' ? process.env.IS_EE === 'true' : !!process.env.IS_EE;
 		describe('when execute successfully', () => {
-			it("should return the statusCode 200 and 'receipts' property and should be equal an array", (done) => {
+			it('should return statusCode: 200 and an array of receipts when running EE', function (done) {
+				if (!isEnterprise) {
+					this.skip();
+				}
+
 				request
-					.get(api(`chat.getMessageReadReceipts?messageId=${message._id}`))
+					.get(api(`chat.getMessageReadReceipts`))
 					.set(credentials)
+					.query({
+						messageId: message._id,
+					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res) => {
@@ -1353,7 +1492,33 @@ describe('[Chat]', function () {
 		});
 
 		describe('when an error occurs', () => {
-			it('should return statusCode 400 and an error', (done) => {
+			it('should throw error-action-not-allowed error when not running EE', function (done) {
+				// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
+				// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
+				if (isEnterprise) {
+					this.skip();
+				}
+				request
+					.get(api(`chat.getMessageReadReceipts`))
+					.set(credentials)
+					.query({
+						messageId: message._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'This is an enterprise feature [error-action-not-allowed]');
+						expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
+					})
+					.end(done);
+			});
+
+			it('should return statusCode: 400 and an error when no messageId is provided', function (done) {
+				if (!isEnterprise) {
+					this.skip();
+				}
+
 				request
 					.get(api('chat.getMessageReadReceipts'))
 					.set(credentials)
@@ -1978,111 +2143,6 @@ describe('[Chat]', function () {
 		});
 	});
 
-	describe('[/chat.getSnippetedMessageById]', () => {
-		it('should return an error when the snippeted messages is disabled', (done) => {
-			updateSetting('Message_AllowSnippeting', false).then(() => {
-				request
-					.get(api('chat.getSnippetedMessageById?messageId=invalid-id'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('error-not-allowed');
-					})
-					.end(done);
-			});
-		});
-		it('should return an error when the required "messageId" parameter is not sent', (done) => {
-			updateSetting('Message_AllowSnippeting', true).then(() => {
-				request
-					.get(api('chat.getSnippetedMessageById'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.errorType).to.be.equal('error-invalid-params');
-					})
-					.end(done);
-			});
-		});
-	});
-
-	describe('[/chat.getSnippetedMessages]', () => {
-		it('should return an error when the required "roomId" parameter is not sent', (done) => {
-			request
-				.get(api('chat.getSnippetedMessages'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('error-invalid-params');
-				})
-				.end(done);
-		});
-
-		it('should return an error when the roomId is invalid', (done) => {
-			request
-				.get(api('chat.getSnippetedMessages?roomId=invalid-room'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('error-not-allowed');
-				})
-				.end(done);
-		});
-
-		it('should return an error when the snippeted messages is disabled', (done) => {
-			updateSetting('Message_AllowSnippeting', false).then(() => {
-				request
-					.get(api('chat.getSnippetedMessages?roomId=invalid-room'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('error-not-allowed');
-					})
-					.end(done);
-			});
-		});
-
-		it('should return the snippeted messages', (done) => {
-			updateSetting('Message_AllowSnippeting', true).then(() => {
-				request
-					.get(api('chat.getSnippetedMessages?roomId=GENERAL'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body.messages).to.be.an('array');
-						expect(res.body).to.have.property('offset');
-						expect(res.body).to.have.property('total');
-						expect(res.body).to.have.property('count');
-					})
-					.end(done);
-			});
-		});
-
-		it('should return an error when the messageId is invalid', (done) => {
-			request
-				.get(api('chat.getSnippetedMessageById?messageId=invalid-id'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('invalid-message');
-				})
-				.end(done);
-		});
-	});
-
 	describe('[/chat.getDiscussions]', () => {
 		const messageText = 'Message to create discussion';
 		let testChannel;
@@ -2226,19 +2286,6 @@ describe('[Chat]', function () {
 
 		messageWords.forEach((text) => {
 			filterDiscussionsByText(text);
-		});
-
-		it('should return an error when the messageId is invalid', (done) => {
-			request
-				.get(api('chat.getSnippetedMessageById?messageId=invalid-id'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('invalid-message');
-				})
-				.end(done);
 		});
 	});
 });
@@ -2736,6 +2783,7 @@ describe('Threads', () => {
 					.set(credentials)
 					.query({
 						tmid: threadMessage.tmid,
+						updatedSince: 'updatedSince',
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -3054,6 +3102,73 @@ describe('Threads', () => {
 						expect(res.body).to.have.property('success', true);
 					})
 					.end(done);
+			});
+		});
+	});
+
+	describe('[/chat.getURLPreview]', () => {
+		const url = 'https://www.youtube.com/watch?v=no050HN4ojo';
+		it('should return the URL preview with metadata and headers', async () => {
+			await request
+				.get(api('chat.getURLPreview'))
+				.set(credentials)
+				.query({
+					roomId: 'GENERAL',
+					url,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('urlPreview').and.to.be.an('object').that.is.not.empty;
+					expect(res.body.urlPreview).to.have.property('url', url);
+					expect(res.body.urlPreview).to.have.property('headers').and.to.be.an('object').that.is.not.empty;
+				});
+		});
+
+		describe('when an error occurs', () => {
+			it('should return statusCode 400 and an error when "roomId" is not provided', async () => {
+				await request
+					.get(api('chat.getURLPreview'))
+					.set(credentials)
+					.query({
+						url,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.errorType).to.be.equal('invalid-params');
+					});
+			});
+			it('should return statusCode 400 and an error when "url" is not provided', async () => {
+				await request
+					.get(api('chat.getURLPreview'))
+					.set(credentials)
+					.query({
+						roomId: 'GENERAL',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.errorType).to.be.equal('invalid-params');
+					});
+			});
+			it('should return statusCode 400 and an error when "roomId" is provided but user is not in the room', async () => {
+				await request
+					.get(api('chat.getURLPreview'))
+					.set(credentials)
+					.query({
+						roomId: 'undefined',
+						url,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.errorType).to.be.equal('error-not-allowed');
+					});
 			});
 		});
 	});

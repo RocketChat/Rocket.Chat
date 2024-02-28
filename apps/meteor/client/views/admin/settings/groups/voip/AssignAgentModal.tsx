@@ -1,7 +1,8 @@
-import { Button, Modal, Select, Field, FieldGroup } from '@rocket.chat/fuselage';
+import { Button, Modal, Select, Field, FieldGroup, FieldLabel, FieldRow, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, useState, useMemo } from 'react';
+import type { FC } from 'react';
+import React, { useState, useMemo } from 'react';
 
 import AutoCompleteAgentWithoutExtension from '../../../../../components/AutoCompleteAgentWithoutExtension';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
@@ -22,7 +23,8 @@ const AssignAgentModal: FC<AssignAgentModalParams> = ({ existingExtension, close
 
 	const assignAgent = useEndpoint('POST', '/v1/omnichannel/agent/extension');
 
-	const handleAssignment = useMutableCallback(async () => {
+	const handleAssignment = useMutableCallback(async (e) => {
+		e.preventDefault();
 		try {
 			await assignAgent({ username: agent, extension });
 		} catch (error) {
@@ -33,10 +35,10 @@ const AssignAgentModal: FC<AssignAgentModalParams> = ({ existingExtension, close
 	});
 	const handleAgentChange = useMutableCallback((e) => setAgent(e));
 
-	const { value: availableExtensions, phase: state } = useEndpointData('/v1/omnichannel/extension', query);
+	const { value: availableExtensions, phase: state } = useEndpointData('/v1/omnichannel/extension', { params: query });
 
 	return (
-		<Modal>
+		<Modal wrapperFunction={(props) => <Box is='form' onSubmit={handleAssignment} {...props} />}>
 			<Modal.Header>
 				<Modal.Title>{t('Associate_Agent_to_Extension')}</Modal.Title>
 				<Modal.Close onClick={closeModal} />
@@ -44,29 +46,29 @@ const AssignAgentModal: FC<AssignAgentModalParams> = ({ existingExtension, close
 			<Modal.Content>
 				<FieldGroup>
 					<Field>
-						<Field.Label>{t('Agent_Without_Extensions')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('Agent_Without_Extensions')}</FieldLabel>
+						<FieldRow>
 							<AutoCompleteAgentWithoutExtension value={agent} onChange={handleAgentChange} currentExtension={extension} />
-						</Field.Row>
+						</FieldRow>
 					</Field>
 					<Field>
-						<Field.Label>{t('Free_Extension_Numbers')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('Free_Extension_Numbers')}</FieldLabel>
+						<FieldRow>
 							<Select
 								disabled={state === AsyncStatePhase.LOADING || agent === ''}
 								options={availableExtensions?.extensions?.map((extension) => [extension, extension]) || []}
 								value={extension}
 								placeholder={t('Select_an_option')}
-								onChange={setExtension}
+								onChange={(value) => setExtension(String(value))}
 							/>
-						</Field.Row>
+						</FieldRow>
 					</Field>
 				</FieldGroup>
 			</Modal.Content>
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={closeModal}>{t('Cancel')}</Button>
-					<Button primary disabled={!agent || !extension} onClick={handleAssignment}>
+					<Button primary disabled={!agent || !extension} type='submit'>
 						{t('Associate')}
 					</Button>
 				</Modal.FooterControllers>

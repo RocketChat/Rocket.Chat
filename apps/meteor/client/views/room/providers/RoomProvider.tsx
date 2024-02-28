@@ -1,42 +1,90 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useUserSubscription } from '@rocket.chat/ui-contexts';
-import React, { ReactNode, useContext, useMemo, memo, useEffect, useCallback } from 'react';
+import { useRouter } from '@rocket.chat/ui-contexts';
+import type { ReactNode, ContextType, ReactElement } from 'react';
+import React, { useMemo, memo, useEffect, useCallback } from 'react';
 
-import { UserAction } from '../../../../app/ui';
-import { RoomManager, useHandleRoom } from '../../../lib/RoomManager';
-import { AsyncStatePhase } from '../../../lib/asyncState';
+import { ChatSubscription } from '../../../../app/models/client';
+import { RoomHistoryManager } from '../../../../app/ui-utils/client';
+import { UserAction } from '../../../../app/ui/client/lib/UserAction';
+import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
+import { useReactiveValue } from '../../../hooks/useReactiveValue';
+import { RoomManager } from '../../../lib/RoomManager';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
+import ImageGalleryProvider from '../../../providers/ImageGalleryProvider';
+import RoomNotFound from '../RoomNotFound';
 import RoomSkeleton from '../RoomSkeleton';
-import { RoomContext, RoomContextValue } from '../contexts/RoomContext';
-import ToolboxProvider from './ToolboxProvider';
+import { useRoomRolesManagement } from '../body/hooks/useRoomRolesManagement';
+import { RoomContext } from '../contexts/RoomContext';
+import ComposerPopupProvider from './ComposerPopupProvider';
+import RoomToolboxProvider from './RoomToolboxProvider';
+import UserCardProvider from './UserCardProvider';
+import { useRedirectOnSettingsChanged } from './hooks/useRedirectOnSettingsChanged';
+import { useRoomQuery } from './hooks/useRoomQuery';
+import { useUsersNameChanged } from './hooks/useUsersNameChanged';
 
 type RoomProviderProps = {
 	children: ReactNode;
 	rid: IRoom['_id'];
 };
 
-const fields = {};
+const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
+	useRoomRolesManagement(rid);
 
-const RoomProvider = ({ rid, children }: RoomProviderProps): JSX.Element => {
-	const { phase, value: room } = useHandleRoom(rid);
+	const { data: room, isSuccess } = useRoomQuery(rid);
 
-	const getMore = useCallback(() => {
-		RoomManager.getMore(rid);
-	}, [rid]);
+	// TODO: the following effect is a workaround while we don't have a general and definitive solution for it
+	const router = useRouter();
+	useEffect(() => {
+		if (isSuccess && !room) {
+			router.navigate('/home');
+		}
+	}, [isSuccess, room, router]);
 
-	const subscribed = Boolean(useUserSubscription(rid, fields));
-	const context = useMemo(() => {
+	const subscriptionQuery = useReactiveQuery(['subscriptions', { rid }], () => ChatSubscription.findOne({ rid }) ?? null);
+
+	useRedirectOnSettingsChanged(subscriptionQuery.data);
+
+	useUsersNameChanged();
+
+	const pseudoRoom = useMemo(() => {
 		if (!room) {
 			return null;
 		}
-		room._id = rid;
+
 		return {
-			subscribed,
-			rid,
-			getMore,
-			room: { ...room, name: roomCoordinator.getRoomName(room.t, room) },
+			...subscriptionQuery.data,
+			...room,
+			name: roomCoordinator.getRoomName(room.t, room),
+			federationOriginalName: room.name,
 		};
-	}, [room, rid, subscribed, getMore]);
+	}, [room, subscriptionQuery.data]);
+
+	const { hasMorePreviousMessages, hasMoreNextMessages, isLoadingMoreMessages } = useReactiveValue(
+		useCallback(() => {
+			const { hasMore, hasMoreNext, isLoading } = RoomHistoryManager.getRoom(rid);
+
+			return {
+				hasMorePreviousMessages: hasMore.get(),
+				hasMoreNextMessages: hasMoreNext.get(),
+				isLoadingMoreMessages: isLoading.get(),
+			};
+		}, [rid]),
+	);
+
+	const context = useMemo((): ContextType<typeof RoomContext> => {
+		if (!pseudoRoom) {
+			return null;
+		}
+
+		return {
+			rid,
+			room: pseudoRoom,
+			subscription: subscriptionQuery.data ?? undefined,
+			hasMorePreviousMessages,
+			hasMoreNextMessages,
+			isLoadingMoreMessages,
+		};
+	}, [hasMoreNextMessages, hasMorePreviousMessages, isLoadingMoreMessages, pseudoRoom, rid, subscriptionQuery.data]);
 
 	useEffect(() => {
 		RoomManager.open(rid);
@@ -45,42 +93,31 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): JSX.Element => {
 		};
 	}, [rid]);
 
+	const subscribed = !!subscriptionQuery.data;
+
 	useEffect(() => {
 		if (!subscribed) {
-			return (): void => undefined;
+			return;
 		}
 
-		UserAction.addStream(rid);
-		return (): void => {
-			UserAction.cancel(rid);
-		};
+		return UserAction.addStream(rid);
 	}, [rid, subscribed]);
 
-	if (phase === AsyncStatePhase.LOADING || !room) {
-		return <RoomSkeleton />;
+	if (!pseudoRoom) {
+		return isSuccess && !room ? <RoomNotFound /> : <RoomSkeleton />;
 	}
 
 	return (
 		<RoomContext.Provider value={context}>
-			<ToolboxProvider room={room}>{children}</ToolboxProvider>
+			<RoomToolboxProvider>
+				<ImageGalleryProvider>
+					<UserCardProvider>
+						<ComposerPopupProvider room={pseudoRoom}>{children}</ComposerPopupProvider>
+					</UserCardProvider>
+				</ImageGalleryProvider>
+			</RoomToolboxProvider>
 		</RoomContext.Provider>
 	);
-};
-
-export const useRoom = (): IRoom => {
-	const context = useContext(RoomContext);
-	if (!context) {
-		throw Error('useRoom should be used only inside rooms context');
-	}
-	return context.room;
-};
-
-export const useRoomContext = (): RoomContextValue => {
-	const context = useContext(RoomContext);
-	if (!context) {
-		throw Error('useRoom should be used only inside rooms context');
-	}
-	return context;
 };
 
 export default memo(RoomProvider);

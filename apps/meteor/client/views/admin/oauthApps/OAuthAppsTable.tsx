@@ -1,16 +1,31 @@
-import { Table } from '@rocket.chat/fuselage';
-import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, useCallback, ReactElement } from 'react';
+import { useEndpoint, useRoute, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
+import type { ReactElement } from 'react';
+import React, { useCallback } from 'react';
 
-import GenericTable from '../../../components/GenericTable';
-import { useEndpointData } from '../../../hooks/useEndpointData';
+import GenericNoResults from '../../../components/GenericNoResults';
+import {
+	GenericTableHeaderCell,
+	GenericTable,
+	GenericTableHeader,
+	GenericTableRow,
+	GenericTableCell,
+	GenericTableBody,
+	GenericTableLoadingRow,
+} from '../../../components/GenericTable';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 
 const OAuthAppsTable = (): ReactElement => {
 	const t = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 
-	const { value: data } = useEndpointData('/v1/oauth-apps.list');
+	const uid = { uid: useUserId() || '' };
+
+	const getOauthApps = useEndpoint('GET', '/v1/oauth-apps.list');
+	const { data, isLoading, isSuccess } = useQuery(['oauth-apps', { uid }], async () => {
+		const oauthApps = await getOauthApps(uid);
+		return oauthApps;
+	});
 
 	const router = useRoute('admin-oauth-apps');
 
@@ -23,29 +38,51 @@ const OAuthAppsTable = (): ReactElement => {
 		[router],
 	);
 
-	const header = useMemo(
-		() => [
-			<GenericTable.HeaderCell key={'name'}>{t('Name')}</GenericTable.HeaderCell>,
-			<GenericTable.HeaderCell key={'_createdBy'}>{t('Created_by')}</GenericTable.HeaderCell>,
-			<GenericTable.HeaderCell key={'_createdAt'}>{t('Created_at')}</GenericTable.HeaderCell>,
-		],
-		[t],
+	const headers = (
+		<>
+			<GenericTableHeaderCell key='name'>{t('Name')}</GenericTableHeaderCell>
+			<GenericTableHeaderCell key='_createdBy'>{t('Created_by')}</GenericTableHeaderCell>
+			<GenericTableHeaderCell key='_createdAt'>{t('Created_at')}</GenericTableHeaderCell>
+		</>
 	);
 
-	const renderRow = useCallback(
-		({ _id, name, _createdAt, _createdBy: { username: createdBy } }) => (
-			<Table.Row key={_id} onKeyDown={onClick(_id)} onClick={onClick(_id)} tabIndex={0} role='link' action qa-oauth-app-id={_id}>
-				<Table.Cell withTruncatedText color='default' fontScale='p2m'>
-					{name}
-				</Table.Cell>
-				<Table.Cell withTruncatedText>{createdBy}</Table.Cell>
-				<Table.Cell withTruncatedText>{formatDateAndTime(_createdAt)}</Table.Cell>
-			</Table.Row>
-		),
-		[formatDateAndTime, onClick],
+	return (
+		<>
+			{isLoading && (
+				<GenericTable>
+					<GenericTableHeader>{headers}</GenericTableHeader>
+					<GenericTableBody>
+						<GenericTableLoadingRow cols={3} />
+					</GenericTableBody>
+				</GenericTable>
+			)}
+			{isSuccess && data?.oauthApps.length === 0 && <GenericNoResults />}
+			{isSuccess && data?.oauthApps.length > 0 && (
+				<GenericTable>
+					<GenericTableHeader>{headers}</GenericTableHeader>
+					<GenericTableBody>
+						{data?.oauthApps.map(({ _id, name, _createdAt, _createdBy: { username: createdBy } }) => (
+							<GenericTableRow
+								key={_id}
+								onKeyDown={onClick(_id)}
+								onClick={onClick(_id)}
+								tabIndex={0}
+								role='link'
+								action
+								qa-oauth-app-id={_id}
+							>
+								<GenericTableCell withTruncatedText color='default' fontScale='p2m'>
+									{name}
+								</GenericTableCell>
+								<GenericTableCell withTruncatedText>{createdBy}</GenericTableCell>
+								<GenericTableCell withTruncatedText>{formatDateAndTime(_createdAt)}</GenericTableCell>
+							</GenericTableRow>
+						))}
+					</GenericTableBody>
+				</GenericTable>
+			)}
+		</>
 	);
-
-	return <GenericTable header={header} renderRow={renderRow} results={data?.oauthApps} />;
 };
 
 export default OAuthAppsTable;

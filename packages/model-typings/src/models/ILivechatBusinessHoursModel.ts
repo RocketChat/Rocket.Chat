@@ -1,5 +1,5 @@
-import type { FindOptions } from 'mongodb';
 import type { ILivechatBusinessHour, LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
+import type { Document, FindOptions } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -17,7 +17,9 @@ export interface ILivechatBusinessHoursModel extends IBaseModel<ILivechatBusines
 	findActiveBusinessHours(options?: FindOptions<ILivechatBusinessHour>): Promise<ILivechatBusinessHour[]>;
 	findOneDefaultBusinessHour(options?: undefined): Promise<ILivechatBusinessHour | null>;
 	findOneDefaultBusinessHour(options: FindOptions<ILivechatBusinessHour>): Promise<ILivechatBusinessHour | null>;
-	findOneDefaultBusinessHour<P>(options: FindOptions<P extends ILivechatBusinessHour ? ILivechatBusinessHour : P>): Promise<P | null>;
+	findOneDefaultBusinessHour<P extends Document>(
+		options: FindOptions<P extends ILivechatBusinessHour ? ILivechatBusinessHour : P>,
+	): Promise<P | null>;
 	findOneDefaultBusinessHour<P>(options?: any): Promise<ILivechatBusinessHour | P | null>;
 	findActiveAndOpenBusinessHoursByDay(day: string, options?: FindOptions<ILivechatBusinessHour>): Promise<ILivechatBusinessHour[]>;
 	findDefaultActiveAndOpenBusinessHoursByDay(day: string, options?: any): Promise<ILivechatBusinessHour[]>;
@@ -37,4 +39,6 @@ export interface ILivechatBusinessHoursModel extends IBaseModel<ILivechatBusines
 		type?: LivechatBusinessHourTypes,
 		options?: any,
 	): Promise<ILivechatBusinessHour[]>;
+
+	disableBusinessHour(businessHourId: string): Promise<any>;
 }

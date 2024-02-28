@@ -1,7 +1,7 @@
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import * as UiKit from '@rocket.chat/ui-kit';
 import type { ReactElement } from 'react';
-import React, { memo, useMemo } from 'react';
+import { memo, useMemo } from 'react';
 
 import { useUiKitState } from '../hooks/useUiKitState';
 import type { BlockProps } from '../utils/BlockProps';
@@ -52,12 +52,7 @@ const LinearScaleElement = ({
         </Box>
       )}
       <Box>
-        <ButtonGroup
-          className={className}
-          align='center'
-          marginInline={-2}
-          minWidth={0}
-        >
+        <ButtonGroup className={className as string} align='center'>
           {points.map((point, i) => (
             <Button
               key={i}

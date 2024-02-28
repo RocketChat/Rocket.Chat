@@ -1,28 +1,24 @@
-import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { IUser } from '@rocket.chat/core-typings';
-import type { Filter } from 'mongodb';
-import { Users } from '@rocket.chat/models';
+import { Users, Subscriptions } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { Mongo } from 'meteor/mongo';
+import type { Filter } from 'mongodb';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { settings } from '../../../settings/server';
 
 type UserAutoComplete = Required<Pick<IUser, '_id' | 'name' | 'username' | 'nickname' | 'status' | 'avatarETag'>>;
+
 export async function findUsersToAutocomplete({
 	uid,
 	selector,
 }: {
 	uid: string;
-	selector: {
-		exceptions: string[];
-		conditions: Filter<IUser>;
-		term: string;
-	};
+	selector: { exceptions: Required<IUser>['username'][]; conditions: Filter<IUser>; term: string };
 }): Promise<{
 	items: UserAutoComplete[];
 }> {
-	if (!(await hasPermissionAsync(uid, 'view-outside-room'))) {
-		return { items: [] };
-	}
+	const searchFields = settings.get<string>('Accounts_SearchFields').trim().split(',');
 	const exceptions = selector.exceptions || [];
 	const conditions = selector.conditions || {};
 	const options = {
@@ -39,6 +35,20 @@ export async function findUsersToAutocomplete({
 		limit: 10,
 	};
 
+	// Search on DMs first, to list known users before others.
+	const contacts = await Subscriptions.findConnectedUsersExcept(uid, selector.term, exceptions, searchFields, conditions, 10, 'd');
+	if (contacts.length >= options.limit) {
+		return { items: contacts as UserAutoComplete[] };
+	}
+
+	options.limit -= contacts.length;
+	contacts.forEach(({ username }) => exceptions.push(username));
+
+	if (!(await hasPermissionAsync(uid, 'view-outside-room'))) {
+		const users = await Subscriptions.findConnectedUsersExcept(uid, selector.term, exceptions, searchFields, conditions, 10);
+		return { items: contacts.concat(users) as UserAutoComplete[] };
+	}
+
 	const users = await Users.findActiveByUsernameOrNameRegexWithExceptionsAndConditions<UserAutoComplete>(
 		new RegExp(escapeRegExp(selector.term), 'i'),
 		exceptions,
@@ -47,7 +57,7 @@ export async function findUsersToAutocomplete({
 	).toArray();
 
 	return {
-		items: users,
+		items: (contacts as UserAutoComplete[]).concat(users),
 	};
 }
 

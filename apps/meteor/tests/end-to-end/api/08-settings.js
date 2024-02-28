@@ -1,6 +1,8 @@
 import { expect } from 'chai';
+import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
+import { updateSetting } from '../../data/permissions.helper';
 
 describe('[Settings]', function () {
 	this.retries(0);
@@ -82,6 +84,54 @@ describe('[Settings]', function () {
 					expect(res.body).to.have.property('configurations');
 				})
 				.end(done);
+		});
+
+		describe('With OAuth enabled', () => {
+			before(() => updateSetting('Accounts_OAuth_Google', true));
+
+			after(() => updateSetting('Accounts_OAuth_Google', false));
+
+			it('should include the OAuth service in the response', (done) => {
+				// wait 3 seconds before getting the service list so the server has had time to update it
+				setTimeout(() => {
+					request
+						.get(api('service.configurations'))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('configurations');
+
+							expect(res.body.configurations.find(({ service }) => service === 'google')).to.exist;
+						})
+						.end(done);
+				}, 3000);
+			});
+		});
+
+		describe('With OAuth disabled', () => {
+			before(() => updateSetting('Accounts_OAuth_Google', false));
+
+			after(() => updateSetting('Accounts_OAuth_Google', false));
+
+			it('should not include the OAuth service in the response', (done) => {
+				// wait 3 seconds before getting the service list so the server has had time to update it
+				setTimeout(() => {
+					request
+						.get(api('service.configurations'))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('configurations');
+
+							expect(res.body.configurations.find(({ service }) => service === 'google')).to.not.exist;
+						})
+						.end(done);
+				}, 3000);
+			});
 		});
 	});
 

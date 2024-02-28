@@ -1,4 +1,3 @@
-import type { FindCursor, UpdateOptions, UpdateFilter, UpdateResult, FindOptions } from 'mongodb';
 import type {
 	IGroupVideoConference,
 	ILivechatVideoConference,
@@ -7,6 +6,7 @@ import type {
 	VideoConference,
 	VideoConferenceStatus,
 } from '@rocket.chat/core-typings';
+import type { FindCursor, UpdateOptions, UpdateFilter, UpdateResult, FindOptions } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
@@ -54,7 +54,7 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 
 	setProviderDataById(callId: string, providerData: Record<string, any> | undefined): Promise<void>;
 
-	addUserById(callId: string, user: Pick<IUser, '_id' | 'name' | 'username' | 'avatarETag'> & { ts?: Date }): Promise<void>;
+	addUserById(callId: string, user: Required<Pick<IUser, '_id' | 'name' | 'username' | 'avatarETag'>> & { ts?: Date }): Promise<void>;
 
 	setMessageById(callId: string, messageType: keyof VideoConference['messages'], messageId: string): Promise<void>;
 

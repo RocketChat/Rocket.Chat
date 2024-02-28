@@ -1,32 +1,32 @@
 import { settingsRegistry } from '../../../app/settings/server';
 
-export function addSettings(): void {
-	settingsRegistry.addGroup('Video_Conference', function () {
-		this.with(
+export function addSettings(): Promise<void> {
+	return settingsRegistry.addGroup('Video_Conference', async function () {
+		await this.with(
 			{
 				enterprise: true,
 				modules: ['videoconference-enterprise'],
 			},
-			function () {
-				this.add('VideoConf_Enable_DMs', true, {
+			async function () {
+				await this.add('VideoConf_Enable_DMs', true, {
 					type: 'boolean',
 					public: true,
 					invalidValue: true,
 				});
 
-				this.add('VideoConf_Enable_Channels', true, {
+				await this.add('VideoConf_Enable_Channels', true, {
 					type: 'boolean',
 					public: true,
 					invalidValue: true,
 				});
 
-				this.add('VideoConf_Enable_Groups', true, {
+				await this.add('VideoConf_Enable_Groups', true, {
 					type: 'boolean',
 					public: true,
 					invalidValue: true,
 				});
 
-				this.add('VideoConf_Enable_Teams', true, {
+				await this.add('VideoConf_Enable_Teams', true, {
 					type: 'boolean',
 					public: true,
 					invalidValue: true,

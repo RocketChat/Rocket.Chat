@@ -1,17 +1,10 @@
-import type { Browser, Page } from '@playwright/test';
-
-import { expect, test } from './utils/test';
+import { createAuxContext } from './fixtures/createAuxContext';
+import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel } from './utils';
+import { expect, test } from './utils/test';
 
-const createAuxContext = async (browser: Browser, storageState: string): Promise<{ page: Page; poHomeChannel: HomeChannel }> => {
-	const page = await browser.newPage({ storageState });
-	const poHomeChannel = new HomeChannel(page);
-	await page.goto('/');
-	return { page, poHomeChannel };
-};
-
-test.use({ storageState: 'user1-session.json' });
+test.use({ storageState: Users.user1.state });
 
 test.describe.serial('Messaging', () => {
 	let poHomeChannel: HomeChannel;
@@ -27,28 +20,111 @@ test.describe.serial('Messaging', () => {
 		await page.goto('/home');
 	});
 
+	test('should navigate on messages using keyboard', async ({ page }) => {
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.content.sendMessage('msg1');
+		await poHomeChannel.content.sendMessage('msg2');
+
+		// move focus to the second message
+		await page.keyboard.press('Shift+Tab');
+		await expect(page.locator('[data-qa-type="message"]').last()).toBeFocused();
+
+		// move focus to the first system message
+		await page.keyboard.press('ArrowUp');
+		await page.keyboard.press('ArrowUp');
+		await expect(page.locator('[data-qa="system-message"]').first()).toBeFocused();
+
+		// move focus to the first typed message
+		await page.keyboard.press('ArrowDown');
+		await expect(page.locator('[data-qa-type="message"]:has-text("msg1")')).toBeFocused();
+
+		// move focus to the favorite icon
+		await page.keyboard.press('Shift+Tab');
+		await expect(poHomeChannel.roomHeaderFavoriteBtn).toBeFocused();
+
+		// refocus on the first typed message
+		await page.keyboard.press('Tab');
+		await page.keyboard.press('Tab');
+		await expect(page.locator('[data-qa-type="message"]:has-text("msg1")')).toBeFocused();
+
+		// move focus to the message toolbar
+		await page.locator('[data-qa-type="message"]:has-text("msg1")').locator('[role=toolbar][aria-label="Message actions"]').getByRole('button', { name: 'Add reaction' }).waitFor();
+		
+		await page.keyboard.press('Tab');
+		await page.keyboard.press('Tab');
+		await expect(page.locator('[data-qa-type="message"]:has-text("msg1")').locator('[role=toolbar][aria-label="Message actions"]').getByRole('button', { name: 'Add reaction' })).toBeFocused();
+		
+		// move focus to the composer
+		await page.keyboard.press('Tab');
+		await page.keyboard.press('Tab');
+		await page.keyboard.press('Tab');
+		await expect(poHomeChannel.composer).toBeFocused();
+	});
+
+	test('should navigate properly on the user card', async ({ page }) => {
+		await poHomeChannel.sidenav.openChat(targetChannel);
+
+		// open UserCard
+		await page.keyboard.press('Shift+Tab');
+		await page.keyboard.press('ArrowUp');
+		await page.keyboard.press('Tab');
+		await page.keyboard.press('Space');
+		await expect(poHomeChannel.userCardToolbar).toBeVisible();
+
+		// close UserCard with Esc
+		await page.keyboard.press('Escape');
+		await expect(poHomeChannel.userCardToolbar).not.toBeVisible();
+
+		// with focus restored reopen toolbar
+		await page.keyboard.press('Space');
+		await expect(poHomeChannel.userCardToolbar).toBeVisible();
+
+		// close UserCard with button
+		await page.keyboard.press('Tab');
+		await page.keyboard.press('Tab');
+		await page.keyboard.press('Tab');
+		await page.keyboard.press('Space');
+		await expect(poHomeChannel.userCardToolbar).not.toBeVisible();
+	})
+
+	test('should not restore focus on the last focused if it was triggered by click', async ({ page }) => {
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		await page.locator('[data-qa-type="message"]:has-text("msg1")').click();	
+		await poHomeChannel.composer.click();
+		await page.locator('[data-qa-type="message"]:has-text("msg2")').click();
+
+		await expect(page.locator('[data-qa-type="message"]:has-text("msg2")')).toBeFocused();
+	});
+
 	test('expect show "hello word" in both contexts (targetChannel)', async ({ browser }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
-		const auxContext = await createAuxContext(browser, 'user2-session.json');
+		const { page } = await createAuxContext(browser, Users.user2);
+		const auxContext = { page, poHomeChannel: new HomeChannel(page) };
+
 		await auxContext.poHomeChannel.sidenav.openChat(targetChannel);
 
 		await poHomeChannel.content.sendMessage('hello world');
 
-		await expect(auxContext.poHomeChannel.content.lastUserMessage.locator('p')).toHaveText('hello world');
-		await expect(poHomeChannel.content.lastUserMessage.locator('p')).toHaveText('hello world');
+		await expect(async () => {
+			await expect(auxContext.poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
+			await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
+		}).toPass();
 
 		await auxContext.page.close();
 	});
 
 	test('expect show "hello word" in both contexts (direct)', async ({ browser }) => {
 		await poHomeChannel.sidenav.openChat('user2');
-		const auxContext = await createAuxContext(browser, 'user2-session.json');
+		const { page } = await createAuxContext(browser, Users.user2);
+		const auxContext = { page, poHomeChannel: new HomeChannel(page) };
 		await auxContext.poHomeChannel.sidenav.openChat('user1');
 
 		await poHomeChannel.content.sendMessage('hello world');
 
-		await expect(poHomeChannel.content.lastUserMessage.locator('p')).toHaveText('hello world');
-		await expect(auxContext.poHomeChannel.content.lastUserMessage.locator('p')).toHaveText('hello world');
+		await expect(async () => {
+			await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
+			await expect(auxContext.poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
+		}).toPass();
 
 		await auxContext.page.close();
 	});

@@ -1,9 +1,6 @@
+import type { IVoipRoom, VoipEventDataSignature, ICallerInfo, ICallDetails, ILivechatVisitor, Serialized } from '@rocket.chat/core-typings';
 import {
-	IVoipRoom,
-	IUser,
-	VoipEventDataSignature,
 	VoipClientEvents,
-	ICallerInfo,
 	isVoipEventAgentCalled,
 	isVoipEventAgentConnected,
 	isVoipEventCallerJoined,
@@ -11,62 +8,35 @@ import {
 	isVoipEventQueueMemberRemoved,
 	isVoipEventCallAbandoned,
 	UserState,
-	ICallDetails,
-	ILivechatVisitor,
-	Serialized,
 } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { Random } from '@rocket.chat/random';
+import type { Device, IExperimentalHTMLAudioElement } from '@rocket.chat/ui-contexts';
 import {
-	useRoute,
+	useRouter,
 	useUser,
 	useSetting,
 	useEndpoint,
 	useStream,
 	useSetOutputMediaDevice,
 	useSetInputMediaDevice,
-	Device,
 	useSetModal,
-	IExperimentalHTMLAudioElement,
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
-// import { useRoute, useUser, useSetting, useEndpoint, useStream, useSetModal } from '@rocket.chat/ui-contexts';
-import { Random } from 'meteor/random';
-import React, { useMemo, FC, useRef, useCallback, useEffect, useState } from 'react';
+import type { FC } from 'react';
+import React, { useMemo, useRef, useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { OutgoingByeRequest } from 'sip.js/lib/core';
+import type { OutgoingByeRequest } from 'sip.js/lib/core';
 
-import { CustomSounds } from '../../../app/custom-sounds/client';
-import { getUserPreference } from '../../../app/utils/client';
 import { isOutboundClient, useVoipClient } from '../../../ee/client/hooks/useVoipClient';
 import { parseOutboundPhoneNumber } from '../../../ee/client/lib/voip/parseOutboundPhoneNumber';
 import { WrapUpCallModal } from '../../../ee/client/voip/components/modals/WrapUpCallModal';
-import { CallContext, CallContextValue, useIsVoipEnterprise } from '../../contexts/CallContext';
+import type { CallContextValue } from '../../contexts/CallContext';
+import { CallContext, useIsVoipEnterprise } from '../../contexts/CallContext';
 import { useDialModal } from '../../hooks/useDialModal';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
-import { QueueAggregator } from '../../lib/voip/QueueAggregator';
-
-type VoipSound = 'telephone' | 'outbound-call-ringing' | 'call-ended';
-
-const startRingback = (user: IUser, soundId: VoipSound, loop = true): void => {
-	const audioVolume = getUserPreference(user, 'notificationsSoundVolume', 100) as number;
-	CustomSounds.play(soundId, {
-		volume: Number((audioVolume / 100).toPrecision(2)),
-		loop,
-	});
-};
-
-const stopRingBackById = (soundId: VoipSound): void => {
-	CustomSounds.pause(soundId);
-	CustomSounds.remove(soundId);
-};
-
-const stopTelephoneRingback = (): void => stopRingBackById('telephone');
-const stopOutboundCallRinging = (): void => stopRingBackById('outbound-call-ringing');
-
-const stopAllRingback = (): void => {
-	stopTelephoneRingback();
-	stopOutboundCallRinging();
-};
+import type { QueueAggregator } from '../../lib/voip/QueueAggregator';
+import { useVoipSounds } from './hooks/useVoipSounds';
 
 type NetworkState = 'online' | 'offline';
 
@@ -85,7 +55,7 @@ export const CallProvider: FC = ({ children }) => {
 
 	const result = useVoipClient();
 	const user = useUser();
-	const homeRoute = useRoute('home');
+	const router = useRouter();
 	const setOutputMediaDevice = useSetOutputMediaDevice();
 	const setInputMediaDevice = useSetInputMediaDevice();
 
@@ -99,6 +69,8 @@ export const CallProvider: FC = ({ children }) => {
 
 	const { openDialModal } = useDialModal();
 
+	const voipSounds = useVoipSounds();
+
 	const closeRoom = useCallback(
 		async (data = {}): Promise<void> => {
 			roomInfo &&
@@ -107,14 +79,14 @@ export const CallProvider: FC = ({ children }) => {
 					token: roomInfo.v.token || '',
 					options: { comment: data?.comment, tags: data?.tags },
 				}));
-			homeRoute.push({});
+			router.navigate('/home');
 
 			const queueAggregator = result.voipClient?.getAggregator();
 			if (queueAggregator) {
 				queueAggregator.callEnded();
 			}
 		},
-		[homeRoute, result?.voipClient, roomInfo, voipCloseRoomEndpoint],
+		[router, result?.voipClient, roomInfo, voipCloseRoomEndpoint],
 	);
 
 	const openWrapUpModal = useCallback((): void => {
@@ -268,7 +240,7 @@ export const CallProvider: FC = ({ children }) => {
 			return;
 		}
 
-		const handleCallHangup = (_event: { roomId: string }): void => {
+		return subscribeToNotifyUser(`${user._id}/call.hangup`, (event): void => {
 			setQueueName(queueAggregator.getCurrentQueueName());
 
 			if (hasVoIPEnterpriseLicense) {
@@ -278,10 +250,8 @@ export const CallProvider: FC = ({ children }) => {
 
 			closeRoom();
 
-			dispatchEvent({ event: VoipClientEvents['VOIP-CALL-ENDED'], rid: _event.roomId });
-		};
-
-		return subscribeToNotifyUser(`${user._id}/call.hangup`, handleCallHangup);
+			dispatchEvent({ event: VoipClientEvents['VOIP-CALL-ENDED'], rid: event.roomId });
+		});
 	}, [openWrapUpModal, queueAggregator, subscribeToNotifyUser, user, voipEnabled, dispatchEvent, hasVoIPEnterpriseLicense, closeRoom]);
 
 	useEffect(() => {
@@ -357,7 +327,7 @@ export const CallProvider: FC = ({ children }) => {
 			if (!callDetails.callInfo) {
 				return;
 			}
-			stopAllRingback();
+			voipSounds.stopAll();
 			if (callDetails.userState !== UserState.UAC) {
 				return;
 			}
@@ -398,16 +368,16 @@ export const CallProvider: FC = ({ children }) => {
 		};
 
 		const onRinging = (): void => {
-			startRingback(user, 'outbound-call-ringing');
+			voipSounds.play('outbound-call-ringing');
 		};
 
 		const onIncomingCallRinging = (): void => {
-			startRingback(user, 'telephone');
+			voipSounds.play('telephone');
 		};
 
 		const onCallTerminated = (): void => {
-			startRingback(user, 'call-ended', false);
-			stopAllRingback();
+			voipSounds.play('call-ended', false);
+			voipSounds.stopAll();
 		};
 
 		const onCallFailed = (reason: 'Not Found' | 'Address Incomplete' | 'Request Terminated' | string): void => {
@@ -456,7 +426,7 @@ export const CallProvider: FC = ({ children }) => {
 				result.voipClient?.off('callfailed', onCallFailed);
 			}
 		};
-	}, [createRoom, dispatchEvent, networkStatus, openDialModal, result.voipClient, t, user]);
+	}, [createRoom, dispatchEvent, networkStatus, openDialModal, result.voipClient, voipSounds, t, user]);
 
 	const contextValue: CallContextValue = useMemo(() => {
 		if (!voipEnabled) {

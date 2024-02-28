@@ -1,32 +1,24 @@
-import { Accordion, Field, FieldGroup, TextAreaInput } from '@rocket.chat/fuselage';
-import { useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import { Accordion, Field, FieldGroup, FieldLabel, FieldRow, FieldHint, TextAreaInput } from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import React from 'react';
+import { useFormContext } from 'react-hook-form';
 
-import { useForm } from '../../../hooks/useForm';
-import { FormSectionProps } from './AccountPreferencesPage';
-
-const PreferencesHighlightsSection = ({ onChange, commitRef, ...props }: FormSectionProps): ReactElement => {
+const PreferencesHighlightsSection = () => {
 	const t = useTranslation();
+	const { register } = useFormContext();
 
-	const userHighlights = useUserPreference<string[]>('highlights')?.join(',\n') ?? '';
-
-	const { values, handlers, commit } = useForm({ highlights: userHighlights }, onChange);
-
-	const { highlights } = values as { highlights: string };
-
-	const { handleHighlights } = handlers;
-
-	commitRef.current.highlights = commit;
+	const highlightsId = useUniqueId();
 
 	return (
-		<Accordion.Item title={t('Highlights')} {...props}>
+		<Accordion.Item title={t('Highlights')}>
 			<FieldGroup>
 				<Field>
-					<Field.Label>{t('Highlights_List')}</Field.Label>
-					<Field.Row>
-						<TextAreaInput rows={4} value={highlights} onChange={handleHighlights} />
-					</Field.Row>
-					<Field.Hint>{t('Highlights_How_To')}</Field.Hint>
+					<FieldLabel htmlFor={highlightsId}>{t('Highlights_List')}</FieldLabel>
+					<FieldRow>
+						<TextAreaInput id={highlightsId} {...register('highlights')} rows={4} />
+					</FieldRow>
+					<FieldHint>{t('Highlights_How_To')}</FieldHint>
 				</Field>
 			</FieldGroup>
 		</Accordion.Item>

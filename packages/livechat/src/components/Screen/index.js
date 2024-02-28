@@ -1,17 +1,17 @@
 import { useEffect } from 'preact/hooks';
 
+import { createClassName } from '../../helpers/createClassName';
 import ChatIcon from '../../icons/chat.svg';
 import CloseIcon from '../../icons/close.svg';
 import { Button } from '../Button';
 import { Footer, FooterContent, PoweredBy } from '../Footer';
 import { PopoverContainer } from '../Popover';
 import { Sound } from '../Sound';
-import { createClassName } from '../helpers';
 import ScreenHeader from './Header';
 import styles from './styles.scss';
 
-export const ScreenContent = ({ children, nopadding, triggered = false }) => (
-	<main className={createClassName(styles, 'screen__main', { nopadding, triggered })}>{children}</main>
+export const ScreenContent = ({ children, nopadding, triggered = false, full = false }) => (
+	<main className={createClassName(styles, 'screen__main', { nopadding, triggered, full })}>{children}</main>
 );
 
 export const ScreenFooter = ({ children, options, limit }) => (
@@ -31,6 +31,7 @@ const ChatButton = ({ text, minimized, badge, onClick, triggered = false, agent 
 		badge={badge}
 		onClick={onClick}
 		className={createClassName(styles, 'screen__chat-button')}
+		data-qa-id='chat-button'
 		img={triggered && agent && agent.avatar.src}
 	>
 		{text}
@@ -72,6 +73,7 @@ const CssVar = ({ theme }) => {
 	);
 };
 
+/** @type {{ (props: any) => JSX.Element; Content: (props: any) => JSX.Element; Footer: (props: any) => JSX.Element }} */
 export const Screen = ({
 	theme = {},
 	agent,
@@ -100,7 +102,12 @@ export const Screen = ({
 	<div className={createClassName(styles, 'screen', { minimized, expanded, windowed, triggered })}>
 		<CssVar theme={theme} />
 		{triggered && (
-			<Button onClick={onMinimize} className={createClassName(styles, 'screen__chat-close-button')} icon={<CloseIcon />}>
+			<Button
+				onClick={onMinimize}
+				data-qa-id='chat-close-button'
+				className={createClassName(styles, 'screen__chat-close-button')}
+				icon={<CloseIcon />}
+			>
 				Close
 			</Button>
 		)}

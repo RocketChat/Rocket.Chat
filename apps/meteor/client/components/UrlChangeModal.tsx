@@ -1,6 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import GenericModal from './GenericModal';
 
@@ -17,7 +18,7 @@ const UrlChangeModal = ({ onConfirm, siteUrl, currentUrl, onClose }: UrlChangeMo
 		<GenericModal variant='warning' title={t('Warning')} onConfirm={onConfirm} onClose={onClose} onCancel={onClose} confirmText={t('Yes')}>
 			<Box
 				is='p'
-				mbe='x16'
+				mbe={16}
 				dangerouslySetInnerHTML={{
 					__html: t('The_setting_s_is_configured_to_s_and_you_are_accessing_from_s', t('Site_Url'), siteUrl, currentUrl),
 				}}

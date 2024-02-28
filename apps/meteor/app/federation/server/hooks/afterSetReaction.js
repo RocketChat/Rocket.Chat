@@ -1,11 +1,12 @@
-import { FederationRoomEvents, Rooms } from '../../../models/server';
-import { clientLogger } from '../lib/logger';
+import { FederationRoomEvents, Rooms } from '@rocket.chat/models';
+
 import { hasExternalDomain } from '../functions/helpers';
-import { getFederationDomain } from '../lib/getFederationDomain';
 import { dispatchEvent } from '../handler';
+import { getFederationDomain } from '../lib/getFederationDomain';
+import { clientLogger } from '../lib/logger';
 
 async function afterSetReaction(message, { user, reaction }) {
-	const room = Rooms.findOneById(message.rid, { fields: { federation: 1 } });
+	const room = await Rooms.findOneById(message.rid, { projection: { federation: 1 } });
 
 	// If there are not federated users on this room, ignore it
 	if (!hasExternalDomain(room)) {
@@ -31,6 +32,6 @@ async function afterSetReaction(message, { user, reaction }) {
 
 export const definition = {
 	hook: 'afterSetReaction',
-	callback: (message, extras) => Promise.await(afterSetReaction(message, extras)),
+	callback: afterSetReaction,
 	id: 'federation-after-set-reaction',
 };

@@ -1,13 +1,13 @@
-import { Meteor } from 'meteor/meteor';
+import type { RequestMethod } from '@rocket.chat/apps-engine/definition/accessors';
+import type { IApiRequest, IApiEndpoint, IApi } from '@rocket.chat/apps-engine/definition/api';
+import { ApiBridge } from '@rocket.chat/apps-engine/server/bridges/ApiBridge';
+import type { AppApi } from '@rocket.chat/apps-engine/server/managers/AppApi';
 import type { Response, Request, IRouter, RequestHandler } from 'express';
 import express from 'express';
+import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
-import { ApiBridge } from '@rocket.chat/apps-engine/server/bridges/ApiBridge';
-import type { IApiRequest, IApiEndpoint, IApi } from '@rocket.chat/apps-engine/definition/api';
-import type { AppApi } from '@rocket.chat/apps-engine/server/managers/AppApi';
-import type { RequestMethod } from '@rocket.chat/apps-engine/definition/accessors';
 
-import type { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 import { authenticationMiddleware } from '../../../api/server/middlewares/authentication';
 
 const apiServer = express();
@@ -55,7 +55,7 @@ export class AppApisBridge extends ApiBridge {
 		});
 	}
 
-	public registerApi({ api, computedPath, endpoint }: AppApi, appId: string): void {
+	public async registerApi({ api, computedPath, endpoint }: AppApi, appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is registering the api: "${endpoint.path}" (${computedPath})`);
 
 		this._verifyApi(api, endpoint);
@@ -75,21 +75,20 @@ export class AppApisBridge extends ApiBridge {
 		}
 
 		if (router[method] instanceof Function) {
-			router[method](routePath, this._authMiddleware(endpoint, appId), Meteor.bindEnvironment(this._appApiExecutor(endpoint, appId)));
+			router[method](
+				routePath,
+				authenticationMiddleware({ rejectUnauthorized: !!endpoint.authRequired }),
+				Meteor.bindEnvironment(this._appApiExecutor(endpoint, appId)),
+			);
 		}
 	}
 
-	public unregisterApis(appId: string): void {
+	public async unregisterApis(appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is unregistering all apis`);
 
 		if (this.appRouters.get(appId)) {
 			this.appRouters.delete(appId);
 		}
-	}
-
-	private _authMiddleware(endpoint: IApiEndpoint, _appId: string): RequestHandler {
-		const authFunction = authenticationMiddleware({ rejectUnauthorized: !!endpoint.authRequired });
-		return Meteor.bindEnvironment(authFunction);
 	}
 
 	private _verifyApi(api: IApi, endpoint: IApiEndpoint): void {

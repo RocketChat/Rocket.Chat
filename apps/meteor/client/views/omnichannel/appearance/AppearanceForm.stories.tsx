@@ -1,4 +1,4 @@
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
 import AppearanceForm from './AppearanceForm';
@@ -8,5 +8,5 @@ export default {
 	component: AppearanceForm,
 } as ComponentMeta<typeof AppearanceForm>;
 
-export const Default: ComponentStory<typeof AppearanceForm> = (args) => <AppearanceForm {...args} />;
+export const Default: ComponentStory<typeof AppearanceForm> = () => <AppearanceForm />;
 Default.storyName = 'AppearanceForm';

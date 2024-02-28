@@ -12,12 +12,26 @@ export class OmnichannelManager {
 		this.sidenav = new OmnichannelSidenav(page);
 	}
 
+	get inputSearch() {
+		return this.page.locator('[placeholder="Search"]');
+	}
+
+	async search(text: string) {
+		await this.inputSearch.fill(text);
+		await this.page.waitForTimeout(500);
+	}
+
+	async clearSearch() {
+		await this.inputSearch.fill('');
+		await this.page.waitForTimeout(500);
+	}
+
 	get inputUsername(): Locator {
 		return this.page.locator('input').first();
 	}
 
 	get btnAdd(): Locator {
-		return this.page.locator('button.rcx-button--primary.rcx-button >> text="Add"');
+		return this.page.locator('button.rcx-button--primary.rcx-button >> text="Add manager"');
 	}
 
 	firstRowInTable(userId: string) {
@@ -26,6 +40,10 @@ export class OmnichannelManager {
 
 	get btnDeleteFirstRowInTable() {
 		return this.page.locator('button[title="Remove"]');
+	}
+
+	btnDeleteSelectedAgent(text: string) {
+		return this.page.locator('tr', { has: this.page.locator(`td >> text="${text}"`) }).locator('button[title="Remove"]');
 	}
 
 	get btnModalRemove(): Locator {

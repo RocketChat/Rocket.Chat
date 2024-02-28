@@ -1,5 +1,4 @@
-import { Meteor } from 'meteor/meteor';
-import React from 'react';
+import React, { StrictMode } from 'react';
 import { render } from 'react-dom';
 
 import AppRoot from '../views/root/AppRoot';
@@ -16,7 +15,11 @@ const createContainer = (): Element => {
 	return container;
 };
 
-Meteor.startup(() => {
-	const container = createContainer();
-	render(<AppRoot />, container);
-});
+const container = createContainer();
+
+render(
+	<StrictMode>
+		<AppRoot />
+	</StrictMode>,
+	container,
+);

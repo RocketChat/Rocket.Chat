@@ -1,40 +1,45 @@
-import { Box, Skeleton } from '@rocket.chat/fuselage';
-import React, { useMemo, FC } from 'react';
+import type { IRoom } from '@rocket.chat/core-typings';
+import { useEndpoint, useRouter, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
+import React from 'react';
 
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../hooks/useEndpointData';
+import {
+	Contextualbar,
+	ContextualbarHeader,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarSkeleton,
+} from '../../../components/Contextualbar';
 import EditRoom from './EditRoom';
 
-const EditRoomWithData: FC<{ rid?: string; onReload: () => void }> = ({ rid, onReload }) => {
-	const {
-		value: data,
-		phase: state,
-		error,
-		reload,
-	} = useEndpointData(
-		'/v1/rooms.adminRooms.getRoom',
-		useMemo(() => ({ rid }), [rid]),
+type EditRoomWithDataProps = { rid?: IRoom['_id']; onReload: () => void };
+
+const EditRoomWithData = ({ rid, onReload }: EditRoomWithDataProps) => {
+	const t = useTranslation();
+	const router = useRouter();
+	const dispatchToastMessage = useToastMessageDispatch();
+
+	const getAdminRooms = useEndpoint('GET', '/v1/rooms.adminRooms.getRoom');
+
+	const { data, isLoading, refetch } = useQuery(
+		['rooms', rid, 'admin'],
+		async () => {
+			const rooms = await getAdminRooms({ rid });
+			return rooms;
+		},
+		{
+			onError: (error) => {
+				dispatchToastMessage({ type: 'error', message: error });
+			},
+		},
 	);
 
-	if (state === AsyncStatePhase.LOADING) {
-		return (
-			<Box w='full' pb='x24'>
-				<Skeleton mbe='x4' />
-				<Skeleton mbe='x8' />
-				<Skeleton mbe='x4' />
-				<Skeleton mbe='x8' />
-				<Skeleton mbe='x4' />
-				<Skeleton mbe='x8' />
-			</Box>
-		);
-	}
-
-	if (state === AsyncStatePhase.REJECTED) {
-		return <>{error?.message}</>;
+	if (isLoading) {
+		return <ContextualbarSkeleton />;
 	}
 
 	const handleChange = (): void => {
-		reload();
+		refetch();
 		onReload();
 	};
 
@@ -42,7 +47,15 @@ const EditRoomWithData: FC<{ rid?: string; onReload: () => void }> = ({ rid, onR
 		onReload();
 	};
 
-	return data ? <EditRoom room={data} onChange={handleChange} onDelete={handleDelete} /> : null;
+	return data ? (
+		<Contextualbar>
+			<ContextualbarHeader>
+				<ContextualbarTitle>{t('Room_Info')}</ContextualbarTitle>
+				<ContextualbarClose onClick={() => router.navigate('/admin/rooms')} />
+			</ContextualbarHeader>
+			<EditRoom room={data} onChange={handleChange} onDelete={handleDelete} />
+		</Contextualbar>
+	) : null;
 };
 
 export default EditRoomWithData;

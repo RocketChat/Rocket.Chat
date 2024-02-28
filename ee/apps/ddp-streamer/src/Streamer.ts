@@ -1,17 +1,18 @@
-import WebSocket from 'ws';
+import { api } from '@rocket.chat/core-services';
+import type { StreamNames } from '@rocket.chat/ui-contexts';
 import type { DDPSubscription, Connection, TransformMessage } from 'meteor/rocketchat:streamer';
+import WebSocket from 'ws';
 
+import { Streamer, StreamerCentral } from '../../../../apps/meteor/server/modules/streamer/streamer.module';
 import { server } from './configureServer';
 import { DDP_EVENTS } from './constants';
 import { isEmpty } from './lib/utils';
-import { Streamer, StreamerCentral } from '../../../../apps/meteor/server/modules/streamer/streamer.module';
-import { api } from '../../../../apps/meteor/server/sdk/api';
 
 StreamerCentral.on('broadcast', (name, eventName, args) => {
-	api.broadcast('stream', [name, eventName, args]);
+	void api.broadcast('stream', [name, eventName, args]);
 });
 
-export class Stream extends Streamer {
+export class Stream<N extends StreamNames> extends Streamer<N> {
 	registerPublication(name: string, fn: (eventName: string, options: boolean | { useCollection?: boolean; args?: any }) => void): void {
 		server.publish(name, fn);
 	}
@@ -57,11 +58,23 @@ export class Stream extends Streamer {
 		};
 
 		for await (const { subscription } of subscriptions) {
+			// if the connection state is not open anymore, it somehow got to a weird state,
+			// we'll emit close so it can clean up the weird state, and so we stop emitting to it
+			if (subscription.client.ws.readyState !== WebSocket.OPEN) {
+				subscription.stop();
+				subscription.client.ws.close();
+				continue;
+			}
+
 			if (this.retransmitToSelf === false && origin && origin === subscription.connection) {
 				continue;
 			}
 
-			if (await this.isEmitAllowed(subscription, eventName, ...args)) {
+			if (!(await this.isEmitAllowed(subscription, eventName, ...args))) {
+				continue;
+			}
+
+			try {
 				await new Promise<void>((resolve, reject) => {
 					const frame = data[subscription.client.meteorClient ? 'meteor' : 'normal'];
 
@@ -72,6 +85,17 @@ export class Stream extends Streamer {
 						resolve();
 					});
 				});
+			} catch (error: any) {
+				if (error.code === 'ERR_STREAM_DESTROYED') {
+					console.warn('Trying to send data to destroyed stream, closing connection.');
+
+					// if we still tried to send data to a destroyed stream, we'll try again to close the connection
+					if (subscription.client.ws.readyState !== WebSocket.OPEN) {
+						subscription.stop();
+						subscription.client.ws.close();
+					}
+				}
+				console.error('Error trying to send data to stream.', error);
 			}
 		}
 	}

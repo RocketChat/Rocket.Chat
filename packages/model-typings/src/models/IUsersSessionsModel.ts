@@ -1,5 +1,5 @@
-import type { FindCursor, FindOptions } from 'mongodb';
 import type { IUserSession, IUserSessionConnection } from '@rocket.chat/core-typings';
+import type { FindCursor, FindOptions } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 

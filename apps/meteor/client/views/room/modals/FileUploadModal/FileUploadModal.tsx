@@ -1,7 +1,9 @@
-import { Modal, Box, Field, FieldGroup, TextInput, Button } from '@rocket.chat/fuselage';
+import { Modal, Box, Field, FieldGroup, FieldLabel, FieldRow, FieldError, TextInput, Button } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, memo, useState, ChangeEvent, FormEventHandler, useEffect } from 'react';
+import { useToastMessageDispatch, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
+import fileSize from 'filesize';
+import type { ReactElement, ChangeEvent, FormEventHandler, ComponentProps } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 
 import FilePreview from './FilePreview';
 
@@ -12,6 +14,7 @@ type FileUploadModalProps = {
 	fileName: string;
 	fileDescription?: string;
 	invalidContentType: boolean;
+	showDescription?: boolean;
 };
 
 const FileUploadModal = ({
@@ -21,11 +24,13 @@ const FileUploadModal = ({
 	fileDescription,
 	onSubmit,
 	invalidContentType,
+	showDescription = true,
 }: FileUploadModalProps): ReactElement => {
 	const [name, setName] = useState<string>(fileName);
 	const [description, setDescription] = useState<string>(fileDescription || '');
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const maxFileSize = useSetting('FileUpload_MaxFileSize') as number;
 
 	const ref = useAutoFocus<HTMLInputElement>();
 
@@ -45,6 +50,16 @@ const FileUploadModal = ({
 				message: t('error-the-field-is-required', { field: t('Name') }),
 			});
 		}
+
+		// -1 maxFileSize means there is no limit
+		if (maxFileSize > -1 && (file.size || 0) > maxFileSize) {
+			onClose();
+			return dispatchToastMessage({
+				type: 'error',
+				message: t('File_exceeds_allowed_size_of_bytes', { size: fileSize(maxFileSize) }),
+			});
+		}
+
 		onSubmit(name, description);
 	};
 
@@ -68,30 +83,32 @@ const FileUploadModal = ({
 	}, [file, dispatchToastMessage, invalidContentType, t, onClose]);
 
 	return (
-		<Modal>
-			<Box is='form' display='flex' flexDirection='column' height='100%' onSubmit={handleSubmit}>
+		<Modal wrapperFunction={(props: ComponentProps<typeof Box>) => <Box is='form' onSubmit={handleSubmit} {...props} />}>
+			<Box display='flex' flexDirection='column' height='100%'>
 				<Modal.Header>
 					<Modal.Title>{t('FileUpload')}</Modal.Title>
 					<Modal.Close onClick={onClose} />
 				</Modal.Header>
-				<Modal.Content overflow='hidden'>
-					<Box display='flex' maxHeight='x360' w='full' justifyContent='center' alignContent='center' mbe='x16'>
+				<Modal.Content>
+					<Box display='flex' maxHeight='x360' w='full' justifyContent='center' alignContent='center' mbe={16}>
 						<FilePreview file={file} />
 					</Box>
 					<FieldGroup>
 						<Field>
-							<Field.Label>{t('Upload_file_name')}</Field.Label>
-							<Field.Row>
+							<FieldLabel>{t('Upload_file_name')}</FieldLabel>
+							<FieldRow>
 								<TextInput value={name} onChange={handleName} />
-							</Field.Row>
-							{!name && <Field.Error>{t('error-the-field-is-required', { field: t('Name') })}</Field.Error>}
+							</FieldRow>
+							{!name && <FieldError>{t('error-the-field-is-required', { field: t('Name') })}</FieldError>}
 						</Field>
-						<Field>
-							<Field.Label>{t('Upload_file_description')}</Field.Label>
-							<Field.Row>
-								<TextInput value={description} onChange={handleDescription} placeholder={t('Description')} ref={ref} />
-							</Field.Row>
-						</Field>
+						{showDescription && (
+							<Field>
+								<FieldLabel>{t('Upload_file_description')}</FieldLabel>
+								<FieldRow>
+									<TextInput value={description} onChange={handleDescription} placeholder={t('Description')} ref={ref} />
+								</FieldRow>
+							</Field>
+						)}
 					</FieldGroup>
 				</Modal.Content>
 				<Modal.Footer>

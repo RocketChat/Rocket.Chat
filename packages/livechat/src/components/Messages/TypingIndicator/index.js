@@ -1,4 +1,5 @@
-import { memo } from '../../helpers';
+import { memo } from 'preact/compat';
+
 import { MessageAvatars } from '../MessageAvatars';
 import { MessageBubble } from '../MessageBubble';
 import { MessageContainer } from '../MessageContainer';

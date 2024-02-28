@@ -1,9 +1,9 @@
 import { UserStatus } from '@rocket.chat/core-typings';
 import { action } from '@storybook/addon-actions';
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
-import VerticalBar from '../../../../components/VerticalBar';
+import { Contextualbar } from '../../../../components/Contextualbar';
 import RoomMembers from './RoomMembers';
 
 export default {
@@ -13,7 +13,7 @@ export default {
 		layout: 'fullscreen',
 		actions: { argTypesRegex: '^on.*' },
 	},
-	decorators: [(fn) => <VerticalBar height='100vh'>{fn()}</VerticalBar>],
+	decorators: [(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>],
 } as ComponentMeta<typeof RoomMembers>;
 
 const Template: ComponentStory<typeof RoomMembers> = (args) => <RoomMembers {...args} />;
@@ -27,7 +27,6 @@ Default.args = {
 			username: 'rocket.cat',
 			status: UserStatus.ONLINE,
 			name: 'Rocket.Cat',
-			_updatedAt: new Date(),
 		},
 	],
 	text: 'filter',

@@ -12,8 +12,9 @@ import Triggers from './triggers';
 const createOrUpdateGuest = async (guest) => {
 	const { token } = guest;
 	token && (await store.setState({ token }));
-	const user = await Livechat.grantVisitor({ visitor: { ...guest } });
+	const { visitor: user } = await Livechat.grantVisitor({ visitor: { ...guest } });
 	store.setState({ user });
+	await loadConfig();
 };
 
 const updateIframeGuestData = (data) => {
@@ -39,7 +40,9 @@ const api = {
 			Triggers.processRequest(info);
 		}
 
-		const { token, room: { _id: rid } = {} } = store.state;
+		const { token, room } = store.state;
+		const { _id: rid } = room || {};
+
 		const {
 			change,
 			title,
@@ -75,13 +78,20 @@ const api = {
 
 	async setDepartment(value) {
 		const {
+			user,
 			config: { departments = [] },
-			user: { department: existingDepartment } = {},
+			defaultAgent,
 		} = store.state;
+
+		const { department: existingDepartment } = user || {};
 
 		const department = departments.find((dep) => dep._id === value || dep.name === value)?._id || '';
 
 		updateIframeGuestData({ department });
+
+		if (defaultAgent && defaultAgent.department !== department) {
+			store.setState({ defaultAgent: null });
+		}
 
 		if (department !== existingDepartment) {
 			await loadConfig();
@@ -128,16 +138,11 @@ const api = {
 	},
 
 	async setGuestToken(token) {
-		const {
-			token: localToken,
-			iframe,
-			iframe: { guest },
-		} = store.state;
+		const { token: localToken } = store.state;
 		if (token === localToken) {
 			return;
 		}
-		store.setState({ token, iframe: { ...iframe, guest: { ...guest, token } } });
-		await loadConfig();
+		await createOrUpdateGuest({ token });
 	},
 
 	setGuestName(name) {
@@ -148,8 +153,8 @@ const api = {
 		updateIframeGuestData({ email });
 	},
 
-	registerGuest(data = {}) {
-		if (typeof data !== 'object') {
+	async registerGuest(data) {
+		if (!data || typeof data !== 'object') {
 			return;
 		}
 
@@ -161,7 +166,9 @@ const api = {
 			api.setDepartment(data.department);
 		}
 
-		createOrUpdateGuest(data);
+		Livechat.unsubscribeAll();
+
+		await createOrUpdateGuest(data);
 	},
 
 	async setLanguage(language) {
@@ -190,6 +197,9 @@ const api = {
 	maximizeWidget() {
 		store.setState({ minimized: false });
 		parentCall('openWidget');
+	},
+	setParentUrl(parentUrl) {
+		store.setState({ parentUrl });
 	},
 };
 

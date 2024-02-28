@@ -1,65 +1,49 @@
-import type { IRoom } from '@rocket.chat/core-typings';
-import { IMessage } from '@rocket.chat/core-typings';
-import { Mongo } from 'meteor/mongo';
+import type { IRoom, IMessage, MessageTypesValues } from '@rocket.chat/core-typings';
+import { useStableArray } from '@rocket.chat/fuselage-hooks';
+import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
+import type { Mongo } from 'meteor/mongo';
 import { useCallback, useMemo } from 'react';
 
 import { ChatMessage } from '../../../../../app/models/client';
-// import { useSetting } from '@rocket.chat/ui-contexts'
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
+import { useRoom } from '../../contexts/RoomContext';
 
-const options = {
-	sort: {
-		ts: 1,
-	},
+const mergeHideSysMessages = (
+	sysMesArray1: Array<MessageTypesValues>,
+	sysMesArray2: Array<MessageTypesValues>,
+): Array<MessageTypesValues> => {
+	return Array.from(new Set([...sysMesArray1, ...sysMesArray2]));
 };
 
-const isNotNullOrUndefined = (value: unknown): boolean => value !== null && value !== undefined;
-
-// In a previous version of the app, some values were being set to null.
-// This is a workaround to remove those null values.
-// A migration script should be created to remove this code.
-const removePossibleNullValues = ({
-	editedBy,
-	editedAt,
-	emoji,
-	avatar,
-	alias,
-	customFields,
-	groupable,
-	attachments,
-	reactions,
-	...message
-}: any): IMessage => ({
-	...message,
-	...(isNotNullOrUndefined(editedBy) && { editedBy }),
-	...(isNotNullOrUndefined(editedAt) && { editedAt }),
-	...(isNotNullOrUndefined(emoji) && { emoji }),
-	...(isNotNullOrUndefined(avatar) && { avatar }),
-	...(isNotNullOrUndefined(alias) && { alias }),
-	...(isNotNullOrUndefined(customFields) && { customFields }),
-	...(isNotNullOrUndefined(groupable) && { groupable }),
-	...(isNotNullOrUndefined(attachments) && { attachments }),
-	...(isNotNullOrUndefined(reactions) && { reactions }),
-});
-
 export const useMessages = ({ rid }: { rid: IRoom['_id'] }): IMessage[] => {
-	// const hideSettings = !!useSetting('Hide_System_Messages');
+	const showThreadsInMainChannel = useUserPreference<boolean>('showThreadsInMainChannel', false);
+	const hideSysMesSetting = useSetting<MessageTypesValues[]>('Hide_System_Messages') ?? [];
+	const room = useRoom();
+	const hideRoomSysMes: Array<MessageTypesValues> = Array.isArray(room.sysMes) ? room.sysMes : [];
 
-	// const room = Rooms.findOne(rid, { fields: { sysMes: 1 } });
-	// const settingValues = Array.isArray(room.sysMes) ? room.sysMes : hideSettings || [];
-	// const hideMessagesOfType = new Set(settingValues.reduce((array, value) => [...array, ...value === 'mute_unmute' ? ['user-muted', 'user-unmuted'] : [value]], []));
-	const query: Mongo.Query<IMessage> = useMemo(
+	const hideSysMessages = useStableArray(mergeHideSysMessages(hideSysMesSetting, hideRoomSysMes));
+
+	const query: Mongo.Selector<IMessage> = useMemo(
 		() => ({
 			rid,
 			_hidden: { $ne: true },
-			$or: [{ tmid: { $exists: false } }, { tshow: { $eq: true } }],
+			t: { $nin: hideSysMessages },
+			...(!showThreadsInMainChannel && {
+				$or: [{ tmid: { $exists: false } }, { tshow: { $eq: true } }],
+			}),
 		}),
-		[rid],
+		[rid, hideSysMessages, showThreadsInMainChannel],
 	);
 
-	// if (hideMessagesOfType.size) {
-	// 	query.t = { $nin: Array.from(hideMessagesOfType.values()) };
-	// }
-
-	return useReactiveValue<IMessage[]>(useCallback(() => ChatMessage.find(query, options).fetch().map(removePossibleNullValues), [query]));
+	return useReactiveValue(
+		useCallback(
+			() =>
+				ChatMessage.find(query, {
+					sort: {
+						ts: 1,
+					},
+				}).fetch(),
+			[query],
+		),
+	);
 };

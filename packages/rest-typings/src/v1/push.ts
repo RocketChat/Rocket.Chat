@@ -65,4 +65,15 @@ export type PushEndpoints = {
 			};
 		};
 	};
+	'/v1/push.info': {
+		GET: () => {
+			pushGatewayEnabled: boolean;
+			defaultPushGateway: boolean;
+		};
+	};
+	'/v1/push.test': {
+		POST: () => {
+			tokensCount: boolean;
+		};
+	};
 };

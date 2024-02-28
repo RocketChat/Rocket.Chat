@@ -267,7 +267,7 @@ module.exports = {
 
 		// disallow use of void operator
 		// https://eslint.org/docs/rules/no-void
-		'no-void': 'error',
+		'no-void': 'off',
 
 		// // disallow usage of configurable warning terms in comments: e.g. todo
 		// 'no-warning-comments': ['off', { terms: ['todo', 'fixme', 'xxx'], location: 'start' }],

@@ -1,19 +1,22 @@
 import { API } from '../../../../../app/api/server';
+import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
 import { findTags, findTagById } from './lib/tags';
 
 API.v1.addRoute(
 	'livechat/tags',
-	{ authRequired: true, permissionsRequired: ['view-l-room', 'manage-livechat-tags'] },
+	{ authRequired: true, permissionsRequired: { GET: { permissions: ['view-l-room', 'manage-livechat-tags'], operation: 'hasAny' } } },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort } = this.parseJsonQuery();
-			const { text } = this.queryParams;
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
+			const { text, viewAll, department } = this.queryParams;
 
 			return API.v1.success(
 				await findTags({
 					userId: this.userId,
 					text,
+					department,
+					viewAll: viewAll === 'true',
 					pagination: {
 						offset,
 						count,
@@ -27,7 +30,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/tags/:tagId',
-	{ authRequired: true, permissionsRequired: ['view-l-room', 'manage-livechat-tags'] },
+	{ authRequired: true, permissionsRequired: { GET: { permissions: ['view-l-room', 'manage-livechat-tags'], operation: 'hasAny' } } },
 	{
 		async get() {
 			const { tagId } = this.urlParams;

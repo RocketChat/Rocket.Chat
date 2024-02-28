@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import type { ReactElement } from 'react';
-import React, { memo, useMemo } from 'react';
+import { memo, useMemo } from 'react';
 
 import type { BlockProps } from '../utils/BlockProps';
 import Item from './ContextBlock.Item';

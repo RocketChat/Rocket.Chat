@@ -2,9 +2,6 @@
  * @author Vigneshwaran Odayappan <vickyokrm@gmail.com>
  */
 
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { HTTP } from 'meteor/http';
-import _ from 'underscore';
 import type {
 	IMessage,
 	IDeepLTranslation,
@@ -13,10 +10,16 @@ import type {
 	ITranslationResult,
 	ISupportedLanguage,
 } from '@rocket.chat/core-typings';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import _ from 'underscore';
 
-import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';
+import { i18n } from '../../../server/lib/i18n';
 import { SystemLogger } from '../../../server/lib/logger/system';
 import { settings } from '../../settings/server';
+import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';
+
+const proApiEndpoint = 'https://api.deepl.com/v2/translate';
+const freeApiEndpoint = 'https://api-free.deepl.com/v2/translate';
 
 /**
  * DeepL translation service provider class representation.
@@ -38,10 +41,18 @@ class DeeplAutoTranslate extends AutoTranslate {
 	constructor() {
 		super();
 		this.name = 'deepl-translate';
-		this.apiEndPointUrl = 'https://api.deepl.com/v2/translate';
+		this.apiEndPointUrl = proApiEndpoint;
+
 		// Get the service provide API key.
 		settings.watch<string>('AutoTranslate_DeepLAPIKey', (value) => {
 			this.apiKey = value;
+
+			// if the api key ends with `:fx` it is a free api key
+			if (/:fx$/.test(value)) {
+				this.apiEndPointUrl = freeApiEndpoint;
+				return;
+			}
+			this.apiEndPointUrl = proApiEndpoint;
 		});
 	}
 
@@ -53,7 +64,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 	_getProviderMetadata(): IProviderMetadata {
 		return {
 			name: this.name,
-			displayName: TAPi18n.__('AutoTranslate_DeepL'),
+			displayName: i18n.t('AutoTranslate_DeepL'),
 			settings: this._getSettings(),
 		};
 	}
@@ -78,7 +89,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 	 * @param {string} target
 	 * @returns {object} code : value pair
 	 */
-	getSupportedLanguages(target: string): ISupportedLanguage[] {
+	async getSupportedLanguages(target: string): Promise<ISupportedLanguage[]> {
 		if (!this.apiKey) {
 			return [];
 		}
@@ -89,99 +100,99 @@ class DeeplAutoTranslate extends AutoTranslate {
 		this.supportedLanguages[target] = [
 			{
 				language: 'bg',
-				name: TAPi18n.__('Language_Bulgarian', { lng: target }),
+				name: i18n.t('Language_Bulgarian', { lng: target }),
 			},
 			{
 				language: 'cs',
-				name: TAPi18n.__('Language_Czech', { lng: target }),
+				name: i18n.t('Language_Czech', { lng: target }),
 			},
 			{
 				language: 'da',
-				name: TAPi18n.__('Language_Danish', { lng: target }),
+				name: i18n.t('Language_Danish', { lng: target }),
 			},
 			{
 				language: 'de',
-				name: TAPi18n.__('Language_German', { lng: target }),
+				name: i18n.t('Language_German', { lng: target }),
 			},
 			{
 				language: 'el',
-				name: TAPi18n.__('Language_Greek', { lng: target }),
+				name: i18n.t('Language_Greek', { lng: target }),
 			},
 			{
 				language: 'en',
-				name: TAPi18n.__('Language_English', { lng: target }),
+				name: i18n.t('Language_English', { lng: target }),
 			},
 			{
 				language: 'es',
-				name: TAPi18n.__('Language_Spanish', { lng: target }),
+				name: i18n.t('Language_Spanish', { lng: target }),
 			},
 			{
 				language: 'et',
-				name: TAPi18n.__('Language_Estonian', { lng: target }),
+				name: i18n.t('Language_Estonian', { lng: target }),
 			},
 			{
 				language: 'fi',
-				name: TAPi18n.__('Language_Finnish', { lng: target }),
+				name: i18n.t('Language_Finnish', { lng: target }),
 			},
 			{
 				language: 'fr',
-				name: TAPi18n.__('Language_French', { lng: target }),
+				name: i18n.t('Language_French', { lng: target }),
 			},
 			{
 				language: 'hu',
-				name: TAPi18n.__('Language_Hungarian', { lng: target }),
+				name: i18n.t('Language_Hungarian', { lng: target }),
 			},
 			{
 				language: 'it',
-				name: TAPi18n.__('Language_Italian', { lng: target }),
+				name: i18n.t('Language_Italian', { lng: target }),
 			},
 			{
 				language: 'ja',
-				name: TAPi18n.__('Language_Japanese', { lng: target }),
+				name: i18n.t('Language_Japanese', { lng: target }),
 			},
 			{
 				language: 'lt',
-				name: TAPi18n.__('Language_Lithuanian', { lng: target }),
+				name: i18n.t('Language_Lithuanian', { lng: target }),
 			},
 			{
 				language: 'lv',
-				name: TAPi18n.__('Language_Latvian', { lng: target }),
+				name: i18n.t('Language_Latvian', { lng: target }),
 			},
 			{
 				language: 'nl',
-				name: TAPi18n.__('Language_Dutch', { lng: target }),
+				name: i18n.t('Language_Dutch', { lng: target }),
 			},
 			{
 				language: 'pl',
-				name: TAPi18n.__('Language_Polish', { lng: target }),
+				name: i18n.t('Language_Polish', { lng: target }),
 			},
 			{
 				language: 'pt',
-				name: TAPi18n.__('Language_Portuguese', { lng: target }),
+				name: i18n.t('Language_Portuguese', { lng: target }),
 			},
 			{
 				language: 'ro',
-				name: TAPi18n.__('Language_Romanian', { lng: target }),
+				name: i18n.t('Language_Romanian', { lng: target }),
 			},
 			{
 				language: 'ru',
-				name: TAPi18n.__('Language_Russian', { lng: target }),
+				name: i18n.t('Language_Russian', { lng: target }),
 			},
 			{
 				language: 'sk',
-				name: TAPi18n.__('Language_Slovak', { lng: target }),
+				name: i18n.t('Language_Slovak', { lng: target }),
 			},
 			{
 				language: 'sl',
-				name: TAPi18n.__('Language_Slovenian', { lng: target }),
+				name: i18n.t('Language_Slovenian', { lng: target }),
 			},
 			{
 				language: 'sv',
-				name: TAPi18n.__('Language_Swedish', { lng: target }),
+				name: i18n.t('Language_Swedish', { lng: target }),
 			},
 			{
 				language: 'zh',
-				name: TAPi18n.__('Language_Chinese', { lng: target }),
+				name: i18n.t('Language_Chinese', { lng: target }),
 			},
 		];
 
@@ -196,45 +207,43 @@ class DeeplAutoTranslate extends AutoTranslate {
 	 * @param {object} targetLanguages
 	 * @returns {object} translations: Translated messages for each language
 	 */
-	_translateMessage(message: IMessage, targetLanguages: string[]): ITranslationResult {
+	async _translateMessage(message: IMessage, targetLanguages: string[]): Promise<ITranslationResult> {
 		const translations: { [k: string]: string } = {};
-		let msgs = message.msg.split('\n');
-		msgs = msgs.map((msg) => encodeURIComponent(msg));
-		const query = `text=${msgs.join('&text=')}`;
-		const supportedLanguages = this.getSupportedLanguages('en');
-		targetLanguages.forEach((language) => {
+		const msgs = message.msg.split('\n');
+		const supportedLanguages = await this.getSupportedLanguages('en');
+		for await (let language of targetLanguages) {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
 				language = language.substr(0, 2);
 			}
 			try {
-				const result = HTTP.get(this.apiEndPointUrl, {
-					params: {
-						auth_key: this.apiKey,
-						target_lang: language,
+				const result = await fetch(this.apiEndPointUrl, {
+					params: { target_lang: language, text: msgs },
+					headers: {
+						Authorization: `DeepL-Auth-Key ${this.apiKey}`,
 					},
-					query,
+					method: 'POST',
 				});
 
-				if (
-					result.statusCode === 200 &&
-					result.data &&
-					result.data.translations &&
-					Array.isArray(result.data.translations) &&
-					result.data.translations.length > 0
-				) {
+				if (!result.ok) {
+					throw new Error(result.statusText);
+				}
+
+				const body = await result.json();
+
+				if (result.status === 200 && body.translations && Array.isArray(body.translations) && body.translations.length > 0) {
 					// store translation only when the source and target language are different.
 					// multiple lines might contain different languages => Mix the text between source and detected target if neccessary
-					const translatedText = result.data.translations
+					const translatedText = body.translations
 						.map((translation: IDeepLTranslation, index: number) =>
 							translation.detected_source_language !== language ? translation.text : msgs[index],
 						)
 						.join('\n');
 					translations[language] = this.deTokenize(Object.assign({}, message, { msg: translatedText }));
 				}
-			} catch (e) {
-				SystemLogger.error('Error translating message', e);
+			} catch (err) {
+				SystemLogger.error({ msg: 'Error translating message', err });
 			}
-		});
+		}
 		return translations;
 	}
 
@@ -245,37 +254,34 @@ class DeeplAutoTranslate extends AutoTranslate {
 	 * @param {object} targetLanguages
 	 * @returns {object} translated messages for each target language
 	 */
-	_translateAttachmentDescriptions(attachment: MessageAttachment, targetLanguages: string[]): ITranslationResult {
+	async _translateAttachmentDescriptions(attachment: MessageAttachment, targetLanguages: string[]): Promise<ITranslationResult> {
 		const translations: { [k: string]: string } = {};
-		const query = `text=${encodeURIComponent(attachment.description || attachment.text || '')}`;
-		const supportedLanguages = this.getSupportedLanguages('en');
-		targetLanguages.forEach((language) => {
+		const supportedLanguages = await this.getSupportedLanguages('en');
+		for await (let language of targetLanguages) {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
 				language = language.substr(0, 2);
 			}
 			try {
-				const result = HTTP.get(this.apiEndPointUrl, {
+				const result = await fetch(this.apiEndPointUrl, {
 					params: {
 						auth_key: this.apiKey,
 						target_lang: language,
+						text: attachment.description || attachment.text || '',
 					},
-					query,
 				});
-				if (
-					result.statusCode === 200 &&
-					result.data &&
-					result.data.translations &&
-					Array.isArray(result.data.translations) &&
-					result.data.translations.length > 0
-				) {
-					if (result.data.translations.map((translation: IDeepLTranslation) => translation.detected_source_language).join() !== language) {
-						translations[language] = result.data.translations.map((translation: IDeepLTranslation) => translation.text);
+				if (!result.ok) {
+					throw new Error(result.statusText);
+				}
+				const body = await result.json();
+				if (result.status === 200 && body.translations && Array.isArray(body.translations) && body.translations.length > 0) {
+					if (body.translations.map((translation: IDeepLTranslation) => translation.detected_source_language).join() !== language) {
+						translations[language] = body.translations.map((translation: IDeepLTranslation) => translation.text);
 					}
 				}
-			} catch (e) {
-				SystemLogger.error('Error translating message attachment', e);
+			} catch (err) {
+				SystemLogger.error({ msg: 'Error translating message attachment', err });
 			}
-		});
+		}
 		return translations;
 	}
 }

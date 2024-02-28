@@ -1,5 +1,5 @@
 import { MongoClient } from 'mongodb';
-import type { Db, Collection, MongoClientOptions } from 'mongodb';
+import type { Db, Collection, MongoClientOptions, Document } from 'mongodb';
 
 const { MONGO_URL = 'mongodb://localhost:27017/rocketchat' } = process.env;
 
@@ -28,25 +28,23 @@ function connectDb(options?: MongoClientOptions): Promise<MongoClient> {
 let db: Db;
 
 export const getConnection = ((): ((options?: MongoClientOptions) => Promise<Db>) => {
-	let client: Promise<MongoClient>;
+	let client: MongoClient;
 
 	return async (options): Promise<Db> => {
 		if (db) {
 			return db;
 		}
-		if (!client) {
-			client = connectDb(options);
-			client.then((c) => {
-				db = c.db(name);
-			});
+		if (client == null) {
+			client = await connectDb(options);
+			db = client.db(name);
 		}
 
 		// if getConnection was called multiple times before it was connected, wait for the connection
-		return (await client).db(name);
+		return client.db(name);
 	};
 })();
 
-export async function getCollection<T>(name: Collections): Promise<Collection<T>> {
+export async function getCollection<T extends Document>(name: Collections): Promise<Collection<T>> {
 	if (!db) {
 		db = await getConnection();
 	}

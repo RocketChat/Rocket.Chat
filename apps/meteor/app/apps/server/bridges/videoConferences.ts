@@ -1,14 +1,13 @@
-import { VideoConferenceBridge } from '@rocket.chat/apps-engine/server/bridges/VideoConferenceBridge';
-import type { AppVideoConference, VideoConference } from '@rocket.chat/apps-engine/definition/videoConferences';
 import type { IVideoConfProvider } from '@rocket.chat/apps-engine/definition/videoConfProviders';
+import type { AppVideoConference, VideoConference } from '@rocket.chat/apps-engine/definition/videoConferences';
+import { VideoConferenceBridge } from '@rocket.chat/apps-engine/server/bridges/VideoConferenceBridge';
+import { VideoConf } from '@rocket.chat/core-services';
 
-import { VideoConf } from '../../../../server/sdk';
-import type { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 import { videoConfProviders } from '../../../../server/lib/videoConfProviders';
 import type { AppVideoConferencesConverter } from '../converters/videoConferences';
 
 export class AppVideoConferenceBridge extends VideoConferenceBridge {
-	// eslint-disable-next-line no-empty-function
 	constructor(private readonly orch: AppServerOrchestrator) {
 		super();
 	}
@@ -41,12 +40,12 @@ export class AppVideoConferenceBridge extends VideoConferenceBridge {
 		const data = (this.orch.getConverters()?.get('videoConferences') as AppVideoConferencesConverter).convertAppVideoConference(call);
 		await VideoConf.setProviderData(call._id, data.providerData);
 
-		for (const { _id, ts } of data.users) {
+		for await (const { _id, ts } of data.users) {
 			if (oldData.users.find((user) => user._id === _id)) {
 				continue;
 			}
 
-			VideoConf.addUser(call._id, _id, ts);
+			await VideoConf.addUser(call._id, _id, ts);
 		}
 
 		if (data.endedBy && data.endedBy._id !== oldData.endedBy?._id) {

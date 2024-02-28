@@ -1,9 +1,10 @@
+import type { MessageTypesValues as MessageTypesValuesType } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { MessageTypes } from '../../ui-utils/lib/MessageTypes';
 // import { callbacks } from '../../../lib/callbacks';
 
-Meteor.startup(function () {
+Meteor.startup(() => {
 	MessageTypes.registerType({
 		id: 'r',
 		system: true,
@@ -188,24 +189,22 @@ Meteor.startup(function () {
 	MessageTypes.registerType({
 		id: 'subscription-role-added',
 		system: true,
-		message: '__username__was_set__role__by__user_by_',
+		message: 'set__username__as__role_',
 		data(message) {
 			return {
 				username: message.msg,
 				role: message.role || '',
-				user_by: message.u.username,
 			};
 		},
 	});
 	MessageTypes.registerType({
 		id: 'subscription-role-removed',
 		system: true,
-		message: '__username__is_no_longer__role__defined_by__user_by_',
+		message: 'removed__username__as__role_',
 		data(message) {
 			return {
 				username: message.msg,
 				role: message.role || '',
-				user_by: message.u.username,
 			};
 		},
 	});
@@ -259,27 +258,32 @@ Meteor.startup(function () {
 			};
 		},
 	});
+	MessageTypes.registerType({
+		id: 'videoconf',
+		system: false,
+		message: 'Video_Conference',
+	});
 });
 
-export const MessageTypesValues = [
+export const MessageTypesValues: Array<{ key: MessageTypesValuesType; i18nLabel: string }> = [
 	{
-		key: 'uj',
+		key: 'uj', // user joined
 		i18nLabel: 'Message_HideType_uj',
 	},
 	{
-		key: 'ujt',
+		key: 'ujt', // user joined team
 		i18nLabel: 'Message_HideType_ujt',
 	},
 	{
-		key: 'ul',
+		key: 'ul', // user left
 		i18nLabel: 'Message_HideType_ul',
 	},
 	{
-		key: 'ult',
+		key: 'ult', // user left team
 		i18nLabel: 'Message_HideType_ult',
 	},
 	{
-		key: 'ru',
+		key: 'ru', // user removed
 		i18nLabel: 'Message_HideType_ru',
 	},
 	{
@@ -287,7 +291,7 @@ export const MessageTypesValues = [
 		i18nLabel: 'Message_HideType_removed_user_from_team',
 	},
 	{
-		key: 'au',
+		key: 'au', // added user
 		i18nLabel: 'Message_HideType_au',
 	},
 	{
@@ -299,19 +303,19 @@ export const MessageTypesValues = [
 		i18nLabel: 'Message_HideType_mute_unmute',
 	},
 	{
-		key: 'r',
+		key: 'r', // room name changed
 		i18nLabel: 'Message_HideType_r',
 	},
 	{
-		key: 'ut',
+		key: 'ut', // user joined conversation
 		i18nLabel: 'Message_HideType_ut',
 	},
 	{
-		key: 'wm',
+		key: 'wm', // welcome
 		i18nLabel: 'Message_HideType_wm',
 	},
 	{
-		key: 'rm',
+		key: 'rm', // message removed
 		i18nLabel: 'Message_HideType_rm',
 	},
 	{
@@ -385,5 +389,13 @@ export const MessageTypesValues = [
 	{
 		key: 'user-removed-room-from-team',
 		i18nLabel: 'Message_HideType_user_removed_room_from_team',
+	},
+	{
+		key: 'room_changed_announcement',
+		i18nLabel: 'Message_HideType_changed_announcement',
+	},
+	{
+		key: 'room_changed_description',
+		i18nLabel: 'Message_HideType_changed_description',
 	},
 ];

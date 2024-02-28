@@ -1,6 +1,5 @@
-import type { JSONSchemaType } from 'ajv';
-import Ajv from 'ajv';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
+import Ajv from 'ajv';
 
 const ajv = new Ajv();
 
@@ -16,7 +15,7 @@ export type TeamsUpdateProps = ({ teamId: string } | { teamName: string }) & {
 		  };
 };
 
-const teamsUpdatePropsSchema: JSONSchemaType<TeamsUpdateProps> = {
+const teamsUpdatePropsSchema = {
 	type: 'object',
 	properties: {
 		updateRoom: {
@@ -71,4 +70,4 @@ const teamsUpdatePropsSchema: JSONSchemaType<TeamsUpdateProps> = {
 	additionalProperties: false,
 };
 
-export const isTeamsUpdateProps = ajv.compile(teamsUpdatePropsSchema);
+export const isTeamsUpdateProps = ajv.compile<TeamsUpdateProps>(teamsUpdatePropsSchema);

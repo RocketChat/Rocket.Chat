@@ -4,7 +4,7 @@ import type * as UiKit from '@rocket.chat/ui-kit';
 import { action } from '@storybook/addon-actions';
 import React from 'react';
 
-import { kitContext, UiKitMessage } from '..';
+import { UiKitContext, UiKitMessage } from '..';
 import * as payloads from './payloads';
 
 export default {
@@ -36,39 +36,40 @@ const createStory = (blocks: readonly UiKit.LayoutBlock[]) => {
               6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkB
               SuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlP
               UH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z'
-          size={'x36'}
+          size='x36'
         />
       </Message.LeftContainer>
       <Message.Container>
         <Message.Header>
-          <Message.Name>Haylie George</Message.Name>
-          <Message.Username>@haylie.george</Message.Username>
+          <Message.NameContainer>
+            <Message.Name>Haylie George</Message.Name>
+            <Message.Username>@haylie.george</Message.Username>
+          </Message.NameContainer>
           <Message.Role>Admin</Message.Role>
           <Message.Role>User</Message.Role>
           <Message.Role>Owner</Message.Role>
           <Message.Timestamp>12:00 PM</Message.Timestamp>
         </Message.Header>
         <Message.Body>
-          <kitContext.Provider
+          <UiKitContext.Provider
             value={{
               action: action('action'),
-              state: action('state'),
+              updateState: action('updateState'),
               values: {},
-              appId: 'core',
               errors,
             }}
           >
             {UiKitMessage(blocks)}
-          </kitContext.Provider>
+          </UiKitContext.Provider>
         </Message.Body>
       </Message.Container>
-      <Message.Toolbox.Wrapper>
-        <Message.Toolbox>
-          <Message.Toolbox.Item icon='quote' />
-          <Message.Toolbox.Item icon='clock' />
-          <Message.Toolbox.Item icon='thread' />
-        </Message.Toolbox>
-      </Message.Toolbox.Wrapper>
+      <Message.Toolbar.Wrapper>
+        <Message.Toolbar>
+          <Message.Toolbar.Item icon='quote' />
+          <Message.Toolbar.Item icon='clock' />
+          <Message.Toolbar.Item icon='thread' />
+        </Message.Toolbar>
+      </Message.Toolbar.Wrapper>
     </Message>
   );
   story.args = {

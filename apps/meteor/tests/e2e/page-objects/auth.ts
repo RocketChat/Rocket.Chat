@@ -1,69 +1,85 @@
 import type { Locator, Page } from '@playwright/test';
 
-export class Auth {
+export class Registration {
 	private readonly page: Page;
 
 	constructor(page: Page) {
 		this.page = page;
 	}
 
-	get toastSuccess(): Locator {
-		return this.page.locator('.rcx-toastbar.rcx-toastbar--success');
+	get btnSendInstructions(): Locator {
+		return this.page.locator('role=button[name="Send instructions"]');
 	}
 
-	get toastError(): Locator {
-		return this.page.locator('.rcx-toastbar.rcx-toastbar--error');
+	get btnReset(): Locator {
+		return this.page.locator('role=button[name="Reset"]');
 	}
 
-	get btnSubmit(): Locator {
-		return this.page.locator('.login');
+	get btnLogin(): Locator {
+		return this.page.locator('role=button[name="Login"]');
+	}
+
+	get btnLoginWithSaml(): Locator {
+		return this.page.locator('role=button[name="SAML"]');
+	}
+
+	get btnLoginWithGoogle(): Locator {
+		return this.page.locator('role=button[name="Sign in with Google"]');
+	}
+
+	get btnLoginWithCustomOAuth(): Locator {
+		return this.page.locator('role=button[name="Sign in with Test"]');
+	}
+
+	get goToRegister(): Locator {
+		return this.page.locator('role=link[name="Create an account"]');
+	}
+
+	get backToLogin(): Locator {
+		return this.page.locator('role=link[name="Back to Login"]');
 	}
 
 	get btnRegister(): Locator {
-		return this.page.locator('button.register');
+		return this.page.locator('role=button[name="Join your team"]');
 	}
 
 	get btnRegisterConfirmUsername(): Locator {
-		return this.page.locator('button[data-loading-text=" Please_wait ..."]');
+		return this.page.locator('role=button[name="Use this username"]');
 	}
 
 	get btnForgotPassword(): Locator {
-		return this.page.locator('.forgot-password');
+		return this.page.locator('role=link[name="Forgot your password?"]');
 	}
 
-	get inputEmailOrUsername(): Locator {
-		return this.page.locator('[name=emailOrUsername]');
+	get username(): Locator {
+		return this.page.locator('role=textbox[name=/username/i]');
 	}
 
 	get inputName(): Locator {
 		return this.page.locator('[name=name]');
 	}
 
-	get textErrorName(): Locator {
-		return this.page.locator('[name=name]~.input-error');
-	}
-
 	get inputEmail(): Locator {
-		return this.page.locator('[name=email]');
-	}
-
-	get textErrorEmail(): Locator {
-		return this.page.locator('[name=email]~.input-error');
+		return this.page.locator('role=textbox[name=/Email/]');
 	}
 
 	get inputPassword(): Locator {
-		return this.page.locator('[name=pass]');
+		return this.page.locator('[name=password]');
 	}
 
-	get textErrorPassword(): Locator {
-		return this.page.locator('[name=pass]~.input-error');
+	get inputReason(): Locator {
+		return this.page.locator('role=textbox[name=/Reason/]');
 	}
 
 	get inputPasswordConfirm(): Locator {
-		return this.page.locator('[name=confirm-pass]');
+		return this.page.locator('[name=passwordConfirmation]');
 	}
 
-	get textErrorPasswordConfirm(): Locator {
-		return this.page.locator('[name=confirm-pass]~.input-error');
+	get forgotPasswordEmailCallout(): Locator {
+		return this.page.locator('role=status');
+	}
+
+	get registrationDisabledCallout(): Locator {
+		return this.page.locator('role=status >> text=/New user registration is currently disabled/');
 	}
 }

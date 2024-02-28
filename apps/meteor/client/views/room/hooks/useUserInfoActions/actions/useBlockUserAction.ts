@@ -1,12 +1,12 @@
-import { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useMethod, useToastMessageDispatch, useUserId, useUserSubscription, useUserRoom } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import { Action } from '../../../../hooks/useActionSpread';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
+import type { UserInfoAction } from '../useUserInfoActions';
 
-export const useBlockUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): Action | undefined => {
+export const useBlockUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): UserInfoAction | undefined => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const currentSubscription = useUserSubscription(rid);
@@ -18,7 +18,7 @@ export const useBlockUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: I
 		throw Error('Room not provided');
 	}
 
-	const { roomCanBlock } = getRoomDirectives(room);
+	const { roomCanBlock } = getRoomDirectives({ room, showingUserId: uid, userSubscription: currentSubscription });
 
 	const isUserBlocked = currentSubscription?.blocker;
 	const toggleBlock = useMethod(isUserBlocked ? 'unblockUser' : 'blockUser');
@@ -39,9 +39,9 @@ export const useBlockUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: I
 		() =>
 			roomCanBlock && uid !== ownUserId
 				? {
-						label: t(isUserBlocked ? 'Unblock' : 'Block'),
-						icon: 'ban',
-						action: toggleBlockUserAction,
+						content: t(isUserBlocked ? 'Unblock' : 'Block'),
+						icon: 'ban' as const,
+						onClick: toggleBlockUserAction,
 				  }
 				: undefined,
 		[isUserBlocked, ownUserId, roomCanBlock, t, toggleBlockUserAction, uid],

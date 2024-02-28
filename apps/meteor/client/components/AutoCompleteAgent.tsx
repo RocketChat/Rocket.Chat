@@ -1,6 +1,7 @@
 import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import React, { memo, ReactElement, useMemo, useState } from 'react';
+import type { ReactElement } from 'react';
+import React, { memo, useMemo, useState } from 'react';
 
 import { useRecordList } from '../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../lib/asyncState';
@@ -8,15 +9,28 @@ import { useAgentsList } from './Omnichannel/hooks/useAgentsList';
 
 type AutoCompleteAgentProps = {
 	value: string;
-	onChange: (value: string) => void;
+	error?: string;
+	placeholder?: string;
 	haveAll?: boolean;
 	haveNoAgentsSelectedOption?: boolean;
+	excludeId?: string;
+	showIdleAgents?: boolean;
+	onlyAvailable?: boolean;
+	withTitle?: boolean;
+	onChange: (value: string) => void;
 };
+
 const AutoCompleteAgent = ({
 	value,
-	onChange,
+	error,
+	placeholder,
 	haveAll = false,
 	haveNoAgentsSelectedOption = false,
+	excludeId,
+	showIdleAgents = true,
+	onlyAvailable = false,
+	withTitle = false,
+	onChange,
 }: AutoCompleteAgentProps): ReactElement => {
 	const [agentsFilter, setAgentsFilter] = useState<string>('');
 
@@ -24,32 +38,24 @@ const AutoCompleteAgent = ({
 
 	const { itemsList: AgentsList, loadMoreItems: loadMoreAgents } = useAgentsList(
 		useMemo(
-			() => ({ text: debouncedAgentsFilter, haveAll, haveNoAgentsSelectedOption }),
-			[debouncedAgentsFilter, haveAll, haveNoAgentsSelectedOption],
+			() => ({ text: debouncedAgentsFilter, onlyAvailable, haveAll, haveNoAgentsSelectedOption, excludeId, showIdleAgents }),
+			[debouncedAgentsFilter, excludeId, haveAll, haveNoAgentsSelectedOption, onlyAvailable, showIdleAgents],
 		),
 	);
 
 	const { phase: agentsPhase, itemCount: agentsTotal, items: agentsItems } = useRecordList(AgentsList);
 
-	const sortedByName = agentsItems.sort((a, b) => {
-		if (a.label > b.label) {
-			return 1;
-		}
-		if (a.label < b.label) {
-			return -1;
-		}
-
-		return 0;
-	});
-
 	return (
 		<PaginatedSelectFiltered
+			withTitle={withTitle}
 			value={value}
+			error={error}
+			placeholder={placeholder}
 			onChange={onChange}
 			flexShrink={0}
 			filter={agentsFilter}
 			setFilter={setAgentsFilter as (value: string | number | undefined) => void}
-			options={sortedByName}
+			options={agentsItems}
 			data-qa='autocomplete-agent'
 			endReached={
 				agentsPhase === AsyncStatePhase.LOADING ? (): void => undefined : (start): void => loadMoreAgents(start, Math.min(50, agentsTotal))

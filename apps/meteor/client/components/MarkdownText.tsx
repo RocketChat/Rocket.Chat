@@ -1,7 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
 import dompurify from 'dompurify';
 import { marked } from 'marked';
-import React, { ComponentProps, FC, useMemo } from 'react';
+import type { ComponentProps, FC } from 'react';
+import React, { useMemo } from 'react';
 
 import { renderMessageEmoji } from '../lib/utils/renderMessageEmoji';
 
@@ -24,7 +25,7 @@ marked.Lexer.rules.gfm = {
 };
 
 const linkMarked = (href: string | null, _title: string | null, text: string): string =>
-	`<a href="${href}" target="_blank" rel="nofollow">${text}</a> `;
+	`<a href="${href}" target="_blank" rel="nofollow noopener noreferrer">${text}</a> `;
 const paragraphMarked = (text: string): string => text;
 const brMarked = (): string => ' ';
 const listItemMarked = (text: string): string => {
@@ -44,6 +45,9 @@ inlineRenderer.hr = horizontalRuleMarked;
 inlineWithoutBreaks.link = linkMarked;
 inlineWithoutBreaks.paragraph = paragraphMarked;
 inlineWithoutBreaks.br = brMarked;
+inlineWithoutBreaks.image = brMarked;
+inlineWithoutBreaks.code = paragraphMarked;
+inlineWithoutBreaks.codespan = paragraphMarked;
 inlineWithoutBreaks.listitem = listItemMarked;
 inlineWithoutBreaks.hr = horizontalRuleMarked;
 
@@ -67,6 +71,11 @@ const inlineWithoutBreaksOptions = {
 	renderer: inlineWithoutBreaks,
 };
 
+const getRegexp = (schemeSetting: string): RegExp => {
+	const schemes = schemeSetting ? schemeSetting.split(',').join('|') : '';
+	return new RegExp(`^(${schemes}):`, 'gim');
+};
+
 const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 	content,
 	variant = 'document',
@@ -78,6 +87,8 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 	const sanitizer = dompurify.sanitize;
 
 	let markedOptions: marked.MarkedOptions;
+
+	const schemes = 'http,https,notes,ftp,ftps,tel,mailto,sms,cid';
 
 	switch (variant) {
 		case 'inline':
@@ -109,8 +120,17 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 			}
 		})();
 
-		return preserveHtml ? html : html && sanitizer(html, { ADD_ATTR: ['target'] });
-	}, [preserveHtml, sanitizer, content, variant, markedOptions, parseEmoji]);
+		// Add a hook to make all links open a new window
+		dompurify.addHook('afterSanitizeAttributes', (node) => {
+			// set all elements owning target to target=_blank
+			if ('target' in node) {
+				node.setAttribute('target', '_blank');
+				node.setAttribute('rel', 'nofollow noopener noreferrer');
+			}
+		});
+
+		return preserveHtml ? html : html && sanitizer(html, { ADD_ATTR: ['target'], ALLOWED_URI_REGEXP: getRegexp(schemes) });
+	}, [preserveHtml, sanitizer, content, variant, markedOptions, parseEmoji, schemes]);
 
 	return __html ? (
 		<Box

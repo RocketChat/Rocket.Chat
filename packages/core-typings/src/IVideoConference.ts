@@ -1,8 +1,8 @@
-import type { AtLeast } from './utils';
+import type { IMessage } from './IMessage';
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IRoom } from './IRoom';
 import type { IUser } from './IUser';
-import type { IMessage } from './IMessage';
+import type { AtLeast } from './utils';
 
 export enum VideoConferenceStatus {
 	CALLING = 0,
@@ -14,7 +14,7 @@ export enum VideoConferenceStatus {
 
 export type DirectCallInstructions = {
 	type: 'direct';
-	callee: IUser['_id'];
+	calleeId: IUser['_id'];
 	callId: string;
 };
 
@@ -31,7 +31,7 @@ export type LivechatInstructions = {
 
 export type VideoConferenceType = DirectCallInstructions['type'] | ConferenceInstructions['type'] | LivechatInstructions['type'];
 
-export interface IVideoConferenceUser extends Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag'> {
+export interface IVideoConferenceUser extends Pick<Required<IUser>, '_id' | 'username' | 'name' | 'avatarETag'> {
 	ts: Date;
 }
 
@@ -46,10 +46,10 @@ export interface IVideoConference extends IRocketChatRecord {
 	};
 	url?: string;
 
-	createdBy: Pick<IUser, '_id' | 'username' | 'name'>;
+	createdBy: Pick<Required<IUser>, '_id' | 'username' | 'name'>;
 	createdAt: Date;
 
-	endedBy?: Pick<IUser, '_id' | 'username' | 'name'>;
+	endedBy?: Pick<Required<IUser>, '_id' | 'username' | 'name'>;
 	endedAt?: Date;
 
 	providerName: string;

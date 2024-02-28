@@ -37,11 +37,15 @@ import type {
 	INpsModel,
 	INpsVoteModel,
 	IOAuthAppsModel,
+	IOAuthAuthCodesModel,
+	IOAuthAccessTokensModel,
+	IOAuthRefreshTokensModel,
 	IOEmbedCacheModel,
 	IPbxEventsModel,
 	IPushTokenModel,
 	IPermissionsModel,
 	IReadReceiptsModel,
+	IMessageReadsModel,
 	IReportsModel,
 	IRolesModel,
 	IRoomsModel,
@@ -62,6 +66,18 @@ import type {
 	IWebdavAccountsModel,
 	IMatrixBridgedRoomModel,
 	IMatrixBridgedUserModel,
+	ICalendarEventModel,
+	IOmnichannelServiceLevelAgreementsModel,
+	IAppsModel,
+	IAppsPersistenceModel,
+	IAppLogsModel,
+	IImportsModel,
+	IFederationRoomEventsModel,
+	IAppsTokensModel,
+	IAuditLogModel,
+	ICronHistoryModel,
+	IMigrationsModel,
+	IModerationReportsModel,
 } from '@rocket.chat/model-typings';
 
 import { proxify } from './proxify';
@@ -73,6 +89,10 @@ export function getCollectionName(name: string): string {
 
 export { registerModel } from './proxify';
 
+export const Apps = proxify<IAppsModel>('IAppsModel');
+export const AppsTokens = proxify<IAppsTokensModel>('IAppsTokensModel');
+export const AppsPersistence = proxify<IAppsPersistenceModel>('IAppsPersistenceModel');
+export const AppLogs = proxify<IAppLogsModel>('IAppLogsModel');
 export const Analytics = proxify<IAnalyticsModel>('IAnalyticsModel');
 export const Avatars = proxify<IAvatarsModel>('IAvatarsModel');
 export const BannersDismiss = proxify<IBannersDismissModel>('IBannersDismissModel');
@@ -87,7 +107,9 @@ export const EmojiCustom = proxify<IEmojiCustomModel>('IEmojiCustomModel');
 export const ExportOperations = proxify<IExportOperationsModel>('IExportOperationsModel');
 export const FederationServers = proxify<IFederationServersModel>('IFederationServersModel');
 export const FederationKeys = proxify<IFederationKeysModel>('IFederationKeysModel');
+export const FederationRoomEvents = proxify<IFederationRoomEventsModel>('IFederationRoomEventsModel');
 export const ImportData = proxify<IImportDataModel>('IImportDataModel');
+export const Imports = proxify<IImportsModel>('IImportsModel');
 export const InstanceStatus = proxify<IInstanceStatusModel>('IInstanceStatusModel');
 export const IntegrationHistory = proxify<IIntegrationHistoryModel>('IIntegrationHistoryModel');
 export const Integrations = proxify<IIntegrationsModel>('IIntegrationsModel');
@@ -111,11 +133,15 @@ export const NotificationQueue = proxify<INotificationQueueModel>('INotification
 export const Nps = proxify<INpsModel>('INpsModel');
 export const NpsVote = proxify<INpsVoteModel>('INpsVoteModel');
 export const OAuthApps = proxify<IOAuthAppsModel>('IOAuthAppsModel');
+export const OAuthAuthCodes = proxify<IOAuthAuthCodesModel>('IOAuthAuthCodesModel');
+export const OAuthAccessTokens = proxify<IOAuthAccessTokensModel>('IOAuthAccessTokensModel');
+export const OAuthRefreshTokens = proxify<IOAuthRefreshTokensModel>('IOAuthRefreshTokensModel');
 export const OEmbedCache = proxify<IOEmbedCacheModel>('IOEmbedCacheModel');
 export const PbxEvents = proxify<IPbxEventsModel>('IPbxEventsModel');
 export const PushToken = proxify<IPushTokenModel>('IPushTokenModel');
 export const Permissions = proxify<IPermissionsModel>('IPermissionsModel');
 export const ReadReceipts = proxify<IReadReceiptsModel>('IReadReceiptsModel');
+export const MessageReads = proxify<IMessageReadsModel>('IMessageReadsModel');
 export const Reports = proxify<IReportsModel>('IReportsModel');
 export const Roles = proxify<IRolesModel>('IRolesModel');
 export const Rooms = proxify<IRoomsModel>('IRoomsModel');
@@ -136,3 +162,11 @@ export const VoipRoom = proxify<IVoipRoomModel>('IVoipRoomModel');
 export const WebdavAccounts = proxify<IWebdavAccountsModel>('IWebdavAccountsModel');
 export const MatrixBridgedRoom = proxify<IMatrixBridgedRoomModel>('IMatrixBridgedRoomModel');
 export const MatrixBridgedUser = proxify<IMatrixBridgedUserModel>('IMatrixBridgedUserModel');
+export const CalendarEvent = proxify<ICalendarEventModel>('ICalendarEventModel');
+export const OmnichannelServiceLevelAgreements = proxify<IOmnichannelServiceLevelAgreementsModel>(
+	'IOmnichannelServiceLevelAgreementsModel',
+);
+export const AuditLog = proxify<IAuditLogModel>('IAuditLogModel');
+export const CronHistory = proxify<ICronHistoryModel>('ICronHistoryModel');
+export const Migrations = proxify<IMigrationsModel>('IMigrationsModel');
+export const ModerationReports = proxify<IModerationReportsModel>('IModerationReportsModel');

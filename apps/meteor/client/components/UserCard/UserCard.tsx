@@ -1,12 +1,15 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, IconButton, Skeleton } from '@rocket.chat/fuselage';
+import { Box, Button, IconButton } from '@rocket.chat/fuselage';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { forwardRef, ReactNode, ComponentProps, MouseEvent } from 'react';
+import type { ReactNode, ComponentProps } from 'react';
+import React from 'react';
 
+import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
 import MarkdownText from '../MarkdownText';
 import * as Status from '../UserStatus';
-import UserAvatar from '../avatar/UserAvatar';
-import UserCardContainer from './UserCardContainer';
+import UserCardActions from './UserCardActions';
+import UserCardDialog from './UserCardDialog';
 import UserCardInfo from './UserCardInfo';
 import UserCardRoles from './UserCardRoles';
 import UserCardUsername from './UserCardUsername';
@@ -20,9 +23,7 @@ const clampStyle = css`
 `;
 
 type UserCardProps = {
-	className?: string;
-	style?: ComponentProps<typeof Box>['style'];
-	open?: (e: MouseEvent<HTMLElement>) => void;
+	onOpenUserInfo?: () => void;
 	name?: string;
 	username?: string;
 	etag?: string;
@@ -34,62 +35,45 @@ type UserCardProps = {
 	localTime?: ReactNode;
 	onClose?: () => void;
 	nickname?: string;
-};
+} & ComponentProps<typeof UserCardDialog>;
 
-const UserCard = forwardRef(function UserCard(
-	{
-		className,
-		style,
-		open,
-		name,
-		username,
-		etag,
-		customStatus = <Skeleton width='100%' />,
-		roles = (
-			<>
-				<Skeleton width='32%' mi='x2' />
-				<Skeleton width='32%' mi='x2' />
-				<Skeleton width='32%' mi='x2' />
-			</>
-		),
-		bio = (
-			<>
-				<Skeleton width='100%' />
-				<Skeleton width='100%' />
-				<Skeleton width='100%' />
-			</>
-		),
-		status = <Status.Offline />,
-		actions,
-		localTime = <Skeleton width='100%' />,
-		onClose,
-		nickname,
-	}: UserCardProps,
-	ref,
-) {
+const UserCard = ({
+	onOpenUserInfo,
+	name,
+	username,
+	etag,
+	customStatus,
+	roles,
+	bio,
+	status = <Status.Offline />,
+	actions,
+	localTime,
+	onClose,
+	nickname,
+	...props
+}: UserCardProps) => {
 	const t = useTranslation();
+	const isLayoutEmbedded = useEmbeddedLayout();
 
 	return (
-		<UserCardContainer data-qa='UserCard' className={className} ref={ref} style={style}>
-			<Box>
-				{!username ? <Skeleton width='x124' height='x124' variant='rect' /> : <UserAvatar username={username} etag={etag} size='x124' />}
-				{actions && (
-					<Box flexGrow={0} display='flex' mb='x12' alignItems='center' justifyContent='center'>
-						{actions}
-					</Box>
-				)}
-			</Box>
-			<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} mis='x24' width='1px'>
-				<Box mbe='x4' withTruncatedText display='flex' alignItems='center'>
-					{!name ? <Skeleton width='100%' /> : <UserCardUsername status={status} name={name} />}
+		<UserCardDialog data-qa='UserCard' {...props}>
+			<div>
+				{username && <UserAvatar username={username} etag={etag} size='x124' />}
+				<Box flexGrow={0} display='flex' mbs={12} alignItems='center' justifyContent='center'>
+					<UserCardActions aria-label={t('User_card_actions')}>{actions}</UserCardActions>
+				</Box>
+			</div>
+			<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} mis={16} width='1px'>
+				<Box mbe={4} withTruncatedText display='flex' alignItems='center'>
+					<UserCardUsername status={status} name={name} />
 					{nickname && (
-						<Box flexGrow={1} flexShrink={1} flexBasis={0} title={nickname} color='hint' mis='x4' fontScale='p2' withTruncatedText>
+						<Box flexGrow={1} flexShrink={1} flexBasis={0} title={nickname} color='hint' mis={4} fontScale='p2' withTruncatedText>
 							({nickname})
 						</Box>
 					)}
 				</Box>
 				{customStatus && (
-					<UserCardInfo mbe='x16'>
+					<UserCardInfo mbe={16}>
 						{typeof customStatus === 'string' ? (
 							<MarkdownText withTruncatedText variant='inlineWithoutBreaks' content={customStatus} parseEmoji={true} />
 						) : (
@@ -104,15 +88,17 @@ const UserCard = forwardRef(function UserCard(
 						{typeof bio === 'string' ? <MarkdownText variant='inline' content={bio} /> : bio}
 					</UserCardInfo>
 				)}
-				{open && <a onClick={open}>{t('See_full_profile')}</a>}
+				{onOpenUserInfo && !isLayoutEmbedded && (
+					<div>
+						<Button small onClick={onOpenUserInfo}>
+							{t('See_full_profile')}
+						</Button>
+					</div>
+				)}
 			</Box>
-			{onClose && (
-				<Box>
-					<IconButton small title={t('Close')} icon='cross' onClick={onClose} />
-				</Box>
-			)}
-		</UserCardContainer>
+			{onClose && <IconButton mis={16} small aria-label={t('Close')} icon='cross' onClick={onClose} />}
+		</UserCardDialog>
 	);
-});
+};
 
 export default UserCard;

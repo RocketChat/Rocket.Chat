@@ -1,3 +1,2 @@
 import './konchatNotifications';
-import './updateAvatar';
-import './usersNameChanged';
+import './notification';

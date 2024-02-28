@@ -9,7 +9,7 @@ type TextSeparatorProps = {
 };
 
 const TextSeparator = ({ label, value }: TextSeparatorProps): ReactElement => (
-	<Box display='flex' flexDirection='row' mb='x4'>
+	<Box display='flex' flexDirection='row' mb={4}>
 		<Box display='inline-flex' alignItems='center'>
 			{label}
 		</Box>

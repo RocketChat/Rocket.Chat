@@ -1,49 +1,43 @@
-import { IVoipRoom } from '@rocket.chat/core-typings';
-import { Header as TemplateHeader } from '@rocket.chat/ui-client';
-import { useLayout, useCurrentRoute } from '@rocket.chat/ui-contexts';
-import React, { FC, useMemo } from 'react';
+import type { IVoipRoom } from '@rocket.chat/core-typings';
+import { HeaderToolbar } from '@rocket.chat/ui-client';
+import { useLayout, useRouter } from '@rocket.chat/ui-contexts';
+import type { FC } from 'react';
+import React, { useCallback, useMemo } from 'react';
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { parseOutboundPhoneNumber } from '../../../../../ee/client/lib/voip/parseOutboundPhoneNumber';
 import BurgerMenu from '../../../../components/BurgerMenu';
-import { ToolboxActionConfig } from '../../lib/Toolbox';
-import { ToolboxContext, useToolboxContext } from '../../lib/Toolbox/ToolboxContext';
-import RoomHeader, { RoomHeaderProps } from '../RoomHeader';
+import type { RoomHeaderProps } from '../RoomHeader';
+import RoomHeader from '../RoomHeader';
 import { BackButton } from './BackButton';
 
-export type VoipRoomHeaderProps = {
+type VoipRoomHeaderProps = {
 	room: IVoipRoom;
 } & Omit<RoomHeaderProps, 'room'>;
 
 const VoipRoomHeader: FC<VoipRoomHeaderProps> = ({ slots: parentSlot, room }) => {
-	const [name] = useCurrentRoute();
+	const router = useRouter();
+
+	const currentRouteName = useSyncExternalStore(
+		router.subscribeToRouteChange,
+		useCallback(() => router.getRouteName(), [router]),
+	);
+
 	const { isMobile } = useLayout();
-	const context = useToolboxContext();
 
 	const slots = useMemo(
 		() => ({
 			...parentSlot,
-			start: (!!isMobile || name === 'omnichannel-directory') && (
-				<TemplateHeader.ToolBox>
+			start: (!!isMobile || currentRouteName === 'omnichannel-directory') && (
+				<HeaderToolbar>
 					{isMobile && <BurgerMenu />}
-					{name === 'omnichannel-directory' && <BackButton />}
-				</TemplateHeader.ToolBox>
+					{currentRouteName === 'omnichannel-directory' && <BackButton />}
+				</HeaderToolbar>
 			),
 		}),
-		[isMobile, name, parentSlot],
+		[isMobile, currentRouteName, parentSlot],
 	);
-	return (
-		<ToolboxContext.Provider
-			value={useMemo(
-				() => ({
-					...context,
-					actions: new Map([...(Array.from(context.actions.entries()) as [string, ToolboxActionConfig][])]),
-				}),
-				[context],
-			)}
-		>
-			<RoomHeader slots={slots} room={{ ...room, name: parseOutboundPhoneNumber(room.fname) }} />
-		</ToolboxContext.Provider>
-	);
+	return <RoomHeader slots={slots} room={{ ...room, name: parseOutboundPhoneNumber(room.fname) }} />;
 };
 
 export default VoipRoomHeader;

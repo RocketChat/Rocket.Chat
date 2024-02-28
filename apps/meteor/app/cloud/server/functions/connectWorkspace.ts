@@ -1,58 +1,79 @@
-import { HTTP } from 'meteor/http';
-import { Settings } from '@rocket.chat/models';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
-import { getRedirectUri } from './getRedirectUri';
-import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
-import { settings } from '../../../settings/server';
-import { saveRegistrationData } from './saveRegistrationData';
+import { CloudWorkspaceConnectionError } from '../../../../lib/errors/CloudWorkspaceConnectionError';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { settings } from '../../../settings/server';
+import { getRedirectUri } from './getRedirectUri';
+import { saveRegistrationData } from './saveRegistrationData';
+
+const fetchRegistrationDataPayload = async ({
+	token,
+	body,
+}: {
+	token: string;
+	body: {
+		email: string;
+		client_name: string;
+		redirect_uris: string[];
+	};
+}) => {
+	const cloudUrl = settings.get<string>('Cloud_Url');
+	const response = await fetch(`${cloudUrl}/api/oauth/clients`, {
+		method: 'POST',
+		headers: {
+			Authorization: `Bearer ${token}`,
+		},
+		body,
+	});
+
+	if (!response.ok) {
+		try {
+			const { error } = await response.json();
+			throw new CloudWorkspaceConnectionError(`Failed to connect to Rocket.Chat Cloud: ${error}`);
+		} catch (error) {
+			throw new CloudWorkspaceConnectionError(`Failed to connect to Rocket.Chat Cloud: ${response.statusText}`);
+		}
+	}
+
+	const payload = await response.json();
+
+	if (!payload) {
+		return undefined;
+	}
+
+	return payload;
+};
 
 export async function connectWorkspace(token: string) {
-	const { connectToCloud } = retrieveRegistrationStatus();
-	if (!connectToCloud) {
-		await Settings.updateValueById('Register_Server', true);
-	}
-
-	// shouldn't get here due to checking this on the method
-	// but this is just to double check
 	if (!token) {
-		return new Error('Invalid token; the registration token is required.');
+		throw new CloudWorkspaceConnectionError('Invalid registration token');
 	}
 
-	const redirectUri = getRedirectUri();
-
-	const regInfo = {
-		email: settings.get('Organization_Email'),
-		client_name: settings.get('Site_Name'),
-		redirect_uris: [redirectUri],
-	};
-
-	const cloudUrl = settings.get('Cloud_Url');
-	let result;
 	try {
-		result = HTTP.post(`${cloudUrl}/api/oauth/clients`, {
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-			data: regInfo,
-		});
-	} catch (e: any) {
-		if (e.response?.data?.error) {
-			SystemLogger.error(`Failed to register with Rocket.Chat Cloud.  Error: ${e.response.data.error}`);
-		} else {
-			SystemLogger.error(e);
+		const redirectUri = getRedirectUri();
+
+		const body = {
+			email: settings.get<string>('Organization_Email'),
+			client_name: settings.get<string>('Site_Name'),
+			redirect_uris: [redirectUri],
+		};
+
+		const payload = await fetchRegistrationDataPayload({ token, body });
+
+		if (!payload) {
+			return false;
 		}
 
+		await saveRegistrationData(payload);
+
+		return true;
+	} catch (err) {
+		SystemLogger.error({
+			msg: 'Failed to Connect with Rocket.Chat Cloud',
+			url: '/api/oauth/clients',
+			err,
+		});
+
 		return false;
 	}
-
-	const { data } = result;
-
-	if (!data) {
-		return false;
-	}
-
-	await saveRegistrationData(data);
-
-	return true;
 }

@@ -1,5 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
-import React, { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import React from 'react';
 
 import NegativeGrowthSymbol from './NegativeGrowthSymbol';
 import PositiveGrowthSymbol from './PositiveGrowthSymbol';
@@ -14,7 +15,7 @@ const Growth = ({ children, ...props }: GrowthProps): ReactElement | null => {
 	}
 
 	return (
-		<Box is='span' color={children < 0 ? 'danger' : 'success'} {...props}>
+		<Box is='span' color={children < 0 ? 'status-font-on-danger' : 'status-font-on-success'} {...props}>
 			{children < 0 ? <NegativeGrowthSymbol /> : <PositiveGrowthSymbol />}
 			{String(Math.abs(children))}
 		</Box>

@@ -1,6 +1,7 @@
 import { AwaitingConfirmationPage } from '@rocket.chat/onboarding-ui';
 import { useToastMessageDispatch, useSettingSetValue, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useEffect, useCallback } from 'react';
+import type { ReactElement } from 'react';
+import React, { useEffect, useCallback } from 'react';
 
 import { useSetupWizardContext } from '../contexts/SetupWizardContext';
 
@@ -9,6 +10,8 @@ const setIntervalTime = (interval?: number): number => (interval ? interval * 10
 const CloudAccountConfirmation = (): ReactElement => {
 	const {
 		registerServer,
+		currentStep,
+		maxSteps,
 		goToStep,
 		setupWizardData: { registrationData },
 		saveWorkspaceData,
@@ -20,14 +23,16 @@ const CloudAccountConfirmation = (): ReactElement => {
 
 	const getConfirmation = useCallback(async () => {
 		try {
-			const { pollData } = await cloudConfirmationPoll({
-				deviceCode: registrationData.device_code,
-			});
+			if (registrationData.device_code) {
+				const { pollData } = await cloudConfirmationPoll({
+					deviceCode: registrationData.device_code,
+				});
 
-			if ('successful' in pollData && pollData.successful) {
-				await saveWorkspaceData();
-				dispatchToastMessage({ type: 'success', message: t('Your_workspace_is_ready') });
-				return setShowSetupWizard('completed');
+				if ('successful' in pollData && pollData.successful) {
+					await saveWorkspaceData();
+					dispatchToastMessage({ type: 'success', message: t('Your_workspace_is_ready') });
+					return setShowSetupWizard('completed');
+				}
 			}
 		} catch (error: unknown) {
 			dispatchToastMessage({ type: 'error', message: error });
@@ -42,6 +47,8 @@ const CloudAccountConfirmation = (): ReactElement => {
 
 	return (
 		<AwaitingConfirmationPage
+			currentStep={currentStep}
+			stepCount={maxSteps}
 			emailAddress={registrationData.cloudEmail}
 			securityCode={registrationData.user_code}
 			onResendEmailRequest={(): Promise<void> => registerServer({ email: registrationData.cloudEmail, resend: true })}

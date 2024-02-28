@@ -1,12 +1,13 @@
 import { Box, Margins } from '@rocket.chat/fuselage';
-import React, { CSSProperties, ReactElement } from 'react';
+import type { CSSProperties, ReactElement } from 'react';
+import React from 'react';
 
 type LegendSymbolProps = {
 	color?: CSSProperties['backgroundColor'];
 };
 
 const LegendSymbol = ({ color = 'currentColor' }: LegendSymbolProps): ReactElement => (
-	<Margins inlineEnd='x8'>
+	<Margins inlineEnd={8}>
 		<Box
 			is='span'
 			aria-hidden='true'

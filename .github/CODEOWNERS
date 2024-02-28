@@ -1,18 +1,26 @@
-/packages/* @RocketChat/chat-engine
-/packages/core-typings/ @RocketChat/chat-engine
-/packages/rest-typings/ @RocketChat/chat-engine
+/packages/* @RocketChat/Architecture
+/packages/core-typings/ @RocketChat/Architecture
+/packages/rest-typings/ @RocketChat/Architecture @RocketChat/backend
 /packages/ui-contexts/ @RocketChat/frontend
-/packages/eslint-config/ @RocketChat/chat-engine
-/packages/livechat/ @RocketChat/frontend @RocketChat/chat-engine
-/.vscode/ @RocketChat/chat-engine
-/.github/ @RocketChat/chat-engine
-/_templates/ @RocketChat/chat-engine
+/packages/eslint-config/ @RocketChat/Architecture
+/packages/livechat/ @RocketChat/frontend @RocketChat/Architecture
+/.vscode/ @RocketChat/Architecture
+/.github/ @RocketChat/Architecture
+/_templates/ @RocketChat/Architecture
 /apps/meteor/client/ @RocketChat/frontend
-/apps/meteor/tests/ @RocketChat/chat-engine
+/apps/meteor/tests/e2e @RocketChat/frontend
+/apps/meteor/tests/end-to-end @RocketChat/backend
+/apps/meteor/tests/unit/app @RocketChat/backend
+/apps/meteor/tests/unit/app/ui-utils @RocketChat/frontend
+/apps/meteor/tests/unit/client @RocketChat/frontend
+/apps/meteor/tests/unit/server @RocketChat/backend
 /apps/meteor/app/apps/ @RocketChat/apps
 /apps/meteor/app/livechat @RocketChat/omnichannel
 /apps/meteor/app/voip @RocketChat/omnichannel
 /apps/meteor/app/sms @RocketChat/omnichannel
+/apps/meteor/server @RocketChat/backend
+/apps/meteor/server/models @RocketChat/Architecture
+apps/meteor/server/startup/migrations @RocketChat/Architecture
 /apps/meteor/packages/rocketchat-livechat @RocketChat/omnichannel
 /apps/meteor/server/services/voip @RocketChat/omnichannel
 /apps/meteor/server/services/omnichannel-voip @RocketChat/omnichannel

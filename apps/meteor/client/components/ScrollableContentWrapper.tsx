@@ -1,7 +1,9 @@
-import { Scrollbars, ScrollValues } from 'rc-scrollbars';
-import React, { MutableRefObject, CSSProperties, useMemo, memo, forwardRef, ReactNode, ReactElement } from 'react';
+import type { ScrollValues } from 'rc-scrollbars';
+import { Scrollbars } from 'rc-scrollbars';
+import type { MutableRefObject, CSSProperties, ReactNode, ReactElement } from 'react';
+import React, { useMemo, memo, forwardRef } from 'react';
 
-const styleDefault = {
+const styleDefault: CSSProperties = {
 	width: '100%',
 	height: '100%',
 	flexGrow: 1,
@@ -19,14 +21,15 @@ export type CustomScrollbarsProps = {
 	autoHide?: boolean;
 };
 
-const ScrollableContentWrapper = forwardRef<HTMLElement, CustomScrollbarsProps>(function WrappedComponent(
-	{ children, style, onScroll, overflowX, renderView },
+const ScrollableContentWrapper = forwardRef<HTMLElement, CustomScrollbarsProps>(function ScrollableContentWrapper(
+	{ children, style, onScroll, overflowX, renderView, ...props },
 	ref,
 ) {
-	const scrollbarsStyle = useMemo(() => ({ ...style, ...styleDefault }), [style]) as CSSProperties;
+	const scrollbarsStyle = useMemo((): CSSProperties => ({ ...style, ...styleDefault }), [style]);
 
 	return (
 		<Scrollbars
+			{...props}
 			autoHide
 			autoHideTimeout={2000}
 			autoHideDuration={500}

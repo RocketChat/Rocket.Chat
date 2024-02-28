@@ -1,6 +1,6 @@
 import { Emitter } from '@rocket.chat/emitter';
 
-export type ToastMessagePayload =
+type ToastMessagePayload =
 	| {
 			type: 'success' | 'info' | 'warning';
 			message: string;

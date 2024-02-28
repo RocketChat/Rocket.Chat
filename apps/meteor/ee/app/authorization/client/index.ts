@@ -1,15 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 
+import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 import { addRoleRestrictions } from '../lib/addRoleRestrictions';
 
-Meteor.startup(() => {
-	Meteor.call('license:isEnterprise', (err: any, result: any) => {
-		if (err) {
-			throw err;
-		}
-
-		if (result) {
-			addRoleRestrictions();
-		}
-	});
+Meteor.startup(async () => {
+	const result = await sdk.call('license:isEnterprise');
+	if (result) {
+		addRoleRestrictions();
+	}
 });

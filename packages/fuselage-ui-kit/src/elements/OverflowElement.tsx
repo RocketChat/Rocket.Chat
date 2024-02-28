@@ -7,20 +7,20 @@ import {
 } from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import type { ReactElement } from 'react';
-import React, { useRef, useCallback, useMemo } from 'react';
+import { useRef, useCallback, useMemo } from 'react';
 
+import { useStringFromTextObject } from '../hooks/useStringFromTextObject';
 import { useUiKitState } from '../hooks/useUiKitState';
 import type { BlockProps } from '../utils/BlockProps';
-import { fromTextObjectToString } from '../utils/fromTextObjectToString';
 
 type OverflowElementProps = BlockProps<UiKit.OverflowElement>;
 
 const OverflowElement = ({
   block,
   context,
-  surfaceRenderer,
 }: OverflowElementProps): ReactElement => {
   const [{ loading }, action] = useUiKitState(block, context);
+  const fromTextObjectToString = useStringFromTextObject();
 
   const fireChange = useCallback(
     ([value]: [UiKit.ActionOf<UiKit.OverflowElement>, string]) =>
@@ -30,14 +30,15 @@ const OverflowElement = ({
 
   const options = useMemo<OptionType[]>(
     () =>
-      block.options.map(({ value, text, url }: UiKit.Option, i) => [
+      block.options.map(({ value, text, url }) => [
         value,
-        fromTextObjectToString(surfaceRenderer, text, i) ?? '',
+        fromTextObjectToString(text) ?? '',
+        undefined,
         undefined,
         undefined,
         url,
       ]),
-    [block.options, surfaceRenderer]
+    [block.options, fromTextObjectToString]
   );
 
   const [cursor, handleKeyDown, handleKeyUp, reset, [visible, hide, show]] =

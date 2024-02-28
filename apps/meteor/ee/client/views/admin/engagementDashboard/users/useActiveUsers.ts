@@ -1,8 +1,7 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import moment from 'moment';
 
-import { getPeriodRange } from '../dataView/periods';
+import { getPeriodRange } from '../../../../components/dashboards/periods';
 
 type UseActiveUsersOptions = { utc: boolean };
 
@@ -16,7 +15,7 @@ export const useActiveUsers = ({ utc }: UseActiveUsersOptions) => {
 			const { start, end } = getPeriodRange('last 30 days', utc);
 
 			const response = await getActiveUsers({
-				start: (utc ? moment.utc(start) : moment(start)).subtract(29, 'days').toISOString(),
+				start: start.toISOString(),
 				end: end.toISOString(),
 			});
 

@@ -1,5 +1,5 @@
-import { ISettingBase, SectionName, SettingId, GroupId, TabId, ISettingColor } from '@rocket.chat/core-typings';
-import { SettingsContextQuery } from '@rocket.chat/ui-contexts';
+import type { ISettingBase, SectionName, SettingId, GroupId, TabId, ISettingColor } from '@rocket.chat/core-typings';
+import type { SettingsContextQuery } from '@rocket.chat/ui-contexts';
 import { createContext, useContext, useMemo } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
@@ -9,7 +9,7 @@ export type EditableSetting = (ISettingBase | ISettingColor) & {
 	invisible: boolean;
 };
 
-export type EditableSettingsContextQuery = SettingsContextQuery & {
+type EditableSettingsContextQuery = SettingsContextQuery & {
 	changed?: boolean;
 };
 

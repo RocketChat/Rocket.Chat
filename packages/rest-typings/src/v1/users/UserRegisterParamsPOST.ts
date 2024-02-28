@@ -11,6 +11,7 @@ export type UserRegisterParamsPOST = {
 	pass: string;
 	secret?: string;
 	reason?: string;
+	customFields?: object;
 };
 
 const UserRegisterParamsPostSchema = {
@@ -18,7 +19,6 @@ const UserRegisterParamsPostSchema = {
 	properties: {
 		username: {
 			type: 'string',
-			minLength: 3,
 		},
 
 		name: {
@@ -37,6 +37,10 @@ const UserRegisterParamsPostSchema = {
 		},
 		reason: {
 			type: 'string',
+			nullable: true,
+		},
+		customFields: {
+			type: 'object',
 			nullable: true,
 		},
 	},
