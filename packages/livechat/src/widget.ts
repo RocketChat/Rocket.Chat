@@ -358,7 +358,7 @@ function setGuestMetadata(metadata: StoreState['iframe']['guestMetadata']) {
 
 function setHiddenSystemMessages(hidden: StoreState['iframe']['hiddenSystemMessages']) {
 	if (!Array.isArray(hidden)) {
-		throw Error('Error: Invalid parameters. Value must be an array of strings');
+		throw new Error('Error: Invalid parameters. Value must be an array of strings');
 	}
 
 	callHook('setHiddenSystemMessages', hidden);
