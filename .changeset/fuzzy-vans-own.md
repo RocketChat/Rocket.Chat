@@ -1,6 +1,6 @@
 ---
-"@rocket.chat/meteor": patch
-"@rocket.chat/livechat": patch
+"@rocket.chat/meteor": minor
+"@rocket.chat/livechat": minor
 ---
 
 Improved Livechat's theming capabilities
