@@ -80,27 +80,3 @@ export const setRoomConfig = ({ roomId, favorite, isDefault }) => {
 			} : undefined
 		});
 };
-
-export const setDefaultRoom = ({ roomId, favorite }) => {
-	return request
-		.post(api('rooms.saveRoomSettings'))
-		.set(credentials)
-		.send({
-			rid: roomId,
-			default: true,
-			favorite: favorite ? {
-				defaultValue: true,
-				favorite: false
-			} : undefined
-		});
-};
-
-export const unsetDefaultRoom = ({ roomId }) => {
-	return request
-		.post(api('rooms.saveRoomSettings'))
-		.set(credentials)
-		.send({
-			rid: roomId,
-			default: false,
-		});
-};
