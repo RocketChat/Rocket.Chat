@@ -2,19 +2,17 @@ import { css } from '@rocket.chat/css-in-js';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useCallback, useState } from 'react';
 import type { MutableRefObject } from 'react';
-import type React from 'react';
 
 import { withThrottling } from '../../../../lib/utils/highOrderFunctions';
 
 type useDateScrollReturn = {
 	bubbleDate: string | undefined;
-	onScroll: (refsObject: React.MutableRefObject<React.MutableRefObject<HTMLElement>[]>) => void;
+	onScroll: (refsObject: MutableRefObject<{ [key: number]: MutableRefObject<HTMLElement> }>) => void;
 	style: ReturnType<typeof css>;
 	showBubble: boolean;
 };
-
-function fromRefObjectToArray<T extends MutableRefObject<any[]>, E = T extends MutableRefObject<Array<infer U>> ? U : never>(
-	fn: (elements: E[]) => void,
+function fromRefObjectToArray<T extends MutableRefObject<{ [key: number]: MutableRefObject<HTMLElement> }>>(
+	fn: (elements: MutableRefObject<HTMLElement>[]) => void,
 ) {
 	return (refsObject: T) => {
 		fn(Object.values(refsObject.current));
@@ -34,7 +32,7 @@ export const useDateScroll = (offset = 0): useDateScrollReturn => {
 
 	const onScroll = useCallback(
 		withThrottling({ wait: 50 })(
-			fromRefObjectToArray<MutableRefObject<MutableRefObject<HTMLElement>[]>>(
+			fromRefObjectToArray(
 				(() => {
 					let timeout: ReturnType<typeof setTimeout>;
 					return (elements) => {
