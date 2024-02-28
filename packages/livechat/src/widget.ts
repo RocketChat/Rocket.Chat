@@ -290,6 +290,10 @@ function setCustomFields(fields: [key: string, value: string, overwrite?: boolea
 }
 
 function setTheme(theme: StoreState['iframe']['theme']) {
+	if (theme?.position && theme?.position !== 'left' && theme?.position !== 'right') {
+		delete theme.position;
+	}
+
 	callHook('setTheme', theme);
 }
 
