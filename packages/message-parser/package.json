@@ -1,0 +1,78 @@
+{
+  "name": "@rocket.chat/message-parser",
+  "description": "Rocket.Chat parser for messages",
+  "version": "0.31.28",
+  "author": {
+    "name": "Rocket.Chat",
+    "url": "https://rocket.chat/"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/RocketChat/fuselage#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RocketChat/fuselage.git",
+    "directory": "packages/message-parser"
+  },
+  "bugs": {
+    "url": "https://github.com/RocketChat/fuselage/issues"
+  },
+  "main": "messageParser.js",
+  "exports": {
+    ".": {
+      "default": "./messageParser.js"
+    },
+    "./index": {
+      "default": "./messageParser.js"
+    }
+  },
+  "module": "dist/messageParser.mjs",
+  "unpkg": "dist/messageParser.umd.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "/dist",
+    "/messageParser.js"
+  ],
+  "directories": {
+    "test": "test"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "run-s .:build:clean .:build:bundle",
+    ".:build:clean": "rimraf dist",
+    ".:build:bundle": "webpack",
+    "test": "jest --runInBand --coverage",
+    "watch": "jest --watch",
+    "lint": "eslint src",
+    "docs": "typedoc"
+  },
+  "devDependencies": {
+    "@babel/core": "~7.21.4",
+    "@babel/eslint-parser": "~7.21.3",
+    "@babel/preset-env": "~7.21.4",
+    "@rocket.chat/eslint-config": "workspace:^",
+    "@rocket.chat/peggy-loader": "workspace:~",
+    "@rocket.chat/prettier-config": "~0.31.25",
+    "@types/jest": "~29.5.7",
+    "@types/node": "~14.18.42",
+    "@typescript-eslint/parser": "~5.58.0",
+    "babel-loader": "~9.1.2",
+    "eslint": "~8.45.0",
+    "jest": "~29.6.4",
+    "npm-run-all": "^4.1.5",
+    "peggy": "3.0.2",
+    "prettier": "~2.8.7",
+    "prettier-plugin-pegjs": "~0.5.4",
+    "rimraf": "^3.0.2",
+    "ts-jest": "~29.1.0",
+    "ts-loader": "~9.4.2",
+    "typedoc": "~0.24.1",
+    "typescript": "~5.0.4",
+    "webpack": "~5.78.0",
+    "webpack-cli": "~5.0.1"
+  },
+  "dependencies": {
+    "tldts": "~5.7.112"
+  }
+}

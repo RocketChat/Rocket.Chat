@@ -2460,6 +2460,7 @@
   "Turn_OFF": "Изключи",
   "Turn_ON": "Включи",
   "Two-factor_authentication": "Двуфакторна удостоверяване",
+  "Two-factor_authentication_via_TOTP": "Двуфакторна удостоверяване",
   "Two-factor_authentication_disabled": "Двуфакторното удостоверяване е деактивирано",
   "Two-factor_authentication_enabled": "Разрешено е двуфакторно удостоверяване",
   "Two-factor_authentication_is_currently_disabled": "Двуфакторното удостоверяване понастоящем е деактивирано",

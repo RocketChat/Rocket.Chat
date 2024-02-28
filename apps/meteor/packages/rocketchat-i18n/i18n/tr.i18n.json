@@ -2928,6 +2928,7 @@
   "Turn_ON": "Aç",
   "Two Factor Authentication": "İki Aşamalı Kimlik Doğrulama",
   "Two-factor_authentication": "İki aşamalı kimlik doğrulama",
+  "Two-factor_authentication_via_TOTP": "İki aşamalı kimlik doğrulama",
   "Two-factor_authentication_disabled": "İki aşamalı kimlik doğrulama devre dışı",
   "Two-factor_authentication_enabled": "İki aşamalı kimlik doğrulama etkin",
   "Two-factor_authentication_is_currently_disabled": "İki aşamalı kimlik doğrulama şu anda devre dışı",

@@ -3624,6 +3624,7 @@
   "Turn_ON": "켜기",
   "Two Factor Authentication": "2단계 인증(2FA)",
   "Two-factor_authentication": "2단계 인증(2FA)",
+  "Two-factor_authentication_via_TOTP": "2단계 인증(2FA)",
   "Two-factor_authentication_disabled": "2단계 인증(2FA) 사용 안 함",
   "Two-factor_authentication_email": "이메일을 통한 2단계 인증(2FA)",
   "Two-factor_authentication_email_is_currently_disabled": "이메일을 통한 2단계 인증(2FA)은 현재 사용할 수 없습니다.",

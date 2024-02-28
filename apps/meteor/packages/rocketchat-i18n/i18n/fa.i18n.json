@@ -2795,6 +2795,7 @@
   "Turn_OFF": "خاموش شود",
   "Turn_ON": "روشن کن",
   "Two-factor_authentication": "تایید هویت دومرحله ای",
+  "Two-factor_authentication_via_TOTP": "تایید هویت دومرحله ای",
   "Two-factor_authentication_disabled": "تایید هویت دومرحله ای غیر فعال است",
   "Two-factor_authentication_enabled": "تایید هویت دومرحله ای فعال است",
   "Two-factor_authentication_is_currently_disabled": "تایید هویت دومرحله ای فعلا غیر فعال است",

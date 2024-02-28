@@ -39,7 +39,9 @@ import RoomComposer from '../composer/RoomComposer/RoomComposer';
 import { useChat } from '../contexts/ChatContext';
 import { useRoom, useRoomSubscription, useRoomMessages } from '../contexts/RoomContext';
 import { useRoomToolbox } from '../contexts/RoomToolboxContext';
+import { useUserCard } from '../contexts/UserCardContext';
 import { useDateScroll } from '../hooks/useDateScroll';
+import { useMessageListNavigation } from '../hooks/useMessageListNavigation';
 import { useScrollMessageList } from '../hooks/useScrollMessageList';
 import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
 import DropTargetOverlay from './DropTargetOverlay';
@@ -85,6 +87,7 @@ const RoomBody = (): ReactElement => {
 	const dividerRefs = useRef<{ [key: number]: MutableRefObject<HTMLElement> }>({});
 
 	const chat = useChat();
+	const { openUserCard, triggerProps } = useUserCard();
 
 	if (!chat) {
 		throw new Error('No ChatContext provided');
@@ -191,9 +194,9 @@ const RoomBody = (): ReactElement => {
 				return;
 			}
 
-			chat?.userCard.openUserCard(event, username);
+			openUserCard(event, username);
 		},
-		[chat?.userCard],
+		[openUserCard],
 	);
 
 	const handleUnreadBarJumpToButtonClick = useCallback(() => {
@@ -545,6 +548,8 @@ const RoomBody = (): ReactElement => {
 
 	useReadMessageWindowEvents();
 
+	const { messageListRef, messageListProps } = useMessageListNavigation();
+
 	return (
 		<>
 			{!isLayoutEmbedded && room.announcement && <Announcement announcement={room.announcement} announcementDetails={undefined} />}
@@ -552,7 +557,6 @@ const RoomBody = (): ReactElement => {
 				<section
 					className={`messages-container flex-tab-main-content ${admin ? 'admin' : ''}`}
 					id={`chat-window-${room._id}`}
-					aria-label={t('Channel')}
 					onClick={hideFlexTab && handleCloseFlexTab}
 				>
 					<div className='messages-container-wrapper'>
@@ -606,6 +610,7 @@ const RoomBody = (): ReactElement => {
 										name={roomLeader.name}
 										visible={!hideLeaderHeader}
 										onAvatarClick={handleOpenUserCard}
+										triggerProps={triggerProps}
 									/>
 								) : null}
 								<div
@@ -620,7 +625,13 @@ const RoomBody = (): ReactElement => {
 								>
 									<MessageListErrorBoundary>
 										<ScrollableContentWrapper ref={wrapperRef}>
-											<ul className='messages-list' aria-live='polite' aria-busy={isLoadingMoreMessages}>
+											<ul
+												ref={messageListRef}
+												className='messages-list'
+												aria-live='polite'
+												aria-busy={isLoadingMoreMessages}
+												{...messageListProps}
+											>
 												{canPreview ? (
 													<>
 														{hasMorePreviousMessages ? (
