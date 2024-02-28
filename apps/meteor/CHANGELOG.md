@@ -1,5 +1,43 @@
 # @rocket.chat/meteor
 
+## 6.6.2
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#31844](https://github.com/RocketChat/Rocket.Chat/pull/31844)) Fixed Federation not working with Microservice deployments
+
+- ([#31823](https://github.com/RocketChat/Rocket.Chat/pull/31823)) Revert unintentional changes real time presence data payload
+
+- ([#31833](https://github.com/RocketChat/Rocket.Chat/pull/31833)) Fix web UI not showing users presence updating to offline
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@4.0.2
+  - @rocket.chat/ui-theming@0.1.2
+  - @rocket.chat/fuselage-ui-kit@4.0.2
+  - @rocket.chat/gazzodown@4.0.2
+  - @rocket.chat/ui-client@4.0.2
+  - @rocket.chat/ui-video-conf@4.0.2
+  - @rocket.chat/web-ui-registration@4.0.2
+  - @rocket.chat/core-typings@6.6.2
+  - @rocket.chat/rest-typings@6.6.2
+  - @rocket.chat/api-client@0.1.24
+  - @rocket.chat/license@0.1.6
+  - @rocket.chat/omnichannel-services@0.1.6
+  - @rocket.chat/pdf-worker@0.0.30
+  - @rocket.chat/presence@0.1.6
+  - @rocket.chat/core-services@0.3.6
+  - @rocket.chat/cron@0.0.26
+  - @rocket.chat/model-typings@0.3.2
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/models@0.0.30
+  - @rocket.chat/instance-status@0.0.30
+  </details>
+
 ## 6.6.1
 
 ### Patch Changes

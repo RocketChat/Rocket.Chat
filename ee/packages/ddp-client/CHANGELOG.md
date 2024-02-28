@@ -1,5 +1,17 @@
 # @rocket.chat/ddp-client
 
+## 0.2.15
+
+### Patch Changes
+
+- ([#31823](https://github.com/RocketChat/Rocket.Chat/pull/31823)) Revert unintentional changes real time presence data payload
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.6.2
+  - @rocket.chat/api-client@0.1.24
+  </details>
+
 ## 0.2.14
 
 ### Patch Changes

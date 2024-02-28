@@ -4,6 +4,23 @@
 
 ### Patch Changes
 
+- ([#31833](https://github.com/RocketChat/Rocket.Chat/pull/31833)) Fix web UI not showing users presence updating to offline
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@4.0.2
+  - @rocket.chat/core-typings@6.6.2
+  - @rocket.chat/rest-typings@6.6.2
+  - @rocket.chat/core-services@0.3.6
+  - @rocket.chat/model-typings@0.3.2
+  - @rocket.chat/models@0.0.30
+  - @rocket.chat/instance-status@0.0.30
+  </details>
+
+## 0.2.5
+
+### Patch Changes
+
 - <details><summary>Updated dependencies []:</summary>
 
   - @rocket.chat/core-typings@6.6.1
