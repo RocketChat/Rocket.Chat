@@ -97,7 +97,7 @@
     "rimraf": "^3.0.2",
     "storybook-dark-mode": "~3.0.1",
     "tslib": "^2.5.3",
-    "typescript": "~5.3.2"
+    "typescript": "~5.3.3"
   },
   "dependencies": {
     "@rocket.chat/gazzodown": "workspace:^",
