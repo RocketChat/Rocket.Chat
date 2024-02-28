@@ -76,6 +76,8 @@ export const VALID_CALLBACKS = [
 	'no-agent-online',
 ];
 
+const VALID_SYSTEM_MESSAGES = ['uj', 'ul', 'livechat-close', 'livechat-started', 'livechat_transfer_history', 'livechat_webrtc_video_call'];
+
 const callbacks = mitt();
 
 function registerCallback(eventName: string, fn: () => unknown) {
@@ -361,7 +363,10 @@ function setHiddenSystemMessages(hidden: StoreState['iframe']['hiddenSystemMessa
 		throw new Error('Error: Invalid parameters. Value must be an array of strings');
 	}
 
-	callHook('setHiddenSystemMessages', hidden);
+	callHook(
+		'setHiddenSystemMessages',
+		hidden.filter((h) => VALID_SYSTEM_MESSAGES.includes(h)),
+	);
 }
 
 function initialize(initParams: Partial<InitializeParams>) {
