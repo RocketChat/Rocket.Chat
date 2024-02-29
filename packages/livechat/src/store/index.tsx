@@ -1,18 +1,37 @@
+import type { ILivechatVisitor, ILivechatVisitorDTO, Serialized } from '@rocket.chat/core-typings';
 import type { ComponentChildren } from 'preact';
 import { Component, createContext } from 'preact';
 
 import type { CustomField } from '../components/Form/CustomFields';
+import type { Agent } from '../definitions/agents';
 import type { Department } from '../definitions/departments';
 import { parentCall } from '../lib/parentCall';
 import { createToken } from '../lib/random';
 import Store from './Store';
 
-type StoreState = {
+export type StoreState = {
 	token: string;
 	typing: string[];
 	config: {
 		messages: any;
-		theme: any;
+		theme: {
+			title?: string;
+			color?: string;
+			offlineTitle?: string;
+			offlineColor?: string;
+			actionLinks?: {
+				webrtc: {
+					actionLinksAlignment: string;
+					i18nLabel: string;
+					label: string;
+					method_id: string;
+				}[];
+				jitsi: {
+					icon: string;
+					i18nLabel: string;
+				}[];
+			};
+		};
 		triggers: any[];
 		resources: any;
 		settings: {
@@ -32,16 +51,25 @@ type StoreState = {
 		enabled?: boolean;
 	};
 	messages: any[];
-	user: any;
+	user?: Serialized<ILivechatVisitor>;
+	guest?: Serialized<ILivechatVisitorDTO>;
 	sound: {
 		src?: string;
 		play?: boolean;
 		enabled: boolean;
 	};
 	iframe: {
-		guest: any;
-		theme: any;
-		visible: boolean;
+		guest?: Serialized<ILivechatVisitorDTO>;
+		theme: {
+			title?: string;
+			color?: string;
+			fontColor?: string;
+			iconColor?: string;
+			offlineTitle?: string;
+		};
+		visible?: boolean;
+		department?: string;
+		language?: string;
 	};
 	gdpr: {
 		accepted: boolean;
@@ -66,7 +94,10 @@ type StoreState = {
 	lastReadMessageId?: any;
 	triggerAgent?: any;
 	queueInfo?: any;
+	defaultAgent?: Agent;
+	parentUrl?: string;
 	connecting?: boolean;
+	messageListPosition?: 'top' | 'bottom' | 'free';
 };
 
 export const initialState = (): StoreState => ({
@@ -81,14 +112,14 @@ export const initialState = (): StoreState => ({
 		resources: {},
 	},
 	messages: [],
-	user: null,
+	user: undefined,
 	sound: {
 		src: '',
 		enabled: true,
 		play: false,
 	},
 	iframe: {
-		guest: {},
+		guest: undefined,
 		theme: {},
 		visible: true,
 	},
@@ -145,16 +176,30 @@ if (process.env.NODE_ENV === 'development') {
 	});
 }
 
-export type Dispatch = (partialState: Partial<StoreState>) => void;
+export type Dispatch = typeof store.setState;
 
-type StoreContextValue = StoreState & { dispatch: Dispatch };
+type StoreContextValue = StoreState & {
+	dispatch: Dispatch;
+	on: typeof store.on;
+	off: typeof store.off;
+};
 
-export const StoreContext = createContext<StoreContextValue>({ ...store.state, dispatch: store.setState.bind(store) });
+export const StoreContext = createContext<StoreContextValue>({
+	...store.state,
+	dispatch: store.setState.bind(store),
+	on: store.on.bind(store),
+	off: store.off.bind(store),
+});
 
 export class Provider extends Component {
 	static displayName = 'StoreProvider';
 
-	state = { ...store.state, dispatch: store.setState.bind(store) };
+	state = {
+		...store.state,
+		dispatch: store.setState.bind(store),
+		on: store.on.bind(store),
+		off: store.off.bind(store),
+	};
 
 	handleStoreChange = () => {
 		this.setState({ ...store.state });
@@ -168,7 +213,9 @@ export class Provider extends Component {
 		store.off('change', this.handleStoreChange);
 	}
 
-	render = ({ children }: { children: ComponentChildren }) => <StoreContext.Provider value={this.state}>{children}</StoreContext.Provider>;
+	render = ({ children }: { children: ComponentChildren }) => {
+		return <StoreContext.Provider value={this.state}>{children}</StoreContext.Provider>;
+	};
 }
 
 export const { Consumer } = StoreContext;

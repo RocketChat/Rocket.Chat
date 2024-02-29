@@ -8,7 +8,7 @@ import React, { Fragment } from 'react';
 
 import { MessageTypes } from '../../../../../../app/ui-utils/client';
 import { isTruthy } from '../../../../../../lib/isTruthy';
-import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
+import { CustomScrollbars } from '../../../../../components/CustomScrollbars';
 import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../../../MessageList/providers/MessageListProvider';
 import LoadingMessagesIndicator from '../../../body/LoadingMessagesIndicator';
@@ -81,7 +81,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 					</Bubble>
 				</Box>
 			)}
-			<ScrollableContentWrapper
+			<CustomScrollbars
 				ref={listWrapperScrollRef}
 				onScroll={(args) => {
 					handleScroll(args);
@@ -121,7 +121,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 						</MessageListProvider>
 					)}
 				</ul>
-			</ScrollableContentWrapper>
+			</CustomScrollbars>
 		</div>
 	);
 };

@@ -21,7 +21,7 @@ import { isAtBottom } from '../../../../app/ui/client/views/app/lib/scrolling';
 import { callbacks } from '../../../../lib/callbacks';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { withDebouncing, withThrottling } from '../../../../lib/utils/highOrderFunctions';
-import ScrollableContentWrapper from '../../../components/ScrollableContentWrapper';
+import { CustomScrollbars } from '../../../components/CustomScrollbars';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
 import { RoomManager } from '../../../lib/RoomManager';
@@ -621,7 +621,7 @@ const RoomBody = (): ReactElement => {
 										.join(' ')}
 								>
 									<MessageListErrorBoundary>
-										<ScrollableContentWrapper ref={wrapperRef}>
+										<CustomScrollbars ref={wrapperRef}>
 											<ul
 												ref={messageListRef}
 												className='messages-list'
@@ -646,7 +646,7 @@ const RoomBody = (): ReactElement => {
 													<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
 												) : null}
 											</ul>
-										</ScrollableContentWrapper>
+										</CustomScrollbars>
 									</MessageListErrorBoundary>
 								</div>
 							</div>
