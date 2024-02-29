@@ -1566,6 +1566,9 @@ describe('[Teams]', () => {
 						expect(res.body).to.have.property('room');
 						expect(res.body.room).to.have.property('teamId', publicTeam._id);
 						expect(res.body.room).to.have.property('teamDefault', true);
+
+						// user1 and user2 now should be part of the room, since the `isDefault` flag was set
+						expect(res.body.room.usersCount).to.be.equal(2);
 					})
 					.end(done);
 			});
