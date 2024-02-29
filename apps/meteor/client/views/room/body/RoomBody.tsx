@@ -11,7 +11,7 @@ import {
 	useUser,
 	useUserPreference,
 } from '@rocket.chat/ui-contexts';
-import type { MouseEventHandler, MutableRefObject, ReactElement, UIEvent } from 'react';
+import type { MouseEventHandler, ReactElement, UIEvent } from 'react';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
@@ -82,7 +82,6 @@ const RoomBody = (): ReactElement => {
 	const messagesBoxRef = useRef<HTMLDivElement | null>(null);
 	const atBottomRef = useRef(true);
 	const lastScrollTopRef = useRef(0);
-	const dividerRefs = useRef<{ [key: number]: MutableRefObject<HTMLElement> }>({});
 
 	const chat = useChat();
 	const { openUserCard, triggerProps } = useUserCard();
@@ -642,7 +641,7 @@ const RoomBody = (): ReactElement => {
 														)}
 													</>
 												) : null}
-												<MessageList rid={room._id} scrollMessageList={scrollMessageList} ref={dividerRefs} />
+												<MessageList rid={room._id} scrollMessageList={scrollMessageList} />
 												{hasMoreNextMessages ? (
 													<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
 												) : null}
