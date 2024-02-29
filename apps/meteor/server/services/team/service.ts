@@ -485,7 +485,6 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			);
 
 			for await (const m of teamMembers.records) {
-				await addUserToRoom(room._id, m.user, user);
 				if (await addUserToRoom(room._id, m.user, user)) {
 					room.usersCount++;
 				}
