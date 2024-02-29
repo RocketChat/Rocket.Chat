@@ -22,7 +22,7 @@ export default {
 				<MessageDivider>May, 24, 2020</MessageDivider>
 				<Message className='customclass'>
 					<Message.LeftContainer>
-						<Avatar url={avatarUrl} size={'x36'} />
+						<Avatar url={avatarUrl} size='x36' />
 					</Message.LeftContainer>
 					<Message.Container>
 						<Message.Header>

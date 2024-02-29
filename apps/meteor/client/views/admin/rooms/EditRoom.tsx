@@ -97,7 +97,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 
 	const handleArchive = useArchiveRoom(room);
 
-	const handleUpdateRoomData = useEffectEvent(async ({ isDefault, roomName, favorite, ...formData }) => {
+	const handleUpdateRoomData = useEffectEvent(async ({ isDefault, favorite, ...formData }) => {
 		const data = getDirtyFields(formData, dirtyFields);
 		delete data.archived;
 		delete data.favorite;
@@ -105,7 +105,6 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 		try {
 			await saveAction({
 				rid: room._id,
-				roomName: roomType === 'd' ? undefined : roomName,
 				default: isDefault,
 				favorite: { defaultValue: isDefault, favorite },
 				...data,

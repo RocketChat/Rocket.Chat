@@ -2,7 +2,7 @@
 	"name": "@rocket.chat/sha256",
 	"private": true,
 	"description": "SHA256 implementation; Fork of Meteor's SHA256 package",
-	"version": "1.0.9",
+	"version": "1.0.10",
 	"main": "./dist/sha256.js",
 	"types": "./dist/sha256.d.ts",
 	"scripts": {
@@ -21,7 +21,7 @@
 		"eslint": "~8.45.0",
 		"jest": "~29.6.4",
 		"ts-jest": "~29.1.1",
-		"typescript": "~5.3.2"
+		"typescript": "~5.3.3"
 	},
 	"volta": {
 		"extends": "../../package.json"

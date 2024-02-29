@@ -23,7 +23,6 @@ import type {
 	IBanner,
 	LicenseLimitKind,
 	ICustomUserStatus,
-	UserStatus,
 	IWebdavAccount,
 } from '@rocket.chat/core-typings';
 import type * as UiKit from '@rocket.chat/ui-kit';
@@ -98,6 +97,7 @@ export interface StreamerEvents {
 							_id: string;
 							u?: Pick<IUser, '_id' | 'username' | 'name'>;
 							rid?: string;
+							t?: string;
 						},
 				  ]
 				| [
@@ -242,7 +242,7 @@ export interface StreamerEvents {
 				[
 					uid: IUser['_id'],
 					username: IUser['username'],
-					status: UserStatus,
+					status: 0 | 1 | 2 | 3,
 					statusText: IUser['statusText'],
 					name: IUser['name'],
 					roles: IUser['roles'],
@@ -324,7 +324,7 @@ export interface StreamerEvents {
 		},
 	];
 
-	'user-presence': [{ key: string; args: [[username: string, statusChanged?: UserStatus, statusText?: string]] }];
+	'user-presence': [{ key: string; args: [[username: string, statusChanged?: 0 | 1 | 2 | 3, statusText?: string]] }];
 
 	// TODO: rename to 'integration-history'
 	'integrationHistory': [
