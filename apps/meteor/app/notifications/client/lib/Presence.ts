@@ -13,8 +13,5 @@ type args = [username: string, statusChanged?: UserStatus, statusText?: string];
 export const STATUS_MAP = [UserStatus.OFFLINE, UserStatus.ONLINE, UserStatus.AWAY, UserStatus.BUSY, UserStatus.DISABLED];
 
 Meteor.StreamerCentral.on('stream-user-presence', (uid: string, [username, statusChanged, statusText]: args) => {
-	if (!statusChanged) {
-		return;
-	}
 	Presence.notify({ _id: uid, username, status: STATUS_MAP[statusChanged as any], statusText });
 });
