@@ -9452,7 +9452,7 @@ __metadata:
     react-hook-form: ~7.45.4
     react-i18next: ~13.2.2
     react-keyed-flatten-children: ^1.3.0
-    react-virtuoso: ^1.11.1
+    react-virtuoso: ^4.7.1
     redis: ^4.0.6
     rewire: ^6.0.0
     sanitize-html: ^2.7.2
@@ -10326,7 +10326,7 @@ __metadata:
     react-dom: ^17.0.2
     react-router-dom: ^6.11.2
     react-split-pane: ^0.1.92
-    react-virtuoso: ^4.3.10
+    react-virtuoso: ^4.7.1
     reactflow: ^11.7.2
     typescript: ~5.3.3
     use-subscription: ^1.8.0
@@ -14707,24 +14707,6 @@ __metadata:
   version: 1.1.2
   resolution: "@ungap/promise-all-settled@npm:1.1.2"
   checksum: 08d37fdfa23a6fe8139f1305313562ebad973f3fac01bcce2773b2bda5bcb0146dfdcf3cb6a722cf0a5f2ca0bc56a827eac8f1e7b3beddc548f654addf1fc34c
-  languageName: node
-  linkType: hard
-
-"@virtuoso.dev/react-urx@npm:^0.2.5":
-  version: 0.2.13
-  resolution: "@virtuoso.dev/react-urx@npm:0.2.13"
-  dependencies:
-    "@virtuoso.dev/urx": ^0.2.13
-  peerDependencies:
-    react: ">=16"
-  checksum: 173e91c21f6a8cd506ad3b72af10656897fe1951124ed9eeb1fd85575534993bea2f97cba3f81c08ae1e88a2613df348e2c80d0ceecb3021f8c8c8fe0e053ee2
-  languageName: node
-  linkType: hard
-
-"@virtuoso.dev/urx@npm:^0.2.13, @virtuoso.dev/urx@npm:^0.2.5":
-  version: 0.2.13
-  resolution: "@virtuoso.dev/urx@npm:0.2.13"
-  checksum: 682a99cf40ccc429241268dd37495cd1ed4695ae58b5a1169c75df1630d5dc3fd8eb3aaa655f71c37f39ba9c23c0aaf4401b76d8a986986d1a38a422d596a6ba
   languageName: node
   linkType: hard
 
@@ -35125,26 +35107,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-virtuoso@npm:^1.11.1":
-  version: 1.11.1
-  resolution: "react-virtuoso@npm:1.11.1"
-  dependencies:
-    "@virtuoso.dev/react-urx": ^0.2.5
-    "@virtuoso.dev/urx": ^0.2.5
-    resize-observer-polyfill: ^1.5.1
-  peerDependencies:
-    react: ">=16"
-  checksum: 05c66c8c543c029de94df92904aa7fb86f4beb3354348e03a7c3a109ea01de35b5861df1a7d58b29819daf81df10c9f88b45c88313ecbf872bb7db5503cf4bf8
-  languageName: node
-  linkType: hard
-
-"react-virtuoso@npm:^4.3.10":
-  version: 4.3.10
-  resolution: "react-virtuoso@npm:4.3.10"
+"react-virtuoso@npm:^4.7.1":
+  version: 4.7.1
+  resolution: "react-virtuoso@npm:4.7.1"
   peerDependencies:
     react: ">=16 || >=17 || >= 18"
     react-dom: ">=16 || >=17 || >= 18"
-  checksum: 1a2747d4b5abcba114ad9a27db4a4057464219c84cef4ae032460ab44f304073e4a115f56f93658844a4e3f76feb8175536618555ecf201bfd61e627a3e8cfb4
+  checksum: c864095bd875825c2ce25b69f165fe29ad7bea2d54c31b407b3b99347f6b68311a6928566369f45641cd2f5a6e8540fbafca87d808c0495c12196cb1665145d5
   languageName: node
   linkType: hard
 
@@ -35916,13 +35885,6 @@ __metadata:
   version: 1.0.0
   resolution: "requires-port@npm:1.0.0"
   checksum: eee0e303adffb69be55d1a214e415cf42b7441ae858c76dfc5353148644f6fd6e698926fc4643f510d5c126d12a705e7c8ed7e38061113bdf37547ab356797ff
-  languageName: node
-  linkType: hard
-
-"resize-observer-polyfill@npm:^1.5.1":
-  version: 1.5.1
-  resolution: "resize-observer-polyfill@npm:1.5.1"
-  checksum: 57e7f79489867b00ba43c9c051524a5c8f162a61d5547e99333549afc23e15c44fd43f2f318ea0261ea98c0eb3158cca261e6f48d66e1ed1cd1f340a43977094
   languageName: node
   linkType: hard
 
