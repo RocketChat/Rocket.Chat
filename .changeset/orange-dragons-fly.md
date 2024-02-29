@@ -1,5 +1,5 @@
 ---
-"@rocket.chat/livechat": patch
+"@rocket.chat/livechat": minor
 ---
 
 chore: Refactor & Improve Livechat Widget API
