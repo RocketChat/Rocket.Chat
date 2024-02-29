@@ -9,6 +9,7 @@ import React, { Fragment } from 'react';
 import { MessageTypes } from '../../../../../../app/ui-utils/client';
 import { isTruthy } from '../../../../../../lib/isTruthy';
 import { CustomScrollbars } from '../../../../../components/CustomScrollbars';
+import { useFormatDate } from '../../../../../hooks/useFormatDate';
 import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../../../MessageList/providers/MessageListProvider';
 import LoadingMessagesIndicator from '../../../body/LoadingMessagesIndicator';
@@ -52,8 +53,9 @@ type ThreadMessageListProps = {
 };
 
 const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElement => {
+	const formatDate = useFormatDate();
 	const { list } = useDateListController();
-	const { bubbleDate, onScroll: handleDateOnScroll, showBubble, style: bubbleDateStyle } = useDateScroll(BUBBLE_OFFSET);
+	const { listStyle, bubbleDate, onScroll: handleDateOnScroll, showBubble, style: bubbleDateStyle } = useDateScroll(BUBBLE_OFFSET);
 
 	const { messages, loading } = useLegacyThreadMessages(mainMessage._id);
 	const {
@@ -77,7 +79,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 			{bubbleDate && (
 				<Box className={[bubbleDateStyle, showBubble && 'bubble-visible']}>
 					<Bubble small secondary>
-						{bubbleDate}
+						{formatDate(bubbleDate)}
 					</Bubble>
 				</Box>
 			)}
@@ -89,7 +91,13 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 				}}
 				style={{ scrollBehavior: 'smooth', overflowX: 'hidden' }}
 			>
-				<ul className='thread' ref={listRef} style={{ scrollBehavior: 'smooth', overflowX: 'hidden' }} {...messageListProps}>
+				<Box
+					is='ul'
+					className={[listStyle, 'thread']}
+					ref={listRef}
+					style={{ scrollBehavior: 'smooth', overflowX: 'hidden' }}
+					{...messageListProps}
+				>
 					{loading ? (
 						<li className='load-more'>
 							<LoadingMessagesIndicator />
@@ -120,7 +128,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 							})}
 						</MessageListProvider>
 					)}
-				</ul>
+				</Box>
 			</CustomScrollbars>
 		</div>
 	);

@@ -9,6 +9,7 @@ type useDateScrollReturn = {
 	onScroll: (list: Set<HTMLElement>) => void;
 	style: ReturnType<typeof css>;
 	showBubble: boolean;
+	listStyle?: ReturnType<typeof css>;
 };
 
 export const useDateScroll = (offset = 0): useDateScrollReturn => {
@@ -23,28 +24,29 @@ export const useDateScroll = (offset = 0): useDateScrollReturn => {
 	);
 
 	const onScroll = useCallback(
-		withThrottling({ wait: 50 })(
+		withThrottling({ wait: 30 })(
 			(() => {
 				let timeout: ReturnType<typeof setTimeout>;
 				return (elements: Set<HTMLElement>) => {
 					clearTimeout(timeout);
 
+					const bubbleOffset = offset + 56;
 					// Gets the first non visible message date and sets the bubble date to it
-					const date = [...elements].reduce((date, message) => {
+					const [date, message] = [...elements].reduce((ret, message) => {
 						// Sanitize elements
 						if (!message.dataset.id) {
-							return date;
+							return ret;
 						}
 
 						const { top } = message.getBoundingClientRect();
 						const { id } = message.dataset;
-						const bubbleOffset = offset + 56;
 
-						if (top <= bubbleOffset) {
-							return id;
+						if (top < bubbleOffset) {
+							// Remove T - . : from the date
+							return [new Date(id).toISOString(), message];
 						}
-						return date;
-					}, undefined as string | undefined);
+						return ret;
+					}, [] as [string, HTMLElement] | []);
 
 					// We always keep the previous date if we don't have a new one, so when the bubble disappears it doesn't flicker
 					setBubbleDate(() => ({
@@ -52,6 +54,14 @@ export const useDateScroll = (offset = 0): useDateScrollReturn => {
 						...(date && { date }),
 						show: Boolean(date),
 					}));
+
+					if (message) {
+						const { top } = message.getBoundingClientRect();
+
+						if (top - offset > 0) {
+							return;
+						}
+					}
 
 					timeout = setTimeout(
 						() =>
@@ -82,5 +92,14 @@ export const useDateScroll = (offset = 0): useDateScrollReturn => {
 		}
 	`;
 
-	return { bubbleDate: bubbleDate.date, onScroll, style: dateBubbleStyle, showBubble: Boolean(bubbleDate.show) };
+	const listStyle =
+		bubbleDate.show && bubbleDate.date
+			? css`
+					& [data-time='${bubbleDate.date.replaceAll(/[-T:.]/g, '').substring(0, 8)}'] {
+						opacity: 0;
+					}
+			  `
+			: undefined;
+
+	return { listStyle, bubbleDate: bubbleDate.date, onScroll, style: dateBubbleStyle, showBubble: Boolean(bubbleDate.show) };
 };

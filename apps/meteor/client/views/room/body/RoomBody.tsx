@@ -23,6 +23,7 @@ import { isTruthy } from '../../../../lib/isTruthy';
 import { withDebouncing, withThrottling } from '../../../../lib/utils/highOrderFunctions';
 import { CustomScrollbars } from '../../../components/CustomScrollbars';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
+import { useFormatDate } from '../../../hooks/useFormatDate';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
 import { RoomManager } from '../../../lib/RoomManager';
 import type { Upload } from '../../../lib/chats/Upload';
@@ -59,6 +60,7 @@ import { useUnreadMessages } from './hooks/useUnreadMessages';
 const BUBBLE_OFFSET = 8;
 
 const RoomBody = (): ReactElement => {
+	const formatDate = useFormatDate();
 	const t = useTranslation();
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const room = useRoom();
@@ -68,7 +70,7 @@ const RoomBody = (): ReactElement => {
 	const subscription = useRoomSubscription();
 
 	const { list } = useDateListController();
-	const { bubbleDate, onScroll: handleDateOnScroll, showBubble, style: bubbleDateStyle } = useDateScroll(BUBBLE_OFFSET);
+	const { listStyle, bubbleDate, onScroll: handleDateOnScroll, showBubble, style: bubbleDateStyle } = useDateScroll(BUBBLE_OFFSET);
 
 	const [lastMessageDate, setLastMessageDate] = useState<Date | undefined>();
 	const [hideLeaderHeader, setHideLeaderHeader] = useState(false);
@@ -550,7 +552,7 @@ const RoomBody = (): ReactElement => {
 	return (
 		<>
 			{!isLayoutEmbedded && room.announcement && <Announcement announcement={room.announcement} announcementDetails={undefined} />}
-			<div className='main-content-flex'>
+			<Box className={['main-content-flex', listStyle]}>
 				<section
 					className={`messages-container flex-tab-main-content ${admin ? 'admin' : ''}`}
 					id={`chat-window-${room._id}`}
@@ -574,7 +576,7 @@ const RoomBody = (): ReactElement => {
 							{bubbleDate && (
 								<Box className={[bubbleDateStyle, showBubble && 'bubble-visible']}>
 									<Bubble small secondary>
-										{bubbleDate}
+										{formatDate(bubbleDate)}
 									</Bubble>
 								</Box>
 							)}
@@ -664,7 +666,7 @@ const RoomBody = (): ReactElement => {
 						</div>
 					</div>
 				</section>
-			</div>
+			</Box>
 		</>
 	);
 };
