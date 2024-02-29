@@ -1,6 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import type { Options, Root } from '@rocket.chat/message-parser';
-import { useUserSubscription } from '@rocket.chat/ui-contexts';
+import { useUserSubscription, useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
 import { parseMessageTextToAstMarkdown } from '../../../../lib/parseMessageTextToAstMarkdown';
@@ -11,6 +11,7 @@ export const useMessageBody = (message: IMessage | undefined, rid: string): stri
 	const subscription = useUserSubscription(rid);
 	const autoTranslateOptions = useAutoTranslate(subscription);
 	const customDomains = useAutoLinkDomains();
+	const ignoreMarkdownCache = useSetting<boolean>('Troubleshoot_Disable_Markdown_Cache_Use');
 
 	return useMemo(() => {
 		if (!message) {
@@ -23,7 +24,11 @@ export const useMessageBody = (message: IMessage | undefined, rid: string): stri
 				emoticons: true,
 			};
 
-			const messageWithMd = parseMessageTextToAstMarkdown(message, parseOptions, autoTranslateOptions);
+			const messageWithMd = parseMessageTextToAstMarkdown(
+				{ ...message, md: ignoreMarkdownCache ? undefined : message.md },
+				parseOptions,
+				autoTranslateOptions,
+			);
 
 			return messageWithMd.md;
 		}

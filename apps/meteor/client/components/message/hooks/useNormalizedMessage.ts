@@ -4,7 +4,7 @@ import { useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
 import type { MessageWithMdEnforced } from '../../../lib/parseMessageTextToAstMarkdown';
-import { parseMessageTextToAstMarkdown, removePossibleNullMessageValues } from '../../../lib/parseMessageTextToAstMarkdown';
+import { parseMessageTextToAstMarkdown } from '../../../lib/parseMessageTextToAstMarkdown';
 import { useAutoLinkDomains } from '../../../views/room/MessageList/hooks/useAutoLinkDomains';
 import { useAutoTranslate } from '../../../views/room/MessageList/hooks/useAutoTranslate';
 import { useKatex } from '../../../views/room/MessageList/hooks/useKatex';
@@ -16,6 +16,7 @@ export const useNormalizedMessage = <TMessage extends IMessage>(message: TMessag
 	const subscription = useSubscriptionFromMessageQuery(message).data ?? undefined;
 	const autoTranslateOptions = useAutoTranslate(subscription);
 	const showColors = useSetting<boolean>('HexColorPreview_Enabled');
+	const ignoreMarkdownCache = useSetting<boolean>('Troubleshoot_Disable_Markdown_Cache_Use');
 
 	return useMemo(() => {
 		const parseOptions: Options = {
@@ -30,6 +31,19 @@ export const useNormalizedMessage = <TMessage extends IMessage>(message: TMessag
 			}),
 		};
 
-		return parseMessageTextToAstMarkdown(removePossibleNullMessageValues(message), parseOptions, autoTranslateOptions);
-	}, [showColors, customDomains, katexEnabled, katexDollarSyntaxEnabled, katexParenthesisSyntaxEnabled, message, autoTranslateOptions]);
+		return parseMessageTextToAstMarkdown(
+			{ ...message, md: ignoreMarkdownCache ? undefined : message.md },
+			parseOptions,
+			autoTranslateOptions,
+		);
+	}, [
+		showColors,
+		customDomains,
+		katexEnabled,
+		katexDollarSyntaxEnabled,
+		katexParenthesisSyntaxEnabled,
+		message,
+		autoTranslateOptions,
+		ignoreMarkdownCache,
+	]);
 };

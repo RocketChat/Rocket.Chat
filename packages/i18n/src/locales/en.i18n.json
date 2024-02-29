@@ -5304,6 +5304,8 @@
   "Troubleshoot_Disable_Livechat_Activity_Monitor_Alert": "This setting stops the processing of livechat visitor sessions causing the statistics to stop working correctly!",
   "Troubleshoot_Disable_Notifications": "Disable Notifications",
   "Troubleshoot_Disable_Notifications_Alert": "This setting completely disables the notifications system; sounds, desktop notifications, mobile notifications, and emails will stop!",
+  "Troubleshoot_Disable_Markdown_Cache_Use": "Disable message markdown cache use",
+  "Troubleshoot_Disable_Markdown_Cache_Use_Description": "This will disable the use of preprocessed markdown, processing it in the client instead. This can increase the load on clients but will make sure markdown is always up to date.",
   "Troubleshoot_Disable_Presence_Broadcast": "Disable Presence Broadcast",
   "Troubleshoot_Disable_Presence_Broadcast_Alert": "This setting prevents all instances form sending the status changes of the users to their clients keeping all the users with their presence status from the first load!",
   "Troubleshoot_Disable_Sessions_Monitor": "Disable Sessions Monitor",

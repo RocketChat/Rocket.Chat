@@ -63,4 +63,10 @@ export const createTroubleshootSettings = () =>
 			type: 'string',
 			i18nDescription: 'Troubleshoot_Force_Caching_Version_Alert',
 		});
+
+		await this.add('Troubleshoot_Disable_Markdown_Cache_Use', false, {
+			type: 'boolean',
+			i18nDescription: 'Troubleshoot_Disable_Markdown_Cache_Use_Description',
+			public: true,
+		});
 	});
