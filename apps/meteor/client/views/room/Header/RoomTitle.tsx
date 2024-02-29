@@ -1,4 +1,4 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import { isTeamRoom, type IRoom } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { HeaderTitle, HeaderTitleButton, useDocumentTitle } from '@rocket.chat/ui-client';
 import type { KeyboardEvent, ReactElement } from 'react';
@@ -12,6 +12,10 @@ const RoomTitle = ({ room }: { room: IRoom }): ReactElement => {
 	const { openTab } = useRoomToolbox();
 
 	const handleOpenRoomInfo = useEffectEvent(() => {
+		if (isTeamRoom(room)) {
+			return openTab('team-info');
+		}
+
 		switch (room.t) {
 			case 'l':
 				openTab('room-info');
