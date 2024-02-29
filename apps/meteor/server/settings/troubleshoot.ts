@@ -63,4 +63,9 @@ export const createTroubleshootSettings = () =>
 			type: 'string',
 			i18nDescription: 'Troubleshoot_Force_Caching_Version_Alert',
 		});
+
+		await this.add('Troubleshoot_Delete_Message_Markdown_Cache_Username_Change', false, {
+			type: 'boolean',
+			i18nDescription: 'Troubleshoot_Delete_Message_Markdown_Cache_Username_Change_Description',
+		});
 	});

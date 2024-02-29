@@ -5300,6 +5300,8 @@
   "Troubleshoot_Disable_Instance_Broadcast_Alert": "This setting prevents the Rocket.Chat instances from sending events to the other instances, it may cause syncing problems and misbehavior!",
   "Troubleshoot_Disable_Livechat_Activity_Monitor": "Disable Livechat Activity Monitor",
   "Troubleshoot_Disable_Livechat_Activity_Monitor_Alert": "This setting stops the processing of livechat visitor sessions causing the statistics to stop working correctly!",
+  "Troubleshoot_Delete_Message_Markdown_Cache_Username_Change": "Delete message markdown cache when changing usernames",
+  "Troubleshoot_Delete_Message_Markdown_Cache_Username_Change_Description": "Turning this on will delete the message markdown cache on mentioned messages when a user changes their username. The markdown will fallback to being proccessed on the client, making sure mentions work correctly.",
   "Troubleshoot_Disable_Notifications": "Disable Notifications",
   "Troubleshoot_Disable_Notifications_Alert": "This setting completely disables the notifications system; sounds, desktop notifications, mobile notifications, and emails will stop!",
   "Troubleshoot_Disable_Presence_Broadcast": "Disable Presence Broadcast",

@@ -3,6 +3,7 @@ import { Messages, VideoConference, LivechatDepartmentAgents, Rooms, Subscriptio
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { FileUpload } from '../../../file-upload/server';
+import { settings } from '../../../settings/server';
 import { _setRealName } from './setRealName';
 import { _setUsername } from './setUsername';
 import { updateGroupDMsName } from './updateGroupDMsName';
@@ -123,9 +124,10 @@ async function updateUsernameReferences({
 		await Messages.updateUsernameOfEditByUserId(user._id, username);
 
 		const cursor = Messages.findByMention(previousUsername);
+		const unsetMd = Boolean(settings.get('Troubleshoot_Delete_Message_Markdown_Cache_Username_Change'));
 		for await (const msg of cursor) {
 			const updatedMsg = msg.msg.replace(new RegExp(`@${previousUsername}`, 'ig'), `@${username}`);
-			await Messages.updateUsernameAndMessageOfMentionByIdAndOldUsername(msg._id, previousUsername, username, updatedMsg);
+			await Messages.updateUsernameAndMessageOfMentionByIdAndOldUsername(msg._id, previousUsername, username, updatedMsg, unsetMd);
 		}
 
 		await Rooms.replaceUsername(previousUsername, username);
