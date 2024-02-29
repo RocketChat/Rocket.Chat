@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState } from 'react';
 type DateListContextValue = {
 	list: Set<HTMLElement>;
 	addToList: (value: HTMLElement) => () => void;
+	useDateRef: () => (ref: HTMLElement | null) => void;
 };
 
 const DateListContext = createContext<DateListContextValue | undefined>(undefined);
@@ -17,7 +18,17 @@ const DateListProvider = ({ children }: { children: React.ReactNode }) => {
 		};
 	};
 
-	return <DateListContext.Provider value={{ list, addToList }}>{children}</DateListContext.Provider>;
+	const useDateRef = () => {
+		let remove: () => void;
+		return (ref: HTMLElement | null) => {
+			if (remove) remove();
+
+			if (!ref) return;
+			remove = addToList(ref);
+		};
+	};
+
+	return <DateListContext.Provider value={{ list, addToList, useDateRef }}>{children}</DateListContext.Provider>;
 };
 
 const useDateListController = () => {
