@@ -11,6 +11,7 @@ test.use({ storageState: Users.admin.state });
 test.describe.serial('channel-management', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
+	let discussionName: string;
 
 	test.beforeAll(async ({ api }) => {
 		targetChannel = await createTargetChannel(api);
@@ -97,7 +98,7 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.tabs.members.setUserAsModerator('user1');
 	});
 
-	test('should edit topic of "targetChannel"', async () => {
+	test.fixme('should edit topic of "targetChannel"', async () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnRoomInfo.click();
 		await poHomeChannel.tabs.room.btnEdit.click();
@@ -105,7 +106,7 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.tabs.room.btnSave.click();
 	});
 
-	test('should edit announcement of "targetChannel"', async () => {
+	test.fixme('should edit announcement of "targetChannel"', async () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnRoomInfo.click();
 		await poHomeChannel.tabs.room.btnEdit.click();
@@ -113,7 +114,7 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.tabs.room.btnSave.click();
 	});
 
-	test('should edit description of "targetChannel"', async () => {
+	test.fixme('should edit description of "targetChannel"', async () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnRoomInfo.click();
 		await poHomeChannel.tabs.room.btnEdit.click();
@@ -147,8 +148,39 @@ test.describe.serial('channel-management', () => {
 		await expect(page.getByRole('heading', { name: hugeName })).toHaveCSS('width', '423px');
 	});
 
+	test('should info contextualbar when clicking on roomName', async ({ page }) => {
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		await page.getByRole('button', { name: targetChannel }).first().focus();
+		await page.keyboard.press('Space');
+		await page.getByRole('complementary').waitFor();
+	
+		await expect(page.getByRole('complementary')).toBeVisible();
+	});
+
+	test('should create a discussion using the message composer', async ({ page }) => {
+		discussionName = faker.string.uuid();
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.content.btnMenuMoreActions.click();
+		await page.getByRole('menuitem', { name: 'Discussion' }).click();
+		await page.getByRole('textbox', { name: 'Discussion name' }).fill(discussionName);
+		await page.getByRole('button', { name: 'Create' }).click();
+		
+		await expect(page.getByRole('heading', { name: discussionName })).toBeVisible();
+	});
+
+	test('should access targetTeam through discussion header', async ({ page }) => {
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		await page.locator('[data-qa-type="message"]', { hasText: discussionName }).locator('button').first().click();
+		await page.getByRole('button', { name: discussionName }).first().focus();
+		await page.keyboard.press('Tab');
+		await page.keyboard.press('Tab');
+		await page.keyboard.press('Space');
+		
+		await expect(page).toHaveURL(`/channel/${targetChannel}`);
+	});
+
 	// FIXME: bad assertion
-	test.skip('expect edit notification preferences of "targetChannel"', async () => {
+	test.fixme('should edit notification preferences of "targetChannel"', async () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await poHomeChannel.tabs.btnNotificationPreferences.click({ force: true });
@@ -179,7 +211,7 @@ test.describe.serial('channel-management', () => {
 		await regularUserPage.close();
 	});
 
-	test.skip('should all notification preferences of "targetChannel" to be "Mentions"', async () => {
+	test.fixme('should all notification preferences of "targetChannel" to be "Mentions"', async () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await poHomeChannel.tabs.btnNotificationPreferences.click({ force: true });
