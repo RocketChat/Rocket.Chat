@@ -1,6 +1,6 @@
-import { validCallbacks } from '../widget';
+import { VALID_CALLBACKS } from '../widget';
 
-export const parentCall = (method: string, args: any = []) => {
+export const parentCall = (method: string, ...args: any[]) => {
 	const data = {
 		src: 'rocketchat',
 		fn: method,
@@ -12,4 +12,4 @@ export const parentCall = (method: string, args: any = []) => {
 };
 
 export const runCallbackEventEmitter = (callbackName: string, data: unknown) =>
-	validCallbacks.includes(callbackName) && parentCall('callback', [callbackName, data]);
+	VALID_CALLBACKS.includes(callbackName) && parentCall('callback', callbackName, data);

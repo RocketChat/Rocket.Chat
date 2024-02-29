@@ -19,7 +19,7 @@ test.describe.serial('message-actions', () => {
 	test('expect reply the message in direct', async ({ page }) => {
 		await poHomeChannel.content.sendMessage('this is a message for reply in direct');
 		await poHomeChannel.content.openLastMessageMenu();
-		await page.locator('li', { hasText: 'Reply in direct message' }).click();
+		await page.locator('role=menuitem[name="Reply in direct message"]').click();
 
 		await expect(page).toHaveURL(/.*reply/);
 	});
@@ -36,7 +36,7 @@ test.describe.serial('message-actions', () => {
 	test('expect edit the message', async ({ page }) => {
 		await poHomeChannel.content.sendMessage('This is a message to edit');
 		await poHomeChannel.content.openLastMessageMenu();
-		await page.locator('[data-qa-id="edit-message"]').click();
+		await page.locator('role=menuitem[name="Edit"]').click();
 		await page.locator('[name="msg"]').fill('this message was edited');
 		await page.keyboard.press('Enter');
 
@@ -46,7 +46,7 @@ test.describe.serial('message-actions', () => {
 	test('expect message is deleted', async ({ page }) => {
 		await poHomeChannel.content.sendMessage('Message to delete');
 		await poHomeChannel.content.openLastMessageMenu();
-		await page.locator('[data-qa-id="delete-message"]').click();
+		await page.locator('role=menuitem[name="Delete"]').click();
 		await page.locator('#modal-root .rcx-button-group--align-end .rcx-button--danger').click();
 		await expect(poHomeChannel.content.lastUserMessage.locator('[data-qa-type="message-body"]:has-text("Message to delete")')).toHaveCount(
 			0,
@@ -68,23 +68,31 @@ test.describe.serial('message-actions', () => {
 	test('expect star the message', async ({ page }) => {
 		await poHomeChannel.content.sendMessage('Message to star');
 		await poHomeChannel.content.openLastMessageMenu();
-		await page.locator('[data-qa-id="star-message"]').click();
+		await page.locator('role=menuitem[name="Star"]').click();
 		await poHomeChannel.dismissToast();
 		await page.locator('role=button[name="Options"]').click();
 		await page.locator('[data-key="starred-messages"]').click();
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('Message to star');
 	});
 
-	test('expect copy the message', async ({ page }) => {
+	test('expect copy the message content to clipboard', async ({ page, context }) => {
+		await context.grantPermissions(['clipboard-read', 'clipboard-write']);
 		await poHomeChannel.content.sendMessage('Message to copy');
 		await poHomeChannel.content.openLastMessageMenu();
-		await page.locator('[data-qa-id="copy"]').click();
+		await page.locator('role=menuitem[name="Copy text"]').click();
+
+		const clipboardText = await page.evaluate("navigator.clipboard.readText()");
+		expect(clipboardText).toBe('Message to copy');
 	});
 
-	test('expect permalink the message', async ({ page }) => {
+	test('expect copy the message link to clipboard', async ({ page, context }) => {
+		await context.grantPermissions(['clipboard-read', 'clipboard-write']);
 		await poHomeChannel.content.sendMessage('Message to permalink');
 		await poHomeChannel.content.openLastMessageMenu();
-		await page.locator('[data-qa-id="permalink"]').click();
+		await page.locator('role=menuitem[name="Copy link"]').click();
+
+		const clipboardText = await page.evaluate('navigator.clipboard.readText()');
+		expect(clipboardText).toContain('http');
 	});
 
 	test.describe('Preference Hide Contextual Bar by clicking outside of it Enabled', () => {
@@ -102,7 +110,7 @@ test.describe.serial('message-actions', () => {
 		test('expect reply the message in direct', async ({ page }) => {
 			await poHomeChannel.content.sendMessage('this is a message for reply in direct');
 			await poHomeChannel.content.openLastMessageMenu();
-			await page.locator('li', { hasText: 'Reply in Direct Message' }).click();
+			await page.locator('role=menuitem[name="Reply in direct message"]').click();
 
 			await expect(page).toHaveURL(/.*reply/);
 		});
