@@ -3,8 +3,8 @@ import { Box, Bubble, MessageDivider } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import { differenceInSeconds } from 'date-fns';
-import type { MutableRefObject, ReactElement } from 'react';
-import React, { useRef, Fragment } from 'react';
+import type { ReactElement } from 'react';
+import React, { Fragment } from 'react';
 
 import { MessageTypes } from '../../../../../../app/ui-utils/client';
 import { isTruthy } from '../../../../../../lib/isTruthy';
@@ -19,6 +19,7 @@ import { useDateScroll } from '../../../hooks/useDateScroll';
 import { useFirstUnreadMessageId } from '../../../hooks/useFirstUnreadMessageId';
 import { useMessageListNavigation } from '../../../hooks/useMessageListNavigation';
 import { useScrollMessageList } from '../../../hooks/useScrollMessageList';
+import { useDateController } from '../../../providers/DateScrollProvider';
 import { useLegacyThreadMessageJump } from '../hooks/useLegacyThreadMessageJump';
 import { useLegacyThreadMessageListScrolling } from '../hooks/useLegacyThreadMessageListScrolling';
 import { useLegacyThreadMessages } from '../hooks/useLegacyThreadMessages';
@@ -53,6 +54,7 @@ type ThreadMessageListProps = {
 };
 
 const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElement => {
+	const { addToList, list } = useDateController();
 	const { bubbleDate, onScroll: handleDateOnScroll, showBubble, style: bubbleDateStyle } = useDateScroll(BUBBLE_OFFSET);
 
 	const { messages, loading } = useLegacyThreadMessages(mainMessage._id);
@@ -65,7 +67,6 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
-	const dividerRefs = useRef<{ [key: number]: MutableRefObject<HTMLElement> }>({});
 
 	const formatDate = useFormatDate();
 	const t = useTranslation();
@@ -91,7 +92,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 				ref={listWrapperScrollRef}
 				onScroll={(args) => {
 					handleScroll(args);
-					handleDateOnScroll(dividerRefs);
+					handleDateOnScroll(list);
 				}}
 				style={{ scrollBehavior: 'smooth', overflowX: 'hidden' }}
 			>
@@ -112,14 +113,21 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 
 								const system = MessageTypes.isSystemMessage(message);
 
-								if (newDay) {
-									Object.assign(dividerRefs.current, { [index]: dividerRefs.current[index] ?? React.createRef() });
-								}
-
 								return (
 									<Fragment key={message._id}>
 										{showDivider && (
-											<Box ref={dividerRefs.current[index]} data-id={formatDate(message.ts)}>
+											<Box
+												ref={(() => {
+													let remove: () => void;
+													return (ref: HTMLElement | null) => {
+														if (remove) remove();
+
+														if (!ref) return;
+														remove = addToList(ref);
+													};
+												})()}
+												data-id={formatDate(message.ts)}
+											>
 												<MessageDivider unreadLabel={firstUnread ? t('Unread_Messages').toLowerCase() : undefined}>
 													{newDay && (
 														<Bubble small secondary>

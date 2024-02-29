@@ -40,6 +40,7 @@ import { useUserCard } from '../contexts/UserCardContext';
 import { useDateScroll } from '../hooks/useDateScroll';
 import { useMessageListNavigation } from '../hooks/useMessageListNavigation';
 import { useScrollMessageList } from '../hooks/useScrollMessageList';
+import { useDateController } from '../providers/DateScrollProvider';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
 import LeaderBar from './LeaderBar';
@@ -65,6 +66,8 @@ const RoomBody = (): ReactElement => {
 	const toolbox = useRoomToolbox();
 	const admin = useRole('admin');
 	const subscription = useRoomSubscription();
+
+	const { list } = useDateController();
 	const { bubbleDate, onScroll: handleDateOnScroll, showBubble, style: bubbleDateStyle } = useDateScroll(BUBBLE_OFFSET);
 
 	const [lastMessageDate, setLastMessageDate] = useState<Date | undefined>();
@@ -386,14 +389,14 @@ const RoomBody = (): ReactElement => {
 
 		wrapper.addEventListener('scroll', updateUnreadCount);
 		wrapper.addEventListener('scroll', handleWrapperScroll);
-		wrapper.addEventListener('scroll', () => handleDateOnScroll(dividerRefs));
+		wrapper.addEventListener('scroll', () => handleDateOnScroll(list));
 
 		return () => {
 			wrapper.removeEventListener('scroll', updateUnreadCount);
 			wrapper.removeEventListener('scroll', handleWrapperScroll);
-			wrapper.removeEventListener('scroll', () => handleDateOnScroll(dividerRefs));
+			wrapper.removeEventListener('scroll', () => handleDateOnScroll(list));
 		};
-	}, [_isAtBottom, handleDateOnScroll, room._id, setUnreadCount]);
+	}, [_isAtBottom, handleDateOnScroll, list, room._id, setUnreadCount]);
 
 	useEffect(() => {
 		const wrapper = wrapperRef.current;

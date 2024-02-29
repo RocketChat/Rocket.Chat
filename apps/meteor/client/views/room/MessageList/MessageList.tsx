@@ -12,6 +12,7 @@ import ThreadMessagePreview from '../../../components/message/variants/ThreadMes
 import { useFormatDate } from '../../../hooks/useFormatDate';
 import { useRoomSubscription } from '../contexts/RoomContext';
 import { useFirstUnreadMessageId } from '../hooks/useFirstUnreadMessageId';
+import { useDateController } from '../providers/DateScrollProvider';
 import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
 import { useMessages } from './hooks/useMessages';
 import { isMessageNewDay } from './lib/isMessageNewDay';
@@ -28,6 +29,8 @@ export const MessageList = forwardRef(function MessageList(
 	ref: ForwardedRef<{ [key: number]: MutableRefObject<HTMLElement> }>,
 ) {
 	const t = useTranslation();
+	const { addToList } = useDateController();
+
 	const messages = useMessages({ rid });
 	const subscription = useRoomSubscription();
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
@@ -59,7 +62,18 @@ export const MessageList = forwardRef(function MessageList(
 					return (
 						<Fragment key={message._id}>
 							{showDivider && (
-								<Box ref={internalRefs.current[index]} data-id={formatDate(message.ts)}>
+								<Box
+									ref={(() => {
+										let remove: () => void;
+										return (ref: HTMLElement | null) => {
+											if (remove) remove();
+
+											if (!ref) return;
+											remove = addToList(ref);
+										};
+									})()}
+									data-id={formatDate(message.ts)}
+								>
 									<MessageDivider unreadLabel={showUnreadDivider ? t('Unread_Messages').toLowerCase() : undefined}>
 										{newDay && (
 											<Bubble small secondary>

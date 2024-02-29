@@ -1,23 +1,15 @@
 import { css } from '@rocket.chat/css-in-js';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useCallback, useState } from 'react';
-import type { MutableRefObject } from 'react';
 
 import { withThrottling } from '../../../../lib/utils/highOrderFunctions';
 
 type useDateScrollReturn = {
 	bubbleDate: string | undefined;
-	onScroll: (refsObject: MutableRefObject<{ [key: number]: MutableRefObject<HTMLElement> }>) => void;
+	onScroll: (list: Set<HTMLElement>) => void;
 	style: ReturnType<typeof css>;
 	showBubble: boolean;
 };
-function fromRefObjectToArray<T extends MutableRefObject<{ [key: number]: MutableRefObject<HTMLElement> }>>(
-	fn: (elements: MutableRefObject<HTMLElement>[]) => void,
-) {
-	return (refsObject: T) => {
-		fn(Object.values(refsObject.current));
-	};
-}
 
 export const useDateScroll = (offset = 0): useDateScrollReturn => {
 	const [bubbleDate, setBubbleDate] = useSafely(
@@ -32,47 +24,45 @@ export const useDateScroll = (offset = 0): useDateScrollReturn => {
 
 	const onScroll = useCallback(
 		withThrottling({ wait: 50 })(
-			fromRefObjectToArray(
-				(() => {
-					let timeout: ReturnType<typeof setTimeout>;
-					return (elements) => {
-						clearTimeout(timeout);
+			(() => {
+				let timeout: ReturnType<typeof setTimeout>;
+				return (elements: Set<HTMLElement>) => {
+					clearTimeout(timeout);
 
-						// Gets the first non visible message date and sets the bubble date to it
-						const date = elements.reduce((date, message) => {
-							// Sanitize elements
-							if (!message.current?.dataset.id) {
-								return date;
-							}
-
-							const { top } = message.current.getBoundingClientRect();
-							const { id } = message.current.dataset;
-							const bubbleOffset = offset + 56;
-
-							if (top <= bubbleOffset) {
-								return id;
-							}
+					// Gets the first non visible message date and sets the bubble date to it
+					const date = [...elements].reduce((date, message) => {
+						// Sanitize elements
+						if (!message.dataset.id) {
 							return date;
-						}, undefined as string | undefined);
+						}
 
-						// We always keep the previous date if we don't have a new one, so when the bubble disappears it doesn't flicker
-						setBubbleDate(() => ({
-							date: '',
-							...(date && { date }),
-							show: Boolean(date),
-						}));
+						const { top } = message.getBoundingClientRect();
+						const { id } = message.dataset;
+						const bubbleOffset = offset + 56;
 
-						timeout = setTimeout(
-							() =>
-								setBubbleDate((current) => ({
-									...current,
-									show: false,
-								})),
-							1000,
-						);
-					};
-				})(),
-			),
+						if (top <= bubbleOffset) {
+							return id;
+						}
+						return date;
+					}, undefined as string | undefined);
+
+					// We always keep the previous date if we don't have a new one, so when the bubble disappears it doesn't flicker
+					setBubbleDate(() => ({
+						date: '',
+						...(date && { date }),
+						show: Boolean(date),
+					}));
+
+					timeout = setTimeout(
+						() =>
+							setBubbleDate((current) => ({
+								...current,
+								show: false,
+							})),
+						1000,
+					);
+				};
+			})(),
 		),
 		[offset],
 	);
