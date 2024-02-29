@@ -16,6 +16,7 @@ const VideoConfController = ({ icon, active, secondary, disabled, small = true, 
 
 	return (
 		<IconButton
+			aria-live='assertive'
 			small={small}
 			icon={icon}
 			id={id}
