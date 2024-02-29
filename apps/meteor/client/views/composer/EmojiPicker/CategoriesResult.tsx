@@ -6,7 +6,7 @@ import type { VirtuosoHandle } from 'react-virtuoso';
 import { Virtuoso } from 'react-virtuoso';
 
 import type { EmojiCategoryPosition, EmojiByCategory } from '../../../../app/emoji/client';
-import ScrollableContentWrapper from '../../../components/ScrollableContentWrapper';
+import { VirtuosoScrollbars } from '../../../components/CustomScrollbars';
 import EmojiCategoryRow from './EmojiCategoryRow';
 
 type CategoriesResultProps = {
@@ -39,7 +39,7 @@ const CategoriesResult = forwardRef<VirtuosoHandle, CategoriesResultProps>(funct
 				totalCount={emojiListByCategory.length}
 				data={emojiListByCategory}
 				onScroll={handleScroll}
-				components={{ Scroller: ScrollableContentWrapper }}
+				components={{ Scroller: VirtuosoScrollbars }}
 				isScrolling={(isScrolling: boolean) => {
 					if (!wrapper.current) {
 						return;
