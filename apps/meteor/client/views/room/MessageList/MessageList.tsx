@@ -12,7 +12,7 @@ import ThreadMessagePreview from '../../../components/message/variants/ThreadMes
 import { useFormatDate } from '../../../hooks/useFormatDate';
 import { useRoomSubscription } from '../contexts/RoomContext';
 import { useFirstUnreadMessageId } from '../hooks/useFirstUnreadMessageId';
-import { useDateController } from '../providers/DateScrollProvider';
+import { useDateListController } from '../providers/DateListProvider';
 import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
 import { useMessages } from './hooks/useMessages';
 import { isMessageNewDay } from './lib/isMessageNewDay';
@@ -29,7 +29,7 @@ export const MessageList = forwardRef(function MessageList(
 	ref: ForwardedRef<{ [key: number]: MutableRefObject<HTMLElement> }>,
 ) {
 	const t = useTranslation();
-	const { addToList } = useDateController();
+	const { addToList } = useDateListController();
 
 	const messages = useMessages({ rid });
 	const subscription = useRoomSubscription();

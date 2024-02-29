@@ -19,7 +19,7 @@ import { useDateScroll } from '../../../hooks/useDateScroll';
 import { useFirstUnreadMessageId } from '../../../hooks/useFirstUnreadMessageId';
 import { useMessageListNavigation } from '../../../hooks/useMessageListNavigation';
 import { useScrollMessageList } from '../../../hooks/useScrollMessageList';
-import { useDateController } from '../../../providers/DateScrollProvider';
+import { useDateListController } from '../../../providers/DateListProvider';
 import { useLegacyThreadMessageJump } from '../hooks/useLegacyThreadMessageJump';
 import { useLegacyThreadMessageListScrolling } from '../hooks/useLegacyThreadMessageListScrolling';
 import { useLegacyThreadMessages } from '../hooks/useLegacyThreadMessages';
@@ -54,7 +54,7 @@ type ThreadMessageListProps = {
 };
 
 const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElement => {
-	const { addToList, list } = useDateController();
+	const { addToList, list } = useDateListController();
 	const { bubbleDate, onScroll: handleDateOnScroll, showBubble, style: bubbleDateStyle } = useDateScroll(BUBBLE_OFFSET);
 
 	const { messages, loading } = useLegacyThreadMessages(mainMessage._id);

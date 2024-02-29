@@ -1,13 +1,13 @@
 import React, { createContext, useContext, useState } from 'react';
 
-type DateScrollContextValue = {
+type DateListContextValue = {
 	list: Set<HTMLElement>;
 	addToList: (value: HTMLElement) => () => void;
 };
 
-const DateScrollContext = createContext<DateScrollContextValue | undefined>(undefined);
+const DateListContext = createContext<DateListContextValue | undefined>(undefined);
 
-const DateScrollProvider = ({ children }: { children: React.ReactNode }) => {
+const DateListProvider = ({ children }: { children: React.ReactNode }) => {
 	const [list] = useState<Set<HTMLElement>>(new Set<HTMLElement>());
 
 	const addToList = (value: HTMLElement) => {
@@ -17,15 +17,15 @@ const DateScrollProvider = ({ children }: { children: React.ReactNode }) => {
 		};
 	};
 
-	return <DateScrollContext.Provider value={{ list, addToList }}>{children}</DateScrollContext.Provider>;
+	return <DateListContext.Provider value={{ list, addToList }}>{children}</DateListContext.Provider>;
 };
 
-const useDateController = () => {
-	const context = useContext(DateScrollContext);
+const useDateListController = () => {
+	const context = useContext(DateListContext);
 	if (!context) {
 		throw new Error('useDateController must be used within an DateScrollProvider');
 	}
 	return context;
 };
 
-export { DateScrollProvider, useDateController };
+export { DateListProvider, useDateListController };

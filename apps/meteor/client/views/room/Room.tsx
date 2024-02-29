@@ -13,7 +13,7 @@ import { useRoomToolbox } from './contexts/RoomToolboxContext';
 import { useAppsContextualBar } from './hooks/useAppsContextualBar';
 import RoomLayout from './layout/RoomLayout';
 import ChatProvider from './providers/ChatProvider';
-import { DateScrollProvider } from './providers/DateScrollProvider';
+import { DateListProvider } from './providers/DateListProvider';
 import { SelectedMessagesProvider } from './providers/SelectedMessagesProvider';
 
 const UiKitContextualBar = lazy(() => import('./contextualBar/uikit/UiKitContextualBar'));
@@ -28,7 +28,7 @@ const Room = (): ReactElement => {
 		<ChatProvider>
 			<MessageHighlightProvider>
 				<FocusScope>
-					<DateScrollProvider>
+					<DateListProvider>
 						<RoomLayout
 							data-qa-rc-room={room._id}
 							aria-label={
@@ -57,7 +57,7 @@ const Room = (): ReactElement => {
 								))
 							}
 						/>
-					</DateScrollProvider>
+					</DateListProvider>
 				</FocusScope>
 			</MessageHighlightProvider>
 		</ChatProvider>

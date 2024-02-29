@@ -15,7 +15,7 @@ import RoomComposer from '../../../composer/RoomComposer/RoomComposer';
 import { useChat } from '../../../contexts/ChatContext';
 import { useRoom, useRoomSubscription } from '../../../contexts/RoomContext';
 import { useRoomToolbox } from '../../../contexts/RoomToolboxContext';
-import { DateScrollProvider } from '../../../providers/DateScrollProvider';
+import { DateListProvider } from '../../../providers/DateListProvider';
 import ThreadMessageList from './ThreadMessageList';
 
 type ThreadChatProps = {
@@ -94,7 +94,7 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 
 	return (
 		<ContextualbarContent flexShrink={1} flexGrow={1} paddingInline={0} {...fileUploadTriggerProps}>
-			<DateScrollProvider>
+			<DateListProvider>
 				<DropTargetOverlay {...fileUploadOverlayProps} />
 				<Box is='section' display='flex' flexDirection='column' flexGrow={1} flexShrink={1} flexBasis='auto' height='full'>
 					<MessageListErrorBoundary>
@@ -128,7 +128,7 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 						</ComposerContainer>
 					</RoomComposer>
 				</Box>
-			</DateScrollProvider>
+			</DateListProvider>
 		</ContextualbarContent>
 	);
 };
