@@ -51,7 +51,7 @@
     "prettier": "~2.8.7",
     "rimraf": "^3.0.2",
     "ts-jest": "~29.1.0",
-    "typescript": "~5.0.4",
+    "typescript": "~5.3.3",
     "webpack": "~5.78.0"
   }
 }
