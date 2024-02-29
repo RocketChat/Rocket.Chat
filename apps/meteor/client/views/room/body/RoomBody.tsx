@@ -1,5 +1,6 @@
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
+import { Box, Bubble } from '@rocket.chat/fuselage';
 import {
 	usePermission,
 	useRole,
@@ -22,13 +23,14 @@ import { isTruthy } from '../../../../lib/isTruthy';
 import { withDebouncing, withThrottling } from '../../../../lib/utils/highOrderFunctions';
 import { CustomScrollbars } from '../../../components/CustomScrollbars';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
+import { useFormatDate } from '../../../hooks/useFormatDate';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
 import { RoomManager } from '../../../lib/RoomManager';
 import type { Upload } from '../../../lib/chats/Upload';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { setMessageJumpQueryStringParameter } from '../../../lib/utils/setMessageJumpQueryStringParameter';
 import Announcement from '../Announcement';
-import { MessageList } from '../MessageList/MessageList';
+import { MessageList } from '../MessageList';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
 import ComposerContainer from '../composer/ComposerContainer';
 import RoomComposer from '../composer/RoomComposer/RoomComposer';
@@ -36,8 +38,10 @@ import { useChat } from '../contexts/ChatContext';
 import { useRoom, useRoomSubscription, useRoomMessages } from '../contexts/RoomContext';
 import { useRoomToolbox } from '../contexts/RoomToolboxContext';
 import { useUserCard } from '../contexts/UserCardContext';
+import { useDateScroll } from '../hooks/useDateScroll';
 import { useMessageListNavigation } from '../hooks/useMessageListNavigation';
 import { useScrollMessageList } from '../hooks/useScrollMessageList';
+import { useDateListController } from '../providers/DateListProvider';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
 import LeaderBar from './LeaderBar';
@@ -53,7 +57,10 @@ import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
 import { useRetentionPolicy } from './hooks/useRetentionPolicy';
 import { useUnreadMessages } from './hooks/useUnreadMessages';
 
+const BUBBLE_OFFSET = 8;
+
 const RoomBody = (): ReactElement => {
+	const formatDate = useFormatDate();
 	const t = useTranslation();
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const room = useRoom();
@@ -61,6 +68,9 @@ const RoomBody = (): ReactElement => {
 	const toolbox = useRoomToolbox();
 	const admin = useRole('admin');
 	const subscription = useRoomSubscription();
+
+	const { list } = useDateListController();
+	const { listStyle, bubbleDate, onScroll: handleDateOnScroll, showBubble, style: bubbleDateStyle } = useDateScroll(BUBBLE_OFFSET);
 
 	const [lastMessageDate, setLastMessageDate] = useState<Date | undefined>();
 	const [hideLeaderHeader, setHideLeaderHeader] = useState(false);
@@ -380,12 +390,14 @@ const RoomBody = (): ReactElement => {
 
 		wrapper.addEventListener('scroll', updateUnreadCount);
 		wrapper.addEventListener('scroll', handleWrapperScroll);
+		wrapper.addEventListener('scroll', () => handleDateOnScroll(list));
 
 		return () => {
 			wrapper.removeEventListener('scroll', updateUnreadCount);
 			wrapper.removeEventListener('scroll', handleWrapperScroll);
+			wrapper.removeEventListener('scroll', () => handleDateOnScroll(list));
 		};
-	}, [_isAtBottom, room._id, setUnreadCount]);
+	}, [_isAtBottom, handleDateOnScroll, list, room._id, setUnreadCount]);
 
 	useEffect(() => {
 		const wrapper = wrapperRef.current;
@@ -540,7 +552,7 @@ const RoomBody = (): ReactElement => {
 	return (
 		<>
 			{!isLayoutEmbedded && room.announcement && <Announcement announcement={room.announcement} announcementDetails={undefined} />}
-			<div className='main-content-flex'>
+			<Box className={['main-content-flex', listStyle]}>
 				<section
 					className={`messages-container flex-tab-main-content ${admin ? 'admin' : ''}`}
 					id={`chat-window-${room._id}`}
@@ -561,6 +573,13 @@ const RoomBody = (): ReactElement => {
 									/>
 								))}
 							</div>
+							{bubbleDate && (
+								<Box className={[bubbleDateStyle, showBubble && 'bubble-visible']}>
+									<Bubble small secondary>
+										{formatDate(bubbleDate)}
+									</Bubble>
+								</Box>
+							)}
 							{unread && (
 								<UnreadMessagesIndicator
 									count={unread.count}
@@ -647,7 +666,7 @@ const RoomBody = (): ReactElement => {
 						</div>
 					</div>
 				</section>
-			</div>
+			</Box>
 		</>
 	);
 };
