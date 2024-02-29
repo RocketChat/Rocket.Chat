@@ -20,7 +20,7 @@ import { isAtBottom } from '../../../../app/ui/client/views/app/lib/scrolling';
 import { callbacks } from '../../../../lib/callbacks';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { withDebouncing, withThrottling } from '../../../../lib/utils/highOrderFunctions';
-import ScrollableContentWrapper from '../../../components/ScrollableContentWrapper';
+import { CustomScrollbars } from '../../../components/CustomScrollbars';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
 import { RoomManager } from '../../../lib/RoomManager';
@@ -35,6 +35,7 @@ import RoomComposer from '../composer/RoomComposer/RoomComposer';
 import { useChat } from '../contexts/ChatContext';
 import { useRoom, useRoomSubscription, useRoomMessages } from '../contexts/RoomContext';
 import { useRoomToolbox } from '../contexts/RoomToolboxContext';
+import { useUserCard } from '../contexts/UserCardContext';
 import { useMessageListNavigation } from '../hooks/useMessageListNavigation';
 import { useScrollMessageList } from '../hooks/useScrollMessageList';
 import DropTargetOverlay from './DropTargetOverlay';
@@ -75,6 +76,7 @@ const RoomBody = (): ReactElement => {
 	const lastScrollTopRef = useRef(0);
 
 	const chat = useChat();
+	const { openUserCard, triggerProps } = useUserCard();
 
 	if (!chat) {
 		throw new Error('No ChatContext provided');
@@ -181,9 +183,9 @@ const RoomBody = (): ReactElement => {
 				return;
 			}
 
-			chat?.userCard.openUserCard(event, username);
+			openUserCard(event, username);
 		},
-		[chat?.userCard],
+		[openUserCard],
 	);
 
 	const handleUnreadBarJumpToButtonClick = useCallback(() => {
@@ -588,6 +590,7 @@ const RoomBody = (): ReactElement => {
 										name={roomLeader.name}
 										visible={!hideLeaderHeader}
 										onAvatarClick={handleOpenUserCard}
+										triggerProps={triggerProps}
 									/>
 								) : null}
 								<div
@@ -601,7 +604,7 @@ const RoomBody = (): ReactElement => {
 										.join(' ')}
 								>
 									<MessageListErrorBoundary>
-										<ScrollableContentWrapper ref={wrapperRef}>
+										<CustomScrollbars ref={wrapperRef}>
 											<ul
 												ref={messageListRef}
 												className='messages-list'
@@ -626,7 +629,7 @@ const RoomBody = (): ReactElement => {
 													<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
 												) : null}
 											</ul>
-										</ScrollableContentWrapper>
+										</CustomScrollbars>
 									</MessageListErrorBoundary>
 								</div>
 							</div>

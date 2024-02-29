@@ -29,8 +29,13 @@ test.describe.serial('Messaging', () => {
 		await page.keyboard.press('Shift+Tab');
 		await expect(page.locator('[data-qa-type="message"]').last()).toBeFocused();
 
-		// move focus to the first typed message
+		// move focus to the first system message
 		await page.keyboard.press('ArrowUp');
+		await page.keyboard.press('ArrowUp');
+		await expect(page.locator('[data-qa="system-message"]').first()).toBeFocused();
+
+		// move focus to the first typed message
+		await page.keyboard.press('ArrowDown');
 		await expect(page.locator('[data-qa-type="message"]:has-text("msg1")')).toBeFocused();
 
 		// move focus to the favorite icon
@@ -48,15 +53,47 @@ test.describe.serial('Messaging', () => {
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('Tab');
 		await expect(page.locator('[data-qa-type="message"]:has-text("msg1")').locator('[role=toolbar][aria-label="Message actions"]').getByRole('button', { name: 'Add reaction' })).toBeFocused();
-
-		// move focus to the first system message
-		await page.keyboard.press('Tab');
-		await page.keyboard.press('ArrowDown');
-		await expect(page.locator('[data-qa="system-message"]').first()).toBeFocused();
-
+		
 		// move focus to the composer
 		await page.keyboard.press('Tab');
+		await page.keyboard.press('Tab');
+		await page.keyboard.press('Tab');
 		await expect(poHomeChannel.composer).toBeFocused();
+	});
+
+	test('should navigate properly on the user card', async ({ page }) => {
+		await poHomeChannel.sidenav.openChat(targetChannel);
+
+		// open UserCard
+		await page.keyboard.press('Shift+Tab');
+		await page.keyboard.press('ArrowUp');
+		await page.keyboard.press('Tab');
+		await page.keyboard.press('Space');
+		await expect(poHomeChannel.userCardToolbar).toBeVisible();
+
+		// close UserCard with Esc
+		await page.keyboard.press('Escape');
+		await expect(poHomeChannel.userCardToolbar).not.toBeVisible();
+
+		// with focus restored reopen toolbar
+		await page.keyboard.press('Space');
+		await expect(poHomeChannel.userCardToolbar).toBeVisible();
+
+		// close UserCard with button
+		await page.keyboard.press('Tab');
+		await page.keyboard.press('Tab');
+		await page.keyboard.press('Tab');
+		await page.keyboard.press('Space');
+		await expect(poHomeChannel.userCardToolbar).not.toBeVisible();
+	})
+
+	test('should not restore focus on the last focused if it was triggered by click', async ({ page }) => {
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		await page.locator('[data-qa-type="message"]:has-text("msg1")').click();	
+		await poHomeChannel.composer.click();
+		await page.locator('[data-qa-type="message"]:has-text("msg2")').click();
+
+		await expect(page.locator('[data-qa-type="message"]:has-text("msg2")')).toBeFocused();
 	});
 
 	test('expect show "hello word" in both contexts (targetChannel)', async ({ browser }) => {
