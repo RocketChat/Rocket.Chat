@@ -113,7 +113,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 								const system = MessageTypes.isSystemMessage(message);
 
 								if (newDay) {
-									dividerRefs.current[index] = dividerRefs.current[index] ?? React.createRef();
+									Object.assign(dividerRefs.current, { [index]: dividerRefs.current[index] ?? React.createRef() });
 								}
 
 								return (
