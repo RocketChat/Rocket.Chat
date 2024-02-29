@@ -1,8 +1,8 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isThreadMessage } from '@rocket.chat/core-typings';
 import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, ForwardedRef, MutableRefObject } from 'react';
-import React, { Fragment, forwardRef, useImperativeHandle, useRef } from 'react';
+import type { ComponentProps } from 'react';
+import React, { Fragment, forwardRef } from 'react';
 
 import { MessageTypes } from '../../../../app/ui-utils/client';
 import { useRoomSubscription } from '../contexts/RoomContext';
@@ -18,18 +18,12 @@ type MessageListProps = {
 	scrollMessageList: ComponentProps<typeof MessageListProvider>['scrollMessageList'];
 };
 
-export const MessageList = forwardRef(function MessageList(
-	{ rid, scrollMessageList }: MessageListProps,
-	ref: ForwardedRef<{ [key: number]: MutableRefObject<HTMLElement> }>,
-) {
+export const MessageList = forwardRef(function MessageList({ rid, scrollMessageList }: MessageListProps) {
 	const messages = useMessages({ rid });
 	const subscription = useRoomSubscription();
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 	const messageGroupingPeriod = Number(useSetting('Message_GroupingPeriod'));
 	const firstUnreadMessageId = useFirstUnreadMessageId();
-
-	const internalRefs = useRef<{ [key: number]: MutableRefObject<HTMLElement> }>({});
-	useImperativeHandle(ref, () => internalRefs.current, [internalRefs]);
 
 	return (
 		<MessageListProvider scrollMessageList={scrollMessageList}>
