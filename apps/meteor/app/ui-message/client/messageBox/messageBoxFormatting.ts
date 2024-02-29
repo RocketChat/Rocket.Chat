@@ -6,28 +6,29 @@ import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import { settings } from '../../../settings/client';
 import AddLinkComposerActionModal from './AddLinkComposerActionModal';
 
-export type FormattingButton =
-	| {
-			label: TranslationKey;
-			icon: IconName;
-			pattern: string;
-			// text?: () => string | undefined;
-			command?: string;
-			link?: string;
-			condition?: () => boolean;
-	  }
-	| {
-			label: TranslationKey;
-			text: () => string | undefined;
-			link: string;
-			condition?: () => boolean;
-	  }
-	| {
-			label: TranslationKey;
-			prompt: (composer: ComposerAPI) => void;
-			condition?: () => boolean;
-			icon: IconName;
-	  };
+type FormattingButtonDefault = { label: TranslationKey; condition?: () => boolean };
+
+type TextButton = {
+	text: () => string | undefined;
+	link: string;
+} & FormattingButtonDefault;
+
+type PatternButton = {
+	icon: IconName;
+	pattern: string;
+	// text?: () => string | undefined;
+	command?: string;
+	link?: string;
+} & FormattingButtonDefault;
+
+type PromptButton = {
+	prompt: (composer: ComposerAPI) => void;
+	icon: IconName;
+} & FormattingButtonDefault;
+
+export type FormattingButton = PatternButton | PromptButton | TextButton;
+
+export const isPromptButton = (button: FormattingButton): button is PromptButton => 'prompt' in button;
 
 export const formattingButtons: ReadonlyArray<FormattingButton> = [
 	{
@@ -72,7 +73,7 @@ export const formattingButtons: ReadonlyArray<FormattingButton> = [
 
 			const onConfirm = (url: string, text: string) => {
 				onClose();
-				composerApi.replaceText(`[${text}](${url}) `, selection);
+				composerApi.replaceText(`[${text}](${url})`, selection);
 				composerApi.setCursorToEnd();
 			};
 

@@ -14,12 +14,7 @@ type AddLinkComposerActionModalProps = {
 const AddLinkComposerActionModal = ({ selectedText, onClose, onConfirm }: AddLinkComposerActionModalProps) => {
 	const t = useTranslation();
 
-	const {
-		formState: { isValid, errors },
-		register,
-		handleSubmit,
-		setFocus,
-	} = useForm({
+	const { register, handleSubmit, setFocus } = useForm({
 		mode: 'onBlur',
 		defaultValues: {
 			text: selectedText || '',
@@ -43,7 +38,6 @@ const AddLinkComposerActionModal = ({ selectedText, onClose, onConfirm }: AddLin
 			icon={null}
 			confirmText={t('Add')}
 			onConfirm={submit}
-			confirmDisabled={!isValid}
 			onClose={onClose}
 			onCancel={onClose}
 			title={t('Add_link')}
@@ -52,16 +46,14 @@ const AddLinkComposerActionModal = ({ selectedText, onClose, onConfirm }: AddLin
 				<Field>
 					<FieldLabel>{t('Text')}</FieldLabel>
 					<FieldRow>
-						<TextInput {...register('text', { required: t('The_field_is_required', t('Text')) })} />
+						<TextInput {...register('text')} />
 					</FieldRow>
-					{errors?.text && <FieldError>{t('The_field_is_required', t('Text'))}</FieldError>}
 				</Field>
 				<Field>
 					<FieldLabel>{t('URL')}</FieldLabel>
 					<FieldRow>
-						<TextInput {...register('url', { required: t('The_field_is_required', t('URL')) })} />
+						<TextInput {...register('url')} />
 					</FieldRow>
-					{errors?.url && <FieldError>{t('The_field_is_required', t('URL'))}</FieldError>}
 				</Field>
 				<input type='submit' hidden />
 			</FieldGroup>
