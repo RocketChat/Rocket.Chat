@@ -217,6 +217,10 @@ const api = {
 		openWidget();
 	},
 
+	closeWidget() {
+		closeWidget();
+	},
+
 	resizeWidget(height) {
 		resizeWidget(height);
 	},
