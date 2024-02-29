@@ -1,12 +1,16 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useMemo, useState } from 'react';
 
 type DateListContextValue = {
 	list: Set<HTMLElement>;
-	addToList: (value: HTMLElement) => () => void;
-	useDateRef: () => (ref: HTMLElement | null) => void;
+	dateRef: () => (ref: HTMLElement | null) => void;
 };
 
 const DateListContext = createContext<DateListContextValue | undefined>(undefined);
+
+const useDateRef = () => {
+	const context = useDateListController();
+	return useMemo(() => context.dateRef(), [context]);
+};
 
 const DateListProvider = ({ children }: { children: React.ReactNode }) => {
 	const [list] = useState<Set<HTMLElement>>(new Set<HTMLElement>());
@@ -18,7 +22,7 @@ const DateListProvider = ({ children }: { children: React.ReactNode }) => {
 		};
 	};
 
-	const useDateRef = () => {
+	const dateRef = () => {
 		let remove: () => void;
 		return (ref: HTMLElement | null) => {
 			if (remove) remove();
@@ -28,7 +32,7 @@ const DateListProvider = ({ children }: { children: React.ReactNode }) => {
 		};
 	};
 
-	return <DateListContext.Provider value={{ list, addToList, useDateRef }}>{children}</DateListContext.Provider>;
+	return <DateListContext.Provider value={{ list, dateRef }}>{children}</DateListContext.Provider>;
 };
 
 const useDateListController = () => {
@@ -39,4 +43,4 @@ const useDateListController = () => {
 	return context;
 };
 
-export { DateListProvider, useDateListController };
+export { DateListProvider, useDateListController, useDateRef };

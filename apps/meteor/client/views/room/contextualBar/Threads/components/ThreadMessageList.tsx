@@ -13,6 +13,7 @@ import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../../../MessageList/providers/MessageListProvider';
 import LoadingMessagesIndicator from '../../../body/LoadingMessagesIndicator';
 import { useDateScroll } from '../../../hooks/useDateScroll';
+import { useFirstUnreadMessageId } from '../../../hooks/useFirstUnreadMessageId';
 import { useMessageListNavigation } from '../../../hooks/useMessageListNavigation';
 import { useScrollMessageList } from '../../../hooks/useScrollMessageList';
 import { useDateListController } from '../../../providers/DateListProvider';
@@ -64,7 +65,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
-
+	const firstUnreadMessageId = useFirstUnreadMessageId();
 	const messageGroupingPeriod = Number(useSetting('Message_GroupingPeriod'));
 
 	const scrollMessageList = useScrollMessageList(listWrapperScrollRef);
@@ -100,6 +101,9 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 								const newDay = isMessageNewDay(message, previous);
 								const shouldShowAsSequential = sequential && !newDay;
 
+								const firstUnread = firstUnreadMessageId === message._id;
+								const system = MessageTypes.isSystemMessage(message);
+
 								return (
 									<Fragment key={message._id}>
 										<ThreadMessageItem
@@ -108,6 +112,8 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 											sequential={sequential}
 											shouldShowAsSequential={shouldShowAsSequential}
 											showUserAvatar={showUserAvatar}
+											firstUnread={firstUnread}
+											system={system}
 										/>
 									</Fragment>
 								);

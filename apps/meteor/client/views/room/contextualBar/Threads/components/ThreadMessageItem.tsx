@@ -3,13 +3,11 @@ import { Box, Bubble, MessageDivider } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import { MessageTypes } from '../../../../../../app/ui-utils/client';
 import SystemMessage from '../../../../../components/message/variants/SystemMessage';
 import ThreadMessage from '../../../../../components/message/variants/ThreadMessage';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
 import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
-import { useFirstUnreadMessageId } from '../../../hooks/useFirstUnreadMessageId';
-import { useDateListController } from '../../../providers/DateListProvider';
+import { useDateRef } from '../../../providers/DateListProvider';
 
 type ThreadMessageProps = {
 	message: IThreadMessage | IThreadMainMessage;
@@ -17,19 +15,25 @@ type ThreadMessageProps = {
 	sequential: boolean;
 	shouldShowAsSequential: boolean;
 	showUserAvatar: boolean;
+	firstUnread: boolean;
+	system: boolean;
 };
 
-export const ThreadMessageItem = ({ message, previous, shouldShowAsSequential, showUserAvatar }: ThreadMessageProps) => {
+export const ThreadMessageItem = ({
+	message,
+	previous,
+	shouldShowAsSequential,
+	showUserAvatar,
+	firstUnread,
+	system,
+}: ThreadMessageProps) => {
 	const t = useTranslation();
 	const formatDate = useFormatDate();
-	const { useDateRef } = useDateListController();
 	const ref = useDateRef();
+
 	const newDay = isMessageNewDay(message, previous);
 
-	const firstUnreadMessageId = useFirstUnreadMessageId();
-	const firstUnread = firstUnreadMessageId === message._id;
 	const showDivider = newDay || firstUnread;
-	const system = MessageTypes.isSystemMessage(message);
 
 	return (
 		<>
