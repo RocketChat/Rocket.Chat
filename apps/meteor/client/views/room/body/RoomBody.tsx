@@ -31,9 +31,6 @@ import { setMessageJumpQueryStringParameter } from '../../../lib/utils/setMessag
 import Announcement from '../Announcement';
 import { MessageList } from '../MessageList';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
-import { useMessages } from '../MessageList/hooks/useMessages';
-import { isMessageNewDay } from '../MessageList/lib/isMessageNewDay';
-import MessageListProvider from '../MessageList/providers/MessageListProvider';
 import ComposerContainer from '../composer/ComposerContainer';
 import RoomComposer from '../composer/RoomComposer/RoomComposer';
 import { useChat } from '../contexts/ChatContext';
@@ -43,7 +40,6 @@ import { useUserCard } from '../contexts/UserCardContext';
 import { useDateScroll } from '../hooks/useDateScroll';
 import { useMessageListNavigation } from '../hooks/useMessageListNavigation';
 import { useScrollMessageList } from '../hooks/useScrollMessageList';
-import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
 import LeaderBar from './LeaderBar';
@@ -69,7 +65,6 @@ const RoomBody = (): ReactElement => {
 	const toolbox = useRoomToolbox();
 	const admin = useRole('admin');
 	const subscription = useRoomSubscription();
-	const messages = useMessages({ rid: room._id });
 	const { bubbleDate, onScroll: handleDateOnScroll, showBubble, style: bubbleDateStyle } = useDateScroll(BUBBLE_OFFSET);
 
 	const [lastMessageDate, setLastMessageDate] = useState<Date | undefined>();
@@ -644,19 +639,7 @@ const RoomBody = (): ReactElement => {
 														)}
 													</>
 												) : null}
-												<MessageListProvider scrollMessageList={scrollMessageList}>
-													<SelectedMessagesProvider>
-														{messages.map((message, index, { [index - 1]: previous }) => {
-															const newDay = isMessageNewDay(message, previous);
-															if (newDay) {
-																dividerRefs.current[index] = dividerRefs.current[index] ?? React.createRef();
-															}
-															return (
-																<MessageList key={message._id} message={message} previous={previous} ref={dividerRefs.current[index]} />
-															);
-														})}
-													</SelectedMessagesProvider>
-												</MessageListProvider>
+												<MessageList rid={room._id} scrollMessageList={scrollMessageList} ref={dividerRefs} />
 												{hasMoreNextMessages ? (
 													<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
 												) : null}
