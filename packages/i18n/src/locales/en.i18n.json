@@ -5879,6 +5879,7 @@
   "You_are_not_authorized_to_view_this_page": "You are not authorized to view this page.",
   "You_can_change_a_different_avatar_too": "You can override the avatar used to post from this integration.",
   "You_can_close_this_window_now": "You can close this window now.",
+  "You_can_do_from_account_preferences": "You can do this later from your account preferences",
   "You_can_search_using_RegExp_eg": "You can search using <a href=\"https://en.wikipedia.org/wiki/Regular_expression\" target=\"_blank\">Regular Expression</a>. e.g. <code class='code-colors inline'>/^text$/i</code>",
   "You_can_try_to": "You can try to",
   "You_can_use_an_emoji_as_avatar": "You can also use an emoji as an avatar.",

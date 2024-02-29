@@ -29,6 +29,7 @@ const SaveE2EPasswordModal = ({ randomPassword, onClose, onCancel, onConfirm }: 
 			confirmText={t('I_Saved_My_Password')}
 			variant='warning'
 			title={t('Save_your_encryption_password')}
+			annotation={t('You_can_do_from_account_preferences')}
 		>
 			<Box fontScale='p1'>
 				<Box is='span'>
