@@ -1,4 +1,4 @@
-import { Field, FieldGroup, TextInput, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage';
+import { Field, FieldGroup, TextInput, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
