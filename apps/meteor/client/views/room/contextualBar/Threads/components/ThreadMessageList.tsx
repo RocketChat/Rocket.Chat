@@ -8,7 +8,7 @@ import React, { Fragment } from 'react';
 
 import { MessageTypes } from '../../../../../../app/ui-utils/client';
 import { isTruthy } from '../../../../../../lib/isTruthy';
-import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
+import { CustomScrollbars } from '../../../../../components/CustomScrollbars';
 import SystemMessage from '../../../../../components/message/variants/SystemMessage';
 import ThreadMessage from '../../../../../components/message/variants/ThreadMessage';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
@@ -74,11 +74,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 
 	return (
 		<div className={['thread-list js-scroll-thread', hideUsernames && 'hide-usernames'].filter(isTruthy).join(' ')}>
-			<ScrollableContentWrapper
-				ref={listWrapperScrollRef}
-				onScroll={handleScroll}
-				style={{ scrollBehavior: 'smooth', overflowX: 'hidden' }}
-			>
+			<CustomScrollbars ref={listWrapperScrollRef} onScroll={handleScroll} style={{ scrollBehavior: 'smooth', overflowX: 'hidden' }}>
 				<ul className='thread' ref={listRef} style={{ scrollBehavior: 'smooth', overflowX: 'hidden' }} {...messageListProps}>
 					{loading ? (
 						<li className='load-more'>
@@ -121,7 +117,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 						</MessageListProvider>
 					)}
 				</ul>
-			</ScrollableContentWrapper>
+			</CustomScrollbars>
 		</div>
 	);
 };
