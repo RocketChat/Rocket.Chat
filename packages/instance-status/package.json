@@ -1,13 +1,13 @@
 {
 	"name": "@rocket.chat/instance-status",
-	"version": "0.0.28",
+	"version": "0.0.29",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
 		"eslint": "~8.45.0",
 		"mongodb": "^4.17.2",
 		"prettier": "~2.8.8",
-		"typescript": "~5.3.2"
+		"typescript": "~5.3.3"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
