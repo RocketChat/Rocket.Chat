@@ -37,17 +37,15 @@ export async function getMentions(message: IMessage): Promise<{ toAll: boolean; 
 	const filteredMentions = mentions
 		.filter((mention) => {
 			if (mention.type === 'team') { teamsMentions.push(mention); }
-
 			return !mention.type || mention.type === 'user';
 		})
 		.filter(({ _id }) => _id !== senderId && !['all', 'here'].includes(_id))
 		.map(({ _id }) => _id);
 
-	// TODO: Rewrite to only call when there are team mentions
-	const mentionIds = await callbacks.run('beforeGetMentions', filteredMentions, {
-		message,
-		otherMentions: teamsMentions
-	});
+	let mentionIds = filteredMentions;
+	if (teamsMentions.length > 0) {
+		mentionIds = await callbacks.run('beforeGetMentions', filteredMentions, teamsMentions);
+	}
 
 	return {
 		toAll,
