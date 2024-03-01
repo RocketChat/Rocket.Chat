@@ -8,9 +8,10 @@ import { useDateListController } from '../providers/DateListProvider';
 type useDateScrollReturn = {
 	bubbleDate: string | undefined;
 	innerRef: (node: HTMLElement | null) => void;
-	style?: ReturnType<typeof css>;
+	className?: ReturnType<typeof css>;
 	showBubble: boolean;
 	listStyle?: ReturnType<typeof css>;
+	style?: React.CSSProperties;
 };
 
 export const useDateScroll = (margin = 8): useDateScrollReturn => {
@@ -18,11 +19,13 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 		useState<{
 			date: string;
 			show: boolean;
-			style?: ReturnType<typeof css>;
+			style?: React.CSSProperties;
+			className?: ReturnType<typeof css>;
 		}>({
 			date: '',
 			show: false,
 			style: undefined,
+			className: undefined,
 		}),
 	);
 
@@ -41,7 +44,7 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 					const bubbleOffset = offset;
 
 					// Gets the first non visible message date and sets the bubble date to it
-					const [date, message, top] = [...elements].reduce((ret, message) => {
+					const [date, message, style] = [...elements].reduce((ret, message) => {
 						// Sanitize elements
 						if (!message.dataset.id) {
 							return ret;
@@ -52,30 +55,46 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 
 						// if the bubble if between the divider and the top, position it at the top of the divider
 						if (top > bubbleOffset && top < bubbleOffset + height) {
-							return [ret[0] || new Date(id).toISOString(), ret[1] || message, top - height - offset + margin];
+							return [
+								ret[0] || new Date(id).toISOString(),
+								ret[1] || message,
+								{
+									position: 'absolute',
+									top: `${top - height - offset + margin}px`,
+									left: ' 50%',
+									translate: '-50%',
+									zIndex: 1,
+								},
+							];
 						}
 
 						if (top < bubbleOffset + height) {
-							return [new Date(id).toISOString(), message];
+							return [
+								new Date(id).toISOString(),
+								message,
+								{
+									position: 'absolute',
+									top: `${margin}px`,
+									left: ' 50%',
+									translate: '-50%',
+									zIndex: 1,
+								},
+							];
 						}
 						return ret;
-					}, [] as [string, HTMLElement, number?] | []);
+					}, [] as [string, HTMLElement, { [key: number]: string | number }?] | []);
+					// try: return o style no reduce
+					// try2: div wrapper 1 upload e blabla, div wrapper 2 do box da bubble com posição relativa a div wrapper 1. trocar wrapper 2 de lugar com a unread, e fazer ela ficar abaixo, quando tiver lá
 
 					// We always keep the previous date if we don't have a new one, so when the bubble disappears it doesn't flicker
 					setBubbleDate(() => ({
 						date: '',
 						...(date && { date }),
 						show: Boolean(date),
-						style: css`
-							position: absolute;
-							top: ${top || margin}px;
-							left: 50%;
-							translate: -50%;
-							z-index: 1;
-
+						style,
+						className: css`
 							opacity: 0;
 							transition: opacity 0.6s;
-
 							&.bubble-visible {
 								opacity: 1;
 							}

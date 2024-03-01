@@ -56,6 +56,7 @@ const RoomBody = (): ReactElement => {
 	const toolbox = useRoomToolbox();
 	const admin = useRole('admin');
 	const subscription = useRoomSubscription();
+
 	const retentionPolicy = useRetentionPolicy(room);
 
 	const hideFlexTab = useUserPreference<boolean>('hideFlexTab') || undefined;
@@ -98,7 +99,14 @@ const RoomBody = (): ReactElement => {
 		counter: [unread],
 	} = useHandleUnread(room, subscription);
 
-	const { innerRef: dateScrollInnerRef, listStyle, bubbleDate, showBubble, style: bubbleDateStyle } = useDateScroll();
+	const {
+		innerRef: dateScrollInnerRef,
+		listStyle,
+		bubbleDate,
+		showBubble,
+		style: bubbleDateStyle,
+		className: bubbleDateClassName,
+	} = useDateScroll();
 
 	const { innerRef: isAtBottomInnerRef, atBottomRef, sendToBottom, sendToBottomIfNecessary, isAtBottom } = useListIsAtBottom();
 
@@ -241,7 +249,7 @@ const RoomBody = (): ReactElement => {
 								))}
 							</div>
 							{bubbleDate && (
-								<Box className={[bubbleDateStyle, showBubble && 'bubble-visible']}>
+								<Box className={[bubbleDateClassName, showBubble && 'bubble-visible']} style={bubbleDateStyle}>
 									<Bubble small secondary>
 										{formatDate(bubbleDate)}
 									</Bubble>
