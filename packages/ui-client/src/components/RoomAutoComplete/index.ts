@@ -1,1 +1,1 @@
-export { default } from './RoomAutoComplete';
+export { default as RoomAutoComplete } from './RoomAutoComplete';

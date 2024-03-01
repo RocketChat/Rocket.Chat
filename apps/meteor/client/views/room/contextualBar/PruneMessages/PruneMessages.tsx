@@ -1,5 +1,6 @@
 import { Field, FieldLabel, FieldRow, ButtonGroup, Button, CheckBox, Callout } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { UserAutoCompleteMultiple } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -13,7 +14,6 @@ import {
 	ContextualbarFooter,
 	ContextualbarClose,
 } from '../../../../components/Contextualbar';
-import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import PruneMessagesDateTimeRow from './PruneMessagesDateTimeRow';
 
 type PruneMessagesProps = {

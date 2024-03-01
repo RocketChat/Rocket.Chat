@@ -2,6 +2,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, Button, ButtonGroup, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { UserAutoCompleteMultiple, UserAutoCompleteMultipleFederated } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -15,8 +16,6 @@ import {
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
 } from '../../../../../components/Contextualbar';
-import UserAutoCompleteMultiple from '../../../../../components/UserAutoCompleteMultiple';
-import UserAutoCompleteMultipleFederated from '../../../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
 import { useRoom } from '../../../contexts/RoomContext';
 import { useRoomToolbox } from '../../../contexts/RoomToolboxContext';
 import { useAddMatrixUsers } from './AddMatrixUsers/useAddMatrixUsers';

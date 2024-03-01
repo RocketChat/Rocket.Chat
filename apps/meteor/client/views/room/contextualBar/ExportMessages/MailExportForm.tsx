@@ -17,13 +17,13 @@ import {
 	Select,
 } from '@rocket.chat/fuselage';
 import { useAutoFocus, useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { UserAutoCompleteMultiple } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useContext } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import { validateEmail } from '../../../../../lib/emailValidator';
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../components/Contextualbar';
-import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import { SelectedMessageContext, useCountSelected } from '../../MessageList/contexts/SelectedMessagesContext';
 import type { MailExportFormValues } from './ExportMessages';
 import { useRoomExportMutation } from './useRoomExportMutation';

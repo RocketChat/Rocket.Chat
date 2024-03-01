@@ -1,14 +1,13 @@
 import type { IRole, IRoom } from '@rocket.chat/core-typings';
 import { Box, Field, FieldLabel, FieldRow, Margins, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { RoomAutoComplete } from '@rocket.chat/ui-client';
+import { UserAutoCompleteMultiple, RoomAutoComplete } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useRef } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { Page, PageHeader, PageContent } from '../../../../components/Page';
-import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import UsersInRoleTable from './UsersInRoleTable';
 
 type UsersInRolePayload = {

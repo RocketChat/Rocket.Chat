@@ -13,6 +13,7 @@ import {
 	FieldDescription,
 } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { UserAutoCompleteMultiple } from '@rocket.chat/ui-client';
 import {
 	useEndpoint,
 	usePermission,
@@ -25,7 +26,6 @@ import type { ComponentProps, ReactElement } from 'react';
 import React, { memo, useEffect, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
-import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
 
 type CreateTeamModalInputs = {

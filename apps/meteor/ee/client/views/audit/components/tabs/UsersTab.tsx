@@ -1,11 +1,11 @@
 import { Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage';
+import { UserAutoCompleteMultiple } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 import type { UseFormReturn } from 'react-hook-form';
 import { useController } from 'react-hook-form';
 
-import UserAutoCompleteMultiple from '../../../../../../client/components/UserAutoCompleteMultiple';
 import type { AuditFields } from '../../hooks/useAuditForm';
 
 type UsersTabProps = {

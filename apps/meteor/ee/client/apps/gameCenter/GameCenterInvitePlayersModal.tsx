@@ -1,11 +1,11 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
+import { UserAutoCompleteMultipleFederated } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useState } from 'react';
 
 import GenericModal from '../../../../client/components/GenericModal';
-import UserAutoCompleteMultipleFederated from '../../../../client/components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
 import { useOpenedRoom } from '../../../../client/lib/RoomManager';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';

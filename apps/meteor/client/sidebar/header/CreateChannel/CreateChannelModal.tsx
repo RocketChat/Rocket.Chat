@@ -14,6 +14,7 @@ import {
 	FieldDescription,
 } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { UserAutoCompleteMultipleFederated } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import {
 	useSetting,
@@ -28,7 +29,6 @@ import React, { useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
-import UserAutoCompleteMultipleFederated from '../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
 
 type CreateChannelModalProps = {
