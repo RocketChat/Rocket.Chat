@@ -1,6 +1,6 @@
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
 
-import UserAutoComplete from '.';
+import { UserAutoComplete } from '.';
 
 export default {
 	title: 'Components/UserAutoComplete',
