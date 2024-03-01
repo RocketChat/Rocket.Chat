@@ -153,7 +153,7 @@ export class HomeContent {
 	}
 
 	get btnMenuMoreActions() {
-		return this.page.locator('[data-qa-id="menu-more-actions"]');
+		return this.page.getByRole('button', { name: 'More actions' });
 	}
 
 	get userCard(): Locator {
