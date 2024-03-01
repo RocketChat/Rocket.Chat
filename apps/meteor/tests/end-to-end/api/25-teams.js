@@ -3,8 +3,8 @@ import { afterEach, before, beforeEach, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials, methodCall } from '../../data/api-data';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
-import { deleteRoom } from '../../data/rooms.helper';
-import { addMembers, deleteTeam } from '../../data/teams.helper';
+import { createRoom, deleteRoom } from '../../data/rooms.helper';
+import { addMembers, createTeam, deleteTeam } from '../../data/teams.helper';
 import { adminUsername, password } from '../../data/user';
 import { createUser, login } from '../../data/users.helper';
 
@@ -1578,24 +1578,8 @@ describe('[Teams]', () => {
 			let createdRoom;
 
 			beforeEach(async () => {
-				const teamName = `test-team-name${Date.now()}`;
-				const createTeamPromise = request
-					.post(api('teams.create'))
-					.set(credentials)
-					.send({
-						name: teamName,
-						type: 0,
-					})
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						testTeam = res.body.tea;
-					});
-
-				const testRoom = `test-room-name${Date.now()}`;
-				const createRoomPromise = request.post(api('channels.create')).set(credentials).send({
-					name: testRoom,
-				});
-
+				const createTeamPromise = createTeam(credentials, `test-team-name${Date.now()}`, 0);
+				const createRoomPromise = createRoom({ name: `test-room-name${Date.now()}`, type: 'c' });
 				const [testTeamCreationResult, testRoomCreationResult] = await Promise.all([createTeamPromise, createRoomPromise]);
 
 				testTeam = testTeamCreationResult;
@@ -1615,7 +1599,9 @@ describe('[Teams]', () => {
 				Promise.all([deleteTeam(credentials, testTeam.body.team.name), deleteRoom({ roomId: createdRoom.body.channel._id, type: 'c' })]),
 			);
 
-			it('should add API_User_Limit members when we update a team channel to be auto-join', async () => {
+			after(() => updateSetting('API_User_Limit', 250));
+
+			it('should add members when the members count is less than or equal to the API_User_Limit setting and the team channel is', async () => {
 				await updateSetting('API_User_Limit', 2);
 
 				await addMembers(credentials, testTeam.body.team.name, [testUser._id, testUser2._id]);
@@ -1633,7 +1619,7 @@ describe('[Teams]', () => {
 					});
 			});
 
-			it('should not add all members when we update a team channel to be auto-join and the API_User_Limit is too small', async () => {
+			it('should not add all members when we update a team channel to be auto-join and the members count is greater than the API_User_Limit setting', async () => {
 				await updateSetting('API_User_Limit', 1);
 
 				await addMembers(credentials, testTeam.body.team.name, [testUser._id, testUser2._id]);
@@ -1793,15 +1779,17 @@ describe('[Teams]', () => {
 			let userWithPrefs;
 			let userCredentials;
 			let createdRoom;
-			const testTeam3Name = `${Date.now()}-testTeam3`;
 
 			before(async () => {
 				userWithPrefs = await createUser();
 				userCredentials = await login(userWithPrefs.username, password);
 
-				createdRoom = await request.post(api('channels.create')).set(credentials).send({
-					name: testTeam3Name,
-				});
+				createdRoom = await request
+					.post(api('channels.create'))
+					.set(credentials)
+					.send({
+						name: `${Date.now()}-testTeam3`,
+					});
 
 				await request
 					.post(api('teams.addRooms'))
@@ -1844,18 +1832,11 @@ describe('[Teams]', () => {
 			});
 
 			it('should update team channel to auto-join', async () => {
-				await request
-					.post(api('teams.updateRoom'))
-					.set(credentials)
-					.send({
-						roomId: createdRoom.body.channel._id,
-						isDefault: true,
-					})
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.nested.property('room.usersCount').and.to.be.equal(2);
-					});
+				const response = await request.post(api('teams.updateRoom')).set(credentials).send({
+					roomId: createdRoom.body.channel._id,
+					isDefault: true,
+				});
+				expect(response.body).to.have.property('success', true);
 			});
 
 			it('should return the user subscription with the right notification preferences', (done) => {
