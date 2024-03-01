@@ -44,7 +44,7 @@ export async function getMentions(message: IMessage): Promise<{ toAll: boolean; 
 
 	let mentionIds = filteredMentions;
 	if (teamsMentions.length > 0) {
-		mentionIds = await callbacks.run('beforeGetMentions', filteredMentions, teamsMentions);
+		mentionIds = await callbacks.run('beforeGetTeamMentions', filteredMentions, teamsMentions);
 	}
 
 	return {
@@ -54,7 +54,6 @@ export async function getMentions(message: IMessage): Promise<{ toAll: boolean; 
 	};
 }
 
-// TODO: Find a way to merge these two functions into one and make it more efficient
 const incGroupMentions = async (rid: string, roomType: RoomType, excludeUserId: string, unreadCount: string): Promise<void> => {
 	const incUnreadByGroup = ['all_messages', 'group_mentions_only', 'user_and_group_mentions_only'].includes(unreadCount);
 	const incUnread = roomType === 'd' || roomType === 'l' || incUnreadByGroup ? 1 : 0;
@@ -78,19 +77,15 @@ export const getUserIdsFromHighlights = async (rid: string, message: IMessage): 
 
 const getUnreadSettingCount = (roomType: RoomType): string => {
 	let unreadSetting = 'Unread_Count';
-	switch (roomType) {
-		case 'd': {
-			unreadSetting = 'Unread_Count_DM';
-			break;
-		}
-		case 'l': {
-			unreadSetting = 'Unread_Count_Omni';
-			break;
-		}
+	if (roomType === 'd') {
+		unreadSetting = 'Unread_Count_DM';
+	} else if (roomType === 'l') {
+		unreadSetting = 'Unread_Count_Omni';
 	}
 
 	return settings.get(unreadSetting);
 };
+
 
 async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise<void> {
 	// Don't increase unread counter on thread messages
@@ -103,14 +98,13 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 
 		(await getUserIdsFromHighlights(room._id, message)).forEach((uid) => userIds.add(uid));
 
-		// give priority to user mentions over group mentions
 		if (userIds.size > 0) {
-			await incUserMentions(room._id, room.t, [...userIds], unreadCount, 1);
+			await incUserMentions(room._id, room.t, [...userIds], unreadCount);
 		} else if (toAll || toHere) {
-			await incGroupMentions(room._id, room.t, message.u._id, unreadCount, 1);
+			await incGroupMentions(room._id, room.t, message.u._id, unreadCount);
 		}
 
-		// this shouldn't run only if has group mentions because it will already exclude mentioned users from the query
+		// This shouldn't run only if has group mentions because it will already exclude mentioned users from the query
 		if (!toAll && !toHere && unreadCount === 'all_messages') {
 			await Subscriptions.incUnreadForRoomIdExcludingUserIds(room._id, [...userIds, message.u._id], 1);
 		}
@@ -125,7 +119,6 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 	]);
 }
 
-// TODO: Review this function as room is not used
 export async function updateThreadUsersSubscriptions(message: IMessage, room: IRoom, replies: string[]): Promise<void> {
 	// const unreadCount = settings.get('Unread_Count');
 	// incUserMentions(room._id, room.t, replies, unreadCount);
