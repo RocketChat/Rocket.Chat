@@ -10,3 +10,5 @@ export * as UserStatus from './UserStatus';
 export * from './Header';
 export * from './MultiSelectCustom/MultiSelectCustom';
 export * from './FeaturePreview/FeaturePreview';
+export { default as UserAutoComplete } from './UserAutoComplete';
+export { default as RoomAutoComplete } from './RoomAutoComplete';

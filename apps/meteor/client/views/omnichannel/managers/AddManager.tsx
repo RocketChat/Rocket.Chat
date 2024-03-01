@@ -1,10 +1,10 @@
 import { Button, Box, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { UserAutoComplete } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useState } from 'react';
 
-import UserAutoComplete from '../../../components/UserAutoComplete';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 
 const AddManager = ({ reload }: { reload: () => void }): ReactElement => {

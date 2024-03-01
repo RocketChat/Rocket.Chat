@@ -1,7 +1,6 @@
 import { Options } from '@rocket.chat/fuselage';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import type { FC } from 'react';
-import React from 'react';
 
 type AvatarProps = {
 	value: string;
