@@ -1,6 +1,7 @@
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
 import { Box, Bubble } from '@rocket.chat/fuselage';
+import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import {
 	usePermission,
 	useRole,
@@ -57,8 +58,6 @@ import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
 import { useRetentionPolicy } from './hooks/useRetentionPolicy';
 import { useUnreadMessages } from './hooks/useUnreadMessages';
 
-const BUBBLE_OFFSET = 8;
-
 const RoomBody = (): ReactElement => {
 	const formatDate = useFormatDate();
 	const t = useTranslation();
@@ -70,7 +69,7 @@ const RoomBody = (): ReactElement => {
 	const subscription = useRoomSubscription();
 
 	const { list } = useDateListController();
-	const { listStyle, bubbleDate, onScroll: handleDateOnScroll, showBubble, style: bubbleDateStyle } = useDateScroll(BUBBLE_OFFSET);
+	const { callbackRef, listStyle, bubbleDate, showBubble, style: bubbleDateStyle } = useDateScroll();
 
 	const [lastMessageDate, setLastMessageDate] = useState<Date | undefined>();
 	const [hideLeaderHeader, setHideLeaderHeader] = useState(false);
@@ -390,14 +389,12 @@ const RoomBody = (): ReactElement => {
 
 		wrapper.addEventListener('scroll', updateUnreadCount);
 		wrapper.addEventListener('scroll', handleWrapperScroll);
-		wrapper.addEventListener('scroll', () => handleDateOnScroll(list));
 
 		return () => {
 			wrapper.removeEventListener('scroll', updateUnreadCount);
 			wrapper.removeEventListener('scroll', handleWrapperScroll);
-			wrapper.removeEventListener('scroll', () => handleDateOnScroll(list));
 		};
-	}, [_isAtBottom, handleDateOnScroll, list, room._id, setUnreadCount]);
+	}, [_isAtBottom, list, room._id, setUnreadCount]);
 
 	useEffect(() => {
 		const wrapper = wrapperRef.current;
@@ -549,6 +546,8 @@ const RoomBody = (): ReactElement => {
 
 	const { messageListRef, messageListProps } = useMessageListNavigation();
 
+	const ref = useMergedRefs(callbackRef, wrapperRef);
+
 	return (
 		<>
 			{!isLayoutEmbedded && room.announcement && <Announcement announcement={room.announcement} announcementDetails={undefined} />}
@@ -559,7 +558,7 @@ const RoomBody = (): ReactElement => {
 					onClick={hideFlexTab && handleCloseFlexTab}
 				>
 					<div className='messages-container-wrapper'>
-						<div className='messages-container-main' {...fileUploadTriggerProps}>
+						<div className='messages-container-main' ref={callbackRef} {...fileUploadTriggerProps}>
 							<DropTargetOverlay {...fileUploadOverlayProps} />
 							<div className={['container-bars', uploads.length && 'show'].filter(isTruthy).join(' ')}>
 								{uploads.map((upload) => (
@@ -623,7 +622,7 @@ const RoomBody = (): ReactElement => {
 										.join(' ')}
 								>
 									<MessageListErrorBoundary>
-										<CustomScrollbars ref={wrapperRef}>
+										<CustomScrollbars ref={ref}>
 											<ul
 												ref={messageListRef}
 												className='messages-list'

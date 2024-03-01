@@ -96,7 +96,16 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 		<ContextualbarContent flexShrink={1} flexGrow={1} paddingInline={0} {...fileUploadTriggerProps}>
 			<DateListProvider>
 				<DropTargetOverlay {...fileUploadOverlayProps} />
-				<Box is='section' display='flex' flexDirection='column' flexGrow={1} flexShrink={1} flexBasis='auto' height='full'>
+				<Box
+					is='section'
+					position='relative'
+					display='flex'
+					flexDirection='column'
+					flexGrow={1}
+					flexShrink={1}
+					flexBasis='auto'
+					height='full'
+				>
 					<MessageListErrorBoundary>
 						<ThreadMessageList mainMessage={mainMessage} />
 					</MessageListErrorBoundary>

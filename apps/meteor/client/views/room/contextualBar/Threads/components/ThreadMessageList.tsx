@@ -17,13 +17,10 @@ import { useDateScroll } from '../../../hooks/useDateScroll';
 import { useFirstUnreadMessageId } from '../../../hooks/useFirstUnreadMessageId';
 import { useMessageListNavigation } from '../../../hooks/useMessageListNavigation';
 import { useScrollMessageList } from '../../../hooks/useScrollMessageList';
-import { useDateListController } from '../../../providers/DateListProvider';
 import { useLegacyThreadMessageJump } from '../hooks/useLegacyThreadMessageJump';
 import { useLegacyThreadMessageListScrolling } from '../hooks/useLegacyThreadMessageListScrolling';
 import { useLegacyThreadMessages } from '../hooks/useLegacyThreadMessages';
 import { ThreadMessageItem } from './ThreadMessageItem';
-
-const BUBBLE_OFFSET = 64;
 
 const isMessageSequential = (current: IMessage, previous: IMessage | undefined, groupingRange: number): boolean => {
 	if (!previous) {
@@ -54,8 +51,7 @@ type ThreadMessageListProps = {
 
 const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElement => {
 	const formatDate = useFormatDate();
-	const { list } = useDateListController();
-	const { listStyle, bubbleDate, onScroll: handleDateOnScroll, showBubble, style: bubbleDateStyle } = useDateScroll(BUBBLE_OFFSET);
+	const { callbackRef, listStyle, bubbleDate, showBubble, style: bubbleDateStyle } = useDateScroll();
 
 	const { messages, loading } = useLegacyThreadMessages(mainMessage._id);
 	const {
@@ -74,6 +70,8 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 	const { messageListRef, messageListProps } = useMessageListNavigation();
 	const listRef = useMergedRefs<HTMLElement | null>(listScrollRef, listJumpRef, messageListRef);
 
+	const scrollRef = useMergedRefs<HTMLElement | null>(callbackRef, listWrapperScrollRef);
+
 	return (
 		<div className={['thread-list js-scroll-thread', hideUsernames && 'hide-usernames'].filter(isTruthy).join(' ')}>
 			{bubbleDate && (
@@ -84,10 +82,9 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 				</Box>
 			)}
 			<CustomScrollbars
-				ref={listWrapperScrollRef}
+				ref={scrollRef}
 				onScroll={(args) => {
 					handleScroll(args);
-					handleDateOnScroll(list);
 				}}
 				style={{ scrollBehavior: 'smooth', overflowX: 'hidden' }}
 			>
