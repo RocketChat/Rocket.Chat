@@ -41,31 +41,34 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 					const bubbleOffset = offset;
 
 					// Gets the first non visible message date and sets the bubble date to it
-					const [date, message] = [...elements].reduce((ret, message) => {
+					const [date, message, top] = [...elements].reduce((ret, message) => {
 						// Sanitize elements
 						if (!message.dataset.id) {
 							return ret;
 						}
 
-						const { top } = message.getBoundingClientRect();
+						const { top, height } = message.getBoundingClientRect();
 						const { id } = message.dataset;
 
-						if (top < bubbleOffset) {
-							// Remove T - . : from the date
+						// if the bubble if between the divider and the top, position it at the top of the divider
+						if (top > bubbleOffset && top < bubbleOffset + height) {
+							return [ret[0] || new Date(id).toISOString(), ret[1] || message, top - height - offset + margin];
+						}
+
+						if (top < bubbleOffset + height) {
 							return [new Date(id).toISOString(), message];
 						}
 						return ret;
-					}, [] as [string, HTMLElement] | []);
+					}, [] as [string, HTMLElement, number?] | []);
 
 					// We always keep the previous date if we don't have a new one, so when the bubble disappears it doesn't flicker
-
 					setBubbleDate(() => ({
 						date: '',
 						...(date && { date }),
 						show: Boolean(date),
 						style: css`
 							position: absolute;
-							top: ${margin}px;
+							top: ${top || margin}px;
 							left: 50%;
 							translate: -50%;
 							z-index: 1;
