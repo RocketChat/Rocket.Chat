@@ -2,7 +2,7 @@ import type { Meta, Story } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import Message from '.';
-import { attachmentResolver, avatarResolver, loremIpsum, sampleAudio, sampleImage, sampleVideo } from '../../../helpers.stories';
+import { attachmentResolver, avatarResolver, loremIpsum, sampleAudio, sampleImage, sampleVideo } from '../../../../.storybook/helpers';
 import {
 	MESSAGE_TYPE_ROOM_NAME_CHANGED,
 	MESSAGE_TYPE_USER_ADDED,

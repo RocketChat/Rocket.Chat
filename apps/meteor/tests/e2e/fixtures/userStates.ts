@@ -15,7 +15,7 @@ export type IUserState = {
 };
 
 function generateContext(username: string): IUserState {
-	const date = new Date('2023-02-17T20:38:12.306Z');
+	const date = new Date();
 	date.setFullYear(date.getFullYear() + 1);
 
 	const token = {
@@ -86,6 +86,11 @@ export const Users = {
 	user1: generateContext('user1'),
 	user2: generateContext('user2'),
 	user3: generateContext('user3'),
+	samluser1: generateContext('samluser1'),
+	samluser2: generateContext('samluser2'),
+	samluser4: generateContext('samluser4'),
+	userForSamlMerge: generateContext('user_for_saml_merge'),
+	userForSamlMerge2: generateContext('user_for_saml_merge2'),
 	admin: generateContext('rocketchat.internal.admin.test'),
 };
 

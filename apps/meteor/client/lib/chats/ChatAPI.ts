@@ -1,6 +1,5 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import type { IActionManager } from '@rocket.chat/ui-contexts';
-import type { UIEvent } from 'react';
 
 import type { FormattingButton } from '../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import type { Subscribable } from '../../definitions/Subscribable';
@@ -125,11 +124,6 @@ export type ChatAPI = {
 				cancel(): Promise<void>;
 		  }
 		| undefined;
-
-	readonly userCard: {
-		open(username: string): (event: UIEvent) => void;
-		close(): void;
-	};
 
 	readonly emojiPicker: {
 		open(el: Element, cb: (emoji: string) => void): void;

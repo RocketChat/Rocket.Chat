@@ -1,4 +1,5 @@
 import { Box, Flex, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation, useStream } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import type { FC } from 'react';
@@ -7,7 +8,6 @@ import React, { useEffect, useState } from 'react';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { WebRTC } from '../../../app/webrtc/client';
 import { WEB_RTC_EVENTS } from '../../../app/webrtc/lib/constants';
-import UserAvatar from '../../components/avatar/UserAvatar';
 import OngoingCallDuration from './OngoingCallDuration';
 import './styles.css';
 
@@ -217,59 +217,60 @@ const CallPage: FC<CallPageProps> = ({
 							display: isCameraOn ? 'block' : 'none',
 						}}
 					></video>
-					<UserAvatar
+					<Box
 						style={{
 							display: isCameraOn ? 'none' : 'block',
 							margin: 'auto',
 						}}
-						username={localAvatar}
-						className='rcx-message__avatar'
-						size={isLocalMobileDevice || callInIframe ? 'x32' : 'x48'}
-					/>
+					>
+						<UserAvatar username={localAvatar} size={isLocalMobileDevice || callInIframe ? 'x32' : 'x48'} />
+					</Box>
 				</Box>
-				<ButtonGroup
+				<Box
 					position='absolute'
 					zIndex={1}
 					style={{
 						bottom: '5%',
 					}}
 				>
-					<Button
-						id='mic'
-						square
-						title={isMicOn ? t('Mute_microphone') : t('Unmute_microphone')}
-						onClick={(): any => toggleButton('mic')}
-						className={isMicOn ? 'On' : 'Off'}
-						size={Number(buttonSize)}
-					>
-						{isMicOn ? <Icon name='mic' size={iconSize} /> : <Icon name='mic-off' size={iconSize} />}
-					</Button>
-					<Button
-						id='camera'
-						square
-						title={isCameraOn ? t('Turn_off_video') : t('Turn_on_video')}
-						onClick={(): void => toggleButton('camera')}
-						className={isCameraOn ? 'On' : 'Off'}
-						size={parseInt(buttonSize)}
-					>
-						{isCameraOn ? <Icon name='video' size={iconSize} /> : <Icon name='video-off' size={iconSize} />}
-					</Button>
-					{isLayoutEmbedded && (
+					<ButtonGroup>
 						<Button
+							id='mic'
 							square
-							backgroundColor='dark'
-							borderColor='stroke-extra-dark'
-							data-title={t('Expand_view')}
-							onClick={(): void => (parent as any)?.expandCall()}
+							title={isMicOn ? t('Mute_microphone') : t('Unmute_microphone')}
+							onClick={(): any => toggleButton('mic')}
+							className={isMicOn ? 'On' : 'Off'}
+							size={Number(buttonSize)}
+						>
+							{isMicOn ? <Icon name='mic' size={iconSize} /> : <Icon name='mic-off' size={iconSize} />}
+						</Button>
+						<Button
+							id='camera'
+							square
+							title={isCameraOn ? t('Turn_off_video') : t('Turn_on_video')}
+							onClick={(): void => toggleButton('camera')}
+							className={isCameraOn ? 'On' : 'Off'}
 							size={parseInt(buttonSize)}
 						>
-							<Icon name='arrow-expand' size={iconSize} color='white' />
+							{isCameraOn ? <Icon name='video' size={iconSize} /> : <Icon name='video-off' size={iconSize} />}
 						</Button>
-					)}
-					<Button square danger title={t('End_call')} onClick={closeWindow} size={parseInt(buttonSize)}>
-						<Icon name='phone-off' size={iconSize} color='white' />
-					</Button>
-				</ButtonGroup>
+						{isLayoutEmbedded && (
+							<Button
+								square
+								backgroundColor='dark'
+								borderColor='stroke-extra-dark'
+								data-title={t('Expand_view')}
+								onClick={(): void => (parent as any)?.expandCall()}
+								size={parseInt(buttonSize)}
+							>
+								<Icon name='arrow-expand' size={iconSize} color='white' />
+							</Button>
+						)}
+						<Button square danger title={t('End_call')} onClick={closeWindow} size={parseInt(buttonSize)}>
+							<Icon name='phone-off' size={iconSize} color='white' />
+						</Button>
+					</ButtonGroup>
+				</Box>
 				<video
 					id='remoteVideo'
 					autoPlay
@@ -291,15 +292,15 @@ const CallPage: FC<CallPageProps> = ({
 						top: isRemoteMobileDevice || isLocalMobileDevice ? '10%' : '30%',
 					}}
 				>
-					<UserAvatar
+					<Box
 						style={{
 							display: 'block',
 							margin: 'auto',
 						}}
-						username={remoteAvatar}
-						className='rcx-message__avatar'
-						size={!callInIframe ? 'x124' : avatarSize}
-					/>
+					>
+						<UserAvatar username={remoteAvatar} size={!callInIframe ? 'x124' : avatarSize} />
+					</Box>
+
 					<Box color='white' fontSize={callInIframe ? 12 : 18} textAlign='center' margin={3}>
 						<OngoingCallDuration counter={getCallDuration(callStartTime)} />
 					</Box>
@@ -334,15 +335,14 @@ const CallPage: FC<CallPageProps> = ({
 							backgroundColor='dark'
 							alignItems='center'
 						>
-							<UserAvatar
+							<Box
 								style={{
 									display: 'block',
 									margin: 'auto',
 								}}
-								username={agentName}
-								className='rcx-message__avatar'
-								size={isLocalMobileDevice ? 'x32' : 'x48'}
-							/>
+							>
+								<UserAvatar username={agentName} size={isLocalMobileDevice ? 'x32' : 'x48'} />
+							</Box>
 						</Box>
 						<Box
 							position='absolute'
@@ -355,15 +355,14 @@ const CallPage: FC<CallPageProps> = ({
 							}}
 							alignItems='center'
 						>
-							<UserAvatar
+							<Box
 								style={{
 									display: 'block',
 									margin: 'auto',
 								}}
-								username={visitorName}
-								className='rcx-message__avatar'
-								size='x124'
-							/>
+							>
+								<UserAvatar username={visitorName} size='x124' />
+							</Box>
 							<Box color='white' fontSize={16} margin={15}>
 								Calling...
 							</Box>

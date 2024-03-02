@@ -1,5 +1,126 @@
 # @rocket.chat/core-services
 
+## 0.3.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.1
+  - @rocket.chat/rest-typings@6.6.1
+  - @rocket.chat/models@0.0.29
+  </details>
+
+## 0.3.4
+
+### Patch Changes
+
+- ([#31138](https://github.com/RocketChat/Rocket.Chat/pull/31138)) feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+
+- ([#31349](https://github.com/RocketChat/Rocket.Chat/pull/31349) by [@Subhojit-Dey1234](https://github.com/Subhojit-Dey1234)) feat: Implemented InlineCode handling in Bold, Italic and Strike
+
+- ([#31371](https://github.com/RocketChat/Rocket.Chat/pull/31371)) Fixed an issue that caused login buttons to not be reactively removed from the login page when the related authentication service was disabled by an admin.
+
+- <details><summary>Updated dependencies [b223cbde14, dbb08ef948, 748e57984d, 7c6198f49f, fdd9852079, 2260c04ec6, b4b2cd20a8]:</summary>
+
+  - @rocket.chat/ui-kit@0.33.0
+  - @rocket.chat/core-typings@6.6.0
+  - @rocket.chat/rest-typings@6.6.0
+  - @rocket.chat/models@0.0.28
+  </details>
+
+## 0.3.4-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.0-rc.7
+  - @rocket.chat/rest-typings@6.6.0-rc.7
+  - @rocket.chat/models@0.0.28-rc.7
+  </details>
+
+## 0.3.4-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.0-rc.6
+  - @rocket.chat/rest-typings@6.6.0-rc.6
+  - @rocket.chat/models@0.0.28-rc.6
+  </details>
+
+## 0.3.4-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.0-rc.5
+  - @rocket.chat/rest-typings@6.6.0-rc.5
+  - @rocket.chat/models@0.0.28-rc.5
+  </details>
+
+## 0.3.4-rc.4
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.4
+- @rocket.chat/rest-typings@6.6.0-rc.4
+- @rocket.chat/models@0.0.28-rc.4
+
+## 0.3.4-rc.3
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.3
+- @rocket.chat/rest-typings@6.6.0-rc.3
+- @rocket.chat/models@0.0.28-rc.3
+
+## 0.3.4-rc.2
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.2
+- @rocket.chat/rest-typings@6.6.0-rc.2
+- @rocket.chat/models@0.0.28-rc.2
+
+## 0.3.4-rc.1
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.1
+- @rocket.chat/rest-typings@6.6.0-rc.1
+- @rocket.chat/models@0.0.28-rc.1
+
+## 0.3.4-rc.0
+
+### Patch Changes
+
+- b223cbde14: feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+- dbb08ef948: feat: Implemented InlineCode handling in Bold, Italic and Strike
+- 9a6e9b4e28: Fixed an issue that caused login buttons to not be reactively removed from the login page when the related authentication service was disabled by an admin.
+- Updated dependencies [b223cbde14]
+- Updated dependencies [dbb08ef948]
+- Updated dependencies [748e57984d]
+- Updated dependencies [7c6198f49f]
+- Updated dependencies [fdd9852079]
+- Updated dependencies [2260c04ec6]
+- Updated dependencies [b4b2cd20a8]
+  - @rocket.chat/ui-kit@0.33.0-rc.0
+  - @rocket.chat/core-typings@6.6.0-rc.0
+  - @rocket.chat/rest-typings@6.6.0-rc.0
+  - @rocket.chat/models@0.0.28-rc.0
+
+## 0.3.3
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.3
+- @rocket.chat/rest-typings@6.5.3
+- @rocket.chat/models@0.0.27
+
 ## 0.3.2
 
 ### Patch Changes

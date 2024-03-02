@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/presence",
-	"version": "0.1.2",
+	"version": "0.1.5",
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.22.20",
@@ -13,7 +13,7 @@
 		"babel-jest": "^29.0.3",
 		"eslint": "~8.45.0",
 		"jest": "~29.6.4",
-		"typescript": "~5.3.2"
+		"typescript": "~5.3.3"
 	},
 	"scripts": {
 		"lint": "eslint src",
@@ -35,6 +35,6 @@
 		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
-		"mongodb": "^4.17.1"
+		"mongodb": "^4.17.2"
 	}
 }

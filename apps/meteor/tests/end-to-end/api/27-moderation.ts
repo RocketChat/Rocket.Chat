@@ -4,6 +4,7 @@ import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { getUsersReports, reportUser } from '../../data/moderation.helper';
 import { createUser, deleteUser } from '../../data/users.helper.js';
 
 // test for the /moderation.reportsByUsers endpoint
@@ -73,6 +74,66 @@ describe('[Moderation]', function () {
 		});
 	});
 
+	describe('[/moderation.userReports]', () => {
+		it('should return an array of reports', async () => {
+			await request
+				.get(api('moderation.userReports'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('reports').and.to.be.an('array');
+				});
+		});
+
+		it('should return an array of reports even requested with count and offset params', async () => {
+			await request
+				.get(api('moderation.userReports'))
+				.set(credentials)
+				.query({
+					count: 5,
+					offset: 0,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('reports').and.to.be.an('array');
+				});
+		});
+
+		it('should return an array of reports even requested with oldest param', async () => {
+			await request
+				.get(api('moderation.userReports'))
+				.set(credentials)
+				.query({
+					oldest: new Date(),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('reports').and.to.be.an('array');
+				});
+		});
+
+		it('should return an array of reports even requested with latest param', async () => {
+			await request
+				.get(api('moderation.userReports'))
+				.set(credentials)
+				.query({
+					latest: new Date(),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('reports').and.to.be.an('array');
+				});
+		});
+	});
+
 	// test for testing out the moderation.dismissReports endpoint
 
 	describe('[/moderation.dismissReports]', () => {
@@ -98,7 +159,6 @@ describe('[Moderation]', function () {
 				});
 		});
 
-		// create a reported message by sending a request to chat.reportMessage
 		beforeEach(async () => {
 			await request
 				.post(api('chat.reportMessage'))
@@ -181,6 +241,100 @@ describe('[Moderation]', function () {
 				.send({
 					userId: '',
 					msgId: '',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error').and.to.be.a('string');
+				});
+		});
+	});
+
+	describe('[/moderation.user.reportsByUserId]', () => {
+		let reportedUser: IUser;
+
+		before(async () => {
+			reportedUser = await createUser();
+			await reportUser(reportedUser._id, 'sample report');
+		});
+
+		after(async () => {
+			await deleteUser(reportedUser);
+		});
+
+		it('should return an array of reports', async () => {
+			await request
+				.get(api('moderation.user.reportsByUserId'))
+				.set(credentials)
+				.query({
+					userId: reportedUser._id,
+					count: 5,
+					offset: 0,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect(async (res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('reports').and.to.be.an('array').and.to.have.lengthOf(1);
+				});
+		});
+
+		it('should return an error when the userId is not provided', async () => {
+			await request
+				.get(api('moderation.user.reportsByUserId'))
+				.set(credentials)
+				.query({
+					userId: '',
+					count: 5,
+					offset: 0,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect(async (res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+				});
+		});
+	});
+
+	describe('[/moderation.dismissUserReports', () => {
+		let reportedUser: IUser;
+
+		before(async () => {
+			reportedUser = await createUser();
+			await reportUser(reportedUser._id, 'sample report');
+		});
+
+		after(async () => {
+			await deleteUser(reportedUser);
+		});
+
+		it('should hide reports of a user', async () => {
+			await request
+				.post(api('moderation.dismissUserReports'))
+				.set(credentials)
+				.send({
+					userId: reportedUser._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await getUsersReports(reportedUser._id).then((res) => {
+				expect(res.reports).to.have.lengthOf(0);
+			});
+		});
+
+		it('should return an error when the userId is not provided', async () => {
+			await request
+				.post(api('moderation.dismissUserReports'))
+				.set(credentials)
+				.send({
+					userId: '',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)

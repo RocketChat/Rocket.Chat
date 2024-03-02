@@ -531,7 +531,7 @@ export class NotificationsModule {
 		return this.streamUser.emitWithoutBroadcast(`${userId}/${eventName}`, ...args);
 	}
 
-	sendPresence(uid: string, ...args: [username: string, statusChanged: 0 | 1 | 2 | 3, statusText: string | undefined]): void {
+	sendPresence(uid: string, ...args: [username: string, status?: 0 | 1 | 2 | 3, statusText?: string]): void {
 		emit(uid, [args]);
 		return this.streamPresence.emitWithoutBroadcast(uid, args);
 	}

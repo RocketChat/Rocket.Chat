@@ -1,9 +1,11 @@
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
+import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { sendSimpleMessage } from '../../data/chat.helper.js';
-import { createRoom } from '../../data/rooms.helper.js';
+import { createRoom, deleteRoom } from '../../data/rooms.helper.js';
+import { password } from '../../data/user';
+import { createUser, deleteUser, login } from '../../data/users.helper.js';
 
 describe('[Commands]', function () {
 	this.retries(0);
@@ -58,7 +60,7 @@ describe('[Commands]', function () {
 
 	describe('[/commands.list]', () => {
 		it('should return a list of commands', (done) => {
-			request
+			void request
 				.get(api('commands.list'))
 				.set(credentials)
 				.expect(200)
@@ -72,7 +74,7 @@ describe('[Commands]', function () {
 				.end(done);
 		});
 		it('should return a list of commands even requested with count and offset params', (done) => {
-			request
+			void request
 				.get(api('commands.list'))
 				.set(credentials)
 				.query({
@@ -95,24 +97,23 @@ describe('[Commands]', function () {
 		let testChannel;
 		let threadMessage;
 
-		before((done) => {
-			createRoom({ type: 'c', name: `channel.test.commands.${Date.now()}` }).end((err, res) => {
-				testChannel = res.body.channel;
-				sendSimpleMessage({
-					roomId: testChannel._id,
-					text: 'Message to create thread',
-				}).end((err, message) => {
-					sendSimpleMessage({
-						roomId: testChannel._id,
-						text: 'Thread Message',
-						tmid: message.body.message._id,
-					}).end((err, res) => {
-						threadMessage = res.body.message;
-						done();
-					});
-				});
+		before(async () => {
+			testChannel = (await createRoom({ type: 'c', name: `channel.test.commands.${Date.now()}` })).body.channel;
+			const { body: { message } = {} } = await sendSimpleMessage({
+				roomId: testChannel._id,
+				text: 'Message to create thread',
 			});
+
+			threadMessage = (
+				await sendSimpleMessage({
+					roomId: testChannel._id,
+					text: 'Thread Message',
+					tmid: message._id,
+				})
+			).body.message;
 		});
+
+		after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
 
 		it('should return an error when call the endpoint without "command" required parameter', (done) => {
 			request
@@ -237,6 +238,156 @@ describe('[Commands]', function () {
 					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
+		});
+	});
+
+	describe('Command archive', function () {
+		describe('unauthorized cases', () => {
+			let user;
+			let credentials;
+
+			this.beforeAll(async () => {
+				user = await createUser({
+					joinDefaultChannels: true,
+				});
+				credentials = await login(user.username, password);
+			});
+
+			this.afterAll(async () => {
+				await deleteUser(user);
+			});
+
+			it('should return an error when the user is not logged in', async () => {
+				await request
+					.post(api('commands.run'))
+					.send({ command: 'archive', roomId: 'GENERAL' })
+					.expect(401)
+					.expect((res) => {
+						expect(res.body).to.have.property('status', 'error');
+					});
+			});
+
+			it('should return an error when the user has not enough permissions', async () => {
+				await request
+					.post(api('commands.run'))
+					.set(credentials)
+					.send({
+						command: 'archive',
+						roomId: 'GENERAL',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-not-authorized');
+					});
+			});
+		});
+
+		describe('authorized cases', function () {
+			this.afterAll(async () => {
+				await request
+					.post(api('commands.run'))
+					.set(credentials)
+					.send({
+						command: 'unarchive',
+						roomId: 'GENERAL',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+			});
+
+			it('should return a success when the user has enough permissions', async () => {
+				await request
+					.post(api('commands.run'))
+					.set(credentials)
+					.send({
+						command: 'archive',
+						roomId: 'GENERAL',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+			});
+		});
+	});
+
+	describe('Command unarchive', function () {
+		describe('unauthorized cases', () => {
+			let user;
+			let credentials;
+			this.beforeAll(async () => {
+				user = await createUser({
+					joinDefaultChannels: true,
+				});
+				credentials = await login(user.username, password);
+			});
+
+			this.afterAll(async () => {
+				await deleteUser(user);
+			});
+
+			it('should return an error when the user is not logged in', async () => {
+				await request
+					.post(api('commands.run'))
+					.send({ command: 'unarchive', roomId: 'GENERAL' })
+					.expect(401)
+					.expect((res) => {
+						expect(res.body).to.have.property('status', 'error');
+					});
+			});
+
+			it('should return an error when the user has not enough permissions', async () => {
+				await request
+					.post(api('commands.run'))
+					.set(credentials)
+					.send({
+						command: 'unarchive',
+						roomId: 'GENERAL',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-not-authorized');
+					});
+			});
+		});
+
+		describe('authorized cases', () => {
+			before(async () => {
+				await request
+					.post(api('commands.run'))
+					.set(credentials)
+					.send({
+						command: 'archive',
+						roomId: 'GENERAL',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+			});
+			it('should return a success when the user has enough permissions', async () => {
+				await request
+					.post(api('commands.run'))
+					.set(credentials)
+					.send({
+						command: 'unarchive',
+						roomId: 'GENERAL',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+			});
 		});
 	});
 });
