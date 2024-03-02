@@ -359,10 +359,10 @@ EmphasisForReferences = BoldForReferences / ItalicForReferences / StrikethroughF
 Italic
    = value:$([a-zA-Z0-9]+ [\x5F] [\x5F]?) { return plain(value); }
   / [\x5F] [\x5F] i:ItalicContentItems [\x5F] [\x5F] t:$[a-zA-Z0-9]+ {
-      return reducePlainTexts([plain('__'), ...i, plain('__'), plain(t)])[0];
+      return reducePlainTexts([plain('__'), ...i, plain('__'), plain(t)]);
     }
   / [\x5F] i:ItalicContentItems [\x5F] t:$[a-zA-Z]+ {
-      return reducePlainTexts([plain('_'), ...i, plain('_'), plain(t)])[0];
+      return reducePlainTexts([plain('_'), ...i, plain('_'), plain(t)]);
     }
   / [\x5F] [\x5F] @ItalicContent [\x5F] [\x5F]
   / [\x5F] @ItalicContent [\x5F]

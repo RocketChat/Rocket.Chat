@@ -1,5 +1,7 @@
 // TODO: Fully type agents in livechat
 export type Agent = {
+	_id: string;
+	username: string;
 	name?: string;
 	status?: string;
 	email?: string;
