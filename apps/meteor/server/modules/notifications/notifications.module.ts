@@ -504,6 +504,7 @@ export class NotificationsModule {
 		eventName: E extends ExtractNotifyUserEventName<'notify-user', P> ? E : never,
 		...args: E extends ExtractNotifyUserEventName<'notify-user', P> ? StreamerCallbackArgs<'notify-user', `${P}/${E}`> : never
 	): void {
+		console.log('notifyUser', userId, eventName, args);
 		return this.streamUser.emit(`${userId}/${eventName}`, ...args);
 	}
 
@@ -520,6 +521,7 @@ export class NotificationsModule {
 		eventName: E extends ExtractNotifyUserEventName<'notify-room', P> ? E : never,
 		...args: E extends ExtractNotifyUserEventName<'notify-room', P> ? StreamerCallbackArgs<'notify-room', `${P}/${E}`> : never
 	): void {
+		console.log('notifyRoomInThisInstance', `${room}/${eventName}`, args);
 		return this.streamRoom.emitWithoutBroadcast(`${room}/${eventName}`, ...args);
 	}
 

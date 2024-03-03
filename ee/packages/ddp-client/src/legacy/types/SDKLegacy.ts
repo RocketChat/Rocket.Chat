@@ -93,6 +93,7 @@ export type RocketchatSdkLegacyEvents = {
 	'notification': StreamerCallbackArgs<'notify-user', `${string}/notification`>;
 	'rooms-changed': StreamerCallbackArgs<'notify-user', `${string}/rooms-changed`>;
 	'subscriptions-changed': StreamerCallbackArgs<'notify-user', `${string}/subscriptions-changed`>;
+	'mentions': StreamerCallbackArgs<'notify-user', `${string}/mentions`>; // SUBSCRIPTIONS_FLAG
 	'uiInteraction': StreamerCallbackArgs<'notify-user', `${string}/uiInteraction`>;
 };
 

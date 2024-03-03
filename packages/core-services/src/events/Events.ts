@@ -53,7 +53,14 @@ type LoginServiceConfigurationEvent = {
 	  }
 );
 
+export enum BroadcastEvents {
+	USER_MENTIONS = 'user.mentions',
+	blablabla = 'blablabla',
+}
+
 export type EventSignatures = {
+	[BroadcastEvents.USER_MENTIONS]: (data: { message: IMessage, mentions: { toAll: boolean, toHere: boolean, mentionsIds: string[] } }) => void;
+
 	'room.video-conference': (params: { rid: string; callId: string }) => void;
 	'shutdown': (params: Record<string, string[]>) => void;
 	'$services.changed': (info: { localService: boolean }) => void;

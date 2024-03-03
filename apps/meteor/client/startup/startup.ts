@@ -33,6 +33,7 @@ Meteor.startup(() => {
 		}
 
 		const user = await synchronizeUserData(uid);
+		console.log('[startup] user', user);
 		if (!user) {
 			return;
 		}

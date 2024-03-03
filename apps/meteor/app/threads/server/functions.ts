@@ -10,12 +10,12 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 		return false;
 	}
 
-	const { toAll, toHere, mentionIds } = await getMentions(message);
+	const { toAll, toHere, mentionsIds } = await getMentions(message);
 
 	const addToReplies = [
 		...new Set([
 			...followers,
-			...mentionIds,
+			...mentionsIds,
 			...(Array.isArray(parentMessage.replies) && parentMessage.replies.length ? [u._id] : [parentMessage.u._id, u._id]),
 		]),
 	];
@@ -27,7 +27,7 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 
 	const replies = await Messages.getThreadFollowsByThreadId(tmid);
 
-	const repliesFiltered = (replies || []).filter((userId) => userId !== u._id).filter((userId) => !mentionIds.includes(userId));
+	const repliesFiltered = (replies || []).filter((userId) => userId !== u._id).filter((userId) => !mentionsIds.includes(userId));
 
 	if (toAll || toHere) {
 		await Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, repliesFiltered, tmid, {
@@ -37,7 +37,7 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 		await Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, repliesFiltered, tmid, {});
 	}
 
-	const mentionedUsers = new Set<string>([...mentionIds, ...highlightedUserIds]);
+	const mentionedUsers = new Set<string>([...mentionsIds, ...highlightedUserIds]);
 	for await (const userId of mentionedUsers) {
 		await Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, [userId], tmid, { userMention: true });
 	}

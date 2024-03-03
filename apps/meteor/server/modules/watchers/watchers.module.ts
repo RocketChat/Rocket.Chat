@@ -89,7 +89,12 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 					return;
 				}
 
-				// Override data cuz we do not publish all fields
+				if (dbWatchersDisabled) {
+					if (diff && (diff.unread || diff.userMentions || diff.groupMentions)) {
+						return;
+					}
+				}
+
 				const subscription =
 					data ||
 					(await Subscriptions.findOneById<
@@ -149,6 +154,7 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 				if (!subscription) {
 					return;
 				}
+
 				void broadcast('watch.subscriptions', { clientAction, subscription });
 				break;
 			}

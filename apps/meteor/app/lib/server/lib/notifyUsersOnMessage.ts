@@ -3,6 +3,7 @@ import moment from 'moment';
 import { IMessage, IRoom, RoomType } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { api, BroadcastEvents, dbWatchersDisabled } from '@rocket.chat/core-services';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
@@ -16,7 +17,7 @@ function messageContainsHighlight(message: IMessage, highlights: string[]): bool
 	});
 }
 
-export async function getMentions(message: IMessage): Promise<{ toAll: boolean; toHere: boolean; mentionIds: string[] }> {
+export async function getMentions(message: IMessage): Promise<{ toAll: boolean; toHere: boolean; mentionsIds: string[] }> {
 	const {
 		mentions,
 		u: { _id: senderId },
@@ -26,7 +27,7 @@ export async function getMentions(message: IMessage): Promise<{ toAll: boolean; 
 		return {
 			toAll: false,
 			toHere: false,
-			mentionIds: [],
+			mentionsIds: [],
 		};
 	}
 
@@ -42,15 +43,15 @@ export async function getMentions(message: IMessage): Promise<{ toAll: boolean; 
 		.filter(({ _id }) => _id !== senderId && !['all', 'here'].includes(_id))
 		.map(({ _id }) => _id);
 
-	let mentionIds = filteredMentions;
+	let mentionsIds = filteredMentions;
 	if (teamsMentions.length > 0) {
-		mentionIds = await callbacks.run('beforeGetTeamMentions', filteredMentions, teamsMentions);
+		mentionsIds = await callbacks.run('beforeGetTeamMentions', filteredMentions, teamsMentions);
 	}
 
 	return {
 		toAll,
 		toHere,
-		mentionIds,
+		mentionsIds,
 	};
 }
 
@@ -88,26 +89,36 @@ const getUnreadSettingCount = (roomType: RoomType): string => {
 
 
 async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise<void> {
-	// Don't increase unread counter on thread messages
-	if (room != null && !message.tmid) {
-		const { toAll, toHere, mentionIds } = await getMentions(message);
+	const { toAll, toHere, mentionsIds } = await getMentions(message);
 
-		const userIds = new Set(mentionIds);
+	// Update unread counters only if it is outside of a thread
+	// TODO: Check this behavior... is it correct?
+	if (room != null && !message.tmid) {
+		const usersIds = new Set(mentionsIds);
 
 		const unreadCount = getUnreadSettingCount(room.t);
 
-		(await getUserIdsFromHighlights(room._id, message)).forEach((uid) => userIds.add(uid));
+		(await getUserIdsFromHighlights(room._id, message)).forEach((uid) => usersIds.add(uid));
 
-		if (userIds.size > 0) {
-			await incUserMentions(room._id, room.t, [...userIds], unreadCount);
+		if (usersIds.size > 0) {
+			await incUserMentions(room._id, room.t, [...usersIds], unreadCount);
 		} else if (toAll || toHere) {
 			await incGroupMentions(room._id, room.t, message.u._id, unreadCount);
 		}
 
 		// This shouldn't run only if has group mentions because it will already exclude mentioned users from the query
 		if (!toAll && !toHere && unreadCount === 'all_messages') {
-			await Subscriptions.incUnreadForRoomIdExcludingUserIds(room._id, [...userIds, message.u._id], 1);
+			await Subscriptions.incUnreadForRoomIdExcludingUserIds(room._id, [...usersIds, message.u._id], 1);
 		}
+	}
+
+	// Run broadcast for mentioned users
+	// TODO: Should broadcast when inside of a thread?
+	if (dbWatchersDisabled) {
+		await api.broadcast(BroadcastEvents.USER_MENTIONS, {
+			message,
+			mentions: { toAll, toHere, mentionsIds }
+		});
 	}
 
 	// Update all other subscriptions to alert their owners but without incrementing

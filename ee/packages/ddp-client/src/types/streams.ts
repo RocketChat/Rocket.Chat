@@ -65,6 +65,7 @@ export interface StreamerEvents {
 		{ key: `${string}/messagesRead`; args: [{ until: Date; tmid?: string }] },
 		{ key: `${string}/messagesImported`; args: [null] },
 		{ key: `${string}/webrtc`; args: unknown[] },
+		{ key: `${string}/mentions`; args: any[] }, // SUBSCRIPTION_FLAG TODO: Add correct args
 		/* @deprecated over videoconf*/
 		// { key: `${string}/${string}`; args: [id: string] },
 	];
@@ -87,6 +88,7 @@ export interface StreamerEvents {
 	];
 
 	'notify-user': [
+		{ key: `${string}/mentions`; args: any }, // SUBSCRIPTION_FLAG TODO: Add correct args
 		{ key: `${string}/rooms-changed`; args: ['inserted' | 'updated' | 'removed' | 'changed', IRoom] },
 		{
 			key: `${string}/subscriptions-changed`;

@@ -1,7 +1,7 @@
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
-import type { IServiceClass } from '@rocket.chat/core-services';
-import { EnterpriseSettings } from '@rocket.chat/core-services';
+import type { IServiceClass, EventSignatures } from '@rocket.chat/core-services';
+import { BroadcastEvents, EnterpriseSettings } from '@rocket.chat/core-services';
 import { isSettingColor, isSettingEnterprise, UserStatus } from '@rocket.chat/core-typings';
 import type { IUser, IRoom, VideoConference, ISetting, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
@@ -183,6 +183,35 @@ export class ListenersModule {
 
 		service.onEvent('notify.messagesRead', ({ rid, until, tmid }): void => {
 			notifications.notifyRoomInThisInstance(rid, 'messagesRead', { tmid, until });
+		});
+
+		service.onEvent(BroadcastEvents.USER_MENTIONS, async ({ message, mentions: { toAll, toHere, mentionsIds } }) => {
+			if (!message.rid) return;
+
+			enum MentionType {
+				ADD_MENTION = 1,
+			}
+
+			const data = {
+				_id: message._id,
+				rid: message.rid,
+				tmid: message.tmid,
+				ts: message.ts,
+				u: message.u,
+				toAll,
+				toHere,
+				action: MentionType.ADD_MENTION,
+			};
+
+			if (toAll || toHere) {
+				notifications.notifyRoomInThisInstance(message.rid, 'mentions', data);
+			} else {
+				await Promise.all(mentionsIds.map(async (mentionId: string) => {
+					if (mentionId !== message.u._id) {
+						notifications.notifyUserInThisInstance(mentionId, 'mentions', data);
+					}
+				}));
+			}
 		});
 
 		service.onEvent('watch.subscriptions', ({ clientAction, subscription }) => {

@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 
-import type { EventSignatures } from '../events/Events';
+import type { BroadcastEvents, EventSignatures } from '../events/Events';
 import { asyncLocalStorage } from '../lib/asyncLocalStorage';
 import type { IApiService } from './IApiService';
 import type { IBroker, IBrokerNode } from './IBroker';
@@ -35,7 +35,9 @@ export interface IServiceClass {
 
 	setApi(api: IApiService): void;
 
+	onEvent<T extends BroadcastEvents>(event: T, handler: (data: any) => void): void;
 	onEvent<T extends keyof EventSignatures>(event: T, handler: EventSignatures[T]): void;
+
 	emit<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): void;
 
 	isInternal(): boolean;
@@ -85,7 +87,11 @@ export abstract class ServiceClass implements IServiceClass {
 		return asyncLocalStorage.getStore();
 	}
 
-	public onEvent<T extends keyof EventSignatures>(event: T, handler: EventSignatures[T]): void {
+	// public onEvent<T extends BroadcastEvents | keyof EventSignatures>(event: T, handler: EventSignatures[T]): void {
+	// 	this.events.on(event, handler);
+	// }
+
+	public onEvent(event: keyof EventSignatures | BroadcastEvents, handler: EventSignatures[keyof EventSignatures]): void {
 		this.events.on(event, handler);
 	}
 
