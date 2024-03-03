@@ -1,4 +1,5 @@
 import { Box, Flex, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation, useStream } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import type { FC } from 'react';
@@ -7,7 +8,6 @@ import React, { useEffect, useState } from 'react';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { WebRTC } from '../../../app/webrtc/client';
 import { WEB_RTC_EVENTS } from '../../../app/webrtc/lib/constants';
-import UserAvatar from '../../components/avatar/UserAvatar';
 import OngoingCallDuration from './OngoingCallDuration';
 import './styles.css';
 
@@ -217,15 +217,14 @@ const CallPage: FC<CallPageProps> = ({
 							display: isCameraOn ? 'block' : 'none',
 						}}
 					></video>
-					<UserAvatar
+					<Box
 						style={{
 							display: isCameraOn ? 'none' : 'block',
 							margin: 'auto',
 						}}
-						username={localAvatar}
-						className='rcx-message__avatar'
-						size={isLocalMobileDevice || callInIframe ? 'x32' : 'x48'}
-					/>
+					>
+						<UserAvatar username={localAvatar} size={isLocalMobileDevice || callInIframe ? 'x32' : 'x48'} />
+					</Box>
 				</Box>
 				<Box
 					position='absolute'
@@ -293,15 +292,15 @@ const CallPage: FC<CallPageProps> = ({
 						top: isRemoteMobileDevice || isLocalMobileDevice ? '10%' : '30%',
 					}}
 				>
-					<UserAvatar
+					<Box
 						style={{
 							display: 'block',
 							margin: 'auto',
 						}}
-						username={remoteAvatar}
-						className='rcx-message__avatar'
-						size={!callInIframe ? 'x124' : avatarSize}
-					/>
+					>
+						<UserAvatar username={remoteAvatar} size={!callInIframe ? 'x124' : avatarSize} />
+					</Box>
+
 					<Box color='white' fontSize={callInIframe ? 12 : 18} textAlign='center' margin={3}>
 						<OngoingCallDuration counter={getCallDuration(callStartTime)} />
 					</Box>
@@ -336,15 +335,14 @@ const CallPage: FC<CallPageProps> = ({
 							backgroundColor='dark'
 							alignItems='center'
 						>
-							<UserAvatar
+							<Box
 								style={{
 									display: 'block',
 									margin: 'auto',
 								}}
-								username={agentName}
-								className='rcx-message__avatar'
-								size={isLocalMobileDevice ? 'x32' : 'x48'}
-							/>
+							>
+								<UserAvatar username={agentName} size={isLocalMobileDevice ? 'x32' : 'x48'} />
+							</Box>
 						</Box>
 						<Box
 							position='absolute'
@@ -357,15 +355,14 @@ const CallPage: FC<CallPageProps> = ({
 							}}
 							alignItems='center'
 						>
-							<UserAvatar
+							<Box
 								style={{
 									display: 'block',
 									margin: 'auto',
 								}}
-								username={visitorName}
-								className='rcx-message__avatar'
-								size='x124'
-							/>
+							>
+								<UserAvatar username={visitorName} size='x124' />
+							</Box>
 							<Box color='white' fontSize={16} margin={15}>
 								Calling...
 							</Box>

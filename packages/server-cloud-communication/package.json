@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/server-cloud-communication",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/license": "workspace:^",
@@ -8,7 +8,7 @@
 		"eslint": "~8.45.0",
 		"jest": "~29.6.4",
 		"ts-jest": "~29.1.1",
-		"typescript": "~5.3.2"
+		"typescript": "~5.3.3"
 	},
 	"volta": {
 		"extends": "../../package.json"
