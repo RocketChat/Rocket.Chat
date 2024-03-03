@@ -2,7 +2,7 @@ import { action } from '@storybook/addon-actions';
 import type { Meta, Story } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
-import { screenDecorator, screenProps } from '../../../.storybook/helpers';
+import { screenDecorator } from '../../../.storybook/helpers';
 import SwitchDepartment from './index';
 
 export default {
@@ -28,7 +28,6 @@ export default {
 		loading: false,
 		onSubmit: action('submit'),
 		onCancel: action('cancel'),
-		...screenProps(),
 	},
 	decorators: [screenDecorator],
 	parameters: {
