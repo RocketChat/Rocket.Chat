@@ -8331,7 +8331,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/apps-engine@npm:1.41.0":
+"@rocket.chat/apps-engine@npm:1.41.0, @rocket.chat/apps-engine@npm:^1.41.0":
   version: 1.41.0
   resolution: "@rocket.chat/apps-engine@npm:1.41.0"
   dependencies:
@@ -8348,6 +8348,21 @@ __metadata:
   checksum: 2e7fa2856bdbdc6b0dd2456e9aa5e5804a4198f8df0306a002c5e71681466d3fc2cb0a1253668d5e24fa21345a7dd7eed3458a257e1e4cc59a4e8a3876579aa5
   languageName: node
   linkType: hard
+
+"@rocket.chat/apps@workspace:^, @rocket.chat/apps@workspace:packages/apps":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/apps@workspace:packages/apps"
+  dependencies:
+    "@rocket.chat/apps-engine": ^1.41.0
+    "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/model-typings": "workspace:^"
+    "@types/jest": ~29.5.7
+    eslint: ~8.45.0
+    jest: ~29.6.4
+    ts-jest: ~29.1.1
+    typescript: ~5.3.2
+  languageName: unknown
+  linkType: soft
 
 "@rocket.chat/authorization-service@workspace:ee/apps/authorization-service":
   version: 0.0.0-use.local
@@ -9146,6 +9161,7 @@ __metadata:
     "@rocket.chat/account-utils": "workspace:^"
     "@rocket.chat/agenda": "workspace:^"
     "@rocket.chat/api-client": "workspace:^"
+    "@rocket.chat/apps": "workspace:^"
     "@rocket.chat/apps-engine": 1.41.0
     "@rocket.chat/base64": "workspace:^"
     "@rocket.chat/cas-validate": "workspace:^"
@@ -9253,6 +9269,7 @@ __metadata:
     "@types/ldapjs": ^2.2.5
     "@types/less": ~3.0.5
     "@types/lodash": ^4.14.200
+    "@types/lodash.clonedeep": ^4.5.9
     "@types/lodash.debounce": ^4.0.8
     "@types/lodash.get": ^4.4.8
     "@types/mailparser": ^3.4.3
@@ -13612,6 +13629,15 @@ __metadata:
   version: 3.0.5
   resolution: "@types/less@npm:3.0.5"
   checksum: 72d04c7877a63ef8a49e22a2aaf2e595aec41b4fcbbb48603e4d3a3d1e2d903edea6654db00bba52148ea4101a904e866b410599088b41935aa4c0733d25ef3c
+  languageName: node
+  linkType: hard
+
+"@types/lodash.clonedeep@npm:^4.5.9":
+  version: 4.5.9
+  resolution: "@types/lodash.clonedeep@npm:4.5.9"
+  dependencies:
+    "@types/lodash": "*"
+  checksum: ef85512b7dce7a4f981a818ae44d11982907e1f26b5b26bedf0957c35e8591eb8e1d24fa31ca851d4b40e0a1ee88563853d762412691fe5f357e8335cead2325
   languageName: node
   linkType: hard
 
