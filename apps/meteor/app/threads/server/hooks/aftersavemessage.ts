@@ -1,4 +1,4 @@
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
@@ -10,7 +10,7 @@ import { sendMessageNotifications } from '../../../lib/server/lib/sendNotificati
 import { settings } from '../../../settings/server';
 import { reply } from '../functions';
 
-async function notifyUsersOnReply(message: IMessage, replies: string[], room: IRoom) {
+async function notifyUsersOnReply(message: IMessage, replies: IUser['_id'][]) {
 	// skips this callback if the message was edited
 	if (isEditedMessage(message)) {
 		return message;
@@ -59,7 +59,7 @@ export async function processThreads(message: IMessage, room: IRoom) {
 		]),
 	].filter((userId) => userId !== message.u._id);
 
-	await notifyUsersOnReply(message, replies, room);
+	await notifyUsersOnReply(message, replies);
 	await metaData(message, parentMessage, replies);
 	await notification(message, room, replies);
 	void broadcastMessageFromData({

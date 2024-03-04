@@ -118,7 +118,7 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 	]);
 }
 
-export async function updateThreadUsersSubscriptions(message: IMessage, replies: string[]): Promise<void> {
+export async function updateThreadUsersSubscriptions(message: IMessage, replies: IUser['_id'][]): Promise<void> {
 	// Don't increase unread counter on thread messages
 
 	await Subscriptions.setAlertForRoomIdAndUserIds(message.rid, replies);
