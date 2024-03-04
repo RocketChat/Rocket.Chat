@@ -1,15 +1,10 @@
 import { Team } from '@rocket.chat/core-services';
+import type { MessageMention } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../settings/server';
 
-interface ITeamMention {
-	_id: string;
-	name: string;
-	type: string;
-}
-
-const beforeGetTeamMentions = async (mentionIds: string[], teamMentions: ITeamMention[]): Promise<string[]> => {
+const beforeGetTeamMentions = async (mentionIds: string[], teamMentions: MessageMention[]): Promise<string[]> => {
 	const teamsIds = teamMentions.map(({ _id }) => _id);
 	const members = await Team.getMembersByTeamIds(teamsIds, { projection: { userId: 1 } });
 	return [...new Set([...mentionIds, ...members.map(({ userId }) => userId)])];
