@@ -291,6 +291,10 @@ function setCustomFields(fields: [key: string, value: string, overwrite?: boolea
 
 function setTheme(theme: StoreState['iframe']['theme']) {
 	if (theme?.position && theme?.position !== 'left' && theme?.position !== 'right') {
+		if (theme?.position) {
+			console.warn(`Error: Position "${theme?.position}" is invalid. It must be "left" or "right"`);
+		}
+
 		delete theme.position;
 	}
 
