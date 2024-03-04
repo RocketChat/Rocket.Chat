@@ -114,6 +114,72 @@ describe('LIVECHAT - visitors', function () {
 			expect(body2.visitor).to.have.property('phone');
 			expect(body2.visitor.phone[0].phoneNumber).to.equal(phone);
 		});
+		it('should update a visitor custom fields when customFields key is provided', async () => {
+			const token = `${new Date().getTime()}-test`;
+			const customFieldName = `new_custom_field_${Date.now()}`;
+			await createCustomField({
+				searchable: true,
+				field: customFieldName,
+				label: customFieldName,
+				defaultValue: 'test_default_address',
+				scope: 'visitor',
+				visibility: 'public',
+				regexp: '',
+			});
+			const { body } = await request.post(api('livechat/visitor')).send({
+				visitor: {
+					token,
+					customFields: [{ key: customFieldName, value: 'Not a real address :)', overwrite: true }],
+				},
+			});
+
+			expect(body).to.have.property('success', true);
+			expect(body).to.have.property('visitor');
+			expect(body.visitor).to.have.property('token', token);
+			expect(body.visitor).to.have.property('livechatData');
+			expect(body.visitor.livechatData).to.have.property(customFieldName, 'Not a real address :)');
+		});
+
+		it('should not update a custom field when it does not exists', async () => {
+			const token = `${new Date().getTime()}-test`;
+			const customFieldName = `new_custom_field_${Date.now()}`;
+			const { body } = await request.post(api('livechat/visitor')).send({
+				visitor: {
+					token,
+					customFields: [{ key: customFieldName, value: 'Not a real address :)', overwrite: true }],
+				},
+			});
+
+			expect(body).to.have.property('success', true);
+			expect(body).to.have.property('visitor');
+			expect(body.visitor).to.have.property('token', token);
+			expect(body.visitor).to.not.have.property('livechatData');
+		});
+
+		it('should not update a custom field when the scope of it is not visitor', async () => {
+			const token = `${new Date().getTime()}-test`;
+			const customFieldName = `new_custom_field_${Date.now()}`;
+			await createCustomField({
+				searchable: true,
+				field: customFieldName,
+				label: customFieldName,
+				defaultValue: 'test_default_address',
+				scope: 'room',
+				visibility: 'public',
+				regexp: '',
+			});
+			const { body } = await request.post(api('livechat/visitor')).send({
+				visitor: {
+					token,
+					customFields: [{ key: customFieldName, value: 'Not a real address :)', overwrite: true }],
+				},
+			});
+
+			expect(body).to.have.property('success', true);
+			expect(body).to.have.property('visitor');
+			expect(body.visitor).to.have.property('token', token);
+			expect(body.visitor).to.not.have.property('livechatData');
+		});
 	});
 
 	describe('livechat/visitors.info', () => {
