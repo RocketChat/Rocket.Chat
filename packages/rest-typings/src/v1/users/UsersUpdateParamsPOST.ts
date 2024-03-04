@@ -23,6 +23,7 @@ export type UsersUpdateParamsPOST = {
 		verified?: boolean;
 		customFields?: Record<string, unknown>;
 		status?: string;
+		language?: string;
 	};
 	confirmRelinquish?: boolean;
 };
@@ -103,6 +104,10 @@ const UsersUpdateParamsPostSchema = {
 					nullable: true,
 				},
 				status: {
+					type: 'string',
+					nullable: true,
+				},
+				language: {
 					type: 'string',
 					nullable: true,
 				},
