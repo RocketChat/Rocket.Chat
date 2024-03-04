@@ -308,9 +308,13 @@ export const FileUpload = {
 		const store = FileUpload.getStore('Uploads');
 		const image = await store._store.getReadStream(file._id, file);
 
-		const transformer = sharp().resize({ width, height, fit: 'inside' });
-
-		const result = transformer.toBuffer({ resolveWithObject: true }).then(({ data, info: { width, height } }) => ({ data, width, height }));
+		let transformer = sharp().resize({ width, height, fit: 'inside' });
+		if (file.type === 'image/svg+xml') {
+			transformer = transformer.png();
+		}
+		const result = transformer
+			.toBuffer({ resolveWithObject: true })
+			.then(({ data, info: { width, height, format } }) => ({ data, width, height, format }));
 		image.pipe(transformer);
 
 		return result;
