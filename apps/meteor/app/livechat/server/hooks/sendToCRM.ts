@@ -35,6 +35,16 @@ type OmnichannelRoomWithExtraFields = IOmnichannelRoom & {
 	oldDepartmentId?: IOmnichannelRoom['departmentId'];
 };
 
+type CRMActions =
+	| 'LivechatSessionStarted'
+	| 'LivechatSessionQueued'
+	| 'LivechatSession'
+	| 'LivechatSessionTaken'
+	| 'LivechatSessionForwarded'
+	| 'LivechatEdit'
+	| 'Message'
+	| 'LeadCapture';
+
 const msgNavType = 'livechat_navigation_history';
 const msgClosingType = 'livechat-close';
 
@@ -60,7 +70,7 @@ const sendMessageType = (msgType: string): boolean => {
 	}
 };
 
-const getAdditionalFieldsByType = (type: string, room: OmnichannelRoomWithExtraFields): AdditionalFields => {
+const getAdditionalFieldsByType = (type: CRMActions, room: OmnichannelRoomWithExtraFields): AdditionalFields => {
 	const { departmentId, servedBy, closedAt, closedBy, closer, oldServedBy, oldDepartmentId } = room;
 	switch (type) {
 		case 'LivechatSessionStarted':
@@ -78,7 +88,7 @@ const getAdditionalFieldsByType = (type: string, room: OmnichannelRoomWithExtraF
 };
 
 async function sendToCRM(
-	type: string,
+	type: CRMActions,
 	room: OmnichannelRoomWithExtraFields,
 	includeMessages: boolean | IOmnichannelSystemMessage[] = true,
 ): Promise<OmnichannelRoomWithExtraFields> {
@@ -162,7 +172,7 @@ callbacks.add(
 			return room;
 		}
 
-		return sendToCRM('LivechatSessionStart', room);
+		return sendToCRM('LivechatSessionStarted', room);
 	},
 	callbacks.priority.MEDIUM,
 	'livechat-send-crm-start-room',
