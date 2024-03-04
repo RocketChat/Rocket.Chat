@@ -31,6 +31,7 @@ const UsersUpdateParamsPostSchema = {
 	properties: {
 		userId: {
 			type: 'string',
+			minLength: 1,
 		},
 		confirmRelinquish: {
 			type: 'boolean',
