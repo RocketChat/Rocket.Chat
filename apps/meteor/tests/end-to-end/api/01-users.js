@@ -1178,6 +1178,25 @@ describe('[Users]', function () {
 				.end(done);
 		});
 
+		it("should update a user's language by userId", (done) => {
+			request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						language: 'en',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.language', 'en');
+				})
+				.end(done);
+		});
+
 		it(`should return an error when trying to set a nickname longer than ${MAX_NICKNAME_LENGTH} characters`, (done) => {
 			request
 				.post(api('users.update'))
