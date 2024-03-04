@@ -1,4 +1,4 @@
-import type { IDirectMessageRoom, IMessage, IOmnichannelGenericRoom, IRoom, IRoomFederated, ITeam, IUser } from '@rocket.chat/core-typings';
+import type { IDirectMessageRoom, IEditedMessage, IMessage, IOmnichannelGenericRoom, IRoom, IRoomFederated, ITeam, IUser } from '@rocket.chat/core-typings';
 import type { AggregationCursor, DeleteResult, Document, FindCursor, FindOptions, UpdateOptions, UpdateResult } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';

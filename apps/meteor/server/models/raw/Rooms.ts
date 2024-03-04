@@ -1,5 +1,6 @@
 import type {
 	IDirectMessageRoom,
+	IEditedMessage,
 	IMessage,
 	IOmnichannelGenericRoom,
 	IRoom,
