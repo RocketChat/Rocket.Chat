@@ -2,16 +2,7 @@ import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
 import { Box, Bubble } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
-import {
-	usePermission,
-	useRole,
-	useRouter,
-	useSearchParameter,
-	useSetting,
-	useTranslation,
-	useUser,
-	useUserPreference,
-} from '@rocket.chat/ui-contexts';
+import { usePermission, useRole, useRouter, useSetting, useTranslation, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { MouseEventHandler, ReactElement, UIEvent } from 'react';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
@@ -26,7 +17,6 @@ import { CustomScrollbars } from '../../../components/CustomScrollbars';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import { useFormatDate } from '../../../hooks/useFormatDate';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
-import { RoomManager } from '../../../lib/RoomManager';
 import type { Upload } from '../../../lib/chats/Upload';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { setMessageJumpQueryStringParameter } from '../../../lib/utils/setMessageJumpQueryStringParameter';
@@ -42,6 +32,7 @@ import { useUserCard } from '../contexts/UserCardContext';
 import { useDateScroll } from '../hooks/useDateScroll';
 import { useMessageListNavigation } from '../hooks/useMessageListNavigation';
 import { useScrollMessageList } from '../hooks/useScrollMessageList';
+import { useShowRoomLeader } from '../hooks/useShowRoomLeader';
 import { useDateListController } from '../providers/DateListProvider';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
@@ -51,8 +42,10 @@ import RetentionPolicyWarning from './RetentionPolicyWarning';
 import RoomForeword from './RoomForeword/RoomForeword';
 import UnreadMessagesIndicator from './UnreadMessagesIndicator';
 import UploadProgressIndicator from './UploadProgressIndicator';
+import { useCheckIfIsAtBottom, useSendToBottomIfNecessaryObserver } from './hooks/useCheckIfIsAtBottom';
 import { useFileUploadDropTarget } from './hooks/useFileUploadDropTarget';
 import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
+import { useQuoteMessageBySearchParam } from './hooks/useQuoteMessageBySearchParam';
 import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
 import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
 import { useRetentionPolicy } from './hooks/useRetentionPolicy';
@@ -72,16 +65,38 @@ const RoomBody = (): ReactElement => {
 	const { callbackRef, listStyle, bubbleDate, showBubble, style: bubbleDateStyle } = useDateScroll();
 
 	const [lastMessageDate, setLastMessageDate] = useState<Date | undefined>();
-	const [hideLeaderHeader, setHideLeaderHeader] = useState(false);
+
 	const [hasNewMessages, setHasNewMessages] = useState(false);
 
 	const hideFlexTab = useUserPreference<boolean>('hideFlexTab') || undefined;
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
 	const displayAvatars = useUserPreference<boolean>('displayAvatars');
 
-	const wrapperRef = useRef<HTMLDivElement | null>(null);
 	const messagesBoxRef = useRef<HTMLDivElement | null>(null);
-	const atBottomRef = useRef(true);
+
+	const wrapperRef = useRef<HTMLElement | null>(null);
+
+	const { ref: callbackRefScrollMessageList, scrollTo } = useScrollMessageList(
+		useCallback((wrapper: HTMLElement) => ({ left: 30, top: wrapper?.scrollHeight }), []),
+	);
+
+	const { ref: callbackRefIsAtBottom, isAtBottom: atBottomRef, sendToBottomIfNecessary } = useCheckIfIsAtBottom();
+
+	const { ref: showRoomLeaderCallbackRef, showRoomLeader } = useShowRoomLeader(atBottomRef);
+
+	const { ref: messageListRef, messageListProps } = useMessageListNavigation();
+
+	useQuoteMessageBySearchParam();
+	useReadMessageWindowEvents();
+	useSendToBottomIfNecessaryObserver(sendToBottomIfNecessary);
+	const sendToBottom = useCallback(() => {
+		scrollTo();
+
+		setHasNewMessages(false);
+	}, [scrollTo]);
+
+	const { ref: scrollPositionRef } = useRestoreScrollPosition(room._id, scrollTo, sendToBottom, atBottomRef);
+
 	const lastScrollTopRef = useRef(0);
 
 	const chat = useChat();
@@ -107,37 +122,17 @@ const RoomBody = (): ReactElement => {
 		return false;
 	}, []);
 
-	const scrollMessageList = useScrollMessageList(wrapperRef);
-
-	const sendToBottom = useCallback(() => {
-		scrollMessageList((wrapper) => {
-			return { left: 30, top: wrapper?.scrollHeight };
-		});
-
-		setHasNewMessages(false);
-	}, [scrollMessageList]);
-
-	const sendToBottomIfNecessary = useCallback(() => {
-		if (atBottomRef.current === true) {
-			sendToBottom();
-		}
-	}, [sendToBottom]);
-
-	const checkIfScrollIsAtBottom = useCallback(() => {
-		atBottomRef.current = _isAtBottom(100);
-	}, [_isAtBottom]);
-
 	const handleNewMessageButtonClick = useCallback(() => {
 		atBottomRef.current = true;
 		sendToBottomIfNecessary();
 		chat.composer?.focus();
-	}, [chat, sendToBottomIfNecessary]);
+	}, [atBottomRef, chat.composer, sendToBottomIfNecessary]);
 
 	const handleJumpToRecentButtonClick = useCallback(() => {
 		atBottomRef.current = true;
 		RoomHistoryManager.clear(room._id);
 		RoomHistoryManager.getMoreIfIsEmpty(room._id);
-	}, [room._id]);
+	}, [atBottomRef, room._id]);
 
 	const [unread, setUnreadCount] = useUnreadMessages(room);
 
@@ -253,24 +248,6 @@ const RoomBody = (): ReactElement => {
 		};
 	}, [_isAtBottom, room._id, sendToBottom, user?._id]);
 
-	useEffect(() => {
-		const messageList = wrapperRef.current?.querySelector('ul');
-
-		if (!messageList) {
-			return;
-		}
-
-		const observer = new ResizeObserver(() => {
-			sendToBottomIfNecessary();
-		});
-
-		observer.observe(messageList);
-
-		return () => {
-			observer?.disconnect();
-		};
-	}, [sendToBottomIfNecessary]);
-
 	const router = useRouter();
 
 	const debouncedReadMessageRead = useMemo(
@@ -364,14 +341,6 @@ const RoomBody = (): ReactElement => {
 		});
 
 		const handleWrapperScroll = withThrottling({ wait: 100 })((event) => {
-			const roomLeader = messagesBoxRef.current?.querySelector('.room-leader');
-			if (roomLeader) {
-				if (event.target.scrollTop < lastScrollTopRef.current) {
-					setHideLeaderHeader(false);
-				} else if (_isAtBottom(100) === false && event.target.scrollTop > parseFloat(getComputedStyle(roomLeader).height)) {
-					setHideLeaderHeader(true);
-				}
-			}
 			lastScrollTopRef.current = event.target.scrollTop;
 			const height = event.target.clientHeight;
 			const isLoading = RoomHistoryManager.isLoading(room._id);
@@ -387,89 +356,14 @@ const RoomBody = (): ReactElement => {
 			}
 		});
 
-		wrapper.addEventListener('scroll', updateUnreadCount);
-		wrapper.addEventListener('scroll', handleWrapperScroll);
+		wrapper.addEventListener('scroll', updateUnreadCount, { passive: true });
+		wrapper.addEventListener('scroll', handleWrapperScroll, { passive: true });
 
 		return () => {
 			wrapper.removeEventListener('scroll', updateUnreadCount);
 			wrapper.removeEventListener('scroll', handleWrapperScroll);
 		};
-	}, [_isAtBottom, list, room._id, setUnreadCount]);
-
-	useEffect(() => {
-		const wrapper = wrapperRef.current;
-
-		if (!wrapper) {
-			return;
-		}
-
-		const store = RoomManager.getStore(room._id);
-
-		const handleWrapperScroll = withThrottling({ wait: 30 })(() => {
-			store?.update({ scroll: wrapper.scrollTop, atBottom: isAtBottom(wrapper, 50) });
-		});
-
-		const afterMessageGroup = (): void => {
-			if (store?.scroll && !store.atBottom) {
-				wrapper.scrollTop = store.scroll;
-			} else {
-				sendToBottom();
-			}
-			wrapper.removeEventListener('MessageGroup', afterMessageGroup);
-		};
-
-		wrapper.addEventListener('scroll', handleWrapperScroll);
-
-		wrapper.addEventListener('MessageGroup', afterMessageGroup);
-
-		return () => {
-			wrapper.removeEventListener('MessageGroup', afterMessageGroup);
-			wrapper.removeEventListener('scroll', handleWrapperScroll);
-		};
-	}, [room._id, sendToBottom]);
-
-	useRestoreScrollPosition(room._id, scrollMessageList, sendToBottom);
-
-	useEffect(() => {
-		const wrapper = wrapperRef.current;
-
-		if (!wrapper) {
-			return;
-		}
-
-		const handleWheel = withThrottling({ wait: 100 })(() => {
-			checkIfScrollIsAtBottom();
-		});
-
-		const handleTouchStart = (): void => {
-			atBottomRef.current = false;
-		};
-
-		let timer1s: ReturnType<typeof setTimeout> | undefined;
-		let timer2s: ReturnType<typeof setTimeout> | undefined;
-
-		const handleTouchEnd = (): void => {
-			checkIfScrollIsAtBottom();
-			timer1s = setTimeout(() => checkIfScrollIsAtBottom(), 1000);
-			timer2s = setTimeout(() => checkIfScrollIsAtBottom(), 2000);
-		};
-
-		// wrapper.addEventListener('mousewheel', handleWheel);
-		// wrapper.addEventListener('wheel', handleWheel);
-		wrapper.addEventListener('scroll', handleWheel);
-		// wrapper.addEventListener('touchstart', handleTouchStart);
-		// wrapper.addEventListener('touchend', handleTouchEnd);
-
-		return (): void => {
-			if (timer1s) clearTimeout(timer1s);
-			if (timer2s) clearTimeout(timer2s);
-			wrapper.removeEventListener('mousewheel', handleWheel);
-			wrapper.removeEventListener('wheel', handleWheel);
-			wrapper.removeEventListener('scroll', handleWheel);
-			wrapper.removeEventListener('touchstart', handleTouchStart);
-			wrapper.removeEventListener('touchend', handleTouchEnd);
-		};
-	}, [checkIfScrollIsAtBottom]);
+	}, [_isAtBottom, atBottomRef, list, room._id, setUnreadCount]);
 
 	const handleComposerResize = useCallback((): void => {
 		sendToBottomIfNecessary();
@@ -489,22 +383,6 @@ const RoomBody = (): ReactElement => {
 		},
 		[chat],
 	);
-
-	const replyMID = useSearchParameter('reply');
-
-	useEffect(() => {
-		if (!replyMID) {
-			return;
-		}
-
-		chat.data.getMessageByID(replyMID).then((message) => {
-			if (!message) {
-				return;
-			}
-
-			chat.composer?.quoteMessage(message);
-		});
-	}, [chat.data, chat.composer, replyMID]);
 
 	useEffect(() => {
 		chat.uploads.wipeFailedOnes();
@@ -542,11 +420,14 @@ const RoomBody = (): ReactElement => {
 		[toolbox],
 	);
 
-	useReadMessageWindowEvents();
-
-	const { messageListRef, messageListProps } = useMessageListNavigation();
-
-	const ref = useMergedRefs(callbackRef, wrapperRef);
+	const ref = useMergedRefs(
+		callbackRef,
+		wrapperRef,
+		callbackRefIsAtBottom,
+		scrollPositionRef,
+		showRoomLeaderCallbackRef,
+		callbackRefScrollMessageList,
+	);
 
 	return (
 		<>
@@ -588,7 +469,7 @@ const RoomBody = (): ReactElement => {
 							)}
 							<div
 								ref={messagesBoxRef}
-								className={['messages-box', roomLeader && !hideLeaderHeader && 'has-leader'].filter(isTruthy).join(' ')}
+								className={['messages-box', roomLeader && showRoomLeader && 'has-leader'].filter(isTruthy).join(' ')}
 							>
 								<JumpToRecentMessageButton visible={hasNewMessages} onClick={handleNewMessageButtonClick} text={t('New_messages')} />
 								<JumpToRecentMessageButton
@@ -606,7 +487,7 @@ const RoomBody = (): ReactElement => {
 										_id={roomLeader._id}
 										username={roomLeader.username}
 										name={roomLeader.name}
-										visible={!hideLeaderHeader}
+										visible={showRoomLeader}
 										onAvatarClick={handleOpenUserCard}
 										triggerProps={triggerProps}
 									/>
@@ -642,7 +523,7 @@ const RoomBody = (): ReactElement => {
 														)}
 													</>
 												) : null}
-												<MessageList rid={room._id} scrollMessageList={scrollMessageList} />
+												<MessageList rid={room._id} scrollMessageList={scrollTo} />
 												{hasMoreNextMessages ? (
 													<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
 												) : null}

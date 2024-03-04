@@ -25,7 +25,7 @@ export type MessageListContextValue = {
 	showColors: boolean;
 	jumpToMessageParam?: string;
 	username: string | undefined;
-	scrollMessageList?: (callback: (wrapper: HTMLDivElement | null) => ScrollToOptions | void) => void;
+	scrollMessageList?: (callback: (wrapper: HTMLElement | null) => ScrollToOptions | void) => void;
 };
 
 export const MessageListContext = createContext<MessageListContextValue>({

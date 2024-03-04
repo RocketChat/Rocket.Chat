@@ -1,16 +1,18 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 
+import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
 import type { MessageListContextValue } from '../../../../components/message/list/MessageListContext';
 import { RoomManager } from '../../../../lib/RoomManager';
 
 export function useRestoreScrollPosition(
-	roomId: IRoom['_id'],
+	rid: IRoom['_id'],
 	scrollMessageList: Exclude<MessageListContextValue['scrollMessageList'], undefined>,
 	sendToBottom: () => void,
+	ref: React.MutableRefObject<boolean>,
 ) {
 	useEffect(() => {
-		const store = RoomManager.getStore(roomId);
+		const store = RoomManager.getStore(rid);
 
 		if (store?.scroll && !store.atBottom) {
 			scrollMessageList(() => {
@@ -19,5 +21,35 @@ export function useRestoreScrollPosition(
 		} else {
 			sendToBottom();
 		}
-	}, [roomId, scrollMessageList, sendToBottom]);
+	}, [rid, scrollMessageList, sendToBottom]);
+
+	const callbackRef = useCallback(
+		(node: HTMLElement | null) => {
+			if (!node) {
+				return;
+			}
+
+			const store = RoomManager.getStore(rid);
+
+			const handleWrapperScroll = withThrottling({ wait: 30 })(() => {
+				store?.update({ scroll: node.scrollTop, atBottom: ref.current });
+			});
+
+			const afterMessageGroup = (): void => {
+				if (store?.scroll && !store.atBottom) {
+					node.scrollTop = store.scroll;
+				} else {
+					sendToBottom();
+				}
+				node.removeEventListener('MessageGroup', afterMessageGroup);
+			};
+
+			node.addEventListener('scroll', handleWrapperScroll, { passive: true });
+
+			node.addEventListener('MessageGroup', afterMessageGroup);
+		},
+		[ref, rid, sendToBottom],
+	);
+
+	return { ref: callbackRef, isAtBottom: ref };
 }

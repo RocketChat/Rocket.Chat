@@ -17,7 +17,7 @@ const isThreadMessage = (node: EventTarget) => (node as HTMLElement).classList.c
  * Custom hook to provide the room navigation by keyboard.
  * @param ref - A ref to the message list DOM element.
  */
-export const useMessageListNavigation = (): { messageListRef: RefCallback<HTMLElement>; messageListProps: MessageListProps } => {
+export const useMessageListNavigation = (): { ref: RefCallback<HTMLElement>; messageListProps: MessageListProps } => {
 	const roomFocusManager = useFocusManager();
 
 	const messageListRef = useCallback(
@@ -108,7 +108,7 @@ export const useMessageListNavigation = (): { messageListRef: RefCallback<HTMLEl
 	);
 
 	return {
-		messageListRef,
+		ref: messageListRef,
 		messageListProps: {
 			'aria-orientation': 'vertical',
 		},
