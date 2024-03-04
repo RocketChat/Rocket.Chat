@@ -1,4 +1,5 @@
-import { Field, FieldGroup, TextInput, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
+import { Field, FieldGroup, TextInput, FieldLabel, FieldRow, Box } from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -12,6 +13,7 @@ type AddLinkComposerActionModalProps = {
 };
 
 const AddLinkComposerActionModal = ({ selectedText, onClose, onConfirm }: AddLinkComposerActionModalProps) => {
+	const formId = useUniqueId();
 	const t = useTranslation();
 
 	const { register, handleSubmit, setFocus } = useForm({
@@ -40,9 +42,10 @@ const AddLinkComposerActionModal = ({ selectedText, onClose, onConfirm }: AddLin
 			onConfirm={submit}
 			onClose={onClose}
 			onCancel={onClose}
+			wrapperFunction={(props) => <Box is='form' name={formId} onSubmit={(e) => void submit(e)} method='post' {...props} />}
 			title={t('Add_link')}
 		>
-			<FieldGroup is='form' name='xxx' onSubmit={(e) => void submit(e)} method='post'>
+			<FieldGroup>
 				<Field>
 					<FieldLabel>{t('Text')}</FieldLabel>
 					<FieldRow>
@@ -55,7 +58,6 @@ const AddLinkComposerActionModal = ({ selectedText, onClose, onConfirm }: AddLin
 						<TextInput {...register('url')} />
 					</FieldRow>
 				</Field>
-				<input type='submit' hidden />
 			</FieldGroup>
 		</GenericModal>
 	);
