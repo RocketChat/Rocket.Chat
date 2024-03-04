@@ -1596,7 +1596,7 @@ describe('[Teams]', () => {
 			});
 
 			afterEach(() =>
-				Promise.all([deleteTeam(credentials, testTeam.body.team.name), deleteRoom({ roomId: createdRoom.body.channel._id, type: 'c' })]),
+				Promise.all([deleteTeam(credentials, testTeam.name), deleteRoom({ roomId: createdRoom.body.channel._id, type: 'c' })]),
 			);
 
 			after(() => updateSetting('API_User_Limit', 250));
