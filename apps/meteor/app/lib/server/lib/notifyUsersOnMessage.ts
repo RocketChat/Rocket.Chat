@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-import type { IMessage, IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
+import type { IEditedMessage, IMessage, IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
@@ -127,7 +127,7 @@ export async function updateThreadUsersSubscriptions(message: IMessage, replies:
 	await Subscriptions.setLastReplyForRoomIdAndUserIds(message.rid, repliesPlusSender, new Date());
 }
 
-export async function notifyUsersOnMessage(message: IMessage & { editedAt?: Date | undefined }, room: IRoom): Promise<IMessage> {
+export async function notifyUsersOnMessage(message: IEditedMessage, room: IRoom): Promise<IMessage> {
 	// skips this callback if the message was edited and increments it if the edit was way in the past (aka imported)
 	if (message.editedAt) {
 		if (Math.abs(moment(message.editedAt).diff(Date.now())) > 60000) {
