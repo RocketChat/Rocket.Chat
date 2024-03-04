@@ -1591,7 +1591,7 @@ describe('[Teams]', () => {
 					.expect(200)
 					.send({
 						rooms: [createdRoom.body.channel._id],
-						teamName: testTeam.body.team.name,
+						teamName: testTeam.name,
 					});
 			});
 
