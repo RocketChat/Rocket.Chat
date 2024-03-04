@@ -2,9 +2,8 @@ import type { ImageAttachmentProps } from '@rocket.chat/core-typings';
 import { useMediaUrl } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import MarkdownText from '../../../../MarkdownText';
 import MessageCollapsible from '../../../MessageCollapsible';
-import MessageContentBody from '../../../MessageContentBody';
+import AttachmentDescription from '../structure/AttachmentDescription';
 import AttachmentImage from '../structure/AttachmentImage';
 import { useLoadImage } from './hooks/useLoadImage';
 
@@ -23,13 +22,14 @@ const ImageAttachment = ({
 	title_link: link,
 	title_link_download: hasDownload,
 	collapsed,
-}: ImageAttachmentProps) => {
+	isMessageEncrypted,
+}: ImageAttachmentProps & { isMessageEncrypted: boolean }) => {
 	const [loadImage, setLoadImage] = useLoadImage();
 	const getURL = useMediaUrl();
 
 	return (
 		<>
-			{descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} />}
+			<AttachmentDescription description={description} descriptionMd={descriptionMd} isMessageEncrypted={isMessageEncrypted} />
 			<MessageCollapsible title={title} hasDownload={hasDownload} link={getURL(link || url)} size={size} isCollapsed={collapsed}>
 				<AttachmentImage
 					{...imageDimensions}

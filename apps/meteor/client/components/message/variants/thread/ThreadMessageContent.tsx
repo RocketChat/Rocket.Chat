@@ -1,5 +1,6 @@
 import type { IThreadMainMessage, IThreadMessage } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
+import { MessageBody } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useUserId, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -44,7 +45,7 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps): ReactElem
 					{(!encrypted || normalizedMessage.e2e === 'done') && (
 						<MessageContentBody md={normalizedMessage.md} mentions={normalizedMessage.mentions} channels={normalizedMessage.channels} />
 					)}
-					{encrypted && normalizedMessage.e2e === 'pending' && t('E2E_message_encrypted_placeholder')}
+					{encrypted && normalizedMessage.e2e === 'pending' && <MessageBody>{t('E2E_message_encrypted_placeholder')}</MessageBody>}
 				</>
 			)}
 

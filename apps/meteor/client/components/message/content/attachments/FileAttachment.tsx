@@ -6,7 +6,7 @@ import GenericFileAttachment from './file/GenericFileAttachment';
 import ImageAttachment from './file/ImageAttachment';
 import VideoAttachment from './file/VideoAttachment';
 
-const FileAttachment = (attachment: FileAttachmentProps) => {
+const FileAttachment = (attachment: FileAttachmentProps & { isMessageEncrypted: boolean }) => {
 	if (isFileImageAttachment(attachment)) {
 		return <ImageAttachment {...attachment} />;
 	}

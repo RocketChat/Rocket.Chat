@@ -7,13 +7,14 @@ import AttachmentsItem from './attachments/AttachmentsItem';
 type AttachmentsProps = {
 	attachments: MessageAttachmentBase[];
 	id?: string | undefined;
+	isMessageEncrypted?: boolean;
 };
 
-const Attachments = ({ attachments, id }: AttachmentsProps): ReactElement => {
+const Attachments = ({ attachments, id, isMessageEncrypted = false }: AttachmentsProps): ReactElement => {
 	return (
 		<>
 			{attachments?.map((attachment, index) => (
-				<AttachmentsItem key={index} id={id} attachment={{ ...attachment }} />
+				<AttachmentsItem key={index} id={id} attachment={{ ...attachment }} isMessageEncrypted={isMessageEncrypted} />
 			))}
 		</>
 	);
