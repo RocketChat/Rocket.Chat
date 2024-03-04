@@ -1287,8 +1287,8 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	}
 
 	incGroupMentionsAndUnreadForRoomIdExcludingUserId(
-		roomId: string,
-		userId: string,
+		roomId: IRoom['_id'],
+		userId: IUser['_id'],
 		incGroup = 1,
 		incUnread = 1,
 	): Promise<UpdateResult | Document> {
@@ -1314,8 +1314,8 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	}
 
 	incUserMentionsAndUnreadForRoomIdAndUserIds(
-		roomId: string,
-		userIds: string[],
+		roomId: IRoom['_id'],
+		userIds: IUser['_id'][],
 		incUser = 1,
 		incUnread = 1,
 	): Promise<UpdateResult | Document> {

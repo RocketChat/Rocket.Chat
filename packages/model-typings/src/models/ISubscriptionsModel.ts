@@ -187,8 +187,8 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	updateDirectNameAndFnameByName(name: string, newName?: string, newFname?: string): Promise<UpdateResult | Document>;
 
 	incGroupMentionsAndUnreadForRoomIdExcludingUserId(
-		roomId: string,
-		userId: string,
+		roomId: IRoom['_id'],
+		userId: IUser['_id'],
 		incGroup?: number,
 		incUnread?: number,
 	): Promise<UpdateResult | Document>;
@@ -201,8 +201,8 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	updateTypeByRoomId(roomId: string, type: ISubscription['t']): Promise<UpdateResult | Document>;
 	setBlockedByRoomId(rid: string, blocked: string, blocker: string): Promise<UpdateResult[]>;
 	incUserMentionsAndUnreadForRoomIdAndUserIds(
-		roomId: string,
-		userIds: string[],
+		roomId: IRoom['_id'],
+		userIds: IUser['_id'][],
 		incUser?: number,
 		incUnread?: number,
 	): Promise<UpdateResult | Document>;
