@@ -4,19 +4,22 @@ import type { MessageMention } from '@rocket.chat/core-typings';
 import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../settings/server';
 
-const beforeGetTeamMentions = async (mentionIds: string[], teamMentions: MessageMention[]): Promise<string[]> => {
-	const teamsIds = teamMentions.map(({ _id }) => _id);
-	const members = await Team.getMembersByTeamIds(teamsIds, { projection: { userId: 1 } });
-	return [...new Set([...mentionIds, ...members.map(({ userId }) => userId)])];
+const beforeGetTeamMentions = async (mentionIds: string[], teamMentions?: MessageMention[]): Promise<string[]> => {
+	if (teamMentions?.length) return mentionIds;
+	const teamsIds = teamMentions?.map(({ _id }) => _id);
+	const members = await Team.getMembersByTeamIds(teamsIds as string[], { projection: { userId: 1 } } as { projection: { userId: 1 } });
+	return [...new Set([...mentionIds, ...members.map(({ userId }: { userId: string }) => userId)])];
 };
 
 settings.watch<boolean>('Troubleshoot_Disable_Teams_Mention', (value) => {
 	if (value) {
-		callbacks.remove('beforeGetTeamMentions', 'before-get-mentions-get-teams');
+		callbacks.remove('beforeGetTeamMentions', 'beforeGetTeamMentions');
 	} else {
-		callbacks.add('beforeGetTeamMentions',
-			beforeGetTeamMentions,
+		callbacks.add(
+			'beforeGetTeamMentions',
+			(mentionIds: string[], teamMentions?: MessageMention[]) => beforeGetTeamMentions(mentionIds, teamMentions),
 			callbacks.priority.MEDIUM,
-			'before-get-team-mentions-get-teams');
+			'beforeGetTeamMentions',
+		);
 	}
 });

@@ -1,6 +1,5 @@
 import type {
 	IDirectMessageRoom,
-	IEditedMessage,
 	IMessage,
 	IOmnichannelGenericRoom,
 	IRoom,
@@ -1517,7 +1516,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		_id: IRoom['_id'],
 		inc = 1,
 		lastMessageTimestamp: NonNullable<IRoom['lm']>,
-		lastMessage: IEditedMessage,
+		lastMessage?: IMessage,
 	): Promise<UpdateResult> {
 		const query: Filter<IRoom> = { _id };
 

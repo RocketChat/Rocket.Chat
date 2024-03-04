@@ -1,8 +1,8 @@
-import moment from 'moment';
-
-import type { IEditedMessage, IMessage, IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
+import { isEditedMessage } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import moment from 'moment';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
@@ -39,10 +39,7 @@ export async function getMentions(message: IMessage): Promise<{ toAll: boolean; 
 		.filter(({ _id }) => _id !== senderId && !['all', 'here'].includes(_id))
 		.map(({ _id }) => _id);
 
-	let mentionIds = filteredMentions;
-	if (teamsMentions.length > 0) {
-		mentionIds = await callbacks.run('beforeGetTeamMentions', filteredMentions, teamsMentions);
-	}
+	const mentionIds = await callbacks.run('beforeGetTeamMentions', filteredMentions, teamsMentions);
 
 	return {
 		toAll,
@@ -53,13 +50,23 @@ export async function getMentions(message: IMessage): Promise<{ toAll: boolean; 
 
 type UnreadCountType = 'all_messages' | 'user_mentions_only' | 'group_mentions_only' | 'user_and_group_mentions_only';
 
-const incGroupMentions = async (rid: IRoom['_id'], roomType: RoomType, excludeUserId: IUser['_id'], unreadCount: Exclude<UnreadCountType, 'user_mentions_only'>): Promise<void> => {
+const incGroupMentions = async (
+	rid: IRoom['_id'],
+	roomType: RoomType,
+	excludeUserId: IUser['_id'],
+	unreadCount: Exclude<UnreadCountType, 'user_mentions_only'>,
+): Promise<void> => {
 	const incUnreadByGroup = new Set(['all_messages', 'group_mentions_only', 'user_and_group_mentions_only']).has(unreadCount);
 	const incUnread = roomType === 'd' || roomType === 'l' || incUnreadByGroup ? 1 : 0;
 	await Subscriptions.incGroupMentionsAndUnreadForRoomIdExcludingUserId(rid, excludeUserId, 1, incUnread);
 };
 
-const incUserMentions = async (rid: IRoom['_id'], roomType: RoomType, uids: IUser['_id'][], unreadCount: Exclude<UnreadCountType, 'group_mentions_only'>): Promise<void> => {
+const incUserMentions = async (
+	rid: IRoom['_id'],
+	roomType: RoomType,
+	uids: IUser['_id'][],
+	unreadCount: Exclude<UnreadCountType, 'group_mentions_only'>,
+): Promise<void> => {
 	const incUnreadByUser = new Set(['all_messages', 'user_mentions_only', 'user_and_group_mentions_only']).has(unreadCount);
 	const incUnread = roomType === 'd' || roomType === 'l' || incUnreadByUser ? 1 : 0;
 	await Subscriptions.incUserMentionsAndUnreadForRoomIdAndUserIds(rid, uids, 1, incUnread);
@@ -70,7 +77,9 @@ export const getUserIdsFromHighlights = async (rid: IRoom['_id'], message: IMess
 	const subs = await Subscriptions.findByRoomWithUserHighlights(rid, highlightOptions).toArray();
 
 	return subs
-		.filter(({ userHighlights, u: { _id: uid } }) => userHighlights && messageContainsHighlight(message, userHighlights) && uid !== message.u._id)
+		.filter(
+			({ userHighlights, u: { _id: uid } }) => userHighlights && messageContainsHighlight(message, userHighlights) && uid !== message.u._id,
+		)
 		.map(({ u: { _id: uid } }) => uid);
 };
 
@@ -127,9 +136,9 @@ export async function updateThreadUsersSubscriptions(message: IMessage, replies:
 	await Subscriptions.setLastReplyForRoomIdAndUserIds(message.rid, repliesPlusSender, new Date());
 }
 
-export async function notifyUsersOnMessage(message: IEditedMessage, room: IRoom): Promise<IMessage> {
+export async function notifyUsersOnMessage(message: IMessage, room: IRoom): Promise<IMessage> {
 	// Skips this callback if the message was edited and increments it if the edit was way in the past (aka imported)
-	if (message.editedAt) {
+	if (isEditedMessage(message)) {
 		if (Math.abs(moment(message.editedAt).diff(Date.now())) > 60000) {
 			// TODO: Review as I am not sure how else to get around this as the incrementing of the msgs count shouldn't be in this callback
 			await Rooms.incMsgCountById(message.rid, 1);
@@ -160,7 +169,7 @@ export async function notifyUsersOnMessage(message: IEditedMessage, room: IRoom)
 	}
 
 	// Update all the room activity tracker fields
-	await Rooms.incMsgCountAndSetLastMessageById(message.rid, 1, message.ts, settings.get('Store_Last_Message') && message);
+	await Rooms.incMsgCountAndSetLastMessageById(message.rid, 1, message.ts, settings.get('Store_Last_Message') ? message : undefined);
 	await updateUsersSubscriptions(message, room);
 
 	return message;

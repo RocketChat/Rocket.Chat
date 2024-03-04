@@ -1,4 +1,4 @@
-import type { IDirectMessageRoom, IEditedMessage, IMessage, IOmnichannelGenericRoom, IRoom, IRoomFederated, ITeam, IUser } from '@rocket.chat/core-typings';
+import type { IDirectMessageRoom, IMessage, IOmnichannelGenericRoom, IRoom, IRoomFederated, ITeam, IUser } from '@rocket.chat/core-typings';
 import type { AggregationCursor, DeleteResult, Document, FindCursor, FindOptions, UpdateOptions, UpdateResult } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
@@ -237,7 +237,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	archiveById(rid: string): Promise<UpdateResult>;
 	unarchiveById(rid: string): Promise<UpdateResult>;
 	setNameById(rid: string, name: string, fname: string): Promise<UpdateResult>;
-	incMsgCountAndSetLastMessageById(rid: IRoom['_id'], inc: number, lastMessageTs: Date, lastMessage: IEditedMessage): Promise<UpdateResult>;
+	incMsgCountAndSetLastMessageById(rid: IRoom['_id'], inc: number, lastMessageTs: Date, lastMessage?: IMessage): Promise<UpdateResult>;
 	incUsersCountById(rid: string, inc: number): Promise<UpdateResult>;
 	incUsersCountNotDMsByIds(rids: string[], inc: number): Promise<Document | UpdateResult>;
 	setLastMessageById(rid: string, lastMessage: IRoom['lastMessage']): Promise<UpdateResult>;
