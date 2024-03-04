@@ -1516,7 +1516,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		_id: IRoom['_id'],
 		inc = 1,
 		lastMessageTimestamp: NonNullable<IRoom['lm']>,
-		lastMessage: IRoom['lastMessage'],
+		lastMessage: IEditedMessage,
 	): Promise<UpdateResult> {
 		const query: Filter<IRoom> = { _id };
 

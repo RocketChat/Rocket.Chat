@@ -128,7 +128,7 @@ export async function updateThreadUsersSubscriptions(message: IMessage, replies:
 }
 
 export async function notifyUsersOnMessage(message: IEditedMessage, room: IRoom): Promise<IMessage> {
-	// skips this callback if the message was edited and increments it if the edit was way in the past (aka imported)
+	// Skips this callback if the message was edited and increments it if the edit was way in the past (aka imported)
 	if (message.editedAt) {
 		if (Math.abs(moment(message.editedAt).diff(Date.now())) > 60000) {
 			// TODO: Review as I am not sure how else to get around this as the incrementing of the msgs count shouldn't be in this callback
@@ -136,7 +136,7 @@ export async function notifyUsersOnMessage(message: IEditedMessage, room: IRoom)
 			return message;
 		}
 
-		// only updates last message if it was edited (skip rest of callback)
+		// Only updates last message if it was edited (skip rest of callback)
 		if (
 			settings.get('Store_Last_Message') &&
 			(!message.tmid || message.tshow) &&
@@ -153,14 +153,14 @@ export async function notifyUsersOnMessage(message: IEditedMessage, room: IRoom)
 		return message;
 	}
 
-	// if message sent ONLY on a thread, skips the rest as it is done on a callback specific to threads
+	// If message sent ONLY on a thread, skips the rest as it is done on a callback specific to threads
 	if (message.tmid && !message.tshow) {
 		await Rooms.incMsgCountById(message.rid, 1);
 		return message;
 	}
 
 	// Update all the room activity tracker fields
-	await Rooms.incMsgCountAndSetLastMessageById(message.rid, 1, message.ts, settings.get('Store_Last_Message') ? (message as IMessage) : undefined);
+	await Rooms.incMsgCountAndSetLastMessageById(message.rid, 1, message.ts, settings.get('Store_Last_Message') && message);
 	await updateUsersSubscriptions(message, room);
 
 	return message;
