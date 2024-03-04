@@ -5,6 +5,7 @@ import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, UIEvent } from 'react';
 import React, { memo, useCallback, useMemo } from 'react';
+import type { AriaButtonProps } from 'react-aria';
 
 import { isTruthy } from '../../../../lib/isTruthy';
 import { ReactiveUserStatus } from '../../../components/UserStatus';
@@ -16,9 +17,10 @@ type LeaderBarProps = {
 	username: IUser['username'];
 	visible: boolean;
 	onAvatarClick?: (event: UIEvent, username: IUser['username']) => void;
+	triggerProps: AriaButtonProps<'button'>;
 };
 
-const LeaderBar = ({ _id, name, username, visible, onAvatarClick }: LeaderBarProps): ReactElement => {
+const LeaderBar = ({ _id, name, username, visible, onAvatarClick, triggerProps }: LeaderBarProps): ReactElement => {
 	const t = useTranslation();
 
 	const chatNowLink = useMemo(() => roomCoordinator.getRouteLink('d', { name: username }) || undefined, [username]);
@@ -64,7 +66,7 @@ const LeaderBar = ({ _id, name, username, visible, onAvatarClick }: LeaderBarPro
 			className={[roomLeaderStyle, 'room-leader', !visible && 'animated-hidden'].filter(isTruthy)}
 		>
 			<Box display='flex' alignItems='center'>
-				<Box is='button' mie={4} onClick={handleAvatarClick}>
+				<Box mie={4} onClick={handleAvatarClick} {...triggerProps}>
 					<UserAvatar username={username} />
 				</Box>
 				<Box fontScale='p2' mi={4} display='flex' alignItems='center'>

@@ -1,4 +1,4 @@
-import { useEffect } from 'preact/hooks';
+import { useContext, useEffect } from 'preact/hooks';
 
 import { createClassName } from '../../helpers/createClassName';
 import ChatIcon from '../../icons/chat.svg';
@@ -8,6 +8,7 @@ import { Footer, FooterContent, PoweredBy } from '../Footer';
 import { PopoverContainer } from '../Popover';
 import { Sound } from '../Sound';
 import ScreenHeader from './Header';
+import { ScreenContext } from './ScreenProvider';
 import styles from './styles.scss';
 
 export const ScreenContent = ({ children, nopadding, triggered = false, full = false }) => (
@@ -74,81 +75,77 @@ const CssVar = ({ theme }) => {
 };
 
 /** @type {{ (props: any) => JSX.Element; Content: (props: any) => JSX.Element; Footer: (props: any) => JSX.Element }} */
-export const Screen = ({
-	theme = {},
-	agent,
-	title,
-	notificationsEnabled,
-	minimized = false,
-	expanded = false,
-	windowed = false,
-	children,
-	className,
-	alerts,
-	modal,
-	unread,
-	sound,
-	onDismissAlert,
-	onEnableNotifications,
-	onDisableNotifications,
-	onMinimize,
-	onRestore,
-	onOpenWindow,
-	onSoundStop,
-	queueInfo,
-	dismissNotification,
-	triggered = false,
-}) => (
-	<div className={createClassName(styles, 'screen', { minimized, expanded, windowed, triggered })}>
-		<CssVar theme={theme} />
-		{triggered && (
-			<Button
-				onClick={onMinimize}
-				data-qa-id='chat-close-button'
-				className={createClassName(styles, 'screen__chat-close-button')}
-				icon={<CloseIcon />}
-			>
-				Close
-			</Button>
-		)}
-		<div className={createClassName(styles, 'screen__inner', { fitTextSize: triggered }, [className])}>
-			<PopoverContainer>
-				{!triggered && (
-					<ScreenHeader
-						alerts={alerts}
-						agent={agent}
-						title={title}
-						notificationsEnabled={notificationsEnabled}
-						minimized={minimized}
-						expanded={expanded}
-						windowed={windowed}
-						onDismissAlert={onDismissAlert}
-						onEnableNotifications={onEnableNotifications}
-						onDisableNotifications={onDisableNotifications}
-						onMinimize={onMinimize}
-						onRestore={onRestore}
-						onOpenWindow={onOpenWindow}
-						queueInfo={queueInfo}
-					/>
-				)}
+export const Screen = ({ title, agent, children, className, unread, triggered = false, queueInfo, onSoundStop }) => {
+	const {
+		theme = {},
+		notificationsEnabled,
+		minimized = false,
+		expanded = false,
+		windowed = false,
+		alerts,
+		modal,
+		sound,
+		onDismissAlert,
+		onEnableNotifications,
+		onDisableNotifications,
+		onMinimize,
+		onRestore,
+		onOpenWindow,
+		dismissNotification,
+	} = useContext(ScreenContext);
 
-				{modal}
-				{children}
-			</PopoverContainer>
+	return (
+		<div className={createClassName(styles, 'screen', { minimized, expanded, windowed, triggered })}>
+			<CssVar theme={theme} />
+			{triggered && (
+				<Button
+					onClick={onMinimize}
+					data-qa-id='chat-close-button'
+					className={createClassName(styles, 'screen__chat-close-button')}
+					icon={<CloseIcon />}
+				>
+					Close
+				</Button>
+			)}
+			<div className={createClassName(styles, 'screen__inner', { fitTextSize: triggered }, [className])}>
+				<PopoverContainer>
+					{!triggered && (
+						<ScreenHeader
+							alerts={alerts}
+							agent={agent}
+							title={title}
+							notificationsEnabled={notificationsEnabled}
+							minimized={minimized}
+							expanded={expanded}
+							windowed={windowed}
+							onDismissAlert={onDismissAlert}
+							onEnableNotifications={onEnableNotifications}
+							onDisableNotifications={onDisableNotifications}
+							onMinimize={onMinimize}
+							onRestore={onRestore}
+							onOpenWindow={onOpenWindow}
+							queueInfo={queueInfo}
+						/>
+					)}
+
+					{modal}
+					{children}
+				</PopoverContainer>
+			</div>
+
+			<ChatButton
+				agent={agent}
+				triggered={triggered}
+				text={title}
+				badge={unread}
+				minimized={minimized}
+				onClick={minimized ? onRestore : onMinimize}
+			/>
+
+			{sound && <Sound src={sound.src} play={sound.play} onStop={onSoundStop} dismissNotification={dismissNotification} />}
 		</div>
-
-		<ChatButton
-			agent={agent}
-			triggered={triggered}
-			text={title}
-			badge={unread}
-			minimized={minimized}
-			onClick={minimized ? onRestore : onMinimize}
-		/>
-
-		{sound && <Sound src={sound.src} play={sound.play} onStop={onSoundStop} dismissNotification={dismissNotification} />}
-	</div>
-);
+	);
+};
 
 Screen.Content = ScreenContent;
 Screen.Footer = ScreenFooter;
