@@ -1,7 +1,9 @@
 import i18next from 'i18next';
 
 import { Livechat } from '../api';
-import { store } from '../store';
+import type { StoreState } from '../store';
+import { initialState, store } from '../store';
+import type { LivechatMessageEventData } from '../widget';
 import CustomFields from './customFields';
 import { loadConfig, updateBusinessUnit } from './main';
 import { parentCall } from './parentCall';
@@ -9,24 +11,34 @@ import { createToken } from './random';
 import { loadMessages } from './room';
 import Triggers from './triggers';
 
-const createOrUpdateGuest = async (guest) => {
+const createOrUpdateGuest = async (guest: StoreState['guest']) => {
+	if (!guest) {
+		return;
+	}
 	const { token } = guest;
 	token && (await store.setState({ token }));
 	const { visitor: user } = await Livechat.grantVisitor({ visitor: { ...guest } });
-	store.setState({ user });
+
+	if (!user) {
+		return;
+	}
+	store.setState({ user } as Omit<StoreState['user'], 'ts'>);
 	await loadConfig();
 };
 
-const updateIframeGuestData = (data) => {
+const updateIframeGuestData = (data: Partial<StoreState['guest']>) => {
 	const {
 		iframe,
 		iframe: { guest },
-		user: _id,
+		user,
 		token,
 	} = store.state;
-	store.setState({ iframe: { ...iframe, guest: { ...guest, ...data } } });
 
-	if (!_id) {
+	const iframeGuest = { ...guest, ...data } as StoreState['guest'];
+
+	store.setState({ iframe: { ...iframe, guest: iframeGuest } });
+
+	if (!user) {
 		return;
 	}
 
@@ -34,8 +46,10 @@ const updateIframeGuestData = (data) => {
 	createOrUpdateGuest(guestData);
 };
 
+export type HooksWidgetAPI = typeof api;
+
 const api = {
-	pageVisited(info) {
+	pageVisited: (info: { change: string; title: string; location: { href: string } }) => {
 		if (info.change === 'url') {
 			Triggers.processRequest(info);
 		}
@@ -52,31 +66,27 @@ const api = {
 		Livechat.sendVisitorNavigation({ token, rid, pageInfo: { change, title, location: { href } } });
 	},
 
-	setCustomField(key, value, overwrite = true) {
+	setCustomField: (key: string, value = '', overwrite = true) => {
 		CustomFields.setCustomField(key, value, overwrite);
 	},
 
-	setTheme({ color, fontColor, iconColor, title, offlineTitle } = {}) {
+	setTheme: (theme: StoreState['iframe']['theme']) => {
 		const {
 			iframe,
-			iframe: { theme },
+			iframe: { theme: currentTheme },
 		} = store.state;
 		store.setState({
 			iframe: {
 				...iframe,
 				theme: {
+					...currentTheme,
 					...theme,
-					color,
-					fontColor,
-					iconColor,
-					title,
-					offlineTitle,
 				},
 			},
 		});
 	},
 
-	async setDepartment(value) {
+	setDepartment: async (value: string) => {
 		const {
 			user,
 			config: { departments = [] },
@@ -90,7 +100,7 @@ const api = {
 		updateIframeGuestData({ department });
 
 		if (defaultAgent && defaultAgent.department !== department) {
-			store.setState({ defaultAgent: null });
+			store.setState({ defaultAgent: undefined });
 		}
 
 		if (department !== existingDepartment) {
@@ -99,8 +109,8 @@ const api = {
 		}
 	},
 
-	async setBusinessUnit(newBusinessUnit) {
-		if (!newBusinessUnit || !newBusinessUnit.trim().length) {
+	setBusinessUnit: async (newBusinessUnit: string) => {
+		if (!newBusinessUnit?.trim().length) {
 			throw new Error('Error! Invalid business ids');
 		}
 
@@ -109,16 +119,27 @@ const api = {
 		return existingBusinessUnit !== newBusinessUnit && updateBusinessUnit(newBusinessUnit);
 	},
 
-	async clearBusinessUnit() {
+	clearBusinessUnit: async () => {
 		const { businessUnit } = store.state;
 		return businessUnit && updateBusinessUnit();
 	},
 
-	clearDepartment() {
+	clearDepartment: () => {
 		updateIframeGuestData({ department: '' });
 	},
 
-	setAgent({ _id, username, ...props } = {}) {
+	clearWidgetData: async () => {
+		const { minimized, visible, undocked, expanded, businessUnit, ...initial } = initialState();
+		await store.setState(initial);
+	},
+
+	setAgent: (agent: StoreState['defaultAgent']) => {
+		if (!agent) {
+			return;
+		}
+
+		const { _id, username, ...props } = agent;
+
 		if (!_id || !username) {
 			return console.warn('The fields _id and username are mandatory.');
 		}
@@ -133,11 +154,11 @@ const api = {
 		});
 	},
 
-	setExpanded(expanded) {
+	setExpanded: (expanded: StoreState['expanded']) => {
 		store.setState({ expanded });
 	},
 
-	async setGuestToken(token) {
+	setGuestToken: async (token: string) => {
 		const { token: localToken } = store.state;
 		if (token === localToken) {
 			return;
@@ -145,16 +166,16 @@ const api = {
 		await createOrUpdateGuest({ token });
 	},
 
-	setGuestName(name) {
+	setGuestName: (name: string) => {
 		updateIframeGuestData({ name });
 	},
 
-	setGuestEmail(email) {
+	setGuestEmail: (email: string) => {
 		updateIframeGuestData({ email });
 	},
 
-	async registerGuest(data) {
-		if (!data || typeof data !== 'object') {
+	registerGuest: async (data: StoreState['guest']) => {
+		if (typeof data !== 'object') {
 			return;
 		}
 
@@ -171,59 +192,72 @@ const api = {
 		await createOrUpdateGuest(data);
 	},
 
-	async setLanguage(language) {
+	setLanguage: async (language: StoreState['iframe']['language']) => {
 		const { iframe } = store.state;
 		await store.setState({ iframe: { ...iframe, language } });
 		i18next.changeLanguage(language);
 	},
 
-	showWidget() {
+	showWidget: () => {
 		const { iframe } = store.state;
 		store.setState({ iframe: { ...iframe, visible: true } });
 		parentCall('showWidget');
 	},
 
-	hideWidget() {
+	hideWidget: () => {
 		const { iframe } = store.state;
 		store.setState({ iframe: { ...iframe, visible: false } });
 		parentCall('hideWidget');
 	},
 
-	minimizeWidget() {
+	minimizeWidget: () => {
 		store.setState({ minimized: true });
 		parentCall('closeWidget');
 	},
 
-	maximizeWidget() {
+	maximizeWidget: () => {
 		store.setState({ minimized: false });
 		parentCall('openWidget');
 	},
-	setParentUrl(parentUrl) {
+
+	setParentUrl: (parentUrl: StoreState['parentUrl']) => {
 		store.setState({ parentUrl });
 	},
 };
 
-const onNewMessage = (event) => {
+function onNewMessageHandler(event: MessageEvent<LivechatMessageEventData<HooksWidgetAPI>>) {
 	if (event.source === event.target) {
 		return;
 	}
 
-	if (typeof event.data === 'object' && event.data.src !== undefined && event.data.src === 'rocketchat') {
-		if (api[event.data.fn] !== undefined && typeof api[event.data.fn] === 'function') {
-			const args = [].concat(event.data.args || []);
-			api[event.data.fn].apply(null, args);
-		}
+	if (!event.data || typeof event.data !== 'object') {
+		return;
 	}
-};
+
+	if (!event.data.src || event.data.src !== 'rocketchat') {
+		return;
+	}
+
+	const { fn, args } = event.data;
+
+	if (!api.hasOwnProperty(fn)) {
+		return;
+	}
+
+	// There is an existing issue with overload resolution with type union arguments please see https://github.com/microsoft/TypeScript/issues/14107
+	// @ts-expect-error: A spread argument must either have a tuple type or be passed to a rest parameter
+	api[fn](...args);
+}
 
 class Hooks {
+	private _started: boolean;
+
 	constructor() {
-		if (!Hooks.instance) {
-			this._started = false;
-			Hooks.instance = this;
+		if (instance) {
+			throw new Error('Hooks already has an instance.');
 		}
 
-		return Hooks.instance;
+		this._started = false;
 	}
 
 	init() {
@@ -232,12 +266,12 @@ class Hooks {
 		}
 
 		this._started = true;
-		window.addEventListener('message', onNewMessage, false);
+		window.addEventListener('message', onNewMessageHandler, false);
 	}
 
 	reset() {
 		this._started = false;
-		window.removeEventListener('message', onNewMessage, false);
+		window.removeEventListener('message', onNewMessageHandler, false);
 	}
 }
 
