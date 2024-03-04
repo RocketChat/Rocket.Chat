@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-import { IMessage, IRoom, RoomType } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, RoomType } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
