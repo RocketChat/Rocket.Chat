@@ -1,11 +1,11 @@
 import type { ComponentProps, RefObject } from 'react';
 import { useCallback } from 'react';
 
-import type { MessageList } from '../MessageList';
+import type MessageListProvider from '../MessageList/providers/MessageListProvider';
 
 export const useScrollMessageList = (
 	wrapperRef: RefObject<HTMLDivElement>,
-): Exclude<ComponentProps<typeof MessageList>['scrollMessageList'], undefined> => {
+): Exclude<ComponentProps<typeof MessageListProvider>['scrollMessageList'], undefined> => {
 	// Passing a callback instead of the values so that the wrapper is exposed
 	return useCallback(
 		(callback) => {

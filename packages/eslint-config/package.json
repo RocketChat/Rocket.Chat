@@ -32,6 +32,6 @@
 		"/node",
 		"/style",
 		"/variables",
-		"/react"
+		"react.js"
 	]
 }

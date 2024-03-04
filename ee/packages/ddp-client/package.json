@@ -12,7 +12,7 @@
 		"jest-environment-jsdom": "~29.6.4",
 		"jest-websocket-mock": "^2.4.0",
 		"ts-jest": "^29.1.2",
-		"typescript": "^5.3.3",
+		"typescript": "~5.3.3",
 		"ws": "^8.13.0"
 	},
 	"peerDependencies": {

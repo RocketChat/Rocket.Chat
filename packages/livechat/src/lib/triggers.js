@@ -157,7 +157,7 @@ class Triggers {
 
 					if (agent && agent._id) {
 						await store.setState({ agent });
-						parentCall('callback', ['assign-agent', normalizeAgent(agent)]);
+						parentCall('callback', 'assign-agent', normalizeAgent(agent));
 					}
 
 					const foundCondition = trigger.conditions.find((c) => ['chat-opened-by-visitor', 'after-guest-registration'].includes(c.name));
