@@ -363,10 +363,16 @@ function setHiddenSystemMessages(hidden: StoreState['iframe']['hiddenSystemMessa
 		throw new Error('Error: Invalid parameters. Value must be an array of strings');
 	}
 
-	callHook(
-		'setHiddenSystemMessages',
-		hidden.filter((h) => VALID_SYSTEM_MESSAGES.includes(h)),
-	);
+	const hiddenSystemMessages = hidden.filter((h) => {
+		if (VALID_SYSTEM_MESSAGES.includes(h)) {
+			return true;
+		}
+
+		console.warn(`Error: Invalid system message "${h}"`);
+		return false;
+	});
+
+	callHook('setHiddenSystemMessages', hiddenSystemMessages);
 }
 
 function initialize(initParams: Partial<InitializeParams>) {
