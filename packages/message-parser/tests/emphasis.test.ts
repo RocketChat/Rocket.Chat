@@ -11,6 +11,7 @@ import {
   emojiUnicode,
   mentionChannel,
   mentionUser,
+  inlineCode,
 } from '../src/utils';
 
 test.each([
@@ -166,6 +167,21 @@ test.each([
           ]),
           plain('](https://rocket.chat)'),
         ]),
+      ]),
+    ],
+  ],
+  ['_ouch_ouch', [paragraph([plain('_ouch_ouch')])]],
+  [
+    `_@mention _gone`,
+    [paragraph([plain('_'), mentionUser('mention'), plain(' _gone')])],
+  ],
+  [
+    '_nothing `should` be _gone',
+    [
+      paragraph([
+        plain('_nothing '),
+        inlineCode(plain('should')),
+        plain(' be _gone'),
       ]),
     ],
   ],

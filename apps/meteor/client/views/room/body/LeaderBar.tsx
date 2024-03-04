@@ -66,7 +66,7 @@ const LeaderBar = ({ _id, name, username, visible, onAvatarClick, triggerProps }
 			className={[roomLeaderStyle, 'room-leader', !visible && 'animated-hidden'].filter(isTruthy)}
 		>
 			<Box display='flex' alignItems='center'>
-				<Box is='button' mie={4} onClick={handleAvatarClick} {...triggerProps}>
+				<Box mie={4} onClick={handleAvatarClick} {...triggerProps}>
 					<UserAvatar username={username} />
 				</Box>
 				<Box fontScale='p2' mi={4} display='flex' alignItems='center'>
