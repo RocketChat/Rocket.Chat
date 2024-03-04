@@ -1,7 +1,8 @@
 import type { ComponentChildren, Ref } from 'preact';
-import { useState, type CSSProperties, type ChangeEvent, type TargetedEvent } from 'preact/compat';
+import { useState, type CSSProperties, type ChangeEvent, type TargetedEvent, useContext } from 'preact/compat';
 
 import { createClassName } from '../../helpers/createClassName';
+import { UploadsContext } from '../../routes/Chat/component';
 import styles from './styles.scss';
 
 const escapeForRegExp = (string: string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -29,23 +30,36 @@ export const FilesDropTarget = ({
 	inputRef,
 	onUpload,
 }: FilesDropTargetProps) => {
+	const uploads = useContext(UploadsContext);
 	const [dragLevel, setDragLevel] = useState(0);
 
 	const handleDragOver = (event: TargetedEvent<HTMLElement, DragEvent>) => {
+		if (!uploads) {
+			return;
+		}
 		event.preventDefault();
 	};
 
 	const handleDragEnter = (event: TargetedEvent<HTMLElement, DragEvent>) => {
+		if (!uploads) {
+			return;
+		}
 		event.preventDefault();
 		setDragLevel(dragLevel + 1);
 	};
 
 	const handleDragLeave = (event: TargetedEvent<HTMLElement, DragEvent>) => {
+		if (!uploads) {
+			return;
+		}
 		event.preventDefault();
 		setDragLevel(dragLevel - 1);
 	};
 
 	const handleDrop = (event: TargetedEvent<HTMLElement, DragEvent>) => {
+		if (!uploads) {
+			return;
+		}
 		event.preventDefault();
 
 		if (dragLevel === 0 || !event?.dataTransfer?.files?.length) {
@@ -58,6 +72,10 @@ export const FilesDropTarget = ({
 	};
 
 	const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+		if (!uploads) {
+			return;
+		}
+
 		if (!event?.currentTarget?.files?.length) {
 			return;
 		}
