@@ -16,7 +16,7 @@ async function notifyUsersOnReply(message: IMessage, replies: string[], room: IR
 		return message;
 	}
 
-	await updateThreadUsersSubscriptions(message, room, replies);
+	await updateThreadUsersSubscriptions(message, replies);
 
 	return message;
 }

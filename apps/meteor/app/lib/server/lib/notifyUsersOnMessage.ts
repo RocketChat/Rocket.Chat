@@ -118,18 +118,13 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 	]);
 }
 
-export async function updateThreadUsersSubscriptions(message: IMessage, room: IRoom, replies: string[]): Promise<void> {
-	// const unreadCount = settings.get('Unread_Count');
-	// incUserMentions(room._id, room.t, replies, unreadCount);
+export async function updateThreadUsersSubscriptions(message: IMessage, replies: string[]): Promise<void> {
+	// Don't increase unread counter on thread messages
 
 	await Subscriptions.setAlertForRoomIdAndUserIds(message.rid, replies);
-
 	const repliesPlusSender = [...new Set([message.u._id, ...replies])];
-
 	await Subscriptions.setOpenForRoomIdAndUserIds(message.rid, repliesPlusSender);
-
-	// TODO: Fix this cause is waiting for a single string and it should (?!) be an array
-	await Subscriptions.setLastReplyForRoomIdAndUserIds(message.rid, repliesPlusSender as unknown as string, new Date());
+	await Subscriptions.setLastReplyForRoomIdAndUserIds(message.rid, repliesPlusSender, new Date());
 }
 
 export async function notifyUsersOnMessage(message: IMessage & { editedAt?: Date | undefined }, room: IRoom): Promise<IMessage> {

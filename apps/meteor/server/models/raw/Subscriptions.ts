@@ -1384,7 +1384,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateMany(query, update);
 	}
 
-	setLastReplyForRoomIdAndUserIds(roomId: string, uids: string, lr: Date): Promise<UpdateResult | Document> {
+		setLastReplyForRoomIdAndUserIds(roomId: IRoom['_id'], uids: IUser['_id'][], lr: Date): Promise<UpdateResult | Document> {
 		const query = {
 			'rid': roomId,
 			'u._id': { $in: uids },
@@ -1397,6 +1397,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		};
 		return this.updateMany(query, update);
 	}
+
 
 	async setBlockedByRoomId(rid: string, blocked: string, blocker: string): Promise<UpdateResult[]> {
 		const query = {
