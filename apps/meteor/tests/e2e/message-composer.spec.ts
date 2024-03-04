@@ -23,7 +23,7 @@ test.describe.serial('message-composer', () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage('hello composer');
 
-		await expect(poHomeChannel.composerToolbarActions).toHaveCount(11);
+		await expect(poHomeChannel.composerToolbarActions).toHaveCount(12);
 	});
 
 	test('should have only the main formatter and the main action', async ({ page }) => {
