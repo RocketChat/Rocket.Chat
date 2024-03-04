@@ -41,7 +41,7 @@ const SaveE2EPasswordModal = ({ randomPassword, onClose, onCancel, onConfirm }: 
 				<Box fontWeight='bold' mb={20}>
 					{t('E2E_password_save_text')}
 				</Box>
-				{t('Your_password_is')}
+				{t('Your_E2EE_password_is')}
 				<CodeSnippet buttonText={t('Copy')} onClick={() => copy()}>
 					{randomPassword}
 				</CodeSnippet>
