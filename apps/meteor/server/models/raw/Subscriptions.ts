@@ -1313,7 +1313,6 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateMany(query, update);
 	}
 
-	// TODO: Update in controlled batches to avoid memory issues
 	incUserMentionsAndUnreadForRoomIdAndUserIds(
 		roomId: string,
 		userIds: string[],
