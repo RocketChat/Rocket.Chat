@@ -2,7 +2,7 @@ import { Field, FieldGroup, TextInput, FieldLabel, FieldRow, Box } from '@rocket
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 
 import GenericModal from '../../../../client/components/GenericModal';
 
@@ -13,10 +13,11 @@ type AddLinkComposerActionModalProps = {
 };
 
 const AddLinkComposerActionModal = ({ selectedText, onClose, onConfirm }: AddLinkComposerActionModalProps) => {
-	const formId = useUniqueId();
 	const t = useTranslation();
+	const textField = useUniqueId();
+	const urlField = useUniqueId();
 
-	const { register, handleSubmit, setFocus } = useForm({
+	const { handleSubmit, setFocus, control } = useForm({
 		mode: 'onBlur',
 		defaultValues: {
 			text: selectedText || '',
@@ -39,23 +40,21 @@ const AddLinkComposerActionModal = ({ selectedText, onClose, onConfirm }: AddLin
 			variant='warning'
 			icon={null}
 			confirmText={t('Add')}
-			onConfirm={submit}
-			onClose={onClose}
 			onCancel={onClose}
-			wrapperFunction={(props) => <Box is='form' name={formId} onSubmit={(e) => void submit(e)} method='post' {...props} />}
+			wrapperFunction={(props) => <Box is='form' onSubmit={(e) => void submit(e)} {...props} />}
 			title={t('Add_link')}
 		>
 			<FieldGroup>
 				<Field>
-					<FieldLabel>{t('Text')}</FieldLabel>
+					<FieldLabel htmlFor={textField}>{t('Text')}</FieldLabel>
 					<FieldRow>
-						<TextInput {...register('text')} />
+						<Controller control={control} name='text' render={({ field }) => <TextInput autoComplete='off' id={textField} {...field} />} />
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel>{t('URL')}</FieldLabel>
+					<FieldLabel htmlFor={urlField}>{t('URL')}</FieldLabel>
 					<FieldRow>
-						<TextInput {...register('url')} />
+						<Controller control={control} name='url' render={({ field }) => <TextInput autoComplete='off' id={urlField} {...field} />} />
 					</FieldRow>
 				</Field>
 			</FieldGroup>
