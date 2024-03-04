@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { afterEach, before, beforeEach, describe, it } from 'mocha';
+import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials, methodCall } from '../../data/api-data';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
