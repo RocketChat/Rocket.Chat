@@ -36,7 +36,7 @@ type OmnichannelRoomWithExtraFields = IOmnichannelRoom & {
 };
 
 type CRMActions =
-	| 'LivechatSessionStarted'
+	| 'LivechatSessionStart'
 	| 'LivechatSessionQueued'
 	| 'LivechatSession'
 	| 'LivechatSessionTaken'
@@ -73,7 +73,7 @@ const sendMessageType = (msgType: string): boolean => {
 const getAdditionalFieldsByType = (type: CRMActions, room: OmnichannelRoomWithExtraFields): AdditionalFields => {
 	const { departmentId, servedBy, closedAt, closedBy, closer, oldServedBy, oldDepartmentId } = room;
 	switch (type) {
-		case 'LivechatSessionStarted':
+		case 'LivechatSessionStart':
 		case 'LivechatSessionQueued':
 			return { departmentId };
 		case 'LivechatSession':
@@ -172,7 +172,7 @@ callbacks.add(
 			return room;
 		}
 
-		return sendToCRM('LivechatSessionStarted', room);
+		return sendToCRM('LivechatSessionStart', room);
 	},
 	callbacks.priority.MEDIUM,
 	'livechat-send-crm-start-room',
