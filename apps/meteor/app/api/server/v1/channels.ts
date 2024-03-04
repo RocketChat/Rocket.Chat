@@ -1047,52 +1047,105 @@ API.v1.addRoute(
 	},
 );
 
+// API.v1.addRoute(
+// 	'channels.members',
+// 	{ authRequired: true },
+// 	{
+// 		async get() {
+// 			const findResult = await findChannelByIdOrName({
+// 				params: this.queryParams,
+// 				checkedArchived: false,
+// 			});
+
+// 			if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult._id))) {
+// 				return API.v1.unauthorized();
+// 			}
+
+// 			const { offset: skip, count: limit } = await getPaginationItems(this.queryParams);
+// 			const { sort = {} } = await this.parseJsonQuery();
+
+// 			check(
+// 				this.queryParams,
+// 				Match.ObjectIncluding({
+// 					status: Match.Maybe([String]),
+// 					filter: Match.Maybe(String),
+// 				}),
+// 			);
+// 			const { status, filter } = this.queryParams;
+
+// 			const { cursor, totalCount } = await findUsersOfRoom({
+// 				rid: findResult._id,
+// 				...(status && { status: { $in: status } }),
+// 				skip,
+// 				limit,
+// 				filter,
+// 				...(sort?.username && { sort: { username: sort.username } }),
+// 			});
+
+// 			const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+// 			return API.v1.success({
+// 				members,
+// 				count: members.length,
+// 				offset: skip,
+// 				total,
+// 			});
+// 		},
+// 	},
+// );
+
 API.v1.addRoute(
-	'channels.members',
-	{ authRequired: true },
-	{
-		async get() {
-			const findResult = await findChannelByIdOrName({
-				params: this.queryParams,
-				checkedArchived: false,
-			});
+    'channels.members',
+    { authRequired: true },
+    {
+        async get() {
+            const findResult = await findChannelByIdOrName({
+                params: this.queryParams,
+                checkedArchived: false,
+            });
 
-			if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult._id))) {
-				return API.v1.unauthorized();
-			}
+            if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult._id))) {
+                return API.v1.unauthorized();
+            }
 
-			const { offset: skip, count: limit } = await getPaginationItems(this.queryParams);
-			const { sort = {} } = await this.parseJsonQuery();
+            const { offset: skip, count: limit } = await getPaginationItems(this.queryParams);
+            const { sort = {} } = await this.parseJsonQuery();
 
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					status: Match.Maybe([String]),
-					filter: Match.Maybe(String),
-				}),
-			);
-			const { status, filter } = this.queryParams;
+            check(
+                this.queryParams,
+                Match.ObjectIncluding({
+                    status: Match.Maybe([String]),
+                    filter: Match.Maybe(String),
+                }),
+            );
+            const { status, filter } = this.queryParams;
 
-			const { cursor, totalCount } = await findUsersOfRoom({
-				rid: findResult._id,
-				...(status && { status: { $in: status } }),
-				skip,
-				limit,
-				filter,
-				...(sort?.username && { sort: { username: sort.username } }),
-			});
+            const { cursor, totalCount } = await findUsersOfRoom({
+                rid: findResult._id,
+                ...(status && { status: { $in: status } }),
+                skip,
+                limit,
+                filter,
+                ...(sort?.username && { sort: { username: sort.username } }),
+            });
 
-			const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
+            const members = await cursor.toArray();
 
-			return API.v1.success({
-				members,
-				count: members.length,
-				offset: skip,
-				total,
-			});
-		},
-	},
+            // Sort the members alphabetically by username
+            members.sort((a, b) => a.username.localeCompare(b.username, 'en', { sensitivity: 'base' }));
+
+            const total = await totalCount;
+
+            return API.v1.success({
+                members,
+                count: members.length,
+                offset: skip,
+                total,
+            });
+        },
+    },
 );
+
 
 API.v1.addRoute(
 	'channels.online',
