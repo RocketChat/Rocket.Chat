@@ -33,12 +33,9 @@ export async function getMentions(message: IMessage): Promise<{ toAll: boolean; 
 	const toAll = mentions.some(({ _id }) => _id === 'all');
 	const toHere = mentions.some(({ _id }) => _id === 'here');
 
-	let teamsMentions = [] as any[];
+	const teamsMentions = mentions.filter((mention) => mention.type === 'team');
 	const filteredMentions = mentions
-		.filter((mention) => {
-			if (mention.type === 'team') { teamsMentions.push(mention); }
-			return !mention.type || mention.type === 'user';
-		})
+		.filter((mention) => !mention.type || mention.type === 'user')
 		.filter(({ _id }) => _id !== senderId && !['all', 'here'].includes(_id))
 		.map(({ _id }) => _id);
 
