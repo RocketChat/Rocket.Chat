@@ -1036,7 +1036,7 @@ export class UsersRaw extends BaseRaw {
 	updateLivechatStatusBasedOnBusinessHours(userIds = []) {
 		const query = {
 			$or: [{ openBusinessHours: { $exists: false } }, { openBusinessHours: { $size: 0 } }],
-			roles: 'livechat-agent',
+			$and: [{ roles: 'livechat-agent' }, { roles: { $ne: 'bot' } }],
 			// exclude deactivated users
 			active: true,
 			// Avoid unnecessary updates
