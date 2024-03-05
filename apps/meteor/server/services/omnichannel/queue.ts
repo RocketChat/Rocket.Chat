@@ -38,6 +38,10 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 	}
 
 	async stop() {
+		if (!this.running) {
+			return;
+		}
+
 		await LivechatInquiry.unlockAll();
 
 		this.running = false;
@@ -74,7 +78,9 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 		const queueDelayTimeout = this.delay();
 		queueLogger.debug(`Executing queue ${queue || 'Public'} with timeout of ${queueDelayTimeout}`);
 
-		setTimeout(this.checkQueue.bind(this, queue), queueDelayTimeout);
+		void this.checkQueue(queue).catch((e) => {
+			queueLogger.error(e);
+		});
 	}
 
 	private async checkQueue(queue: string | undefined) {
@@ -96,6 +102,12 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 			}
 
 			await LivechatInquiry.unlock(nextInquiry._id);
+			queueLogger.debug({
+				msg: 'Inquiry processed',
+				inquiry: nextInquiry._id,
+				queue: queue || 'Public',
+				result,
+			});
 		} catch (e) {
 			queueLogger.error({
 				msg: 'Error processing queue',
@@ -103,7 +115,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 				err: e,
 			});
 		} finally {
-			void this.execute();
+			setTimeout(this.execute.bind(this), this.delay());
 		}
 	}
 
@@ -116,7 +128,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 		const routingSupportsAutoAssign = RoutingManager.getConfig()?.autoAssignAgent;
 		queueLogger.debug({
 			msg: 'Routing method supports auto assignment',
-			method: RoutingManager.methodName,
+			method: settings.get('Livechat_Routing_Method'),
 			status: routingSupportsAutoAssign ? 'Starting' : 'Stopping',
 		});
 
@@ -135,6 +147,10 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 		// This is a precaution to avoid taking the same inquiry multiple times. It should not happen, but it's a safety net
 		if (roomFromDb?.servedBy) {
 			queueLogger.debug(`Inquiry ${inquiry._id} already taken by agent ${roomFromDb.servedBy._id}. Skipping`);
+
+			// Reconciliation step: if we find an inquiry that is already taken, but somehow was processed again by the queue
+			// We'll update its status so it doesnt happen again.
+			await LivechatInquiry.takeInquiry(inquiry._id);
 			return true;
 		}
 

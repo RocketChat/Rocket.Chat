@@ -18,6 +18,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
+import { settings } from '../../../settings/server';
 import {
 	createLivechatSubscription,
 	dispatchAgentDelegated,
@@ -34,9 +35,8 @@ const logger = new Logger('RoutingManager');
 type Routing = {
 	methodName: string | null;
 	methods: Record<string, IRoutingMethod>;
-	startQueue(): void;
+	startQueue(): Promise<void>;
 	isMethodSet(): boolean;
-	setMethodNameAndStartQueue(name: string): Promise<void>;
 	registerMethod(name: string, Method: IRoutingMethodConstructor): void;
 	getMethod(): IRoutingMethod;
 	getConfig(): RoutingMethodConfig | undefined;
@@ -65,32 +65,18 @@ export const RoutingManager: Routing = {
 	methodName: null,
 	methods: {},
 
-	startQueue() {
-		// todo: move to eventemitter or middleware
-		// queue shouldn't start on CE
-	},
-
-	isMethodSet() {
-		return !!this.methodName;
-	},
-
-	async setMethodNameAndStartQueue(name) {
-		logger.info(`Changing default routing method from ${this.methodName} to ${name}`);
-		if (!this.methods[name]) {
-			logger.warn(`Cannot change routing method to ${name}. Selected Routing method does not exists. Defaulting to Manual_Selection`);
-			this.methodName = 'Manual_Selection';
-		} else {
-			this.methodName = name;
-		}
-
+	async startQueue() {
 		const shouldPreventQueueStart = await License.shouldPreventAction('monthlyActiveContacts');
 
 		if (shouldPreventQueueStart) {
 			logger.error('Monthly Active Contacts limit reached. Queue will not start');
 			return;
 		}
-
 		void (await Omnichannel.getQueueWorker()).shouldStart();
+	},
+
+	isMethodSet() {
+		return settings.get<string>('Livechat_Routing_Method') !== '';
 	},
 
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -99,13 +85,7 @@ export const RoutingManager: Routing = {
 	},
 
 	getMethod() {
-		if (!this.methodName) {
-			throw new Meteor.Error('error-routing-method-not-set');
-		}
-		if (!this.methods[this.methodName]) {
-			throw new Meteor.Error('error-routing-method-not-available');
-		}
-		return this.methods[this.methodName];
+		return this.methods[settings.get<string>('Livechat_Routing_Method')];
 	},
 
 	getConfig() {
