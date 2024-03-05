@@ -1,3 +1,4 @@
+import type { FunctionalComponent } from 'preact';
 import { useContext, useRef } from 'preact/hooks';
 import type { JSXInternal } from 'preact/src/jsx';
 import type { FieldValues, SubmitHandler } from 'react-hook-form';
@@ -21,12 +22,12 @@ import { createToken } from '../../lib/random';
 import { StoreContext } from '../../store';
 import styles from './styles.scss';
 
-const LeaveMessage = ({ screenProps }: { screenProps: { [key: string]: unknown }; path: string }) => {
+const LeaveMessage: FunctionalComponent<{ path: string }> = () => {
 	const {
 		config: {
 			departments = [],
 			messages: { offlineMessage, offlineSuccessMessage, offlineUnavailableMessage },
-			theme: { offlineTitle: title, offlineColor: color },
+			theme: { offlineTitle: title },
 			settings: { displayOfflineForm },
 		},
 		iframe,
@@ -56,7 +57,9 @@ const LeaveMessage = ({ screenProps }: { screenProps: { [key: string]: unknown }
 			...(department && { department }),
 			message,
 		};
+
 		await dispatch({ loading: true });
+
 		try {
 			// TODO: Remove intersection after ts refactor of parseOfflineMessage
 			const payload = parseOfflineMessage(fields) as FormValues & { host: string };
@@ -64,7 +67,7 @@ const LeaveMessage = ({ screenProps }: { screenProps: { [key: string]: unknown }
 			await ModalManager.alert({
 				text: offlineSuccessMessage || text,
 			});
-			parentCall('callback', ['offline-form-submit', fields]);
+			parentCall('callback', 'offline-form-submit', fields);
 			return true;
 		} catch (error: unknown) {
 			const errorMessage = (error as { error: string })?.error;
@@ -82,13 +85,7 @@ const LeaveMessage = ({ screenProps }: { screenProps: { [key: string]: unknown }
 	const defaultUnavailableMessage = ''; // TODO
 
 	return (
-		<Screen
-			{...screenProps}
-			theme={{ color, title }}
-			color={color}
-			title={customOfflineTitle || title || defaultTitle}
-			className={createClassName(styles, 'leave-message')}
-		>
+		<Screen title={customOfflineTitle || title || defaultTitle} className={createClassName(styles, 'leave-message')}>
 			<FormScrollShadow topRef={topRef} bottomRef={bottomRef}>
 				<Screen.Content full>
 					<div id='top' ref={topRef} style={{ height: '1px', width: '100%' }} />

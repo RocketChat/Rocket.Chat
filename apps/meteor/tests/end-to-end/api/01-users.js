@@ -9,6 +9,8 @@ import { getCredentials, api, request, credentials, apiEmail, apiUsername, log, 
 import { MAX_BIO_LENGTH, MAX_NICKNAME_LENGTH } from '../../data/constants.ts';
 import { customFieldText, clearCustomFields, setCustomFields } from '../../data/custom-fields.js';
 import { imgURL } from '../../data/interactions';
+import { createAgent, makeAgentAvailable } from '../../data/livechat/rooms';
+import { removeAgent, getAgent } from '../../data/livechat/users';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom, setRoomConfig } from '../../data/rooms.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
@@ -3271,6 +3273,21 @@ describe('[Users]', function () {
 
 	describe('[/users.setActiveStatus]', () => {
 		let user;
+		let agent;
+		let agentUser;
+
+		before(async () => {
+			agentUser = await createUser();
+			const agentUserCredentials = await login(agentUser.username, password);
+			await createAgent(agentUser.username);
+			await makeAgentAvailable(agentUserCredentials);
+
+			agent = {
+				user: agentUser,
+				credentials: agentUserCredentials,
+			};
+		});
+
 		before((done) => {
 			const username = `user.test.${Date.now()}`;
 			const email = `${username}@rocket.chat`;
@@ -3313,6 +3330,12 @@ describe('[Users]', function () {
 				.end(() => updatePermission('edit-other-user-active-status', ['admin']).then(done));
 			user = undefined;
 		});
+
+		after(async () => {
+			await removeAgent(agent.user._id);
+			await deleteUser(agent.user);
+		});
+
 		it('should set other user active status to false when the logged user has the necessary permission(edit-other-user-active-status)', (done) => {
 			request
 				.post(api('users.setActiveStatus'))
@@ -3640,6 +3663,39 @@ describe('[Users]', function () {
 			expect(user.roles).to.include('user', 'livechat-agent');
 
 			await deleteUser(testUser);
+		});
+		it('should make agents not-available when the user is deactivated', async () => {
+			await makeAgentAvailable(agent.credentials);
+			await request
+				.post(api('users.setActiveStatus'))
+				.set(credentials)
+				.send({
+					activeStatus: false,
+					userId: agent.user._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			const agentInfo = await getAgent(agent.user._id);
+			expect(agentInfo).to.have.property('statusLivechat', 'not-available');
+		});
+
+		it('should not make agents available when the user is activated', async () => {
+			let agentInfo = await getAgent(agent.user._id);
+			expect(agentInfo).to.have.property('statusLivechat', 'not-available');
+
+			await request
+				.post(api('users.setActiveStatus'))
+				.set(credentials)
+				.send({
+					activeStatus: true,
+					userId: agent.user._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			agentInfo = await getAgent(agent.user._id);
+			expect(agentInfo).to.have.property('statusLivechat', 'not-available');
 		});
 	});
 
