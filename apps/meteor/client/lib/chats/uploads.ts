@@ -55,8 +55,6 @@ const send = async (
 		},
 	]);
 
-	console.log('upload', { description, msg });
-
 	try {
 		// Assuming that only description is available in case of attachments
 		const message = description
@@ -68,8 +66,6 @@ const send = async (
 			: ({
 					msg: description,
 			  } as IMessage);
-
-		console.log('attachment encrypted, ', message);
 
 		await new Promise((resolve, reject) => {
 			const xhr = sdk.rest.upload(

@@ -420,7 +420,13 @@ class E2E extends Emitter {
 
 		const attachmentDescription = message.attachments?.[0]?.description;
 
-		const data = await e2eRoom.decrypt(attachmentDescription || message.msg);
+		const textToDecrypt = attachmentDescription || message.msg;
+
+		if (!textToDecrypt) {
+			return message;
+		}
+
+		const data = await e2eRoom.decrypt(textToDecrypt);
 
 		if (!data) {
 			return message;
