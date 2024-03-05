@@ -13,7 +13,7 @@ import {
 	useUserPreference,
 } from '@rocket.chat/ui-contexts';
 import type { MouseEventHandler, ReactElement, UIEvent } from 'react';
-import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState, Suspense } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { ChatMessage, RoomRoles } from '../../../../app/models/client';
@@ -630,22 +630,24 @@ const RoomBody = (): ReactElement => {
 												aria-busy={isLoadingMoreMessages}
 												{...messageListProps}
 											>
-												{canPreview ? (
-													<>
-														{hasMorePreviousMessages ? (
-															<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
-														) : (
-															<li className='start color-info-font-color'>
-																{retentionPolicy ? <RetentionPolicyWarning {...retentionPolicy} /> : null}
-																<RoomForeword user={user} room={room} />
-															</li>
-														)}
-													</>
-												) : null}
-												<MessageList rid={room._id} scrollMessageList={scrollMessageList} />
-												{hasMoreNextMessages ? (
-													<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
-												) : null}
+												<Suspense fallback={<LoadingMessagesIndicator />}>
+													{canPreview ? (
+														<>
+															{hasMorePreviousMessages ? (
+																<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
+															) : (
+																<li className='start color-info-font-color'>
+																	{retentionPolicy ? <RetentionPolicyWarning {...retentionPolicy} /> : null}
+																	<RoomForeword user={user} room={room} />
+																</li>
+															)}
+														</>
+													) : null}
+													<MessageList rid={room._id} scrollMessageList={scrollMessageList} />
+													{hasMoreNextMessages ? (
+														<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
+													) : null}
+												</Suspense>
 											</ul>
 										</CustomScrollbars>
 									</MessageListErrorBoundary>
