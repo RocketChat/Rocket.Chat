@@ -23,6 +23,7 @@ export type UsersUpdateParamsPOST = {
 		customFields?: Record<string, unknown>;
 		status?: string;
 		settings?: { preferences?: Record<string, unknown> };
+		language?: string;
 	};
 	confirmRelinquish?: boolean;
 };
@@ -110,6 +111,10 @@ const UsersUpdateParamsPostSchema = {
 						preferences: { type: 'object' },
 						additionalProperties: false,
 					},
+				},
+				language: {
+					type: 'string',
+					nullable: true,
 				},
 			},
 			required: [],
