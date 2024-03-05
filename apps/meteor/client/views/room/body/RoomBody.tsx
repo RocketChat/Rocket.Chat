@@ -5,7 +5,6 @@ import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useRole, useRouter, useSetting, useTranslation, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { MouseEventHandler, ReactElement, UIEvent } from 'react';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { ChatMessage, RoomRoles } from '../../../../app/models/client';
 import { RoomHistoryManager } from '../../../../app/ui-utils/client';
@@ -17,7 +16,6 @@ import { CustomScrollbars } from '../../../components/CustomScrollbars';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import { useFormatDate } from '../../../hooks/useFormatDate';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
-import type { Upload } from '../../../lib/chats/Upload';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { setMessageJumpQueryStringParameter } from '../../../lib/utils/setMessageJumpQueryStringParameter';
 import Announcement from '../Announcement';
@@ -40,7 +38,7 @@ import RetentionPolicyWarning from './RetentionPolicyWarning';
 import RoomForeword from './RoomForeword/RoomForeword';
 import UnreadMessagesIndicator from './UnreadMessagesIndicator';
 import UploadProgressIndicator from './UploadProgressIndicator';
-import { useFileUploadDropTarget } from './hooks/useFileUploadDropTarget';
+import { useFileUpload } from './hooks/useFileUpload';
 import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
 import { useLeaderBanner } from './hooks/useLeaderBanner';
 import { useListIsAtBottom } from './hooks/useListIsAtBottom';
@@ -83,7 +81,12 @@ const RoomBody = (): ReactElement => {
 		throw new Error('No ChatContext provided');
 	}
 
-	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget();
+	const {
+		uploads,
+		handleUploadFiles,
+		handleUploadProgressClose,
+		targeDrop: [fileUploadTriggerProps, fileUploadOverlayProps],
+	} = useFileUpload();
 
 	const _isAtBottom = useCallback((scrollThreshold = 0) => {
 		const wrapper = wrapperRef.current;
@@ -124,8 +127,6 @@ const RoomBody = (): ReactElement => {
 	}, [atBottomRef, room._id]);
 
 	const [unread, setUnreadCount] = useUnreadMessages(room);
-
-	const uploads = useSyncExternalStore(chat.uploads.subscribe, chat.uploads.get);
 
 	const { hasMorePreviousMessages, hasMoreNextMessages, isLoadingMoreMessages } = useRoomMessages();
 
@@ -199,13 +200,6 @@ const RoomBody = (): ReactElement => {
 		chat.readStateManager.markAsRead();
 		setUnreadCount(0);
 	}, [chat.readStateManager, setUnreadCount]);
-
-	const handleUploadProgressClose = useCallback(
-		(id: Upload['id']) => {
-			chat.uploads.cancel(id);
-		},
-		[chat],
-	);
 
 	const retentionPolicy = useRetentionPolicy(room);
 
@@ -386,13 +380,6 @@ const RoomBody = (): ReactElement => {
 	const handleNavigateToNextMessage = useCallback((): void => {
 		chat.messageEditing.toNextMessage();
 	}, [chat.messageEditing]);
-
-	const handleUploadFiles = useCallback(
-		(files: readonly File[]): void => {
-			chat.flows.uploadFiles(files);
-		},
-		[chat],
-	);
 
 	useQuoteMessageByUrl();
 
