@@ -6,7 +6,7 @@ export const useGetTopMessageRoomAction = () => {
 	return useMemo((): RoomToolboxActionConfig | undefined => {
 		return {
 			id: 'go-to-start-of-the-conversation',
-			title: 'Start_of_converstation',
+			title: 'Go_to_first_message',
 			icon: 'arrow-up',
 			order: 21,
 			type: 'organization',
