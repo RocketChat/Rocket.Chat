@@ -5,7 +5,6 @@ import { hashQueryKey } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useMemo, useState } from 'react';
 
-import { parseOutboundPhoneNumber } from '../../../../../ee/client/lib/voip/parseOutboundPhoneNumber';
 import FilterByText from '../../../../components/FilterByText';
 import GenericNoResults from '../../../../components/GenericNoResults';
 import {
@@ -21,6 +20,7 @@ import { usePagination } from '../../../../components/GenericTable/hooks/usePagi
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import { useIsCallReady } from '../../../../contexts/CallContext';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
+import { parseOutboundPhoneNumber } from '../../../../lib/voip/parseOutboundPhoneNumber';
 import { CallDialpadButton } from '../components/CallDialpadButton';
 import { useCurrentContacts } from './hooks/useCurrentContacts';
 
@@ -123,7 +123,7 @@ function ContactTable(): ReactElement {
 					description={t('No_contacts_yet_description')}
 					buttonTitle={t('New_contact')}
 					buttonAction={onButtonNewClick}
-					linkHref='https://go.rocket.chat/omnichannel-docs'
+					linkHref='https://go.rocket.chat/i/omnichannel-docs'
 					linkText={t('Learn_more_about_contacts')}
 				/>
 			)}

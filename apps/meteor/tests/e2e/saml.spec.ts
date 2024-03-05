@@ -9,16 +9,23 @@ import * as constants from './config/constants';
 import { createUserFixture } from './fixtures/collections/users';
 import { Users } from './fixtures/userStates';
 import { Registration } from './page-objects';
+import { createCustomRole, deleteCustomRole } from './utils/custom-role';
 import { getUserInfo } from './utils/getUserInfo';
 import { setSettingValueById } from './utils/setSettingValueById';
-import { test, expect } from './utils/test';
+import { test, expect, BaseTest } from './utils/test';
 
 const resetTestData = async (cleanupOnly = false) => {
 	// Reset saml users' data on mongo in the beforeAll hook to allow re-running the tests within the same playwright session
 	// This is needed because those tests will modify this data and running them a second time would trigger different code paths
 	const connection = await MongoClient.connect(constants.URL_MONGODB);
 
-	const usernamesToDelete = [Users.userForSamlMerge, Users.userForSamlMerge2, Users.samluser1, Users.samluser2].map(({ data: { username }}) => username);
+	const usernamesToDelete = [
+		Users.userForSamlMerge,
+		Users.userForSamlMerge2,
+		Users.samluser1,
+		Users.samluser2,
+		Users.samluser4,
+	].map(({ data: { username } }) => username);
 	await connection
 		.db()
 		.collection('users')
@@ -57,6 +64,14 @@ const resetTestData = async (cleanupOnly = false) => {
 				_id: 'SAML_Custom_Default',
 				value: false,
 			},
+			{
+				_id: 'SAML_Custom_Default_role_attribute_sync',
+				value: true,
+			},
+			{
+				_id: 'SAML_Custom_Default_role_attribute_name',
+				value: 'role',
+			},
 		].map((setting) =>
 			connection
 				.db()
@@ -66,8 +81,17 @@ const resetTestData = async (cleanupOnly = false) => {
 	);
 };
 
+const setupCustomRole = async (api: BaseTest['api']) => {
+	const roleResponse = await createCustomRole(api, { name: 'saml-role' })
+	expect(roleResponse.status()).toBe(200);
+
+	const { role } = await roleResponse.json();
+	return role._id;
+}
+
 test.describe('SAML', () => {
 	let poRegistration: Registration;
+	let samlRoleId: string;
 
 	const containerPath = path.join(__dirname, 'containers', 'saml');
 
@@ -76,6 +100,11 @@ test.describe('SAML', () => {
 
 		// Only one setting updated through the API to avoid refreshing the service configurations several times
 		await expect((await setSettingValueById(api, 'SAML_Custom_Default', true)).status()).toBe(200);
+
+		// Create a new custom role
+		if (constants.IS_EE) {
+			samlRoleId = await setupCustomRole(api)
+		}
 
 		await compose.buildOne('testsamlidp_idp', {
 			cwd: containerPath,
@@ -86,7 +115,7 @@ test.describe('SAML', () => {
 		});
 	});
 
-	test.afterAll(async () => {
+	test.afterAll(async ({ api }) => {
 		await compose.down({
 			cwd: containerPath,
 		});
@@ -102,6 +131,11 @@ test.describe('SAML', () => {
 
 		// Remove saml test users so they don't interfere with other tests
 		await resetTestData(true);
+
+		// Remove created custom role
+		if (constants.IS_EE) {
+			expect((await deleteCustomRole(api, 'saml-role')).status()).toBe(200);
+		}
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -173,6 +207,7 @@ test.describe('SAML', () => {
 			await expect((await setSettingValueById(api, 'SAML_Custom_Default_logout_behaviour', 'Local')).status()).toBe(200);
 		});
 
+		await page.goto('/home');
 		await doLoginStep(page, 'samluser1');
 		await doLogoutStep(page);
 
@@ -188,6 +223,7 @@ test.describe('SAML', () => {
 			await expect((await setSettingValueById(api, 'SAML_Custom_Default_logout_behaviour', 'SAML')).status()).toBe(200);
 		})
 
+		await page.goto('/home');
 		await doLoginStep(page, 'samluser1');
 		await doLogoutStep(page);
 
@@ -255,6 +291,25 @@ test.describe('SAML', () => {
 			expect(user?.name).toBe('Saml User 3');
 			expect(user?.emails).toBeDefined();
 			expect(user?.emails?.[0].address).toBe('samluser3@example.com');
+		});
+	});
+
+	test('User Mapping - Custom Role', async ({ page, api }) => {
+		test.skip(!constants.IS_EE);
+
+		await doLoginStep(page, 'samluser4');
+
+		await test.step('expect users role to have been mapped correctly', async () => {
+			const user = await getUserInfo(api, 'samluser4');
+
+			expect(user).toBeDefined();
+			expect(user?.username).toBe('samluser4');
+			expect(user?.name).toBe('Saml User 4');
+			expect(user?.emails).toBeDefined();
+			expect(user?.emails?.[0].address).toBe('samluser4@example.com');
+			expect(user?.roles).toBeDefined();
+			expect(user?.roles?.length).toBe(1);
+			expect(user?.roles).toContain(samlRoleId);
 		});
 	});
 
