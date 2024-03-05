@@ -1604,7 +1604,7 @@ describe('[Teams]', () => {
 			it('should add members when the members count is less than or equal to the API_User_Limit setting and the team channel is', async () => {
 				await updateSetting('API_User_Limit', 2);
 
-					await addMembers(credentials, testTeam.name, [testUser._id, testUser2._id]);
+				await addMembers(credentials, testTeam.name, [testUser._id, testUser2._id]);
 				await request
 					.post(api('teams.updateRoom'))
 					.set(credentials)
