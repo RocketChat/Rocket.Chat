@@ -146,7 +146,7 @@ export type UsersEndpoints = {
 
 	'/v1/users.list': {
 		GET: (params: PaginatedRequest<{ fields: string }>) => PaginatedResult<{
-			users: PickedUser[][];
+			users: PickedUser[];
 		}>;
 	};
 
