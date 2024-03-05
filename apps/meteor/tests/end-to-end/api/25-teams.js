@@ -1604,7 +1604,7 @@ describe('[Teams]', () => {
 			it('should add members when the members count is less than or equal to the API_User_Limit setting and the team channel is', async () => {
 				await updateSetting('API_User_Limit', 2);
 
-				await addMembers(credentials, testTeam.body.team.name, [testUser._id, testUser2._id]);
+					await addMembers(credentials, testTeam.name, [testUser._id, testUser2._id]);
 				await request
 					.post(api('teams.updateRoom'))
 					.set(credentials)
@@ -1622,7 +1622,7 @@ describe('[Teams]', () => {
 			it('should not add all members when we update a team channel to be auto-join and the members count is greater than the API_User_Limit setting', async () => {
 				await updateSetting('API_User_Limit', 1);
 
-				await addMembers(credentials, testTeam.body.team.name, [testUser._id, testUser2._id]);
+				await addMembers(credentials, testTeam.name, [testUser._id, testUser2._id]);
 				await request
 					.post(api('teams.updateRoom'))
 					.set(credentials)
