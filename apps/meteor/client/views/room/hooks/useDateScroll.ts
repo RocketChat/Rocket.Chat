@@ -1,6 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
-import { useCallback, useState } from 'react';
+import type { MutableRefObject } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 import { withThrottling } from '../../../../lib/utils/highOrderFunctions';
 import { useDateListController } from '../providers/DateListProvider';
@@ -8,7 +9,7 @@ import { useDateListController } from '../providers/DateListProvider';
 type useDateScrollReturn = {
 	bubbleDate: string | undefined;
 	innerRef: (node: HTMLElement | null) => void;
-	callbackBubbleRef: (node: HTMLElement | null) => void;
+	bubbleRef: MutableRefObject<HTMLElement | null>;
 	className?: ReturnType<typeof css>;
 	showBubble: boolean;
 	listStyle?: ReturnType<typeof css>;
@@ -34,25 +35,14 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 
 	const { list } = useDateListController();
 
-	const callbackBubbleRef = useCallback(
-		(node: HTMLElement | null) => {
-			if (!node) {
-				return;
-			}
-			setBubbleDate((current) => ({
-				...current,
-				offset: node.getBoundingClientRect().top,
-			}));
-		},
-		[setBubbleDate],
-	);
+	const bubbleRef = useRef<HTMLElement>(null);
 
 	const callbackRef = useCallback(
 		(node: HTMLElement | null) => {
 			if (!node) {
 				return;
 			}
-			const bubbleOffset = bubbleDate.offset;
+			const bubbleOffset = bubbleRef.current?.getBoundingClientRect().bottom || 0;
 
 			const onScroll = (() => {
 				let timeout: ReturnType<typeof setTimeout>;
@@ -68,7 +58,6 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 
 						const { top, height } = message.getBoundingClientRect();
 						const { id } = message.dataset;
-						console.log('top divider', top, 'offset bubble', bubbleOffset);
 
 						// if the bubble if between the divider and the top, position it at the top of the divider
 						if (top > bubbleOffset && top < bubbleOffset + height) {
@@ -80,7 +69,7 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 									top: `${top - height - bubbleOffset + margin}px`,
 									left: ' 50%',
 									translate: '-50%',
-									zIndex: 1,
+									zIndex: 11,
 								},
 							];
 						}
@@ -94,7 +83,7 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 									top: `${margin}px`,
 									left: ' 50%',
 									translate: '-50%',
-									zIndex: 1,
+									zIndex: 11,
 								},
 							];
 						}
@@ -136,29 +125,27 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 			})();
 
 			const fn = withThrottling({ wait: 30 })(() => {
-				// const offset = node.getBoundingClientRect().top;
 				onScroll(list);
 			});
 
 			node.addEventListener('scroll', fn, { passive: true });
 		},
-		[bubbleDate, list, margin, setBubbleDate],
+		[list, margin, setBubbleDate],
 	);
 
-	const listStyle = undefined;
-	// bubbleDate.show && bubbleDate.date
-	// 	? css`
-	// 			position: relative;
-	// 			& [data-time='${bubbleDate.date.replaceAll(/[-T:.]/g, '').substring(0, 8)}'] {
-	// 				opacity: 0;
-	// 			}
-	// 	  `
-	// 	: undefined;
+	const listStyle =
+		bubbleDate.show && bubbleDate.date
+			? css`
+					position: relative;
+					& [data-time='${bubbleDate.date.replaceAll(/[-T:.]/g, '').substring(0, 8)}'] {
+						opacity: 0;
+					}
+			  `
+			: undefined;
 
-	// console.log('bubbleDate', bubbleDate);
 	return {
 		innerRef: callbackRef,
-		callbackBubbleRef,
+		bubbleRef,
 		listStyle,
 		bubbleDate: bubbleDate.date,
 		style: bubbleDate.style,

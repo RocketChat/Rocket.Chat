@@ -101,7 +101,7 @@ const RoomBody = (): ReactElement => {
 
 	const {
 		innerRef: dateScrollInnerRef,
-		callbackBubbleRef,
+		bubbleRef,
 		listStyle,
 		bubbleDate,
 		showBubble,
@@ -258,16 +258,15 @@ const RoomBody = (): ReactElement => {
 											onMarkAsReadButtonClick={handleMarkAsReadButtonClick}
 										/>
 									)}
-									{/* )} */}
-									{bubbleDate && (
-										<Box ref={callbackBubbleRef} position='relative' display='flex' justifyContent='center' zIndex={2}>
-											<Box className={[bubbleDateClassName, /* showBubble && */ 'bubble-visible']} /* style={bubbleDateStyle} */>
+									<Box ref={bubbleRef} position='relative' display='flex' justifyContent='center'>
+										<Box className={[bubbleDateClassName, showBubble && 'bubble-visible']} style={bubbleDateStyle}>
+											{bubbleDate && (
 												<Bubble small secondary>
 													{formatDate(bubbleDate)}
 												</Bubble>
-											</Box>
+											)}
 										</Box>
-									)}
+									</Box>
 								</Margins>
 							</Box>
 
