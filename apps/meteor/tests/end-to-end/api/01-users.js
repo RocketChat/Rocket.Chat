@@ -527,6 +527,41 @@ describe('[Users]', function () {
 				})
 				.end(done);
 		});
+
+		describe('Logging in with type: "resume"', () => {
+			let user;
+			let userCredentials;
+
+			before(async () => {
+				user = await createUser({ joinDefaultChannels: false });
+				userCredentials = await login(user.username, password);
+			});
+
+			after(async () => deleteUser(user));
+
+			it('should return "offline" after a login type "resume" via REST', async () => {
+				await request
+					.post(api('login'))
+					.send({
+						resume: userCredentials['X-Auth-Token'],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				await request
+					.get(api('users.getPresence'))
+					.set(credentials)
+					.query({
+						userId: user._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('presence', 'offline');
+					});
+			});
+		});
 	});
 
 	describe('[/users.presence]', () => {
