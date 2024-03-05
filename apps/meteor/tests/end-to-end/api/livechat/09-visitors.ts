@@ -14,6 +14,7 @@ import {
 	createLivechatRoom,
 	createVisitor,
 	startANewLivechatRoomAndTakeIt,
+	closeOmnichannelRoom,
 } from '../../../data/livechat/rooms';
 import { getRandomVisitorToken } from '../../../data/livechat/users';
 import { getLivechatVisitorByToken } from '../../../data/livechat/visitor';
@@ -588,6 +589,88 @@ describe('LIVECHAT - visitors', function () {
 					expect(res.body.history[0]).to.have.property('_id');
 					expect(res.body.history[0]).to.have.property('fname');
 					expect(res.body.history[0]).to.have.property('v');
+				});
+		});
+
+		it('should return only closed chats when closedChatsOnly is true', async () => {
+			const {
+				room: { _id: roomId },
+				visitor: { _id: visitorId },
+			} = await startANewLivechatRoomAndTakeIt();
+
+			await closeOmnichannelRoom(roomId);
+
+			await request
+				.get(api(`livechat/visitors.searchChats/room/${roomId}/visitor/${visitorId}?closedChatsOnly=true&servedChatsOnly=false`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('history');
+					expect(res.body.history).to.be.an('array');
+					expect(res.body.history.find((chat: any) => chat._id === roomId)).to.be.an('object');
+				});
+		});
+
+		it('should return only served chats when servedChatsOnly is true', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+
+			await request
+				.get(api(`livechat/visitors.searchChats/room/${room._id}/visitor/${visitor._id}?closedChatsOnly=false&servedChatsOnly=true`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('history');
+					expect(res.body.history).to.be.an('array');
+					expect(res.body.history.find((chat: any) => chat._id === room._id)).to.be.undefined;
+				});
+		});
+
+		it('should return open rooms when closedChatsOnly is false', async () => {
+			const {
+				room: { _id: roomId },
+				visitor: { _id: visitorId, token },
+			} = await startANewLivechatRoomAndTakeIt();
+			await closeOmnichannelRoom(roomId);
+			const room2 = await createLivechatRoom(token);
+			await closeOmnichannelRoom(room2._id);
+
+			await request
+				.get(api(`livechat/visitors.searchChats/room/${roomId}/visitor/${visitorId}?closedChatsOnly=true&servedChatsOnly=false`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('history');
+					expect(res.body.history).to.be.an('array');
+					expect(res.body.history.find((chat: any) => chat._id === roomId)).to.be.an('object');
+					expect(res.body.history.find((chat: any) => chat._id === room2._id)).to.be.an('object');
+				});
+		});
+
+		it('should return all closed chats (even unserved ones) when closedChatsOnly is true & servedChatsOnly is false', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			await closeOmnichannelRoom(room._id);
+			const room2 = await createLivechatRoom(visitor.token);
+			await closeOmnichannelRoom(room2._id);
+
+			await request
+				.get(api(`livechat/visitors.searchChats/room/${room._id}/visitor/${visitor._id}?closedChatsOnly=true&servedChatsOnly=false`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('history');
+					expect(res.body.history).to.be.an('array');
+					expect(res.body.history.find((chat: any) => chat._id === room._id)).to.be.an('object');
+					expect(res.body.history.find((chat: any) => chat._id === room2._id)).to.be.an('object');
 				});
 		});
 	});
