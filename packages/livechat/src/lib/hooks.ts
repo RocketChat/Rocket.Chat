@@ -143,10 +143,10 @@ const api = {
 
 		store.setState({
 			defaultAgent: {
+				...props,
 				_id,
 				username,
 				ts: Date.now(),
-				...props,
 			},
 		});
 	},

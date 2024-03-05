@@ -2,6 +2,8 @@ import type { ILivechatSendMessageAction, ILivechatTriggerCondition, ILivechatUs
 import { route } from 'preact-router';
 
 import store from '../store';
+import { normalizeAgent } from './api';
+import { parentCall } from './parentCall';
 import { createToken } from './random';
 import { getAgent, removeMessage, requestTriggerMessages, upsertMessage } from './triggerUtils';
 import Triggers from './triggers';
@@ -20,6 +22,11 @@ export const sendMessageAction = async (_: string, action: ILivechatSendMessageA
 	};
 
 	await upsertMessage(message);
+
+	if (agent && '_id' in agent) {
+		await store.setState({ agent });
+		parentCall('callback', 'assign-agent', normalizeAgent(agent));
+	}
 
 	if (minimized) {
 		route('/trigger-messages');
@@ -68,6 +75,11 @@ export const sendMessageExternalServiceAction = async (
 			}));
 
 		await Promise.all(messages.map((message) => upsertMessage(message)));
+
+		if (agent && '_id' in agent) {
+			await store.setState({ agent });
+			parentCall('callback', 'assign-agent', normalizeAgent(agent));
+		}
 
 		if (minimized) {
 			route('/trigger-messages');

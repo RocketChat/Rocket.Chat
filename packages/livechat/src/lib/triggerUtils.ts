@@ -1,6 +1,7 @@
 import type { ILivechatAgent, ILivechatTrigger, ILivechatTriggerAction, ILivechatTriggerType, Serialized } from '@rocket.chat/core-typings';
 
 import { Livechat } from '../api';
+import type { Agent } from '../definitions/agents';
 import { upsert } from '../helpers/upsert';
 import store from '../store';
 import { processUnread } from './main';
@@ -16,9 +17,7 @@ const isAgentWithInfo = (agent: any): agent is Serialized<ILivechatAgent> => !ag
 const getNextAgentFromQueue = async () => {
 	const {
 		defaultAgent,
-		iframe: {
-			guest: { department },
-		},
+		iframe: { guest: { department } = {} },
 	} = store.state;
 
 	if (defaultAgent?.ts && Date.now() - defaultAgent.ts < agentCacheExpiry) {
@@ -36,7 +35,7 @@ const getNextAgentFromQueue = async () => {
 		return Promise.reject(error);
 	}
 
-	store.setState({ defaultAgent: { ...agent, department, ts: Date.now() } });
+	store.setState({ defaultAgent: { ...agent, department, ts: Date.now() } as Agent });
 
 	return agent;
 };
