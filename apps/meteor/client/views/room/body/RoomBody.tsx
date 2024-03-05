@@ -389,38 +389,6 @@ const RoomBody = (): ReactElement => {
 		};
 	}, [_isAtBottom, atBottomRef, list, room._id, setUnreadCount]);
 
-	useEffect(() => {
-		const wrapper = wrapperRef.current;
-
-		if (!wrapper) {
-			return;
-		}
-
-		const store = RoomManager.getStore(room._id);
-
-		const handleWrapperScroll = withThrottling({ wait: 30 })(() => {
-			store?.update({ scroll: wrapper.scrollTop, atBottom: isAtBottom(wrapper, 50) });
-		});
-
-		const afterMessageGroup = (): void => {
-			if (store?.scroll && !store.atBottom) {
-				wrapper.scrollTop = store.scroll;
-			} else {
-				sendToBottom();
-			}
-			wrapper.removeEventListener('MessageGroup', afterMessageGroup);
-		};
-
-		wrapper.addEventListener('scroll', handleWrapperScroll);
-
-		wrapper.addEventListener('MessageGroup', afterMessageGroup);
-
-		return () => {
-			wrapper.removeEventListener('MessageGroup', afterMessageGroup);
-			wrapper.removeEventListener('scroll', handleWrapperScroll);
-		};
-	}, [room._id, sendToBottom]);
-
 	const restorePositionRef = useRestoreScrollPosition(room._id);
 
 	const handleComposerResize = useCallback((): void => {
