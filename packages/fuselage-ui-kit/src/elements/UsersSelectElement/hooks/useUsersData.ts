@@ -23,7 +23,7 @@ export const useUsersData = ({ filter }: useUsersDataProps) => {
         })
       );
 
-      return options;
+      return options || [];
     },
     { keepPreviousData: true }
   );

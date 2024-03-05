@@ -67,7 +67,7 @@ const MultiUsersSelectElement = ({
           </OptionContent>
         </Option>
       )}
-      options={data || []}
+      options={data}
       value={value}
     />
   );

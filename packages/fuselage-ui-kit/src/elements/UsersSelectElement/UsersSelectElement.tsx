@@ -2,7 +2,7 @@ import { AutoComplete, Box, Chip, Option } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type * as UiKit from '@rocket.chat/ui-kit';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { useUiKitState } from '../../hooks/useUiKitState';
 import type { BlockProps } from '../../utils/BlockProps';
@@ -23,8 +23,6 @@ const UsersSelectElement = ({ block, context }: UsersSelectElementProps) => {
 
   const data = useUsersData({ filter: debouncedFilter });
 
-  const options = useMemo(() => data || [], [data]);
-
   const handleChange = useCallback(
     (value) => {
       action({ target: { value } });
@@ -37,7 +35,7 @@ const UsersSelectElement = ({ block, context }: UsersSelectElementProps) => {
       placeholder={block.placeholder?.text}
       disabled={loading}
       value={value}
-      options={options}
+      options={data}
       onChange={handleChange}
       filter={filter}
       setFilter={setFilter}
