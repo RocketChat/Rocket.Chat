@@ -1,5 +1,7 @@
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
+import { Box, Bubble } from '@rocket.chat/fuselage';
+import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import {
 	usePermission,
 	useRole,
@@ -20,23 +22,27 @@ import { isAtBottom } from '../../../../app/ui/client/views/app/lib/scrolling';
 import { callbacks } from '../../../../lib/callbacks';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { withDebouncing, withThrottling } from '../../../../lib/utils/highOrderFunctions';
-import ScrollableContentWrapper from '../../../components/ScrollableContentWrapper';
+import { CustomScrollbars } from '../../../components/CustomScrollbars';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
+import { useFormatDate } from '../../../hooks/useFormatDate';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
 import { RoomManager } from '../../../lib/RoomManager';
 import type { Upload } from '../../../lib/chats/Upload';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { setMessageJumpQueryStringParameter } from '../../../lib/utils/setMessageJumpQueryStringParameter';
 import Announcement from '../Announcement';
-import { MessageList } from '../MessageList/MessageList';
+import { MessageList } from '../MessageList';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
 import ComposerContainer from '../composer/ComposerContainer';
 import RoomComposer from '../composer/RoomComposer/RoomComposer';
 import { useChat } from '../contexts/ChatContext';
 import { useRoom, useRoomSubscription, useRoomMessages } from '../contexts/RoomContext';
 import { useRoomToolbox } from '../contexts/RoomToolboxContext';
+import { useUserCard } from '../contexts/UserCardContext';
+import { useDateScroll } from '../hooks/useDateScroll';
 import { useMessageListNavigation } from '../hooks/useMessageListNavigation';
 import { useScrollMessageList } from '../hooks/useScrollMessageList';
+import { useDateListController } from '../providers/DateListProvider';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
 import LeaderBar from './LeaderBar';
@@ -53,6 +59,7 @@ import { useRetentionPolicy } from './hooks/useRetentionPolicy';
 import { useUnreadMessages } from './hooks/useUnreadMessages';
 
 const RoomBody = (): ReactElement => {
+	const formatDate = useFormatDate();
 	const t = useTranslation();
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const room = useRoom();
@@ -60,6 +67,9 @@ const RoomBody = (): ReactElement => {
 	const toolbox = useRoomToolbox();
 	const admin = useRole('admin');
 	const subscription = useRoomSubscription();
+
+	const { list } = useDateListController();
+	const { callbackRef, listStyle, bubbleDate, showBubble, style: bubbleDateStyle } = useDateScroll();
 
 	const [lastMessageDate, setLastMessageDate] = useState<Date | undefined>();
 	const [hideLeaderHeader, setHideLeaderHeader] = useState(false);
@@ -75,6 +85,7 @@ const RoomBody = (): ReactElement => {
 	const lastScrollTopRef = useRef(0);
 
 	const chat = useChat();
+	const { openUserCard, triggerProps } = useUserCard();
 
 	if (!chat) {
 		throw new Error('No ChatContext provided');
@@ -181,9 +192,9 @@ const RoomBody = (): ReactElement => {
 				return;
 			}
 
-			chat?.userCard.openUserCard(event, username);
+			openUserCard(event, username);
 		},
-		[chat?.userCard],
+		[openUserCard],
 	);
 
 	const handleUnreadBarJumpToButtonClick = useCallback(() => {
@@ -383,7 +394,7 @@ const RoomBody = (): ReactElement => {
 			wrapper.removeEventListener('scroll', updateUnreadCount);
 			wrapper.removeEventListener('scroll', handleWrapperScroll);
 		};
-	}, [_isAtBottom, room._id, setUnreadCount]);
+	}, [_isAtBottom, list, room._id, setUnreadCount]);
 
 	useEffect(() => {
 		const wrapper = wrapperRef.current;
@@ -535,17 +546,19 @@ const RoomBody = (): ReactElement => {
 
 	const { messageListRef, messageListProps } = useMessageListNavigation();
 
+	const ref = useMergedRefs(callbackRef, wrapperRef);
+
 	return (
 		<>
 			{!isLayoutEmbedded && room.announcement && <Announcement announcement={room.announcement} announcementDetails={undefined} />}
-			<div className='main-content-flex'>
+			<Box className={['main-content-flex', listStyle]}>
 				<section
 					className={`messages-container flex-tab-main-content ${admin ? 'admin' : ''}`}
 					id={`chat-window-${room._id}`}
 					onClick={hideFlexTab && handleCloseFlexTab}
 				>
 					<div className='messages-container-wrapper'>
-						<div className='messages-container-main' {...fileUploadTriggerProps}>
+						<div className='messages-container-main' ref={callbackRef} {...fileUploadTriggerProps}>
 							<DropTargetOverlay {...fileUploadOverlayProps} />
 							<div className={['container-bars', uploads.length && 'show'].filter(isTruthy).join(' ')}>
 								{uploads.map((upload) => (
@@ -559,6 +572,13 @@ const RoomBody = (): ReactElement => {
 									/>
 								))}
 							</div>
+							{bubbleDate && (
+								<Box className={[bubbleDateStyle, showBubble && 'bubble-visible']}>
+									<Bubble small secondary>
+										{formatDate(bubbleDate)}
+									</Bubble>
+								</Box>
+							)}
 							{unread && (
 								<UnreadMessagesIndicator
 									count={unread.count}
@@ -588,6 +608,7 @@ const RoomBody = (): ReactElement => {
 										name={roomLeader.name}
 										visible={!hideLeaderHeader}
 										onAvatarClick={handleOpenUserCard}
+										triggerProps={triggerProps}
 									/>
 								) : null}
 								<div
@@ -601,7 +622,7 @@ const RoomBody = (): ReactElement => {
 										.join(' ')}
 								>
 									<MessageListErrorBoundary>
-										<ScrollableContentWrapper ref={wrapperRef}>
+										<CustomScrollbars ref={ref}>
 											<ul
 												ref={messageListRef}
 												className='messages-list'
@@ -626,7 +647,7 @@ const RoomBody = (): ReactElement => {
 													<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
 												) : null}
 											</ul>
-										</ScrollableContentWrapper>
+										</CustomScrollbars>
 									</MessageListErrorBoundary>
 								</div>
 							</div>
@@ -644,7 +665,7 @@ const RoomBody = (): ReactElement => {
 						</div>
 					</div>
 				</section>
-			</div>
+			</Box>
 		</>
 	);
 };

@@ -15,7 +15,7 @@ import {
 	useCountSelected,
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import { useJumpToMessage } from '../../../views/room/MessageList/hooks/useJumpToMessage';
-import { useChat } from '../../../views/room/contexts/ChatContext';
+import { useUserCard } from '../../../views/room/contexts/UserCardContext';
 import Emoji from '../../Emoji';
 import IgnoredContent from '../IgnoredContent';
 import MessageHeader from '../MessageHeader';
@@ -51,15 +51,14 @@ const RoomMessage = ({
 	const editing = useIsMessageHighlight(message._id);
 	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
 	const ignored = (ignoredUser || message.ignored) && !displayIgnoredMessage;
-	const chat = useChat();
 	const messageRef = useRef(null);
+	const { openUserCard, triggerProps } = useUserCard();
 
 	const selecting = useIsSelecting();
 	const toggleSelected = useToggleSelect(message._id);
 	const selected = useIsSelectedMessage(message._id);
 
 	useCountSelected();
-
 	useJumpToMessage(message._id, messageRef);
 
 	return (
@@ -91,10 +90,10 @@ const RoomMessage = ({
 						avatarUrl={message.avatar}
 						username={message.u.username}
 						size='x36'
-						{...(chat?.userCard && {
-							onClick: (e) => chat?.userCard.openUserCard(e, message.u.username),
-							style: { cursor: 'pointer' },
-						})}
+						onClick={(e) => openUserCard(e, message.u.username)}
+						style={{ cursor: 'pointer' }}
+						role='button'
+						{...triggerProps}
 					/>
 				)}
 				{selecting && <CheckBox checked={selected} onChange={toggleSelected} />}
