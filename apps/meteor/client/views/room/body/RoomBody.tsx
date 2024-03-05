@@ -52,6 +52,7 @@ import UnreadMessagesIndicator from './UnreadMessagesIndicator';
 import UploadProgressIndicator from './UploadProgressIndicator';
 import { useFileUploadDropTarget } from './hooks/useFileUploadDropTarget';
 import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
+import { useListIsAtBottom } from './hooks/useListIsAtBottom';
 import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
 import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
 import { useRetentionPolicy } from './hooks/useRetentionPolicy';
@@ -80,8 +81,8 @@ const RoomBody = (): ReactElement => {
 
 	const wrapperRef = useRef<HTMLDivElement | null>(null);
 	const messagesBoxRef = useRef<HTMLDivElement | null>(null);
-	const atBottomRef = useRef(true);
-	const lastScrollTopRef = useRef(0);
+
+	const { atBottomRef, ref: isAtBottomCallbackRef } = useListIsAtBottom();
 
 	const chat = useChat();
 	const { openUserCard, triggerProps } = useUserCard();
@@ -116,23 +117,19 @@ const RoomBody = (): ReactElement => {
 		if (atBottomRef.current === true) {
 			sendToBottom();
 		}
-	}, [sendToBottom]);
-
-	const checkIfScrollIsAtBottom = useCallback(() => {
-		atBottomRef.current = _isAtBottom(100);
-	}, [_isAtBottom]);
+	}, [atBottomRef, sendToBottom]);
 
 	const handleNewMessageButtonClick = useCallback(() => {
 		atBottomRef.current = true;
 		sendToBottomIfNecessary();
 		chat.composer?.focus();
-	}, [chat, sendToBottomIfNecessary]);
+	}, [atBottomRef, chat.composer, sendToBottomIfNecessary]);
 
 	const handleJumpToRecentButtonClick = useCallback(() => {
 		atBottomRef.current = true;
 		RoomHistoryManager.clear(room._id);
 		RoomHistoryManager.getMoreIfIsEmpty(room._id);
-	}, [room._id]);
+	}, [atBottomRef, room._id]);
 
 	const [unread, setUnreadCount] = useUnreadMessages(room);
 
@@ -358,25 +355,26 @@ const RoomBody = (): ReactElement => {
 			});
 		});
 
+		let lastScrollTopRef = 0;
 		const handleWrapperScroll = withThrottling({ wait: 100 })((event) => {
 			const roomLeader = messagesBoxRef.current?.querySelector('.room-leader');
 			if (roomLeader) {
-				if (event.target.scrollTop < lastScrollTopRef.current) {
+				if (event.target.scrollTop < lastScrollTopRef) {
 					setHideLeaderHeader(false);
 				} else if (_isAtBottom(100) === false && event.target.scrollTop > parseFloat(getComputedStyle(roomLeader).height)) {
 					setHideLeaderHeader(true);
 				}
 			}
-			lastScrollTopRef.current = event.target.scrollTop;
+			lastScrollTopRef = event.target.scrollTop;
 			const height = event.target.clientHeight;
 			const isLoading = RoomHistoryManager.isLoading(room._id);
 			const hasMore = RoomHistoryManager.hasMore(room._id);
 			const hasMoreNext = RoomHistoryManager.hasMoreNext(room._id);
 
 			if ((isLoading === false && hasMore === true) || hasMoreNext === true) {
-				if (hasMore === true && lastScrollTopRef.current <= height / 3) {
+				if (hasMore === true && lastScrollTopRef <= height / 3) {
 					RoomHistoryManager.getMore(room._id);
-				} else if (hasMoreNext === true && Math.ceil(lastScrollTopRef.current) >= event.target.scrollHeight - height) {
+				} else if (hasMoreNext === true && Math.ceil(lastScrollTopRef) >= event.target.scrollHeight - height) {
 					RoomHistoryManager.getMoreNext(room._id, atBottomRef);
 				}
 			}
@@ -389,7 +387,7 @@ const RoomBody = (): ReactElement => {
 			wrapper.removeEventListener('scroll', updateUnreadCount);
 			wrapper.removeEventListener('scroll', handleWrapperScroll);
 		};
-	}, [_isAtBottom, list, room._id, setUnreadCount]);
+	}, [_isAtBottom, atBottomRef, list, room._id, setUnreadCount]);
 
 	useEffect(() => {
 		const wrapper = wrapperRef.current;
@@ -424,47 +422,6 @@ const RoomBody = (): ReactElement => {
 	}, [room._id, sendToBottom]);
 
 	const restoreScrollPositionRef = useRestoreScrollPosition(room._id);
-
-	useEffect(() => {
-		const wrapper = wrapperRef.current;
-
-		if (!wrapper) {
-			return;
-		}
-
-		const handleWheel = withThrottling({ wait: 100 })(() => {
-			checkIfScrollIsAtBottom();
-		});
-
-		const handleTouchStart = (): void => {
-			atBottomRef.current = false;
-		};
-
-		let timer1s: ReturnType<typeof setTimeout> | undefined;
-		let timer2s: ReturnType<typeof setTimeout> | undefined;
-
-		const handleTouchEnd = (): void => {
-			checkIfScrollIsAtBottom();
-			timer1s = setTimeout(() => checkIfScrollIsAtBottom(), 1000);
-			timer2s = setTimeout(() => checkIfScrollIsAtBottom(), 2000);
-		};
-
-		// wrapper.addEventListener('mousewheel', handleWheel);
-		// wrapper.addEventListener('wheel', handleWheel);
-		wrapper.addEventListener('scroll', handleWheel);
-		// wrapper.addEventListener('touchstart', handleTouchStart);
-		// wrapper.addEventListener('touchend', handleTouchEnd);
-
-		return (): void => {
-			if (timer1s) clearTimeout(timer1s);
-			if (timer2s) clearTimeout(timer2s);
-			wrapper.removeEventListener('mousewheel', handleWheel);
-			wrapper.removeEventListener('wheel', handleWheel);
-			wrapper.removeEventListener('scroll', handleWheel);
-			wrapper.removeEventListener('touchstart', handleTouchStart);
-			wrapper.removeEventListener('touchend', handleTouchEnd);
-		};
-	}, [checkIfScrollIsAtBottom]);
 
 	const handleComposerResize = useCallback((): void => {
 		sendToBottomIfNecessary();
@@ -541,7 +498,7 @@ const RoomBody = (): ReactElement => {
 
 	const { messageListRef, messageListProps } = useMessageListNavigation();
 
-	const ref = useMergedRefs(callbackRef, wrapperRef, restoreScrollPositionRef);
+	const ref = useMergedRefs(callbackRef, wrapperRef, restoreScrollPositionRef, isAtBottomCallbackRef);
 
 	return (
 		<>
