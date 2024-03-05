@@ -1,47 +1,13 @@
-import type { ComponentProps } from 'preact';
+import type { TFunction } from 'i18next';
+import type { FunctionalComponent } from 'preact';
 import { withTranslation } from 'react-i18next';
 
 import { ChatContainer } from '.';
-import { getAvatarUrl } from '../../helpers/baseUrl';
-import { canRenderMessage } from '../../helpers/canRenderMessage';
+import { canRenderMessage, canRenderTriggerMessage } from '../../helpers/canRenderMessage';
+import { formatAgent } from '../../helpers/formatAgent';
 import { Consumer } from '../../store';
 
-type ChatConnectorProps = Omit<
-	ComponentProps<typeof ChatContainer>,
-	| 'theme'
-	| 'title'
-	| 'sound'
-	| 'token'
-	| 'user'
-	| 'agent'
-	| 'room'
-	| 'messages'
-	| 'noMoreMessages'
-	| 'emoji'
-	| 'uploads'
-	| 'typingUsernames'
-	| 'loading'
-	| 'showConnecting'
-	| 'connecting'
-	| 'dispatch'
-	| 'departments'
-	| 'allowSwitchingDepartments'
-	| 'conversationFinishedMessage'
-	| 'allowRemoveUserData'
-	| 'alerts'
-	| 'visible'
-	| 'unread'
-	| 'lastReadMessageId'
-	| 'guest'
-	| 'triggerAgent'
-	| 'queueInfo'
-	| 'registrationFormEnabled'
-	| 'nameFieldRegistrationForm'
-	| 'emailFieldRegistrationForm'
-	| 'limitTextLength'
->;
-
-const ChatConnector = ({ ref, ...props }: ChatConnectorProps) => (
+export const ChatConnector: FunctionalComponent<{ path: string; default: boolean; t: TFunction }> = ({ ref, t }) => (
 	<Consumer>
 		{({
 			config: {
@@ -56,13 +22,10 @@ const ChatConnector = ({ ref, ...props }: ChatConnectorProps) => (
 					limitTextLength,
 				} = {},
 				messages: { conversationFinishedMessage } = {},
-				theme: { color, title } = {},
+				theme: { title } = {},
 				departments = {},
 			},
-			iframe: {
-				theme: { color: customColor, fontColor: customFontColor, iconColor: customIconColor, title: customTitle } = {},
-				guest,
-			} = {},
+			iframe: { theme: { title: customTitle } = {}, guest } = {},
 			token,
 			agent,
 			sound,
@@ -79,40 +42,19 @@ const ChatConnector = ({ ref, ...props }: ChatConnectorProps) => (
 			lastReadMessageId,
 			triggerAgent,
 			queueInfo,
+			incomingCallAlert,
+			ongoingCall,
+			messageListPosition,
 		}) => (
 			<ChatContainer
 				ref={ref}
-				{...props}
-				theme={{
-					color: customColor || color,
-					fontColor: customFontColor,
-					iconColor: customIconColor,
-					title: customTitle,
-				}}
-				title={customTitle || title || props.t('need_help')}
+				title={customTitle || title || t('need_help')}
 				sound={sound}
 				token={token}
 				user={user}
-				agent={
-					agent
-						? {
-								_id: agent._id,
-								name: agent.name,
-								status: agent.status,
-								email: agent.emails?.[0]?.address,
-								username: agent.username,
-								phone: agent.phone?.[0]?.phoneNumber || agent.customFields?.phone,
-								avatar: agent.username
-									? {
-											description: agent.username,
-											src: getAvatarUrl(agent.username),
-									  }
-									: undefined,
-						  }
-						: undefined
-				}
+				agent={formatAgent(agent)}
 				room={room}
-				messages={messages?.filter(canRenderMessage)}
+				messages={messages?.filter(canRenderMessage).filter(canRenderTriggerMessage(user))}
 				noMoreMessages={noMoreMessages}
 				emoji={true}
 				uploads={uploads}
@@ -123,7 +65,7 @@ const ChatConnector = ({ ref, ...props }: ChatConnectorProps) => (
 				dispatch={dispatch}
 				departments={departments}
 				allowSwitchingDepartments={allowSwitchingDepartments}
-				conversationFinishedMessage={conversationFinishedMessage || props.t('conversation_finished')}
+				conversationFinishedMessage={conversationFinishedMessage || t('conversation_finished')}
 				allowRemoveUserData={allowRemoveUserData}
 				alerts={alerts}
 				visible={visible}
@@ -144,6 +86,9 @@ const ChatConnector = ({ ref, ...props }: ChatConnectorProps) => (
 				nameFieldRegistrationForm={nameFieldRegistrationForm}
 				emailFieldRegistrationForm={emailFieldRegistrationForm}
 				limitTextLength={limitTextLength}
+				incomingCallAlert={incomingCallAlert}
+				ongoingCall={ongoingCall}
+				messageListPosition={messageListPosition}
 			/>
 		)}
 	</Consumer>
