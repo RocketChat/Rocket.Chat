@@ -57,6 +57,7 @@ import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
 import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
 import { useRetentionPolicy } from './hooks/useRetentionPolicy';
 import { useUnreadMessages } from './hooks/useUnreadMessages';
+import { useQuoteMessageByUrl } from './hooks/useQuoteMessageByUrl';
 
 const RoomBody = (): ReactElement => {
 	const formatDate = useFormatDate();
@@ -410,21 +411,7 @@ const RoomBody = (): ReactElement => {
 		[chat],
 	);
 
-	const replyMID = useSearchParameter('reply');
-
-	useEffect(() => {
-		if (!replyMID) {
-			return;
-		}
-
-		chat.data.getMessageByID(replyMID).then((message) => {
-			if (!message) {
-				return;
-			}
-
-			chat.composer?.quoteMessage(message);
-		});
-	}, [chat.data, chat.composer, replyMID]);
+	useQuoteMessageByUrl();
 
 	useEffect(() => {
 		chat.uploads.wipeFailedOnes();
