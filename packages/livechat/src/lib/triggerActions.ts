@@ -42,7 +42,7 @@ export const sendMessageExternalServiceAction = async (
 	condition: ILivechatTriggerCondition,
 ) => {
 	const { token, minimized, typing, iframe } = store.state;
-	const { metadata = {} } = iframe.guest || {};
+	const metadata = iframe.guestMetadata || {};
 	const agent = await getAgent(action);
 
 	if (agent?.username) {

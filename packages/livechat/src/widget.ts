@@ -41,6 +41,7 @@ type InitializeParams = {
 	language: string;
 	agent: StoreState['defaultAgent'];
 	parentUrl: string;
+	setGuestMetadata: StoreState['iframe']['guestMetadata'];
 };
 
 const WIDGET_OPEN_WIDTH = 365;
@@ -346,9 +347,9 @@ function setParentUrl(url: string) {
 	callHook('setParentUrl', url);
 }
 
-function setGuestMetadata(metadata) {
+function setGuestMetadata(metadata: StoreState['iframe']['guestMetadata']) {
 	if (typeof metadata !== 'object') {
-		return;
+		throw new Error('Invalid metadata');
 	}
 
 	callHook('setGuestMetadata', metadata);
@@ -404,7 +405,7 @@ function initialize(initParams: Partial<InitializeParams>) {
 				setParentUrl(params as InitializeParams['parentUrl']);
 				continue;
 			case 'setGuestMetadata':
-				setGuestMetadata(params[method]);
+				setGuestMetadata(params as InitializeParams['setGuestMetadata']);
 				continue;
 			default:
 				continue;

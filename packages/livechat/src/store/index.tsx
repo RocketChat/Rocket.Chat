@@ -60,6 +60,7 @@ export type StoreState = {
 	};
 	iframe: {
 		guest?: Serialized<ILivechatVisitorDTO>;
+		guestMetadata?: Record<string, string>;
 		theme: {
 			title?: string;
 			color?: string;

@@ -220,8 +220,9 @@ const api = {
 	setParentUrl: (parentUrl: StoreState['parentUrl']) => {
 		store.setState({ parentUrl });
 	},
-	setGuestMetadata(metadata) {
-		updateIframeGuestData({ metadata });
+	setGuestMetadata(metadata: StoreState['iframe']['guestMetadata']) {
+		const { iframe } = store.state;
+		store.setState({ iframe: { ...iframe, guestMetadata: metadata } });
 	},
 };
 
