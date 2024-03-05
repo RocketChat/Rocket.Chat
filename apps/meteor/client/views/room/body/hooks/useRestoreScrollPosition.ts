@@ -2,26 +2,20 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { useCallback, useEffect } from 'react';
 
 import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
-import type { MessageListContextValue } from '../../../../components/message/list/MessageListContext';
+import { useMessageListScrollRef } from '../../../../components/message/list/MessageListContext';
 import { RoomManager } from '../../../../lib/RoomManager';
 
-export function useRestoreScrollPosition(
-	rid: IRoom['_id'],
-	scrollMessageList: Exclude<MessageListContextValue['scrollMessageList'], undefined>,
-	sendToBottom: () => void,
-	ref: React.MutableRefObject<boolean>,
-) {
+export function useRestoreScrollPosition(rid: IRoom['_id'], ref: React.MutableRefObject<boolean>) {
+	const scrollRef = useMessageListScrollRef();
 	useEffect(() => {
 		const store = RoomManager.getStore(rid);
 
 		if (store?.scroll && !store.atBottom) {
-			scrollMessageList(() => {
-				return { left: 30, top: store.scroll };
-			});
+			scrollRef.current?.scrollTo({ top: store.scroll, behavior: 'auto' });
 		} else {
-			sendToBottom();
+			scrollRef.current?.scrollTo({ top: scrollRef.current?.scrollHeight, behavior: 'auto' });
 		}
-	}, [rid, scrollMessageList, sendToBottom]);
+	}, [rid, scrollRef]);
 
 	const callbackRef = useCallback(
 		(node: HTMLElement | null) => {
@@ -39,7 +33,7 @@ export function useRestoreScrollPosition(
 				if (store?.scroll && !store.atBottom) {
 					node.scrollTop = store.scroll;
 				} else {
-					sendToBottom();
+					scrollRef.current?.scrollTo({ top: scrollRef.current?.scrollHeight, behavior: 'auto' });
 				}
 				node.removeEventListener('MessageGroup', afterMessageGroup);
 			};
@@ -48,7 +42,7 @@ export function useRestoreScrollPosition(
 
 			node.addEventListener('MessageGroup', afterMessageGroup);
 		},
-		[ref, rid, sendToBottom],
+		[ref, rid, scrollRef],
 	);
 
 	return { ref: callbackRef, isAtBottom: ref };

@@ -15,8 +15,10 @@ export const useShowRoomLeader = (isAtBottom: MutableRefObject<boolean>) => {
 			}
 
 			const handleWrapperScroll = withThrottling({ wait: 100 })((event) => {
+				console.log('handleWrapperScroll', showRoomLeader, event.target.scrollTop, lastScrollTopRef.current);
 				const roomLeader = node.querySelector('.room-leader');
 				if (!roomLeader) {
+					console.log('roomLeader not found');
 					return;
 				}
 

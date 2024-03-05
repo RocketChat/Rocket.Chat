@@ -7,7 +7,7 @@ import { useDateListController } from '../providers/DateListProvider';
 
 type useDateScrollReturn = {
 	bubbleDate: string | undefined;
-	callbackRef: (node: HTMLElement | null) => void;
+	ref: (node: HTMLElement | null) => void;
 	style?: ReturnType<typeof css>;
 	showBubble: boolean;
 	listStyle?: ReturnType<typeof css>;
@@ -116,5 +116,5 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 			  `
 			: undefined;
 
-	return { callbackRef, listStyle, bubbleDate: bubbleDate.date, style: bubbleDate.style, showBubble: Boolean(bubbleDate.show) };
+	return { ref: callbackRef, listStyle, bubbleDate: bubbleDate.date, style: bubbleDate.style, showBubble: Boolean(bubbleDate.show) };
 };

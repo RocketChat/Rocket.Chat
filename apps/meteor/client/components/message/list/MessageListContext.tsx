@@ -1,4 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import type { RefObject } from 'react';
 import { createContext, useContext } from 'react';
 
 export type MessageListContextValue = {
@@ -25,7 +26,7 @@ export type MessageListContextValue = {
 	showColors: boolean;
 	jumpToMessageParam?: string;
 	username: string | undefined;
-	scrollMessageList?: (callback: (wrapper: HTMLElement | null) => ScrollToOptions | void) => void;
+	scrollRef: RefObject<HTMLElement>;
 };
 
 export const MessageListContext = createContext<MessageListContextValue>({
@@ -42,8 +43,8 @@ export const MessageListContext = createContext<MessageListContextValue>({
 	showRealName: false,
 	showUsername: false,
 	showColors: false,
-	scrollMessageList: () => undefined,
 	username: undefined,
+	scrollRef: { current: null },
 });
 
 export const useShowTranslated: MessageListContextValue['useShowTranslated'] = (...args) =>
@@ -60,7 +61,8 @@ export const useMessageListShowUsername = (): MessageListContextValue['showUsern
 export const useMessageListHighlights = (): MessageListContextValue['highlights'] => useContext(MessageListContext).highlights;
 export const useMessageListJumpToMessageParam = (): MessageListContextValue['jumpToMessageParam'] =>
 	useContext(MessageListContext).jumpToMessageParam;
-export const useMessageListScroll = (): MessageListContextValue['scrollMessageList'] => useContext(MessageListContext).scrollMessageList;
+
+export const useMessageListScrollRef = (): MessageListContextValue['scrollRef'] => useContext(MessageListContext).scrollRef;
 
 export const useUserHasReacted: MessageListContextValue['useUserHasReacted'] = (message: IMessage) =>
 	useContext(MessageListContext).useUserHasReacted(message);

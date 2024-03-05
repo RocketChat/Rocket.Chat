@@ -3,7 +3,7 @@ import { useRouter } from '@rocket.chat/ui-contexts';
 import type { RefObject } from 'react';
 import { useLayoutEffect } from 'react';
 
-import { useMessageListJumpToMessageParam, useMessageListScroll } from '../../../../components/message/list/MessageListContext';
+import { useMessageListJumpToMessageParam, useMessageListScrollRef } from '../../../../components/message/list/MessageListContext';
 import { setHighlightMessage, clearHighlightMessage } from '../providers/messageHighlightSubscription';
 
 // this is an arbitrary value so that there's a gap between the header and the message;
@@ -11,28 +11,27 @@ const SCROLL_EXTRA_OFFSET = 60;
 
 export const useJumpToMessage = (messageId: IMessage['_id'], messageRef: RefObject<HTMLDivElement>): void => {
 	const jumpToMessageParam = useMessageListJumpToMessageParam();
-	const scroll = useMessageListScroll();
+	const listRef = useMessageListScrollRef();
 	const router = useRouter();
 
 	useLayoutEffect(() => {
-		if (jumpToMessageParam !== messageId || !messageRef.current || !scroll) {
+		if (jumpToMessageParam !== messageId) {
 			return;
 		}
 
 		setTimeout(() => {
-			scroll((wrapper) => {
-				if (!wrapper || !messageRef.current) {
-					return;
-				}
-				const containerRect = wrapper.getBoundingClientRect();
-				const messageRect = messageRef.current.getBoundingClientRect();
+			if (!messageRef.current || !listRef.current) {
+				return;
+			}
 
-				const offset = messageRect.top - containerRect.top;
-				const scrollPosition = wrapper.scrollTop;
-				const newScrollPosition = scrollPosition + offset - SCROLL_EXTRA_OFFSET;
+			const containerRect = listRef.current.getBoundingClientRect();
+			const messageRect = messageRef.current.getBoundingClientRect();
 
-				return { top: newScrollPosition, behavior: 'smooth' };
-			});
+			const offset = messageRect.top - containerRect.top;
+			const scrollPosition = listRef.current.scrollTop;
+			const newScrollPosition = scrollPosition + offset - SCROLL_EXTRA_OFFSET;
+
+			listRef.current.scrollTo({ top: newScrollPosition, behavior: 'smooth' });
 
 			const search = router.getSearchParameters();
 			delete search.msg;
@@ -47,5 +46,5 @@ export const useJumpToMessage = (messageId: IMessage['_id'], messageRef: RefObje
 			setHighlightMessage(messageId);
 			setTimeout(clearHighlightMessage, 2000);
 		}, 500);
-	}, [messageId, jumpToMessageParam, messageRef, scroll, router]);
+	}, [messageId, jumpToMessageParam, messageRef, router, listRef]);
 };

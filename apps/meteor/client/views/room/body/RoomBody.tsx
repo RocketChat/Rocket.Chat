@@ -31,9 +31,7 @@ import { useRoomToolbox } from '../contexts/RoomToolboxContext';
 import { useUserCard } from '../contexts/UserCardContext';
 import { useDateScroll } from '../hooks/useDateScroll';
 import { useMessageListNavigation } from '../hooks/useMessageListNavigation';
-import { useScrollMessageList } from '../hooks/useScrollMessageList';
 import { useShowRoomLeader } from '../hooks/useShowRoomLeader';
-import { useDateListController } from '../providers/DateListProvider';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
 import LeaderBar from './LeaderBar';
@@ -61,12 +59,19 @@ const RoomBody = (): ReactElement => {
 	const admin = useRole('admin');
 	const subscription = useRoomSubscription();
 
-	const { list } = useDateListController();
-	const { callbackRef, listStyle, bubbleDate, showBubble, style: bubbleDateStyle } = useDateScroll();
+	const chat = useChat();
+
+	if (!chat) {
+		throw new Error('No ChatContext provided');
+	}
 
 	const [lastMessageDate, setLastMessageDate] = useState<Date | undefined>();
 
 	const [hasNewMessages, setHasNewMessages] = useState(false);
+
+	const { openUserCard, triggerProps } = useUserCard();
+
+	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget();
 
 	const hideFlexTab = useUserPreference<boolean>('hideFlexTab') || undefined;
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
@@ -74,53 +79,24 @@ const RoomBody = (): ReactElement => {
 
 	const messagesBoxRef = useRef<HTMLDivElement | null>(null);
 
-	const wrapperRef = useRef<HTMLElement | null>(null);
-
-	const { ref: callbackRefScrollMessageList, scrollTo } = useScrollMessageList(
-		useCallback((wrapper: HTMLElement) => ({ left: 30, top: wrapper?.scrollHeight }), []),
-	);
-
 	const { ref: callbackRefIsAtBottom, isAtBottom: atBottomRef, sendToBottomIfNecessary } = useCheckIfIsAtBottom();
 
 	const { ref: showRoomLeaderCallbackRef, showRoomLeader } = useShowRoomLeader(atBottomRef);
 
 	const { ref: messageListRef, messageListProps } = useMessageListNavigation();
 
+	const { ref: scrollPositionRef } = useRestoreScrollPosition(room._id, atBottomRef);
+
+	const { ref: callbackRef, listStyle, bubbleDate, showBubble, style: bubbleDateStyle } = useDateScroll();
+
+	const containerRef = useMergedRefs(showRoomLeaderCallbackRef, callbackRef) as unknown as React.RefObject<HTMLElement>;
+
 	useQuoteMessageBySearchParam();
 	useReadMessageWindowEvents();
 	useSendToBottomIfNecessaryObserver(sendToBottomIfNecessary);
-	const sendToBottom = useCallback(() => {
-		scrollTo();
-
-		setHasNewMessages(false);
-	}, [scrollTo]);
-
-	const { ref: scrollPositionRef } = useRestoreScrollPosition(room._id, scrollTo, sendToBottom, atBottomRef);
+	useGoToHomeOnRemoved(room, user?._id);
 
 	const lastScrollTopRef = useRef(0);
-
-	const chat = useChat();
-	const { openUserCard, triggerProps } = useUserCard();
-
-	if (!chat) {
-		throw new Error('No ChatContext provided');
-	}
-
-	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget();
-
-	const _isAtBottom = useCallback((scrollThreshold = 0) => {
-		const wrapper = wrapperRef.current;
-
-		if (!wrapper) {
-			return false;
-		}
-
-		if (isAtBottom(wrapper, scrollThreshold)) {
-			setHasNewMessages(false);
-			return true;
-		}
-		return false;
-	}, []);
 
 	const handleNewMessageButtonClick = useCallback(() => {
 		atBottomRef.current = true;
@@ -220,9 +196,28 @@ const RoomBody = (): ReactElement => {
 
 	const retentionPolicy = useRetentionPolicy(room);
 
-	useGoToHomeOnRemoved(room, user?._id);
+	const ref = useMergedRefs(callbackRefIsAtBottom, scrollPositionRef) as unknown as React.RefObject<HTMLElement>;
+
+	const sendToBottom = useCallback(() => {
+		ref.current?.scrollTo({ top: ref.current?.scrollHeight, behavior: 'auto' });
+
+		setHasNewMessages(false);
+	}, [ref]);
 
 	useEffect(() => {
+		const _isAtBottom = (scrollThreshold = 0) => {
+			const wrapper = ref.current;
+
+			if (!wrapper) {
+				return false;
+			}
+
+			if (isAtBottom(wrapper, scrollThreshold)) {
+				setHasNewMessages(false);
+				return true;
+			}
+			return false;
+		};
 		callbacks.add(
 			'streamNewMessage',
 			(msg: IMessage) => {
@@ -246,7 +241,7 @@ const RoomBody = (): ReactElement => {
 		return () => {
 			callbacks.remove('streamNewMessage', room._id);
 		};
-	}, [_isAtBottom, room._id, sendToBottom, user?._id]);
+	}, [room._id, sendToBottom, user?._id]);
 
 	const router = useRouter();
 
@@ -292,7 +287,7 @@ const RoomBody = (): ReactElement => {
 	}, [debouncedReadMessageRead, room._id, unread?.count]);
 
 	useEffect(() => {
-		const wrapper = wrapperRef.current;
+		const wrapper = ref.current;
 
 		if (!wrapper) {
 			return;
@@ -363,7 +358,7 @@ const RoomBody = (): ReactElement => {
 			wrapper.removeEventListener('scroll', updateUnreadCount);
 			wrapper.removeEventListener('scroll', handleWrapperScroll);
 		};
-	}, [_isAtBottom, atBottomRef, list, room._id, setUnreadCount]);
+	}, [atBottomRef, ref, room._id, setUnreadCount]);
 
 	const handleComposerResize = useCallback((): void => {
 		sendToBottomIfNecessary();
@@ -420,15 +415,6 @@ const RoomBody = (): ReactElement => {
 		[toolbox],
 	);
 
-	const ref = useMergedRefs(
-		callbackRef,
-		wrapperRef,
-		callbackRefIsAtBottom,
-		scrollPositionRef,
-		showRoomLeaderCallbackRef,
-		callbackRefScrollMessageList,
-	);
-
 	return (
 		<>
 			{!isLayoutEmbedded && room.announcement && <Announcement announcement={room.announcement} announcementDetails={undefined} />}
@@ -439,7 +425,7 @@ const RoomBody = (): ReactElement => {
 					onClick={hideFlexTab && handleCloseFlexTab}
 				>
 					<div className='messages-container-wrapper'>
-						<div className='messages-container-main' ref={callbackRef} {...fileUploadTriggerProps}>
+						<div className='messages-container-main' ref={containerRef} {...fileUploadTriggerProps}>
 							<DropTargetOverlay {...fileUploadOverlayProps} />
 							<div className={['container-bars', uploads.length && 'show'].filter(isTruthy).join(' ')}>
 								{uploads.map((upload) => (
@@ -523,7 +509,7 @@ const RoomBody = (): ReactElement => {
 														)}
 													</>
 												) : null}
-												<MessageList rid={room._id} scrollMessageList={scrollTo} />
+												<MessageList rid={room._id} scrollRef={ref} />
 												{hasMoreNextMessages ? (
 													<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
 												) : null}

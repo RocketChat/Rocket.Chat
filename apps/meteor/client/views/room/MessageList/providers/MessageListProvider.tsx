@@ -15,14 +15,14 @@ import { useLoadSurroundingMessages } from '../hooks/useLoadSurroundingMessages'
 
 type MessageListProviderProps = {
 	children: ReactNode;
-	scrollMessageList?: MessageListContextValue['scrollMessageList'];
+	scrollRef: React.RefObject<HTMLElement>;
 	attachmentDimension?: {
 		width?: number;
 		height?: number;
 	};
 };
 
-const MessageListProvider: VFC<MessageListProviderProps> = ({ children, scrollMessageList, attachmentDimension }) => {
+const MessageListProvider: VFC<MessageListProviderProps> = ({ children, scrollRef, attachmentDimension }) => {
 	const room = useRoom();
 
 	if (!room) {
@@ -58,6 +58,7 @@ const MessageListProvider: VFC<MessageListProviderProps> = ({ children, scrollMe
 
 	const context: MessageListContextValue = useMemo(
 		() => ({
+			scrollRef,
 			showColors,
 			useUserHasReacted: username
 				? (message) =>
@@ -79,7 +80,6 @@ const MessageListProvider: VFC<MessageListProviderProps> = ({ children, scrollMe
 			showRoles,
 			showRealName,
 			showUsername,
-			scrollMessageList,
 			jumpToMessageParam: msgParameter,
 			...(katexEnabled && {
 				katex: {
@@ -105,6 +105,7 @@ const MessageListProvider: VFC<MessageListProviderProps> = ({ children, scrollMe
 			username,
 		}),
 		[
+			scrollRef,
 			username,
 			uid,
 			showAutoTranslate,
@@ -120,7 +121,6 @@ const MessageListProvider: VFC<MessageListProviderProps> = ({ children, scrollMe
 			reactToMessage,
 			showColors,
 			msgParameter,
-			scrollMessageList,
 			chat?.emojiPicker,
 		],
 	);
