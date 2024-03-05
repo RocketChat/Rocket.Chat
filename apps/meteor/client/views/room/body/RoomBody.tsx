@@ -1,5 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { Box, Bubble } from '@rocket.chat/fuselage';
+import { Box, Bubble, Margins } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { MouseEventHandler, ReactElement, UIEvent } from 'react';
@@ -101,6 +101,7 @@ const RoomBody = (): ReactElement => {
 
 	const {
 		innerRef: dateScrollInnerRef,
+		callbackBubbleRef,
 		listStyle,
 		bubbleDate,
 		showBubble,
@@ -236,32 +237,40 @@ const RoomBody = (): ReactElement => {
 					<div className='messages-container-wrapper'>
 						<div className='messages-container-main' ref={wrapperBoxRefs} {...fileUploadTriggerProps}>
 							<DropTargetOverlay {...fileUploadOverlayProps} />
-							<div className={['container-bars', uploads.length && 'show'].filter(isTruthy).join(' ')}>
-								{uploads.map((upload) => (
-									<UploadProgressIndicator
-										key={upload.id}
-										id={upload.id}
-										name={upload.name}
-										percentage={upload.percentage}
-										error={upload.error instanceof Error ? upload.error.message : undefined}
-										onClose={handleUploadProgressClose}
-									/>
-								))}
-							</div>
-							{bubbleDate && (
-								<Box className={[bubbleDateClassName, showBubble && 'bubble-visible']} style={bubbleDateStyle}>
-									<Bubble small secondary>
-										{formatDate(bubbleDate)}
-									</Bubble>
-								</Box>
-							)}
-							{Boolean(unread) && (
-								<UnreadMessagesIndicator
-									count={unread}
-									onJumpButtonClick={handleUnreadBarJumpToButtonClick}
-									onMarkAsReadButtonClick={handleMarkAsReadButtonClick}
-								/>
-							)}
+							<Box position='absolute' w='full'>
+								<Margins block={8}>
+									<div className={['container-bars', uploads.length && 'show'].filter(isTruthy).join(' ')}>
+										{uploads.map((upload) => (
+											<UploadProgressIndicator
+												key={upload.id}
+												id={upload.id}
+												name={upload.name}
+												percentage={upload.percentage}
+												error={upload.error instanceof Error ? upload.error.message : undefined}
+												onClose={handleUploadProgressClose}
+											/>
+										))}
+									</div>
+									{Boolean(unread) && (
+										<UnreadMessagesIndicator
+											count={unread}
+											onJumpButtonClick={handleUnreadBarJumpToButtonClick}
+											onMarkAsReadButtonClick={handleMarkAsReadButtonClick}
+										/>
+									)}
+									{/* )} */}
+									{bubbleDate && (
+										<Box ref={callbackBubbleRef} position='relative' display='flex' justifyContent='center' zIndex={2}>
+											<Box className={[bubbleDateClassName, /* showBubble && */ 'bubble-visible']} /* style={bubbleDateStyle} */>
+												<Bubble small secondary>
+													{formatDate(bubbleDate)}
+												</Bubble>
+											</Box>
+										</Box>
+									)}
+								</Margins>
+							</Box>
+
 							<div className={['messages-box', roomLeader && !hideLeaderHeader && 'has-leader'].filter(isTruthy).join(' ')}>
 								<JumpToRecentMessageButton visible={hasNewMessages} onClick={handleNewMessageButtonClick} text={t('New_messages')} />
 								<JumpToRecentMessageButton

@@ -8,6 +8,7 @@ import { useDateListController } from '../providers/DateListProvider';
 type useDateScrollReturn = {
 	bubbleDate: string | undefined;
 	innerRef: (node: HTMLElement | null) => void;
+	callbackBubbleRef: (node: HTMLElement | null) => void;
 	className?: ReturnType<typeof css>;
 	showBubble: boolean;
 	listStyle?: ReturnType<typeof css>;
@@ -21,27 +22,42 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 			show: boolean;
 			style?: React.CSSProperties;
 			className?: ReturnType<typeof css>;
+			offset: number;
 		}>({
 			date: '',
 			show: false,
 			style: undefined,
 			className: undefined,
+			offset: 0,
 		}),
 	);
 
 	const { list } = useDateListController();
+
+	const callbackBubbleRef = useCallback(
+		(node: HTMLElement | null) => {
+			if (!node) {
+				return;
+			}
+			setBubbleDate((current) => ({
+				...current,
+				offset: node.getBoundingClientRect().top,
+			}));
+		},
+		[setBubbleDate],
+	);
 
 	const callbackRef = useCallback(
 		(node: HTMLElement | null) => {
 			if (!node) {
 				return;
 			}
+			const bubbleOffset = bubbleDate.offset;
+
 			const onScroll = (() => {
 				let timeout: ReturnType<typeof setTimeout>;
-				return (elements: Set<HTMLElement>, offset: number) => {
+				return (elements: Set<HTMLElement>) => {
 					clearTimeout(timeout);
-
-					const bubbleOffset = offset;
 
 					// Gets the first non visible message date and sets the bubble date to it
 					const [date, message, style] = [...elements].reduce((ret, message) => {
@@ -52,6 +68,7 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 
 						const { top, height } = message.getBoundingClientRect();
 						const { id } = message.dataset;
+						console.log('top divider', top, 'offset bubble', bubbleOffset);
 
 						// if the bubble if between the divider and the top, position it at the top of the divider
 						if (top > bubbleOffset && top < bubbleOffset + height) {
@@ -60,7 +77,7 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 								ret[1] || message,
 								{
 									position: 'absolute',
-									top: `${top - height - offset + margin}px`,
+									top: `${top - height - bubbleOffset + margin}px`,
 									left: ' 50%',
 									translate: '-50%',
 									zIndex: 1,
@@ -83,11 +100,10 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 						}
 						return ret;
 					}, [] as [string, HTMLElement, { [key: number]: string | number }?] | []);
-					// try: return o style no reduce
-					// try2: div wrapper 1 upload e blabla, div wrapper 2 do box da bubble com posição relativa a div wrapper 1. trocar wrapper 2 de lugar com a unread, e fazer ela ficar abaixo, quando tiver lá
 
 					// We always keep the previous date if we don't have a new one, so when the bubble disappears it doesn't flicker
-					setBubbleDate(() => ({
+					setBubbleDate((current) => ({
+						...current,
 						date: '',
 						...(date && { date }),
 						show: Boolean(date),
@@ -103,7 +119,7 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 
 					if (message) {
 						const { top } = message.getBoundingClientRect();
-						if (top < offset && top > 0) {
+						if (top < bubbleOffset && top > 0) {
 							return;
 						}
 					}
@@ -118,25 +134,35 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 					);
 				};
 			})();
+
 			const fn = withThrottling({ wait: 30 })(() => {
-				const offset = node.getBoundingClientRect().top;
-				onScroll(list, offset);
+				// const offset = node.getBoundingClientRect().top;
+				onScroll(list);
 			});
 
 			node.addEventListener('scroll', fn, { passive: true });
 		},
-		[list, margin, setBubbleDate],
+		[bubbleDate, list, margin, setBubbleDate],
 	);
 
-	const listStyle =
-		bubbleDate.show && bubbleDate.date
-			? css`
-					position: relative;
-					& [data-time='${bubbleDate.date.replaceAll(/[-T:.]/g, '').substring(0, 8)}'] {
-						opacity: 0;
-					}
-			  `
-			: undefined;
+	const listStyle = undefined;
+	// bubbleDate.show && bubbleDate.date
+	// 	? css`
+	// 			position: relative;
+	// 			& [data-time='${bubbleDate.date.replaceAll(/[-T:.]/g, '').substring(0, 8)}'] {
+	// 				opacity: 0;
+	// 			}
+	// 	  `
+	// 	: undefined;
 
-	return { innerRef: callbackRef, listStyle, bubbleDate: bubbleDate.date, style: bubbleDate.style, showBubble: Boolean(bubbleDate.show) };
+	// console.log('bubbleDate', bubbleDate);
+	return {
+		innerRef: callbackRef,
+		callbackBubbleRef,
+		listStyle,
+		bubbleDate: bubbleDate.date,
+		style: bubbleDate.style,
+		showBubble: Boolean(bubbleDate.show),
+		className: bubbleDate.className,
+	};
 };
