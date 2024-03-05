@@ -19,11 +19,6 @@ import { useUsersData } from './hooks/useUsersData';
 
 type MultiUsersSelectElementProps = BlockProps<UiKit.MultiUsersSelectElement>;
 
-type MultiUserSelectOptionType = {
-  label: string;
-  value: string;
-};
-
 const MultiUsersSelectElement = ({
   block,
   context,
@@ -44,6 +39,7 @@ const MultiUsersSelectElement = ({
 
   return (
     <AutoComplete
+      placeholder={block.placeholder?.text}
       disabled={loading}
       filter={filter}
       setFilter={setFilter}
@@ -72,7 +68,7 @@ const MultiUsersSelectElement = ({
         </Option>
       )}
       options={data || []}
-      value={value as MultiUserSelectOptionType['value']}
+      value={value}
     />
   );
 };

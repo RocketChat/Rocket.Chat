@@ -34,8 +34,9 @@ const UsersSelectElement = ({ block, context }: UsersSelectElementProps) => {
 
   return (
     <AutoComplete
+      placeholder={block.placeholder?.text}
       disabled={loading}
-      value={value as UserAutoCompleteOptionType['value']}
+      value={value}
       options={options}
       onChange={handleChange}
       filter={filter}
