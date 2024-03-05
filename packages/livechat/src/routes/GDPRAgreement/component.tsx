@@ -1,3 +1,4 @@
+import type { TFunction } from 'i18next';
 import { Component } from 'preact';
 import { Trans, withTranslation } from 'react-i18next';
 
@@ -8,23 +9,22 @@ import Screen from '../../components/Screen';
 import { createClassName } from '../../helpers/createClassName';
 import styles from './styles.scss';
 
-class GDPR extends Component {
+type GDPRProps = {
+	title: string;
+	consentText: string;
+	instructions: string;
+	onAgree: () => void;
+	t: TFunction;
+};
+
+class GDPR extends Component<GDPRProps> {
 	handleClick = () => {
 		const { onAgree } = this.props;
-		onAgree && onAgree();
+		onAgree?.();
 	};
 
-	render = ({
-		color,
-		title,
-		consentText,
-		instructions,
-		// eslint-disable-next-line no-unused-vars
-		onAgree,
-		t,
-		...props
-	}) => (
-		<Screen color={color} title={title} className={createClassName(styles, 'gdpr')} {...props}>
+	render = ({ title, consentText, instructions, t }: GDPRProps) => (
+		<Screen title={title} className={createClassName(styles, 'gdpr')}>
 			<Screen.Content>
 				{consentText ? (
 					<p className={createClassName(styles, 'gdpr__consent-text')}>

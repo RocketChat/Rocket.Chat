@@ -167,6 +167,7 @@
   "Favorite": "Favorito",
   "Favorite_Rooms": "Habilitar Room favoritas",
   "Favorites": "Favoritos",
+  "Federation_Matrix_enabled": "Activado",
   "File_name_Placeholder": "Procurar arquivos...",
   "files": "arquivos",
   "Files": "Lista de arquivos",
@@ -262,6 +263,8 @@
   "Started_a_video_call": "Iniciou unha videochamada",
   "Stats_Away_Users": "Usuarios ausentes",
   "Stats_Online_Users": "Usuarios en liña",
+  "Stats_Total_Channels": "Channel",
+  "Stats_Total_Messages": "Mensaxes",
   "StatusMessage": "Mensaxe de Estado",
   "Symbols": "Símbolos",
   "theme-color-status-away": "Cor do estado ausente",
@@ -385,5 +388,8 @@
   "onboarding.form.standaloneServerForm.title": "Confirmación do servidor autónomo",
   "onboarding.form.standaloneServerForm.servicesUnavailable": "Algúns dos servizos non estarán dispoñibles ou requirirán unha configuración manual",
   "onboarding.form.standaloneServerForm.publishOwnApp": "Para enviar notificacións push, debes compilar e publicar a túa propia aplicación en Google Play e App Store",
-  "onboarding.form.standaloneServerForm.manuallyIntegrate": "Necesita integrarse manualmente con servizos externos"
+  "onboarding.form.standaloneServerForm.manuallyIntegrate": "Necesita integrarse manualmente con servizos externos",
+  "Awaiting_confirmation": "Agardando confirmación",
+  "RegisterWorkspace_Features_MobileNotifications_Title": "Notificacións push móbiles",
+  "cloud.RegisterWorkspace_Setup_Terms_Privacy": "Acepto os <1>Termos e condicións</1> e a <3>Política de privacidade</3>"
 }
