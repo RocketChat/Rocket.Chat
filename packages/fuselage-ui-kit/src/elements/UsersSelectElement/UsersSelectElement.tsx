@@ -1,17 +1,16 @@
 import { AutoComplete, Box, Chip, Option } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useEndpoint } from '@rocket.chat/ui-contexts';
 import type * as UiKit from '@rocket.chat/ui-kit';
-import { useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo, useState } from 'react';
 
 import { useUiKitState } from '../../hooks/useUiKitState';
 import type { BlockProps } from '../../utils/BlockProps';
+import { useUsersData } from './hooks/useUsersData';
 
 type UsersSelectElementProps = BlockProps<UiKit.UsersSelectElement>;
 
-type UserAutoCompleteOptionType = {
+export type UserAutoCompleteOptionType = {
   value: string;
   label: string;
 };
@@ -21,25 +20,8 @@ const UsersSelectElement = ({ block, context }: UsersSelectElementProps) => {
 
   const [filter, setFilter] = useState('');
   const debouncedFilter = useDebouncedValue(filter, 1000);
-  const getUsers = useEndpoint('GET', '/v1/users.autocomplete');
 
-  const { data } = useQuery(
-    ['users.autoComplete', debouncedFilter],
-    async () => {
-      const users = await getUsers({
-        selector: JSON.stringify({ term: debouncedFilter }),
-      });
-      const options = users.items.map(
-        (item): UserAutoCompleteOptionType => ({
-          value: item.username,
-          label: item.name || item.username,
-        })
-      );
-
-      return options;
-    },
-    { keepPreviousData: true }
-  );
+  const data = useUsersData({ filter: debouncedFilter });
 
   const options = useMemo(() => data || [], [data]);
 

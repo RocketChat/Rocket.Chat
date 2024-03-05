@@ -9,14 +9,13 @@ import {
 } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useEndpoint } from '@rocket.chat/ui-contexts';
 import type * as UiKit from '@rocket.chat/ui-kit';
-import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import { memo, useCallback, useState } from 'react';
 
 import { useUiKitState } from '../../hooks/useUiKitState';
 import type { BlockProps } from '../../utils/BlockProps';
+import { useUsersData } from './hooks/useUsersData';
 
 type MultiUsersSelectElementProps = BlockProps<UiKit.MultiUsersSelectElement>;
 
@@ -33,22 +32,8 @@ const MultiUsersSelectElement = ({
   const [filter, setFilter] = useState('');
 
   const debouncedFilter = useDebouncedValue(filter, 500);
-  const getUsers = useEndpoint('GET', '/v1/users.autocomplete');
 
-  const { data } = useQuery(
-    ['users.autocomplete', debouncedFilter],
-    async () => {
-      const users = await getUsers({
-        selector: JSON.stringify({ term: debouncedFilter }),
-      });
-      const options = users.items.map((item): MultiUserSelectOptionType => {
-        return { value: item.username, label: item.name || item.username };
-      });
-
-      return options;
-    },
-    { keepPreviousData: true }
-  );
+  const data = useUsersData({ filter: debouncedFilter });
 
   const handleChange = useCallback(
     (value) => {
