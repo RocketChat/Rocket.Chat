@@ -82,7 +82,7 @@ const RoomBody = (): ReactElement => {
 		targeDrop: [fileUploadTriggerProps, fileUploadOverlayProps],
 	} = useFileUpload();
 
-	const { hideLeaderHeader, ref: leaderBannerRefCallback } = useLeaderBanner();
+	const { hideLeaderHeader, ref: leaderBannerRefCallback, messagesBoxRef: leaderMessageBoxRef } = useLeaderBanner();
 
 	const restorePositionRef = useRestoreScrollPosition(room._id);
 
@@ -282,7 +282,15 @@ const RoomBody = (): ReactElement => {
 
 	const { messageListRef, messageListProps } = useMessageListNavigation();
 
-	const ref = useMergedRefs(callbackRef, wrapperRef, unreadBarRef, restorePositionRef, isAtBottomCallbackRef, getMoreRef);
+	const ref = useMergedRefs(
+		callbackRef,
+		wrapperRef,
+		unreadBarRef,
+		restorePositionRef,
+		isAtBottomCallbackRef,
+		getMoreRef,
+		leaderBannerRefCallback,
+	);
 
 	return (
 		<>
@@ -294,7 +302,7 @@ const RoomBody = (): ReactElement => {
 					onClick={hideFlexTab && handleCloseFlexTab}
 				>
 					<div className='messages-container-wrapper'>
-						<div className='messages-container-main' ref={useMergedRefs(callbackRef, leaderBannerRefCallback)} {...fileUploadTriggerProps}>
+						<div className='messages-container-main' ref={useMergedRefs(callbackRef, leaderMessageBoxRef)} {...fileUploadTriggerProps}>
 							<DropTargetOverlay {...fileUploadOverlayProps} />
 							<div className={['container-bars', uploads.length && 'show'].filter(isTruthy).join(' ')}>
 								{uploads.map((upload) => (
@@ -323,7 +331,7 @@ const RoomBody = (): ReactElement => {
 								/>
 							)}
 							<div
-								ref={messagesBoxRef}
+								ref={useMergedRefs(messagesBoxRef)}
 								className={['messages-box', roomLeader && !hideLeaderHeader && 'has-leader'].filter(isTruthy).join(' ')}
 							>
 								<JumpToRecentMessageButton visible={hasNewMessages} onClick={handleNewMessageButtonClick} text={t('New_messages')} />

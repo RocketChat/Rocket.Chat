@@ -1,10 +1,13 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 import { isAtBottom } from '../../../../../app/ui/client/views/app/lib/scrolling';
 import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
 
 export const useLeaderBanner = () => {
 	const [hideLeaderHeader, setHideLeaderHeader] = useState(false);
+
+	const messagesBoxRef = useRef<HTMLDivElement>(null);
+
 	const ref = useCallback((node: HTMLElement | null) => {
 		if (!node) {
 			return;
@@ -14,7 +17,7 @@ export const useLeaderBanner = () => {
 		node.addEventListener(
 			'scroll',
 			withThrottling({ wait: 100 })((event) => {
-				const roomLeader = node.querySelector('.room-leader');
+				const roomLeader = messagesBoxRef.current?.querySelector('.room-leader');
 				if (roomLeader) {
 					if (event.target.scrollTop < lastScrollTopRef) {
 						setHideLeaderHeader(false);
@@ -28,6 +31,7 @@ export const useLeaderBanner = () => {
 	}, []);
 
 	return {
+		messagesBoxRef,
 		hideLeaderHeader,
 		ref,
 	};
