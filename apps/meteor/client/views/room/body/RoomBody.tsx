@@ -11,7 +11,6 @@ import { RoomHistoryManager } from '../../../../app/ui-utils/client';
 import { isAtBottom } from '../../../../app/ui/client/views/app/lib/scrolling';
 import { callbacks } from '../../../../lib/callbacks';
 import { isTruthy } from '../../../../lib/isTruthy';
-import { withThrottling } from '../../../../lib/utils/highOrderFunctions';
 import { CustomScrollbars } from '../../../components/CustomScrollbars';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import { useFormatDate } from '../../../hooks/useFormatDate';
@@ -27,7 +26,6 @@ import { useRoomToolbox } from '../contexts/RoomToolboxContext';
 import { useUserCard } from '../contexts/UserCardContext';
 import { useDateScroll } from '../hooks/useDateScroll';
 import { useMessageListNavigation } from '../hooks/useMessageListNavigation';
-import { useDateListController } from '../providers/DateListProvider';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
 import LeaderBar from './LeaderBar';
@@ -37,6 +35,7 @@ import RoomForeword from './RoomForeword/RoomForeword';
 import UnreadMessagesIndicator from './UnreadMessagesIndicator';
 import UploadProgressIndicator from './UploadProgressIndicator';
 import { useFileUpload } from './hooks/useFileUpload';
+import { useGetMore } from './hooks/useGetMore';
 import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
 import { useLeaderBanner } from './hooks/useLeaderBanner';
 import { useListIsAtBottom } from './hooks/useListIsAtBottom';
@@ -56,7 +55,6 @@ const RoomBody = (): ReactElement => {
 	const admin = useRole('admin');
 	const subscription = useRoomSubscription();
 
-	const { list } = useDateListController();
 	const { callbackRef, listStyle, bubbleDate, showBubble, style: bubbleDateStyle } = useDateScroll();
 
 	const [hasNewMessages, setHasNewMessages] = useState(false);
@@ -233,37 +231,6 @@ const RoomBody = (): ReactElement => {
 		};
 	}, [sendToBottomIfNecessary]);
 
-	useEffect(() => {
-		const wrapper = wrapperRef.current;
-
-		if (!wrapper) {
-			return;
-		}
-
-		let lastScrollTopRef = 0;
-		const handleWrapperScroll = withThrottling({ wait: 100 })((event) => {
-			lastScrollTopRef = event.target.scrollTop;
-			const height = event.target.clientHeight;
-			const isLoading = RoomHistoryManager.isLoading(room._id);
-			const hasMore = RoomHistoryManager.hasMore(room._id);
-			const hasMoreNext = RoomHistoryManager.hasMoreNext(room._id);
-
-			if ((isLoading === false && hasMore === true) || hasMoreNext === true) {
-				if (hasMore === true && lastScrollTopRef <= height / 3) {
-					RoomHistoryManager.getMore(room._id);
-				} else if (hasMoreNext === true && Math.ceil(lastScrollTopRef) >= event.target.scrollHeight - height) {
-					RoomHistoryManager.getMoreNext(room._id, atBottomRef);
-				}
-			}
-		});
-
-		wrapper.addEventListener('scroll', handleWrapperScroll);
-
-		return () => {
-			wrapper.removeEventListener('scroll', handleWrapperScroll);
-		};
-	}, [_isAtBottom, atBottomRef, list, room._id]);
-
 	const restoreScrollPositionRef = useRestoreScrollPosition(room._id);
 
 	const handleComposerResize = useCallback((): void => {
@@ -317,6 +284,8 @@ const RoomBody = (): ReactElement => {
 	useReadMessageWindowEvents();
 	useQuoteMessageByUrl();
 
+	const getMoreRef = useGetMore(room._id, atBottomRef);
+
 	const { messageListRef, messageListProps } = useMessageListNavigation();
 
 	const ref = useMergedRefs(
@@ -327,6 +296,7 @@ const RoomBody = (): ReactElement => {
 		unreadBarRef,
 		leaderBannerRefCallback,
 		unreadBarMessagesBoxRef,
+		getMoreRef,
 	);
 
 	return (
