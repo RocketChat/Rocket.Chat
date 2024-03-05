@@ -17,7 +17,7 @@ settings.watch<boolean>('Troubleshoot_Disable_Teams_Mention', (value) => {
 	} else {
 		callbacks.add(
 			'beforeGetTeamMentions',
-			(mentionIds: string[], teamMentions?: MessageMention[]) => beforeGetTeamMentions(mentionIds, teamMentions),
+			(mentionIds, teamMentions) => beforeGetTeamMentions(mentionIds, teamMentions),
 			callbacks.priority.MEDIUM,
 			'beforeGetTeamMentions',
 		);
