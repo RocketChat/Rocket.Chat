@@ -2,16 +2,7 @@ import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
 import { Box, Bubble } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
-import {
-	usePermission,
-	useRole,
-	useRouter,
-	useSearchParameter,
-	useSetting,
-	useTranslation,
-	useUser,
-	useUserPreference,
-} from '@rocket.chat/ui-contexts';
+import { usePermission, useRole, useRouter, useSetting, useTranslation, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { MouseEventHandler, ReactElement, UIEvent } from 'react';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
@@ -26,7 +17,6 @@ import { CustomScrollbars } from '../../../components/CustomScrollbars';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import { useFormatDate } from '../../../hooks/useFormatDate';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
-import { RoomManager } from '../../../lib/RoomManager';
 import type { Upload } from '../../../lib/chats/Upload';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { setMessageJumpQueryStringParameter } from '../../../lib/utils/setMessageJumpQueryStringParameter';
@@ -52,12 +42,13 @@ import UnreadMessagesIndicator from './UnreadMessagesIndicator';
 import UploadProgressIndicator from './UploadProgressIndicator';
 import { useFileUploadDropTarget } from './hooks/useFileUploadDropTarget';
 import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
+import { useLeaderBanner } from './hooks/useLeaderBanner';
 import { useListIsAtBottom } from './hooks/useListIsAtBottom';
+import { useQuoteMessageByUrl } from './hooks/useQuoteMessageByUrl';
 import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
 import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
 import { useRetentionPolicy } from './hooks/useRetentionPolicy';
 import { useUnreadMessages } from './hooks/useUnreadMessages';
-import { useQuoteMessageByUrl } from './hooks/useQuoteMessageByUrl';
 
 const RoomBody = (): ReactElement => {
 	const formatDate = useFormatDate();
@@ -73,7 +64,6 @@ const RoomBody = (): ReactElement => {
 	const { callbackRef, listStyle, bubbleDate, showBubble, style: bubbleDateStyle } = useDateScroll();
 
 	const [lastMessageDate, setLastMessageDate] = useState<Date | undefined>();
-	const [hideLeaderHeader, setHideLeaderHeader] = useState(false);
 	const [hasNewMessages, setHasNewMessages] = useState(false);
 
 	const hideFlexTab = useUserPreference<boolean>('hideFlexTab') || undefined;
@@ -88,6 +78,7 @@ const RoomBody = (): ReactElement => {
 	const chat = useChat();
 	const { openUserCard, triggerProps } = useUserCard();
 
+	const { hideLeaderHeader, ref: leaderBannerRefCallback } = useLeaderBanner();
 	if (!chat) {
 		throw new Error('No ChatContext provided');
 	}
@@ -358,14 +349,6 @@ const RoomBody = (): ReactElement => {
 
 		let lastScrollTopRef = 0;
 		const handleWrapperScroll = withThrottling({ wait: 100 })((event) => {
-			const roomLeader = messagesBoxRef.current?.querySelector('.room-leader');
-			if (roomLeader) {
-				if (event.target.scrollTop < lastScrollTopRef) {
-					setHideLeaderHeader(false);
-				} else if (_isAtBottom(100) === false && event.target.scrollTop > parseFloat(getComputedStyle(roomLeader).height)) {
-					setHideLeaderHeader(true);
-				}
-			}
 			lastScrollTopRef = event.target.scrollTop;
 			const height = event.target.clientHeight;
 			const isLoading = RoomHistoryManager.isLoading(room._id);
@@ -465,7 +448,7 @@ const RoomBody = (): ReactElement => {
 					onClick={hideFlexTab && handleCloseFlexTab}
 				>
 					<div className='messages-container-wrapper'>
-						<div className='messages-container-main' ref={callbackRef} {...fileUploadTriggerProps}>
+						<div className='messages-container-main' ref={useMergedRefs(callbackRef, leaderBannerRefCallback)} {...fileUploadTriggerProps}>
 							<DropTargetOverlay {...fileUploadOverlayProps} />
 							<div className={['container-bars', uploads.length && 'show'].filter(isTruthy).join(' ')}>
 								{uploads.map((upload) => (
