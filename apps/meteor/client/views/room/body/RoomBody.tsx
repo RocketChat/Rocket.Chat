@@ -41,7 +41,6 @@ import { useRoomToolbox } from '../contexts/RoomToolboxContext';
 import { useUserCard } from '../contexts/UserCardContext';
 import { useDateScroll } from '../hooks/useDateScroll';
 import { useMessageListNavigation } from '../hooks/useMessageListNavigation';
-import { useScrollMessageList } from '../hooks/useScrollMessageList';
 import { useDateListController } from '../providers/DateListProvider';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
@@ -107,15 +106,11 @@ const RoomBody = (): ReactElement => {
 		return false;
 	}, []);
 
-	const scrollMessageList = useScrollMessageList(wrapperRef);
-
 	const sendToBottom = useCallback(() => {
-		scrollMessageList((wrapper) => {
-			return { left: 30, top: wrapper?.scrollHeight };
-		});
+		wrapperRef.current?.scrollTo({ left: 30, top: wrapperRef.current?.scrollHeight });
 
 		setHasNewMessages(false);
-	}, [scrollMessageList]);
+	}, []);
 
 	const sendToBottomIfNecessary = useCallback(() => {
 		if (atBottomRef.current === true) {
@@ -428,7 +423,7 @@ const RoomBody = (): ReactElement => {
 		};
 	}, [room._id, sendToBottom]);
 
-	useRestoreScrollPosition(room._id, scrollMessageList, sendToBottom);
+	const restorePositionRef = useRestoreScrollPosition(room._id);
 
 	useEffect(() => {
 		const wrapper = wrapperRef.current;
@@ -546,7 +541,7 @@ const RoomBody = (): ReactElement => {
 
 	const { messageListRef, messageListProps } = useMessageListNavigation();
 
-	const ref = useMergedRefs(callbackRef, wrapperRef);
+	const ref = useMergedRefs(callbackRef, wrapperRef, restorePositionRef);
 
 	return (
 		<>
@@ -642,7 +637,7 @@ const RoomBody = (): ReactElement => {
 														)}
 													</>
 												) : null}
-												<MessageList rid={room._id} scrollMessageList={scrollMessageList} />
+												<MessageList rid={room._id} messageListRef={ref as unknown as React.RefObject<HTMLElement>} />
 												{hasMoreNextMessages ? (
 													<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
 												) : null}

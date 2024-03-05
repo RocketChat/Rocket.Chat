@@ -15,10 +15,10 @@ import MessageListProvider from './providers/MessageListProvider';
 
 type MessageListProps = {
 	rid: IRoom['_id'];
-	scrollMessageList: ComponentProps<typeof MessageListProvider>['scrollMessageList'];
+	messageListRef: ComponentProps<typeof MessageListProvider>['messageListRef'];
 };
 
-export const MessageList = forwardRef(function MessageList({ rid, scrollMessageList }: MessageListProps) {
+export const MessageList = function MessageList({ rid, messageListRef }: MessageListProps) {
 	const messages = useMessages({ rid });
 	const subscription = useRoomSubscription();
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
@@ -26,7 +26,7 @@ export const MessageList = forwardRef(function MessageList({ rid, scrollMessageL
 	const firstUnreadMessageId = useFirstUnreadMessageId();
 
 	return (
-		<MessageListProvider scrollMessageList={scrollMessageList}>
+		<MessageListProvider messageListRef={messageListRef}>
 			<SelectedMessagesProvider>
 				{messages.map((message, index, { [index - 1]: previous }) => {
 					const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
@@ -52,4 +52,4 @@ export const MessageList = forwardRef(function MessageList({ rid, scrollMessageL
 			</SelectedMessagesProvider>
 		</MessageListProvider>
 	);
-});
+};

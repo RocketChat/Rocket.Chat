@@ -1,23 +1,19 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
-import type { MessageListContextValue } from '../../../../components/message/list/MessageListContext';
 import { RoomManager } from '../../../../lib/RoomManager';
 
-export function useRestoreScrollPosition(
-	roomId: IRoom['_id'],
-	scrollMessageList: Exclude<MessageListContextValue['scrollMessageList'], undefined>,
-	sendToBottom: () => void,
-) {
+export function useRestoreScrollPosition(roomId: IRoom['_id']) {
+	const ref = useRef<HTMLElement | null>(null);
 	useEffect(() => {
 		const store = RoomManager.getStore(roomId);
 
 		if (store?.scroll && !store.atBottom) {
-			scrollMessageList(() => {
-				return { left: 30, top: store.scroll };
-			});
+			ref.current?.scrollTo({ top: store.scroll });
 		} else {
-			sendToBottom();
+			ref.current?.scrollTo({ top: ref.current?.scrollHeight });
 		}
-	}, [roomId, scrollMessageList, sendToBottom]);
+	}, [roomId]);
+
+	return ref;
 }

@@ -3,7 +3,7 @@ import { Box, Bubble } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import { differenceInSeconds } from 'date-fns';
-import type { ReactElement } from 'react';
+import type { ReactElement, RefObject } from 'react';
 import React, { Fragment } from 'react';
 
 import { MessageTypes } from '../../../../../../app/ui-utils/client';
@@ -16,7 +16,6 @@ import LoadingMessagesIndicator from '../../../body/LoadingMessagesIndicator';
 import { useDateScroll } from '../../../hooks/useDateScroll';
 import { useFirstUnreadMessageId } from '../../../hooks/useFirstUnreadMessageId';
 import { useMessageListNavigation } from '../../../hooks/useMessageListNavigation';
-import { useScrollMessageList } from '../../../hooks/useScrollMessageList';
 import { useLegacyThreadMessageJump } from '../hooks/useLegacyThreadMessageJump';
 import { useLegacyThreadMessageListScrolling } from '../hooks/useLegacyThreadMessageListScrolling';
 import { useLegacyThreadMessages } from '../hooks/useLegacyThreadMessages';
@@ -66,7 +65,6 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 	const firstUnreadMessageId = useFirstUnreadMessageId();
 	const messageGroupingPeriod = Number(useSetting('Message_GroupingPeriod'));
 
-	const scrollMessageList = useScrollMessageList(listWrapperScrollRef);
 	const { messageListRef, messageListProps } = useMessageListNavigation();
 	const listRef = useMergedRefs<HTMLElement | null>(listScrollRef, listJumpRef, messageListRef);
 
@@ -100,7 +98,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 							<LoadingMessagesIndicator />
 						</li>
 					) : (
-						<MessageListProvider scrollMessageList={scrollMessageList}>
+						<MessageListProvider messageListRef={listRef as unknown as RefObject<HTMLElement>}>
 							{[mainMessage, ...messages].map((message, index, { [index - 1]: previous }) => {
 								const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
 								const newDay = isMessageNewDay(message, previous);

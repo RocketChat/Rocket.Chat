@@ -3,7 +3,7 @@ import { useRouter } from '@rocket.chat/ui-contexts';
 import type { RefObject } from 'react';
 import { useLayoutEffect } from 'react';
 
-import { useMessageListJumpToMessageParam, useMessageListScroll } from '../../../../components/message/list/MessageListContext';
+import { useMessageListJumpToMessageParam, useMessageListRef } from '../../../../components/message/list/MessageListContext';
 import { setHighlightMessage, clearHighlightMessage } from '../providers/messageHighlightSubscription';
 
 // this is an arbitrary value so that there's a gap between the header and the message;
@@ -11,7 +11,7 @@ const SCROLL_EXTRA_OFFSET = 60;
 
 export const useJumpToMessage = (messageId: IMessage['_id'], messageRef: RefObject<HTMLDivElement>): void => {
 	const jumpToMessageParam = useMessageListJumpToMessageParam();
-	const scroll = useMessageListScroll();
+	const ref = useMessageListRef();
 	const router = useRouter();
 
 	useLayoutEffect(() => {
@@ -20,10 +20,9 @@ export const useJumpToMessage = (messageId: IMessage['_id'], messageRef: RefObje
 		}
 
 		setTimeout(() => {
-			scroll((wrapper) => {
-				if (!wrapper || !messageRef.current) {
-					return;
-				}
+			if (ref?.current && messageRef.current) {
+				const wrapper = ref.current;
+
 				const containerRect = wrapper.getBoundingClientRect();
 				const messageRect = messageRef.current.getBoundingClientRect();
 
@@ -31,8 +30,8 @@ export const useJumpToMessage = (messageId: IMessage['_id'], messageRef: RefObje
 				const scrollPosition = wrapper.scrollTop;
 				const newScrollPosition = scrollPosition + offset - SCROLL_EXTRA_OFFSET;
 
-				return { top: newScrollPosition, behavior: 'smooth' };
-			});
+				wrapper.scrollTo({ top: newScrollPosition, behavior: 'smooth' });
+			}
 
 			const search = router.getSearchParameters();
 			delete search.msg;
@@ -47,5 +46,5 @@ export const useJumpToMessage = (messageId: IMessage['_id'], messageRef: RefObje
 			setHighlightMessage(messageId);
 			setTimeout(clearHighlightMessage, 2000);
 		}, 500);
-	}, [messageId, jumpToMessageParam, messageRef, scroll, router]);
+	}, [messageId, jumpToMessageParam, messageRef, router, ref]);
 };
