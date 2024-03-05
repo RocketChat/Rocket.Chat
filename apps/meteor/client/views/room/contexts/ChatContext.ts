@@ -6,4 +6,10 @@ type ChatContextValue = ChatAPI | undefined;
 
 export const ChatContext = createContext<ChatContextValue>(undefined);
 
-export const useChat = (): ChatContextValue => useContext(ChatContext);
+export const useChat = () => {
+	const chat = useContext(ChatContext);
+	if (!chat) {
+		throw new Error('No ChatContext provided');
+	}
+	return chat;
+};

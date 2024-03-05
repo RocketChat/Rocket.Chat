@@ -203,14 +203,13 @@ class RoomHistoryManagerClass extends Emitter {
 		room.isLoading.set(false);
 	}
 
-	public async getMoreNext(rid: IRoom['_id'], atBottomRef: MutableRefObject<boolean>) {
+	public async getMoreNext(rid: IRoom['_id']) {
 		const room = this.getRoom(rid);
 		if (Tracker.nonreactive(() => room.hasMoreNext.get()) !== true) {
 			return;
 		}
 
 		await this.queue();
-		atBottomRef.current = false;
 
 		room.isLoading.set(true);
 
