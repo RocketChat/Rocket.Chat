@@ -40,6 +40,7 @@ import UnreadMessagesIndicator from './UnreadMessagesIndicator';
 import UploadProgressIndicator from './UploadProgressIndicator';
 import { useFileUpload } from './hooks/useFileUpload';
 import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
+import { useLeaderBanner } from './hooks/useLeaderBanner';
 import { useListIsAtBottom } from './hooks/useListIsAtBottom';
 import { useQuoteMessageByUrl } from './hooks/useQuoteMessageByUrl';
 import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
@@ -61,7 +62,6 @@ const RoomBody = (): ReactElement => {
 	const { callbackRef, listStyle, bubbleDate, showBubble, style: bubbleDateStyle } = useDateScroll();
 
 	const [lastMessageDate, setLastMessageDate] = useState<Date | undefined>();
-	const [hideLeaderHeader, setHideLeaderHeader] = useState(false);
 	const [hasNewMessages, setHasNewMessages] = useState(false);
 
 	const hideFlexTab = useUserPreference<boolean>('hideFlexTab') || undefined;
@@ -69,12 +69,13 @@ const RoomBody = (): ReactElement => {
 	const displayAvatars = useUserPreference<boolean>('displayAvatars');
 
 	const wrapperRef = useRef<HTMLDivElement | null>(null);
-	const messagesBoxRef = useRef<HTMLDivElement | null>(null);
 
 	const { atBottomRef, ref: isAtBottomCallbackRef } = useListIsAtBottom();
 
 	const chat = useChat();
 	const { openUserCard, triggerProps } = useUserCard();
+
+	const { messagesBoxRef, hideLeaderHeader, ref: leaderBannerRefCallback } = useLeaderBanner();
 
 	if (!chat) {
 		throw new Error('No ChatContext provided');
@@ -342,14 +343,6 @@ const RoomBody = (): ReactElement => {
 
 		let lastScrollTopRef = 0;
 		const handleWrapperScroll = withThrottling({ wait: 100 })((event) => {
-			const roomLeader = messagesBoxRef.current?.querySelector('.room-leader');
-			if (roomLeader) {
-				if (event.target.scrollTop < lastScrollTopRef) {
-					setHideLeaderHeader(false);
-				} else if (_isAtBottom(100) === false && event.target.scrollTop > parseFloat(getComputedStyle(roomLeader).height)) {
-					setHideLeaderHeader(true);
-				}
-			}
 			lastScrollTopRef = event.target.scrollTop;
 			const height = event.target.clientHeight;
 			const isLoading = RoomHistoryManager.isLoading(room._id);
@@ -441,7 +434,7 @@ const RoomBody = (): ReactElement => {
 					onClick={hideFlexTab && handleCloseFlexTab}
 				>
 					<div className='messages-container-wrapper'>
-						<div className='messages-container-main' ref={callbackRef} key={room._id} {...fileUploadTriggerProps}>
+						<div className='messages-container-main' ref={useMergedRefs(callbackRef, leaderBannerRefCallback)} {...fileUploadTriggerProps}>
 							<DropTargetOverlay {...fileUploadOverlayProps} />
 							<div className={['container-bars', uploads.length && 'show'].filter(isTruthy).join(' ')}>
 								{uploads.map((upload) => (
