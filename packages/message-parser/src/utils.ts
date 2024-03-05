@@ -197,20 +197,21 @@ const joinEmoji = (
 export const reducePlainTexts = (
   values: Paragraph['value']
 ): Paragraph['value'] =>
-  values.reduce((result, item, index) => {
-    const next = values[index + 1];
-    const current = joinEmoji(item, values[index - 1], next);
-    const previous: Inlines = result[result.length - 1];
+  values
+    .flatMap((item) => item)
+    .reduce((result, item, index, values) => {
+      const next = values[index + 1];
+      const current = joinEmoji(item, values[index - 1], next);
+      const previous: Inlines = result[result.length - 1];
 
-    if (previous) {
-      if (current.type === 'PLAIN_TEXT' && current.type === previous.type) {
-        previous.value += current.value;
-        return result;
+      if (previous) {
+        if (current.type === 'PLAIN_TEXT' && current.type === previous.type) {
+          previous.value += current.value;
+          return result;
+        }
       }
-    }
-
-    return [...result, current];
-  }, [] as Paragraph['value']);
+      return [...result, current];
+    }, [] as Paragraph['value']);
 export const lineBreak = (): LineBreak => ({
   type: 'LINE_BREAK',
   value: undefined,
