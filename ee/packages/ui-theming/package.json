@@ -29,7 +29,7 @@
 		"react": "~17.0.2",
 		"react-docgen-typescript-plugin": "~1.0.5",
 		"ts-jest": "~29.1.1",
-		"typescript": "~5.3.2"
+		"typescript": "~5.3.3"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
