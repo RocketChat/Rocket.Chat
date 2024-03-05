@@ -47,8 +47,6 @@ const GenericFileAttachment = ({
 		return getURL(link);
 	};
 
-	console.log({ isMessageEncrypted, description, descriptionMd });
-
 	return (
 		<>
 			<AttachmentDescription description={description} descriptionMd={descriptionMd} isMessageEncrypted={isMessageEncrypted} />
