@@ -4285,4 +4285,261 @@ describe('[Users]', function () {
 			});
 		});
 	});
+
+	describe('[/users.listByStatus]', () => {
+		let user;
+		let otherUser;
+		let otherUserCredentials;
+
+		before(async () => {
+			user = await createUser();
+			otherUser = await createUser();
+			otherUserCredentials = await login(otherUser.username, password);
+		});
+
+		after(async () => {
+			await deleteUser(user);
+			await deleteUser(otherUser);
+			await updatePermission('view-outside-room', ['admin', 'owner', 'moderator', 'user']);
+			await updatePermission('view-d-room', ['admin', 'owner', 'moderator', 'user']);
+		});
+
+		it('should list pending users', async () => {
+			await request
+				.get(api('users.listByStatus'))
+				.set(credentials)
+				.query({ status: 'pending', count: 50 })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('users');
+
+					const { users } = res.body;
+					const ids = users.map((user) => user._id);
+
+					expect(ids).to.include(user._id);
+				});
+		});
+
+		it('should list all users', async () => {
+			await login(user.username, password);
+
+			await request
+				.get(api('users.listByStatus'))
+				.set(credentials)
+				.query({ status: 'all' })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('users');
+
+					const { users } = res.body;
+					const ids = users.map((user) => user._id);
+
+					expect(ids).to.include(user._id);
+				});
+		});
+
+		it('should list active users', async () => {
+			await login(user.username, password);
+
+			await request
+				.get(api('users.listByStatus'))
+				.set(credentials)
+				.query({ status: 'active' })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('users');
+
+					const { users } = res.body;
+					const ids = users.map((user) => user._id);
+
+					expect(ids).to.include(user._id);
+				});
+		});
+
+		it('should filter users by role', async () => {
+			await login(user.username, password);
+
+			await request
+				.get(api('users.listByStatus'))
+				.set(credentials)
+				.query({ 'status': 'active', 'roles[]': 'admin' })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('users');
+
+					const { users } = res.body;
+					const ids = users.map((user) => user._id);
+
+					expect(ids).to.not.include(user._id);
+				});
+		});
+
+		it('should list deactivated users', async () => {
+			await request.post(api('users.setActiveStatus')).set(credentials).send({
+				userId: user._id,
+				activeStatus: false,
+				confirmRelinquish: false,
+			});
+
+			await request
+				.get(api('users.listByStatus'))
+				.set(credentials)
+				.query({ status: 'deactivated' })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('users');
+
+					const { users } = res.body;
+					const ids = users.map((user) => user._id);
+
+					expect(ids).to.include(user._id);
+				});
+		});
+
+		it('should filter users by username', async () => {
+			await request
+				.get(api('users.listByStatus'))
+				.set(credentials)
+				.query({ status: 'all', searchTerm: user.username })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('users');
+
+					const { users } = res.body;
+					const ids = users.map((user) => user._id);
+
+					expect(ids).to.include(user._id);
+				});
+		});
+
+		it('should return error for invalid status params', async () => {
+			await request
+				.get(api('users.listByStatus'))
+				.set(credentials)
+				.query({ status: 'abcd' })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('invalid-params');
+					expect(res.body.error).to.be.equal('must be equal to one of the allowed values [invalid-params]');
+				});
+		});
+
+		it('should throw unauthorized error to user without "view-d-room" permission', async () => {
+			await updatePermission('view-d-room', ['admin']);
+			await request
+				.get(api('users.listByStatus'))
+				.set(otherUserCredentials)
+				.query({ status: 'active' })
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+				});
+		});
+
+		it('should throw unauthorized error to user without "view-outside-room" permission', async () => {
+			await updatePermission('view-outside-room', ['admin']);
+			await request
+				.get(api('users.listByStatus'))
+				.set(otherUserCredentials)
+				.query({ status: 'active' })
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+				});
+		});
+	});
+
+	describe('[/users.sendWelcomeEmail]', async () => {
+		let user;
+		let otherUser;
+
+		before(async () => {
+			user = await createUser();
+			otherUser = await createUser();
+		});
+
+		after(async () => {
+			await deleteUser(user);
+			await deleteUser(otherUser);
+		});
+
+		it('should send Welcome Email to user', async () => {
+			await updateSetting('SMTP_Host', 'localhost');
+
+			await request
+				.post(api('users.sendWelcomeEmail'))
+				.set(credentials)
+				.send({ email: user.emails[0].address })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+
+		it('should fail to send Welcome Email due to SMTP settings missing', async () => {
+			await updateSetting('SMTP_Host', '');
+
+			await request
+				.post(api('users.sendWelcomeEmail'))
+				.set(credentials)
+				.send({ email: user.emails[0].address })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal('SMTP is not configured [error-email-send-failed]');
+				});
+		});
+
+		it('should fail to send Welcome Email due to missing param', async () => {
+			await updateSetting('SMTP_Host', '');
+
+			await request
+				.post(api('users.sendWelcomeEmail'))
+				.set(credentials)
+				.send({})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('error', "must have required property 'email' [invalid-params]");
+				});
+		});
+
+		it('should fail to send Welcome Email due missing user', async () => {
+			await updateSetting('SMTP_Host', 'localhost');
+
+			await request
+				.post(api('users.sendWelcomeEmail'))
+				.set(credentials)
+				.send({ email: 'fake_user32132131231@rocket.chat' })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-user');
+					expect(res.body).to.have.property('error', 'Invalid user [error-invalid-user]');
+				});
+		});
+	});
 });
