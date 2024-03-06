@@ -1245,7 +1245,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 				'mentions.$.username': newUsername,
 				'msg': newMessage,
 			},
-			$unset = {
+			$unset: {
 				md: 1,
 			},
 		};
