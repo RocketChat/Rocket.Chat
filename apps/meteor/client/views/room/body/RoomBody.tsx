@@ -2,22 +2,20 @@ import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
 import { Box, Bubble } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
-import { usePermission, useRole, useRouter, useSetting, useTranslation, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
+import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { MouseEventHandler, ReactElement, UIEvent } from 'react';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { ChatMessage, RoomRoles } from '../../../../app/models/client';
+import { RoomRoles } from '../../../../app/models/client';
 import { RoomHistoryManager } from '../../../../app/ui-utils/client';
 import { isAtBottom } from '../../../../app/ui/client/views/app/lib/scrolling';
 import { callbacks } from '../../../../lib/callbacks';
 import { isTruthy } from '../../../../lib/isTruthy';
-import { withDebouncing, withThrottling } from '../../../../lib/utils/highOrderFunctions';
+import { withThrottling } from '../../../../lib/utils/highOrderFunctions';
 import { CustomScrollbars } from '../../../components/CustomScrollbars';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import { useFormatDate } from '../../../hooks/useFormatDate';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
-import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
-import { setMessageJumpQueryStringParameter } from '../../../lib/utils/setMessageJumpQueryStringParameter';
 import Announcement from '../Announcement';
 import { MessageList } from '../MessageList';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
@@ -46,7 +44,7 @@ import { useQuoteMessageByUrl } from './hooks/useQuoteMessageByUrl';
 import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
 import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
 import { useRetentionPolicy } from './hooks/useRetentionPolicy';
-import { useUnreadMessages } from './hooks/useUnreadMessages';
+import { useHandleUnread } from './hooks/useUnreadMessages';
 
 const RoomBody = (): ReactElement => {
 	const formatDate = useFormatDate();
@@ -61,7 +59,6 @@ const RoomBody = (): ReactElement => {
 	const { list } = useDateListController();
 	const { callbackRef, listStyle, bubbleDate, showBubble, style: bubbleDateStyle } = useDateScroll();
 
-	const [lastMessageDate, setLastMessageDate] = useState<Date | undefined>();
 	const [hasNewMessages, setHasNewMessages] = useState(false);
 
 	const hideFlexTab = useUserPreference<boolean>('hideFlexTab') || undefined;
@@ -70,12 +67,20 @@ const RoomBody = (): ReactElement => {
 
 	const wrapperRef = useRef<HTMLDivElement | null>(null);
 
+	const {
+		ref: unreadBarRef,
+		messagesBoxRef: unreadBarMessagesBoxRef,
+		handleUnreadBarJumpToButtonClick,
+		handleMarkAsReadButtonClick,
+		counter: [unread],
+	} = useHandleUnread(room, subscription);
+
 	const { atBottomRef, ref: isAtBottomCallbackRef } = useListIsAtBottom();
 
 	const chat = useChat();
 	const { openUserCard, triggerProps } = useUserCard();
 
-	const { messagesBoxRef, hideLeaderHeader, ref: leaderBannerRefCallback } = useLeaderBanner();
+	const { wrapperBoxRef, hideLeaderHeader, innerScrollRef: leaderBannerRefCallback } = useLeaderBanner();
 
 	if (!chat) {
 		throw new Error('No ChatContext provided');
@@ -125,8 +130,6 @@ const RoomBody = (): ReactElement => {
 		RoomHistoryManager.clear(room._id);
 		RoomHistoryManager.getMoreIfIsEmpty(room._id);
 	}, [atBottomRef, room._id]);
-
-	const [unread, setUnreadCount] = useUnreadMessages(room);
 
 	const { hasMorePreviousMessages, hasMoreNextMessages, isLoadingMoreMessages } = useRoomMessages();
 
@@ -182,25 +185,6 @@ const RoomBody = (): ReactElement => {
 		[openUserCard],
 	);
 
-	const handleUnreadBarJumpToButtonClick = useCallback(() => {
-		const rid = room._id;
-		const { firstUnread } = RoomHistoryManager.getRoom(rid);
-		let message = firstUnread?.get();
-		if (!message) {
-			message = ChatMessage.findOne({ rid, ts: { $gt: unread?.since } }, { sort: { ts: 1 }, limit: 1 });
-		}
-		if (!message) {
-			return;
-		}
-		setMessageJumpQueryStringParameter(message?._id);
-		setUnreadCount(0);
-	}, [room._id, unread?.since, setUnreadCount]);
-
-	const handleMarkAsReadButtonClick = useCallback(() => {
-		chat.readStateManager.markAsRead();
-		setUnreadCount(0);
-	}, [chat.readStateManager, setUnreadCount]);
-
 	const retentionPolicy = useRetentionPolicy(room);
 
 	useGoToHomeOnRemoved(room, user?._id);
@@ -249,97 +233,12 @@ const RoomBody = (): ReactElement => {
 		};
 	}, [sendToBottomIfNecessary]);
 
-	const router = useRouter();
-
-	const debouncedReadMessageRead = useMemo(
-		() =>
-			withDebouncing({ wait: 500 })(() => {
-				chat.readStateManager.attemptMarkAsRead();
-			}),
-		[chat.readStateManager],
-	);
-
-	useEffect(
-		() =>
-			router.subscribeToRouteChange(() => {
-				const routeName = router.getRouteName();
-				if (!routeName || !roomCoordinator.isRouteNameKnown(routeName)) {
-					return;
-				}
-
-				debouncedReadMessageRead();
-			}),
-		[debouncedReadMessageRead, room._id, router, subscribed, subscription?.alert, subscription?.unread],
-	);
-
-	useEffect(() => {
-		if (!subscribed) {
-			setUnreadCount(0);
-			return;
-		}
-
-		const count = ChatMessage.find({
-			rid: room._id,
-			ts: { $lte: lastMessageDate, $gt: subscription?.ls },
-		}).count();
-
-		setUnreadCount(count);
-	}, [lastMessageDate, room._id, setUnreadCount, subscribed, subscription?.ls]);
-
-	useEffect(() => {
-		if (!unread?.count) {
-			return debouncedReadMessageRead();
-		}
-	}, [debouncedReadMessageRead, room._id, unread?.count]);
-
 	useEffect(() => {
 		const wrapper = wrapperRef.current;
 
 		if (!wrapper) {
 			return;
 		}
-
-		const getElementFromPoint = (topOffset = 0): Element | undefined => {
-			const messagesBox = messagesBoxRef.current;
-
-			if (!messagesBox) {
-				return;
-			}
-
-			const messagesBoxLeft = messagesBox.getBoundingClientRect().left + window.pageXOffset;
-			const messagesBoxTop = messagesBox.getBoundingClientRect().top + window.pageYOffset;
-			const messagesBoxWidth = parseFloat(getComputedStyle(messagesBox).width);
-
-			let element;
-			if (document.dir === 'rtl') {
-				element = document.elementFromPoint(messagesBoxLeft + messagesBoxWidth - 1, messagesBoxTop + topOffset + 1);
-			} else {
-				element = document.elementFromPoint(messagesBoxLeft + 1, messagesBoxTop + topOffset + 1);
-			}
-
-			if (element?.classList.contains('rcx-message') || element?.classList.contains('rcx-message--sequential')) {
-				return element;
-			}
-		};
-
-		const updateUnreadCount = withThrottling({ wait: 300 })(() => {
-			Tracker.afterFlush(() => {
-				const lastInvisibleMessageOnScreen = getElementFromPoint(0) || getElementFromPoint(20) || getElementFromPoint(40);
-
-				if (!lastInvisibleMessageOnScreen) {
-					setUnreadCount(0);
-					return;
-				}
-
-				const lastMessage = ChatMessage.findOne(lastInvisibleMessageOnScreen.id);
-				if (!lastMessage) {
-					setUnreadCount(0);
-					return;
-				}
-
-				setLastMessageDate(lastMessage.ts);
-			});
-		});
 
 		let lastScrollTopRef = 0;
 		const handleWrapperScroll = withThrottling({ wait: 100 })((event) => {
@@ -358,14 +257,12 @@ const RoomBody = (): ReactElement => {
 			}
 		});
 
-		wrapper.addEventListener('scroll', updateUnreadCount);
 		wrapper.addEventListener('scroll', handleWrapperScroll);
 
 		return () => {
-			wrapper.removeEventListener('scroll', updateUnreadCount);
 			wrapper.removeEventListener('scroll', handleWrapperScroll);
 		};
-	}, [_isAtBottom, atBottomRef, list, room._id, setUnreadCount]);
+	}, [_isAtBottom, atBottomRef, list, room._id]);
 
 	const restoreScrollPositionRef = useRestoreScrollPosition(room._id);
 
@@ -422,19 +319,27 @@ const RoomBody = (): ReactElement => {
 
 	const { messageListRef, messageListProps } = useMessageListNavigation();
 
-	const ref = useMergedRefs(callbackRef, wrapperRef, restoreScrollPositionRef, isAtBottomCallbackRef);
+	const ref = useMergedRefs(
+		callbackRef,
+		wrapperRef,
+		restoreScrollPositionRef,
+		isAtBottomCallbackRef,
+		unreadBarRef,
+		leaderBannerRefCallback,
+		unreadBarMessagesBoxRef,
+	);
 
 	return (
 		<>
 			{!isLayoutEmbedded && room.announcement && <Announcement announcement={room.announcement} announcementDetails={undefined} />}
-			<Box className={['main-content-flex', listStyle]}>
+			<Box key={room._id} className={['main-content-flex', listStyle]}>
 				<section
 					className={`messages-container flex-tab-main-content ${admin ? 'admin' : ''}`}
 					id={`chat-window-${room._id}`}
 					onClick={hideFlexTab && handleCloseFlexTab}
 				>
 					<div className='messages-container-wrapper'>
-						<div className='messages-container-main' ref={useMergedRefs(callbackRef, leaderBannerRefCallback)} {...fileUploadTriggerProps}>
+						<div className='messages-container-main' ref={useMergedRefs(callbackRef, wrapperBoxRef)} {...fileUploadTriggerProps}>
 							<DropTargetOverlay {...fileUploadOverlayProps} />
 							<div className={['container-bars', uploads.length && 'show'].filter(isTruthy).join(' ')}>
 								{uploads.map((upload) => (
@@ -455,17 +360,14 @@ const RoomBody = (): ReactElement => {
 									</Bubble>
 								</Box>
 							)}
-							{unread && (
+							{Boolean(unread) && (
 								<UnreadMessagesIndicator
-									count={unread.count}
+									count={unread}
 									onJumpButtonClick={handleUnreadBarJumpToButtonClick}
 									onMarkAsReadButtonClick={handleMarkAsReadButtonClick}
 								/>
 							)}
-							<div
-								ref={messagesBoxRef}
-								className={['messages-box', roomLeader && !hideLeaderHeader && 'has-leader'].filter(isTruthy).join(' ')}
-							>
+							<div className={['messages-box', roomLeader && !hideLeaderHeader && 'has-leader'].filter(isTruthy).join(' ')}>
 								<JumpToRecentMessageButton visible={hasNewMessages} onClick={handleNewMessageButtonClick} text={t('New_messages')} />
 								<JumpToRecentMessageButton
 									visible={hasMoreNextMessages}

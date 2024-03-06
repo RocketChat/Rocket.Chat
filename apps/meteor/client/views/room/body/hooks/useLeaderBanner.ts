@@ -6,9 +6,9 @@ import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
 export const useLeaderBanner = () => {
 	const [hideLeaderHeader, setHideLeaderHeader] = useState(false);
 
-	const messagesBoxRef = useRef<HTMLDivElement>(null);
+	const wrapperBoxRef = useRef<HTMLDivElement>(null);
 
-	const ref = useCallback((node: HTMLElement | null) => {
+	const innerScrollRef = useCallback((node: HTMLElement | null) => {
 		if (!node) {
 			return;
 		}
@@ -17,7 +17,7 @@ export const useLeaderBanner = () => {
 		node.addEventListener(
 			'scroll',
 			withThrottling({ wait: 100 })((event) => {
-				const roomLeader = messagesBoxRef.current?.querySelector('.room-leader');
+				const roomLeader = wrapperBoxRef.current?.querySelector('.room-leader');
 				if (roomLeader) {
 					if (event.target.scrollTop < lastScrollTopRef) {
 						setHideLeaderHeader(false);
@@ -32,8 +32,8 @@ export const useLeaderBanner = () => {
 	}, []);
 
 	return {
-		messagesBoxRef,
+		wrapperBoxRef,
 		hideLeaderHeader,
-		ref,
+		innerScrollRef,
 	};
 };
