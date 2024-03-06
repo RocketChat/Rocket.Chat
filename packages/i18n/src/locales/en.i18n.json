@@ -4290,6 +4290,7 @@
   "register-on-cloud": "Register On Cloud",
   "register-on-cloud_description": "Permission to register on cloud",
   "Registration": "Registration",
+  "Registration_status": "Registration status",
   "Registration_Succeeded": "Registration Succeeded",
   "Registration_via_Admin": "Registration via Admin",
   "Regular_Expressions": "Regular Expressions",

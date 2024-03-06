@@ -13,13 +13,14 @@ import { GenericTableRow, GenericTableCell } from '../../../../components/Generi
 
 type UsersTableRowProps = {
 	user: Serialized<PickedUser>;
-	onClick: (id: IUser['_id']) => void;
+	onClick: (id: IUser['_id'], e: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement>) => void;
 	mediaQuery: boolean;
 };
 
 const UsersTableRow = ({ user, onClick, mediaQuery }: UsersTableRowProps): ReactElement => {
 	const t = useTranslation();
 	const { _id, emails, username, name, roles, status, active, avatarETag } = user;
+
 	const statusText = active ? t(capitalize(status as string) as TranslationKey) : t('Disabled');
 
 	const roleNames = (roles || [])
@@ -29,8 +30,8 @@ const UsersTableRow = ({ user, onClick, mediaQuery }: UsersTableRowProps): React
 
 	return (
 		<GenericTableRow
-			onKeyDown={(): void => onClick(_id)}
-			onClick={(): void => onClick(_id)}
+			onKeyDown={(e): void => onClick(_id, e)}
+			onClick={(e): void => onClick(_id, e)}
 			tabIndex={0}
 			role='link'
 			action
