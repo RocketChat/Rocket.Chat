@@ -17,7 +17,7 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 
 	private logger: Logger;
 
-	public queueStarted = false;
+	private queueStarted = false;
 
 	constructor(private readonly db: Db, loggerClass: typeof Logger) {
 		super();
