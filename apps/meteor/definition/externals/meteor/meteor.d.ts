@@ -42,8 +42,6 @@ declare module 'meteor/meteor' {
 		const server: any;
 
 		const runAsUser: <T>(userId: string, scope: () => T) => T;
-		// https://github.com/meteor/meteor/pull/12274 - Function is there on meteor 2.9, but meteor.d.ts doesn't have it registered
-		function userAsync(options?: { fields?: Mongo.FieldSpecifier | undefined }): Promise<Meteor.User | null>;
 
 		interface MethodThisType {
 			twoFactorChecked: boolean | undefined;

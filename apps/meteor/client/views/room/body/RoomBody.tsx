@@ -1,18 +1,10 @@
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
-import {
-	usePermission,
-	useRole,
-	useRouter,
-	useSearchParameter,
-	useSetting,
-	useTranslation,
-	useUser,
-	useUserPreference,
-} from '@rocket.chat/ui-contexts';
+import { Box, Bubble } from '@rocket.chat/fuselage';
+import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
+import { usePermission, useRole, useRouter, useSetting, useTranslation, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { MouseEventHandler, ReactElement, UIEvent } from 'react';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { ChatMessage, RoomRoles } from '../../../../app/models/client';
 import { RoomHistoryManager } from '../../../../app/ui-utils/client';
@@ -20,22 +12,24 @@ import { isAtBottom } from '../../../../app/ui/client/views/app/lib/scrolling';
 import { callbacks } from '../../../../lib/callbacks';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { withDebouncing, withThrottling } from '../../../../lib/utils/highOrderFunctions';
-import ScrollableContentWrapper from '../../../components/ScrollableContentWrapper';
+import { CustomScrollbars } from '../../../components/CustomScrollbars';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
+import { useFormatDate } from '../../../hooks/useFormatDate';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
-import { RoomManager } from '../../../lib/RoomManager';
-import type { Upload } from '../../../lib/chats/Upload';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { setMessageJumpQueryStringParameter } from '../../../lib/utils/setMessageJumpQueryStringParameter';
 import Announcement from '../Announcement';
-import { MessageList } from '../MessageList/MessageList';
+import { MessageList } from '../MessageList';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
 import ComposerContainer from '../composer/ComposerContainer';
 import RoomComposer from '../composer/RoomComposer/RoomComposer';
 import { useChat } from '../contexts/ChatContext';
 import { useRoom, useRoomSubscription, useRoomMessages } from '../contexts/RoomContext';
 import { useRoomToolbox } from '../contexts/RoomToolboxContext';
-import { useScrollMessageList } from '../hooks/useScrollMessageList';
+import { useUserCard } from '../contexts/UserCardContext';
+import { useDateScroll } from '../hooks/useDateScroll';
+import { useMessageListNavigation } from '../hooks/useMessageListNavigation';
+import { useDateListController } from '../providers/DateListProvider';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
 import LeaderBar from './LeaderBar';
@@ -44,14 +38,18 @@ import RetentionPolicyWarning from './RetentionPolicyWarning';
 import RoomForeword from './RoomForeword/RoomForeword';
 import UnreadMessagesIndicator from './UnreadMessagesIndicator';
 import UploadProgressIndicator from './UploadProgressIndicator';
-import { useFileUploadDropTarget } from './hooks/useFileUploadDropTarget';
+import { useFileUpload } from './hooks/useFileUpload';
 import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
+import { useLeaderBanner } from './hooks/useLeaderBanner';
+import { useListIsAtBottom } from './hooks/useListIsAtBottom';
+import { useQuoteMessageByUrl } from './hooks/useQuoteMessageByUrl';
 import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
 import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
 import { useRetentionPolicy } from './hooks/useRetentionPolicy';
 import { useUnreadMessages } from './hooks/useUnreadMessages';
 
 const RoomBody = (): ReactElement => {
+	const formatDate = useFormatDate();
 	const t = useTranslation();
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const room = useRoom();
@@ -60,8 +58,10 @@ const RoomBody = (): ReactElement => {
 	const admin = useRole('admin');
 	const subscription = useRoomSubscription();
 
+	const { list } = useDateListController();
+	const { callbackRef, listStyle, bubbleDate, showBubble, style: bubbleDateStyle } = useDateScroll();
+
 	const [lastMessageDate, setLastMessageDate] = useState<Date | undefined>();
-	const [hideLeaderHeader, setHideLeaderHeader] = useState(false);
 	const [hasNewMessages, setHasNewMessages] = useState(false);
 
 	const hideFlexTab = useUserPreference<boolean>('hideFlexTab') || undefined;
@@ -69,17 +69,24 @@ const RoomBody = (): ReactElement => {
 	const displayAvatars = useUserPreference<boolean>('displayAvatars');
 
 	const wrapperRef = useRef<HTMLDivElement | null>(null);
-	const messagesBoxRef = useRef<HTMLDivElement | null>(null);
-	const atBottomRef = useRef(true);
-	const lastScrollTopRef = useRef(0);
+
+	const { atBottomRef, ref: isAtBottomCallbackRef } = useListIsAtBottom();
 
 	const chat = useChat();
+	const { openUserCard, triggerProps } = useUserCard();
+
+	const { messagesBoxRef, hideLeaderHeader, ref: leaderBannerRefCallback } = useLeaderBanner();
 
 	if (!chat) {
 		throw new Error('No ChatContext provided');
 	}
 
-	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget();
+	const {
+		uploads,
+		handleUploadFiles,
+		handleUploadProgressClose,
+		targeDrop: [fileUploadTriggerProps, fileUploadOverlayProps],
+	} = useFileUpload();
 
 	const _isAtBottom = useCallback((scrollThreshold = 0) => {
 		const wrapper = wrapperRef.current;
@@ -95,41 +102,31 @@ const RoomBody = (): ReactElement => {
 		return false;
 	}, []);
 
-	const scrollMessageList = useScrollMessageList(wrapperRef);
-
 	const sendToBottom = useCallback(() => {
-		scrollMessageList((wrapper) => {
-			return { left: 30, top: wrapper?.scrollHeight };
-		});
+		wrapperRef.current?.scrollTo({ left: 30, top: wrapperRef.current?.scrollHeight });
 
 		setHasNewMessages(false);
-	}, [scrollMessageList]);
+	}, []);
 
 	const sendToBottomIfNecessary = useCallback(() => {
 		if (atBottomRef.current === true) {
 			sendToBottom();
 		}
-	}, [sendToBottom]);
-
-	const checkIfScrollIsAtBottom = useCallback(() => {
-		atBottomRef.current = _isAtBottom(100);
-	}, [_isAtBottom]);
+	}, [atBottomRef, sendToBottom]);
 
 	const handleNewMessageButtonClick = useCallback(() => {
 		atBottomRef.current = true;
 		sendToBottomIfNecessary();
 		chat.composer?.focus();
-	}, [chat, sendToBottomIfNecessary]);
+	}, [atBottomRef, chat.composer, sendToBottomIfNecessary]);
 
 	const handleJumpToRecentButtonClick = useCallback(() => {
 		atBottomRef.current = true;
 		RoomHistoryManager.clear(room._id);
 		RoomHistoryManager.getMoreIfIsEmpty(room._id);
-	}, [room._id]);
+	}, [atBottomRef, room._id]);
 
 	const [unread, setUnreadCount] = useUnreadMessages(room);
-
-	const uploads = useSyncExternalStore(chat.uploads.subscribe, chat.uploads.get);
 
 	const { hasMorePreviousMessages, hasMoreNextMessages, isLoadingMoreMessages } = useRoomMessages();
 
@@ -174,15 +171,15 @@ const RoomBody = (): ReactElement => {
 		};
 	});
 
-	const handleOpenUserCardButtonClick = useCallback(
+	const handleOpenUserCard = useCallback(
 		(event: UIEvent, username: IUser['username']) => {
 			if (!username) {
 				return;
 			}
 
-			chat?.userCard.open(username)(event);
+			openUserCard(event, username);
 		},
-		[chat?.userCard],
+		[openUserCard],
 	);
 
 	const handleUnreadBarJumpToButtonClick = useCallback(() => {
@@ -203,13 +200,6 @@ const RoomBody = (): ReactElement => {
 		chat.readStateManager.markAsRead();
 		setUnreadCount(0);
 	}, [chat.readStateManager, setUnreadCount]);
-
-	const handleUploadProgressClose = useCallback(
-		(id: Upload['id']) => {
-			chat.uploads.cancel(id);
-		},
-		[chat],
-	);
 
 	const retentionPolicy = useRetentionPolicy(room);
 
@@ -351,25 +341,18 @@ const RoomBody = (): ReactElement => {
 			});
 		});
 
+		let lastScrollTopRef = 0;
 		const handleWrapperScroll = withThrottling({ wait: 100 })((event) => {
-			const roomLeader = messagesBoxRef.current?.querySelector('.room-leader');
-			if (roomLeader) {
-				if (event.target.scrollTop < lastScrollTopRef.current) {
-					setHideLeaderHeader(false);
-				} else if (_isAtBottom(100) === false && event.target.scrollTop > parseFloat(getComputedStyle(roomLeader).height)) {
-					setHideLeaderHeader(true);
-				}
-			}
-			lastScrollTopRef.current = event.target.scrollTop;
+			lastScrollTopRef = event.target.scrollTop;
 			const height = event.target.clientHeight;
 			const isLoading = RoomHistoryManager.isLoading(room._id);
 			const hasMore = RoomHistoryManager.hasMore(room._id);
 			const hasMoreNext = RoomHistoryManager.hasMoreNext(room._id);
 
 			if ((isLoading === false && hasMore === true) || hasMoreNext === true) {
-				if (hasMore === true && lastScrollTopRef.current <= height / 3) {
+				if (hasMore === true && lastScrollTopRef <= height / 3) {
 					RoomHistoryManager.getMore(room._id);
-				} else if (hasMoreNext === true && Math.ceil(lastScrollTopRef.current) >= event.target.scrollHeight - height) {
+				} else if (hasMoreNext === true && Math.ceil(lastScrollTopRef) >= event.target.scrollHeight - height) {
 					RoomHistoryManager.getMoreNext(room._id, atBottomRef);
 				}
 			}
@@ -382,82 +365,9 @@ const RoomBody = (): ReactElement => {
 			wrapper.removeEventListener('scroll', updateUnreadCount);
 			wrapper.removeEventListener('scroll', handleWrapperScroll);
 		};
-	}, [_isAtBottom, room._id, setUnreadCount]);
+	}, [_isAtBottom, atBottomRef, list, room._id, setUnreadCount]);
 
-	useEffect(() => {
-		const wrapper = wrapperRef.current;
-
-		if (!wrapper) {
-			return;
-		}
-
-		const store = RoomManager.getStore(room._id);
-
-		const handleWrapperScroll = withThrottling({ wait: 30 })(() => {
-			store?.update({ scroll: wrapper.scrollTop, atBottom: isAtBottom(wrapper, 50) });
-		});
-
-		const afterMessageGroup = (): void => {
-			if (store?.scroll && !store.atBottom) {
-				wrapper.scrollTop = store.scroll;
-			} else {
-				sendToBottom();
-			}
-			wrapper.removeEventListener('MessageGroup', afterMessageGroup);
-		};
-
-		wrapper.addEventListener('scroll', handleWrapperScroll);
-
-		wrapper.addEventListener('MessageGroup', afterMessageGroup);
-
-		return () => {
-			wrapper.removeEventListener('MessageGroup', afterMessageGroup);
-			wrapper.removeEventListener('scroll', handleWrapperScroll);
-		};
-	}, [room._id, sendToBottom]);
-
-	useRestoreScrollPosition(room._id, scrollMessageList, sendToBottom);
-
-	useEffect(() => {
-		const wrapper = wrapperRef.current;
-
-		if (!wrapper) {
-			return;
-		}
-
-		const handleWheel = withThrottling({ wait: 100 })(() => {
-			checkIfScrollIsAtBottom();
-		});
-
-		const handleTouchStart = (): void => {
-			atBottomRef.current = false;
-		};
-
-		let timer1s: ReturnType<typeof setTimeout> | undefined;
-		let timer2s: ReturnType<typeof setTimeout> | undefined;
-
-		const handleTouchEnd = (): void => {
-			checkIfScrollIsAtBottom();
-			timer1s = setTimeout(() => checkIfScrollIsAtBottom(), 1000);
-			timer2s = setTimeout(() => checkIfScrollIsAtBottom(), 2000);
-		};
-
-		// wrapper.addEventListener('mousewheel', handleWheel);
-		// wrapper.addEventListener('wheel', handleWheel);
-		wrapper.addEventListener('scroll', handleWheel);
-		// wrapper.addEventListener('touchstart', handleTouchStart);
-		// wrapper.addEventListener('touchend', handleTouchEnd);
-
-		return (): void => {
-			if (timer1s) clearTimeout(timer1s);
-			if (timer2s) clearTimeout(timer2s);
-			wrapper.removeEventListener('mousewheel', handleWheel);
-			wrapper.removeEventListener('wheel', handleWheel);
-			wrapper.removeEventListener('scroll', handleWheel);
-			wrapper.removeEventListener('touchstart', handleTouchStart);
-			wrapper.removeEventListener('touchend', handleTouchEnd);
-		};
-	}, [checkIfScrollIsAtBottom]);
+	const restoreScrollPositionRef = useRestoreScrollPosition(room._id);
 
 	const handleComposerResize = useCallback((): void => {
 		sendToBottomIfNecessary();
@@ -470,29 +380,6 @@ const RoomBody = (): ReactElement => {
 	const handleNavigateToNextMessage = useCallback((): void => {
 		chat.messageEditing.toNextMessage();
 	}, [chat.messageEditing]);
-
-	const handleUploadFiles = useCallback(
-		(files: readonly File[]): void => {
-			chat.flows.uploadFiles(files);
-		},
-		[chat],
-	);
-
-	const replyMID = useSearchParameter('reply');
-
-	useEffect(() => {
-		if (!replyMID) {
-			return;
-		}
-
-		chat.data.getMessageByID(replyMID).then((message) => {
-			if (!message) {
-				return;
-			}
-
-			chat.composer?.quoteMessage(message);
-		});
-	}, [chat.data, chat.composer, replyMID]);
 
 	useEffect(() => {
 		chat.uploads.wipeFailedOnes();
@@ -531,19 +418,23 @@ const RoomBody = (): ReactElement => {
 	);
 
 	useReadMessageWindowEvents();
+	useQuoteMessageByUrl();
+
+	const { messageListRef, messageListProps } = useMessageListNavigation();
+
+	const ref = useMergedRefs(callbackRef, wrapperRef, restoreScrollPositionRef, isAtBottomCallbackRef);
 
 	return (
 		<>
 			{!isLayoutEmbedded && room.announcement && <Announcement announcement={room.announcement} announcementDetails={undefined} />}
-			<div className='main-content-flex'>
+			<Box className={['main-content-flex', listStyle]}>
 				<section
 					className={`messages-container flex-tab-main-content ${admin ? 'admin' : ''}`}
 					id={`chat-window-${room._id}`}
-					aria-label={t('Channel')}
 					onClick={hideFlexTab && handleCloseFlexTab}
 				>
 					<div className='messages-container-wrapper'>
-						<div className='messages-container-main' {...fileUploadTriggerProps}>
+						<div className='messages-container-main' ref={useMergedRefs(callbackRef, leaderBannerRefCallback)} {...fileUploadTriggerProps}>
 							<DropTargetOverlay {...fileUploadOverlayProps} />
 							<div className={['container-bars', uploads.length && 'show'].filter(isTruthy).join(' ')}>
 								{uploads.map((upload) => (
@@ -557,6 +448,13 @@ const RoomBody = (): ReactElement => {
 									/>
 								))}
 							</div>
+							{bubbleDate && (
+								<Box className={[bubbleDateStyle, showBubble && 'bubble-visible']}>
+									<Bubble small secondary>
+										{formatDate(bubbleDate)}
+									</Bubble>
+								</Box>
+							)}
 							{unread && (
 								<UnreadMessagesIndicator
 									count={unread.count}
@@ -585,7 +483,8 @@ const RoomBody = (): ReactElement => {
 										username={roomLeader.username}
 										name={roomLeader.name}
 										visible={!hideLeaderHeader}
-										onAvatarClick={handleOpenUserCardButtonClick}
+										onAvatarClick={handleOpenUserCard}
+										triggerProps={triggerProps}
 									/>
 								) : null}
 								<div
@@ -599,8 +498,14 @@ const RoomBody = (): ReactElement => {
 										.join(' ')}
 								>
 									<MessageListErrorBoundary>
-										<ScrollableContentWrapper ref={wrapperRef}>
-											<ul className='messages-list' aria-live='polite' aria-busy={isLoadingMoreMessages}>
+										<CustomScrollbars ref={ref}>
+											<ul
+												ref={messageListRef}
+												className='messages-list'
+												aria-live='polite'
+												aria-busy={isLoadingMoreMessages}
+												{...messageListProps}
+											>
 												{canPreview ? (
 													<>
 														{hasMorePreviousMessages ? (
@@ -613,12 +518,12 @@ const RoomBody = (): ReactElement => {
 														)}
 													</>
 												) : null}
-												<MessageList rid={room._id} scrollMessageList={scrollMessageList} />
+												<MessageList rid={room._id} messageListRef={wrapperRef} />
 												{hasMoreNextMessages ? (
 													<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
 												) : null}
 											</ul>
-										</ScrollableContentWrapper>
+										</CustomScrollbars>
 									</MessageListErrorBoundary>
 								</div>
 							</div>
@@ -636,7 +541,7 @@ const RoomBody = (): ReactElement => {
 						</div>
 					</div>
 				</section>
-			</div>
+			</Box>
 		</>
 	);
 };

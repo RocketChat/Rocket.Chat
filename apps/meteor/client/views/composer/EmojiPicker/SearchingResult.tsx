@@ -6,7 +6,7 @@ import type { VirtuosoGridHandle } from 'react-virtuoso';
 import { VirtuosoGrid } from 'react-virtuoso';
 
 import type { EmojiItem } from '../../../../app/emoji/client';
-import ScrollableContentWrapper from '../../../components/ScrollableContentWrapper';
+import { VirtuosoScrollbars } from '../../../components/CustomScrollbars';
 import EmojiElement from './EmojiElement';
 import SearchingResultWrapper from './SearchingResultWrapper';
 
@@ -33,7 +33,7 @@ const SearchingResult = ({ searchResults, handleSelectEmoji }: SearchingResultPr
 			ref={ref}
 			totalCount={searchResults.length}
 			components={{
-				Scroller: ScrollableContentWrapper,
+				Scroller: VirtuosoScrollbars,
 				List: SearchingResultWrapper,
 			}}
 			itemContent={(index) => {

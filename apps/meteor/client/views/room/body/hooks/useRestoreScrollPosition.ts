@@ -1,23 +1,52 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useEffect } from 'react';
+import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
+import type { RefObject } from 'react';
+import { useCallback } from 'react';
 
-import type { MessageListContextValue } from '../../../../components/message/list/MessageListContext';
+import { isAtBottom } from '../../../../../app/ui/client/views/app/lib/scrolling';
+import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
 import { RoomManager } from '../../../../lib/RoomManager';
 
-export function useRestoreScrollPosition(
-	roomId: IRoom['_id'],
-	scrollMessageList: Exclude<MessageListContextValue['scrollMessageList'], undefined>,
-	sendToBottom: () => void,
-) {
-	useEffect(() => {
-		const store = RoomManager.getStore(roomId);
+export function useRestoreScrollPosition(roomId: IRoom['_id']) {
+	const ref = useCallback(
+		(node: HTMLElement | null) => {
+			if (!node) {
+				return;
+			}
+			const store = RoomManager.getStore(roomId);
 
-		if (store?.scroll && !store.atBottom) {
-			scrollMessageList(() => {
-				return { left: 30, top: store.scroll };
+			if (store?.scroll && !store.atBottom) {
+				node.scrollTo({
+					left: 30,
+					top: store.scroll,
+				});
+			} else {
+				node.scrollTo({
+					top: node.scrollHeight,
+				});
+			}
+		},
+		[roomId],
+	);
+
+	const refCallback = useCallback(
+		(node: HTMLElement | null) => {
+			if (!node) {
+				return;
+			}
+
+			const store = RoomManager.getStore(roomId);
+
+			const handleWrapperScroll = withThrottling({ wait: 100 })(() => {
+				store?.update({ scroll: node.scrollTop, atBottom: isAtBottom(node, 50) });
 			});
-		} else {
-			sendToBottom();
-		}
-	}, [roomId, scrollMessageList, sendToBottom]);
+
+			node.addEventListener('scroll', handleWrapperScroll, {
+				passive: true,
+			});
+		},
+		[roomId],
+	);
+
+	return useMergedRefs(refCallback, ref) as unknown as RefObject<HTMLElement>;
 }
