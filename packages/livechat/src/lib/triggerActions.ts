@@ -57,10 +57,12 @@ export const sendMessageExternalServiceAction = async (
 	}
 
 	try {
+		const { serviceFallbackMessage: fallbackMessage } = action.params || {};
 		const triggerMessages = await requestTriggerMessages({
 			token,
 			triggerId,
 			metadata,
+			fallbackMessage,
 		});
 
 		const messages = triggerMessages

@@ -100,10 +100,12 @@ export const requestTriggerMessages = async ({
 	triggerId,
 	token,
 	metadata = {},
+	fallbackMessage,
 }: {
 	triggerId: string;
 	token: string;
 	metadata: Record<string, string>;
+	fallbackMessage?: string;
 }) => {
 	try {
 		const extraData = Object.entries(metadata).reduce<{ key: string; value: string }[]>(
@@ -113,12 +115,11 @@ export const requestTriggerMessages = async ({
 
 		const { response } = await Livechat.rest.post(`/v1/livechat/triggers/${triggerId}/external-service/call`, { extraData, token });
 		return response.contents;
-	} catch (e) {
-		const error = e as { fallbackMessage?: string };
-		if (!error.fallbackMessage) {
+	} catch (_) {
+		if (!fallbackMessage) {
 			throw Error('Unable to fetch message from external service.');
 		}
 
-		return [{ msg: error.fallbackMessage, order: 0 }];
+		return [{ msg: fallbackMessage, order: 0 }];
 	}
 };
