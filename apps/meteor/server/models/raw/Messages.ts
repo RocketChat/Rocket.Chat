@@ -1234,7 +1234,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		oldUsername: string,
 		newUsername: string,
 		newMessage: string,
-		unsetMd?: boolean,
 	): Promise<UpdateResult> {
 		const query = {
 			_id,
@@ -1246,13 +1245,10 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 				'mentions.$.username': newUsername,
 				'msg': newMessage,
 			},
-		};
-
-		if (unsetMd) {
-			update.$unset = {
+			$unset = {
 				md: 1,
-			};
-		}
+			},
+		};
 
 		return this.updateOne(query, update);
 	}
