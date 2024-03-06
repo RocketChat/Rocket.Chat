@@ -386,7 +386,7 @@ const RoomBody = (): ReactElement => {
 														)}
 													</>
 												) : null}
-												<MessageList rid={room._id} messageListRef={ref as unknown as React.RefObject<HTMLElement>} />
+												<MessageList rid={room._id} messageListRef={wrapperRef} />
 												{hasMoreNextMessages ? (
 													<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
 												) : null}
