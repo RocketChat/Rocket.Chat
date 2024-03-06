@@ -119,7 +119,6 @@ const UsersTable = ({
 					{t('Registration_status')}
 				</GenericTableHeaderCell>
 			),
-			<GenericTableHeaderCell key='actions' w='x170' />,
 		],
 		[mediaQuery, setSort, sortBy, sortDirection, t, tab],
 	);
@@ -170,7 +169,7 @@ const UsersTable = ({
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.users.map((user) => (
-								<UsersTableRow key={user._id} onClick={handleClickOrKeyDown} mediaQuery={mediaQuery} user={user} />
+								<UsersTableRow key={user._id} onClick={handleClickOrKeyDown} mediaQuery={mediaQuery} user={user} tab={tab} />
 							))}
 						</GenericTableBody>
 					</GenericTable>

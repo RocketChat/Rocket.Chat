@@ -1,27 +1,43 @@
-import type { IRole, IUser, Serialized } from '@rocket.chat/core-typings';
+import { UserStatus as Status } from '@rocket.chat/core-typings';
+import type { IAdminUserTabs, IRole, IUser, Serialized } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import type { PickedUser } from '@rocket.chat/rest-typings';
-import { capitalize } from '@rocket.chat/string-helpers';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { Roles } from '../../../../../app/models/client';
 import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
+import { UserStatus } from '../../../../components/UserStatus';
 
 type UsersTableRowProps = {
 	user: Serialized<PickedUser>;
 	onClick: (id: IUser['_id'], e: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement>) => void;
 	mediaQuery: boolean;
+	tab: IAdminUserTabs;
 };
 
-const UsersTableRow = ({ user, onClick, mediaQuery }: UsersTableRowProps): ReactElement => {
+const UsersTableRow = ({ user, onClick, mediaQuery, tab }: UsersTableRowProps): ReactElement => {
 	const t = useTranslation();
-	const { _id, emails, username, name, roles, status, active, avatarETag } = user;
+	const { _id, emails, username, name, roles, status, active, avatarETag, lastLogin, type } = user;
+	const registrationStatusText = useMemo(() => {
+		const usersExcludedFromPending = ['bot', 'app'];
 
-	const statusText = active ? t(capitalize(status as string) as TranslationKey) : t('Disabled');
+		console.log(user);
+
+		if (!lastLogin && !usersExcludedFromPending.includes(type)) {
+			return t('Pending');
+		}
+
+		if (active && lastLogin) {
+			return t('Active');
+		}
+
+		if (!active && lastLogin) {
+			return t('Deactivated');
+		}
+	}, [active, lastLogin, t, type, user]);
 
 	const roleNames = (roles || [])
 		.map((roleId) => (Roles.findOne(roleId, { fields: { name: 1 } }) as IRole | undefined)?.name)
@@ -43,12 +59,14 @@ const UsersTableRow = ({ user, onClick, mediaQuery }: UsersTableRowProps): React
 					<Box display='flex' mi={8} withTruncatedText>
 						<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
 							<Box fontScale='p2m' color='default' withTruncatedText>
+								<Box display='inline' mie='x8'>
+									<UserStatus status={status || Status.OFFLINE} />
+								</Box>
 								{name || username}
 							</Box>
 							{!mediaQuery && name && (
 								<Box fontScale='p2' color='hint' withTruncatedText>
-									{' '}
-									{`@${username}`}{' '}
+									{`@${username}`}
 								</Box>
 							)}
 						</Box>
@@ -59,15 +77,17 @@ const UsersTableRow = ({ user, onClick, mediaQuery }: UsersTableRowProps): React
 				<GenericTableCell>
 					<Box fontScale='p2m' color='hint' withTruncatedText>
 						{username}
-					</Box>{' '}
+					</Box>
 					<Box mi={4} />
 				</GenericTableCell>
 			)}
-			<GenericTableCell withTruncatedText>{emails?.length && emails[0].address}</GenericTableCell>
+			{mediaQuery && <GenericTableCell withTruncatedText>{emails?.length && emails[0].address}</GenericTableCell>}
 			{mediaQuery && <GenericTableCell withTruncatedText>{roleNames}</GenericTableCell>}
-			<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
-				{statusText}
-			</GenericTableCell>
+			{tab === 'all' && (
+				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
+					{registrationStatusText}
+				</GenericTableCell>
+			)}
 		</GenericTableRow>
 	);
 };
