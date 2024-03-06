@@ -11,6 +11,7 @@ import {
 	useTranslation,
 	useUser,
 	useUserPreference,
+	useRouteParameter,
 } from '@rocket.chat/ui-contexts';
 import type { MouseEventHandler, ReactElement, UIEvent } from 'react';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -57,6 +58,7 @@ import { useRetentionPolicy } from './hooks/useRetentionPolicy';
 import { useUnreadMessages } from './hooks/useUnreadMessages';
 
 const RoomBody = (): ReactElement => {
+	const tabActionId = useRouteParameter('tab');
 	const formatDate = useFormatDate();
 	const t = useTranslation();
 	const isLayoutEmbedded = useEmbeddedLayout();
@@ -115,6 +117,12 @@ const RoomBody = (): ReactElement => {
 
 		setHasNewMessages(false);
 	}, []);
+
+	const sendToTop = useCallback(() => {
+		scrollMessageList(() => {
+			return { left: 30, top: 0 };
+		});
+	}, [scrollMessageList]);
 
 	const sendToBottomIfNecessary = useCallback(() => {
 		if (atBottomRef.current === true) {
@@ -256,6 +264,13 @@ const RoomBody = (): ReactElement => {
 			observer?.disconnect();
 		};
 	}, [sendToBottomIfNecessary]);
+
+	useEffect(() => {
+		if (tabActionId === 'go-to-start-of-the-conversation') {
+			sendToTop();
+			toolbox.closeTab();
+		}
+	}, [tabActionId, sendToTop, toolbox]);
 
 	const router = useRouter();
 
