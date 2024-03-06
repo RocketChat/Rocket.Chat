@@ -41,7 +41,7 @@ export async function getMentions(message: IMessage): Promise<{ toAll: boolean; 
 
 	let mentionIds = filteredMentions;
 	if (teamsMentions.length > 0) {
-		mentionIds = await callbacks.run('beforeGetMentions', filteredMentions, teamsMentions);
+		mentionIds = await callbacks.run('beforeGetTeamMentions', filteredMentions, teamsMentions);
 	}
 
 	return {
