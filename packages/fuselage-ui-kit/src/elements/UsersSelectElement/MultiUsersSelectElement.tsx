@@ -32,13 +32,10 @@ const MultiUsersSelectElement = ({
 
   const handleChange = useCallback(
     (value) => {
-      console.log(value);
       action({ target: { value } });
     },
     [action]
   );
-
-  console.log(value);
 
   return (
     <AutoComplete
