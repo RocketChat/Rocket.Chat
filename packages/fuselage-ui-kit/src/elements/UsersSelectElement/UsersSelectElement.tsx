@@ -1,4 +1,12 @@
-import { AutoComplete, Box, Chip, Option } from '@rocket.chat/fuselage';
+import {
+  AutoComplete,
+  Box,
+  Chip,
+  Option,
+  OptionAvatar,
+  OptionContent,
+  OptionDescription,
+} from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type * as UiKit from '@rocket.chat/ui-kit';
@@ -16,7 +24,7 @@ export type UserAutoCompleteOptionType = {
 };
 
 const UsersSelectElement = ({ block, context }: UsersSelectElementProps) => {
-  const [{ loading, value }, action] = useUiKitState(block, context);
+  const [{ value, loading }, action] = useUiKitState(block, context);
 
   const [filter, setFilter] = useState('');
   const debouncedFilter = useDebouncedValue(filter, 1000);
@@ -32,14 +40,13 @@ const UsersSelectElement = ({ block, context }: UsersSelectElementProps) => {
 
   return (
     <AutoComplete
+      value={value}
       placeholder={block.placeholder?.text}
       disabled={loading}
-      value={value}
       options={data}
       onChange={handleChange}
       filter={filter}
       setFilter={setFilter}
-      data-qa-id='UserAutoComplete'
       renderSelected={({ selected: { value, label } }) => (
         <Chip height='x20' value={value} mie={4}>
           <UserAvatar size='x20' username={value} />
@@ -49,12 +56,14 @@ const UsersSelectElement = ({ block, context }: UsersSelectElementProps) => {
         </Chip>
       )}
       renderItem={({ value, label, ...props }) => (
-        <Option
-          key={value}
-          label={label}
-          avatar={<UserAvatar size='x20' username={value} />}
-          {...props}
-        />
+        <Option key={value} {...props}>
+          <OptionAvatar>
+            <UserAvatar username={value} size='x20' />
+          </OptionAvatar>
+          <OptionContent>
+            {label} <OptionDescription>({value})</OptionDescription>
+          </OptionContent>
+        </Option>
       )}
     />
   );

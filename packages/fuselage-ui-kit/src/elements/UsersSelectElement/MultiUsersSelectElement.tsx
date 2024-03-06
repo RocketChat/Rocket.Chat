@@ -32,13 +32,18 @@ const MultiUsersSelectElement = ({
 
   const handleChange = useCallback(
     (value) => {
+      console.log(value);
       action({ target: { value } });
     },
     [action]
   );
 
+  console.log(value);
+
   return (
     <AutoComplete
+      value={value || []}
+      options={data}
       placeholder={block.placeholder?.text}
       disabled={loading}
       filter={filter}
@@ -58,7 +63,7 @@ const MultiUsersSelectElement = ({
         </Chip>
       )}
       renderItem={({ value, label, ...props }): ReactElement => (
-        <Option data-qa-type='autocomplete-user-option' key={value} {...props}>
+        <Option key={value} {...props}>
           <OptionAvatar>
             <UserAvatar username={value} size='x20' />
           </OptionAvatar>
@@ -67,8 +72,6 @@ const MultiUsersSelectElement = ({
           </OptionContent>
         </Option>
       )}
-      options={data}
-      value={value}
     />
   );
 };
