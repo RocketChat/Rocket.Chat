@@ -13,19 +13,14 @@ const ConnectionStatusProvider = ({ children }: { children: ReactNode }) => {
 		() => {
 			switch (sdk.connection.status) {
 				case 'connecting':
-					console.log('connecting');
 					return 'connecting' as const;
 				case 'connected':
-					console.log('connected');
 					return 'connected' as const;
 				case 'failed':
-					console.log('failed');
 					return 'failed' as const;
 				case 'idle':
-					console.log('idle');
 					return 'waiting' as const;
 				default:
-					console.log('offline');
 					return 'offline' as const;
 			}
 		},

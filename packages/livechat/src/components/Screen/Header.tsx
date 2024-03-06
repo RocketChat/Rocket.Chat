@@ -10,6 +10,7 @@ import RestoreIcon from '../../icons/arrowUp.svg';
 import NotificationsEnabledIcon from '../../icons/bell.svg';
 import NotificationsDisabledIcon from '../../icons/bellOff.svg';
 import OpenWindowIcon from '../../icons/newWindow.svg';
+import store from '../../store';
 import Alert from '../Alert';
 import { Avatar } from '../Avatar';
 import Header from '../Header';
@@ -52,10 +53,6 @@ const ScreenHeader = ({
 }: screenHeaderProps) => {
 	const { t } = useTranslation();
 	const headerRef = useRef<HTMLElement>(null);
-
-	const endpoint = useEndpoint('GET', '/v1/livechat/config');
-
-	useQuery([], () => endpoint({ token: 'lero' }));
 
 	const largeHeader = () => {
 		return !!(agent?.email && agent.phone);

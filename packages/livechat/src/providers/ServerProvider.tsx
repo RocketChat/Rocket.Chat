@@ -14,10 +14,13 @@ import { ServerContext } from '@rocket.chat/ui-contexts';
 import { compile } from 'path-to-regexp';
 import React from 'react';
 
+import store from '../store';
 import { useSDK } from './SDKProvider';
 
 const ServerProvider = ({ children }: { children: React.ReactNode }) => {
 	const sdk = useSDK();
+
+	const { token } = store.state;
 
 	const absoluteUrl = (path: string): string => {
 		return `http://localhost:3000${path}`;
@@ -69,7 +72,7 @@ const ServerProvider = ({ children }: { children: React.ReactNode }) => {
 		},
 	): ((eventName: K, callback: (...args: StreamerCallbackArgs<N, K>) => void) => () => void) => {
 		return (eventName, callback): (() => void) => {
-			return sdk.stream(streamName, [eventName], callback as (...args: any[]) => void).stop;
+			return sdk.stream(streamName, [eventName, { visitorToken: token, token }], callback as (...args: any[]) => void).stop;
 		};
 	};
 

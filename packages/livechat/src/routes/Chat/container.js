@@ -9,7 +9,14 @@ import { canRenderMessage, canRenderTriggerMessage } from '../../helpers/canRend
 import { debounce } from '../../helpers/debounce';
 import { throttle } from '../../helpers/throttle';
 import { upsert } from '../../helpers/upsert';
-import { useRoomSubscription } from '../../hooks/useRoomSubscription';
+import {
+	useAgentChangeSubscription,
+	useAgentStatusChangeSubscription,
+	useQueuePositionChangeSubscription,
+} from '../../hooks/livechatRoomSubscriptionHooks';
+import { useDeleteMessageSubscription } from '../../hooks/useDeleteMessageSubscription';
+import { useRoomMessagesSubscription } from '../../hooks/useRoomMessagesSubscription';
+import { useUserActivitySubscription } from '../../hooks/useUserActivitySubscription';
 import { normalizeQueueAlert } from '../../lib/api';
 import constants from '../../lib/constants';
 import { getLastReadMessage, loadConfig, processUnread, shouldMarkAsUnread } from '../../lib/main';
@@ -20,9 +27,17 @@ import { Consumer } from '../../store';
 import Chat from './component';
 
 const ChatWrapper = ({ children, rid }) => {
-	const notifyUserStream = useRoomSubscription(rid);
+	useRoomMessagesSubscription(rid);
 
-	console.log('notifyUserStream', notifyUserStream);
+	useUserActivitySubscription(rid);
+
+	useDeleteMessageSubscription(rid);
+
+	useAgentChangeSubscription(rid);
+
+	useAgentStatusChangeSubscription(rid);
+
+	useQueuePositionChangeSubscription(rid);
 
 	return children;
 };
@@ -70,6 +85,8 @@ class ChatContainer extends Component {
 		}
 
 		const visitor = { token, ...guest };
+		// const grantUser = useGrantUser();
+		// grantUser(visitor);
 		const { visitor: newUser } = await Livechat.grantVisitor({ visitor });
 		await dispatch({ user: newUser });
 	};
@@ -362,8 +379,8 @@ class ChatContainer extends Component {
 		this.handleConnectingAgentAlert(false);
 	}
 
-	render = ({ user, rid, ...props }) => (
-		<ChatWrapper rid={rid}>
+	render = ({ user, ...props }) => (
+		<ChatWrapper token={props.token} rid={props.room?._id}>
 			<Chat
 				{...props}
 				avatarResolver={getAvatarUrl}
