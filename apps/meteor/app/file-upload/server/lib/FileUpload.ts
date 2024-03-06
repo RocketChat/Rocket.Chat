@@ -309,12 +309,14 @@ export const FileUpload = {
 		const image = await store._store.getReadStream(file._id, file);
 
 		let transformer = sharp().resize({ width, height, fit: 'inside' });
+		let fileName = file.name;
 		if (file.type === 'image/svg+xml') {
 			transformer = transformer.png();
+			fileName = (fileName || '').replace(/\.svg$/i, '.png');
 		}
 		const result = transformer
 			.toBuffer({ resolveWithObject: true })
-			.then(({ data, info: { width, height, format } }) => ({ data, width, height, format }));
+			.then(({ data, info: { width, height, format } }) => ({ data, width, height, format, fileName }));
 		image.pipe(transformer);
 
 		return result;
