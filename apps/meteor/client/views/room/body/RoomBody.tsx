@@ -25,7 +25,6 @@ import { CustomScrollbars } from '../../../components/CustomScrollbars';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import { useFormatDate } from '../../../hooks/useFormatDate';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
-import { RoomManager } from '../../../lib/RoomManager';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { setMessageJumpQueryStringParameter } from '../../../lib/utils/setMessageJumpQueryStringParameter';
 import Announcement from '../Announcement';
@@ -382,38 +381,6 @@ const RoomBody = (): ReactElement => {
 			wrapper.removeEventListener('scroll', handleWrapperScroll);
 		};
 	}, [_isAtBottom, atBottomRef, list, room._id, setUnreadCount]);
-
-	useEffect(() => {
-		const wrapper = wrapperRef.current;
-
-		if (!wrapper) {
-			return;
-		}
-
-		const store = RoomManager.getStore(room._id);
-
-		const handleWrapperScroll = withThrottling({ wait: 30 })(() => {
-			store?.update({ scroll: wrapper.scrollTop, atBottom: isAtBottom(wrapper, 50) });
-		});
-
-		const afterMessageGroup = (): void => {
-			if (store?.scroll && !store.atBottom) {
-				wrapper.scrollTop = store.scroll;
-			} else {
-				sendToBottom();
-			}
-			wrapper.removeEventListener('MessageGroup', afterMessageGroup);
-		};
-
-		wrapper.addEventListener('scroll', handleWrapperScroll);
-
-		wrapper.addEventListener('MessageGroup', afterMessageGroup);
-
-		return () => {
-			wrapper.removeEventListener('MessageGroup', afterMessageGroup);
-			wrapper.removeEventListener('scroll', handleWrapperScroll);
-		};
-	}, [room._id, sendToBottom]);
 
 	const restoreScrollPositionRef = useRestoreScrollPosition(room._id);
 
