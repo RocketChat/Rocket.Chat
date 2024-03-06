@@ -643,6 +643,9 @@ export const createOmniSettings = () =>
 				{ key: 'left', i18nLabel: 'Left' },
 				{ key: 'right', i18nLabel: 'Right' },
 			],
+			enterprise: true,
+			invalidValue: 'right',
+			modules: ['livechat-enterprise'],
 			enableQuery: omnichannelEnabledQuery,
 		});
 
@@ -651,6 +654,9 @@ export const createOmniSettings = () =>
 			group: 'Omnichannel',
 			section: 'Livechat',
 			public: true,
+			enterprise: true,
+			invalidValue: '',
+			modules: ['livechat-enterprise'],
 			enableQuery: omnichannelEnabledQuery,
 		});
 	});
