@@ -3,7 +3,6 @@ import { Emitter } from '@rocket.chat/emitter';
 import differenceInMilliseconds from 'date-fns/differenceInMilliseconds';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
-import type { MutableRefObject } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 import type { MinimongoCollection } from '../../../../client/definitions/MinimongoCollection';
