@@ -46,6 +46,11 @@ import { useRetentionPolicy } from './hooks/useRetentionPolicy';
 import { useHandleUnread } from './hooks/useUnreadMessages';
 
 const RoomBody = (): ReactElement => {
+	const chat = useChat();
+	if (!chat) {
+		throw new Error('No ChatContext provided');
+	}
+
 	const formatDate = useFormatDate();
 	const t = useTranslation();
 	const isLayoutEmbedded = useEmbeddedLayout();
@@ -54,80 +59,15 @@ const RoomBody = (): ReactElement => {
 	const toolbox = useRoomToolbox();
 	const admin = useRole('admin');
 	const subscription = useRoomSubscription();
+	const retentionPolicy = useRetentionPolicy(room);
 
-	const { callbackRef, listStyle, bubbleDate, showBubble, style: bubbleDateStyle } = useDateScroll();
+	const { openUserCard, triggerProps } = useUserCard();
 
 	const [hasNewMessages, setHasNewMessages] = useState(false);
 
 	const hideFlexTab = useUserPreference<boolean>('hideFlexTab') || undefined;
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
 	const displayAvatars = useUserPreference<boolean>('displayAvatars');
-
-	const wrapperRef = useRef<HTMLDivElement | null>(null);
-
-	const {
-		ref: unreadBarRef,
-		messagesBoxRef: unreadBarMessagesBoxRef,
-		handleUnreadBarJumpToButtonClick,
-		handleMarkAsReadButtonClick,
-		counter: [unread],
-	} = useHandleUnread(room, subscription);
-
-	const { atBottomRef, ref: isAtBottomCallbackRef } = useListIsAtBottom();
-
-	const chat = useChat();
-	const { openUserCard, triggerProps } = useUserCard();
-
-	const { wrapperBoxRef, hideLeaderHeader, innerScrollRef: leaderBannerRefCallback } = useLeaderBanner();
-
-	if (!chat) {
-		throw new Error('No ChatContext provided');
-	}
-
-	const {
-		uploads,
-		handleUploadFiles,
-		handleUploadProgressClose,
-		targeDrop: [fileUploadTriggerProps, fileUploadOverlayProps],
-	} = useFileUpload();
-
-	const _isAtBottom = useCallback((scrollThreshold = 0) => {
-		const wrapper = wrapperRef.current;
-
-		if (!wrapper) {
-			return false;
-		}
-
-		if (isAtBottom(wrapper, scrollThreshold)) {
-			setHasNewMessages(false);
-			return true;
-		}
-		return false;
-	}, []);
-
-	const sendToBottom = useCallback(() => {
-		wrapperRef.current?.scrollTo({ left: 30, top: wrapperRef.current?.scrollHeight });
-
-		setHasNewMessages(false);
-	}, []);
-
-	const sendToBottomIfNecessary = useCallback(() => {
-		if (atBottomRef.current === true) {
-			sendToBottom();
-		}
-	}, [atBottomRef, sendToBottom]);
-
-	const handleNewMessageButtonClick = useCallback(() => {
-		atBottomRef.current = true;
-		sendToBottomIfNecessary();
-		chat.composer?.focus();
-	}, [atBottomRef, chat.composer, sendToBottomIfNecessary]);
-
-	const handleJumpToRecentButtonClick = useCallback(() => {
-		atBottomRef.current = true;
-		RoomHistoryManager.clear(room._id);
-		RoomHistoryManager.getMoreIfIsEmpty(room._id);
-	}, [atBottomRef, room._id]);
 
 	const { hasMorePreviousMessages, hasMoreNextMessages, isLoadingMoreMessages } = useRoomMessages();
 
@@ -155,83 +95,86 @@ const RoomBody = (): ReactElement => {
 
 	const useRealName = useSetting('UI_Use_Real_Name') as boolean;
 
-	const { data: roomLeader } = useReactiveQuery(['rooms', room._id, 'leader', { not: user?._id }], () => {
-		const leaderRoomRole = RoomRoles.findOne({
-			'rid': room._id,
-			'roles': 'leader',
-			'u._id': { $ne: user?._id },
-		});
+	const innerBoxRef = useRef<HTMLDivElement | null>(null);
 
-		if (!leaderRoomRole) {
-			return null;
-		}
+	const {
+		wrapperRef: unreadBarWrapperRef,
+		innerRef: unreadBarInnerRef,
+		handleUnreadBarJumpToButtonClick,
+		handleMarkAsReadButtonClick,
+		counter: [unread],
+	} = useHandleUnread(room, subscription);
 
-		return {
-			...leaderRoomRole.u,
-			name: useRealName ? leaderRoomRole.u.name || leaderRoomRole.u.username : leaderRoomRole.u.username,
-		};
-	});
+	const { innerRef: dateScrollInnerRef, listStyle, bubbleDate, showBubble, style: bubbleDateStyle } = useDateScroll();
 
-	const handleOpenUserCard = useCallback(
-		(event: UIEvent, username: IUser['username']) => {
-			if (!username) {
-				return;
-			}
+	const { innerRef: isAtBottomInnerRef, atBottomRef } = useListIsAtBottom();
 
-			openUserCard(event, username);
-		},
-		[openUserCard],
+	const { innerRef: getMoreInnerRef } = useGetMore(room._id, atBottomRef);
+
+	const { wrapperRef: leaderBannerWrapperRef, hideLeaderHeader, innerRef: leaderBannerInnerRef } = useLeaderBanner();
+
+	const {
+		uploads,
+		handleUploadFiles,
+		handleUploadProgressClose,
+		targeDrop: [fileUploadTriggerProps, fileUploadOverlayProps],
+	} = useFileUpload();
+
+	const { innerRef: restoreScrollPositionInnerRef } = useRestoreScrollPosition(room._id);
+
+	const { messageListRef, messageListProps } = useMessageListNavigation();
+
+	const innerRef = useMergedRefs(
+		dateScrollInnerRef,
+		innerBoxRef,
+		restoreScrollPositionInnerRef,
+		isAtBottomInnerRef,
+		leaderBannerInnerRef,
+		unreadBarInnerRef,
+		getMoreInnerRef,
+
+		messageListRef,
 	);
 
-	const retentionPolicy = useRetentionPolicy(room);
+	const wrapperBoxRefs = useMergedRefs(unreadBarWrapperRef, leaderBannerWrapperRef);
 
-	useGoToHomeOnRemoved(room, user?._id);
+	const _isAtBottom = useCallback((scrollThreshold = 0) => {
+		const wrapper = innerBoxRef.current;
 
-	useEffect(() => {
-		callbacks.add(
-			'streamNewMessage',
-			(msg: IMessage) => {
-				if (room._id !== msg.rid || isEditedMessage(msg) || msg.tmid) {
-					return;
-				}
-
-				if (msg.u._id === user?._id) {
-					sendToBottom();
-					return;
-				}
-
-				if (!_isAtBottom()) {
-					setHasNewMessages(true);
-				}
-			},
-			callbacks.priority.MEDIUM,
-			room._id,
-		);
-
-		return () => {
-			callbacks.remove('streamNewMessage', room._id);
-		};
-	}, [_isAtBottom, room._id, sendToBottom, user?._id]);
-
-	useEffect(() => {
-		const messageList = wrapperRef.current?.querySelector('ul');
-
-		if (!messageList) {
-			return;
+		if (!wrapper) {
+			return false;
 		}
 
-		const observer = new ResizeObserver(() => {
-			sendToBottomIfNecessary();
-		});
+		if (isAtBottom(wrapper, scrollThreshold)) {
+			setHasNewMessages(false);
+			return true;
+		}
+		return false;
+	}, []);
 
-		observer.observe(messageList);
+	const sendToBottom = useCallback(() => {
+		innerBoxRef.current?.scrollTo({ left: 30, top: innerBoxRef.current?.scrollHeight });
 
-		return () => {
-			observer?.disconnect();
-		};
-	}, [sendToBottomIfNecessary]);
+		setHasNewMessages(false);
+	}, []);
 
-	const restoreScrollPositionRef = useRestoreScrollPosition(room._id);
+	const sendToBottomIfNecessary = useCallback(() => {
+		if (atBottomRef.current === true) {
+			sendToBottom();
+		}
+	}, [atBottomRef, sendToBottom]);
+
+	const handleNewMessageButtonClick = useCallback(() => {
+		atBottomRef.current = true;
+		sendToBottomIfNecessary();
+		chat.composer?.focus();
+	}, [atBottomRef, chat.composer, sendToBottomIfNecessary]);
+
+	const handleJumpToRecentButtonClick = useCallback(() => {
+		atBottomRef.current = true;
+		RoomHistoryManager.clear(room._id);
+		RoomHistoryManager.getMoreIfIsEmpty(room._id);
+	}, [atBottomRef, room._id]);
 
 	const handleComposerResize = useCallback((): void => {
 		sendToBottomIfNecessary();
@@ -244,10 +187,6 @@ const RoomBody = (): ReactElement => {
 	const handleNavigateToNextMessage = useCallback((): void => {
 		chat.messageEditing.toNextMessage();
 	}, [chat.messageEditing]);
-
-	useEffect(() => {
-		chat.uploads.wipeFailedOnes();
-	}, [chat]);
 
 	const handleCloseFlexTab: MouseEventHandler<HTMLElement> = useCallback(
 		(e): void => {
@@ -281,23 +220,81 @@ const RoomBody = (): ReactElement => {
 		[toolbox],
 	);
 
+	const handleOpenUserCard = useCallback(
+		(event: UIEvent, username: IUser['username']) => {
+			if (!username) {
+				return;
+			}
+
+			openUserCard(event, username);
+		},
+		[openUserCard],
+	);
+
+	useGoToHomeOnRemoved(room, user?._id);
 	useReadMessageWindowEvents();
 	useQuoteMessageByUrl();
 
-	const getMoreRef = useGetMore(room._id, atBottomRef);
+	useEffect(() => {
+		callbacks.add(
+			'streamNewMessage',
+			(msg: IMessage) => {
+				if (room._id !== msg.rid || isEditedMessage(msg) || msg.tmid) {
+					return;
+				}
 
-	const { messageListRef, messageListProps } = useMessageListNavigation();
+				if (msg.u._id === user?._id) {
+					sendToBottom();
+					return;
+				}
 
-	const ref = useMergedRefs(
-		callbackRef,
-		wrapperRef,
-		restoreScrollPositionRef,
-		isAtBottomCallbackRef,
-		unreadBarRef,
-		leaderBannerRefCallback,
-		unreadBarMessagesBoxRef,
-		getMoreRef,
-	);
+				if (!_isAtBottom()) {
+					setHasNewMessages(true);
+				}
+			},
+			callbacks.priority.MEDIUM,
+			room._id,
+		);
+
+		return () => {
+			callbacks.remove('streamNewMessage', room._id);
+		};
+	}, [_isAtBottom, room._id, sendToBottom, user?._id]);
+
+	useEffect(() => {
+		const messageList = innerBoxRef.current?.querySelector('ul');
+
+		if (!messageList) {
+			return;
+		}
+
+		const observer = new ResizeObserver(() => {
+			sendToBottomIfNecessary();
+		});
+
+		observer.observe(messageList);
+
+		return () => {
+			observer?.disconnect();
+		};
+	}, [sendToBottomIfNecessary]);
+
+	const { data: roomLeader } = useReactiveQuery(['rooms', room._id, 'leader', { not: user?._id }], () => {
+		const leaderRoomRole = RoomRoles.findOne({
+			'rid': room._id,
+			'roles': 'leader',
+			'u._id': { $ne: user?._id },
+		});
+
+		if (!leaderRoomRole) {
+			return null;
+		}
+
+		return {
+			...leaderRoomRole.u,
+			name: useRealName ? leaderRoomRole.u.name || leaderRoomRole.u.username : leaderRoomRole.u.username,
+		};
+	});
 
 	return (
 		<>
@@ -309,7 +306,7 @@ const RoomBody = (): ReactElement => {
 					onClick={hideFlexTab && handleCloseFlexTab}
 				>
 					<div className='messages-container-wrapper'>
-						<div className='messages-container-main' ref={useMergedRefs(callbackRef, wrapperBoxRef)} {...fileUploadTriggerProps}>
+						<div className='messages-container-main' ref={wrapperBoxRefs} {...fileUploadTriggerProps}>
 							<DropTargetOverlay {...fileUploadOverlayProps} />
 							<div className={['container-bars', uploads.length && 'show'].filter(isTruthy).join(' ')}>
 								{uploads.map((upload) => (
@@ -370,14 +367,8 @@ const RoomBody = (): ReactElement => {
 										.join(' ')}
 								>
 									<MessageListErrorBoundary>
-										<CustomScrollbars ref={ref}>
-											<ul
-												ref={messageListRef}
-												className='messages-list'
-												aria-live='polite'
-												aria-busy={isLoadingMoreMessages}
-												{...messageListProps}
-											>
+										<CustomScrollbars ref={innerRef}>
+											<ul className='messages-list' aria-live='polite' aria-busy={isLoadingMoreMessages} {...messageListProps}>
 												{canPreview ? (
 													<>
 														{hasMorePreviousMessages ? (
@@ -390,7 +381,7 @@ const RoomBody = (): ReactElement => {
 														)}
 													</>
 												) : null}
-												<MessageList rid={room._id} messageListRef={wrapperRef} />
+												<MessageList rid={room._id} messageListRef={innerBoxRef} />
 												{hasMoreNextMessages ? (
 													<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
 												) : null}

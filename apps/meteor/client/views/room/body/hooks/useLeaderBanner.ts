@@ -32,8 +32,8 @@ export const useLeaderBanner = () => {
 	}, []);
 
 	return {
-		wrapperBoxRef,
+		wrapperRef: wrapperBoxRef,
 		hideLeaderHeader,
-		innerScrollRef,
+		innerRef: innerScrollRef,
 	};
 };

@@ -24,6 +24,6 @@ export const useListIsAtBottom = () => {
 
 	return {
 		atBottomRef,
-		ref,
+		innerRef: ref,
 	};
 };
