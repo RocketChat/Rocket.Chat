@@ -13,7 +13,7 @@ API.v1.addRoute(
 		authRequired: true,
 		permissionsRequired: ['view-livechat-manager'],
 		validateParams: isLivechatTriggerWebhookTestParams,
-		rateLimiterOptions: { numRequestsAllowed: 5, intervalTimeInMS: 60000 },
+		rateLimiterOptions: { numRequestsAllowed: 15, intervalTimeInMS: 60000 },
 	},
 	{
 		async post() {
