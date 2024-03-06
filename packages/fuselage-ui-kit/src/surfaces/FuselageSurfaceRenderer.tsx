@@ -11,6 +11,8 @@ import PreviewBlock from '../blocks/PreviewBlock';
 import SectionBlock from '../blocks/SectionBlock';
 import { AppIdProvider } from '../contexts/AppIdContext';
 import ButtonElement from '../elements/ButtonElement';
+import ChannelsSelectElement from '../elements/ChannelsSelectElement/ChannelsSelectElement';
+import MultiChannelsSelectElement from '../elements/ChannelsSelectElement/MultiChannelsSelectElement';
 import CheckboxElement from '../elements/CheckboxElement';
 import DatePickerElement from '../elements/DatePickerElement';
 import ImageElement from '../elements/ImageElement';
@@ -527,5 +529,43 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
         />
       </AppIdProvider>
     );
+  }
+
+  channels_select(
+    block: UiKit.ChannelsSelectElement,
+    context: UiKit.BlockContext,
+    index: number
+  ): ReactElement | null {
+    if (context === UiKit.BlockContext.FORM) {
+      return (
+        <ChannelsSelectElement
+          block={block}
+          context={context}
+          index={index}
+          surfaceRenderer={this}
+        />
+      );
+    }
+
+    return null;
+  }
+
+  multi_channels_select(
+    block: UiKit.MultiChannelsSelectElement,
+    context: UiKit.BlockContext,
+    index: number
+  ): ReactElement | null {
+    if (context === UiKit.BlockContext.FORM) {
+      return (
+        <MultiChannelsSelectElement
+          block={block}
+          context={context}
+          index={index}
+          surfaceRenderer={this}
+        />
+      );
+    }
+
+    return null;
   }
 }
