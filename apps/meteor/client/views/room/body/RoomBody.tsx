@@ -41,11 +41,11 @@ import UploadProgressIndicator from './UploadProgressIndicator';
 import { useFileUpload } from './hooks/useFileUpload';
 import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
 import { useListIsAtBottom } from './hooks/useListIsAtBottom';
+import { useQuoteMessageByUrl } from './hooks/useQuoteMessageByUrl';
 import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
 import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
 import { useRetentionPolicy } from './hooks/useRetentionPolicy';
 import { useUnreadMessages } from './hooks/useUnreadMessages';
-import { useQuoteMessageByUrl } from './hooks/useQuoteMessageByUrl';
 
 const RoomBody = (): ReactElement => {
 	const formatDate = useFormatDate();
