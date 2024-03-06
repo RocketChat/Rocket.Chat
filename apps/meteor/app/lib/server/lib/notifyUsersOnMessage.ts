@@ -39,7 +39,10 @@ export async function getMentions(message: IMessage): Promise<{ toAll: boolean; 
 		.filter(({ _id }) => _id !== senderId && !['all', 'here'].includes(_id))
 		.map(({ _id }) => _id);
 
-	const mentionIds = await callbacks.run('beforeGetTeamMentions', filteredMentions, teamsMentions);
+	let mentionIds = filteredMentions;
+	if (teamsMentions.length > 0) {
+		mentionIds = await callbacks.run('beforeGetMentions', filteredMentions, teamsMentions);
+	}
 
 	return {
 		toAll,
@@ -56,7 +59,7 @@ const incGroupMentions = async (
 	excludeUserId: IUser['_id'],
 	unreadCount: Exclude<UnreadCountType, 'user_mentions_only'>,
 ): Promise<void> => {
-	const incUnreadByGroup = new Set(['all_messages', 'group_mentions_only', 'user_and_group_mentions_only']).has(unreadCount);
+	const incUnreadByGroup = ['all_messages', 'group_mentions_only', 'user_and_group_mentions_only'].includes(unreadCount);
 	const incUnread = roomType === 'd' || roomType === 'l' || incUnreadByGroup ? 1 : 0;
 	await Subscriptions.incGroupMentionsAndUnreadForRoomIdExcludingUserId(rid, excludeUserId, 1, incUnread);
 };
@@ -85,10 +88,15 @@ export const getUserIdsFromHighlights = async (rid: IRoom['_id'], message: IMess
 
 const getUnreadSettingCount = (roomType: RoomType): UnreadCountType => {
 	let unreadSetting = 'Unread_Count';
-	if (roomType === 'd') {
-		unreadSetting = 'Unread_Count_DM';
-	} else if (roomType === 'l') {
-		unreadSetting = 'Unread_Count_Omni';
+	switch (roomType) {
+		case 'd': {
+			unreadSetting = 'Unread_Count_DM';
+			break;
+		}
+		case 'l': {
+			unreadSetting = 'Unread_Count_Omni';
+			break;
+		}
 	}
 
 	return settings.get(unreadSetting);
@@ -112,7 +120,7 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 			await incGroupMentions(room._id, room.t, message.u._id, unreadCount as Exclude<UnreadCountType, 'user_mentions_only'>);
 		}
 
-		// This shouldn't run only if has group mentions because it will already exclude mentioned users from the query
+		// this shouldn't run only if has group mentions because it will already exclude mentioned users from the query
 		if (!toAll && !toHere && unreadCount === 'all_messages') {
 			await Subscriptions.incUnreadForRoomIdExcludingUserIds(room._id, [...userIds, message.u._id], 1);
 		}
