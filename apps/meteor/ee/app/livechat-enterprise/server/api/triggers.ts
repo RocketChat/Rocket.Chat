@@ -64,7 +64,7 @@ API.v1.addRoute(
 	{
 		authRequired: false,
 		rateLimiterOptions: {
-			numRequestsAllowed: 1,
+			numRequestsAllowed: 10,
 			intervalTimeInMS: 60000,
 		},
 		validateParams: isLivechatTriggerWebhookCallParams,
