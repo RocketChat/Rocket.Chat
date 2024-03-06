@@ -107,7 +107,7 @@ const RoomBody = (): ReactElement => {
 
 	const { innerRef: dateScrollInnerRef, listStyle, bubbleDate, showBubble, style: bubbleDateStyle } = useDateScroll();
 
-	const { innerRef: isAtBottomInnerRef, atBottomRef } = useListIsAtBottom();
+	const { innerRef: isAtBottomInnerRef, atBottomRef, sendToBottom, sendToBottomIfNecessary } = useListIsAtBottom();
 
 	const { innerRef: getMoreInnerRef } = useGetMore(room._id, atBottomRef);
 
@@ -138,35 +138,10 @@ const RoomBody = (): ReactElement => {
 
 	const wrapperBoxRefs = useMergedRefs(unreadBarWrapperRef, leaderBannerWrapperRef);
 
-	const _isAtBottom = useCallback((scrollThreshold = 0) => {
-		const wrapper = innerBoxRef.current;
-
-		if (!wrapper) {
-			return false;
-		}
-
-		if (isAtBottom(wrapper, scrollThreshold)) {
-			setHasNewMessages(false);
-			return true;
-		}
-		return false;
-	}, []);
-
-	const sendToBottom = useCallback(() => {
-		innerBoxRef.current?.scrollTo({ left: 30, top: innerBoxRef.current?.scrollHeight });
-
-		setHasNewMessages(false);
-	}, []);
-
-	const sendToBottomIfNecessary = useCallback(() => {
-		if (atBottomRef.current === true) {
-			sendToBottom();
-		}
-	}, [atBottomRef, sendToBottom]);
-
 	const handleNewMessageButtonClick = useCallback(() => {
 		atBottomRef.current = true;
 		sendToBottomIfNecessary();
+		setHasNewMessages(false);
 		chat.composer?.focus();
 	}, [atBottomRef, chat.composer, sendToBottomIfNecessary]);
 
@@ -178,6 +153,7 @@ const RoomBody = (): ReactElement => {
 
 	const handleComposerResize = useCallback((): void => {
 		sendToBottomIfNecessary();
+		setHasNewMessages(false);
 	}, [sendToBottomIfNecessary]);
 
 	const handleNavigateToPreviousMessage = useCallback((): void => {
@@ -245,10 +221,11 @@ const RoomBody = (): ReactElement => {
 
 				if (msg.u._id === user?._id) {
 					sendToBottom();
+					setHasNewMessages(false);
 					return;
 				}
 
-				if (!_isAtBottom()) {
+				if (innerBoxRef.current && !isAtBottom(innerBoxRef.current)) {
 					setHasNewMessages(true);
 				}
 			},
@@ -259,25 +236,7 @@ const RoomBody = (): ReactElement => {
 		return () => {
 			callbacks.remove('streamNewMessage', room._id);
 		};
-	}, [_isAtBottom, room._id, sendToBottom, user?._id]);
-
-	useEffect(() => {
-		const messageList = innerBoxRef.current?.querySelector('ul');
-
-		if (!messageList) {
-			return;
-		}
-
-		const observer = new ResizeObserver(() => {
-			sendToBottomIfNecessary();
-		});
-
-		observer.observe(messageList);
-
-		return () => {
-			observer?.disconnect();
-		};
-	}, [sendToBottomIfNecessary]);
+	}, [room._id, sendToBottom, user?._id]);
 
 	const { data: roomLeader } = useReactiveQuery(['rooms', room._id, 'leader', { not: user?._id }], () => {
 		const leaderRoomRole = RoomRoles.findOne({
