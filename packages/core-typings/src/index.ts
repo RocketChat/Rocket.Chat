@@ -21,6 +21,7 @@ export * from './IServerInfo';
 export * from './IWorkspaceInfo';
 export * from './IInstanceStatus';
 export * from './IWebdavAccount';
+export * from './IWorkspaceCredentials';
 export * from './IPermission';
 export * from './utils';
 export * from './IRole';
