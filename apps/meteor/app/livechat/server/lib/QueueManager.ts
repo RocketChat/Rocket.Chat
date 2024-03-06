@@ -5,6 +5,7 @@ import { LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 import { checkServiceStatus, createLivechatRoom, createLivechatInquiry } from './Helper';
 import { RoutingManager } from './RoutingManager';
