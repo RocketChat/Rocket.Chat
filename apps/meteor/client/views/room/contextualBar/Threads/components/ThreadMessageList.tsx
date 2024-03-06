@@ -50,7 +50,7 @@ type ThreadMessageListProps = {
 
 const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElement => {
 	const formatDate = useFormatDate();
-	const { callbackRef, listStyle, bubbleDate, showBubble, style: bubbleDateStyle } = useDateScroll();
+	const { innerRef, listStyle, bubbleDate, showBubble, style: bubbleDateStyle } = useDateScroll();
 
 	const { messages, loading } = useLegacyThreadMessages(mainMessage._id);
 	const {
@@ -68,7 +68,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 	const { messageListRef, messageListProps } = useMessageListNavigation();
 	const listRef = useMergedRefs<HTMLElement | null>(listScrollRef, listJumpRef, messageListRef);
 
-	const scrollRef = useMergedRefs<HTMLElement | null>(callbackRef, listWrapperScrollRef);
+	const scrollRef = useMergedRefs<HTMLElement | null>(innerRef, listWrapperScrollRef);
 
 	return (
 		<div className={['thread-list js-scroll-thread', hideUsernames && 'hide-usernames'].filter(isTruthy).join(' ')}>
