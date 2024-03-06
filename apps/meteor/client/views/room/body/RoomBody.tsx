@@ -1,15 +1,11 @@
-import type { IMessage, IUser } from '@rocket.chat/core-typings';
-import { isEditedMessage } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import { Box, Bubble } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { MouseEventHandler, ReactElement, UIEvent } from 'react';
-import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { memo, useCallback, useMemo, useRef } from 'react';
 
 import { RoomRoles } from '../../../../app/models/client';
-import { RoomHistoryManager } from '../../../../app/ui-utils/client';
-import { isAtBottom } from '../../../../app/ui/client/views/app/lib/scrolling';
-import { callbacks } from '../../../../lib/callbacks';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { CustomScrollbars } from '../../../components/CustomScrollbars';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
@@ -37,6 +33,7 @@ import UploadProgressIndicator from './UploadProgressIndicator';
 import { useFileUpload } from './hooks/useFileUpload';
 import { useGetMore } from './hooks/useGetMore';
 import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
+import { useHasNewMessages } from './hooks/useHasNewMessages';
 import { useLeaderBanner } from './hooks/useLeaderBanner';
 import { useListIsAtBottom } from './hooks/useListIsAtBottom';
 import { useQuoteMessageByUrl } from './hooks/useQuoteMessageByUrl';
@@ -60,10 +57,6 @@ const RoomBody = (): ReactElement => {
 	const admin = useRole('admin');
 	const subscription = useRoomSubscription();
 	const retentionPolicy = useRetentionPolicy(room);
-
-	const { openUserCard, triggerProps } = useUserCard();
-
-	const [hasNewMessages, setHasNewMessages] = useState(false);
 
 	const hideFlexTab = useUserPreference<boolean>('hideFlexTab') || undefined;
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
@@ -107,7 +100,7 @@ const RoomBody = (): ReactElement => {
 
 	const { innerRef: dateScrollInnerRef, listStyle, bubbleDate, showBubble, style: bubbleDateStyle } = useDateScroll();
 
-	const { innerRef: isAtBottomInnerRef, atBottomRef, sendToBottom, sendToBottomIfNecessary } = useListIsAtBottom();
+	const { innerRef: isAtBottomInnerRef, atBottomRef, sendToBottom, sendToBottomIfNecessary, isAtBottom } = useListIsAtBottom();
 
 	const { innerRef: getMoreInnerRef } = useGetMore(room._id, atBottomRef);
 
@@ -138,23 +131,16 @@ const RoomBody = (): ReactElement => {
 
 	const wrapperBoxRefs = useMergedRefs(unreadBarWrapperRef, leaderBannerWrapperRef);
 
-	const handleNewMessageButtonClick = useCallback(() => {
-		atBottomRef.current = true;
-		sendToBottomIfNecessary();
-		setHasNewMessages(false);
-		chat.composer?.focus();
-	}, [atBottomRef, chat.composer, sendToBottomIfNecessary]);
-
-	const handleJumpToRecentButtonClick = useCallback(() => {
-		atBottomRef.current = true;
-		RoomHistoryManager.clear(room._id);
-		RoomHistoryManager.getMoreIfIsEmpty(room._id);
-	}, [atBottomRef, room._id]);
-
-	const handleComposerResize = useCallback((): void => {
-		sendToBottomIfNecessary();
-		setHasNewMessages(false);
-	}, [sendToBottomIfNecessary]);
+	const { handleNewMessageButtonClick, handleJumpToRecentButtonClick, handleComposerResize, hasNewMessages } = useHasNewMessages(
+		room._id,
+		user?._id,
+		atBottomRef,
+		{
+			sendToBottom,
+			sendToBottomIfNecessary,
+			isAtBottom,
+		},
+	);
 
 	const handleNavigateToPreviousMessage = useCallback((): void => {
 		chat.messageEditing.toPreviousMessage();
@@ -196,6 +182,8 @@ const RoomBody = (): ReactElement => {
 		[toolbox],
 	);
 
+	const { openUserCard, triggerProps } = useUserCard();
+
 	const handleOpenUserCard = useCallback(
 		(event: UIEvent, username: IUser['username']) => {
 			if (!username) {
@@ -210,33 +198,6 @@ const RoomBody = (): ReactElement => {
 	useGoToHomeOnRemoved(room, user?._id);
 	useReadMessageWindowEvents();
 	useQuoteMessageByUrl();
-
-	useEffect(() => {
-		callbacks.add(
-			'streamNewMessage',
-			(msg: IMessage) => {
-				if (room._id !== msg.rid || isEditedMessage(msg) || msg.tmid) {
-					return;
-				}
-
-				if (msg.u._id === user?._id) {
-					sendToBottom();
-					setHasNewMessages(false);
-					return;
-				}
-
-				if (innerBoxRef.current && !isAtBottom(innerBoxRef.current)) {
-					setHasNewMessages(true);
-				}
-			},
-			callbacks.priority.MEDIUM,
-			room._id,
-		);
-
-		return () => {
-			callbacks.remove('streamNewMessage', room._id);
-		};
-	}, [room._id, sendToBottom, user?._id]);
 
 	const { data: roomLeader } = useReactiveQuery(['rooms', room._id, 'leader', { not: user?._id }], () => {
 		const leaderRoomRole = RoomRoles.findOne({
