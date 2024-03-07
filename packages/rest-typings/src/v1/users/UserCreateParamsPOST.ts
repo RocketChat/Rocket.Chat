@@ -1,4 +1,3 @@
-import type { IUserSettings } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 const ajv = new Ajv({
@@ -43,14 +42,6 @@ const userCreateParamsPostSchema = {
 		sendWelcomeEmail: { type: 'boolean', nullable: true },
 		verified: { type: 'boolean', nullable: true },
 		customFields: { type: 'object' },
-		settings: {
-			type: 'object',
-			properties: {
-				profile: { type: 'object' },
-				preferences: { type: 'object' },
-			},
-			additionalProperties: false,
-		},
 		fields: { type: 'string', nullable: true },
 	},
 	additionalProperties: false,
