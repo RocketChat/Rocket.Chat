@@ -59,7 +59,7 @@ export type StoreState = {
 		enabled: boolean;
 	};
 	iframe: {
-		guest?: Serialized<ILivechatVisitorDTO>;
+		guest: Serialized<ILivechatVisitorDTO> | object;
 		theme: {
 			title?: string;
 			color?: string;
@@ -119,7 +119,7 @@ export const initialState = (): StoreState => ({
 		play: false,
 	},
 	iframe: {
-		guest: undefined,
+		guest: {},
 		theme: {},
 		visible: true,
 	},
