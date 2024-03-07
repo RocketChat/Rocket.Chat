@@ -1,4 +1,3 @@
-import { Apps, AppEvents } from '@rocket.chat/apps';
 import type { UserStatus } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
@@ -13,6 +12,7 @@ import { saveUserIdentity } from '../../app/lib/server/functions/saveUserIdentit
 import { passwordPolicy } from '../../app/lib/server/lib/passwordPolicy';
 import { settings as rcSettings } from '../../app/settings/server';
 import { setUserStatusMethod } from '../../app/user-status/server/methods/setUserStatus';
+import { AppEvents, Apps } from '../../ee/server/apps/orchestrator';
 import { compareUserPassword } from '../lib/compareUserPassword';
 import { compareUserPasswordHistory } from '../lib/compareUserPasswordHistory';
 
@@ -156,7 +156,7 @@ async function saveUserProfile(
 
 	// App IPostUserUpdated event hook
 	const updatedUser = await Users.findOneById(this.userId);
-	await Apps?.triggerEvent(AppEvents.IPostUserUpdated, { user: updatedUser, previousUser: user });
+	await Apps.triggerEvent(AppEvents.IPostUserUpdated, { user: updatedUser, previousUser: user });
 
 	return true;
 }

@@ -8,7 +8,6 @@ import stream from 'stream';
 import URL from 'url';
 
 import { hashLoginToken } from '@rocket.chat/account-utils';
-import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import type { IUpload } from '@rocket.chat/core-typings';
 import { Users, Avatars, UserDataFiles, Uploads, Settings, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
@@ -22,6 +21,7 @@ import sharp from 'sharp';
 import type { WritableStreamBuffer } from 'stream-buffers';
 import streamBuffers from 'stream-buffers';
 
+import { AppEvents, Apps } from '../../../../ee/server/apps';
 import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
@@ -177,7 +177,7 @@ export const FileUpload = {
 
 		// App IPreFileUpload event hook
 		try {
-			await Apps?.triggerEvent(AppEvents.IPreFileUpload, { file, content: content || Buffer.from([]) });
+			await Apps.triggerEvent(AppEvents.IPreFileUpload, { file, content: content || Buffer.from([]) });
 		} catch (error: any) {
 			if (error.name === AppsEngineException.name) {
 				throw new Meteor.Error('error-app-prevented', error.message);

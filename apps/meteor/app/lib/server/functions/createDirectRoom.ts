@@ -1,4 +1,3 @@
-import { AppEvents, Apps } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import type { ISubscriptionExtraData } from '@rocket.chat/core-services';
 import type { ICreatedRoom, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
@@ -7,6 +6,7 @@ import { Random } from '@rocket.chat/random';
 import { Meteor } from 'meteor/meteor';
 import type { MatchKeysAndValues } from 'mongodb';
 
+import { Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { settings } from '../../../settings/server';
@@ -104,7 +104,7 @@ export async function createDirectRoom(
 			_USERNAMES: usernames,
 		};
 
-		const prevent = await Apps?.triggerEvent(AppEvents.IPreRoomCreatePrevent, tmpRoom).catch((error) => {
+		const prevent = await Apps.triggerEvent('IPreRoomCreatePrevent', tmpRoom).catch((error) => {
 			if (error.name === AppsEngineException.name) {
 				throw new Meteor.Error('error-app-prevented', error.message);
 			}
@@ -116,10 +116,7 @@ export async function createDirectRoom(
 			throw new Meteor.Error('error-app-prevented', 'A Rocket.Chat App prevented the room creation.');
 		}
 
-		const result = await Apps?.triggerEvent(
-			AppEvents.IPreRoomCreateModify,
-			await Apps?.triggerEvent(AppEvents.IPreRoomCreateExtend, tmpRoom),
-		);
+		const result = await Apps.triggerEvent('IPreRoomCreateModify', await Apps.triggerEvent('IPreRoomCreateExtend', tmpRoom));
 
 		if (typeof result === 'object') {
 			Object.assign(roomInfo, result);
@@ -173,7 +170,7 @@ export async function createDirectRoom(
 
 		await callbacks.run('afterCreateDirectRoom', insertedRoom, { members: roomMembers, creatorId: options?.creator });
 
-		void Apps?.triggerEvent(AppEvents.IPostRoomCreate, insertedRoom);
+		void Apps.triggerEvent('IPostRoomCreate', insertedRoom);
 	}
 
 	return {
