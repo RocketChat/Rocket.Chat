@@ -11,11 +11,14 @@ type UnreadMessagesIndicatorProps = {
 };
 
 const indicatorStyle = css`
-	position: absolute;
+	/* position: absolute;
 	top: 8px;
 	left: 50%;
-	translate: -50%;
-	z-index: 1;
+	translate: -50%; */
+	position: relative;
+	display: flex;
+	justify-content: center;
+	z-index: 3;
 `;
 
 const UnreadMessagesIndicator = ({ count, onJumpButtonClick, onMarkAsReadButtonClick }: UnreadMessagesIndicatorProps): ReactElement => {
