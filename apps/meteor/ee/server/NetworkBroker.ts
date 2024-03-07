@@ -78,6 +78,7 @@ export class NetworkBroker implements IBroker {
 		}
 		void this.broker.destroyService(name);
 		instance.removeAllListeners();
+		instance.stopped()
 	}
 
 	createService(instance: IServiceClass, serviceDependencies?: string[]): void {
