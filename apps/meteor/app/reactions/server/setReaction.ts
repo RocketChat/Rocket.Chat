@@ -1,4 +1,3 @@
-import { Apps, AppEvents } from '@rocket.chat/apps';
 import { api } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Messages, EmojiCustom, Rooms, Users } from '@rocket.chat/models';
@@ -6,6 +5,7 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
+import { AppEvents, Apps } from '../../../ee/server/apps/orchestrator';
 import { callbacks } from '../../../lib/callbacks';
 import { i18n } from '../../../server/lib/i18n';
 import { broadcastMessageFromData } from '../../../server/modules/watchers/lib/messages';
@@ -106,7 +106,7 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 		isReacted = true;
 	}
 
-	await Apps?.triggerEvent(AppEvents.IPostMessageReacted, message, user, reaction, isReacted);
+	await Apps.triggerEvent(AppEvents.IPostMessageReacted, message, user, reaction, isReacted);
 
 	void broadcastMessageFromData({
 		id: message._id,

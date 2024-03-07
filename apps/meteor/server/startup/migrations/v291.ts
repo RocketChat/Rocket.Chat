@@ -1,7 +1,8 @@
-import { Apps, type AppMetadataStorage } from '@rocket.chat/apps';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import { Settings } from '@rocket.chat/models';
 
+import { Apps } from '../../../ee/server/apps';
+import type { AppRealStorage } from '../../../ee/server/apps/storage';
 import { addMigration } from '../../lib/migrations';
 
 addMigration({
@@ -12,17 +13,13 @@ addMigration({
 		await Settings.removeById('Apps_Framework_Development_Mode');
 		await Settings.removeById('Apps_Framework_enabled');
 
-		if (!Apps) {
-			throw new Error('Apps Orchestrator not registered.');
-		}
-
 		Apps.initialize();
 
-		const appsStorage = Apps.getStorage();
+		const appsStorage = Apps.getStorage() as AppRealStorage;
 
 		const apps = await appsStorage.retrieveAll();
 
-		const promises: Array<ReturnType<AppMetadataStorage['update']>> = [];
+		const promises: Array<ReturnType<AppRealStorage['update']>> = [];
 
 		apps.forEach((app) =>
 			promises.push(

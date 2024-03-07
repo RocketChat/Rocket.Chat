@@ -1,4 +1,4 @@
 import './cron';
 import './appRequestsCron';
 
-export { Apps } from './orchestrator';
+export { Apps, AppEvents } from './orchestrator';

@@ -1,4 +1,3 @@
-import { Apps, AppEvents } from '@rocket.chat/apps';
 import { isUserFederated } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import Gravatar from 'gravatar';
@@ -6,6 +5,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
+import { AppEvents, Apps } from '../../../../ee/server/apps/orchestrator';
 import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
@@ -434,7 +434,7 @@ export const saveUser = async function (userId, userData) {
 		oldUser: oldUserData,
 	});
 
-	await Apps?.triggerEvent(AppEvents.IPostUserUpdated, {
+	await Apps.triggerEvent(AppEvents.IPostUserUpdated, {
 		user: userUpdated,
 		previousUser: oldUserData,
 		performedBy: await safeGetMeteorUser(),
