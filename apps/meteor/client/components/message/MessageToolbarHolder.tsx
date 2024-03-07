@@ -2,7 +2,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { MessageToolbarWrapper } from '@rocket.chat/fuselage';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { Suspense, lazy, memo, useRef, useState } from 'react';
+import React, { Suspense, lazy, memo, useState } from 'react';
 
 import type { MessageActionContext } from '../../../app/ui-utils/client/lib/MessageAction';
 import { useChat } from '../../views/room/contexts/ChatContext';
@@ -17,8 +17,7 @@ const MessageToolbar = lazy(() => import('./toolbar/MessageToolbar'));
 
 const MessageToolbarHolder = ({ message, context }: MessageToolbarHolderProps): ReactElement => {
 	const chat = useChat();
-	const ref = useRef(null);
-	const [isVisible] = useIsVisible(ref);
+	const [ref, isVisible] = useIsVisible();
 	const [isToolbarMenuOpen, setIsToolbarMenuOpen] = useState(false);
 
 	const showToolbar = isVisible || isToolbarMenuOpen;
