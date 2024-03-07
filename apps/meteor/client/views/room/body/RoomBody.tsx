@@ -117,11 +117,19 @@ const RoomBody = (): ReactElement => {
 
 	const { messageListRef, messageListProps } = useMessageListNavigation();
 
+	const { handleNewMessageButtonClick, handleJumpToRecentButtonClick, handleComposerResize, hasNewMessages, newMessagesScrollRef } =
+		useHasNewMessages(room._id, user?._id, atBottomRef, {
+			sendToBottom,
+			sendToBottomIfNecessary,
+			isAtBottom,
+		});
+
 	const innerRef = useMergedRefs(
 		dateScrollInnerRef,
 		innerBoxRef,
 		restoreScrollPositionInnerRef,
 		isAtBottomInnerRef,
+		newMessagesScrollRef,
 		leaderBannerInnerRef,
 		unreadBarInnerRef,
 		getMoreInnerRef,
@@ -130,17 +138,6 @@ const RoomBody = (): ReactElement => {
 	);
 
 	const wrapperBoxRefs = useMergedRefs(unreadBarWrapperRef, leaderBannerWrapperRef);
-
-	const { handleNewMessageButtonClick, handleJumpToRecentButtonClick, handleComposerResize, hasNewMessages } = useHasNewMessages(
-		room._id,
-		user?._id,
-		atBottomRef,
-		{
-			sendToBottom,
-			sendToBottomIfNecessary,
-			isAtBottom,
-		},
-	);
 
 	const handleNavigateToPreviousMessage = useCallback((): void => {
 		chat.messageEditing.toPreviousMessage();
