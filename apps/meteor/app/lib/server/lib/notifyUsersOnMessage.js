@@ -177,14 +177,13 @@ export async function notifyUsersOnMessage(message, room) {
 		return message;
 	}
 
-	// if message sent ONLY on a thread, skips the rest as it is done on a callback specific to threads
-	if (message.tmid && !message.tshow) {
-		await Rooms.incMsgCountById(message.rid, 1);
-		return message;
-	}
-
 	// Update all the room activity tracker fields
 	await Rooms.incMsgCountAndSetLastMessageById(message.rid, 1, message.ts, settings.get('Store_Last_Message') && message);
+
+	// if message sent ONLY on a thread, skips the rest as it is done on a callback specific to threads
+	if (message.tmid && !message.tshow) {
+		return message;
+	}
 
 	await updateUsersSubscriptions(message, room);
 
