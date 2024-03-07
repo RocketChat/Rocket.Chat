@@ -84,8 +84,6 @@ class ChatContainer extends Component {
 		}
 
 		const visitor = { token, ...guest };
-		// const grantUser = useGrantUser();
-		// grantUser(visitor);
 		const { visitor: newUser } = await Livechat.grantVisitor({ visitor });
 		await dispatch({ user: newUser });
 	};

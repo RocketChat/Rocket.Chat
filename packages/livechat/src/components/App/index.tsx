@@ -12,17 +12,13 @@ const host =
 
 export const useSsl = Boolean((Array.isArray(host) ? host[0] : host)?.match(/^https:/));
 
-console.log('host', host);
-console.log('useSsl', useSsl);
-console.log('host.replace(/^http/, "ws")', host.replace(/^http/, 'ws'));
-
 const AppConnector = () => (
 	<div id='app'>
 		<QueryClientProvider client={new QueryClient()}>
-			<SDKProvider serverURL={host}>
-				<ConnectionStatusProvider>
-					<ServerProvider>
-						<StoreProvider>
+			<StoreProvider>
+				<SDKProvider serverURL={host}>
+					<ConnectionStatusProvider>
+						<ServerProvider>
 							<StoreConsumer>
 								{({
 									config,
@@ -54,10 +50,10 @@ const AppConnector = () => (
 									/>
 								)}
 							</StoreConsumer>
-						</StoreProvider>
-					</ServerProvider>
-				</ConnectionStatusProvider>
-			</SDKProvider>
+						</ServerProvider>
+					</ConnectionStatusProvider>
+				</SDKProvider>
+			</StoreProvider>
 		</QueryClientProvider>
 	</div>
 );
