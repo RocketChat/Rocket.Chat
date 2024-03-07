@@ -7,13 +7,16 @@ import { withThrottling } from '../../../../lib/utils/highOrderFunctions';
 import { useDateListController } from '../providers/DateListProvider';
 
 type useDateScrollReturn = {
-	bubbleDate: string | undefined;
 	innerRef: (node: HTMLElement | null) => void;
 	bubbleRef: MutableRefObject<HTMLElement | null>;
-	className?: ReturnType<typeof css>;
-	showBubble: boolean;
 	listStyle?: ReturnType<typeof css>;
-	style?: React.CSSProperties;
+} & BubbleDateProps;
+
+export type BubbleDateProps = {
+	bubbleDate: string | undefined;
+	bubbleDateClassName?: ReturnType<typeof css>;
+	showBubble: boolean;
+	bubbleDateStyle?: React.CSSProperties;
 };
 
 export const useDateScroll = (margin = 8): useDateScrollReturn => {
@@ -22,13 +25,13 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 			date: string;
 			show: boolean;
 			style?: React.CSSProperties;
-			className?: ReturnType<typeof css>;
+			bubbleDateClassName?: ReturnType<typeof css>;
 			offset: number;
 		}>({
 			date: '',
 			show: false,
 			style: undefined,
-			className: undefined,
+			bubbleDateClassName: undefined,
 			offset: 0,
 		}),
 	);
@@ -97,7 +100,7 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 						...(date && { date }),
 						show: Boolean(date),
 						style,
-						className: css`
+						bubbleDateClassName: css`
 							opacity: 0;
 							transition: opacity 0.6s;
 							&.bubble-visible {
@@ -148,8 +151,8 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 		bubbleRef,
 		listStyle,
 		bubbleDate: bubbleDate.date,
-		style: bubbleDate.style,
+		bubbleDateStyle: bubbleDate.style,
 		showBubble: Boolean(bubbleDate.show),
-		className: bubbleDate.className,
+		bubbleDateClassName: bubbleDate.bubbleDateClassName,
 	};
 };

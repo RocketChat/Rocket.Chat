@@ -1,5 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { Box, Bubble, Margins } from '@rocket.chat/fuselage';
+import { Box, Margins } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { MouseEventHandler, ReactElement, UIEvent } from 'react';
@@ -9,9 +9,9 @@ import { RoomRoles } from '../../../../app/models/client';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { CustomScrollbars } from '../../../components/CustomScrollbars';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
-import { useFormatDate } from '../../../hooks/useFormatDate';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
 import Announcement from '../Announcement';
+import { BubbleDate } from '../BubbleDate';
 import { MessageList } from '../MessageList';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
 import ComposerContainer from '../composer/ComposerContainer';
@@ -48,7 +48,6 @@ const RoomBody = (): ReactElement => {
 		throw new Error('No ChatContext provided');
 	}
 
-	const formatDate = useFormatDate();
 	const t = useTranslation();
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const room = useRoom();
@@ -99,15 +98,7 @@ const RoomBody = (): ReactElement => {
 		counter: [unread],
 	} = useHandleUnread(room, subscription);
 
-	const {
-		innerRef: dateScrollInnerRef,
-		bubbleRef,
-		listStyle,
-		bubbleDate,
-		showBubble,
-		style: bubbleDateStyle,
-		className: bubbleDateClassName,
-	} = useDateScroll();
+	const { innerRef: dateScrollInnerRef, bubbleRef, listStyle, ...bubbleDate } = useDateScroll();
 
 	const { innerRef: isAtBottomInnerRef, atBottomRef, sendToBottom, sendToBottomIfNecessary, isAtBottom } = useListIsAtBottom();
 
@@ -258,15 +249,8 @@ const RoomBody = (): ReactElement => {
 											onMarkAsReadButtonClick={handleMarkAsReadButtonClick}
 										/>
 									)}
-									<Box ref={bubbleRef} position='relative' display='flex' justifyContent='center'>
-										<Box className={[bubbleDateClassName, showBubble && 'bubble-visible']} style={bubbleDateStyle}>
-											{bubbleDate && (
-												<Bubble small secondary>
-													{formatDate(bubbleDate)}
-												</Bubble>
-											)}
-										</Box>
-									</Box>
+
+									<BubbleDate ref={bubbleRef} {...bubbleDate} />
 								</Margins>
 							</Box>
 
