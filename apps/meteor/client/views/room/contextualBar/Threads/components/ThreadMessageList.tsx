@@ -16,7 +16,6 @@ import LoadingMessagesIndicator from '../../../body/LoadingMessagesIndicator';
 import { useDateScroll } from '../../../hooks/useDateScroll';
 import { useFirstUnreadMessageId } from '../../../hooks/useFirstUnreadMessageId';
 import { useMessageListNavigation } from '../../../hooks/useMessageListNavigation';
-import { useScrollMessageList } from '../../../hooks/useScrollMessageList';
 import { useLegacyThreadMessageJump } from '../hooks/useLegacyThreadMessageJump';
 import { useLegacyThreadMessageListScrolling } from '../hooks/useLegacyThreadMessageListScrolling';
 import { useLegacyThreadMessages } from '../hooks/useLegacyThreadMessages';
@@ -51,7 +50,7 @@ type ThreadMessageListProps = {
 
 const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElement => {
 	const formatDate = useFormatDate();
-	const { callbackRef, listStyle, bubbleDate, showBubble, style: bubbleDateStyle } = useDateScroll();
+	const { innerRef, listStyle, bubbleDate, showBubble, style: bubbleDateStyle } = useDateScroll();
 
 	const { messages, loading } = useLegacyThreadMessages(mainMessage._id);
 	const {
@@ -66,11 +65,10 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 	const firstUnreadMessageId = useFirstUnreadMessageId();
 	const messageGroupingPeriod = Number(useSetting('Message_GroupingPeriod'));
 
-	const scrollMessageList = useScrollMessageList(listWrapperScrollRef);
 	const { messageListRef, messageListProps } = useMessageListNavigation();
 	const listRef = useMergedRefs<HTMLElement | null>(listScrollRef, listJumpRef, messageListRef);
 
-	const scrollRef = useMergedRefs<HTMLElement | null>(callbackRef, listWrapperScrollRef);
+	const scrollRef = useMergedRefs<HTMLElement | null>(innerRef, listWrapperScrollRef);
 
 	return (
 		<div className={['thread-list js-scroll-thread', hideUsernames && 'hide-usernames'].filter(isTruthy).join(' ')}>
@@ -100,7 +98,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 							<LoadingMessagesIndicator />
 						</li>
 					) : (
-						<MessageListProvider scrollMessageList={scrollMessageList}>
+						<MessageListProvider messageListRef={listJumpRef}>
 							{[mainMessage, ...messages].map((message, index, { [index - 1]: previous }) => {
 								const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
 								const newDay = isMessageNewDay(message, previous);
