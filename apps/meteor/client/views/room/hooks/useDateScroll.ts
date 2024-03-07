@@ -1,16 +1,22 @@
 import { css } from '@rocket.chat/css-in-js';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
-import { useCallback, useState } from 'react';
+import type { MutableRefObject } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 import { withThrottling } from '../../../../lib/utils/highOrderFunctions';
 import { useDateListController } from '../providers/DateListProvider';
 
 type useDateScrollReturn = {
-	bubbleDate: string | undefined;
 	innerRef: (node: HTMLElement | null) => void;
-	style?: ReturnType<typeof css>;
-	showBubble: boolean;
+	bubbleRef: MutableRefObject<HTMLElement | null>;
 	listStyle?: ReturnType<typeof css>;
+} & BubbleDateProps;
+
+export type BubbleDateProps = {
+	bubbleDate: string | undefined;
+	bubbleDateClassName?: ReturnType<typeof css>;
+	showBubble: boolean;
+	bubbleDateStyle?: React.CSSProperties;
 };
 
 export const useDateScroll = (margin = 8): useDateScrollReturn => {
@@ -18,61 +24,85 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 		useState<{
 			date: string;
 			show: boolean;
-			style?: ReturnType<typeof css>;
+			style?: React.CSSProperties;
+			bubbleDateClassName?: ReturnType<typeof css>;
+			offset: number;
 		}>({
 			date: '',
 			show: false,
 			style: undefined,
+			bubbleDateClassName: undefined,
+			offset: 0,
 		}),
 	);
 
 	const { list } = useDateListController();
+
+	const bubbleRef = useRef<HTMLElement>(null);
 
 	const callbackRef = useCallback(
 		(node: HTMLElement | null) => {
 			if (!node) {
 				return;
 			}
+			const bubbleOffset = bubbleRef.current?.getBoundingClientRect().bottom || 0;
+
 			const onScroll = (() => {
 				let timeout: ReturnType<typeof setTimeout>;
-				return (elements: Set<HTMLElement>, offset: number) => {
+				return (elements: Set<HTMLElement>) => {
 					clearTimeout(timeout);
 
-					const bubbleOffset = offset;
-
 					// Gets the first non visible message date and sets the bubble date to it
-					const [date, message] = [...elements].reduce((ret, message) => {
+					const [date, message, style] = [...elements].reduce((ret, message) => {
 						// Sanitize elements
 						if (!message.dataset.id) {
 							return ret;
 						}
 
-						const { top } = message.getBoundingClientRect();
+						const { top, height } = message.getBoundingClientRect();
 						const { id } = message.dataset;
 
-						if (top < bubbleOffset) {
-							// Remove T - . : from the date
-							return [new Date(id).toISOString(), message];
+						// if the bubble if between the divider and the top, position it at the top of the divider
+						if (top > bubbleOffset && top < bubbleOffset + height) {
+							return [
+								ret[0] || new Date(id).toISOString(),
+								ret[1] || message,
+								{
+									position: 'absolute',
+									top: `${top - height - bubbleOffset + margin}px`,
+									left: ' 50%',
+									translate: '-50%',
+									zIndex: 11,
+								},
+							];
+						}
+
+						if (top < bubbleOffset + height) {
+							return [
+								new Date(id).toISOString(),
+								message,
+								{
+									position: 'absolute',
+									top: `${margin}px`,
+									left: ' 50%',
+									translate: '-50%',
+									zIndex: 11,
+								},
+							];
 						}
 						return ret;
-					}, [] as [string, HTMLElement] | []);
+					}, [] as [string, HTMLElement, { [key: number]: string | number }?] | []);
 
 					// We always keep the previous date if we don't have a new one, so when the bubble disappears it doesn't flicker
-
-					setBubbleDate(() => ({
+					setBubbleDate((current) => ({
+						...current,
 						date: '',
 						...(date && { date }),
 						show: Boolean(date),
-						style: css`
-							position: absolute;
-							top: ${margin}px;
-							left: 50%;
-							translate: -50%;
-							z-index: 1;
-
+						style,
+						bubbleDateClassName: css`
 							opacity: 0;
 							transition: opacity 0.6s;
-
 							&.bubble-visible {
 								opacity: 1;
 							}
@@ -81,7 +111,7 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 
 					if (message) {
 						const { top } = message.getBoundingClientRect();
-						if (top < offset && top > 0) {
+						if (top < bubbleOffset && top > 0) {
 							return;
 						}
 					}
@@ -96,9 +126,9 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 					);
 				};
 			})();
+
 			const fn = withThrottling({ wait: 30 })(() => {
-				const offset = node.getBoundingClientRect().top;
-				onScroll(list, offset);
+				onScroll(list);
 			});
 
 			node.addEventListener('scroll', fn, { passive: true });
@@ -116,5 +146,13 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 			  `
 			: undefined;
 
-	return { innerRef: callbackRef, listStyle, bubbleDate: bubbleDate.date, style: bubbleDate.style, showBubble: Boolean(bubbleDate.show) };
+	return {
+		innerRef: callbackRef,
+		bubbleRef,
+		listStyle,
+		bubbleDate: bubbleDate.date,
+		bubbleDateStyle: bubbleDate.style,
+		showBubble: Boolean(bubbleDate.show),
+		bubbleDateClassName: bubbleDate.bubbleDateClassName,
+	};
 };

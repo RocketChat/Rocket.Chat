@@ -1,5 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { Box, Bubble } from '@rocket.chat/fuselage';
+import { Box, Margins } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { MouseEventHandler, ReactElement, UIEvent } from 'react';
@@ -9,9 +9,9 @@ import { RoomRoles } from '../../../../app/models/client';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { CustomScrollbars } from '../../../components/CustomScrollbars';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
-import { useFormatDate } from '../../../hooks/useFormatDate';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
 import Announcement from '../Announcement';
+import { BubbleDate } from '../BubbleDate';
 import { MessageList } from '../MessageList';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
 import ComposerContainer from '../composer/ComposerContainer';
@@ -48,7 +48,6 @@ const RoomBody = (): ReactElement => {
 		throw new Error('No ChatContext provided');
 	}
 
-	const formatDate = useFormatDate();
 	const t = useTranslation();
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const room = useRoom();
@@ -56,6 +55,7 @@ const RoomBody = (): ReactElement => {
 	const toolbox = useRoomToolbox();
 	const admin = useRole('admin');
 	const subscription = useRoomSubscription();
+
 	const retentionPolicy = useRetentionPolicy(room);
 
 	const hideFlexTab = useUserPreference<boolean>('hideFlexTab') || undefined;
@@ -98,7 +98,7 @@ const RoomBody = (): ReactElement => {
 		counter: [unread],
 	} = useHandleUnread(room, subscription);
 
-	const { innerRef: dateScrollInnerRef, listStyle, bubbleDate, showBubble, style: bubbleDateStyle } = useDateScroll();
+	const { innerRef: dateScrollInnerRef, bubbleRef, listStyle, ...bubbleDate } = useDateScroll();
 
 	const { innerRef: isAtBottomInnerRef, atBottomRef, sendToBottom, sendToBottomIfNecessary, isAtBottom } = useListIsAtBottom();
 
@@ -228,32 +228,32 @@ const RoomBody = (): ReactElement => {
 					<div className='messages-container-wrapper'>
 						<div className='messages-container-main' ref={wrapperBoxRefs} {...fileUploadTriggerProps}>
 							<DropTargetOverlay {...fileUploadOverlayProps} />
-							<div className={['container-bars', uploads.length && 'show'].filter(isTruthy).join(' ')}>
-								{uploads.map((upload) => (
-									<UploadProgressIndicator
-										key={upload.id}
-										id={upload.id}
-										name={upload.name}
-										percentage={upload.percentage}
-										error={upload.error instanceof Error ? upload.error.message : undefined}
-										onClose={handleUploadProgressClose}
-									/>
-								))}
-							</div>
-							{bubbleDate && (
-								<Box className={[bubbleDateStyle, showBubble && 'bubble-visible']}>
-									<Bubble small secondary>
-										{formatDate(bubbleDate)}
-									</Bubble>
-								</Box>
-							)}
-							{Boolean(unread) && (
-								<UnreadMessagesIndicator
-									count={unread}
-									onJumpButtonClick={handleUnreadBarJumpToButtonClick}
-									onMarkAsReadButtonClick={handleMarkAsReadButtonClick}
-								/>
-							)}
+							<Box position='absolute' w='full'>
+								<Margins block={8}>
+									<div className={['container-bars', uploads.length && 'show'].filter(isTruthy).join(' ')}>
+										{uploads.map((upload) => (
+											<UploadProgressIndicator
+												key={upload.id}
+												id={upload.id}
+												name={upload.name}
+												percentage={upload.percentage}
+												error={upload.error instanceof Error ? upload.error.message : undefined}
+												onClose={handleUploadProgressClose}
+											/>
+										))}
+									</div>
+									{Boolean(unread) && (
+										<UnreadMessagesIndicator
+											count={unread}
+											onJumpButtonClick={handleUnreadBarJumpToButtonClick}
+											onMarkAsReadButtonClick={handleMarkAsReadButtonClick}
+										/>
+									)}
+
+									<BubbleDate ref={bubbleRef} {...bubbleDate} />
+								</Margins>
+							</Box>
+
 							<div className={['messages-box', roomLeader && !hideLeaderHeader && 'has-leader'].filter(isTruthy).join(' ')}>
 								<JumpToRecentMessageButton visible={hasNewMessages} onClick={handleNewMessageButtonClick} text={t('New_messages')} />
 								<JumpToRecentMessageButton
