@@ -55,7 +55,6 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, disabled, e
 	const clickReset = (): void => {
 		const url = getUserAvatarPath(username || '', etag);
 		if (url === `/avatar/${username}`) {
-			dispatchToastMessage({ type: 'error', message: t('error-default-image-selected') });
 			return;
 		}
 
