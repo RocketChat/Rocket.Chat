@@ -8967,6 +8967,7 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/ddp-client": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
+    "@rocket.chat/fuselage-hooks": ^0.33.0
     "@rocket.chat/fuselage-tokens": ^0.33.0
     "@rocket.chat/gazzodown": "workspace:^"
     "@rocket.chat/logo": ^0.31.29
