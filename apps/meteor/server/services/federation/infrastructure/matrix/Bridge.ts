@@ -724,7 +724,6 @@ export class MatrixBridge implements IFederationBridge {
 			controller: {
 				onEvent: (request) => {
 					const event = request.getData() as unknown as AbstractMatrixEvent;
-					console.log({ event });
 					this.eventHandler(event);
 				},
 				onLog: (line, isError) => {
