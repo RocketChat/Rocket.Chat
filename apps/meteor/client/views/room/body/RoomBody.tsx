@@ -1,5 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { Box, Margins } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { MouseEventHandler, ReactElement, UIEvent } from 'react';
@@ -226,29 +226,37 @@ const RoomBody = (): ReactElement => {
 						<div className='messages-container-main' ref={wrapperBoxRefs} {...fileUploadTriggerProps}>
 							<DropTargetOverlay {...fileUploadOverlayProps} />
 							<Box position='absolute' w='full'>
-								<Margins block={8}>
-									<div className={['container-bars', uploads.length && 'show'].filter(isTruthy).join(' ')}>
-										{uploads.map((upload) => (
-											<UploadProgressIndicator
-												key={upload.id}
-												id={upload.id}
-												name={upload.name}
-												percentage={upload.percentage}
-												error={upload.error instanceof Error ? upload.error.message : undefined}
-												onClose={handleUploadProgressClose}
-											/>
-										))}
-									</div>
-									{Boolean(unread) && (
-										<UnreadMessagesIndicator
-											count={unread}
-											onJumpButtonClick={handleUnreadBarJumpToButtonClick}
-											onMarkAsReadButtonClick={handleMarkAsReadButtonClick}
+								{roomLeader ? (
+									<LeaderBar
+										_id={roomLeader._id}
+										username={roomLeader.username}
+										name={roomLeader.name}
+										visible={!hideLeaderHeader}
+										onAvatarClick={handleOpenUserCard}
+										triggerProps={triggerProps}
+									/>
+								) : null}
+								<div className={['container-bars', uploads.length && 'show'].filter(isTruthy).join(' ')}>
+									{uploads.map((upload) => (
+										<UploadProgressIndicator
+											key={upload.id}
+											id={upload.id}
+											name={upload.name}
+											percentage={upload.percentage}
+											error={upload.error instanceof Error ? upload.error.message : undefined}
+											onClose={handleUploadProgressClose}
 										/>
-									)}
+									))}
+								</div>
+								{Boolean(unread) && (
+									<UnreadMessagesIndicator
+										count={unread}
+										onJumpButtonClick={handleUnreadBarJumpToButtonClick}
+										onMarkAsReadButtonClick={handleMarkAsReadButtonClick}
+									/>
+								)}
 
-									<BubbleDate ref={bubbleRef} {...bubbleDate} />
-								</Margins>
+								<BubbleDate ref={bubbleRef} {...bubbleDate} />
 							</Box>
 
 							<div className={['messages-box', roomLeader && !hideLeaderHeader && 'has-leader'].filter(isTruthy).join(' ')}>
@@ -262,16 +270,6 @@ const RoomBody = (): ReactElement => {
 									<div className='content room-not-found error-color'>
 										<div>{t('You_must_join_to_view_messages_in_this_channel')}</div>
 									</div>
-								) : null}
-								{roomLeader ? (
-									<LeaderBar
-										_id={roomLeader._id}
-										username={roomLeader.username}
-										name={roomLeader.name}
-										visible={!hideLeaderHeader}
-										onAvatarClick={handleOpenUserCard}
-										triggerProps={triggerProps}
-									/>
 								) : null}
 								<div
 									className={[
