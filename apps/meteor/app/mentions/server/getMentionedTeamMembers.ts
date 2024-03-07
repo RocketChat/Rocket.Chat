@@ -5,6 +5,10 @@ import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../settings/server';
 
 const beforeGetMentions = async (mentionIds: string[], teamMentions: MessageMention[]): Promise<string[]> => {
+	if (!teamMentions.length) {
+		return mentionIds;
+	}
+
 	const teamsIds = teamMentions.map(({ _id }) => _id);
 	const members = await Team.getMembersByTeamIds(teamsIds, { projection: { userId: 1 } });
 	return [...new Set([...mentionIds, ...members.map(({ userId }) => userId)])];
