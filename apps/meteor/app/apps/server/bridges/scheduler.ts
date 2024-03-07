@@ -1,12 +1,11 @@
 import type { Job } from '@rocket.chat/agenda';
 import { Agenda } from '@rocket.chat/agenda';
+import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import type { IProcessor, IOnetimeSchedule, IRecurringSchedule, IJobContext } from '@rocket.chat/apps-engine/definition/scheduler';
 import { StartupType } from '@rocket.chat/apps-engine/definition/scheduler';
 import { SchedulerBridge } from '@rocket.chat/apps-engine/server/bridges/SchedulerBridge';
 import { ObjectID } from 'bson';
 import { MongoInternals } from 'meteor/mongo';
-
-import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 
 function _callProcessor(processor: IProcessor['processor']): (job: Job) => Promise<void> {
 	return (job) => {
@@ -36,7 +35,7 @@ export class AppSchedulerBridge extends SchedulerBridge {
 
 	private scheduler: Agenda;
 
-	constructor(private readonly orch: AppServerOrchestrator) {
+	constructor(private readonly orch: IAppServerOrchestrator) {
 		super();
 		this.scheduler = new Agenda({
 			mongo: (MongoInternals.defaultRemoteCollectionDriver().mongo as any).client.db(),
