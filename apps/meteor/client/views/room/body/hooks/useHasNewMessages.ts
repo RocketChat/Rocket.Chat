@@ -81,31 +81,17 @@ export const useHasNewMessages = (
 				return;
 			}
 
-			const messageList = node.querySelector('ul');
-
-			if (!messageList) {
-				return;
-			}
-
-			const observer = new ResizeObserver(() => {
-				if (atBottomRef.current === true) {
-					node.scrollTo({ left: 30, top: node.scrollHeight });
-				}
-			});
-
-			observer.observe(messageList);
-
 			node.addEventListener(
 				'scroll',
 				withThrottling({ wait: 100 })(() => {
-					isAtBottom() && setHasNewMessages(false);
+					atBottomRef.current && setHasNewMessages(false);
 				}),
 				{
 					passive: true,
 				},
 			);
 		},
-		[atBottomRef, isAtBottom],
+		[atBottomRef],
 	);
 
 	return {
