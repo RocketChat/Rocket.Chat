@@ -68,7 +68,7 @@ BlockquoteLine = ">" [ \t]* @Paragraph
 
 TimestampType = "t" / "T" / "d" / "D" / "f" / "F" / "R"
 
-Unixtime = d:Digit |13| { return d.join(''); }
+Unixtime = d:Digit |10| { return d.join(''); }
 
 Timestamp = "<t:" date:Unixtime ":" format:TimestampType ">" { return timestamp(date, format); } / "<t:" date:Unixtime ">" { return timestamp(date); }
 
