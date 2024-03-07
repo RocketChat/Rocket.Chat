@@ -3218,7 +3218,7 @@
   "Livechat_Calls": "Livechat Calls",
   "Livechat_visitor_email_and_transcript_email_do_not_match": "Visitor's email and transcript's email do not match",
   "Livechat_visitor_transcript_request": "{{guest}} requested the chat transcript",
-  "Assets_livechat_widget_logo": "Livechat widget logo",
+  "Assets_livechat_widget_logo": "Livechat widget logo (svg, png, jpg)",
   "Livechat_hide_watermark": "Hide \"powered by Rocket.Chat\"",
   "Livechat_hide_watermark_description": "Remove the Rocket.Chat logo from the widget",
   "LiveStream & Broadcasting": "LiveStream & Broadcasting",
