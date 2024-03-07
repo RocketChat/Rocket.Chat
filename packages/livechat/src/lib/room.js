@@ -154,12 +154,12 @@ export const initRoom = async () => {
 		if (servedBy) {
 			roomAgent = await Livechat.agent(rid);
 			await store.setState({ agent: roomAgent, queueInfo: null });
-			parentCall('callback', ['assign-agent', normalizeAgent(roomAgent)]);
+			parentCall('callback', 'assign-agent', normalizeAgent(roomAgent));
 		}
 	}
 
 	if (queueInfo) {
-		parentCall('callback', ['queue-position-change', queueInfo]);
+		parentCall('callback', 'queue-position-change', queueInfo);
 	}
 
 	setCookies(rid, token);
