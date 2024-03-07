@@ -632,38 +632,6 @@ export const createOmniSettings = () =>
 			i18nLabel: 'Call_provider',
 			enableQuery: omnichannelEnabledQuery,
 		});
-
-		await this.add('Livechat_hide_watermark', false, {
-			type: 'boolean',
-			group: 'Omnichannel',
-			section: 'Livechat',
-			invalidValue: false,
-			public: true,
-			enableQuery: omnichannelEnabledQuery,
-			i18nDescription: 'Livechat_hide_watermark_description',
-			enterprise: true,
-			modules: ['livechat-enterprise'],
-		});
-
-		await this.add(
-			'Assets_livechat_widget_logo',
-			{ defaultUrl: undefined },
-			{
-				type: 'asset',
-				group: 'Omnichannel',
-				section: 'Livechat',
-				invalidValue: null,
-				asset: 'livechat_widget_logo',
-				public: true,
-				enableQuery: omnichannelEnabledQuery,
-				enterprise: true,
-				modules: ['livechat-enterprise'],
-				fileConstraints: {
-					type: 'image',
-					extensions: ['svg', 'png', 'jpg', 'jpeg'],
-				},
-			},
-		);
 	});
 await settingsRegistry.addGroup('SMS', async function () {
 	await this.add('SMS_Enabled', false, {
