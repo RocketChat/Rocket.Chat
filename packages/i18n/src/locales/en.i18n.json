@@ -16,6 +16,8 @@
   "__count__without__department__": "{{count}} without department",
   "__count__without__tags__": "{{count}} without tags",
   "__count__without__assignee__": "{{count}} without assignee",
+  "__roomName__was_added_to_favorites": "{{roomName}} was added to favorites",
+  "__roomName__was_was_removed_from_favorites": "{{roomName}} was removed from favorites",
   "removed__username__as__role_": "removed {{username}} as {{role}}",
   "set__username__as__role_": "set {{username}} as {{role}}",
   "This_room_encryption_has_been_enabled_by__username_": "This room's encryption has been enabled by {{username}}",
