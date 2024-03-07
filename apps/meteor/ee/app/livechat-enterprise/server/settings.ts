@@ -194,6 +194,33 @@ export const createSettings = async (): Promise<void> => {
 		modules: ['livechat-enterprise'],
 	});
 
+	await settingsRegistry.add('Livechat_widget_position', 'right', {
+		type: 'select',
+		group: 'Omnichannel',
+		section: 'Livechat',
+		i18nLabel: 'Livechat_widget_position_on_the_screen',
+		public: true,
+		values: [
+			{ key: 'left', i18nLabel: 'Left' },
+			{ key: 'right', i18nLabel: 'Right' },
+		],
+		enterprise: true,
+		invalidValue: 'right',
+		modules: ['livechat-enterprise'],
+		enableQuery: omnichannelEnabledQuery,
+	});
+
+	await settingsRegistry.add('Livechat_background', '', {
+		type: 'string',
+		group: 'Omnichannel',
+		section: 'Livechat',
+		public: true,
+		enterprise: true,
+		invalidValue: '',
+		modules: ['livechat-enterprise'],
+		enableQuery: omnichannelEnabledQuery,
+	});
+
 	await settingsRegistry.add('Omnichannel_contact_manager_routing', true, {
 		type: 'boolean',
 		group: 'Omnichannel',
