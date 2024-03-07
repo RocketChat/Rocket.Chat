@@ -21,16 +21,22 @@ const MessageToolbarHolder = ({ message, context }: MessageToolbarHolderProps): 
 	const [isVisible] = useIsVisible(ref);
 	const [isToolbarMenuOpen, setIsToolbarMenuOpen] = useState(false);
 
-	const depsQueryResult = useQuery(['toolbox', message._id, context], async () => {
-		const room = await chat?.data.findRoom();
-		const subscription = await chat?.data.findSubscription();
-		return {
-			room,
-			subscription,
-		};
-	});
-
 	const showToolbar = isVisible || isToolbarMenuOpen;
+
+	const depsQueryResult = useQuery(
+		['toolbox', message._id, context],
+		async () => {
+			const room = await chat?.data.findRoom();
+			const subscription = await chat?.data.findSubscription();
+			return {
+				room,
+				subscription,
+			};
+		},
+		{
+			enabled: showToolbar,
+		},
+	);
 
 	return (
 		<MessageToolbarWrapper ref={ref} visible={isToolbarMenuOpen}>
