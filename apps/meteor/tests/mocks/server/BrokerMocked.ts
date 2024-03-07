@@ -1,7 +1,7 @@
 export class BrokerMocked {
 	actions: Record<string, (...params: unknown[]) => Promise<unknown>> = {};
 
-	destroyService(): void {
+	async destroyService(): Promise<void> {
 		// no op
 	}
 
