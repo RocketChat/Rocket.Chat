@@ -2142,7 +2142,6 @@
   "error-unable-to-update-priority": "Unable to update priority",
   "error-you-are-last-owner": "You are the last owner. Please set new owner before leaving the room.",
   "error-saving-sla": "An error ocurred while saving the SLA",
-  "error-default-image-selected" : "Default image is already selected.",
   "error-duplicated-sla": "An SLA with the same name or due time already exists",
   "error-cannot-place-chat-on-hold": "You cannot place chat on-hold",
   "error-contact-sent-last-message-so-cannot-place-on-hold": "You cannot place chat on-hold, when the Contact has sent the last message",
