@@ -1,5 +1,3 @@
-import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
 import type { ComponentChildren } from 'preact';
 import { useRef } from 'preact/hooks';
 import { useTranslation, withTranslation } from 'react-i18next';
@@ -10,7 +8,6 @@ import RestoreIcon from '../../icons/arrowUp.svg';
 import NotificationsEnabledIcon from '../../icons/bell.svg';
 import NotificationsDisabledIcon from '../../icons/bellOff.svg';
 import OpenWindowIcon from '../../icons/newWindow.svg';
-import store from '../../store';
 import Alert from '../Alert';
 import { Avatar } from '../Avatar';
 import Header from '../Header';
