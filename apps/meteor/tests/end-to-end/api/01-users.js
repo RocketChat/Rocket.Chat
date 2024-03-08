@@ -12,7 +12,8 @@ import { imgURL } from '../../data/interactions';
 import { createAgent, makeAgentAvailable } from '../../data/livechat/rooms';
 import { removeAgent, getAgent } from '../../data/livechat/users';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
-import { createRoom, deleteRoom } from '../../data/rooms.helper';
+import { createRoom, deleteRoom, setRoomConfig } from '../../data/rooms.helper';
+import { createTeam, deleteTeam } from '../../data/teams.helper';
 import { adminEmail, preferences, password, adminUsername } from '../../data/user';
 import { createUser, login, deleteUser, getUserStatus, getUserByUsername } from '../../data/users.helper.js';
 
@@ -279,6 +280,162 @@ describe('[Users]', function () {
 					.end(done);
 			});
 		});
+
+		describe('auto join default channels', () => {
+			let defaultTeamRoomId;
+			let defaultTeamId;
+			let group;
+			let user;
+			let userCredentials;
+			let user2;
+			let user3;
+			let userNoDefault;
+			const teamName = `defaultTeam_${Date.now()}`;
+
+			before(async () => {
+				const defaultTeam = await createTeam(credentials, teamName, 0);
+				defaultTeamRoomId = defaultTeam.roomId;
+				defaultTeamId = defaultTeam._id;
+			});
+
+			before(async () => {
+				const { body } = await createRoom({
+					name: `defaultGroup_${Date.now()}`,
+					type: 'p',
+					credentials,
+					extraData: {
+						broadcast: false,
+						encrypted: false,
+						teamId: defaultTeamId,
+						topic: '',
+					},
+				});
+				group = body.group;
+			});
+
+			after(() =>
+				Promise.all([
+					deleteRoom({ roomId: group._id, type: 'p' }),
+					deleteTeam(credentials, teamName),
+					deleteUser(user),
+					deleteUser(user2),
+					deleteUser(user3),
+					deleteUser(userNoDefault),
+				]),
+			);
+
+			it('should not create subscriptions to non default teams or rooms even if joinDefaultChannels is true', async () => {
+				userNoDefault = await createUser({ joinDefaultChannels: true });
+				const noDefaultUserCredentials = await login(userNoDefault.username, password);
+				await request
+					.get(api('subscriptions.getOne'))
+					.set(noDefaultUserCredentials)
+					.query({ roomId: defaultTeamRoomId })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('subscription').that.is.null;
+					});
+
+				await request
+					.get(api('subscriptions.getOne'))
+					.set(noDefaultUserCredentials)
+					.query({ roomId: group._id })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('subscription').that.is.null;
+					});
+			});
+
+			it('should create a subscription for a default team room if joinDefaultChannels is true', async () => {
+				await setRoomConfig({ roomId: defaultTeamRoomId, favorite: true, isDefault: true });
+
+				user = await createUser({ joinDefaultChannels: true });
+				userCredentials = await login(user.username, password);
+				await request
+					.get(api('subscriptions.getOne'))
+					.set(userCredentials)
+					.query({ roomId: defaultTeamRoomId })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('subscription');
+						expect(res.body.subscription).to.have.property('rid', defaultTeamRoomId);
+					});
+			});
+
+			it('should NOT create a subscription for non auto-join rooms inside a default team', async () => {
+				await request
+					.get(api('subscriptions.getOne'))
+					.set(userCredentials)
+					.query({ roomId: group._id })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('subscription').that.is.null;
+					});
+			});
+
+			it('should create a subscription for the user in all the auto join rooms of the team', async () => {
+				await request.post(api('teams.updateRoom')).set(credentials).send({
+					roomId: group._id,
+					isDefault: true,
+				});
+
+				user2 = await createUser({ joinDefaultChannels: true });
+				const user2Credentials = await login(user2.username, password);
+
+				await request
+					.get(api('subscriptions.getOne'))
+					.set(user2Credentials)
+					.query({ roomId: group._id })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('subscription');
+						expect(res.body.subscription).to.have.property('rid', group._id);
+					});
+			});
+
+			it('should create a subscription for a default room inside a non default team', async () => {
+				await setRoomConfig({ roomId: defaultTeamRoomId, isDefault: false });
+				await setRoomConfig({ roomId: group._id, favorite: true, isDefault: true });
+
+				user3 = await createUser({ joinDefaultChannels: true });
+				const user3Credentials = await login(user3.username, password);
+
+				// New user should be subscribed to the default room inside a team
+				await request
+					.get(api('subscriptions.getOne'))
+					.set(user3Credentials)
+					.query({ roomId: group._id })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('subscription');
+						expect(res.body.subscription).to.have.property('rid', group._id);
+					});
+
+				// New user should not be subscribed to the parent team
+				await request
+					.get(api('subscriptions.getOne'))
+					.set(user3Credentials)
+					.query({ roomId: defaultTeamRoomId })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('subscription').that.is.null;
+					});
+			});
+		});
 	});
 
 	describe('[/users.register]', () => {
@@ -528,6 +685,41 @@ describe('[Users]', function () {
 					expect(res.body).to.have.nested.property('presence', 'offline');
 				})
 				.end(done);
+		});
+
+		describe('Logging in with type: "resume"', () => {
+			let user;
+			let userCredentials;
+
+			before(async () => {
+				user = await createUser({ joinDefaultChannels: false });
+				userCredentials = await login(user.username, password);
+			});
+
+			after(async () => deleteUser(user));
+
+			it('should return "offline" after a login type "resume" via REST', async () => {
+				await request
+					.post(api('login'))
+					.send({
+						resume: userCredentials['X-Auth-Token'],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				await request
+					.get(api('users.getPresence'))
+					.set(credentials)
+					.query({
+						userId: user._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('presence', 'offline');
+					});
+			});
 		});
 	});
 

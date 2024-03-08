@@ -25,6 +25,7 @@ describe('Apps - Video Conferences', function () {
 			agentId: undefined,
 			members: undefined,
 			credentials: undefined,
+			extraData: undefined,
 		});
 
 		roomId = res.body.group._id;
