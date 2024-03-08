@@ -5,7 +5,11 @@ test.use({ storageState: Users.admin.state });
 
 test.describe.serial('setting-language', () => {
 
-	test.beforeEach(async ({ page, api }) => {
+	test.beforeAll(async ({ api }) => {
+    await api.post('/settings/API_Enable_Rate_Limiter', { value: false });
+  });
+  
+  test.beforeEach(async ({ page, api }) => {
 		await page.goto('/home');
     const response = await api.post('/settings/Language', { value: 'en' });
     expect(response.status()).toBe(200);
@@ -17,8 +21,8 @@ test.describe.serial('setting-language', () => {
   });
 
   test.afterAll(async ({ api }) => {
-    const response = await api.post('/settings/Language', { value: 'en' });
-    expect(response.status()).toBe(200);
+    await api.post('/settings/Language', { value: 'en' });
+    await api.post('/settings/API_Enable_Rate_Limiter', { value: true });
   });
 
   test('Change workspace language', async ({ page, api }) => {
