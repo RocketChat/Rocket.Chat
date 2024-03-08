@@ -677,7 +677,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('sendForgotPasswordEmail', email.trim().toLowerCase());
 			return API.v1.success();
-		}
+		},
 	},
 );
 
