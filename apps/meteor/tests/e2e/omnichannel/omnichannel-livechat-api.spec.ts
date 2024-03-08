@@ -6,6 +6,7 @@ import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel, OmnichannelLiveChatEmbedded } from '../page-objects';
 import { createAgent } from '../utils/omnichannel/agents';
+import { addAgentToDepartment, createDepartment } from '../utils/omnichannel/departments';
 import { test, expect } from '../utils/test';
 
 // TODO: Use official widget typing once that is merged
@@ -55,7 +56,7 @@ declare const window: Window & {
 	};
 };
 
-test.describe.only('OC - Livechat API', () => {
+test.describe('OC - Livechat API', () => {
 	// TODO: Check if there is a way to add livechat to the global window object
 
 	test.describe('Basic Widget Interactions', () => {
@@ -210,51 +211,26 @@ test.describe.only('OC - Livechat API', () => {
 
 	test.describe('Complex Widget Interactions', () => {
 		// Needs Departments to test this, so needs an EE license for multiple deps
-		test.skip(!IS_EE, 'Enterprise Only');
+		// test.skip(!IS_EE, 'Enterprise Only');
 		// Tests that requires interaction from an agent or more
 		let poAuxContext: { page: Page; poHomeOmnichannel: HomeOmnichannel };
 		let poAuxContext2: { page: Page; poHomeOmnichannel: HomeOmnichannel };
 		let poLiveChat: OmnichannelLiveChatEmbedded;
 		let page: Page;
-		let depId: string;
-		let dep2Id: string;
 		let agent: Awaited<ReturnType<typeof createAgent>>;
 		let agent2: Awaited<ReturnType<typeof createAgent>>;
+		let departments: Awaited<ReturnType<typeof createDepartment>>[];
+
 
 		test.beforeAll(async ({ api }) => {
 			agent = await createAgent(api, 'user1')
 			agent2 = await createAgent(api, 'user2')
 
-			const dep1 = await api.post('/livechat/department', {department: {
-				enabled: true,
-				email: faker.internet.email(),
-				showOnRegistration: true,
-				showOnOfflineForm: true,
-				name: `new department ${Date.now()}`,
-				description: 'created from api',
+			departments = await Promise.all([createDepartment(api), createDepartment(api)]);
+			const [departmentA, departmentB] = departments.map(({ data }) => data);
 
-			}});
-
-			const dep2 = await api.post('/livechat/department', {department: {
-				enabled: true,
-				email: faker.internet.email(),
-				showOnRegistration: true,
-				showOnOfflineForm: true,
-				name: `new department ${Date.now()}`,
-				description: 'created from api',
-			}});
-
-			expect(dep1.status()).toBe(200);
-			expect(dep2.status()).toBe(200);
-
-			const dep1Body = await dep1.json();
-			depId = dep1Body.department._id;
-			const dep2Body = await dep1.json();
-			dep2Id = dep2Body.department._id;
-
-			// Assign agents to deps
-			await api.post('/v1/livechat/department/:_id/agents', { departmentId: depId, agentId: 'user1' });
-			await api.post('/v1/livechat/department/:_id/agents', { departmentId: dep2Id, agentId: 'user2' });
+			await addAgentToDepartment(api, { department: departmentA, agentId: agent.data._id })
+			await addAgentToDepartment(api, { department: departmentB, agentId: agent2.data._id })
 
 			await expect((await api.post('/settings/Enable_CSP', { value: false })).status()).toBe(200);
 			await expect((await api.post('/settings/Livechat_offline_email', { value: 'test@testing.com' })).status()).toBe(200);
@@ -292,9 +268,9 @@ test.describe.only('OC - Livechat API', () => {
 			await expect((await api.post('/settings/Enable_CSP', { value: true })).status()).toBe(200);
 			await agent.delete();
 			await agent2.delete();
+
 			await expect((await api.post('/settings/Omnichannel_enable_department_removal', { value: true })).status()).toBe(200);
-			const response = await api.delete(`/livechat/department/${depId}`, { name: 'TestDep', email: 'TestDep@email.com' });
-			expect(response.status()).toBe(200);
+			await Promise.all([...departments.map((department) => department.delete())]);
 			await expect((await api.post('/settings/Omnichannel_enable_department_removal', { value: false })).status()).toBe(200);
 		});
 
@@ -344,11 +320,12 @@ test.describe.only('OC - Livechat API', () => {
 		});
 
 		test('OC - Livechat API - setDepartment', async () => {
-
+			const [departmentA, departmentB] = departments.map(({ data }) => data);
 			const registerGuestVisitor = {
 				name: faker.person.firstName(),
 				email: faker.internet.email(),
 				token: faker.string.uuid(),
+				department: departmentA._id,
 			};
 
 			// Start Chat
@@ -368,6 +345,8 @@ test.describe.only('OC - Livechat API', () => {
 			await test.step('Expect registered guest to be in dep1', async () => {
 				await poAuxContext.poHomeOmnichannel.sidenav.openChat(registerGuestVisitor.name);
 			});
+
+			const depId = departmentB._id;
 
 			await test.step('Expect setDepartment to change a guest department', async () => {
 				await poLiveChat.page.evaluate(
