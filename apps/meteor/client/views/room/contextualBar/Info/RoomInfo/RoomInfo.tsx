@@ -48,7 +48,7 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 			<Menu
 				small={false}
 				flexShrink={0}
-				mi={4}
+				flexGrow={0}
 				key='menu'
 				maxHeight='initial'
 				secondary

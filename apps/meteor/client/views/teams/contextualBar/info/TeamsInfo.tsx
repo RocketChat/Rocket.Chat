@@ -105,7 +105,7 @@ const TeamsInfo = ({
 			<Menu
 				small={false}
 				flexShrink={0}
-				mi={2}
+				flexGrow={0}
 				key='menu'
 				maxHeight='initial'
 				secondary
