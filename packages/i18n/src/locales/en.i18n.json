@@ -5462,7 +5462,7 @@
   "User_added_successfully": "User added successfully",
   "User_and_group_mentions_only": "User and group mentions only",
   "User_cant_be_empty": "User cannot be empty",
-  "User_created_successfully!": "User create successfully!",
+  "User_created_successfully!": "User created successfully!",
   "User_default": "User default",
   "User_doesnt_exist": "No user exists by the name of `@%s`.",
   "User_e2e_key_was_reset": "User E2E key was reset successfully.",

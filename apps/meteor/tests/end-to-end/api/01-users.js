@@ -143,6 +143,46 @@ describe('[Users]', function () {
 			await deleteUser(user);
 		});
 
+		it('should create a new user with custom fields', async () => {
+			await setCustomFields({ customFieldText });
+
+			const username = `customField_${apiUsername}`;
+			const email = `      customField_${apiEmail}            `;
+			const customFields = { customFieldText: 'success' };
+
+			let user;
+
+			await request
+				.post(api('users.create'))
+				.set(credentials)
+				.send({
+					email,
+					name: username,
+					username,
+					password,
+					active: true,
+					roles: ['user'],
+					joinDefaultChannels: true,
+					verified: true,
+					customFields,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.username', username);
+					expect(res.body).to.have.nested.property('user.emails[0].address', email);
+					expect(res.body).to.have.nested.property('user.active', true);
+					expect(res.body).to.have.nested.property('user.name', username);
+					expect(res.body).to.have.nested.property('user.customFields.customFieldText', 'success');
+					expect(res.body).to.not.have.nested.property('user.e2e');
+
+					user = res.body.user;
+				});
+
+			await deleteUser(user);
+		});
+
 		function failCreateUser(name) {
 			it(`should not create a new user if username is the reserved word ${name}`, (done) => {
 				request

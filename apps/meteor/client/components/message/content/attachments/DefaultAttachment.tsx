@@ -70,6 +70,21 @@ const DefaultAttachment = (attachment: DefaultAttachmentProps): ReactElement => 
 						{collapse}
 					</AttachmentRow>
 				)}
+				{attachment.title && (
+					<AttachmentRow>
+						<AttachmentTitle
+							{...(attachment.title_link && {
+								is: 'a',
+								href: attachment.title_link,
+								target: '_blank',
+								color: undefined,
+							})}
+						>
+							{attachment.title}
+						</AttachmentTitle>{'\t'}
+						{collapse}
+					</AttachmentRow>
+				)}
 				{!collapsed && (
 					<>
 						{attachment.text && (
