@@ -60,9 +60,9 @@ export const useCreateRoomItems = (): GenericMenuItemProps[] => {
 	};
 
 	return [
-		...(canCreateChannel ? [createChannelItem] : []),
-		...(canCreateTeam ? [createTeamItem] : []),
 		...(canCreateDirectMessages ? [createDirectMessageItem] : []),
 		...(canCreateDiscussion && discussionEnabled ? [createDiscussionItem] : []),
+		...(canCreateChannel ? [createChannelItem] : []),
+		...(canCreateTeam ? [createTeamItem] : []),
 	];
 };
