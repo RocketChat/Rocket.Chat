@@ -81,12 +81,12 @@ Empty.args = {
 export const Timestamp = Template.bind({});
 
 Timestamp.args = {
-	tokens: parse(`Short time: <t:1708551317642:t>
-	Long time: <t:1708551317642:T>
-	Short date: <t:1708551317642:d>
-	Long date: <t:1708551317642:D>
-	Full date: <t:1708551317642:f>
-	Full date (long): <t:1708551317642:F>
+	tokens: parse(`Short time: <t:1708551317:t>
+	Long time: <t:1708551317:T>
+	Short date: <t:1708551317:d>
+	Long date: <t:1708551317:D>
+	Full date: <t:1708551317:f>
+	Full date (long): <t:1708551317:F>
 	Relative time from past: <t:${((): number => {
 		const date = new Date();
 		date.setHours(date.getHours() - 1);
