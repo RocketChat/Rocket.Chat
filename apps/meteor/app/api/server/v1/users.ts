@@ -598,6 +598,7 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		validateParams: isUsersSendWelcomeEmailProps,
+		permissionsRequired: ['send-mail'],
 	},
 	{
 		async post() {
