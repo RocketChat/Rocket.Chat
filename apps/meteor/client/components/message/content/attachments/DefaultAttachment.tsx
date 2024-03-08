@@ -70,7 +70,6 @@ const DefaultAttachment = (attachment: DefaultAttachmentProps): ReactElement => 
 						{collapse}
 					</AttachmentRow>
 				)}
-
 				{!collapsed && (
 					<>
 						{attachment.text && (
