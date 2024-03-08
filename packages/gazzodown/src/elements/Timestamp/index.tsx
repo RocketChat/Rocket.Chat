@@ -51,23 +51,16 @@ const Timestamp = ({ children }: BoldSpanProps): ReactElement => {
 };
 
 // eslint-disable-next-line react/no-multi-comp
-const ShortTime = ({ value }: { value: number }) => (
-	<Time value={format(new Date(value), 'p')} dateTime={new Date(value).toISOString()} />
-);
+const ShortTime = ({ value }: { value: number }) => <Time value={format(new Date(value), 'p')} dateTime={new Date(value).toISOString()} />;
 
 // eslint-disable-next-line react/no-multi-comp
-const LongTime = ({ value }: { value: number }) => (
-	<Time value={format(new Date(value), 'pp')} dateTime={new Date(value).toISOString()} />
-);
+const LongTime = ({ value }: { value: number }) => <Time value={format(new Date(value), 'pp')} dateTime={new Date(value).toISOString()} />;
 
 // eslint-disable-next-line react/no-multi-comp
-const ShortDate = ({ value }: { value: number }) => (
-	<Time value={format(new Date(value), 'P')} dateTime={new Date(value).toISOString()} />
-);
+const ShortDate = ({ value }: { value: number }) => <Time value={format(new Date(value), 'P')} dateTime={new Date(value).toISOString()} />;
+
 // eslint-disable-next-line react/no-multi-comp
-const LongDate = ({ value }: { value: number }) => (
-	<Time value={format(new Date(value), 'Pp')} dateTime={new Date(value).toISOString()} />
-);
+const LongDate = ({ value }: { value: number }) => <Time value={format(new Date(value), 'Pp')} dateTime={new Date(value).toISOString()} />;
 
 // eslint-disable-next-line react/no-multi-comp
 const FullDate = ({ value }: { value: number }) => (
