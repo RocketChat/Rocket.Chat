@@ -5,6 +5,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import moment from 'moment';
 
 import { callbacks } from '../../../../lib/callbacks';
+import { beforeGetMentions } from '../../../mentions/server/getMentionedTeamMembers';
 import { settings } from '../../../settings/server';
 
 function messageContainsHighlight(message: IMessage, highlights: string[]): boolean {
@@ -39,7 +40,10 @@ export async function getMentions(message: IMessage): Promise<{ toAll: boolean; 
 		.filter(({ _id }) => _id !== senderId && !['all', 'here'].includes(_id))
 		.map(({ _id }) => _id);
 
-	const mentionIds = await callbacks.run('beforeGetMentions', filteredMentions, teamsMentions);
+	let mentionIds = filteredMentions;
+	if (teamsMentions.length > 0) {
+		mentionIds = await beforeGetMentions(filteredMentions, teamsMentions);
+	}
 
 	return {
 		toAll,

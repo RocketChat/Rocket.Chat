@@ -207,7 +207,6 @@ type ChainedCallbackSignatures = {
 	'archiveRoom': (room: IRoom) => void;
 	'unarchiveRoom': (room: IRoom) => void;
 	'roomAvatarChanged': (room: IRoom) => void;
-	'beforeGetMentions': (mentionIds: string[], teamMentions: MessageMention[]) => Promise<string[]>;
 };
 
 export type Hook =
