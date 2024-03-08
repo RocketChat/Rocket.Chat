@@ -14,6 +14,9 @@ export const useDeleteMessageSubscription = (rid: string) => {
 	const stream = useStream('notify-room');
 
 	useEffect(() => {
+		if (!rid) {
+			return;
+		}
 		return stream(`${rid}/deleteMessage`, async ({ _id }) => {
 			deleteMessage(_id);
 		});

@@ -1,4 +1,3 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { parse } from 'query-string';
 
 import ConnectionStatusProvider from '../../providers/ConnectionStatusProvider';
@@ -14,47 +13,45 @@ export const useSsl = Boolean((Array.isArray(host) ? host[0] : host)?.match(/^ht
 
 const AppConnector = () => (
 	<div id='app'>
-		<QueryClientProvider client={new QueryClient()}>
-			<StoreProvider>
-				<SDKProvider serverURL={host}>
-					<ConnectionStatusProvider>
-						<ServerProvider>
-							<StoreConsumer>
-								{({
-									config,
-									user,
-									triggered,
-									gdpr,
-									sound,
-									undocked,
-									minimized = true,
-									expanded = false,
-									alerts,
-									modal,
-									dispatch,
-									iframe,
-								}) => (
-									<App
-										config={config}
-										gdpr={gdpr}
-										triggered={triggered}
-										user={user}
-										sound={sound}
-										undocked={undocked}
-										minimized={minimized}
-										expanded={expanded}
-										alerts={alerts}
-										modal={modal}
-										dispatch={dispatch}
-										iframe={iframe}
-									/>
-								)}
-							</StoreConsumer>
-						</ServerProvider>
-					</ConnectionStatusProvider>
-				</SDKProvider>
-			</StoreProvider>
-		</QueryClientProvider>
+		<StoreProvider>
+			<SDKProvider serverURL={host}>
+				<ConnectionStatusProvider>
+					<ServerProvider>
+						<StoreConsumer>
+							{({
+								config,
+								user,
+								triggered,
+								gdpr,
+								sound,
+								undocked,
+								minimized = true,
+								expanded = false,
+								alerts,
+								modal,
+								dispatch,
+								iframe,
+							}) => (
+								<App
+									config={config}
+									gdpr={gdpr}
+									triggered={triggered}
+									user={user}
+									sound={sound}
+									undocked={undocked}
+									minimized={minimized}
+									expanded={expanded}
+									alerts={alerts}
+									modal={modal}
+									dispatch={dispatch}
+									iframe={iframe}
+								/>
+							)}
+						</StoreConsumer>
+					</ServerProvider>
+				</ConnectionStatusProvider>
+			</SDKProvider>
+		</StoreProvider>
 	</div>
 );
 export default AppConnector;

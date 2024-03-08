@@ -8,6 +8,9 @@ export const useRoomMessagesSubscription = (rid: string, token: string) => {
 	const stream = useStream('room-messages');
 
 	useEffect(() => {
+		if (!rid) {
+			return;
+		}
 		return stream(rid, (msg: IMessage) => {
 			onMessage(msg);
 		});
