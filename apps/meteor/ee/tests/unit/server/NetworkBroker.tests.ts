@@ -13,7 +13,7 @@ class DelayedStopBroker extends BrokerMocked {
 
 		await instance.stopped();
 
-		super.destroyService(name);
+		await super.destroyService(name);
 	}
 }
 
