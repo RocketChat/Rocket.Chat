@@ -88,7 +88,7 @@ export type StoreState = {
 	expanded?: boolean;
 	modal?: any;
 	agent?: any;
-	room?: any;
+	room?: { _id: string };
 	noMoreMessages?: boolean;
 	loading?: boolean;
 	department?: string;

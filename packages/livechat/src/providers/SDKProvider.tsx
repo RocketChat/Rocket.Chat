@@ -1,5 +1,5 @@
 import type { DDPSDK } from '@rocket.chat/ddp-client';
-import React, { createContext, useEffect, useMemo } from 'react';
+import React, { createContext, useMemo } from 'react';
 
 import { Livechat } from '../api';
 
@@ -19,10 +19,6 @@ export const useSDK = () => {
 
 const SDKProvider = ({ children }: { serverURL: string; children: React.ReactNode }) => {
 	const sdk = useMemo(() => Livechat, []);
-
-	useEffect(() => {
-		void sdk.connection.connect();
-	}, [sdk]);
 
 	return <SDKContext.Provider value={{ sdk }}>{children}</SDKContext.Provider>;
 };
