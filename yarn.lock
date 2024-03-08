@@ -8967,12 +8967,14 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/ddp-client": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
+    "@rocket.chat/fuselage-hooks": ^0.33.0
     "@rocket.chat/fuselage-tokens": ^0.33.0
     "@rocket.chat/gazzodown": "workspace:^"
     "@rocket.chat/logo": ^0.31.29
     "@rocket.chat/message-parser": "workspace:^"
     "@rocket.chat/random": "workspace:~"
     "@rocket.chat/sdk": ^1.0.0-alpha.42
+    "@rocket.chat/ui-contexts": "workspace:^"
     "@rocket.chat/ui-kit": "workspace:~"
     "@storybook/addon-essentials": ~6.5.16
     "@storybook/addon-postcss": ~2.0.0
@@ -9013,6 +9015,7 @@ __metadata:
     mini-css-extract-plugin: ~1.6.2
     mitt: ^2.1.0
     npm-run-all: ^4.1.5
+    path-to-regexp: ^6.2.1
     postcss-css-variables: ^0.17.0
     postcss-dir-pseudo-class: ^5.0.0
     postcss-flexbugs-fixes: ^4.2.1
