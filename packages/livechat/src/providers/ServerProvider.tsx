@@ -14,6 +14,7 @@ import { ServerContext } from '@rocket.chat/ui-contexts';
 import { compile } from 'path-to-regexp';
 import React from 'react';
 
+import { host } from '../components/App';
 import store from '../store';
 import { useSDK } from './SDKProvider';
 
@@ -23,7 +24,7 @@ const ServerProvider = ({ children }: { children: React.ReactNode }) => {
 	const { token } = store.state;
 
 	const absoluteUrl = (path: string): string => {
-		return `http://localhost:3000${path}`;
+		return `${host}${path}`;
 	};
 
 	const callMethod = <MethodName extends ServerMethodName>(

@@ -6,7 +6,7 @@ import ServerProvider from '../../providers/ServerProvider';
 import { Provider as StoreProvider, Consumer as StoreConsumer } from '../../store';
 import App from './App';
 
-const host =
+export const host =
 	window.SERVER_URL ?? parse(window.location.search).serverUrl ?? (process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : null);
 
 export const useSsl = Boolean((Array.isArray(host) ? host[0] : host)?.match(/^https:/));
