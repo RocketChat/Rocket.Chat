@@ -49,10 +49,17 @@ type EditRoomInfoProps = {
 	onClickBack: () => void;
 };
 
+const title = {
+	team: 'Edit_team' as TranslationKey,
+	channel: 'Edit_channel' as TranslationKey,
+	discussion: 'Edit_discussion' as TranslationKey,
+};
+
 const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const isFederated = useMemo(() => isRoomFederated(room), [room]);
+	const roomType = 'prid' in room ? 'discussion' : room.teamId ? 'team' : 'channel';
 
 	const retentionPolicy = useSetting<boolean>('RetentionPolicy_Enabled');
 	const { handleDelete, canDeleteRoom } = useDeleteRoom(room);
@@ -145,7 +152,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		<>
 			<ContextualbarHeader>
 				{onClickBack && <ContextualbarBack onClick={onClickBack} />}
-				<ContextualbarTitle>{room.teamId ? t('edit-team') : t('edit-room')}</ContextualbarTitle>
+				<ContextualbarTitle>{t(`${title[roomType]}`)}</ContextualbarTitle>
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent p={24}>
@@ -172,6 +179,26 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 							</FieldRow>
 							{errors.roomName && <FieldError>{errors.roomName.message}</FieldError>}
 						</Field>
+						{canViewTopic && (
+							<Field>
+								<FieldLabel htmlFor={roomTopicField}>{t('Topic')}</FieldLabel>
+								<FieldRow>
+									<Controller name='roomTopic' control={control} render={({ field }) => <TextInput id={roomTopicField} {...field} />} />
+								</FieldRow>
+							</Field>
+						)}
+						{canViewAnnouncement && (
+							<Field>
+								<FieldLabel htmlFor={roomAnnouncementField}>{t('Announcement')}</FieldLabel>
+								<FieldRow>
+									<Controller
+										name='roomAnnouncement'
+										control={control}
+										render={({ field }) => <TextInput id={roomAnnouncementField} {...field} disabled={isFederated} />}
+									/>
+								</FieldRow>
+							</Field>
+						)}
 						{canViewDescription && (
 							<Field>
 								<FieldLabel htmlFor={roomDescriptionField}>{t('Description')}</FieldLabel>
@@ -184,30 +211,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 								</FieldRow>
 							</Field>
 						)}
-						{canViewAnnouncement && (
-							<Field>
-								<FieldLabel htmlFor={roomAnnouncementField}>{t('Announcement')}</FieldLabel>
-								<FieldRow>
-									<Controller
-										name='roomAnnouncement'
-										control={control}
-										render={({ field }) => <TextAreaInput id={roomAnnouncementField} {...field} disabled={isFederated} rows={4} />}
-									/>
-								</FieldRow>
-							</Field>
-						)}
-						{canViewTopic && (
-							<Field>
-								<FieldLabel htmlFor={roomTopicField}>{t('Topic')}</FieldLabel>
-								<FieldRow>
-									<Controller
-										name='roomTopic'
-										control={control}
-										render={({ field }) => <TextAreaInput id={roomTopicField} {...field} rows={4} />}
-									/>
-								</FieldRow>
-							</Field>
-						)}
+
 						{canViewType && (
 							<Field>
 								<FieldRow>
@@ -441,17 +445,10 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 					<Button type='reset' disabled={!isDirty || isSubmitting} onClick={() => reset(defaultValues)}>
 						{t('Reset')}
 					</Button>
-					<Button form={formId} type='submit' loading={isSubmitting} disabled={!isDirty}>
+					<Button form={formId} type='submit' primary loading={isSubmitting} disabled={!isDirty}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
-				<Box mbs={8}>
-					<ButtonGroup stretch>
-						<Button icon='trash' danger disabled={!canDeleteRoom || isFederated || isSubmitting} onClick={handleDelete}>
-							{t('Delete')}
-						</Button>
-					</ButtonGroup>
-				</Box>
 			</ContextualbarFooter>
 		</>
 	);
