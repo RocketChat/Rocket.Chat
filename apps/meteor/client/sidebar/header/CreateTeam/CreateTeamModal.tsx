@@ -11,6 +11,7 @@ import {
 	FieldRow,
 	FieldError,
 	FieldDescription,
+	FieldHint,
 } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import {
@@ -107,7 +108,6 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 
 	const canChangeReadOnly = !broadcast;
 	const canChangeEncrypted = isPrivate && !broadcast && e2eEnabled && !e2eEnabledForPrivateByDefault;
-	const isButtonEnabled = isDirty && canCreateTeam;
 
 	const handleCreateTeam = async ({
 		name,
@@ -164,6 +164,9 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 				<Modal.Close title={t('Close')} onClick={onClose} tabIndex={-1} />
 			</Modal.Header>
 			<Modal.Content mbe={2}>
+				<Box fontScale='p2' mbe={16}>
+					{t('Teams_new_description')}
+				</Box>
 				<FieldGroup>
 					<Field>
 						<FieldLabel required htmlFor={nameId}>
@@ -191,20 +194,23 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 						)}
 					</Field>
 					<Field>
-						<FieldLabel htmlFor={topicId}>
-							{t('Teams_New_Description_Label')}{' '}
-							<Box is='span' color='annotation'>
-								({t('optional')})
-							</Box>
-						</FieldLabel>
+						<FieldLabel htmlFor={topicId}>{t('Topic')}</FieldLabel>
 						<FieldRow>
-							<TextInput
-								id={topicId}
-								aria-describedby={`${topicId}-hint`}
-								{...register('topic')}
-								placeholder={t('Teams_New_Description_Placeholder')}
-							/>
+							<TextInput id={topicId} aria-describedby={`${topicId}-hint`} {...register('topic')} />
 						</FieldRow>
+						<FieldRow>
+							<FieldHint id={`${topicId}-hint`}>{t('Displayed_next_to_name')}</FieldHint>
+						</FieldRow>
+					</Field>
+					<Field>
+						<FieldLabel htmlFor={addMembersId}>
+							{t('Teams_New_Add_members_Label')}
+						</FieldLabel>
+						<Controller
+							control={control}
+							name='members'
+							render={({ field: { onChange, value } }): ReactElement => <UserAutoCompleteMultiple value={value} onChange={onChange} />}
+						/>
 					</Field>
 					<Field>
 						<FieldRow>
@@ -276,27 +282,14 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 								)}
 							/>
 						</FieldRow>
-						<FieldDescription d={`${broadcastId}-hint`}>{t('Teams_New_Broadcast_Description')}</FieldDescription>
-					</Field>
-					<Field>
-						<FieldLabel htmlFor={addMembersId}>
-							{t('Teams_New_Add_members_Label')}{' '}
-							<Box is='span' color='annotation'>
-								({t('optional')})
-							</Box>
-						</FieldLabel>
-						<Controller
-							control={control}
-							name='members'
-							render={({ field: { onChange, value } }): ReactElement => <UserAutoCompleteMultiple value={value} onChange={onChange} />}
-						/>
+						<FieldDescription id={`${broadcastId}-hint`}>{t('Teams_New_Broadcast_Description')}</FieldDescription>
 					</Field>
 				</FieldGroup>
 			</Modal.Content>
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button disabled={!isButtonEnabled} loading={isSubmitting} type='submit' primary>
+					<Button disabled={!canCreateTeam} loading={isSubmitting} type='submit' primary>
 						{t('Create')}
 					</Button>
 				</Modal.FooterControllers>
