@@ -28,12 +28,40 @@ export class Admin {
 		return this.page.locator(`label >> text=Private`);
 	}
 
+	get privateInput(): Locator {
+		return this.page.locator('input[name="roomType"]');
+	}
+
+	get roomNameInput(): Locator {
+		return this.page.locator('input[name="roomName"]');
+	}
+
+	get roomOwnerInput(): Locator {
+		return this.page.locator('input[name="roomOwner"]');
+	}
+
 	get archivedLabel(): Locator {
 		return this.page.locator('label >> text=Archived');
 	}
 
 	get archivedInput(): Locator {
 		return this.page.locator('input[name="archived"]');
+	}
+
+	get favoriteLabel(): Locator {
+		return this.page.locator('label >> text=Favorite');
+	}
+
+	get favoriteInput(): Locator {
+		return this.page.locator('input[name="favorite"]');
+	}
+
+	get defaultLabel(): Locator {
+		return this.page.locator('label >> text=Default');
+	}
+
+	get defaultInput(): Locator {
+		return this.page.locator('input[name="isDefault"]');
 	}
 
 	get inputSearchUsers(): Locator {

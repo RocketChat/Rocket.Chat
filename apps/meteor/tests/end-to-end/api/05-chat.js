@@ -1104,6 +1104,14 @@ describe('[Chat]', function () {
 	});
 
 	describe('/chat.update', () => {
+		const siteUrl = process.env.SITE_URL || process.env.TEST_API_URL || 'http://localhost:3000';
+		let simpleMessageId;
+
+		before('should send simple message in room', async () => {
+			const res = await sendSimpleMessage({ roomId: 'GENERAL' });
+			simpleMessageId = res.body.message._id;
+		});
+
 		it('should update a message successfully', (done) => {
 			request
 				.post(api('chat.update'))
@@ -1120,6 +1128,86 @@ describe('[Chat]', function () {
 					expect(res.body).to.have.nested.property('message.msg', 'This message was edited via API');
 				})
 				.end(done);
+		});
+
+		it('should add quote attachments to a message', async () => {
+			const quotedMsgLink = `${siteUrl}/channel/general?msg=${message._id}`;
+			request
+				.post(api('chat.update'))
+				.set(credentials)
+				.send({
+					roomId: 'GENERAL',
+					msgId: message._id,
+					text: `Testing quotes ${quotedMsgLink}`,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('message.msg', `Testing quotes ${quotedMsgLink}`);
+					expect(res.body.message).to.have.property('attachments').that.is.an('array').that.has.lengthOf(1);
+					expect(res.body.message.attachments[0]).to.have.property('message_link', quotedMsgLink);
+				});
+		});
+
+		it('should replace a quote attachment in a message', async () => {
+			const quotedMsgLink = `${siteUrl}/channel/general?msg=${simpleMessageId}`;
+			request
+				.post(api('chat.update'))
+				.set(credentials)
+				.send({
+					roomId: 'GENERAL',
+					msgId: message._id,
+					text: `Testing quotes ${quotedMsgLink}`,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('message.msg', `Testing quotes ${quotedMsgLink}`);
+					expect(res.body.message).to.have.property('attachments').that.is.an('array').that.has.lengthOf(1);
+					expect(res.body.message.attachments[0]).to.have.property('message_link', quotedMsgLink);
+				});
+		});
+
+		it('should add multiple quote attachments in a single message', async () => {
+			const quotedMsgLink = `${siteUrl}/channel/general?msg=${simpleMessageId}`;
+			const newQuotedMsgLink = `${siteUrl}/channel/general?msg=${message._id}`;
+			request
+				.post(api('chat.update'))
+				.set(credentials)
+				.send({
+					roomId: 'GENERAL',
+					msgId: message._id,
+					text: `${newQuotedMsgLink} Testing quotes ${quotedMsgLink}`,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('message.msg', `Testing quotes ${quotedMsgLink}`);
+					expect(res.body.message).to.have.property('attachments').that.is.an('array').that.has.lengthOf(2);
+					expect(res.body.message.attachments[0]).to.have.property('message_link', newQuotedMsgLink);
+					expect(res.body.message.attachments[1]).to.have.property('message_link', quotedMsgLink);
+				});
+		});
+
+		it('should erase old quote attachments when updating a message', async () => {
+			await request
+				.post(api('chat.update'))
+				.set(credentials)
+				.send({
+					roomId: 'GENERAL',
+					msgId: message._id,
+					text: 'This message was edited via API',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('message.msg', 'This message was edited via API');
+					expect(res.body.message).to.have.property('attachments').that.is.an('array').that.has.lengthOf(0);
+				});
 		});
 	});
 
