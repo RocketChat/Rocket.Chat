@@ -53,6 +53,10 @@ type LoginServiceConfigurationEvent = {
 	  }
 );
 
+export enum EventNames {
+	USER_MENTIONS = 'user.mentions',
+}
+
 export type EventSignatures = {
 	'room.video-conference': (params: { rid: string; callId: string }) => void;
 	'shutdown': (params: Record<string, string[]>) => void;
@@ -301,4 +305,7 @@ export type EventSignatures = {
 	'command.updated'(command: string): void;
 	'command.removed'(command: string): void;
 	'actions.changed'(): void;
+
+	// Events from event broker - that don't rely on DB Watcher notifications
+	[EventNames.USER_MENTIONS]: (message: IMessage, room: IRoom) => void;
 };
