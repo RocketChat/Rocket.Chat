@@ -1,7 +1,7 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import type { FormattingButton } from '../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
+import { isPromptButton, type FormattingButton } from '../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import GenericMenu from '../../../../../components/GenericMenu/GenericMenu';
 import type { GenericMenuItemProps } from '../../../../../components/GenericMenu/GenericMenuItem';
 import type { ComposerAPI } from '../../../../../lib/chats/ChatAPI';
@@ -20,6 +20,9 @@ const FormattingToolbarDropdown = ({ composer, items, disabled }: FormattingTool
 			if ('link' in formatter) {
 				window.open(formatter.link, '_blank', 'rel=noreferrer noopener');
 				return;
+			}
+			if (isPromptButton(formatter)) {
+				return formatter.prompt(composer);
 			}
 			composer.wrapSelection(formatter.pattern);
 		};
