@@ -169,7 +169,7 @@ describe('[Users]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('user.username', username);
-					expect(res.body).to.have.nested.property('user.emails[0].address', email);
+					expect(res.body).to.have.nested.property('user.emails[0].address', email.trim());
 					expect(res.body).to.have.nested.property('user.active', true);
 					expect(res.body).to.have.nested.property('user.name', username);
 					expect(res.body).to.have.nested.property('user.customFields.customFieldText', 'success');
