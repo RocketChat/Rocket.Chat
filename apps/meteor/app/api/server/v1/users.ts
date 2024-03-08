@@ -122,7 +122,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			const userData = {
-				email: this.bodyParams.data.email,
+				email: this.bodyParams.data.email?.trim(),
 				realname: this.bodyParams.data.name,
 				username: this.bodyParams.data.username,
 				nickname: this.bodyParams.data.nickname,
