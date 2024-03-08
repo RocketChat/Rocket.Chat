@@ -39,7 +39,6 @@ import RawText from '../../../../../components/RawText';
 import RoomAvatarEditor from '../../../../../components/avatar/RoomAvatarEditor';
 import { getDirtyFields } from '../../../../../lib/getDirtyFields';
 import { useArchiveRoom } from '../../../../hooks/roomActions/useArchiveRoom';
-import { useDeleteRoom } from '../../../../hooks/roomActions/useDeleteRoom';
 import { useEditRoomInitialValues } from './useEditRoomInitialValues';
 import { useEditRoomPermissions } from './useEditRoomPermissions';
 
@@ -62,7 +61,6 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const roomType = 'prid' in room ? 'discussion' : room.teamId ? 'team' : 'channel';
 
 	const retentionPolicy = useSetting<boolean>('RetentionPolicy_Enabled');
-	const { handleDelete, canDeleteRoom } = useDeleteRoom(room);
 	const defaultValues = useEditRoomInitialValues(room);
 
 	const {
@@ -78,7 +76,17 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		[t],
 	);
 
-	const { readOnly, archived, joinCodeRequired, hideSysMes, retentionEnabled, retentionMaxAge, retentionOverrideGlobal } = watch();
+	const {
+		readOnly,
+		archived,
+		joinCodeRequired,
+		hideSysMes,
+		retentionEnabled,
+		retentionMaxAge,
+		retentionOverrideGlobal,
+		roomType: roomTypeP,
+		reactWhenReadOnly,
+	} = watch();
 
 	const {
 		canChangeType,
@@ -185,6 +193,9 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 								<FieldRow>
 									<Controller name='roomTopic' control={control} render={({ field }) => <TextInput id={roomTopicField} {...field} />} />
 								</FieldRow>
+								<FieldRow>
+									<FieldHint id={`${roomTopicField}-hint`}>{t('Displayed_next_to_name')}</FieldHint>
+								</FieldRow>
 							</Field>
 						)}
 						{canViewAnnouncement && (
@@ -196,6 +207,9 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 										control={control}
 										render={({ field }) => <TextInput id={roomAnnouncementField} {...field} disabled={isFederated} />}
 									/>
+								</FieldRow>
+								<FieldRow>
+									<FieldHint id={`${roomAnnouncementField}-hint`}>{t('Information_to_keep_top_of_mind')}</FieldHint>
 								</FieldRow>
 							</Field>
 						)}
@@ -233,7 +247,28 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 										)}
 									/>
 								</FieldRow>
-								<FieldHint id={`${roomTypeField}-hint`}>{t('Teams_New_Private_Description_Enabled')}</FieldHint>
+								<FieldRow>
+									<FieldHint id={`${roomTypeField}-hint`}>
+										{roomTypeP === 'p' ? t('Teams_New_Private_Description_Enabled') : t('Teams_New_Private_Description_Disabled')}
+									</FieldHint>
+								</FieldRow>
+							</Field>
+						)}
+						{canViewEncrypted && (
+							<Field>
+								<FieldRow>
+									<FieldLabel htmlFor={encryptedField}>{t('Encrypted')}</FieldLabel>
+									<Controller
+										control={control}
+										name='encrypted'
+										render={({ field: { value, ...field } }) => (
+											<ToggleSwitch id={encryptedField} {...field} disabled={!canToggleEncryption || isFederated} checked={value} />
+										)}
+									/>
+								</FieldRow>
+								<FieldRow>
+									<FieldHint id={`${encryptedField}-hint`}>{t('Encrypted_field_hint')}</FieldHint>
+								</FieldRow>
 							</Field>
 						)}
 						{canViewReadOnly && (
@@ -254,7 +289,9 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 										)}
 									/>
 								</FieldRow>
-								<FieldHint id={`${readOnlyField}-hint`}>{t('Only_authorized_users_can_write_new_messages')}</FieldHint>
+								<FieldHint id={`${readOnlyField}-hint`}>
+									{readOnly ? t('Read_only_field_hint_enabled', { roomType }) : t('Read_only_field_hint_disabled')}
+								</FieldHint>
 							</Field>
 						)}
 						{readOnly && (
@@ -275,7 +312,11 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 										)}
 									/>
 								</FieldRow>
-								<FieldHint id={`${reactWhenReadOnlyField}-hint`}>{t('Only_authorized_users_can_react_to_messages')}</FieldHint>
+								<FieldRow>
+									<FieldHint id={`${reactWhenReadOnlyField}-hint`}>
+										{reactWhenReadOnly ? t('Anyone_can_react_to_messages') : t('Only_authorized_users_can_react_to_messages')}
+									</FieldHint>
+								</FieldRow>
 							</Field>
 						)}
 						{canViewArchived && (
@@ -290,6 +331,11 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 										)}
 									/>
 								</FieldRow>
+								{archived && (
+									<FieldRow>
+										<FieldHint id={`${archivedField}-hint`}>{t('New_messages_cannot_be_sent')}</FieldHint>
+									</FieldRow>
+								)}
 							</Field>
 						)}
 						{canViewJoinCode && (
@@ -336,20 +382,6 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 												disabled={!hideSysMes || isFederated}
 												placeholder={t('Select_an_option')}
 											/>
-										)}
-									/>
-								</FieldRow>
-							</Field>
-						)}
-						{canViewEncrypted && (
-							<Field>
-								<FieldRow>
-									<FieldLabel htmlFor={encryptedField}>{t('Encrypted')}</FieldLabel>
-									<Controller
-										control={control}
-										name='encrypted'
-										render={({ field: { value, ...field } }) => (
-											<ToggleSwitch id={encryptedField} {...field} disabled={!canToggleEncryption || isFederated} checked={value} />
 										)}
 									/>
 								</FieldRow>
