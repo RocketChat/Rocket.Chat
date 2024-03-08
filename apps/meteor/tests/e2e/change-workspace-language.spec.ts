@@ -16,6 +16,11 @@ test.describe.serial('setting-language', () => {
     expect(response.status()).toBe(200);
   });
 
+  test.afterAll(async ({ api }) => {
+    const response = await api.post('/settings/Language', { value: 'en' });
+    expect(response.status()).toBe(200);
+  });
+
   test('Change workspace language', async ({ page, api }) => {
     await test.step('expect welcomeTextLocator to be in English initially', async () => {
       const welcomeTextLocator = page.locator('[data-qa-id="homepage-welcome-text"]');
