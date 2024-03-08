@@ -71,7 +71,7 @@ async function _sendUserEmail(subject: string, html: string, userData: RequiredF
 
 async function validateUserData(userId: IUser['_id'], userData: ISaveUserDataParams) {
 	const existingRoles = _.pluck(await getRoles(), '_id');
-	const isUpdateUserParams = '_id' in userData;
+	const isUpdateUserParams = '_id' in userData && userData._id;
 
 	if (isUpdateUserParams && userId !== userData._id && !(await hasPermissionAsync(userId, 'edit-other-user-info'))) {
 		throw new Meteor.Error('error-action-not-allowed', 'Editing user is not allowed', {
@@ -329,7 +329,7 @@ const saveNewUser = async function (userData: ICreateUserParams, sendPassword: b
 };
 
 export const saveUser = async function (userId: IUser['_id'], userData: ISaveUserDataParams) {
-	const oldUserData = '_id' in userData && (await Users.findOneById(userData._id));
+	const oldUserData = '_id' in userData && userData._id && (await Users.findOneById(userData._id));
 	if (oldUserData && isUserFederated(oldUserData)) {
 		throw new Meteor.Error('Edit_Federated_User_Not_Allowed', 'Not possible to edit a federated user');
 	}
@@ -353,7 +353,7 @@ export const saveUser = async function (userId: IUser['_id'], userData: ISaveUse
 		delete userData.setRandomPassword;
 	}
 
-	if (!('_id' in userData)) {
+	if (!('_id' in userData) || !userData._id) {
 		return saveNewUser(userData, sendPassword);
 	}
 
