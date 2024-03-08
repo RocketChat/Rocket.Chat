@@ -143,9 +143,7 @@ describe('[Users]', function () {
 			await deleteUser(user);
 		});
 
-		it('should create a new user with custom fields', async () => {
-			await setCustomFields({ customFieldText });
-
+		it('it should trim faulty emails', async () => {
 			const username = `customField_${apiUsername}`;
 			const email = `      customField_${apiEmail}            `;
 			const customFields = { customFieldText: 'success' };
