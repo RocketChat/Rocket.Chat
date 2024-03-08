@@ -98,16 +98,16 @@ test.describe('Omnichannel Contact Center', () => {
 		await test.step('cancel button', async () => {
 			await poContacts.btnNewContact.click();
 			await page.waitForURL(URL.newContact);
-			await expect(poContacts.newContact.newContactTitle).toBeVisible();
+			await expect(poContacts.newContact.inputName).toBeVisible();
 			await poContacts.newContact.btnCancel.click();
 			await page.waitForURL(URL.contactCenter);
-			await expect(poContacts.newContact.newContactTitle).not.toBeVisible();
+			await expect(poContacts.newContact.inputName).not.toBeVisible();
 		});
 
 		await test.step('open contextual bar', async () => {
 			await poContacts.btnNewContact.click();
 			await page.waitForURL(URL.newContact);
-			await expect(poContacts.newContact.newContactTitle).toBeVisible();
+			await expect(poContacts.newContact.inputName).toBeVisible();
 			await expect(poContacts.newContact.btnSave).toBeDisabled();
 		});
 

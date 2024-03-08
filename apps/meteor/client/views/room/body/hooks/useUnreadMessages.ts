@@ -37,8 +37,8 @@ export const useHandleUnread = (
 	room: IRoom,
 	subscription?: ISubscription,
 ): {
-	wrapperRef: (wrapper: HTMLDivElement | null) => void;
-	innerRef: React.MutableRefObject<HTMLDivElement | null>;
+	innerRef: (wrapper: HTMLDivElement | null) => void;
+	wrapperRef: React.MutableRefObject<HTMLDivElement | null>;
 	handleUnreadBarJumpToButtonClick: () => void;
 	handleMarkAsReadButtonClick: () => void;
 	counter: readonly [number, Date | undefined];
@@ -171,8 +171,8 @@ export const useHandleUnread = (
 	);
 
 	return {
-		wrapperRef: ref,
-		innerRef: messagesBoxRef,
+		innerRef: ref,
+		wrapperRef: messagesBoxRef,
 		handleUnreadBarJumpToButtonClick,
 		handleMarkAsReadButtonClick,
 		counter: [unread?.count ?? 0, unread?.since] as const,
