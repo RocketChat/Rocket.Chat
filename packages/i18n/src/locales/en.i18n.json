@@ -6314,5 +6314,6 @@
   "Seat_limit_reached": "Seat limit reached",
   "Seat_limit_reached_Description": "Your workspace reached its contractual seat limit. Buy more seats to add more users.",
   "Buy_more_seats": "Buy more seats",
-  "Anyone_can_react_to_messages": "Anyone can react to messages"
+  "Anyone_can_react_to_messages": "Anyone can react to messages",
+  "Name_cannot_have_spaces": "Name cannot have spaces"
 }

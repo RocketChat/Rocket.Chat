@@ -181,17 +181,33 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 								<Controller
 									name='roomName'
 									control={control}
-									rules={{ required: t('error-the-field-is-required', { field: t('Name') }) }}
-									render={({ field }) => <TextInput id={roomNameField} {...field} disabled={!canViewName} />}
+									rules={{
+										required: t('error-the-field-is-required', { field: t('Name') }),
+										validate: (value) => (value.includes(' ') ? t('Name_cannot_have_spaces') : undefined),
+									}}
+									render={({ field }) => (
+										<TextInput
+											id={roomNameField}
+											{...field}
+											disabled={!canViewName}
+											aria-invalid={errors.roomName ? 'true' : 'false'}
+											aria-describedby={`${roomNameField}-error`}
+											aria-required='true'
+										/>
+									)}
 								/>
 							</FieldRow>
-							{errors.roomName && <FieldError>{errors.roomName.message}</FieldError>}
+							{errors.roomName && <FieldError id={`${roomNameField}-error`}>{errors.roomName.message}</FieldError>}
 						</Field>
 						{canViewTopic && (
 							<Field>
 								<FieldLabel htmlFor={roomTopicField}>{t('Topic')}</FieldLabel>
 								<FieldRow>
-									<Controller name='roomTopic' control={control} render={({ field }) => <TextInput id={roomTopicField} {...field} />} />
+									<Controller
+										name='roomTopic'
+										control={control}
+										render={({ field }) => <TextInput id={roomTopicField} aria-describedby={`${roomTopicField}-hint`} {...field} />}
+									/>
 								</FieldRow>
 								<FieldRow>
 									<FieldHint id={`${roomTopicField}-hint`}>{t('Displayed_next_to_name')}</FieldHint>
@@ -205,7 +221,14 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 									<Controller
 										name='roomAnnouncement'
 										control={control}
-										render={({ field }) => <TextInput id={roomAnnouncementField} {...field} disabled={isFederated} />}
+										render={({ field }) => (
+											<TextInput
+												id={roomAnnouncementField}
+												aria-describedby={`${roomAnnouncementField}-hint`}
+												{...field}
+												disabled={isFederated}
+											/>
+										)}
 									/>
 								</FieldRow>
 								<FieldRow>
@@ -262,7 +285,13 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 										control={control}
 										name='encrypted'
 										render={({ field: { value, ...field } }) => (
-											<ToggleSwitch id={encryptedField} {...field} disabled={!canToggleEncryption || isFederated} checked={value} />
+											<ToggleSwitch
+												id={encryptedField}
+												aria-describedby={`${encryptedField}-hint`}
+												{...field}
+												disabled={!canToggleEncryption || isFederated}
+												checked={value}
+											/>
 										)}
 									/>
 								</FieldRow>
@@ -327,7 +356,13 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 										control={control}
 										name='archived'
 										render={({ field: { value, ...field } }) => (
-											<ToggleSwitch id={archivedField} {...field} disabled={!canArchiveOrUnarchive} checked={value} />
+											<ToggleSwitch
+												id={archivedField}
+												aria-describedby={`${archivedField}-hint`}
+												{...field}
+												disabled={!canArchiveOrUnarchive}
+												checked={value}
+											/>
 										)}
 									/>
 								</FieldRow>
