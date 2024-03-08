@@ -119,3 +119,95 @@ export function getNonEmptyQuery<T extends IUser>(query: Mongo.Query<T> | undefi
 
 	return { ...defaultQuery, ...query };
 }
+
+type findPaginatedUsersByStatusProps = {
+	uid: string;
+	offset: number;
+	count: number;
+	sort: Record<string, 1 | -1>;
+	status: 'active' | 'all' | 'deactivated' | 'pending';
+	roles: string[] | null;
+	searchTerm: string;
+};
+
+export async function findPaginatedUsersByStatus({ uid, offset, count, sort, status, roles, searchTerm }: findPaginatedUsersByStatusProps) {
+	const projection = {
+		name: 1,
+		username: 1,
+		emails: 1,
+		roles: 1,
+		status: 1,
+		active: 1,
+		avatarETag: 1,
+		lastLogin: 1,
+		type: 1,
+		reason: 0,
+	};
+
+	const actualSort: Record<string, 1 | -1> = sort || { username: 1 };
+
+	if (sort?.status) {
+		actualSort.active = sort.status;
+	}
+
+	if (sort?.name) {
+		actualSort.nameInsensitive = sort.name;
+	}
+
+	const match: Filter<IUser> = { $or: [] };
+
+	switch (status) {
+		case 'active':
+			match.active = true;
+			match.lastLogin = { $exists: true };
+			break;
+		case 'all':
+			break;
+		case 'deactivated':
+			match.active = false;
+			match.lastLogin = { $exists: true };
+			break;
+		case 'pending':
+			match.lastLogin = { $exists: false };
+			match.type = { $nin: ['bot', 'app'] };
+			projection.reason = 1;
+			break;
+	}
+
+	const canSeeAllUserInfo = await hasPermissionAsync(uid, 'view-full-other-user-info');
+
+	match.$or = [
+		...(canSeeAllUserInfo ? [{ 'emails.address': { $regex: escapeRegExp(searchTerm || ''), $options: 'i' } }] : []),
+		{
+			username: { $regex: escapeRegExp(searchTerm || ''), $options: 'i' },
+		},
+		{
+			name: { $regex: escapeRegExp(searchTerm || ''), $options: 'i' },
+		},
+	];
+
+	if (roles?.length && !roles.includes('all')) {
+		match.roles = { $in: roles };
+	}
+
+	const { cursor, totalCount } = await Users.findPaginated(
+		{
+			...match,
+		},
+		{
+			sort: actualSort,
+			skip: offset,
+			limit: count,
+			projection,
+		},
+	);
+
+	const [users, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+	return {
+		users,
+		count: users.length,
+		offset,
+		total,
+	};
+}
