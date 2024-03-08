@@ -1,6 +1,7 @@
 import type { ILivechatVisitor, ILivechatVisitorDTO, Serialized } from '@rocket.chat/core-typings';
 import type { ComponentChildren } from 'preact';
 import { Component, createContext } from 'preact';
+import { useContext } from 'preact/hooks';
 
 import type { CustomField } from '../components/Form/CustomFields';
 import type { Agent } from '../definitions/agents';
@@ -221,3 +222,9 @@ export class Provider extends Component {
 export const { Consumer } = StoreContext;
 
 export default store;
+
+export const useStore = (): StoreContextValue => {
+	const store = useContext(StoreContext);
+
+	return store;
+};
