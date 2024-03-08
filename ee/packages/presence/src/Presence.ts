@@ -43,7 +43,7 @@ export class Presence extends ServiceClass implements IPresence {
 		});
 
 		this.onEvent('license.module', async ({ module, valid }) => {
-			if (module === 'scalability') {
+			if (module === 'unlimited-presence-service') {
 				this.hasLicense = valid;
 
 				// broadcast should always be enabled if license is active (unless the troubleshoot setting is on)
@@ -68,7 +68,7 @@ export class Presence extends ServiceClass implements IPresence {
 		try {
 			await Settings.updateValueById('Presence_broadcast_disabled', false);
 
-			this.hasLicense = await License.hasModule('scalability');
+			this.hasLicense = await License.hasModule('unlimited-presence-service');
 		} catch (e: unknown) {
 			// ignore
 		}
