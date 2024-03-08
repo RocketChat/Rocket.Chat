@@ -138,7 +138,7 @@ async function validateUserData(userId: IUser['_id'], userData: ISaveUserDataPar
 		});
 	}
 
-	if (!isUpdateUserParams) {
+	if (!('_id' in userData)) {
 		if (!(await checkUsernameAvailability(userData.username))) {
 			throw new Meteor.Error('error-field-unavailable', `${_.escape(userData.username)} is already in use :(`, {
 				method: 'insertOrUpdateUser',
@@ -353,7 +353,7 @@ export const saveUser = async function (userId: IUser['_id'], userData: ISaveUse
 		delete userData.setRandomPassword;
 	}
 
-	if (!('_id' in userData) || !userData._id) {
+	if (!('_id' in userData)) {
 		return saveNewUser(userData, sendPassword);
 	}
 
