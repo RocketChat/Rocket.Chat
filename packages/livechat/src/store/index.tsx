@@ -59,7 +59,7 @@ export type StoreState = {
 		enabled: boolean;
 	};
 	iframe: {
-		guest: Serialized<ILivechatVisitorDTO> | object;
+		guest: Serialized<ILivechatVisitorDTO> | Record<string, unknown>;
 		theme: {
 			title?: string;
 			color?: string;
