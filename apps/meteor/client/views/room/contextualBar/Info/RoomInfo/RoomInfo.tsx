@@ -126,7 +126,7 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 
 						{topic && topic !== '' && (
 							<InfoPanel.Field>
-								<InfoPanel.Label>{isDiscussion ? t('Parent_channel_or_team') : t('Topic')}</InfoPanel.Label>
+								<InfoPanel.Label>{t('Topic')}</InfoPanel.Label>
 								<InfoPanel.Text withTruncatedText={false}>
 									<MarkdownText variant='inline' content={topic} />
 								</InfoPanel.Text>
