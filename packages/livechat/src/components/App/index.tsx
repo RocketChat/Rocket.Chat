@@ -3,7 +3,7 @@ import { parse } from 'query-string';
 import ConnectionStatusProvider from '../../providers/ConnectionStatusProvider';
 import SDKProvider from '../../providers/SDKProvider';
 import ServerProvider from '../../providers/ServerProvider';
-import { Provider as StoreProvider, Consumer as StoreConsumer } from '../../store';
+import { Provider as StoreProvider } from '../../store';
 import App from './App';
 
 export const host =
@@ -17,37 +17,7 @@ const AppConnector = () => (
 			<SDKProvider serverURL={host}>
 				<ConnectionStatusProvider>
 					<ServerProvider>
-						<StoreConsumer>
-							{({
-								config,
-								user,
-								triggered,
-								gdpr,
-								sound,
-								undocked,
-								minimized = true,
-								expanded = false,
-								alerts,
-								modal,
-								dispatch,
-								iframe,
-							}) => (
-								<App
-									config={config}
-									gdpr={gdpr}
-									triggered={triggered}
-									user={user}
-									sound={sound}
-									undocked={undocked}
-									minimized={minimized}
-									expanded={expanded}
-									alerts={alerts}
-									modal={modal}
-									dispatch={dispatch}
-									iframe={iframe}
-								/>
-							)}
-						</StoreConsumer>
+						<App />
 					</ServerProvider>
 				</ConnectionStatusProvider>
 			</SDKProvider>
