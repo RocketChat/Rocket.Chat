@@ -24,6 +24,7 @@ import SwitchDepartment from '../../routes/SwitchDepartment';
 import TriggerMessage from '../../routes/TriggerMessage';
 import type { Dispatch, StoreState } from '../../store';
 import { ScreenProvider } from '../Screen/ScreenProvider';
+import { loadConfig } from '../../lib/main';
 
 type AppProps = {
 	config: {
@@ -160,7 +161,8 @@ export class App extends Component<AppProps, AppState> {
 
 	protected async initialize() {
 		// TODO: split these behaviors into composable components
-		await Connection.init();
+		await import('../../i18next');
+		await loadConfig();
 		CustomFields.init();
 		userPresence.init();
 		Hooks.init();
