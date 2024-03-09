@@ -12,6 +12,7 @@ import Alert from '../Alert';
 import { Avatar } from '../Avatar';
 import Header from '../Header';
 import Tooltip from '../Tooltip';
+import { useConnectionAlerts } from './ConnectionAlert';
 
 type screenHeaderProps = {
 	alerts: { id: string; children: ComponentChildren; [key: string]: unknown }[];
@@ -66,6 +67,8 @@ const ScreenHeader = ({
 
 		return title;
 	};
+
+	useConnectionAlerts();
 
 	return (
 		<Header
