@@ -103,9 +103,13 @@ export default class Store<T extends Record<string, unknown>> implements Emitter
 		localStorage.setItem(this.localStorageKey, JSON.stringify(persistable));
 	}
 
-	setState(partialState: Partial<T>) {
+	setState<S extends Partial<T>>(partialState: S | ((state: T) => S)) {
+		if (typeof partialState === 'function') {
+			partialState = partialState(this._state);
+		}
 		const prevState = this._state;
-		this._state = { ...prevState, ...partialState };
+		this._state = JSON.parse(JSON.stringify({ ...prevState, ...partialState }));
+
 		this.persist();
 		this.emit('change', [this._state, prevState, partialState]);
 	}

@@ -4,18 +4,42 @@ import { createToken } from '../../../lib/random';
 import { useStore } from '../../../store';
 
 export const useAlert = () => {
-	const { alerts, dispatch } = useStore();
+	const { dispatch } = useStore();
 
-	return useCallback(
-		(text: string, { error = false, timeout = 10000 }: { error: boolean; timeout: number }) => {
+	const remove = useCallback(
+		(id: string) => {
+			dispatch(({ alerts }) => ({ alerts: alerts.filter((alert) => alert.id !== id) }));
+		},
+		[dispatch],
+	);
+
+	const alert = useCallback(
+		(
+			text: string,
+			{
+				error,
+				timeout = 10000,
+				success,
+			}: {
+				error?: true;
+				timeout?: number;
+				success?: true;
+			},
+		) => {
 			const alert = {
 				id: createToken(),
 				children: text,
 				error,
+				success,
 				timeout,
 			};
-			dispatch({ alerts: (alerts.push(alert), alerts) });
+
+			dispatch(({ alerts }) => ({ alerts: (alerts.push(alert), alerts) }));
+
+			return () => remove(alert.id);
 		},
-		[alerts, dispatch],
+		[dispatch, remove],
 	);
+
+	return { alert, remove };
 };
