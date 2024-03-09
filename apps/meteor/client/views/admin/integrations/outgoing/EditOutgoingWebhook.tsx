@@ -14,7 +14,7 @@ import { useUpdateIntegration } from '../hooks/useUpdateIntegration';
 import OutgoingWebhookForm from './OutgoingWebhookForm';
 
 const getInitialValue = (webhookData: Serialized<IOutgoingIntegration> | undefined, defaultToken: string) => ({
-	enabled: webhookData?.enabled || true,
+	enabled: webhookData?.enabled ?? true,
 	impersonateUser: webhookData?.impersonateUser || false,
 	event: webhookData?.event || 'sendMessage',
 	urls: webhookData?.urls?.join('\n') ?? '',
@@ -30,11 +30,11 @@ const getInitialValue = (webhookData: Serialized<IOutgoingIntegration> | undefin
 	scriptEnabled: webhookData?.scriptEnabled || false,
 	scriptEngine: webhookData?.scriptEngine || 'isolated-vm',
 	script: webhookData?.script || '',
-	retryFailedCalls: webhookData?.retryFailedCalls || true,
+	retryFailedCalls: webhookData?.retryFailedCalls ?? true,
 	retryCount: webhookData?.retryCount || 6,
 	retryDelay: webhookData?.retryDelay || 'powers-of-ten',
 	triggerWordAnywhere: webhookData?.triggerWordAnywhere || false,
-	runOnEdits: webhookData?.runOnEdits || true,
+	runOnEdits: webhookData?.runOnEdits ?? true,
 });
 
 const OUTGOING_TYPE = 'webhook-outgoing';
