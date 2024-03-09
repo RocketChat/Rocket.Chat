@@ -2,6 +2,7 @@ import type { FunctionalComponent } from 'preact';
 import { createContext } from 'preact';
 import { useCallback, useContext, useEffect, useState } from 'preact/hooks';
 import { parse } from 'query-string';
+import type { JsxElement } from 'typescript';
 
 import { isActiveSession } from '../../helpers/isActiveSession';
 import { parentCall } from '../../lib/parentCall';
@@ -17,7 +18,7 @@ export type ScreenContextValue = {
 	windowed: boolean;
 	sound: unknown;
 	alerts: unknown;
-	modal: unknown;
+	modal?: JsxElement;
 	nameDefault: string;
 	emailDefault: string;
 	departmentDefault: string;

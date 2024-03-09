@@ -1,7 +1,8 @@
 import type { ILivechatVisitor, ILivechatVisitorDTO, Serialized } from '@rocket.chat/core-typings';
 import type { ComponentChildren } from 'preact';
-import { Component, createContext } from 'preact';
+import { createContext } from 'preact';
 import { useContext, useEffect, useState } from 'preact/hooks';
+import type { JsxElement } from 'typescript';
 
 import type { CustomField } from '../components/Form/CustomFields';
 import type { Agent } from '../definitions/agents';
@@ -107,7 +108,7 @@ export type StoreState = {
 	triggered?: boolean;
 	undocked?: boolean;
 	expanded?: boolean;
-	modal?: any;
+	modal?: JsxElement;
 	agent?: any;
 	room?: { _id: string };
 	noMoreMessages?: boolean;
