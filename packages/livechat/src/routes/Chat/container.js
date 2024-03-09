@@ -9,37 +9,14 @@ import { canRenderMessage } from '../../helpers/canRenderMessage';
 import { debounce } from '../../helpers/debounce';
 import { throttle } from '../../helpers/throttle';
 import { upsert } from '../../helpers/upsert';
-import {
-	useAgentChangeSubscription,
-	useAgentStatusChangeSubscription,
-	useQueuePositionChangeSubscription,
-} from '../../hooks/livechatRoomSubscriptionHooks';
-import { useDeleteMessageSubscription } from '../../hooks/useDeleteMessageSubscription';
-import { useRoomMessagesSubscription } from '../../hooks/useRoomMessagesSubscription';
-import { useUserActivitySubscription } from '../../hooks/useUserActivitySubscription';
 import { normalizeQueueAlert } from '../../lib/api';
 import constants from '../../lib/constants';
 import { getLastReadMessage, loadConfig, processUnread, shouldMarkAsUnread } from '../../lib/main';
 import { parentCall, runCallbackEventEmitter } from '../../lib/parentCall';
 import { createToken } from '../../lib/random';
-import { initRoom, closeChat, loadMessages, loadMoreMessages, defaultRoomParams, getGreetingMessages } from '../../lib/room';
+import { initRoom, closeChat, loadMoreMessages, defaultRoomParams, getGreetingMessages } from '../../lib/room';
+import { ChatWrapper } from './ChatWrapper';
 import Chat from './component';
-
-const ChatWrapper = ({ children, rid }) => {
-	useRoomMessagesSubscription(rid);
-
-	useUserActivitySubscription(rid);
-
-	useDeleteMessageSubscription(rid);
-
-	useAgentChangeSubscription(rid);
-
-	useAgentStatusChangeSubscription(rid);
-
-	useQueuePositionChangeSubscription(rid);
-
-	return children;
-};
 
 class ChatContainer extends Component {
 	state = {
@@ -64,15 +41,6 @@ class ChatContainer extends Component {
 			this.state.estimatedWaitTime = newEstimatedWaitTime;
 			await this.handleQueueMessage(connecting, queueInfo);
 			await this.handleConnectingAgentAlert(newConnecting, await normalizeQueueAlert(queueInfo));
-		}
-	};
-
-	checkRoom = () => {
-		const { room } = this.props;
-		const { room: stateRoom } = this.state;
-		if (room && (!stateRoom || room._id !== stateRoom._id)) {
-			this.state.room = room;
-			setTimeout(loadMessages, 500);
 		}
 	};
 
@@ -341,7 +309,6 @@ class ChatContainer extends Component {
 
 	async componentDidMount() {
 		await this.checkConnectingAgent();
-		await loadMessages();
 		processUnread();
 	}
 
@@ -369,7 +336,6 @@ class ChatContainer extends Component {
 		}
 
 		await this.checkConnectingAgent();
-		this.checkRoom();
 	}
 
 	componentWillUnmount() {
@@ -377,7 +343,7 @@ class ChatContainer extends Component {
 	}
 
 	render = ({ user, ...props }) => (
-		<ChatWrapper token={props.token} rid={props.room?._id}>
+		<ChatWrapper token={props.token}>
 			<Chat
 				{...props}
 				avatarResolver={getAvatarUrl}
