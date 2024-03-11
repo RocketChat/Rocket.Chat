@@ -118,7 +118,6 @@ export const createLivechatRoom = async (
 
 	const roomId = (await Rooms.insertOne(room)).insertedId;
 
-	void Apps.triggerEvent(AppEvents.IPostLivechatRoomStarted, room);
 	await callbacks.run('livechat.newRoom', room);
 
 	await sendMessage(guest, { t: 'livechat-started', msg: '', groupable: false }, room);
