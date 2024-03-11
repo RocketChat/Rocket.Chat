@@ -796,7 +796,14 @@ describe('LIVECHAT - business hours', function () {
 		it('should add a bot agent but shouldn change its status', async () => {
 			const bot = await createUser({ roles: ['bot', 'livechat-agent'] });
 			const newUserCredentials = await login(bot.username, password);
-			await setUserActiveStatus(bot._id, true);
+			await request
+				.post(api('livechat/agent.status'))
+				.set(credentials)
+				.send({
+					status: 'available',
+					agentId: bot._id,
+				})
+				.expect(200);
 
 			const latestAgent: ILivechatAgent = await getMe(newUserCredentials);
 			expect(latestAgent).to.be.an('object');
@@ -886,8 +893,8 @@ describe('LIVECHAT - business hours', function () {
 		it('should verify if agent becomes unavailable to take chats when user is activated, if business hour is inactive', async () => {
 			await openOrCloseBusinessHour(defaultBH, false);
 
-			await setUserActiveStatus(agent._id, false);
 			await setUserActiveStatus(agent._id, true);
+			await setUserActiveStatus(agent._id, false);
 
 			const latestAgent = await getUserByUsername(agent.username);
 
