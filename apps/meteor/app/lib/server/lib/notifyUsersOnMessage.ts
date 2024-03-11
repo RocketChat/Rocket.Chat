@@ -1,3 +1,5 @@
+import type { IMessage, IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
+import { isEditedMessage } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import moment from 'moment';
@@ -5,26 +7,16 @@ import moment from 'moment';
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
 
-/**
- * Chechs if a messages contains a user highlight
- *
- * @param {string} message
- * @param {array|undefined} highlights
- *
- * @returns {boolean}
- */
-function messageContainsHighlight(message, highlights) {
-	if (!highlights || highlights.length === 0) {
-		return false;
-	}
+function messageContainsHighlight(message: IMessage, highlights: string[]): boolean {
+	if (!highlights || highlights.length === 0) return false;
 
-	return highlights.some((highlight) => {
+	return highlights.some((highlight: string) => {
 		const regexp = new RegExp(escapeRegExp(highlight), 'i');
 		return regexp.test(message.msg);
 	});
 }
 
-export async function getMentions(message) {
+export async function getMentions(message: IMessage): Promise<{ toAll: boolean; toHere: boolean; mentionIds: string[] }> {
 	const {
 		mentions,
 		u: { _id: senderId },
@@ -41,16 +33,13 @@ export async function getMentions(message) {
 	const toAll = mentions.some(({ _id }) => _id === 'all');
 	const toHere = mentions.some(({ _id }) => _id === 'here');
 
-	const userMentions = mentions.filter((mention) => !mention.type || mention.type === 'user');
-	const otherMentions = mentions.filter((mention) => mention?.type !== 'user');
+	const teamsMentions = mentions.filter((mention) => mention.type === 'team');
+	const filteredMentions = mentions
+		.filter((mention) => !mention.type || mention.type === 'user')
+		.filter(({ _id }) => _id !== senderId && !['all', 'here'].includes(_id))
+		.map(({ _id }) => _id);
 
-	const filteredMentions = userMentions.filter(({ _id }) => _id !== senderId && !['all', 'here'].includes(_id)).map(({ _id }) => _id);
-
-	const mentionIds = await callbacks.run('beforeGetMentions', filteredMentions, {
-		userMentions,
-		otherMentions,
-		message,
-	});
+	const mentionIds = await callbacks.run('beforeGetMentions', filteredMentions, teamsMentions);
 
 	return {
 		toAll,
@@ -59,21 +48,31 @@ export async function getMentions(message) {
 	};
 }
 
-const incGroupMentions = async (rid, roomType, excludeUserId, unreadCount) => {
+type UnreadCountType = 'all_messages' | 'user_mentions_only' | 'group_mentions_only' | 'user_and_group_mentions_only';
+
+const incGroupMentions = async (
+	rid: IRoom['_id'],
+	roomType: RoomType,
+	excludeUserId: IUser['_id'],
+	unreadCount: Exclude<UnreadCountType, 'user_mentions_only'>,
+): Promise<void> => {
 	const incUnreadByGroup = ['all_messages', 'group_mentions_only', 'user_and_group_mentions_only'].includes(unreadCount);
 	const incUnread = roomType === 'd' || roomType === 'l' || incUnreadByGroup ? 1 : 0;
-
 	await Subscriptions.incGroupMentionsAndUnreadForRoomIdExcludingUserId(rid, excludeUserId, 1, incUnread);
 };
 
-const incUserMentions = async (rid, roomType, uids, unreadCount) => {
-	const incUnreadByUser = ['all_messages', 'user_mentions_only', 'user_and_group_mentions_only'].includes(unreadCount);
+const incUserMentions = async (
+	rid: IRoom['_id'],
+	roomType: RoomType,
+	uids: IUser['_id'][],
+	unreadCount: Exclude<UnreadCountType, 'group_mentions_only'>,
+): Promise<void> => {
+	const incUnreadByUser = new Set(['all_messages', 'user_mentions_only', 'user_and_group_mentions_only']).has(unreadCount);
 	const incUnread = roomType === 'd' || roomType === 'l' || incUnreadByUser ? 1 : 0;
-
 	await Subscriptions.incUserMentionsAndUnreadForRoomIdAndUserIds(rid, uids, 1, incUnread);
 };
 
-export const getUserIdsFromHighlights = async (rid, message) => {
+export const getUserIdsFromHighlights = async (rid: IRoom['_id'], message: IMessage): Promise<string[]> => {
 	const highlightOptions = { projection: { 'userHighlights': 1, 'u._id': 1 } };
 	const subs = await Subscriptions.findByRoomWithUserHighlights(rid, highlightOptions).toArray();
 
@@ -84,11 +83,7 @@ export const getUserIdsFromHighlights = async (rid, message) => {
 		.map(({ u: { _id: uid } }) => uid);
 };
 
-/*
- * {IRoom['t']} roomType - The type of the room
- * @returns {string} - The setting value for unread count
- */
-const getUnreadSettingCount = (roomType) => {
+const getUnreadSettingCount = (roomType: RoomType): UnreadCountType => {
 	let unreadSetting = 'Unread_Count';
 	switch (roomType) {
 		case 'd': {
@@ -104,7 +99,7 @@ const getUnreadSettingCount = (roomType) => {
 	return settings.get(unreadSetting);
 };
 
-async function updateUsersSubscriptions(message, room) {
+async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise<void> {
 	// Don't increase unread counter on thread messages
 	if (room != null && !message.tmid) {
 		const { toAll, toHere, mentionIds } = await getMentions(message);
@@ -115,16 +110,16 @@ async function updateUsersSubscriptions(message, room) {
 
 		(await getUserIdsFromHighlights(room._id, message)).forEach((uid) => userIds.add(uid));
 
-		// give priority to user mentions over group mentions
+		// Give priority to user mentions over group mentions
 		if (userIds.size > 0) {
-			await incUserMentions(room._id, room.t, [...userIds], unreadCount);
+			await incUserMentions(room._id, room.t, [...userIds], unreadCount as Exclude<UnreadCountType, 'group_mentions_only'>);
 		} else if (toAll || toHere) {
-			await incGroupMentions(room._id, room.t, message.u._id, unreadCount);
+			await incGroupMentions(room._id, room.t, message.u._id, unreadCount as Exclude<UnreadCountType, 'user_mentions_only'>);
 		}
 
 		// this shouldn't run only if has group mentions because it will already exclude mentioned users from the query
 		if (!toAll && !toHere && unreadCount === 'all_messages') {
-			await Subscriptions.incUnreadForRoomIdExcludingUserIds(room._id, [...userIds, message.u._id]);
+			await Subscriptions.incUnreadForRoomIdExcludingUserIds(room._id, [...userIds, message.u._id], 1);
 		}
 	}
 
@@ -137,30 +132,25 @@ async function updateUsersSubscriptions(message, room) {
 	]);
 }
 
-export async function updateThreadUsersSubscriptions(message, room, replies) {
-	// const unreadCount = settings.get('Unread_Count');
-
-	// incUserMentions(room._id, room.t, replies, unreadCount);
+export async function updateThreadUsersSubscriptions(message: IMessage, replies: IUser['_id'][]): Promise<void> {
+	// Don't increase unread counter on thread messages
 
 	await Subscriptions.setAlertForRoomIdAndUserIds(message.rid, replies);
-
 	const repliesPlusSender = [...new Set([message.u._id, ...replies])];
-
 	await Subscriptions.setOpenForRoomIdAndUserIds(message.rid, repliesPlusSender);
-
 	await Subscriptions.setLastReplyForRoomIdAndUserIds(message.rid, repliesPlusSender, new Date());
 }
 
-export async function notifyUsersOnMessage(message, room) {
-	// skips this callback if the message was edited and increments it if the edit was way in the past (aka imported)
-	if (message.editedAt) {
-		if (Math.abs(moment(message.editedAt).diff()) > 60000) {
+export async function notifyUsersOnMessage(message: IMessage, room: IRoom): Promise<IMessage> {
+	// Skips this callback if the message was edited and increments it if the edit was way in the past (aka imported)
+	if (isEditedMessage(message)) {
+		if (Math.abs(moment(message.editedAt).diff(Date.now())) > 60000) {
 			// TODO: Review as I am not sure how else to get around this as the incrementing of the msgs count shouldn't be in this callback
 			await Rooms.incMsgCountById(message.rid, 1);
 			return message;
 		}
 
-		// only updates last message if it was edited (skip rest of callback)
+		// Only updates last message if it was edited (skip rest of callback)
 		if (
 			settings.get('Store_Last_Message') &&
 			(!message.tmid || message.tshow) &&
@@ -172,20 +162,19 @@ export async function notifyUsersOnMessage(message, room) {
 		return message;
 	}
 
-	if (message.ts && Math.abs(moment(message.ts).diff()) > 60000) {
+	if (message.ts && Math.abs(moment(message.ts).diff(Date.now())) > 60000) {
 		await Rooms.incMsgCountById(message.rid, 1);
 		return message;
 	}
 
-	// if message sent ONLY on a thread, skips the rest as it is done on a callback specific to threads
+	// If message sent ONLY on a thread, skips the rest as it is done on a callback specific to threads
 	if (message.tmid && !message.tshow) {
 		await Rooms.incMsgCountById(message.rid, 1);
 		return message;
 	}
 
 	// Update all the room activity tracker fields
-	await Rooms.incMsgCountAndSetLastMessageById(message.rid, 1, message.ts, settings.get('Store_Last_Message') && message);
-
+	await Rooms.incMsgCountAndSetLastMessageById(message.rid, 1, message.ts, settings.get('Store_Last_Message') ? message : undefined);
 	await updateUsersSubscriptions(message, room);
 
 	return message;

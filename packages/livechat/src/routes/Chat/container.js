@@ -9,6 +9,14 @@ import { canRenderMessage } from '../../helpers/canRenderMessage';
 import { debounce } from '../../helpers/debounce';
 import { throttle } from '../../helpers/throttle';
 import { upsert } from '../../helpers/upsert';
+import {
+	useAgentChangeSubscription,
+	useAgentStatusChangeSubscription,
+	useQueuePositionChangeSubscription,
+} from '../../hooks/livechatRoomSubscriptionHooks';
+import { useDeleteMessageSubscription } from '../../hooks/useDeleteMessageSubscription';
+import { useRoomMessagesSubscription } from '../../hooks/useRoomMessagesSubscription';
+import { useUserActivitySubscription } from '../../hooks/useUserActivitySubscription';
 import { normalizeQueueAlert } from '../../lib/api';
 import constants from '../../lib/constants';
 import { getLastReadMessage, loadConfig, processUnread, shouldMarkAsUnread } from '../../lib/main';
@@ -16,6 +24,22 @@ import { parentCall, runCallbackEventEmitter } from '../../lib/parentCall';
 import { createToken } from '../../lib/random';
 import { initRoom, closeChat, loadMessages, loadMoreMessages, defaultRoomParams, getGreetingMessages } from '../../lib/room';
 import Chat from './component';
+
+const ChatWrapper = ({ children, rid }) => {
+	useRoomMessagesSubscription(rid);
+
+	useUserActivitySubscription(rid);
+
+	useDeleteMessageSubscription(rid);
+
+	useAgentChangeSubscription(rid);
+
+	useAgentStatusChangeSubscription(rid);
+
+	useQueuePositionChangeSubscription(rid);
+
+	return children;
+};
 
 class ChatContainer extends Component {
 	state = {
@@ -353,22 +377,24 @@ class ChatContainer extends Component {
 	}
 
 	render = ({ user, ...props }) => (
-		<Chat
-			{...props}
-			avatarResolver={getAvatarUrl}
-			uid={user && user._id}
-			onTop={this.handleTop}
-			onChangeText={this.handleChangeText}
-			onSubmit={this.handleSubmit}
-			onUpload={this.handleUpload}
-			options={this.showOptionsMenu()}
-			onChangeDepartment={(this.canSwitchDepartment() && this.onChangeDepartment) || null}
-			onFinishChat={(this.canFinishChat() && this.onFinishChat) || null}
-			onRemoveUserData={(this.canRemoveUserData() && this.onRemoveUserData) || null}
-			onSoundStop={this.handleSoundStop}
-			registrationRequired={this.registrationRequired()}
-			onRegisterUser={this.onRegisterUser}
-		/>
+		<ChatWrapper token={props.token} rid={props.room?._id}>
+			<Chat
+				{...props}
+				avatarResolver={getAvatarUrl}
+				uid={user && user._id}
+				onTop={this.handleTop}
+				onChangeText={this.handleChangeText}
+				onSubmit={this.handleSubmit}
+				onUpload={this.handleUpload}
+				options={this.showOptionsMenu()}
+				onChangeDepartment={(this.canSwitchDepartment() && this.onChangeDepartment) || null}
+				onFinishChat={(this.canFinishChat() && this.onFinishChat) || null}
+				onRemoveUserData={(this.canRemoveUserData() && this.onRemoveUserData) || null}
+				onSoundStop={this.handleSoundStop}
+				registrationRequired={this.registrationRequired()}
+				onRegisterUser={this.onRegisterUser}
+			/>
+		</ChatWrapper>
 	);
 }
 
