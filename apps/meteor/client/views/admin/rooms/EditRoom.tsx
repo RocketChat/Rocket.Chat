@@ -96,7 +96,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 
 	const handleArchive = useArchiveRoom(room);
 
-	const handleUpdateRoomData = useEffectEvent(async ({ isDefault, roomName, favorite, ...formData }) => {
+	const handleUpdateRoomData = useEffectEvent(async ({ isDefault, favorite, ...formData }) => {
 		const data = getDirtyFields(formData, dirtyFields);
 		delete data.archived;
 		delete data.favorite;
@@ -104,7 +104,6 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 		try {
 			await saveAction({
 				rid: room._id,
-				roomName: roomType === 'd' ? undefined : roomName,
 				default: isDefault,
 				favorite: { defaultValue: isDefault, favorite },
 				...data,
@@ -183,7 +182,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 							<Field>
 								<FieldLabel htmlFor={ownerField}>{t('Owner')}</FieldLabel>
 								<FieldRow>
-									<TextInput id={ownerField} readOnly value={room.u?.username} />
+									<TextInput id={ownerField} name='roomOwner' readOnly value={room.u?.username} />
 								</FieldRow>
 							</Field>
 						)}

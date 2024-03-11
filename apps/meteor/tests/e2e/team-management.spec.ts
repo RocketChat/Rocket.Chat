@@ -89,4 +89,14 @@ test.describe.serial('teams-management', () => {
 		await poHomeTeam.tabs.channels.btnAdd.click();
 		await expect(page.locator('//main//aside >> li')).toContainText(targetChannel);
 	});
+
+	test('should access team channel through "targetTeam" header', async ({ page }) => {
+		await poHomeTeam.sidenav.openChat(targetChannel);
+		await page.getByRole('button', { name: targetChannel }).first().focus();
+		await page.keyboard.press('Tab');
+		await page.keyboard.press('Tab');
+		await page.keyboard.press('Space');
+
+		await expect(page).toHaveURL(`/group/${targetTeam}`);
+	});
 });

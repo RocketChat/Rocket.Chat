@@ -7,11 +7,11 @@ export default defineConfig(() => ({
   esbuild: {},
   plugins: [react()],
   optimizeDeps: {
-    include: ['@rocket.chat/ui-contexts'],
+    include: ['@rocket.chat/ui-contexts', '@rocket.chat/message-parser'],
   },
   build: {
     commonjsOptions: {
-      include: [/ui-contexts/, /node_modules/],
+      include: [/ui-contexts/, /message-parser/, /node_modules/],
     },
   },
 }));

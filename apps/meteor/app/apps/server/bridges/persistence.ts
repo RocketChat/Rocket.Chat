@@ -1,10 +1,10 @@
+import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import type { RocketChatAssociationRecord } from '@rocket.chat/apps-engine/definition/metadata';
 import { PersistenceBridge } from '@rocket.chat/apps-engine/server/bridges/PersistenceBridge';
-
-import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
+import type { InsertOneResult } from 'mongodb';
 
 export class AppPersistenceBridge extends PersistenceBridge {
-	constructor(private readonly orch: AppServerOrchestrator) {
+	constructor(private readonly orch: IAppServerOrchestrator) {
 		super();
 	}
 
@@ -21,7 +21,10 @@ export class AppPersistenceBridge extends PersistenceBridge {
 			throw new Error('Attempted to store an invalid data type, it must be an object.');
 		}
 
-		return this.orch.getPersistenceModel().insertOne({ appId, data });
+		return this.orch
+			.getPersistenceModel()
+			.insertOne({ appId, data })
+			.then(({ insertedId }: InsertOneResult) => (insertedId as unknown as string) || '');
 	}
 
 	protected async createWithAssociations(data: object, associations: Array<RocketChatAssociationRecord>, appId: string): Promise<string> {
@@ -35,7 +38,10 @@ export class AppPersistenceBridge extends PersistenceBridge {
 			throw new Error('Attempted to store an invalid data type, it must be an object.');
 		}
 
-		return this.orch.getPersistenceModel().insertOne({ appId, associations, data });
+		return this.orch
+			.getPersistenceModel()
+			.insertOne({ appId, associations, data })
+			.then(({ insertedId }: InsertOneResult) => (insertedId as unknown as string) || '');
 	}
 
 	protected async readById(id: string, appId: string): Promise<object> {
@@ -89,7 +95,7 @@ export class AppPersistenceBridge extends PersistenceBridge {
 
 		const records = await this.orch.getPersistenceModel().find(query).toArray();
 
-		if (!records || !records.length) {
+		if (!records?.length) {
 			return undefined;
 		}
 
@@ -125,6 +131,9 @@ export class AppPersistenceBridge extends PersistenceBridge {
 			associations,
 		};
 
-		return this.orch.getPersistenceModel().update(query, { $set: { data } }, { upsert });
+		return this.orch
+			.getPersistenceModel()
+			.update(query, { $set: { data } }, { upsert })
+			.then(({ upsertedId }: any) => upsertedId || '');
 	}
 }
