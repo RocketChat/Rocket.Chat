@@ -28,8 +28,7 @@ const GenericFileAttachment = ({
 	size,
 	format,
 	collapsed,
-	isMessageEncrypted,
-}: GenericFileAttachmentProps & { isMessageEncrypted: boolean }) => {
+}: GenericFileAttachmentProps) => {
 	const getURL = useMediaUrl();
 
 	const handleTitleClick = (event: UIEvent): void => {
@@ -49,7 +48,7 @@ const GenericFileAttachment = ({
 
 	return (
 		<>
-			<AttachmentDescription description={description} descriptionMd={descriptionMd} isMessageEncrypted={isMessageEncrypted} />
+			<AttachmentDescription description={description} descriptionMd={descriptionMd} />
 			<MessageCollapsible title={title} hasDownload={hasDownload} link={link} isCollapsed={collapsed}>
 				<MessageGenericPreview style={{ maxWidth: 368, width: '100%' }}>
 					<MessageGenericPreviewContent

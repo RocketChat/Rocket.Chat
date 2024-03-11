@@ -3,6 +3,7 @@ import type { ReactElement } from 'react';
 import React from 'react';
 
 import AttachmentsItem from './attachments/AttachmentsItem';
+import { AttachmentEncryptionContext } from './attachments/contexts/AttachmentEncryptionContext';
 
 type AttachmentsProps = {
 	attachments: MessageAttachmentBase[];
@@ -13,9 +14,11 @@ type AttachmentsProps = {
 const Attachments = ({ attachments, id, isMessageEncrypted = false }: AttachmentsProps): ReactElement => {
 	return (
 		<>
-			{attachments?.map((attachment, index) => (
-				<AttachmentsItem key={index} id={id} attachment={{ ...attachment }} isMessageEncrypted={isMessageEncrypted} />
-			))}
+			<AttachmentEncryptionContext.Provider value={{ isMessageEncrypted }}>
+				{attachments?.map((attachment, index) => (
+					<AttachmentsItem key={index} id={id} attachment={{ ...attachment }} />
+				))}
+			</AttachmentEncryptionContext.Provider>
 		</>
 	);
 };

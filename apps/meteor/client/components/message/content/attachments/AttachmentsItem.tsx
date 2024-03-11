@@ -10,12 +10,11 @@ import { QuoteAttachment } from './QuoteAttachment';
 type AttachmentsItemProps = {
 	attachment: MessageAttachmentBase;
 	id: string | undefined;
-	isMessageEncrypted: boolean;
 };
 
-const AttachmentsItem = ({ attachment, id, isMessageEncrypted }: AttachmentsItemProps): ReactElement => {
+const AttachmentsItem = ({ attachment, id }: AttachmentsItemProps): ReactElement => {
 	if (isFileAttachment(attachment)) {
-		return <FileAttachment id={id} {...attachment} isMessageEncrypted={isMessageEncrypted} />;
+		return <FileAttachment id={id} {...attachment} />;
 	}
 
 	if (isQuoteAttachment(attachment)) {

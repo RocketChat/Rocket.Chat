@@ -17,13 +17,12 @@ const VideoAttachment = ({
 	title_link: link,
 	title_link_download: hasDownload,
 	collapsed,
-	isMessageEncrypted,
-}: VideoAttachmentProps & { isMessageEncrypted: boolean }) => {
+}: VideoAttachmentProps) => {
 	const getURL = useMediaUrl();
 
 	return (
 		<>
-			<AttachmentDescription isMessageEncrypted={isMessageEncrypted} description={description} descriptionMd={descriptionMd} />
+			<AttachmentDescription description={description} descriptionMd={descriptionMd} />
 			<MessageCollapsible title={title} hasDownload={hasDownload} link={getURL(link || url)} size={size} isCollapsed={collapsed}>
 				<MessageGenericPreview style={{ maxWidth: 368, width: '100%' }}>
 					<Box is='video' controls preload='metadata'>

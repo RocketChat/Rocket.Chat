@@ -16,12 +16,11 @@ const AudioAttachment = ({
 	title_link: link,
 	title_link_download: hasDownload,
 	collapsed,
-	isMessageEncrypted,
-}: AudioAttachmentProps & { isMessageEncrypted: boolean }) => {
+}: AudioAttachmentProps) => {
 	const getURL = useMediaUrl();
 	return (
 		<>
-			<AttachmentDescription description={description} descriptionMd={descriptionMd} isMessageEncrypted={isMessageEncrypted} />
+			<AttachmentDescription description={description} descriptionMd={descriptionMd} />
 			<MessageCollapsible title={title} hasDownload={hasDownload} link={getURL(link || url)} size={size} isCollapsed={collapsed}>
 				<AudioPlayer src={getURL(url)} type={type} />
 			</MessageCollapsible>

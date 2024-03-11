@@ -22,14 +22,13 @@ const ImageAttachment = ({
 	title_link: link,
 	title_link_download: hasDownload,
 	collapsed,
-	isMessageEncrypted,
-}: ImageAttachmentProps & { isMessageEncrypted: boolean }) => {
+}: ImageAttachmentProps) => {
 	const [loadImage, setLoadImage] = useLoadImage();
 	const getURL = useMediaUrl();
 
 	return (
 		<>
-			<AttachmentDescription description={description} descriptionMd={descriptionMd} isMessageEncrypted={isMessageEncrypted} />
+			<AttachmentDescription description={description} descriptionMd={descriptionMd} />
 			<MessageCollapsible title={title} hasDownload={hasDownload} link={getURL(link || url)} size={size} isCollapsed={collapsed}>
 				<AttachmentImage
 					{...imageDimensions}
