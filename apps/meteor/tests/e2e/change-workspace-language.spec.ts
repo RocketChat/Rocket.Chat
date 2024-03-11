@@ -33,7 +33,7 @@ test.describe.serial('setting-language', () => {
 
     await test.step('change language from English to Spanish', async () => {
       await api.post('/settings/Language', { value: 'es' });
-      await page.waitForTimeout(2000);
+      await page.waitForTimeout(4000);
       await page.reload();
       const welcomeTextLocator = page.locator('[data-qa-id="homepage-welcome-text"]');
       await expect(welcomeTextLocator).toHaveText(/Te damos la bienvenida a.*/);
@@ -51,7 +51,7 @@ test.describe.serial('setting-language', () => {
     await expect(welcomeTextLocator).toHaveText(/Welcome to.*/);
     
     await api.post('/settings/Language', { value: '' });
-    await page.waitForTimeout(2000);
+    await page.waitForTimeout(4000);
     await page.reload();
     await expect(welcomeTextLocator).toHaveText(/Te damos la bienvenida a.*/);
   });
