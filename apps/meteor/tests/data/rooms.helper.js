@@ -9,6 +9,7 @@ export const createRoom = ({
 	agentId,
 	members,
 	credentials: customCredentials,
+	extraData,
 	voipCallDirection = 'inbound',
 }) => {
 	if (!type) {
@@ -41,6 +42,7 @@ export const createRoom = ({
 		.send({
 			...params,
 			...(members && { members }),
+			...(extraData && { extraData }),
 		});
 };
 
@@ -98,3 +100,19 @@ export const getChannelRoles = async ({ roomId, overrideCredentials = credential
 			roomId,
 		})
 	).body.roles;
+
+export const setRoomConfig = ({ roomId, favorite, isDefault }) => {
+	return request
+		.post(api('rooms.saveRoomSettings'))
+		.set(credentials)
+		.send({
+			rid: roomId,
+			default: isDefault,
+			favorite: favorite
+				? {
+						defaultValue: true,
+						favorite: false,
+				  }
+				: undefined,
+		});
+};
