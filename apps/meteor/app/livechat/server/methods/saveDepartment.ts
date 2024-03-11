@@ -21,6 +21,7 @@ declare module '@rocket.chat/ui-contexts' {
 				chatClosingTags?: string[];
 				fallbackForwardDepartment?: string;
 				departmentsAllowedToForward?: string[];
+				allowReceiveForwardOffline?: boolean;
 			},
 			departmentAgents?:
 				| {
