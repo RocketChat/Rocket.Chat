@@ -77,11 +77,13 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 
 			<ContextualbarScrollableContent p={24}>
 				<InfoPanel>
-					<InfoPanel.Avatar>
-						<RoomAvatar size='x332' room={room} />
-					</InfoPanel.Avatar>
+					<InfoPanel.Section maxWidth='x332' mi='auto'>
+						<InfoPanel.Avatar>
+							<RoomAvatar size='x332' room={room} />
+						</InfoPanel.Avatar>
 
-					<InfoPanel.ActionGroup>{actions}</InfoPanel.ActionGroup>
+						<InfoPanel.ActionGroup>{actions}</InfoPanel.ActionGroup>
+					</InfoPanel.Section>
 
 					{archived && (
 						<InfoPanel.Section>

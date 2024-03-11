@@ -58,6 +58,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const isFederated = useMemo(() => isRoomFederated(room), [room]);
+	// eslint-disable-next-line no-nested-ternary
 	const roomType = 'prid' in room ? 'discussion' : room.teamId ? 'team' : 'channel';
 
 	const retentionPolicy = useSetting<boolean>('RetentionPolicy_Enabled');

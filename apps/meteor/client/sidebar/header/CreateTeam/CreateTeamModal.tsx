@@ -81,7 +81,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 		handleSubmit,
 		setValue,
 		watch,
-		formState: { isDirty, errors, isSubmitting },
+		formState: { errors, isSubmitting },
 	} = useForm<CreateTeamModalInputs>({
 		defaultValues: {
 			isPrivate: true,
@@ -203,9 +203,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 						</FieldRow>
 					</Field>
 					<Field>
-						<FieldLabel htmlFor={addMembersId}>
-							{t('Teams_New_Add_members_Label')}
-						</FieldLabel>
+						<FieldLabel htmlFor={addMembersId}>{t('Teams_New_Add_members_Label')}</FieldLabel>
 						<Controller
 							control={control}
 							name='members'
