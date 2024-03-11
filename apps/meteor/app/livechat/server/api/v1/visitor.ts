@@ -102,7 +102,8 @@ API.v1.addRoute('livechat/visitor', {
 			}
 
 			if (errors.length > 0) {
-				throw new Meteor.Error('error-updating-custom-fields', `Error updating custom fields: ${errors.join(', ')}`);
+				LivechatTyped.logger.error({ msg: 'Error updating custom fields', err: errors });
+				throw new Error('error-updating-custom-fields');
 			}
 
 			visitor = await VisitorsRaw.findOneEnabledById(visitorId, {});
