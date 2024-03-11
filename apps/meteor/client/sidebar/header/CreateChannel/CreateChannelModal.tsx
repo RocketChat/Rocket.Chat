@@ -222,14 +222,16 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 								error={errors.name?.message}
 								addon={<Icon name={isPrivate ? 'hashtag-lock' : 'hashtag'} size='x20' />}
 								aria-invalid={errors.name ? 'true' : 'false'}
-								aria-describedby={`${nameId}-error`}
+								aria-describedby={`${nameId}-error ${nameId}-hint`}
 								aria-required='true'
 							/>
 						</FieldRow>
-						{errors.name && (
+						{errors.name ? (
 							<FieldError aria-live='assertive' id={`${nameId}-error`}>
 								{errors.name.message}
 							</FieldError>
+						) : (
+							<FieldHint id={`${nameId}-hint`}>{t('No_spaces')}</FieldHint>
 						)}
 					</Field>
 					<Field>
@@ -237,7 +239,17 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 						<FieldRow>
 							<TextInput id={topicId} aria-describedby={`${topicId}-hint`} {...register('topic')} data-qa-type='channel-topic-input' />
 						</FieldRow>
-						<FieldHint id={`${topicId}-hint`}>{t('Channel_what_is_this_channel_about')}</FieldHint>
+						<FieldHint id={`${topicId}-hint`}>{t('Displayed_next_to_name')}</FieldHint>
+					</Field>
+					<Field>
+						<FieldLabel htmlFor={addMembersId}>{t('Members')}</FieldLabel>
+						<Controller
+							control={control}
+							name='members'
+							render={({ field: { onChange, value } }): ReactElement => (
+								<UserAutoCompleteMultipleFederated id={addMembersId} value={value} onChange={onChange} placeholder={t('Add_people')} />
+							)}
+						/>
 					</Field>
 					<Field>
 						<FieldRow>
@@ -258,7 +270,7 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 							/>
 						</FieldRow>
 						<FieldHint id={`${privateId}-hint`}>
-							{isPrivate ? t('Only_invited_users_can_acess_this_channel') : t('Everyone_can_access_this_channel')}
+							{isPrivate ? t('Only_invited_users_can_acess_this_channel') : t('Anyone_can_access')}
 						</FieldHint>
 					</Field>
 					<Field>
@@ -280,28 +292,6 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 							/>
 						</FieldRow>
 						<FieldHint id={`${federatedId}-hint`}>{t(getFederationHintKey(federatedModule, federationEnabled))}</FieldHint>
-					</Field>
-					<Field>
-						<FieldRow>
-							<FieldLabel htmlFor={readOnlyId}>{t('Read_only')}</FieldLabel>
-							<Controller
-								control={control}
-								name='readOnly'
-								render={({ field: { onChange, value, ref } }): ReactElement => (
-									<ToggleSwitch
-										id={readOnlyId}
-										aria-describedby={`${readOnlyId}-hint`}
-										ref={ref}
-										checked={value}
-										disabled={!canSetReadOnly || broadcast || federated}
-										onChange={onChange}
-									/>
-								)}
-							/>
-						</FieldRow>
-						<FieldHint id={`${readOnlyId}-hint`}>
-							{readOnly ? t('Only_authorized_users_can_write_new_messages') : t('All_users_in_the_channel_can_write_new_messages')}
-						</FieldHint>
 					</Field>
 					<Field>
 						<FieldRow>
@@ -328,6 +318,28 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 					</Field>
 					<Field>
 						<FieldRow>
+							<FieldLabel htmlFor={readOnlyId}>{t('Read_only')}</FieldLabel>
+							<Controller
+								control={control}
+								name='readOnly'
+								render={({ field: { onChange, value, ref } }): ReactElement => (
+									<ToggleSwitch
+										id={readOnlyId}
+										aria-describedby={`${readOnlyId}-hint`}
+										ref={ref}
+										checked={value}
+										disabled={!canSetReadOnly || broadcast || federated}
+										onChange={onChange}
+									/>
+								)}
+							/>
+						</FieldRow>
+						<FieldHint id={`${readOnlyId}-hint`}>
+							{readOnly ? t('Read_only_field_hint_enabled', { roomType: 'channel' }) : t('All_users_in_the_channel_can_write_new_messages')}
+						</FieldHint>
+					</Field>
+					<Field>
+						<FieldRow>
 							<FieldLabel htmlFor={broadcastId}>{t('Broadcast')}</FieldLabel>
 							<Controller
 								control={control}
@@ -344,17 +356,7 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 								)}
 							/>
 						</FieldRow>
-						<FieldHint id={`${broadcastId}-hint`}>{t('Broadcast_channel_Description')}</FieldHint>
-					</Field>
-					<Field>
-						<FieldLabel htmlFor={addMembersId}>{t('Add_members')}</FieldLabel>
-						<Controller
-							control={control}
-							name='members'
-							render={({ field: { onChange, value } }): ReactElement => (
-								<UserAutoCompleteMultipleFederated id={addMembersId} value={value} onChange={onChange} />
-							)}
-						/>
+						{broadcast && <FieldHint id={`${broadcastId}-hint`}>{t('Broadcast_hint_enabled', { roomType: 'channel' })}</FieldHint>}
 					</Field>
 				</FieldGroup>
 			</Modal.Content>

@@ -6316,5 +6316,10 @@
   "Seat_limit_reached_Description": "Your workspace reached its contractual seat limit. Buy more seats to add more users.",
   "Buy_more_seats": "Buy more seats",
   "Anyone_can_react_to_messages": "Anyone can react to messages",
-  "Name_cannot_have_spaces": "Name cannot have spaces"
+  "Name_cannot_have_spaces": "Name cannot have spaces",
+  "No_spaces": "No spaces",
+  "Add_people": "Add people",
+  "Anyone_can_access": "Anyone can access",
+  "Only_invited_people": "People can only join by being invited",
+  "Broadcast_hint_enabled": "Only {{roomType}} owners can write new messages but anyone can reply in a thread"
 }
