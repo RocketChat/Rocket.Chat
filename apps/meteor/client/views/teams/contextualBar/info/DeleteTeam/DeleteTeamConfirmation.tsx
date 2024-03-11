@@ -23,7 +23,7 @@ const DeleteTeamConfirmation = ({ deletedRooms, keptRooms, onConfirm, onReturn, 
 			title={t('Delete_roomType', { roomType: 'team' })}
 			onConfirm={() => onConfirm(roomIds)}
 			onCancel={onReturn}
-			confirmText={t('Remove')}
+			confirmText={t('Yes_delete_it')}
 			cancelText={t('Back')}
 			onClose={onCancel}
 		>

@@ -25,7 +25,7 @@ export const useDeleteRoom = (room: IRoom | Pick<IRoom, RoomAdminFieldsType>, { 
 	const deleteRoomMutation = useMutation({
 		mutationFn: deleteRoomEndpoint,
 		onSuccess: () => {
-			dispatchToastMessage({ type: 'success', message: t('Room_has_been_deleted') });
+			dispatchToastMessage({ type: 'success', message: t('Deleted_roomType', { roomName: room.name, roomType }) });
 			if (isAdminRoute) {
 				return router.navigate('/admin/rooms');
 			}

@@ -5870,7 +5870,7 @@
   "Yes_clear_all": "Yes, clear all!",
   "Yes_continue": "Yes, continue!",
   "Yes_deactivate_it": "Yes, deactivate it!",
-  "Yes_delete_it": "Yes, delete it!",
+  "Yes_delete_it": "Yes, delete",
   "Yes_hide_it": "Yes, hide it!",
   "Yes_leave_it": "Yes, leave it!",
   "Yes_mute_user": "Yes, mute user!",
@@ -6327,5 +6327,6 @@
   "Search_options": "Search options",
   "First_message_hint": "A discussion can start with a question like \"How do I upload a picture?\"",
   "Delete_roomType": "Delete {{roomType}}",
-  "Delete_roomType_description": "Deleting this {{roomType}} will also delete all contained message. This cannot be undone."
+  "Delete_roomType_description": "Deleting this {{roomType}} will also delete all contained message. This cannot be undone.",
+  "Deleted_roomType": "{{roomName}} {{roomType}} has been deleted"
 }
