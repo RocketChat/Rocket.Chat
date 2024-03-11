@@ -301,10 +301,23 @@ describe('[Users]', function () {
 	});
 
 	describe('[/users.info]', () => {
+		let infoRoom;
+
+		before(async () => {
+			infoRoom = (
+				await createRoom({
+					type: 'c',
+					name: `channel.test.info.${Date.now()}-${Math.random()}`,
+					members: [targetUser.username],
+				})
+			).body.channel;
+		});
+
 		after(async () => {
 			await Promise.all([
 				updatePermission('view-other-user-channels', ['admin']),
 				updatePermission('view-full-other-user-info', ['admin']),
+				deleteRoom({ type: 'c', roomId: infoRoom._id }),
 			]);
 		});
 
@@ -356,10 +369,8 @@ describe('[Users]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('user.rooms').and.to.be.an('array');
-					// Do not rely on the default GENERAL channel
-					if (res.body.user.rooms.length > 0) {
-						expect(res.body.user.rooms[0]).to.have.property('unread');
-					}
+					const createdRoom = res.body.user.rooms.find((room) => room.rid === infoRoom._id);
+					expect(createdRoom).to.have.property('unread');
 				})
 				.end(done);
 		});
@@ -1010,6 +1021,7 @@ describe('[Users]', function () {
 				updateSetting('Accounts_AllowUserStatusMessageChange', true),
 				updateSetting('Accounts_AllowEmailChange', true),
 				updateSetting('Accounts_AllowPasswordChange', true),
+				updatePermission('edit-other-user-info', ['admin']),
 			]),
 		);
 		after(async () =>
