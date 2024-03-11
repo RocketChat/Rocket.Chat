@@ -63,7 +63,7 @@ function actionRoom({ action, type, roomId, overrideCredentials }) {
 	});
 }
 
-export const deleteRoom = ({ type, roomId, overrideCredentials = credentials }) => actionRoom({ action: 'delete', type, roomId, overrideCredentials });
+export const deleteRoom = ({ type, roomId }) => actionRoom({ action: 'delete', type, roomId, overrideCredentials: credentials });
 
 export const closeRoom = ({ type, roomId }) => actionRoom({ action: 'close', type, roomId });
 
