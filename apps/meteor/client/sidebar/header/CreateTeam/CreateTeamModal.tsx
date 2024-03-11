@@ -221,9 +221,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 								)}
 							/>
 						</FieldRow>
-						<FieldDescription id={`${privateId}-hint`}>
-							{isPrivate ? t('Teams_New_Private_Description_Enabled') : t('Teams_New_Private_Description_Disabled')}
-						</FieldDescription>
+						<FieldDescription id={`${privateId}-hint`}>{isPrivate ? t('Only_invited_people') : t('Anyone_can_access')}</FieldDescription>
 					</Field>
 					<Field>
 						<FieldRow>

@@ -273,7 +273,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 								</FieldRow>
 								<FieldRow>
 									<FieldHint id={`${roomTypeField}-hint`}>
-										{roomTypeP === 'p' ? t('Teams_New_Private_Description_Enabled') : t('Teams_New_Private_Description_Disabled')}
+										{roomTypeP === 'p' ? t('Only_invited_people') : t('Anyone_can_access')}
 									</FieldHint>
 								</FieldRow>
 							</Field>
