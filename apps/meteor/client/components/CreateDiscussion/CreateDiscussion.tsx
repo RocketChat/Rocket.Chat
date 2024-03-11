@@ -88,7 +88,6 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 	const membersId = useUniqueId();
 	const firstMessageId = useUniqueId();
 
-	console.log(errors);
 	return (
 		<Modal
 			data-qa='create-discussion-modal'
