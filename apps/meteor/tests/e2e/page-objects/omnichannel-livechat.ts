@@ -46,7 +46,7 @@ export class OmnichannelLiveChat {
 	get btnChatNow(): Locator {
 		return this.page.locator('[type="button"] >> text="Chat now"');
 	}
-	
+
 	get headerTitle(): Locator {
 		return this.page.locator('[data-qa="header-title"]');
 	}
@@ -134,7 +134,7 @@ export class OmnichannelLiveChat {
 		return this.page.locator('#files-drop-target');
 	}
 
-	findUploadedFileLink (fileName: string): Locator {
+	findUploadedFileLink(fileName: string): Locator {
 		return this.page.getByRole('link', { name: fileName });
 	}
 

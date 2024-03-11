@@ -103,13 +103,13 @@ test.describe('OC - Livechat API', () => {
 			await test.step('Expect livechat button not be visible after minimizeWidget()', async () => {
 				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.hideWidget());
 
-				await expect(page.frameLocator('#rocketchat-iframe').getByRole('button', { name: 'Rocket.Chat' })).not.toBeVisible();
+				await expect(poLiveChat.btnOpenLiveChat()).not.toBeVisible();
 			});
 
 			await test.step('Expect livechat button to be visible after show()', async () => {
 				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.showWidget());
 
-				await expect(page.frameLocator('#rocketchat-iframe').getByRole('button', { name: 'Rocket.Chat' })).toBeVisible();
+				await expect(poLiveChat.btnOpenLiveChat()).toBeVisible();
 			});
 		});
 

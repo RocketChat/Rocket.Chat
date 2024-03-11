@@ -24,8 +24,8 @@ test.describe('Omnichannel chat histr', () => {
 		const { page } = await createAuxContext(browser, Users.user1);
 		agent = { page, poHomeOmnichannel: new HomeOmnichannel(page) };
 	});
-	test.beforeEach(async ({ page, api }) => {
-		poLiveChat = new OmnichannelLiveChat(page, api);
+	test.beforeEach(async ({ page }) => {
+		poLiveChat = new OmnichannelLiveChat(page);
 	});
 
 	test.afterAll(async ({ api }) => {

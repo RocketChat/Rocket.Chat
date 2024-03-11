@@ -42,7 +42,7 @@ test.describe('omnichannel-auto-transfer-unanswered-chat', () => {
 		await agent2.page.close();
 	});
 
-	test.beforeEach(async ({ page, api }) => {
+	test.beforeEach(async ({ page }) => {
 		// make "user-1" online
 		await agent1.poHomeChannel.sidenav.switchOmnichannelStatus('online');
 		await agent2.poHomeChannel.sidenav.switchOmnichannelStatus('offline');
@@ -52,7 +52,7 @@ test.describe('omnichannel-auto-transfer-unanswered-chat', () => {
 			name: faker.person.firstName(),
 			email: faker.internet.email(),
 		};
-		poLiveChat = new OmnichannelLiveChat(page, api);
+		poLiveChat = new OmnichannelLiveChat(page);
 		await page.goto('/livechat');
 		await poLiveChat.openLiveChat();
 		await poLiveChat.sendMessage(newVisitor, false);

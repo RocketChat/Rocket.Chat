@@ -36,7 +36,7 @@ test.describe('omnichannel-auto-onhold-chat-closing', () => {
 		await agent.page.close();
 	});
 
-	test.beforeEach(async ({ page, api }) => {
+	test.beforeEach(async ({ page }) => {
 		// make "user-1" online
 		await agent.poHomeChannel.sidenav.switchStatus('online');
 
@@ -45,7 +45,7 @@ test.describe('omnichannel-auto-onhold-chat-closing', () => {
 			name: faker.person.firstName(),
 			email: faker.internet.email(),
 		};
-		poLiveChat = new OmnichannelLiveChat(page, api);
+		poLiveChat = new OmnichannelLiveChat(page);
 		await page.goto('/livechat');
 		await poLiveChat.openLiveChat();
 		await poLiveChat.sendMessage(newVisitor, false);

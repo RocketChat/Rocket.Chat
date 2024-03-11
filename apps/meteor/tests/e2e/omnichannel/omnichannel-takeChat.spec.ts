@@ -33,7 +33,7 @@ test.describe('omnichannel-takeChat', () => {
 		await agent.page.close();
 	});
 
-	test.beforeEach(async ({ page, api }) => {
+	test.beforeEach(async ({ page }) => {
 		// make "user-1" online
 		await agent.poHomeChannel.sidenav.switchStatus('online');
 
@@ -42,7 +42,7 @@ test.describe('omnichannel-takeChat', () => {
 			name: `${faker.person.firstName()} ${faker.string.uuid()}`,
 			email: faker.internet.email(),
 		};
-		poLiveChat = new OmnichannelLiveChat(page, api);
+		poLiveChat = new OmnichannelLiveChat(page);
 		await page.goto('/livechat');
 		await poLiveChat.openLiveChat();
 		await poLiveChat.sendMessage(newVisitor, false);
