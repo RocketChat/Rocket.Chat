@@ -1,6 +1,6 @@
 import type { InquiryWithAgentInfo, IOmnichannelQueue } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
-import { LivechatInquiry } from '@rocket.chat/models';
+import { LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 
 import { dispatchAgentDelegated } from '../../../app/livechat/server/lib/Helper';
 import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
@@ -129,6 +129,15 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 
 		queueLogger.debug(`Processing inquiry ${inquiry._id} from queue ${queue}`);
 		const { defaultAgent } = inquiry;
+
+		const roomFromDb = await LivechatRooms.findOneById(inquiry.rid, { projection: { servedBy: 1 } });
+
+		// This is a precaution to avoid taking the same inquiry multiple times. It should not happen, but it's a safety net
+		if (roomFromDb?.servedBy) {
+			queueLogger.debug(`Inquiry ${inquiry._id} already taken by agent ${roomFromDb.servedBy._id}. Skipping`);
+			return true;
+		}
+
 		const room = await RoutingManager.delegateInquiry(inquiry, defaultAgent);
 
 		const propagateAgentDelegated = async (rid: string, agentId: string) => {

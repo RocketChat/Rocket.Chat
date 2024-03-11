@@ -5,7 +5,7 @@ import { useLoginWithService, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, SetStateAction, Dispatch } from 'react';
 import { useCallback } from 'react';
 
-import type { LoginErrors } from './LoginForm';
+import type { LoginErrorState, LoginErrors } from './LoginForm';
 
 const LoginServicesButton = <T extends LoginService>({
 	buttonLabelText,
@@ -19,17 +19,17 @@ const LoginServicesButton = <T extends LoginService>({
 }: T & {
 	className?: string;
 	disabled?: boolean;
-	setError?: Dispatch<SetStateAction<LoginErrors | undefined>>;
+	setError?: Dispatch<SetStateAction<LoginErrorState>>;
 }): ReactElement => {
 	const t = useTranslation();
 	const handler = useLoginWithService({ service, buttonLabelText, ...props });
 
 	const handleOnClick = useCallback(() => {
-		handler().catch((e: { error?: LoginErrors }) => {
+		handler().catch((e: { error?: LoginErrors; reason?: string }) => {
 			if (!e.error || typeof e.error !== 'string') {
 				return;
 			}
-			setError?.(e.error);
+			setError?.([e.error, e.reason]);
 		});
 	}, [handler, setError]);
 
