@@ -73,6 +73,7 @@ export type FormValues = {
 	fallbackForwardDepartment: string;
 	agentList: IDepartmentAgent[];
 	chatClosingTags: string[];
+	allowReceiveForwardOffline: boolean;
 };
 
 function withDefault<T>(key: T | undefined | null, defaultValue: T) {
@@ -96,6 +97,7 @@ const getInitialValues = ({ department, agents, allowedToForwardData }: InitialV
 	fallbackForwardDepartment: withDefault(department?.fallbackForwardDepartment, ''),
 	chatClosingTags: department?.chatClosingTags ?? [],
 	agentList: agents || [],
+	allowReceiveForwardOffline: withDefault(department?.allowReceiveForwardOffline, false),
 });
 
 function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmentProps) {
@@ -151,6 +153,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 			waitingQueueMessage,
 			departmentsAllowedToForward,
 			fallbackForwardDepartment,
+			allowReceiveForwardOffline,
 		} = data;
 
 		const payload = {
@@ -169,6 +172,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 			waitingQueueMessage,
 			departmentsAllowedToForward: departmentsAllowedToForward?.map((dep) => dep.value),
 			fallbackForwardDepartment,
+			allowReceiveForwardOffline,
 		};
 
 		try {
@@ -422,6 +426,12 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 							<FieldRow>
 								<FieldLabel htmlFor={requestTagBeforeClosingChatField}>{t('Request_tag_before_closing_chat')}</FieldLabel>
 								<ToggleSwitch id={requestTagBeforeClosingChatField} {...register('requestTagBeforeClosingChat')} />
+							</FieldRow>
+						</Field>
+						<Field>
+							<FieldRow>
+								<FieldLabel htmlFor={showOnOfflineFormField}>{t('Accept_receive_inquiry_no_online_agents')}</FieldLabel>
+								<ToggleSwitch id={showOnOfflineFormField} {...register('allowReceiveForwardOffline')} />
 							</FieldRow>
 						</Field>
 						{requestTagBeforeClosingChat && (

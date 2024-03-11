@@ -38,7 +38,7 @@ import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { sendNotification } from '../../../lib/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { settings } from '../../../settings/server';
-import { Livechat as LivechatTyped } from './LivechatTyped';
+import { Livechat, Livechat as LivechatTyped } from './LivechatTyped';
 import { queueInquiry, saveQueueInquiry } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
 
@@ -539,10 +539,16 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 		agent = { agentId, username };
 	}
 
-	if (!RoutingManager.getConfig()?.autoAssignAgent || !(await Omnichannel.isWithinMACLimit(room))) {
+	const department = await LivechatDepartment.findOneById(departmentId);
+
+	if (
+		!RoutingManager.getConfig()?.autoAssignAgent ||
+		!(await Omnichannel.isWithinMACLimit(room)) ||
+		(department?.allowReceiveForwardOffline && !(await Livechat.checkOnlineAgents(departmentId)))
+	) {
 		logger.debug(`Room ${room._id} will be on department queue`);
 		await LivechatTyped.saveTransferHistory(room, transferData);
-		return RoutingManager.unassignAgent(inquiry, departmentId);
+		return RoutingManager.unassignAgent(inquiry, departmentId, true);
 	}
 
 	// Fake the department to forward the inquiry - Case the forward process does not success
