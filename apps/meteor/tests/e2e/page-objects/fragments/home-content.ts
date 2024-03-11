@@ -153,7 +153,7 @@ export class HomeContent {
 	}
 
 	get btnMenuMoreActions() {
-		return this.page.locator('[data-qa-id="menu-more-actions"]');
+		return this.page.getByRole('button', { name: 'More actions' });
 	}
 
 	get userCard(): Locator {
@@ -223,8 +223,8 @@ export class HomeContent {
 
 	async openLastMessageMenu(): Promise<void> {
 		await this.page.locator('[data-qa-type="message"]').last().hover();
-		await this.page.locator('[data-qa-type="message"]').last().locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]').waitFor();
-		await this.page.locator('[data-qa-type="message"]').last().locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]').click();
+		await this.page.locator('[data-qa-type="message"]').last().locator('role=button[name="More"]').waitFor();
+		await this.page.locator('[data-qa-type="message"]').last().locator('role=button[name="More"]').click();
 	}
 
 	async openLastThreadMessageMenu(): Promise<void> {
