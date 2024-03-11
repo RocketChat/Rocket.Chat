@@ -1,11 +1,9 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { isUserFederated } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import type { UserCreateParamsPOST, UsersUpdateParamsPOST } from '@rocket.chat/rest-typings';
 import Gravatar from 'gravatar';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
-import type { UpdateFilter } from 'mongodb';
 import _ from 'underscore';
 
 import { callbacks } from '../../../../lib/callbacks';
@@ -27,10 +25,6 @@ import { setEmail } from './setEmail';
 import { setStatusText } from './setStatusText';
 import { setUserAvatar } from './setUserAvatar';
 
-type ICreateUserParams = UserCreateParamsPOST;
-type IUpdateUserParams = UsersUpdateParamsPOST['data'] & { _id: IUser['_id'] };
-export type ISaveUserDataParams = ICreateUserParams | IUpdateUserParams;
-
 const MAX_BIO_LENGTH = 260;
 const MAX_NICKNAME_LENGTH = 120;
 
@@ -46,22 +40,25 @@ Meteor.startup(() => {
 	});
 });
 
-async function _sendUserEmail(subject: string, html: string, userData: RequiredField<ISaveUserDataParams, 'email'>) {
+async function _sendUserEmail(subject, html, userData) {
 	const email = {
 		to: userData.email,
-		from: settings.get<string>('From_Email'),
+		from: settings.get('From_Email'),
 		subject,
 		html,
 		data: {
 			email: userData.email,
 			password: userData.password,
-			...(userData.name && { name: userData.name }),
 		},
 	};
 
+	if (typeof userData.name !== 'undefined') {
+		email.data.name = userData.name;
+	}
+
 	try {
 		await Mailer.send(email);
-	} catch (error: any) {
+	} catch (error) {
 		throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${error.message}`, {
 			function: 'RocketChat.saveUser',
 			message: error.message,
@@ -69,9 +66,8 @@ async function _sendUserEmail(subject: string, html: string, userData: RequiredF
 	}
 }
 
-async function validateUserData(userId: IUser['_id'], userData: ISaveUserDataParams) {
+async function validateUserData(userId, userData) {
 	const existingRoles = _.pluck(await getRoles(), '_id');
-	const isUpdateUserParams = '_id' in userData;
 
 	if (userData.verified && userData._id && userId === userData._id) {
 		throw new Meteor.Error('error-action-not-allowed', 'Editing email verification is not allowed', {
@@ -87,7 +83,7 @@ async function validateUserData(userId: IUser['_id'], userData: ISaveUserDataPar
 		});
 	}
 
-	if (!isUpdateUserParams && !(await hasPermissionAsync(userId, 'create-user'))) {
+	if (!userData._id && !(await hasPermissionAsync(userId, 'create-user'))) {
 		throw new Meteor.Error('error-action-not-allowed', 'Adding user is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Adding_user',
@@ -101,21 +97,21 @@ async function validateUserData(userId: IUser['_id'], userData: ISaveUserDataPar
 		});
 	}
 
-	if (userData.roles?.includes('admin') && !(await hasPermissionAsync(userId, 'assign-admin-role'))) {
+	if (userData.roles && userData.roles.includes('admin') && !(await hasPermissionAsync(userId, 'assign-admin-role'))) {
 		throw new Meteor.Error('error-action-not-allowed', 'Assigning admin is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Assign_admin',
 		});
 	}
 
-	if (settings.get('Accounts_RequireNameForSignUp') && !isUpdateUserParams && !trim(userData.name)) {
+	if (settings.get('Accounts_RequireNameForSignUp') && !userData._id && !trim(userData.name)) {
 		throw new Meteor.Error('error-the-field-is-required', 'The field Name is required', {
 			method: 'insertOrUpdateUser',
 			field: 'Name',
 		});
 	}
 
-	if (!isUpdateUserParams && !trim(userData.username)) {
+	if (!userData._id && !trim(userData.username)) {
 		throw new Meteor.Error('error-the-field-is-required', 'The field Username is required', {
 			method: 'insertOrUpdateUser',
 			field: 'Username',
@@ -138,14 +134,14 @@ async function validateUserData(userId: IUser['_id'], userData: ISaveUserDataPar
 		});
 	}
 
-	if (!isUpdateUserParams && !userData.password && !userData.setRandomPassword) {
+	if (!userData._id && !userData.password && !userData.setRandomPassword) {
 		throw new Meteor.Error('error-the-field-is-required', 'The field Password is required', {
 			method: 'insertOrUpdateUser',
 			field: 'Password',
 		});
 	}
 
-	if (!isUpdateUserParams) {
+	if (!userData._id) {
 		if (!(await checkUsernameAvailability(userData.username))) {
 			throw new Meteor.Error('error-field-unavailable', `${_.escape(userData.username)} is already in use :(`, {
 				method: 'insertOrUpdateUser',
@@ -162,20 +158,22 @@ async function validateUserData(userId: IUser['_id'], userData: ISaveUserDataPar
 	}
 }
 
-export async function validateUserEditing(userId: IUser['_id'], userData: IUpdateUserParams) {
+/**
+ * Validate permissions to edit user fields
+ *
+ * @param {string} userId
+ * @param {{ _id: string, roles?: string[], username?: string, name?: string, statusText?: string, email?: string, password?: string}} userData
+ */
+export async function validateUserEditing(userId, userData) {
 	const editingMyself = userData._id && userId === userData._id;
 
 	const canEditOtherUserInfo = await hasPermissionAsync(userId, 'edit-other-user-info');
 	const canEditOtherUserPassword = await hasPermissionAsync(userId, 'edit-other-user-password');
 	const user = await Users.findOneById(userData._id);
 
-	if (!user) {
-		throw new Error('error-invalid-user');
-	}
-
-	const isEditingUserRoles = (previousRoles: IUser['roles'], newRoles?: IUser['roles']) =>
+	const isEditingUserRoles = (previousRoles, newRoles) =>
 		typeof newRoles !== 'undefined' && !_.isEqual(_.sortBy(previousRoles), _.sortBy(newRoles));
-	const isEditingField = (previousValue?: string, newValue?: string) => typeof newValue !== 'undefined' && newValue !== previousValue;
+	const isEditingField = (previousValue, newValue) => typeof newValue !== 'undefined' && newValue !== previousValue;
 
 	if (isEditingUserRoles(user.roles, userData.roles) && !(await hasPermissionAsync(userId, 'assign-roles'))) {
 		throw new Meteor.Error('error-action-not-allowed', 'Assign roles is not allowed', {
@@ -244,8 +242,8 @@ export async function validateUserEditing(userId: IUser['_id'], userData: IUpdat
 	}
 }
 
-const handleBio = (updateUser: DeepWritable<UpdateFilter<IUser>>, bio?: string) => {
-	if (bio?.trim()) {
+const handleBio = (updateUser, bio) => {
+	if (bio && bio.trim()) {
 		if (bio.length > MAX_BIO_LENGTH) {
 			throw new Meteor.Error('error-bio-size-exceeded', `Bio size exceeds ${MAX_BIO_LENGTH} characters`, {
 				method: 'saveUserProfile',
@@ -259,8 +257,8 @@ const handleBio = (updateUser: DeepWritable<UpdateFilter<IUser>>, bio?: string) 
 	}
 };
 
-const handleNickname = (updateUser: DeepWritable<UpdateFilter<IUser>>, nickname?: string) => {
-	if (nickname?.trim()) {
+const handleNickname = (updateUser, nickname) => {
+	if (nickname && nickname.trim()) {
 		if (nickname.length > MAX_NICKNAME_LENGTH) {
 			throw new Meteor.Error('error-nickname-size-exceeded', `Nickname size exceeds ${MAX_NICKNAME_LENGTH} characters`, {
 				method: 'saveUserProfile',
@@ -274,7 +272,7 @@ const handleNickname = (updateUser: DeepWritable<UpdateFilter<IUser>>, nickname?
 	}
 };
 
-const saveNewUser = async function (userData: ICreateUserParams, sendPassword: boolean) {
+const saveNewUser = async function (userData, sendPassword) {
 	await validateEmailDomain(userData.email);
 
 	const roles = (!!userData.roles && userData.roles.length > 0 && userData.roles) || getNewUserRoles();
@@ -285,11 +283,13 @@ const saveNewUser = async function (userData: ICreateUserParams, sendPassword: b
 		username: userData.username,
 		password: userData.password,
 		joinDefaultChannels: userData.joinDefaultChannels,
-		...(userData.email && { email: userData.email }),
 		isGuest,
 		globalRoles: roles,
 		skipNewUserRolesSetting: true,
 	};
+	if (userData.email) {
+		createUser.email = userData.email;
+	}
 
 	const _id = await Accounts.createUserAsync(createUser);
 
@@ -321,6 +321,8 @@ const saveNewUser = async function (userData: ICreateUserParams, sendPassword: b
 		await _sendUserEmail(settings.get('Password_Changed_Email_Subject'), passwordChangedHtml, userData);
 	}
 
+	userData._id = _id;
+
 	if (settings.get('Accounts_SetDefaultAvatar') === true && userData.email) {
 		const gravatarUrl = Gravatar.url(userData.email, {
 			default: '404',
@@ -329,7 +331,7 @@ const saveNewUser = async function (userData: ICreateUserParams, sendPassword: b
 		});
 
 		try {
-			await setUserAvatar({ _id, username: userData.username }, gravatarUrl, '', 'url');
+			await setUserAvatar(userData, gravatarUrl, '', 'url');
 		} catch (e) {
 			// Ignore this error for now, as it not being successful isn't bad
 		}
@@ -340,8 +342,8 @@ const saveNewUser = async function (userData: ICreateUserParams, sendPassword: b
 	return _id;
 };
 
-export const saveUser = async function (userId: IUser['_id'], userData: ISaveUserDataParams) {
-	const oldUserData = '_id' in userData && (await Users.findOneById(userData._id));
+export const saveUser = async function (userId, userData) {
+	const oldUserData = userData._id && (await Users.findOneById(userData._id));
 	if (oldUserData && isUserFederated(oldUserData)) {
 		throw new Meteor.Error('Edit_Federated_User_Not_Allowed', 'Not possible to edit a federated user');
 	}
@@ -365,7 +367,7 @@ export const saveUser = async function (userId: IUser['_id'], userData: ISaveUse
 		delete userData.setRandomPassword;
 	}
 
-	if (!('_id' in userData)) {
+	if (!userData._id) {
 		return saveNewUser(userData, sendPassword);
 	}
 
@@ -397,7 +399,8 @@ export const saveUser = async function (userId: IUser['_id'], userData: ISaveUse
 	}
 
 	if (
-		userData.password?.trim() &&
+		userData.password &&
+		userData.password.trim() &&
 		(await hasPermissionAsync(userId, 'edit-other-user-password')) &&
 		passwordPolicy.validate(userData.password)
 	) {
@@ -416,6 +419,13 @@ export const saveUser = async function (userId: IUser['_id'], userData: ISaveUse
 
 	if (userData.roles) {
 		updateUser.$set.roles = userData.roles;
+	}
+	if (userData.settings) {
+		updateUser.$set.settings = { preferences: userData.settings.preferences };
+	}
+
+	if (userData.language) {
+		updateUser.$set.language = userData.language;
 	}
 
 	if (typeof userData.requirePasswordChange !== 'undefined') {
@@ -445,13 +455,8 @@ export const saveUser = async function (userId: IUser['_id'], userData: ISaveUse
 		performedBy: await safeGetMeteorUser(),
 	});
 
-	if (sendPassword && userUpdated?.emails && userUpdated.emails[0].address) {
-		userData.email = userUpdated.emails[0].address;
-		await _sendUserEmail(
-			settings.get('Password_Changed_Email_Subject'),
-			passwordChangedHtml,
-			userData as RequiredField<IUpdateUserParams, 'email'>,
-		);
+	if (sendPassword) {
+		await _sendUserEmail(settings.get('Password_Changed_Email_Subject'), passwordChangedHtml, userData);
 	}
 
 	if (typeof userData.verified === 'boolean') {

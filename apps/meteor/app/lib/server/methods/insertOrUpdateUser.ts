@@ -25,6 +25,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		return saveUser(Meteor.userId(), userData as ISaveUserDataParams);
+		return saveUser(Meteor.userId(), userData);
 	}),
 });
