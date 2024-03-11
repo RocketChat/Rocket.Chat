@@ -64,8 +64,7 @@ export const parseFileIntoMessageAttachments = async (
 			attachment.image_preview = await FileUpload.resizeImagePreview(file);
 			const thumbResult = await FileUpload.createImageThumbnail(file);
 			if (thumbResult) {
-				const { data: thumbBuffer, width, height, fileName, format } = thumbResult;
-				const thumbFile = { ...file, type: format, name: fileName || file.name };
+				const { data: thumbBuffer, width, height, thumbFile } = thumbResult;
 				const thumbnail = await FileUpload.uploadImageThumbnail(thumbFile, thumbBuffer, roomId, user._id);
 				const thumbUrl = FileUpload.getPath(`${thumbnail._id}/${encodeURI(file.name || '')}`);
 				attachment.image_url = thumbUrl;
@@ -76,7 +75,7 @@ export const parseFileIntoMessageAttachments = async (
 				};
 				files.push({
 					_id: thumbnail._id,
-					name: file.name || '',
+					name: thumbnail.name || '',
 					type: thumbnail.type || 'file',
 					size: thumbnail.size || 0,
 					format: thumbnail.identify?.format || '',
