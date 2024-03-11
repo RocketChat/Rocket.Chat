@@ -226,13 +226,12 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 								aria-required='true'
 							/>
 						</FieldRow>
-						{errors.name ? (
+						{errors.name && (
 							<FieldError aria-live='assertive' id={`${nameId}-error`}>
 								{errors.name.message}
 							</FieldError>
-						) : (
-							<FieldHint id={`${nameId}-hint`}>{t('No_spaces')}</FieldHint>
 						)}
+						<FieldHint id={`${nameId}-hint`}>{t('No_spaces')}</FieldHint>
 					</Field>
 					<Field>
 						<FieldLabel htmlFor={topicId}>{t('Topic')}</FieldLabel>

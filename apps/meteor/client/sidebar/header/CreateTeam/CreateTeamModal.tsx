@@ -183,7 +183,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 								placeholder={t('Team_Name')}
 								addon={<Icon size='x20' name={isPrivate ? 'team-lock' : 'team'} />}
 								error={errors.name?.message}
-								aria-describedby={`${nameId}-error`}
+								aria-describedby={`${nameId}-error ${nameId}-hint`}
 								aria-required='true'
 							/>
 						</FieldRow>
@@ -192,6 +192,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 								{errors.name.message}
 							</FieldError>
 						)}
+						<FieldHint id={`${nameId}-hint`}>{t('No_spaces')}</FieldHint>
 					</Field>
 					<Field>
 						<FieldLabel htmlFor={topicId}>{t('Topic')}</FieldLabel>
@@ -207,7 +208,9 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 						<Controller
 							control={control}
 							name='members'
-							render={({ field: { onChange, value } }): ReactElement => <UserAutoCompleteMultiple value={value} onChange={onChange} />}
+							render={({ field: { onChange, value } }): ReactElement => (
+								<UserAutoCompleteMultiple value={value} onChange={onChange} placeholder={t('Add_people')} />
+							)}
 						/>
 					</Field>
 					<Field>
@@ -278,7 +281,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 								)}
 							/>
 						</FieldRow>
-						<FieldDescription id={`${broadcastId}-hint`}>{t('Teams_New_Broadcast_Description')}</FieldDescription>
+						{broadcast && <FieldDescription id={`${broadcastId}-hint`}>{t('Teams_New_Broadcast_Description')}</FieldDescription>}
 					</Field>
 				</FieldGroup>
 			</Modal.Content>
