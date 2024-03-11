@@ -1075,10 +1075,18 @@ export class UsersRaw extends BaseRaw {
 	async isAgentWithinBusinessHours(agentId) {
 		const query = {
 			_id: agentId,
-			openBusinessHours: {
-				$exists: true,
-				$not: { $size: 0 },
-			},
+			$or: [
+				{
+					openBusinessHours: {
+						$exists: true,
+						$not: { $size: 0 },
+					},
+				},
+				{
+					// Bots can ignore Business Hours and be always available
+					roles: 'bot',
+				},
+			],
 		};
 		return (await this.col.countDocuments(query)) > 0;
 	}
