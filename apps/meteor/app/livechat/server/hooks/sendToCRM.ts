@@ -48,15 +48,15 @@ type CRMActions =
 const msgNavType = 'livechat_navigation_history';
 const msgClosingType = 'livechat-close';
 
-const isOmnichannelNavigationMessage = (message: IMessage): message is IOmnichannelSystemMessage => {
+export const isOmnichannelNavigationMessage = (message: IMessage): message is IOmnichannelSystemMessage => {
 	return message.t === msgNavType;
 };
 
-const isOmnichannelClosingMessage = (message: IMessage): message is IOmnichannelSystemMessage => {
+export const isOmnichannelClosingMessage = (message: IMessage): message is IOmnichannelSystemMessage => {
 	return message.t === msgClosingType;
 };
 
-const sendMessageType = (msgType: string): boolean => {
+export const sendMessageType = (msgType: string): boolean => {
 	switch (msgType) {
 		case msgClosingType:
 			return true;
@@ -70,7 +70,7 @@ const sendMessageType = (msgType: string): boolean => {
 	}
 };
 
-const getAdditionalFieldsByType = (type: CRMActions, room: OmnichannelRoomWithExtraFields): AdditionalFields => {
+export const getAdditionalFieldsByType = (type: CRMActions, room: OmnichannelRoomWithExtraFields): AdditionalFields => {
 	const { departmentId, servedBy, closedAt, closedBy, closer, oldServedBy, oldDepartmentId } = room;
 	switch (type) {
 		case 'LivechatSessionStart':
