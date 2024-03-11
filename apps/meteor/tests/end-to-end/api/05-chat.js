@@ -1136,7 +1136,7 @@ describe('[Chat]', function () {
 				.post(api('chat.update'))
 				.set(credentials)
 				.send({
-					roomId: 'GENERAL',
+					roomId: testChannel._id,
 					msgId: message._id,
 					text: `Testing quotes ${quotedMsgLink}`,
 				})
@@ -1156,7 +1156,7 @@ describe('[Chat]', function () {
 				.post(api('chat.update'))
 				.set(credentials)
 				.send({
-					roomId: 'GENERAL',
+					roomId: testChannel._id,
 					msgId: message._id,
 					text: `Testing quotes ${quotedMsgLink}`,
 				})
@@ -1177,7 +1177,7 @@ describe('[Chat]', function () {
 				.post(api('chat.update'))
 				.set(credentials)
 				.send({
-					roomId: 'GENERAL',
+					roomId: testChannel._id,
 					msgId: message._id,
 					text: `${newQuotedMsgLink} Testing quotes ${quotedMsgLink}`,
 				})
@@ -1197,7 +1197,7 @@ describe('[Chat]', function () {
 				.post(api('chat.update'))
 				.set(credentials)
 				.send({
-					roomId: 'GENERAL',
+					roomId: testChannel._id,
 					msgId: message._id,
 					text: 'This message was edited via API',
 				})
