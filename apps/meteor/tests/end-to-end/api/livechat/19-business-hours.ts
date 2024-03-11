@@ -793,6 +793,20 @@ describe('LIVECHAT - business hours', function () {
 			await deleteUser(newUser);
 		});
 
+		it('should add a bot agent but shouldn change its status', async () => {
+			const bot = await createUser({ roles: ['bot', 'livechat-agent'] });
+			const newUserCredentials = await login(bot.username, password);
+			await setUserActiveStatus(bot._id, true);
+
+			const latestAgent: ILivechatAgent = await getMe(newUserCredentials);
+			expect(latestAgent).to.be.an('object');
+			expect(latestAgent.openBusinessHours).to.be.undefined;
+			expect(latestAgent.statusLivechat).to.be.equal(ILivechatAgentStatus.AVAILABLE);
+
+			// cleanup
+			await deleteUser(bot);
+		});
+
 		it('should verify if agent is assigned to BH when it is opened', async () => {
 			// first verify if agent is not assigned to any BH
 			let latestAgent: ILivechatAgent = await getMe(agentCredentials as any);
