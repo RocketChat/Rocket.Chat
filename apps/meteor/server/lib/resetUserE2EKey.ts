@@ -2,8 +2,8 @@ import { Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import * as Mailer from '../../app/mailer/server/api';
-import { settings } from '../../app/settings/server';
 import { Notifications } from '../../app/notifications/server';
+import { settings } from '../../app/settings/server';
 import { i18n } from './i18n';
 import { isUserIdFederated } from './isUserIdFederated';
 
