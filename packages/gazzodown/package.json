@@ -77,6 +77,7 @@
 		"react": "*"
 	},
 	"dependencies": {
+		"date-fns": "^3.3.1",
 		"highlight.js": "^11.5.1",
 		"react-error-boundary": "^3.1.4"
 	},

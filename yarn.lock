@@ -8845,6 +8845,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": ~5.60.1
     "@typescript-eslint/parser": ~5.60.1
     babel-loader: ^8.3.0
+    date-fns: ^3.3.1
     eslint: ~8.45.0
     eslint-plugin-anti-trojan-source: ~1.1.1
     eslint-plugin-react: ~7.32.2
@@ -8967,12 +8968,14 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/ddp-client": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
+    "@rocket.chat/fuselage-hooks": ^0.33.0
     "@rocket.chat/fuselage-tokens": ^0.33.0
     "@rocket.chat/gazzodown": "workspace:^"
     "@rocket.chat/logo": ^0.31.29
     "@rocket.chat/message-parser": "workspace:^"
     "@rocket.chat/random": "workspace:~"
     "@rocket.chat/sdk": ^1.0.0-alpha.42
+    "@rocket.chat/ui-contexts": "workspace:^"
     "@rocket.chat/ui-kit": "workspace:~"
     "@storybook/addon-essentials": ~6.5.16
     "@storybook/addon-postcss": ~2.0.0
@@ -9013,6 +9016,7 @@ __metadata:
     mini-css-extract-plugin: ~1.6.2
     mitt: ^2.1.0
     npm-run-all: ^4.1.5
+    path-to-regexp: ^6.2.1
     postcss-css-variables: ^0.17.0
     postcss-dir-pseudo-class: ^5.0.0
     postcss-flexbugs-fixes: ^4.2.1
@@ -20225,6 +20229,13 @@ __metadata:
   version: 2.28.0
   resolution: "date-fns@npm:2.28.0"
   checksum: a0516b2e4f99b8bffc6cc5193349f185f195398385bdcaf07f17c2c4a24473c99d933eb0018be4142a86a6d46cb0b06be6440ad874f15e795acbedd6fd727a1f
+  languageName: node
+  linkType: hard
+
+"date-fns@npm:^3.3.1":
+  version: 3.3.1
+  resolution: "date-fns@npm:3.3.1"
+  checksum: 6245e93a47de28ac96dffd4d62877f86e6b64854860ae1e00a4f83174d80bc8e59bd1259cf265223fb2ddce5c8e586dc9cc210f0d052faba2f7660e265877283
   languageName: node
   linkType: hard
 
