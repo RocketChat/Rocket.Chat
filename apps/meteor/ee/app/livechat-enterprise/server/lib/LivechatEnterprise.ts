@@ -232,6 +232,7 @@ export const LivechatEnterprise = {
 			chatClosingTags: Match.Optional([String]),
 			fallbackForwardDepartment: Match.Optional(String),
 			departmentsAllowedToForward: Match.Optional([String]),
+			allowReceiveForwardOffline: Match.Optional(Boolean),
 		};
 
 		// The Livechat Form department support addition/custom fields, so those fields need to be added before validating

@@ -539,10 +539,20 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 		agent = { agentId, username };
 	}
 
-	if (!RoutingManager.getConfig()?.autoAssignAgent || !(await Omnichannel.isWithinMACLimit(room))) {
+	const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, 'allowReceiveForwardOffline'>>(departmentId, {
+		projection: {
+			allowReceiveForwardOffline: 1,
+		},
+	});
+
+	if (
+		!RoutingManager.getConfig()?.autoAssignAgent ||
+		!(await Omnichannel.isWithinMACLimit(room)) ||
+		(department?.allowReceiveForwardOffline && !(await LivechatTyped.checkOnlineAgents(departmentId)))
+	) {
 		logger.debug(`Room ${room._id} will be on department queue`);
 		await LivechatTyped.saveTransferHistory(room, transferData);
-		return RoutingManager.unassignAgent(inquiry, departmentId);
+		return RoutingManager.unassignAgent(inquiry, departmentId, true);
 	}
 
 	// Fake the department to forward the inquiry - Case the forward process does not success
