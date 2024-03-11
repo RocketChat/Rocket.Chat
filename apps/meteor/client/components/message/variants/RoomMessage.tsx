@@ -4,7 +4,7 @@ import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import { useUserId } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
-import React, { useRef, memo } from 'react';
+import React, { memo } from 'react';
 
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
@@ -51,7 +51,6 @@ const RoomMessage = ({
 	const editing = useIsMessageHighlight(message._id);
 	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
 	const ignored = (ignoredUser || message.ignored) && !displayIgnoredMessage;
-	const messageRef = useRef(null);
 	const { openUserCard, triggerProps } = useUserCard();
 
 	const selecting = useIsSelecting();
@@ -59,7 +58,8 @@ const RoomMessage = ({
 	const selected = useIsSelectedMessage(message._id);
 
 	useCountSelected();
-	useJumpToMessage(message._id, messageRef);
+
+	const messageRef = useJumpToMessage(message._id);
 
 	return (
 		<Message
