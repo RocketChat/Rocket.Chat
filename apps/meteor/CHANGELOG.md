@@ -1,5 +1,45 @@
 # @rocket.chat/meteor
 
+## 6.6.1
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#31713](https://github.com/RocketChat/Rocket.Chat/pull/31713)) Fixes an issue not allowing admin users to edit the room name
+
+- ([#31723](https://github.com/RocketChat/Rocket.Chat/pull/31723)) fixed an issue with the user presence not updating automatically for other users.
+
+- ([#31753](https://github.com/RocketChat/Rocket.Chat/pull/31753)) Fixed an issue where the login button for Custom OAuth services would not work if any non-custom login service was also available
+
+- ([#31554](https://github.com/RocketChat/Rocket.Chat/pull/31554) by [@shivang-16](https://github.com/shivang-16)) Fixed a bug on the rooms page's "Favorite" setting, which previously failed to designate selected rooms as favorites by default.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.1
+  - @rocket.chat/rest-typings@6.6.1
+  - @rocket.chat/api-client@0.1.23
+  - @rocket.chat/license@0.1.5
+  - @rocket.chat/omnichannel-services@0.1.5
+  - @rocket.chat/pdf-worker@0.0.29
+  - @rocket.chat/presence@0.1.5
+  - @rocket.chat/core-services@0.3.5
+  - @rocket.chat/cron@0.0.25
+  - @rocket.chat/gazzodown@4.0.1
+  - @rocket.chat/model-typings@0.3.1
+  - @rocket.chat/ui-contexts@4.0.1
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/fuselage-ui-kit@4.0.1
+  - @rocket.chat/models@0.0.29
+  - @rocket.chat/ui-theming@0.1.2
+  - @rocket.chat/ui-client@4.0.1
+  - @rocket.chat/ui-video-conf@4.0.1
+  - @rocket.chat/web-ui-registration@4.0.1
+  - @rocket.chat/instance-status@0.0.29
+  </details>
+
 ## 6.6.0
 
 ### Minor Changes

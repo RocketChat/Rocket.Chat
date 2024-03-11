@@ -7,6 +7,7 @@ import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
+import { VirtuosoScrollbars } from '../../components/CustomScrollbars';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { usePreventDefault } from '../hooks/usePreventDefault';
@@ -14,7 +15,6 @@ import { useRoomList } from '../hooks/useRoomList';
 import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 import RoomListRow from './RoomListRow';
-import ScrollerWithCustomProps from './ScrollerWithCustomProps';
 
 const computeItemKey = (index: number, room: IRoom): IRoom['_id'] | number => room._id || index;
 
@@ -121,7 +121,7 @@ const RoomList = (): ReactElement => {
 				<Virtuoso
 					totalCount={roomsList.length}
 					data={roomsList}
-					components={{ Scroller: ScrollerWithCustomProps }}
+					components={{ Scroller: VirtuosoScrollbars }}
 					computeItemKey={computeItemKey}
 					itemContent={(_, data): ReactElement => <RoomListRow data={itemData} item={data} />}
 				/>
