@@ -132,11 +132,13 @@ const TeamsInfo = ({
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent p={24}>
 				<InfoPanel>
-					<InfoPanel.Avatar>
-						<RoomAvatar size='x332' room={room} />
-					</InfoPanel.Avatar>
+					<InfoPanel.Section maxWidth='x332' mi='auto'>
+						<InfoPanel.Avatar>
+							<RoomAvatar size='x332' room={room} />
+						</InfoPanel.Avatar>
 
-					<InfoPanel.ActionGroup>{actions}</InfoPanel.ActionGroup>
+						<InfoPanel.ActionGroup>{actions}</InfoPanel.ActionGroup>
+					</InfoPanel.Section>
 
 					<InfoPanel.Section>
 						{room.archived && (
