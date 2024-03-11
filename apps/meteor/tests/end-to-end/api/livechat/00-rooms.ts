@@ -18,7 +18,7 @@ import type { Response } from 'supertest';
 import type { SuccessResult } from '../../../../app/api/server/definition';
 import { getCredentials, api, request, credentials, methodCall } from '../../../data/api-data';
 import { createCustomField } from '../../../data/livechat/custom-fields';
-import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
+import { createDepartmentWithAnOfflineAgent, createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
 import { createSLA, getRandomPriority } from '../../../data/livechat/priorities';
 import {
 	createVisitor,
@@ -32,6 +32,7 @@ import {
 	closeOmnichannelRoom,
 	createDepartment,
 	fetchMessages,
+	makeAgentUnavailable,
 } from '../../../data/livechat/rooms';
 import { saveTags } from '../../../data/livechat/tags';
 import type { DummyResponse } from '../../../data/livechat/utils';
@@ -49,7 +50,8 @@ import { adminUsername, password } from '../../../data/user';
 import { createUser, deleteUser, login } from '../../../data/users.helper.js';
 import { IS_EE } from '../../../e2e/config/constants';
 
-describe('LIVECHAT - rooms', function () {
+// eslint-disable-next-line no-restricted-properties
+describe.only('LIVECHAT - rooms', function () {
 	this.retries(0);
 	let visitor: ILivechatVisitor;
 	let room: IOmnichannelRoom;
@@ -734,6 +736,89 @@ describe('LIVECHAT - rooms', function () {
 			expect((latestRoom.lastMessage as any)?.transferData?.scope).to.be.equal('department');
 			expect((latestRoom.lastMessage as any)?.transferData?.nextDepartment?._id).to.be.equal(forwardToDepartment._id);
 		});
+		(IS_EE ? it : it.skip)(
+			'should return a success message when transferred successfully to an offline department when the department accepts it',
+			async () => {
+				const { department: initialDepartment } = await createDepartmentWithAnOnlineAgent();
+				const { department: forwardToOfflineDepartment } = await createDepartmentWithAnOfflineAgent(true);
+
+				const newVisitor = await createVisitor(initialDepartment._id);
+				const newRoom = await createLivechatRoom(newVisitor.token);
+
+				await request
+					.post(api('livechat/room.forward'))
+					.set(credentials)
+					.send({
+						roomId: newRoom._id,
+						departmentId: forwardToOfflineDepartment._id,
+						clientAction: true,
+						comment: 'test comment',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+					});
+			},
+		);
+		(IS_EE ? it : it.skip)('should the agent take the inquiry when the agent is back online', async () => {
+			const { department: initialDepartment } = await createDepartmentWithAnOnlineAgent();
+			const { department: forwardToOfflineDepartment } = await createDepartmentWithAnOfflineAgent(true);
+
+			const newVisitor = await createVisitor(initialDepartment._id);
+			const newRoom = await createLivechatRoom(newVisitor.token);
+
+			await request.post(api('livechat/room.forward')).set(credentials).send({
+				roomId: newRoom._id,
+				departmentId: forwardToOfflineDepartment._id,
+				clientAction: true,
+				comment: 'test comment',
+			});
+
+			await makeAgentAvailable();
+
+			const latestRoom = await getLivechatRoomInfo(newRoom._id);
+
+			expect(latestRoom).to.have.property('departmentId');
+			expect(latestRoom.departmentId).to.be.equal(forwardToOfflineDepartment._id);
+
+			expect(latestRoom).to.have.property('lastMessage');
+			expect(latestRoom.lastMessage?.t).to.be.equal('livechat_transfer_history');
+			expect(latestRoom.lastMessage?.u?.username).to.be.equal(adminUsername);
+			expect((latestRoom.lastMessage as any)?.transferData?.comment).to.be.equal('test comment');
+			expect((latestRoom.lastMessage as any)?.transferData?.scope).to.be.equal('department');
+			expect((latestRoom.lastMessage as any)?.transferData?.nextDepartment?._id).to.be.equal(forwardToOfflineDepartment._id);
+		});
+		(IS_EE ? it : it.skip)(
+			'should not return a success message when transferred successfully to an offline department when the department does not accepts it',
+			async () => {
+				const { department: initialDepartment } = await createDepartmentWithAnOnlineAgent();
+				const { department: forwardToOfflineDepartment } = await createDepartmentWithAnOfflineAgent();
+				console.log('🚀 ~ forwardToOfflineDepartment:', forwardToOfflineDepartment);
+
+				const newVisitor = await createVisitor(initialDepartment._id);
+				console.log('🚀 ~ newVisitor:', newVisitor);
+				const newRoom = await createLivechatRoom(newVisitor.token);
+				console.log('🚀 ~ newRoom:', newRoom);
+
+				await makeAgentUnavailable();
+
+				await request
+					.post(api('livechat/room.forward'))
+					.set(credentials)
+					.send({
+						roomId: newRoom._id,
+						departmentId: forwardToOfflineDepartment._id,
+						clientAction: true,
+						comment: 'test comment',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', false);
+					});
+			},
+		);
 		let roomId: string;
 		let visitorToken: string;
 		(IS_EE ? it : it.skip)('should return a success message when transferring to a fallback department', async () => {

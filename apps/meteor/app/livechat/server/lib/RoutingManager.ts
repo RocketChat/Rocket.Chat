@@ -47,7 +47,7 @@ type Routing = {
 		options?: { clientAction?: boolean; forwardingToDepartment?: { oldDepartmentId?: string; transferData?: any } },
 	): Promise<(IOmnichannelRoom & { chatQueued?: boolean }) | null | void>;
 	assignAgent(inquiry: InquiryWithAgentInfo, agent: SelectedAgent): Promise<InquiryWithAgentInfo>;
-	unassignAgent(inquiry: ILivechatInquiryRecord, departmentId?: string): Promise<boolean>;
+	unassignAgent(inquiry: ILivechatInquiryRecord, departmentId?: string, shouldQueue?: boolean): Promise<boolean>;
 	takeInquiry(
 		inquiry: Omit<
 			ILivechatInquiryRecord,
@@ -176,7 +176,7 @@ export const RoutingManager: Routing = {
 		return inquiry;
 	},
 
-	async unassignAgent(inquiry, departmentId) {
+	async unassignAgent(inquiry, departmentId, shouldQueue = false) {
 		const { rid, department } = inquiry;
 		const room = await LivechatRooms.findOneById(rid);
 
@@ -200,6 +200,9 @@ export const RoutingManager: Routing = {
 		const { servedBy } = room;
 
 		if (servedBy) {
+			if (shouldQueue) {
+				await LivechatInquiry.queueInquiry(inquiry._id);
+			}
 			await LivechatRooms.removeAgentByRoomId(rid);
 			await this.removeAllRoomSubscriptions(room);
 			await dispatchAgentDelegated(rid);
