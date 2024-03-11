@@ -1580,7 +1580,7 @@
   "Delete_my_account": "Delete my account",
   "Delete_Role_Warning": "This cannot be undone",
   "Delete_Role_Warning_Not_Enterprise": "This cannot be undone. You won't be able to create a new custom role, since that feature is no longer available for your current plan.",
-  "Delete_Room_Warning": "Deleting a room will delete all messages posted within the room. This cannot be undone.",
+  "Delete_Room_Warning": "Deleting this {{roomType}} will also delete all contained message. This cannot be undone.",
   "Delete_User_Warning": "Deleting a user will delete all messages from that user as well. This cannot be undone.",
   "Delete_User_Warning_Delete": "Deleting a user will delete all messages from that user as well. This cannot be undone.",
   "Delete_User_Warning_Keep": "The user will be deleted, but their messages will remain visible. This cannot be undone.",
@@ -5069,7 +5069,6 @@
   "Teams_delete_team_choose_channels": "Select the Channels you would like to delete. The ones you decide to keep, will be available on your workspace.",
   "Teams_delete_team_public_notice": "Notice that public Channels will still be public and visible to everyone.",
   "Teams_delete_team_Warning": "Once you delete a Team, all chat content and configuration will be deleted.",
-  "Teams_delete_team": "You are about to delete this Team.",
   "Teams_deleted_channels": "The following Channels are going to be deleted:",
   "Teams_Errors_Already_exists": "The team `{{name}}` already exists.",
   "Teams_Errors_team_name": "You can't use \"{{name}}\" as a team name.",
@@ -5079,7 +5078,7 @@
   "Teams_move_channel_to_team_description_third": "Team’s members and even Team’s owners, if not a member of this Channel, can not have access to the Channel’s content.",
   "Teams_move_channel_to_team_description_fourth": "Please notice that the Team’s owner will be able to remove members from the Channel.",
   "Teams_move_channel_to_team_confirm_description": "After reading the previous instructions about this behavior, do you want to move forward with this action?",
-  "Teams_New_Title": "Create Team",
+  "Teams_New_Title": "Create team",
   "Teams_new_description": "Teams allow a group of people to collaborate. A team can contain multiple channels.",
   "Teams_New_Name_Label": "Name",
   "Teams_Info": "Team info",
@@ -6326,5 +6325,7 @@
   "Broadcast_hint_enabled": "Only {{roomType}} owners can write new messages but anyone can reply in a thread",
   "Federation_is_currently_disabled_on_this_workspace": "Federation is currently disabled on this workspace",
   "Search_options": "Search options",
-  "First_message_hint": "A discussion can start with a question like \"How do I upload a picture?\""
+  "First_message_hint": "A discussion can start with a question like \"How do I upload a picture?\"",
+  "Delete_roomType": "Delete {{roomType}}",
+  "Delete_roomType_description": "Deleting this {{roomType}} will also delete all contained message. This cannot be undone."
 }
