@@ -321,6 +321,21 @@ describe('LIVECHAT - business hours', function () {
 			expect(latestAgent.openBusinessHours).to.be.an('array').of.length(0);
 			expect(latestAgent.statusLivechat).to.be.equal(ILivechatAgentStatus.NOT_AVAILABLE);
 		});
+
+		it('should create a custom business hour which is closed by default, but a bot agent shouldnt be affected', async () => {
+			const bot = await createUser({ roles: ['bot', 'livechat-agent'] });
+			const creds = await login(bot.username, password);
+			await makeAgentAvailable(creds);
+
+			const { department } = await createDepartmentWithAnOnlineAgent({ user: bot, credentials: creds });
+
+			await createCustomBusinessHour([department._id], false);
+
+			const latestAgent: ILivechatAgent = await getMe(creds);
+			expect(latestAgent).to.be.an('object');
+			expect(latestAgent.openBusinessHours).to.be.an('array').of.length(0);
+			expect(latestAgent.statusLivechat).to.be.equal(ILivechatAgentStatus.AVAILABLE);
+		});
 	});
 
 	// Scenario: Assume we have a BH linked to a department, and we archive the department
@@ -791,27 +806,6 @@ describe('LIVECHAT - business hours', function () {
 
 			// cleanup
 			await deleteUser(newUser);
-		});
-
-		it('should add a bot agent but shouldn change its status', async () => {
-			const bot = await createUser({ roles: ['bot', 'livechat-agent'] });
-			const newUserCredentials = await login(bot.username, password);
-			await request
-				.post(api('livechat/agent.status'))
-				.set(credentials)
-				.send({
-					status: 'available',
-					agentId: bot._id,
-				})
-				.expect(200);
-
-			const latestAgent: ILivechatAgent = await getMe(newUserCredentials);
-			expect(latestAgent).to.be.an('object');
-			expect(latestAgent.openBusinessHours).to.be.undefined;
-			expect(latestAgent.statusLivechat).to.be.equal(ILivechatAgentStatus.AVAILABLE);
-
-			// cleanup
-			await deleteUser(bot);
 		});
 
 		it('should verify if agent is assigned to BH when it is opened', async () => {

@@ -57,11 +57,23 @@ new Promise((resolve, reject) => {
 		});
 });
 
-export const createDepartmentWithAnOnlineAgent = async (): Promise<{department: ILivechatDepartment, agent: {
-	credentials: IUserCredentialsHeader;
+type OnlineAgent = {
 	user: WithRequiredProperty<IUser, 'username'>;
-}}> => {
-    const { user, credentials } = await createAnOnlineAgent();
+	credentials: IUserCredentialsHeader;
+};
+
+export const createDepartmentWithAnOnlineAgent = async (overrideUser?: OnlineAgent): Promise<{department: ILivechatDepartment, agent: OnlineAgent }> => {
+    let user: OnlineAgent['user'];
+	let credentials: OnlineAgent['credentials'];
+
+	if (!overrideUser) {
+		const agent = await createAnOnlineAgent();
+		user = agent.user;
+		credentials = agent.credentials;
+	} else {
+		user = overrideUser.user;
+		credentials = overrideUser.credentials;
+	}
 
 	const department = await createDepartmentWithMethod() as ILivechatDepartment;
 
