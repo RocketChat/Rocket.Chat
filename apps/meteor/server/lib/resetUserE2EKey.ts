@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 
 import * as Mailer from '../../app/mailer/server/api';
 import { settings } from '../../app/settings/server';
+import { Notifications } from '../../app/notifications/server';
 import { i18n } from './i18n';
 import { isUserIdFederated } from './isUserIdFederated';
 
@@ -63,6 +64,9 @@ export async function resetUserE2EEncriptionKey(uid: string, notifyUser: boolean
 	if (isUserFederated) {
 		throw new Meteor.Error('error-not-allowed', 'Federated Users cant have TOTP', { function: 'resetTOTP' });
 	}
+
+	// force logout the live sessions
+	Notifications.notifyUser(uid, 'force_logout');
 
 	await Users.resetE2EKey(uid);
 	await Subscriptions.resetUserE2EKey(uid);
