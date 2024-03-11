@@ -3,6 +3,7 @@ import { before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
+import { sleep } from '../../../data/livechat/utils';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
 
 describe('LIVECHAT - appearance', function () {
@@ -88,6 +89,9 @@ describe('LIVECHAT - appearance', function () {
 				.send([{ _id: 'Livechat_registration_form', value: true }])
 				.expect(200);
 
+			// Just enough to get the stream to update cached settings
+			await sleep(500);
+
 			// Get data from livechat/config
 			const { body } = await request.get(api('livechat/config')).set(credentials).expect(200);
 			expect(body.config.settings.registrationForm).to.be.true;
@@ -99,6 +103,8 @@ describe('LIVECHAT - appearance', function () {
 				.send([{ _id: 'Livechat_registration_form', value: false }])
 				.expect(200);
 
+			// Just enough to get the stream to update cached settings
+			await sleep(500);
 			// Get data from livechat/config
 			const { body } = await request.get(api('livechat/config')).set(credentials).expect(200);
 			expect(body.config.settings.registrationForm).to.be.false;
@@ -110,6 +116,9 @@ describe('LIVECHAT - appearance', function () {
 				.set(credentials)
 				.send([{ _id: 'Livechat_message_character_limit', value: 100 }])
 				.expect(200);
+
+			// Just enough to get the stream to update cached settings
+			await sleep(500);
 
 			// Get data from livechat/config
 			const { body } = await request.get(api('livechat/config')).set(credentials).expect(200);
@@ -123,7 +132,8 @@ describe('LIVECHAT - appearance', function () {
 				.set(credentials)
 				.send([{ _id: 'Livechat_message_character_limit', value: '100' }])
 				.expect(200);
-
+			// Just enough to get the stream to update cached settings
+			await sleep(500);
 			// Get data from livechat/config
 			const { body } = await request.get(api('livechat/config')).set(credentials).expect(200);
 			expect(body.config.settings.limitTextLength).to.be.equal(100);
@@ -136,6 +146,8 @@ describe('LIVECHAT - appearance', function () {
 				.send([{ _id: 'Livechat_registration_form', value: 'true' }])
 				.expect(200);
 
+			// Just enough to get the stream to update cached settings
+			await sleep(500);
 			// Get data from livechat/config
 			const { body } = await request.get(api('livechat/config')).set(credentials).expect(200);
 			expect(body.config.settings.registrationForm).to.be.true;
@@ -150,6 +162,8 @@ describe('LIVECHAT - appearance', function () {
 				])
 				.expect(200);
 
+			// Just enough to get the stream to update cached settings
+			await sleep(500);
 			// Get data from livechat/config
 			const { body } = await request.get(api('livechat/config')).set(credentials).expect(200);
 			// When setting is 0, we default to Message_MaxAllowedSize value
@@ -165,6 +179,8 @@ describe('LIVECHAT - appearance', function () {
 				])
 				.expect(200);
 
+			// Just enough to get the stream to update cached settings
+			await sleep(500);
 			// Get data from livechat/config
 			const { body } = await request.get(api('livechat/config')).set(credentials).expect(200);
 			expect(body.config.settings.limitTextLength).to.be.equal(5000);
@@ -176,6 +192,8 @@ describe('LIVECHAT - appearance', function () {
 				.send([{ _id: 'Livechat_enable_message_character_limit', value: 'xxxx' }])
 				.expect(200);
 
+			// Just enough to get the stream to update cached settings
+			await sleep(500);
 			// Get data from livechat/config
 			const { body } = await request.get(api('livechat/config')).set(credentials).expect(200);
 			expect(body.config.settings.limitTextLength).to.be.false;

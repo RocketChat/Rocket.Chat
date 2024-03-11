@@ -38,11 +38,12 @@ test.describe.serial('Messaging', () => {
 		await page.keyboard.press('ArrowDown');
 		await expect(page.locator('[data-qa-type="message"]:has-text("msg1")')).toBeFocused();
 
-		// move focus to the favorite icon
+		// move focus to the room title
 		await page.keyboard.press('Shift+Tab');
-		await expect(poHomeChannel.roomHeaderFavoriteBtn).toBeFocused();
+		await expect(page.getByRole('button', { name: targetChannel }).first()).toBeFocused();
 
 		// refocus on the first typed message
+		await page.keyboard.press('Tab');
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('Tab');
 		await expect(page.locator('[data-qa-type="message"]:has-text("msg1")')).toBeFocused();
@@ -56,6 +57,7 @@ test.describe.serial('Messaging', () => {
 		
 		// move focus to the composer
 		await page.keyboard.press('Tab');
+		await page.locator('[data-qa-type="message"]:has-text("msg2")').locator('[role=toolbar][aria-label="Message actions"]').getByRole('button', { name: 'Add reaction' }).waitFor();
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('Tab');
 		await expect(poHomeChannel.composer).toBeFocused();

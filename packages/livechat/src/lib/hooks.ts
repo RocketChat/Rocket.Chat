@@ -36,7 +36,7 @@ const updateIframeGuestData = (data: Partial<StoreState['guest']>) => {
 
 	const iframeGuest = { ...guest, ...data } as StoreState['guest'];
 
-	store.setState({ iframe: { ...iframe, guest: iframeGuest } });
+	store.setState({ iframe: { ...iframe, guest: iframeGuest || {} } });
 
 	if (!user) {
 		return;

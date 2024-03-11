@@ -19,8 +19,6 @@ import { handleTranscript } from './transcript';
 const commands = new Commands();
 
 export const closeChat = async ({ transcriptRequested } = {}) => {
-	Livechat.unsubscribeAll();
-
 	if (!transcriptRequested) {
 		await handleTranscript();
 	}
@@ -120,6 +118,22 @@ const doPlaySound = async (message) => {
 	await store.setState({ sound: { ...sound, play: true } });
 };
 
+export const onAgentChange = async (agent) => {
+	await store.setState({ agent, queueInfo: null });
+	parentCall('callback', ['assign-agent', normalizeAgent(agent)]);
+};
+
+export const onAgentStatusChange = (status) => {
+	const { agent } = store.state;
+	agent && store.setState({ agent: { ...agent, status } });
+	parentCall('callback', ['agent-status-change', normalizeAgent(agent)]);
+};
+
+export const onQueuePositionChange = async (queueInfo) => {
+	await store.setState({ queueInfo });
+	parentCall('callback', ['queue-position-change', queueInfo]);
+};
+
 export const initRoom = async () => {
 	const { state } = store;
 	const { room } = state;
@@ -134,7 +148,6 @@ export const initRoom = async () => {
 		queueInfo,
 		room: { _id: rid, servedBy },
 	} = state;
-	Livechat.subscribeRoom(rid);
 
 	let roomAgent = agent;
 	if (!roomAgent) {
@@ -148,22 +161,6 @@ export const initRoom = async () => {
 	if (queueInfo) {
 		parentCall('callback', 'queue-position-change', queueInfo);
 	}
-
-	Livechat.onAgentChange(rid, async (agent) => {
-		await store.setState({ agent, queueInfo: null });
-		parentCall('callback', 'assign-agent', normalizeAgent(agent));
-	});
-
-	Livechat.onAgentStatusChange(rid, (status) => {
-		const { agent } = store.state;
-		agent && store.setState({ agent: { ...agent, status } });
-		parentCall('callback', 'agent-status-change', normalizeAgent(agent));
-	});
-
-	Livechat.onQueuePositionChange(rid, async (queueInfo) => {
-		await store.setState({ queueInfo });
-		parentCall('callback', 'queue-position-change', queueInfo);
-	});
 
 	setCookies(rid, token);
 };
@@ -183,7 +180,7 @@ const transformAgentInformationOnMessage = (message) => {
 	return message;
 };
 
-Livechat.onUserActivity((username, activities) => {
+export const onUserActivity = (username, activities) => {
 	const isTyping = activities.includes('user-typing');
 	const { typing, user, agent } = store.state;
 
@@ -203,9 +200,9 @@ Livechat.onUserActivity((username, activities) => {
 	if (!isTyping) {
 		return store.setState({ typing: typing.filter((u) => u !== username) });
 	}
-});
+};
 
-Livechat.onMessage(async (originalMessage) => {
+export const onMessage = async (originalMessage) => {
 	let message = JSON.parse(JSON.stringify(originalMessage));
 
 	if (message.ts instanceof Date) {
@@ -242,7 +239,7 @@ Livechat.onMessage(async (originalMessage) => {
 
 	await processUnread();
 	await doPlaySound(message);
-});
+};
 
 export const getGreetingMessages = (messages) => messages && messages.filter((msg) => msg.trigger && msg.triggerAfterRegistration);
 export const getLatestCallMessage = (messages) => messages && messages.filter((msg) => isVideoCallMessage(msg)).pop();

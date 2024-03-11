@@ -31,6 +31,7 @@
     task,
     tasks,
     unorderedList,
+    timestamp,
   } = require('./utils');
 }}
 
@@ -62,6 +63,14 @@ Blocks
 Blockquote = b:BlockquoteLine+ { return quote(b); }
 
 BlockquoteLine = ">" [ \t]* @Paragraph
+
+// <t:1630360800:?{format}>
+
+TimestampType = "t" / "T" / "d" / "D" / "f" / "F" / "R"
+
+Unixtime = d:Digit |10| { return d.join(''); }
+
+Timestamp = "<t:" date:Unixtime ":" format:TimestampType ">" { return timestamp(date, format); } / "<t:" date:Unixtime ">" { return timestamp(date); }
 
 /**
  *
@@ -202,6 +211,7 @@ Paragraph = value:Inline { return paragraph(value); }
 Inline = value:(InlineItem / Any)+ EndOfLine? { return reducePlainTexts(value); }
 
 InlineItem = Whitespace
+  / Timestamp
   / References
   / AutolinkedPhone
   / AutolinkedEmail
@@ -359,10 +369,10 @@ EmphasisForReferences = BoldForReferences / ItalicForReferences / StrikethroughF
 Italic
    = value:$([a-zA-Z0-9]+ [\x5F] [\x5F]?) { return plain(value); }
   / [\x5F] [\x5F] i:ItalicContentItems [\x5F] [\x5F] t:$[a-zA-Z0-9]+ {
-      return reducePlainTexts([plain('__'), ...i, plain('__'), plain(t)])[0];
+      return reducePlainTexts([plain('__'), ...i, plain('__'), plain(t)]);
     }
   / [\x5F] i:ItalicContentItems [\x5F] t:$[a-zA-Z]+ {
-      return reducePlainTexts([plain('_'), ...i, plain('_'), plain(t)])[0];
+      return reducePlainTexts([plain('_'), ...i, plain('_'), plain(t)]);
     }
   / [\x5F] [\x5F] @ItalicContent [\x5F] [\x5F]
   / [\x5F] @ItalicContent [\x5F]
@@ -394,7 +404,7 @@ BoldContentItem = Whitespace / InlineCode / References / UserMention / ChannelMe
 /* Strike */
 Strikethrough = [\x7E] [\x7E] @StrikethroughContent [\x7E] [\x7E] / [\x7E] @StrikethroughContent [\x7E]
 
-StrikethroughContent = text:(InlineCode / Whitespace / References / UserMention / ChannelMention / Italic / Bold / Emoji / Emoticon / AnyStrike / Line)+ {
+StrikethroughContent = text:(Timestamp / InlineCode / Whitespace / References / UserMention / ChannelMention / Italic / Bold / Emoji / Emoticon / AnyStrike / Line)+ {
       return strike(reducePlainTexts(text));
     }
 

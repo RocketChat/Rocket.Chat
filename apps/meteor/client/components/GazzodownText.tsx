@@ -1,7 +1,9 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { ChannelMention, UserMention } from '@rocket.chat/gazzodown';
 import { MarkupInteractionContext } from '@rocket.chat/gazzodown';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { useFeaturePreview } from '@rocket.chat/ui-client';
 import { useLayout, useRouter, useSetting, useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
 import type { UIEvent } from 'react';
 import React, { useCallback, memo, useMemo } from 'react';
@@ -25,6 +27,9 @@ type GazzodownTextProps = {
 };
 
 const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTextProps) => {
+	const enableTimestamp = useFeaturePreview('enable-timestamp-message-parser');
+	const [userLanguage] = useLocalStorage('userLanguage', 'en');
+
 	const highlights = useMessageListHighlights();
 	const { triggerProps, openUserCard } = useUserCard();
 
@@ -125,6 +130,8 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 				ownUserId,
 				showMentionSymbol,
 				triggerProps,
+				enableTimestamp,
+				language: userLanguage,
 			}}
 		>
 			{children}
