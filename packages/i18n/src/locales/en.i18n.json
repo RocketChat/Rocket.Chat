@@ -3384,8 +3384,8 @@
   "MapView_GMapsAPIKey": "Google Static Maps API Key",
   "MapView_GMapsAPIKey_Description": "This can be obtained from the Google Developers Console for free.",
   "Mark_all_as_read": "`%s` - Mark all messages (in all channels) as read",
-  "Mark_as_read": "Mark As Read",
-  "Mark_as_unread": "Mark As Unread",
+  "Mark_as_read": "Mark as read",
+  "Mark_as_unread": "Mark as unread",
   "Mark_read": "Mark Read",
   "Mark_unread": "Mark Unread",
   "Marketplace": "Marketplace",
@@ -5399,7 +5399,6 @@
   "Unread_Count_DM": "Unread Count for Direct Messages",
   "Unread_Count_Omni": "Unread Count for Omnichannel Chats",
   "Unread_Messages": "Unread Messages",
-  "S_unread_messages": "%s unread messages",
   "Unread_on_top": "Unread on top",
   "Unread_Rooms": "Unread Rooms",
   "Unread_Rooms_Mode": "Unread Rooms Mode",
@@ -6305,5 +6304,7 @@
   "Unlimited_seats_MACs": "Unlimited seats and MACs",
   "Seat_limit_reached": "Seat limit reached",
   "Seat_limit_reached_Description": "Your workspace reached its contractual seat limit. Buy more seats to add more users.",
-  "Buy_more_seats": "Buy more seats"
+  "Buy_more_seats": "Buy more seats",
+  "unread_messages_one": "{{count}} unread message",
+  "unread_messages_other": "{{count}} unread messages"
 }
