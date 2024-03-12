@@ -12,65 +12,62 @@ type BoldSpanProps = {
 	children: MessageParser.Timestamp;
 };
 
-// | `f`    | Full date and time        | Thursday, December 31, 2020 12:00 AM    |
-// | `F`    | Full date and time (long) | Thursday, December 31, 2020 12:00:00 AM |
-// | `R`    | Relative time             | 1 year ago                              |
+const Timestamp = ({ format, value }: { format: 't' | 'T' | 'd' | 'D' | 'f' | 'F' | 'R'; value: Date }): ReactElement => {
+	switch (format) {
+		case 't': // Short time format
+			return <ShortTime value={value} />;
+		case 'T': // Long time format
+			return <LongTime value={value} />;
+		case 'd': // Short date format
+			return <ShortDate value={value} />;
+		case 'D': // Long date format
+			return <LongDate value={value} />;
+		case 'f': // Full date and time format
+			return <FullDate value={value} />;
 
-const Timestamp = ({ children }: BoldSpanProps): ReactElement => {
+		case 'F': // Full date and time (long) format
+			return <FullDateLong value={value} />;
+
+		case 'R': // Relative time format
+			return <RelativeTime value={value} />;
+
+		default:
+			return <time dateTime={value.toISOString()}> {JSON.stringify(value.getTime())}</time>;
+	}
+};
+
+// eslint-disable-next-line react/no-multi-comp
+const TimestampWrapper = ({ children }: BoldSpanProps): ReactElement => {
 	const { enableTimestamp } = useContext(MarkupInteractionContext);
 
 	if (!enableTimestamp) {
 		return <>{`<t:${children.value.timestamp}:${children.value.format}>`}</>;
 	}
 
-	switch (children.value.format) {
-		case 't': // Short time format
-			return <ShortTime value={parseInt(children.value.timestamp)} />;
-		case 'T': // Long time format
-			return <LongTime value={parseInt(children.value.timestamp)} />;
-		case 'd': // Short date format
-			return <ShortDate value={parseInt(children.value.timestamp)} />;
-		case 'D': // Long date format
-			return <LongDate value={parseInt(children.value.timestamp)} />;
-		case 'f': // Full date and time format
-			return <FullDate value={parseInt(children.value.timestamp)} />;
-
-		case 'F': // Full date and time (long) format
-			return <FullDateLong value={parseInt(children.value.timestamp)} />;
-
-		case 'R': // Relative time format
-			return (
-				<ErrorBoundary fallback={<>{new Date().toUTCString()}</>}>
-					<RelativeTime key={children.value.timestamp} value={parseInt(children.value.timestamp)} />
-				</ErrorBoundary>
-			);
-
-		default:
-			return <time dateTime={children.value.timestamp}> {JSON.stringify(children.value.timestamp)}</time>;
-	}
+	return (
+		<ErrorBoundary fallback={<>{new Date(parseInt(children.value.timestamp) * 1000).toUTCString()}</>}>
+			<Timestamp format={children.value.format} value={new Date(parseInt(children.value.timestamp) * 1000)} />
+		</ErrorBoundary>
+	);
 };
 
 // eslint-disable-next-line react/no-multi-comp
-const ShortTime = ({ value }: { value: number }) => <Time value={format(new Date(value), 'p')} dateTime={new Date(value).toISOString()} />;
+const ShortTime = ({ value }: { value: Date }) => <Time value={format(value, 'p')} dateTime={value.toISOString()} />;
 
 // eslint-disable-next-line react/no-multi-comp
-const LongTime = ({ value }: { value: number }) => <Time value={format(new Date(value), 'pp')} dateTime={new Date(value).toISOString()} />;
+const LongTime = ({ value }: { value: Date }) => <Time value={format(value, 'pp')} dateTime={value.toISOString()} />;
 
 // eslint-disable-next-line react/no-multi-comp
-const ShortDate = ({ value }: { value: number }) => <Time value={format(new Date(value), 'P')} dateTime={new Date(value).toISOString()} />;
+const ShortDate = ({ value }: { value: Date }) => <Time value={format(value, 'P')} dateTime={value.toISOString()} />;
 
 // eslint-disable-next-line react/no-multi-comp
-const LongDate = ({ value }: { value: number }) => <Time value={format(new Date(value), 'Pp')} dateTime={new Date(value).toISOString()} />;
+const LongDate = ({ value }: { value: Date }) => <Time value={format(value, 'Pp')} dateTime={value.toISOString()} />;
 
 // eslint-disable-next-line react/no-multi-comp
-const FullDate = ({ value }: { value: number }) => (
-	<Time value={format(new Date(value), 'PPPppp')} dateTime={new Date(value).toISOString()} />
-);
+const FullDate = ({ value }: { value: Date }) => <Time value={format(value, 'PPPppp')} dateTime={value.toISOString()} />;
 
 // eslint-disable-next-line react/no-multi-comp
-const FullDateLong = ({ value }: { value: number }) => (
-	<Time value={format(new Date(value), 'PPPPpppp')} dateTime={new Date(value).toISOString()} />
-);
+const FullDateLong = ({ value }: { value: Date }) => <Time value={format(value, 'PPPPpppp')} dateTime={value.toISOString()} />;
 
 // eslint-disable-next-line react/no-multi-comp
 const Time = ({ value, dateTime }: { value: string; dateTime: string }) => (
@@ -81,26 +78,28 @@ const Time = ({ value, dateTime }: { value: string; dateTime: string }) => (
 			display: 'inline-block',
 		}}
 	>
-		<Tag> {value}</Tag>
+		<Tag>{value}</Tag>
 	</time>
 );
 
 // eslint-disable-next-line react/no-multi-comp
-const RelativeTime = ({ value }: { value: number }) => {
+const RelativeTime = ({ value }: { value: Date }) => {
+	const time = value.getTime();
+
 	const { language } = useContext(MarkupInteractionContext);
-	const [time, setTime] = useState(() => timeAgo(value, language ?? 'en'));
-	const [timeToRefresh, setTimeToRefresh] = useState(() => getTimeToRefresh(value));
+	const [text, setTime] = useState(() => timeAgo(time, language ?? 'en'));
+	const [timeToRefresh, setTimeToRefresh] = useState(() => getTimeToRefresh(time));
 
 	useEffect(() => {
 		const interval = setInterval(() => {
-			setTime(timeAgo(value, 'en'));
-			setTimeToRefresh(getTimeToRefresh(value));
+			setTime(timeAgo(value.getTime(), 'en'));
+			setTimeToRefresh(getTimeToRefresh(time));
 		}, timeToRefresh);
 
 		return () => clearInterval(interval);
-	}, [value, timeToRefresh]);
+	}, [time, timeToRefresh, value]);
 
-	return <Time value={time} dateTime={new Date(value).toISOString()} />;
+	return <Time value={text} dateTime={value.toISOString()} />;
 };
 
 const getTimeToRefresh = (time: number): number => {
@@ -125,4 +124,4 @@ const getTimeToRefresh = (time: number): number => {
 	return 3600000;
 };
 
-export default Timestamp;
+export default TimestampWrapper;
