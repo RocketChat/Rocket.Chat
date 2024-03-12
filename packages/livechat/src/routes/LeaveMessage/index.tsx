@@ -1,5 +1,5 @@
 import type { FunctionalComponent } from 'preact';
-import { useContext, useRef } from 'preact/hooks';
+import { useRef } from 'preact/hooks';
 import type { JSXInternal } from 'preact/src/jsx';
 import type { FieldValues, SubmitHandler } from 'react-hook-form';
 import { Controller, useForm } from 'react-hook-form';

@@ -31,6 +31,7 @@ export type StoreState = {
 			transcriptMessage?: string;
 			registrationFormMessage?: string;
 			dataProcessingConsentText?: string;
+			switchDepartmentMessage?: string;
 		};
 		theme: {
 			title?: string;
