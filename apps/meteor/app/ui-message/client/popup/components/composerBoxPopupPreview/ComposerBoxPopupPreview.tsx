@@ -1,4 +1,4 @@
-import { Box, Skeleton, Tile } from '@rocket.chat/fuselage';
+import { Box, Skeleton, Tile, Option } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useMethod } from '@rocket.chat/ui-contexts';
 import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
@@ -128,7 +128,7 @@ const ComposerBoxPopupPreview = forwardRef<
 										Your browser does not support the video element.
 									</video>
 								)}
-								{item.type === 'text' && <h4>{item.value}</h4>}
+								{item.type === 'text' && <Option>{item.value}</Option>}
 								{item.type === 'other' && <code>{item.value}</code>}
 							</Box>
 						))}
