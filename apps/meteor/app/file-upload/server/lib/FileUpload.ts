@@ -312,13 +312,15 @@ export const FileUpload = {
 
 		if (file.type === 'image/svg+xml') {
 			transformer = transformer.png();
-			file.name = (file.name || '').replace(/\.svg$/i, '.png');
+			if (file.name) {
+				file.name = `${file.name}.png`;
+			}
 		}
 		const result = transformer.toBuffer({ resolveWithObject: true }).then(({ data, info: { width, height, format } }) => ({
 			data,
 			width,
 			height,
-			thumbFile: { ...file, type: mime.lookup(format) || file?.type || '' } as IUpload,
+			thumbFile: { ...file, type: mime.lookup(format) || '' } as IUpload,
 		}));
 		image.pipe(transformer);
 

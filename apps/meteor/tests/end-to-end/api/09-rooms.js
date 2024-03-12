@@ -8,7 +8,7 @@ import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
 import { imgURL, svgLogoFileName, svgLogoURL } from '../../data/interactions';
-import { updateEEPermission, updatePermission, updateSetting } from '../../data/permissions.helper';
+import { getSettingValueById, updateEEPermission, updatePermission, updateSetting } from '../../data/permissions.helper';
 import { closeRoom, createRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
@@ -83,10 +83,16 @@ describe('[Rooms]', function () {
 		let testChannel;
 		let user;
 		let userCredentials;
-
+		let blockedMediaTypes;
 		before(async () => {
 			user = await createUser({ joinDefaultChannels: false });
 			userCredentials = await login(user.username, password);
+			blockedMediaTypes = await getSettingValueById('FileUpload_MediaTypeBlackList');
+			const newBlockedMediaTypes = blockedMediaTypes
+				.split(',')
+				.filter((type) => type !== 'image/svg+xml')
+				.join(',');
+			await updateSetting('FileUpload_MediaTypeBlackList', newBlockedMediaTypes);
 		});
 
 		after(async () => {
@@ -95,6 +101,7 @@ describe('[Rooms]', function () {
 
 			await updateSetting('FileUpload_Restrict_to_room_members', false);
 			await updateSetting('FileUpload_ProtectFiles', true);
+			await updateSetting('FileUpload_MediaTypeBlackList', blockedMediaTypes);
 		});
 
 		const testChannelName = `channel.test.upload.${Date.now()}-${Math.random()}`;
@@ -204,7 +211,7 @@ describe('[Rooms]', function () {
 		});
 
 		it('should generate thumbnail for SVG files correctly', async () => {
-			const expectedFileName = `thumb-${svgLogoFileName.replace('.svg', '.png')}`;
+			const expectedFileName = `thumb-${svgLogoFileName}.png`;
 			let thumbUrl;
 			await request
 				.post(api(`rooms.upload/${testChannel._id}`))
