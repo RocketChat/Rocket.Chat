@@ -65,6 +65,10 @@ export class RocketChatSettingsAdapter {
 		return settings.get('Federation_Matrix_enabled') === true;
 	}
 
+	public shouldServeWellKnown(): boolean {
+		return settings.get<boolean>('Federation_Matrix_serve_well_known');
+	}
+
 	public areEphemeralEventsEnabled(): boolean {
 		return this.isTypingStatusEnabled();
 	}
@@ -87,6 +91,7 @@ export class RocketChatSettingsAdapter {
 		return settings.watchMultiple<boolean>(
 			[
 				'Federation_Matrix_enabled',
+				'Federation_Matrix_serve_well_known',
 				'Federation_Matrix_id',
 				'Federation_Matrix_hs_token',
 				'Federation_Matrix_as_token',
@@ -95,9 +100,10 @@ export class RocketChatSettingsAdapter {
 				'Federation_Matrix_bridge_url',
 				'Federation_Matrix_bridge_localpart',
 			],
-			([enabled]) =>
+			([enabled, serveWellKnown]) =>
 				callback(
 					enabled === true,
+					serveWellKnown === true,
 					this.getApplicationServiceId(),
 					this.getHomeServerUrl(),
 					this.getHomeServerDomain(),
@@ -185,18 +191,31 @@ export class RocketChatSettingsAdapter {
 			section: 'Matrix Bridge',
 		});
 
+		await settingsRegistry.add('Federation_Matrix_serve_well_known', false, {
+			readonly: false,
+			type: 'boolean',
+			i18nLabel: 'Federation_Matrix_serve_well_known',
+			i18nDescription: 'Federation_Matrix_serve_well_known_desc',
+			alert: 'Federation_Matrix_serve_well_known_Alert',
+			public: true,
+			group: 'Federation',
+			section: 'Matrix Bridge',
+		});
+
 		const uniqueId = settings.get('uniqueID') || uuidv4().slice(0, 15).replace(new RegExp('-', 'g'), '_');
 		const homeserverToken = crypto.createHash('sha256').update(`hs_${uniqueId}`).digest('hex');
 		const applicationServiceToken = crypto.createHash('sha256').update(`as_${uniqueId}`).digest('hex');
 
-		await settingsRegistry.add('Federation_Matrix_id', preExistingConfiguration?.id || `rocketchat_${uniqueId}`, {
-			readonly: true,
-			type: 'string',
-			i18nLabel: 'Federation_Matrix_id',
-			i18nDescription: 'Federation_Matrix_id_desc',
-			group: 'Federation',
-			section: 'Matrix Bridge',
-		});
+		const siteUrl = settings.get<string>("Site_Url");
+
+			await settingsRegistry.add('Federation_Matrix_id', preExistingConfiguration?.id || `rocketchat_${uniqueId}`, {
+				readonly: true,
+				type: 'string',
+				i18nLabel: 'Federation_Matrix_id',
+				i18nDescription: 'Federation_Matrix_id_desc',
+				group: 'Federation',
+				section: 'Matrix Bridge',
+			});
 
 		await settingsRegistry.add('Federation_Matrix_hs_token', preExistingConfiguration?.homeserverToken || homeserverToken, {
 			readonly: true,
@@ -231,7 +250,7 @@ export class RocketChatSettingsAdapter {
 
 		await settingsRegistry.add(
 			'Federation_Matrix_homeserver_domain',
-			preExistingConfiguration?.rocketchat?.domainName || 'local.rocket.chat',
+			preExistingConfiguration?.rocketchat?.domainName ||siteUrl,
 			{
 				type: 'string',
 				i18nLabel: 'Federation_Matrix_homeserver_domain',
@@ -242,7 +261,7 @@ export class RocketChatSettingsAdapter {
 			},
 		);
 
-		await settingsRegistry.add('Federation_Matrix_bridge_url', preExistingConfiguration?.bridgeUrl || 'http://host.docker.internal:3300', {
+		await settingsRegistry.add('Federation_Matrix_bridge_url', preExistingConfiguration?.bridgeUrl || 'http://localhost:3300', {
 			type: 'string',
 			i18nLabel: 'Federation_Matrix_bridge_url',
 			i18nDescription: 'Federation_Matrix_bridge_url_desc',
