@@ -19,18 +19,18 @@ export class HomeDiscussion {
 	}
 
 	get inputChannelName(): Locator {
-		return this.page.locator('.rcx-input-box--undecorated.rcx-input-box').first();
+		return this.page.locator('role=textbox[name="Parent channel or team"]');
 	}
 
 	get inputName(): Locator {
-		return this.page.locator('[placeholder="A meaningful name for the discussion room"]');
+		return this.page.locator('role=textbox[name="Discussion name"]');
 	}
 
 	get inputMessage(): Locator {
-		return this.page.locator('textarea.rcx-input-box');
+		return this.page.locator('role=textbox[name="Message"]');
 	}
 
 	get btnCreate(): Locator {
-		return this.page.locator('button.rcx-button--primary.rcx-button >> text="Create"');
+		return this.page.locator('role=button[name="Create"]');
 	}
 }
