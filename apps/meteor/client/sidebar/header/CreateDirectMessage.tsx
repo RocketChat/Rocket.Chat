@@ -1,5 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { Box, Modal, Button, FieldGroup, Field, FieldRow, FieldLabel, FieldError, FieldHint } from '@rocket.chat/fuselage';
+import { Box, Modal, Button, FieldGroup, Field, FieldRow, FieldError, FieldHint } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint, useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
