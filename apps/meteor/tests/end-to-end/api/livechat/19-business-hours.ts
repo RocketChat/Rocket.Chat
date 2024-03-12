@@ -887,8 +887,8 @@ describe('LIVECHAT - business hours', function () {
 		it('should verify if agent becomes unavailable to take chats when user is activated, if business hour is inactive', async () => {
 			await openOrCloseBusinessHour(defaultBH, false);
 
-			await setUserActiveStatus(agent._id, true);
 			await setUserActiveStatus(agent._id, false);
+			await setUserActiveStatus(agent._id, true);
 
 			const latestAgent = await getUserByUsername(agent.username);
 
