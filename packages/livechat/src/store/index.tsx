@@ -1,8 +1,7 @@
 import type { ILivechatVisitor, ILivechatVisitorDTO, Serialized } from '@rocket.chat/core-typings';
-import type { ComponentChildren } from 'preact';
+import type { ComponentChildren, VNode } from 'preact';
 import { createContext } from 'preact';
 import { useContext, useEffect, useState } from 'preact/hooks';
-import type { JsxElement } from 'typescript';
 
 import type { CustomField } from '../components/Form/CustomFields';
 import type { Agent } from '../definitions/agents';
@@ -23,7 +22,16 @@ export type StoreState = {
 	typing: string[];
 	config: {
 		loading: boolean;
-		messages: any;
+		messages: {
+			offlineMessage?: string;
+			offlineSuccessMessage?: string;
+			offlineUnavailableMessage?: string;
+			conversationFinishedMessage?: string;
+			conversationFinishedText?: string;
+			transcriptMessage?: string;
+			registrationFormMessage?: string;
+			dataProcessingConsentText?: string;
+		};
 		theme: {
 			title?: string;
 			color?: string;
@@ -109,7 +117,7 @@ export type StoreState = {
 	triggered?: boolean;
 	undocked?: boolean;
 	expanded?: boolean;
-	modal?: JsxElement;
+	modal?: VNode | null;
 	agent?: any;
 	room?: { _id: string };
 	noMoreMessages?: boolean;

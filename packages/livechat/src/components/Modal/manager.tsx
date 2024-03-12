@@ -2,9 +2,9 @@ import store from '../../store';
 import Modal from './component';
 
 export default {
-	confirm(props = {}) {
+	confirm(props = {}): Promise<{ success: boolean }> {
 		return new Promise((resolve) => {
-			const handleButton = (success) => () => {
+			const handleButton = (success: boolean) => () => {
 				store.setState({ modal: null });
 				resolve({ success });
 			};
@@ -15,7 +15,7 @@ export default {
 		});
 	},
 
-	alert(props = {}) {
+	alert(props: { text: string }): Promise<{ success: boolean }> {
 		return new Promise((resolve) => {
 			const handleButton = () => () => {
 				store.setState({ modal: null });

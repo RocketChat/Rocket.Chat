@@ -19,7 +19,7 @@ import { sortArrayByColumn } from '../../helpers/sortArrayByColumn';
 import { validateEmail } from '../../lib/email';
 import { parentCall } from '../../lib/parentCall';
 import { createToken } from '../../lib/random';
-import { StoreContext } from '../../store';
+import { useStore } from '../../store';
 import styles from './styles.scss';
 
 const LeaveMessage: FunctionalComponent<{ path: string }> = () => {
@@ -34,7 +34,7 @@ const LeaveMessage: FunctionalComponent<{ path: string }> = () => {
 		loading,
 		dispatch,
 		alerts,
-	} = useContext(StoreContext);
+	} = useStore();
 	const { t } = useTranslation();
 
 	const topRef = useRef<HTMLDivElement>(null);
@@ -63,9 +63,9 @@ const LeaveMessage: FunctionalComponent<{ path: string }> = () => {
 		try {
 			// TODO: Remove intersection after ts refactor of parseOfflineMessage
 			const payload = parseOfflineMessage(fields) as FormValues & { host: string };
-			const text = await Livechat.sendOfflineMessage(payload);
+			const text = offlineSuccessMessage || (await Livechat.sendOfflineMessage(payload)).message;
 			await ModalManager.alert({
-				text: offlineSuccessMessage || text,
+				text,
 			});
 			parentCall('callback', 'offline-form-submit', fields);
 			return true;
