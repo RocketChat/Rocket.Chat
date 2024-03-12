@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { parse } from 'query-string';
 
 import ConnectionStatusProvider from '../../providers/ConnectionStatusProvider';
@@ -11,17 +12,21 @@ export const host =
 
 export const useSsl = Boolean((Array.isArray(host) ? host[0] : host)?.match(/^https:/));
 
+const queryClient = new QueryClient();
+
 const AppConnector = () => (
 	<div id='app'>
-		<StoreProvider>
-			<SDKProvider serverURL={host}>
-				<ConnectionStatusProvider>
-					<ServerProvider>
-						<App />
-					</ServerProvider>
-				</ConnectionStatusProvider>
-			</SDKProvider>
-		</StoreProvider>
+		<QueryClientProvider client={queryClient}>
+			<StoreProvider>
+				<SDKProvider serverURL={host}>
+					<ConnectionStatusProvider>
+						<ServerProvider>
+							<App />
+						</ServerProvider>
+					</ConnectionStatusProvider>
+				</SDKProvider>
+			</StoreProvider>
+		</QueryClientProvider>
 	</div>
 );
 export default AppConnector;

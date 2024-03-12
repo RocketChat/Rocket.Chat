@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import type { FunctionalComponent } from 'preact';
 import Router, { route } from 'preact-router';
 import { useEffect } from 'preact/hooks';
@@ -121,15 +122,9 @@ export const App: FunctionalComponent = () => {
 };
 
 const ConfigApp = () => {
-	const {
-		config: { loading },
-	} = useStore();
+	const config = useQuery(['config'], loadConfig);
 
-	useEffect(() => {
-		loadConfig();
-	}, []);
-
-	if (loading) {
+	if (config.isLoading || config.isError) {
 		return null;
 	}
 

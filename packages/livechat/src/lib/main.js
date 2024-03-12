@@ -66,6 +66,8 @@ export const loadConfig = async () => {
 		visible: true,
 		unread: null,
 	});
+
+	return store.state;
 };
 
 export const shouldMarkAsUnread = () => {

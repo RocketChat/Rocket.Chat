@@ -101,6 +101,7 @@
 		"@rocket.chat/random": "workspace:~",
 		"@rocket.chat/sdk": "^1.0.0-alpha.42",
 		"@rocket.chat/ui-kit": "workspace:~",
+		"@tanstack/react-query": "^4.16.1",
 		"css-vars-ponyfill": "^2.4.8",
 		"date-fns": "^2.15.0",
 		"emoji-mart": "^3.0.1",
