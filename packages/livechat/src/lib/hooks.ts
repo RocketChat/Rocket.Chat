@@ -49,7 +49,7 @@ const updateIframeGuestData = (data: Partial<StoreState['guest']>) => {
 
 export type HooksWidgetAPI = typeof api;
 
-const updateIframeData = (data: StoreState['iframe']) => {
+const updateIframeData = (data: Partial<StoreState['iframe']>) => {
 	const { iframe } = store.state;
 
 	if (data.guest) {
