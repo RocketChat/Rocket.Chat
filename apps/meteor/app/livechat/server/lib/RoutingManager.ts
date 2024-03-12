@@ -33,7 +33,6 @@ import {
 const logger = new Logger('RoutingManager');
 
 type Routing = {
-	methodName: string | null;
 	methods: Record<string, IRoutingMethod>;
 	startQueue(): Promise<void>;
 	isMethodSet(): boolean;
@@ -62,7 +61,6 @@ type Routing = {
 };
 
 export const RoutingManager: Routing = {
-	methodName: null,
 	methods: {},
 
 	async startQueue() {
@@ -85,7 +83,11 @@ export const RoutingManager: Routing = {
 	},
 
 	getMethod() {
-		return this.methods[settings.get<string>('Livechat_Routing_Method')];
+		const setting = settings.get<string>('Livechat_Routing_Method');
+		if (!this.methods[setting]) {
+			throw new Meteor.Error('error-routing-method-not-available');
+		}
+		return this.methods[setting];
 	},
 
 	getConfig() {
@@ -93,7 +95,7 @@ export const RoutingManager: Routing = {
 	},
 
 	async getNextAgent(department, ignoreAgentId) {
-		logger.debug(`Getting next available agent with method ${this.methodName}`);
+		logger.debug(`Getting next available agent with method ${settings.get('Livechat_Routing_Method')}`);
 		return this.getMethod().getNextAgent(department, ignoreAgentId);
 	},
 
