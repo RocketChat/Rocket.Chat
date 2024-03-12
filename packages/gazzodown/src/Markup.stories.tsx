@@ -87,38 +87,38 @@ Timestamp.args = {
 	})()}:t>
 	Long time: <t:${((): number => {
 		const date = new Date();
-		return parseInt(String(date.getTime()).split('').slice(0, 10).join(''));
+		return Math.floor(date.getTime() / 1000);
 	})()}:T>
 	Short date: <t:${((): number => {
 		const date = new Date();
-		return parseInt(String(date.getTime()).split('').slice(0, 10).join(''));
+		return Math.floor(date.getTime() / 1000);
 	})()}:d>
 	Long date: <t:${((): number => {
 		const date = new Date();
-		return parseInt(String(date.getTime()).split('').slice(0, 10).join(''));
+		return Math.floor(date.getTime() / 1000);
 	})()}:D>
 	Full date: <t:${((): number => {
 		const date = new Date();
-		return parseInt(String(date.getTime()).split('').slice(0, 10).join(''));
+		return Math.floor(date.getTime() / 1000);
 	})()}:f>
 	Full date (long): <t:${((): number => {
 		const date = new Date();
-		return parseInt(String(date.getTime()).split('').slice(0, 10).join(''));
+		return Math.floor(date.getTime() / 1000);
 	})()}:F>
 	Relative time from past: <t:${((): number => {
 		const date = new Date();
 		date.setHours(date.getHours() - 1);
-		return parseInt(String(date.getTime()).split('').slice(0, 10).join(''));
+		return Math.floor(date.getTime() / 1000);
 	})()}:R>
 	Relative to Future: <t:${((): number => {
 		const date = new Date();
 		date.setHours(date.getHours() + 1);
-		return parseInt(String(date.getTime()).split('').slice(0, 10).join(''));
+		return Math.floor(date.getTime() / 1000);
 	})()}:R>
 	Relative Seconds: <t:${((): number => {
 		const date = new Date();
 		date.setSeconds(date.getSeconds() - 1);
-		return parseInt(String(date.getTime()).split('').slice(0, 10).join(''));
+		return Math.floor(date.getTime() / 1000);
 	})()}:R>
 
 `),
