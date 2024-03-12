@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
 
+import { createAuxContext } from './fixtures/createAuxContext';
 import injectInitialData from './fixtures/inject-initial-data';
 import { Users, storeState, restoreState } from './fixtures/userStates';
 import { AccountProfile, HomeChannel } from './page-objects';
@@ -134,7 +135,6 @@ test.describe.serial('e2e-encryption', () => {
 		expect(statusCode).toBe(200);
 
 		poHomeChannel = new HomeChannel(page);
-
 		await page.goto('/home');
 	});
 
@@ -211,5 +211,33 @@ test.describe.serial('e2e-encryption', () => {
 
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+	});
+
+	test('expect force logout on e2e keys reset', async ({ page, browser }) => {
+		const poAccountProfile = new AccountProfile(page);
+		// creating another logged in client, to check force logout
+		const { page: anotherClientPage } = await createAuxContext(browser, Users.admin);
+
+		await page.goto('/account/security');
+
+		await poAccountProfile.securityE2EEncryptionSection.click();
+		await poAccountProfile.securityE2EEncryptionResetKeyButton.click();
+
+		await page.locator('role=button[name="Login"]').waitFor();
+		await anotherClientPage.locator('role=button[name="Login"]').waitFor();
+
+		await expect(page).toHaveURL('/home');
+		await expect(anotherClientPage).toHaveURL('/home');
+
+		await expect(page.locator('role=button[name="Login"]')).toBeVisible();
+		await expect(anotherClientPage.locator('role=button[name="Login"]')).toBeVisible();
+
+		await expect(page.locator('role=banner')).toContainText('Your session was ended on this device, please log in again to continue.');
+		await expect(anotherClientPage.locator('role=banner')).toContainText('Your session was ended on this device, please log in again to continue.');
+
+		await anotherClientPage.close();
+
+		// inject initial data, so that tokens are restored after forced logout
+		await injectInitialData();
 	});
 });
