@@ -31,6 +31,6 @@ export class HomeDiscussion {
 	}
 
 	get btnCreate(): Locator {
-		return this.page.locator('role=button[name="Create"]');
+		return this.page.locator('role=dialog >> role=group >> role=button[name="Create"]');
 	}
 }

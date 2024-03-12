@@ -19,11 +19,11 @@ export class HomeTeam {
 	}
 
 	get inputTeamName(): Locator {
-		return this.page.locator('.rcx-field-group__item:nth-child(1) input');
+		return this.page.locator('role=textbox[name="Name"]');
 	}
 
 	async addMember(memberName: string): Promise<void> {
-		await this.page.locator('.rcx-field-group__item:nth-child(7) input').type(memberName, { delay: 100 });
+		await this.page.locator('role=textbox[name="Members"]').type(memberName, { delay: 100 });
 		await this.page.locator(`.rcx-option__content:has-text("${memberName}")`).click();
 	}
 
@@ -32,10 +32,10 @@ export class HomeTeam {
 	}
 
 	get textPrivate(): Locator {
-		return this.page.locator('role=dialog[name="Create Team"] >> label >> text="Private"');
+		return this.page.locator('label', {has: this.page.getByRole('checkbox', {name: 'Private'})});
 	}
 
 	get textReadOnly(): Locator {
-		return this.page.locator('role=dialog[name="Create Team"] >> label >> text="Read Only"');
+		return this.page.locator('label', {has: this.page.getByRole('checkbox', {name: 'Read Only'})});
 	}
 }

@@ -209,7 +209,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 							control={control}
 							name='members'
 							render={({ field: { onChange, value } }): ReactElement => (
-								<UserAutoCompleteMultiple value={value} onChange={onChange} placeholder={t('Add_people')} />
+								<UserAutoCompleteMultiple id={addMembersId} value={value} onChange={onChange} placeholder={t('Add_people')} />
 							)}
 						/>
 					</Field>
