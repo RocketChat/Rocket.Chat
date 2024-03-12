@@ -12,7 +12,15 @@ export const host =
 
 export const useSsl = Boolean((Array.isArray(host) ? host[0] : host)?.match(/^https:/));
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+	defaultOptions: {
+		queries: {
+			refetchOnWindowFocus: false,
+			refetchOnReconnect: false,
+			staleTime: Infinity,
+		},
+	},
+});
 
 const AppConnector = () => (
 	<div id='app'>
