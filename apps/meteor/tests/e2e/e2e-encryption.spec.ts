@@ -142,6 +142,9 @@ test.describe.serial('e2e-encryption', () => {
 		const statusCode = (await api.post('/settings/E2E_Enable', { value: false })).status();
 
 		await expect(statusCode).toBe(200);
+
+		// inject initial data, so that tokens are restored after forced logout
+		await injectInitialData();
 	});
 
 	test('expect create a private channel encrypted and send an encrypted message', async ({ page }) => {
@@ -236,8 +239,5 @@ test.describe.serial('e2e-encryption', () => {
 		await expect(anotherClientPage.locator('role=banner')).toContainText('Your session was ended on this device, please log in again to continue.');
 
 		await anotherClientPage.close();
-
-		// inject initial data, so that tokens are restored after forced logout
-		await injectInitialData();
 	});
 });
