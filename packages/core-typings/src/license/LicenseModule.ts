@@ -19,4 +19,4 @@ export type LicenseModule =
 	| 'hide-watermark'
 	| 'custom-roles'
 	| 'accessibility-certification'
-	| 'unlimited-presence-service';
+	| 'unlimited-presence';

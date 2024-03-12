@@ -26,7 +26,7 @@ const bundles: IBundle = {
 		'hide-watermark',
 		'custom-roles',
 		'accessibility-certification',
-		'unlimited-presence-service',
+		'unlimited-presence',
 	],
 	pro: [],
 };
