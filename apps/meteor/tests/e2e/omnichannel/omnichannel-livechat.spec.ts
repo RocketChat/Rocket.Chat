@@ -41,7 +41,7 @@ test.describe.serial('OC - Livechat', () => {
 
 	test.afterAll(async ({ api }) => {
 		await api.delete('/livechat/users/agent/user1');
-		await poLiveChat.page?.close();
+		await poLiveChat.page.close();
 	});
 
 	test('OC - Livechat - Send message to online agent', async () => {

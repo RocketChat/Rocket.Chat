@@ -45,7 +45,7 @@ export default class Store<T extends Record<string, unknown>> implements Emitter
 	constructor(
 		initialState: T,
 		{
-			localStorageKey = 'store',
+			localStorageKey = 'storse',
 			dontPersist = [],
 		}: {
 			localStorageKey?: string;
@@ -108,7 +108,7 @@ export default class Store<T extends Record<string, unknown>> implements Emitter
 			partialState = partialState(this._state);
 		}
 		const prevState = this._state;
-		this._state = JSON.parse(JSON.stringify({ ...prevState, ...partialState }));
+		this._state = { ...prevState, ...partialState };
 
 		this.persist();
 		this.emit('change', [this._state, prevState, partialState]);
