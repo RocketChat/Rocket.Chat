@@ -1,7 +1,7 @@
 import type { Meta, Story } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
-import { screenDecorator } from '../../helpers.stories';
+import { screenDecorator } from '../../../.storybook/helpers';
 import LeaveMessage from './index';
 
 export default {

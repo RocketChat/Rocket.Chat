@@ -21,11 +21,11 @@ type VideoConfPopupProps = {
 } & HTMLAttributes<HTMLElement>;
 
 const VideoConfPopup = forwardRef(function VideoConfPopup(
-	{ children, position }: VideoConfPopupProps,
+	{ children, position, ...props }: VideoConfPopupProps,
 	ref: Ref<HTMLDivElement>,
 ): ReactElement {
 	return (
-		<VideoConfPopupContainer ref={ref} position={position}>
+		<VideoConfPopupContainer role='dialog' ref={ref} position={position} {...props}>
 			<Box p={24} maxWidth='x276' color='default'>
 				{children}
 			</Box>

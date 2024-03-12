@@ -61,6 +61,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			{ key: { prid: 1 } },
 			{ key: { 'u._id': 1, 'open': 1, 'department': 1 } },
 			{ key: { rid: 1, ls: 1 } },
+			{ key: { 'u._id': 1, 'autotranslate': 1 } },
 		];
 	}
 
@@ -601,6 +602,21 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		}
 
 		return this.updateOne(query, update);
+	}
+
+	updateAllAutoTranslateLanguagesByUserId(userId: IUser['_id'], language: string): Promise<UpdateResult | Document> {
+		const query = {
+			'u._id': userId,
+			'autoTranslate': true,
+		};
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				autoTranslateLanguage: language,
+			},
+		};
+
+		return this.updateMany(query, update);
 	}
 
 	disableAutoTranslateByRoomId(roomId: IRoom['_id']): Promise<UpdateResult | Document> {
@@ -1271,8 +1287,8 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	}
 
 	incGroupMentionsAndUnreadForRoomIdExcludingUserId(
-		roomId: string,
-		userId: string,
+		roomId: IRoom['_id'],
+		userId: IUser['_id'],
 		incGroup = 1,
 		incUnread = 1,
 	): Promise<UpdateResult | Document> {
@@ -1298,8 +1314,8 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	}
 
 	incUserMentionsAndUnreadForRoomIdAndUserIds(
-		roomId: string,
-		userIds: string[],
+		roomId: IRoom['_id'],
+		userIds: IUser['_id'][],
 		incUser = 1,
 		incUnread = 1,
 	): Promise<UpdateResult | Document> {
@@ -1368,7 +1384,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateMany(query, update);
 	}
 
-	setLastReplyForRoomIdAndUserIds(roomId: string, uids: string, lr: Date): Promise<UpdateResult | Document> {
+	setLastReplyForRoomIdAndUserIds(roomId: IRoom['_id'], uids: IUser['_id'][], lr: Date): Promise<UpdateResult | Document> {
 		const query = {
 			'rid': roomId,
 			'u._id': { $in: uids },

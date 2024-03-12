@@ -53,7 +53,7 @@ export class OmnichannelTriggers {
 	}
 
 	get conditionLabel(): Locator {
-		return this.page.locator('label >> text="Condition"')
+		return this.page.locator('label >> text="Condition"');
 	}
 
 	get inputConditionValue(): Locator {
@@ -61,7 +61,11 @@ export class OmnichannelTriggers {
 	}
 
 	get actionLabel(): Locator {
-		return this.page.locator('label >> text="Action"')
+		return this.page.locator('label >> text="Action"');
+	}
+
+	get senderLabel(): Locator {
+		return this.page.locator('label >> text="Sender"');
 	}
 
 	get inputAgentName(): Locator {
@@ -78,7 +82,7 @@ export class OmnichannelTriggers {
 	}
 
 	async selectSender(sender: 'queue' | 'custom') {
-		await this.actionLabel.click();
+		await this.senderLabel.click();
 		await this.page.locator(`li.rcx-option[data-key="${sender}"]`).click();
 	}
 
@@ -88,7 +92,7 @@ export class OmnichannelTriggers {
 			name: triggersName,
 			description: 'Creating a fresh trigger',
 			condition: 'time-on-site',
-			conditionValue: '5s',
+			conditionValue: 5,
 			triggerMessage,
 		});
 		await this.btnSave.click();
@@ -110,7 +114,7 @@ export class OmnichannelTriggers {
 			name: string;
 			description: string;
 			condition: 'time-on-site' | 'chat-opened-by-visitor' | 'after-guest-registration';
-			conditionValue?: string;
+			conditionValue?: string | number;
 			sender: 'queue' | 'custom';
 			agentName?: string;
 			triggerMessage: string;
@@ -121,7 +125,7 @@ export class OmnichannelTriggers {
 		data.condition && (await this.selectCondition(data.condition));
 
 		if (data.conditionValue) {
-			await this.inputConditionValue.fill(data.conditionValue);
+			await this.inputConditionValue.fill(data.conditionValue.toString());
 		}
 
 		data.sender && (await this.selectSender(data.sender));

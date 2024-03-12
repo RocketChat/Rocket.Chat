@@ -27,7 +27,8 @@ Meteor.startup(async () => {
 					return;
 				}
 
-				const schedule = ldapIntervalValuesToCronMap[settings.get<string>(intervalSetting)];
+				const settingValue = settings.get<string>(intervalSetting);
+				const schedule = ldapIntervalValuesToCronMap[settingValue] ?? settingValue;
 				if (schedule) {
 					if (schedule !== lastSchedule && (await cronJobs.has(jobName))) {
 						await cronJobs.remove(jobName);

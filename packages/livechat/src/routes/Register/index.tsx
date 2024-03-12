@@ -1,3 +1,4 @@
+import type { FunctionalComponent } from 'preact';
 import { route } from 'preact-router';
 import { useContext, useEffect, useRef } from 'preact/hooks';
 import type { JSXInternal } from 'preact/src/jsx';
@@ -15,13 +16,15 @@ import { sortArrayByColumn } from '../../helpers/sortArrayByColumn';
 import CustomFields from '../../lib/customFields';
 import { validateEmail } from '../../lib/email';
 import { parentCall } from '../../lib/parentCall';
+import Triggers from '../../lib/triggers';
 import { StoreContext } from '../../store';
+import type { StoreState } from '../../store';
 import styles from './styles.scss';
 
 // Custom field as in the form payload
 type FormPayloadCustomField = { [key: string]: string };
 
-export const Register = ({ screenProps }: { screenProps: { [key: string]: unknown }; path: string }) => {
+export const Register: FunctionalComponent<{ path: string }> = () => {
 	const { t } = useTranslation();
 
 	const topRef = useRef<HTMLDivElement>(null);
@@ -38,13 +41,10 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 			departments = [],
 			messages: { registrationFormMessage: message },
 			settings: { nameFieldRegistrationForm: hasNameField, emailFieldRegistrationForm: hasEmailField },
-			theme: { title, color },
+			theme: { title },
 			customFields = [],
 		},
-		iframe: {
-			guest: { department: guestDepartment, name: guestName, email: guestEmail },
-			theme: { color: customColor, fontColor: customFontColor, iconColor: customIconColor, title: customTitle },
-		},
+		iframe: { guest: { department: guestDepartment = undefined, name: guestName = undefined, email: guestEmail = undefined } = {} },
 		loading = false,
 		token,
 		dispatch,
@@ -82,10 +82,13 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 		};
 
 		dispatch({ loading: true, department });
+
 		try {
 			const { visitor: user } = await Livechat.grantVisitor({ visitor: { ...fields, token } });
-			dispatch({ user });
-			parentCall('callback', ['pre-chat-form-submit', fields]);
+			await dispatch({ user } as Omit<StoreState['user'], 'ts'>);
+
+			parentCall('callback', 'pre-chat-form-submit', fields);
+			Triggers.callbacks?.emit('chat-visitor-registered');
 			registerCustomFields(customFields);
 		} finally {
 			dispatch({ loading: false });
@@ -107,17 +110,7 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 	}, [user?._id]);
 
 	return (
-		<Screen
-			theme={{
-				color: customColor || color,
-				fontColor: customFontColor,
-				iconColor: customIconColor,
-				title: customTitle,
-			}}
-			title={title || defaultTitle}
-			className={createClassName(styles, 'register')}
-			{...screenProps}
-		>
+		<Screen title={title || defaultTitle} className={createClassName(styles, 'register')}>
 			<FormScrollShadow topRef={topRef} bottomRef={bottomRef}>
 				<Screen.Content full>
 					<Form

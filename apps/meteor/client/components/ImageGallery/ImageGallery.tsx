@@ -1,3 +1,4 @@
+import type { IUpload } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, ButtonGroup, IconButton, Palette, Throbber } from '@rocket.chat/fuselage';
 import React, { useRef, useState } from 'react';
@@ -14,8 +15,6 @@ import 'swiper/modules/keyboard/keyboard.min.css';
 import 'swiper/modules/zoom/zoom.min.css';
 
 import { usePreventPropagation } from '../../hooks/usePreventPropagation';
-import ImageGalleryLoader from './ImageGalleryLoader';
-import { useImageGallery } from './hooks/useImageGallery';
 
 const swiperStyle = css`
 	.swiper {
@@ -107,7 +106,7 @@ const swiperStyle = css`
 	}
 `;
 
-const ImageGallery = () => {
+export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[]; onClose: () => void; loadMore?: () => void }) => {
 	const swiperRef = useRef<SwiperRef>(null);
 	const [, setSwiperInst] = useState<SwiperClass>();
 	const [zoomScale, setZoomScale] = useState(1);
@@ -126,18 +125,12 @@ const ImageGallery = () => {
 
 	const preventPropagation = usePreventPropagation();
 
-	const { isLoading, loadMore, images, onClose } = useImageGallery();
-
-	if (isLoading) {
-		return <ImageGalleryLoader onClose={onClose} />;
-	}
-
 	return createPortal(
-		<FocusScope contain restoreFocus autoFocus>
+		<FocusScope contain autoFocus>
 			<Box className={swiperStyle}>
 				<div className='swiper-container' onClick={onClose}>
 					<ButtonGroup className='rcx-swiper-controls' onClick={preventPropagation}>
-						{zoomScale !== 1 && <IconButton icon='arrow-collapse' title='Resize' rcx-swiper-zoom-out onClick={handleResize} />}
+						{zoomScale !== 1 && <IconButton small icon='arrow-collapse' title='Resize' rcx-swiper-zoom-out onClick={handleResize} />}
 						<IconButton small icon='h-bar' title='Zoom out' rcx-swiper-zoom-out onClick={handleZoomOut} disabled={zoomScale === 1} />
 						<IconButton small icon='plus' title='Zoom in' rcx-swiper-zoom-in onClick={handleZoomIn} />
 						<IconButton small icon='cross' title='Close' aria-label='Close gallery' className='rcx-swiper-close-button' onClick={onClose} />
@@ -176,5 +169,3 @@ const ImageGallery = () => {
 		document.body,
 	);
 };
-
-export default ImageGallery;

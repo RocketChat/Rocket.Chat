@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/livechat",
-	"version": "1.14.11",
+	"version": "1.14.14",
 	"files": [
 		"/build"
 	],
@@ -11,6 +11,7 @@
 		"url": "https://github.com/RocketChat/Rocket.Chat",
 		"directory": "packages/livechat"
 	},
+	"homepage": "https://rocket.chat",
 	"scripts": {
 		"clean": "rimraf dist",
 		"build": "cross-env TS_NODE_PROJECT=\"tsconfig.webpack.json\" webpack-cli --mode production",
@@ -30,8 +31,10 @@
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/ddp-client": "workspace:^",
 		"@rocket.chat/eslint-config": "workspace:^",
-		"@rocket.chat/fuselage-tokens": "~0.32.0",
-		"@rocket.chat/logo": "~0.31.28",
+		"@rocket.chat/fuselage-hooks": "^0.33.0",
+		"@rocket.chat/fuselage-tokens": "^0.33.0",
+		"@rocket.chat/logo": "^0.31.29",
+		"@rocket.chat/ui-contexts": "workspace:^",
 		"@storybook/addon-essentials": "~6.5.16",
 		"@storybook/addon-postcss": "~2.0.0",
 		"@storybook/preact": "~6.5.16",
@@ -81,7 +84,7 @@
 		"stylelint-order": "^5.0.0",
 		"svg-loader": "^0.0.2",
 		"terser-webpack-plugin": "~4.2.3",
-		"typescript": "~5.3.2",
+		"typescript": "~5.3.3",
 		"url-loader": "^4.1.1",
 		"webpack": "^5.89.0",
 		"webpack-bundle-analyzer": "^4.9.1",
@@ -94,7 +97,7 @@
 	},
 	"dependencies": {
 		"@rocket.chat/gazzodown": "workspace:^",
-		"@rocket.chat/message-parser": "~0.31.27",
+		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/random": "workspace:~",
 		"@rocket.chat/sdk": "^1.0.0-alpha.42",
 		"@rocket.chat/ui-kit": "workspace:~",
@@ -106,11 +109,13 @@
 		"markdown-it": "^11.0.1",
 		"mem": "^6.1.1",
 		"mitt": "^2.1.0",
+		"path-to-regexp": "^6.2.1",
 		"preact": "10.15.1",
 		"preact-router": "^3.2.1",
 		"query-string": "^7.1.3",
 		"react-hook-form": "~7.45.4",
 		"react-i18next": "~13.2.2",
+		"storybook-dark-mode": "~3.0.1",
 		"whatwg-fetch": "^3.6.19"
 	},
 	"browserslist": [

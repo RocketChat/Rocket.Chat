@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/presence-service",
 	"private": true,
-	"version": "0.3.2",
+	"version": "0.3.5",
 	"description": "Rocket.Chat Presence service",
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
@@ -30,7 +30,7 @@
 		"gc-stats": "^1.4.0",
 		"mem": "^8.1.1",
 		"moleculer": "^0.14.31",
-		"mongodb": "^4.17.1",
+		"mongodb": "^4.17.2",
 		"nats": "^2.4.0",
 		"pino": "^8.15.0",
 		"polka": "^0.5.2"
@@ -41,7 +41,7 @@
 		"@types/polka": "^0.5.6",
 		"eslint": "~8.45.0",
 		"ts-node": "^10.9.1",
-		"typescript": "~5.3.2"
+		"typescript": "~5.3.3"
 	},
 	"main": "./dist/ee/apps/presence-service/src/service.js",
 	"files": [

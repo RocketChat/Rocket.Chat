@@ -13,8 +13,8 @@ import {
 	TextAreaInput,
 	FieldError,
 } from '@rocket.chat/fuselage';
-import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useEndpoint, useRouter, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
@@ -64,6 +64,7 @@ const getInitialValues = (room: Pick<IRoom, RoomAdminFieldsType>): EditRoomFormV
 
 const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 	const t = useTranslation();
+	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const {
@@ -95,13 +96,14 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 
 	const handleArchive = useArchiveRoom(room);
 
-	const handleUpdateRoomData = useMutableCallback(async ({ isDefault, roomName, favorite, ...formData }) => {
+	const handleUpdateRoomData = useEffectEvent(async ({ isDefault, favorite, ...formData }) => {
 		const data = getDirtyFields(formData, dirtyFields);
+		delete data.archived;
+		delete data.favorite;
 
 		try {
 			await saveAction({
 				rid: room._id,
-				roomName: roomType === 'd' ? undefined : roomName,
 				default: isDefault,
 				favorite: { defaultValue: isDefault, favorite },
 				...data,
@@ -109,14 +111,15 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 
 			dispatchToastMessage({ type: 'success', message: t('Room_updated_successfully') });
 			onChange();
+			router.navigate('/admin/rooms');
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
 
-	const handleSave = useMutableCallback(async (data) => {
-		await Promise.all([isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive()].filter(Boolean));
-	});
+	const handleSave = useEffectEvent((data) =>
+		Promise.all([isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive()].filter(Boolean)),
+	);
 
 	const formId = useUniqueId();
 	const roomNameField = useUniqueId();
@@ -179,7 +182,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 							<Field>
 								<FieldLabel htmlFor={ownerField}>{t('Owner')}</FieldLabel>
 								<FieldRow>
-									<TextInput id={ownerField} readOnly value={room.u?.username} />
+									<TextInput id={ownerField} name='roomOwner' readOnly value={room.u?.username} />
 								</FieldRow>
 							</Field>
 						)}
@@ -348,11 +351,13 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
-				<ButtonGroup mbs={8} stretch>
-					<Button icon='trash' danger loading={isDeleting} disabled={!canDeleteRoom || isRoomFederated(room)} onClick={handleDelete}>
-						{t('Delete')}
-					</Button>
-				</ButtonGroup>
+				<Box mbs={8}>
+					<ButtonGroup stretch>
+						<Button icon='trash' danger loading={isDeleting} disabled={!canDeleteRoom || isRoomFederated(room)} onClick={handleDelete}>
+							{t('Delete')}
+						</Button>
+					</ButtonGroup>
+				</Box>
 			</ContextualbarFooter>
 		</>
 	);

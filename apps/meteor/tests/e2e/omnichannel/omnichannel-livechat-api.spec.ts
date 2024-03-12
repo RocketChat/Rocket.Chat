@@ -6,6 +6,7 @@ import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel, OmnichannelLiveChatEmbedded } from '../page-objects';
 import { createAgent } from '../utils/omnichannel/agents';
+import { addAgentToDepartment, createDepartment } from '../utils/omnichannel/departments';
 import { test, expect } from '../utils/test';
 
 // TODO: Use official widget typing once that is merged
@@ -32,7 +33,7 @@ declare const window: Window & {
 			setAgent: (agent: { username: string; _id: string }) => void;
 			setBusinessUnit: (businessUnit?: string) => void;
 			setCustomField: (field: { key: string; value: string }) => void;
-			setDepartment: (department: { _id: string; name: string }) => void;
+			setDepartment: (dep: string) => void;
 			setGuestEmail: (email: string) => void;
 			setGuestName: (name: string) => void;
 			setGuestToken: (token: string) => void;
@@ -56,8 +57,8 @@ declare const window: Window & {
 };
 
 test.describe('OC - Livechat API', () => {
-	// TODO: Check if there is a way to add livechat to the global window object 
-	
+	// TODO: Check if there is a way to add livechat to the global window object
+
 	test.describe('Basic Widget Interactions', () => {
 		// Tests that rely only on the widget itself, without requiring further interaction from the main RC app
 		let poAuxContext: { page: Page; poHomeOmnichannel: HomeOmnichannel };
@@ -71,7 +72,7 @@ test.describe('OC - Livechat API', () => {
 			page = await browser.newPage();
 			await expect((await api.post('/settings/Enable_CSP', { value: false })).status()).toBe(200);
 
-			poLiveChat = new OmnichannelLiveChatEmbedded(page, api);
+			poLiveChat = new OmnichannelLiveChatEmbedded(page);
 
 			const { page: pageCtx } = await createAuxContext(browser, Users.user1);
 			poAuxContext = { page: pageCtx, poHomeOmnichannel: new HomeOmnichannel(pageCtx) };
@@ -213,35 +214,32 @@ test.describe('OC - Livechat API', () => {
 		test.skip(!IS_EE, 'Enterprise Only');
 		// Tests that requires interaction from an agent or more
 		let poAuxContext: { page: Page; poHomeOmnichannel: HomeOmnichannel };
+		let poAuxContext2: { page: Page; poHomeOmnichannel: HomeOmnichannel };
 		let poLiveChat: OmnichannelLiveChatEmbedded;
 		let page: Page;
-		let depId: string;
 		let agent: Awaited<ReturnType<typeof createAgent>>;
+		let agent2: Awaited<ReturnType<typeof createAgent>>;
+		let departments: Awaited<ReturnType<typeof createDepartment>>[];
+
 
 		test.beforeAll(async ({ api }) => {
 			agent = await createAgent(api, 'user1')
-			
-			const response = await api.post('/livechat/department', {department: {
-				enabled: true,
-				email: faker.internet.email(),
-				showOnRegistration: true,
-				showOnOfflineForm: true,
-				name: `new department ${Date.now()}`,
-				description: 'created from api',
-			}});
-		
-			expect(response.status()).toBe(200);
+			agent2 = await createAgent(api, 'user2')
 
-			const resBody = await response.json();
-			depId = resBody.department._id;
+			departments = await Promise.all([createDepartment(api), createDepartment(api)]);
+			const [departmentA, departmentB] = departments.map(({ data }) => data);
+
+			await addAgentToDepartment(api, { department: departmentA, agentId: agent.data._id })
+			await addAgentToDepartment(api, { department: departmentB, agentId: agent2.data._id })
+
 			await expect((await api.post('/settings/Enable_CSP', { value: false })).status()).toBe(200);
 			await expect((await api.post('/settings/Livechat_offline_email', { value: 'test@testing.com' })).status()).toBe(200);
 		});
 
-		test.beforeEach(async ({ browser, api }, testInfo) => {
+		test.beforeEach(async ({ browser }, testInfo) => {
 			page = await browser.newPage();
 
-			poLiveChat = new OmnichannelLiveChatEmbedded(page, api);
+			poLiveChat = new OmnichannelLiveChatEmbedded(page);
 
 			const { page: pageCtx } = await createAuxContext(browser, Users.user1);
 			poAuxContext = { page: pageCtx, poHomeOmnichannel: new HomeOmnichannel(pageCtx) };
@@ -251,6 +249,11 @@ test.describe('OC - Livechat API', () => {
 				await poAuxContext.poHomeOmnichannel.sidenav.switchStatus('offline');
 			} else {
 				await poAuxContext.poHomeOmnichannel.sidenav.switchStatus('online');
+			}
+
+			if (testInfo.title === 'OC - Livechat API - setDepartment') {
+				const { page: pageCtx2 } = await createAuxContext(browser, Users.user2);
+			 	poAuxContext2 = { page: pageCtx2, poHomeOmnichannel: new HomeOmnichannel(pageCtx) };
 			}
 
 			await page.goto('/packages/rocketchat_livechat/assets/demo.html');
@@ -264,9 +267,10 @@ test.describe('OC - Livechat API', () => {
 		test.afterAll(async ({ api }) => {
 			await expect((await api.post('/settings/Enable_CSP', { value: true })).status()).toBe(200);
 			await agent.delete();
+			await agent2.delete();
+
 			await expect((await api.post('/settings/Omnichannel_enable_department_removal', { value: true })).status()).toBe(200);
-			const response = await api.delete(`/livechat/department/${depId}`, { name: 'TestDep', email: 'TestDep@email.com' });
-			expect(response.status()).toBe(200);
+			await Promise.all([...departments.map((department) => department.delete())]);
 			await expect((await api.post('/settings/Omnichannel_enable_department_removal', { value: false })).status()).toBe(200);
 		});
 
@@ -312,6 +316,47 @@ test.describe('OC - Livechat API', () => {
 			// TODO
 			await test.step('Expect clearDepartment to do something', async () => {
 				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.clearDepartment());
+			});
+		});
+
+		test('OC - Livechat API - setDepartment', async () => {
+			const [departmentA, departmentB] = departments.map(({ data }) => data);
+			const registerGuestVisitor = {
+				name: faker.person.firstName(),
+				email: faker.internet.email(),
+				token: faker.string.uuid(),
+				department: departmentA._id,
+			};
+
+			// Start Chat
+			await poLiveChat.page.evaluate(() => window.RocketChat.livechat.maximizeWidget());
+			await expect(page.frameLocator('#rocketchat-iframe').getByText('Start Chat')).toBeVisible();
+
+			await poLiveChat.page.evaluate(
+				(registerGuestVisitor) => window.RocketChat.livechat.registerGuest(registerGuestVisitor),
+				registerGuestVisitor,
+			);
+
+			await expect(page.frameLocator('#rocketchat-iframe').getByText('Start Chat')).not.toBeVisible();
+
+			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
+			await poLiveChat.btnSendMessageToOnlineAgent.click();
+
+			await test.step('Expect registered guest to be in dep1', async () => {
+				await poAuxContext.poHomeOmnichannel.sidenav.openChat(registerGuestVisitor.name);
+			});
+
+			const depId = departmentB._id;
+
+			await test.step('Expect setDepartment to change a guest department', async () => {
+				await poLiveChat.page.evaluate(
+					(depId) => window.RocketChat.livechat.setDepartment(depId),
+					depId,
+				);
+			});
+
+			await test.step('Expect registered guest to be in dep2', async () => {
+				await poAuxContext2.poHomeOmnichannel.sidenav.openChat(registerGuestVisitor.name);
 			});
 		});
 
@@ -421,6 +466,8 @@ test.describe('OC - Livechat API', () => {
 			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
 			await poLiveChat.btnSendMessageToOnlineAgent.click();
 
+			await poAuxContext.poHomeOmnichannel.sidenav.openChat(registerGuestVisitor.name);
+
 			await test.step('Expect setGuestEmail to change a guest email', async () => {
 				await poLiveChat.page.evaluate(
 					(registerGuestVisitor) => window.RocketChat.livechat.setGuestName(`changed${registerGuestVisitor.name}`),
@@ -429,9 +476,7 @@ test.describe('OC - Livechat API', () => {
 			});
 
 			await test.step('Expect registered guest to have valid info', async () => {
-				await poAuxContext.poHomeOmnichannel.sidenav.openChat(registerGuestVisitor.name);
-
-				await expect(poAuxContext.poHomeOmnichannel.content.infoContactName).toContainText(`changed${registerGuestVisitor.name}`);
+				await expect(poAuxContext.poHomeOmnichannel.content.infoHeaderName).toContainText(`changed${registerGuestVisitor.name}`);
 			});
 		});
 
@@ -488,21 +533,21 @@ test.describe('OC - Livechat API', () => {
 			await expect((await api.post('/settings/Livechat_offline_email', { value: 'test@testing.com' })).status()).toBe(200);
 		});
 
-		test.beforeEach(async ({ browser, api }, testInfo) => {
+		test.beforeEach(async ({ browser }, testInfo) => {
 			page = await browser.newPage();
 
-			poLiveChat = new OmnichannelLiveChatEmbedded(page, api);
+			poLiveChat = new OmnichannelLiveChatEmbedded(page);
 
 			const { page: pageCtx } = await createAuxContext(browser, Users.user1);
 			poAuxContext = { page: pageCtx, poHomeOmnichannel: new HomeOmnichannel(pageCtx) };
-			
+
 			// This is needed since the livechat will not react to online/offline status changes if already loaded in a page
 			if (testInfo.title === 'Expect onOfflineFormSubmit to trigger callback') {
 				await poAuxContext.poHomeOmnichannel.sidenav.switchStatus('offline');
 			} else {
 				await poAuxContext.poHomeOmnichannel.sidenav.switchStatus('online');
 			}
-			
+
 			await page.goto('/packages/rocketchat_livechat/assets/demo.html');
 		});
 
@@ -559,7 +604,7 @@ test.describe('OC - Livechat API', () => {
 					}),
 				);
 
-				await poLiveChat.openLiveChat(false);
+				await poLiveChat.openLiveChat();
 				await poLiveChat.sendMessage(newVisitor, false);
 				await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
 				await poLiveChat.btnSendMessageToOnlineAgent.click();
@@ -601,7 +646,7 @@ test.describe('OC - Livechat API', () => {
 					}),
 				);
 
-				await poLiveChat.openLiveChat(false);
+				await poLiveChat.openLiveChat();
 				await poLiveChat.sendMessage(newVisitor, false);
 				await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
 				await poLiveChat.btnSendMessageToOnlineAgent.click();
@@ -631,11 +676,11 @@ test.describe('OC - Livechat API', () => {
 				email: faker.internet.email(),
 			};
 
-			await poLiveChat.openLiveChat(false);
+			await poLiveChat.openLiveChat();
 			await poLiveChat.sendMessage(newVisitor, false);
 			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
 			await poLiveChat.btnSendMessageToOnlineAgent.click();
-				
+
 
 			const watchForTrigger = page.waitForFunction(() => window.onAgentStatusChange === true);
 
@@ -669,7 +714,7 @@ test.describe('OC - Livechat API', () => {
 				}),
 			);
 
-			await poLiveChat.openLiveChat(true);
+			await poLiveChat.openLiveChat();
 			await poLiveChat.sendMessage(newVisitor, true);
 
 			await watchForTrigger;
@@ -717,5 +762,5 @@ test.describe('OC - Livechat API', () => {
 			});
 		});
 	});
-	
+
 });
