@@ -27,10 +27,10 @@ test.describe.serial('OC - Livechat', () => {
 		await expect(statusCode).toBe(200);
 	});
 
-	test.beforeAll(async ({ browser }) => {
+	test.beforeAll(async ({ browser, api }) => {
 		const { page: livechatPage } = await createAuxContext(browser, Users.user1, '/livechat', false);
 
-		poLiveChat = new OmnichannelLiveChat(livechatPage);
+		poLiveChat = new OmnichannelLiveChat(livechatPage, api);
 	});
 
 	test.beforeEach(async ({ page }) => {

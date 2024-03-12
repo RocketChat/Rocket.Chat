@@ -57,12 +57,12 @@ test.describe('omnichannel-changing-room-priority-and-sla', () => {
 		await agent.page.close();
 	});
 
-	test('expect to initiate a new livechat conversation', async ({ page }) => {
+	test('expect to initiate a new livechat conversation', async ({ page, api }) => {
 		newVisitor = {
 			name: faker.person.firstName(),
 			email: faker.internet.email(),
 		};
-		poLiveChat = new OmnichannelLiveChat(page);
+		poLiveChat = new OmnichannelLiveChat(page, api);
 		await page.goto('/livechat');
 		await poLiveChat.openLiveChat();
 		await poLiveChat.sendMessage(newVisitor, false);

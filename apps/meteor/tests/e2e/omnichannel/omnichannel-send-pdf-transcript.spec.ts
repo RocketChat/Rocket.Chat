@@ -27,8 +27,8 @@ test.describe('omnichannel- export chat transcript as PDF', () => {
 		const { page } = await createAuxContext(browser, Users.user1);
 		agent = { page, poHomeChannel: new HomeOmnichannel(page) };
 	});
-	test.beforeEach(async ({ page }) => {
-		poLiveChat = new OmnichannelLiveChat(page);
+	test.beforeEach(async ({ page, api }) => {
+		poLiveChat = new OmnichannelLiveChat(page, api);
 	});
 
 	test.afterAll(async ({ api }) => {

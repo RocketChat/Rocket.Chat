@@ -28,8 +28,8 @@ test.describe('Omnichannel Canned Responses Sidebar', () => {
 		const { page } = await createAuxContext(browser, Users.user1);
 		agent = { page, poHomeChannel: new HomeChannel(page) };
 	});
-	test.beforeEach(async ({ page }) => {
-		poLiveChat = new OmnichannelLiveChat(page);
+	test.beforeEach(async ({ page, api }) => {
+		poLiveChat = new OmnichannelLiveChat(page, api);
 	});
 
 	test.afterAll(async ({ api }) => {
