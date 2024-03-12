@@ -1196,7 +1196,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			params.push({ $limit: options.limit });
 		}
 
-		console.log(JSON.stringify(params, null, 2));
 		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 	}
 
