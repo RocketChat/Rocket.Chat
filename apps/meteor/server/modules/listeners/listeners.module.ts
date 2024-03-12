@@ -209,10 +209,6 @@ export class ListenersModule {
 		});
 
 		service.onEvent('watch.inquiries', async ({ clientAction, inquiry, diff }): Promise<void> => {
-			if (settings.get('Livechat_Routing_Method') !== 'Manual_Selection') {
-				return;
-			}
-
 			const type = minimongoChangeMap[clientAction] as 'added' | 'changed' | 'removed';
 			if (clientAction === 'removed') {
 				notifications.streamLivechatQueueData.emitWithoutBroadcast(inquiry._id, {

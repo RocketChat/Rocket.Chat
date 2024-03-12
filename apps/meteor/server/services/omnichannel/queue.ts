@@ -147,10 +147,6 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 		// This is a precaution to avoid taking the same inquiry multiple times. It should not happen, but it's a safety net
 		if (roomFromDb?.servedBy) {
 			queueLogger.debug(`Inquiry ${inquiry._id} already taken by agent ${roomFromDb.servedBy._id}. Skipping`);
-
-			// Reconciliation step: if we find an inquiry that is already taken, but somehow was processed again by the queue
-			// We'll update its status so it doesnt happen again.
-			await LivechatInquiry.takeInquiry(inquiry._id);
 			return true;
 		}
 
