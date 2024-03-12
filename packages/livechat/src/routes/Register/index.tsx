@@ -16,6 +16,7 @@ import { sortArrayByColumn } from '../../helpers/sortArrayByColumn';
 import CustomFields from '../../lib/customFields';
 import { validateEmail } from '../../lib/email';
 import { parentCall } from '../../lib/parentCall';
+import Triggers from '../../lib/triggers';
 import { StoreContext } from '../../store';
 import type { StoreState } from '../../store';
 import styles from './styles.scss';
@@ -87,6 +88,7 @@ export const Register: FunctionalComponent<{ path: string }> = () => {
 			await dispatch({ user } as Omit<StoreState['user'], 'ts'>);
 
 			parentCall('callback', 'pre-chat-form-submit', fields);
+			Triggers.callbacks?.emit('chat-visitor-registered');
 			registerCustomFields(customFields);
 		} finally {
 			dispatch({ loading: false });
