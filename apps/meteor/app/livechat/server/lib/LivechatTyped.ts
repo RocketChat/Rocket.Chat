@@ -33,7 +33,6 @@ import {
 	LivechatDepartmentAgents,
 	ReadReceipts,
 	Rooms,
-	Settings,
 	LivechatCustomField,
 } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
@@ -1096,9 +1095,7 @@ class LivechatClass {
 	}
 
 	async getInitSettings() {
-		const rcSettings: Record<string, string | number | any> = {};
-
-		await Settings.findNotHiddenPublic([
+		const validSettings = [
 			'Livechat_title',
 			'Livechat_title_color',
 			'Livechat_enable_message_character_limit',
@@ -1128,11 +1125,15 @@ class LivechatClass {
 			'Livechat_data_processing_consent_text',
 			'Livechat_show_agent_info',
 			'Livechat_clear_local_storage_when_chat_ended',
-		]).forEach((setting) => {
-			rcSettings[setting._id] = setting.value;
-		});
+			'Livechat_history_monitor_type',
+		] as const;
 
-		rcSettings.Livechat_history_monitor_type = settings.get('Livechat_history_monitor_type');
+		type SettingTypes = (typeof validSettings)[number] | 'Livechat_Show_Connecting';
+
+		const rcSettings = validSettings.reduce<Record<SettingTypes, string | boolean>>((acc, setting) => {
+			acc[setting] = settings.get(setting);
+			return acc;
+		}, {} as any);
 
 		rcSettings.Livechat_Show_Connecting = this.showConnecting();
 
