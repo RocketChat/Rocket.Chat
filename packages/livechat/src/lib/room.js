@@ -15,6 +15,7 @@ import { parentCall } from './parentCall';
 import { createToken } from './random';
 import { normalizeMessage, normalizeMessages } from './threads';
 import { handleTranscript } from './transcript';
+import Triggers from './triggers';
 
 const commands = new Commands();
 
@@ -32,6 +33,8 @@ export const closeChat = async ({ transcriptRequested } = {}) => {
 		initial.iframe = { ...currentIframe, guest: { department } };
 		await store.setState(initial);
 	}
+
+	Triggers.rescheduleCondition('after-guest-registration');
 
 	await loadConfig();
 	parentCall('callback', 'chat-ended');

@@ -126,6 +126,12 @@ class Triggers {
 		this.scheduleAll(triggers);
 	}
 
+	rescheduleCondition(condition) {
+		const records = this._findRecordsByStatus(['fired']).filter((record) => record.condition === condition);
+		const triggers = this._triggers.filter((trigger) => records.some((record) => record.id === trigger._id));
+		this.scheduleAll(triggers);
+	}
+
 	hasTriggersBeforeRegistration() {
 		if (!this._triggers.length) {
 			return false;
