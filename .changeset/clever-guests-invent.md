@@ -1,5 +1,5 @@
 ---
-"@rocket.chat/meteor": patch
+"@rocket.chat/meteor": minor
 ---
 
 Avoid streaming inquiries to client when routing algorithm is not manual selection. Previously, all inquiries where sent to the client no matter which routing was used. Inquiries are not shown on the UI or interacted with when the inquiry is not manual selection.
