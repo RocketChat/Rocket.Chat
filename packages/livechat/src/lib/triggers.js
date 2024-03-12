@@ -1,6 +1,5 @@
 import mitt from 'mitt';
 
-import { Livechat } from '../api';
 import store from '../store';
 import { actions } from './triggerActions';
 import { conditions } from './triggerConditions';
@@ -56,10 +55,8 @@ class Triggers {
 		}
 
 		const {
-			token,
 			config: { triggers },
 		} = store.state;
-		Livechat.credentials.token = token;
 
 		if (!(triggers && triggers.length > 0)) {
 			return;
