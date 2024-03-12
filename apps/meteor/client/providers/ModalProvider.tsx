@@ -1,58 +1,31 @@
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { ModalContext } from '@rocket.chat/ui-contexts';
-import type { ModalContextValue } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import React, { useState, useMemo, memo, Suspense, createElement, useEffect } from 'react';
+import React, { useMemo, memo } from 'react';
+import { useSyncExternalStore } from 'use-sync-external-store';
 
-import { imperativeModal } from '../lib/imperativeModal';
-
-const mapCurrentModal = (descriptor: typeof imperativeModal.current): ReactNode => {
-	if (descriptor === null) {
-		return null;
-	}
-
-	if ('component' in descriptor) {
-		return {
-			component: (
-				<Suspense fallback={<div />}>
-					{createElement(descriptor.component, {
-						key: Math.random(),
-						...descriptor.props,
-					})}
-				</Suspense>
-			),
-		};
-	}
-};
+import { modalStore } from './ModalStore';
 
 type ModalProviderProps = {
 	children?: ReactNode;
+	region?: symbol;
 };
 
-const ModalProvider = ({ children }: ModalProviderProps) => {
-	const [currentModal, setCurrentModal] = useState<ModalContextValue['currentModal']>(() => mapCurrentModal(imperativeModal.current));
+const ModalProvider = ({ children, region }: ModalProviderProps) => {
+	const currentModal = useSyncExternalStore(modalStore.subscribe, modalStore.getSnapshot);
 
-	const setModal = (modal: ReactNode, region = 'default') => {
-		setCurrentModal({ component: modal, region });
-	};
+	const setModal = useEffectEvent((modal: ReactNode) => {
+		modalStore.open(modal, region);
+	});
 
 	const contextValue = useMemo(
 		() => ({
 			modal: {
 				setModal,
 			},
-			currentModal: {
-				...currentModal,
-			},
+			currentModal,
 		}),
-		[currentModal],
-	);
-
-	useEffect(
-		() =>
-			imperativeModal.on('update', (descriptor) => {
-				setCurrentModal(mapCurrentModal(descriptor));
-			}),
-		[],
+		[currentModal, setModal],
 	);
 
 	return <ModalContext.Provider value={contextValue} children={children} />;
