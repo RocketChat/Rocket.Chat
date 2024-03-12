@@ -36,7 +36,7 @@ const updateIframeGuestData = (data: Partial<StoreState['guest']>) => {
 
 	const iframeGuest = { ...guest, ...data } as StoreState['guest'];
 
-	store.setState({ iframe: { ...iframe, guest: iframeGuest } });
+	store.setState({ iframe: { ...iframe, guest: iframeGuest || {} } });
 
 	if (!user) {
 		return;
@@ -98,6 +98,7 @@ const api = {
 		const department = departments.find((dep) => dep._id === value || dep.name === value)?._id || '';
 
 		updateIframeGuestData({ department });
+		store.setState({ department });
 
 		if (defaultAgent && defaultAgent.department !== department) {
 			store.setState({ defaultAgent: undefined });
