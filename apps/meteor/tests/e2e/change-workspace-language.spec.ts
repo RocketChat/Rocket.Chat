@@ -1,41 +1,36 @@
 import { Users } from './fixtures/userStates';
 import { test, expect } from './utils/test';
 
-test.use({ storageState: Users.admin.state });
-
 test.describe('setting-language', () => {
-  
-  test.beforeEach(async ({ page }) => {
-    await page.goto('/admin/settings/General');
+	test.beforeAll(async ({ api }) => {
+		await api.post('/settings/Language', { value: '' });
 	});
 
-  test.afterAll(async ({ api }) => {
-    await api.post('/settings/Language', { value: 'en' });
-  });
+	test.afterAll(async ({ api }) => {
+		await api.post('/settings/Language', { value: '' });
+	});
 
-  test('Change workspace language', async ({ page }) => {
-    const languageDropdownSelector = page.locator('button#Language');
-    const languageOption = page.locator('text=Brazilian Portuguese');
-    const saveChangesButton = page.locator('button[type="submit"]');
-    const settingsPageTitle = page.locator('[data-qa-type="PageHeader-title"]');
+	test('Change workspace language', async ({ browser }) => {
+		const context = await browser.newContext({ locale: 'es-ES', storageState: Users.admin.state });
+		const page = await context.newPage();
+		await page.goto('/admin/settings/General');
 
-    await expect(settingsPageTitle).toHaveText(/General.*/);
-    await languageDropdownSelector.click();
-    await languageOption.click();
-    await saveChangesButton.click();
+		await test.step('expect to be in spanish', async () => {
+			const settingLabel = page.locator('label[for="Language"]');
+			await expect(settingLabel).toHaveText('Idioma');
+		});
 
-    await expect(settingsPageTitle).toHaveText(/Geral.*/);
-  });
+		await test.step('expect to be change language to english', async () => {
+			const languageDropdownSelector = page.locator('button#Language');
+			const languageOption = page.locator('text=Inglés');
+			const saveChangesButton = page.locator('button[type="submit"]');
+			const settingLabel = page.locator('label[for="Language"]');
 
-  test('Change workspace language to default language', async ({ page }) => {
-    const resetButton = page.locator('[data-qa-reset-setting-id="Language"]');
-    const saveChangesButton = page.locator('button[type="submit"]');
-    const settingsPageTitle = page.locator('[data-qa-type="PageHeader-title"]');
+			await languageDropdownSelector.click();
+			await languageOption.click();
+			await saveChangesButton.click();
 
-    await expect(settingsPageTitle).toHaveText(/Geral.*/);
-    await resetButton.click();
-    await saveChangesButton.click();
-
-    await expect(settingsPageTitle).toHaveText(/General.*/);
-  });
+			await expect(settingLabel).toHaveText('Language');
+		});
+	});
 });
