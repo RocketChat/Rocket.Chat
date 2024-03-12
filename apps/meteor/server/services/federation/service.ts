@@ -14,7 +14,7 @@ import type { RocketChatSettingsAdapter } from './infrastructure/rocket-chat/ada
 import type { RocketChatUserAdapter } from './infrastructure/rocket-chat/adapters/User';
 import { FederationRoomSenderConverter } from './infrastructure/rocket-chat/converters/RoomSender';
 import { FederationHooks } from './infrastructure/rocket-chat/hooks';
-import {setupWellKnownPaths, teardownWellKnownPaths} from './infrastructure/rocket-chat/well-known';
+import { setupWellKnownPaths, teardownWellKnownPaths } from './infrastructure/rocket-chat/well-known';
 
 export abstract class AbstractFederationService extends ServiceClassInternal {
 	private cancelSettingsObserver: () => void;
@@ -190,7 +190,7 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 			return;
 		}
 
-		return setupWellKnownPaths()
+		return setupWellKnownPaths();
 	}
 
 	protected getInternalSettingsAdapter(): RocketChatSettingsAdapter {

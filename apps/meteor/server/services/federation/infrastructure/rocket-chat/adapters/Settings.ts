@@ -80,6 +80,7 @@ export class RocketChatSettingsAdapter {
 	public onFederationEnabledStatusChanged(
 		callback: (
 			enabled: boolean,
+			serveWellKnown: boolean,
 			appServiceId: string,
 			homeServerUrl: string,
 			homeServerDomain: string,
@@ -206,16 +207,16 @@ export class RocketChatSettingsAdapter {
 		const homeserverToken = crypto.createHash('sha256').update(`hs_${uniqueId}`).digest('hex');
 		const applicationServiceToken = crypto.createHash('sha256').update(`as_${uniqueId}`).digest('hex');
 
-		const siteUrl = settings.get<string>("Site_Url");
+		const siteUrl = settings.get<string>('Site_Url');
 
-			await settingsRegistry.add('Federation_Matrix_id', preExistingConfiguration?.id || `rocketchat_${uniqueId}`, {
-				readonly: true,
-				type: 'string',
-				i18nLabel: 'Federation_Matrix_id',
-				i18nDescription: 'Federation_Matrix_id_desc',
-				group: 'Federation',
-				section: 'Matrix Bridge',
-			});
+		await settingsRegistry.add('Federation_Matrix_id', preExistingConfiguration?.id || `rocketchat_${uniqueId}`, {
+			readonly: true,
+			type: 'string',
+			i18nLabel: 'Federation_Matrix_id',
+			i18nDescription: 'Federation_Matrix_id_desc',
+			group: 'Federation',
+			section: 'Matrix Bridge',
+		});
 
 		await settingsRegistry.add('Federation_Matrix_hs_token', preExistingConfiguration?.homeserverToken || homeserverToken, {
 			readonly: true,
@@ -248,18 +249,14 @@ export class RocketChatSettingsAdapter {
 			},
 		);
 
-		await settingsRegistry.add(
-			'Federation_Matrix_homeserver_domain',
-			preExistingConfiguration?.rocketchat?.domainName ||siteUrl,
-			{
-				type: 'string',
-				i18nLabel: 'Federation_Matrix_homeserver_domain',
-				i18nDescription: 'Federation_Matrix_homeserver_domain_desc',
-				alert: 'Federation_Matrix_homeserver_domain_alert',
-				group: 'Federation',
-				section: 'Matrix Bridge',
-			},
-		);
+		await settingsRegistry.add('Federation_Matrix_homeserver_domain', preExistingConfiguration?.rocketchat?.domainName || siteUrl, {
+			type: 'string',
+			i18nLabel: 'Federation_Matrix_homeserver_domain',
+			i18nDescription: 'Federation_Matrix_homeserver_domain_desc',
+			alert: 'Federation_Matrix_homeserver_domain_alert',
+			group: 'Federation',
+			section: 'Matrix Bridge',
+		});
 
 		await settingsRegistry.add('Federation_Matrix_bridge_url', preExistingConfiguration?.bridgeUrl || 'http://localhost:3300', {
 			type: 'string',
