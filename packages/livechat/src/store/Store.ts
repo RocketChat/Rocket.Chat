@@ -45,7 +45,7 @@ export default class Store<T extends Record<string, unknown>> implements Emitter
 	constructor(
 		initialState: T,
 		{
-			localStorageKey = 'storse',
+			localStorageKey = 'store',
 			dontPersist = [],
 		}: {
 			localStorageKey?: string;
