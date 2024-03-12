@@ -83,7 +83,7 @@ export const Timestamp = Template.bind({});
 Timestamp.args = {
 	tokens: parse(`Short time: <t:${((): number => {
 		const date = new Date();
-		return parseInt(String(date.getTime()).split('').slice(0, 10).join(''));
+		return Math.floor(date.getTime() / 1000);
 	})()}:t>
 	Long time: <t:${((): number => {
 		const date = new Date();
