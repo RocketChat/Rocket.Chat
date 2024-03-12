@@ -1,7 +1,8 @@
-import { WebApp } from 'meteor/webapp';
-import { URL } from 'node:url';
 import type { ServerResponse, IncomingMessage } from 'node:http';
+import { URL } from 'node:url';
+
 import type { ServerStackItem } from 'connect';
+import { WebApp } from 'meteor/webapp';
 
 import { settings } from '../../../../../app/settings/server';
 
