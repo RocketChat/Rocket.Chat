@@ -308,7 +308,7 @@ describe('LIVECHAT - business hours', function () {
 			defaultBusinessHour = await getDefaultBusinessHour();
 
 			// close default business hour
-			await openOrCloseBusinessHour(defaultBusinessHour, false);
+			await openOrCloseBusinessHour(defaultBusinessHour, true);
 		});
 
 		it('should create a custom business hour which is closed by default', async () => {
