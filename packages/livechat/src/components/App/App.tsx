@@ -1,12 +1,9 @@
-import type { ILivechatTrigger } from '@rocket.chat/core-typings';
-import type i18next from 'i18next';
 import type { FunctionalComponent } from 'preact';
 import Router, { route } from 'preact-router';
 import { useEffect } from 'preact/hooks';
-import { useTranslation, withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import '../../i18next';
 
-import type { Department } from '../../definitions/departments';
 import { setInitCookies } from '../../helpers/cookies';
 import { isRTL } from '../../helpers/isRTL';
 import { visibility } from '../../helpers/visibility';
@@ -24,51 +21,10 @@ import LeaveMessage from '../../routes/LeaveMessage';
 import Register from '../../routes/Register';
 import SwitchDepartment from '../../routes/SwitchDepartment';
 import TriggerMessage from '../../routes/TriggerMessage';
-import type { Dispatch, StoreState } from '../../store';
 import { useStore } from '../../store';
 import { ScreenProvider } from '../Screen/ScreenProvider';
 
-type AppProps = {
-	config: {
-		settings: StoreState['config']['settings'];
-		theme: StoreState['config']['theme'];
-		online?: boolean;
-		departments: Department[];
-		enabled?: boolean;
-		triggers: ILivechatTrigger[];
-	};
-	gdpr: {
-		accepted: boolean;
-	};
-	triggered?: boolean;
-	user: {
-		token: string;
-	};
-	dispatch: Dispatch;
-	sound: {
-		enabled: boolean;
-	};
-	minimized: boolean;
-	undocked?: boolean;
-	expanded: boolean;
-	modal: boolean;
-	alerts: {
-		id: string;
-	}[];
-	iframe: {
-		visible: boolean;
-		guest?: {
-			token: string;
-			department: string;
-			name: string;
-			email: string;
-		};
-		theme: StoreState['iframe']['theme'];
-	};
-	i18n: typeof i18next;
-};
-
-export const App: FunctionalComponent<AppProps> = () => {
+export const App: FunctionalComponent = () => {
 	const { t } = useTranslation();
 
 	const {
@@ -90,18 +46,6 @@ export const App: FunctionalComponent<AppProps> = () => {
 	}, [t]);
 
 	useEffect(() => {
-		loadConfig();
-
-		// const {
-		// 	config: { online, enabled },
-		// } = useStore();
-
-		// if (online && enabled) {
-		// 	Triggers.init();
-		// }
-
-		Triggers.processTriggers();
-
 		const handleVisibilityChange = () => {
 			dispatch(({ visible }) => ({
 				visible: !visible,
@@ -126,6 +70,10 @@ export const App: FunctionalComponent<AppProps> = () => {
 		CustomFields.init();
 		userPresence.init();
 		Hooks.init();
+
+		Triggers.init();
+
+		Triggers.processTriggers();
 
 		parentCall('ready');
 		return () => {
@@ -172,4 +120,20 @@ export const App: FunctionalComponent<AppProps> = () => {
 	);
 };
 
-export default withTranslation()(App);
+const ConfigApp = () => {
+	const {
+		config: { loading },
+	} = useStore();
+
+	useEffect(() => {
+		loadConfig();
+	}, []);
+
+	if (loading) {
+		return null;
+	}
+
+	return <App />;
+};
+
+export default ConfigApp;

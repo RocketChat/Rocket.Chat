@@ -22,6 +22,7 @@ export type StoreState = {
 	token: string;
 	typing: string[];
 	config: {
+		loading: boolean;
 		messages: any;
 		theme: {
 			title?: string;
@@ -127,6 +128,7 @@ export const initialState = (): StoreState => ({
 	token: createToken(),
 	typing: [],
 	config: {
+		loading: true,
 		messages: {},
 		settings: {},
 		theme: {

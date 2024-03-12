@@ -17,6 +17,8 @@ import { useStore } from '../../store';
 export const ChatWrapper: FunctionalComponent<{}> = ({ children }) => {
 	const { room: { _id: rid } = {}, user: { _id: uid } = {}, token, department } = useStore();
 
+	const connection = useConnectionStatus();
+
 	useRoomMessagesSubscription(rid);
 
 	useUserActivitySubscription(rid);
@@ -30,15 +32,9 @@ export const ChatWrapper: FunctionalComponent<{}> = ({ children }) => {
 	useQueuePositionChangeSubscription(rid);
 
 	useEffect(() => {
-		loadMessages();
-	}, [rid, uid, token, department]);
-
-	const connection = useConnectionStatus();
-
-	useEffect(() => {
 		if (connection.status !== 'connected') return;
 		loadMessages();
-	}, [connection]);
+	}, [rid, uid, token, department, connection.status]);
 
 	useEffect(() => {
 		// Cross-tab communication

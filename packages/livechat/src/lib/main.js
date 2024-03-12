@@ -54,7 +54,7 @@ export const loadConfig = async () => {
 	});
 
 	await store.setState({
-		config,
+		config: { ...config, loading: false },
 		agent: agent && agent.hiddenInfo ? { hiddenInfo: true } : agent, // TODO: revert it when the API is updated
 		room,
 		user,
