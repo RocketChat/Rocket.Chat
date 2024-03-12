@@ -1130,7 +1130,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		const match: Document = {
 			$match: {
 				'v._id': visitorId,
-				...(open !== undefined && open && { open: { $exists: open } }),
+				...(open !== undefined && !open && { closedAt: { $exists: true } }),
 				...(served !== undefined && served && { servedBy: { $exists: served } }),
 				...(source && {
 					$or: [{ 'source.type': new RegExp(escapeRegExp(source), 'i') }, { 'source.alias': new RegExp(escapeRegExp(source), 'i') }],
@@ -1196,6 +1196,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			params.push({ $limit: options.limit });
 		}
 
+		console.log(JSON.stringify(params, null, 2));
 		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 	}
 

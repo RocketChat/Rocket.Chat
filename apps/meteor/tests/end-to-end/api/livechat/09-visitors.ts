@@ -673,6 +673,27 @@ describe('LIVECHAT - visitors', function () {
 					expect(res.body.history.find((chat: any) => chat._id === room2._id)).to.be.an('object');
 				});
 		});
+
+		it('should return all chats when both closed & served flags are false', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			await closeOmnichannelRoom(room._id);
+			const room2 = await createLivechatRoom(visitor.token);
+			await closeOmnichannelRoom(room2._id);
+			await createLivechatRoom(visitor.token);
+
+			const { body } = await request
+				.get(api(`livechat/visitors.searchChats/room/${room._id}/visitor/${visitor._id}?closedChatsOnly=false&servedChatsOnly=false`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(body).to.have.property('success', true);
+			expect(body.count).to.be.equal(3);
+			expect(body.history.filter((chat: any) => !!chat.closedAt).length === 2).to.be.true;
+			expect(body.history.filter((chat: any) => !chat.closedAt).length === 1).to.be.true;
+			expect(body.total).to.be.equal(3);
+		});
 	});
 
 	describe('livechat/visitor.status', () => {
