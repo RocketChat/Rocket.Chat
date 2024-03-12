@@ -37,6 +37,7 @@ test.describe.serial('OC - Livechat', () => {
 		poHomeOmnichannel = new HomeOmnichannel(page);
 		await page.goto('/');
 		await page.locator('.main-content').waitFor();
+		await poHomeOmnichannel.sidenav.waitForOmnichannelOnlineStatus();
 	});
 
 	test.afterAll(async ({ api }) => {
