@@ -5073,6 +5073,7 @@
   "Teams_delete_team_choose_channels": "Select the Channels you would like to delete. The ones you decide to keep, will be available on your workspace.",
   "Teams_delete_team_public_notice": "Notice that public Channels will still be public and visible to everyone.",
   "Teams_delete_team_Warning": "Once you delete a Team, all chat content and configuration will be deleted.",
+  "Teams_delete_team": "You are about to delete this Team.",
   "Teams_deleted_channels": "The following Channels are going to be deleted:",
   "Teams_Errors_Already_exists": "The team `{{name}}` already exists.",
   "Teams_Errors_team_name": "You can't use \"{{name}}\" as a team name.",
