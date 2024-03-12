@@ -27,15 +27,14 @@ test.describe.serial('OC - Livechat', () => {
 		await expect(statusCode).toBe(200);
 	});
 
-	test.beforeAll(async ({ browser }) => {
+	test.beforeAll(async ({ browser, page }) => {
 		const { page: livechatPage } = await createAuxContext(browser, Users.user1, '/livechat', false);
 
 		poLiveChat = new OmnichannelLiveChat(livechatPage);
+		poHomeOmnichannel = new HomeOmnichannel(page);
 	});
 
 	test.beforeEach(async ({ page }) => {
-		poHomeOmnichannel = new HomeOmnichannel(page);
-
 		await page.goto('/');
 		await page.locator('.main-content').waitFor();
 	});
@@ -278,7 +277,7 @@ test.describe('OC - Livechat - Livechat_Display_Offline_Form', () => {
 	test('OC - Livechat - Livechat_Display_Offline_Form false', async () => {
 		await test.step('expect offline form to not be visible', async () => {
 			await poLiveChat.openAnyLiveChat();
-			await expect (poLiveChat.page.locator(`div >> text=${message}`)).toBeVisible();
+			await expect(poLiveChat.page.locator(`div >> text=${message}`)).toBeVisible();
 			await expect(poLiveChat.textAreaMessage).not.toBeVisible();
 		});
 	});
