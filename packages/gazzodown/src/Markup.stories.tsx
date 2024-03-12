@@ -81,27 +81,44 @@ Empty.args = {
 export const Timestamp = Template.bind({});
 
 Timestamp.args = {
-	tokens: parse(`Short time: <t:1708551317:t>
-	Long time: <t:1708551317:T>
-	Short date: <t:1708551317:d>
-	Long date: <t:1708551317:D>
-	Full date: <t:1708551317:f>
-	Full date (long): <t:1708551317:F>
+	tokens: parse(`Short time: <t:${((): number => {
+		const date = new Date();
+		return parseInt(String(date.getTime()).split('').slice(0, 10).join(''));
+	})()}:t>
+	Long time: <t:${((): number => {
+		const date = new Date();
+		return parseInt(String(date.getTime()).split('').slice(0, 10).join(''));
+	})()}:T>
+	Short date: <t:${((): number => {
+		const date = new Date();
+		return parseInt(String(date.getTime()).split('').slice(0, 10).join(''));
+	})()}:d>
+	Long date: <t:${((): number => {
+		const date = new Date();
+		return parseInt(String(date.getTime()).split('').slice(0, 10).join(''));
+	})()}:D>
+	Full date: <t:${((): number => {
+		const date = new Date();
+		return parseInt(String(date.getTime()).split('').slice(0, 10).join(''));
+	})()}:f>
+	Full date (long): <t:${((): number => {
+		const date = new Date();
+		return parseInt(String(date.getTime()).split('').slice(0, 10).join(''));
+	})()}:F>
 	Relative time from past: <t:${((): number => {
 		const date = new Date();
 		date.setHours(date.getHours() - 1);
-		return date.getTime();
+		return parseInt(String(date.getTime()).split('').slice(0, 10).join(''));
 	})()}:R>
 	Relative to Future: <t:${((): number => {
 		const date = new Date();
 		date.setHours(date.getHours() + 1);
-		return date.getTime();
+		return parseInt(String(date.getTime()).split('').slice(0, 10).join(''));
 	})()}:R>
-
 	Relative Seconds: <t:${((): number => {
 		const date = new Date();
 		date.setSeconds(date.getSeconds() - 1);
-		return date.getTime();
+		return parseInt(String(date.getTime()).split('').slice(0, 10).join(''));
 	})()}:R>
 
 `),
