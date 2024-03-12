@@ -90,17 +90,17 @@ Timestamp.args = {
 	Relative time from past: <t:${((): number => {
 		const date = new Date();
 		date.setHours(date.getHours() - 1);
-		return Math.floor(Date.now() / 1000);
+		return Math.floor(date.getTime() / 1000);
 	})()}:R>
 	Relative to Future: <t:${((): number => {
 		const date = new Date();
 		date.setHours(date.getHours() + 1);
-		return Math.floor(Date.now() / 1000);
+		return Math.floor(date.getTime() / 1000);
 	})()}:R>
 	Relative Seconds: <t:${((): number => {
 		const date = new Date();
 		date.setSeconds(date.getSeconds() - 1);
-		return Math.floor(Date.now() / 1000);
+		return Math.floor(date.getTime() / 1000);
 	})()}:R>
 
 `),
