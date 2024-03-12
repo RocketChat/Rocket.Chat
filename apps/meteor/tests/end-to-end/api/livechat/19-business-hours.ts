@@ -18,6 +18,7 @@ import {
 	addOrRemoveAgentFromDepartment,
 	archiveDepartment,
 	createDepartmentWithAnOnlineAgent,
+	createDepartmentWithAgent,
 	disableDepartment,
 	getDepartmentById,
 	deleteDepartment,
@@ -327,7 +328,7 @@ describe('LIVECHAT - business hours', function () {
 			const creds = await login(bot.username, password);
 			await makeAgentAvailable(creds);
 
-			const { department } = await createDepartmentWithAnOnlineAgent({ user: bot, credentials: creds });
+			const { department } = await createDepartmentWithAgent({ user: bot, credentials: creds });
 
 			await createCustomBusinessHour([department._id], false);
 

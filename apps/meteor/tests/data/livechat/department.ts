@@ -62,22 +62,12 @@ type OnlineAgent = {
 	credentials: IUserCredentialsHeader;
 };
 
-export const createDepartmentWithAnOnlineAgent = async (overrideUser?: OnlineAgent): Promise<{department: ILivechatDepartment, agent: OnlineAgent }> => {
-    let user: OnlineAgent['user'];
-	let credentials: OnlineAgent['credentials'];
-
-	if (!overrideUser) {
-		const agent = await createAnOnlineAgent();
-		user = agent.user;
-		credentials = agent.credentials;
-	} else {
-		user = overrideUser.user;
-		credentials = overrideUser.credentials;
-	}
+export const createDepartmentWithAnOnlineAgent = async (): Promise<{department: ILivechatDepartment, agent: OnlineAgent }> => {
+    const { user, credentials } = await createAnOnlineAgent();
 
 	const department = await createDepartmentWithMethod() as ILivechatDepartment;
 
-	await addOrRemoveAgentFromDepartment(department._id, {agentId: user._id, username: user.username}, true);
+	await addOrRemoveAgentFromDepartment(department._id, { agentId: user._id, username: user.username }, true);
 
 	return {
 		department,
@@ -87,6 +77,21 @@ export const createDepartmentWithAnOnlineAgent = async (overrideUser?: OnlineAge
 		}
 	};
 };
+
+export const createDepartmentWithAgent = async (agent: OnlineAgent): Promise<{ department: ILivechatDepartment; agent: OnlineAgent }> => {
+	const { user, credentials } = agent;
+	const department = await createDepartmentWithMethod() as ILivechatDepartment;
+
+	await addOrRemoveAgentFromDepartment(department._id, { agentId: user._id, username: user.username }, true);
+
+	return {
+		department,
+		agent: {
+			credentials,
+			user,
+		}
+	};
+}
 
 export const addOrRemoveAgentFromDepartment = async (departmentId: string, agent: { agentId: string; username: string; count?: number; order?: number }, add: boolean) => {
 	const response = await request.post(api('livechat/department/' + departmentId + '/agents')).set(credentials).send({
