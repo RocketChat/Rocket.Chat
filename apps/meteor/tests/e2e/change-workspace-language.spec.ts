@@ -4,13 +4,8 @@ import { test, expect } from './utils/test';
 test.use({ storageState: Users.admin.state });
 
 test.describe.serial('setting-language', () => {
-
-	test.beforeAll(async ({ api }) => {
-    await api.post('/settings/API_Enable_Rate_Limiter', { value: false });
-  });
   
-  test.beforeEach(async ({ page, api }) => {
-		await page.goto('/home');
+  test.beforeEach(async ({ api }) => {
     const response = await api.post('/settings/Language', { value: 'en' });
     expect(response.status()).toBe(200);
 	});
@@ -22,37 +17,49 @@ test.describe.serial('setting-language', () => {
 
   test.afterAll(async ({ api }) => {
     await api.post('/settings/Language', { value: 'en' });
-    await api.post('/settings/API_Enable_Rate_Limiter', { value: true });
   });
 
-  test('Change workspace language', async ({ page, api }) => {
-    await test.step('expect welcomeTextLocator to be in English initially', async () => {
-      const welcomeTextLocator = page.locator('[data-qa-id="homepage-welcome-text"]');
+  test('Change workspace language', async ({ page }) => {
+    const languageDropdownSelector = page.locator('button#Language');
+    const languageOption = page.locator('text=Spanish');
+    const saveChangesButton = page.locator('button[type="submit"]');
+    const welcomeTextLocator = page.locator('[data-qa-id="homepage-welcome-text"]');
+
+    await test.step('Expect workspace language to be in English initially', async () => {
+      await page.goto('/home');
       await expect(welcomeTextLocator).toHaveText(/Welcome to.*/);
     });
 
-    await test.step('change language from English to Spanish', async () => {
-      await api.post('/settings/Language', { value: 'es' });
-      await page.waitForTimeout(4000);
-      await page.reload();
-      const welcomeTextLocator = page.locator('[data-qa-id="homepage-welcome-text"]');
+    await test.step('Change language from English to Spanish', async () => {
+      await page.goto('/admin/settings/General');
+      await languageDropdownSelector.click();
+      await languageOption.click();
+      await saveChangesButton.click();
+      await page.waitForTimeout(3000);
+
+      await page.goto('/home');
       await expect(welcomeTextLocator).toHaveText(/Te damos la bienvenida a.*/);
     });
   });
 
-  test('Change workspace language to browser language when no server language is provided', async ({ browser, api }) => {
-    const context = await browser.newContext({
-      locale: 'es-ES'
+  test('Change workspace language to default language', async ({ page, api }) => {
+    const welcomeTextLocator = page.locator('[data-qa-id="homepage-welcome-text"]');
+    const resetButton = page.locator('[data-qa-reset-setting-id="Language"]');
+    const saveChangesButton = page.locator('button[type="submit"]');
+
+    await test.step('Change language to Spanish first', async () => {
+      const response = await api.post('/settings/Language', { value: 'es' });
+      expect(response.status()).toBe(200);
     });
 
-    const page = await context.newPage();
-    await page.goto('/home');
-    const welcomeTextLocator = page.locator('[data-qa-id="homepage-welcome-text"]');
-    await expect(welcomeTextLocator).toHaveText(/Welcome to.*/);
-    
-    await api.post('/settings/Language', { value: '' });
-    await page.waitForTimeout(4000);
-    await page.reload();
-    await expect(welcomeTextLocator).toHaveText(/Te damos la bienvenida a.*/);
+    await test.step('Change language to default language', async () => {
+      await page.goto('/admin/settings/General');
+      await resetButton.click();
+      await saveChangesButton.click();
+      await page.waitForTimeout(3000);
+
+      await page.goto('/home');
+      await expect(welcomeTextLocator).toHaveText(/Welcome to.*/);
+    });
   });
 });
