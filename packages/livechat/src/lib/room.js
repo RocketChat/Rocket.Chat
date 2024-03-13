@@ -271,6 +271,8 @@ export const loadMessages = async () => {
 	await initRoom();
 	await store.setState({ messages: (messages || []).reverse(), noMoreMessages: false, loading: false });
 
+	processUnread();
+
 	if (ongoingCall && isCallOngoing(ongoingCall.callStatus)) {
 		return;
 	}
