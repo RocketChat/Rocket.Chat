@@ -19,7 +19,7 @@ const secondUser = {
 test.use({ storageState: Users.user1.state });
 
 test.describe.serial('OC - Livechat', () => {
-	let poLiveChat: OmnichannelLiveChat;
+	let poLiveChat: OmnichannelLiveChat | undefined;
 	let poHomeOmnichannel: HomeOmnichannel;
 
 	test.beforeAll(async ({ api }) => {
@@ -28,7 +28,7 @@ test.describe.serial('OC - Livechat', () => {
 	});
 
 	test.beforeAll(async ({ browser, api }) => {
-		const { page: livechatPage } = await createAuxContext(browser, Users.user1, '/livechat');
+		const { page: livechatPage } = await createAuxContext(browser, Users.user1, '/livechat', false);
 		poLiveChat = new OmnichannelLiveChat(livechatPage, api);
 	});
 
