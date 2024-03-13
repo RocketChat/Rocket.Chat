@@ -211,7 +211,7 @@ describe('[Rooms]', function () {
 		});
 
 		it('should generate thumbnail for SVG files correctly', async () => {
-			const expectedFileName = `thumb-${svgLogoFileName}.png`;
+			const expectedFileName = `thumb-${svgLogoFileName}`;
 			let thumbUrl;
 			await request
 				.post(api(`rooms.upload/${testChannel._id}`))
