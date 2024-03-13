@@ -1,4 +1,4 @@
-import type { RocketChatRecordDeleted, IWorkspaceCredentials } from '@rocket.chat/core-typings';
+import type { RocketChatRecordDeleted, IWorkspaceCredentials, IWorkspaceAvailableCredentials } from '@rocket.chat/core-typings';
 import type { IWorkspaceCredentialsModel } from '@rocket.chat/model-typings';
 import type { Collection, Db, Filter, IndexDescription } from 'mongodb';
 
@@ -13,7 +13,11 @@ export class WorkspaceCredentialsRaw extends BaseRaw<IWorkspaceCredentials> impl
 		return [{ key: { id: 1 } }];
 	}
 
-	getCredentialById(id: IWorkspaceCredentials['id']): Promise<IWorkspaceCredentials | null> {
+	getCredentialById(id: 'cloud_workspace_access_token_expires_at'): Promise<{ value: Date } | null>;
+
+	getCredentialById(id: Omit<IWorkspaceAvailableCredentials, 'cloud_workspace_access_token_expires_at'>): Promise<{ value: string } | null>;
+
+	getCredentialById(id: IWorkspaceCredentials['id']): Promise<{ value: string | Date } | null> {
 		return this.findOne({ id });
 	}
 
