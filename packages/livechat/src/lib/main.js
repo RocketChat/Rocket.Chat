@@ -72,7 +72,8 @@ export const loadConfig = async () => {
 
 export const shouldMarkAsUnread = () => {
 	const { minimized, visible, messageListPosition } = store.state;
-	return minimized || !visible || (messageListPosition !== undefined && messageListPosition !== 'bottom');
+
+	return !document.hasFocus() || minimized || !visible || (messageListPosition !== undefined && messageListPosition !== 'bottom');
 };
 
 export const getLastReadMessage = () => {
