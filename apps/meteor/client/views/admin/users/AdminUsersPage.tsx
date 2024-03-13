@@ -19,6 +19,7 @@ import AdminUserInfoWithData from './AdminUserInfoWithData';
 import AdminUserUpgrade from './AdminUserUpgrade';
 import UsersTable from './UsersTable';
 import useFilteredUsers from './hooks/useFilteredUsers';
+import usePendingUsersCount from './hooks/usePendingUsersCount';
 
 export type UsersFilters = {
 	text: string;
@@ -54,6 +55,8 @@ const AdminUsersPage = (): ReactElement => {
 		paginationData,
 		tab,
 	});
+
+	const pendingUsersCount = usePendingUsersCount(filteredUsersQueryResult.data?.total);
 
 	const handleReload = (): void => {
 		seatsCap?.reload();
@@ -94,6 +97,9 @@ const AdminUsersPage = (): ReactElement => {
 					<Tabs>
 						<TabsItem selected={!tab || tab === 'all'} onClick={() => setTab('all')}>
 							{t('All')}
+						</TabsItem>
+						<TabsItem selected={tab === 'pending'} onClick={() => setTab('pending')}>
+							{pendingUsersCount ? `${t('Pending')} (${pendingUsersCount})` : t('Pending')}
 						</TabsItem>
 					</Tabs>
 					<UsersTable
