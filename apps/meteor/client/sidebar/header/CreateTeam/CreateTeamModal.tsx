@@ -192,7 +192,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 								{errors.name.message}
 							</FieldError>
 						)}
-						<FieldHint id={`${nameId}-hint`}>{t('No_spaces')}</FieldHint>
+						{!allowSpecialNames && <FieldHint id={`${nameId}-hint`}>{t('No_spaces')}</FieldHint>}
 					</Field>
 					<Field>
 						<FieldLabel htmlFor={topicId}>{t('Topic')}</FieldLabel>
