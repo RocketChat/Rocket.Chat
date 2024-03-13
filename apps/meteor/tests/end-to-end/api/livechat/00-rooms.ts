@@ -793,14 +793,10 @@ describe.only('LIVECHAT - rooms', function () {
 			'should not return a success message when transferred successfully to an offline department when the department does not accepts it',
 			async () => {
 				const { department: initialDepartment } = await createDepartmentWithAnOnlineAgent();
-				console.log('🚀 ~ initialDepartment:', initialDepartment);
 				const { department: forwardToOfflineDepartment, agent: offlineAgent } = await createDepartmentWithAnOfflineAgent();
-				console.log('🚀 ~ forwardToOfflineDepartment:', forwardToOfflineDepartment);
 
 				const newVisitor = await createVisitor(initialDepartment._id);
-				console.log('🚀 ~ newVisitor: ', newVisitor);
 				const newRoom = await createLivechatRoom(newVisitor.token);
-				console.log('🚀 ~ newRoom: ', newRoom);
 
 				await makeAgentUnavailable(offlineAgent.credentials);
 
