@@ -72,24 +72,26 @@ API.v1.addRoute('livechat/visitor', {
 			const keys = customFields.map((field) => field.key);
 			const errors: string[] = [];
 
-			const processedKeys = await LivechatCustomField.findByIdsAndScope<Pick<ILivechatCustomField, '_id'>>(keys, 'visitor', {
-				projection: { _id: 1 },
-			})
-				.map(async (field) => {
-					const customField = customFields.find((f) => f.key === field._id);
-					if (!customField) {
-						return;
-					}
-
-					const { key, value, overwrite } = customField;
-					// TODO: Change this to Bulk update
-					if (!(await VisitorsRaw.updateLivechatDataByToken(token, key, value, overwrite))) {
-						errors.push(key);
-					}
-
-					return key;
+			const processedKeys = await Promise.all(
+				await LivechatCustomField.findByIdsAndScope<Pick<ILivechatCustomField, '_id'>>(keys, 'visitor', {
+					projection: { _id: 1 },
 				})
-				.toArray();
+					.map(async (field) => {
+						const customField = customFields.find((f) => f.key === field._id);
+						if (!customField) {
+							return;
+						}
+
+						const { key, value, overwrite } = customField;
+						// TODO: Change this to Bulk update
+						if (!(await VisitorsRaw.updateLivechatDataByToken(token, key, value, overwrite))) {
+							errors.push(key);
+						}
+
+						return key;
+					})
+					.toArray(),
+			);
 
 			if (processedKeys.length !== keys.length) {
 				LivechatTyped.logger.warn({
@@ -100,8 +102,7 @@ API.v1.addRoute('livechat/visitor', {
 			}
 
 			if (errors.length > 0) {
-				LivechatTyped.logger.error({ msg: 'Error updating custom fields', err: errors });
-				throw new Error('error-updating-custom-fields');
+				throw new Meteor.Error('error-updating-custom-fields', `Error updating custom fields: ${errors.join(', ')}`);
 			}
 
 			visitor = await VisitorsRaw.findOneEnabledById(visitorId, {});
