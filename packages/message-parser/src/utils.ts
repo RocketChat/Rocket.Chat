@@ -16,6 +16,7 @@ import type {
   KaTeX,
   InlineKaTeX,
   Link,
+  Timestamp,
 } from './definitions';
 
 const generate =
@@ -233,4 +234,18 @@ export const phoneChecker = (text: string, number: string) => {
   }
 
   return link(`tel:${number}`, [plain(text)]);
+};
+
+export const timestamp = (
+  value: string,
+  type?: 't' | 'T' | 'd' | 'D' | 'f' | 'F' | 'R'
+): Timestamp => {
+  return {
+    type: 'TIMESTAMP',
+    value: {
+      timestamp: value,
+      format: type || 't',
+    },
+    fallback: plain(`<t:${value}:${type || 't'}>`),
+  };
 };

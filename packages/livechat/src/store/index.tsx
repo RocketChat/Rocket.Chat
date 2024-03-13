@@ -1,6 +1,7 @@
 import type { ILivechatVisitor, ILivechatVisitorDTO, Serialized } from '@rocket.chat/core-typings';
 import type { ComponentChildren } from 'preact';
 import { Component, createContext } from 'preact';
+import { useContext } from 'preact/hooks';
 
 import type { CustomField } from '../components/Form/CustomFields';
 import type { Agent } from '../definitions/agents';
@@ -59,7 +60,8 @@ export type StoreState = {
 		enabled: boolean;
 	};
 	iframe: {
-		guest?: Serialized<ILivechatVisitorDTO>;
+		guest: Partial<Serialized<ILivechatVisitorDTO>>;
+		guestMetadata?: Record<string, string>;
 		theme: {
 			title?: string;
 			color?: string;
@@ -87,7 +89,7 @@ export type StoreState = {
 	expanded?: boolean;
 	modal?: any;
 	agent?: any;
-	room?: any;
+	room?: { _id: string };
 	noMoreMessages?: boolean;
 	loading?: boolean;
 	department?: string;
@@ -119,7 +121,7 @@ export const initialState = (): StoreState => ({
 		play: false,
 	},
 	iframe: {
-		guest: undefined,
+		guest: {},
 		theme: {},
 		visible: true,
 	},
@@ -221,3 +223,9 @@ export class Provider extends Component {
 export const { Consumer } = StoreContext;
 
 export default store;
+
+export const useStore = (): StoreContextValue => {
+	const store = useContext(StoreContext);
+
+	return store;
+};

@@ -75,7 +75,7 @@ const CssVar = ({ theme }) => {
 };
 
 /** @type {{ (props: any) => JSX.Element; Content: (props: any) => JSX.Element; Footer: (props: any) => JSX.Element }} */
-export const Screen = ({ title, agent, children, className, unread, triggered = false, queueInfo, onSoundStop }) => {
+export const Screen = ({ title, color, agent, children, className, unread, triggered = false, queueInfo, onSoundStop }) => {
 	const {
 		theme = {},
 		notificationsEnabled,
@@ -96,7 +96,7 @@ export const Screen = ({ title, agent, children, className, unread, triggered = 
 
 	return (
 		<div className={createClassName(styles, 'screen', { minimized, expanded, windowed, triggered })}>
-			<CssVar theme={theme} />
+			<CssVar theme={{ ...theme, color: color || theme.color }} />
 			{triggered && (
 				<Button
 					onClick={onMinimize}

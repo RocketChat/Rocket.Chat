@@ -36,10 +36,10 @@ class Search extends ServiceClassInternal {
 
 const service = new Search();
 
-settings.watch('Search.Provider', () => {
+settings.watch('Search.Provider', async () => {
 	if (searchProviderService.activeProvider?.on) {
 		api.registerService(service);
 	} else {
-		api.destroyService(service);
+		await api.destroyService(service);
 	}
 });
