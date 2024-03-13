@@ -1,13 +1,6 @@
 import { Emitter } from '@rocket.chat/emitter';
 import type { ReactNode } from 'react';
 
-// type ReactModalDescriptor<TProps> = {
-// 	component: ComponentType<TProps>;
-// 	props?: TProps;
-// };
-
-// type ModalDescriptor = ReactModalDescriptor<Record<string, unknown>> | null;
-
 type ModalInstance = {
 	close: () => void;
 	cancel: () => void;
