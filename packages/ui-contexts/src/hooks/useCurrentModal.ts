@@ -13,7 +13,7 @@ export const useCurrentModal = (): ModalContextValue['currentModal']['component'
 		throw new Error('useCurrentModal must be used inside Modal Context');
 	}
 
-	if (context.currentModal.region !== context.region) {
+	if (context.currentModal?.region !== context.region) {
 		return null;
 	}
 

@@ -2,7 +2,7 @@ import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { ModalContext } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import React, { useMemo, memo } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store';
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { modalStore } from './ModalStore';
 
@@ -23,10 +23,13 @@ const ModalProvider = ({ children, region }: ModalProviderProps) => {
 			modal: {
 				setModal,
 			},
-			currentModal,
+			currentModal: {
+				component: currentModal?.node,
+				region: currentModal?.region,
+			},
 			region,
 		}),
-		[currentModal, setModal],
+		[currentModal, region, setModal],
 	);
 
 	return <ModalContext.Provider value={contextValue} children={children} />;
