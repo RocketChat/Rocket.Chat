@@ -63,6 +63,31 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 
 	const retentionPolicy = useSetting<boolean>('RetentionPolicy_Enabled');
 	const defaultValues = useEditRoomInitialValues(room);
+	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
+	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
+	const checkTeamNameExists = useEndpoint('GET', '/v1/rooms.nameExists');
+
+	const teamNameRegex = useMemo(() => {
+		if (allowSpecialNames) {
+			return null;
+		}
+
+		return new RegExp(`^${namesValidation}$`);
+	}, [allowSpecialNames, namesValidation]);
+
+	const validateName = async (name: string): Promise<string | undefined> => {
+		if (!name) return;
+		if (roomType === 'discussion') return;
+
+		if (teamNameRegex && !teamNameRegex?.test(name)) {
+			return t('Teams_Errors_team_name', { name });
+		}
+
+		const { exists } = await checkTeamNameExists({ roomName: name });
+		if (exists) {
+			return t('Teams_Errors_Already_exists', { name });
+		}
+	};
 
 	const {
 		watch,
@@ -184,7 +209,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 									control={control}
 									rules={{
 										required: t('error-the-field-is-required', { field: t('Name') }),
-										validate: (value) => (value.includes(' ') ? t('Name_cannot_have_spaces') : undefined),
+										validate: (value) => validateName(value),
 									}}
 									render={({ field }) => (
 										<TextInput
