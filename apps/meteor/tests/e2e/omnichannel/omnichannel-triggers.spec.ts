@@ -119,7 +119,6 @@ test.describe.serial('OC - Livechat Triggers', () => {
 	});
 
 	test('OC - Livechat Triggers - Condition: after guest registration', async ({ page }) => {
-		test.fail();
 
 		triggerMessage = 'This is a trigger message after guest registration';
 		await test.step('expect update trigger to after guest registration', async () => {
