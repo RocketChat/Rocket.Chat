@@ -1646,11 +1646,25 @@ describe('[Rooms]', function () {
 	describe('/rooms.saveRoomSettings', () => {
 		let testChannel;
 		const randomString = `randomString${Date.now()}`;
+		let discussion;
 
-		before('create a channel', async () => {
-			const result = await createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` });
-			testChannel = result.body.channel;
+		before('create a channel and a discussion', (done) => {
+			createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` }).end((err, res) => {
+				testChannel = res.body.channel;
+				request
+					.post(api('rooms.createDiscussion'))
+					.set(credentials)
+					.send({
+						prid: testChannel._id,
+						t_name: `discussion-create-from-tests-${testChannel.name}`,
+					})
+					.end((err, res) => {
+						discussion = res.body.discussion;
+						done();
+					});
+			});
 		});
+		after(() => closeRoom({ type: 'p', roomId: discussion._id }));
 
 		it('should update the room settings', (done) => {
 			const imageDataUri = `data:image/png;base64,${fs.readFileSync(path.join(process.cwd(), imgURL)).toString('base64')}`;
@@ -1704,6 +1718,19 @@ describe('[Rooms]', function () {
 					expect(res.body.room).to.have.property('favorite', true);
 					expect(res.body.room).to.have.property('reactWhenReadOnly', true);
 				})
+				.end(done);
+		});
+
+		it('should be able to update the discussion name with spaces', (done) => {
+			request
+				.post(api('rooms.saveRoomSettings'))
+				.set(credentials)
+				.send({
+					rid: discussion._id,
+					roomName: `${randomString} with spaces`,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
 				.end(done);
 		});
 	});
