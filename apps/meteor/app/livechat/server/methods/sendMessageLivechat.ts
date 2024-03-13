@@ -26,7 +26,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 export const sendMessageLivechat = async ({
-	message: { token, _id, rid, msg, file, attachments },
+	message: { token, _id, rid, msg, file, files, attachments },
 	agent,
 }: ISendMessageLivechat): Promise<boolean> => {
 	check(token, String);
@@ -67,6 +67,7 @@ export const sendMessageLivechat = async ({
 			msg,
 			token,
 			file,
+			files,
 			attachments,
 		},
 		agent,
