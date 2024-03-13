@@ -41,8 +41,9 @@ export const useUserInfoActions = (
 	rid: IRoom['_id'],
 	reload?: () => void,
 	size = 2,
+	isMember?: boolean,
 ): { actions: [string, UserInfoAction][]; menuActions: any | undefined } => {
-	const { data, refetch, isSuccess: membershipCheckSuccess } = useMemberExists(rid, user.username as string);
+	const { data, refetch, isSuccess: membershipCheckSuccess } = useMemberExists(rid, user.username as string, isMember);
 	const memberChangeReload = useCallback(async () => {
 		await reload?.();
 		await refetch();

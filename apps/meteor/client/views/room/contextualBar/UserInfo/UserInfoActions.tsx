@@ -13,14 +13,17 @@ type UserInfoActionsProps = {
 	user: Pick<IUser, '_id' | 'username' | 'name'>;
 	rid: IRoom['_id'];
 	backToList: () => void;
+	isMember?: boolean;
 };
 
-const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): ReactElement => {
+const UserInfoActions = ({ user, rid, backToList, isMember }: UserInfoActionsProps): ReactElement => {
 	const t = useTranslation();
 	const { actions: actionsDefinition, menuActions: menuOptions } = useUserInfoActions(
 		{ _id: user._id, username: user.username, name: user.name },
 		rid,
 		backToList,
+		undefined,
+		isMember,
 	);
 
 	const menu = useMemo(() => {
