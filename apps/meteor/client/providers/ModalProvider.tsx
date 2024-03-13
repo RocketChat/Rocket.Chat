@@ -24,6 +24,7 @@ const ModalProvider = ({ children, region }: ModalProviderProps) => {
 				setModal,
 			},
 			currentModal,
+			region,
 		}),
 		[currentModal, setModal],
 	);

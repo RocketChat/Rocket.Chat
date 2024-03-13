@@ -6,14 +6,14 @@ import { ModalContext } from '../ModalContext';
 /**
  * Similar to useModal this hook return the current modal from the context value
  */
-export const useCurrentModal = (region: string): ModalContextValue['currentModal']['component'] => {
+export const useCurrentModal = (): ModalContextValue['currentModal']['component'] => {
 	const context = useContext(ModalContext);
 
 	if (!context) {
 		throw new Error('useCurrentModal must be used inside Modal Context');
 	}
 
-	if (context.currentModal.region !== region) {
+	if (context.currentModal.region !== context.region) {
 		return null;
 	}
 
