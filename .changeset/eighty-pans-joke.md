@@ -1,5 +1,5 @@
 ---
-'@rocket.chat/meteor': minor
+'@rocket.chat/meteor': patch
 ---
 
-Force logout live clients on E2EE keys reset
+Force logout the clients which are actively online, whenever a user resets E2EE keys.
