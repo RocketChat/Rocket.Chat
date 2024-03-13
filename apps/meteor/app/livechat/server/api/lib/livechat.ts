@@ -6,6 +6,7 @@ import type {
 	IOmnichannelRoom,
 	SelectedAgent,
 } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { EmojiCustom, LivechatTrigger, LivechatVisitors, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { Meteor } from 'meteor/meteor';
@@ -21,12 +22,17 @@ export function online(department: string, skipSettingCheck = false, skipFallbac
 
 async function findTriggers(): Promise<Pick<ILivechatTrigger, '_id' | 'actions' | 'conditions' | 'runOnce'>[]> {
 	const triggers = await LivechatTrigger.findEnabled().toArray();
-	return triggers.map(({ _id, actions, conditions, runOnce }) => ({
-		_id,
-		actions,
-		conditions,
-		runOnce,
-	}));
+	const hasLicense = License.hasModule('livechat-enterprise');
+	const premiumActions = ['use-external-service'];
+
+	return triggers
+		.filter(({ actions }) => hasLicense || actions.some((c) => !premiumActions.includes(c.name)))
+		.map(({ _id, actions, conditions, runOnce }) => ({
+			_id,
+			actions,
+			conditions,
+			runOnce,
+		}));
 }
 
 async function findDepartments(
