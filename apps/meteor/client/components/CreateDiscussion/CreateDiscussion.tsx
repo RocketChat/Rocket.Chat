@@ -153,7 +153,7 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 							<Controller
 								name='name'
 								control={control}
-								rules={{ required: t('Field_required'), validate: (value) => (value.includes(' ') ? t('Name_cannot_have_spaces') : true) }}
+								rules={{ required: t('Field_required') }}
 								render={({ field }) => (
 									<TextInput
 										id={discussionNameId}
@@ -171,7 +171,6 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 								{errors.name.message}
 							</FieldError>
 						)}
-						<FieldHint id={`${discussionNameId}-hint`}>{t('No_spaces')}</FieldHint>
 					</Field>
 					<Field>
 						<FieldLabel htmlFor={membersId}>{t('Members')}</FieldLabel>
