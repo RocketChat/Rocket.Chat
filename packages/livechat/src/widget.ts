@@ -76,7 +76,7 @@ export const VALID_CALLBACKS = [
 	'no-agent-online',
 ];
 
-const VALID_SYSTEM_MESSAGES = ['uj', 'ul', 'livechat-close', 'livechat-started', 'livechat_transfer_history', 'livechat_webrtc_video_call'];
+const VALID_SYSTEM_MESSAGES = ['uj', 'ul', 'livechat-close', 'livechat-started', 'livechat_transfer_history'];
 
 const callbacks = mitt();
 

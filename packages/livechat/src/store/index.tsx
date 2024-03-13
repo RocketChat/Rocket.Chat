@@ -15,8 +15,7 @@ export type LivechatHiddenSytemMessageType =
 	| 'ul' // User left
 	| 'livechat-close' // Chat closed
 	| 'livechat-started' // Chat started
-	| 'livechat_transfer_history' // Chat transfered
-	| 'livechat_webrtc_video_call'; // Video call
+	| 'livechat_transfer_history'; // Chat transfered
 
 export type StoreState = {
 	token: string;

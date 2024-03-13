@@ -2965,7 +2965,6 @@
   "Message_HideType_livechat_closed": "Ocultar mensagens de \"Conversa encerrada\"",
   "Message_HideType_livechat_started": "Ocultar mensagens de \"Conversa iniciada\"",
   "Message_HideType_livechat_transfer_history": "Ocultar mensagens de \"Histórico de transferência\"",
-  "Message_HideType_livechat_webrtc_video_call": "Ocultar mensagens de \"Chamada de vídeo\"",
   "Message_Id": "ID da mensagem",
   "Message_Ignored": "Esta mensagem foi ignorada",
   "message-impersonate": "Personificar outros usuários",

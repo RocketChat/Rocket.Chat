@@ -3534,7 +3534,6 @@
   "Message_HideType_livechat_closed": "Hide \"Conversation finished\" messages",
   "Message_HideType_livechat_started": "Hide \"Conversation started\" messages",
   "Message_HideType_livechat_transfer_history": "Hide \"Conversation transfered\" messages",
-  "Message_HideType_livechat_webrtc_video_call": "Hide \"Video Call\" messages",
   "Message_Id": "Message Id",
   "Message_Ignored": "This message was ignored",
   "message-impersonate": "Impersonate Other Users",

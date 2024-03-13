@@ -644,7 +644,6 @@ export const createOmniSettings = () =>
 				{ key: 'livechat-close', i18nLabel: 'Message_HideType_livechat_closed' },
 				{ key: 'livechat-started', i18nLabel: 'Message_HideType_livechat_started' },
 				{ key: 'livechat_transfer_history', i18nLabel: 'Message_HideType_livechat_transfer_history' },
-				{ key: 'livechat_webrtc_video_call', i18nLabel: 'Message_HideType_livechat_webrtc_video_call' },
 			],
 		});
 	});
