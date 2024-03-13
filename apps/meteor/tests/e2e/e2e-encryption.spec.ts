@@ -139,12 +139,12 @@ test.describe.serial('e2e-encryption', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
+		// inject initial data, so that tokens are restored after forced logout
+		await injectInitialData();
+
 		const statusCode = (await api.post('/settings/E2E_Enable', { value: false })).status();
 
 		await expect(statusCode).toBe(200);
-
-		// inject initial data, so that tokens are restored after forced logout
-		await injectInitialData();
 	});
 
 	test('expect create a private channel encrypted and send an encrypted message', async ({ page }) => {
