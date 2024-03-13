@@ -72,26 +72,24 @@ API.v1.addRoute('livechat/visitor', {
 			const keys = customFields.map((field) => field.key);
 			const errors: string[] = [];
 
-			const processedKeys = await Promise.all(
-				await LivechatCustomField.findByIdsAndScope<Pick<ILivechatCustomField, '_id'>>(keys, 'visitor', {
-					projection: { _id: 1 },
+			const processedKeys = await LivechatCustomField.findByIdsAndScope<Pick<ILivechatCustomField, '_id'>>(keys, 'visitor', {
+				projection: { _id: 1 },
+			})
+				.map(async (field) => {
+					const customField = customFields.find((f) => f.key === field._id);
+					if (!customField) {
+						return;
+					}
+
+					const { key, value, overwrite } = customField;
+					// TODO: Change this to Bulk update
+					if (!(await VisitorsRaw.updateLivechatDataByToken(token, key, value, overwrite))) {
+						errors.push(key);
+					}
+
+					return key;
 				})
-					.map(async (field) => {
-						const customField = customFields.find((f) => f.key === field._id);
-						if (!customField) {
-							return;
-						}
-
-						const { key, value, overwrite } = customField;
-						// TODO: Change this to Bulk update
-						if (!(await VisitorsRaw.updateLivechatDataByToken(token, key, value, overwrite))) {
-							errors.push(key);
-						}
-
-						return key;
-					})
-					.toArray(),
-			);
+				.toArray();
 
 			if (processedKeys.length !== keys.length) {
 				LivechatTyped.logger.warn({
