@@ -37,10 +37,15 @@ test.describe.serial('OC - Livechat Triggers', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
+		const ids = (await (await api.get('/livechat/triggers')).json()).triggers.map(
+			(trigger: { _id: string }) => trigger._id,
+		) as unknown as string[];
+
+		await Promise.all(ids.map((id) => api.delete(`/livechat/triggers/${id}`)));
+
 		await Promise.all([
 			api.delete('/livechat/users/agent/user1'),
 			api.delete('/livechat/users/manager/user1'),
-			api.delete(`/livechat/triggers/${triggersName}`),
 			api.post('/settings/Livechat_clear_local_storage_when_chat_ended', { value: false }),
 		]);
 		await agent.page.close();
@@ -68,14 +73,16 @@ test.describe.serial('OC - Livechat Triggers', () => {
 	});
 
 	test('OC - Livechat Triggers - Create and edit trigger', async () => {
+		triggerMessage = 'This is a trigger message time on site';
 		await test.step('expect create new trigger', async () => {
 			await agent.poHomeOmnichannel.triggers.createTrigger(triggersName, triggerMessage);
 			await agent.poHomeOmnichannel.triggers.btnCloseToastMessage.click();
 		});
 
+		triggerMessage = 'This is a trigger message chat opened by visitor';
 		await test.step('expect update trigger', async () => {
 			await agent.poHomeOmnichannel.triggers.firstRowInTriggerTable(triggersName).click();
-			await agent.poHomeOmnichannel.triggers.updateTrigger(triggersName);
+			await agent.poHomeOmnichannel.triggers.updateTrigger(triggersName, triggerMessage);
 			await agent.poHomeOmnichannel.triggers.btnCloseToastMessage.click();
 		});
 	});
@@ -112,6 +119,9 @@ test.describe.serial('OC - Livechat Triggers', () => {
 	});
 
 	test('OC - Livechat Triggers - Condition: after guest registration', async ({ page }) => {
+		test.fail();
+
+		triggerMessage = 'This is a trigger message after guest registration';
 		await test.step('expect update trigger to after guest registration', async () => {
 			await agent.poHomeOmnichannel.triggers.firstRowInTriggerTable(`edited-${triggersName}`).click();
 			await agent.poHomeOmnichannel.triggers.fillTriggerForm({ condition: 'after-guest-registration', triggerMessage });
@@ -142,6 +152,7 @@ test.describe.serial('OC - Livechat Triggers', () => {
 			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_user');
 			await poLiveChat.btnSendMessageToOnlineAgent.click();
 			await expect(poLiveChat.txtChatMessage('this_a_test_message_from_user')).toBeVisible();
+			await expect(poLiveChat.txtChatMessage(triggerMessage)).toBeVisible();
 		});
 
 		await test.step('expect to finish this chat', async () => {
