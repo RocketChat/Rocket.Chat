@@ -9,9 +9,13 @@ import { settings } from '../../../settings/server';
 export const getValidRoomName = async (
 	displayName: string,
 	rid = '',
-	options: { allowDuplicates?: boolean; nameValidationRegex?: string } = {},
+	options: { allowAll?: boolean; allowDuplicates?: boolean; nameValidationRegex?: string } = {},
 ) => {
 	let slugifiedName = displayName;
+
+	if (options.allowAll) {
+		return slugifiedName;
+	}
 
 	if (settings.get('UI_Allow_room_names_with_special_chars')) {
 		const cleanName = limax(displayName, { maintainCase: true });

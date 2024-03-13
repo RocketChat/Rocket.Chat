@@ -55,8 +55,8 @@ export async function saveRoomName(
 		return;
 	}
 
-	const slugifiedRoomName = await getValidRoomName(displayName, rid);
 	const isDiscussion = Boolean(room?.prid);
+	const slugifiedRoomName = await getValidRoomName(displayName, rid, { allowAll: isDiscussion });
 
 	let update;
 
