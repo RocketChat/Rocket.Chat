@@ -119,6 +119,11 @@ const UsersTable = ({
 					{t('Registration_status')}
 				</GenericTableHeaderCell>
 			),
+			tab === 'pending' && (
+				<GenericTableHeaderCell w='x88' key='action' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
+					{t('Pending_action')}
+				</GenericTableHeaderCell>
+			),
 		],
 		[mediaQuery, setSort, sortBy, sortDirection, t, tab],
 	);
