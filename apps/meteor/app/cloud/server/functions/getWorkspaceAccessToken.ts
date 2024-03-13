@@ -1,6 +1,5 @@
-import { Settings } from '@rocket.chat/models';
+import { Settings, WorkspaceCredentials } from '@rocket.chat/models';
 
-import { settings } from '../../../settings/server';
 import { getWorkspaceAccessTokenWithScope } from './getWorkspaceAccessTokenWithScope';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 
@@ -17,8 +16,7 @@ export async function getWorkspaceAccessToken(forceNew = false, scope = '', save
 		return '';
 	}
 
-	const expires = await Settings.findOneById('Cloud_Workspace_Access_Token_Expires_At');
-
+	const expires = await WorkspaceCredentials.getCredentialById('cloud_workspace_access_token_expires_at');
 	if (expires === null) {
 		throw new Error('Cloud_Workspace_Access_Token_Expires_At is not set');
 	}
@@ -26,14 +24,19 @@ export async function getWorkspaceAccessToken(forceNew = false, scope = '', save
 	const now = new Date();
 
 	if (expires.value && now < expires.value && !forceNew) {
-		return settings.get<string>('Cloud_Workspace_Access_Token');
+		const accessToken = await WorkspaceCredentials.getCredentialById('cloud_workspace_access_token');
+		if (!accessToken) {
+			throw new Error('cloud_workspace_access_token is not set');
+		}
+
+		return accessToken.value;
 	}
 
 	const accessToken = await getWorkspaceAccessTokenWithScope(scope, throwOnError);
 
 	if (save) {
 		await Promise.all([
-			Settings.updateValueById('Cloud_Workspace_Access_Token', accessToken.token),
+			WorkspaceCredentials.updateCredential('cloud_workspace_access_token', accessToken.token),
 			Settings.updateValueById('Cloud_Workspace_Access_Token_Expires_At', accessToken.expiresAt),
 		]);
 	}

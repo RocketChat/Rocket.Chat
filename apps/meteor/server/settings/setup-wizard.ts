@@ -1227,28 +1227,6 @@ export const createSetupWSettings = () =>
 				type: 'boolean',
 			});
 
-			await this.add('Cloud_Workspace_Id', '', {
-				type: 'string',
-				hidden: true,
-				readonly: true,
-				enableQuery: {
-					_id: 'Register_Server',
-					value: true,
-				},
-				secret: true,
-			});
-
-			await this.add('Cloud_Workspace_Name', '', {
-				type: 'string',
-				hidden: true,
-				readonly: true,
-				enableQuery: {
-					_id: 'Register_Server',
-					value: true,
-				},
-				secret: true,
-			});
-
 			await this.add('Cloud_Workspace_Client_Id', '', {
 				type: 'string',
 				hidden: true,
@@ -1282,28 +1260,6 @@ export const createSetupWSettings = () =>
 				secret: true,
 			});
 
-			await this.add('Cloud_Workspace_Registration_Client_Uri', '', {
-				type: 'string',
-				hidden: true,
-				readonly: true,
-				enableQuery: {
-					_id: 'Register_Server',
-					value: true,
-				},
-				secret: true,
-			});
-
-			await this.add('Cloud_Workspace_PublicKey', '', {
-				type: 'string',
-				hidden: true,
-				readonly: true,
-				enableQuery: {
-					_id: 'Register_Server',
-					value: true,
-				},
-				secret: true,
-			});
-
 			await this.add('Cloud_Workspace_License', '', {
 				type: 'string',
 				hidden: true,
@@ -1319,17 +1275,6 @@ export const createSetupWSettings = () =>
 				type: 'boolean',
 				hidden: true,
 				readonly: true,
-				secret: true,
-			});
-
-			await this.add('Cloud_Workspace_Access_Token', '', {
-				type: 'string',
-				hidden: true,
-				readonly: true,
-				enableQuery: {
-					_id: 'Register_Server',
-					value: true,
-				},
 				secret: true,
 			});
 

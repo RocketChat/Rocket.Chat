@@ -4,7 +4,7 @@ import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import { AppInstallationSource } from '@rocket.chat/apps-engine/server/storage';
 import type { IUser, IMessage } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
-import { Settings, Users } from '@rocket.chat/models';
+import { Users, WorkspaceCredentials } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Meteor } from 'meteor/meteor';
 
@@ -93,11 +93,16 @@ export class AppsRestApi {
 			{
 				async get() {
 					const baseUrl = orchestrator.getMarketplaceUrl();
-					const workspaceId = settings.get('Cloud_Workspace_Id');
+					const workspaceId = await WorkspaceCredentials.getCredentialById('workspace_id');
+
+					if (!workspaceId) {
+						return API.v1.internalError();
+					}
+
 					const { action, appId, appVersion } = this.queryParams;
 
 					return API.v1.success({
-						url: `${baseUrl}/apps/${appId}/incompatible/${appVersion}/${action}?workspaceId=${workspaceId}&rocketChatVersion=${rocketChatVersion}`,
+						url: `${baseUrl}/apps/${appId}/incompatible/${appVersion}/${action}?workspaceId=${workspaceId.value}&rocketChatVersion=${rocketChatVersion}`,
 					});
 				},
 			},
@@ -180,7 +185,11 @@ export class AppsRestApi {
 				async get() {
 					const baseUrl = orchestrator.getMarketplaceUrl();
 
-					const workspaceId = settings.get('Cloud_Workspace_Id');
+					const workspaceId = await WorkspaceCredentials.getCredentialById('workspace_id');
+
+					if (!workspaceId) {
+						return API.v1.internalError();
+					}
 
 					if (!this.queryParams.purchaseType || !purchaseTypes.has(this.queryParams.purchaseType)) {
 						return API.v1.failure({ error: 'Invalid purchase type' });
@@ -198,7 +207,7 @@ export class AppsRestApi {
 					return API.v1.success({
 						url: `${baseUrl}/apps/${this.queryParams.appId}/${
 							this.queryParams.purchaseType === 'buy' ? this.queryParams.purchaseType : subscribeRoute
-						}?workspaceId=${workspaceId}&token=${response.token}&seats=${seats}`,
+						}?workspaceId=${workspaceId.value}&token=${response.token}&seats=${seats}`,
 					});
 				},
 			},
@@ -279,7 +288,11 @@ export class AppsRestApi {
 						this.queryParams.appId
 					) {
 						apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, 'Use /apps/buildExternalUrl to get the modal URLs.');
-						const workspaceId = settings.get('Cloud_Workspace_Id');
+						const workspaceId = await WorkspaceCredentials.getCredentialById('workspace_id');
+
+						if (!workspaceId) {
+							return API.v1.internalError();
+						}
 
 						if (!this.queryParams.purchaseType || !purchaseTypes.has(this.queryParams.purchaseType)) {
 							return API.v1.failure({ error: 'Invalid purchase type' });
@@ -297,7 +310,7 @@ export class AppsRestApi {
 						return API.v1.success({
 							url: `${baseUrl}/apps/${this.queryParams.appId}/${
 								this.queryParams.purchaseType === 'buy' ? this.queryParams.purchaseType : subscribeRoute
-							}?workspaceId=${workspaceId}&token=${token.token}&seats=${seats}`,
+							}?workspaceId=${workspaceId.value}&token=${token.token}&seats=${seats}`,
 						});
 					}
 					apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, 'Use /apps/installed to get the installed apps list.');
@@ -442,7 +455,11 @@ export class AppsRestApi {
 					}
 
 					const baseUrl = orchestrator.getMarketplaceUrl();
-					const workspaceId = settings.get<string>('Cloud_Workspace_Id');
+					const workspaceId = await WorkspaceCredentials.getCredentialById('workspace_id');
+
+					if (!workspaceId) {
+						return API.v1.internalError();
+					}
 
 					const requester = {
 						id: this.user._id,
@@ -480,7 +497,7 @@ export class AppsRestApi {
 					}
 
 					const queryParams = new URLSearchParams();
-					queryParams.set('workspaceId', workspaceId);
+					queryParams.set('workspaceId', workspaceId.value);
 					queryParams.set('frameworkVersion', appsEngineVersionForMarketplace);
 					queryParams.set('requester', Buffer.from(JSON.stringify(requester)).toString('base64'));
 					queryParams.set('admins', Buffer.from(JSON.stringify(admins)).toString('base64'));
@@ -886,15 +903,16 @@ export class AppsRestApi {
 						headers.Authorization = `Bearer ${token}`;
 					}
 
-					const workspaceIdSetting = await Settings.findOneById('Cloud_Workspace_Id');
-					if (!workspaceIdSetting) {
+					const workspaceId = await WorkspaceCredentials.getCredentialById('workspace_id');
+
+					if (!workspaceId) {
 						return API.v1.failure('No workspace id found');
 					}
 
 					let result;
 					let statusCode;
 					try {
-						const request = await fetch(`${baseUrl}/v1/workspaces/${workspaceIdSetting.value}/apps/${this.urlParams.id}`, { headers });
+						const request = await fetch(`${baseUrl}/v1/workspaces/${workspaceId.value}/apps/${this.urlParams.id}`, { headers });
 						statusCode = request.status;
 						result = await request.json();
 

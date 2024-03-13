@@ -1,17 +1,21 @@
 import type { ISetting } from '@rocket.chat/core-typings';
-import { Settings, Users } from '@rocket.chat/models';
+import { Settings, Users, WorkspaceCredentials } from '@rocket.chat/models';
 
 type WizardSettings = Array<ISetting>;
 
 export const getSeatsRequestLink = async (url: string, params?: Record<string, string>): Promise<string> => {
-	const workspaceId = await Settings.findOneById('Cloud_Workspace_Id');
+	const workspaceId = await WorkspaceCredentials.getCredentialById('workspace_id');
+	if (!workspaceId) {
+		throw new Error('No workspace id found');
+	}
+
 	const activeUsers = await Users.getActiveLocalUserCount();
 	const wizardSettings: WizardSettings = await Settings.findSetupWizardSettings().toArray();
 
 	const newUrl = new URL(url);
 
 	if (workspaceId?.value) {
-		newUrl.searchParams.append('workspaceId', String(workspaceId.value));
+		newUrl.searchParams.append('workspaceId', workspaceId.value);
 	}
 
 	if (activeUsers) {

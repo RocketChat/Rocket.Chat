@@ -1,11 +1,10 @@
 import { type Cloud, type Serialized } from '@rocket.chat/core-typings';
-import { Settings } from '@rocket.chat/models';
+import { Settings, WorkspaceCredentials } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { v, compile } from 'suretype';
 
 import { CloudWorkspaceConnectionError } from '../../../../../lib/errors/CloudWorkspaceConnectionError';
 import { CloudWorkspaceRegistrationError } from '../../../../../lib/errors/CloudWorkspaceRegistrationError';
-import { settings } from '../../../../settings/server';
 import type { WorkspaceRegistrationData } from '../buildRegistrationData';
 import { buildWorkspaceRegistrationData } from '../buildRegistrationData';
 import { CloudWorkspaceAccessTokenEmptyError, getWorkspaceAccessToken } from '../getWorkspaceAccessToken';
@@ -91,8 +90,12 @@ const fetchWorkspaceClientPayload = async ({
 	token: string;
 	workspaceRegistrationData: WorkspaceRegistrationData<undefined>;
 }): Promise<Serialized<Cloud.WorkspaceSyncPayload> | undefined> => {
-	const workspaceRegistrationClientUri = settings.get<string>('Cloud_Workspace_Registration_Client_Uri');
-	const response = await fetch(`${workspaceRegistrationClientUri}/client`, {
+	const workspaceRegistrationClientUri = await WorkspaceCredentials.getCredentialById('workspace_registration_client_uri');
+	if (!workspaceRegistrationClientUri) {
+		throw new CloudWorkspaceConnectionError('Failed to connect to Rocket.Chat Cloud: missing workspace registration client uri');
+	}
+
+	const response = await fetch(`${workspaceRegistrationClientUri.value}/client`, {
 		method: 'POST',
 		headers: {
 			Authorization: `Bearer ${token}`,
@@ -126,7 +129,7 @@ const fetchWorkspaceClientPayload = async ({
 /** @deprecated */
 const consumeWorkspaceSyncPayload = async (result: Serialized<Cloud.WorkspaceSyncPayload>) => {
 	if (result.publicKey) {
-		await Settings.updateValueById('Cloud_Workspace_PublicKey', result.publicKey);
+		await WorkspaceCredentials.updateCredential('workspace_public_key', result.publicKey);
 	}
 
 	if (result.trial?.trialID) {

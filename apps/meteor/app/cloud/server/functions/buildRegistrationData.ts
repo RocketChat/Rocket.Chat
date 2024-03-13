@@ -1,4 +1,4 @@
-import { LivechatRooms, Statistics, Users } from '@rocket.chat/models';
+import { LivechatRooms, Statistics, Users, WorkspaceCredentials } from '@rocket.chat/models';
 import moment from 'moment';
 
 import { settings } from '../../../settings/server';
@@ -48,7 +48,13 @@ export async function buildWorkspaceRegistrationData<T extends string | undefine
 
 	const address = settings.get<string>('Site_Url');
 	const siteName = settings.get<string>('Site_Name');
-	const workspaceId = settings.get<string>('Cloud_Workspace_Id');
+
+	const workspaceId = await WorkspaceCredentials.getCredentialById('workspace_id');
+
+	if (!workspaceId) {
+		throw new Error('Failed to retrieve workspace id');
+	}
+
 	const allowMarketing = settings.get<string>('Allow_Marketing_Emails');
 	const accountName = settings.get<string>('Organization_Name');
 	const website = settings.get<string>('Website');
@@ -77,7 +83,7 @@ export async function buildWorkspaceRegistrationData<T extends string | undefine
 		uniqueId: stats.uniqueId,
 		deploymentFingerprintHash,
 		deploymentFingerprintVerified,
-		workspaceId,
+		workspaceId: workspaceId.value,
 		address,
 		contactName,
 		contactEmail,

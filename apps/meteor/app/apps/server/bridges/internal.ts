@@ -1,7 +1,7 @@
 import type { IAppServerOrchestrator, IAppsSetting } from '@rocket.chat/apps';
 import { InternalBridge } from '@rocket.chat/apps-engine/server/bridges/InternalBridge';
 import type { ISetting, ISubscription } from '@rocket.chat/core-typings';
-import { Settings, Subscriptions } from '@rocket.chat/models';
+import { Subscriptions, WorkspaceCredentials } from '@rocket.chat/models';
 
 import { isTruthy } from '../../../../lib/isTruthy';
 import { deasyncPromise } from '../../../../server/deasync/deasync';
@@ -37,12 +37,16 @@ export class AppInternalBridge extends InternalBridge {
 	}
 
 	protected async getWorkspacePublicKey(): Promise<IAppsSetting> {
-		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
-		const publicKeySetting: ISetting | null = await Settings.findOneById('Cloud_Workspace_PublicKey');
+		const publicKeySetting = await WorkspaceCredentials.getCredentialById('workspace_public_key');
 
+		if (!publicKeySetting) {
+			throw new Error('Public Key not found');
+		}
+
+		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
 		return this.orch
 			.getConverters()
 			?.get('settings')
-			.convertToApp(publicKeySetting as ISetting);
+			.convertToApp(publicKeySetting.value as unknown as ISetting);
 	}
 }

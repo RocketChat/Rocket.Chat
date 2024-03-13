@@ -1,5 +1,5 @@
 import type { Cloud, Serialized } from '@rocket.chat/core-typings';
-import { Settings } from '@rocket.chat/models';
+import { Settings, WorkspaceCredentials } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { v, compile } from 'suretype';
 
@@ -7,7 +7,6 @@ import { callbacks } from '../../../../lib/callbacks';
 import { CloudWorkspaceConnectionError } from '../../../../lib/errors/CloudWorkspaceConnectionError';
 import { CloudWorkspaceLicenseError } from '../../../../lib/errors/CloudWorkspaceLicenseError';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import { settings } from '../../../settings/server';
 import { LICENSE_VERSION } from '../license';
 import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 
@@ -23,8 +22,13 @@ const workspaceLicensePayloadSchema = v.object({
 const assertWorkspaceLicensePayload = compile(workspaceLicensePayloadSchema);
 
 const fetchCloudWorkspaceLicensePayload = async ({ token }: { token: string }): Promise<Serialized<Cloud.WorkspaceLicensePayload>> => {
-	const workspaceRegistrationClientUri = settings.get<string>('Cloud_Workspace_Registration_Client_Uri');
-	const response = await fetch(`${workspaceRegistrationClientUri}/license`, {
+	const workspaceRegistrationClientUri = await WorkspaceCredentials.getCredentialById('workspace_registration_client_uri');
+
+	if (!workspaceRegistrationClientUri) {
+		throw new CloudWorkspaceConnectionError('Failed to connect to Rocket.Chat Cloud: missing workspace registration client uri');
+	}
+
+	const response = await fetch(`${workspaceRegistrationClientUri.value}/license`, {
 		headers: {
 			Authorization: `Bearer ${token}`,
 		},
