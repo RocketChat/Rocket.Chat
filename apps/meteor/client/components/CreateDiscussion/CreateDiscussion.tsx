@@ -32,6 +32,7 @@ type CreateDiscussionFormValues = {
 	encrypted: boolean;
 	usernames: Array<IUser['username']>;
 	firstMessage: string;
+	topic: string;
 };
 
 type CreateDiscussionProps = {
@@ -49,6 +50,7 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 		handleSubmit,
 		control,
 		watch,
+		register,
 	} = useForm({
 		mode: 'onBlur',
 		defaultValues: {
@@ -57,6 +59,7 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 			encrypted: false,
 			usernames: [],
 			firstMessage: '',
+			topic: '',
 		},
 	});
 
@@ -72,12 +75,13 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 		},
 	});
 
-	const handleCreate = async ({ name, parentRoom, encrypted, usernames, firstMessage }: CreateDiscussionFormValues) => {
+	const handleCreate = async ({ name, parentRoom, encrypted, usernames, firstMessage, topic }: CreateDiscussionFormValues) => {
 		createDiscussionMutation.mutate({
 			prid: defaultParentRoom || parentRoom,
 			t_name: name,
 			users: usernames,
 			reply: encrypted ? undefined : firstMessage,
+			topic,
 			...(parentMessageId && { pmid: parentMessageId }),
 		});
 	};
@@ -87,6 +91,7 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 	const discussionNameId = useUniqueId();
 	const membersId = useUniqueId();
 	const firstMessageId = useUniqueId();
+	const topicId = useUniqueId();
 
 	return (
 		<Modal
@@ -209,6 +214,15 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 						) : (
 							<FieldHint id={`${firstMessageId}-hint`}>{t('First_message_hint')}</FieldHint>
 						)}
+					</Field>
+					<Field>
+						<FieldLabel htmlFor={topicId}>{t('Topic')}</FieldLabel>
+						<FieldRow>
+							<TextInput id={topicId} aria-describedby={`${topicId}-hint`} {...register('topic')} />
+						</FieldRow>
+						<FieldRow>
+							<FieldHint id={`${topicId}-hint`}>{t('Displayed_next_to_name')}</FieldHint>
+						</FieldRow>
 					</Field>
 					<Field>
 						<FieldRow>
