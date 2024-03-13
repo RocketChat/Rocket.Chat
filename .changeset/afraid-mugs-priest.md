@@ -4,4 +4,4 @@
 "@rocket.chat/livechat": patch
 ---
 
-fix: setDepartment Livechat API call overriding triggers
+Fixes issue causing the setDepartment Livechat API overriding some triggers conditions
