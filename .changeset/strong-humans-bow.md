@@ -1,6 +1,6 @@
 ---
-"@rocket.chat/fuselage-ui-kit": patch
-"@rocket.chat/ui-kit": patch
+"@rocket.chat/fuselage-ui-kit": minor
+"@rocket.chat/ui-kit": minor
 ---
 
 Introduce channels select to UiKit
