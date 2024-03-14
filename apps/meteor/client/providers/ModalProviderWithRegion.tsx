@@ -1,17 +1,18 @@
-import React, { ReactNode, useState } from "react";
+import type { ReactNode } from 'react';
+import React, { useState } from 'react';
 
-import ModalProvider from "./ModalProvider";
-import ModalRegion from "../views/modal/ModalRegion";
+import ModalRegion from '../views/modal/ModalRegion';
+import ModalProvider from './ModalProvider';
 
 const ModalProviderWithRegion = ({ children }: { children: ReactNode }) => {
-    const [region] = useState(() => Symbol());
+	const [region] = useState(() => Symbol());
 
-    return (
-        <ModalProvider region={region}>
-            <ModalRegion />
-            {children}
-        </ModalProvider>
-    );
-}
+	return (
+		<ModalProvider region={region}>
+			<ModalRegion />
+			{children}
+		</ModalProvider>
+	);
+};
 
 export default ModalProviderWithRegion;
