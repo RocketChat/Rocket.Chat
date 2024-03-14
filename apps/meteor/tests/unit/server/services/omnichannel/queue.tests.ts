@@ -61,6 +61,17 @@ const { OmnichannelQueue } = p.noCallThru().load('../../../../../server/services
 });
 
 describe('Omnichannel Queue processor', () => {
+	describe('isRunning', () => {
+		it('should return the running status', () => {
+			const queue = new OmnichannelQueue();
+			expect(queue.isRunning()).to.be.false;
+		});
+		it('should return the running status', () => {
+			const queue = new OmnichannelQueue();
+			queue.running = true;
+			expect(queue.isRunning()).to.be.true;
+		});
+	});
 	describe('delay', () => {
 		after(() => {
 			settings.get.reset();
