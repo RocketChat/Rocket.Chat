@@ -12,19 +12,19 @@ export class HomeFlextabRoom {
 	}
 
 	get inputName(): Locator {
-		return this.page.locator('//aside//label[contains(text(), "Name")]/..//input');
+		return this.page.locator('//dialog//label[contains(text(), "Name")]/..//input');
 	}
 
 	get inputTopic(): Locator {
-		return this.page.locator('//main//aside//label[contains(text(), "Topic")]/..//textarea');
+		return this.page.locator('//main//dialog//label[contains(text(), "Topic")]/..//textarea');
 	}
 
 	get inputAnnouncement(): Locator {
-		return this.page.locator('//main//aside//label[contains(text(), "Announcement")]/..//textarea');
+		return this.page.locator('//main//dialog//label[contains(text(), "Announcement")]/..//textarea');
 	}
 
 	get inputDescription(): Locator {
-		return this.page.locator('//main//aside//label[contains(text(), "Description")]/..//textarea');
+		return this.page.locator('//main//dialog//label[contains(text(), "Description")]/..//textarea');
 	}
 
 	get checkboxReadOnly(): Locator {

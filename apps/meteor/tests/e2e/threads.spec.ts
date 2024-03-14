@@ -24,7 +24,7 @@ test.describe.serial('Threads', () => {
 		await expect(page).toHaveURL(/.*thread/);
 
 		await poHomeChannel.content.toggleAlsoSendThreadToChannel(true);
-		await page.locator('//main//aside >> [name="msg"]').last().fill('This is a thread message also sent in channel');
+		await page.locator('//main//dialog >> [name="msg"]').last().fill('This is a thread message also sent in channel');
 		await page.keyboard.press('Enter');
 		await expect(poHomeChannel.content.lastThreadMessageText).toContainText('This is a thread message also sent in channel');
 		await expect(poHomeChannel.content.lastUserMessage).toContainText('This is a thread message also sent in channel');
@@ -108,7 +108,7 @@ test.describe.serial('Threads', () => {
 		});
 
 		test('expect quote the thread message', async ({ page }) => {
-			await page.locator('//main//aside >> [data-qa-type="message"]').last().hover();
+			await page.locator('//main//dialog >> [data-qa-type="message"]').last().hover();
 			await page.locator('role=button[name="Quote"]').click();
 			await page.locator('[name="msg"]').last().fill('this is a quote message');
 			await page.keyboard.press('Enter');
@@ -144,7 +144,7 @@ test.describe.serial('Threads', () => {
 
 		test('expect close thread if has only one message and user press escape', async ({ page }) => {
 			await expect(page).toHaveURL(/.*thread/);
-			await expect(page.locator('//main//aside >> [data-qa-type="message"]')).toBeVisible();
+			await expect(page.locator('//main//dialog >> [data-qa-type="message"]')).toBeVisible();
 			await expect(page.locator('[name="msg"]').last()).toBeFocused();
 			await page.keyboard.press('Escape');
 			await expect(page).not.toHaveURL(/.*thread/);

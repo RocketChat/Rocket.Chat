@@ -228,13 +228,13 @@ export class HomeContent {
 	}
 
 	async openLastThreadMessageMenu(): Promise<void> {
-		await this.page.locator('//main//aside >> [data-qa-type="message"]').last().hover();
-		await this.page.locator('//main//aside >> [data-qa-type="message"]').last().locator('role=button[name="More"]').waitFor();
-		await this.page.locator('//main//aside >> [data-qa-type="message"]').last().locator('role=button[name="More"]').click();
+		await this.page.locator('//main//dialog >> [data-qa-type="message"]').last().hover();
+		await this.page.locator('//main//dialog >> [data-qa-type="message"]').last().locator('role=button[name="More"]').waitFor();
+		await this.page.locator('//main//dialog >> [data-qa-type="message"]').last().locator('role=button[name="More"]').click();
 	}
 
 	async toggleAlsoSendThreadToChannel(isChecked: boolean): Promise<void> {
-		await this.page.locator('//main//aside >> [name="alsoSendThreadToChannel"]').setChecked(isChecked);
+		await this.page.locator('//main//dialog >> [name="alsoSendThreadToChannel"]').setChecked(isChecked);
 	}
 
 	get lastSystemMessageBody(): Locator {

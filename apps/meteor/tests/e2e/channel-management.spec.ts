@@ -152,9 +152,9 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await page.getByRole('button', { name: targetChannel }).first().focus();
 		await page.keyboard.press('Space');
-		await page.getByRole('complementary').waitFor();
+		await page.getByRole('dialog').waitFor();
 	
-		await expect(page.getByRole('complementary')).toBeVisible();
+		await expect(page.getByRole('dialog')).toBeVisible();
 	});
 
 	test('should create a discussion using the message composer', async ({ page }) => {
