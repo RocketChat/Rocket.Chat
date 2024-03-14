@@ -119,6 +119,20 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 		}
 	};
 
+	const handleDownload = () => {
+		const image = images[0];
+		if (image && image.url && image.name) {
+			const link = document.createElement('a');
+			link.href = image.url;
+			link.download = image.name;
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+		} else {
+			console.error('Image URL or name is undefined');
+		}
+	};
+
 	const handleZoomIn = () => handleZoom(1);
 	const handleZoomOut = () => handleZoom(-1);
 	const handleResize = () => handleZoom(-(zoomScale - 1));
@@ -131,6 +145,8 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 				<div className='swiper-container' onClick={onClose}>
 					<ButtonGroup className='rcx-swiper-controls' onClick={preventPropagation}>
 						{zoomScale !== 1 && <IconButton small icon='arrow-collapse' title='Resize' rcx-swiper-zoom-out onClick={handleResize} />}
+
+						<IconButton small icon='download' title='download' onClick={handleDownload} />
 						<IconButton small icon='h-bar' title='Zoom out' rcx-swiper-zoom-out onClick={handleZoomOut} disabled={zoomScale === 1} />
 						<IconButton small icon='plus' title='Zoom in' rcx-swiper-zoom-in onClick={handleZoomIn} />
 						<IconButton small icon='cross' title='Close' aria-label='Close gallery' className='rcx-swiper-close-button' onClick={onClose} />
