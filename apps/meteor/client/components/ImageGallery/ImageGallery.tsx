@@ -6,7 +6,7 @@ import { FocusScope } from 'react-aria';
 import { createPortal } from 'react-dom';
 import { Keyboard, Navigation, Zoom, A11y } from 'swiper';
 import type { SwiperRef } from 'swiper/react';
-import { type SwiperClass, Swiper, SwiperSlide } from 'swiper/react';
+import { Swiper, SwiperSlide } from 'swiper/react';
 
 // Import Swiper styles
 import 'swiper/swiper.css';
@@ -108,9 +108,12 @@ const swiperStyle = css`
 
 export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[]; onClose: () => void; loadMore?: () => void }) => {
 	const swiperRef = useRef<SwiperRef>(null);
-	const [, setSwiperInst] = useState<SwiperClass>();
 	const [zoomScale, setZoomScale] = useState(1);
+	const [img, setImg] = useState(images[0]);
 
+	const handleSlideChange = (swiper: any) => {
+		setImg(images[swiper.activeIndex]);
+	};
 	const handleZoom = (ratio: number) => {
 		if (swiperRef.current?.swiper.zoom) {
 			const { scale, in: zoomIn } = swiperRef.current?.swiper.zoom;
@@ -118,9 +121,8 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 			return zoomIn(scale + ratio);
 		}
 	};
-
 	const handleDownload = () => {
-		const image = images[0];
+		const image = img;
 		if (image && image.url && image.name) {
 			const link = document.createElement('a');
 			link.href = image.url;
@@ -145,7 +147,6 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 				<div className='swiper-container' onClick={onClose}>
 					<ButtonGroup className='rcx-swiper-controls' onClick={preventPropagation}>
 						{zoomScale !== 1 && <IconButton small icon='arrow-collapse' title='Resize' rcx-swiper-zoom-out onClick={handleResize} />}
-
 						<IconButton small icon='download' title='download' onClick={handleDownload} />
 						<IconButton small icon='h-bar' title='Zoom out' rcx-swiper-zoom-out onClick={handleZoomOut} disabled={zoomScale === 1} />
 						<IconButton small icon='plus' title='Zoom in' rcx-swiper-zoom-in onClick={handleZoomIn} />
@@ -155,6 +156,7 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 					<IconButton icon='chevron-left' className='rcx-swiper-next-button' onClick={preventPropagation} />
 					<Swiper
 						ref={swiperRef}
+						onSlideChange={handleSlideChange}
 						navigation={{
 							nextEl: '.rcx-swiper-next-button',
 							prevEl: '.rcx-swiper-prev-button',
@@ -165,13 +167,12 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 						runCallbacksOnInit
 						onKeyPress={(_, keyCode) => String(keyCode) === '27' && onClose()}
 						modules={[Navigation, Zoom, Keyboard, A11y]}
-						onInit={(swiper) => setSwiperInst(swiper)}
 						onReachEnd={loadMore}
 					>
-						{images?.map(({ _id, url }) => (
-							<SwiperSlide key={_id}>
+						{images?.map((image) => (
+							<SwiperSlide key={image._id}>
 								<div className='swiper-zoom-container'>
-									<img src={url} loading='lazy' onClick={preventPropagation} />
+									<img src={image.url} loading='lazy' onClick={preventPropagation} />
 									<div className='rcx-lazy-preloader'>
 										<Throbber inheritColor />
 									</div>
