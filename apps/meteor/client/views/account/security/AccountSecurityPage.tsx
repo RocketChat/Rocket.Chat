@@ -30,10 +30,11 @@ const AccountSecurityPage = (): ReactElement => {
 	const twoFactorTOTP = useSetting('Accounts_TwoFactorAuthentication_By_TOTP_Enabled');
 	const twoFactorByEmailEnabled = useSetting('Accounts_TwoFactorAuthentication_By_Email_Enabled');
 	const e2eEnabled = useSetting('E2E_Enable');
+	const allowPasswordChange = useSetting('Accounts_AllowPasswordChange');
 
 	const passwordFormId = useUniqueId();
 
-	if (!twoFactorEnabled && !e2eEnabled) {
+	if (!twoFactorEnabled && !e2eEnabled && !allowPasswordChange) {
 		return <NotAuthorizedPage />;
 	}
 
