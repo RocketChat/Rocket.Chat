@@ -227,7 +227,6 @@ test.describe('OC - Livechat New Chat Triggers', () => {
 		});
 
 		await test('expect trigger message after registration', async () => {
-			test.fail();
 			await expect(poLiveChat.txtChatMessage(triggerMessage)).toBeVisible();
 		});
 	});
@@ -246,7 +245,6 @@ test.describe('OC - Livechat New Chat Triggers', () => {
 		});
 	
 		await test('expect trigger message after registration', async () => {
-			test.fail();
 			await poLiveChat.sendMessage(newUser, false);
 			await expect(poLiveChat.txtChatMessage(triggerMessage)).toBeVisible();
 		});
