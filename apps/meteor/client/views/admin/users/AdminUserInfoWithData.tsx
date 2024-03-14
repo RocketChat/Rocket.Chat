@@ -69,6 +69,7 @@ const AdminUserInfoWithData = ({ uid, onReload }: AdminUserInfoWithDataProps): R
 			lastLogin,
 			nickname,
 			canViewAllInfo,
+			reason,
 		} = data.user;
 
 		return {
@@ -91,6 +92,7 @@ const AdminUserInfoWithData = ({ uid, onReload }: AdminUserInfoWithDataProps): R
 			status: <UserStatus status={status} />,
 			statusText,
 			nickname,
+			reason,
 		};
 	}, [approveManuallyUsers, data, getRoles]);
 
