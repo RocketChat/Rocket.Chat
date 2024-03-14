@@ -43,13 +43,15 @@ const AccountSecurityPage = (): ReactElement => {
 			<PageHeader title={t('Security')} />
 			<PageScrollableContentWithShadow>
 				<Box maxWidth='x600' w='full' alignSelf='center' color='default'>
-					<FormProvider {...methods}>
-						<Accordion>
-							<Accordion.Item title={t('Password')} defaultExpanded>
-								<ChangePassword id={passwordFormId} />
-							</Accordion.Item>
-						</Accordion>
-					</FormProvider>
+					{allowPasswordChange && (
+						<FormProvider {...methods}>
+							<Accordion>
+								<Accordion.Item title={t('Password')} defaultExpanded>
+									<ChangePassword id={passwordFormId} />
+								</Accordion.Item>
+							</Accordion>
+						</FormProvider>
+					)}
 					<Accordion>
 						{(twoFactorTOTP || twoFactorByEmailEnabled) && twoFactorEnabled && (
 							<Accordion.Item title={t('Two Factor Authentication')}>
