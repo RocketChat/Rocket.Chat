@@ -120,7 +120,7 @@ export function getNonEmptyQuery<T extends IUser>(query: Mongo.Query<T> | undefi
 	return { ...defaultQuery, ...query };
 }
 
-type findPaginatedUsersByStatusProps = {
+type FindPaginatedUsersByStatusProps = {
 	uid: string;
 	offset: number;
 	count: number;
@@ -130,7 +130,7 @@ type findPaginatedUsersByStatusProps = {
 	searchTerm: string;
 };
 
-export async function findPaginatedUsersByStatus({ uid, offset, count, sort, status, roles, searchTerm }: findPaginatedUsersByStatusProps) {
+export async function findPaginatedUsersByStatus({ uid, offset, count, sort, status, roles, searchTerm }: FindPaginatedUsersByStatusProps) {
 	const projection = {
 		name: 1,
 		username: 1,
