@@ -1,11 +1,11 @@
 import { expect } from 'chai';
 
-import { PatchCoordinator } from '../src';
+import { makeFunction } from '../src/makeFunction';
 
 describe('PatchCoordinator', () => {
 	describe('Make a simple function', () => {
 		it('should execute the function passed as argument', () => {
-			const fn = PatchCoordinator.makeFunction(() => {
+			const fn = makeFunction(() => {
 				throw new Error('function was called');
 			});
 
@@ -13,7 +13,7 @@ describe('PatchCoordinator', () => {
 		});
 
 		it('should return the result of the internal function', () => {
-			const fn = PatchCoordinator.makeFunction(() => 15);
+			const fn = makeFunction(() => 15);
 
 			expect(fn()).to.be.equal(15);
 		});
@@ -21,11 +21,11 @@ describe('PatchCoordinator', () => {
 
 	describe('Replace a simple function', () => {
 		it('should execute the patched function', () => {
-			const fn = PatchCoordinator.makeFunction(() => {
+			const fn = makeFunction(() => {
 				throw new Error('function was called');
 			});
 
-			PatchCoordinator.addPatch(fn, () => {
+			fn.patch(() => {
 				throw new Error('patch was called');
 			});
 
@@ -33,9 +33,9 @@ describe('PatchCoordinator', () => {
 		});
 
 		it('should return the result of the patched function', () => {
-			const fn = PatchCoordinator.makeFunction(() => 15);
+			const fn = makeFunction(() => 15);
 
-			PatchCoordinator.addPatch(fn, () => 20);
+			fn.patch(() => 20);
 
 			expect(fn()).to.be.equal(20);
 		});
@@ -43,11 +43,11 @@ describe('PatchCoordinator', () => {
 
 	describe('Remove a patch', () => {
 		it('should execute the function passed as argument', () => {
-			const fn = PatchCoordinator.makeFunction(() => {
+			const fn = makeFunction(() => {
 				throw new Error('function was called');
 			});
 
-			const remove = PatchCoordinator.addPatch(fn, () => {
+			const remove = fn.patch(() => {
 				throw new Error('patch was called');
 			});
 
@@ -59,9 +59,9 @@ describe('PatchCoordinator', () => {
 		});
 
 		it('should return the result of the internal function', () => {
-			const fn = PatchCoordinator.makeFunction(() => 15);
+			const fn = makeFunction(() => 15);
 
-			const remove = PatchCoordinator.addPatch(fn, () => 20);
+			const remove = fn.patch(() => 20);
 
 			expect(fn()).to.be.equal(20);
 
@@ -73,14 +73,13 @@ describe('PatchCoordinator', () => {
 
 	describe('Patch Condition', () => {
 		it('should execute either function depending if the patch is enabled or not', () => {
-			const fn = PatchCoordinator.makeFunction(() => {
+			const fn = makeFunction(() => {
 				throw new Error('function was called');
 			});
 
 			let enabled = false;
 
-			PatchCoordinator.addPatch(
-				fn,
+			fn.patch(
 				() => {
 					throw new Error('patch was called');
 				},
@@ -95,12 +94,11 @@ describe('PatchCoordinator', () => {
 		});
 
 		it('should return the value of the right function based on the condition', () => {
-			const fn = PatchCoordinator.makeFunction(() => 15);
+			const fn = makeFunction(() => 15);
 
 			let enabled = false;
 
-			PatchCoordinator.addPatch(
-				fn,
+			fn.patch(
 				() => 20,
 				() => enabled,
 			);
@@ -115,11 +113,11 @@ describe('PatchCoordinator', () => {
 
 	describe('Chained calls', () => {
 		it('Should call the inner function', () => {
-			const fn = PatchCoordinator.makeFunction(() => {
+			const fn = makeFunction(() => {
 				throw new Error('function was called');
 			});
 
-			PatchCoordinator.addPatch(fn, (next) => {
+			fn.patch((next) => {
 				next();
 				throw new Error('patch was called');
 			});
@@ -128,9 +126,9 @@ describe('PatchCoordinator', () => {
 		});
 
 		it('should return the sum of values', () => {
-			const fn = PatchCoordinator.makeFunction(() => 15);
+			const fn = makeFunction(() => 15);
 
-			PatchCoordinator.addPatch(fn, (next) => 20 + next());
+			fn.patch((next) => 20 + next());
 
 			expect(fn()).to.be.equal(35);
 		});
@@ -138,15 +136,15 @@ describe('PatchCoordinator', () => {
 
 	describe('Multiple patches', () => {
 		it('Should call the right version of the function', () => {
-			const fn = PatchCoordinator.makeFunction(() => {
+			const fn = makeFunction(() => {
 				throw new Error('function was called');
 			});
 
-			const remove = PatchCoordinator.addPatch(fn, () => {
+			const remove = fn.patch(() => {
 				throw new Error('patch was called');
 			});
 
-			const remove2 = PatchCoordinator.addPatch(fn, () => {
+			const remove2 = fn.patch(() => {
 				throw new Error('second patch was called');
 			});
 
@@ -158,23 +156,21 @@ describe('PatchCoordinator', () => {
 		});
 
 		it('Should respect conditions and removals', () => {
-			const fn = PatchCoordinator.makeFunction(() => {
+			const fn = makeFunction(() => {
 				throw new Error('function was called');
 			});
 
 			let enabled = true;
 			let enabled2 = true;
 
-			const remove = PatchCoordinator.addPatch(
-				fn,
+			const remove = fn.patch(
 				() => {
 					throw new Error('patch was called');
 				},
 				() => enabled,
 			);
 
-			const remove2 = PatchCoordinator.addPatch(
-				fn,
+			const remove2 = fn.patch(
 				() => {
 					throw new Error('second patch was called');
 				},
@@ -196,24 +192,21 @@ describe('PatchCoordinator', () => {
 		});
 
 		it('should chain on the right order', () => {
-			const fn = PatchCoordinator.makeFunction(() => [1]);
+			const fn = makeFunction(() => [1]);
 
 			let enabled2 = true;
 			let enabled3 = true;
 			let enabled4 = true;
 
-			PatchCoordinator.addPatch(
-				fn,
+			fn.patch(
 				(next) => [2].concat(next()),
 				() => enabled2,
 			);
-			const remove3 = PatchCoordinator.addPatch(
-				fn,
+			const remove3 = fn.patch(
 				(next) => [3].concat(next()),
 				() => enabled3,
 			);
-			PatchCoordinator.addPatch(
-				fn,
+			fn.patch(
 				(next) => [4].concat(next()),
 				() => enabled4,
 			);
