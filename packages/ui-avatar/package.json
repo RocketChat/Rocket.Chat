@@ -4,7 +4,7 @@
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.22.20",
-		"@rocket.chat/fuselage": "^0.50.0",
+		"@rocket.chat/fuselage": "^0.51.0",
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"@types/babel__core": "~7.20.3",
 		"@types/react": "~17.0.69",
