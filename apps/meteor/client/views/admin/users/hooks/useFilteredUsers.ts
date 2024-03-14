@@ -6,16 +6,17 @@ import { useMemo } from 'react';
 
 import type { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import type { useSort } from '../../../../components/GenericTable/hooks/useSort';
+import type { UsersTableSortingOptions } from '../AdminUsersPage';
 
-type useFilteredUsersOptions = {
+type UseFilteredUsersOptions = {
 	searchTerm: string;
 	prevSearchTerm: MutableRefObject<string>;
 	tab: IAdminUserTabs;
 	paginationData: ReturnType<typeof usePagination>;
-	sortData: ReturnType<typeof useSort<'name' | 'username' | 'emails.address' | 'status'>>;
+	sortData: ReturnType<typeof useSort<UsersTableSortingOptions>>;
 };
 
-const useFilteredUsers = ({ searchTerm, prevSearchTerm, sortData, paginationData, tab }: useFilteredUsersOptions) => {
+const useFilteredUsers = ({ searchTerm, prevSearchTerm, sortData, paginationData, tab }: UseFilteredUsersOptions) => {
 	const { setCurrent, itemsPerPage, current } = paginationData;
 	const { sortBy, sortDirection } = sortData;
 

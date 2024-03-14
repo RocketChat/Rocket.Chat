@@ -25,6 +25,8 @@ export type UsersFilters = {
 	text: string;
 };
 
+export type UsersTableSortingOptions = 'name' | 'username' | 'emails.address' | 'status' | 'active';
+
 const AdminUsersPage = (): ReactElement => {
 	const t = useTranslation();
 
@@ -40,7 +42,7 @@ const AdminUsersPage = (): ReactElement => {
 	const isCreateUserDisabled = useShouldPreventAction('activeUsers');
 
 	const paginationData = usePagination();
-	const sortData = useSort<'name' | 'username' | 'emails.address' | 'status'>('name');
+	const sortData = useSort<UsersTableSortingOptions>('name');
 
 	const [tab, setTab] = useState<IAdminUserTabs>('all');
 	const [userFilters, setUserFilters] = useState<UsersFilters>({ text: '' });
@@ -61,6 +63,12 @@ const AdminUsersPage = (): ReactElement => {
 	const handleReload = (): void => {
 		seatsCap?.reload();
 		filteredUsersQueryResult?.refetch();
+	};
+
+	const handleTabChangeAndSort = (tab: IAdminUserTabs) => {
+		setTab(tab);
+
+		sortData.setSort(tab === 'pending' ? 'active' : 'name', 'asc');
 	};
 
 	useEffect(() => {
@@ -95,10 +103,10 @@ const AdminUsersPage = (): ReactElement => {
 				</PageHeader>
 				<PageContent>
 					<Tabs>
-						<TabsItem selected={!tab || tab === 'all'} onClick={() => setTab('all')}>
+						<TabsItem selected={!tab || tab === 'all'} onClick={() => handleTabChangeAndSort('all')}>
 							{t('All')}
 						</TabsItem>
-						<TabsItem selected={tab === 'pending'} onClick={() => setTab('pending')}>
+						<TabsItem selected={tab === 'pending'} onClick={() => handleTabChangeAndSort('pending')}>
 							{pendingUsersCount ? `${t('Pending')} (${pendingUsersCount})` : t('Pending')}
 						</TabsItem>
 					</Tabs>
