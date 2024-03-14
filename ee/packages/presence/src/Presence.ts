@@ -13,6 +13,10 @@ export class Presence extends ServiceClass implements IPresence {
 
 	private broadcastEnabled = true;
 
+	private hasPresenceLicense = false;
+
+	private hasScalabilityLicense = false;
+
 	private hasLicense = false;
 
 	private lostConTimeout?: NodeJS.Timeout;
@@ -43,11 +47,25 @@ export class Presence extends ServiceClass implements IPresence {
 		});
 
 		this.onEvent('license.module', async ({ module, valid }) => {
-			if (module === 'unlimited-presence') {
-				this.hasLicense = valid;
+			switch (module) {
+				case 'unlimited-presence':
+					this.hasPresenceLicense = valid;
+					break;
+				case 'scalability':
+					this.hasScalabilityLicense = valid;
+					break;
+				default:
+					return;
+			}
+
+			// The scalability module is also accepted as a way to enable the presence service for backwards compatibility
+			const hasLicense = this.hasPresenceLicense || this.hasScalabilityLicense;
+
+			if (this.hasLicense !== hasLicense) {
+				this.hasLicense = hasLicense;
 
 				// broadcast should always be enabled if license is active (unless the troubleshoot setting is on)
-				if (!this.broadcastEnabled && valid) {
+				if (!this.broadcastEnabled && hasLicense) {
 					await this.toggleBroadcast(true);
 				}
 			}
@@ -68,7 +86,9 @@ export class Presence extends ServiceClass implements IPresence {
 		try {
 			await Settings.updateValueById('Presence_broadcast_disabled', false);
 
-			this.hasLicense = await License.hasModule('unlimited-presence');
+			this.hasScalabilityLicense = await License.hasModule('scalability');
+			this.hasPresenceLicense = await License.hasModule('unlimited-presence');
+			this.hasLicense = this.hasPresenceLicense || this.hasScalabilityLicense;
 		} catch (e: unknown) {
 			// ignore
 		}
