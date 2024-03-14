@@ -5,7 +5,12 @@ import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel, OmnichannelLiveChat } from '../page-objects';
 import { test, expect } from '../utils/test';
 
-const newUser = {
+const firstUser = {
+	name: `${faker.person.firstName()} ${faker.string.uuid()}}`,
+	email: faker.internet.email(),
+};
+
+const secondUser = {
 	name: `${faker.person.firstName()} ${faker.string.uuid()}}`,
 	email: faker.internet.email(),
 };
@@ -43,7 +48,7 @@ test.describe.serial('OC - Livechat', () => {
 		await test.step('expect message to be sent by livechat', async () => {
 			await poLiveChat.page.reload();
 			await poLiveChat.openLiveChat();
-			await poLiveChat.sendMessage(newUser, false);
+			await poLiveChat.sendMessage(firstUser, false);
 
 			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_user');
 			await poLiveChat.btnSendMessageToOnlineAgent.click();
@@ -52,14 +57,14 @@ test.describe.serial('OC - Livechat', () => {
 		});
 
 		await test.step('expect message to be received by agent', async () => {
-			await poHomeOmnichannel.sidenav.openChat(newUser.name);
+			await poHomeOmnichannel.sidenav.openChat(firstUser.name);
 			await expect(poHomeOmnichannel.content.lastUserMessage).toBeVisible();
 			await expect(poHomeOmnichannel.content.lastUserMessage).toContainText('this_a_test_message_from_user');
 		});
 	});
 
 	test('OC - Livechat - Send message to livechat costumer', async () => {
-		await poHomeOmnichannel.sidenav.openChat(newUser.name);
+		await poHomeOmnichannel.sidenav.openChat(firstUser.name);
 
 		await test.step('expect message to be sent by agent', async () => {
 			await poHomeOmnichannel.content.sendMessage('this_a_test_message_from_agent');
@@ -83,13 +88,62 @@ test.describe.serial('OC - Livechat', () => {
 	});
 
 	test('OC - Livechat - Close livechat conversation', async () => {
-		await poHomeOmnichannel.sidenav.openChat(newUser.name);
+		await poHomeOmnichannel.sidenav.openChat(firstUser.name);
 
 		await test.step('expect livechat conversation to be closed by agent', async () => {
 			await poHomeOmnichannel.content.btnCloseChat.click();
 			await poHomeOmnichannel.content.closeChatModal.inputComment.fill('this_is_a_test_comment');
 			await poHomeOmnichannel.content.closeChatModal.btnConfirm.click();
 			await expect(poHomeOmnichannel.toastSuccess).toBeVisible();
+		});
+	});
+});
+
+test.describe.serial('OC - Livechat - Resub after close room', () => {
+	let poLiveChat: OmnichannelLiveChat;
+	let poHomeOmnichannel: HomeOmnichannel;
+
+	test.beforeAll(async ({ api }) => {
+		const statusCode = (await api.post('/livechat/users/agent', { username: 'user1' })).status();
+		await expect(statusCode).toBe(200);
+	});
+
+	test.beforeAll(async ({ browser, api }) => {
+		await api.post('/settings/Livechat_clear_local_storage_when_chat_ended', { value: true });
+		const { page: omniPage } = await createAuxContext(browser, Users.user1, '/', true);
+		poHomeOmnichannel = new HomeOmnichannel(omniPage);
+
+		const { page: livechatPage } = await createAuxContext(browser, Users.user1, '/livechat', false);
+		poLiveChat = new OmnichannelLiveChat(livechatPage, api);
+
+		await poLiveChat.sendMessageAndCloseChat(firstUser);
+	});
+
+	test.afterAll(async ({ api }) => {
+		await api.post('/settings/Livechat_clear_local_storage_when_chat_ended', { value: false });
+		await api.delete('/livechat/users/agent/user1');
+		await poLiveChat.page?.close();
+	});
+
+	test('OC - Livechat - Resub after close room', async () => {
+		test.fail()
+		await test.step('expect livechat conversation to be opened again', async () => {
+			await poLiveChat.startNewChat();
+			await poLiveChat.sendMessage(secondUser, false);
+			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_user');
+			await poLiveChat.btnSendMessageToOnlineAgent.click();
+			await expect(poLiveChat.page.locator('div >> text="this_a_test_message_from_user"')).toBeVisible();
+		});
+
+		await test.step('expect message to be received by agent', async () => {
+			await poHomeOmnichannel.sidenav.openChat(secondUser.name);
+			await expect(poHomeOmnichannel.content.lastUserMessage).toBeVisible();
+			await expect(poHomeOmnichannel.content.lastUserMessage).toContainText('this_a_test_message_from_user');
+		});
+
+		await test.step('expect message to be sent by agent', async () => {
+			await poHomeOmnichannel.content.sendMessage('this_a_test_message_from_agent');
+			await expect(poLiveChat.page.locator('div >> text="this_a_test_message_from_agent"')).toBeVisible();
 		});
 	});
 });
