@@ -24,9 +24,10 @@ type UsersTableRowProps = {
 	mediaQuery: boolean;
 	onReload: () => void;
 	tab: IAdminUserTabs;
+	isSeatsCapExceeded: boolean;
 };
 
-const UsersTableRow = ({ user, onClick, mediaQuery, onReload, tab }: UsersTableRowProps): ReactElement => {
+const UsersTableRow = ({ user, onClick, mediaQuery, onReload, tab, isSeatsCapExceeded }: UsersTableRowProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -106,21 +107,16 @@ const UsersTableRow = ({ user, onClick, mediaQuery, onReload, tab }: UsersTableR
 		resendWelcomeEmail.mutateAsync({ email: emails[0].address });
 	};
 
-	const renderPendingButton = (): ReactElement => {
-		if (active) {
-			return (
-				<Button small secondary mie={8} onClick={handleResendWelcomeEmail}>
-					{t('Resend_welcome_email')}
-				</Button>
-			);
-		}
-
-		return (
-			<Button small primary mie={8} onClick={changeUserStatusAction?.action}>
+	const renderPendingButton = (): ReactElement =>
+		active ? (
+			<Button small secondary mie={8} onClick={handleResendWelcomeEmail}>
+				{t('Resend_welcome_email')}
+			</Button>
+		) : (
+			<Button small primary mie={8} onClick={changeUserStatusAction?.action} disabled={isSeatsCapExceeded}>
 				{t('Activate')}
 			</Button>
 		);
-	};
 
 	return (
 		<GenericTableRow

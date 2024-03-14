@@ -27,6 +27,7 @@ type UsersTableProps = {
 	filteredUsersQueryResult: UseQueryResult<PaginatedResult<{ users: Serialized<PickedUser>[] }>>;
 	paginationData: ReturnType<typeof usePagination>;
 	sortData: ReturnType<typeof useSort<UsersTableSortingOptions>>;
+	isSeatsCapExceeded: boolean;
 };
 
 const UsersTable = ({
@@ -36,6 +37,7 @@ const UsersTable = ({
 	onReload,
 	paginationData,
 	sortData,
+	isSeatsCapExceeded,
 }: UsersTableProps): ReactElement | null => {
 	const t = useTranslation();
 	const router = useRouter();
@@ -188,6 +190,7 @@ const UsersTable = ({
 									user={user}
 									onReload={onReload}
 									tab={tab}
+									isSeatsCapExceeded={isSeatsCapExceeded}
 								/>
 							))}
 						</GenericTableBody>

@@ -1,5 +1,5 @@
 import type { IAdminUserTabs } from '@rocket.chat/core-typings';
-import { Button, ButtonGroup, ContextualbarIcon, Tabs, TabsItem } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Callout, ContextualbarIcon, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useRouteParameter, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -31,6 +31,8 @@ const AdminUsersPage = (): ReactElement => {
 	const t = useTranslation();
 
 	const seatsCap = useSeatsCap();
+
+	const isSeatsCapExceeded = useMemo(() => !!seatsCap && seatsCap.activeUsers >= seatsCap.maxActiveUsers, [seatsCap]);
 
 	const router = useRouter();
 	const context = useRouteParameter('context');
@@ -85,7 +87,7 @@ const AdminUsersPage = (): ReactElement => {
 			<Page>
 				<PageHeader title={t('Users')}>
 					{seatsCap && seatsCap.maxActiveUsers < Number.POSITIVE_INFINITY ? (
-						<UserPageHeaderContentWithSeatsCap {...seatsCap} />
+						<UserPageHeaderContentWithSeatsCap isSeatsCapExceeded={isSeatsCapExceeded} {...seatsCap} />
 					) : (
 						<ButtonGroup>
 							{canBulkCreateUser && (
@@ -102,6 +104,11 @@ const AdminUsersPage = (): ReactElement => {
 					)}
 				</PageHeader>
 				<PageContent>
+					{isSeatsCapExceeded && (
+						<Callout title={t('Service_disruptions_occurring')} type='danger' mbe={19}>
+							{t('Your_workspace_exceeded_the_seat_license_limit')}
+						</Callout>
+					)}
 					<Tabs>
 						<TabsItem selected={!tab || tab === 'all'} onClick={() => handleTabChangeAndSort('all')}>
 							{t('All')}
@@ -117,6 +124,7 @@ const AdminUsersPage = (): ReactElement => {
 						paginationData={paginationData}
 						sortData={sortData}
 						tab={tab}
+						isSeatsCapExceeded={isSeatsCapExceeded}
 					/>
 				</PageContent>
 			</Page>

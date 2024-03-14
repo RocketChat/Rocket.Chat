@@ -11,9 +11,14 @@ import SeatsCapUsage from './SeatsCapUsage';
 type UserPageHeaderContentWithSeatsCapProps = {
 	activeUsers: number;
 	maxActiveUsers: number;
+	isSeatsCapExceeded: boolean;
 };
 
-const UserPageHeaderContentWithSeatsCap = ({ activeUsers, maxActiveUsers }: UserPageHeaderContentWithSeatsCapProps): ReactElement => {
+const UserPageHeaderContentWithSeatsCap = ({
+	isSeatsCapExceeded,
+	activeUsers,
+	maxActiveUsers,
+}: UserPageHeaderContentWithSeatsCapProps): ReactElement => {
 	const isCreateUserDisabled = useShouldPreventAction('activeUsers');
 
 	const t = useTranslation();
@@ -36,10 +41,10 @@ const UserPageHeaderContentWithSeatsCap = ({ activeUsers, maxActiveUsers }: User
 				<SeatsCapUsage members={activeUsers} limit={maxActiveUsers} />
 			</Margins>
 			<ButtonGroup>
-				<Button icon='mail' onClick={handleInviteButtonClick}>
+				<Button icon='mail' onClick={handleInviteButtonClick} disabled={isSeatsCapExceeded}>
 					{t('Invite')}
 				</Button>
-				<Button icon='user-plus' onClick={handleNewButtonClick}>
+				<Button icon='user-plus' onClick={handleNewButtonClick} disabled={isSeatsCapExceeded}>
 					{t('New_user')}
 				</Button>
 				{isCreateUserDisabled && (
