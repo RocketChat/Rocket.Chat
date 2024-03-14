@@ -14,6 +14,27 @@ type MarkdownTextParams = {
 	withTruncatedText: boolean;
 } & ComponentProps<typeof Box>;
 
+const getBaseURI = (): string => {
+	if (document.baseURI) {
+		return document.baseURI;
+	}
+
+	// Should be exactly one tag:
+	//   https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+	const base = document.getElementsByTagName('base');
+
+	// Return location from BASE tag.
+	if (base.length > 0) {
+		return base[0].href;
+	}
+
+	// Else use implementation of documentURI:
+	//   http://www.w3.org/TR/DOM-Level-3-Core/core.html#Node3-baseURI
+	return document.URL;
+};
+
+const isExternal = (href: string): boolean => href.indexOf(getBaseURI()) !== 0;
+
 const documentRenderer = new marked.Renderer();
 const inlineRenderer = new marked.Renderer();
 const inlineWithoutBreaks = new marked.Renderer();
@@ -25,7 +46,9 @@ marked.Lexer.rules.gfm = {
 };
 
 const linkMarked = (href: string | null, _title: string | null, text: string): string =>
-	`<a href="${href}" target="_blank" rel="nofollow noopener noreferrer">${text}</a> `;
+	isExternal(href || '')
+		? `<a href="${href}" rel="nofollow noopener noreferrer" title="Go to ${href}">${text}</a> `
+		: `<a href="${href}" rel="nofollow noopener noreferrer" title="${href?.replace(getBaseURI(), '/')}">${text}</a> `;
 const paragraphMarked = (text: string): string => text;
 const brMarked = (): string => ' ';
 const listItemMarked = (text: string): string => {
@@ -122,9 +145,9 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 
 		// Add a hook to make all links open a new window
 		dompurify.addHook('afterSanitizeAttributes', (node) => {
-			// set all elements owning target to target=_blank
+			// set all elements owning external target to target=_blank
 			if ('target' in node) {
-				node.setAttribute('target', '_blank');
+				isExternal(node.getAttribute('href') || '') && node.setAttribute('target', '_blank');
 				node.setAttribute('rel', 'nofollow noopener noreferrer');
 			}
 		});
