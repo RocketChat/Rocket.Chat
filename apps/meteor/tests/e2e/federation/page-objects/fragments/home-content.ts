@@ -232,7 +232,7 @@ export class FederationHomeContent {
 	}
 
 	get threadInputMessage(): Locator {
-		return this.page.locator('//main//dialog >> [name="msg"]').last();
+		return this.page.getByRole('dialog').getByRole('textbox', { name: 'msg' }).last();
 	}
 
 	async sendFileMessage(fileName: string): Promise<void> {
@@ -240,7 +240,7 @@ export class FederationHomeContent {
 	}
 
 	async sendThreadMessage(message: string): Promise<void> {
-		await this.page.locator('//main//dialog >> [name="msg"]').last().fill(message);
+		await this.page.getByRole('dialog').getByRole('textbox', { name: 'msg' }).last().fill(message);
 		await this.page.keyboard.press('Enter');
 	}
 
@@ -251,7 +251,7 @@ export class FederationHomeContent {
 	}
 
 	threadSendToChannelAlso(): Locator {
-		return this.page.locator('//main//dialog >> [name="alsoSendThreadToChannel"]');
+		return this.page.getByRole('dialog').locator('label', { hasText: 'Also send to channel' });
 	}
 
 	async quoteMessage(message: string): Promise<void> {
@@ -262,14 +262,14 @@ export class FederationHomeContent {
 	}
 
 	async openLastThreadMessageMenu(): Promise<void> {
-		await this.page.locator('//main//dialog >> [data-qa-type="message"]').last().hover();
+		await this.page.getByRole('dialog').locator('[data-qa-type="message"]').last().hover();
 		await this.page
-			.locator('//main//dialog >> [data-qa-type="message"]')
+			.getByRole('dialog').locator('[data-qa-type="message"]')
 			.last()
 			.locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]')
 			.waitFor();
 		await this.page
-			.locator('//main//dialog >> [data-qa-type="message"]')
+			.getByRole('dialog').locator('[data-qa-type="message"]')
 			.last()
 			.locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]')
 			.click();
