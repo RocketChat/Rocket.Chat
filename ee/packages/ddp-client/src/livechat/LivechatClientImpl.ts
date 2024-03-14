@@ -381,9 +381,9 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 		const sdk = new LivechatClientImpl(connection, stream, account, timeoutControl, rest);
 
 		connection.on('connected', () => {
-			Object.entries(stream.subscriptions).forEach(([, sub]) => {
+			for (const [, sub] of stream.subscriptions.entries()) {
 				ddp.subscribeWithId(sub.id, sub.name, sub.params);
-			});
+			}
 		});
 
 		return sdk;
