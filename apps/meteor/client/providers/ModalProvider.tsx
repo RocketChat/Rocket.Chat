@@ -14,7 +14,11 @@ type ModalProviderProps = {
 const ModalProvider = ({ children, region }: ModalProviderProps) => {
 	const currentModal = useSyncExternalStore(modalStore.subscribe, modalStore.getSnapshot);
 
-	const setModal = useEffectEvent((modal: ReactNode) => {
+	const setModal = useEffectEvent((modal: ReactNode | (() => ReactNode)) => {
+		if (typeof modal === 'function') {
+			modalStore.open(modal(), region);
+			return;
+		}
 		modalStore.open(modal, region);
 	});
 
