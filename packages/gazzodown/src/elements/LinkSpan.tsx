@@ -69,7 +69,7 @@ const LinkSpan = ({ href, label }: LinkSpanProps): ReactElement => {
 	}
 
 	return (
-		<a href={href} title={`${t('Go_to_href', { href: href.replace(getBaseURI(), '') })}`}>
+		<a href={href} title={t('Go_to_href', { href: href.replace(getBaseURI(), '') })}>
 			{children}
 		</a>
 	);
