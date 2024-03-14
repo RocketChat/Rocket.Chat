@@ -126,7 +126,6 @@ test.describe.serial('OC - Livechat - Resub after close room', () => {
 	});
 
 	test('OC - Livechat - Resub after close room', async () => {
-		test.fail()
 		await test.step('expect livechat conversation to be opened again', async () => {
 			await poLiveChat.startNewChat();
 			await poLiveChat.sendMessage(secondUser, false);
