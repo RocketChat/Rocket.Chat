@@ -632,20 +632,6 @@ export const createOmniSettings = () =>
 			i18nLabel: 'Call_provider',
 			enableQuery: omnichannelEnabledQuery,
 		});
-
-		await this.add('Livechat_hide_system_messages', ['uj', 'ul', 'livechat-close', 'livechat_webrtc_video_call'], {
-			type: 'multiSelect',
-			group: 'Omnichannel',
-			section: 'Livechat',
-			public: true,
-			values: [
-				{ key: 'uj', i18nLabel: 'Message_HideType_uj' },
-				{ key: 'ul', i18nLabel: 'Message_HideType_ul' },
-				{ key: 'livechat-close', i18nLabel: 'Message_HideType_livechat_closed' },
-				{ key: 'livechat-started', i18nLabel: 'Message_HideType_livechat_started' },
-				{ key: 'livechat_transfer_history', i18nLabel: 'Message_HideType_livechat_transfer_history' },
-			],
-		});
 	});
 await settingsRegistry.addGroup('SMS', async function () {
 	await this.add('SMS_Enabled', false, {

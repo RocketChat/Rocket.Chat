@@ -263,6 +263,22 @@ export const createSettings = async (): Promise<void> => {
 		i18nLabel: 'Omnichannel_transcript_pdf',
 	});
 
+	await settingsRegistry.add('Livechat_hide_system_messages', ['uj', 'ul', 'livechat-close'], {
+		type: 'multiSelect',
+		group: 'Omnichannel',
+		section: 'Livechat',
+		enterprise: true,
+		modules: ['livechat-enterprise'],
+		public: true,
+		values: [
+			{ key: 'uj', i18nLabel: 'Message_HideType_uj' },
+			{ key: 'ul', i18nLabel: 'Message_HideType_ul' },
+			{ key: 'livechat-close', i18nLabel: 'Message_HideType_livechat_closed' },
+			{ key: 'livechat-started', i18nLabel: 'Message_HideType_livechat_started' },
+			{ key: 'livechat_transfer_history', i18nLabel: 'Message_HideType_livechat_transfer_history' },
+		],
+	});
+
 	await Settings.addOptionValueById('Livechat_Routing_Method', {
 		key: 'Load_Balancing',
 		i18nLabel: 'Load_Balancing',
