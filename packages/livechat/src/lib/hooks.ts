@@ -49,6 +49,18 @@ const updateIframeGuestData = (data: Partial<StoreState['guest']>) => {
 
 export type HooksWidgetAPI = typeof api;
 
+const updateIframeData = (data: Partial<StoreState['iframe']>) => {
+	const { iframe } = store.state;
+
+	if (data.guest) {
+		throw new Error('Guest data changes not allowed. Use updateIframeGuestData instead.');
+	}
+
+	const iframeData = { ...iframe, ...data };
+
+	store.setState({ iframe: { ...iframeData } });
+};
+
 const api = {
 	pageVisited(info: { change: string; title: string; location: { href: string } }) {
 		const { token, room } = store.state;
@@ -89,6 +101,11 @@ const api = {
 			config: { departments = [] },
 			defaultAgent,
 		} = store.state;
+
+		if (!user) {
+			updateIframeData({ defaultDepartment: value });
+			return;
+		}
 
 		const { department: existingDepartment } = user || {};
 
