@@ -51,8 +51,10 @@ import type { IVoipService } from './types/IVoipService';
 export { asyncLocalStorage } from './lib/asyncLocalStorage';
 export { MeteorError, isMeteorError } from './MeteorError';
 export { api } from './api';
-export { EventNames, EventSignatures } from './events/Events';
 export { LocalBroker } from './LocalBroker';
+
+export { EventNames, EventSignatures } from './events/Events';
+export type { IMentionCounter } from './events/Events';
 
 export { IBroker, IBrokerNode, BaseMetricOptions, IServiceMetrics } from './types/IBroker';
 

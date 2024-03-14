@@ -1,14 +1,15 @@
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { IServiceClass } from '@rocket.chat/core-services';
-import { EnterpriseSettings } from '@rocket.chat/core-services';
-import { isSettingColor, isSettingEnterprise, UserStatus } from '@rocket.chat/core-typings';
 import type { IUser, IRoom, VideoConference, ISetting, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { EventNames, EnterpriseSettings } from '@rocket.chat/core-services';
+import { isSettingColor, isSettingEnterprise, UserStatus } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { parse } from '@rocket.chat/message-parser';
+import { StreamerRoomEvents, StreamerUserEvents, MentionTypes } from '@rocket.chat/ddp-client';
 
-import { settings } from '../../../app/settings/server/cached';
 import type { NotificationsModule } from '../notifications/notifications.module';
+import { settings } from '../../../app/settings/server/cached';
 
 const isMessageParserDisabled = process.env.DISABLE_MESSAGE_PARSER === 'true';
 
@@ -29,6 +30,30 @@ const minimongoChangeMap: Record<string, string> = {
 export class ListenersModule {
 	constructor(service: IServiceClass, notifications: NotificationsModule) {
 		const logger = new Logger('ListenersModule');
+
+		service.onEvent(EventNames.USER_MENTIONS, (message, mentions) => {
+
+			// TODO: In case of all or here messages, should we notify named users too?
+			// TODO: Refine events body - we don't need to send the whole message object
+
+			if (mentions.toAll || mentions.toHere) {
+				notifications.notifyRoomInThisInstance(message.rid, StreamerRoomEvents.MENTION, {
+					rid: message.rid,
+					mid: message._id,
+					type: mentions.toAll ? MentionTypes.ALL : MentionTypes.HERE,
+				});
+			}
+
+			if (mentions.mentionIds.length > 0) {
+				for (const userId of mentions.mentionIds) {
+					notifications.notifyUserInThisInstance(userId, StreamerUserEvents.MENTION, {
+						rid: message.rid,
+						mid: message._id,
+						type: MentionTypes.USER,
+					});
+				}
+			}
+		});
 
 		service.onEvent('license.sync', () => notifications.notifyAllInThisInstance('license'));
 		service.onEvent('license.actions', () => notifications.notifyAllInThisInstance('license'));

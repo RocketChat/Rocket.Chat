@@ -64,6 +64,17 @@ export function isWatcherRunning(): boolean {
 	return watcherStarted;
 }
 
+function isMention(diff): boolean {
+	// If diff contains groupMentions, unread, or userMentions different than 0 (zero) then it's a mention
+	// When these attribute have a value of 0 (zero) represents a message read
+	return (
+		diff && (
+			(diff.groupMentions && diff.groupMentions !== 0)
+			|| (diff.unread && diff.unread !== 0)
+			|| (diff.userMentions && diff.userMentions !== 0)
+		)) || false;
+}
+
 export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallback): void {
 	// watch for changes on the database and broadcast them to the other instances
 	if (!dbWatchersDisabled) {
@@ -85,9 +96,10 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 		switch (clientAction) {
 			case 'inserted':
 			case 'updated': {
-				if (!hasSubscriptionFields(data || diff)) {
-					return;
-				}
+				if (!hasSubscriptionFields(data || diff)) return;
+
+				// TODO: Remove comments... dbWatchersDisabled -> DISABLE_DB_WATCHERS=true
+				if (dbWatchersDisabled && isMention(diff)) return;
 
 				// Override data cuz we do not publish all fields
 				const subscription =
@@ -142,13 +154,10 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 							| 'v'
 							| 'onHold'
 						>
-					>(id, {
-						projection: subscriptionFields,
-					}));
+					>(id, { projection: subscriptionFields }));
 
-				if (!subscription) {
-					return;
-				}
+				if (!subscription) return;
+
 				void broadcast('watch.subscriptions', { clientAction, subscription });
 				break;
 			}

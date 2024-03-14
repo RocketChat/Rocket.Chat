@@ -1,9 +1,11 @@
-import type { IMessage } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
-import { ChatMessage } from '../../app/models/client';
+import type { IMessage } from '@rocket.chat/core-typings';
+
+import { ChatMessage, Subscriptions } from '../../app/models/client';
 import { CachedCollectionManager } from '../../app/ui-cached-collection/client';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
+
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {
@@ -22,6 +24,10 @@ Meteor.startup(() => {
 	});
 
 	CachedCollectionManager.onLogin(() => {
+		sdk.stream('notify-user', [`${Meteor.userId()}/mention`], (data) => {
+			Subscriptions.update({ rid: data.rid }, { $inc: { unread: 1, userMentions: 1 }, $set: { ts: new Date(), alert: true } });
+		});
+
 		sdk.stream('notify-user', [`${Meteor.userId()}/subscriptions-changed`], (_action, sub) => {
 			ChatMessage.update(
 				{

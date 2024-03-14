@@ -1,5 +1,7 @@
 import type { IMessage, IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
+import type { IMentionCounter } from '@rocket.chat/core-services';
 import { isEditedMessage } from '@rocket.chat/core-typings';
+import { api, dbWatchersDisabled, EventNames } from '@rocket.chat/core-services';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import moment from 'moment';
@@ -17,39 +19,26 @@ function messageContainsHighlight(message: IMessage, highlights: string[]): bool
 	});
 }
 
-export async function getMentions(message: IMessage): Promise<{ toAll: boolean; toHere: boolean; mentionIds: string[] }> {
-	const {
-		mentions,
-		u: { _id: senderId },
-	} = message;
+export async function getMentions(message: IMessage): Promise<IMentionCounter> {
+	if (!message.mentions) return { toAll: false, toHere: false, mentionIds: [] };
 
-	if (!mentions) {
-		return {
-			toAll: false,
-			toHere: false,
-			mentionIds: [],
-		};
-	}
+	const { mentions, u: { _id: senderId } } = message;
 
 	const toAll = mentions.some(({ _id }) => _id === 'all');
 	const toHere = mentions.some(({ _id }) => _id === 'here');
 
-	const teamsMentions = mentions.filter((mention) => mention.type === 'team');
+	const teamMentions = mentions.filter((mention) => mention.type === 'team');
 	const filteredMentions = mentions
 		.filter((mention) => !mention.type || mention.type === 'user')
 		.filter(({ _id }) => _id !== senderId && !['all', 'here'].includes(_id))
 		.map(({ _id }) => _id);
 
 	let mentionIds = filteredMentions;
-	if (teamsMentions.length > 0) {
-		mentionIds = await beforeGetMentions(filteredMentions, teamsMentions);
+	if (teamMentions.length > 0) {
+		mentionIds = await beforeGetMentions(filteredMentions, teamMentions);
 	}
 
-	return {
-		toAll,
-		toHere,
-		mentionIds,
-	};
+	return { toAll, toHere, mentionIds };
 }
 
 type UnreadCountType = 'all_messages' | 'user_mentions_only' | 'group_mentions_only' | 'user_and_group_mentions_only';
@@ -103,13 +92,11 @@ const getUnreadSettingCount = (roomType: RoomType): UnreadCountType => {
 	return settings.get(unreadSetting);
 };
 
-async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise<void> {
+async function updateUsersSubscriptions(message: IMessage, room: IRoom, mentions: IMentionCounter): Promise<void> {
 	// Don't increase unread counter on thread messages
 	if (room != null && !message.tmid) {
-		const { toAll, toHere, mentionIds } = await getMentions(message);
-
+		const { toAll, toHere, mentionIds } = mentions;
 		const userIds = new Set(mentionIds);
-
 		const unreadCount = getUnreadSettingCount(room.t);
 
 		(await getUserIdsFromHighlights(room._id, message)).forEach((uid) => userIds.add(uid));
@@ -179,7 +166,14 @@ export async function notifyUsersOnMessage(message: IMessage, room: IRoom): Prom
 
 	// Update all the room activity tracker fields
 	await Rooms.incMsgCountAndSetLastMessageById(message.rid, 1, message.ts, settings.get('Store_Last_Message') ? message : undefined);
-	await updateUsersSubscriptions(message, room);
+
+	const mentions = await getMentions(message);
+
+	await updateUsersSubscriptions(message, room, mentions);
+
+	if (dbWatchersDisabled && (mentions?.mentionIds.length > 0 || mentions?.toAll || mentions?.toHere)) {
+		api.broadcast(EventNames.USER_MENTIONS, message, mentions);
+	}
 
 	return message;
 }

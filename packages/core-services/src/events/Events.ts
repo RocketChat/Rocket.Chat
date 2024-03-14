@@ -53,8 +53,15 @@ type LoginServiceConfigurationEvent = {
 	  }
 );
 
+// TODO: Decided to keep this here for now, but it should be moved to a more appropriate place in the future
+export interface IMentionCounter {
+	toAll: boolean,
+	toHere: boolean,
+	mentionIds: string[]
+}
+
 export enum EventNames {
-	USER_MENTIONS = 'user.mentions',
+	USER_MENTIONS = 'user.mention',
 }
 
 export type EventSignatures = {
@@ -307,5 +314,5 @@ export type EventSignatures = {
 	'actions.changed'(): void;
 
 	// Events from event broker - that don't rely on DB Watcher notifications
-	[EventNames.USER_MENTIONS]: (message: IMessage, room: IRoom) => void;
+	[EventNames.USER_MENTIONS]: (message: IMessage, mentions: IMentionCounter) => void;
 };
