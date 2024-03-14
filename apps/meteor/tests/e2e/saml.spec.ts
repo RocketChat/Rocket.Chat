@@ -120,7 +120,7 @@ test.describe('SAML', () => {
 	});
 
 	test.beforeAll(async ({ api }) => {
-		const groupResponse = await api.post('/channels.create', { name: faker.string.uuid() });
+		const groupResponse = await api.post('/groups.create', { name: faker.string.uuid() });
 		expect(groupResponse.status()).toBe(200);
 		const { group } = await groupResponse.json();
 		targetInviteGroupId = group._id;
