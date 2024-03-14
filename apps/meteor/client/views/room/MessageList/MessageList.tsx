@@ -31,6 +31,8 @@ export const MessageList = ({ rid, scrollMessageList }: MessageListProps): React
 	const messageGroupingPeriod = Number(useSetting('Message_GroupingPeriod'));
 	const formatDate = useFormatDate();
 
+	console.log('All messages - ', messages);
+
 	const firstUnreadMessageId = useFirstUnreadMessageId();
 
 	return (

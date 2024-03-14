@@ -37,6 +37,8 @@ export async function upsertMessage(
 
 	const { _id } = msg;
 
+	console.log('upsert message - ', msg)
+
 	return collection.upsert({ _id }, msg);
 }
 

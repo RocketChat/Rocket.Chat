@@ -5,7 +5,6 @@ import { Random } from '@rocket.chat/random';
 import { UserAction, USER_ACTIVITIES } from '../../../app/ui/client/lib/UserAction';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { getErrorMessage } from '../errorHandling';
-import { onClientBeforeSendMessage } from '../onClientBeforeSendMessage';
 import type { UploadsAPI } from './ChatAPI';
 import type { Upload } from './Upload';
 
@@ -37,11 +36,15 @@ const send = async (
 		msg,
 		rid,
 		tmid,
+		t,
+		e2e,
 	}: {
 		description?: string;
 		msg?: string;
 		rid: string;
 		tmid?: string;
+		t?: IMessage['t'];
+		e2e?: IMessage['e2e'];
 	},
 ): Promise<void> => {
 	const id = Random.id();
@@ -55,17 +58,19 @@ const send = async (
 		},
 	]);
 
+	console.log("BEFORE UPLOAD", t, e2e, description)
+
 	try {
-		// Assuming that only description is available in case of attachments
-		const message = description
-			? await onClientBeforeSendMessage({
-					_id: id,
-					msg: description,
-					rid,
-			  })
-			: ({
-					msg: description,
-			  } as IMessage);
+		// // Assuming that only description is available in case of attachments
+		// const message = description
+		// 	? await onClientBeforeSendMessage({
+		// 			_id: id,
+		// 			msg: description,
+		// 			rid,
+		// 	  })
+		// 	: ({
+		// 			msg: description,
+		// 	  } as IMessage);
 
 		await new Promise((resolve, reject) => {
 			const xhr = sdk.rest.upload(
@@ -74,9 +79,9 @@ const send = async (
 					msg,
 					tmid,
 					file,
-					description: message.msg,
-					...(message.t && { t: message.t }),
-					...(message.e2e && { e2e: message.e2e }),
+					description,
+					t,
+					e2e,
 				},
 				{
 					load: (event) => {
@@ -160,6 +165,6 @@ export const createUploadsAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMes
 	subscribe,
 	wipeFailedOnes,
 	cancel,
-	send: (file: File, { description, msg }: { description?: string; msg?: string }): Promise<void> =>
-		send(file, { description, msg, rid, tmid }),
+	send: (file: File, { description, msg, t, e2e }: { description?: string; msg?: string; t?: IMessage['t']; e2e?: IMessage['e2e'] }): Promise<void> =>
+		send(file, { description, msg, rid, tmid, t, e2e }),
 });

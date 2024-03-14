@@ -43,17 +43,19 @@ export const parseMessageTextToAstMarkdown = <
 	const translated = showAutoTranslate(message);
 
 	const text = (translated && translations && translations[autoTranslateLanguage]) || msg.msg;
-
-	return {
+	const parsedMessage = {
 		...msg,
 		md:
 			isE2EEMessage(message) || isOTRMessage(message) || isOTRAckMessage(message) || translated
 				? textToMessageToken(text, parseOptions)
 				: msg.md ?? textToMessageToken(text, parseOptions),
-		...(msg.attachments && {
-			attachments: parseMessageAttachments(msg.attachments, parseOptions, { autoTranslateLanguage, translated }),
-		}),
+		// ...(msg.attachments && {
+		// 	attachments: parseMessageAttachments(msg.attachments, parseOptions, { autoTranslateLanguage, translated }),
+		// }),
 	};
+	// console.log({parsedMessage});
+
+	return parsedMessage;
 };
 
 export const parseMessageQuoteAttachment = <T extends MessageQuoteAttachment>(

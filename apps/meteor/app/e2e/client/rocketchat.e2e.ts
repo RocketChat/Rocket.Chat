@@ -2,7 +2,7 @@ import QueryString from 'querystring';
 import URL from 'url';
 
 import type { IE2EEMessage, IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { isE2EEMessage } from '@rocket.chat/core-typings';
+import { isE2EEMessage, isFileAttachment } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import EJSON from 'ejson';
 import { Meteor } from 'meteor/meteor';
@@ -435,21 +435,88 @@ class E2E extends Emitter {
 		const decryptedMessage: IE2EEMessage = {
 			...message,
 			...(!attachmentDescription && { msg: data.text }),
-			...(attachmentDescription && {
-				attachments: [
-					{
-						...message?.attachments?.[0],
-						description: data.text,
-					},
-				],
-			}),
+			// ...(attachmentDescription && {
+			// 	attachments: [
+			// 		{
+			// 			...message?.attachments?.[0],
+			// 			description: data.text,
+			// 		},
+			// 	],
+			// }),
 			e2e: 'done',
 		};
 
 		const decryptedMessageWithQuote = await this.parseQuoteAttachment(decryptedMessage);
 
-		return decryptedMessageWithQuote;
+		const decryptedMessageWithAttachments = await this.decryptMessageAttachments(decryptedMessageWithQuote);
+
+		console.log({decryptedMessageWithAttachments});
+
+		return decryptedMessageWithAttachments;
 	}
+
+	async decryptMessageAttachments(message: IMessage): Promise<IMessage> {
+		const { attachments } = message;
+
+		if (!attachments || !attachments.length) {
+			return message;
+		}
+
+		const e2eRoom = await this.getInstanceByRoomId(message.rid);
+
+		if (!e2eRoom) {
+			return message;
+		}
+
+		attachments.map(async attachment => {
+			if(!isFileAttachment(attachment)) {
+				return attachment;
+			}
+
+			if(!attachment.description) {
+				return attachment;
+			}
+
+			const data = await e2eRoom.decrypt(attachment.description);
+
+			if(!data) {
+				return attachment;
+			}
+
+			attachment.description = data.text;
+
+		});
+
+		return message;
+	}
+
+	async decryptAttachmentDescription(description: string, rid: string): Promise<string> {
+		const e2eRoom = await this.getInstanceByRoomId(rid);
+
+		if (!e2eRoom) {
+			return description;
+		}
+
+		const data = await e2eRoom.decrypt(description);
+
+		if (!data) {
+			return description;
+		}
+
+		return data.text as string;
+	}
+
+	// async encryptAttachmentDescription(description: string, _id: string, rid: string): Promise<string> {
+	// 	const e2eRoom = await this.getInstanceByRoomId(rid);
+
+	// 	if(!e2eRoom) {
+	// 		return description;
+	// 	}
+
+	// 	const data = e2eRoom.encryptAttachmentDescription(description, _id);
+
+	// 	return data;
+	// }
 
 	async decryptPendingMessages(): Promise<void> {
 		return Messages.find({ t: 'e2e', e2e: 'pending' }).forEach(async ({ _id, ...msg }: IMessage) => {

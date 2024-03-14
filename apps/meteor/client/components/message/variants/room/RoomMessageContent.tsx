@@ -45,6 +45,7 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 
 	const normalizedMessage = useNormalizedMessage(message);
 	const isMessageEncrypted = encrypted && normalizedMessage?.e2e === 'pending';
+	console.log({normalizedMessage})
 
 	return (
 		<>

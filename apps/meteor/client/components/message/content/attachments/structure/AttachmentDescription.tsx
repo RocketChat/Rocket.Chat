@@ -20,8 +20,8 @@ const AttachmentDescription = ({ description, descriptionMd }: AttachmentDescrip
 	if (isMessageEncrypted) {
 		return <MessageBody>{t('E2E_message_encrypted_placeholder')}</MessageBody>;
 	}
-
-	return descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} />;
+	console.log({description, descriptionMd})
+	return descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} data-qa-type='ATTACHMENT'/>;
 };
 
 export default memo(AttachmentDescription);
