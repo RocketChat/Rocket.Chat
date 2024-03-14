@@ -1,4 +1,5 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import { ReactElement, useMemo } from 'react';
 
 import BoldSpan from './BoldSpan';
@@ -33,6 +34,7 @@ type LinkSpanProps = {
 };
 
 const LinkSpan = ({ href, label }: LinkSpanProps): ReactElement => {
+	const t = useTranslation();
 	const children = useMemo(() => {
 		const labelArray = Array.isArray(label) ? label : [label];
 
@@ -67,7 +69,7 @@ const LinkSpan = ({ href, label }: LinkSpanProps): ReactElement => {
 	}
 
 	return (
-		<a href={href} title={href}>
+		<a href={href} title={`${t('Go_to_href', { href: href.replace(getBaseURI(), '') })}`}>
 			{children}
 		</a>
 	);
