@@ -3,7 +3,7 @@ import type { FunctionalComponent } from 'preact';
 import { withTranslation } from 'react-i18next';
 
 import { ChatContainer } from '.';
-import { canRenderMessage, canRenderTriggerMessage } from '../../helpers/canRenderMessage';
+import { canRenderMessage } from '../../helpers/canRenderMessage';
 import { formatAgent } from '../../helpers/formatAgent';
 import { Consumer } from '../../store';
 
@@ -54,7 +54,7 @@ export const ChatConnector: FunctionalComponent<{ path: string; default: boolean
 				user={user}
 				agent={formatAgent(agent)}
 				room={room}
-				messages={messages?.filter(canRenderMessage).filter(canRenderTriggerMessage(user))}
+				messages={messages?.filter(canRenderMessage)}
 				noMoreMessages={noMoreMessages}
 				emoji={true}
 				uploads={uploads}

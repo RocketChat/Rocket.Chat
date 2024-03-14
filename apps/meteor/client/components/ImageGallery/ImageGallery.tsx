@@ -142,7 +142,7 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 	const preventPropagation = usePreventPropagation();
 
 	return createPortal(
-		<FocusScope contain restoreFocus autoFocus>
+		<FocusScope contain autoFocus>
 			<Box className={swiperStyle}>
 				<div className='swiper-container' onClick={onClose}>
 					<ButtonGroup className='rcx-swiper-controls' onClick={preventPropagation}>
