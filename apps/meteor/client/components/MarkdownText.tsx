@@ -47,8 +47,8 @@ marked.Lexer.rules.gfm = {
 
 const linkMarked = (href: string | null, _title: string | null, text: string): string =>
 	isExternal(href || '')
-		? `<a href="${href}" rel="nofollow noopener noreferrer" title="Go to ${href}">${text}</a> `
-		: `<a href="${href}" rel="nofollow noopener noreferrer" title="${href?.replace(getBaseURI(), '/')}">${text}</a> `;
+		? `<a href="${href}" rel="nofollow noopener noreferrer" title="${href}">${text}</a> `
+		: `<a href="${href}" rel="nofollow noopener noreferrer" title="Go to: ${href?.replace(getBaseURI(), '/')}">${text}</a> `;
 const paragraphMarked = (text: string): string => text;
 const brMarked = (): string => ' ';
 const listItemMarked = (text: string): string => {
