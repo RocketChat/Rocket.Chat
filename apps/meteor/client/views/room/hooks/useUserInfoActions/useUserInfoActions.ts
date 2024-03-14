@@ -43,7 +43,11 @@ export const useUserInfoActions = (
 	size = 2,
 	isMember?: boolean,
 ): { actions: [string, UserInfoAction][]; menuActions: any | undefined } => {
-	const { data, refetch, isSuccess: membershipCheckSuccess } = useMemberExists(rid, user.username as string, isMember);
+	const {
+		data,
+		refetch,
+		isSuccess: membershipCheckSuccess,
+	} = useMemberExists({ roomId: rid, username: user.username as string, isMember });
 	const memberChangeReload = useCallback(async () => {
 		await reload?.();
 		await refetch();
