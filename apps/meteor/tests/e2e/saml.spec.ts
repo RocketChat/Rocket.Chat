@@ -1,6 +1,7 @@
 import child_process from 'child_process';
 import path from 'path';
 
+import { faker } from '@faker-js/faker';
 import { Page } from '@playwright/test';
 import { v2 as compose } from 'docker-compose'
 import { MongoClient } from 'mongodb';
@@ -92,6 +93,9 @@ const setupCustomRole = async (api: BaseTest['api']) => {
 test.describe('SAML', () => {
 	let poRegistration: Registration;
 	let samlRoleId: string;
+	let targetInviteGroupId: string;
+	let targetInviteGroupName: string;
+	let inviteUrl: string;
 
 	const containerPath = path.join(__dirname, 'containers', 'saml');
 
@@ -113,6 +117,19 @@ test.describe('SAML', () => {
 		await compose.upOne('testsamlidp_idp', {
 			cwd: containerPath,
 		});
+	});
+
+	test.beforeAll(async ({ api }) => {
+		const groupResponse = await api.post('/channels.create', { name: faker.string.uuid() });
+		expect(groupResponse.status()).toBe(200);
+		const { group } = await groupResponse.json();
+		targetInviteGroupId = group._id;
+		targetInviteGroupName = group.name;
+
+		const inviteResponse = await api.post('/findOrCreateInvite', { rid: targetInviteGroupId, days: 1, maxUses: 1 });
+		expect(inviteResponse.status()).toBe(200);
+		const { url } = await inviteResponse.json();
+		inviteUrl = url;
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -310,6 +327,17 @@ test.describe('SAML', () => {
 			expect(user?.roles).toBeDefined();
 			expect(user?.roles?.length).toBe(1);
 			expect(user?.roles).toContain(samlRoleId);
+		});
+	});
+
+	test('Redirect after login', async ({ page }) => {
+		await doLogoutStep(page);
+		await page.goto(inviteUrl);
+
+		await doLoginStep(page, 'samluser4');
+
+		await test.step('expect to be redirected to the invited room after succesful login', async () => {
+			await expect(page).toHaveURL(`/group/${targetInviteGroupName}`);
 		});
 	});
 
