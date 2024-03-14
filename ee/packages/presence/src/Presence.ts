@@ -61,13 +61,10 @@ export class Presence extends ServiceClass implements IPresence {
 			// The scalability module is also accepted as a way to enable the presence service for backwards compatibility
 			const hasLicense = this.hasPresenceLicense || this.hasScalabilityLicense;
 
-			if (this.hasLicense !== hasLicense) {
-				this.hasLicense = hasLicense;
-
-				// broadcast should always be enabled if license is active (unless the troubleshoot setting is on)
-				if (!this.broadcastEnabled && hasLicense) {
-					await this.toggleBroadcast(true);
-				}
+			this.hasLicense = hasLicense;
+			// broadcast should always be enabled if license is active (unless the troubleshoot setting is on)
+			if (!this.broadcastEnabled && hasLicense) {
+				await this.toggleBroadcast(true);
 			}
 		});
 	}
