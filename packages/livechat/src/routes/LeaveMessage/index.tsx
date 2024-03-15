@@ -27,7 +27,7 @@ const LeaveMessage: FunctionalComponent<{ path: string }> = () => {
 		config: {
 			departments = [],
 			messages: { offlineMessage, offlineSuccessMessage, offlineUnavailableMessage },
-			theme: { offlineTitle: title },
+			theme: { offlineTitle: title, offlineColor },
 			settings: { displayOfflineForm },
 		},
 		iframe,
@@ -85,7 +85,7 @@ const LeaveMessage: FunctionalComponent<{ path: string }> = () => {
 	const defaultUnavailableMessage = ''; // TODO
 
 	return (
-		<Screen title={customOfflineTitle || title || defaultTitle} className={createClassName(styles, 'leave-message')}>
+		<Screen title={customOfflineTitle || title || defaultTitle} color={offlineColor} className={createClassName(styles, 'leave-message')}>
 			<FormScrollShadow topRef={topRef} bottomRef={bottomRef}>
 				<Screen.Content full>
 					<div id='top' ref={topRef} style={{ height: '1px', width: '100%' }} />

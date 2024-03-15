@@ -13,6 +13,7 @@ import PlainSpan from './PlainSpan';
 const CodeElement = lazy(() => import('../code/CodeElement'));
 
 type MessageBlock =
+	| MessageParser.Timestamp
 	| MessageParser.Emoji
 	| MessageParser.ChannelMention
 	| MessageParser.UserMention
