@@ -1,9 +1,10 @@
-import { useRouter, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import type { LocationPathname } from '@rocket.chat/ui-contexts';
+import { useAbsoluteUrl, useRouter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import { useEffect } from 'react';
 
 const SAMLLoginRoute = () => {
-	const siteUrl = useSetting<string>('Site_Url');
+	const rootUrl = useAbsoluteUrl()('');
 	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -11,15 +12,21 @@ const SAMLLoginRoute = () => {
 		const { token } = router.getRouteParameters();
 		const { redirectUrl } = router.getSearchParameters();
 
-		if (!siteUrl) {
-			return;
-		}
 		Meteor.loginWithSamlToken(token, (error?: unknown) => {
 			if (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 
-			if (redirectUrl?.startsWith(siteUrl)) {
+			const decodedRedirectUrl = decodeURIComponent(redirectUrl || '');
+			if (decodedRedirectUrl?.startsWith(rootUrl)) {
+				const redirect = new URL(decodedRedirectUrl);
+				router.navigate(
+					{
+						pathname: redirect.pathname as LocationPathname,
+						search: Object.fromEntries(redirect.searchParams.entries()),
+					},
+					{ replace: true },
+				);
 				window.location.href = decodeURIComponent(redirectUrl);
 			} else {
 				router.navigate(
@@ -30,7 +37,7 @@ const SAMLLoginRoute = () => {
 				);
 			}
 		});
-	}, [dispatchToastMessage, router, siteUrl]);
+	}, [dispatchToastMessage, rootUrl, router]);
 
 	return null;
 };
