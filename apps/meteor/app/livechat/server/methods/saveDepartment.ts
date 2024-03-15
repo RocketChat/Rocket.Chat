@@ -2,8 +2,8 @@ import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
-import { LivechatEnterprise } from '../../../../ee/app/livechat-enterprise/server/lib/LivechatEnterprise';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { Livechat } from '../lib/LivechatTyped';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -42,6 +42,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		return LivechatEnterprise.saveDepartment(_id, departmentData, { upsert: departmentAgents });
+		return Livechat.saveDepartment(_id, departmentData, { upsert: departmentAgents });
 	},
 });
