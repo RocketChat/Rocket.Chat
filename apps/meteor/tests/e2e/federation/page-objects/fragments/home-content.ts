@@ -232,7 +232,7 @@ export class FederationHomeContent {
 	}
 
 	get threadInputMessage(): Locator {
-		return this.page.getByRole('dialog').getByRole('textbox', { name: 'msg' }).last();
+		return this.page.getByRole('dialog').locator('[name="msg"]').last();
 	}
 
 	async sendFileMessage(fileName: string): Promise<void> {
@@ -240,7 +240,7 @@ export class FederationHomeContent {
 	}
 
 	async sendThreadMessage(message: string): Promise<void> {
-		await this.page.getByRole('dialog').getByRole('textbox', { name: 'msg' }).last().fill(message);
+		await this.page.getByRole('dialog').locator('[name="msg"]').last().fill(message);
 		await this.page.keyboard.press('Enter');
 	}
 

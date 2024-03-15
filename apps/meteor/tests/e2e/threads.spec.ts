@@ -24,7 +24,7 @@ test.describe.serial('Threads', () => {
 		await expect(page).toHaveURL(/.*thread/);
 
 		await poHomeChannel.content.toggleAlsoSendThreadToChannel(true);
-		await page.getByRole('dialog').getByRole('textbox', { name: 'msg' }).last().fill('This is a thread message also sent in channel');
+		await page.getByRole('dialog').locator('[name="msg"]').last().fill('This is a thread message also sent in channel');
 		await page.keyboard.press('Enter');
 		await expect(poHomeChannel.content.lastThreadMessageText).toContainText('This is a thread message also sent in channel');
 		await expect(poHomeChannel.content.lastUserMessage).toContainText('This is a thread message also sent in channel');
