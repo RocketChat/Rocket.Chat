@@ -202,7 +202,7 @@ describe('Create attachments for message URLs', () => {
 		expect(message).to.not.have.property('attachments');
 	});
 
-	it('should remove other attachments from the message if message_link is the same as the URL', async () => {
+	it('should not duplicate quote attachment from the message if message_link is the same as the URL', async () => {
 		const jumpToMessage = new BeforeSaveJumpToMessage({
 			getMessages: async () => [createMessage('linked message', { _id: 'linked' })],
 			getRooms: async () => [createRoom()],
@@ -245,6 +245,72 @@ describe('Create attachments for message URLs', () => {
 		const [attachment] = message.attachments ?? [];
 
 		expect(attachment).to.have.property('text', 'linked message');
+	});
+
+	it('should remove existing quote attachments provided in the message if they are not in the urls field', async () => {
+		const jumpToMessage = new BeforeSaveJumpToMessage({
+			getMessages: async () => [createMessage('linked message', { _id: 'linked' })],
+			getRooms: async () => [createRoom()],
+			canAccessRoom: async () => true,
+			getUserAvatarURL: () => 'url',
+		});
+
+		const message = await jumpToMessage.createAttachmentForMessageURLs({
+			message: createMessage('hey', {
+				urls: [],
+				attachments: [
+					{
+						text: 'old attachment',
+						author_name: 'username',
+						author_icon: 'url',
+						message_link: 'https://open.rocket.chat/linked?msg=linked',
+						ts: new Date(),
+					},
+				],
+			}),
+			user: createUser(),
+			config: {
+				chainLimit: 10,
+				siteUrl: 'https://open.rocket.chat',
+				useRealName: true,
+			},
+		});
+
+		expect(message).to.have.property('attachments').and.to.have.lengthOf(0);
+	});
+
+	it('should not consider attachments with undefined message_link as quotes', async () => {
+		const jumpToMessage = new BeforeSaveJumpToMessage({
+			getMessages: async () => [createMessage('linked message', { _id: 'linked' })],
+			getRooms: async () => [createRoom()],
+			canAccessRoom: async () => true,
+			getUserAvatarURL: () => 'url',
+		});
+
+		const message = await jumpToMessage.createAttachmentForMessageURLs({
+			message: createMessage('hey', {
+				urls: [],
+				attachments: [
+					{
+						text: 'old attachment',
+						author_name: 'username',
+						author_icon: 'url',
+						message_link: undefined,
+						ts: new Date(),
+					},
+				],
+			}),
+			user: createUser(),
+			config: {
+				chainLimit: 10,
+				siteUrl: 'https://open.rocket.chat',
+				useRealName: true,
+			},
+		});
+
+		expect(message).to.have.property('attachments').and.to.have.lengthOf(1);
+		const [attachment] = message.attachments ?? [];
+		expect(attachment).to.have.property('text', 'old attachment');
 	});
 
 	it('should return an attachment with the message content if a message URL is provided', async () => {

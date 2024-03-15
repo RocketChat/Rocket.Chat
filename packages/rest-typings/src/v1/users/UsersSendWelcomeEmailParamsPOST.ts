@@ -1,8 +1,4 @@
-import Ajv from 'ajv';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
+import { ajv } from '../Ajv';
 
 export type UsersSendWelcomeEmailParamsPOST = { email: string };
 
@@ -11,6 +7,7 @@ const UsersSendWelcomeEmailParamsPostSchema = {
 	properties: {
 		email: {
 			type: 'string',
+			format: 'email',
 		},
 	},
 	required: ['email'],
