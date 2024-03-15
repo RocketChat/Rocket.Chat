@@ -63,7 +63,7 @@
     "@babel/preset-typescript": "~7.22.15",
     "@rocket.chat/apps-engine": "1.42.0-alpha.619",
     "@rocket.chat/eslint-config": "workspace:^",
-    "@rocket.chat/fuselage": "^0.50.0",
+    "@rocket.chat/fuselage": "^0.50.1",
     "@rocket.chat/fuselage-hooks": "^0.33.0",
     "@rocket.chat/fuselage-polyfills": "~0.31.25",
     "@rocket.chat/icons": "^0.33.0",

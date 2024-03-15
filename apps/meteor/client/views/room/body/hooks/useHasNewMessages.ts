@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { RoomHistoryManager } from '../../../../../app/ui-utils/client';
 import { callbacks } from '../../../../../lib/callbacks';
+import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
 import { useChat } from '../../contexts/ChatContext';
 
 export const useHasNewMessages = (
@@ -74,7 +75,27 @@ export const useHasNewMessages = (
 		};
 	}, [isAtBottom, rid, sendToBottom, uid]);
 
+	const ref = useCallback(
+		(node: HTMLElement | null) => {
+			if (!node) {
+				return;
+			}
+
+			node.addEventListener(
+				'scroll',
+				withThrottling({ wait: 100 })(() => {
+					atBottomRef.current && setHasNewMessages(false);
+				}),
+				{
+					passive: true,
+				},
+			);
+		},
+		[atBottomRef],
+	);
+
 	return {
+		newMessagesScrollRef: ref,
 		handleNewMessageButtonClick,
 		handleJumpToRecentButtonClick,
 		handleComposerResize,

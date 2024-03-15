@@ -7,8 +7,16 @@ export class OmnichannelLiveChat {
 		this.page = page;
 	}
 
-	btnOpenLiveChat(label: string): Locator {
+	btnOpenOnlineLiveChat(label: string): Locator {
 		return this.page.locator(`role=button[name="${label}"]`);
+	}
+
+	btnOpenLiveChat(): Locator {
+		return this.page.locator(`[data-qa-id="chat-button"]`);
+	}
+
+	get btnNewChat(): Locator {
+		return this.page.locator(`role=button[name="New Chat"]`);
 	}
 
 	get btnOptions(): Locator {
@@ -43,7 +51,17 @@ export class OmnichannelLiveChat {
 
 	async openLiveChat(): Promise<void> {
 		const { value: siteName } = await (await this.api.get('/settings/Site_Name')).json();
-		await this.btnOpenLiveChat(siteName).click();
+		await this.btnOpenOnlineLiveChat(siteName).click();
+	}
+
+	// TODO: replace openLivechat with this method and create a new method for openOnlineLivechat
+	// as openLivechat only opens a chat that is in the 'online' state
+	async openAnyLiveChat(): Promise<void> {
+		await this.btnOpenLiveChat().click();
+	}
+
+	async startNewChat(): Promise<void> {
+		await this.btnNewChat.click();
 	}
 
 	unreadMessagesBadge(count: number): Locator {
@@ -93,5 +111,13 @@ export class OmnichannelLiveChat {
 		}
 		await this.btnSendMessage(buttonLabel).click();
 		await this.page.waitForSelector('[data-qa="livechat-composer"]');
+	}
+
+	public async sendMessageAndCloseChat(liveChatUser: { name: string; email: string }): Promise<void> {
+		await this.openLiveChat();
+		await this.sendMessage(liveChatUser, false);
+		await this.onlineAgentMessage.type('this_a_test_message_from_user');
+		await this.btnSendMessageToOnlineAgent.click();
+		await this.closeChat();
 	}
 }

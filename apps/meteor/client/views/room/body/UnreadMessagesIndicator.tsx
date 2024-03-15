@@ -11,10 +11,6 @@ type UnreadMessagesIndicatorProps = {
 };
 
 const indicatorStyle = css`
-	/* position: absolute;
-	top: 8px;
-	left: 50%;
-	translate: -50%; */
 	position: relative;
 	display: flex;
 	justify-content: center;
@@ -25,14 +21,14 @@ const UnreadMessagesIndicator = ({ count, onJumpButtonClick, onMarkAsReadButtonC
 	const t = useTranslation();
 
 	return (
-		<Box className={indicatorStyle}>
+		<Box className={indicatorStyle} mbs={8}>
 			<Bubble
 				onClick={onJumpButtonClick}
 				onDismiss={onMarkAsReadButtonClick}
 				icon='arrow-up'
 				dismissProps={{ 'title': t('Mark_as_read'), 'aria-label': `${t('Mark_as_read')}` }}
 			>
-				{t('S_unread_messages', count)}
+				{t('unread_messages', { count })}
 			</Bubble>
 		</Box>
 	);
