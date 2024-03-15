@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-fix: `Edit Discussion` name validation allow special characters
+Fix error on changing a discussion name
