@@ -68,8 +68,14 @@ class Triggers {
 	}
 
 	async when(id, condition) {
+		const { user } = store.state;
+
 		if (!this._enabled) {
-			return Promise.reject('Triggers disabled');
+			return Promise.reject('Failed to schedule. Triggers disabled.');
+		}
+
+		if (user) {
+			return Promise.reject('Failed to schedule. User already registered.');
 		}
 
 		this._updateRecord(id, {
