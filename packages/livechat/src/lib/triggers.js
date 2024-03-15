@@ -6,6 +6,13 @@ import { actions } from './triggerActions';
 import { conditions } from './triggerConditions';
 import { hasTriggerCondition, isInIframe } from './triggerUtils';
 
+class IgnoredScheduledTriggerError extends Error {
+	constructor(message) {
+		super(message);
+		this.name = 'IgnoredScheduledTriggerError';
+	}
+}
+
 class Triggers {
 	/** @property {Triggers} instance*/
 
@@ -71,11 +78,17 @@ class Triggers {
 		const { user } = store.state;
 
 		if (!this._enabled) {
-			return Promise.reject('Failed to schedule. Triggers disabled.');
+			return new IgnoredScheduledTriggerError('Failed to schedule. Triggers disabled.');
 		}
 
-		if (user) {
-			return Promise.reject('Failed to schedule. User already registered.');
+		if (condition.name !== 'after-guest-registration' && user) {
+			throw new IgnoredScheduledTriggerError('Failed to schedule. User already registered.');
+		}
+
+		const record = this._findRecordById(id);
+
+		if (record && record.status === 'scheduled') {
+			throw new IgnoredScheduledTriggerError('Trigger already scheduled. ignoring...');
 		}
 
 		this._updateRecord(id, {
@@ -113,22 +126,25 @@ class Triggers {
 
 		return this.when(id, condition)
 			.then(() => this.fire(id, action, condition))
-			.catch((error) => console.error(`[Livechat Triggers]: ${error}`));
+			.catch((error) => {
+				if (error instanceof IgnoredScheduledTriggerError) {
+					console.warn(`[Livechat Triggers]: ${error}`);
+					return;
+				}
+				console.error(`[Livechat Triggers]: ${error}`);
+			});
 	}
 
 	scheduleAll(triggers) {
 		triggers.map((trigger) => this.schedule(trigger));
 	}
 
-	async processTriggers({ force = false, filter = () => true } = {}) {
-		const triggers = this._triggers.filter((trigger) => force || this._isValid(trigger)).filter(filter);
-
-		this.scheduleAll(triggers);
+	async processTrigger(id) {
+		this.processTriggers({ force: true, filter: (trigger) => trigger.conditions.some(({ name }) => name === id) });
 	}
 
-	rescheduleCondition(condition) {
-		const records = this._findRecordsByStatus(['fired']).filter((record) => record.condition === condition);
-		const triggers = this._triggers.filter((trigger) => records.some((record) => record.id === trigger._id));
+	async processTriggers({ force = false, filter = () => true } = {}) {
+		const triggers = this._triggers.filter((trigger) => force || this._isValid(trigger)).filter(filter);
 		this.scheduleAll(triggers);
 	}
 
