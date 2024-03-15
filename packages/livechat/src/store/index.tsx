@@ -72,6 +72,7 @@ export type StoreState = {
 		visible?: boolean;
 		department?: string;
 		language?: string;
+		defaultDepartment?: string;
 	};
 	gdpr: {
 		accepted: boolean;
