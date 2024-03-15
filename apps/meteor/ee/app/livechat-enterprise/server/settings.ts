@@ -269,6 +269,7 @@ export const createSettings = async (): Promise<void> => {
 		section: 'Livechat',
 		enterprise: true,
 		modules: ['livechat-enterprise'],
+		invalidValue: ['uj', 'ul', 'livechat-close'],
 		public: true,
 		values: [
 			{ key: 'uj', i18nLabel: 'Message_HideType_uj' },
