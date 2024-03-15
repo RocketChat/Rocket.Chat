@@ -127,7 +127,7 @@ test.describe('SAML', () => {
 		targetInviteGroupId = group._id;
 		targetInviteGroupName = group.name;
 
-		const inviteResponse = await api.post('/findOrCreateInvite', { rid: targetInviteGroupId, days: 1, maxUses: 1 });
+		const inviteResponse = await api.post('/findOrCreateInvite', { rid: targetInviteGroupId, days: 1, maxUses: 0 });
 		expect(inviteResponse.status()).toBe(200);
 		const { url, _id } = await inviteResponse.json();
 		inviteUrl = url;
