@@ -50,7 +50,7 @@ export class OmnichannelLiveChat {
 	}
 
 	async openLiveChat(): Promise<void> {
-		const { value: siteName } = await (await this.api.get('/settings/Site_Name')).json();
+		const { value: siteName } = await (await this.api.get('/settings/Livechat_title')).json();
 		await this.btnOpenOnlineLiveChat(siteName).click();
 	}
 
