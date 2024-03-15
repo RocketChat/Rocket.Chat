@@ -2,7 +2,7 @@ import type { RocketChatRecordDeleted, IWorkspaceCredentials, IWorkspaceAvailabl
 import type { IWorkspaceCredentialsModel } from '@rocket.chat/model-typings';
 import type { Collection, Db, Filter, IndexDescription } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
 
 export class WorkspaceCredentialsRaw extends BaseRaw<IWorkspaceCredentials> implements IWorkspaceCredentialsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IWorkspaceCredentials>>) {
