@@ -9,7 +9,7 @@ import { getCredentials, api, request, credentials } from '../../data/api-data.j
 import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
 import { imgURL } from '../../data/interactions';
 import { updateEEPermission, updatePermission, updateSetting } from '../../data/permissions.helper';
-import { closeRoom, createRoom } from '../../data/rooms.helper';
+import { closeRoom, createRoom, deleteRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE } from '../../e2e/config/constants';
@@ -1705,6 +1705,141 @@ describe('[Rooms]', function () {
 					expect(res.body.room).to.have.property('reactWhenReadOnly', true);
 				})
 				.end(done);
+		});
+	});
+
+	describe('/rooms.muteUser', () => {
+		let testChannel;
+
+		before('create a channel', async () => {
+			const result = await createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` });
+			testChannel = result.body.channel;
+		});
+
+		after(async () => {
+			await deleteRoom({ type: 'c', roomId: testChannel._id });
+		});
+
+		it('should invite rocket.cat user to room', () => {
+			return request
+				.post(api('channels.invite'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					username: 'rocket.cat',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel.name', testChannel.name);
+				});
+		});
+
+		it('should mute the rocket.cat user', () => {
+			return request
+				.post(api('rooms.muteUser'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					username: 'rocket.cat',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+
+		it('should contain rocket.cat user in mute list', () => {
+			return request
+				.get(api('channels.info'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel.name', testChannel.name);
+					expect(res.body.channel).to.have.property('muted').and.to.be.an('array');
+					expect(res.body.channel.muted).to.have.lengthOf(1);
+					expect(res.body.channel.muted[0]).to.be.equal('rocket.cat');
+				});
+		});
+	});
+
+	describe('/rooms.unmuteUser', () => {
+		let testChannel;
+
+		before('create a channel', async () => {
+			const result = await createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` });
+			testChannel = result.body.channel;
+
+			await request
+				.post(api('rooms.saveRoomSettings'))
+				.set(credentials)
+				.send({
+					rid: testChannel._id,
+					readOnly: true,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.post(api('channels.invite'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					username: 'rocket.cat',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel.name', testChannel.name);
+				});
+		});
+
+		after(async () => {
+			await deleteRoom({ type: 'c', roomId: testChannel._id });
+		});
+
+		it('should unmute the rocket.cat user in read-only room', () => {
+			return request
+				.post(api('rooms.unmuteUser'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					username: 'rocket.cat',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+
+		it('should contain rocket.cat user in unmute list', () => {
+			return request
+				.get(api('channels.info'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel.name', testChannel.name);
+					expect(res.body.channel).to.have.property('unmuted').and.to.be.an('array');
+					expect(res.body.channel.unmuted).to.have.lengthOf(1);
+					expect(res.body.channel.unmuted[0]).to.be.equal('rocket.cat');
+				});
 		});
 	});
 });
