@@ -1,95 +1,58 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isThreadMessage } from '@rocket.chat/core-typings';
-import { MessageDivider } from '@rocket.chat/fuselage';
-import { useSetting, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ComponentProps } from 'react';
-import React, { Fragment, memo } from 'react';
+import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
+import type { ComponentProps } from 'react';
+import React, { Fragment } from 'react';
 
 import { MessageTypes } from '../../../../app/ui-utils/client';
-import RoomMessage from '../../../components/message/variants/RoomMessage';
-import SystemMessage from '../../../components/message/variants/SystemMessage';
-import ThreadMessagePreview from '../../../components/message/variants/ThreadMessagePreview';
-import { useFormatDate } from '../../../hooks/useFormatDate';
 import { useRoomSubscription } from '../contexts/RoomContext';
 import { useFirstUnreadMessageId } from '../hooks/useFirstUnreadMessageId';
 import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
+import { MessageListItem } from './MessageListItem';
 import { useMessages } from './hooks/useMessages';
-import { isMessageNewDay } from './lib/isMessageNewDay';
 import { isMessageSequential } from './lib/isMessageSequential';
 import MessageListProvider from './providers/MessageListProvider';
 
 type MessageListProps = {
 	rid: IRoom['_id'];
-	scrollMessageList: ComponentProps<typeof MessageListProvider>['scrollMessageList'];
+	messageListRef: ComponentProps<typeof MessageListProvider>['messageListRef'];
 };
 
-export const MessageList = ({ rid, scrollMessageList }: MessageListProps): ReactElement => {
-	const t = useTranslation();
+export const MessageList = function MessageList({ rid, messageListRef }: MessageListProps) {
 	const messages = useMessages({ rid });
 	const subscription = useRoomSubscription();
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 	const messageGroupingPeriod = Number(useSetting('Message_GroupingPeriod'));
+<<<<<<< HEAD
 	const formatDate = useFormatDate();
 
 	console.log('All messages - ', messages);
 
+=======
+>>>>>>> develop
 	const firstUnreadMessageId = useFirstUnreadMessageId();
 
 	return (
-		<MessageListProvider scrollMessageList={scrollMessageList}>
+		<MessageListProvider messageListRef={messageListRef}>
 			<SelectedMessagesProvider>
 				{messages.map((message, index, { [index - 1]: previous }) => {
 					const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
-
-					const newDay = isMessageNewDay(message, previous);
-
 					const showUnreadDivider = firstUnreadMessageId === message._id;
-
-					const showDivider = newDay || showUnreadDivider;
-
-					const shouldShowAsSequential = sequential && !newDay;
-
 					const system = MessageTypes.isSystemMessage(message);
 					const visible = !isThreadMessage(message) && !system;
 
-					const unread = Boolean(subscription?.tunread?.includes(message._id));
-					const mention = Boolean(subscription?.tunreadUser?.includes(message._id));
-					const all = Boolean(subscription?.tunreadGroup?.includes(message._id));
-					const ignoredUser = Boolean(subscription?.ignored?.includes(message.u._id));
-
 					return (
 						<Fragment key={message._id}>
-							{showDivider && (
-								<MessageDivider unreadLabel={showUnreadDivider ? t('Unread_Messages').toLowerCase() : undefined}>
-									{newDay && formatDate(message.ts)}
-								</MessageDivider>
-							)}
-
-							{visible && (
-								<RoomMessage
-									message={message}
-									showUserAvatar={showUserAvatar}
-									sequential={shouldShowAsSequential}
-									unread={unread}
-									mention={mention}
-									all={all}
-									ignoredUser={ignoredUser}
-								/>
-							)}
-
-							{isThreadMessage(message) && (
-								<ThreadMessagePreview
-									data-mid={message._id}
-									data-tmid={message.tmid}
-									data-unread={showUnreadDivider}
-									data-sequential={sequential}
-									sequential={shouldShowAsSequential}
-									message={message}
-									showUserAvatar={showUserAvatar}
-								/>
-							)}
-
-							{system && <SystemMessage showUserAvatar={showUserAvatar} message={message} />}
+							<MessageListItem
+								message={message}
+								previous={previous}
+								showUnreadDivider={showUnreadDivider}
+								showUserAvatar={showUserAvatar}
+								sequential={sequential}
+								visible={visible}
+								subscription={subscription}
+								system={system}
+							/>
 						</Fragment>
 					);
 				})}
@@ -97,5 +60,3 @@ export const MessageList = ({ rid, scrollMessageList }: MessageListProps): React
 		</MessageListProvider>
 	);
 };
-
-export default memo(MessageList);

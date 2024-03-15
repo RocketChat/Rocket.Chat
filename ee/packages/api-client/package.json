@@ -11,7 +11,7 @@
 		"jest": "~29.6.4",
 		"jest-fetch-mock": "^3.0.3",
 		"ts-jest": "~29.1.1",
-		"typescript": "~5.3.2"
+		"typescript": "~5.3.3"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",

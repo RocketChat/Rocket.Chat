@@ -42,7 +42,7 @@
     "build": "run-s .:build:clean .:build:bundle",
     ".:build:clean": "rimraf dist",
     ".:build:bundle": "webpack",
-    "test": "jest --runInBand --coverage",
+    "testunit": "jest --runInBand --coverage",
     "watch": "jest --watch",
     "lint": "eslint src",
     "docs": "typedoc"
@@ -68,7 +68,7 @@
     "ts-jest": "~29.1.0",
     "ts-loader": "~9.4.2",
     "typedoc": "~0.24.1",
-    "typescript": "~5.0.4",
+    "typescript": "~5.3.3",
     "webpack": "~5.78.0",
     "webpack-cli": "~5.0.1"
   },

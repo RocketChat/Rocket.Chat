@@ -37,25 +37,19 @@ const LeaderBar = ({ _id, name, username, visible, onAvatarClick, triggerProps }
 	}
 
 	const roomLeaderStyle = css`
-		position: absolute;
+		position: relative;
 		z-index: 9;
 		right: 0;
 		left: 0;
-
-		visibility: visible;
-
-		transition: transform 0.15s cubic-bezier(0.5, 0, 0.1, 1), visibility 0.15s cubic-bezier(0.5, 0, 0.1, 1);
+		display: flex;
 
 		&.animated-hidden {
-			visibility: hidden;
-
-			transform: translateY(-100%);
+			display: none !important;
 		}
 	`;
 
 	return (
 		<Box
-			display='flex'
 			backgroundColor='light'
 			color='default'
 			pi={24}
@@ -66,7 +60,7 @@ const LeaderBar = ({ _id, name, username, visible, onAvatarClick, triggerProps }
 			className={[roomLeaderStyle, 'room-leader', !visible && 'animated-hidden'].filter(isTruthy)}
 		>
 			<Box display='flex' alignItems='center'>
-				<Box is='button' mie={4} onClick={handleAvatarClick} {...triggerProps}>
+				<Box mie={4} onClick={handleAvatarClick} {...triggerProps}>
 					<UserAvatar username={username} />
 				</Box>
 				<Box fontScale='p2' mi={4} display='flex' alignItems='center'>

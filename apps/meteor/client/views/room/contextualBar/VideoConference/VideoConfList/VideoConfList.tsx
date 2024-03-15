@@ -15,7 +15,7 @@ import {
 	ContextualbarContent,
 	ContextualbarEmptyContent,
 } from '../../../../../components/Contextualbar';
-import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
+import { VirtuosoScrollbars } from '../../../../../components/CustomScrollbars';
 import { getErrorMessage } from '../../../../../lib/errorHandling';
 import VideoConfListItem from './VideoConfListItem';
 
@@ -78,7 +78,7 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 							endReached={(start): unknown => loadMoreItems(start, Math.min(50, total - start))}
 							overscan={25}
 							data={videoConfs}
-							components={{ Scroller: ScrollableContentWrapper as any }}
+							components={{ Scroller: VirtuosoScrollbars }}
 							itemContent={(_index, data): ReactElement => <VideoConfListItem videoConfData={data} reload={reload} />}
 						/>
 					</Box>

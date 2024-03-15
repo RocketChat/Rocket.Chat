@@ -4,7 +4,7 @@
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.22.20",
-		"@rocket.chat/fuselage": "^0.47.1",
+		"@rocket.chat/fuselage": "^0.50.1",
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"@types/babel__core": "~7.20.3",
 		"@types/react": "~17.0.69",
@@ -15,7 +15,7 @@
 		"eslint-plugin-storybook": "~0.6.15",
 		"eslint-plugin-testing-library": "~5.11.1",
 		"react": "^17.0.2",
-		"typescript": "~5.3.2"
+		"typescript": "~5.3.3"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
