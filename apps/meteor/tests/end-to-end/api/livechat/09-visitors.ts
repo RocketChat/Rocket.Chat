@@ -180,6 +180,39 @@ describe('LIVECHAT - visitors', function () {
 			expect(body.visitor).to.have.property('token', token);
 			expect(body.visitor).to.not.have.property('livechatData');
 		});
+
+		it('should not update a custom field whe the overwrite flag is false', async () => {
+			const token = `${new Date().getTime()}-test`;
+			const customFieldName = `new_custom_field_${Date.now()}`;
+			await createCustomField({
+				searchable: true,
+				field: customFieldName,
+				label: customFieldName,
+				defaultValue: 'test_default_address',
+				scope: 'visitor',
+				visibility: 'public',
+				regexp: '',
+			});
+			await request.post(api('livechat/visitor')).send({
+				visitor: {
+					token,
+					customFields: [{ key: customFieldName, value: 'Not a real address :)', overwrite: true }],
+				},
+			});
+
+			const { body } = await request.post(api('livechat/visitor')).send({
+				visitor: {
+					token,
+					customFields: [{ key: customFieldName, value: 'This should not change!', overwrite: false }],
+				},
+			});
+
+			expect(body).to.have.property('success', true);
+			expect(body).to.have.property('visitor');
+			expect(body.visitor).to.have.property('token', token);
+			expect(body.visitor).to.have.property('livechatData');
+			expect(body.visitor.livechatData).to.have.property(customFieldName, 'Not a real address :)');
+		});
 	});
 
 	describe('livechat/visitors.info', () => {
