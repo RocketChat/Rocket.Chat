@@ -28,8 +28,16 @@ export class Admin {
 		return this.page.locator(`label >> text=Private`);
 	}
 
+	get privateInput(): Locator {
+		return this.page.locator('input[name="roomType"]');
+	}
+
 	get roomNameInput(): Locator {
 		return this.page.locator('input[name="roomName"]');
+	}
+
+	get roomOwnerInput(): Locator {
+		return this.page.locator('input[name="roomOwner"]');
 	}
 
 	get archivedLabel(): Locator {

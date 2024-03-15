@@ -1,18 +1,20 @@
-import type { IMessage as AppsEngineMessage } from '@rocket.chat/apps-engine/definition/messages';
+import type { IAppRoomsConverter, IAppThreadsConverter, IAppUsersConverter, IAppsMessage, IAppsUser } from '@rocket.chat/apps';
+import type { IMessage as AppsEngineMessage, IMessageAttachment } from '@rocket.chat/apps-engine/definition/messages';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
+import type { IUser } from '@rocket.chat/core-typings';
 import { isEditedMessage, type IMessage } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 
-import { transformMappedData } from '../../../../ee/lib/misc/transformMappedData';
+import { transformMappedData } from './transformMappedData';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 interface Orchestrator {
 	rooms: () => {
-		convertById(id: string): Promise<unknown>;
+		convertById: IAppRoomsConverter['convertById'];
 	};
 	users: () => {
-		convertById(id: string): Promise<unknown>;
-		convertToApp(user: unknown): Promise<unknown>;
+		convertById: IAppUsersConverter['convertById'];
+		convertToApp: IAppUsersConverter['convertToApp'];
 	};
 }
 
@@ -34,7 +36,7 @@ const cachedFunction = <F extends (...args: any[]) => any>(fn: F) => {
 	}) as F;
 };
 
-export class AppThreadsConverter {
+export class AppThreadsConverter implements IAppThreadsConverter {
 	constructor(
 		private readonly orch: {
 			getConverters: () => {
@@ -111,7 +113,7 @@ export class AppThreadsConverter {
 
 				return convertUserById(editedBy._id);
 			},
-			attachments: async (message: IMessage) => {
+			attachments: async (message: IMessage): Promise<IAppsMessage['attachments']> => {
 				if (!message.attachments) {
 					return undefined;
 				}
@@ -119,26 +121,33 @@ export class AppThreadsConverter {
 				delete message.attachments;
 				return result;
 			},
-			sender: async (message: IMessage) => {
+			sender: async (message: IMessage): Promise<IAppsUser> => {
+				// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
 				if (!message.u?._id) {
-					return undefined;
+					return undefined as unknown as IAppsUser;
 				}
 
-				let user = await convertUserById(message.u._id);
+				let user: IAppsUser | undefined = await convertUserById(message.u._id);
 
 				// When the sender of the message is a Guest (livechat) and not a user
 				if (!user) {
-					user = await convertToApp(message.u);
+					user = await convertToApp(message.u as unknown as IUser);
 				}
 
-				return user;
+				return user as IAppsUser;
 			},
-		};
+		} as const;
 
-		return (await transformMappedData(msgObj, map)) as unknown as AppsEngineMessage;
+		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
+		const msgData = {
+			...msgObj,
+			reactions: msgObj.reactions as unknown as AppsEngineMessage['reactions'],
+		} as IMessage & { reactions?: AppsEngineMessage['reactions'] };
+
+		return transformMappedData(msgData, map);
 	}
 
-	async _convertAttachmentsToApp(attachments: NonNullable<IMessage['attachments']>) {
+	async _convertAttachmentsToApp(attachments: NonNullable<IMessage['attachments']>): Promise<NonNullable<IAppsMessage['attachments']>> {
 		const map = {
 			collapsed: 'collapsed',
 			color: 'color',
@@ -161,7 +170,7 @@ export class AppThreadsConverter {
 			actions: 'actions',
 			type: 'type',
 			description: 'description',
-			author: (attachment: NonNullable<IMessage['attachments']>[number]) => {
+			author: (attachment: NonNullable<IMessage['attachments']>[number]): IMessageAttachment['author'] => {
 				if (!('author_name' in attachment)) {
 					return;
 				}
@@ -188,7 +197,7 @@ export class AppThreadsConverter {
 				delete attachment.ts;
 				return result;
 			},
-		};
+		} as const;
 
 		return Promise.all(attachments.map(async (attachment) => transformMappedData(attachment, map)));
 	}
