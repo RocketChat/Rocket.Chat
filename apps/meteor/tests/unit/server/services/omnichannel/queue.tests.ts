@@ -286,6 +286,8 @@ describe('Omnichannel Queue processor', () => {
 		it('should return true for any other case', async () => {
 			const queue = new OmnichannelQueue();
 			expect(await queue.reconciliation('random', { roomId: 'rid', inquiryId: 'inquiryId' })).to.be.true;
+			expect(models.LivechatInquiry.removeByRoomId.notCalled).to.be.true;
+			expect(models.LivechatInquiry.takeInquiry.notCalled).to.be.true;
 		});
 	});
 	describe('processWaitingQueue', () => {
@@ -293,6 +295,7 @@ describe('Omnichannel Queue processor', () => {
 		beforeEach(() => {
 			models.LivechatRooms.findOneById.reset();
 			models.LivechatInquiry.takeInquiry.resetHistory();
+			models.LivechatInquiry.removeByRoomId.resetHistory();
 			delegateInquiry.resetHistory();
 			queueLogger.debug.resetHistory();
 			clock = Sinon.useFakeTimers();
@@ -327,6 +330,7 @@ describe('Omnichannel Queue processor', () => {
 					step: 'reconciliation',
 				}),
 			).to.be.true;
+			expect(models.LivechatInquiry.removeByRoomId.calledOnce).to.be.true;
 		});
 		it('should call takeInquiry when findOneById returns a room thats already being served', async () => {
 			models.LivechatRooms.findOneById.returns({ _id: 'rid', servedBy: { some: 'thing' } });
@@ -394,6 +398,7 @@ describe('Omnichannel Queue processor', () => {
 			queue.running = true;
 			expect(await queue.execute()).to.be.undefined;
 			expect(license.shouldPreventAction.calledOnce).to.be.true;
+			expect(queue.running).to.be.false;
 		});
 		it('should try to process a queue if license is not over mac limits', async () => {
 			license.shouldPreventAction.returns(false);
