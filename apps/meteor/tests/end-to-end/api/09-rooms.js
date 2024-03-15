@@ -9,7 +9,7 @@ import { getCredentials, api, request, credentials } from '../../data/api-data.j
 import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
 import { imgURL } from '../../data/interactions';
 import { updateEEPermission, updatePermission, updateSetting } from '../../data/permissions.helper';
-import { closeRoom, createRoom } from '../../data/rooms.helper';
+import { closeRoom, createRoom, deleteRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE } from '../../e2e/config/constants';
@@ -1648,23 +1648,22 @@ describe('[Rooms]', function () {
 		const randomString = `randomString${Date.now()}`;
 		let discussion;
 
-		before('create a channel and a discussion', (done) => {
-			createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` }).end((err, res) => {
-				testChannel = res.body.channel;
-				request
-					.post(api('rooms.createDiscussion'))
-					.set(credentials)
-					.send({
-						prid: testChannel._id,
-						t_name: `discussion-create-from-tests-${testChannel.name}`,
-					})
-					.end((err, res) => {
-						discussion = res.body.discussion;
-						done();
-					});
-			});
+		before(async () => {
+			const result = await createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` });
+			testChannel = result.body.channel;
+
+			const resDiscussion = await request
+				.post(api('rooms.createDiscussion'))
+				.set(credentials)
+				.send({
+					prid: testChannel._id,
+					t_name: `discussion-create-from-tests-${testChannel.name}`,
+				});
+
+			discussion = resDiscussion.body.discussion;
 		});
-		after(() => closeRoom({ type: 'p', roomId: discussion._id }));
+
+		after(() => Promise.all([deleteRoom({ type: 'p', roomId: discussion._id }), deleteRoom({ type: 'p', roomId: testChannel._id })]));
 
 		it('should update the room settings', (done) => {
 			const imageDataUri = `data:image/png;base64,${fs.readFileSync(path.join(process.cwd(), imgURL)).toString('base64')}`;
@@ -1721,17 +1720,33 @@ describe('[Rooms]', function () {
 				.end(done);
 		});
 
-		it('should be able to update the discussion name with spaces', (done) => {
-			request
+		it('should be able to update the discussion name with spaces', async () => {
+			const newDiscussionName = `${randomString} with spaces`;
+
+			await request
 				.post(api('rooms.saveRoomSettings'))
 				.set(credentials)
 				.send({
 					rid: discussion._id,
-					roomName: `${randomString} with spaces`,
+					roomName: newDiscussionName,
 				})
 				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			await request
+				.get(api('rooms.info'))
+				.set(credentials)
+				.query({
+					roomId: discussion._id,
+				})
 				.expect(200)
-				.end(done);
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.be.an('object');
+
+					expect(res.body.room).to.have.property('_id', discussion._id);
+					expect(res.body.room).to.have.property('fname', newDiscussionName);
+				});
 		});
 	});
 });

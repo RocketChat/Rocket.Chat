@@ -6,16 +6,8 @@ import { Meteor } from 'meteor/meteor';
 import { validateName } from '../../../lib/server/functions/validateName';
 import { settings } from '../../../settings/server';
 
-export const getValidRoomName = async (
-	displayName: string,
-	rid = '',
-	options: { allowAll?: boolean; allowDuplicates?: boolean; nameValidationRegex?: string } = {},
-) => {
+export const getValidRoomName = async (displayName: string, rid = '', options: { allowDuplicates?: boolean } = {}) => {
 	let slugifiedName = displayName;
-
-	if (options.allowAll) {
-		return slugifiedName;
-	}
 
 	if (settings.get('UI_Allow_room_names_with_special_chars')) {
 		const cleanName = limax(displayName, { maintainCase: true });
@@ -40,14 +32,10 @@ export const getValidRoomName = async (
 
 	let nameValidation;
 
-	if (options.nameValidationRegex) {
-		nameValidation = new RegExp(options.nameValidationRegex);
-	} else {
-		try {
-			nameValidation = new RegExp(`^${settings.get('UTF8_Channel_Names_Validation')}$`);
-		} catch (error) {
-			nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
-		}
+	try {
+		nameValidation = new RegExp(`^${settings.get('UTF8_Channel_Names_Validation')}$`);
+	} catch (error) {
+		nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
 	}
 
 	if (!nameValidation.test(slugifiedName) || !validateName(slugifiedName)) {
