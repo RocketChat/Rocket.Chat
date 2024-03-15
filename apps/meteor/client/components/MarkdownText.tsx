@@ -1,4 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
+import { isExternal, getBaseURI } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import dompurify from 'dompurify';
 import { marked } from 'marked';
@@ -14,27 +15,6 @@ type MarkdownTextParams = {
 	parseEmoji: boolean;
 	withTruncatedText: boolean;
 } & ComponentProps<typeof Box>;
-
-const getBaseURI = (): string => {
-	if (document.baseURI) {
-		return document.baseURI;
-	}
-
-	// Should be exactly one tag:
-	//   https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-	const base = document.getElementsByTagName('base');
-
-	// Return location from BASE tag.
-	if (base.length > 0) {
-		return base[0].href;
-	}
-
-	// Else use implementation of documentURI:
-	//   http://www.w3.org/TR/DOM-Level-3-Core/core.html#Node3-baseURI
-	return document.URL;
-};
-
-const isExternal = (href: string): boolean => href.indexOf(getBaseURI()) !== 0;
 
 const documentRenderer = new marked.Renderer();
 const inlineRenderer = new marked.Renderer();
