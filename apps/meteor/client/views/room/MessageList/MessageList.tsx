@@ -23,13 +23,6 @@ export const MessageList = function MessageList({ rid, messageListRef }: Message
 	const subscription = useRoomSubscription();
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 	const messageGroupingPeriod = Number(useSetting('Message_GroupingPeriod'));
-<<<<<<< HEAD
-	const formatDate = useFormatDate();
-
-	console.log('All messages - ', messages);
-
-=======
->>>>>>> develop
 	const firstUnreadMessageId = useFirstUnreadMessageId();
 
 	return (
