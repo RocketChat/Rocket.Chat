@@ -332,7 +332,7 @@ test.describe('SAML', () => {
 		});
 	});
 
-	test('Redirect after login', async ({ page }) => {
+	test('Redirect to a specific group after login when using a valid invite link', async ({ page }) => {
 		await page.goto(inviteUrl);
 		await page.getByText('Web application').click();
 		await page.getByRole('link', { name: 'Back to Login' }).click();
