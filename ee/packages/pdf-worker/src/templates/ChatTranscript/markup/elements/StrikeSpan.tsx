@@ -13,6 +13,7 @@ const styles = StyleSheet.create({
 });
 
 type MessageBlock =
+	| MessageParser.Timestamp
 	| MessageParser.Emoji
 	| MessageParser.ChannelMention
 	| MessageParser.UserMention

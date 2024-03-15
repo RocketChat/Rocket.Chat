@@ -19,7 +19,6 @@ import {
 	isUsersCheckUsernameAvailabilityParamsGET,
 	isUsersSendConfirmationEmailParamsPOST,
 } from '@rocket.chat/rest-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -27,8 +26,8 @@ import type { Filter } from 'mongodb';
 
 import { i18n } from '../../../../server/lib/i18n';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
+import { sendWelcomeEmail } from '../../../../server/lib/sendWelcomeEmail';
 import { saveUserPreferences } from '../../../../server/methods/saveUserPreferences';
-import { sendWelcomeEmail } from '../../../../server/methods/sendWelcomeEmail';
 import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
 import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -52,7 +51,7 @@ import { getUserFromParams } from '../helpers/getUserFromParams';
 import { isUserFromParams } from '../helpers/isUserFromParams';
 import { getUploadFormData } from '../lib/getUploadFormData';
 import { isValidQuery } from '../lib/isValidQuery';
-import { findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
+import { findPaginatedUsersByStatus, findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
 
 API.v1.addRoute(
 	'users.getAvatar',
@@ -564,104 +563,32 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		validateParams: isUsersListStatusProps,
-		permissionsRequired: ['view-d-room', 'view-outside-room'],
+		permissionsRequired: ['view-d-room'],
 	},
 	{
 		async get() {
+			if (
+				settings.get('API_Apply_permission_view-outside-room_on_users-list') &&
+				!(await hasPermissionAsync(this.userId, 'view-outside-room'))
+			) {
+				return API.v1.unauthorized();
+			}
+
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields } = await this.parseJsonQuery();
+			const { sort } = await this.parseJsonQuery();
 			const { status, roles, searchTerm } = this.queryParams;
 
-			const projection = {
-				name: 1,
-				username: 1,
-				emails: 1,
-				roles: 1,
-				status: 1,
-				active: 1,
-				avatarETag: 1,
-				lastLogin: 1,
-				type: 1,
-				reason: 0,
-				...fields,
-			};
-
-			const actualSort: Record<string, 1 | -1> = sort || { username: 1 };
-
-			if (sort?.status) {
-				actualSort.active = sort.status;
-			}
-
-			if (sort?.name) {
-				actualSort.nameInsensitive = sort.name;
-			}
-
-			let match: Filter<IUser>;
-
-			switch (status) {
-				case 'active':
-					match = {
-						active: true,
-						lastLogin: { $exists: true },
-					};
-					break;
-				case 'all':
-					match = {};
-					break;
-				case 'deactivated':
-					match = {
-						active: false,
-						lastLogin: { $exists: true },
-					};
-					break;
-				case 'pending':
-					match = {
-						lastLogin: { $exists: false },
-						type: { $nin: ['bot', 'app'] },
-					};
-					projection.reason = 1;
-					break;
-				default:
-					throw new Meteor.Error('invalid-params', 'Invalid status parameter');
-			}
-
-			const canSeeAllUserInfo = await hasPermissionAsync(this.userId, 'view-full-other-user-info');
-
-			match = {
-				...match,
-				$or: [
-					...(canSeeAllUserInfo ? [{ 'emails.address': { $regex: escapeRegExp(searchTerm), $options: 'i' } }] : []),
-					{ username: { $regex: escapeRegExp(searchTerm), $options: 'i' } },
-					{ name: { $regex: escapeRegExp(searchTerm), $options: 'i' } },
-				],
-			};
-
-			if (roles?.length && !roles.includes('all')) {
-				match = {
-					...match,
-					roles: { $in: roles },
-				};
-			}
-
-			const { cursor, totalCount } = await Users.findPaginated(
-				{
-					...match,
-				},
-				{
-					sort: actualSort,
-					skip: offset,
-					limit: count,
-					projection,
-				},
+			return API.v1.success(
+				await findPaginatedUsersByStatus({
+					uid: this.userId,
+					offset,
+					count,
+					sort,
+					status,
+					roles,
+					searchTerm,
+				}),
 			);
-			const [users, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			return API.v1.success({
-				users,
-				count: users.length,
-				offset,
-				total,
-			});
 		},
 	},
 );
@@ -671,6 +598,7 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		validateParams: isUsersSendWelcomeEmailProps,
+		permissionsRequired: ['send-mail'],
 	},
 	{
 		async post() {

@@ -6,12 +6,6 @@ import { settings } from '../../app/settings/server';
 import { isSMTPConfigured } from '../../app/utils/server/functions/isSMTPConfigured';
 
 export async function sendWelcomeEmail(to: string): Promise<void> {
-	if (typeof to !== 'string') {
-		throw new Meteor.Error('error-invalid-arguments', 'Invalid arguments', {
-			method: 'sendWelcomeEmail',
-		});
-	}
-
 	if (!isSMTPConfigured()) {
 		throw new Meteor.Error('error-email-send-failed', 'SMTP is not configured', {
 			method: 'sendWelcomeEmail',
