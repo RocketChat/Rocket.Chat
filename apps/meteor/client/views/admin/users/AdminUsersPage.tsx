@@ -32,7 +32,7 @@ const AdminUsersPage = (): ReactElement => {
 
 	const seatsCap = useSeatsCap();
 
-	const isSeatsCapExceeded = useMemo(() => true, [seatsCap]);
+	const isSeatsCapExceeded = useMemo(() => !!seatsCap && seatsCap.activeUsers >= seatsCap.maxActiveUsers, [seatsCap]);
 
 	const router = useRouter();
 	const context = useRouteParameter('context');
