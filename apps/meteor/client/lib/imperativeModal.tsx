@@ -2,7 +2,7 @@ import { Emitter } from '@rocket.chat/emitter';
 import React, { Suspense, createElement } from 'react';
 import type { ComponentType, ReactNode } from 'react';
 
-import { modalStore } from '../providers/ModalStore';
+import { modalStore } from '../providers/ModalProvider/ModalStore';
 
 type ReactModalDescriptor<TProps> = {
 	component: ComponentType<TProps>;
