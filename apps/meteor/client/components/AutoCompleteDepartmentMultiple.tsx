@@ -1,4 +1,4 @@
-import { PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
+import { Box, CheckOption, PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
 import type { PaginatedMultiSelectOption } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
@@ -65,6 +65,13 @@ const AutoCompleteDepartmentMultiple = ({
 							return loadMoreDepartments(start, Math.min(50, departmentsTotal));
 					  }
 			}
+			renderItem={({ label, ...props }) => (
+				<CheckOption
+					{...props}
+					label={<Box style={{ whiteSpace: 'normal' }}>{label}</Box>}
+					selected={value.some((item) => item.value === props.value)}
+				/>
+			)}
 		/>
 	);
 };

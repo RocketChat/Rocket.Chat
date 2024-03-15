@@ -1,4 +1,4 @@
-import { Field, FieldLabel, FieldRow, FieldHint, Box, PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, FieldHint, Box, PaginatedMultiSelectFiltered, CheckOption } from '@rocket.chat/fuselage';
 import type { PaginatedMultiSelectOption } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
@@ -65,6 +65,13 @@ export const DepartmentForwarding = ({ departmentId, value = [], handler, label 
 										loadMoreDepartments(start, Math.min(50, departmentsTotal));
 								  }
 						}
+						renderItem={({ label, ...props }) => (
+							<CheckOption
+								{...props}
+								label={<Box style={{ whiteSpace: 'normal' }}>{label}</Box>}
+								selected={value.some((item) => item.value === props.value)}
+							/>
+						)}
 					/>
 				</Box>
 			</FieldRow>
