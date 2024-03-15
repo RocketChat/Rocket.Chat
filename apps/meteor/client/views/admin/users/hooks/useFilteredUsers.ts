@@ -1,4 +1,5 @@
 import type { IAdminUserTabs } from '@rocket.chat/core-typings';
+import type { UsersListStatusParamsGET } from '@rocket.chat/rest-typings';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
@@ -25,8 +26,24 @@ const useFilteredUsers = ({ searchTerm, prevSearchTerm, sortData, paginationData
 			setCurrent(0);
 		}
 
+		const listUsersPayload: Partial<Record<IAdminUserTabs, UsersListStatusParamsGET>> = {
+			all: {},
+			pending: {
+				hasLoggedIn: false,
+				type: 'user',
+			},
+			active: {
+				hasLoggedIn: true,
+				status: 'active',
+			},
+			deactivated: {
+				hasLoggedIn: true,
+				status: 'deactivated',
+			},
+		};
+
 		return {
-			status: tab,
+			...listUsersPayload[tab],
 			searchTerm,
 			sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
 			count: itemsPerPage,

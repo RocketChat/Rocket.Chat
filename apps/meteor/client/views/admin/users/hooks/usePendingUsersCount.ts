@@ -10,8 +10,9 @@ const usePendingUsersCount = (users: Serialized<PickedUser[]> | undefined) => {
 		['pendingUsersCount', users],
 		async () => {
 			const payload: UsersListStatusParamsGET = {
-				status: 'pending',
-				isPendingCount: true,
+				hasLoggedIn: false,
+				status: 'deactivated',
+				type: 'user',
 				count: 1,
 			};
 

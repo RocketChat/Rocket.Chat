@@ -125,10 +125,11 @@ type FindPaginatedUsersByStatusProps = {
 	offset: number;
 	count: number;
 	sort: Record<string, 1 | -1>;
-	status: 'active' | 'all' | 'deactivated' | 'pending';
+	status: 'active' | 'all' | 'deactivated';
 	roles: string[] | null;
 	searchTerm: string;
-	isPendingCount: boolean;
+	hasLoggedIn: boolean;
+	type: string;
 };
 
 export async function findPaginatedUsersByStatus({
@@ -139,7 +140,8 @@ export async function findPaginatedUsersByStatus({
 	status,
 	roles,
 	searchTerm,
-	isPendingCount = false,
+	hasLoggedIn,
+	type,
 }: FindPaginatedUsersByStatusProps) {
 	const projection = {
 		name: 1,
@@ -151,7 +153,7 @@ export async function findPaginatedUsersByStatus({
 		avatarETag: 1,
 		lastLogin: 1,
 		type: 1,
-		reason: 0,
+		reason: 1,
 	};
 
 	const actualSort: Record<string, 1 | -1> = sort || { username: 1 };
@@ -168,23 +170,19 @@ export async function findPaginatedUsersByStatus({
 
 	switch (status) {
 		case 'active':
-			match.lastLogin = { $exists: true };
 			match.active = true;
 			break;
-		case 'all':
-			break;
 		case 'deactivated':
-			match.lastLogin = { $exists: true };
 			match.active = false;
 			break;
-		case 'pending':
-			match.lastLogin = { $exists: false };
-			if (isPendingCount) {
-				match.active = false;
-			}
-			match.type = { $nin: ['bot', 'app'] };
-			projection.reason = 1;
-			break;
+	}
+
+	if (hasLoggedIn !== undefined) {
+		match.lastLogin = { $exists: hasLoggedIn };
+	}
+
+	if (type) {
+		match.type = type;
 	}
 
 	const canSeeAllUserInfo = await hasPermissionAsync(uid, 'view-full-other-user-info');

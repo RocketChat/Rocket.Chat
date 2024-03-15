@@ -7,10 +7,11 @@ const ajv = new Ajv({
 });
 
 export type UsersListStatusParamsGET = PaginatedRequest<{
-	status: 'active' | 'all' | 'deactivated' | 'pending';
+	status?: 'active' | 'all' | 'deactivated';
+	hasLoggedIn?: boolean;
+	type?: string;
 	roles?: string[];
 	searchTerm?: string;
-	isPendingCount: boolean;
 }>;
 
 const UsersListStatusParamsGetSchema = {
@@ -18,10 +19,14 @@ const UsersListStatusParamsGetSchema = {
 	properties: {
 		status: {
 			type: 'string',
-			enum: ['active', 'all', 'deactivated', 'pending'],
+			enum: ['active', 'all', 'deactivated'],
 		},
-		isPendingCount: {
+		hasLoggedIn: {
 			type: 'boolean',
+			nullable: true,
+		},
+		type: {
+			type: 'string',
 			nullable: true,
 		},
 		roles: {
@@ -48,7 +53,6 @@ const UsersListStatusParamsGetSchema = {
 			nullable: true,
 		},
 	},
-	required: ['status'],
 	additionalProperties: false,
 };
 
