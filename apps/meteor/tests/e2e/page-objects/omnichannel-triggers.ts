@@ -98,13 +98,14 @@ export class OmnichannelTriggers {
 		await this.btnSave.click();
 	}
 
-	public async updateTrigger(newName: string) {
+	public async updateTrigger(newName: string, triggerMessage: string) {
 		await this.fillTriggerForm({
 			name: `edited-${newName}`,
 			description: 'Updating the existing trigger',
 			condition: 'chat-opened-by-visitor',
 			sender: 'custom',
 			agentName: 'Rocket.cat',
+			triggerMessage,
 		});
 		await this.btnSave.click();
 	}
