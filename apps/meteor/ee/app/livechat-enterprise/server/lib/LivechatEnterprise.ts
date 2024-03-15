@@ -1,17 +1,8 @@
-import type { IOmnichannelBusinessUnit, IOmnichannelServiceLevelAgreements, LivechatDepartmentDTO } from '@rocket.chat/core-typings';
-import { License } from '@rocket.chat/license';
-import {
-	Users,
-	LivechatDepartment as LivechatDepartmentRaw,
-	OmnichannelServiceLevelAgreements,
-	LivechatTag,
-	LivechatUnitMonitors,
-	LivechatUnit,
-} from '@rocket.chat/models';
+import type { IOmnichannelBusinessUnit, IOmnichannelServiceLevelAgreements } from '@rocket.chat/core-typings';
+import { Users, OmnichannelServiceLevelAgreements, LivechatTag, LivechatUnitMonitors, LivechatUnit } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { updateDepartmentAgents } from '../../../../../app/livechat/server/lib/Helper';
 import { callbacks } from '../../../../../lib/callbacks';
 import { addUserRolesAsync } from '../../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../../server/lib/roles/removeUserFromRoles';
