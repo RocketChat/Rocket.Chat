@@ -24,8 +24,6 @@ const UsersTableRow = ({ user, onClick, mediaQuery, tab }: UsersTableRowProps): 
 	const registrationStatusText = useMemo(() => {
 		const usersExcludedFromPending = ['bot', 'app'];
 
-		console.log(user);
-
 		if (!lastLogin && !usersExcludedFromPending.includes(type)) {
 			return t('Pending');
 		}
@@ -37,7 +35,7 @@ const UsersTableRow = ({ user, onClick, mediaQuery, tab }: UsersTableRowProps): 
 		if (!active && lastLogin) {
 			return t('Deactivated');
 		}
-	}, [active, lastLogin, t, type, user]);
+	}, [active, lastLogin, t, type]);
 
 	const roleNames = (roles || [])
 		.map((roleId) => (Roles.findOne(roleId, { fields: { name: 1 } }) as IRole | undefined)?.name)
