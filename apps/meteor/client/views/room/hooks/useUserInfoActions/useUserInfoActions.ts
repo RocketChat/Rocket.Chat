@@ -2,11 +2,10 @@ import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import type { Icon } from '@rocket.chat/fuselage';
 import { useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 
 import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
 import { useEmbeddedLayout } from '../../../../hooks/useEmbeddedLayout';
-import { useMemberExists } from '../../../hooks/useMemberExists';
 import { useAddUserAction } from './actions/useAddUserAction';
 import { useBlockUserAction } from './actions/useBlockUserAction';
 import { useCallAction } from './actions/useCallAction';
@@ -43,18 +42,7 @@ export const useUserInfoActions = (
 	size = 2,
 	isMember?: boolean,
 ): { actions: [string, UserInfoAction][]; menuActions: any | undefined } => {
-	const {
-		data,
-		refetch,
-		isSuccess: membershipCheckSuccess,
-	} = useMemberExists({ roomId: rid, username: user.username as string, isMember });
-	const memberChangeReload = useCallback(async () => {
-		await reload?.();
-		await refetch();
-	}, [reload, refetch]);
-	const showAddMember = (data?.exists as boolean) && membershipCheckSuccess;
-
-	const addUser = useAddUserAction(user, rid, memberChangeReload);
+	const addUser = useAddUserAction(user, rid, reload);
 	const blockUser = useBlockUserAction(user, rid);
 	const changeLeader = useChangeLeaderAction(user, rid);
 	const changeModerator = useChangeModeratorAction(user, rid);
@@ -63,7 +51,7 @@ export const useUserInfoActions = (
 	const openDirectMessage = useDirectMessageAction(user, rid);
 	const ignoreUser = useIgnoreUserAction(user, rid);
 	const muteUser = useMuteUserAction(user, rid);
-	const removeUser = useRemoveUserAction(user, rid, memberChangeReload);
+	const removeUser = useRemoveUserAction(user, rid, reload);
 	const call = useCallAction(user);
 	const reportUserOption = useReportUser(user);
 	const isLayoutEmbedded = useEmbeddedLayout();
@@ -73,16 +61,16 @@ export const useUserInfoActions = (
 		() => ({
 			...(openDirectMessage && !isLayoutEmbedded && { openDirectMessage }),
 			...(call && { call }),
-			...(!showAddMember && addUser && { addUser }),
-			...(showAddMember && changeOwner && { changeOwner }),
-			...(showAddMember && changeLeader && { changeLeader }),
-			...(showAddMember && changeModerator && { changeModerator }),
-			...(showAddMember && openModerationConsole && { openModerationConsole }),
-			...(showAddMember && ignoreUser && { ignoreUser }),
-			...(showAddMember && muteUser && { muteUser }),
+			...(!isMember && addUser && { addUser }),
+			...(isMember && changeOwner && { changeOwner }),
+			...(isMember && changeLeader && { changeLeader }),
+			...(isMember && changeModerator && { changeModerator }),
+			...(isMember && openModerationConsole && { openModerationConsole }),
+			...(isMember && ignoreUser && { ignoreUser }),
+			...(isMember && muteUser && { muteUser }),
 			...(blockUser && { toggleBlock: blockUser }),
 			...(reportUserOption && { reportUser: reportUserOption }),
-			...(showAddMember && removeUser && { removeUser }),
+			...(isMember && removeUser && { removeUser }),
 		}),
 		[
 			openDirectMessage,
@@ -98,7 +86,7 @@ export const useUserInfoActions = (
 			reportUserOption,
 			openModerationConsole,
 			addUser,
-			showAddMember,
+			isMember,
 		],
 	);
 

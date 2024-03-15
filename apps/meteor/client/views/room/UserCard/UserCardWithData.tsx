@@ -10,6 +10,7 @@ import LocalTime from '../../../components/LocalTime';
 import { UserCard, UserCardAction, UserCardRole, UserCardSkeleton } from '../../../components/UserCard';
 import { ReactiveUserStatus } from '../../../components/UserStatus';
 import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
+import { useMemberExists } from '../../hooks/useMemberExists';
 import { useUserInfoActions } from '../hooks/useUserInfoActions';
 
 type UserCardWithDataProps = {
@@ -25,6 +26,9 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 	const showRealNames = Boolean(useSetting('UI_Use_Real_Name'));
 
 	const { data, isLoading } = useUserInfoQuery({ username });
+	const { data: isMemberData, refetch, isSuccess: membershipCheckSuccess } = useMemberExists({ roomId: rid, username });
+
+	const isMember = (isMemberData?.exists as boolean) && membershipCheckSuccess;
 
 	const user = useMemo(() => {
 		const defaultValue = isLoading ? undefined : null;
@@ -62,6 +66,9 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 	const { actions: actionsDefinition, menuActions: menuOptions } = useUserInfoActions(
 		{ _id: user._id ?? '', username: user.username, name: user.name },
 		rid,
+		refetch,
+		undefined,
+		isMember,
 	);
 
 	const menu = useMemo(() => {
