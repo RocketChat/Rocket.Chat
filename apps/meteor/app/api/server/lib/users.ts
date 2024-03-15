@@ -128,9 +128,19 @@ type FindPaginatedUsersByStatusProps = {
 	status: 'active' | 'all' | 'deactivated' | 'pending';
 	roles: string[] | null;
 	searchTerm: string;
+	isPendingCount: boolean;
 };
 
-export async function findPaginatedUsersByStatus({ uid, offset, count, sort, status, roles, searchTerm }: FindPaginatedUsersByStatusProps) {
+export async function findPaginatedUsersByStatus({
+	uid,
+	offset,
+	count,
+	sort,
+	status,
+	roles,
+	searchTerm,
+	isPendingCount = false,
+}: FindPaginatedUsersByStatusProps) {
 	const projection = {
 		name: 1,
 		username: 1,
@@ -158,17 +168,20 @@ export async function findPaginatedUsersByStatus({ uid, offset, count, sort, sta
 
 	switch (status) {
 		case 'active':
-			match.active = true;
 			match.lastLogin = { $exists: true };
+			match.active = true;
 			break;
 		case 'all':
 			break;
 		case 'deactivated':
-			match.active = false;
 			match.lastLogin = { $exists: true };
+			match.active = false;
 			break;
 		case 'pending':
 			match.lastLogin = { $exists: false };
+			if (isPendingCount) {
+				match.active = false;
+			}
 			match.type = { $nin: ['bot', 'app'] };
 			projection.reason = 1;
 			break;

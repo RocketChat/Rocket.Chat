@@ -10,6 +10,7 @@ export type UsersListStatusParamsGET = PaginatedRequest<{
 	status: 'active' | 'all' | 'deactivated' | 'pending';
 	roles?: string[];
 	searchTerm?: string;
+	isPendingCount: boolean;
 }>;
 
 const UsersListStatusParamsGetSchema = {
@@ -18,6 +19,10 @@ const UsersListStatusParamsGetSchema = {
 		status: {
 			type: 'string',
 			enum: ['active', 'all', 'deactivated', 'pending'],
+		},
+		isPendingCount: {
+			type: 'boolean',
+			nullable: true,
 		},
 		roles: {
 			type: 'array',

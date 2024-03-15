@@ -60,7 +60,7 @@ const AdminUsersPage = (): ReactElement => {
 		tab,
 	});
 
-	const pendingUsersCount = usePendingUsersCount(filteredUsersQueryResult.data?.total);
+	const pendingUsersCount = usePendingUsersCount(filteredUsersQueryResult.data?.users);
 
 	const handleReload = (): void => {
 		seatsCap?.reload();

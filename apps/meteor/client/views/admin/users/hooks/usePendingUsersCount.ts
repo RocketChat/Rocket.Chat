@@ -1,15 +1,17 @@
-import type { UsersListStatusParamsGET } from '@rocket.chat/rest-typings';
+import type { Serialized } from '@rocket.chat/core-typings';
+import type { PickedUser, UsersListStatusParamsGET } from '@rocket.chat/rest-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
-const usePendingUsersCount = (currentUsersTotal: number | undefined) => {
+const usePendingUsersCount = (users: Serialized<PickedUser[]> | undefined) => {
 	const getUsers = useEndpoint('GET', '/v1/users.listByStatus');
 
 	return useQuery(
-		['pendingUsersCount', currentUsersTotal],
+		['pendingUsersCount', users],
 		async () => {
 			const payload: UsersListStatusParamsGET = {
 				status: 'pending',
+				isPendingCount: true,
 				count: 1,
 			};
 
