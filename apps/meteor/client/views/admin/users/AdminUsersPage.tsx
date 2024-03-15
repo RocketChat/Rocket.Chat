@@ -32,7 +32,7 @@ const AdminUsersPage = (): ReactElement => {
 
 	const seatsCap = useSeatsCap();
 
-	const isSeatsCapExceeded = useMemo(() => !!seatsCap && seatsCap.activeUsers >= seatsCap.maxActiveUsers, [seatsCap]);
+	const isSeatsCapExceeded = useMemo(() => true, [seatsCap]);
 
 	const router = useRouter();
 	const context = useRouteParameter('context');
@@ -91,12 +91,12 @@ const AdminUsersPage = (): ReactElement => {
 					) : (
 						<ButtonGroup>
 							{canBulkCreateUser && (
-								<Button icon='mail' onClick={() => router.navigate('/admin/users/invite')}>
+								<Button icon='mail' onClick={() => router.navigate('/admin/users/invite')} disabled={isSeatsCapExceeded}>
 									{t('Invite')}
 								</Button>
 							)}
 							{canCreateUser && (
-								<Button icon='user-plus' onClick={() => router.navigate('/admin/users/new')}>
+								<Button icon='user-plus' onClick={() => router.navigate('/admin/users/new')} disabled={isSeatsCapExceeded}>
 									{t('New_user')}
 								</Button>
 							)}
