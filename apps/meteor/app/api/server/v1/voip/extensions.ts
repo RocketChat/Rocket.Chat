@@ -1,7 +1,7 @@
 import { Voip } from '@rocket.chat/core-services';
 import type { IVoipExtensionBase } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import { Match, check } from 'meteor/check';
+import { isConnectorExtensionGetRegistrationInfoByUserIdProps, isConnectorExtensionsProps } from '@rocket.chat/rest-typings';
 
 import { settings } from '../../../../settings/server';
 import { generateJWT } from '../../../../utils/server/lib/JWTHelper';
@@ -39,15 +39,9 @@ API.v1.addRoute(
  */
 API.v1.addRoute(
 	'connector.extension.getDetails',
-	{ authRequired: true, permissionsRequired: ['manage-voip-call-settings'] },
+	{ authRequired: true, permissionsRequired: ['manage-voip-call-settings'], validateParams: isConnectorExtensionsProps },
 	{
 		async get() {
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					extension: String,
-				}),
-			);
 			const endpointDetails = await Voip.getExtensionDetails(this.queryParams);
 			return API.v1.success({ ...endpointDetails.result });
 		},
@@ -59,15 +53,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'connector.extension.getRegistrationInfoByExtension',
-	{ authRequired: true, permissionsRequired: ['manage-voip-call-settings'] },
+	{ authRequired: true, permissionsRequired: ['manage-voip-call-settings'], validateParams: isConnectorExtensionsProps },
 	{
 		async get() {
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					extension: String,
-				}),
-			);
 			const endpointDetails = await Voip.getRegistrationInfo(this.queryParams);
 			const encKey = settings.get<string>('VoIP_JWT_Secret');
 			if (!encKey) {
@@ -83,15 +71,13 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'connector.extension.getRegistrationInfoByUserId',
-	{ authRequired: true, permissionsRequired: ['view-agent-extension-association'] },
+	{
+		authRequired: true,
+		permissionsRequired: ['view-agent-extension-association'],
+		validateParams: isConnectorExtensionGetRegistrationInfoByUserIdProps,
+	},
 	{
 		async get() {
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					id: String,
-				}),
-			);
 			const { id } = this.queryParams;
 
 			if (id !== this.userId) {

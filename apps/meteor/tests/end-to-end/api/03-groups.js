@@ -1810,7 +1810,7 @@ describe('[Groups]', function () {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'The bodyParam "encrypted" is required');
+					expect(res.body).to.have.property('errorType', 'invalid-params');
 				})
 				.end(done);
 		});

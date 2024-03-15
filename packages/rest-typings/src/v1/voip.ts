@@ -387,6 +387,21 @@ export const isVoipManagementServerCheckConnectionProps = ajv.compile<VoipManage
 	VoipManagementServerCheckConnectionSchema,
 );
 
+type ConnectorExtensionProps = { extension: string };
+
+const ConnectorExtensionschema: JSONSchemaType<ConnectorExtensionProps> = {
+	type: 'object',
+	properties: {
+		extension: {
+			type: 'string',
+		},
+	},
+	required: ['extension'],
+	additionalProperties: false,
+};
+
+export const isConnectorExtensionsProps = ajv.compile<ConnectorExtensionProps>(ConnectorExtensionschema);
+
 type VoipCallServerCheckConnection = { websocketUrl: string; host: string; port: string; path: string };
 
 const VoipCallServerCheckConnectionSchema: JSONSchemaType<VoipCallServerCheckConnection> = {
@@ -580,9 +595,9 @@ export type VoipEndpoints = {
 		POST: (params: VoipRoomClose) => { rid: string };
 	};
 	'/v1/connector.extension.getDetails': {
-		GET: (params: { extension: string }) => IVoipConnectorResult;
+		GET: (params: ConnectorExtensionProps) => IVoipConnectorResult;
 	};
 	'/v1/connector.extension.getRegistrationInfoByExtension': {
-		GET: (params: { extension: string }) => IRegistrationInfo;
+		GET: (params: ConnectorExtensionProps) => IRegistrationInfo;
 	};
 };

@@ -9,10 +9,14 @@ import type { UserLogoutParamsPOST } from './users/UserLogoutParamsPOST';
 import type { UserRegisterParamsPOST } from './users/UserRegisterParamsPOST';
 import type { UserSetActiveStatusParamsPOST } from './users/UserSetActiveStatusParamsPOST';
 import type { UsersAutocompleteParamsGET } from './users/UsersAutocompleteParamsGET';
+import type { UsersDeleteOwnAccountParamsPOST } from './users/UsersDeleteOwnAccountParamsPOST';
+import type { UsersDeleteParamsPOST } from './users/UsersDeleteParamsPOST';
+import type { UsersGetAvatarParamsGET } from './users/UsersGetAvatarParamsGET';
 import type { UsersInfoParamsGet } from './users/UsersInfoParamsGet';
 import type { UsersListTeamsParamsGET } from './users/UsersListTeamsParamsGET';
 import type { UsersSendConfirmationEmailParamsPOST } from './users/UsersSendConfirmationEmailParamsPOST';
 import type { UsersSetPreferencesParamsPOST } from './users/UsersSetPreferenceParamsPOST';
+import type { UsersSetStatusParamsPOST } from './users/UsersSetStatusParamsPOST';
 import type { UsersUpdateOwnBasicInfoParamsPOST } from './users/UsersUpdateOwnBasicInfoParamsPOST';
 import type { UsersUpdateParamsPOST } from './users/UsersUpdateParamsPOST';
 
@@ -314,7 +318,7 @@ export type UsersEndpoints = {
 	};
 
 	'/v1/users.setStatus': {
-		POST: (params: { message?: string; status?: UserStatus; userId?: string; username?: string; user?: string }) => void;
+		POST: (params: UsersSetStatusParamsPOST) => void;
 	};
 
 	'/v1/users.getStatus': {
@@ -351,11 +355,11 @@ export type UsersEndpoints = {
 	};
 
 	'/v1/users.delete': {
-		POST: (params: { userId: IUser['_id']; confirmRelinquish?: boolean }) => void;
+		POST: (params: UsersDeleteParamsPOST) => void;
 	};
 
 	'/v1/users.getAvatar': {
-		GET: (params: { userId?: string; username?: string; user?: string }) => void;
+		GET: (params: UsersGetAvatarParamsGET) => void;
 	};
 
 	'/v1/users.updateOwnBasicInfo': {
@@ -365,7 +369,7 @@ export type UsersEndpoints = {
 	};
 
 	'/v1/users.deleteOwnAccount': {
-		POST: (params: { password: string; confirmRelinquish?: boolean }) => void;
+		POST: (params: UsersDeleteOwnAccountParamsPOST) => void;
 	};
 };
 

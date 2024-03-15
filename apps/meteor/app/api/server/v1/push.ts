@@ -1,6 +1,6 @@
 import { Messages, AppsTokens, Users, Rooms, Settings } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import { Match, check } from 'meteor/check';
+import { isPushGetProps } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { executePushTest } from '../../../../server/lib/pushConfig';
@@ -76,23 +76,15 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'push.get',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isPushGetProps },
 	{
 		async get() {
-			const params = this.queryParams;
-			check(
-				params,
-				Match.ObjectIncluding({
-					id: String,
-				}),
-			);
-
 			const receiver = await Users.findOneById(this.userId);
 			if (!receiver) {
 				throw new Error('error-user-not-found');
 			}
 
-			const message = await Messages.findOneById(params.id);
+			const message = await Messages.findOneById(this.queryParams.id);
 			if (!message) {
 				throw new Error('error-message-not-found');
 			}

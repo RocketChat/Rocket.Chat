@@ -11,7 +11,6 @@ import {
 	isDmCreateProps,
 	isDmHistoryProps,
 } from '@rocket.chat/rest-typings';
-import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
@@ -312,14 +311,6 @@ API.v1.addRoute(
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort } = await this.parseJsonQuery();
-
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					status: Match.Maybe([String]),
-					filter: Match.Maybe(String),
-				}),
-			);
 			const { status, filter } = this.queryParams;
 
 			const extraQuery = {

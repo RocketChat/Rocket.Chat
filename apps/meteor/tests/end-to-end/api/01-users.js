@@ -4232,8 +4232,8 @@ describe('[Users]', function () {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('error-invalid-status');
-					expect(res.body.error).to.be.equal('Valid status types include online, away, offline, and busy. [error-invalid-status]');
+					expect(res.body.errorType).to.be.equal('invalid-params');
+					expect(res.body.error).to.be.equal('must be equal to one of the allowed values [invalid-params]');
 				})
 				.end(done);
 		});
@@ -4265,7 +4265,7 @@ describe('[Users]', function () {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('Match error: Failed Match.OneOf, Match.Maybe or Match.Optional validation');
+					expect(res.body).to.have.property('errorType', 'invalid-params');
 				})
 				.end(done);
 		});

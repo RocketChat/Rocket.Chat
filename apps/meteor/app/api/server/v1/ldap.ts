@@ -1,5 +1,5 @@
 import { LDAP } from '@rocket.chat/core-services';
-import { Match, check } from 'meteor/check';
+import { isLdapTestSearch } from '@rocket.chat/rest-typings';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -39,16 +39,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'ldap.testSearch',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isLdapTestSearch },
 	{
 		async post() {
-			check(
-				this.bodyParams,
-				Match.ObjectIncluding({
-					username: String,
-				}),
-			);
-
 			if (!this.userId) {
 				throw new Error('error-invalid-user');
 			}

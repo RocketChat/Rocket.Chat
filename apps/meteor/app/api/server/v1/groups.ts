@@ -1,7 +1,7 @@
 import { Team, isMeteorError } from '@rocket.chat/core-services';
 import type { IIntegration, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
-import { check, Match } from 'meteor/check';
+import { isGroupsMembersProps, isGroupsSetEncryptedProps } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
@@ -701,7 +701,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'groups.members',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isGroupsMembersProps },
 	{
 		async get() {
 			const findResult = await findPrivateGroupByIdOrName({
@@ -715,15 +715,6 @@ API.v1.addRoute(
 
 			const { offset: skip, count: limit } = await getPaginationItems(this.queryParams);
 			const { sort = {} } = await this.parseJsonQuery();
-
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					status: Match.Maybe([String]),
-					filter: Match.Maybe(String),
-				}),
-			);
-
 			const { status, filter } = this.queryParams;
 
 			const { cursor, totalCount } = await findUsersOfRoom({
@@ -1192,12 +1183,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'groups.setEncrypted',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isGroupsSetEncryptedProps },
 	{
 		async post() {
-			if (!Match.test(this.bodyParams, Match.ObjectIncluding({ encrypted: Boolean }))) {
-				return API.v1.failure('The bodyParam "encrypted" is required');
-			}
 			const { encrypted, ...params } = this.bodyParams;
 
 			const findResult = await findPrivateGroupByIdOrName({

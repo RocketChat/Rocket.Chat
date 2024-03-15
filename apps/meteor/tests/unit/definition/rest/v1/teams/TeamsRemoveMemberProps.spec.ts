@@ -47,8 +47,8 @@ describe('Teams (definition/rest/v1)', () => {
 			assert.isTrue(isTeamsRemoveMemberProps({ teamId: 'teamId', userId: 'userId', rooms: ['room'] }));
 		});
 
-		it('should return false if teamId and userId are informed and rooms are informed but rooms is not an array of strings', () => {
-			assert.isFalse(isTeamsRemoveMemberProps({ teamId: 'teamId', userId: 'userId', rooms: [123] }));
+		it('should return true if teamId and userId are informed and rooms are informed but rooms is not an array of strings (due to type coercion)', () => {
+			assert.isTrue(isTeamsRemoveMemberProps({ teamId: 'teamId', userId: 'userId', rooms: [123] }));
 		});
 
 		it('should return false if teamName and userId are informed and rooms are informed but there is an extra property', () => {

@@ -1,4 +1,4 @@
-import { Match, check } from 'meteor/check';
+import { isDnsResolveSrvProps, isDnsResolveTxtProps } from '@rocket.chat/rest-typings/dist/v1/dns';
 import { Meteor } from 'meteor/meteor';
 
 import { resolveSRV, resolveTXT } from '../../../federation/server/functions/resolveDNS';
@@ -49,16 +49,9 @@ import { API } from '../api';
  */
 API.v1.addRoute(
 	'dns.resolve.srv',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isDnsResolveSrvProps },
 	{
 		async get() {
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					url: String,
-				}),
-			);
-
 			const { url } = this.queryParams;
 			if (!url) {
 				throw new Meteor.Error('error-missing-param', 'The required "url" param is missing.');
@@ -107,16 +100,9 @@ API.v1.addRoute(
  */
 API.v1.addRoute(
 	'dns.resolve.txt',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isDnsResolveTxtProps },
 	{
 		async post() {
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					url: String,
-				}),
-			);
-
 			const { url } = this.queryParams;
 			if (!url) {
 				throw new Meteor.Error('error-missing-param', 'The required "url" param is missing.');

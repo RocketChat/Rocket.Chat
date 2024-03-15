@@ -1,8 +1,7 @@
 import { api } from '@rocket.chat/core-services';
 import type { IRole } from '@rocket.chat/core-typings';
 import { Roles, Users } from '@rocket.chat/models';
-import { isRoleAddUserToRoleProps, isRoleDeleteProps, isRoleRemoveUserFromRoleProps } from '@rocket.chat/rest-typings';
-import { check, Match } from 'meteor/check';
+import { isRoleAddUserToRoleProps, isRoleDeleteProps, isRoleRemoveUserFromRoleProps, isRolesSyncProps } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { getUsersInRolePaginated } from '../../../authorization/server/functions/getUsersInRole';
@@ -28,16 +27,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'roles.sync',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isRolesSyncProps },
 	{
 		async get() {
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					updatedSince: Match.Where((value: unknown): value is string => typeof value === 'string' && !Number.isNaN(Date.parse(value))),
-				}),
-			);
-
 			const { updatedSince } = this.queryParams;
 
 			return API.v1.success({

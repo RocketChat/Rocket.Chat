@@ -16,9 +16,12 @@ import {
 	isUsersSetPreferencesParamsPOST,
 	isUsersCheckUsernameAvailabilityParamsGET,
 	isUsersSendConfirmationEmailParamsPOST,
+	isUsersSetStatusParamsPOST,
+	isUsersDeleteOwnAccountParamsPOST,
+	isUsersGetAvatarParamsGET,
+	isUsersDeleteParamsPOST,
 } from '@rocket.chat/rest-typings';
 import { Accounts } from 'meteor/accounts-base';
-import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
@@ -52,7 +55,7 @@ import { findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonE
 
 API.v1.addRoute(
 	'users.getAvatar',
-	{ authRequired: false },
+	{ authRequired: false, validateParams: isUsersGetAvatarParamsGET },
 	{
 		async get() {
 			const user = await getUserFromParams(this.queryParams);
@@ -304,7 +307,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.delete',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isUsersDeleteParamsPOST },
 	{
 		async post() {
 			if (!(await hasPermissionAsync(this.userId, 'delete-user'))) {
@@ -323,13 +326,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.deleteOwnAccount',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isUsersDeleteOwnAccountParamsPOST },
 	{
 		async post() {
 			const { password } = this.bodyParams;
-			if (!password) {
-				return API.v1.failure('Body parameter "password" is required.');
-			}
 			if (!settings.get('Accounts_AllowDeleteOwnAccount')) {
 				throw new Meteor.Error('error-not-allowed', 'Not allowed');
 			}
@@ -1144,23 +1144,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.setStatus',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isUsersSetStatusParamsPOST },
 	{
 		async post() {
-			check(
-				this.bodyParams,
-				Match.OneOf(
-					Match.ObjectIncluding({
-						status: Match.Maybe(String),
-						message: String,
-					}),
-					Match.ObjectIncluding({
-						status: String,
-						message: Match.Maybe(String),
-					}),
-				),
-			);
-
 			if (!settings.get('Accounts_AllowUserStatusMessageChange')) {
 				throw new Meteor.Error('error-not-allowed', 'Change status is not allowed', {
 					method: 'users.setStatus',

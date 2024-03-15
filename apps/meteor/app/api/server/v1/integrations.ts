@@ -7,7 +7,6 @@ import {
 	isIntegrationsGetProps,
 	isIntegrationsUpdateProps,
 } from '@rocket.chat/rest-typings';
-import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
@@ -165,13 +164,6 @@ API.v1.addRoute(
 						integration,
 					});
 				case 'webhook-incoming':
-					check(
-						bodyParams,
-						Match.ObjectIncluding({
-							integrationId: String,
-						}),
-					);
-
 					integration = await Integrations.findOne({ _id: bodyParams.integrationId });
 
 					if (!integration) {

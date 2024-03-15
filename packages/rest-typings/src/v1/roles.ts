@@ -1,11 +1,13 @@
 import type { RocketChatRecordDeleted, IRole, IUserInRole } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
+import addFormats from 'ajv-formats';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 
 const ajv = new Ajv({
 	coerceTypes: true,
 });
+addFormats(ajv);
 
 type RoleDeleteProps = { roleId: IRole['_id'] };
 
@@ -131,9 +133,17 @@ const RolesGetUsersInRolePropsSchema = {
 
 export const isRolesGetUsersInRoleProps = ajv.compile<RolesGetUsersInRoleProps>(RolesGetUsersInRolePropsSchema);
 
-type RoleSyncProps = {
-	updatedSince?: string;
+type RoleSyncProps = { updatedSince?: string };
+
+const RolesSyncPropsSchema = {
+	type: 'object',
+	properties: {
+		updatedSince: { type: 'string', format: 'date-time' },
+	},
+	additionalProperties: false,
 };
+
+export const isRolesSyncProps = ajv.compile<RoleSyncProps>(RolesSyncPropsSchema);
 
 export type RolesEndpoints = {
 	'/v1/roles.list': {

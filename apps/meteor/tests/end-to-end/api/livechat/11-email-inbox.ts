@@ -107,7 +107,7 @@ describe('Email inbox', () => {
 		};
 		it('should fail if user doesnt have manage-email-inbox permission', async () => {
 			await updatePermission('manage-email-inbox', []);
-			await request.post(api('email-inbox')).set(credentials).send({}).expect(403);
+			await request.post(api('email-inbox')).set(credentials).send(mockedPayload).expect(403);
 		});
 		it('should fail if smtp config is not on body params', async () => {
 			await updatePermission('manage-email-inbox', ['admin']);
@@ -204,7 +204,7 @@ describe('Email inbox', () => {
 	describe('GET email-inbox.search', () => {
 		it('should fail if user doesnt have manage-email-inbox permission', async () => {
 			await updatePermission('manage-email-inbox', []);
-			await request.get(api('email-inbox.search')).set(credentials).expect(403);
+			await request.get(api('email-inbox.search?email=test')).set(credentials).expect(403);
 		});
 		it('should return an email inbox matching email', async () => {
 			await createEmailInbox();
