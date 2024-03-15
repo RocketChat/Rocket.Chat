@@ -122,27 +122,30 @@ test.describe.serial('message-actions', () => {
 	});
 
 	test('expect forward message to channel', async () => {
-		const message = 'this is a message to forward to a channel'
-		await poHomeChannel.content.forwardMessage(message, forwardChannel)
+		const message = 'this is a message to forward to channel'
+		await poHomeChannel.content.sendMessage(message);
+		await poHomeChannel.content.forwardMessage(forwardChannel)
 
 		await poHomeChannel.sidenav.openChat(forwardChannel);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(message)
 	})
 
 	test('expect forward message to team', async () => {
-		const message = 'this is a message to forward to a team'
-		await poHomeChannel.content.forwardMessage(message, forwardTeam)
+		const message = 'this is a message to forward to team'
+		await poHomeChannel.content.sendMessage(message);
+		await poHomeChannel.content.forwardMessage(forwardTeam)
 
 		await poHomeChannel.sidenav.openChat(forwardTeam);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(message)
 	})
 
-	test('expect forward message to a direct message', async () => {
-		const message = 'this is a message to forward to a direct message'
+	test('expect forward message to direct message', async () => {
+		const message = 'this is a message to forward to direct message'
 		const direct = 'RocketChat Internal Admin Test'
 
 		// todo: Forward modal is using name as display and the sidebar is using username
-		await poHomeChannel.content.forwardMessage(message, direct)
+		await poHomeChannel.content.sendMessage(message);
+		await poHomeChannel.content.forwardMessage(direct)
 
 		await poHomeChannel.sidenav.openChat(ADMIN_CREDENTIALS.username);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(message)

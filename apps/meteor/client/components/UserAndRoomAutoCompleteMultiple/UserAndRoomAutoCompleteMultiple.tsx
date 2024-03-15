@@ -51,7 +51,6 @@ const UserAndRoomAutoCompleteMultiple = ({ value, onChange, ...props }: UserAndR
 	return (
 		<AutoComplete
 			{...props}
-			data-qa-type='user-and-room-auto-complete-input'
 			value={value}
 			onChange={onChange}
 			filter={filter}

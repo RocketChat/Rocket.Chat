@@ -78,13 +78,12 @@ export class HomeContent {
 		await this.page.keyboard.press('Enter');
 	}
 
-	async forwardMessage(message: string, chatName: string) {
-		await this.sendMessage(message);
+	async forwardMessage(chatName: string) {
 
 		await this.page.locator('[data-qa-type="message"]').last().hover();
 		await this.page.locator('role=button[name="Forward message"]').click();
 
-		await this.page.locator('[data-qa-type="user-and-room-auto-complete-input"]').click()
+		await this.page.getByRole('textbox', { name: 'Person or Channel' }).click()
 		await this.page.keyboard.type(chatName);
 		await this.page.locator('#position-container').getByText(chatName).waitFor()
 		await this.page.locator('#position-container').getByText(chatName).click()
