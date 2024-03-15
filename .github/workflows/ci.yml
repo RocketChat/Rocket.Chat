@@ -330,6 +330,7 @@ jobs:
       rc-dockerfile-alpine: ${{ needs.release-versions.outputs.rc-dockerfile-alpine }}
       rc-docker-tag-alpine: ${{ needs.release-versions.outputs.rc-docker-tag-alpine }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+      retries: ${{ github.ref == 'refs/heads/develop' && 2 || 0 }}
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
@@ -379,6 +380,7 @@ jobs:
       rc-dockerfile-alpine: ${{ needs.release-versions.outputs.rc-dockerfile-alpine }}
       rc-docker-tag-alpine: ${{ needs.release-versions.outputs.rc-docker-tag-alpine }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+      retries: ${{ github.ref == 'refs/heads/develop' && 2 || 0 }}
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
