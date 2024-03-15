@@ -7,21 +7,32 @@ import React, { useMemo } from 'react';
 
 import GenericMenu from '../../../../components/GenericMenu/GenericMenu';
 import UserInfo from '../../../../components/UserInfo';
+import { useMemberExists } from '../../../hooks/useMemberExists';
 import { useUserInfoActions } from '../../hooks/useUserInfoActions';
 
 type UserInfoActionsProps = {
 	user: Pick<IUser, '_id' | 'username' | 'name'>;
 	rid: IRoom['_id'];
 	backToList: () => void;
-	isMember?: boolean;
 };
 
-const UserInfoActions = ({ user, rid, backToList, isMember }: UserInfoActionsProps): ReactElement => {
+const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): ReactElement => {
 	const t = useTranslation();
+	const {
+		data: isMemberData,
+		refetch,
+		isSuccess: membershipCheckSuccess,
+	} = useMemberExists({ roomId: rid, username: user.username as string });
+
+	const isMember = (isMemberData?.exists as boolean) && membershipCheckSuccess;
+
 	const { actions: actionsDefinition, menuActions: menuOptions } = useUserInfoActions(
 		{ _id: user._id, username: user.username, name: user.name },
 		rid,
-		backToList,
+		() => {
+			backToList?.();
+			refetch();
+		},
 		undefined,
 		isMember,
 	);

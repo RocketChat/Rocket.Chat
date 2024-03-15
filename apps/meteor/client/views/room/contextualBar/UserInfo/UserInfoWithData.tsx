@@ -28,10 +28,9 @@ type UserInfoWithDataProps = {
 	rid: IRoom['_id'];
 	onClose: () => void;
 	onClickBack: () => void;
-	isMember?: boolean;
 };
 
-const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack, isMember }: UserInfoWithDataProps): ReactElement => {
+const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfoWithDataProps): ReactElement => {
 	const t = useTranslation();
 	const getRoles = useRolesDescription();
 
@@ -105,9 +104,7 @@ const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack, isMember }
 				</ContextualbarContent>
 			)}
 
-			{!isLoading && user && (
-				<UserInfo {...user} actions={<UserInfoActions user={user} rid={rid} backToList={onClickBack} isMember={isMember} />} />
-			)}
+			{!isLoading && user && <UserInfo {...user} actions={<UserInfoActions user={user} rid={rid} backToList={onClickBack} />} />}
 		</>
 	);
 };
