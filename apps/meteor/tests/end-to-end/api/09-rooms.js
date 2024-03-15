@@ -7,8 +7,8 @@ import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
-import { imgURL } from '../../data/interactions';
-import { updateEEPermission, updatePermission, updateSetting } from '../../data/permissions.helper';
+import { imgURL, svgLogoFileName, svgLogoURL } from '../../data/interactions';
+import { getSettingValueById, updateEEPermission, updatePermission, updateSetting } from '../../data/permissions.helper';
 import { closeRoom, createRoom, deleteRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
@@ -83,10 +83,16 @@ describe('[Rooms]', function () {
 		let testChannel;
 		let user;
 		let userCredentials;
-
+		let blockedMediaTypes;
 		before(async () => {
 			user = await createUser({ joinDefaultChannels: false });
 			userCredentials = await login(user.username, password);
+			blockedMediaTypes = await getSettingValueById('FileUpload_MediaTypeBlackList');
+			const newBlockedMediaTypes = blockedMediaTypes
+				.split(',')
+				.filter((type) => type !== 'image/svg+xml')
+				.join(',');
+			await updateSetting('FileUpload_MediaTypeBlackList', newBlockedMediaTypes);
 		});
 
 		after(async () => {
@@ -95,6 +101,7 @@ describe('[Rooms]', function () {
 
 			await updateSetting('FileUpload_Restrict_to_room_members', false);
 			await updateSetting('FileUpload_ProtectFiles', true);
+			await updateSetting('FileUpload_MediaTypeBlackList', blockedMediaTypes);
 		});
 
 		const testChannelName = `channel.test.upload.${Date.now()}-${Math.random()}`;
@@ -201,6 +208,58 @@ describe('[Rooms]', function () {
 			await updateSetting('FileUpload_ProtectFiles', false);
 			await request.get(fileNewUrl).expect('Content-Type', 'image/png').expect(200);
 			await request.get(fileOldUrl).expect('Content-Type', 'image/png').expect(200);
+		});
+
+		it('should generate thumbnail for SVG files correctly', async () => {
+			const expectedFileName = `thumb-${svgLogoFileName}`;
+			let thumbUrl;
+			await request
+				.post(api(`rooms.upload/${testChannel._id}`))
+				.set(credentials)
+				.attach('file', svgLogoURL)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					const { message } = res.body;
+					const { files, attachments } = message;
+
+					expect(files).to.be.an('array');
+					const hasThumbFile = files.some((file) => file.type === 'image/png' && file.name === expectedFileName);
+					expect(hasThumbFile).to.be.true;
+
+					expect(attachments).to.be.an('array');
+					const thumbAttachment = attachments.find((attachment) => attachment.title === svgLogoFileName);
+					expect(thumbAttachment).to.be.an('object');
+					thumbUrl = thumbAttachment.image_url;
+				});
+
+			await request.get(thumbUrl).set(credentials).expect('Content-Type', 'image/png');
+		});
+
+		it('should generate thumbnail for JPEG files correctly', async () => {
+			const expectedFileName = `thumb-sample-jpeg.jpg`;
+			let thumbUrl;
+			await request
+				.post(api(`rooms.upload/${testChannel._id}`))
+				.set(credentials)
+				.attach('file', fs.createReadStream(path.join(__dirname, '../../mocks/files/sample-jpeg.jpg')))
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					const { message } = res.body;
+					const { files, attachments } = message;
+
+					expect(files).to.be.an('array');
+					const hasThumbFile = files.some((file) => file.type === 'image/jpeg' && file.name === expectedFileName);
+					expect(hasThumbFile).to.be.true;
+
+					expect(attachments).to.be.an('array');
+					const thumbAttachment = attachments.find((attachment) => attachment.title === `sample-jpeg.jpg`);
+					expect(thumbAttachment).to.be.an('object');
+					thumbUrl = thumbAttachment.image_url;
+				});
+
+			await request.get(thumbUrl).set(credentials).expect('Content-Type', 'image/jpeg');
 		});
 	});
 
