@@ -382,7 +382,7 @@ describe('Omnichannel Queue processor', () => {
 			queueLogger.debug.reset();
 		});
 
-		it('should return if service is not running', async () => {
+		it('should return undefined if service is not running', async () => {
 			const queue = new OmnichannelQueue();
 			queue.running = false;
 			expect(await queue.execute()).to.be.undefined;
