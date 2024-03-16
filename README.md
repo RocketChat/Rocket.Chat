@@ -90,6 +90,10 @@ After initialized, you can access the server at http://localhost:4000
 Please see the [requirements documentation](https://docs.rocket.chat/deploy/installing-client-apps/minimum-requirements-for-using-rocket.chat) for system requirements and more information about supported operating systems.
 Please refer to [Install Rocket.Chat](https://rocket.chat/install) to install your Rocket.Chat instance.
 
+### One-Click Deployment (Third Party)
+
+[![Deploy on RepoCloud](https://d16t0pc4846x52.cloudfront.net/deploy.png)](https://repocloud.io/details/?app_id=169)
+
 # 📱 Mobile Apps
 
 In addition to the web interface, you can also download Rocket.Chat clients for:
