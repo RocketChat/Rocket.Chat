@@ -14,7 +14,7 @@ import constants from '../../lib/constants';
 import { getLastReadMessage, loadConfig, processUnread, shouldMarkAsUnread } from '../../lib/main';
 import { parentCall, runCallbackEventEmitter } from '../../lib/parentCall';
 import { createToken } from '../../lib/random';
-import { initRoom, closeChat, loadMoreMessages, defaultRoomParams, getGreetingMessages } from '../../lib/room';
+import { initRoom, closeChat, loadMoreMessages, defaultRoomParams, getGreetingMessages, onMessage } from '../../lib/room';
 import { ChatWrapper } from './ChatWrapper';
 import Chat from './component';
 
@@ -123,7 +123,10 @@ class ChatContainer extends Component {
 
 		try {
 			this.stopTypingDebounced.stop();
-			await Promise.all([this.stopTyping({ rid, username: user.username }), Livechat.sendMessage({ msg, token, rid })]);
+			await this.stopTyping({ rid, username: user.username });
+			const { message } = await Livechat.sendMessage({ msg, token, rid });
+
+			await onMessage(message);
 		} catch (error) {
 			const reason = error?.error ?? error.message;
 			const alert = { id: createToken(), children: reason, error: true, timeout: 5000 };
