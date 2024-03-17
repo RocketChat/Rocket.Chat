@@ -48,14 +48,15 @@ export async function createDirectMessage(
 
 				// If the username does have an `@`, but does not exist locally, we create it first
 				if (!to && username.includes('@')) {
-					try {
-						to = await addUser(username);
-					} catch {
-						// no-op
-					}
-					if (!to) {
-						return username;
-					}
+					// NOTE(debdut): this adds "old" federated users, fails always
+					//try {
+					//	to = await addUser(username);
+					//} catch {
+					//	// no-op
+					//}
+					//if (!to) {
+					return username;
+					//}
 				}
 
 				if (!to) {
@@ -80,6 +81,7 @@ export async function createDirectMessage(
 		if ((await hasPermissionAsync(userId, 'view-d-room')) && !Object.keys(roomUsers).some((user) => typeof user === 'string')) {
 			// Check if the direct room already exists, then return it
 			const uids = (roomUsers as IUser[]).map(({ _id }) => _id).sort();
+			// XXX: if "federated DM" was already created, removing the room (user) is mandatory.
 			const room = await Rooms.findOneDirectRoomContainingAllUserIDs(uids, { projection: { _id: 1 } });
 			if (room) {
 				return {

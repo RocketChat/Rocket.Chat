@@ -235,6 +235,10 @@ export class RocketChatRoomAdapter {
 		await Rooms.setAsFederated(internalRoomId);
 	}
 
+	public async deleteFederatedRoomByInternalRoomId(internalRoomId: string): Promise<void> {
+		return MatrixBridgedRoom.removeByLocalRoomId(internalRoomId);
+	}
+
 	public async getInternalRoomRolesByUserId(internalRoomId: string, internalUserId: string): Promise<string[]> {
 		const subscription = await Subscriptions.findOneByRoomIdAndUserId(internalRoomId, internalUserId, { projection: { roles: 1 } });
 		if (!subscription) {

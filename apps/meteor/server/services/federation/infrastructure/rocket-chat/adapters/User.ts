@@ -116,6 +116,14 @@ export class RocketChatUserAdapter {
 		);
 	}
 
+	public async deleteFederatedUser(federatedUser: FederatedUser): Promise<void> {
+		if (!federatedUser.getUsername()) {
+			throw new Error('invalid user ' + String(federatedUser));
+		}
+
+		return MatrixBridgedUser.removeByExternalId(federatedUser.getUsername());
+	}
+
 	public async setAvatar(federatedUser: FederatedUser, avatarUrl: string): Promise<void> {
 		await setUserAvatar(federatedUser.getInternalReference(), avatarUrl, 'image/jpeg', 'url'); // this mimetype is fixed here, but the function when called with a url as source don't use that mimetype
 	}

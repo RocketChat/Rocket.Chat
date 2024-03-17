@@ -204,6 +204,8 @@ export class MatrixBridge implements IFederationBridge {
 		return VerificationStatus.UNABLE_TO_VERIFY;
 	}
 
+	// TODO(debdut): path for deactivate user
+
 	public async createUser(username: string, name: string, domain: string, avatarUrl?: string): Promise<string> {
 		if (!MatrixUserInstance) {
 			throw new Error('Error loading the Matrix User instance from the external library');
