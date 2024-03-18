@@ -157,6 +157,10 @@ test.describe('SAML', () => {
 		}
 	});
 
+	test.afterAll(async ({ api }) => {
+		expect((await api.post('/groups.delete', { roomId: targetInviteGroupId })).status()).toBe(200);
+	});
+
 	test.beforeEach(async ({ page }) => {
 		poRegistration = new Registration(page);
 
