@@ -2,6 +2,7 @@ import { api } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import {
 	Integrations,
+	FederationServers,
 	LivechatVisitors,
 	LivechatDepartmentAgents,
 	Messages,
