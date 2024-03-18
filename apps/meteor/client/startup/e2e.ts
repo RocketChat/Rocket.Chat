@@ -118,11 +118,7 @@ Meteor.startup(() => {
 			if (!e2eRoom?.shouldConvertReceivedMessages()) {
 				return msg;
 			}
-			const mess = await e2e.decryptMessage(msg);
-
-			console.log("MESS", mess)
-
-			return mess;
+			return e2e.decryptMessage(msg);
 		});
 
 		// Encrypt messages before sending

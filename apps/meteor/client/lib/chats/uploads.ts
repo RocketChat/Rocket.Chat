@@ -58,20 +58,7 @@ const send = async (
 		},
 	]);
 
-	console.log("BEFORE UPLOAD", t, e2e, description)
-
 	try {
-		// // Assuming that only description is available in case of attachments
-		// const message = description
-		// 	? await onClientBeforeSendMessage({
-		// 			_id: id,
-		// 			msg: description,
-		// 			rid,
-		// 	  })
-		// 	: ({
-		// 			msg: description,
-		// 	  } as IMessage);
-
 		await new Promise((resolve, reject) => {
 			const xhr = sdk.rest.upload(
 				`/v1/rooms.upload/${rid}`,

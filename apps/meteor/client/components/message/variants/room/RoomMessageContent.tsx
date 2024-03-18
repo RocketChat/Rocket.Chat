@@ -45,7 +45,6 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 
 	const normalizedMessage = useNormalizedMessage(message);
 	const isMessageEncrypted = encrypted && normalizedMessage?.e2e === 'pending';
-	console.log({normalizedMessage})
 
 	return (
 		<>
@@ -68,7 +67,7 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 			)}
 
 			{!!normalizedMessage?.attachments?.length && (
-				<Attachments id={message.files?.[0]._id} attachments={normalizedMessage.attachments} isMessageEncrypted={isMessageEncrypted} />
+				<Attachments id={message.files?.[0]?._id} attachments={normalizedMessage.attachments} isMessageEncrypted={isMessageEncrypted} />
 			)}
 
 			{oembedEnabled && !!normalizedMessage.urls?.length && <UrlPreviews urls={normalizedMessage.urls} />}

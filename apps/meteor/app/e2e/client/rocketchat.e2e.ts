@@ -476,34 +476,6 @@ class E2E extends Emitter {
 		};
 	}
 
-	async decryptAttachmentDescription(description: string, rid: string): Promise<string> {
-		const e2eRoom = await this.getInstanceByRoomId(rid);
-
-		if (!e2eRoom) {
-			return description;
-		}
-
-		const data = await e2eRoom.decrypt(description);
-
-		if (!data) {
-			return description;
-		}
-
-		return data.text as string;
-	}
-
-	// async encryptAttachmentDescription(description: string, _id: string, rid: string): Promise<string> {
-	// 	const e2eRoom = await this.getInstanceByRoomId(rid);
-
-	// 	if(!e2eRoom) {
-	// 		return description;
-	// 	}
-
-	// 	const data = e2eRoom.encryptAttachmentDescription(description, _id);
-
-	// 	return data;
-	// }
-
 	async decryptPendingMessages(): Promise<void> {
 		return Messages.find({ t: 'e2e', e2e: 'pending' }).forEach(async ({ _id, ...msg }: IMessage) => {
 			Messages.update({ _id }, await this.decryptMessage(msg as IE2EEMessage));

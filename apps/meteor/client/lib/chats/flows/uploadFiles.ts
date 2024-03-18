@@ -19,7 +19,6 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 	const queue = [...files];
 
 	const uploadFile = (file: File, description?: string, extraData?: Pick<IMessage, 't' | 'e2e'>) => {
-		console.log({extraData})
 		chat.uploads.send(file, {
 			description,
 			msg,
