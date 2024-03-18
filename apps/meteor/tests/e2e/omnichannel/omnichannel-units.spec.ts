@@ -104,6 +104,8 @@ test.describe('OC - Manage Units', () => {
 	});
 
 	test('OC - Manage Units - Edit unit', async ({ api, page }) => {
+		const editedUnitName = faker.string.uuid();
+
 		await page.goto('/omnichannel');
 		await poOmnichannelUnits.sidenav.linkUnits.click();
 
@@ -122,19 +124,19 @@ test.describe('OC - Manage Units', () => {
 			await poOmnichannelUnits.search(unit.name);
 			await poOmnichannelUnits.findRowByName(unit.name).click();
 			await expect(poOmnichannelUnits.contextualBar).toBeVisible();
-			await poOmnichannelUnits.inputName.fill(edittedUnitName);
+			await poOmnichannelUnits.inputName.fill(editedUnitName);
 			await poOmnichannelUnits.btnSave.click();
 		});
 
 		await test.step('expect unit to have been edited', async () => {
 			await poOmnichannelUnits.sidenav.linkPriorities.click();
 			await poOmnichannelUnits.sidenav.linkUnits.click(); // refresh the page
-			await poOmnichannelUnits.search(edittedUnitName);
-			await expect(poOmnichannelUnits.findRowByName(edittedUnitName)).toBeVisible();
+			await poOmnichannelUnits.search(editedUnitName);
+			await expect(poOmnichannelUnits.findRowByName(editedUnitName)).toBeVisible();
 		});
 
 		await test.step('expect to delete unit', async () => {
-			await poOmnichannelUnits.findRowByName(edittedUnitName).click();
+			await poOmnichannelUnits.findRowByName(editedUnitName).click();
 			await expect(poOmnichannelUnits.contextualBar).toBeVisible();
 
 			await test.step('expect confirm delete unit', async () => {
@@ -160,8 +162,8 @@ test.describe('OC - Manage Units', () => {
 				await poOmnichannelUnits.sidenav.linkUnits.click(); // refresh the page
 
 				if (await poOmnichannelUnits.inputSearch.isVisible()) {
-					await poOmnichannelUnits.search(edittedUnitName);
-					await expect(poOmnichannelUnits.findRowByName(edittedUnitName)).not.toBeVisible();
+					await poOmnichannelUnits.search(editedUnitName);
+					await expect(poOmnichannelUnits.findRowByName(editedUnitName)).not.toBeVisible();
 				} else {
 					await expect(page.locator('h3 >> text="No units yet"')).toBeVisible();
 				}
