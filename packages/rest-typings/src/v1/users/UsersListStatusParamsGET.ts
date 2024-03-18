@@ -19,7 +19,7 @@ const UsersListStatusParamsGetSchema = {
 	properties: {
 		status: {
 			type: 'string',
-			enum: ['active', 'all', 'deactivated'],
+			enum: ['active', 'deactivated'],
 		},
 		hasLoggedIn: {
 			type: 'boolean',

@@ -18,7 +18,7 @@ const usePendingUsersCount = (users: Serialized<PickedUser[]> | undefined) => {
 
 			return getUsers(payload);
 		},
-		{ select: (data) => data?.total },
+		{ enabled: !!users, select: (data) => data?.total },
 	).data;
 };
 
