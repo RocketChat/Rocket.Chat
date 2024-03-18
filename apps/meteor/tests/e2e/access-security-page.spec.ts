@@ -12,6 +12,7 @@ test.describe.serial('access-security-page', () => {
 	let passwordChangeEnabledDefaultValue: unknown;
 	let poAccountProfile: AccountProfile;
 	let enableSettings: (api: BaseTestAPI, { passwordChange, twofa, e2e }: { passwordChange: boolean; twofa: boolean; e2e: boolean }) => Promise<void>;
+	let isFirstTestOver = false;
 
 	test.beforeAll(async ({ api }) => {
 		[passwordChangeEnabledDefaultValue, twofaEnabledDefaultValue, e2eEnabledDefaultValue] = await Promise.all([
@@ -36,6 +37,14 @@ test.describe.serial('access-security-page', () => {
 		await page.goto('/account/security');
 	});
 
+	test.afterEach(async ({ api }) => {
+		if (!isFirstTestOver) {
+			// This has to be done before page is loaded, since the side nav is not reactive to the settings in real time
+			await enableSettings(api, { passwordChange: true, twofa: false, e2e: false });
+			isFirstTestOver = true;
+		}
+	});
+
 	test.afterAll(async ({ api }) => {
 		await Promise.all([
 			setSettingValueById(api, 'Accounts_AllowPasswordChange', passwordChangeEnabledDefaultValue),
@@ -44,19 +53,16 @@ test.describe.serial('access-security-page', () => {
 		]);
 	});
 
-	test('can access account security sections', async ({ page, api }) => {
+	test('security tab is invisible when password change, 2FA and E2E are disabled', async ({ page }) => {
 		await page.waitForLoadState('networkidle');
-		await test.step('security tab is invisible when password change, 2FA and E2E are disabled', async () => {
-			const securityTab = poAccountProfile.sidenav.linkSecurity;
-			await expect(securityTab).not.toBeVisible();
-			const mainContent = page.locator('.main-content').getByText('You are not authorized to view this page.').first();
-			await expect(mainContent).toBeVisible();
-		});
+		const securityTab = poAccountProfile.sidenav.linkSecurity;
+		await expect(securityTab).not.toBeVisible();
+		const mainContent = page.locator('.main-content').getByText('You are not authorized to view this page.').first();
+		await expect(mainContent).toBeVisible();
+	});
 
+	test('can access account security sections', async ({ api }) => {
 		await test.step('security page is visible when password change is enabled but 2FA and E2E are disabled', async () => {
-			await enableSettings(api, { passwordChange: true, twofa: false, e2e: false });
-			await page.reload({ waitUntil: 'networkidle' });
-
 			await poAccountProfile.securityHeader.waitFor({ state: 'visible' });
 			const securityTab = poAccountProfile.sidenav.linkSecurity;
 
