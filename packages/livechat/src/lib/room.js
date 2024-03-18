@@ -15,6 +15,7 @@ import { parentCall } from './parentCall';
 import { createToken } from './random';
 import { normalizeMessage, normalizeMessages } from './threads';
 import { handleTranscript } from './transcript';
+import Triggers from './triggers';
 
 const commands = new Commands();
 
@@ -32,6 +33,8 @@ export const closeChat = async ({ transcriptRequested } = {}) => {
 		initial.iframe = { ...currentIframe, guest: { department } };
 		await store.setState(initial);
 	}
+
+	Triggers.processTrigger('after-guest-registration');
 
 	await loadConfig();
 	parentCall('callback', 'chat-ended');
@@ -241,7 +244,7 @@ export const onMessage = async (originalMessage) => {
 	await doPlaySound(message);
 };
 
-export const getGreetingMessages = (messages) => messages && messages.filter((msg) => msg.trigger && msg.triggerAfterRegistration);
+export const getGreetingMessages = (messages) => messages && messages.filter((msg) => msg.trigger);
 export const getLatestCallMessage = (messages) => messages && messages.filter((msg) => isVideoCallMessage(msg)).pop();
 
 export const loadMessages = async () => {
