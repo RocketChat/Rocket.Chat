@@ -34,15 +34,24 @@ const mapCurrentModal = (descriptor: ModalDescriptor): ReactNode => {
 };
 
 class ImperativeModalEmmiter extends Emitter<{ update: ModalDescriptor }> {
+	private store: typeof modalStore;
+
+	constructor(store: typeof modalStore) {
+		super();
+		this.store = store;
+	}
+
 	open = <TProps,>(descriptor: ReactModalDescriptor<TProps>): ModalInstance => {
-		return modalStore.open(mapCurrentModal(descriptor as ModalDescriptor));
+		return this.store.open(mapCurrentModal(descriptor as ModalDescriptor));
 	};
 
 	push = <TProps,>(descriptor: ReactModalDescriptor<TProps>): ModalInstance => {
-		return modalStore.push(mapCurrentModal(descriptor as ModalDescriptor));
+		return this.store.push(mapCurrentModal(descriptor as ModalDescriptor));
 	};
 
-	close = modalStore.close;
+	close = () => {
+		this.store.close();
+	};
 }
 
-export const imperativeModal = new ImperativeModalEmmiter();
+export const imperativeModal = new ImperativeModalEmmiter(modalStore);
