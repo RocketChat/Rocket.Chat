@@ -75,7 +75,7 @@ test.describe.serial('OC - Livechat Triggers', () => {
 	test('OC - Livechat Triggers - Create and edit trigger', async () => {
 		triggerMessage = 'This is a trigger message time on site';
 		await test.step('expect create new trigger', async () => {
-			await agent.poHomeOmnichannel.triggers.createTrigger(triggersName, triggerMessage);
+			await agent.poHomeOmnichannel.triggers.createTrigger(triggersName, triggerMessage, 'time-on-site', 5);
 			await agent.poHomeOmnichannel.triggers.btnCloseToastMessage.click();
 		});
 
@@ -119,7 +119,6 @@ test.describe.serial('OC - Livechat Triggers', () => {
 	});
 
 	test('OC - Livechat Triggers - Condition: after guest registration', async ({ page }) => {
-
 		triggerMessage = 'This is a trigger message after guest registration';
 		await test.step('expect update trigger to after guest registration', async () => {
 			await agent.poHomeOmnichannel.triggers.firstRowInTriggerTable(`edited-${triggersName}`).click();

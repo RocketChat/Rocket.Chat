@@ -1,5 +1,7 @@
 import type { Page, Locator, APIResponse } from '@playwright/test';
 
+import { expect } from '../utils/test';
+
 export class OmnichannelLiveChat {
 	readonly page: Page;
 
@@ -113,11 +115,15 @@ export class OmnichannelLiveChat {
 		await this.page.waitForSelector('[data-qa="livechat-composer"]');
 	}
 
-	public async sendMessageAndCloseChat(liveChatUser: { name: string; email: string }): Promise<void> {
+	public async sendMessageAndCloseChat(
+		liveChatUser: { name: string; email: string },
+		message = 'this_a_test_message_from_user',
+	): Promise<void> {
 		await this.openLiveChat();
 		await this.sendMessage(liveChatUser, false);
-		await this.onlineAgentMessage.type('this_a_test_message_from_user');
+		await this.onlineAgentMessage.type(message);
 		await this.btnSendMessageToOnlineAgent.click();
+		await expect(this.txtChatMessage(message)).toBeVisible();
 		await this.closeChat();
 	}
 }
