@@ -8,6 +8,8 @@ import React, { Suspense, createContext, useContext, useEffect } from 'react';
 
 import GenericModal from '../../components/GenericModal';
 import { imperativeModal } from '../../lib/imperativeModal';
+import ModalRegion from '../../views/modal/ModalRegion';
+import ModalProvider from './ModalProvider';
 import ModalProviderWithRegion from './ModalProviderWithRegion';
 
 const TestContext = createContext({ title: 'default' });
@@ -51,24 +53,44 @@ describe('Modal Provider', () => {
 		expect(await screen.findByText('function modal')).to.exist;
 	});
 
-	it.skip('should render a modal through imperativeModal', async () => {
+	it('should render a modal through imperative modal', () => {
+		async () => {
+			render(
+				<Suspense fallback={null}>
+					<ModalProvider>
+						<ModalRegion />
+					</ModalProvider>
+				</Suspense>,
+			);
+
+			const { close } = imperativeModal.open({
+				component: GenericModal,
+				props: { title: 'imperativeModal' },
+			});
+
+			expect(await screen.findByText('imperativeModal')).to.exist;
+
+			close();
+
+			expect(screen.queryByText('imperativeModal')).to.not.exist;
+		};
+	});
+
+	it('should not render a modal if no corresponding region exists', async () => {
+		// ModalProviderWithRegion will always have a region identifier set
+		// and imperativeModal will only render modals in the default region (e.g no region identifier)
 		render(
 			<Suspense fallback={null}>
 				<ModalProviderWithRegion />
 			</Suspense>,
 		);
 
-		// Not sure why this isn't working
-		const { close } = imperativeModal.open({
+		imperativeModal.open({
 			component: GenericModal,
 			props: { title: 'imperativeModal' },
 		});
 
-		expect(await screen.findByText('imperativeModal')).to.exist;
-
-		close();
-
-		expect(screen.getByText('imperativeModal')).to.not.exist;
+		expect(screen.queryByText('imperativeModal')).to.not.exist;
 	});
 
 	it('should render a modal in another region', () => {
