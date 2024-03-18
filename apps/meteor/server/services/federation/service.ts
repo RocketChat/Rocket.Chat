@@ -215,14 +215,13 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 	}
 
 	protected async setupFederation(): Promise<void> {
-		if (!this.isFederationEnabled()) {
-			return;
+		if (this.isFederationEnabled()) {
+			await this.setupEventHandlersForExternalEvents();
+			await this.setupInternalValidators();
+			await this.setupInternalActionListeners();
+			await this.setupInternalEphemeralListeners();
 		}
-
-		await this.setupEventHandlersForExternalEvents();
-		await this.setupInternalValidators();
-		await this.setupInternalActionListeners();
-		await this.setupInternalEphemeralListeners();
+		this.isRunning = true;
 	}
 
 	protected async cleanUpSettingObserver(): Promise<void> {
