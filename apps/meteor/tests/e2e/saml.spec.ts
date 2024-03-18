@@ -344,6 +344,15 @@ test.describe('SAML', () => {
 		});
 	});
 
+	test('Redirect to home after login when no redirectUrl is provided', async ({ page }) => {
+		await doLoginStep(page, 'samluser2');
+
+		await test.step('expect to be redirected to the homepage after succesful login', async () => {
+			await expect(page).toHaveURL('/home');
+		});
+	});
+
+
 	test.fixme('User Merge - By Custom Identifier', async () => {
 		// Test user merge with a custom identifier configured in the fieldmap
 	});
