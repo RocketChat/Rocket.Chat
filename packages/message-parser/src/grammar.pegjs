@@ -31,6 +31,7 @@
     task,
     tasks,
     unorderedList,
+    timestamp,
   } = require('./utils');
 }}
 
@@ -62,6 +63,14 @@ Blocks
 Blockquote = b:BlockquoteLine+ { return quote(b); }
 
 BlockquoteLine = ">" [ \t]* @Paragraph
+
+// <t:1630360800:?{format}>
+
+TimestampType = "t" / "T" / "d" / "D" / "f" / "F" / "R"
+
+Unixtime = d:Digit |10| { return d.join(''); }
+
+Timestamp = "<t:" date:Unixtime ":" format:TimestampType ">" { return timestamp(date, format); } / "<t:" date:Unixtime ">" { return timestamp(date); }
 
 /**
  *
@@ -202,6 +211,7 @@ Paragraph = value:Inline { return paragraph(value); }
 Inline = value:(InlineItem / Any)+ EndOfLine? { return reducePlainTexts(value); }
 
 InlineItem = Whitespace
+  / Timestamp
   / References
   / AutolinkedPhone
   / AutolinkedEmail
@@ -394,7 +404,7 @@ BoldContentItem = Whitespace / InlineCode / References / UserMention / ChannelMe
 /* Strike */
 Strikethrough = [\x7E] [\x7E] @StrikethroughContent [\x7E] [\x7E] / [\x7E] @StrikethroughContent [\x7E]
 
-StrikethroughContent = text:(InlineCode / Whitespace / References / UserMention / ChannelMention / Italic / Bold / Emoji / Emoticon / AnyStrike / Line)+ {
+StrikethroughContent = text:(Timestamp / InlineCode / Whitespace / References / UserMention / ChannelMention / Italic / Bold / Emoji / Emoticon / AnyStrike / Line)+ {
       return strike(reducePlainTexts(text));
     }
 
