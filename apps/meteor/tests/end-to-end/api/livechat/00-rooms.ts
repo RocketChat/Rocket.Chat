@@ -913,7 +913,7 @@ describe('LIVECHAT - rooms', function () {
 			await deleteVisitor(visitor.token);
 		});
 
-		it('should throw and error if livechat file uploads are disabled', async () => {
+		it('should throw and error if file uploads are enabled but livechat file uploads are disabled', async () => {
 			await updateSetting('Livechat_fileupload_enabled', false);
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
