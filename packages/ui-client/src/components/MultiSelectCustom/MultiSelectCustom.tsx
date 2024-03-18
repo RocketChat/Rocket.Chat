@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useOutsideClick, useToggle } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import type { Dispatch, FormEvent, ReactElement, RefObject, SetStateAction } from 'react';
+import type { FormEvent, ReactElement, RefObject } from 'react';
 import { useCallback, useRef } from 'react';
 
 import MultiSelectCustomAnchor from './MultiSelectCustomAnchor';
@@ -21,21 +21,11 @@ const onMouseEventPreventSideEffects = (e: MouseEvent): void => {
 	e.stopImmediatePropagation();
 };
 
-type TitleOptionProp = {
+export type OptionProp = {
 	id: string;
 	text: string;
-	isGroupTitle: boolean;
-	checked: never;
+	checked?: boolean;
 };
-
-type CheckboxOptionProp = {
-	id: string;
-	text: string;
-	isGroupTitle: never;
-	checked: boolean;
-};
-
-export type OptionProp = TitleOptionProp | CheckboxOptionProp;
 
 /**
  * @param dropdownOptions options available for the multiselect dropdown list
@@ -56,7 +46,7 @@ type DropDownProps = {
 	defaultTitle: TranslationKey;
 	selectedOptionsTitle: TranslationKey;
 	selectedOptions: OptionProp[];
-	setSelectedOptions: Dispatch<SetStateAction<OptionProp[]>>;
+	setSelectedOptions: (roles: OptionProp[]) => void;
 	searchBarText?: TranslationKey;
 };
 
