@@ -17,13 +17,10 @@ export async function getWorkspaceAccessToken(forceNew = false, scope = '', save
 	}
 
 	const expires = await WorkspaceCredentials.getCredentialById('cloud_workspace_access_token_expires_at');
-	if (expires === null) {
-		throw new Error('Cloud_Workspace_Access_Token_Expires_At is not set');
-	}
 
 	const now = new Date();
 
-	if (expires.value && now < expires.value && !forceNew) {
+	if (expires?.value && now < expires.value && !forceNew) {
 		const accessToken = await WorkspaceCredentials.getCredentialById('cloud_workspace_access_token');
 		if (!accessToken) {
 			throw new Error('cloud_workspace_access_token is not set');

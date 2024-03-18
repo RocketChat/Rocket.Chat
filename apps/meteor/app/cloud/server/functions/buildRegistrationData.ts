@@ -50,11 +50,6 @@ export async function buildWorkspaceRegistrationData<T extends string | undefine
 	const siteName = settings.get<string>('Site_Name');
 
 	const workspaceId = await WorkspaceCredentials.getCredentialById('workspace_id');
-
-	if (!workspaceId) {
-		throw new Error('Failed to retrieve workspace id');
-	}
-
 	const allowMarketing = settings.get<string>('Allow_Marketing_Emails');
 	const accountName = settings.get<string>('Organization_Name');
 	const website = settings.get<string>('Website');
@@ -83,7 +78,7 @@ export async function buildWorkspaceRegistrationData<T extends string | undefine
 		uniqueId: stats.uniqueId,
 		deploymentFingerprintHash,
 		deploymentFingerprintVerified,
-		workspaceId: workspaceId.value,
+		workspaceId: workspaceId?.value || '',
 		address,
 		contactName,
 		contactEmail,

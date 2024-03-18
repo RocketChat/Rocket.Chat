@@ -10,13 +10,10 @@ export async function retrieveRegistrationStatus(): Promise<{
 	email: string;
 }> {
 	const workspaceId = await WorkspaceCredentials.getCredentialById('workspace_id');
-	if (!workspaceId) {
-		throw new Error('No workspace id found');
-	}
 
 	const info = {
 		workspaceRegistered: !!settings.get('Cloud_Workspace_Client_Id') && !!settings.get('Cloud_Workspace_Client_Secret'),
-		workspaceId: workspaceId.value,
+		workspaceId: workspaceId?.value || '',
 		uniqueId: settings.get<string>('uniqueID'),
 		token: '',
 		email: settings.get<string>('Organization_Email') || '',
