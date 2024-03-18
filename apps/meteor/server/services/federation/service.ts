@@ -238,6 +238,7 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 		await this.setupInternalValidators();
 		await this.setupInternalActionListeners();
 		await this.setupInternalEphemeralListeners();
+		this.setupWellKnownServer();
 	}
 
 	protected async cleanUpSettingObserver(): Promise<void> {

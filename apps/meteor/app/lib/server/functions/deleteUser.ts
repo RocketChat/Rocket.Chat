@@ -87,15 +87,12 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 				break;
 		}
 
-		/*
-		 * TODO move
-		 */
 		if (user.federated) {
 			await MatrixBridgedUser.removeByInternalId(user._id);
 
-			await Rooms.find({ t: 'd', usernames: user.username, usersCount: 2 }).forEach(({ _id }) => {
-				void MatrixBridgedRoom.removeByLocalRoomId(_id);
-			});
+			//await Rooms.find({ t: 'd', usernames: user.username, usersCount: 2 }).forEach(({ _id }) => {
+			//	void MatrixBridgedRoom.removeByLocalRoomId(_id);
+			//});
 		}
 
 		await Rooms.updateGroupDMsRemovingUsernamesByUsername(user.username, userId); // Remove direct rooms with the user
