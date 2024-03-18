@@ -121,12 +121,10 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 		if (!this.isRunning) {
 			return;
 		}
-
 		if (isFederationEnabled) {
 			await this.onDisableFederation();
 			return this.onEnableFederation();
 		}
-
 		return this.onDisableFederation();
 	}
 
@@ -153,7 +151,7 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 			this.internalQueueInstance,
 			this.bridge,
 		);
-		const federationMessageServiceReceiver = FederationFactory.buildMessageServiceReceiver(
+		const federationMessageServiceReceiver = await FederationFactory.buildMessageServiceReceiver(
 			this.internalRoomAdapter,
 			this.internalUserAdapter,
 			this.internalMessageAdapter,
