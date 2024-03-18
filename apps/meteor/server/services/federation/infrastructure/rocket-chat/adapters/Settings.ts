@@ -60,10 +60,6 @@ export class RocketChatSettingsAdapter {
 		return settings.get('Federation_Matrix_enabled') === true;
 	}
 
-	public shouldServeWellKnown(): boolean {
-		return settings.get<boolean>('Federation_Matrix_serve_well_known');
-	}
-
 	public isTypingStatusEnabled(): boolean {
 		return settings.get('Federation_Matrix_enable_ephemeral_events') === true;
 	}
@@ -71,7 +67,6 @@ export class RocketChatSettingsAdapter {
 	public onFederationEnabledStatusChanged(
 		callback: (
 			enabled: boolean,
-			serveWellKnown: boolean,
 			appServiceId: string,
 			homeServerUrl: string,
 			homeServerDomain: string,
@@ -83,7 +78,6 @@ export class RocketChatSettingsAdapter {
 		return settings.watchMultiple<boolean>(
 			[
 				'Federation_Matrix_enabled',
-				'Federation_Matrix_serve_well_known',
 				'Federation_Matrix_id',
 				'Federation_Matrix_hs_token',
 				'Federation_Matrix_as_token',
@@ -92,10 +86,9 @@ export class RocketChatSettingsAdapter {
 				'Federation_Matrix_bridge_url',
 				'Federation_Matrix_bridge_localpart',
 			],
-			([enabled, serveWellKnown]) =>
+			([enabled]) =>
 				callback(
 					enabled === true,
-					serveWellKnown === true,
 					this.getApplicationServiceId(),
 					this.getHomeServerUrl(),
 					this.getHomeServerDomain(),
@@ -155,17 +148,6 @@ export class RocketChatSettingsAdapter {
 			i18nLabel: 'Federation_Matrix_enable_ephemeral_events',
 			i18nDescription: 'Federation_Matrix_enable_ephemeral_events_desc',
 			alert: 'Federation_Matrix_enable_ephemeral_events_Alert',
-			public: true,
-			group: 'Federation',
-			section: 'Matrix Bridge',
-		});
-
-		await settingsRegistry.add('Federation_Matrix_serve_well_known', false, {
-			readonly: false,
-			type: 'boolean',
-			i18nLabel: 'Federation_Matrix_serve_well_known',
-			i18nDescription: 'Federation_Matrix_serve_well_known_desc',
-			alert: 'Federation_Matrix_serve_well_known_Alert',
 			public: true,
 			group: 'Federation',
 			section: 'Matrix Bridge',

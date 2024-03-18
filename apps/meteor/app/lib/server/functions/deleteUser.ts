@@ -11,8 +11,6 @@ import {
 	ReadReceipts,
 	LivechatUnitMonitors,
 	ModerationReports,
-	MatrixBridgedUser,
-	MatrixBridgedRoom,
 } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -87,14 +85,6 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 				break;
 		}
 
-		if (user.federated) {
-			await MatrixBridgedUser.removeByInternalId(user._id);
-
-			//await Rooms.find({ t: 'd', usernames: user.username, usersCount: 2 }).forEach(({ _id }) => {
-			//	void MatrixBridgedRoom.removeByLocalRoomId(_id);
-			//});
-		}
-
 		await Rooms.updateGroupDMsRemovingUsernamesByUsername(user.username, userId); // Remove direct rooms with the user
 		await Rooms.removeDirectRoomContainingUsername(user.username); // Remove direct rooms with the user
 
@@ -142,8 +132,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 	await updateGroupDMsName(user);
 
 	// Refresh the servers list
-	//await FederationServers.refreshServers();
-	//
+	await FederationServers.refreshServers();
 
 	await callbacks.run('afterDeleteUser', user);
 }

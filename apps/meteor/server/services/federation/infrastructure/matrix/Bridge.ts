@@ -31,7 +31,7 @@ export class MatrixBridge implements IFederationBridge {
 
 	protected isUpdatingBridgeStatus = false;
 
-	constructor(protected internalSettings: RocketChatSettingsAdapter, protected eventHandler: (event: AbstractMatrixEvent) => void) { } // eslint-disable-line no-empty-function
+	constructor(protected internalSettings: RocketChatSettingsAdapter, protected eventHandler: (event: AbstractMatrixEvent) => void) {} // eslint-disable-line no-empty-function
 
 	public async start(): Promise<void> {
 		if (this.isUpdatingBridgeStatus) {
@@ -73,12 +73,12 @@ export class MatrixBridge implements IFederationBridge {
 				displayName: externalInformation.displayname || '',
 				...(externalInformation.avatar_url
 					? {
-						avatarUrl: externalInformation.avatar_url,
-					}
+							avatarUrl: externalInformation.avatar_url,
+					  }
 					: {}),
 			};
 		} catch (err) {
-			federationBridgeLogger.error({ msg: 'Failed to get user profile information', err });
+			// no-op
 		}
 	}
 
@@ -94,7 +94,6 @@ export class MatrixBridge implements IFederationBridge {
 					DEFAULT_TIMEOUT_IN_MS_FOR_JOINING_ROOMS,
 				);
 		} catch (e) {
-			federationBridgeLogger.error({ msg: 'failed to join external room', e });
 			throw new Error('Error joining Matrix room');
 		}
 	}
@@ -158,7 +157,7 @@ export class MatrixBridge implements IFederationBridge {
 		try {
 			await this.bridgeInstance.getIntent(externalInviterId).invite(externalRoomId, externalInviteeId);
 		} catch (e) {
-			federationBridgeLogger.error({ msg: 'failed to invite user to room', err: e });
+			// no-op
 		}
 	}
 
@@ -166,7 +165,7 @@ export class MatrixBridge implements IFederationBridge {
 		try {
 			await this.bridgeInstance.getIntent(externalUserId).matrixClient.setAvatarUrl(avatarUrl);
 		} catch (e) {
-			federationBridgeLogger.error({ msg: 'failed to set user avatar', err: e });
+			// no-op
 		}
 	}
 
@@ -205,8 +204,6 @@ export class MatrixBridge implements IFederationBridge {
 		return VerificationStatus.UNABLE_TO_VERIFY;
 	}
 
-	// TODO(debdut): path for deactivate user
-
 	public async createUser(username: string, name: string, domain: string, avatarUrl?: string): Promise<string> {
 		if (!MatrixUserInstance) {
 			throw new Error('Error loading the Matrix User instance from the external library');
@@ -222,7 +219,7 @@ export class MatrixBridge implements IFederationBridge {
 		try {
 			await this.bridgeInstance.getIntent(externalUserId).setDisplayName(displayName);
 		} catch (e) {
-			federationBridgeLogger.error({ msg: 'failed to set user display name', err: e });
+			// no-op
 		}
 	}
 
@@ -499,7 +496,7 @@ export class MatrixBridge implements IFederationBridge {
 		try {
 			await this.bridgeInstance.getIntent(externalUserId).leave(externalRoomId);
 		} catch (e) {
-			federationBridgeLogger.error({ msg: 'failed to leave federated room', err: e });
+			// no-op
 		}
 	}
 
@@ -684,7 +681,7 @@ export class MatrixBridge implements IFederationBridge {
 			return ((roomState || []).find((event) => event?.type === MatrixEventType.ROOM_NAME_CHANGED) as MatrixEventRoomNameChanged)?.content
 				?.name;
 		} catch (error) {
-			federationBridgeLogger.error({ msg: 'failed to get room name', err: error });
+			// no-op
 		}
 	}
 
@@ -695,7 +692,7 @@ export class MatrixBridge implements IFederationBridge {
 			return ((roomState || []).find((event) => event?.type === MatrixEventType.ROOM_TOPIC_CHANGED) as MatrixEventRoomTopicChanged)?.content
 				?.topic;
 		} catch (error) {
-			federationBridgeLogger.error({ msg: 'failed to get room topic', err: error });
+			// no-op
 		}
 	}
 
@@ -734,11 +731,11 @@ export class MatrixBridge implements IFederationBridge {
 				},
 				...(this.internalSettings.getAppServiceRegistrationObject().enableEphemeralEvents
 					? {
-						onEphemeralEvent: (request) => {
-							const event = request.getData() as unknown as AbstractMatrixEvent;
-							this.eventHandler(event);
-						},
-					}
+							onEphemeralEvent: (request) => {
+								const event = request.getData() as unknown as AbstractMatrixEvent;
+								this.eventHandler(event);
+							},
+					  }
 					: {}),
 			},
 		});

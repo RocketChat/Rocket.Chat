@@ -57,8 +57,4 @@ export class MatrixBridgedUserRaw extends BaseRaw<IMatrixBridgedUser> implements
 			{ upsert: true },
 		);
 	}
-
-	async removeByInternalId(internalId: string): Promise<void> {
-		await this.deleteOne({ uid: internalId });
-	}
 }
