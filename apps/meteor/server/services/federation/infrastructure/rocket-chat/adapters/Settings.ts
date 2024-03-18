@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 
 import { Settings } from '@rocket.chat/models';
+import yaml from 'js-yaml';
 import { v4 as uuidv4 } from 'uuid';
 
 import { settings, settingsRegistry } from '../../../../../../app/settings/server';
@@ -12,6 +13,7 @@ const LISTEN_RULES = EVERYTHING_REGEX;
 export class RocketChatSettingsAdapter {
 	public async initialize() {
 		await this.addFederationSettings();
+		this.watchChangesAndUpdateRegistrationFile();
 	}
 
 	public getApplicationServiceId(): string {
@@ -130,6 +132,38 @@ export class RocketChatSettingsAdapter {
 		};
 	}
 
+	private async updateRegistrationFile(): Promise<void> {
+		const registrationFile = this.getAppServiceRegistrationObject();
+
+		await Settings.updateValueById(
+			'Federation_Matrix_registration_file',
+			yaml.dump({
+				'id': registrationFile.id,
+				'hs_token': registrationFile.homeserverToken,
+				'as_token': registrationFile.applicationServiceToken,
+				'url': registrationFile.bridgeUrl,
+				'sender_localpart': registrationFile.botName,
+				'namespaces': registrationFile.listenTo,
+				'de.sorunome.msc2409.push_ephemeral': registrationFile.enableEphemeralEvents,
+			}),
+		);
+	}
+
+	private watchChangesAndUpdateRegistrationFile(): void {
+		settings.watchMultiple(
+			[
+				'Federation_Matrix_id',
+				'Federation_Matrix_hs_token',
+				'Federation_Matrix_as_token',
+				'Federation_Matrix_homeserver_url',
+				'Federation_Matrix_homeserver_domain',
+				'Federation_Matrix_bridge_url',
+				'Federation_Matrix_bridge_localpart',
+			],
+			this.updateRegistrationFile.bind(this),
+		);
+	}
+
 	private async addFederationSettings(): Promise<void> {
 		await settingsRegistry.add('Federation_Matrix_enabled', false, {
 			readonly: false,
@@ -216,6 +250,16 @@ export class RocketChatSettingsAdapter {
 			type: 'string',
 			i18nLabel: 'Federation_Matrix_bridge_localpart',
 			i18nDescription: 'Federation_Matrix_bridge_localpart_desc',
+			group: 'Federation',
+			section: 'Matrix Bridge',
+		});
+
+		await settingsRegistry.add('Federation_Matrix_registration_file', '', {
+			readonly: true,
+			type: 'code',
+			i18nLabel: 'Federation_Matrix_registration_file',
+			i18nDescription: 'Federation_Matrix_registration_file_desc',
+			alert: 'Federation_Matrix_registration_file_Alert',
 			group: 'Federation',
 			section: 'Matrix Bridge',
 		});
