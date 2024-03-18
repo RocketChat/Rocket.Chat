@@ -2264,6 +2264,17 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		);
 	}
 
+	countOpenByAgent(userId: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
+		const query: Filter<IOmnichannelRoom> = {
+			't': 'l',
+			'open': true,
+			'servedBy._id': userId,
+			...extraQuery,
+		};
+
+		return this.col.countDocuments(query);
+	}
+
 	findOpenByAgent(userId: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
 		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
