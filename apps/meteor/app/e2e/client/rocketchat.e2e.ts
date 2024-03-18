@@ -418,39 +418,19 @@ class E2E extends Emitter {
 			return message;
 		}
 
-		const attachmentDescription = message.attachments?.[0]?.description;
-
-		const textToDecrypt = attachmentDescription || message.msg;
-
-		if (!textToDecrypt) {
-			return message;
-		}
-
-		const data = await e2eRoom.decrypt(textToDecrypt);
-
-		if (!data) {
-			return message;
-		}
+		const data = await e2eRoom.decrypt(message.msg);
 
 		const decryptedMessage: IE2EEMessage = {
 			...message,
-			...(!attachmentDescription && { msg: data.text }),
-			// ...(attachmentDescription && {
-			// 	attachments: [
-			// 		{
-			// 			...message?.attachments?.[0],
-			// 			description: data.text,
-			// 		},
-			// 	],
-			// }),
-			e2e: 'done',
+			...(data && {
+				msg: data.text,
+				e2e: 'done',
+			}),
 		};
 
 		const decryptedMessageWithQuote = await this.parseQuoteAttachment(decryptedMessage);
 
 		const decryptedMessageWithAttachments = await this.decryptMessageAttachments(decryptedMessageWithQuote);
-
-		console.log({decryptedMessageWithAttachments});
 
 		return decryptedMessageWithAttachments;
 	}
@@ -468,26 +448,32 @@ class E2E extends Emitter {
 			return message;
 		}
 
-		attachments.map(async attachment => {
-			if(!isFileAttachment(attachment)) {
+		const decryptedAttachments = await Promise.all(
+			attachments.map(async (attachment) => {
+				if (!isFileAttachment(attachment)) {
+					return attachment;
+				}
+
+				if (!attachment.description) {
+					return attachment;
+				}
+
+				const data = await e2eRoom.decrypt(attachment.description);
+
+				if (!data) {
+					return attachment;
+				}
+
+				attachment.description = data.text;
 				return attachment;
-			}
+			}),
+		);
 
-			if(!attachment.description) {
-				return attachment;
-			}
-
-			const data = await e2eRoom.decrypt(attachment.description);
-
-			if(!data) {
-				return attachment;
-			}
-
-			attachment.description = data.text;
-
-		});
-
-		return message;
+		return {
+			...message,
+			attachments: decryptedAttachments,
+			e2e: 'done',
+		};
 	}
 
 	async decryptAttachmentDescription(description: string, rid: string): Promise<string> {
