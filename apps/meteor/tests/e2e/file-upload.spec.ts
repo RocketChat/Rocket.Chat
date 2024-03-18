@@ -41,4 +41,13 @@ test.describe.serial('file-upload', () => {
 		await expect(poHomeChannel.content.getFileDescription).toHaveText('any_description');
 		await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
 	});
+
+	test('expect send lst file succesfully', async () => {
+		await poHomeChannel.content.dragAndDropFile('./tests/e2e/fixtures/files/lst-test.lst');
+		await poHomeChannel.content.descriptionInput.fill('lst_description');
+		await poHomeChannel.content.btnModalConfirm.click();
+
+		await expect(poHomeChannel.content.getFileDescription).toHaveText('lst_description');
+		await expect(poHomeChannel.content.lastMessageFileName).toContainText('lst-test.lst');
+	});
 });
