@@ -60,7 +60,8 @@ export type StoreState = {
 		enabled: boolean;
 	};
 	iframe: {
-		guest: Serialized<ILivechatVisitorDTO> | Record<string, unknown>;
+		guest: Partial<Serialized<ILivechatVisitorDTO>>;
+		guestMetadata?: Record<string, string>;
 		theme: {
 			title?: string;
 			color?: string;
@@ -71,6 +72,7 @@ export type StoreState = {
 		visible?: boolean;
 		department?: string;
 		language?: string;
+		defaultDepartment?: string;
 	};
 	gdpr: {
 		accepted: boolean;
