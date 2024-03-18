@@ -419,8 +419,8 @@ export class E2ERoom extends Emitter {
 				text: description,
 				_id,
 				ts,
-			})
-		)
+			}),
+		);
 		return this.encryptText(data);
 	}
 

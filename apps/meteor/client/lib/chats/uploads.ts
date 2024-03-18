@@ -152,6 +152,8 @@ export const createUploadsAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMes
 	subscribe,
 	wipeFailedOnes,
 	cancel,
-	send: (file: File, { description, msg, t, e2e }: { description?: string; msg?: string; t?: IMessage['t']; e2e?: IMessage['e2e'] }): Promise<void> =>
-		send(file, { description, msg, rid, tmid, t, e2e }),
+	send: (
+		file: File,
+		{ description, msg, t, e2e }: { description?: string; msg?: string; t?: IMessage['t']; e2e?: IMessage['e2e'] },
+	): Promise<void> => send(file, { description, msg, rid, tmid, t, e2e }),
 });
