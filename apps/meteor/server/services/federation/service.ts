@@ -14,6 +14,7 @@ import type { RocketChatSettingsAdapter } from './infrastructure/rocket-chat/ada
 import type { RocketChatUserAdapter } from './infrastructure/rocket-chat/adapters/User';
 import { FederationRoomSenderConverter } from './infrastructure/rocket-chat/converters/RoomSender';
 import { FederationHooks } from './infrastructure/rocket-chat/hooks';
+import { setupWellKnownPaths, teardownWellKnownPaths } from './infrastructure/rocket-chat/well-known';
 
 export abstract class AbstractFederationService extends ServiceClassInternal {
 	private cancelSettingsObserver: () => void;
@@ -117,14 +118,22 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 		);
 	}
 
-	private async onFederationEnabledSettingChange(isFederationEnabled: boolean): Promise<void> {
+	private async onFederationEnabledSettingChange(isFederationEnabled: boolean, serveWellKnown: boolean): Promise<void> {
 		if (!this.isRunning) {
 			return;
 		}
+
 		if (isFederationEnabled) {
 			await this.onDisableFederation();
 			return this.onEnableFederation();
 		}
+
+		if (serveWellKnown) {
+			setupWellKnownPaths();
+		} else {
+			teardownWellKnownPaths();
+		}
+
 		return this.onDisableFederation();
 	}
 
@@ -151,7 +160,7 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 			this.internalQueueInstance,
 			this.bridge,
 		);
-		const federationMessageServiceReceiver = await FederationFactory.buildMessageServiceReceiver(
+		const federationMessageServiceReceiver = FederationFactory.buildMessageServiceReceiver(
 			this.internalRoomAdapter,
 			this.internalUserAdapter,
 			this.internalMessageAdapter,
@@ -174,6 +183,14 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 			this.internalSettingsAdapter,
 		);
 		this.internalQueueInstance.setHandler(federationEventsHandler.handleEvent.bind(federationEventsHandler), this.PROCESSING_CONCURRENCY);
+	}
+
+	protected setupWellKnownServer(): void {
+		if (!this.internalSettingsAdapter.shouldServeWellKnown()) {
+			return;
+		}
+
+		return setupWellKnownPaths();
 	}
 
 	protected getInternalSettingsAdapter(): RocketChatSettingsAdapter {
@@ -281,6 +298,7 @@ abstract class AbstractBaseFederationService extends AbstractFederationService {
 	}
 
 	protected async onDisableFederation(): Promise<void> {
+		teardownWellKnownPaths();
 		await this.stopFederation();
 	}
 
