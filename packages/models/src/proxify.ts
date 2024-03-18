@@ -24,7 +24,15 @@ function handler<T extends object>(namespace: string): ProxyHandler<T> {
 	};
 }
 
-export function registerModel<TModel extends IBaseModel<any, any, any>>(name: string, instance: TModel | (() => TModel)): void {
+export function registerModel<TModel extends IBaseModel<any, any, any>>(
+	name: string,
+	instance: TModel | (() => TModel),
+	overwriteExisting = true,
+): void {
+	if (!overwriteExisting && (lazyModels.has(name) || models.has(name))) {
+		return;
+	}
+
 	if (typeof instance === 'function') {
 		lazyModels.set(name, instance);
 	} else {
