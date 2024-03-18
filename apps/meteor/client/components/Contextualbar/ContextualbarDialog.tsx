@@ -1,9 +1,11 @@
 import { Contextualbar } from '@rocket.chat/fuselage';
 import { useLayoutSizes, useLayoutContextualBarPosition } from '@rocket.chat/ui-contexts';
-import type { ComponentProps } from 'react';
-import React, { useRef } from 'react';
+import type { ComponentProps, KeyboardEvent } from 'react';
+import React, { useCallback, useRef } from 'react';
 import type { AriaDialogProps } from 'react-aria';
 import { FocusScope, useDialog } from 'react-aria';
+
+import { useRoomToolbox } from '../../views/room/contexts/RoomToolboxContext';
 
 type ContextualbarDialogProps = AriaDialogProps & ComponentProps<typeof Contextualbar>;
 
@@ -12,10 +14,27 @@ const ContextualbarDialog = (props: ContextualbarDialogProps) => {
 	const { dialogProps } = useDialog({ 'aria-labelledby': 'contextualbarTitle', ...props }, ref);
 	const sizes = useLayoutSizes();
 	const position = useLayoutContextualBarPosition();
+	const { closeTab } = useRoomToolbox();
+
+	const callbackRef = useCallback(
+		(node) => {
+			if (!node) {
+				return;
+			}
+
+			ref.current = node;
+			node.addEventListener('keydown', (e: KeyboardEvent) => {
+				if (e.key === 'Escape') {
+					closeTab();
+				}
+			});
+		},
+		[closeTab],
+	);
 
 	return (
 		<FocusScope autoFocus restoreFocus>
-			<Contextualbar ref={ref} width={sizes.contextualBar} position={position} {...dialogProps} {...props} />
+			<Contextualbar ref={callbackRef} width={sizes.contextualBar} position={position} {...dialogProps} {...props} />
 		</FocusScope>
 	);
 };
