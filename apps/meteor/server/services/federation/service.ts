@@ -213,13 +213,14 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 	}
 
 	protected async setupFederation(): Promise<void> {
-		if (this.isFederationEnabled()) {
-			await this.setupEventHandlersForExternalEvents();
-			await this.setupInternalValidators();
-			await this.setupInternalActionListeners();
-			await this.setupInternalEphemeralListeners();
+		if (!this.isFederationEnabled()) {
+			return;
 		}
-		this.isRunning = true;
+
+		await this.setupEventHandlersForExternalEvents();
+		await this.setupInternalValidators();
+		await this.setupInternalActionListeners();
+		await this.setupInternalEphemeralListeners();
 	}
 
 	protected async cleanUpSettingObserver(): Promise<void> {
@@ -245,6 +246,7 @@ abstract class AbstractBaseFederationService extends AbstractFederationService {
 		super(bridge, internalQueueInstance, internalSettingsAdapter);
 	}
 
+	// don't care about this
 	protected async setupInternalEphemeralListeners(): Promise<void> {
 		await this.getInternalNotificationAdapter().subscribeToUserTypingEventsOnFederatedRooms(
 			this.getInternalNotificationAdapter().broadcastUserTypingOnRoom.bind(this.getInternalNotificationAdapter()),
