@@ -11,7 +11,7 @@ export const MockedModalContext = ({ children }: { children: React.ReactNode }) 
 				modal: {
 					setModal: setCurrentModal,
 				},
-				currentModal,
+				currentModal: { component: currentModal },
 			}}
 		>
 			{children}
