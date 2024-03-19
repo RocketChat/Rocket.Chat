@@ -58,6 +58,7 @@ export const useAgentsSection = () => {
 
 	return useMemo(
 		() => ({
+			id: 'conversations-by-agent',
 			title,
 			subtitle,
 			emptyStateSubtitle,

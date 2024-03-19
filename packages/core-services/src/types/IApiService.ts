@@ -1,11 +1,11 @@
-import type { EventSignatures } from '../Events';
+import type { EventSignatures } from '../events/Events';
 import type { IBroker, IBrokerNode } from './IBroker';
 import type { IServiceClass } from './ServiceClass';
 
 export interface IApiService {
 	setBroker(broker: IBroker): void;
 
-	destroyService(instance: IServiceClass): void;
+	destroyService(instance: IServiceClass): Promise<void>;
 
 	registerService(instance: IServiceClass): void;
 

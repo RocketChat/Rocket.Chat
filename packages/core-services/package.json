@@ -1,21 +1,21 @@
 {
 	"name": "@rocket.chat/core-services",
-	"version": "0.1.2",
+	"version": "0.3.5",
 	"private": true,
 	"devDependencies": {
-		"@babel/core": "~7.22.9",
-		"@babel/preset-env": "~7.22.9",
-		"@babel/preset-typescript": "~7.22.5",
+		"@babel/core": "~7.22.20",
+		"@babel/preset-env": "~7.22.20",
+		"@babel/preset-typescript": "~7.22.15",
 		"@rocket.chat/eslint-config": "workspace:^",
-		"@types/babel__core": "^7",
-		"@types/babel__preset-env": "^7",
-		"@types/jest": "~29.5.3",
+		"@types/babel__core": "^7.20.3",
+		"@types/babel__preset-env": "^7.9.4",
+		"@types/jest": "~29.5.7",
 		"babel-jest": "^29.5.0",
 		"eslint": "~8.45.0",
-		"jest": "~29.6.1",
-		"mongodb": "^4.12.1",
+		"jest": "~29.6.4",
+		"mongodb": "^4.17.2",
 		"prettier": "~2.8.8",
-		"typescript": "~5.2.2"
+		"typescript": "~5.3.3"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
@@ -30,15 +30,18 @@
 	"files": [
 		"/dist"
 	],
+	"volta": {
+		"extends": "../../package.json"
+	},
 	"dependencies": {
-		"@rocket.chat/apps-engine": "1.41.0-alpha.290",
+		"@rocket.chat/apps-engine": "1.42.0-alpha.619",
 		"@rocket.chat/core-typings": "workspace:^",
-		"@rocket.chat/icons": "next",
-		"@rocket.chat/message-parser": "next",
+		"@rocket.chat/icons": "^0.34.0",
+		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
-		"@rocket.chat/ui-kit": "next",
-		"@types/fibers": "^3.1.1",
+		"@rocket.chat/ui-kit": "workspace:~",
+		"@types/fibers": "^3.1.3",
 		"fibers": "^5.0.3"
 	}
 }

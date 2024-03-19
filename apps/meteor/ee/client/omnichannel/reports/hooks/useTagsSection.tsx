@@ -59,6 +59,7 @@ export const useTagsSection = () => {
 
 	return useMemo(
 		() => ({
+			id: 'conversations-by-tags',
 			title,
 			subtitle,
 			emptyStateSubtitle,

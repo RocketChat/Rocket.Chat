@@ -1,5 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, Callout, Menu, Option } from '@rocket.chat/fuselage';
+import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
@@ -14,7 +15,6 @@ import {
 import InfoPanel from '../../../../../components/InfoPanel';
 import RetentionPolicyCallout from '../../../../../components/InfoPanel/RetentionPolicyCallout';
 import MarkdownText from '../../../../../components/MarkdownText';
-import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
 import type { Action } from '../../../../hooks/useActionSpread';
 import { useActionSpread } from '../../../../hooks/useActionSpread';
 import { useRetentionPolicy } from '../../../body/hooks/useRetentionPolicy';
@@ -48,7 +48,7 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 			<Menu
 				small={false}
 				flexShrink={0}
-				mi={2}
+				mi={4}
 				key='menu'
 				maxHeight='initial'
 				secondary

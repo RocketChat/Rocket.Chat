@@ -12,12 +12,12 @@ import type { VirtuosoHandle } from 'react-virtuoso';
 import { Virtuoso } from 'react-virtuoso';
 import tinykeys from 'tinykeys';
 
+import { VirtuosoScrollbars } from '../../components/CustomScrollbars';
 import { getConfig } from '../../lib/utils/getConfig';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 import Row from './Row';
-import ScrollerWithCustomProps from './ScrollerWithCustomProps';
 
 const mobileCheck = function () {
 	let check = false;
@@ -55,7 +55,7 @@ const shortcut = ((): string => {
 	if (window.navigator.platform.toLowerCase().includes('mac')) {
 		return '(\u2318+K)';
 	}
-	return '(\u2303+K)';
+	return '(Ctrl+K)';
 })();
 
 const LIMIT = parseInt(String(getConfig('Sidebar_Search_Spotlight_LIMIT', 20)));
@@ -255,14 +255,14 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 	});
 
 	const resetCursor = useMutableCallback(() => {
-		itemIndexRef.current = 0;
-		listRef.current?.scrollToIndex({ index: itemIndexRef.current });
-
-		selectedElement.current = boxRef.current?.querySelector('a.rcx-sidebar-item');
-
-		if (selectedElement.current) {
-			toggleSelectionState(selectedElement.current, undefined, cursorRef?.current || undefined);
-		}
+		setTimeout(() => {
+			itemIndexRef.current = 0;
+			listRef.current?.scrollToIndex({ index: itemIndexRef.current });
+			selectedElement.current = boxRef.current?.querySelector('a.rcx-sidebar-item');
+			if (selectedElement.current) {
+				toggleSelectionState(selectedElement.current, undefined, cursorRef?.current || undefined);
+			}
+		}, 0);
 	});
 
 	usePreventDefault(boxRef);
@@ -303,9 +303,12 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 				listRef.current?.scrollToIndex({ index: itemIndexRef.current });
 				selectedElement.current = currentElement;
 			},
-			Enter: () => {
-				if (selectedElement.current) {
+			Enter: (event) => {
+				event.preventDefault();
+				if (selectedElement.current && items.length > 0) {
 					selectedElement.current.click();
+				} else {
+					onClose();
 				}
 			},
 		});
@@ -363,7 +366,7 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 					style={{ height: '100%', width: '100%' }}
 					totalCount={items.length}
 					data={items}
-					components={{ Scroller: ScrollerWithCustomProps }}
+					components={{ Scroller: VirtuosoScrollbars }}
 					computeItemKey={(_, room) => room._id}
 					itemContent={(_, data): ReactElement => <Row data={itemData} item={data} />}
 					ref={listRef}

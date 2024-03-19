@@ -21,13 +21,13 @@ export const restrictQuery = async (originalQuery: FilterOperators<IOmnichannelR
 	};
 	query.$and = [condition, ...expressions];
 
+	cbLogger.debug({ msg: 'Applying room query restrictions', units });
 	return query;
 };
 
 callbacks.add(
 	'livechat.applyRoomRestrictions',
 	async (originalQuery: FilterOperators<IOmnichannelRoom> = {}) => {
-		cbLogger.debug('Applying room query restrictions');
 		return restrictQuery(originalQuery);
 	},
 	callbacks.priority.HIGH,

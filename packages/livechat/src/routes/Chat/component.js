@@ -1,4 +1,4 @@
-import { Component } from 'preact';
+import { Component, createRef } from 'preact';
 import { Suspense, lazy } from 'preact/compat';
 import { withTranslation } from 'react-i18next';
 
@@ -35,6 +35,8 @@ class Chat extends Component {
 		emojiPickerActive: false,
 	};
 
+	inputRef = createRef(null);
+
 	handleFilesDropTargetRef = (ref) => {
 		this.filesDropTarget = ref;
 	};
@@ -61,7 +63,7 @@ class Chat extends Component {
 
 	handleUploadClick = (event) => {
 		event.preventDefault();
-		this.filesDropTarget.browse();
+		this.inputRef?.current?.click();
 	};
 
 	handleSendClick = (event) => {
@@ -151,7 +153,7 @@ class Chat extends Component {
 			handleEmojiClick={this.handleEmojiClick}
 			{...props}
 		>
-			<FilesDropTarget ref={this.handleFilesDropTargetRef} overlayed overlayText={t('drop_here_to_upload_a_file')} onUpload={onUpload}>
+			<FilesDropTarget inputRef={this.inputRef} overlayed overlayText={t('drop_here_to_upload_a_file')} onUpload={onUpload}>
 				<Screen.Content nopadding>
 					{incomingCallAlert && !!incomingCallAlert.show && <CallNotification {...incomingCallAlert} dispatch={dispatch} />}
 					{incomingCallAlert?.show && ongoingCall && ongoingCall.callStatus === CallStatus.IN_PROGRESS_SAME_TAB ? (
@@ -186,7 +188,7 @@ class Chat extends Component {
 				</Screen.Content>
 				<Screen.Footer
 					options={
-						options ? (
+						options && !registrationRequired ? (
 							<FooterOptions>
 								<Menu.Group>
 									{onChangeDepartment && (

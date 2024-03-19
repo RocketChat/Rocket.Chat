@@ -1,24 +1,26 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { usePermission, useStream, useUserId, useRouter } from '@rocket.chat/ui-contexts';
-import { useQueryClient } from '@tanstack/react-query';
+import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ContextType, ReactElement } from 'react';
 import React, { useMemo, memo, useEffect, useCallback } from 'react';
 
-import { ChatRoom, ChatSubscription } from '../../../../app/models/client';
+import { ChatSubscription } from '../../../../app/models/client';
 import { RoomHistoryManager } from '../../../../app/ui-utils/client';
 import { UserAction } from '../../../../app/ui/client/lib/UserAction';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { RoomManager } from '../../../lib/RoomManager';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
+import ImageGalleryProvider from '../../../providers/ImageGalleryProvider';
 import RoomNotFound from '../RoomNotFound';
 import RoomSkeleton from '../RoomSkeleton';
 import { useRoomRolesManagement } from '../body/hooks/useRoomRolesManagement';
 import { RoomContext } from '../contexts/RoomContext';
 import ComposerPopupProvider from './ComposerPopupProvider';
 import RoomToolboxProvider from './RoomToolboxProvider';
+import UserCardProvider from './UserCardProvider';
+import { useRedirectOnSettingsChanged } from './hooks/useRedirectOnSettingsChanged';
 import { useRoomQuery } from './hooks/useRoomQuery';
+import { useUsersNameChanged } from './hooks/useUsersNameChanged';
 
 type RoomProviderProps = {
 	children: ReactNode;
@@ -30,23 +32,6 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 
 	const { data: room, isSuccess } = useRoomQuery(rid);
 
-	const subscribeToRoom = useStream('room-data');
-
-	const queryClient = useQueryClient();
-	const userId = useUserId();
-	const isLivechatAdmin = usePermission('view-livechat-rooms');
-
-	// TODO: move this to omnichannel context only
-	useEffect(() => {
-		if (!room || !isOmnichannelRoom(room)) {
-			return;
-		}
-
-		return subscribeToRoom(rid, (room) => {
-			queryClient.setQueryData(['rooms', rid], room);
-		});
-	}, [subscribeToRoom, rid, queryClient, room]);
-
 	// TODO: the following effect is a workaround while we don't have a general and definitive solution for it
 	const router = useRouter();
 	useEffect(() => {
@@ -55,21 +40,11 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 		}
 	}, [isSuccess, room, router]);
 
-	// TODO: Review the necessity of this effect when we move away from cached collections
-	useEffect(() => {
-		if (!room || !isOmnichannelRoom(room) || !room.servedBy) {
-			return;
-		}
-
-		if (!isLivechatAdmin && room.servedBy._id !== userId) {
-			ChatRoom.remove(room._id);
-			queryClient.removeQueries(['rooms', room._id]);
-			queryClient.removeQueries(['rooms', { reference: room._id, type: 'l' }]);
-			queryClient.removeQueries(['/v1/rooms.info', room._id]);
-		}
-	}, [isLivechatAdmin, queryClient, userId, room]);
-
 	const subscriptionQuery = useReactiveQuery(['subscriptions', { rid }], () => ChatSubscription.findOne({ rid }) ?? null);
+
+	useRedirectOnSettingsChanged(subscriptionQuery.data);
+
+	useUsersNameChanged();
 
 	const pseudoRoom = useMemo(() => {
 		if (!room) {
@@ -125,14 +100,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 			return;
 		}
 
-		UserAction.addStream(rid);
-		return (): void => {
-			try {
-				UserAction.cancel(rid);
-			} catch (error) {
-				// Do nothing
-			}
-		};
+		return UserAction.addStream(rid);
 	}, [rid, subscribed]);
 
 	if (!pseudoRoom) {
@@ -142,7 +110,11 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	return (
 		<RoomContext.Provider value={context}>
 			<RoomToolboxProvider>
-				<ComposerPopupProvider room={pseudoRoom}>{children}</ComposerPopupProvider>
+				<ImageGalleryProvider>
+					<UserCardProvider>
+						<ComposerPopupProvider room={pseudoRoom}>{children}</ComposerPopupProvider>
+					</UserCardProvider>
+				</ImageGalleryProvider>
 			</RoomToolboxProvider>
 		</RoomContext.Provider>
 	);

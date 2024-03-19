@@ -1,3 +1,4 @@
+import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import { Subscriptions } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
@@ -6,6 +7,8 @@ import { BaseRaw } from './BaseRaw';
 const queryStatusAgentOnline = (extraFilters = {}, isLivechatEnabledWhenAgentIdle) => ({
 	statusLivechat: 'available',
 	roles: 'livechat-agent',
+	// ignore deactivated users
+	active: true,
 	...(!isLivechatEnabledWhenAgentIdle && {
 		$or: [
 			{
@@ -53,7 +56,6 @@ export class UsersRaw extends BaseRaw {
 			{ key: { lastLogin: 1 } },
 			{ key: { status: 1 } },
 			{ key: { statusText: 1 } },
-			{ key: { active: 1 }, sparse: 1 },
 			{ key: { statusConnection: 1 }, sparse: 1 },
 			{ key: { appId: 1 }, sparse: 1 },
 			{ key: { type: 1 } },
@@ -381,6 +383,10 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	findOneByUsernameIgnoringCase(username, options) {
+		if (!username) {
+			throw new Error('invalid username');
+		}
+
 		const query = { username };
 
 		return this.findOne(query, {
@@ -933,7 +939,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		return this.updateMany(query, update);
+		return this.updateOne(query, update);
 	}
 
 	addBusinessHourByAgentIds(agentIds = [], businessHourId) {
@@ -1030,7 +1036,9 @@ export class UsersRaw extends BaseRaw {
 	updateLivechatStatusBasedOnBusinessHours(userIds = []) {
 		const query = {
 			$or: [{ openBusinessHours: { $exists: false } }, { openBusinessHours: { $size: 0 } }],
-			roles: 'livechat-agent',
+			$and: [{ roles: 'livechat-agent' }, { roles: { $ne: 'bot' } }],
+			// exclude deactivated users
+			active: true,
 			// Avoid unnecessary updates
 			statusLivechat: 'available',
 			...(Array.isArray(userIds) && userIds.length > 0 && { _id: { $in: userIds } }),
@@ -1067,10 +1075,18 @@ export class UsersRaw extends BaseRaw {
 	async isAgentWithinBusinessHours(agentId) {
 		const query = {
 			_id: agentId,
-			openBusinessHours: {
-				$exists: true,
-				$not: { $size: 0 },
-			},
+			$or: [
+				{
+					openBusinessHours: {
+						$exists: true,
+						$not: { $size: 0 },
+					},
+				},
+				{
+					// Bots can ignore Business Hours and be always available
+					roles: 'bot',
+				},
+			],
 		};
 		return (await this.col.countDocuments(query)) > 0;
 	}
@@ -1483,6 +1499,18 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
+	addRoomByUserIds(uids, rid) {
+		return this.updateMany(
+			{
+				_id: { $in: uids },
+				__rooms: { $ne: rid },
+			},
+			{
+				$addToSet: { __rooms: rid },
+			},
+		);
+	}
+
 	removeRoomByRoomIds(rids) {
 		return this.updateMany(
 			{
@@ -1631,7 +1659,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		const user = await this.col.findOneAndUpdate(query, update, { sort, returnDocument: 'after' });
+		const user = await this.findOneAndUpdate(query, update, { sort, returnDocument: 'after' });
 		if (user && user.value) {
 			return {
 				agentId: user.value._id,
@@ -1661,7 +1689,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		const user = await this.col.findOneAndUpdate(query, update, { sort, returnDocument: 'after' });
+		const user = await this.findOneAndUpdate(query, update, { sort, returnDocument: 'after' });
 		if (user?.value) {
 			return {
 				agentId: user.value._id,
@@ -1681,6 +1709,24 @@ export class UsersRaw extends BaseRaw {
 			$set: {
 				statusLivechat: status,
 				livechatStatusSystemModified: false,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	makeAgentUnavailableAndUnsetExtension(userId) {
+		const query = {
+			_id: userId,
+			roles: 'livechat-agent',
+		};
+
+		const update = {
+			$set: {
+				statusLivechat: ILivechatAgentStatus.NOT_AVAILABLE,
+			},
+			$unset: {
+				extension: 1,
 			},
 		};
 
@@ -1898,45 +1944,63 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	removeExpiredEmailCodesOfUserId(userId) {
+	removeExpiredEmailCodeOfUserId(userId) {
+		return this.updateOne(
+			{ '_id': userId, 'services.emailCode.expire': { $lt: new Date() } },
+			{
+				$unset: { 'services.emailCode': 1 },
+			},
+		);
+	}
+
+	removeEmailCodeOfUserId(userId) {
 		return this.updateOne(
 			{ _id: userId },
 			{
-				$pull: {
-					'services.emailCode': {
-						expire: { $lt: new Date() },
-					},
+				$unset: { 'services.emailCode': 1 },
+			},
+		);
+	}
+
+	incrementInvalidEmailCodeAttempt(userId) {
+		return this.findOneAndUpdate(
+			{ _id: userId },
+			{
+				$inc: { 'services.emailCode.attempts': 1 },
+			},
+			{
+				returnDocument: 'after',
+				projection: {
+					'services.emailCode.attempts': 1,
 				},
 			},
 		);
 	}
 
-	removeEmailCodeByUserIdAndCode(userId, code) {
-		return this.updateOne(
-			{ _id: userId },
+	async maxInvalidEmailCodeAttemptsReached(userId, maxAttempts) {
+		const result = await this.findOne(
 			{
-				$pull: {
-					'services.emailCode': {
-						code,
-					},
+				'_id': userId,
+				'services.emailCode.attempts': { $gte: maxAttempts },
+			},
+			{
+				projection: {
+					_id: 1,
 				},
 			},
 		);
+		return !!result?._id;
 	}
 
 	addEmailCodeByUserId(userId, code, expire) {
 		return this.updateOne(
 			{ _id: userId },
 			{
-				$push: {
+				$set: {
 					'services.emailCode': {
-						$each: [
-							{
-								code,
-								expire,
-							},
-						],
-						$slice: -5,
+						code,
+						expire,
+						attempts: 0,
 					},
 				},
 			},
@@ -2148,7 +2212,6 @@ export class UsersRaw extends BaseRaw {
 			{
 				active: true,
 				type: { $nin: ['app'] },
-				roles: { $ne: ['guest'] },
 				_id: { $in: ids },
 			},
 			options,

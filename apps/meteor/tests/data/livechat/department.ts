@@ -2,9 +2,9 @@ import { faker } from '@faker-js/faker';
 import { expect } from 'chai';
 import type { ILivechatDepartment, IUser, LivechatDepartmentDTO } from '@rocket.chat/core-typings';
 import { api, credentials, methodCall, request } from '../api-data';
-import { IUserCredentialsHeader, password } from '../user';
-import { login } from '../users.helper';
-import { createAgent, makeAgentAvailable } from './rooms';
+import { IUserCredentialsHeader } from '../user';
+import { createAnOnlineAgent } from './users';
+import { WithRequiredProperty } from './utils';
 
 export const NewDepartmentData = ((): Partial<ILivechatDepartment> => ({
     enabled: true,
@@ -57,34 +57,41 @@ new Promise((resolve, reject) => {
 		});
 });
 
-export const createDepartmentWithAnOnlineAgent = async (): Promise<{department: ILivechatDepartment, agent: {
+type OnlineAgent = {
+	user: WithRequiredProperty<IUser, 'username'>;
 	credentials: IUserCredentialsHeader;
-	user: IUser;
-}}> => {
-	// TODO moving here for tests
-	const username = `user.test.${Date.now()}`;
-	const email = `${username}@rocket.chat`;
-	const { body } = await request
-			.post(api('users.create'))
-			.set(credentials)
-			.send({ email, name: username, username, password });
-	const agent = body.user;
-	const createdUserCredentials = await login(agent.username, password);
-	await createAgent(agent.username);
-	await makeAgentAvailable(createdUserCredentials);
+};
+
+export const createDepartmentWithAnOnlineAgent = async (): Promise<{department: ILivechatDepartment, agent: OnlineAgent }> => {
+    const { user, credentials } = await createAnOnlineAgent();
 
 	const department = await createDepartmentWithMethod() as ILivechatDepartment;
 
-	await addOrRemoveAgentFromDepartment(department._id, {agentId: agent._id, username: (agent.username as string)}, true);
+	await addOrRemoveAgentFromDepartment(department._id, { agentId: user._id, username: user.username }, true);
 
 	return {
 		department,
 		agent: {
-			credentials: createdUserCredentials,
-			user: agent,
+			credentials,
+			user,
 		}
 	};
 };
+
+export const createDepartmentWithAgent = async (agent: OnlineAgent): Promise<{ department: ILivechatDepartment; agent: OnlineAgent }> => {
+	const { user, credentials } = agent;
+	const department = await createDepartmentWithMethod() as ILivechatDepartment;
+
+	await addOrRemoveAgentFromDepartment(department._id, { agentId: user._id, username: user.username }, true);
+
+	return {
+		department,
+		agent: {
+			credentials,
+			user,
+		}
+	};
+}
 
 export const addOrRemoveAgentFromDepartment = async (departmentId: string, agent: { agentId: string; username: string; count?: number; order?: number }, add: boolean) => {
 	const response = await request.post(api('livechat/department/' + departmentId + '/agents')).set(credentials).send({

@@ -142,6 +142,7 @@ export const BarChart = ({
 					labelSkipHeight={direction === 'vertical' ? 16 : undefined}
 					valueScale={{ type: 'linear' }}
 					tooltip={({ data }) => <Tooltip>{`${data.label}: ${data.value}`}</Tooltip>}
+					barAriaLabel={({ data }) => data.label}
 				/>
 			</Box>
 		</Box>

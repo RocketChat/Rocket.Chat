@@ -1,4 +1,4 @@
-import { Field, ButtonGroup, Button, CheckBox, Callout } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, ButtonGroup, Button, CheckBox, Callout } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -45,7 +45,7 @@ const PruneMessages = ({ callOutText, validateText, onClickClose, onClickPrune }
 				<PruneMessagesDateTimeRow label={t('Newer_than')} field='newer' />
 				<PruneMessagesDateTimeRow label={t('Older_than')} field='older' />
 				<Field>
-					<Field.Label flexGrow={0}>{t('Only_from_users')}</Field.Label>
+					<FieldLabel flexGrow={0}>{t('Only_from_users')}</FieldLabel>
 					<Controller
 						control={control}
 						name='users'
@@ -55,34 +55,34 @@ const PruneMessages = ({ callOutText, validateText, onClickClose, onClickPrune }
 					/>
 				</Field>
 				<Field>
-					<Field.Row>
+					<FieldRow>
+						<FieldLabel htmlFor={inclusiveCheckboxId}>{t('Inclusive')}</FieldLabel>
 						<CheckBox id={inclusiveCheckboxId} {...register('inclusive')} />
-						<Field.Label htmlFor={inclusiveCheckboxId}>{t('Inclusive')}</Field.Label>
-					</Field.Row>
+					</FieldRow>
 				</Field>
 				<Field>
-					<Field.Row>
+					<FieldRow>
+						<FieldLabel htmlFor={pinnedCheckboxId}>{t('RetentionPolicy_DoNotPrunePinned')}</FieldLabel>
 						<CheckBox id={pinnedCheckboxId} {...register('pinned')} />
-						<Field.Label htmlFor={pinnedCheckboxId}>{t('RetentionPolicy_DoNotPrunePinned')}</Field.Label>
-					</Field.Row>
+					</FieldRow>
 				</Field>
 				<Field>
-					<Field.Row>
+					<FieldRow>
+						<FieldLabel htmlFor={discussionCheckboxId}>{t('RetentionPolicy_DoNotPruneDiscussion')}</FieldLabel>
 						<CheckBox id={discussionCheckboxId} {...register('discussion')} />
-						<Field.Label htmlFor={discussionCheckboxId}>{t('RetentionPolicy_DoNotPruneDiscussion')}</Field.Label>
-					</Field.Row>
+					</FieldRow>
 				</Field>
 				<Field>
-					<Field.Row>
+					<FieldRow>
+						<FieldLabel htmlFor={threadsCheckboxId}>{t('RetentionPolicy_DoNotPruneThreads')}</FieldLabel>
 						<CheckBox id={threadsCheckboxId} {...register('threads')} />
-						<Field.Label htmlFor={threadsCheckboxId}>{t('RetentionPolicy_DoNotPruneThreads')}</Field.Label>
-					</Field.Row>
+					</FieldRow>
 				</Field>
 				<Field>
-					<Field.Row>
+					<FieldRow>
+						<FieldLabel htmlFor={attachedCheckboxId}>{t('Files_only')}</FieldLabel>
 						<CheckBox id={attachedCheckboxId} {...register('attached')} />
-						<Field.Label htmlFor={attachedCheckboxId}>{t('Files_only')}</Field.Label>
-					</Field.Row>
+					</FieldRow>
 				</Field>
 				{callOutText && !validateText && <Callout type='warning'>{callOutText}</Callout>}
 				{validateText && <Callout type='warning'>{validateText}</Callout>}

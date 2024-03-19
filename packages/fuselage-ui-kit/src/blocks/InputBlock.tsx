@@ -1,4 +1,10 @@
-import { Field } from '@rocket.chat/fuselage';
+import {
+  Field,
+  FieldLabel,
+  FieldRow,
+  FieldError,
+  FieldHint,
+} from '@rocket.chat/fuselage';
 import * as UiKit from '@rocket.chat/ui-kit';
 import type { ReactElement } from 'react';
 import { memo, useMemo } from 'react';
@@ -28,19 +34,19 @@ const InputBlock = ({
   return (
     <Field className={className}>
       {block.label && (
-        <Field.Label>
+        <FieldLabel>
           {surfaceRenderer.renderTextObject(
             block.label,
             0,
             UiKit.BlockContext.NONE
           )}
-        </Field.Label>
+        </FieldLabel>
       )}
-      <Field.Row>
+      <FieldRow>
         {surfaceRenderer.renderInputBlockElement(inputElement, 0)}
-      </Field.Row>
-      {error && <Field.Error>{error}</Field.Error>}
-      {block.hint && <Field.Hint>{block.hint}</Field.Hint>}
+      </FieldRow>
+      {error && <FieldError>{error}</FieldError>}
+      {block.hint && <FieldHint>{block.hint}</FieldHint>}
     </Field>
   );
 };

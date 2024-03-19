@@ -1,4 +1,4 @@
-import type { TFunction } from 'react-i18next';
+import { type TFunction } from 'i18next';
 import { withTranslation } from 'react-i18next';
 
 import { getConnectionBaseUrl } from '../../helpers/baseUrl';
@@ -7,8 +7,7 @@ import VideoIcon from '../../icons/video.svg';
 import constants from '../../lib/constants';
 import store from '../../store';
 import { Button } from '../Button';
-import type { CallStatus } from './CallStatus';
-import { isCallOngoing } from './CallStatus';
+import { type CallStatus, isCallOngoing } from './CallStatus';
 import styles from './styles.scss';
 
 type JoinCallButtonProps = {
@@ -22,6 +21,9 @@ export const JoinCallButton = ({ t, ...props }: JoinCallButtonProps) => {
 	const { token, room } = store.state;
 
 	const clickJoinCall = () => {
+		if (!room) {
+			return;
+		}
 		switch (props.callProvider) {
 			case 'video-conference': {
 				window.open(props.url, room._id);

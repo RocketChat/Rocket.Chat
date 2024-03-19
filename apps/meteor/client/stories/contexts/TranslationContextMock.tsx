@@ -51,6 +51,7 @@ const TranslationContextMock = ({ children }: TranslationContextMockProps): Reac
 				{
 					name: 'English',
 					en: 'English',
+					ogName: 'English',
 					key: 'en',
 				},
 			],

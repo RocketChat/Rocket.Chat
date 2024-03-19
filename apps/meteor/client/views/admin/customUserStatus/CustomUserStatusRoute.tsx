@@ -3,8 +3,8 @@ import { useRoute, useRouteParameter, usePermission, useTranslation, useSetting 
 import type { ReactElement } from 'react';
 import React, { useCallback, useRef, useEffect } from 'react';
 
-import { ContextualbarContainer, ContextualbarHeader, ContextualbarClose, ContextualbarTitle } from '../../../components/Contextualbar';
-import Page from '../../../components/Page';
+import { Contextualbar, ContextualbarHeader, ContextualbarClose, ContextualbarTitle } from '../../../components/Contextualbar';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import CustomUserActiveConnections from './CustomUserActiveConnections';
@@ -57,19 +57,19 @@ const CustomUserStatusRoute = (): ReactElement => {
 	return (
 		<Page flexDirection='row'>
 			<Page name='admin-user-status'>
-				<Page.Header title={t('User_Status')}>
+				<PageHeader title={t('User_Status')}>
 					{!license?.isEnterprise && <CustomUserActiveConnections />}
 					<ButtonGroup>
 						<Button onClick={handlePresenceServiceClick}>{t('Presence_service')}</Button>
 						<Button onClick={handleNewButtonClick}>{t('New_custom_status')}</Button>
 					</ButtonGroup>
-				</Page.Header>
-				<Page.Content>
+				</PageHeader>
+				<PageContent>
 					<CustomUserStatusTable reload={reload} onClick={handleItemClick} />
-				</Page.Content>
+				</PageContent>
 			</Page>
 			{context && (
-				<ContextualbarContainer bg='light' flexShrink={0}>
+				<Contextualbar bg='light' flexShrink={0}>
 					<ContextualbarHeader>
 						<ContextualbarTitle>
 							{context === 'edit' && t('Custom_User_Status_Edit')}
@@ -82,7 +82,7 @@ const CustomUserStatusRoute = (): ReactElement => {
 					{(context === 'new' || context === 'edit') && (
 						<CustomUserStatusFormWithData _id={id} onClose={handleClose} onReload={handleReload} />
 					)}
-				</ContextualbarContainer>
+				</Contextualbar>
 			)}
 		</Page>
 	);

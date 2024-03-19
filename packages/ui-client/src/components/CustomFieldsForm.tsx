@@ -1,6 +1,7 @@
 import type { CustomFieldMetadata } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Field, Select, TextInput } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, FieldError, Select, TextInput } from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo } from 'react';
@@ -35,6 +36,7 @@ const CustomField = <T extends FieldValues>({
 }: CustomFieldProps<T>) => {
 	const t = useTranslation();
 	const { errors } = useFormState({ control });
+	const fieldId = useUniqueId();
 
 	const Component = FIELD_TYPES[type] ?? null;
 
@@ -47,7 +49,7 @@ const CustomField = <T extends FieldValues>({
 	const validateRequired = useCallback((value) => (required ? typeof value === 'string' && !!value.trim() : true), [required]);
 
 	const getErrorMessage = useCallback(
-		(error: any) => {
+		(error) => {
 			switch (error?.type) {
 				case 'required':
 					return t('The_field_is_required', label || name);
@@ -71,14 +73,23 @@ const CustomField = <T extends FieldValues>({
 			rules={{ minLength: props.minLength, maxLength: props.maxLength, validate: { required: validateRequired } }}
 			render={({ field }) => (
 				<Field rcx-field-group__item>
-					<Field.Label>
+					<FieldLabel htmlFor={fieldId} required={required}>
 						{label || t(name as TranslationKey)}
-						{required && '*'}
-					</Field.Label>
-					<Field.Row>
-						<Component {...props} {...field} error={errorMessage} options={selectOptions as SelectOption[]} flexGrow={1} />
-					</Field.Row>
-					<Field.Error>{errorMessage}</Field.Error>
+					</FieldLabel>
+					<FieldRow>
+						<Component
+							{...props}
+							{...field}
+							id={fieldId}
+							aria-describedby={`${fieldId}-error`}
+							error={errorMessage}
+							options={selectOptions as SelectOption[]}
+							flexGrow={1}
+						/>
+					</FieldRow>
+					<FieldError aria-live='assertive' id={`${fieldId}-error`}>
+						{errorMessage}
+					</FieldError>
 				</Field>
 			)}
 		/>

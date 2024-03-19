@@ -1,4 +1,5 @@
 import type { IOmnichannelBusinessUnit, IOmnichannelServiceLevelAgreements, LivechatDepartmentDTO } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import {
 	Users,
 	LivechatDepartment as LivechatDepartmentRaw,
@@ -14,7 +15,6 @@ import { updateDepartmentAgents } from '../../../../../app/livechat/server/lib/H
 import { callbacks } from '../../../../../lib/callbacks';
 import { addUserRolesAsync } from '../../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../../server/lib/roles/removeUserFromRoles';
-import { hasLicense } from '../../../license/server/license';
 import { updateSLAInquiries } from './Helper';
 import { removeSLAFromRooms } from './SlaHelper';
 
@@ -113,7 +113,18 @@ export const LivechatEnterprise = {
 			ancestors = unit.ancestors || [];
 		}
 
-		return LivechatUnit.createOrUpdateUnit(_id, unitData, ancestors, unitMonitors, unitDepartments);
+		const validUserMonitors = await Users.findUsersInRolesWithQuery(
+			'livechat-monitor',
+			{ _id: { $in: unitMonitors.map(({ monitorId }) => monitorId) } },
+			{ projection: { _id: 1, username: 1 } },
+		).toArray();
+
+		const monitors = validUserMonitors.map(({ _id: monitorId, username }) => ({
+			monitorId,
+			username,
+		})) as { monitorId: string; username: string }[];
+
+		return LivechatUnit.createOrUpdateUnit(_id, unitData, ancestors, monitors, unitDepartments);
 	},
 
 	async removeTag(_id: string) {
@@ -195,7 +206,7 @@ export const LivechatEnterprise = {
 
 		const department = _id ? await LivechatDepartmentRaw.findOneById(_id, { projection: { _id: 1, archived: 1, enabled: 1 } }) : null;
 
-		if (!hasLicense('livechat-enterprise')) {
+		if (!License.hasModule('livechat-enterprise')) {
 			const totalDepartments = await LivechatDepartmentRaw.countTotal();
 			if (!department && totalDepartments >= 1) {
 				throw new Meteor.Error('error-max-departments-number-reached', 'Maximum number of departments reached', {
@@ -261,8 +272,15 @@ export const LivechatEnterprise = {
 			);
 		}
 
-		if (fallbackForwardDepartment && !(await LivechatDepartmentRaw.findOneById(fallbackForwardDepartment))) {
-			throw new Meteor.Error('error-fallback-department-not-found', 'Fallback department not found', { method: 'livechat:saveDepartment' });
+		if (fallbackForwardDepartment) {
+			const fallbackDep = await LivechatDepartmentRaw.findOneById(fallbackForwardDepartment, {
+				projection: { _id: 1, fallbackForwardDepartment: 1 },
+			});
+			if (!fallbackDep) {
+				throw new Meteor.Error('error-fallback-department-not-found', 'Fallback department not found', {
+					method: 'livechat:saveDepartment',
+				});
+			}
 		}
 
 		const departmentDB = await LivechatDepartmentRaw.createOrUpdateDepartment(_id, departmentData);
@@ -272,13 +290,13 @@ export const LivechatEnterprise = {
 
 		// Disable event
 		if (department?.enabled && !departmentDB?.enabled) {
-			void callbacks.run('livechat.afterDepartmentDisabled', departmentDB);
+			await callbacks.run('livechat.afterDepartmentDisabled', departmentDB);
 		}
 
 		return departmentDB;
 	},
 
 	async isDepartmentCreationAvailable() {
-		return hasLicense('livechat-enterprise') || (await LivechatDepartmentRaw.countTotal()) === 0;
+		return License.hasModule('livechat-enterprise') || (await LivechatDepartmentRaw.countTotal()) === 0;
 	},
 };

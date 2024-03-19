@@ -3,7 +3,7 @@ import { Messages } from '@rocket.chat/models';
 import { isPOSTLivechatPageVisitedParams } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
-import { Livechat } from '../../lib/Livechat';
+import { Livechat } from '../../lib/LivechatTyped';
 
 API.v1.addRoute(
 	'livechat/page.visited',

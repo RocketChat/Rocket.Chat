@@ -43,6 +43,10 @@ on:
         default: 1
         required: false
         type: number
+      retries:
+        default: 0
+        required: false
+        type: number
       type:
         required: true
         type: string
@@ -56,6 +60,8 @@ on:
       REPORTER_ROCKETCHAT_URL:
         required: false
       REPORTER_ROCKETCHAT_API_KEY:
+        required: false
+      CODECOV_TOKEN:
         required: false
 
 env:
@@ -86,7 +92,7 @@ jobs:
           mongodb-version: ${{ matrix.mongodb-version }}
           mongodb-replica-set: rs0
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
@@ -94,6 +100,14 @@ jobs:
           node-version: ${{ inputs.node-version }}
           cache-modules: true
           install: true
+
+      # if we are testing a PR from a fork, we need to build the docker image at this point
+      - uses: ./.github/actions/build-docker
+        if: github.event.pull_request.head.repo.full_name != github.repository
+        with:
+          CR_USER: ${{ secrets.CR_USER }}
+          CR_PAT: ${{ secrets.CR_PAT }}
+          node-version: ${{ inputs.node-version }}
 
       - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
@@ -117,6 +131,12 @@ jobs:
 
       - run: yarn build
 
+      - name: Prepare code coverage directory
+        if: inputs.release == 'ee'
+        run: |
+          mkdir -p /tmp/coverage
+          chmod 777 /tmp/coverage
+
       - name: Start containers for CE
         if: inputs.release == 'ce'
         env:
@@ -131,6 +151,8 @@ jobs:
           MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
           ENTERPRISE_LICENSE: ${{ inputs.enterprise-license }}
           TRANSPORTER: ${{ inputs.transporter }}
+          COVERAGE_DIR: '/tmp/coverage'
+          COVERAGE_REPORTER: 'lcov'
         run: |
           docker compose -f docker-compose-ci.yml up -d
 
@@ -142,7 +164,7 @@ jobs:
           path: |
             ~/.cache/ms-playwright
           # This is the version of Playwright that we are using, if you are willing to upgrade, you should update this.
-          key: playwright-1.37.1
+          key: playwright-1.40.1
 
       - name: Install Playwright
         if: inputs.type == 'ui' && steps.cache-playwright.outputs.cache-hit != 'true'
@@ -174,6 +196,8 @@ jobs:
         env:
           WEBHOOK_TEST_URL: 'http://host.docker.internal:10000'
           IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
+          COVERAGE_DIR: '/tmp/coverage'
+          COVERAGE_REPORTER: 'lcovonly'
         run: |
           for i in $(seq 1 2); do
             npm run testapi && s=0 && break || s=$?
@@ -194,6 +218,9 @@ jobs:
               sleep 10
             done;
           done;
+          docker compose -f ../../docker-compose-ci.yml stop
+
+          ls -l $COVERAGE_DIR
           exit $s
 
       - name: E2E Test UI (${{ matrix.shard }}/${{ inputs.total-shard }})
@@ -209,8 +236,12 @@ jobs:
           REPORTER_ROCKETCHAT_DRAFT: ${{ github.event.pull_request.draft }}
           QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
           QASE_REPORT: ${{ github.ref == 'refs/heads/develop' && 'true' || '' }}
+          CI: true
+          PLAYWRIGHT_RETRIES: ${{ inputs.retries }}
         working-directory: ./apps/meteor
-        run: yarn test:e2e --shard=${{ matrix.shard }}/${{ inputs.total-shard }}
+        run: |
+          yarn prepare
+          yarn test:e2e --shard=${{ matrix.shard }}/${{ inputs.total-shard }}
 
       - name: Store playwright test trace
         if: inputs.type == 'ui' && always()
@@ -234,6 +265,23 @@ jobs:
           directory: ./apps/meteor
           flags: e2e
           verbose: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - uses: codecov/codecov-action@v3
+        if: inputs.type == 'api' && inputs.release == 'ee'
+        with:
+          directory: /tmp/coverage
+          working-directory: .
+          flags: e2e-api
+          verbose: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Store e2e-api-ee-coverage
+        if: inputs.type == 'api' && inputs.release == 'ee'
+        uses: actions/upload-artifact@v3
+        with:
+          name: e2e-api-ee-coverage
+          path: /tmp/coverage
 
       - name: Store e2e-ee-coverage
         if: inputs.type == 'ui' && inputs.release == 'ee'

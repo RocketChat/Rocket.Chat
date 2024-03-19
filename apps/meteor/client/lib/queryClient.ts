@@ -5,6 +5,7 @@ export const queryClient = new QueryClient({
 		queries: {
 			onError: console.warn,
 			refetchOnWindowFocus: false,
+			retry: process.env.TEST_MODE === 'true',
 		},
 		mutations: {
 			onError: console.warn,

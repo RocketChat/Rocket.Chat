@@ -1,5 +1,5 @@
 import { TextInput, Icon, Button, Divider } from '@rocket.chat/fuselage';
-import { useMediaQuery, useOutsideClick } from '@rocket.chat/fuselage-hooks';
+import { useMediaQuery, useMergedRefs, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import {
 	EmojiPickerCategoryHeader,
 	EmojiPickerContainer,
@@ -36,11 +36,13 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 
 	const ref = useRef<Element | null>(reference);
 	const categoriesPosition = useRef<EmojiCategoryPosition[]>([]);
-	const textInputRef = useRef<HTMLInputElement>(null);
 	const virtuosoRef = useRef<VirtuosoHandle>(null);
 	const emojiContainerRef = useRef<HTMLDivElement>(null);
 
-	const isInputVisible = useIsVisible(textInputRef);
+	const [isVisibleRef, isInputVisible] = useIsVisible();
+	const textInputRef = useRef<HTMLInputElement>();
+
+	const mergedTextInputRef = useMergedRefs(isVisibleRef, textInputRef);
 
 	const emojiCategories = getCategoriesList();
 
@@ -187,7 +189,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 				<EmojiPickerHeader>
 					<TextInput
 						autoFocus
-						ref={textInputRef}
+						ref={mergedTextInputRef}
 						value={searchTerm}
 						onChange={handleSearch}
 						addon={<Icon name='magnifier' size='x20' />}
@@ -195,7 +197,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 						aria-label={t('Search')}
 					/>
 				</EmojiPickerHeader>
-				<EmojiPickerCategoryHeader role='tablist' {...(scrollCategories && { overflowX: 'scroll', h: 'x64' })}>
+				<EmojiPickerCategoryHeader role='tablist' {...(scrollCategories && { style: { overflowX: 'scroll' } })}>
 					{emojiCategories.map((category, index) => (
 						<EmojiPickerCategoryItem
 							key={category.key}

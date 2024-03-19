@@ -19,7 +19,9 @@ const get: FileUploadClass['get'] = async function (this: FileUploadClass, file,
 };
 
 const copy: FileUploadClass['copy'] = async function (this: FileUploadClass, file, out) {
-	(await this.store.getReadStream(file._id, file)).pipe(out);
+	return new Promise(async (resolve) => {
+		(await this.store.getReadStream(file._id, file)).pipe(out).on('finish', () => resolve());
+	});
 };
 
 const WebdavUploads = new FileUploadClass({

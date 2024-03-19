@@ -1,5 +1,5 @@
 import type { IAuditLog } from '@rocket.chat/core-typings';
-import { Box, Field, TextInput, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Box, Field, FieldLabel, FieldRow, FieldError, TextInput, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import { useController } from 'react-hook-form';
@@ -40,18 +40,18 @@ const AuditForm = ({ type, onSubmit }: AuditFormProps) => {
 		<form onSubmit={handleSubmit(submit)}>
 			<Box display='flex' flexDirection='row' justifyContent='stretch' marginInline={-4}>
 				<Field flexShrink={1} marginInline={4}>
-					<Field.Label>{t('Message')}</Field.Label>
-					<Field.Row>
+					<FieldLabel>{t('Message')}</FieldLabel>
+					<FieldRow>
 						<TextInput placeholder={t('Search')} {...register('msg')} />
-					</Field.Row>
+					</FieldRow>
 				</Field>
 				<Field flexShrink={1} marginInline={4}>
-					<Field.Label>{t('Date')}</Field.Label>
-					<Field.Row>
+					<FieldLabel>{t('Date')}</FieldLabel>
+					<FieldRow>
 						<DateRangePicker value={dateRangeField.value} onChange={dateRangeField.onChange} display='flex' flexGrow={1} />
-						{dateRangeFieldState.error?.type === 'required' && <Field.Error>{t('The_field_is_required', t('Date'))}</Field.Error>}
-						{dateRangeFieldState.error?.type === 'validate' && <Field.Error>{dateRangeFieldState.error.message}</Field.Error>}
-					</Field.Row>
+						{dateRangeFieldState.error?.type === 'required' && <FieldError>{t('The_field_is_required', t('Date'))}</FieldError>}
+						{dateRangeFieldState.error?.type === 'validate' && <FieldError>{dateRangeFieldState.error.message}</FieldError>}
+					</FieldRow>
 				</Field>
 			</Box>
 			<Box display='flex' flexDirection='row' alignItems='flex-start'>
@@ -59,14 +59,16 @@ const AuditForm = ({ type, onSubmit }: AuditFormProps) => {
 				{type === 'u' && <UsersTab form={form} />}
 				{type === 'd' && <DirectTab form={form} />}
 				{type === 'l' && <OmnichannelTab form={form} />}
-				<ButtonGroup align='end' flexShrink={0} marginBlockStart={28} marginInlineStart={8}>
-					<Button secondary onClick={() => window.print()}>
-						{t('Export')} {t('PDF')}
-					</Button>
-					<Button primary type='submit'>
-						{t('Apply')}
-					</Button>
-				</ButtonGroup>
+				<Box flexShrink={0} mbs={28} mis={8}>
+					<ButtonGroup align='end'>
+						<Button secondary onClick={() => window.print()}>
+							{t('Export')} {t('PDF')}
+						</Button>
+						<Button primary type='submit'>
+							{t('Apply')}
+						</Button>
+					</ButtonGroup>
+				</Box>
 			</Box>
 		</form>
 	);

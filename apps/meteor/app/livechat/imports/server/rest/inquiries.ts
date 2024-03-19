@@ -23,7 +23,7 @@ API.v1.addRoute(
 			const { department } = this.queryParams;
 			const ourQuery: { status: string; department?: string } = { status: 'queued' };
 			if (department) {
-				const departmentFromDB = await LivechatDepartment.findOneByIdOrName(department);
+				const departmentFromDB = await LivechatDepartment.findOneByIdOrName(department, { projection: { _id: 1 } });
 				if (departmentFromDB) {
 					ourQuery.department = departmentFromDB._id;
 				}

@@ -425,7 +425,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		return null;
 	}
 
-	return <Menu options={menuOptions} placement='bottom-start' maxHeight='initial' {...props} />;
+	return <Menu title={t('More_options')} options={menuOptions} placement='bottom-start' maxHeight='initial' {...props} />;
 }
 
 export default AppMenu;

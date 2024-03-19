@@ -3,10 +3,18 @@ import { LayoutContext, useRouter, useSetting } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React, { useMemo, useState, useEffect } from 'react';
 
+const hiddenActionsDefaultValue = {
+	roomToolbox: [],
+	messageToolbox: [],
+	composerToolbox: [],
+	userToolbox: [],
+};
+
 const LayoutProvider: FC = ({ children }) => {
 	const showTopNavbarEmbeddedLayout = Boolean(useSetting('UI_Show_top_navbar_embedded_layout'));
 	const [isCollapsed, setIsCollapsed] = useState(false);
 	const breakpoints = useBreakpoints(); // ["xs", "sm", "md", "lg", "xl", xxl"]
+	const [hiddenActions, setHiddenActions] = useState(hiddenActionsDefaultValue);
 
 	const router = useRouter();
 	// Once the layout is embedded, it can't be changed
@@ -17,6 +25,18 @@ const LayoutProvider: FC = ({ children }) => {
 	useEffect(() => {
 		setIsCollapsed(isMobile);
 	}, [isMobile]);
+
+	useEffect(() => {
+		const eventHandler = (event: MessageEvent<any>) => {
+			if (event.data?.event !== 'overrideUi') {
+				return;
+			}
+
+			setHiddenActions({ ...hiddenActionsDefaultValue, ...event.data.hideActions });
+		};
+		window.addEventListener('message', eventHandler);
+		return () => window.removeEventListener('message', eventHandler);
+	}, []);
 
 	return (
 		<LayoutContext.Provider
@@ -42,8 +62,9 @@ const LayoutProvider: FC = ({ children }) => {
 						position: breakpoints.includes('sm') ? (breakpoints.includes('lg') ? 'relative' : 'absolute') : 'fixed',
 					},
 					roomToolboxExpanded: breakpoints.includes('lg'),
+					hiddenActions,
 				}),
-				[isMobile, isEmbedded, showTopNavbarEmbeddedLayout, isCollapsed, breakpoints, router],
+				[isMobile, isEmbedded, showTopNavbarEmbeddedLayout, isCollapsed, breakpoints, router, hiddenActions],
 			)}
 		/>
 	);

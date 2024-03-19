@@ -3,15 +3,15 @@ import { isGETDashboardTotalizerParams, isGETDashboardsAgentStatusParams } from 
 
 import { API } from '../../../../api/server';
 import {
-	findAllChatsStatusAsync,
-	getProductivityMetricsAsync,
-	getConversationsMetricsAsync,
-	findAllChatMetricsByAgentAsync,
-	findAllAgentsStatusAsync,
-	findAllChatMetricsByDepartmentAsync,
-	findAllResponseTimeMetricsAsync,
-	getAgentsProductivityMetricsAsync,
-	getChatsMetricsAsync,
+	getProductivityMetricsAsyncCached,
+	getConversationsMetricsAsyncCached,
+	getAgentsProductivityMetricsAsyncCached,
+	getChatsMetricsAsyncCached,
+	findAllChatsStatusAsyncCached,
+	findAllChatMetricsByAgentAsyncCached,
+	findAllAgentsStatusAsyncCached,
+	findAllChatMetricsByDepartmentAsyncCached,
+	findAllResponseTimeMetricsAsyncCached,
 } from '../../../server/lib/analytics/dashboards';
 
 API.v1.addRoute(
@@ -29,19 +29,17 @@ API.v1.addRoute(
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
-			const startDate = new Date(start);
 
 			if (isNaN(Date.parse(end))) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
-			const endDate = new Date(end);
 
 			const user = await Users.findOneById(this.userId, { projection: { utcOffset: 1, language: 1 } });
 			if (!user) {
 				return API.v1.failure('User not found');
 			}
 
-			const totalizers = await getConversationsMetricsAsync({ start: startDate, end: endDate, departmentId, user });
+			const totalizers = await getConversationsMetricsAsyncCached({ start, end, departmentId, user });
 			return API.v1.success(totalizers);
 		},
 	},
@@ -58,19 +56,17 @@ API.v1.addRoute(
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
-			const startDate = new Date(start);
 
 			if (isNaN(Date.parse(end))) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
-			const endDate = new Date(end);
 
 			const user = await Users.findOneById(this.userId, { projection: { utcOffset: 1, language: 1 } });
 			if (!user) {
 				return API.v1.failure('User not found');
 			}
 
-			const totalizers = await getAgentsProductivityMetricsAsync({ start: startDate, end: endDate, departmentId, user });
+			const totalizers = await getAgentsProductivityMetricsAsyncCached({ start, end, departmentId, user });
 			return API.v1.success(totalizers);
 		},
 	},
@@ -94,7 +90,7 @@ API.v1.addRoute(
 			}
 			const endDate = new Date(end);
 
-			const totalizers = await getChatsMetricsAsync({ start: startDate, end: endDate, departmentId });
+			const totalizers = await getChatsMetricsAsyncCached({ start: startDate, end: endDate, departmentId });
 			return API.v1.success(totalizers);
 		},
 	},
@@ -111,19 +107,17 @@ API.v1.addRoute(
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
-			const startDate = new Date(start);
 
 			if (isNaN(Date.parse(end))) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
-			const endDate = new Date(end);
 
 			const user = await Users.findOneById(this.userId, { projection: { utcOffset: 1, language: 1 } });
 			if (!user) {
 				return API.v1.failure('User not found');
 			}
 
-			const totalizers = await getProductivityMetricsAsync({ start: startDate, end: endDate, departmentId, user });
+			const totalizers = await getProductivityMetricsAsyncCached({ start, end, departmentId, user });
 
 			return API.v1.success(totalizers);
 		},
@@ -148,7 +142,7 @@ API.v1.addRoute(
 			}
 			const endDate = new Date(end);
 
-			const result = await findAllChatsStatusAsync({ start: startDate, end: endDate, departmentId });
+			const result = await findAllChatsStatusAsyncCached({ start: startDate, end: endDate, departmentId });
 
 			return API.v1.success(result);
 		},
@@ -172,7 +166,7 @@ API.v1.addRoute(
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
 			const endDate = new Date(end);
-			const result = (await findAllChatMetricsByAgentAsync({ start: startDate, end: endDate, departmentId })) as {
+			const result = (await findAllChatMetricsByAgentAsyncCached({ start: startDate, end: endDate, departmentId })) as {
 				[k: string]: { open: number; closed: number; onhold: number };
 			};
 
@@ -188,7 +182,7 @@ API.v1.addRoute(
 		async get() {
 			const { departmentId } = this.queryParams;
 
-			const result = await findAllAgentsStatusAsync({ departmentId });
+			const result = await findAllAgentsStatusAsyncCached({ departmentId });
 
 			return API.v1.success(result);
 		},
@@ -213,7 +207,7 @@ API.v1.addRoute(
 			}
 			const endDate = new Date(end);
 
-			const result = (await findAllChatMetricsByDepartmentAsync({ start: startDate, end: endDate, departmentId })) as {
+			const result = (await findAllChatMetricsByDepartmentAsyncCached({ start: startDate, end: endDate, departmentId })) as {
 				[k: string]: { open: number; closed: number };
 			};
 
@@ -240,7 +234,7 @@ API.v1.addRoute(
 			}
 			const endDate = new Date(end);
 
-			const result = await findAllResponseTimeMetricsAsync({ start: startDate, end: endDate, departmentId });
+			const result = await findAllResponseTimeMetricsAsyncCached({ start: startDate, end: endDate, departmentId });
 
 			return API.v1.success(result);
 		},

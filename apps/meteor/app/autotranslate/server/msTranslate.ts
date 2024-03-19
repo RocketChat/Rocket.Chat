@@ -87,7 +87,7 @@ class MsAutoTranslate extends AutoTranslate {
 		if (this.supportedLanguages[target]) {
 			return this.supportedLanguages[target];
 		}
-		const request = await fetch(this.apiEndPointUrl);
+		const request = await fetch(this.apiGetLanguages);
 		if (!request.ok) {
 			throw new Error(request.statusText);
 		}

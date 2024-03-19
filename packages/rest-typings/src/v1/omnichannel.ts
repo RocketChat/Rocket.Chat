@@ -25,6 +25,8 @@ import type {
 	ILivechatTriggerAction,
 	ReportResult,
 	ReportWithUnmatchingElements,
+	SMSProviderResponse,
+	ILivechatTriggerActionResponse,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
@@ -749,13 +751,31 @@ const LivechatDepartmentsByUnitIdSchema = {
 
 export const isLivechatDepartmentsByUnitIdProps = ajv.compile<LivechatDepartmentsByUnitIdProps>(LivechatDepartmentsByUnitIdSchema);
 
-type LivechatUsersManagerGETProps = PaginatedRequest<{ text?: string; fields?: string }>;
+type LivechatUsersManagerGETProps = PaginatedRequest<{
+	text?: string;
+	fields?: string;
+	onlyAvailable?: boolean;
+	excludeId?: string;
+	showIdleAgents?: boolean;
+}>;
 
 const LivechatUsersManagerGETSchema = {
 	type: 'object',
 	properties: {
 		text: {
 			type: 'string',
+			nullable: true,
+		},
+		onlyAvailable: {
+			type: 'boolean',
+			nullable: true,
+		},
+		excludeId: {
+			type: 'string',
+			nullable: true,
+		},
+		showIdleAgents: {
+			type: 'boolean',
 			nullable: true,
 		},
 		count: {
@@ -2550,6 +2570,10 @@ const GETLivechatRoomsParamsSchema = {
 			type: 'string',
 			nullable: true,
 		},
+		query: {
+			type: 'string',
+			nullable: true,
+		},
 		fields: {
 			type: 'string',
 			nullable: true,
@@ -2582,12 +2606,16 @@ const GETLivechatRoomsParamsSchema = {
 			nullable: true,
 		},
 		open: {
-			type: ['string', 'boolean'],
-			nullable: true,
+			anyOf: [
+				{ type: 'string', nullable: true },
+				{ type: 'boolean', nullable: true },
+			],
 		},
 		onhold: {
-			type: ['string', 'boolean'],
-			nullable: true,
+			anyOf: [
+				{ type: 'string', nullable: true },
+				{ type: 'boolean', nullable: true },
+			],
 		},
 		tags: {
 			type: 'array',
@@ -3056,34 +3084,74 @@ const POSTLivechatTriggersParamsSchema = {
 		actions: {
 			type: 'array',
 			items: {
-				type: 'object',
-				properties: {
-					name: {
-						type: 'string',
-						enum: ['send-message'],
-					},
-					params: {
+				oneOf: [
+					{
 						type: 'object',
-						nullable: true,
 						properties: {
-							sender: {
-								type: 'string',
-								enum: ['queue', 'custom'],
-							},
-							msg: {
-								type: 'string',
-							},
 							name: {
 								type: 'string',
+								enum: ['send-message'],
+							},
+							params: {
+								type: 'object',
 								nullable: true,
+								properties: {
+									sender: {
+										type: 'string',
+										enum: ['queue', 'custom'],
+									},
+									msg: {
+										type: 'string',
+									},
+									name: {
+										type: 'string',
+										nullable: true,
+									},
+								},
+								required: ['sender', 'msg'],
+								additionalProperties: false,
 							},
 						},
-						required: ['sender', 'msg'],
+						required: ['name'],
 						additionalProperties: false,
 					},
-				},
-				required: ['name'],
-				additionalProperties: false,
+					{
+						type: 'object',
+						properties: {
+							name: {
+								type: 'string',
+								enum: ['use-external-service'],
+							},
+							params: {
+								type: 'object',
+								nullable: true,
+								properties: {
+									sender: {
+										type: 'string',
+										enum: ['queue', 'custom'],
+									},
+									name: {
+										type: 'string',
+										nullable: true,
+									},
+									serviceUrl: {
+										type: 'string',
+									},
+									serviceTimeout: {
+										type: 'number',
+									},
+									serviceFallbackMessage: {
+										type: 'string',
+									},
+								},
+								required: ['serviceUrl', 'serviceTimeout', 'serviceFallbackMessage'],
+								additionalProperties: false,
+							},
+						},
+						required: ['name'],
+						additionalProperties: false,
+					},
+				],
 			},
 			minItems: 1,
 		},
@@ -3112,6 +3180,7 @@ const POSTLivechatAppearanceParamsSchema = {
 				type: 'string',
 			},
 			value: {
+				// Be careful with anyOf - https://github.com/ajv-validator/ajv/issues/1140
 				type: ['string', 'boolean', 'number'],
 			},
 		},
@@ -3210,6 +3279,90 @@ const LivechatAnalyticsOverviewPropsSchema = {
 
 export const isLivechatAnalyticsOverviewProps = ajv.compile<LivechatAnalyticsOverviewProps>(LivechatAnalyticsOverviewPropsSchema);
 
+type LivechatTriggerWebhookTestParams = {
+	webhookUrl: string;
+	timeout: number;
+	fallbackMessage: string;
+	extraData: {
+		key: string;
+		value: string;
+	}[];
+};
+
+const LivechatTriggerWebhookTestParamsSchema = {
+	type: 'object',
+	properties: {
+		webhookUrl: {
+			type: 'string',
+		},
+		timeout: {
+			type: 'number',
+		},
+		fallbackMessage: {
+			type: 'string',
+		},
+		extraData: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					key: {
+						type: 'string',
+					},
+					value: {
+						type: 'string',
+					},
+				},
+				required: ['key', 'value'],
+				additionalProperties: false,
+			},
+			nullable: true,
+		},
+	},
+	required: ['webhookUrl', 'timeout', 'fallbackMessage'],
+	additionalProperties: false,
+};
+
+export const isLivechatTriggerWebhookTestParams = ajv.compile<LivechatTriggerWebhookTestParams>(LivechatTriggerWebhookTestParamsSchema);
+
+type LivechatTriggerWebhookCallParams = {
+	token: string;
+	extraData?: {
+		key: string;
+		value: string;
+	}[];
+};
+
+const LivechatTriggerWebhookCallParamsSchema = {
+	type: 'object',
+	properties: {
+		token: {
+			type: 'string',
+		},
+		extraData: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					key: {
+						type: 'string',
+					},
+					value: {
+						type: 'string',
+					},
+				},
+				required: ['key', 'value'],
+				additionalProperties: false,
+			},
+			nullable: true,
+		},
+	},
+	required: ['token'],
+	additionalProperties: false,
+};
+
+export const isLivechatTriggerWebhookCallParams = ajv.compile<LivechatTriggerWebhookCallParams>(LivechatTriggerWebhookCallParamsSchema);
+
 export type OmnichannelEndpoints = {
 	'/v1/livechat/appearance': {
 		GET: () => {
@@ -3251,7 +3404,7 @@ export type OmnichannelEndpoints = {
 		}>;
 	};
 	'/v1/livechat/tags/:tagId': {
-		GET: () => ILivechatTag | null;
+		GET: () => ILivechatTag;
 	};
 	'/v1/livechat/department': {
 		GET: (params?: LivechatDepartmentProps) => PaginatedResult<{
@@ -3264,15 +3417,12 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/department/:_id': {
 		GET: (params: LivechatDepartmentId) => {
-			department: ILivechatDepartment | null;
+			department: ILivechatDepartment;
 			agents?: ILivechatDepartmentAgents[];
 		};
 		PUT: (params: {
 			department: LivechatDepartmentDTO;
-			agents: {
-				upsert?: { agentId: string; count?: number; order?: number }[];
-				remove?: { agentId: string; count?: number; order?: number };
-			}[];
+			agents: Pick<ILivechatDepartmentAgents, 'agentId' | 'count' | 'order' | 'username'>[];
 		}) => {
 			department: ILivechatDepartment | null;
 			agents: ILivechatDepartmentAgents[];
@@ -3333,7 +3483,7 @@ export type OmnichannelEndpoints = {
 		}>;
 	};
 	'/v1/livechat/custom-fields/:_id': {
-		GET: () => { customField: ILivechatCustomField | null };
+		GET: () => { customField: ILivechatCustomField };
 	};
 	'/v1/livechat/:rid/messages': {
 		GET: (params: LivechatRidMessagesProps) => PaginatedResult<{
@@ -3378,7 +3528,9 @@ export type OmnichannelEndpoints = {
 	};
 
 	'/v1/livechat/users/agent': {
-		GET: (params: PaginatedRequest<{ text?: string }>) => PaginatedResult<{
+		GET: (
+			params: PaginatedRequest<{ text?: string; onlyAvailable?: boolean; excludeId?: string; showIdleAgents?: boolean }>,
+		) => PaginatedResult<{
 			users: (ILivechatAgent & { departments: string[] })[];
 		}>;
 		POST: (params: LivechatUsersManagerPOSTProps) => { success: boolean };
@@ -3587,7 +3739,8 @@ export type OmnichannelEndpoints = {
 		POST: (params: POSTLivechatTriggersParams) => void;
 	};
 	'/v1/livechat/triggers/:_id': {
-		GET: () => { trigger: ILivechatTrigger | null };
+		GET: () => { trigger: ILivechatTrigger };
+		DELETE: () => void;
 	};
 	'/v1/livechat/rooms': {
 		GET: (params: GETLivechatRoomsParams) => PaginatedResult<{ rooms: IOmnichannelRoom[] }>;
@@ -3607,7 +3760,7 @@ export type OmnichannelEndpoints = {
 		}>;
 	};
 	'/v1/livechat/integrations.settings': {
-		GET: () => { settings: ISetting[] };
+		GET: () => { settings: ISetting[]; success: boolean };
 	};
 	'/v1/livechat/upload/:rid': {
 		POST: (params: { file: File }) => IMessage & { newRoom: boolean; showConnecting: boolean };
@@ -3689,6 +3842,15 @@ export type OmnichannelEndpoints = {
 			title: string;
 			value: string | number;
 		}[];
+	};
+	'/v1/livechat/sms-incoming/:service': {
+		POST: (params: unknown) => SMSProviderResponse;
+	};
+	'/v1/livechat/triggers/external-service/test': {
+		POST: (params: LivechatTriggerWebhookTestParams) => ILivechatTriggerActionResponse;
+	};
+	'/v1/livechat/triggers/:_id/external-service/call': {
+		POST: (params: LivechatTriggerWebhookCallParams) => ILivechatTriggerActionResponse;
 	};
 } & {
 	// EE
@@ -3803,5 +3965,8 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/analytics/dashboards/conversations-by-agent': {
 		GET: (params: GETDashboardConversationsByType) => ReportWithUnmatchingElements;
+	};
+	'/v1/livechat/webhook.test': {
+		POST: () => void;
 	};
 };

@@ -72,6 +72,7 @@ export const useChannelsSection = () => {
 
 	return useMemo(
 		() => ({
+			id: 'conversations-by-channel',
 			title,
 			subtitle,
 			emptyStateSubtitle,

@@ -1,4 +1,4 @@
-import { Box, Field, Flex, Select } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
 import moment from 'moment-timezone';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -13,6 +13,7 @@ type SelectTimezoneSettingInputProps = {
 	readonly?: boolean;
 	autocomplete?: boolean;
 	disabled?: boolean;
+	required?: boolean;
 	hasResetButton?: boolean;
 	onChangeValue?: (value: string) => void;
 	onResetButtonClick?: () => void;
@@ -26,6 +27,7 @@ function SelectTimezoneSettingInput({
 	readonly,
 	autocomplete,
 	disabled,
+	required,
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
@@ -35,16 +37,14 @@ function SelectTimezoneSettingInput({
 	};
 
 	return (
-		<>
-			<Flex.Container>
-				<Box>
-					<Field.Label htmlFor={_id} title={_id}>
-						{label}
-					</Field.Label>
-					{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
-				</Box>
-			</Flex.Container>
-			<Field.Row>
+		<Field>
+			<FieldRow>
+				<FieldLabel htmlFor={_id} title={_id} required={required}>
+					{label}
+				</FieldLabel>
+				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+			</FieldRow>
+			<FieldRow>
 				<Select
 					data-qa-setting-id={_id}
 					id={_id}
@@ -56,8 +56,8 @@ function SelectTimezoneSettingInput({
 					onChange={(value) => handleChange(String(value))}
 					options={moment.tz.names().map((key) => [key, key])}
 				/>
-			</Field.Row>
-		</>
+			</FieldRow>
+		</Field>
 	);
 }
 

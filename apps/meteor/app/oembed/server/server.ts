@@ -1,8 +1,12 @@
-import querystring from 'querystring';
-import URL from 'url';
-
-import type { OEmbedUrlContentResult, OEmbedUrlWithMetadata, IMessage, MessageAttachment, OEmbedMeta } from '@rocket.chat/core-typings';
-import { isOEmbedUrlContentResult, isOEmbedUrlWithMetadata } from '@rocket.chat/core-typings';
+import type {
+	OEmbedUrlContentResult,
+	OEmbedUrlWithMetadata,
+	IMessage,
+	MessageAttachment,
+	OEmbedMeta,
+	MessageUrl,
+} from '@rocket.chat/core-typings';
+import { isOEmbedUrlWithMetadata } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Messages, OEmbedCache } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
@@ -11,7 +15,6 @@ import he from 'he';
 import iconv from 'iconv-lite';
 import ipRangeCheck from 'ip-range-check';
 import jschardet from 'jschardet';
-import _ from 'underscore';
 
 import { callbacks } from '../../../lib/callbacks';
 import { isURL } from '../../../lib/utils/isURL';
@@ -62,14 +65,7 @@ const toUtf8 = function (contentType: string, body: Buffer): string {
 	return iconv.decode(body, getCharset(contentType, body));
 };
 
-const getUrlContent = async function (urlObjStr: string | URL.UrlWithStringQuery, redirectCount = 5): Promise<OEmbedUrlContentResult> {
-	let urlObj: URL.UrlWithStringQuery;
-	if (typeof urlObjStr === 'string') {
-		urlObj = URL.parse(urlObjStr);
-	} else {
-		urlObj = urlObjStr;
-	}
-
+const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlContentResult> => {
 	const portsProtocol = new Map<string, string>(
 		Object.entries({
 			80: 'http:',
@@ -78,34 +74,28 @@ const getUrlContent = async function (urlObjStr: string | URL.UrlWithStringQuery
 		}),
 	);
 
-	const parsedUrl = _.pick(urlObj, ['host', 'hash', 'pathname', 'protocol', 'port', 'query', 'search', 'hostname']);
 	const ignoredHosts = settings.get<string>('API_EmbedIgnoredHosts').replace(/\s/g, '').split(',') || [];
-	if (parsedUrl.hostname && (ignoredHosts.includes(parsedUrl.hostname) || ipRangeCheck(parsedUrl.hostname, ignoredHosts))) {
+	if (urlObj.hostname && (ignoredHosts.includes(urlObj.hostname) || ipRangeCheck(urlObj.hostname, ignoredHosts))) {
 		throw new Error('invalid host');
 	}
 
 	const safePorts = settings.get<string>('API_EmbedSafePorts').replace(/\s/g, '').split(',') || [];
 
-	if (safePorts.length > 0 && parsedUrl.port && !safePorts.includes(parsedUrl.port)) {
+	// checks if the URL port is in the safe ports list
+	if (safePorts.length > 0 && urlObj.port && !safePorts.includes(urlObj.port)) {
 		throw new Error('invalid/unsafe port');
 	}
 
-	if (safePorts.length > 0 && !parsedUrl.port && !safePorts.some((port) => portsProtocol.get(port) === parsedUrl.protocol)) {
+	// if port is not detected, use protocol to verify instead
+	if (safePorts.length > 0 && !urlObj.port && !safePorts.some((port) => portsProtocol.get(port) === urlObj.protocol)) {
 		throw new Error('invalid/unsafe port');
 	}
 
 	const data = await callbacks.run('oembed:beforeGetUrlContent', {
 		urlObj,
-		parsedUrl,
 	});
 
-	/*  This prop is neither passed or returned by the callback, so I'll just comment it for now
-	if (data.attachments != null) {
-		return data;
-	} */
-
-	const url = URL.format(data.urlObj);
-
+	const url = data.urlObj.toString();
 	const sizeLimit = 250000;
 
 	log.debug(`Fetching ${url} following redirects ${redirectCount} times`);
@@ -137,11 +127,46 @@ const getUrlContent = async function (urlObjStr: string | URL.UrlWithStringQuery
 
 	log.debug('Obtained response from server with length of', totalSize);
 	const buffer = Buffer.concat(chunks);
+
 	return {
 		headers: Object.fromEntries(response.headers),
 		body: toUtf8(response.headers.get('content-type') || 'text/plain', buffer),
-		parsedUrl,
 		statusCode: response.status,
+	};
+};
+
+const parseUrl = async function (url: string): Promise<{ urlPreview: MessageUrl; foundMeta: boolean }> {
+	const parsedUrlObject: MessageUrl = { url, meta: {} };
+	let foundMeta = false;
+	if (!isURL(url)) {
+		return { urlPreview: parsedUrlObject, foundMeta };
+	}
+
+	const data = await getUrlMetaWithCache(url);
+	if (!data) {
+		return { urlPreview: parsedUrlObject, foundMeta };
+	}
+
+	if (isOEmbedUrlWithMetadata(data) && data.meta) {
+		parsedUrlObject.meta = getRelevantMetaTags(data.meta) || {};
+		if (parsedUrlObject.meta?.oembedHtml) {
+			parsedUrlObject.meta.oembedHtml = insertMaxWidthInOembedHtml(parsedUrlObject.meta.oembedHtml) || '';
+		}
+	}
+
+	foundMeta = true;
+	return {
+		urlPreview: {
+			...parsedUrlObject,
+			...((parsedUrlObject.headers || data.headers) && {
+				headers: {
+					...parsedUrlObject.headers,
+					...(data.headers?.contentLength && { contentLength: data.headers.contentLength }),
+					...(data.headers?.contentType && { contentType: data.headers.contentType }),
+				},
+			}),
+		},
+		foundMeta,
 	};
 };
 
@@ -150,19 +175,13 @@ const getUrlMeta = async function (
 	withFragment?: boolean,
 ): Promise<OEmbedUrlWithMetadata | OEmbedUrlContentResult | undefined> {
 	log.debug('Obtaining metadata for URL', url);
-	const urlObj = URL.parse(url);
-	if (withFragment != null) {
-		const queryStringObj = querystring.parse(urlObj.query || '');
-		queryStringObj._escaped_fragment_ = '';
-		urlObj.query = querystring.stringify(queryStringObj);
-		let path = urlObj.pathname;
-		if (urlObj.query != null) {
-			path += `?${urlObj.query}`;
-			urlObj.search = `?${urlObj.query}`;
-		}
-		urlObj.path = path;
+	const urlObj = new URL(url);
+
+	if (withFragment) {
+		urlObj.searchParams.set('_escaped_fragment_', '');
 	}
-	log.debug('Fetching url content', urlObj.path);
+
+	log.debug('Fetching url content', urlObj.toString());
 	let content: OEmbedUrlContentResult | undefined;
 	try {
 		content = await getUrlContent(urlObj, 5);
@@ -172,10 +191,6 @@ const getUrlMeta = async function (
 
 	if (!content) {
 		return;
-	}
-
-	if (content.attachments != null) {
-		return content;
 	}
 
 	log.debug('Parsing metadata for URL', url);
@@ -221,7 +236,6 @@ const getUrlMeta = async function (
 		url,
 		meta: metas,
 		headers,
-		parsedUrl: content.parsedUrl,
 		content,
 	});
 };
@@ -233,38 +247,25 @@ const getUrlMetaWithCache = async function (
 	log.debug('Getting oembed metadata for', url);
 	const cache = await OEmbedCache.findOneById(url);
 
-	if (cache != null) {
+	if (cache) {
 		log.debug('Found oembed metadata in cache for', url);
 		return cache.data;
 	}
+
 	const data = await getUrlMeta(url, withFragment);
-	if (data != null) {
-		try {
-			log.debug('Saving oembed metadata in cache for', url);
-			await OEmbedCache.createWithIdAndData(url, data);
-		} catch (_error) {
-			log.error({ msg: 'OEmbed duplicated record', url });
-		}
-		return data;
+
+	if (!data) {
+		return;
 	}
-};
 
-const hasOnlyContentLength = (obj: any): obj is { contentLength: string } => 'contentLength' in obj && Object.keys(obj).length === 1;
-const hasOnlyContentType = (obj: any): obj is { contentType: string } => 'contentType' in obj && Object.keys(obj).length === 1;
-const hasContentLengthAndContentType = (obj: any): obj is { contentLength: string; contentType: string } =>
-	'contentLength' in obj && 'contentType' in obj && Object.keys(obj).length === 2;
-
-const getRelevantHeaders = function (headersObj: {
-	[key: string]: string;
-}): { contentLength: string } | { contentType: string } | { contentLength: string; contentType: string } | void {
-	const headers = {
-		...(headersObj.contentLength && { contentLength: headersObj.contentLength }),
-		...(headersObj.contentType && { contentType: headersObj.contentType }),
-	};
-
-	if (hasOnlyContentLength(headers) || hasOnlyContentType(headers) || hasContentLengthAndContentType(headers)) {
-		return headers;
+	try {
+		log.debug('Saving oembed metadata in cache for', url);
+		await OEmbedCache.createWithIdAndData(url, data);
+	} catch (_error) {
+		log.error({ msg: 'OEmbed duplicated record', url });
 	}
+
+	return data;
 };
 
 const getRelevantMetaTags = function (metaObj: OEmbedMeta): Record<string, string> | void {
@@ -286,57 +287,44 @@ const insertMaxWidthInOembedHtml = (oembedHtml?: string): string | undefined =>
 
 const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 	log.debug('Parsing message URLs');
-	if (Array.isArray(message.urls)) {
-		log.debug('URLs found', message.urls.length);
 
-		if (
-			message.attachments ||
-			message.urls.filter((item) => !item.url.includes(settings.get('Site_Url'))).length > MAX_EXTERNAL_URL_PREVIEWS
-		) {
-			log.debug('All URL ignored');
-			return message;
-		}
-
-		const attachments: MessageAttachment[] = [];
-
-		let changed = false;
-		for await (const item of message.urls) {
-			if (item.ignoreParse === true) {
-				log.debug('URL ignored', item.url);
-				continue;
-			}
-			if (!isURL(item.url)) {
-				continue;
-			}
-			const data = await getUrlMetaWithCache(item.url);
-			if (data != null) {
-				if (isOEmbedUrlContentResult(data) && data.attachments) {
-					attachments.push(...data.attachments);
-					break;
-				}
-				if (isOEmbedUrlWithMetadata(data) && data.meta != null) {
-					item.meta = getRelevantMetaTags(data.meta) || {};
-					if (item.meta?.oembedHtml) {
-						item.meta.oembedHtml = insertMaxWidthInOembedHtml(item.meta.oembedHtml) || '';
-					}
-				}
-				if (data.headers != null) {
-					const headers = getRelevantHeaders(data.headers);
-					if (headers) {
-						item.headers = headers;
-					}
-				}
-				item.parsedUrl = data.parsedUrl;
-				changed = true;
-			}
-		}
-		if (attachments.length) {
-			await Messages.setMessageAttachments(message._id, attachments);
-		}
-		if (changed === true) {
-			await Messages.setUrlsById(message._id, message.urls);
-		}
+	if (!Array.isArray(message.urls)) {
+		return message;
 	}
+
+	log.debug('URLs found', message.urls.length);
+
+	if (
+		(message.attachments && message.attachments.length > 0) ||
+		message.urls.filter((item) => !item.url.includes(settings.get('Site_Url'))).length > MAX_EXTERNAL_URL_PREVIEWS
+	) {
+		log.debug('All URL ignored');
+		return message;
+	}
+
+	const attachments: MessageAttachment[] = [];
+
+	let changed = false;
+	for await (const item of message.urls) {
+		if (item.ignoreParse === true) {
+			log.debug('URL ignored', item.url);
+			continue;
+		}
+
+		const { urlPreview, foundMeta } = await parseUrl(item.url);
+
+		Object.assign(item, foundMeta ? urlPreview : {});
+		changed = changed || foundMeta;
+	}
+
+	if (attachments.length) {
+		await Messages.setMessageAttachments(message._id, attachments);
+	}
+
+	if (changed === true) {
+		await Messages.setUrlsById(message._id, message.urls);
+	}
+
 	return message;
 };
 
@@ -344,10 +332,12 @@ const OEmbed: {
 	getUrlMeta: (url: string, withFragment?: boolean) => Promise<OEmbedUrlWithMetadata | undefined | OEmbedUrlContentResult>;
 	getUrlMetaWithCache: (url: string, withFragment?: boolean) => Promise<OEmbedUrlWithMetadata | OEmbedUrlContentResult | undefined>;
 	rocketUrlParser: (message: IMessage) => Promise<IMessage>;
+	parseUrl: (url: string) => Promise<{ urlPreview: MessageUrl; foundMeta: boolean }>;
 } = {
 	rocketUrlParser,
 	getUrlMetaWithCache,
 	getUrlMeta,
+	parseUrl,
 };
 
 settings.watch('API_Embed', (value) => {

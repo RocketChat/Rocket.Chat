@@ -6,6 +6,7 @@ import type {
 	IOmnichannelRoom,
 	SelectedAgent,
 } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { EmojiCustom, LivechatTrigger, LivechatVisitors, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { Meteor } from 'meteor/meteor';
@@ -13,7 +14,6 @@ import { Meteor } from 'meteor/meteor';
 import { callbacks } from '../../../../../lib/callbacks';
 import { i18n } from '../../../../../server/lib/i18n';
 import { normalizeAgent } from '../../lib/Helper';
-import { Livechat } from '../../lib/Livechat';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 
 export function online(department: string, skipSettingCheck = false, skipFallbackCheck = false): Promise<boolean> {
@@ -22,12 +22,17 @@ export function online(department: string, skipSettingCheck = false, skipFallbac
 
 async function findTriggers(): Promise<Pick<ILivechatTrigger, '_id' | 'actions' | 'conditions' | 'runOnce'>[]> {
 	const triggers = await LivechatTrigger.findEnabled().toArray();
-	return triggers.map(({ _id, actions, conditions, runOnce }) => ({
-		_id,
-		actions,
-		conditions,
-		runOnce,
-	}));
+	const hasLicense = License.hasModule('livechat-enterprise');
+	const premiumActions = ['use-external-service'];
+
+	return triggers
+		.filter(({ actions }) => hasLicense || actions.some((c) => !premiumActions.includes(c.name)))
+		.map(({ _id, actions, conditions, runOnce }) => ({
+			_id,
+			actions,
+			conditions,
+			runOnce,
+		}));
 }
 
 async function findDepartments(
@@ -59,6 +64,7 @@ export function findGuest(token: string): Promise<ILivechatVisitor | null> {
 			token: 1,
 			visitorEmails: 1,
 			department: 1,
+			activity: 1,
 		},
 	});
 }
@@ -139,7 +145,7 @@ export function normalizeHttpHeaderData(headers: Record<string, string | string[
 
 export async function settings({ businessUnit = '' }: { businessUnit?: string } = {}): Promise<Record<string, string | number | any>> {
 	// Putting this ugly conversion while we type the livechat service
-	const initSettings = (await Livechat.getInitSettings()) as unknown as Record<string, string | number | any>;
+	const initSettings = await LivechatTyped.getInitSettings();
 	const triggers = await findTriggers();
 	const departments = await findDepartments(businessUnit);
 	const sound = `${Meteor.absoluteUrl()}sounds/chime.mp3`;

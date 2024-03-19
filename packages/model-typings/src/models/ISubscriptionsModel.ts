@@ -1,5 +1,15 @@
-import type { ISubscription, IRole, IUser, IRoom, RoomType, SpotlightUser } from '@rocket.chat/core-typings';
-import type { FindOptions, FindCursor, UpdateResult, DeleteResult, Document, AggregateOptions, Filter, InsertOneResult } from 'mongodb';
+import type { ISubscription, IRole, IUser, IRoom, RoomType, SpotlightUser, AtLeast } from '@rocket.chat/core-typings';
+import type {
+	FindOptions,
+	FindCursor,
+	UpdateResult,
+	DeleteResult,
+	Document,
+	AggregateOptions,
+	Filter,
+	InsertOneResult,
+	InsertManyResult,
+} from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -121,6 +131,8 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	findByUserId(userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 	cachedFindByUserId(userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 	updateAutoTranslateById(_id: string, autoTranslate: boolean): Promise<UpdateResult>;
+	updateAllAutoTranslateLanguagesByUserId(userId: IUser['_id'], language: string): Promise<UpdateResult | Document>;
+	disableAutoTranslateByRoomId(roomId: IRoom['_id']): Promise<UpdateResult | Document>;
 	findAlwaysNotifyDesktopUsersByRoomId(roomId: string): FindCursor<ISubscription>;
 
 	findOneByRoomNameAndUserId(roomName: string, userId: string): Promise<ISubscription | null>;
@@ -175,13 +187,13 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	updateDirectNameAndFnameByName(name: string, newName?: string, newFname?: string): Promise<UpdateResult | Document>;
 
 	incGroupMentionsAndUnreadForRoomIdExcludingUserId(
-		roomId: string,
-		userId: string,
+		roomId: IRoom['_id'],
+		userId: IUser['_id'],
 		incGroup?: number,
 		incUnread?: number,
 	): Promise<UpdateResult | Document>;
 	unsetBlockedByRoomId(rid: string, blocked: string, blocker: string): Promise<UpdateResult[]>;
-	setLastReplyForRoomIdAndUserIds(roomId: string, uids: string, lr: Date): Promise<UpdateResult | Document>;
+	setLastReplyForRoomIdAndUserIds(roomId: IRoom['_id'], uids: IUser['_id'][], lr: Date): Promise<UpdateResult | Document>;
 	updateCustomFieldsByRoomId(rid: string, cfields: Record<string, any>): Promise<UpdateResult | Document>;
 	setOpenForRoomIdAndUserIds(roomId: string, uids: string[]): Promise<UpdateResult | Document>;
 
@@ -189,8 +201,8 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	updateTypeByRoomId(roomId: string, type: ISubscription['t']): Promise<UpdateResult | Document>;
 	setBlockedByRoomId(rid: string, blocked: string, blocker: string): Promise<UpdateResult[]>;
 	incUserMentionsAndUnreadForRoomIdAndUserIds(
-		roomId: string,
-		userIds: string[],
+		roomId: IRoom['_id'],
+		userIds: IUser['_id'][],
 		incUser?: number,
 		incUnread?: number,
 	): Promise<UpdateResult | Document>;
@@ -216,6 +228,10 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	): Promise<UpdateResult | Document>;
 	removeByUserId(userId: string): Promise<number>;
 	createWithRoomAndUser(room: IRoom, user: IUser, extraData?: Record<string, any>): Promise<InsertOneResult<ISubscription>>;
+	createWithRoomAndManyUsers(
+		room: IRoom,
+		users: { user: AtLeast<IUser, '_id' | 'username' | 'name' | 'settings'>; extraData: Record<string, any> }[],
+	): Promise<InsertManyResult<ISubscription>>;
 	removeByRoomIdsAndUserId(rids: string[], userId: string): Promise<number>;
 	removeByRoomIdAndUserId(roomId: string, userId: string): Promise<number>;
 

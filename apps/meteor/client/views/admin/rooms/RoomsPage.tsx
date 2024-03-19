@@ -1,43 +1,28 @@
-import { useRouteParameter, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useRef } from 'react';
 
-import { ContextualbarContainer, ContextualbarHeader, ContextualbarTitle, ContextualbarClose } from '../../../components/Contextualbar';
-import Page from '../../../components/Page';
-import EditRoomContextBar from './EditRoomContextBar';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
+import EditRoomWithData from './EditRoomWithData';
 import RoomsTable from './RoomsTable';
 
 const RoomsPage = (): ReactElement => {
 	const t = useTranslation();
 
-	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
-
-	const roomsRoute = useRoute('admin-rooms');
-
-	const handleContextualbarCloseButtonClick = (): void => {
-		roomsRoute.push({});
-	};
+	const context = useRouteParameter('context');
 
 	const reloadRef = useRef(() => null);
 
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('Rooms')} />
-				<Page.Content>
+				<PageHeader title={t('Rooms')} />
+				<PageContent>
 					<RoomsTable reload={reloadRef} />
-				</Page.Content>
+				</PageContent>
 			</Page>
-			{context && (
-				<ContextualbarContainer>
-					<ContextualbarHeader>
-						<ContextualbarTitle>{t('Room_Info')}</ContextualbarTitle>
-						<ContextualbarClose onClick={handleContextualbarCloseButtonClick} />
-					</ContextualbarHeader>
-					<EditRoomContextBar rid={id} onReload={reloadRef.current} />
-				</ContextualbarContainer>
-			)}
+			{context && <EditRoomWithData rid={id} onReload={reloadRef.current} />}
 		</Page>
 	);
 };

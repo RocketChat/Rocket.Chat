@@ -186,7 +186,7 @@ export type MatchPathPattern<TPath extends Path> = TPath extends any ? Extract<O
 
 export type JoinPathPattern<TBasePath extends string, TSubPathPattern extends string> = Extract<
 	PathPattern,
-	`${TBasePath}/${TSubPathPattern}` | TSubPathPattern
+	`${TBasePath}${TSubPathPattern extends '' ? TSubPathPattern : `/${TSubPathPattern}`}` | TSubPathPattern
 >;
 
 type GetParams<TOperation> = TOperation extends (...args: any) => any ? Parameters<TOperation>[0] : never;
@@ -228,6 +228,7 @@ export * from './v1/invites';
 export * from './v1/dm';
 export * from './v1/dm/DmHistoryProps';
 export * from './v1/integrations';
+export * from './v1/licenses';
 export * from './v1/omnichannel';
 export * from './v1/oauthapps';
 export * from './v1/oauthapps/UpdateOAuthAppParamsPOST';

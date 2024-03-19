@@ -6,7 +6,7 @@ import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';
 import { test, expect } from '../utils/test';
 
-test.describe.serial('Omnichannel Triggers', () => {
+test.describe.serial('OC - Livechat Triggers', () => {
 	let triggersName: string;
 	let triggerMessage: string;
 	let poLiveChat: OmnichannelLiveChat;
@@ -29,6 +29,7 @@ test.describe.serial('Omnichannel Triggers', () => {
 
 		const { page } = await createAuxContext(browser, Users.user1, '/omnichannel/triggers');
 		agent = { page, poHomeOmnichannel: new HomeOmnichannel(page) };
+		await page.emulateMedia({ reducedMotion: 'reduce' });
 	});
 
 	test.beforeEach(async ({ page, api }) => {
@@ -36,6 +37,12 @@ test.describe.serial('Omnichannel Triggers', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
+		const ids = (await (await api.get('/livechat/triggers')).json()).triggers.map(
+			(trigger: { _id: string }) => trigger._id,
+		) as unknown as string[];
+
+		await Promise.all(ids.map((id) => api.delete(`/livechat/triggers/${id}`)));
+
 		await Promise.all([
 			api.delete('/livechat/users/agent/user1'),
 			api.delete('/livechat/users/manager/user1'),
@@ -44,7 +51,7 @@ test.describe.serial('Omnichannel Triggers', () => {
 		await agent.page.close();
 	});
 
-	test('trigger baseline', async ({ page }) => {
+	test('OC - Livechat Triggers - Baseline', async ({ page }) => {
 		await page.goto('/livechat');
 		await poLiveChat.openLiveChat();
 
@@ -65,20 +72,22 @@ test.describe.serial('Omnichannel Triggers', () => {
 		});
 	});
 
-	test('create and edit trigger', async () => {
+	test('OC - Livechat Triggers - Create and edit trigger', async () => {
+		triggerMessage = 'This is a trigger message time on site';
 		await test.step('expect create new trigger', async () => {
-			await agent.poHomeOmnichannel.triggers.createTrigger(triggersName, triggerMessage);
+			await agent.poHomeOmnichannel.triggers.createTrigger(triggersName, triggerMessage, 'time-on-site', 5);
 			await agent.poHomeOmnichannel.triggers.btnCloseToastMessage.click();
 		});
 
+		triggerMessage = 'This is a trigger message chat opened by visitor';
 		await test.step('expect update trigger', async () => {
 			await agent.poHomeOmnichannel.triggers.firstRowInTriggerTable(triggersName).click();
-			await agent.poHomeOmnichannel.triggers.updateTrigger(triggersName);
+			await agent.poHomeOmnichannel.triggers.updateTrigger(triggersName, triggerMessage);
 			await agent.poHomeOmnichannel.triggers.btnCloseToastMessage.click();
 		});
 	});
 
-	test('trigger condition: chat opened by visitor', async ({ page }) => {
+	test('OC - Livechat Triggers - Condition: chat opened by visitor', async ({ page }) => {
 		await test.step('expect to start conversation', async () => {
 			await page.goto('/livechat');
 			await poLiveChat.openLiveChat();
@@ -109,7 +118,8 @@ test.describe.serial('Omnichannel Triggers', () => {
 		});
 	});
 
-	test('trigger condition: after guest registration', async ({ page }) => {
+	test('OC - Livechat Triggers - Condition: after guest registration', async ({ page }) => {
+		triggerMessage = 'This is a trigger message after guest registration';
 		await test.step('expect update trigger to after guest registration', async () => {
 			await agent.poHomeOmnichannel.triggers.firstRowInTriggerTable(`edited-${triggersName}`).click();
 			await agent.poHomeOmnichannel.triggers.fillTriggerForm({ condition: 'after-guest-registration', triggerMessage });
@@ -140,6 +150,7 @@ test.describe.serial('Omnichannel Triggers', () => {
 			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_user');
 			await poLiveChat.btnSendMessageToOnlineAgent.click();
 			await expect(poLiveChat.txtChatMessage('this_a_test_message_from_user')).toBeVisible();
+			await expect(poLiveChat.txtChatMessage(triggerMessage)).toBeVisible();
 		});
 
 		await test.step('expect to finish this chat', async () => {
@@ -148,7 +159,7 @@ test.describe.serial('Omnichannel Triggers', () => {
 		});
 	});
 
-	test('delete trigger', async () => {
+	test('OC - Livechat Triggers - Delete trigger', async () => {
 		await agent.poHomeOmnichannel.triggers.btnDeletefirstRowInTable.click();
 		await agent.poHomeOmnichannel.triggers.btnModalRemove.click();
 		await expect(agent.poHomeOmnichannel.triggers.removeToastMessage).toBeVisible();

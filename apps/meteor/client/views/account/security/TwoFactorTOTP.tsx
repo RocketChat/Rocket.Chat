@@ -1,6 +1,6 @@
 import { Box, Button, TextInput, Margins } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch, useUser, useMethod, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useUser, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ComponentProps } from 'react';
 import React, { useState, useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -16,7 +16,6 @@ const TwoFactorTOTP = (props: ComponentProps<typeof Box>): ReactElement => {
 	const user = useUser();
 	const setModal = useSetModal();
 
-	const logoutOtherSessions = useEndpoint('POST', '/v1/users.logoutOtherClients');
 	const enableTotpFn = useMethod('2fa:enable');
 	const disableTotpFn = useMethod('2fa:disable');
 	const verifyCodeFn = useMethod('2fa:validateTempToken');
@@ -86,13 +85,12 @@ const TwoFactorTOTP = (props: ComponentProps<typeof Box>): ReactElement => {
 					return dispatchToastMessage({ type: 'error', message: t('Invalid_two_factor_code') });
 				}
 
-				logoutOtherSessions();
 				setModal(<BackupCodesModal codes={result.codes} onClose={closeModal} />);
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		},
-		[closeModal, dispatchToastMessage, logoutOtherSessions, setModal, t, verifyCodeFn],
+		[closeModal, dispatchToastMessage, setModal, t, verifyCodeFn],
 	);
 
 	const handleRegenerateCodes = useCallback(() => {
@@ -115,7 +113,7 @@ const TwoFactorTOTP = (props: ComponentProps<typeof Box>): ReactElement => {
 	return (
 		<Box display='flex' flexDirection='column' alignItems='flex-start' {...props}>
 			<Margins blockEnd={8}>
-				<Box fontScale='h4'>{t('Two-factor_authentication')}</Box>
+				<Box fontScale='h4'>{t('Two-factor_authentication_via_TOTP')}</Box>
 				{!totpEnabled && !registeringTotp && (
 					<>
 						<Box>{t('Two-factor_authentication_is_currently_disabled')}</Box>

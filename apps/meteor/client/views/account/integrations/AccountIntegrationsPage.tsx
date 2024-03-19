@@ -1,49 +1,54 @@
-import type { IWebdavAccountIntegration } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { SelectLegacy, Box, Field, Button } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import { SelectLegacy, Box, Button, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
-import { WebdavAccounts } from '../../../../app/models/client';
-import Page from '../../../components/Page';
-import { useReactiveValue } from '../../../hooks/useReactiveValue';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
+import { useWebDAVAccountIntegrationsQuery } from '../../../hooks/webdav/useWebDAVAccountIntegrationsQuery';
 import { getWebdavServerName } from '../../../lib/getWebdavServerName';
+import { useRemoveWebDAVAccountIntegrationMutation } from './hooks/useRemoveWebDAVAccountIntegrationMutation';
 
-const getWebdavAccounts = (): IWebdavAccountIntegration[] => WebdavAccounts.find().fetch();
+const AccountIntegrationsPage = () => {
+	const { data: webdavAccountIntegrations } = useWebDAVAccountIntegrationsQuery();
 
-const AccountIntegrationsPage = (): ReactElement => {
-	const t = useTranslation();
-	const { handleSubmit, control } = useForm();
+	const { handleSubmit, control } = useForm<{ accountSelected: string }>();
+
+	const options: SelectOption[] = useMemo(
+		() => webdavAccountIntegrations?.map(({ _id, ...current }) => [_id, getWebdavServerName(current)]) ?? [],
+		[webdavAccountIntegrations],
+	);
+
 	const dispatchToastMessage = useToastMessageDispatch();
-	const accounts = useReactiveValue(getWebdavAccounts);
-	const removeWebdavAccount = useEndpoint('POST', '/v1/webdav.removeWebdavAccount');
+	const t = useTranslation();
 
-	const options: SelectOption[] = useMemo(() => accounts?.map(({ _id, ...current }) => [_id, getWebdavServerName(current)]), [accounts]);
-
-	const handleClickRemove = useMutableCallback(({ accountSelected }) => {
-		try {
-			removeWebdavAccount({ accountId: accountSelected });
+	const removeMutation = useRemoveWebDAVAccountIntegrationMutation({
+		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Webdav_account_removed') });
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error as Error });
-		}
+		},
+		onError: (error) => {
+			dispatchToastMessage({ type: 'error', message: error });
+		},
+	});
+
+	const handleSubmitForm = useEffectEvent(({ accountSelected }) => {
+		removeMutation.mutate({ accountSelected });
 	});
 
 	return (
 		<Page>
-			<Page.Header title={t('Integrations')} />
-			<Page.ScrollableContentWithShadow>
-				<Box maxWidth='x600' w='full' alignSelf='center'>
+			<PageHeader title={t('Integrations')} />
+			<PageScrollableContentWithShadow>
+				<Box is='form' maxWidth='x600' w='full' alignSelf='center' onSubmit={handleSubmit(handleSubmitForm)}>
 					<Field>
-						<Field.Label>{t('WebDAV_Accounts')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('WebDAV_Accounts')}</FieldLabel>
+						<FieldRow>
 							<Controller
 								control={control}
 								name='accountSelected'
-								render={({ field: { onChange, value, name, ref } }): ReactElement => (
+								rules={{ required: true }}
+								render={({ field: { onChange, value, name, ref } }) => (
 									<SelectLegacy
 										ref={ref}
 										name={name}
@@ -54,13 +59,13 @@ const AccountIntegrationsPage = (): ReactElement => {
 									/>
 								)}
 							/>
-							<Button danger onClick={handleSubmit(handleClickRemove)}>
+							<Button type='submit' danger>
 								{t('Remove')}
 							</Button>
-						</Field.Row>
+						</FieldRow>
 					</Field>
 				</Box>
-			</Page.ScrollableContentWithShadow>
+			</PageScrollableContentWithShadow>
 		</Page>
 	);
 };

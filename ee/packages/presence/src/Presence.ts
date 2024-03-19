@@ -13,11 +13,17 @@ export class Presence extends ServiceClass implements IPresence {
 
 	private broadcastEnabled = true;
 
+	private hasPresenceLicense = false;
+
+	private hasScalabilityLicense = false;
+
 	private hasLicense = false;
 
 	private lostConTimeout?: NodeJS.Timeout;
 
 	private connsPerInstance = new Map<string, number>();
+
+	private peakConnections = 0;
 
 	constructor() {
 		super();
@@ -35,13 +41,28 @@ export class Presence extends ServiceClass implements IPresence {
 			if (diff?.hasOwnProperty('extraInformation.conns')) {
 				this.connsPerInstance.set(id, diff['extraInformation.conns']);
 
+				this.peakConnections = Math.max(this.peakConnections, this.getTotalConnections());
 				this.validateAvailability();
 			}
 		});
 
-		this.onEvent('license.module', ({ module, valid }) => {
-			if (module === 'scalability') {
-				this.hasLicense = valid;
+		this.onEvent('license.module', async ({ module, valid }) => {
+			switch (module) {
+				case 'unlimited-presence':
+					this.hasPresenceLicense = valid;
+					break;
+				case 'scalability':
+					this.hasScalabilityLicense = valid;
+					break;
+				default:
+					return;
+			}
+
+			// The scalability module is also accepted as a way to enable the presence service for backwards compatibility
+			this.hasLicense = this.hasPresenceLicense || this.hasScalabilityLicense;
+			// broadcast should always be enabled if license is active (unless the troubleshoot setting is on)
+			if (!this.broadcastEnabled && this.hasLicense) {
+				await this.toggleBroadcast(true);
 			}
 		});
 	}
@@ -58,9 +79,11 @@ export class Presence extends ServiceClass implements IPresence {
 		}, 10000);
 
 		try {
-			this.hasLicense = await License.hasLicense('scalability');
-
 			await Settings.updateValueById('Presence_broadcast_disabled', false);
+
+			this.hasScalabilityLicense = await License.hasModule('scalability');
+			this.hasPresenceLicense = await License.hasModule('unlimited-presence');
+			this.hasLicense = this.hasPresenceLicense || this.hasScalabilityLicense;
 		} catch (e: unknown) {
 			// ignore
 		}
@@ -245,5 +268,17 @@ export class Presence extends ServiceClass implements IPresence {
 
 	private getTotalConnections(): number {
 		return Array.from(this.connsPerInstance.values()).reduce((acc, conns) => acc + conns, 0);
+	}
+
+	getPeakConnections(reset = false): number {
+		const peak = this.peakConnections;
+		if (reset) {
+			this.resetPeakConnections();
+		}
+		return peak;
+	}
+
+	resetPeakConnections(): void {
+		this.peakConnections = 0;
 	}
 }

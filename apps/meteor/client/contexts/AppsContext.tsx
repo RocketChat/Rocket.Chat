@@ -5,9 +5,9 @@ import { AsyncStatePhase } from '../lib/asyncState';
 import type { App } from '../views/marketplace/types';
 
 export type AppsContextValue = {
-	installedApps: AsyncState<{ apps: App[] }>;
-	marketplaceApps: AsyncState<{ apps: App[] }>;
-	privateApps: AsyncState<{ apps: App[] }>;
+	installedApps: Omit<AsyncState<{ apps: App[] }>, 'error'>;
+	marketplaceApps: Omit<AsyncState<{ apps: App[] }>, 'error'>;
+	privateApps: Omit<AsyncState<{ apps: App[] }>, 'error'>;
 	reload: () => Promise<void>;
 };
 
@@ -15,17 +15,14 @@ export const AppsContext = createContext<AppsContextValue>({
 	installedApps: {
 		phase: AsyncStatePhase.LOADING,
 		value: undefined,
-		error: undefined,
 	},
 	marketplaceApps: {
 		phase: AsyncStatePhase.LOADING,
 		value: undefined,
-		error: undefined,
 	},
 	privateApps: {
 		phase: AsyncStatePhase.LOADING,
 		value: undefined,
-		error: undefined,
 	},
 	reload: () => Promise.resolve(),
 });

@@ -8,7 +8,6 @@ type IRoom = Pick<IOmnichannelRoom, '_id'>;
 
 const handleAfterOnHoldChatResumed = async (room: IRoom): Promise<IRoom> => {
 	if (!room?._id) {
-		cbLogger.debug('Skipping callback. No room provided');
 		return room;
 	}
 

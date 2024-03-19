@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useMemo } from 'react';
 
 const createStyleElement = (id: string) => {
 	const styleElement = document.getElementById(id);
@@ -10,11 +10,14 @@ const createStyleElement = (id: string) => {
 	return newStyleElement;
 };
 
-export const useCreateFontStyleElement = (fontSize: string): void => {
-	useEffect(() => {
-		const styleElement = createStyleElement('rcx-font-size');
-		const css = `html { font-size: ${fontSize}; }`;
-		styleElement.innerHTML = css;
-		document.head.appendChild(styleElement);
-	}, [fontSize]);
+export const useCreateFontStyleElement = (): ((fontSize: string) => void) => {
+	return useMemo(
+		() => (fontSize: string) => {
+			const styleElement = createStyleElement('rcx-font-size');
+			const css = `html { font-size: ${fontSize}; }`;
+			styleElement.innerHTML = css;
+			document.head.appendChild(styleElement);
+		},
+		[],
+	);
 };

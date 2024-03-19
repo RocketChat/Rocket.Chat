@@ -1,23 +1,24 @@
 {
 	"name": "@rocket.chat/ui-contexts",
-	"version": "1.0.2",
+	"version": "4.0.1",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
-		"@rocket.chat/emitter": "next",
-		"@rocket.chat/fuselage-hooks": "next",
+		"@rocket.chat/emitter": "~0.31.25",
+		"@rocket.chat/fuselage-hooks": "^0.33.0",
+		"@rocket.chat/i18n": "workspace:~",
 		"@rocket.chat/rest-typings": "workspace:^",
-		"@types/jest": "~29.5.3",
-		"@types/react": "~17.0.62",
-		"@types/react-dom": "~17.0.20",
-		"@types/use-sync-external-store": "^0.0.3",
+		"@types/jest": "~29.5.7",
+		"@types/react": "~17.0.69",
+		"@types/react-dom": "~17.0.22",
+		"@types/use-sync-external-store": "^0.0.5",
 		"eslint": "~8.45.0",
 		"eslint-plugin-react-hooks": "^4.6.0",
-		"jest": "~29.6.1",
-		"mongodb": "^4.12.1",
+		"jest": "~29.6.4",
+		"mongodb": "^4.17.2",
 		"react": "~17.0.2",
-		"ts-jest": "~29.0.5",
-		"typescript": "~5.2.2",
+		"ts-jest": "~29.1.1",
+		"typescript": "~5.3.3",
 		"use-sync-external-store": "^1.2.0"
 	},
 	"peerDependencies": {
@@ -25,9 +26,13 @@
 		"@rocket.chat/ddp-client": "workspace:^",
 		"@rocket.chat/emitter": "*",
 		"@rocket.chat/fuselage-hooks": "*",
+		"@rocket.chat/i18n": "workspace:~",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"react": "~17.0.2",
 		"use-sync-external-store": "^1.2.0"
+	},
+	"dependencies": {
+		"@rocket.chat/password-policies": "workspace:^"
 	},
 	"volta": {
 		"extends": "../../package.json"

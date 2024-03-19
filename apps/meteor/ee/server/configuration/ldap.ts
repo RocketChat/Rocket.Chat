@@ -1,18 +1,18 @@
 import type { IImportUser, ILDAPEntry, IUser } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
+import { License } from '@rocket.chat/license';
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../app/settings/server';
 import { callbacks } from '../../../lib/callbacks';
 import type { LDAPConnection } from '../../../server/lib/ldap/Connection';
 import { logger } from '../../../server/lib/ldap/Logger';
-import { onLicense } from '../../app/license/server';
 import { LDAPEEManager } from '../lib/ldap/Manager';
 import { LDAPEE } from '../sdk';
 import { addSettings, ldapIntervalValuesToCronMap } from '../settings/ldap';
 
 Meteor.startup(async () => {
-	await onLicense('ldap-enterprise', async () => {
+	await License.onLicense('ldap-enterprise', async () => {
 		await addSettings();
 
 		// Configure background sync cronjob
@@ -27,7 +27,8 @@ Meteor.startup(async () => {
 					return;
 				}
 
-				const schedule = ldapIntervalValuesToCronMap[settings.get<string>(intervalSetting)];
+				const settingValue = settings.get<string>(intervalSetting);
+				const schedule = ldapIntervalValuesToCronMap[settingValue] ?? settingValue;
 				if (schedule) {
 					if (schedule !== lastSchedule && (await cronJobs.has(jobName))) {
 						await cronJobs.remove(jobName);

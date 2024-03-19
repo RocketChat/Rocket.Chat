@@ -8,6 +8,7 @@ import type {
 	ILivechatPriority,
 	IOmnichannelServiceLevelAgreements,
 	ReportResult,
+	MACStats,
 } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
@@ -50,7 +51,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			{ key: { 'omnichannel.predictedVisitorAbandonmentAt': 1 }, sparse: true },
 			{ key: { closedAt: 1 }, sparse: true },
 			{ key: { servedBy: 1 }, sparse: true },
-			{ key: { 'v.token': 1 }, sparse: true },
 			{ key: { 'v.token': 1, 'email.thread': 1 }, sparse: true },
 			{ key: { 'v._id': 1 }, sparse: true },
 			{ key: { t: 1, departmentId: 1, closedAt: 1 }, partialFilterExpression: { closedAt: { $exists: true } } },
@@ -74,6 +74,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			{ key: { departmentId: 1, ts: 1 }, partialFilterExpression: { departmentId: { $exists: true }, t: 'l' } },
 			{ key: { 'tags.0': 1, 'ts': 1 }, partialFilterExpression: { 'tags.0': { $exists: true }, 't': 'l' } },
 			{ key: { servedBy: 1, ts: 1 }, partialFilterExpression: { servedBy: { $exists: true }, t: 'l' } },
+			{ key: { 'v.activity': 1, 'ts': 1 }, partialFilterExpression: { 'v.activity': { $exists: true }, 't': 'l' } },
 		];
 	}
 
@@ -1129,8 +1130,8 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		const match: Document = {
 			$match: {
 				'v._id': visitorId,
-				...(open !== undefined && { open: { $exists: open } }),
-				...(served !== undefined && { servedBy: { $exists: served } }),
+				...(open !== undefined && !open && { closedAt: { $exists: true } }),
+				...(served !== undefined && served && { servedBy: { $exists: served } }),
 				...(source && {
 					$or: [{ 'source.type': new RegExp(escapeRegExp(source), 'i') }, { 'source.alias': new RegExp(escapeRegExp(source), 'i') }],
 				}),
@@ -1516,11 +1517,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			{
 				$set: { pdfTranscriptRequested: true },
 			},
-			{},
-			// @ts-expect-error - extra arg not on base types
-			{
-				bypassUnits: true,
-			},
 		);
 	}
 
@@ -1532,11 +1528,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			{
 				$unset: { pdfTranscriptRequested: 1 },
 			},
-			{},
-			// @ts-expect-error - extra arg not on base types
-			{
-				bypassUnits: true,
-			},
 		);
 	}
 
@@ -1547,11 +1538,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			},
 			{
 				$set: { pdfTranscriptFileId: fileId },
-			},
-			{},
-			// @ts-expect-error - extra arg not on base types
-			{
-				bypassUnits: true,
 			},
 		);
 	}
@@ -1905,7 +1891,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 
 	findOneOpenByVisitorTokenAndDepartmentIdAndSource(
 		visitorToken: string,
-		departmentId: string,
+		departmentId?: string,
 		source?: string,
 		options: FindOptions<IOmnichannelRoom> = {},
 	) {
@@ -1986,7 +1972,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.find(query, options);
 	}
 
-	setResponseByRoomId(roomId: string, response: { user: { _id: string; username: string } }) {
+	setResponseByRoomId(roomId: string, responseBy: IOmnichannelRoom['responseBy']) {
 		return this.updateOne(
 			{
 				_id: roomId,
@@ -1994,11 +1980,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			},
 			{
 				$set: {
-					responseBy: {
-						_id: response.user._id,
-						username: response.user.username,
-						lastMessageTs: new Date(),
-					},
+					responseBy,
 				},
 				$unset: {
 					waitingResponse: 1,
@@ -2282,6 +2264,17 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		);
 	}
 
+	countOpenByAgent(userId: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
+		const query: Filter<IOmnichannelRoom> = {
+			't': 'l',
+			'open': true,
+			'servedBy._id': userId,
+			...extraQuery,
+		};
+
+		return this.col.countDocuments(query);
+	}
+
 	findOpenByAgent(userId: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
 		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
@@ -2450,6 +2443,140 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		};
 
 		return this.updateOne(query, update);
+	}
+
+	markVisitorActiveForPeriod(rid: string, period: string): Promise<UpdateResult> {
+		const query = {
+			_id: rid,
+		};
+
+		const update = {
+			$addToSet: {
+				'v.activity': period,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	async getMACStatisticsForPeriod(period: string): Promise<MACStats[]> {
+		return this.col
+			.aggregate<MACStats>([
+				{
+					$match: {
+						't': 'l',
+						'v.activity': period,
+					},
+				},
+				{
+					$group: {
+						_id: {
+							source: {
+								$ifNull: ['$source.alias', '$source.type'],
+							},
+						},
+						contactsCount: {
+							$addToSet: '$v._id',
+						},
+						conversationsCount: {
+							$sum: 1,
+						},
+					},
+				},
+				{
+					$group: {
+						_id: null,
+						sources: {
+							$push: {
+								source: '$_id.source',
+								contactsCount: {
+									$size: '$contactsCount',
+								},
+								conversationsCount: '$conversationsCount',
+							},
+						},
+						totalContactsCount: {
+							$sum: {
+								$size: '$contactsCount',
+							},
+						},
+						totalConversationsCount: {
+							$sum: '$conversationsCount',
+						},
+					},
+				},
+				{
+					$project: {
+						_id: 0,
+						contactsCount: '$totalContactsCount',
+						conversationsCount: '$totalConversationsCount',
+						sources: 1,
+					},
+				},
+			])
+			.toArray();
+	}
+
+	async getMACStatisticsBetweenDates(start: Date, end: Date): Promise<MACStats[]> {
+		return this.col
+			.aggregate<MACStats>([
+				{
+					$match: {
+						't': 'l',
+						'v.activity': { $exists: true },
+						'ts': {
+							$gte: start,
+							$lt: end,
+						},
+					},
+				},
+				{
+					$group: {
+						_id: {
+							source: {
+								$ifNull: ['$source.alias', '$source.type'],
+							},
+						},
+						contactsCount: {
+							$addToSet: '$v._id',
+						},
+						conversationsCount: {
+							$sum: 1,
+						},
+					},
+				},
+				{
+					$group: {
+						_id: null,
+						sources: {
+							$push: {
+								source: '$_id.source',
+								contactsCount: {
+									$size: '$contactsCount',
+								},
+								conversationsCount: '$conversationsCount',
+							},
+						},
+						totalContactsCount: {
+							$sum: {
+								$size: '$contactsCount',
+							},
+						},
+						totalConversationsCount: {
+							$sum: '$conversationsCount',
+						},
+					},
+				},
+				{
+					$project: {
+						_id: 0,
+						contactsCount: '$totalContactsCount',
+						conversationsCount: '$totalConversationsCount',
+						sources: 1,
+					},
+				},
+			])
+			.toArray();
 	}
 
 	async unsetAllPredictedVisitorAbandonment(): Promise<void> {

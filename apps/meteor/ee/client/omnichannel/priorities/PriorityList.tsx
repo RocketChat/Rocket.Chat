@@ -3,7 +3,8 @@ import type { ReactElement } from 'react';
 import React from 'react';
 
 import {
-	ContextualbarContainer,
+	Contextualbar,
+	ContextualbarTitle,
 	ContextualbarHeader,
 	ContextualbarClose,
 	ContextualbarScrollableContent,
@@ -22,15 +23,15 @@ const PriorityList = ({ priorityId, onClose, onSave }: PriorityListProps): React
 	const t = useTranslation();
 
 	return (
-		<ContextualbarContainer>
+		<Contextualbar>
 			<ContextualbarHeader>
-				{t('Edit_Priority')}
+				<ContextualbarTitle>{t('Edit_Priority')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent height='100%'>
 				<PriorityEditFormWithData priorityId={priorityId} onSave={onSave} onCancel={onClose} />
 			</ContextualbarScrollableContent>
-		</ContextualbarContainer>
+		</Contextualbar>
 	);
 };
 

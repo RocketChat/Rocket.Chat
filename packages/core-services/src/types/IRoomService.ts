@@ -4,10 +4,10 @@ export interface ISubscriptionExtraData {
 	open: boolean;
 	ls?: Date;
 	prid?: string;
+	roles?: string[];
 }
 
 interface ICreateRoomOptions extends Partial<Record<string, string | ISubscriptionExtraData>> {
-	nameValidationRegex?: string;
 	creator: string;
 	subscriptionExtra?: ISubscriptionExtraData;
 }
@@ -37,11 +37,7 @@ export interface IRoomService {
 		silenced?: boolean,
 	): Promise<boolean | undefined>;
 	removeUserFromRoom(roomId: string, user: IUser, options?: { byUser: Pick<IUser, '_id' | 'username'> }): Promise<void>;
-	getValidRoomName(
-		displayName: string,
-		roomId?: string,
-		options?: { allowDuplicates?: boolean; nameValidationRegex?: string },
-	): Promise<string>;
+	getValidRoomName(displayName: string, roomId?: string, options?: { allowDuplicates?: boolean }): Promise<string>;
 	saveRoomTopic(
 		roomId: string,
 		roomTopic: string | undefined,
@@ -52,4 +48,5 @@ export interface IRoomService {
 		sendMessage?: boolean,
 	): Promise<void>;
 	getRouteLink(room: AtLeast<IRoom, '_id' | 't' | 'name'>): Promise<string | boolean>;
+	join(param: { room: IRoom; user: Pick<IUser, '_id'>; joinCode?: string }): Promise<boolean | undefined>;
 }

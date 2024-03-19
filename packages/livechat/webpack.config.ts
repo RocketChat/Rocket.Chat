@@ -2,14 +2,13 @@ import path from 'path';
 
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import TerserPlugin from 'terser-webpack-plugin';
 import webpack from 'webpack';
 import 'webpack-dev-server';
 
 // Helper to use absolute paths in the webpack config
 const _ = (p: string) => path.resolve(__dirname, p);
 
-const common = (args: webpack.CliConfigOptions): Partial<webpack.Configuration> => ({
+const common = (args: webpack.WebpackOptionsNormalized): Partial<webpack.Configuration> => ({
 	stats: 'errors-warnings',
 	mode: args.mode,
 	devtool: args.mode === 'production' ? 'source-map' : 'eval',
@@ -23,28 +22,13 @@ const common = (args: webpack.CliConfigOptions): Partial<webpack.Configuration> 
 	optimization: {
 		sideEffects: false,
 		splitChunks: {
-			automaticNameDelimiter: '~',
 			chunks: 'all',
-			maxAsyncRequests: 30,
-			maxInitialRequests: 30,
-			minChunks: 1,
-			minSize: 20000,
-			maxSize: 0,
 		},
-		noEmitOnErrors: true,
-		...(args.mode === 'production' && {
-			minimizer: [
-				new TerserPlugin({
-					terserOptions: {
-						mangle: true,
-					},
-				}),
-			],
-		}),
+		emitOnErrors: false,
 	},
 });
 
-const config: webpack.MultiConfigurationFactory = (_env, args) => [
+const config = (_env: any, args: webpack.WebpackOptionsNormalized): webpack.Configuration[] => [
 	{
 		...common(args),
 		entry: {
@@ -143,7 +127,7 @@ const config: webpack.MultiConfigurationFactory = (_env, args) => [
 			new MiniCssExtractPlugin({
 				filename: args.mode === 'production' ? '[name].[contenthash:5].css' : '[name].css',
 				chunkFilename: args.mode === 'production' ? '[name].chunk.[contenthash:5].css' : '[name].chunk.css',
-			}) as unknown as webpack.Plugin,
+			}) as unknown as webpack.WebpackPluginInstance,
 			new webpack.DefinePlugin({
 				'process.env.NODE_ENV': JSON.stringify(args.mode === 'production' ? 'production' : 'development'),
 			}),
@@ -178,12 +162,12 @@ const config: webpack.MultiConfigurationFactory = (_env, args) => [
 	{
 		...common(args),
 		entry: {
-			script: _('./src/widget.js'),
+			'rocketchat-livechat.min': _('./src/widget.ts'),
 		} as webpack.Entry,
 		output: {
 			path: _('./dist'),
 			publicPath: args.mode === 'production' ? 'livechat/' : '/',
-			filename: 'rocketchat-livechat.min.js',
+			filename: '[name].js',
 		},
 		module: {
 			rules: [

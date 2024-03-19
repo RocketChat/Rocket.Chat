@@ -20,10 +20,7 @@ export type AccountPreferencesData = {
 	autoImageLoad?: boolean;
 	saveMobileBandwidth?: boolean;
 	collapseMediaByDefault?: boolean;
-	hideUsernames?: boolean;
-	hideRoles?: boolean;
 	hideFlexTab?: boolean;
-	clockMode?: 0 | 1 | 2;
 	sendOnEnter?: 'normal' | 'alternative' | 'desktop';
 	highlights?: string;
 	newRoomNotification?: string;
@@ -42,7 +39,7 @@ export type AccountPreferencesData = {
 };
 
 export const useAccountPreferencesValues = (): AccountPreferencesData => {
-	const language = useUserPreference<string>('language');
+	const language = useUserPreference<string>('language') || '';
 	const userDontAskAgainList = useUserPreference<{ action: string; label: string }[]>('dontAskAgainList') || [];
 	const dontAskAgainList = userDontAskAgainList.map(({ action }) => action);
 	const enableAutoAway = useUserPreference<boolean>('enableAutoAway');
@@ -64,10 +61,7 @@ export const useAccountPreferencesValues = (): AccountPreferencesData => {
 	const autoImageLoad = useUserPreference<boolean>('autoImageLoad');
 	const saveMobileBandwidth = useUserPreference<boolean>('saveMobileBandwidth');
 	const collapseMediaByDefault = useUserPreference<boolean>('collapseMediaByDefault');
-	const hideUsernames = useUserPreference<boolean>('hideUsernames');
-	const hideRoles = useUserPreference<boolean>('hideRoles');
 	const hideFlexTab = useUserPreference<boolean>('hideFlexTab');
-	const clockMode = useUserPreference<0 | 1 | 2>('clockMode') ?? 0;
 	const sendOnEnter = useUserPreference<'normal' | 'alternative' | 'desktop'>('sendOnEnter');
 	const displayAvatars = useUserPreference<boolean>('displayAvatars');
 
@@ -98,10 +92,7 @@ export const useAccountPreferencesValues = (): AccountPreferencesData => {
 		autoImageLoad,
 		saveMobileBandwidth,
 		collapseMediaByDefault,
-		hideUsernames,
-		hideRoles,
 		hideFlexTab,
-		clockMode,
 		sendOnEnter,
 		displayAvatars,
 		highlights,

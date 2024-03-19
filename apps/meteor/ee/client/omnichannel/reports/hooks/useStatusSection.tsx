@@ -67,6 +67,7 @@ export const useStatusSection = () => {
 
 	return useMemo(
 		() => ({
+			id: 'conversations-by-status',
 			title,
 			subtitle,
 			emptyStateSubtitle,

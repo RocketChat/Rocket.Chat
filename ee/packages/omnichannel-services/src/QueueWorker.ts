@@ -1,4 +1,4 @@
-import { ServiceClass, api, License } from '@rocket.chat/core-services';
+import { ServiceClass, api } from '@rocket.chat/core-services';
 import type { IQueueWorkerService, HealthAggResult } from '@rocket.chat/core-services';
 import type { Logger } from '@rocket.chat/logger';
 import type { Actions, ValidResult, Work } from 'mongo-message-queue';
@@ -17,7 +17,7 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 
 	private logger: Logger;
 
-	private shouldWork = true;
+	private queueStarted = false;
 
 	constructor(private readonly db: Db, loggerClass: typeof Logger) {
 		super();
@@ -25,20 +25,7 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 		// eslint-disable-next-line new-cap
 		this.logger = new loggerClass('QueueWorker');
 		this.queue = new MessageQueue();
-
-		this.onEvent('license.module', ({ module, valid }) => {
-			if (module === 'scalability') {
-				this.shouldWork = valid;
-			}
-		});
-	}
-
-	async started(): Promise<void> {
-		try {
-			this.shouldWork = await License.hasLicense('scalability');
-		} catch (e: unknown) {
-			// ignore
-		}
+		this.queue.pollingInterval = 5000;
 	}
 
 	isServiceNotFoundMessage(message: string): boolean {
@@ -50,13 +37,11 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 	}
 
 	async created(): Promise<void> {
-		this.logger.info('Starting queue worker');
 		this.queue.databasePromise = () => {
 			return Promise.resolve(this.db);
 		};
 
 		try {
-			await this.registerWorkers();
 			await this.createIndexes();
 		} catch (e) {
 			this.logger.fatal(e, 'Fatal error occurred when registering workers');
@@ -111,12 +96,14 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 	}
 
 	// Registers the actual workers, the actions lib will try to fetch elements to work on
-	private async registerWorkers(): Promise<void> {
+	private registerWorkers(): void {
 		this.logger.info('Registering workers of type "work"');
 		this.queue.registerWorker('work', this.workerCallback.bind(this));
 
 		this.logger.info('Registering workers of type "workComplete"');
 		this.queue.registerWorker('workComplete', this.workerCallback.bind(this));
+
+		this.queueStarted = true;
 	}
 
 	private matchServiceCall(service: string): boolean {
@@ -132,12 +119,11 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 	// `to` is a service name that will be called, including namespace + action
 	// This is a "generic" job that allows you to call any service
 	async queueWork<T extends Record<string, unknown>>(queue: Actions, to: string, data: T): Promise<void> {
-		if (!this.shouldWork) {
-			this.logger.info('Queue worker is disabled, not queueing work');
-			return;
+		this.logger.info(`Queueing work for ${to}`);
+		if (!this.queueStarted) {
+			this.registerWorkers();
 		}
 
-		this.logger.info(`Queueing work for ${to}`);
 		if (!this.matchServiceCall(to)) {
 			// We don't want to queue calls to invalid service names
 			throw new Error(`Invalid service name ${to}`);
@@ -160,5 +146,9 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 				{ $project: { _id: 0, type: '$_id.type', status: '$_id.status', total: 1 } },
 			])
 			.toArray();
+	}
+
+	async isQueueStarted(): Promise<boolean> {
+		return this.queueStarted;
 	}
 }

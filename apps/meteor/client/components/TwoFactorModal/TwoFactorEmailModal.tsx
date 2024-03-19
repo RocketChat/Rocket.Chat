@@ -1,4 +1,4 @@
-import { Box, FieldGroup, TextInput, Field } from '@rocket.chat/fuselage';
+import { Box, FieldGroup, TextInput, Field, FieldLabel, FieldRow, FieldError, Button } from '@rocket.chat/fuselage';
 import { useAutoFocus, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent, SyntheticEvent } from 'react';
@@ -51,26 +51,27 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername, invalidAttem
 			wrapperFunction={(props) => <Box is='form' onSubmit={onConfirmEmailCode} {...props} />}
 			onCancel={onClose}
 			confirmText={t('Verify')}
-			title={t('Two-factor_authentication_email')}
+			title={t('Enter_authentication_code')}
 			onClose={onClose}
 			variant='warning'
-			icon='info'
 			confirmDisabled={!code}
+			tagline={t('Email_two-factor_authentication')}
+			icon={null}
 		>
 			<FieldGroup>
 				<Field>
-					<Field.Label alignSelf='stretch' htmlFor={id}>
-						{t('Verify_your_email_with_the_code_we_sent')}
-					</Field.Label>
-					<Field.Row>
-						<TextInput id={id} ref={ref} value={code} onChange={onChange} placeholder={t('Enter_authentication_code')} />
-					</Field.Row>
-					{invalidAttempt && <Field.Error>{t('Invalid_password')}</Field.Error>}
+					<FieldLabel alignSelf='stretch' htmlFor={id}>
+						{t('Enter_the_code_we_just_emailed_you')}
+					</FieldLabel>
+					<FieldRow>
+						<TextInput id={id} ref={ref} value={code} onChange={onChange} placeholder={t('Enter_code_here')} />
+					</FieldRow>
+					{invalidAttempt && <FieldError>{t('Invalid_password')}</FieldError>}
 				</Field>
 			</FieldGroup>
-			<Box display='flex' justifyContent='end' is='a' onClick={onClickResendCode}>
+			<Button display='flex' justifyContent='end' onClick={onClickResendCode} small mbs={24}>
 				{t('Cloud_resend_email')}
-			</Box>
+			</Button>
 		</GenericModal>
 	);
 };

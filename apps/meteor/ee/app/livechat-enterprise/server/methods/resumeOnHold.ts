@@ -12,14 +12,14 @@ import { i18n } from '../../../../../server/lib/i18n';
 
 async function resolveOnHoldCommentInfo(options: { clientAction: boolean }, room: any, onHoldChatResumedBy: any): Promise<string> {
 	if (options.clientAction) {
-		return i18n.t('Omnichannel_on_hold_chat_manually', {
+		return i18n.t('Omnichannel_on_hold_chat_resumed_manually', {
 			user: onHoldChatResumedBy.name || onHoldChatResumedBy.username,
 		});
 	}
 	const {
 		v: { _id: visitorId },
 	} = room;
-	const visitor = await LivechatVisitors.findOneById<Pick<ILivechatVisitor, 'name' | 'username'>>(visitorId, {
+	const visitor = await LivechatVisitors.findOneEnabledById<Pick<ILivechatVisitor, 'name' | 'username'>>(visitorId, {
 		projection: { name: 1, username: 1 },
 	});
 	if (!visitor) {

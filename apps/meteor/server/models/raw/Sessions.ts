@@ -166,10 +166,16 @@ const getProjectionByFullDate = (): { day: string; month: string; year: string }
 	year: '$_id.year',
 });
 
+const getProjectionFullDate = (): { day: string; month: string; year: string } => ({
+	day: '$day',
+	month: '$month',
+	year: '$year',
+});
+
 export const aggregates = {
-	dailySessionsOfYesterday(
+	dailySessions(
 		collection: Collection<ISession>,
-		{ year, month, day }: DestructuredDate,
+		{ start, end }: DestructuredRange,
 	): AggregationCursor<
 		Pick<ISession, 'mostImportantRole' | 'userId' | 'day' | 'year' | 'month' | 'type'> & {
 			time: number;
@@ -178,6 +184,87 @@ export const aggregates = {
 			_computedAt: string;
 		}
 	> {
+		const pipeline = [
+			{
+				$match: {
+					userId: { $exists: true },
+					lastActivityAt: { $exists: true },
+					device: { $exists: true },
+					type: 'session',
+					...matchBasedOnDate(start, end),
+				},
+			},
+			{
+				$project: {
+					userId: 1,
+					device: 1,
+					day: 1,
+					month: 1,
+					year: 1,
+					mostImportantRole: 1,
+					time: { $trunc: { $divide: [{ $subtract: ['$lastActivityAt', '$loginAt'] }, 1000] } },
+				},
+			},
+			{
+				$match: {
+					time: { $gt: 0 },
+				},
+			},
+			{
+				$group: {
+					_id: {
+						userId: '$userId',
+						device: '$device',
+						...getProjectionFullDate(),
+					},
+					mostImportantRole: { $first: '$mostImportantRole' },
+					time: { $sum: '$time' },
+					sessions: { $sum: 1 },
+				},
+			},
+			{
+				$sort: {
+					time: -1,
+				},
+			},
+			{
+				$group: {
+					_id: {
+						userId: '$_id.userId',
+						...getProjectionByFullDate(),
+					},
+					mostImportantRole: { $first: '$mostImportantRole' },
+					time: { $sum: '$time' },
+					sessions: { $sum: '$sessions' },
+					devices: {
+						$push: {
+							sessions: '$sessions',
+							time: '$time',
+							device: '$_id.device',
+						},
+					},
+				},
+			},
+			{
+				$sort: {
+					_id: 1,
+				},
+			},
+			{
+				$project: {
+					_id: 0,
+					type: { $literal: 'user_daily' },
+					_computedAt: { $literal: new Date() },
+					...getProjectionByFullDate(),
+					userId: '$_id.userId',
+					mostImportantRole: 1,
+					time: 1,
+					sessions: 1,
+					devices: 1,
+				},
+			},
+		];
+
 		return collection.aggregate<
 			Pick<ISession, 'mostImportantRole' | 'userId' | 'day' | 'year' | 'month' | 'type'> & {
 				time: number;
@@ -185,108 +272,7 @@ export const aggregates = {
 				devices: ISession['device'][];
 				_computedAt: string;
 			}
-		>(
-			[
-				{
-					$match: {
-						userId: { $exists: true },
-						lastActivityAt: { $exists: true },
-						device: { $exists: true },
-						type: 'session',
-						$or: [
-							{
-								year: { $lt: year },
-							},
-							{
-								year,
-								month: { $lt: month },
-							},
-							{
-								year,
-								month,
-								day: { $lte: day },
-							},
-						],
-					},
-				},
-				{
-					$project: {
-						userId: 1,
-						device: 1,
-						day: 1,
-						month: 1,
-						year: 1,
-						mostImportantRole: 1,
-						time: { $trunc: { $divide: [{ $subtract: ['$lastActivityAt', '$loginAt'] }, 1000] } },
-					},
-				},
-				{
-					$match: {
-						time: { $gt: 0 },
-					},
-				},
-				{
-					$group: {
-						_id: {
-							userId: '$userId',
-							device: '$device',
-							day: '$day',
-							month: '$month',
-							year: '$year',
-						},
-						mostImportantRole: { $first: '$mostImportantRole' },
-						time: { $sum: '$time' },
-						sessions: { $sum: 1 },
-					},
-				},
-				{
-					$sort: {
-						time: -1,
-					},
-				},
-				{
-					$group: {
-						_id: {
-							userId: '$_id.userId',
-							day: '$_id.day',
-							month: '$_id.month',
-							year: '$_id.year',
-						},
-						mostImportantRole: { $first: '$mostImportantRole' },
-						time: { $sum: '$time' },
-						sessions: { $sum: '$sessions' },
-						devices: {
-							$push: {
-								sessions: '$sessions',
-								time: '$time',
-								device: '$_id.device',
-							},
-						},
-					},
-				},
-				{
-					$sort: {
-						_id: 1,
-					},
-				},
-				{
-					$project: {
-						_id: 0,
-						type: { $literal: 'user_daily' },
-						_computedAt: { $literal: new Date() },
-						day: '$_id.day',
-						month: '$_id.month',
-						year: '$_id.year',
-						userId: '$_id.userId',
-						mostImportantRole: 1,
-						time: 1,
-						sessions: 1,
-						devices: 1,
-					},
-				},
-			],
-			{ allowDiskUse: true },
-		);
+		>(pipeline, { allowDiskUse: true });
 	},
 
 	async getUniqueUsersOfYesterday(
@@ -306,9 +292,7 @@ export const aggregates = {
 				{
 					$group: {
 						_id: {
-							day: '$day',
-							month: '$month',
-							year: '$year',
+							...getProjectionFullDate(),
 							mostImportantRole: '$mostImportantRole',
 						},
 						count: {
@@ -325,9 +309,7 @@ export const aggregates = {
 				{
 					$group: {
 						_id: {
-							day: '$day',
-							month: '$month',
-							year: '$year',
+							...getProjectionFullDate(),
 						},
 						roles: {
 							$push: {
@@ -889,6 +871,10 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 							$exists: true,
 							$ne: '',
 						},
+						sessionId: {
+							$exists: true,
+							$ne: '',
+						},
 					},
 					{
 						logoutAt: {
@@ -1083,9 +1069,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 				{
 					$group: {
 						_id: {
-							day: '$day',
-							month: '$month',
-							year: '$year',
+							...getProjectionFullDate(),
 							userId: '$userId',
 						},
 					},
@@ -1093,9 +1077,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 				{
 					$group: {
 						_id: {
-							day: '$_id.day',
-							month: '$_id.month',
-							year: '$_id.year',
+							...getProjectionByFullDate(),
 						},
 						usersList: {
 							$addToSet: '$_id.userId',
@@ -1188,7 +1170,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 				},
 				{
 					$group: {
-						_id: { year: '$year', month: '$month', day: '$day' },
+						_id: { ...getProjectionFullDate() },
 						users: { $sum: 1 },
 					},
 				},
@@ -1445,11 +1427,15 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		};
 	}
 
+	private isValidData(data: Omit<ISession, '_id' | 'createdAt' | '_updatedAt'>): boolean {
+		return Boolean(data.year && data.month && data.day && data.sessionId && data.instanceId);
+	}
+
 	async createOrUpdate(data: Omit<ISession, '_id' | 'createdAt' | '_updatedAt'>): Promise<UpdateResult | undefined> {
 		// TODO: check if we should create a session when there is no loginToken or not
 		const { year, month, day, sessionId, instanceId } = data;
 
-		if (!year || !month || !day || !sessionId || !instanceId) {
+		if (!this.isValidData(data)) {
 			return;
 		}
 
@@ -1602,18 +1588,38 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		sessions.forEach((doc) => {
 			const { year, month, day, sessionId, instanceId } = doc;
 			delete doc._id;
-
-			ops.push({
-				updateOne: {
-					filter: { year, month, day, sessionId, instanceId },
-					update: {
-						$set: doc,
+			if (this.isValidData(doc)) {
+				ops.push({
+					updateOne: {
+						filter: { year, month, day, sessionId, instanceId },
+						update: {
+							$set: doc,
+						},
+						upsert: true,
 					},
-					upsert: true,
-				},
-			});
+				});
+			}
 		});
 
 		return this.col.bulkWrite(ops, { ordered: false });
+	}
+
+	async updateDailySessionById(_id: ISession['_id'], record: Partial<ISession>): Promise<UpdateResult> {
+		return this.updateOne({ _id }, { $set: record }, { upsert: true });
+	}
+
+	async updateAllSessionsByDateToComputed({ start, end }: DestructuredRange): Promise<UpdateResult | Document> {
+		return this.updateMany(
+			{
+				type: 'session',
+				...matchBasedOnDate(start, end),
+			},
+			{
+				$set: {
+					type: 'computed-session',
+					_computedAt: new Date(),
+				},
+			},
+		);
 	}
 }

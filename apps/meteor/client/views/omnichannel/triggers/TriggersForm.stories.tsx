@@ -1,13 +1,12 @@
 import { FieldGroup, Box } from '@rocket.chat/fuselage';
-import { action } from '@storybook/addon-actions';
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
-import TriggersForm from './TriggersForm';
+import EditTrigger from './EditTrigger';
 
 export default {
-	title: 'Omnichannel/TriggersForm',
-	component: TriggersForm,
+	title: 'Omnichannel/EditTrigger',
+	component: EditTrigger,
 	decorators: [
 		(fn) => (
 			<Box maxWidth='x600'>
@@ -15,35 +14,6 @@ export default {
 			</Box>
 		),
 	],
-} as ComponentMeta<typeof TriggersForm>;
+} as ComponentMeta<typeof EditTrigger>;
 
-export const Default: ComponentStory<typeof TriggersForm> = (args) => <TriggersForm {...args} />;
-Default.storyName = 'TriggersForm';
-Default.args = {
-	values: {
-		name: '',
-		description: '',
-		enabled: true,
-		runOnce: false,
-		conditions: {
-			name: 'page-url',
-			value: '',
-		},
-		actions: {
-			name: '',
-			params: {
-				sender: 'queue',
-				msg: '',
-				name: '',
-			},
-		},
-	},
-	handlers: {
-		handleName: action('handleName'),
-		handleDescription: action('handleDescription'),
-		handleEnabled: action('handleEnabled'),
-		handleRunOnce: action('handleRunOnce'),
-		handleConditions: action('handleConditions'),
-		handleActions: action('handleActions'),
-	},
-};
+export const Default: ComponentStory<typeof EditTrigger> = (args) => <EditTrigger {...args} />;

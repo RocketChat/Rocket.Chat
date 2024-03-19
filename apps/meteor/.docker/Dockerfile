@@ -14,9 +14,11 @@ RUN groupadd -g 65533 -r rocketchat \
 ADD --chown=rocketchat:rocketchat . /app
 
 RUN aptMark="$(apt-mark showmanual)" \
-    && apt-get install -y --no-install-recommends g++ make python ca-certificates \
+    && apt-get install -y --no-install-recommends g++ make python3 ca-certificates \
     && cd /app/bundle/programs/server \
     && npm install \
+	&& cd npm/node_modules/isolated-vm \
+	&& npm install \
     && apt-mark auto '.*' > /dev/null \
     && apt-mark manual $aptMark > /dev/null \
     && find /usr/local -type f -executable -exec ldd '{}' ';' \

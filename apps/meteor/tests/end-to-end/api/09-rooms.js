@@ -4,11 +4,12 @@ import path from 'path';
 import { expect } from 'chai';
 import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 
+import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
-import { imgURL } from '../../data/interactions.js';
-import { updateEEPermission, updatePermission, updateSetting } from '../../data/permissions.helper';
-import { closeRoom, createRoom } from '../../data/rooms.helper';
+import { imgURL, svgLogoFileName, svgLogoURL } from '../../data/interactions';
+import { getSettingValueById, updateEEPermission, updatePermission, updateSetting } from '../../data/permissions.helper';
+import { closeRoom, createRoom, deleteRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE } from '../../e2e/config/constants';
@@ -82,10 +83,16 @@ describe('[Rooms]', function () {
 		let testChannel;
 		let user;
 		let userCredentials;
-
+		let blockedMediaTypes;
 		before(async () => {
 			user = await createUser({ joinDefaultChannels: false });
 			userCredentials = await login(user.username, password);
+			blockedMediaTypes = await getSettingValueById('FileUpload_MediaTypeBlackList');
+			const newBlockedMediaTypes = blockedMediaTypes
+				.split(',')
+				.filter((type) => type !== 'image/svg+xml')
+				.join(',');
+			await updateSetting('FileUpload_MediaTypeBlackList', newBlockedMediaTypes);
 		});
 
 		after(async () => {
@@ -94,6 +101,7 @@ describe('[Rooms]', function () {
 
 			await updateSetting('FileUpload_Restrict_to_room_members', false);
 			await updateSetting('FileUpload_ProtectFiles', true);
+			await updateSetting('FileUpload_MediaTypeBlackList', blockedMediaTypes);
 		});
 
 		const testChannelName = `channel.test.upload.${Date.now()}-${Math.random()}`;
@@ -173,7 +181,8 @@ describe('[Rooms]', function () {
 			await request.get(fileOldUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
 		});
 
-		it('should be able to get the file when no access to the room', async () => {
+		it('should be able to get the file when no access to the room if setting allows it', async () => {
+			await updateSetting('FileUpload_Restrict_to_room_members', false);
 			await request.get(fileNewUrl).set(userCredentials).expect('Content-Type', 'image/png').expect(200);
 			await request.get(fileOldUrl).set(userCredentials).expect('Content-Type', 'image/png').expect(200);
 		});
@@ -199,6 +208,58 @@ describe('[Rooms]', function () {
 			await updateSetting('FileUpload_ProtectFiles', false);
 			await request.get(fileNewUrl).expect('Content-Type', 'image/png').expect(200);
 			await request.get(fileOldUrl).expect('Content-Type', 'image/png').expect(200);
+		});
+
+		it('should generate thumbnail for SVG files correctly', async () => {
+			const expectedFileName = `thumb-${svgLogoFileName}`;
+			let thumbUrl;
+			await request
+				.post(api(`rooms.upload/${testChannel._id}`))
+				.set(credentials)
+				.attach('file', svgLogoURL)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					const { message } = res.body;
+					const { files, attachments } = message;
+
+					expect(files).to.be.an('array');
+					const hasThumbFile = files.some((file) => file.type === 'image/png' && file.name === expectedFileName);
+					expect(hasThumbFile).to.be.true;
+
+					expect(attachments).to.be.an('array');
+					const thumbAttachment = attachments.find((attachment) => attachment.title === svgLogoFileName);
+					expect(thumbAttachment).to.be.an('object');
+					thumbUrl = thumbAttachment.image_url;
+				});
+
+			await request.get(thumbUrl).set(credentials).expect('Content-Type', 'image/png');
+		});
+
+		it('should generate thumbnail for JPEG files correctly', async () => {
+			const expectedFileName = `thumb-sample-jpeg.jpg`;
+			let thumbUrl;
+			await request
+				.post(api(`rooms.upload/${testChannel._id}`))
+				.set(credentials)
+				.attach('file', fs.createReadStream(path.join(__dirname, '../../mocks/files/sample-jpeg.jpg')))
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					const { message } = res.body;
+					const { files, attachments } = message;
+
+					expect(files).to.be.an('array');
+					const hasThumbFile = files.some((file) => file.type === 'image/jpeg' && file.name === expectedFileName);
+					expect(hasThumbFile).to.be.true;
+
+					expect(attachments).to.be.an('array');
+					const thumbAttachment = attachments.find((attachment) => attachment.title === `sample-jpeg.jpg`);
+					expect(thumbAttachment).to.be.an('object');
+					thumbUrl = thumbAttachment.image_url;
+				});
+
+			await request.get(thumbUrl).set(credentials).expect('Content-Type', 'image/jpeg');
 		});
 	});
 
@@ -1543,54 +1604,56 @@ describe('[Rooms]', function () {
 			roomId = result.body.room.rid;
 		});
 
-		it('should update group name if user changes username', (done) => {
-			updateSetting('UI_Use_Real_Name', false).then(() => {
-				request
-					.post(api('users.update'))
-					.set(credentials)
-					.send({
-						userId: testUser._id,
-						data: {
-							username: `changed.username.${testUser.username}`,
-						},
-					})
-					.end(() => {
-						request
-							.get(api('subscriptions.getOne'))
-							.set(credentials)
-							.query({ roomId })
-							.end((err, res) => {
-								const { subscription } = res.body;
-								expect(subscription.name).to.equal(`rocket.cat,changed.username.${testUser.username}`);
-								done();
-							});
-					});
-			});
+		it('should update group name if user changes username', async () => {
+			await updateSetting('UI_Use_Real_Name', false);
+			await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: testUser._id,
+					data: {
+						username: `changed.username.${testUser.username}`,
+					},
+				});
+
+			// need to wait for the username update finish
+			await sleep(300);
+
+			await request
+				.get(api('subscriptions.getOne'))
+				.set(credentials)
+				.query({ roomId })
+				.send()
+				.expect((res) => {
+					const { subscription } = res.body;
+					expect(subscription.name).to.equal(`rocket.cat,changed.username.${testUser.username}`);
+				});
 		});
 
-		it('should update group name if user changes name', (done) => {
-			updateSetting('UI_Use_Real_Name', true).then(() => {
-				request
-					.post(api('users.update'))
-					.set(credentials)
-					.send({
-						userId: testUser._id,
-						data: {
-							name: `changed.name.${testUser.username}`,
-						},
-					})
-					.end(() => {
-						request
-							.get(api('subscriptions.getOne'))
-							.set(credentials)
-							.query({ roomId })
-							.end((err, res) => {
-								const { subscription } = res.body;
-								expect(subscription.fname).to.equal(`changed.name.${testUser.username}, Rocket.Cat`);
-								done();
-							});
-					});
-			});
+		it('should update group name if user changes name', async () => {
+			await updateSetting('UI_Use_Real_Name', true);
+			await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: testUser._id,
+					data: {
+						name: `changed.name.${testUser.username}`,
+					},
+				});
+
+			// need to wait for the name update finish
+			await sleep(300);
+
+			await request
+				.get(api('subscriptions.getOne'))
+				.set(credentials)
+				.query({ roomId })
+				.send()
+				.expect((res) => {
+					const { subscription } = res.body;
+					expect(subscription.fname).to.equal(`changed.name.${testUser.username}, Rocket.Cat`);
+				});
 		});
 	});
 
@@ -1642,11 +1705,24 @@ describe('[Rooms]', function () {
 	describe('/rooms.saveRoomSettings', () => {
 		let testChannel;
 		const randomString = `randomString${Date.now()}`;
+		let discussion;
 
-		before('create a channel', async () => {
+		before(async () => {
 			const result = await createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` });
 			testChannel = result.body.channel;
+
+			const resDiscussion = await request
+				.post(api('rooms.createDiscussion'))
+				.set(credentials)
+				.send({
+					prid: testChannel._id,
+					t_name: `discussion-create-from-tests-${testChannel.name}`,
+				});
+
+			discussion = resDiscussion.body.discussion;
 		});
+
+		after(() => Promise.all([deleteRoom({ type: 'p', roomId: discussion._id }), deleteRoom({ type: 'p', roomId: testChannel._id })]));
 
 		it('should update the room settings', (done) => {
 			const imageDataUri = `data:image/png;base64,${fs.readFileSync(path.join(process.cwd(), imgURL)).toString('base64')}`;
@@ -1701,6 +1777,35 @@ describe('[Rooms]', function () {
 					expect(res.body.room).to.have.property('reactWhenReadOnly', true);
 				})
 				.end(done);
+		});
+
+		it('should be able to update the discussion name with spaces', async () => {
+			const newDiscussionName = `${randomString} with spaces`;
+
+			await request
+				.post(api('rooms.saveRoomSettings'))
+				.set(credentials)
+				.send({
+					rid: discussion._id,
+					roomName: newDiscussionName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			await request
+				.get(api('rooms.info'))
+				.set(credentials)
+				.query({
+					roomId: discussion._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.be.an('object');
+
+					expect(res.body.room).to.have.property('_id', discussion._id);
+					expect(res.body.room).to.have.property('fname', newDiscussionName);
+				});
 		});
 	});
 });

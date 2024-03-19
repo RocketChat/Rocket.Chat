@@ -1,4 +1,4 @@
-import { Box, Button, Field, Modal, TextAreaInput } from '@rocket.chat/fuselage';
+import { Box, Button, Field, FieldLabel, FieldRow, FieldHint, Modal, TextAreaInput } from '@rocket.chat/fuselage';
 import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect } from 'react';
@@ -52,13 +52,15 @@ export const WrapUpCallModal = ({ closeRoom }: WrapUpCallModalProps): ReactEleme
 			</Modal.Header>
 			<Modal.Content>
 				<Field mbe='24px'>
-					<Field.Label>{t('Notes')}</Field.Label>
-					<Field.Row>
+					<FieldLabel>{t('Notes')}</FieldLabel>
+					<FieldRow>
 						<TextAreaInput placeholder={t('Do_you_have_any_notes_for_this_conversation')} {...register('comment')} />
-					</Field.Row>
-					<Field.Hint>{t('These_notes_will_be_available_in_the_call_summary')}</Field.Hint>
+					</FieldRow>
+					<FieldHint>{t('These_notes_will_be_available_in_the_call_summary')}</FieldHint>
 				</Field>
-				<Tags tags={tags} handler={handleTags as () => void} />
+				<Field>
+					<Tags tags={tags} handler={handleTags as () => void} />
+				</Field>
 			</Modal.Content>
 			<Modal.Footer>
 				<Modal.FooterControllers>

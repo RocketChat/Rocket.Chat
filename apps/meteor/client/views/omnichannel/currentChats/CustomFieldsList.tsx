@@ -1,5 +1,5 @@
 import type { ILivechatCustomField } from '@rocket.chat/core-typings';
-import { Field, TextInput, Select } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, TextInput, Select } from '@rocket.chat/fuselage';
 import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
 import type { ReactElement, Dispatch, SetStateAction } from 'react';
 import React, { useEffect } from 'react';
@@ -44,8 +44,8 @@ const CustomFieldsList = ({ setCustomFields, allCustomFields }: CustomFieldsList
 						if (customField.type === 'select') {
 							return (
 								<Field key={customField._id}>
-									<Field.Label>{customField.label}</Field.Label>
-									<Field.Row>
+									<FieldLabel>{customField.label}</FieldLabel>
+									<FieldRow>
 										<Controller
 											name={customField._id}
 											control={control}
@@ -53,17 +53,17 @@ const CustomFieldsList = ({ setCustomFields, allCustomFields }: CustomFieldsList
 												<Select {...field} options={(customField.options || '').split(',').map((item) => [item, item])} />
 											)}
 										/>
-									</Field.Row>
+									</FieldRow>
 								</Field>
 							);
 						}
 
 						return (
 							<Field key={customField._id}>
-								<Field.Label>{customField.label}</Field.Label>
-								<Field.Row>
+								<FieldLabel>{customField.label}</FieldLabel>
+								<FieldRow>
 									<TextInput flexGrow={1} {...register(customField._id)} />
-								</Field.Row>
+								</FieldRow>
 							</Field>
 						);
 					})}

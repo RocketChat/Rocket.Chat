@@ -1,4 +1,4 @@
-import { onLicense } from '../../app/license/server/license';
+import { License } from '@rocket.chat/license';
 
 // To facilitate our lives with the stream
 // Collection will be registered on CE too
@@ -8,7 +8,7 @@ import('./OmnichannelServiceLevelAgreements');
 import('./AuditLog');
 import('./ReadReceipts');
 
-await onLicense('livechat-enterprise', () => {
+void License.onLicense('livechat-enterprise', () => {
 	import('./CannedResponse');
 	import('./LivechatTag');
 	import('./LivechatUnit');

@@ -24,7 +24,7 @@ test.describe.serial('Threads', () => {
 		await expect(page).toHaveURL(/.*thread/);
 
 		await poHomeChannel.content.toggleAlsoSendThreadToChannel(true);
-		await page.locator('//main//aside >> [name="msg"]').last().fill('This is a thread message also sent in channel');
+		await page.getByRole('dialog').locator('[name="msg"]').last().fill('This is a thread message also sent in channel');
 		await page.keyboard.press('Enter');
 		await expect(poHomeChannel.content.lastThreadMessageText).toContainText('This is a thread message also sent in channel');
 		await expect(poHomeChannel.content.lastUserMessage).toContainText('This is a thread message also sent in channel');
@@ -62,7 +62,7 @@ test.describe.serial('Threads', () => {
 			await expect(poHomeChannel.content.lastThreadMessageText).toContainText('This is a thread message also sent in channel');
 
 			await poHomeChannel.content.openLastMessageMenu();
-			await page.locator('[data-qa-id="copy"]').click();
+			await page.locator('role=menuitem[name="Copy text"]').click();
 
 			await expect(page).toHaveURL(/.*thread/);
 			await expect(poHomeChannel.content.lastThreadMessageText).toContainText('This is a thread message also sent in channel');
@@ -82,7 +82,7 @@ test.describe.serial('Threads', () => {
 			await poHomeChannel.content.openLastThreadMessageMenu();
 			await expect(page).toHaveURL(/.*thread/);
 
-			await page.locator('[data-qa-id="delete-message"]').click();
+			await page.locator('role=menuitem[name="Delete"]').click();
 			await page.locator('#modal-root .rcx-button-group--align-end .rcx-button--danger').click();
 
 			await expect(page).not.toHaveURL(/.*thread/);
@@ -93,7 +93,7 @@ test.describe.serial('Threads', () => {
 			await poHomeChannel.content.openLastThreadMessageMenu();
 			await expect(page).toHaveURL(/.*thread/);
 
-			await page.locator('[data-qa-id="delete-message"]').click();
+			await page.locator('role=menuitem[name="Delete"]').click();
 			await page.locator('#modal-root .rcx-button-group--align-end .rcx-button--danger').click();
 
 			await expect(page).toHaveURL(/.*thread/);
@@ -101,13 +101,14 @@ test.describe.serial('Threads', () => {
 
 		test('expect edit the thread message', async ({ page }) => {
 			await poHomeChannel.content.openLastThreadMessageMenu();
-			await page.locator('[data-qa-id="edit-message"]').click();
+			await page.locator('role=menuitem[name="Edit"]').click();
 			await page.locator('[name="msg"]').last().fill('this message was edited');
 			await page.keyboard.press('Enter');
+			await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('this message was edited');
 		});
 
 		test('expect quote the thread message', async ({ page }) => {
-			await page.locator('//main//aside >> [data-qa-type="message"]').last().hover();
+			await page.getByRole('dialog').locator('[data-qa-type="message"]').last().hover();
 			await page.locator('role=button[name="Quote"]').click();
 			await page.locator('[name="msg"]').last().fill('this is a quote message');
 			await page.keyboard.press('Enter');
@@ -117,22 +118,33 @@ test.describe.serial('Threads', () => {
 
 		test('expect star the thread message', async ({ page }) => {
 			await poHomeChannel.content.openLastThreadMessageMenu();
-			await page.locator('[data-qa-id="star-message"]').click();
+			await page.locator('role=menuitem[name="Star"]').click();
+			await page.getByRole('button').and(page.getByTitle('Options')).click();
+			await page.locator('[data-key="starred-messages"]').click();
+			await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('this is a message for reply');
 		});
 
-		test('expect copy the message', async ({ page }) => {
+		test('expect copy the thread message content to clipboard', async ({ page, context }) => {
+			await context.grantPermissions(['clipboard-read', 'clipboard-write']);
 			await poHomeChannel.content.openLastThreadMessageMenu();
-			await page.locator('[data-qa-id="copy"]').click();
+			await page.locator('role=menuitem[name="Copy text"]').click();
+			
+			const clipboardText = await page.evaluate("navigator.clipboard.readText()");
+			expect(clipboardText).toBe('this is a message for reply');
 		});
 
-		test('expect permalink the thread message', async ({ page }) => {
+		test('expect copy the thread message link to clipboard', async ({ page, context }) => {
+			await context.grantPermissions(['clipboard-read', 'clipboard-write']);
 			await poHomeChannel.content.openLastThreadMessageMenu();
-			await page.locator('[data-qa-id="permalink"]').click();
+			await page.locator('role=menuitem[name="Copy link"]').click();
+
+			const clipboardText = await page.evaluate("navigator.clipboard.readText()");
+			expect(clipboardText).toContain('http');
 		});
 
 		test('expect close thread if has only one message and user press escape', async ({ page }) => {
 			await expect(page).toHaveURL(/.*thread/);
-			await expect(page.locator('//main//aside >> [data-qa-type="message"]')).toBeVisible();
+			await expect(page.getByRole('dialog').locator('[data-qa-type="message"]')).toBeVisible();
 			await expect(page.locator('[name="msg"]').last()).toBeFocused();
 			await page.keyboard.press('Escape');
 			await expect(page).not.toHaveURL(/.*thread/);

@@ -5,6 +5,7 @@ import * as constants from './tests/e2e/config/constants';
 export default {
 	globalSetup: require.resolve('./tests/e2e/config/global-setup.ts'),
 	use: {
+		channel: 'chromium',
 		headless: true,
 		ignoreHTTPSErrors: true,
 		trace: 'retain-on-failure',
@@ -51,4 +52,6 @@ export default {
 	timeout: 60 * 1000,
 	globalTimeout: (process.env.IS_EE === 'true' ? 50 : 40) * 60 * 1000,
 	maxFailures: process.env.CI ? 5 : undefined,
+	// Retry on CI only.
+	retries: parseInt(String(process.env.PLAYWRIGHT_RETRIES)) || 0,
 } as PlaywrightTestConfig;

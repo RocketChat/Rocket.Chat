@@ -6,8 +6,6 @@ export type AccountProfileFormValues = {
 	email: string;
 	name: string;
 	username: string;
-	password: string;
-	confirmationPassword: string;
 	avatar: AvatarObject;
 	url: string;
 	statusText: string;
@@ -21,8 +19,6 @@ export const getProfileInitialValues = (user: IUser | null): AccountProfileFormV
 	email: user ? getUserEmailAddress(user) || '' : '',
 	name: user?.name ?? '',
 	username: user?.username ?? '',
-	password: '',
-	confirmationPassword: '',
 	avatar: '' as AvatarObject,
 	url: '',
 	statusText: user?.statusText ?? '',

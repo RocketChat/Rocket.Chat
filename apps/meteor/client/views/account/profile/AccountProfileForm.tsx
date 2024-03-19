@@ -1,7 +1,19 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { Field, FieldGroup, TextInput, TextAreaInput, Box, Icon, PasswordInput, Button } from '@rocket.chat/fuselage';
+import {
+	Field,
+	FieldGroup,
+	FieldLabel,
+	FieldRow,
+	FieldError,
+	FieldHint,
+	TextInput,
+	TextAreaInput,
+	Box,
+	Icon,
+	Button,
+} from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { CustomFieldsForm, PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
+import { CustomFieldsForm } from '@rocket.chat/ui-client';
 import {
 	useAccountsCustomFields,
 	useToastMessageDispatch,
@@ -22,11 +34,8 @@ import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
 import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
 import type { AccountProfileFormValues } from './getProfileInitialValues';
-import { getProfileInitialValues } from './getProfileInitialValues';
 import { useAccountProfileSettings } from './useAccountProfileSettings';
-import { useAllowPasswordChange } from './useAllowPasswordChange';
 
-// TODO: add password validation on UI
 const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactElement => {
 	const t = useTranslation();
 	const user = useUser();
@@ -46,20 +55,19 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 		requireName,
 		namesRegex,
 	} = useAccountProfileSettings();
-	const { allowPasswordChange } = useAllowPasswordChange();
 
 	const {
-		register,
 		control,
 		watch,
-		reset,
 		handleSubmit,
+		reset,
 		formState: { errors },
 	} = useFormContext<AccountProfileFormValues>();
 
-	const { email, avatar, password, username } = watch();
+	const { email, avatar, username } = watch();
 
 	const previousEmail = user ? getUserEmailAddress(user) : '';
+	const previousUsername = user?.username || '';
 	const isUserVerified = user?.emails?.[0]?.verified ?? false;
 
 	const mutateConfirmationEmail = useMutation({
@@ -81,6 +89,10 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 			return;
 		}
 
+		if (username === previousUsername) {
+			return;
+		}
+
 		if (!namesRegex.test(username)) {
 			return t('error-invalid-username');
 		}
@@ -91,8 +103,6 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 		}
 	};
 
-	const passwordIsValid = useValidatePassword(password);
-
 	// FIXME: replace to endpoint
 	const updateOwnBasicInfo = useMethod('saveUserProfile');
 
@@ -102,11 +112,10 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 		try {
 			await updateOwnBasicInfo(
 				{
-					...(allowRealNameChange ? { name } : {}),
-					...(allowEmailChange && user ? getUserEmailAddress(user) !== email && { email } : {}),
-					...(allowPasswordChange ? { newPassword: password } : {}),
-					...(canChangeUsername ? { username } : {}),
-					...(allowUserStatusMessageChange ? { statusText } : {}),
+					realname: name,
+					...(user ? getUserEmailAddress(user) !== email && { email } : {}),
+					username,
+					statusText,
 					statusType,
 					nickname,
 					bio,
@@ -116,9 +125,10 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 
 			await updateAvatar();
 			dispatchToastMessage({ type: 'success', message: t('Profile_saved_successfully') });
-			reset(getProfileInitialValues(user));
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
+		} finally {
+			reset({ email, name, username, statusType, statusText, nickname, bio, customFields });
 		}
 	};
 
@@ -128,9 +138,6 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 	const statusTextId = useUniqueId();
 	const bioId = useUniqueId();
 	const emailId = useUniqueId();
-	const passwordId = useUniqueId();
-	const confirmPasswordId = useUniqueId();
-	const passwordVerifierId = useUniqueId();
 
 	return (
 		<Box {...props} is='form' autoComplete='off' onSubmit={handleSubmit(handleSave)}>
@@ -152,190 +159,179 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 				</Field>
 				<Box display='flex' flexDirection='row' justifyContent='space-between'>
 					<Field mie={8} flexShrink={1}>
-						<Field.Label required htmlFor={nameId}>
+						<FieldLabel required htmlFor={nameId}>
 							{t('Name')}
-						</Field.Label>
-						<Field.Row>
-							<TextInput
-								{...register('name', {
-									validate: (name) => (requireName && name === '' ? t('error-the-field-is-required', { field: t('Name') }) : true),
-								})}
-								id={nameId}
-								error={errors.name?.message}
-								disabled={!allowRealNameChange}
-								aria-required='true'
-								aria-invalid={errors.username ? 'true' : 'false'}
-								aria-describedby={`${nameId}-error ${nameId}-hint`}
+						</FieldLabel>
+						<FieldRow>
+							<Controller
+								control={control}
+								name='name'
+								rules={{ validate: (name) => (requireName && name === '' ? t('error-the-field-is-required', { field: t('Name') }) : true) }}
+								render={({ field }) => (
+									<TextInput
+										{...field}
+										id={nameId}
+										error={errors.name?.message}
+										disabled={!allowRealNameChange}
+										aria-required='true'
+										aria-invalid={errors.username ? 'true' : 'false'}
+										aria-describedby={`${nameId}-error ${nameId}-hint`}
+									/>
+								)}
 							/>
-						</Field.Row>
+						</FieldRow>
 						{errors.name && (
-							<Field.Error aria-live='assertive' id={`${nameId}-error`}>
+							<FieldError aria-live='assertive' id={`${nameId}-error`}>
 								{errors.name.message}
-							</Field.Error>
+							</FieldError>
 						)}
-						{!allowRealNameChange && <Field.Hint id={`${nameId}-hint`}>{t('RealName_Change_Disabled')}</Field.Hint>}
+						{!allowRealNameChange && <FieldHint id={`${nameId}-hint`}>{t('RealName_Change_Disabled')}</FieldHint>}
 					</Field>
 					<Field mis={8} flexShrink={1}>
-						<Field.Label required htmlFor={usernameId}>
+						<FieldLabel required htmlFor={usernameId}>
 							{t('Username')}
-						</Field.Label>
-						<Field.Row>
-							<TextInput
-								{...register('username', {
+						</FieldLabel>
+						<FieldRow>
+							<Controller
+								control={control}
+								name='username'
+								rules={{
 									required: t('error-the-field-is-required', { field: t('Username') }),
 									validate: (username) => validateUsername(username),
-								})}
-								id={usernameId}
-								error={errors.username?.message}
-								addon={<Icon name='at' size='x20' />}
-								aria-required='true'
-								aria-invalid={errors.username ? 'true' : 'false'}
-								aria-describedby={`${usernameId}-error ${usernameId}-hint`}
+								}}
+								render={({ field }) => (
+									<TextInput
+										{...field}
+										id={usernameId}
+										disabled={!canChangeUsername}
+										error={errors.username?.message}
+										addon={<Icon name='at' size='x20' />}
+										aria-required='true'
+										aria-invalid={errors.username ? 'true' : 'false'}
+										aria-describedby={`${usernameId}-error ${usernameId}-hint`}
+									/>
+								)}
 							/>
-						</Field.Row>
+						</FieldRow>
 						{errors?.username && (
-							<Field.Error aria-live='assertive' id={`${usernameId}-error`}>
+							<FieldError aria-live='assertive' id={`${usernameId}-error`}>
 								{errors.username.message}
-							</Field.Error>
+							</FieldError>
 						)}
-						{!canChangeUsername && <Field.Hint id={`${usernameId}-hint`}>{t('Username_Change_Disabled')}</Field.Hint>}
+						{!canChangeUsername && <FieldHint id={`${usernameId}-hint`}>{t('Username_Change_Disabled')}</FieldHint>}
 					</Field>
 				</Box>
 				<Field>
-					<Field.Label htmlFor={statusTextId}>{t('StatusMessage')}</Field.Label>
-					<Field.Row>
-						<TextInput
-							id={statusTextId}
-							{...register('statusText', {
-								maxLength: { value: USER_STATUS_TEXT_MAX_LENGTH, message: t('Max_length_is', USER_STATUS_TEXT_MAX_LENGTH) },
-							})}
-							error={errors?.statusText?.message}
-							disabled={!allowUserStatusMessageChange}
-							flexGrow={1}
-							placeholder={t('StatusMessage_Placeholder')}
-							aria-invalid={errors.statusText ? 'true' : 'false'}
-							aria-describedby={`${statusTextId}-error ${statusTextId}-hint`}
-							addon={
-								<Controller
-									control={control}
-									name='statusType'
-									render={({ field: { value, onChange } }) => (
-										<UserStatusMenu margin='neg-x2' onChange={onChange} initialStatus={value as IUser['status']} />
-									)}
+					<FieldLabel htmlFor={statusTextId}>{t('StatusMessage')}</FieldLabel>
+					<FieldRow>
+						<Controller
+							control={control}
+							name='statusText'
+							rules={{ maxLength: { value: USER_STATUS_TEXT_MAX_LENGTH, message: t('Max_length_is', USER_STATUS_TEXT_MAX_LENGTH) } }}
+							render={({ field }) => (
+								<TextInput
+									{...field}
+									id={statusTextId}
+									error={errors?.statusText?.message}
+									disabled={!allowUserStatusMessageChange}
+									flexGrow={1}
+									placeholder={t('StatusMessage_Placeholder')}
+									aria-invalid={errors.statusText ? 'true' : 'false'}
+									aria-describedby={`${statusTextId}-error ${statusTextId}-hint`}
+									addon={
+										<Controller
+											control={control}
+											name='statusType'
+											render={({ field: { value, onChange } }) => (
+												<UserStatusMenu margin='neg-x2' onChange={onChange} initialStatus={value as IUser['status']} />
+											)}
+										/>
+									}
 								/>
-							}
+							)}
 						/>
-					</Field.Row>
+					</FieldRow>
 					{errors?.statusText && (
-						<Field.Error aria-live='assertive' id={`${statusTextId}-error`}>
+						<FieldError aria-live='assertive' id={`${statusTextId}-error`}>
 							{errors?.statusText.message}
-						</Field.Error>
+						</FieldError>
 					)}
-					{!allowUserStatusMessageChange && <Field.Hint id={`${statusTextId}-hint`}>{t('StatusMessage_Change_Disabled')}</Field.Hint>}
+					{!allowUserStatusMessageChange && <FieldHint id={`${statusTextId}-hint`}>{t('StatusMessage_Change_Disabled')}</FieldHint>}
 				</Field>
 				<Field>
-					<Field.Label htmlFor={nicknameId}>{t('Nickname')}</Field.Label>
-					<Field.Row>
-						<TextInput id={nicknameId} {...register('nickname')} flexGrow={1} addon={<Icon name='edit' size='x20' alignSelf='center' />} />
-					</Field.Row>
-				</Field>
-				<Field>
-					<Field.Label htmlFor={bioId}>{t('Bio')}</Field.Label>
-					<Field.Row>
-						<TextAreaInput
-							id={bioId}
-							{...register('bio', { maxLength: { value: BIO_TEXT_MAX_LENGTH, message: t('Max_length_is', BIO_TEXT_MAX_LENGTH) } })}
-							error={errors.bio?.message}
-							rows={3}
-							flexGrow={1}
-							addon={<Icon name='edit' size='x20' alignSelf='center' />}
-							aria-invalid={errors.statusText ? 'true' : 'false'}
-							aria-describedby={`${bioId}-error`}
+					<FieldLabel htmlFor={nicknameId}>{t('Nickname')}</FieldLabel>
+					<FieldRow>
+						<Controller
+							control={control}
+							name='nickname'
+							render={({ field }) => (
+								<TextInput {...field} id={nicknameId} flexGrow={1} addon={<Icon name='edit' size='x20' alignSelf='center' />} />
+							)}
 						/>
-					</Field.Row>
+					</FieldRow>
+				</Field>
+				<Field>
+					<FieldLabel htmlFor={bioId}>{t('Bio')}</FieldLabel>
+					<FieldRow>
+						<Controller
+							control={control}
+							name='bio'
+							rules={{ maxLength: { value: BIO_TEXT_MAX_LENGTH, message: t('Max_length_is', BIO_TEXT_MAX_LENGTH) } }}
+							render={({ field }) => (
+								<TextAreaInput
+									{...field}
+									id={bioId}
+									error={errors.bio?.message}
+									rows={3}
+									flexGrow={1}
+									addon={<Icon name='edit' size='x20' alignSelf='center' />}
+									aria-invalid={errors.statusText ? 'true' : 'false'}
+									aria-describedby={`${bioId}-error`}
+								/>
+							)}
+						/>
+					</FieldRow>
 					{errors?.bio && (
-						<Field.Error aria-live='assertive' id={`${bioId}-error`}>
+						<FieldError aria-live='assertive' id={`${bioId}-error`}>
 							{errors.bio.message}
-						</Field.Error>
+						</FieldError>
 					)}
 				</Field>
 				<Field>
-					<Field.Label required htmlFor={emailId}>
+					<FieldLabel required htmlFor={emailId}>
 						{t('Email')}
-					</Field.Label>
-					<Field.Row display='flex' flexDirection='row' justifyContent='space-between'>
-						<TextInput
-							id={emailId}
-							{...register('email', {
-								validate: { validateEmail: (email) => (validateEmail(email) ? undefined : t('error-invalid-email-address')) },
-							})}
-							flexGrow={1}
-							error={errors.email?.message}
-							addon={<Icon name={isUserVerified ? 'circle-check' : 'mail'} size='x20' />}
-							disabled={!allowEmailChange}
-							aria-required='true'
-							aria-invalid={errors.email ? 'true' : 'false'}
-							aria-describedby={`${emailId}-error ${emailId}-hint`}
+					</FieldLabel>
+					<FieldRow display='flex' flexDirection='row' justifyContent='space-between'>
+						<Controller
+							control={control}
+							name='email'
+							rules={{ validate: { validateEmail: (email) => (validateEmail(email) ? undefined : t('error-invalid-email-address')) } }}
+							render={({ field }) => (
+								<TextInput
+									{...field}
+									id={emailId}
+									flexGrow={1}
+									error={errors.email?.message}
+									addon={<Icon name={isUserVerified ? 'circle-check' : 'mail'} size='x20' />}
+									disabled={!allowEmailChange}
+									aria-required='true'
+									aria-invalid={errors.email ? 'true' : 'false'}
+									aria-describedby={`${emailId}-error ${emailId}-hint`}
+								/>
+							)}
 						/>
 						{!isUserVerified && (
 							<Button disabled={email !== previousEmail} onClick={handleSendConfirmationEmail} mis={24}>
 								{t('Resend_verification_email')}
 							</Button>
 						)}
-					</Field.Row>
+					</FieldRow>
 					{errors.email && (
-						<Field.Error aria-live='assertive' id={`${emailId}-error`}>
+						<FieldError aria-live='assertive' id={`${emailId}-error`}>
 							{errors?.email?.message}
-						</Field.Error>
+						</FieldError>
 					)}
-					{!allowEmailChange && <Field.Hint id={`${emailId}-hint`}>{t('Email_Change_Disabled')}</Field.Hint>}
-				</Field>
-				<Field>
-					<Field.Label htmlFor={passwordId}>{t('New_password')}</Field.Label>
-					<Field.Row>
-						<PasswordInput
-							id={passwordId}
-							{...register('password', {
-								validate: () => (!passwordIsValid ? t('Password_must_meet_the_complexity_requirements') : true),
-							})}
-							error={errors.password?.message}
-							flexGrow={1}
-							addon={<Icon name='key' size='x20' />}
-							disabled={!allowPasswordChange}
-							aria-describedby={passwordVerifierId}
-							aria-invalid={errors.password ? 'true' : 'false'}
-						/>
-					</Field.Row>
-					{errors?.password && (
-						<Field.Error aria-live='assertive' id={`${passwordId}-error`}>
-							{errors.password.message}
-						</Field.Error>
-					)}
-					{allowPasswordChange && <PasswordVerifier password={password} id={passwordVerifierId} />}
-				</Field>
-				<Field>
-					<Field.Label htmlFor={confirmPasswordId}>{t('Confirm_password')}</Field.Label>
-					<Field.Row>
-						<PasswordInput
-							id={confirmPasswordId}
-							{...register('confirmationPassword', {
-								validate: (confirmationPassword) => (password !== confirmationPassword ? t('Passwords_do_not_match') : true),
-							})}
-							error={errors.confirmationPassword?.message}
-							flexGrow={1}
-							addon={<Icon name='key' size='x20' />}
-							disabled={!allowPasswordChange || !passwordIsValid}
-							aria-required={password !== '' ? 'true' : 'false'}
-							aria-invalid={errors.confirmationPassword ? 'true' : 'false'}
-							aria-describedby={`${confirmPasswordId}-error ${confirmPasswordId}-hint`}
-						/>
-					</Field.Row>
-					{!allowPasswordChange && <Field.Hint id={`${confirmPasswordId}-hint`}>{t('Password_Change_Disabled')}</Field.Hint>}
-					{errors.confirmationPassword && (
-						<Field.Error aria-live='assertive' id={`${confirmPasswordId}-error`}>
-							{errors.confirmationPassword.message}
-						</Field.Error>
-					)}
+					{!allowEmailChange && <FieldHint id={`${emailId}-hint`}>{t('Email_Change_Disabled')}</FieldHint>}
 				</Field>
 				{customFieldsMetadata && <CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />}
 			</FieldGroup>

@@ -1,4 +1,4 @@
-import { Box, Skeleton } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useVerifyPassword } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
@@ -6,19 +6,21 @@ import { useTranslation } from 'react-i18next';
 import { PasswordVerifierItem } from './PasswordVerifierItem';
 
 type PasswordVerifierProps = {
-	password: string;
+	password: string | undefined;
 	id?: string;
 };
+
+type PasswordVerificationProps = {
+	name: string;
+	isValid: boolean;
+	limit?: number;
+}[];
 
 export const PasswordVerifier = ({ password, id }: PasswordVerifierProps) => {
 	const { t } = useTranslation();
 	const uniqueId = useUniqueId();
 
-	const { data: passwordVerifications, isLoading } = useVerifyPassword(password);
-
-	if (isLoading) {
-		return <Skeleton data-testid='password-verifier-skeleton' w='full' mbe={8} />;
-	}
+	const passwordVerifications: PasswordVerificationProps = useVerifyPassword(password || '');
 
 	if (!passwordVerifications?.length) {
 		return null;

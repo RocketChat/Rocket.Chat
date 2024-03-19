@@ -1,5 +1,5 @@
 import type { ProgressStep } from '@rocket.chat/core-typings';
-import { Box, Margins, Throbber } from '@rocket.chat/fuselage';
+import { Box, Margins, ProgressBar, Throbber } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint, useTranslation, useStream, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -7,9 +7,10 @@ import React, { useEffect } from 'react';
 
 import { ImportingStartedStates } from '../../../../app/importer/lib/ImporterProgressStep';
 import { numberFormat } from '../../../../lib/utils/stringUtils';
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import { useErrorHandler } from './useErrorHandler';
 
+// TODO: review inner logic
 const ImportProgressPage = function ImportProgressPage() {
 	const queryClient = useQueryClient();
 	const streamer = useStream('importers');
@@ -137,24 +138,21 @@ const ImportProgressPage = function ImportProgressPage() {
 	useEffect(() => {
 		return streamer('progress', (progress) => {
 			// There shouldn't be any progress update sending only the rate at this point of the process
-			if ('rate' in progress) {
-				return;
+			if (!('rate' in progress)) {
+				handleProgressUpdated({
+					key: progress.key,
+					step: progress.step,
+					completed: progress.count.completed,
+					total: progress.count.total,
+				});
 			}
-
-			handleProgressUpdated({
-				key: progress.key,
-				step: progress.step,
-				completed: progress.count.completed,
-				total: progress.count.total,
-			});
 		});
 	}, [handleProgressUpdated, streamer]);
 
 	return (
 		<Page>
-			<Page.Header title={t('Importing_Data')} />
-
-			<Page.ScrollableContentWithShadow>
+			<PageHeader title={t('Importing_Data')} />
+			<PageScrollableContentWithShadow>
 				<Box marginInline='auto' marginBlock='neg-x24' width='full' maxWidth='x580'>
 					<Margins block={24}>
 						{currentOperation.isLoading && <Throbber justifyContent='center' />}
@@ -167,18 +165,16 @@ const ImportProgressPage = function ImportProgressPage() {
 									{t((progress.data.step[0].toUpperCase() + progress.data.step.slice(1)) as any)}
 								</Box>
 								<Box display='flex' justifyContent='center'>
-									<Box is='progress' value={progress.data.completed} max={progress.data.total} marginInlineEnd={24} />
-									<Box is='span' fontScale='p2'>
-										{progress.data.completed}/{progress.data.total} (
-										{numberFormat((progress.data.completed / progress.data.total) * 100, 0)}
-										%)
+									<ProgressBar percentage={(progress.data.completed / progress.data.total) * 100} />
+									<Box is='span' fontScale='p2' mis={24}>
+										{numberFormat((progress.data.completed / progress.data.total) * 100, 0)}%
 									</Box>
 								</Box>
 							</>
 						)}
 					</Margins>
 				</Box>
-			</Page.ScrollableContentWithShadow>
+			</PageScrollableContentWithShadow>
 		</Page>
 	);
 };

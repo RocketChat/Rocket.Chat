@@ -8,6 +8,7 @@ import _ from 'underscore';
 import { AppEvents, Apps } from '../../../ee/server/apps/orchestrator';
 import { callbacks } from '../../../lib/callbacks';
 import { i18n } from '../../../server/lib/i18n';
+import { broadcastMessageFromData } from '../../../server/modules/watchers/lib/messages';
 import { canAccessRoomAsync } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { emoji } from '../../emoji/server';
@@ -106,6 +107,10 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 	}
 
 	await Apps.triggerEvent(AppEvents.IPostMessageReacted, message, user, reaction, isReacted);
+
+	void broadcastMessageFromData({
+		id: message._id,
+	});
 }
 
 export async function executeSetReaction(userId: string, reaction: string, messageId: IMessage['_id'], shouldReact?: boolean) {

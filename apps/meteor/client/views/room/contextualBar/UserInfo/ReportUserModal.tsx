@@ -1,11 +1,11 @@
-import { Box, FieldGroup, Field, TextAreaInput } from '@rocket.chat/fuselage';
+import { Box, FieldGroup, Field, FieldLabel, FieldRow, FieldError, TextAreaInput } from '@rocket.chat/fuselage';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { ComponentProps } from 'react';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../../../../components/GenericModal/GenericModal';
-import UserAvatar from '../../../../components/avatar/UserAvatar';
 
 type ReportUserModalProps = {
 	onConfirm: (description: string) => void;
@@ -44,15 +44,15 @@ const ReportUserModal = ({ username, displayName, onConfirm, onClose }: ReportUs
 		>
 			<FieldGroup>
 				<Field>
-					<Field.Label>
+					<FieldLabel>
 						<Box mbe='x12' display='flex' alignItems='center'>
 							<UserAvatar username={username} />
 							<Box mis='x12' fontScale='p1' fontWeight='700'>
 								{displayName}
 							</Box>
 						</Box>
-					</Field.Label>
-					<Field.Row>
+					</FieldLabel>
+					<FieldRow>
 						<TextAreaInput
 							rows={3}
 							placeholder={t('Why_do_you_want_to_report_question_mark')}
@@ -60,8 +60,8 @@ const ReportUserModal = ({ username, displayName, onConfirm, onClose }: ReportUs
 							width='full'
 							mbe='x4'
 						/>
-					</Field.Row>
-					{errors.description && <Field.Error>{errors.description.message}</Field.Error>}
+					</FieldRow>
+					{errors.description && <FieldError>{errors.description.message}</FieldError>}
 				</Field>
 			</FieldGroup>
 		</GenericModal>

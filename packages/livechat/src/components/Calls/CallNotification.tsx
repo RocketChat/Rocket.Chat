@@ -1,5 +1,5 @@
+import { type TFunction } from 'i18next';
 import { useState } from 'preact/compat';
-import type { TFunction } from 'react-i18next';
 import { withTranslation } from 'react-i18next';
 
 import { Livechat } from '../../api';
@@ -9,8 +9,7 @@ import { isMobileDevice } from '../../helpers/isMobileDevice';
 import PhoneAccept from '../../icons/phone.svg';
 import PhoneDecline from '../../icons/phoneOff.svg';
 import constants from '../../lib/constants';
-import type { Dispatch } from '../../store';
-import store from '../../store';
+import store, { type Dispatch } from '../../store';
 import { Avatar } from '../Avatar';
 import { Button } from '../Button';
 import { CallStatus } from './CallStatus';
