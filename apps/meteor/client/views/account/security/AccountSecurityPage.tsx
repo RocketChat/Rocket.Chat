@@ -34,7 +34,6 @@ const AccountSecurityPage = (): ReactElement => {
 
 	const passwordFormId = useUniqueId();
 
-	if (!twoFactorEnabled && !e2eEnabled && !allowPasswordChange) {
 		return <NotAuthorizedPage />;
 	}
 
