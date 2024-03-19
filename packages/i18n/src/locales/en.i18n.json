@@ -2245,7 +2245,7 @@
   "Federation_Enable": "Enable Federation",
   "Federation_Example_matrix_server": "Example: matrix.org",
   "Federation_Matrix_enable_ephemeral_events": "Enable Matrix ephemeral events",
-  "Federation_Matrix_enable_ephemeral_events_Alert": "Enabling ephemeral events like user typing indicator can affect the performance of your Matrix Homeserver and Rocket.Chat server for federated communication",
+  "Federation_Matrix_enable_ephemeral_events_Alert": "This requires a restart. </br> Enabling ephemeral events like user typing indicator can affect the performance of your Matrix Homeserver and Rocket.Chat server for federated communication",
   "Federation_Federated_room_search": "Federated room search",
   "Federation_Public_key": "Public Key",
   "Federation_Search_federated_rooms": "Search federated rooms",
