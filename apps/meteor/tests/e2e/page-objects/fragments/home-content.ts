@@ -216,12 +216,11 @@ export class HomeContent {
 		await this.page.locator(`role=dialog[name="Emoji picker"] >> role=tabpanel >> role=button[name="${emoji}"]`).click();
 	}
 
-	async dragAndDropPlainTextFile(filePath: string, fileName: string): Promise<void> {
-		const contract = await fs.readFile(filePath, 'utf-8');
-
+	async dragAndDropTxtFile(): Promise<void> {
+		const contract = await fs.readFile('./tests/e2e/fixtures/files/any_file.txt', 'utf-8');
 		const dataTransfer = await this.page.evaluateHandle((contract) => {
 			const data = new DataTransfer();
-			const file = new File([`${contract}`], fileName, {
+			const file = new File([`${contract}`], 'any_file.txt', {
 				type: 'text/plain',
 			});
 			data.items.add(file);
@@ -233,12 +232,20 @@ export class HomeContent {
 		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
 	}
 
-	async dragAndDropTxtFile(): Promise<void> {
-		return this.dragAndDropPlainTextFile('./tests/e2e/fixtures/files/any_file.txt', 'any_file.txt');
-	}
-
 	async dragAndDropLstFile(): Promise<void> {
-		return this.dragAndDropPlainTextFile('./tests/e2e/fixtures/files/lst-test.lst', 'lst-test.lst');
+		const contract = await fs.readFile('./tests/e2e/fixtures/files/lst-test.lst', 'utf-8');
+		const dataTransfer = await this.page.evaluateHandle((contract) => {
+			const data = new DataTransfer();
+			const file = new File([`${contract}`], 'lst-test.lst', {
+				type: 'text/plain',
+			});
+			data.items.add(file);
+			return data;
+		}, contract);
+
+		await this.inputMessage.dispatchEvent('dragenter', { dataTransfer });
+
+		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
 	}
 
 	async openLastMessageMenu(): Promise<void> {
