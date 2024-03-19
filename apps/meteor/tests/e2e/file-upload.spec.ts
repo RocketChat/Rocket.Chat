@@ -20,6 +20,10 @@ test.describe.serial('file-upload', () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 	});
 
+	test.afterAll(async ({ api }) => {
+		expect((await api.post('/channels.delete', { roomName: targetChannel })).status()).toBe(200);
+	});
+
 	test('expect successfully cancel upload', async () => {
 		await poHomeChannel.content.dragAndDropTxtFile();
 		await poHomeChannel.content.btnModalCancel.click();
