@@ -78,6 +78,18 @@ export class HomeContent {
 		await this.page.keyboard.press('Enter');
 	}
 
+	async forwardMessage(chatName: string) {
+
+		await this.page.locator('[data-qa-type="message"]').last().hover();
+		await this.page.locator('role=button[name="Forward message"]').click();
+
+		await this.page.getByRole('textbox', { name: 'Person or Channel' }).click()
+		await this.page.keyboard.type(chatName);
+		await this.page.locator('#position-container').getByText(chatName).waitFor()
+		await this.page.locator('#position-container').getByText(chatName).click()
+		await this.page.locator('role=button[name="Forward"]').click();
+	}
+
 	get btnModalCancel(): Locator {
 		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--secondary');
 	}
@@ -228,13 +240,13 @@ export class HomeContent {
 	}
 
 	async openLastThreadMessageMenu(): Promise<void> {
-		await this.page.locator('//main//aside >> [data-qa-type="message"]').last().hover();
-		await this.page.locator('//main//aside >> [data-qa-type="message"]').last().locator('role=button[name="More"]').waitFor();
-		await this.page.locator('//main//aside >> [data-qa-type="message"]').last().locator('role=button[name="More"]').click();
+		await this.page.getByRole('dialog').locator('[data-qa-type="message"]').last().hover();
+		await this.page.getByRole('dialog').locator('[data-qa-type="message"]').last().locator('role=button[name="More"]').waitFor();
+		await this.page.getByRole('dialog').locator('[data-qa-type="message"]').last().locator('role=button[name="More"]').click();
 	}
 
 	async toggleAlsoSendThreadToChannel(isChecked: boolean): Promise<void> {
-		await this.page.locator('//main//aside >> [name="alsoSendThreadToChannel"]').setChecked(isChecked);
+		await this.page.getByRole('dialog').locator('[name="alsoSendThreadToChannel"]').setChecked(isChecked);
 	}
 
 	get lastSystemMessageBody(): Locator {
