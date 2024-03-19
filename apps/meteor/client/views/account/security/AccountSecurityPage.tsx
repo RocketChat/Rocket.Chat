@@ -6,7 +6,6 @@ import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
-import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import ChangePassword from './ChangePassword';
 import EndToEnd from './EndToEnd';
 import TwoFactorEmail from './TwoFactorEmail';
@@ -33,9 +32,6 @@ const AccountSecurityPage = (): ReactElement => {
 	const allowPasswordChange = useSetting('Accounts_AllowPasswordChange');
 
 	const passwordFormId = useUniqueId();
-
-		return <NotAuthorizedPage />;
-	}
 
 	return (
 		<Page>
