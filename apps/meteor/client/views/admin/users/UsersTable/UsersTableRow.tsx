@@ -179,13 +179,9 @@ const UsersTableRow = ({ user, onClick, onReload, isMobile, isLaptop, tab, isSea
 					placement='bottom-start'
 					flexShrink={0}
 					key='menu'
-					renderItem={({ label: { label, icon }, ...props }): ReactElement =>
-						label === 'Delete' ? (
-							<Option label={label} title={label} icon={icon} variant='danger' {...props} />
-						) : (
-							<Option label={label} title={label} icon={icon} {...props} />
-						)
-					}
+					renderItem={({ label: { label, icon }, ...props }): ReactElement => (
+						<Option label={label} title={label} icon={icon} variant={label === 'Delete' ? 'danger' : ''} {...props} />
+					)}
 					options={menuOptions}
 				/>
 			</GenericTableCell>
