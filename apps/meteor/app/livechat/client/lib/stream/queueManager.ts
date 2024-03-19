@@ -29,7 +29,6 @@ const events = {
 };
 
 const invalidateRoomQueries = async (rid: string) => {
-	await queryClient.invalidateQueries(['rooms', { reference: rid, type: 'l' }]);
 	await queryClient.removeQueries(['rooms', rid]);
 	await queryClient.removeQueries(['/v1/rooms.info', rid]);
 };

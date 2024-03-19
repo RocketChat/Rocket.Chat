@@ -22,7 +22,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 
 	return useQuery(
 		// we need to add uid and username here because `user` is not loaded all at once (see UserProvider -> Meteor.user())
-		['rooms', { type, reference }, { uid: user?._id, username: user?.username }] as const,
+		['rooms', reference, type, { uid: user?._id, username: user?.username }] as const,
 		async (): Promise<{ rid: IRoom['_id'] }> => {
 			if ((user && !user.username) || (!user && !allowAnonymousRead)) {
 				throw new NotAuthorizedError();
