@@ -2,7 +2,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
-import { ContextualbarContainer } from '../../../../components/Contextualbar';
+import { Contextualbar } from '../../../../components/Contextualbar';
 import TeamsInfo from './TeamsInfo';
 
 const room = {
@@ -23,7 +23,7 @@ export default {
 		layout: 'fullscreen',
 		actions: { argTypesRegex: '^on.*' },
 	},
-	decorators: [(fn) => <ContextualbarContainer height='100vh'>{fn()}</ContextualbarContainer>],
+	decorators: [(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>],
 	args: {
 		room,
 		icon: 'lock',

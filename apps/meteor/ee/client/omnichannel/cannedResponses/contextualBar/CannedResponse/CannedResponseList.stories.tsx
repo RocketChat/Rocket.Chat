@@ -3,7 +3,7 @@ import { action } from '@storybook/addon-actions';
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
-import { ContextualbarContainer } from '../../../../../../client/components/Contextualbar';
+import { Contextualbar } from '../../../../../../client/components/Contextualbar';
 import CannedResponseList from './CannedResponseList';
 
 export default {
@@ -80,7 +80,7 @@ Default.args = {
 Default.decorators = [
 	(fn) => (
 		<Box h='600px'>
-			<ContextualbarContainer>{fn()}</ContextualbarContainer>
+			<Contextualbar>{fn()}</Contextualbar>
 		</Box>
 	),
 ];

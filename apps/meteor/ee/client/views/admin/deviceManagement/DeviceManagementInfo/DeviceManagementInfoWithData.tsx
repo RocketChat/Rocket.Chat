@@ -5,7 +5,7 @@ import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
 import {
-	ContextualbarContainer,
+	Contextualbar,
 	ContextualbarSkeleton,
 	ContextualbarHeader,
 	ContextualbarClose,
@@ -37,15 +37,15 @@ const DeviceInfoWithData = ({ deviceId, onReload }: { deviceId: string; onReload
 
 	if (phase === AsyncStatePhase.LOADING) {
 		return (
-			<ContextualbarContainer>
+			<Contextualbar>
 				<ContextualbarSkeleton />
-			</ContextualbarContainer>
+			</Contextualbar>
 		);
 	}
 
 	if (error || !data) {
 		return (
-			<ContextualbarContainer>
+			<Contextualbar>
 				<ContextualbarHeader>
 					<ContextualbarTitle>{t('Device_Info')}</ContextualbarTitle>
 					<ContextualbarClose />
@@ -60,7 +60,7 @@ const DeviceInfoWithData = ({ deviceId, onReload }: { deviceId: string; onReload
 						</States>
 					</Box>
 				</ContextualbarContent>
-			</ContextualbarContainer>
+			</Contextualbar>
 		);
 	}
 

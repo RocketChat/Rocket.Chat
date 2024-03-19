@@ -2,7 +2,7 @@ import { action } from '@storybook/addon-actions';
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
-import { ContextualbarContainer } from '../../../../components/Contextualbar';
+import { Contextualbar } from '../../../../components/Contextualbar';
 import NotificationsPreferences from './NotificationPreferences';
 
 export default {
@@ -11,7 +11,7 @@ export default {
 	parameters: {
 		layout: 'fullscreen',
 	},
-	decorators: [(fn) => <ContextualbarContainer height='100vh'>{fn()}</ContextualbarContainer>],
+	decorators: [(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>],
 } as ComponentMeta<typeof NotificationsPreferences>;
 
 export const Default: ComponentStory<typeof NotificationsPreferences> = (args) => <NotificationsPreferences {...args} />;

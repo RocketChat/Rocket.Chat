@@ -2,7 +2,7 @@ import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import { ContextualbarContainer } from '../../../../components/Contextualbar';
+import { Contextualbar } from '../../../../components/Contextualbar';
 import PruneMessages from './PruneMessages';
 
 export default {
@@ -22,7 +22,7 @@ export default {
 
 			return (
 				<FormProvider {...methods}>
-					<ContextualbarContainer height='100vh'>{fn()}</ContextualbarContainer>
+					<Contextualbar height='100vh'>{fn()}</Contextualbar>
 				</FormProvider>
 			);
 		},

@@ -1,7 +1,7 @@
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
-import { ContextualbarContainer } from '../Contextualbar';
+import { Contextualbar } from '../Contextualbar';
 import * as Status from '../UserStatus';
 import UserInfo from './UserInfo';
 
@@ -12,7 +12,7 @@ export default {
 		layout: 'fullscreen',
 		actions: { argTypesRegex: '^on.*' },
 	},
-	decorators: [(fn) => <ContextualbarContainer height='100vh'>{fn()}</ContextualbarContainer>],
+	decorators: [(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>],
 } as ComponentMeta<typeof UserInfo>;
 
 const Template: ComponentStory<typeof UserInfo> = (args) => <UserInfo {...args} />;

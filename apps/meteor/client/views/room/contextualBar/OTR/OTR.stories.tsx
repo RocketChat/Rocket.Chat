@@ -2,7 +2,7 @@ import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
 import { OtrRoomState } from '../../../../../app/otr/lib/OtrRoomState';
-import { ContextualbarContainer } from '../../../../components/Contextualbar';
+import { Contextualbar } from '../../../../components/Contextualbar';
 import OTR from './OTR';
 
 export default {
@@ -12,7 +12,7 @@ export default {
 		layout: 'fullscreen',
 		actions: { argTypesRegex: '^on.*' },
 	},
-	decorators: [(fn) => <ContextualbarContainer height='100vh'>{fn()}</ContextualbarContainer>],
+	decorators: [(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>],
 } as ComponentMeta<typeof OTR>;
 
 const Template: ComponentStory<typeof OTR> = (args) => <OTR {...args} />;

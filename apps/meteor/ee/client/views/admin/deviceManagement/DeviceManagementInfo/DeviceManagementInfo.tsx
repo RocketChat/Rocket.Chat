@@ -6,7 +6,7 @@ import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
 
 import {
-	ContextualbarContainer,
+	Contextualbar,
 	ContextualbarHeader,
 	ContextualbarClose,
 	ContextualbarScrollableContent,
@@ -36,7 +36,7 @@ const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user, o
 	const handleCloseContextualBar = useCallback((): void => deviceManagementRouter.push({}), [deviceManagementRouter]);
 
 	return (
-		<ContextualbarContainer>
+		<Contextualbar>
 			<ContextualbarHeader>
 				<ContextualbarTitle>{t('Device_Info')}</ContextualbarTitle>
 				<ContextualbarClose onClick={handleCloseContextualBar} />
@@ -97,7 +97,7 @@ const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user, o
 					</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>
-		</ContextualbarContainer>
+		</Contextualbar>
 	);
 };
 

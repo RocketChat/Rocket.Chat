@@ -2,7 +2,7 @@ import { action } from '@storybook/addon-actions';
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
-import { ContextualbarContainer } from '../../../../components/Contextualbar';
+import { Contextualbar } from '../../../../components/Contextualbar';
 import RoomFiles from './RoomFiles';
 
 export default {
@@ -12,7 +12,7 @@ export default {
 		layout: 'fullscreen',
 		actions: { argTypesRegex: '^on.*' },
 	},
-	decorators: [(fn) => <ContextualbarContainer height='100vh'>{fn()}</ContextualbarContainer>],
+	decorators: [(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>],
 } as ComponentMeta<typeof RoomFiles>;
 
 const Template: ComponentStory<typeof RoomFiles> = (args) => <RoomFiles {...args} />;
