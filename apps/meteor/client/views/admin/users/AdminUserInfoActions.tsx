@@ -1,4 +1,4 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IUser, IAdminUserTabs } from '@rocket.chat/core-typings';
 import { ButtonGroup, Menu, Option } from '@rocket.chat/fuselage';
 import { useRoute, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -18,6 +18,7 @@ type AdminUserInfoActionsProps = {
 	isFederatedUser: IUser['federated'];
 	isActive: boolean;
 	isAdmin: boolean;
+	tab: IAdminUserTabs;
 	onChange: () => void;
 	onReload: () => void;
 };
@@ -29,6 +30,7 @@ const AdminUserInfoActions = ({
 	isFederatedUser,
 	isActive,
 	isAdmin,
+	tab,
 	onChange,
 	onReload,
 }: AdminUserInfoActionsProps): ReactElement => {
@@ -62,6 +64,7 @@ const AdminUserInfoActions = ({
 		[userId, userRoute],
 	);
 
+	const isNotPendingDeactivatedNorFederated = tab !== 'pending' && tab !== 'deactivated' && !isFederatedUser;
 	const options = useMemo(
 		() => ({
 			...(canDirectMessage && {
@@ -81,24 +84,25 @@ const AdminUserInfoActions = ({
 					disabled: isFederatedUser,
 				},
 			}),
-			...(changeAdminStatusAction && !isFederatedUser && { makeAdmin: changeAdminStatusAction }),
-			...(resetE2EKeyAction && !isFederatedUser && { resetE2EKey: resetE2EKeyAction }),
-			...(resetTOTPAction && !isFederatedUser && { resetTOTP: resetTOTPAction }),
-			...(deleteUserAction && { delete: deleteUserAction }),
+			...(isNotPendingDeactivatedNorFederated && changeAdminStatusAction && { makeAdmin: changeAdminStatusAction }),
+			...(isNotPendingDeactivatedNorFederated && resetE2EKeyAction && { resetE2EKey: resetE2EKeyAction }),
+			...(isNotPendingDeactivatedNorFederated && resetTOTPAction && { resetTOTP: resetTOTPAction }),
 			...(changeUserStatusAction && !isFederatedUser && { changeActiveStatus: changeUserStatusAction }),
+			...(deleteUserAction && { delete: deleteUserAction }),
 		}),
 		[
-			t,
 			canDirectMessage,
-			directMessageClick,
 			canEditOtherUserInfo,
-			editUserClick,
 			changeAdminStatusAction,
 			changeUserStatusAction,
 			deleteUserAction,
+			directMessageClick,
+			editUserClick,
+			isFederatedUser,
+			isNotPendingDeactivatedNorFederated,
 			resetE2EKeyAction,
 			resetTOTPAction,
-			isFederatedUser,
+			t,
 		],
 	);
 

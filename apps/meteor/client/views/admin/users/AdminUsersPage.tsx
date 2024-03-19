@@ -177,7 +177,7 @@ const AdminUsersPage = (): ReactElement => {
 							</ContextualbarTitle>
 							<ContextualbarClose onClick={() => router.navigate('/admin/users')} />
 						</ContextualbarHeader>
-						{context === 'info' && id && <AdminUserInfoWithData uid={id} onReload={handleReload} />}
+						{context === 'info' && id && <AdminUserInfoWithData uid={id} onReload={handleReload} tab={tab} />}
 						{context === 'edit' && id && <AdminUserFormWithData uid={id} onReload={handleReload} />}
 						{!isRoutePrevented && context === 'new' && <AdminUserForm onReload={handleReload} />}
 						{!isRoutePrevented && context === 'invite' && <AdminInviteUsers />}
