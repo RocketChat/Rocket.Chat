@@ -308,21 +308,36 @@ export const FileUpload = {
 		const store = FileUpload.getStore('Uploads');
 		const image = await store._store.getReadStream(file._id, file);
 
-		const transformer = sharp().resize({ width, height, fit: 'inside' });
+		let transformer = sharp().resize({ width, height, fit: 'inside' });
 
-		const result = transformer.toBuffer({ resolveWithObject: true }).then(({ data, info: { width, height } }) => ({ data, width, height }));
+		if (file.type === 'image/svg+xml') {
+			transformer = transformer.png();
+		}
+		const result = transformer.toBuffer({ resolveWithObject: true }).then(({ data, info: { width, height, format } }) => ({
+			data,
+			width,
+			height,
+			thumbFileType: (mime.lookup(format) as string) || '',
+			thumbFileName: file?.name as string,
+			originalFileId: file?._id as string,
+		}));
 		image.pipe(transformer);
 
 		return result;
 	},
 
-	async uploadImageThumbnail(file: IUpload, buffer: Buffer, rid: string, userId: string) {
+	async uploadImageThumbnail(
+		{ thumbFileName, thumbFileType, originalFileId }: { thumbFileName: string; thumbFileType: string; originalFileId: string },
+		buffer: Buffer,
+		rid: string,
+		userId: string,
+	) {
 		const store = FileUpload.getStore('Uploads');
 		const details = {
-			name: `thumb-${file.name}`,
+			name: `thumb-${thumbFileName}`,
 			size: buffer.length,
-			type: file.type,
-			originalFileId: file._id,
+			type: thumbFileType,
+			originalFileId,
 			typeGroup: 'thumb',
 			uploadedAt: new Date(),
 			_updatedAt: new Date(),

@@ -37,25 +37,19 @@ const LeaderBar = ({ _id, name, username, visible, onAvatarClick, triggerProps }
 	}
 
 	const roomLeaderStyle = css`
-		position: absolute;
+		position: relative;
 		z-index: 9;
 		right: 0;
 		left: 0;
-
-		visibility: visible;
-
-		transition: transform 0.15s cubic-bezier(0.5, 0, 0.1, 1), visibility 0.15s cubic-bezier(0.5, 0, 0.1, 1);
+		display: flex;
 
 		&.animated-hidden {
-			visibility: hidden;
-
-			transform: translateY(-100%);
+			display: none !important;
 		}
 	`;
 
 	return (
 		<Box
-			display='flex'
 			backgroundColor='light'
 			color='default'
 			pi={24}
