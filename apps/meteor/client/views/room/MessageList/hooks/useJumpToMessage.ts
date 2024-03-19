@@ -1,51 +1,55 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import type { RefObject } from 'react';
-import { useLayoutEffect } from 'react';
+import { useCallback } from 'react';
 
-import { useMessageListJumpToMessageParam, useMessageListScroll } from '../../../../components/message/list/MessageListContext';
+import { useMessageListJumpToMessageParam, useMessageListRef } from '../../../../components/message/list/MessageListContext';
 import { setHighlightMessage, clearHighlightMessage } from '../providers/messageHighlightSubscription';
 
 // this is an arbitrary value so that there's a gap between the header and the message;
 const SCROLL_EXTRA_OFFSET = 60;
 
-export const useJumpToMessage = (messageId: IMessage['_id'], messageRef: RefObject<HTMLDivElement>): void => {
+export const useJumpToMessage = (messageId: IMessage['_id']) => {
 	const jumpToMessageParam = useMessageListJumpToMessageParam();
-	const scroll = useMessageListScroll();
+	const listRef = useMessageListRef();
 	const router = useRouter();
 
-	useLayoutEffect(() => {
-		if (jumpToMessageParam !== messageId || !messageRef.current || !scroll) {
-			return;
-		}
+	const ref = useCallback(
+		(node: HTMLElement | null) => {
+			if (!node || !scroll) {
+				return;
+			}
+			setTimeout(() => {
+				if (listRef?.current) {
+					const wrapper = listRef.current;
+					const containerRect = wrapper.getBoundingClientRect();
+					const messageRect = node.getBoundingClientRect();
 
-		setTimeout(() => {
-			scroll((wrapper) => {
-				if (!wrapper || !messageRef.current) {
-					return;
+					const offset = messageRect.top - containerRect.top;
+					const scrollPosition = wrapper.scrollTop;
+					const newScrollPosition = scrollPosition + offset - SCROLL_EXTRA_OFFSET;
+
+					wrapper.scrollTo({ top: newScrollPosition, behavior: 'smooth' });
 				}
-				const containerRect = wrapper.getBoundingClientRect();
-				const messageRect = messageRef.current.getBoundingClientRect();
 
-				const offset = messageRect.top - containerRect.top;
-				const scrollPosition = wrapper.scrollTop;
-				const newScrollPosition = scrollPosition + offset - SCROLL_EXTRA_OFFSET;
+				const { msg: _, ...search } = router.getSearchParameters();
+				router.navigate(
+					{
+						pathname: router.getLocationPathname(),
+						search,
+					},
+					{ replace: true },
+				);
 
-				return { top: newScrollPosition, behavior: 'smooth' };
-			});
+				setHighlightMessage(messageId);
+				setTimeout(clearHighlightMessage, 2000);
+			}, 500);
+		},
+		[listRef, messageId, router],
+	);
 
-			const search = router.getSearchParameters();
-			delete search.msg;
-			router.navigate(
-				{
-					pathname: router.getLocationPathname(),
-					search,
-				},
-				{ replace: true },
-			);
+	if (jumpToMessageParam !== messageId) {
+		return undefined;
+	}
 
-			setHighlightMessage(messageId);
-			setTimeout(clearHighlightMessage, 2000);
-		}, 500);
-	}, [messageId, jumpToMessageParam, messageRef, scroll, router]);
+	return ref;
 };
