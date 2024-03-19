@@ -1,4 +1,5 @@
 import { Contextualbar } from '@rocket.chat/fuselage';
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import { useLayoutContextualbar } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, KeyboardEvent } from 'react';
 import React, { useCallback, useRef } from 'react';
@@ -34,9 +35,16 @@ const ContextualbarDialog = (props: ContextualbarDialogProps) => {
 
 	return (
 		<FocusScope autoFocus restoreFocus>
-			<ContextualbarResizable defaultWidth={size}>
-				<Contextualbar ref={callbackRef} width='100%' position={position} {...dialogProps} {...props} />
-			</ContextualbarResizable>
+			<FeaturePreview feature='contextualbarResizable'>
+				<FeaturePreviewOn>
+					<ContextualbarResizable defaultWidth={size}>
+						<Contextualbar ref={callbackRef} width='100%' position={position} {...dialogProps} {...props} />
+					</ContextualbarResizable>
+				</FeaturePreviewOn>
+				<FeaturePreviewOff>
+					<Contextualbar ref={callbackRef} width={size} position={position} {...dialogProps} {...props} />
+				</FeaturePreviewOff>
+			</FeaturePreview>
 		</FocusScope>
 	);
 };
