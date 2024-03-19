@@ -9,8 +9,6 @@ import type { ChatAPI } from '../ChatAPI';
 export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFileInput?: () => void): Promise<void> => {
 	const replies = chat.composer?.quotedMessages.get() ?? [];
 
-	const msg = await prependReplies('', replies);
-
 	const room = await chat.data.getRoom();
 
 	const queue = [...files];
@@ -33,13 +31,14 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 					imperativeModal.close();
 					uploadNextFile();
 				},
-				onSubmit: (fileName: string, description?: string): void => {
+				onSubmit: async (fileName: string, description?: string): Promise<void> => {
 					Object.defineProperty(file, 'name', {
 						writable: true,
 						value: fileName,
 					});
+					const msg = await prependReplies(description || '', replies);
 					chat.uploads.send(file, {
-						description,
+						// description,
 						msg,
 					});
 					chat.composer?.clear();

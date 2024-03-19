@@ -103,9 +103,9 @@ const FileUploadModal = ({
 						</Field>
 						{showDescription && (
 							<Field>
-								<FieldLabel>{t('Upload_file_description')}</FieldLabel>
+								<FieldLabel>{t('Message')}</FieldLabel>
 								<FieldRow>
-									<TextInput value={description} onChange={handleDescription} placeholder={t('Description')} ref={ref} />
+									<TextInput value={description} onChange={handleDescription} placeholder={t('Message')} ref={ref} />
 								</FieldRow>
 							</Field>
 						)}
