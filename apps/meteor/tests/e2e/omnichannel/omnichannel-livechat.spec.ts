@@ -146,3 +146,34 @@ test.describe.serial('OC - Livechat - Resub after close room', () => {
 		});
 	});
 });
+
+test.describe('OC - Livechat - Livechat_Display_Offline_Form', () => {
+	let poLiveChat: OmnichannelLiveChat;
+	const message = 'This form is not available';
+
+	test.beforeAll(async ({ api }) => {
+		await api.post('/settings/Livechat_display_offline_form', { value: false });
+		await api.post('/settings/Livechat_offline_form_unavailable', { value: message });
+	});
+
+	test.beforeEach(async ({ page, api }) => {
+		poLiveChat = new OmnichannelLiveChat(page, api);
+		await poLiveChat.page.goto('/livechat');
+	});
+
+	test.afterAll(async ({ api }) => {
+		await api.post('/settings/Livechat_display_offline_form', { value: true });
+		await api.post('/settings/Livechat_offline_form_unavailable', { value: '' });
+	});
+
+	test('OC - Livechat - Livechat_Display_Offline_Form false', async () => {
+		await test.step('expect offline form to not be visible', async () => {
+			// Fix not implemented yet
+			test.fail()
+
+			await poLiveChat.openAnyLiveChat();
+			await expect (poLiveChat.page.locator(`div >> text=${message}`)).toBeVisible();
+			await expect(poLiveChat.textAreaMessage).not.toBeVisible();
+		});
+	});
+});
