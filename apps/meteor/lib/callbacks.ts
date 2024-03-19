@@ -20,7 +20,6 @@ import type {
 	AtLeast,
 	UserStatus,
 	ILivechatDepartment,
-	MessageMention,
 } from '@rocket.chat/core-typings';
 import type { FilterOperators } from 'mongodb';
 

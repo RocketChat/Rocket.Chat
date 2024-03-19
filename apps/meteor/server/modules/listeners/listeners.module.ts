@@ -1,15 +1,15 @@
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { IServiceClass } from '@rocket.chat/core-services';
-import type { IUser, IRoom, VideoConference, ISetting, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { EventNames, EnterpriseSettings } from '@rocket.chat/core-services';
+import type { IUser, IRoom, VideoConference, ISetting, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { isSettingColor, isSettingEnterprise, UserStatus } from '@rocket.chat/core-typings';
+import { StreamerRoomEvents, StreamerUserEvents, MentionTypes } from '@rocket.chat/ddp-client';
 import { Logger } from '@rocket.chat/logger';
 import { parse } from '@rocket.chat/message-parser';
-import { StreamerRoomEvents, StreamerUserEvents, MentionTypes } from '@rocket.chat/ddp-client';
 
-import type { NotificationsModule } from '../notifications/notifications.module';
 import { settings } from '../../../app/settings/server/cached';
+import type { NotificationsModule } from '../notifications/notifications.module';
 
 const isMessageParserDisabled = process.env.DISABLE_MESSAGE_PARSER === 'true';
 
@@ -32,7 +32,6 @@ export class ListenersModule {
 		const logger = new Logger('ListenersModule');
 
 		service.onEvent(EventNames.USER_MENTIONS, (message, mentions) => {
-
 			// TODO: In case of all or here messages, should we notify named users too?
 			// TODO: Refine events body - we don't need to send the whole message object
 

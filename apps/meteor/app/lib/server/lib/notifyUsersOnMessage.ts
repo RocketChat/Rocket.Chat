@@ -1,7 +1,7 @@
-import type { IMessage, IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
 import type { IMentionCounter } from '@rocket.chat/core-services';
-import { isEditedMessage } from '@rocket.chat/core-typings';
 import { api, dbWatchersDisabled, EventNames } from '@rocket.chat/core-services';
+import type { IMessage, IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
+import { isEditedMessage } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import moment from 'moment';
@@ -22,7 +22,10 @@ function messageContainsHighlight(message: IMessage, highlights: string[]): bool
 export async function getMentions(message: IMessage): Promise<IMentionCounter> {
 	if (!message.mentions) return { toAll: false, toHere: false, mentionIds: [] };
 
-	const { mentions, u: { _id: senderId } } = message;
+	const {
+		mentions,
+		u: { _id: senderId },
+	} = message;
 
 	const toAll = mentions.some(({ _id }) => _id === 'all');
 	const toHere = mentions.some(({ _id }) => _id === 'here');
@@ -172,7 +175,7 @@ export async function notifyUsersOnMessage(message: IMessage, room: IRoom): Prom
 	await updateUsersSubscriptions(message, room, mentions);
 
 	if (dbWatchersDisabled && (mentions?.mentionIds.length > 0 || mentions?.toAll || mentions?.toHere)) {
-		api.broadcast(EventNames.USER_MENTIONS, message, mentions);
+		await api.broadcast(EventNames.USER_MENTIONS, message, mentions);
 	}
 
 	return message;

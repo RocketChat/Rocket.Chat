@@ -82,7 +82,7 @@ export interface StreamerEvents {
 		{ key: `${string}/webrtc`; args: unknown[] },
 		/* @deprecated over videoconf*/
 		// { key: `${string}/${string}`; args: [id: string] },
-		{ key: `${string}/${StreamerRoomEvents.MENTION}`; args: [{ rid: IRoom['_id'], mid: IMessage['_id'], type: MentionTypes }] },
+		{ key: `${string}/${StreamerRoomEvents.MENTION}`; args: [{ rid: IRoom['_id']; mid: IMessage['_id']; type: MentionTypes }] },
 	];
 
 	'room-messages': [{ key: '__my_messages__'; args: [IMessage] }, { key: string; args: [message: IMessage, user?: IUser, room?: IRoom] }];
@@ -201,7 +201,7 @@ export interface StreamerEvents {
 		},
 		{ key: `${string}/calendar`; args: [ICalendarNotification] },
 		{ key: `${string}/banners`; args: [IBanner] },
-		{ key: `${string}/${StreamerUserEvents.MENTION}`; args: [{ rid: IRoom['_id'], mid: IMessage['_id'], type: MentionTypes }] },
+		{ key: `${string}/${StreamerUserEvents.MENTION}`; args: [{ rid: IRoom['_id']; mid: IMessage['_id']; type: MentionTypes }] },
 	];
 
 	'importers': [

@@ -1,11 +1,9 @@
-import { Meteor } from 'meteor/meteor';
-
 import type { IMessage } from '@rocket.chat/core-typings';
+import { Meteor } from 'meteor/meteor';
 
 import { ChatMessage, Subscriptions } from '../../app/models/client';
 import { CachedCollectionManager } from '../../app/ui-cached-collection/client';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
-
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {

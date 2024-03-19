@@ -64,15 +64,16 @@ export function isWatcherRunning(): boolean {
 	return watcherStarted;
 }
 
-function isMention(diff): boolean {
+function isMention(diff: Partial<ISubscription> | undefined): boolean {
 	// If diff contains groupMentions, unread, or userMentions different than 0 (zero) then it's a mention
 	// When these attribute have a value of 0 (zero) represents a message read
 	return (
-		diff && (
-			(diff.groupMentions && diff.groupMentions !== 0)
-			|| (diff.unread && diff.unread !== 0)
-			|| (diff.userMentions && diff.userMentions !== 0)
-		)) || false;
+		(diff &&
+			((diff.groupMentions && diff.groupMentions !== 0) ||
+				(diff.unread && diff.unread !== 0) ||
+				(diff.userMentions && diff.userMentions !== 0))) ||
+		false
+	);
 }
 
 export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallback): void {
