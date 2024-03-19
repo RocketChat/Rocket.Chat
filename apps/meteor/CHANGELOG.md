@@ -1,5 +1,43 @@
 # @rocket.chat/meteor
 
+## 6.6.4
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#31700](https://github.com/RocketChat/Rocket.Chat/pull/31700)) Fixed matrix homeserver domain setting not being visible in admin panel
+
+- ([#32012](https://github.com/RocketChat/Rocket.Chat/pull/32012)) Don't use the registration.yaml file to configure Matrix Federation anymore.
+
+- ([#31927](https://github.com/RocketChat/Rocket.Chat/pull/31927)) `stopped` lifecycle method was unexpectedly synchronous when using microservices, causing our code to create race conditions.
+
+- <details><summary>Updated dependencies [c2872a93f2]:</summary>
+
+  - @rocket.chat/core-services@0.3.8
+  - @rocket.chat/omnichannel-services@0.1.8
+  - @rocket.chat/presence@0.1.8
+  - @rocket.chat/core-typings@6.6.4
+  - @rocket.chat/rest-typings@6.6.4
+  - @rocket.chat/api-client@0.1.26
+  - @rocket.chat/license@0.1.8
+  - @rocket.chat/pdf-worker@0.0.32
+  - @rocket.chat/cron@0.0.28
+  - @rocket.chat/gazzodown@4.0.4
+  - @rocket.chat/model-typings@0.3.4
+  - @rocket.chat/ui-contexts@4.0.4
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/fuselage-ui-kit@4.0.4
+  - @rocket.chat/models@0.0.32
+  - @rocket.chat/ui-theming@0.1.2
+  - @rocket.chat/ui-client@4.0.4
+  - @rocket.chat/ui-video-conf@4.0.4
+  - @rocket.chat/web-ui-registration@4.0.4
+  - @rocket.chat/instance-status@0.0.32
+  </details>
+
 ## 6.6.3
 
 ### Patch Changes

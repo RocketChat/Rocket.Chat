@@ -1,5 +1,18 @@
 # @rocket.chat/core-services
 
+## 0.3.8
+
+### Patch Changes
+
+- ([#31927](https://github.com/RocketChat/Rocket.Chat/pull/31927)) `stopped` lifecycle method was unexpectedly synchronous when using microservices, causing our code to create race conditions.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.4
+  - @rocket.chat/rest-typings@6.6.4
+  - @rocket.chat/models@0.0.32
+  </details>
+
 ## 0.3.7
 
 ### Patch Changes
