@@ -9,7 +9,6 @@ import {
 	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarSkeleton,
-	ContextualbarDialog,
 } from '../../../components/Contextualbar';
 import EditRoom from './EditRoom';
 
@@ -49,15 +48,13 @@ const EditRoomWithData = ({ rid, onReload }: EditRoomWithDataProps) => {
 	};
 
 	return data ? (
-		<ContextualbarDialog>
-			<Contextualbar>
-				<ContextualbarHeader>
-					<ContextualbarTitle>{t('Room_Info')}</ContextualbarTitle>
-					<ContextualbarClose onClick={() => router.navigate('/admin/rooms')} />
-				</ContextualbarHeader>
-				<EditRoom room={data} onChange={handleChange} onDelete={handleDelete} />
-			</Contextualbar>
-		</ContextualbarDialog>
+		<Contextualbar>
+			<ContextualbarHeader>
+				<ContextualbarTitle>{t('Room_Info')}</ContextualbarTitle>
+				<ContextualbarClose onClick={() => router.navigate('/admin/rooms')} />
+			</ContextualbarHeader>
+			<EditRoom room={data} onChange={handleChange} onDelete={handleDelete} />
+		</Contextualbar>
 	) : null;
 };
 
