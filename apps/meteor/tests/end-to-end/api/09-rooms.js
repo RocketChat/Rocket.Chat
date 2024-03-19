@@ -156,8 +156,8 @@ describe('[Rooms]', function () {
 
 		let fileNewUrl;
 		let fileOldUrl;
-		it('should upload a PNG file to room', (done) => {
-			request
+		it('should upload a PNG file to room', async () => {
+			await request
 				.post(api(`rooms.upload/${testChannel._id}`))
 				.set(credentials)
 				.attach('file', imgURL)
@@ -178,8 +178,7 @@ describe('[Rooms]', function () {
 
 					fileNewUrl = `/file-upload/${message.file._id}/${message.file.name}`;
 					fileOldUrl = `/ufs/GridFS:Uploads/${message.file._id}/${message.file.name}`;
-				})
-				.end(done);
+				});
 		});
 
 		it('should upload a LST file to room', (done) => {
@@ -201,6 +200,20 @@ describe('[Rooms]', function () {
 					expect(res.body.message.files[0]).to.have.property('name', 'lst-test.lst');
 				})
 				.end(done);
+		});
+
+		it('should not allow uploading a blocked media type to a room', async () => {
+			await updateSetting('FileUpload_MediaTypeBlackList', 'application/octet-stream');
+			await request
+				.post(api(`rooms.upload/${testChannel._id}`))
+				.set(credentials)
+				.attach('file', lstURL)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-file-type');
+				});
 		});
 
 		it('should be able to get the file', async () => {
