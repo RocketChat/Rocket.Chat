@@ -8811,6 +8811,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/fuselage@npm:^0.51.2":
+  version: 0.51.2
+  resolution: "@rocket.chat/fuselage@npm:0.51.2"
+  dependencies:
+    "@rocket.chat/css-in-js": ^0.31.25
+    "@rocket.chat/css-supports": ^0.31.25
+    "@rocket.chat/fuselage-tokens": ^0.33.0
+    "@rocket.chat/memo": ^0.31.25
+    "@rocket.chat/styled": ^0.31.25
+    invariant: ^2.2.4
+    react-aria: ~3.23.1
+    react-keyed-flatten-children: ^1.3.0
+    react-stately: ~3.17.0
+  peerDependencies:
+    "@rocket.chat/fuselage-hooks": "*"
+    "@rocket.chat/fuselage-polyfills": "*"
+    "@rocket.chat/icons": "*"
+    react: ^17.0.2
+    react-dom: ^17.0.2
+    react-virtuoso: 1.2.4
+  checksum: 148c2282094c83c8788151e37e94d92bd818133728ed821cac399bff9c365cc534e5b2ee1a40f260cca3a376a094f3ebcee626a81e556c5faf310ced49b94bb8
+  languageName: node
+  linkType: hard
+
 "@rocket.chat/gazzodown@workspace:^, @rocket.chat/gazzodown@workspace:packages/gazzodown":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/gazzodown@workspace:packages/gazzodown"
@@ -9178,7 +9202,7 @@ __metadata:
     "@rocket.chat/favicon": "workspace:^"
     "@rocket.chat/forked-matrix-appservice-bridge": ^4.0.2
     "@rocket.chat/forked-matrix-bot-sdk": ^0.6.0-beta.3
-    "@rocket.chat/fuselage": ^0.51.1
+    "@rocket.chat/fuselage": ^0.51.2
     "@rocket.chat/fuselage-hooks": ^0.33.0
     "@rocket.chat/fuselage-polyfills": ~0.31.25
     "@rocket.chat/fuselage-toastbar": ^0.31.26
