@@ -129,7 +129,7 @@ const AdminUsersPage = (): ReactElement => {
 				</PageContent>
 			</Page>
 			{context && (
-				<Contextualbar is='aside' aria-labelledby=''>
+				<Contextualbar>
 					<ContextualbarHeader>
 						{context === 'upgrade' && <ContextualbarIcon name='user-plus' />}
 						<ContextualbarTitle>

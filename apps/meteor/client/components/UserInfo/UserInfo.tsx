@@ -10,6 +10,7 @@ import { useUserCustomFields } from '../../hooks/useUserCustomFields';
 import { useUserDisplayName } from '../../hooks/useUserDisplayName';
 import { ContextualbarScrollableContent } from '../Contextualbar';
 import InfoPanel from '../InfoPanel';
+import InfoPanelActionGroup from '../InfoPanel/InfoPanelActionGroup';
 import InfoPanelAvatar from '../InfoPanel/InfoPanelAvatar';
 import InfoPanelField from '../InfoPanel/InfoPanelField';
 import InfoPanelLabel from '../InfoPanel/InfoPanelLabel';
@@ -83,7 +84,7 @@ const UserInfo = ({
 					</InfoPanelAvatar>
 				)}
 
-				{actions && <InfoPanelSection>{actions}</InfoPanelSection>}
+				{actions && <InfoPanelActionGroup>{actions}</InfoPanelActionGroup>}
 
 				<InfoPanelSection>
 					{userDisplayName && <InfoPanelTitle icon={status} title={userDisplayName} />}
