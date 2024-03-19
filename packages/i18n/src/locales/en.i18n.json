@@ -1762,6 +1762,8 @@
   "Duplicated_Email_address_will_be_ignored": "Duplicated email address will be ignored.",
   "Markdown_Marked_Tables": "Enable Marked Tables",
   "duplicated-account": "Duplicated account",
+  "E2E_Allow_Unencrypted_Messages": "Unencrypted messages in encrypted rooms",
+  "E2E_Allow_Unencrypted_Messages_description": "Allow plain text messages to be sent in encrypted rooms. These messages will not be encrypted.",
   "E2E Encryption": "E2E Encryption",
   "E2E_Encryption_enabled_for_room": "End-to-end encryption enabled for #{{roomName}}",
   "E2E_Encryption_disabled_for_room": "End-to-end encryption disabled for #{{roomName}}",
