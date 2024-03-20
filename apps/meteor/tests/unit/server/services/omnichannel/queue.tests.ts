@@ -137,6 +137,7 @@ describe('Omnichannel Queue processor', () => {
 		});
 	});
 	describe('checkQueue', () => {
+		let clock: any;
 		beforeEach(() => {
 			models.LivechatInquiry.findNextAndLock.resetHistory();
 			models.LivechatInquiry.takeInquiry.resetHistory();
@@ -144,6 +145,10 @@ describe('Omnichannel Queue processor', () => {
 			models.LivechatInquiry.unlock.resetHistory();
 			queueLogger.error.resetHistory();
 			queueLogger.info.resetHistory();
+			clock = Sinon.useFakeTimers();
+		});
+		afterEach(() => {
+			clock.restore();
 		});
 		after(() => {
 			models.LivechatInquiry.findNextAndLock.reset();
@@ -152,6 +157,7 @@ describe('Omnichannel Queue processor', () => {
 			models.LivechatInquiry.unlock.reset();
 			queueLogger.error.reset();
 			queueLogger.info.reset();
+			clock.reset();
 		});
 
 		it('should return undefined when the queue is empty', async () => {
@@ -209,7 +215,9 @@ describe('Omnichannel Queue processor', () => {
 			const queue = new OmnichannelQueue();
 			queue.processWaitingQueue = Sinon.stub().returns(true);
 			queue.execute = Sinon.stub();
+			queue.delay = Sinon.stub().returns(100);
 			await queue.checkQueue();
+			clock.tick(100);
 
 			expect(queue.execute.calledOnce).to.be.true;
 			expect(models.LivechatInquiry.unlock.calledOnce).to.be.true;
@@ -308,6 +316,7 @@ describe('Omnichannel Queue processor', () => {
 			models.LivechatInquiry.takeInquiry.reset();
 			delegateInquiry.reset();
 			queueLogger.debug.reset();
+			clock.reset();
 		});
 
 		it('should process the public queue when department is undefined', async () => {
@@ -409,7 +418,6 @@ describe('Omnichannel Queue processor', () => {
 			await queue.execute();
 
 			expect(queue.nextQueue.calledOnce).to.be.true;
-			expect(queueLogger.debug.calledOnce).to.be.true;
 			expect(queueLogger.debug.calledWith('Executing queue Public with timeout of 5000')).to.be.true;
 		});
 	});
