@@ -39,6 +39,10 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 	}
 
 	async stop() {
+		if (!this.running) {
+			return;
+		}
+
 		await LivechatInquiry.unlockAll();
 
 		this.running = false;
@@ -75,7 +79,9 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 		const queueDelayTimeout = this.delay();
 		queueLogger.debug(`Executing queue ${queue || 'Public'} with timeout of ${queueDelayTimeout}`);
 
-		setTimeout(this.checkQueue.bind(this, queue), queueDelayTimeout);
+		void this.checkQueue(queue).catch((e) => {
+			queueLogger.error(e);
+		});
 	}
 
 	private async checkQueue(queue: string | undefined) {
@@ -99,6 +105,12 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 
 			queueLogger.debug(`Inquiry ${nextInquiry._id} taken successfully. Unlocking`);
 			await LivechatInquiry.unlock(nextInquiry._id);
+			queueLogger.debug({
+				msg: 'Inquiry processed',
+				inquiry: nextInquiry._id,
+				queue: queue || 'Public',
+				result,
+			});
 		} catch (e) {
 			queueLogger.error({
 				msg: 'Error processing queue',
@@ -106,7 +118,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 				err: e,
 			});
 		} finally {
-			void this.execute();
+			setTimeout(this.execute.bind(this), this.delay());
 		}
 	}
 
@@ -119,7 +131,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 		const routingSupportsAutoAssign = RoutingManager.getConfig()?.autoAssignAgent;
 		queueLogger.debug({
 			msg: 'Routing method supports auto assignment',
-			method: RoutingManager.methodName,
+			method: settings.get('Livechat_Routing_Method'),
 			status: routingSupportsAutoAssign ? 'Starting' : 'Stopping',
 		});
 
