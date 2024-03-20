@@ -1,7 +1,7 @@
 import type { IAdminUserTabs, Serialized } from '@rocket.chat/core-typings';
 import { Box, Icon, Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle, TextInput } from '@rocket.chat/fuselage';
 import { useMediaQuery, useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import type { PaginatedResult, PickedUser } from '@rocket.chat/rest-typings';
+import type { PaginatedResult, DefaultUserInfo } from '@rocket.chat/rest-typings';
 import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactElement, Dispatch, SetStateAction } from 'react';
@@ -24,7 +24,7 @@ type UsersTableProps = {
 	tab: IAdminUserTabs;
 	onReload: () => void;
 	setUserFilters: Dispatch<SetStateAction<UsersFilters>>;
-	filteredUsersQueryResult: UseQueryResult<PaginatedResult<{ users: Serialized<PickedUser>[] }>>;
+	filteredUsersQueryResult: UseQueryResult<PaginatedResult<{ users: Serialized<DefaultUserInfo>[] }>>;
 	paginationData: ReturnType<typeof usePagination>;
 	sortData: ReturnType<typeof useSort<UsersTableSortingOptions>>;
 	isSeatsCapExceeded: boolean;
