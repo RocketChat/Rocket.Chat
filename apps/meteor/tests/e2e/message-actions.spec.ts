@@ -1,6 +1,7 @@
+import { ADMIN_CREDENTIALS } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetChannel } from './utils';
+import { createTargetChannel, createTargetTeam } from './utils';
 import { setUserPreferences } from './utils/setUserPreferences';
 import { expect, test } from './utils/test';
 
@@ -8,8 +9,12 @@ test.use({ storageState: Users.admin.state });
 test.describe.serial('message-actions', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
+	let forwardChannel: string;
+	let forwardTeam: string;
 	test.beforeAll(async ({ api }) => {
 		targetChannel = await createTargetChannel(api);
+		forwardChannel = await createTargetChannel(api);
+		forwardTeam = await createTargetTeam(api);
 	});
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
@@ -115,4 +120,35 @@ test.describe.serial('message-actions', () => {
 			await expect(page).toHaveURL(/.*reply/);
 		});
 	});
+
+	test('expect forward message to channel', async () => {
+		const message = 'this is a message to forward to channel'
+		await poHomeChannel.content.sendMessage(message);
+		await poHomeChannel.content.forwardMessage(forwardChannel)
+
+		await poHomeChannel.sidenav.openChat(forwardChannel);
+		await expect(poHomeChannel.content.lastUserMessage).toContainText(message)
+	})
+
+	test('expect forward message to team', async () => {
+		const message = 'this is a message to forward to team'
+		await poHomeChannel.content.sendMessage(message);
+		await poHomeChannel.content.forwardMessage(forwardTeam)
+
+		await poHomeChannel.sidenav.openChat(forwardTeam);
+		await expect(poHomeChannel.content.lastUserMessage).toContainText(message)
+	})
+
+	test('expect forward message to direct message', async () => {
+		const message = 'this is a message to forward to direct message'
+		const direct = 'RocketChat Internal Admin Test'
+
+		// todo: Forward modal is using name as display and the sidebar is using username
+		await poHomeChannel.content.sendMessage(message);
+		await poHomeChannel.content.forwardMessage(direct)
+
+		await poHomeChannel.sidenav.openChat(ADMIN_CREDENTIALS.username);
+		await expect(poHomeChannel.content.lastUserMessage).toContainText(message)
+	})
 });
+
