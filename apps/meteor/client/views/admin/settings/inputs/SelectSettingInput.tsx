@@ -1,14 +1,14 @@
 import { Field, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import React from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 
 type SelectSettingInputProps = {
 	_id: string;
-	label: string;
+	label: ReactNode;
 	value?: string;
 	values?: { key: string; i18nLabel: TranslationKey }[];
 	placeholder?: string;

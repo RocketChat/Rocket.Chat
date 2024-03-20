@@ -1,6 +1,6 @@
 import { Field, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
 import type { PathPattern } from '@rocket.chat/rest-typings';
-import type { ReactElement } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import React from 'react';
 
 import type { AsyncState } from '../../../../hooks/useAsyncState';
@@ -9,7 +9,7 @@ import ResetSettingButton from '../ResetSettingButton';
 
 type LookupSettingInputProps = {
 	_id: string;
-	label: string;
+	label: ReactNode;
 	value?: string;
 	lookupEndpoint: PathPattern extends `/${infer U}` ? U : PathPattern;
 	placeholder?: string;

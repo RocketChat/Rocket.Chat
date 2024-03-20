@@ -1,7 +1,7 @@
 import { FieldLabel, MultiSelectFiltered, MultiSelect, Field, FieldRow } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import React from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
@@ -9,7 +9,7 @@ import ResetSettingButton from '../ResetSettingButton';
 export type valuesOption = { key: string; i18nLabel: TranslationKey };
 type MultiSelectSettingInputProps = {
 	_id: string;
-	label: string;
+	label: ReactNode;
 	value?: [string, string];
 	values: valuesOption[];
 	placeholder?: string;

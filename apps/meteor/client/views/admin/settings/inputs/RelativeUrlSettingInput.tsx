@@ -1,13 +1,13 @@
 import { Field, FieldLabel, FieldRow, UrlInput } from '@rocket.chat/fuselage';
 import { useAbsoluteUrl } from '@rocket.chat/ui-contexts';
-import type { EventHandler, ReactElement, SyntheticEvent } from 'react';
+import type { EventHandler, ReactElement, ReactNode, SyntheticEvent } from 'react';
 import React from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 
 type RelativeUrlSettingInputProps = {
 	_id: string;
-	label: string;
+	label: ReactNode;
 	value?: string;
 	placeholder?: string;
 	readonly?: boolean;

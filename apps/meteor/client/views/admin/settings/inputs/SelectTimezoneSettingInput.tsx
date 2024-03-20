@@ -1,13 +1,13 @@
 import { Field, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
 import moment from 'moment-timezone';
-import type { ReactElement } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import React from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 
 type SelectTimezoneSettingInputProps = {
 	_id: string;
-	label: string;
+	label: ReactNode;
 	value?: string;
 	placeholder?: string;
 	readonly?: boolean;

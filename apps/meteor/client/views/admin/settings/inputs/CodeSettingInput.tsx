@@ -1,5 +1,5 @@
 import { FieldLabel, FieldHint, FieldRow, Field } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import React from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
@@ -8,7 +8,7 @@ import CodeMirrorBox from './CodeMirror/CodeMirrorBox';
 
 type CodeSettingInputProps = {
 	_id: string;
-	label: string;
+	label: ReactNode;
 	hint: string;
 	value?: string;
 	code: string;
