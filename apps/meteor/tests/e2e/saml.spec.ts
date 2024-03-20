@@ -50,6 +50,10 @@ const resetTestData = async (cleanupOnly = false) => {
 	await Promise.all(
 		[
 			{
+				_id: 'Accounts_AllowAnonymousRead',
+				value: false,
+			},
+			{
 				_id: 'SAML_Custom_Default_logout_behaviour',
 				value: 'SAML',
 			},
