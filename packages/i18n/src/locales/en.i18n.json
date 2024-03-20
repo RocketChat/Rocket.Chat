@@ -2244,6 +2244,8 @@
   "Federation_Description": "Federation allows an unlimited number of workspaces to communicate with each other.",
   "Federation_Enable": "Enable Federation",
   "Federation_Example_matrix_server": "Example: matrix.org",
+  "Federation_Matrix_enable_ephemeral_events": "Enable Matrix ephemeral events",
+  "Federation_Matrix_enable_ephemeral_events_Alert": "This requires a restart. </br> Enabling ephemeral events like user typing indicator can affect the performance of your Matrix Homeserver and Rocket.Chat server for federated communication",
   "Federation_Federated_room_search": "Federated room search",
   "Federation_Public_key": "Public Key",
   "Federation_Search_federated_rooms": "Search federated rooms",
@@ -6319,5 +6321,6 @@
   "Seat_limit_reached_Description": "Your workspace reached its contractual seat limit. Buy more seats to add more users.",
   "Buy_more_seats": "Buy more seats",
   "unread_messages_one": "{{count}} unread message",
-  "unread_messages_other": "{{count}} unread messages"
+  "unread_messages_other": "{{count}} unread messages",
+  "Go_to_href": "Go to: {{href}}"
 }
