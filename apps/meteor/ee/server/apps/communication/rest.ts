@@ -789,10 +789,13 @@ export class AppsRestApi {
 						?.get('users')
 						.convertToApp(await Meteor.userAsync());
 
-					await manager.remove(prl.getID(), { user });
-
 					const info: IAppInfo & { status?: AppStatus } = prl.getInfo();
-					info.status = await prl.getStatus();
+					try {
+						await manager.remove(prl.getID(), { user });
+					} catch (e) {
+						info.status = await prl.getStatus();
+						return API.v1.failure({ app: info });
+					}
 
 					void notifyAppInstall(orchestrator.getMarketplaceUrl() as string, 'uninstall', info);
 
