@@ -8,7 +8,7 @@ import type { Meteor } from 'meteor/meteor';
 
 export const useRoomInfoEndpoint = (rid: IRoom['_id']): UseQueryResult<OperationResult<'GET', '/v1/rooms.info'>> => {
 	const getRoomInfo = useEndpoint('GET', '/v1/rooms.info');
-	return useQuery(['rooms/info', rid], () => getRoomInfo({ roomId: rid }), {
+	return useQuery(['/v1/rooms.info', rid], () => getRoomInfo({ roomId: rid }), {
 		cacheTime: minutesToMilliseconds(15),
 		staleTime: minutesToMilliseconds(5),
 		retry: (count, error: Meteor.Error) => {

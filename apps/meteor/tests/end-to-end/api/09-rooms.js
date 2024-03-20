@@ -7,7 +7,7 @@ import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
-import { imgURL, svgLogoFileName, svgLogoURL } from '../../data/interactions';
+import { imgURL, lstURL, svgLogoFileName, svgLogoURL } from '../../data/interactions';
 import { getSettingValueById, updateEEPermission, updatePermission, updateSetting } from '../../data/permissions.helper';
 import { closeRoom, createRoom, deleteRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
@@ -156,8 +156,8 @@ describe('[Rooms]', function () {
 
 		let fileNewUrl;
 		let fileOldUrl;
-		it('upload a file to room', (done) => {
-			request
+		it('should upload a PNG file to room', async () => {
+			await request
 				.post(api(`rooms.upload/${testChannel._id}`))
 				.set(credentials)
 				.attach('file', imgURL)
@@ -166,14 +166,54 @@ describe('[Rooms]', function () {
 				.expect((res) => {
 					const { message } = res.body;
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('message._id', message._id);
-					expect(res.body).to.have.nested.property('message.rid', testChannel._id);
-					expect(res.body).to.have.nested.property('message.file._id', message.file._id);
-					expect(res.body).to.have.nested.property('message.file.type', message.file.type);
+					expect(res.body).to.have.property('message');
+					expect(res.body.message).to.have.property('attachments');
+					expect(res.body.message.attachments).to.be.an('array').of.length(1);
+					expect(res.body.message.attachments[0]).to.have.property('image_type', 'image/png');
+					expect(res.body.message.attachments[0]).to.have.property('title', '1024x1024.png');
+					expect(res.body.message).to.have.property('files');
+					expect(res.body.message.files).to.be.an('array').of.length(2);
+					expect(res.body.message.files[0]).to.have.property('type', 'image/png');
+					expect(res.body.message.files[0]).to.have.property('name', '1024x1024.png');
+
 					fileNewUrl = `/file-upload/${message.file._id}/${message.file.name}`;
 					fileOldUrl = `/ufs/GridFS:Uploads/${message.file._id}/${message.file.name}`;
+				});
+		});
+
+		it('should upload a LST file to room', (done) => {
+			request
+				.post(api(`rooms.upload/${testChannel._id}`))
+				.set(credentials)
+				.attach('file', lstURL)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('message');
+					expect(res.body.message).to.have.property('attachments');
+					expect(res.body.message.attachments).to.be.an('array').of.length(1);
+					expect(res.body.message.attachments[0]).to.have.property('format', 'LST');
+					expect(res.body.message.attachments[0]).to.have.property('title', 'lst-test.lst');
+					expect(res.body.message).to.have.property('files');
+					expect(res.body.message.files).to.be.an('array').of.length(1);
+					expect(res.body.message.files[0]).to.have.property('name', 'lst-test.lst');
 				})
 				.end(done);
+		});
+
+		it('should not allow uploading a blocked media type to a room', async () => {
+			await updateSetting('FileUpload_MediaTypeBlackList', 'application/octet-stream');
+			await request
+				.post(api(`rooms.upload/${testChannel._id}`))
+				.set(credentials)
+				.attach('file', lstURL)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-file-type');
+				});
 		});
 
 		it('should be able to get the file', async () => {
