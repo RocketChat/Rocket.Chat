@@ -6324,5 +6324,6 @@
   "Seat_limit_reached_Description": "Your workspace reached its contractual seat limit. Buy more seats to add more users.",
   "Buy_more_seats": "Buy more seats",
   "unread_messages_one": "{{count}} unread message",
-  "unread_messages_other": "{{count}} unread messages"
+  "unread_messages_other": "{{count}} unread messages",
+  "Go_to_href": "Go to: {{href}}"
 }

@@ -1,7 +1,7 @@
 import { UserStatus as Status } from '@rocket.chat/core-typings';
 import type { IAdminUserTabs, IRole, IUser, Serialized } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
-import type { PickedUser } from '@rocket.chat/rest-typings';
+import type { DefaultUserInfo } from '@rocket.chat/rest-typings';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -12,7 +12,7 @@ import { GenericTableRow, GenericTableCell } from '../../../../components/Generi
 import { UserStatus } from '../../../../components/UserStatus';
 
 type UsersTableRowProps = {
-	user: Serialized<PickedUser>;
+	user: Serialized<DefaultUserInfo>;
 	onClick: (id: IUser['_id'], e: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement>) => void;
 	mediaQuery: boolean;
 	tab: IAdminUserTabs;
