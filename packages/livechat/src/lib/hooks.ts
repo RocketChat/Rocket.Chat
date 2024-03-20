@@ -49,6 +49,18 @@ const updateIframeGuestData = (data: Partial<StoreState['guest']>) => {
 
 export type HooksWidgetAPI = typeof api;
 
+const updateIframeData = (data: Partial<StoreState['iframe']>) => {
+	const { iframe } = store.state;
+
+	if (data.guest) {
+		throw new Error('Guest data changes not allowed. Use updateIframeGuestData instead.');
+	}
+
+	const iframeData = { ...iframe, ...data };
+
+	store.setState({ iframe: { ...iframeData } });
+};
+
 const api = {
 	pageVisited(info: { change: string; title: string; location: { href: string } }) {
 		const { token, room } = store.state;
@@ -90,9 +102,20 @@ const api = {
 			defaultAgent,
 		} = store.state;
 
+		if (!user) {
+			updateIframeData({ defaultDepartment: value });
+			return;
+		}
+
 		const { department: existingDepartment } = user || {};
 
 		const department = departments.find((dep) => dep._id === value || dep.name === value)?._id || '';
+
+		if (!department) {
+			console.warn(
+				'The selected department is invalid. Check departments configuration to ensure the department exists, is enabled and has at least 1 agent',
+			);
+		}
 
 		updateIframeGuestData({ department });
 		store.setState({ department });
