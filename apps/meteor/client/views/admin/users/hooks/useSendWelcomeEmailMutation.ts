@@ -6,7 +6,7 @@ type useSendWelcomeEmailMutationProps = {
 	email: string;
 };
 
-export const useSendWelcomeEmailMutation = (): UseMutationResult<{ success: boolean }, Error, useSendWelcomeEmailMutationProps> => {
+export const useSendWelcomeEmailMutation = (): UseMutationResult<null, Error, useSendWelcomeEmailMutationProps> => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
