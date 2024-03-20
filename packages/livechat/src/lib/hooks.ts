@@ -84,6 +84,7 @@ const api = {
 			iframe,
 			iframe: { theme: currentTheme },
 		} = store.state;
+
 		store.setState({
 			iframe: {
 				...iframe,

@@ -20,6 +20,7 @@ type InternalWidgetAPI = {
 	hideWidget: () => void;
 	resetDocumentStyle: () => void;
 	setFullScreenDocumentMobile: () => void;
+	setWidgetPosition: (position: 'left' | 'right') => void;
 };
 
 export type LivechatMessageEventData<ApiType extends Record<string, any>> = {
@@ -173,7 +174,7 @@ const createWidget = (url: string) => {
 	widget.style.height = `${WIDGET_MARGIN + WIDGET_MINIMIZED_HEIGHT + WIDGET_MARGIN}px`;
 	widget.style.maxHeight = '100vh';
 	widget.style.bottom = '0';
-	widget.style.right = '0';
+	widget.style.left = '0';
 	widget.style.zIndex = '12345';
 	widget.dataset.state = 'closed';
 
@@ -224,6 +225,15 @@ const openWidget = () => {
 	updateWidgetStyle(true);
 	iframe.focus();
 	emitCallback('chat-maximized');
+};
+
+const setWidgetPosition = (position: 'left' | 'right' = 'right') => {
+	if (!widget) {
+		throw new Error('Widget is not initialized');
+	}
+
+	widget.style.left = position === 'left' ? '0' : 'auto';
+	widget.style.right = position !== 'left' ? '0' : 'auto';
 };
 
 const resizeWidget = (height: number) => {
@@ -280,6 +290,14 @@ function setCustomFields(fields: [key: string, value: string, overwrite?: boolea
 }
 
 function setTheme(theme: StoreState['iframe']['theme']) {
+	if (theme?.position !== 'left' && theme?.position !== 'right') {
+		if (theme?.position) {
+			console.warn(`Error: Position "${theme?.position}" is invalid. It must be "left" or "right"`);
+		}
+
+		delete theme.position;
+	}
+
 	callHook('setTheme', theme);
 }
 
@@ -481,6 +499,8 @@ const api: InternalWidgetAPI = {
 	setFullScreenDocumentMobile() {
 		smallScreen && document.body.classList.add('rc-livechat-mobile-full-screen');
 	},
+
+	setWidgetPosition,
 };
 
 const livechatWidgetAPI = {
