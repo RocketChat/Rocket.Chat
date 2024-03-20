@@ -631,8 +631,8 @@ API.v1.addRoute(
 					throw new Meteor.Error('error-invalid-format');
 				}
 
-				const convertedDateFrom = new Date(dateFrom || '');
-				const convertedDateTo = new Date(dateTo || '');
+				const convertedDateFrom = dateFrom ? new Date(dateFrom) : new Date(0);
+				const convertedDateTo = dateTo ? new Date(dateTo) : new Date();
 				convertedDateTo.setDate(convertedDateTo.getDate() + 1);
 
 				if (convertedDateFrom > convertedDateTo) {
