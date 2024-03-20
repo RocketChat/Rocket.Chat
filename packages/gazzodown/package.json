@@ -6,7 +6,7 @@
 		"@babel/core": "~7.22.20",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/css-in-js": "~0.31.25",
-		"@rocket.chat/fuselage": "^0.51.1",
+		"@rocket.chat/fuselage": "^0.51.2",
 		"@rocket.chat/fuselage-tokens": "^0.33.0",
 		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/styled": "~0.31.25",
