@@ -46,6 +46,7 @@ import { useSmtpQuery } from './hooks/useSmtpQuery';
 type AdminUserFormProps = {
 	userData?: Serialized<IUser>;
 	onReload: () => void;
+	context: string;
 };
 
 const getInitialValue = ({
@@ -76,17 +77,19 @@ const getInitialValue = ({
 	avatar: '' as AvatarObject,
 });
 
-const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
+const UserForm = ({ userData, onReload, context, ...props }: AdminUserFormProps) => {
 	const t = useTranslation();
 	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const customFieldsMetadata = useAccountsCustomFields();
 	const defaultRoles = useSetting<string>('Accounts_Registration_Users_Default_Roles') || '';
+	const isVerificationNeeded = useSetting('Accounts_EmailVerification');
 
 	const defaultUserRoles = parseCSV(defaultRoles);
 	const { data } = useSmtpQuery();
 	const isSmtpEnabled = data?.isSMTPConfigured;
+	const isNewUserPage = context === 'new';
 
 	const eventStats = useEndpointAction('POST', '/v1/statistics.telemetry');
 	const updateUserAction = useEndpoint('POST', '/v1/users.update');
@@ -170,7 +173,7 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 		<>
 			<ContextualbarScrollableContent {...props}>
 				<FieldGroup>
-					{isEditingExistingUser && (
+					{!isNewUserPage && (
 						<Field>
 							<Controller
 								name='avatar'
@@ -186,6 +189,62 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 							/>
 						</Field>
 					)}
+					{isNewUserPage && <Box color='hint'>{t('Manually_created_users_briefing')}</Box>}
+					<Field>
+						<FieldLabel htmlFor={emailId}>{t('Email')}</FieldLabel>
+						<FieldRow>
+							<Controller
+								control={control}
+								name='email'
+								rules={{
+									required: t('The_field_is_required', t('Email')),
+									validate: (email) => (validateEmail(email) ? undefined : t('ensure_email_address_valid')),
+								}}
+								render={({ field }) => (
+									<TextInput
+										{...field}
+										id={emailId}
+										aria-invalid={errors.email ? 'true' : 'false'}
+										aria-describedby={`${emailId}-error`}
+										error={errors.email?.message}
+										flexGrow={1}
+									/>
+								)}
+							/>
+						</FieldRow>
+						{errors?.email && (
+							<FieldError aria-live='assertive' id={`${emailId}-error`} fontScale='c1' mbs={12}>
+								{errors.email.message}
+							</FieldError>
+						)}
+						<FieldRow mbs={12}>
+							<Box display='flex' alignItems='center'>
+								<FieldLabel htmlFor={verifiedId} p={0} disabled={!isSmtpEnabled || !isVerificationNeeded}>
+									{t('Mark_email_as_verified')}
+								</FieldLabel>
+								<Icon name='info-circled' size='x20' mis={8} title={t('Enable_to_bypass_email_verification')} color='default' />
+							</Box>
+							<Controller
+								control={control}
+								name='verified'
+								render={({ field: { onChange, value } }) => (
+									<ToggleSwitch id={verifiedId} checked={value} onChange={onChange} disabled={!isSmtpEnabled || !isVerificationNeeded} />
+								)}
+							/>
+						</FieldRow>
+						{isVerificationNeeded && !isSmtpEnabled && (
+							<FieldHint
+								id={`${verifiedId}-hint`}
+								dangerouslySetInnerHTML={{ __html: t('Send_Email_SMTP_Warning', { url: 'admin/settings/Email' }) }}
+							/>
+						)}
+						{!isVerificationNeeded && (
+							<FieldHint
+								id={`${verifiedId}-hint`}
+								dangerouslySetInnerHTML={{ __html: t('Email_verification_isnt_required', { url: 'admin/settings/Accounts' }) }}
+							/>
+						)}
+					</Field>
 					<Field>
 						<FieldLabel htmlFor={nameId}>{t('Name')}</FieldLabel>
 						<FieldRow>
@@ -234,35 +293,6 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 						{errors?.username && (
 							<FieldError aria-live='assertive' id={`${usernameId}-error`}>
 								{errors.username.message}
-							</FieldError>
-						)}
-					</Field>
-					<Field>
-						<FieldLabel htmlFor={emailId}>{t('Email')}</FieldLabel>
-						<FieldRow>
-							<Controller
-								control={control}
-								name='email'
-								rules={{
-									required: t('The_field_is_required', t('Email')),
-									validate: (email) => (validateEmail(email) ? undefined : t('error-invalid-email-address')),
-								}}
-								render={({ field }) => (
-									<TextInput
-										{...field}
-										id={emailId}
-										aria-invalid={errors.email ? 'true' : 'false'}
-										aria-describedby={`${emailId}-error`}
-										error={errors.email?.message}
-										flexGrow={1}
-										addon={<Icon name='mail' size='x20' />}
-									/>
-								)}
-							/>
-						</FieldRow>
-						{errors?.email && (
-							<FieldError aria-live='assertive' id={`${emailId}-error`}>
-								{errors.email.message}
 							</FieldError>
 						)}
 					</Field>
