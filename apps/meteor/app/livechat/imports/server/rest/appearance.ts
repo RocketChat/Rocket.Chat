@@ -45,6 +45,10 @@ API.v1.addRoute(
 				'Livechat_name_field_registration_form',
 				'Livechat_email_field_registration_form',
 				'Livechat_registration_form_message',
+				'Livechat_hide_watermark',
+				'Livechat_background',
+				'Livechat_widget_position',
+				'Livechat_hide_system_messages',
 			];
 
 			const valid = settings.every((setting) => validSettingList.includes(setting._id));
@@ -69,7 +73,7 @@ API.v1.addRoute(
 						case 'int':
 							return {
 								_id: dbSetting._id,
-								value: coerceInt(setting.value),
+								value: coerceInt(setting.value as number),
 							};
 						default:
 							return {
