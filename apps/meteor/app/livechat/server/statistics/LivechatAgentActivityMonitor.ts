@@ -52,21 +52,19 @@ export class LivechatAgentActivityMonitor {
 		// TODO use service event socket.connected instead
 		Meteor.onConnection((connection: unknown) => this._handleMeteorConnection(connection as ISocketConnection));
 		callbacks.add('livechat.agentStatusChanged', this._handleAgentStatusChanged);
-		callbacks.add('livechat.setUserStatusLivechat', async (...args) => {
+		callbacks.add('livechat.setUserStatusLivechat', (...args) => {
 			return this._handleUserStatusLivechatChanged(...args);
 		});
 		this._started = true;
 	}
 
 	async _startMonitoring(): Promise<void> {
-		await this.scheduler.add(this._name, '0 0 * * *', async () => this._updateActiveSessions());
+		await this.scheduler.add(this._name, '0 0 * * *', () => this._updateActiveSessions());
 	}
 
 	async _updateActiveSessions(): Promise<void> {
-		const openLivechatAgentSessions = await LivechatAgentActivity.findOpenSessions();
-		if (!(await openLivechatAgentSessions.count())) {
-			return;
-		}
+		const openLivechatAgentSessions = LivechatAgentActivity.findOpenSessions();
+
 		const today = moment(new Date());
 		const startedAt = new Date(today.year(), today.month(), today.date());
 		for await (const session of openLivechatAgentSessions) {
@@ -74,16 +72,12 @@ export class LivechatAgentActivityMonitor {
 			const stoppedAt = new Date(startDate.year(), startDate.month(), startDate.date(), 23, 59, 59);
 			const data = { ...formatDate(startDate.toDate()), agentId: session.agentId };
 			const availableTime = moment(stoppedAt).diff(moment(new Date(session.lastStartedAt)), 'seconds');
-			await LivechatAgentActivity.updateLastStoppedAt({
-				...data,
-				availableTime,
-				lastStoppedAt: stoppedAt,
-			});
-			await LivechatAgentActivity.updateServiceHistory({
-				...data,
-				serviceHistory: { startedAt: session.lastStartedAt, stoppedAt },
-			});
-			await this._createOrUpdateSession(session.agentId, startedAt);
+
+			await Promise.all([
+				LivechatAgentActivity.updateLastStoppedAt({ ...data, availableTime, lastStoppedAt: stoppedAt }),
+				LivechatAgentActivity.updateServiceHistory({ ...data, serviceHistory: { startedAt: session.lastStartedAt, stoppedAt } }),
+				this._createOrUpdateSession(session.agentId, startedAt),
+			]);
 		}
 	}
 
@@ -96,7 +90,9 @@ export class LivechatAgentActivityMonitor {
 		if (!session) {
 			return;
 		}
-		const user = await Users.findOneById<ILivechatAgent>(session.userId);
+		const user = await Users.findOneById<Pick<ILivechatAgent, '_id' | 'statusLivechat' | 'status'>>(session.userId, {
+			projection: { _id: 1, status: 1, statusLivechat: 1 },
+		});
 		if (user && user.status !== 'offline' && user.statusLivechat === 'available') {
 			await this._createOrUpdateSession(user._id);
 		}
@@ -112,7 +108,7 @@ export class LivechatAgentActivityMonitor {
 			return;
 		}
 
-		const user = await Users.findOneById<ILivechatAgent>(userId);
+		const user = await Users.findOneById<Pick<ILivechatAgent, '_id' | 'statusLivechat'>>(userId, { projection: { statusLivechat: 1 } });
 		if (!user || user.statusLivechat !== 'available') {
 			return;
 		}
@@ -129,7 +125,7 @@ export class LivechatAgentActivityMonitor {
 			return;
 		}
 
-		const user = await Users.findOneById(userId);
+		const user = await Users.findOneById<Pick<ILivechatAgent, '_id' | 'status'>>(userId, { projection: { status: 1 } });
 		if (user && user.status === 'offline') {
 			return;
 		}
@@ -158,16 +154,13 @@ export class LivechatAgentActivityMonitor {
 		const stoppedAt = new Date();
 		const availableTime = moment(stoppedAt).diff(moment(new Date(livechatSession.lastStartedAt)), 'seconds');
 
-		await LivechatAgentActivity.updateLastStoppedAt({
-			agentId,
-			date,
-			availableTime,
-			lastStoppedAt: stoppedAt,
-		});
-		await LivechatAgentActivity.updateServiceHistory({
-			agentId,
-			date,
-			serviceHistory: { startedAt: livechatSession.lastStartedAt, stoppedAt },
-		});
+		await Promise.all([
+			LivechatAgentActivity.updateLastStoppedAt({ agentId, date, availableTime, lastStoppedAt: stoppedAt }),
+			LivechatAgentActivity.updateServiceHistory({
+				agentId,
+				date,
+				serviceHistory: { startedAt: livechatSession.lastStartedAt, stoppedAt },
+			}),
+		]);
 	}
 }
