@@ -112,7 +112,7 @@ export type UserPresence = Readonly<
 
 export type UserPersonalTokens = Pick<IPersonalAccessToken, 'name' | 'lastTokenPart' | 'bypassTwoFactor'> & { createdAt: string };
 
-export type PickedUser = Pick<
+export type DefaultUserInfo = Pick<
 	IUser,
 	'_id' | 'username' | 'name' | 'status' | 'roles' | 'emails' | 'active' | 'avatarETag' | 'lastLogin' | 'type'
 >;
@@ -146,18 +146,18 @@ export type UsersEndpoints = {
 
 	'/v1/users.list': {
 		GET: (params: PaginatedRequest<{ fields: string }>) => PaginatedResult<{
-			users: PickedUser[];
+			users: DefaultUserInfo[];
 		}>;
 	};
 
 	'/v1/users.listByStatus': {
 		GET: (params: UsersListStatusParamsGET) => PaginatedResult<{
-			users: PickedUser[];
+			users: DefaultUserInfo[];
 		}>;
 	};
 
 	'/v1/users.sendWelcomeEmail': {
-		POST: (params: UsersSendWelcomeEmailParamsPOST) => { success: boolean };
+		POST: (params: UsersSendWelcomeEmailParamsPOST) => void;
 	};
 
 	'/v1/users.setAvatar': {

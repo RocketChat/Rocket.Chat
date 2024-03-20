@@ -2,7 +2,7 @@ import { UserStatus as Status, isUserFederated } from '@rocket.chat/core-typings
 import type { IAdminUserTabs, IRole, IUser, Serialized } from '@rocket.chat/core-typings';
 import { Box, Button, Menu, Option } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import type { PickedUser } from '@rocket.chat/rest-typings';
+import type { DefaultUserInfo } from '@rocket.chat/rest-typings';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -19,7 +19,7 @@ import { useResetTOTPAction } from '../hooks/useResetTOTPAction';
 import { useSendWelcomeEmailMutation } from '../hooks/useSendWelcomeEmailMutation';
 
 type UsersTableRowProps = {
-	user: Serialized<PickedUser>;
+	user: Serialized<DefaultUserInfo>;
 	onClick: (id: IUser['_id'], e: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement>) => void;
 	mediaQuery: boolean;
 	onReload: () => void;
