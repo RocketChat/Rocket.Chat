@@ -170,11 +170,11 @@ describe('[Rooms]', function () {
 					expect(res.body.message).to.have.property('attachments');
 					expect(res.body.message.attachments).to.be.an('array').of.length(1);
 					expect(res.body.message.attachments[0]).to.have.property('image_type', 'image/png');
-					expect(res.body.message.attachments[0]).to.have.property('title', 'logo.png');
+					expect(res.body.message.attachments[0]).to.have.property('title', '1024x1024.png');
 					expect(res.body.message).to.have.property('files');
 					expect(res.body.message.files).to.be.an('array').of.length(2);
 					expect(res.body.message.files[0]).to.have.property('type', 'image/png');
-					expect(res.body.message.files[0]).to.have.property('name', 'logo.png');
+					expect(res.body.message.files[0]).to.have.property('name', '1024x1024.png');
 
 					fileNewUrl = `/file-upload/${message.file._id}/${message.file.name}`;
 					fileOldUrl = `/ufs/GridFS:Uploads/${message.file._id}/${message.file.name}`;
