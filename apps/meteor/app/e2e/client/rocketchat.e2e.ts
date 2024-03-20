@@ -96,6 +96,11 @@ class E2E extends Emitter {
 		return this.enabled.get() && this._ready.get();
 	}
 
+	shouldAskForE2EEPassword() {
+		const { private_key } = this.getKeysFromLocalStorage();
+		return this.db_private_key !== null && !private_key;
+	}
+
 	async getInstanceByRoomId(rid: IRoom['_id']): Promise<E2ERoom | null> {
 		const room = await waitUntilFind(() => ChatRoom.findOne({ _id: rid }));
 
@@ -154,6 +159,33 @@ class E2E extends Emitter {
 		};
 	}
 
+	initiateHandshake() {
+		Object.keys(this.instancesByRoomId).map((key) => this.instancesByRoomId[key].handshake());
+	}
+
+	openSaveE2EEPasswordModal(randomPassword: string, onSavePassword?: () => void) {
+		console.log('openSave e2ee modal ', randomPassword);
+		imperativeModal.open({
+			component: SaveE2EPasswordModal,
+			props: {
+				randomPassword,
+				onClose: imperativeModal.close,
+				onCancel: () => {
+					this.closeAlert();
+					imperativeModal.close();
+				},
+				onConfirm: () => {
+					Meteor._localStorage.removeItem('e2e.randomPassword');
+					this._ready.set(true);
+					onSavePassword?.();
+					this.initiateHandshake();
+					this.closeAlert();
+					imperativeModal.close();
+				},
+			},
+		});
+	}
+
 	async startClient(): Promise<void> {
 		if (this.started) {
 			return;
@@ -210,24 +242,7 @@ class E2E extends Emitter {
 				modifiers: ['large'],
 				closable: false,
 				icon: 'key',
-				action: () => {
-					imperativeModal.open({
-						component: SaveE2EPasswordModal,
-						props: {
-							randomPassword,
-							onClose: imperativeModal.close,
-							onCancel: () => {
-								this.closeAlert();
-								imperativeModal.close();
-							},
-							onConfirm: () => {
-								Meteor._localStorage.removeItem('e2e.randomPassword');
-								this.closeAlert();
-								imperativeModal.close();
-							},
-						},
-					});
-				},
+				action: () => this.openSaveE2EEPasswordModal(randomPassword),
 			});
 		}
 		this.emit('ready');
@@ -350,26 +365,29 @@ class E2E extends Emitter {
 		}
 	}
 
+	openEnterE2EEPasswordModal(onEnterE2EEPassword?: (password: string) => void) {
+		imperativeModal.open({
+			component: EnterE2EPasswordModal,
+			props: {
+				onClose: imperativeModal.close,
+				onCancel: () => {
+					failedToDecodeKey = false;
+					this.closeAlert();
+					imperativeModal.close();
+				},
+				onConfirm: (password) => {
+					// resolve(password);
+					onEnterE2EEPassword?.(password);
+					this.closeAlert();
+					imperativeModal.close();
+				},
+			},
+		});
+	}
+
 	async requestPassword(): Promise<string> {
 		return new Promise((resolve) => {
-			const showModal = () => {
-				imperativeModal.open({
-					component: EnterE2EPasswordModal,
-					props: {
-						onClose: imperativeModal.close,
-						onCancel: () => {
-							failedToDecodeKey = false;
-							this.closeAlert();
-							imperativeModal.close();
-						},
-						onConfirm: (password) => {
-							resolve(password);
-							this.closeAlert();
-							imperativeModal.close();
-						},
-					},
-				});
-			};
+			const showModal = () => this.openEnterE2EEPasswordModal((password) => resolve(password));
 
 			const showAlert = () => {
 				this.openAlert({
@@ -390,6 +408,41 @@ class E2E extends Emitter {
 				showAlert();
 			}
 		});
+	}
+
+	async requestPasswordFromOutside(): Promise<string> {
+		return new Promise((resolve) => this.openEnterE2EEPasswordModal((password) => resolve(password)));
+	}
+
+	async decodePrivateKeyFromOutside() {
+		const password = await this.requestPasswordFromOutside();
+		console.log('entered password - ', password);
+		const masterKey = await this.getMasterKey(password);
+
+		if (!this.db_private_key) {
+			return;
+		}
+
+		const [vector, cipherText] = splitVectorAndEcryptedData(EJSON.parse(this.db_private_key));
+
+		try {
+			const privKey = await decryptAES(vector, masterKey, cipherText);
+			const privateKey = toString(privKey) as string;
+
+			const { public_key } = this.getKeysFromLocalStorage();
+
+			if (public_key && privateKey) {
+				await this.loadKeys({ public_key, private_key: privateKey });
+			} else {
+				await this.createAndLoadKeys();
+			}
+
+			// if (!this.db_public_key || !this.db_private_key) {
+			// 	await this.persistKeys(this.getKeysFromLocalStorage(), await this.createRandomPassword());
+			// }
+		} catch (error) {
+			throw new Error('E2E -> Error decrypting private key');
+		}
 	}
 
 	async decodePrivateKey(privateKey: string): Promise<string> {
