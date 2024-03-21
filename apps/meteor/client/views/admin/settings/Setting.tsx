@@ -129,7 +129,7 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 				<Box is='span' mie={4}>
 					{labelText}
 				</Box>
-				<Tag variant='primary'>{t('Enterprise')}</Tag>
+				<Tag variant='featured'>{t('Premium')}</Tag>
 			</>
 		);
 	}, [labelText, shouldDisableEnterprise, t]);
