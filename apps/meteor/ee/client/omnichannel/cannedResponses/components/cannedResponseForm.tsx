@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Field, FieldLabel, FieldRow, FieldError, TextInput, FieldGroup, RadioButton, FieldHint } from '@rocket.chat/fuselage';
+import { Box, Field, FieldLabel, FieldRow, FieldError, TextInput, FieldGroup, RadioButton, FieldHint, Option } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState } from 'react';
@@ -178,6 +178,10 @@ const CannedResponseForm = () => {
 											aria-describedby={`${departmentField}-error`}
 											aria-required={true}
 											aria-invalid={Boolean(errors?.departmentId)}
+											withTitle={false}
+											renderItem={({ label, ...props }) => (
+												<Option {...props} label={<Box style={{ whiteSpace: 'normal' }}>{label}</Box>} />
+											)}
 										/>
 									)}
 								/>

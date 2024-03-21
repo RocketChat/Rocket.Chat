@@ -12,6 +12,7 @@ import {
 	Box,
 	FieldLabel,
 	FieldRow,
+	CheckOption,
 } from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedValue, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
@@ -227,7 +228,7 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 											value={value}
 											onChange={onChange}
 											onBlur={onBlur}
-											withTitle
+											withTitle={false}
 											filter={departmentsFilter}
 											setFilter={setDepartmentsFilter}
 											options={departmentsOptions}
@@ -241,6 +242,13 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 											aria-describedby={`${departmentsField}-error`}
 											aria-required={true}
 											aria-invalid={Boolean(errors?.departments)}
+											renderItem={({ label, ...props }) => (
+												<CheckOption
+													{...props}
+													label={<Box style={{ whiteSpace: 'normal' }}>{label}</Box>}
+													selected={value.some((item) => item.value === props.value)}
+												/>
+											)}
 										/>
 									)}
 								/>

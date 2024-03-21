@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Select, Margins, Field, FieldLabel, FieldRow, Label } from '@rocket.chat/fuselage';
+import { Box, Select, Margins, Field, FieldLabel, FieldRow, Label, Option } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useState, useEffect } from 'react';
 
@@ -63,7 +63,13 @@ const AnalyticsPage = () => {
 							</Box>
 							<Box display='flex' mi={4} flexDirection='column' flexGrow={1}>
 								<Label mb={4}>{t('Departments')}</Label>
-								<AutoCompleteDepartment value={department || undefined} onChange={setDepartment} onlyMyDepartments />
+								<AutoCompleteDepartment
+									value={department || undefined}
+									onChange={setDepartment}
+									onlyMyDepartments
+									withTitle={false}
+									renderItem={({ label, ...props }) => <Option {...props} label={<Box style={{ whiteSpace: 'normal' }}>{label}</Box>} />}
+								/>
 							</Box>
 						</Box>
 						<DateRangePicker flexGrow={1} mi={4} onChange={setDateRange} />
