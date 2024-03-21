@@ -1,5 +1,17 @@
 # @rocket.chat/ddp-client
 
+## 0.2.18
+
+### Patch Changes
+
+- ([#31941](https://github.com/RocketChat/Rocket.Chat/pull/31941)) fix: livechat sdk reconnect not resubscribing
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.6.5
+  - @rocket.chat/api-client@0.1.27
+  </details>
+
 ## 0.2.17
 
 ### Patch Changes

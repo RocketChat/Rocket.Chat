@@ -1,5 +1,43 @@
 # @rocket.chat/meteor
 
+## 6.6.5
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#31998](https://github.com/RocketChat/Rocket.Chat/pull/31998)) Introduced a new step to the queue worker: when an inquiry that's on an improper status is selected for processing, queue worker will first check its status and will attempt to fix it.
+  For example, if an inquiry points to a closed room, there's no point in processing, system will now remove the inquiry
+  If an inquiry is already taken, the inquiry will be updated to reflect the new status and clean the queue.
+
+  This prevents issues where the queue worker attempted to process an inquiry _forever_ because it was in an improper state.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@4.0.5
+  - @rocket.chat/ui-theming@0.1.2
+  - @rocket.chat/fuselage-ui-kit@4.0.5
+  - @rocket.chat/gazzodown@4.0.5
+  - @rocket.chat/ui-client@4.0.5
+  - @rocket.chat/ui-video-conf@4.0.5
+  - @rocket.chat/web-ui-registration@4.0.5
+  - @rocket.chat/core-typings@6.6.5
+  - @rocket.chat/rest-typings@6.6.5
+  - @rocket.chat/api-client@0.1.27
+  - @rocket.chat/license@0.1.9
+  - @rocket.chat/omnichannel-services@0.1.9
+  - @rocket.chat/pdf-worker@0.0.33
+  - @rocket.chat/presence@0.1.9
+  - @rocket.chat/core-services@0.3.9
+  - @rocket.chat/cron@0.0.29
+  - @rocket.chat/model-typings@0.3.5
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/models@0.0.33
+  - @rocket.chat/instance-status@0.0.33
+  </details>
+
 ## 6.6.4
 
 ### Patch Changes

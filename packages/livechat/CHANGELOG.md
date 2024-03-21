@@ -1,5 +1,16 @@
 # @rocket.chat/livechat Change Log
 
+## 1.14.18
+
+### Patch Changes
+
+- ([#31792](https://github.com/RocketChat/Rocket.Chat/pull/31792)) Fixes issue of the `setDepartment` Livechat API method not setting the store value properly (is was only setting on the guest object)
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@4.0.5
+  </details>
+
 ## 1.14.17
 
 ### Patch Changes
