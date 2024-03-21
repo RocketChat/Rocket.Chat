@@ -4,6 +4,7 @@ import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { Admin } from './page-objects';
 import { createTargetChannel } from './utils';
+import { setSettingValueById } from './utils/setSettingValueById';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -170,9 +171,20 @@ test.describe.parallel('administration', () => {
 				await page.goto('/admin/settings/General');
 			});
 
+			test.afterAll(async ({ api }) => {
+				await setSettingValueById(api, 'Language', 'en')
+			});
+
 			test('expect be able to reset a setting after a change', async () => {
 				await poAdmin.inputSiteURL.type('any_text');
 				await poAdmin.btnResetSiteURL.click();
+			});
+
+			test('expect to change the language to pt-BR', async ({ page, api }) => {
+				expect((await setSettingValueById(api, 'Language', 'pt-BR')).status()).toBe(200);
+
+				await page.reload();
+				await expect(page.locator('h1')).toHaveText('Geral');
 			});
 		});
 	});
