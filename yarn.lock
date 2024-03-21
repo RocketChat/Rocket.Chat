@@ -8538,6 +8538,7 @@ __metadata:
     "@rocket.chat/apps-engine": 1.41.0
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/ddp-client": "workspace:^"
     "@rocket.chat/emitter": ~0.31.25
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/instance-status": "workspace:^"
@@ -9169,6 +9170,7 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/cron": "workspace:^"
     "@rocket.chat/css-in-js": ~0.31.25
+    "@rocket.chat/ddp-client": "workspace:^"
     "@rocket.chat/emitter": ~0.31.25
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/favicon": "workspace:^"

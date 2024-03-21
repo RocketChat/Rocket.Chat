@@ -18,6 +18,7 @@
 		"@rocket.chat/apps-engine": "1.41.0",
 		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/ddp-client": "workspace:^",
 		"@rocket.chat/emitter": "~0.31.25",
 		"@rocket.chat/instance-status": "workspace:^",
 		"@rocket.chat/logger": "workspace:^",

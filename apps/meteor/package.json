@@ -238,6 +238,7 @@
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/cron": "workspace:^",
 		"@rocket.chat/css-in-js": "~0.31.25",
+		"@rocket.chat/ddp-client": "workspace:^",
 		"@rocket.chat/emitter": "~0.31.25",
 		"@rocket.chat/favicon": "workspace:^",
 		"@rocket.chat/forked-matrix-appservice-bridge": "^4.0.2",
