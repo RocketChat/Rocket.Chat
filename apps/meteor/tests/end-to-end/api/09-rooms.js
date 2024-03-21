@@ -2211,4 +2211,147 @@ describe('[Rooms]', function () {
 				});
 		});
 	});
+
+	describe('/rooms.export', () => {
+		let testChannel;
+
+		before(async () => {
+			const result = await createRoom({ type: 'c', name: `channel.export.test.${Date.now()}-${Math.random()}` });
+			testChannel = result.body.channel;
+		});
+
+		after(async () => deleteRoom({ type: 'c', roomId: testChannel._id }));
+
+		it('should fail exporting room as file if dates are incorrectly provided', async () => {
+			return request
+				.post(api('rooms.export'))
+				.set(credentials)
+				.send({
+					rid: testChannel._id,
+					type: 'file',
+					dateFrom: 'test-date',
+					dateTo: 'test-date',
+					format: 'html',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+				});
+		});
+
+		it('should fail exporting room as file if no roomId is provided', async () => {
+			return request
+				.post(api('rooms.export'))
+				.set(credentials)
+				.send({
+					type: 'file',
+					dateFrom: '2024-03-15',
+					dateTo: '2024-03-22',
+					format: 'html',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body.error).to.have.property('error', "must have required property 'rid' [invalid-params]");
+				});
+		});
+
+		it('should fail exporting room as file if no type is provided', async () => {
+			return request
+				.post(api('rooms.export'))
+				.set(credentials)
+				.send({
+					rid: testChannel._id,
+					dateFrom: '2024-03-15',
+					dateTo: '2024-03-22',
+					format: 'html',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body.error).to.have.property('error', "must have required property 'type' [invalid-params]");
+				});
+		});
+
+		it('should fail exporting room as file if fromDate is after toDate (incorrect date interval)', async () => {
+			return request
+				.post(api('rooms.export'))
+				.set(credentials)
+				.send({
+					rid: testChannel._id,
+					type: 'file',
+					dateFrom: '2024-03-22',
+					dateTo: '2024-03-15',
+					format: 'html',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-dates');
+					expect(res.body.error).to.have.property('error', 'From date cannot be after To date [error-invalid-dates]');
+				});
+		});
+
+		it('should fail exporting room as file if invalid roomId is provided', async () => {
+			return request
+				.post(api('rooms.export'))
+				.set(credentials)
+				.send({
+					rid: 'invalid-rid',
+					type: 'file',
+					dateFrom: '2024-03-22',
+					dateTo: '2024-03-15',
+					format: 'html',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-room');
+				});
+		});
+
+		it('should fail exporting room as file if an invalid format is provided', async () => {
+			return request
+				.post(api('rooms.export'))
+				.set(credentials)
+				.send({
+					rid: 'invalid-rid',
+					type: 'file',
+					dateFrom: '2024-03-15',
+					dateTo: '2024-03-22',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-format');
+				});
+		});
+
+		it('should succesfully export room as file', async () => {
+			return request
+				.post(api('rooms.export'))
+				.set(credentials)
+				.send({
+					rid: testChannel._id,
+					type: 'file',
+					dateFrom: '2024-03-15',
+					dateTo: '2024-03-22',
+					format: 'html',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+	});
 });
