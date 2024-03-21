@@ -240,4 +240,29 @@ test.describe.serial('e2e-encryption', () => {
 
 		await anotherClientPage.close();
 	});
+
+	test('expect create a private encrypted channel and send an attachment with encrypted file description', async ({ page }) => {
+		const channelName = faker.string.uuid();
+
+		await poHomeChannel.sidenav.openNewByLabel('Channel');
+		await poHomeChannel.sidenav.inputChannelName.fill(channelName);
+		await poHomeChannel.sidenav.checkboxEncryption.click();
+		await poHomeChannel.sidenav.btnCreate.click();
+
+		await expect(page).toHaveURL(`/group/${channelName}`);
+
+		await poHomeChannel.dismissToast();
+
+		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+
+		await poHomeChannel.content.dragAndDropTxtFile();
+		await poHomeChannel.content.descriptionInput.fill('any_description');
+		await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
+		await poHomeChannel.content.btnModalConfirm.click();
+
+		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+
+		await expect(poHomeChannel.content.getFileDescription).toHaveText('any_description');
+		await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
+	});
 });
