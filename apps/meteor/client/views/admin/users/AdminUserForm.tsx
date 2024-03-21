@@ -7,7 +7,6 @@ import {
 	FieldHint,
 	TextInput,
 	TextAreaInput,
-	PasswordInput,
 	MultiSelectFiltered,
 	Box,
 	ToggleSwitch,
@@ -21,6 +20,7 @@ import {
 } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useUniqueId, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import type { UserCreateParamsPOST } from '@rocket.chat/rest-typings';
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
 import {
 	useAccountsCustomFields,
@@ -41,6 +41,8 @@ import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
 import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
+import AdminUserSetRandomPasswordContent from './AdminUserSetRandomPasswordContent';
+import AdminUserSetRandomPasswordRadios from './AdminUserSetRandomPasswordRadios';
 import { useSmtpQuery } from './hooks/useSmtpQuery';
 
 type AdminUserFormProps = {
@@ -48,6 +50,8 @@ type AdminUserFormProps = {
 	onReload: () => void;
 	context: string;
 };
+
+export type UserFormProps = Omit<UserCreateParamsPOST & { avatar: AvatarObject; passwordConfirmation: string }, 'fields'>;
 
 const getInitialValue = ({
 	data,
@@ -75,6 +79,7 @@ const getInitialValue = ({
 	...(!isEditingExistingUser && { joinDefaultChannels: true }),
 	sendWelcomeEmail: isSmtpEnabled,
 	avatar: '' as AvatarObject,
+	passwordConfirmation: '',
 });
 
 const UserForm = ({ userData, onReload, context, ...props }: AdminUserFormProps) => {
@@ -87,7 +92,7 @@ const UserForm = ({ userData, onReload, context, ...props }: AdminUserFormProps)
 	const isVerificationNeeded = useSetting('Accounts_EmailVerification');
 
 	const defaultUserRoles = parseCSV(defaultRoles);
-	const { data } = useSmtpQuery();
+	const { data, isSuccess: isSmtpStatusAvailable } = useSmtpQuery();
 	const isSmtpEnabled = data?.isSMTPConfigured;
 	const isNewUserPage = context === 'new';
 
@@ -110,12 +115,13 @@ const UserForm = ({ userData, onReload, context, ...props }: AdminUserFormProps)
 		handleSubmit,
 		reset,
 		formState: { errors, isDirty },
-	} = useForm({
-		defaultValues: getInitialValue({ data: userData, defaultUserRoles, isSmtpEnabled, isEditingExistingUser }),
+		setValue,
+	} = useForm<UserFormProps>({
+		defaultValues: getInitialValue({ data: userData, defaultUserRoles, isSmtpEnabled }),
 		mode: 'onBlur',
 	});
 
-	const { avatar, username, setRandomPassword } = watch();
+	const { avatar, username, setRandomPassword, password } = watch();
 
 	const updateAvatar = useUpdateAvatar(avatar, userData?._id || '');
 
@@ -285,7 +291,6 @@ const UserForm = ({ userData, onReload, context, ...props }: AdminUserFormProps)
 										aria-describedby={`${usernameId}-error`}
 										error={errors.username?.message}
 										flexGrow={1}
-										addon={<Icon name='at' size='x20' />}
 									/>
 								)}
 							/>
@@ -297,14 +302,27 @@ const UserForm = ({ userData, onReload, context, ...props }: AdminUserFormProps)
 						)}
 					</Field>
 					<Field>
-						<FieldRow>
-							<FieldLabel htmlFor={verifiedId}>{t('Verified')}</FieldLabel>
-							<Controller
+						<FieldLabel htmlFor={passwordId} mbe={8}>
+							{t('Password')}
+						</FieldLabel>
+						<AdminUserSetRandomPasswordRadios
+							isNewUserPage={isNewUserPage}
+							setRandomPasswordId={setRandomPasswordId}
+							control={control}
+							isSmtpStatusAvailable={isSmtpStatusAvailable}
+							isSmtpEnabled={isSmtpEnabled}
+							setValue={setValue}
+						/>
+						{!setRandomPassword && (
+							<AdminUserSetRandomPasswordContent
 								control={control}
-								name='verified'
-								render={({ field: { onChange, value } }) => <ToggleSwitch id={verifiedId} checked={value} onChange={onChange} />}
+								setRandomPassword={setRandomPassword}
+								isNewUserPage={isNewUserPage}
+								passwordId={passwordId}
+								errors={errors}
+								password={password}
 							/>
-						</FieldRow>
+						)}
 					</Field>
 					<Field>
 						<FieldLabel htmlFor={statusTextId}>{t('StatusMessage')}</FieldLabel>
@@ -373,7 +391,7 @@ const UserForm = ({ userData, onReload, context, ...props }: AdminUserFormProps)
 					</Field>
 				</FieldGroup>
 				<FieldGroup>
-					{!setRandomPassword && (
+					{/* {!setRandomPassword && (
 						<Field>
 							<FieldLabel htmlFor={passwordId}>{t('Password')}</FieldLabel>
 							<FieldRow>
@@ -443,7 +461,7 @@ const UserForm = ({ userData, onReload, context, ...props }: AdminUserFormProps)
 								dangerouslySetInnerHTML={{ __html: t('Send_Email_SMTP_Warning', { url: 'admin/settings/Email' }) }}
 							/>
 						)}
-					</Field>
+					</Field> */}
 					<Field>
 						<FieldLabel htmlFor={rolesId}>{t('Roles')}</FieldLabel>
 						<FieldRow>
