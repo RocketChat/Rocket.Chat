@@ -11,6 +11,7 @@ import LinkSpan from './LinkSpan';
 import PlainSpan from './PlainSpan';
 
 type MessageBlock =
+	| MessageParser.Timestamp
 	| MessageParser.Emoji
 	| MessageParser.ChannelMention
 	| MessageParser.UserMention
