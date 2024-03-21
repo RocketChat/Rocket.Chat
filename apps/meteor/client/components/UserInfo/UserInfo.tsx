@@ -75,7 +75,7 @@ const UserInfo = ({
 					</InfoPanel.Avatar>
 				)}
 
-				{actions && <InfoPanel.Section>{actions}</InfoPanel.Section>}
+				{actions && <InfoPanel.ActionGroup>{actions}</InfoPanel.ActionGroup>}
 
 				<InfoPanel.Section>
 					{userDisplayName && <InfoPanel.Title icon={status} title={userDisplayName} />}

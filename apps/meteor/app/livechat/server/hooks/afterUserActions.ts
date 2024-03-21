@@ -39,7 +39,7 @@ const handleDeactivateUser = async (user: IUser) => {
 
 const handleActivateUser = async (user: IUser) => {
 	if (isAgent(user) && user.username) {
-		await LivechatTyped.addAgent(user.username);
+		await LivechatTyped.afterAgentUserActivated(user);
 	}
 };
 

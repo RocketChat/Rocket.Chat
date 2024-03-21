@@ -2,6 +2,7 @@ import { useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useRef } from 'react';
 
+import { ContextualbarDialog } from '../../../components/Contextualbar';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
 import EditRoomWithData from './EditRoomWithData';
 import RoomsTable from './RoomsTable';
@@ -22,7 +23,11 @@ const RoomsPage = (): ReactElement => {
 					<RoomsTable reload={reloadRef} />
 				</PageContent>
 			</Page>
-			{context && <EditRoomWithData rid={id} onReload={reloadRef.current} />}
+			{context && (
+				<ContextualbarDialog>
+					<EditRoomWithData rid={id} onReload={reloadRef.current} />
+				</ContextualbarDialog>
+			)}
 		</Page>
 	);
 };
