@@ -3271,7 +3271,7 @@
   "Log_Trace_Subscriptions_Filter": "Trace subscription filter",
   "Log_Trace_Subscriptions_Filter_Description": "The text here will be evaluated as RegExp (`new RegExp('text')`). Keep it empty to show trace of every call.",
   "Log_View_Limit": "Log View Limit",
-  "Logged_Out_Banner_Text": "Your workspace admin ended your session on this device. Please log in again to continue.",
+  "Logged_Out_Banner_Text": "Your session was ended on this device, please log in again to continue.",
   "Logged_out_of_other_clients_successfully": "Logged out of other clients successfully",
   "Login": "Login",
   "Log_in_to_sync": "Log in to sync",
