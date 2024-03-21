@@ -117,6 +117,19 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 		);
 	};
 
+	const namesRegexSetting = useSetting('UTF8_User_Names_Validation');
+	const regex = new RegExp(`^${namesRegexSetting}$`);
+
+	const validateUsername = async (username: string): Promise<string | undefined> => {
+		if (!username) {
+			return;
+		}
+
+		if (!regex.test(username)) {
+			return t('error-invalid-username');
+		}
+	};
+
 	if (errors.email?.type === 'invalid-email') {
 		return <EmailConfirmationForm onBackToLogin={() => clearErrors('email')} email={getValues('email')} />;
 	}
@@ -192,6 +205,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 							<TextInput
 								{...register('username', {
 									required: t('registration.component.form.requiredField'),
+									validate: (username) => validateUsername(username),
 								})}
 								error={errors?.username?.message}
 								aria-required='true'
