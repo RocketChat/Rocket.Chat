@@ -132,6 +132,7 @@ export class BusinessHourManager {
 		if (!settings.get('Livechat_enable_business_hours')) {
 			return;
 		}
+
 		await this.createCronJobsForWorkHours();
 	}
 
