@@ -61,7 +61,6 @@ type MemoizedSettingProps = {
 	disabled?: boolean;
 	required?: boolean;
 	showUpgradeButton?: ReactNode;
-	tag?: ReactNode;
 	actionText?: string;
 };
 
