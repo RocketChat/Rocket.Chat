@@ -163,8 +163,10 @@ test.describe.parallel('administration', () => {
 
 			test('expect to change the language to pt-BR', async ({ page, api }) => {
 				expect((await setSettingValueById(api, 'Language', 'pt-BR')).status()).toBe(200);
+				expect((await api.get('/i18n/pt-BR.json')).status()).toBe(200);
 
 				await page.reload();
+				await expect(page.locator('html')).toHaveAttribute('lang', 'pt-BR');
 				await expect(page.locator('h1')).toHaveText('Geral');
 			});
 		});
