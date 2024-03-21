@@ -2323,7 +2323,7 @@ describe('[Rooms]', function () {
 				.post(api('rooms.export'))
 				.set(credentials)
 				.send({
-					rid: 'invalid-rid',
+					rid: testChannel._id,
 					type: 'file',
 					dateFrom: '2024-03-15',
 					dateTo: '2024-03-22',
