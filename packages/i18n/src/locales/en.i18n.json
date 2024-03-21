@@ -6354,5 +6354,6 @@
   "Encrypted_messages_false": "Messages are not encrypted",
   "Not_available_for_broadcast": "Not available for broadcast {{roomType}}",
   "Not_available_for_this_workspace": "Not available for this workspace",
-  "People_can_only_join_by_being_invited": "People can only join by being invited"
+  "People_can_only_join_by_being_invited": "People can only join by being invited",
+  "Go_to_href": "Go to: {{href}}"
 }
