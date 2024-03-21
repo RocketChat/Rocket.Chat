@@ -28,6 +28,7 @@ import { Controller, useForm } from 'react-hook-form';
 
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
+import { useEncryptedRoomDescription } from '../hooks/useEncryptedRoomDescription';
 
 type CreateTeamModalInputs = {
 	name: string;
@@ -92,7 +93,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 		},
 	});
 
-	const { isPrivate, broadcast, readOnly } = watch();
+	const { isPrivate, broadcast, readOnly, encrypted } = watch();
 
 	useEffect(() => {
 		if (!isPrivate) {
@@ -108,6 +109,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 
 	const canChangeReadOnly = !broadcast;
 	const canChangeEncrypted = isPrivate && !broadcast && e2eEnabled && !e2eEnabledForPrivateByDefault;
+	const getEncryptedHint = useEncryptedRoomDescription('team');
 
 	const handleCreateTeam = async ({
 		name,
@@ -224,7 +226,9 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 								)}
 							/>
 						</FieldRow>
-						<FieldDescription id={`${privateId}-hint`}>{isPrivate ? t('Only_invited_people') : t('Anyone_can_access')}</FieldDescription>
+						<FieldDescription id={`${privateId}-hint`}>
+							{isPrivate ? t('People_can_only_join_by_being_invited') : t('Anyone_can_access')}
+						</FieldDescription>
 					</Field>
 					<Field>
 						<FieldRow>
@@ -266,9 +270,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 								)}
 							/>
 						</FieldRow>
-						<FieldDescription id={`${encryptedId}-hint`}>
-							{isPrivate ? t('Teams_New_Encrypted_Description_Enabled') : t('Teams_New_Encrypted_Description_Disabled')}
-						</FieldDescription>
+						<FieldDescription id={`${encryptedId}-hint`}>{getEncryptedHint({ isPrivate, broadcast, encrypted })}</FieldDescription>
 					</Field>
 					<Field>
 						<FieldRow>

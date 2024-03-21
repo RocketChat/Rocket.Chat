@@ -1927,7 +1927,7 @@
   "Encrypted_key_title": "Click here to disable end-to-end encryption for this channel (requires e2ee-permission)",
   "Encrypted_message": "Encrypted message",
   "Encrypted_setting_changed_successfully": "Encrypted setting changed successfully",
-  "Encrypted_not_available": "Not available for public channels",
+  "Encrypted_not_available": "Not available for public {{roomType}}",
   "Encryption_key_saved_successfully": "Your encryption key was saved successfully.",
   "EncryptionKey_Change_Disabled": "You can't set a password for your encryption key because your private key is not present on this client. In order to set a new password you need load your private key using your existing password or use a client where the key is already loaded.",
   "End": "End",
@@ -3960,7 +3960,7 @@
   "Only_On_Desktop": "Desktop mode (only sends with enter on desktop)",
   "Only_works_with_chrome_version_greater_50": "Only works with Chrome browser versions > 50",
   "Only_you_can_see_this_message": "Only you can see this message",
-  "Only_invited_users_can_acess_this_channel": "Only invited users can access this Channel",
+  "Only_invited_users_can_acess_this_channel": "Only invited users can access this channel",
   "Oops_page_not_found": "Oops, page not found",
   "Oops!": "Oops",
   "Person_Or_Channel": "Person or Channel",
@@ -6349,5 +6349,10 @@
   "Delete_roomType_description": "Deleting this {{roomType}} will also delete all contained message. This cannot be undone.",
   "Deleted_roomType": "{{roomName}} {{roomType}} has been deleted",
   "unread_messages_one": "{{count}} unread message",
-  "unread_messages_other": "{{count}} unread messages"
+  "unread_messages_other": "{{count}} unread messages",
+  "Encrypted_messages": "End-to-end encrypted {{roomType}}. Search will not work with encrypted {{roomType}} and notifications may not show the messages content.",
+  "Encrypted_messages_false": "Messages are not encrypted",
+  "Not_available_for_broadcast": "Not available for broadcast {{roomType}}",
+  "Not_available_for_this_workspace": "Not available for this workspace",
+  "People_can_only_join_by_being_invited": "People can only join by being invited"
 }

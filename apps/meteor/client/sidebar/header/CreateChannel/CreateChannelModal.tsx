@@ -30,6 +30,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
 import UserAutoCompleteMultipleFederated from '../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
+import { useEncryptedRoomDescription } from '../hooks/useEncryptedRoomDescription';
 
 type CreateChannelModalProps = {
 	teamId?: string;
@@ -68,6 +69,7 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 
 	const canCreateChannel = usePermission('create-c');
 	const canCreatePrivateChannel = usePermission('create-p');
+	const getEncryptedHint = useEncryptedRoomDescription('channel');
 
 	const channelNameRegex = useMemo(() => new RegExp(`^${namesValidation}$`), [namesValidation]);
 	const federatedModule = useHasLicenseModule('federation');
@@ -110,7 +112,7 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 		},
 	});
 
-	const { isPrivate, broadcast, readOnly, federated } = watch();
+	const { isPrivate, broadcast, readOnly, federated, encrypted } = watch();
 
 	useEffect(() => {
 		if (!isPrivate) {
@@ -269,7 +271,7 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 							/>
 						</FieldRow>
 						<FieldHint id={`${privateId}-hint`}>
-							{isPrivate ? t('Only_invited_users_can_acess_this_channel') : t('Anyone_can_access')}
+							{isPrivate ? t('People_can_only_join_by_being_invited') : t('Anyone_can_access')}
 						</FieldHint>
 					</Field>
 					<Field>
@@ -311,9 +313,7 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 								)}
 							/>
 						</FieldRow>
-						<FieldDescription id={`${encryptedId}-hint`}>
-							{isPrivate ? t('Encrypted_channel_Description') : t('Encrypted_not_available')}
-						</FieldDescription>
+						<FieldDescription id={`${encryptedId}-hint`}>{getEncryptedHint({ isPrivate, broadcast, encrypted })}</FieldDescription>
 					</Field>
 					<Field>
 						<FieldRow>
