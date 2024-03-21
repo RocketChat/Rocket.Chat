@@ -76,8 +76,8 @@ export class LivechatAgentActivityMonitor {
 			await Promise.all([
 				LivechatAgentActivity.updateLastStoppedAt({ ...data, availableTime, lastStoppedAt: stoppedAt }),
 				LivechatAgentActivity.updateServiceHistory({ ...data, serviceHistory: { startedAt: session.lastStartedAt, stoppedAt } }),
-				this._createOrUpdateSession(session.agentId, startedAt),
 			]);
+			await this._createOrUpdateSession(session.agentId, startedAt);
 		}
 	}
 
