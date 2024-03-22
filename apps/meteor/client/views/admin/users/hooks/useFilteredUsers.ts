@@ -50,18 +50,13 @@ const useFilteredUsers = ({ searchTerm, prevSearchTerm, sortData, paginationData
 			offset: searchTerm === prevSearchTerm.current ? current : 0,
 		};
 	}, [current, itemsPerPage, prevSearchTerm, searchTerm, setCurrent, sortBy, sortDirection, tab]);
-
 	const getUsers = useEndpoint('GET', '/v1/users.listByStatus');
-
 	const dispatchToastMessage = useToastMessageDispatch();
-
 	const usersListQueryResult = useQuery(['users.list', payload, tab], async () => getUsers(payload), {
 		onError: (error) => {
 			dispatchToastMessage({ type: 'error', message: error });
 		},
 	});
-
 	return usersListQueryResult;
 };
-
 export default useFilteredUsers;
