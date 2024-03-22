@@ -132,6 +132,9 @@ const AdminUsersPage = (): ReactElement => {
 						<TabsItem selected={tab === 'active'} onClick={() => handleTabChangeAndSort('active')}>
 							{t('Active')}
 						</TabsItem>
+						<TabsItem selected={tab === 'deactivated'} onClick={() => handleTabChangeAndSort('deactivated')}>
+							{t('Deactivated')}
+						</TabsItem>
 					</Tabs>
 					<UsersTable
 						filteredUsersQueryResult={filteredUsersQueryResult}
@@ -158,7 +161,7 @@ const AdminUsersPage = (): ReactElement => {
 							</ContextualbarTitle>
 							<ContextualbarClose onClick={() => router.navigate('/admin/users')} />
 						</ContextualbarHeader>
-						{context === 'info' && id && <AdminUserInfoWithData uid={id} onReload={handleReload} />}
+						{context === 'info' && id && <AdminUserInfoWithData uid={id} onReload={handleReload} tab={tab} />}
 						{context === 'edit' && id && <AdminUserFormWithData uid={id} onReload={handleReload} />}
 						{!isRoutePrevented && context === 'new' && <AdminUserForm onReload={handleReload} />}
 						{!isRoutePrevented && context === 'invite' && <AdminInviteUsers />}
