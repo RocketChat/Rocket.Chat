@@ -1,7 +1,7 @@
 import type { ILivechatVisitor, ILivechatVisitorDTO, Serialized } from '@rocket.chat/core-typings';
-import type { ComponentChildren } from 'preact';
-import { Component, createContext } from 'preact';
-import { useContext } from 'preact/hooks';
+import type { ComponentChildren, VNode } from 'preact';
+import { createContext } from 'preact';
+import { useContext, useEffect, useState } from 'preact/hooks';
 
 import type { CustomField } from '../components/Form/CustomFields';
 import type { Agent } from '../definitions/agents';
@@ -21,7 +21,18 @@ export type StoreState = {
 	token: string;
 	typing: string[];
 	config: {
-		messages: any;
+		loading: boolean;
+		messages: {
+			offlineMessage?: string;
+			offlineSuccessMessage?: string;
+			offlineUnavailableMessage?: string;
+			conversationFinishedMessage?: string;
+			conversationFinishedText?: string;
+			transcriptMessage?: string;
+			registrationFormMessage?: string;
+			dataProcessingConsentText?: string;
+			switchDepartmentMessage?: string;
+		};
 		theme: {
 			title?: string;
 			color?: string;
@@ -97,7 +108,7 @@ export type StoreState = {
 	triggered?: boolean;
 	undocked?: boolean;
 	expanded?: boolean;
-	modal?: any;
+	modal?: VNode | null;
 	agent?: any;
 	room?: { _id: string };
 	noMoreMessages?: boolean;
@@ -116,6 +127,7 @@ export const initialState = (): StoreState => ({
 	token: createToken(),
 	typing: [],
 	config: {
+		loading: true,
 		messages: {},
 		settings: {},
 		theme: {},
@@ -203,32 +215,26 @@ export const StoreContext = createContext<StoreContextValue>({
 	off: store.off.bind(store),
 });
 
-export class Provider extends Component {
-	static displayName = 'StoreProvider';
-
-	state = {
+export const Provider = ({ children }: { children: ComponentChildren }) => {
+	const [state, setState] = useState({
 		...store.state,
 		dispatch: store.setState.bind(store),
 		on: store.on.bind(store),
 		off: store.off.bind(store),
-	};
+	});
 
-	handleStoreChange = () => {
-		this.setState({ ...store.state });
-	};
+	useEffect(() => {
+		const handleStoreChange = () => {
+			setState((old) => ({ ...old, ...store.state }));
+		};
+		store.on('change', handleStoreChange);
+		return () => {
+			store.off('change', handleStoreChange);
+		};
+	}, []);
 
-	componentDidMount() {
-		store.on('change', this.handleStoreChange);
-	}
-
-	componentWillUnmount() {
-		store.off('change', this.handleStoreChange);
-	}
-
-	render = ({ children }: { children: ComponentChildren }) => {
-		return <StoreContext.Provider value={this.state}>{children}</StoreContext.Provider>;
-	};
-}
+	return <StoreContext.Provider value={state}>{children}</StoreContext.Provider>;
+};
 
 export const { Consumer } = StoreContext;
 

@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 
 import { onUserActivity } from '../lib/room';
 
-export const useUserActivitySubscription = (rid: string) => {
+export const useUserActivitySubscription = (rid?: string) => {
 	const stream = useStream('notify-room');
 
 	useEffect(() => {

@@ -54,7 +54,7 @@ export const loadConfig = async () => {
 	});
 
 	await store.setState({
-		config,
+		config: { ...config, loading: false },
 		agent: agent && agent.hiddenInfo ? { hiddenInfo: true } : agent, // TODO: revert it when the API is updated
 		room,
 		user,
@@ -66,11 +66,14 @@ export const loadConfig = async () => {
 		visible: true,
 		unread: null,
 	});
+
+	return store.state;
 };
 
 export const shouldMarkAsUnread = () => {
 	const { minimized, visible, messageListPosition } = store.state;
-	return minimized || !visible || (messageListPosition !== undefined && messageListPosition !== 'bottom');
+
+	return !document.hasFocus() || minimized || !visible || (messageListPosition !== undefined && messageListPosition !== 'bottom');
 };
 
 export const getLastReadMessage = () => {

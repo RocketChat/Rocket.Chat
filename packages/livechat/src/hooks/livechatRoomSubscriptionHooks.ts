@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 
 import { onAgentChange, onAgentStatusChange, onQueuePositionChange } from '../lib/room';
 
-export const useAgentChangeSubscription = (rid: string) => {
+export const useAgentChangeSubscription = (rid?: string) => {
 	const stream = useStream('livechat-room');
 
 	useEffect(() => {
@@ -18,7 +18,7 @@ export const useAgentChangeSubscription = (rid: string) => {
 	}, [rid, stream]);
 };
 
-export const useAgentStatusChangeSubscription = (rid: string) => {
+export const useAgentStatusChangeSubscription = (rid?: string) => {
 	const stream = useStream('livechat-room');
 
 	useEffect(() => {
@@ -33,7 +33,7 @@ export const useAgentStatusChangeSubscription = (rid: string) => {
 	}, [rid, stream]);
 };
 
-export const useQueuePositionChangeSubscription = (rid: string) => {
+export const useQueuePositionChangeSubscription = (rid?: string) => {
 	const stream = useStream('livechat-room');
 
 	useEffect(() => {

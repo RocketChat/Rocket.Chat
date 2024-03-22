@@ -271,6 +271,8 @@ export const loadMessages = async () => {
 	await initRoom();
 	await store.setState({ messages: (messages || []).reverse(), noMoreMessages: false, loading: false });
 
+	processUnread();
+
 	if (ongoingCall && isCallOngoing(ongoingCall.callStatus)) {
 		return;
 	}
@@ -344,11 +346,3 @@ export const defaultRoomParams = () => {
 
 	return params;
 };
-
-store.on('change', ([state, prevState]) => {
-	// Cross-tab communication
-	// Detects when a room is created and then route to the correct container
-	if (!prevState.room && state.room) {
-		route('/');
-	}
-});

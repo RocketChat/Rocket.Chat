@@ -92,6 +92,14 @@ export class HomeSidenav {
 		await expect(this.page.locator('role=main >> role=list')).not.toHaveAttribute('aria-busy', 'true');
 	}
 
+	async waitForOmnichannelOnlineStatus(): Promise<void> {
+		const toggleButton = this.page.locator('#omnichannel-status-toggle');
+		await expect(toggleButton).toBeVisible();
+
+		const currentStatus = await toggleButton.getAttribute('title');
+		await expect(currentStatus).toContain('Turn off answer chats');
+	}
+
 	async switchOmnichannelStatus(status: 'offline' | 'online') {
 		// button has a id of "omnichannel-status-toggle"
 		const toggleButton = this.page.locator('#omnichannel-status-toggle');

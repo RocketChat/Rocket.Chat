@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 
 import { onMessage } from '../lib/room';
 
-export const useRoomMessagesSubscription = (rid: string, token: string) => {
+export const useRoomMessagesSubscription = (rid?: string, token?: string) => {
 	const stream = useStream('room-messages');
 
 	useEffect(() => {

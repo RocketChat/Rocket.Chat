@@ -10,7 +10,7 @@ const deleteMessage = (messageId: string) => {
 	});
 };
 
-export const useDeleteMessageSubscription = (rid: string) => {
+export const useDeleteMessageSubscription = (rid?: string) => {
 	const stream = useStream('notify-room');
 
 	useEffect(() => {

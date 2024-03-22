@@ -8,7 +8,6 @@ import CustomFields from './customFields';
 import { loadConfig, updateBusinessUnit } from './main';
 import { parentCall } from './parentCall';
 import { createToken } from './random';
-import { loadMessages } from './room';
 import Triggers from './triggers';
 
 const createOrUpdateGuest = async (guest: StoreState['guest']) => {
@@ -126,7 +125,6 @@ const api = {
 
 		if (department !== existingDepartment) {
 			await loadConfig();
-			await loadMessages();
 		}
 	},
 

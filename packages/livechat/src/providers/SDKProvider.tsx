@@ -18,7 +18,7 @@ export const useSDK = () => {
 };
 
 const SDKProvider = ({ children }: { serverURL: string; children: React.ReactNode }) => {
-	const sdk = useMemo(() => Livechat, []);
+	const sdk = useMemo(() => (Livechat.connection.connect(), Livechat), []);
 
 	return <SDKContext.Provider value={{ sdk }}>{children}</SDKContext.Provider>;
 };

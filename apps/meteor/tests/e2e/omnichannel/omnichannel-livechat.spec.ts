@@ -29,20 +29,19 @@ test.describe.serial('OC - Livechat', () => {
 
 	test.beforeAll(async ({ browser, api }) => {
 		const { page: livechatPage } = await createAuxContext(browser, Users.user1, '/livechat', false);
-
 		poLiveChat = new OmnichannelLiveChat(livechatPage, api);
 	});
 
 	test.beforeEach(async ({ page }) => {
 		poHomeOmnichannel = new HomeOmnichannel(page);
-
 		await page.goto('/');
 		await page.locator('.main-content').waitFor();
+		await poHomeOmnichannel.sidenav.waitForOmnichannelOnlineStatus();
 	});
 
 	test.afterAll(async ({ api }) => {
 		await api.delete('/livechat/users/agent/user1');
-		await poLiveChat.page?.close();
+		await poLiveChat.page.close();
 	});
 
 	test('OC - Livechat - Send message to online agent', async () => {
