@@ -82,7 +82,10 @@ export interface StreamerEvents {
 		{ key: `${string}/webrtc`; args: unknown[] },
 		/* @deprecated over videoconf*/
 		// { key: `${string}/${string}`; args: [id: string] },
-		{ key: `${string}/${StreamerRoomEvents.MENTION}`; args: [{ rid: IRoom['_id']; mid: IMessage['_id']; type: MentionTypes }] },
+		{
+			key: `${string}/${StreamerRoomEvents.MENTION}`;
+			args: [{ rid: IRoom['_id']; mid: IMessage['_id']; uid: IUser['_id']; type: MentionTypes }];
+		},
 	];
 
 	'room-messages': [{ key: '__my_messages__'; args: [IMessage] }, { key: string; args: [message: IMessage, user?: IUser, room?: IRoom] }];
