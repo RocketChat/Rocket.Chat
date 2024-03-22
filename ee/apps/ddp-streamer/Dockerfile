@@ -46,6 +46,12 @@ COPY ./packages/server-cloud-communication/ packages/server-cloud-communication/
 COPY ./ee/packages/license/package.json packages/license/package.json
 COPY ./ee/packages/license/dist packages/license/dist
 
+COPY ./ee/packages/ddp-client/package.json packages/ddp-client/package.json
+COPY ./ee/packages/ddp-client/dist packages/ddp-client/dist
+
+COPY ./ee/packages/api-client/package.json packages/api-client/package.json
+COPY ./ee/packages/api-client/dist packages/api-client/dist
+
 COPY ./packages/instance-status/package.json packages/instance-status/package.json
 COPY ./packages/instance-status/dist packages/instance-status/dist
 
