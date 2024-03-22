@@ -157,17 +157,13 @@ export async function findPaginatedUsersByStatus({
 	};
 
 	const actualSort: Record<string, 1 | -1> = sort || { username: 1 };
-
 	if (sort?.status) {
 		actualSort.active = sort.status;
 	}
-
 	if (sort?.name) {
 		actualSort.nameInsensitive = sort.name;
 	}
-
 	const match: Filter<IUser & RootFilterOperators<IUser>> = {};
-
 	switch (status) {
 		case 'active':
 			match.active = true;
@@ -196,11 +192,9 @@ export async function findPaginatedUsersByStatus({
 			name: { $regex: escapeRegExp(searchTerm || ''), $options: 'i' },
 		},
 	];
-
 	if (roles?.length && !roles.includes('all')) {
 		match.roles = { $in: roles };
 	}
-
 	const { cursor, totalCount } = await Users.findPaginated(
 		{
 			...match,
@@ -212,9 +206,7 @@ export async function findPaginatedUsersByStatus({
 			projection,
 		},
 	);
-
 	const [users, total] = await Promise.all([cursor.toArray(), totalCount]);
-
 	return {
 		users,
 		count: users.length,

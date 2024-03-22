@@ -4506,10 +4506,8 @@ describe('[Users]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('users');
-
 					const { users } = res.body;
 					const ids = users.map((user) => user._id);
-
 					expect(ids).to.include(user._id);
 				});
 		});
@@ -4523,17 +4521,14 @@ describe('[Users]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('users');
-
 					const { users } = res.body;
 					const ids = users.map((user) => user._id);
-
 					expect(ids).to.include(user._id);
 				});
 		});
 
 		it('should list active users', async () => {
 			await login(user.username, password);
-
 			await request
 				.get(api('users.listByStatus'))
 				.set(credentials)
@@ -4543,17 +4538,14 @@ describe('[Users]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('users');
-
 					const { users } = res.body;
 					const ids = users.map((user) => user._id);
-
 					expect(ids).to.include(user._id);
 				});
 		});
 
 		it('should filter users by role', async () => {
 			await login(user.username, password);
-
 			await request
 				.get(api('users.listByStatus'))
 				.set(credentials)
@@ -4563,10 +4555,8 @@ describe('[Users]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('users');
-
 					const { users } = res.body;
 					const ids = users.map((user) => user._id);
-
 					expect(ids).to.not.include(user._id);
 				});
 		});
@@ -4577,7 +4567,6 @@ describe('[Users]', function () {
 				activeStatus: false,
 				confirmRelinquish: false,
 			});
-
 			await request
 				.get(api('users.listByStatus'))
 				.set(credentials)
@@ -4587,10 +4576,8 @@ describe('[Users]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('users');
-
 					const { users } = res.body;
 					const ids = users.map((user) => user._id);
-
 					expect(ids).to.include(user._id);
 				});
 		});
@@ -4605,10 +4592,8 @@ describe('[Users]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('users');
-
 					const { users } = res.body;
 					const ids = users.map((user) => user._id);
-
 					expect(ids).to.include(user._id);
 				});
 		});
