@@ -246,6 +246,8 @@ export const createSettings = async (): Promise<void> => {
 		type: 'string',
 		group: 'Omnichannel',
 		section: 'Livechat',
+		i18nDescription: 'Livechat_background_description',
+		placeholder: '#FFFFFF',
 		public: true,
 		enterprise: true,
 		invalidValue: '',
