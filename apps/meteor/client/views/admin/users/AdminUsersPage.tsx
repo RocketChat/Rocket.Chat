@@ -38,7 +38,7 @@ export type UsersFilters = {
 	roles: OptionProp[];
 };
 
-export type UsersTableSortingOptions = 'name' | 'username' | 'emails.address' | 'status' | 'active';
+export type UsersTableSortingOptions = 'name' | 'username' | 'emails.address' | 'status';
 
 const AdminUsersPage = (): ReactElement => {
 	const t = useTranslation();
