@@ -1,4 +1,4 @@
-import type { ILivechatVisitor, IRoom } from '@rocket.chat/core-typings';
+import type { ILivechatCustomField, ILivechatVisitor, IRoom } from '@rocket.chat/core-typings';
 import { LivechatVisitors as VisitorsRaw, LivechatCustomField, LivechatRooms } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -68,16 +68,46 @@ API.v1.addRoute('livechat/visitor', {
 			);
 		}
 
-		if (customFields && Array.isArray(customFields)) {
-			for await (const field of customFields) {
-				const customField = await LivechatCustomField.findOneById(field.key);
-				if (!customField) {
-					continue;
-				}
-				const { key, value, overwrite } = field;
-				if (customField.scope === 'visitor' && !(await VisitorsRaw.updateLivechatDataByToken(token, key, value, overwrite))) {
-					return API.v1.failure();
-				}
+		if (customFields && Array.isArray(customFields) && customFields.length > 0) {
+			const keys = customFields.map((field) => field.key);
+			const errors: string[] = [];
+
+			const processedKeys = await Promise.all(
+				await LivechatCustomField.findByIdsAndScope<Pick<ILivechatCustomField, '_id'>>(keys, 'visitor', {
+					projection: { _id: 1 },
+				})
+					.map(async (field) => {
+						const customField = customFields.find((f) => f.key === field._id);
+						if (!customField) {
+							return;
+						}
+
+						const { key, value, overwrite } = customField;
+						// TODO: Change this to Bulk update
+						if (!(await VisitorsRaw.updateLivechatDataByToken(token, key, value, overwrite))) {
+							errors.push(key);
+						}
+
+						return key;
+					})
+					.toArray(),
+			);
+
+			if (processedKeys.length !== keys.length) {
+				LivechatTyped.logger.warn({
+					msg: 'Some custom fields were not processed',
+					visitorId,
+					missingKeys: keys.filter((key) => !processedKeys.includes(key)),
+				});
+			}
+
+			if (errors.length > 0) {
+				LivechatTyped.logger.error({
+					msg: 'Error updating custom fields',
+					visitorId,
+					errors,
+				});
+				throw new Error('error-updating-custom-fields');
 			}
 
 			visitor = await VisitorsRaw.findOneEnabledById(visitorId, {});
