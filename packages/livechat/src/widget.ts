@@ -42,6 +42,7 @@ type InitializeParams = {
 	agent: StoreState['defaultAgent'];
 	parentUrl: string;
 	setGuestMetadata: StoreState['iframe']['guestMetadata'];
+	hiddenSystemMessages: StoreState['iframe']['hiddenSystemMessages'];
 };
 
 const WIDGET_OPEN_WIDTH = 365;
@@ -74,6 +75,8 @@ export const VALID_CALLBACKS = [
 	'queue-position-change',
 	'no-agent-online',
 ];
+
+const VALID_SYSTEM_MESSAGES = ['uj', 'ul', 'livechat-close', 'livechat-started', 'livechat_transfer_history'];
 
 const callbacks = mitt();
 
@@ -355,6 +358,23 @@ function setGuestMetadata(metadata: StoreState['iframe']['guestMetadata']) {
 	callHook('setGuestMetadata', metadata);
 }
 
+function setHiddenSystemMessages(hidden: StoreState['iframe']['hiddenSystemMessages']) {
+	if (!Array.isArray(hidden)) {
+		throw new Error('Error: Invalid parameters. Value must be an array of strings');
+	}
+
+	const hiddenSystemMessages = hidden.filter((h) => {
+		if (VALID_SYSTEM_MESSAGES.includes(h)) {
+			return true;
+		}
+
+		console.warn(`Error: Invalid system message "${h}"`);
+		return false;
+	});
+
+	callHook('setHiddenSystemMessages', hiddenSystemMessages);
+}
+
 function initialize(initParams: Partial<InitializeParams>) {
 	for (const initKey in initParams) {
 		if (!initParams.hasOwnProperty(initKey)) {
@@ -406,6 +426,9 @@ function initialize(initParams: Partial<InitializeParams>) {
 				continue;
 			case 'setGuestMetadata':
 				setGuestMetadata(params as InitializeParams['setGuestMetadata']);
+				continue;
+			case 'hiddenSystemMessages':
+				setHiddenSystemMessages(params as InitializeParams['hiddenSystemMessages']);
 				continue;
 			default:
 				continue;
@@ -506,6 +529,7 @@ const livechatWidgetAPI = {
 	setParentUrl,
 	setGuestMetadata,
 	clearAllCallbacks,
+	setHiddenSystemMessages,
 
 	// callbacks
 	onChatMaximized(fn: () => void) {

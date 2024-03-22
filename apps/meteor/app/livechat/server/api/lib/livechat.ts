@@ -170,6 +170,7 @@ export async function settings({ businessUnit = '' }: { businessUnit?: string } 
 			limitTextLength:
 				initSettings.Livechat_enable_message_character_limit &&
 				(initSettings.Livechat_message_character_limit || initSettings.Message_MaxAllowedSize),
+			hiddenSystemMessages: initSettings.Livechat_hide_system_messages,
 		},
 		theme: {
 			title: initSettings.Livechat_title,
