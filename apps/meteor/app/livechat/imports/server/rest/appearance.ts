@@ -1,10 +1,10 @@
+import type { ISettingSelectOption } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 import { isPOSTLivechatAppearanceParams } from '@rocket.chat/rest-typings';
 
 import { isTruthy } from '../../../../../lib/isTruthy';
 import { API } from '../../../../api/server';
 import { findAppearance } from '../../../server/api/lib/appearance';
-import { ISettingSelectOption } from '@rocket.chat/core-typings';
 
 API.v1.addRoute(
 	'livechat/appearance',
