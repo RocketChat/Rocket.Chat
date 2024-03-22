@@ -4,6 +4,7 @@ import { isPOSTLivechatAppearanceParams } from '@rocket.chat/rest-typings';
 import { isTruthy } from '../../../../../lib/isTruthy';
 import { API } from '../../../../api/server';
 import { findAppearance } from '../../../server/api/lib/appearance';
+import { ISettingSelectOption } from '@rocket.chat/core-typings';
 
 API.v1.addRoute(
 	'livechat/appearance',
@@ -64,6 +65,10 @@ API.v1.addRoute(
 						return;
 					}
 
+					if (dbSetting.type === 'multiSelect' && (!Array.isArray(setting.value) || !validateValues(setting.value, dbSetting.values))) {
+						return;
+					}
+
 					switch (dbSetting?.type) {
 						case 'boolean':
 							return {
@@ -94,6 +99,10 @@ API.v1.addRoute(
 		},
 	},
 );
+
+function validateValues(values: string[], allowedValues: ISettingSelectOption[] = []): boolean {
+	return values.every((value) => allowedValues.some((allowedValue) => allowedValue.key === value));
+}
 
 function coerceInt(value: string | number | boolean | string[]): number {
 	if (typeof value === 'number') {
