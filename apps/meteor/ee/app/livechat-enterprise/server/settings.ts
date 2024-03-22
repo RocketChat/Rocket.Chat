@@ -228,32 +228,12 @@ export const createSettings = async (): Promise<void> => {
 		group: 'Omnichannel',
 		section: 'Livechat',
 		invalidValue: false,
-		public: true,
 		enableQuery: omnichannelEnabledQuery,
 		i18nDescription: 'Livechat_hide_watermark_description',
 		enterprise: true,
+		sorter: 999,
 		modules: ['livechat-enterprise'],
 	});
-
-	await settingsRegistry.add(
-		'Assets_livechat_widget_logo',
-		{ defaultUrl: undefined },
-		{
-			type: 'asset',
-			group: 'Omnichannel',
-			section: 'Livechat',
-			invalidValue: null,
-			asset: 'livechat_widget_logo',
-			public: true,
-			enableQuery: omnichannelEnabledQuery,
-			enterprise: true,
-			modules: ['livechat-enterprise'],
-			fileConstraints: {
-				type: 'image',
-				extensions: ['svg', 'png', 'jpg', 'jpeg'],
-			},
-		},
-	);
 
 	await settingsRegistry.add('Omnichannel_contact_manager_routing', true, {
 		type: 'boolean',
