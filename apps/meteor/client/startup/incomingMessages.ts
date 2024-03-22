@@ -26,6 +26,13 @@ Meteor.startup(() => {
 			Subscriptions.update({ rid: data.rid }, { $inc: { unread: 1, userMentions: 1 }, $set: { ts: new Date(), alert: true } });
 		});
 
+		Subscriptions.find({ 'u._id': Meteor.userId() }).forEach((sub) => {
+			sdk.stream('notify-room', [`${sub.rid}/mention`], (data) => {
+				if (Meteor.userId() === data.uid) return;
+				Subscriptions.update({ rid: data.rid }, { $inc: { unread: 1, groupMentions: 1 }, $set: { ts: new Date(), alert: true } });
+			});
+		});
+
 		sdk.stream('notify-user', [`${Meteor.userId()}/subscriptions-changed`], (_action, sub) => {
 			ChatMessage.update(
 				{

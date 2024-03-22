@@ -39,6 +39,7 @@ export class ListenersModule {
 				notifications.notifyRoomInThisInstance(message.rid, StreamerRoomEvents.MENTION, {
 					rid: message.rid,
 					mid: message._id,
+					uid: message.u._id,
 					type: mentions.toAll ? MentionTypes.ALL : MentionTypes.HERE,
 				});
 			}
