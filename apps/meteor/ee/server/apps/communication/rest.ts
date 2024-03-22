@@ -792,6 +792,7 @@ export class AppsRestApi {
 					const info: IAppInfo & { status?: AppStatus } = prl.getInfo();
 					try {
 						await manager.remove(prl.getID(), { user });
+						info.status = AppStatus.DISABLED;
 					} catch (e) {
 						info.status = await prl.getStatus();
 						return API.v1.failure({ app: info });
