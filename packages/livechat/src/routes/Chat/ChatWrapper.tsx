@@ -9,13 +9,16 @@ import {
 	useQueuePositionChangeSubscription,
 } from '../../hooks/livechatRoomSubscriptionHooks';
 import { useDeleteMessageSubscription } from '../../hooks/useDeleteMessageSubscription';
+import { useRoomId } from '../../hooks/useRoomId';
 import { useRoomMessagesSubscription } from '../../hooks/useRoomMessagesSubscription';
 import { useUserActivitySubscription } from '../../hooks/useUserActivitySubscription';
 import { loadMessages } from '../../lib/room';
 import { useStore } from '../../store';
 
 export const ChatWrapper: FunctionalComponent<{}> = ({ children }) => {
-	const { room: { _id: rid } = {}, user: { _id: uid } = {}, token, department } = useStore();
+	const { user: { _id: uid } = {}, token, department } = useStore();
+
+	const rid = useRoomId();
 
 	const connection = useConnectionStatus();
 
