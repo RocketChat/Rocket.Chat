@@ -6,7 +6,7 @@ import { parse } from 'query-string';
 import { isActiveSession } from '../../helpers/isActiveSession';
 import { parentCall } from '../../lib/parentCall';
 import Triggers from '../../lib/triggers';
-import store, { StoreContext } from '../../store';
+import { StoreContext } from '../../store';
 
 export type ScreenContextValue = {
 	notificationsEnabled: boolean;
@@ -27,9 +27,15 @@ export type ScreenContextValue = {
 	onDismissAlert: () => unknown;
 	dismissNotification: () => void;
 	theme?: {
-		color: string;
-		fontColor: string;
-		iconColor: string;
+		color?: string;
+		fontColor?: string;
+		iconColor?: string;
+		position?: 'left' | 'right';
+		guestBubbleBackgroundColor?: string;
+		agentBubbleBackgroundColor?: string;
+		background?: string;
+		hideGuestAvatar?: boolean;
+		hideAgentAvatar?: boolean;
 	};
 };
 
@@ -38,6 +44,8 @@ export const ScreenContext = createContext<ScreenContextValue>({
 		color: '',
 		fontColor: '',
 		iconColor: '',
+		hideAgentAvatar: false,
+		hideGuestAvatar: true,
 	},
 	notificationsEnabled: true,
 	minimized: true,
@@ -50,12 +58,40 @@ export const ScreenContext = createContext<ScreenContextValue>({
 } as ScreenContextValue);
 
 export const ScreenProvider: FunctionalComponent = ({ children }) => {
-	const { dispatch, config, sound, minimized = true, undocked, expanded = false, alerts, modal, iframe } = useContext(StoreContext);
+	const {
+		dispatch,
+		config,
+		sound,
+		minimized = true,
+		undocked,
+		expanded = false,
+		alerts,
+		modal,
+		iframe,
+		...store
+	} = useContext(StoreContext);
 	const { department, name, email } = iframe.guest || {};
-	const { color } = config.theme || {};
-	const { color: customColor, fontColor: customFontColor, iconColor: customIconColor } = iframe.theme || {};
+	const { color, position: configPosition, background } = config.theme || {};
+
+	const {
+		color: customColor,
+		fontColor: customFontColor,
+		iconColor: customIconColor,
+		guestBubbleBackgroundColor,
+		agentBubbleBackgroundColor,
+		position: customPosition,
+		background: customBackground,
+		hideAgentAvatar = false,
+		hideGuestAvatar = true,
+	} = iframe.theme || {};
 
 	const [poppedOut, setPopedOut] = useState(false);
+
+	const position = customPosition || configPosition || 'right';
+
+	useEffect(() => {
+		parentCall('setWidgetPosition', position || 'right');
+	}, [position]);
 
 	const handleEnableNotifications = () => {
 		dispatch({ sound: { ...sound, enabled: true } });
@@ -118,6 +154,12 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 			color: customColor || color,
 			fontColor: customFontColor,
 			iconColor: customIconColor,
+			position,
+			guestBubbleBackgroundColor,
+			agentBubbleBackgroundColor,
+			background: customBackground || background,
+			hideAgentAvatar,
+			hideGuestAvatar,
 		},
 		notificationsEnabled: sound?.enabled,
 		minimized: !poppedOut && (minimized || undocked),
