@@ -73,7 +73,7 @@ API.v1.addRoute(
 						case 'int':
 							return {
 								_id: dbSetting._id,
-								value: coerceInt(setting.value as number),
+								value: coerceInt(setting.value),
 							};
 						default:
 							return {
@@ -95,12 +95,16 @@ API.v1.addRoute(
 	},
 );
 
-function coerceInt(value: string | number | boolean): number {
+function coerceInt(value: string | number | boolean | string[]): number {
 	if (typeof value === 'number') {
 		return value;
 	}
 
 	if (typeof value === 'boolean') {
+		return 0;
+	}
+
+	if (Array.isArray(value)) {
 		return 0;
 	}
 
