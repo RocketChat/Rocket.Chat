@@ -4500,76 +4500,63 @@ describe('[Users]', function () {
 			await request
 				.get(api('users.listByStatus'))
 				.set(credentials)
-				.query({ status: 'pending', count: 50 })
+				.query({ hasLoggedIn: false, type: 'user', count: 50 })
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('users');
-
 					const { users } = res.body;
 					const ids = users.map((user) => user._id);
-
 					expect(ids).to.include(user._id);
 				});
 		});
 
 		it('should list all users', async () => {
-			await login(user.username, password);
-
 			await request
 				.get(api('users.listByStatus'))
 				.set(credentials)
-				.query({ status: 'all' })
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('users');
-
 					const { users } = res.body;
 					const ids = users.map((user) => user._id);
-
 					expect(ids).to.include(user._id);
 				});
 		});
 
 		it('should list active users', async () => {
 			await login(user.username, password);
-
 			await request
 				.get(api('users.listByStatus'))
 				.set(credentials)
-				.query({ status: 'active' })
+				.query({ hasLoggedIn: true, status: 'active' })
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('users');
-
 					const { users } = res.body;
 					const ids = users.map((user) => user._id);
-
 					expect(ids).to.include(user._id);
 				});
 		});
 
 		it('should filter users by role', async () => {
 			await login(user.username, password);
-
 			await request
 				.get(api('users.listByStatus'))
 				.set(credentials)
-				.query({ 'status': 'active', 'roles[]': 'admin' })
+				.query({ 'roles[]': 'admin' })
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('users');
-
 					const { users } = res.body;
 					const ids = users.map((user) => user._id);
-
 					expect(ids).to.not.include(user._id);
 				});
 		});
@@ -4580,20 +4567,17 @@ describe('[Users]', function () {
 				activeStatus: false,
 				confirmRelinquish: false,
 			});
-
 			await request
 				.get(api('users.listByStatus'))
 				.set(credentials)
-				.query({ status: 'deactivated' })
+				.query({ hasLoggedIn: true, status: 'deactivated' })
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('users');
-
 					const { users } = res.body;
 					const ids = users.map((user) => user._id);
-
 					expect(ids).to.include(user._id);
 				});
 		});
@@ -4602,16 +4586,14 @@ describe('[Users]', function () {
 			await request
 				.get(api('users.listByStatus'))
 				.set(credentials)
-				.query({ status: 'all', searchTerm: user.username })
+				.query({ searchTerm: user.username })
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('users');
-
 					const { users } = res.body;
 					const ids = users.map((user) => user._id);
-
 					expect(ids).to.include(user._id);
 				});
 		});

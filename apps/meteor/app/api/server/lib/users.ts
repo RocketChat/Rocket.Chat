@@ -125,12 +125,24 @@ type FindPaginatedUsersByStatusProps = {
 	offset: number;
 	count: number;
 	sort: Record<string, 1 | -1>;
-	status: 'active' | 'all' | 'deactivated' | 'pending';
+	status: 'active' | 'deactivated';
 	roles: string[] | null;
 	searchTerm: string;
+	hasLoggedIn: boolean;
+	type: string;
 };
 
-export async function findPaginatedUsersByStatus({ uid, offset, count, sort, status, roles, searchTerm }: FindPaginatedUsersByStatusProps) {
+export async function findPaginatedUsersByStatus({
+	uid,
+	offset,
+	count,
+	sort,
+	status,
+	roles,
+	searchTerm,
+	hasLoggedIn,
+	type,
+}: FindPaginatedUsersByStatusProps) {
 	const projection = {
 		name: 1,
 		username: 1,
@@ -141,37 +153,32 @@ export async function findPaginatedUsersByStatus({ uid, offset, count, sort, sta
 		avatarETag: 1,
 		lastLogin: 1,
 		type: 1,
-		reason: 0,
+		reason: 1,
 	};
 
 	const actualSort: Record<string, 1 | -1> = sort || { username: 1 };
-
 	if (sort?.status) {
 		actualSort.active = sort.status;
 	}
-
 	if (sort?.name) {
 		actualSort.nameInsensitive = sort.name;
 	}
-
 	const match: Filter<IUser & RootFilterOperators<IUser>> = {};
-
 	switch (status) {
 		case 'active':
 			match.active = true;
-			match.lastLogin = { $exists: true };
-			break;
-		case 'all':
 			break;
 		case 'deactivated':
 			match.active = false;
-			match.lastLogin = { $exists: true };
 			break;
-		case 'pending':
-			match.lastLogin = { $exists: false };
-			match.type = { $nin: ['bot', 'app'] };
-			projection.reason = 1;
-			break;
+	}
+
+	if (hasLoggedIn !== undefined) {
+		match.lastLogin = { $exists: hasLoggedIn };
+	}
+
+	if (type) {
+		match.type = type;
 	}
 
 	const canSeeAllUserInfo = await hasPermissionAsync(uid, 'view-full-other-user-info');
@@ -185,11 +192,9 @@ export async function findPaginatedUsersByStatus({ uid, offset, count, sort, sta
 			name: { $regex: escapeRegExp(searchTerm || ''), $options: 'i' },
 		},
 	];
-
 	if (roles?.length && !roles.includes('all')) {
 		match.roles = { $in: roles };
 	}
-
 	const { cursor, totalCount } = await Users.findPaginated(
 		{
 			...match,
@@ -201,9 +206,7 @@ export async function findPaginatedUsersByStatus({ uid, offset, count, sort, sta
 			projection,
 		},
 	);
-
 	const [users, total] = await Promise.all([cursor.toArray(), totalCount]);
-
 	return {
 		users,
 		count: users.length,
