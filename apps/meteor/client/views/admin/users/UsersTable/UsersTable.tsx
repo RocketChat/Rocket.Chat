@@ -17,7 +17,7 @@ import {
 } from '../../../../components/GenericTable';
 import type { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import type { useSort } from '../../../../components/GenericTable/hooks/useSort';
-import type { UsersFilters } from '../AdminUsersPage';
+import type { UsersFilters, UsersTableSortingOptions } from '../AdminUsersPage';
 import UsersTableRow from './UsersTableRow';
 
 type UsersTableProps = {
@@ -26,10 +26,10 @@ type UsersTableProps = {
 	setUserFilters: Dispatch<SetStateAction<UsersFilters>>;
 	filteredUsersQueryResult: UseQueryResult<PaginatedResult<{ users: Serialized<DefaultUserInfo>[] }>>;
 	paginationData: ReturnType<typeof usePagination>;
-	sortData: ReturnType<typeof useSort<'name' | 'username' | 'emails.address' | 'status'>>;
+	sortData: ReturnType<typeof useSort<UsersTableSortingOptions>>;
+	isSeatsCapExceeded: boolean;
 };
 
-// TODO: Missing error state
 const UsersTable = ({
 	filteredUsersQueryResult,
 	setUserFilters,
@@ -37,6 +37,7 @@ const UsersTable = ({
 	onReload,
 	paginationData,
 	sortData,
+	isSeatsCapExceeded,
 }: UsersTableProps): ReactElement | null => {
 	const t = useTranslation();
 	const router = useRouter();
@@ -75,12 +76,12 @@ const UsersTable = ({
 
 	const headers = useMemo(
 		() => [
-			<GenericTableHeaderCell w='x240' key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
+			<GenericTableHeaderCell w='x186' key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
 				{t('Name')}
 			</GenericTableHeaderCell>,
 			mediaQuery && (
 				<GenericTableHeaderCell
-					w='x140'
+					w='x186'
 					key='username'
 					direction={sortDirection}
 					active={sortBy === 'username'}
@@ -92,7 +93,7 @@ const UsersTable = ({
 			),
 			mediaQuery && (
 				<GenericTableHeaderCell
-					w='x120'
+					w='x186'
 					key='email'
 					direction={sortDirection}
 					active={sortBy === 'emails.address'}
@@ -103,13 +104,13 @@ const UsersTable = ({
 				</GenericTableHeaderCell>
 			),
 			mediaQuery && (
-				<GenericTableHeaderCell w='x120' key='roles' onClick={setSort}>
+				<GenericTableHeaderCell w='x186' key='roles' onClick={setSort}>
 					{t('Roles')}
 				</GenericTableHeaderCell>
 			),
 			tab === 'all' && (
 				<GenericTableHeaderCell
-					w='x100'
+					w='x186'
 					key='status'
 					direction={sortDirection}
 					active={sortBy === 'status'}
@@ -119,6 +120,19 @@ const UsersTable = ({
 					{t('Registration_status')}
 				</GenericTableHeaderCell>
 			),
+			tab === 'pending' && (
+				<GenericTableHeaderCell
+					w='x186'
+					key='action'
+					direction={sortDirection}
+					active={sortBy === 'active'}
+					onClick={setSort}
+					sort='active'
+				>
+					{t('Pending_action')}
+				</GenericTableHeaderCell>
+			),
+			<GenericTableHeaderCell key='actions' w='x186' />,
 		],
 		[mediaQuery, setSort, sortBy, sortDirection, t, tab],
 	);
@@ -169,7 +183,15 @@ const UsersTable = ({
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.users.map((user) => (
-								<UsersTableRow key={user._id} onClick={handleClickOrKeyDown} mediaQuery={mediaQuery} user={user} tab={tab} />
+								<UsersTableRow
+									key={user._id}
+									onClick={handleClickOrKeyDown}
+									mediaQuery={mediaQuery}
+									user={user}
+									onReload={onReload}
+									tab={tab}
+									isSeatsCapExceeded={isSeatsCapExceeded}
+								/>
 							))}
 						</GenericTableBody>
 					</GenericTable>

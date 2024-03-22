@@ -1,5 +1,5 @@
 import type { IAdminUserTabs } from '@rocket.chat/core-typings';
-import { Button, ButtonGroup, ContextualbarIcon, Tabs, TabsItem } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Callout, ContextualbarIcon, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useRouteParameter, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -25,17 +25,20 @@ import AdminUserInfoWithData from './AdminUserInfoWithData';
 import AdminUserUpgrade from './AdminUserUpgrade';
 import UsersTable from './UsersTable';
 import useFilteredUsers from './hooks/useFilteredUsers';
+import usePendingUsersCount from './hooks/usePendingUsersCount';
 
 export type UsersFilters = {
 	text: string;
 };
 
-export type UsersTableSortingOptions = 'name' | 'username' | 'emails.address' | 'status';
+export type UsersTableSortingOptions = 'name' | 'username' | 'emails.address' | 'status' | 'active';
 
 const AdminUsersPage = (): ReactElement => {
 	const t = useTranslation();
 
 	const seatsCap = useSeatsCap();
+
+	const isSeatsCapExceeded = useMemo(() => !!seatsCap && seatsCap.activeUsers >= seatsCap.maxActiveUsers, [seatsCap]);
 
 	const router = useRouter();
 	const context = useRouteParameter('context');
@@ -47,7 +50,7 @@ const AdminUsersPage = (): ReactElement => {
 	const isCreateUserDisabled = useShouldPreventAction('activeUsers');
 
 	const paginationData = usePagination();
-	const sortData = useSort<'name' | 'username' | 'emails.address' | 'status'>('name');
+	const sortData = useSort<UsersTableSortingOptions>('name');
 
 	const [tab, setTab] = useState<IAdminUserTabs>('all');
 	const [userFilters, setUserFilters] = useState<UsersFilters>({ text: '' });
@@ -63,9 +66,17 @@ const AdminUsersPage = (): ReactElement => {
 		tab,
 	});
 
+	const pendingUsersCount = usePendingUsersCount(filteredUsersQueryResult.data?.users);
+
 	const handleReload = (): void => {
 		seatsCap?.reload();
 		filteredUsersQueryResult?.refetch();
+	};
+
+	const handleTabChangeAndSort = (tab: IAdminUserTabs) => {
+		setTab(tab);
+
+		sortData.setSort(tab === 'pending' ? 'active' : 'name', 'asc');
 	};
 
 	useEffect(() => {
@@ -82,16 +93,16 @@ const AdminUsersPage = (): ReactElement => {
 			<Page>
 				<PageHeader title={t('Users')}>
 					{seatsCap && seatsCap.maxActiveUsers < Number.POSITIVE_INFINITY ? (
-						<UserPageHeaderContentWithSeatsCap {...seatsCap} />
+						<UserPageHeaderContentWithSeatsCap isSeatsCapExceeded={isSeatsCapExceeded} {...seatsCap} />
 					) : (
 						<ButtonGroup>
 							{canBulkCreateUser && (
-								<Button icon='mail' onClick={() => router.navigate('/admin/users/invite')}>
+								<Button icon='mail' onClick={() => router.navigate('/admin/users/invite')} disabled={isSeatsCapExceeded}>
 									{t('Invite')}
 								</Button>
 							)}
 							{canCreateUser && (
-								<Button icon='user-plus' onClick={() => router.navigate('/admin/users/new')}>
+								<Button icon='user-plus' onClick={() => router.navigate('/admin/users/new')} disabled={isSeatsCapExceeded}>
 									{t('New_user')}
 								</Button>
 							)}
@@ -99,9 +110,17 @@ const AdminUsersPage = (): ReactElement => {
 					)}
 				</PageHeader>
 				<PageContent>
+					{isSeatsCapExceeded && (
+						<Callout title={t('Service_disruptions_occurring')} type='danger' mbe={19}>
+							{t('Your_workspace_exceeded_the_seat_license_limit')}
+						</Callout>
+					)}
 					<Tabs>
-						<TabsItem selected={!tab || tab === 'all'} onClick={() => setTab('all')}>
+						<TabsItem selected={!tab || tab === 'all'} onClick={() => handleTabChangeAndSort('all')}>
 							{t('All')}
+						</TabsItem>
+						<TabsItem selected={tab === 'pending'} onClick={() => handleTabChangeAndSort('pending')}>
+							{pendingUsersCount ? `${t('Pending')} (${pendingUsersCount})` : t('Pending')}
 						</TabsItem>
 					</Tabs>
 					<UsersTable
@@ -111,6 +130,7 @@ const AdminUsersPage = (): ReactElement => {
 						paginationData={paginationData}
 						sortData={sortData}
 						tab={tab}
+						isSeatsCapExceeded={isSeatsCapExceeded}
 					/>
 				</PageContent>
 			</Page>
