@@ -8500,8 +8500,8 @@ __metadata:
   linkType: soft
 
 "@rocket.chat/apps-engine@npm:deno":
-  version: 1.42.0-deno.655
-  resolution: "@rocket.chat/apps-engine@npm:1.42.0-deno.655"
+  version: 1.42.0-deno.658
+  resolution: "@rocket.chat/apps-engine@npm:1.42.0-deno.658"
   dependencies:
     "@msgpack/msgpack": 3.0.0-beta2
     adm-zip: ^0.5.9
@@ -8518,7 +8518,7 @@ __metadata:
     vm2: ^3.9.19
   peerDependencies:
     "@rocket.chat/ui-kit": "*"
-  checksum: aa33b9f5370b8cf9c4e4c1eb833d39907d8a2d9270b422125ad443e231239e9d9aceba3bece9b4606221d38716499344e08dbb6995e72f22b7cc194c79f433eb
+  checksum: c39c62dc55ce48c6c33408403b831838c27ce6be27e032a04a04ea11bc5790528f17d4b736edc749ae8f2a26d4a2f32b664ec987e59793725f0fd6f06db8e309
   languageName: node
   linkType: hard
 
@@ -8951,9 +8951,9 @@ __metadata:
     "@rocket.chat/prettier-config": "*"
     "@rocket.chat/styled": "*"
     "@rocket.chat/ui-avatar": "*"
-    "@rocket.chat/ui-contexts": 4.0.4
+    "@rocket.chat/ui-contexts": 4.0.5
     "@rocket.chat/ui-kit": 0.33.0
-    "@rocket.chat/ui-video-conf": 4.0.4
+    "@rocket.chat/ui-video-conf": 4.0.5
     "@tanstack/react-query": "*"
     react: "*"
     react-dom: "*"
@@ -9042,8 +9042,8 @@ __metadata:
     "@rocket.chat/fuselage-tokens": "*"
     "@rocket.chat/message-parser": "*"
     "@rocket.chat/styled": "*"
-    "@rocket.chat/ui-client": 4.0.4
-    "@rocket.chat/ui-contexts": 4.0.4
+    "@rocket.chat/ui-client": 4.0.5
+    "@rocket.chat/ui-contexts": 4.0.5
     katex: "*"
     react: "*"
   languageName: unknown
@@ -10298,7 +10298,7 @@ __metadata:
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/icons": "*"
-    "@rocket.chat/ui-contexts": 4.0.4
+    "@rocket.chat/ui-contexts": 4.0.5
     react: ~17.0.2
   languageName: unknown
   linkType: soft
@@ -10475,7 +10475,7 @@ __metadata:
     "@rocket.chat/icons": "*"
     "@rocket.chat/styled": "*"
     "@rocket.chat/ui-avatar": "*"
-    "@rocket.chat/ui-contexts": 4.0.4
+    "@rocket.chat/ui-contexts": 4.0.5
     react: ^17.0.2
     react-dom: ^17.0.2
   languageName: unknown
@@ -10565,7 +10565,7 @@ __metadata:
   peerDependencies:
     "@rocket.chat/layout": "*"
     "@rocket.chat/tools": 0.2.1
-    "@rocket.chat/ui-contexts": 4.0.4
+    "@rocket.chat/ui-contexts": 4.0.5
     "@tanstack/react-query": "*"
     react: "*"
     react-hook-form: "*"
