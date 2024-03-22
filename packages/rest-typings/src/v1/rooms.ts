@@ -165,75 +165,100 @@ const RoomsCreateDiscussionSchema = {
 
 export const isRoomsCreateDiscussionProps = ajv.compile<RoomsCreateDiscussionProps>(RoomsCreateDiscussionSchema);
 
-type RoomsExportProps = {
+type RoomsExportProps = RoomsExportFileProps | RoomsExportEmailProps;
+
+type RoomsExportFileProps = {
 	rid: IRoom['_id'];
-	type: 'email' | 'file';
+	type: 'file';
+	format: 'html' | 'json';
+	dateFrom?: string;
+	dateTo?: string;
+};
+
+type RoomsExportEmailProps = {
+	rid: IRoom['_id'];
+	type: 'email';
 	toUsers?: IUser['username'][];
 	toEmails?: string[];
 	additionalEmails?: string;
 	subject?: string;
-	messages?: IMessage['_id'][];
-	dateFrom?: string;
-	dateTo?: string;
-	format?: 'html' | 'json';
+	messages: IMessage['_id'][];
 };
 
 const RoomsExportSchema = {
-	type: 'object',
-	properties: {
-		rid: {
-			type: 'string',
-		},
-		type: {
-			type: 'string',
-			enum: ['email', 'file'],
-		},
-		toUsers: {
-			type: 'array',
-			items: {
-				type: 'string',
+	oneOf: [
+		{
+			type: 'object',
+			properties: {
+				rid: {
+					type: 'string',
+				},
+				type: {
+					type: 'string',
+					enum: ['file'],
+				},
+				format: {
+					type: 'string',
+					enum: ['html', 'json'],
+				},
+				dateFrom: {
+					type: 'string',
+					nullable: true,
+					format: 'date',
+				},
+				dateTo: {
+					type: 'string',
+					nullable: true,
+					format: 'date',
+				},
 			},
-			nullable: true,
+			required: ['rid', 'type', 'format'],
+			additionalProperties: false,
 		},
-		toEmails: {
-			type: 'array',
-			items: {
-				type: 'string',
+		{
+			type: 'object',
+			properties: {
+				rid: {
+					type: 'string',
+				},
+				type: {
+					type: 'string',
+					enum: ['email', 'file'],
+				},
+				toUsers: {
+					type: 'array',
+					items: {
+						type: 'string',
+					},
+					nullable: true,
+				},
+				toEmails: {
+					type: 'array',
+					items: {
+						type: 'string',
+					},
+					nullable: true,
+				},
+				additionalEmails: {
+					type: 'string',
+					nullable: true,
+				},
+				subject: {
+					type: 'string',
+					nullable: true,
+				},
+				messages: {
+					type: 'array',
+					items: {
+						type: 'string',
+					},
+					minItems: 1,
+				},
 			},
-			nullable: true,
+			required: ['rid', 'type'],
+			additionalProperties: false,
 		},
-		additionalEmails: {
-			type: 'string',
-			nullable: true,
-		},
-		subject: {
-			type: 'string',
-			nullable: true,
-		},
-		messages: {
-			type: 'array',
-			items: {
-				type: 'string',
-			},
-			nullable: true,
-		},
-		dateFrom: {
-			type: 'string',
-			nullable: true,
-			format: 'date',
-		},
-		dateTo: {
-			type: 'string',
-			nullable: true,
-			format: 'date',
-		},
-		format: {
-			type: 'string',
-			nullable: true,
-		},
-	},
-	required: ['rid', 'type'],
-	additionalProperties: false,
+	],
 };
 
 export const isRoomsExportProps = ajv.compile<RoomsExportProps>(RoomsExportSchema);
