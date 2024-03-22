@@ -1,22 +1,11 @@
 import { Field, FieldLabel, FieldRow, PasswordInput } from '@rocket.chat/fuselage';
-import type { EventHandler, ReactElement, ReactNode, SyntheticEvent } from 'react';
+import type { EventHandler, ReactElement, SyntheticEvent } from 'react';
 import React from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
+import type { SettingInputProps } from './types';
 
-type PasswordSettingInputProps = {
-	_id: string;
-	label: ReactNode;
-	value?: string | number | readonly string[] | undefined;
-	placeholder?: string;
-	readonly?: boolean;
-	autocomplete?: boolean;
-	disabled?: boolean;
-	required?: boolean;
-	hasResetButton?: boolean;
-	onChangeValue?: (value: string) => void;
-	onResetButtonClick?: () => void;
-};
+type PasswordSettingInputProps = SettingInputProps<string | number | readonly string[] | undefined>;
 
 function PasswordSettingInput({
 	_id,

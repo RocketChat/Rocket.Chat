@@ -1,18 +1,14 @@
 import { Box, Button, Field, FieldLabel, FieldRow, Icon } from '@rocket.chat/fuselage';
 import { Random } from '@rocket.chat/random';
 import { useToastMessageDispatch, useEndpoint, useTranslation, useUpload } from '@rocket.chat/ui-contexts';
-import type { ChangeEventHandler, DragEvent, ReactElement, ReactNode, SyntheticEvent } from 'react';
+import type { ChangeEventHandler, DragEvent, ReactElement, SyntheticEvent } from 'react';
 import React from 'react';
 
 import './AssetSettingInput.styles.css';
+import type { SettingInputProps } from './types';
 
-type AssetSettingInputProps = {
-	_id: string;
-	label: ReactNode;
-	value?: { url: string };
+type AssetSettingInputProps = Omit<SettingInputProps<{ url: string }>, 'onChangeValue'> & {
 	asset?: any;
-	required?: boolean;
-	disabled?: boolean;
 	fileConstraints?: { extensions: string[] };
 };
 

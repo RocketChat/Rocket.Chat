@@ -1,22 +1,14 @@
 import { Field, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage';
-import type { FormEventHandler, ReactElement, ReactNode } from 'react';
+import type { FormEventHandler, ReactElement } from 'react';
 import React from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
+import type { SettingInputProps } from './types';
 
-type GenericSettingInputProps = {
-	_id: string;
-	label: ReactNode;
+type GenericSettingInputProps = SettingInputProps & {
 	value: string;
-	placeholder?: string;
-	readonly?: boolean;
-	autocomplete?: boolean;
-	disabled?: boolean;
-	required?: boolean;
-	hasResetButton?: boolean;
-	onChangeValue?: (value: string) => void;
-	onResetButtonClick?: () => void;
 };
+
 function GenericSettingInput({
 	_id,
 	label,

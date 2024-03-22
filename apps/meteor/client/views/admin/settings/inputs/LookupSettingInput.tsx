@@ -1,25 +1,15 @@
 import { Field, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
 import type { PathPattern } from '@rocket.chat/rest-typings';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactElement } from 'react';
 import React from 'react';
 
 import type { AsyncState } from '../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import ResetSettingButton from '../ResetSettingButton';
+import type { SettingInputProps } from './types';
 
-type LookupSettingInputProps = {
-	_id: string;
-	label: ReactNode;
-	value?: string;
+type LookupSettingInputProps = SettingInputProps & {
 	lookupEndpoint: PathPattern extends `/${infer U}` ? U : PathPattern;
-	placeholder?: string;
-	readonly?: boolean;
-	autocomplete?: boolean;
-	disabled?: boolean;
-	required?: boolean;
-	hasResetButton?: boolean;
-	onChangeValue?: (value: string) => void;
-	onResetButtonClick?: () => void;
 };
 
 function LookupSettingInput({

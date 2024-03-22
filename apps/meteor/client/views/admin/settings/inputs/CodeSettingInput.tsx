@@ -1,25 +1,17 @@
 import { FieldLabel, FieldHint, FieldRow, Field } from '@rocket.chat/fuselage';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactElement } from 'react';
 import React from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 import CodeMirror from './CodeMirror';
 import CodeMirrorBox from './CodeMirror/CodeMirrorBox';
+import type { SettingInputProps } from './types';
 
-type CodeSettingInputProps = {
-	_id: string;
-	label: ReactNode;
+type CodeSettingInputProps = SettingInputProps & {
 	hint: string;
-	value?: string;
 	code: string;
-	placeholder?: string;
 	readonly: boolean;
-	autocomplete: boolean;
 	disabled: boolean;
-	required?: boolean;
-	hasResetButton: boolean;
-	onChangeValue: (value: string) => void;
-	onResetButtonClick: () => void;
 };
 
 function CodeSettingInput({
