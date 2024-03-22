@@ -13,7 +13,6 @@ export type UsersListStatusParamsGET = PaginatedRequest<{
 	roles?: string[];
 	searchTerm?: string;
 }>;
-
 const UsersListStatusParamsGetSchema = {
 	type: 'object',
 	properties: {
