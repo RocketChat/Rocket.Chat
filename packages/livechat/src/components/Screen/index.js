@@ -69,6 +69,9 @@ const CssVar = ({ theme }) => {
 			${theme.color ? `--color: ${theme.color};` : ''}
 			${theme.fontColor ? `--font-color: ${theme.fontColor};` : ''}
 			${theme.iconColor ? `--icon-color: ${theme.iconColor};` : ''}
+			${theme.guestBubbleBackgroundColor ? `--sender-bubble-background-color: ${theme.guestBubbleBackgroundColor};` : ''}
+			${theme.agentBubbleBackgroundColor ? `--receiver-bubble-background-color: ${theme.agentBubbleBackgroundColor};` : ''}
+			${theme.background ? `--message-list-background: ${theme.background};` : ''}
 		}
 	`}</style>
 	);
@@ -95,7 +98,15 @@ export const Screen = ({ title, color, agent, children, className, unread, trigg
 	} = useContext(ScreenContext);
 
 	return (
-		<div className={createClassName(styles, 'screen', { minimized, expanded, windowed, triggered })}>
+		<div
+			className={createClassName(styles, 'screen', {
+				minimized,
+				expanded,
+				windowed,
+				triggered,
+				'position-left': theme.position === 'left',
+			})}
+		>
 			<CssVar theme={{ ...theme, color: color || theme.color }} />
 			{triggered && (
 				<Button
