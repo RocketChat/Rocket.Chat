@@ -30,7 +30,7 @@ export type UsersFilters = {
 	text: string;
 };
 
-export type UsersTableSortingOptions = 'name' | 'username' | 'emails.address' | 'status' | 'active';
+export type UsersTableSortingOptions = 'name' | 'username' | 'emails.address' | 'status';
 
 const AdminUsersPage = (): ReactElement => {
 	const t = useTranslation();
