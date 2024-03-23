@@ -27,6 +27,8 @@ export type StoreState = {
 			color?: string;
 			offlineTitle?: string;
 			offlineColor?: string;
+			position: 'left' | 'right';
+			background?: string;
 			actionLinks?: {
 				webrtc: {
 					actionLinksAlignment: string;
@@ -76,6 +78,12 @@ export type StoreState = {
 			fontColor?: string;
 			iconColor?: string;
 			offlineTitle?: string;
+			position?: 'left' | 'right';
+			guestBubbleBackgroundColor?: string;
+			agentBubbleBackgroundColor?: string;
+			background?: string;
+			hideGuestAvatar?: boolean;
+			hideAgentAvatar?: boolean;
 		};
 		visible?: boolean;
 		department?: string;
@@ -118,7 +126,9 @@ export const initialState = (): StoreState => ({
 	config: {
 		messages: {},
 		settings: {},
-		theme: {},
+		theme: {
+			position: 'right',
+		},
 		triggers: [],
 		departments: [],
 		resources: {},
@@ -132,7 +142,10 @@ export const initialState = (): StoreState => ({
 	},
 	iframe: {
 		guest: {},
-		theme: {},
+		theme: {
+			hideGuestAvatar: true,
+			hideAgentAvatar: false,
+		},
 		visible: true,
 	},
 	gdpr: {

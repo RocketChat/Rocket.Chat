@@ -5,7 +5,7 @@ const models = new Map<string, IBaseModel<any>>();
 
 function handler<T extends object>(namespace: string): ProxyHandler<T> {
 	return {
-		get: (_target: T, prop: keyof IBaseModel<any>): any => {
+		get: (_target: T, nameProp: keyof IBaseModel<any>): any => {
 			if (!models.has(namespace) && lazyModels.has(namespace)) {
 				const getModel = lazyModels.get(namespace);
 				if (getModel) {
@@ -19,7 +19,21 @@ function handler<T extends object>(namespace: string): ProxyHandler<T> {
 				throw new Error(`Model ${namespace} not found`);
 			}
 
-			return model[prop];
+			const prop = model[nameProp];
+
+			if (typeof prop === 'function') {
+				return prop.bind(model);
+			}
+
+			return prop;
+		},
+
+		set() {
+			if (process.env.NODE_ENV !== 'production') {
+				throw new Error('Models accessed via proxify are read-only, use the model instance directly to modify it.');
+			}
+			/* istanbul ignore next */
+			return true;
 		},
 	};
 }
