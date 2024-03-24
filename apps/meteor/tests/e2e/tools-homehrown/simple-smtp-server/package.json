@@ -1,0 +1,28 @@
+{
+	"name": "simple-smtp-server",
+	"version": "1.0.0",
+	"description": "",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"start": "ts-node ./src/",
+		"build": "tsc -p tsconfig.json"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"engines": {
+		"node": "^16"
+	},
+	"dependencies": {
+		"@types/mongodb": "^4.0.7",
+		"mailparser": "^3.6.9",
+		"mongodb": "^6.5.0",
+		"smtp-server": "^3.13.3"
+	},
+	"devDependencies": {
+		"@types/mailparser": "^3.4.4",
+		"@types/smtp-server": "^3.5.10",
+		"ts-node": "^10.9.2",
+		"typescript": "^5.4.3"
+	}
+}
