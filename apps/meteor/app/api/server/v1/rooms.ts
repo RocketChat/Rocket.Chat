@@ -176,7 +176,9 @@ API.v1.addRoute(
 			const fileStore = FileUpload.getStore('Uploads');
 			const uploadedFile = await fileStore.insert(details, fileBuffer);
 
-			uploadedFile.description = fields.description;
+			if (!fields.msg && fields.description) {
+				fields.msg = fields.description;
+			}
 
 			delete fields.description;
 
