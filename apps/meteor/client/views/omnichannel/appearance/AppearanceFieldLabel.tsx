@@ -10,7 +10,7 @@ type FieldLabelProps = ComponentProps<typeof BaseFieldLabel> & {
 	children: string;
 };
 
-export const FieldLabel = ({ children: label, premium = false }: FieldLabelProps) => {
+const FieldLabel = ({ children: label, premium = false }: FieldLabelProps) => {
 	const t = useTranslation();
 	const hasLicense = useHasLicenseModule('livechat-enterprise');
 	const shouldDisableEnterprise = premium && !hasLicense;
@@ -28,3 +28,5 @@ export const FieldLabel = ({ children: label, premium = false }: FieldLabelProps
 		</BaseFieldLabel>
 	);
 };
+
+export default FieldLabel;

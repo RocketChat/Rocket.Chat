@@ -20,7 +20,7 @@ import { Controller, useFormContext } from 'react-hook-form';
 
 import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
 import MarkdownText from '../../../components/MarkdownText';
-import { FieldLabel } from './AppearanceFieldLabel';
+import FieldLabel from './AppearanceFieldLabel';
 
 const AppearanceForm = () => {
 	const t = useTranslation();
