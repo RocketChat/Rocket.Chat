@@ -44,7 +44,7 @@ export const useCreateRoomItems = (): GenericMenuItemProps[] => {
 	};
 	const createDirectMessageItem: GenericMenuItemProps = {
 		id: 'direct',
-		content: t('Direct_Messages'),
+		content: t('Direct_message'),
 		icon: 'balloon',
 		onClick: () => {
 			createDirectMessage();

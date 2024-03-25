@@ -211,7 +211,7 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 				<FieldGroup>
 					<Field>
 						<FieldLabel required htmlFor={nameId}>
-							{t('Channel_name')}
+							{t('Name')}
 						</FieldLabel>
 						<FieldRow>
 							<TextInput
@@ -334,7 +334,7 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 							/>
 						</FieldRow>
 						<FieldHint id={`${readOnlyId}-hint`}>
-							{readOnly ? t('Read_only_field_hint_enabled', { roomType: 'channel' }) : t('All_users_in_the_channel_can_write_new_messages')}
+							{readOnly ? t('Read_only_field_hint_enabled', { roomType: 'channel' }) : t('Anyone_can_send_new_messages')}
 						</FieldHint>
 					</Field>
 					<Field>

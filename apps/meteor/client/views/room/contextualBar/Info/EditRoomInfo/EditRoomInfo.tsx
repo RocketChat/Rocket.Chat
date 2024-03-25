@@ -418,7 +418,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 												{...field}
 												options={sysMesOptions}
 												disabled={!hideSysMes || isFederated}
-												placeholder={t('Select_an_option')}
+												placeholder={t('Select_messages_to_hide')}
 											/>
 										)}
 									/>
