@@ -3741,7 +3741,7 @@
   "New_Custom_Field": "New Custom Field",
   "New_Department": "New Department",
   "New_discussion": "New discussion",
-  "New_discussion_first_message": "Usually, a discussion starts with a question, like \"How do I upload a picture?\"",
+  "New_discussion_first_message": "Usually, a discussion starts with a question, like “How do I upload a picture?”",
   "New_discussion_name": "A meaningful name for the discussion room",
   "New_Email_Inbox": "New Email Inbox",
   "New_encryption_password": "New encryption password",
@@ -5109,7 +5109,7 @@
   "Teams_move_channel_to_team_description_fourth": "Please notice that the Team’s owner will be able to remove members from the Channel.",
   "Teams_move_channel_to_team_confirm_description": "After reading the previous instructions about this behavior, do you want to move forward with this action?",
   "Teams_New_Title": "Create team",
-  "Teams_new_description": "Teams allow a group of people to collaborate. A team can contain multiple channels.",
+  "Teams_new_description": "Teams allow a group of people to collaborate and can contain multiple channels.",
   "Teams_New_Name_Label": "Name",
   "Teams_Info": "Team info",
   "Teams_kept_channels": "You did not select the following Channels so they will be moved to the Workspace:",
@@ -5137,7 +5137,7 @@
   "Teams_removing__username__from_team_and_channels": "You are removing {{username}} from this Team and all its Channels.",
   "Teams_Select_a_team": "Select a team",
   "Teams_Search_teams": "Search Teams",
-  "Teams_New_Read_only_Label": "Read Only",
+  "Teams_New_Read_only_Label": "Read-only",
   "Technology_Services": "Technology Services",
   "Upgrade_tab_connection_error_description": "Looks like you have no internet connection. This may be because your workspace is installed on a fully-secured air-gapped server",
   "Terms": "Terms",
@@ -6370,5 +6370,6 @@
   "People_can_only_join_by_being_invited": "People can only join by being invited",
   "Go_to_href": "Go to: {{href}}",
   "Anyone_can_send_new_messages": "Anyone can send new messages",
-  "Select_messages_to_hide": "Select messages to hide"
+  "Select_messages_to_hide": "Select messages to hide",
+  "Name_cannot_have_special_characters": "Name cannot have special characters"
 }

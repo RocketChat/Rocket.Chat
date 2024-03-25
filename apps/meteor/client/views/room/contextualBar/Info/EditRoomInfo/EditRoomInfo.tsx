@@ -388,13 +388,15 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 										)}
 									/>
 								</FieldRow>
-								<FieldRow>
-									<Controller
-										name='joinCode'
-										control={control}
-										render={({ field }) => <PasswordInput {...field} placeholder={t('Reset_password')} disabled={!joinCodeRequired} />}
-									/>
-								</FieldRow>
+								{joinCodeRequired && (
+									<FieldRow>
+										<Controller
+											name='joinCode'
+											control={control}
+											render={({ field }) => <PasswordInput {...field} placeholder={t('Reset_password')} disabled={!joinCodeRequired} />}
+										/>
+									</FieldRow>
+								)}
 							</Field>
 						)}
 						{canViewHideSysMes && (

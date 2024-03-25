@@ -139,7 +139,7 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 		}
 
 		if (!allowSpecialNames && !channelNameRegex.test(name)) {
-			return t('error-invalid-name');
+			return t('Name_cannot_have_special_characters');
 		}
 
 		const { exists } = await channelNameExists({ roomName: name });

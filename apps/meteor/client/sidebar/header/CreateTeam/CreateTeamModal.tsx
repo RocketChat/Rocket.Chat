@@ -67,7 +67,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 		}
 
 		if (teamNameRegex && !teamNameRegex?.test(name)) {
-			return t('Teams_Errors_team_name', { name });
+			return t('Name_cannot_have_special_characters');
 		}
 
 		const { exists } = await checkTeamNameExists({ roomName: name });
@@ -182,7 +182,6 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 									required: t('error-the-field-is-required', { field: t('Name') }),
 									validate: (value) => validateTeamName(value),
 								})}
-								placeholder={t('Team_Name')}
 								addon={<Icon size='x20' name={isPrivate ? 'team-lock' : 'team'} />}
 								error={errors.name?.message}
 								aria-describedby={`${nameId}-error ${nameId}-hint`}
@@ -249,7 +248,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 							/>
 						</FieldRow>
 						<FieldDescription id={`${readOnlyId}-hint`}>
-							{readOnly ? t('Only_authorized_users_can_write_new_messages') : t('Teams_New_Read_only_Description')}
+							{readOnly ? t('Read_only_field_hint_enabled', { roomType: 'team' }) : t('Anyone_can_send_new_messages')}
 						</FieldDescription>
 					</Field>
 					<Field>

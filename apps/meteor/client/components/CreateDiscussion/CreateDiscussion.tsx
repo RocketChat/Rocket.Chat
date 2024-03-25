@@ -147,7 +147,7 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 					</Field>
 					<Field>
 						<FieldLabel htmlFor={discussionNameId} required>
-							{t('Discussion_name')}
+							{t('Name')}
 						</FieldLabel>
 						<FieldRow>
 							<Controller
@@ -171,6 +171,15 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 								{errors.name.message}
 							</FieldError>
 						)}
+					</Field>
+					<Field>
+						<FieldLabel htmlFor={topicId}>{t('Topic')}</FieldLabel>
+						<FieldRow>
+							<TextInput id={topicId} aria-describedby={`${topicId}-hint`} {...register('topic')} />
+						</FieldRow>
+						<FieldRow>
+							<FieldHint id={`${topicId}-hint`}>{t('Displayed_next_to_name')}</FieldHint>
+						</FieldRow>
 					</Field>
 					<Field>
 						<FieldLabel htmlFor={membersId}>{t('Members')}</FieldLabel>
@@ -215,15 +224,6 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 						)}
 					</Field>
 					<Field>
-						<FieldLabel htmlFor={topicId}>{t('Topic')}</FieldLabel>
-						<FieldRow>
-							<TextInput id={topicId} aria-describedby={`${topicId}-hint`} {...register('topic')} />
-						</FieldRow>
-						<FieldRow>
-							<FieldHint id={`${topicId}-hint`}>{t('Displayed_next_to_name')}</FieldHint>
-						</FieldRow>
-					</Field>
-					<Field>
 						<FieldRow>
 							<FieldLabel htmlFor={encryptedId}>{t('Encrypted')}</FieldLabel>
 							<Controller
@@ -232,6 +232,11 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 								render={({ field: { value, ...field } }) => <ToggleSwitch id={encryptedId} {...field} checked={value} />}
 							/>
 						</FieldRow>
+						{encrypted ? (
+							<FieldHint id={`${encryptedId}-hint`}>{t('Encrypted_messages', { roomType: 'discussion' })}</FieldHint>
+						) : (
+							<FieldHint id={`${encryptedId}-hint`}>{t('Encrypted_messages_false')}</FieldHint>
+						)}
 					</Field>
 				</FieldGroup>
 			</Modal.Content>
