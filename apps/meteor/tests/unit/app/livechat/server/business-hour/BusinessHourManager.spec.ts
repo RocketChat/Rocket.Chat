@@ -93,6 +93,11 @@ describe('[OC] BusinessHourManager', () => {
 			onDisableBusinessHours: () => {},
 		});
 
+		afterEach(() => {
+			sinon.restore();
+			loggerStub.resetHistory();
+		});
+
 		it('should call the verifier when the manager starts', async () => {
 			sinon.stub(manager, 'createCronJobsForWorkHours');
 			sinon.stub(manager, 'setupCallbacks');
