@@ -14,7 +14,7 @@ import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE } from '../../e2e/config/constants';
 
-describe('[Rooms]', function() {
+describe('[Rooms]', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
@@ -1742,7 +1742,7 @@ describe('[Rooms]', function() {
 		});
 	});
 
-	describe.only('/rooms.saveRoomSettings', () => {
+	describe('rooms.saveRoomSettings', () => {
 		let testChannel;
 		const randomString = `randomString${Date.now()}`;
 		let discussion;
