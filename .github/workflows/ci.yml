@@ -295,6 +295,7 @@ jobs:
   test-api:
     name: 🔨 Test API (CE)
     needs: [checks, build-gh-docker-coverage, release-versions]
+    runs-on: ae-deno-runtime-test
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
