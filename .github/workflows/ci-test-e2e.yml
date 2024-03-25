@@ -73,7 +73,7 @@ env:
 
 jobs:
   test:
-    runs-on: ubuntu-20.04
+    runs-on: ae-deno-runtime-test
     env:
       RC_DOCKERFILE: ${{ matrix.mongodb-version == '6.0' && inputs.rc-dockerfile-alpine || inputs.rc-dockerfile }}
       RC_DOCKER_TAG: ${{ matrix.mongodb-version == '6.0' && inputs.rc-docker-tag-alpine || inputs.rc-docker-tag }}
