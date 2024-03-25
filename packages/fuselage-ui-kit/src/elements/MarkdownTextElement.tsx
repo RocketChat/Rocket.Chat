@@ -19,7 +19,7 @@ const MarkdownTextElement = ({ textObject }: { textObject: TextObject }) => {
 
   return (
     <Suspense fallback={<Skeleton />}>
-      <Markup tokens={parse(text, { emoticons: false })} />;
+      <Markup tokens={parse(text, { emoticons: false })} />
     </Suspense>
   );
 };
