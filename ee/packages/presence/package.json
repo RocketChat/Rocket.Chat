@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/presence",
-	"version": "0.1.9",
+	"version": "0.1.10",
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.22.20",
