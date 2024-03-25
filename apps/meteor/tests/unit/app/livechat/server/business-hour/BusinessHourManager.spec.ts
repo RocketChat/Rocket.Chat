@@ -180,5 +180,20 @@ describe('[OC] BusinessHourManager', () => {
 			expect(loggerStub.calledWith('Failed to update business hours with new timezone', error)).to.be.true;
 			expect(manager.createCronJobsForWorkHours.called).to.be.true;
 		});
+
+		it('should NOT throw any error even if the business hour has an invalid type', async () => {
+			sinon.stub(manager, 'getBusinessHourType').returns({ saveBusinessHour: saveBusinessHourStub });
+			sinon.stub(manager, 'createCronJobsForWorkHours');
+			sinon.stub(manager, 'hasDaylightSavingTimeChanged').returns(true);
+			findActiveBusinessHoursStub.resolves([
+				{
+					type: 'invalid',
+					timezone: { name: 'timezoneName' },
+					workHours: [{ start: { time: 'startTime' }, finish: { time: 'finishTime' } }],
+				},
+			]);
+			await expect(manager.startDaylightSavingTimeVerifier()).not.to.be.rejected;
+			expect(loggerStub.called).to.be.false;
+		});
 	});
 });

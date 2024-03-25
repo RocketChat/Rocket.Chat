@@ -263,7 +263,10 @@ export class BusinessHourManager {
 		}
 		const result = await Promise.allSettled(
 			timezonesNeedingAdjustment.map((businessHour) => {
-				const businessHourType = this.getBusinessHourType(businessHour.type) as IBusinessHourType;
+				const businessHourType = this.getBusinessHourType(businessHour.type);
+				if (!businessHourType) {
+					return;
+				}
 
 				return businessHourType.saveBusinessHour({
 					...businessHour,

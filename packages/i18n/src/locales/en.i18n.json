@@ -1546,7 +1546,7 @@
   "DAU_value": "DAU {{value}}",
   "days": "days",
   "Days": "Days",
-  "Daylight_savings_time": "Daylight savings time",
+  "Daylight_savings_time": "Timezone observes daylight saving time",
   "DB_Migration": "Database Migration",
   "DB_Migration_Date": "Database Migration Date",
   "DDP_Rate_Limiter": "DDP Rate Limit",
