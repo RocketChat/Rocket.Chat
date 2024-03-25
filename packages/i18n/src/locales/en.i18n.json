@@ -1663,7 +1663,7 @@
   "Direct_Message": "Direct message",
   "Livechat_Facebook_Enabled": "Facebook integration enabled",
   "Direct_message_creation_description": "Select one or more people to message",
-  "Direct_message_creation_error": "This field is required",
+  "Direct_message_creation_error": "Please select at least one person",
   "Direct_message_creation_description_hint": "More people cannot be added once created",
   "Direct_message_someone": "Direct message someone",
   "Direct_message_you_have_joined": "You have joined a new direct message with",
@@ -6371,5 +6371,5 @@
   "Go_to_href": "Go to: {{href}}",
   "Anyone_can_send_new_messages": "Anyone can send new messages",
   "Select_messages_to_hide": "Select messages to hide",
-  "Name_cannot_have_special_characters": "Name cannot have special characters"
+  "Name_cannot_have_special_characters": "Name cannot have spaces or special characters"
 }
