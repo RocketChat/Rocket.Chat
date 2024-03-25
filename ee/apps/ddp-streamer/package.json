@@ -15,7 +15,7 @@
 	],
 	"author": "Rocket.Chat",
 	"dependencies": {
-		"@rocket.chat/apps-engine": "1.41.0",
+		"@rocket.chat/apps-engine": "^1.41.1",
 		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/emitter": "~0.31.25",

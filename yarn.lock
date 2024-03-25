@@ -8919,9 +8919,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/apps-engine@npm:1.41.0":
-  version: 1.41.0
-  resolution: "@rocket.chat/apps-engine@npm:1.41.0"
+"@rocket.chat/apps-engine@npm:^1.41.1":
+  version: 1.41.1
+  resolution: "@rocket.chat/apps-engine@npm:1.41.1"
   dependencies:
     adm-zip: ^0.5.9
     cryptiles: ^4.1.3
@@ -8933,7 +8933,7 @@ __metadata:
     vm2: ^3.9.19
   peerDependencies:
     "@rocket.chat/ui-kit": "*"
-  checksum: 2e7fa2856bdbdc6b0dd2456e9aa5e5804a4198f8df0306a002c5e71681466d3fc2cb0a1253668d5e24fa21345a7dd7eed3458a257e1e4cc59a4e8a3876579aa5
+  checksum: 3134570898516f5d40ae66be3841d5987daeceb3a8f04ee85b0bf2bf079a24198ec9026863cb1ba4ed3d171ac67c4feda17948b1357315fe5ec427f342a70ec1
   languageName: node
   linkType: hard
 
@@ -9005,7 +9005,7 @@ __metadata:
     "@babel/core": ~7.22.20
     "@babel/preset-env": ~7.22.20
     "@babel/preset-typescript": ~7.22.15
-    "@rocket.chat/apps-engine": 1.41.0
+    "@rocket.chat/apps-engine": ^1.41.1
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/icons": ^0.33.0
@@ -9031,7 +9031,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/core-typings@workspace:packages/core-typings"
   dependencies:
-    "@rocket.chat/apps-engine": 1.41.0
+    "@rocket.chat/apps-engine": ^1.41.1
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/icons": ^0.33.0
     "@rocket.chat/message-parser": ~0.31.28
@@ -9107,7 +9107,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ddp-streamer@workspace:ee/apps/ddp-streamer"
   dependencies:
-    "@rocket.chat/apps-engine": 1.41.0
+    "@rocket.chat/apps-engine": ^1.41.1
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": ~0.31.25
@@ -9302,7 +9302,7 @@ __metadata:
     "@babel/preset-env": ~7.22.20
     "@babel/preset-react": ~7.22.15
     "@babel/preset-typescript": ~7.22.15
-    "@rocket.chat/apps-engine": 1.41.0
+    "@rocket.chat/apps-engine": ^1.41.1
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/fuselage": ^0.45.0
     "@rocket.chat/fuselage-hooks": ^0.33.0
@@ -9709,7 +9709,7 @@ __metadata:
     "@rocket.chat/account-utils": "workspace:^"
     "@rocket.chat/agenda": "workspace:^"
     "@rocket.chat/api-client": "workspace:^"
-    "@rocket.chat/apps-engine": 1.41.0
+    "@rocket.chat/apps-engine": ^1.41.1
     "@rocket.chat/base64": "workspace:^"
     "@rocket.chat/cas-validate": "workspace:^"
     "@rocket.chat/core-services": "workspace:^"
@@ -10310,7 +10310,7 @@ __metadata:
     "@babel/core": ~7.22.20
     "@babel/preset-env": ~7.22.20
     "@babel/preset-typescript": ~7.22.15
-    "@rocket.chat/apps-engine": 1.41.0
+    "@rocket.chat/apps-engine": ^1.41.1
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
@@ -10425,7 +10425,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/rest-typings@workspace:packages/rest-typings"
   dependencies:
-    "@rocket.chat/apps-engine": 1.41.0
+    "@rocket.chat/apps-engine": ^1.41.1
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/message-parser": ~0.31.28
@@ -36570,7 +36570,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "rocketchat-services@workspace:apps/meteor/ee/server/services"
   dependencies:
-    "@rocket.chat/apps-engine": 1.41.0
+    "@rocket.chat/apps-engine": ^1.41.1
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": ~0.31.25
