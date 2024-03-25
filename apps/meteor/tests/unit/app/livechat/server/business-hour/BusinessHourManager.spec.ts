@@ -22,6 +22,7 @@ const LivechatBusinessHoursStub = {
 	findActiveBusinessHours: findActiveBusinessHoursStub,
 };
 const saveBusinessHourStub = sinon.stub();
+const loggerStub = sinon.stub();
 
 const { BusinessHourManager } = proxyquire.noCallThru().load('../../../../../../app/livechat/server/business-hour/BusinessHourManager', {
 	'../../../settings/server': {},
@@ -31,6 +32,11 @@ const { BusinessHourManager } = proxyquire.noCallThru().load('../../../../../../
 	'moment': momentStub,
 	'@rocket.chat/models': {
 		LivechatBusinessHours: LivechatBusinessHoursStub,
+	},
+	'../lib/logger': {
+		businessHourLogger: {
+			error: loggerStub,
+		},
 	},
 });
 
@@ -157,6 +163,21 @@ describe('[OC] BusinessHourManager', () => {
 					workHours: [{ start: 'startTime', finish: 'finishTime' }],
 				}),
 			).to.be.true;
+			expect(manager.createCronJobsForWorkHours.called).to.be.true;
+		});
+
+		it('should log any error on the updating process', async () => {
+			sinon.stub(manager, 'getBusinessHourType').returns({ saveBusinessHour: saveBusinessHourStub });
+			sinon.stub(manager, 'createCronJobsForWorkHours');
+			sinon.stub(manager, 'hasDaylightSavingTimeChanged').returns(true);
+			findActiveBusinessHoursStub.resolves([
+				{ timezone: { name: 'timezoneName' }, workHours: [{ start: { time: 'startTime' }, finish: { time: 'finishTime' } }] },
+				{ timezone: { name: 'timezoneName2' }, workHours: [{ start: { time: 'startTime' }, finish: { time: 'finishTime' } }] },
+			]);
+			const error = new Error('update error');
+			saveBusinessHourStub.onSecondCall().rejects(error);
+			await manager.startDaylightSavingTimeVerifier();
+			expect(loggerStub.calledWith('Failed to update business hours with new timezone', error)).to.be.true;
 			expect(manager.createCronJobsForWorkHours.called).to.be.true;
 		});
 	});

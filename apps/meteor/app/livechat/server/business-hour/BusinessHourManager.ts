@@ -7,10 +7,11 @@ import moment from 'moment';
 import { closeBusinessHour } from '../../../../ee/app/livechat-enterprise/server/business-hour/Helper';
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
+import { businessHourLogger } from '../lib/logger';
 import type { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
 
-const EVERY_MIDNIGHT_CRON_EXPRESSION = '0 0 * * *';
-const DAYLIGHT_CRON_JOB_NAME = 'livechat-business-hour-daylight-saving-time-verifier';
+const CRON_EVERY_MIDNIGHT_EXPRESSION = '0 0 * * *';
+const CRON_DAYLIGHT_JOB_NAME = 'livechat-business-hour-daylight-saving-time-verifier';
 
 export class BusinessHourManager {
 	private types: Map<string, IBusinessHourType> = new Map();
@@ -41,7 +42,7 @@ export class BusinessHourManager {
 		this.clearCronJobsCache();
 		this.removeCallbacks();
 		await this.behavior.onDisableBusinessHours();
-		await this.cronJobs.remove(DAYLIGHT_CRON_JOB_NAME);
+		await this.cronJobs.remove(CRON_DAYLIGHT_JOB_NAME);
 	}
 
 	async restartManager(): Promise<void> {
@@ -245,11 +246,11 @@ export class BusinessHourManager {
 		const existingTimezoneUTC = moment(timezone.utc, 'Z').utc().tz(timezone.name);
 		const DSTHasChanged = !moment(currentUTC, 'Z').utc().tz(timezone.name).isSame(existingTimezoneUTC);
 
-		return currentUTC !== timezone.utc && ((now.isDST() && DSTHasChanged) || (!now.isDST() && DSTHasChanged));
+		return currentUTC !== timezone.utc && DSTHasChanged;
 	}
 
 	async registerDaylightSavingTimeCronJob(): Promise<void> {
-		await this.cronJobs.add(DAYLIGHT_CRON_JOB_NAME, EVERY_MIDNIGHT_CRON_EXPRESSION, this.startDaylightSavingTimeVerifier.bind(this));
+		await this.cronJobs.add(CRON_DAYLIGHT_JOB_NAME, CRON_EVERY_MIDNIGHT_EXPRESSION, this.startDaylightSavingTimeVerifier.bind(this));
 	}
 
 	async startDaylightSavingTimeVerifier(): Promise<void> {
@@ -260,7 +261,7 @@ export class BusinessHourManager {
 		if (timezonesNeedingAdjustment.length === 0) {
 			return;
 		}
-		await Promise.all(
+		const result = await Promise.allSettled(
 			timezonesNeedingAdjustment.map((businessHour) => {
 				const businessHourType = this.getBusinessHourType(businessHour.type) as IBusinessHourType;
 
@@ -274,6 +275,13 @@ export class BusinessHourManager {
 				} as ILivechatBusinessHour & { timezoneName: string });
 			}),
 		);
+		const failed = result.filter((r) => r.status === 'rejected');
+		if (failed.length > 0) {
+			failed.forEach((error: any) => {
+				businessHourLogger.error('Failed to update business hours with new timezone', error.reason);
+			});
+		}
+
 		await this.createCronJobsForWorkHours();
 	}
 }
