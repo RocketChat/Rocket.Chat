@@ -223,6 +223,18 @@ export const createSettings = async (): Promise<void> => {
 		enableQuery: omnichannelEnabledQuery,
 	});
 
+	await settingsRegistry.add('Livechat_hide_watermark', false, {
+		type: 'boolean',
+		group: 'Omnichannel',
+		section: 'Livechat',
+		invalidValue: false,
+		enableQuery: omnichannelEnabledQuery,
+		i18nDescription: 'Livechat_hide_watermark_description',
+		enterprise: true,
+		sorter: 999,
+		modules: ['livechat-enterprise'],
+	});
+
 	await settingsRegistry.add('Omnichannel_contact_manager_routing', true, {
 		type: 'boolean',
 		group: 'Omnichannel',

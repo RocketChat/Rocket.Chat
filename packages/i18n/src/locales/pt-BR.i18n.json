@@ -2725,6 +2725,7 @@
   "Livechat_Calls": "Chamadas do livechat",
   "Livechat_visitor_email_and_transcript_email_do_not_match": "O e-mail do visitante e o e-mail da transcrição não correspondem",
   "Livechat_visitor_transcript_request": "{{guest}} solicitou a transcrição da conversa",
+  "Assets_livechat_widget_logo": "Logotipo do widget do Livechat (svg, png, jpg)",
   "LiveStream & Broadcasting": "LiveStream e transmissão",
   "Livestream": "Livestream",
   "Livestream_close": "Fechar Livestream",
