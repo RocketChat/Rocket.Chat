@@ -8,7 +8,7 @@ export default {
 		channel: 'chromium',
 		headless: true,
 		ignoreHTTPSErrors: true,
-		trace: 'retain-on-failure',
+		trace: 'on-first-retry',
 		baseURL: constants.BASE_URL,
 		screenshot: process.env.CI ? 'off' : 'only-on-failure',
 		video: process.env.CI ? 'off' : 'retain-on-failure',
@@ -48,10 +48,12 @@ export default {
 	].filter(Boolean),
 	testDir: 'tests/e2e',
 	testIgnore: 'tests/e2e/federation/**',
-	workers: 1,
+	workers: process.env.CI ? 1 : undefined,
 	timeout: 60 * 1000,
 	globalTimeout: (process.env.IS_EE === 'true' ? 50 : 40) * 60 * 1000,
 	maxFailures: process.env.CI ? 5 : undefined,
 	// Retry on CI only.
 	retries: process.env.CI ? 2 : 0,
+	// Fail the build on CI if you accidentally left test.only in the source code.
+	forbidOnly: !!process.env.CI,
 } as PlaywrightTestConfig;
