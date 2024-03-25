@@ -169,7 +169,7 @@ type RoomsExportProps = RoomsExportFileProps | RoomsExportEmailProps;
 
 type RoomsExportFileProps = {
 	rid: IRoom['_id'];
-	type: 'file' | 'email';
+	type: 'file';
 	format: 'html' | 'json';
 	dateFrom?: string;
 	dateTo?: string;
@@ -177,7 +177,7 @@ type RoomsExportFileProps = {
 
 type RoomsExportEmailProps = {
 	rid: IRoom['_id'];
-	type: 'file' | 'email';
+	type: 'email';
 	toUsers?: IUser['username'][];
 	toEmails?: string[];
 	additionalEmails?: string;
@@ -223,7 +223,7 @@ const RoomsExportSchema = {
 				},
 				type: {
 					type: 'string',
-					enum: ['email', 'file'],
+					enum: ['email'],
 				},
 				toUsers: {
 					type: 'array',
@@ -255,7 +255,7 @@ const RoomsExportSchema = {
 					minItems: 1,
 				},
 			},
-			required: ['rid', 'type'],
+			required: ['rid', 'type', 'messages'],
 			additionalProperties: false,
 		},
 	],
