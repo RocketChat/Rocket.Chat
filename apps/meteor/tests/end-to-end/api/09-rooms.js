@@ -14,7 +14,7 @@ import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE } from '../../e2e/config/constants';
 
-describe('[Rooms]', function () {
+describe('[Rooms]', function() {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
@@ -1742,7 +1742,7 @@ describe('[Rooms]', function () {
 		});
 	});
 
-	describe('/rooms.saveRoomSettings', () => {
+	describe.only('/rooms.saveRoomSettings', () => {
 		let testChannel;
 		const randomString = `randomString${Date.now()}`;
 		let discussion;
@@ -1845,6 +1845,65 @@ describe('[Rooms]', function () {
 
 					expect(res.body.room).to.have.property('_id', discussion._id);
 					expect(res.body.room).to.have.property('fname', newDiscussionName);
+				});
+		});
+
+		it('should mark a room as favorite', async () => {
+			await request
+				.post(api('rooms.saveRoomSettings'))
+				.set(credentials)
+				.send({
+					rid: testChannel._id,
+					favorite: {
+						favorite: true,
+						defaultValue: true,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			await request
+				.get(api('rooms.info'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.be.an('object');
+
+					expect(res.body.room).to.have.property('_id', testChannel._id);
+					expect(res.body.room).to.have.property('favorite', true);
+				});
+		});
+		it('should not mark a room as favorite when room is not a default room', async () => {
+			await request
+				.post(api('rooms.saveRoomSettings'))
+				.set(credentials)
+				.send({
+					rid: testChannel._id,
+					favorite: {
+						favorite: true,
+						defaultValue: false,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			await request
+				.get(api('rooms.info'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.be.an('object');
+
+					expect(res.body.room).to.have.property('_id', testChannel._id);
+					expect(res.body.room).to.not.have.property('favorite');
 				});
 		});
 	});
