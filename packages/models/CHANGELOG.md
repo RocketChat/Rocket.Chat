@@ -1,5 +1,12 @@
 # @rocket.chat/models
 
+## 0.0.29
+
+### Patch Changes
+
+- dfbc7dc8c5: Fix proxified model props were missing context before attribution
+  - @rocket.chat/model-typings@0.2.5
+
 ## 0.0.28
 
 ### Patch Changes

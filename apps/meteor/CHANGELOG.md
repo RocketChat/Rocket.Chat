@@ -1,5 +1,35 @@
 # @rocket.chat/meteor
 
+## 6.5.5
+
+### Patch Changes
+
+- 461ca635ba: Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+- 04a7142427: Fix an issue affecting Rocket.Chat Apps utilizing the OAuth 2 library from Apps Engine, ensuring that apps like Google Drive and Google Calendar are operational once more.
+- dfbc7dc8c5: Fix error during migration 304. Throwing `Cannot read property 'finally' of undefined` error.
+- Updated dependencies [dfbc7dc8c5]
+  - @rocket.chat/models@0.0.29
+  - @rocket.chat/omnichannel-services@0.1.5
+  - @rocket.chat/presence@0.1.5
+  - @rocket.chat/core-services@0.3.5
+  - @rocket.chat/cron@0.0.25
+  - @rocket.chat/instance-status@0.0.29
+  - @rocket.chat/core-typings@6.5.5
+  - @rocket.chat/rest-typings@6.5.5
+  - @rocket.chat/api-client@0.1.23
+  - @rocket.chat/license@0.1.5
+  - @rocket.chat/pdf-worker@0.0.29
+  - @rocket.chat/gazzodown@3.0.5
+  - @rocket.chat/model-typings@0.2.5
+  - @rocket.chat/ui-contexts@3.0.5
+  - @rocket.chat/server-cloud-communication@0.0.1
+  - @rocket.chat/fuselage-ui-kit@3.0.5
+  - @rocket.chat/ui-theming@0.1.1
+  - @rocket.chat/ui-client@3.0.5
+  - @rocket.chat/ui-video-conf@3.0.5
+  - @rocket.chat/web-ui-registration@3.0.5
+
 ## 6.5.4
 
 ### Patch Changes
