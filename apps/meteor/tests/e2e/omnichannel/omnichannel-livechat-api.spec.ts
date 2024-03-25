@@ -405,6 +405,51 @@ test.describe('OC - Livechat API', () => {
 			});
 		});
 
+		test('OC - Livechat API - registerGuest multiple times', async () => {
+			const registerGuestVisitor = {
+				name: faker.person.firstName(),
+				email: faker.internet.email(),
+				token: faker.string.uuid(),
+			};
+
+			await test.step('Expect registerGuest work with the same token, multiple times', async () => {
+				test.fail();
+
+				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.maximizeWidget());
+				await expect(page.frameLocator('#rocketchat-iframe').getByText('Start Chat')).toBeVisible();
+
+				await poLiveChat.page.evaluate(
+					(registerGuestVisitor) => window.RocketChat.livechat.registerGuest(registerGuestVisitor),
+					registerGuestVisitor,
+				);
+
+				await expect(page.frameLocator('#rocketchat-iframe').getByText('Start Chat')).not.toBeVisible();
+
+				await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
+				await poLiveChat.btnSendMessageToOnlineAgent.click();
+
+				await expect(poLiveChat.txtChatMessage('this_a_test_message_from_visitor')).toBeVisible();
+
+				await poLiveChat.page.evaluate(
+					(registerGuestVisitor) => window.RocketChat.livechat.registerGuest(registerGuestVisitor),
+					registerGuestVisitor,
+				);
+
+				await page.waitForTimeout(500);
+
+				await expect(poLiveChat.txtChatMessage('this_a_test_message_from_visitor')).toBeVisible();
+
+				await poLiveChat.page.evaluate(
+					(registerGuestVisitor) => window.RocketChat.livechat.registerGuest(registerGuestVisitor),
+					registerGuestVisitor,
+				);
+
+				await page.waitForTimeout(500);
+
+				await expect(poLiveChat.txtChatMessage('this_a_test_message_from_visitor')).toBeVisible();
+			});
+		});
+
 		test('OC - Livechat API - setGuestEmail', async () => {
 			const registerGuestVisitor = {
 				name: faker.person.firstName(),
