@@ -14,11 +14,11 @@ export class HomeSidenav {
 	}
 
 	get checkboxEncryption(): Locator {
-		return this.page.locator('role=dialog[name="Create Channel"] >> label >> text="Encrypted"');
+		return this.page.locator('role=dialog[name="Create channel"] >> label >> text="Encrypted"');
 	}
 
 	get checkboxReadOnly(): Locator {
-		return this.page.locator('label', { has: this.page.getByRole('checkbox', { name: 'Read Only' }) });
+		return this.page.locator('label', { has: this.page.getByRole('checkbox', { name: 'Read-only' }) });
 	}
 
 	get inputChannelName(): Locator {

@@ -23,7 +23,7 @@ export class HomeDiscussion {
 	}
 
 	get inputName(): Locator {
-		return this.page.locator('role=textbox[name="Discussion name"]');
+		return this.page.locator('role=textbox[name="Name"]');
 	}
 
 	get inputMessage(): Locator {
