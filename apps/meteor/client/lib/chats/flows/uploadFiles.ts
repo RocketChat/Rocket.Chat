@@ -25,8 +25,8 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 			props: {
 				file,
 				fileName: file.name,
-				fileDescription: chat.composer?.text ?? '',
-				showDescription: room && !isRoomFederated(room),
+				fileMessageText: chat.composer?.text ?? '',
+				showMessageText: room && !isRoomFederated(room),
 				onClose: (): void => {
 					imperativeModal.close();
 					uploadNextFile();

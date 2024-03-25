@@ -12,22 +12,22 @@ type FileUploadModalProps = {
 	onSubmit: (name: string, description?: string) => void;
 	file: File;
 	fileName: string;
-	fileDescription?: string;
+	fileMessageText?: string;
 	invalidContentType: boolean;
-	showDescription?: boolean;
+	showMessageText?: boolean;
 };
 
 const FileUploadModal = ({
 	onClose,
 	file,
 	fileName,
-	fileDescription,
+	fileMessageText,
 	onSubmit,
 	invalidContentType,
-	showDescription = true,
+	showMessageText = true,
 }: FileUploadModalProps): ReactElement => {
 	const [name, setName] = useState<string>(fileName);
-	const [description, setDescription] = useState<string>(fileDescription || '');
+	const [messageText, setMessageText] = useState<string>(fileMessageText || '');
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const maxFileSize = useSetting('FileUpload_MaxFileSize') as number;
@@ -39,7 +39,7 @@ const FileUploadModal = ({
 	};
 
 	const handleDescription = (e: ChangeEvent<HTMLInputElement>): void => {
-		setDescription(e.currentTarget.value);
+		setMessageText(e.currentTarget.value);
 	};
 
 	const handleSubmit: FormEventHandler<HTMLFormElement> = (e): void => {
@@ -60,7 +60,7 @@ const FileUploadModal = ({
 			});
 		}
 
-		onSubmit(name, description);
+		onSubmit(name, messageText);
 	};
 
 	useEffect(() => {
@@ -101,11 +101,11 @@ const FileUploadModal = ({
 							</FieldRow>
 							{!name && <FieldError>{t('error-the-field-is-required', { field: t('Name') })}</FieldError>}
 						</Field>
-						{showDescription && (
+						{showMessageText && (
 							<Field>
 								<FieldLabel>{t('Message')}</FieldLabel>
 								<FieldRow>
-									<TextInput value={description} onChange={handleDescription} placeholder={t('Message')} ref={ref} />
+									<TextInput value={messageText} onChange={handleDescription} placeholder={t('Message')} ref={ref} />
 								</FieldRow>
 							</Field>
 						)}
