@@ -50,7 +50,7 @@ const { insertAdminUserFromEnv } = proxyquire.noCallThru().load('../../../../ser
 	'@rocket.chat/models': models,
 });
 
-describe.only('insertAdminUserFromEnv', () => {
+describe('insertAdminUserFromEnv', () => {
 	beforeEach(() => {
 		getUsersInRole.reset();
 		checkUsernameAvailability.reset();
@@ -60,6 +60,7 @@ describe.only('insertAdminUserFromEnv', () => {
 		models.Users.findOneByEmailAddress.reset();
 		setPasswordAsync.reset();
 		settingsGet.reset();
+		process.env.ADMIN_PASS = 'pass';
 	});
 
 	it('should do nothing if process.env.ADMIN_PASS is empty', async () => {
@@ -69,7 +70,6 @@ describe.only('insertAdminUserFromEnv', () => {
 		expect(result).to.be.undefined;
 	});
 	it('should do nothing if theres already an admin user', async () => {
-		process.env.ADMIN_PASS = 'pass';
 		getUsersInRole.returns({ count: () => 1 });
 
 		const result = await insertAdminUserFromEnv();
@@ -78,7 +78,6 @@ describe.only('insertAdminUserFromEnv', () => {
 		expect(result).to.be.undefined;
 	});
 	it('should try to validate an email when process.env.ADMIN_EMAIL is set', async () => {
-		process.env.ADMIN_PASS = 'pass';
 		process.env.ADMIN_EMAIL = 'email';
 		getUsersInRole.returns({ count: () => 0 });
 		validateEmail.returns(false);
@@ -93,7 +92,6 @@ describe.only('insertAdminUserFromEnv', () => {
 		expect(result).to.be.undefined;
 	});
 	it('should override the admins name when process.env.ADMIN_NAME is set', async () => {
-		process.env.ADMIN_PASS = 'pass';
 		process.env.ADMIN_EMAIL = 'email';
 		process.env.ADMIN_NAME = 'name';
 		getUsersInRole.returns({ count: () => 0 });
@@ -118,7 +116,6 @@ describe.only('insertAdminUserFromEnv', () => {
 		).to.be.true;
 	});
 	it('should ignore the admin email when another user already has it set', async () => {
-		process.env.ADMIN_PASS = 'pass';
 		process.env.ADMIN_EMAIL = 'email';
 		getUsersInRole.returns({ count: () => 0 });
 		validateEmail.returns(true);
@@ -130,7 +127,6 @@ describe.only('insertAdminUserFromEnv', () => {
 		expect(models.Users.findOneByEmailAddress.getCall(0).firstArg).to.not.to.have.property('email', 'email');
 	});
 	it('should add the email from env when its valid and no users are using it', async () => {
-		process.env.ADMIN_PASS = 'pass';
 		process.env.ADMIN_EMAIL = 'email';
 		getUsersInRole.returns({ count: () => 0 });
 		validateEmail.returns(true);
@@ -144,7 +140,6 @@ describe.only('insertAdminUserFromEnv', () => {
 			.to.deep.equal([{ address: 'email', verified: false }]);
 	});
 	it('should mark the admin email as verified when process.env.ADMIN_EMAIL_VERIFIED is set to true', async () => {
-		process.env.ADMIN_PASS = 'pass';
 		process.env.ADMIN_EMAIL = 'email';
 		process.env.ADMIN_EMAIL_VERIFIED = 'true';
 		getUsersInRole.returns({ count: () => 0 });
@@ -159,7 +154,6 @@ describe.only('insertAdminUserFromEnv', () => {
 			.to.deep.equal([{ address: 'email', verified: true }]);
 	});
 	it('should validate a username with setting UTF9_User_Names_Validation when process.env.ADMIN_USERNAME is set', async () => {
-		process.env.ADMIN_PASS = 'pass';
 		process.env.ADMIN_USERNAME = '1234';
 		getUsersInRole.returns({ count: () => 0 });
 		validateEmail.returns(true);
@@ -171,7 +165,6 @@ describe.only('insertAdminUserFromEnv', () => {
 		expect(checkUsernameAvailability.called).to.be.true;
 	});
 	it('should override the username from admin if the env ADMIN_USERNAME is set, is valid and the username is available', async () => {
-		process.env.ADMIN_PASS = 'pass';
 		process.env.ADMIN_USERNAME = '1234';
 		getUsersInRole.returns({ count: () => 0 });
 		validateEmail.returns(true);
@@ -184,7 +177,6 @@ describe.only('insertAdminUserFromEnv', () => {
 		expect(models.Users.create.calledWith(sinon.match({ username: '1234' }))).to.be.true;
 	});
 	it('should ignore the username when it does not pass setting regexp validation', async () => {
-		process.env.ADMIN_PASS = 'pass';
 		process.env.ADMIN_USERNAME = '1234';
 		getUsersInRole.returns({ count: () => 0 });
 		validateEmail.returns(true);
@@ -197,7 +189,6 @@ describe.only('insertAdminUserFromEnv', () => {
 		expect(models.Users.create.calledWith(sinon.match({ username: 'admin' }))).to.be.true;
 	});
 	it('should call addUserRolesAsync as the last step when all data is valid and all overrides are valid', async () => {
-		process.env.ADMIN_PASS = 'pass';
 		process.env.ADMIN_EMAIL = 'email';
 		process.env.ADMIN_NAME = 'name';
 		process.env.ADMIN_USERNAME = '1234';
@@ -218,7 +209,6 @@ describe.only('insertAdminUserFromEnv', () => {
 			.to.be.true;
 	});
 	it('should use the default nameValidation regex when the regex on the setting is invalid', async () => {
-		process.env.ADMIN_PASS = 'pass';
 		process.env.ADMIN_NAME = 'name';
 		process.env.ADMIN_USERNAME = '$$$$$$';
 
@@ -232,7 +222,6 @@ describe.only('insertAdminUserFromEnv', () => {
 		expect(models.Users.create.calledWith(sinon.match({ username: 'admin' })));
 	});
 	it('should ignore the username when is not available', async () => {
-		process.env.ADMIN_PASS = 'pass';
 		process.env.ADMIN_USERNAME = '1234';
 
 		getUsersInRole.returns({ count: () => 0 });
