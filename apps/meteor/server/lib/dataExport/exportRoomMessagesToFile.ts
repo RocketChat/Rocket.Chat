@@ -215,6 +215,8 @@ const exportRoomMessages = async (
 	);
 
 	const [results, total] = await Promise.all([cursor.toArray(), totalCount]);
+	console.log('results here', results);
+	console.log('total here', total);
 
 	const result = {
 		total,
@@ -230,7 +232,9 @@ const exportRoomMessages = async (
 			result.uploads.push(msg.file);
 		}
 
-		result.messages.push(exportMessageObject(exportType, messageObject, msg.file));
+		const x = exportMessageObject(exportType, messageObject, msg.file);
+		console.log('stringified here', x);
+		result.messages.push(x);
 	});
 
 	return result;
