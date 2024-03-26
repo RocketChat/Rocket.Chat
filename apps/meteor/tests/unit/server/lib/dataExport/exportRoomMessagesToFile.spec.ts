@@ -17,7 +17,9 @@ const { exportMessageObject } = proxyquire.noCallThru().load('../../../../../ser
 		writeFile: stubs.writeFile,
 	},
 	'../i18n': {
-		t: stubs.translateKey(),
+		i18n: {
+			t: stubs.translateKey(),
+		},
 	},
 	'../../../app/settings/server': {
 		settings: stubs.settings(),
@@ -95,6 +97,7 @@ const messagesData = [
 		attachments: [
 			{
 				type: 'file',
+				title: undefined,
 				title_link: '/file-upload/txt-file-id/test.txt',
 				url: '/file-upload/id/test.txt',
 				remote: false,
@@ -141,7 +144,7 @@ describe('Export - exportMessageObject', () => {
 
 		expect(result).to.be.a.string;
 		expect(result).to.equal(
-			`<p><strong>${messagesData[1].username}</strong> (Wed, 20 Mar 2024 13:46:01 GMT):<br/>\n${messagesData[1].msg}\n<br/><a href="./assets/${messages[1].file?._id}-${messages[1].file?.name}">${messagesData[1].attachments?.[0].title_link}</a>\n</p>`,
+			`<p><strong>${messagesData[1].username}</strong> (Wed, 20 Mar 2024 13:46:01 GMT):<br/>\n${messagesData[1].msg}\n<br/><a href="./assets/${messages[1].file?._id}-${messages[1].file?.name}">${messagesData[1].attachments?.[0].title}</a>\n</p>`,
 		);
 	});
 
