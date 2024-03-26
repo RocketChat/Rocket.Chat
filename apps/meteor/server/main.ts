@@ -21,6 +21,8 @@ const StartupLogger = new Logger('StartupLogger');
 
 StartupLogger.info('Starting Rocket.Chat server...');
 
+await import('../app/settings/server').then(() => StartupLogger.info('Settings started'));
+
 await Promise.all([
 	import('./importPackages').then(() => StartupLogger.info('Imported packages')),
 	import('./methods').then(() => StartupLogger.info('Imported methods')),
@@ -31,7 +33,6 @@ await Promise.all([
 	import('./features/EmailInbox/index').then(() => StartupLogger.info('EmailInbox started')),
 	configureLogLevel().then(() => StartupLogger.info('Log level configured')),
 	registerServices().then(() => StartupLogger.info('Services registered')),
-	import('../app/settings/server').then(() => StartupLogger.info('Settings started')),
 	configureLoginServices().then(() => StartupLogger.info('Login services configured')),
 	registerEEBroker().then(() => StartupLogger.info('EE Broker registered')),
 	startup().then(() => StartupLogger.info('Startup finished')),
