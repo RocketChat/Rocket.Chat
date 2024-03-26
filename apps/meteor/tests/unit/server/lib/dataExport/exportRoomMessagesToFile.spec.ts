@@ -137,7 +137,7 @@ describe('Export - exportMessageObject', () => {
 	});
 
 	it('should correctly reference file when exporting a message object with an attachment as html', async () => {
-		const result = await exportMessageObject('json', messagesData[1], messages[1].file);
+		const result = await exportMessageObject('html', messagesData[1], messages[1].file);
 
 		expect(result).to.be.a.string;
 		expect(result).to.equal(
@@ -146,7 +146,7 @@ describe('Export - exportMessageObject', () => {
 	});
 
 	it('should use fallback attachment description when no title is provided on message object export as html', async () => {
-		const result = await exportMessageObject('json', messagesData[2], messages[1].file);
+		const result = await exportMessageObject('html', messagesData[2], messages[1].file);
 
 		expect(stubs.translateKey.calledWith('Message_Attachments')).to.be.true;
 		expect(result).to.be.a.string;
