@@ -13,6 +13,10 @@ inputs:
     required: false
     description: 'Platform'
     type: string
+  build-containers:
+    required: false
+    description: 'Containers to build along with Rocket.Chat'
+    type: string
 
 runs:
   using: composite
@@ -57,7 +61,7 @@ runs:
         args=(rocketchat)
 
         if [[ '${{ inputs.platform }}' = 'alpine' ]]; then
-          args+=($SERVICES_PUBLISH)
+          args+=('${{ inputs.build-containers }}')
         fi;
 
         docker compose -f docker-compose-ci.yml build "${args[@]}"
@@ -69,7 +73,7 @@ runs:
         args=(rocketchat)
 
         if [[ '${{ inputs.platform }}' = 'alpine' ]]; then
-          args+=($SERVICES_PUBLISH)
+          args+=('${{ inputs.build-containers }}')
         fi;
 
         docker compose -f docker-compose-ci.yml push "${args[@]}"
