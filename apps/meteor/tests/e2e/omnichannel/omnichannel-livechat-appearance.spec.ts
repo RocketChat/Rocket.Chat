@@ -1,5 +1,6 @@
 import { expect } from '@playwright/test';
 
+import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelLivechatAppearance } from '../page-objects/omnichannel-livechat-appearance';
 import { test } from '../utils/test';
@@ -23,6 +24,8 @@ test.describe('OC - Livechat Appearance', () => {
 	});
 
 	test('OC - Livechat Appearance - Hide system messages', async ({ page }) => {
+		test.skip(!IS_EE, 'Enterprise Only');
+
 		await test.step('expect to have default values', async () => {
 			await poLivechatAppearance.inputHideSystemMessages.click();
 			await expect(poLivechatAppearance.findHideSystemMessageOption('uj')).toHaveAttribute('aria-selected', 'true');
