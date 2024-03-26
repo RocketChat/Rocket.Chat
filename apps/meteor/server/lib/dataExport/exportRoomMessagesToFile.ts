@@ -160,7 +160,7 @@ const getMessageData = (
 	return messageObject;
 };
 
-const exportMessageObject = (type: 'json' | 'html', messageObject: MessageData, messageFile?: FileProp): string => {
+export const exportMessageObject = (type: 'json' | 'html', messageObject: MessageData, messageFile?: FileProp): string => {
 	if (type === 'json') {
 		return JSON.stringify(messageObject);
 	}
