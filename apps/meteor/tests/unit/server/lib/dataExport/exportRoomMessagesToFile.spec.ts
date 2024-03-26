@@ -8,6 +8,7 @@ const stubs = {
 	mkdir: sinon.stub(),
 	writeFile: sinon.stub(),
 	translateKey: sinon.stub(),
+	settings: sinon.stub(),
 };
 
 const { exportMessageObject } = proxyquire.noCallThru().load('../../../../../server/lib/dataExport/exportRoomMessagesToFile.ts', {
@@ -17,6 +18,9 @@ const { exportMessageObject } = proxyquire.noCallThru().load('../../../../../ser
 	},
 	'../i18n': {
 		t: stubs.translateKey(),
+	},
+	'../../../app/settings/server': {
+		settings: stubs.settings(),
 	},
 });
 
