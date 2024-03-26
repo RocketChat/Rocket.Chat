@@ -57,7 +57,7 @@ test.describe.parallel('administration', () => {
 		});
 	});
 
-	test.describe.only('Rooms', () => {
+	test.describe('Rooms', () => {
 		test.beforeAll(async ({ api }) => {
 			targetChannel = await createTargetChannel(api);
 		});
