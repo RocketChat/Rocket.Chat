@@ -16,12 +16,6 @@ const createOrUpdateGuest = async (guest: StoreState['guest']) => {
 		return;
 	}
 
-	// compare room token and department to avoid unnecessary requests
-
-	if (guest.token === store.state.token && guest.department === store.state.department) {
-		return;
-	}
-
 	const { token } = guest;
 	token && (await store.setState({ token }));
 	const { visitor: user } = await Livechat.grantVisitor({ visitor: { ...guest } });
@@ -30,7 +24,7 @@ const createOrUpdateGuest = async (guest: StoreState['guest']) => {
 		return;
 	}
 	store.setState({ user } as Omit<StoreState['user'], 'ts'>);
-	await loadConfig();
+
 	Triggers.callbacks?.emit('chat-visitor-registered');
 };
 
@@ -219,6 +213,19 @@ const api = {
 		Livechat.unsubscribeAll();
 
 		await createOrUpdateGuest(data);
+
+		/**
+		 * it solves the issues where the registerGuest is called every time the widget is opened
+		 * and the guest is already registered. If there is nothing different in the data,
+		 * it will not call the loadConfig again.
+		 */
+		if (
+			Object.entries(data).some(([key, value]) => {
+				return store.state[key as keyof StoreState['guest']] !== value;
+			})
+		) {
+			await loadConfig();
+		}
 	},
 
 	setLanguage: async (language: StoreState['iframe']['language']) => {
