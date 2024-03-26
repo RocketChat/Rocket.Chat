@@ -1,4 +1,4 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
 import { MarkupInteractionContext } from '@rocket.chat/gazzodown';
 import type * as UiKit from '@rocket.chat/ui-kit';
@@ -22,9 +22,9 @@ const UiKitModal = ({ initialView }: UiKitModalProps) => {
 	const { view, errors, values, updateValues, state } = useUiKitView(initialView);
 	const contextValue = useModalContextValue({ view, values, updateValues });
 
-	const handleSubmit = useMutableCallback((e: FormEvent) => {
+	const handleSubmit = useEffectEvent((e: FormEvent) => {
 		preventSyntheticEvent(e);
-		void actionManager
+		actionManager
 			.emitInteraction(view.appId, {
 				type: 'viewSubmit',
 				payload: {
@@ -35,7 +35,12 @@ const UiKitModal = ({ initialView }: UiKitModalProps) => {
 				},
 				viewId: view.id,
 			})
-			.finally(() => {
+			.then((interaction) => {
+				if (!interaction || !['errors', 'modal.update', 'contextual_bar.update'].includes(String(interaction))) {
+					actionManager.disposeView(view.id);
+				}
+			})
+			.catch(() => {
 				actionManager.disposeView(view.id);
 			});
 	});
