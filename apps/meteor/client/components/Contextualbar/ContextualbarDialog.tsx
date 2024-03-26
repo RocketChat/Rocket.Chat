@@ -9,6 +9,10 @@ import { useRoomToolbox } from '../../views/room/contexts/RoomToolboxContext';
 
 type ContextualbarDialogProps = AriaDialogProps & ComponentProps<typeof Contextualbar>;
 
+/**
+ * TODO: inside administration it should have a mechanism to display the contextualbar programmatically
+ * @prop closeTab only work inside a room
+ * */
 const ContextualbarDialog = (props: ContextualbarDialogProps) => {
 	const ref = useRef(null);
 	const { dialogProps } = useDialog({ 'aria-labelledby': 'contextualbarTitle', ...props }, ref);

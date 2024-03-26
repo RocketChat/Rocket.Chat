@@ -170,12 +170,17 @@ export async function settings({ businessUnit = '' }: { businessUnit?: string } 
 			limitTextLength:
 				initSettings.Livechat_enable_message_character_limit &&
 				(initSettings.Livechat_message_character_limit || initSettings.Message_MaxAllowedSize),
+			hiddenSystemMessages: initSettings.Livechat_hide_system_messages,
+			livechatLogo: initSettings.Assets_livechat_widget_logo,
+			hideWatermark: initSettings.Livechat_hide_watermark || false,
 		},
 		theme: {
 			title: initSettings.Livechat_title,
 			color: initSettings.Livechat_title_color,
 			offlineTitle: initSettings.Livechat_offline_title,
 			offlineColor: initSettings.Livechat_offline_title_color,
+			position: initSettings.Livechat_widget_position || 'right',
+			background: initSettings.Livechat_background,
 			actionLinks: {
 				webrtc: [
 					{

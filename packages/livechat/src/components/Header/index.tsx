@@ -54,7 +54,7 @@ export const Content = ({ children, className = undefined, ...props }: HeaderCom
 );
 
 export const Title = ({ children, className = undefined, ...props }: HeaderComponentProps) => (
-	<div className={createClassName(styles, 'header__title', {}, [className])} {...props}>
+	<div className={createClassName(styles, 'header__title', {}, [className])} data-qa='header-title' {...props}>
 		{children}
 	</div>
 );
