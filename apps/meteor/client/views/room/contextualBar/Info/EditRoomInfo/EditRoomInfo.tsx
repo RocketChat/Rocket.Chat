@@ -75,25 +75,12 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		return new RegExp(`^${namesValidation}$`);
 	}, [allowSpecialNames, namesValidation]);
 
-	const validateName = async (name: string): Promise<string | undefined> => {
-		if (!name) return;
-		if (roomType === 'discussion') return;
-
-		if (teamNameRegex && !teamNameRegex?.test(name)) {
-			return t('Teams_Errors_team_name', { name });
-		}
-
-		const { exists } = await checkTeamNameExists({ roomName: name });
-		if (exists) {
-			return t('Teams_Errors_Already_exists', { name });
-		}
-	};
-
 	const {
 		watch,
 		reset,
 		control,
 		handleSubmit,
+		getFieldState,
 		formState: { isDirty, dirtyFields, errors, isSubmitting },
 	} = useForm({ mode: 'onBlur', defaultValues });
 
@@ -101,6 +88,8 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		() => MessageTypesValues.map(({ key, i18nLabel }) => [key, t(i18nLabel as TranslationKey)]),
 		[t],
 	);
+
+	const { isDirty: isRoomNameDirty } = getFieldState('roomName');
 
 	const {
 		readOnly,
@@ -163,6 +152,20 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const handleSave = useEffectEvent((data) =>
 		Promise.all([isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive()].filter(Boolean)),
 	);
+
+	const validateName = async (name: string): Promise<string | undefined> => {
+		if (!name || !isRoomNameDirty) return;
+		if (roomType === 'discussion') return;
+
+		if (teamNameRegex && !teamNameRegex?.test(name)) {
+			return t('Name_cannot_have_special_characters');
+		}
+
+		const { exists } = await checkTeamNameExists({ roomName: name });
+		if (exists) {
+			return t('Teams_Errors_Already_exists', { name });
+		}
+	};
 
 	const formId = useUniqueId();
 	const roomNameField = useUniqueId();
