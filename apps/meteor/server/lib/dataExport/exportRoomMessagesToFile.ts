@@ -192,7 +192,7 @@ export const exportMessageObject = (type: 'json' | 'html', messageObject: Messag
 	return file.join('\n');
 };
 
-const exportRoomMessages = async (
+export const exportRoomMessages = async (
 	rid: IRoom['_id'],
 	exportType: 'json' | 'html',
 	skip: number,
