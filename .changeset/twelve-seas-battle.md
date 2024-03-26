@@ -2,4 +2,4 @@
 "@rocket.chat/meteor": patch
 ---
 
-Added file id to message exports zip file names in order to avoid overwriting previous exports generated in the same day when using external storage services (such as Amazon S3)
+Fixed an issue where old exports would get overwritten by new ones if generated on the same day, when using external storage services (such as Amazon S3)
