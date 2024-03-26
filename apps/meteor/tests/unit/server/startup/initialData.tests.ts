@@ -153,7 +153,7 @@ describe('insertAdminUserFromEnv', () => {
 			.to.have.property('emails')
 			.to.deep.equal([{ address: 'email', verified: true }]);
 	});
-	it('should validate a username with setting UTF9_User_Names_Validation when process.env.ADMIN_USERNAME is set', async () => {
+	it('should validate a username with setting UTF8_User_Names_Validation when process.env.ADMIN_USERNAME is set', async () => {
 		process.env.ADMIN_USERNAME = '1234';
 		getUsersInRole.returns({ count: () => 0 });
 		validateEmail.returns(true);
