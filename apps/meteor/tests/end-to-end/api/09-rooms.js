@@ -7,8 +7,8 @@ import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
-import { imgURL } from '../../data/interactions';
-import { updateEEPermission, updatePermission, updateSetting } from '../../data/permissions.helper';
+import { imgURL, lstURL, svgLogoFileName, svgLogoURL } from '../../data/interactions';
+import { getSettingValueById, updateEEPermission, updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { deleteTeam } from '../../data/teams.helper';
 import { password } from '../../data/user';
@@ -86,11 +86,18 @@ describe('[Rooms]', function () {
 		let user;
 		let userCredentials;
 		const testChannelName = `channel.test.upload.${Date.now()}-${Math.random()}`;
+		let blockedMediaTypes;
 
 		before(async () => {
 			user = await createUser({ joinDefaultChannels: false });
 			userCredentials = await login(user.username, password);
 			testChannel = (await createRoom({ type: 'c', name: testChannelName })).body.channel;
+			blockedMediaTypes = await getSettingValueById('FileUpload_MediaTypeBlackList');
+			const newBlockedMediaTypes = blockedMediaTypes
+				.split(',')
+				.filter((type) => type !== 'image/svg+xml')
+				.join(',');
+			await updateSetting('FileUpload_MediaTypeBlackList', newBlockedMediaTypes);
 		});
 
 		after(() =>
@@ -99,6 +106,7 @@ describe('[Rooms]', function () {
 				deleteUser(user),
 				updateSetting('FileUpload_Restrict_to_room_members', true),
 				updateSetting('FileUpload_ProtectFiles', true),
+				updateSetting('FileUpload_MediaTypeBlackList', blockedMediaTypes),
 			]),
 		);
 
@@ -146,8 +154,8 @@ describe('[Rooms]', function () {
 
 		let fileNewUrl;
 		let fileOldUrl;
-		it('upload a file to room', (done) => {
-			request
+		it('should upload a PNG file to room', async () => {
+			await request
 				.post(api(`rooms.upload/${testChannel._id}`))
 				.set(credentials)
 				.attach('file', imgURL)
@@ -156,14 +164,54 @@ describe('[Rooms]', function () {
 				.expect((res) => {
 					const { message } = res.body;
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('message._id', message._id);
-					expect(res.body).to.have.nested.property('message.rid', testChannel._id);
-					expect(res.body).to.have.nested.property('message.file._id', message.file._id);
-					expect(res.body).to.have.nested.property('message.file.type', message.file.type);
+					expect(res.body).to.have.property('message');
+					expect(res.body.message).to.have.property('attachments');
+					expect(res.body.message.attachments).to.be.an('array').of.length(1);
+					expect(res.body.message.attachments[0]).to.have.property('image_type', 'image/png');
+					expect(res.body.message.attachments[0]).to.have.property('title', '1024x1024.png');
+					expect(res.body.message).to.have.property('files');
+					expect(res.body.message.files).to.be.an('array').of.length(2);
+					expect(res.body.message.files[0]).to.have.property('type', 'image/png');
+					expect(res.body.message.files[0]).to.have.property('name', '1024x1024.png');
+
 					fileNewUrl = `/file-upload/${message.file._id}/${message.file.name}`;
 					fileOldUrl = `/ufs/GridFS:Uploads/${message.file._id}/${message.file.name}`;
+				});
+		});
+
+		it('should upload a LST file to room', (done) => {
+			request
+				.post(api(`rooms.upload/${testChannel._id}`))
+				.set(credentials)
+				.attach('file', lstURL)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('message');
+					expect(res.body.message).to.have.property('attachments');
+					expect(res.body.message.attachments).to.be.an('array').of.length(1);
+					expect(res.body.message.attachments[0]).to.have.property('format', 'LST');
+					expect(res.body.message.attachments[0]).to.have.property('title', 'lst-test.lst');
+					expect(res.body.message).to.have.property('files');
+					expect(res.body.message.files).to.be.an('array').of.length(1);
+					expect(res.body.message.files[0]).to.have.property('name', 'lst-test.lst');
 				})
 				.end(done);
+		});
+
+		it('should not allow uploading a blocked media type to a room', async () => {
+			await updateSetting('FileUpload_MediaTypeBlackList', 'application/octet-stream');
+			await request
+				.post(api(`rooms.upload/${testChannel._id}`))
+				.set(credentials)
+				.attach('file', lstURL)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-file-type');
+				});
 		});
 
 		it('should be able to get the file', async () => {
@@ -198,6 +246,58 @@ describe('[Rooms]', function () {
 			await updateSetting('FileUpload_ProtectFiles', false);
 			await request.get(fileNewUrl).expect('Content-Type', 'image/png').expect(200);
 			await request.get(fileOldUrl).expect('Content-Type', 'image/png').expect(200);
+		});
+
+		it('should generate thumbnail for SVG files correctly', async () => {
+			const expectedFileName = `thumb-${svgLogoFileName}`;
+			let thumbUrl;
+			await request
+				.post(api(`rooms.upload/${testChannel._id}`))
+				.set(credentials)
+				.attach('file', svgLogoURL)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					const { message } = res.body;
+					const { files, attachments } = message;
+
+					expect(files).to.be.an('array');
+					const hasThumbFile = files.some((file) => file.type === 'image/png' && file.name === expectedFileName);
+					expect(hasThumbFile).to.be.true;
+
+					expect(attachments).to.be.an('array');
+					const thumbAttachment = attachments.find((attachment) => attachment.title === svgLogoFileName);
+					expect(thumbAttachment).to.be.an('object');
+					thumbUrl = thumbAttachment.image_url;
+				});
+
+			await request.get(thumbUrl).set(credentials).expect('Content-Type', 'image/png');
+		});
+
+		it('should generate thumbnail for JPEG files correctly', async () => {
+			const expectedFileName = `thumb-sample-jpeg.jpg`;
+			let thumbUrl;
+			await request
+				.post(api(`rooms.upload/${testChannel._id}`))
+				.set(credentials)
+				.attach('file', fs.createReadStream(path.join(__dirname, '../../mocks/files/sample-jpeg.jpg')))
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					const { message } = res.body;
+					const { files, attachments } = message;
+
+					expect(files).to.be.an('array');
+					const hasThumbFile = files.some((file) => file.type === 'image/jpeg' && file.name === expectedFileName);
+					expect(hasThumbFile).to.be.true;
+
+					expect(attachments).to.be.an('array');
+					const thumbAttachment = attachments.find((attachment) => attachment.title === `sample-jpeg.jpg`);
+					expect(thumbAttachment).to.be.an('object');
+					thumbUrl = thumbAttachment.image_url;
+				});
+
+			await request.get(thumbUrl).set(credentials).expect('Content-Type', 'image/jpeg');
 		});
 	});
 
@@ -1601,13 +1701,24 @@ describe('[Rooms]', function () {
 	describe('/rooms.saveRoomSettings', () => {
 		let testChannel;
 		const randomString = `randomString${Date.now()}`;
+		let discussion;
 
-		before('create a channel', async () => {
+		before(async () => {
 			const result = await createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` });
 			testChannel = result.body.channel;
+
+			const resDiscussion = await request
+				.post(api('rooms.createDiscussion'))
+				.set(credentials)
+				.send({
+					prid: testChannel._id,
+					t_name: `discussion-create-from-tests-${testChannel.name}`,
+				});
+
+			discussion = resDiscussion.body.discussion;
 		});
 
-		after(() => deleteRoom({ type: 'p', roomId: testChannel._id }));
+		after(() => Promise.all([deleteRoom({ type: 'p', roomId: discussion._id }), deleteRoom({ type: 'p', roomId: testChannel._id })]));
 
 		it('should update the room settings', (done) => {
 			const imageDataUri = `data:image/png;base64,${fs.readFileSync(path.join(process.cwd(), imgURL)).toString('base64')}`;
@@ -1662,6 +1773,35 @@ describe('[Rooms]', function () {
 					expect(res.body.room).to.have.property('reactWhenReadOnly', true);
 				})
 				.end(done);
+		});
+
+		it('should be able to update the discussion name with spaces', async () => {
+			const newDiscussionName = `${randomString} with spaces`;
+
+			await request
+				.post(api('rooms.saveRoomSettings'))
+				.set(credentials)
+				.send({
+					rid: discussion._id,
+					roomName: newDiscussionName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			await request
+				.get(api('rooms.info'))
+				.set(credentials)
+				.query({
+					roomId: discussion._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.be.an('object');
+
+					expect(res.body.room).to.have.property('_id', discussion._id);
+					expect(res.body.room).to.have.property('fname', newDiscussionName);
+				});
 		});
 	});
 });
