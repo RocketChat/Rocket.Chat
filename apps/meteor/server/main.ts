@@ -39,4 +39,6 @@ await Promise.all([
 
 await startLicense().then(() => StartupLogger.info('License started'));
 
+await import('../ee/server/startup/services');
+
 StartupLogger.info('Rocket.Chat server started.');
