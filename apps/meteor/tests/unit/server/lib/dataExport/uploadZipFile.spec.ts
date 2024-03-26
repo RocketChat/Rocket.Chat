@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { before, describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
@@ -44,7 +45,7 @@ describe('Export - uploadZipFile', () => {
 	const userId = 'user-id';
 	const filePath = 'random-path';
 
-	beforeAll(() => {
+	before(() => {
 		stubs.findOneUserById.returns({ name: userName });
 		stubs.stat.returns(fileStat);
 		stubs.randomId.returns(randomId);
