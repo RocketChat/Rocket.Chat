@@ -58,11 +58,7 @@ runs:
     - name: Build Docker images
       shell: bash
       run: |
-        args=(rocketchat)
-
-        if [[ '${{ inputs.platform }}' = 'alpine' ]]; then
-          args+=('${{ inputs.build-containers }}')
-        fi;
+        args=(rocketchat ${{ inputs.build-containers }})
 
         docker compose -f docker-compose-ci.yml build "${args[@]}"
 
@@ -70,10 +66,6 @@ runs:
       if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
       shell: bash
       run: |
-        args=(rocketchat)
-
-        if [[ '${{ inputs.platform }}' = 'alpine' ]]; then
-          args+=('${{ inputs.build-containers }}')
-        fi;
+        args=(rocketchat ${{ inputs.build-containers }})
 
         docker compose -f docker-compose-ci.yml push "${args[@]}"
