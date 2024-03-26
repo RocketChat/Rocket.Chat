@@ -84,6 +84,7 @@ const api = {
 			iframe,
 			iframe: { theme: currentTheme },
 		} = store.state;
+
 		store.setState({
 			iframe: {
 				...iframe,
@@ -244,9 +245,15 @@ const api = {
 	setParentUrl: (parentUrl: StoreState['parentUrl']) => {
 		store.setState({ parentUrl });
 	},
+
 	setGuestMetadata(metadata: StoreState['iframe']['guestMetadata']) {
 		const { iframe } = store.state;
 		store.setState({ iframe: { ...iframe, guestMetadata: metadata } });
+	},
+
+	setHiddenSystemMessages: (hiddenSystemMessages: StoreState['iframe']['hiddenSystemMessages']) => {
+		const { iframe } = store.state;
+		store.setState({ iframe: { ...iframe, hiddenSystemMessages } });
 	},
 };
 

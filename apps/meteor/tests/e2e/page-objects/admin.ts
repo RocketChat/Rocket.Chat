@@ -3,7 +3,7 @@ import type { Locator, Page } from '@playwright/test';
 import { AdminFlextab } from './fragments/admin-flextab';
 
 export class Admin {
-	private readonly page: Page;
+	public readonly page: Page;
 
 	readonly tabs: AdminFlextab;
 
