@@ -2262,7 +2262,7 @@ describe('[Rooms]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('errorType', 'invalid-params');
-					expect(res.body).to.have.property('error').include("must have required property 'rid' [invalid-params]");
+					expect(res.body).to.have.property('error').include("must have required property 'rid'");
 				});
 		});
 
@@ -2281,7 +2281,7 @@ describe('[Rooms]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('errorType', 'invalid-params');
-					expect(res.body).to.have.property('error').include("must have required property 'type' [invalid-params]");
+					expect(res.body).to.have.property('error').include("must have required property 'type'");
 				});
 		});
 
