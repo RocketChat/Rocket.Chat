@@ -7,6 +7,8 @@ import { test } from '../utils/test';
 
 test.use({ storageState: Users.admin.state });
 
+test.skip(!IS_EE, 'Enterprise Only');
+
 test.describe('OC - Livechat Appearance', () => {
 	let poLivechatAppearance: OmnichannelLivechatAppearance;
 
@@ -24,8 +26,6 @@ test.describe('OC - Livechat Appearance', () => {
 	});
 
 	test('OC - Livechat Appearance - Hide system messages', async ({ page }) => {
-		test.skip(!IS_EE, 'Enterprise Only');
-
 		await test.step('expect to have default values', async () => {
 			await poLivechatAppearance.inputHideSystemMessages.click();
 			await expect(poLivechatAppearance.findHideSystemMessageOption('uj')).toHaveAttribute('aria-selected', 'true');
