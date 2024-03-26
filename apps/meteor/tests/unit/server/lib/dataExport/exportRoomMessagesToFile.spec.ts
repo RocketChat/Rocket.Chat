@@ -18,11 +18,11 @@ const { exportMessageObject } = proxyquire.noCallThru().load('../../../../../ser
 	},
 	'../i18n': {
 		i18n: {
-			t: stubs.translateKey(),
+			t: stubs.translateKey,
 		},
 	},
 	'../../../app/settings/server': {
-		settings: stubs.settings(),
+		settings: stubs.settings,
 	},
 });
 
