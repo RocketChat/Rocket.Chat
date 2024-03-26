@@ -18,7 +18,7 @@ const connectionStatusBarStyle = css`
 	justify-content: space-between;
 	align-items: center;
 
-	.rcx-connection-status-bar--content-wrapper {
+	.rcx-connection-status-bar--wrapper {
 		display: flex;
 		align-items: center;
 		column-gap: 8px;
@@ -27,6 +27,9 @@ const connectionStatusBarStyle = css`
 		display: flex;
 		align-items: center;
 		column-gap: 8px;
+	}
+	.rcx-connection-status-bar--info {
+		color: ${Palette.text['font-default']};
 	}
 `;
 function ConnectionStatusBar() {
@@ -50,14 +53,14 @@ function ConnectionStatusBar() {
 			role='alert'
 			fontScale='p2'
 		>
-			<span className='rcx-connection-status-bar--content-wrapper'>
+			<span className='rcx-connection-status-bar--wrapper'>
 				<Icon name='warning' />
 				<span className='rcx-connection-status-bar--content'>
 					<strong>{t('meteor_status', { context: status })}</strong>
 					{['waiting', 'failed', 'offline'].includes(status) && (
-						<Box is='span' color='default' fontScale='p2'>
+						<span className='rcx-connection-status-bar--info'>
 							{status === 'waiting' ? t('meteor_status_reconnect_in', { count: reconnectCountdown }) : t('meteor_status_try_again_later')}
-						</Box>
+						</span>
 					)}
 				</span>
 			</span>
