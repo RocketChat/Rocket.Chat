@@ -1,4 +1,4 @@
-import { Box, CheckOption, PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
+import { Box, Option, PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
 import type { PaginatedMultiSelectOption } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
@@ -66,10 +66,9 @@ const AutoCompleteDepartmentMultiple = ({
 					  }
 			}
 			renderItem={({ label, ...props }) => (
-				<CheckOption
+				<Option
 					{...props}
 					label={<Box style={{ whiteSpace: 'normal' }}>{label}</Box>}
-					selected={value.some((item) => item.value === props.value)}
 				/>
 			)}
 		/>
