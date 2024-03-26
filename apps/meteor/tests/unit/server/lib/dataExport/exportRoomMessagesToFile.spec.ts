@@ -5,10 +5,16 @@ import sinon from 'sinon';
 
 // Create stubs for dependencies
 const stubs = {
+	mkdir: sinon.stub(),
+	writeFile: sinon.stub(),
 	translateKey: sinon.stub(),
 };
 
 const { exportMessageObject } = proxyquire.noCallThru().load('../../../../../server/lib/dataExport/exportRoomMessagesToFile.ts', {
+	'fs/promises': {
+		mkdir: stubs.mkdir,
+		writeFile: stubs.writeFile,
+	},
 	'../i18n': {
 		t: stubs.translateKey(),
 	},
