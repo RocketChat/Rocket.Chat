@@ -1,11 +1,9 @@
 import './models/startup';
-
 /**
  * ./settings uses top level await, in theory the settings creation
  * and the startup should be done in parallel
  */
 import './settings';
-import '../app/lib/server/startup';
 
 import { startLicense } from '../ee/app/license/server/startup';
 import { registerEEBroker } from '../ee/server';
@@ -13,10 +11,13 @@ import { configureLoginServices } from './configuration';
 import { configureLogLevel } from './configureLogLevel';
 import { registerServices } from './services/startup';
 import { startup } from './startup';
-import './importPackages';
-import './methods';
-import './publications';
+
 import './routes';
+import '../app/lib/server/startup';
+
+await import('./importPackages');
+await import('./methods');
+await import('./publications');
 
 await import('./lib/logger/startup');
 
