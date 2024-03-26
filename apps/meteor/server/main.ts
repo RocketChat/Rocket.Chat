@@ -19,27 +19,27 @@ import '../app/lib/server/startup';
 
 const StartupLogger = new Logger('StartupLogger');
 
-StartupLogger.info('Starting Rocket.Chat server...');
+StartupLogger.log('Starting Rocket.Chat server...');
 
-await import('../app/settings/server').then(() => StartupLogger.info('Settings started'));
+await import('../app/settings/server').then(() => StartupLogger.log('Settings started'));
 
 await Promise.all([
-	import('./importPackages').then(() => StartupLogger.info('Imported packages')),
-	import('./methods').then(() => StartupLogger.info('Imported methods')),
-	import('./publications').then(() => StartupLogger.info('Imported publications')),
-	import('./lib/logger/startup').then(() => StartupLogger.info('Logger started')),
-	import('../lib/oauthRedirectUriServer').then(() => StartupLogger.info('OAuth redirect uri server started')),
-	import('./lib/pushConfig').then(() => StartupLogger.info('Push configuration started')),
-	import('./features/EmailInbox/index').then(() => StartupLogger.info('EmailInbox started')),
-	configureLogLevel().then(() => StartupLogger.info('Log level configured')),
-	registerServices().then(() => StartupLogger.info('Services registered')),
-	configureLoginServices().then(() => StartupLogger.info('Login services configured')),
-	registerEEBroker().then(() => StartupLogger.info('EE Broker registered')),
-	startup().then(() => StartupLogger.info('Startup finished')),
+	import('./importPackages').then(() => StartupLogger.log('Imported packages')),
+	import('./methods').then(() => StartupLogger.log('Imported methods')),
+	import('./publications').then(() => StartupLogger.log('Imported publications')),
+	import('./lib/logger/startup').then(() => StartupLogger.log('Logger started')),
+	import('../lib/oauthRedirectUriServer').then(() => StartupLogger.log('OAuth redirect uri server started')),
+	import('./lib/pushConfig').then(() => StartupLogger.log('Push configuration started')),
+	import('./features/EmailInbox/index').then(() => StartupLogger.log('EmailInbox started')),
+	configureLogLevel().then(() => StartupLogger.log('Log level configured')),
+	registerServices().then(() => StartupLogger.log('Services registered')),
+	configureLoginServices().then(() => StartupLogger.log('Login services configured')),
+	registerEEBroker().then(() => StartupLogger.log('EE Broker registered')),
+	startup().then(() => StartupLogger.log('Startup finished')),
 ]);
 
-await startLicense().then(() => StartupLogger.info('License started'));
+await startLicense().then(() => StartupLogger.log('License started'));
 
 await import('../ee/server/startup/services');
 
-StartupLogger.info('Rocket.Chat server started.');
+StartupLogger.log('Rocket.Chat server started.');
