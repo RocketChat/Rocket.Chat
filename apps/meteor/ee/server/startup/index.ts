@@ -5,7 +5,6 @@ import './audit';
 import './deviceManagement';
 import './engagementDashboard';
 import './maxRoomsPerGuest';
-import './services';
 import './upsell';
 import { api } from '@rocket.chat/core-services';
 
