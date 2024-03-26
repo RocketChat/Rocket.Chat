@@ -29,10 +29,6 @@ import type * as UiKit from '@rocket.chat/ui-kit';
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 
-export enum StreamerRoomEvents {
-	MENTION = 'mention',
-}
-
 export enum StreamerUserEvents {
 	MENTION = 'mention',
 }
@@ -41,7 +37,6 @@ export enum MentionTypes {
 	ALL = 'all',
 	HERE = 'here',
 	USER = 'user',
-	TEAM = 'team', // TODO: Unused...
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -82,10 +77,6 @@ export interface StreamerEvents {
 		{ key: `${string}/webrtc`; args: unknown[] },
 		/* @deprecated over videoconf*/
 		// { key: `${string}/${string}`; args: [id: string] },
-		{
-			key: `${string}/${StreamerRoomEvents.MENTION}`;
-			args: [{ rid: IRoom['_id']; mid: IMessage['_id']; uid: IUser['_id']; type: MentionTypes }];
-		},
 	];
 
 	'room-messages': [{ key: '__my_messages__'; args: [IMessage] }, { key: string; args: [message: IMessage, user?: IUser, room?: IRoom] }];

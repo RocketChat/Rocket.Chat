@@ -10,7 +10,7 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 		return false;
 	}
 
-	const { toAll, toHere, mentionIds } = await getMentions(message);
+	const { hasAllMention, hasHereMention, mentionIds } = await getMentions(message);
 
 	const addToReplies = [
 		...new Set([
@@ -29,7 +29,7 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 
 	const repliesFiltered = (replies || []).filter((userId) => userId !== u._id).filter((userId) => !mentionIds.includes(userId));
 
-	if (toAll || toHere) {
+	if (hasAllMention || hasHereMention) {
 		await Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, repliesFiltered, tmid, {
 			groupMention: true,
 		});

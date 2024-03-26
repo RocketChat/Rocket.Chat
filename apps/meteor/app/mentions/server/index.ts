@@ -1,2 +1,2 @@
-import './getMentionedTeamMembers';
+import './getMentionedUsers';
 import './methods/getUserMentionsByChannel';

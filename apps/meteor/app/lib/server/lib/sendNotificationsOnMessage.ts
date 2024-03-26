@@ -271,7 +271,7 @@ export async function sendMessageNotifications(message: IMessage, room: IRoom, u
 		return message;
 	}
 
-	const { toAll: hasMentionToAll, toHere: hasMentionToHere, mentionIds } = await getMentions(message);
+	const { hasAllMention: hasMentionToAll, hasHereMention: hasMentionToHere, mentionIds } = await getMentions(message);
 
 	const mentionIdsWithoutGroups = [...mentionIds];
 

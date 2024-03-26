@@ -4,7 +4,7 @@ import type { IServiceClass } from '@rocket.chat/core-services';
 import { EventNames, EnterpriseSettings } from '@rocket.chat/core-services';
 import type { IUser, IRoom, VideoConference, ISetting, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { isSettingColor, isSettingEnterprise, UserStatus } from '@rocket.chat/core-typings';
-import { StreamerRoomEvents, StreamerUserEvents, MentionTypes } from '@rocket.chat/ddp-client';
+import { StreamerUserEvents, MentionTypes } from '@rocket.chat/ddp-client';
 import { Logger } from '@rocket.chat/logger';
 import { parse } from '@rocket.chat/message-parser';
 
@@ -32,24 +32,21 @@ export class ListenersModule {
 		const logger = new Logger('ListenersModule');
 
 		service.onEvent(EventNames.USER_MENTIONS, (message, mentions) => {
-			// TODO: In case of all or here messages, should we notify named users too?
-			// TODO: Refine events body - we don't need to send the whole message object
-
-			if (mentions.toAll || mentions.toHere) {
-				notifications.notifyRoomInThisInstance(message.rid, StreamerRoomEvents.MENTION, {
-					rid: message.rid,
-					mid: message._id,
-					uid: message.u._id,
-					type: mentions.toAll ? MentionTypes.ALL : MentionTypes.HERE,
-				});
-			}
-
 			if (mentions.mentionIds.length > 0) {
+				let type;
+				if (mentions.hasAllMention) {
+					type = MentionTypes.ALL;
+				} else if (mentions.hasHereMention) {
+					type = MentionTypes.HERE;
+				} else {
+					type = MentionTypes.USER;
+				}
+
 				for (const userId of mentions.mentionIds) {
 					notifications.notifyUserInThisInstance(userId, StreamerUserEvents.MENTION, {
 						rid: message.rid,
 						mid: message._id,
-						type: MentionTypes.USER,
+						type,
 					});
 				}
 			}

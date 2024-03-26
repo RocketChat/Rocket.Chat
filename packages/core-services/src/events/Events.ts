@@ -55,8 +55,8 @@ type LoginServiceConfigurationEvent = {
 
 // TODO: Decided to keep this here for now, but it should be moved to a more appropriate place in the future
 export interface IMentionCounter {
-	toAll: boolean;
-	toHere: boolean;
+	hasAllMention: boolean;
+	hasHereMention: boolean;
 	mentionIds: string[];
 }
 

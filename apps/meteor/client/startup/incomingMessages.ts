@@ -1,4 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import { MentionTypes } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
 import { ChatMessage, Subscriptions } from '../../app/models/client';
@@ -23,14 +24,11 @@ Meteor.startup(() => {
 
 	CachedCollectionManager.onLogin(() => {
 		sdk.stream('notify-user', [`${Meteor.userId()}/mention`], (data) => {
-			Subscriptions.update({ rid: data.rid }, { $inc: { unread: 1, userMentions: 1 }, $set: { ts: new Date(), alert: true } });
-		});
-
-		Subscriptions.find({ 'u._id': Meteor.userId() }).forEach((sub) => {
-			sdk.stream('notify-room', [`${sub.rid}/mention`], (data) => {
-				if (Meteor.userId() === data.uid) return;
+			if (data.type === MentionTypes.USER) {
+				Subscriptions.update({ rid: data.rid }, { $inc: { unread: 1, userMentions: 1 }, $set: { ts: new Date(), alert: true } });
+			} else {
 				Subscriptions.update({ rid: data.rid }, { $inc: { unread: 1, groupMentions: 1 }, $set: { ts: new Date(), alert: true } });
-			});
+			}
 		});
 
 		sdk.stream('notify-user', [`${Meteor.userId()}/subscriptions-changed`], (_action, sub) => {
