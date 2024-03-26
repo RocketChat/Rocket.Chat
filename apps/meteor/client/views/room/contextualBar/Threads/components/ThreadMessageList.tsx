@@ -4,7 +4,7 @@ import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import { differenceInSeconds } from 'date-fns';
 import type { ReactElement } from 'react';
-import React, { Fragment } from 'react';
+import React from 'react';
 
 import { MessageTypes } from '../../../../../../app/ui-utils/client';
 import { isTruthy } from '../../../../../../lib/isTruthy';
@@ -64,7 +64,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 	const firstUnreadMessageId = useFirstUnreadMessageId();
 	const messageGroupingPeriod = Number(useSetting('Message_GroupingPeriod'));
 
-	const { messageListRef, messageListProps } = useMessageListNavigation();
+	const { messageListRef } = useMessageListNavigation();
 	const listRef = useMergedRefs<HTMLElement | null>(listScrollRef, listJumpRef, messageListRef);
 
 	const scrollRef = useMergedRefs<HTMLElement | null>(innerRef, listWrapperScrollRef);
@@ -79,13 +79,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 				}}
 				style={{ scrollBehavior: 'smooth', overflowX: 'hidden' }}
 			>
-				<Box
-					is='ul'
-					className={[listStyle, 'thread']}
-					ref={listRef}
-					style={{ scrollBehavior: 'smooth', overflowX: 'hidden' }}
-					{...messageListProps}
-				>
+				<Box is='ul' className={[listStyle, 'thread']} ref={listRef} style={{ scrollBehavior: 'smooth', overflowX: 'hidden' }}>
 					{loading ? (
 						<li className='load-more'>
 							<LoadingMessagesIndicator />
@@ -101,7 +95,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 								const system = MessageTypes.isSystemMessage(message);
 
 								return (
-									<Fragment key={message._id}>
+									<li key={message._id}>
 										<ThreadMessageItem
 											message={message}
 											previous={previous}
@@ -111,7 +105,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 											firstUnread={firstUnread}
 											system={system}
 										/>
-									</Fragment>
+									</li>
 								);
 							})}
 						</MessageListProvider>

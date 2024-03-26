@@ -37,7 +37,8 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar }: ThreadMe
 
 	return (
 		<Message
-			role='listitem'
+			role='link'
+			aria-roledescription='thread message'
 			tabIndex={0}
 			id={message._id}
 			ref={messageRef}
