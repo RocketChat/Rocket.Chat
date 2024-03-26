@@ -124,7 +124,7 @@ describe('insertAdminUserFromEnv', () => {
 
 		await insertAdminUserFromEnv();
 
-		expect(models.Users.findOneByEmailAddress.getCall(0).firstArg).to.not.to.have.property('email', 'email');
+		expect(models.Users.create.getCall(0).firstArg).to.not.to.have.property('email');
 	});
 	it('should add the email from env when its valid and no users are using it', async () => {
 		process.env.ADMIN_EMAIL = 'email';
