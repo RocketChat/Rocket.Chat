@@ -47,7 +47,7 @@ describe('Export - uploadZipFile', () => {
 
 	before(() => {
 		stubs.findOneUserById.returns({ name: userName });
-		stubs.stat.returns(fileStat);
+		stubs.stat.returns({ size: fileStat });
 		stubs.randomId.returns(randomId);
 		stubs.getStore.returns({ insert: stubs.insertFileStub });
 		stubs.insertFileStub.callsFake((details) => ({ _id: details._id, name: details.name }));
