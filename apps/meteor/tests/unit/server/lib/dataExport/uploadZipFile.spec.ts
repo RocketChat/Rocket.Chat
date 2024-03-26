@@ -12,7 +12,7 @@ const stubs = {
 	createReadStream: sinon.stub(),
 };
 
-const { uploadZipFile } = proxyquire.noCallThru().load('./uploadZipFile.ts', {
+const { uploadZipFile } = proxyquire.noCallThru().load('../../../../server/lib/dataExport/uploadZipFile.ts', {
 	'@rocket.chat/models': {
 		Users: {
 			findOneById: stubs.findOneUserById,
