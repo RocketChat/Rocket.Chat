@@ -20,36 +20,35 @@ function messageContainsHighlight(message: IMessage, highlights: string[]): bool
 }
 
 export async function getMentions(message: IMessage): Promise<IMentionCounter> {
-	if (!message.mentions) return { hasAllMention: false, hasHereMention: false, mentionIds: [] };
+	if (!message.mentions) return { toAll: false, toHere: false, mentionIds: [] };
 
-	const {
-		u: { _id: senderId },
-	} = message;
+	let toAll = false;
+	let toHere = false;
 
-	let hasAllMention = false;
-	let hasHereMention = false;
+	const mentions = message.mentions.reduce(
+		(acc, cur) => {
+			if (cur._id === message.u._id) return acc;
 
-	const mentions = message.mentions.reduce((acc, cur) => {
-		if (cur._id === senderId) return acc;
+			if (cur.type === 'user') {
+				acc.u.push(cur._id);
+			} else if (cur.type === 'team') {
+				acc.t.push(cur._id);
+			} else if (cur._id === 'all') {
+				toAll = true;
+				acc.c.push(message.rid);
+			} else if (cur._id === 'here') {
+				toHere = true;
+				acc.c.push(message.rid);
+			}
 
-		if (cur.type === 'user') {
-			acc.u.push(cur._id);
-		} else if (cur.type === 'team') {
-			acc.t.push(cur._id);
-		} else if (cur._id === 'all') {
-			hasAllMention = true;
-			acc.c.push(message.rid);
-		} else if (cur._id === 'here') {
-			hasHereMention = true;
-			acc.c.push(message.rid);
-		}
-
-		return acc;
-	}, {} as { c: string[]; u: string[]; t: string[] });
+			return acc;
+		},
+		{ c: [], u: [], t: [] } as { c: string[]; u: string[]; t: string[] },
+	);
 
 	const mentionIds = await beforeGetMentions(mentions.u, mentions.t, mentions.c);
 
-	return { hasAllMention, hasHereMention, mentionIds };
+	return { toAll, toHere, mentionIds };
 }
 
 type UnreadCountType = 'all_messages' | 'user_mentions_only' | 'group_mentions_only' | 'user_and_group_mentions_only';
@@ -106,7 +105,7 @@ const getUnreadSettingCount = (roomType: RoomType): UnreadCountType => {
 async function updateUsersSubscriptions(message: IMessage, room: IRoom, mentions: IMentionCounter): Promise<void> {
 	// Don't increase unread counter on thread messages
 	if (room != null && !message.tmid) {
-		const { hasAllMention, hasHereMention, mentionIds } = mentions;
+		const { toAll, toHere, mentionIds } = mentions;
 		const mids = new Set(mentionIds);
 		const unreadCount = getUnreadSettingCount(room.t);
 
@@ -115,12 +114,12 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom, mentions
 		// Give priority to user mentions over group mentions
 		if (mids.size > 0) {
 			await incUserMentions(room._id, room.t, [...mids], unreadCount as Exclude<UnreadCountType, 'group_mentions_only'>);
-		} else if (hasAllMention || hasHereMention) {
+		} else if (toAll || toHere) {
 			await incGroupMentions(room._id, room.t, message.u._id, unreadCount as Exclude<UnreadCountType, 'user_mentions_only'>);
 		}
 
 		// this shouldn't run only if has group mentions because it will already exclude mentioned users from the query
-		if (!hasAllMention && !hasHereMention && unreadCount === 'all_messages') {
+		if (!toAll && !toHere && unreadCount === 'all_messages') {
 			await Subscriptions.incUnreadForRoomIdExcludingUserIds(room._id, [...mids, message.u._id], 1);
 		}
 	}
@@ -182,7 +181,7 @@ export async function notifyUsersOnMessage(message: IMessage, room: IRoom): Prom
 
 	await updateUsersSubscriptions(message, room, mentions);
 
-	if (dbWatchersDisabled && (mentions?.mentionIds.length > 0 || mentions?.hasAllMention || mentions?.hasHereMention)) {
+	if (dbWatchersDisabled && (mentions?.mentionIds.length > 0 || mentions?.toAll || mentions?.toHere)) {
 		await api.broadcast(EventNames.USER_MENTIONS, message, mentions);
 	}
 

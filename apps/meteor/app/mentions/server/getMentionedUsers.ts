@@ -2,7 +2,7 @@ import { Team, dbWatchersDisabled } from '@rocket.chat/core-services';
 import { Subscriptions } from '@rocket.chat/models';
 
 export async function beforeGetMentions(userMentions: string[], teamMentions: string[], channelMentions: string[]): Promise<string[]> {
-	if (!teamMentions.length && !channelMentions.length) return userMentions;
+	if (!teamMentions.length && !channelMentions.length) return [...userMentions];
 
 	const response = [];
 

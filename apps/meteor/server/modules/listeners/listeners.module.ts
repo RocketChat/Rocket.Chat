@@ -34,9 +34,9 @@ export class ListenersModule {
 		service.onEvent(EventNames.USER_MENTIONS, (message, mentions) => {
 			if (mentions.mentionIds.length > 0) {
 				let type;
-				if (mentions.hasAllMention) {
+				if (mentions.toAll) {
 					type = MentionTypes.ALL;
-				} else if (mentions.hasHereMention) {
+				} else if (mentions.toHere) {
 					type = MentionTypes.HERE;
 				} else {
 					type = MentionTypes.USER;
