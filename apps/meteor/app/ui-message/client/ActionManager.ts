@@ -71,35 +71,38 @@ export class ActionManager implements IActionManager {
 		return triggerId;
 	}
 
-	public async emitInteraction(appId: string, userInteraction: DistributiveOmit<UiKit.UserInteraction, 'triggerId'>) {
+	public async emitInteraction(
+		appId: string,
+		userInteraction: DistributiveOmit<UiKit.UserInteraction, 'triggerId'>,
+	): Promise<Pick<UiKit.ServerInteraction, 'type'> | undefined> {
 		this.notifyBusy();
 
 		const triggerId = this.generateTriggerId(appId);
-
 		let timeout: ReturnType<typeof setTimeout> | undefined;
 
-		await Promise.race([
-			new Promise((_, reject) => {
-				timeout = setTimeout(() => reject(new UiKitTriggerTimeoutError('Timeout', { triggerId, appId })), ActionManager.TRIGGER_TIMEOUT);
-			}),
-			sdk.rest
+		try {
+			const timeoutPromise = new Promise<Pick<UiKit.ServerInteraction, 'type'> | undefined>((_, reject) => {
+				timeout = setTimeout(() => {
+					reject(new UiKitTriggerTimeoutError('Timeout', { triggerId, appId }));
+				}, ActionManager.TRIGGER_TIMEOUT);
+			});
+
+			const interactionPromise = sdk.rest
 				.post(`/apps/ui.interaction/${appId}`, {
 					...userInteraction,
 					triggerId,
 				})
-				.then((interaction) => this.handleServerInteraction(interaction)),
-		]).finally(() => {
+				.then((interaction) => this.handleServerInteraction(interaction));
+
+			return Promise.race([timeoutPromise, interactionPromise]);
+		} finally {
 			if (timeout) clearTimeout(timeout);
 			this.notifyIdle();
-		});
+		}
 	}
 
-	public handleServerInteraction(interaction: UiKit.ServerInteraction) {
+	public handleServerInteraction(interaction: UiKit.ServerInteraction): Pick<UiKit.ServerInteraction, 'type'> | undefined {
 		const { triggerId } = interaction;
-
-		if (!this.triggersId.has(triggerId)) {
-			return;
-		}
 
 		const appId = this.invalidateTriggerId(triggerId);
 		if (!appId) {
@@ -180,7 +183,7 @@ export class ActionManager implements IActionManager {
 			}
 		}
 
-		return interaction.type;
+		return interaction.type as unknown as Pick<UiKit.ServerInteraction, 'type'>;
 	}
 
 	public getInteractionPayloadByViewId(viewId: UiKit.ContextualBarView['id']) {

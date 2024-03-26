@@ -13,8 +13,11 @@ export interface IActionManager {
 	notifyBusy(): void;
 	notifyIdle(): void;
 	generateTriggerId(appId: string | undefined): string;
-	emitInteraction(appId: string, userInteraction: DistributiveOmit<UiKit.UserInteraction, 'triggerId'>): Promise<unknown>;
-	handleServerInteraction(interaction: UiKit.ServerInteraction): UiKit.ServerInteraction['type'] | undefined;
+	emitInteraction(
+		appId: string,
+		userInteraction: DistributiveOmit<UiKit.UserInteraction, 'triggerId'>,
+	): Promise<Pick<UiKit.ServerInteraction, 'type'> | undefined>;
+	handleServerInteraction(interaction: UiKit.ServerInteraction): Pick<UiKit.ServerInteraction, 'type'> | undefined;
 	getInteractionPayloadByViewId(viewId: UiKit.ContextualBarView['id']):
 		| {
 				view: UiKit.ContextualBarView;
