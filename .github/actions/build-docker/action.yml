@@ -60,6 +60,11 @@ runs:
       run: |
         args=(rocketchat ${{ inputs.build-containers }})
 
+        echo "RC_DOCKERFILE: $RC_DOCKERFILE"
+        echo "RC_DOCKER_TAG: $RC_DOCKER_TAG"
+        echo "DOCKER_TAG: $DOCKER_TAG"
+        echo "LOWERCASE_REPOSITORY: $LOWERCASE_REPOSITORY"
+
         docker compose -f docker-compose-ci.yml build "${args[@]}"
 
     - name: Publish Docker images to GitHub Container Registry
@@ -67,5 +72,10 @@ runs:
       shell: bash
       run: |
         args=(rocketchat ${{ inputs.build-containers }})
+
+        echo "RC_DOCKERFILE: $RC_DOCKERFILE"
+        echo "RC_DOCKER_TAG: $RC_DOCKER_TAG"
+        echo "DOCKER_TAG: $DOCKER_TAG"
+        echo "LOWERCASE_REPOSITORY: $LOWERCASE_REPOSITORY"
 
         docker compose -f docker-compose-ci.yml push "${args[@]}"
