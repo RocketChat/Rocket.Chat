@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/gazzodown",
-	"version": "4.0.1",
+	"version": "4.0.6",
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.22.20",
@@ -71,8 +71,8 @@
 		"@rocket.chat/fuselage-tokens": "*",
 		"@rocket.chat/message-parser": "*",
 		"@rocket.chat/styled": "*",
-		"@rocket.chat/ui-client": "4.0.1",
-		"@rocket.chat/ui-contexts": "4.0.1",
+		"@rocket.chat/ui-client": "4.0.6",
+		"@rocket.chat/ui-contexts": "4.0.6",
 		"katex": "*",
 		"react": "*"
 	},
