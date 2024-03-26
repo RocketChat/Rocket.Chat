@@ -1,3 +1,5 @@
+import { Logger } from '@rocket.chat/logger';
+
 import './models/startup';
 /**
  * ./settings uses top level await, in theory the settings creation
@@ -15,23 +17,26 @@ import { startup } from './startup';
 import './routes';
 import '../app/lib/server/startup';
 
-await import('./importPackages');
-await import('./methods');
-await import('./publications');
+const StartupLogger = new Logger('StartupLogger');
 
-await import('./lib/logger/startup');
+StartupLogger.info('Starting Rocket.Chat server...');
 
-await import('../lib/oauthRedirectUriServer');
+await Promise.all([
+	import('./importPackages').then(() => StartupLogger.info('Imported packages')),
+	import('./methods').then(() => StartupLogger.info('Imported methods')),
+	import('./publications').then(() => StartupLogger.info('Imported publications')),
+	import('./lib/logger/startup').then(() => StartupLogger.info('Logger started')),
+	import('../lib/oauthRedirectUriServer').then(() => StartupLogger.info('OAuth redirect uri server started')),
+	import('./lib/pushConfig').then(() => StartupLogger.info('Push configuration started')),
+	import('./features/EmailInbox/index').then(() => StartupLogger.info('EmailInbox started')),
+	configureLogLevel().then(() => StartupLogger.info('Log level configured')),
+	registerServices().then(() => StartupLogger.info('Services registered')),
+	import('../app/settings/server').then(() => StartupLogger.info('Settings started')),
+	configureLoginServices().then(() => StartupLogger.info('Login services configured')),
+	registerEEBroker().then(() => StartupLogger.info('EE Broker registered')),
+	startup().then(() => StartupLogger.info('Startup finished')),
+]);
 
-await import('./lib/pushConfig');
+await startLicense().then(() => StartupLogger.info('License started'));
 
-await import('./stream/stdout');
-await import('./features/EmailInbox/index');
-
-await configureLogLevel();
-await registerServices();
-await import('../app/settings/server');
-await configureLoginServices();
-await registerEEBroker();
-await startup();
-await startLicense();
+StartupLogger.info('Rocket.Chat server started.');
