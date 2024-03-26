@@ -97,7 +97,6 @@ export class E2ERoom extends Emitter {
 	}
 
 	setState(requestedState) {
-		console.log('requested state - ', requestedState);
 		const currentState = this.state;
 		const nextState = filterMutation(currentState, requestedState);
 
@@ -213,7 +212,6 @@ export class E2ERoom extends Emitter {
 
 	// Initiates E2E Encryption
 	async handshake() {
-		console.log('initiate handshake', this.state);
 		if (this.state !== E2ERoomState.KEYS_RECEIVED && this.state !== E2ERoomState.NOT_STARTED) {
 			return;
 		}

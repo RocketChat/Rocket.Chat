@@ -164,7 +164,6 @@ class E2E extends Emitter {
 	}
 
 	openSaveE2EEPasswordModal(randomPassword: string, onSavePassword?: () => void) {
-		console.log('openSave e2ee modal ', randomPassword);
 		imperativeModal.open({
 			component: SaveE2EPasswordModal,
 			props: {
@@ -203,7 +202,7 @@ class E2E extends Emitter {
 			public_key = this.db_public_key;
 		}
 
-		if (!private_key && this.db_private_key) {
+		if (this.shouldAskForE2EEPassword()) {
 			try {
 				private_key = await this.decodePrivateKey(this.db_private_key);
 			} catch (error) {
@@ -376,7 +375,6 @@ class E2E extends Emitter {
 					imperativeModal.close();
 				},
 				onConfirm: (password) => {
-					// resolve(password);
 					onEnterE2EEPassword?.(password);
 					this.closeAlert();
 					imperativeModal.close();
@@ -385,7 +383,7 @@ class E2E extends Emitter {
 		});
 	}
 
-	async requestPassword(): Promise<string> {
+	async requestPasswordAlert(): Promise<string> {
 		return new Promise((resolve) => {
 			const showModal = () => this.openEnterE2EEPasswordModal((password) => resolve(password));
 
@@ -410,13 +408,12 @@ class E2E extends Emitter {
 		});
 	}
 
-	async requestPasswordFromOutside(): Promise<string> {
+	async requestPasswordModal(): Promise<string> {
 		return new Promise((resolve) => this.openEnterE2EEPasswordModal((password) => resolve(password)));
 	}
 
-	async decodePrivateKeyFromOutside() {
-		const password = await this.requestPasswordFromOutside();
-		console.log('entered password - ', password);
+	async decodePrivateKeyFlow() {
+		const password = await this.requestPasswordModal();
 		const masterKey = await this.getMasterKey(password);
 
 		if (!this.db_private_key) {
@@ -436,17 +433,13 @@ class E2E extends Emitter {
 			} else {
 				await this.createAndLoadKeys();
 			}
-
-			// if (!this.db_public_key || !this.db_private_key) {
-			// 	await this.persistKeys(this.getKeysFromLocalStorage(), await this.createRandomPassword());
-			// }
 		} catch (error) {
 			throw new Error('E2E -> Error decrypting private key');
 		}
 	}
 
 	async decodePrivateKey(privateKey: string): Promise<string> {
-		const password = await this.requestPassword();
+		const password = await this.requestPasswordAlert();
 
 		const masterKey = await this.getMasterKey(password);
 

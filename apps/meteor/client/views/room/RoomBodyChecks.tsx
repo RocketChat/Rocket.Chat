@@ -24,7 +24,7 @@ const RoomBodyChecks = ({ room }: { room: IRoom }) => {
 		e2e.openSaveE2EEPasswordModal(randomPassword, () => setRandomPassword(undefined));
 	}, [randomPassword, setRandomPassword]);
 
-	const onEnterE2EEPassword = useCallback(() => e2e.decodePrivateKeyFromOutside(), []);
+	const onEnterE2EEPassword = useCallback(() => e2e.decodePrivateKeyFlow(), []);
 
 	if (!room?.encrypted) {
 		return <RoomBody />;
