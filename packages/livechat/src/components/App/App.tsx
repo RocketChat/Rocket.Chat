@@ -22,17 +22,13 @@ import LeaveMessage from '../../routes/LeaveMessage';
 import Register from '../../routes/Register';
 import SwitchDepartment from '../../routes/SwitchDepartment';
 import TriggerMessage from '../../routes/TriggerMessage';
-import type { Dispatch } from '../../store';
+import type { Dispatch, StoreState } from '../../store';
 import { ScreenProvider } from '../Screen/ScreenProvider';
 
 type AppProps = {
 	config: {
-		settings: {
-			registrationForm?: boolean;
-			nameFieldRegistrationForm?: boolean;
-			emailFieldRegistrationForm?: boolean;
-			forceAcceptDataProcessingConsent?: boolean;
-		};
+		settings: StoreState['config']['settings'];
+		theme: StoreState['config']['theme'];
 		online?: boolean;
 		departments: Department[];
 		enabled?: boolean;
@@ -64,6 +60,7 @@ type AppProps = {
 			name: string;
 			email: string;
 		};
+		theme: StoreState['iframe']['theme'];
 	};
 	i18n: typeof i18next;
 };
@@ -141,11 +138,13 @@ export class App extends Component<AppProps, AppState> {
 		const {
 			minimized,
 			iframe: { visible },
+			config: { theme },
 			dispatch,
 		} = this.props;
 
 		parentCall(minimized ? 'minimizeWindow' : 'restoreWindow');
 		parentCall(visible ? 'showWidget' : 'hideWidget');
+		parentCall('setWidgetPosition', theme.position || 'right');
 
 		visibility.addListener(this.handleVisibilityChange);
 
