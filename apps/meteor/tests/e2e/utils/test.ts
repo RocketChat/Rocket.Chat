@@ -13,17 +13,15 @@ const PATH_NYC_OUTPUT = path.join(process.cwd(), '.nyc_output');
 
 export type AnyObj = { [key: string]: any };
 
-export type BaseTestAPI = {
+export type BaseTest = {
+api: {
 	recreateContext(): Promise<void>;
 	login(credentials: { username: string; password: string }): Promise<APIRequestContext>;
 	get(uri: string, params?: AnyObj, prefix?: string): Promise<APIResponse>;
 	post(uri: string, data: AnyObj, prefix?: string): Promise<APIResponse>;
 	put(uri: string, data: AnyObj, prefix?: string): Promise<APIResponse>;
 	delete(uri: string, params?: AnyObj, prefix?: string): Promise<APIResponse>;
-}
-
-export type BaseTest = {
-	api: BaseTestAPI;
+};
 	makeAxeBuilder: () => AxeBuilder;
 };
 declare global {
