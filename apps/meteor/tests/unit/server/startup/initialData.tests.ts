@@ -233,4 +233,3 @@ describe('insertAdminUserFromEnv', () => {
 		expect(models.Users.create.calledWith(sinon.match({ username: 'admin' }))).to.be.true;
 	});
 });
-
