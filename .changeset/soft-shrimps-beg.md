@@ -1,13 +1,5 @@
 ---
 "@rocket.chat/meteor": patch
-"@rocket.chat/fuselage-ui-kit": patch
-"@rocket.chat/gazzodown": patch
-"@rocket.chat/ui-avatar": patch
-"@rocket.chat/ui-client": patch
-"@rocket.chat/ui-composer": patch
-"@rocket.chat/ui-video-conf": patch
-"@rocket.chat/uikit-playground": patch
-"@rocket.chat/ui-theming": patch
 ---
 
-fix: omnichannel department names overflowing, adding customized options in some omnichannel selects. 
+This PR have made enhancements to the select and multiselect inputs related to Omnichannel Departments, now the options properly display the complete department names, ensuring clarity for users and added text wrapping for long department names, enhancing readability and UX.
