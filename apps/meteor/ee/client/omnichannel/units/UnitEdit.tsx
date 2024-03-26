@@ -243,10 +243,7 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 											aria-required={true}
 											aria-invalid={Boolean(errors?.departments)}
 											renderItem={({ label, ...props }) => (
-												<Option
-													{...props}
-													label={<Box style={{ whiteSpace: 'normal' }}>{label}</Box>}
-												/>
+												<Option {...props} label={<Box style={{ whiteSpace: 'normal' }}>{label}</Box>} />
 											)}
 										/>
 									)}
