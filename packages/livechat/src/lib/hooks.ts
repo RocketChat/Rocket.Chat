@@ -15,6 +15,13 @@ const createOrUpdateGuest = async (guest: StoreState['guest']) => {
 	if (!guest) {
 		return;
 	}
+
+	// compare room token and department to avoid unnecessary requests
+
+	if (guest.token === store.state.token && guest.department === store.state.department) {
+		return;
+	}
+
 	const { token } = guest;
 	token && (await store.setState({ token }));
 	const { visitor: user } = await Livechat.grantVisitor({ visitor: { ...guest } });
