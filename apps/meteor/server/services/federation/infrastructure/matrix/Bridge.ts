@@ -714,7 +714,7 @@ export class MatrixBridge implements IFederationBridge {
 		// Dynamic import to prevent Rocket.Chat from loading the module until needed and then handle if that fails
 		const { Bridge, AppServiceRegistration, MatrixUser } = await import('@rocket.chat/forked-matrix-appservice-bridge');
 		MatrixUserInstance = MatrixUser;
-		const registrationFile = this.internalSettings.generateRegistrationFileObject();
+		const registrationFile = this.internalSettings.getAppServiceRegistrationObject();
 
 		this.bridgeInstance = new Bridge({
 			homeserverUrl: this.internalSettings.getHomeServerUrl(),
@@ -729,7 +729,7 @@ export class MatrixBridge implements IFederationBridge {
 				onLog: (line, isError) => {
 					console.log(line, isError);
 				},
-				...(this.internalSettings.generateRegistrationFileObject().enableEphemeralEvents
+				...(this.internalSettings.getAppServiceRegistrationObject().enableEphemeralEvents
 					? {
 							onEphemeralEvent: (request) => {
 								const event = request.getData() as unknown as AbstractMatrixEvent;
