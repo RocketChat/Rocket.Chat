@@ -5,26 +5,36 @@ import sinon from 'sinon';
 
 // Create stubs for dependencies
 const stubs = {
+	findPaginatedMessages: sinon.stub(),
 	mkdir: sinon.stub(),
 	writeFile: sinon.stub(),
+	findPaginatedMessagesCursor: sinon.stub(),
+	findPaginatedMessagesTotal: sinon.stub(),
 	translateKey: sinon.stub(),
 	settings: sinon.stub(),
 };
 
-const { exportMessageObject } = proxyquire.noCallThru().load('../../../../../server/lib/dataExport/exportRoomMessagesToFile.ts', {
-	'fs/promises': {
-		mkdir: stubs.mkdir,
-		writeFile: stubs.writeFile,
-	},
-	'../i18n': {
-		i18n: {
-			t: stubs.translateKey,
+const { exportRoomMessages, exportMessageObject } = proxyquire
+	.noCallThru()
+	.load('../../../../../server/lib/dataExport/exportRoomMessagesToFile.ts', {
+		'@rocket.chat/models': {
+			Messages: {
+				findPaginated: stubs.findPaginatedMessages,
+			},
 		},
-	},
-	'../../../app/settings/server': {
-		settings: stubs.settings,
-	},
-});
+		'fs/promises': {
+			mkdir: stubs.mkdir,
+			writeFile: stubs.writeFile,
+		},
+		'../i18n': {
+			i18n: {
+				t: stubs.translateKey,
+			},
+		},
+		'../../../app/settings/server': {
+			settings: stubs.settings,
+		},
+	});
 
 const messages = [
 	{
@@ -156,5 +166,48 @@ describe('Export - exportMessageObject', () => {
 		expect(result).to.equal(
 			`<p><strong>${messagesData[2].username}</strong> (Wed, 20 Mar 2024 13:46:01 GMT):<br/>\n${messages[1].msg}\n<br/><a href="./assets/${messages[1].file?._id}-${messages[1].file?.name}">translated-placeholder-attachment</a>\n</p>`,
 		);
+	});
+});
+
+describe('Export - exportRoomMessages', () => {
+	const totalMessages = 10;
+	const userData = {
+		_id: 'oNfuDGerMEiPoF7tq',
+		name: 'Matheus Barbosa Silva',
+		username: 'matheus.barbosa',
+	};
+
+	before(() => {
+		stubs.findPaginatedMessages.returns({
+			cursor: { toArray: stubs.findPaginatedMessagesCursor },
+			totalCount: stubs.findPaginatedMessagesTotal,
+		});
+		stubs.findPaginatedMessagesCursor.resolves(messages);
+		stubs.findPaginatedMessagesTotal.resolves(totalMessages);
+		stubs.translateKey.returns('translated-placeholder-uj');
+	});
+
+	it('should correctly export multiple messages to result when exporting room as json', async () => {
+		const result = await exportRoomMessages('test-rid', 'json', 0, 100, userData);
+
+		expect(stubs.translateKey.calledWith('User_joined_the_channel')).to.be.true;
+		expect(result).to.be.an('object');
+		expect(result).to.have.property('total', totalMessages);
+		expect(result).to.have.property('exported', messages.length);
+		expect(result).to.have.property('messages').that.is.an('array').of.length(messages.length);
+		const messagesWithFiles = messages.filter((message) => message.file);
+		expect(result).to.have.property('uploads').that.is.an('array').of.length(messagesWithFiles.length);
+	});
+
+	it('should correctly export multiple messages to result when exporting room as html', async () => {
+		const result = await exportRoomMessages('test-rid', 'html', 0, 100, userData);
+
+		expect(stubs.translateKey.calledWith('User_joined_the_channel')).to.be.true;
+		expect(result).to.be.an('object');
+		expect(result).to.have.property('total', totalMessages);
+		expect(result).to.have.property('exported', messages.length);
+		expect(result).to.have.property('messages').that.is.an('array').of.length(messages.length);
+		const messagesWithFiles = messages.filter((message) => message.file);
+		expect(result).to.have.property('uploads').that.is.an('array').of.length(messagesWithFiles.length);
 	});
 });
