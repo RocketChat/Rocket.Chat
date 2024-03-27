@@ -405,6 +405,56 @@ test.describe('OC - Livechat API', () => {
 			});
 		});
 
+		test('OC - Livechat API - registerGuest different guests', async () => {
+			const registerGuestVisitor1 = {
+				name: faker.person.firstName(),
+				email: faker.internet.email(),
+				token: faker.string.uuid(),
+			};
+
+			const registerGuestVisitor2 = {
+				name: faker.person.firstName(),
+				email: faker.internet.email(),
+				token: faker.string.uuid(),
+			};
+
+			await test.step('Expect registerGuest to create guest 1', async () => {
+				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.maximizeWidget());
+				await expect(poLiveChat.page.frameLocator('#rocketchat-iframe').getByText('Start Chat')).toBeVisible();
+
+				await poLiveChat.page.evaluate(
+					(registerGuestVisitor1) => window.RocketChat.livechat.registerGuest(registerGuestVisitor1),
+					registerGuestVisitor1,
+				);
+
+				await expect(poLiveChat.page.frameLocator('#rocketchat-iframe').getByText('Start Chat')).not.toBeVisible();
+
+				await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor_1');
+				await poLiveChat.btnSendMessageToOnlineAgent.click();
+
+				await expect(poLiveChat.txtChatMessage('this_a_test_message_from_visitor_1')).toBeVisible();
+
+			});
+
+			await test.step('Expect registerGuest to create guest 2', async () => {
+				await poLiveChat.page.evaluate(
+					(registerGuestVisitor2) => window.RocketChat.livechat.registerGuest(registerGuestVisitor2),
+					registerGuestVisitor2,
+				);
+
+				await poLiveChat.page.frameLocator('#rocketchat-iframe').getByText('this_a_test_message_from_visitor').waitFor({ state: 'hidden' });
+
+				await expect(poLiveChat.page.frameLocator('#rocketchat-iframe').getByText('Start Chat')).not.toBeVisible();
+
+				await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor_2');
+				await poLiveChat.btnSendMessageToOnlineAgent.click();
+
+				await poLiveChat.txtChatMessage('this_a_test_message_from_visitor_2').waitFor({ state: 'visible' });
+				await expect(poLiveChat.txtChatMessage('this_a_test_message_from_visitor_2')).toBeVisible();
+
+			});
+		});
+
 		test('OC - Livechat API - registerGuest multiple times', async () => {
 			const registerGuestVisitor = {
 				name: faker.person.firstName(),

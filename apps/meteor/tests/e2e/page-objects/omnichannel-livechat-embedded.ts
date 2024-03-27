@@ -40,7 +40,7 @@ export class OmnichannelLiveChatEmbedded {
 	}
 
 	txtChatMessage(message: string): Locator {
-		return this.page.frameLocator('#rocketchat-iframe').locator(`text="${message}"`);
+		return this.page.frameLocator('#rocketchat-iframe').locator(`li >> text="${message}"`);
 	}
 
 	async closeChat(): Promise<void> {
