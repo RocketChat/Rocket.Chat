@@ -7,15 +7,14 @@ test.use({ storageState: Users.admin.state });
 
 test.skip(!IS_EE, 'Enterprise Only');
 
-test.describe('OC - Livechat Appearance', () => {
+test.describe.serial('OC - Livechat Appearance', () => {
 	let poLivechatAppearance: OmnichannelLivechatAppearance;
 
 	test.beforeEach(async ({ page }) => {
 		poLivechatAppearance = new OmnichannelLivechatAppearance(page);
-	});
 
-	test.beforeEach(async ({ page }) => {
-		await page.goto('/omnichannel/appearance');
+		await page.goto('/omnichannel');
+		await poLivechatAppearance.sidenav.linkLivechatAppearance.click();
 	});
 
 	test.afterAll(async ({ api }) => {
