@@ -99,7 +99,6 @@ test.describe('SAML', () => {
 	let samlRoleId: string;
 	let targetInviteGroupId: string;
 	let targetInviteGroupName: string;
-	let inviteUrl: string;
 	let inviteId: string;
 
 	const containerPath = path.join(__dirname, 'containers', 'saml');
@@ -133,8 +132,7 @@ test.describe('SAML', () => {
 
 		const inviteResponse = await api.post('/findOrCreateInvite', { rid: targetInviteGroupId, days: 1, maxUses: 0 });
 		expect(inviteResponse.status()).toBe(200);
-		const { url, _id } = await inviteResponse.json();
-		inviteUrl = url;
+		const { _id } = await inviteResponse.json();
 		inviteId = _id;
 	});
 
@@ -341,8 +339,7 @@ test.describe('SAML', () => {
 	});
 
 	test('Redirect to a specific group after login when using a valid invite link', async ({ page }) => {
-		await page.goto(inviteUrl);
-		await page.getByText('Web application').click();
+		await page.goto(`/invite/${inviteId}`);
 		await page.getByRole('link', { name: 'Back to Login' }).click();
 
 		await doLoginStep(page, 'samluser1', `${constants.BASE_URL}/invite/${inviteId}`);
