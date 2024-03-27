@@ -36,17 +36,19 @@ const { exportRoomMessages, exportMessageObject } = proxyquire
 		},
 	});
 
+const testUsername = 'test.username';
+const testName = 'Test Name';
 const messages = [
 	{
 		_id: '65f46ce9e162d4ca5e6aba5c',
 		t: 'uj',
 		rid: 'GENERAL',
 		ts: new Date('2024-03-15T15:44:41.889Z'),
-		msg: 'matheus.barbosa',
+		msg: testUsername,
 		u: {
 			_id: 'oNfuDGerMEiPoF7tq',
-			username: 'matheus.barbosa',
-			name: 'Matheus Barbosa Silva',
+			username: testUsername,
+			name: testName,
 		},
 		groupable: false,
 	},
@@ -65,8 +67,8 @@ const messages = [
 		groupable: false,
 		u: {
 			_id: 'oNfuDGerMEiPoF7tq',
-			username: 'matheus.barbosa',
-			name: 'Matheus Barbosa Silva',
+			username: testUsername,
+			name: testName,
 		},
 		_updatedAt: new Date('2024-03-20T13:46:01.667Z'),
 	},
@@ -77,16 +79,16 @@ const messages = [
 		ts: new Date('2024-03-26T18:24:21.994Z'),
 		u: {
 			_id: 'oNfuDGerMEiPoF7tq',
-			username: 'matheus.barbosa',
-			name: 'Matheus Barbosa Silva',
+			username: testUsername,
+			name: testName,
 		},
 	},
 ];
 const messagesData = [
-	{ msg: 'joined the channel', username: 'matheus.barbosa', ts: '2024-03-15T15:44:41.889Z', type: 'uj' },
+	{ msg: 'joined the channel', username: testUsername, ts: '2024-03-15T15:44:41.889Z', type: 'uj' },
 	{
 		msg: '',
-		username: 'matheus.barbosa',
+		username: testUsername,
 		ts: '2024-03-20T13:46:01.623Z',
 		attachments: [
 			{
@@ -102,7 +104,7 @@ const messagesData = [
 	},
 	{
 		msg: '',
-		username: 'matheus.barbosa',
+		username: testUsername,
 		ts: '2024-03-20T13:46:01.623Z',
 		attachments: [
 			{
@@ -116,7 +118,7 @@ const messagesData = [
 			},
 		],
 	},
-	{ msg: 'hello msg here', username: 'matheus.barbosa', ts: '2024-03-26T18:24:21.994Z' },
+	{ msg: 'hello msg here', username: testUsername, ts: '2024-03-26T18:24:21.994Z' },
 ];
 
 describe('Export - exportMessageObject', () => {
@@ -173,8 +175,8 @@ describe('Export - exportRoomMessages', () => {
 	const totalMessages = 10;
 	const userData = {
 		_id: 'oNfuDGerMEiPoF7tq',
-		name: 'Matheus Barbosa Silva',
-		username: 'matheus.barbosa',
+		name: testName,
+		username: testUsername,
 	};
 
 	before(() => {
