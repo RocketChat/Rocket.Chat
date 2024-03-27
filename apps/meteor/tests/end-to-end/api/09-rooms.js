@@ -2387,8 +2387,6 @@ describe('[Rooms]', function () {
 					rid: testChannel._id,
 					type: 'email',
 					toUsers: [],
-					dateFrom: '2024-03-15',
-					dateTo: '2024-03-22',
 					subject: 'Test Subject',
 					messages: [testMessageId],
 				})
@@ -2408,8 +2406,6 @@ describe('[Rooms]', function () {
 					rid: testChannel._id,
 					type: 'email',
 					toUsers: [credentials['X-User-Id']],
-					dateFrom: '2024-03-15',
-					dateTo: '2024-03-22',
 					subject: 'Test Subject',
 					messages: [],
 				})
@@ -2429,8 +2425,6 @@ describe('[Rooms]', function () {
 					rid: testChannel._id,
 					type: 'email',
 					toUsers: [credentials['X-User-Id']],
-					dateFrom: '2024-03-15',
-					dateTo: '2024-03-22',
 					subject: 'Test Subject',
 					messages: [testMessageId],
 				})
