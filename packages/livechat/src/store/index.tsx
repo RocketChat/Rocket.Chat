@@ -57,6 +57,7 @@ export type StoreState = {
 			hiddenSystemMessages?: LivechatHiddenSytemMessageType[];
 			hideWatermark?: boolean;
 			livechatLogo?: { url: string };
+			transcript?: boolean;
 		};
 		online?: boolean;
 		departments: Department[];
