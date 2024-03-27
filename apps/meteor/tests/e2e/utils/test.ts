@@ -14,14 +14,14 @@ const PATH_NYC_OUTPUT = path.join(process.cwd(), '.nyc_output');
 export type AnyObj = { [key: string]: any };
 
 export type BaseTest = {
-api: {
-	recreateContext(): Promise<void>;
-	login(credentials: { username: string; password: string }): Promise<APIRequestContext>;
-	get(uri: string, params?: AnyObj, prefix?: string): Promise<APIResponse>;
-	post(uri: string, data: AnyObj, prefix?: string): Promise<APIResponse>;
-	put(uri: string, data: AnyObj, prefix?: string): Promise<APIResponse>;
-	delete(uri: string, params?: AnyObj, prefix?: string): Promise<APIResponse>;
-};
+	api: {
+		recreateContext(): Promise<void>;
+		login(credentials: { username: string; password: string }): Promise<APIRequestContext>;
+		get(uri: string, params?: AnyObj, prefix?: string): Promise<APIResponse>;
+		post(uri: string, data: AnyObj, prefix?: string): Promise<APIResponse>;
+		put(uri: string, data: AnyObj, prefix?: string): Promise<APIResponse>;
+		delete(uri: string, params?: AnyObj, prefix?: string): Promise<APIResponse>;
+	};
 	makeAxeBuilder: () => AxeBuilder;
 };
 declare global {
@@ -116,6 +116,7 @@ export const test = baseTest.extend<BaseTest>({
 	},
 	makeAxeBuilder: async ({ page }, use) => {
 		const SELECT_KNOW_ISSUES = ['aria-hidden-focus', 'nested-interactive']
+		
     const makeAxeBuilder = () => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).include('body').disableRules([...SELECT_KNOW_ISSUES]);
     await use(makeAxeBuilder);
   }
