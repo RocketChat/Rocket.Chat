@@ -10,7 +10,7 @@ export class WorkspaceCredentialsRaw extends BaseRaw<IWorkspaceCredentials> impl
 	}
 
 	protected modelIndexes(): IndexDescription[] {
-		return [{ key: { _id: 1, scopes: 1, expirationDate: 1, accessToken: 1 } }];
+		return [{ key: { _id: 1, scopes: 1, expirationDate: 1, accessToken: 1 }, unique: true }];
 	}
 
 	getCredentialByScope(scope: string): Promise<IWorkspaceCredentials | null> {
