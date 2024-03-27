@@ -24,6 +24,7 @@ export const useMessageListNavigation = (): { messageListRef: RefCallback<HTMLEl
 		(node: HTMLElement | null) => {
 			let lastMessageFocused: HTMLElement | null = null;
 			let triggeredByKeyboard = false;
+			let initialFocus = true;
 
 			if (!node) {
 				return;
@@ -70,8 +71,9 @@ export const useMessageListNavigation = (): { messageListRef: RefCallback<HTMLEl
 					}
 
 					lastMessageFocused = document.activeElement as HTMLElement;
-					triggeredByKeyboard = true;
 				}
+
+				triggeredByKeyboard = true;
 			});
 
 			node.addEventListener(
@@ -91,6 +93,13 @@ export const useMessageListNavigation = (): { messageListRef: RefCallback<HTMLEl
 			node.addEventListener(
 				'focus',
 				(e) => {
+					if (initialFocus) {
+						lastMessageFocused = node?.querySelector('li:last-child > [role=link]:first-child');
+						lastMessageFocused?.focus();
+						lastMessageFocused = null;
+						initialFocus = false;
+					}
+
 					if (!triggeredByKeyboard || !(e.currentTarget instanceof HTMLElement && e.relatedTarget instanceof HTMLElement)) {
 						return;
 					}
