@@ -56,13 +56,13 @@ const getAttachmentData = (attachment: MessageAttachment, message: IMessage) => 
 	};
 };
 
-type MessageData = Pick<IMessage, 'msg' | 'ts'> & {
+export type MessageData = Pick<IMessage, 'msg' | 'ts'> & {
 	username?: IUser['username'] | IUser['name'];
 	attachments?: ReturnType<typeof getAttachmentData>[];
 	type?: IMessage['t'];
 };
 
-const getMessageData = (
+export const getMessageData = (
 	msg: IMessage,
 	hideUsers: boolean,
 	userData: Pick<IUser, 'username'> | undefined,

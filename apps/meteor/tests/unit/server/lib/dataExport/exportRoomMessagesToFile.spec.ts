@@ -1,7 +1,11 @@
+import { faker } from '@faker-js/faker';
 import { expect } from 'chai';
 import { before, describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+
+import type { MessageData } from '../../../../../server/lib/dataExport/exportRoomMessagesToFile';
+import { createFakeMessage } from '../../../../mocks/data';
 
 // Create stubs for dependencies
 const stubs = {
@@ -14,7 +18,7 @@ const stubs = {
 	settings: sinon.stub(),
 };
 
-const { exportRoomMessages, exportMessageObject } = proxyquire
+const { getMessageData, exportRoomMessages, exportMessageObject } = proxyquire
 	.noCallThru()
 	.load('../../../../../server/lib/dataExport/exportRoomMessagesToFile.ts', {
 		'@rocket.chat/models': {
@@ -36,26 +40,12 @@ const { exportRoomMessages, exportMessageObject } = proxyquire
 		},
 	});
 
-const testUsername = 'test.username';
-const testName = 'Test Name';
+const testUsername = faker.internet.userName();
+const testUserId = faker.database.mongodbObjectId();
 const messages = [
-	{
-		_id: '65f46ce9e162d4ca5e6aba5c',
-		t: 'uj',
-		rid: 'GENERAL',
-		ts: new Date('2024-03-15T15:44:41.889Z'),
-		msg: testUsername,
-		u: {
-			_id: 'oNfuDGerMEiPoF7tq',
-			username: testUsername,
-			name: testName,
-		},
-		groupable: false,
-	},
-	{
-		_id: 'LmHvpSLmZfwcuNG9e',
-		rid: '65f7aa32d187cb7fe6779da3',
-		ts: new Date('2024-03-20T13:46:01.623Z'),
+	createFakeMessage({ t: 'uj', u: { _id: testUserId, username: testUsername }, msg: testUsername }),
+	createFakeMessage({
+		msg: '',
 		file: {
 			_id: 'txt-file-id',
 			name: 'test.txt',
@@ -63,74 +53,46 @@ const messages = [
 			size: 29,
 			format: '',
 		},
-		msg: '',
-		groupable: false,
-		u: {
-			_id: 'oNfuDGerMEiPoF7tq',
-			username: `${testUsername}2`,
-			name: `${testName}2`,
-		},
-		_updatedAt: new Date('2024-03-20T13:46:01.667Z'),
-	},
-	{
-		_id: '8AhSDvDNGMqDc3zwa',
-		rid: 'GENERAL',
-		msg: 'hello msg here',
-		ts: new Date('2024-03-26T18:24:21.994Z'),
-		u: {
-			_id: 'oNfuDGerMEiPoF7tq',
-			username: `${testUsername}3`,
-			name: `${testName}3`,
-		},
-	},
-];
-const messagesData = [
-	{ msg: 'joined the channel', username: testUsername, ts: '2024-03-15T15:44:41.889Z', type: 'uj' },
-	{
-		msg: '',
-		username: `${testUsername}2`,
-		ts: '2024-03-20T13:46:01.623Z',
 		attachments: [
 			{
 				type: 'file',
 				title: 'test.txt',
 				title_link: '/file-upload/txt-file-id/test.txt',
-				url: '/file-upload/id/test.txt',
-				remote: false,
-				fileId: 'txt-file-id',
-				fileName: 'test.txt',
 			},
 		],
-	},
-	{
+	}),
+	createFakeMessage({
 		msg: '',
-		username: `${testUsername}2`,
-		ts: '2024-03-20T13:46:01.623Z',
+		file: {
+			_id: 'txt-file-id',
+			name: 'test.txt',
+			type: 'text/plain',
+			size: 29,
+			format: '',
+		},
 		attachments: [
 			{
 				type: 'file',
-				title: undefined,
 				title_link: '/file-upload/txt-file-id/test.txt',
-				url: '/file-upload/id/test.txt',
-				remote: false,
-				fileId: 'txt-file-id',
-				fileName: 'test.txt',
 			},
 		],
-	},
-	{ msg: 'hello msg here', username: `${testUsername}3`, ts: '2024-03-26T18:24:21.994Z' },
+	}),
+	createFakeMessage(),
 ];
 
 describe('Export - exportMessageObject', () => {
+	let messagesData: MessageData[];
+	const translationPlaceholder = 'translation-placeholder';
 	before(() => {
-		stubs.translateKey.returns('translated-placeholder-attachment');
+		stubs.translateKey.returns(translationPlaceholder);
+		messagesData = messages.map((message) => getMessageData(message, false));
 	});
 
 	it('should only stringify message object when exporting message as json', async () => {
 		const result = await exportMessageObject('json', messagesData[3]);
 
 		expect(result).to.be.a.string;
-		expect(result).to.equal(`{"msg":"${messagesData[3].msg}","username":"${messagesData[3].username}","ts":"2024-03-26T18:24:21.994Z"}`);
+		expect(result).to.equal(JSON.stringify(messagesData[3]));
 	});
 
 	it('should correctly add tags when exporting plain text message object as html', async () => {
@@ -138,7 +100,7 @@ describe('Export - exportMessageObject', () => {
 
 		expect(result).to.be.a.string;
 		expect(result).to.equal(
-			`<p><strong>${messagesData[3].username}</strong> (Tue, 26 Mar 2024 18:24:21 GMT):<br/>\n${messagesData[3].msg}\n</p>`,
+			`<p><strong>${messagesData[3].username}</strong> (${new Date(messagesData[3].ts).toUTCString()}):<br/>\n${messagesData[3].msg}\n</p>`,
 		);
 	});
 
@@ -147,7 +109,9 @@ describe('Export - exportMessageObject', () => {
 
 		expect(result).to.be.a.string;
 		expect(result).to.equal(
-			`<p><strong>${messagesData[0].username}</strong> (Fri, 15 Mar 2024 15:44:41 GMT):<br/>\n<i>joined the channel</i>\n</p>`,
+			`<p><strong>${messagesData[0].username}</strong> (${new Date(messagesData[0].ts).toUTCString()}):<br/>\n<i>${
+				messagesData[0].msg
+			}</i>\n</p>`,
 		);
 	});
 
@@ -156,17 +120,21 @@ describe('Export - exportMessageObject', () => {
 
 		expect(result).to.be.a.string;
 		expect(result).to.equal(
-			`<p><strong>${messagesData[1].username}</strong> (Wed, 20 Mar 2024 13:46:01 GMT):<br/>\n${messagesData[1].msg}\n<br/><a href="./assets/${messages[1].file?._id}-${messages[1].file?.name}">${messagesData[1].attachments?.[0].title}</a>\n</p>`,
+			`<p><strong>${messagesData[1].username}</strong> (${new Date(messagesData[1].ts).toUTCString()}):<br/>\n${
+				messagesData[1].msg
+			}\n<br/><a href="./assets/${messages[1].file?._id}-${messages[1].file?.name}">${messagesData[1].attachments?.[0].title}</a>\n</p>`,
 		);
 	});
 
 	it('should use fallback attachment description when no title is provided on message object export as html', async () => {
-		const result = await exportMessageObject('html', messagesData[2], messages[1].file);
+		const result = await exportMessageObject('html', messagesData[2], messages[2].file);
 
 		expect(stubs.translateKey.calledWith('Message_Attachments')).to.be.true;
 		expect(result).to.be.a.string;
 		expect(result).to.equal(
-			`<p><strong>${messagesData[2].username}</strong> (Wed, 20 Mar 2024 13:46:01 GMT):<br/>\n${messages[1].msg}\n<br/><a href="./assets/${messages[1].file?._id}-${messages[1].file?.name}">translated-placeholder-attachment</a>\n</p>`,
+			`<p><strong>${messagesData[2].username}</strong> (${new Date(messagesData[2].ts).toUTCString()}):<br/>\n${
+				messages[1].msg
+			}\n<br/><a href="./assets/${messages[2].file?._id}-${messages[2].file?.name}">${translationPlaceholder}</a>\n</p>`,
 		);
 	});
 });
@@ -174,9 +142,9 @@ describe('Export - exportMessageObject', () => {
 describe('Export - exportRoomMessages', () => {
 	const totalMessages = 10;
 	const userData = {
-		_id: 'oNfuDGerMEiPoF7tq',
-		name: testName,
-		username: testUsername,
+		_id: faker.database.mongodbObjectId(),
+		name: faker.person.fullName(),
+		username: faker.internet.userName(),
 	};
 
 	before(() => {
