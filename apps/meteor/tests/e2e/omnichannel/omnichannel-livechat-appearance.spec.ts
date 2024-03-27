@@ -1,9 +1,7 @@
-import { expect } from '@playwright/test';
-
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelLivechatAppearance } from '../page-objects/omnichannel-livechat-appearance';
-import { test } from '../utils/test';
+import { test, expect } from '../utils/test';
 
 test.use({ storageState: Users.admin.state });
 
