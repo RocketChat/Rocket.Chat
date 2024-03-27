@@ -3,24 +3,54 @@ import { ILivechatDepartment } from '@rocket.chat/core-typings';
 
 import { BaseTest } from '../test';
 
-type CreateDepartmentParams = { name?: string; maxNumberSimultaneousChat?: number };
+type CreateDepartmentParams = { 
+	name?: string;
+	enabled?: boolean;
+	description?: string;
+	showOnRegistration?: boolean;
+	showOnOfflineForm?: boolean;
+	requestTagBeforeClosingChat?: boolean;
+	email?: string;
+	chatClosingTags?: string[];
+	offlineMessageChannelName?: string;
+	abandonedRoomsCloseCustomMessage?: string,
+	waitingQueueMessage?: string;
+	departmentsAllowedToForward?: string[];
+	fallbackForwardDepartment?: string;
+	maxNumberSimultaneousChat?: number;
+ };
 
-export const createDepartment = async (api: BaseTest['api'], { name = '', maxNumberSimultaneousChat }: CreateDepartmentParams = {}) => {
+export const createDepartment = async (api: BaseTest['api'], {
+	name = '',
+	enabled = true,
+	description = '',
+	showOnRegistration = false,
+	showOnOfflineForm = false,
+	requestTagBeforeClosingChat = false,
+	email = '',
+	chatClosingTags = [],
+	offlineMessageChannelName = '',
+	abandonedRoomsCloseCustomMessage = '',
+	waitingQueueMessage = '',
+	departmentsAllowedToForward = [],
+	fallbackForwardDepartment = '',
+	maxNumberSimultaneousChat
+}: CreateDepartmentParams = {}) => {
 	const response = await api.post('/livechat/department', {
 		department: {
 			name: name || faker.string.uuid(),
-			enabled: true,
-			description: '',
-			showOnRegistration: false,
-			showOnOfflineForm: false,
-			requestTagBeforeClosingChat: false,
-			email: faker.internet.email(),
-			chatClosingTags: [],
-			offlineMessageChannelName: '',
-			abandonedRoomsCloseCustomMessage: '',
-			waitingQueueMessage: '',
-			departmentsAllowedToForward: [],
-			fallbackForwardDepartment: '',
+			enabled,
+			description,
+			showOnRegistration,
+			showOnOfflineForm,
+			requestTagBeforeClosingChat,
+			email: email || faker.internet.email(),
+			chatClosingTags,
+			offlineMessageChannelName,
+			abandonedRoomsCloseCustomMessage,
+			waitingQueueMessage,
+			departmentsAllowedToForward,
+			fallbackForwardDepartment,
 			maxNumberSimultaneousChat,
 		},
 	});
