@@ -41,10 +41,12 @@ export const ThreadMessageItem = ({
 				<Box
 					ref={ref}
 					data-id={message.ts}
-					data-time={new Date(message.ts)
-						.toISOString()
-						.replaceAll(/[-T:.]/g, '')
-						.substring(0, 8)}
+					{...(newDay && {
+						'data-time': new Date(message.ts)
+							.toISOString()
+							.replaceAll(/[-T:.]/g, '')
+							.substring(0, 8),
+					})}
 				>
 					<MessageDivider unreadLabel={firstUnread ? t('Unread_Messages').toLowerCase() : undefined}>
 						{newDay && (
