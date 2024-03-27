@@ -48,23 +48,27 @@ function saveRegistrationDataBase({
 	registration_client_uri,
 }: SaveRegistrationDataDTO) {
 	return Promise.all([
-		WorkspaceCredentials.updateCredential('workspace_id', workspaceId),
-		WorkspaceCredentials.updateCredential('workspace_name', client_name),
-		WorkspaceCredentials.updateCredential('workspace_public_key', publicKey),
-		WorkspaceCredentials.updateCredential('workspace_registration_client_uri', registration_client_uri),
-
 		Settings.updateValueById('Register_Server', true),
+		Settings.updateValueById('Cloud_Workspace_Id', workspaceId),
+		Settings.updateValueById('Cloud_Workspace_Name', client_name),
 		Settings.updateValueById('Cloud_Workspace_Client_Id', client_id),
 		Settings.updateValueById('Cloud_Workspace_Client_Secret', client_secret),
 		Settings.updateValueById('Cloud_Workspace_Client_Secret_Expires_At', client_secret_expires_at),
+		Settings.updateValueById('Cloud_Workspace_PublicKey', publicKey),
+		Settings.updateValueById('Cloud_Workspace_Registration_Client_Uri', registration_client_uri),
+		WorkspaceCredentials.updateCredentialByScope('', '', new Date(0)),
 	]).then(async (...results) => {
 		// wait until all the settings are updated before syncing the data
 		for await (const retry of Array.from({ length: 10 })) {
 			if (
 				settings.get('Register_Server') === true &&
+				settings.get('Cloud_Workspace_Id') === workspaceId &&
+				settings.get('Cloud_Workspace_Name') === client_name &&
 				settings.get('Cloud_Workspace_Client_Id') === client_id &&
 				settings.get('Cloud_Workspace_Client_Secret') === client_secret &&
-				settings.get('Cloud_Workspace_Client_Secret_Expires_At') === client_secret_expires_at
+				settings.get('Cloud_Workspace_Client_Secret_Expires_At') === client_secret_expires_at &&
+				settings.get('Cloud_Workspace_PublicKey') === publicKey &&
+				settings.get('Cloud_Workspace_Registration_Client_Uri') === registration_client_uri
 			) {
 				break;
 			}

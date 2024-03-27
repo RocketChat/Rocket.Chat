@@ -1,4 +1,4 @@
-import { Users, WorkspaceCredentials } from '@rocket.chat/models';
+import { Settings, Users } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
 
@@ -9,11 +9,11 @@ export async function retrieveRegistrationStatus(): Promise<{
 	token: string;
 	email: string;
 }> {
-	const workspaceId = await WorkspaceCredentials.getCredentialById('workspace_id');
+	const workspaceId = ((await Settings.getValueById('Cloud_Workspace_Id')) || '') as string;
 
 	const info = {
 		workspaceRegistered: !!settings.get('Cloud_Workspace_Client_Id') && !!settings.get('Cloud_Workspace_Client_Secret'),
-		workspaceId: workspaceId?.value || '',
+		workspaceId,
 		uniqueId: settings.get<string>('uniqueID'),
 		token: '',
 		email: settings.get<string>('Organization_Email') || '',

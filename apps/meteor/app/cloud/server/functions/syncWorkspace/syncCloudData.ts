@@ -1,6 +1,6 @@
 import type { Cloud, Serialized } from '@rocket.chat/core-typings';
 import { DuplicatedLicenseError } from '@rocket.chat/license';
-import { WorkspaceCredentials } from '@rocket.chat/models';
+import { Settings } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { v, compile } from 'suretype';
 
@@ -28,12 +28,8 @@ const fetchWorkspaceSyncPayload = async ({
 	token: string;
 	data: Cloud.WorkspaceSyncRequestPayload;
 }): Promise<Serialized<Cloud.WorkspaceSyncResponse>> => {
-	const workspaceRegistrationClientUri = await WorkspaceCredentials.getCredentialById('workspace_registration_client_uri');
-	if (!workspaceRegistrationClientUri) {
-		throw new CloudWorkspaceConnectionError('Failed to connect to Rocket.Chat Cloud: missing workspace registration client uri');
-	}
-
-	const response = await fetch(`${workspaceRegistrationClientUri.value}/sync`, {
+	const workspaceRegistrationClientUri = await Settings.getValueById('Cloud_Workspace_Registration_Client_Uri');
+	const response = await fetch(`${workspaceRegistrationClientUri}/sync`, {
 		method: 'POST',
 		headers: {
 			Authorization: `Bearer ${token}`,

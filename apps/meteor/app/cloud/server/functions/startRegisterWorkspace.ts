@@ -1,4 +1,4 @@
-import { Settings, WorkspaceCredentials } from '@rocket.chat/models';
+import { Settings } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
@@ -47,7 +47,7 @@ export async function startRegisterWorkspace(resend = false) {
 		return false;
 	}
 
-	await WorkspaceCredentials.updateCredential('workspace_id', payload.id);
+	await Settings.updateValueById('Cloud_Workspace_Id', payload.id);
 
 	return true;
 }

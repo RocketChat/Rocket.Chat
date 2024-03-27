@@ -688,19 +688,17 @@ API.v1.addRoute(
 
 			if (this.bodyParams.setDeploymentAs === 'new-workspace') {
 				await Promise.all([
-					WorkspaceCredentials.unsetCredentialValue('workspace_public_key'),
-					WorkspaceCredentials.unsetCredentialValue('workspace_registration_client_uri'),
-					WorkspaceCredentials.unsetCredentialValue('workspace_id'),
-					WorkspaceCredentials.unsetCredentialValue('workspace_name'),
-					WorkspaceCredentials.unsetCredentialValue('cloud_workspace_access_token'),
-					WorkspaceCredentials.unsetCredentialValue('cloud_workspace_access_token_expires_at'),
-
+					WorkspaceCredentials.unsetCredentialByScope(''),
 					Settings.resetValueById('uniqueID', process.env.DEPLOYMENT_ID || uuidv4()),
 					// Settings.resetValueById('Cloud_Url'),
 					Settings.resetValueById('Cloud_Service_Agree_PrivacyTerms'),
+					Settings.resetValueById('Cloud_Workspace_Id'),
+					Settings.resetValueById('Cloud_Workspace_Name'),
 					Settings.resetValueById('Cloud_Workspace_Client_Id'),
 					Settings.resetValueById('Cloud_Workspace_Client_Secret'),
 					Settings.resetValueById('Cloud_Workspace_Client_Secret_Expires_At'),
+					Settings.resetValueById('Cloud_Workspace_Registration_Client_Uri'),
+					Settings.resetValueById('Cloud_Workspace_PublicKey'),
 					Settings.resetValueById('Cloud_Workspace_License'),
 					Settings.resetValueById('Cloud_Workspace_Had_Trial'),
 					Settings.resetValueById('Cloud_Workspace_Registration_State'),

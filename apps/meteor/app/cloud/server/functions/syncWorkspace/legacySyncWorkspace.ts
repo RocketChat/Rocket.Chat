@@ -1,5 +1,5 @@
 import { type Cloud, type Serialized } from '@rocket.chat/core-typings';
-import { Settings, WorkspaceCredentials } from '@rocket.chat/models';
+import { Settings } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { v, compile } from 'suretype';
 
@@ -90,12 +90,8 @@ const fetchWorkspaceClientPayload = async ({
 	token: string;
 	workspaceRegistrationData: WorkspaceRegistrationData<undefined>;
 }): Promise<Serialized<Cloud.WorkspaceSyncPayload> | undefined> => {
-	const workspaceRegistrationClientUri = await WorkspaceCredentials.getCredentialById('workspace_registration_client_uri');
-	if (!workspaceRegistrationClientUri) {
-		throw new CloudWorkspaceConnectionError('Failed to connect to Rocket.Chat Cloud: missing workspace registration client uri');
-	}
-
-	const response = await fetch(`${workspaceRegistrationClientUri.value}/client`, {
+	const workspaceRegistrationClientUri = await Settings.getValueById('Cloud_Workspace_Registration_Client_Uri');
+	const response = await fetch(`${workspaceRegistrationClientUri}/client`, {
 		method: 'POST',
 		headers: {
 			Authorization: `Bearer ${token}`,
@@ -129,7 +125,7 @@ const fetchWorkspaceClientPayload = async ({
 /** @deprecated */
 const consumeWorkspaceSyncPayload = async (result: Serialized<Cloud.WorkspaceSyncPayload>) => {
 	if (result.publicKey) {
-		await WorkspaceCredentials.updateCredential('workspace_public_key', result.publicKey);
+		await Settings.updateValueById('Cloud_Workspace_PublicKey', result.publicKey);
 	}
 
 	if (result.trial?.trialID) {

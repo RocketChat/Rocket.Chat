@@ -1,7 +1,7 @@
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { ProxiedApp } from '@rocket.chat/apps-engine/server/ProxiedApp';
 import { cronJobs } from '@rocket.chat/cron';
-import { Users, WorkspaceCredentials } from '@rocket.chat/models';
+import { Settings, Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
@@ -74,15 +74,12 @@ const notifyAdminsAboutRenewedApps = async function _notifyAdminsAboutRenewedApp
 const appsUpdateMarketplaceInfo = async function _appsUpdateMarketplaceInfo() {
 	const token = await getWorkspaceAccessToken();
 	const baseUrl = Apps.getMarketplaceUrl();
-	const workspaceId = await WorkspaceCredentials.getCredentialById('workspace_id');
 
-	if (!workspaceId) {
-		return;
-	}
+	const workspaceId = await Settings.getValueById('Cloud_Workspace_Id');
 
 	const currentSeats = await Users.getActiveLocalUserCount();
 
-	const fullUrl = `${baseUrl}/v1/workspaces/${workspaceId.value}/apps`;
+	const fullUrl = `${baseUrl}/v1/workspaces/${workspaceId}/apps`;
 	const options = {
 		headers: {
 			Authorization: `Bearer ${token}`,

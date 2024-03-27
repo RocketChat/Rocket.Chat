@@ -1,4 +1,4 @@
-import { WorkspaceCredentials } from '@rocket.chat/models';
+import { Settings } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { callbacks } from '../../../../lib/callbacks';
@@ -20,12 +20,9 @@ export async function removeLicense() {
 			throw new CloudWorkspaceAccessTokenEmptyError();
 		}
 
-		const workspaceRegistrationClientUri = await WorkspaceCredentials.getCredentialById('workspace_registration_client_uri');
-		if (!workspaceRegistrationClientUri) {
-			throw new CloudWorkspaceConnectionError('Failed to connect to Rocket.Chat Cloud: missing workspace registration client uri');
-		}
+		const workspaceRegistrationClientUri = Settings.getValueById('Cloud_Workspace_Registration_Client_Uri');
 
-		const response = await fetch(`${workspaceRegistrationClientUri.value}/client/downgrade`, {
+		const response = await fetch(`${workspaceRegistrationClientUri}/client/downgrade`, {
 			method: 'POST',
 			headers: {
 				Authorization: `Bearer ${token}`,

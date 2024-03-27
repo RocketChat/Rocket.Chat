@@ -1,4 +1,4 @@
-import { WorkspaceCredentials } from '@rocket.chat/models';
+import { Settings } from '@rocket.chat/models';
 
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 
@@ -9,11 +9,11 @@ export async function getWorkspaceKey() {
 		return false;
 	}
 
-	const publicKey = await WorkspaceCredentials.getCredentialById('workspace_public_key');
+	const publicKey = await Settings.getValueById('Cloud_Workspace_PublicKey');
 
 	if (!publicKey) {
 		return false;
 	}
 
-	return publicKey.value;
+	return publicKey;
 }

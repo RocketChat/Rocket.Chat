@@ -9,14 +9,15 @@ export async function removeWorkspaceRegistrationInfo() {
 	}
 
 	await Promise.all([
-		WorkspaceCredentials.unsetCredentialValue('workspace_public_key'),
-		WorkspaceCredentials.unsetCredentialValue('workspace_registration_client_uri'),
-		WorkspaceCredentials.unsetCredentialValue('workspace_id'),
-		WorkspaceCredentials.unsetCredentialValue('workspace_name'),
+		WorkspaceCredentials.removeAllCredentials(),
 
 		Settings.resetValueById('Cloud_Workspace_Client_Id', null),
 		Settings.resetValueById('Cloud_Workspace_Client_Secret', null),
 		Settings.resetValueById('Cloud_Workspace_Client_Secret_Expires_At', null),
+		Settings.resetValueById('Cloud_Workspace_PublicKey', null),
+		Settings.resetValueById('Cloud_Workspace_Registration_Client_Uri', null),
+		Settings.resetValueById('Cloud_Workspace_Id', null),
+		Settings.resetValueById('Cloud_Workspace_Name', null),
 	]);
 
 	await Settings.updateValueById('Show_Setup_Wizard', 'in_progress');

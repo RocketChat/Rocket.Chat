@@ -1,6 +1,6 @@
-import type { RocketChatRecordDeleted, IWorkspaceCredentials, IWorkspaceAvailableCredentials } from '@rocket.chat/core-typings';
+import type { RocketChatRecordDeleted, IWorkspaceCredentials } from '@rocket.chat/core-typings';
 import type { IWorkspaceCredentialsModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, Filter, IndexDescription } from 'mongodb';
+import type { Collection, Db, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
 
@@ -10,26 +10,30 @@ export class WorkspaceCredentialsRaw extends BaseRaw<IWorkspaceCredentials> impl
 	}
 
 	protected modelIndexes(): IndexDescription[] {
-		return [{ key: { id: 1 } }];
+		return [{ key: { _id: 1, scopes: 1, expirationDate: 1, accessToken: 1 } }];
 	}
 
-	getCredentialById(id: 'cloud_workspace_access_token_expires_at'): Promise<{ value: Date } | null>;
-
-	getCredentialById(id: Omit<IWorkspaceAvailableCredentials, 'cloud_workspace_access_token_expires_at'>): Promise<{ value: string } | null>;
-
-	getCredentialById(id: IWorkspaceCredentials['id']): Promise<{ value: string | Date } | null> {
-		return this.findOne({ id });
+	getCredentialByScope(scope: string): Promise<IWorkspaceCredentials | null> {
+		return this.findOne({ scope });
 	}
 
-	async updateCredential(id: IWorkspaceCredentials['id'], value: IWorkspaceCredentials['value']): Promise<void> {
-		const query: Filter<IWorkspaceCredentials> = { id };
-		const update = { $set: { value } };
-
-		await this.updateOne(query, update, { upsert: true });
+	async unsetCredentialByScope(scope: string): Promise<void> {
+		await this.deleteOne({ scopes: scope });
 	}
 
-	async unsetCredentialValue(id: IWorkspaceCredentials['id']): Promise<void> {
-		const query: Filter<IWorkspaceCredentials> = { id };
-		await this.deleteOne(query);
+	async updateCredentialByScope(scope: string, accessToken: string, expirationDate: Date): Promise<void> {
+		const record = {
+			$set: {
+				scopes: [scope],
+				accessToken,
+				expirationDate,
+			},
+		};
+
+		await this.updateOne({ scopes: scope }, record, { upsert: true });
+	}
+
+	async removeAllCredentials(): Promise<void> {
+		await this.col.deleteMany({});
 	}
 }
