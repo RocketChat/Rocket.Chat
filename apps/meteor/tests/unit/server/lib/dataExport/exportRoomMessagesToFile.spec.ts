@@ -5,7 +5,7 @@ import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import type { MessageData } from '../../../../../server/lib/dataExport/exportRoomMessagesToFile';
-import { createFakeMessage } from '../../../../mocks/data';
+import { exportMessagesMock } from '../../../app/apps/server/mocks/data/messages.data';
 
 // Create stubs for dependencies
 const stubs = {
@@ -40,52 +40,12 @@ const { getMessageData, exportRoomMessages, exportMessageObject } = proxyquire
 		},
 	});
 
-const testUsername = faker.internet.userName();
-const testUserId = faker.database.mongodbObjectId();
-const messages = [
-	createFakeMessage({ t: 'uj', u: { _id: testUserId, username: testUsername }, msg: testUsername }),
-	createFakeMessage({
-		msg: '',
-		file: {
-			_id: 'txt-file-id',
-			name: 'test.txt',
-			type: 'text/plain',
-			size: 29,
-			format: '',
-		},
-		attachments: [
-			{
-				type: 'file',
-				title: 'test.txt',
-				title_link: '/file-upload/txt-file-id/test.txt',
-			},
-		],
-	}),
-	createFakeMessage({
-		msg: '',
-		file: {
-			_id: 'txt-file-id',
-			name: 'test.txt',
-			type: 'text/plain',
-			size: 29,
-			format: '',
-		},
-		attachments: [
-			{
-				type: 'file',
-				title_link: '/file-upload/txt-file-id/test.txt',
-			},
-		],
-	}),
-	createFakeMessage(),
-];
-
 describe('Export - exportMessageObject', () => {
 	let messagesData: MessageData[];
 	const translationPlaceholder = 'translation-placeholder';
 	before(() => {
 		stubs.translateKey.returns(translationPlaceholder);
-		messagesData = messages.map((message) => getMessageData(message, false));
+		messagesData = exportMessagesMock.map((message) => getMessageData(message, false));
 	});
 
 	it('should only stringify message object when exporting message as json', async () => {
@@ -116,25 +76,29 @@ describe('Export - exportMessageObject', () => {
 	});
 
 	it('should correctly reference file when exporting a message object with an attachment as html', async () => {
-		const result = await exportMessageObject('html', messagesData[1], messages[1].file);
+		const result = await exportMessageObject('html', messagesData[1], exportMessagesMock[1].file);
 
 		expect(result).to.be.a.string;
 		expect(result).to.equal(
 			`<p><strong>${messagesData[1].username}</strong> (${new Date(messagesData[1].ts).toUTCString()}):<br/>\n${
 				messagesData[1].msg
-			}\n<br/><a href="./assets/${messages[1].file?._id}-${messages[1].file?.name}">${messagesData[1].attachments?.[0].title}</a>\n</p>`,
+			}\n<br/><a href="./assets/${exportMessagesMock[1].file?._id}-${exportMessagesMock[1].file?.name}">${
+				messagesData[1].attachments?.[0].title
+			}</a>\n</p>`,
 		);
 	});
 
 	it('should use fallback attachment description when no title is provided on message object export as html', async () => {
-		const result = await exportMessageObject('html', messagesData[2], messages[2].file);
+		const result = await exportMessageObject('html', messagesData[2], exportMessagesMock[2].file);
 
 		expect(stubs.translateKey.calledWith('Message_Attachments')).to.be.true;
 		expect(result).to.be.a.string;
 		expect(result).to.equal(
 			`<p><strong>${messagesData[2].username}</strong> (${new Date(messagesData[2].ts).toUTCString()}):<br/>\n${
-				messages[1].msg
-			}\n<br/><a href="./assets/${messages[2].file?._id}-${messages[2].file?.name}">${translationPlaceholder}</a>\n</p>`,
+				exportMessagesMock[1].msg
+			}\n<br/><a href="./assets/${exportMessagesMock[2].file?._id}-${
+				exportMessagesMock[2].file?.name
+			}">${translationPlaceholder}</a>\n</p>`,
 		);
 	});
 });
@@ -148,7 +112,7 @@ describe('Export - exportRoomMessages', () => {
 	};
 
 	before(() => {
-		stubs.findPaginatedMessagesCursor.resolves(messages);
+		stubs.findPaginatedMessagesCursor.resolves(exportMessagesMock);
 		stubs.findPaginatedMessagesTotal.resolves(totalMessages);
 		stubs.findPaginatedMessages.returns({
 			cursor: { toArray: stubs.findPaginatedMessagesCursor },
@@ -163,9 +127,9 @@ describe('Export - exportRoomMessages', () => {
 		expect(stubs.translateKey.calledWith('User_joined_the_channel')).to.be.true;
 		expect(result).to.be.an('object');
 		expect(result).to.have.property('total', totalMessages);
-		expect(result).to.have.property('exported', messages.length);
-		expect(result).to.have.property('messages').that.is.an('array').of.length(messages.length);
-		const messagesWithFiles = messages.filter((message) => message.file);
+		expect(result).to.have.property('exported', exportMessagesMock.length);
+		expect(result).to.have.property('messages').that.is.an('array').of.length(exportMessagesMock.length);
+		const messagesWithFiles = exportMessagesMock.filter((message) => message.file);
 		expect(result).to.have.property('uploads').that.is.an('array').of.length(messagesWithFiles.length);
 	});
 
@@ -175,9 +139,9 @@ describe('Export - exportRoomMessages', () => {
 		expect(stubs.translateKey.calledWith('User_joined_the_channel')).to.be.true;
 		expect(result).to.be.an('object');
 		expect(result).to.have.property('total', totalMessages);
-		expect(result).to.have.property('exported', messages.length);
-		expect(result).to.have.property('messages').that.is.an('array').of.length(messages.length);
-		const messagesWithFiles = messages.filter((message) => message.file);
+		expect(result).to.have.property('exported', exportMessagesMock.length);
+		expect(result).to.have.property('messages').that.is.an('array').of.length(exportMessagesMock.length);
+		const messagesWithFiles = exportMessagesMock.filter((message) => message.file);
 		expect(result).to.have.property('uploads').that.is.an('array').of.length(messagesWithFiles.length);
 	});
 });
