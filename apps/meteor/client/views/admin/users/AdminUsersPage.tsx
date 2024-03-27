@@ -163,7 +163,7 @@ const AdminUsersPage = (): ReactElement => {
 						</ContextualbarHeader>
 						{context === 'info' && id && <AdminUserInfoWithData uid={id} onReload={handleReload} tab={tab} />}
 						{context === 'edit' && id && <AdminUserFormWithData uid={id} onReload={handleReload} />}
-						{!isRoutePrevented && context === 'new' && <AdminUserForm onReload={handleReload} />}
+						{!isRoutePrevented && context === 'new' && <AdminUserForm onReload={handleReload} context={context} />}
 						{!isRoutePrevented && context === 'invite' && <AdminInviteUsers />}
 						{isRoutePrevented && <AdminUserUpgrade />}
 					</Contextualbar>
