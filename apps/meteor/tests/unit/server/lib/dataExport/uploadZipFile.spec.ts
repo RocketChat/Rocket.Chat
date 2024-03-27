@@ -74,7 +74,7 @@ describe('Export - uploadZipFile', () => {
 		expect(result).to.have.property('_id', randomId);
 		expect(result).to.have.property('name').that.is.a.string;
 		const fileName: string = result.name;
-		expect(fileName.endsWith(`${userName}-data-${randomId}.zip`)).to.be.true;
+		expect(fileName.endsWith(encodeURIComponent(`${userName}-data-${randomId}.zip`))).to.be.true;
 	});
 
 	it('should correctly build file name for html exports', async () => {
@@ -98,7 +98,7 @@ describe('Export - uploadZipFile', () => {
 		expect(result).to.have.property('_id', randomId);
 		expect(result).to.have.property('name').that.is.a.string;
 		const fileName: string = result.name;
-		expect(fileName.endsWith(`${userName}-${randomId}.zip`)).to.be.true;
+		expect(fileName.endsWith(encodeURIComponent(`${userName}-${randomId}.zip`))).to.be.true;
 	});
 
 	it("should use username as a fallback in the zip file name when user's name is not defined", async () => {
