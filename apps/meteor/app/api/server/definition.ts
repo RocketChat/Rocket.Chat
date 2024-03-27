@@ -34,7 +34,21 @@ export type UnauthorizedResult<T> = {
 	};
 };
 
-export type InternalError<T> = { statusCode: 500; body: { error: T | 'Internal error occured'; success: false } };
+export type ForbiddenResult<T> = {
+	statusCode: 403;
+	body: {
+		success: false;
+		error: T | 'forbidden';
+	};
+};
+
+export type InternalError<T> = {
+	statusCode: 500;
+	body: {
+		error: T | 'Internal server error';
+		success: false;
+	};
+};
 
 export type NotFoundResult = {
 	statusCode: 404;
