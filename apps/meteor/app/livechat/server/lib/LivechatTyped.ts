@@ -1127,6 +1127,10 @@ class LivechatClass {
 			'Livechat_clear_local_storage_when_chat_ended',
 			'Livechat_history_monitor_type',
 			'Livechat_hide_system_messages',
+			'Livechat_widget_position',
+			'Livechat_background',
+			'Assets_livechat_widget_logo',
+			'Livechat_hide_watermark',
 		] as const;
 
 		type SettingTypes = (typeof validSettings)[number] | 'Livechat_Show_Connecting';
