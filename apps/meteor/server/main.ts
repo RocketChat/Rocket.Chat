@@ -1,5 +1,3 @@
-import { Logger } from '@rocket.chat/logger';
-
 import './models/startup';
 /**
  * ./settings uses top level await, in theory the settings creation
@@ -26,19 +24,8 @@ import '../lib/oauthRedirectUriServer';
 import './lib/pushConfig';
 import './features/EmailInbox/index';
 
-const StartupLogger = new Logger('StartupLogger');
+await Promise.all([configureLogLevel(), registerServices(), registerEEBroker(), startup()]);
 
-StartupLogger.startup('Starting Rocket.Chat server...');
+await startLicense();
 
-await registerEEBroker().then(() => StartupLogger.startup('EE Broker registered'));
-
-await Promise.all([
-	configureLogLevel().then(() => StartupLogger.startup('Log level configured')),
-	registerServices().then(() => StartupLogger.startup('Services registered')),
-	configureLoginServices().then(() => StartupLogger.startup('Login services configured')),
-	startup().then(() => StartupLogger.startup('Startup finished')),
-]);
-
-await startLicense().then(() => StartupLogger.startup('License started'));
-await startFederationService();
-StartupLogger.startup('Rocket.Chat server started.');
+await Promise.all([configureLoginServices(), startFederationService()]);
