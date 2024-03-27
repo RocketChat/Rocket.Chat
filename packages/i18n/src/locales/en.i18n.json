@@ -2970,6 +2970,8 @@
   "LDAP_Background_Sync_Avatars": "Avatar Background Sync",
   "LDAP_Background_Sync_Avatars_Description": "Enable a separate background process to sync user avatars.",
   "LDAP_Background_Sync_Avatars_Interval": "Avatar Background Sync Interval",
+  "LDAP_Background_Sync_Disable_Missing_Users": "Automatically disable uses that are no longer found on LDAP.",
+  "LDAP_Background_Sync_Disable_Missing_Users_description": "This option will deactive users on Rocket.Chat when their data is not found on LDAP. Any rooms owned by those users will be automatically assigned to new owners, or removed if no other user has access to them.",
   "LDAP_Background_Sync_Import_New_Users": "Background Sync Import New Users",
   "LDAP_Background_Sync_Import_New_Users_Description": "Will import all users (based on your filter criteria) that exists in LDAP and does not exists in Rocket.Chat",
   "LDAP_Background_Sync_Interval": "Background Sync Interval",
