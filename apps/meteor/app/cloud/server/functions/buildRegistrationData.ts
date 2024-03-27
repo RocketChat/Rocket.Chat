@@ -48,7 +48,6 @@ export async function buildWorkspaceRegistrationData<T extends string | undefine
 
 	const address = settings.get<string>('Site_Url');
 	const siteName = settings.get<string>('Site_Name');
-
 	const workspaceId = settings.get<string>('Cloud_Workspace_Id');
 	const allowMarketing = settings.get<string>('Allow_Marketing_Emails');
 	const accountName = settings.get<string>('Organization_Name');
