@@ -10,6 +10,7 @@ import '../app/settings/server';
 
 import { startLicense } from '../ee/app/license/server/startup';
 import { registerEEBroker } from '../ee/server';
+import { startFederationService } from '../ee/server/startup/services';
 import { configureLoginServices } from './configuration';
 import { configureLogLevel } from './configureLogLevel';
 import { registerServices } from './services/startup';
@@ -31,15 +32,13 @@ StartupLogger.startup('Starting Rocket.Chat server...');
 
 await registerEEBroker().then(() => StartupLogger.startup('EE Broker registered'));
 
-await (async () => {
-	await Promise.all([
-		configureLogLevel().then(() => StartupLogger.startup('Log level configured')),
-		registerServices().then(() => StartupLogger.startup('Services registered')),
-		configureLoginServices().then(() => StartupLogger.startup('Login services configured')),
-		startup().then(() => StartupLogger.startup('Startup finished')),
-	]);
-})();
+await Promise.all([
+	configureLogLevel().then(() => StartupLogger.startup('Log level configured')),
+	registerServices().then(() => StartupLogger.startup('Services registered')),
+	configureLoginServices().then(() => StartupLogger.startup('Login services configured')),
+	startup().then(() => StartupLogger.startup('Startup finished')),
+]);
 
 await startLicense().then(() => StartupLogger.startup('License started'));
-await import('../ee/server/startup/services');
+await startFederationService();
 StartupLogger.startup('Rocket.Chat server started.');
