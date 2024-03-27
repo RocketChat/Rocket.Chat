@@ -18,7 +18,7 @@ const DOCS_URL = 'https://rocket.chat/docs/user-guides/end-to-end-encryption/';
 
 const SaveE2EPasswordModal = ({ randomPassword, onClose, onCancel, onConfirm }: SaveE2EPasswordModalProps): ReactElement => {
 	const t = useTranslation();
-	const { copy } = useClipboard(randomPassword);
+	const { copy, hasCopied } = useClipboard(randomPassword);
 
 	return (
 		<GenericModal
@@ -42,7 +42,7 @@ const SaveE2EPasswordModal = ({ randomPassword, onClose, onCancel, onConfirm }: 
 					{t('E2E_password_save_text')}
 				</Box>
 				{t('Your_E2EE_password_is')}
-				<CodeSnippet buttonText={t('Copy')} onClick={() => copy()}>
+				<CodeSnippet buttonText={hasCopied ? t('Copied') : t('Copy_password')} buttonDisabled={hasCopied} onClick={() => copy()}>
 					{randomPassword}
 				</CodeSnippet>
 			</Box>
