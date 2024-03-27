@@ -14,7 +14,7 @@ import {
 	ContextualbarTitle,
 	ContextualbarEmptyContent,
 } from '../../../../components/Contextualbar';
-import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
+import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import type { ThreadsListOptions } from '../../../../lib/lists/ThreadsList';
@@ -181,7 +181,7 @@ const ThreadList: VFC = () => {
 							}
 							overscan={25}
 							data={items}
-							components={{ Scroller: ScrollableContentWrapper }}
+							components={{ Scroller: VirtuosoScrollbars }}
 							itemContent={(_index, data: IMessage): ReactElement => (
 								<ThreadListItem
 									thread={data}

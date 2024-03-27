@@ -3,7 +3,13 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRouteParameter, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useRef, useCallback } from 'react';
 
-import { Contextualbar, ContextualbarTitle, ContextualbarHeader, ContextualbarClose } from '../../../../client/components/Contextualbar';
+import {
+	Contextualbar,
+	ContextualbarTitle,
+	ContextualbarHeader,
+	ContextualbarClose,
+	ContextualbarDialog,
+} from '../../../../client/components/Contextualbar';
 import { Page, PageHeader, PageContent } from '../../../../client/components/Page';
 import SlaEditWithData from './SlaEditWithData';
 import SlaNew from './SlaNew';
@@ -44,17 +50,19 @@ const SlaPage = () => {
 				</PageContent>
 			</Page>
 			{context && (
-				<Contextualbar>
-					<ContextualbarHeader>
-						<ContextualbarTitle>
-							{context === 'edit' && t('Edit_SLA_Policy')}
-							{context === 'new' && t('New_SLA_Policy')}
-						</ContextualbarTitle>
-						<ContextualbarClose onClick={handleCloseContextualbar} />
-					</ContextualbarHeader>
-					{context === 'edit' && id && <SlaEditWithData slaId={id} reload={handleReload} />}
-					{context === 'new' && <SlaNew reload={handleReload} />}
-				</Contextualbar>
+				<ContextualbarDialog>
+					<Contextualbar>
+						<ContextualbarHeader>
+							<ContextualbarTitle>
+								{context === 'edit' && t('Edit_SLA_Policy')}
+								{context === 'new' && t('New_SLA_Policy')}
+							</ContextualbarTitle>
+							<ContextualbarClose onClick={handleCloseContextualbar} />
+						</ContextualbarHeader>
+						{context === 'edit' && id && <SlaEditWithData slaId={id} reload={handleReload} />}
+						{context === 'new' && <SlaNew reload={handleReload} />}
+					</Contextualbar>
+				</ContextualbarDialog>
 			)}
 		</Page>
 	);

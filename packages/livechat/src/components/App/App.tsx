@@ -2,12 +2,10 @@ import type { ILivechatTrigger } from '@rocket.chat/core-typings';
 import i18next from 'i18next';
 import { Component } from 'preact';
 import Router, { route } from 'preact-router';
-import { parse } from 'query-string';
 import { withTranslation } from 'react-i18next';
 
 import type { Department } from '../../definitions/departments';
 import { setInitCookies } from '../../helpers/cookies';
-import { isActiveSession } from '../../helpers/isActiveSession';
 import { isRTL } from '../../helpers/isRTL';
 import { visibility } from '../../helpers/visibility';
 import history from '../../history';
@@ -24,17 +22,13 @@ import LeaveMessage from '../../routes/LeaveMessage';
 import Register from '../../routes/Register';
 import SwitchDepartment from '../../routes/SwitchDepartment';
 import TriggerMessage from '../../routes/TriggerMessage';
-import type { Dispatch } from '../../store';
-import store from '../../store';
+import type { Dispatch, StoreState } from '../../store';
+import { ScreenProvider } from '../Screen/ScreenProvider';
 
 type AppProps = {
 	config: {
-		settings: {
-			registrationForm?: boolean;
-			nameFieldRegistrationForm?: boolean;
-			emailFieldRegistrationForm?: boolean;
-			forceAcceptDataProcessingConsent?: boolean;
-		};
+		settings: StoreState['config']['settings'];
+		theme: StoreState['config']['theme'];
 		online?: boolean;
 		departments: Department[];
 		enabled?: boolean;
@@ -66,6 +60,7 @@ type AppProps = {
 			name: string;
 			email: string;
 		};
+		theme: StoreState['iframe']['theme'];
 	};
 	i18n: typeof i18next;
 };
@@ -73,26 +68,6 @@ type AppProps = {
 type AppState = {
 	initialized: boolean;
 	poppedOut: boolean;
-};
-
-export type ScreenPropsType = {
-	notificationsEnabled: boolean;
-	minimized: boolean;
-	expanded: boolean;
-	windowed: boolean;
-	sound: unknown;
-	alerts: unknown;
-	modal: unknown;
-	nameDefault: string;
-	emailDefault: string;
-	departmentDefault: string;
-	onEnableNotifications: () => unknown;
-	onDisableNotifications: () => unknown;
-	onMinimize: () => unknown;
-	onRestore: () => unknown;
-	onOpenWindow: () => unknown;
-	onDismissAlert: () => unknown;
-	dismissNotification: () => void;
 };
 
 export class App extends Component<AppProps, AppState> {
@@ -129,9 +104,9 @@ export class App extends Component<AppProps, AppState> {
 				return route('/leave-message');
 			}
 
-			const showDepartment = departments.filter((dept) => dept.showOnRegistration).length > 0;
+			const showDepartment = departments.some((dept) => dept.showOnRegistration);
 			const isAnyFieldVisible = nameFieldRegistrationForm || emailFieldRegistrationForm || showDepartment;
-			const showRegistrationForm = !user?.token && registrationForm && isAnyFieldVisible && !Triggers.showTriggerMessages();
+			const showRegistrationForm = !user?.token && registrationForm && isAnyFieldVisible && !Triggers.hasTriggersBeforeRegistration();
 
 			if (url === '/' && showRegistrationForm) {
 				return route('/register');
@@ -150,49 +125,6 @@ export class App extends Component<AppProps, AppState> {
 		Triggers.processTriggers();
 	}
 
-	protected handleEnableNotifications = () => {
-		const { dispatch, sound = {} } = this.props;
-		dispatch({ sound: { ...sound, enabled: true } });
-	};
-
-	protected handleDisableNotifications = () => {
-		const { dispatch, sound = {} } = this.props;
-		dispatch({ sound: { ...sound, enabled: false } });
-	};
-
-	protected handleMinimize = () => {
-		parentCall('minimizeWindow');
-		const { dispatch } = this.props;
-		dispatch({ minimized: true });
-	};
-
-	protected handleRestore = () => {
-		parentCall('restoreWindow');
-		const { dispatch, undocked } = this.props;
-		const dispatchRestore = () => dispatch({ minimized: false, undocked: false });
-		const dispatchEvent = () => {
-			dispatchRestore();
-			store.off('storageSynced', dispatchEvent);
-		};
-		if (undocked) {
-			store.on('storageSynced', dispatchEvent);
-		} else {
-			dispatchRestore();
-		}
-		Triggers.callbacks?.emit('chat-opened-by-visitor');
-	};
-
-	protected handleOpenWindow = () => {
-		parentCall('openPopout');
-		const { dispatch } = this.props;
-		dispatch({ undocked: true, minimized: false });
-	};
-
-	protected handleDismissAlert = (id: string) => {
-		const { dispatch, alerts = [] } = this.props;
-		dispatch({ alerts: alerts.filter((alert) => alert.id !== id) });
-	};
-
 	protected handleVisibilityChange = async () => {
 		const { dispatch } = this.props;
 		dispatch({ visible: !visibility.hidden });
@@ -202,35 +134,28 @@ export class App extends Component<AppProps, AppState> {
 		this.forceUpdate();
 	};
 
-	protected dismissNotification = () => !isActiveSession();
-
 	protected initWidget() {
 		const {
 			minimized,
 			iframe: { visible },
+			config: { theme },
 			dispatch,
 		} = this.props;
+
 		parentCall(minimized ? 'minimizeWindow' : 'restoreWindow');
 		parentCall(visible ? 'showWidget' : 'hideWidget');
+		parentCall('setWidgetPosition', theme.position || 'right');
 
 		visibility.addListener(this.handleVisibilityChange);
+
 		this.handleVisibilityChange();
+
 		window.addEventListener('beforeunload', () => {
 			visibility.removeListener(this.handleVisibilityChange);
 			dispatch({ minimized: true, undocked: false });
 		});
 
 		i18next.on('languageChanged', this.handleLanguageChange);
-	}
-
-	protected checkPoppedOutWindow() {
-		// Checking if the window is poppedOut and setting parent minimized if yes for the restore purpose
-		const { dispatch } = this.props;
-		const poppedOut = parse(window.location.search).mode === 'popout';
-		this.setState({ poppedOut });
-		if (poppedOut) {
-			dispatch({ minimized: false });
-		}
 	}
 
 	protected async initialize() {
@@ -241,7 +166,6 @@ export class App extends Component<AppProps, AppState> {
 		Hooks.init();
 		this.handleTriggers();
 		this.initWidget();
-		this.checkPoppedOutWindow();
 		this.setState({ initialized: true });
 		parentCall('ready');
 	}
@@ -268,44 +192,23 @@ export class App extends Component<AppProps, AppState> {
 		}
 	}
 
-	render = ({ sound, undocked, minimized, expanded, alerts, modal, iframe }: AppProps, { initialized, poppedOut }: AppState) => {
+	render = (_: AppProps, { initialized }: AppState) => {
 		if (!initialized) {
 			return null;
 		}
 
-		const { department, name, email } = iframe.guest || {};
-
-		const screenProps = {
-			notificationsEnabled: sound?.enabled,
-			minimized: !poppedOut && (minimized || undocked),
-			expanded: !minimized && expanded,
-			windowed: !minimized && poppedOut,
-			sound,
-			alerts,
-			modal,
-			nameDefault: name,
-			emailDefault: email,
-			departmentDefault: department,
-			onEnableNotifications: this.handleEnableNotifications,
-			onDisableNotifications: this.handleDisableNotifications,
-			onMinimize: this.handleMinimize,
-			onRestore: this.handleRestore,
-			onOpenWindow: this.handleOpenWindow,
-			onDismissAlert: this.handleDismissAlert,
-			dismissNotification: this.dismissNotification,
-		};
-
 		return (
-			<Router history={history} onChange={this.handleRoute}>
-				<ChatConnector default path='/' {...screenProps} />
-				<ChatFinished path='/chat-finished' {...screenProps} />
-				<GDPRAgreement path='/gdpr' {...screenProps} />
-				{/* TODO: Find a better way to avoid prop drilling with that amout of props (perhaps create a screen context/provider) */}
-				<LeaveMessage path='/leave-message' screenProps={screenProps} />
-				<Register path='/register' screenProps={screenProps} />
-				<SwitchDepartment path='/switch-department' screenProps={screenProps} />
-				<TriggerMessage path='/trigger-messages' {...screenProps} />
-			</Router>
+			<ScreenProvider>
+				<Router history={history} onChange={this.handleRoute}>
+					<ChatConnector path='/' default />
+					<ChatFinished path='/chat-finished' />
+					<GDPRAgreement path='/gdpr' />
+					<LeaveMessage path='/leave-message' />
+					<Register path='/register' />
+					<SwitchDepartment path='/switch-department' />
+					<TriggerMessage path='/trigger-messages' />
+				</Router>
+			</ScreenProvider>
 		);
 	};
 }

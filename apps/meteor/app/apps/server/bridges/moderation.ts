@@ -1,13 +1,13 @@
+import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import { ModerationBridge } from '@rocket.chat/apps-engine/server/bridges/ModerationBridge';
 import { ModerationReports } from '@rocket.chat/models';
 
-import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 import { reportMessage } from '../../../../server/lib/moderation/reportMessage';
 
 export class AppModerationBridge extends ModerationBridge {
-	constructor(private readonly orch: AppServerOrchestrator) {
+	constructor(private readonly orch: IAppServerOrchestrator) {
 		super();
 	}
 
