@@ -67,8 +67,8 @@ const messages = [
 		groupable: false,
 		u: {
 			_id: 'oNfuDGerMEiPoF7tq',
-			username: testUsername,
-			name: testName,
+			username: `${testUsername}2`,
+			name: `${testName}2`,
 		},
 		_updatedAt: new Date('2024-03-20T13:46:01.667Z'),
 	},
@@ -79,8 +79,8 @@ const messages = [
 		ts: new Date('2024-03-26T18:24:21.994Z'),
 		u: {
 			_id: 'oNfuDGerMEiPoF7tq',
-			username: testUsername,
-			name: testName,
+			username: `${testUsername}3`,
+			name: `${testName}3`,
 		},
 	},
 ];
@@ -88,7 +88,7 @@ const messagesData = [
 	{ msg: 'joined the channel', username: testUsername, ts: '2024-03-15T15:44:41.889Z', type: 'uj' },
 	{
 		msg: '',
-		username: testUsername,
+		username: `${testUsername}2`,
 		ts: '2024-03-20T13:46:01.623Z',
 		attachments: [
 			{
@@ -104,7 +104,7 @@ const messagesData = [
 	},
 	{
 		msg: '',
-		username: testUsername,
+		username: `${testUsername}2`,
 		ts: '2024-03-20T13:46:01.623Z',
 		attachments: [
 			{
@@ -118,7 +118,7 @@ const messagesData = [
 			},
 		],
 	},
-	{ msg: 'hello msg here', username: testUsername, ts: '2024-03-26T18:24:21.994Z' },
+	{ msg: 'hello msg here', username: `${testUsername}3`, ts: '2024-03-26T18:24:21.994Z' },
 ];
 
 describe('Export - exportMessageObject', () => {
