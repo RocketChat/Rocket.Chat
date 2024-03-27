@@ -1,28 +1,32 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 
 import { e2e } from '../../../app/e2e/client';
+import { E2EEState } from '../../../app/e2e/client/E2EEState';
 import { E2ERoomState } from '../../../app/e2e/client/E2ERoomState';
 import RoomE2EENotAllowed from './RoomE2EENotAllowed';
 import RoomBody from './body/RoomBody';
 import { useE2EERoomState } from './hooks/useE2EERoomState';
+import { useE2EEState } from './hooks/useE2EEState';
 import { useIsE2EEReady } from './hooks/useIsE2EEReady';
 
 const RoomBodyChecks = ({ room }: { room: IRoom }) => {
-	const [randomPassword, setRandomPassword] = useState(window.localStorage.getItem('e2e.randomPassword') || undefined);
 	const areUnencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages');
 	const e2eRoomState = useE2EERoomState(room._id);
+	const e2eeState = useE2EEState();
 	const isE2EEReady = useIsE2EEReady();
-	const shouldAskForE2EEPassword = e2e.shouldAskForE2EEPassword();
 	const t = useTranslation();
+	console.log({ e2eRoomState });
+	const randomPassword = window.localStorage.getItem('e2e.randomPassword');
 
 	const onSavePassword = useCallback(() => {
 		if (!randomPassword) {
 			return;
 		}
-		e2e.openSaveE2EEPasswordModal(randomPassword, () => setRandomPassword(undefined));
-	}, [randomPassword, setRandomPassword]);
+
+		e2e.openSaveE2EEPasswordModal(randomPassword);
+	}, [randomPassword]);
 
 	const onEnterE2EEPassword = useCallback(() => e2e.decodePrivateKeyFlow(), []);
 
@@ -30,14 +34,11 @@ const RoomBodyChecks = ({ room }: { room: IRoom }) => {
 		return <RoomBody />;
 	}
 
-	if (
-		areUnencryptedMessagesAllowed ||
-		(e2eRoomState === E2ERoomState.READY && isE2EEReady && !areUnencryptedMessagesAllowed && !randomPassword)
-	) {
+	if (areUnencryptedMessagesAllowed || (e2eRoomState === E2ERoomState.READY && isE2EEReady && !areUnencryptedMessagesAllowed)) {
 		return <RoomBody />;
 	}
 
-	if (randomPassword) {
+	if (e2eeState === E2EEState.SAVE_PASSWORD) {
 		return (
 			<RoomE2EENotAllowed
 				title={t('__roomName__is_encrypted', { roomName: room.name })}
@@ -49,7 +50,7 @@ const RoomBodyChecks = ({ room }: { room: IRoom }) => {
 		);
 	}
 
-	if (shouldAskForE2EEPassword) {
+	if (e2eeState === E2EEState.ENTER_PASSWORD) {
 		return (
 			<RoomE2EENotAllowed
 				title={t('__roomName__is_encrypted', { roomName: room.name })}
