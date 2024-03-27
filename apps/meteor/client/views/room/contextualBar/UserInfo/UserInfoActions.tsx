@@ -1,6 +1,6 @@
 /* eslint-disable react/display-name, react/no-multi-comp */
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { ButtonGroup, IconButton } from '@rocket.chat/fuselage';
+import { ButtonGroup, IconButton, Skeleton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
@@ -22,6 +22,7 @@ const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): React
 		data: isMemberData,
 		refetch,
 		isSuccess: membershipCheckSuccess,
+		isLoading,
 	} = useMemberExists({ roomId: rid, username: user.username as string });
 
 	const isMember = (isMemberData?.exists as boolean) && membershipCheckSuccess;
@@ -65,6 +66,9 @@ const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): React
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
 	}, [actionsDefinition, menu]);
 
+	if (isLoading) {
+		return <Skeleton w='full' />;
+	}
 	return <ButtonGroup align='center'>{actions}</ButtonGroup>;
 };
 
