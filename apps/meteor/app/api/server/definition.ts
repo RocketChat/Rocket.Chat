@@ -27,7 +27,7 @@ export type FailureResult<T, TStack = undefined, TErrorType = undefined, TErrorD
 };
 
 export type UnauthorizedResult<T> = {
-	statusCode: 403;
+	statusCode: 401;
 	body: {
 		success: false;
 		error: T | 'unauthorized';
