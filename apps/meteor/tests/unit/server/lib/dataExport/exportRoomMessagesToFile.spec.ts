@@ -178,12 +178,12 @@ describe('Export - exportRoomMessages', () => {
 	};
 
 	before(() => {
+		stubs.findPaginatedMessagesCursor.resolves(messages);
+		stubs.findPaginatedMessagesTotal.resolves(totalMessages);
 		stubs.findPaginatedMessages.returns({
 			cursor: { toArray: stubs.findPaginatedMessagesCursor },
 			totalCount: stubs.findPaginatedMessagesTotal(),
 		});
-		stubs.findPaginatedMessagesCursor.resolves(messages);
-		stubs.findPaginatedMessagesTotal.resolves(totalMessages);
 		stubs.translateKey.returns('translated-placeholder-uj');
 	});
 
