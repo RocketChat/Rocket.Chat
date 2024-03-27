@@ -180,7 +180,7 @@ describe('Export - exportRoomMessages', () => {
 	before(() => {
 		stubs.findPaginatedMessages.returns({
 			cursor: { toArray: stubs.findPaginatedMessagesCursor },
-			totalCount: stubs.findPaginatedMessagesTotal,
+			totalCount: stubs.findPaginatedMessagesTotal(),
 		});
 		stubs.findPaginatedMessagesCursor.resolves(messages);
 		stubs.findPaginatedMessagesTotal.resolves(totalMessages);
