@@ -27,7 +27,7 @@ const RoomAutoCompleteMultiple = ({ value, onChange, ...props }: RoomAutoComplet
 
 	const options = useMemo(
 		() =>
-			result.i.success()
+			result.isSuccess
 				? result.data.items.map(({ fname, name, _id, avatarETag, t }) => ({
 						value: _id,
 						label: { name: fname || name, avatarETag, type: t },

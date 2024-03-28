@@ -15,7 +15,7 @@ const TeamAutocomplete = ({ value, onChange, ...props }: TeamAutocompleteProps) 
 
 	const options = useMemo(
 		() =>
-			i.success()
+			isSuccess
 				? data?.teams.map(({ name, teamId, _id, avatarETag, t }) => ({
 						value: teamId as string,
 						label: { name, avatarETag, type: t, _id },

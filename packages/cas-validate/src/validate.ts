@@ -224,7 +224,8 @@ export function validate(options: CasOptions, ticket: string, callback: CasCallb
 				// Use cheerio to parse the XML repsonse.
 				const cheerio = load(response);
 
-				// Check for auth.success()				const elemSuccess = cheerio('cas\\:authenticationSuccess').first();
+				// Check for auth success
+				const elemSuccess = cheerio('cas\\:authenticationSuccess').first();
 				if (elemSuccess && elemSuccess.length > 0) {
 					const elemUser = elemSuccess.find('cas\\:user').first();
 					if (!elemUser || elemUser.length < 1) {
@@ -262,7 +263,8 @@ export function validate(options: CasOptions, ticket: string, callback: CasCallb
 						proxies,
 					});
 					return;
-				} // end if auth.success()
+				} // end if auth success
+
 				// Check for correctly formatted auth failure message
 				const elemFailure = cheerio('cas\\:authenticationFailure').first();
 				if (elemFailure && elemFailure.length > 0) {

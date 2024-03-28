@@ -52,7 +52,8 @@ const NabBar: FC = () => {
           <Button
             mis="12px"
             small
-           .success()            onClick={() => {
+            success
+            onClick={() => {
               dispatch(openCreateNewScreenAction(true));
             }}
           >
@@ -70,7 +71,8 @@ const NabBar: FC = () => {
               <ButtonGroup>
                 <Button
                   secondary
-                 .success()                  small
+                  success
+                  small
                   onClick={() => {
                     navigator.clipboard.writeText(
                       JSON.stringify(screens[activeScreen]?.payload)

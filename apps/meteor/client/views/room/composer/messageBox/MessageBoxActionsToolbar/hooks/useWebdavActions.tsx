@@ -36,7 +36,7 @@ export const useWebdavActions = (): GenericMenuItemProps[] => {
 			disabled: !isSuccess,
 			onClick: handleAddWebDav,
 		},
-		...(i.success()
+		...(isSuccess
 			? data.map((account) => ({
 					id: account._id,
 					content: account.name,

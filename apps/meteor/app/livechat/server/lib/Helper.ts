@@ -545,7 +545,8 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 		return RoutingManager.unassignAgent(inquiry, departmentId);
 	}
 
-	// Fake the department to forward the inquiry - Case the forward process does not.success()	// the inquiry will stay in the same original department
+	// Fake the department to forward the inquiry - Case the forward process does not success
+	// the inquiry will stay in the same original department
 	inquiry.department = departmentId;
 	const roomTaken = await RoutingManager.delegateInquiry(inquiry, agent, {
 		forwardingToDepartment: { oldDepartmentId },

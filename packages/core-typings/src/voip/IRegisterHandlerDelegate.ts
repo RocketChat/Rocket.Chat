@@ -8,7 +8,8 @@ export interface IRegisterHandlerDelegate {
 	/**
 	 * Called when a endpoint is registered
 	 * @remarks
-	 * Callback for handling registration.success()	 */
+	 * Callback for handling registration success
+	 */
 	onRegistered?(): void;
 	/**
 	 * Called when registration fails.
@@ -19,7 +20,8 @@ export interface IRegisterHandlerDelegate {
 	/**
 	 * Called when a endpoint is unregistered
 	 * @remarks
-	 * Callback for handling registration.success()	 */
+	 * Callback for handling registration success
+	 */
 	onUnregistered?(): void;
 	/**
 	 * Called when unregistered fails.
