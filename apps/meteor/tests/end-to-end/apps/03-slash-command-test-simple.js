@@ -55,7 +55,6 @@ describe('Apps - Slash Command "test-simple"', function () {
 				})
 				.set(credentials)
 				.success()
-				.expect((res) => {})
 				.end(done);
 		});
 		it('should have sent the message correctly', (done) => {

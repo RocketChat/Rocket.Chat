@@ -284,7 +284,6 @@ describe('AutoTranslate', function () {
 						value: 'en',
 					})
 					.success()
-					.expect((res) => {})
 					.end(done);
 			});
 		});
@@ -363,7 +362,6 @@ describe('AutoTranslate', function () {
 						messageId: messageSent._id,
 					})
 					.success()
-					.expect((res) => {})
 					.end(done);
 			});
 		});

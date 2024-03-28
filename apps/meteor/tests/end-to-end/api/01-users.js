@@ -3801,7 +3801,8 @@ describe('[Users]', function () {
 						message: 'test',
 					})
 					.success()
-					.expect((res) => {
+					.expect(() => {
+						// TODO: fixme
 						getUserStatus(credentials['X-User-Id']).then((status) => expect(status.status).to.be.equal('busy'));
 					})
 					.end(done);
@@ -3836,7 +3837,8 @@ describe('[Users]', function () {
 						userId: user._id,
 					})
 					.success()
-					.expect((res) => {
+					.expect(() => {
+						// TODO: fixme
 						getUserStatus(credentials['X-User-Id']).then((status) => {
 							expect(status.status).to.be.equal('busy');
 							expect(status.message).to.be.equal('test');

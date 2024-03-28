@@ -420,7 +420,6 @@ describe('[Groups]', function () {
 					userId: 'rocket.cat',
 				})
 				.success()
-				.expect((res) => {})
 				.end(done);
 		});
 	});
@@ -1774,7 +1773,6 @@ describe('[Groups]', function () {
 						.set(credentials)
 						.send({ roomId: newGroup._id })
 						.success()
-						.expect((res) => {})
 						.end(done);
 				});
 			});

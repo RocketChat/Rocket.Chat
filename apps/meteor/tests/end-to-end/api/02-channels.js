@@ -418,7 +418,6 @@ describe('[Channels]', function () {
 				userId: 'rocket.cat',
 			})
 			.success()
-			.expect((res) => {})
 			.end(done);
 	});
 	it('/channels.removeLeader', (done) => {
@@ -1924,8 +1923,7 @@ describe('[Channels]', function () {
 				.post(api('channels.convertToTeam'))
 				.set(credentials)
 				.send({ channelId: testChannel._id })
-				.success()
-				.expect((res) => {});
+				.success();
 		});
 
 		it(`should successfully convert a channel to a team when the channel's name is sent as parameter`, async () => {
@@ -1933,15 +1931,13 @@ describe('[Channels]', function () {
 				.post(api('teams.convertToChannel'))
 				.set(credentials)
 				.send({ teamName: testChannel.name })
-				.success()
-				.expect((res) => {});
+				.success();
 
 			await request
 				.post(api('channels.convertToTeam'))
 				.set(credentials)
 				.send({ channelName: testChannel.name })
-				.success()
-				.expect((res) => {});
+				.success();
 		});
 
 		it('should fail to convert channel without the required parameters', (done) => {
