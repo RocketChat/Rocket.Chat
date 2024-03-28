@@ -22,6 +22,7 @@ import { settings } from '../../settings/client';
 import { getUserAvatarURL } from '../../utils/client';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { t } from '../../utils/lib/i18n';
+import { E2EEState } from './E2EEState';
 import {
 	toString,
 	toArrayBuffer,
@@ -39,7 +40,6 @@ import {
 import { log, logError } from './logger';
 import { E2ERoom } from './rocketchat.e2e.room';
 import './events.js';
-import { E2EEState } from './E2EEState';
 
 let failedToDecodeKey = false;
 
@@ -78,8 +78,9 @@ class E2E extends Emitter {
 			// this._ready.set(true);
 			this.log('startClient -> Done');
 			this.log('decryptSubscriptions');
-
+			this.initiateHandshake();
 			await this.decryptSubscriptions();
+			await this.initiateDecryptingPendingMessages();
 			this.log('decryptSubscriptions -> Done');
 		});
 
@@ -427,8 +428,6 @@ class E2E extends Emitter {
 				onConfirm: (password) => {
 					onEnterE2EEPassword?.(password);
 					this.closeAlert();
-					this.initiateHandshake();
-					this.initiateDecryptingPendingMessages();
 					imperativeModal.close();
 				},
 			},

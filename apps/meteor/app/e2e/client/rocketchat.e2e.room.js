@@ -212,6 +212,10 @@ export class E2ERoom extends Emitter {
 
 	// Initiates E2E Encryption
 	async handshake() {
+		if (!e2e.isReady()) {
+			return;
+		}
+
 		if (this.state !== E2ERoomState.KEYS_RECEIVED && this.state !== E2ERoomState.NOT_STARTED) {
 			return;
 		}
