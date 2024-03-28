@@ -1,12 +1,12 @@
 {
 	"name": "@rocket.chat/presence",
-	"version": "0.1.5",
+	"version": "0.1.10",
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.22.20",
 		"@babel/preset-env": "~7.22.20",
 		"@babel/preset-typescript": "~7.22.15",
-		"@rocket.chat/apps-engine": "1.41.0",
+		"@rocket.chat/apps-engine": "1.42.0-alpha.619",
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@types/node": "^14.18.63",

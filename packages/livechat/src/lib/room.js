@@ -15,6 +15,7 @@ import { parentCall } from './parentCall';
 import { createToken } from './random';
 import { normalizeMessage, normalizeMessages } from './threads';
 import { handleTranscript } from './transcript';
+import Triggers from './triggers';
 
 const commands = new Commands();
 
@@ -23,7 +24,14 @@ export const closeChat = async ({ transcriptRequested } = {}) => {
 		await handleTranscript();
 	}
 
-	const { department, config: { settings: { clearLocalStorageWhenChatEnded } = {} } = {} } = store.state;
+	const { room, department, config: { settings: { clearLocalStorageWhenChatEnded } = {} } = {} } = store.state;
+
+	if (!room) {
+		console.warn('closeChat called without a room');
+		return;
+	}
+
+	await store.setState({ room: null });
 
 	if (clearLocalStorageWhenChatEnded) {
 		// exclude UI-affecting flags
@@ -32,6 +40,8 @@ export const closeChat = async ({ transcriptRequested } = {}) => {
 		initial.iframe = { ...currentIframe, guest: { department } };
 		await store.setState(initial);
 	}
+
+	Triggers.processTrigger('after-guest-registration');
 
 	await loadConfig();
 	parentCall('callback', 'chat-ended');
@@ -98,7 +108,7 @@ export const processIncomingCallMessage = async (message) => {
 
 const processMessage = async (message) => {
 	if (message.t === 'livechat-close') {
-		closeChat(message);
+		await closeChat(message);
 	} else if (message.t === 'command') {
 		commands[message.msg] && commands[message.msg]();
 	} else if (message.webRtcCallEndTs) {
@@ -241,7 +251,7 @@ export const onMessage = async (originalMessage) => {
 	await doPlaySound(message);
 };
 
-export const getGreetingMessages = (messages) => messages && messages.filter((msg) => msg.trigger && msg.triggerAfterRegistration);
+export const getGreetingMessages = (messages) => messages && messages.filter((msg) => msg.trigger);
 export const getLatestCallMessage = (messages) => messages && messages.filter((msg) => isVideoCallMessage(msg)).pop();
 
 export const loadMessages = async () => {
