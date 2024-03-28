@@ -31,9 +31,6 @@ describe('[EmojiCustom]', function () {
 					aliases: `${customEmojiName}-alias`,
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
 				.end(done);
 		});
 		it('should create new custom emoji without optional parameter "aliases"', (done) => {
@@ -45,9 +42,6 @@ describe('[EmojiCustom]', function () {
 					name: `${customEmojiName}-without-aliases`,
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
 				.end(done);
 		});
 		it('should throw an error when the filename is wrong', (done) => {
@@ -96,9 +90,6 @@ describe('[EmojiCustom]', function () {
 						aliases: 'alias-my-custom-emoji',
 					})
 					.success()
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
 					.end(done);
 			});
 			it('should update the custom emoji without optional parameter "aliases"', (done) => {
@@ -110,9 +101,6 @@ describe('[EmojiCustom]', function () {
 						name: customEmojiName,
 					})
 					.success()
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
 					.end(done);
 			});
 			it('should update the custom emoji with all parameters and with a file', (done) => {
@@ -125,9 +113,6 @@ describe('[EmojiCustom]', function () {
 						name: customEmojiName,
 					})
 					.success()
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
 					.end(done);
 			});
 		});
@@ -204,7 +189,6 @@ describe('[EmojiCustom]', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('emojis').and.to.be.a('object');
 					expect(res.body.emojis).to.have.property('update').and.to.be.a('array').and.to.have.lengthOf(0);
 					expect(res.body.emojis).to.have.property('remove').and.to.be.a('array').and.to.have.lengthOf(0);
@@ -217,7 +201,6 @@ describe('[EmojiCustom]', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('emojis').and.to.be.a('object');
 					expect(res.body.emojis).to.have.property('update').and.to.be.a('array').and.to.have.lengthOf(0);
 					expect(res.body.emojis).to.have.property('remove').and.to.be.a('array').and.to.have.lengthOf(0);
@@ -234,7 +217,6 @@ describe('[EmojiCustom]', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('emojis').and.to.be.a('object');
 					expect(res.body.emojis).to.have.property('update').and.to.be.a('array').and.to.have.lengthOf(0);
 					expect(res.body.emojis).to.have.property('remove').and.to.be.a('array').and.to.have.lengthOf(0);
@@ -400,9 +382,6 @@ describe('[EmojiCustom]', function () {
 					emojiId: createdCustomEmoji._id,
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
 				.end(done);
 		});
 	});

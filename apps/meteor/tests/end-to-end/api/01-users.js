@@ -54,7 +54,6 @@ describe('[Users]', function () {
 			})
 			.success()
 			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.nested.property('user.username', apiUsername);
 				expect(res.body).to.have.nested.property('user.emails[0].address', apiEmail);
 				expect(res.body).to.have.nested.property('user.active', true);
@@ -81,16 +80,12 @@ describe('[Users]', function () {
 				private_key: 'test',
 				public_key: 'test',
 			})
-			.success()
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-			});
+			.success();
 		await request
 			.get(api('e2e.fetchMyKeys'))
 			.set(credentials)
 			.success()
 			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('public_key', 'test');
 				expect(res.body).to.have.property('private_key', 'test');
 			});
@@ -125,7 +120,6 @@ describe('[Users]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('user.username', username);
 					expect(res.body).to.have.nested.property('user.emails[0].address', email);
 					expect(res.body).to.have.nested.property('user.active', true);
@@ -234,7 +228,6 @@ describe('[Users]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.nested.property('user.username', username);
 						expect(res.body).to.have.nested.property('user.emails[0].address', email);
 						expect(res.body).to.have.nested.property('user.active', true);
@@ -262,7 +255,6 @@ describe('[Users]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.nested.property('user.username', username);
 						expect(res.body).to.have.nested.property('user.emails[0].address', email);
 						expect(res.body).to.have.nested.property('user.active', true);
@@ -327,7 +319,6 @@ describe('[Users]', function () {
 					.query({ roomId: defaultTeamRoomId })
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('subscription').that.is.null;
 					});
 
@@ -337,7 +328,6 @@ describe('[Users]', function () {
 					.query({ roomId: group._id })
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('subscription').that.is.null;
 					});
 			});
@@ -353,7 +343,6 @@ describe('[Users]', function () {
 					.query({ roomId: defaultTeamRoomId })
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('subscription');
 						expect(res.body.subscription).to.have.property('rid', defaultTeamRoomId);
 					});
@@ -366,7 +355,6 @@ describe('[Users]', function () {
 					.query({ roomId: group._id })
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('subscription').that.is.null;
 					});
 			});
@@ -386,7 +374,6 @@ describe('[Users]', function () {
 					.query({ roomId: group._id })
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('subscription');
 						expect(res.body.subscription).to.have.property('rid', group._id);
 					});
@@ -406,7 +393,6 @@ describe('[Users]', function () {
 					.query({ roomId: group._id })
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('subscription');
 						expect(res.body.subscription).to.have.property('rid', group._id);
 					});
@@ -418,7 +404,6 @@ describe('[Users]', function () {
 					.query({ roomId: defaultTeamRoomId })
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('subscription').that.is.null;
 					});
 			});
@@ -443,7 +428,6 @@ describe('[Users]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('user.username', username);
 					expect(res.body).to.have.nested.property('user.active', true);
 					expect(res.body).to.have.nested.property('user.name', 'name');
@@ -502,7 +486,6 @@ describe('[Users]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('user.username', apiUsername);
 					expect(res.body).to.have.nested.property('user.active', true);
 					expect(res.body).to.have.nested.property('user.name', apiUsername);
@@ -520,7 +503,6 @@ describe('[Users]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('user.rooms').and.to.be.an('array');
 					expect(res.body.user.rooms[0]).to.have.property('unread');
 				})
@@ -535,7 +517,6 @@ describe('[Users]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.not.have.nested.property('user.rooms');
 				})
 				.end(done);
@@ -551,7 +532,6 @@ describe('[Users]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.nested.property('user.rooms');
 						expect(res.body.user.rooms[0]).to.have.property('unread');
 					})
@@ -569,7 +549,6 @@ describe('[Users]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.not.have.nested.property('user.rooms');
 					})
 					.end(done);
@@ -585,7 +564,6 @@ describe('[Users]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.not.have.nested.property('user.services.emailCode');
 						expect(res.body).to.not.have.nested.property('user.services');
 					})
@@ -602,7 +580,6 @@ describe('[Users]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.nested.property('user.services.password');
 						expect(res.body).to.have.nested.property('user.services.resume');
 					})
@@ -625,7 +602,6 @@ describe('[Users]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					user = res.body.user;
 				});
 
@@ -637,7 +613,6 @@ describe('[Users]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.user).to.have.property('type', 'user');
 					expect(res.body.user).to.have.property('name', 'testuser');
 					expect(res.body.user).to.have.property('username', ufsUsername);
@@ -657,7 +632,6 @@ describe('[Users]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('presence', 'offline');
 				})
 				.end(done);
@@ -687,7 +661,6 @@ describe('[Users]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.nested.property('presence', 'offline');
 					});
 			});
@@ -713,7 +686,6 @@ describe('[Users]', function () {
 					.set(credentials)
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('full', true);
 
 						const user = res.body.users.find((user) => user.username === 'rocket.cat');
@@ -729,7 +701,6 @@ describe('[Users]', function () {
 					.set(credentials)
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('full', false);
 						expect(res.body).to.have.property('users').that.is.an('array').that.has.lengthOf(0);
 					})
@@ -745,7 +716,6 @@ describe('[Users]', function () {
 					.set(credentials)
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('full', true);
 
 						const user = res.body.users.find((user) => user.username === 'rocket.cat');
@@ -838,7 +808,6 @@ describe('[Users]', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count');
 					expect(res.body).to.have.property('total');
 					const myself = res.body.users.find((user) => user.username === adminUsername);
@@ -865,7 +834,6 @@ describe('[Users]', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count');
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('users');
@@ -895,7 +863,6 @@ describe('[Users]', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count');
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('users');
@@ -918,7 +885,6 @@ describe('[Users]', function () {
 				.expect(log)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count');
 					expect(res.body).to.have.property('total');
 				})
@@ -932,7 +898,6 @@ describe('[Users]', function () {
 				.set(user2Credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count');
 					expect(res.body).to.have.property('total');
 				});
@@ -973,9 +938,7 @@ describe('[Users]', function () {
 				.set(userCredentials)
 				.attach('image', imgURL)
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 		it('should update the avatar of another user by userId when the logged user has the necessary permission (edit-other-user-avatar)', (done) => {
@@ -985,9 +948,7 @@ describe('[Users]', function () {
 				.attach('image', imgURL)
 				.field({ userId: credentials['X-User-Id'] })
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 		it('should set the avatar of another user by username and local image when the logged user has the necessary permission (edit-other-user-avatar)', (done) => {
@@ -997,9 +958,7 @@ describe('[Users]', function () {
 				.attach('image', imgURL)
 				.field({ username: adminUsername })
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 		it("should prevent from updating someone else's avatar when the logged user doesn't have the necessary permission(edit-other-user-avatar)", (done) => {
@@ -1026,9 +985,7 @@ describe('[Users]', function () {
 						.attach('image', imgURL)
 						.field({ userId: userCredentials['X-User-Id'] })
 						.success()
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-						})
+
 						.end(done);
 				});
 			});
@@ -1062,9 +1019,7 @@ describe('[Users]', function () {
 				.set(userCredentials)
 				.attach('image', imgURL)
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 		it('should reset the avatar of the logged user', (done) => {
@@ -1076,9 +1031,7 @@ describe('[Users]', function () {
 					userId: userCredentials['X-User-Id'],
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 		it('should reset the avatar of another user by userId when the logged user has the necessary permission (edit-other-user-avatar)', (done) => {
@@ -1089,9 +1042,7 @@ describe('[Users]', function () {
 					userId: credentials['X-User-Id'],
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 		it('should reset the avatar of another user by username and local image when the logged user has the necessary permission (edit-other-user-avatar)', (done) => {
@@ -1102,9 +1053,7 @@ describe('[Users]', function () {
 					username: adminUsername,
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 		it("should prevent from resetting someone else's avatar when the logged user doesn't have the necessary permission(edit-other-user-avatar)", (done) => {
@@ -1133,9 +1082,7 @@ describe('[Users]', function () {
 							userId: userCredentials['X-User-Id'],
 						})
 						.success()
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-						})
+
 						.end(done);
 				});
 			});
@@ -1208,7 +1155,6 @@ describe('[Users]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('suggestions').and.to.be.an('object');
 				})
 				.end(done);
@@ -1254,7 +1200,6 @@ describe('[Users]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('user.username', `edited${apiUsername}`);
 					expect(res.body).to.have.nested.property('user.emails[0].address', apiEmail);
 					expect(res.body).to.have.nested.property('user.active', true);
@@ -1276,7 +1221,6 @@ describe('[Users]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('user.emails[0].address', `edited${apiEmail}`);
 					expect(res.body).to.have.nested.property('user.emails[0].verified', false);
 					expect(res.body).to.not.have.nested.property('user.e2e');
@@ -1296,7 +1240,6 @@ describe('[Users]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('user.bio', 'edited-bio-test');
 					expect(res.body).to.not.have.nested.property('user.e2e');
 				})
@@ -1315,7 +1258,6 @@ describe('[Users]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('user.nickname', 'edited-nickname-test');
 					expect(res.body).to.not.have.nested.property('user.e2e');
 				})
@@ -1372,9 +1314,7 @@ describe('[Users]', function () {
 					data: { email: 'nouser@rocket.cat' },
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 
@@ -1390,7 +1330,6 @@ describe('[Users]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('user.emails[0].verified', true);
 					expect(res.body).to.not.have.nested.property('user.e2e');
 				})
@@ -1431,10 +1370,7 @@ describe('[Users]', function () {
 						username: `fake.name.${Date.now()}`,
 					},
 				})
-				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 		});
 
 		it('should return an error when trying update user real name and it is not allowed', (done) => {
@@ -1472,9 +1408,7 @@ describe('[Users]', function () {
 							},
 						})
 						.success()
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-						})
+
 						.end(done);
 				});
 			});
@@ -1515,9 +1449,7 @@ describe('[Users]', function () {
 							},
 						})
 						.success()
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-						})
+
 						.end(done);
 				});
 			});
@@ -1558,9 +1490,7 @@ describe('[Users]', function () {
 							},
 						})
 						.success()
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-						})
+
 						.end(done);
 				});
 			});
@@ -1601,9 +1531,7 @@ describe('[Users]', function () {
 							},
 						})
 						.success()
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-						})
+
 						.end(done);
 				});
 			});
@@ -1644,9 +1572,7 @@ describe('[Users]', function () {
 							},
 						})
 						.success()
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-						})
+
 						.end(done);
 				});
 			});
@@ -1734,9 +1660,7 @@ describe('[Users]', function () {
 						public_key: 'test',
 					})
 					.success()
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
+
 					.end(done);
 			});
 		});
@@ -2327,9 +2251,7 @@ describe('[Users]', function () {
 					email: adminEmail,
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 
@@ -2340,9 +2262,7 @@ describe('[Users]', function () {
 					email: 'invalidEmail',
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 	});
@@ -2356,9 +2276,7 @@ describe('[Users]', function () {
 					email: adminEmail,
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 
@@ -2420,7 +2338,6 @@ describe('[Users]', function () {
 				.set(userCredentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.exist;
 				})
 				.end(done);
@@ -2482,7 +2399,6 @@ describe('[Users]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.result).to.be.equal(true);
 				})
 				.end(done);
@@ -2497,7 +2413,6 @@ describe('[Users]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.result).to.be.equal(true);
 				})
 				.end(done);
@@ -2559,9 +2474,7 @@ describe('[Users]', function () {
 				.set(credentials)
 				.send({ value: true })
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(wait(done, 200));
 		});
 
@@ -2573,9 +2486,7 @@ describe('[Users]', function () {
 					password: crypto.createHash('sha256').update(password, 'utf8').digest('hex'),
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 
@@ -2588,10 +2499,7 @@ describe('[Users]', function () {
 				.send({
 					password: crypto.createHash('sha256').update(password, 'utf8').digest('hex').toUpperCase(),
 				})
-				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await deleteUser(user);
 		});
@@ -2615,10 +2523,7 @@ describe('[Users]', function () {
 					userId: user._id,
 					roomId: room._id,
 				})
-				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('channels.removeOwner'))
@@ -2627,10 +2532,7 @@ describe('[Users]', function () {
 					userId: credentials['X-User-Id'],
 					roomId: room._id,
 				})
-				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('users.deleteOwnAccount'))
@@ -2669,10 +2571,7 @@ describe('[Users]', function () {
 					userId: user._id,
 					roomId: room._id,
 				})
-				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('channels.removeOwner'))
@@ -2681,10 +2580,7 @@ describe('[Users]', function () {
 					userId: credentials['X-User-Id'],
 					roomId: room._id,
 				})
-				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('users.deleteOwnAccount'))
@@ -2693,10 +2589,7 @@ describe('[Users]', function () {
 					password: crypto.createHash('sha256').update(password, 'utf8').digest('hex'),
 					confirmRelinquish: true,
 				})
-				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 			await deleteRoom({ type: 'c', roomId: room._id });
 			await deleteUser(user);
 		});
@@ -2720,10 +2613,7 @@ describe('[Users]', function () {
 					userId: user._id,
 					roomId: room._id,
 				})
-				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('channels.removeOwner'))
@@ -2732,10 +2622,7 @@ describe('[Users]', function () {
 					userId: credentials['X-User-Id'],
 					roomId: room._id,
 				})
-				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('users.deleteOwnAccount'))
@@ -2744,10 +2631,7 @@ describe('[Users]', function () {
 					password: crypto.createHash('sha256').update(password, 'utf8').digest('hex'),
 					confirmRelinquish: true,
 				})
-				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.get(api('channels.roles'))
@@ -2757,7 +2641,6 @@ describe('[Users]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.roles).to.have.lengthOf(1);
 					expect(res.body.roles[0].roles).to.eql(['owner']);
 					expect(res.body.roles[0].u).to.have.property('_id', credentials['X-User-Id']);
@@ -2832,10 +2715,7 @@ describe('[Users]', function () {
 					userId: targetUser._id,
 					roomId: room._id,
 				})
-				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('channels.removeOwner'))
@@ -2844,10 +2724,7 @@ describe('[Users]', function () {
 					userId: credentials['X-User-Id'],
 					roomId: room._id,
 				})
-				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('users.delete'))
@@ -2883,10 +2760,7 @@ describe('[Users]', function () {
 					userId: targetUser._id,
 					roomId: room._id,
 				})
-				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('channels.removeOwner'))
@@ -2895,10 +2769,7 @@ describe('[Users]', function () {
 					userId: credentials['X-User-Id'],
 					roomId: room._id,
 				})
-				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('users.delete'))
@@ -2907,10 +2778,7 @@ describe('[Users]', function () {
 					userId: targetUser._id,
 					confirmRelinquish: true,
 				})
-				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await deleteRoom({ type: 'c', roomId: room._id });
 		});
@@ -2923,10 +2791,7 @@ describe('[Users]', function () {
 				.send({
 					userId: targetUser._id,
 				})
-				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 		});
 
 		it('should assign a new owner to the room if the last room owner is deleted', async () => {
@@ -2946,10 +2811,7 @@ describe('[Users]', function () {
 					userId: targetUser._id,
 					roomId: room._id,
 				})
-				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('channels.removeOwner'))
@@ -2958,10 +2820,7 @@ describe('[Users]', function () {
 					userId: credentials['X-User-Id'],
 					roomId: room._id,
 				})
-				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('users.delete'))
@@ -2970,10 +2829,7 @@ describe('[Users]', function () {
 					userId: targetUser._id,
 					confirmRelinquish: true,
 				})
-				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.get(api('channels.roles'))
@@ -2983,7 +2839,6 @@ describe('[Users]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.roles).to.have.lengthOf(1);
 					expect(res.body.roles[0].roles).to.eql(['owner']);
 					expect(res.body.roles[0].u).to.have.property('_id', credentials['X-User-Id']);
@@ -3003,7 +2858,6 @@ describe('[Users]', function () {
 						.set(credentials)
 						.success()
 						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('tokens').and.to.be.an('array');
 						})
 						.end(done);
@@ -3021,7 +2875,6 @@ describe('[Users]', function () {
 						})
 						.success()
 						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('token');
 						})
 						.end(done);
@@ -3051,7 +2904,6 @@ describe('[Users]', function () {
 						})
 						.success()
 						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('token');
 						})
 						.end(done);
@@ -3078,7 +2930,6 @@ describe('[Users]', function () {
 						.set(credentials)
 						.success()
 						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('tokens').and.to.be.an('array');
 						})
 						.end(done);
@@ -3093,9 +2944,7 @@ describe('[Users]', function () {
 							tokenName,
 						})
 						.success()
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-						})
+
 						.end(done);
 				});
 				it('should throw an error when user tries remove a token that does not exist', (done) => {
@@ -3265,7 +3114,6 @@ describe('[Users]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('user.active', false);
 				})
 				.end(done);
@@ -3280,7 +3128,6 @@ describe('[Users]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('user.active', true);
 				})
 				.end(done);
@@ -3303,10 +3150,7 @@ describe('[Users]', function () {
 					userId: targetUser._id,
 					roomId: room._id,
 				})
-				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('channels.addOwner'))
@@ -3315,10 +3159,7 @@ describe('[Users]', function () {
 					userId: targetUser._id,
 					roomId: room._id,
 				})
-				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('channels.removeOwner'))
@@ -3327,10 +3168,7 @@ describe('[Users]', function () {
 					userId: credentials['X-User-Id'],
 					roomId: room._id,
 				})
-				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('users.setActiveStatus'))
@@ -3367,10 +3205,7 @@ describe('[Users]', function () {
 					userId: targetUser._id,
 					roomId: room._id,
 				})
-				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('channels.addOwner'))
@@ -3379,10 +3214,7 @@ describe('[Users]', function () {
 					userId: targetUser._id,
 					roomId: room._id,
 				})
-				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('channels.removeOwner'))
@@ -3391,10 +3223,7 @@ describe('[Users]', function () {
 					userId: credentials['X-User-Id'],
 					roomId: room._id,
 				})
-				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('users.setActiveStatus'))
@@ -3404,10 +3233,7 @@ describe('[Users]', function () {
 					userId: targetUser._id,
 					confirmRelinquish: true,
 				})
-				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await deleteRoom({ type: 'c', roomId: room._id });
 		});
@@ -3428,10 +3254,7 @@ describe('[Users]', function () {
 					activeStatus: true,
 					userId: targetUser._id,
 				})
-				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('channels.invite'))
@@ -3440,10 +3263,7 @@ describe('[Users]', function () {
 					userId: targetUser._id,
 					roomId: room._id,
 				})
-				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('channels.addOwner'))
@@ -3452,10 +3272,7 @@ describe('[Users]', function () {
 					userId: targetUser._id,
 					roomId: room._id,
 				})
-				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('channels.removeOwner'))
@@ -3464,10 +3281,7 @@ describe('[Users]', function () {
 					userId: credentials['X-User-Id'],
 					roomId: room._id,
 				})
-				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('users.setActiveStatus'))
@@ -3477,10 +3291,7 @@ describe('[Users]', function () {
 					userId: targetUser._id,
 					confirmRelinquish: true,
 				})
-				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.get(api('channels.roles'))
@@ -3490,7 +3301,6 @@ describe('[Users]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.roles).to.have.lengthOf(2);
 					expect(res.body.roles[1].roles).to.eql(['owner']);
 					expect(res.body.roles[1].u).to.have.property('_id', credentials['X-User-Id']);
@@ -3623,9 +3433,7 @@ describe('[Users]', function () {
 					username: testUser.username,
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 		before('Login as test user', (done) => {
@@ -3672,7 +3480,6 @@ describe('[Users]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('count', 0);
 					})
 					.end(done);
@@ -3689,7 +3496,6 @@ describe('[Users]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('count', 1);
 					})
 					.end(done);
@@ -3706,7 +3512,6 @@ describe('[Users]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('count', 0);
 					})
 					.end(done);
@@ -3721,7 +3526,6 @@ describe('[Users]', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('requested');
 					expect(res.body).to.have.property('exportOperation').and.to.be.an('object');
 					expect(res.body.exportOperation).to.have.property('fullExport', false);
@@ -3734,7 +3538,6 @@ describe('[Users]', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('requested');
 					expect(res.body).to.have.property('exportOperation').and.to.be.an('object');
 					expect(res.body.exportOperation).to.have.property('fullExport', false);
@@ -3747,7 +3550,6 @@ describe('[Users]', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('requested');
 					expect(res.body).to.have.property('exportOperation').and.to.be.an('object');
 					expect(res.body.exportOperation).to.have.property('fullExport', true);
@@ -3800,7 +3602,6 @@ describe('[Users]', function () {
 				.set(newCredentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('token').and.to.be.a('string');
 					expect(res.body).to.have.property('tokenExpires').and.to.be.a('string');
 				})
@@ -3846,7 +3647,6 @@ describe('[Users]', function () {
 					.set(userCredentials)
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('items').and.to.be.an('array').that.has.lengthOf(0);
 					})
 					.end(done);
@@ -3860,7 +3660,6 @@ describe('[Users]', function () {
 					.set(userCredentials)
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('items').and.to.be.an('array').with.lengthOf(1);
 					});
 			});
@@ -3888,7 +3687,6 @@ describe('[Users]', function () {
 					.set(credentials)
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('items').and.to.be.an('array');
 					})
 					.end(done);
@@ -3914,7 +3712,6 @@ describe('[Users]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('items').and.to.be.an('array').with.lengthOf(0);
 					})
 					.end(done);
@@ -3959,7 +3756,6 @@ describe('[Users]', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('status');
 					expect(res.body._id).to.be.equal(credentials['X-User-Id']);
 				})
@@ -3971,7 +3767,6 @@ describe('[Users]', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('status');
 					expect(res.body._id).to.be.equal('rocket.cat');
 				})
@@ -4019,7 +3814,6 @@ describe('[Users]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						getUserStatus(credentials['X-User-Id']).then((status) => expect(status.status).to.be.equal('busy'));
 					})
 					.end(done);
@@ -4055,7 +3849,6 @@ describe('[Users]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						getUserStatus(credentials['X-User-Id']).then((status) => {
 							expect(status.status).to.be.equal('busy');
 							expect(status.message).to.be.equal('test');
@@ -4170,7 +3963,6 @@ describe('[Users]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('team');
 					expect(res.body).to.have.nested.property('team._id');
 				})
@@ -4187,7 +3979,6 @@ describe('[Users]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('team');
 					expect(res.body).to.have.nested.property('team._id');
 				})
@@ -4216,9 +4007,7 @@ describe('[Users]', function () {
 					],
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.then(() => done());
 		});
 
@@ -4236,9 +4025,7 @@ describe('[Users]', function () {
 					],
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.then(() => done());
 		});
 
@@ -4255,7 +4042,6 @@ describe('[Users]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('teams');
 
 					const { teams } = res.body;

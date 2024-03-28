@@ -106,7 +106,6 @@ describe('[Push]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('result').and.to.be.an('object');
 				});
 		});
@@ -172,10 +171,7 @@ describe('[Push]', function () {
 				.send({
 					token: 'token',
 				})
-				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 		});
 
 		it('should fail if token is already deleted', async () => {

@@ -208,7 +208,6 @@ describe('miscellaneous', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('result').and.to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -234,7 +233,6 @@ describe('miscellaneous', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('result').and.to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -259,7 +257,6 @@ describe('miscellaneous', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('count');
@@ -286,7 +283,6 @@ describe('miscellaneous', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('count');
@@ -418,7 +414,6 @@ describe('miscellaneous', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('users').and.to.be.an('array');
 					expect(res.body.users[0]).to.have.property('_id');
 					expect(res.body.users[0]).to.have.property('name');
@@ -437,7 +432,6 @@ describe('miscellaneous', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('users').and.to.be.an('array');
 					expect(res.body).to.have.property('rooms').and.to.be.an('array');
 					expect(res.body.rooms[0]).to.have.property('_id');
@@ -455,7 +449,6 @@ describe('miscellaneous', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('users').and.to.be.an('array');
 					expect(res.body).to.have.property('rooms').and.to.be.an('array');
 					expect(res.body.rooms[0]).to.have.property('_id');
@@ -474,7 +467,6 @@ describe('miscellaneous', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('users').and.to.be.an('array');
 					expect(res.body).to.have.property('rooms').and.to.be.an('array');
 					expect(res.body.rooms[0]).to.have.property('_id', testChannelSpecialChars._id);
@@ -521,8 +513,6 @@ describe('miscellaneous', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-
 					expect(res.body).to.have.property('instances').and.to.be.an('array').with.lengthOf(1);
 
 					const { instances } = res.body;
@@ -606,7 +596,6 @@ describe('miscellaneous', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('enabled');
 					expect(res.body).to.have.property('policy').and.to.be.an('array');
 				})

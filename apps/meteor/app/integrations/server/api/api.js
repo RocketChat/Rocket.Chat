@@ -151,8 +151,7 @@ async function executeIntegrationRest() {
 		}
 	}
 
-	// TODO: Turn this into an option on the integrations - no body means a success
-	// TODO: Temporary fix for https://github.com/RocketChat/Rocket.Chat/issues/7770 until the above is implemented
+	// TODO: Turn this into an option on the integrations - no body means a.success()	// TODO: Temporary fix for https://github.com/RocketChat/Rocket.Chat/issues/7770 until the above is implemented
 	if (!this.bodyParams || (_.isEmpty(this.bodyParams) && !this.integration.scriptEnabled)) {
 		// return RocketChat.API.v1.failure('body-empty');
 		return API.v1.success();

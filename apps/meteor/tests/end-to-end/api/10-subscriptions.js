@@ -25,7 +25,6 @@ describe('[Subscriptions]', function () {
 			.set(credentials)
 			.success()
 			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('update');
 				expect(res.body).to.have.property('remove');
 			})
@@ -41,7 +40,6 @@ describe('[Subscriptions]', function () {
 			})
 			.success()
 			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('update').that.have.lengthOf(0);
 				expect(res.body).to.have.property('remove').that.have.lengthOf(0);
 			})
@@ -58,7 +56,6 @@ describe('[Subscriptions]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('subscription').and.to.be.an('object');
 				})
 				.end(done);
@@ -92,9 +89,7 @@ describe('[Subscriptions]', function () {
 					rid: testChannel._id,
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 
@@ -106,9 +101,7 @@ describe('[Subscriptions]', function () {
 					rid: testGroup._id,
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 
@@ -120,9 +113,7 @@ describe('[Subscriptions]', function () {
 					rid: testDM._id,
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 
@@ -259,10 +250,7 @@ describe('[Subscriptions]', function () {
 						rid: testChannel._id,
 						readThreads: true,
 					})
-					.success()
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					});
+					.success();
 
 				await request
 					.get(api('subscriptions.getOne'))
@@ -272,7 +260,6 @@ describe('[Subscriptions]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body.subscription).to.not.have.property('tunread');
 					});
 			});
@@ -295,10 +282,7 @@ describe('[Subscriptions]', function () {
 						rid: testChannel._id,
 						readThreads: false,
 					})
-					.success()
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					});
+					.success();
 
 				await request
 					.get(api('subscriptions.getOne'))
@@ -308,7 +292,6 @@ describe('[Subscriptions]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body.subscription).to.have.property('tunread');
 						expect(res.body.subscription.tunread).to.be.an('array');
 						expect(res.body.subscription.tunread).to.deep.equal([threadId]);
@@ -353,7 +336,6 @@ describe('[Subscriptions]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('message').and.to.be.an('object');
 				})
 				.end(done);
@@ -366,9 +348,7 @@ describe('[Subscriptions]', function () {
 					roomId: testChannel._id,
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 

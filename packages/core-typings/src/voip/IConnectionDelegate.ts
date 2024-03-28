@@ -8,8 +8,7 @@ export interface IConnectionDelegate {
 	/**
 	 * Called when a connection is establised
 	 * @remarks
-	 * Callback for handling connection success
-	 */
+	 * Callback for handling connection.success()	 */
 	onConnected?(): void;
 	/**
 	 * Called when connection fails

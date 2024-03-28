@@ -31,7 +31,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
 					expect(res.body).to.have.nested.property('group.name', channelName);
 					expect(res.body).to.have.nested.property('group.t', 'p');
@@ -53,7 +52,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					firstMessage = res.body.message;
 				})
 				.end(done);
@@ -71,9 +69,7 @@ describe('Meteor.methods', function () {
 					},
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 
@@ -157,7 +153,6 @@ describe('Meteor.methods', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						const data = JSON.parse(res.body.message);
 						expect(data).to.have.property('error').that.is.an('object');
 						expect(data.error).to.have.property('error', 'error-action-not-allowed');
@@ -450,7 +445,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
 					expect(res.body).to.have.nested.property('group.name', channelName);
 					expect(res.body).to.have.nested.property('group.t', 'p');
@@ -472,7 +466,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					firstMessage = res.body.message;
 				})
 				.end(done);
@@ -490,7 +483,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					lastMessage = res.body.message;
 				})
 				.end(done);
@@ -606,7 +598,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
 					expect(res.body).to.have.nested.property('group.name', channelName);
 					expect(res.body).to.have.nested.property('group.t', 'p');
@@ -627,9 +618,7 @@ describe('Meteor.methods', function () {
 					},
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 
@@ -644,9 +633,7 @@ describe('Meteor.methods', function () {
 					},
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 
@@ -728,7 +715,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
 					expect(res.body).to.have.nested.property('group.name', channelName);
 					expect(res.body).to.have.nested.property('group.t', 'p');
@@ -750,7 +736,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					postMessageDate = { $date: new Date().getTime() };
 				})
 				.end(done);
@@ -768,7 +753,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					lastMessage = res.body.message;
 				})
 				.end(done);
@@ -938,7 +922,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
 					expect(res.body).to.have.nested.property('group.name', channelName);
 					expect(res.body).to.have.nested.property('group.t', 'p');
@@ -960,7 +943,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					postMessageDate = { $date: new Date().getTime() };
 				})
 				.end(done);
@@ -977,9 +959,7 @@ describe('Meteor.methods', function () {
 					},
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 
@@ -1121,7 +1101,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
 					expect(res.body).to.have.nested.property('group.name', channelName);
 					expect(res.body).to.have.nested.property('group.t', 'p');
@@ -1405,7 +1384,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
 					expect(res.body).to.have.nested.property('group.name', channelName);
 					expect(res.body).to.have.nested.property('group.t', 'p');
@@ -1427,7 +1405,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					postMessageDate = { $date: new Date().getTime() };
 				})
 				.end(done);
@@ -1444,9 +1421,7 @@ describe('Meteor.methods', function () {
 					},
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 
@@ -1838,7 +1813,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
 					expect(res.body).to.have.nested.property('group.name', channelName);
 					expect(res.body).to.have.nested.property('group.t', 'p');
@@ -1925,7 +1899,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
 					expect(res.body).to.have.nested.property('group.name', channelName);
 					expect(res.body).to.have.nested.property('group.t', 'p');
@@ -2301,7 +2274,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
 					expect(res.body).to.have.nested.property('group.name', channelName);
 					expect(res.body).to.have.nested.property('group.t', 'p');
@@ -2711,9 +2683,7 @@ describe('Meteor.methods', function () {
 					}),
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.then(() => {
 					request
 						.get(api('channels.members'))
@@ -2723,7 +2693,6 @@ describe('Meteor.methods', function () {
 						})
 						.success()
 						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('members').and.to.be.an('array');
 							expect(res.body.members).to.have.lengthOf(2);
 						})
@@ -2763,7 +2732,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					const parsedBody = JSON.parse(res.body.message);
 					expect(parsedBody).to.have.property('error');
 					expect(parsedBody.error).to.have.property('error', 'error-max-rooms-per-guest-reached');
@@ -2874,10 +2842,7 @@ describe('Meteor.methods', function () {
 								rid,
 							},
 						})
-						.success()
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-						});
+						.success();
 				});
 			});
 		});
@@ -2947,10 +2912,7 @@ describe('Meteor.methods', function () {
 								rid,
 							},
 						})
-						.success()
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-						});
+						.success();
 				});
 			});
 

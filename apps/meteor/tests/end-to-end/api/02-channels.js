@@ -42,7 +42,6 @@ describe('[Channels]', function () {
 			})
 			.success()
 			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.nested.property('channel._id');
 				expect(res.body).to.have.nested.property('channel.name', apiPublicChannelName);
 				expect(res.body).to.have.nested.property('channel.t', 'c');
@@ -69,7 +68,6 @@ describe('[Channels]', function () {
 			})
 			.success()
 			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.nested.property('channel._id');
 				expect(res.body).to.have.nested.property('channel.name', apiPublicChannelName);
 				expect(res.body).to.have.nested.property('channel.t', 'c');
@@ -86,9 +84,7 @@ describe('[Channels]', function () {
 				userId: 'rocket.cat',
 			})
 			.success()
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-			})
+
 			.end(done);
 	});
 
@@ -131,9 +127,7 @@ describe('[Channels]', function () {
 				userId: 'rocket.cat',
 			})
 			.success()
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-			})
+
 			.end(done);
 	});
 
@@ -176,9 +170,7 @@ describe('[Channels]', function () {
 				userId: 'rocket.cat',
 			})
 			.success()
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-			})
+
 			.end(done);
 	});
 
@@ -191,9 +183,7 @@ describe('[Channels]', function () {
 				userId: 'rocket.cat',
 			})
 			.success()
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-			})
+
 			.end(done);
 	});
 
@@ -209,7 +199,6 @@ describe('[Channels]', function () {
 			})
 			.success()
 			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.nested.property('channel._id');
 				expect(res.body).to.have.nested.property('channel.name', apiPublicChannelName);
 				expect(res.body).to.have.nested.property('channel.t', 'c');
@@ -229,7 +218,6 @@ describe('[Channels]', function () {
 			})
 			.success()
 			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.nested.property('channel._id');
 				expect(res.body).to.have.nested.property('channel.name', apiPublicChannelName);
 				expect(res.body).to.have.nested.property('channel.t', 'c');
@@ -246,9 +234,7 @@ describe('[Channels]', function () {
 				userId: 'rocket.cat',
 			})
 			.success()
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-			})
+
 			.end(done);
 	});
 
@@ -260,9 +246,7 @@ describe('[Channels]', function () {
 				roomId: channel._id,
 			})
 			.success()
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-			})
+
 			.end(done);
 	});
 
@@ -274,9 +258,7 @@ describe('[Channels]', function () {
 				roomId: channel._id,
 			})
 			.success()
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-			})
+
 			.end(done);
 	});
 
@@ -288,9 +270,7 @@ describe('[Channels]', function () {
 				roomId: channel._id,
 			})
 			.success()
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-			})
+
 			.end(done);
 	});
 
@@ -318,9 +298,7 @@ describe('[Channels]', function () {
 				roomId: channel._id,
 			})
 			.success()
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-			})
+
 			.end(done);
 	});
 
@@ -333,7 +311,6 @@ describe('[Channels]', function () {
 			})
 			.success()
 			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('count');
 				expect(res.body).to.have.property('total');
 			})
@@ -349,7 +326,6 @@ describe('[Channels]', function () {
 			})
 			.success()
 			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('count');
 				expect(res.body).to.have.property('total');
 			})
@@ -364,7 +340,6 @@ describe('[Channels]', function () {
 			})
 			.success()
 			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('joined', true);
 				expect(res.body).to.have.property('members');
 				expect(res.body).to.have.property('unreads');
@@ -411,7 +386,6 @@ describe('[Channels]', function () {
 			})
 			.success()
 			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.nested.property('channel._id');
 				expect(res.body).to.have.nested.property('channel.name', `EDITED${apiPublicChannelName}`);
 				expect(res.body).to.have.nested.property('channel.t', 'c');
@@ -428,7 +402,6 @@ describe('[Channels]', function () {
 			})
 			.success()
 			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.nested.property('channel._id');
 				expect(res.body).to.have.nested.property('channel.name', `EDITED${apiPublicChannelName}`);
 				expect(res.body).to.have.nested.property('channel.t', 'c');
@@ -459,9 +432,7 @@ describe('[Channels]', function () {
 				userId: 'rocket.cat',
 			})
 			.success()
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-			})
+
 			.end(done);
 	});
 
@@ -477,7 +448,6 @@ describe('[Channels]', function () {
 			})
 			.success()
 			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.nested.property('channel._id');
 				expect(res.body).to.have.nested.property('channel.name', `EDITED${apiPublicChannelName}`);
 				expect(res.body).to.have.nested.property('channel.t', 'c');
@@ -497,7 +467,6 @@ describe('[Channels]', function () {
 			})
 			.success()
 			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.nested.property('channel._id');
 				expect(res.body).to.have.nested.property('channel.name', `EDITED${apiPublicChannelName}`);
 				expect(res.body).to.have.nested.property('channel.t', 'c');
@@ -515,7 +484,6 @@ describe('[Channels]', function () {
 			})
 			.success()
 			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.nested.property('channel._id');
 				expect(res.body).to.have.nested.property('channel.name', `EDITED${apiPublicChannelName}`);
 				expect(res.body).to.have.nested.property('channel.t', 'c');
@@ -577,7 +545,6 @@ describe('[Channels]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					room = res.body.group;
 				})
 				.then(() => {
@@ -589,7 +556,6 @@ describe('[Channels]', function () {
 						})
 						.success()
 						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('members').and.to.be.an('array');
 							expect(res.body.members).to.have.lengthOf(1);
 						});
@@ -644,7 +610,6 @@ describe('[Channels]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel._id');
 					expect(res.body).to.have.nested.property('channel.name', testChannelName);
 					expect(res.body).to.have.nested.property('channel.t', 'c');
@@ -664,7 +629,6 @@ describe('[Channels]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					channelMessage = res.body.message;
 				})
 				.end(done);
@@ -678,9 +642,7 @@ describe('[Channels]', function () {
 					messageId: channelMessage._id,
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 		it('STARring last message', (done) => {
@@ -691,9 +653,7 @@ describe('[Channels]', function () {
 					messageId: channelMessage._id,
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 		it('PINning last message', (done) => {
@@ -704,9 +664,7 @@ describe('[Channels]', function () {
 					messageId: channelMessage._id,
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 		it('should return channel structure with "lastMessage" object including pin, reactions and star(should be an array) infos', (done) => {
@@ -718,7 +676,6 @@ describe('[Channels]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('channel').and.to.be.an('object');
 					const { channel } = res.body;
 					expect(channel).to.have.property('lastMessage').and.to.be.an('object');
@@ -739,7 +696,6 @@ describe('[Channels]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
 					const { messages } = res.body;
 					const lastMessage = messages.filter((message) => message._id === channelMessage._id)[0];
@@ -759,7 +715,6 @@ describe('[Channels]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
 					const { messages } = res.body;
 					const lastMessage = messages.filter((message) => message._id === channelMessage._id)[0];
@@ -839,7 +794,6 @@ describe('[Channels]', function () {
 				.query(`query={"_id": "${room._id}"}`)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('online');
 
 					const expected = {
@@ -862,7 +816,6 @@ describe('[Channels]', function () {
 				.query(`query={"_id": "${room._id}"}`)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('online');
 
 					const expected = {
@@ -914,9 +867,7 @@ describe('[Channels]', function () {
 					joinCode: '123',
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 
@@ -946,7 +897,6 @@ describe('[Channels]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.nested.property('channel._id', testChannelNoCode._id);
 					})
 					.end(done);
@@ -1002,7 +952,6 @@ describe('[Channels]', function () {
 						})
 						.success()
 						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.nested.property('channel._id', testChannelWithCode._id);
 						})
 						.end(done);
@@ -1022,9 +971,7 @@ describe('[Channels]', function () {
 							roomId: testChannelWithCode._id,
 						})
 						.success()
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-						})
+
 						.end(done);
 				});
 
@@ -1037,7 +984,6 @@ describe('[Channels]', function () {
 						})
 						.success()
 						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.nested.property('channel._id', testChannelWithCode._id);
 						})
 						.end(done);
@@ -1057,7 +1003,6 @@ describe('[Channels]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('description', 'this is a description for a channel for api tests');
 				})
 				.end(done);
@@ -1072,7 +1017,6 @@ describe('[Channels]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('description', '');
 				})
 				.end(done);
@@ -1090,7 +1034,6 @@ describe('[Channels]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('topic', 'this is a topic of a channel for api tests');
 				})
 				.end(done);
@@ -1105,7 +1048,6 @@ describe('[Channels]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('topic', '');
 				})
 				.end(done);
@@ -1123,7 +1065,6 @@ describe('[Channels]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('announcement', 'this is an announcement of a channel for api tests');
 				})
 				.end(done);
@@ -1138,7 +1079,6 @@ describe('[Channels]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('announcement', '');
 				})
 				.end(done);
@@ -1156,7 +1096,6 @@ describe('[Channels]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('purpose', 'this is a purpose of a channel for api tests');
 				})
 				.end(done);
@@ -1171,7 +1110,6 @@ describe('[Channels]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('purpose', '');
 				})
 				.end(done);
@@ -1188,7 +1126,6 @@ describe('[Channels]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages');
 				})
 				.end(done);
@@ -1205,7 +1142,6 @@ describe('[Channels]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages');
 				})
 				.end(done);
@@ -1241,7 +1177,6 @@ describe('[Channels]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('members').and.to.be.an('array');
 					expect(res.body).to.have.property('count');
 					expect(res.body).to.have.property('total');
@@ -1261,7 +1196,6 @@ describe('[Channels]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('members').and.to.be.an('array');
 					expect(res.body).to.have.property('count');
 					expect(res.body).to.have.property('total');
@@ -1280,7 +1214,6 @@ describe('[Channels]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('members').and.to.be.an('array');
 					expect(res.body).to.have.property('count', 1);
 					expect(res.body.members[0]._id).to.be.equal(testUser._id);
@@ -1350,7 +1283,6 @@ describe('[Channels]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						const integrationCreated = res.body.integrations.find(
 							(createdIntegration) => createdIntegration._id === integrationCreatedByAnUser._id,
 						);
@@ -1374,7 +1306,6 @@ describe('[Channels]', function () {
 						})
 						.success()
 						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
 							const integrationCreated = res.body.integrations.find(
 								(createdIntegration) => createdIntegration._id === integrationCreatedByAnUser._id,
 							);
@@ -1442,7 +1373,6 @@ describe('[Channels]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel.customFields.field0', 'value0');
 				})
 				.end(done);
@@ -1458,7 +1388,6 @@ describe('[Channels]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel._id');
 					expect(res.body).to.have.nested.property('channel.name', withCFChannel.name);
 					expect(res.body).to.have.nested.property('channel.t', 'c');
@@ -1475,7 +1404,6 @@ describe('[Channels]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel.customFields.field9', 'value9');
 				})
 				.end(done);
@@ -1488,9 +1416,7 @@ describe('[Channels]', function () {
 					roomName: withCFChannel.name,
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 		it('create channel without customFields', (done) => {
@@ -1516,7 +1442,6 @@ describe('[Channels]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel._id');
 					expect(res.body).to.have.nested.property('channel.name', withoutCFChannel.name);
 					expect(res.body).to.have.nested.property('channel.t', 'c');
@@ -1535,7 +1460,6 @@ describe('[Channels]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel._id');
 					expect(res.body).to.have.nested.property('channel.name', withoutCFChannel.name);
 					expect(res.body).to.have.nested.property('channel.t', 'c');
@@ -1557,7 +1481,6 @@ describe('[Channels]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel._id');
 					expect(res.body).to.have.nested.property('channel.name', withoutCFChannel.name);
 					expect(res.body).to.have.nested.property('channel.t', 'c');
@@ -1592,9 +1515,7 @@ describe('[Channels]', function () {
 					roomName: withoutCFChannel.name,
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 	});
@@ -1623,7 +1544,6 @@ describe('[Channels]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel._id');
 					expect(res.body).to.have.nested.property('channel.name', name);
 					expect(res.body).to.have.nested.property('channel.t', 'c');
@@ -1643,7 +1563,6 @@ describe('[Channels]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel._id');
 					expect(res.body).to.have.nested.property('channel.name', name);
 					expect(res.body).to.have.nested.property('channel.t', 'c');
@@ -1677,7 +1596,6 @@ describe('[Channels]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel._id');
 					expect(res.body).to.have.nested.property('channel.name', name);
 					expect(res.body).to.have.nested.property('channel.t', 'p');
@@ -1705,9 +1623,7 @@ describe('[Channels]', function () {
 					roomName: testChannel.name,
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 		it('/channels.info', (done) => {
@@ -1737,7 +1653,6 @@ describe('[Channels]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('mentions').and.to.be.an('array');
 					expect(res.body).to.have.property('count');
 					expect(res.body).to.have.property('offset');
@@ -1756,7 +1671,6 @@ describe('[Channels]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('mentions').and.to.be.an('array');
 					expect(res.body).to.have.property('count');
 					expect(res.body).to.have.property('offset');
@@ -2076,7 +1990,6 @@ describe('[Channels]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel._id', testChannel._id);
 				});
 
@@ -2089,10 +2002,7 @@ describe('[Channels]', function () {
 						rid: testChannel._id,
 					},
 				})
-				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 		});
 
 		after(async () => {
@@ -2109,7 +2019,6 @@ describe('[Channels]', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count');
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('channels').and.to.be.an('array');
@@ -2127,7 +2036,6 @@ describe('[Channels]', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count');
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('channels').and.to.be.an('array');
@@ -2147,7 +2055,6 @@ describe('[Channels]', function () {
 				.set(newCreds)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count').that.is.equal(0);
 					expect(res.body).to.have.property('total').that.is.equal(0);
 					expect(res.body).to.have.property('channels').and.to.be.an('array').and.that.has.lengthOf(0);

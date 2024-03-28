@@ -136,7 +136,6 @@ describe('[Incoming Integrations]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('integration').and.to.be.an('object');
 						integrationId = res.body.integration._id;
 					})
@@ -160,7 +159,6 @@ describe('[Incoming Integrations]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('integration').and.to.be.an('object');
 					expect(res.body.integration).to.have.property('overrideDestinationChannelEnabled', false);
 					integrationId = res.body.integration._id;
@@ -186,7 +184,6 @@ describe('[Incoming Integrations]', function () {
 						})
 						.success()
 						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('integration').and.to.be.an('object');
 							integration = res.body.integration;
 						})
@@ -251,7 +248,6 @@ describe('[Incoming Integrations]', function () {
 						})
 						.success()
 						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('messages').and.to.be.an('array');
 							expect(!!res.body.messages.find((m) => m.msg === successfulMesssage)).to.be.true;
 						})
@@ -274,7 +270,6 @@ describe('[Incoming Integrations]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('integration');
 					expect(res.body.integration.overrideDestinationChannelEnabled).to.be.equal(true);
 				});
@@ -295,7 +290,6 @@ describe('[Incoming Integrations]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
 					expect(!!res.body.messages.find((m) => m.msg === successfulMesssage)).to.be.true;
 				});
@@ -353,7 +347,6 @@ describe('[Incoming Integrations]', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					const integrationCreatedByAdmin = res.body.integrations.find((createdIntegration) => createdIntegration._id === integration._id);
 					expect(integrationCreatedByAdmin).to.be.an('object');
 					expect(integrationCreatedByAdmin._id).to.be.equal(integration._id);
@@ -372,7 +365,6 @@ describe('[Incoming Integrations]', function () {
 						.set(userCredentials)
 						.success()
 						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
 							const integrationCreatedByAdmin = res.body.integrations.find(
 								(createdIntegration) => createdIntegration._id === integration._id,
 							);
@@ -475,7 +467,6 @@ describe('[Incoming Integrations]', function () {
 						.set(userCredentials)
 						.success()
 						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('integration');
 							expect(res.body.integration._id).to.be.equal(integrationCreatedByAnUser._id);
 						})
@@ -490,7 +481,6 @@ describe('[Incoming Integrations]', function () {
 					.set(credentials)
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('integration');
 						expect(res.body.integration._id).to.be.equal(integration._id);
 					})
@@ -517,7 +507,6 @@ describe('[Incoming Integrations]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('integration');
 					expect(res.body.integration._id).to.be.equal(integration._id);
 					expect(res.body.integration.name).to.be.equal('Incoming test updated');
@@ -532,7 +521,6 @@ describe('[Incoming Integrations]', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('integration');
 					expect(res.body.integration._id).to.be.equal(integration._id);
 					expect(res.body.integration.name).to.be.equal('Incoming test updated');
@@ -608,9 +596,7 @@ describe('[Incoming Integrations]', function () {
 						type: integration.type,
 					})
 					.success()
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
+
 					.end(done);
 			});
 		});
@@ -625,9 +611,7 @@ describe('[Incoming Integrations]', function () {
 						type: integrationCreatedByAnUser.type,
 					})
 					.success()
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
+
 					.end(done);
 			});
 		});

@@ -406,7 +406,6 @@ describe('AutoTranslate', function () {
 						})
 						.success()
 						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('subscription').and.to.be.an('object');
 						})
 				).body.subscription;

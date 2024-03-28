@@ -96,7 +96,6 @@ describe('licenses', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('licenses').and.to.be.an('array');
 				})
 
@@ -122,7 +121,6 @@ describe('licenses', function () {
 				.set(unauthorizedUserCredentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('license').and.to.be.an('object');
 					expect(res.body.license).to.not.have.property('license');
 					expect(res.body.license).to.have.property('tags').and.to.be.an('array');
@@ -136,7 +134,6 @@ describe('licenses', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('license').and.to.be.an('object');
 					if (process.env.IS_EE) {
 						expect(res.body.license).to.have.property('license').and.to.be.an('object');

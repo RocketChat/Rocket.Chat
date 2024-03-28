@@ -15,7 +15,6 @@ describe('[Webdav]', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('accounts').and.to.be.a('array');
 				})
 				.end(done);

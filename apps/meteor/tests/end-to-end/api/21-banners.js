@@ -71,7 +71,6 @@ describe('banners', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('banners').and.to.be.an('array');
 				})
 				.end(done);

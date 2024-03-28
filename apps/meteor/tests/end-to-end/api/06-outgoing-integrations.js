@@ -167,7 +167,6 @@ describe('[Outgoing Integrations]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('integration').and.to.be.an('object');
 						integrationId = res.body.integration._id;
 					})
@@ -197,7 +196,6 @@ describe('[Outgoing Integrations]', function () {
 						})
 						.success()
 						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('integration').and.to.be.an('object');
 							integration = res.body.integration;
 						})
@@ -227,7 +225,6 @@ describe('[Outgoing Integrations]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('integration.name', 'Guggy');
 					expect(res.body).to.have.nested.property('integration.type', 'webhook-outgoing');
 					expect(res.body).to.have.nested.property('integration.enabled', true);
@@ -246,7 +243,6 @@ describe('[Outgoing Integrations]', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					const integrationCreatedByAdmin = res.body.integrations.find((createdIntegration) => createdIntegration._id === integration._id);
 					expect(integrationCreatedByAdmin).to.be.an('object');
 					expect(integrationCreatedByAdmin._id).to.be.equal(integration._id);
@@ -265,7 +261,6 @@ describe('[Outgoing Integrations]', function () {
 						.set(userCredentials)
 						.success()
 						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
 							const integrationCreatedByAdmin = res.body.integrations.find(
 								(createdIntegration) => createdIntegration._id === integration._id,
 							);
@@ -330,7 +325,6 @@ describe('[Outgoing Integrations]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('history').and.to.be.an('array');
 						expect(res.body).to.have.property('offset');
 						expect(res.body).to.have.property('items');
@@ -409,7 +403,6 @@ describe('[Outgoing Integrations]', function () {
 						.set(userCredentials)
 						.success()
 						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('integration');
 							expect(res.body.integration._id).to.be.equal(integrationCreatedByAnUser._id);
 						})
@@ -424,7 +417,6 @@ describe('[Outgoing Integrations]', function () {
 					.set(credentials)
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('integration');
 						expect(res.body.integration._id).to.be.equal(integration._id);
 					})
@@ -499,9 +491,7 @@ describe('[Outgoing Integrations]', function () {
 						type: integration.type,
 					})
 					.success()
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
+
 					.end(done);
 			});
 		});
@@ -516,9 +506,7 @@ describe('[Outgoing Integrations]', function () {
 						type: integrationCreatedByAnUser.type,
 					})
 					.success()
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
+
 					.end(done);
 			});
 		});

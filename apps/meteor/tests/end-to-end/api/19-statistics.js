@@ -33,7 +33,6 @@ describe('[Statistics]', function () {
 					.set(credentials)
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('process');
 						expect(res.body.process).to.have.property('uptime');
 						lastUptime = res.body.process.uptime;
@@ -47,7 +46,6 @@ describe('[Statistics]', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('process');
 					expect(res.body.process).to.have.property('uptime');
 					expect(lastUptime).to.not.be.equal(res.body.process.uptime);
@@ -77,7 +75,6 @@ describe('[Statistics]', function () {
 					.set(credentials)
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('statistics').and.to.be.an('array');
 						expect(res.body).to.have.property('offset');
 						expect(res.body).to.have.property('total');
@@ -97,7 +94,6 @@ describe('[Statistics]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('statistics').and.to.be.an('array');
 						expect(res.body).to.have.property('offset');
 						expect(res.body).to.have.property('total');

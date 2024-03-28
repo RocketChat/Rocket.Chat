@@ -15,7 +15,6 @@ describe('[Settings]', function () {
 				.get(api('settings.public'))
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('settings');
 					expect(res.body).to.have.property('count');
 				})
@@ -30,7 +29,6 @@ describe('[Settings]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('settings');
 					expect(res.body).to.have.property('count');
 				})
@@ -45,7 +43,6 @@ describe('[Settings]', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('settings');
 					expect(res.body).to.have.property('count');
 				})
@@ -60,7 +57,6 @@ describe('[Settings]', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('_id', 'Site_Url');
 					expect(res.body).to.have.property('value');
 				})
@@ -75,7 +71,6 @@ describe('[Settings]', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('configurations');
 				})
 				.end(done);
@@ -94,7 +89,6 @@ describe('[Settings]', function () {
 						.set(credentials)
 						.success()
 						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('configurations');
 
 							expect(res.body.configurations.find(({ service }) => service === 'google')).to.exist;
@@ -117,7 +111,6 @@ describe('[Settings]', function () {
 						.set(credentials)
 						.success()
 						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('configurations');
 
 							expect(res.body.configurations.find(({ service }) => service === 'google')).to.not.exist;
@@ -134,7 +127,6 @@ describe('[Settings]', function () {
 				.get(api('settings.oauth'))
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('services').and.to.be.an('array');
 				})
 				.end(done);
@@ -146,7 +138,6 @@ describe('[Settings]', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('services').and.to.be.an('array');
 				})
 				.end(done);

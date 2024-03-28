@@ -25,7 +25,6 @@ describe('[Rooms]', function () {
 			.set(credentials)
 			.success()
 			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('update');
 				expect(res.body).to.have.property('remove');
 			})
@@ -41,7 +40,6 @@ describe('[Rooms]', function () {
 			})
 			.success()
 			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('update').that.have.lengthOf(0);
 				expect(res.body).to.have.property('remove').that.have.lengthOf(0);
 			})
@@ -71,9 +69,7 @@ describe('[Rooms]', function () {
 					},
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 	});
@@ -186,7 +182,6 @@ describe('[Rooms]', function () {
 				.attach('file', lstURL)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('message');
 					expect(res.body.message).to.have.property('attachments');
 					expect(res.body.message.attachments).to.be.an('array').of.length(1);
@@ -316,9 +311,7 @@ describe('[Rooms]', function () {
 					favorite: true,
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 		it('should unfavorite the room when send favorite: false by roomName', (done) => {
@@ -330,9 +323,7 @@ describe('[Rooms]', function () {
 					favorite: false,
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 		it('should favorite the room when send favorite: true by roomId', (done) => {
@@ -344,9 +335,7 @@ describe('[Rooms]', function () {
 					favorite: true,
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 
@@ -359,9 +348,7 @@ describe('[Rooms]', function () {
 					favorite: false,
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 
@@ -411,7 +398,6 @@ describe('[Rooms]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('exists', true);
 				})
 				.end(done);
@@ -509,9 +495,7 @@ describe('[Rooms]', function () {
 					oldest: '2016-08-30T13:42:25.304Z',
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 		it('should not count hidden or deleted messages when limit param is not sent', async () => {
@@ -527,7 +511,6 @@ describe('[Rooms]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count', 0);
 				});
 		});
@@ -545,7 +528,6 @@ describe('[Rooms]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count', 0);
 				});
 		});
@@ -572,10 +554,7 @@ describe('[Rooms]', function () {
 					latest: '9999-12-31T23:59:59.000Z',
 					oldest: '0001-01-01T00:00:00.000Z',
 				})
-				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			request
 				.get(api('channels.files'))
@@ -585,7 +564,6 @@ describe('[Rooms]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('files').and.to.be.an('array');
 					expect(res.body.files).to.have.lengthOf(0);
 				})
@@ -601,9 +579,7 @@ describe('[Rooms]', function () {
 					oldest: '2016-08-30T13:42:25.304Z',
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 		it('should return success when send a valid Direct Message channel', (done) => {
@@ -616,9 +592,7 @@ describe('[Rooms]', function () {
 					oldest: '2016-08-30T13:42:25.304Z',
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 		it('should return not allowed error when try deleting messages with user without permission', (done) => {
@@ -691,7 +665,6 @@ describe('[Rooms]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('room').and.to.be.an('object');
 					expect(res.body.room).to.have.keys(expectedKeys);
 				})
@@ -706,7 +679,6 @@ describe('[Rooms]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('room').and.to.be.an('object');
 					expect(res.body.room).to.have.all.keys(expectedKeys);
 				})
@@ -721,7 +693,6 @@ describe('[Rooms]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('room').and.to.be.an('object');
 					expect(res.body.room).to.have.all.keys(expectedKeys);
 				})
@@ -736,7 +707,6 @@ describe('[Rooms]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('room').and.to.be.an('object');
 					expect(res.body.room).to.have.all.keys(expectedKeys);
 				})
@@ -751,7 +721,6 @@ describe('[Rooms]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('room').and.to.be.an('object');
 				})
 				.end(done);
@@ -766,7 +735,6 @@ describe('[Rooms]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('room').and.to.be.an('object');
 					expect(res.body.room).to.have.property('name').and.to.be.equal(testChannelName);
 					expect(res.body.room).to.have.all.keys(['_id', 'name']);
@@ -900,9 +868,7 @@ describe('[Rooms]', function () {
 										roomId: testChannel._id,
 									})
 									.success()
-									.expect((res) => {
-										expect(res.body).to.have.property('success', true);
-									})
+
 									.end(done);
 							});
 					});
@@ -932,9 +898,7 @@ describe('[Rooms]', function () {
 										roomId: testGroup._id,
 									})
 									.success()
-									.expect((res) => {
-										expect(res.body).to.have.property('success', true);
-									})
+
 									.end(done);
 							});
 					});
@@ -1080,7 +1044,6 @@ describe('[Rooms]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('discussion').and.to.be.an('object');
 					expect(res.body.discussion).to.have.property('prid').and.to.be.equal(testChannel._id);
 					expect(res.body.discussion).to.have.property('fname').and.to.be.equal(`discussion-create-from-tests-${testChannel.name}`);
@@ -1098,7 +1061,6 @@ describe('[Rooms]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('discussion').and.to.be.an('object');
 					expect(res.body.discussion).to.have.property('prid').and.to.be.equal(testChannel._id);
 					expect(res.body.discussion).to.have.property('fname').and.to.be.equal(`discussion-create-from-tests-${testChannel.name}`);
@@ -1117,7 +1079,6 @@ describe('[Rooms]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('discussion').and.to.be.an('object');
 					expect(res.body.discussion).to.have.property('prid').and.to.be.equal(testChannel._id);
 					expect(res.body.discussion).to.have.property('fname').and.to.be.equal(`discussion-create-from-tests-${testChannel.name}`);
@@ -1137,7 +1098,6 @@ describe('[Rooms]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('discussion').and.to.be.an('object');
 					expect(res.body.discussion).to.have.property('prid').and.to.be.equal(testChannel._id);
 					expect(res.body.discussion).to.have.property('fname').and.to.be.equal(`discussion-create-from-tests-${testChannel.name}`);
@@ -1158,7 +1118,6 @@ describe('[Rooms]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('team');
 						expect(res.body).to.have.nested.property('team._id');
 						privateTeam = res.body.team;
@@ -1191,7 +1150,6 @@ describe('[Rooms]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('discussion').and.to.be.an('object');
 						expect(res.body.discussion).to.have.property('prid').and.to.be.equal(testChannel._id);
 						expect(res.body.discussion).to.have.property('fname').and.to.be.equal(`discussion-create-from-tests-${testChannel.name}-team`);
@@ -1258,7 +1216,6 @@ describe('[Rooms]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('discussions').and.to.be.an('array');
 					expect(res.body.discussions).to.have.lengthOf(1);
 				})
@@ -1286,7 +1243,6 @@ describe('[Rooms]', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('items').and.to.be.an('array');
 				})
 				.end(done);
@@ -1312,7 +1268,6 @@ describe('[Rooms]', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('items').and.to.be.an('array');
 					expect(res.body).to.have.property('total');
 				})
@@ -1328,7 +1283,6 @@ describe('[Rooms]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('items').and.to.be.an('array');
 					expect(res.body).to.have.property('total');
 				})
@@ -1343,7 +1297,6 @@ describe('[Rooms]', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('items').and.to.be.an('array');
 				})
 				.end(done);
@@ -1354,7 +1307,6 @@ describe('[Rooms]', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('items').and.to.be.an('array');
 				})
 				.end(done);
@@ -1400,7 +1352,6 @@ describe('[Rooms]', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('items').and.to.be.an('array');
 				})
 				.end(done);
@@ -1414,7 +1365,6 @@ describe('[Rooms]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('items').and.to.be.an('array');
 					expect(res.body).to.have.property('items').that.have.lengthOf(2);
 				})
@@ -1464,7 +1414,6 @@ describe('[Rooms]', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('rooms').and.to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -1482,7 +1431,6 @@ describe('[Rooms]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('rooms').and.to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -1500,7 +1448,6 @@ describe('[Rooms]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('rooms').and.to.be.an('array');
 						expect(res.body.rooms).to.have.lengthOf(1);
 						expect(res.body.rooms[0].fname).to.be.equal(fnameRoom);
@@ -1521,7 +1468,6 @@ describe('[Rooms]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('rooms').and.to.be.an('array');
 						expect(res.body.rooms).to.have.lengthOf(1);
 						expect(res.body.rooms[0].name).to.be.equal(nameRoom);
@@ -1541,7 +1487,6 @@ describe('[Rooms]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('rooms').and.to.be.an('array');
 					expect(res.body.rooms).to.have.lengthOf.at.least(1);
 					expect(res.body.rooms[0].t).to.be.equal('p');
@@ -1559,7 +1504,6 @@ describe('[Rooms]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('rooms').and.to.be.an('array');
 					expect(res.body.rooms).to.have.lengthOf(1);
 					expect(res.body.rooms[0].name).to.be.equal(nameRoom);
@@ -1576,7 +1520,6 @@ describe('[Rooms]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('rooms').and.to.be.an('array');
 					expect(res.body.rooms).to.have.lengthOf(1);
 					expect(res.body.rooms[0].name).to.be.equal(nameRoom);
@@ -1593,7 +1536,6 @@ describe('[Rooms]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('rooms').and.to.be.an('array');
 					expect(res.body.rooms).to.have.lengthOf(0);
 				})
@@ -1696,9 +1638,7 @@ describe('[Rooms]', function () {
 				.set(credentials)
 				.send({ roomId: testChannel._id })
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 		it('should throw an error when the room id doesn exist', (done) => {
@@ -1773,7 +1713,6 @@ describe('[Rooms]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('room').and.to.be.an('object');
 
 					expect(res.body.room).to.have.property('_id', testChannel._id);
@@ -1811,7 +1750,6 @@ describe('[Rooms]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('room').and.to.be.an('object');
 
 					expect(res.body.room).to.have.property('_id', discussion._id);

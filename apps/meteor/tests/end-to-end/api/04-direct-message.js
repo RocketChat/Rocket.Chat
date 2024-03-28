@@ -23,7 +23,6 @@ describe('[Direct Messages]', function () {
 			})
 			.success()
 			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.nested.property('message.msg', 'This message was sent using the API');
 				expect(res.body).to.have.nested.property('message.rid');
 				directMessage._id = res.body.message.rid;
@@ -42,7 +41,6 @@ describe('[Direct Messages]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('topic', 'a direct message with rocket.cat');
 				})
 				.end(done);
@@ -57,7 +55,6 @@ describe('[Direct Messages]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('topic', '');
 				})
 				.end(done);
@@ -92,7 +89,6 @@ describe('[Direct Messages]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					dmMessage = res.body.message;
 				})
 				.end(done);
@@ -106,9 +102,7 @@ describe('[Direct Messages]', function () {
 					messageId: dmMessage._id,
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 		it('STARring last message', (done) => {
@@ -119,9 +113,7 @@ describe('[Direct Messages]', function () {
 					messageId: dmMessage._id,
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 		it('PINning last message', (done) => {
@@ -132,9 +124,7 @@ describe('[Direct Messages]', function () {
 					messageId: dmMessage._id,
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 		it('should return all DM messages where the last message of array should have the "star" array with USERS star ONLY', (done) => {
@@ -146,7 +136,6 @@ describe('[Direct Messages]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
 					const { messages } = res.body;
 					const lastMessage = messages.filter((message) => message._id === dmMessage._id)[0];
@@ -166,7 +155,6 @@ describe('[Direct Messages]', function () {
 			})
 			.success()
 			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('messages');
 			})
 			.end(done);
@@ -178,7 +166,6 @@ describe('[Direct Messages]', function () {
 			.set(credentials)
 			.success()
 			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('count', 1);
 				expect(res.body).to.have.property('total', 1);
 				expect(res.body).to.have.property('ims').and.to.be.an('array');
@@ -201,7 +188,6 @@ describe('[Direct Messages]', function () {
 			.set(credentials)
 			.success()
 			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('count', 1);
 				expect(res.body).to.have.property('total', 1);
 				expect(res.body).to.have.property('ims').and.to.be.an('array');
@@ -229,7 +215,6 @@ describe('[Direct Messages]', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count', 1);
 					expect(res.body).to.have.property('total', 1);
 					expect(res.body).to.have.property('ims').and.to.be.an('array');
@@ -258,7 +243,6 @@ describe('[Direct Messages]', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count', 1);
 					expect(res.body).to.have.property('total', 1);
 					expect(res.body).to.have.property('ims').and.to.be.an('array');
@@ -289,9 +273,7 @@ describe('[Direct Messages]', function () {
 				roomId: directMessage._id,
 			})
 			.success()
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-			})
+
 			.end(done);
 	});
 
@@ -304,7 +286,6 @@ describe('[Direct Messages]', function () {
 			})
 			.success()
 			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('joined', true);
 				expect(res.body).to.have.property('members');
 				expect(res.body).to.have.property('unreads');
@@ -330,7 +311,6 @@ describe('[Direct Messages]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
 				})
 				.end(done);
@@ -384,7 +364,6 @@ describe('[Direct Messages]', function () {
 						})
 						.success()
 						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('messages').and.to.be.an('array');
 							expect(res.body).to.have.property('offset');
 							expect(res.body).to.have.property('count');
@@ -405,9 +384,7 @@ describe('[Direct Messages]', function () {
 				userId: 'rocket.cat',
 			})
 			.success()
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-			})
+
 			.end(done);
 	});
 
@@ -451,7 +428,6 @@ describe('[Direct Messages]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('message.msg', 'This message was sent using the API');
 					expect(res.body).to.have.nested.property('message.rid');
 					directMessageId = res.body.message.rid;
@@ -470,7 +446,6 @@ describe('[Direct Messages]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.subscription).to.have.property('name', username);
 					expect(res.body.subscription).to.have.property('fname', name);
 				})
@@ -502,7 +477,6 @@ describe('[Direct Messages]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.subscription).to.have.property('name', username);
 					expect(res.body.subscription).to.have.property('fname', updatedName);
 				})
@@ -520,7 +494,6 @@ describe('[Direct Messages]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count').and.to.be.equal(2);
 					expect(res.body).to.have.property('offset').and.to.be.equal(0);
 					expect(res.body).to.have.property('total').and.to.be.equal(2);
@@ -537,7 +510,6 @@ describe('[Direct Messages]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count').and.to.be.equal(2);
 					expect(res.body).to.have.property('offset').and.to.be.equal(0);
 					expect(res.body).to.have.property('total').and.to.be.equal(2);
@@ -555,7 +527,6 @@ describe('[Direct Messages]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count').and.to.be.equal(1);
 					expect(res.body).to.have.property('offset').and.to.be.equal(0);
 					expect(res.body).to.have.property('total').and.to.be.equal(1);
@@ -717,7 +688,6 @@ describe('[Direct Messages]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('subscription').and.to.be.an('object');
 						expect(res.body).to.have.nested.property('subscription.emailNotifications').and.to.be.equal('nothing');
 					})

@@ -158,8 +158,7 @@ export const VoipFooter = ({
 							<Button
 								small
 								square
-								success
-								icon='phone'
+							.success()								icon='phone'
 								data-tooltip={t('Accept')}
 								onClick={async (): Promise<void> => {
 									callActions.pickUp();

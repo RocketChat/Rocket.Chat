@@ -67,7 +67,6 @@ describe('[Teams]', () => {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('team');
 					expect(res.body).to.have.nested.property('team._id');
 					publicTeam = res.body.team;
@@ -86,7 +85,6 @@ describe('[Teams]', () => {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('team');
 					expect(res.body).to.have.nested.property('team._id');
 					publicTeam = res.body.team;
@@ -123,7 +121,6 @@ describe('[Teams]', () => {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('team');
 					expect(res.body).to.have.nested.property('team._id');
 					privateTeam = res.body.team;
@@ -227,7 +224,6 @@ describe('[Teams]', () => {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('rooms');
 					expect(res.body.rooms[0]).to.have.property('teamId', testTeam._id);
 					expect(res.body.rooms[0]).to.not.have.property('teamDefault');
@@ -265,7 +261,6 @@ describe('[Teams]', () => {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('rooms');
 					expect(res.body.rooms[0]).to.have.property('teamId', testTeam._id);
 					expect(res.body.rooms[0]).to.not.have.property('teamDefault');
@@ -282,9 +277,7 @@ describe('[Teams]', () => {
 					roomsToRemove: [channelToEraseId],
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.then(() => {
 					request
 						.get(api('channels.info'))
@@ -370,9 +363,7 @@ describe('[Teams]', () => {
 					],
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.then(() =>
 					request
 						.get(api('teams.members'))
@@ -460,7 +451,6 @@ describe('[Teams]', () => {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count', 3);
 					expect(res.body).to.have.property('offset', 0);
 					expect(res.body).to.have.property('total', 3);
@@ -499,7 +489,6 @@ describe('[Teams]', () => {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count');
 					expect(res.body).to.have.property('offset', 0);
 					expect(res.body).to.have.property('total');
@@ -568,9 +557,7 @@ describe('[Teams]', () => {
 					},
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.then(() =>
 					request
 						.get(api('teams.members'))
@@ -686,9 +673,7 @@ describe('[Teams]', () => {
 							userId: testUser2._id,
 						})
 						.success()
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-						})
+
 						.then(() =>
 							request
 								.get(api('teams.members'))
@@ -769,9 +754,7 @@ describe('[Teams]', () => {
 							teamName: testTeam.name,
 						})
 						.success()
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-						})
+
 						.then(() => done()),
 				)
 				.catch(done);
@@ -900,9 +883,7 @@ describe('[Teams]', () => {
 						teamName: tempTeamName,
 					})
 					.success()
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
+
 					.then(() => {
 						request
 							.get(api('teams.info'))
@@ -989,7 +970,6 @@ describe('[Teams]', () => {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('rooms');
 						expect(res.body.rooms[0]).to.have.property('teamId', teamId);
 						expect(res.body.rooms[0]).to.not.have.property('teamDefault');
@@ -1027,7 +1007,6 @@ describe('[Teams]', () => {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('rooms');
 						expect(res.body.rooms[0]).to.have.property('teamId', teamId);
 						expect(res.body.rooms[0]).to.not.have.property('teamDefault');
@@ -1044,9 +1023,7 @@ describe('[Teams]', () => {
 						roomsToRemove: [channel2Id],
 					})
 					.success()
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
+
 					.then(() => {
 						request
 							.get(api('channels.info'))
@@ -1096,7 +1073,6 @@ describe('[Teams]', () => {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
 					expect(res.body).to.have.nested.property('group.name', channelName);
 					expect(res.body).to.have.nested.property('group.t', 'p');
@@ -1115,7 +1091,6 @@ describe('[Teams]', () => {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
 					expect(res.body).to.have.nested.property('group.name', channelName);
 					expect(res.body).to.have.nested.property('group.t', 'p');
@@ -1134,7 +1109,6 @@ describe('[Teams]', () => {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
 					expect(res.body).to.have.nested.property('group.name', channelName);
 					expect(res.body).to.have.nested.property('group.t', 'p');
@@ -1153,7 +1127,6 @@ describe('[Teams]', () => {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel._id');
 					expect(res.body).to.have.nested.property('channel.name', channelName);
 					expect(res.body).to.have.nested.property('channel.t', 'c');
@@ -1172,7 +1145,6 @@ describe('[Teams]', () => {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel._id');
 					expect(res.body).to.have.nested.property('channel.name', `${channelName}2`);
 					expect(res.body).to.have.nested.property('channel.t', 'c');
@@ -1212,7 +1184,6 @@ describe('[Teams]', () => {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('rooms');
 						expect(res.body.rooms).to.have.length(2);
 						expect(res.body.rooms[0]).to.have.property('_id');
@@ -1240,7 +1211,6 @@ describe('[Teams]', () => {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('rooms');
 						expect(res.body.rooms[0]).to.have.property('teamId', privateTeam._id);
 						expect(res.body.rooms[0]).to.not.have.property('teamDefault');
@@ -1260,7 +1230,6 @@ describe('[Teams]', () => {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('rooms');
 						expect(res.body.rooms[0]).to.have.property('teamId', privateTeam._id);
 						expect(res.body.rooms[0]).to.not.have.property('teamDefault');
@@ -1304,9 +1273,7 @@ describe('[Teams]', () => {
 					}),
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.then(() => {
 					request
 						.post(api('teams.addRooms'))
@@ -1385,7 +1352,6 @@ describe('[Teams]', () => {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('rooms');
 						expect(res.body.rooms).to.be.an('array');
 						// main room should not be returned here
@@ -1405,7 +1371,6 @@ describe('[Teams]', () => {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('rooms');
 						expect(res.body.rooms).to.be.an('array');
 						expect(res.body.rooms.length).to.equal(2);
@@ -1425,7 +1390,6 @@ describe('[Teams]', () => {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('rooms');
 						expect(res.body.rooms).to.be.an('array');
 						expect(res.body.rooms.length).to.equal(2);
@@ -1445,7 +1409,6 @@ describe('[Teams]', () => {
 						})
 						.success()
 						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('rooms');
 							expect(res.body.rooms).to.be.an('array');
 							expect(res.body.rooms.length).to.equal(2);
@@ -1467,7 +1430,6 @@ describe('[Teams]', () => {
 						})
 						.success()
 						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('rooms');
 							expect(res.body.rooms).to.be.an('array');
 							expect(res.body.rooms.length).to.equal(2);
@@ -1509,7 +1471,6 @@ describe('[Teams]', () => {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('room');
 						expect(res.body.room).to.have.property('teamId', publicTeam._id);
 						expect(res.body.room).to.have.property('teamDefault', true);
@@ -1550,7 +1511,6 @@ describe('[Teams]', () => {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('room');
 						expect(res.body.room).to.not.have.property('teamId');
 						expect(res.body.room).to.not.have.property('teamDefault');
@@ -1726,7 +1686,6 @@ describe('[Teams]', () => {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('subscription').and.to.be.an('object');
 						expect(res.body).to.have.nested.property('subscription.emailNotifications').and.to.be.equal('nothing');
 					})

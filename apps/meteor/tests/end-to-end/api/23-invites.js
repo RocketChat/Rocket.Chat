@@ -53,7 +53,6 @@ describe('Invites', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('days', 1);
 					expect(res.body).to.have.property('maxUses', 10);
 					expect(res.body).to.have.property('uses');
@@ -74,7 +73,6 @@ describe('Invites', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('days', 1);
 					expect(res.body).to.have.property('maxUses', 10);
 					expect(res.body).to.have.property('uses');
@@ -156,9 +154,7 @@ describe('Invites', function () {
 					token: testInviteID,
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 	});
@@ -173,7 +169,6 @@ describe('Invites', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('valid', false);
 				})
 				.end(done);
@@ -188,7 +183,6 @@ describe('Invites', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('valid', true);
 				})
 				.end(done);

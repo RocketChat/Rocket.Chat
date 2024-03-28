@@ -18,7 +18,6 @@ describe('[Permissions]', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('update').and.to.be.an('array');
 					expect(res.body).to.have.property('remove').and.to.be.an('array');
 				})
@@ -31,7 +30,6 @@ describe('[Permissions]', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('update').and.to.be.an('array');
 					expect(res.body).to.have.property('remove').and.to.be.an('array');
 				})
@@ -65,7 +63,6 @@ describe('[Permissions]', function () {
 				.send({ permissions })
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('permissions');
 
 					const firstElement = res.body.permissions[0];

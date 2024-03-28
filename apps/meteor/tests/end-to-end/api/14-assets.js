@@ -24,9 +24,7 @@ describe('[Assets]', function () {
 					assetName: 'logo',
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 		it('should throw an error when we try set an invalid asset', (done) => {
@@ -52,9 +50,7 @@ describe('[Assets]', function () {
 					assetName: 'logo',
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 		it('should throw an error when we try set an invalid asset', (done) => {

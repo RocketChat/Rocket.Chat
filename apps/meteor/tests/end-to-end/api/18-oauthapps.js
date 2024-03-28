@@ -42,7 +42,6 @@ describe('[OAuthApps]', function () {
 					.set(credentials)
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('oauthApps').and.to.be.an('array');
 					})
 					.end(done);
@@ -57,7 +56,6 @@ describe('[OAuthApps]', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('oauthApp');
 					expect(res.body.oauthApp._id).to.be.equal('zapier');
 				})
@@ -69,7 +67,6 @@ describe('[OAuthApps]', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('oauthApp');
 					expect(res.body.oauthApp._id).to.be.equal('zapier');
 				})
@@ -185,7 +182,6 @@ describe('[OAuthApps]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('application.name', name);
 					expect(res.body).to.have.nested.property('application.redirectUri', redirectUri);
 					expect(res.body).to.have.nested.property('application.active', active);
@@ -233,7 +229,6 @@ describe('[OAuthApps]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('active', active);
 					expect(res.body).to.have.property('redirectUri', redirectUri);
 					expect(res.body).to.have.property('name', name);

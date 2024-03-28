@@ -485,7 +485,6 @@ describe('[Chat]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('message.msg', 'Sample message');
 					message._id = res.body.message._id;
 				})
@@ -503,7 +502,6 @@ describe('[Chat]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('message._id', message._id);
 				})
 				.end(done);
@@ -737,7 +735,6 @@ describe('[Chat]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('message.msg', 'Sample message');
 				})
 				.end(done);
@@ -834,7 +831,6 @@ describe('[Chat]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.is.not.empty;
 						expect(res.body.message.urls[0]).to.have.property('ignoreParse', true);
 						msgId = res.body.message._id;
@@ -868,7 +864,6 @@ describe('[Chat]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.has.lengthOf(2);
 						expect(res.body.message.urls[0]).to.have.property('ignoreParse', true);
 						expect(res.body.message.urls[1]).to.not.have.property('ignoreParse');
@@ -912,7 +907,6 @@ describe('[Chat]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.has.lengthOf(urls.length);
 						msgId = res.body.message._id;
 					});
@@ -972,7 +966,6 @@ describe('[Chat]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						readOnlyChannel = res.body.channel;
 					})
 					.end(done);
@@ -989,7 +982,6 @@ describe('[Chat]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('message').and.to.be.an('object');
 					})
 					.end(done);
@@ -1003,9 +995,7 @@ describe('[Chat]', function () {
 						userId: user._id,
 					})
 					.success()
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
+
 					.end(() => {
 						done();
 					});
@@ -1044,7 +1034,6 @@ describe('[Chat]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('message').and.to.be.an('object');
 					});
 
@@ -1113,7 +1102,6 @@ describe('[Chat]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('message.msg', 'This message was edited via API');
 				})
 				.end(done);
@@ -1131,7 +1119,6 @@ describe('[Chat]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('message.msg', `Testing quotes ${quotedMsgLink}`);
 					expect(res.body.message).to.have.property('attachments').that.is.an('array').that.has.lengthOf(1);
 					expect(res.body.message.attachments[0]).to.have.property('message_link', quotedMsgLink);
@@ -1150,7 +1137,6 @@ describe('[Chat]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('message.msg', `Testing quotes ${quotedMsgLink}`);
 					expect(res.body.message).to.have.property('attachments').that.is.an('array').that.has.lengthOf(1);
 					expect(res.body.message.attachments[0]).to.have.property('message_link', quotedMsgLink);
@@ -1170,7 +1156,6 @@ describe('[Chat]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('message.msg', `Testing quotes ${quotedMsgLink}`);
 					expect(res.body.message).to.have.property('attachments').that.is.an('array').that.has.lengthOf(2);
 					expect(res.body.message.attachments[0]).to.have.property('message_link', newQuotedMsgLink);
@@ -1189,7 +1174,6 @@ describe('[Chat]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('message.msg', 'This message was edited via API');
 					expect(res.body.message).to.have.property('attachments').that.is.an('array').that.has.lengthOf(0);
 				});
@@ -1249,7 +1233,6 @@ describe('[Chat]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					msgId = res.body.message._id;
 				})
 				.end(done);
@@ -1263,9 +1246,7 @@ describe('[Chat]', function () {
 					msgId,
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 		it('sending message as another user...', (done) => {
@@ -1280,7 +1261,6 @@ describe('[Chat]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					msgId = res.body.message._id;
 				})
 				.end(done);
@@ -1295,9 +1275,7 @@ describe('[Chat]', function () {
 					asUser: true,
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 	});
@@ -1332,7 +1310,6 @@ describe('[Chat]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages');
 				})
 				.end(done);
@@ -1348,7 +1325,6 @@ describe('[Chat]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages');
 					expect(res.body.messages.length).to.equal(1);
 				})
@@ -1366,7 +1342,6 @@ describe('[Chat]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages');
 					expect(res.body.messages.length).to.equal(3);
 				})
@@ -1385,7 +1360,6 @@ describe('[Chat]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages');
 					expect(res.body.messages.length).to.equal(0);
 				})
@@ -1404,9 +1378,7 @@ describe('[Chat]', function () {
 					shouldReact: false,
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 		it('should react a message successfully', (done) => {
@@ -1418,9 +1390,7 @@ describe('[Chat]', function () {
 					messageId: message._id,
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 
@@ -1433,9 +1403,7 @@ describe('[Chat]', function () {
 					messageId: message._id,
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 		it("should return statusCode: 200 and success when try react a message that's already reacted", (done) => {
@@ -1448,9 +1416,7 @@ describe('[Chat]', function () {
 					shouldReact: true,
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 		it('should return statusCode: 200 when unreact a message with flag, shouldReact: false', (done) => {
@@ -1463,9 +1429,7 @@ describe('[Chat]', function () {
 					shouldReact: false,
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 		it('should return statusCode: 200 when react a message with flag, shouldReact: true', (done) => {
@@ -1478,9 +1442,7 @@ describe('[Chat]', function () {
 					shouldReact: true,
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 		it('should return statusCode: 200 when the emoji is valid and has no colons', (done) => {
@@ -1492,9 +1454,7 @@ describe('[Chat]', function () {
 					messageId: message._id,
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 		it('should return statusCode: 200 for reaction property when the emoji is valid', (done) => {
@@ -1506,9 +1466,7 @@ describe('[Chat]', function () {
 					messageId: message._id,
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(done);
 		});
 	});
@@ -1590,9 +1548,7 @@ describe('[Chat]', function () {
 						description: 'test',
 					})
 					.success()
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
+
 					.end(done);
 			});
 		});
@@ -1642,7 +1598,6 @@ describe('[Chat]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('messages').and.to.be.an('array');
 						expect(res.body.messages.length).to.be.equal(1);
 					})
@@ -1659,7 +1614,6 @@ describe('[Chat]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('messages').and.to.be.an('array');
 						expect(res.body.messages.length).to.be.equal(1);
 					})
@@ -1677,7 +1631,6 @@ describe('[Chat]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('messages').and.to.be.an('array');
 						expect(res.body.messages.length).to.be.equal(1);
 					})
@@ -1790,7 +1743,6 @@ describe('[Chat]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.not.have.property('error');
 					})
 					.end(done);
@@ -1847,7 +1799,6 @@ describe('[Chat]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.not.have.property('error');
 					})
 					.end(done);
@@ -1884,7 +1835,6 @@ describe('[Chat]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.not.have.property('error');
 					})
 					.end(done);
@@ -1921,7 +1871,6 @@ describe('[Chat]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.not.have.property('error');
 					})
 					.end(done);
@@ -1975,9 +1924,7 @@ describe('[Chat]', function () {
 					userId: 'rocket.cat',
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(() => {
 					done();
 				});
@@ -1992,9 +1939,7 @@ describe('[Chat]', function () {
 					ignore: false,
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+
 				.end(() => {
 					done();
 				});
@@ -2026,7 +1971,6 @@ describe('[Chat]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('messages').and.to.be.an('array');
 						expect(res.body.messages.length).to.be.equal(1);
 					})
@@ -2042,7 +1986,6 @@ describe('[Chat]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('messages').and.to.be.an('array');
 						expect(res.body.messages.length).to.be.equal(1);
 					})
@@ -2059,7 +2002,6 @@ describe('[Chat]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('messages').and.to.be.an('array');
 						expect(res.body.messages.length).to.be.equal(1);
 					})
@@ -2120,7 +2062,6 @@ describe('[Chat]', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.messages).to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -2163,7 +2104,6 @@ describe('[Chat]', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.messages).to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -2235,7 +2175,6 @@ describe('[Chat]', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.messages).to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -2254,7 +2193,6 @@ describe('[Chat]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.messages).to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -2274,7 +2212,6 @@ describe('[Chat]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('messages').and.to.be.an('array');
 						expect(res.body).to.have.property('total');
 						expect(res.body).to.have.property('offset');
@@ -2297,7 +2234,6 @@ describe('[Chat]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('messages').and.to.be.an('array');
 						expect(res.body).to.have.property('total');
 						expect(res.body).to.have.property('offset');
@@ -2421,7 +2357,6 @@ describe('Threads', () => {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('threads').and.to.be.an('array');
 						expect(res.body).to.have.property('total');
 						expect(res.body).to.have.property('offset');
@@ -2445,7 +2380,6 @@ describe('Threads', () => {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('threads').and.to.be.an('array');
 						expect(res.body).to.have.property('total');
 						expect(res.body).to.have.property('offset');
@@ -2468,7 +2402,6 @@ describe('Threads', () => {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('threads').and.to.be.an('array');
 						expect(res.body).to.have.property('total');
 						expect(res.body).to.have.property('offset');
@@ -2490,7 +2423,6 @@ describe('Threads', () => {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('threads').and.to.be.an('array');
 						expect(res.body).to.have.property('total');
 						expect(res.body).to.have.property('offset');
@@ -2517,7 +2449,6 @@ describe('Threads', () => {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('threads').and.to.be.an('array');
 						expect(res.body).to.have.property('total');
 						expect(res.body).to.have.property('offset');
@@ -2664,7 +2595,6 @@ describe('Threads', () => {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('threads').and.to.be.an('object');
 						expect(res.body.threads).to.have.property('update').and.to.be.an('array');
 						expect(res.body.threads).to.have.property('remove').and.to.be.an('array');
@@ -2755,7 +2685,6 @@ describe('Threads', () => {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('messages').and.to.be.an('array');
 						expect(res.body).to.have.property('total').and.to.be.equal(1);
 						expect(res.body).to.have.property('offset');
@@ -2906,7 +2835,6 @@ describe('Threads', () => {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('messages').and.to.be.an('object');
 						expect(res.body.messages).to.have.property('update').and.to.be.an('array');
 						expect(res.body.messages).to.have.property('remove').and.to.be.an('array');
@@ -3011,9 +2939,7 @@ describe('Threads', () => {
 						mid: threadMessage.tmid,
 					})
 					.success()
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
+
 					.end(done);
 			});
 		});
@@ -3111,9 +3037,7 @@ describe('Threads', () => {
 						mid: threadMessage.tmid,
 					})
 					.success()
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
+
 					.end(done);
 			});
 		});
@@ -3131,7 +3055,6 @@ describe('Threads', () => {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('urlPreview').and.to.be.an('object').that.is.not.empty;
 					expect(res.body.urlPreview).to.have.property('url', url);
 					expect(res.body.urlPreview).to.have.property('headers').and.to.be.an('object').that.is.not.empty;
