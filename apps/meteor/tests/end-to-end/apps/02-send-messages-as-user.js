@@ -63,7 +63,7 @@ describe('Apps - Send Messages As User', function () {
 					.send({
 						roomId: 'GENERAL',
 					})
-					.expect(200)
+					.success()
 					.expect((res) => {
 						const response = JSON.parse(res.text);
 						expect(response).to.have.a.property('messageId');
@@ -112,7 +112,7 @@ describe('Apps - Send Messages As User', function () {
 					.send({
 						roomId: group._id,
 					})
-					.expect(200)
+					.success()
 					.expect((res) => {
 						const response = JSON.parse(res.text);
 						expect(response).to.have.a.property('messageId');
@@ -147,7 +147,7 @@ describe('Apps - Send Messages As User', function () {
 					.send({
 						roomId: dmRoom._id,
 					})
-					.expect(200)
+					.success()
 					.expect((res) => {
 						const response = JSON.parse(res.text);
 						expect(response).to.have.a.property('messageId');

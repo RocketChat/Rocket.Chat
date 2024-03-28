@@ -21,10 +21,8 @@ describe('[Direct Messages]', function () {
 				channel: 'rocket.cat',
 				text: 'This message was sent using the API',
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.nested.property('message.msg', 'This message was sent using the API');
 				expect(res.body).to.have.nested.property('message.rid');
 				directMessage._id = res.body.message.rid;
@@ -41,10 +39,8 @@ describe('[Direct Messages]', function () {
 					roomId: directMessage._id,
 					topic: 'a direct message with rocket.cat',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('topic', 'a direct message with rocket.cat');
 				})
 				.end(done);
@@ -57,10 +53,8 @@ describe('[Direct Messages]', function () {
 					roomId: directMessage._id,
 					topic: '',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('topic', '');
 				})
 				.end(done);
@@ -77,8 +71,7 @@ describe('[Direct Messages]', function () {
 				.send({
 					username: 'rocket.cat',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					testDM = res.body.room;
 				})
@@ -94,10 +87,8 @@ describe('[Direct Messages]', function () {
 						rid: testDM._id,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					dmMessage = res.body.message;
 				})
 				.end(done);
@@ -110,11 +101,8 @@ describe('[Direct Messages]', function () {
 					emoji: ':squid:',
 					messageId: dmMessage._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 		it('STARring last message', (done) => {
@@ -124,11 +112,8 @@ describe('[Direct Messages]', function () {
 				.send({
 					messageId: dmMessage._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 		it('PINning last message', (done) => {
@@ -138,11 +123,8 @@ describe('[Direct Messages]', function () {
 				.send({
 					messageId: dmMessage._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 		it('should return all DM messages where the last message of array should have the "star" array with USERS star ONLY', (done) => {
@@ -152,10 +134,8 @@ describe('[Direct Messages]', function () {
 				.query({
 					roomId: testDM._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
 					const { messages } = res.body;
 					const lastMessage = messages.filter((message) => message._id === dmMessage._id)[0];
@@ -173,10 +153,8 @@ describe('[Direct Messages]', function () {
 			.query({
 				roomId: directMessage._id,
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('messages');
 			})
 			.end(done);
@@ -186,10 +164,8 @@ describe('[Direct Messages]', function () {
 		request
 			.get(api('im.list'))
 			.set(credentials)
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('count', 1);
 				expect(res.body).to.have.property('total', 1);
 				expect(res.body).to.have.property('ims').and.to.be.an('array');
@@ -210,10 +186,8 @@ describe('[Direct Messages]', function () {
 		request
 			.get(api('im.list.everyone'))
 			.set(credentials)
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('count', 1);
 				expect(res.body).to.have.property('total', 1);
 				expect(res.body).to.have.property('ims').and.to.be.an('array');
@@ -239,10 +213,8 @@ describe('[Direct Messages]', function () {
 			request
 				.get(api('im.list'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count', 1);
 					expect(res.body).to.have.property('total', 1);
 					expect(res.body).to.have.property('ims').and.to.be.an('array');
@@ -269,10 +241,8 @@ describe('[Direct Messages]', function () {
 			request
 				.get(api('im.list.everyone'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count', 1);
 					expect(res.body).to.have.property('total', 1);
 					expect(res.body).to.have.property('ims').and.to.be.an('array');
@@ -302,11 +272,8 @@ describe('[Direct Messages]', function () {
 			.send({
 				roomId: directMessage._id,
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-			})
+			.success()
+
 			.end(done);
 	});
 
@@ -317,10 +284,8 @@ describe('[Direct Messages]', function () {
 			.query({
 				roomId: directMessage._id,
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('joined', true);
 				expect(res.body).to.have.property('members');
 				expect(res.body).to.have.property('unreads');
@@ -344,10 +309,8 @@ describe('[Direct Messages]', function () {
 				.query({
 					username: adminUsername,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
 				})
 				.end(done);
@@ -381,8 +344,7 @@ describe('[Direct Messages]', function () {
 						.query({
 							roomId: directMessage._id,
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(403)
+						.forbidden()
 						.expect((res) => {
 							expect(res.body).to.have.property('success', false);
 							expect(res.body).to.have.property('error', 'unauthorized');
@@ -400,10 +362,8 @@ describe('[Direct Messages]', function () {
 						.query({
 							roomId: directMessage._id,
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('messages').and.to.be.an('array');
 							expect(res.body).to.have.property('offset');
 							expect(res.body).to.have.property('count');
@@ -423,11 +383,8 @@ describe('[Direct Messages]', function () {
 				roomId: directMessage._id,
 				userId: 'rocket.cat',
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-			})
+			.success()
+
 			.end(done);
 	});
 
@@ -469,10 +426,8 @@ describe('[Direct Messages]', function () {
 					channel: `@${username}`,
 					text: 'This message was sent using the API',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('message.msg', 'This message was sent using the API');
 					expect(res.body).to.have.nested.property('message.rid');
 					directMessageId = res.body.message.rid;
@@ -489,10 +444,8 @@ describe('[Direct Messages]', function () {
 				.query({
 					roomId: directMessageId,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.subscription).to.have.property('name', username);
 					expect(res.body.subscription).to.have.property('fname', name);
 				})
@@ -522,10 +475,8 @@ describe('[Direct Messages]', function () {
 				.query({
 					roomId: directMessageId,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.subscription).to.have.property('name', username);
 					expect(res.body.subscription).to.have.property('fname', updatedName);
 				})
@@ -541,10 +492,8 @@ describe('[Direct Messages]', function () {
 				.query({
 					roomId: directMessage._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count').and.to.be.equal(2);
 					expect(res.body).to.have.property('offset').and.to.be.equal(0);
 					expect(res.body).to.have.property('total').and.to.be.equal(2);
@@ -559,10 +508,8 @@ describe('[Direct Messages]', function () {
 				.query({
 					username: 'rocket.cat',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count').and.to.be.equal(2);
 					expect(res.body).to.have.property('offset').and.to.be.equal(0);
 					expect(res.body).to.have.property('total').and.to.be.equal(2);
@@ -578,10 +525,8 @@ describe('[Direct Messages]', function () {
 					'roomId': directMessage._id,
 					'status[]': ['online'],
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count').and.to.be.equal(1);
 					expect(res.body).to.have.property('offset').and.to.be.equal(0);
 					expect(res.body).to.have.property('total').and.to.be.equal(1);
@@ -635,10 +580,8 @@ describe('[Direct Messages]', function () {
 				.send({
 					usernames: [otherUser.username, thirdUser.username].join(','),
 				})
-				.expect(200)
-				.expect('Content-Type', 'application/json')
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('room').and.to.be.an('object');
 					expect(res.body.room).to.have.property('usernames').and.to.have.members([thirdUser.username, user.username, otherUser.username]);
 					roomIds = { ...roomIds, multipleDm: res.body.room._id };
@@ -654,10 +597,8 @@ describe('[Direct Messages]', function () {
 					usernames: [user.username, otherUser.username].join(','),
 					excludeSelf: true,
 				})
-				.expect(200)
-				.expect('Content-Type', 'application/json')
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('room').and.to.be.an('object');
 					expect(res.body.room).to.have.property('usernames').and.to.have.members([user.username, otherUser.username]);
 					roomIds = { ...roomIds, dm: res.body.room._id };
@@ -672,10 +613,8 @@ describe('[Direct Messages]', function () {
 				.send({
 					username: user.username,
 				})
-				.expect(200)
-				.expect('Content-Type', 'application/json')
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('room').and.to.be.an('object');
 					expect(res.body.room).to.have.property('usernames').and.to.have.members([user.username]);
 					roomIds = { ...roomIds, self: res.body.room._id };
@@ -713,7 +652,7 @@ describe('[Direct Messages]', function () {
 							params: [{ emailNotificationMode: 'nothing' }],
 						}),
 					})
-					.expect(200);
+					.success();
 			});
 
 			it('should create a DM', (done) => {
@@ -723,10 +662,8 @@ describe('[Direct Messages]', function () {
 					.send({
 						usernames: [user.username, otherUser.username].join(','),
 					})
-					.expect(200)
-					.expect('Content-Type', 'application/json')
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('room').and.to.be.an('object');
 						expect(res.body.room).to.have.property('usernames').and.to.have.members([user.username, otherUser.username]);
 						userPrefRoomId = res.body.room._id;
@@ -741,10 +678,8 @@ describe('[Direct Messages]', function () {
 					.query({
 						roomId: userPrefRoomId,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('subscription').and.to.be.an('object');
 						expect(res.body).to.have.nested.property('subscription.emailNotifications').and.to.be.equal('nothing');
 					})
@@ -757,10 +692,8 @@ describe('[Direct Messages]', function () {
 				.get(api('subscriptions.getOne'))
 				.set(testCredentials)
 				.query({ roomId })
-				.expect(200)
-				.expect('Content-Type', 'application/json')
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('subscription').and.to.be.an('object');
 					expect(res.body.subscription).to.have.property('fname', fullName);
 				});
@@ -794,7 +727,7 @@ describe('[Direct Messages]', function () {
 				.send({
 					username: 'rocket.cat',
 				})
-				.expect(200)
+				.success()
 				.expect('Content-Type', 'application/json')
 				.expect((res) => {
 					testDM = res.body.room;
@@ -809,11 +742,7 @@ describe('[Direct Messages]', function () {
 				.send({
 					username: 'rocket.cat',
 				})
-				.expect(200)
-				.expect('Content-Type', 'application/json')
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
 				.end(done);
 		});
 
@@ -854,7 +783,7 @@ describe('[Direct Messages]', function () {
 					.send({
 						username: otherUser.username,
 					})
-					.expect(200)
+					.success()
 					.expect('Content-Type', 'application/json')
 					.expect((res) => {
 						testDM = res.body.room;

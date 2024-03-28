@@ -29,10 +29,8 @@ describe('Meteor.methods', function () {
 				.send({
 					name: channelName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
 					expect(res.body).to.have.nested.property('group.name', channelName);
 					expect(res.body).to.have.nested.property('group.t', 'p');
@@ -52,10 +50,8 @@ describe('Meteor.methods', function () {
 						rid,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					firstMessage = res.body.message;
 				})
 				.end(done);
@@ -72,11 +68,8 @@ describe('Meteor.methods', function () {
 						tmid: firstMessage._id,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 
@@ -93,8 +86,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.unauthorized()
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');
@@ -114,10 +106,8 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -140,8 +130,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.unauthorized()
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message', 'You must be logged in to do this.');
@@ -161,10 +150,8 @@ describe('Meteor.methods', function () {
 							msg: 'method',
 						}),
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						const data = JSON.parse(res.body.message);
 						expect(data).to.have.property('error').that.is.an('object');
 						expect(data.error).to.have.property('error', 'error-action-not-allowed');
@@ -213,10 +200,8 @@ describe('Meteor.methods', function () {
 								msg: 'method',
 							}),
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
 
 							const data = JSON.parse(res.body.message);
@@ -238,10 +223,8 @@ describe('Meteor.methods', function () {
 								msg: 'method',
 							}),
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
 
 							const data = JSON.parse(res.body.message);
@@ -279,10 +262,8 @@ describe('Meteor.methods', function () {
 								msg: 'method',
 							}),
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
 
 							const data = JSON.parse(res.body.message);
@@ -306,10 +287,8 @@ describe('Meteor.methods', function () {
 								msg: 'method',
 							}),
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
 
 							const data = JSON.parse(res.body.message);
@@ -351,10 +330,8 @@ describe('Meteor.methods', function () {
 								msg: 'method',
 							}),
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
 
 							const data = JSON.parse(res.body.message);
@@ -402,10 +379,8 @@ describe('Meteor.methods', function () {
 								msg: 'method',
 							}),
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
 
 							const data = JSON.parse(res.body.message);
@@ -429,10 +404,8 @@ describe('Meteor.methods', function () {
 								msg: 'method',
 							}),
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
 
 							const data = JSON.parse(res.body.message);
@@ -462,10 +435,8 @@ describe('Meteor.methods', function () {
 				.send({
 					name: channelName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
 					expect(res.body).to.have.nested.property('group.name', channelName);
 					expect(res.body).to.have.nested.property('group.t', 'p');
@@ -485,10 +456,8 @@ describe('Meteor.methods', function () {
 						rid,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					firstMessage = res.body.message;
 				})
 				.end(done);
@@ -504,10 +473,8 @@ describe('Meteor.methods', function () {
 						rid,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					lastMessage = res.body.message;
 				})
 				.end(done);
@@ -526,8 +493,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.unauthorized()
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');
@@ -547,10 +513,8 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -573,10 +537,8 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -598,10 +560,8 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -625,10 +585,8 @@ describe('Meteor.methods', function () {
 				.send({
 					name: channelName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
 					expect(res.body).to.have.nested.property('group.name', channelName);
 					expect(res.body).to.have.nested.property('group.t', 'p');
@@ -648,11 +606,8 @@ describe('Meteor.methods', function () {
 						rid,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 
@@ -666,11 +621,8 @@ describe('Meteor.methods', function () {
 						rid,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 
@@ -693,9 +645,8 @@ describe('Meteor.methods', function () {
 					ignoreThreads: false,
 					ignoreDiscussion: false,
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('count', 0);
 				});
 
@@ -722,9 +673,8 @@ describe('Meteor.methods', function () {
 					ignoreThreads: false,
 					ignoreDiscussion: false,
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('count', 2);
 				});
 
@@ -750,10 +700,8 @@ describe('Meteor.methods', function () {
 				.send({
 					name: channelName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
 					expect(res.body).to.have.nested.property('group.name', channelName);
 					expect(res.body).to.have.nested.property('group.t', 'p');
@@ -773,10 +721,8 @@ describe('Meteor.methods', function () {
 						rid,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
+				.success()
+				.expect(() => {
 					postMessageDate = { $date: new Date().getTime() };
 				})
 				.end(done);
@@ -792,10 +738,8 @@ describe('Meteor.methods', function () {
 						rid,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					lastMessage = res.body.message;
 				})
 				.end(done);
@@ -814,8 +758,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.unauthorized()
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');
@@ -835,10 +778,8 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -861,10 +802,8 @@ describe('Meteor.methods', function () {
 						params: [rid],
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -887,10 +826,8 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -913,10 +850,8 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -939,10 +874,8 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -969,10 +902,8 @@ describe('Meteor.methods', function () {
 				.send({
 					name: channelName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
 					expect(res.body).to.have.nested.property('group.name', channelName);
 					expect(res.body).to.have.nested.property('group.t', 'p');
@@ -992,10 +923,8 @@ describe('Meteor.methods', function () {
 						rid,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
+				.success()
+				.expect(() => {
 					postMessageDate = { $date: new Date().getTime() };
 				})
 				.end(done);
@@ -1011,11 +940,8 @@ describe('Meteor.methods', function () {
 						rid,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 
@@ -1032,8 +958,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.unauthorized()
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');
@@ -1053,10 +978,8 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1079,10 +1002,8 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1105,10 +1026,8 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1131,10 +1050,8 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1160,10 +1077,8 @@ describe('Meteor.methods', function () {
 				.send({
 					name: channelName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
 					expect(res.body).to.have.nested.property('group.name', channelName);
 					expect(res.body).to.have.nested.property('group.t', 'p');
@@ -1194,8 +1109,7 @@ describe('Meteor.methods', function () {
 					roomId: rid,
 					userId: testUser._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.end(done);
 		});
 
@@ -1212,8 +1126,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.unauthorized()
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');
@@ -1233,10 +1146,8 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1258,10 +1169,8 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1284,8 +1193,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.unauthorized()
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');
@@ -1305,10 +1213,8 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1330,8 +1236,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.unauthorized()
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');
@@ -1351,10 +1256,8 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1380,8 +1283,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.unauthorized()
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');
@@ -1401,10 +1303,8 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1426,10 +1326,8 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1456,10 +1354,8 @@ describe('Meteor.methods', function () {
 				.send({
 					name: channelName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
 					expect(res.body).to.have.nested.property('group.name', channelName);
 					expect(res.body).to.have.nested.property('group.t', 'p');
@@ -1479,10 +1375,8 @@ describe('Meteor.methods', function () {
 						rid,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
+				.success()
+				.expect(() => {
 					postMessageDate = { $date: new Date().getTime() };
 				})
 				.end(done);
@@ -1498,11 +1392,8 @@ describe('Meteor.methods', function () {
 						rid,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 
@@ -1519,8 +1410,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.unauthorized()
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');
@@ -1540,10 +1430,8 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.include('error-invalid-room');
 				})
 				.end(done);
@@ -1561,10 +1449,8 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.include('Match error');
 				})
 				.end(done);
@@ -1582,10 +1468,8 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1607,10 +1491,8 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1632,10 +1514,8 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1662,8 +1542,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.unauthorized()
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');
@@ -1683,10 +1562,8 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1720,8 +1597,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.unauthorized()
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');
@@ -1745,10 +1621,8 @@ describe('Meteor.methods', function () {
 								msg: 'method',
 							}),
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
 
 							const data = JSON.parse(res.body.message);
@@ -1772,10 +1646,8 @@ describe('Meteor.methods', function () {
 							msg: 'method',
 						}),
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
 						expect(res.body).to.have.a.property('message').that.is.a('string');
 
 						const data = JSON.parse(res.body.message);
@@ -1803,10 +1675,8 @@ describe('Meteor.methods', function () {
 								msg: 'method',
 							}),
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
 
 							const data = JSON.parse(res.body.message);
@@ -1835,8 +1705,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.unauthorized()
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');
@@ -1856,10 +1725,8 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1881,10 +1748,8 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1907,10 +1772,8 @@ describe('Meteor.methods', function () {
 				.send({
 					name: channelName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
 					expect(res.body).to.have.nested.property('group.name', channelName);
 					expect(res.body).to.have.nested.property('group.t', 'p');
@@ -1934,10 +1797,8 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1965,10 +1826,8 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1997,10 +1856,8 @@ describe('Meteor.methods', function () {
 				.send({
 					name: channelName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
 					expect(res.body).to.have.nested.property('group.name', channelName);
 					expect(res.body).to.have.nested.property('group.t', 'p');
@@ -2034,10 +1891,8 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -2067,10 +1922,8 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -2100,10 +1953,8 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 					const data = JSON.parse(res.body.message);
 					expect(data).to.have.a.property('msg').that.is.an('string');
@@ -2124,18 +1975,15 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 				});
 
 			await request
 				.get(api(`chat.getMessage?msgId=${messageId}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('message').that.is.an('object');
 					expect(res.body.message).to.have.property('msg', `${quotedMsgLink} updated`);
@@ -2157,18 +2005,15 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 				});
 
 			await request
 				.get(api(`chat.getMessage?msgId=${messageId}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('message').that.is.an('object');
 					expect(res.body.message).to.have.property('msg', `${quotedMsgLink} updated`);
@@ -2191,18 +2036,15 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 				});
 
 			await request
 				.get(api(`chat.getMessage?msgId=${messageId}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('message').that.is.an('object');
 					expect(res.body.message).to.have.property('msg', `${newQuotedMsgLink} ${quotedMsgLink} updated`);
@@ -2224,18 +2066,15 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 				});
 
 			await request
 				.get(api(`chat.getMessage?msgId=${messageId}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('message').that.is.an('object');
 					expect(res.body.message).to.have.property('msg', 'updated');
@@ -2260,18 +2099,15 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 				});
 
 			await request
 				.get(api(`chat.getMessage?msgId=${messageId}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('message').that.is.an('object');
 					expect(res.body.message.msg).to.equal('https://github.com updated with bypass');
@@ -2301,10 +2137,8 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -2314,8 +2148,7 @@ describe('Meteor.methods', function () {
 					request
 						.get(api(`chat.getMessage?msgId=${messageWithMarkdownId}`))
 						.set(credentials)
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
 							expect(res.body).to.have.property('message').that.is.an('object');
 							expect(res.body.message.msg).to.equal('test message with ```https://github.com``` updated');
@@ -2339,10 +2172,8 @@ describe('Meteor.methods', function () {
 							msg: 'method',
 						}),
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
 						expect(res.body).to.have.a.property('message').that.is.a('string');
 						const data = JSON.parse(res.body.message);
 						expect(data).to.have.a.property('msg').that.is.a('string');
@@ -2364,10 +2195,8 @@ describe('Meteor.methods', function () {
 							msg: 'method',
 						}),
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
 						expect(res.body).to.have.a.property('message').that.is.a('string');
 
 						const data = JSON.parse(res.body.message);
@@ -2391,10 +2220,8 @@ describe('Meteor.methods', function () {
 				.send({
 					name: channelName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
 					expect(res.body).to.have.nested.property('group.name', channelName);
 					expect(res.body).to.have.nested.property('group.t', 'p');
@@ -2422,10 +2249,8 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -2457,10 +2282,8 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 					const data = JSON.parse(res.body.message);
 					expect(data).to.have.a.property('msg', 'result');
@@ -2486,10 +2309,8 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 					const data = JSON.parse(res.body.message);
 					expect(data).to.have.a.property('msg', 'result');
@@ -2671,13 +2492,10 @@ describe('Meteor.methods', function () {
 
 		it('should keep the direct conversation between testUser=>testUser2 as readonly when one of them is deactivated', (done) => {
 			request
-				.post(api('login'))
-				.send({
+				.expectLoginSuccess({
 					user: testUser.username,
 					password,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
 				.expect((res) => {
 					testUserCredentials['X-Auth-Token'] = res.body.data.authToken;
 					testUserCredentials['X-User-Id'] = res.body.data.userId;
@@ -2789,8 +2607,7 @@ describe('Meteor.methods', function () {
 		it('should fail if not logged in', (done) => {
 			request
 				.post(methodCall('addUsersToRoom'))
-				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.unauthorized()
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');
@@ -2810,11 +2627,8 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.then(() => {
 					request
 						.get(api('channels.members'))
@@ -2822,10 +2636,8 @@ describe('Meteor.methods', function () {
 						.query({
 							roomId: room._id,
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('members').and.to.be.an('array');
 							expect(res.body.members).to.have.lengthOf(2);
 						})
@@ -2863,10 +2675,8 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					const parsedBody = JSON.parse(res.body.message);
 					expect(parsedBody).to.have.property('error');
 					expect(parsedBody.error).to.have.property('error', 'error-max-rooms-per-guest-reached');
@@ -2912,10 +2722,8 @@ describe('Meteor.methods', function () {
 								msg: 'method',
 							}),
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
 							const data = JSON.parse(res.body.message);
 							expect(data).to.have.a.property('msg', 'result');
@@ -2957,10 +2765,8 @@ describe('Meteor.methods', function () {
 								msg: 'method',
 							}),
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
 							const data = JSON.parse(res.body.message);
 							expect(data).to.have.a.property('msg', 'result');
@@ -2979,11 +2785,7 @@ describe('Meteor.methods', function () {
 								rid,
 							},
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-						});
+						.success();
 				});
 			});
 		});
@@ -2997,8 +2799,7 @@ describe('Meteor.methods', function () {
 						roomId: rid,
 						readOnly: true,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200);
+					.success();
 			});
 
 			it('should not allow an user to send messages', async () => {
@@ -3033,10 +2834,8 @@ describe('Meteor.methods', function () {
 								msg: 'method',
 							}),
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
 							const data = JSON.parse(res.body.message);
 							expect(data).to.have.a.property('msg', 'result');
@@ -3055,11 +2854,7 @@ describe('Meteor.methods', function () {
 								rid,
 							},
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-						});
+						.success();
 				});
 			});
 
@@ -3076,10 +2871,8 @@ describe('Meteor.methods', function () {
 								msg: 'method',
 							}),
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
 							const data = JSON.parse(res.body.message);
 							expect(data).to.have.a.property('msg', 'result');

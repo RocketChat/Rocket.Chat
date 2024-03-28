@@ -36,8 +36,7 @@ describe('Email inbox', () => {
 					maxRetries: 10,
 				},
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect((res: Response) => {
 				expect(res.body).to.have.property('success');
 				if (res.body.success === true) {
@@ -54,7 +53,7 @@ describe('Email inbox', () => {
 				.delete(api(`email-inbox/${testInbox}`))
 				.set(credentials)
 				.send()
-				.expect(200);
+				.success();
 		}
 	});
 	describe('GET email-inbox.list', () => {
@@ -142,7 +141,7 @@ describe('Email inbox', () => {
 					...payload,
 					email: `test${new Date().getTime()}@test.com`,
 				})
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('_id');
 			inboxId = body._id;
@@ -157,7 +156,7 @@ describe('Email inbox', () => {
 					_id: inboxId,
 					description: 'Updated test description',
 				})
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('_id');
 		});
@@ -176,7 +175,7 @@ describe('Email inbox', () => {
 			const { body } = await request
 				.get(api(`email-inbox/${inbox._id}`))
 				.set(credentials)
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('_id');
 			expect(body).to.have.property('name', 'test');
@@ -196,7 +195,7 @@ describe('Email inbox', () => {
 			const { body } = await request
 				.delete(api(`email-inbox/${inbox._id}`))
 				.set(credentials)
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('success', true);
 		});

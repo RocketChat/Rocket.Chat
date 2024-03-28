@@ -78,12 +78,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 		// POST
 		it('should return an "unauthorized error" when the user does not have the necessary permission for [POST] livechat/sla endpoint', async () => {
 			await updatePermission('manage-livechat-sla', []);
-			const response = await request
-				.post(api('livechat/sla'))
-				.set(credentials)
-				.send(generateRandomSLAData())
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+			const response = await request.post(api('livechat/sla')).set(credentials).send(generateRandomSLAData()).forbidden();
 			expect(response.body).to.have.property('success', false);
 		});
 		it('should create a new sla', async () => {
@@ -91,12 +86,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 
 			const sla = generateRandomSLAData();
 
-			const response = await request
-				.post(api('livechat/sla'))
-				.set(credentials)
-				.send(sla)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+			const response = await request.post(api('livechat/sla')).set(credentials).send(sla).success();
 
 			expect(response.body).to.have.property('success', true);
 			expect(response.body.sla).to.be.an('object');
@@ -110,12 +100,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 		it('should throw an error when trying to create a duplicate sla with same dueTimeInMinutes', async () => {
 			const firstSla = generateRandomSLAData();
 
-			const response = await request
-				.post(api('livechat/sla'))
-				.set(credentials)
-				.send(firstSla)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+			const response = await request.post(api('livechat/sla')).set(credentials).send(firstSla).success();
 
 			expect(response.body).to.have.property('success', true);
 
@@ -139,12 +124,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 		it('should throw an error when trying to create a duplicate sla with same name', async () => {
 			const firstSla = generateRandomSLAData();
 
-			const response = await request
-				.post(api('livechat/sla'))
-				.set(credentials)
-				.send(firstSla)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+			const response = await request.post(api('livechat/sla')).set(credentials).send(firstSla).success();
 
 			expect(response.body).to.have.property('success', true);
 
@@ -182,8 +162,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 			const response = await request
 				.get(api(`livechat/sla/${sla._id}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 			expect(response.body).to.have.property('success', true);
 			expect(response.body).to.be.an('object');
 			expect(response.body._id).to.be.equal(sla._id);
@@ -193,12 +172,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 		it('should return an "unauthorized error" when the user does not have the necessary permission for [PUT] livechat/sla/:slaId endpoint', async () => {
 			await removePermissionFromAllRoles('manage-livechat-sla');
 
-			const response = await request
-				.put(api('livechat/sla/123'))
-				.set(credentials)
-				.send(generateRandomSLAData())
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+			const response = await request.put(api('livechat/sla/123')).set(credentials).send(generateRandomSLAData()).forbidden();
 
 			expect(response.body).to.have.property('success', false);
 		});
@@ -212,8 +186,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 				.put(api(`livechat/sla/${sla._id}`))
 				.set(credentials)
 				.send(newSlaData)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 			expect(response.body).to.have.property('success', true);
 			expect(response.body.sla).to.be.an('object');
 			expect(response.body.sla).to.have.property('_id');
@@ -275,11 +248,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 		// DELETE
 		it('should return an "unauthorized error" when the user does not have the necessary permission for [DELETE] livechat/sla/:slaId endpoint', async () => {
 			await updatePermission('manage-livechat-sla', []);
-			const response = await request
-				.delete(api('livechat/sla/123'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+			const response = await request.delete(api('livechat/sla/123')).set(credentials).forbidden();
 			expect(response.body).to.have.property('success', false);
 		});
 		it('should delete an sla', async () => {
@@ -288,8 +257,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 			const response = await request
 				.delete(api(`livechat/sla/${sla._id}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 			expect(response.body).to.have.property('success', true);
 		});
 	});
@@ -304,8 +272,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 					roomId: '123',
 					sla: '123',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 			expect(response.body).to.have.property('success', false);
 		});
 		it('should fail if roomId is not in request body', async () => {
@@ -390,8 +357,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 					roomId: room._id,
 					sla: sla._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 			expect(response.body).to.have.property('success', true);
 		});
 	});
@@ -400,11 +366,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 		let priority: ILivechatPriority;
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await removePermissions(['manage-livechat-priorities', 'view-l-room']);
-			const response = await request
-				.get(api('livechat/priorities'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+			const response = await request.get(api('livechat/priorities')).set(credentials).forbidden();
 			expect(response.body).to.have.property('success', false);
 		});
 		it('should return an array of priorities', async () => {
@@ -412,11 +374,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 				'manage-livechat-priorities': ['admin', 'livechat-manager'],
 				'view-l-room': ['livechat-agent', 'admin', 'livechat-manager'],
 			});
-			const response = await request
-				.get(api('livechat/priorities'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+			const response = await request.get(api('livechat/priorities')).set(credentials).success();
 			expect(response.body).to.have.property('success', true);
 			expect(response.body.priorities).to.be.an('array');
 			expect(response.body.priorities).to.have.lengthOf(5);
@@ -432,8 +390,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 				.query({
 					text: priority.name,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 			expect(response.body).to.have.property('success', true);
 			expect(response.body.priorities).to.be.an('array');
 			expect(response.body.priorities).to.have.length.greaterThan(0);
@@ -465,8 +422,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 			const response = await request
 				.get(api(`livechat/priorities/${priority._id}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 			expect(response.body).to.have.property('success', true);
 			expect(response.body).to.be.an('object');
 			expect(response.body._id).to.be.equal(priority._id);
@@ -482,16 +438,14 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 				.send({
 					name,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 			expect(response.body).to.have.property('success', true);
 		});
 		it('should return dirty: true after a priority has been updated', async () => {
 			const response = await request
 				.get(api(`livechat/priorities/${priority._id}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 			expect(response.body).to.have.property('success', true);
 			expect(response.body).to.have.property('dirty', true);
 		});
@@ -502,8 +456,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 				.query({
 					text: name,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 			expect(response.body).to.have.property('success', true);
 			expect(response.body.priorities).to.be.an('array');
 			expect(response.body.priorities).to.have.length.greaterThan(0);
@@ -520,14 +473,12 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 				.send({
 					name: newName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 			expect(response.body).to.have.property('success', true);
 			const newPriorityResponse = await request
 				.get(api(`livechat/priorities/${priority._id}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 			expect(newPriorityResponse.body).to.have.property('success', true);
 			expect(newPriorityResponse.body).to.have.property('dirty', true);
 			expect(newPriorityResponse.body).to.have.property('name', newName);
@@ -568,8 +519,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 				.send({
 					name: false,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 			expect(response.body).to.have.property('success', true);
 		});
 		it('should fail to update a non-existing priority', async () => {
@@ -590,14 +540,12 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 				.send({
 					reset: true,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 			expect(response.body).to.have.property('success', true);
 			const newPriorityResponse = await request
 				.get(api(`livechat/priorities/${priority._id}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 			expect(newPriorityResponse.body).to.have.property('success', true);
 			expect(newPriorityResponse.body).to.have.property('dirty', false);
 			expect(newPriorityResponse.body).to.not.have.property('name');
@@ -613,8 +561,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 				.put(api(`livechat/priorities/${priorities[0]._id}`))
 				.set(credentials)
 				.send({ name: newName })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			// change name of second priority to the name of first priority and expect error
 			const response = await request
@@ -637,8 +584,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 				.put(api(`livechat/priorities/${priorities[0]._id}`))
 				.set(credentials)
 				.send({ name: newNameLowercase })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			// change name of second priority to the name of first priority in different case and expect error
 			const response = await request
@@ -676,33 +622,19 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 				.send({
 					name: priority.name,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 			expect(responseChange.body).to.have.property('success', true);
 
-			const response = await request
-				.get(api('livechat/priorities.reset'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+			const response = await request.get(api('livechat/priorities.reset')).set(credentials).success();
 			expect(response.body).to.have.property('success', true);
 			expect(response.body).to.have.property('reset', true);
 		});
 		it('should reset all priorities', async () => {
-			const resetRespose = await request
-				.post(api('livechat/priorities.reset'))
-				.set(credentials)
-				.send()
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+			const resetRespose = await request.post(api('livechat/priorities.reset')).set(credentials).send().success();
 			expect(resetRespose.body).to.have.property('success', true);
 		});
 		it('should return reset: false after all priorities have been reset', async () => {
-			const response = await request
-				.get(api('livechat/priorities.reset'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+			const response = await request.get(api('livechat/priorities.reset')).set(credentials).success();
 			expect(response.body).to.have.property('success', true);
 			expect(response.body).to.have.property('reset', false);
 		});
@@ -710,18 +642,13 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 			const response = await request
 				.get(api(`livechat/priorities/${priority._id}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 			expect(response.body).to.have.property('success', true);
 			expect(response.body).to.have.property('dirty', false);
 			expect(response.body).to.not.have.property('name');
 		});
 		it('should change all priorities to their default', async () => {
-			const response = await request
-				.get(api('livechat/priorities'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+			const response = await request.get(api('livechat/priorities')).set(credentials).success();
 			expect(response.body).to.have.property('success', true);
 			expect(response.body.priorities).to.be.an('array');
 			response.body.priorities.forEach((priority: ILivechatPriority) => {

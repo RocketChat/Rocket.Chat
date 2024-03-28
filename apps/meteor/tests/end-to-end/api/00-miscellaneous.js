@@ -23,8 +23,7 @@ describe('miscellaneous', function () {
 				request
 					.get('/api/info')
 					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('version').and.to.be.a('string');
 						expect(res.body.info).to.have.property('version').and.to.be.a('string');
@@ -38,8 +37,7 @@ describe('miscellaneous', function () {
 			it('should return only "version" and the version should not have patch info when the user is not logged in', (done) => {
 				request
 					.get('/api/info')
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('version');
 						expect(res.body).to.not.have.property('info');
@@ -57,20 +55,14 @@ describe('miscellaneous', function () {
 
 	it('/login (wrapper username)', (done) => {
 		request
-			.post(api('login'))
-			.send({
+			.expectLoginSuccess({
 				user: {
 					username: adminUsername,
 				},
 				password: adminPassword,
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
 			.expect((res) => {
-				expect(res.body).to.have.property('status', 'success');
 				expect(res.body).to.have.property('data').and.to.be.an('object');
-				expect(res.body.data).to.have.property('userId');
-				expect(res.body.data).to.have.property('authToken');
 				expect(res.body.data).to.have.property('me');
 			})
 			.end(done);
@@ -78,20 +70,14 @@ describe('miscellaneous', function () {
 
 	it('/login (wrapper email)', (done) => {
 		request
-			.post(api('login'))
-			.send({
+			.expectLoginSuccess({
 				user: {
 					email: adminEmail,
 				},
 				password: adminPassword,
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
 			.expect((res) => {
-				expect(res.body).to.have.property('status', 'success');
 				expect(res.body).to.have.property('data').and.to.be.an('object');
-				expect(res.body.data).to.have.property('userId');
-				expect(res.body.data).to.have.property('authToken');
 				expect(res.body.data).to.have.property('me');
 			})
 			.end(done);
@@ -99,18 +85,12 @@ describe('miscellaneous', function () {
 
 	it('/login by user', (done) => {
 		request
-			.post(api('login'))
-			.send({
+			.expectLoginSuccess({
 				user: adminEmail,
 				password: adminPassword,
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
 			.expect((res) => {
-				expect(res.body).to.have.property('status', 'success');
 				expect(res.body).to.have.property('data').and.to.be.an('object');
-				expect(res.body.data).to.have.property('userId');
-				expect(res.body.data).to.have.property('authToken');
 				expect(res.body.data).to.have.property('me');
 			})
 			.end(done);
@@ -118,18 +98,12 @@ describe('miscellaneous', function () {
 
 	it('/login by username', (done) => {
 		request
-			.post(api('login'))
-			.send({
+			.expectLoginSuccess({
 				username: adminUsername,
 				password: adminPassword,
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
 			.expect((res) => {
-				expect(res.body).to.have.property('status', 'success');
 				expect(res.body).to.have.property('data').and.to.be.an('object');
-				expect(res.body.data).to.have.property('userId');
-				expect(res.body.data).to.have.property('authToken');
 				expect(res.body.data).to.have.property('me');
 			})
 			.end(done);
@@ -142,8 +116,7 @@ describe('miscellaneous', function () {
 		await request
 			.get(api('me'))
 			.set(userCredentials)
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect((res) => {
 				const allUserPreferencesKeys = [
 					'alsoSendThreadToChannel',
@@ -185,7 +158,6 @@ describe('miscellaneous', function () {
 					'enableMobileRinging',
 				].filter((p) => Boolean(p));
 
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('_id', user._id);
 				expect(res.body).to.have.property('username', user.username);
 				expect(res.body).to.have.property('active');
@@ -233,10 +205,8 @@ describe('miscellaneous', function () {
 						type: 'users',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('result').and.to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -260,10 +230,8 @@ describe('miscellaneous', function () {
 						type: 'users',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('result').and.to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -286,10 +254,8 @@ describe('miscellaneous', function () {
 						type: 'channels',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('count');
@@ -314,10 +280,8 @@ describe('miscellaneous', function () {
 						name: 1,
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('count');
@@ -381,8 +345,7 @@ describe('miscellaneous', function () {
 						name: 1,
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('result');
 					expect(res.body.result).to.be.an(`array`);
@@ -448,10 +411,8 @@ describe('miscellaneous', function () {
 					query: `@${adminUsername}`,
 				})
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('users').and.to.be.an('array');
 					expect(res.body.users[0]).to.have.property('_id');
 					expect(res.body.users[0]).to.have.property('name');
@@ -468,10 +429,8 @@ describe('miscellaneous', function () {
 					query: `#${testChannel.name}`,
 				})
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('users').and.to.be.an('array');
 					expect(res.body).to.have.property('rooms').and.to.be.an('array');
 					expect(res.body.rooms[0]).to.have.property('_id');
@@ -487,10 +446,8 @@ describe('miscellaneous', function () {
 					query: `${testTeam.name}`,
 				})
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('users').and.to.be.an('array');
 					expect(res.body).to.have.property('rooms').and.to.be.an('array');
 					expect(res.body.rooms[0]).to.have.property('_id');
@@ -507,10 +464,8 @@ describe('miscellaneous', function () {
 					query: `#${fnameSpecialCharsRoom}`,
 				})
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('users').and.to.be.an('array');
 					expect(res.body).to.have.property('rooms').and.to.be.an('array');
 					expect(res.body.rooms[0]).to.have.property('_id', testChannelSpecialChars._id);
@@ -532,8 +487,7 @@ describe('miscellaneous', function () {
 			request
 				.get(api('instances.get'))
 				.set(unauthorizedUserCredentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403)
+				.forbidden()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'unauthorized');
@@ -544,8 +498,7 @@ describe('miscellaneous', function () {
 		it('should fail if not logged in', (done) => {
 			request
 				.get(api('instances.get'))
-				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.unauthorized()
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');
@@ -557,10 +510,8 @@ describe('miscellaneous', function () {
 			request
 				.get(api('instances.get'))
 				.set(credentials)
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-
 					expect(res.body).to.have.property('instances').and.to.be.an('array').with.lengthOf(1);
 
 					const { instances } = res.body;
@@ -631,7 +582,7 @@ describe('miscellaneous', function () {
 						name: 'Rocket.Chat',
 					})
 					.expect('Content-Type', 'image/svg+xml;charset=utf-8')
-					.expect(200)
+					.svg()
 					.end(done);
 			});
 		});
@@ -642,10 +593,8 @@ describe('miscellaneous', function () {
 			request
 				.get(api('pw.getPolicy'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('enabled');
 					expect(res.body).to.have.property('policy').and.to.be.an('array');
 				})
@@ -669,8 +618,7 @@ describe('miscellaneous', function () {
 		it('should fail if no token is invalid format', (done) => {
 			request
 				.get(api('pw.getPolicyReset?token=123'))
-				.expect('Content-Type', 'application/json')
-				.expect(403)
+				.forbidden()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'unauthorized');
@@ -683,10 +631,8 @@ describe('miscellaneous', function () {
 			request
 				.get(api('pw.getPolicyReset?token'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403)
+				.forbidden()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('enabled');
 					expect(res.body).to.have.property('policy').and.to.be.an('array');
 				})

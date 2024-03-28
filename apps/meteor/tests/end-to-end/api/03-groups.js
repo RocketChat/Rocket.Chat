@@ -36,10 +36,8 @@ describe('[Groups]', function () {
 			.send({
 				name: apiPrivateChannelName,
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.nested.property('group._id');
 				expect(res.body).to.have.nested.property('group.name', apiPrivateChannelName);
 				expect(res.body).to.have.nested.property('group.t', 'p');
@@ -56,8 +54,7 @@ describe('[Groups]', function () {
 			.send({
 				roomId: group._id,
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200);
+			.success();
 	});
 
 	describe('/groups.create', () => {
@@ -98,10 +95,8 @@ describe('[Groups]', function () {
 						name: `channel.test.${Date.now()}-${Math.random()}`,
 						members: [guestUser.username],
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						room = res.body.group;
 					});
 
@@ -111,10 +106,8 @@ describe('[Groups]', function () {
 					.query({
 						roomId: room._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('members').and.to.be.an('array');
 						expect(res.body.members).to.have.lengthOf(1);
 					});
@@ -132,10 +125,8 @@ describe('[Groups]', function () {
 							encrypted: true,
 						},
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.nested.property('group.name', `encrypted-${apiPrivateChannelName}`);
 						expect(res.body).to.have.nested.property('group.t', 'p');
 						expect(res.body).to.have.nested.property('group.msgs', 0);
@@ -160,10 +151,8 @@ describe('[Groups]', function () {
 					.send({
 						name: `default-encrypted-${apiPrivateChannelName}`,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.nested.property('group.name', `default-encrypted-${apiPrivateChannelName}`);
 						expect(res.body).to.have.nested.property('group.t', 'p');
 						expect(res.body).to.have.nested.property('group.msgs', 0);
@@ -201,8 +190,7 @@ describe('[Groups]', function () {
 				.send({
 					name: newGroupInfoName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					testGroup = res.body.group;
 				});
@@ -215,8 +203,7 @@ describe('[Groups]', function () {
 				.send({
 					roomName: newGroupInfoName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 		});
 
 		it('should return group basic structure', async () => {
@@ -226,10 +213,8 @@ describe('[Groups]', function () {
 				.query({
 					roomId: testGroup._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
 					expect(res.body).to.have.nested.property('group.name', newGroupInfoName);
 					expect(res.body).to.have.nested.property('group.t', 'p');
@@ -247,10 +232,8 @@ describe('[Groups]', function () {
 						rid: testGroup._id,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					groupMessage = res.body.message;
 				});
 		});
@@ -263,11 +246,7 @@ describe('[Groups]', function () {
 					emoji: ':squid:',
 					messageId: groupMessage._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 		});
 
 		it('STARring last message', async () => {
@@ -277,11 +256,7 @@ describe('[Groups]', function () {
 				.send({
 					messageId: groupMessage._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 		});
 
 		it('PINning last message', async () => {
@@ -291,11 +266,7 @@ describe('[Groups]', function () {
 				.send({
 					messageId: groupMessage._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 		});
 
 		it('should return group structure with "lastMessage" object including pin, reaction and star(should be an array) infos', async () => {
@@ -305,10 +276,8 @@ describe('[Groups]', function () {
 				.query({
 					roomId: testGroup._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('group').and.to.be.an('object');
 					const { group } = res.body;
 					expect(group).to.have.property('lastMessage').and.to.be.an('object');
@@ -326,10 +295,8 @@ describe('[Groups]', function () {
 				.query({
 					roomId: testGroup._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
 					const { messages } = res.body;
 					const lastMessage = messages.filter((message) => message._id === groupMessage._id)[0];
@@ -347,10 +314,8 @@ describe('[Groups]', function () {
 					count: 5,
 					offset: 0,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
 					const { messages } = res.body;
 					const lastMessage = messages.filter((message) => message._id === groupMessage._id)[0];
@@ -375,10 +340,8 @@ describe('[Groups]', function () {
 					roomId: group._id,
 					userId: 'rocket.cat',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
 					expect(res.body).to.have.nested.property('group.name', apiPrivateChannelName);
 					expect(res.body).to.have.nested.property('group.t', 'p');
@@ -396,11 +359,8 @@ describe('[Groups]', function () {
 					roomId: group._id,
 					userId: 'rocket.cat',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 	});
@@ -414,11 +374,8 @@ describe('[Groups]', function () {
 					roomId: group._id,
 					userId: 'rocket.cat',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 	});
@@ -432,11 +389,8 @@ describe('[Groups]', function () {
 					roomId: group._id,
 					userId: 'rocket.cat',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 	});
@@ -450,11 +404,8 @@ describe('[Groups]', function () {
 					roomId: group._id,
 					userId: 'rocket.cat',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 	});
@@ -468,11 +419,7 @@ describe('[Groups]', function () {
 					roomId: group._id,
 					userId: 'rocket.cat',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-				})
+				.success()
 				.end(done);
 		});
 	});
@@ -486,11 +433,8 @@ describe('[Groups]', function () {
 					roomId: group._id,
 					userId: 'rocket.cat',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 	});
@@ -511,8 +455,7 @@ describe('[Groups]', function () {
 					roomId: groupTest._id,
 					userId,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 		};
 
 		before(async () => {
@@ -530,10 +473,8 @@ describe('[Groups]', function () {
 				.send({
 					name: `kick-test-group-${Date.now()}`,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
 					expect(res.body).to.have.nested.property('group.t', 'p');
 					expect(res.body).to.have.nested.property('group.msgs', 0);
@@ -549,8 +490,7 @@ describe('[Groups]', function () {
 					roomId: groupTest._id,
 					userId: testUserModerator._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 		});
 
 		after(async () => {
@@ -561,8 +501,7 @@ describe('[Groups]', function () {
 					.send({
 						roomId: groupTest._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200),
+					.success(),
 				// updatePermission('kick-user-from-any-p-room', []),
 				updatePermission('remove-user', ['admin', 'owner', 'moderator']),
 				deleteUser(testUserModerator),
@@ -597,8 +536,7 @@ describe('[Groups]', function () {
 					roomId: groupTest._id,
 					userId: testUserMember._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 		});
 
 		it('should allow an owner to remove user from group', async () => {
@@ -611,8 +549,7 @@ describe('[Groups]', function () {
 					roomId: groupTest._id,
 					userId: testUserMember._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 		});
 
 		it.skip('should kick user from group if not a member of the room but has the required permission', async () => {
@@ -626,8 +563,7 @@ describe('[Groups]', function () {
 					roomId: group._id,
 					userId: testUserMember._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 		});
 
 		it("should return an error when the owner doesn't have the required permission", async () => {
@@ -682,10 +618,8 @@ describe('[Groups]', function () {
 					roomId: group._id,
 					description: 'this is a description for a channel for api tests',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('description', 'this is a description for a channel for api tests');
 				})
 				.end(done);
@@ -698,10 +632,8 @@ describe('[Groups]', function () {
 					roomId: group._id,
 					description: '',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('description', '');
 				})
 				.end(done);
@@ -717,10 +649,8 @@ describe('[Groups]', function () {
 					roomId: group._id,
 					topic: 'this is a topic of a channel for api tests',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('topic', 'this is a topic of a channel for api tests');
 				})
 				.end(done);
@@ -733,10 +663,8 @@ describe('[Groups]', function () {
 					roomId: group._id,
 					topic: '',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('topic', '');
 				})
 				.end(done);
@@ -752,10 +680,8 @@ describe('[Groups]', function () {
 					roomId: group._id,
 					purpose: 'this is a purpose of a channel for api tests',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('purpose', 'this is a purpose of a channel for api tests');
 				})
 				.end(done);
@@ -768,10 +694,8 @@ describe('[Groups]', function () {
 					roomId: group._id,
 					purpose: '',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('purpose', '');
 				})
 				.end(done);
@@ -786,10 +710,8 @@ describe('[Groups]', function () {
 				.query({
 					roomId: group._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages');
 				})
 				.end(done);
@@ -803,10 +725,8 @@ describe('[Groups]', function () {
 					count: 5,
 					offset: 0,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages');
 				})
 				.end(done);
@@ -821,11 +741,8 @@ describe('[Groups]', function () {
 				.send({
 					roomId: group._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 	});
@@ -838,11 +755,8 @@ describe('[Groups]', function () {
 				.send({
 					roomId: group._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 	});
@@ -855,11 +769,8 @@ describe('[Groups]', function () {
 				.send({
 					roomId: group._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 
@@ -888,11 +799,8 @@ describe('[Groups]', function () {
 				.send({
 					roomId: group._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 	});
@@ -902,10 +810,8 @@ describe('[Groups]', function () {
 			request
 				.get(api('groups.list'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count');
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('groups').and.to.be.an('array');
@@ -919,10 +825,8 @@ describe('[Groups]', function () {
 			await request
 				.get(api('groups.list'))
 				.set(newCreds)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count').and.to.equal(0);
 					expect(res.body).to.have.property('total').and.to.equal(0);
 					expect(res.body).to.have.property('groups').and.to.be.an('array').and.that.has.lengthOf(0);
@@ -1032,10 +936,8 @@ describe('[Groups]', function () {
 				.query({
 					roomId: group._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count');
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('offset');
@@ -1052,10 +954,8 @@ describe('[Groups]', function () {
 					count: 5,
 					offset: 0,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count');
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('offset');
@@ -1075,8 +975,7 @@ describe('[Groups]', function () {
 				request
 					.get(api('groups.listAll'))
 					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(403)
+					.forbidden()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error', 'unauthorized');
@@ -1089,10 +988,8 @@ describe('[Groups]', function () {
 				request
 					.get(api('groups.listAll'))
 					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('groups').and.to.be.an('array');
 					})
 					.end(done);
@@ -1108,10 +1005,8 @@ describe('[Groups]', function () {
 				.query({
 					roomId: group._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('joined', true);
 					expect(res.body).to.have.property('members');
 					expect(res.body).to.have.property('unreads');
@@ -1138,10 +1033,8 @@ describe('[Groups]', function () {
 					roomId: group._id,
 					name: `EDITED${apiPrivateChannelName}`,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
 					expect(res.body).to.have.nested.property('group.name', `EDITED${apiPrivateChannelName}`);
 					expect(res.body).to.have.nested.property('group.t', 'p');
@@ -1203,10 +1096,8 @@ describe('[Groups]', function () {
 				.query({
 					roomId: createdGroup._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					const integrationCreated = res.body.integrations.find(
 						(createdIntegration) => createdIntegration._id === integrationCreatedByAnUser._id,
 					);
@@ -1229,10 +1120,8 @@ describe('[Groups]', function () {
 				.query({
 					roomId: createdGroup._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					const integrationCreated = res.body.integrations.find(
 						(createdIntegration) => createdIntegration._id === integrationCreatedByAnUser._id,
 					);
@@ -1256,8 +1145,7 @@ describe('[Groups]', function () {
 				.query({
 					roomId: createdGroup._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(403)
+				.forbidden()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'unauthorized');
@@ -1274,11 +1162,8 @@ describe('[Groups]', function () {
 					roomId: group._id,
 					readOnly: true,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 	});
@@ -1291,11 +1176,8 @@ describe('[Groups]', function () {
 				.send({
 					roomId: group._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 	});
@@ -1309,10 +1191,8 @@ describe('[Groups]', function () {
 					roomId: group._id,
 					announcement: 'this is an announcement of a group for api tests',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('announcement', 'this is an announcement of a group for api tests');
 				})
 				.end(done);
@@ -1325,10 +1205,8 @@ describe('[Groups]', function () {
 					roomId: group._id,
 					announcement: '',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('announcement', '');
 				})
 				.end(done);
@@ -1345,11 +1223,8 @@ describe('[Groups]', function () {
 				.send({
 					name: `channel.type.${Date.now()}`,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-
 					roomTypeId = res.body.group._id;
 				});
 		});
@@ -1361,8 +1236,7 @@ describe('[Groups]', function () {
 				.send({
 					roomId: roomTypeId,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 		});
 
 		it('should change the type of the group to a channel', async () => {
@@ -1373,10 +1247,8 @@ describe('[Groups]', function () {
 					roomId: roomTypeId,
 					type: 'c',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group.t', 'c');
 				});
 		});
@@ -1418,8 +1290,7 @@ describe('[Groups]', function () {
 				.send({
 					roomName: cfchannel.name,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			await request
 				.post(api('groups.delete'))
@@ -1427,8 +1298,7 @@ describe('[Groups]', function () {
 				.send({
 					roomName: groupWithoutCustomFields.name,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 		});
 
 		it('get customFields using groups.info', (done) => {
@@ -1438,10 +1308,8 @@ describe('[Groups]', function () {
 				.query({
 					roomId: cfchannel._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group.customFields.field0', 'value0');
 				})
 				.end(done);
@@ -1455,10 +1323,8 @@ describe('[Groups]', function () {
 					roomId: cfchannel._id,
 					customFields,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
 					expect(res.body).to.have.nested.property('group.name', cfchannel.name);
 					expect(res.body).to.have.nested.property('group.t', 'p');
@@ -1473,10 +1339,8 @@ describe('[Groups]', function () {
 				.query({
 					roomId: cfchannel._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group.customFields.field9', 'value9');
 				})
 				.end(done);
@@ -1491,10 +1355,8 @@ describe('[Groups]', function () {
 					roomId: groupWithoutCustomFields._id,
 					customFields,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
 					expect(res.body).to.have.nested.property('group.name', groupWithoutCustomFields.name);
 					expect(res.body).to.have.nested.property('group.t', 'p');
@@ -1511,10 +1373,8 @@ describe('[Groups]', function () {
 					roomName: groupWithoutCustomFields.name,
 					customFields,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
 					expect(res.body).to.have.nested.property('group.name', groupWithoutCustomFields.name);
 					expect(res.body).to.have.nested.property('group.t', 'p');
@@ -1534,10 +1394,8 @@ describe('[Groups]', function () {
 					roomName: groupWithoutCustomFields.name,
 					customFields,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
 					expect(res.body).to.have.nested.property('group.name', groupWithoutCustomFields.name);
 					expect(res.body).to.have.nested.property('group.t', 'p');
@@ -1574,8 +1432,7 @@ describe('[Groups]', function () {
 				.send({
 					name: `group.test.${Date.now()}`,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					testGroup = res.body.group;
 				});
@@ -1588,11 +1445,8 @@ describe('[Groups]', function () {
 				.send({
 					roomName: testGroup.name,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 
@@ -1622,8 +1476,7 @@ describe('[Groups]', function () {
 				.send({
 					name: `group.roles.test.${Date.now()}`,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					testGroup = res.body.group;
 				});
@@ -1636,8 +1489,7 @@ describe('[Groups]', function () {
 				.send({
 					roomName: testGroup.name,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 		});
 
 		it('/groups.invite', (done) => {
@@ -1677,10 +1529,8 @@ describe('[Groups]', function () {
 				.query({
 					roomId: testGroup._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('roles').that.is.an('array').that.has.lengthOf(2);
 
 					expect(res.body.roles[0]).to.have.a.property('_id').that.is.a('string');
@@ -1710,8 +1560,7 @@ describe('[Groups]', function () {
 				.send({
 					name: `group.roles.test.${Date.now()}`,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					testGroup = res.body.group;
 				});
@@ -1724,8 +1573,7 @@ describe('[Groups]', function () {
 				.send({
 					roomName: testGroup.name,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 		});
 
 		it('/groups.invite', (done) => {
@@ -1755,10 +1603,8 @@ describe('[Groups]', function () {
 				.query({
 					roomId: testGroup._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('moderators').that.is.an('array').that.has.lengthOf(1);
 					expect(res.body.moderators[0].username).to.be.equal('rocket.cat');
 				})
@@ -1776,8 +1622,8 @@ describe('[Groups]', function () {
 				.send({
 					name: `group.encrypted.test.${Date.now()}`,
 				})
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
 
 					testGroup = res.body.group;
@@ -1795,8 +1641,7 @@ describe('[Groups]', function () {
 				.send({
 					roomName: testGroup.name,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 		});
 
 		it('should return an error when passing no boolean param', (done) => {
@@ -1823,9 +1668,8 @@ describe('[Groups]', function () {
 					roomId: testGroup._id,
 					encrypted: true,
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('group');
 					expect(res.body.group).to.have.property('_id', testGroup._id);
 					expect(res.body.group).to.have.property('encrypted', true);
@@ -1848,9 +1692,8 @@ describe('[Groups]', function () {
 					roomId: testGroup._id,
 					encrypted: false,
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('group');
 					expect(res.body.group).to.have.property('_id', testGroup._id);
 					expect(res.body.group).to.have.property('encrypted', false);
@@ -1874,7 +1717,7 @@ describe('[Groups]', function () {
 				.post(api('groups.create'))
 				.set(credentials)
 				.send({ name: `group-${Date.now()}` })
-				.expect(200)
+				.success()
 				.expect((response) => {
 					newGroup = response.body.group;
 				});
@@ -1887,8 +1730,7 @@ describe('[Groups]', function () {
 				.send({
 					roomName: newGroup.name,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 		});
 
 		it('should fail to convert group if lacking edit-room permission', (done) => {
@@ -1926,15 +1768,7 @@ describe('[Groups]', function () {
 		it('should successfully convert a group to a team', (done) => {
 			updatePermission('create-team', ['admin']).then(() => {
 				updatePermission('edit-room', ['admin']).then(() => {
-					request
-						.post(api('groups.convertToTeam'))
-						.set(credentials)
-						.send({ roomId: newGroup._id })
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
-						})
-						.end(done);
+					request.post(api('groups.convertToTeam')).set(credentials).send({ roomId: newGroup._id }).success().end(done);
 				});
 			});
 		});
@@ -1966,10 +1800,8 @@ describe('[Groups]', function () {
 				.post(api('groups.create'))
 				.set(credentials)
 				.send({ name: `group-${Date.now()}` })
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-
 					realNameGroup = res.body.group;
 				});
 
@@ -1982,34 +1814,21 @@ describe('[Groups]', function () {
 						rid: realNameGroup._id,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 		});
 
 		after(async () => {
 			await updateSetting('UI_Use_Real_Name', false);
 
-			await request
-				.post(api('groups.delete'))
-				.set(credentials)
-				.send({ roomId: realNameGroup._id })
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+			await request.post(api('groups.delete')).set(credentials).send({ roomId: realNameGroup._id }).success();
 		});
 
 		it('/groups.list', (done) => {
 			request
 				.get(api('groups.list'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count');
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('groups').and.to.be.an('array');
@@ -2025,10 +1844,8 @@ describe('[Groups]', function () {
 			request
 				.get(api('groups.listAll'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count');
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('groups').and.to.be.an('array');

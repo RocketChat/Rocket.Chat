@@ -40,9 +40,8 @@ describe('[OAuthApps]', function () {
 				request
 					.get(api('oauth-apps.list'))
 					.set(credentials)
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('oauthApps').and.to.be.an('array');
 					})
 					.end(done);
@@ -55,9 +54,8 @@ describe('[OAuthApps]', function () {
 			request
 				.get(api('oauth-apps.get?appId=zapier'))
 				.set(credentials)
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('oauthApp');
 					expect(res.body.oauthApp._id).to.be.equal('zapier');
 				})
@@ -67,9 +65,8 @@ describe('[OAuthApps]', function () {
 			request
 				.get(api('oauth-apps.get?clientId=zapier'))
 				.set(credentials)
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('oauthApp');
 					expect(res.body.oauthApp._id).to.be.equal('zapier');
 				})
@@ -115,8 +112,7 @@ describe('[OAuthApps]', function () {
 					redirectUri: 'error',
 					active: false,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 			await updatePermission('manage-oauth-apps', ['admin']);
 		});
 
@@ -184,10 +180,8 @@ describe('[OAuthApps]', function () {
 					redirectUri,
 					active,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('application.name', name);
 					expect(res.body).to.have.nested.property('application.redirectUri', redirectUri);
 					expect(res.body).to.have.nested.property('application.active', active);
@@ -211,8 +205,7 @@ describe('[OAuthApps]', function () {
 					redirectUri,
 					active,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.end((err, res) => {
 					appId = res.body.application._id;
 					createdAppsIds.push(appId);
@@ -234,10 +227,8 @@ describe('[OAuthApps]', function () {
 					redirectUri,
 					active,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('active', active);
 					expect(res.body).to.have.property('redirectUri', redirectUri);
 					expect(res.body).to.have.property('name', name);
@@ -260,8 +251,7 @@ describe('[OAuthApps]', function () {
 					redirectUri,
 					active,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.end((err, res) => {
 					appId = res.body.application._id;
 					done();
@@ -275,8 +265,7 @@ describe('[OAuthApps]', function () {
 				.send({
 					appId,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.equals(true);
 				});

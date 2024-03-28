@@ -60,11 +60,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 					_id: visitor._id,
 				},
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res: Response) => {
-				expect(res.body).to.have.property('success', true);
-			});
+			.success();
 
 		await createUnit(user._id, user.username, [dep1._id]);
 
@@ -139,7 +135,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/dashboards/conversations-by-source'))
 				.set(credentials)
 				.query({ start: now, end: now })
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('data').and.to.be.an('array');
 			expect(body.data).to.have.lengthOf(0);
@@ -153,7 +149,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/dashboards/conversations-by-source'))
 				.set(agent2.credentials)
 				.query({ start: oneHourAgo, end: now })
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('data').and.to.be.an('array');
 			expect(body.data).to.have.lengthOf(0);
@@ -166,7 +162,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/dashboards/conversations-by-source'))
 				.set(agent3.credentials)
 				.query({ start: oneHourAgo, end: now })
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('data').and.to.be.an('array');
 			expect(body.data).to.have.lengthOf.greaterThan(0);
@@ -182,7 +178,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/dashboards/conversations-by-source'))
 				.set(credentials)
 				.query({ start: oneHourAgo, end: now })
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('data').and.to.be.an('array');
 			expect(body.data).to.have.lengthOf.greaterThan(0);
@@ -250,7 +246,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/dashboards/conversations-by-status'))
 				.set(credentials)
 				.query({ start: now, end: now })
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('data').and.to.be.an('array');
 			expect(body.data).to.have.lengthOf(0);
@@ -263,7 +259,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/dashboards/conversations-by-status'))
 				.set(agent2.credentials)
 				.query({ start: oneHourAgo, end: now })
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('data').and.to.be.an('array');
 			expect(body.data).to.have.lengthOf(0);
@@ -277,7 +273,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/dashboards/conversations-by-status'))
 				.set(credentials)
 				.query({ start: oneHourAgo, end: now })
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('data').and.to.be.an('array');
 			expect(body.data).to.have.lengthOf.greaterThan(0);
@@ -352,7 +348,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/dashboards/conversations-by-department'))
 				.set(credentials)
 				.query({ start: now, end: now })
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('data').and.to.be.an('array');
 			expect(body.data).to.have.lengthOf(0);
@@ -365,7 +361,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/dashboards/conversations-by-department'))
 				.set(agent2.credentials)
 				.query({ start: oneHourAgo, end: now })
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('data').and.to.be.an('array');
 			expect(body.data).to.have.lengthOf(0);
@@ -379,7 +375,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/dashboards/conversations-by-department'))
 				.set(credentials)
 				.query({ start: oneHourAgo, end: now })
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('data').and.to.be.an('array');
 			expect(body.data).to.have.lengthOf.greaterThan(0);
@@ -446,7 +442,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/dashboards/conversations-by-tags'))
 				.set(credentials)
 				.query({ start: now, end: now })
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('data').and.to.be.an('array');
 			expect(body.data).to.have.lengthOf(0);
@@ -459,7 +455,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/dashboards/conversations-by-tags'))
 				.set(agent2.credentials)
 				.query({ start: oneHourAgo, end: now })
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('data').and.to.be.an('array');
 			expect(body.data).to.have.lengthOf(0);
@@ -473,7 +469,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/dashboards/conversations-by-tags'))
 				.set(credentials)
 				.query({ start: oneHourAgo, end: now })
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('data').and.to.be.an('array');
 			expect(body.data).to.have.lengthOf.greaterThan(0);
@@ -540,7 +536,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/dashboards/conversations-by-agent'))
 				.set(credentials)
 				.query({ start: now, end: now })
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('data').and.to.be.an('array');
 			expect(body.data).to.have.lengthOf(0);
@@ -552,7 +548,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/dashboards/conversations-by-agent'))
 				.set(agent2.credentials)
 				.query({ start: oneHourAgo, end: now })
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('data').and.to.be.an('array');
 			expect(body.data).to.have.lengthOf(0);
@@ -566,7 +562,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/dashboards/conversations-by-agent'))
 				.set(credentials)
 				.query({ start: oneHourAgo, end: now })
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('data').and.to.be.an('array');
 			expect(body.data).to.have.lengthOf.greaterThan(0);

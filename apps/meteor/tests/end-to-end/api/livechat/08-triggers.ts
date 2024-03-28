@@ -28,10 +28,8 @@ describe('LIVECHAT - triggers', function () {
 			await request
 				.get(api('livechat/triggers'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.triggers).to.be.an('array');
 					expect(res.body).to.have.property('count').to.be.greaterThan(0);
 					expect(res.body.triggers[0]).to.have.property('_id');
@@ -204,7 +202,7 @@ describe('LIVECHAT - triggers', function () {
 					conditions: [{ name: 'page-url', value: 'http://localhost:3000' }],
 					actions: [{ name: 'send-message', params: { sender: 'custom', msg: 'test', name: 'test' } }],
 				})
-				.expect(200);
+				.success();
 		});
 		it('should fail if type is use-external-service but serviceUrl is not a present', async () => {
 			await request
@@ -293,7 +291,7 @@ describe('LIVECHAT - triggers', function () {
 						},
 					],
 				})
-				.expect(200);
+				.success();
 		});
 	});
 
@@ -403,11 +401,7 @@ describe('LIVECHAT - triggers', function () {
 		});
 		it('should return null when trigger does not exist', async () => {
 			await updatePermission('view-livechat-manager', ['admin']);
-			const response = await request
-				.get(api('livechat/triggers/invalid-id'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+			const response = await request.get(api('livechat/triggers/invalid-id')).set(credentials).success();
 			expect(response.body).to.have.property('success', true);
 			expect(response.body.trigger).to.be.null;
 		});
@@ -418,8 +412,7 @@ describe('LIVECHAT - triggers', function () {
 			const response = await request
 				.get(api(`livechat/triggers/${trigger?._id}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 			expect(response.body).to.have.property('success', true);
 			expect(response.body.trigger).to.be.an('object');
 			expect(response.body.trigger).to.have.property('_id', trigger?._id);

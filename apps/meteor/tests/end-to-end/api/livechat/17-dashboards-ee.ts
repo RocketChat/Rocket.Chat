@@ -34,8 +34,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/agents/average-service-time'))
 				.set(credentials)
 				.query({ start: '2020-01-01', end: '2020-01-02' })
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 		});
 		it('should fail if start is not present as query param', async () => {
 			await updatePermission('view-livechat-manager', ['admin']);
@@ -84,8 +83,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/agents/average-service-time'))
 				.set(credentials)
 				.query({ start: date, end: new Date().toISOString() })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 			expect(body).to.have.property('success', true);
 			expect(body.agents).to.be.an('array').with.lengthOf.greaterThan(0);
 			expect(body.agents[0]).to.have.a.property('_id');
@@ -100,8 +98,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/agents/total-service-time'))
 				.set(credentials)
 				.query({ start: '2020-01-01', end: '2020-01-02' })
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 		});
 		it('should fail if start is not present as query param', async () => {
 			await updatePermission('view-livechat-manager', ['admin']);
@@ -144,8 +141,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/agents/total-service-time'))
 				.set(credentials)
 				.query({ start: date, end: new Date().toISOString() })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 			expect(body).to.have.property('success', true);
 			expect(body.agents).to.be.an('array').with.lengthOf.greaterThan(0);
 			expect(body.agents[0]).to.have.a.property('_id');
@@ -160,8 +156,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/agents/available-for-service-history'))
 				.set(credentials)
 				.query({ start: '2020-01-01', end: '2020-01-02' })
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 		});
 		it('should fail if start is not present as query param', async () => {
 			await updatePermission('view-livechat-manager', ['admin']);
@@ -209,8 +204,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/agents/available-for-service-history'))
 				.set(credentials)
 				.query({ start: date, end: new Date().toISOString() })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 			expect(body).to.have.property('success', true);
 			expect(body.agents).to.be.an('array').with.lengthOf.greaterThan(0);
 			expect(body.agents[0]).to.have.a.property('username');
@@ -224,8 +218,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/departments/amount-of-chats'))
 				.set(credentials)
 				.query({ start: '2020-01-01', end: '2020-01-02' })
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 		});
 		it('should fail if start is not present as query param', async () => {
 			await updatePermission('view-livechat-manager', ['admin']);
@@ -268,8 +261,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/departments/amount-of-chats'))
 				.set(credentials)
 				.query({ start: date, end: new Date().toISOString() })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 			expect(body).to.have.property('success', true);
 			expect(body.departments).to.be.an('array').with.lengthOf.greaterThan(0);
 			expect(body.departments[0]).to.have.a.property('rooms').that.is.a('number');
@@ -283,8 +275,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/departments/average-service-time'))
 				.set(credentials)
 				.query({ start: '2020-01-01', end: '2020-01-02' })
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 		});
 		it('should fail if start is not present as query param', async () => {
 			await updatePermission('view-livechat-manager', ['admin']);
@@ -327,8 +318,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/departments/average-service-time'))
 				.set(credentials)
 				.query({ start: date, end: new Date().toISOString() })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 			expect(body).to.have.property('success', true);
 			expect(body.departments).to.be.an('array').with.lengthOf.greaterThan(0);
 			expect(body.departments[0]).to.have.a.property('averageServiceTimeInSeconds').that.is.a('number');
@@ -342,8 +332,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/departments/average-chat-duration-time'))
 				.set(credentials)
 				.query({ start: '2020-01-01', end: '2020-01-02' })
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 		});
 		it('should fail if start is not present as query param', async () => {
 			await updatePermission('view-livechat-manager', ['admin']);
@@ -386,8 +375,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/departments/average-chat-duration-time'))
 				.set(credentials)
 				.query({ start: date, end: new Date().toISOString() })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 			expect(body).to.have.property('success', true);
 			expect(body.departments).to.be.an('array').with.lengthOf.greaterThan(0);
 			expect(body.departments[0]).to.have.a.property('averageChatDurationTimeInSeconds').that.is.a('number');
@@ -401,8 +389,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/departments/total-service-time'))
 				.set(credentials)
 				.query({ start: '2020-01-01', end: '2020-01-02' })
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 		});
 		it('should fail if start is not present as query param', async () => {
 			await updatePermission('view-livechat-manager', ['admin']);
@@ -445,8 +432,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/departments/total-service-time'))
 				.set(credentials)
 				.query({ start: date, end: new Date().toISOString() })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 			expect(body).to.have.property('success', true);
 			expect(body.departments).to.be.an('array').with.lengthOf.greaterThan(0);
 			expect(body.departments[0]).to.have.a.property('chats').that.is.a('number');
@@ -461,8 +447,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/departments/average-waiting-time'))
 				.set(credentials)
 				.query({ start: '2020-01-01', end: '2020-01-02' })
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 		});
 		it('should fail if start is not present as query param', async () => {
 			await updatePermission('view-livechat-manager', ['admin']);
@@ -505,8 +490,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/departments/average-waiting-time'))
 				.set(credentials)
 				.query({ start: date, end: new Date().toISOString() })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 			expect(body).to.have.property('success', true);
 			expect(body.departments).to.be.an('array').with.lengthOf.greaterThan(0);
 			expect(body.departments[0]).to.have.a.property('averageWaitingTimeInSeconds').that.is.a('number');
@@ -520,8 +504,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/departments/total-transferred-chats'))
 				.set(credentials)
 				.query({ start: '2020-01-01', end: '2020-01-02' })
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 		});
 		it('should fail if start is not present as query param', async () => {
 			await updatePermission('view-livechat-manager', ['admin']);
@@ -564,8 +547,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/departments/total-transferred-chats'))
 				.set(credentials)
 				.query({ start: date, end: new Date().toISOString() })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 			expect(body).to.have.property('success', true);
 			expect(body.departments).to.be.an('array').with.lengthOf.greaterThan(0);
 			expect(body.departments[0]).to.have.a.property('numberOfTransferredRooms').that.is.a('number');
@@ -579,8 +561,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/departments/total-abandoned-chats'))
 				.set(credentials)
 				.query({ start: '2020-01-01', end: '2020-01-02' })
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 		});
 		it('should fail if start is not present as query param', async () => {
 			await updatePermission('view-livechat-manager', ['admin']);
@@ -632,8 +613,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/departments/total-abandoned-chats'))
 				.set(credentials)
 				.query({ start: date, end: new Date().toISOString() })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 			expect(body).to.have.property('success', true);
 			expect(body.departments).to.be.an('array').with.lengthOf.greaterThan(0);
 			expect(body.departments[0]).to.have.a.property('abandonedRooms').that.is.a('number');
@@ -647,8 +627,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/departments/percentage-abandoned-chats'))
 				.set(credentials)
 				.query({ start: '2020-01-01', end: '2020-01-02' })
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 		});
 		it('should fail if start is not present as query param', async () => {
 			await updatePermission('view-livechat-manager', ['admin']);
@@ -693,8 +672,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/departments/percentage-abandoned-chats'))
 				.set(credentials)
 				.query({ start: date, end: new Date().toISOString() })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 			expect(body).to.have.property('success', true);
 			expect(body.departments).to.be.an('array').with.lengthOf.greaterThan(0);
 			expect(body.departments[0]).to.have.a.property('percentageOfAbandonedChats').that.is.a('number');

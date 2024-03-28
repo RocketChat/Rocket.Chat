@@ -52,10 +52,8 @@ describe('[Users]', function () {
 				joinDefaultChannels: true,
 				verified: true,
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.nested.property('user.username', apiUsername);
 				expect(res.body).to.have.nested.property('user.emails[0].address', apiEmail);
 				expect(res.body).to.have.nested.property('user.active', true);
@@ -82,18 +80,12 @@ describe('[Users]', function () {
 				private_key: 'test',
 				public_key: 'test',
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-			});
+			.success();
 		await request
 			.get(api('e2e.fetchMyKeys'))
 			.set(credentials)
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('public_key', 'test');
 				expect(res.body).to.have.property('private_key', 'test');
 			});
@@ -126,10 +118,8 @@ describe('[Users]', function () {
 					verified: true,
 					customFields,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('user.username', username);
 					expect(res.body).to.have.nested.property('user.emails[0].address', email);
 					expect(res.body).to.have.nested.property('user.active', true);
@@ -236,10 +226,8 @@ describe('[Users]', function () {
 						username,
 						password,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.nested.property('user.username', username);
 						expect(res.body).to.have.nested.property('user.emails[0].address', email);
 						expect(res.body).to.have.nested.property('user.active', true);
@@ -265,10 +253,8 @@ describe('[Users]', function () {
 						password,
 						roles: ['guest'],
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.nested.property('user.username', username);
 						expect(res.body).to.have.nested.property('user.emails[0].address', email);
 						expect(res.body).to.have.nested.property('user.active', true);
@@ -331,10 +317,8 @@ describe('[Users]', function () {
 					.get(api('subscriptions.getOne'))
 					.set(noDefaultUserCredentials)
 					.query({ roomId: defaultTeamRoomId })
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('subscription').that.is.null;
 					});
 
@@ -342,10 +326,8 @@ describe('[Users]', function () {
 					.get(api('subscriptions.getOne'))
 					.set(noDefaultUserCredentials)
 					.query({ roomId: group._id })
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('subscription').that.is.null;
 					});
 			});
@@ -359,10 +341,8 @@ describe('[Users]', function () {
 					.get(api('subscriptions.getOne'))
 					.set(userCredentials)
 					.query({ roomId: defaultTeamRoomId })
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('subscription');
 						expect(res.body.subscription).to.have.property('rid', defaultTeamRoomId);
 					});
@@ -373,10 +353,8 @@ describe('[Users]', function () {
 					.get(api('subscriptions.getOne'))
 					.set(userCredentials)
 					.query({ roomId: group._id })
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('subscription').that.is.null;
 					});
 			});
@@ -394,10 +372,8 @@ describe('[Users]', function () {
 					.get(api('subscriptions.getOne'))
 					.set(user2Credentials)
 					.query({ roomId: group._id })
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('subscription');
 						expect(res.body.subscription).to.have.property('rid', group._id);
 					});
@@ -415,10 +391,8 @@ describe('[Users]', function () {
 					.get(api('subscriptions.getOne'))
 					.set(user3Credentials)
 					.query({ roomId: group._id })
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('subscription');
 						expect(res.body.subscription).to.have.property('rid', group._id);
 					});
@@ -428,10 +402,8 @@ describe('[Users]', function () {
 					.get(api('subscriptions.getOne'))
 					.set(user3Credentials)
 					.query({ roomId: defaultTeamRoomId })
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('subscription').that.is.null;
 					});
 			});
@@ -454,10 +426,8 @@ describe('[Users]', function () {
 					username,
 					pass: 'test',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('user.username', username);
 					expect(res.body).to.have.nested.property('user.active', true);
 					expect(res.body).to.have.nested.property('user.name', 'name');
@@ -514,10 +484,8 @@ describe('[Users]', function () {
 				.query({
 					userId: targetUser._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('user.username', apiUsername);
 					expect(res.body).to.have.nested.property('user.active', true);
 					expect(res.body).to.have.nested.property('user.name', apiUsername);
@@ -533,10 +501,8 @@ describe('[Users]', function () {
 					userId: targetUser._id,
 					fields: JSON.stringify({ userRooms: 1 }),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('user.rooms').and.to.be.an('array');
 					expect(res.body.user.rooms[0]).to.have.property('unread');
 				})
@@ -549,10 +515,8 @@ describe('[Users]', function () {
 				.query({
 					userId: targetUser._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.not.have.nested.property('user.rooms');
 				})
 				.end(done);
@@ -566,10 +530,8 @@ describe('[Users]', function () {
 						userId: credentials['X-User-Id'],
 						fields: JSON.stringify({ userRooms: 1 }),
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.nested.property('user.rooms');
 						expect(res.body.user.rooms[0]).to.have.property('unread');
 					})
@@ -585,10 +547,8 @@ describe('[Users]', function () {
 						userId: targetUser._id,
 						fields: JSON.stringify({ userRooms: 1 }),
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.not.have.nested.property('user.rooms');
 					})
 					.end(done);
@@ -602,10 +562,8 @@ describe('[Users]', function () {
 					.query({
 						userId: targetUser._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.not.have.nested.property('user.services.emailCode');
 						expect(res.body).to.not.have.nested.property('user.services');
 					})
@@ -620,10 +578,8 @@ describe('[Users]', function () {
 					.query({
 						userId: credentials['X-User-Id'],
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.nested.property('user.services.password');
 						expect(res.body).to.have.nested.property('user.services.resume');
 					})
@@ -644,10 +600,8 @@ describe('[Users]', function () {
 					username: ufsUsername,
 					password: '1234',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					user = res.body.user;
 				});
 
@@ -657,10 +611,8 @@ describe('[Users]', function () {
 				.query({
 					username: ufsUsername,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.user).to.have.property('type', 'user');
 					expect(res.body.user).to.have.property('name', 'testuser');
 					expect(res.body.user).to.have.property('username', ufsUsername);
@@ -678,10 +630,8 @@ describe('[Users]', function () {
 				.query({
 					userId: targetUser._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('presence', 'offline');
 				})
 				.end(done);
@@ -699,13 +649,9 @@ describe('[Users]', function () {
 			after(async () => deleteUser(user));
 
 			it('should return "offline" after a login type "resume" via REST', async () => {
-				await request
-					.post(api('login'))
-					.send({
-						resume: userCredentials['X-Auth-Token'],
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200);
+				await request.expectLoginSuccess({
+					resume: userCredentials['X-Auth-Token'],
+				});
 
 				await request
 					.get(api('users.getPresence'))
@@ -713,10 +659,8 @@ describe('[Users]', function () {
 					.query({
 						userId: user._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.nested.property('presence', 'offline');
 					});
 			});
@@ -728,8 +672,7 @@ describe('[Users]', function () {
 			it('should return 401 unauthorized', (done) => {
 				request
 					.get(api('users.presence'))
-					.expect('Content-Type', 'application/json')
-					.expect(401)
+					.unauthorized()
 					.expect((res) => {
 						expect(res.body).to.have.property('message');
 					})
@@ -741,10 +684,8 @@ describe('[Users]', function () {
 				request
 					.get(api('users.presence'))
 					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('full', true);
 
 						const user = res.body.users.find((user) => user.username === 'rocket.cat');
@@ -758,10 +699,8 @@ describe('[Users]', function () {
 				request
 					.get(api(`users.presence?from=${new Date().toISOString()}`))
 					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('full', false);
 						expect(res.body).to.have.property('users').that.is.an('array').that.has.lengthOf(0);
 					})
@@ -775,10 +714,8 @@ describe('[Users]', function () {
 				request
 					.get(api(`users.presence?from=${date.toISOString()}`))
 					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('full', true);
 
 						const user = res.body.users.find((user) => user.username === 'rocket.cat');
@@ -869,10 +806,8 @@ describe('[Users]', function () {
 			request
 				.get(api('users.list'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count');
 					expect(res.body).to.have.property('total');
 					const myself = res.body.users.find((user) => user.username === adminUsername);
@@ -897,10 +832,8 @@ describe('[Users]', function () {
 				.get(api('users.list'))
 				.query(query)
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count');
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('users');
@@ -928,10 +861,8 @@ describe('[Users]', function () {
 				.get(api('users.list'))
 				.query(query)
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count');
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('users');
@@ -952,10 +883,8 @@ describe('[Users]', function () {
 				.field('username', 1)
 				.sort('createdAt', -1)
 				.expect(log)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count');
 					expect(res.body).to.have.property('total');
 				})
@@ -967,10 +896,8 @@ describe('[Users]', function () {
 			await request
 				.get(api('users.list'))
 				.set(user2Credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count');
 					expect(res.body).to.have.property('total');
 				});
@@ -1010,11 +937,8 @@ describe('[Users]', function () {
 				.post(api('users.setAvatar'))
 				.set(userCredentials)
 				.attach('image', imgURL)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 		it('should update the avatar of another user by userId when the logged user has the necessary permission (edit-other-user-avatar)', (done) => {
@@ -1023,11 +947,8 @@ describe('[Users]', function () {
 				.set(userCredentials)
 				.attach('image', imgURL)
 				.field({ userId: credentials['X-User-Id'] })
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 		it('should set the avatar of another user by username and local image when the logged user has the necessary permission (edit-other-user-avatar)', (done) => {
@@ -1036,11 +957,8 @@ describe('[Users]', function () {
 				.set(credentials)
 				.attach('image', imgURL)
 				.field({ username: adminUsername })
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 		it("should prevent from updating someone else's avatar when the logged user doesn't have the necessary permission(edit-other-user-avatar)", (done) => {
@@ -1066,11 +984,8 @@ describe('[Users]', function () {
 						.set(credentials)
 						.attach('image', imgURL)
 						.field({ userId: userCredentials['X-User-Id'] })
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-						})
+						.success()
+
 						.end(done);
 				});
 			});
@@ -1103,11 +1018,8 @@ describe('[Users]', function () {
 				.post(api('users.setAvatar'))
 				.set(userCredentials)
 				.attach('image', imgURL)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 		it('should reset the avatar of the logged user', (done) => {
@@ -1118,10 +1030,8 @@ describe('[Users]', function () {
 				.send({
 					userId: userCredentials['X-User-Id'],
 				})
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 		it('should reset the avatar of another user by userId when the logged user has the necessary permission (edit-other-user-avatar)', (done) => {
@@ -1131,11 +1041,8 @@ describe('[Users]', function () {
 				.send({
 					userId: credentials['X-User-Id'],
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 		it('should reset the avatar of another user by username and local image when the logged user has the necessary permission (edit-other-user-avatar)', (done) => {
@@ -1145,11 +1052,8 @@ describe('[Users]', function () {
 				.send({
 					username: adminUsername,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 		it("should prevent from resetting someone else's avatar when the logged user doesn't have the necessary permission(edit-other-user-avatar)", (done) => {
@@ -1177,11 +1081,8 @@ describe('[Users]', function () {
 						.send({
 							userId: userCredentials['X-User-Id'],
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-						})
+						.success()
+
 						.end(done);
 				});
 			});
@@ -1252,9 +1153,8 @@ describe('[Users]', function () {
 				.query({
 					userId: userCredentials['X-User-Id'],
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('suggestions').and.to.be.an('object');
 				})
 				.end(done);
@@ -1298,10 +1198,8 @@ describe('[Users]', function () {
 						roles: ['user'],
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('user.username', `edited${apiUsername}`);
 					expect(res.body).to.have.nested.property('user.emails[0].address', apiEmail);
 					expect(res.body).to.have.nested.property('user.active', true);
@@ -1321,10 +1219,8 @@ describe('[Users]', function () {
 						email: `edited${apiEmail}`,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('user.emails[0].address', `edited${apiEmail}`);
 					expect(res.body).to.have.nested.property('user.emails[0].verified', false);
 					expect(res.body).to.not.have.nested.property('user.e2e');
@@ -1342,10 +1238,8 @@ describe('[Users]', function () {
 						bio: `edited-bio-test`,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('user.bio', 'edited-bio-test');
 					expect(res.body).to.not.have.nested.property('user.e2e');
 				})
@@ -1362,10 +1256,8 @@ describe('[Users]', function () {
 						nickname: `edited-nickname-test`,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('user.nickname', 'edited-nickname-test');
 					expect(res.body).to.not.have.nested.property('user.e2e');
 				})
@@ -1421,11 +1313,8 @@ describe('[Users]', function () {
 					userId: 'rocket.cat',
 					data: { email: 'nouser@rocket.cat' },
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 
@@ -1439,10 +1328,8 @@ describe('[Users]', function () {
 						verified: true,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('user.emails[0].verified', true);
 					expect(res.body).to.not.have.nested.property('user.e2e');
 				})
@@ -1483,11 +1370,7 @@ describe('[Users]', function () {
 						username: `fake.name.${Date.now()}`,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 		});
 
 		it('should return an error when trying update user real name and it is not allowed', (done) => {
@@ -1524,11 +1407,8 @@ describe('[Users]', function () {
 								name: 'Fake name',
 							},
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-						})
+						.success()
+
 						.end(done);
 				});
 			});
@@ -1568,11 +1448,8 @@ describe('[Users]', function () {
 								name: 'a new status',
 							},
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-						})
+						.success()
+
 						.end(done);
 				});
 			});
@@ -1612,11 +1489,8 @@ describe('[Users]', function () {
 								email: apiEmail,
 							},
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-						})
+						.success()
+
 						.end(done);
 				});
 			});
@@ -1656,11 +1530,8 @@ describe('[Users]', function () {
 								password: 'itsnotworking',
 							},
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-						})
+						.success()
+
 						.end(done);
 				});
 			});
@@ -1700,11 +1571,8 @@ describe('[Users]', function () {
 								verified: true,
 							},
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-						})
+						.success()
+
 						.end(done);
 				});
 			});
@@ -1754,13 +1622,10 @@ describe('[Users]', function () {
 		let userCredentials;
 		before((done) => {
 			request
-				.post(api('login'))
-				.send({
+				.expectLoginSuccess({
 					user: user.username,
 					password,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
 				.expect((res) => {
 					userCredentials = {};
 					userCredentials['X-Auth-Token'] = res.body.data.authToken;
@@ -1794,11 +1659,8 @@ describe('[Users]', function () {
 						private_key: 'test',
 						public_key: 'test',
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
+					.success()
+
 					.end(done);
 			});
 		});
@@ -1815,11 +1677,9 @@ describe('[Users]', function () {
 						newPassword,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					const { user } = res.body;
-					expect(res.body).to.have.property('success', true);
 					expect(user.username).to.be.equal(editedUsername);
 					expect(user.name).to.be.equal(editedName);
 					expect(user).to.not.have.property('e2e');
@@ -1836,11 +1696,9 @@ describe('[Users]', function () {
 						username: editedUsername,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					const { user } = res.body;
-					expect(res.body).to.have.property('success', true);
 					expect(user.username).to.be.equal(editedUsername);
 					expect(user).to.not.have.property('e2e');
 				})
@@ -1902,11 +1760,9 @@ describe('[Users]', function () {
 						currentPassword: crypto.createHash('sha256').update(newPassword, 'utf8').digest('hex'),
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					const { user } = res.body;
-					expect(res.body).to.have.property('success', true);
 					expect(user.emails[0].address).to.be.equal(editedEmail);
 					expect(user.emails[0].verified).to.be.false;
 					expect(user).to.not.have.property('e2e');
@@ -2241,12 +2097,11 @@ describe('[Users]', function () {
 							newPassword: '123Abc@!',
 						},
 					})
-					.expect('Content-Type', 'application/json')
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('user');
 					})
-					.expect(200);
+					.success();
 			});
 		});
 	});
@@ -2312,13 +2167,11 @@ describe('[Users]', function () {
 					.post(api('users.setPreferences'))
 					.set(credentials)
 					.send(userPreferences)
-					.expect(200)
-					.expect('Content-Type', 'application/json')
+					.success()
 					.expect((res) => {
 						expect(res.body.user).to.have.property('settings');
 						expect(res.body.user.settings).to.have.property('preferences');
 						expect(res.body.user._id).to.be.equal('rocket.cat');
-						expect(res.body).to.have.property('success', true);
 					})
 					.end(done);
 			});
@@ -2334,12 +2187,10 @@ describe('[Users]', function () {
 				.post(api('users.setPreferences'))
 				.set(credentials)
 				.send(userPreferences)
-				.expect(200)
-				.expect('Content-Type', 'application/json')
+				.success()
 				.expect((res) => {
 					expect(res.body.user).to.have.property('settings');
 					expect(res.body.user.settings).to.have.property('preferences');
-					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
 		});
@@ -2355,10 +2206,8 @@ describe('[Users]', function () {
 				.post(api('users.setPreferences'))
 				.set(credentials)
 				.send(userPreferences)
-				.expect(200)
-				.expect('Content-Type', 'application/json')
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.user.settings.preferences).to.have.property('language', 'en');
 				})
 				.end(done);
@@ -2374,11 +2223,9 @@ describe('[Users]', function () {
 			request
 				.get(api('users.getPreferences'))
 				.set(credentials)
-				.expect(200)
-				.expect('Content-Type', 'application/json')
+				.success()
 				.expect((res) => {
 					expect(res.body.preferences).to.be.eql(userPreferences);
-					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
 		});
@@ -2391,11 +2238,8 @@ describe('[Users]', function () {
 				.send({
 					email: adminEmail,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 
@@ -2405,11 +2249,8 @@ describe('[Users]', function () {
 				.send({
 					email: 'invalidEmail',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 	});
@@ -2422,11 +2263,8 @@ describe('[Users]', function () {
 				.send({
 					email: adminEmail,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 
@@ -2460,8 +2298,7 @@ describe('[Users]', function () {
 					name: testUsername,
 					pass: password,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					targetUser = res.body.user;
 				})
@@ -2469,13 +2306,10 @@ describe('[Users]', function () {
 		});
 		before('Login...', (done) => {
 			request
-				.post(api('login'))
-				.send({
+				.expectLoginSuccess({
 					user: targetUser.username,
 					password,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
 				.expect((res) => {
 					userCredentials = {};
 					userCredentials['X-Auth-Token'] = res.body.data.authToken;
@@ -2490,10 +2324,8 @@ describe('[Users]', function () {
 			request
 				.get(api('users.getUsernameSuggestion'))
 				.set(userCredentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.exist;
 				})
 				.end(done);
@@ -2504,8 +2336,7 @@ describe('[Users]', function () {
 		it('should return 401 unauthorized when user is not logged in', (done) => {
 			request
 				.get(api('users.checkUsernameAvailability'))
-				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.unauthorized()
 				.expect((res) => {
 					expect(res.body).to.have.property('message');
 				})
@@ -2525,8 +2356,7 @@ describe('[Users]', function () {
 					name: testUsername,
 					pass: password,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					targetUser = res.body.user;
 				})
@@ -2534,13 +2364,10 @@ describe('[Users]', function () {
 		});
 		before((done) => {
 			request
-				.post(api('login'))
-				.send({
+				.expectLoginSuccess({
 					user: targetUser.username,
 					password,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
 				.expect((res) => {
 					userCredentials = {};
 					userCredentials['X-Auth-Token'] = res.body.data.authToken;
@@ -2558,10 +2385,8 @@ describe('[Users]', function () {
 				.query({
 					username: targetUser.username,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.result).to.be.equal(true);
 				})
 				.end(done);
@@ -2574,10 +2399,8 @@ describe('[Users]', function () {
 				.query({
 					username: `${targetUser.username}-${+new Date()}`,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.result).to.be.equal(true);
 				})
 				.end(done);
@@ -2611,8 +2434,7 @@ describe('[Users]', function () {
 					name: testUsername,
 					pass: password,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					targetUser = res.body.user;
 				})
@@ -2620,13 +2442,10 @@ describe('[Users]', function () {
 		});
 		before((done) => {
 			request
-				.post(api('login'))
-				.send({
+				.expectLoginSuccess({
 					user: targetUser.username,
 					password,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
 				.expect((res) => {
 					userCredentials = {};
 					userCredentials['X-Auth-Token'] = res.body.data.authToken;
@@ -2642,11 +2461,8 @@ describe('[Users]', function () {
 				.post('/api/v1/settings/Accounts_AllowDeleteOwnAccount')
 				.set(credentials)
 				.send({ value: true })
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(wait(done, 200));
 		});
 
@@ -2657,11 +2473,8 @@ describe('[Users]', function () {
 				.send({
 					password: crypto.createHash('sha256').update(password, 'utf8').digest('hex'),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 
@@ -2674,11 +2487,7 @@ describe('[Users]', function () {
 				.send({
 					password: crypto.createHash('sha256').update(password, 'utf8').digest('hex').toUpperCase(),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await deleteUser(user);
 		});
@@ -2702,11 +2511,7 @@ describe('[Users]', function () {
 					userId: user._id,
 					roomId: room._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('channels.removeOwner'))
@@ -2715,11 +2520,7 @@ describe('[Users]', function () {
 					userId: credentials['X-User-Id'],
 					roomId: room._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('users.deleteOwnAccount'))
@@ -2758,11 +2559,7 @@ describe('[Users]', function () {
 					userId: user._id,
 					roomId: room._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('channels.removeOwner'))
@@ -2771,11 +2568,7 @@ describe('[Users]', function () {
 					userId: credentials['X-User-Id'],
 					roomId: room._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('users.deleteOwnAccount'))
@@ -2784,11 +2577,7 @@ describe('[Users]', function () {
 					password: crypto.createHash('sha256').update(password, 'utf8').digest('hex'),
 					confirmRelinquish: true,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 			await deleteRoom({ type: 'c', roomId: room._id });
 			await deleteUser(user);
 		});
@@ -2812,11 +2601,7 @@ describe('[Users]', function () {
 					userId: user._id,
 					roomId: room._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('channels.removeOwner'))
@@ -2825,11 +2610,7 @@ describe('[Users]', function () {
 					userId: credentials['X-User-Id'],
 					roomId: room._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('users.deleteOwnAccount'))
@@ -2838,11 +2619,7 @@ describe('[Users]', function () {
 					password: crypto.createHash('sha256').update(password, 'utf8').digest('hex'),
 					confirmRelinquish: true,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.get(api('channels.roles'))
@@ -2850,10 +2627,8 @@ describe('[Users]', function () {
 				.query({
 					roomId: room._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.roles).to.have.lengthOf(1);
 					expect(res.body.roles[0].roles).to.eql(['owner']);
 					expect(res.body.roles[0].u).to.have.property('_id', credentials['X-User-Id']);
@@ -2876,8 +2651,7 @@ describe('[Users]', function () {
 					name: testUsername,
 					pass: password,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					targetUser = res.body.user;
 				})
@@ -2905,8 +2679,7 @@ describe('[Users]', function () {
 				.send({
 					userId: targetUser._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(403)
+				.forbidden()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'unauthorized');
@@ -2930,11 +2703,7 @@ describe('[Users]', function () {
 					userId: targetUser._id,
 					roomId: room._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('channels.removeOwner'))
@@ -2943,11 +2712,7 @@ describe('[Users]', function () {
 					userId: credentials['X-User-Id'],
 					roomId: room._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('users.delete'))
@@ -2983,11 +2748,7 @@ describe('[Users]', function () {
 					userId: targetUser._id,
 					roomId: room._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('channels.removeOwner'))
@@ -2996,11 +2757,7 @@ describe('[Users]', function () {
 					userId: credentials['X-User-Id'],
 					roomId: room._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('users.delete'))
@@ -3009,11 +2766,7 @@ describe('[Users]', function () {
 					userId: targetUser._id,
 					confirmRelinquish: true,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await deleteRoom({ type: 'c', roomId: room._id });
 		});
@@ -3026,11 +2779,7 @@ describe('[Users]', function () {
 				.send({
 					userId: targetUser._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 		});
 
 		it('should assign a new owner to the room if the last room owner is deleted', async () => {
@@ -3050,11 +2799,7 @@ describe('[Users]', function () {
 					userId: targetUser._id,
 					roomId: room._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('channels.removeOwner'))
@@ -3063,11 +2808,7 @@ describe('[Users]', function () {
 					userId: credentials['X-User-Id'],
 					roomId: room._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('users.delete'))
@@ -3076,11 +2817,7 @@ describe('[Users]', function () {
 					userId: targetUser._id,
 					confirmRelinquish: true,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.get(api('channels.roles'))
@@ -3088,10 +2825,8 @@ describe('[Users]', function () {
 				.query({
 					roomId: room._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.roles).to.have.lengthOf(1);
 					expect(res.body.roles[0].roles).to.eql(['owner']);
 					expect(res.body.roles[0].u).to.have.property('_id', credentials['X-User-Id']);
@@ -3109,10 +2844,8 @@ describe('[Users]', function () {
 					request
 						.get(api('users.getPersonalAccessTokens'))
 						.set(credentials)
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('tokens').and.to.be.an('array');
 						})
 						.end(done);
@@ -3128,10 +2861,8 @@ describe('[Users]', function () {
 						.send({
 							tokenName,
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('token');
 						})
 						.end(done);
@@ -3159,10 +2890,8 @@ describe('[Users]', function () {
 						.send({
 							tokenName,
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('token');
 						})
 						.end(done);
@@ -3187,10 +2916,8 @@ describe('[Users]', function () {
 					request
 						.get(api('users.getPersonalAccessTokens'))
 						.set(credentials)
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('tokens').and.to.be.an('array');
 						})
 						.end(done);
@@ -3204,11 +2931,8 @@ describe('[Users]', function () {
 						.send({
 							tokenName,
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-						})
+						.success()
+
 						.end(done);
 				});
 				it('should throw an error when user tries remove a token that does not exist', (done) => {
@@ -3338,13 +3062,10 @@ describe('[Users]', function () {
 		let userCredentials;
 		before((done) => {
 			request
-				.post(api('login'))
-				.send({
+				.expectLoginSuccess({
 					user: user.username,
 					password,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
 				.expect((res) => {
 					userCredentials = {};
 					userCredentials['X-Auth-Token'] = res.body.data.authToken;
@@ -3379,10 +3100,8 @@ describe('[Users]', function () {
 					activeStatus: false,
 					userId: targetUser._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('user.active', false);
 				})
 				.end(done);
@@ -3395,10 +3114,8 @@ describe('[Users]', function () {
 					activeStatus: true,
 					userId: targetUser._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('user.active', true);
 				})
 				.end(done);
@@ -3421,11 +3138,7 @@ describe('[Users]', function () {
 					userId: targetUser._id,
 					roomId: room._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('channels.addOwner'))
@@ -3434,11 +3147,7 @@ describe('[Users]', function () {
 					userId: targetUser._id,
 					roomId: room._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('channels.removeOwner'))
@@ -3447,11 +3156,7 @@ describe('[Users]', function () {
 					userId: credentials['X-User-Id'],
 					roomId: room._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('users.setActiveStatus'))
@@ -3488,11 +3193,7 @@ describe('[Users]', function () {
 					userId: targetUser._id,
 					roomId: room._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('channels.addOwner'))
@@ -3501,11 +3202,7 @@ describe('[Users]', function () {
 					userId: targetUser._id,
 					roomId: room._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('channels.removeOwner'))
@@ -3514,11 +3211,7 @@ describe('[Users]', function () {
 					userId: credentials['X-User-Id'],
 					roomId: room._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('users.setActiveStatus'))
@@ -3528,11 +3221,7 @@ describe('[Users]', function () {
 					userId: targetUser._id,
 					confirmRelinquish: true,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await deleteRoom({ type: 'c', roomId: room._id });
 		});
@@ -3553,11 +3242,7 @@ describe('[Users]', function () {
 					activeStatus: true,
 					userId: targetUser._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('channels.invite'))
@@ -3566,11 +3251,7 @@ describe('[Users]', function () {
 					userId: targetUser._id,
 					roomId: room._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('channels.addOwner'))
@@ -3579,11 +3260,7 @@ describe('[Users]', function () {
 					userId: targetUser._id,
 					roomId: room._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('channels.removeOwner'))
@@ -3592,11 +3269,7 @@ describe('[Users]', function () {
 					userId: credentials['X-User-Id'],
 					roomId: room._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.post(api('users.setActiveStatus'))
@@ -3606,11 +3279,7 @@ describe('[Users]', function () {
 					userId: targetUser._id,
 					confirmRelinquish: true,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await request
 				.get(api('channels.roles'))
@@ -3618,10 +3287,8 @@ describe('[Users]', function () {
 				.query({
 					roomId: room._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.roles).to.have.lengthOf(2);
 					expect(res.body.roles[1].roles).to.eql(['owner']);
 					expect(res.body.roles[1].u).to.have.property('_id', credentials['X-User-Id']);
@@ -3639,8 +3306,7 @@ describe('[Users]', function () {
 						activeStatus: false,
 						userId: targetUser._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(403)
+					.forbidden()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 					})
@@ -3655,8 +3321,7 @@ describe('[Users]', function () {
 					activeStatus: false,
 					userId: user._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(403)
+				.forbidden()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 				})
@@ -3671,8 +3336,7 @@ describe('[Users]', function () {
 						activeStatus: false,
 						userId: user._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(403)
+					.forbidden()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 					})
@@ -3689,8 +3353,7 @@ describe('[Users]', function () {
 					activeStatus: false,
 					userId: testUser._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			const user = await getUserByUsername(testUser.username);
 			expect(user).to.have.property('roles');
@@ -3708,8 +3371,7 @@ describe('[Users]', function () {
 					activeStatus: false,
 					userId: agent.user._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			const agentInfo = await getAgent(agent.user._id);
 			expect(agentInfo).to.have.property('statusLivechat', 'not-available');
@@ -3726,8 +3388,7 @@ describe('[Users]', function () {
 					activeStatus: true,
 					userId: agent.user._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			agentInfo = await getAgent(agent.user._id);
 			expect(agentInfo).to.have.property('statusLivechat', 'not-available');
@@ -3759,22 +3420,16 @@ describe('[Users]', function () {
 					roleId: testRoleId,
 					username: testUser.username,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 		before('Login as test user', (done) => {
 			request
-				.post(api('login'))
-				.send({
+				.expectLoginSuccess({
 					user: testUser.username,
 					password,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
 				.expect((res) => {
 					testUserCredentials = {};
 					testUserCredentials['X-Auth-Token'] = res.body.data.authToken;
@@ -3795,8 +3450,7 @@ describe('[Users]', function () {
 					.send({
 						daysIdle: 0,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(403)
+					.forbidden()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error', 'unauthorized');
@@ -3812,10 +3466,8 @@ describe('[Users]', function () {
 					.send({
 						daysIdle: 999999,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('count', 0);
 					})
 					.end(done);
@@ -3830,10 +3482,8 @@ describe('[Users]', function () {
 						daysIdle: 0,
 						role: testRoleId,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('count', 1);
 					})
 					.end(done);
@@ -3848,10 +3498,8 @@ describe('[Users]', function () {
 						daysIdle: 0,
 						role: testRoleId,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('count', 0);
 					})
 					.end(done);
@@ -3864,10 +3512,8 @@ describe('[Users]', function () {
 			request
 				.get(api('users.requestDataDownload'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('requested');
 					expect(res.body).to.have.property('exportOperation').and.to.be.an('object');
 					expect(res.body.exportOperation).to.have.property('fullExport', false);
@@ -3878,10 +3524,8 @@ describe('[Users]', function () {
 			request
 				.get(api('users.requestDataDownload?fullExport=false'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('requested');
 					expect(res.body).to.have.property('exportOperation').and.to.be.an('object');
 					expect(res.body.exportOperation).to.have.property('fullExport', false);
@@ -3892,10 +3536,8 @@ describe('[Users]', function () {
 			request
 				.get(api('users.requestDataDownload?fullExport=true'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('requested');
 					expect(res.body).to.have.property('exportOperation').and.to.be.an('object');
 					expect(res.body.exportOperation).to.have.property('fullExport', true);
@@ -3946,9 +3588,8 @@ describe('[Users]', function () {
 			request
 				.post(api('users.logoutOtherClients'))
 				.set(newCredentials)
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('token').and.to.be.a('string');
 					expect(res.body).to.have.property('tokenExpires').and.to.be.a('string');
 				})
@@ -3992,10 +3633,8 @@ describe('[Users]', function () {
 				request
 					.get(api('users.autocomplete?selector={}'))
 					.set(userCredentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('items').and.to.be.an('array').that.has.lengthOf(0);
 					})
 					.end(done);
@@ -4007,10 +3646,8 @@ describe('[Users]', function () {
 				request
 					.get(api('users.autocomplete?selector={}'))
 					.set(userCredentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('items').and.to.be.an('array').with.lengthOf(1);
 					});
 			});
@@ -4036,10 +3673,8 @@ describe('[Users]', function () {
 				request
 					.get(api('users.autocomplete?selector={}'))
 					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('items').and.to.be.an('array');
 					})
 					.end(done);
@@ -4063,10 +3698,8 @@ describe('[Users]', function () {
 							},
 						}),
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('items').and.to.be.an('array').with.lengthOf(0);
 					})
 					.end(done);
@@ -4109,10 +3742,8 @@ describe('[Users]', function () {
 			request
 				.get(api('users.getStatus'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('status');
 					expect(res.body._id).to.be.equal(credentials['X-User-Id']);
 				})
@@ -4122,10 +3753,8 @@ describe('[Users]', function () {
 			request
 				.get(api('users.getStatus?userId=rocket.cat'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('status');
 					expect(res.body._id).to.be.equal('rocket.cat');
 				})
@@ -4171,10 +3800,9 @@ describe('[Users]', function () {
 						status: 'busy',
 						message: 'test',
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
+					.success()
+					.expect(() => {
+						// TODO: fixme
 						getUserStatus(credentials['X-User-Id']).then((status) => expect(status.status).to.be.equal('busy'));
 					})
 					.end(done);
@@ -4190,8 +3818,7 @@ describe('[Users]', function () {
 						message: 'test',
 						userId: user._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(403)
+					.forbidden()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body.error).to.be.equal('unauthorized');
@@ -4209,10 +3836,9 @@ describe('[Users]', function () {
 						message: 'test',
 						userId: user._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
+					.success()
+					.expect(() => {
+						// TODO: fixme
 						getUserStatus(credentials['X-User-Id']).then((status) => {
 							expect(status.status).to.be.equal('busy');
 							expect(status.message).to.be.equal('test');
@@ -4325,10 +3951,8 @@ describe('[Users]', function () {
 					name: teamName1,
 					type: 0,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('team');
 					expect(res.body).to.have.nested.property('team._id');
 				})
@@ -4343,10 +3967,8 @@ describe('[Users]', function () {
 					name: teamName2,
 					type: 0,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('team');
 					expect(res.body).to.have.nested.property('team._id');
 				})
@@ -4374,11 +3996,8 @@ describe('[Users]', function () {
 						},
 					],
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.then(() => done());
 		});
 
@@ -4395,11 +4014,8 @@ describe('[Users]', function () {
 						},
 					],
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.then(() => done());
 		});
 
@@ -4414,10 +4030,8 @@ describe('[Users]', function () {
 				.query({
 					userId: testUser._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('teams');
 
 					const { teams } = res.body;
@@ -4449,25 +4063,13 @@ describe('[Users]', function () {
 
 		it('should throw unauthorized error to user w/o "logout-other-user" permission', (done) => {
 			updatePermission('logout-other-user', []).then(() => {
-				request
-					.post(api('users.logout'))
-					.set(credentials)
-					.send({ userId: otherUser._id })
-					.expect('Content-Type', 'application/json')
-					.expect(403)
-					.end(done);
+				request.post(api('users.logout')).set(credentials).send({ userId: otherUser._id }).forbidden().end(done);
 			});
 		});
 
 		it('should logout other user', (done) => {
 			updatePermission('logout-other-user', ['admin']).then(() => {
-				request
-					.post(api('users.logout'))
-					.set(credentials)
-					.send({ userId: otherUser._id })
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.end(done);
+				request.post(api('users.logout')).set(credentials).send({ userId: otherUser._id }).success().end(done);
 			});
 		});
 

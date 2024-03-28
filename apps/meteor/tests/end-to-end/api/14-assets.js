@@ -23,11 +23,8 @@ describe('[Assets]', function () {
 				.field({
 					assetName: 'logo',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 		it('should throw an error when we try set an invalid asset', (done) => {
@@ -52,11 +49,8 @@ describe('[Assets]', function () {
 				.send({
 					assetName: 'logo',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 		it('should throw an error when we try set an invalid asset', (done) => {

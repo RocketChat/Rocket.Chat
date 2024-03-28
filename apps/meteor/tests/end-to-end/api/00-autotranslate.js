@@ -74,10 +74,8 @@ describe('AutoTranslate', function () {
 						.query({
 							targetLanguage: 'en',
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
 							expect(res.body.languages).to.be.an('array');
 						})
 						.end(done);
@@ -285,11 +283,7 @@ describe('AutoTranslate', function () {
 						field: 'autoTranslateLanguage',
 						value: 'en',
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
-					})
+					.success()
 					.end(done);
 			});
 		});
@@ -367,11 +361,7 @@ describe('AutoTranslate', function () {
 					.send({
 						messageId: messageSent._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
-					})
+					.success()
 					.end(done);
 			});
 		});
@@ -388,15 +378,7 @@ describe('AutoTranslate', function () {
 				(await createRoom({ type: 'c', members, name: `channel-test-${Date.now()}`, credentials: cred })).body.channel;
 
 			const setLanguagePref = async (language, cred) => {
-				await request
-					.post(api('users.setPreferences'))
-					.set(cred)
-					.send({ data: { language } })
-					.expect(200)
-					.expect('Content-Type', 'application/json')
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					});
+				await request.post(api('users.setPreferences')).set(cred).send({ data: { language } }).success();
 			};
 
 			const getSub = async (roomId, cred) =>
@@ -407,10 +389,8 @@ describe('AutoTranslate', function () {
 						.query({
 							roomId,
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('subscription').and.to.be.an('object');
 						})
 				).body.subscription;
@@ -466,8 +446,7 @@ describe('AutoTranslate', function () {
 					.send({
 						roomId: channel._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200);
+					.success();
 
 				const sub = await getSub(channel._id, credB);
 				expect(sub).to.have.property('autoTranslate');
@@ -505,8 +484,7 @@ describe('AutoTranslate', function () {
 						roomId: newChannel._id,
 						userId: userB._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200);
+					.success();
 
 				const sub = await getSub(newChannel._id, credB);
 				expect(sub).to.have.property('autoTranslate');

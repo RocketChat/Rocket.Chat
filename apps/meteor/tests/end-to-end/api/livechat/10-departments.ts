@@ -50,8 +50,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			.post(api('livechat/department'))
 			.set(credentials)
 			.send({ department: { name: 'Test', enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'bla@bla' } })
-			.expect('Content-Type', 'application/json')
-			.expect(200);
+			.success();
 		expect(body).to.have.property('success', true);
 		expect(body).to.have.property('department');
 		expect(body.department).to.have.property('_id');
@@ -104,10 +103,8 @@ import { IS_EE } from '../../../e2e/config/constants';
 			await request
 				.get(api('livechat/department'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('departments');
 					expect(res.body.departments).to.be.an('array');
 					expect(res.body.departments).to.have.length.of.at.least(0);
@@ -128,10 +125,8 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/department'))
 				.set(credentials)
 				.query({ count: 1, offset: 0 })
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('departments');
 					expect(res.body.departments).to.be.an('array');
 					expect(res.body.departments).to.have.lengthOf(1);
@@ -145,10 +140,8 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/department'))
 				.set(credentials)
 				.query({ count: 2, offset: 0, text: 'test' })
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('departments');
 					expect(res.body.departments).to.be.an('array');
 					expect(res.body.departments).to.have.lengthOf(2);
@@ -166,10 +159,8 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/department'))
 				.set(credentials)
 				.query({ count: 2, offset: 0, text: 'A test 123' })
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('departments');
 					expect(res.body.departments).to.be.an('array');
 					expect(res.body.departments).to.have.lengthOf(1);
@@ -190,8 +181,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.send({
 					department: { name: 'TestUnauthorized', enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'bla@bla' },
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 		});
 
 		it('should return an error when no keys are provided', async () => {
@@ -282,8 +272,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.post(api('livechat/department'))
 				.set(credentials)
 				.send({ department: { name: 'Test', enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'bla@bla' } })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 			expect(body).to.have.property('success', true);
 			expect(body).to.have.property('department');
 			expect(body.department).to.have.property('_id');
@@ -307,8 +296,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 						email: faker.internet.email(),
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 			expect(body).to.have.property('success', true);
 			expect(body).to.have.property('department');
 			expect(body.department).to.have.property('_id');
@@ -320,11 +308,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 	describe('GET livechat/department/:_id', () => {
 		it('should return unauthorized error when the user does not have the necessary permission', async () => {
 			await updatePermission('view-livechat-departments', []);
-			await request
-				.get(api('livechat/department/testetetetstetete'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+			await request.get(api('livechat/department/testetetetstetete')).set(credentials).forbidden();
 		}).timeout(5000);
 
 		it('should return an error when the department does not exist', async () => {
@@ -332,10 +316,8 @@ import { IS_EE } from '../../../e2e/config/constants';
 			await request
 				.get(api('livechat/department/testesteteste'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('department');
 					expect(res.body.department).to.be.null;
 				});
@@ -347,8 +329,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const { body } = await request
 				.get(api(`livechat/department/${department._id}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 			expect(body).to.have.property('success', true);
 			expect(body).to.have.property('department');
 			expect(body.department).to.have.property('_id');
@@ -446,11 +427,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			await updatePermission('manage-livechat-departments', []);
 			await updatePermission('remove-livechat-department', []);
 
-			await request
-				.delete(api('livechat/department/testetetetstetete'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+			await request.delete(api('livechat/department/testetetetstetete')).set(credentials).forbidden();
 		});
 
 		it('should return an error when the department does not exist', async () => {
@@ -472,8 +449,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const resp: Response = await request
 				.delete(api(`livechat/department/${department._id}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			expect(resp.body).to.have.property('success', true);
 		});
@@ -486,8 +462,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const resp: Response = await request
 				.delete(api(`livechat/department/${department._id}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			expect(resp.body).to.have.property('success', true);
 
@@ -512,8 +487,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const resp: Response = await request
 				.delete(api(`livechat/department/${department._id}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			expect(resp.body).to.have.property('success', true);
 
@@ -551,8 +525,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				const resp: Response = await request
 					.delete(api(`livechat/department/${department1._id}`))
 					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200);
+					.success();
 
 				expect(resp.body).to.have.property('success', true);
 
@@ -644,8 +617,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/department.autocomplete'))
 				.set(credentials)
 				.query({ selector: '{"term":"test"}' })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 			expect(response.body).to.have.property('success', true);
 			expect(response.body).to.have.property('items');
 			expect(response.body.items).to.be.an('array');
@@ -668,10 +640,8 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/department.autocomplete'))
 				.set(credentials)
 				.query({ selector: `{"exceptions":["${dep1._id}"]}` })
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('items');
 					expect(res.body.items).to.be.an('array');
 					expect(res.body.items).to.have.length.of.at.least(1);
@@ -732,10 +702,8 @@ import { IS_EE } from '../../../e2e/config/constants';
 			await request
 				.get(api('livechat/department/test/agents'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('agents');
 					expect(res.body.agents).to.be.an('array');
 					expect(res.body.agents).to.have.lengthOf(0);
@@ -750,8 +718,8 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const res = await request
 				.get(api(`livechat/department/${dep._id}/agents`))
 				.set(credentials)
-				.expect(200);
-			expect(res.body).to.have.property('success', true);
+				.success();
+
 			expect(res.body).to.have.property('agents');
 			expect(res.body.agents).to.be.an('array');
 			expect(res.body.agents).to.have.lengthOf(0);
@@ -768,8 +736,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const res = await request
 				.get(api(`livechat/department/${dep._id}/agents`))
 				.set(credentials)
-				.expect(200);
-			expect(res.body).to.have.property('success', true);
+				.success();
 			expect(res.body).to.have.property('agents');
 			expect(res.body.agents).to.be.an('array');
 			expect(res.body.agents).to.have.lengthOf(1);
@@ -834,12 +801,12 @@ import { IS_EE } from '../../../e2e/config/constants';
 			await updatePermission('manage-livechat-departments', ['admin']);
 			await updatePermission('add-livechat-department-agents', ['admin', 'livechat-manager']);
 			const [dep, agent] = await Promise.all([createDepartment(), createAgent()]);
-			const res = await request
+			await request
 				.post(api(`livechat/department/${dep._id}/agents`))
 				.set(credentials)
 				.send({ upsert: [{ agentId: agent._id, username: agent.username }], remove: [] })
-				.expect(200);
-			expect(res.body).to.have.property('success', true);
+				.success();
+
 			await deleteDepartment(dep._id);
 		});
 	});
@@ -863,7 +830,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			await request
 				.post(api(`livechat/department/${department._id}/archive`))
 				.set(credentials)
-				.expect(200);
+				.success();
 			departmentForTest = department;
 		});
 		it('should return a list of archived departments', async () => {
@@ -878,7 +845,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			await request
 				.post(api(`livechat/department/${departmentForTest._id}/unarchive`))
 				.set(credentials)
-				.expect(200);
+				.success();
 		});
 	});
 });

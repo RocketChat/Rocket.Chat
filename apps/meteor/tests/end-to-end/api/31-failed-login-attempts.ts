@@ -39,34 +39,20 @@ describe('[Failed Login Attempts]', function () {
 
 	async function shouldFailLoginWithUser(username: string, password: string) {
 		await request
-			.post(api('login'))
-			.send({
+			.expectLoginFailure({
 				user: username,
 				password,
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(401)
 			.expect((res) => {
-				expect(res.body).to.have.property('status', 'error');
 				expect(res.body).to.have.property('message', 'Incorrect password');
 			});
 	}
 
 	async function shouldSuccesfullyLoginWithUser(username: string, password: string) {
-		await request
-			.post(api('login'))
-			.send({
-				user: username,
-				password,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('status', 'success');
-				expect(res.body).to.have.property('data').and.to.be.an('object');
-				expect(res.body.data).to.have.property('userId');
-				expect(res.body.data).to.have.property('authToken');
-			});
+		await request.expectLoginSuccess({
+			user: username,
+			password,
+		});
 	}
 
 	async function shouldLogoutUser(uid: string) {
@@ -75,15 +61,11 @@ describe('[Failed Login Attempts]', function () {
 
 	async function shouldBlockLogin(username: string, password: string, reason: 'user' | 'ip') {
 		await request
-			.post(api('login'))
-			.send({
+			.expectLoginFailure({
 				user: username,
 				password,
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(401)
 			.expect((res) => {
-				expect(res.body).to.have.property('status', 'error');
 				expect(res.body).to.have.property('error', `error-login-blocked-for-${reason}`);
 			});
 	}

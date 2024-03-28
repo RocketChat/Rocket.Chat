@@ -22,8 +22,7 @@ describe('[Presence]', function () {
 		it('should throw an error if not authenticated', async () => {
 			await request
 				.get(api('presence.getConnections'))
-				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.unauthorized()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');
@@ -34,8 +33,7 @@ describe('[Presence]', function () {
 			await request
 				.get(api('presence.getConnections'))
 				.set(unauthorizedUserCredentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403)
+				.forbidden()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error');
@@ -48,8 +46,7 @@ describe('[Presence]', function () {
 			await request
 				.get(api('presence.getConnections'))
 				.set(unauthorizedUserCredentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403)
+				.forbidden()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error');
@@ -62,10 +59,8 @@ describe('[Presence]', function () {
 			await request
 				.get(api('presence.getConnections'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('current').to.be.a('number');
 					expect(res.body).to.have.property('max').to.be.a('number').and.to.be.equal(200);
 				});
@@ -76,8 +71,7 @@ describe('[Presence]', function () {
 		it('should throw an error if not authenticated', async () => {
 			await request
 				.post(api('presence.enableBroadcast'))
-				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.unauthorized()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');
@@ -88,8 +82,7 @@ describe('[Presence]', function () {
 			await request
 				.post(api('presence.enableBroadcast'))
 				.set(unauthorizedUserCredentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403)
+				.forbidden()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error');
@@ -102,8 +95,7 @@ describe('[Presence]', function () {
 			await request
 				.post(api('presence.enableBroadcast'))
 				.set(unauthorizedUserCredentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403)
+				.forbidden()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error');
@@ -113,14 +105,7 @@ describe('[Presence]', function () {
 		});
 
 		it('should return success', async () => {
-			await request
-				.post(api('presence.enableBroadcast'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+			await request.post(api('presence.enableBroadcast')).set(credentials).success();
 		});
 	});
 

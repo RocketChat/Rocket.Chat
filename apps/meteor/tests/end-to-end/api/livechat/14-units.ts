@@ -97,7 +97,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/units'))
 				.query({ sort: JSON.stringify({ name: 1 }), text: 'test', count: 2 })
 				.set(credentials)
-				.expect(200);
+				.success();
 			expect(body).to.have.property('units').and.to.be.an('array').with.lengthOf(2);
 			expect(body.units[0]._id).to.be.equal(unit._id);
 			expect(body.units[1]._id).to.be.equal(unit2._id);
@@ -136,7 +136,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 					unitMonitors: [{ monitorId: user._id, username: user.username }],
 					unitDepartments: [{ departmentId: department._id }],
 				})
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('_id');
 			expect(body).to.have.property('name', 'test');
@@ -162,7 +162,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 					unitMonitors: [{ monitorId: user._id, username: user.username }],
 					unitDepartments: [{ departmentId: department._id }],
 				})
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('numMonitors', 0);
 			expect(body).to.have.property('name', 'test');
@@ -187,7 +187,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const { body } = await request
 				.get(api(`livechat/units/${unit._id}`))
 				.set(credentials)
-				.expect(200);
+				.success();
 			expect(body).to.have.property('_id', unit._id);
 			expect(body).to.have.property('name', unit.name);
 			expect(body).to.have.property('numMonitors', 1);
@@ -238,7 +238,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 					unitMonitors: [{ monitorId: user._id, username: user.username }],
 					unitDepartments: [{ departmentId: department._id }],
 				})
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('_id');
 			expect(body).to.have.property('name', 'test');
@@ -260,7 +260,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const { body } = await request
 				.get(api(`livechat/units/${unit1._id}/departments`))
 				.set(credentials)
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('departments');
 			expect(body.departments).to.have.lengthOf(0);
@@ -280,7 +280,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 					unitMonitors: [{ monitorId: user._id, username: user.username }],
 					unitDepartments: [],
 				})
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('_id', unit1._id);
 			expect(body).to.have.property('numDepartments', 0);
@@ -299,7 +299,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 					unitMonitors: [],
 					unitDepartments: [{ departmentId: department._id }],
 				})
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('_id', unit1._id);
 			expect(body).to.have.property('numMonitors', 0);
@@ -321,7 +321,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const { body } = await request
 				.delete(api(`livechat/units/${unit._id}`))
 				.set(credentials)
-				.expect(200);
+				.success();
 
 			expect(body).to.have.be.a('number').equal(1);
 
@@ -345,7 +345,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const { body } = await request
 				.get(api(`livechat/units/${unit._id}/departments`))
 				.set(credentials)
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('departments');
 			expect(body.departments).to.have.lengthOf(1);
@@ -372,7 +372,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const { body } = await request
 				.get(api(`livechat/units/${unit._id}/departments/available`))
 				.set(credentials)
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('departments');
 			expect(body.departments).to.have.lengthOf.greaterThan(0);
@@ -400,7 +400,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const { body } = await request
 				.get(api(`livechat/units/${unit._id}/monitors`))
 				.set(credentials)
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('monitors');
 			expect(body.monitors).to.have.lengthOf(1);

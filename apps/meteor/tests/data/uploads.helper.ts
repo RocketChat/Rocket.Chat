@@ -10,19 +10,28 @@ import { updateSetting } from './permissions.helper';
 import { createRoom, deleteRoom } from './rooms.helper';
 import { createVisitor } from './livechat/rooms';
 
-export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.files' | 'im.files', roomType: 'c' | 'd' | 'p', invalidRoomError = 'error-room-not-found') {
+export async function testFileUploads(
+	filesEndpoint: 'channels.files' | 'groups.files' | 'im.files',
+	roomType: 'c' | 'd' | 'p',
+	invalidRoomError = 'error-room-not-found',
+) {
 	let testRoom: Record<string, any>;
 	const propertyMap = {
-		'c': 'channel',
-		'p': 'group',
-		'd': 'room',
+		c: 'channel',
+		p: 'group',
+		d: 'room',
 	};
 
 	before(async function () {
 		await updateSetting('VoIP_Enabled', true);
 		await updateSetting('Message_KeepHistory', true);
 
-		testRoom = (await createRoom({ type: roomType, ...(roomType === 'd' ? { username: 'rocket.cat' } : { name: `channel-files-${Date.now()}` }) } as any)).body[propertyMap[roomType]];
+		testRoom = (
+			await createRoom({
+				type: roomType,
+				...(roomType === 'd' ? { username: 'rocket.cat' } : { name: `channel-files-${Date.now()}` }),
+			} as any)
+		).body[propertyMap[roomType]];
 	});
 
 	after(async function () {
@@ -90,10 +99,8 @@ export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.
 			.query({
 				roomId: testRoom._id,
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect(function (res: Response) {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('files').and.to.be.an('array');
 			})
 			.end(done);
@@ -108,10 +115,8 @@ export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.
 				count: 5,
 				offset: 0,
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect(function (res: Response) {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('files').and.to.be.an('array');
 			})
 			.end(done);
@@ -127,10 +132,8 @@ export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.
 			.query({
 				roomName: testRoom.name,
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect(function (res: Response) {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('files').and.to.be.an('array');
 			})
 			.end(done);
@@ -148,10 +151,8 @@ export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.
 				count: 5,
 				offset: 0,
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect(function (res: Response) {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('files').and.to.be.an('array');
 			})
 			.end(done);
@@ -162,11 +163,7 @@ export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.
 			.post(api(`rooms.upload/${testRoom._id}`))
 			.set(credentials)
 			.attach('file', imgURL)
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect(function (res: Response) {
-				expect(res.body).to.have.property('success', true);
-			});
+			.success();
 
 		await request
 			.get(api(filesEndpoint))
@@ -174,10 +171,8 @@ export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.
 			.query({
 				roomId: testRoom._id,
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect(function (res: Response) {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('files').and.to.be.an('array').with.lengthOf(1);
 
 				const { files } = res.body;
@@ -196,11 +191,8 @@ export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.
 			.post(api(`rooms.upload/${testRoom._id}`))
 			.set(credentials)
 			.attach('file', imgURL)
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect(function (res: Response) {
-				expect(res.body).to.have.property('success', true);
-
 				msgId = res.body.message._id;
 				fileId = res.body.message.file._id;
 			});
@@ -212,8 +204,7 @@ export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.
 				roomId: testRoom._id,
 				msgId,
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200);
+			.success();
 
 		await request
 			.get(api(filesEndpoint))
@@ -221,10 +212,8 @@ export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.
 			.query({
 				roomId: testRoom._id,
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect(function (res: Response) {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('files').and.to.be.an('array').with.lengthOf(1);
 
 				const { files } = res.body;

@@ -19,12 +19,7 @@ describe('[OAuth Server]', function () {
 	before((done) => getCredentials(done));
 
 	after(async () => {
-		await request
-			.post(api('oauth-apps.delete'))
-			.set(credentials)
-			.send({ appId: oAuthAppId })
-			.expect('Content-Type', 'application/json')
-			.expect(200);
+		await request.post(api('oauth-apps.delete')).set(credentials).send({ appId: oAuthAppId }).success();
 	});
 
 	describe('[/oauth-apps.create]', () => {
@@ -39,10 +34,8 @@ describe('[OAuth Server]', function () {
 				.post(api('oauth-apps.create'))
 				.set(credentials)
 				.send(data)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('application');
 					expect(res.body.application).to.have.property('_id');
 					expect(res.body.application).to.have.property('name', data.name);
@@ -96,8 +89,7 @@ describe('[OAuth Server]', function () {
 					client_secret: clientSecret,
 					redirect_uri: redirectUri,
 				})
-				.expect('Content-Type', 'application/json; charset=utf-8')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('token_type', 'Bearer');
 					expect(res.body).to.have.property('access_token');
@@ -118,8 +110,7 @@ describe('[OAuth Server]', function () {
 					client_id: clientId,
 					client_secret: clientSecret,
 				})
-				.expect('Content-Type', 'application/json; charset=utf-8')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('token_type', 'Bearer');
 					expect(res.body).to.have.property('access_token').and.not.be.equal(accessToken);
@@ -137,8 +128,7 @@ describe('[OAuth Server]', function () {
 			await request
 				.get(`/oauth/userinfo`)
 				.auth(refreshedAccessToken, { type: 'bearer' })
-				.expect('Content-Type', 'application/json; charset=utf-8')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('sub', 'rocketchat.internal.admin.test');
 				});

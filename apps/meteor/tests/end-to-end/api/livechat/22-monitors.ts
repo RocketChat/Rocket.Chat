@@ -91,7 +91,7 @@ type TestUser = { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id
 						msg: 'method',
 					}),
 				})
-				.expect(200);
+				.success();
 
 			expect(body.success).to.be.true;
 		});
@@ -108,7 +108,7 @@ type TestUser = { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id
 						msg: 'method',
 					}),
 				})
-				.expect(200);
+				.success();
 
 			expect(body.success).to.be.true;
 		});
@@ -125,7 +125,7 @@ type TestUser = { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id
 						msg: 'method',
 					}),
 				})
-				.expect(200);
+				.success();
 
 			expect(body.success).to.be.true;
 			const parsedBody = JSON.parse(body.message);
@@ -145,7 +145,7 @@ type TestUser = { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id
 						msg: 'method',
 					}),
 				})
-				.expect(200);
+				.success();
 
 			expect(body.success).to.be.true;
 			const parsedBody = JSON.parse(body.message);
@@ -165,7 +165,7 @@ type TestUser = { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id
 						msg: 'method',
 					}),
 				})
-				.expect(200);
+				.success();
 
 			expect(body.success).to.be.true;
 		});
@@ -182,7 +182,7 @@ type TestUser = { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id
 						msg: 'method',
 					}),
 				})
-				.expect(200);
+				.success();
 
 			expect(body.success).to.be.true;
 		});
@@ -221,7 +221,7 @@ type TestUser = { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id
 			const { body } = await request
 				.get(api(`livechat/monitors/${user.username}`))
 				.set(credentials)
-				.expect(200);
+				.success();
 			expect(body).to.have.property('username', user.username);
 
 			// cleanup
@@ -234,11 +234,7 @@ type TestUser = { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id
 			const visitor = await createVisitor(noUnitDepartment._id);
 			const room = await createLivechatRoom(visitor.token);
 
-			const { body } = await request
-				.get(api('livechat/rooms'))
-				.set(monitor.credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+			const { body } = await request.get(api('livechat/rooms')).set(monitor.credentials).success();
 
 			expect(body).to.have.property('rooms').that.is.an('array');
 			expect(body.rooms.find((r: any) => r._id === room._id)).to.not.exist;
@@ -247,11 +243,7 @@ type TestUser = { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id
 			const visitor = await createVisitor(unitDepartment._id);
 			const room = await createLivechatRoom(visitor.token);
 
-			const { body } = await request
-				.get(api('livechat/rooms'))
-				.set(monitor.credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+			const { body } = await request.get(api('livechat/rooms')).set(monitor.credentials).success();
 
 			expect(body).to.have.property('rooms').that.is.an('array');
 			expect(body.rooms.find((r: any) => r._id === room._id)).to.exist;
@@ -260,23 +252,13 @@ type TestUser = { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id
 
 	describe('Monitors & Departments', () => {
 		it('should not return a department that the monitor is not assigned to', async () => {
-			const { body } = await request
-				.get(api('livechat/department'))
-				.query({ onlyMyDepartments: true })
-				.set(monitor.credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+			const { body } = await request.get(api('livechat/department')).query({ onlyMyDepartments: true }).set(monitor.credentials).success();
 
 			expect(body).to.have.property('departments').that.is.an('array');
 			expect(body.departments.find((d: any) => d._id === noUnitDepartment._id)).to.not.exist;
 		});
 		it('should return a department that the monitor is assigned to', async () => {
-			const { body } = await request
-				.get(api('livechat/department'))
-				.query({ onlyMyDepartments: true })
-				.set(monitor.credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+			const { body } = await request.get(api('livechat/department')).query({ onlyMyDepartments: true }).set(monitor.credentials).success();
 
 			expect(body).to.have.property('departments').that.is.an('array');
 			expect(body.departments.length).to.be.equal(1);
@@ -287,8 +269,7 @@ type TestUser = { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id
 				.get(api('livechat/department'))
 				.query({ onlyMyDepartments: true, sort: '{ "_updatedAt": 1 }' })
 				.set(manager.credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('departments').that.is.an('array');
 			expect(body.departments.find((d: any) => d._id === noUnitDepartment._id)).to.exist;
@@ -302,12 +283,7 @@ type TestUser = { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id
 				true,
 			);
 
-			const { body } = await request
-				.get(api('livechat/department'))
-				.query({ onlyMyDepartments: true })
-				.set(monitor.credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+			const { body } = await request.get(api('livechat/department')).query({ onlyMyDepartments: true }).set(monitor.credentials).success();
 
 			expect(body).to.have.property('departments').that.is.an('array');
 			expect(body.departments.length).to.be.equal(1);
@@ -327,8 +303,7 @@ type TestUser = { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id
 					roomId: room._id,
 					userId: 'rocketchat.internal.admin.test',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('success', true);
 
@@ -348,8 +323,7 @@ type TestUser = { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id
 					roomId: room._id,
 					departmentId: unitDepartment._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('success', true);
 

@@ -86,10 +86,8 @@ describe('LIVECHAT - Agents', function () {
 			await request
 				.get(api('livechat/users/agent'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.users).to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -108,9 +106,8 @@ describe('LIVECHAT - Agents', function () {
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.query({ onlyAvailable: true })
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.users).to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -124,9 +121,8 @@ describe('LIVECHAT - Agents', function () {
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.query({ onlyAvailable: false })
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.users).to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -146,9 +142,8 @@ describe('LIVECHAT - Agents', function () {
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.query({ showIdleAgents: true })
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.users).to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -169,9 +164,8 @@ describe('LIVECHAT - Agents', function () {
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.query({ showIdleAgents: false })
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.users).to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -187,10 +181,8 @@ describe('LIVECHAT - Agents', function () {
 			await request
 				.get(api('livechat/users/manager'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.users).to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -211,8 +203,7 @@ describe('LIVECHAT - Agents', function () {
 				.send({
 					username: 'test-agent',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 		});
 
 		it('should return an error when type is invalid', async () => {
@@ -250,10 +241,8 @@ describe('LIVECHAT - Agents', function () {
 				.send({
 					username: user.username,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('user');
 					expect(res.body.user).to.have.property('_id');
 					expect(res.body.user).to.have.property('username');
@@ -271,10 +260,8 @@ describe('LIVECHAT - Agents', function () {
 				.send({
 					username: user.username,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('user');
 					expect(res.body.user).to.have.property('_id');
 					expect(res.body.user).to.have.property('username');
@@ -292,8 +279,7 @@ describe('LIVECHAT - Agents', function () {
 			await request
 				.get(api(`livechat/users/agent/id${agent._id}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 		}).timeout(5000);
 
 		it('should return an error when type is invalid', async () => {
@@ -318,10 +304,8 @@ describe('LIVECHAT - Agents', function () {
 			await request
 				.get(api(`livechat/users/agent/${agent._id}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('user');
 					expect(res.body.user).to.have.property('_id');
 					expect(res.body.user).to.have.property('username');
@@ -335,10 +319,8 @@ describe('LIVECHAT - Agents', function () {
 			await request
 				.get(api(`livechat/users/agent/${user._id}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('user');
 					expect(res.body.user).to.be.null;
 				});
@@ -373,8 +355,7 @@ describe('LIVECHAT - Agents', function () {
 			await request
 				.delete(api(`livechat/users/agent/${agent._id}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 		});
 	});
 
@@ -384,18 +365,15 @@ describe('LIVECHAT - Agents', function () {
 			await request
 				.get(api(`livechat/agents/${agent._id}/departments`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 		});
 		it('should return an empty array of departments when the agentId is invalid', async () => {
 			await updatePermission('view-l-room', ['admin']);
 			await request
 				.get(api('livechat/agents/invalid-id/departments'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('departments').and.to.be.an('array');
 				});
 		});
@@ -404,10 +382,8 @@ describe('LIVECHAT - Agents', function () {
 			await request
 				.get(api(`livechat/agents/${agent._id}/departments`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('departments').and.to.be.an('array');
 					(res.body.departments as ILivechatDepartment[]).forEach((department) => {
 						expect(department.agentId).to.be.equal(agent._id);
@@ -528,9 +504,8 @@ describe('LIVECHAT - Agents', function () {
 				.post(api('livechat/agent.status'))
 				.set(agent2.credentials)
 				.send({ status: newStatus, agentId: currentUser._id })
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('status', newStatus);
 				});
 		});
@@ -545,9 +520,8 @@ describe('LIVECHAT - Agents', function () {
 				.post(api('livechat/agent.status'))
 				.set(credentials)
 				.send({ status: newStatus, agentId: currentUser._id })
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('status', newStatus);
 				});
 		});
@@ -579,9 +553,8 @@ describe('LIVECHAT - Agents', function () {
 				.post(api('livechat/agent.status'))
 				.set(credentials)
 				.send({ status: newStatus, agentId: currentUser._id })
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('status', currentStatus);
 				});
 
@@ -634,7 +607,7 @@ describe('LIVECHAT - Agents', function () {
 				.get(api('rooms.get'))
 				.set(testUser.credentials)
 				.query({ updatedSince: new Date(new Date().getTime() - 2000) })
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('success', true);
 			expect(body.update.find((r: { _id: string }) => r._id === room._id)).to.be.undefined;

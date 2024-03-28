@@ -43,8 +43,7 @@ export const bulkCreateSLA = (amount: number): Promise<Omit<IOmnichannelServiceL
 };
 
 export const deleteAllSLA = async (): Promise<void> => {
-	const response = await request.get(api('livechat/sla')).set(credentials).expect('Content-Type', 'application/json').expect(200);
-	expect(response.body).to.have.property('success', true);
+	const response = await request.get(api('livechat/sla')).set(credentials).expect('Content-Type', 'application/json').success();
 	expect(response.body.sla).to.be.an('array');
 	const {
 		body: { sla },
@@ -53,18 +52,16 @@ export const deleteAllSLA = async (): Promise<void> => {
 		request
 			.delete(api(`livechat/sla/${slaObj._id}`))
 			.set(credentials)
-			.expect('Content-Type', 'application/json')
-			.expect(200),
+			.success(),
 	);
 	await Promise.all(promises);
 };
 
 export const getRandomPriority = async (): Promise<ILivechatPriority> => {
-	const response = await request.get(api('livechat/priorities')).set(credentials).expect('Content-Type', 'application/json').expect(200);
-	expect(response.body).to.have.property('success', true);
+	const response = await request.get(api('livechat/priorities')).set(credentials).expect('Content-Type', 'application/json').success();
 	expect(response.body.priorities).to.be.an('array');
 	const {
 		body: { priorities },
 	} = response as { body: { priorities: ILivechatPriority[] } };
 	return priorities[Math.floor(Math.random() * priorities.length)];
-}
+};

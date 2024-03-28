@@ -13,9 +13,8 @@ describe('[Webdav]', function () {
 			request
 				.get(api('webdav.getMyAccounts'))
 				.set(credentials)
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('accounts').and.to.be.a('array');
 				})
 				.end(done);

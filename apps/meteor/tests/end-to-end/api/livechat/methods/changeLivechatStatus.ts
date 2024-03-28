@@ -49,9 +49,8 @@ describe('livechat:changeLivechatStatus', function () {
 						msg: 'method',
 					}),
 				})
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					const parsedBody = JSON.parse(res.body.message);
 					expect(parsedBody).to.have.property('error');
 					expect(parsedBody.error).to.have.property('error', 'error-not-allowed');
@@ -73,9 +72,8 @@ describe('livechat:changeLivechatStatus', function () {
 						msg: 'method',
 					}),
 				})
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					const parsedBody = JSON.parse(res.body.message);
 					expect(parsedBody).to.have.property('error');
 					expect(parsedBody.error).to.have.property('error', 'error-not-allowed');
@@ -97,11 +95,9 @@ describe('livechat:changeLivechatStatus', function () {
 						msg: 'method',
 					}),
 				})
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					const parsedBody = JSON.parse(res.body.message);
-					expect(parsedBody).to.have.property('error');
 					expect(parsedBody.error).to.have.property('error', 'error-not-allowed');
 					expect(parsedBody.error).to.have.property('reason', 'Invalid Status');
 				});
@@ -118,11 +114,9 @@ describe('livechat:changeLivechatStatus', function () {
 						msg: 'method',
 					}),
 				})
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					const parsedBody = JSON.parse(res.body.message);
-					expect(parsedBody).to.have.property('error');
 					expect(parsedBody.error).to.have.property('error', 'error-not-allowed');
 					expect(parsedBody.error).to.have.property('reason', 'Invalid Agent Id');
 				});
@@ -143,12 +137,7 @@ describe('livechat:changeLivechatStatus', function () {
 						msg: 'method',
 					}),
 				})
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-					const parsedBody = JSON.parse(res.body.message);
-					expect(parsedBody).to.not.have.property('error');
-				});
+				.success();
 		});
 		it('should allow managers to change other agents status', async () => {
 			await updatePermission('manage-livechat-agents', ['admin']);
@@ -168,12 +157,7 @@ describe('livechat:changeLivechatStatus', function () {
 						msg: 'method',
 					}),
 				})
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-					const parsedBody = JSON.parse(res.body.message);
-					expect(parsedBody).to.not.have.property('error');
-				});
+				.success();
 		});
 		it('should throw an error if agent tries to make themselves available outside of Business hour', async () => {
 			await makeDefaultBusinessHourActiveAndClosed();
@@ -193,11 +177,9 @@ describe('livechat:changeLivechatStatus', function () {
 						msg: 'method',
 					}),
 				})
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					const parsedBody = JSON.parse(res.body.message);
-					expect(parsedBody).to.have.property('error');
 					expect(parsedBody.error).to.have.property('error', 'error-business-hours-are-closed');
 				});
 		});
@@ -219,12 +201,7 @@ describe('livechat:changeLivechatStatus', function () {
 						msg: 'method',
 					}),
 				})
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-					const parsedBody = JSON.parse(res.body.message);
-					expect(parsedBody).to.not.have.property('error');
-				});
+				.success();
 
 			await disableDefaultBusinessHour();
 		});
