@@ -27,7 +27,10 @@ export const {
 		href: '/account/security',
 		i18nLabel: 'Security',
 		icon: 'lock',
-		permissionGranted: (): boolean => settings.get('Accounts_TwoFactorAuthentication_Enabled') || settings.get('E2E_Enable'),
+		permissionGranted: (): boolean =>
+			settings.get('Accounts_TwoFactorAuthentication_Enabled') ||
+			settings.get('E2E_Enable') ||
+			settings.get('Accounts_AllowPasswordChange'),
 	},
 	{
 		href: '/account/integrations',
