@@ -1413,6 +1413,44 @@ describe('[Users]', function () {
 				.end(done);
 		});
 
+		it('should return an error when trying to upsert a user by sending an empty userId', (done) => {
+			request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: '',
+					data: {},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('error', 'must NOT have fewer than 1 characters [invalid-params]');
+				})
+				.end(done);
+		});
+
+		it('should return an error when trying to use the joinDefaultChannels param, which is not intended for updates', (done) => {
+			request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						joinDefaultChannels: true,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('error', 'must NOT have additional properties [invalid-params]');
+				})
+				.end(done);
+		});
+
 		it("should update a bot's email", (done) => {
 			request
 				.post(api('users.update'))
