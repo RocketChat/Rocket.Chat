@@ -33,6 +33,10 @@ export class HomeSidenav {
 		return this.page.locator('role=button[name="Create"]');
 	}
 
+	get inputSearch(): Locator {
+		return this.page.locator('[placeholder="Search (Ctrl+K)"]').first();
+	}
+
 	getSidebarItemByName(name: string): Locator {
 		return this.page.locator(`[data-qa="sidebar-item"][aria-label="${name}"]`);
 	}
@@ -57,6 +61,10 @@ export class HomeSidenav {
 	async openNewByLabel(text: string): Promise<void> {
 		await this.page.locator('role=button[name="Create new"]').click();
 		await this.page.locator(`role=menuitem[name="${text}"]`).click();
+	}
+
+	async openSearch(): Promise<void> {
+		await this.page.locator('role=button[name="Search"]').click();
 	}
 
 	async logout(): Promise<void> {

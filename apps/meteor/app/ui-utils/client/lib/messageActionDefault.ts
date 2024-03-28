@@ -10,7 +10,7 @@ import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { messageArgs } from '../../../../client/lib/utils/messageArgs';
 import { router } from '../../../../client/providers/RouterProvider';
 import ForwardMessageModal from '../../../../client/views/room/modals/ForwardMessageModal/ForwardMessageModal';
-import ReactionList from '../../../../client/views/room/modals/ReactionListModal';
+import ReactionListModal from '../../../../client/views/room/modals/ReactionListModal';
 import ReportMessageModal from '../../../../client/views/room/modals/ReportMessageModal';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/client';
 import { ChatRoom, Subscriptions } from '../../../models/client';
@@ -268,7 +268,7 @@ Meteor.startup(async () => {
 		type: 'interaction',
 		action(this: unknown, _, { message: { reactions = {} } = messageArgs(this).msg }) {
 			imperativeModal.open({
-				component: ReactionList,
+				component: ReactionListModal,
 				props: { reactions, onClose: imperativeModal.close },
 			});
 		},

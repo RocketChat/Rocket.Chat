@@ -1,8 +1,8 @@
 {
-    "translation": {
-        "conversation_finished": "سۆھبەتلىشىش ئاخىرلاشتى",
-        "send": "يوللاش",
-        "user_joined": "ئەزا ئاللىبۇرۇن قېتىلدى",
-        "user_left": "ئەزا ئاللىبۇرۇن ئايرىلدى"
-    }
+  "translation": {
+    "conversation_finished": "سۆھبەتلىشىش ئاخىرلاشتى",
+    "send": "يوللاش",
+    "user_joined": "ئەزا ئاللىبۇرۇن قېتىلدى",
+    "user_left": "ئەزا ئاللىبۇرۇن ئايرىلدى"
+  }
 }

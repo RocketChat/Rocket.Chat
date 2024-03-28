@@ -4,20 +4,9 @@ import type { EventHandler, ReactElement, SyntheticEvent } from 'react';
 import React from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
+import type { SettingInputProps } from './types';
 
-type RelativeUrlSettingInputProps = {
-	_id: string;
-	label: string;
-	value?: string;
-	placeholder?: string;
-	readonly?: boolean;
-	autocomplete?: boolean;
-	disabled?: boolean;
-	required?: boolean;
-	hasResetButton?: boolean;
-	onChangeValue?: (value: string) => void;
-	onResetButtonClick?: () => void;
-};
+type RelativeUrlSettingInputProps = SettingInputProps;
 
 function RelativeUrlSettingInput({
 	_id,

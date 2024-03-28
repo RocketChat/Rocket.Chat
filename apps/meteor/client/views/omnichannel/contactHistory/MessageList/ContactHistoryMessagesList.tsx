@@ -13,7 +13,7 @@ import {
 	ContextualbarContent,
 	ContextualbarEmptyContent,
 } from '../../../../components/Contextualbar';
-import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
+import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import { isMessageNewDay } from '../../../room/MessageList/lib/isMessageNewDay';
@@ -98,7 +98,7 @@ const ContactHistoryMessagesList = ({
 							}
 							overscan={25}
 							data={messages}
-							components={{ Scroller: ScrollableContentWrapper as any }}
+							components={{ Scroller: VirtuosoScrollbars }}
 							itemContent={(index, data): ReactElement => {
 								const lastMessage = messages[index - 1];
 								const isSequential = isMessageSequential(data, lastMessage, messageGroupingPeriod);

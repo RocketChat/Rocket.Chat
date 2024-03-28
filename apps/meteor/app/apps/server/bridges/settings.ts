@@ -1,11 +1,10 @@
+import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import { ServerSettingBridge } from '@rocket.chat/apps-engine/server/bridges/ServerSettingBridge';
 import { Settings } from '@rocket.chat/models';
 
-import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
-
 export class AppSettingBridge extends ServerSettingBridge {
-	constructor(private readonly orch: AppServerOrchestrator) {
+	constructor(private readonly orch: IAppServerOrchestrator) {
 		super();
 	}
 

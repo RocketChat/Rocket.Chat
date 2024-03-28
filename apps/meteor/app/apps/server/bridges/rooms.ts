@@ -1,3 +1,4 @@
+import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
@@ -6,7 +7,6 @@ import { RoomBridge } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
 import type { ISubscription, IUser as ICoreUser, IRoom as ICoreRoom } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 
-import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
 import { createDiscussion } from '../../../discussion/server/methods/createDiscussion';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
@@ -15,7 +15,7 @@ import { createChannelMethod } from '../../../lib/server/methods/createChannel';
 import { createPrivateGroupMethod } from '../../../lib/server/methods/createPrivateGroup';
 
 export class AppRoomBridge extends RoomBridge {
-	constructor(private readonly orch: AppServerOrchestrator) {
+	constructor(private readonly orch: IAppServerOrchestrator) {
 		super();
 	}
 
@@ -65,13 +65,17 @@ export class AppRoomBridge extends RoomBridge {
 	protected async getById(roomId: string, appId: string): Promise<IRoom> {
 		this.orch.debugLog(`The App ${appId} is getting the roomById: "${roomId}"`);
 
-		return this.orch.getConverters()?.get('rooms').convertById(roomId);
+		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
+		const promise: Promise<IRoom | undefined> = this.orch.getConverters()?.get('rooms').convertById(roomId);
+		return promise as Promise<IRoom>;
 	}
 
 	protected async getByName(roomName: string, appId: string): Promise<IRoom> {
 		this.orch.debugLog(`The App ${appId} is getting the roomByName: "${roomName}"`);
 
-		return this.orch.getConverters()?.get('rooms').convertByName(roomName);
+		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
+		const promise: Promise<IRoom | undefined> = this.orch.getConverters()?.get('rooms').convertByName(roomName);
+		return promise as Promise<IRoom>;
 	}
 
 	protected async getCreatorById(roomId: string, appId: string): Promise<IUser | undefined> {
@@ -79,7 +83,7 @@ export class AppRoomBridge extends RoomBridge {
 
 		const room = await Rooms.findOneById(roomId);
 
-		if (!room || !room.u || !room.u._id) {
+		if (!room?.u?._id) {
 			return undefined;
 		}
 
@@ -91,7 +95,7 @@ export class AppRoomBridge extends RoomBridge {
 
 		const room = await Rooms.findOneByName(roomName, {});
 
-		if (!room || !room.u || !room.u._id) {
+		if (!room?.u?._id) {
 			return undefined;
 		}
 
@@ -101,9 +105,12 @@ export class AppRoomBridge extends RoomBridge {
 	protected async getMembers(roomId: string, appId: string): Promise<Array<IUser>> {
 		this.orch.debugLog(`The App ${appId} is getting the room's members by room id: "${roomId}"`);
 		const subscriptions = await Subscriptions.findByRoomId(roomId, {});
-		return Promise.all(
+		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
+		const promises: Promise<(IUser | undefined)[]> = Promise.all(
 			(await subscriptions.toArray()).map((sub: ISubscription) => this.orch.getConverters()?.get('users').convertById(sub.u?._id)),
 		);
+
+		return promises as Promise<IUser[]>;
 	}
 
 	protected async getDirectByUsernames(usernames: Array<string>, appId: string): Promise<IRoom | undefined> {
@@ -124,7 +131,7 @@ export class AppRoomBridge extends RoomBridge {
 
 		const rm = await this.orch.getConverters()?.get('rooms').convertAppRoom(room);
 
-		await Rooms.updateOne({ _id: rm._id }, { $set: rm });
+		await Rooms.updateOne({ _id: rm._id }, { $set: rm as Partial<ICoreRoom> });
 
 		for await (const username of members) {
 			const member = await Users.findOneByUsername(username, {});
@@ -162,9 +169,10 @@ export class AppRoomBridge extends RoomBridge {
 			throw new Error('There must be a parent room to create a discussion.');
 		}
 
+		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
 		const discussion = {
 			prid: rcRoom.prid,
-			t_name: rcRoom.fname,
+			t_name: rcRoom.fname as string,
 			pmid: rcMessage ? rcMessage._id : undefined,
 			reply: reply && reply.trim() !== '' ? reply : undefined,
 			users: members.length > 0 ? members : [],
@@ -198,7 +206,7 @@ export class AppRoomBridge extends RoomBridge {
 		}[];
 		// Was this a bug?
 		const users = await Users.findByIds(subs.map((user: { uid: string }) => user.uid)).toArray();
-		const userConverter = this.orch.getConverters()!.get('users');
-		return users.map((user: ICoreUser) => userConverter!.convertToApp(user));
+		const userConverter = this.orch.getConverters().get('users');
+		return users.map((user: ICoreUser) => userConverter.convertToApp(user));
 	}
 }

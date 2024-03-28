@@ -25,7 +25,7 @@ const RoleHeader = ({ _id, name, description }: RoleHeaderProps): ReactElement =
 
 	return (
 		<GenericTableHeaderCell pi={4} p={8}>
-			<Button icon='edit' secondary onClick={handleEditRole}>
+			<Button small icon='edit' secondary onClick={handleEditRole}>
 				{description || name}
 			</Button>
 		</GenericTableHeaderCell>

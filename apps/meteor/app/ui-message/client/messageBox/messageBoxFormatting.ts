@@ -1,24 +1,34 @@
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
+import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
+import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import { settings } from '../../../settings/client';
+import AddLinkComposerActionModal from './AddLinkComposerActionModal';
 
-export type FormattingButton =
-	| {
-			label: TranslationKey;
-			icon: IconName;
-			pattern: string;
-			// text?: () => string | undefined;
-			command?: string;
-			link?: string;
-			condition?: () => boolean;
-	  }
-	| {
-			label: TranslationKey;
-			text: () => string | undefined;
-			link: string;
-			condition?: () => boolean;
-	  };
+type FormattingButtonDefault = { label: TranslationKey; condition?: () => boolean };
+
+type TextButton = {
+	text: () => string | undefined;
+	link: string;
+} & FormattingButtonDefault;
+
+type PatternButton = {
+	icon: IconName;
+	pattern: string;
+	// text?: () => string | undefined;
+	command?: string;
+	link?: string;
+} & FormattingButtonDefault;
+
+type PromptButton = {
+	prompt: (composer: ComposerAPI) => void;
+	icon: IconName;
+} & FormattingButtonDefault;
+
+export type FormattingButton = PatternButton | PromptButton | TextButton;
+
+export const isPromptButton = (button: FormattingButton): button is PromptButton => 'prompt' in button;
 
 export const formattingButtons: ReadonlyArray<FormattingButton> = [
 	{
@@ -47,6 +57,28 @@ export const formattingButtons: ReadonlyArray<FormattingButton> = [
 		label: 'Multi_line',
 		icon: 'multiline',
 		pattern: '```\n{{text}}\n``` ',
+	},
+	{
+		label: 'Link',
+		icon: 'link',
+		prompt: (composerApi: ComposerAPI) => {
+			const { selection } = composerApi;
+
+			const selectedText = composerApi.substring(selection.start, selection.end);
+
+			const onClose = () => {
+				imperativeModal.close();
+				composerApi.focus();
+			};
+
+			const onConfirm = (url: string, text: string) => {
+				onClose();
+				composerApi.replaceText(`[${text}](${url})`, selection);
+				composerApi.setCursorToEnd();
+			};
+
+			imperativeModal.open({ component: AddLinkComposerActionModal, props: { onConfirm, selectedText, onClose } });
+		},
 	},
 	{
 		label: 'KaTeX' as TranslationKey,

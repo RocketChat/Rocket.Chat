@@ -1,3 +1,5 @@
+import { faker } from '@faker-js/faker';
+
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel } from './utils';
@@ -23,21 +25,18 @@ test.describe.serial('message-composer', () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage('hello composer');
 
-		await expect(poHomeChannel.composerToolbarActions).toHaveCount(11);
+		await expect(poHomeChannel.composerToolbarActions).toHaveCount(12);
 	});
 
 	test('should have only the main formatter and the main action', async ({ page }) => {
 		await page.setViewportSize({ width: 768, height: 600 });
-
 		await poHomeChannel.sidenav.openChat(targetChannel);
-		await poHomeChannel.content.sendMessage('hello composer');
 
 		await expect(poHomeChannel.composerToolbarActions).toHaveCount(5);
 	});
 
 	test('should navigate on toolbar using arrow keys', async ({ page }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
-		await poHomeChannel.content.sendMessage('hello composer');
 
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('ArrowRight');
@@ -50,11 +49,24 @@ test.describe.serial('message-composer', () => {
 
 	test('should move the focus away from toolbar using tab key', async ({ page }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
-		await poHomeChannel.content.sendMessage('hello composer');
 
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('Tab');
 		
 		await expect(poHomeChannel.composerToolbar.getByRole('button', { name: 'Emoji' })).not.toBeFocused();
+	});
+
+	test('should add a link to the selected text', async ({ page }) => {
+		const url = faker.internet.url();
+		await poHomeChannel.sidenav.openChat(targetChannel);
+
+		await page.keyboard.type('hello composer');
+		await page.keyboard.press('Control+A'); // on Windows and Linux
+		await page.keyboard.press('Meta+A'); // on macOS
+		await poHomeChannel.composerToolbar.getByRole('button', { name: 'Link' }).click()
+		await page.keyboard.type(url);
+		await page.keyboard.press('Enter');
+		
+		await expect(poHomeChannel.composer).toHaveValue(`[hello composer](${url})`);
 	});
 });

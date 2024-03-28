@@ -16,8 +16,8 @@ import {
 	ContextualbarFooter,
 	ContextualbarEmptyContent,
 } from '../../../../components/Contextualbar';
+import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
-import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import Row from './Row';
 
 type BaseTeamsChannelsProps = {
@@ -125,7 +125,7 @@ const BaseTeamsChannels = ({
 								totalCount={total}
 								data={channels}
 								// eslint-disable-next-line react/no-multi-comp
-								components={{ Scroller: ScrollableContentWrapper, Footer: () => <InfiniteListAnchor loadMore={loadMoreChannels} /> }}
+								components={{ Scroller: VirtuosoScrollbars, Footer: () => <InfiniteListAnchor loadMore={loadMoreChannels} /> }}
 								itemContent={(index, data) => <Row onClickView={onClickView} room={data} reload={reload} key={index} />}
 							/>
 						</Box>

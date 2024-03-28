@@ -43,7 +43,6 @@ export async function createDirectRoom(
 	members: IUser[] | string[],
 	roomExtraData = {},
 	options: {
-		nameValidationRegex?: string;
 		creator?: string;
 		subscriptionExtra?: ISubscriptionExtraData;
 	},

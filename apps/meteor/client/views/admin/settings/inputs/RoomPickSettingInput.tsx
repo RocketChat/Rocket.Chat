@@ -5,19 +5,9 @@ import React from 'react';
 
 import RoomAutoCompleteMultiple from '../../../../components/RoomAutoCompleteMultiple';
 import ResetSettingButton from '../ResetSettingButton';
+import type { SettingInputProps } from './types';
 
-type RoomPickSettingInputProps = {
-	_id: string;
-	label: string;
-	value?: SettingValueRoomPick | '';
-	placeholder?: string;
-	readonly?: boolean;
-	disabled?: boolean;
-	required?: boolean;
-	hasResetButton?: boolean;
-	onChangeValue: (value: SettingValueRoomPick) => void;
-	onResetButtonClick?: () => void;
-};
+type RoomPickSettingInputProps = SettingInputProps<SettingValueRoomPick | '', SettingValueRoomPick>;
 
 function RoomPickSettingInput({
 	_id,

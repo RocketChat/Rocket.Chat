@@ -9,7 +9,6 @@ import type {
 	IEmoji,
 	ICustomSound,
 	INotificationDesktop,
-	IWebdavAccount,
 	VoipEventDataSignature,
 	IUser,
 	IOmnichannelRoom,
@@ -24,6 +23,7 @@ import type {
 	IBanner,
 	LicenseLimitKind,
 	ICustomUserStatus,
+	IWebdavAccount,
 } from '@rocket.chat/core-typings';
 import type * as UiKit from '@rocket.chat/ui-kit';
 

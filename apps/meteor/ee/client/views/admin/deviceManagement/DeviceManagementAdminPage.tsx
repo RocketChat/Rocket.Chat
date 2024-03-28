@@ -2,6 +2,7 @@ import { useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useRef } from 'react';
 
+import { ContextualbarDialog } from '../../../../../client/components/Contextualbar';
 import { Page, PageHeader, PageContent } from '../../../../../client/components/Page';
 import DeviceManagementAdminTable from './DeviceManagementAdminTable';
 import DeviceManagementInfo from './DeviceManagementInfo';
@@ -21,7 +22,11 @@ const DeviceManagementAdminPage = (): ReactElement => {
 					<DeviceManagementAdminTable reloadRef={reloadRef} />
 				</PageContent>
 			</Page>
-			{context === 'info' && deviceId && <DeviceManagementInfo deviceId={deviceId} onReload={reloadRef.current} />}
+			{context === 'info' && deviceId && (
+				<ContextualbarDialog>
+					<DeviceManagementInfo deviceId={deviceId} onReload={reloadRef.current} />
+				</ContextualbarDialog>
+			)}
 		</Page>
 	);
 };

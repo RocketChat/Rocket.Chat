@@ -5,7 +5,7 @@ import type { ReactElement } from 'react';
 import React from 'react';
 
 import { getUserAvatarURL } from '../../../../app/utils/client';
-import { parseOutboundPhoneNumber } from '../../../../ee/client/lib/voip/parseOutboundPhoneNumber';
+import { parseOutboundPhoneNumber } from '../../../lib/voip/parseOutboundPhoneNumber';
 
 export const VoipRoomForeword = ({ room }: { room: IVoipRoom }): ReactElement => {
 	const t = useTranslation();

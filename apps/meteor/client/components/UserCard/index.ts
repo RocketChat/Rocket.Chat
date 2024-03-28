@@ -3,12 +3,7 @@ import UserCardAction from './UserCardAction';
 import UserCardInfo from './UserCardInfo';
 import UserCardRole from './UserCardRole';
 import UserCardRoles from './UserCardRoles';
+import UserCardSkeleton from './UserCardSkeleton';
 import UserCardUsername from './UserCardUsername';
 
-export default Object.assign(UserCard, {
-	Action: UserCardAction,
-	Role: UserCardRole,
-	Roles: UserCardRoles,
-	Info: UserCardInfo,
-	Username: UserCardUsername,
-});
+export { UserCard, UserCardAction, UserCardInfo, UserCardRole, UserCardRoles, UserCardUsername, UserCardSkeleton };

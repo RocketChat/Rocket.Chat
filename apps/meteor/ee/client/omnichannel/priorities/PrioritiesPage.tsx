@@ -86,7 +86,6 @@ export const PrioritiesPage = ({ priorityId, context }: PrioritiesPageProps): Re
 					<PrioritiesTable priorities={priorities} isLoading={isLoading} onRowClick={onRowClick} />
 				</PageContent>
 			</Page>
-
 			{context === 'edit' && (
 				<PriorityList priorityId={priorityId} context={context} onSave={onSavePriority} onClose={onContextualbarClose} />
 			)}

@@ -55,8 +55,9 @@ export async function saveRoomName(
 		return;
 	}
 
-	const slugifiedRoomName = await getValidRoomName(displayName, rid);
 	const isDiscussion = Boolean(room?.prid);
+
+	const slugifiedRoomName = isDiscussion ? displayName : await getValidRoomName(displayName, rid);
 
 	let update;
 
@@ -70,7 +71,9 @@ export async function saveRoomName(
 		return;
 	}
 
-	room.name && (await Integrations.updateRoomName(room.name, slugifiedRoomName));
+	if (room.name && !isDiscussion) {
+		await Integrations.updateRoomName(room.name, slugifiedRoomName);
+	}
 	if (sendMessage) {
 		await Message.saveSystemMessage('r', rid, displayName, user);
 	}

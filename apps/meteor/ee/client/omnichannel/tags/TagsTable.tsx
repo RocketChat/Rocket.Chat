@@ -87,7 +87,7 @@ const TagsTable = () => {
 					description={t('No_tags_yet_description')}
 					buttonTitle={t('Create_tag')}
 					buttonAction={handleAddNew}
-					linkHref='https://go.rocket.chat/omnichannel-docs'
+					linkHref='https://go.rocket.chat/i/omnichannel-docs'
 					linkText={t('Learn_more_about_tags')}
 				/>
 			)}

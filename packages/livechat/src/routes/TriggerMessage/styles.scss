@@ -34,7 +34,7 @@
 		cursor: pointer;
 		text-decoration: none;
 
-		color: $color-blue;
+		color: var(--color, $color-blue);
 		border: 0;
 		background: none;
 

@@ -33,3 +33,14 @@ export async function createDirectMessage(api: BaseTest['api']): Promise<void> {
 		usernames: 'user1,user2',
 	});
 }
+
+export async function createTargetDiscussion(api: BaseTest['api']): Promise<string> {
+	const channelName = faker.string.uuid();
+	const discussionName = faker.string.uuid();
+
+	const response = await api.post('/channels.create', { name: channelName });
+	const { channel } = await response.json();
+	await api.post('/rooms.createDiscussion', { t_name: discussionName, prid: channel._id});
+
+	return discussionName;
+}

@@ -5,18 +5,41 @@ import { withTranslation } from 'react-i18next';
 import { Livechat } from '../../api';
 import { ModalManager } from '../../components/Modal';
 import { getAvatarUrl } from '../../helpers/baseUrl';
-import { canRenderMessage, canRenderTriggerMessage } from '../../helpers/canRenderMessage';
+import { canRenderMessage } from '../../helpers/canRenderMessage';
 import { debounce } from '../../helpers/debounce';
 import { throttle } from '../../helpers/throttle';
 import { upsert } from '../../helpers/upsert';
+import {
+	useAgentChangeSubscription,
+	useAgentStatusChangeSubscription,
+	useQueuePositionChangeSubscription,
+} from '../../hooks/livechatRoomSubscriptionHooks';
+import { useDeleteMessageSubscription } from '../../hooks/useDeleteMessageSubscription';
+import { useRoomMessagesSubscription } from '../../hooks/useRoomMessagesSubscription';
+import { useUserActivitySubscription } from '../../hooks/useUserActivitySubscription';
 import { normalizeQueueAlert } from '../../lib/api';
 import constants from '../../lib/constants';
 import { getLastReadMessage, loadConfig, processUnread, shouldMarkAsUnread } from '../../lib/main';
 import { parentCall, runCallbackEventEmitter } from '../../lib/parentCall';
 import { createToken } from '../../lib/random';
 import { initRoom, closeChat, loadMessages, loadMoreMessages, defaultRoomParams, getGreetingMessages } from '../../lib/room';
-import { Consumer } from '../../store';
 import Chat from './component';
+
+const ChatWrapper = ({ children, rid }) => {
+	useRoomMessagesSubscription(rid);
+
+	useUserActivitySubscription(rid);
+
+	useDeleteMessageSubscription(rid);
+
+	useAgentChangeSubscription(rid);
+
+	useAgentStatusChangeSubscription(rid);
+
+	useQueuePositionChangeSubscription(rid);
+
+	return children;
+};
 
 class ChatContainer extends Component {
 	state = {
@@ -354,137 +377,25 @@ class ChatContainer extends Component {
 	}
 
 	render = ({ user, ...props }) => (
-		<Chat
-			{...props}
-			avatarResolver={getAvatarUrl}
-			uid={user && user._id}
-			onTop={this.handleTop}
-			onChangeText={this.handleChangeText}
-			onSubmit={this.handleSubmit}
-			onUpload={this.handleUpload}
-			options={this.showOptionsMenu()}
-			onChangeDepartment={(this.canSwitchDepartment() && this.onChangeDepartment) || null}
-			onFinishChat={(this.canFinishChat() && this.onFinishChat) || null}
-			onRemoveUserData={(this.canRemoveUserData() && this.onRemoveUserData) || null}
-			onSoundStop={this.handleSoundStop}
-			registrationRequired={this.registrationRequired()}
-			onRegisterUser={this.onRegisterUser}
-		/>
+		<ChatWrapper token={props.token} rid={props.room?._id}>
+			<Chat
+				{...props}
+				avatarResolver={getAvatarUrl}
+				uid={user && user._id}
+				onTop={this.handleTop}
+				onChangeText={this.handleChangeText}
+				onSubmit={this.handleSubmit}
+				onUpload={this.handleUpload}
+				options={this.showOptionsMenu()}
+				onChangeDepartment={(this.canSwitchDepartment() && this.onChangeDepartment) || null}
+				onFinishChat={(this.canFinishChat() && this.onFinishChat) || null}
+				onRemoveUserData={(this.canRemoveUserData() && this.onRemoveUserData) || null}
+				onSoundStop={this.handleSoundStop}
+				registrationRequired={this.registrationRequired()}
+				onRegisterUser={this.onRegisterUser}
+			/>
+		</ChatWrapper>
 	);
 }
 
-export const ChatConnector = ({ ref, t, ...props }) => (
-	<Consumer>
-		{({
-			config: {
-				settings: {
-					fileUpload: uploads,
-					allowSwitchingDepartments,
-					forceAcceptDataProcessingConsent: allowRemoveUserData,
-					showConnecting,
-					registrationForm,
-					nameFieldRegistrationForm,
-					emailFieldRegistrationForm,
-					limitTextLength,
-				} = {},
-				messages: { conversationFinishedMessage } = {},
-				theme: { color, title } = {},
-				departments = {},
-			},
-			iframe: {
-				theme: { color: customColor, fontColor: customFontColor, iconColor: customIconColor, title: customTitle } = {},
-				guest,
-			} = {},
-			token,
-			agent,
-			sound,
-			user,
-			room,
-			messages,
-			noMoreMessages,
-			typing,
-			loading,
-			dispatch,
-			alerts,
-			visible,
-			unread,
-			lastReadMessageId,
-			triggerAgent,
-			queueInfo,
-			incomingCallAlert,
-			ongoingCall,
-			messageListPosition,
-		}) => (
-			<ChatContainer
-				ref={ref}
-				{...props}
-				theme={{
-					color: customColor || color,
-					fontColor: customFontColor,
-					iconColor: customIconColor,
-					title: customTitle,
-				}}
-				title={customTitle || title || t('need_help')}
-				sound={sound}
-				token={token}
-				user={user}
-				agent={
-					agent
-						? {
-								_id: agent._id,
-								name: agent.name,
-								status: agent.status,
-								email: agent.emails && agent.emails[0] && agent.emails[0].address,
-								username: agent.username,
-								phone: (agent.phone && agent.phone[0] && agent.phone[0].phoneNumber) || (agent.customFields && agent.customFields.phone),
-								avatar: agent.username
-									? {
-											description: agent.username,
-											src: getAvatarUrl(agent.username),
-									  }
-									: undefined,
-						  }
-						: undefined
-				}
-				room={room}
-				messages={messages && messages.filter(canRenderMessage).filter(canRenderTriggerMessage(user))}
-				noMoreMessages={noMoreMessages}
-				emoji={true}
-				uploads={uploads}
-				typingUsernames={Array.isArray(typing) ? typing : []}
-				loading={loading}
-				showConnecting={showConnecting} // setting from server that tells if app needs to show "connecting" sometimes
-				connecting={!!(room && !agent && (showConnecting || queueInfo))}
-				dispatch={dispatch}
-				departments={departments}
-				allowSwitchingDepartments={allowSwitchingDepartments}
-				conversationFinishedMessage={conversationFinishedMessage || t('conversation_finished')}
-				allowRemoveUserData={allowRemoveUserData}
-				alerts={alerts}
-				visible={visible}
-				unread={unread}
-				lastReadMessageId={lastReadMessageId}
-				guest={guest}
-				triggerAgent={triggerAgent}
-				queueInfo={
-					queueInfo
-						? {
-								spot: queueInfo.spot,
-								estimatedWaitTimeSeconds: queueInfo.estimatedWaitTimeSeconds,
-								message: queueInfo.message,
-						  }
-						: undefined
-				}
-				registrationFormEnabled={registrationForm}
-				nameFieldRegistrationForm={nameFieldRegistrationForm}
-				emailFieldRegistrationForm={emailFieldRegistrationForm}
-				limitTextLength={limitTextLength}
-				incomingCallAlert={incomingCallAlert}
-				ongoingCall={ongoingCall}
-				messageListPosition={messageListPosition}
-			/>
-		)}
-	</Consumer>
-);
-
-export default withTranslation()(ChatConnector);
+export default withTranslation()(ChatContainer);

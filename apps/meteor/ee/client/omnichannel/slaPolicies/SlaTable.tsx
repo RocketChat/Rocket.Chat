@@ -101,7 +101,7 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 					description={t('No_SLA_policies_yet_description')}
 					buttonTitle={t('Create_SLA_policy')}
 					buttonAction={handleAddNew}
-					linkHref='https://go.rocket.chat/omnichannel-docs'
+					linkHref='https://go.rocket.chat/i/omnichannel-docs'
 					linkText={t('Learn_more_about_SLA_policies')}
 				/>
 			)}

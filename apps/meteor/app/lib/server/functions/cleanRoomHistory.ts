@@ -120,6 +120,7 @@ export async function cleanRoomHistory({
 			ignoreDiscussion,
 			ts,
 			users: fromUsers,
+			ids: selectedMessageIds,
 		});
 	}
 	return count;

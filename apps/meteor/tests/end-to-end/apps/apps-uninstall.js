@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
+import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, request, credentials } from '../../data/api-data.js';
 import { apps } from '../../data/apps/apps-data.js';
@@ -15,6 +15,8 @@ describe('Apps - Uninstall', function () {
 		await cleanupApps();
 		app = await installTestApp();
 	});
+
+	after(() => cleanupApps());
 
 	describe('[Uninstall]', () => {
 		it('should throw an error when trying to uninstall an invalid app', (done) => {

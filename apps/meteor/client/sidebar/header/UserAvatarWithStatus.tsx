@@ -1,10 +1,10 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useSetting, useUser, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import { UserStatus } from '../../components/UserStatus';
-import UserAvatar from '../../components/avatar/UserAvatar';
 
 const anon = {
 	_id: '',

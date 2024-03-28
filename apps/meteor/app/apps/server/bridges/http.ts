@@ -1,9 +1,8 @@
+import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import type { IHttpResponse } from '@rocket.chat/apps-engine/definition/accessors';
 import type { IHttpBridgeRequestInfo } from '@rocket.chat/apps-engine/server/bridges';
 import { HttpBridge } from '@rocket.chat/apps-engine/server/bridges/HttpBridge';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-
-import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 
 const isGetOrHead = (method: string): boolean => ['GET', 'HEAD'].includes(method.toUpperCase());
 
@@ -13,7 +12,7 @@ const isGetOrHead = (method: string): boolean => ['GET', 'HEAD'].includes(method
 const DEFAULT_TIMEOUT = 3 * 60 * 1000;
 
 export class AppHttpBridge extends HttpBridge {
-	constructor(private readonly orch: AppServerOrchestrator) {
+	constructor(private readonly orch: IAppServerOrchestrator) {
 		super();
 	}
 

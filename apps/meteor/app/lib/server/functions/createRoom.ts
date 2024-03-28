@@ -164,15 +164,16 @@ export const createRoom = async <T extends RoomType>(
 		delete extraData.reactWhenReadOnly;
 	}
 
+	// this might not be the best way to check if the room is a discussion, we may need a specific field for that
+	const isDiscussion = 'prid' in extraData && extraData.prid !== '';
+
 	const now = new Date();
 
 	const roomProps: Omit<IRoom, '_id' | '_updatedAt'> = {
 		fname: name,
 		_updatedAt: now,
 		...extraData,
-		name: await getValidRoomName(name.trim(), undefined, {
-			...(options?.nameValidationRegex && { nameValidationRegex: options.nameValidationRegex }),
-		}),
+		name: isDiscussion ? name : await getValidRoomName(name.trim(), undefined),
 		t: type,
 		msgs: 0,
 		usersCount: 0,

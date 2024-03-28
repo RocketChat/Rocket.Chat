@@ -1,12 +1,12 @@
 import type { IUserInRole } from '@rocket.chat/core-typings';
 import { Box, Button, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
 import { getUserEmailAddress } from '../../../../../../lib/getUserEmailAddress';
 import { GenericTableRow, GenericTableCell } from '../../../../../components/GenericTable';
-import UserAvatar from '../../../../../components/avatar/UserAvatar';
 
 type UsersInRoleTableRowProps = {
 	user: IUserInRole;

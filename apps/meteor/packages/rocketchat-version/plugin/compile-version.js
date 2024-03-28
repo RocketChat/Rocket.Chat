@@ -123,6 +123,13 @@ class VersionCompiler {
 					break;
 				}
 				case file.getDisplayPath().endsWith('rocketchat-supported-versions.info'): {
+					if (process.env.NODE_ENV === 'development') {
+						file.addJavaScript({
+							data: `exports.supportedVersions = {}`,
+							path: `${file.getPathInPackage()}.js`,
+						});
+						break;
+					}
 					await processVersionFile(file);
 					break;
 				}

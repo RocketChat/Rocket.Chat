@@ -1,5 +1,6 @@
 import type { DeviceManagementPopulatedSession } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, StatusBullet } from '@rocket.chat/fuselage';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
@@ -13,7 +14,6 @@ import {
 	ContextualbarTitle,
 } from '../../../../../../client/components/Contextualbar';
 import InfoPanel from '../../../../../../client/components/InfoPanel';
-import UserAvatar from '../../../../../../client/components/avatar/UserAvatar';
 import { useFormatDateAndTime } from '../../../../../../client/hooks/useFormatDateAndTime';
 import { usePresence } from '../../../../../../client/hooks/usePresence';
 import { useDeviceLogout } from '../../../../hooks/useDeviceLogout';

@@ -4,9 +4,9 @@ import { after, before, describe, it } from 'mocha';
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
 import { updatePermission } from '../../data/permissions.helper';
-import { createRoom } from '../../data/rooms.helper.js';
+import { createRoom, deleteRoom } from '../../data/rooms.helper.js';
 import { password } from '../../data/user';
-import { createUser, login } from '../../data/users.helper';
+import { createUser, deleteUser, login } from '../../data/users.helper';
 
 describe('[Incoming Integrations]', function () {
 	this.retries(0);
@@ -20,27 +20,28 @@ describe('[Incoming Integrations]', function () {
 
 	before((done) => getCredentials(done));
 
-	before((done) => {
-		updatePermission('manage-incoming-integrations', [])
-			.then(() => updatePermission('manage-own-incoming-integrations', []))
-			.then(() => updatePermission('manage-own-outgoing-integrations', []))
-			.then(() => updatePermission('manage-outgoing-integrations', []));
+	before(async () => {
+		await Promise.all([
+			updatePermission('manage-incoming-integrations', []),
+			updatePermission('manage-own-incoming-integrations', []),
+			updatePermission('manage-own-outgoing-integrations', []),
+			updatePermission('manage-outgoing-integrations', []),
+		]);
 
 		testChannelName = `channel.test.${Date.now()}-${Math.random()}`;
 
-		createRoom({ type: 'c', name: testChannelName }).end((err, res) => {
-			channel = res.body.channel;
-
-			return done();
-		});
+		channel = (await createRoom({ type: 'c', name: testChannelName })).body.channel;
 	});
 
-	after((done) => {
-		updatePermission('manage-incoming-integrations', ['admin'])
-			.then(() => updatePermission('manage-own-incoming-integrations', ['admin']))
-			.then(() => updatePermission('manage-own-outgoing-integrations', ['admin']))
-			.then(() => updatePermission('manage-outgoing-integrations', ['admin']))
-			.then(done);
+	after(async () => {
+		await Promise.all([
+			updatePermission('manage-incoming-integrations', ['admin']),
+			updatePermission('manage-own-incoming-integrations', ['admin']),
+			updatePermission('manage-own-outgoing-integrations', ['admin']),
+			updatePermission('manage-outgoing-integrations', ['admin']),
+			deleteRoom({ type: 'c', roomId: channel._id }),
+			deleteUser(user),
+		]);
 	});
 
 	describe('[/integrations.create]', () => {

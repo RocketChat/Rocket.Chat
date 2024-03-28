@@ -1,11 +1,11 @@
 import { Box, FieldGroup, Field, FieldLabel, FieldRow, FieldError, TextAreaInput } from '@rocket.chat/fuselage';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { ComponentProps } from 'react';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../../../../components/GenericModal/GenericModal';
-import UserAvatar from '../../../../components/avatar/UserAvatar';
 
 type ReportUserModalProps = {
 	onConfirm: (description: string) => void;

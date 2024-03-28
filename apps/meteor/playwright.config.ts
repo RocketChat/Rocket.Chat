@@ -53,5 +53,5 @@ export default {
 	globalTimeout: (process.env.IS_EE === 'true' ? 50 : 40) * 60 * 1000,
 	maxFailures: process.env.CI ? 5 : undefined,
 	// Retry on CI only.
-	retries: process.env.CI ? 2 : 0,
+	retries: parseInt(String(process.env.PLAYWRIGHT_RETRIES)) || 0,
 } as PlaywrightTestConfig;

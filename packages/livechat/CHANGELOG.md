@@ -1,5 +1,53 @@
 # @rocket.chat/livechat Change Log
 
+## 1.15.0-rc.0
+
+### Minor Changes
+
+- ([#31820](https://github.com/RocketChat/Rocket.Chat/pull/31820)) **Added the ability for premium workspaces to hide Rocket.Chat's watermark as well as change the Livechat widget's logo**
+
+  The new settings (named below) can be found in the Omnichannel workspace settings within the livechat section.
+
+  - Hide "powered by Rocket.Chat"
+  - Livechat widget logo (svg, png, jpg)
+
+- ([#31751](https://github.com/RocketChat/Rocket.Chat/pull/31751)) Added Livechat setting `Hide system messages` & API method `setHiddenSystemMessages`, to customize system message visibility within the widget.
+
+- ([#31772](https://github.com/RocketChat/Rocket.Chat/pull/31772)) Improved Livechat's theming capabilities
+
+  | Name (`setTheme`, `initialize`) | Workspace setting                      | Default value | Description                                                                                                                                                |
+  | ------------------------------- | -------------------------------------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+  | `position`                      | Livechat widget position on the screen | `right`       | Changes the widget position on the screen. Can be `left` or `right`                                                                                        |
+  | `background`                    | Livechat background                    | `N/A`         | Changes the message list background. Accepts the same values as the CSS property [background](https://developer.mozilla.org/en-US/docs/Web/CSS/background) |
+  | `guestBubbleBackgroundColor`    | `N/A`                                  | `N/A`         | Changes the guest's message bubble background color                                                                                                        |
+  | `agentBubbleBackgroundColor`    | `N/A`                                  | `N/A`         | Changes the agent's message bubble background color                                                                                                        |
+  | `hideGuestAvatar`               | `N/A`                                  | `false`       | Hides/shows the guest avatar                                                                                                                               |
+  | `hideAgentAvatar`               | `N/A`                                  | `true`        | Hides/shows the agent avatar                                                                                                                               |
+
+- ([#30924](https://github.com/RocketChat/Rocket.Chat/pull/30924)) chore: Refactor & Improve Livechat Widget API
+  Refactors and adds better error handling to the widget's API calls
+- ([#31268](https://github.com/RocketChat/Rocket.Chat/pull/31268)) Added new Livechat trigger action "Send message (external service)"
+
+### Patch Changes
+
+- ([#31663](https://github.com/RocketChat/Rocket.Chat/pull/31663)) Fixes issue causing the setDepartment Livechat API overriding some triggers conditions
+
+- ([#31718](https://github.com/RocketChat/Rocket.Chat/pull/31718)) Allows the after-guest-registration trigger to run when starting a new chat after finishing a chat when the clear guest data when chat ended setting is set to false
+
+- ([#32031](https://github.com/RocketChat/Rocket.Chat/pull/32031)) Fixes issue where the livechat offline form would render even when disabled
+
+- ([#31752](https://github.com/RocketChat/Rocket.Chat/pull/31752)) fixed livechat UI blinking different colors when the chat is finished
+
+- ([#31792](https://github.com/RocketChat/Rocket.Chat/pull/31792)) Fixes issue of the `setDepartment` Livechat API method not setting the store value properly (is was only setting on the guest object)
+
+- <details><summary>Updated dependencies [5ad65ff3da]:</summary>
+
+  - @rocket.chat/message-parser@0.31.29-rc.0
+  - @rocket.chat/gazzodown@5.0.0-rc.0
+  - @rocket.chat/random@1.2.2
+  - @rocket.chat/ui-kit@0.33.0
+  </details>
+
 ## 1.14.19
 
 ### Patch Changes

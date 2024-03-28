@@ -1,5 +1,16 @@
 # @rocket.chat/model-typings
 
+## 0.3.7-rc.0
+
+### Patch Changes
+
+- ([#31890](https://github.com/RocketChat/Rocket.Chat/pull/31890)) Changed logic that process custom fields from visitors when updating its data, making the process more reliable and faster.
+
+- <details><summary>Updated dependencies [b9ef630816, 3eb4dd7f50, b9e897a8f5]:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.0
+  </details>
+
 ## 0.3.6
 
 ### Patch Changes

@@ -14,7 +14,7 @@ import {
 	ContextualbarFooter,
 	ContextualbarSkeleton,
 } from '../../../components/Contextualbar';
-import ScrollableContentWrapper from '../../../components/ScrollableContentWrapper';
+import { VirtuosoScrollbars } from '../../../components/CustomScrollbars';
 import { getErrorMessage } from '../../../lib/errorHandling';
 import { useOutlookAuthentication } from '../hooks/useOutlookAuthentication';
 import { useMutationOutlookCalendarSync, useOutlookCalendarListForToday } from '../hooks/useOutlookCalendarList';
@@ -108,7 +108,7 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): Re
 									totalCount={total}
 									overscan={25}
 									data={calendarEvents}
-									components={{ Scroller: ScrollableContentWrapper }}
+									components={{ Scroller: VirtuosoScrollbars }}
 									itemContent={(_index, calendarData): ReactElement => <OutlookEventItem {...calendarData} />}
 								/>
 							</Box>

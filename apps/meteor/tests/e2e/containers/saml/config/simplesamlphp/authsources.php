@@ -29,6 +29,13 @@ $config = array(
 			'eduPersonAffiliation' => array('group2'),
 			'email' => 'samluser3@example.com',
 		),
+		'samluser4:password' => array(
+			'uid' => array('4'),
+			'username' => 'samluser4',
+			'cn' => 'Saml User 4',
+			'eduPersonAffiliation' => array('group4'),
+			'email' => 'samluser4@example.com',
+			'role' => 'saml-role',
+		),
 	),
-
 );

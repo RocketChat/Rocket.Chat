@@ -1,9 +1,9 @@
-import type { IOmnichannelAgent } from '@rocket.chat/core-typings';
+import type { IOmnichannelAgent, Serialized } from '@rocket.chat/core-typings';
 import i18next from 'i18next';
 
 import { getDateFnsLocale } from './locale';
 
-export const normalizeAgent = (agentData: IOmnichannelAgent) =>
+export const normalizeAgent = (agentData: Serialized<IOmnichannelAgent>) =>
 	agentData && { name: agentData.name, username: agentData.username, status: agentData.status };
 
 export const normalizeQueueAlert = async (queueInfo: any) => {

@@ -1,11 +1,11 @@
 import { AutoComplete, Option, Box } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement, ComponentProps } from 'react';
 import React, { memo, useMemo, useState } from 'react';
 
-import RoomAvatar from '../avatar/RoomAvatar';
 import Avatar from './Avatar';
 
 const generateQuery = (

@@ -1,5 +1,7 @@
 import type { Page, Locator, APIResponse } from '@playwright/test';
 
+import { expect } from '../utils/test';
+
 export class OmnichannelLiveChat {
 	readonly page: Page;
 
@@ -7,8 +9,16 @@ export class OmnichannelLiveChat {
 		this.page = page;
 	}
 
-	btnOpenLiveChat(label: string): Locator {
+	btnOpenOnlineLiveChat(label: string): Locator {
 		return this.page.locator(`role=button[name="${label}"]`);
+	}
+
+	btnOpenLiveChat(): Locator {
+		return this.page.locator(`[data-qa-id="chat-button"]`);
+	}
+
+	get btnNewChat(): Locator {
+		return this.page.locator(`role=button[name="New Chat"]`);
 	}
 
 	get btnOptions(): Locator {
@@ -17,6 +27,10 @@ export class OmnichannelLiveChat {
 
 	get btnCloseChat(): Locator {
 		return this.page.locator(`button >> text="Finish this chat"`);
+	}
+
+	get btnChangeDepartment(): Locator {
+		return this.page.locator(`button >> text="Change department"`);
 	}
 
 	get btnCloseChatConfirm(): Locator {
@@ -30,9 +44,23 @@ export class OmnichannelLiveChat {
 	get btnChatNow(): Locator {
 		return this.page.locator('[type="button"] >> text="Chat now"');
 	}
+	
+	get headerTitle(): Locator {
+		return this.page.locator('[data-qa="header-title"]');
+	}
 
 	txtChatMessage(message: string): Locator {
 		return this.page.locator(`text="${message}"`);
+	}
+
+	async changeDepartment (department: string): Promise<void> {
+		await this.btnOptions.click();
+		await this.btnChangeDepartment.click();
+		await this.selectDepartment.waitFor({ state: 'visible' });
+		await this.selectDepartment.selectOption({ label: department });
+		await this.btnSendMessage('Start chat').click();
+		await this.btnYes.click();
+		await this.btnOk.click();
 	}
 
 	async closeChat(): Promise<void> {
@@ -42,8 +70,18 @@ export class OmnichannelLiveChat {
 	}
 
 	async openLiveChat(): Promise<void> {
-		const { value: siteName } = await (await this.api.get('/settings/Site_Name')).json();
-		await this.btnOpenLiveChat(siteName).click();
+		const { value: siteName } = await (await this.api.get('/settings/Livechat_title')).json();
+		await this.btnOpenOnlineLiveChat(siteName).click();
+	}
+
+	// TODO: replace openLivechat with this method and create a new method for openOnlineLivechat
+	// as openLivechat only opens a chat that is in the 'online' state
+	async openAnyLiveChat(): Promise<void> {
+		await this.btnOpenLiveChat().click();
+	}
+
+	async startNewChat(): Promise<void> {
+		await this.btnNewChat.click();
 	}
 
 	unreadMessagesBadge(count: number): Locator {
@@ -60,6 +98,10 @@ export class OmnichannelLiveChat {
 		return this.page.locator('[name="email"]');
 	}
 
+	get selectDepartment(): Locator {
+		return this.page.locator('[name="department"]');
+	}
+
 	get textAreaMessage(): Locator {
 		return this.page.locator('[name="message"]');
 	}
@@ -70,6 +112,10 @@ export class OmnichannelLiveChat {
 
 	get btnOk(): Locator {
 		return this.page.locator('role=button[name="OK"]');
+	}
+
+	get btnYes(): Locator {
+		return this.page.locator('role=button[name="Yes"]');
 	}
 
 	get onlineAgentMessage(): Locator {
@@ -84,14 +130,32 @@ export class OmnichannelLiveChat {
 		return this.page.locator('div.message-text__WwYco p');
 	}
 
-	public async sendMessage(liveChatUser: { name: string; email: string }, isOffline = true): Promise<void> {
+	public async sendMessage(liveChatUser: { name: string; email: string }, isOffline = true, department?: string): Promise<void> {
 		const buttonLabel = isOffline ? 'Send' : 'Start chat';
-		await this.inputName.type(liveChatUser.name);
-		await this.inputEmail.type(liveChatUser.email);
+		await this.inputName.fill(liveChatUser.name);
+		await this.inputEmail.fill(liveChatUser.email);
+
+		if (department) {
+			await this.selectDepartment.selectOption({ label: department });
+		}
+
 		if (isOffline) {
 			await this.textAreaMessage.type('any_message');
 		}
+
 		await this.btnSendMessage(buttonLabel).click();
 		await this.page.waitForSelector('[data-qa="livechat-composer"]');
+	}
+
+	public async sendMessageAndCloseChat(
+		liveChatUser: { name: string; email: string },
+		message = 'this_a_test_message_from_user',
+	): Promise<void> {
+		await this.openAnyLiveChat();
+		await this.sendMessage(liveChatUser, false);
+		await this.onlineAgentMessage.type(message);
+		await this.btnSendMessageToOnlineAgent.click();
+		await expect(this.txtChatMessage(message)).toBeVisible();
+		await this.closeChat();
 	}
 }

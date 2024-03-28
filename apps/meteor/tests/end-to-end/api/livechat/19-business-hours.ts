@@ -18,6 +18,7 @@ import {
 	addOrRemoveAgentFromDepartment,
 	archiveDepartment,
 	createDepartmentWithAnOnlineAgent,
+	createDepartmentWithAgent,
 	disableDepartment,
 	getDepartmentById,
 	deleteDepartment,
@@ -320,6 +321,21 @@ describe('LIVECHAT - business hours', function () {
 			expect(latestAgent).to.be.an('object');
 			expect(latestAgent.openBusinessHours).to.be.an('array').of.length(0);
 			expect(latestAgent.statusLivechat).to.be.equal(ILivechatAgentStatus.NOT_AVAILABLE);
+		});
+
+		it('should create a custom business hour which is closed by default, but a bot agent shouldnt be affected', async () => {
+			const bot = await createUser({ roles: ['bot', 'livechat-agent'] });
+			const creds = await login(bot.username, password);
+			await makeAgentAvailable(creds);
+
+			const { department } = await createDepartmentWithAgent({ user: bot, credentials: creds });
+
+			await createCustomBusinessHour([department._id], false);
+
+			const latestAgent: ILivechatAgent = await getMe(creds);
+			expect(latestAgent).to.be.an('object');
+			expect(latestAgent.openBusinessHours).to.be.an('array').of.length(0);
+			expect(latestAgent.statusLivechat).to.be.equal(ILivechatAgentStatus.AVAILABLE);
 		});
 	});
 

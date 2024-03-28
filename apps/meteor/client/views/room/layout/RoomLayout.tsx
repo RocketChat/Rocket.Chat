@@ -2,7 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import type { ComponentProps, ReactElement, ReactNode } from 'react';
 import React, { Suspense } from 'react';
 
-import { Contextualbar } from '../../../components/Contextualbar';
+import { ContextualbarDialog } from '../../../components/Contextualbar';
 import HeaderSkeleton from '../Header/HeaderSkeleton';
 
 type RoomLayoutProps = {
@@ -23,9 +23,9 @@ const RoomLayout = ({ header, body, footer, aside, ...props }: RoomLayoutProps):
 				{footer && <Suspense fallback={null}>{footer}</Suspense>}
 			</Box>
 			{aside && (
-				<Contextualbar is='aside'>
+				<ContextualbarDialog>
 					<Suspense fallback={null}>{aside}</Suspense>
-				</Contextualbar>
+				</ContextualbarDialog>
 			)}
 		</Box>
 	</Box>

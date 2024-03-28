@@ -1,0 +1,189 @@
+import type { FunctionalComponent } from 'preact';
+import { createContext } from 'preact';
+import { useCallback, useContext, useEffect, useState } from 'preact/hooks';
+import { parse } from 'query-string';
+
+import { isActiveSession } from '../../helpers/isActiveSession';
+import { parentCall } from '../../lib/parentCall';
+import Triggers from '../../lib/triggers';
+import { StoreContext } from '../../store';
+
+export type ScreenContextValue = {
+	hideWatermark: boolean;
+	livechatLogo: { url: string } | undefined;
+	notificationsEnabled: boolean;
+	minimized: boolean;
+	expanded: boolean;
+	windowed: boolean;
+	sound: unknown;
+	alerts: unknown;
+	modal: unknown;
+	nameDefault: string;
+	emailDefault: string;
+	departmentDefault: string;
+	onEnableNotifications: () => unknown;
+	onDisableNotifications: () => unknown;
+	onMinimize: () => unknown;
+	onRestore: () => unknown;
+	onOpenWindow: () => unknown;
+	onDismissAlert: () => unknown;
+	dismissNotification: () => void;
+	theme?: {
+		color?: string;
+		fontColor?: string;
+		iconColor?: string;
+		position?: 'left' | 'right';
+		guestBubbleBackgroundColor?: string;
+		agentBubbleBackgroundColor?: string;
+		background?: string;
+		hideGuestAvatar?: boolean;
+		hideAgentAvatar?: boolean;
+	};
+};
+
+export const ScreenContext = createContext<ScreenContextValue>({
+	theme: {
+		color: '',
+		fontColor: '',
+		iconColor: '',
+		hideAgentAvatar: false,
+		hideGuestAvatar: true,
+	},
+	notificationsEnabled: true,
+	minimized: true,
+	windowed: false,
+	onEnableNotifications: () => undefined,
+	onDisableNotifications: () => undefined,
+	onMinimize: () => undefined,
+	onRestore: () => undefined,
+	onOpenWindow: () => undefined,
+} as ScreenContextValue);
+
+export const ScreenProvider: FunctionalComponent = ({ children }) => {
+	const {
+		dispatch,
+		config,
+		sound,
+		minimized = true,
+		undocked,
+		expanded = false,
+		alerts,
+		modal,
+		iframe,
+		...store
+	} = useContext(StoreContext);
+	const { department, name, email } = iframe.guest || {};
+	const { color, position: configPosition, background } = config.theme || {};
+	const { livechatLogo, hideWatermark = false } = config.settings || {};
+
+	const {
+		color: customColor,
+		fontColor: customFontColor,
+		iconColor: customIconColor,
+		guestBubbleBackgroundColor,
+		agentBubbleBackgroundColor,
+		position: customPosition,
+		background: customBackground,
+		hideAgentAvatar = false,
+		hideGuestAvatar = true,
+	} = iframe.theme || {};
+
+	const [poppedOut, setPopedOut] = useState(false);
+
+	const position = customPosition || configPosition || 'right';
+
+	useEffect(() => {
+		parentCall('setWidgetPosition', position || 'right');
+	}, [position]);
+
+	const handleEnableNotifications = () => {
+		dispatch({ sound: { ...sound, enabled: true } });
+	};
+
+	const handleDisableNotifications = () => {
+		dispatch({ sound: { ...sound, enabled: false } });
+	};
+
+	const handleMinimize = () => {
+		parentCall('minimizeWindow');
+		dispatch({ minimized: true });
+	};
+
+	const handleRestore = () => {
+		parentCall('restoreWindow');
+		const dispatchRestore = () => dispatch({ minimized: false, undocked: false });
+
+		const dispatchEvent = () => {
+			dispatchRestore();
+			store.off('storageSynced', dispatchEvent);
+		};
+
+		if (undocked) {
+			store.on('storageSynced', dispatchEvent);
+		} else {
+			dispatchRestore();
+		}
+
+		Triggers.callbacks?.emit('chat-opened-by-visitor');
+	};
+
+	const handleOpenWindow = () => {
+		parentCall('openPopout');
+		dispatch({ undocked: true, minimized: false });
+	};
+
+	const handleDismissAlert = (id: string) => {
+		dispatch({ alerts: alerts.filter((alert) => alert.id !== id) });
+	};
+
+	const dismissNotification = () => !isActiveSession();
+
+	const checkPoppedOutWindow = useCallback(() => {
+		// Checking if the window is poppedOut and setting parent minimized if yes for the restore purpose
+		const poppedOut = parse(window.location.search).mode === 'popout';
+		setPopedOut(poppedOut);
+
+		if (poppedOut) {
+			dispatch({ minimized: false });
+		}
+	}, [dispatch]);
+
+	useEffect(() => {
+		checkPoppedOutWindow();
+	}, [checkPoppedOutWindow]);
+
+	const screenProps = {
+		theme: {
+			color: customColor || color,
+			fontColor: customFontColor,
+			iconColor: customIconColor,
+			position,
+			guestBubbleBackgroundColor,
+			agentBubbleBackgroundColor,
+			background: customBackground || background,
+			hideAgentAvatar,
+			hideGuestAvatar,
+		},
+		notificationsEnabled: sound?.enabled,
+		minimized: !poppedOut && (minimized || undocked),
+		expanded: !minimized && expanded,
+		windowed: !minimized && poppedOut,
+		livechatLogo,
+		hideWatermark,
+		sound,
+		alerts,
+		modal,
+		nameDefault: name,
+		emailDefault: email,
+		departmentDefault: department,
+		onEnableNotifications: handleEnableNotifications,
+		onDisableNotifications: handleDisableNotifications,
+		onMinimize: handleMinimize,
+		onRestore: handleRestore,
+		onOpenWindow: handleOpenWindow,
+		onDismissAlert: handleDismissAlert,
+		dismissNotification,
+	};
+
+	return <ScreenContext.Provider value={screenProps}>{children}</ScreenContext.Provider>;
+};

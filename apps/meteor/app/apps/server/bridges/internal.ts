@@ -1,14 +1,13 @@
-import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
+import type { IAppServerOrchestrator, IAppsSetting } from '@rocket.chat/apps';
 import { InternalBridge } from '@rocket.chat/apps-engine/server/bridges/InternalBridge';
-import type { ISubscription } from '@rocket.chat/core-typings';
+import type { ISetting, ISubscription } from '@rocket.chat/core-typings';
 import { Settings, Subscriptions } from '@rocket.chat/models';
 
-import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { deasyncPromise } from '../../../../server/deasync/deasync';
 
 export class AppInternalBridge extends InternalBridge {
-	constructor(private readonly orch: AppServerOrchestrator) {
+	constructor(private readonly orch: IAppServerOrchestrator) {
 		super();
 	}
 
@@ -37,9 +36,13 @@ export class AppInternalBridge extends InternalBridge {
 		return records.map((s: ISubscription) => s.u.username).filter(isTruthy);
 	}
 
-	protected async getWorkspacePublicKey(): Promise<ISetting> {
-		const publicKeySetting = await Settings.findOneById('Cloud_Workspace_PublicKey');
+	protected async getWorkspacePublicKey(): Promise<IAppsSetting> {
+		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
+		const publicKeySetting: ISetting | null = await Settings.findOneById('Cloud_Workspace_PublicKey');
 
-		return this.orch.getConverters()?.get('settings').convertToApp(publicKeySetting);
+		return this.orch
+			.getConverters()
+			?.get('settings')
+			.convertToApp(publicKeySetting as ISetting);
 	}
 }

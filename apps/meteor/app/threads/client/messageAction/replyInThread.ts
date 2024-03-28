@@ -19,7 +19,7 @@ Meteor.startup(() => {
 			context: ['message', 'message-mobile', 'federated', 'videoconf'],
 			action(e, props) {
 				const { message = messageArgs(this).msg } = props;
-				e.stopPropagation();
+				e?.stopPropagation();
 				router.navigate({
 					name: router.getRouteName()!,
 					params: {

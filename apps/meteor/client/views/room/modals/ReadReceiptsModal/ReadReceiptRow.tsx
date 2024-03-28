@@ -1,10 +1,10 @@
 import type { ReadReceipt } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import UserAvatar from '../../../../components/avatar/UserAvatar';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useUserDisplayName } from '../../../../hooks/useUserDisplayName';
 

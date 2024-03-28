@@ -115,7 +115,7 @@ runs:
           echo "Coverage enabled"
         fi
 
-        yarn build:ci -- --directory /tmp/dist
+        yarn build:ci
 
     - name: Prepare build
       shell: bash

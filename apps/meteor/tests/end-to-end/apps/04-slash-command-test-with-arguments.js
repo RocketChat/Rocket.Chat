@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
+import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, request, credentials, api } from '../../data/api-data.js';
 import { cleanupApps, installTestApp } from '../../data/apps/helper.js';
@@ -12,6 +12,8 @@ describe('Apps - Slash Command "test-with-arguments"', function () {
 		await cleanupApps();
 		await installTestApp();
 	});
+
+	after(() => cleanupApps());
 
 	describe('[Slash command "test-with-arguments"]', () => {
 		const params = 'argument';

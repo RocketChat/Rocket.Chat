@@ -38,7 +38,7 @@ const ContactContextualBar = () => {
 	const header = useMemo(() => HEADER_OPTIONS[bar] || HEADER_OPTIONS.info, [bar]);
 
 	return (
-		<Contextualbar className='contextual-bar'>
+		<Contextualbar>
 			<ContextualbarHeader>
 				<ContextualbarIcon name={header.icon} />
 				<ContextualbarTitle>{t(header.title)}</ContextualbarTitle>

@@ -43,6 +43,10 @@ on:
         default: 1
         required: false
         type: number
+      retries:
+        default: 0
+        required: false
+        type: number
       type:
         required: true
         type: string
@@ -233,6 +237,7 @@ jobs:
           QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
           QASE_REPORT: ${{ github.ref == 'refs/heads/develop' && 'true' || '' }}
           CI: true
+          PLAYWRIGHT_RETRIES: ${{ inputs.retries }}
         working-directory: ./apps/meteor
         run: |
           yarn prepare

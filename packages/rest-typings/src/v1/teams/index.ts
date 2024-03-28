@@ -72,7 +72,6 @@ export type TeamsEndpoints = {
 					teamMain?: boolean;
 				} & { [key: string]: string | boolean };
 				options?: {
-					nameValidationRegex?: string;
 					creator: string;
 					subscriptionExtra?: {
 						open: boolean;

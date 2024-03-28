@@ -4,9 +4,9 @@ import moment from 'moment';
 import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
 
-import { parseOutboundPhoneNumber } from '../../../../../ee/client/lib/voip/parseOutboundPhoneNumber';
 import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
 import { useIsCallReady } from '../../../../contexts/CallContext';
+import { parseOutboundPhoneNumber } from '../../../../lib/voip/parseOutboundPhoneNumber';
 import { CallDialpadButton } from '../components/CallDialpadButton';
 
 type CallTableRowProps = {

@@ -1,5 +1,6 @@
-import type { ReactElement, HTMLProps } from 'react';
+import { Box } from '@rocket.chat/fuselage';
+import type { ReactElement, ComponentProps } from 'react';
 
-const VideoConfPopupFooter = (props: HTMLProps<HTMLDivElement>): ReactElement => <div {...props} />;
+const VideoConfPopupFooter = (props: ComponentProps<typeof Box>): ReactElement => <Box mbs={28} {...props} />;
 
 export default VideoConfPopupFooter;

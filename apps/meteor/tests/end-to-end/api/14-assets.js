@@ -1,26 +1,18 @@
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
+import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { imgURL } from '../../data/interactions';
+import { updatePermission } from '../../data/permissions.helper';
 
 describe('[Assets]', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
 
-	it('giving "manage-assets" permission to user', (done) => {
-		request
-			.post(api('permissions.update'))
-			.set(credentials)
-			.send({ permissions: [{ _id: 'manage-assets', roles: ['admin'] }] })
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-			})
-			.end(done);
-	});
+	before(() => updatePermission('manage-assets', ['admin']));
+
+	after(() => updatePermission('manage-assets', ['admin']));
 
 	describe('[/assets.setAsset]', () => {
 		it('should set the "logo" asset', (done) => {
@@ -28,7 +20,6 @@ describe('[Assets]', function () {
 				.post(api('assets.setAsset'))
 				.set(credentials)
 				.attach('asset', imgURL)
-
 				.field({
 					assetName: 'logo',
 				})

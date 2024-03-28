@@ -4,20 +4,9 @@ import type { ReactElement } from 'react';
 import React from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
+import type { SettingInputProps } from './types';
 
-type LanguageSettingInputProps = {
-	_id: string;
-	label: string;
-	value: string;
-	placeholder?: string;
-	readonly?: boolean;
-	autocomplete?: boolean;
-	disabled?: boolean;
-	required?: boolean;
-	hasResetButton?: boolean;
-	onChangeValue?: (value: string | number) => void;
-	onResetButtonClick?: () => void;
-};
+type LanguageSettingInputProps = SettingInputProps<string, string | number>;
 
 function LanguageSettingInput({
 	_id,

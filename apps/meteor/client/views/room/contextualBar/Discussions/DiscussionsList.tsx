@@ -13,7 +13,7 @@ import {
 	ContextualbarClose,
 	ContextualbarEmptyContent,
 } from '../../../../components/Contextualbar';
-import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
+import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
 import { goToRoomById } from '../../../../lib/utils/goToRoomById';
 import DiscussionsListRow from './DiscussionsListRow';
 
@@ -106,7 +106,7 @@ function DiscussionsList({
 							endReached={loading ? () => undefined : (start) => loadMoreItems(start, Math.min(50, total - start))}
 							overscan={25}
 							data={discussions}
-							components={{ Scroller: ScrollableContentWrapper }}
+							components={{ Scroller: VirtuosoScrollbars }}
 							itemContent={(_, data) => (
 								<DiscussionsListRow discussion={data} showRealNames={showRealNames} userId={userId} onClick={onClick} />
 							)}

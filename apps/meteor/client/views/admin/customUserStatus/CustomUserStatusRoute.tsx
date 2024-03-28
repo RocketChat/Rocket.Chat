@@ -3,7 +3,13 @@ import { useRoute, useRouteParameter, usePermission, useTranslation, useSetting 
 import type { ReactElement } from 'react';
 import React, { useCallback, useRef, useEffect } from 'react';
 
-import { Contextualbar, ContextualbarHeader, ContextualbarClose, ContextualbarTitle } from '../../../components/Contextualbar';
+import {
+	Contextualbar,
+	ContextualbarHeader,
+	ContextualbarClose,
+	ContextualbarTitle,
+	ContextualbarDialog,
+} from '../../../components/Contextualbar';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
@@ -69,20 +75,22 @@ const CustomUserStatusRoute = (): ReactElement => {
 				</PageContent>
 			</Page>
 			{context && (
-				<Contextualbar bg='light' flexShrink={0}>
-					<ContextualbarHeader>
-						<ContextualbarTitle>
-							{context === 'edit' && t('Custom_User_Status_Edit')}
-							{context === 'new' && t('Custom_User_Status_Add')}
-							{context === 'presence-service' && t('Presence_service_cap')}
-						</ContextualbarTitle>
-						<ContextualbarClose onClick={handleClose} />
-					</ContextualbarHeader>
-					{context === 'presence-service' && <CustomUserStatusService />}
-					{(context === 'new' || context === 'edit') && (
-						<CustomUserStatusFormWithData _id={id} onClose={handleClose} onReload={handleReload} />
-					)}
-				</Contextualbar>
+				<ContextualbarDialog>
+					<Contextualbar>
+						<ContextualbarHeader>
+							<ContextualbarTitle>
+								{context === 'edit' && t('Custom_User_Status_Edit')}
+								{context === 'new' && t('Custom_User_Status_Add')}
+								{context === 'presence-service' && t('Presence_service_cap')}
+							</ContextualbarTitle>
+							<ContextualbarClose onClick={handleClose} />
+						</ContextualbarHeader>
+						{context === 'presence-service' && <CustomUserStatusService />}
+						{(context === 'new' || context === 'edit') && (
+							<CustomUserStatusFormWithData _id={id} onClose={handleClose} onReload={handleReload} />
+						)}
+					</Contextualbar>
+				</ContextualbarDialog>
 			)}
 		</Page>
 	);

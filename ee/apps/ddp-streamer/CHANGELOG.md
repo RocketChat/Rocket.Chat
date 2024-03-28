@@ -1,5 +1,22 @@
 # @rocket.chat/ddp-streamer
 
+## 0.2.10-rc.0
+
+### Patch Changes
+
+- ([#31833](https://github.com/RocketChat/Rocket.Chat/pull/31833)) Fix web UI not showing users presence updating to offline
+
+- <details><summary>Updated dependencies [b9ef630816, 3eb4dd7f50, d1b1ffe9e5, 0570f6740a, b9e897a8f5, b876e4e0fc, e203c40471]:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.0
+  - @rocket.chat/rest-typings@6.7.0-rc.0
+  - @rocket.chat/model-typings@0.3.7-rc.0
+  - @rocket.chat/core-services@0.3.11-rc.0
+  - @rocket.chat/models@0.0.35-rc.0
+  - @rocket.chat/ui-contexts@5.0.0-rc.0
+  - @rocket.chat/instance-status@0.0.35-rc.0
+  </details>
+
 ## 0.2.9
 
 ### Patch Changes

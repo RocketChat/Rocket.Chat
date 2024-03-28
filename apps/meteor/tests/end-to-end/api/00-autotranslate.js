@@ -6,7 +6,20 @@ import { sendSimpleMessage } from '../../data/chat.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
-import { createUser, login } from '../../data/users.helper.js';
+import { createUser, deleteUser, login } from '../../data/users.helper.js';
+
+const resetAutoTranslateDefaults = async () => {
+	await Promise.all([
+		updateSetting('AutoTranslate_Enabled', false),
+		updateSetting('AutoTranslate_AutoEnableOnJoinRoom', false),
+		updateSetting('Language', ''),
+		updatePermission('auto-translate', ['admin']),
+	]);
+};
+
+const resetE2EDefaults = async () => {
+	await Promise.all([updateSetting('E2E_Enabled_Default_PrivateRooms', false), updateSetting('E2E_Enable', false)]);
+};
 
 describe('AutoTranslate', function () {
 	this.retries(0);
@@ -15,22 +28,23 @@ describe('AutoTranslate', function () {
 
 	describe('[AutoTranslate]', () => {
 		describe('[/autotranslate.getSupportedLanguages', () => {
+			before(() => resetAutoTranslateDefaults());
+			after(() => resetAutoTranslateDefaults());
+
 			it('should throw an error when the "AutoTranslate_Enabled" setting is disabled', (done) => {
-				updateSetting('AutoTranslate_Enabled', false).then(() => {
-					request
-						.get(api('autotranslate.getSupportedLanguages'))
-						.set(credentials)
-						.query({
-							targetLanguage: 'en',
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.a.property('success', false);
-							expect(res.body.error).to.be.equal('AutoTranslate is disabled.');
-						})
-						.end(done);
-				});
+				request
+					.get(api('autotranslate.getSupportedLanguages'))
+					.set(credentials)
+					.query({
+						targetLanguage: 'en',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', false);
+						expect(res.body.error).to.be.equal('AutoTranslate is disabled.');
+					})
+					.end(done);
 			});
 			it('should throw an error when the user does not have the "auto-translate" permission', (done) => {
 				updateSetting('AutoTranslate_Enabled', true).then(() => {
@@ -70,38 +84,48 @@ describe('AutoTranslate', function () {
 				});
 			});
 		});
+
 		describe('[/autotranslate.saveSettings', () => {
 			let testGroupId;
+			let testChannelId;
+
 			before(async () => {
-				await updateSetting('E2E_Enable', true);
-				await updateSetting('E2E_Enabled_Default_PrivateRooms', true);
-				const res = await createRoom({ type: 'p', name: `e2etest-autotranslate-${Date.now()}` });
-				testGroupId = res.body.group._id;
+				await Promise.all([
+					resetAutoTranslateDefaults(),
+					updateSetting('E2E_Enable', true),
+					updateSetting('E2E_Enabled_Default_PrivateRooms', true),
+				]);
+
+				testGroupId = (await createRoom({ type: 'p', name: `e2etest-autotranslate-${Date.now()}` })).body.group._id;
+				testChannelId = (await createRoom({ type: 'c', name: `test-autotranslate-${Date.now()}` })).body.channel._id;
 			});
+
 			after(async () => {
-				await updateSetting('E2E_Enabled_Default_PrivateRooms', false);
-				await updateSetting('E2E_Enable', false);
-				await deleteRoom({ type: 'p', roomId: testGroupId });
+				await Promise.all([
+					resetAutoTranslateDefaults(),
+					resetE2EDefaults(),
+					deleteRoom({ type: 'p', roomId: testGroupId }),
+					deleteRoom({ type: 'c', roomId: testChannelId }),
+				]);
 			});
+
 			it('should throw an error when the "AutoTranslate_Enabled" setting is disabled', (done) => {
-				updateSetting('AutoTranslate_Enabled', false).then(() => {
-					request
-						.post(api('autotranslate.saveSettings'))
-						.set(credentials)
-						.send({
-							roomId: 'GENERAL',
-							field: 'autoTranslate',
-							defaultLanguage: 'en',
-							value: true,
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.a.property('success', false);
-							expect(res.body.error).to.be.equal('AutoTranslate is disabled.');
-						})
-						.end(done);
-				});
+				request
+					.post(api('autotranslate.saveSettings'))
+					.set(credentials)
+					.send({
+						roomId: testChannelId,
+						field: 'autoTranslate',
+						defaultLanguage: 'en',
+						value: true,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', false);
+						expect(res.body.error).to.be.equal('AutoTranslate is disabled.');
+					})
+					.end(done);
 			});
 			it('should throw an error when the user does not have the "auto-translate" permission', (done) => {
 				updateSetting('AutoTranslate_Enabled', true).then(() => {
@@ -110,7 +134,7 @@ describe('AutoTranslate', function () {
 							.post(api('autotranslate.saveSettings'))
 							.set(credentials)
 							.send({
-								roomId: 'GENERAL',
+								roomId: testChannelId,
 								defaultLanguage: 'en',
 								field: 'autoTranslateLanguage',
 								value: 'en',
@@ -145,7 +169,7 @@ describe('AutoTranslate', function () {
 					.post(api('autotranslate.saveSettings'))
 					.set(credentials)
 					.send({
-						roomId: 'GENERAL',
+						roomId: testChannelId,
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -159,7 +183,7 @@ describe('AutoTranslate', function () {
 					.post(api('autotranslate.saveSettings'))
 					.set(credentials)
 					.send({
-						roomId: 'GENERAL',
+						roomId: testChannelId,
 						field: 'autoTranslate',
 					})
 					.expect('Content-Type', 'application/json')
@@ -174,7 +198,7 @@ describe('AutoTranslate', function () {
 					.post(api('autotranslate.saveSettings'))
 					.set(credentials)
 					.send({
-						roomId: 'GENERAL',
+						roomId: testChannelId,
 						field: 'autoTranslate',
 						value: 'test',
 					})
@@ -190,7 +214,7 @@ describe('AutoTranslate', function () {
 					.post(api('autotranslate.saveSettings'))
 					.set(credentials)
 					.send({
-						roomId: 'GENERAL',
+						roomId: testChannelId,
 						field: 'autoTranslateLanguage',
 						value: 12,
 					})
@@ -206,7 +230,7 @@ describe('AutoTranslate', function () {
 					.post(api('autotranslate.saveSettings'))
 					.set(credentials)
 					.send({
-						roomId: 'GENERAL',
+						roomId: testChannelId,
 						field: 'invalid',
 						value: 12,
 					})
@@ -257,7 +281,7 @@ describe('AutoTranslate', function () {
 					.post(api('autotranslate.saveSettings'))
 					.set(credentials)
 					.send({
-						roomId: 'GENERAL',
+						roomId: testChannelId,
 						field: 'autoTranslateLanguage',
 						value: 'en',
 					})
@@ -269,36 +293,41 @@ describe('AutoTranslate', function () {
 					.end(done);
 			});
 		});
+
 		describe('[/autotranslate.translateMessage', () => {
 			let messageSent;
+			let testChannelId;
 
-			before((done) => {
-				sendSimpleMessage({
-					roomId: 'GENERAL',
+			before(async () => {
+				await resetAutoTranslateDefaults();
+
+				testChannelId = (await createRoom({ type: 'c', name: `test-autotranslate-message-${Date.now()}` })).body.channel._id;
+				const res = await sendSimpleMessage({
+					roomId: testChannelId,
 					text: 'Isso é um teste',
-				}).end((err, res) => {
-					messageSent = res.body.message;
-					done();
 				});
+				messageSent = res.body.message;
+			});
+
+			after(async () => {
+				await Promise.all([resetAutoTranslateDefaults(), deleteRoom({ type: 'c', roomId: testChannelId })]);
 			});
 
 			it('should throw an error when the "AutoTranslate_Enabled" setting is disabled', (done) => {
-				updateSetting('AutoTranslate_Enabled', false).then(() => {
-					request
-						.post(api('autotranslate.translateMessage'))
-						.set(credentials)
-						.send({
-							messageId: 'test',
-							targetLanguage: 'en',
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.a.property('success', false);
-							expect(res.body.error).to.be.equal('AutoTranslate is disabled.');
-						})
-						.end(done);
-				});
+				request
+					.post(api('autotranslate.translateMessage'))
+					.set(credentials)
+					.send({
+						messageId: 'test',
+						targetLanguage: 'en',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', false);
+						expect(res.body.error).to.be.equal('AutoTranslate is disabled.');
+					})
+					.end(done);
 			});
 			it('should throw an error when the bodyParam "messageId" is not provided', (done) => {
 				updateSetting('AutoTranslate_Enabled', true).then(() => {
@@ -346,12 +375,14 @@ describe('AutoTranslate', function () {
 					.end(done);
 			});
 		});
+
 		describe('Autoenable setting', () => {
 			let userA;
 			let userB;
 			let credA;
 			let credB;
 			let channel;
+			const channelsToRemove = [];
 
 			const createChannel = async (members, cred) =>
 				(await createRoom({ type: 'c', members, name: `channel-test-${Date.now()}`, credentials: cred })).body.channel;
@@ -385,28 +416,37 @@ describe('AutoTranslate', function () {
 				).body.subscription;
 
 			before(async () => {
-				await updateSetting('AutoTranslate_Enabled', true);
-				await updateSetting('AutoTranslate_AutoEnableOnJoinRoom', true);
-				await updateSetting('Language', 'pt-BR');
+				await Promise.all([
+					updateSetting('AutoTranslate_Enabled', true),
+					updateSetting('AutoTranslate_AutoEnableOnJoinRoom', true),
+					updateSetting('Language', 'pt-BR'),
+				]);
 
-				channel = await createChannel();
 				userA = await createUser();
 				userB = await createUser();
 
 				credA = await login(userA.username, password);
 				credB = await login(userB.username, password);
 
+				channel = await createChannel(undefined, credA);
+
 				await setLanguagePref('en', credB);
+				channelsToRemove.push(channel);
 			});
 
 			after(async () => {
-				await updateSetting('AutoTranslate_AutoEnableOnJoinRoom', false);
-				await updateSetting('AutoTranslate_Enabled', false);
-				await updateSetting('Language', '');
+				await Promise.all([
+					updateSetting('AutoTranslate_AutoEnableOnJoinRoom', false),
+					updateSetting('AutoTranslate_Enabled', false),
+					updateSetting('Language', ''),
+					deleteUser(userA),
+					deleteUser(userB),
+					channelsToRemove.map(() => deleteRoom({ type: 'c', roomId: channel._id })),
+				]);
 			});
 
 			it("should do nothing if the user hasn't changed his language preference", async () => {
-				const sub = await getSub(channel._id, credentials);
+				const sub = await getSub(channel._id, credA);
 				expect(sub).to.not.have.property('autoTranslate');
 				expect(sub).to.not.have.property('autoTranslateLanguage');
 			});
@@ -414,54 +454,17 @@ describe('AutoTranslate', function () {
 			it("should do nothing if the user changed his language preference to be the same as the server's", async () => {
 				await setLanguagePref('pt-BR', credA);
 
-				const channel = await createChannel(undefined, credA);
 				const sub = await getSub(channel._id, credA);
 				expect(sub).to.not.have.property('autoTranslate');
 				expect(sub).to.not.have.property('autoTranslateLanguage');
 			});
 
-			it('should enable autotranslate with the correct language when creating a new room', async () => {
-				await setLanguagePref('en', credA);
-
-				const channel = await createChannel(undefined, credA);
-				const sub = await getSub(channel._id, credA);
-				expect(sub).to.have.property('autoTranslate');
-				expect(sub).to.have.property('autoTranslateLanguage').and.to.be.equal('en');
-			});
-
-			it('should enable autotranslate for all the members added to the room upon creation', async () => {
-				const channel = await createChannel([userA.username, userB.username]);
-				const subA = await getSub(channel._id, credA);
-				expect(subA).to.have.property('autoTranslate');
-				expect(subA).to.have.property('autoTranslateLanguage').and.to.be.equal('en');
-
-				const subB = await getSub(channel._id, credB);
-				expect(subB).to.have.property('autoTranslate');
-				expect(subB).to.have.property('autoTranslateLanguage').and.to.be.equal('en');
-			});
-
 			it('should enable autotranslate with the correct language when joining a room', async () => {
 				await request
 					.post(api('channels.join'))
-					.set(credA)
+					.set(credB)
 					.send({
 						roomId: channel._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200);
-
-				const sub = await getSub(channel._id, credA);
-				expect(sub).to.have.property('autoTranslate');
-				expect(sub).to.have.property('autoTranslateLanguage').and.to.be.equal('en');
-			});
-
-			it('should enable autotranslate with the correct language when added to a room', async () => {
-				await request
-					.post(api('channels.invite'))
-					.set(credentials)
-					.send({
-						roomId: channel._id,
-						userId: userB._id,
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200);
@@ -471,12 +474,54 @@ describe('AutoTranslate', function () {
 				expect(sub).to.have.property('autoTranslateLanguage').and.to.be.equal('en');
 			});
 
+			it('should enable autotranslate with the correct language when creating a new room', async () => {
+				await setLanguagePref('en', credA);
+
+				const newChannel = await createChannel(undefined, credA);
+				const sub = await getSub(newChannel._id, credA);
+				expect(sub).to.have.property('autoTranslate');
+				expect(sub).to.have.property('autoTranslateLanguage').and.to.be.equal('en');
+				channelsToRemove.push(newChannel);
+			});
+
+			it('should enable autotranslate for all the members added to the room upon creation', async () => {
+				const newChannel = await createChannel([userA.username, userB.username], credA);
+				const subA = await getSub(newChannel._id, credA);
+				expect(subA).to.have.property('autoTranslate');
+				expect(subA).to.have.property('autoTranslateLanguage').and.to.be.equal('en');
+
+				const subB = await getSub(newChannel._id, credB);
+				expect(subB).to.have.property('autoTranslate');
+				expect(subB).to.have.property('autoTranslateLanguage').and.to.be.equal('en');
+				channelsToRemove.push(newChannel);
+			});
+
+			it('should enable autotranslate with the correct language when added to a room', async () => {
+				const newChannel = await createChannel(undefined, credA);
+				await request
+					.post(api('channels.invite'))
+					.set(credA)
+					.send({
+						roomId: newChannel._id,
+						userId: userB._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				const sub = await getSub(newChannel._id, credB);
+				expect(sub).to.have.property('autoTranslate');
+				expect(sub).to.have.property('autoTranslateLanguage').and.to.be.equal('en');
+				channelsToRemove.push(newChannel);
+			});
+
 			it('should change the auto translate language when the user changes his language preference', async () => {
 				await setLanguagePref('es', credA);
-				const subscription = await getSub(channel._id, credA);
+				const newChannel = await createChannel(undefined, credA);
+				const subscription = await getSub(newChannel._id, credA);
 
 				expect(subscription).to.have.property('autoTranslate', true);
 				expect(subscription).to.have.property('autoTranslateLanguage', 'es');
+				channelsToRemove.push(newChannel);
 			});
 		});
 	});

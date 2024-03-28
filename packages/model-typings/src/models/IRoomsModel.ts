@@ -237,7 +237,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	archiveById(rid: string): Promise<UpdateResult>;
 	unarchiveById(rid: string): Promise<UpdateResult>;
 	setNameById(rid: string, name: string, fname: string): Promise<UpdateResult>;
-	incMsgCountAndSetLastMessageById(rid: string, inc: number, lastMessageTs: Date, lastMessage: IRoom['lastMessage']): Promise<UpdateResult>;
+	incMsgCountAndSetLastMessageById(rid: IRoom['_id'], inc: number, lastMessageTs: Date, lastMessage?: IMessage): Promise<UpdateResult>;
 	incUsersCountById(rid: string, inc: number): Promise<UpdateResult>;
 	incUsersCountNotDMsByIds(rids: string[], inc: number): Promise<Document | UpdateResult>;
 	setLastMessageById(rid: string, lastMessage: IRoom['lastMessage']): Promise<UpdateResult>;

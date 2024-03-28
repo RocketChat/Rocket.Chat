@@ -2,6 +2,7 @@ import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useTranslation, useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
+import { ContextualbarDialog } from '../../../../client/components/Contextualbar';
 import { Page, PageHeader, PageContent } from '../../../../client/components/Page';
 import UnitEdit from './UnitEdit';
 import UnitEditWithData from './UnitEditWithData';
@@ -28,8 +29,12 @@ const UnitsPage = () => {
 					<UnitsTable />
 				</PageContent>
 			</Page>
-			{context === 'edit' && id && <UnitEditWithData unitId={id} />}
-			{context === 'new' && <UnitEdit />}
+			{context && (
+				<ContextualbarDialog>
+					{context === 'edit' && id && <UnitEditWithData unitId={id} />}
+					{context === 'new' && <UnitEdit />}
+				</ContextualbarDialog>
+			)}
 		</Page>
 	);
 };

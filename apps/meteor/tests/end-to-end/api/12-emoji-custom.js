@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
+import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { imgURL } from '../../data/interactions';
@@ -8,9 +8,17 @@ const customEmojiName = `my-custom-emoji-${Date.now()}`;
 let createdCustomEmoji;
 
 describe('[EmojiCustom]', function () {
+	let withoutAliases;
+
 	this.retries(0);
 
 	before((done) => getCredentials(done));
+
+	after(() =>
+		request.post(api('emoji-custom.delete')).set(credentials).send({
+			emojiId: withoutAliases._id,
+		}),
+	);
 
 	describe('[/emoji-custom.create]', () => {
 		it('should create new custom emoji', (done) => {
@@ -75,6 +83,7 @@ describe('[EmojiCustom]', function () {
 					expect(res.body.emojis).to.have.property('remove').and.to.be.a('array').and.to.have.lengthOf(0);
 
 					createdCustomEmoji = res.body.emojis.update.find((emoji) => emoji.name === customEmojiName);
+					withoutAliases = res.body.emojis.update.find((emoji) => emoji.name === `${customEmojiName}-without-aliases`);
 				})
 				.end(done);
 		});

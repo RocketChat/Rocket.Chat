@@ -23,7 +23,7 @@ export class HomeFlextabMembers {
 		await this.page.locator('role=button[name="More"]').click();
 		await this.page.locator('role=menuitem[name="Mute user"]').click();
 		await this.page.locator('.rcx-modal .rcx-button--danger').click();
-		await this.page.locator('(//main//aside/h3//button)[1]').click();
+		await this.page.getByRole('dialog').getByRole('button').first().click();
 	}
 
 	async setUserAsModerator(username: string) {

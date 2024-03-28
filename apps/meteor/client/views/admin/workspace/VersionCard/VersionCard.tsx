@@ -4,7 +4,7 @@ import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import type { SupportedVersions } from '@rocket.chat/server-cloud-communication';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import type { LocationPathname } from '@rocket.chat/ui-contexts';
-import { useModal, useMediaUrl } from '@rocket.chat/ui-contexts';
+import { useSetModal, useMediaUrl } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 import React, { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -39,7 +39,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 		backgroundSize: mediaQuery ? 'auto' : 'contain',
 	};
 
-	const { setModal } = useModal();
+	const setModal = useSetModal();
 
 	const { t } = useTranslation();
 

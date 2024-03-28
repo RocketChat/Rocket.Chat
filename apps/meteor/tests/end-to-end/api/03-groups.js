@@ -1066,7 +1066,7 @@ describe('[Groups]', function () {
 	});
 
 	describe('/groups.files', async () => {
-		await testFileUploads('groups.files', group);
+		await testFileUploads('groups.files', 'p');
 	});
 
 	describe('/groups.listAll', () => {
