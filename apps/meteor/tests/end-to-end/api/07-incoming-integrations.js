@@ -534,6 +534,7 @@ describe('[Incoming Integrations]', function () {
 					expect(res.body).to.have.property('integration');
 					expect(res.body.integration._id).to.be.equal(integration._id);
 					expect(res.body.integration.name).to.be.equal('Incoming test updated');
+					expect(res.body.integration.username).to.be.equal('rocket.cat');
 					expect(res.body.integration.alias).to.be.equal('test updated');
 				})
 				.end(done);
@@ -550,7 +551,31 @@ describe('[Incoming Integrations]', function () {
 					expect(res.body).to.have.property('integration');
 					expect(res.body.integration._id).to.be.equal(integration._id);
 					expect(res.body.integration.name).to.be.equal('Incoming test updated');
+					expect(res.body.integration.username).to.be.equal('rocket.cat');
 					expect(res.body.integration.alias).to.be.equal('test updated');
+				})
+				.end(done);
+		});
+
+		it('should not update integration by returning error-invalid-post-as-user for non existing user for post-as', (done) => {
+			request
+				.put(api('integrations.update'))
+				.set(credentials)
+				.send({
+					type: 'webhook-incoming',
+					name: 'Incoming test updated',
+					enabled: true,
+					alias: 'test updated',
+					username: 'invalid_username',
+					scriptEnabled: true,
+					channel: '#general',
+					integrationId: integration._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Invalid Post As User [error-invalid-post-as-user]');
 				})
 				.end(done);
 		});
