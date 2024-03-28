@@ -1,5 +1,5 @@
+import { registerOrchestrator } from '@rocket.chat/apps';
 import { EssentialAppDisabledException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import { Logger } from '@rocket.chat/logger';
 import { AppLogs, Apps as AppsModel, AppsPersistence } from '@rocket.chat/models';
@@ -249,8 +249,8 @@ export class AppServerOrchestrator {
 	}
 }
 
-export const AppEvents = AppInterface;
 export const Apps = new AppServerOrchestrator();
+registerOrchestrator(Apps);
 
 settings.watch('Apps_Framework_Source_Package_Storage_Type', (value) => {
 	if (!Apps.isInitialized()) {
