@@ -17,7 +17,7 @@ import { Form, ActionLink } from '@rocket.chat/layout';
 import { CustomFieldsForm, PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
 import { useAccountsCustomFields, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -71,6 +71,19 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 		control,
 		formState: { errors },
 	} = useForm<LoginRegisterPayload>({ mode: 'onBlur' });
+
+	const namesRegexSetting = useSetting('UTF8_User_Names_Validation');
+	const namesRegex = useMemo(() => new RegExp(`^${namesRegexSetting}$`), [namesRegexSetting]);
+
+	const validateUsername = async (username: string): Promise<string | undefined> => {
+		if (!username) {
+			return;
+		}
+
+		if (!namesRegex.test(username)) {
+			return t('error-invalid-username');
+		}
+	};
 
 	const { password } = watch();
 	const passwordIsValid = useValidatePassword(password);
@@ -192,6 +205,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 							<TextInput
 								{...register('username', {
 									required: t('registration.component.form.requiredField'),
+									validate: (username) => validateUsername(username),
 								})}
 								error={errors?.username?.message}
 								aria-required='true'
