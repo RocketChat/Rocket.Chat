@@ -220,6 +220,7 @@ describe('miscellaneous', function () {
 				deleteTeam(normalUserCredentials, teamName),
 				deleteUser(user),
 				deleteRoom({ type: 'c', roomId: testChannel._id }),
+				updatePermission('create-team', ['admin', 'user']),
 			]);
 		});
 
