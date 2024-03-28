@@ -29,7 +29,6 @@ describe('LIVECHAT - Queue', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.queue).to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -47,7 +46,6 @@ describe('LIVECHAT - Queue', function () {
 				})
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.queue).to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');

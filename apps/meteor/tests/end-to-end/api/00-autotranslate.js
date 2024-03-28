@@ -76,7 +76,6 @@ describe('AutoTranslate', function () {
 						})
 						.success()
 						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
 							expect(res.body.languages).to.be.an('array');
 						})
 						.end(done);
@@ -285,9 +284,7 @@ describe('AutoTranslate', function () {
 						value: 'en',
 					})
 					.success()
-					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
-					})
+					.expect((res) => {})
 					.end(done);
 			});
 		});
@@ -366,9 +363,7 @@ describe('AutoTranslate', function () {
 						messageId: messageSent._id,
 					})
 					.success()
-					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
-					})
+					.expect((res) => {})
 					.end(done);
 			});
 		});
@@ -385,15 +380,7 @@ describe('AutoTranslate', function () {
 				(await createRoom({ type: 'c', members, name: `channel-test-${Date.now()}`, credentials: cred })).body.channel;
 
 			const setLanguagePref = async (language, cred) => {
-				await request
-					.post(api('users.setPreferences'))
-					.set(cred)
-					.send({ data: { language } })
-					.success()
-					.expect('Content-Type', 'application/json')
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					});
+				await request.post(api('users.setPreferences')).set(cred).send({ data: { language } }).success();
 			};
 
 			const getSub = async (roomId, cred) =>

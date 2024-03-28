@@ -28,7 +28,6 @@ describe('LIVECHAT - custom fields', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.customFields).to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -46,7 +45,6 @@ describe('LIVECHAT - custom fields', function () {
 				})
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.customFields).to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');

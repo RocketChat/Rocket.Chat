@@ -61,7 +61,6 @@ describe('[Presence]', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('current').to.be.a('number');
 					expect(res.body).to.have.property('max').to.be.a('number').and.to.be.equal(200);
 				});
@@ -106,13 +105,7 @@ describe('[Presence]', function () {
 		});
 
 		it('should return success', async () => {
-			await request
-				.post(api('presence.enableBroadcast'))
-				.set(credentials)
-				.success()
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+			await request.post(api('presence.enableBroadcast')).set(credentials).success();
 		});
 	});
 

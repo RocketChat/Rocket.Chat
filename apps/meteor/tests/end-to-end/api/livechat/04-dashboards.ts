@@ -154,7 +154,6 @@ describe('LIVECHAT - dashboards', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.totalizers).to.be.an('array');
 					(res.body.totalizers as { title: string; value: string }[]).forEach(
 						(prop) => expect(expectedMetrics.includes(prop.title)).to.be.true,
@@ -215,7 +214,6 @@ describe('LIVECHAT - dashboards', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.totalizers).to.be.an('array');
 					(res.body.totalizers as { title: string; value: string }[]).forEach(
 						(prop) => expect(expectedMetrics.includes(prop.title)).to.be.true,
@@ -268,7 +266,6 @@ describe('LIVECHAT - dashboards', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.totalizers).to.be.an('array');
 					(res.body.totalizers as { title: string; value: string }[]).forEach(
 						(prop) => expect(expectedMetrics.includes(prop.title)).to.be.true,
@@ -329,7 +326,6 @@ describe('LIVECHAT - dashboards', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.totalizers).to.be.an('array');
 					(res.body.totalizers as { title: string; value: string }[]).forEach(
 						(prop) => expect(expectedMetrics.includes(prop.title)).to.be.true,
@@ -381,7 +377,6 @@ describe('LIVECHAT - dashboards', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('open');
 					expect(res.body).to.have.property('closed');
 					expect(res.body).to.have.property('queued');
@@ -425,10 +420,7 @@ describe('LIVECHAT - dashboards', function () {
 			await request
 				.get(api('livechat/analytics/dashboards/charts/chats-per-agent?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
 				.set(credentials)
-				.success()
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 		});
 		(IS_EE ? it : it.skip)('should return data with correct values', async () => {
 			const start = moment().subtract(1, 'days').toISOString();
@@ -471,7 +463,6 @@ describe('LIVECHAT - dashboards', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('offline');
 					expect(res.body).to.have.property('away');
 					expect(res.body).to.have.property('busy');
@@ -517,10 +508,7 @@ describe('LIVECHAT - dashboards', function () {
 			await request
 				.get(api('livechat/analytics/dashboards/charts/chats-per-department?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
 				.set(credentials)
-				.success()
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 		});
 		(IS_EE ? it : it.skip)('should return data with correct values', async () => {
 			const start = moment().subtract(1, 'days').toISOString();
@@ -561,7 +549,6 @@ describe('LIVECHAT - dashboards', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('response');
 					expect(res.body).to.have.property('reaction');
 					expect(res.body).to.have.property('chatDuration');
@@ -640,7 +627,6 @@ describe('LIVECHAT - dashboards', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(Object.keys(res.body)).to.have.lengthOf(1);
 				});
 		});
@@ -709,7 +695,6 @@ describe('LIVECHAT - dashboards', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(Object.keys(res.body)).to.have.lengthOf(1);
 				});
 		});

@@ -248,7 +248,6 @@ describe('LIVECHAT - visitors', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.visitor._id).to.be.equal(visitor._id);
 				});
 		});
@@ -289,7 +288,6 @@ describe('LIVECHAT - visitors', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.pages).to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -333,7 +331,6 @@ describe('LIVECHAT - visitors', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.history).to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -373,7 +370,6 @@ describe('LIVECHAT - visitors', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('visitor');
 				});
 		});
@@ -436,7 +432,6 @@ describe('LIVECHAT - visitors', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('visitor');
 					expect(res.body.visitor).to.have.property('_id');
 					expect(res.body.visitor).to.have.property('ts');
@@ -558,7 +553,6 @@ describe('LIVECHAT - visitors', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('items');
 					expect(res.body.items).to.be.an('array');
 					expect(res.body.items).to.have.length.of.at.least(1);
@@ -602,7 +596,6 @@ describe('LIVECHAT - visitors', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('history');
 					expect(res.body.history).to.be.an('array');
 					expect(res.body.history).to.have.lengthOf(0);
@@ -619,7 +612,6 @@ describe('LIVECHAT - visitors', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('history');
 					expect(res.body.history).to.be.an('array');
 					expect(res.body.history).to.have.lengthOf(0);
@@ -640,7 +632,6 @@ describe('LIVECHAT - visitors', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('history');
 					expect(res.body.history).to.be.an('array');
 					expect(res.body.history).to.have.length.of.at.least(1);
@@ -661,7 +652,6 @@ describe('LIVECHAT - visitors', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('history');
 					expect(res.body.history).to.be.an('array');
 					expect(res.body.history).to.have.length.of.at.least(1);
@@ -684,7 +674,6 @@ describe('LIVECHAT - visitors', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('history');
 					expect(res.body.history).to.be.an('array');
 					expect(res.body.history.find((chat: any) => chat._id === roomId)).to.be.an('object');
@@ -700,7 +689,6 @@ describe('LIVECHAT - visitors', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('history');
 					expect(res.body.history).to.be.an('array');
 					expect(res.body.history.find((chat: any) => chat._id === room._id)).to.be.undefined;
@@ -721,7 +709,6 @@ describe('LIVECHAT - visitors', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('history');
 					expect(res.body.history).to.be.an('array');
 					expect(res.body.history.find((chat: any) => chat._id === roomId)).to.be.an('object');
@@ -765,12 +752,7 @@ describe('LIVECHAT - visitors', function () {
 		});
 		it('should update visitor status if all things are valid', async () => {
 			const visitor = await createVisitor();
-			const res = await request
-				.post(api('livechat/visitor.status'))
-				.set(credentials)
-				.send({ token: visitor.token, status: 'online' })
-				.success();
-			expect(res.body).to.have.property('success', true);
+			await request.post(api('livechat/visitor.status')).set(credentials).send({ token: visitor.token, status: 'online' }).success();
 		});
 	});
 
@@ -803,7 +785,6 @@ describe('LIVECHAT - visitors', function () {
 				.send()
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('contact');
 					expect(res.body.contact).to.have.property('_id');
 					expect(res.body.contact).to.have.property('name');
@@ -823,7 +804,6 @@ describe('LIVECHAT - visitors', function () {
 				.send()
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('contact');
 					expect(res.body.contact).to.have.property('_id');
 					expect(res.body.contact).to.have.property('name');
@@ -858,7 +838,6 @@ describe('LIVECHAT - visitors', function () {
 				.send()
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.contact).to.have.property('name');
 					expect(res.body.contact).to.have.property('username');
 					expect(res.body.contact).to.have.property('phone');
@@ -873,8 +852,8 @@ describe('LIVECHAT - visitors', function () {
 			const res = await request
 				.get(api(`omnichannel/contact.search?custom=${JSON.stringify({ nope: 'nel' })}`))
 				.set(credentials)
-				.send();
-			expect(res.body).to.have.property('success', true);
+				.send()
+				.success();
 			expect(res.body.contact).to.be.null;
 		});
 
@@ -882,8 +861,8 @@ describe('LIVECHAT - visitors', function () {
 			const res = await request
 				.get(api(`omnichannel/contact.search?custom=${JSON.stringify({ nope: 'nel', another: 'field' })}`))
 				.set(credentials)
-				.send();
-			expect(res.body).to.have.property('success', true);
+				.send()
+				.success();
 			expect(res.body.contact).to.be.null;
 		});
 
@@ -891,8 +870,8 @@ describe('LIVECHAT - visitors', function () {
 			const res = await request
 				.get(api(`omnichannel/contact.search?custom=${JSON.stringify({ $regex: 'nel' })}`))
 				.set(credentials)
-				.send();
-			expect(res.body).to.have.property('success', true);
+				.send()
+				.success();
 			expect(res.body.contact).to.be.null;
 		});
 
@@ -900,8 +879,8 @@ describe('LIVECHAT - visitors', function () {
 			const res = await request
 				.get(api(`omnichannel/contact.search?custom=${JSON.stringify({ '$regex: { very-bad }': 'nel' })}`))
 				.set(credentials)
-				.send();
-			expect(res.body).to.have.property('success', true);
+				.send()
+				.success();
 			expect(res.body.contact).to.be.null;
 		});
 
@@ -909,8 +888,8 @@ describe('LIVECHAT - visitors', function () {
 			const res = await request
 				.get(api(`omnichannel/contact.search?custom=${JSON.stringify({ nope: '^((ab)*)+$' })}`))
 				.set(credentials)
-				.send();
-			expect(res.body).to.have.property('success', true);
+				.send()
+				.success();
 			expect(res.body.contact).to.be.null;
 		});
 	});
@@ -968,8 +947,9 @@ describe('LIVECHAT - visitors', function () {
 			const res = await request
 				.put(api(`livechat/room.visitor`))
 				.set(credentials)
-				.send({ rid: room._id, oldVisitorId: visitor._id, newVisitorId: visitor2._id });
-			expect(res.body).to.have.property('success', true);
+				.send({ rid: room._id, oldVisitorId: visitor._id, newVisitorId: visitor2._id })
+				.success();
+
 			expect(res.body.room).to.have.property('v');
 			expect(res.body.room.v._id).to.equal(visitor2._id);
 		});
@@ -986,8 +966,7 @@ describe('LIVECHAT - visitors', function () {
 			expect(res.body).to.have.property('success', false);
 		});
 		it('should not fail when term is an evil regex string', async () => {
-			const res = await request.get(api(`livechat/visitors.search?term=^((ab)*)+$`)).set(credentials).send();
-			expect(res.body).to.have.property('success', true);
+			await request.get(api(`livechat/visitors.search?term=^((ab)*)+$`)).set(credentials).send().success();
 		});
 		it('should return a list of visitors when term is a valid string', async () => {
 			const visitor = await createVisitor();
@@ -995,8 +974,8 @@ describe('LIVECHAT - visitors', function () {
 			const res = await request
 				.get(api(`livechat/visitors.search?term=${visitor.name}`))
 				.set(credentials)
-				.send();
-			expect(res.body).to.have.property('success', true);
+				.send()
+				.success();
 			expect(res.body.visitors).to.be.an('array');
 			expect(res.body.visitors).to.have.lengthOf.greaterThan(0);
 			expect(res.body.visitors[0]).to.have.property('_id', visitor._id);
@@ -1006,8 +985,7 @@ describe('LIVECHAT - visitors', function () {
 			expect(res.body.visitors[0]).to.have.property('phone');
 		});
 		it('should return a list of visitors when term is an empty string', async () => {
-			const res = await request.get(api(`livechat/visitors.search?term=`)).set(credentials).send();
-			expect(res.body).to.have.property('success', true);
+			const res = await request.get(api(`livechat/visitors.search?term=`)).set(credentials).send().success();
 			expect(res.body.visitors).to.be.an('array');
 			expect(res.body.visitors).to.have.lengthOf.greaterThan(0);
 			expect(res.body.visitors[0]).to.have.property('_id');
@@ -1028,11 +1006,15 @@ describe('LIVECHAT - visitors', function () {
 		});
 		it('should create a new contact', async () => {
 			const token = getRandomVisitorToken();
-			const res = await request.post(api('omnichannel/contact')).set(credentials).send({
-				name: faker.person.fullName(),
-				token,
-			});
-			expect(res.body).to.have.property('success', true);
+			const res = await request
+				.post(api('omnichannel/contact'))
+				.set(credentials)
+				.send({
+					name: faker.person.fullName(),
+					token,
+				})
+				.success();
+
 			expect(res.body).to.have.property('contact');
 			expect(res.body.contact).to.be.an('string');
 			const contactId: string = res.body.contact;
@@ -1042,11 +1024,15 @@ describe('LIVECHAT - visitors', function () {
 		});
 		it('should update an existing contact', async () => {
 			const name = faker.person.fullName();
-			const res = await request.post(api('omnichannel/contact')).set(credentials).send({
-				name,
-				token: contact.token,
-			});
-			expect(res.body).to.have.property('success', true);
+			const res = await request
+				.post(api('omnichannel/contact'))
+				.set(credentials)
+				.send({
+					name,
+					token: contact.token,
+				})
+				.success();
+
 			expect(res.body).to.have.property('contact');
 			expect(res.body.contact).to.be.an('string');
 			expect(res.body.contact).to.equal(contact._id);
@@ -1058,14 +1044,17 @@ describe('LIVECHAT - visitors', function () {
 			const name = faker.person.fullName();
 			const email = faker.internet.email().toLowerCase();
 			const phone = faker.phone.number();
-			const res = await request.post(api('omnichannel/contact')).set(credentials).send({
-				name,
-				email,
-				phone,
-				token: contact.token,
-			});
+			const res = await request
+				.post(api('omnichannel/contact'))
+				.set(credentials)
+				.send({
+					name,
+					email,
+					phone,
+					token: contact.token,
+				})
+				.success();
 
-			expect(res.body).to.have.property('success', true);
 			expect(res.body).to.have.property('contact');
 			expect(res.body.contact).to.be.an('string');
 			expect(res.body.contact).to.equal(contact._id);
@@ -1095,9 +1084,9 @@ describe('LIVECHAT - visitors', function () {
 					},
 					token: contact.token,
 					name: contact.name,
-				});
+				})
+				.success();
 
-			expect(res.body).to.have.property('success', true);
 			expect(res.body).to.have.property('contact');
 			expect(res.body.contact).to.be.an('string');
 			expect(res.body.contact).to.equal(contact._id);
@@ -1126,9 +1115,9 @@ describe('LIVECHAT - visitors', function () {
 					customFields: {
 						[cfName]: 'test',
 					},
-				});
+				})
+				.success();
 
-			expect(res.body).to.have.property('success', true);
 			expect(res.body).to.have.property('contact');
 			expect(res.body.contact).to.be.an('string');
 			expect(res.body.contact).to.equal(contact._id);

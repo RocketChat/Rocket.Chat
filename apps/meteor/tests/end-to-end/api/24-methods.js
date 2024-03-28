@@ -108,7 +108,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -203,7 +202,6 @@ describe('Meteor.methods', function () {
 						})
 						.success()
 						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
 
 							const data = JSON.parse(res.body.message);
@@ -227,7 +225,6 @@ describe('Meteor.methods', function () {
 						})
 						.success()
 						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
 
 							const data = JSON.parse(res.body.message);
@@ -267,7 +264,6 @@ describe('Meteor.methods', function () {
 						})
 						.success()
 						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
 
 							const data = JSON.parse(res.body.message);
@@ -293,7 +289,6 @@ describe('Meteor.methods', function () {
 						})
 						.success()
 						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
 
 							const data = JSON.parse(res.body.message);
@@ -337,7 +332,6 @@ describe('Meteor.methods', function () {
 						})
 						.success()
 						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
 
 							const data = JSON.parse(res.body.message);
@@ -387,7 +381,6 @@ describe('Meteor.methods', function () {
 						})
 						.success()
 						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
 
 							const data = JSON.parse(res.body.message);
@@ -413,7 +406,6 @@ describe('Meteor.methods', function () {
 						})
 						.success()
 						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
 
 							const data = JSON.parse(res.body.message);
@@ -523,7 +515,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -548,7 +539,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -572,7 +562,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -658,7 +647,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('count', 0);
 				});
 
@@ -687,7 +675,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('count', 2);
 				});
 
@@ -735,7 +722,7 @@ describe('Meteor.methods', function () {
 					},
 				})
 				.success()
-				.expect((res) => {
+				.expect(() => {
 					postMessageDate = { $date: new Date().getTime() };
 				})
 				.end(done);
@@ -793,7 +780,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -818,7 +804,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -843,7 +828,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -868,7 +852,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -893,7 +876,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -942,7 +924,7 @@ describe('Meteor.methods', function () {
 					},
 				})
 				.success()
-				.expect((res) => {
+				.expect(() => {
 					postMessageDate = { $date: new Date().getTime() };
 				})
 				.end(done);
@@ -998,7 +980,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1023,7 +1004,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1048,7 +1028,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1073,7 +1052,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1170,7 +1148,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1194,7 +1171,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1239,7 +1215,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1283,7 +1258,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1331,7 +1305,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1355,7 +1328,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1404,7 +1376,7 @@ describe('Meteor.methods', function () {
 					},
 				})
 				.success()
-				.expect((res) => {
+				.expect(() => {
 					postMessageDate = { $date: new Date().getTime() };
 				})
 				.end(done);
@@ -1460,7 +1432,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.include('error-invalid-room');
 				})
 				.end(done);
@@ -1480,7 +1451,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.include('Match error');
 				})
 				.end(done);
@@ -1500,7 +1470,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1524,7 +1493,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1548,7 +1516,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1597,7 +1564,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1657,7 +1623,6 @@ describe('Meteor.methods', function () {
 						})
 						.success()
 						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
 
 							const data = JSON.parse(res.body.message);
@@ -1683,7 +1648,6 @@ describe('Meteor.methods', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
 						expect(res.body).to.have.a.property('message').that.is.a('string');
 
 						const data = JSON.parse(res.body.message);
@@ -1713,7 +1677,6 @@ describe('Meteor.methods', function () {
 						})
 						.success()
 						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
 
 							const data = JSON.parse(res.body.message);
@@ -1764,7 +1727,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1788,7 +1750,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1838,7 +1799,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1868,7 +1828,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1934,7 +1893,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1966,7 +1924,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1998,7 +1955,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 					const data = JSON.parse(res.body.message);
 					expect(data).to.have.a.property('msg').that.is.an('string');
@@ -2021,7 +1977,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 				});
 
@@ -2052,7 +2007,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 				});
 
@@ -2084,7 +2038,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 				});
 
@@ -2115,7 +2068,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 				});
 
@@ -2149,7 +2101,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 				});
 
@@ -2188,7 +2139,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -2224,7 +2174,6 @@ describe('Meteor.methods', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
 						expect(res.body).to.have.a.property('message').that.is.a('string');
 						const data = JSON.parse(res.body.message);
 						expect(data).to.have.a.property('msg').that.is.a('string');
@@ -2248,7 +2197,6 @@ describe('Meteor.methods', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
 						expect(res.body).to.have.a.property('message').that.is.a('string');
 
 						const data = JSON.parse(res.body.message);
@@ -2303,7 +2251,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -2337,7 +2284,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 					const data = JSON.parse(res.body.message);
 					expect(data).to.have.a.property('msg', 'result');
@@ -2365,7 +2311,6 @@ describe('Meteor.methods', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 					const data = JSON.parse(res.body.message);
 					expect(data).to.have.a.property('msg', 'result');
@@ -2779,7 +2724,6 @@ describe('Meteor.methods', function () {
 						})
 						.success()
 						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
 							const data = JSON.parse(res.body.message);
 							expect(data).to.have.a.property('msg', 'result');
@@ -2823,7 +2767,6 @@ describe('Meteor.methods', function () {
 						})
 						.success()
 						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
 							const data = JSON.parse(res.body.message);
 							expect(data).to.have.a.property('msg', 'result');
@@ -2893,7 +2836,6 @@ describe('Meteor.methods', function () {
 						})
 						.success()
 						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
 							const data = JSON.parse(res.body.message);
 							expect(data).to.have.a.property('msg', 'result');
@@ -2931,7 +2873,6 @@ describe('Meteor.methods', function () {
 						})
 						.success()
 						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
 							const data = JSON.parse(res.body.message);
 							expect(data).to.have.a.property('msg', 'result');

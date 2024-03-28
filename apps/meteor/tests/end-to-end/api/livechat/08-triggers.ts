@@ -30,7 +30,6 @@ describe('LIVECHAT - triggers', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.triggers).to.be.an('array');
 					expect(res.body).to.have.property('count').to.be.greaterThan(0);
 					expect(res.body.triggers[0]).to.have.property('_id');

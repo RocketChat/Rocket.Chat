@@ -226,7 +226,6 @@ describe('LIVECHAT - rooms', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.rooms).to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -253,7 +252,6 @@ describe('LIVECHAT - rooms', function () {
 				})
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.rooms).to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -267,7 +265,6 @@ describe('LIVECHAT - rooms', function () {
 				.query({ customFields: {}, roomName: 'test' })
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.rooms).to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -527,7 +524,6 @@ describe('LIVECHAT - rooms', function () {
 				})
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('rid');
 					expect(res.body).to.have.property('comment');
 				});
@@ -673,10 +669,7 @@ describe('LIVECHAT - rooms', function () {
 					clientAction: true,
 					comment: 'test comment',
 				})
-				.success()
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			const latestRoom = await getLivechatRoomInfo(newRoom._id);
 
@@ -708,10 +701,7 @@ describe('LIVECHAT - rooms', function () {
 					clientAction: true,
 					comment: 'test comment',
 				})
-				.success()
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			const latestRoom = await getLivechatRoomInfo(newRoom._id);
 
@@ -747,11 +737,7 @@ describe('LIVECHAT - rooms', function () {
 					clientAction: true,
 					comment: 'test comment',
 				})
-				.success()
-				.expect((res: Response) => {
-					console.log({ res: res.body });
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			const latestRoom = await getLivechatRoomInfo(newRoom._id);
 
@@ -848,7 +834,6 @@ describe('LIVECHAT - rooms', function () {
 				})
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('rid');
 					expect(res.body).to.have.property('data');
 					expect(res.body.data.satisfaction).to.be.equal('5');
@@ -1276,10 +1261,7 @@ describe('LIVECHAT - rooms', function () {
 					clientAction: true,
 					comment: 'test comment',
 				})
-				.success()
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			const { body } = await request
 				.get(api(`livechat/transfer.history/${newRoom._id}`))
@@ -1436,10 +1418,7 @@ describe('LIVECHAT - rooms', function () {
 						_id: newVisitor._id,
 					},
 				})
-				.success()
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			const latestRoom = await getLivechatRoomInfo(newRoom._id);
 			expect(latestRoom).to.have.property('topic', 'new topic');
@@ -1478,10 +1457,7 @@ describe('LIVECHAT - rooms', function () {
 						_id: newVisitor._id,
 					},
 				})
-				.success()
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			const latestRoom = await getLivechatRoomInfo(newRoom._id);
 			expect(latestRoom).to.have.property('topic', 'new topic');
@@ -1509,10 +1485,7 @@ describe('LIVECHAT - rooms', function () {
 						_id: newVisitor._id,
 					},
 				})
-				.success()
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			const latestRoom = await getLivechatRoomInfo(newRoom._id);
 			expect(latestRoom).to.have.property('topic', 'new topic');
@@ -1632,10 +1605,7 @@ describe('LIVECHAT - rooms', function () {
 						_id: newVisitor._id,
 					},
 				})
-				.success()
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			const updatedRoom = await getLivechatRoomInfo(newRoom._id);
 			expect(updatedRoom).to.have.property('priorityId', priority._id);
@@ -1658,10 +1628,7 @@ describe('LIVECHAT - rooms', function () {
 						_id: newVisitor._id,
 					},
 				})
-				.success()
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			const updatedRoom = await getLivechatRoomInfo(newRoom._id);
 			expect(updatedRoom).to.have.property('slaId', sla._id);
@@ -1680,7 +1647,6 @@ describe('LIVECHAT - rooms', function () {
 				.set(credentials)
 				.success()
 				.expect((res: DummyResponse<SuccessResult<{ priorities: ILivechatPriority[] }>>) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('priorities').and.to.be.an('array');
 					expect(res.body.priorities).to.have.length.greaterThan(0);
 				});

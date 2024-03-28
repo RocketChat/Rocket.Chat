@@ -60,10 +60,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 					_id: visitor._id,
 				},
 			})
-			.success()
-			.expect((res: Response) => {
-				expect(res.body).to.have.property('success', true);
-			});
+			.success();
 
 		await createUnit(user._id, user.username, [dep1._id]);
 

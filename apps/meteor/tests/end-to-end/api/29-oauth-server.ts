@@ -36,7 +36,6 @@ describe('[OAuth Server]', function () {
 				.send(data)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('application');
 					expect(res.body.application).to.have.property('_id');
 					expect(res.body.application).to.have.property('name', data.name);

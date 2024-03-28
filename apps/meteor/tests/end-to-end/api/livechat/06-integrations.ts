@@ -24,7 +24,6 @@ describe('LIVECHAT - Integrations', function () {
 			updatePermission('view-livechat-manager', ['admin'])
 				.then(async () => {
 					const res = await request.get(api('livechat/integrations.settings')).set(credentials).success();
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.settings).to.be.an('array');
 					const settingIds = res.body.settings.map((setting: ISetting) => setting._id);
 					expect(settingIds).to.include.members([

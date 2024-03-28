@@ -418,9 +418,7 @@ describe('[Channels]', function () {
 				userId: 'rocket.cat',
 			})
 			.success()
-			.expect((res) => {
-				expect(res.body).to.have.a.property('success', true);
-			})
+			.expect((res) => {})
 			.end(done);
 	});
 	it('/channels.removeLeader', (done) => {
@@ -1730,7 +1728,6 @@ describe('[Channels]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('roles').that.is.an('array').that.has.lengthOf(2);
 
 					expect(res.body.roles[0]).to.have.a.property('_id').that.is.a('string');
@@ -1791,7 +1788,6 @@ describe('[Channels]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('moderators').that.is.an('array').that.has.lengthOf(1);
 					expect(res.body.moderators[0].username).to.be.equal('rocket.cat');
 				})
@@ -1838,7 +1834,6 @@ describe('[Channels]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
 						expect(res.body).to.have.a.property('messages').that.is.an('array');
 					})
 					.end(done);
@@ -1855,7 +1850,6 @@ describe('[Channels]', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
 						expect(res.body).to.have.a.property('messages').that.is.an('array');
 					})
 					.end(done);
@@ -1931,9 +1925,7 @@ describe('[Channels]', function () {
 				.set(credentials)
 				.send({ channelId: testChannel._id })
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-				});
+				.expect((res) => {});
 		});
 
 		it(`should successfully convert a channel to a team when the channel's name is sent as parameter`, async () => {
@@ -1942,18 +1934,14 @@ describe('[Channels]', function () {
 				.set(credentials)
 				.send({ teamName: testChannel.name })
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-				});
+				.expect((res) => {});
 
 			await request
 				.post(api('channels.convertToTeam'))
 				.set(credentials)
 				.send({ channelName: testChannel.name })
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-				});
+				.expect((res) => {});
 		});
 
 		it('should fail to convert channel without the required parameters', (done) => {

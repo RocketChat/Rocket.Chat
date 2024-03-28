@@ -105,7 +105,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('departments');
 					expect(res.body.departments).to.be.an('array');
 					expect(res.body.departments).to.have.length.of.at.least(0);
@@ -128,7 +127,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.query({ count: 1, offset: 0 })
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('departments');
 					expect(res.body.departments).to.be.an('array');
 					expect(res.body.departments).to.have.lengthOf(1);
@@ -144,7 +142,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.query({ count: 2, offset: 0, text: 'test' })
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('departments');
 					expect(res.body.departments).to.be.an('array');
 					expect(res.body.departments).to.have.lengthOf(2);
@@ -164,7 +161,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.query({ count: 2, offset: 0, text: 'A test 123' })
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('departments');
 					expect(res.body.departments).to.be.an('array');
 					expect(res.body.departments).to.have.lengthOf(1);
@@ -322,7 +318,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('department');
 					expect(res.body.department).to.be.null;
 				});
@@ -647,7 +642,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.query({ selector: `{"exceptions":["${dep1._id}"]}` })
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('items');
 					expect(res.body.items).to.be.an('array');
 					expect(res.body.items).to.have.length.of.at.least(1);
@@ -710,7 +704,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('agents');
 					expect(res.body.agents).to.be.an('array');
 					expect(res.body.agents).to.have.lengthOf(0);
@@ -726,7 +719,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api(`livechat/department/${dep._id}/agents`))
 				.set(credentials)
 				.success();
-			expect(res.body).to.have.property('success', true);
+
 			expect(res.body).to.have.property('agents');
 			expect(res.body.agents).to.be.an('array');
 			expect(res.body.agents).to.have.lengthOf(0);
@@ -744,7 +737,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api(`livechat/department/${dep._id}/agents`))
 				.set(credentials)
 				.success();
-			expect(res.body).to.have.property('success', true);
 			expect(res.body).to.have.property('agents');
 			expect(res.body.agents).to.be.an('array');
 			expect(res.body.agents).to.have.lengthOf(1);
@@ -809,12 +801,12 @@ import { IS_EE } from '../../../e2e/config/constants';
 			await updatePermission('manage-livechat-departments', ['admin']);
 			await updatePermission('add-livechat-department-agents', ['admin', 'livechat-manager']);
 			const [dep, agent] = await Promise.all([createDepartment(), createAgent()]);
-			const res = await request
+			await request
 				.post(api(`livechat/department/${dep._id}/agents`))
 				.set(credentials)
 				.send({ upsert: [{ agentId: agent._id, username: agent.username }], remove: [] })
 				.success();
-			expect(res.body).to.have.property('success', true);
+
 			await deleteDepartment(dep._id);
 		});
 	});

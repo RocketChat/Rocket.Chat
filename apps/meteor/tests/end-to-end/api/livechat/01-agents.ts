@@ -88,7 +88,6 @@ describe('LIVECHAT - Agents', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.users).to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -109,7 +108,6 @@ describe('LIVECHAT - Agents', function () {
 				.query({ onlyAvailable: true })
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.users).to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -125,7 +123,6 @@ describe('LIVECHAT - Agents', function () {
 				.query({ onlyAvailable: false })
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.users).to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -147,7 +144,6 @@ describe('LIVECHAT - Agents', function () {
 				.query({ showIdleAgents: true })
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.users).to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -170,7 +166,6 @@ describe('LIVECHAT - Agents', function () {
 				.query({ showIdleAgents: false })
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.users).to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -188,7 +183,6 @@ describe('LIVECHAT - Agents', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.users).to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -249,7 +243,6 @@ describe('LIVECHAT - Agents', function () {
 				})
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('user');
 					expect(res.body.user).to.have.property('_id');
 					expect(res.body.user).to.have.property('username');
@@ -269,7 +262,6 @@ describe('LIVECHAT - Agents', function () {
 				})
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('user');
 					expect(res.body.user).to.have.property('_id');
 					expect(res.body.user).to.have.property('username');
@@ -314,7 +306,6 @@ describe('LIVECHAT - Agents', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('user');
 					expect(res.body.user).to.have.property('_id');
 					expect(res.body.user).to.have.property('username');
@@ -330,7 +321,6 @@ describe('LIVECHAT - Agents', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('user');
 					expect(res.body.user).to.be.null;
 				});
@@ -384,7 +374,6 @@ describe('LIVECHAT - Agents', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('departments').and.to.be.an('array');
 				});
 		});
@@ -395,7 +384,6 @@ describe('LIVECHAT - Agents', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('departments').and.to.be.an('array');
 					(res.body.departments as ILivechatDepartment[]).forEach((department) => {
 						expect(department.agentId).to.be.equal(agent._id);
@@ -518,7 +506,6 @@ describe('LIVECHAT - Agents', function () {
 				.send({ status: newStatus, agentId: currentUser._id })
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('status', newStatus);
 				});
 		});
@@ -535,7 +522,6 @@ describe('LIVECHAT - Agents', function () {
 				.send({ status: newStatus, agentId: currentUser._id })
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('status', newStatus);
 				});
 		});
@@ -569,7 +555,6 @@ describe('LIVECHAT - Agents', function () {
 				.send({ status: newStatus, agentId: currentUser._id })
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('status', currentStatus);
 				});
 

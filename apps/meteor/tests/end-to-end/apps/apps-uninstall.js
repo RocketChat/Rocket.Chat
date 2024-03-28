@@ -37,7 +37,6 @@ describe('Apps - Uninstall', function () {
 				.set(credentials)
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('app');
 					expect(res.body.app.id).to.be.equal(app.id);
 					expect(res.body.app.status).to.be.equal('disabled');

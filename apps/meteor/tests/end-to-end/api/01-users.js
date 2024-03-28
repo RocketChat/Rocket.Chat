@@ -1680,7 +1680,6 @@ describe('[Users]', function () {
 				.success()
 				.expect((res) => {
 					const { user } = res.body;
-					expect(res.body).to.have.property('success', true);
 					expect(user.username).to.be.equal(editedUsername);
 					expect(user.name).to.be.equal(editedName);
 					expect(user).to.not.have.property('e2e');
@@ -1700,7 +1699,6 @@ describe('[Users]', function () {
 				.success()
 				.expect((res) => {
 					const { user } = res.body;
-					expect(res.body).to.have.property('success', true);
 					expect(user.username).to.be.equal(editedUsername);
 					expect(user).to.not.have.property('e2e');
 				})
@@ -1765,7 +1763,6 @@ describe('[Users]', function () {
 				.success()
 				.expect((res) => {
 					const { user } = res.body;
-					expect(res.body).to.have.property('success', true);
 					expect(user.emails[0].address).to.be.equal(editedEmail);
 					expect(user.emails[0].verified).to.be.false;
 					expect(user).to.not.have.property('e2e');
@@ -2100,9 +2097,8 @@ describe('[Users]', function () {
 							newPassword: '123Abc@!',
 						},
 					})
-					.expect('Content-Type', 'application/json')
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('user');
 					})
 					.success();
@@ -2172,12 +2168,10 @@ describe('[Users]', function () {
 					.set(credentials)
 					.send(userPreferences)
 					.success()
-					.expect('Content-Type', 'application/json')
 					.expect((res) => {
 						expect(res.body.user).to.have.property('settings');
 						expect(res.body.user.settings).to.have.property('preferences');
 						expect(res.body.user._id).to.be.equal('rocket.cat');
-						expect(res.body).to.have.property('success', true);
 					})
 					.end(done);
 			});
@@ -2194,11 +2188,9 @@ describe('[Users]', function () {
 				.set(credentials)
 				.send(userPreferences)
 				.success()
-				.expect('Content-Type', 'application/json')
 				.expect((res) => {
 					expect(res.body.user).to.have.property('settings');
 					expect(res.body.user.settings).to.have.property('preferences');
-					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
 		});
@@ -2215,9 +2207,7 @@ describe('[Users]', function () {
 				.set(credentials)
 				.send(userPreferences)
 				.success()
-				.expect('Content-Type', 'application/json')
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.user.settings.preferences).to.have.property('language', 'en');
 				})
 				.end(done);
@@ -2234,10 +2224,8 @@ describe('[Users]', function () {
 				.get(api('users.getPreferences'))
 				.set(credentials)
 				.success()
-				.expect('Content-Type', 'application/json')
 				.expect((res) => {
 					expect(res.body.preferences).to.be.eql(userPreferences);
-					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
 		});

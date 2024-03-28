@@ -101,7 +101,6 @@ export async function testFileUploads(
 			})
 			.success()
 			.expect(function (res: Response) {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('files').and.to.be.an('array');
 			})
 			.end(done);
@@ -118,7 +117,6 @@ export async function testFileUploads(
 			})
 			.success()
 			.expect(function (res: Response) {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('files').and.to.be.an('array');
 			})
 			.end(done);
@@ -136,7 +134,6 @@ export async function testFileUploads(
 			})
 			.success()
 			.expect(function (res: Response) {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('files').and.to.be.an('array');
 			})
 			.end(done);
@@ -156,7 +153,6 @@ export async function testFileUploads(
 			})
 			.success()
 			.expect(function (res: Response) {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('files').and.to.be.an('array');
 			})
 			.end(done);
@@ -167,10 +163,7 @@ export async function testFileUploads(
 			.post(api(`rooms.upload/${testRoom._id}`))
 			.set(credentials)
 			.attach('file', imgURL)
-			.success()
-			.expect(function (res: Response) {
-				expect(res.body).to.have.property('success', true);
-			});
+			.success();
 
 		await request
 			.get(api(filesEndpoint))
@@ -180,7 +173,6 @@ export async function testFileUploads(
 			})
 			.success()
 			.expect(function (res: Response) {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('files').and.to.be.an('array').with.lengthOf(1);
 
 				const { files } = res.body;
@@ -201,8 +193,6 @@ export async function testFileUploads(
 			.attach('file', imgURL)
 			.success()
 			.expect(function (res: Response) {
-				expect(res.body).to.have.property('success', true);
-
 				msgId = res.body.message._id;
 				fileId = res.body.message.file._id;
 			});
@@ -224,7 +214,6 @@ export async function testFileUploads(
 			})
 			.success()
 			.expect(function (res: Response) {
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('files').and.to.be.an('array').with.lengthOf(1);
 
 				const { files } = res.body;

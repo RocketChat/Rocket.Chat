@@ -44,7 +44,6 @@ describe('LIVECHAT - inquiries', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.inquiries).to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -65,7 +64,6 @@ describe('LIVECHAT - inquiries', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.inquiries).to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -86,7 +84,6 @@ describe('LIVECHAT - inquiries', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('inquiry');
 				});
 		});
@@ -102,7 +99,6 @@ describe('LIVECHAT - inquiries', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('inquiry');
 					expect(res.body.inquiry).to.have.property('_id', inquiry._id);
 					expect(res.body.inquiry).to.have.property('rid', room._id);
@@ -166,10 +162,7 @@ describe('LIVECHAT - inquiries', function () {
 					inquiryId: inquiry._id,
 					userId: agent._id,
 				})
-				.success()
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 			const inquiry2 = (await fetchInquiry(room._id)) as ILivechatInquiryRecord;
 			expect(inquiry2.source?.type).to.equal('api');
 			expect(inquiry2.status).to.equal('taken');
@@ -188,10 +181,7 @@ describe('LIVECHAT - inquiries', function () {
 					inquiryId: inquiry._id,
 					userId: agent._id,
 				})
-				.success()
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			const roomInfo = await getLivechatRoomInfo(room._id);
 
@@ -229,7 +219,6 @@ describe('LIVECHAT - inquiries', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.inquiries).to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -242,7 +231,6 @@ describe('LIVECHAT - inquiries', function () {
 				.set(credentials)
 				.success()
 				.expect(async (res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.inquiries).to.be.an('array');
 					for (const inquiry of res.body.inquiries) {
 						expect(inquiry).to.have.property('status', 'queued');

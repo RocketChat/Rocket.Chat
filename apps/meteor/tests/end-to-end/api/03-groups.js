@@ -420,9 +420,7 @@ describe('[Groups]', function () {
 					userId: 'rocket.cat',
 				})
 				.success()
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-				})
+				.expect((res) => {})
 				.end(done);
 		});
 	});
@@ -1534,7 +1532,6 @@ describe('[Groups]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('roles').that.is.an('array').that.has.lengthOf(2);
 
 					expect(res.body.roles[0]).to.have.a.property('_id').that.is.a('string');
@@ -1609,7 +1606,6 @@ describe('[Groups]', function () {
 				})
 				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('moderators').that.is.an('array').that.has.lengthOf(1);
 					expect(res.body.moderators[0].username).to.be.equal('rocket.cat');
 				})
@@ -1627,8 +1623,8 @@ describe('[Groups]', function () {
 				.send({
 					name: `group.encrypted.test.${Date.now()}`,
 				})
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
 
 					testGroup = res.body.group;
@@ -1778,9 +1774,7 @@ describe('[Groups]', function () {
 						.set(credentials)
 						.send({ roomId: newGroup._id })
 						.success()
-						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
-						})
+						.expect((res) => {})
 						.end(done);
 				});
 			});

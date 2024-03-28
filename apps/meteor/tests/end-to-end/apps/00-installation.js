@@ -43,7 +43,6 @@ describe('Apps - Installation', function () {
 					})
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
 						expect(res.body).to.have.a.property('app');
 						expect(res.body.app).to.have.a.property('id');
 						expect(res.body.app).to.have.a.property('version');
@@ -66,7 +65,6 @@ describe('Apps - Installation', function () {
 					.set(credentials)
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
 						expect(res.body).to.have.a.property('command');
 						expect(res.body.command.command).to.be.equal('test-simple');
 					})
@@ -78,7 +76,6 @@ describe('Apps - Installation', function () {
 					.set(credentials)
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
 						expect(res.body).to.have.a.property('command');
 						expect(res.body.command.command).to.be.equal('test-with-arguments');
 					})
@@ -92,7 +89,6 @@ describe('Apps - Installation', function () {
 					.set(credentials)
 					.success()
 					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
 						expect(res.body).to.have.a.property('data').that.is.an('array').with.lengthOf(2);
 						expect(res.body.data[0]).to.be.an('object').with.a.property('key').equal('test');
 						expect(res.body.data[1]).to.be.an('object').with.a.property('key').equal('unconfigured');

@@ -28,7 +28,6 @@ describe('LIVECHAT - appearance', function () {
 				.set(credentials)
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.appearance).to.be.an('array');
 				});
 		});

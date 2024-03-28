@@ -50,7 +50,6 @@ describe('[Roles]', function () {
 				})
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('role');
 					expect(res.body.role).to.have.property('name', testRoleName);
 				});
@@ -75,7 +74,6 @@ describe('[Roles]', function () {
 				})
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('role');
 					expect(res.body.role).to.have.property('name', testRoleName);
 					testRoleId = res.body.role._id;
@@ -122,7 +120,6 @@ describe('[Roles]', function () {
 				})
 				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('role');
 					expect(res.body.role).to.have.property('name', newTestRoleName);
 				});

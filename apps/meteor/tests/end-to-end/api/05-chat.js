@@ -1488,7 +1488,6 @@ describe('[Chat]', function () {
 					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('receipts').and.to.be.an('array');
-						expect(res.body).to.have.property('success', true);
 					})
 					.end(done);
 			});

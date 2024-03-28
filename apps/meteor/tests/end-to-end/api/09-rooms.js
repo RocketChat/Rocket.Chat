@@ -158,9 +158,8 @@ describe('[Rooms]', function () {
 				.attach('file', imgURL)
 				.success()
 				.expect((res) => {
-					const { message } = res.body;
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('message');
+					const { message } = res.body;
 					expect(res.body.message).to.have.property('attachments');
 					expect(res.body.message.attachments).to.be.an('array').of.length(1);
 					expect(res.body.message.attachments[0]).to.have.property('image_type', 'image/png');
@@ -539,7 +538,6 @@ describe('[Rooms]', function () {
 				.success()
 				.expect((res) => {
 					const { message } = res.body;
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('message._id', message._id);
 					expect(res.body).to.have.nested.property('message.rid', publicChannel._id);
 					expect(res.body).to.have.nested.property('message.file._id', message.file._id);

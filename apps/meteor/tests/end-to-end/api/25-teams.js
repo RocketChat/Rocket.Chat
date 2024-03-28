@@ -97,7 +97,6 @@ describe('[Teams]', () => {
 						.query({ teamId })
 						.success()
 						.expect((response) => {
-							expect(response.body).to.have.property('success', true);
 							expect(response.body).to.have.property('members');
 
 							// remove admin user from members because it's added automatically as owner
@@ -133,7 +132,6 @@ describe('[Teams]', () => {
 						.query({ teamId })
 						.success()
 						.expect((response) => {
-							expect(response.body).to.have.property('success', true);
 							expect(response.body).to.have.property('members');
 
 							const member = response.body.members[0];
@@ -205,7 +203,6 @@ describe('[Teams]', () => {
 				.success()
 				.expect((res) => {
 					channelToEraseId = res.body.channel._id;
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel._id');
 					expect(res.body).to.have.nested.property('channel.name', channelToEraseName);
 					expect(res.body).to.have.nested.property('channel.t', 'c');
@@ -242,7 +239,6 @@ describe('[Teams]', () => {
 				.success()
 				.expect((res) => {
 					channelToKeepId = res.body.channel._id;
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel._id');
 					expect(res.body).to.have.nested.property('channel.name', channelToKeepName);
 					expect(res.body).to.have.nested.property('channel.t', 'c');
@@ -302,7 +298,6 @@ describe('[Teams]', () => {
 						})
 						.success()
 						.expect((response) => {
-							expect(response.body).to.have.property('success', true);
 							expect(response.body).to.have.property('channel');
 							expect(response.body.channel).to.have.property('_id', channelToKeepId);
 							expect(response.body.channel).to.not.have.property('teamId');
@@ -317,7 +312,6 @@ describe('[Teams]', () => {
 						})
 						.success()
 						.expect((response) => {
-							expect(response.body).to.have.property('success', true);
 							expect(response.body).to.have.property('channel');
 							expect(response.body.channel).to.have.property('_id', testTeam.roomId);
 							expect(response.body.channel).to.not.have.property('teamId');
@@ -373,7 +367,6 @@ describe('[Teams]', () => {
 						})
 						.success()
 						.expect((response) => {
-							expect(response.body).to.have.property('success', true);
 							expect(response.body).to.have.property('members');
 							expect(response.body.members).to.have.length(3);
 							expect(response.body.members[1]).to.have.property('user');
@@ -567,7 +560,6 @@ describe('[Teams]', () => {
 						})
 						.success()
 						.expect((response) => {
-							expect(response.body).to.have.property('success', true);
 							expect(response.body).to.have.property('members');
 							expect(response.body.members).to.have.length(3);
 
@@ -683,7 +675,6 @@ describe('[Teams]', () => {
 								})
 								.success()
 								.expect((response) => {
-									expect(response.body).to.have.property('success', true);
 									expect(response.body).to.have.property('members');
 									expect(response.body.members).to.have.length(2);
 								}),
@@ -791,7 +782,6 @@ describe('[Teams]', () => {
 				})
 				.success()
 				.expect((response) => {
-					expect(response.body).to.have.property('success', true);
 					expect(response.body).to.have.property('teamInfo');
 					expect(response.body.teamInfo).to.have.property('_id', publicTeam._id);
 					expect(response.body.teamInfo).to.have.property('name', publicTeam.name);
@@ -808,7 +798,6 @@ describe('[Teams]', () => {
 				})
 				.success()
 				.expect((response) => {
-					expect(response.body).to.have.property('success', true);
 					expect(response.body).to.have.property('teamInfo');
 					expect(response.body.teamInfo).to.have.property('_id', publicTeam._id);
 					expect(response.body.teamInfo).to.have.property('name', publicTeam.name);
@@ -864,7 +853,6 @@ describe('[Teams]', () => {
 					})
 					.success()
 					.expect((resp) => {
-						expect(resp.body).to.have.property('success', true);
 						expect(resp.body).to.have.property('team');
 						expect(resp.body.team).to.have.property('name', tempTeamName);
 						expect(resp.body.team).to.have.property('_id');
@@ -951,7 +939,6 @@ describe('[Teams]', () => {
 					.success()
 					.expect((res) => {
 						channel1Id = res.body.channel._id;
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.nested.property('channel._id');
 						expect(res.body).to.have.nested.property('channel.name', channel1Name);
 						expect(res.body).to.have.nested.property('channel.t', 'c');
@@ -988,7 +975,6 @@ describe('[Teams]', () => {
 					.success()
 					.expect((res) => {
 						channel2Id = res.body.channel._id;
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.nested.property('channel._id');
 						expect(res.body).to.have.nested.property('channel.name', channel2Name);
 						expect(res.body).to.have.nested.property('channel.t', 'c');
@@ -1047,7 +1033,6 @@ describe('[Teams]', () => {
 									})
 									.success()
 									.expect((response) => {
-										expect(response.body).to.have.property('success', true);
 										expect(response.body).to.have.property('channel');
 										expect(response.body.channel).to.have.property('_id', channel1Id);
 										expect(response.body.channel).to.not.have.property('teamId');
@@ -1572,7 +1557,7 @@ describe('[Teams]', () => {
 
 		it('should update team name', async () => {
 			const testTeamName = `test-team-name-changed${Date.now()}`;
-			const updateResponse = await request
+			await request
 				.post(api('teams.update'))
 				.set(credentials)
 				.send({
@@ -1580,20 +1565,17 @@ describe('[Teams]', () => {
 					data: {
 						name: testTeamName,
 					},
-				});
+				})
+				.success();
 
-			expect(updateResponse.body).to.have.property('success', true);
-
-			const infoResponse = await request.get(api('teams.info')).set(credentials).query({ teamId: testTeam._id });
-
-			expect(infoResponse.body).to.have.property('success', true);
+			const infoResponse = await request.get(api('teams.info')).set(credentials).query({ teamId: testTeam._id }).success();
 
 			const { teamInfo } = infoResponse.body;
 			expect(teamInfo).to.have.property('name', testTeamName);
 		});
 
 		it('should update team type', async () => {
-			const updateResponse = await request
+			await request
 				.post(api('teams.update'))
 				.set(credentials)
 				.send({
@@ -1601,13 +1583,10 @@ describe('[Teams]', () => {
 					data: {
 						type: 1,
 					},
-				});
+				})
+				.success();
 
-			expect(updateResponse.body).to.have.property('success', true);
-
-			const infoResponse = await request.get(api('teams.info')).set(credentials).query({ teamId: testTeam._id });
-
-			expect(infoResponse.body).to.have.property('success', true);
+			const infoResponse = await request.get(api('teams.info')).set(credentials).query({ teamId: testTeam._id }).success();
 
 			const { teamInfo } = infoResponse.body;
 			expect(teamInfo).to.have.property('type', 1);
@@ -1670,11 +1649,14 @@ describe('[Teams]', () => {
 			});
 
 			it('should update team channel to auto-join', async () => {
-				const response = await request.post(api('teams.updateRoom')).set(credentials).send({
-					roomId: createdRoom.body.channel._id,
-					isDefault: true,
-				});
-				expect(response.body).to.have.property('success', true);
+				await request
+					.post(api('teams.updateRoom'))
+					.set(credentials)
+					.send({
+						roomId: createdRoom.body.channel._id,
+						isDefault: true,
+					})
+					.success();
 			});
 
 			it('should return the user subscription with the right notification preferences', (done) => {
@@ -1695,7 +1677,7 @@ describe('[Teams]', () => {
 
 		it('should update team name and type at once', async () => {
 			const testTeamName = `test-team-name-changed${Date.now()}`;
-			const updateResponse = await request
+			await request
 				.post(api('teams.update'))
 				.set(credentials)
 				.send({
@@ -1704,13 +1686,10 @@ describe('[Teams]', () => {
 						name: testTeamName,
 						type: 1,
 					},
-				});
+				})
+				.success();
 
-			expect(updateResponse.body).to.have.property('success', true);
-
-			const infoResponse = await request.get(api('teams.info')).set(credentials).query({ teamId: testTeam2._id });
-
-			expect(infoResponse.body).to.have.property('success', true);
+			const infoResponse = await request.get(api('teams.info')).set(credentials).query({ teamId: testTeam2._id }).success();
 
 			const { teamInfo } = infoResponse.body;
 			expect(teamInfo).to.have.property('type', 1);

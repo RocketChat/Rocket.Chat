@@ -158,7 +158,6 @@ describe('miscellaneous', function () {
 					'enableMobileRinging',
 				].filter((p) => Boolean(p));
 
-				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('_id', user._id);
 				expect(res.body).to.have.property('username', user.username);
 				expect(res.body).to.have.property('active');
@@ -634,7 +633,6 @@ describe('miscellaneous', function () {
 				.set(credentials)
 				.forbidden()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('enabled');
 					expect(res.body).to.have.property('policy').and.to.be.an('array');
 				})
