@@ -1,6 +1,6 @@
 import type { AtLeast } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import { Subscriptions } from '@rocket.chat/models';
+import { Rooms, Subscriptions } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../../app/settings/server';
@@ -89,6 +89,28 @@ roomCoordinator.add(DirectMessageRoomType, {
 
 	isGroupChat(room) {
 		return (room?.uids?.length || 0) > 2;
+	},
+
+	// Right now not expecting to find group dms by usernames
+	// there's no place in the UI where we can access a group DM by usernames
+	async roomFind(name: string) {
+		const roomByNameOrId = await Rooms.findByTypeAndNameOrId('d', name);
+
+		if (roomByNameOrId) {
+			return roomByNameOrId;
+		}
+
+		const user = Meteor.user();
+
+		if (!user?.username) {
+			return;
+		}
+
+		const roomByUsernames = await Rooms.findDirectRoomContainingAllUsernames([user.username, name]);
+
+		if (roomByUsernames) {
+			return roomByUsernames;
+		}
 	},
 
 	async getNotificationDetails(room, sender, notificationMessage, userId) {
