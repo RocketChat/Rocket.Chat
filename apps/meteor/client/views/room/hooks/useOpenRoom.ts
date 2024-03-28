@@ -1,7 +1,6 @@
 import type { IRoom, RoomType } from '@rocket.chat/core-typings';
 import { useMethod, useRoute, useSetting, useUser } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import { useRef } from 'react';
 
 import { roomFields } from '../../../../lib/publishFields';
 import { omit } from '../../../../lib/utils/omit';
@@ -17,8 +16,6 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 	const createDirectMessage = useMethod('createDirectMessage');
 	const openRoom = useMethod('openRoom');
 	const directRoute = useRoute('direct');
-
-	const unsubscribeFromRoomOpenedEvent = useRef<() => void>(() => undefined);
 
 	return useQuery(
 		// we need to add uid and username here because `user` is not loaded all at once (see UserProvider -> Meteor.user())
@@ -85,8 +82,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 			const { RoomManager } = await import('../../../lib/RoomManager');
 			const { fireGlobalEvent } = await import('../../../lib/utils/fireGlobalEvent');
 
-			unsubscribeFromRoomOpenedEvent.current();
-			unsubscribeFromRoomOpenedEvent.current = RoomManager.once('opened', () => fireGlobalEvent('room-opened', omit(room, 'usernames')));
+			fireGlobalEvent('room-opened', omit(room, 'usernames'));
 
 			LegacyRoomManager.open({ typeName: type + reference, rid: room._id });
 
