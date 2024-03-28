@@ -4,14 +4,13 @@ import { Settings, Users } from '@rocket.chat/models';
 type WizardSettings = Array<ISetting>;
 
 export const getSeatsRequestLink = async (url: string, params?: Record<string, string>): Promise<string> => {
-	const workspaceId = await Settings.findOneById('Cloud_Workspace_Id');
-
+	const workspaceId = await Settings.getValueById('Cloud_Workspace_Id');
 	const activeUsers = await Users.getActiveLocalUserCount();
 	const wizardSettings: WizardSettings = await Settings.findSetupWizardSettings().toArray();
 
 	const newUrl = new URL(url);
 
-	if (workspaceId?.value) {
+	if (workspaceId) {
 		newUrl.searchParams.append('workspaceId', String(workspaceId));
 	}
 
