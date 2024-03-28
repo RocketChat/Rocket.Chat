@@ -160,4 +160,4 @@ injectIntoBody(
 `,
 );
 
-injectIntoBody('icons', await Assets.getTextAsync('public/icons.svg'));
+injectIntoBody('icons', await Assets.getText('public/icons.svg'));

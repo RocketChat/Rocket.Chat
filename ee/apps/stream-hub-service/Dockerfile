@@ -1,4 +1,4 @@
-FROM node:14.21.3-alpine
+FROM node:20.9.0-alpine
 
 ARG SERVICE
 

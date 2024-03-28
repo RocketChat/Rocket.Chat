@@ -6,7 +6,6 @@ Package.describe({
 });
 
 Package.onUse((api) => {
-	api.versionsFrom('2.5');
 	api.use('ecmascript');
 	api.use('accounts-base', ['client', 'server']);
 	api.imply('accounts-base', ['client', 'server']);
