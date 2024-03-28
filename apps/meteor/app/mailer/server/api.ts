@@ -159,7 +159,7 @@ export const sendNoWrap = async ({
 	}
 
 	if (!text) {
-		text = html ? stripHtml(html).result : undefined;
+		text = html ? stripHtml(html, { "ignoreTags": ['a'] }).result : undefined;
 	}
 
 	if (settings.get('email_plain_text_only')) {
@@ -199,7 +199,7 @@ export const send = async ({
 		from,
 		replyTo,
 		subject: replace(subject, data),
-		text: (text && replace(text, data)) || (html && stripHtml(replace(html, data)).result) || undefined,
+		text: (text && replace(text, data)) || (html && stripHtml(replace(html, data), { "ignoreTags": ['a'] }).result) || undefined,
 		html: html ? wrap(html, data) : undefined,
 		headers,
 	});
