@@ -65,8 +65,10 @@ const RoomMessage = ({
 		<Message
 			ref={messageRef}
 			id={message._id}
-			role='listitem'
+			role='link'
+			aria-roledescription={sequential ? 'sequential message' : 'message'}
 			tabIndex={0}
+			aria-labelledby={`${message._id}-displayName ${message._id}-time ${message._id}-content`}
 			onClick={selecting ? toggleSelected : undefined}
 			isSelected={selected}
 			isEditing={editing}

@@ -3,12 +3,7 @@ import type { RefCallback } from 'react';
 import { useCallback } from 'react';
 import { useFocusManager } from 'react-aria';
 
-type MessageListProps = {
-	'aria-orientation': 'vertical' | 'horizontal';
-};
-
-const isListItem = (node: EventTarget) =>
-	(node as HTMLElement).getAttribute('role') === 'listitem' || (node as HTMLElement).getAttribute('role') === 'link';
+const isListItem = (node: EventTarget) => (node as HTMLElement).getAttribute('role') === 'link';
 const isMessageToolbarAction = (node: EventTarget) => (node as HTMLElement).parentElement?.getAttribute('role') === 'toolbar';
 const isSystemMessage = (node: EventTarget) => (node as HTMLElement).classList.contains('rcx-message-system');
 const isThreadMessage = (node: EventTarget) => (node as HTMLElement).classList.contains('rcx-message-thread');
@@ -17,7 +12,7 @@ const isThreadMessage = (node: EventTarget) => (node as HTMLElement).classList.c
  * Custom hook to provide the room navigation by keyboard.
  * @param ref - A ref to the message list DOM element.
  */
-export const useMessageListNavigation = (): { messageListRef: RefCallback<HTMLElement>; messageListProps: MessageListProps } => {
+export const useMessageListNavigation = (): { messageListRef: RefCallback<HTMLElement> } => {
 	const roomFocusManager = useFocusManager();
 
 	const messageListRef = useCallback(
@@ -118,8 +113,5 @@ export const useMessageListNavigation = (): { messageListRef: RefCallback<HTMLEl
 
 	return {
 		messageListRef,
-		messageListProps: {
-			'aria-orientation': 'vertical',
-		},
 	};
 };

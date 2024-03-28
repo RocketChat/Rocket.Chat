@@ -70,12 +70,13 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 
 	return (
 		<ThreadMessage
+			role='link'
+			aria-roledescription='thread message preview'
 			tabIndex={0}
 			onClick={handleThreadClick}
 			onKeyDown={(e) => e.code === 'Enter' && handleThreadClick()}
 			isSelected={isSelected}
 			data-qa-selected={isSelected}
-			role='link'
 			{...props}
 		>
 			{!sequential && (
