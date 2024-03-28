@@ -1347,6 +1347,212 @@ describe('[Channels]', function () {
 		});
 	});
 
+	describe('/channels.membersByHighestRole', () => {
+		let testChannel;
+		let testUser;
+		before('create a channel', async () => {
+			testUser = await createUser();
+			const result = await createRoom({
+				type: 'c',
+				name: `channel-test-highest-role-${Date.now()}`,
+				members: [testUser.username, 'rocket.cat'],
+			});
+			testChannel = result.body.channel;
+		});
+		before('assign roles to the users added to the channel', async () => {
+			await request.post(api('channels.addLeader')).set(credentials).send({
+				roomId: testChannel._id,
+				userId: testUser._id,
+			});
+			await request.post(api('channels.addModerator')).set(credentials).send({
+				roomId: testChannel._id,
+				userId: 'rocket.cat',
+			});
+		});
+		after(async () => {
+			await deleteUser(testUser);
+			await deleteRoom({ type: 'c', roomId: testChannel._id });
+		});
+
+		it('should return an array of members by channel when roomId is provided', (done) => {
+			request
+				.get(api('channels.membersByHighestRole'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('members').and.to.be.an('array');
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+				})
+				.end(done);
+		});
+
+		it('should return an array of members by channel when roomName is provided', (done) => {
+			request
+				.get(api('channels.membersByHighestRole'))
+				.set(credentials)
+				.query({
+					roomName: testChannel.name,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('members').and.to.be.an('array');
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+				})
+				.end(done);
+		});
+
+		it('should return an array of members by channel even when requested with count param', (done) => {
+			request
+				.get(api('channels.membersByHighestRole'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					count: 5,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('members').and.to.be.an('array');
+					expect(res.body).to.have.property('count', 3);
+					expect(res.body).to.have.property('total');
+				})
+				.end(done);
+		});
+
+		it('should return a filtered array of members by channel', (done) => {
+			request
+				.get(api('channels.membersByHighestRole'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					filter: testUser.username,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('members').and.to.be.an('array');
+					expect(res.body).to.have.property('count', 1);
+					expect(res.body).to.have.property('total');
+
+					const member = res.body.members[0];
+					expect(member).to.have.property('_id');
+					expect(member).to.have.property('username');
+					expect(member).to.have.property('name');
+					expect(member).to.have.property('status');
+					expect(member).to.have.property('highestRole');
+				})
+				.end(done);
+		});
+
+		it('should return the correct highest role when searching for a moderator user', (done) => {
+			request
+				.get(api('channels.membersByHighestRole'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					filter: 'rocket.cat',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('members').and.to.be.an('array');
+
+					const member = res.body.members[0];
+					expect(member).to.have.property('highestRole');
+
+					const { highestRole } = member;
+					expect(highestRole).to.have.property('role', 'moderator');
+					expect(highestRole).to.have.property('level', 1);
+				})
+				.end(done);
+		});
+
+		it('should return the correct highest role when searching for an owner user', (done) => {
+			request
+				.get(api('channels.membersByHighestRole'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					filter: adminUsername,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('members').and.to.be.an('array');
+
+					const member = res.body.members[0];
+					expect(member).to.have.property('highestRole');
+
+					const { highestRole } = member;
+					expect(highestRole).to.have.property('role', 'owner');
+					expect(highestRole).to.have.property('level', 0);
+				})
+				.end(done);
+		});
+
+		it('should return the correct highest role when searching for a leader', (done) => {
+			request
+				.get(api('channels.membersByHighestRole'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					filter: testUser.username,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('members').and.to.be.an('array');
+
+					const member = res.body.members[0];
+					expect(member).to.have.property('highestRole');
+
+					const { highestRole } = member;
+					expect(highestRole).to.have.property('role', 'member');
+					expect(highestRole).to.have.property('level', 2);
+				})
+				.end(done);
+		});
+
+		it('should return members correctly sorted by highest role', (done) => {
+			request
+				.get(api('channels.membersByHighestRole'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('members').and.to.be.an('array');
+					expect(res.body.members).to.have.length(3);
+
+					const highestRoles = ['owner', 'moderator', 'member'];
+					for (let i = 0; i < 3; i++) {
+						const member = res.body.members[i];
+						expect(member).to.have.property('highestRole');
+						expect(member.highestRole).to.have.property('role', highestRoles[i]);
+						expect(member.highestRole).to.have.property('level', i);
+					}
+				})
+				.end(done);
+		});
+	});
+
 	describe('/channels.getIntegrations', () => {
 		let integrationCreatedByAnUser;
 		let userCredentials;

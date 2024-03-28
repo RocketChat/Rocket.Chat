@@ -193,6 +193,13 @@ export interface IRegisterUser extends IUser {
 export const isRegisterUser = (user: IUser): user is IRegisterUser => user.username !== undefined && user.name !== undefined;
 export const isUserFederated = (user: Partial<IUser>) => 'federated' in user && user.federated === true;
 
+export interface IUserWithRoleInfo extends IUser {
+	highestRole: {
+		role: string;
+		level: number;
+	};
+}
+
 export type IUserDataEvent = {
 	id: unknown;
 } & (

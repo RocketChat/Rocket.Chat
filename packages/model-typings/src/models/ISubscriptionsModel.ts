@@ -1,4 +1,4 @@
-import type { ISubscription, IRole, IUser, IRoom, RoomType, SpotlightUser, AtLeast } from '@rocket.chat/core-typings';
+import type { ISubscription, IRole, IUser, IRoom, IUserWithRoleInfo, RoomType, SpotlightUser, AtLeast } from '@rocket.chat/core-typings';
 import type {
 	FindOptions,
 	FindCursor,
@@ -85,6 +85,15 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 		{ startsWith, endsWith }?: { startsWith?: string | false; endsWith?: string | false },
 		options?: AggregateOptions,
 	): Promise<SpotlightUser[]>;
+
+	findPaginatedActiveHighestRoleUsers(
+		searchTerm: string,
+		rid: IRoom['_id'],
+		searchFields: string[],
+		options?: FindOptions<IUser>,
+		extraQuery?: Filter<IUser & { __rooms: IRoom['_id'][] }>,
+		{ startsWith, endsWith }?: { startsWith?: string | false; endsWith?: string | false },
+	): Promise<{ members: IUserWithRoleInfo[]; totalCount: { total: number }; ids: { allMembersIds: string[] } }[]>;
 
 	incUnreadForRoomIdExcludingUserIds(roomId: IRoom['_id'], userIds: IUser['_id'][], inc: number): Promise<UpdateResult | Document>;
 

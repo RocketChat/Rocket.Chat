@@ -1,5 +1,5 @@
 import { Team, Room } from '@rocket.chat/core-services';
-import type { IRoom, ISubscription, IUser, RoomType, IUpload } from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription, IUser, RoomType, IUpload, UserStatus } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
 import {
 	isChannelsAddAllProps,
@@ -24,6 +24,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { isTruthy } from '../../../../lib/isTruthy';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
+import { findUsersOfRoomByHighestRole } from '../../../../server/lib/findUsersOfRoomByHighestRole';
 import { hideRoomMethod } from '../../../../server/methods/hideRoom';
 import { removeUserFromRoomMethod } from '../../../../server/methods/removeUserFromRoom';
 import { canAccessRoomAsync } from '../../../authorization/server';
@@ -1088,6 +1089,41 @@ API.v1.addRoute(
 				members,
 				count: members.length,
 				offset: skip,
+				total,
+			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'channels.membersByHighestRole',
+	{ authRequired: true },
+	{
+		async get() {
+			const findResult = await findChannelByIdOrName({
+				params: this.queryParams,
+				checkedArchived: false,
+			});
+
+			if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult._id))) {
+				return API.v1.unauthorized();
+			}
+
+			const { count: limit } = await getPaginationItems(this.queryParams);
+			const { sort = {} } = await this.parseJsonQuery();
+			const { status, filter } = this.queryParams;
+
+			const { members, total } = await findUsersOfRoomByHighestRole({
+				rid: findResult._id,
+				...(status && { status: { $in: status as UserStatus[] } }),
+				limit,
+				filter,
+				...(sort?.username && { sort: { username: sort.username } }),
+			});
+
+			return API.v1.success({
+				members,
+				count: members.length,
 				total,
 			});
 		},

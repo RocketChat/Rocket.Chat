@@ -5,7 +5,7 @@ import { getCredentials, api, request, credentials, group, apiPrivateChannelName
 import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
-import { createRoom } from '../../data/rooms.helper';
+import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { testFileUploads } from '../../data/uploads.helper';
 import { adminUsername, password } from '../../data/user';
 import { createUser, login, deleteUser } from '../../data/users.helper';
@@ -1062,6 +1062,204 @@ describe('[Groups]', function () {
 					expect(res.body).to.have.property('members').and.to.be.an('array');
 				})
 				.end(done);
+		});
+	});
+
+	describe('/groups.membersByHighestRole', () => {
+		let testGroup;
+		let testUser;
+		before('create a group', async () => {
+			testUser = await createUser();
+			const result = await createRoom({
+				type: 'p',
+				name: `group-test-highest-role-${Date.now()}`,
+				members: [testUser.username, 'rocket.cat'],
+			});
+			testGroup = result.body.group;
+		});
+		before('assign roles to the users added to the group', async () => {
+			await request.post(api('groups.addLeader')).set(credentials).send({
+				roomId: testGroup._id,
+				userId: testUser._id,
+			});
+			await request.post(api('groups.addModerator')).set(credentials).send({
+				roomId: testGroup._id,
+				userId: 'rocket.cat',
+			});
+		});
+		after(async () => {
+			await deleteUser(testUser);
+			await deleteRoom({ type: 'p', roomId: testGroup._id });
+		});
+
+		it('should return an array of members by channel when roomId is provided', async () => {
+			await request
+				.get(api('groups.membersByHighestRole'))
+				.set(credentials)
+				.query({
+					roomId: testGroup._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('members').and.to.be.an('array');
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+				});
+		});
+
+		it('should return an array of members by channel when roomName is provided', async () => {
+			await request
+				.get(api('groups.membersByHighestRole'))
+				.set(credentials)
+				.query({
+					roomName: testGroup.name,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('members').and.to.be.an('array');
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+				});
+		});
+
+		it('should return an array of members by channel even when requested with count param', async () => {
+			await request
+				.get(api('groups.membersByHighestRole'))
+				.set(credentials)
+				.query({
+					roomId: testGroup._id,
+					count: 5,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('members').and.to.be.an('array');
+					expect(res.body).to.have.property('count', 3);
+					expect(res.body).to.have.property('total');
+				});
+		});
+
+		it('should return a filtered array of members by group', async () => {
+			await request
+				.get(api('groups.membersByHighestRole'))
+				.set(credentials)
+				.query({
+					roomId: testGroup._id,
+					filter: testUser.username,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('members').and.to.be.an('array');
+					expect(res.body).to.have.property('count', 1);
+					expect(res.body).to.have.property('total');
+
+					const member = res.body.members[0];
+					expect(member).to.have.property('_id');
+					expect(member).to.have.property('username');
+					expect(member).to.have.property('name');
+					expect(member).to.have.property('status');
+					expect(member).to.have.property('highestRole');
+				});
+		});
+
+		it('should return the correct highest role when searching for a moderator user', async () => {
+			await request
+				.get(api('groups.membersByHighestRole'))
+				.set(credentials)
+				.query({
+					roomId: testGroup._id,
+					filter: 'rocket.cat',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('members').and.to.be.an('array');
+
+					const member = res.body.members[0];
+					expect(member).to.have.property('highestRole');
+
+					const { highestRole } = member;
+					expect(highestRole).to.have.property('role', 'moderator');
+					expect(highestRole).to.have.property('level', 1);
+				});
+		});
+
+		it('should return the correct highest role when searching for an owner user', async () => {
+			await request
+				.get(api('groups.membersByHighestRole'))
+				.set(credentials)
+				.query({
+					roomId: testGroup._id,
+					filter: adminUsername,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('members').and.to.be.an('array');
+
+					const member = res.body.members[0];
+					expect(member).to.have.property('highestRole');
+
+					const { highestRole } = member;
+					expect(highestRole).to.have.property('role', 'owner');
+					expect(highestRole).to.have.property('level', 0);
+				});
+		});
+
+		it('should return the correct highest role when searching for a leader', async () => {
+			await request
+				.get(api('groups.membersByHighestRole'))
+				.set(credentials)
+				.query({
+					roomId: testGroup._id,
+					filter: testUser.username,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('members').and.to.be.an('array');
+
+					const member = res.body.members[0];
+					expect(member).to.have.property('highestRole');
+
+					const { highestRole } = member;
+					expect(highestRole).to.have.property('role', 'member');
+					expect(highestRole).to.have.property('level', 2);
+				});
+		});
+
+		it('should return members correctly sorted by highest role', async () => {
+			await request
+				.get(api('groups.membersByHighestRole'))
+				.set(credentials)
+				.query({
+					roomId: testGroup._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('members').and.to.be.an('array');
+					expect(res.body.members).to.have.length(3);
+
+					const highestRoles = ['owner', 'moderator', 'member'];
+					for (let i = 0; i < 3; i++) {
+						const member = res.body.members[i];
+						expect(member).to.have.property('highestRole');
+						expect(member.highestRole).to.have.property('role', highestRoles[i]);
+						expect(member.highestRole).to.have.property('level', i);
+					}
+				});
 		});
 	});
 

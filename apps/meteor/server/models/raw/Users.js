@@ -266,10 +266,7 @@ export class UsersRaw extends BaseRaw {
 
 		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
 
-		const orStmt = (searchFields || []).reduce((acc, el) => {
-			acc.push({ [el.trim()]: termRegex });
-			return acc;
-		}, []);
+		const orStmt = (searchFields || []).map((el) => ({ [el.trim()]: termRegex }));
 
 		const query = {
 			$and: [
@@ -292,38 +289,89 @@ export class UsersRaw extends BaseRaw {
 	findPaginatedByActiveUsersExcept(
 		searchTerm,
 		exceptions,
-		options,
 		searchFields,
+		options = {},
 		extraQuery = [],
 		{ startsWith = false, endsWith = false } = {},
 	) {
 		if (exceptions == null) {
 			exceptions = [];
 		}
-		if (options == null) {
-			options = {};
-		}
 		if (!Array.isArray(exceptions)) {
 			exceptions = [exceptions];
 		}
 
-		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
+		const regexString = (startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : '');
+		const termRegex = new RegExp(regexString, 'i');
 
-		const orStmt = (searchFields || []).reduce((acc, el) => {
-			acc.push({ [el.trim()]: termRegex });
-			return acc;
-		}, []);
+		const orStmt = (searchFields || []).map((el) => ({ [el.trim()]: termRegex }));
 
 		const query = {
 			$and: [
 				{
 					active: true,
-					username: {
-						$exists: true,
-						...(exceptions.length > 0 && { $nin: exceptions }),
-					},
+					...(exceptions.length && { _id: { $nin: exceptions } }),
+					username: { $exists: true },
 					// if the search term is empty, don't need to have the $or statement (because it would be an empty regex)
-					...(searchTerm && orStmt.length > 0 && { $or: orStmt }),
+					...(searchTerm && orStmt.length && { $or: orStmt }),
+				},
+				...extraQuery,
+			],
+		};
+
+		return this.findPaginated(query, options);
+	}
+
+	countActiveUsersExcept(searchTerm, exceptions, searchFields, extraQuery = [], { startsWith = false, endsWith = false } = {}) {
+		if (exceptions == null) {
+			exceptions = [];
+		}
+		if (!Array.isArray(exceptions)) {
+			exceptions = [exceptions];
+		}
+
+		const regexString = (startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : '');
+		const termRegex = new RegExp(regexString, 'i');
+
+		const orStmt = (searchFields || []).map((el) => ({ [el.trim()]: termRegex }));
+
+		const query = {
+			$and: [
+				{
+					active: true,
+					...(exceptions.length && { _id: { $nin: exceptions } }),
+					username: { $exists: true },
+					// if the search term is empty, don't need to have the $or statement (because it would be an empty regex)
+					...(searchTerm && orStmt.length && { $or: orStmt }),
+				},
+				...extraQuery,
+			],
+		};
+
+		return this.col.countDocuments(query);
+	}
+
+	findPaginatedActiveUsersByIds(
+		searchTerm,
+		searchFields,
+		ids = [],
+		options = {},
+		extraQuery = [],
+		{ startsWith = false, endsWith = false } = {},
+	) {
+		const regexString = (startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : '');
+		const termRegex = new RegExp(regexString, 'i');
+
+		const orStmt = (searchFields || []).map((el) => ({ [el.trim()]: termRegex }));
+
+		const query = {
+			$and: [
+				{
+					active: true,
+					...(ids.length && { _id: { $in: ids } }),
+					username: { $exists: true },
+					// if the search term is empty, don't need to have the $or statement (because it would be an empty regex)
+					...(searchTerm && orStmt.length && { $or: orStmt }),
 				},
 				...extraQuery,
 			],
@@ -338,12 +386,12 @@ export class UsersRaw extends BaseRaw {
 				$or: [{ federation: { $exists: false } }, { 'federation.origin': localDomain }],
 			},
 		];
-		return this.findPaginatedByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery);
+		return this.findPaginatedByActiveUsersExcept(searchTerm, exceptions, forcedSearchFields, options, extraQuery);
 	}
 
 	findPaginatedByActiveExternalUsersExcept(searchTerm, exceptions, options, forcedSearchFields, localDomain) {
 		const extraQuery = [{ federation: { $exists: true } }, { 'federation.origin': { $ne: localDomain } }];
-		return this.findPaginatedByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery);
+		return this.findPaginatedByActiveUsersExcept(searchTerm, exceptions, forcedSearchFields, options, extraQuery);
 	}
 
 	findActive(query, options = {}) {

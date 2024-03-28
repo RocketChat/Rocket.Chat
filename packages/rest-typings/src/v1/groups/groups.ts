@@ -1,4 +1,14 @@
-import type { IMessage, IRoom, ITeam, IGetRoomRoles, IUser, IUploadWithUser, IIntegration, ISubscription } from '@rocket.chat/core-typings';
+import type {
+	IMessage,
+	IRoom,
+	ITeam,
+	IGetRoomRoles,
+	IUser,
+	IUploadWithUser,
+	IIntegration,
+	ISubscription,
+	IUserWithRoleInfo,
+} from '@rocket.chat/core-typings';
 
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
 import type { GroupsAddAllProps } from './GroupsAddAllProps';
@@ -50,6 +60,14 @@ export type GroupsEndpoints = {
 			count: number;
 			offset: number;
 			members: IUser[];
+			total: number;
+		};
+	};
+	'/v1/groups.membersByHighestRole': {
+		GET: (params: GroupsMembersProps) => {
+			count: number;
+			offset: number;
+			members: IUserWithRoleInfo[];
 			total: number;
 		};
 	};

@@ -4,6 +4,7 @@ import type {
 	IRoom,
 	ISubscription,
 	IUser,
+	IUserWithRoleInfo,
 	RocketChatRecordDeleted,
 	RoomType,
 	SpotlightUser,
@@ -456,6 +457,96 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 					},
 				],
 				options,
+			)
+			.toArray();
+	}
+
+	async findPaginatedActiveHighestRoleUsers(
+		searchTerm: string,
+		rid: IRoom['_id'],
+		searchFields: string[],
+		options: FindOptions<IUser> = {},
+		extraQuery?: Filter<IUser>,
+		{ startsWith = false, endsWith = false }: { startsWith?: string | false; endsWith?: string | false } = {},
+	): Promise<{ members: IUserWithRoleInfo[]; totalCount: { total: number }; ids: { allMembersIds: string[] } }[]> {
+		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
+		const orStatement = (searchFields || []).map((el) => ({ [el.trim()]: termRegex })) as { [x: string]: RegExp }[];
+
+		const limit =
+			options.limit !== 0
+				? [
+						{
+							$limit: options.limit,
+						},
+				  ]
+				: [];
+
+		return this.col
+			.aggregate<{ members: IUserWithRoleInfo[]; totalCount: { total: number }; ids: { allMembersIds: string[] } }>(
+				[
+					{
+						$match: {
+							rid,
+							roles: { $in: ['owner', 'moderator'] },
+						},
+					},
+					{
+						$lookup: {
+							from: 'users',
+							as: 'user',
+							let: { id: '$u._id' },
+							pipeline: [
+								{
+									$match: {
+										$expr: { $eq: ['$_id', '$$id'] },
+										username: { $exists: true },
+										active: true,
+										...(searchTerm && orStatement.length > 0 && { $or: orStatement }),
+										...extraQuery,
+									},
+								},
+								{ $project: options.projection },
+							],
+						},
+					},
+					{
+						$unwind: {
+							path: '$user',
+						},
+					},
+					{
+						$addFields: {
+							'user.highestRole': {
+								$cond: [{ $in: ['owner', '$roles'] }, { role: 'owner', level: 0 }, { role: 'moderator', level: 1 }],
+							},
+						},
+					},
+					{
+						$replaceRoot: { newRoot: '$user' },
+					},
+					{
+						$facet: {
+							members: [
+								{
+									$sort: {
+										'highestRole.level': 1,
+										...(options.sort as object),
+									},
+								},
+								...limit,
+							],
+							ids: [{ $group: { _id: null, allMembersIds: { $push: '$_id' } } }],
+							totalCount: [{ $count: 'total' }],
+						},
+					},
+					{
+						$unwind: { path: '$totalCount' },
+					},
+					{
+						$unwind: { path: '$ids' },
+					},
+				],
+				{ allowDiskUse: true },
 			)
 			.toArray();
 	}

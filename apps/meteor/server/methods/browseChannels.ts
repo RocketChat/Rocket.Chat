@@ -225,7 +225,7 @@ const findUsers = async ({
 		  };
 
 	if (workspace === 'all') {
-		const { cursor, totalCount } = Users.findPaginatedByActiveUsersExcept<FederatedUser>(text, [], options, searchFields);
+		const { cursor, totalCount } = Users.findPaginatedByActiveUsersExcept<FederatedUser>(text, [], searchFields, options);
 		const [results, total] = await Promise.all([cursor.toArray(), totalCount]);
 		return {
 			total,

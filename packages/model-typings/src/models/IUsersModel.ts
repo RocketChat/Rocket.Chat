@@ -9,7 +9,17 @@ import type {
 	AtLeast,
 	ILivechatAgentStatus,
 } from '@rocket.chat/core-typings';
-import type { Document, UpdateResult, FindCursor, FindOptions, Filter, InsertOneResult, DeleteResult, ModifyResult } from 'mongodb';
+import type {
+	Document,
+	UpdateResult,
+	FindCursor,
+	FindOptions,
+	Filter,
+	FilterOperators,
+	InsertOneResult,
+	DeleteResult,
+	ModifyResult,
+} from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
@@ -39,9 +49,24 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findPaginatedByActiveUsersExcept<T = IUser>(
 		searchTerm: any,
 		exceptions: any,
-		options: any,
 		searchFields: any,
+		options?: any,
 		extraQuery?: any,
+		params?: { startsWith?: boolean; endsWith?: boolean },
+	): FindPaginated<FindCursor<T>>;
+	countActiveUsersExcept(
+		searchTerm: string,
+		exceptions: IUser['_id'][],
+		searchFields: string[],
+		extraQuery?: FilterOperators<string>[],
+		params?: { startsWith?: boolean; endsWith?: boolean },
+	): Promise<number>;
+	findPaginatedActiveUsersByIds<T = IUser>(
+		searchTerm: string,
+		searchFields: string[],
+		ids: IUser['_id'][],
+		options?: FindOptions<IUser>,
+		extraQuery?: FilterOperators<string>[],
 		params?: { startsWith?: boolean; endsWith?: boolean },
 	): FindPaginated<FindCursor<T>>;
 

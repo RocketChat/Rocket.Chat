@@ -35,7 +35,7 @@ export function findUsersOfRoom({ rid, status, skip = 0, limit = 0, filter = '',
 
 	const searchFields = settings.get<string>('Accounts_SearchFields').trim().split(',');
 
-	return Users.findPaginatedByActiveUsersExcept(filter, undefined, options, searchFields, [
+	return Users.findPaginatedByActiveUsersExcept(filter, undefined, searchFields, options, [
 		{
 			__rooms: rid,
 			...(status && { status }),

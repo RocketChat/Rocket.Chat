@@ -1,11 +1,12 @@
 import { Team, isMeteorError } from '@rocket.chat/core-services';
-import type { IIntegration, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
+import type { IIntegration, IUser, IRoom, RoomType, UserStatus } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
+import { findUsersOfRoomByHighestRole } from '../../../../server/lib/findUsersOfRoomByHighestRole';
 import { hideRoomMethod } from '../../../../server/methods/hideRoom';
 import { removeUserFromRoomMethod } from '../../../../server/methods/removeUserFromRoom';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
@@ -741,6 +742,41 @@ API.v1.addRoute(
 				members,
 				count: members.length,
 				offset: skip,
+				total,
+			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'groups.membersByHighestRole',
+	{ authRequired: true },
+	{
+		async get() {
+			const findResult = await findPrivateGroupByIdOrName({
+				params: this.queryParams,
+				userId: this.userId,
+			});
+
+			if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult.rid))) {
+				return API.v1.unauthorized();
+			}
+
+			const { count: limit } = await getPaginationItems(this.queryParams);
+			const { sort = {} } = await this.parseJsonQuery();
+			const { status, filter } = this.queryParams;
+
+			const { members, total } = await findUsersOfRoomByHighestRole({
+				rid: findResult.rid,
+				...(status && { status: { $in: status as UserStatus[] } }),
+				limit,
+				filter,
+				...(sort?.username && { sort: { username: sort.username } }),
+			});
+
+			return API.v1.success({
+				members,
+				count: members.length,
 				total,
 			});
 		},
