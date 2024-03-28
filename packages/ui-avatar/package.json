@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-avatar",
-	"version": "1.0.0-rc.0",
+	"version": "1.0.0-rc.1",
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.22.20",
@@ -31,7 +31,7 @@
 	],
 	"peerDependencies": {
 		"@rocket.chat/fuselage": "*",
-		"@rocket.chat/ui-contexts": "5.0.0-rc.0",
+		"@rocket.chat/ui-contexts": "5.0.0-rc.1",
 		"react": "~17.0.2"
 	},
 	"volta": {
