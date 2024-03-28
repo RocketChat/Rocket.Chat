@@ -1,6 +1,7 @@
 import type { Actionable } from '../Actionable';
+import type { PlainText } from '../text/PlainText';
 
-/** @todo */
 export type MultiUsersSelectElement = Actionable<{
 	type: 'multi_users_select';
+	placeholder?: PlainText;
 }>;
