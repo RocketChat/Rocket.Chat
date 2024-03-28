@@ -1,0 +1,9 @@
+{
+	"fields": {
+		"email": "example@example.com",
+		"password": "Password"
+	},
+	"button": {
+		"login": "Login"
+	}
+}

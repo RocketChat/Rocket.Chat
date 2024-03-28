@@ -89,6 +89,7 @@ export const test = baseTest.extend<BaseTest>({
 			});
 		};
 
+		apiContext = apiContext ?? (await login(ADMIN_CREDENTIALS));
 		const recreateContext = async () => {
 			apiContext = await login(ADMIN_CREDENTIALS);
 		};
