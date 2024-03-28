@@ -117,6 +117,60 @@ export class HomeSidenav {
 		expect(newStatus).toBe(status === 'offline' ? StatusTitleMap.offline : StatusTitleMap.online);
 	}
 
+	async openDisplayOptions(): Promise<void> {
+		await this.page.locator('[title="Display"]').click();
+	}
+
+	async selectOrderByName(): Promise<void> {
+		const label = this.page.locator('text=Name >> .. >> label');
+
+		const inputIsChecked = await label.locator('input').isChecked();
+		if (!inputIsChecked) {
+			await label.click();
+
+			// Wait for child change
+			await this.page.locator('.rooms-list .rc-scrollbars-view > div > div').evaluate((div) => {
+				return new Promise<void>((resolve) => {
+					new window.MutationObserver(() => {
+						resolve();
+					}).observe(div, { childList: true });
+				});
+			});
+		}
+	}
+
+	async selectOrderByActivity(): Promise<void> {
+		await this.page.locator('text=Activity >> .. >> label').click();
+	}
+
+	async getChannels(): Promise<string[]> {
+		await this.page.waitForSelector('.rc-scrollbars-view div[data-index]');
+		const items = await this.page.$$('.rc-scrollbars-view div[data-index]');
+
+		const channels: string[] = await Promise.all(
+			items.map(async (item) => {
+				const sidebar = await item.$('.rcx-sidebar-section .rcx-sidebar-title');
+				if (sidebar) {
+					const sidebarText = await sidebar.textContent();
+					if (sidebarText === 'Channels') {
+						return 'Channels';
+					}
+				}
+
+				const channel = await item.$('.rcx-sidebar-item .rcx-sidebar-item__title');
+				const channelName = await channel?.textContent();
+
+				if (channelName) return channelName;
+				return '';
+			}),
+		);
+
+		const channelIndex = channels.findIndex((channel) => channel === 'Channels');
+		const filteredChannels = channels.filter((channel) => !!channel).slice(channelIndex);
+
+		return filteredChannels;
+	}
+
 	// Note: this is a workaround for now since queued omnichannel chats are not searchable yet so we can't use openChat() :(
 	async openQueuedOmnichannelChat(name: string): Promise<void> {
 		await this.page.locator('[data-qa="sidebar-item-title"]', { hasText: name }).first().click();
