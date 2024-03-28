@@ -2,7 +2,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Modal, Skeleton } from '@rocket.chat/fuselage';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import { useLayoutContextualBarExpanded, useToastMessageDispatch, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
+import { useLayoutContextualbar, useToastMessageDispatch, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import type { VFC } from 'react';
 import React from 'react';
 
@@ -41,7 +41,7 @@ const Thread: VFC<ThreadProps> = ({ tmid }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const canExpand = useLayoutContextualBarExpanded();
+	const { canExpand } = useLayoutContextualbar();
 	const [expanded, setExpanded] = useLocalStorage('expand-threads', false);
 
 	const uid = useUserId();

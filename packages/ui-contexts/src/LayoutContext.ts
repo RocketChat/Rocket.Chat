@@ -1,25 +1,23 @@
 import { createContext } from 'react';
 
-export type SizeLayout = {
-	sidebar: string;
-	contextualBar: string;
-};
-
 export type LayoutContextValue = {
 	isEmbedded: boolean;
 	showTopNavbarEmbeddedLayout: boolean;
 	isMobile: boolean;
 	roomToolboxExpanded: boolean;
 	sidebar: {
+		size: string;
 		isCollapsed: boolean;
 		toggle: () => void;
 		collapse: () => void;
 		expand: () => void;
 		close: () => void;
 	};
-	size: SizeLayout;
-	contextualBarExpanded: boolean;
-	contextualBarPosition: 'absolute' | 'relative' | 'fixed';
+	contextualbar: {
+		size: string;
+		canExpand: boolean;
+		position: 'absolute' | 'relative' | 'fixed';
+	};
 	hiddenActions: {
 		roomToolbox: Array<string>;
 		messageToolbox: Array<string>;
@@ -34,18 +32,18 @@ export const LayoutContext = createContext<LayoutContextValue>({
 	isMobile: false,
 	roomToolboxExpanded: true,
 	sidebar: {
+		size: '240px',
 		isCollapsed: false,
 		toggle: () => undefined,
 		collapse: () => undefined,
 		expand: () => undefined,
 		close: () => undefined,
 	},
-	size: {
-		sidebar: '380px',
-		contextualBar: '380px',
+	contextualbar: {
+		size: '380px',
+		position: 'relative',
+		canExpand: false,
 	},
-	contextualBarPosition: 'relative',
-	contextualBarExpanded: false,
 	hiddenActions: {
 		roomToolbox: [],
 		messageToolbox: [],
