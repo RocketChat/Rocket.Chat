@@ -12,7 +12,7 @@ const AccountSidebar: FC = () => {
 
 	const items = useSyncExternalStore(subscribeToAccountSidebarItems, getAccountSidebarItems);
 
-	const { sidebar } = useLayout();
+	const { sidebar, isMobile } = useLayout();
 
 	const currentPath = useCurrentRoutePath();
 
@@ -20,7 +20,9 @@ const AccountSidebar: FC = () => {
 	return (
 		<SettingsProvider privileged>
 			<Sidebar>
-				<Sidebar.Header onClose={sidebar.close} title={t('Account')} />
+				<Sidebar.Header 	onClose=
+					{isMobile ? sidebar.toggle : sidebar.close} 
+					title={t('Account')} />
 				<Sidebar.Content>
 					<Sidebar.ItemsAssembler items={items} currentPath={currentPath} />
 				</Sidebar.Content>

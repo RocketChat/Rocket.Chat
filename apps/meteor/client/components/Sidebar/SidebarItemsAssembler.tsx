@@ -1,11 +1,12 @@
 import { Divider } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
-import React, { Fragment, memo } from 'react';
+import React, { Fragment, memo, useMemo } from 'react';
 
 import type { SidebarItem } from '../../lib/createSidebarItems';
 import { isSidebarItem } from '../../lib/createSidebarItems';
 import SidebarNavigationItem from './SidebarNavigationItem';
+import { useLayout } from '@rocket.chat/ui-contexts';
 
 type SidebarItemsAssemblerProps = {
 	items: SidebarItem[];
@@ -14,7 +15,17 @@ type SidebarItemsAssemblerProps = {
 
 const SidebarItemsAssembler: FC<SidebarItemsAssemblerProps> = ({ items, currentPath }) => {
 	const t = useTranslation();
+	const { isMobile } = useLayout();
 
+	const homeItem : SidebarItem = {
+		i18nLabel: 'Home',
+		href: '/home',
+		icon: 'home',
+	};
+
+	items = useMemo(() => 
+		isMobile? [homeItem, ...items] : items, [isMobile]); 
+	
 	return (
 		<>
 			{items.map((props) => (

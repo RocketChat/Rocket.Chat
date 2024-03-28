@@ -10,7 +10,7 @@ import AdminSidebarPages from './AdminSidebarPages';
 const AdminSidebar: FC = () => {
 	const t = useTranslation();
 
-	const { sidebar } = useLayout();
+	const { sidebar, isMobile } = useLayout();
 
 	const currentPath = useCurrentRoutePath();
 
@@ -19,7 +19,8 @@ const AdminSidebar: FC = () => {
 		<SettingsProvider privileged>
 			<Sidebar>
 				<Sidebar.Header
-					onClose={sidebar.close}
+					onClose=
+					{isMobile ? sidebar.toggle : sidebar.close}
 					title={
 						<>
 							{t('Administration')} <PlanTag />
