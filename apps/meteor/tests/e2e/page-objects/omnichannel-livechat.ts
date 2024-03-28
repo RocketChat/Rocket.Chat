@@ -1,3 +1,5 @@
+import fs from 'fs/promises';
+
 import type { Page, Locator, APIResponse } from '@playwright/test';
 
 import { expect } from '../utils/test';
@@ -47,6 +49,10 @@ export class OmnichannelLiveChat {
 	
 	get headerTitle(): Locator {
 		return this.page.locator('[data-qa="header-title"]');
+	}
+
+	alertMessage(message: string): Locator {
+		return this.page.getByRole('alert').locator(`text="${message}"`);
 	}
 
 	txtChatMessage(message: string): Locator {
@@ -130,6 +136,14 @@ export class OmnichannelLiveChat {
 		return this.page.locator('div.message-text__WwYco p');
 	}
 
+	get fileUploadTarget(): Locator {
+		return this.page.locator('#files-drop-target');
+	}
+
+	findUploadedFileLink (fileName: string): Locator {
+		return this.page.getByRole('link', { name: fileName });
+	}
+
 	public async sendMessage(liveChatUser: { name: string; email: string }, isOffline = true, department?: string): Promise<void> {
 		const buttonLabel = isOffline ? 'Send' : 'Start chat';
 		await this.inputName.fill(liveChatUser.name);
@@ -157,5 +171,37 @@ export class OmnichannelLiveChat {
 		await this.btnSendMessageToOnlineAgent.click();
 		await expect(this.txtChatMessage(message)).toBeVisible();
 		await this.closeChat();
+	}
+
+	async dragAndDropTxtFile(): Promise<void> {
+		const contract = await fs.readFile('./tests/e2e/fixtures/files/any_file.txt', 'utf-8');
+		const dataTransfer = await this.page.evaluateHandle((contract) => {
+			const data = new DataTransfer();
+			const file = new File([`${contract}`], 'any_file.txt', {
+				type: 'text/plain',
+			});
+			data.items.add(file);
+			return data;
+		}, contract);
+
+		await this.fileUploadTarget.dispatchEvent('dragenter', { dataTransfer });
+
+		await this.fileUploadTarget.dispatchEvent('drop', { dataTransfer });
+	}
+
+	async dragAndDropLstFile(): Promise<void> {
+		const contract = await fs.readFile('./tests/e2e/fixtures/files/lst-test.lst', 'utf-8');
+		const dataTransfer = await this.page.evaluateHandle((contract) => {
+			const data = new DataTransfer();
+			const file = new File([`${contract}`], 'lst-test.lst', {
+				type: 'text/plain',
+			});
+			data.items.add(file);
+			return data;
+		}, contract);
+
+		await this.fileUploadTarget.dispatchEvent('dragenter', { dataTransfer });
+
+		await this.fileUploadTarget.dispatchEvent('drop', { dataTransfer });
 	}
 }
