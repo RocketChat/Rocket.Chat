@@ -287,7 +287,7 @@ describe('[EmojiCustom]', function () {
 			request
 				.get('/emoji-custom/invalid')
 				.set(credentials)
-				.success()
+				.expect(200)
 				.expect((res) => {
 					expect(res.headers).to.have.property('last-modified', 'Thu, 01 Jan 2015 00:00:00 GMT');
 					expect(res.headers).to.have.property('content-type', 'image/svg+xml');
@@ -316,7 +316,7 @@ describe('[EmojiCustom]', function () {
 			request
 				.get(`/emoji-custom/${customEmojiName}.png`)
 				.set(credentials)
-				.success()
+				.expect(200)
 				.expect((res) => {
 					expect(res.headers).to.have.property('last-modified');
 					expect(res.headers).to.have.property('content-type', 'image/png');
