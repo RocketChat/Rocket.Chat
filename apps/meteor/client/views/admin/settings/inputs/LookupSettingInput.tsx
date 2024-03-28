@@ -6,20 +6,10 @@ import React from 'react';
 import type { AsyncState } from '../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import ResetSettingButton from '../ResetSettingButton';
+import type { SettingInputProps } from './types';
 
-type LookupSettingInputProps = {
-	_id: string;
-	label: string;
-	value?: string;
+type LookupSettingInputProps = SettingInputProps & {
 	lookupEndpoint: PathPattern extends `/${infer U}` ? U : PathPattern;
-	placeholder?: string;
-	readonly?: boolean;
-	autocomplete?: boolean;
-	disabled?: boolean;
-	required?: boolean;
-	hasResetButton?: boolean;
-	onChangeValue?: (value: string) => void;
-	onResetButtonClick?: () => void;
 };
 
 function LookupSettingInput({

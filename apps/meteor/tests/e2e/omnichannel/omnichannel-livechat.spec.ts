@@ -3,6 +3,7 @@ import { faker } from '@faker-js/faker';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel, OmnichannelLiveChat } from '../page-objects';
+import { createAgent } from '../utils/omnichannel/agents';
 import { test, expect } from '../utils/test';
 
 const firstUser = {
@@ -47,10 +48,10 @@ test.describe.serial('OC - Livechat', () => {
 	test('OC - Livechat - Send message to online agent', async () => {
 		await test.step('expect message to be sent by livechat', async () => {
 			await poLiveChat.page.reload();
-			await poLiveChat.openLiveChat();
+			await poLiveChat.openAnyLiveChat();
 			await poLiveChat.sendMessage(firstUser, false);
 
-			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_user');
+			await poLiveChat.onlineAgentMessage.fill('this_a_test_message_from_user');
 			await poLiveChat.btnSendMessageToOnlineAgent.click();
 
 			await expect(poLiveChat.page.locator('div >> text="this_a_test_message_from_user"')).toBeVisible();
@@ -72,7 +73,7 @@ test.describe.serial('OC - Livechat', () => {
 		});
 
 		await test.step('expect when user minimizes the livechat screen, the composer should be hidden', async () => {
-			await poLiveChat.openLiveChat();
+			await poLiveChat.openAnyLiveChat();
 			await expect(poLiveChat.page.locator('[contenteditable="true"]')).not.toBeVisible();
 		});
 
@@ -126,10 +127,10 @@ test.describe.serial('OC - Livechat - Resub after close room', () => {
 	});
 
 	test('OC - Livechat - Resub after close room', async () => {
-		await test.step('expect livechat conversation to be opened again', async () => {
+		await test.step('expect livechat conversation to be opened again, different guest', async () => {
 			await poLiveChat.startNewChat();
 			await poLiveChat.sendMessage(secondUser, false);
-			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_user');
+			await poLiveChat.onlineAgentMessage.fill('this_a_test_message_from_user');
 			await poLiveChat.btnSendMessageToOnlineAgent.click();
 			await expect(poLiveChat.page.locator('div >> text="this_a_test_message_from_user"')).toBeVisible();
 		});
@@ -143,6 +144,142 @@ test.describe.serial('OC - Livechat - Resub after close room', () => {
 		await test.step('expect message to be sent by agent', async () => {
 			await poHomeOmnichannel.content.sendMessage('this_a_test_message_from_agent');
 			await expect(poLiveChat.page.locator('div >> text="this_a_test_message_from_agent"')).toBeVisible();
+		});
+	});
+});
+
+test.describe('OC - Livechat - Resume chat after closing', () => {
+	let poLiveChat: OmnichannelLiveChat;
+	let poHomeOmnichannel: HomeOmnichannel;
+
+	test.beforeAll(async ({ api }) => {
+		const statusCode = (await api.post('/livechat/users/agent', { username: 'user1' })).status();
+		await expect(statusCode).toBe(200);
+	});
+
+	test.beforeAll(async ({ browser, api }) => {
+		const { page: omniPage } = await createAuxContext(browser, Users.user1, '/', true);
+		poHomeOmnichannel = new HomeOmnichannel(omniPage);
+
+		const { page: livechatPage } = await createAuxContext(browser, Users.user1, '/livechat', false);
+		poLiveChat = new OmnichannelLiveChat(livechatPage, api);
+
+		await poLiveChat.sendMessageAndCloseChat(firstUser);
+	});
+
+	test.afterAll(async ({ api }) => {
+		await api.delete('/livechat/users/agent/user1');
+		await poLiveChat.page?.close();
+	});
+
+	test('OC - Livechat - Resume chat after closing', async () => {
+		await test.step('expect livechat conversation to be opened again', async () => {
+			await poLiveChat.startNewChat();
+			await expect(poLiveChat.onlineAgentMessage).toBeVisible();
+			await poLiveChat.onlineAgentMessage.fill('this_a_test_message_from_user');
+			await poLiveChat.btnSendMessageToOnlineAgent.click();
+			await expect(poLiveChat.page.locator('div >> text="this_a_test_message_from_user"')).toBeVisible();
+		});
+
+		await test.step('expect message to be received by agent', async () => {
+			await poHomeOmnichannel.sidenav.openChat(firstUser.name);
+			await expect(poHomeOmnichannel.content.lastUserMessage).toBeVisible();
+			await expect(poHomeOmnichannel.content.lastUserMessage).toContainText('this_a_test_message_from_user');
+		});
+
+		await test.step('expect message to be sent by agent', async () => {
+			await poHomeOmnichannel.content.sendMessage('this_a_test_message_from_agent');
+			await expect(poLiveChat.page.locator('div >> text="this_a_test_message_from_agent"')).toBeVisible();
+		});
+	});
+});
+
+test.describe('OC - Livechat - Close chat using widget', () => {
+	let poLiveChat: OmnichannelLiveChat;
+	let poHomeOmnichannel: HomeOmnichannel;
+	let agent: Awaited<ReturnType<typeof createAgent>>;
+
+	test.beforeAll(async ({ browser, api }) => {
+		agent = await createAgent(api, 'user1');
+
+		const { page } = await createAuxContext(browser, Users.user1, '/');
+		poHomeOmnichannel = new HomeOmnichannel(page);
+	});
+
+	test.beforeEach(async ({ page, api }) => {
+		poLiveChat = new OmnichannelLiveChat(page, api);
+
+		await poLiveChat.page.goto('/livechat');
+	});
+
+	test.afterAll(async () => {
+		await poHomeOmnichannel.page?.close();
+		await agent.delete();
+	});
+
+	test('OC - Livechat - Close Chat', async () => {
+		await poLiveChat.openAnyLiveChat();
+		await poLiveChat.sendMessage(firstUser, false);
+		await poLiveChat.onlineAgentMessage.fill('this_a_test_message_from_user');
+		await poLiveChat.btnSendMessageToOnlineAgent.click();
+
+		await test.step('expect to close a livechat conversation', async () => {
+			await expect(poLiveChat.btnOptions).toBeVisible();
+			await poLiveChat.btnOptions.click();
+
+			await expect(poLiveChat.btnCloseChat).toBeVisible();
+			await poLiveChat.btnCloseChat.click();
+
+			await poLiveChat.btnCloseChatConfirm.click();
+
+			await expect(poLiveChat.btnNewChat).toBeVisible();
+		});
+	});
+
+	test('OC - Livechat - Close Chat twice', async () => {
+		await poLiveChat.sendMessageAndCloseChat(firstUser);
+		await poLiveChat.startNewChat();
+		await poLiveChat.onlineAgentMessage.fill('this_a_test_message_from_user');
+		await poLiveChat.btnSendMessageToOnlineAgent.click();
+
+		await test.step('expect to close a livechat conversation a second time', async () => {
+			await expect(poLiveChat.btnOptions).toBeVisible();
+			await poLiveChat.btnOptions.click();
+
+			await expect(poLiveChat.btnCloseChat).toBeVisible();
+			await poLiveChat.btnCloseChat.click();
+
+			await poLiveChat.btnCloseChatConfirm.click();
+
+			await expect(poLiveChat.btnNewChat).toBeVisible();
+		});
+	});
+});
+
+test.describe('OC - Livechat - Livechat_Display_Offline_Form', () => {
+	let poLiveChat: OmnichannelLiveChat;
+	const message = 'This form is not available';
+
+	test.beforeAll(async ({ api }) => {
+		await api.post('/settings/Livechat_display_offline_form', { value: false });
+		await api.post('/settings/Livechat_offline_form_unavailable', { value: message });
+	});
+
+	test.beforeEach(async ({ page, api }) => {
+		poLiveChat = new OmnichannelLiveChat(page, api);
+		await poLiveChat.page.goto('/livechat');
+	});
+
+	test.afterAll(async ({ api }) => {
+		await api.post('/settings/Livechat_display_offline_form', { value: true });
+		await api.post('/settings/Livechat_offline_form_unavailable', { value: '' });
+	});
+
+	test('OC - Livechat - Livechat_Display_Offline_Form false', async () => {
+		await test.step('expect offline form to not be visible', async () => {
+			await poLiveChat.openAnyLiveChat();
+			await expect (poLiveChat.page.locator(`div >> text=${message}`)).toBeVisible();
+			await expect(poLiveChat.textAreaMessage).not.toBeVisible();
 		});
 	});
 });

@@ -1,5 +1,189 @@
 # @rocket.chat/meteor
 
+## 6.6.6
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#32064](https://github.com/RocketChat/Rocket.Chat/pull/32064)) Fix an issue affecting Rocket.Chat Apps utilizing the OAuth 2 library from Apps Engine, ensuring that apps like Google Drive and Google Calendar are operational once more.
+
+- ([#32056](https://github.com/RocketChat/Rocket.Chat/pull/32056)) Fix error during migration 304. Throwing `Cannot read property 'finally' of undefined` error.
+
+- <details><summary>Updated dependencies [ada096901a]:</summary>
+
+  - @rocket.chat/models@0.0.34
+  - @rocket.chat/omnichannel-services@0.1.10
+  - @rocket.chat/presence@0.1.10
+  - @rocket.chat/core-services@0.3.10
+  - @rocket.chat/cron@0.0.30
+  - @rocket.chat/instance-status@0.0.34
+  - @rocket.chat/core-typings@6.6.6
+  - @rocket.chat/rest-typings@6.6.6
+  - @rocket.chat/api-client@0.1.28
+  - @rocket.chat/license@0.1.10
+  - @rocket.chat/pdf-worker@0.0.34
+  - @rocket.chat/gazzodown@4.0.6
+  - @rocket.chat/model-typings@0.3.6
+  - @rocket.chat/ui-contexts@4.0.6
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/fuselage-ui-kit@4.0.6
+  - @rocket.chat/ui-theming@0.1.2
+  - @rocket.chat/ui-client@4.0.6
+  - @rocket.chat/ui-video-conf@4.0.6
+  - @rocket.chat/web-ui-registration@4.0.6
+  </details>
+
+## 6.6.5
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#31998](https://github.com/RocketChat/Rocket.Chat/pull/31998)) Introduced a new step to the queue worker: when an inquiry that's on an improper status is selected for processing, queue worker will first check its status and will attempt to fix it.
+  For example, if an inquiry points to a closed room, there's no point in processing, system will now remove the inquiry
+  If an inquiry is already taken, the inquiry will be updated to reflect the new status and clean the queue.
+
+  This prevents issues where the queue worker attempted to process an inquiry _forever_ because it was in an improper state.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@4.0.5
+  - @rocket.chat/ui-theming@0.1.2
+  - @rocket.chat/fuselage-ui-kit@4.0.5
+  - @rocket.chat/gazzodown@4.0.5
+  - @rocket.chat/ui-client@4.0.5
+  - @rocket.chat/ui-video-conf@4.0.5
+  - @rocket.chat/web-ui-registration@4.0.5
+  - @rocket.chat/core-typings@6.6.5
+  - @rocket.chat/rest-typings@6.6.5
+  - @rocket.chat/api-client@0.1.27
+  - @rocket.chat/license@0.1.9
+  - @rocket.chat/omnichannel-services@0.1.9
+  - @rocket.chat/pdf-worker@0.0.33
+  - @rocket.chat/presence@0.1.9
+  - @rocket.chat/core-services@0.3.9
+  - @rocket.chat/cron@0.0.29
+  - @rocket.chat/model-typings@0.3.5
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/models@0.0.33
+  - @rocket.chat/instance-status@0.0.33
+  </details>
+
+## 6.6.4
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#31700](https://github.com/RocketChat/Rocket.Chat/pull/31700)) Fixed matrix homeserver domain setting not being visible in admin panel
+
+- ([#32012](https://github.com/RocketChat/Rocket.Chat/pull/32012)) Don't use the registration.yaml file to configure Matrix Federation anymore.
+
+- ([#31927](https://github.com/RocketChat/Rocket.Chat/pull/31927)) `stopped` lifecycle method was unexpectedly synchronous when using microservices, causing our code to create race conditions.
+
+- <details><summary>Updated dependencies [c2872a93f2]:</summary>
+
+  - @rocket.chat/core-services@0.3.8
+  - @rocket.chat/omnichannel-services@0.1.8
+  - @rocket.chat/presence@0.1.8
+  - @rocket.chat/core-typings@6.6.4
+  - @rocket.chat/rest-typings@6.6.4
+  - @rocket.chat/api-client@0.1.26
+  - @rocket.chat/license@0.1.8
+  - @rocket.chat/pdf-worker@0.0.32
+  - @rocket.chat/cron@0.0.28
+  - @rocket.chat/gazzodown@4.0.4
+  - @rocket.chat/model-typings@0.3.4
+  - @rocket.chat/ui-contexts@4.0.4
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/fuselage-ui-kit@4.0.4
+  - @rocket.chat/models@0.0.32
+  - @rocket.chat/ui-theming@0.1.2
+  - @rocket.chat/ui-client@4.0.4
+  - @rocket.chat/ui-video-conf@4.0.4
+  - @rocket.chat/web-ui-registration@4.0.4
+  - @rocket.chat/instance-status@0.0.32
+  </details>
+
+## 6.6.3
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#31895](https://github.com/RocketChat/Rocket.Chat/pull/31895)) Fix users presence stuck as online after connecting using mobile apps
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.3
+  - @rocket.chat/rest-typings@6.6.3
+  - @rocket.chat/api-client@0.1.25
+  - @rocket.chat/license@0.1.7
+  - @rocket.chat/omnichannel-services@0.1.7
+  - @rocket.chat/pdf-worker@0.0.31
+  - @rocket.chat/presence@0.1.7
+  - @rocket.chat/core-services@0.3.7
+  - @rocket.chat/cron@0.0.27
+  - @rocket.chat/gazzodown@4.0.3
+  - @rocket.chat/model-typings@0.3.3
+  - @rocket.chat/ui-contexts@4.0.3
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/fuselage-ui-kit@4.0.3
+  - @rocket.chat/models@0.0.31
+  - @rocket.chat/ui-theming@0.1.2
+  - @rocket.chat/ui-client@4.0.3
+  - @rocket.chat/ui-video-conf@4.0.3
+  - @rocket.chat/web-ui-registration@4.0.3
+  - @rocket.chat/instance-status@0.0.31
+  </details>
+
+## 6.6.2
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#31844](https://github.com/RocketChat/Rocket.Chat/pull/31844)) Fixed Federation not working with Microservice deployments
+
+- ([#31823](https://github.com/RocketChat/Rocket.Chat/pull/31823)) Revert unintentional changes real time presence data payload
+
+- ([#31833](https://github.com/RocketChat/Rocket.Chat/pull/31833)) Fix web UI not showing users presence updating to offline
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@4.0.2
+  - @rocket.chat/ui-theming@0.1.2
+  - @rocket.chat/fuselage-ui-kit@4.0.2
+  - @rocket.chat/gazzodown@4.0.2
+  - @rocket.chat/ui-client@4.0.2
+  - @rocket.chat/ui-video-conf@4.0.2
+  - @rocket.chat/web-ui-registration@4.0.2
+  - @rocket.chat/core-typings@6.6.2
+  - @rocket.chat/rest-typings@6.6.2
+  - @rocket.chat/api-client@0.1.24
+  - @rocket.chat/license@0.1.6
+  - @rocket.chat/omnichannel-services@0.1.6
+  - @rocket.chat/pdf-worker@0.0.30
+  - @rocket.chat/presence@0.1.6
+  - @rocket.chat/core-services@0.3.6
+  - @rocket.chat/cron@0.0.26
+  - @rocket.chat/model-typings@0.3.2
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/models@0.0.30
+  - @rocket.chat/instance-status@0.0.30
+  </details>
+
 ## 6.6.1
 
 ### Patch Changes

@@ -63,6 +63,7 @@ test.describe.serial('OC - Priorities [Sidebar]', () => {
 
 		await test.step('expect to change inquiry priority using sidebar menu', async () => {
 			await poHomeChannel.sidenav.getSidebarItemByName(NEW_USER.name).click();
+			await expect(poHomeChannel.content.btnTakeChat).toBeVisible();
 
 			await expect(poRoomInfo.getLabel('Priority')).not.toBeVisible();
 

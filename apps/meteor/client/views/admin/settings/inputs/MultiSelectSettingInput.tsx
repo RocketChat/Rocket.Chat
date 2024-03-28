@@ -5,21 +5,11 @@ import type { ReactElement } from 'react';
 import React from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
+import type { SettingInputProps } from './types';
 
 export type valuesOption = { key: string; i18nLabel: TranslationKey };
-type MultiSelectSettingInputProps = {
-	_id: string;
-	label: string;
-	value?: [string, string];
+type MultiSelectSettingInputProps = SettingInputProps<[string, string], string[]> & {
 	values: valuesOption[];
-	placeholder?: string;
-	readonly?: boolean;
-	autocomplete?: boolean;
-	disabled?: boolean;
-	required?: boolean;
-	hasResetButton?: boolean;
-	onChangeValue?: (value: string[]) => void;
-	onResetButtonClick?: () => void;
 };
 
 function MultiSelectSettingInput({

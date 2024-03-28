@@ -18,8 +18,9 @@ export const useReturnChatToQueueMutation = (
 			...options,
 			onSuccess: async (data, rid, context) => {
 				await queryClient.invalidateQueries(['current-chats']);
-				queryClient.removeQueries(['rooms', rid]);
-				queryClient.removeQueries(['subscriptions', { rid }]);
+				await queryClient.removeQueries(['rooms', rid]);
+				await queryClient.removeQueries(['/v1/rooms.info', rid]);
+				await queryClient.removeQueries(['subscriptions', { rid }]);
 				return options?.onSuccess?.(data, rid, context);
 			},
 		},

@@ -3168,7 +3168,7 @@ export const isPOSTLivechatTriggersParams = ajv.compile<POSTLivechatTriggersPara
 
 type POSTLivechatAppearanceParams = {
 	_id: string;
-	value: string | boolean | number;
+	value: string | boolean | number | string[];
 }[];
 
 const POSTLivechatAppearanceParamsSchema = {
@@ -3181,7 +3181,7 @@ const POSTLivechatAppearanceParamsSchema = {
 			},
 			value: {
 				// Be careful with anyOf - https://github.com/ajv-validator/ajv/issues/1140
-				type: ['string', 'boolean', 'number'],
+				type: ['string', 'boolean', 'number', 'array'],
 			},
 		},
 		required: ['_id', 'value'],

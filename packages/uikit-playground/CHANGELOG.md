@@ -1,5 +1,55 @@
 # @rocket.chat/uikit-playground
 
+## 0.2.19
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@4.0.6
+  - @rocket.chat/fuselage-ui-kit@4.0.6
+  </details>
+
+## 0.2.18
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@4.0.5
+  - @rocket.chat/fuselage-ui-kit@4.0.5
+  </details>
+
+## 0.2.17
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@4.0.4
+  - @rocket.chat/fuselage-ui-kit@4.0.4
+  </details>
+
+## 0.2.16
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@4.0.3
+  - @rocket.chat/fuselage-ui-kit@4.0.3
+  </details>
+
+## 0.2.15
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@4.0.2
+  - @rocket.chat/fuselage-ui-kit@4.0.2
+  </details>
+
 ## 0.2.14
 
 ### Patch Changes

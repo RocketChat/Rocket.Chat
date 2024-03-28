@@ -3,6 +3,7 @@ import { useRouteParameter, usePermission, useTranslation, useRouter } from '@ro
 import type { ReactElement } from 'react';
 import React, { useEffect, useCallback } from 'react';
 
+import { ContextualbarDialog } from '../../../components/Contextualbar';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
 import { queryClient } from '../../../lib/queryClient';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
@@ -62,7 +63,9 @@ const OmnichannelDirectoryPage = (): ReactElement => {
 					{(page === 'contacts' && <ContactTab />) || (page === 'chats' && <ChatTab />) || (page === 'calls' && <CallTab />)}
 				</PageContent>
 			</Page>
-			<ContextualBar chatReload={chatReload} />
+			<ContextualbarDialog>
+				<ContextualBar chatReload={chatReload} />
+			</ContextualbarDialog>
 		</Page>
 	);
 };

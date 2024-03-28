@@ -5,21 +5,13 @@ import React from 'react';
 import ResetSettingButton from '../ResetSettingButton';
 import CodeMirror from './CodeMirror';
 import CodeMirrorBox from './CodeMirror/CodeMirrorBox';
+import type { SettingInputProps } from './types';
 
-type CodeSettingInputProps = {
-	_id: string;
-	label: string;
+type CodeSettingInputProps = SettingInputProps & {
 	hint: string;
-	value?: string;
 	code: string;
-	placeholder?: string;
 	readonly: boolean;
-	autocomplete: boolean;
 	disabled: boolean;
-	required?: boolean;
-	hasResetButton: boolean;
-	onChangeValue: (value: string) => void;
-	onResetButtonClick: () => void;
 };
 
 function CodeSettingInput({

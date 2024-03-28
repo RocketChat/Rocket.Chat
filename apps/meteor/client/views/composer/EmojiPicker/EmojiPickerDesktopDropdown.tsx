@@ -25,7 +25,7 @@ const useDropdownPosition = (reference: RefObject<HTMLElement>, target: RefObjec
 
 	const placement = useMemo(() => {
 		if (refTop >= viewHeight / 2) {
-			return 'top-end';
+			return 'top-start';
 		}
 		return 'bottom-end';
 	}, [targetHeight, refTop]);

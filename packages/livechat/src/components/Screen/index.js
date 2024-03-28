@@ -1,12 +1,12 @@
 import { useContext, useEffect } from 'preact/hooks';
 
 import { createClassName } from '../../helpers/createClassName';
-import ChatIcon from '../../icons/chat.svg';
 import CloseIcon from '../../icons/close.svg';
 import { Button } from '../Button';
 import { Footer, FooterContent, PoweredBy } from '../Footer';
 import { PopoverContainer } from '../Popover';
 import { Sound } from '../Sound';
+import { ChatButton } from './ChatButton';
 import ScreenHeader from './Header';
 import { ScreenContext } from './ScreenProvider';
 import styles from './styles.scss';
@@ -15,29 +15,20 @@ export const ScreenContent = ({ children, nopadding, triggered = false, full = f
 	<main className={createClassName(styles, 'screen__main', { nopadding, triggered, full })}>{children}</main>
 );
 
-export const ScreenFooter = ({ children, options, limit }) => (
-	<Footer>
-		{children && <FooterContent>{children}</FooterContent>}
-		<FooterContent>
-			{options}
-			{limit}
-			<PoweredBy />
-		</FooterContent>
-	</Footer>
-);
+export const ScreenFooter = ({ children, options, limit }) => {
+	const { hideWatermark } = useContext(ScreenContext);
 
-const ChatButton = ({ text, minimized, badge, onClick, triggered = false, agent }) => (
-	<Button
-		icon={minimized || triggered ? <ChatIcon /> : <CloseIcon />}
-		badge={badge}
-		onClick={onClick}
-		className={createClassName(styles, 'screen__chat-button')}
-		data-qa-id='chat-button'
-		img={triggered && agent && agent.avatar.src}
-	>
-		{text}
-	</Button>
-);
+	return (
+		<Footer>
+			{children && <FooterContent>{children}</FooterContent>}
+			<FooterContent>
+				{options}
+				{limit}
+				{!hideWatermark && <PoweredBy />}
+			</FooterContent>
+		</Footer>
+	);
+};
 
 const CssVar = ({ theme }) => {
 	useEffect(() => {
@@ -69,6 +60,9 @@ const CssVar = ({ theme }) => {
 			${theme.color ? `--color: ${theme.color};` : ''}
 			${theme.fontColor ? `--font-color: ${theme.fontColor};` : ''}
 			${theme.iconColor ? `--icon-color: ${theme.iconColor};` : ''}
+			${theme.guestBubbleBackgroundColor ? `--sender-bubble-background-color: ${theme.guestBubbleBackgroundColor};` : ''}
+			${theme.agentBubbleBackgroundColor ? `--receiver-bubble-background-color: ${theme.agentBubbleBackgroundColor};` : ''}
+			${theme.background ? `--message-list-background: ${theme.background};` : ''}
 		}
 	`}</style>
 	);
@@ -78,6 +72,7 @@ const CssVar = ({ theme }) => {
 export const Screen = ({ title, color, agent, children, className, unread, triggered = false, queueInfo, onSoundStop }) => {
 	const {
 		theme = {},
+		livechatLogo,
 		notificationsEnabled,
 		minimized = false,
 		expanded = false,
@@ -95,7 +90,15 @@ export const Screen = ({ title, color, agent, children, className, unread, trigg
 	} = useContext(ScreenContext);
 
 	return (
-		<div className={createClassName(styles, 'screen', { minimized, expanded, windowed, triggered })}>
+		<div
+			className={createClassName(styles, 'screen', {
+				minimized,
+				expanded,
+				windowed,
+				triggered,
+				'position-left': theme.position === 'left',
+			})}
+		>
 			<CssVar theme={{ ...theme, color: color || theme.color }} />
 			{triggered && (
 				<Button
@@ -139,6 +142,8 @@ export const Screen = ({ title, color, agent, children, className, unread, trigg
 				text={title}
 				badge={unread}
 				minimized={minimized}
+				logoUrl={livechatLogo?.url}
+				className={createClassName(styles, 'screen__chat-button')}
 				onClick={minimized ? onRestore : onMinimize}
 			/>
 

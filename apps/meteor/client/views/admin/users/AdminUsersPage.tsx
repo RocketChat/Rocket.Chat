@@ -5,7 +5,13 @@ import React, { useRef } from 'react';
 
 import UserPageHeaderContentWithSeatsCap from '../../../../ee/client/views/admin/users/UserPageHeaderContentWithSeatsCap';
 import { useSeatsCap } from '../../../../ee/client/views/admin/users/useSeatsCap';
-import { Contextualbar, ContextualbarHeader, ContextualbarTitle, ContextualbarClose } from '../../../components/Contextualbar';
+import {
+	Contextualbar,
+	ContextualbarHeader,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarDialog,
+} from '../../../components/Contextualbar';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
 import { useShouldPreventAction } from '../../../hooks/useShouldPreventAction';
 import AdminInviteUsers from './AdminInviteUsers';
@@ -63,23 +69,25 @@ const UsersPage = (): ReactElement => {
 				</PageContent>
 			</Page>
 			{context && (
-				<Contextualbar is='aside' aria-labelledby=''>
-					<ContextualbarHeader>
-						{context === 'upgrade' && <ContextualbarIcon name='user-plus' />}
-						<ContextualbarTitle>
-							{context === 'info' && t('User_Info')}
-							{context === 'edit' && t('Edit_User')}
-							{context === 'new' && t('Add_User')}
-							{context === 'invite' && t('Invite_Users')}
-						</ContextualbarTitle>
-						<ContextualbarClose onClick={() => router.navigate('/admin/users')} />
-					</ContextualbarHeader>
-					{context === 'info' && id && <AdminUserInfoWithData uid={id} onReload={handleReload} />}
-					{context === 'edit' && id && <AdminUserFormWithData uid={id} onReload={handleReload} />}
-					{!isRoutePrevented && context === 'new' && <AdminUserForm onReload={handleReload} />}
-					{!isRoutePrevented && context === 'invite' && <AdminInviteUsers />}
-					{isRoutePrevented && <AdminUserUpgrade />}
-				</Contextualbar>
+				<ContextualbarDialog>
+					<Contextualbar>
+						<ContextualbarHeader>
+							{context === 'upgrade' && <ContextualbarIcon name='user-plus' />}
+							<ContextualbarTitle>
+								{context === 'info' && t('User_Info')}
+								{context === 'edit' && t('Edit_User')}
+								{context === 'new' && t('Add_User')}
+								{context === 'invite' && t('Invite_Users')}
+							</ContextualbarTitle>
+							<ContextualbarClose onClick={() => router.navigate('/admin/users')} />
+						</ContextualbarHeader>
+						{context === 'info' && id && <AdminUserInfoWithData uid={id} onReload={handleReload} />}
+						{context === 'edit' && id && <AdminUserFormWithData uid={id} onReload={handleReload} />}
+						{!isRoutePrevented && context === 'new' && <AdminUserForm onReload={handleReload} />}
+						{!isRoutePrevented && context === 'invite' && <AdminInviteUsers />}
+						{isRoutePrevented && <AdminUserUpgrade />}
+					</Contextualbar>
+				</ContextualbarDialog>
 			)}
 		</Page>
 	);

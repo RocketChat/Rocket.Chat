@@ -72,7 +72,7 @@ const UserCardProvider = ({ children }: { children: ReactNode }) => {
 			{children}
 			{state.isOpen && userCardData && (
 				<Suspense fallback={null}>
-					<Popover triggerRef={triggerRef} state={state}>
+					<Popover placement='top left' triggerRef={triggerRef} state={state}>
 						<UserCard {...userCardData} {...overlayProps} />
 					</Popover>
 				</Suspense>

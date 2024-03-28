@@ -3,20 +3,9 @@ import type { EventHandler, ReactElement, SyntheticEvent } from 'react';
 import React from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
+import type { SettingInputProps } from './types';
 
-type PasswordSettingInputProps = {
-	_id: string;
-	label: string;
-	value?: string | number | readonly string[] | undefined;
-	placeholder?: string;
-	readonly?: boolean;
-	autocomplete?: boolean;
-	disabled?: boolean;
-	required?: boolean;
-	hasResetButton?: boolean;
-	onChangeValue?: (value: string) => void;
-	onResetButtonClick?: () => void;
-};
+type PasswordSettingInputProps = SettingInputProps<string | number | readonly string[] | undefined>;
 
 function PasswordSettingInput({
 	_id,

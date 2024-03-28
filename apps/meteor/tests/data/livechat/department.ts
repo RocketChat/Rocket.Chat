@@ -57,15 +57,17 @@ new Promise((resolve, reject) => {
 		});
 });
 
-export const createDepartmentWithAnOnlineAgent = async (): Promise<{department: ILivechatDepartment, agent: {
-	credentials: IUserCredentialsHeader;
+type OnlineAgent = {
 	user: WithRequiredProperty<IUser, 'username'>;
-}}> => {
+	credentials: IUserCredentialsHeader;
+};
+
+export const createDepartmentWithAnOnlineAgent = async (): Promise<{department: ILivechatDepartment, agent: OnlineAgent }> => {
     const { user, credentials } = await createAnOnlineAgent();
 
 	const department = await createDepartmentWithMethod() as ILivechatDepartment;
 
-	await addOrRemoveAgentFromDepartment(department._id, {agentId: user._id, username: user.username}, true);
+	await addOrRemoveAgentFromDepartment(department._id, { agentId: user._id, username: user.username }, true);
 
 	return {
 		department,
@@ -75,6 +77,21 @@ export const createDepartmentWithAnOnlineAgent = async (): Promise<{department: 
 		}
 	};
 };
+
+export const createDepartmentWithAgent = async (agent: OnlineAgent): Promise<{ department: ILivechatDepartment; agent: OnlineAgent }> => {
+	const { user, credentials } = agent;
+	const department = await createDepartmentWithMethod() as ILivechatDepartment;
+
+	await addOrRemoveAgentFromDepartment(department._id, { agentId: user._id, username: user.username }, true);
+
+	return {
+		department,
+		agent: {
+			credentials,
+			user,
+		}
+	};
+}
 
 export const addOrRemoveAgentFromDepartment = async (departmentId: string, agent: { agentId: string; username: string; count?: number; order?: number }, add: boolean) => {
 	const response = await request.post(api('livechat/department/' + departmentId + '/agents')).set(credentials).send({
