@@ -131,7 +131,6 @@ const RoomMenu = ({
 				text={t(warnText as TranslationKey, name)}
 				confirmText={t('Leave_room')}
 				close={closeModal}
-				cancel={closeModal}
 				cancelText={t('Cancel')}
 				confirm={leave}
 			/>,

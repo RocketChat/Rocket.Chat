@@ -38,7 +38,6 @@ export const useRoomLeave = (room: IRoom, joined = true) => {
 				text={t(warnText as TranslationKey, room.fname || room.name)}
 				confirmText={t('Leave_room')}
 				close={() => setModal(null)}
-				cancel={() => setModal(null)}
 				cancelText={t('Cancel')}
 				confirm={leaveAction}
 			/>,

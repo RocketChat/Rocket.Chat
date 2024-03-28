@@ -124,7 +124,7 @@ export type AppsEndpoints = {
 			status: string;
 		};
 		POST: (params: { status: AppStatus }) => {
-			status: string;
+			status: AppStatus;
 		};
 	};
 

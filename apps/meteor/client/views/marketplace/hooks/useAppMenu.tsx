@@ -1,4 +1,6 @@
-import { Box, Icon, Menu, Skeleton } from '@rocket.chat/fuselage';
+import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
+import type { App } from '@rocket.chat/core-typings';
+import { Box, Icon, type Menu } from '@rocket.chat/fuselage';
 import {
 	useSetModal,
 	useEndpoint,
@@ -8,74 +10,92 @@ import {
 	usePermission,
 	useRouter,
 } from '@rocket.chat/ui-contexts';
+import type { ComponentProps } from 'react';
 import React, { useMemo, useCallback, useState } from 'react';
 import semver from 'semver';
 
-import WarningModal from '../../components/WarningModal';
-import { useIsEnterprise } from '../../hooks/useIsEnterprise';
-import IframeModal from './IframeModal';
-import UninstallGrandfatheredAppModal from './components/UninstallGrandfatheredAppModal/UninstallGrandfatheredAppModal';
-import { appEnabledStatuses, appButtonProps } from './helpers';
-import { handleAPIError } from './helpers/handleAPIError';
-import { marketplaceActions } from './helpers/marketplaceActions';
-import { warnEnableDisableApp } from './helpers/warnEnableDisableApp';
-import { useAppInstallationHandler } from './hooks/useAppInstallationHandler';
-import { useAppsCountQuery } from './hooks/useAppsCountQuery';
-import { useOpenAppPermissionsReviewModal } from './hooks/useOpenAppPermissionsReviewModal';
-import { useOpenIncompatibleModal } from './hooks/useOpenIncompatibleModal';
+import WarningModal from '../../../components/WarningModal';
+import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
+import IframeModal from '../IframeModal';
+import UninstallGrandfatheredAppModal from '../components/UninstallGrandfatheredAppModal/UninstallGrandfatheredAppModal';
+import type { Actions } from '../helpers';
+import { appEnabledStatuses, appButtonProps } from '../helpers';
+import { handleAPIError } from '../helpers/handleAPIError';
+// import { marketplaceActions } from '../helpers/marketplaceActions';
+import { warnEnableDisableApp } from '../helpers/warnEnableDisableApp';
+import { useAppInstallationHandler } from './useAppInstallationHandler';
+import type { MarketplaceRouteContext } from './useAppsCountQuery';
+import { useAppsCountQuery } from './useAppsCountQuery';
+import { useMarketplaceActions } from './useMarketplaceActions';
+import { useOpenAppPermissionsReviewModal } from './useOpenAppPermissionsReviewModal';
+import { useOpenIncompatibleModal } from './useOpenIncompatibleModal';
 
-function AppMenu({ app, isAppDetailsPage, ...props }) {
+type UseAppMenuReturn = { isLoading: boolean; isAdminUser: boolean; menuOptions: ComponentProps<typeof Menu>['options'] };
+
+export const useAppMenu = (app: App, isAppDetailsPage: boolean): UseAppMenuReturn => {
 	const t = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
-	const setModal = useSetModal();
 	const router = useRouter();
+	const setModal = useSetModal();
+	const dispatchToastMessage = useToastMessageDispatch();
+	const openIncompatibleModal = useOpenIncompatibleModal();
 
-	const context = useRouteParameter('context');
+	const context = useRouteParameter('context') as MarketplaceRouteContext;
 	const currentTab = useRouteParameter('tab');
+	const appCountQuery = useAppsCountQuery(context);
 
-	const setAppStatus = useEndpoint('POST', `/apps/${app.id}/status`);
-	const buildExternalUrl = useEndpoint('GET', '/apps');
-	const syncApp = useEndpoint('POST', `/apps/${app.id}/sync`);
-	const uninstallApp = useEndpoint('DELETE', `/apps/${app.id}`);
+	const isAdminUser = usePermission('manage-apps');
 	const { data } = useIsEnterprise();
-
 	const isEnterpriseLicense = !!data?.isEnterprise;
 
-	const [loading, setLoading] = useState(false);
+	const [isLoading, setLoading] = useState(false);
 	const [requestedEndUser, setRequestedEndUser] = useState(app.requestedEndUser);
+	const [isAppPurchased, setPurchased] = useState(app?.isPurchased);
+
+	const button = appButtonProps({ ...app, isAdminUser, endUserRequested: false });
+	const buttonLabel = button?.label.replace(' ', '_') as
+		| 'Update'
+		| 'Install'
+		| 'Subscribe'
+		| 'See_Pricing'
+		| 'Try_now'
+		| 'Buy'
+		| 'Request'
+		| 'Requested';
+	const action = button?.action || '';
+
+	const setAppStatus = useEndpoint('POST', `/apps/:id/status`, { id: app.id });
+	const buildExternalUrl = useEndpoint('GET', '/apps');
+	const syncApp = useEndpoint('POST', `/apps/:id/sync`, { id: app.id });
+	const uninstallApp = useEndpoint('DELETE', `/apps/:id`, { id: app.id });
 
 	const canAppBeSubscribed = app.purchaseType === 'subscription';
 	const isSubscribed = app.subscriptionInfo && ['active', 'trialing'].includes(app.subscriptionInfo.status);
-	const isAppEnabled = appEnabledStatuses.includes(app.status);
-	const [isAppPurchased, setPurchased] = useState(app?.isPurchased);
-
-	const isAdminUser = usePermission('manage-apps');
-	const appCountQuery = useAppsCountQuery(context);
-	const openIncompatibleModal = useOpenIncompatibleModal();
-
-	const button = appButtonProps({ ...app, isAdminUser });
-	const action = button?.action || '';
+	const isAppEnabled = app.status ? appEnabledStatuses.includes(app.status) : false;
 
 	const closeModal = useCallback(() => {
 		setModal(null);
 		setLoading(false);
 	}, [setModal, setLoading]);
 
-	const installationSuccess = useCallback(
-		async (action, permissionsGranted) => {
-			if (action === 'purchase') {
-				setPurchased(true);
-			}
+	const marketplaceActions = useMarketplaceActions();
 
-			if (action === 'request') {
-				setRequestedEndUser(true);
-			} else {
-				await marketplaceActions[action]({ ...app, permissionsGranted });
+	const installationSuccess = useCallback(
+		async (action: Actions | '', permissionsGranted) => {
+			if (action) {
+				if (action === 'purchase') {
+					setPurchased(true);
+				}
+
+				if (action === 'request') {
+					setRequestedEndUser(true);
+				} else {
+					await marketplaceActions[action]({ ...app, permissionsGranted });
+				}
 			}
 
 			setLoading(false);
 		},
-		[app, setLoading],
+		[app, marketplaceActions, setLoading],
 	);
 
 	const openPermissionModal = useOpenAppPermissionsReviewModal({
@@ -105,12 +125,12 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 
 		let data;
 		try {
-			data = await buildExternalUrl({
+			data = (await buildExternalUrl({
 				buildExternalUrl: 'true',
 				appId: app.id,
 				purchaseType: app.purchaseType,
-				details: true,
-			});
+				details: 'true',
+			})) as { url: string };
 		} catch (error) {
 			handleAPIError(error);
 			return;
@@ -144,7 +164,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		const confirm = async () => {
 			closeModal();
 			try {
-				const { status } = await setAppStatus({ status: 'manually_disabled' });
+				const { status } = await setAppStatus({ status: AppStatus.MANUALLY_DISABLED });
 				warnEnableDisableApp(app.name, status, 'disable');
 			} catch (error) {
 				handleAPIError(error);
@@ -157,7 +177,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 
 	const handleEnable = useCallback(async () => {
 		try {
-			const { status } = await setAppStatus({ status: 'manually_enabled' });
+			const { status } = await setAppStatus({ status: AppStatus.MANUALLY_ENABLED });
 			warnEnableDisableApp(app.name, status, 'enable');
 		} catch (error) {
 			handleAPIError(error);
@@ -300,7 +320,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 						label: (
 							<>
 								{isAdminUser && <Icon name={incompatibleIconName(app, 'install')} size='x16' mie={4} />}
-								{t(button.label.replace(' ', '_'))}
+								{t(buttonLabel)}
 							</>
 						),
 						action: handleAcquireApp,
@@ -312,7 +332,10 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		const isEnterpriseOrNot = (app.isEnterpriseOnly && isEnterpriseLicense) || !app.isEnterpriseOnly;
 		const isPossibleToEnableApp = app.installed && isAdminUser && !isAppEnabled && isEnterpriseOrNot;
 		const doesItReachedTheLimit =
-			!app.migrated && !appCountQuery?.data?.hasUnlimitedApps && appCountQuery?.data?.enabled >= appCountQuery?.data?.limit;
+			!app.migrated &&
+			!appCountQuery?.data?.hasUnlimitedApps &&
+			appCountQuery?.data?.enabled &&
+			appCountQuery?.data?.enabled >= appCountQuery?.data?.limit;
 
 		const installedAppOptions = {
 			...(context !== 'details' &&
@@ -362,14 +385,14 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 							{t('Enable')}
 						</>
 					),
-					disabled: doesItReachedTheLimit,
+					disabled: Boolean(doesItReachedTheLimit),
 					action: handleEnable,
 				},
 			}),
 			...(app.installed &&
 				isAdminUser && {
 					divider: {
-						type: 'divider',
+						type: 'divider' as 'divider' | 'option' | 'heading',
 					},
 				}),
 			...(app.installed &&
@@ -400,6 +423,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		t,
 		handleSubscription,
 		button,
+		buttonLabel,
 		handleAcquireApp,
 		requestedEndUser,
 		isEnterpriseLicense,
@@ -417,15 +441,5 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		handleUninstall,
 	]);
 
-	if (loading) {
-		return <Skeleton variant='rect' height='x28' width='x28' />;
-	}
-
-	if (!isAdminUser && app?.installed) {
-		return null;
-	}
-
-	return <Menu title={t('More_options')} options={menuOptions} placement='bottom-start' maxHeight='initial' {...props} />;
-}
-
-export default AppMenu;
+	return { isLoading, isAdminUser, menuOptions };
+};

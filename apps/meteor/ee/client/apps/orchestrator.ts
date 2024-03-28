@@ -1,4 +1,5 @@
 import { AppClientManager } from '@rocket.chat/apps-engine/client/AppClientManager';
+import type { AppsEngineUIHost } from '@rocket.chat/apps-engine/client/AppsEngineUIHost';
 import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { Serialized } from '@rocket.chat/core-typings';
@@ -11,7 +12,7 @@ import type { IAppExternalURL, ICategory } from './@types/IOrchestrator';
 import { RealAppsEngineUIHost } from './RealAppsEngineUIHost';
 
 class AppClientOrchestrator {
-	private _appClientUIHost: RealAppsEngineUIHost;
+	private _appClientUIHost: AppsEngineUIHost;
 
 	private _manager: AppClientManager;
 

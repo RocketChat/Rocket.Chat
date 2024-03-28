@@ -10,9 +10,9 @@ import semver from 'semver';
 import { useIsEnterprise } from '../../../../../hooks/useIsEnterprise';
 import type { appStatusSpanResponseProps } from '../../../helpers';
 import { appButtonProps, appMultiStatusProps } from '../../../helpers';
-import { marketplaceActions } from '../../../helpers/marketplaceActions';
 import type { AppInstallationHandlerParams } from '../../../hooks/useAppInstallationHandler';
 import { useAppInstallationHandler } from '../../../hooks/useAppInstallationHandler';
+import { useMarketplaceActions } from '../../../hooks/useMarketplaceActions';
 import AppStatusPriceDisplay from './AppStatusPriceDisplay';
 
 type AppStatusProps = {
@@ -48,18 +48,22 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 
 	const action = button?.action;
 
+	const marketplaceActions = useMarketplaceActions();
+
 	const confirmAction = useCallback<AppInstallationHandlerParams['onSuccess']>(
 		async (action, permissionsGranted) => {
-			if (action !== 'request') {
-				setPurchased(true);
-				await marketplaceActions[action]({ ...app, permissionsGranted });
-			} else {
-				setEndUserRequested(true);
+			if (action) {
+				if (action !== 'request') {
+					setPurchased(true);
+					await marketplaceActions[action]({ ...app, permissionsGranted });
+				} else {
+					setEndUserRequested(true);
+				}
 			}
 
 			setLoading(false);
 		},
-		[app, setLoading, setPurchased],
+		[app, marketplaceActions, setLoading, setPurchased],
 	);
 
 	const cancelAction = useCallback(() => {

@@ -46,7 +46,7 @@ const GenericMenu = ({ title, icon = 'menu', disabled, onAction, ...props }: Gen
 	const isMenuEmpty = !(sections && sections.length > 0) && !(items && items.length > 0);
 
 	if (isMenuEmpty || disabled) {
-		return <IconButton small icon={icon} disabled />;
+		return <IconButton small icon={icon} title={t.has(title) ? t(title) : title} disabled />;
 	}
 
 	return (
