@@ -2808,8 +2808,7 @@ describe('[Users]', function () {
 				.send({
 					userId: targetUser._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(403)
+				.forbidden()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'unauthorized');
@@ -3509,8 +3508,7 @@ describe('[Users]', function () {
 						activeStatus: false,
 						userId: targetUser._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(403)
+					.forbidden()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 					})
@@ -3525,8 +3523,7 @@ describe('[Users]', function () {
 					activeStatus: false,
 					userId: user._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(403)
+				.forbidden()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 				})
@@ -3541,8 +3538,7 @@ describe('[Users]', function () {
 						activeStatus: false,
 						userId: user._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(403)
+					.forbidden()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 					})
@@ -3658,8 +3654,7 @@ describe('[Users]', function () {
 					.send({
 						daysIdle: 0,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(403)
+					.forbidden()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error', 'unauthorized');
@@ -4040,8 +4035,7 @@ describe('[Users]', function () {
 						message: 'test',
 						userId: user._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(403)
+					.forbidden()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body.error).to.be.equal('unauthorized');
@@ -4293,13 +4287,7 @@ describe('[Users]', function () {
 
 		it('should throw unauthorized error to user w/o "logout-other-user" permission', (done) => {
 			updatePermission('logout-other-user', []).then(() => {
-				request
-					.post(api('users.logout'))
-					.set(credentials)
-					.send({ userId: otherUser._id })
-					.expect('Content-Type', 'application/json')
-					.expect(403)
-					.end(done);
+				request.post(api('users.logout')).set(credentials).send({ userId: otherUser._id }).forbidden().end(done);
 			});
 		});
 

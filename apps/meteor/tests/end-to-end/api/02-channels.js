@@ -1398,8 +1398,7 @@ describe('[Channels]', function () {
 								.query({
 									roomId: createdChannel._id,
 								})
-								.expect('Content-Type', 'application/json')
-								.expect(403)
+								.forbidden()
 								.expect((res) => {
 									expect(res.body).to.have.property('success', false);
 									expect(res.body).to.have.property('error', 'unauthorized');

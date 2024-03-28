@@ -287,8 +287,7 @@ describe('[Outgoing Integrations]', function () {
 							request
 								.get(api('integrations.list'))
 								.set(credentials)
-								.expect('Content-Type', 'application/json')
-								.expect(403)
+								.forbidden()
 								.expect((res) => {
 									expect(res.body).to.have.property('success', false);
 									expect(res.body).to.have.property('error', 'unauthorized');
@@ -311,8 +310,7 @@ describe('[Outgoing Integrations]', function () {
 						.query({
 							id: integration._id,
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(403)
+						.forbidden()
 						.expect((res) => {
 							expect(res.body).to.have.property('success', false);
 							expect(res.body).to.have.property('error', 'unauthorized');
@@ -445,8 +443,7 @@ describe('[Outgoing Integrations]', function () {
 						integrationId: integration._id,
 						type: 'webhook-outgoing',
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(403)
+					.forbidden()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error', 'unauthorized');
@@ -464,8 +461,7 @@ describe('[Outgoing Integrations]', function () {
 						integrationId: integration._id,
 						type: 'webhook-outgoing',
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(403)
+					.forbidden()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error', 'unauthorized');

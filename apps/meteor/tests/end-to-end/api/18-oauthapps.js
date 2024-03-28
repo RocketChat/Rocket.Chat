@@ -115,8 +115,7 @@ describe('[OAuthApps]', function () {
 					redirectUri: 'error',
 					active: false,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 			await updatePermission('manage-oauth-apps', ['admin']);
 		});
 

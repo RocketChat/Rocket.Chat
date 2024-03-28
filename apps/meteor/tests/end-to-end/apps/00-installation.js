@@ -25,8 +25,7 @@ describe('Apps - Installation', function () {
 					.send({
 						url: APP_URL,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(403)
+					.forbidden()
 					.expect((res) => {
 						expect(res.body).to.have.a.property('success', false);
 						expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');

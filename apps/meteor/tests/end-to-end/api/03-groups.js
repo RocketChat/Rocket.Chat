@@ -1029,8 +1029,7 @@ describe('[Groups]', function () {
 				request
 					.get(api('groups.listAll'))
 					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(403)
+					.forbidden()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error', 'unauthorized');
@@ -1205,8 +1204,7 @@ describe('[Groups]', function () {
 				.query({
 					roomId: createdGroup._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(403)
+				.forbidden()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'unauthorized');

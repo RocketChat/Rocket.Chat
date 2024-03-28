@@ -145,8 +145,7 @@ describe('LIVECHAT - dashboards', function () {
 			await request
 				.get(api('livechat/analytics/dashboards/conversation-totalizers?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 		});
 		it('should return an array of conversation totalizers', async () => {
 			await restorePermissionToRoles('view-livechat-manager');
@@ -207,8 +206,7 @@ describe('LIVECHAT - dashboards', function () {
 			await request
 				.get(api('livechat/analytics/dashboards/productivity-totalizers?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 		});
 		it('should return an array of productivity totalizers', async () => {
 			await restorePermissionToRoles('view-livechat-manager');
@@ -261,8 +259,7 @@ describe('LIVECHAT - dashboards', function () {
 			await request
 				.get(api('livechat/analytics/dashboards/chats-totalizers?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 		});
 		it('should return an array of chats totalizers', async () => {
 			await restorePermissionToRoles('view-livechat-manager');
@@ -321,8 +318,7 @@ describe('LIVECHAT - dashboards', function () {
 					api('livechat/analytics/dashboards/agents-productivity-totalizers?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'),
 				)
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 		});
 		it('should return an array of agents productivity totalizers', async () => {
 			await restorePermissionToRoles('view-livechat-manager');
@@ -376,8 +372,7 @@ describe('LIVECHAT - dashboards', function () {
 			await request
 				.get(api('livechat/analytics/dashboards/charts/chats?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 		});
 		it('should return an array of productivity totalizers', async () => {
 			await restorePermissionToRoles('view-livechat-manager');
@@ -423,8 +418,7 @@ describe('LIVECHAT - dashboards', function () {
 			await request
 				.get(api('livechat/analytics/dashboards/charts/chats-per-agent?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 		});
 		it('should return an object with open and closed chats by agent', async () => {
 			await restorePermissionToRoles('view-livechat-manager');
@@ -468,11 +462,7 @@ describe('LIVECHAT - dashboards', function () {
 	describe('livechat/analytics/dashboards/charts/agents-status', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await removePermissionFromAllRoles('view-livechat-manager');
-			await request
-				.get(api('livechat/analytics/dashboards/charts/agents-status'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+			await request.get(api('livechat/analytics/dashboards/charts/agents-status')).set(credentials).forbidden();
 		});
 		it('should return an object with agents status metrics', async () => {
 			await restorePermissionToRoles('view-livechat-manager');
@@ -520,8 +510,7 @@ describe('LIVECHAT - dashboards', function () {
 			await request
 				.get(api('livechat/analytics/dashboards/charts/chats-per-department?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 		});
 		it('should return an object with open and closed chats by department', async () => {
 			await restorePermissionToRoles('view-livechat-manager');
@@ -563,8 +552,7 @@ describe('LIVECHAT - dashboards', function () {
 			await request
 				.get(api('livechat/analytics/dashboards/charts/timings?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 		});
 		it('should return an object with open and closed chats by department', async () => {
 			await restorePermissionToRoles('view-livechat-manager');
@@ -634,8 +622,7 @@ describe('LIVECHAT - dashboards', function () {
 				.get(api('livechat/analytics/agent-overview'))
 				.query({ from: '2020-01-01', to: '2020-01-02', name: 'Total_conversations' })
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 		});
 		it('should return an "invalid-chart-name error" when the chart name is empty', async () => {
 			await restorePermissionToRoles('view-livechat-manager');
@@ -704,8 +691,7 @@ describe('LIVECHAT - dashboards', function () {
 				.get(api('livechat/analytics/overview'))
 				.query({ from: '2020-01-01', to: '2020-01-02', name: 'Conversations' })
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 		});
 		it('should return an "invalid-chart-name error" when the chart name is empty', async () => {
 			await restorePermissionToRoles('view-livechat-manager');

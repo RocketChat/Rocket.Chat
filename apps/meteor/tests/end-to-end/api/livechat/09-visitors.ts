@@ -223,8 +223,7 @@ describe('LIVECHAT - visitors', function () {
 			await request
 				.get(api('livechat/visitors.info?visitorId=invalid'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403)
+				.forbidden()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
@@ -262,8 +261,7 @@ describe('LIVECHAT - visitors', function () {
 			await request
 				.get(api('livechat/visitors.pagesVisited/room-id'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403)
+				.forbidden()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
@@ -307,8 +305,7 @@ describe('LIVECHAT - visitors', function () {
 			await request
 				.get(api('livechat/visitors.chatHistory/room/room-id/visitor/visitor-id'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403)
+				.forbidden()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
@@ -522,8 +519,7 @@ describe('LIVECHAT - visitors', function () {
 				.set(credentials)
 				.query({ selector: 'invalid' })
 				.query({ selector: 'xxx' })
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 		});
 
 		it('should return an error when the "selector" query parameter is not valid', async () => {
@@ -580,11 +576,7 @@ describe('LIVECHAT - visitors', function () {
 	describe('livechat/visitors.searchChats/room/:roomId/visitor/:visitorId', () => {
 		it('should return an error when the user doesnt have the right permissions', async () => {
 			await updatePermission('view-l-room', []);
-			await request
-				.get(api('livechat/visitors.searchChats/room/123/visitor/123'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+			await request.get(api('livechat/visitors.searchChats/room/123/visitor/123')).set(credentials).forbidden();
 		});
 
 		it('should throw an error when the roomId is not valid', async () => {

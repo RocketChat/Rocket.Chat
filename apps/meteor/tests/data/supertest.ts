@@ -8,6 +8,7 @@ declare module 'supertest' {
 		expectLoginFailure(): this;
 		success(): this;
 		unauthorized(): this;
+		forbidden(): this;
 	}
 
 	interface SuperTest<T extends superagent.SuperAgentRequest> extends superagent.SuperAgent<T> {
@@ -39,4 +40,8 @@ Test.prototype.success = function () {
 
 Test.prototype.unauthorized = function () {
 	return this.expect(401).expect('Content-Type', 'application/json');
+};
+
+Test.prototype.forbidden = function () {
+	return this.expect(403).expect('Content-Type', 'application/json');
 };

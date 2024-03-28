@@ -132,8 +132,7 @@ describe('LIVECHAT - rooms', function () {
 			await request
 				.get(api('livechat/rooms'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403)
+				.forbidden()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.error).to.be.equal('unauthorized');
@@ -609,8 +608,7 @@ describe('LIVECHAT - rooms', function () {
 				.send({
 					roomId: 'invalid-room-id',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(403)
+				.forbidden()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.error).to.have.string('unauthorized');
@@ -627,8 +625,7 @@ describe('LIVECHAT - rooms', function () {
 				.send({
 					roomId: 'invalid-room-id',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(403)
+				.forbidden()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.error).to.have.string('unauthorized');
@@ -866,8 +863,7 @@ describe('LIVECHAT - rooms', function () {
 				.post(api('livechat/upload/test'))
 				.set(credentials)
 				.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 		});
 
 		it('should throw an error if x-visitor-token is present but with an invalid value', async () => {
@@ -876,8 +872,7 @@ describe('LIVECHAT - rooms', function () {
 				.set(credentials)
 				.set('x-visitor-token', 'invalid-token')
 				.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 		});
 
 		it('should throw unauthorized if visitor with token exists but room is invalid', async () => {
@@ -887,8 +882,7 @@ describe('LIVECHAT - rooms', function () {
 				.set(credentials)
 				.set('x-visitor-token', visitor.token)
 				.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 		});
 
 		it('should throw an error if the file is not attached', async () => {
@@ -1233,11 +1227,7 @@ describe('LIVECHAT - rooms', function () {
 	describe('livechat/transfer.history/:rid', () => {
 		it('should fail if user doesnt have "view-livechat-rooms" permission', async () => {
 			await removePermissionFromAllRoles('view-livechat-rooms');
-			const { body } = await request
-				.get(api(`livechat/transfer.history/test`))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+			const { body } = await request.get(api(`livechat/transfer.history/test`)).set(credentials).forbidden();
 			expect(body).to.have.property('success', false);
 
 			await restorePermissionToRoles('view-livechat-rooms');
@@ -1328,8 +1318,7 @@ describe('LIVECHAT - rooms', function () {
 						_id: 'invalid-guest-id',
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(403)
+				.forbidden()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.error).to.have.string('unauthorized');
@@ -1359,8 +1348,7 @@ describe('LIVECHAT - rooms', function () {
 						_id: newVisitor._id,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(403)
+				.forbidden()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.error).to.have.string('unauthorized');

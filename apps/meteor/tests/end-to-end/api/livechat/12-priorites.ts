@@ -78,12 +78,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 		// POST
 		it('should return an "unauthorized error" when the user does not have the necessary permission for [POST] livechat/sla endpoint', async () => {
 			await updatePermission('manage-livechat-sla', []);
-			const response = await request
-				.post(api('livechat/sla'))
-				.set(credentials)
-				.send(generateRandomSLAData())
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+			const response = await request.post(api('livechat/sla')).set(credentials).send(generateRandomSLAData()).forbidden();
 			expect(response.body).to.have.property('success', false);
 		});
 		it('should create a new sla', async () => {
@@ -177,12 +172,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 		it('should return an "unauthorized error" when the user does not have the necessary permission for [PUT] livechat/sla/:slaId endpoint', async () => {
 			await removePermissionFromAllRoles('manage-livechat-sla');
 
-			const response = await request
-				.put(api('livechat/sla/123'))
-				.set(credentials)
-				.send(generateRandomSLAData())
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+			const response = await request.put(api('livechat/sla/123')).set(credentials).send(generateRandomSLAData()).forbidden();
 
 			expect(response.body).to.have.property('success', false);
 		});
@@ -258,11 +248,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 		// DELETE
 		it('should return an "unauthorized error" when the user does not have the necessary permission for [DELETE] livechat/sla/:slaId endpoint', async () => {
 			await updatePermission('manage-livechat-sla', []);
-			const response = await request
-				.delete(api('livechat/sla/123'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+			const response = await request.delete(api('livechat/sla/123')).set(credentials).forbidden();
 			expect(response.body).to.have.property('success', false);
 		});
 		it('should delete an sla', async () => {
@@ -286,8 +272,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 					roomId: '123',
 					sla: '123',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 			expect(response.body).to.have.property('success', false);
 		});
 		it('should fail if roomId is not in request body', async () => {
@@ -381,11 +366,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 		let priority: ILivechatPriority;
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await removePermissions(['manage-livechat-priorities', 'view-l-room']);
-			const response = await request
-				.get(api('livechat/priorities'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+			const response = await request.get(api('livechat/priorities')).set(credentials).forbidden();
 			expect(response.body).to.have.property('success', false);
 		});
 		it('should return an array of priorities', async () => {

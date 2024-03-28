@@ -496,8 +496,7 @@ describe('miscellaneous', function () {
 			request
 				.get(api('instances.get'))
 				.set(unauthorizedUserCredentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403)
+				.forbidden()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'unauthorized');
@@ -631,8 +630,7 @@ describe('miscellaneous', function () {
 		it('should fail if no token is invalid format', (done) => {
 			request
 				.get(api('pw.getPolicyReset?token=123'))
-				.expect('Content-Type', 'application/json')
-				.expect(403)
+				.forbidden()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'unauthorized');
@@ -645,8 +643,7 @@ describe('miscellaneous', function () {
 			request
 				.get(api('pw.getPolicyReset?token'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403)
+				.forbidden()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('enabled');

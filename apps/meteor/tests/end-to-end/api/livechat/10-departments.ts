@@ -185,8 +185,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.send({
 					department: { name: 'TestUnauthorized', enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'bla@bla' },
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 		});
 
 		it('should return an error when no keys are provided', async () => {
@@ -313,11 +312,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 	describe('GET livechat/department/:_id', () => {
 		it('should return unauthorized error when the user does not have the necessary permission', async () => {
 			await updatePermission('view-livechat-departments', []);
-			await request
-				.get(api('livechat/department/testetetetstetete'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+			await request.get(api('livechat/department/testetetetstetete')).set(credentials).forbidden();
 		}).timeout(5000);
 
 		it('should return an error when the department does not exist', async () => {
@@ -437,11 +432,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			await updatePermission('manage-livechat-departments', []);
 			await updatePermission('remove-livechat-department', []);
 
-			await request
-				.delete(api('livechat/department/testetetetstetete'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+			await request.delete(api('livechat/department/testetetetstetete')).set(credentials).forbidden();
 		});
 
 		it('should return an error when the department does not exist', async () => {

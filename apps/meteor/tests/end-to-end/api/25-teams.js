@@ -856,8 +856,7 @@ describe('[Teams]', () => {
 				.query({
 					teamName: privateTeam.name,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(403)
+				.forbidden()
 				.expect((response) => {
 					expect(response.body).to.have.property('success', false);
 					expect(response.body).to.have.property('error', 'unauthorized');
@@ -1192,8 +1191,7 @@ describe('[Teams]', () => {
 						rooms: [publicRoom._id],
 						teamId: publicTeam._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(403)
+					.forbidden()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
@@ -1490,8 +1488,7 @@ describe('[Teams]', () => {
 						roomId: publicRoom._id,
 						isDefault: true,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(403)
+					.forbidden()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
@@ -1532,8 +1529,7 @@ describe('[Teams]', () => {
 						roomId: publicRoom._id,
 						teamId: publicTeam._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(403)
+					.forbidden()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
@@ -1774,8 +1770,7 @@ describe('[Teams]', () => {
 						name: 'anyname',
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 
 			expect(res.body).to.have.property('success', false);
 		});

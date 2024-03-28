@@ -209,8 +209,7 @@ describe('LIVECHAT - Agents', function () {
 				.send({
 					username: 'test-agent',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 		});
 
 		it('should return an error when type is invalid', async () => {
@@ -288,8 +287,7 @@ describe('LIVECHAT - Agents', function () {
 			await request
 				.get(api(`livechat/users/agent/id${agent._id}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 		}).timeout(5000);
 
 		it('should return an error when type is invalid', async () => {
@@ -377,8 +375,7 @@ describe('LIVECHAT - Agents', function () {
 			await request
 				.get(api(`livechat/agents/${agent._id}/departments`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 		});
 		it('should return an empty array of departments when the agentId is invalid', async () => {
 			await updatePermission('view-l-room', ['admin']);

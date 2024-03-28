@@ -77,11 +77,7 @@ describe('LIVECHAT - inquiries', function () {
 	describe('livechat/inquiries.getOne', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await updatePermission('view-l-room', []);
-			await request
-				.get(api('livechat/inquiries.getOne?roomId=room-id'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+			await request.get(api('livechat/inquiries.getOne?roomId=room-id')).set(credentials).forbidden();
 		});
 		it('should return a inquiry', async () => {
 			await updatePermission('view-l-room', ['admin']);
@@ -129,12 +125,7 @@ describe('LIVECHAT - inquiries', function () {
 	describe('POST livechat/inquiries.take', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await updatePermission('view-l-room', []);
-			await request
-				.post(api('livechat/inquiries.take'))
-				.set(credentials)
-				.send({ inquiryId: 'room-id' })
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+			await request.post(api('livechat/inquiries.take')).set(credentials).send({ inquiryId: 'room-id' }).forbidden();
 		});
 		it('should throw an error when userId is provided but is invalid', async () => {
 			await updatePermission('view-l-room', ['admin', 'livechat-agent']);
