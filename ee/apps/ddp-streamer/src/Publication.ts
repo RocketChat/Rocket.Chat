@@ -19,7 +19,7 @@ export class Publication extends EventEmitter implements IPublication {
 		this.once('stop', () => client.subscriptions.delete(packet.id));
 
 		this._session = {
-			sendAdded: this.added,
+			sendAdded: this.added.bind(this),
 			socket: client,
 			userId: client.userId,
 		};
