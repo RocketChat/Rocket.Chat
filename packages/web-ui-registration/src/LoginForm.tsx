@@ -86,7 +86,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 
 	const loginMutation = useMutation({
 		mutationFn: (formData: { usernameOrEmail: string; password: string }) => {
-			return login(formData.usernameOrEmail, formData.password);
+			return login(formData.usernameOrEmail.trim(), formData.password);
 		},
 		onError: (error: any) => {
 			if ([error.error, error.errorType].includes('error-invalid-email')) {
