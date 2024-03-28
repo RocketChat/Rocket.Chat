@@ -1,22 +1,25 @@
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
+import { before, describe, it, after } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { updatePermission } from '../../data/permissions.helper';
 import { password } from '../../data/user';
-import { createUser, login } from '../../data/users.helper';
+import { createUser, deleteUser, login } from '../../data/users.helper';
 
 describe('[Presence]', function () {
+	let createdUser: any;
 	this.retries(0);
 
 	before((done) => getCredentials(done));
 
 	let unauthorizedUserCredentials: any;
 	before(async () => {
-		const createdUser = await createUser();
+		createdUser = await createUser();
 		unauthorizedUserCredentials = await login(createdUser.username, password);
 	});
+
+	after(() => Promise.all([updatePermission('manage-user-status', ['admin']), deleteUser(createdUser)]));
 
 	describe('[/presence.getConnections]', () => {
 		it('should throw an error if not authenticated', async () => {
