@@ -74,16 +74,28 @@ export const _setUsername = async function (userId: string, u: string, fullUser:
 	if (!userId || !username) {
 		return false;
 	}
-	let nameValidation;
-	try {
-		nameValidation = new RegExp(`^${settings.get('UTF8_User_Names_Validation')}$`);
-	} catch (error) {
-		nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
-	}
+	const nameValidation = new RegExp('^[0-9a-zA-Z-_.]+(?:@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+)?$');
 	if (!nameValidation.test(username)) {
 		return false;
 	}
 	const user = fullUser || (await Users.findOneById(userId));
+	const emailPattern = new RegExp('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$');
+	const isEmail = emailPattern.test(username);
+
+	if (isEmail) {
+		let emailIsUsername = false;
+		user.emails?.forEach((email) => {
+			if (email.address === username) {
+				emailIsUsername = true;
+			}
+		});
+
+		// If the username is an email, we set the email as verified
+		if (!emailIsUsername) {
+			return false;
+		}
+	}
+
 	// User already has desired username, return
 	if (user.username === username) {
 		return user;
