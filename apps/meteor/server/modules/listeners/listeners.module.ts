@@ -1,9 +1,10 @@
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { IServiceClass } from '@rocket.chat/core-services';
-import { EnterpriseSettings } from '@rocket.chat/core-services';
-import { isSettingColor, isSettingEnterprise, UserStatus } from '@rocket.chat/core-typings';
+import { EventNames, EnterpriseSettings } from '@rocket.chat/core-services';
 import type { IUser, IRoom, VideoConference, ISetting, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { isSettingColor, isSettingEnterprise, UserStatus } from '@rocket.chat/core-typings';
+import { StreamerUserEvents, MentionTypes } from '@rocket.chat/ddp-client';
 import { Logger } from '@rocket.chat/logger';
 import { parse } from '@rocket.chat/message-parser';
 
@@ -29,6 +30,27 @@ const minimongoChangeMap: Record<string, string> = {
 export class ListenersModule {
 	constructor(service: IServiceClass, notifications: NotificationsModule) {
 		const logger = new Logger('ListenersModule');
+
+		service.onEvent(EventNames.USER_MENTIONS, (message, mentions) => {
+			if (mentions.mentionIds.length > 0) {
+				let type;
+				if (mentions.toAll) {
+					type = MentionTypes.ALL;
+				} else if (mentions.toHere) {
+					type = MentionTypes.HERE;
+				} else {
+					type = MentionTypes.USER;
+				}
+
+				for (const userId of mentions.mentionIds) {
+					notifications.notifyUserInThisInstance(userId, StreamerUserEvents.MENTION, {
+						rid: message.rid,
+						mid: message._id,
+						type,
+					});
+				}
+			}
+		});
 
 		service.onEvent('license.sync', () => notifications.notifyAllInThisInstance('license'));
 		service.onEvent('license.actions', () => notifications.notifyAllInThisInstance('license'));

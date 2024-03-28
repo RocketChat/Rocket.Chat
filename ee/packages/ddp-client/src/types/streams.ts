@@ -29,6 +29,16 @@ import type * as UiKit from '@rocket.chat/ui-kit';
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 
+export enum StreamerUserEvents {
+	MENTION = 'mention',
+}
+
+export enum MentionTypes {
+	ALL = 'all',
+	HERE = 'here',
+	USER = 'user',
+}
+
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface StreamerEvents {
 	'roles': [
@@ -185,6 +195,7 @@ export interface StreamerEvents {
 		},
 		{ key: `${string}/calendar`; args: [ICalendarNotification] },
 		{ key: `${string}/banners`; args: [IBanner] },
+		{ key: `${string}/${StreamerUserEvents.MENTION}`; args: [{ rid: IRoom['_id']; mid: IMessage['_id']; type: MentionTypes }] },
 	];
 
 	'importers': [

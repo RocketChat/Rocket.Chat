@@ -53,6 +53,17 @@ type LoginServiceConfigurationEvent = {
 	  }
 );
 
+// TODO: Decided to keep this here for now, but it should be moved to a more appropriate place in the future
+export interface IMentionCounter {
+	toAll: boolean;
+	toHere: boolean;
+	mentionIds: string[];
+}
+
+export enum EventNames {
+	USER_MENTIONS = 'user.mention',
+}
+
 export type EventSignatures = {
 	'room.video-conference': (params: { rid: string; callId: string }) => void;
 	'shutdown': (params: Record<string, string[]>) => void;
@@ -301,4 +312,7 @@ export type EventSignatures = {
 	'command.updated'(command: string): void;
 	'command.removed'(command: string): void;
 	'actions.changed'(): void;
+
+	// Events from event broker - that don't rely on DB Watcher notifications
+	[EventNames.USER_MENTIONS]: (message: IMessage, mentions: IMentionCounter) => void;
 };

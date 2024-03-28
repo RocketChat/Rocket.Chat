@@ -20,7 +20,6 @@ import type {
 	AtLeast,
 	UserStatus,
 	ILivechatDepartment,
-	MessageMention,
 } from '@rocket.chat/core-typings';
 import type { FilterOperators } from 'mongodb';
 
@@ -207,7 +206,6 @@ type ChainedCallbackSignatures = {
 	'archiveRoom': (room: IRoom) => void;
 	'unarchiveRoom': (room: IRoom) => void;
 	'roomAvatarChanged': (room: IRoom) => void;
-	'beforeGetMentions': (mentionIds: string[], teamMentions: MessageMention[]) => Promise<string[]>;
 };
 
 export type Hook =
