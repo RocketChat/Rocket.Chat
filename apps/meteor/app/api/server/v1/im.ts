@@ -395,17 +395,13 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	['dm.messages.others', 'im.messages.others'],
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-room-administration'] },
 	{
 		async get() {
 			if (settings.get('API_Enable_Direct_Message_History_EndPoint') !== true) {
 				throw new Meteor.Error('error-endpoint-disabled', 'This endpoint is disabled', {
 					route: '/api/v1/im.messages.others',
 				});
-			}
-
-			if (!(await hasPermissionAsync(this.userId, 'view-room-administration'))) {
-				return API.v1.unauthorized();
 			}
 
 			const { roomId } = this.queryParams;
@@ -483,13 +479,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	['dm.list.everyone', 'im.list.everyone'],
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-room-administration'] },
 	{
 		async get() {
-			if (!(await hasPermissionAsync(this.userId, 'view-room-administration'))) {
-				return API.v1.unauthorized();
-			}
-
 			const { offset, count }: { offset: number; count: number } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
 

@@ -2,7 +2,6 @@ import { InstanceStatus } from '@rocket.chat/models';
 
 import { Instance as InstanceService } from '../../../../ee/server/sdk';
 import { isRunningMs } from '../../../../server/lib/isRunningMs';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { API } from '../api';
 
 const getMatrixInstances = (() => {
@@ -15,13 +14,9 @@ const getMatrixInstances = (() => {
 
 API.v1.addRoute(
 	'instances.get',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-statistics'] },
 	{
 		async get() {
-			if (!(await hasPermissionAsync(this.userId, 'view-statistics'))) {
-				return API.v1.unauthorized();
-			}
-
 			const instanceRecords = await InstanceStatus.find().toArray();
 
 			const connections = await getMatrixInstances();
