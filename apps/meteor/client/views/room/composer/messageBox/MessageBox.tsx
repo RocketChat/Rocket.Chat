@@ -5,14 +5,15 @@ import {
 	MessageComposerAction,
 	MessageComposerToolbarActions,
 	MessageComposer,
-	MessageComposerInput,
+	// MessageComposerInput,
 	MessageComposerToolbar,
 	MessageComposerActionsDivider,
 	MessageComposerToolbarSubmit,
 	MessageComposerHint,
 	MessageComposerButton,
+	MessageComposerQuillInput,
 } from '@rocket.chat/ui-composer';
-import { useTranslation, useUserPreference, useLayout } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserPreference, useLayout, useQuill } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type {
 	ReactElement,
@@ -22,12 +23,14 @@ import type {
 	KeyboardEvent,
 	ClipboardEventHandler,
 	MouseEvent,
+	Ref,
 } from 'react';
 import React, { memo, useRef, useReducer, useCallback } from 'react';
 import { Trans } from 'react-i18next';
 import { useSubscription } from 'use-subscription';
 
 import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
+import { createQuillComposerAPI } from '../../../../../app/ui-message/client/messageBox/createQuillComposerAPI';
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionFromMime';
@@ -53,6 +56,7 @@ import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxReplies from './MessageBoxReplies';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
+import './MessageBoxQuill.css';
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -139,6 +143,8 @@ const MessageBox = ({
 	const messageComposerRef = useRef<HTMLElement>(null);
 	const shadowRef = useRef<HTMLDivElement>(null);
 
+	const { quillRef, getDelta } = useQuill();
+
 	const storageID = `messagebox_${room._id}${tmid ? `-${tmid}` : ''}`;
 
 	const callbackRef = useCallback(
@@ -149,6 +155,16 @@ const MessageBox = ({
 			chat.setComposerAPI(createComposerAPI(node, storageID));
 		},
 		[chat, storageID],
+	);
+
+	const quillCallbackRef = useCallback(
+		(node: HTMLDivElement) => {
+			if (node === null || chat.quillComposer) {
+				return;
+			}
+			chat.setQuillComposerAPI(createQuillComposerAPI());
+		},
+		[chat],
 	);
 
 	const autofocusRef = useMessageBoxAutoFocus(!isMobile);
@@ -168,7 +184,8 @@ const MessageBox = ({
 	});
 
 	const handleSendMessage = useMutableCallback(() => {
-		const text = chat.composer?.text ?? '';
+		chat.quillComposer?.setQuillDeltaToText(getDelta);
+		const text = chat.quillComposer?.text ?? '';
 		chat.composer?.clear();
 		clearPopup();
 
@@ -353,7 +370,8 @@ const MessageBox = ({
 		configurations: composerPopupConfig,
 	});
 
-	const mergedRefs = useMessageComposerMergedRefs(c, textareaRef, callbackRef, autofocusRef);
+	// const mergedRefs = useMessageComposerMergedRefs(c, textareaRef, quillRef, callbackRef, autofocusRef, quillCallbackRef);
+	const qillMergedRefs = useMessageComposerMergedRefs(c, quillRef, callbackRef, autofocusRef, quillCallbackRef);
 
 	const shouldPopupPreview = useEnablePopupPreview(filter, popup);
 
@@ -399,8 +417,20 @@ const MessageBox = ({
 			{isRecordingVideo && <VideoMessageRecorder reference={messageComposerRef} rid={room._id} tmid={tmid} />}
 			<MessageComposer ref={messageComposerRef} variant={isEditing ? 'editing' : undefined}>
 				{isRecordingAudio && <AudioMessageRecorder rid={room._id} isMicrophoneDenied={isMicrophoneDenied} />}
-				<MessageComposerInput
+				{/* <MessageComposerInput
 					ref={mergedRefs}
+					aria-label={composerPlaceholder}
+					name='msg'
+					disabled={isRecording || !canSend}
+					onChange={setTyping}
+					style={textAreaStyle}
+					placeholder={composerPlaceholder}
+					onKeyDown={handler}
+					onPaste={handlePaste}
+					aria-activedescendant={ariaActiveDescendant}
+				/> */}
+				<MessageComposerQuillInput
+					ref={qillMergedRefs as unknown as Ref<any>}
 					aria-label={composerPlaceholder}
 					name='msg'
 					disabled={isRecording || !canSend}
@@ -445,19 +475,19 @@ const MessageBox = ({
 								{t('Join')}
 							</MessageComposerButton>
 						)}
-						{canSend && (
-							<>
-								{isEditing && <MessageComposerButton onClick={closeEditing}>{t('Cancel')}</MessageComposerButton>}
-								<MessageComposerAction
-									aria-label={t('Send')}
-									icon='send'
-									disabled={!canSend || (!typing && !isEditing)}
-									onClick={handleSendMessage}
-									secondary={typing || isEditing}
-									info={typing || isEditing}
-								/>
-							</>
-						)}
+						{/* {canSend && ( */}
+						<>
+							{isEditing && <MessageComposerButton onClick={closeEditing}>{t('Cancel')}</MessageComposerButton>}
+							<MessageComposerAction
+								aria-label={t('Send')}
+								icon='send'
+								// disabled={!canSend || (!typing && !isEditing)}
+								onClick={handleSendMessage}
+								secondary={typing || isEditing}
+								info={typing || isEditing}
+							/>
+						</>
+						{/* )} */}
 					</MessageComposerToolbarSubmit>
 				</MessageComposerToolbar>
 			</MessageComposer>
