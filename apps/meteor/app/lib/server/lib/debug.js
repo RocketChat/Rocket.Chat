@@ -4,6 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 import _ from 'underscore';
 
+import { setSubscriptionOverwrite } from '../../../../server/lib/instrumentation/registers';
 import { getMethodArgs } from '../../../../server/lib/logger/logPayloads';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
@@ -86,32 +87,28 @@ Meteor.methods = function (methodMap) {
 	originalMeteorMethods(methodMap);
 };
 
-const originalMeteorPublish = Meteor.publish;
+setSubscriptionOverwrite(function ({ name, func, args }) {
+	traceConnection(Log_Trace_Subscriptions, Log_Trace_Subscriptions_Filter, 'subscription', name, this.connection, this.userId);
 
-Meteor.publish = function (name, func) {
-	return originalMeteorPublish(name, function (...args) {
-		traceConnection(Log_Trace_Subscriptions, Log_Trace_Subscriptions_Filter, 'subscription', name, this.connection, this.userId);
-
-		logger.subscription({
-			publication: name,
-			userId: this.userId,
-			userAgent: this.connection?.httpHeaders['user-agent'],
-			referer: this.connection?.httpHeaders.referer,
-			remoteIP: this.connection?.clientAddress,
-			instanceId: InstanceStatus.id(),
-		});
-
-		const end = metrics.meteorSubscriptions.startTimer({ subscription: name });
-
-		const originalReady = this.ready;
-		this.ready = function () {
-			end();
-			return originalReady.apply(this, args);
-		};
-
-		return func.apply(this, args);
+	logger.subscription({
+		publication: name,
+		userId: this.userId,
+		userAgent: this.connection?.httpHeaders['user-agent'],
+		referer: this.connection?.httpHeaders.referer,
+		remoteIP: this.connection?.clientAddress,
+		instanceId: InstanceStatus.id(),
 	});
-};
+
+	const end = metrics.meteorSubscriptions.startTimer({ subscription: name });
+
+	const originalReady = this.ready;
+	this.ready = function () {
+		end();
+		return originalReady.apply(this, args);
+	};
+
+	return func.apply(this, args);
+});
 
 WebApp.rawConnectHandlers.use((req, res, next) => {
 	res.setHeader('X-Instance-ID', InstanceStatus.id());
