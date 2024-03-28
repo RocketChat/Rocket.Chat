@@ -298,6 +298,8 @@
   "add-livechat-department-agents_description": "Jogosultság az összcsatornás ügyintézők részlegekhez való hozzáadásához",
   "add-oauth-service": "OAuth-szolgáltatás hozzáadása",
   "add-oauth-service_description": "Jogosultság új OAuth-szolgáltatás hozzáadásához",
+  "add-user": "Felhasználó hozzáadása",
+  "add-user_description": "Jogosultság új felhasználóknak a kiszolgálóhoz való hozzáadásához a felhasználók képernyőn keresztül",
   "add-user-to-any-c-room": "Felhasználó hozzáadása bármely nyilvános csatornához",
   "add-user-to-any-c-room_description": "Jogosultság egy felhasználó bármely nyilvános csatornához való hozzáadásához",
   "add-user-to-any-p-room": "Felhasználó hozzáadása bármely személyes csatornához",

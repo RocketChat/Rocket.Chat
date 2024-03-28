@@ -306,6 +306,8 @@
   "add-oauth-service_description": "Oikeus lisätä uusi OAuth-palvelu",
   "bypass-time-limit-edit-and-delete": "Ohita rajoitus",
   "bypass-time-limit-edit-and-delete_description": "Oikeus ohittaa viestien muokkauksen ja poistamisen aikaraja",
+  "add-user": "Lisää käyttäjä",
+  "add-user_description": "Oikeus lisätä uusia käyttäjiä palvelimeen käyttäjänäytössä",
   "add-user-to-any-c-room": "Lisää käyttäjä mille tahansa julkiselle kanavalle (Channel)",
   "add-user-to-any-c-room_description": "Oikeus lisätä käyttäjä mille tahansa julkiselle kanavalle",
   "add-user-to-any-p-room": "Lisää käyttäjä mille tahansa yksityiselle kanavalle (Channel)",
