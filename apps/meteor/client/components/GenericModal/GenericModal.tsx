@@ -21,6 +21,7 @@ type GenericModalProps = RequiredModalProps & {
 	tagline?: ReactNode;
 	onCancel?: () => Promise<void> | void;
 	onClose?: () => Promise<void> | void;
+	annotation?: ReactNode;
 } & Omit<ComponentProps<typeof Modal>, 'title'>;
 
 const iconMap: Record<string, IconName> = {
@@ -71,6 +72,7 @@ const GenericModal: FC<GenericModalProps> = ({
 	confirmDisabled,
 	tagline,
 	wrapperFunction,
+	annotation,
 	...props
 }) => {
 	const t = useTranslation();
@@ -89,6 +91,7 @@ const GenericModal: FC<GenericModalProps> = ({
 			<Modal.Content fontScale='p2'>{children}</Modal.Content>
 			<Modal.Footer justifyContent={dontAskAgain ? 'space-between' : 'end'}>
 				{dontAskAgain}
+				{annotation && !dontAskAgain && <Modal.FooterAnnotation>{annotation}</Modal.FooterAnnotation>}
 				<Modal.FooterControllers>
 					{onCancel && (
 						<Button secondary onClick={onCancel}>

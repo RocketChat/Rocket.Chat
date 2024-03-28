@@ -4,9 +4,8 @@ import { useMediaUrl } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import { userAgentMIMETypeFallback } from '../../../../../lib/utils/userAgentMIMETypeFallback';
-import MarkdownText from '../../../../MarkdownText';
 import MessageCollapsible from '../../../MessageCollapsible';
-import MessageContentBody from '../../../MessageContentBody';
+import AttachmentDescription from '../structure/AttachmentDescription';
 
 const VideoAttachment = ({
 	title,
@@ -23,7 +22,7 @@ const VideoAttachment = ({
 
 	return (
 		<>
-			{descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} />}
+			<AttachmentDescription description={description} descriptionMd={descriptionMd} />
 			<MessageCollapsible title={title} hasDownload={hasDownload} link={getURL(link || url)} size={size} isCollapsed={collapsed}>
 				<MessageGenericPreview style={{ maxWidth: 368, width: '100%' }}>
 					<Box is='video' controls preload='metadata'>

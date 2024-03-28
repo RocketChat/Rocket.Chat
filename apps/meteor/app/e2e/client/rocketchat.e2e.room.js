@@ -92,6 +92,10 @@ export class E2ERoom extends Emitter {
 		logError(`E2E ROOM { state: ${this.state}, rid: ${this.roomId} }`, ...msg);
 	}
 
+	getState() {
+		return this.state;
+	}
+
 	setState(requestedState) {
 		const currentState = this.state;
 		const nextState = filterMutation(currentState, requestedState);
@@ -208,6 +212,10 @@ export class E2ERoom extends Emitter {
 
 	// Initiates E2E Encryption
 	async handshake() {
+		if (!e2e.isReady()) {
+			return;
+		}
+
 		if (this.state !== E2ERoomState.KEYS_RECEIVED && this.state !== E2ERoomState.NOT_STARTED) {
 			return;
 		}
@@ -410,6 +418,20 @@ export class E2ERoom extends Emitter {
 		return this.encryptText(data);
 	}
 
+	encryptAttachmentDescription(description, _id) {
+		const ts = new Date();
+
+		const data = new TextEncoder('UTF-8').encode(
+			EJSON.stringify({
+				userId: this.userId,
+				text: description,
+				_id,
+				ts,
+			}),
+		);
+		return this.encryptText(data);
+	}
+
 	// Decrypt messages
 
 	async decryptMessage(message) {
@@ -459,5 +481,6 @@ export class E2ERoom extends Emitter {
 		}
 
 		this.encryptKeyForOtherParticipants();
+		this.setState(E2ERoomState.READY);
 	}
 }

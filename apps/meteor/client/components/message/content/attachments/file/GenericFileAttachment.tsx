@@ -11,9 +11,8 @@ import type { UIEvent } from 'react';
 import React from 'react';
 
 import { getFileExtension } from '../../../../../../lib/utils/getFileExtension';
-import MarkdownText from '../../../../MarkdownText';
 import MessageCollapsible from '../../../MessageCollapsible';
-import MessageContentBody from '../../../MessageContentBody';
+import AttachmentDescription from '../structure/AttachmentDescription';
 import AttachmentSize from '../structure/AttachmentSize';
 
 const openDocumentViewer = window.RocketChatDesktop?.openDocumentViewer;
@@ -49,7 +48,7 @@ const GenericFileAttachment = ({
 
 	return (
 		<>
-			{descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} />}
+			<AttachmentDescription description={description} descriptionMd={descriptionMd} />
 			<MessageCollapsible title={title} hasDownload={hasDownload} link={link} isCollapsed={collapsed}>
 				<MessageGenericPreview style={{ maxWidth: 368, width: '100%' }}>
 					<MessageGenericPreviewContent

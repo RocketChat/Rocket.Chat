@@ -1,20 +1,20 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, usePermission, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { e2e } from '../../../app/e2e/client/rocketchat.e2e';
 import { dispatchToastMessage } from '../../lib/toast';
 import { useRoom, useRoomSubscription } from '../../views/room/contexts/RoomContext';
 import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
-import { useReactiveValue } from '../useReactiveValue';
+import { useIsE2EEReady } from '../../views/room/hooks/useIsE2EEReady';
 
 export const useE2EERoomAction = () => {
 	const enabled = useSetting('E2E_Enable', false);
 	const room = useRoom();
 	const subscription = useRoomSubscription();
-	const readyToEncrypt = useReactiveValue(useCallback(() => e2e.isReady(), [])) || room.encrypted;
+	const isE2EEReady = useIsE2EEReady();
+	const readyToEncrypt = isE2EEReady || room.encrypted;
 	const permittedToToggleEncryption = usePermission('toggle-room-e2e-encryption', room._id);
 	const permittedToEditRoom = usePermission('edit-room', room._id);
 	const permitted = (room.t === 'd' || (permittedToEditRoom && permittedToToggleEncryption)) && readyToEncrypt;
