@@ -219,6 +219,9 @@ export interface IMessage extends IRocketChatRecord {
 		definedBy: Pick<IUser, '_id' | 'username'>;
 		priority?: Pick<ILivechatPriority, 'name' | 'i18n'>;
 	};
+
+	// A fallback string to be rendered if the message data is otherwise not supported by the client.
+	msgFallback?: string;
 }
 
 export type MessageSystem = {
