@@ -153,7 +153,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			if (!(await hasPermissionAsync(this.userId, 'view-privileged-setting'))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 			const setting = await Settings.findOneNotHiddenById(this.urlParams._id);
 			if (!setting) {
@@ -165,7 +165,7 @@ API.v1.addRoute(
 			twoFactorRequired: true,
 			async action(): Promise<ResultFor<'POST', '/v1/settings/:_id'>> {
 				if (!(await hasPermissionAsync(this.userId, 'edit-privileged-setting'))) {
-					return API.v1.unauthorized();
+					return API.v1.forbidden();
 				}
 
 				if (typeof this.urlParams._id !== 'string') {

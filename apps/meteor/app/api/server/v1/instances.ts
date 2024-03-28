@@ -19,7 +19,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			if (!(await hasPermissionAsync(this.userId, 'view-statistics'))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const instanceRecords = await InstanceStatus.find().toArray();

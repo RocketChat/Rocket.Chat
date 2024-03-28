@@ -49,7 +49,7 @@ API.v1.addRoute(
 			const { userId, queryParams } = this;
 
 			if (!(await hasAtLeastOnePermissionAsync(userId, ['manage-outgoing-integrations', 'manage-own-outgoing-integrations']))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			if (!queryParams.id || queryParams.id.trim() === '') {
@@ -94,7 +94,7 @@ API.v1.addRoute(
 					'manage-own-incoming-integrations',
 				]))
 			) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -135,7 +135,7 @@ API.v1.addRoute(
 					'manage-own-incoming-integrations',
 				]))
 			) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { bodyParams } = this;

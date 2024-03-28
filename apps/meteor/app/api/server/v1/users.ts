@@ -219,7 +219,7 @@ API.v1.addRoute(
 			})();
 
 			if (!user) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			if (this.bodyParams.avatarUrl) {
@@ -308,7 +308,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			if (!(await hasPermissionAsync(this.userId, 'delete-user'))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const user = await getUserFromParams(this.bodyParams);
@@ -352,7 +352,7 @@ API.v1.addRoute(
 				!(await hasPermissionAsync(this.userId, 'edit-other-user-active-status')) &&
 				!(await hasPermissionAsync(this.userId, 'manage-moderation-actions'))
 			) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { userId, activeStatus, confirmRelinquish = false } = this.bodyParams;
@@ -375,7 +375,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			if (!(await hasPermissionAsync(this.userId, 'edit-other-user-active-status'))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { daysIdle, role = 'user' } = this.bodyParams;
@@ -452,14 +452,14 @@ API.v1.addRoute(
 	{
 		async get() {
 			if (!(await hasPermissionAsync(this.userId, 'view-d-room'))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			if (
 				settings.get('API_Apply_permission_view-outside-room_on_users-list') &&
 				!(await hasPermissionAsync(this.userId, 'view-outside-room'))
 			) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -641,7 +641,7 @@ API.v1.addRoute(
 		async post() {
 			const user = await getUserFromParams(this.bodyParams);
 			const data = await Meteor.callAsync('createToken', user._id);
-			return data ? API.v1.success({ data }) : API.v1.unauthorized();
+			return data ? API.v1.success({ data }) : API.v1.forbidden();
 		},
 	},
 );
@@ -1104,7 +1104,7 @@ API.v1.addRoute(
 			const userId = this.bodyParams.userId || this.userId;
 
 			if (userId !== this.userId && !(await hasPermissionAsync(this.userId, 'logout-other-user'))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			// this method logs the user out automatically, if successful returns 1, otherwise 0
@@ -1179,7 +1179,7 @@ API.v1.addRoute(
 			})();
 
 			if (!user) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			if (this.bodyParams.message || this.bodyParams.message === '') {

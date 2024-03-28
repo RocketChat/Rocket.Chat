@@ -28,7 +28,7 @@ API.v1.addRoute(
 			});
 
 			if (!(await hasPermissionAsync(this.userId, 'register-on-cloud'))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const registrationInfo = await retrieveRegistrationStatus();
@@ -57,7 +57,7 @@ API.v1.addRoute(
 			});
 
 			if (!(await hasPermissionAsync(this.userId, 'manage-cloud'))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const intentData = await startRegisterWorkspaceSetupWizard(this.bodyParams.resend, this.bodyParams.email);
@@ -77,7 +77,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			if (!(await hasPermissionAsync(this.userId, 'manage-cloud'))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			return API.v1.success({ offline: !(await registerPreIntentWorkspaceWizard()) });
@@ -96,7 +96,7 @@ API.v1.addRoute(
 			});
 
 			if (!(await hasPermissionAsync(this.userId, 'manage-cloud'))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			if (!deviceCode) {
@@ -122,7 +122,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			if (!(await hasRoleAsync(this.userId, 'admin'))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const registrationStatus = await retrieveRegistrationStatus();

@@ -136,7 +136,7 @@ describe('LIVECHAT - rooms', function () {
 				.expect(403)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('unauthorized');
+					expect(res.body).to.have.property('error', 'forbidden');
 				});
 
 			await restorePermissionToRoles('view-livechat-rooms');

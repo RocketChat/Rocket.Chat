@@ -2909,7 +2909,7 @@ describe('[Users]', function () {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'unauthorized');
+					expect(res.body).to.have.property('error', 'forbidden');
 				});
 		});
 
@@ -3799,7 +3799,7 @@ describe('[Users]', function () {
 					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'unauthorized');
+						expect(res.body).to.have.property('error', 'forbidden');
 					})
 					.end(done);
 			});
@@ -4194,7 +4194,7 @@ describe('[Users]', function () {
 					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('unauthorized');
+						expect(res.body).to.have.property('error', 'forbidden');
 					})
 					.end(done);
 			});

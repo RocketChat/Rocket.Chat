@@ -48,7 +48,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			if (!(await hasPermissionAsync(this.userId, 'view-all-teams'))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -71,7 +71,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			if (!(await hasPermissionAsync(this.userId, 'create-team'))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			check(
@@ -131,7 +131,7 @@ API.v1.addRoute(
 			}
 
 			if (!(await hasPermissionAsync(this.userId, 'convert-team', team.roomId))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const rooms = await Team.getMatchingTeamRooms(team._id, roomsToRemove);
@@ -176,7 +176,7 @@ API.v1.addRoute(
 			}
 
 			if (!(await hasPermissionAsync(this.userId, 'add-team-channel', team.roomId))) {
-				return API.v1.unauthorized('error-no-permission-team-channel');
+				return API.v1.forbidden('error-no-permission-team-channel');
 			}
 
 			const { rooms } = this.bodyParams;
@@ -202,7 +202,7 @@ API.v1.addRoute(
 			}
 
 			if (!(await hasPermissionAsync(this.userId, 'remove-team-channel', team.roomId))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const canRemoveAny = !!(await hasPermissionAsync(this.userId, 'view-all-team-channels', team.roomId));
@@ -237,7 +237,7 @@ API.v1.addRoute(
 			}
 
 			if (!(await hasPermissionAsync(this.userId, 'edit-team-channel', team.roomId))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 			const canUpdateAny = !!(await hasPermissionAsync(this.userId, 'view-all-team-channels', team.roomId));
 
@@ -351,7 +351,7 @@ API.v1.addRoute(
 			const { userId, canUserDelete } = this.queryParams;
 
 			if (!(this.userId === userId || (await hasPermissionAsync(this.userId, 'view-all-team-channels', team.roomId)))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const booleanCanUserDelete = canUserDelete === 'true';
@@ -442,7 +442,7 @@ API.v1.addRoute(
 			}
 
 			if (!(await hasAtLeastOnePermissionAsync(this.userId, ['add-team-member', 'edit-team-member'], team.roomId))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			await Team.addMembers(this.userId, team._id, members);
@@ -469,7 +469,7 @@ API.v1.addRoute(
 			}
 
 			if (!(await hasAtLeastOnePermissionAsync(this.userId, ['edit-team-member'], team.roomId))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			await Team.updateMember(team._id, member);
@@ -496,7 +496,7 @@ API.v1.addRoute(
 			}
 
 			if (!(await hasAtLeastOnePermissionAsync(this.userId, ['edit-team-member'], team.roomId))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const user = await Users.findOneActiveById(userId, {});
@@ -587,7 +587,7 @@ API.v1.addRoute(
 				(await canAccessRoomAsync(room, { _id: this.userId })) || (await hasPermissionAsync(this.userId, 'view-all-teams'));
 
 			if (!canViewInfo) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			return API.v1.success({ teamInfo });
@@ -611,7 +611,7 @@ API.v1.addRoute(
 			}
 
 			if (!(await hasPermissionAsync(this.userId, 'delete-team', team.roomId))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const rooms: string[] = await Team.getMatchingTeamRooms(team._id, roomsToRemove);
@@ -677,7 +677,7 @@ API.v1.addRoute(
 			}
 
 			if (!(await hasPermissionAsync(this.userId, 'edit-team', team.roomId))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			await Team.update(this.userId, team._id, data);

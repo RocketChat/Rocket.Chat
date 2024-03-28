@@ -25,6 +25,7 @@ import type { PermissionsPayload } from './api.helpers';
 import { checkPermissionsForInvocation, checkPermissions } from './api.helpers';
 import type {
 	FailureResult,
+	ForbiddenResult,
 	InternalError,
 	NotFoundResult,
 	Operations,
@@ -289,17 +290,27 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 			statusCode: 500,
 			body: {
 				success: false,
-				error: msg || 'Internal error occured',
+				error: msg || 'Internal server error',
 			},
 		};
 	}
 
-	public unauthorized<T>(msg?: T): UnauthorizedResult<T> {
+	public unauthorized<T extends string>(msg?: T): UnauthorizedResult<T> {
+		return {
+			statusCode: 401,
+			body: {
+				success: false,
+				error: msg || 'unauthorized',
+			},
+		};
+	}
+
+	public forbidden<T>(msg?: T): ForbiddenResult<T> {
 		return {
 			statusCode: 403,
 			body: {
 				success: false,
-				error: msg || 'unauthorized',
+				error: msg || 'forbidden',
 			},
 		};
 	}
@@ -568,13 +579,7 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 							}
 
 							if (!this.user && !settings.get('Accounts_AllowAnonymousRead')) {
-								return {
-									statusCode: 401,
-									body: {
-										status: 'error',
-										message: 'You must be logged in to do this.',
-									},
-								};
+								return api.unauthorized('You must be logged in to do this.');
 							}
 						}
 
@@ -761,8 +766,8 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 		// eslint-disable-next-line @typescript-eslint/no-this-alias
 		const self = this;
 
-		(this as APIClass<'/v1'>).addRoute<'/v1/login', { authRequired: false }>(
-			'login' as any,
+		(this as APIClass<'/v1'>).addRoute(
+			'login',
 			{ authRequired: false },
 			{
 				async post() {
@@ -773,58 +778,40 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 						connection: generateConnection(getRequestIP(request) || '', this.request.headers),
 					});
 
-					let auth;
 					try {
-						auth = await DDP._CurrentInvocation.withValue(invocation as any, async () => Meteor.callAsync('login', args));
-					} catch (error: any) {
-						let e = error;
-						if (error.reason === 'User not found') {
-							e = {
-								error: 'Unauthorized',
-								reason: 'Unauthorized',
-							};
+						const auth = await DDP._CurrentInvocation.withValue(invocation as any, async () => Meteor.callAsync('login', args));
+						this.user = await Users.findOne(
+							{
+								_id: auth.id,
+							},
+							{
+								projection: getDefaultUserFields(),
+							},
+						);
+
+						if (!this.user) {
+							return self.unauthorized();
 						}
 
-						return {
-							statusCode: 401,
-							body: {
-								status: 'error',
-								error: e.error,
-								details: e.details,
-								message: e.reason || e.message,
+						this.userId = this.user._id;
+
+						const extraData = self._config.onLoggedIn?.call(this);
+
+						return self.success({
+							status: 'success',
+							data: {
+								userId: this.userId,
+								authToken: auth.token,
+								me: await getUserInfo(this.user || ({} as IUser)),
+								...(extraData && { extra: extraData }),
 							},
-						} as unknown as SuccessResult<Record<string, any>>;
-					}
-
-					this.user = await Users.findOne(
-						{
-							_id: auth.id,
-						},
-						{
-							projection: getDefaultUserFields(),
-						},
-					);
-
-					this.userId = (this.user as unknown as IUser)?._id;
-
-					const response = {
-						status: 'success',
-						data: {
-							userId: this.userId,
-							authToken: auth.token,
-							me: await getUserInfo(this.user || ({} as IUser)),
-						},
-					};
-
-					const extraData = self._config.onLoggedIn?.call(this);
-
-					if (extraData != null) {
-						_.extend(response.data, {
-							extra: extraData,
 						});
+					} catch (error) {
+						if (!(error instanceof Meteor.Error)) {
+							return self.internalError();
+						}
+						return self.unauthorized();
 					}
-
-					return response as unknown as SuccessResult<Record<string, any>>;
 				},
 			},
 		);

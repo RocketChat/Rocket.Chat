@@ -15,7 +15,7 @@ API.v1.addRoute(
 			apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, ' Use licenses.info instead.');
 
 			if (!(await hasPermissionAsync(this.userId, 'view-privileged-setting'))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const license = License.getUnmodifiedLicenseAndModules();
@@ -51,7 +51,7 @@ API.v1.addRoute(
 			});
 
 			if (!(await hasPermissionAsync(this.userId, 'edit-privileged-setting'))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { license } = this.bodyParams;

@@ -28,7 +28,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			if (!(await hasPermissionAsync(this.userId, 'manage-oauth-apps'))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const oauthApp = await OAuthApps.findOneAuthAppByIdOrClientId(this.queryParams);
@@ -57,7 +57,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			if (!(await hasPermissionAsync(this.userId, 'manage-oauth-apps'))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { appId } = this.bodyParams;
@@ -78,7 +78,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			if (!(await hasPermissionAsync(this.userId, 'manage-oauth-apps'))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { appId } = this.bodyParams;
@@ -99,7 +99,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			if (!(await hasPermissionAsync(this.userId, 'manage-oauth-apps'))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const application = await addOAuthApp(this.bodyParams, this.userId);
