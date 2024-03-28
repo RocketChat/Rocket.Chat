@@ -1,4 +1,5 @@
 import supertest from 'supertest';
+import './supertest';
 
 import { publicChannelName, privateChannelName } from './channel';
 import { roleNameUsers, roleNameSubscriptions, roleScopeUsers, roleScopeSubscriptions, roleDescription } from './role';
@@ -7,6 +8,15 @@ import { username, email, adminUsername, adminPassword } from './user';
 const apiUrl = process.env.TEST_API_URL || 'http://localhost:3000';
 
 export const request = supertest(apiUrl);
+
+request.expectLoginSuccess = function expectLoginSuccess(props) {
+	return this.post(api('login')).send(props).expectLoginSuccess();
+};
+
+request.expectLoginFailure = function expectLoginFailure(props) {
+	return this.post(api('login')).send(props).expectLoginFailure();
+};
+
 const prefix = '/api/v1/';
 
 export function wait(cb, time) {

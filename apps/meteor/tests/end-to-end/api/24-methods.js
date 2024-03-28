@@ -2671,13 +2671,10 @@ describe('Meteor.methods', function () {
 
 		it('should keep the direct conversation between testUser=>testUser2 as readonly when one of them is deactivated', (done) => {
 			request
-				.post(api('login'))
-				.send({
+				.expectLoginSuccess({
 					user: testUser.username,
 					password,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
 				.expect((res) => {
 					testUserCredentials['X-Auth-Token'] = res.body.data.authToken;
 					testUserCredentials['X-User-Id'] = res.body.data.userId;

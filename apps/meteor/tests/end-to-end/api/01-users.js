@@ -699,13 +699,9 @@ describe('[Users]', function () {
 			after(async () => deleteUser(user));
 
 			it('should return "offline" after a login type "resume" via REST', async () => {
-				await request
-					.post(api('login'))
-					.send({
-						resume: userCredentials['X-Auth-Token'],
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200);
+				await request.expectLoginSuccess({
+					resume: userCredentials['X-Auth-Token'],
+				});
 
 				await request
 					.get(api('users.getPresence'))
@@ -1754,13 +1750,10 @@ describe('[Users]', function () {
 		let userCredentials;
 		before((done) => {
 			request
-				.post(api('login'))
-				.send({
+				.expectLoginSuccess({
 					user: user.username,
 					password,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
 				.expect((res) => {
 					userCredentials = {};
 					userCredentials['X-Auth-Token'] = res.body.data.authToken;
@@ -2469,13 +2462,10 @@ describe('[Users]', function () {
 		});
 		before('Login...', (done) => {
 			request
-				.post(api('login'))
-				.send({
+				.expectLoginSuccess({
 					user: targetUser.username,
 					password,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
 				.expect((res) => {
 					userCredentials = {};
 					userCredentials['X-Auth-Token'] = res.body.data.authToken;
@@ -2534,13 +2524,10 @@ describe('[Users]', function () {
 		});
 		before((done) => {
 			request
-				.post(api('login'))
-				.send({
+				.expectLoginSuccess({
 					user: targetUser.username,
 					password,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
 				.expect((res) => {
 					userCredentials = {};
 					userCredentials['X-Auth-Token'] = res.body.data.authToken;
@@ -2620,13 +2607,10 @@ describe('[Users]', function () {
 		});
 		before((done) => {
 			request
-				.post(api('login'))
-				.send({
+				.expectLoginSuccess({
 					user: targetUser.username,
 					password,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
 				.expect((res) => {
 					userCredentials = {};
 					userCredentials['X-Auth-Token'] = res.body.data.authToken;
@@ -3338,13 +3322,10 @@ describe('[Users]', function () {
 		let userCredentials;
 		before((done) => {
 			request
-				.post(api('login'))
-				.send({
+				.expectLoginSuccess({
 					user: user.username,
 					password,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
 				.expect((res) => {
 					userCredentials = {};
 					userCredentials['X-Auth-Token'] = res.body.data.authToken;
@@ -3768,13 +3749,10 @@ describe('[Users]', function () {
 		});
 		before('Login as test user', (done) => {
 			request
-				.post(api('login'))
-				.send({
+				.expectLoginSuccess({
 					user: testUser.username,
 					password,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
 				.expect((res) => {
 					testUserCredentials = {};
 					testUserCredentials['X-Auth-Token'] = res.body.data.authToken;

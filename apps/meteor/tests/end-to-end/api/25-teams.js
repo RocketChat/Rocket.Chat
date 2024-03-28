@@ -45,13 +45,10 @@ describe('[Teams]', () => {
 
 	before('login testUser', (done) => {
 		request
-			.post(api('login'))
-			.send({
+			.expectLoginSuccess({
 				user: testUser.username,
 				password: testUser.username,
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
 			.expect((res) => {
 				testUserCredentials['X-Auth-Token'] = res.body.data.authToken;
 				testUserCredentials['X-User-Id'] = res.body.data.userId;
@@ -1388,13 +1385,10 @@ describe('[Teams]', () => {
 		});
 		before('Login as test user', (done) => {
 			request
-				.post(api('login'))
-				.send({
+				.expectLoginSuccess({
 					user: testUser.username,
 					password: testUser.username,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
 				.expect((res) => {
 					testUserCredentials = {};
 					testUserCredentials['X-Auth-Token'] = res.body.data.authToken;

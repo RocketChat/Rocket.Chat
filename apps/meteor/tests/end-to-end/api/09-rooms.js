@@ -460,13 +460,10 @@ describe('[Rooms]', function () {
 		let userCredentials;
 		beforeEach((done) => {
 			request
-				.post(api('login'))
-				.send({
+				.expectLoginSuccess({
 					user: user.username,
 					password,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
 				.expect((res) => {
 					userCredentials = {};
 					userCredentials['X-Auth-Token'] = res.body.data.authToken;

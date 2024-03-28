@@ -57,20 +57,14 @@ describe('miscellaneous', function () {
 
 	it('/login (wrapper username)', (done) => {
 		request
-			.post(api('login'))
-			.send({
+			.expectLoginSuccess({
 				user: {
 					username: adminUsername,
 				},
 				password: adminPassword,
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
 			.expect((res) => {
-				expect(res.body).to.have.property('status', 'success');
 				expect(res.body).to.have.property('data').and.to.be.an('object');
-				expect(res.body.data).to.have.property('userId');
-				expect(res.body.data).to.have.property('authToken');
 				expect(res.body.data).to.have.property('me');
 			})
 			.end(done);
@@ -78,20 +72,14 @@ describe('miscellaneous', function () {
 
 	it('/login (wrapper email)', (done) => {
 		request
-			.post(api('login'))
-			.send({
+			.expectLoginSuccess({
 				user: {
 					email: adminEmail,
 				},
 				password: adminPassword,
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
 			.expect((res) => {
-				expect(res.body).to.have.property('status', 'success');
 				expect(res.body).to.have.property('data').and.to.be.an('object');
-				expect(res.body.data).to.have.property('userId');
-				expect(res.body.data).to.have.property('authToken');
 				expect(res.body.data).to.have.property('me');
 			})
 			.end(done);
@@ -99,18 +87,12 @@ describe('miscellaneous', function () {
 
 	it('/login by user', (done) => {
 		request
-			.post(api('login'))
-			.send({
+			.expectLoginSuccess({
 				user: adminEmail,
 				password: adminPassword,
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
 			.expect((res) => {
-				expect(res.body).to.have.property('status', 'success');
 				expect(res.body).to.have.property('data').and.to.be.an('object');
-				expect(res.body.data).to.have.property('userId');
-				expect(res.body.data).to.have.property('authToken');
 				expect(res.body.data).to.have.property('me');
 			})
 			.end(done);
@@ -118,18 +100,12 @@ describe('miscellaneous', function () {
 
 	it('/login by username', (done) => {
 		request
-			.post(api('login'))
-			.send({
+			.expectLoginSuccess({
 				username: adminUsername,
 				password: adminPassword,
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
 			.expect((res) => {
-				expect(res.body).to.have.property('status', 'success');
 				expect(res.body).to.have.property('data').and.to.be.an('object');
-				expect(res.body.data).to.have.property('userId');
-				expect(res.body.data).to.have.property('authToken');
 				expect(res.body.data).to.have.property('me');
 			})
 			.end(done);

@@ -961,13 +961,10 @@ describe('[Chat]', function () {
 					.end((err, res) => {
 						user = res.body.user;
 						request
-							.post(api('login'))
-							.send({
+							.expectLoginSuccess({
 								user: username,
 								password,
 							})
-							.expect('Content-Type', 'application/json')
-							.expect(200)
 							.expect((res) => {
 								userCredentials['X-Auth-Token'] = res.body.data.authToken;
 								userCredentials['X-User-Id'] = res.body.data.userId;
@@ -1237,13 +1234,10 @@ describe('[Chat]', function () {
 		});
 		before((done) => {
 			request
-				.post(api('login'))
-				.send({
+				.expectLoginSuccess({
 					user: user.username,
 					password,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
 				.expect((res) => {
 					userCredentials = {};
 					userCredentials['X-Auth-Token'] = res.body.data.authToken;
