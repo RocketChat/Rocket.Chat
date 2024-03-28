@@ -122,7 +122,7 @@ describe('[CustomSounds]', function () {
 			request
 				.get(`/custom-sounds/${fileId}.wav`)
 				.set(credentials)
-				.success()
+				.expect(200)
 				.expect((res) => {
 					expect(res.headers).to.have.property('last-modified');
 					expect(res.headers).to.have.property('content-type', 'audio/wav');
