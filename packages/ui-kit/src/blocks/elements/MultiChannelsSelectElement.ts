@@ -1,6 +1,7 @@
 import type { Actionable } from '../Actionable';
+import type { PlainText } from '../text/PlainText';
 
-/** @todo */
 export type MultiChannelsSelectElement = Actionable<{
 	type: 'multi_channels_select';
+	placeholder?: PlainText;
 }>;
