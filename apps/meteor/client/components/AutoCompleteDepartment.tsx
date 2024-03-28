@@ -51,8 +51,8 @@ const AutoCompleteDepartment = ({
 
 	return (
 		<PaginatedSelectFiltered
-			{...props}
 			withTitle
+			{...props}
 			value={value}
 			onChange={onChange}
 			filter={departmentsFilter}

@@ -15,6 +15,7 @@ import {
 	Button,
 	PaginatedSelectFiltered,
 	FieldHint,
+	Option,
 } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useEndpoint, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
@@ -412,6 +413,10 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 												onChange={onChange}
 												onlyMyDepartments
 												showArchived
+												withTitle={false}
+												renderItem={({ label, ...props }) => (
+													<Option {...props} label={<Box style={{ whiteSpace: 'normal' }}>{label}</Box>} />
+												)}
 											/>
 										)}
 									/>
