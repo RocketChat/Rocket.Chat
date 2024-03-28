@@ -1955,6 +1955,19 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.deleteMany(query);
 	}
 
+	removeUsernameFromMutedAndUnmutedByRoomId(_id: string, username: string): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
+
+		const update: UpdateFilter<IRoom> = {
+			$pull: {
+				muted: username,
+				unmuted: username,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
 	countDiscussions(): Promise<number> {
 		return this.col.countDocuments({ prid: { $exists: true } });
 	}
