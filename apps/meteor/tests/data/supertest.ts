@@ -36,7 +36,7 @@ Test.prototype.expectLoginFailure = function () {
 };
 
 Test.prototype.success = function () {
-	return this.expect('Content-Type', 'application/json').expect(200);
+	return this.expect('Content-Type', /application\/json/).expect(200);
 };
 
 Test.prototype.unauthorized = function () {

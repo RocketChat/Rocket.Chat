@@ -89,7 +89,6 @@ describe('[OAuth Server]', function () {
 					client_secret: clientSecret,
 					redirect_uri: redirectUri,
 				})
-				.expect('Content-Type', 'application/json; charset=utf-8')
 				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('token_type', 'Bearer');
@@ -111,7 +110,6 @@ describe('[OAuth Server]', function () {
 					client_id: clientId,
 					client_secret: clientSecret,
 				})
-				.expect('Content-Type', 'application/json; charset=utf-8')
 				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('token_type', 'Bearer');
@@ -130,7 +128,6 @@ describe('[OAuth Server]', function () {
 			await request
 				.get(`/oauth/userinfo`)
 				.auth(refreshedAccessToken, { type: 'bearer' })
-				.expect('Content-Type', 'application/json; charset=utf-8')
 				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('sub', 'rocketchat.internal.admin.test');
