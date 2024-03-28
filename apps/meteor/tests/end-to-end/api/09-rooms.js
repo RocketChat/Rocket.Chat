@@ -386,8 +386,7 @@ describe('[Rooms]', function () {
 		it('should return 401 unauthorized when user is not logged in', (done) => {
 			request
 				.get(api('rooms.nameExists'))
-				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.unauthorized()
 				.expect((res) => {
 					expect(res.body).to.have.property('message');
 				})

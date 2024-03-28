@@ -508,8 +508,7 @@ describe('miscellaneous', function () {
 		it('should fail if not logged in', (done) => {
 			request
 				.get(api('instances.get'))
-				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.unauthorized()
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');

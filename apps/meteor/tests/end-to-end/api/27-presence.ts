@@ -22,8 +22,7 @@ describe('[Presence]', function () {
 		it('should throw an error if not authenticated', async () => {
 			await request
 				.get(api('presence.getConnections'))
-				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.unauthorized()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');
@@ -75,8 +74,7 @@ describe('[Presence]', function () {
 		it('should throw an error if not authenticated', async () => {
 			await request
 				.post(api('presence.enableBroadcast'))
-				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.unauthorized()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');

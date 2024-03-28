@@ -90,8 +90,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.unauthorized()
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');
@@ -136,8 +135,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.unauthorized()
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message', 'You must be logged in to do this.');
@@ -511,8 +509,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.unauthorized()
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');
@@ -790,8 +787,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.unauthorized()
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');
@@ -1000,8 +996,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.unauthorized()
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');
@@ -1174,8 +1169,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.unauthorized()
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');
@@ -1244,8 +1238,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.unauthorized()
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');
@@ -1289,8 +1282,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.unauthorized()
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');
@@ -1338,8 +1330,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.unauthorized()
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');
@@ -1472,8 +1463,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.unauthorized()
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');
@@ -1610,8 +1600,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.unauthorized()
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');
@@ -1667,8 +1656,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.unauthorized()
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');
@@ -1779,8 +1767,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.unauthorized()
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');
@@ -2703,8 +2690,7 @@ describe('Meteor.methods', function () {
 		it('should fail if not logged in', (done) => {
 			request
 				.post(methodCall('addUsersToRoom'))
-				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.unauthorized()
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');

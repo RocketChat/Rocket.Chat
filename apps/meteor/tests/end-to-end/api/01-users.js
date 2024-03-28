@@ -699,8 +699,7 @@ describe('[Users]', function () {
 			it('should return 401 unauthorized', (done) => {
 				request
 					.get(api('users.presence'))
-					.expect('Content-Type', 'application/json')
-					.expect(401)
+					.unauthorized()
 					.expect((res) => {
 						expect(res.body).to.have.property('message');
 					})
@@ -2432,8 +2431,7 @@ describe('[Users]', function () {
 		it('should return 401 unauthorized when user is not logged in', (done) => {
 			request
 				.get(api('users.checkUsernameAvailability'))
-				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.unauthorized()
 				.expect((res) => {
 					expect(res.body).to.have.property('message');
 				})
