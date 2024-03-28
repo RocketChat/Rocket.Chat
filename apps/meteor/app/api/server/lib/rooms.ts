@@ -39,7 +39,13 @@ export async function findAdminRooms({
 
 	const { cursor, totalCount } = result;
 
-	const [rooms, total] = await Promise.all([cursor.sort(sort || { default: -1, name: 1 }).toArray(), totalCount]);
+	const [rooms, total] = await Promise.all([
+		cursor
+			.collation({ locale: 'en' })
+			.sort(sort || { default: -1, name: 1 })
+			.toArray(),
+		totalCount,
+	]);
 
 	return {
 		rooms,

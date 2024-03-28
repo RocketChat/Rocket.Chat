@@ -941,6 +941,43 @@ describe('[Users]', function () {
 				.end(done);
 		});
 
+		it('should sort for user names and check if capitalization is not taken into consideration', async () => {
+			const query = {
+				fields: JSON.stringify({
+					username: 1,
+					_id: 1,
+					active: 1,
+					status: 1,
+					name: 1,
+				}),
+				sort: JSON.stringify({
+					name: 1,
+				}),
+			};
+
+			const now = Date.now();
+			const capitalizedUserName = `A_b_USER_${now}`;
+			const lowercaseUserName = `a_a_user_${now}`;
+
+			await Promise.all([createUser({ name: capitalizedUserName }), createUser({ name: lowercaseUserName })]);
+
+			await request
+				.get(api('users.list'))
+				.query(query)
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('users');
+					const indexOfCapitalized = res.body.users.findIndex((r) => r.name === capitalizedUserName);
+					const indexOfLowercased = res.body.users.findIndex((r) => r.name === lowercaseUserName);
+					expect(indexOfCapitalized).to.be.greaterThan(indexOfLowercased);
+				});
+		});
+
 		it.skip('should query all users in the system by name', (done) => {
 			// filtering user list
 			request
