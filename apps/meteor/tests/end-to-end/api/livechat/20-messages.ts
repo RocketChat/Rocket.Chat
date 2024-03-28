@@ -9,6 +9,7 @@ import {
 	sendAgentMessage,
 	createAgent,
 	makeAgentAvailable,
+	uploadFile,
 } from '../../../data/livechat/rooms';
 import { updateSetting } from '../../../data/permissions.helper';
 
@@ -50,6 +51,18 @@ describe('LIVECHAT - messages', () => {
 				expect(quotedMessageAttachments).to.have.property('message_link').that.is.equal(msgLink);
 				expect(quotedMessageAttachments).to.have.property('text').that.is.equal(agentMsgSentence);
 			}
+		});
+
+		it('it should verify if visitor is receiving a message with a image attachment', async () => {
+			const {
+				room: { _id: roomId },
+				visitor: { token },
+			} = await startANewLivechatRoomAndTakeIt();
+
+			const imgMessage = await uploadFile(roomId, token);
+
+			expect(imgMessage).to.have.property('files');
+			expect(imgMessage.files).to.be.an('array');
 		});
 	});
 });
