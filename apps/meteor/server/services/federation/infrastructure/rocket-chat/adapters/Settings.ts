@@ -176,6 +176,17 @@ export class RocketChatSettingsAdapter {
 			section: 'Matrix Bridge',
 		});
 
+		await settingsRegistry.add('Federation_Matrix_serve_well_known', false, {
+			readonly: false,
+			type: 'boolean',
+			i18nLabel: 'Federation_Matrix_serve_well_known',
+			i18nDescription: 'Federation_Matrix_serve_well_known_desc',
+			alert: 'Federation_Matrix_serve_well_known_Alert',
+			public: true,
+			group: 'Federation',
+			section: 'Matrix Bridge',
+		});
+
 		await settingsRegistry.add('Federation_Matrix_enable_ephemeral_events', false, {
 			readonly: false,
 			type: 'boolean',
