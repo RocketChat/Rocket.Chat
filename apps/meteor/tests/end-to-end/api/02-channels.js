@@ -291,6 +291,19 @@ describe('[Channels]', function () {
 			.end(done);
 	});
 
+	it('/channels.close', async () => {
+		await request
+			.post(api('channels.close'))
+			.set(credentials)
+			.send({})
+			.expect('Content-Type', 'application/json')
+			.expect(400)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('errorType', 'invalid-params');
+			});
+	});
+
 	it('/channels.close', (done) => {
 		request
 			.post(api('channels.close'))

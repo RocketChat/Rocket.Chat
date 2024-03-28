@@ -4,6 +4,7 @@ import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@r
 import {
 	isChannelsAddAllProps,
 	isChannelsArchiveProps,
+	isChannelsCloseProps,
 	isChannelsHistoryProps,
 	isChannelsUnarchiveProps,
 	isChannelsRolesProps,
@@ -562,25 +563,34 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'channels.close',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChannelsCloseProps },
 	{
 		async post() {
-			const findResult = await findChannelByIdOrName({
-				params: this.bodyParams,
-				checkedArchived: false,
+			const { roomId, roomName } = this.bodyParams;
+			const findResult = await Rooms.findOneByIdOrName(roomId || roomName, {
+				projection: {
+					name: 1,
+				},
 			});
 
-			const sub = await Subscriptions.findOneByRoomIdAndUserId(findResult._id, this.userId);
+			const foundRoomId = findResult?._id || roomId;
+			const foundRoomName = findResult?.name || roomName;
+
+			if (!foundRoomId) {
+				return API.v1.failure('Could not find the channel or any subscription linked to it');
+			}
+
+			const sub = await Subscriptions.findOneByRoomIdAndUserId(foundRoomId, this.userId);
 
 			if (!sub) {
-				return API.v1.failure(`The user/callee is not in the channel "${findResult.name}.`);
+				return API.v1.failure(`The user/callee is not in the channel "${foundRoomName}.`);
 			}
 
 			if (!sub.open) {
-				return API.v1.failure(`The channel, ${findResult.name}, is already closed to the sender`);
+				return API.v1.failure(`The channel, ${foundRoomName}, is already closed to the sender`);
 			}
 
-			await hideRoomMethod(this.userId, findResult._id);
+			await hideRoomMethod(this.userId, foundRoomId);
 
 			return API.v1.success();
 		},
