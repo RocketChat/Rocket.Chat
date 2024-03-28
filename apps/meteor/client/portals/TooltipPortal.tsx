@@ -6,7 +6,7 @@ import { createAnchor } from '../lib/utils/createAnchor';
 import { deleteAnchor } from '../lib/utils/deleteAnchor';
 
 const TooltipPortal: FC = ({ children }) => {
-	const [tooltipRoot] = useState(() => createAnchor('react-tooltip'));
+	const [tooltipRoot] = useState(() => createAnchor('tooltip-root'));
 	useEffect(() => (): void => deleteAnchor(tooltipRoot), [tooltipRoot]);
 	return <>{createPortal(children, tooltipRoot)}</>;
 };
