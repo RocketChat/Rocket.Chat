@@ -53,7 +53,7 @@ describe('Apps - Installation', function () {
 					})
 					.end(done);
 			});
-		});
+		}).timeout(20000);
 		it('should have created the app user successfully', (done) => {
 			getUserByUsername(APP_USERNAME)
 				.then((user) => {

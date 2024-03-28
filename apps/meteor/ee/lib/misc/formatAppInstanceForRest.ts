@@ -14,10 +14,10 @@ interface IAppInfoRest extends IAppInfo {
 	migrated: boolean;
 }
 
-export function formatAppInstanceForRest(app: ProxiedApp): IAppInfoRest {
+export async function formatAppInstanceForRest(app: ProxiedApp): Promise<IAppInfoRest> {
 	const appRest: IAppInfoRest = {
 		...app.getInfo(),
-		status: app.getStatus(),
+		status: await app.getStatus(),
 		languages: app.getStorageItem().languageContent,
 		private: getInstallationSourceFromAppStorageItem(app.getStorageItem()) === 'private',
 		migrated: !!app.getStorageItem().migrated,
