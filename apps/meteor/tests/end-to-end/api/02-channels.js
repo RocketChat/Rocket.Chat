@@ -1919,25 +1919,13 @@ describe('[Channels]', function () {
 			await updatePermission('create-team', ['admin']);
 			await updatePermission('edit-room', ['admin']);
 
-			await request
-				.post(api('channels.convertToTeam'))
-				.set(credentials)
-				.send({ channelId: testChannel._id })
-				.success();
+			await request.post(api('channels.convertToTeam')).set(credentials).send({ channelId: testChannel._id }).success();
 		});
 
 		it(`should successfully convert a channel to a team when the channel's name is sent as parameter`, async () => {
-			await request
-				.post(api('teams.convertToChannel'))
-				.set(credentials)
-				.send({ teamName: testChannel.name })
-				.success();
+			await request.post(api('teams.convertToChannel')).set(credentials).send({ teamName: testChannel.name }).success();
 
-			await request
-				.post(api('channels.convertToTeam'))
-				.set(credentials)
-				.send({ channelName: testChannel.name })
-				.success();
+			await request.post(api('channels.convertToTeam')).set(credentials).send({ channelName: testChannel.name }).success();
 		});
 
 		it('should fail to convert channel without the required parameters', (done) => {
