@@ -48,5 +48,5 @@ Test.prototype.forbidden = function () {
 };
 
 Test.prototype.svg = function () {
-	return this.expect('Content-Type', 'image/svg+xml').expect(200);
+	return this.expect('Content-Type', 'image/svg+xml;charset=utf-8').expect(200);
 };
