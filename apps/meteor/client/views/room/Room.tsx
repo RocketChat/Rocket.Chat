@@ -7,7 +7,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { ContextualbarSkeleton } from '../../components/Contextualbar';
 import Header from './Header';
 import MessageHighlightProvider from './MessageList/providers/MessageHighlightProvider';
-import RoomBodyChecks from './RoomBodyChecks';
+import RoomBodyWithE2EESetup from './RoomBodyWithE2EESetup';
 import { useRoom } from './contexts/RoomContext';
 import { useRoomToolbox } from './contexts/RoomToolboxContext';
 import { useAppsContextualBar } from './hooks/useAppsContextualBar';
@@ -37,7 +37,7 @@ const Room = (): ReactElement => {
 									: t('Channel__roomName__', { roomName: room.name })
 							}
 							header={<Header room={room} />}
-							body={<RoomBodyChecks room={room} />}
+							body={<RoomBodyWithE2EESetup room={room} />}
 							aside={
 								(toolbox.tab?.tabComponent && (
 									<ErrorBoundary fallback={null}>
