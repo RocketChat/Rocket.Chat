@@ -39,23 +39,27 @@ export const useVoipClient = (): UseVoipClientResult => {
 	const isEE = useHasLicenseModule('voip-enterprise');
 	const voipEnabled = settingVoipEnabled && voipConnectorEnabled;
 
-	useEffect(
-		() =>
-			subscribeToNotifyLoggedIn(`voip.statuschanged`, (enabled: boolean): void => {
-				setVoipConnectorEnabled(enabled);
-			}),
-		[setResult, setVoipConnectorEnabled, subscribeToNotifyLoggedIn],
-	);
+	useEffect(() => {
+		const uid = user?._id;
+		const userExtension = user?.extension;
+		if (!uid || !userExtension || !voipEnabled) {
+			return;
+		}
+		return subscribeToNotifyLoggedIn(`voip.statuschanged`, (enabled: boolean): void => {
+			setVoipConnectorEnabled(enabled);
+		});
+	}, [user, voipEnabled, setResult, setVoipConnectorEnabled, subscribeToNotifyLoggedIn]);
 
 	useEffect(() => {
 		const uid = user?._id;
 		const userExtension = user?.extension;
-
 		if (!uid || !userExtension || !voipEnabled) {
 			setResult(empty);
 			return;
 		}
+
 		let client: VoIPUser;
+
 		registrationInfo({ id: uid }).then(
 			(data) => {
 				let parsedData: IRegistrationInfo;
