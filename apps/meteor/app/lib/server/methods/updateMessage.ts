@@ -26,8 +26,7 @@ export async function executeUpdateMessage(uid: IUser['_id'], message: AtLeast<I
 		}
 	});
 
-	const msgText = originalMessage?.attachments?.[0]?.description ?? originalMessage.msg;
-	if (msgText === message.msg && !previewUrls) {
+	if (originalMessage.msg === message.msg && !previewUrls) {
 		return;
 	}
 
@@ -77,13 +76,6 @@ export async function executeUpdateMessage(uid: IUser['_id'], message: AtLeast<I
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'updateMessage' });
 	}
 	await canSendMessageAsync(message.rid, { uid: user._id, username: user.username ?? undefined, ...user });
-
-	// It is possible to have an empty array as the attachments property, so ensure both things exist
-	if (originalMessage.attachments && originalMessage.attachments.length > 0 && originalMessage.attachments[0].description !== undefined) {
-		originalMessage.attachments[0].description = message.msg;
-		message.attachments = originalMessage.attachments;
-		message.msg = originalMessage.msg;
-	}
 
 	message.u = originalMessage.u;
 

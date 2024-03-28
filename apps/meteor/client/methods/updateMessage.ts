@@ -26,9 +26,7 @@ Meteor.methods<ServerMethods>({
 		const editAllowed = settings.get('Message_AllowEditing');
 		let editOwn = false;
 
-		const msgText = originalMessage?.attachments?.[0]?.description ?? originalMessage.msg;
-
-		if (msgText === message.msg) {
+		if (originalMessage.msg === message.msg) {
 			return;
 		}
 		if (originalMessage?.u?._id) {
@@ -79,12 +77,6 @@ Meteor.methods<ServerMethods>({
 				msg: message.msg,
 			};
 
-			if (originalMessage.attachments?.length) {
-				if (originalMessage.attachments[0].description !== undefined) {
-					delete messageObject.msg;
-					originalMessage.attachments[0].description = message.msg;
-				}
-			}
 			ChatMessage.update(
 				{
 					'_id': message._id,
