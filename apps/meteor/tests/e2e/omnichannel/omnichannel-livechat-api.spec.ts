@@ -220,6 +220,7 @@ test.describe('OC - Livechat API', () => {
 		let agent: Awaited<ReturnType<typeof createAgent>>;
 		let agent2: Awaited<ReturnType<typeof createAgent>>;
 		let departments: Awaited<ReturnType<typeof createDepartment>>[];
+		let pageContext: Page;
 
 		test.beforeAll(async ({ api }) => {
 			agent = await createAgent(api, 'user1');
@@ -262,6 +263,7 @@ test.describe('OC - Livechat API', () => {
 			await poAuxContext.page.close();
 			await page.close();
 			await poAuxContext2?.page.close();
+			await pageContext?.close();
 		});
 
 		test.afterAll(async ({ api }) => {
@@ -388,20 +390,20 @@ test.describe('OC - Livechat API', () => {
 			});
 
 			await test.step('Expect registerGuest to log in an existing guest and load chat history', async () => {
-				const { page: pageCtx } = await createAuxContext(browser, Users.user1);
+				({ page: pageContext } = await createAuxContext(browser, Users.user1));
 
-				await pageCtx.goto('/packages/rocketchat_livechat/assets/demo.html');
+				await pageContext.goto('/packages/rocketchat_livechat/assets/demo.html');
 
-				await pageCtx.evaluate(() => window.RocketChat.livechat.maximizeWidget());
-				await expect(pageCtx.frameLocator('#rocketchat-iframe').getByText('Start Chat')).toBeVisible();
+				await pageContext.evaluate(() => window.RocketChat.livechat.maximizeWidget());
+				await expect(pageContext.frameLocator('#rocketchat-iframe').getByText('Start Chat')).toBeVisible();
 
-				await pageCtx.evaluate(
+				await pageContext.evaluate(
 					(registerGuestVisitor) => window.RocketChat.livechat.registerGuest(registerGuestVisitor),
 					registerGuestVisitor,
 				);
 
-				await expect(pageCtx.frameLocator('#rocketchat-iframe').getByText('Start Chat')).not.toBeVisible();
-				await expect(pageCtx.frameLocator('#rocketchat-iframe').getByText('this_a_test_message_from_visitor')).toBeVisible();
+				await expect(pageContext.frameLocator('#rocketchat-iframe').getByText('Start Chat')).not.toBeVisible();
+				await expect(pageContext.frameLocator('#rocketchat-iframe').getByText('this_a_test_message_from_visitor')).toBeVisible();
 			});
 		});
 
@@ -543,20 +545,20 @@ test.describe('OC - Livechat API', () => {
 			await poLiveChat.btnSendMessageToOnlineAgent.click();
 
 			await test.step('Expect setGuestToken to log in an existing guest and load chat history', async () => {
-				const { page: pageCtx } = await createAuxContext(browser, Users.user1);
+				({ page: pageContext } = await createAuxContext(browser, Users.user1));
 
-				await pageCtx.goto('/packages/rocketchat_livechat/assets/demo.html');
+				await pageContext.goto('/packages/rocketchat_livechat/assets/demo.html');
 
-				await pageCtx.evaluate(() => window.RocketChat.livechat.maximizeWidget());
-				await expect(pageCtx.frameLocator('#rocketchat-iframe').getByText('Start Chat')).toBeVisible();
+				await pageContext.evaluate(() => window.RocketChat.livechat.maximizeWidget());
+				await expect(pageContext.frameLocator('#rocketchat-iframe').getByText('Start Chat')).toBeVisible();
 
-				await pageCtx.evaluate(
+				await pageContext.evaluate(
 					(registerGuestVisitor) => window.RocketChat.livechat.setGuestToken(registerGuestVisitor.token),
 					registerGuestVisitor,
 				);
 
-				await expect(pageCtx.frameLocator('#rocketchat-iframe').getByText('Start Chat')).not.toBeVisible();
-				await expect(pageCtx.frameLocator('#rocketchat-iframe').getByText('this_a_test_message_from_visitor')).toBeVisible();
+				await expect(pageContext.frameLocator('#rocketchat-iframe').getByText('Start Chat')).not.toBeVisible();
+				await expect(pageContext.frameLocator('#rocketchat-iframe').getByText('this_a_test_message_from_visitor')).toBeVisible();
 			});
 		});
 	});
