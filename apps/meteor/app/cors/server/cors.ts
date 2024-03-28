@@ -7,7 +7,6 @@ import { Logger } from '@rocket.chat/logger';
 import { Meteor } from 'meteor/meteor';
 import type { StaticFiles } from 'meteor/webapp';
 import { WebApp, WebAppInternals } from 'meteor/webapp';
-import _ from 'underscore';
 
 import { settings } from '../../settings/server';
 
@@ -158,7 +157,7 @@ WebApp.httpServer.addListener('request', (req, res, ...args) => {
 
 	const isLocal =
 		localhostRegexp.test(remoteAddress) &&
-		(!req.headers['x-forwarded-for'] || _.all((req.headers['x-forwarded-for'] as string).split(','), localhostTest));
+		(!req.headers['x-forwarded-for'] || (req.headers['x-forwarded-for'] as string).split(',').every(localhostTest));
 	// @ts-expect-error - `pair` is valid, but doesnt exists on types
 	const isSsl = req.connection.pair || (req.headers['x-forwarded-proto'] && req.headers['x-forwarded-proto'].indexOf('https') !== -1);
 

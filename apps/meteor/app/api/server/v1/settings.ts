@@ -106,7 +106,7 @@ API.v1.addRoute(
 	{ authRequired: true, twoFactorRequired: true },
 	{
 		async post() {
-			if (!this.bodyParams.name || !this.bodyParams.name.trim()) {
+			if (!this.bodyParams.name?.trim()) {
 				throw new Meteor.Error('error-name-param-not-provided', 'The parameter "name" is required');
 			}
 
