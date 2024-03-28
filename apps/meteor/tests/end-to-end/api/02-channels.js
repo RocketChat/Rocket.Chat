@@ -40,8 +40,7 @@ describe('[Channels]', function () {
 			.send({
 				name: apiPublicChannelName,
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.nested.property('channel._id');
@@ -68,8 +67,7 @@ describe('[Channels]', function () {
 				roomId: channel._id,
 				userId: 'rocket.cat',
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.nested.property('channel._id');
@@ -87,8 +85,7 @@ describe('[Channels]', function () {
 				roomId: channel._id,
 				userId: 'rocket.cat',
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
 			})
@@ -133,8 +130,7 @@ describe('[Channels]', function () {
 				roomId: channel._id,
 				userId: 'rocket.cat',
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
 			})
@@ -179,8 +175,7 @@ describe('[Channels]', function () {
 				roomId: channel._id,
 				userId: 'rocket.cat',
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
 			})
@@ -195,8 +190,7 @@ describe('[Channels]', function () {
 				roomId: channel._id,
 				userId: 'rocket.cat',
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
 			})
@@ -213,8 +207,7 @@ describe('[Channels]', function () {
 				roomId: channel._id,
 				userId: 'rocket.cat',
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.nested.property('channel._id');
@@ -234,8 +227,7 @@ describe('[Channels]', function () {
 				roomId: channel._id,
 				userId: 'rocket.cat',
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.nested.property('channel._id');
@@ -253,8 +245,7 @@ describe('[Channels]', function () {
 				roomId: channel._id,
 				userId: 'rocket.cat',
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
 			})
@@ -268,8 +259,7 @@ describe('[Channels]', function () {
 			.send({
 				roomId: channel._id,
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
 			})
@@ -283,8 +273,7 @@ describe('[Channels]', function () {
 			.send({
 				roomId: channel._id,
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
 			})
@@ -298,8 +287,7 @@ describe('[Channels]', function () {
 			.send({
 				roomId: channel._id,
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
 			})
@@ -329,8 +317,7 @@ describe('[Channels]', function () {
 			.send({
 				roomId: channel._id,
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
 			})
@@ -344,8 +331,7 @@ describe('[Channels]', function () {
 			.query({
 				roomId: channel._id,
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('count');
@@ -361,8 +347,7 @@ describe('[Channels]', function () {
 			.query({
 				roomId: channel._id,
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('count');
@@ -377,8 +362,7 @@ describe('[Channels]', function () {
 			.query({
 				roomId: channel._id,
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('joined', true);
@@ -425,8 +409,7 @@ describe('[Channels]', function () {
 				roomId: channel._id,
 				name: `EDITED${apiPublicChannelName}`,
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.nested.property('channel._id');
@@ -443,8 +426,7 @@ describe('[Channels]', function () {
 			.send({
 				roomId: channel._id,
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.nested.property('channel._id');
@@ -462,8 +444,7 @@ describe('[Channels]', function () {
 				roomId: channel._id,
 				userId: 'rocket.cat',
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect((res) => {
 				expect(res.body).to.have.a.property('success', true);
 			})
@@ -477,8 +458,7 @@ describe('[Channels]', function () {
 				roomId: channel._id,
 				userId: 'rocket.cat',
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
 			})
@@ -495,8 +475,7 @@ describe('[Channels]', function () {
 				roomId: channel._id,
 				joinCode: '123',
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.nested.property('channel._id');
@@ -516,8 +495,7 @@ describe('[Channels]', function () {
 				roomId: channel._id,
 				readOnly: true,
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.nested.property('channel._id');
@@ -535,8 +513,7 @@ describe('[Channels]', function () {
 			.send({
 				roomId: channel._id,
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.nested.property('channel._id');
@@ -598,8 +575,7 @@ describe('[Channels]', function () {
 					name: `channel.test.${Date.now()}-${Math.random()}`,
 					members: [guestUser.username],
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					room = res.body.group;
@@ -611,8 +587,7 @@ describe('[Channels]', function () {
 						.query({
 							roomId: room._id,
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('members').and.to.be.an('array');
@@ -639,8 +614,7 @@ describe('[Channels]', function () {
 				.send({
 					name: testChannelName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					testChannel = res.body.channel;
 				})
@@ -668,8 +642,7 @@ describe('[Channels]', function () {
 				.query({
 					roomId: testChannel._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel._id');
@@ -689,8 +662,7 @@ describe('[Channels]', function () {
 						rid: testChannel._id,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					channelMessage = res.body.message;
@@ -705,8 +677,7 @@ describe('[Channels]', function () {
 					emoji: ':squid:',
 					messageId: channelMessage._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
@@ -719,8 +690,7 @@ describe('[Channels]', function () {
 				.send({
 					messageId: channelMessage._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
@@ -733,8 +703,7 @@ describe('[Channels]', function () {
 				.send({
 					messageId: channelMessage._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
@@ -747,8 +716,7 @@ describe('[Channels]', function () {
 				.query({
 					roomId: testChannel._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('channel').and.to.be.an('object');
@@ -769,8 +737,7 @@ describe('[Channels]', function () {
 				.query({
 					roomId: testChannel._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
@@ -790,8 +757,7 @@ describe('[Channels]', function () {
 					count: 5,
 					offset: 0,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
@@ -871,8 +837,7 @@ describe('[Channels]', function () {
 				.get(api('channels.online'))
 				.set(testUserCredentials)
 				.query(`query={"_id": "${room._id}"}`)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('online');
@@ -895,8 +860,7 @@ describe('[Channels]', function () {
 				.get(api('channels.online'))
 				.set(outsiderCredentials)
 				.query(`query={"_id": "${room._id}"}`)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('online');
@@ -949,8 +913,7 @@ describe('[Channels]', function () {
 					roomId: testChannelWithCode._id,
 					joinCode: '123',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
@@ -981,8 +944,7 @@ describe('[Channels]', function () {
 					.send({
 						roomId: testChannelNoCode._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.nested.property('channel._id', testChannelNoCode._id);
@@ -1038,8 +1000,7 @@ describe('[Channels]', function () {
 							roomId: testChannelWithCode._id,
 							joinCode: '123',
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.nested.property('channel._id', testChannelWithCode._id);
@@ -1060,8 +1021,7 @@ describe('[Channels]', function () {
 						.send({
 							roomId: testChannelWithCode._id,
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
 							expect(res.body).to.have.property('success', true);
 						})
@@ -1075,8 +1035,7 @@ describe('[Channels]', function () {
 						.send({
 							roomId: testChannelWithCode._id,
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.nested.property('channel._id', testChannelWithCode._id);
@@ -1096,8 +1055,7 @@ describe('[Channels]', function () {
 					roomId: channel._id,
 					description: 'this is a description for a channel for api tests',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('description', 'this is a description for a channel for api tests');
@@ -1112,8 +1070,7 @@ describe('[Channels]', function () {
 					roomId: channel._id,
 					description: '',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('description', '');
@@ -1131,8 +1088,7 @@ describe('[Channels]', function () {
 					roomId: channel._id,
 					topic: 'this is a topic of a channel for api tests',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('topic', 'this is a topic of a channel for api tests');
@@ -1147,8 +1103,7 @@ describe('[Channels]', function () {
 					roomId: channel._id,
 					topic: '',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('topic', '');
@@ -1166,8 +1121,7 @@ describe('[Channels]', function () {
 					roomId: channel._id,
 					announcement: 'this is an announcement of a channel for api tests',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('announcement', 'this is an announcement of a channel for api tests');
@@ -1182,8 +1136,7 @@ describe('[Channels]', function () {
 					roomId: channel._id,
 					announcement: '',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('announcement', '');
@@ -1201,8 +1154,7 @@ describe('[Channels]', function () {
 					roomId: channel._id,
 					purpose: 'this is a purpose of a channel for api tests',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('purpose', 'this is a purpose of a channel for api tests');
@@ -1217,8 +1169,7 @@ describe('[Channels]', function () {
 					roomId: channel._id,
 					purpose: '',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('purpose', '');
@@ -1235,8 +1186,7 @@ describe('[Channels]', function () {
 				.query({
 					roomId: channel._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages');
@@ -1253,8 +1203,7 @@ describe('[Channels]', function () {
 					count: 5,
 					offset: 0,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages');
@@ -1276,8 +1225,7 @@ describe('[Channels]', function () {
 					roomId: channel._id,
 					userId: testUser._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 		});
 
 		after(async () => {
@@ -1291,8 +1239,7 @@ describe('[Channels]', function () {
 				.query({
 					roomId: channel._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('members').and.to.be.an('array');
@@ -1312,8 +1259,7 @@ describe('[Channels]', function () {
 					count: 5,
 					offset: 0,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('members').and.to.be.an('array');
@@ -1332,8 +1278,7 @@ describe('[Channels]', function () {
 					roomId: channel._id,
 					filter: testUser.username,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('members').and.to.be.an('array');
@@ -1403,8 +1348,7 @@ describe('[Channels]', function () {
 					.query({
 						roomId: createdChannel._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						const integrationCreated = res.body.integrations.find(
@@ -1428,8 +1372,7 @@ describe('[Channels]', function () {
 						.query({
 							roomId: createdChannel._id,
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
 							expect(res.body).to.have.property('success', true);
 							const integrationCreated = res.body.integrations.find(
@@ -1498,8 +1441,7 @@ describe('[Channels]', function () {
 				.query({
 					roomId: withCFChannel._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel.customFields.field0', 'value0');
@@ -1515,8 +1457,7 @@ describe('[Channels]', function () {
 					roomId: withCFChannel._id,
 					customFields,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel._id');
@@ -1533,8 +1474,7 @@ describe('[Channels]', function () {
 				.query({
 					roomId: withCFChannel._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel.customFields.field9', 'value9');
@@ -1548,8 +1488,7 @@ describe('[Channels]', function () {
 				.send({
 					roomName: withCFChannel.name,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
@@ -1576,8 +1515,7 @@ describe('[Channels]', function () {
 					roomId: withoutCFChannel._id,
 					customFields,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel._id');
@@ -1596,8 +1534,7 @@ describe('[Channels]', function () {
 					roomName: withoutCFChannel.name,
 					customFields,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel._id');
@@ -1619,8 +1556,7 @@ describe('[Channels]', function () {
 					roomName: withoutCFChannel.name,
 					customFields,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel._id');
@@ -1656,8 +1592,7 @@ describe('[Channels]', function () {
 				.send({
 					roomName: withoutCFChannel.name,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
@@ -1687,8 +1622,7 @@ describe('[Channels]', function () {
 					roomId: testChannel._id,
 					default: true,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel._id');
@@ -1708,8 +1642,7 @@ describe('[Channels]', function () {
 					roomId: testChannel._id,
 					default: false,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel._id');
@@ -1743,8 +1676,7 @@ describe('[Channels]', function () {
 					roomId: channel._id,
 					type: 'p',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel._id');
@@ -1773,8 +1705,7 @@ describe('[Channels]', function () {
 				.send({
 					roomName: testChannel.name,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
@@ -1805,8 +1736,7 @@ describe('[Channels]', function () {
 				.query({
 					roomId: channel._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('mentions').and.to.be.an('array');
@@ -1825,8 +1755,7 @@ describe('[Channels]', function () {
 					count: 5,
 					offset: 0,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('mentions').and.to.be.an('array');
@@ -1886,8 +1815,7 @@ describe('[Channels]', function () {
 				.query({
 					roomId: testChannel._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('roles').that.is.an('array').that.has.lengthOf(2);
@@ -1948,8 +1876,7 @@ describe('[Channels]', function () {
 				.query({
 					roomId: testChannel._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('moderators').that.is.an('array').that.has.lengthOf(1);
@@ -1996,8 +1923,7 @@ describe('[Channels]', function () {
 					.query({
 						roomId: testChannel._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.a.property('success', true);
 						expect(res.body).to.have.a.property('messages').that.is.an('array');
@@ -2014,8 +1940,7 @@ describe('[Channels]', function () {
 						count: 5,
 						offset: 0,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.a.property('success', true);
 						expect(res.body).to.have.a.property('messages').that.is.an('array');
@@ -2092,7 +2017,7 @@ describe('[Channels]', function () {
 				.post(api('channels.convertToTeam'))
 				.set(credentials)
 				.send({ channelId: testChannel._id })
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 				});
@@ -2103,7 +2028,7 @@ describe('[Channels]', function () {
 				.post(api('teams.convertToChannel'))
 				.set(credentials)
 				.send({ teamName: testChannel.name })
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 				});
@@ -2112,7 +2037,7 @@ describe('[Channels]', function () {
 				.post(api('channels.convertToTeam'))
 				.set(credentials)
 				.send({ channelName: testChannel.name })
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 				});
@@ -2150,8 +2075,7 @@ describe('[Channels]', function () {
 				.send({
 					roomId: testChannel._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel._id', testChannel._id);
@@ -2166,8 +2090,7 @@ describe('[Channels]', function () {
 						rid: testChannel._id,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				});
@@ -2185,8 +2108,7 @@ describe('[Channels]', function () {
 			request
 				.get(api('channels.list'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count');
@@ -2204,8 +2126,7 @@ describe('[Channels]', function () {
 			request
 				.get(api('channels.list.joined'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count');
@@ -2225,8 +2146,7 @@ describe('[Channels]', function () {
 			await request
 				.get(api('channels.list.joined'))
 				.set(newCreds)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count').that.is.equal(0);

@@ -42,8 +42,7 @@ describe('Apps - Installation', function () {
 					.send({
 						url: APP_URL,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.a.property('success', true);
 						expect(res.body).to.have.a.property('app');
@@ -66,8 +65,7 @@ describe('Apps - Installation', function () {
 				request
 					.get(api('commands.get?command=test-simple'))
 					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.a.property('success', true);
 						expect(res.body).to.have.a.property('command');
@@ -79,8 +77,7 @@ describe('Apps - Installation', function () {
 				request
 					.get(api('commands.get?command=test-with-arguments'))
 					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.a.property('success', true);
 						expect(res.body).to.have.a.property('command');
@@ -94,8 +91,7 @@ describe('Apps - Installation', function () {
 				request
 					.get(api('video-conference.providers'))
 					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.a.property('success', true);
 						expect(res.body).to.have.a.property('data').that.is.an('array').with.lengthOf(2);

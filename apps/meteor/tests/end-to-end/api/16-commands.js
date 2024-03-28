@@ -45,7 +45,7 @@ describe('[Commands]', function () {
 				.query({
 					command: 'help',
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('command');
@@ -63,7 +63,7 @@ describe('[Commands]', function () {
 			void request
 				.get(api('commands.list'))
 				.set(credentials)
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('offset');
@@ -81,7 +81,7 @@ describe('[Commands]', function () {
 					count: 5,
 					offset: 0,
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('offset');
@@ -233,7 +233,7 @@ describe('[Commands]', function () {
 					roomId: threadMessage.rid,
 					tmid: threadMessage.tmid,
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
@@ -293,8 +293,7 @@ describe('[Commands]', function () {
 						command: 'unarchive',
 						roomId: 'GENERAL',
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 					});
@@ -308,8 +307,7 @@ describe('[Commands]', function () {
 						command: 'archive',
 						roomId: 'GENERAL',
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 					});
@@ -368,8 +366,7 @@ describe('[Commands]', function () {
 						command: 'archive',
 						roomId: 'GENERAL',
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 					});
@@ -382,8 +379,7 @@ describe('[Commands]', function () {
 						command: 'unarchive',
 						roomId: 'GENERAL',
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 					});

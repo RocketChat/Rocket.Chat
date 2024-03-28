@@ -62,8 +62,7 @@ describe('[Presence]', function () {
 			await request
 				.get(api('presence.getConnections'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('current').to.be.a('number');
@@ -116,8 +115,7 @@ describe('[Presence]', function () {
 			await request
 				.post(api('presence.enableBroadcast'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 				});

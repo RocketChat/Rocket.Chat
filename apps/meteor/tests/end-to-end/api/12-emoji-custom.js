@@ -30,8 +30,7 @@ describe('[EmojiCustom]', function () {
 					name: customEmojiName,
 					aliases: `${customEmojiName}-alias`,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
@@ -45,8 +44,7 @@ describe('[EmojiCustom]', function () {
 				.field({
 					name: `${customEmojiName}-without-aliases`,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
@@ -76,7 +74,7 @@ describe('[EmojiCustom]', function () {
 			request
 				.get(api('emoji-custom.list'))
 				.set(credentials)
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('emojis').and.to.be.a('object');
 					expect(res.body.emojis).to.have.property('update').and.to.be.a('array').and.to.not.have.lengthOf(0);
@@ -97,8 +95,7 @@ describe('[EmojiCustom]', function () {
 						name: customEmojiName,
 						aliases: 'alias-my-custom-emoji',
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 					})
@@ -112,8 +109,7 @@ describe('[EmojiCustom]', function () {
 						_id: createdCustomEmoji._id,
 						name: customEmojiName,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 					})
@@ -128,8 +124,7 @@ describe('[EmojiCustom]', function () {
 						_id: createdCustomEmoji._id,
 						name: customEmojiName,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 					})
@@ -195,7 +190,7 @@ describe('[EmojiCustom]', function () {
 			request
 				.get(api('emoji-custom.list'))
 				.set(credentials)
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('emojis').and.to.be.a('object');
 					expect(res.body.emojis).to.have.property('update').and.to.be.a('array').and.to.not.have.lengthOf(0);
@@ -207,7 +202,7 @@ describe('[EmojiCustom]', function () {
 			request
 				.get(api(`emoji-custom.list?query={"_updatedAt": {"$gt": { "$date": "${new Date().toISOString()}" } } }`))
 				.set(credentials)
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('emojis').and.to.be.a('object');
@@ -220,7 +215,7 @@ describe('[EmojiCustom]', function () {
 			request
 				.get(api(`emoji-custom.list?updatedSince=${new Date().toISOString()}`))
 				.set(credentials)
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('emojis').and.to.be.a('object');
@@ -237,7 +232,7 @@ describe('[EmojiCustom]', function () {
 					),
 				)
 				.set(credentials)
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('emojis').and.to.be.a('object');
@@ -264,7 +259,7 @@ describe('[EmojiCustom]', function () {
 			request
 				.get(api('emoji-custom.all'))
 				.set(credentials)
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('emojis').and.to.be.an('array');
 					expect(res.body).to.have.property('total');
@@ -281,7 +276,7 @@ describe('[EmojiCustom]', function () {
 					count: 5,
 					offset: 0,
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('emojis').and.to.be.an('array');
 					expect(res.body).to.have.property('total');
@@ -310,7 +305,7 @@ describe('[EmojiCustom]', function () {
 			request
 				.get('/emoji-custom/invalid')
 				.set(credentials)
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.headers).to.have.property('last-modified', 'Thu, 01 Jan 2015 00:00:00 GMT');
 					expect(res.headers).to.have.property('content-type', 'image/svg+xml');
@@ -339,7 +334,7 @@ describe('[EmojiCustom]', function () {
 			request
 				.get(`/emoji-custom/${customEmojiName}.png`)
 				.set(credentials)
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.headers).to.have.property('last-modified');
 					expect(res.headers).to.have.property('content-type', 'image/png');
@@ -404,8 +399,7 @@ describe('[EmojiCustom]', function () {
 				.send({
 					emojiId: createdCustomEmoji._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})

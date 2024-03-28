@@ -74,8 +74,7 @@ describe('AutoTranslate', function () {
 						.query({
 							targetLanguage: 'en',
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
 							expect(res.body).to.have.a.property('success', true);
 							expect(res.body.languages).to.be.an('array');
@@ -285,8 +284,7 @@ describe('AutoTranslate', function () {
 						field: 'autoTranslateLanguage',
 						value: 'en',
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.a.property('success', true);
 					})
@@ -367,8 +365,7 @@ describe('AutoTranslate', function () {
 					.send({
 						messageId: messageSent._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.a.property('success', true);
 					})
@@ -392,7 +389,7 @@ describe('AutoTranslate', function () {
 					.post(api('users.setPreferences'))
 					.set(cred)
 					.send({ data: { language } })
-					.expect(200)
+					.success()
 					.expect('Content-Type', 'application/json')
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
@@ -407,8 +404,7 @@ describe('AutoTranslate', function () {
 						.query({
 							roomId,
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('subscription').and.to.be.an('object');
@@ -466,8 +462,7 @@ describe('AutoTranslate', function () {
 					.send({
 						roomId: channel._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200);
+					.success();
 
 				const sub = await getSub(channel._id, credB);
 				expect(sub).to.have.property('autoTranslate');
@@ -505,8 +500,7 @@ describe('AutoTranslate', function () {
 						roomId: newChannel._id,
 						userId: userB._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200);
+					.success();
 
 				const sub = await getSub(newChannel._id, credB);
 				expect(sub).to.have.property('autoTranslate');

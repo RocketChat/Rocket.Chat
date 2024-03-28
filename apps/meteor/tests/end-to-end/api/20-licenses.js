@@ -98,7 +98,7 @@ describe('licenses', function () {
 			request
 				.get(api('licenses.get'))
 				.set(credentials)
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('licenses').and.to.be.an('array');
@@ -125,8 +125,7 @@ describe('licenses', function () {
 			request
 				.get(api('licenses.info'))
 				.set(unauthorizedUserCredentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('license').and.to.be.an('object');
@@ -140,7 +139,7 @@ describe('licenses', function () {
 			request
 				.get(api('licenses.info'))
 				.set(credentials)
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('license').and.to.be.an('object');
@@ -171,8 +170,7 @@ describe('licenses', function () {
 			request
 				.get(api('licenses.isEnterprise'))
 				.set(unauthorizedUserCredentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('isEnterprise', Boolean(process.env.IS_EE));
 				})
@@ -183,8 +181,7 @@ describe('licenses', function () {
 			request
 				.get(api('licenses.isEnterprise'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('isEnterprise', Boolean(process.env.IS_EE));
 				})

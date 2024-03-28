@@ -53,8 +53,7 @@ export const deleteAllSLA = async (): Promise<void> => {
 		request
 			.delete(api(`livechat/sla/${slaObj._id}`))
 			.set(credentials)
-			.expect('Content-Type', 'application/json')
-			.expect(200),
+			.success(),
 	);
 	await Promise.all(promises);
 };
@@ -67,4 +66,4 @@ export const getRandomPriority = async (): Promise<ILivechatPriority> => {
 		body: { priorities },
 	} = response as { body: { priorities: ILivechatPriority[] } };
 	return priorities[Math.floor(Math.random() * priorities.length)];
-}
+};

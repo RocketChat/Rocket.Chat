@@ -23,8 +23,7 @@ describe('[Assets]', function () {
 				.field({
 					assetName: 'logo',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
@@ -52,8 +51,7 @@ describe('[Assets]', function () {
 				.send({
 					assetName: 'logo',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})

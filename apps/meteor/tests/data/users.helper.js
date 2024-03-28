@@ -54,8 +54,7 @@ export const getUserStatus = (userId) =>
 		request
 			.get(api(`users.getStatus?userId=${userId}`))
 			.set(credentials)
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.end((end, res) => {
 				resolve(res.body);
 			});
@@ -66,8 +65,7 @@ export const getMe = (overrideCredential = credentials) =>
 		request
 			.get(api('me'))
 			.set(overrideCredential)
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.end((end, res) => {
 				resolve(res.body);
 			});

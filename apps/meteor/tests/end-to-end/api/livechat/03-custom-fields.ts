@@ -26,8 +26,7 @@ describe('LIVECHAT - custom fields', function () {
 			await request
 				.get(api('livechat/custom-fields'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body.customFields).to.be.an('array');
@@ -45,8 +44,7 @@ describe('LIVECHAT - custom fields', function () {
 					count: 5,
 					offset: 0,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body.customFields).to.be.an('array');
@@ -110,7 +108,7 @@ describe('LIVECHAT - custom fields', function () {
 			const { body } = await request
 				.post(api('livechat/custom.field'))
 				.send({ token: visitor.token, key: customFieldName, value: 'test_address', overwrite: true })
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('success', true);
 			expect(body).to.have.property('field');
@@ -169,7 +167,7 @@ describe('LIVECHAT - custom fields', function () {
 			const { body } = await request
 				.post(api('livechat/custom.fields'))
 				.send({ token: visitor.token, customFields: [{ key: customFieldName, value: 'test_address', overwrite: true }] })
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('success', true);
 			expect(body).to.have.property('fields');

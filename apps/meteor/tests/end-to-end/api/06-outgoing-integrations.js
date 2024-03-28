@@ -165,8 +165,7 @@ describe('[Outgoing Integrations]', function () {
 						emoji: ':ghost:',
 						event: 'sendMessage',
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('integration').and.to.be.an('object');
@@ -196,8 +195,7 @@ describe('[Outgoing Integrations]', function () {
 							emoji: ':ghost:',
 							event: 'sendMessage',
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('integration').and.to.be.an('object');
@@ -227,8 +225,7 @@ describe('[Outgoing Integrations]', function () {
 					emoji: ':ghost:',
 					event: 'sendMessage',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('integration.name', 'Guggy');
@@ -247,8 +244,7 @@ describe('[Outgoing Integrations]', function () {
 			request
 				.get(api('integrations.list'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					const integrationCreatedByAdmin = res.body.integrations.find((createdIntegration) => createdIntegration._id === integration._id);
@@ -267,8 +263,7 @@ describe('[Outgoing Integrations]', function () {
 					request
 						.get(api('integrations.list'))
 						.set(userCredentials)
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
 							expect(res.body).to.have.property('success', true);
 							const integrationCreatedByAdmin = res.body.integrations.find(
@@ -335,8 +330,7 @@ describe('[Outgoing Integrations]', function () {
 					.query({
 						id: integration._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('history').and.to.be.an('array');
@@ -415,8 +409,7 @@ describe('[Outgoing Integrations]', function () {
 					request
 						.get(api(`integrations.get?integrationId=${integrationCreatedByAnUser._id}`))
 						.set(userCredentials)
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('integration');
@@ -431,8 +424,7 @@ describe('[Outgoing Integrations]', function () {
 				request
 					.get(api(`integrations.get?integrationId=${integration._id}`))
 					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('integration');
@@ -510,8 +502,7 @@ describe('[Outgoing Integrations]', function () {
 						integrationId: integration._id,
 						type: integration.type,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 					})
@@ -528,8 +519,7 @@ describe('[Outgoing Integrations]', function () {
 						integrationId: integrationCreatedByAnUser._id,
 						type: integrationCreatedByAnUser.type,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 					})

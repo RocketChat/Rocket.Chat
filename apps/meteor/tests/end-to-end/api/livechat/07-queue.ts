@@ -27,8 +27,7 @@ describe('LIVECHAT - Queue', function () {
 			await request
 				.get(api('livechat/queue'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body.queue).to.be.an('array');
@@ -46,8 +45,7 @@ describe('LIVECHAT - Queue', function () {
 					count: 5,
 					offset: 0,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body.queue).to.be.an('array');

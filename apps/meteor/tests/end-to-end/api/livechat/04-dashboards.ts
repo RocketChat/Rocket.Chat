@@ -153,8 +153,7 @@ describe('LIVECHAT - dashboards', function () {
 			await request
 				.get(api('livechat/analytics/dashboards/conversation-totalizers?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body.totalizers).to.be.an('array');
@@ -171,8 +170,7 @@ describe('LIVECHAT - dashboards', function () {
 				.get(api('livechat/analytics/dashboards/conversation-totalizers'))
 				.query({ start, end, departmentId: department._id })
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			expect(result.body).to.have.property('success', true);
 			expect(result.body).to.have.property('totalizers');
@@ -217,8 +215,7 @@ describe('LIVECHAT - dashboards', function () {
 			await request
 				.get(api('livechat/analytics/dashboards/productivity-totalizers?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body.totalizers).to.be.an('array');
@@ -235,8 +232,7 @@ describe('LIVECHAT - dashboards', function () {
 				.get(api('livechat/analytics/dashboards/productivity-totalizers'))
 				.query({ start, end, departmentId: department._id })
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			expect(result.body).to.have.property('success', true);
 
@@ -273,8 +269,7 @@ describe('LIVECHAT - dashboards', function () {
 			await request
 				.get(api('livechat/analytics/dashboards/chats-totalizers?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body.totalizers).to.be.an('array');
@@ -291,8 +286,7 @@ describe('LIVECHAT - dashboards', function () {
 				.get(api('livechat/analytics/dashboards/chats-totalizers'))
 				.query({ start, end, departmentId: department._id })
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			const expected = [
 				{ title: 'Total_abandoned_chats', value: 1 },
@@ -337,8 +331,7 @@ describe('LIVECHAT - dashboards', function () {
 					api('livechat/analytics/dashboards/agents-productivity-totalizers?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'),
 				)
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body.totalizers).to.be.an('array');
@@ -355,8 +348,7 @@ describe('LIVECHAT - dashboards', function () {
 				.get(api('livechat/analytics/dashboards/agents-productivity-totalizers'))
 				.query({ start, end, departmentId: department._id })
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			// [
 			//     { title: 'Busiest_time', value: '- -' },
@@ -392,8 +384,7 @@ describe('LIVECHAT - dashboards', function () {
 			await request
 				.get(api('livechat/analytics/dashboards/charts/chats?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('open');
@@ -409,8 +400,7 @@ describe('LIVECHAT - dashboards', function () {
 				.get(api('livechat/analytics/dashboards/charts/chats'))
 				.query({ start, end, departmentId: department._id })
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			const expected = {
 				open: 4,
@@ -441,8 +431,7 @@ describe('LIVECHAT - dashboards', function () {
 			await request
 				.get(api('livechat/analytics/dashboards/charts/chats-per-agent?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 				});
@@ -455,8 +444,7 @@ describe('LIVECHAT - dashboards', function () {
 				.get(api('livechat/analytics/dashboards/charts/chats-per-agent'))
 				.query({ start, end, departmentId: department._id })
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			const expected = {
 				agent0: { open: 1, closed: 0, onhold: 1 },
@@ -491,8 +479,7 @@ describe('LIVECHAT - dashboards', function () {
 			await request
 				.get(api('livechat/analytics/dashboards/charts/agents-status'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('offline');
@@ -509,8 +496,7 @@ describe('LIVECHAT - dashboards', function () {
 				.get(api('livechat/analytics/dashboards/charts/agents-status'))
 				.query({ start, end, departmentId: department._id })
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			// TODO: We can improve tests further by creating some agents with different status
 			const expected = {
@@ -542,8 +528,7 @@ describe('LIVECHAT - dashboards', function () {
 			await request
 				.get(api('livechat/analytics/dashboards/charts/chats-per-department?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 				});
@@ -556,8 +541,7 @@ describe('LIVECHAT - dashboards', function () {
 				.get(api('livechat/analytics/dashboards/charts/chats-per-department'))
 				.query({ start, end, departmentId: department._id })
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			const expected = {
 				department0: { open: 5, closed: 2 },
@@ -587,8 +571,7 @@ describe('LIVECHAT - dashboards', function () {
 			await request
 				.get(api('livechat/analytics/dashboards/charts/timings?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('response');
@@ -610,8 +593,7 @@ describe('LIVECHAT - dashboards', function () {
 				.get(api('livechat/analytics/dashboards/charts/timings'))
 				.query({ start, end, departmentId: department._id })
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			expect(result.body).to.have.property('success', true);
 
@@ -669,8 +651,7 @@ describe('LIVECHAT - dashboards', function () {
 				.get(api('livechat/analytics/agent-overview'))
 				.query({ from: '2020-01-01', to: '2020-01-02', name: 'invalid-chart-name' })
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(Object.keys(res.body)).to.have.lengthOf(1);
@@ -681,8 +662,7 @@ describe('LIVECHAT - dashboards', function () {
 				.get(api('livechat/analytics/agent-overview'))
 				.query({ from: '2020-01-01', to: '2020-01-02', name: 'Total_conversations' })
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			expect(result.body).to.have.property('success', true);
 			expect(result.body).to.have.property('head');
@@ -698,8 +678,7 @@ describe('LIVECHAT - dashboards', function () {
 				.get(api('livechat/analytics/agent-overview'))
 				.query({ from: yesterday, to: today, name: 'Total_conversations', departmentId: department._id })
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			expect(result.body).to.have.property('success', true);
 			expect(result.body).to.have.property('head');
@@ -742,8 +721,7 @@ describe('LIVECHAT - dashboards', function () {
 				.get(api('livechat/analytics/overview'))
 				.query({ from: '2020-01-01', to: '2020-01-02', name: 'invalid-chart-name' })
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(Object.keys(res.body)).to.have.lengthOf(1);
@@ -754,8 +732,7 @@ describe('LIVECHAT - dashboards', function () {
 				.get(api('livechat/analytics/overview'))
 				.query({ from: '2020-01-01', to: '2020-01-02', name: 'Conversations' })
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			expect(result.body).to.be.an('array');
 			expect(result.body).to.have.lengthOf(7);
@@ -770,8 +747,7 @@ describe('LIVECHAT - dashboards', function () {
 				.get(api('livechat/analytics/overview'))
 				.query({ from: yesterday, to: today, name: 'Conversations', departmentId: department._id })
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			expect(result.body).to.be.an('array');
 

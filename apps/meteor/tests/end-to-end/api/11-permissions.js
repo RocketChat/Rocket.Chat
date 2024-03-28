@@ -16,8 +16,7 @@ describe('[Permissions]', function () {
 			request
 				.get(api('permissions.listAll'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('update').and.to.be.an('array');
@@ -30,8 +29,7 @@ describe('[Permissions]', function () {
 			request
 				.get(api('permissions.listAll?updatedSince=2018-11-27T13:52:01Z'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('update').and.to.be.an('array');
@@ -65,8 +63,7 @@ describe('[Permissions]', function () {
 				.post(api('permissions.update'))
 				.set(credentials)
 				.send({ permissions })
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('permissions');

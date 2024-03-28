@@ -26,8 +26,7 @@ describe('LIVECHAT - appearance', function () {
 			await request
 				.get(api('livechat/appearance'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body.appearance).to.be.an('array');
@@ -80,7 +79,7 @@ describe('LIVECHAT - appearance', function () {
 				.post(api('livechat/appearance'))
 				.set(credentials)
 				.send([{ _id: 'Livechat_title', value: 'test' }])
-				.expect(200);
+				.success();
 		});
 		// Test for: https://github.com/ajv-validator/ajv/issues/1140
 		it('should update a boolean setting and keep it as boolean', async () => {
@@ -88,7 +87,7 @@ describe('LIVECHAT - appearance', function () {
 				.post(api('livechat/appearance'))
 				.set(credentials)
 				.send([{ _id: 'Livechat_registration_form', value: true }])
-				.expect(200);
+				.success();
 
 			// Just enough to get the stream to update cached settings
 			await sleep(500);
@@ -102,7 +101,7 @@ describe('LIVECHAT - appearance', function () {
 				.post(api('livechat/appearance'))
 				.set(credentials)
 				.send([{ _id: 'Livechat_registration_form', value: false }])
-				.expect(200);
+				.success();
 
 			// Just enough to get the stream to update cached settings
 			await sleep(500);
@@ -116,7 +115,7 @@ describe('LIVECHAT - appearance', function () {
 				.post(api('livechat/appearance'))
 				.set(credentials)
 				.send([{ _id: 'Livechat_message_character_limit', value: 100 }])
-				.expect(200);
+				.success();
 
 			// Just enough to get the stream to update cached settings
 			await sleep(500);
@@ -132,7 +131,7 @@ describe('LIVECHAT - appearance', function () {
 				.post(api('livechat/appearance'))
 				.set(credentials)
 				.send([{ _id: 'Livechat_message_character_limit', value: '100' }])
-				.expect(200);
+				.success();
 			// Just enough to get the stream to update cached settings
 			await sleep(500);
 			// Get data from livechat/config
@@ -145,7 +144,7 @@ describe('LIVECHAT - appearance', function () {
 				.post(api('livechat/appearance'))
 				.set(credentials)
 				.send([{ _id: 'Livechat_registration_form', value: 'true' }])
-				.expect(200);
+				.success();
 
 			// Just enough to get the stream to update cached settings
 			await sleep(500);
@@ -161,7 +160,7 @@ describe('LIVECHAT - appearance', function () {
 					{ _id: 'Livechat_message_character_limit', value: 'xxxx' },
 					{ _id: 'Livechat_enable_message_character_limit', value: true },
 				])
-				.expect(200);
+				.success();
 
 			// Just enough to get the stream to update cached settings
 			await sleep(500);
@@ -178,7 +177,7 @@ describe('LIVECHAT - appearance', function () {
 					{ _id: 'Livechat_message_character_limit', value: true },
 					{ _id: 'Livechat_enable_message_character_limit', value: true },
 				])
-				.expect(200);
+				.success();
 
 			// Just enough to get the stream to update cached settings
 			await sleep(500);
@@ -191,7 +190,7 @@ describe('LIVECHAT - appearance', function () {
 				.post(api('livechat/appearance'))
 				.set(credentials)
 				.send([{ _id: 'Livechat_enable_message_character_limit', value: 'xxxx' }])
-				.expect(200);
+				.success();
 
 			// Just enough to get the stream to update cached settings
 			await sleep(500);
@@ -204,7 +203,7 @@ describe('LIVECHAT - appearance', function () {
 				.post(api('livechat/appearance'))
 				.set(credentials)
 				.send([{ _id: 'Livechat_hide_system_messages', value: ['uj'] }])
-				.expect(200);
+				.success();
 			await sleep(500);
 
 			// Get data from livechat/config
@@ -217,7 +216,7 @@ describe('LIVECHAT - appearance', function () {
 				.post(api('livechat/appearance'))
 				.set(credentials)
 				.send([{ _id: 'Livechat_hide_system_messages', value: ['uj', 'ul'] }])
-				.expect(200);
+				.success();
 			await sleep(500);
 
 			// Get data from livechat/config
@@ -231,7 +230,7 @@ describe('LIVECHAT - appearance', function () {
 				.post(api('livechat/appearance'))
 				.set(credentials)
 				.send([{ _id: 'Livechat_hide_system_messages', value: 'uj' }])
-				.expect(200);
+				.success();
 
 			await sleep(500);
 
@@ -245,7 +244,7 @@ describe('LIVECHAT - appearance', function () {
 				.post(api('livechat/appearance'))
 				.set(credentials)
 				.send([{ _id: 'Livechat_hide_system_messages', value: ['uj', 'invalid'] }])
-				.expect(200);
+				.success();
 
 			await sleep(500);
 

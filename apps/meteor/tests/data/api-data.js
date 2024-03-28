@@ -68,8 +68,7 @@ export function getCredentials(done = function () {}) {
 	request
 		.post(api('login'))
 		.send(login)
-		.expect('Content-Type', 'application/json')
-		.expect(200)
+		.success()
 		.expect((res) => {
 			credentials['X-Auth-Token'] = res.body.data.authToken;
 			credentials['X-User-Id'] = res.body.data.userId;

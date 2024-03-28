@@ -65,8 +65,7 @@ describe('[Teams]', () => {
 					name: community,
 					type: 0,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('team');
@@ -85,8 +84,7 @@ describe('[Teams]', () => {
 					type: 0,
 					members: [testUser.username],
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('team');
@@ -99,7 +97,7 @@ describe('[Teams]', () => {
 						.get(api('teams.members'))
 						.set(credentials)
 						.query({ teamId })
-						.expect(200)
+						.success()
 						.expect((response) => {
 							expect(response.body).to.have.property('success', true);
 							expect(response.body).to.have.property('members');
@@ -123,8 +121,7 @@ describe('[Teams]', () => {
 					name: `test-team-${Date.now()}`,
 					type: 1,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('team');
@@ -137,7 +134,7 @@ describe('[Teams]', () => {
 						.get(api('teams.members'))
 						.set(credentials)
 						.query({ teamId })
-						.expect(200)
+						.success()
 						.expect((response) => {
 							expect(response.body).to.have.property('success', true);
 							expect(response.body).to.have.property('members');
@@ -208,8 +205,7 @@ describe('[Teams]', () => {
 				.send({
 					name: channelToEraseName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					channelToEraseId = res.body.channel._id;
 					expect(res.body).to.have.property('success', true);
@@ -229,8 +225,7 @@ describe('[Teams]', () => {
 					rooms: [channelToEraseId],
 					teamId: testTeam._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('rooms');
@@ -248,8 +243,7 @@ describe('[Teams]', () => {
 				.send({
 					name: channelToKeepName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					channelToKeepId = res.body.channel._id;
 					expect(res.body).to.have.property('success', true);
@@ -269,8 +263,7 @@ describe('[Teams]', () => {
 					rooms: [channelToKeepId],
 					teamId: testTeam._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('rooms');
@@ -288,8 +281,7 @@ describe('[Teams]', () => {
 					teamName,
 					roomsToRemove: [channelToEraseId],
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
@@ -315,8 +307,7 @@ describe('[Teams]', () => {
 						.query({
 							roomId: channelToKeepId,
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((response) => {
 							expect(response.body).to.have.property('success', true);
 							expect(response.body).to.have.property('channel');
@@ -331,8 +322,7 @@ describe('[Teams]', () => {
 						.query({
 							roomId: testTeam.roomId,
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((response) => {
 							expect(response.body).to.have.property('success', true);
 							expect(response.body).to.have.property('channel');
@@ -379,8 +369,7 @@ describe('[Teams]', () => {
 						},
 					],
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
@@ -391,8 +380,7 @@ describe('[Teams]', () => {
 						.query({
 							teamName: testTeam.name,
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((response) => {
 							expect(response.body).to.have.property('success', true);
 							expect(response.body).to.have.property('members');
@@ -470,8 +458,7 @@ describe('[Teams]', () => {
 				.query({
 					teamName: testTeam.name,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count', 3);
@@ -510,8 +497,7 @@ describe('[Teams]', () => {
 			request
 				.get(api('teams.list'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count');
@@ -581,8 +567,7 @@ describe('[Teams]', () => {
 						roles: ['member', 'owner'],
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
@@ -593,8 +578,7 @@ describe('[Teams]', () => {
 						.query({
 							teamName: testTeam.name,
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((response) => {
 							expect(response.body).to.have.property('success', true);
 							expect(response.body).to.have.property('members');
@@ -701,8 +685,7 @@ describe('[Teams]', () => {
 							teamName: testTeam.name,
 							userId: testUser2._id,
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
 							expect(res.body).to.have.property('success', true);
 						})
@@ -713,8 +696,7 @@ describe('[Teams]', () => {
 								.query({
 									teamName: testTeam.name,
 								})
-								.expect('Content-Type', 'application/json')
-								.expect(200)
+								.success()
 								.expect((response) => {
 									expect(response.body).to.have.property('success', true);
 									expect(response.body).to.have.property('members');
@@ -786,8 +768,7 @@ describe('[Teams]', () => {
 						.send({
 							teamName: testTeam.name,
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
 							expect(res.body).to.have.property('success', true);
 						})
@@ -825,8 +806,7 @@ describe('[Teams]', () => {
 				.query({
 					teamName: publicTeam.name,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((response) => {
 					expect(response.body).to.have.property('success', true);
 					expect(response.body).to.have.property('teamInfo');
@@ -843,8 +823,7 @@ describe('[Teams]', () => {
 				.query({
 					teamId: publicTeam._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((response) => {
 					expect(response.body).to.have.property('success', true);
 					expect(response.body).to.have.property('teamInfo');
@@ -901,8 +880,7 @@ describe('[Teams]', () => {
 						name: tempTeamName,
 						type: 0,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((resp) => {
 						expect(resp.body).to.have.property('success', true);
 						expect(resp.body).to.have.property('team');
@@ -922,8 +900,7 @@ describe('[Teams]', () => {
 					.send({
 						teamName: tempTeamName,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 					})
@@ -991,8 +968,7 @@ describe('[Teams]', () => {
 					.send({
 						name: channel1Name,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						channel1Id = res.body.channel._id;
 						expect(res.body).to.have.property('success', true);
@@ -1012,8 +988,7 @@ describe('[Teams]', () => {
 						rooms: [channel1Id],
 						teamId,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('rooms');
@@ -1031,8 +1006,7 @@ describe('[Teams]', () => {
 					.send({
 						name: channel2Name,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						channel2Id = res.body.channel._id;
 						expect(res.body).to.have.property('success', true);
@@ -1052,8 +1026,7 @@ describe('[Teams]', () => {
 						rooms: [channel2Id],
 						teamId,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('rooms');
@@ -1071,8 +1044,7 @@ describe('[Teams]', () => {
 						teamName: tempTeamName,
 						roomsToRemove: [channel2Id],
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 					})
@@ -1097,8 +1069,7 @@ describe('[Teams]', () => {
 									.query({
 										roomId: channel1Id,
 									})
-									.expect('Content-Type', 'application/json')
-									.expect(200)
+									.success()
 									.expect((response) => {
 										expect(response.body).to.have.property('success', true);
 										expect(response.body).to.have.property('channel');
@@ -1124,8 +1095,7 @@ describe('[Teams]', () => {
 				.send({
 					name: channelName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
@@ -1144,8 +1114,7 @@ describe('[Teams]', () => {
 				.send({
 					name: channelName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
@@ -1164,8 +1133,7 @@ describe('[Teams]', () => {
 				.send({
 					name: channelName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
@@ -1184,8 +1152,7 @@ describe('[Teams]', () => {
 				.send({
 					name: channelName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel._id');
@@ -1204,8 +1171,7 @@ describe('[Teams]', () => {
 				.send({
 					name: `${channelName}2`,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel._id');
@@ -1246,8 +1212,7 @@ describe('[Teams]', () => {
 						rooms: [publicRoom._id, privateRoom._id],
 						teamId: publicTeam._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('rooms');
@@ -1275,8 +1240,7 @@ describe('[Teams]', () => {
 						rooms: [publicRoom2._id],
 						teamId: privateTeam._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('rooms');
@@ -1296,8 +1260,7 @@ describe('[Teams]', () => {
 						rooms: [privateRoom2._id],
 						teamId: privateTeam._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('rooms');
@@ -1342,8 +1305,7 @@ describe('[Teams]', () => {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
@@ -1423,8 +1385,7 @@ describe('[Teams]', () => {
 					.query({
 						teamId: publicTeam._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('rooms');
@@ -1444,8 +1405,7 @@ describe('[Teams]', () => {
 					.query({
 						teamId: publicTeam._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('rooms');
@@ -1465,8 +1425,7 @@ describe('[Teams]', () => {
 						count: 5,
 						offset: 0,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('rooms');
@@ -1486,8 +1445,7 @@ describe('[Teams]', () => {
 						.query({
 							teamId: privateTeam._id,
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('rooms');
@@ -1509,8 +1467,7 @@ describe('[Teams]', () => {
 							count: 5,
 							offset: 0,
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('rooms');
@@ -1553,8 +1510,7 @@ describe('[Teams]', () => {
 						roomId: publicRoom._id,
 						isDefault: true,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('room');
@@ -1596,8 +1552,7 @@ describe('[Teams]', () => {
 						roomId: publicRoom._id,
 						teamId: publicTeam._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('room');
@@ -1739,7 +1694,7 @@ describe('[Teams]', () => {
 							msg: 'method',
 						}),
 					})
-					.expect(200);
+					.success();
 			});
 
 			it('should add user with prefs to team', (done) => {
@@ -1773,8 +1728,7 @@ describe('[Teams]', () => {
 					.query({
 						roomId: createdRoom.body.channel._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('subscription').and.to.be.an('object');

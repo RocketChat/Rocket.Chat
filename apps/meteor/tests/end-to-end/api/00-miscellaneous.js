@@ -23,8 +23,7 @@ describe('miscellaneous', function () {
 				request
 					.get('/api/info')
 					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('version').and.to.be.a('string');
 						expect(res.body.info).to.have.property('version').and.to.be.a('string');
@@ -38,8 +37,7 @@ describe('miscellaneous', function () {
 			it('should return only "version" and the version should not have patch info when the user is not logged in', (done) => {
 				request
 					.get('/api/info')
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('version');
 						expect(res.body).to.not.have.property('info');
@@ -118,8 +116,7 @@ describe('miscellaneous', function () {
 		await request
 			.get(api('me'))
 			.set(userCredentials)
-			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.success()
 			.expect((res) => {
 				const allUserPreferencesKeys = [
 					'alsoSendThreadToChannel',
@@ -209,8 +206,7 @@ describe('miscellaneous', function () {
 						type: 'users',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('result').and.to.be.an('array');
@@ -236,8 +232,7 @@ describe('miscellaneous', function () {
 						type: 'users',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('result').and.to.be.an('array');
@@ -262,8 +257,7 @@ describe('miscellaneous', function () {
 						type: 'channels',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('offset');
@@ -290,8 +284,7 @@ describe('miscellaneous', function () {
 						name: 1,
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('offset');
@@ -357,8 +350,7 @@ describe('miscellaneous', function () {
 						name: 1,
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('result');
 					expect(res.body.result).to.be.an(`array`);
@@ -424,8 +416,7 @@ describe('miscellaneous', function () {
 					query: `@${adminUsername}`,
 				})
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('users').and.to.be.an('array');
@@ -444,8 +435,7 @@ describe('miscellaneous', function () {
 					query: `#${testChannel.name}`,
 				})
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('users').and.to.be.an('array');
@@ -463,8 +453,7 @@ describe('miscellaneous', function () {
 					query: `${testTeam.name}`,
 				})
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('users').and.to.be.an('array');
@@ -483,8 +472,7 @@ describe('miscellaneous', function () {
 					query: `#${fnameSpecialCharsRoom}`,
 				})
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('users').and.to.be.an('array');
@@ -533,7 +521,7 @@ describe('miscellaneous', function () {
 			request
 				.get(api('instances.get'))
 				.set(credentials)
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 
@@ -607,7 +595,7 @@ describe('miscellaneous', function () {
 						name: 'Rocket.Chat',
 					})
 					.expect('Content-Type', 'image/svg+xml;charset=utf-8')
-					.expect(200)
+					.success()
 					.end(done);
 			});
 		});
@@ -618,8 +606,7 @@ describe('miscellaneous', function () {
 			request
 				.get(api('pw.getPolicy'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('enabled');

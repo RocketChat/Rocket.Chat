@@ -40,12 +40,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			};
 
 			// remove all existing tags
-			const allTags = await request
-				.get(api('livechat/tags'))
-				.set(credentials)
-				.query({ viewAll: 'true' })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+			const allTags = await request.get(api('livechat/tags')).set(credentials).query({ viewAll: 'true' }).success();
 			const { tags } = allTags.body;
 			for await (const tag of tags) {
 				await removeTag(tag._id);
@@ -82,23 +77,13 @@ import { IS_EE } from '../../../e2e/config/constants';
 		});
 		it('should return an array of tags', async () => {
 			const { tag } = tagsData.caseA;
-			const response = await request
-				.get(api('livechat/tags'))
-				.set(credentials)
-				.query({ text: tag.name, viewAll: 'true' })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+			const response = await request.get(api('livechat/tags')).set(credentials).query({ text: tag.name, viewAll: 'true' }).success();
 			expect(response.body).to.have.property('success', true);
 			expect(response.body.tags).to.be.an('array').with.lengthOf(1);
 			expect(response.body.tags[0]).to.have.property('_id', tag._id);
 		});
 		it('[Manager role] show return all tags when "viewAll" param is true and user has access to all tags', async () => {
-			const response = await request
-				.get(api('livechat/tags'))
-				.set(credentials)
-				.query({ viewAll: 'true' })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+			const response = await request.get(api('livechat/tags')).set(credentials).query({ viewAll: 'true' }).success();
 
 			expect(response.body).to.have.property('success', true);
 			expect(response.body.tags).to.be.an('array').with.lengthOf(3);
@@ -108,12 +93,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(actualTags).to.deep.equal(expectedTags);
 		});
 		it('[Monitor role] show return only public tags when "viewAll" param is true and user does not have access to all tags', async () => {
-			const response = await request
-				.get(api('livechat/tags'))
-				.set(monitor.credentials)
-				.query({ viewAll: 'true' })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+			const response = await request.get(api('livechat/tags')).set(monitor.credentials).query({ viewAll: 'true' }).success();
 
 			expect(response.body).to.have.property('success', true);
 			expect(response.body.tags).to.be.an('array').with.lengthOf(1);
@@ -125,12 +105,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 		it('[Manager Role] should return department tags and public tags when "departmentId" param is provided', async () => {
 			const { department } = tagsData.caseA;
 
-			const response = await request
-				.get(api('livechat/tags'))
-				.set(credentials)
-				.query({ department: department._id })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+			const response = await request.get(api('livechat/tags')).set(credentials).query({ department: department._id }).success();
 
 			expect(response.body).to.have.property('success', true);
 			expect(response.body.tags).to.be.an('array').with.lengthOf(2);
@@ -149,12 +124,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 		it('[Monitor role] should return only public tags when user does not have access to department', async () => {
 			const { department } = tagsData.caseA;
 
-			const response = await request
-				.get(api('livechat/tags'))
-				.set(monitor.credentials)
-				.query({ department: department._id })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+			const response = await request.get(api('livechat/tags')).set(monitor.credentials).query({ department: department._id }).success();
 
 			expect(response.body).to.have.property('success', true);
 			expect(response.body.tags).to.be.an('array').with.lengthOf(1);
@@ -168,12 +138,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 			await createUnit(monitor.user._id, monitor.user.username || '', [department._id]);
 
-			const response = await request
-				.get(api('livechat/tags'))
-				.set(monitor.credentials)
-				.query({ department: department._id })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+			const response = await request.get(api('livechat/tags')).set(monitor.credentials).query({ department: department._id }).success();
 
 			expect(response.body).to.have.property('success', true);
 			expect(response.body.tags).to.be.an('array').with.lengthOf(2);
@@ -185,12 +150,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 		it('[Agent Role] should return department tags and public tags when "departmentId" param is provided', async () => {
 			const { department, agent } = tagsData.caseA;
 
-			const response = await request
-				.get(api('livechat/tags'))
-				.set(agent.credentials)
-				.query({ department: department._id })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+			const response = await request.get(api('livechat/tags')).set(agent.credentials).query({ department: department._id }).success();
 
 			expect(response.body).to.have.property('success', true);
 			expect(response.body.tags).to.be.an('array').with.lengthOf(2);
@@ -200,11 +160,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(actualTags).to.deep.equal(expectedTags);
 		});
 		it('[Monitor role] should return public tags and department tags which they are part of, when "departmentId" param is not provided', async () => {
-			const response = await request
-				.get(api('livechat/tags'))
-				.set(monitor.credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+			const response = await request.get(api('livechat/tags')).set(monitor.credentials).success();
 
 			expect(response.body).to.have.property('success', true);
 			expect(response.body.tags).to.be.an('array').with.lengthOf(2);
@@ -213,11 +169,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(actualTags).to.deep.equal(expectedTags);
 		});
 		it('[Agent role] should return public tags when "departmentId" param is not provided', async () => {
-			const response = await request
-				.get(api('livechat/tags'))
-				.set(monitor.credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+			const response = await request.get(api('livechat/tags')).set(monitor.credentials).success();
 
 			expect(response.body).to.have.property('success', true);
 			expect(response.body.tags).to.be.an('array').with.lengthOf(2);
@@ -245,8 +197,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const response = await request
 				.get(api(`livechat/tags/${tag._id}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 			expect(response.body).to.have.property('success', true);
 			expect(response.body).to.have.property('_id', tag._id);
 			expect(response.body).to.have.property('name', tag.name);

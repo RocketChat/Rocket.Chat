@@ -48,8 +48,7 @@ describe('[Roles]', function () {
 				.send({
 					name: testRoleName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('role');
@@ -74,8 +73,7 @@ describe('[Roles]', function () {
 				.send({
 					name: testRoleName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('role');
@@ -122,8 +120,7 @@ describe('[Roles]', function () {
 					name: newTestRoleName,
 					roleId: testRoleId,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('role');

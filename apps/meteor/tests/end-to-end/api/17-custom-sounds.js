@@ -17,7 +17,7 @@ describe('[CustomSounds]', function () {
 			request
 				.get(api('custom-sounds.list'))
 				.set(credentials)
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('sounds').and.to.be.an('array');
 					expect(res.body).to.have.property('total');
@@ -30,7 +30,7 @@ describe('[CustomSounds]', function () {
 			request
 				.get(api('custom-sounds.list'))
 				.set(credentials)
-				.expect(200)
+				.success()
 				.query({
 					count: 5,
 					offset: 0,
@@ -64,7 +64,7 @@ describe('[CustomSounds]', function () {
 						params: [{ name: fileName, extension: 'mp3', newFile: true }],
 					}),
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
 					fileId = JSON.parse(res.body.message).result;
 				});
@@ -79,7 +79,7 @@ describe('[CustomSounds]', function () {
 						params: [binary, 'audio/wav', { name: fileName, extension: 'wav', newFile: true, _id: fileId }],
 					}),
 				})
-				.expect(200);
+				.success();
 		});
 
 		after(() =>
@@ -122,7 +122,7 @@ describe('[CustomSounds]', function () {
 			request
 				.get(`/custom-sounds/${fileId}.wav`)
 				.set(credentials)
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.headers).to.have.property('last-modified');
 					expect(res.headers).to.have.property('content-type', 'audio/wav');

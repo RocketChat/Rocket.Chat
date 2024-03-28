@@ -247,8 +247,7 @@ describe('LIVECHAT - visitors', function () {
 			await request
 				.get(api(`livechat/visitors.info?visitorId=${visitor._id}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body.visitor._id).to.be.equal(visitor._id);
@@ -290,8 +289,7 @@ describe('LIVECHAT - visitors', function () {
 			await request
 				.get(api(`livechat/visitors.pagesVisited/${createdRoom._id}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body.pages).to.be.an('array');
@@ -336,8 +334,7 @@ describe('LIVECHAT - visitors', function () {
 			await request
 				.get(api(`livechat/visitors.chatHistory/room/${createdRoom._id}/visitor/${createdVisitor._id}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body.history).to.be.an('array');
@@ -377,8 +374,7 @@ describe('LIVECHAT - visitors', function () {
 			await request
 				.get(api(`livechat/visitor/${visitor.token}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('visitor');
@@ -433,8 +429,7 @@ describe('LIVECHAT - visitors', function () {
 			await request
 				.delete(api(`livechat/visitor/${createdVisitor.token}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 		});
 
 		it('should return a visitor when the query params is all valid', async () => {
@@ -442,8 +437,7 @@ describe('LIVECHAT - visitors', function () {
 			await request
 				.delete(api(`livechat/visitor/${createdVisitor.token}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('visitor');
@@ -491,8 +485,7 @@ describe('LIVECHAT - visitors', function () {
 			await request
 				.delete(api(`livechat/visitor/${visitor.token}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			const { body: licenseAfterGdpr } = await getLicenseInfo(true);
 
@@ -567,8 +560,7 @@ describe('LIVECHAT - visitors', function () {
 				.get(api('livechat/visitors.autocomplete'))
 				.query({ selector: JSON.stringify({ term: createdVisitor.name }) })
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('items');
@@ -616,8 +608,7 @@ describe('LIVECHAT - visitors', function () {
 			await request
 				.get(api(`livechat/visitors.searchChats/room/${room._id}/visitor/123`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('history');
@@ -634,8 +625,7 @@ describe('LIVECHAT - visitors', function () {
 			await request
 				.get(api(`livechat/visitors.searchChats/room/${room._id}/visitor/123`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('history');
@@ -656,8 +646,7 @@ describe('LIVECHAT - visitors', function () {
 			await request
 				.get(api(`livechat/visitors.searchChats/room/${roomId}/visitor/${visitorId}?closedChatsOnly=false&servedChatsOnly=true`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('history');
@@ -678,8 +667,7 @@ describe('LIVECHAT - visitors', function () {
 			await request
 				.get(api(`livechat/visitors.searchChats/room/${roomId}/visitor/${visitorId}?source=api&servedChatsOnly=true`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('history');
@@ -702,8 +690,7 @@ describe('LIVECHAT - visitors', function () {
 			await request
 				.get(api(`livechat/visitors.searchChats/room/${roomId}/visitor/${visitorId}?closedChatsOnly=true&servedChatsOnly=false`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('history');
@@ -719,8 +706,7 @@ describe('LIVECHAT - visitors', function () {
 			await request
 				.get(api(`livechat/visitors.searchChats/room/${room._id}/visitor/${visitor._id}?closedChatsOnly=false&servedChatsOnly=true`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('history');
@@ -741,8 +727,7 @@ describe('LIVECHAT - visitors', function () {
 			await request
 				.get(api(`livechat/visitors.searchChats/room/${roomId}/visitor/${visitorId}?closedChatsOnly=true&servedChatsOnly=false`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('history');
@@ -763,8 +748,7 @@ describe('LIVECHAT - visitors', function () {
 			const { body } = await request
 				.get(api(`livechat/visitors.searchChats/room/${room._id}/visitor/${visitor._id}?closedChatsOnly=false&servedChatsOnly=false`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('success', true);
 			expect(body.count).to.be.equal(3);
@@ -793,7 +777,7 @@ describe('LIVECHAT - visitors', function () {
 				.post(api('livechat/visitor.status'))
 				.set(credentials)
 				.send({ token: visitor.token, status: 'online' })
-				.expect(200);
+				.success();
 			expect(res.body).to.have.property('success', true);
 		});
 	});
@@ -825,8 +809,7 @@ describe('LIVECHAT - visitors', function () {
 				.get(api(`omnichannel/contact.search?email=${visitor.visitorEmails?.[0].address}`))
 				.set(credentials)
 				.send()
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('contact');
@@ -846,8 +829,7 @@ describe('LIVECHAT - visitors', function () {
 				.get(api(`omnichannel/contact.search?phone=${visitor.phone?.[0].phoneNumber}`))
 				.set(credentials)
 				.send()
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('contact');
@@ -882,8 +864,7 @@ describe('LIVECHAT - visitors', function () {
 				.get(api(`omnichannel/contact.search?custom=${JSON.stringify({ address: 'Rocket.Chat' })}`))
 				.set(credentials)
 				.send()
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body.contact).to.have.property('name');

@@ -117,7 +117,7 @@ describe('Apps - Video Conferences', function () {
 					.get(api('video-conference.capabilities'))
 					.set(credentials)
 					.send()
-					.expect(200)
+					.success()
 					.expect((res: Response) => {
 						expect(res.body.success).to.be.equal(true);
 						expect(res.body.providerName).to.be.equal('test');
@@ -183,7 +183,7 @@ describe('Apps - Video Conferences', function () {
 					.send({
 						roomId,
 					})
-					.expect(200)
+					.success()
 					.expect((res: Response) => {
 						expect(res.body.success).to.be.equal(true);
 						expect(res.body.data).to.be.an('object');
@@ -204,7 +204,7 @@ describe('Apps - Video Conferences', function () {
 						roomId,
 						title: 'Conference Title',
 					})
-					.expect(200)
+					.success()
 					.expect((res: Response) => {
 						expect(res.body.success).to.be.equal(true);
 						expect(res.body.data).to.be.an('object');
@@ -224,7 +224,7 @@ describe('Apps - Video Conferences', function () {
 						title: 'Conference Title',
 						allowRinging: true,
 					})
-					.expect(200)
+					.success()
 					.expect((res: Response) => {
 						expect(res.body.success).to.be.equal(true);
 						expect(res.body.data).to.be.an('object');
@@ -253,7 +253,7 @@ describe('Apps - Video Conferences', function () {
 					.send({
 						callId,
 					})
-					.expect(200)
+					.success()
 					.expect((res: Response) => {
 						expect(res.body.success).to.be.equal(true);
 						expect(res.body).to.have.a.property('providerName').equal('test');
@@ -273,7 +273,7 @@ describe('Apps - Video Conferences', function () {
 							cam: false,
 						},
 					})
-					.expect(200)
+					.success()
 					.expect((res: Response) => {
 						expect(res.body.success).to.be.equal(true);
 						expect(res.body).to.have.a.property('providerName').equal('test');
@@ -302,7 +302,7 @@ describe('Apps - Video Conferences', function () {
 					.query({
 						callId,
 					})
-					.expect(200)
+					.success()
 					.expect((res: Response) => {
 						expect(res.body.success).to.be.equal(true);
 						expect(res.body).to.have.a.property('providerName').equal('test');
@@ -348,7 +348,7 @@ describe('Apps - Video Conferences', function () {
 					.query({
 						roomId,
 					})
-					.expect(200)
+					.success()
 					.expect((res: Response) => {
 						expect(res.body.success).to.be.equal(true);
 						expect(res.body).to.have.a.property('count').that.is.greaterThanOrEqual(2);

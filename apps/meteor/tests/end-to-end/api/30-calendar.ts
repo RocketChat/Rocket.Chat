@@ -34,8 +34,7 @@ describe('[Calendar Events]', function () {
 					description: 'Description',
 					reminderMinutesBeforeStart: 10,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					eventId = res.body.id;
@@ -96,8 +95,7 @@ describe('[Calendar Events]', function () {
 					subject: 'Subject',
 					description: 'Description',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					eventId = res.body.id;
@@ -172,8 +170,7 @@ describe('[Calendar Events]', function () {
 				.query({
 					date: new Date().toISOString(),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('data').that.is.an('array');
@@ -191,8 +188,7 @@ describe('[Calendar Events]', function () {
 				.query({
 					date: new Date().toISOString(),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('data').that.is.an('array');
@@ -251,8 +247,7 @@ describe('[Calendar Events]', function () {
 				.query({
 					id: eventId,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('event').that.is.an('object').with.property('subject', testSubject);
@@ -266,8 +261,7 @@ describe('[Calendar Events]', function () {
 				.query({
 					id: eventId2,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('event').that.is.an('object').with.property('subject', testSubject);
@@ -320,8 +314,7 @@ describe('[Calendar Events]', function () {
 					reminderMinutesBeforeStart: 10,
 					externalId,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					eventId = res.body.id;
@@ -394,8 +387,7 @@ describe('[Calendar Events]', function () {
 					description: 'Description',
 					externalId: `calendar-events.import-external-id-${Date.now()}`,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					eventId = res.body.id;
@@ -436,8 +428,7 @@ describe('[Calendar Events]', function () {
 					reminderMinutesBeforeStart: 10,
 					externalId,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body.id).to.not.be.equal(eventId);
@@ -449,8 +440,7 @@ describe('[Calendar Events]', function () {
 				.get(api('calendar-events.info'))
 				.set(userCredentials)
 				.query({ id: eventId })
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('event').that.is.an('object').with.property('subject', 'First User');
@@ -460,8 +450,7 @@ describe('[Calendar Events]', function () {
 				.get(api('calendar-events.info'))
 				.set(credentials)
 				.query({ id: eventId2 })
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('event').that.is.an('object').with.property('subject', 'Second User');
@@ -497,8 +486,7 @@ describe('[Calendar Events]', function () {
 					reminderMinutesBeforeStart: 15,
 					externalId,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect(async (res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('id', eventId);
@@ -508,8 +496,7 @@ describe('[Calendar Events]', function () {
 				.get(api('calendar-events.info'))
 				.set(credentials)
 				.query({ id: eventId })
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('event').that.is.an('object').with.property('subject', 'New Subject');
@@ -551,8 +538,7 @@ describe('[Calendar Events]', function () {
 					description: 'New Description',
 					reminderMinutesBeforeStart: 15,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect(async (res: Response) => {
 					expect(res.body).to.have.property('success', true);
 				});
@@ -561,8 +547,7 @@ describe('[Calendar Events]', function () {
 				.get(api('calendar-events.info'))
 				.set(userCredentials)
 				.query({ id: eventId })
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('event').that.is.an('object');
@@ -638,8 +623,7 @@ describe('[Calendar Events]', function () {
 				.send({
 					eventId,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect(async (res: Response) => {
 					expect(res.body).to.have.property('success', true);
 				});

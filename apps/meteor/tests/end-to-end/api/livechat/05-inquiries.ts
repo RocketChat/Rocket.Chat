@@ -42,8 +42,7 @@ describe('LIVECHAT - inquiries', function () {
 			await request
 				.get(api('livechat/inquiries.list'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body.inquiries).to.be.an('array');
@@ -64,8 +63,7 @@ describe('LIVECHAT - inquiries', function () {
 			await request
 				.get(api('livechat/inquiries.queued'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body.inquiries).to.be.an('array');
@@ -90,8 +88,7 @@ describe('LIVECHAT - inquiries', function () {
 			await request
 				.get(api('livechat/inquiries.getOne?roomId=room-id'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('inquiry');
@@ -107,8 +104,7 @@ describe('LIVECHAT - inquiries', function () {
 			await request
 				.get(api(`livechat/inquiries.getOne?roomId=${room._id}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('inquiry');
@@ -179,8 +175,7 @@ describe('LIVECHAT - inquiries', function () {
 					inquiryId: inquiry._id,
 					userId: agent._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 				});
@@ -202,8 +197,7 @@ describe('LIVECHAT - inquiries', function () {
 					inquiryId: inquiry._id,
 					userId: agent._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 				});
@@ -242,8 +236,7 @@ describe('LIVECHAT - inquiries', function () {
 			await request
 				.get(api('livechat/inquiries.queuedForUser'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body.inquiries).to.be.an('array');
@@ -256,8 +249,7 @@ describe('LIVECHAT - inquiries', function () {
 			await request
 				.get(api('livechat/inquiries.queuedForUser'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect(async (res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body.inquiries).to.be.an('array');
@@ -267,11 +259,7 @@ describe('LIVECHAT - inquiries', function () {
 				});
 		});
 		it('should return only public inquiries for a user with no departments', async () => {
-			const { body } = await request
-				.get(api('livechat/inquiries.queuedForUser'))
-				.set(testUser.credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+			const { body } = await request.get(api('livechat/inquiries.queuedForUser')).set(testUser.credentials).success();
 			expect(body).to.have.property('success', true);
 			expect(body.inquiries).to.be.an('array');
 			for (const inq of body.inquiries) {
@@ -284,11 +272,7 @@ describe('LIVECHAT - inquiries', function () {
 			const visitor = await createVisitor(dep._id);
 			await createLivechatRoom(visitor.token);
 
-			const { body } = await request
-				.get(api('livechat/inquiries.queuedForUser'))
-				.set(testUser.credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+			const { body } = await request.get(api('livechat/inquiries.queuedForUser')).set(testUser.credentials).success();
 
 			expect(body).to.have.property('success', true);
 			expect(body.inquiries).to.be.an('array');
@@ -301,11 +285,7 @@ describe('LIVECHAT - inquiries', function () {
 			const visitor = await createVisitor(dep._id);
 			await createLivechatRoom(visitor.token);
 
-			const { body } = await request
-				.get(api('livechat/inquiries.queuedForUser'))
-				.set(testUser.credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+			const { body } = await request.get(api('livechat/inquiries.queuedForUser')).set(testUser.credentials).success();
 
 			expect(body).to.have.property('success', true);
 			expect(body.inquiries).to.be.an('array');
@@ -345,8 +325,7 @@ describe('LIVECHAT - inquiries', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			const response = parseMethodResponse(body);
 
@@ -365,8 +344,7 @@ describe('LIVECHAT - inquiries', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			const response = parseMethodResponse(body);
 			expect(response.error.error).to.be.equal('error-invalid-room');
@@ -383,8 +361,7 @@ describe('LIVECHAT - inquiries', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			const response = parseMethodResponse(body);
 			expect(response.error.error).to.be.equal('error-invalid-room');
@@ -405,8 +382,7 @@ describe('LIVECHAT - inquiries', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			const response = parseMethodResponse(body);
 			expect(response.error.error).to.be.equal('room-closed');
@@ -425,8 +401,7 @@ describe('LIVECHAT - inquiries', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			const response = parseMethodResponse(body);
 			expect(response.result).to.be.false;
@@ -452,18 +427,13 @@ describe('LIVECHAT - inquiries', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			const response = parseMethodResponse(body);
 			expect(response.result).to.be.true;
 		});
 		(IS_EE ? it : it.skip)('should appear on users queued elements', async () => {
-			const { body } = await request
-				.get(api('livechat/inquiries.queuedForUser'))
-				.set(testUser.credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+			const { body } = await request.get(api('livechat/inquiries.queuedForUser')).set(testUser.credentials).success();
 
 			expect(body.inquiries).to.be.an('array');
 			const depInq = body.inquiries.filter((inq: { _id: string }) => inq._id === inquiry._id);

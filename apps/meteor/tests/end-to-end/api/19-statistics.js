@@ -31,7 +31,7 @@ describe('[Statistics]', function () {
 				request
 					.get(api('statistics'))
 					.set(credentials)
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('process');
@@ -45,7 +45,7 @@ describe('[Statistics]', function () {
 			request
 				.get(api('statistics?refresh=true'))
 				.set(credentials)
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('process');
@@ -75,7 +75,7 @@ describe('[Statistics]', function () {
 				request
 					.get(api('statistics.list'))
 					.set(credentials)
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('statistics').and.to.be.an('array');
@@ -95,7 +95,7 @@ describe('[Statistics]', function () {
 						count: 5,
 						offset: 0,
 					})
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('statistics').and.to.be.an('array');

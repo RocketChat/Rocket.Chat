@@ -51,7 +51,7 @@ describe('Invites', function () {
 					days: 1,
 					maxUses: 10,
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('days', 1);
@@ -72,7 +72,7 @@ describe('Invites', function () {
 					days: 1,
 					maxUses: 10,
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('days', 1);
@@ -100,7 +100,7 @@ describe('Invites', function () {
 			request
 				.get(api('listInvites'))
 				.set(credentials)
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body[0]).to.have.property('_id', testInviteID);
 				})
@@ -155,7 +155,7 @@ describe('Invites', function () {
 				.send({
 					token: testInviteID,
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
@@ -171,7 +171,7 @@ describe('Invites', function () {
 				.send({
 					token: 'invalid',
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('valid', false);
@@ -186,7 +186,7 @@ describe('Invites', function () {
 				.send({
 					token: testInviteID,
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('valid', true);
@@ -223,7 +223,7 @@ describe('Invites', function () {
 			request
 				.delete(api(`removeInvite/${testInviteID}`))
 				.set(credentials)
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.equal(true);
 				})

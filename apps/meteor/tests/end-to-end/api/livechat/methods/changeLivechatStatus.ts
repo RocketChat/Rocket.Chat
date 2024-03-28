@@ -49,7 +49,7 @@ describe('livechat:changeLivechatStatus', function () {
 						msg: 'method',
 					}),
 				})
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					const parsedBody = JSON.parse(res.body.message);
@@ -73,7 +73,7 @@ describe('livechat:changeLivechatStatus', function () {
 						msg: 'method',
 					}),
 				})
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					const parsedBody = JSON.parse(res.body.message);
@@ -97,7 +97,7 @@ describe('livechat:changeLivechatStatus', function () {
 						msg: 'method',
 					}),
 				})
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					const parsedBody = JSON.parse(res.body.message);
@@ -118,7 +118,7 @@ describe('livechat:changeLivechatStatus', function () {
 						msg: 'method',
 					}),
 				})
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					const parsedBody = JSON.parse(res.body.message);
@@ -143,7 +143,7 @@ describe('livechat:changeLivechatStatus', function () {
 						msg: 'method',
 					}),
 				})
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					const parsedBody = JSON.parse(res.body.message);
@@ -168,7 +168,7 @@ describe('livechat:changeLivechatStatus', function () {
 						msg: 'method',
 					}),
 				})
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					const parsedBody = JSON.parse(res.body.message);
@@ -193,7 +193,7 @@ describe('livechat:changeLivechatStatus', function () {
 						msg: 'method',
 					}),
 				})
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					const parsedBody = JSON.parse(res.body.message);
@@ -219,7 +219,7 @@ describe('livechat:changeLivechatStatus', function () {
 						msg: 'method',
 					}),
 				})
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					const parsedBody = JSON.parse(res.body.message);

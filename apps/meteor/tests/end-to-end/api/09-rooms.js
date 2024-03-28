@@ -23,7 +23,7 @@ describe('[Rooms]', function () {
 		request
 			.get(api('rooms.get'))
 			.set(credentials)
-			.expect(200)
+			.success()
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('update');
@@ -39,7 +39,7 @@ describe('[Rooms]', function () {
 			.query({
 				updatedSince: new Date(),
 			})
-			.expect(200)
+			.success()
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('update').that.have.lengthOf(0);
@@ -70,8 +70,7 @@ describe('[Rooms]', function () {
 						mobilePushNotifications: 'mentions',
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
@@ -161,8 +160,7 @@ describe('[Rooms]', function () {
 				.post(api(`rooms.upload/${testChannel._id}`))
 				.set(credentials)
 				.attach('file', imgURL)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					const { message } = res.body;
 					expect(res.body).to.have.property('success', true);
@@ -186,8 +184,7 @@ describe('[Rooms]', function () {
 				.post(api(`rooms.upload/${testChannel._id}`))
 				.set(credentials)
 				.attach('file', lstURL)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('message');
@@ -257,8 +254,7 @@ describe('[Rooms]', function () {
 				.post(api(`rooms.upload/${testChannel._id}`))
 				.set(credentials)
 				.attach('file', svgLogoURL)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					const { message } = res.body;
 					const { files, attachments } = message;
@@ -283,8 +279,7 @@ describe('[Rooms]', function () {
 				.post(api(`rooms.upload/${testChannel._id}`))
 				.set(credentials)
 				.attach('file', fs.createReadStream(path.join(__dirname, '../../mocks/files/sample-jpeg.jpg')))
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					const { message } = res.body;
 					const { files, attachments } = message;
@@ -320,7 +315,7 @@ describe('[Rooms]', function () {
 					roomName: testChannelName,
 					favorite: true,
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
@@ -334,7 +329,7 @@ describe('[Rooms]', function () {
 					roomName: testChannelName,
 					favorite: false,
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
@@ -348,7 +343,7 @@ describe('[Rooms]', function () {
 					roomId: testChannel._id,
 					favorite: true,
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
@@ -363,7 +358,7 @@ describe('[Rooms]', function () {
 					roomId: testChannel._id,
 					favorite: false,
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
@@ -415,7 +410,7 @@ describe('[Rooms]', function () {
 				.query({
 					roomName: testChannelName,
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('exists', true);
@@ -514,8 +509,7 @@ describe('[Rooms]', function () {
 					latest: '2016-12-09T13:42:25.304Z',
 					oldest: '2016-08-30T13:42:25.304Z',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
@@ -532,8 +526,7 @@ describe('[Rooms]', function () {
 					latest: '9999-12-31T23:59:59.000Z',
 					oldest: '0001-01-01T00:00:00.000Z',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count', 0);
@@ -551,8 +544,7 @@ describe('[Rooms]', function () {
 					oldest: '0001-01-01T00:00:00.000Z',
 					limit: 2000,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count', 0);
@@ -563,8 +555,7 @@ describe('[Rooms]', function () {
 				.post(api(`rooms.upload/${publicChannel._id}`))
 				.set(credentials)
 				.attach('file', imgURL)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					const { message } = res.body;
 					expect(res.body).to.have.property('success', true);
@@ -582,8 +573,7 @@ describe('[Rooms]', function () {
 					latest: '9999-12-31T23:59:59.000Z',
 					oldest: '0001-01-01T00:00:00.000Z',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				});
@@ -594,8 +584,7 @@ describe('[Rooms]', function () {
 				.query({
 					roomId: publicChannel._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('files').and.to.be.an('array');
@@ -612,8 +601,7 @@ describe('[Rooms]', function () {
 					latest: '2016-12-09T13:42:25.304Z',
 					oldest: '2016-08-30T13:42:25.304Z',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
@@ -628,8 +616,7 @@ describe('[Rooms]', function () {
 					latest: '2016-12-09T13:42:25.304Z',
 					oldest: '2016-08-30T13:42:25.304Z',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
@@ -703,7 +690,7 @@ describe('[Rooms]', function () {
 				.query({
 					roomId: testChannel._id,
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('room').and.to.be.an('object');
@@ -718,7 +705,7 @@ describe('[Rooms]', function () {
 				.query({
 					roomName: testChannel.name,
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('room').and.to.be.an('object');
@@ -733,7 +720,7 @@ describe('[Rooms]', function () {
 				.query({
 					roomId: testGroup._id,
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('room').and.to.be.an('object');
@@ -748,7 +735,7 @@ describe('[Rooms]', function () {
 				.query({
 					roomName: testGroup.name,
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('room').and.to.be.an('object');
@@ -763,7 +750,7 @@ describe('[Rooms]', function () {
 				.query({
 					roomId: testDM._id,
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('room').and.to.be.an('object');
@@ -778,7 +765,7 @@ describe('[Rooms]', function () {
 					roomId: testChannel._id,
 					fields: JSON.stringify({ name: 1 }),
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('room').and.to.be.an('object');
@@ -913,7 +900,7 @@ describe('[Rooms]', function () {
 									.send({
 										roomId: testChannel._id,
 									})
-									.expect(200)
+									.success()
 									.expect((res) => {
 										expect(res.body).to.have.property('success', true);
 									})
@@ -945,7 +932,7 @@ describe('[Rooms]', function () {
 									.send({
 										roomId: testGroup._id,
 									})
-									.expect(200)
+									.success()
 									.expect((res) => {
 										expect(res.body).to.have.property('success', true);
 									})
@@ -1092,7 +1079,7 @@ describe('[Rooms]', function () {
 					prid: testChannel._id,
 					t_name: `discussion-create-from-tests-${testChannel.name}`,
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('discussion').and.to.be.an('object');
@@ -1110,7 +1097,7 @@ describe('[Rooms]', function () {
 					t_name: `discussion-create-from-tests-${testChannel.name}`,
 					reply: 'reply from discussion tests',
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('discussion').and.to.be.an('object');
@@ -1129,7 +1116,7 @@ describe('[Rooms]', function () {
 					reply: 'reply from discussion tests',
 					users: ['rocket.cat'],
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('discussion').and.to.be.an('object');
@@ -1149,7 +1136,7 @@ describe('[Rooms]', function () {
 					users: ['rocket.cat'],
 					pmid: messageSent._id,
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('discussion').and.to.be.an('object');
@@ -1170,8 +1157,7 @@ describe('[Rooms]', function () {
 						name: `test-team-${Date.now()}`,
 						type: 1,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('team');
@@ -1189,8 +1175,7 @@ describe('[Rooms]', function () {
 						rooms: [testChannel._id],
 						teamId: privateTeam._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('success');
 					})
@@ -1205,7 +1190,7 @@ describe('[Rooms]', function () {
 						prid: testChannel._id,
 						t_name: `discussion-create-from-tests-${testChannel.name}-team`,
 					})
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('discussion').and.to.be.an('object');
@@ -1272,7 +1257,7 @@ describe('[Rooms]', function () {
 				.query({
 					roomId: testChannel._id,
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('discussions').and.to.be.an('array');
@@ -1300,8 +1285,7 @@ describe('[Rooms]', function () {
 			request
 				.get(api('rooms.autocomplete.channelAndPrivate?selector={}'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('items').and.to.be.an('array');
@@ -1327,8 +1311,7 @@ describe('[Rooms]', function () {
 			request
 				.get(api('rooms.autocomplete.channelAndPrivate.withPagination?selector={}'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('items').and.to.be.an('array');
@@ -1344,8 +1327,7 @@ describe('[Rooms]', function () {
 					count: 5,
 					offset: 0,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('items').and.to.be.an('array');
@@ -1360,8 +1342,7 @@ describe('[Rooms]', function () {
 			request
 				.get(api('rooms.autocomplete.availableForTeams'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('items').and.to.be.an('array');
@@ -1372,8 +1353,7 @@ describe('[Rooms]', function () {
 			request
 				.get(api('rooms.autocomplete.availableForTeams?name=group'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('items').and.to.be.an('array');
@@ -1419,8 +1399,7 @@ describe('[Rooms]', function () {
 			request
 				.get(api('rooms.autocomplete.adminRooms?selector={}'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('items').and.to.be.an('array');
@@ -1434,8 +1413,7 @@ describe('[Rooms]', function () {
 				.query({
 					selector: JSON.stringify(name),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('items').and.to.be.an('array');
@@ -1485,7 +1463,7 @@ describe('[Rooms]', function () {
 			request
 				.get(api('rooms.adminRooms'))
 				.set(credentials)
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('rooms').and.to.be.an('array');
@@ -1503,7 +1481,7 @@ describe('[Rooms]', function () {
 					count: 5,
 					offset: 0,
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('rooms').and.to.be.an('array');
@@ -1521,7 +1499,7 @@ describe('[Rooms]', function () {
 					.query({
 						filter: fnameRoom,
 					})
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('rooms').and.to.be.an('array');
@@ -1542,7 +1520,7 @@ describe('[Rooms]', function () {
 					.query({
 						filter: nameRoom,
 					})
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('rooms').and.to.be.an('array');
@@ -1562,7 +1540,7 @@ describe('[Rooms]', function () {
 				.query({
 					types: ['p'],
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('rooms').and.to.be.an('array');
@@ -1580,7 +1558,7 @@ describe('[Rooms]', function () {
 				.query({
 					filter: nameRoom,
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('rooms').and.to.be.an('array');
@@ -1597,7 +1575,7 @@ describe('[Rooms]', function () {
 					filter: nameRoom,
 					types: ['p'],
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('rooms').and.to.be.an('array');
@@ -1614,7 +1592,7 @@ describe('[Rooms]', function () {
 					filter: nameRoom,
 					types: ['c'],
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('rooms').and.to.be.an('array');
@@ -1718,8 +1696,7 @@ describe('[Rooms]', function () {
 				.post(api('rooms.delete'))
 				.set(credentials)
 				.send({ roomId: testChannel._id })
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
@@ -1784,8 +1761,7 @@ describe('[Rooms]', function () {
 						defaultValue: true,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.end(done);
 		});
 
@@ -1796,7 +1772,7 @@ describe('[Rooms]', function () {
 				.query({
 					roomId: testChannel._id,
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('room').and.to.be.an('object');
@@ -1826,8 +1802,7 @@ describe('[Rooms]', function () {
 					rid: discussion._id,
 					roomName: newDiscussionName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			await request
 				.get(api('rooms.info'))
@@ -1835,7 +1810,7 @@ describe('[Rooms]', function () {
 				.query({
 					roomId: discussion._id,
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('room').and.to.be.an('object');

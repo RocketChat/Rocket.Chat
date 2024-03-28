@@ -29,8 +29,7 @@ describe('Meteor.methods', function () {
 				.send({
 					name: channelName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
@@ -52,8 +51,7 @@ describe('Meteor.methods', function () {
 						rid,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					firstMessage = res.body.message;
@@ -72,8 +70,7 @@ describe('Meteor.methods', function () {
 						tmid: firstMessage._id,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
@@ -114,8 +111,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -161,8 +157,7 @@ describe('Meteor.methods', function () {
 							msg: 'method',
 						}),
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						const data = JSON.parse(res.body.message);
@@ -213,8 +208,7 @@ describe('Meteor.methods', function () {
 								msg: 'method',
 							}),
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
 							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -238,8 +232,7 @@ describe('Meteor.methods', function () {
 								msg: 'method',
 							}),
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
 							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -279,8 +272,7 @@ describe('Meteor.methods', function () {
 								msg: 'method',
 							}),
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
 							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -306,8 +298,7 @@ describe('Meteor.methods', function () {
 								msg: 'method',
 							}),
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
 							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -351,8 +342,7 @@ describe('Meteor.methods', function () {
 								msg: 'method',
 							}),
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
 							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -402,8 +392,7 @@ describe('Meteor.methods', function () {
 								msg: 'method',
 							}),
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
 							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -429,8 +418,7 @@ describe('Meteor.methods', function () {
 								msg: 'method',
 							}),
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
 							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -462,8 +450,7 @@ describe('Meteor.methods', function () {
 				.send({
 					name: channelName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
@@ -485,8 +472,7 @@ describe('Meteor.methods', function () {
 						rid,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					firstMessage = res.body.message;
@@ -504,8 +490,7 @@ describe('Meteor.methods', function () {
 						rid,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					lastMessage = res.body.message;
@@ -547,8 +532,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -573,8 +557,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -598,8 +581,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -625,8 +607,7 @@ describe('Meteor.methods', function () {
 				.send({
 					name: channelName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
@@ -648,8 +629,7 @@ describe('Meteor.methods', function () {
 						rid,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
@@ -666,8 +646,7 @@ describe('Meteor.methods', function () {
 						rid,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
@@ -693,7 +672,7 @@ describe('Meteor.methods', function () {
 					ignoreThreads: false,
 					ignoreDiscussion: false,
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('count', 0);
@@ -722,7 +701,7 @@ describe('Meteor.methods', function () {
 					ignoreThreads: false,
 					ignoreDiscussion: false,
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('count', 2);
@@ -750,8 +729,7 @@ describe('Meteor.methods', function () {
 				.send({
 					name: channelName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
@@ -773,8 +751,7 @@ describe('Meteor.methods', function () {
 						rid,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					postMessageDate = { $date: new Date().getTime() };
@@ -792,8 +769,7 @@ describe('Meteor.methods', function () {
 						rid,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					lastMessage = res.body.message;
@@ -835,8 +811,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -861,8 +836,7 @@ describe('Meteor.methods', function () {
 						params: [rid],
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -887,8 +861,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -913,8 +886,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -939,8 +911,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -969,8 +940,7 @@ describe('Meteor.methods', function () {
 				.send({
 					name: channelName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
@@ -992,8 +962,7 @@ describe('Meteor.methods', function () {
 						rid,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					postMessageDate = { $date: new Date().getTime() };
@@ -1011,8 +980,7 @@ describe('Meteor.methods', function () {
 						rid,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
@@ -1053,8 +1021,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -1079,8 +1046,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -1105,8 +1071,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -1131,8 +1096,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -1160,8 +1124,7 @@ describe('Meteor.methods', function () {
 				.send({
 					name: channelName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
@@ -1194,8 +1157,7 @@ describe('Meteor.methods', function () {
 					roomId: rid,
 					userId: testUser._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.end(done);
 		});
 
@@ -1233,8 +1195,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -1258,8 +1219,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -1305,8 +1265,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -1351,8 +1310,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -1401,8 +1359,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -1426,8 +1383,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -1456,8 +1412,7 @@ describe('Meteor.methods', function () {
 				.send({
 					name: channelName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
@@ -1479,8 +1434,7 @@ describe('Meteor.methods', function () {
 						rid,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					postMessageDate = { $date: new Date().getTime() };
@@ -1498,8 +1452,7 @@ describe('Meteor.methods', function () {
 						rid,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
@@ -1540,8 +1493,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.include('error-invalid-room');
@@ -1561,8 +1513,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.include('Match error');
@@ -1582,8 +1533,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -1607,8 +1557,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -1632,8 +1581,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -1683,8 +1631,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -1745,8 +1692,7 @@ describe('Meteor.methods', function () {
 								msg: 'method',
 							}),
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
 							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -1772,8 +1718,7 @@ describe('Meteor.methods', function () {
 							msg: 'method',
 						}),
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.a.property('success', true);
 						expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -1803,8 +1748,7 @@ describe('Meteor.methods', function () {
 								msg: 'method',
 							}),
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
 							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -1856,8 +1800,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -1881,8 +1824,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -1907,8 +1849,7 @@ describe('Meteor.methods', function () {
 				.send({
 					name: channelName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
@@ -1934,8 +1875,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -1965,8 +1905,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -1997,8 +1936,7 @@ describe('Meteor.methods', function () {
 				.send({
 					name: channelName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
@@ -2034,8 +1972,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -2067,8 +2004,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -2100,8 +2036,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -2124,8 +2059,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -2134,8 +2068,7 @@ describe('Meteor.methods', function () {
 			await request
 				.get(api(`chat.getMessage?msgId=${messageId}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('message').that.is.an('object');
 					expect(res.body.message).to.have.property('msg', `${quotedMsgLink} updated`);
@@ -2157,8 +2090,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -2167,8 +2099,7 @@ describe('Meteor.methods', function () {
 			await request
 				.get(api(`chat.getMessage?msgId=${messageId}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('message').that.is.an('object');
 					expect(res.body.message).to.have.property('msg', `${quotedMsgLink} updated`);
@@ -2191,8 +2122,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -2201,8 +2131,7 @@ describe('Meteor.methods', function () {
 			await request
 				.get(api(`chat.getMessage?msgId=${messageId}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('message').that.is.an('object');
 					expect(res.body.message).to.have.property('msg', `${newQuotedMsgLink} ${quotedMsgLink} updated`);
@@ -2224,8 +2153,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -2234,8 +2162,7 @@ describe('Meteor.methods', function () {
 			await request
 				.get(api(`chat.getMessage?msgId=${messageId}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('message').that.is.an('object');
 					expect(res.body.message).to.have.property('msg', 'updated');
@@ -2260,8 +2187,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -2270,8 +2196,7 @@ describe('Meteor.methods', function () {
 			await request
 				.get(api(`chat.getMessage?msgId=${messageId}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('message').that.is.an('object');
 					expect(res.body.message.msg).to.equal('https://github.com updated with bypass');
@@ -2301,8 +2226,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -2314,8 +2238,7 @@ describe('Meteor.methods', function () {
 					request
 						.get(api(`chat.getMessage?msgId=${messageWithMarkdownId}`))
 						.set(credentials)
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
 							expect(res.body).to.have.property('message').that.is.an('object');
 							expect(res.body.message.msg).to.equal('test message with ```https://github.com``` updated');
@@ -2339,8 +2262,7 @@ describe('Meteor.methods', function () {
 							msg: 'method',
 						}),
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.a.property('success', true);
 						expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -2364,8 +2286,7 @@ describe('Meteor.methods', function () {
 							msg: 'method',
 						}),
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.a.property('success', true);
 						expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -2391,8 +2312,7 @@ describe('Meteor.methods', function () {
 				.send({
 					name: channelName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
@@ -2422,8 +2342,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -2457,8 +2376,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -2486,8 +2404,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -2807,8 +2724,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
@@ -2819,8 +2735,7 @@ describe('Meteor.methods', function () {
 						.query({
 							roomId: room._id,
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('members').and.to.be.an('array');
@@ -2860,8 +2775,7 @@ describe('Meteor.methods', function () {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					const parsedBody = JSON.parse(res.body.message);
@@ -2909,8 +2823,7 @@ describe('Meteor.methods', function () {
 								msg: 'method',
 							}),
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
 							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -2954,8 +2867,7 @@ describe('Meteor.methods', function () {
 								msg: 'method',
 							}),
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
 							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -2976,8 +2888,7 @@ describe('Meteor.methods', function () {
 								rid,
 							},
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
 							expect(res.body).to.have.property('success', true);
 						});
@@ -2994,8 +2905,7 @@ describe('Meteor.methods', function () {
 						roomId: rid,
 						readOnly: true,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200);
+					.success();
 			});
 
 			it('should not allow an user to send messages', async () => {
@@ -3030,8 +2940,7 @@ describe('Meteor.methods', function () {
 								msg: 'method',
 							}),
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
 							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
@@ -3052,8 +2961,7 @@ describe('Meteor.methods', function () {
 								rid,
 							},
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
 							expect(res.body).to.have.property('success', true);
 						});
@@ -3073,8 +2981,7 @@ describe('Meteor.methods', function () {
 								msg: 'method',
 							}),
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
 							expect(res.body).to.have.a.property('success', true);
 							expect(res.body).to.have.a.property('message').that.is.a('string');
