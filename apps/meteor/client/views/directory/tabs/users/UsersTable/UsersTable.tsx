@@ -46,7 +46,7 @@ const UsersTable = ({ workspace = 'local' }): ReactElement => {
 						active={sortBy === 'email'}
 						onClick={setSort}
 						sort='email'
-						width='x200'
+						width='x250'
 					>
 						{t('Email')}
 					</GenericTableHeaderCell>
