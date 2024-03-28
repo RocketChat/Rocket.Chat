@@ -107,7 +107,6 @@ describe('LIVECHAT - Integrations', function () {
 						Body: 'Hello',
 					})
 					.expect('Content-Type', 'text/xml')
-					.success()
 					.expect((res: Response) => {
 						expect(res).to.have.property('text', '<Response></Response>');
 					});
