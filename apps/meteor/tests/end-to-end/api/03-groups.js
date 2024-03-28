@@ -1768,12 +1768,7 @@ describe('[Groups]', function () {
 		it('should successfully convert a group to a team', (done) => {
 			updatePermission('create-team', ['admin']).then(() => {
 				updatePermission('edit-room', ['admin']).then(() => {
-					request
-						.post(api('groups.convertToTeam'))
-						.set(credentials)
-						.send({ roomId: newGroup._id })
-						.success()
-						.end(done);
+					request.post(api('groups.convertToTeam')).set(credentials).send({ roomId: newGroup._id }).success().end(done);
 				});
 			});
 		});
