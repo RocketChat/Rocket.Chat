@@ -6,7 +6,7 @@ on:
       
 jobs:
   IntegrateSecurityVulnerabilities:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: "Github vulnerabilities and jira board integration"
         uses: RocketChat/github-vulnerabilities-jira-integration@v0.3
