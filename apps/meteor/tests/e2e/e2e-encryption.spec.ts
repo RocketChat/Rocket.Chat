@@ -63,7 +63,7 @@ test.describe.serial('e2e-encryption initial setup', () => {
 
 		await expect(page.locator('#modal-root')).toContainText(password);
 
-		await page.locator('#modal-root .rcx-button--primary').click();
+		await page.locator('#modal-root .rcx-button-group--align-end .rcx-button--primary').click();
 
 		await expect(page.locator('role=banner >> text="Save your encryption password"')).not.toBeVisible();
 
