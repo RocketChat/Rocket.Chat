@@ -123,6 +123,21 @@ test.describe.parallel('administration', () => {
 				await poAdmin.getRoomRow(targetChannel).click();
 				await expect(poAdmin.favoriteInput).toBeChecked();
 			});
+
+			test('should see favorite switch disabled when default is not true', async () => {
+				await poAdmin.inputSearchRooms.type(targetChannel);
+				await poAdmin.getRoomRow(targetChannel).click();
+				await poAdmin.defaultLabel.click();
+
+				await expect(poAdmin.favoriteInput).toBeDisabled();
+			});
+
+			test('should see favorite switch enabled when default is true', async () => {
+				await poAdmin.inputSearchRooms.type(targetChannel);
+				await poAdmin.getRoomRow(targetChannel).click();
+
+				await expect(poAdmin.favoriteInput).toBeEnabled();
+			});
 		});
 	});
 
