@@ -54,6 +54,8 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 							mentions={normalizedMessage.mentions}
 							channels={normalizedMessage.channels}
 							searchText={searchText}
+							urls={oembedEnabled && !!normalizedMessage.urls?.length ? normalizedMessage.urls : []}
+							idx={0}
 						/>
 					)}
 					{encrypted && normalizedMessage.e2e === 'pending' && t('E2E_message_encrypted_placeholder')}
@@ -66,7 +68,6 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 
 			{!!normalizedMessage?.attachments?.length && <Attachments id={message.files?.[0]._id} attachments={normalizedMessage.attachments} />}
 
-			{oembedEnabled && !!normalizedMessage.urls?.length && <UrlPreviews urls={normalizedMessage.urls} />}
 
 			{normalizedMessage.actionLinks?.length && (
 				<MessageActions
