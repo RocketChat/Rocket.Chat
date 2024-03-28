@@ -1848,4 +1848,286 @@ describe('[Rooms]', function () {
 				});
 		});
 	});
+	describe('/rooms.isMember', () => {
+		let testChannel;
+		let testGroup;
+		let testDM;
+
+		const fakeRoomId = `room.test.${Date.now()}-${Math.random()}`;
+		const fakeUserId = `user.test.${Date.now()}-${Math.random()}`;
+
+		const testChannelName = `channel.test.${Date.now()}-${Math.random()}`;
+		const testGroupName = `group.test.${Date.now()}-${Math.random()}`;
+
+		let testUser1;
+		let testUser2;
+		let testUserNonMember;
+		let testUser1Credentials;
+		let testUserNonMemberCredentials;
+
+		before(async () => {
+			testUser1 = await createUser();
+			testUser1Credentials = await login(testUser1.username, password);
+		});
+
+		before(async () => {
+			testUser2 = await createUser();
+		});
+
+		before(async () => {
+			testUserNonMember = await createUser();
+			testUserNonMemberCredentials = await login(testUserNonMember.username, password);
+		});
+
+		before(async () => {
+			const response = await createRoom({
+				type: 'c',
+				name: testChannelName,
+				members: [testUser1.username, testUser2.username],
+			});
+			testChannel = response.body.channel;
+		});
+
+		before(async () => {
+			const response = await createRoom({
+				type: 'p',
+				name: testGroupName,
+				members: [testUser1.username, testUser2.username],
+			});
+			testGroup = response.body.group;
+		});
+
+		before(async () => {
+			const response = await createRoom({
+				type: 'd',
+				username: testUser2.username,
+				credentials: testUser1Credentials,
+			});
+			testDM = response.body.room;
+		});
+
+		after(() =>
+			Promise.all([
+				deleteRoom({ type: 'c', roomId: testChannel._id }),
+				deleteRoom({ type: 'p', roomId: testGroup._id }),
+				deleteRoom({ type: 'd', roomId: testDM._id }),
+				deleteUser(testUser1),
+				deleteUser(testUser2),
+				deleteUser(testUserNonMember),
+			]),
+		);
+
+		it('should return error if room not found', () => {
+			return request
+				.get(api('rooms.isMember'))
+				.set(testUser1Credentials)
+				.query({
+					roomId: fakeRoomId,
+					userId: testUser1._id,
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property(
+						'error',
+						'The required "roomId" or "roomName" param provided does not match any channel [error-room-not-found]',
+					);
+				});
+		});
+
+		it('should return error if user not found with the given userId', () => {
+			return request
+				.get(api('rooms.isMember'))
+				.set(testUser1Credentials)
+				.query({
+					roomId: testChannel._id,
+					userId: fakeUserId,
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'error-user-not-found');
+				});
+		});
+
+		it('should return error if user not found with the given username', () => {
+			return request
+				.get(api('rooms.isMember'))
+				.set(testUser1Credentials)
+				.query({
+					roomId: testChannel._id,
+					username: fakeUserId,
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'error-user-not-found');
+				});
+		});
+
+		it('should return success with exists=true if given userId is a member of the channel', () => {
+			return request
+				.get(api('rooms.isMember'))
+				.set(testUser1Credentials)
+				.query({
+					roomId: testChannel._id,
+					userId: testUser2._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('exists', true);
+				});
+		});
+
+		it('should return success with exists=true if given username is a member of the channel', () => {
+			return request
+				.get(api('rooms.isMember'))
+				.set(testUser1Credentials)
+				.query({
+					roomId: testChannel._id,
+					userId: testUser2.username,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('exists', true);
+				});
+		});
+
+		it('should return success with exists=false if user is not a member of the channel', () => {
+			return request
+				.get(api('rooms.isMember'))
+				.set(testUser1Credentials)
+				.query({
+					roomId: testChannel._id,
+					userId: testUserNonMember._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('exists', false);
+				});
+		});
+
+		it('should return success with exists=true if given userId is a member of the group', () => {
+			return request
+				.get(api('rooms.isMember'))
+				.set(testUser1Credentials)
+				.query({
+					roomId: testGroup._id,
+					userId: testUser2._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('exists', true);
+				});
+		});
+
+		it('should return success with exists=true if given username is a member of the group', () => {
+			return request
+				.get(api('rooms.isMember'))
+				.set(testUser1Credentials)
+				.query({
+					roomId: testGroup._id,
+					userId: testUser2.username,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('exists', true);
+				});
+		});
+
+		it('should return success with exists=false if user is not a member of the group', () => {
+			return request
+				.get(api('rooms.isMember'))
+				.set(testUser1Credentials)
+				.query({
+					roomId: testGroup._id,
+					userId: testUserNonMember._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('exists', false);
+				});
+		});
+
+		it('should return unauthorized if caller cannot access the group', () => {
+			return request
+				.get(api('rooms.isMember'))
+				.set(testUserNonMemberCredentials)
+				.query({
+					roomId: testGroup._id,
+					userId: testUser1._id,
+				})
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'unauthorized');
+				});
+		});
+
+		it('should return success with exists=true if given userId is a member of the DM', () => {
+			return request
+				.get(api('rooms.isMember'))
+				.set(testUser1Credentials)
+				.query({
+					roomId: testDM._id,
+					userId: testUser2._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('exists', true);
+				});
+		});
+
+		it('should return success with exists=true if given username is a member of the DM', () => {
+			return request
+				.get(api('rooms.isMember'))
+				.set(testUser1Credentials)
+				.query({
+					roomId: testDM._id,
+					userId: testUser2.username,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('exists', true);
+				});
+		});
+
+		it('should return success with exists=false if user is not a member of the DM', () => {
+			return request
+				.get(api('rooms.isMember'))
+				.set(testUser1Credentials)
+				.query({
+					roomId: testDM._id,
+					userId: testUserNonMember._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('exists', false);
+				});
+		});
+
+		it('should return unauthorized if caller cannot access the DM', () => {
+			return request
+				.get(api('rooms.isMember'))
+				.set(testUserNonMemberCredentials)
+				.query({
+					roomId: testDM._id,
+					userId: testUser1._id,
+				})
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'unauthorized');
+				});
+		});
+	});
 });

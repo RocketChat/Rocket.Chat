@@ -6,6 +6,7 @@ import { useMemo } from 'react';
 
 import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
 import { useEmbeddedLayout } from '../../../../hooks/useEmbeddedLayout';
+import { useAddUserAction } from './actions/useAddUserAction';
 import { useBlockUserAction } from './actions/useBlockUserAction';
 import { useCallAction } from './actions/useCallAction';
 import { useChangeLeaderAction } from './actions/useChangeLeaderAction';
@@ -39,7 +40,9 @@ export const useUserInfoActions = (
 	rid: IRoom['_id'],
 	reload?: () => void,
 	size = 2,
+	isMember?: boolean,
 ): { actions: [string, UserInfoAction][]; menuActions: any | undefined } => {
+	const addUser = useAddUserAction(user, rid, reload);
 	const blockUser = useBlockUserAction(user, rid);
 	const changeLeader = useChangeLeaderAction(user, rid);
 	const changeModerator = useChangeModeratorAction(user, rid);
@@ -58,15 +61,16 @@ export const useUserInfoActions = (
 		() => ({
 			...(openDirectMessage && !isLayoutEmbedded && { openDirectMessage }),
 			...(call && { call }),
-			...(changeOwner && { changeOwner }),
-			...(changeLeader && { changeLeader }),
-			...(changeModerator && { changeModerator }),
-			...(openModerationConsole && { openModerationConsole }),
-			...(ignoreUser && { ignoreUser }),
-			...(muteUser && { muteUser }),
+			...(!isMember && addUser && { addUser }),
+			...(isMember && changeOwner && { changeOwner }),
+			...(isMember && changeLeader && { changeLeader }),
+			...(isMember && changeModerator && { changeModerator }),
+			...(isMember && openModerationConsole && { openModerationConsole }),
+			...(isMember && ignoreUser && { ignoreUser }),
+			...(isMember && muteUser && { muteUser }),
 			...(blockUser && { toggleBlock: blockUser }),
 			...(reportUserOption && { reportUser: reportUserOption }),
-			...(removeUser && { removeUser }),
+			...(isMember && removeUser && { removeUser }),
 		}),
 		[
 			openDirectMessage,
@@ -81,6 +85,8 @@ export const useUserInfoActions = (
 			removeUser,
 			reportUserOption,
 			openModerationConsole,
+			addUser,
+			isMember,
 		],
 	);
 

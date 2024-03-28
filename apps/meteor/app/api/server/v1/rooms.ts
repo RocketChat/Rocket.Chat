@@ -1,8 +1,8 @@
 import { Media } from '@rocket.chat/core-services';
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Messages, Rooms, Users } from '@rocket.chat/models';
+import { Messages, Rooms, Users, Subscriptions } from '@rocket.chat/models';
 import type { Notifications } from '@rocket.chat/rest-typings';
-import { isGETRoomsNameExists } from '@rocket.chat/rest-typings';
+import { isGETRoomsNameExists, isRoomsIsMemberProps } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { isTruthy } from '../../../../lib/isTruthy';
@@ -632,6 +632,36 @@ API.v1.addRoute(
 			}
 
 			return API.v1.failure();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'rooms.isMember',
+	{
+		authRequired: true,
+		validateParams: isRoomsIsMemberProps,
+	},
+	{
+		async get() {
+			const { roomId, userId, username } = this.queryParams;
+			const [room, user] = await Promise.all([
+				findRoomByIdOrName({
+					params: { roomId },
+				}) as Promise<IRoom>,
+				Users.findOneByIdOrUsername(userId || username),
+			]);
+
+			if (!user?._id) {
+				return API.v1.failure('error-user-not-found');
+			}
+
+			if (await canAccessRoomAsync(room, this.user)) {
+				return API.v1.success({
+					exists: (await Subscriptions.countByRoomIdAndUserId(room._id, user._id)) > 0,
+				});
+			}
+			return API.v1.unauthorized();
 		},
 	},
 );
