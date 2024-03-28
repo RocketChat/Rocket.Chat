@@ -65,10 +65,6 @@ export class RocketChatSettingsAdapter {
 		return settings.get('Federation_Matrix_enabled') === true;
 	}
 
-	public shouldServeWellKnown(): boolean {
-		return settings.get<boolean>('Federation_Matrix_serve_well_known');
-	}
-
 	public areEphemeralEventsEnabled(): boolean {
 		return this.isTypingStatusEnabled();
 	}
@@ -80,7 +76,6 @@ export class RocketChatSettingsAdapter {
 	public onFederationEnabledStatusChanged(
 		callback: (
 			enabled: boolean,
-			serveWellKnown: boolean,
 			appServiceId: string,
 			homeServerUrl: string,
 			homeServerDomain: string,
@@ -92,7 +87,6 @@ export class RocketChatSettingsAdapter {
 		return settings.watchMultiple<boolean>(
 			[
 				'Federation_Matrix_enabled',
-				'Federation_Matrix_serve_well_known',
 				'Federation_Matrix_id',
 				'Federation_Matrix_hs_token',
 				'Federation_Matrix_as_token',
@@ -101,10 +95,9 @@ export class RocketChatSettingsAdapter {
 				'Federation_Matrix_bridge_url',
 				'Federation_Matrix_bridge_localpart',
 			],
-			([enabled, serveWellKnown]) =>
+			([enabled]) =>
 				callback(
 					enabled === true,
-					serveWellKnown === true,
 					this.getApplicationServiceId(),
 					this.getHomeServerUrl(),
 					this.getHomeServerDomain(),
