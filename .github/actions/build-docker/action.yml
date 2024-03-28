@@ -13,6 +13,10 @@ inputs:
     required: false
     description: 'Platform'
     type: string
+  build-containers:
+    required: false
+    description: 'Containers to build along with Rocket.Chat'
+    type: string
 
 runs:
   using: composite
@@ -54,11 +58,12 @@ runs:
     - name: Build Docker images
       shell: bash
       run: |
-        args=(rocketchat)
+        args=(rocketchat ${{ inputs.build-containers }})
 
-        if [[ '${{ inputs.platform }}' = 'alpine' ]]; then
-          args+=($SERVICES_PUBLISH)
-        fi;
+        echo "RC_DOCKERFILE: $RC_DOCKERFILE"
+        echo "RC_DOCKER_TAG: $RC_DOCKER_TAG"
+        echo "DOCKER_TAG: $DOCKER_TAG"
+        echo "LOWERCASE_REPOSITORY: $LOWERCASE_REPOSITORY"
 
         docker compose -f docker-compose-ci.yml build "${args[@]}"
 
@@ -66,10 +71,11 @@ runs:
       if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
       shell: bash
       run: |
-        args=(rocketchat)
+        args=(rocketchat ${{ inputs.build-containers }})
 
-        if [[ '${{ inputs.platform }}' = 'alpine' ]]; then
-          args+=($SERVICES_PUBLISH)
-        fi;
+        echo "RC_DOCKERFILE: $RC_DOCKERFILE"
+        echo "RC_DOCKER_TAG: $RC_DOCKER_TAG"
+        echo "DOCKER_TAG: $DOCKER_TAG"
+        echo "LOWERCASE_REPOSITORY: $LOWERCASE_REPOSITORY"
 
         docker compose -f docker-compose-ci.yml push "${args[@]}"

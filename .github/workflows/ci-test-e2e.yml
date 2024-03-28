@@ -154,6 +154,11 @@ jobs:
           COVERAGE_DIR: '/tmp/coverage'
           COVERAGE_REPORTER: 'lcov'
         run: |
+          echo "RC_DOCKERFILE: $RC_DOCKERFILE"
+          echo "RC_DOCKER_TAG: $RC_DOCKER_TAG"
+          echo "DOCKER_TAG: $DOCKER_TAG"
+          echo "LOWERCASE_REPOSITORY: $LOWERCASE_REPOSITORY"
+
           docker compose -f docker-compose-ci.yml up -d
 
       - name: Cache Playwright binaries
