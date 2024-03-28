@@ -159,6 +159,11 @@ export interface IStats {
 		priorities?: number;
 		slas?: number;
 		businessUnits?: number;
+		omnichannelPdfTranscriptRequested?: number;
+		omnichannelPdfTranscriptSucceeded?: number;
+		omnichannelRoomsWithSlas?: number;
+		omnichannelRoomsWithPriorities?: number;
+		livechatMonitors?: number;
 	};
 	createdAt: Date | string;
 	totalOTR: number;
