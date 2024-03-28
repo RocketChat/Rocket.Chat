@@ -17,6 +17,7 @@ export interface ILivechatDepartment {
 	departmentsAllowedToForward?: string[];
 	maxNumberSimultaneousChat?: number;
 	ancestors?: string[];
+	allowReceiveForwardOffline?: boolean;
 	// extra optional fields
 	[k: string]: any;
 }

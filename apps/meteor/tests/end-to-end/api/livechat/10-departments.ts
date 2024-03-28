@@ -49,7 +49,16 @@ import { IS_EE } from '../../../e2e/config/constants';
 		const { body } = await request
 			.post(api('livechat/department'))
 			.set(credentials)
-			.send({ department: { name: 'Test', enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'bla@bla' } })
+			.send({
+				department: {
+					name: 'Test',
+					enabled: true,
+					showOnOfflineForm: true,
+					showOnRegistration: true,
+					email: 'bla@bla',
+					allowReceiveForwardOffline: true,
+				},
+			})
 			.expect('Content-Type', 'application/json')
 			.expect(200);
 		expect(body).to.have.property('success', true);
@@ -59,6 +68,8 @@ import { IS_EE } from '../../../e2e/config/constants';
 		expect(body.department).to.have.property('enabled', true);
 		expect(body.department).to.have.property('showOnOfflineForm', true);
 		expect(body.department).to.have.property('showOnRegistration', true);
+		expect(body.department).to.have.property('allowReceiveForwardOffline', true);
+
 		departmentId = body.department._id;
 	});
 
