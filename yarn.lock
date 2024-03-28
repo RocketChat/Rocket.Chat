@@ -8264,7 +8264,6 @@ __metadata:
     eslint: ~8.45.0
     event-loop-stats: ^1.4.1
     eventemitter3: ^4.0.7
-    fibers: ^5.0.3
     gc-stats: ^1.4.0
     mem: ^8.1.1
     moleculer: ^0.14.31
@@ -8383,7 +8382,6 @@ __metadata:
     eslint: ~8.45.0
     event-loop-stats: ^1.4.1
     eventemitter3: ^4.0.7
-    fibers: ^5.0.3
     gc-stats: ^1.4.0
     mem: ^8.1.1
     moleculer: ^0.14.31
@@ -8442,11 +8440,9 @@ __metadata:
     "@rocket.chat/ui-kit": "workspace:~"
     "@types/babel__core": ^7.20.3
     "@types/babel__preset-env": ^7.9.4
-    "@types/fibers": ^3.1.3
     "@types/jest": ~29.5.7
     babel-jest: ^29.5.0
     eslint: ~8.45.0
-    fibers: ^5.0.3
     jest: ~29.6.4
     mongodb: ^4.17.2
     prettier: ~2.8.8
@@ -8560,7 +8556,6 @@ __metadata:
     eslint: ~8.45.0
     event-loop-stats: ^1.4.1
     eventemitter3: ^4.0.7
-    fibers: ^5.0.3
     gc-stats: ^1.4.0
     jaeger-client: ^3.19.0
     mem: ^8.1.1
@@ -9259,7 +9254,6 @@ __metadata:
     "@types/ejson": ^2.2.1
     "@types/express": ^4.17.20
     "@types/express-rate-limit": ^5.1.3
-    "@types/fibers": ^3.1.3
     "@types/google-libphonenumber": ^7.4.29
     "@types/gravatar": ^1.8.5
     "@types/he": ^1.1.2
@@ -9382,7 +9376,6 @@ __metadata:
     fast-glob: ^3.2.12
     fastq: ^1.13.0
     fflate: ^0.7.4
-    fibers: ^5.0.3
     file-type: ^16.5.4
     filenamify: ^4.3.0
     filesize: 9.0.11
@@ -9403,7 +9396,7 @@ __metadata:
     imap: ^0.8.19
     ip-range-check: ^0.2.0
     is-svg: ^4.3.2
-    isolated-vm: 4.4.2
+    isolated-vm: 4.7.2
     jest: ~29.6.4
     jschardet: ^3.0.0
     jsdom: ^16.7.0
@@ -9602,7 +9595,6 @@ __metadata:
     emoji-toolkit: ^7.0.1
     eslint: ~8.45.0
     eventemitter3: ^4.0.7
-    fibers: ^5.0.3
     jest: ~29.6.4
     mem: ^8.1.1
     moment-timezone: ^0.5.43
@@ -9638,7 +9630,6 @@ __metadata:
     eslint: ~8.45.0
     event-loop-stats: ^1.4.1
     eventemitter3: ^4.0.7
-    fibers: ^5.0.3
     gc-stats: ^1.4.0
     mem: ^8.1.1
     moleculer: ^0.14.31
@@ -9770,7 +9761,6 @@ __metadata:
     eslint: ~8.45.0
     event-loop-stats: ^1.4.1
     eventemitter3: ^4.0.7
-    fibers: ^5.0.3
     gc-stats: ^1.4.0
     mem: ^8.1.1
     moleculer: ^0.14.31
@@ -9835,7 +9825,6 @@ __metadata:
     eslint: ~8.45.0
     event-loop-stats: ^1.4.1
     eventemitter3: ^4.0.7
-    fibers: ^5.0.3
     gc-stats: ^1.4.0
     mem: ^8.1.1
     moleculer: ^0.14.31
@@ -10002,7 +9991,6 @@ __metadata:
     eslint: ~8.45.0
     event-loop-stats: ^1.4.1
     eventemitter3: ^4.0.7
-    fibers: ^5.0.3
     gc-stats: ^1.4.0
     mem: ^8.1.1
     moleculer: ^0.14.31
@@ -13329,13 +13317,6 @@ __metadata:
     "@types/qs": "*"
     "@types/serve-static": "*"
   checksum: bf8a97d283128e5129f9ccabbeef728ff3f0484465e0ae74a304bd0588fa6cb715ae68845650caba9a641944b7791ba125d02ddbd47a7e62aaefdd036570c6c5
-  languageName: node
-  linkType: hard
-
-"@types/fibers@npm:^3.1.3":
-  version: 3.1.3
-  resolution: "@types/fibers@npm:3.1.3"
-  checksum: c4511eecea1c4e73a4b4310ff5152bb43477dfbd7c19ea8614de5ce6d604c6bd629b4552bdbc06fbd593215c684d06aee4e6d8e6681b4ab019f2b8a03838de79
   languageName: node
   linkType: hard
 
@@ -20740,7 +20721,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"detect-libc@npm:^1.0.2, detect-libc@npm:^1.0.3":
+"detect-libc@npm:^1.0.2":
   version: 1.0.3
   resolution: "detect-libc@npm:1.0.3"
   bin:
@@ -22995,15 +22976,6 @@ __metadata:
   version: 0.7.4
   resolution: "fflate@npm:0.7.4"
   checksum: b812ab26047432db70ff4c73eb45ad53bd0774575b4818b9c61c2921e89ec65d1259f06ec1618f2ac55e6a2f2e29b6dc09173d213b46580bc69efae5344bf8f1
-  languageName: node
-  linkType: hard
-
-"fibers@npm:^5.0.3":
-  version: 5.0.3
-  resolution: "fibers@npm:5.0.3"
-  dependencies:
-    detect-libc: ^1.0.3
-  checksum: d66c5e18a911aab3480b846e1c837e5c7cfacb27a2a5fe512919865eaecef33cdd4abc14d777191a6a93473dc52356d48549c91a2a7b8b3450544c44104b23f3
   languageName: node
   linkType: hard
 
@@ -27107,12 +27079,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"isolated-vm@npm:4.4.2":
-  version: 4.4.2
-  resolution: "isolated-vm@npm:4.4.2"
+"isolated-vm@npm:4.7.2":
+  version: 4.7.2
+  resolution: "isolated-vm@npm:4.7.2"
   dependencies:
     node-gyp: latest
-  checksum: 86d12d96f90ceef74a3fc096439c71b0c115235ae3053d600eb8f7c678443d9ca3c8a2805dcd7f97463d11eb7d2e667868946b90e377a3e6d50fdd4085506fbc
+    prebuild-install: ^7.1.1
+  checksum: 16f43f6413623dc7009a8bb9fa567fb30ffc151e21e9a7ae616f25626e750ba823527fb24e2e17408943c6bbbcc7235db89f41262d43a8d8155ad99e888b0760
   languageName: node
   linkType: hard
 
@@ -36197,7 +36170,6 @@ __metadata:
     "@types/cookie-parser": ^1.4.5
     "@types/ejson": ^2.2.1
     "@types/express": ^4.17.20
-    "@types/fibers": ^3.1.3
     "@types/node": ^14.18.63
     "@types/ws": ^8.5.8
     ajv: ^8.11.0
@@ -36209,7 +36181,6 @@ __metadata:
     ejson: ^2.2.3
     eventemitter3: ^4.0.7
     express: ^4.17.3
-    fibers: ^5.0.3
     jaeger-client: ^3.19.0
     mem: ^8.1.1
     moleculer: ^0.14.31

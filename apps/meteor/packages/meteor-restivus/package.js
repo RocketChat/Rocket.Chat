@@ -1,13 +1,13 @@
 Package.describe({
 	name: 'rocketchat:restivus',
 	summary: 'Create authenticated REST APIs in Meteor 0.9+ via HTTP/HTTPS. Setup CRUD endpoints for Collections.',
-	version: '1.1.0',
+	version: '2.0.0-beta300.1',
 	git: 'https://github.com/kahmali/meteor-restivus.git',
 });
 
 Package.onUse(function (api) {
 	// Minimum Meteor version
-	api.versionsFrom('2.5');
+	api.versionsFrom('3.0-beta.7');
 
 	// Meteor dependencies
 	api.use('check');

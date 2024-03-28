@@ -1,7 +1,5 @@
 import { AsyncLocalStorage } from 'async_hooks';
 
-import Fiber from 'fibers';
-
 interface IContextStore<T> {
 	getStore(): T | undefined;
 	run(store: T, callback: (...args: any) => void, ...args: any): void;
@@ -12,20 +10,18 @@ export class AsyncContextStore<T> extends AsyncLocalStorage<T> implements IConte
 
 export class FibersContextStore<T extends object> implements IContextStore<T> {
 	getStore(): T | undefined {
-		return Fiber.current as unknown as T;
+		// return Fiber.current as unknown as T;
+		return undefined
 	}
 
 	run(store: T, callback: (...args: any) => void, ...args: any): void {
-		// eslint-disable-next-line new-cap
-		return Fiber((...rest: any) => {
-			const fiber = Fiber.current as Record<any, any>;
-			for (const key in store) {
-				if (store.hasOwnProperty(key)) {
-					fiber[key] = store[key];
-				}
+		const fiber = {} as Record<any, any>;
+		for (const key in store) {
+			if (store.hasOwnProperty(key)) {
+				fiber[key] = store[key];
 			}
+		}
 
-			Fiber.yield(callback(...rest));
-		}).run(...args);
+		callback(...args);
 	}
 }
