@@ -78,6 +78,7 @@ const TeamsChannels = () => {
 			setType={setType}
 			setText={handleTextChange}
 			channels={items}
+			mainRoom={room}
 			total={total}
 			onClickClose={closeTab}
 			onClickAddExisting={canAddExistingTeam && addExisting}

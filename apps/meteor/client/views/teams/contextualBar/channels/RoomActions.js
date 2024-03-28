@@ -1,6 +1,6 @@
 import { Box, CheckBox, Menu, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, usePermission, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
 import { useEndpointAction } from '../../../../hooks/useEndpointAction';
@@ -19,7 +19,7 @@ const useReactModal = (Component, props) => {
 	});
 };
 
-const RoomActions = ({ room, reload }) => {
+const RoomActions = ({ room, mainRoom, reload }) => {
 	const t = useTranslation();
 	const rid = room._id;
 	const type = room.t;
@@ -78,13 +78,32 @@ const RoomActions = ({ room, reload }) => {
 		),
 	});
 
+	const maxNumberOfAutoJoinMembers = useSetting('API_User_Limit');
+
 	const menuOptions = useMemo(() => {
 		const AutoJoinAction = async () => {
 			try {
-				await updateRoomEndpoint({
+				const { room: updatedRoom } = await updateRoomEndpoint({
 					roomId: rid,
 					isDefault: !room.teamDefault,
 				});
+
+				if (updatedRoom.teamDefault) {
+					// If the number of members in the mainRoom (the team) is greater than the limit, show an info message
+					// informing that not all members will be auto-joined to the channel
+					const messageType = mainRoom.usersCount > maxNumberOfAutoJoinMembers ? 'info' : 'success';
+					const message =
+						mainRoom.usersCount > maxNumberOfAutoJoinMembers ? 'Team_Auto-join_exceeded_user_limit' : 'Team_Auto-join_updated';
+
+					dispatchToastMessage({
+						type: messageType,
+						message: t(message, {
+							channelName: roomCoordinator.getRoomName(room.t, room),
+							numberOfMembers: updatedRoom.usersCount,
+							limit: maxNumberOfAutoJoinMembers,
+						}),
+					});
+				}
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
@@ -116,18 +135,20 @@ const RoomActions = ({ room, reload }) => {
 			},
 		].filter(Boolean);
 	}, [
-		DeleteChannelAction,
-		RemoveFromTeamAction,
-		rid,
-		type,
-		room.teamDefault,
-		t,
-		updateRoomEndpoint,
-		reload,
-		dispatchToastMessage,
-		canDeleteTeamChannel,
-		canRemoveTeamChannel,
 		canEditTeamChannel,
+		t,
+		type,
+		canRemoveTeamChannel,
+		RemoveFromTeamAction,
+		canDeleteTeamChannel,
+		DeleteChannelAction,
+		reload,
+		updateRoomEndpoint,
+		rid,
+		room,
+		mainRoom.usersCount,
+		maxNumberOfAutoJoinMembers,
+		dispatchToastMessage,
 	]);
 
 	return (
