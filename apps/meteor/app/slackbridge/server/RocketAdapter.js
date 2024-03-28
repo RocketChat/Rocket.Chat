@@ -262,6 +262,16 @@ export default class RocketAdapter {
 		return slackChannel.creator ? (await this.findUser(slackChannel.creator)) || this.addUser(slackChannel.creator) : null;
 	}
 
+	// Slugify Slack channel name to be compatible with RocketChat channel names
+	async slugify(name, separator = '-') {
+		return name
+    			.toString()                    // Cast to string (optional)
+    			.normalize('NFKD')             // The normalize() using NFKD method returns the Unicode Normalization Form of a given string.
+    			.trim()                        // Remove whitespace from both sides of a string (optional)
+    			.replace(/\s+/g, separator)    // Replace spaces with -
+    			.replace(/[^\w\-]+/g, '');     // Remove all non-word chars
+	}
+
 	async addChannel(slackChannelID, hasRetried = false) {
 		rocketLogger.debug('Adding Rocket.Chat channel from Slack', slackChannelID);
 		let addedRoom;
@@ -278,8 +288,14 @@ export default class RocketAdapter {
 					rocketLogger.error('Could not fetch room members');
 					return;
 				}
+              			if (typeof slackChannel.name === 'undefined') {
+			                rocketLogger.error('Channel has no name, maybe it is a Direct Message.');
+					return;
+				}
 
-				const rocketRoom = await Rooms.findOneByName(slackChannel.name);
+				// Slugify slack channel name
+				const slugifiedSlackName = this.slugify(slackChannel.name);
+				const rocketRoom = await Rooms.findOneByName(slugifiedSlackName);
 
 				if (rocketRoom || slackChannel.is_general) {
 					slackChannel.rocketId = slackChannel.is_general ? 'GENERAL' : rocketRoom._id;
@@ -295,7 +311,8 @@ export default class RocketAdapter {
 
 					try {
 						const isPrivate = slackChannel.is_private;
-						const rocketChannel = await createRoom(isPrivate ? 'p' : 'c', slackChannel.name, rocketUserCreator, rocketUsers);
+						// Use slugified name
+						const rocketChannel = await createRoom(isPrivate ? 'p' : 'c', slugifiedSlackName, rocketUserCreator, rocketUsers);
 						slackChannel.rocketId = rocketChannel.rid;
 					} catch (e) {
 						if (!hasRetried) {
@@ -305,6 +322,7 @@ export default class RocketAdapter {
 							return (await this.findChannel(slackChannelID)) || this.addChannel(slackChannelID, true);
 						}
 						rocketLogger.error(e);
+						return;
 					}
 
 					const roomUpdate = {
@@ -379,10 +397,9 @@ export default class RocketAdapter {
 						newUser.email = email;
 					}
 
-					if (isBot) {
-						newUser.joinDefaultChannels = false;
-					}
-
+					// Do not join default channels by default
+					// TODO: join the current channel to have permissions to setReation, uploadFile, ...
+					newUser.joinDefaultChannels = false;
 					rocketUserData.rocketId = await Accounts.createUserAsync(newUser);
 					const userUpdate = {
 						utcOffset: rocketUserData.tz_offset / 3600, // Slack's is -18000 which translates to Rocket.Chat's after dividing by 3600,
@@ -512,34 +529,72 @@ export default class RocketAdapter {
 	}
 
 	async convertSlackMsgTxtToRocketTxtFormat(slackMsgTxt) {
-		const regex = /(?:<@)([a-zA-Z0-9]+)(?:\|.+)?(?:>)/g;
 		if (!_.isEmpty(slackMsgTxt)) {
+	        	// Async string.replace, from: https://stackoverflow.com/a/73891404
+		        replaceAsync = async (string, regexp, replacerFunction) => {
+		        	const replacements = await Promise.all(
+		        		Array.from(string.matchAll(regexp), match => replacerFunction(...match))
+				);
+		        	let i = 0;
+		        	let res = string.replace(regexp, () => replacements[i++]);
+		        	return res;
+		        };
+
+			// Replace special words
 			slackMsgTxt = slackMsgTxt.replace(/<!everyone>/g, '@all');
 			slackMsgTxt = slackMsgTxt.replace(/<!channel>/g, '@all');
 			slackMsgTxt = slackMsgTxt.replace(/<!here>/g, '@here');
+
+			// Replace links
+			const regexL = /<(http[s]?:[^>\|]*)(?:\|([^>]*))?>/g;
+			slackMsgTxt = slackMsgTxt.replace(regexL, (match, link, anchorText) => {
+          			if (anchorText) {
+					// Link with anchor text
+					return "[" + anchorText + "](" + link + ")";
+				} else {
+					return link;
+				}
+			});
+
+			// Replace user names
+			const regexU = /(?:<@)([a-zA-Z0-9]+)(?:\|[^>]*)?(?:>)/g;
+			slackMsgTxt = await replaceAsync(slackMsgTxt, regexU, async (match, userId) => {
+          			if (!this.userTags[userId]) {
+          				(await this.findUser(userId)) || (await this.addUser(userId)); // This adds userTags for the userId
+          			}
+          			const userTags = this.userTags[userId];
+          			if (userTags) {
+          				return userTags.rocket;
+          			}
+				// Remove special character "|", if present
+				return "<#" + userId + ">";
+        		};
+			
+		        // Replace channel names
+        		const regexC = /(?:<\#)([a-zA-Z0-9]+)(?:\|[^>]*)?(?:>)/g;
+        		slackMsgTxt = await replaceAsync(slackMsgTxt, regexC, async (match, channelId) => {
+				for await (const slack of this.slackAdapters) {
+			                const slackChannel = await slack.slackAPI.getRoomInfo(channelId);
+                			// Found channel name
+                			if (slackChannel) {
+                				return "<#" + slackChannel.name + ">";
+                			}
+				}
+				// Remove special character "|", if present
+				return "<#" + channelId + ">";
+        		};
+
+			// HTML escape sequences
 			slackMsgTxt = slackMsgTxt.replace(/&gt;/g, '>');
 			slackMsgTxt = slackMsgTxt.replace(/&lt;/g, '<');
 			slackMsgTxt = slackMsgTxt.replace(/&amp;/g, '&');
+			
+			// Replace smileys
 			slackMsgTxt = slackMsgTxt.replace(/:simple_smile:/g, ':smile:');
 			slackMsgTxt = slackMsgTxt.replace(/:memo:/g, ':pencil:');
 			slackMsgTxt = slackMsgTxt.replace(/:piggy:/g, ':pig:');
 			slackMsgTxt = slackMsgTxt.replace(/:uk:/g, ':gb:');
-			slackMsgTxt = slackMsgTxt.replace(/<(http[s]?:[^>]*)>/g, '$1');
-
-			const promises = [];
-
-			slackMsgTxt.replace(regex, async (match, userId) => {
-				if (!this.userTags[userId]) {
-					(await this.findUser(userId)) || (await this.addUser(userId)); // This adds userTags for the userId
-				}
-				const userTags = this.userTags[userId];
-				if (userTags) {
-					promises.push(slackMsgTxt.replace(userTags.slack, userTags.rocket));
-				}
-			});
-
-			const result = await Promise.all(promises);
-			slackMsgTxt = slackMsgTxt.replace(regex, () => result.shift());
+			
 		} else {
 			slackMsgTxt = '';
 		}
