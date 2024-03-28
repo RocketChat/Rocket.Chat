@@ -582,7 +582,7 @@ describe('miscellaneous', function () {
 						name: 'Rocket.Chat',
 					})
 					.expect('Content-Type', 'image/svg+xml;charset=utf-8')
-					.success()
+					.svg()
 					.end(done);
 			});
 		});

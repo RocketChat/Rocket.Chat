@@ -7,6 +7,7 @@ declare module 'supertest' {
 		expectLoginSuccess(): this;
 		expectLoginFailure(): this;
 		success(): this;
+		svg(): this;
 		unauthorized(): this;
 		forbidden(): this;
 	}
@@ -44,4 +45,8 @@ Test.prototype.unauthorized = function () {
 
 Test.prototype.forbidden = function () {
 	return this.expect(403).expect('Content-Type', 'application/json');
+};
+
+Test.prototype.svg = function () {
+	return this.expect('Content-Type', 'image/svg+xml').expect(200);
 };
