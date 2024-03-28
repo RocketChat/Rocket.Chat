@@ -6,7 +6,7 @@ import Section from './InfoPanelSection';
 
 const InfoPanelActionGroup: FC<ComponentProps<typeof ButtonGroup>> = (props) => (
 	<Section>
-		<ButtonGroup align='center' {...props} />
+		<ButtonGroup align='center' stretch {...props} />
 	</Section>
 );
 

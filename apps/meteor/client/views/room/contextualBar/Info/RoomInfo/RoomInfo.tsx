@@ -34,6 +34,7 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 	const t = useTranslation();
 	const { name, fname, description, topic, archived, broadcast, announcement } = room;
 	const roomTitle = fname || name;
+	const isDiscussion = 'prid' in room;
 
 	const retentionPolicy = useRetentionPolicy(room);
 	const memoizedActions = useRoomActions(room, { onClickEnterRoom, onClickEdit }, resetState);
@@ -48,7 +49,7 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 			<Menu
 				small={false}
 				flexShrink={0}
-				mi={4}
+				flexGrow={0}
 				key='menu'
 				maxHeight='initial'
 				secondary
@@ -70,17 +71,19 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 		<>
 			<ContextualbarHeader>
 				{onClickBack ? <ContextualbarBack onClick={onClickBack} /> : <ContextualbarIcon name='info-circled' />}
-				<ContextualbarTitle>{t('Room_Info')}</ContextualbarTitle>
+				<ContextualbarTitle>{isDiscussion ? t('Discussion_info') : t('Channel_info')}</ContextualbarTitle>
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
 
 			<ContextualbarScrollableContent p={24}>
 				<InfoPanel>
-					<InfoPanel.Avatar>
-						<RoomAvatar size='x332' room={room} />
-					</InfoPanel.Avatar>
+					<InfoPanel.Section maxWidth='x332' mi='auto'>
+						<InfoPanel.Avatar>
+							<RoomAvatar size='x332' room={room} />
+						</InfoPanel.Avatar>
 
-					<InfoPanel.ActionGroup>{actions}</InfoPanel.ActionGroup>
+						<InfoPanel.ActionGroup>{actions}</InfoPanel.ActionGroup>
+					</InfoPanel.Section>
 
 					{archived && (
 						<InfoPanel.Section>

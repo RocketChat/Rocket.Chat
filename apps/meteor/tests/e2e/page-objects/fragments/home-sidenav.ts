@@ -10,15 +10,15 @@ export class HomeSidenav {
 	}
 
 	get checkboxPrivateChannel(): Locator {
-		return this.page.locator('role=dialog[name="Create Channel"] >> label >> text="Private"');
+		return this.page.locator('label', { has: this.page.getByRole('checkbox', { name: 'Private' }) });
 	}
 
 	get checkboxEncryption(): Locator {
-		return this.page.locator('role=dialog[name="Create Channel"] >> label >> text="Encrypted"');
+		return this.page.locator('role=dialog[name="Create channel"] >> label >> text="Encrypted"');
 	}
 
 	get checkboxReadOnly(): Locator {
-		return this.page.locator('role=dialog[name="Create Channel"] >> label >> text="Read Only"');
+		return this.page.locator('label', { has: this.page.getByRole('checkbox', { name: 'Read-only' }) });
 	}
 
 	get inputChannelName(): Locator {

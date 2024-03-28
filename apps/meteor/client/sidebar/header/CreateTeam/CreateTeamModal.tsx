@@ -11,6 +11,7 @@ import {
 	FieldRow,
 	FieldError,
 	FieldDescription,
+	FieldHint,
 } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import {
@@ -27,6 +28,7 @@ import { Controller, useForm } from 'react-hook-form';
 
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
+import { useEncryptedRoomDescription } from '../hooks/useEncryptedRoomDescription';
 
 type CreateTeamModalInputs = {
 	name: string;
@@ -65,7 +67,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 		}
 
 		if (teamNameRegex && !teamNameRegex?.test(name)) {
-			return t('Teams_Errors_team_name', { name });
+			return t('Name_cannot_have_special_characters');
 		}
 
 		const { exists } = await checkTeamNameExists({ roomName: name });
@@ -80,7 +82,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 		handleSubmit,
 		setValue,
 		watch,
-		formState: { isDirty, errors, isSubmitting },
+		formState: { errors, isSubmitting },
 	} = useForm<CreateTeamModalInputs>({
 		defaultValues: {
 			isPrivate: true,
@@ -91,7 +93,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 		},
 	});
 
-	const { isPrivate, broadcast, readOnly } = watch();
+	const { isPrivate, broadcast, readOnly, encrypted } = watch();
 
 	useEffect(() => {
 		if (!isPrivate) {
@@ -107,7 +109,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 
 	const canChangeReadOnly = !broadcast;
 	const canChangeEncrypted = isPrivate && !broadcast && e2eEnabled && !e2eEnabledForPrivateByDefault;
-	const isButtonEnabled = isDirty && canCreateTeam;
+	const getEncryptedHint = useEncryptedRoomDescription('team');
 
 	const handleCreateTeam = async ({
 		name,
@@ -164,6 +166,9 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 				<Modal.Close title={t('Close')} onClick={onClose} tabIndex={-1} />
 			</Modal.Header>
 			<Modal.Content mbe={2}>
+				<Box fontScale='p2' mbe={16}>
+					{t('Teams_new_description')}
+				</Box>
 				<FieldGroup>
 					<Field>
 						<FieldLabel required htmlFor={nameId}>
@@ -177,10 +182,9 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 									required: t('error-the-field-is-required', { field: t('Name') }),
 									validate: (value) => validateTeamName(value),
 								})}
-								placeholder={t('Team_Name')}
 								addon={<Icon size='x20' name={isPrivate ? 'team-lock' : 'team'} />}
 								error={errors.name?.message}
-								aria-describedby={`${nameId}-error`}
+								aria-describedby={`${nameId}-error ${nameId}-hint`}
 								aria-required='true'
 							/>
 						</FieldRow>
@@ -189,22 +193,26 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 								{errors.name.message}
 							</FieldError>
 						)}
+						{!allowSpecialNames && <FieldHint id={`${nameId}-hint`}>{t('No_spaces')}</FieldHint>}
 					</Field>
 					<Field>
-						<FieldLabel htmlFor={topicId}>
-							{t('Teams_New_Description_Label')}{' '}
-							<Box is='span' color='annotation'>
-								({t('optional')})
-							</Box>
-						</FieldLabel>
+						<FieldLabel htmlFor={topicId}>{t('Topic')}</FieldLabel>
 						<FieldRow>
-							<TextInput
-								id={topicId}
-								aria-describedby={`${topicId}-hint`}
-								{...register('topic')}
-								placeholder={t('Teams_New_Description_Placeholder')}
-							/>
+							<TextInput id={topicId} aria-describedby={`${topicId}-hint`} {...register('topic')} />
 						</FieldRow>
+						<FieldRow>
+							<FieldHint id={`${topicId}-hint`}>{t('Displayed_next_to_name')}</FieldHint>
+						</FieldRow>
+					</Field>
+					<Field>
+						<FieldLabel htmlFor={addMembersId}>{t('Teams_New_Add_members_Label')}</FieldLabel>
+						<Controller
+							control={control}
+							name='members'
+							render={({ field: { onChange, value } }): ReactElement => (
+								<UserAutoCompleteMultiple id={addMembersId} value={value} onChange={onChange} placeholder={t('Add_people')} />
+							)}
+						/>
 					</Field>
 					<Field>
 						<FieldRow>
@@ -218,7 +226,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 							/>
 						</FieldRow>
 						<FieldDescription id={`${privateId}-hint`}>
-							{isPrivate ? t('Teams_New_Private_Description_Enabled') : t('Teams_New_Private_Description_Disabled')}
+							{isPrivate ? t('People_can_only_join_by_being_invited') : t('Anyone_can_access')}
 						</FieldDescription>
 					</Field>
 					<Field>
@@ -240,7 +248,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 							/>
 						</FieldRow>
 						<FieldDescription id={`${readOnlyId}-hint`}>
-							{readOnly ? t('Only_authorized_users_can_write_new_messages') : t('Teams_New_Read_only_Description')}
+							{readOnly ? t('Read_only_field_hint_enabled', { roomType: 'team' }) : t('Anyone_can_send_new_messages')}
 						</FieldDescription>
 					</Field>
 					<Field>
@@ -261,9 +269,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 								)}
 							/>
 						</FieldRow>
-						<FieldDescription id={`${encryptedId}-hint`}>
-							{isPrivate ? t('Teams_New_Encrypted_Description_Enabled') : t('Teams_New_Encrypted_Description_Disabled')}
-						</FieldDescription>
+						<FieldDescription id={`${encryptedId}-hint`}>{getEncryptedHint({ isPrivate, broadcast, encrypted })}</FieldDescription>
 					</Field>
 					<Field>
 						<FieldRow>
@@ -276,27 +282,14 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 								)}
 							/>
 						</FieldRow>
-						<FieldDescription d={`${broadcastId}-hint`}>{t('Teams_New_Broadcast_Description')}</FieldDescription>
-					</Field>
-					<Field>
-						<FieldLabel htmlFor={addMembersId}>
-							{t('Teams_New_Add_members_Label')}{' '}
-							<Box is='span' color='annotation'>
-								({t('optional')})
-							</Box>
-						</FieldLabel>
-						<Controller
-							control={control}
-							name='members'
-							render={({ field: { onChange, value } }): ReactElement => <UserAutoCompleteMultiple value={value} onChange={onChange} />}
-						/>
+						{broadcast && <FieldDescription id={`${broadcastId}-hint`}>{t('Teams_New_Broadcast_Description')}</FieldDescription>}
 					</Field>
 				</FieldGroup>
 			</Modal.Content>
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button disabled={!isButtonEnabled} loading={isSubmitting} type='submit' primary>
+					<Button disabled={!canCreateTeam} loading={isSubmitting} type='submit' primary>
 						{t('Create')}
 					</Button>
 				</Modal.FooterControllers>

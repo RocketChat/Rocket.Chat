@@ -162,7 +162,7 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.content.btnMenuMoreActions.click();
 		await page.getByRole('menuitem', { name: 'Discussion' }).click();
-		await page.getByRole('textbox', { name: 'Discussion name' }).fill(discussionName);
+		await page.getByRole('textbox', { name: 'Name' }).fill(discussionName);
 		await page.getByRole('button', { name: 'Create' }).click();
 		
 		await expect(page.getByRole('heading', { name: discussionName })).toBeVisible();
