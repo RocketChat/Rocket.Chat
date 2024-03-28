@@ -74,11 +74,12 @@ const notifyAdminsAboutRenewedApps = async function _notifyAdminsAboutRenewedApp
 const appsUpdateMarketplaceInfo = async function _appsUpdateMarketplaceInfo() {
 	const token = await getWorkspaceAccessToken();
 	const baseUrl = Apps.getMarketplaceUrl();
-	const workspaceIdSetting = await Settings.getValueById('Cloud_Workspace_Id');
+
+	const workspaceId = await Settings.getValueById('Cloud_Workspace_Id');
 
 	const currentSeats = await Users.getActiveLocalUserCount();
 
-	const fullUrl = `${baseUrl}/v1/workspaces/${workspaceIdSetting}/apps`;
+	const fullUrl = `${baseUrl}/v1/workspaces/${workspaceId}/apps`;
 	const options = {
 		headers: {
 			Authorization: `Bearer ${token}`,
