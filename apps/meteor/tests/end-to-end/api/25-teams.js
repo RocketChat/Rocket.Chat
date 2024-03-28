@@ -45,13 +45,10 @@ describe('[Teams]', () => {
 
 	before('login testUser', (done) => {
 		request
-			.post(api('login'))
-			.send({
+			.expectLoginSuccess({
 				user: testUser.username,
 				password: testUser.username,
 			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
 			.expect((res) => {
 				testUserCredentials['X-Auth-Token'] = res.body.data.authToken;
 				testUserCredentials['X-User-Id'] = res.body.data.userId;
@@ -68,10 +65,8 @@ describe('[Teams]', () => {
 					name: community,
 					type: 0,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('team');
 					expect(res.body).to.have.nested.property('team._id');
 					publicTeam = res.body.team;
@@ -88,10 +83,8 @@ describe('[Teams]', () => {
 					type: 0,
 					members: [testUser.username],
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('team');
 					expect(res.body).to.have.nested.property('team._id');
 					publicTeam = res.body.team;
@@ -102,9 +95,8 @@ describe('[Teams]', () => {
 						.get(api('teams.members'))
 						.set(credentials)
 						.query({ teamId })
-						.expect(200)
+						.success()
 						.expect((response) => {
-							expect(response.body).to.have.property('success', true);
 							expect(response.body).to.have.property('members');
 
 							// remove admin user from members because it's added automatically as owner
@@ -126,10 +118,8 @@ describe('[Teams]', () => {
 					name: `test-team-${Date.now()}`,
 					type: 1,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('team');
 					expect(res.body).to.have.nested.property('team._id');
 					privateTeam = res.body.team;
@@ -140,9 +130,8 @@ describe('[Teams]', () => {
 						.get(api('teams.members'))
 						.set(credentials)
 						.query({ teamId })
-						.expect(200)
+						.success()
 						.expect((response) => {
-							expect(response.body).to.have.property('success', true);
 							expect(response.body).to.have.property('members');
 
 							const member = response.body.members[0];
@@ -211,11 +200,9 @@ describe('[Teams]', () => {
 				.send({
 					name: channelToEraseName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					channelToEraseId = res.body.channel._id;
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel._id');
 					expect(res.body).to.have.nested.property('channel.name', channelToEraseName);
 					expect(res.body).to.have.nested.property('channel.t', 'c');
@@ -232,10 +219,8 @@ describe('[Teams]', () => {
 					rooms: [channelToEraseId],
 					teamId: testTeam._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('rooms');
 					expect(res.body.rooms[0]).to.have.property('teamId', testTeam._id);
 					expect(res.body.rooms[0]).to.not.have.property('teamDefault');
@@ -251,11 +236,9 @@ describe('[Teams]', () => {
 				.send({
 					name: channelToKeepName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
 					channelToKeepId = res.body.channel._id;
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel._id');
 					expect(res.body).to.have.nested.property('channel.name', channelToKeepName);
 					expect(res.body).to.have.nested.property('channel.t', 'c');
@@ -272,10 +255,8 @@ describe('[Teams]', () => {
 					rooms: [channelToKeepId],
 					teamId: testTeam._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('rooms');
 					expect(res.body.rooms[0]).to.have.property('teamId', testTeam._id);
 					expect(res.body.rooms[0]).to.not.have.property('teamDefault');
@@ -291,11 +272,8 @@ describe('[Teams]', () => {
 					teamName,
 					roomsToRemove: [channelToEraseId],
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.then(() => {
 					request
 						.get(api('channels.info'))
@@ -318,10 +296,8 @@ describe('[Teams]', () => {
 						.query({
 							roomId: channelToKeepId,
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((response) => {
-							expect(response.body).to.have.property('success', true);
 							expect(response.body).to.have.property('channel');
 							expect(response.body.channel).to.have.property('_id', channelToKeepId);
 							expect(response.body.channel).to.not.have.property('teamId');
@@ -334,10 +310,8 @@ describe('[Teams]', () => {
 						.query({
 							roomId: testTeam.roomId,
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((response) => {
-							expect(response.body).to.have.property('success', true);
 							expect(response.body).to.have.property('channel');
 							expect(response.body.channel).to.have.property('_id', testTeam.roomId);
 							expect(response.body.channel).to.not.have.property('teamId');
@@ -382,11 +356,8 @@ describe('[Teams]', () => {
 						},
 					],
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.then(() =>
 					request
 						.get(api('teams.members'))
@@ -394,10 +365,8 @@ describe('[Teams]', () => {
 						.query({
 							teamName: testTeam.name,
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((response) => {
-							expect(response.body).to.have.property('success', true);
 							expect(response.body).to.have.property('members');
 							expect(response.body.members).to.have.length(3);
 							expect(response.body.members[1]).to.have.property('user');
@@ -473,10 +442,8 @@ describe('[Teams]', () => {
 				.query({
 					teamName: testTeam.name,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count', 3);
 					expect(res.body).to.have.property('offset', 0);
 					expect(res.body).to.have.property('total', 3);
@@ -513,10 +480,8 @@ describe('[Teams]', () => {
 			request
 				.get(api('teams.list'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count');
 					expect(res.body).to.have.property('offset', 0);
 					expect(res.body).to.have.property('total');
@@ -584,11 +549,8 @@ describe('[Teams]', () => {
 						roles: ['member', 'owner'],
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.then(() =>
 					request
 						.get(api('teams.members'))
@@ -596,10 +558,8 @@ describe('[Teams]', () => {
 						.query({
 							teamName: testTeam.name,
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((response) => {
-							expect(response.body).to.have.property('success', true);
 							expect(response.body).to.have.property('members');
 							expect(response.body.members).to.have.length(3);
 
@@ -704,11 +664,8 @@ describe('[Teams]', () => {
 							teamName: testTeam.name,
 							userId: testUser2._id,
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-						})
+						.success()
+
 						.then(() =>
 							request
 								.get(api('teams.members'))
@@ -716,10 +673,8 @@ describe('[Teams]', () => {
 								.query({
 									teamName: testTeam.name,
 								})
-								.expect('Content-Type', 'application/json')
-								.expect(200)
+								.success()
 								.expect((response) => {
-									expect(response.body).to.have.property('success', true);
 									expect(response.body).to.have.property('members');
 									expect(response.body.members).to.have.length(2);
 								}),
@@ -789,11 +744,8 @@ describe('[Teams]', () => {
 						.send({
 							teamName: testTeam.name,
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-						})
+						.success()
+
 						.then(() => done()),
 				)
 				.catch(done);
@@ -828,10 +780,8 @@ describe('[Teams]', () => {
 				.query({
 					teamName: publicTeam.name,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((response) => {
-					expect(response.body).to.have.property('success', true);
 					expect(response.body).to.have.property('teamInfo');
 					expect(response.body.teamInfo).to.have.property('_id', publicTeam._id);
 					expect(response.body.teamInfo).to.have.property('name', publicTeam.name);
@@ -846,10 +796,8 @@ describe('[Teams]', () => {
 				.query({
 					teamId: publicTeam._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((response) => {
-					expect(response.body).to.have.property('success', true);
 					expect(response.body).to.have.property('teamInfo');
 					expect(response.body.teamInfo).to.have.property('_id', publicTeam._id);
 					expect(response.body.teamInfo).to.have.property('name', publicTeam.name);
@@ -880,8 +828,7 @@ describe('[Teams]', () => {
 				.query({
 					teamName: privateTeam.name,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(403)
+				.forbidden()
 				.expect((response) => {
 					expect(response.body).to.have.property('success', false);
 					expect(response.body).to.have.property('error', 'unauthorized');
@@ -904,10 +851,8 @@ describe('[Teams]', () => {
 						name: tempTeamName,
 						type: 0,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((resp) => {
-						expect(resp.body).to.have.property('success', true);
 						expect(resp.body).to.have.property('team');
 						expect(resp.body.team).to.have.property('name', tempTeamName);
 						expect(resp.body.team).to.have.property('_id');
@@ -925,11 +870,8 @@ describe('[Teams]', () => {
 					.send({
 						teamName: tempTeamName,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
+					.success()
+
 					.then(() => {
 						request
 							.get(api('teams.info'))
@@ -994,11 +936,9 @@ describe('[Teams]', () => {
 					.send({
 						name: channel1Name,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						channel1Id = res.body.channel._id;
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.nested.property('channel._id');
 						expect(res.body).to.have.nested.property('channel.name', channel1Name);
 						expect(res.body).to.have.nested.property('channel.t', 'c');
@@ -1015,10 +955,8 @@ describe('[Teams]', () => {
 						rooms: [channel1Id],
 						teamId,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('rooms');
 						expect(res.body.rooms[0]).to.have.property('teamId', teamId);
 						expect(res.body.rooms[0]).to.not.have.property('teamDefault');
@@ -1034,11 +972,9 @@ describe('[Teams]', () => {
 					.send({
 						name: channel2Name,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						channel2Id = res.body.channel._id;
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.nested.property('channel._id');
 						expect(res.body).to.have.nested.property('channel.name', channel2Name);
 						expect(res.body).to.have.nested.property('channel.t', 'c');
@@ -1055,10 +991,8 @@ describe('[Teams]', () => {
 						rooms: [channel2Id],
 						teamId,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('rooms');
 						expect(res.body.rooms[0]).to.have.property('teamId', teamId);
 						expect(res.body.rooms[0]).to.not.have.property('teamDefault');
@@ -1074,11 +1008,8 @@ describe('[Teams]', () => {
 						teamName: tempTeamName,
 						roomsToRemove: [channel2Id],
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
+					.success()
+
 					.then(() => {
 						request
 							.get(api('channels.info'))
@@ -1100,10 +1031,8 @@ describe('[Teams]', () => {
 									.query({
 										roomId: channel1Id,
 									})
-									.expect('Content-Type', 'application/json')
-									.expect(200)
+									.success()
 									.expect((response) => {
-										expect(response.body).to.have.property('success', true);
 										expect(response.body).to.have.property('channel');
 										expect(response.body.channel).to.have.property('_id', channel1Id);
 										expect(response.body.channel).to.not.have.property('teamId');
@@ -1127,10 +1056,8 @@ describe('[Teams]', () => {
 				.send({
 					name: channelName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
 					expect(res.body).to.have.nested.property('group.name', channelName);
 					expect(res.body).to.have.nested.property('group.t', 'p');
@@ -1147,10 +1074,8 @@ describe('[Teams]', () => {
 				.send({
 					name: channelName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
 					expect(res.body).to.have.nested.property('group.name', channelName);
 					expect(res.body).to.have.nested.property('group.t', 'p');
@@ -1167,10 +1092,8 @@ describe('[Teams]', () => {
 				.send({
 					name: channelName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
 					expect(res.body).to.have.nested.property('group.name', channelName);
 					expect(res.body).to.have.nested.property('group.t', 'p');
@@ -1187,10 +1110,8 @@ describe('[Teams]', () => {
 				.send({
 					name: channelName,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel._id');
 					expect(res.body).to.have.nested.property('channel.name', channelName);
 					expect(res.body).to.have.nested.property('channel.t', 'c');
@@ -1207,10 +1128,8 @@ describe('[Teams]', () => {
 				.send({
 					name: `${channelName}2`,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('channel._id');
 					expect(res.body).to.have.nested.property('channel.name', `${channelName}2`);
 					expect(res.body).to.have.nested.property('channel.t', 'c');
@@ -1229,8 +1148,7 @@ describe('[Teams]', () => {
 						rooms: [publicRoom._id],
 						teamId: publicTeam._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(403)
+					.forbidden()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
@@ -1249,10 +1167,8 @@ describe('[Teams]', () => {
 						rooms: [publicRoom._id, privateRoom._id],
 						teamId: publicTeam._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('rooms');
 						expect(res.body.rooms).to.have.length(2);
 						expect(res.body.rooms[0]).to.have.property('_id');
@@ -1278,10 +1194,8 @@ describe('[Teams]', () => {
 						rooms: [publicRoom2._id],
 						teamId: privateTeam._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('rooms');
 						expect(res.body.rooms[0]).to.have.property('teamId', privateTeam._id);
 						expect(res.body.rooms[0]).to.not.have.property('teamDefault');
@@ -1299,10 +1213,8 @@ describe('[Teams]', () => {
 						rooms: [privateRoom2._id],
 						teamId: privateTeam._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('rooms');
 						expect(res.body.rooms[0]).to.have.property('teamId', privateTeam._id);
 						expect(res.body.rooms[0]).to.not.have.property('teamDefault');
@@ -1345,11 +1257,8 @@ describe('[Teams]', () => {
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.then(() => {
 					request
 						.post(api('teams.addRooms'))
@@ -1388,13 +1297,10 @@ describe('[Teams]', () => {
 		});
 		before('Login as test user', (done) => {
 			request
-				.post(api('login'))
-				.send({
+				.expectLoginSuccess({
 					user: testUser.username,
 					password: testUser.username,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
 				.expect((res) => {
 					testUserCredentials = {};
 					testUserCredentials['X-Auth-Token'] = res.body.data.authToken;
@@ -1429,10 +1335,8 @@ describe('[Teams]', () => {
 					.query({
 						teamId: publicTeam._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('rooms');
 						expect(res.body.rooms).to.be.an('array');
 						// main room should not be returned here
@@ -1450,10 +1354,8 @@ describe('[Teams]', () => {
 					.query({
 						teamId: publicTeam._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('rooms');
 						expect(res.body.rooms).to.be.an('array');
 						expect(res.body.rooms.length).to.equal(2);
@@ -1471,10 +1373,8 @@ describe('[Teams]', () => {
 						count: 5,
 						offset: 0,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('rooms');
 						expect(res.body.rooms).to.be.an('array');
 						expect(res.body.rooms.length).to.equal(2);
@@ -1492,10 +1392,8 @@ describe('[Teams]', () => {
 						.query({
 							teamId: privateTeam._id,
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('rooms');
 							expect(res.body.rooms).to.be.an('array');
 							expect(res.body.rooms.length).to.equal(2);
@@ -1515,10 +1413,8 @@ describe('[Teams]', () => {
 							count: 5,
 							offset: 0,
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('rooms');
 							expect(res.body.rooms).to.be.an('array');
 							expect(res.body.rooms.length).to.equal(2);
@@ -1539,8 +1435,7 @@ describe('[Teams]', () => {
 						roomId: publicRoom._id,
 						isDefault: true,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(403)
+					.forbidden()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
@@ -1559,10 +1454,8 @@ describe('[Teams]', () => {
 						roomId: publicRoom._id,
 						isDefault: true,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('room');
 						expect(res.body.room).to.have.property('teamId', publicTeam._id);
 						expect(res.body.room).to.have.property('teamDefault', true);
@@ -1582,8 +1475,7 @@ describe('[Teams]', () => {
 						roomId: publicRoom._id,
 						teamId: publicTeam._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(403)
+					.forbidden()
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
@@ -1602,10 +1494,8 @@ describe('[Teams]', () => {
 						roomId: publicRoom._id,
 						teamId: publicTeam._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('room');
 						expect(res.body.room).to.not.have.property('teamId');
 						expect(res.body.room).to.not.have.property('teamDefault');
@@ -1667,7 +1557,7 @@ describe('[Teams]', () => {
 
 		it('should update team name', async () => {
 			const testTeamName = `test-team-name-changed${Date.now()}`;
-			const updateResponse = await request
+			await request
 				.post(api('teams.update'))
 				.set(credentials)
 				.send({
@@ -1675,20 +1565,17 @@ describe('[Teams]', () => {
 					data: {
 						name: testTeamName,
 					},
-				});
+				})
+				.success();
 
-			expect(updateResponse.body).to.have.property('success', true);
-
-			const infoResponse = await request.get(api('teams.info')).set(credentials).query({ teamId: testTeam._id });
-
-			expect(infoResponse.body).to.have.property('success', true);
+			const infoResponse = await request.get(api('teams.info')).set(credentials).query({ teamId: testTeam._id }).success();
 
 			const { teamInfo } = infoResponse.body;
 			expect(teamInfo).to.have.property('name', testTeamName);
 		});
 
 		it('should update team type', async () => {
-			const updateResponse = await request
+			await request
 				.post(api('teams.update'))
 				.set(credentials)
 				.send({
@@ -1696,13 +1583,10 @@ describe('[Teams]', () => {
 					data: {
 						type: 1,
 					},
-				});
+				})
+				.success();
 
-			expect(updateResponse.body).to.have.property('success', true);
-
-			const infoResponse = await request.get(api('teams.info')).set(credentials).query({ teamId: testTeam._id });
-
-			expect(infoResponse.body).to.have.property('success', true);
+			const infoResponse = await request.get(api('teams.info')).set(credentials).query({ teamId: testTeam._id }).success();
 
 			const { teamInfo } = infoResponse.body;
 			expect(teamInfo).to.have.property('type', 1);
@@ -1745,7 +1629,7 @@ describe('[Teams]', () => {
 							msg: 'method',
 						}),
 					})
-					.expect(200);
+					.success();
 			});
 
 			it('should add user with prefs to team', (done) => {
@@ -1765,11 +1649,14 @@ describe('[Teams]', () => {
 			});
 
 			it('should update team channel to auto-join', async () => {
-				const response = await request.post(api('teams.updateRoom')).set(credentials).send({
-					roomId: createdRoom.body.channel._id,
-					isDefault: true,
-				});
-				expect(response.body).to.have.property('success', true);
+				await request
+					.post(api('teams.updateRoom'))
+					.set(credentials)
+					.send({
+						roomId: createdRoom.body.channel._id,
+						isDefault: true,
+					})
+					.success();
 			});
 
 			it('should return the user subscription with the right notification preferences', (done) => {
@@ -1779,10 +1666,8 @@ describe('[Teams]', () => {
 					.query({
 						roomId: createdRoom.body.channel._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('subscription').and.to.be.an('object');
 						expect(res.body).to.have.nested.property('subscription.emailNotifications').and.to.be.equal('nothing');
 					})
@@ -1792,7 +1677,7 @@ describe('[Teams]', () => {
 
 		it('should update team name and type at once', async () => {
 			const testTeamName = `test-team-name-changed${Date.now()}`;
-			const updateResponse = await request
+			await request
 				.post(api('teams.update'))
 				.set(credentials)
 				.send({
@@ -1801,13 +1686,10 @@ describe('[Teams]', () => {
 						name: testTeamName,
 						type: 1,
 					},
-				});
+				})
+				.success();
 
-			expect(updateResponse.body).to.have.property('success', true);
-
-			const infoResponse = await request.get(api('teams.info')).set(credentials).query({ teamId: testTeam2._id });
-
-			expect(infoResponse.body).to.have.property('success', true);
+			const infoResponse = await request.get(api('teams.info')).set(credentials).query({ teamId: testTeam2._id }).success();
 
 			const { teamInfo } = infoResponse.body;
 			expect(teamInfo).to.have.property('type', 1);
@@ -1826,8 +1708,7 @@ describe('[Teams]', () => {
 						name: 'anyname',
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 
 			expect(res.body).to.have.property('success', false);
 		});

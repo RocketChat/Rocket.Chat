@@ -25,8 +25,7 @@ describe('Apps - Installation', function () {
 					.send({
 						url: APP_URL,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(403)
+					.forbidden()
 					.expect((res) => {
 						expect(res.body).to.have.a.property('success', false);
 						expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
@@ -42,10 +41,8 @@ describe('Apps - Installation', function () {
 					.send({
 						url: APP_URL,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
 						expect(res.body).to.have.a.property('app');
 						expect(res.body.app).to.have.a.property('id');
 						expect(res.body.app).to.have.a.property('version');
@@ -66,10 +63,8 @@ describe('Apps - Installation', function () {
 				request
 					.get(api('commands.get?command=test-simple'))
 					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
 						expect(res.body).to.have.a.property('command');
 						expect(res.body.command.command).to.be.equal('test-simple');
 					})
@@ -79,10 +74,8 @@ describe('Apps - Installation', function () {
 				request
 					.get(api('commands.get?command=test-with-arguments'))
 					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
 						expect(res.body).to.have.a.property('command');
 						expect(res.body.command.command).to.be.equal('test-with-arguments');
 					})
@@ -94,10 +87,8 @@ describe('Apps - Installation', function () {
 				request
 					.get(api('video-conference.providers'))
 					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
 						expect(res.body).to.have.a.property('data').that.is.an('array').with.lengthOf(2);
 						expect(res.body.data[0]).to.be.an('object').with.a.property('key').equal('test');
 						expect(res.body.data[1]).to.be.an('object').with.a.property('key').equal('unconfigured');

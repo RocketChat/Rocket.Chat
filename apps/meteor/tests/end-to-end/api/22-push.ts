@@ -104,9 +104,8 @@ describe('[Push]', function () {
 					value: 'token',
 					appName: 'com.example.rocketchat',
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('result').and.to.be.an('object');
 				});
 		});
@@ -172,10 +171,7 @@ describe('[Push]', function () {
 				.send({
 					token: 'token',
 				})
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 		});
 
 		it('should fail if token is already deleted', async () => {
@@ -223,7 +219,7 @@ describe('[Push]', function () {
 			await request
 				.get(api('push.info'))
 				.set(credentials)
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('pushGatewayEnabled', true);
 					expect(res.body).to.have.property('defaultPushGateway', false);
@@ -235,7 +231,7 @@ describe('[Push]', function () {
 			await request
 				.get(api('push.info'))
 				.set(credentials)
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('pushGatewayEnabled', true);
 					expect(res.body).to.have.property('defaultPushGateway', true);

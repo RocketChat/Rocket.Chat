@@ -13,7 +13,7 @@ describe('[CustomUserStatus]', function () {
 			request
 				.get(api('custom-user-status.list'))
 				.set(credentials)
-				.expect(200)
+				.success()
 				.expect((res) => {
 					expect(res.body).to.have.property('statuses').and.to.be.an('array');
 					expect(res.body).to.have.property('total');
@@ -26,7 +26,7 @@ describe('[CustomUserStatus]', function () {
 			request
 				.get(api('custom-user-status.list'))
 				.set(credentials)
-				.expect(200)
+				.success()
 				.query({
 					count: 5,
 					offset: 0,

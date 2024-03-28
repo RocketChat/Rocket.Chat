@@ -132,8 +132,7 @@ describe('LIVECHAT - rooms', function () {
 			await request
 				.get(api('livechat/rooms'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403)
+				.forbidden()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.error).to.be.equal('unauthorized');
@@ -225,10 +224,8 @@ describe('LIVECHAT - rooms', function () {
 			await request
 				.get(api('livechat/rooms'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.rooms).to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -253,10 +250,8 @@ describe('LIVECHAT - rooms', function () {
 					'fields': '{ "msgs": 0 }',
 					'roomName': 'test',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.rooms).to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -268,10 +263,8 @@ describe('LIVECHAT - rooms', function () {
 				.get(api(`livechat/rooms`))
 				.set(credentials)
 				.query({ customFields: {}, roomName: 'test' })
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.rooms).to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -342,7 +335,7 @@ describe('LIVECHAT - rooms', function () {
 				.get(api('livechat/rooms'))
 				.query({ departmentId: department._id, open: true })
 				.set(credentials)
-				.expect(200);
+				.success();
 
 			expect(body.rooms.length).to.be.equal(1);
 			expect(body.rooms.some((room: IOmnichannelRoom) => room._id === expectedRoom._id)).to.be.true;
@@ -358,7 +351,7 @@ describe('LIVECHAT - rooms', function () {
 				.get(api('livechat/rooms'))
 				.query({ departmentId: department._id, open: false })
 				.set(credentials)
-				.expect(200);
+				.success();
 
 			expect(body.rooms.length).to.be.equal(0);
 		});
@@ -373,7 +366,7 @@ describe('LIVECHAT - rooms', function () {
 			const { body } = await request
 				.get(api(`livechat/rooms?agents[]=${agent.user._id}`))
 				.set(credentials)
-				.expect(200);
+				.success();
 
 			expect(body.rooms.length).to.be.equal(1);
 			expect(body.rooms.some((room: IOmnichannelRoom) => room._id === expectedRoom._id)).to.be.true;
@@ -387,7 +380,7 @@ describe('LIVECHAT - rooms', function () {
 			const { body } = await request
 				.get(api(`livechat/rooms?tags[]=${tag.name}`))
 				.set(credentials)
-				.expect(200);
+				.success();
 
 			expect(body.rooms.length).to.be.equal(1);
 			expect(body.rooms.some((room: IOmnichannelRoom) => room._id === expectedRoom._id)).to.be.true;
@@ -416,7 +409,7 @@ describe('LIVECHAT - rooms', function () {
 					.get(api('livechat/rooms'))
 					.query({ sort: JSON.stringify({ open: 1 }), departmentId: department._id })
 					.set(credentials)
-					.expect(200);
+					.success();
 
 				expect(body.rooms.length).to.be.equal(2);
 				expect(body.rooms[0]._id).to.be.equal(closeRoom._id);
@@ -427,7 +420,7 @@ describe('LIVECHAT - rooms', function () {
 					.get(api('livechat/rooms'))
 					.query({ sort: JSON.stringify({ open: -1 }), departmentId: department._id })
 					.set(credentials)
-					.expect(200);
+					.success();
 
 				expect(body.rooms.length).to.be.equal(2);
 				expect(body.rooms[0]._id).to.be.equal(openRoom._id);
@@ -529,10 +522,8 @@ describe('LIVECHAT - rooms', function () {
 					token: visitor.token,
 					rid: room._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('rid');
 					expect(res.body).to.have.property('comment');
 				});
@@ -565,7 +556,7 @@ describe('LIVECHAT - rooms', function () {
 							omnichannelTranscriptPDF: true,
 						},
 					})
-					.expect(200);
+					.success();
 
 				// Give time for the setting to be on the user's preferences
 				await sleep(500);
@@ -589,7 +580,7 @@ describe('LIVECHAT - rooms', function () {
 					.post(api('users.setPreferences'))
 					.set(credentials)
 					.send({ data: { omnichannelTranscriptPDF: false } })
-					.expect(200);
+					.success();
 
 				await request.post(api('livechat/room.close')).send({ rid: roomId, token: visitor.token }).expect(200);
 
@@ -613,8 +604,7 @@ describe('LIVECHAT - rooms', function () {
 				.send({
 					roomId: 'invalid-room-id',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(403)
+				.forbidden()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.error).to.have.string('unauthorized');
@@ -631,8 +621,7 @@ describe('LIVECHAT - rooms', function () {
 				.send({
 					roomId: 'invalid-room-id',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(403)
+				.forbidden()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.error).to.have.string('unauthorized');
@@ -680,11 +669,7 @@ describe('LIVECHAT - rooms', function () {
 					clientAction: true,
 					comment: 'test comment',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			const latestRoom = await getLivechatRoomInfo(newRoom._id);
 
@@ -716,11 +701,7 @@ describe('LIVECHAT - rooms', function () {
 					clientAction: true,
 					comment: 'test comment',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			const latestRoom = await getLivechatRoomInfo(newRoom._id);
 
@@ -756,12 +737,7 @@ describe('LIVECHAT - rooms', function () {
 					clientAction: true,
 					comment: 'test comment',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
-					console.log({ res: res.body });
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			const latestRoom = await getLivechatRoomInfo(newRoom._id);
 
@@ -856,10 +832,8 @@ describe('LIVECHAT - rooms', function () {
 						{ name: 'agentKnowledge', value: '3' },
 					],
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('rid');
 					expect(res.body).to.have.property('data');
 					expect(res.body.data.satisfaction).to.be.equal('5');
@@ -874,8 +848,7 @@ describe('LIVECHAT - rooms', function () {
 				.post(api('livechat/upload/test'))
 				.set(credentials)
 				.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 		});
 
 		it('should throw an error if x-visitor-token is present but with an invalid value', async () => {
@@ -884,8 +857,7 @@ describe('LIVECHAT - rooms', function () {
 				.set(credentials)
 				.set('x-visitor-token', 'invalid-token')
 				.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 		});
 
 		it('should throw unauthorized if visitor with token exists but room is invalid', async () => {
@@ -895,8 +867,7 @@ describe('LIVECHAT - rooms', function () {
 				.set(credentials)
 				.set('x-visitor-token', visitor.token)
 				.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.forbidden();
 		});
 
 		it('should throw an error if the file is not attached', async () => {
@@ -918,8 +889,7 @@ describe('LIVECHAT - rooms', function () {
 				.set(credentials)
 				.set('x-visitor-token', visitor.token)
 				.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 		});
 	});
 
@@ -942,8 +912,7 @@ describe('LIVECHAT - rooms', function () {
 			const { body } = await request
 				.get(api(`livechat/${room._id}/messages`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('success', true);
 			expect(body).to.have.property('messages');
@@ -961,8 +930,7 @@ describe('LIVECHAT - rooms', function () {
 				.get(api(`livechat/${room._id}/messages`))
 				.query({ searchTerm: 'Ran' })
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('success', true);
 			expect(body).to.have.property('messages');
@@ -980,8 +948,7 @@ describe('LIVECHAT - rooms', function () {
 				.get(api(`livechat/${room._id}/messages`))
 				.query({ searchTerm: 'ndo' })
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('success', true);
 			expect(body).to.have.property('messages');
@@ -999,8 +966,7 @@ describe('LIVECHAT - rooms', function () {
 				.get(api(`livechat/${room._id}/messages`))
 				.query({ searchTerm: '' })
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('success', true);
 			expect(body).to.have.property('messages');
@@ -1037,8 +1003,7 @@ describe('LIVECHAT - rooms', function () {
 					rid: room._id,
 				})
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('success', true);
 			expect(body).to.have.property('message');
@@ -1116,8 +1081,7 @@ describe('LIVECHAT - rooms', function () {
 				.put(api(`livechat/message/${message._id}`))
 				.set(credentials)
 				.send({ token: visitor.token, rid: room._id, msg: 'Hello World' })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('success', true);
 			expect(body).to.have.property('message');
@@ -1173,8 +1137,7 @@ describe('LIVECHAT - rooms', function () {
 				.delete(api(`livechat/message/${message._id}`))
 				.set(credentials)
 				.send({ token: visitor.token, rid: room._id })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('success', true);
 			expect(body).to.have.property('message');
@@ -1233,8 +1196,7 @@ describe('LIVECHAT - rooms', function () {
 				.post(api('livechat/messages'))
 				.set(credentials)
 				.send({ visitor: { token: visitor.token }, messages: [{ msg: 'Hello' }, { msg: 'Hello 2' }] })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('success', true);
 			expect(body).to.have.property('messages').of.length(2);
@@ -1250,11 +1212,7 @@ describe('LIVECHAT - rooms', function () {
 	describe('livechat/transfer.history/:rid', () => {
 		it('should fail if user doesnt have "view-livechat-rooms" permission', async () => {
 			await removePermissionFromAllRoles('view-livechat-rooms');
-			const { body } = await request
-				.get(api(`livechat/transfer.history/test`))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403);
+			const { body } = await request.get(api(`livechat/transfer.history/test`)).set(credentials).forbidden();
 			expect(body).to.have.property('success', false);
 
 			await restorePermissionToRoles('view-livechat-rooms');
@@ -1273,8 +1231,7 @@ describe('LIVECHAT - rooms', function () {
 			const { body } = await request
 				.get(api(`livechat/transfer.history/${room._id}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 			expect(body).to.have.property('success', true);
 			expect(body).to.have.property('history').that.is.an('array');
 			expect(body.history.length).to.equal(0);
@@ -1304,17 +1261,12 @@ describe('LIVECHAT - rooms', function () {
 					clientAction: true,
 					comment: 'test comment',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			const { body } = await request
 				.get(api(`livechat/transfer.history/${newRoom._id}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('success', true);
 			expect(body).to.have.property('history').that.is.an('array');
@@ -1348,8 +1300,7 @@ describe('LIVECHAT - rooms', function () {
 						_id: 'invalid-guest-id',
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(403)
+				.forbidden()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.error).to.have.string('unauthorized');
@@ -1379,8 +1330,7 @@ describe('LIVECHAT - rooms', function () {
 						_id: newVisitor._id,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(403)
+				.forbidden()
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.error).to.have.string('unauthorized');
@@ -1468,11 +1418,7 @@ describe('LIVECHAT - rooms', function () {
 						_id: newVisitor._id,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			const latestRoom = await getLivechatRoomInfo(newRoom._id);
 			expect(latestRoom).to.have.property('topic', 'new topic');
@@ -1511,11 +1457,7 @@ describe('LIVECHAT - rooms', function () {
 						_id: newVisitor._id,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			const latestRoom = await getLivechatRoomInfo(newRoom._id);
 			expect(latestRoom).to.have.property('topic', 'new topic');
@@ -1543,11 +1485,7 @@ describe('LIVECHAT - rooms', function () {
 						_id: newVisitor._id,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			const latestRoom = await getLivechatRoomInfo(newRoom._id);
 			expect(latestRoom).to.have.property('topic', 'new topic');
@@ -1604,7 +1542,7 @@ describe('LIVECHAT - rooms', function () {
 						msg: 'method',
 					}),
 				})
-				.expect(200);
+				.success();
 			const newVisitor = await createVisitor();
 			const newRoom = await createLivechatRoom(newVisitor.token);
 
@@ -1641,8 +1579,7 @@ describe('LIVECHAT - rooms', function () {
 						_id: newVisitor._id,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 			expect(response2.body).to.have.property('success', true);
 		});
 
@@ -1668,11 +1605,7 @@ describe('LIVECHAT - rooms', function () {
 						_id: newVisitor._id,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			const updatedRoom = await getLivechatRoomInfo(newRoom._id);
 			expect(updatedRoom).to.have.property('priorityId', priority._id);
@@ -1695,11 +1628,7 @@ describe('LIVECHAT - rooms', function () {
 						_id: newVisitor._id,
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			const updatedRoom = await getLivechatRoomInfo(newRoom._id);
 			expect(updatedRoom).to.have.property('slaId', sla._id);
@@ -1716,10 +1645,8 @@ describe('LIVECHAT - rooms', function () {
 			const response = await request
 				.get(api('livechat/priorities'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: DummyResponse<SuccessResult<{ priorities: ILivechatPriority[] }>>) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('priorities').and.to.be.an('array');
 					expect(res.body.priorities).to.have.length.greaterThan(0);
 				});
@@ -1734,8 +1661,7 @@ describe('LIVECHAT - rooms', function () {
 				.send({
 					priorityId: chosenPriority._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 			expect(response.body).to.have.property('success', true);
 		});
 		it('should return the room with the new priority', async () => {
@@ -1748,8 +1674,7 @@ describe('LIVECHAT - rooms', function () {
 				.delete(api(`livechat/room/${room._id}/priority`))
 				.set(credentials)
 				.send()
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 			expect(response.body).to.have.property('success', true);
 		});
 		it('should return the room with the new priority', async () => {
@@ -1855,7 +1780,7 @@ describe('LIVECHAT - rooms', function () {
 				.post(api('livechat/room.closeByUser'))
 				.set(credentials)
 				.send({ rid: roomId, comment: 'test', generateTranscriptPdf: true })
-				.expect(200);
+				.success();
 
 			// Wait for the pdf to be generated
 			await sleep(1500);
@@ -1873,7 +1798,7 @@ describe('LIVECHAT - rooms', function () {
 				.post(api('livechat/room.closeByUser'))
 				.set(credentials)
 				.send({ rid: roomId, comment: 'test', generateTranscriptPdf: false })
-				.expect(200);
+				.success();
 
 			// Wait for the pdf to not be generated
 			await sleep(1500);
@@ -1921,7 +1846,7 @@ describe('LIVECHAT - rooms', function () {
 			await request
 				.post(api(`omnichannel/${_id}/request-transcript`))
 				.set(credentials)
-				.expect(200);
+				.success();
 		});
 		let roomWithTranscriptGenerated: string;
 		it('should request a pdf transcript when all conditions are met', async () => {
@@ -1935,7 +1860,7 @@ describe('LIVECHAT - rooms', function () {
 			await request
 				.post(api(`omnichannel/${roomId}/request-transcript`))
 				.set(credentials)
-				.expect(200);
+				.success();
 
 			// wait for the pdf to be generated
 			await sleep(1500);
@@ -1949,7 +1874,7 @@ describe('LIVECHAT - rooms', function () {
 			await request
 				.post(api(`omnichannel/${roomWithTranscriptGenerated}/request-transcript`))
 				.set(credentials)
-				.expect(200);
+				.success();
 		});
 	});
 
@@ -2055,13 +1980,13 @@ describe('LIVECHAT - rooms', function () {
 						msg: 'method',
 					}),
 				})
-				.expect(200);
+				.success();
 
 			// Then, delete the transcript
 			await request
 				.delete(api(`livechat/transcript/${_id}`))
 				.set(credentials)
-				.expect(200);
+				.success();
 		});
 	});
 
@@ -2079,7 +2004,7 @@ describe('LIVECHAT - rooms', function () {
 						params: ['test', 'test', 'test', 'test'],
 					}),
 				})
-				.expect(200);
+				.success();
 
 			const result = parseMethodResponse(body);
 			expect(body.success).to.be.true;
@@ -2098,7 +2023,7 @@ describe('LIVECHAT - rooms', function () {
 						params: [],
 					}),
 				})
-				.expect(200);
+				.success();
 
 			const result = parseMethodResponse(body);
 			expect(body.success).to.be.true;
@@ -2116,7 +2041,7 @@ describe('LIVECHAT - rooms', function () {
 						params: ['invalid-token', 'test', 'test', 'test'],
 					}),
 				})
-				.expect(200);
+				.success();
 
 			const result = parseMethodResponse(body);
 			expect(body.success).to.be.true;
@@ -2135,7 +2060,7 @@ describe('LIVECHAT - rooms', function () {
 						params: [visitor.token, 'invalid-room-id', 'test', 'test'],
 					}),
 				})
-				.expect(200);
+				.success();
 
 			const result = parseMethodResponse(body);
 			expect(body.success).to.be.true;
@@ -2156,7 +2081,7 @@ describe('LIVECHAT - rooms', function () {
 						params: [visitor2.token, _id, 'test', 'test'],
 					}),
 				})
-				.expect(200);
+				.success();
 
 			const result = parseMethodResponse(body);
 			expect(body.success).to.be.true;
@@ -2176,7 +2101,7 @@ describe('LIVECHAT - rooms', function () {
 						params: [visitor.token, _id, 'invalid-email', 'test'],
 					}),
 				})
-				.expect(200);
+				.success();
 
 			const result = parseMethodResponse(body);
 			expect(body.success).to.be.true;
@@ -2196,7 +2121,7 @@ describe('LIVECHAT - rooms', function () {
 						params: [visitor.token, _id, 'test@test', 'test'],
 					}),
 				})
-				.expect(200);
+				.success();
 
 			const result = parseMethodResponse(body);
 			expect(body.success).to.be.true;

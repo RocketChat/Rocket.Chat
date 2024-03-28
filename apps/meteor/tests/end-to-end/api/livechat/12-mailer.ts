@@ -19,11 +19,7 @@ describe('Mailer', () => {
 					dryrun: true,
 					query: '',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 		});
 		it('should throw an error if the request is incorrect', async () => {
 			await request
@@ -71,11 +67,7 @@ describe('Mailer Unsubscribe', () => {
 					_id: credentials['X-User-Id'],
 					createdAt: new Date().getTime().toString(),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 		});
 		it('should throw an error if the "_id" param is missing', async () => {
 			await request

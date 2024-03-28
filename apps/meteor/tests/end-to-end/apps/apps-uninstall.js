@@ -35,10 +35,8 @@ describe('Apps - Uninstall', function () {
 			request
 				.delete(apps(`/${app.id}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('app');
 					expect(res.body.app.id).to.be.equal(app.id);
 					expect(res.body.app.status).to.be.equal('disabled');

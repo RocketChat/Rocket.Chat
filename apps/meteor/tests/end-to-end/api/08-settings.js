@@ -13,10 +13,8 @@ describe('[Settings]', function () {
 		it('should return public settings', (done) => {
 			request
 				.get(api('settings.public'))
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('settings');
 					expect(res.body).to.have.property('count');
 				})
@@ -29,10 +27,8 @@ describe('[Settings]', function () {
 					count: 5,
 					offset: 0,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('settings');
 					expect(res.body).to.have.property('count');
 				})
@@ -45,10 +41,8 @@ describe('[Settings]', function () {
 			request
 				.get(api('settings'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('settings');
 					expect(res.body).to.have.property('count');
 				})
@@ -61,10 +55,8 @@ describe('[Settings]', function () {
 			request
 				.get(api('settings/Site_Url'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('_id', 'Site_Url');
 					expect(res.body).to.have.property('value');
 				})
@@ -77,10 +69,8 @@ describe('[Settings]', function () {
 			request
 				.get(api('service.configurations'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('configurations');
 				})
 				.end(done);
@@ -97,10 +87,8 @@ describe('[Settings]', function () {
 					request
 						.get(api('service.configurations'))
 						.set(credentials)
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('configurations');
 
 							expect(res.body.configurations.find(({ service }) => service === 'google')).to.exist;
@@ -121,10 +109,8 @@ describe('[Settings]', function () {
 					request
 						.get(api('service.configurations'))
 						.set(credentials)
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('configurations');
 
 							expect(res.body.configurations.find(({ service }) => service === 'google')).to.not.exist;
@@ -139,10 +125,8 @@ describe('[Settings]', function () {
 		it('should have return list of available oauth services when user is not logged', (done) => {
 			request
 				.get(api('settings.oauth'))
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('services').and.to.be.an('array');
 				})
 				.end(done);
@@ -152,10 +136,8 @@ describe('[Settings]', function () {
 			request
 				.get(api('settings.oauth'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('services').and.to.be.an('array');
 				})
 				.end(done);

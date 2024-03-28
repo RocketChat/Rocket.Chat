@@ -54,10 +54,7 @@ describe('Apps - Slash Command "test-simple"', function () {
 					command: 'test-simple',
 				})
 				.set(credentials)
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-				})
+				.success()
 				.end(done);
 		});
 		it('should have sent the message correctly', (done) => {
@@ -68,7 +65,7 @@ describe('Apps - Slash Command "test-simple"', function () {
 					searchText: "Slashcommand 'test-simple' successfully executed",
 				})
 				.set(credentials)
-				.expect(200)
+				.success()
 				.expect((res) => {
 					const message = res.body.messages.find((message) => message.msg === "Slashcommand 'test-simple' successfully executed");
 					expect(message).to.not.be.equal(undefined);

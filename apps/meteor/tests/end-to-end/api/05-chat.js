@@ -483,10 +483,8 @@ describe('[Chat]', function () {
 						},
 					],
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('message.msg', 'Sample message');
 					message._id = res.body.message._id;
 				})
@@ -502,10 +500,8 @@ describe('[Chat]', function () {
 				.query({
 					msgId: message._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('message._id', message._id);
 				})
 				.end(done);
@@ -737,10 +733,8 @@ describe('[Chat]', function () {
 						],
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('message.msg', 'Sample message');
 				})
 				.end(done);
@@ -792,8 +786,7 @@ describe('[Chat]', function () {
 						.query({
 							msgId: ytEmbedMsgId,
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
 							expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.is.not.empty;
 
@@ -814,8 +807,7 @@ describe('[Chat]', function () {
 						.query({
 							msgId: imgUrlMsgId,
 						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
+						.success()
 						.expect((res) => {
 							expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.is.not.empty;
 
@@ -837,10 +829,8 @@ describe('[Chat]', function () {
 						},
 						previewUrls: [],
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.is.not.empty;
 						expect(res.body.message.urls[0]).to.have.property('ignoreParse', true);
 						msgId = res.body.message._id;
@@ -852,8 +842,7 @@ describe('[Chat]', function () {
 					.query({
 						msgId,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.has.lengthOf(1);
 
@@ -873,10 +862,8 @@ describe('[Chat]', function () {
 						},
 						previewUrls: ['https://www.rocket.chat/'],
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.has.lengthOf(2);
 						expect(res.body.message.urls[0]).to.have.property('ignoreParse', true);
 						expect(res.body.message.urls[1]).to.not.have.property('ignoreParse');
@@ -889,8 +876,7 @@ describe('[Chat]', function () {
 					.query({
 						msgId,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.has.lengthOf(2);
 
@@ -919,10 +905,8 @@ describe('[Chat]', function () {
 						},
 						previewUrls: urls,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.has.lengthOf(urls.length);
 						msgId = res.body.message._id;
 					});
@@ -933,8 +917,7 @@ describe('[Chat]', function () {
 					.query({
 						msgId,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.has.lengthOf(urls.length);
 
@@ -961,13 +944,10 @@ describe('[Chat]', function () {
 					.end((err, res) => {
 						user = res.body.user;
 						request
-							.post(api('login'))
-							.send({
+							.expectLoginSuccess({
 								user: username,
 								password,
 							})
-							.expect('Content-Type', 'application/json')
-							.expect(200)
 							.expect((res) => {
 								userCredentials['X-Auth-Token'] = res.body.data.authToken;
 								userCredentials['X-User-Id'] = res.body.data.userId;
@@ -984,10 +964,8 @@ describe('[Chat]', function () {
 						name: `readonlychannel${+new Date()}`,
 						readOnly: true,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						readOnlyChannel = res.body.channel;
 					})
 					.end(done);
@@ -1002,10 +980,8 @@ describe('[Chat]', function () {
 							msg: 'Sample message',
 						},
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('message').and.to.be.an('object');
 					})
 					.end(done);
@@ -1018,11 +994,8 @@ describe('[Chat]', function () {
 						roomId: readOnlyChannel._id,
 						userId: user._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
+					.success()
+
 					.end(() => {
 						done();
 					});
@@ -1059,10 +1032,8 @@ describe('[Chat]', function () {
 							msg: 'Sample message overwriting readonly status',
 						},
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('message').and.to.be.an('object');
 					});
 
@@ -1129,10 +1100,8 @@ describe('[Chat]', function () {
 					msgId: message._id,
 					text: 'This message was edited via API',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('message.msg', 'This message was edited via API');
 				})
 				.end(done);
@@ -1148,10 +1117,8 @@ describe('[Chat]', function () {
 					msgId: message._id,
 					text: `Testing quotes ${quotedMsgLink}`,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('message.msg', `Testing quotes ${quotedMsgLink}`);
 					expect(res.body.message).to.have.property('attachments').that.is.an('array').that.has.lengthOf(1);
 					expect(res.body.message.attachments[0]).to.have.property('message_link', quotedMsgLink);
@@ -1168,10 +1135,8 @@ describe('[Chat]', function () {
 					msgId: message._id,
 					text: `Testing quotes ${quotedMsgLink}`,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('message.msg', `Testing quotes ${quotedMsgLink}`);
 					expect(res.body.message).to.have.property('attachments').that.is.an('array').that.has.lengthOf(1);
 					expect(res.body.message.attachments[0]).to.have.property('message_link', quotedMsgLink);
@@ -1189,10 +1154,8 @@ describe('[Chat]', function () {
 					msgId: message._id,
 					text: `${newQuotedMsgLink} Testing quotes ${quotedMsgLink}`,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('message.msg', `Testing quotes ${quotedMsgLink}`);
 					expect(res.body.message).to.have.property('attachments').that.is.an('array').that.has.lengthOf(2);
 					expect(res.body.message.attachments[0]).to.have.property('message_link', newQuotedMsgLink);
@@ -1209,10 +1172,8 @@ describe('[Chat]', function () {
 					msgId: message._id,
 					text: 'This message was edited via API',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('message.msg', 'This message was edited via API');
 					expect(res.body.message).to.have.property('attachments').that.is.an('array').that.has.lengthOf(0);
 				});
@@ -1237,13 +1198,10 @@ describe('[Chat]', function () {
 		});
 		before((done) => {
 			request
-				.post(api('login'))
-				.send({
+				.expectLoginSuccess({
 					user: user.username,
 					password,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
 				.expect((res) => {
 					userCredentials = {};
 					userCredentials['X-Auth-Token'] = res.body.data.authToken;
@@ -1273,10 +1231,8 @@ describe('[Chat]', function () {
 						msg: 'Sample message',
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					msgId = res.body.message._id;
 				})
 				.end(done);
@@ -1289,11 +1245,8 @@ describe('[Chat]', function () {
 					roomId: 'GENERAL',
 					msgId,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 		it('sending message as another user...', (done) => {
@@ -1306,10 +1259,8 @@ describe('[Chat]', function () {
 						msg: 'Sample message',
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					msgId = res.body.message._id;
 				})
 				.end(done);
@@ -1323,11 +1274,8 @@ describe('[Chat]', function () {
 					msgId,
 					asUser: true,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 	});
@@ -1360,10 +1308,8 @@ describe('[Chat]', function () {
 					roomId: 'GENERAL',
 					searchText: 'msg1',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages');
 				})
 				.end(done);
@@ -1377,10 +1323,8 @@ describe('[Chat]', function () {
 					searchText: 'msg1',
 					count: 1,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages');
 					expect(res.body.messages.length).to.equal(1);
 				})
@@ -1396,10 +1340,8 @@ describe('[Chat]', function () {
 					offset: 1,
 					count: 3,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages');
 					expect(res.body.messages.length).to.equal(3);
 				})
@@ -1416,10 +1358,8 @@ describe('[Chat]', function () {
 					offset: 9999,
 					count: 3,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages');
 					expect(res.body.messages.length).to.equal(0);
 				})
@@ -1437,11 +1377,8 @@ describe('[Chat]', function () {
 					messageId: message._id,
 					shouldReact: false,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 		it('should react a message successfully', (done) => {
@@ -1452,11 +1389,8 @@ describe('[Chat]', function () {
 					emoji: 'smile',
 					messageId: message._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 
@@ -1468,11 +1402,8 @@ describe('[Chat]', function () {
 					emoji: ':squid:',
 					messageId: message._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 		it("should return statusCode: 200 and success when try react a message that's already reacted", (done) => {
@@ -1484,11 +1415,8 @@ describe('[Chat]', function () {
 					messageId: message._id,
 					shouldReact: true,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 		it('should return statusCode: 200 when unreact a message with flag, shouldReact: false', (done) => {
@@ -1500,11 +1428,8 @@ describe('[Chat]', function () {
 					messageId: message._id,
 					shouldReact: false,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 		it('should return statusCode: 200 when react a message with flag, shouldReact: true', (done) => {
@@ -1516,11 +1441,8 @@ describe('[Chat]', function () {
 					messageId: message._id,
 					shouldReact: true,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 		it('should return statusCode: 200 when the emoji is valid and has no colons', (done) => {
@@ -1531,11 +1453,8 @@ describe('[Chat]', function () {
 					emoji: 'bee',
 					messageId: message._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 		it('should return statusCode: 200 for reaction property when the emoji is valid', (done) => {
@@ -1546,11 +1465,8 @@ describe('[Chat]', function () {
 					reaction: 'ant',
 					messageId: message._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 	});
@@ -1569,11 +1485,9 @@ describe('[Chat]', function () {
 					.query({
 						messageId: message._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
 						expect(res.body).to.have.property('receipts').and.to.be.an('array');
-						expect(res.body).to.have.property('success', true);
 					})
 					.end(done);
 			});
@@ -1632,11 +1546,8 @@ describe('[Chat]', function () {
 						messageId: message._id,
 						description: 'test',
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
+					.success()
+
 					.end(done);
 			});
 		});
@@ -1684,10 +1595,8 @@ describe('[Chat]', function () {
 						roomId,
 						since: new Date('20 December 2018 17:51 UTC').toISOString(),
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('messages').and.to.be.an('array');
 						expect(res.body.messages.length).to.be.equal(1);
 					})
@@ -1702,10 +1611,8 @@ describe('[Chat]', function () {
 						since: new Date('20 December 2018 17:51 UTC').toISOString(),
 						count: 1,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('messages').and.to.be.an('array');
 						expect(res.body.messages.length).to.be.equal(1);
 					})
@@ -1721,10 +1628,8 @@ describe('[Chat]', function () {
 						count: 1,
 						offset: 0,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('messages').and.to.be.an('array');
 						expect(res.body.messages.length).to.be.equal(1);
 					})
@@ -1835,10 +1740,8 @@ describe('[Chat]', function () {
 					.send({
 						messageId: message._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.not.have.property('error');
 					})
 					.end(done);
@@ -1893,10 +1796,8 @@ describe('[Chat]', function () {
 					.send({
 						messageId: message._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.not.have.property('error');
 					})
 					.end(done);
@@ -1931,10 +1832,8 @@ describe('[Chat]', function () {
 					.send({
 						messageId: message._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.not.have.property('error');
 					})
 					.end(done);
@@ -1969,10 +1868,8 @@ describe('[Chat]', function () {
 					.send({
 						messageId: message._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.not.have.property('error');
 					})
 					.end(done);
@@ -2025,11 +1922,8 @@ describe('[Chat]', function () {
 					rid: 'rocket.catrocketchat.internal.admin.test',
 					userId: 'rocket.cat',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(() => {
 					done();
 				});
@@ -2043,11 +1937,8 @@ describe('[Chat]', function () {
 					userId: 'rocket.cat',
 					ignore: false,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(() => {
 					done();
 				});
@@ -2077,10 +1968,8 @@ describe('[Chat]', function () {
 					.query({
 						roomId,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('messages').and.to.be.an('array');
 						expect(res.body.messages.length).to.be.equal(1);
 					})
@@ -2094,10 +1983,8 @@ describe('[Chat]', function () {
 						roomId,
 						count: 1,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('messages').and.to.be.an('array');
 						expect(res.body.messages.length).to.be.equal(1);
 					})
@@ -2112,10 +1999,8 @@ describe('[Chat]', function () {
 						count: 1,
 						offset: 0,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('messages').and.to.be.an('array');
 						expect(res.body.messages.length).to.be.equal(1);
 					})
@@ -2174,10 +2059,8 @@ describe('[Chat]', function () {
 			request
 				.get(api('chat.getMentionedMessages?roomId=GENERAL'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.messages).to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -2218,10 +2101,8 @@ describe('[Chat]', function () {
 			request
 				.get(api('chat.getStarredMessages?roomId=GENERAL'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.messages).to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -2253,8 +2134,7 @@ describe('[Chat]', function () {
 						prid: testChannel._id,
 						t_name: 'Message to create discussion',
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.end((err, res) => {
 						discussionRoom = res.body.discussion;
 						done();
@@ -2292,10 +2172,8 @@ describe('[Chat]', function () {
 			request
 				.get(api('chat.getDiscussions?roomId=GENERAL'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.messages).to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -2312,10 +2190,8 @@ describe('[Chat]', function () {
 					count: 5,
 					offset: 0,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body.messages).to.be.an('array');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
@@ -2333,10 +2209,8 @@ describe('[Chat]', function () {
 						roomId: testChannel._id,
 						text,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('messages').and.to.be.an('array');
 						expect(res.body).to.have.property('total');
 						expect(res.body).to.have.property('offset');
@@ -2357,10 +2231,8 @@ describe('[Chat]', function () {
 						count: 5,
 						offset: 0,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('messages').and.to.be.an('array');
 						expect(res.body).to.have.property('total');
 						expect(res.body).to.have.property('offset');
@@ -2409,8 +2281,7 @@ describe('Threads', () => {
 							msg: 'Message to create thread',
 						},
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.then((response) => {
 						request
 							.post(api('chat.sendMessage'))
@@ -2422,8 +2293,7 @@ describe('Threads', () => {
 									tmid: response.body.message._id,
 								},
 							})
-							.expect('Content-Type', 'application/json')
-							.expect(200)
+							.success()
 							.end((err, res) => {
 								threadMessage = res.body.message;
 								done();
@@ -2484,10 +2354,8 @@ describe('Threads', () => {
 					.query({
 						rid: testChannel._id,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('threads').and.to.be.an('array');
 						expect(res.body).to.have.property('total');
 						expect(res.body).to.have.property('offset');
@@ -2509,10 +2377,8 @@ describe('Threads', () => {
 						count: 5,
 						offset: 0,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('threads').and.to.be.an('array');
 						expect(res.body).to.have.property('total');
 						expect(res.body).to.have.property('offset');
@@ -2533,10 +2399,8 @@ describe('Threads', () => {
 						rid: testChannel._id,
 						text,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('threads').and.to.be.an('array');
 						expect(res.body).to.have.property('total');
 						expect(res.body).to.have.property('offset');
@@ -2556,10 +2420,8 @@ describe('Threads', () => {
 						count: 5,
 						offset: 0,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('threads').and.to.be.an('array');
 						expect(res.body).to.have.property('total');
 						expect(res.body).to.have.property('offset');
@@ -2584,10 +2446,8 @@ describe('Threads', () => {
 						rid: testChannel._id,
 						text: 'missing',
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('threads').and.to.be.an('array');
 						expect(res.body).to.have.property('total');
 						expect(res.body).to.have.property('offset');
@@ -2732,10 +2592,8 @@ describe('Threads', () => {
 						rid: testChannel._id,
 						updatedSince: new Date('2019-04-01').toISOString(),
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('threads').and.to.be.an('object');
 						expect(res.body.threads).to.have.property('update').and.to.be.an('array');
 						expect(res.body.threads).to.have.property('remove').and.to.be.an('array');
@@ -2824,10 +2682,8 @@ describe('Threads', () => {
 					.query({
 						tmid: threadMessage.tmid,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('messages').and.to.be.an('array');
 						expect(res.body).to.have.property('total').and.to.be.equal(1);
 						expect(res.body).to.have.property('offset');
@@ -2976,10 +2832,8 @@ describe('Threads', () => {
 						tmid: threadMessage.tmid,
 						updatedSince: new Date('2019-04-01').toISOString(),
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.success()
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('messages').and.to.be.an('object');
 						expect(res.body.messages).to.have.property('update').and.to.be.an('array');
 						expect(res.body.messages).to.have.property('remove').and.to.be.an('array');
@@ -3083,11 +2937,8 @@ describe('Threads', () => {
 					.send({
 						mid: threadMessage.tmid,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
+					.success()
+
 					.end(done);
 			});
 		});
@@ -3184,11 +3035,8 @@ describe('Threads', () => {
 					.send({
 						mid: threadMessage.tmid,
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
+					.success()
+
 					.end(done);
 			});
 		});
@@ -3204,10 +3052,8 @@ describe('Threads', () => {
 					roomId: 'GENERAL',
 					url,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('urlPreview').and.to.be.an('object').that.is.not.empty;
 					expect(res.body.urlPreview).to.have.property('url', url);
 					expect(res.body.urlPreview).to.have.property('headers').and.to.be.an('object').that.is.not.empty;

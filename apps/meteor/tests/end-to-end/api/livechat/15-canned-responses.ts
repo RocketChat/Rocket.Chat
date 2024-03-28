@@ -53,7 +53,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.post(api('canned-responses'))
 				.set(credentials)
 				.send({ shortcut, scope: 'department', tags: ['tag'], text: 'text', departmentId: department._id })
-				.expect(200);
+				.success();
 
 			const { body } = await request.get(api('canned-responses.get')).set(creds).expect(200);
 
@@ -72,7 +72,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.post(api('canned-responses'))
 				.set(creds)
 				.send({ shortcut, scope: 'user', tags: ['tag'], text: 'text' })
-				.expect(200);
+				.success();
 
 			const { body } = await request.get(api('canned-responses.get')).set(creds).expect(200);
 
@@ -107,7 +107,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.post(api('canned-responses'))
 				.set(credentials)
 				.send({ shortcut, scope: 'department', text: 'text', departmentId: department._id })
-				.expect(200);
+				.success();
 
 			const { body } = await request.get(api('canned-responses.get')).set(creds).expect(200);
 
@@ -200,7 +200,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.post(api('canned-responses'))
 				.set(credentials)
 				.send({ shortcut: 'shortcutxx', scope: 'user', tags: ['tag'], text: 'text' })
-				.expect(200);
+				.success();
 			expect(body).to.have.property('success', true);
 		});
 		it('should fail if shortcut is already in use', async () => {
@@ -217,7 +217,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.post(api('canned-responses'))
 				.set(credentials)
 				.send({ shortcut: 'shortcutxxx', scope: 'user', tags: [tag.name], text: 'text' })
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('success', true);
 
@@ -235,7 +235,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.post(api('canned-responses'))
 				.set(credentials)
 				.send({ shortcut: 'shortcutxxxx', scope: 'user', tags: [tag.name], text: 'text' })
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('success', true);
 

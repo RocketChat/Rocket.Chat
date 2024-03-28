@@ -60,7 +60,7 @@ describe('LIVECHAT - Utils', function () {
 				.post(api('livechat/offline.message'))
 				.set(credentials)
 				.send({ name: 'test', email: 'test@email.com', message: 'this is a test :)' })
-				.expect(200);
+				.success();
 		});
 	});
 
@@ -326,13 +326,13 @@ describe('LIVECHAT - Utils', function () {
 				.post(api(`livechat/transcript/${room._id}`))
 				.set(credentials)
 				.send({ email: 'abc@abc.com', subject: 'test' })
-				.expect(200);
+				.success();
 
 			await request
 				.delete(api(`livechat/transcript/${room._id}`))
 				.set(credentials)
 				.send({})
-				.expect(200);
+				.success();
 		});
 	});
 
@@ -393,7 +393,7 @@ describe('LIVECHAT - Utils', function () {
 				.post(api(`livechat/transcript/${room._id}`))
 				.set(credentials)
 				.send({ email: 'abc@abc.com', subject: 'test' })
-				.expect(200);
+				.success();
 
 			await request
 				.post(api(`livechat/transcript/${room._id}`))
@@ -409,7 +409,7 @@ describe('LIVECHAT - Utils', function () {
 				.post(api(`livechat/transcript/${room._id}`))
 				.set(credentials)
 				.send({ email: 'abc@abc.com', subject: 'test' })
-				.expect(200);
+				.success();
 		});
 	});
 
@@ -525,7 +525,7 @@ describe('LIVECHAT - Utils', function () {
 			await request
 				.get(api(`livechat/message/${message._id}`))
 				.query({ token: visitor.token, rid: room._id })
-				.expect(200);
+				.success();
 		});
 	});
 
@@ -556,7 +556,7 @@ describe('LIVECHAT - Utils', function () {
 				.put(api(`livechat/message/${message._id}`))
 				.set(credentials)
 				.send({ msg: 'test2', token: visitor.token, rid: room._id })
-				.expect(200);
+				.success();
 			expect(body).to.have.property('message');
 			expect(body.message).to.have.property('_id', message._id);
 			expect(body.message).to.have.property('msg', 'test2');
@@ -590,7 +590,7 @@ describe('LIVECHAT - Utils', function () {
 			const { body } = await request
 				.delete(api(`livechat/message/${message._id}`))
 				.send({ token: visitor.token, rid: room._id })
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('message');
 			expect(body.message).to.have.property('_id', message._id);
@@ -624,7 +624,7 @@ describe('LIVECHAT - Utils', function () {
 			const { body } = await request
 				.get(api(`livechat/messages.history/${room._id}`))
 				.query({ token: visitor.token })
-				.expect(200);
+				.success();
 			expect(body).to.have.property('messages').that.is.an('array');
 			expect(body.messages).to.have.lengthOf(2);
 			expect(body.messages[0]).to.have.property('msg', 'test');
@@ -637,7 +637,7 @@ describe('LIVECHAT - Utils', function () {
 			const { body } = await request
 				.get(api(`livechat/messages.history/${room._id}`))
 				.query({ token: visitor.token, offset: 1, limit: 1 })
-				.expect(200);
+				.success();
 			expect(body).to.have.property('messages').that.is.an('array');
 			expect(body.messages).to.have.lengthOf(1);
 			expect(body.messages[0]).to.have.property('msg', 'test');
@@ -650,7 +650,7 @@ describe('LIVECHAT - Utils', function () {
 			const { body } = await request
 				.get(api(`livechat/messages.history/${room._id}`))
 				.query({ token: visitor.token, ls: new Date() })
-				.expect(200);
+				.success();
 			expect(body).to.have.property('messages').that.is.an('array');
 			expect(body.messages).to.have.lengthOf(3);
 			expect(body.messages[0]).to.have.property('msg', 'test2');
@@ -665,7 +665,7 @@ describe('LIVECHAT - Utils', function () {
 			const { body } = await request
 				.get(api(`livechat/messages.history/${room._id}`))
 				.query({ token: visitor.token, end: tsPlusSomeMillis })
-				.expect(200);
+				.success();
 			expect(body).to.have.property('messages').that.is.an('array');
 			expect(body.messages).to.have.lengthOf(2);
 			expect(body.messages[0]).to.have.property('msg', 'test');
@@ -679,8 +679,7 @@ describe('LIVECHAT - Utils', function () {
 				.get(api(`livechat/messages.history/${room._id}`))
 				.set(credentials)
 				.query({ token: visitor.token, limit: 1 })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('success', true);
 			expect(body).to.have.property('messages').of.length(1);
@@ -695,8 +694,7 @@ describe('LIVECHAT - Utils', function () {
 				.get(api(`livechat/messages.history/${room._id}`))
 				.set(credentials)
 				.query({ token: visitor.token, limit: 1, offset: 1 })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			expect(body).to.have.property('success', true);
 			expect(body).to.have.property('messages').of.length(1);

@@ -80,8 +80,7 @@ describe('MAC', () => {
 			const { body } = await request
 				.get(api(`livechat/visitors.info?visitorId=${visitor._id}`))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.success();
 
 			expect(body).to.have.nested.property('visitor').and.to.be.an('object');
 			expect(body.visitor).to.have.nested.property('activity').and.to.be.an('array');

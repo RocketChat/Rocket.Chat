@@ -108,7 +108,7 @@ describe('LIVECHAT - WebRTC video call', function () {
 				.query({
 					rid: room._id,
 				})
-				.expect(200);
+				.success();
 			const messages = await fetchMessages(room._id, visitor.token);
 			const callMessage = messages.find((message) => message.t === 'livechat_webrtc_video_call');
 			expect(callMessage).to.be.an('object');

@@ -23,12 +23,7 @@ describe('LIVECHAT - Integrations', function () {
 		it('should return an array of settings', (done) => {
 			updatePermission('view-livechat-manager', ['admin'])
 				.then(async () => {
-					const res = await request
-						.get(api('livechat/integrations.settings'))
-						.set(credentials)
-						.expect('Content-Type', 'application/json')
-						.expect(200);
-					expect(res.body).to.have.property('success', true);
+					const res = await request.get(api('livechat/integrations.settings')).set(credentials).success();
 					expect(res.body.settings).to.be.an('array');
 					const settingIds = res.body.settings.map((setting: ISetting) => setting._id);
 					expect(settingIds).to.include.members([
@@ -112,7 +107,6 @@ describe('LIVECHAT - Integrations', function () {
 						Body: 'Hello',
 					})
 					.expect('Content-Type', 'text/xml')
-					.expect(200)
 					.expect((res: Response) => {
 						expect(res).to.have.property('text', '<Response></Response>');
 					});
@@ -165,7 +159,7 @@ describe('LIVECHAT - Integrations', function () {
 						LivechatWebhookOnVisitorMessage: false,
 						LivechatWebhookOnAgentMessage: false,
 					})
-					.expect(200);
+					.success();
 				expect(response.body).to.have.property('success', true);
 			});
 			it('should fail if a wrong type is provided', async () => {
@@ -175,7 +169,7 @@ describe('LIVECHAT - Integrations', function () {
 					.send({
 						LivechatWebhookUrl: 8000,
 					})
-					.expect(200);
+					.success();
 				expect(response.body).to.have.property('success', true);
 			});
 			it('should fail if a wrong setting is provided', async () => {

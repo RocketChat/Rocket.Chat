@@ -16,7 +16,7 @@ describe('Imports', function () {
 			await request
 				.get(api('getCurrentImportOperation'))
 				.set(credentials)
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body.success).to.be.true;
 					expect(res.body.operation).not.be.null;
@@ -28,7 +28,7 @@ describe('Imports', function () {
 			await request
 				.post(api('downloadPendingFiles'))
 				.set(credentials)
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body.success).to.be.true;
 					expect(res.body.count).to.be.greaterThanOrEqual(0);
@@ -40,7 +40,7 @@ describe('Imports', function () {
 			await request
 				.post(api('downloadPendingAvatars'))
 				.set(credentials)
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body.success).to.be.true;
 					expect(res.body.count).to.be.greaterThanOrEqual(0);
@@ -76,7 +76,7 @@ describe('Imports', function () {
 			await request
 				.get(api('getLatestImportOperations'))
 				.set(credentials)
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body).to.be.an('array');
 				});
@@ -88,7 +88,7 @@ describe('Imports', function () {
 			await request
 				.get(api('getImportProgress'))
 				.set(credentials)
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body.success).to.be.true;
 					expect(res.body.key).to.be.an('string');
@@ -104,7 +104,7 @@ describe('Imports', function () {
 			await request
 				.get(api('getImportFileData'))
 				.set(credentials)
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
 					expect(res.body.success).to.be.true;
 					expect(res.body.users).to.be.an('array');

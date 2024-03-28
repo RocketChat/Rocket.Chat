@@ -19,10 +19,8 @@ describe('[Moderation]', function () {
 			await request
 				.get(api('moderation.reportsByUsers'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array');
 				});
 		});
@@ -35,10 +33,8 @@ describe('[Moderation]', function () {
 					count: 5,
 					offset: 0,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array');
 				});
 		});
@@ -50,10 +46,8 @@ describe('[Moderation]', function () {
 				.query({
 					oldest: new Date(),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array');
 				});
 		});
@@ -65,10 +59,8 @@ describe('[Moderation]', function () {
 				.query({
 					latest: new Date(),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array');
 				});
 		});
@@ -79,10 +71,8 @@ describe('[Moderation]', function () {
 			await request
 				.get(api('moderation.userReports'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array');
 				});
 		});
@@ -95,10 +85,8 @@ describe('[Moderation]', function () {
 					count: 5,
 					offset: 0,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array');
 				});
 		});
@@ -110,10 +98,8 @@ describe('[Moderation]', function () {
 				.query({
 					oldest: new Date(),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array');
 				});
 		});
@@ -125,10 +111,8 @@ describe('[Moderation]', function () {
 				.query({
 					latest: new Date(),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array');
 				});
 		});
@@ -151,10 +135,8 @@ describe('[Moderation]', function () {
 						msg: 'Sample message 0',
 					},
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					message = res.body.message;
 				});
 		});
@@ -167,11 +149,7 @@ describe('[Moderation]', function () {
 					messageId: message._id,
 					description: 'sample report',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 		});
 
 		beforeEach(async () => {
@@ -182,10 +160,8 @@ describe('[Moderation]', function () {
 					count: 5,
 					offset: 0,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array');
 					reportedMessage = res.body.reports[0];
 				});
@@ -199,11 +175,7 @@ describe('[Moderation]', function () {
 					roomId: 'GENERAL',
 					msgId: message._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 		});
 
 		it('should hide reports of a user', async () => {
@@ -213,11 +185,7 @@ describe('[Moderation]', function () {
 				.send({
 					userId: reportedMessage.userId,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 		});
 
 		it('should hide reports of a message', async () => {
@@ -227,11 +195,7 @@ describe('[Moderation]', function () {
 				.send({
 					msgId: message._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 		});
 
 		it('should return an error when the userId && msgId is not provided', async () => {
@@ -245,7 +209,6 @@ describe('[Moderation]', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(400)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error').and.to.be.a('string');
 				});
 		});
@@ -272,10 +235,8 @@ describe('[Moderation]', function () {
 					count: 5,
 					offset: 0,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect(async (res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array').and.to.have.lengthOf(1);
 				});
 		});
@@ -318,11 +279,7 @@ describe('[Moderation]', function () {
 				.send({
 					userId: reportedUser._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 
 			await getUsersReports(reportedUser._id).then((res) => {
 				expect(res.reports).to.have.lengthOf(0);
@@ -359,10 +316,8 @@ describe('[Moderation]', function () {
 					channel: 'general',
 					text: 'messageId',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('message').and.to.be.an('object');
 					message = res.body.message;
 				});
@@ -377,11 +332,7 @@ describe('[Moderation]', function () {
 					messageId: message._id,
 					description: 'sample report',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 		});
 
 		after(async () => {
@@ -392,11 +343,7 @@ describe('[Moderation]', function () {
 					roomId: 'GENERAL',
 					msgId: message._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 		});
 
 		it('should return the reports for a message', async () => {
@@ -406,10 +353,8 @@ describe('[Moderation]', function () {
 				.query({
 					msgId: message._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array');
 				});
 		});
@@ -424,7 +369,6 @@ describe('[Moderation]', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(400)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error').and.to.be.a('string');
 				});
 		});
@@ -445,10 +389,8 @@ describe('[Moderation]', function () {
 					channel: 'general',
 					text: 'messageId',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('message').and.to.be.an('object');
 					message = res.body.message;
 				});
@@ -463,11 +405,7 @@ describe('[Moderation]', function () {
 					messageId: message._id,
 					description: 'sample report',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 		});
 
 		// get the report information by sending a request to moderation.reports
@@ -478,10 +416,8 @@ describe('[Moderation]', function () {
 				.query({
 					msgId: message._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array');
 					reportedMessage = res.body.reports[0];
 				});
@@ -495,11 +431,7 @@ describe('[Moderation]', function () {
 					roomId: 'GENERAL',
 					msgId: message._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 		});
 
 		it('should return the report information', async () => {
@@ -509,10 +441,8 @@ describe('[Moderation]', function () {
 				.query({
 					reportId: reportedMessage._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('report').and.to.be.an('object');
 					expect(res.body.report).to.have.property('_id', reportedMessage._id);
 				});
@@ -579,10 +509,8 @@ describe('[Moderation]', function () {
 					channel: 'general',
 					text: 'messageId',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('message').and.to.be.an('object');
 					message = res.body.message;
 				});
@@ -597,11 +525,7 @@ describe('[Moderation]', function () {
 					messageId: message._id,
 					description: 'sample report',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 		});
 
 		// get the report information by sending a request to moderation.reports
@@ -612,10 +536,8 @@ describe('[Moderation]', function () {
 				.query({
 					msgId: message._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array');
 					reportedMessage = res.body.reports[0];
 				});
@@ -629,11 +551,7 @@ describe('[Moderation]', function () {
 					roomId: 'GENERAL',
 					msgId: message._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 		});
 
 		it('should return the message history', async () => {
@@ -643,10 +561,8 @@ describe('[Moderation]', function () {
 				.query({
 					userId: reportedMessage.reportedBy._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
 				});
 		});
@@ -682,10 +598,8 @@ describe('[Moderation]', function () {
 					channel: 'general',
 					text: 'messageId',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('message').and.to.be.an('object');
 					message = res.body.message;
 				});
@@ -700,11 +614,7 @@ describe('[Moderation]', function () {
 					messageId: message._id,
 					description: 'sample report',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 		});
 
 		// get the report information by sending a request to moderation.reports
@@ -715,10 +625,8 @@ describe('[Moderation]', function () {
 				.query({
 					msgId: message._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.success()
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array');
 					reportedMessage = res.body.reports[0];
 				});
@@ -731,11 +639,7 @@ describe('[Moderation]', function () {
 				.send({
 					userId: reportedMessage.reportedBy._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 		});
 
 		it('should return an error when the userId is not provided', async () => {
@@ -773,11 +677,7 @@ describe('[Moderation]', function () {
 					userId: userToBeReported?._id,
 					description: 'sample report',
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				.success();
 		});
 
 		it('should fail to report an user if not provided description', async () => {

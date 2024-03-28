@@ -26,10 +26,7 @@ describe('Apps - Slash Command "test-with-arguments"', function () {
 					params,
 				})
 				.set(credentials)
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-				})
+				.success()
 				.end(done);
 		});
 		it('should have sent the message correctly', (done) => {
@@ -41,7 +38,7 @@ describe('Apps - Slash Command "test-with-arguments"', function () {
 					searchText,
 				})
 				.set(credentials)
-				.expect(200)
+				.success()
 				.expect((res) => {
 					const message = res.body.messages.find((message) => message.msg === searchText);
 					expect(message).to.not.be.equal(undefined);

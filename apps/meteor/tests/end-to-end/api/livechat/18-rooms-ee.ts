@@ -160,7 +160,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.send({
 					roomId: room._id,
 				})
-				.expect(200);
+				.success();
 
 			expect(response.body.success).to.be.true;
 
@@ -177,7 +177,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.send({
 					roomId: room._id,
 				})
-				.expect(200);
+				.success();
 			expect(response.body.success).to.be.true;
 			const updatedRoom = await getLivechatRoomInfo(room._id);
 			expect(updatedRoom.onHold).to.be.true;
@@ -264,7 +264,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.send({
 					roomId: room._id,
 				})
-				.expect(200);
+				.success();
 
 			expect(response.body.success).to.be.true;
 
@@ -283,7 +283,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.send({
 					roomId: room._id,
 				})
-				.expect(200);
+				.success();
 
 			expect(response.body.success).to.be.true;
 

@@ -45,9 +45,8 @@ describe('[Commands]', function () {
 				.query({
 					command: 'help',
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('command');
 					expect(res.body.command).to.have.property('command');
 					expect(res.body.command).to.have.property('description');
@@ -63,9 +62,8 @@ describe('[Commands]', function () {
 			void request
 				.get(api('commands.list'))
 				.set(credentials)
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('count');
 					expect(res.body).to.have.property('total');
@@ -81,9 +79,8 @@ describe('[Commands]', function () {
 					count: 5,
 					offset: 0,
 				})
-				.expect(200)
+				.success()
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('count');
 					expect(res.body).to.have.property('total');
@@ -233,10 +230,8 @@ describe('[Commands]', function () {
 					roomId: threadMessage.rid,
 					tmid: threadMessage.tmid,
 				})
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
+				.success()
+
 				.end(done);
 		});
 	});
@@ -293,11 +288,7 @@ describe('[Commands]', function () {
 						command: 'unarchive',
 						roomId: 'GENERAL',
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					});
+					.success();
 			});
 
 			it('should return a success when the user has enough permissions', async () => {
@@ -308,11 +299,7 @@ describe('[Commands]', function () {
 						command: 'archive',
 						roomId: 'GENERAL',
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					});
+					.success();
 			});
 		});
 	});
@@ -368,11 +355,7 @@ describe('[Commands]', function () {
 						command: 'archive',
 						roomId: 'GENERAL',
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					});
+					.success();
 			});
 			it('should return a success when the user has enough permissions', async () => {
 				await request
@@ -382,11 +365,7 @@ describe('[Commands]', function () {
 						command: 'unarchive',
 						roomId: 'GENERAL',
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					});
+					.success();
 			});
 		});
 	});

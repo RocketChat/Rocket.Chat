@@ -127,7 +127,7 @@ describe('LIVECHAT - business hours', function () {
 				.get(api('livechat/business-hour'))
 				.set(credentials)
 				.query({ type: LivechatBusinessHourTypes.DEFAULT })
-				.expect(200);
+				.success();
 
 			expect(body.success).to.be.true;
 			expect(body.businessHour).to.be.an('object');
