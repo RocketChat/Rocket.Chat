@@ -53,10 +53,6 @@ const E2EEStateDependency = new Tracker.Dependency();
 class E2E extends Emitter {
 	private started: boolean;
 
-	// public enabled: ReactiveVarType<boolean>;
-
-	// private _ready: ReactiveVarType<boolean>;
-
 	private instancesByRoomId: Record<IRoom['_id'], E2ERoom>;
 
 	private db_public_key: string | null | undefined;
@@ -70,22 +66,18 @@ class E2E extends Emitter {
 	constructor() {
 		super();
 		this.started = false;
-		// this.enabled = new ReactiveVar(false);
-		// this._ready = new ReactiveVar(false);
 		this.instancesByRoomId = {};
-
-		this.on('ready', async () => {
-			// this._ready.set(true);
-			this.log('startClient -> Done');
-			this.log('decryptSubscriptions');
-			this.initiateHandshake();
-			await this.decryptSubscriptions();
-			await this.initiateDecryptingPendingMessages();
-			this.log('decryptSubscriptions -> Done');
-		});
 
 		this.on('E2E_STATE_CHANGED', ({ prevState, nextState }) => {
 			this.log(`${prevState} -> ${nextState}`);
+		});
+
+		this.on(E2EEState.READY, async () => {
+			await this.onE2EEReady();
+		});
+
+		this.on(E2EEState.SAVE_PASSWORD, async () => {
+			await this.onE2EEReady();
 		});
 
 		this.setState(E2EEState.NOT_STARTED);
@@ -108,12 +100,20 @@ class E2E extends Emitter {
 	}
 
 	isReady(): boolean {
-		// return this.enabled.get() && this._ready.get();
-
 		E2EEStateDependency.depend();
 
 		// Save_Password state is also a ready state for E2EE
 		return this.state === E2EEState.READY || this.state === E2EEState.SAVE_PASSWORD;
+	}
+
+	async onE2EEReady() {
+		this.log('startClient -> Done');
+		this.log('decryptSubscriptions');
+		this.initiateHandshake();
+		await this.decryptSubscriptions();
+		this.log('decryptSubscriptions -> Done');
+		await this.initiateDecryptingPendingMessages();
+		this.log('DecryptingPendingMessages -> Done');
 	}
 
 	shouldAskForE2EEPassword() {
@@ -129,6 +129,8 @@ class E2E extends Emitter {
 		E2EEStateDependency.changed();
 
 		this.emit('E2E_STATE_CHANGED', { prevState, nextState });
+
+		this.emit(nextState);
 	}
 
 	async getInstanceByRoomId(rid: IRoom['_id']): Promise<E2ERoom | null> {
@@ -197,7 +199,7 @@ class E2E extends Emitter {
 		await Promise.all(Object.keys(this.instancesByRoomId).map((key) => this.instancesByRoomId[key].decryptPendingMessages()));
 	}
 
-	openSaveE2EEPasswordModal(randomPassword: string, onSavePassword?: () => void) {
+	openSaveE2EEPasswordModal(randomPassword: string) {
 		imperativeModal.open({
 			component: SaveE2EPasswordModal,
 			props: {
@@ -209,10 +211,7 @@ class E2E extends Emitter {
 				},
 				onConfirm: () => {
 					Meteor._localStorage.removeItem('e2e.randomPassword');
-					// this._ready.set(true);
 					this.setState(E2EEState.READY);
-					onSavePassword?.();
-					this.initiateHandshake();
 					this.closeAlert();
 					imperativeModal.close();
 				},
@@ -264,7 +263,7 @@ class E2E extends Emitter {
 			this.setState(E2EEState.READY);
 		} else {
 			await this.createAndLoadKeys();
-			// this.setState(E2EEState.READY);
+			this.setState(E2EEState.READY);
 		}
 
 		if (!this.db_public_key || !this.db_private_key) {
@@ -284,7 +283,6 @@ class E2E extends Emitter {
 				action: () => this.openSaveE2EEPasswordModal(randomPassword),
 			});
 		}
-		this.emit('ready');
 	}
 
 	async stopClient(): Promise<void> {
@@ -295,8 +293,6 @@ class E2E extends Emitter {
 		Meteor._localStorage.removeItem('private_key');
 		this.instancesByRoomId = {};
 		this.privateKey = undefined;
-		// this.enabled.set(false);
-		// this._ready.set(false);
 		this.started = false;
 		this.setState(E2EEState.DISABLED);
 	}

@@ -467,6 +467,6 @@ export class E2ERoom extends Emitter {
 		}
 
 		this.encryptKeyForOtherParticipants();
-		// this.setState(E2ERoomState.READY);
+		this.setState(E2ERoomState.READY);
 	}
 }

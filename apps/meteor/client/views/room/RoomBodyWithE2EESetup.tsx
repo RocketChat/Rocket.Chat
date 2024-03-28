@@ -11,13 +11,12 @@ import { useE2EERoomState } from './hooks/useE2EERoomState';
 import { useE2EEState } from './hooks/useE2EEState';
 import { useIsE2EEReady } from './hooks/useIsE2EEReady';
 
-const RoomBodyChecks = ({ room }: { room: IRoom }) => {
+const RoomBodyWithE2EESetup = ({ room }: { room: IRoom }) => {
 	const areUnencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages');
 	const e2eRoomState = useE2EERoomState(room._id);
 	const e2eeState = useE2EEState();
 	const isE2EEReady = useIsE2EEReady();
 	const t = useTranslation();
-	console.log({ e2eRoomState });
 	const randomPassword = window.localStorage.getItem('e2e.randomPassword');
 
 	const onSavePassword = useCallback(() => {
@@ -75,4 +74,4 @@ const RoomBodyChecks = ({ room }: { room: IRoom }) => {
 	return <RoomBody />;
 };
 
-export default RoomBodyChecks;
+export default RoomBodyWithE2EESetup;
