@@ -27,6 +27,7 @@ export function addSettings(): Promise<void> {
 					});
 
 					const backgroundSyncQuery = [enableQuery, { _id: 'LDAP_Background_Sync', value: true }];
+					const backgroundUpdateQuery = [...backgroundSyncQuery, { _id: 'LDAP_Background_Sync_Keep_Existant_Users_Updated', value: true }];
 
 					await this.add('LDAP_Background_Sync_Interval', 'every_24_hours', {
 						type: 'select',
@@ -70,11 +71,13 @@ export function addSettings(): Promise<void> {
 
 					await this.add('LDAP_Background_Sync_Merge_Existent_Users', false, {
 						type: 'boolean',
-						enableQuery: [
-							...backgroundSyncQuery,
-							{ _id: 'LDAP_Background_Sync_Keep_Existant_Users_Updated', value: true },
-							{ _id: 'LDAP_Merge_Existing_Users', value: true },
-						],
+						enableQuery: [...backgroundUpdateQuery, { _id: 'LDAP_Merge_Existing_Users', value: true }],
+						invalidValue: false,
+					});
+
+					await this.add('LDAP_Background_Sync_Disable_Missing_Users', false, {
+						type: 'boolean',
+						enableQuery: backgroundUpdateQuery,
 						invalidValue: false,
 					});
 
