@@ -90,7 +90,7 @@ Meteor.startup(() => {
 			return;
 		}
 
-		res.setHeader('Cache-Control', 'public, max-age=31536000');
+		res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
 		res.setHeader('Last-Modified', fileUploadDate || new Date().toUTCString());
 		res.setHeader('Content-Length', file.length);
 

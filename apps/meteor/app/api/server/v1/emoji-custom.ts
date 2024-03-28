@@ -117,7 +117,7 @@ API.v1.addRoute(
 				{
 					request: this.request,
 				},
-				{ field: 'emoji', sizeLimit: settings.get('FileUpload_MaxFileSize') },
+				{ field: 'emoji', isFileRequired: false, sizeLimit: settings.get('FileUpload_MaxFileSize') },
 			);
 
 			const { fields, fileBuffer, mimetype } = emoji;
@@ -134,9 +134,9 @@ API.v1.addRoute(
 			fields.previousName = emojiToUpdate.name;
 			fields.previousExtension = emojiToUpdate.extension;
 			fields.aliases = fields.aliases || '';
-			const newFile = Boolean(emoji && fileBuffer.length);
+			const newFile = Boolean(fileBuffer?.length);
 
-			if (fields.newFile) {
+			if (newFile) {
 				const isUploadable = await Media.isImage(fileBuffer);
 				if (!isUploadable) {
 					throw new Meteor.Error('emoji-is-not-image', "Emoji file provided cannot be uploaded since it's not an image");
@@ -149,7 +149,7 @@ API.v1.addRoute(
 			}
 
 			await Meteor.callAsync('insertOrUpdateEmoji', { ...fields, newFile });
-			if (fields.newFile) {
+			if (newFile) {
 				await Meteor.callAsync('uploadEmojiCustom', fileBuffer, mimetype, { ...fields, newFile });
 			}
 			return API.v1.success();
