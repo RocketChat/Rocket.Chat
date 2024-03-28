@@ -1,8 +1,10 @@
 {
   "translation": {
+    "accept": "Aceitar",
     "are_you_sure_you_want_to_finish_this_chat": "Tem certeza de que deseja encerrar este chat?",
     "are_you_sure_you_want_to_remove_all_of_your_person": "Tem certeza de que deseja remover todos os seus dados pessoais?",
     "are_you_sure_you_want_to_switch_the_department": "Tem certeza de que deseja trocar de departamento?",
+    "call_end_time": "A chamada foi encerrada em {{time, datetime}} - Durou {{callDuration, datetime}}",
     "cancel": "Cancelar",
     "change_department": "Trocar departamento",
     "change_department_1": "Trocar Departamento",
@@ -23,6 +25,7 @@
     "email": "E-mail",
     "enable_notifications": "Habilitar notificações",
     "error_closing_chat": "Erro ao fechar o chat.",
+    "error_getting_call_alert": "Erro ao receber o alerta de chamada.",
     "error_removing_user_data": "Erro ao remover os dados do usuário.",
     "error_starting_a_new_conversation_reason": "Erro ao iniciar nova conversa: {{reason}}",
     "expand_chat": "Expandir chat",
