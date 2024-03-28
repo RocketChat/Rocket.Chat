@@ -112,6 +112,19 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 		return true;
 	};
 
+	const validatePhoneFormat = (phone: string): boolean | string => {
+		if (!phone || phone === initialValue.phone) {
+			return true;
+		}
+
+		const phoneRegex = /^\+(?:[0-9] ?){6,14}[0-9]$/;
+		if (!phoneRegex.test(phone)) {
+			return t('Invalid Phone Number');
+		}
+
+		return true;
+	};
+
 	const validateContactField = async (name: 'phone' | 'email', value: string, optional = true) => {
 		if ((optional && !value) || value === initialValue[name]) {
 			return true;
@@ -201,7 +214,7 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 				<Field>
 					<FieldLabel>{t('Phone')}</FieldLabel>
 					<FieldRow>
-						<TextInput {...register('phone')} error={errors.phone?.message} flexGrow={1} />
+						<TextInput {...register('phone', { validate: validatePhoneFormat })} error={errors.phone?.message} flexGrow={1} />
 					</FieldRow>
 					<FieldError>{errors.phone?.message}</FieldError>
 				</Field>
