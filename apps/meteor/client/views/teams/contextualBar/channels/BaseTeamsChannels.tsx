@@ -23,6 +23,7 @@ import Row from './Row';
 type BaseTeamsChannelsProps = {
 	loading: boolean;
 	channels: IRoom[];
+	mainRoomId: IRoom['_id'];
 	text: string;
 	type: 'all' | 'autoJoin';
 	setType: Dispatch<SetStateAction<'all' | 'autoJoin'>>;
@@ -39,6 +40,7 @@ type BaseTeamsChannelsProps = {
 const BaseTeamsChannels = ({
 	loading,
 	channels = [],
+	mainRoomId,
 	text,
 	type,
 	setText,
@@ -126,7 +128,9 @@ const BaseTeamsChannels = ({
 								data={channels}
 								// eslint-disable-next-line react/no-multi-comp
 								components={{ Scroller: VirtuosoScrollbars, Footer: () => <InfiniteListAnchor loadMore={loadMoreChannels} /> }}
-								itemContent={(index, data) => <Row onClickView={onClickView} room={data} reload={reload} key={index} />}
+								itemContent={(index, data) => (
+									<Row onClickView={onClickView} room={data} mainRoomId={mainRoomId} reload={reload} key={index} />
+								)}
 							/>
 						</Box>
 					</>

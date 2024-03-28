@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback, useLocalStorage, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, usePermission } from '@rocket.chat/ui-contexts';
+import { useSetModal, usePermission, useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
 import type { FC, SyntheticEvent } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 
@@ -56,7 +56,8 @@ const TeamsChannels = () => {
 		setText(event.currentTarget.value);
 	}, []);
 
-	const canAddExistingTeam = usePermission('add-team-channel', room._id);
+	const canAddExistingRoomToTeam = usePermission('move-room-to-team', room._id);
+	const canCreateRoomInTeam = useAtLeastOnePermission(['create-team-channel', 'create-team-group'], room._id);
 	const addExisting = useReactModal(AddExistingModal, teamId, reload);
 	const createNew = useReactModal(CreateChannelWithData, teamId, reload);
 
@@ -78,10 +79,11 @@ const TeamsChannels = () => {
 			setType={setType}
 			setText={handleTextChange}
 			channels={items}
+			mainRoomId={room._id}
 			total={total}
 			onClickClose={closeTab}
-			onClickAddExisting={canAddExistingTeam && addExisting}
-			onClickCreateNew={canAddExistingTeam && createNew}
+			onClickAddExisting={canAddExistingRoomToTeam && addExisting}
+			onClickCreateNew={canCreateRoomInTeam && createNew}
 			onClickView={viewRoom}
 			loadMoreItems={loadMoreItems}
 			reload={reload}

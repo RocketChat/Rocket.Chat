@@ -35,6 +35,13 @@ export async function eraseRoom(rid: string, uid: string): Promise<void> {
 		});
 	}
 
+	const team = room.teamId && (await Team.getOneById(room.teamId, { projection: { roomId: 1 } }));
+	if (team && !(await hasPermissionAsync(uid, `delete-team-${room.t === 'c' ? 'channel' : 'group'}`, team.roomId))) {
+		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+			method: 'eraseRoom',
+		});
+	}
+
 	if (Apps?.isLoaded()) {
 		const prevent = await Apps.getBridges()?.getListenerBridge().roomEvent('IPreRoomDeletePrevent', room);
 		if (prevent) {
@@ -43,8 +50,6 @@ export async function eraseRoom(rid: string, uid: string): Promise<void> {
 	}
 
 	await deleteRoom(rid);
-
-	const team = room.teamId && (await Team.getOneById(room.teamId));
 
 	if (team) {
 		const user = await Meteor.userAsync();

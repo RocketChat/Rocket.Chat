@@ -1,5 +1,6 @@
 import type { IRoom, IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
-import { usePermission, useAtLeastOnePermission, useRole } from '@rocket.chat/ui-contexts';
+import { usePermission, useAtLeastOnePermission, useRole, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import { e2e } from '../../../../../../app/e2e/client/rocketchat.e2e';
@@ -13,8 +14,24 @@ export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) =
 	const isAdmin = useRole('admin');
 	const canCreateChannel = usePermission('create-c');
 	const canCreateGroup = usePermission('create-p');
+	const teamsInfoEndpoint = useEndpoint('GET', '/v1/teams.info');
 
-	const canChangeType = getCanChangeType(room, canCreateChannel, canCreateGroup, isAdmin);
+	const teamId = room.teamId || '';
+	const { data: teamInfoData } = useQuery(['teamId', teamId], async () => teamsInfoEndpoint({ teamId }), {
+		keepPreviousData: true,
+		retry: false,
+		enabled: room.teamId !== '',
+	});
+
+	const canCreateTeamChannel = usePermission('create-team-channel', teamInfoData?.teamInfo.roomId);
+	const canCreateTeamGroup = usePermission('create-team-group', teamInfoData?.teamInfo.roomId);
+
+	const canChangeType = getCanChangeType(
+		room,
+		teamId ? canCreateTeamChannel : canCreateChannel,
+		teamId ? canCreateTeamGroup : canCreateGroup,
+		isAdmin,
+	);
 	const canSetReadOnly = usePermission('set-readonly', room._id);
 	const canSetReactWhenReadOnly = usePermission('set-react-when-readonly', room._id);
 	const canEditRoomRetentionPolicy = usePermission('edit-room-retention-policy', room._id);
