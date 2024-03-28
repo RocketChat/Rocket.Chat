@@ -9,7 +9,7 @@ import ReadReceiptsModal from '../../../client/views/room/modals/ReadReceiptsMod
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {
-		const enabled = settings.get('Message_Read_Receipt_Store_Users');
+		const enabled = settings.get('Message_Read_Receipt_Enabled') && settings.get('Message_Read_Receipt_Store_Users');
 
 		if (!enabled) {
 			return MessageAction.removeButton('receipt-detail');
