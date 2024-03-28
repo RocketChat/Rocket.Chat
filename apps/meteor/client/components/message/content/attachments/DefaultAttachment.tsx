@@ -55,21 +55,19 @@ const DefaultAttachment = (attachment: DefaultAttachmentProps): ReactElement => 
 						</AttachmentAuthorName>
 					</AttachmentAuthor>
 				)}
-				{attachment.title && (
-					<AttachmentRow>
-						<AttachmentTitle
-							{...(attachment.title_link && {
-								is: 'a',
-								href: attachment.title_link,
-								target: '_blank',
-								color: undefined,
-							})}
-						>
-							{attachment.title}
-						</AttachmentTitle>{' '}
-						{collapse}
-					</AttachmentRow>
-				)}
+				<AttachmentRow>
+					<AttachmentTitle
+						{...(attachment.title_link && {
+							is: 'a',
+							href: attachment.title_link,
+							target: '_blank',
+							color: undefined,
+						})}
+					>
+						{attachment.title}
+					</AttachmentTitle>{' '}
+					{collapse}
+				</AttachmentRow>
 				{!collapsed && (
 					<>
 						{attachment.text && (
