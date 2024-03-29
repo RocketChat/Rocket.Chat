@@ -1,6 +1,6 @@
 import type { IMessage, MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import { Modal, Field, FieldGroup, FieldLabel, FieldRow, FieldHint, ButtonGroup, Button } from '@rocket.chat/fuselage';
-import { useClipboard } from '@rocket.chat/fuselage-hooks';
+import { useClipboard, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint, useToastMessageDispatch, useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
@@ -23,6 +23,7 @@ const ForwardMessageModal = ({ onClose, permalink, message }: ForwardMessageProp
 	const getUserAvatarPath = useUserAvatarPath();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { copy, hasCopied } = useClipboard(permalink);
+	const usersAndRoomsField = useUniqueId();
 
 	const { control, watch } = useForm({
 		defaultValues: {
@@ -84,17 +85,25 @@ const ForwardMessageModal = ({ onClose, permalink, message }: ForwardMessageProp
 			<Modal.Content>
 				<FieldGroup>
 					<Field>
-						<FieldLabel>{t('Person_Or_Channel')}</FieldLabel>
+						<FieldLabel htmlFor={usersAndRoomsField}>{t('Person_Or_Channel')}</FieldLabel>
 						<FieldRow>
 							<Controller
 								name='rooms'
 								control={control}
-								render={({ field: { value, onChange } }): ReactElement => (
-									<UserAndRoomAutoCompleteMultiple value={value} onChange={onChange} />
+								render={({ field: { name, value, onChange } }): ReactElement => (
+									<UserAndRoomAutoCompleteMultiple
+										id={usersAndRoomsField}
+										aria-describedby={`${usersAndRoomsField}-hint`}
+										name={name}
+										value={value}
+										onChange={onChange}
+									/>
 								)}
 							/>
 						</FieldRow>
-						{!rooms.length && <FieldHint>{t('Select_atleast_one_channel_to_forward_the_messsage_to')}</FieldHint>}
+						{!rooms.length && (
+							<FieldHint id={`${usersAndRoomsField}-hint`}>{t('Select_atleast_one_channel_to_forward_the_messsage_to')}</FieldHint>
+						)}
 					</Field>
 					<Field>
 						<QuoteAttachment attachment={attachment} />

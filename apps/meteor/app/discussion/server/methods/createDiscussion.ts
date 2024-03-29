@@ -168,8 +168,6 @@ const create = async ({
 			encrypted,
 		},
 		{
-			// overrides name validation to allow anything, because discussion's name is randomly generated
-			nameValidationRegex: '.*',
 			creator: user._id,
 		},
 	);

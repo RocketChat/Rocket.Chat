@@ -15,25 +15,33 @@ import { parentCall } from './parentCall';
 import { createToken } from './random';
 import { normalizeMessage, normalizeMessages } from './threads';
 import { handleTranscript } from './transcript';
+import Triggers from './triggers';
 
 const commands = new Commands();
 
 export const closeChat = async ({ transcriptRequested } = {}) => {
-	Livechat.unsubscribeAll();
-
 	if (!transcriptRequested) {
 		await handleTranscript();
 	}
 
-	const { config: { settings: { clearLocalStorageWhenChatEnded } = {} } = {} } = store.state;
+	const { room, department, config: { settings: { clearLocalStorageWhenChatEnded } = {} } = {} } = store.state;
+
+	if (!room) {
+		console.warn('closeChat called without a room');
+		return;
+	}
+
+	await store.setState({ room: null });
 
 	if (clearLocalStorageWhenChatEnded) {
 		// exclude UI-affecting flags
 		const { iframe: currentIframe } = store.state;
 		const { minimized, visible, undocked, expanded, businessUnit, config, iframe, ...initial } = initialState();
-		initial.iframe = { ...currentIframe, guest: {} };
+		initial.iframe = { ...currentIframe, guest: { department } };
 		await store.setState(initial);
 	}
+
+	Triggers.processTrigger('after-guest-registration');
 
 	await loadConfig();
 	parentCall('callback', 'chat-ended');
@@ -100,7 +108,7 @@ export const processIncomingCallMessage = async (message) => {
 
 const processMessage = async (message) => {
 	if (message.t === 'livechat-close') {
-		closeChat(message);
+		await closeChat(message);
 	} else if (message.t === 'command') {
 		commands[message.msg] && commands[message.msg]();
 	} else if (message.webRtcCallEndTs) {
@@ -120,6 +128,22 @@ const doPlaySound = async (message) => {
 	await store.setState({ sound: { ...sound, play: true } });
 };
 
+export const onAgentChange = async (agent) => {
+	await store.setState({ agent, queueInfo: null });
+	parentCall('callback', ['assign-agent', normalizeAgent(agent)]);
+};
+
+export const onAgentStatusChange = (status) => {
+	const { agent } = store.state;
+	agent && store.setState({ agent: { ...agent, status } });
+	parentCall('callback', ['agent-status-change', normalizeAgent(agent)]);
+};
+
+export const onQueuePositionChange = async (queueInfo) => {
+	await store.setState({ queueInfo });
+	parentCall('callback', ['queue-position-change', queueInfo]);
+};
+
 export const initRoom = async () => {
 	const { state } = store;
 	const { room } = state;
@@ -134,36 +158,19 @@ export const initRoom = async () => {
 		queueInfo,
 		room: { _id: rid, servedBy },
 	} = state;
-	Livechat.subscribeRoom(rid);
 
 	let roomAgent = agent;
 	if (!roomAgent) {
 		if (servedBy) {
 			roomAgent = await Livechat.agent(rid);
 			await store.setState({ agent: roomAgent, queueInfo: null });
-			parentCall('callback', ['assign-agent', normalizeAgent(roomAgent)]);
+			parentCall('callback', 'assign-agent', normalizeAgent(roomAgent));
 		}
 	}
 
 	if (queueInfo) {
-		parentCall('callback', ['queue-position-change', queueInfo]);
+		parentCall('callback', 'queue-position-change', queueInfo);
 	}
-
-	Livechat.onAgentChange(rid, async (agent) => {
-		await store.setState({ agent, queueInfo: null });
-		parentCall('callback', ['assign-agent', normalizeAgent(agent)]);
-	});
-
-	Livechat.onAgentStatusChange(rid, (status) => {
-		const { agent } = store.state;
-		agent && store.setState({ agent: { ...agent, status } });
-		parentCall('callback', ['agent-status-change', normalizeAgent(agent)]);
-	});
-
-	Livechat.onQueuePositionChange(rid, async (queueInfo) => {
-		await store.setState({ queueInfo });
-		parentCall('callback', ['queue-position-change', queueInfo]);
-	});
 
 	setCookies(rid, token);
 };
@@ -183,7 +190,7 @@ const transformAgentInformationOnMessage = (message) => {
 	return message;
 };
 
-Livechat.onUserActivity((username, activities) => {
+export const onUserActivity = (username, activities) => {
 	const isTyping = activities.includes('user-typing');
 	const { typing, user, agent } = store.state;
 
@@ -203,9 +210,9 @@ Livechat.onUserActivity((username, activities) => {
 	if (!isTyping) {
 		return store.setState({ typing: typing.filter((u) => u !== username) });
 	}
-});
+};
 
-Livechat.onMessage(async (originalMessage) => {
+export const onMessage = async (originalMessage) => {
 	let message = JSON.parse(JSON.stringify(originalMessage));
 
 	if (message.ts instanceof Date) {
@@ -242,9 +249,9 @@ Livechat.onMessage(async (originalMessage) => {
 
 	await processUnread();
 	await doPlaySound(message);
-});
+};
 
-export const getGreetingMessages = (messages) => messages && messages.filter((msg) => msg.trigger && msg.triggerAfterRegistration);
+export const getGreetingMessages = (messages) => messages && messages.filter((msg) => msg.trigger);
 export const getLatestCallMessage = (messages) => messages && messages.filter((msg) => isVideoCallMessage(msg)).pop();
 
 export const loadMessages = async () => {

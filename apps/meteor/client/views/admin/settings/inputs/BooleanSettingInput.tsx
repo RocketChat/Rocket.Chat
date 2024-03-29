@@ -3,18 +3,10 @@ import type { ReactElement, SyntheticEvent } from 'react';
 import React from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
+import type { SettingInputProps } from './types';
 
-type BooleanSettingInputProps = {
-	_id: string;
-	label: string;
-	disabled?: boolean;
-	readonly?: boolean;
-	required?: boolean;
-	value: boolean;
-	hasResetButton: boolean;
-	onChangeValue: (value: boolean) => void;
-	onResetButtonClick: () => void;
-};
+type BooleanSettingInputProps = SettingInputProps<boolean>;
+
 function BooleanSettingInput({
 	_id,
 	label,
