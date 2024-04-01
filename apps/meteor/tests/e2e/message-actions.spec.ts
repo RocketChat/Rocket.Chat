@@ -187,12 +187,9 @@ test.describe.serial('message-actions', () => {
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename)
 	})
 
-	test('expect forward audio message to channel', async ({ page }) => {
-		const filename = 'Audio record.mp3'
-		await poHomeChannel.content.btnRecordAudio.click();
-		// timeout to allow the audio recording
-		await page.waitForTimeout(3000)
-		await poHomeChannel.content.btnEndRecordAudio.click();
+	test('expect forward audio message to channel', async () => {
+		const filename = 'sample-audio.mp3'
+		await poHomeChannel.content.sendFileMessage(filename);
 		await poHomeChannel.content.btnModalConfirm.click();
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename)
 
