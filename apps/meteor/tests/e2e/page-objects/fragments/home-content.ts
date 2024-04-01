@@ -162,7 +162,7 @@ export class HomeContent {
 	get btnRecordAudio(): Locator {
 		return this.page.locator('[data-qa-id="audio-message"]');
 	}
-	
+
 	get btnMenuMoreActions() {
 		return this.page.getByRole('button', { name: 'More actions' });
 	}
