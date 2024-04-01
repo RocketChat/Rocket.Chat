@@ -152,8 +152,10 @@ test.describe.serial('message-actions', () => {
 	})
 
 	test('expect forward text file to channel', async () => {
-		const filename = await poHomeChannel.content.dragAndDropTxtFile();
+		const filename = 'any_file.txt'
+		await poHomeChannel.content.sendFileMessage(filename);
 		await poHomeChannel.content.btnModalConfirm.click();
+		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename)
 
 		await poHomeChannel.content.forwardMessage(forwardChannel)
 
@@ -162,8 +164,10 @@ test.describe.serial('message-actions', () => {
 	})
 
 	test('expect forward image file to channel', async () => {
-		const filename = await poHomeChannel.content.dragAndDropImageFile();
+		const filename = 'test-image.jpeg'
+		await poHomeChannel.content.sendFileMessage(filename);
 		await poHomeChannel.content.btnModalConfirm.click();
+		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename)
 
 		await poHomeChannel.content.forwardMessage(forwardChannel)
 
@@ -172,8 +176,10 @@ test.describe.serial('message-actions', () => {
 	})
 
 	test('expect forward pdf file to channel', async () => {
-		const filename = await poHomeChannel.content.dragAndDropPdfFile();
+		const filename = 'test_pdf_file.pdf'
+		await poHomeChannel.content.sendFileMessage(filename);
 		await poHomeChannel.content.btnModalConfirm.click();
+		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename)
 
 		await poHomeChannel.content.forwardMessage(forwardChannel)
 
@@ -182,15 +188,17 @@ test.describe.serial('message-actions', () => {
 	})
 
 	test('expect forward audio message to channel', async ({ page }) => {
+		const filename = 'Audio record.mp3'
 		await poHomeChannel.content.btnRecordAudio.click();
 		await page.waitForTimeout(2000)
 		await poHomeChannel.content.btnEndRecordAudio.click();
 		await poHomeChannel.content.btnModalConfirm.click();
+		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename)
 
 		await poHomeChannel.content.forwardMessage(forwardChannel)
 
 		await poHomeChannel.sidenav.openChat(forwardChannel);
-		await expect(poHomeChannel.content.lastUserMessage).toContainText('Audio record.mp3')
+		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename)
 	})
 });
 
