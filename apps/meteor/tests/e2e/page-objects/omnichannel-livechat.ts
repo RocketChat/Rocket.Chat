@@ -53,16 +53,6 @@ export class OmnichannelLiveChat {
 		return this.page.locator(`text="${message}"`);
 	}
 
-	async changeDepartment (department: string): Promise<void> {
-		await this.btnOptions.click();
-		await this.btnChangeDepartment.click();
-		await this.selectDepartment.waitFor({ state: 'visible' });
-		await this.selectDepartment.selectOption({ label: department });
-		await this.btnSendMessage('Start chat').click();
-		await this.btnYes.click();
-		await this.btnOk.click();
-	}
-
 	async closeChat(): Promise<void> {
 		await this.btnOptions.click();
 		await this.btnCloseChat.click();
@@ -126,8 +116,12 @@ export class OmnichannelLiveChat {
 		return this.page.locator('footer div div div:nth-child(3) button');
 	}
 
-	get firstAutoMessage(): Locator {
-		return this.page.locator('div.message-text__WwYco p');
+	get livechatModal(): Locator {
+		return this.page.locator('[data-qa-type="modal-overlay"]');
+	}
+
+	livechatModalText(text: string): Locator {
+		return this.page.locator(`[data-qa-type="modal-overlay"] >> text=${text}`);
 	}
 
 	public async sendMessage(liveChatUser: { name: string; email: string }, isOffline = true, department?: string): Promise<void> {

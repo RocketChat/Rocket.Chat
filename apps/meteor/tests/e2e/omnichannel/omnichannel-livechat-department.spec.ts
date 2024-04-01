@@ -54,8 +54,8 @@ test.describe('OC - Livechat - Department Flow', () => {
 	});
 
 	test.afterEach(async ({ page }) => {
-		await poHomeOmnichannelAgent1.page?.close();
-		await poHomeOmnichannelAgent2.page?.close();
+		await poHomeOmnichannelAgent1?.page?.close();
+		await poHomeOmnichannelAgent2?.page?.close();
 		await page.close();
 	});
 
@@ -98,25 +98,58 @@ test.describe('OC - Livechat - Department Flow', () => {
 			await expect(poLiveChat.page.locator('div >> text="this_a_test_message_from_user"')).toBeVisible();
 		});
 
+		await test.step('expect message to be received by department 1', async () => {
+			await poHomeOmnichannelAgent1.sidenav.openChat(firstUser.name);
+			await expect(poHomeOmnichannelAgent1.content.lastUserMessage).toBeVisible();
+			await expect(poHomeOmnichannelAgent1.content.lastUserMessage).toContainText('this_a_test_message_from_user');
+		});
+
+		await test.step('expect message to be sent by department 1', async () => {
+			await poHomeOmnichannelAgent1.content.sendMessage('this_a_test_message_from_agent_department_1');
+			await expect(poLiveChat.page.locator('div >> text="this_a_test_message_from_agent_department_1"')).toBeVisible();
+			await poHomeOmnichannelAgent1.page.close();
+		});
+
 		await test.step('expect to change department', async () => {
-			await poLiveChat.changeDepartment(departmentB.name);
+			await poLiveChat.btnOptions.click();
+			await poLiveChat.btnChangeDepartment.click();
+
+			await expect(poLiveChat.selectDepartment).toBeVisible();
+			await poLiveChat.selectDepartment.selectOption({ label: departmentB.name });
+
+			await expect(poLiveChat.btnSendMessage('Start chat')).toBeEnabled();
+			await poLiveChat.btnSendMessage('Start chat').click();
+
+			await expect(poLiveChat.livechatModal).toBeVisible();
+
+			await expect(poLiveChat.livechatModalText('Are you sure you want to switch the department?')).toBeVisible();
+			await poLiveChat.btnYes.click();
+			
+			await expect(poLiveChat.livechatModal).toBeVisible();
+
+			await expect(poLiveChat.livechatModalText('Department switched')).toBeVisible();
+			await poLiveChat.btnOk.click();
 
 			// Expect keep chat history
 			await expect(poLiveChat.page.locator('div >> text="this_a_test_message_from_user"')).toBeVisible();
 
 			// Expect user to have changed
 			await expect(await poLiveChat.headerTitle.textContent()).toEqual(agent2.username);
+
+			await poLiveChat.onlineAgentMessage.fill('this_a_test_message_from_user_to_department_2');
+			await poLiveChat.btnSendMessageToOnlineAgent.click();
+			await expect(poLiveChat.page.locator('div >> text="this_a_test_message_from_user_to_department_2"')).toBeVisible();
 		});
 
 		await test.step('expect message to be received by department', async () => {
 			await poHomeOmnichannelAgent2.sidenav.openChat(firstUser.name);
 			await expect(poHomeOmnichannelAgent2.content.lastUserMessage).toBeVisible();
-			await expect(poHomeOmnichannelAgent2.content.lastUserMessage).toContainText('this_a_test_message_from_user');
+			await expect(poHomeOmnichannelAgent2.content.lastUserMessage).toContainText('this_a_test_message_from_user_to_department_2');
 		});
 
 		await test.step('expect message to be sent by department', async () => {
-			await poHomeOmnichannelAgent2.content.sendMessage('this_a_test_message_from_agent');
-			await expect(poLiveChat.page.locator('div >> text="this_a_test_message_from_agent"')).toBeVisible();
+			await poHomeOmnichannelAgent2.content.sendMessage('this_a_test_message_from_agent_department_2');
+			await expect(poLiveChat.page.locator('div >> text="this_a_test_message_from_agent_department_2"')).toBeVisible();
 		});
 	});
 });
