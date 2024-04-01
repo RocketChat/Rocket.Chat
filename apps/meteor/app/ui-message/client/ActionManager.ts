@@ -8,6 +8,7 @@ import { lazy } from 'react';
 
 import * as banners from '../../../client/lib/banners';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
+import { exhaustiveCheck } from '../../../lib/utils/exhaustiveCheck';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { UiKitTriggerTimeoutError } from './UiKitTriggerTimeoutError';
 
@@ -20,7 +21,7 @@ export class ActionManager implements IActionManager {
 
 	protected events = new Emitter<{ busy: { busy: boolean }; [viewId: string]: any }>();
 
-	protected triggersId = new Map<string, string | undefined>();
+	protected appIdByTriggerId = new Map<string, string | undefined>();
 
 	protected viewInstances = new Map<
 		string,
@@ -35,8 +36,8 @@ export class ActionManager implements IActionManager {
 	public constructor(protected router: ContextType<typeof RouterContext>) {}
 
 	protected invalidateTriggerId(id: string) {
-		const appId = this.triggersId.get(id);
-		this.triggersId.delete(id);
+		const appId = this.appIdByTriggerId.get(id);
+		this.appIdByTriggerId.delete(id);
 		return appId;
 	}
 
@@ -66,42 +67,62 @@ export class ActionManager implements IActionManager {
 
 	public generateTriggerId(appId: string | undefined) {
 		const triggerId = Random.id();
-		this.triggersId.set(triggerId, appId);
+		this.appIdByTriggerId.set(triggerId, appId);
 		setTimeout(() => this.invalidateTriggerId(triggerId), ActionManager.TRIGGER_TIMEOUT);
 		return triggerId;
 	}
 
-	public async emitInteraction(
-		appId: string,
-		userInteraction: DistributiveOmit<UiKit.UserInteraction, 'triggerId'>,
-	): Promise<Pick<UiKit.ServerInteraction, 'type'> | undefined> {
+	public async emitInteraction(appId: string, userInteraction: DistributiveOmit<UiKit.UserInteraction, 'triggerId'>) {
+		const triggerId = this.generateTriggerId(appId);
+
+		return this.runWithTimeout(
+			async () => {
+				let interaction: UiKit.ServerInteraction | undefined;
+
+				try {
+					interaction = (await sdk.rest.post(`/apps/ui.interaction/${appId}`, {
+						...userInteraction,
+						triggerId,
+					})) as UiKit.ServerInteraction;
+
+					this.handleServerInteraction(interaction);
+				} finally {
+					switch (userInteraction.type) {
+						case 'viewSubmit':
+							if (!!interaction && interaction.type !== 'errors') this.disposeView(userInteraction.viewId);
+							break;
+
+						case 'viewClosed':
+							if (!!interaction && interaction.type !== 'errors') this.disposeView(userInteraction.payload.viewId);
+							break;
+					}
+				}
+			},
+			{ triggerId, appId },
+		);
+	}
+
+	protected async runWithTimeout<T>(task: () => Promise<T>, details: { triggerId: string; appId: string }) {
 		this.notifyBusy();
 
-		const triggerId = this.generateTriggerId(appId);
-		let timeout: ReturnType<typeof setTimeout> | undefined;
+		let timer: ReturnType<typeof setTimeout> | undefined;
 
 		try {
-			const timeoutPromise = new Promise<Pick<UiKit.ServerInteraction, 'type'> | undefined>((_, reject) => {
-				timeout = setTimeout(() => {
-					reject(new UiKitTriggerTimeoutError('Timeout', { triggerId, appId }));
+			const taskPromise = task();
+			const timeoutPromise = new Promise<T>((_, reject) => {
+				timer = setTimeout(() => {
+					reject(new UiKitTriggerTimeoutError('Timeout', details));
 				}, ActionManager.TRIGGER_TIMEOUT);
 			});
 
-			const interactionPromise = sdk.rest
-				.post(`/apps/ui.interaction/${appId}`, {
-					...userInteraction,
-					triggerId,
-				})
-				.then((interaction) => this.handleServerInteraction(interaction));
-
-			return Promise.race([timeoutPromise, interactionPromise]);
+			return await Promise.race([taskPromise, timeoutPromise]);
 		} finally {
-			if (timeout) clearTimeout(timeout);
+			if (timer) clearTimeout(timer);
 			this.notifyIdle();
 		}
 	}
 
-	public handleServerInteraction(interaction: UiKit.ServerInteraction): Pick<UiKit.ServerInteraction, 'type'> | undefined {
+	public handleServerInteraction(interaction: UiKit.ServerInteraction): UiKit.ServerInteraction['type'] | undefined {
 		const { triggerId } = interaction;
 
 		const appId = this.invalidateTriggerId(triggerId);
@@ -165,8 +186,7 @@ export class ActionManager implements IActionManager {
 
 			case 'banner.close': {
 				const { viewId } = interaction;
-				this.viewInstances.get(viewId)?.close();
-
+				this.disposeView(viewId);
 				break;
 			}
 
@@ -178,12 +198,15 @@ export class ActionManager implements IActionManager {
 
 			case 'contextual_bar.close': {
 				const { view } = interaction;
-				this.viewInstances.get(view.id)?.close();
+				this.disposeView(view.id);
 				break;
 			}
+
+			default:
+				exhaustiveCheck(interaction);
 		}
 
-		return interaction.type as unknown as Pick<UiKit.ServerInteraction, 'type'>;
+		return interaction.type;
 	}
 
 	public getInteractionPayloadByViewId(viewId: UiKit.ContextualBarView['id']) {
