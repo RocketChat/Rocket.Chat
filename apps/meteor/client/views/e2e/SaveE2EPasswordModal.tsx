@@ -31,12 +31,12 @@ const SaveE2EPasswordModal = ({ randomPassword, onClose, onCancel, onConfirm }: 
 			title={t('Save_your_encryption_password')}
 			annotation={t('You_can_do_from_account_preferences')}
 		>
-			<Box is='span'>
-				<Box is='span'>{t('E2E_password_reveal_text')}</Box>
+			<span>
+				<span>{t('E2E_password_reveal_text')}</span>
 				<ExternalLink to={DOCS_URL} mis={4}>
 					{t('Learn_more_about_E2EE')}
 				</ExternalLink>
-			</Box>
+			</span>
 			<Box fontWeight='bold' mb={20}>
 				{t('E2E_password_save_text')}
 			</Box>
