@@ -164,6 +164,10 @@ export class HomeContent {
 		return this.page.locator('[data-qa-id="audio-message"]');
 	}
 
+	get btnEndRecordAudio(): Locator {
+		return this.page.locator('.rc-message-box__icon.rc-message-box__audio-message-done');
+	}
+
 	get btnMenuMoreActions() {
 		return this.page.getByRole('button', { name: 'More actions' });
 	}
@@ -216,32 +220,44 @@ export class HomeContent {
 		await this.page.locator(`role=dialog[name="Emoji picker"] >> role=tabpanel >> role=button[name="${emoji}"]`).click();
 	}
 
-	async dragAndDropTxtFile(): Promise<void> {
-		const contract = await fs.readFile('./tests/e2e/fixtures/files/any_file.txt', 'utf-8');
-		const dataTransfer = await this.page.evaluateHandle((contract) => {
-			const data = new DataTransfer();
-			const file = new File([`${contract}`], 'any_file.txt', {
-				type: 'text/plain',
-			});
-			data.items.add(file);
-			return data;
-		}, contract);
+	async dragAndDropTxtFile(): Promise<string> {
+		const filename = 'any_file.txt';
+		await this.dragAndDropFile(filename);
 
-		await this.inputMessage.dispatchEvent('dragenter', { dataTransfer });
-
-		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
+		return filename;
 	}
 
-	async dragAndDropLstFile(): Promise<void> {
-		const contract = await fs.readFile('./tests/e2e/fixtures/files/lst-test.lst', 'utf-8');
-		const dataTransfer = await this.page.evaluateHandle((contract) => {
+	async dragAndDropLstFile(): Promise<string> {
+		const filename = 'lst-test.lst';
+		await this.dragAndDropFile(filename);
+
+		return filename;
+	}
+
+	async dragAndDropPdfFile(): Promise<string> {
+		const filename = 'test_pdf_file.pdf';
+		await this.dragAndDropFile(filename);
+
+		return filename;
+	}
+
+	async dragAndDropImageFile(): Promise<string> {
+		const filename = 'test-image.jpeg';
+		await this.dragAndDropFile(filename);
+
+		return filename;
+	}
+
+	async dragAndDropFile(filename: string): Promise<void> {
+		const contract = await fs.readFile(`./tests/e2e/fixtures/files/${filename}`, 'utf-8');
+		const dataTransfer = await this.page.evaluateHandle(({ contract, filename }) => {
 			const data = new DataTransfer();
-			const file = new File([`${contract}`], 'lst-test.lst', {
+			const file = new File([`${contract}`], filename, {
 				type: 'text/plain',
 			});
 			data.items.add(file);
 			return data;
-		}, contract);
+		}, { contract, filename });
 
 		await this.inputMessage.dispatchEvent('dragenter', { dataTransfer });
 

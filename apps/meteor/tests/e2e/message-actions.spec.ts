@@ -150,5 +150,47 @@ test.describe.serial('message-actions', () => {
 		await poHomeChannel.sidenav.openChat(ADMIN_CREDENTIALS.username);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(message)
 	})
+
+	test('expect forward text file to channel', async () => {
+		const filename = await poHomeChannel.content.dragAndDropTxtFile();
+		await poHomeChannel.content.btnModalConfirm.click();
+
+		await poHomeChannel.content.forwardMessage(forwardChannel)
+
+		await poHomeChannel.sidenav.openChat(forwardChannel);
+		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename)
+	})
+
+	test('expect forward image file to channel', async () => {
+		const filename = await poHomeChannel.content.dragAndDropImageFile();
+		await poHomeChannel.content.btnModalConfirm.click();
+
+		await poHomeChannel.content.forwardMessage(forwardChannel)
+
+		await poHomeChannel.sidenav.openChat(forwardChannel);
+		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename)
+	})
+
+	test('expect forward pdf file to channel', async () => {
+		const filename = await poHomeChannel.content.dragAndDropPdfFile();
+		await poHomeChannel.content.btnModalConfirm.click();
+
+		await poHomeChannel.content.forwardMessage(forwardChannel)
+
+		await poHomeChannel.sidenav.openChat(forwardChannel);
+		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename)
+	})
+
+	test('expect forward audio message to channel', async ({ page }) => {
+		await poHomeChannel.content.btnRecordAudio.click();
+		await page.waitForTimeout(2000)
+		await poHomeChannel.content.btnEndRecordAudio.click();
+		await poHomeChannel.content.btnModalConfirm.click();
+
+		await poHomeChannel.content.forwardMessage(forwardChannel)
+
+		await poHomeChannel.sidenav.openChat(forwardChannel);
+		await expect(poHomeChannel.content.lastUserMessage).toContainText('Audio record.mp3')
+	})
 });
 
