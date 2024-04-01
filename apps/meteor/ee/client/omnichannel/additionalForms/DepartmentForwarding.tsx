@@ -65,7 +65,7 @@ export const DepartmentForwarding = ({ departmentId, value = [], handler, label 
 										loadMoreDepartments(start, Math.min(50, departmentsTotal));
 								  }
 						}
-						renderItem={({ label, ...props }) => <Option {...props} label={<Box style={{ whiteSpace: 'normal' }}>{label}</Box>} />}
+						renderItem={({ label, ...props }) => <Option {...props} label={<span style={{ whiteSpace: 'normal' }}>{label}</span>} />}
 					/>
 				</Box>
 			</FieldRow>

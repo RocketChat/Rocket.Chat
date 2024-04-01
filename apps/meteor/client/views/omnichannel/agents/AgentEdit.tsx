@@ -187,7 +187,7 @@ const AgentEdit = ({ agentData, userDepartments, availableDepartments }: AgentEd
 												{...field}
 												placeholder={t('Select_an_option')}
 												renderItem={({ label, ...props }) => (
-													<CheckOption {...props} label={<Box style={{ whiteSpace: 'normal' }}>{label}</Box>} />
+													<CheckOption {...props} label={<span style={{ whiteSpace: 'normal' }}>{label}</span>} />
 												)}
 											/>
 										)}

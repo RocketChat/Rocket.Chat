@@ -111,7 +111,7 @@ const ForwardChatModal = ({
 								}}
 								flexGrow={1}
 								endReached={endReached}
-								renderItem={({ label, ...props }) => <Option {...props} label={<Box style={{ whiteSpace: 'normal' }}>{label}</Box>} />}
+								renderItem={({ label, ...props }) => <Option {...props} label={<span style={{ whiteSpace: 'normal' }}>{label}</span>} />}
 							/>
 						</FieldRow>
 					</Field>

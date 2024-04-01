@@ -415,7 +415,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 												showArchived
 												withTitle={false}
 												renderItem={({ label, ...props }) => (
-													<Option {...props} label={<Box style={{ whiteSpace: 'normal' }}>{label}</Box>} />
+													<Option {...props} label={<span style={{ whiteSpace: 'normal' }}>{label}</span>} />
 												)}
 											/>
 										)}

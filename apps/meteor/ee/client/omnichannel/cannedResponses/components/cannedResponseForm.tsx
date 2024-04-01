@@ -180,7 +180,7 @@ const CannedResponseForm = () => {
 											aria-invalid={Boolean(errors?.departmentId)}
 											withTitle={false}
 											renderItem={({ label, ...props }) => (
-												<Option {...props} label={<Box style={{ whiteSpace: 'normal' }}>{label}</Box>} />
+												<Option {...props} label={<span style={{ whiteSpace: 'normal' }}>{label}</span>} />
 											)}
 										/>
 									)}
