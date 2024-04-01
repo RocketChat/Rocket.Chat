@@ -220,6 +220,7 @@ test.describe('OC - Livechat API', () => {
 		let agent: Awaited<ReturnType<typeof createAgent>>;
 		let agent2: Awaited<ReturnType<typeof createAgent>>;
 		let departments: Awaited<ReturnType<typeof createDepartment>>[];
+		let pageContext: Page;
 
 		test.beforeAll(async ({ api }) => {
 			agent = await createAgent(api, 'user1');
@@ -262,6 +263,7 @@ test.describe('OC - Livechat API', () => {
 			await poAuxContext.page.close();
 			await page.close();
 			await poAuxContext2?.page.close();
+			await pageContext?.close();
 		});
 
 		test.afterAll(async ({ api }) => {
@@ -388,20 +390,115 @@ test.describe('OC - Livechat API', () => {
 			});
 
 			await test.step('Expect registerGuest to log in an existing guest and load chat history', async () => {
-				const { page: pageCtx } = await createAuxContext(browser, Users.user1);
+				({ page: pageContext } = await createAuxContext(browser, Users.user1));
 
-				await pageCtx.goto('/packages/rocketchat_livechat/assets/demo.html');
+				await pageContext.goto('/packages/rocketchat_livechat/assets/demo.html');
 
-				await pageCtx.evaluate(() => window.RocketChat.livechat.maximizeWidget());
-				await expect(pageCtx.frameLocator('#rocketchat-iframe').getByText('Start Chat')).toBeVisible();
+				await pageContext.evaluate(() => window.RocketChat.livechat.maximizeWidget());
+				await expect(pageContext.frameLocator('#rocketchat-iframe').getByText('Start Chat')).toBeVisible();
 
-				await pageCtx.evaluate(
+				await pageContext.evaluate(
 					(registerGuestVisitor) => window.RocketChat.livechat.registerGuest(registerGuestVisitor),
 					registerGuestVisitor,
 				);
 
-				await expect(pageCtx.frameLocator('#rocketchat-iframe').getByText('Start Chat')).not.toBeVisible();
-				await expect(pageCtx.frameLocator('#rocketchat-iframe').getByText('this_a_test_message_from_visitor')).toBeVisible();
+				await expect(pageContext.frameLocator('#rocketchat-iframe').getByText('Start Chat')).not.toBeVisible();
+				await expect(pageContext.frameLocator('#rocketchat-iframe').getByText('this_a_test_message_from_visitor')).toBeVisible();
+			});
+		});
+
+		test('OC - Livechat API - registerGuest different guests', async () => {
+			const registerGuestVisitor1 = {
+				name: faker.person.firstName(),
+				email: faker.internet.email(),
+				token: faker.string.uuid(),
+			};
+
+			const registerGuestVisitor2 = {
+				name: faker.person.firstName(),
+				email: faker.internet.email(),
+				token: faker.string.uuid(),
+			};
+
+			await test.step('Expect registerGuest to create guest 1', async () => {
+				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.maximizeWidget());
+				await expect(poLiveChat.page.frameLocator('#rocketchat-iframe').getByText('Start Chat')).toBeVisible();
+
+				await poLiveChat.page.evaluate(
+					(registerGuestVisitor1) => window.RocketChat.livechat.registerGuest(registerGuestVisitor1),
+					registerGuestVisitor1,
+				);
+
+				await expect(poLiveChat.page.frameLocator('#rocketchat-iframe').getByText('Start Chat')).not.toBeVisible();
+
+				await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor_1');
+				await poLiveChat.btnSendMessageToOnlineAgent.click();
+
+				await expect(poLiveChat.txtChatMessage('this_a_test_message_from_visitor_1')).toBeVisible();
+
+			});
+
+			await test.step('Expect registerGuest to create guest 2', async () => {
+				await poLiveChat.page.evaluate(
+					(registerGuestVisitor2) => window.RocketChat.livechat.registerGuest(registerGuestVisitor2),
+					registerGuestVisitor2,
+				);
+
+				await poLiveChat.page.frameLocator('#rocketchat-iframe').getByText('this_a_test_message_from_visitor').waitFor({ state: 'hidden' });
+
+				await expect(poLiveChat.page.frameLocator('#rocketchat-iframe').getByText('Start Chat')).not.toBeVisible();
+
+				await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor_2');
+				await poLiveChat.btnSendMessageToOnlineAgent.click();
+
+				await poLiveChat.txtChatMessage('this_a_test_message_from_visitor_2').waitFor({ state: 'visible' });
+				await expect(poLiveChat.txtChatMessage('this_a_test_message_from_visitor_2')).toBeVisible();
+
+			});
+		});
+
+		test('OC - Livechat API - registerGuest multiple times', async () => {
+			const registerGuestVisitor = {
+				name: faker.person.firstName(),
+				email: faker.internet.email(),
+				token: faker.string.uuid(),
+			};
+
+			await test.step('Expect registerGuest work with the same token, multiple times', async () => {
+				test.fail();
+
+				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.maximizeWidget());
+				await expect(page.frameLocator('#rocketchat-iframe').getByText('Start Chat')).toBeVisible();
+
+				await poLiveChat.page.evaluate(
+					(registerGuestVisitor) => window.RocketChat.livechat.registerGuest(registerGuestVisitor),
+					registerGuestVisitor,
+				);
+
+				await expect(page.frameLocator('#rocketchat-iframe').getByText('Start Chat')).not.toBeVisible();
+
+				await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
+				await poLiveChat.btnSendMessageToOnlineAgent.click();
+
+				await expect(poLiveChat.txtChatMessage('this_a_test_message_from_visitor')).toBeVisible();
+
+				await poLiveChat.page.evaluate(
+					(registerGuestVisitor) => window.RocketChat.livechat.registerGuest(registerGuestVisitor),
+					registerGuestVisitor,
+				);
+
+				await page.waitForTimeout(500);
+
+				await expect(poLiveChat.txtChatMessage('this_a_test_message_from_visitor')).toBeVisible();
+
+				await poLiveChat.page.evaluate(
+					(registerGuestVisitor) => window.RocketChat.livechat.registerGuest(registerGuestVisitor),
+					registerGuestVisitor,
+				);
+
+				await page.waitForTimeout(500);
+
+				await expect(poLiveChat.txtChatMessage('this_a_test_message_from_visitor')).toBeVisible();
 			});
 		});
 
@@ -498,20 +595,20 @@ test.describe('OC - Livechat API', () => {
 			await poLiveChat.btnSendMessageToOnlineAgent.click();
 
 			await test.step('Expect setGuestToken to log in an existing guest and load chat history', async () => {
-				const { page: pageCtx } = await createAuxContext(browser, Users.user1);
+				({ page: pageContext } = await createAuxContext(browser, Users.user1));
 
-				await pageCtx.goto('/packages/rocketchat_livechat/assets/demo.html');
+				await pageContext.goto('/packages/rocketchat_livechat/assets/demo.html');
 
-				await pageCtx.evaluate(() => window.RocketChat.livechat.maximizeWidget());
-				await expect(pageCtx.frameLocator('#rocketchat-iframe').getByText('Start Chat')).toBeVisible();
+				await pageContext.evaluate(() => window.RocketChat.livechat.maximizeWidget());
+				await expect(pageContext.frameLocator('#rocketchat-iframe').getByText('Start Chat')).toBeVisible();
 
-				await pageCtx.evaluate(
+				await pageContext.evaluate(
 					(registerGuestVisitor) => window.RocketChat.livechat.setGuestToken(registerGuestVisitor.token),
 					registerGuestVisitor,
 				);
 
-				await expect(pageCtx.frameLocator('#rocketchat-iframe').getByText('Start Chat')).not.toBeVisible();
-				await expect(pageCtx.frameLocator('#rocketchat-iframe').getByText('this_a_test_message_from_visitor')).toBeVisible();
+				await expect(pageContext.frameLocator('#rocketchat-iframe').getByText('Start Chat')).not.toBeVisible();
+				await expect(pageContext.frameLocator('#rocketchat-iframe').getByText('this_a_test_message_from_visitor')).toBeVisible();
 			});
 		});
 	});

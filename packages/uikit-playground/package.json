@@ -1,7 +1,7 @@
 {
   "name": "@rocket.chat/uikit-playground",
   "private": true,
-  "version": "0.2.14",
+  "version": "0.2.19",
   "type": "module",
   "scripts": {
     "dev": "vite",

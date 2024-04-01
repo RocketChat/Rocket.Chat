@@ -37,7 +37,15 @@ const ForwardChatModal = ({
 	const getUserData = useEndpoint('GET', '/v1/users.info');
 	const idleAgentsAllowedForForwarding = useSetting('Livechat_enabled_when_agent_idle') as boolean;
 
-	const { getValues, handleSubmit, register, setFocus, setValue, watch } = useForm();
+	const {
+		getValues,
+		handleSubmit,
+		register,
+		setFocus,
+		setValue,
+		watch,
+		formState: { isSubmitting },
+	} = useForm();
 
 	useEffect(() => {
 		setFocus('comment');
@@ -72,7 +80,7 @@ const ForwardChatModal = ({
 				uid = user?._id;
 			}
 
-			onForward(departmentId, uid, comment);
+			await onForward(departmentId, uid, comment);
 		},
 		[getUserData, onForward],
 	);
@@ -148,7 +156,7 @@ const ForwardChatModal = ({
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onCancel}>{t('Cancel')}</Button>
-					<Button type='submit' disabled={!username && !department} primary>
+					<Button type='submit' disabled={!username && !department} primary loading={isSubmitting}>
 						{t('Forward')}
 					</Button>
 				</Modal.FooterControllers>

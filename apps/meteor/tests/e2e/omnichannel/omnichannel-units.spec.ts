@@ -106,9 +106,6 @@ test.describe('OC - Manage Units', () => {
 	test('OC - Manage Units - Edit unit', async ({ api, page }) => {
 		const editedUnitName = faker.string.uuid();
 
-		await page.goto('/omnichannel');
-		await poOmnichannelUnits.sidenav.linkUnits.click();
-
 		const unit = await test.step('expect to create new unit', async () => {
 			const { data: unit } = await createOrUpdateUnit(api, {
 				name: faker.string.uuid(),
@@ -120,6 +117,9 @@ test.describe('OC - Manage Units', () => {
 			return unit;
 		});
 
+		await page.goto('/omnichannel');
+		await poOmnichannelUnits.sidenav.linkUnits.click();
+		
 		await test.step('expect to edit unit', async () => {
 			await poOmnichannelUnits.search(unit.name);
 			await poOmnichannelUnits.findRowByName(unit.name).click();
@@ -129,8 +129,7 @@ test.describe('OC - Manage Units', () => {
 		});
 
 		await test.step('expect unit to have been edited', async () => {
-			await poOmnichannelUnits.sidenav.linkPriorities.click();
-			await poOmnichannelUnits.sidenav.linkUnits.click(); // refresh the page
+			await expect(poOmnichannelUnits.inputSearch).toBeVisible();
 			await poOmnichannelUnits.search(editedUnitName);
 			await expect(poOmnichannelUnits.findRowByName(editedUnitName)).toBeVisible();
 		});
@@ -158,15 +157,9 @@ test.describe('OC - Manage Units', () => {
 			});
 
 			await test.step('expect to have been deleted', async () => {
-				await poOmnichannelUnits.sidenav.linkPriorities.click();
-				await poOmnichannelUnits.sidenav.linkUnits.click(); // refresh the page
-
-				if (await poOmnichannelUnits.inputSearch.isVisible()) {
-					await poOmnichannelUnits.search(editedUnitName);
-					await expect(poOmnichannelUnits.findRowByName(editedUnitName)).not.toBeVisible();
-				} else {
-					await expect(page.locator('h3 >> text="No units yet"')).toBeVisible();
-				}
+				await expect(poOmnichannelUnits.inputSearch).toBeVisible();
+				await poOmnichannelUnits.inputSearch.clear();
+				await expect(page.locator('h3 >> text="No units yet"')).toBeVisible();
 			});
 		});
 	});
