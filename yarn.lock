@@ -8732,7 +8732,7 @@ __metadata:
     "@babel/preset-typescript": ~7.22.15
     "@rocket.chat/apps-engine": 1.42.0-alpha.619
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/fuselage": ^0.52.0
+    "@rocket.chat/fuselage": ^0.53.2
     "@rocket.chat/fuselage-hooks": ^0.33.1
     "@rocket.chat/fuselage-polyfills": ~0.31.25
     "@rocket.chat/gazzodown": "workspace:^"
@@ -8787,9 +8787,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/fuselage@npm:^0.52.0":
-  version: 0.52.0
-  resolution: "@rocket.chat/fuselage@npm:0.52.0"
+"@rocket.chat/fuselage@npm:^0.53.2":
+  version: 0.53.2
+  resolution: "@rocket.chat/fuselage@npm:0.53.2"
   dependencies:
     "@rocket.chat/css-in-js": ^0.31.25
     "@rocket.chat/css-supports": ^0.31.25
@@ -8807,7 +8807,7 @@ __metadata:
     react: ^17.0.2
     react-dom: ^17.0.2
     react-virtuoso: 1.2.4
-  checksum: 518c96ad67dcb2395c6299842250c1e87959e53ee54fee2bb4d813a41a8e78913e599adc4c73258f7e99249bb2351cf8b94dd8a3bfb2ba5473aa80f051cfac40
+  checksum: 3dd1464821330cc353fdb3de585853e7d41f181e87a90c8281d8ef28ba719dd95ddc92f048a321127e800a9287638f77d5549412548b443bceedbefa4d728e40
   languageName: node
   linkType: hard
 
@@ -8818,7 +8818,7 @@ __metadata:
     "@babel/core": ~7.22.20
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": ~0.31.25
-    "@rocket.chat/fuselage": ^0.52.0
+    "@rocket.chat/fuselage": ^0.53.2
     "@rocket.chat/fuselage-tokens": ^0.33.0
     "@rocket.chat/message-parser": "workspace:^"
     "@rocket.chat/styled": ~0.31.25
@@ -9178,7 +9178,7 @@ __metadata:
     "@rocket.chat/favicon": "workspace:^"
     "@rocket.chat/forked-matrix-appservice-bridge": ^4.0.2
     "@rocket.chat/forked-matrix-bot-sdk": ^0.6.0-beta.3
-    "@rocket.chat/fuselage": ^0.52.0
+    "@rocket.chat/fuselage": ^0.53.2
     "@rocket.chat/fuselage-hooks": ^0.33.1
     "@rocket.chat/fuselage-polyfills": ~0.31.25
     "@rocket.chat/fuselage-toastbar": ^0.31.26
@@ -10060,7 +10060,7 @@ __metadata:
   resolution: "@rocket.chat/ui-avatar@workspace:packages/ui-avatar"
   dependencies:
     "@babel/core": ~7.22.20
-    "@rocket.chat/fuselage": ^0.52.0
+    "@rocket.chat/fuselage": ^0.53.2
     "@rocket.chat/ui-contexts": "workspace:^"
     "@types/babel__core": ~7.20.3
     "@types/react": ~17.0.69
@@ -10086,7 +10086,7 @@ __metadata:
     "@babel/core": ~7.22.20
     "@react-aria/toolbar": ^3.0.0-beta.1
     "@rocket.chat/css-in-js": ~0.31.25
-    "@rocket.chat/fuselage": ^0.52.0
+    "@rocket.chat/fuselage": ^0.53.2
     "@rocket.chat/fuselage-hooks": ^0.33.1
     "@rocket.chat/icons": ^0.34.0
     "@rocket.chat/mock-providers": "workspace:^"
@@ -10139,7 +10139,7 @@ __metadata:
     "@babel/core": ~7.22.20
     "@react-aria/toolbar": ^3.0.0-beta.1
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/fuselage": ^0.52.0
+    "@rocket.chat/fuselage": ^0.53.2
     "@rocket.chat/icons": ^0.34.0
     "@storybook/addon-actions": ~6.5.16
     "@storybook/addon-docs": ~6.5.16
@@ -10231,7 +10231,7 @@ __metadata:
   resolution: "@rocket.chat/ui-theming@workspace:ee/packages/ui-theming"
   dependencies:
     "@rocket.chat/css-in-js": ~0.31.25
-    "@rocket.chat/fuselage": ^0.52.0
+    "@rocket.chat/fuselage": ^0.53.2
     "@rocket.chat/fuselage-hooks": ^0.33.1
     "@rocket.chat/icons": ^0.34.0
     "@rocket.chat/ui-contexts": "workspace:~"
@@ -10274,7 +10274,7 @@ __metadata:
     "@rocket.chat/css-in-js": ~0.31.25
     "@rocket.chat/emitter": ~0.31.25
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/fuselage": ^0.52.0
+    "@rocket.chat/fuselage": ^0.53.2
     "@rocket.chat/fuselage-hooks": ^0.33.1
     "@rocket.chat/icons": ^0.34.0
     "@rocket.chat/styled": ~0.31.25
@@ -10319,7 +10319,7 @@ __metadata:
     "@codemirror/tooltip": ^0.19.16
     "@lezer/highlight": ^1.1.6
     "@rocket.chat/css-in-js": ~0.31.25
-    "@rocket.chat/fuselage": ^0.52.0
+    "@rocket.chat/fuselage": ^0.53.2
     "@rocket.chat/fuselage-hooks": ^0.33.1
     "@rocket.chat/fuselage-polyfills": ~0.31.25
     "@rocket.chat/fuselage-toastbar": ^0.31.26
