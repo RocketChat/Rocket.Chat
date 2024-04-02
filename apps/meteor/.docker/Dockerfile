@@ -19,6 +19,8 @@ RUN aptMark="$(apt-mark showmanual)" \
     && npm install \
     && cd npm/node_modules/isolated-vm \
     && npm install \
+    && cd /app/bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine/deno-runtime \
+    && npm install \
     && apt-mark auto '.*' > /dev/null \
     && apt-mark manual $aptMark > /dev/null \
     && find /usr/local -type f -executable -exec ldd '{}' ';' \

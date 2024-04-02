@@ -27,7 +27,6 @@ runs:
         path: |
           node_modules
           apps/meteor/node_modules
-          apps/meteor/node_modules/@rocket.chat/apps-engine/deno-runtime/.deno
           apps/meteor/ee/server/services/node_modules
         key: node-modules-${{ hashFiles('yarn.lock') }}
     #
