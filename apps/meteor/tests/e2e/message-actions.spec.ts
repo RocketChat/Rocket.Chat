@@ -198,5 +198,17 @@ test.describe.serial('message-actions', () => {
 		await poHomeChannel.sidenav.openChat(forwardChannel);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename)
 	})
+
+	test('expect forward video message to channel', async () => {
+		const filename = 'test_video.mp4'
+		await poHomeChannel.content.sendFileMessage(filename);
+		await poHomeChannel.content.btnModalConfirm.click();
+		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename)
+
+		await poHomeChannel.content.forwardMessage(forwardChannel)
+
+		await poHomeChannel.sidenav.openChat(forwardChannel);
+		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename)
+	})
 });
 
