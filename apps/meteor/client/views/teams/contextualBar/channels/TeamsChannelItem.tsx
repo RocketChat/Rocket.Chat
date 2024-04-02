@@ -18,7 +18,7 @@ import React, { useState } from 'react';
 
 import { usePreventPropagation } from '../../../../hooks/usePreventPropagation';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
-import RoomActions from './RoomActions';
+import TeamsChannelItemMenu from './TeamsChannelItemMenu';
 
 type TeamsChannelItemProps = {
 	room: IRoom;
@@ -68,7 +68,7 @@ const TeamsChannelItem = ({ room, onClickView, reload }: TeamsChannelItemProps) 
 			</OptionContent>
 			{(canRemoveTeamChannel || canEditTeamChannel || canDeleteTeamChannel) && (
 				<OptionMenu onClick={onClick}>
-					{showButton ? <RoomActions room={room} reload={reload} /> : <IconButton tiny icon='kebab' />}
+					{showButton ? <TeamsChannelItemMenu room={room} reload={reload} /> : <IconButton tiny icon='kebab' />}
 				</OptionMenu>
 			)}
 		</Option>
