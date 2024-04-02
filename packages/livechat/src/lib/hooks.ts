@@ -24,6 +24,7 @@ const createOrUpdateGuest = async (guest: StoreState['guest']) => {
 	}
 	store.setState({ user } as Omit<StoreState['user'], 'ts'>);
 	await loadConfig();
+	Triggers.callbacks?.emit('chat-visitor-registered');
 };
 
 const updateIframeGuestData = (data: Partial<StoreState['guest']>) => {
@@ -36,7 +37,7 @@ const updateIframeGuestData = (data: Partial<StoreState['guest']>) => {
 
 	const iframeGuest = { ...guest, ...data } as StoreState['guest'];
 
-	store.setState({ iframe: { ...iframe, guest: iframeGuest } });
+	store.setState({ iframe: { ...iframe, guest: iframeGuest || {} } });
 
 	if (!user) {
 		return;
@@ -48,12 +49,20 @@ const updateIframeGuestData = (data: Partial<StoreState['guest']>) => {
 
 export type HooksWidgetAPI = typeof api;
 
-const api = {
-	pageVisited: (info: { change: string; title: string; location: { href: string } }) => {
-		if (info.change === 'url') {
-			Triggers.processRequest(info);
-		}
+const updateIframeData = (data: Partial<StoreState['iframe']>) => {
+	const { iframe } = store.state;
 
+	if (data.guest) {
+		throw new Error('Guest data changes not allowed. Use updateIframeGuestData instead.');
+	}
+
+	const iframeData = { ...iframe, ...data };
+
+	store.setState({ iframe: { ...iframeData } });
+};
+
+const api = {
+	pageVisited(info: { change: string; title: string; location: { href: string } }) {
 		const { token, room } = store.state;
 		const { _id: rid } = room || {};
 
@@ -93,11 +102,17 @@ const api = {
 			defaultAgent,
 		} = store.state;
 
+		if (!user) {
+			updateIframeData({ defaultDepartment: value });
+			return;
+		}
+
 		const { department: existingDepartment } = user || {};
 
 		const department = departments.find((dep) => dep._id === value || dep.name === value)?._id || '';
 
 		updateIframeGuestData({ department });
+		store.setState({ department });
 
 		if (defaultAgent && defaultAgent.department !== department) {
 			store.setState({ defaultAgent: undefined });
@@ -146,10 +161,10 @@ const api = {
 
 		store.setState({
 			defaultAgent: {
+				...props,
 				_id,
 				username,
 				ts: Date.now(),
-				...props,
 			},
 		});
 	},
@@ -222,6 +237,10 @@ const api = {
 
 	setParentUrl: (parentUrl: StoreState['parentUrl']) => {
 		store.setState({ parentUrl });
+	},
+	setGuestMetadata(metadata: StoreState['iframe']['guestMetadata']) {
+		const { iframe } = store.state;
+		store.setState({ iframe: { ...iframe, guestMetadata: metadata } });
 	},
 };
 

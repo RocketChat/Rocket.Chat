@@ -1,2 +1,2 @@
-import './getMatrixInstances';
+import './getInstanceList';
 import './isDepartmentCreationAvailable';

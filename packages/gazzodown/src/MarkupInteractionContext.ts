@@ -22,6 +22,8 @@ type MarkupInteractionContextValue = {
 	ownUserId?: string | null;
 	showMentionSymbol?: boolean;
 	triggerProps?: AriaButtonProps<'button'>;
+	enableTimestamp?: boolean;
+	language?: string;
 };
 
 export const MarkupInteractionContext = createContext<MarkupInteractionContextValue>({});

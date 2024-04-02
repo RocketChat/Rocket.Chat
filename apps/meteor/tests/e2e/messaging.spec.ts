@@ -57,6 +57,7 @@ test.describe.serial('Messaging', () => {
 		
 		// move focus to the composer
 		await page.keyboard.press('Tab');
+		await page.locator('[data-qa-type="message"]:has-text("msg2")').locator('[role=toolbar][aria-label="Message actions"]').getByRole('button', { name: 'Add reaction' }).waitFor();
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('Tab');
 		await expect(poHomeChannel.composer).toBeFocused();
