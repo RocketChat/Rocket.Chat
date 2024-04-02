@@ -140,8 +140,8 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 					<Swiper
 						ref={swiperRef}
 						navigation={{
-							nextEl: '.rcx-swiper-next-button',
-							prevEl: '.rcx-swiper-prev-button',
+							nextEl: '.rcx-swiper-prev-button',
+							prevEl: '.rcx-swiper-next-button',
 						}}
 						keyboard
 						zoom={{ toggle: false }}
@@ -151,6 +151,7 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 						modules={[Navigation, Zoom, Keyboard, A11y]}
 						onInit={(swiper) => setSwiperInst(swiper)}
 						onReachEnd={loadMore}
+						dir='rtl'
 					>
 						{images?.map(({ _id, url }) => (
 							<SwiperSlide key={_id}>
