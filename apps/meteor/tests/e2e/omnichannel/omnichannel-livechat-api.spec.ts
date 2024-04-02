@@ -70,7 +70,6 @@ test.describe('OC - Livechat API', () => {
 			agent = await createAgent(api, 'user1');
 
 			page = await browser.newPage();
-			await expect((await api.post('/settings/Enable_CSP', { value: false })).status()).toBe(200);
 
 			poLiveChat = new OmnichannelLiveChatEmbedded(page);
 
@@ -80,8 +79,7 @@ test.describe('OC - Livechat API', () => {
 			await page.goto('/packages/rocketchat_livechat/assets/demo.html');
 		});
 
-		test.afterAll(async ({ api }) => {
-			await expect((await api.post('/settings/Enable_CSP', { value: true })).status()).toBe(200);
+		test.afterAll(async () => {
 			await agent.delete();
 			await poAuxContext.page.close();
 			await page.close();
@@ -231,8 +229,6 @@ test.describe('OC - Livechat API', () => {
 
 			await addAgentToDepartment(api, { department: departmentA, agentId: agent.data._id });
 			await addAgentToDepartment(api, { department: departmentB, agentId: agent2.data._id });
-
-			await expect((await api.post('/settings/Enable_CSP', { value: false })).status()).toBe(200);
 			await expect((await api.post('/settings/Livechat_offline_email', { value: 'test@testing.com' })).status()).toBe(200);
 		});
 
@@ -267,7 +263,6 @@ test.describe('OC - Livechat API', () => {
 		});
 
 		test.afterAll(async ({ api }) => {
-			await expect((await api.post('/settings/Enable_CSP', { value: true })).status()).toBe(200);
 			await agent.delete();
 			await agent2.delete();
 
@@ -621,7 +616,6 @@ test.describe('OC - Livechat API', () => {
 
 		test.beforeAll(async ({ api }) => {
 			agent = await createAgent(api, 'user1');
-			await expect((await api.post('/settings/Enable_CSP', { value: false })).status()).toBe(200);
 			await expect((await api.post('/settings/Livechat_offline_email', { value: 'test@testing.com' })).status()).toBe(200);
 		});
 
@@ -648,8 +642,7 @@ test.describe('OC - Livechat API', () => {
 			await page.close();
 		});
 
-		test.afterAll(async ({ api }) => {
-			await expect((await api.post('/settings/Enable_CSP', { value: true })).status()).toBe(200);
+		test.afterAll(async () => {
 			await agent.delete();
 		});
 
