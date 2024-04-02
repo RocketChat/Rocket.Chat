@@ -230,7 +230,6 @@ export class HomeContent {
 		await this.inputMessage.dispatchEvent('dragenter', { dataTransfer });
 
 		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
-		await this.page.locator('button >> text="Send"').click();
 	}
 
 	async dragAndDropImageFile(imageName: string): Promise<void> {
