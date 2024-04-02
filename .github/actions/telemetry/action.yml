@@ -1,5 +1,5 @@
-permissions:
-  pull-requests: write
+#permissions:
+#  pull-requests: write
 jobs:
   telemetry:
     runs-on: ubuntu-latest
@@ -9,4 +9,4 @@ jobs:
         with:
           theme: dark
           job_summary: true
-          comment_on_pr: true # set to false before merging at least until https://github.com/catchpoint/workflow-telemetry-action/pull/51 is merged
+          comment_on_pr: false # set to false at least until https://github.com/catchpoint/workflow-telemetry-action/pull/51 is merged
