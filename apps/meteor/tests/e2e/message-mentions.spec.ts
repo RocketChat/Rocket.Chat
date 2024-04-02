@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetPrivateChannel } from './utils';
+import { createTargetPrivateChannel, createTargetTeam } from './utils';
 import { test, expect } from './utils/test';
 
 
@@ -209,6 +209,25 @@ test.describe.serial('message-mentions', () => {
 				await test.step('not show "Let them know" action', async () => {
 					await expect(userPage.content.lastUserMessage.locator('button >> text="Let them know"')).not.toBeVisible();
 				});
+			});
+		})
+
+		test.describe('team mention', () => {
+			let team: string;
+			test.use({ storageState: Users.user1.state });
+			test.beforeAll(async ({ api }) => {
+				team = await createTargetTeam(api);			
+			});	
+			
+			test('should not receive bot message', async ({ page }) => {
+				const userPage = new HomeChannel(page);
+
+				await test.step('do not receive bot message', async () => {
+					await userPage.sidenav.openChat(targetChannel);
+					await userPage.content.sendMessage(getMentionText(team));
+					await expect(userPage.content.lastUserMessage.locator('.rcx-message-block')).not.toBeVisible();
+				});
+
 			});
 		})
 		
