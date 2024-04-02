@@ -430,7 +430,6 @@ test.describe('OC - Livechat API', () => {
 				await poLiveChat.btnSendMessageToOnlineAgent.click();
 
 				await expect(poLiveChat.txtChatMessage('this_a_test_message_from_visitor_1')).toBeVisible();
-
 			});
 
 			await test.step('Expect registerGuest to create guest 2', async () => {
@@ -448,7 +447,6 @@ test.describe('OC - Livechat API', () => {
 
 				await poLiveChat.txtChatMessage('this_a_test_message_from_visitor_2').waitFor({ state: 'visible' });
 				await expect(poLiveChat.txtChatMessage('this_a_test_message_from_visitor_2')).toBeVisible();
-
 			});
 		});
 
@@ -460,8 +458,6 @@ test.describe('OC - Livechat API', () => {
 			};
 
 			await test.step('Expect registerGuest work with the same token, multiple times', async () => {
-				test.fail();
-
 				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.maximizeWidget());
 				await expect(page.frameLocator('#rocketchat-iframe').getByText('Start Chat')).toBeVisible();
 
