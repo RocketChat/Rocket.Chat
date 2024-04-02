@@ -4,7 +4,7 @@ import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import { differenceInSeconds } from 'date-fns';
 import type { ReactElement } from 'react';
-import React from 'react';
+import React, { Fragment } from 'react';
 
 import { MessageTypes } from '../../../../../../app/ui-utils/client';
 import { isTruthy } from '../../../../../../lib/isTruthy';
@@ -95,7 +95,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 								const system = MessageTypes.isSystemMessage(message);
 
 								return (
-									<li key={message._id}>
+									<Fragment key={message._id}>
 										<ThreadMessageItem
 											message={message}
 											previous={previous}
@@ -105,7 +105,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 											firstUnread={firstUnread}
 											system={system}
 										/>
-									</li>
+									</Fragment>
 								);
 							})}
 						</MessageListProvider>

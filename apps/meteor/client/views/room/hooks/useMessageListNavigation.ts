@@ -3,7 +3,8 @@ import type { RefCallback } from 'react';
 import { useCallback } from 'react';
 import { useFocusManager } from 'react-aria';
 
-const isListItem = (node: EventTarget) => (node as HTMLElement).getAttribute('role') === 'link';
+const isListItem = (node: EventTarget) =>
+	(node as HTMLElement).getAttribute('role') === 'listitem' || (node as HTMLElement).getAttribute('role') === 'link';
 const isMessageToolbarAction = (node: EventTarget) => (node as HTMLElement).parentElement?.getAttribute('role') === 'toolbar';
 const isSystemMessage = (node: EventTarget) => (node as HTMLElement).classList.contains('rcx-message-system');
 const isThreadMessage = (node: EventTarget) => (node as HTMLElement).classList.contains('rcx-message-thread');
@@ -89,9 +90,8 @@ export const useMessageListNavigation = (): { messageListRef: RefCallback<HTMLEl
 				'focus',
 				(e) => {
 					if (initialFocus) {
-						lastMessageFocused = node?.querySelector('li:last-child > [role=link]:first-child');
-						lastMessageFocused?.focus();
-						lastMessageFocused = null;
+						massageListFocusManager.focusLast({ accept: (node) => isListItem(node) });
+						lastMessageFocused = document.activeElement as HTMLElement;
 						initialFocus = false;
 					}
 

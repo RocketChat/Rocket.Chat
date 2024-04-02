@@ -2,7 +2,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { isThreadMessage } from '@rocket.chat/core-typings';
 import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
-import React from 'react';
+import React, { Fragment } from 'react';
 
 import { MessageTypes } from '../../../../app/ui-utils/client';
 import { useRoomSubscription } from '../contexts/RoomContext';
@@ -35,7 +35,7 @@ export const MessageList = function MessageList({ rid, messageListRef }: Message
 					const visible = !isThreadMessage(message) && !system;
 
 					return (
-						<li key={message._id}>
+						<Fragment key={message._id}>
 							<MessageListItem
 								message={message}
 								previous={previous}
@@ -46,7 +46,7 @@ export const MessageList = function MessageList({ rid, messageListRef }: Message
 								subscription={subscription}
 								system={system}
 							/>
-						</li>
+						</Fragment>
 					);
 				})}
 			</SelectedMessagesProvider>
