@@ -70,11 +70,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		return removeUserFromRoom(roomId, user, options);
 	}
 
-	async getValidRoomName(
-		displayName: string,
-		roomId = '',
-		options: { allowDuplicates?: boolean; nameValidationRegex?: string } = {},
-	): Promise<string> {
+	async getValidRoomName(displayName: string, roomId = '', options: { allowDuplicates?: boolean } = {}): Promise<string> {
 		return getValidRoomName(displayName, roomId, options);
 	}
 

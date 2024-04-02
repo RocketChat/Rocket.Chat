@@ -3,14 +3,14 @@ import { InstanceStatus } from '@rocket.chat/models';
 import { isRunningMs } from '../../../../server/lib/isRunningMs';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { API } from '../api';
-import { getMatrixInstances } from '../helpers/getMatrixInstances';
+import { getInstanceList } from '../helpers/getInstanceList';
 
 const getConnections = (() => {
 	if (isRunningMs()) {
 		return () => [];
 	}
 
-	return () => getMatrixInstances();
+	return () => getInstanceList();
 })();
 
 API.v1.addRoute(

@@ -1,2 +1,2 @@
 import './closeBusinessHour';
-import './getMatrixInstances';
+import './getInstanceList';
