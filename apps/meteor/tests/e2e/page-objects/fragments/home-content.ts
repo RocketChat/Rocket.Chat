@@ -230,6 +230,23 @@ export class HomeContent {
 		await this.inputMessage.dispatchEvent('dragenter', { dataTransfer });
 
 		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
+		await this.page.locator('button >> text="Send"').click();
+	}
+
+	async dragAndDropImageFile(imageName: string): Promise<void> {
+		const contract = await fs.readFile(`./tests/e2e/fixtures/files/${imageName}`, 'base64');
+		const dataTransfer = await this.page.evaluateHandle(([contract, imageName]) => {
+			const data = new DataTransfer();
+			const file = new File([`${contract}`], imageName, {
+				type: 'image/png',
+			});
+			data.items.add(file);
+			return data;
+		}, [contract, imageName]);
+
+		await this.inputMessage.dispatchEvent('dragenter', { dataTransfer });
+
+		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
 	}
 
 	async dragAndDropLstFile(): Promise<void> {
@@ -246,6 +263,10 @@ export class HomeContent {
 		await this.inputMessage.dispatchEvent('dragenter', { dataTransfer });
 
 		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
+	}
+
+	async sendFileMessage(fileName: string): Promise<void> {
+		await this.page.locator('input[type=file]').setInputFiles(`./tests/e2e/fixtures/files/${fileName}`);
 	}
 
 	async openLastMessageMenu(): Promise<void> {
@@ -302,6 +323,18 @@ export class HomeContent {
 
 	get btnAnonymousTalk(): Locator {
 		return this.page.locator('role=button[name="Or talk as anonymous"]');
+	}
+
+	get nextSlideButton(): Locator {
+		return this.page.getByLabel('Next slide');
+	}
+
+	get previousSlideButton(): Locator {
+		return this.page.getByLabel('Previous slide');
+	}
+
+	get closeGalleryButton(): Locator {
+		return this.page.getByLabel('Close gallery');
 	}
 
 	findSystemMessage(text: string): Locator {
