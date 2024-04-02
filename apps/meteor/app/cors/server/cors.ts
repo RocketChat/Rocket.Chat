@@ -16,14 +16,28 @@ type NextFunction = (err?: any) => void;
 
 const logger = new Logger('CORS');
 
+let templatePromise: Promise<void> | void;
+
+declare module 'meteor/webapp' {
+	// eslint-disable-next-line @typescript-eslint/no-namespace
+	namespace WebApp {
+		function setInlineScriptsAllowed(allowed: boolean): Promise<void>;
+	}
+}
+
 settings.watch<boolean>(
 	'Enable_CSP',
-	Meteor.bindEnvironment((enabled) => {
-		WebAppInternals.setInlineScriptsAllowed(!enabled);
+	Meteor.bindEnvironment(async (enabled) => {
+		templatePromise = WebAppInternals.setInlineScriptsAllowed(!enabled);
 	}),
 );
 
-WebApp.rawConnectHandlers.use((_req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) => {
+WebApp.rawConnectHandlers.use(async (_req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) => {
+	if (templatePromise) {
+		await templatePromise;
+		templatePromise = void 0;
+	}
+
 	// XSS Protection for old browsers (IE)
 	res.setHeader('X-XSS-Protection', '1');
 
