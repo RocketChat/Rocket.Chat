@@ -67,14 +67,14 @@ const swiperStyle = css`
 
 	.rcx-swiper-prev-button,
 	.swiper-rtl .rcx-swiper-next-button {
-		right: auto;
-		left: 10px;
+		left: auto;
+		right: 10px;
 	}
 
 	.rcx-swiper-next-button,
 	.swiper-rtl .rcx-swiper-prev-button {
-		right: 10px;
-		left: auto;
+		left: 10px;
+		right: auto;
 	}
 
 	.rcx-lazy-preloader {
@@ -135,13 +135,13 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 						<IconButton small icon='plus' title='Zoom in' rcx-swiper-zoom-in onClick={handleZoomIn} />
 						<IconButton small icon='cross' title='Close' aria-label='Close gallery' className='rcx-swiper-close-button' onClick={onClose} />
 					</ButtonGroup>
-					<IconButton icon='chevron-right' className='rcx-swiper-prev-button' onClick={preventPropagation} />
-					<IconButton icon='chevron-left' className='rcx-swiper-next-button' onClick={preventPropagation} />
+					<IconButton icon='chevron-right' className='rcx-swiper-next-button' onClick={preventPropagation} />
+					<IconButton icon='chevron-left' className='rcx-swiper-prev-button' onClick={preventPropagation} />
 					<Swiper
 						ref={swiperRef}
 						navigation={{
-							nextEl: '.rcx-swiper-prev-button',
-							prevEl: '.rcx-swiper-next-button',
+							nextEl: '.rcx-swiper-next-button',
+							prevEl: '.rcx-swiper-prev-button',
 						}}
 						keyboard
 						zoom={{ toggle: false }}
@@ -151,7 +151,6 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 						modules={[Navigation, Zoom, Keyboard, A11y]}
 						onInit={(swiper) => setSwiperInst(swiper)}
 						onReachEnd={loadMore}
-						dir='rtl'
 					>
 						{images?.map(({ _id, url }) => (
 							<SwiperSlide key={_id}>
