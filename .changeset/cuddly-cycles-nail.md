@@ -3,4 +3,4 @@
 "@rocket.chat/ui-kit": minor
 ---
 
-Introduce users select to UiKit
+Introduced new elements for apps to select users
