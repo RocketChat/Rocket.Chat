@@ -1,1 +1,1 @@
-import './getMatrixInstances';
+import './getInstanceList';
