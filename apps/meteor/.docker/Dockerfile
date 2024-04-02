@@ -19,8 +19,6 @@ RUN aptMark="$(apt-mark showmanual)" \
     && npm install \
     && cd npm/node_modules/isolated-vm \
     && npm install \
-    && cd npm/node_modules/deno-bin/bin/ \
-    && deno --version \
     && apt-mark auto '.*' > /dev/null \
     && apt-mark manual $aptMark > /dev/null \
     && find /usr/local -type f -executable -exec ldd '{}' ';' \
