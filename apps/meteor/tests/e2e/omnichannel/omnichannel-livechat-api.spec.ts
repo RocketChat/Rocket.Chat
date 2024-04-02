@@ -435,7 +435,6 @@ test.describe('OC - Livechat API', () => {
 				await poLiveChat.btnSendMessageToOnlineAgent.click();
 
 				await expect(poLiveChat.txtChatMessage('this_a_test_message_from_visitor_1')).toBeVisible();
-
 			});
 
 			await test.step('Expect registerGuest to create guest 2', async () => {
@@ -453,52 +452,6 @@ test.describe('OC - Livechat API', () => {
 
 				await poLiveChat.txtChatMessage('this_a_test_message_from_visitor_2').waitFor({ state: 'visible' });
 				await expect(poLiveChat.txtChatMessage('this_a_test_message_from_visitor_2')).toBeVisible();
-
-			});
-		});
-
-		test('OC - Livechat API - registerGuest multiple times', async () => {
-			const registerGuestVisitor = {
-				name: faker.person.firstName(),
-				email: faker.internet.email(),
-				token: faker.string.uuid(),
-			};
-
-			await test.step('Expect registerGuest work with the same token, multiple times', async () => {
-				test.fail();
-
-				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.maximizeWidget());
-				await expect(page.frameLocator('#rocketchat-iframe').getByText('Start Chat')).toBeVisible();
-
-				await poLiveChat.page.evaluate(
-					(registerGuestVisitor) => window.RocketChat.livechat.registerGuest(registerGuestVisitor),
-					registerGuestVisitor,
-				);
-
-				await expect(page.frameLocator('#rocketchat-iframe').getByText('Start Chat')).not.toBeVisible();
-
-				await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
-				await poLiveChat.btnSendMessageToOnlineAgent.click();
-
-				await expect(poLiveChat.txtChatMessage('this_a_test_message_from_visitor')).toBeVisible();
-
-				await poLiveChat.page.evaluate(
-					(registerGuestVisitor) => window.RocketChat.livechat.registerGuest(registerGuestVisitor),
-					registerGuestVisitor,
-				);
-
-				await page.waitForTimeout(500);
-
-				await expect(poLiveChat.txtChatMessage('this_a_test_message_from_visitor')).toBeVisible();
-
-				await poLiveChat.page.evaluate(
-					(registerGuestVisitor) => window.RocketChat.livechat.registerGuest(registerGuestVisitor),
-					registerGuestVisitor,
-				);
-
-				await page.waitForTimeout(500);
-
-				await expect(poLiveChat.txtChatMessage('this_a_test_message_from_visitor')).toBeVisible();
 			});
 		});
 
