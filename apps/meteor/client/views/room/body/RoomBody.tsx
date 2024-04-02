@@ -283,7 +283,7 @@ const RoomBody = (): ReactElement => {
 								>
 									<MessageListErrorBoundary>
 										<CustomScrollbars ref={innerRef}>
-											<ul className='messages-list' aria-label='Message list' aria-busy={isLoadingMoreMessages}>
+											<ul className='messages-list' aria-label={t('Message_list')} aria-busy={isLoadingMoreMessages}>
 												{canPreview ? (
 													<>
 														{hasMorePreviousMessages ? (
