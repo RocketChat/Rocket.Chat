@@ -1,0 +1,12 @@
+permissions:
+  pull-requests: write
+jobs:
+  telemetry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Collect Workflow Telemetry
+        uses: catchpoint/workflow-telemetry-action@v2
+        with:
+          theme: dark
+          job_summary: true
+          comment_on_pr: true # set to false before merging at least until https://github.com/catchpoint/workflow-telemetry-action/pull/51 is merged
