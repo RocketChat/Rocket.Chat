@@ -86,6 +86,12 @@ jobs:
     name: MongoDB ${{ matrix.mongodb-version }} (${{ matrix.shard }}/${{ inputs.total-shard }})
 
     steps:
+      - name: Collect Workflow Telemetry
+        uses: catchpoint/workflow-telemetry-action@v2
+        with:
+          theme: dark
+          job_summary: true
+          comment_on_pr: false
       - name: Launch MongoDB
         uses: supercharge/mongodb-github-action@v1.10.0
         with:
