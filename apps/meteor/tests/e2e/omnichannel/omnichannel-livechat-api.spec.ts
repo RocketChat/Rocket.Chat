@@ -458,8 +458,6 @@ test.describe('OC - Livechat API', () => {
 			};
 
 			await test.step('Expect registerGuest work with the same token, multiple times', async () => {
-				test.fail();
-
 				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.maximizeWidget());
 				await expect(page.frameLocator('#rocketchat-iframe').getByText('Start Chat')).toBeVisible();
 
