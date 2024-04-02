@@ -7,7 +7,9 @@ import type {
 } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 import { FileUpload } from '../../../file-upload/server';
 import { sendMessageLivechat } from './sendMessageLivechat';
@@ -107,3 +109,9 @@ export const sendFileLivechatMessage = async ({ roomId, visitorToken, file, msgD
 
 	return sendMessageLivechat({ message: msg });
 };
+
+Meteor.methods<ServerMethods>({
+	async sendFileLivechatMessage(roomId, visitorToken, file, msgData = {}) {
+		return sendFileLivechatMessage({ roomId, visitorToken, file, msgData });
+	},
+});
