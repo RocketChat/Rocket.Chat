@@ -20,6 +20,7 @@
   "__roomName__was_removed_from_favorites": "{{roomName}} was removed from favorites",
   "removed__username__as__role_": "removed {{username}} as {{role}}",
   "set__username__as__role_": "set {{username}} as {{role}}",
+  "sequential_message": "sequential message",
   "This_room_encryption_has_been_enabled_by__username_": "This room's encryption has been enabled by {{username}}",
   "This_room_encryption_has_been_disabled_by__username_": "This room's encryption has been disabled by {{username}}",
   "Third_party_login": "Third-party login",
