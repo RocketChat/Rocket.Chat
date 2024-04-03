@@ -96,7 +96,7 @@ export class AppsRestApi {
 					const workspaceId = await Settings.getValueById('Cloud_Workspace_Id');
 
 					if (!workspaceId) {
-						return API.v1.internalError();
+						return API.v1.failure('No workspace id found');
 					}
 
 					const { action, appId, appVersion } = this.queryParams;

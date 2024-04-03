@@ -20,7 +20,7 @@ export async function removeLicense() {
 			throw new CloudWorkspaceAccessTokenEmptyError();
 		}
 
-		const workspaceRegistrationClientUri = Settings.getValueById('Cloud_Workspace_Registration_Client_Uri');
+		const workspaceRegistrationClientUri = await Settings.getValueById('Cloud_Workspace_Registration_Client_Uri');
 
 		const response = await fetch(`${workspaceRegistrationClientUri}/client/downgrade`, {
 			method: 'POST',
