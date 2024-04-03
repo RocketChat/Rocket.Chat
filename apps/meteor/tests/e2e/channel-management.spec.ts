@@ -122,7 +122,7 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.tabs.room.btnSave.click();
 	});
 
-	test('should edit name of "targetChannel"', async ({ page }) => {
+	test('should edit name of targetChannel', async ({ page }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnRoomInfo.click();
 		await poHomeChannel.tabs.room.btnEdit.click();
@@ -152,9 +152,9 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await page.getByRole('button', { name: targetChannel }).first().focus();
 		await page.keyboard.press('Space');
-		await page.getByRole('complementary').waitFor();
+		await page.getByRole('dialog').waitFor();
 	
-		await expect(page.getByRole('complementary')).toBeVisible();
+		await expect(page.getByRole('dialog')).toBeVisible();
 	});
 
 	test('should create a discussion using the message composer', async ({ page }) => {
@@ -162,7 +162,7 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.content.btnMenuMoreActions.click();
 		await page.getByRole('menuitem', { name: 'Discussion' }).click();
-		await page.getByRole('textbox', { name: 'Discussion name' }).fill(discussionName);
+		await page.getByRole('textbox', { name: 'Name' }).fill(discussionName);
 		await page.getByRole('button', { name: 'Create' }).click();
 		
 		await expect(page.getByRole('heading', { name: discussionName })).toBeVisible();

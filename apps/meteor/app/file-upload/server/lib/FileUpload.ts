@@ -8,6 +8,7 @@ import stream from 'stream';
 import URL from 'url';
 
 import { hashLoginToken } from '@rocket.chat/account-utils';
+import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import type { IUpload } from '@rocket.chat/core-typings';
 import { Users, Avatars, UserDataFiles, Uploads, Settings, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
@@ -21,7 +22,6 @@ import sharp from 'sharp';
 import type { WritableStreamBuffer } from 'stream-buffers';
 import streamBuffers from 'stream-buffers';
 
-import { AppEvents, Apps } from '../../../../ee/server/apps';
 import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
@@ -177,7 +177,7 @@ export const FileUpload = {
 
 		// App IPreFileUpload event hook
 		try {
-			await Apps.triggerEvent(AppEvents.IPreFileUpload, { file, content: content || Buffer.from([]) });
+			await Apps?.triggerEvent(AppEvents.IPreFileUpload, { file, content: content || Buffer.from([]) });
 		} catch (error: any) {
 			if (error.name === AppsEngineException.name) {
 				throw new Meteor.Error('error-app-prevented', error.message);
@@ -308,21 +308,36 @@ export const FileUpload = {
 		const store = FileUpload.getStore('Uploads');
 		const image = await store._store.getReadStream(file._id, file);
 
-		const transformer = sharp().resize({ width, height, fit: 'inside' });
+		let transformer = sharp().resize({ width, height, fit: 'inside' });
 
-		const result = transformer.toBuffer({ resolveWithObject: true }).then(({ data, info: { width, height } }) => ({ data, width, height }));
+		if (file.type === 'image/svg+xml') {
+			transformer = transformer.png();
+		}
+		const result = transformer.toBuffer({ resolveWithObject: true }).then(({ data, info: { width, height, format } }) => ({
+			data,
+			width,
+			height,
+			thumbFileType: (mime.lookup(format) as string) || '',
+			thumbFileName: file?.name as string,
+			originalFileId: file?._id as string,
+		}));
 		image.pipe(transformer);
 
 		return result;
 	},
 
-	async uploadImageThumbnail(file: IUpload, buffer: Buffer, rid: string, userId: string) {
+	async uploadImageThumbnail(
+		{ thumbFileName, thumbFileType, originalFileId }: { thumbFileName: string; thumbFileType: string; originalFileId: string },
+		buffer: Buffer,
+		rid: string,
+		userId: string,
+	) {
 		const store = FileUpload.getStore('Uploads');
 		const details = {
-			name: `thumb-${file.name}`,
+			name: `thumb-${thumbFileName}`,
 			size: buffer.length,
-			type: file.type,
-			originalFileId: file._id,
+			type: thumbFileType,
+			originalFileId,
 			typeGroup: 'thumb',
 			uploadedAt: new Date(),
 			_updatedAt: new Date(),

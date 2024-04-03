@@ -48,5 +48,7 @@ export function useRestoreScrollPosition(roomId: IRoom['_id']) {
 		[roomId],
 	);
 
-	return useMergedRefs(refCallback, ref) as unknown as RefObject<HTMLElement>;
+	return {
+		innerRef: useMergedRefs(refCallback, ref) as unknown as RefObject<HTMLElement>,
+	};
 }
