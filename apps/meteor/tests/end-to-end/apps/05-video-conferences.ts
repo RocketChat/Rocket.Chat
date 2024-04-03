@@ -1,11 +1,11 @@
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
+import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, request, api, credentials } from '../../data/api-data.js';
 import { cleanupApps, installTestApp } from '../../data/apps/helper.js';
 import { updateSetting } from '../../data/permissions.helper';
-import { createRoom } from '../../data/rooms.helper';
+import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { adminUsername } from '../../data/user';
 
 describe('Apps - Video Conferences', function () {
@@ -25,10 +25,13 @@ describe('Apps - Video Conferences', function () {
 			agentId: undefined,
 			members: undefined,
 			credentials: undefined,
+			extraData: undefined,
 		});
 
 		roomId = res.body.group._id;
 	});
+
+	after(() => Promise.all([cleanupApps(), deleteRoom({ type: 'p', roomId }), updateSetting('VideoConf_Default_Provider', '')]));
 
 	describe('[With No App]', () => {
 		before(async () => {
