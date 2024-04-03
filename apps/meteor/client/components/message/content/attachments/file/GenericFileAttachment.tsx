@@ -69,5 +69,5 @@ const GenericFileAttachment = ({
 		</>
 	);
 };
-
+// mobile
 export default GenericFileAttachment;
