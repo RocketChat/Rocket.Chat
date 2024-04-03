@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/models",
-	"version": "0.0.35-rc.1",
+	"version": "0.0.35-rc.2",
 	"private": true,
 	"devDependencies": {
 		"@swc/core": "^1.3.95",

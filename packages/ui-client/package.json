@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-client",
-	"version": "5.0.0-rc.1",
+	"version": "5.0.0-rc.2",
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.22.20",
@@ -63,7 +63,7 @@
 		"@rocket.chat/fuselage": "*",
 		"@rocket.chat/fuselage-hooks": "*",
 		"@rocket.chat/icons": "*",
-		"@rocket.chat/ui-contexts": "5.0.0-rc.1",
+		"@rocket.chat/ui-contexts": "5.0.0-rc.2",
 		"react": "~17.0.2"
 	},
 	"volta": {
