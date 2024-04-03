@@ -6,11 +6,12 @@ type useChannelsDataProps = {
 };
 
 type useChannelsDataReturn = {
-  _id: string;
-  t: string;
-  name?: string;
-  fname?: string;
-  avatarETag?: string;
+  value: string;
+  label: {
+    name?: string;
+    avatarETag?: string;
+    type: string;
+  };
 }[];
 
 const generateQuery = (
@@ -36,10 +37,8 @@ export const useChannelsData = ({
   );
 
   const result = data?.items.map(({ fname, name, _id, avatarETag, t }) => ({
-    _id,
-    name: name || fname,
-    t,
-    avatarETag,
+    value: _id,
+    label: { name: name || fname, avatarETag, type: t },
   }));
 
   return result || [];

@@ -19,16 +19,7 @@ const MultiChannelsSelectElement = ({
   const [filter, setFilter] = useState('');
   const filterDebounced = useDebouncedValue(filter, 300);
 
-  const data = useChannelsData({ filter: filterDebounced });
-
-  const options = useMemo(
-    () =>
-      data.map(({ name, _id, avatarETag, t }) => ({
-        value: _id,
-        label: { name, avatarETag, type: t },
-      })),
-    [data]
-  );
+  const options = useChannelsData({ filter: filterDebounced });
 
   const handleChange = useCallback(
     (value) => {
