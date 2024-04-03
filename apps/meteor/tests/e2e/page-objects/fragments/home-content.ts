@@ -307,8 +307,4 @@ export class HomeContent {
 	findSystemMessage(text: string): Locator {
 		return this.page.locator(`[data-qa-type="system-message-body"] >> text="${text}"`);
 	}
-	
-	get infoHeaderName(): Locator {
-		return this.page.locator('.rcx-room-header').getByRole('heading');
-	}
 }
