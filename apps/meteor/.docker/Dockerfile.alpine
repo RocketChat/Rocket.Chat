@@ -21,7 +21,7 @@ RUN set -x \
     && mv node_modules/isolated-vm npm/node_modules/isolated-vm \
     # End hack for isolated-vm
     && cd /app/bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine/deno-runtime \
-    && ../../../deno-bin/bin/deno cache main.ts \
+    && npx deno-bin cache main.ts \
     && cd npm \
     && npm rebuild bcrypt --build-from-source \
     && npm cache clear --force \
