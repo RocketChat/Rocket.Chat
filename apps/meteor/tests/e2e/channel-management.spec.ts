@@ -130,6 +130,7 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.tabs.room.btnSave.click();
 
 		targetChannel = `NAME-EDITED-${targetChannel}`;
+		await expect(page.locator(`role=main >> role=heading[name="${targetChannel}"]`)).toBeVisible();
 		await poHomeChannel.sidenav.openChat(targetChannel);
 
 		await expect(page).toHaveURL(`/channel/${targetChannel}`);
