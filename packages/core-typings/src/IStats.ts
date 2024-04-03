@@ -46,6 +46,8 @@ export interface IStats {
 	totalLivechatAgents: number;
 	totalLivechatManagers: number;
 	totalCustomFields: number;
+	totalLivechatPublicCustomFields: number;
+	livechatAutomaticForwardingUnansweredChats: boolean;
 	livechatEnabled: boolean;
 	isDepartmentRemovalEnabled: boolean;
 	totalChannelMessages: number;
@@ -220,6 +222,7 @@ export interface IStats {
 	totalWebRTCCalls: number;
 	uncaughtExceptionsCount: number;
 	push: number;
+	pushSecured: boolean;
 	dailyPeakConnections: number;
 	maxMonthlyPeakConnections: number;
 	matrixFederation: {
