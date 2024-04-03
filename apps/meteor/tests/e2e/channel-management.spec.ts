@@ -129,6 +129,8 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.tabs.room.inputName.fill(`NAME-EDITED-${targetChannel}`);
 		await poHomeChannel.tabs.room.btnSave.click();
 
+		await expect(poHomeChannel.content.infoHeaderName).toHaveText(`NAME-EDITED-${targetChannel}`)
+
 		targetChannel = `NAME-EDITED-${targetChannel}`;
 		await poHomeChannel.sidenav.openChat(targetChannel);
 
