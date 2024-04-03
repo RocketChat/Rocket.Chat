@@ -3,4 +3,4 @@
 "@rocket.chat/ui-kit": minor
 ---
 
-Introduce channels select to UiKit
+Introduced new elements for apps to select channels
