@@ -188,7 +188,7 @@ export class AppsRestApi {
 					const workspaceId = await Settings.getValueById('Cloud_Workspace_Id');
 
 					if (!workspaceId) {
-						return API.v1.internalError();
+						return API.v1.failure('No workspace id found');
 					}
 
 					if (!this.queryParams.purchaseType || !purchaseTypes.has(this.queryParams.purchaseType)) {
@@ -291,7 +291,7 @@ export class AppsRestApi {
 						const workspaceId = await Settings.getValueById('Cloud_Workspace_Id');
 
 						if (!workspaceId) {
-							return API.v1.internalError();
+							return API.v1.failure('No workspace id found');
 						}
 
 						if (!this.queryParams.purchaseType || !purchaseTypes.has(this.queryParams.purchaseType)) {
@@ -458,7 +458,7 @@ export class AppsRestApi {
 					const workspaceId = await Settings.getValueById('Cloud_Workspace_Id');
 
 					if (!workspaceId) {
-						return API.v1.internalError();
+						return API.v1.failure('No workspace id found');
 					}
 
 					const requester = {
