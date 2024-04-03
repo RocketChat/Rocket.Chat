@@ -20,8 +20,11 @@ RUN set -x \
     && npm install isolated-vm@4.4.2 \
     && mv node_modules/isolated-vm npm/node_modules/isolated-vm \
     # End hack for isolated-vm
+    && rm -rf npm/node_modules/deno-bin \
+    && npm install deno-bin@1.37.1\
+    && mv node_modules/deno-bin npm/node_modules/deno-bin \
     && cd /app/bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine/deno-runtime \
-    && npx deno-bin cache main.ts \
+    && ../../../deno-bin/bin/deno cache main.ts \
     && cd npm \
     && npm rebuild bcrypt --build-from-source \
     && npm cache clear --force \
