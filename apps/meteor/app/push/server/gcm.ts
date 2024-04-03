@@ -5,6 +5,9 @@ import gcm from 'node-gcm';
 import type { PendingPushNotification, PushOptions } from './definition';
 import { logger } from './logger';
 
+/**
+ * @deprecated Use sendFCM instead, node-gcm is deprecated and google will remove it soon
+ */
 export const sendGCM = function ({
 	userTokens,
 	notification,
