@@ -1,14 +1,15 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useEndpoint, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, usePermission, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 
-export const useRemoveRoomFromTeam = (room: IRoom, reload: () => void) => {
+export const useRemoveRoomFromTeam = (room: IRoom, { reload }: { reload?: () => void }) => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const canRemoveTeamChannel = usePermission('remove-team-channel', room._id);
 
 	const removeRoomEndpoint = useEndpoint('POST', '/v1/teams.removeRoom');
 
@@ -21,7 +22,7 @@ export const useRemoveRoomFromTeam = (room: IRoom, reload: () => void) => {
 			try {
 				await removeRoomEndpoint({ teamId: room.teamId, roomId: room._id });
 				dispatchToastMessage({ type: 'error', message: t('Room_has_been_removed') });
-				reload();
+				reload?.();
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {
@@ -38,5 +39,5 @@ export const useRemoveRoomFromTeam = (room: IRoom, reload: () => void) => {
 		);
 	};
 
-	return handleRemoveRoom;
+	return { handleRemoveRoom, canRemoveTeamChannel };
 };

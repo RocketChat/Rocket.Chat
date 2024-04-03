@@ -1,30 +1,26 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { CheckBox } from '@rocket.chat/fuselage';
-import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import GenericMenu from '../../../../components/GenericMenu/GenericMenu';
 import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
-import { useDeleteRoom } from './hooks/useDeleteRoom';
+import { useDeleteRoom } from '../../../hooks/roomActions/useDeleteRoom';
 import { useRemoveRoomFromTeam } from './hooks/useRemoveRoomFromTeam';
 import { useToggleAutoJoin } from './hooks/useToggleAutoJoin';
 
-const TeamsChannelItemMenu = ({ room, reload }: { room: IRoom; reload: () => void }) => {
+const TeamsChannelItemMenu = ({ room, reload }: { room: IRoom; reload?: () => void }) => {
 	const t = useTranslation();
 
-	const canDeleteTeamChannel = usePermission(room.t === 'c' ? 'delete-c' : 'delete-p', room._id);
-	const canEditTeamChannel = usePermission('edit-team-channel', room._id);
-	const canRemoveTeamChannel = usePermission('remove-team-channel', room._id);
-
-	const removeRoomAction = useRemoveRoomFromTeam(room, reload);
-	const deleteRoomAction = useDeleteRoom(room, reload);
-	const toggleAutoJoinAction = useToggleAutoJoin(room, reload);
+	const { handleRemoveRoom, canRemoveTeamChannel } = useRemoveRoomFromTeam(room, { reload });
+	const { handleDelete, canDeleteRoom } = useDeleteRoom(room, { reload });
+	const { handleToggleAutoJoin, canEditTeamChannel } = useToggleAutoJoin(room, { reload });
 
 	const toggleAutoJoin = {
 		id: 'toggleAutoJoin',
 		icon: room.t === 'c' ? 'hash' : 'hashtag-lock',
 		content: t('Team_Auto-join'),
-		onClick: toggleAutoJoinAction,
+		onClick: handleToggleAutoJoin,
 		addon: <CheckBox checked={room.teamDefault} />,
 	};
 
@@ -32,7 +28,7 @@ const TeamsChannelItemMenu = ({ room, reload }: { room: IRoom; reload: () => voi
 		id: 'removeRoom',
 		icon: 'cross',
 		content: t('Team_Remove_from_team'),
-		onClick: removeRoomAction,
+		onClick: handleRemoveRoom,
 		variant: 'danger',
 	};
 
@@ -40,7 +36,7 @@ const TeamsChannelItemMenu = ({ room, reload }: { room: IRoom; reload: () => voi
 		id: 'deleteRoom',
 		icon: 'trash',
 		content: t('Delete'),
-		onClick: deleteRoomAction,
+		onClick: handleDelete,
 		variant: 'danger',
 	};
 
@@ -51,7 +47,7 @@ const TeamsChannelItemMenu = ({ room, reload }: { room: IRoom; reload: () => voi
 			sections={[
 				{
 					title: '',
-					items: [canEditTeamChannel && toggleAutoJoin, canRemoveTeamChannel && removeRoom, canDeleteTeamChannel && deleteRoom].filter(
+					items: [canEditTeamChannel && toggleAutoJoin, canRemoveTeamChannel && removeRoom, canDeleteRoom && deleteRoom].filter(
 						Boolean,
 					) as GenericMenuItemProps[],
 				},
