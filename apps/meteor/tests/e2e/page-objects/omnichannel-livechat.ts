@@ -1,3 +1,5 @@
+import fs from 'fs/promises';
+
 import type { Page, Locator, APIResponse } from '@playwright/test';
 
 import { expect } from '../utils/test';
@@ -29,6 +31,10 @@ export class OmnichannelLiveChat {
 		return this.page.locator(`button >> text="Finish this chat"`);
 	}
 
+	get btnChangeDepartment(): Locator {
+		return this.page.locator(`button >> text="Change department"`);
+	}
+
 	get btnCloseChatConfirm(): Locator {
 		return this.page.locator(`button >> text="Yes"`);
 	}
@@ -40,9 +46,27 @@ export class OmnichannelLiveChat {
 	get btnChatNow(): Locator {
 		return this.page.locator('[type="button"] >> text="Chat now"');
 	}
+	
+	get headerTitle(): Locator {
+		return this.page.locator('[data-qa="header-title"]');
+	}
+
+	alertMessage(message: string): Locator {
+		return this.page.getByRole('alert').locator(`text="${message}"`);
+	}
 
 	txtChatMessage(message: string): Locator {
 		return this.page.locator(`text="${message}"`);
+	}
+
+	async changeDepartment (department: string): Promise<void> {
+		await this.btnOptions.click();
+		await this.btnChangeDepartment.click();
+		await this.selectDepartment.waitFor({ state: 'visible' });
+		await this.selectDepartment.selectOption({ label: department });
+		await this.btnSendMessage('Start chat').click();
+		await this.btnYes.click();
+		await this.btnOk.click();
 	}
 
 	async closeChat(): Promise<void> {
@@ -80,6 +104,10 @@ export class OmnichannelLiveChat {
 		return this.page.locator('[name="email"]');
 	}
 
+	get selectDepartment(): Locator {
+		return this.page.locator('[name="department"]');
+	}
+
 	get textAreaMessage(): Locator {
 		return this.page.locator('[name="message"]');
 	}
@@ -90,6 +118,10 @@ export class OmnichannelLiveChat {
 
 	get btnOk(): Locator {
 		return this.page.locator('role=button[name="OK"]');
+	}
+
+	get btnYes(): Locator {
+		return this.page.locator('role=button[name="Yes"]');
 	}
 
 	get onlineAgentMessage(): Locator {
@@ -104,13 +136,27 @@ export class OmnichannelLiveChat {
 		return this.page.locator('div.message-text__WwYco p');
 	}
 
-	public async sendMessage(liveChatUser: { name: string; email: string }, isOffline = true): Promise<void> {
+	get fileUploadTarget(): Locator {
+		return this.page.locator('#files-drop-target');
+	}
+
+	findUploadedFileLink (fileName: string): Locator {
+		return this.page.getByRole('link', { name: fileName });
+	}
+
+	public async sendMessage(liveChatUser: { name: string; email: string }, isOffline = true, department?: string): Promise<void> {
 		const buttonLabel = isOffline ? 'Send' : 'Start chat';
-		await this.inputName.type(liveChatUser.name);
-		await this.inputEmail.type(liveChatUser.email);
+		await this.inputName.fill(liveChatUser.name);
+		await this.inputEmail.fill(liveChatUser.email);
+
+		if (department) {
+			await this.selectDepartment.selectOption({ label: department });
+		}
+
 		if (isOffline) {
 			await this.textAreaMessage.type('any_message');
 		}
+
 		await this.btnSendMessage(buttonLabel).click();
 		await this.page.waitForSelector('[data-qa="livechat-composer"]');
 	}
@@ -119,11 +165,43 @@ export class OmnichannelLiveChat {
 		liveChatUser: { name: string; email: string },
 		message = 'this_a_test_message_from_user',
 	): Promise<void> {
-		await this.openLiveChat();
+		await this.openAnyLiveChat();
 		await this.sendMessage(liveChatUser, false);
 		await this.onlineAgentMessage.type(message);
 		await this.btnSendMessageToOnlineAgent.click();
 		await expect(this.txtChatMessage(message)).toBeVisible();
 		await this.closeChat();
+	}
+
+	async dragAndDropTxtFile(): Promise<void> {
+		const contract = await fs.readFile('./tests/e2e/fixtures/files/any_file.txt', 'utf-8');
+		const dataTransfer = await this.page.evaluateHandle((contract) => {
+			const data = new DataTransfer();
+			const file = new File([`${contract}`], 'any_file.txt', {
+				type: 'text/plain',
+			});
+			data.items.add(file);
+			return data;
+		}, contract);
+
+		await this.fileUploadTarget.dispatchEvent('dragenter', { dataTransfer });
+
+		await this.fileUploadTarget.dispatchEvent('drop', { dataTransfer });
+	}
+
+	async dragAndDropLstFile(): Promise<void> {
+		const contract = await fs.readFile('./tests/e2e/fixtures/files/lst-test.lst', 'utf-8');
+		const dataTransfer = await this.page.evaluateHandle((contract) => {
+			const data = new DataTransfer();
+			const file = new File([`${contract}`], 'lst-test.lst', {
+				type: 'text/plain',
+			});
+			data.items.add(file);
+			return data;
+		}, contract);
+
+		await this.fileUploadTarget.dispatchEvent('dragenter', { dataTransfer });
+
+		await this.fileUploadTarget.dispatchEvent('drop', { dataTransfer });
 	}
 }
