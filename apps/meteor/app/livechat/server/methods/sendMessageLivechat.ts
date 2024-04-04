@@ -80,7 +80,7 @@ export const sendMessageLivechat = async ({
 };
 
 Meteor.methods<ServerMethods>({
-	async sendMessageLivechat({ token, _id, rid, msg, file, attachments }: ILivechatMessage, agent: ILivechatMessageAgent) {
-		return sendMessageLivechat({ message: { token, _id, rid, msg, file, attachments }, agent });
+	async sendMessageLivechat({ token, _id, rid, msg, file, files, attachments }: ILivechatMessage, agent: ILivechatMessageAgent) {
+		return sendMessageLivechat({ message: { token, _id, rid, msg, file, files, attachments }, agent });
 	},
 });
