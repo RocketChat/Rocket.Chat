@@ -1,5 +1,6 @@
 import type { CpuInfo } from 'os';
 
+import type { IMatrixFederationStatistics } from './IMatrixFederationStatistics';
 import type { DeviceSessionAggregationResult, OSSessionAggregationResult, UserSessionAggregationResult } from './ISession';
 import type { ISettingStatisticsObject } from './ISetting';
 import type { ITeamStats } from './ITeam';
@@ -225,9 +226,7 @@ export interface IStats {
 	pushSecured: boolean;
 	dailyPeakConnections: number;
 	maxMonthlyPeakConnections: number;
-	matrixFederation: {
-		enabled: boolean;
-	};
+	matrixFederation: IMatrixFederationStatistics;
 	webRTCEnabled: boolean;
 	webRTCEnabledForOmnichannel: boolean;
 	omnichannelWebRTCCalls: number;
