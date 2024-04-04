@@ -1,6 +1,5 @@
----
-"@rocket.chat/meteor": minor
-"@rocket.chat/i18n": minor
----
+@rocket.chat/meteor: Minor update
+@rocket.chat/i18n: Minor update
+Changes:
 
-Added a new formatter shortcut to add hyperlinks to a message
+Implemented a new formatter shortcut enabling the addition of hyperlinks to messages.
