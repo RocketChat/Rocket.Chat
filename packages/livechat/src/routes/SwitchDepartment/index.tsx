@@ -31,7 +31,7 @@ const SwitchDepartment: FunctionalComponent<{ path: string }> = () => {
 		iframe: { guest },
 		iframe,
 		room,
-		loading = false,
+		loading = true,
 		dispatch,
 		alerts,
 		token,
