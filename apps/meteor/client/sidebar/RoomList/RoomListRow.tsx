@@ -38,27 +38,23 @@ const RoomListRow = ({ data, item }: { data: RoomListRowProps; item: ISubscripti
 
 	if (typeof item === 'string') {
 		return (
-			<div role='listitem'>
-				<SidebarSection>
-					<SidebarSection.Title>{t(item)}</SidebarSection.Title>
-				</SidebarSection>
-			</div>
+			<SidebarSection>
+				<SidebarSection.Title>{t(item)}</SidebarSection.Title>
+			</SidebarSection>
 		);
 	}
 
 	return (
-		<div role='listitem'>
-			<SideBarItemTemplateWithData
-				sidebarViewMode={sidebarViewMode}
-				selected={item.rid === openedRoom}
-				t={t}
-				room={item}
-				extended={extended}
-				SideBarItemTemplate={SideBarItemTemplate}
-				AvatarTemplate={AvatarTemplate}
-				videoConfActions={videoConfActions}
-			/>
-		</div>
+		<SideBarItemTemplateWithData
+			sidebarViewMode={sidebarViewMode}
+			selected={item.rid === openedRoom}
+			t={t}
+			room={item}
+			extended={extended}
+			SideBarItemTemplate={SideBarItemTemplate}
+			AvatarTemplate={AvatarTemplate}
+			videoConfActions={videoConfActions}
+		/>
 	);
 };
 

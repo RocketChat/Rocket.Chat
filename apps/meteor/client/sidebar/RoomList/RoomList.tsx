@@ -15,7 +15,8 @@ import { useRoomList } from '../hooks/useRoomList';
 import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 import RoomListRow from './RoomListRow';
-import { useSidebarListNavigation } from './useSidebarListNavigation';
+import RoomListRowWrapper from './RoomListRowWrapper';
+import RoomListWrapper from './RoomListWrapper';
 
 const computeItemKey = (index: number, room: IRoom): IRoom['_id'] | number => room._id || index;
 
@@ -45,7 +46,6 @@ const RoomList = (): ReactElement => {
 
 	usePreventDefault(ref);
 	useShortcutOpenMenu(ref);
-	const { sidebarListRef } = useSidebarListNavigation();
 
 	const roomsListStyle = css`
 		position: relative;
@@ -118,12 +118,12 @@ const RoomList = (): ReactElement => {
 	`;
 
 	return (
-		<Box ref={sidebarListRef} className={[roomsListStyle, 'sidebar--custom-colors'].filter(Boolean)} aria-label={t('Channels')} role='list'>
+		<Box className={[roomsListStyle, 'sidebar--custom-colors'].filter(Boolean)}>
 			<Box h='full' w='full' ref={ref}>
 				<Virtuoso
 					totalCount={roomsList.length}
 					data={roomsList}
-					components={{ Scroller: VirtuosoScrollbars }}
+					components={{ Item: RoomListRowWrapper, List: RoomListWrapper, Scroller: VirtuosoScrollbars }}
 					computeItemKey={computeItemKey}
 					itemContent={(_, data): ReactElement => <RoomListRow data={itemData} item={data} />}
 				/>
