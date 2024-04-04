@@ -143,7 +143,7 @@ jobs:
           MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
         run: |
           # when we are testing CE, we only need to start the rocketchat container
-          docker compose -f docker-compose-ci.yml up -d rocketchat
+          docker compose -f docker-compose-ci.yml up -d --no-build rocketchat
 
       - name: Start containers for EE
         if: inputs.release == 'ee'
@@ -159,7 +159,7 @@ jobs:
           echo "DOCKER_TAG: $DOCKER_TAG"
           echo "LOWERCASE_REPOSITORY: $LOWERCASE_REPOSITORY"
 
-          docker compose -f docker-compose-ci.yml up -d
+          docker compose -f docker-compose-ci.yml up -d --no-build
 
       - name: Cache Playwright binaries
         if: inputs.type == 'ui'
