@@ -26,7 +26,8 @@ export async function executeUpdateMessage(uid: IUser['_id'], message: AtLeast<I
 		}
 	});
 
-	if (originalMessage.msg === message.msg && !previewUrls) {
+	const msgText = originalMessage?.attachments?.[0]?.description ?? originalMessage.msg;
+	if (msgText === message.msg && !previewUrls) {
 		return;
 	}
 
