@@ -47,21 +47,21 @@ const LayoutProvider: FC = ({ children }) => {
 					isEmbedded,
 					showTopNavbarEmbeddedLayout,
 					sidebar: {
-						size: '240px',
 						isCollapsed,
 						toggle: () => setIsCollapsed((isCollapsed) => !isCollapsed),
 						collapse: () => setIsCollapsed(true),
 						expand: () => setIsCollapsed(false),
 						close: () => (isEmbedded ? setIsCollapsed(true) : router.navigate('/home')),
 					},
-					contextualbar: {
+					size: {
+						sidebar: '240px',
 						// eslint-disable-next-line no-nested-ternary
-						size: breakpoints.includes('sm') ? (breakpoints.includes('xl') ? '38%' : '380px') : '100%',
-						canExpand: breakpoints.includes('sm'),
-						// eslint-disable-next-line no-nested-ternary
-						position: breakpoints.includes('sm') ? (breakpoints.includes('lg') ? 'relative' : 'absolute') : 'fixed',
+						contextualBar: breakpoints.includes('sm') ? (breakpoints.includes('xl') ? '38%' : '380px') : '100%',
 					},
 					roomToolboxExpanded: breakpoints.includes('lg'),
+					contextualBarExpanded: breakpoints.includes('sm'),
+					// eslint-disable-next-line no-nested-ternary
+					contextualBarPosition: breakpoints.includes('sm') ? (breakpoints.includes('lg') ? 'relative' : 'absolute') : 'fixed',
 					hiddenActions,
 				}),
 				[isMobile, isEmbedded, showTopNavbarEmbeddedLayout, isCollapsed, breakpoints, router, hiddenActions],

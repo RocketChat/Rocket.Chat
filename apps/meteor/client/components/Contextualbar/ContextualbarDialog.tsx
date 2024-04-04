@@ -1,6 +1,6 @@
 import { Contextualbar } from '@rocket.chat/fuselage';
 import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
-import { useLayoutContextualbar } from '@rocket.chat/ui-contexts';
+import { useLayoutSizes, useLayoutContextualBarPosition } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, KeyboardEvent } from 'react';
 import React, { useCallback, useRef } from 'react';
 import type { AriaDialogProps } from 'react-aria';
@@ -18,7 +18,8 @@ type ContextualbarDialogProps = AriaDialogProps & ComponentProps<typeof Contextu
 const ContextualbarDialog = (props: ContextualbarDialogProps) => {
 	const ref = useRef(null);
 	const { dialogProps } = useDialog({ 'aria-labelledby': 'contextualbarTitle', ...props }, ref);
-	const { size, position } = useLayoutContextualbar();
+	const sizes = useLayoutSizes();
+	const position = useLayoutContextualBarPosition();
 	const { closeTab } = useRoomToolbox();
 
 	const callbackRef = useCallback(
@@ -41,12 +42,12 @@ const ContextualbarDialog = (props: ContextualbarDialogProps) => {
 		<FocusScope autoFocus restoreFocus>
 			<FeaturePreview feature='contextualbarResizable'>
 				<FeaturePreviewOn>
-					<ContextualbarResizable defaultWidth={size}>
+					<ContextualbarResizable defaultWidth={sizes.contextualBar}>
 						<Contextualbar ref={callbackRef} width='100%' position={position} {...dialogProps} {...props} />
 					</ContextualbarResizable>
 				</FeaturePreviewOn>
 				<FeaturePreviewOff>
-					<Contextualbar ref={callbackRef} width={size} position={position} {...dialogProps} {...props} />
+					<Contextualbar ref={callbackRef} width={sizes.contextualBar} position={position} {...dialogProps} {...props} />
 				</FeaturePreviewOff>
 			</FeaturePreview>
 		</FocusScope>
