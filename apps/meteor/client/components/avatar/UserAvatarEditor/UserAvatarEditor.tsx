@@ -2,7 +2,7 @@ import type { IUser, AvatarObject } from '@rocket.chat/core-typings';
 import { Box, Button, Avatar, TextInput, IconButton, Label } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useToastMessageDispatch, useSetting, useTranslation, useUserAvatarPath } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent } from 'react';
 import React, { useState, useCallback } from 'react';
 
@@ -27,7 +27,6 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, disabled, e
 	const [newAvatarSource, setNewAvatarSource] = useState<string>();
 	const imageUrlField = useUniqueId();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const getUserAvatarPath = useUserAvatarPath();
 
 	const setUploadedPreview = useCallback(
 		async (file, avatarObj) => {
@@ -53,11 +52,6 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, disabled, e
 	};
 
 	const clickReset = (): void => {
-		const url = getUserAvatarPath(username || '', etag);
-		if (url === `/avatar/${username}`) {
-			return;
-		}
-
 		setNewAvatarSource(`/avatar/%40${username}`);
 		setAvatarObj('reset');
 	};

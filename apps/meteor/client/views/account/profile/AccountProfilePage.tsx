@@ -10,9 +10,10 @@ import {
 	useEndpoint,
 	useTranslation,
 	useSetting,
+	useUserAvatarPath,
 } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import ConfirmOwnerChangeModal from '../../../components/ConfirmOwnerChangeModal';
@@ -27,6 +28,7 @@ const AccountProfilePage = (): ReactElement => {
 	const t = useTranslation();
 	const user = useUser();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const getUserAvatarPath = useUserAvatarPath();
 
 	const setModal = useSetModal();
 	const logout = useLogout();
@@ -35,6 +37,7 @@ const AccountProfilePage = (): ReactElement => {
 	const erasureType = useSetting('Message_ErasureType');
 	const allowDeleteOwnAccount = useSetting('Accounts_AllowDeleteOwnAccount');
 	const { hasLocalPassword } = useAllowPasswordChange();
+	const [checkProfileImage, setCheckProfileImage] = useState<boolean>(false);
 
 	const methods = useForm({
 		defaultValues: getProfileInitialValues(user),
@@ -44,7 +47,21 @@ const AccountProfilePage = (): ReactElement => {
 	const {
 		reset,
 		formState: { isDirty, isSubmitting },
+		watch,
 	} = methods;
+
+	const { avatar } = watch();
+	const username = user?.username;
+	const etag = user?.avatarETag;
+
+	useEffect(() => {
+		if (avatar === 'reset') {
+			const url = getUserAvatarPath(username || '', etag);
+			if (url === `/avatar/${username}`) {
+				setCheckProfileImage(true);
+			}
+		} else setCheckProfileImage(false);
+	}, [avatar, getUserAvatarPath, username, etag]);
 
 	const logoutOtherClients = useEndpoint('POST', '/v1/users.logoutOtherClients');
 	const deleteOwnAccount = useEndpoint('POST', '/v1/users.deleteOwnAccount');
@@ -142,7 +159,7 @@ const AccountProfilePage = (): ReactElement => {
 						form={profileFormId}
 						data-qa='AccountProfilePageSaveButton'
 						primary
-						disabled={!isDirty || loggingOut}
+						disabled={checkProfileImage || !isDirty || loggingOut}
 						loading={isSubmitting}
 						type='submit'
 					>
