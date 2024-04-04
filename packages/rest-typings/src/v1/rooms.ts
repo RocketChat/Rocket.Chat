@@ -130,6 +130,7 @@ type RoomsCreateDiscussionProps = {
 	users?: IUser['username'][];
 	encrypted?: boolean;
 	reply?: string;
+	topic?: string;
 };
 
 const RoomsCreateDiscussionSchema = {

@@ -37,7 +37,7 @@ export const useHistoryList = (
 			const { history, total } = await getHistory({
 				...(options.filter && { searchText: options.filter }),
 				closedChatsOnly: 'true',
-				servedChatsOnly: 'true',
+				servedChatsOnly: 'false',
 				offset: start,
 				count: end + start,
 			});

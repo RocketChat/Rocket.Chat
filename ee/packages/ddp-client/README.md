@@ -77,10 +77,11 @@ Rocket.Chat uses websockets as to provide realtime data. You can subscribe to pu
 Below is an example of subscribing to the room-messages publication, which receives message updates from a room:
 ```ts
 const messages = new Map([]);
-const stream = sdk.stream('room-messages', roomId,  (args)  =>  {
-	setMessages((messages)  =>  {
-	messages.set(args._id, args);
-	return  new  Map(messages);
+const stream = sdk.stream('room-messages', roomId, (args) => {
+    setMessages((messages) => {
+       messages.set(args._id, args);
+       return new Map(messages);
+    });
 });
 
 // Stop the stream when you're done

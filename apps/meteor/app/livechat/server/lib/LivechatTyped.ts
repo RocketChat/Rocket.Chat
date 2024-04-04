@@ -1,6 +1,7 @@
 import dns from 'dns';
 import * as util from 'util';
 
+import { Apps, AppEvents } from '@rocket.chat/apps';
 import { Message, VideoConf, api, Omnichannel } from '@rocket.chat/core-services';
 import type {
 	IOmnichannelRoom,
@@ -33,7 +34,6 @@ import {
 	LivechatDepartmentAgents,
 	ReadReceipts,
 	Rooms,
-	Settings,
 	LivechatCustomField,
 } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
@@ -43,7 +43,6 @@ import moment from 'moment-timezone';
 import type { Filter, FindCursor, UpdateFilter } from 'mongodb';
 import UAParser from 'ua-parser-js';
 
-import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { i18n } from '../../../../server/lib/i18n';
@@ -330,8 +329,8 @@ class LivechatClass {
 			 * @deprecated the `AppEvents.ILivechatRoomClosedHandler` event will be removed
 			 * in the next major version of the Apps-Engine
 			 */
-			void Apps.getBridges()?.getListenerBridge().livechatEvent(AppEvents.ILivechatRoomClosedHandler, newRoom);
-			void Apps.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomClosed, newRoom);
+			void Apps?.getBridges()?.getListenerBridge().livechatEvent(AppEvents.ILivechatRoomClosedHandler, newRoom);
+			void Apps?.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomClosed, newRoom);
 		});
 		if (process.env.TEST_MODE) {
 			await callbacks.run('livechat.closeRoom', {
@@ -1096,9 +1095,7 @@ class LivechatClass {
 	}
 
 	async getInitSettings() {
-		const rcSettings: Record<string, string | number | any> = {};
-
-		await Settings.findNotHiddenPublic([
+		const validSettings = [
 			'Livechat_title',
 			'Livechat_title_color',
 			'Livechat_enable_message_character_limit',
@@ -1128,11 +1125,20 @@ class LivechatClass {
 			'Livechat_data_processing_consent_text',
 			'Livechat_show_agent_info',
 			'Livechat_clear_local_storage_when_chat_ended',
-		]).forEach((setting) => {
-			rcSettings[setting._id] = setting.value;
-		});
+			'Livechat_history_monitor_type',
+			'Livechat_hide_system_messages',
+			'Livechat_widget_position',
+			'Livechat_background',
+			'Assets_livechat_widget_logo',
+			'Livechat_hide_watermark',
+		] as const;
 
-		rcSettings.Livechat_history_monitor_type = settings.get('Livechat_history_monitor_type');
+		type SettingTypes = (typeof validSettings)[number] | 'Livechat_Show_Connecting';
+
+		const rcSettings = validSettings.reduce<Record<SettingTypes, string | boolean>>((acc, setting) => {
+			acc[setting] = settings.get(setting);
+			return acc;
+		}, {} as any);
 
 		rcSettings.Livechat_Show_Connecting = this.showConnecting();
 
@@ -1420,7 +1426,7 @@ class LivechatClass {
 		const ret = await LivechatVisitors.saveGuestById(_id, updateData);
 
 		setImmediate(() => {
-			void Apps.triggerEvent(AppEvents.IPostLivechatGuestSaved, _id);
+			void Apps?.triggerEvent(AppEvents.IPostLivechatGuestSaved, _id);
 		});
 
 		return ret;
@@ -1682,6 +1688,14 @@ class LivechatClass {
 		return false;
 	}
 
+	async afterAgentUserActivated(user: IUser) {
+		if (!user.roles.includes('livechat-agent')) {
+			throw new Error('invalid-user-role');
+		}
+		await Users.setOperator(user._id, true);
+		callbacks.runAsync('livechat.onNewAgentCreated', user._id);
+	}
+
 	async addManager(username: string) {
 		check(username, String);
 
@@ -1778,7 +1792,7 @@ class LivechatClass {
 		await LivechatRooms.saveRoomById(roomData);
 
 		setImmediate(() => {
-			void Apps.triggerEvent(AppEvents.IPostLivechatRoomSaved, roomData._id);
+			void Apps?.triggerEvent(AppEvents.IPostLivechatRoomSaved, roomData._id);
 		});
 
 		if (guestData?.name?.trim().length) {

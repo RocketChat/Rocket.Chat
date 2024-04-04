@@ -42,7 +42,6 @@ const ModerationConsolePage = ({ tab = 'messages', onSelectTab }: ModerationCons
 		<Page flexDirection='row'>
 			<Page>
 				<PageHeader title={t('Moderation')} />
-
 				<Tabs>
 					<TabsItem selected={tab === 'messages'} onClick={handleTabClick('messages')}>
 						{t('Reported_Messages')}

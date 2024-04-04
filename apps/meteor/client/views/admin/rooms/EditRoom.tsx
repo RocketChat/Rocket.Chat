@@ -86,7 +86,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 		canViewReactWhenReadOnly,
 	} = useEditAdminRoomPermissions(room);
 
-	const { roomType, readOnly, archived } = watch();
+	const { roomType, readOnly, archived, isDefault } = watch();
 
 	const changeArchiving = archived !== !!room.archived;
 
@@ -182,7 +182,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 							<Field>
 								<FieldLabel htmlFor={ownerField}>{t('Owner')}</FieldLabel>
 								<FieldRow>
-									<TextInput id={ownerField} readOnly value={room.u?.username} />
+									<TextInput id={ownerField} name='roomOwner' readOnly value={room.u?.username} />
 								</FieldRow>
 							</Field>
 						)}
@@ -324,7 +324,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 							name='favorite'
 							control={control}
 							render={({ field: { value, ...field } }) => (
-								<ToggleSwitch id={favoriteField} {...field} disabled={isDeleting} checked={value} />
+								<ToggleSwitch id={favoriteField} {...field} disabled={isDeleting || !isDefault} checked={value} />
 							)}
 						/>
 					</FieldRow>
