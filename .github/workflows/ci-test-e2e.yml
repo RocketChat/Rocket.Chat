@@ -234,6 +234,7 @@ jobs:
           REPORTER_ROCKETCHAT_RUN: ${{ github.run_number }}
           REPORTER_ROCKETCHAT_BRANCH: ${{ github.ref }}
           REPORTER_ROCKETCHAT_DRAFT: ${{ github.event.pull_request.draft }}
+          REPORTER_ROCKETCHAT_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
           QASE_REPORT: ${{ github.ref == 'refs/heads/develop' && 'true' || '' }}
           CI: true
