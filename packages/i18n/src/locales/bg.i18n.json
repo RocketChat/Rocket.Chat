@@ -2099,7 +2099,6 @@
   "Room_default_change_to_private_will_be_default_no_more": "Това е канал по подразбиране и ако го промените на частна група, той вече няма да бъде канал по подразбиране. Искаш ли да продължиш?",
   "Room_description_changed_successfully": "Описание на стаята се промени успешно",
   "Room_has_been_archived": "Стаята е архивирана",
-  "Room_has_been_deleted": "Стаята е изтрита",
   "Room_has_been_unarchived": "Стаята е деархивирана",
   "Room_Info": "Информация за стаята",
   "room_is_blocked": "Тази стая е блокирана",
