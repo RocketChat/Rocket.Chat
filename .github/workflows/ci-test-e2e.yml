@@ -159,6 +159,9 @@ jobs:
           echo "DOCKER_TAG: $DOCKER_TAG"
           echo "LOWERCASE_REPOSITORY: $LOWERCASE_REPOSITORY"
 
+          # when we are testing EE, we need to start all the services
+          docker compose -f docker-compose-ci.yml build queue-worker-service omnichannel-transcript-service
+
           docker compose -f docker-compose-ci.yml up -d --no-build
 
       - name: Cache Playwright binaries
