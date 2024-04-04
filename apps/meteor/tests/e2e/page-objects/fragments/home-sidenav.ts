@@ -37,6 +37,18 @@ export class HomeSidenav {
 		return this.page.locator('[placeholder="Search (Ctrl+K)"]').first();
 	}
 
+	get userProfileMenu(): Locator {
+		return this.page.getByRole('button', { name: 'User menu' });
+	}
+
+	get sidebarChannelsList(): Locator {
+		return this.page.getByRole('list', { name: 'Channels' });
+	}
+
+	get sidebarToolbar(): Locator {
+		return this.page.getByRole('toolbar', { name: 'Sidebar actions' });
+	}
+
 	getSidebarItemByName(name: string): Locator {
 		return this.page.locator(`[data-qa="sidebar-item"][aria-label="${name}"]`);
 	}
