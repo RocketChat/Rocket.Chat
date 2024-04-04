@@ -1,3 +1,5 @@
+import fs from 'fs/promises';
+
 import type { Page, Locator, APIResponse } from '@playwright/test';
 
 import { expect } from '../utils/test';
