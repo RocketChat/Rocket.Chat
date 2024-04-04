@@ -1,4 +1,4 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IRole, IUser } from '@rocket.chat/core-typings';
 import { isUserFederated } from '@rocket.chat/core-typings';
 import { Box, Callout } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
@@ -13,9 +13,12 @@ import AdminUserForm from './AdminUserForm';
 type AdminUserFormWithDataProps = {
 	uid: IUser['_id'];
 	onReload: () => void;
+	context: string;
+	roleData: { roles: IRole[] } | undefined;
+	roleError: unknown;
 };
 
-const AdminUserFormWithData = ({ uid, onReload }: AdminUserFormWithDataProps): ReactElement => {
+const AdminUserFormWithData = ({ uid, onReload, context, roleData, roleError }: AdminUserFormWithDataProps): ReactElement => {
 	const t = useTranslation();
 	const { data, isLoading, isError, refetch } = useUserInfoQuery({ userId: uid });
 
@@ -40,7 +43,7 @@ const AdminUserFormWithData = ({ uid, onReload }: AdminUserFormWithDataProps): R
 		);
 	}
 
-	if (data?.user && isUserFederated(data?.user as unknown as IUser)) {
+	if (data?.user && isUserFederated(data?.user)) {
 		return (
 			<Callout m={16} type='danger'>
 				{t('Edit_Federated_User_Not_Allowed')}
@@ -48,7 +51,16 @@ const AdminUserFormWithData = ({ uid, onReload }: AdminUserFormWithDataProps): R
 		);
 	}
 
-	return <AdminUserForm userData={data?.user} onReload={handleReload} />;
+	return (
+		<AdminUserForm
+			userData={data?.user}
+			onReload={onReload}
+			context={context}
+			refetchUserFormData={handleReload}
+			roleData={roleData}
+			roleError={roleError}
+		/>
+	);
 };
 
 export default AdminUserFormWithData;

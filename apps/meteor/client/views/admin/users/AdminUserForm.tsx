@@ -52,7 +52,7 @@ type AdminUserFormProps = {
 	roleError: unknown;
 };
 
-export type userFormProps = Omit<UserCreateParamsPOST & { avatar: AvatarObject; passwordConfirmation: string }, 'fields'>;
+export type UserFormProps = Omit<UserCreateParamsPOST & { avatar: AvatarObject; passwordConfirmation: string }, 'fields'>;
 
 const getInitialValue = ({
 	data,
@@ -64,7 +64,7 @@ const getInitialValue = ({
 	defaultUserRoles?: IUser['roles'];
 	isSmtpEnabled?: boolean;
 	isNewUserPage?: boolean;
-}): userFormProps => ({
+}): UserFormProps => ({
 	roles: data?.roles ?? defaultUserRoles,
 	name: data?.name ?? '',
 	password: '',
@@ -151,7 +151,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 		},
 	});
 
-	const handleSaveUser = useMutableCallback(async (userFormPayload: userFormProps) => {
+	const handleSaveUser = useMutableCallback(async (userFormPayload: UserFormProps) => {
 		const { avatar, passwordConfirmation, ...userFormData } = userFormPayload;
 
 		if (!isNewUserPage && userData?._id) {
