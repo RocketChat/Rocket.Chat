@@ -324,7 +324,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			// eslint-disable-next-line @typescript-eslint/naming-convention
-			const { prid, pmid, reply, t_name, users, encrypted } = this.bodyParams;
+			const { prid, pmid, reply, t_name, users, encrypted, topic } = this.bodyParams;
 			if (!prid) {
 				return API.v1.failure('Body parameter "prid" is required.');
 			}
@@ -346,6 +346,7 @@ API.v1.addRoute(
 				reply,
 				users: users?.filter(isTruthy) || [],
 				encrypted,
+				topic,
 			});
 
 			return API.v1.success({ discussion });
