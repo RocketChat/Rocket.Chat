@@ -1,3 +1,4 @@
+import { Apps, AppEvents } from '@rocket.chat/apps';
 import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
 import { api, Message, Omnichannel } from '@rocket.chat/core-services';
 import type {
@@ -30,7 +31,6 @@ import {
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 import { validateEmail as validatorFunc } from '../../../../lib/emailValidator';
 import { i18n } from '../../../../server/lib/i18n';
@@ -118,7 +118,6 @@ export const createLivechatRoom = async (
 
 	const roomId = (await Rooms.insertOne(room)).insertedId;
 
-	void Apps.triggerEvent(AppEvents.IPostLivechatRoomStarted, room);
 	await callbacks.run('livechat.newRoom', room);
 
 	await sendMessage(guest, { t: 'livechat-started', msg: '', groupable: false }, room);
@@ -274,7 +273,7 @@ export const removeAgentFromSubscription = async (rid: string, { _id, username }
 	await Message.saveSystemMessage('ul', rid, username || '', { _id: user._id, username: user.username, name: user.name });
 
 	setImmediate(() => {
-		void Apps.triggerEvent(AppEvents.IPostLivechatAgentUnassigned, { room, user });
+		void Apps?.triggerEvent(AppEvents.IPostLivechatAgentUnassigned, { room, user });
 	});
 };
 
@@ -453,7 +452,7 @@ export const forwardRoomToAgent = async (room: IOmnichannelRoom, transferData: T
 		}
 
 		setImmediate(() => {
-			void Apps.triggerEvent(AppEvents.IPostLivechatRoomTransferred, {
+			void Apps?.triggerEvent(AppEvents.IPostLivechatRoomTransferred, {
 				type: LivechatTransferEventType.AGENT,
 				room: rid,
 				from: oldServedBy?._id,
@@ -483,7 +482,7 @@ export const updateChatDepartment = async ({
 	]);
 
 	setImmediate(() => {
-		void Apps.triggerEvent(AppEvents.IPostLivechatRoomTransferred, {
+		void Apps?.triggerEvent(AppEvents.IPostLivechatRoomTransferred, {
 			type: LivechatTransferEventType.DEPARTMENT,
 			room: rid,
 			from: oldDepartmentId,

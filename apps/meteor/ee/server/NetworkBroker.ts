@@ -71,12 +71,12 @@ export class NetworkBroker implements IBroker {
 		return this.broker.call(method, data);
 	}
 
-	destroyService(instance: IServiceClass): void {
+	async destroyService(instance: IServiceClass): Promise<void> {
 		const name = instance.getName();
 		if (!name) {
 			return;
 		}
-		void this.broker.destroyService(name);
+		await this.broker.destroyService(name);
 		instance.removeAllListeners();
 	}
 

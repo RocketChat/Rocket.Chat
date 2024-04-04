@@ -50,10 +50,12 @@ export const MessageListItem = ({
 				<Box
 					ref={ref}
 					data-id={message.ts}
-					data-time={new Date(message.ts)
-						.toISOString()
-						.replaceAll(/[-T:.]/g, '')
-						.substring(0, 8)}
+					{...(newDay && {
+						'data-time': new Date(message.ts)
+							.toISOString()
+							.replaceAll(/[-T:.]/g, '')
+							.substring(0, 8),
+					})}
 				>
 					<MessageDivider unreadLabel={showUnreadDivider ? t('Unread_Messages').toLowerCase() : undefined}>
 						{newDay && (
