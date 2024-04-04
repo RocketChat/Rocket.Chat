@@ -30,6 +30,7 @@ export default {
 				branch: process.env.REPORTER_ROCKETCHAT_BRANCH,
 				run: Number(process.env.REPORTER_ROCKETCHAT_RUN),
 				draft: process.env.REPORTER_ROCKETCHAT_DRAFT === 'true',
+				headSha: process.env.REPORTER_ROCKETCHAT_HEAD_SHA,
 			},
 		],
 		[

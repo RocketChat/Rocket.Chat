@@ -12,12 +12,15 @@ class RocketChatReporter implements Reporter {
 
 	private run: number;
 
-	constructor(options: { url: string; apiKey: string; branch: string; draft: boolean; run: number }) {
+	private headSha: string;
+
+	constructor(options: { url: string; apiKey: string; branch: string; draft: boolean; run: number; headSha: string }) {
 		this.url = options.url;
 		this.apiKey = options.apiKey;
 		this.branch = options.branch;
 		this.draft = options.draft;
 		this.run = options.run;
+		this.headSha = options.headSha;
 	}
 
 	onTestEnd(test: TestCase, result: TestResult) {
@@ -35,6 +38,7 @@ class RocketChatReporter implements Reporter {
 			branch: this.branch,
 			draft: this.draft,
 			run: this.run,
+			headSha: this.headSha,
 		};
 		console.log(`Sending test result to Rocket.Chat: ${JSON.stringify(payload)}`);
 		return fetch(this.url, {
