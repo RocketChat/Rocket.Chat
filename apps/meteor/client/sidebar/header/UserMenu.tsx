@@ -28,7 +28,6 @@ const UserMenu = ({ user }: { user: IUser }) => {
 					selectionMode='multiple'
 					sections={sections}
 					title={t('User_menu')}
-					data-qa='sidebar-avatar-button'
 					onAction={handleAction}
 					isOpen={isOpen}
 					onOpenChange={setIsOpen}
@@ -42,7 +41,6 @@ const UserMenu = ({ user }: { user: IUser }) => {
 					selectionMode='multiple'
 					sections={sections}
 					title={t('User_menu')}
-					data-qa='sidebar-avatar-button'
 					onAction={handleAction}
 					isOpen={isOpen}
 					onOpenChange={setIsOpen}
