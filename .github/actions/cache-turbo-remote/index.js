@@ -21,26 +21,25 @@ files.map((file) => {
 		let form = new FormData();
 		form.append('file', fs.createReadStream('./test/payload/id-document.png'));
 
-		https.request(
-			{
-				hostname: TURBOAPI,
-				path: `/v8/artifacts/${hash}`,
-				method: 'PUT',
-				headers: {
-					'Content-Type': 'application/octet-stream',
-					'authorization': `Bearer ${TURBOAPIKEY}`,
-				},
+		const req = https.request({
+			hostname: TURBOAPI,
+			path: `/v8/artifacts/${hash}`,
+			method: 'PUT',
+			headers: {
+				...form.getHeaders(),
+				authorization: `Bearer ${TURBOAPIKEY}`,
 			},
-			(req) => {
-				req.on('error', (e) => {
-					console.log(`Error uploading ${file}: ${e}`);
-					reject(e);
-				});
-				req.on('end', () => {
-					console.log(`Uploaded ${file}`);
-					resolve();
-				});
-			},
-		);
+		});
+
+		req.on('error', (e) => {
+			console.log(`Error uploading ${file}: ${e}`);
+			reject(e);
+		});
+		req.on('end', () => {
+			console.log(`Uploaded ${file}`);
+			resolve();
+		});
+
+		form.pipe(req);
 	});
 });
