@@ -1,4 +1,4 @@
-import { useRouter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useRouter, useToastMessageDispatch, useUserId } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import { useEffect } from 'react';
 
@@ -12,15 +12,22 @@ const SAMLLoginRoute = () => {
 			if (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
-
-			router.navigate(
-				{
-					pathname: '/home',
-				},
-				{ replace: true },
-			);
 		});
 	}, [dispatchToastMessage, router]);
+
+	const userId = useUserId();
+	useEffect(() => {
+		if (!userId) {
+			return;
+		}
+
+		router.navigate(
+			{
+				pathname: '/home',
+			},
+			{ replace: true },
+		);
+	}, [userId, router]);
 
 	return null;
 };
