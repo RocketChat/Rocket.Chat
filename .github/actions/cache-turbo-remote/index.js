@@ -2,24 +2,20 @@
 
 const { TURBOAPI = process.env.TURBOAPI, TURBOAPIKEY = process.env.TURBOREMOTEAPIKEY } = process.env;
 
-console.log(`TURBOAPI: ${TURBOAPI}`);
-
 const fs = require('fs');
 const FormData = require('form-data');
 const files = fs.readdirSync('./node_modules/.cache/turbo');
 
+console.log(`Uploading ${files.length} files to remote cache...`);
+
 const https = require('https');
 
-// send files to remote cache
-files.map((file) => {
+const updateFile = (path) => {
 	new Promise((resolve, reject) => {
-		const path = `./node_modules/.cache/turbo/${file}`;
-
-		const [hash] = file.split('.');
-		console.log(`Uploading ${hash}...`);
+		const [hash] = path.split('.');
+		console.log(`Uploading  ${path} ${hash}...`);
 
 		let form = new FormData();
-		form.append('file', fs.createReadStream(path));
 
 		const req = https.request({
 			hostname: TURBOAPI,
@@ -36,10 +32,23 @@ files.map((file) => {
 			reject(e);
 		});
 		req.on('end', () => {
-			console.log(`Uploaded ${file}`);
+			console.log(`Uploaded ${path}`);
 			resolve();
 		});
 
-		form.pipe(req);
+		req.on('finish', () => {
+			console.log(`finish Uploaded ${path}`);
+			resolve();
+		});
+
+		fs.createReadStream(path).pipe(req);
 	});
-});
+};
+
+files.map(
+	(file) =>
+		new Promise((resolve, reject) => {
+			const path = `./node_modules/.cache/turbo/${file}`;
+			updateFile(path);
+		}),
+);
