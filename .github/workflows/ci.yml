@@ -162,6 +162,9 @@ jobs:
       - name: Build Rocket.Chat Packages
         run: yarn build
 
+      - name: Cache Turbo Remote
+        uses: ./github/actions/cache-turbo-remote
+
   build:
     name: 📦 Meteor Build - coverage
     needs: [release-versions, packages-build]
