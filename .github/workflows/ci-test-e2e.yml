@@ -151,7 +151,7 @@ jobs:
           MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
         run: |
           # when we are testing CE, we only need to start the rocketchat container
-          docker compose -f docker-compose-ci.yml up -d --no-build rocketchat
+          docker compose -f docker-compose-ci.yml up -d rocketchat
 
       - name: Start containers for EE
         if: inputs.release == 'ee'
