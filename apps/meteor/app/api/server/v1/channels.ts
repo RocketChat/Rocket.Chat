@@ -1,5 +1,5 @@
 import { Team, Room } from '@rocket.chat/core-services';
-import type { IRoom, ISubscription, IUser, RoomType } from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription, IUser, RoomType, IUpload } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
 import {
 	isChannelsAddAllProps,
