@@ -34,7 +34,7 @@
 		"extends": "../../package.json"
 	},
 	"dependencies": {
-		"@rocket.chat/apps-engine": "1.42.0-alpha.619",
+		"@rocket.chat/apps-engine": "^1.42.1",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/icons": "^0.34.0",
 		"@rocket.chat/message-parser": "workspace:^",
