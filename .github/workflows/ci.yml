@@ -163,7 +163,7 @@ jobs:
         run: yarn build
 
       - name: Cache Turbo Remote
-        uses: ./github/actions/cache-turbo-remote
+        uses: ./.github/actions/cache-turbo-remote
 
   build:
     name: 📦 Meteor Build - coverage
