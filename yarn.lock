@@ -9465,6 +9465,7 @@ __metadata:
     query-string: ^7.1.3
     queue-fifo: ^0.2.6
     rc-scrollbars: ^1.1.6
+    re-resizable: ^6.9.9
     react: ~17.0.2
     react-aria: ~3.23.1
     react-docgen-typescript-plugin: ^1.0.5
@@ -34697,6 +34698,16 @@ __metadata:
   bin:
     rc: ./cli.js
   checksum: 2e26e052f8be2abd64e6d1dabfbd7be03f80ec18ccbc49562d31f617d0015fbdbcf0f9eed30346ea6ab789e0fdfe4337f033f8016efdbee0df5354751842080e
+  languageName: node
+  linkType: hard
+
+"re-resizable@npm:^6.9.9":
+  version: 6.9.9
+  resolution: "re-resizable@npm:6.9.9"
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
+  checksum: a2c8bfe86646fb02d5c9c624b1da26f9e6a5e2f552cd96ce4db690588bee6b21177065ce8e98646c6ca0b1a9c4ce233824b75eb346800d8248ac8a87b40f1b28
   languageName: node
   linkType: hard
 

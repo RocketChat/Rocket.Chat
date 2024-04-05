@@ -2390,7 +2390,6 @@
   "Room_default_change_to_private_will_be_default_no_more": "Das ist ein Standardkanal. Die Änderung zu einem privaten Kanal führt dazu, dass er dies nicht mehr ist. Willst Du das?",
   "Room_description_changed_successfully": "Raumbeschreibung erfolgreich geändert",
   "Room_has_been_archived": "Der Raum wurde archiviert",
-  "Room_has_been_deleted": "Der Raum wurde gelöscht",
   "Room_has_been_unarchived": "Der Raum wurde aus dem Archiv geholt",
   "Room_Info": "Rauminformation",
   "room_is_blocked": "Der Raum ist blockiert",
