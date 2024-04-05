@@ -8,7 +8,7 @@ import { addMigration } from '../../lib/migrations';
 addMigration({
 	version: 294,
 	async up() {
-		if (!Apps) {
+		if (!Apps.self) {
 			throw new Error('Apps Orchestrator not registered.');
 		}
 

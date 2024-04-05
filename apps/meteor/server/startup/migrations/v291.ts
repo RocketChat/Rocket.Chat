@@ -12,7 +12,7 @@ addMigration({
 		await Settings.removeById('Apps_Framework_Development_Mode');
 		await Settings.removeById('Apps_Framework_enabled');
 
-		if (!Apps) {
+		if (!Apps.self) {
 			throw new Error('Apps Orchestrator not registered.');
 		}
 
