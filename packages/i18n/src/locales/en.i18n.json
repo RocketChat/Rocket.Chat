@@ -4841,6 +4841,8 @@
   "Show_more": "Show more",
   "Show_name_field": "Show name field",
   "show_offline_users": "show offline users",
+  "Accept_receive_inquiry_no_online_agents": "Allow department to receive forwarded inquiries even when there's no available agents",
+  "Accept_receive_inquiry_no_online_agents_Hint": "This method is effective only with automatic assignment routing methods, and does not apply to Manual Selection.",
   "Show_on_offline_page": "Show on offline page",
   "Show_on_registration_page": "Show on registration page",
   "Show_only_online": "Show Online Only",

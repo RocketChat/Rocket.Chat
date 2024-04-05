@@ -539,10 +539,24 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 		agent = { agentId, username };
 	}
 
-	if (!RoutingManager.getConfig()?.autoAssignAgent || !(await Omnichannel.isWithinMACLimit(room))) {
+	const department = await LivechatDepartment.findOneById<
+		Pick<ILivechatDepartment, 'allowReceiveForwardOffline' | 'fallbackForwardDepartment' | 'name'>
+	>(departmentId, {
+		projection: {
+			allowReceiveForwardOffline: 1,
+			fallbackForwardDepartment: 1,
+			name: 1,
+		},
+	});
+
+	if (
+		!RoutingManager.getConfig()?.autoAssignAgent ||
+		!(await Omnichannel.isWithinMACLimit(room)) ||
+		(department?.allowReceiveForwardOffline && !(await LivechatTyped.checkOnlineAgents(departmentId)))
+	) {
 		logger.debug(`Room ${room._id} will be on department queue`);
 		await LivechatTyped.saveTransferHistory(room, transferData);
-		return RoutingManager.unassignAgent(inquiry, departmentId);
+		return RoutingManager.unassignAgent(inquiry, departmentId, true);
 	}
 
 	// Fake the department to forward the inquiry - Case the forward process does not success
@@ -559,11 +573,6 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 
 	const { servedBy, chatQueued } = roomTaken;
 	if (!chatQueued && oldServedBy && servedBy && oldServedBy._id === servedBy._id) {
-		const department = departmentId
-			? await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'fallbackForwardDepartment' | 'name'>>(departmentId, {
-					projection: { fallbackForwardDepartment: 1, name: 1 },
-			  })
-			: null;
 		if (!department?.fallbackForwardDepartment?.length) {
 			logger.debug(`Cannot forward room ${room._id}. Chat assigned to agent ${servedBy._id} (Previous was ${oldServedBy._id})`);
 			throw new Error('error-no-agents-online-in-department');
