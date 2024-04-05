@@ -55,6 +55,26 @@ test.describe.parallel('administration', () => {
 			await poAdmin.tabs.users.setupSmtpLink.click();
 			await expect(page).toHaveURL('/admin/settings/Email');
 		});
+
+		test('expect to show join default channels option only when creating new users, not when editing users', async () => {
+			const username = faker.internet.userName();
+
+			await poAdmin.tabs.users.btnNewUser.click();
+			await poAdmin.tabs.users.inputName.type(faker.person.firstName());
+			await poAdmin.tabs.users.inputUserName.type(username);
+			await poAdmin.tabs.users.inputEmail.type(faker.internet.email());
+			await poAdmin.tabs.users.checkboxVerified.click();
+			await poAdmin.tabs.users.inputPassword.type('any_password');
+			await expect(poAdmin.tabs.users.userRole).toBeVisible();
+			await expect(poAdmin.tabs.users.joinDefaultChannels).toBeVisible();
+			await poAdmin.tabs.users.btnSave.click();
+
+			await poAdmin.inputSearchUsers.fill(username);
+			await poAdmin.getUserRow(username).click();
+			await poAdmin.btnEdit.click();
+			await expect(poAdmin.tabs.users.inputUserName).toHaveValue(username);
+			await expect(poAdmin.tabs.users.joinDefaultChannels).not.toBeVisible();
+		});
 	});
 
 	test.describe('Rooms', () => {
