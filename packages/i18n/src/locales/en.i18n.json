@@ -1110,6 +1110,8 @@
   "Common_Access": "Common Access",
   "Commit": "Commit",
   "Community": "Community",
+  "Contextualbar_resizable": "Contextual bar resizable",
+  "Contextualbar_resizable_description": "Allows you to adjust the size of the contextual bar by simply dragging, giving you instant customization and flexibility",
   "Free_Edition": "Free edition",
   "Composer_not_available_phone_calls": "Messages are not available on phone calls",
   "Condensed": "Condensed",
