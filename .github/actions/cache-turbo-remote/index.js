@@ -10,9 +10,8 @@ console.log(`Uploading ${files.length} files to remote cache...`);
 
 const https = require('https');
 
-const updateFile = (path) => {
+const updateFile = (path, hash) => {
 	new Promise((resolve, reject) => {
-		const [hash] = path.split('.');
 		console.log(`Uploading  ${path} ${hash}...`);
 
 		let form = new FormData();
@@ -48,7 +47,8 @@ const updateFile = (path) => {
 files.map(
 	(file) =>
 		new Promise((resolve, reject) => {
+			const [hash] = file.split('.');
 			const path = `./node_modules/.cache/turbo/${file}`;
-			updateFile(path);
+			updateFile(path, hash);
 		}),
 );
