@@ -438,11 +438,33 @@ type RoomsGetDiscussionsProps = PaginatedRequest<BaseRoomsProps>;
 
 export type RoomsImagesProps = {
 	roomId: string;
-	startingFromId: string;
+	startingFromId?: string;
 	count?: number;
 	offset?: number;
 };
-const roomsImagesPropsSchema = {};
+const roomsImagesPropsSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+		startingFromId: {
+			type: 'string',
+			nullable: true,
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
 export const isRoomsImagesProps = ajv.compile<RoomsImagesProps>(roomsImagesPropsSchema);
 
 export type RoomsEndpoints = {
