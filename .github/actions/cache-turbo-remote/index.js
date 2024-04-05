@@ -2,6 +2,8 @@
 
 const { TURBOAPI = process.env.TURBOAPI, TURBOAPIKEY = process.env.TURBOREMOTEAPIKEY } = process.env;
 
+console.log(`TURBOAPI: ${TURBOAPI}`);
+
 const fs = require('fs');
 const FormData = require('form-data');
 const files = fs.readdirSync('./node_modules/.cache/turbo');
