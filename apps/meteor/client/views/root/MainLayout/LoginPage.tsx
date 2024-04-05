@@ -12,7 +12,7 @@ const LoginPage = ({ defaultRoute, children }: { defaultRoute?: LoginRoutes; chi
 	const iframeLoginUrl = useIframeLogin();
 
 	if (iframeLoginUrl) {
-		return <iframe src={iframeLoginUrl} style={{ height: '100%', width: '100%' }} />;
+		return <iframe title='login-iframe' src={iframeLoginUrl} style={{ height: '100%', width: '100%' }} />;
 	}
 
 	return (

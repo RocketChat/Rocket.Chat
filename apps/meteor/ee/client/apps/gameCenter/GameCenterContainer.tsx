@@ -28,7 +28,7 @@ const GameCenterContainer = ({ handleClose, handleBack, game }: IGameCenterConta
 				{handleClose && <ContextualbarClose onClick={handleClose} />}
 			</ContextualbarHeader>
 			<ContextualbarContent pb={16}>
-				<iframe style={{ position: 'absolute', width: '95%', height: '80%' }} src={game.url}></iframe>
+				<iframe title='gameCenter-iframe' style={{ position: 'absolute', width: '95%', height: '80%' }} src={game.url}></iframe>
 			</ContextualbarContent>
 		</>
 	);

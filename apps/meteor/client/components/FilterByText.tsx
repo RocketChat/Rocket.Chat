@@ -8,7 +8,6 @@ type FilterByTextCommonProps = {
 	placeholder?: string;
 	inputRef?: () => void;
 	onChange: (filter: { text: string }) => void;
-	autoFocus?: boolean;
 };
 
 type FilterByTextPropsWithButton = FilterByTextCommonProps & {
@@ -22,7 +21,7 @@ type FilterByTextProps = FilterByTextCommonProps | FilterByTextPropsWithButton;
 const isFilterByTextPropsWithButton = (props: any): props is FilterByTextPropsWithButton =>
 	'displayButton' in props && props.displayButton === true;
 
-const FilterByText = ({ placeholder, onChange: setFilter, inputRef, children, autoFocus, ...props }: FilterByTextProps): ReactElement => {
+const FilterByText = ({ placeholder, onChange: setFilter, inputRef, children, ...props }: FilterByTextProps): ReactElement => {
 	const t = useTranslation();
 
 	const [text, setText] = useState('');
@@ -48,7 +47,6 @@ const FilterByText = ({ placeholder, onChange: setFilter, inputRef, children, au
 					addon={<Icon name='magnifier' size='x20' />}
 					onChange={handleInputChange}
 					value={text}
-					autoFocus={autoFocus}
 					flexGrow={2}
 					minWidth='x220'
 				/>
