@@ -19,7 +19,7 @@ files.map((file) => {
 		console.log(`Uploading ${hash}...`);
 
 		let form = new FormData();
-		form.append('file', fs.createReadStream('./test/payload/id-document.png'));
+		form.append('file', fs.createReadStream(path));
 
 		const req = https.request({
 			hostname: TURBOAPI,
