@@ -1,3 +1,4 @@
+import { Apps, AppEvents } from '@rocket.chat/apps';
 import { Message, Omnichannel } from '@rocket.chat/core-services';
 import type {
 	ILivechatInquiryRecord,
@@ -16,7 +17,6 @@ import { LivechatInquiry, LivechatRooms, Subscriptions, Rooms, Users } from '@ro
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
 import {
@@ -46,7 +46,7 @@ type Routing = {
 		options?: { clientAction?: boolean; forwardingToDepartment?: { oldDepartmentId?: string; transferData?: any } },
 	): Promise<(IOmnichannelRoom & { chatQueued?: boolean }) | null | void>;
 	assignAgent(inquiry: InquiryWithAgentInfo, agent: SelectedAgent): Promise<InquiryWithAgentInfo>;
-	unassignAgent(inquiry: ILivechatInquiryRecord, departmentId?: string): Promise<boolean>;
+	unassignAgent(inquiry: ILivechatInquiryRecord, departmentId?: string, shouldQueue?: boolean): Promise<boolean>;
 	takeInquiry(
 		inquiry: Omit<
 			ILivechatInquiryRecord,
@@ -154,11 +154,11 @@ export const RoutingManager: Routing = {
 		await dispatchAgentDelegated(rid, agent.agentId);
 		logger.debug(`Agent ${agent.agentId} assigned to inquriy ${inquiry._id}. Instances notified`);
 
-		void Apps.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatAgentAssigned, { room, user });
+		void Apps.self?.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatAgentAssigned, { room, user });
 		return inquiry;
 	},
 
-	async unassignAgent(inquiry, departmentId) {
+	async unassignAgent(inquiry, departmentId, shouldQueue = false) {
 		const { rid, department } = inquiry;
 		const room = await LivechatRooms.findOneById(rid);
 
@@ -180,6 +180,10 @@ export const RoutingManager: Routing = {
 		}
 
 		const { servedBy } = room;
+
+		if (shouldQueue) {
+			await LivechatInquiry.queueInquiry(inquiry._id);
+		}
 
 		if (servedBy) {
 			await LivechatRooms.removeAgentByRoomId(rid);
