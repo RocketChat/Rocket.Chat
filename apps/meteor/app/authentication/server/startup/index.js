@@ -92,28 +92,28 @@ Meteor.startup(() => {
 	});
 });
 
-Accounts.emailTemplates.verifyEmail.html = function(userModel, url) {
+Accounts.emailTemplates.verifyEmail.html = function (userModel, url) {
 	const name = safeHtmlDots(userModel.name);
 
 	return Mailer.replace(verifyEmailTemplate, { Verification_Url: url, name });
 };
 
-Accounts.emailTemplates.verifyEmail.subject = function() {
+Accounts.emailTemplates.verifyEmail.subject = function () {
 	const subject = settings.get('Verification_Email_Subject');
 	return Mailer.replace(subject || '');
 };
 
-Accounts.urls.resetPassword = function(token) {
+Accounts.urls.resetPassword = function (token) {
 	return Meteor.absoluteUrl(`reset-password/${token}`);
 };
 
-Accounts.emailTemplates.resetPassword.subject = function(userModel) {
+Accounts.emailTemplates.resetPassword.subject = function (userModel) {
 	return Mailer.replace(settings.get('Forgot_Password_Email_Subject') || '', {
 		name: userModel.name,
 	});
 };
 
-Accounts.emailTemplates.resetPassword.html = function(userModel, url) {
+Accounts.emailTemplates.resetPassword.html = function (userModel, url) {
 	return Mailer.replacekey(
 		Mailer.replace(resetPasswordTemplate, {
 			name: userModel.name,
@@ -123,12 +123,12 @@ Accounts.emailTemplates.resetPassword.html = function(userModel, url) {
 	);
 };
 
-Accounts.emailTemplates.enrollAccount.subject = function(user) {
+Accounts.emailTemplates.enrollAccount.subject = function (user) {
 	const subject = settings.get('Accounts_Enrollment_Email_Subject');
 	return Mailer.replace(subject, user);
 };
 
-Accounts.emailTemplates.enrollAccount.html = function(user = {} /* , url*/) {
+Accounts.emailTemplates.enrollAccount.html = function (user = {} /* , url*/) {
 	return Mailer.replace(enrollAccountTemplate, {
 		name: escapeHTML(user.name),
 		email: user.emails && user.emails[0] && escapeHTML(user.emails[0].address),
@@ -182,7 +182,7 @@ const validateEmailDomain = (user) => {
 	return true;
 };
 
-const onCreateUserAsync = async function(options, user = {}) {
+const onCreateUserAsync = async function (options, user = {}) {
 	if (!options.skipBeforeCreateUserCallback) {
 		await beforeCreateUserCallback.run(options, user);
 	}
@@ -256,13 +256,13 @@ const onCreateUserAsync = async function(options, user = {}) {
 	return user;
 };
 
-Accounts.onCreateUser(function(...args) {
+Accounts.onCreateUser(function (...args) {
 	// Depends on meteor support for Async
 	return Promise.await(onCreateUserAsync.call(this, ...args));
 });
 
 const { insertUserDoc } = Accounts;
-const insertUserDocAsync = async function(options, user) {
+const insertUserDocAsync = async function (options, user) {
 	const globalRoles = new Set();
 
 	if (Match.test(options.globalRoles, [String]) && options.globalRoles.length > 0) {
@@ -363,12 +363,12 @@ const insertUserDocAsync = async function(options, user) {
 	return _id;
 };
 
-Accounts.insertUserDoc = function(...args) {
+Accounts.insertUserDoc = function (...args) {
 	// Depends on meteor support for Async
 	return Promise.await(insertUserDocAsync.call(this, ...args));
 };
 
-const validateLoginAttemptAsync = async function(login) {
+const validateLoginAttemptAsync = async function (login) {
 	login = await callbacks.run('beforeValidateLogin', login);
 
 	if (!(await isValidLoginAttemptByIp(getClientAddress(login.connection)))) {
@@ -435,7 +435,7 @@ const validateLoginAttemptAsync = async function(login) {
 	return true;
 };
 
-Accounts.validateLoginAttempt(function(...args) {
+Accounts.validateLoginAttempt(function (...args) {
 	// Depends on meteor support for Async
 	return Promise.await(validateLoginAttemptAsync.call(this, ...args));
 });
