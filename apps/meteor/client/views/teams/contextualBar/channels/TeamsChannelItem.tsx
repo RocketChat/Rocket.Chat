@@ -1,3 +1,4 @@
+import type { IRoom } from '@rocket.chat/core-typings';
 import {
 	Box,
 	Icon,
@@ -17,9 +18,15 @@ import React, { useState } from 'react';
 
 import { usePreventPropagation } from '../../../../hooks/usePreventPropagation';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
-import RoomActions from './RoomActions';
+import TeamsChannelItemMenu from './TeamsChannelItemMenu';
 
-const TeamsChannelItem = ({ room, onClickView, reload }) => {
+type TeamsChannelItemProps = {
+	room: IRoom;
+	onClickView: (room: IRoom) => void;
+	reload: () => void;
+};
+
+const TeamsChannelItem = ({ room, onClickView, reload }: TeamsChannelItemProps) => {
 	const t = useTranslation();
 	const rid = room._id;
 	const type = room.t;
@@ -37,8 +44,12 @@ const TeamsChannelItem = ({ room, onClickView, reload }) => {
 
 	const onClick = usePreventPropagation();
 
+	if (!room) {
+		return <OptionSkeleton />;
+	}
+
 	return (
-		<Option id={room._id} data-rid={room._id} {...handleMenuEvent} onClick={onClickView}>
+		<Option id={room._id} data-rid={room._id} {...handleMenuEvent} onClick={() => onClickView(room)}>
 			<OptionAvatar>
 				<RoomAvatar room={room} size='x28' />
 			</OptionAvatar>
@@ -57,13 +68,11 @@ const TeamsChannelItem = ({ room, onClickView, reload }) => {
 			</OptionContent>
 			{(canRemoveTeamChannel || canEditTeamChannel || canDeleteTeamChannel) && (
 				<OptionMenu onClick={onClick}>
-					{showButton ? <RoomActions room={room} reload={reload} /> : <IconButton tiny icon='kebab' />}
+					{showButton ? <TeamsChannelItemMenu room={room} reload={reload} /> : <IconButton tiny icon='kebab' />}
 				</OptionMenu>
 			)}
 		</Option>
 	);
 };
 
-export default Object.assign(TeamsChannelItem, {
-	Skeleton: OptionSkeleton,
-});
+export default TeamsChannelItem;
