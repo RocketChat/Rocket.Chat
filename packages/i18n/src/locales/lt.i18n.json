@@ -1327,8 +1327,6 @@
   "Importer_done": "Importavimas baigtas!",
   "Importer_finishing": "Užbaigti importą.",
   "Importer_From_Description": "Importuoja {{from}} duomenis į Rocket.Chat.",
-  "Importer_HipChatEnterprise_BetaWarning": "Atminkite, kad šis importas vis dar vyksta, prašome pranešti apie klaidas, kurios atsiranda \"GitHub\":",
-  "Importer_HipChatEnterprise_Information": "Įkeltas failas turi būti iššifruotas tar.gz, prašome perskaityti dokumentus, kad gautumėte papildomos informacijos:",
   "Importer_import_cancelled": "Importas atšauktas.",
   "Importer_import_failed": "Paleidus importą įvyko klaida.",
   "Importer_importing_channels": "Kanalų importavimas.",

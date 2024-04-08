@@ -9509,7 +9509,6 @@ __metadata:
     supports-color: ~7.2.0
     suretype: ~2.4.1
     swiper: ^9.3.2
-    tar-stream: ^1.6.2
     template-file: ^6.0.1
     textarea-caret: ^3.1.0
     tinykeys: ^1.4.0
@@ -38793,7 +38792,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tar-stream@npm:^1.5.2, tar-stream@npm:^1.6.2":
+"tar-stream@npm:^1.5.2":
   version: 1.6.2
   resolution: "tar-stream@npm:1.6.2"
   dependencies:

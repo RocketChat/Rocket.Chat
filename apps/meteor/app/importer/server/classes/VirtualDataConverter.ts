@@ -47,15 +47,6 @@ export class VirtualDataConverter extends ImportDataConverter {
 		this.clearVirtualData();
 	}
 
-	public async findDMForImportedUsers(...users: Array<string>): Promise<IImportChannel | undefined> {
-		if (!this.useVirtual) {
-			return super.findDMForImportedUsers(...users);
-		}
-
-		// The original method is only used by the hipchat importer so we probably don't need to implement this on the virtual converter.
-		return undefined;
-	}
-
 	public addUserSync(data: IImportUser, options?: Record<string, any>): void {
 		return this.addObjectSync('user', data, options);
 	}

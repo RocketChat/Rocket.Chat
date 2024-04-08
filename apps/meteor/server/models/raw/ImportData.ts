@@ -102,15 +102,4 @@ export class ImportDataRaw extends BaseRaw<IImportRecord> implements IImportData
 
 		return channel?.data?.importIds?.shift();
 	}
-
-	findDMForImportedUsers(...users: Array<string>): Promise<IImportChannelRecord | null> {
-		const query: Filter<IImportRecord> = {
-			'dataType': 'channel',
-			'data.users': {
-				$all: users,
-			},
-		};
-
-		return this.findOne<IImportChannelRecord>(query);
-	}
 }
