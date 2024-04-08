@@ -24,20 +24,20 @@ type MessageContentBodyProps = Pick<MessageWithMdEnforced, 'mentions' | 'channel
 	idx: number;
 };
 
-const MessageContentBody = ({ mentions, channels, md, searchText, urls , idx=0 }: MessageContentBodyProps) => (
+const MessageContentBody = ({ mentions, channels, md, searchText, urls  }: MessageContentBodyProps) => (
 	<MessageBody data-qa-type='message-body' dir='auto'>
 		<Suspense fallback={<Skeleton />}>
 			<GazzodownText channels={channels} mentions={mentions} searchText={searchText}>
 				<>
-					{md.map((item) => (
+				{console.log('md',md)}
+					{md.map((item,index) => (
 						<>
-							{console.log('ursl', urls)}
 							<Markup tokens={[].concat(item as unknown as never)} />
 							{item.value && Array.isArray(item.value) && item.value.some((innerItem) => innerItem.type === 'LINK') && (
 								<>
-								{console.log('urls', [].concat(urls[idx++] as unknown as never))}
-								{console.log('test',urls[0])}
-									<UrlPreviews urls={urls} />
+								{console.log('urls',urls)}
+								{console.log('test',Array(urls[index]))}
+									<UrlPreviews urls={Array(urls[index])} />
 								</>
 							)}
 						</>
