@@ -26,7 +26,7 @@ const replaceCaret = (el: Element) => {
 	const target = findLastTextNode(el);
 	// do not move caret if element was not focused
 	const isTargetFocused = document.activeElement === el;
-	if (target?.nodeValue !== null && isTargetFocused) {
+	if (!!target?.nodeValue && isTargetFocused) {
 		const range = document.createRange();
 		const sel = window.getSelection();
 		range.setStart(target, target.nodeValue.length);
