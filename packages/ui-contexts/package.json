@@ -1,11 +1,11 @@
 {
 	"name": "@rocket.chat/ui-contexts",
-	"version": "4.0.6",
+	"version": "5.0.0-rc.4",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/emitter": "~0.31.25",
-		"@rocket.chat/fuselage-hooks": "^0.33.0",
+		"@rocket.chat/fuselage-hooks": "^0.33.1",
 		"@rocket.chat/i18n": "workspace:~",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@types/jest": "~29.5.7",
@@ -18,7 +18,7 @@
 		"mongodb": "^4.17.2",
 		"react": "~17.0.2",
 		"ts-jest": "~29.1.1",
-		"typescript": "~5.3.2",
+		"typescript": "~5.3.3",
 		"use-sync-external-store": "^1.2.0"
 	},
 	"peerDependencies": {

@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/core-services",
-	"version": "0.3.10",
+	"version": "0.3.11-rc.4",
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.22.20",
@@ -15,7 +15,7 @@
 		"jest": "~29.6.4",
 		"mongodb": "^4.17.2",
 		"prettier": "~2.8.8",
-		"typescript": "~5.3.2"
+		"typescript": "~5.3.3"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
@@ -34,10 +34,10 @@
 		"extends": "../../package.json"
 	},
 	"dependencies": {
-		"@rocket.chat/apps-engine": "^1.41.1",
+		"@rocket.chat/apps-engine": "^1.42.1",
 		"@rocket.chat/core-typings": "workspace:^",
-		"@rocket.chat/icons": "^0.33.0",
-		"@rocket.chat/message-parser": "~0.31.28",
+		"@rocket.chat/icons": "^0.34.0",
+		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/ui-kit": "workspace:~",

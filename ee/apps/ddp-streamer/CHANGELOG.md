@@ -1,5 +1,84 @@
 # @rocket.chat/ddp-streamer
 
+## 0.2.10-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.4
+  - @rocket.chat/rest-typings@6.7.0-rc.4
+  - @rocket.chat/core-services@0.3.11-rc.4
+  - @rocket.chat/model-typings@0.3.7-rc.4
+  - @rocket.chat/ui-contexts@5.0.0-rc.4
+  - @rocket.chat/models@0.0.35-rc.4
+  - @rocket.chat/instance-status@0.0.35-rc.4
+  </details>
+
+## 0.2.10-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.3
+  - @rocket.chat/rest-typings@6.7.0-rc.3
+  - @rocket.chat/core-services@0.3.11-rc.3
+  - @rocket.chat/model-typings@0.3.7-rc.3
+  - @rocket.chat/ui-contexts@5.0.0-rc.3
+  - @rocket.chat/models@0.0.35-rc.3
+  - @rocket.chat/instance-status@0.0.35-rc.3
+  </details>
+
+## 0.2.10-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.2
+  - @rocket.chat/rest-typings@6.7.0-rc.2
+  - @rocket.chat/core-services@0.3.11-rc.2
+  - @rocket.chat/model-typings@0.3.7-rc.2
+  - @rocket.chat/ui-contexts@5.0.0-rc.2
+  - @rocket.chat/models@0.0.35-rc.2
+  - @rocket.chat/instance-status@0.0.35-rc.2
+  </details>
+
+## 0.2.10-rc.1
+
+### Patch Changes
+
+- ([#32085](https://github.com/RocketChat/Rocket.Chat/pull/32085)) Fixed an internal server error when using the backwards compatibility flag to connect to the real time API for listening to all server message notifications.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.1
+  - @rocket.chat/rest-typings@6.7.0-rc.1
+  - @rocket.chat/core-services@0.3.11-rc.1
+  - @rocket.chat/model-typings@0.3.7-rc.1
+  - @rocket.chat/ui-contexts@5.0.0-rc.1
+  - @rocket.chat/models@0.0.35-rc.1
+  - @rocket.chat/instance-status@0.0.35-rc.1
+  </details>
+
+## 0.2.10-rc.0
+
+### Patch Changes
+
+- ([#31833](https://github.com/RocketChat/Rocket.Chat/pull/31833)) Fix web UI not showing users presence updating to offline
+
+- <details><summary>Updated dependencies [b9ef630816, 3eb4dd7f50, d1b1ffe9e5, 0570f6740a, b9e897a8f5, b876e4e0fc, e203c40471]:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.0
+  - @rocket.chat/rest-typings@6.7.0-rc.0
+  - @rocket.chat/model-typings@0.3.7-rc.0
+  - @rocket.chat/core-services@0.3.11-rc.0
+  - @rocket.chat/models@0.0.35-rc.0
+  - @rocket.chat/ui-contexts@5.0.0-rc.0
+  - @rocket.chat/instance-status@0.0.35-rc.0
+  </details>
+
 ## 0.2.9
 
 ### Patch Changes
