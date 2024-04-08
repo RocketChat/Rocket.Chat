@@ -3,11 +3,13 @@ import { Emitter } from '@rocket.chat/emitter';
 import { Random } from '@rocket.chat/random';
 import type { RouterContext, IActionManager } from '@rocket.chat/ui-contexts';
 import type * as UiKit from '@rocket.chat/ui-kit';
+import { t } from 'i18next';
 import type { ContextType } from 'react';
 import { lazy } from 'react';
 
 import * as banners from '../../../client/lib/banners';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
+import { dispatchToastMessage } from '../../../client/lib/toast';
 import { exhaustiveCheck } from '../../../lib/utils/exhaustiveCheck';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { UiKitTriggerTimeoutError } from './UiKitTriggerTimeoutError';
@@ -89,7 +91,8 @@ export class ActionManager implements IActionManager {
 				} finally {
 					switch (userInteraction.type) {
 						case 'viewSubmit':
-							if (!!interaction && interaction.type !== 'errors') this.disposeView(userInteraction.viewId);
+							if (!!interaction && !['errors', 'modal.update', 'contextual_bar.update'].includes(interaction.type))
+								this.disposeView(userInteraction.viewId);
 							break;
 
 						case 'viewClosed':
@@ -98,11 +101,11 @@ export class ActionManager implements IActionManager {
 					}
 				}
 			},
-			{ triggerId, appId },
+			{ triggerId, appId, ...('viewId' in userInteraction ? { viewId: userInteraction.viewId } : {}) },
 		);
 	}
 
-	protected async runWithTimeout<T>(task: () => Promise<T>, details: { triggerId: string; appId: string }) {
+	protected async runWithTimeout<T>(task: () => Promise<T>, details: { triggerId: string; appId: string; viewId?: string }) {
 		this.notifyBusy();
 
 		let timer: ReturnType<typeof setTimeout> | undefined;
@@ -116,6 +119,16 @@ export class ActionManager implements IActionManager {
 			});
 
 			return await Promise.race([taskPromise, timeoutPromise]);
+		} catch (error) {
+			if (error instanceof UiKitTriggerTimeoutError) {
+				dispatchToastMessage({
+					type: 'error',
+					message: t('UIKit_Interaction_Timeout'),
+				});
+				if (details.viewId) {
+					this.disposeView(details.viewId);
+				}
+			}
 		} finally {
 			if (timer) clearTimeout(timer);
 			this.notifyIdle();
