@@ -1,3 +1,4 @@
+import { Apps, AppEvents } from '@rocket.chat/apps';
 import { Roles, Settings, Users } from '@rocket.chat/models';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 import { Accounts } from 'meteor/accounts-base';
@@ -5,7 +6,6 @@ import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { AppEvents, Apps } from '../../../../ee/server/apps/orchestrator';
 import { callbacks } from '../../../../lib/callbacks';
 import { beforeCreateUserCallback } from '../../../../lib/callbacks/beforeCreateUserCallback';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
@@ -350,8 +350,8 @@ const insertUserDocAsync = async function (options, user) {
 
 	if (!options.skipAppsEngineEvent) {
 		// `post` triggered events don't need to wait for the promise to resolve
-		Apps.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: await safeGetMeteorUser() }).catch((e) => {
-			Apps.getRocketChatLogger().error('Error while executing post user created event:', e);
+		Apps.self?.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: await safeGetMeteorUser() }).catch((e) => {
+			Apps.self?.getRocketChatLogger().error('Error while executing post user created event:', e);
 		});
 	}
 
@@ -424,7 +424,7 @@ const validateLoginAttemptAsync = async function (login) {
 	 */
 	if (login.type !== 'resume') {
 		// App IPostUserLoggedIn event hook
-		await Apps.triggerEvent(AppEvents.IPostUserLoggedIn, login.user);
+		await Apps.self?.triggerEvent(AppEvents.IPostUserLoggedIn, login.user);
 	}
 
 	return true;

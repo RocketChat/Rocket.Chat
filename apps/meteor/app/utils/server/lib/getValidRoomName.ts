@@ -6,11 +6,7 @@ import { Meteor } from 'meteor/meteor';
 import { validateName } from '../../../lib/server/functions/validateName';
 import { settings } from '../../../settings/server';
 
-export const getValidRoomName = async (
-	displayName: string,
-	rid = '',
-	options: { allowDuplicates?: boolean; nameValidationRegex?: string } = {},
-) => {
+export const getValidRoomName = async (displayName: string, rid = '', options: { allowDuplicates?: boolean } = {}) => {
 	let slugifiedName = displayName;
 
 	if (settings.get('UI_Allow_room_names_with_special_chars')) {
@@ -36,6 +32,7 @@ export const getValidRoomName = async (
 
 	let nameValidation;
 
+
 	if (options.nameValidationRegex) {
 		nameValidation = new RegExp(options.nameValidationRegex);
 	} else {
@@ -46,6 +43,7 @@ export const getValidRoomName = async (
 		} catch (error) {
 			nameValidation = new RegExp('^[0-9a-zA-Z-_. ]+$');
 		}
+
 	}
 	if (!nameValidation.test(slugifiedName) || !validateName(slugifiedName)) {
 		throw new Meteor.Error('error-invalid-room-name', `${escapeHTML(slugifiedName)} is not a valid room name.`, {

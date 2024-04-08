@@ -11,9 +11,10 @@ import {
 	MessageUsername,
 	MessageNameContainer,
 } from '@rocket.chat/fuselage';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import type { ComponentProps, ReactElement, KeyboardEvent } from 'react';
 import React, { memo } from 'react';
 
 import { MessageTypes } from '../../../../app/ui-utils/client';
@@ -28,8 +29,7 @@ import {
 	useIsSelectedMessage,
 	useCountSelected,
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
-import { useChat } from '../../../views/room/contexts/ChatContext';
-import UserAvatar from '../../avatar/UserAvatar';
+import { useUserCard } from '../../../views/room/contexts/UserCardContext';
 import Attachments from '../content/Attachments';
 import MessageActions from '../content/MessageActions';
 import { useMessageListShowRealName, useMessageListShowUsername } from '../list/MessageListContext';
@@ -37,13 +37,13 @@ import { useMessageListShowRealName, useMessageListShowUsername } from '../list/
 type SystemMessageProps = {
 	message: IMessage;
 	showUserAvatar: boolean;
-};
+} & ComponentProps<typeof MessageSystem>;
 
-const SystemMessage = ({ message, showUserAvatar }: SystemMessageProps): ReactElement => {
+const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps): ReactElement => {
 	const t = useTranslation();
 	const formatTime = useFormatTime();
 	const formatDateAndTime = useFormatDateAndTime();
-	const chat = useChat();
+	const { triggerProps, openUserCard } = useUserCard();
 
 	const showRealName = useMessageListShowRealName();
 	const user: UserPresence = { ...message.u, roles: [], ...useUserData(message.u._id) };
@@ -59,11 +59,14 @@ const SystemMessage = ({ message, showUserAvatar }: SystemMessageProps): ReactEl
 
 	return (
 		<MessageSystem
+			role='listitem'
+			tabIndex={0}
 			onClick={isSelecting ? toggleSelected : undefined}
 			isSelected={isSelected}
 			data-qa-selected={isSelected}
 			data-qa='system-message'
 			data-system-message-type={message.t}
+			{...props}
 		>
 			<MessageSystemLeftContainer>
 				{!isSelecting && showUserAvatar && <UserAvatar username={message.u.username} size='x18' />}
@@ -71,29 +74,21 @@ const SystemMessage = ({ message, showUserAvatar }: SystemMessageProps): ReactEl
 			</MessageSystemLeftContainer>
 			<MessageSystemContainer>
 				<MessageSystemBlock>
-					<MessageNameContainer>
-						<MessageSystemName
-							{...(user.username !== undefined &&
-								chat?.userCard && {
-									onClick: chat?.userCard.open(user.username),
-									style: { cursor: 'pointer' },
-								})}
-						>
-							{getUserDisplayName(user.name, user.username, showRealName)}
-						</MessageSystemName>
+					<MessageNameContainer
+						tabIndex={0}
+						role='button'
+						onClick={(e) => user.username && openUserCard(e, user.username)}
+						onKeyDown={(e: KeyboardEvent<HTMLSpanElement>) => {
+							(e.code === 'Enter' || e.code === 'Space') && openUserCard(e, message.u.username);
+						}}
+						style={{ cursor: 'pointer' }}
+						{...triggerProps}
+					>
+						<MessageSystemName>{getUserDisplayName(user.name, user.username, showRealName)}</MessageSystemName>
 						{showUsername && (
 							<>
 								{' '}
-								<MessageUsername
-									data-username={user.username}
-									{...(user.username !== undefined &&
-										chat?.userCard && {
-											onClick: chat?.userCard.open(user.username),
-											style: { cursor: 'pointer' },
-										})}
-								>
-									@{user.username}
-								</MessageUsername>
+								<MessageUsername data-username={user.username}>@{user.username}</MessageUsername>
 							</>
 						)}
 					</MessageNameContainer>
