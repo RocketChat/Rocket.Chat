@@ -44,7 +44,7 @@ Meteor.methods<ServerMethods>({
 		const unfollowResult = await unfollow({ rid: message.rid, tmid: message.tmid || message._id, uid });
 
 		const isFollowed = false;
-		await Apps?.triggerEvent(AppEvents.IPostMessageFollowed, message, await Meteor.userAsync(), isFollowed);
+		await Apps.self?.triggerEvent(AppEvents.IPostMessageFollowed, message, await Meteor.userAsync(), isFollowed);
 
 		return unfollowResult;
 	},
