@@ -14,7 +14,7 @@ import {
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps, ReactElement, KeyboardEvent } from 'react';
 import React, { memo } from 'react';
 
 import { MessageTypes } from '../../../../app/ui-utils/client';
@@ -29,7 +29,7 @@ import {
 	useIsSelectedMessage,
 	useCountSelected,
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
-import { useChat } from '../../../views/room/contexts/ChatContext';
+import { useUserCard } from '../../../views/room/contexts/UserCardContext';
 import Attachments from '../content/Attachments';
 import MessageActions from '../content/MessageActions';
 import { useMessageListShowRealName, useMessageListShowUsername } from '../list/MessageListContext';
@@ -43,7 +43,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	const t = useTranslation();
 	const formatTime = useFormatTime();
 	const formatDateAndTime = useFormatDateAndTime();
-	const chat = useChat();
+	const { triggerProps, openUserCard } = useUserCard();
 
 	const showRealName = useMessageListShowRealName();
 	const user: UserPresence = { ...message.u, roles: [], ...useUserData(message.u._id) };
@@ -74,29 +74,21 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 			</MessageSystemLeftContainer>
 			<MessageSystemContainer>
 				<MessageSystemBlock>
-					<MessageNameContainer>
-						<MessageSystemName
-							{...(user.username !== undefined &&
-								chat?.userCard && {
-									onClick: (e) => user.username && chat?.userCard.openUserCard(e, user.username),
-									style: { cursor: 'pointer' },
-								})}
-						>
-							{getUserDisplayName(user.name, user.username, showRealName)}
-						</MessageSystemName>
+					<MessageNameContainer
+						tabIndex={0}
+						role='button'
+						onClick={(e) => user.username && openUserCard(e, user.username)}
+						onKeyDown={(e: KeyboardEvent<HTMLSpanElement>) => {
+							(e.code === 'Enter' || e.code === 'Space') && openUserCard(e, message.u.username);
+						}}
+						style={{ cursor: 'pointer' }}
+						{...triggerProps}
+					>
+						<MessageSystemName>{getUserDisplayName(user.name, user.username, showRealName)}</MessageSystemName>
 						{showUsername && (
 							<>
 								{' '}
-								<MessageUsername
-									data-username={user.username}
-									{...(user.username !== undefined &&
-										chat?.userCard && {
-											onClick: (e) => user.username && chat?.userCard.openUserCard(e, user.username),
-											style: { cursor: 'pointer' },
-										})}
-								>
-									@{user.username}
-								</MessageUsername>
+								<MessageUsername data-username={user.username}>@{user.username}</MessageUsername>
 							</>
 						)}
 					</MessageNameContainer>

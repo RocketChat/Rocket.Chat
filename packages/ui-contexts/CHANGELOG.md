@@ -1,5 +1,71 @@
 # @rocket.chat/ui-contexts
 
+## 4.0.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.6
+  - @rocket.chat/rest-typings@6.6.6
+  - @rocket.chat/ddp-client@0.2.19
+  </details>
+
+## 4.0.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [6476aa947c]:</summary>
+
+  - @rocket.chat/ddp-client@0.2.18
+  - @rocket.chat/core-typings@6.6.5
+  - @rocket.chat/rest-typings@6.6.5
+  </details>
+
+## 4.0.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.4
+  - @rocket.chat/rest-typings@6.6.4
+  - @rocket.chat/ddp-client@0.2.17
+  </details>
+
+## 4.0.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.3
+  - @rocket.chat/rest-typings@6.6.3
+  - @rocket.chat/ddp-client@0.2.16
+  </details>
+
+## 4.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [5abac60f19]:</summary>
+
+  - @rocket.chat/ddp-client@0.2.15
+  - @rocket.chat/core-typings@6.6.2
+  - @rocket.chat/rest-typings@6.6.2
+  </details>
+
+## 4.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.1
+  - @rocket.chat/rest-typings@6.6.1
+  - @rocket.chat/ddp-client@0.2.14
+  </details>
+
 ## 4.0.0
 
 ### Minor Changes

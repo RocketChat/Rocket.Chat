@@ -4,7 +4,7 @@ import { useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
 import type { MessageWithMdEnforced } from '../../../lib/parseMessageTextToAstMarkdown';
-import { parseMessageTextToAstMarkdown, removePossibleNullMessageValues } from '../../../lib/parseMessageTextToAstMarkdown';
+import { parseMessageTextToAstMarkdown } from '../../../lib/parseMessageTextToAstMarkdown';
 import { useAutoLinkDomains } from '../../../views/room/MessageList/hooks/useAutoLinkDomains';
 import { useAutoTranslate } from '../../../views/room/MessageList/hooks/useAutoTranslate';
 import { useKatex } from '../../../views/room/MessageList/hooks/useKatex';
@@ -30,6 +30,6 @@ export const useNormalizedMessage = <TMessage extends IMessage>(message: TMessag
 			}),
 		};
 
-		return parseMessageTextToAstMarkdown(removePossibleNullMessageValues(message), parseOptions, autoTranslateOptions);
+		return parseMessageTextToAstMarkdown(message, parseOptions, autoTranslateOptions);
 	}, [showColors, customDomains, katexEnabled, katexDollarSyntaxEnabled, katexParenthesisSyntaxEnabled, message, autoTranslateOptions]);
 };

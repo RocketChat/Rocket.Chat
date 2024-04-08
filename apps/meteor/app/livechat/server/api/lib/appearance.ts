@@ -24,6 +24,10 @@ export async function findAppearance(): Promise<{ appearance: ISetting[] }> {
 				'Livechat_email_field_registration_form',
 				'Livechat_registration_form_message',
 				'Livechat_conversation_finished_text',
+				'Livechat_hide_watermark',
+				'Livechat_background',
+				'Livechat_widget_position',
+				'Livechat_hide_system_messages',
 			],
 		},
 	};

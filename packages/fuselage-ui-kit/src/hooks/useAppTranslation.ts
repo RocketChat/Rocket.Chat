@@ -5,7 +5,7 @@ import { useAppId } from '../contexts/AppIdContext';
 
 export const useAppTranslation = () => {
   const appId = useAppId();
-  const appNs = `app-${appId}`;
+  const appNs = appId.endsWith(`-core`) ? undefined : `app-${appId}`;
 
   useDebugValue(appNs);
 
