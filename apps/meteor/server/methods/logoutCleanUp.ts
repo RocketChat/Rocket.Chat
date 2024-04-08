@@ -1,9 +1,9 @@
+import { AppEvents, Apps } from '@rocket.chat/apps';
 import type { IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { AppEvents, Apps } from '../../ee/server/apps/orchestrator';
 import { afterLogoutCleanUpCallback } from '../../lib/callbacks/afterLogoutCleanUpCallback';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -22,6 +22,6 @@ Meteor.methods<ServerMethods>({
 		});
 
 		// App IPostUserLogout event hook
-		await Apps.triggerEvent(AppEvents.IPostUserLoggedOut, user);
+		await Apps.self?.triggerEvent(AppEvents.IPostUserLoggedOut, user);
 	},
 });
