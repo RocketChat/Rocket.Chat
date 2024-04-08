@@ -838,6 +838,19 @@ describe('LIVECHAT - business hours', function () {
 			expect(latestAgent.statusLivechat).to.be.undefined;
 		});
 
+		it('should verify a newly created agent to be assigned to the default business hour', async () => {
+			const agent = await createUser({ roles: ['user', 'livechat-agent'] });
+			const agentCredentials = await login(agent.username, password);
+
+			const latestAgent: ILivechatAgent = await getMe(agentCredentials as any);
+			expect(latestAgent).to.be.an('object');
+			expect(latestAgent.openBusinessHours).to.be.an('array').of.length(1);
+			expect(latestAgent?.openBusinessHours?.[0]).to.be.equal(defaultBH._id);
+
+			// cleanup
+			await deleteUser(agent);
+		});
+
 		after(async () => {
 			await deleteUser(agent._id);
 		});
