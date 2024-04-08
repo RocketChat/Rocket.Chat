@@ -806,7 +806,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'channels.images',
-	{ authRequired: true, validateParams: isRoomsImagesProps, deprecationVersion: '7.0.0' },
+	{ authRequired: true, validateParams: isRoomsImagesProps, deprecationVersion: '7.0.0', deprecationInfo: 'Use /v1/rooms.images instead' },
 	{
 		async get() {
 			const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'teamId' | 'prid'>>(this.queryParams.roomId, {
