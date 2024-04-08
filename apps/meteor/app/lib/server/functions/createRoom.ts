@@ -198,7 +198,7 @@ export const createRoom = async <T extends RoomType>(
 		_USERNAMES: members,
 	};
 
-	const prevent = await Apps?.triggerEvent(AppEvents.IPreRoomCreatePrevent, tmp).catch((error) => {
+	const prevent = await Apps.self?.triggerEvent(AppEvents.IPreRoomCreatePrevent, tmp).catch((error) => {
 		if (error.name === AppsEngineException.name) {
 			throw new Meteor.Error('error-app-prevented', error.message);
 		}
@@ -210,7 +210,7 @@ export const createRoom = async <T extends RoomType>(
 		throw new Meteor.Error('error-app-prevented', 'A Rocket.Chat App prevented the room creation.');
 	}
 
-	const eventResult = await Apps?.triggerEvent(
+	const eventResult = await Apps.self?.triggerEvent(
 		AppEvents.IPreRoomCreateModify,
 		await Apps.triggerEvent(AppEvents.IPreRoomCreateExtend, tmp),
 	);
@@ -245,7 +245,7 @@ export const createRoom = async <T extends RoomType>(
 		callbacks.runAsync('federation.afterCreateFederatedRoom', room, { owner, originalMemberList: members });
 	}
 
-	void Apps?.triggerEvent(AppEvents.IPostRoomCreate, room);
+	void Apps.self?.triggerEvent(AppEvents.IPostRoomCreate, room);
 	return {
 		rid: room._id, // backwards compatible
 		inserted: true,

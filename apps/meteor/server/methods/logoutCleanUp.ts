@@ -22,6 +22,6 @@ Meteor.methods<ServerMethods>({
 		});
 
 		// App IPostUserLogout event hook
-		await Apps?.triggerEvent(AppEvents.IPostUserLoggedOut, user);
+		await Apps.self?.triggerEvent(AppEvents.IPostUserLoggedOut, user);
 	},
 });
