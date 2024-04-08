@@ -1,5 +1,16 @@
 # @rocket.chat/livechat Change Log
 
+## 1.15.0-rc.4
+
+### Patch Changes
+
+- ([#32135](https://github.com/RocketChat/Rocket.Chat/pull/32135)) Fixes issue causing a desync in different browser windows when a chat is closed and started again
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@5.0.0-rc.4
+  </details>
+
 ## 1.15.0-rc.3
 
 ### Patch Changes
