@@ -2226,7 +2226,7 @@ describe('[Rooms]', function () {
 			testMessageId = message._id;
 		});
 
-		after(async () => deleteRoom({ type: 'c', roomId: testChannel._id }));
+		after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
 
 		it('should fail exporting room as file if dates are incorrectly provided', async () => {
 			return request
@@ -2325,6 +2325,7 @@ describe('[Rooms]', function () {
 		});
 
 		it('should fail exporting room as file if no format is provided', async () => {
+<<<<<<< HEAD
 			return request
 				.post(api('rooms.export'))
 				.set(credentials)
@@ -2343,6 +2344,8 @@ describe('[Rooms]', function () {
 		});
 
 		it('should fail exporting room as file if an invalid format is provided', async () => {
+=======
+>>>>>>> d4c54f6ccb (Apply suggestions from code review)
 			return request
 				.post(api('rooms.export'))
 				.set(credentials)
@@ -2414,7 +2417,7 @@ describe('[Rooms]', function () {
 				});
 		});
 
-		it('should fail exporting room via email if no target users are provided', async () => {
+		it('should fail exporting room via email if target users AND target emails are NOT provided', async () => {
 			return request
 				.post(api('rooms.export'))
 				.set(credentials)
