@@ -6,9 +6,9 @@ import { createClassName } from '../../helpers/createClassName';
 import { parse } from '../../helpers/parse';
 import styles from './styles.scss';
 
-const findLastTextNode = (node: Node): Text | null => {
+const findLastTextNode = (node: Node): Node | null => {
 	if (node.nodeType === Node.TEXT_NODE) {
-		return node as Text;
+		return node;
 	}
 	const children = node.childNodes;
 	for (let i = children.length - 1; i >= 0; i--) {
