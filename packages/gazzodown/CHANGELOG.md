@@ -1,5 +1,60 @@
 # @rocket.chat/gazzodown
 
+## 4.0.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.6
+  - @rocket.chat/ui-contexts@4.0.6
+  - @rocket.chat/ui-client@4.0.6
+  </details>
+
+## 4.0.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@4.0.5
+  - @rocket.chat/ui-client@4.0.5
+  - @rocket.chat/core-typings@6.6.5
+  </details>
+
+## 4.0.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.4
+  - @rocket.chat/ui-contexts@4.0.4
+  - @rocket.chat/ui-client@4.0.4
+  </details>
+
+## 4.0.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.3
+  - @rocket.chat/ui-contexts@4.0.3
+  - @rocket.chat/ui-client@4.0.3
+  </details>
+
+## 4.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@4.0.2
+  - @rocket.chat/ui-client@4.0.2
+  - @rocket.chat/core-typings@6.6.2
+  </details>
+
 ## 4.0.1
 
 ### Patch Changes
