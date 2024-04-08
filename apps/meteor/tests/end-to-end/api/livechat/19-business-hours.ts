@@ -839,17 +839,17 @@ describe('LIVECHAT - business hours', function () {
 		});
 
 		describe('Special Case - Agent created, BH already enabled', () => {
-			let agent: ILivechatAgent;
-			let agentCredentials: IUserCredentialsHeader;
+			let newAgent: ILivechatAgent;
+			let newAgentCredentials: IUserCredentialsHeader;
 			before(async () => {
-				agent = await createUser({ roles: ['user', 'livechat-agent'] });
-				agentCredentials = await login(agent.username, password);
+				newAgent = await createUser({ roles: ['user', 'livechat-agent'] });
+				newAgentCredentials = await login(newAgent.username, password);
 			});
 			after(async () => {
-				await deleteUser(agent);
+				await deleteUser(newAgent);
 			});
 			it('should verify a newly created agent to be assigned to the default business hour', async () => {
-				const latestAgent: ILivechatAgent = await getMe(agentCredentials as any);
+				const latestAgent: ILivechatAgent = await getMe(newAgentCredentials as any);
 				expect(latestAgent).to.be.an('object');
 				expect(latestAgent.openBusinessHours).to.be.an('array').of.length(1);
 				expect(latestAgent?.openBusinessHours?.[0]).to.be.equal(defaultBH._id);
