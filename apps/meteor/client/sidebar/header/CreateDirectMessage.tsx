@@ -1,5 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { Box, Modal, Button, FieldGroup, Field, FieldRow, FieldLabel, FieldError } from '@rocket.chat/fuselage';
+import { Box, Modal, Button, FieldGroup, Field, FieldRow, FieldError, FieldHint } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint, useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
@@ -20,7 +20,7 @@ const CreateDirectMessage = ({ onClose }: { onClose: () => void }) => {
 	const {
 		control,
 		handleSubmit,
-		formState: { isDirty, isSubmitting, isValidating, errors },
+		formState: { isSubmitting, isValidating, errors },
 	} = useForm({ mode: 'onBlur', defaultValues: { users: [] } });
 
 	const mutateDirectMessage = useMutation({
@@ -47,17 +47,14 @@ const CreateDirectMessage = ({ onClose }: { onClose: () => void }) => {
 				<Modal.Close tabIndex={-1} onClick={onClose} />
 			</Modal.Header>
 			<Modal.Content mbe={2}>
-				<Box mbe={24}>{t('Direct_message_creation_description')}</Box>
 				<FieldGroup>
 					<Field>
-						<FieldLabel htmlFor={membersFieldId} required>
-							{t('Members')}
-						</FieldLabel>
+						<Box htmlFor={membersFieldId}>{t('Direct_message_creation_description')}</Box>
 						<FieldRow>
 							<Controller
 								name='users'
 								rules={{
-									required: t('error-the-field-is-required', { field: t('Members') }),
+									required: t('Direct_message_creation_error'),
 									validate: (users) =>
 										users.length + 1 > directMaxUsers
 											? t('error-direct-message-max-user-exceeded', { maxUsers: directMaxUsers })
@@ -71,7 +68,7 @@ const CreateDirectMessage = ({ onClose }: { onClose: () => void }) => {
 										value={value}
 										onBlur={onBlur}
 										id={membersFieldId}
-										aria-describedby={`${membersFieldId}-error`}
+										aria-describedby={`${membersFieldId}-hint ${membersFieldId}-error`}
 										aria-required='true'
 										aria-invalid={Boolean(errors.users)}
 									/>
@@ -83,13 +80,14 @@ const CreateDirectMessage = ({ onClose }: { onClose: () => void }) => {
 								{errors.users.message}
 							</FieldError>
 						)}
+						<FieldHint id={`${membersFieldId}-hint`}>{t('Direct_message_creation_description_hint')}</FieldHint>
 					</Field>
 				</FieldGroup>
 			</Modal.Content>
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button disabled={!isDirty} loading={isSubmitting || isValidating} type='submit' primary>
+					<Button loading={isSubmitting || isValidating} type='submit' primary>
 						{t('Create')}
 					</Button>
 				</Modal.FooterControllers>
