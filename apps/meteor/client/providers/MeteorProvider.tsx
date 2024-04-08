@@ -15,6 +15,7 @@ import LayoutProvider from './LayoutProvider';
 import ModalProvider from './ModalProvider/ModalProvider';
 import OmnichannelProvider from './OmnichannelProvider';
 import RouterProvider from './RouterProvider';
+import { SearchFilterProvider } from './SearchFiltersProvider/SearchFilterProvider';
 import ServerProvider from './ServerProvider';
 import SessionProvider from './SessionProvider';
 import SettingsProvider from './SettingsProvider';
@@ -48,7 +49,9 @@ const MeteorProvider: FC = ({ children }) => (
 																				<ActionManagerProvider>
 																					<VideoConfProvider>
 																						<CallProvider>
-																							<OmnichannelProvider>{children}</OmnichannelProvider>
+																							<OmnichannelProvider>
+																								<SearchFilterProvider>{children}</SearchFilterProvider>
+																							</OmnichannelProvider>
 																						</CallProvider>
 																					</VideoConfProvider>
 																				</ActionManagerProvider>

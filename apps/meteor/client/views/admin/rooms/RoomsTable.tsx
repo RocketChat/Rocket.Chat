@@ -1,10 +1,9 @@
 import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import type { OptionProp } from '@rocket.chat/ui-client';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement, MutableRefObject } from 'react';
-import React, { useRef, useState, useEffect, useMemo } from 'react';
+import React, { useRef, useEffect, useMemo, useContext } from 'react';
 
 import GenericNoResults from '../../../components/GenericNoResults';
 import {
@@ -16,13 +15,10 @@ import {
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
+import type { SearchFilters } from '../../../contexts/SearchFilterContext';
+import { SearchFilterContext } from '../../../contexts/SearchFilterContext';
 import RoomRow from './RoomRow';
 import RoomsTableFilters from './RoomsTableFilters';
-
-type RoomFilters = {
-	searchText: string;
-	types: OptionProp[];
-};
 
 const DEFAULT_TYPES = ['d', 'p', 'c', 'l', 'discussions', 'teams'];
 
@@ -30,27 +26,32 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 	const t = useTranslation();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
-	const [roomFilters, setRoomFilters] = useState<RoomFilters>({ searchText: '', types: [] });
+	const { searchFilters } = useContext(SearchFilterContext);
 
-	const prevRoomFilterText = useRef<string>(roomFilters.searchText);
+	const prevRoomFilters = useRef<SearchFilters>(searchFilters);
 
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 't' | 'usersCount' | 'msgs' | 'default' | 'featured'>('name');
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
-	const searchText = useDebouncedValue(roomFilters.searchText, 500);
+	const searchText = useDebouncedValue(searchFilters.searchText, 500);
 
 	const query = useDebouncedValue(
 		useMemo(() => {
-			if (searchText !== prevRoomFilterText.current) {
+			const filtersChanged =
+				searchText !== prevRoomFilters.current.searchText ||
+				JSON.stringify(searchFilters.types) !== JSON.stringify(prevRoomFilters.current.types);
+
+			if (filtersChanged) {
 				setCurrent(0);
 			}
+
 			return {
 				filter: searchText || '',
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
 				count: itemsPerPage,
-				offset: searchText === prevRoomFilterText.current ? current : 0,
-				types: roomFilters.types.length ? [...roomFilters.types.map((roomType) => roomType.id)] : DEFAULT_TYPES,
+				offset: filtersChanged ? 0 : current,
+				types: searchFilters.types.length ? [...searchFilters.types.map((roomType) => roomType.id)] : DEFAULT_TYPES,
 			};
-		}, [searchText, sortBy, sortDirection, itemsPerPage, current, roomFilters.types, setCurrent]),
+		}, [searchText, sortBy, sortDirection, itemsPerPage, current, searchFilters.types, setCurrent]),
 		500,
 	);
 
@@ -63,8 +64,8 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 	}, [reload, refetch]);
 
 	useEffect(() => {
-		prevRoomFilterText.current = searchText;
-	}, [searchText]);
+		prevRoomFilters.current = searchFilters;
+	}, [searchFilters]);
 
 	const headers = (
 		<>
@@ -116,7 +117,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 
 	return (
 		<>
-			<RoomsTableFilters setFilters={setRoomFilters} />
+			<RoomsTableFilters />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

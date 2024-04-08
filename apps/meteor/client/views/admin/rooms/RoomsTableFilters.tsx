@@ -2,8 +2,10 @@ import { Box, Icon, TextInput } from '@rocket.chat/fuselage';
 import type { OptionProp } from '@rocket.chat/ui-client';
 import { MultiSelectCustom } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useContext } from 'react';
 import type { Dispatch, ReactElement, SetStateAction } from 'react';
+
+import { SearchFilterContext } from '../../../contexts/SearchFilterContext';
 
 const roomTypeFilterStructure = [
 	{
@@ -43,27 +45,23 @@ const roomTypeFilterStructure = [
 	},
 ] as OptionProp[];
 
-const RoomsTableFilters = ({ setFilters }: { setFilters: Dispatch<SetStateAction<any>> }): ReactElement => {
+const RoomsTableFilters = (): ReactElement => {
+	const { searchFilters, setSearchFilters } = useContext(SearchFilterContext);
 	const t = useTranslation();
-	const [text, setText] = useState('');
-
-	const [roomTypeSelectedOptions, setRoomTypeSelectedOptions] = useState<OptionProp[]>([]);
 
 	const handleSearchTextChange = useCallback(
-		(event) => {
-			const text = event.currentTarget.value;
-			setFilters({ searchText: text, types: roomTypeSelectedOptions });
-			setText(text);
+		(event: React.ChangeEvent<HTMLInputElement>) => {
+			const newText = event.currentTarget.value;
+			setSearchFilters((filters) => ({ ...filters, searchText: newText, types: searchFilters.types }));
 		},
-		[roomTypeSelectedOptions, setFilters],
+		[searchFilters.types, setSearchFilters],
 	);
 
 	const handleRoomTypeChange = useCallback(
 		(options: OptionProp[]) => {
-			setFilters({ searchText: text, types: options });
-			setRoomTypeSelectedOptions(options);
+			setSearchFilters((filters) => ({ ...filters, types: options, searchText: searchFilters.searchText }));
 		},
-		[text, setFilters],
+		[searchFilters.searchText, setSearchFilters],
 	) as Dispatch<SetStateAction<OptionProp[]>>;
 
 	return (
@@ -83,7 +81,7 @@ const RoomsTableFilters = ({ setFilters }: { setFilters: Dispatch<SetStateAction
 					placeholder={t('Search_rooms')}
 					addon={<Icon name='magnifier' size='x20' />}
 					onChange={handleSearchTextChange}
-					value={text}
+					value={searchFilters.searchText}
 				/>
 			</Box>
 			<Box minWidth='x224' m='x4'>
@@ -92,7 +90,7 @@ const RoomsTableFilters = ({ setFilters }: { setFilters: Dispatch<SetStateAction
 					defaultTitle={'All_rooms' as any}
 					selectedOptionsTitle='Rooms'
 					setSelectedOptions={handleRoomTypeChange}
-					selectedOptions={roomTypeSelectedOptions}
+					selectedOptions={searchFilters.types}
 				/>
 			</Box>
 		</Box>
