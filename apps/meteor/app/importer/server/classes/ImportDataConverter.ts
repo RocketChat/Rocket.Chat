@@ -60,7 +60,6 @@ export type IConverterOptions = {
 	flagEmailsAsVerified?: boolean;
 	skipExistingUsers?: boolean;
 	skipNewUsers?: boolean;
-	bindSkippedUsers?: boolean;
 	skipUserCallbacks?: boolean;
 	skipDefaultChannels?: boolean;
 
@@ -100,7 +99,6 @@ export class ImportDataConverter {
 			flagEmailsAsVerified: false,
 			skipExistingUsers: false,
 			skipNewUsers: false,
-			bindSkippedUsers: false,
 		};
 		this._userCache = new Map();
 		this._userDisplayNameCache = new Map();
@@ -396,18 +394,6 @@ export class ImportDataConverter {
 	}
 
 	async findExistingUser(data: IImportUser): Promise<IUser | undefined> {
-		// If we're gonna force-bind importIds, we search for them first to ensure they are unique
-		if (this._options.bindSkippedUsers) {
-			// #TODO: Use a single operation for multiple IDs
-			// (Currently there's no existing use case with multiple IDs being passed to this function)
-			for await (const importId of data.importIds) {
-				const importedUser = await Users.findOneByImportId(importId, {});
-				if (importedUser) {
-					return importedUser;
-				}
-			}
-		}
-
 		if (data.emails.length) {
 			const emailUser = await Users.findOneByEmailAddress(data.emails[0], {});
 
@@ -488,13 +474,6 @@ export class ImportDataConverter {
 
 				const existingUser = await this.findExistingUser(data);
 				if (existingUser && this._options.skipExistingUsers) {
-					if (this._options.bindSkippedUsers) {
-						const newImportIds = data.importIds.filter((importId) => !(existingUser as IUser).importIds?.includes(importId));
-						if (newImportIds.length) {
-							await Users.addImportIds(existingUser._id, newImportIds);
-						}
-					}
-
 					await this.skipRecord(_id);
 					skippedCount++;
 					continue;
@@ -736,7 +715,12 @@ export class ImportDataConverter {
 		return ImportData.getAllMessages().toArray();
 	}
 
-	async convertMessages({ beforeImportFn, afterImportFn, onErrorFn }: IConversionCallbacks = {}): Promise<void> {
+	async convertMessages({
+		beforeImportFn,
+		afterImportFn,
+		onErrorFn,
+		afterImportAllMessagesFn,
+	}: IConversionCallbacks & { afterImportAllMessagesFn?: (roomIds: string[]) => Promise<void> }): Promise<void> {
 		const rids: Array<string> = [];
 		const messages = await this.getMessagesToImport();
 
@@ -761,7 +745,6 @@ export class ImportDataConverter {
 					this._logger.warn(`Imported user not found: ${data.u._id}`);
 					throw new Error('importer-message-unknown-user');
 				}
-
 				const rid = await this.findImportedRoomId(data.rid);
 				if (!rid) {
 					throw new Error('importer-message-unknown-room');
@@ -828,11 +811,14 @@ export class ImportDataConverter {
 
 		for await (const rid of rids) {
 			try {
-				await Rooms.resetLastMessageById(rid);
+				await Rooms.resetLastMessageById(rid, null);
 			} catch (e) {
 				this._logger.warn(`Failed to update last message of room ${rid}`);
 				this._logger.error(e);
 			}
+		}
+		if (afterImportAllMessagesFn) {
+			await afterImportAllMessagesFn(rids);
 		}
 	}
 
@@ -1034,13 +1020,13 @@ export class ImportDataConverter {
 					return;
 				}
 				if (roomData.t === 'p') {
-					const user = await Users.findOneById(startedByUserId);
+					const user = await Users.findOneById(creatorId);
 					if (!user) {
 						throw new Error('importer-channel-invalid-creator');
 					}
-					roomInfo = await createPrivateGroupMethod(user, roomData.name, members, false, {}, {}, true);
+					roomInfo = await createPrivateGroupMethod(user, roomData.name, members, false, {}, {});
 				} else {
-					roomInfo = await createChannelMethod(startedByUserId, roomData.name, members, false, {}, {}, true);
+					roomInfo = await createChannelMethod(creatorId, roomData.name, members, false, {}, {});
 				}
 			}
 

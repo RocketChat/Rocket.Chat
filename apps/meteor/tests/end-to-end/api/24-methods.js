@@ -1,11 +1,14 @@
 import { expect } from 'chai';
 import { after, before, beforeEach, describe, it } from 'mocha';
 
-import { getCredentials, request, methodCall, api, credentials } from '../../data/api-data.js';
+import { api, credentials, getCredentials, methodCall, request } from '../../data/api-data.js';
+import { sendSimpleMessage } from '../../data/chat.helper.js';
 import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
-import { createRoom } from '../../data/rooms.helper';
+import { createRoom, deleteRoom } from '../../data/rooms.helper';
+import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper.js';
+import { IS_EE } from '../../e2e/config/constants';
 
 describe('Meteor.methods', function () {
 	this.retries(0);
@@ -77,6 +80,8 @@ describe('Meteor.methods', function () {
 				.end(done);
 		});
 
+		after(() => deleteRoom({ type: 'p', roomId: rid }));
+
 		it('should fail if not logged in', (done) => {
 			request
 				.post(methodCall('getThreadMessages'))
@@ -120,6 +125,325 @@ describe('Meteor.methods', function () {
 					expect(data.result.length).to.equal(2);
 				})
 				.end(done);
+		});
+	});
+
+	describe('[@getReadReceipts]', () => {
+		it('should fail if not logged in', async () => {
+			await request
+				.post(methodCall('getReadReceipts'))
+				.send({
+					message: JSON.stringify({
+						method: 'getReadReceipts',
+						params: [{ messageId: 'test' }],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('message', 'You must be logged in to do this.');
+				});
+		});
+
+		(!IS_EE ? describe : describe.skip)('[@getReadReceipts] CE', () => {
+			it('should fail if there is no enterprise license', async () => {
+				await request
+					.post(methodCall('getReadReceipts'))
+					.set(credentials)
+					.send({
+						message: JSON.stringify({
+							method: 'getReadReceipts',
+							params: [{ messageId: 'test' }],
+							id: 'id',
+							msg: 'method',
+						}),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						const data = JSON.parse(res.body.message);
+						expect(data).to.have.property('error').that.is.an('object');
+						expect(data.error).to.have.property('error', 'error-action-not-allowed');
+						expect(data.error).to.have.property('message', 'This is an enterprise feature [error-action-not-allowed]');
+					});
+			});
+		});
+
+		(IS_EE ? describe : describe.skip)('[@getReadReceipts] EE', () => {
+			let user = null;
+			let userCredentials = null;
+			let room = null;
+			let firstMessage = null;
+			let firstThreadMessage = null;
+
+			const roomName = `methods-test-channel-${Date.now()}`;
+			before(async () => {
+				await Promise.all([updateSetting('Message_Read_Receipt_Enabled', true), updateSetting('Message_Read_Receipt_Store_Users', true)]);
+
+				user = await createUser();
+				userCredentials = await login(user.username, password);
+				room = (await createRoom({ type: 'p', name: roomName, members: [user.username] })).body.group;
+				firstMessage = (await sendSimpleMessage({ roomId: room._id })).body.message;
+				firstThreadMessage = (await sendSimpleMessage({ roomId: room._id, tmid: firstMessage._id })).body.message;
+			});
+
+			after(() =>
+				Promise.all([
+					deleteRoom({ type: 'p', roomId: room._id }),
+					deleteUser(user),
+					updateSetting('Message_Read_Receipt_Enabled', false),
+					updateSetting('Message_Read_Receipt_Store_Users', false),
+				]),
+			);
+
+			describe('simple message and thread that nobody has read yet', () => {
+				it("should return only the sender's read receipt for a message sent in the main room", async () => {
+					await request
+						.post(methodCall('getReadReceipts'))
+						.set(credentials)
+						.send({
+							message: JSON.stringify({
+								method: 'getReadReceipts',
+								params: [{ messageId: firstMessage._id }],
+								id: 'id',
+								msg: 'method',
+							}),
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', true);
+							expect(res.body).to.have.a.property('message').that.is.a('string');
+
+							const data = JSON.parse(res.body.message);
+							expect(data).to.have.a.property('result').that.is.an('array');
+							expect(data.result.length).to.equal(1);
+							expect(data.result[0]).to.have.property('userId', credentials['X-User-Id']);
+						});
+				});
+
+				it("should return only the sender's read receipt for a message sent in a thread", async () => {
+					await request
+						.post(methodCall('getReadReceipts'))
+						.set(credentials)
+						.send({
+							message: JSON.stringify({
+								method: 'getReadReceipts',
+								params: [{ messageId: firstThreadMessage._id }],
+								id: 'id',
+								msg: 'method',
+							}),
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', true);
+							expect(res.body).to.have.a.property('message').that.is.a('string');
+
+							const data = JSON.parse(res.body.message);
+							expect(data).to.have.a.property('result').that.is.an('array');
+							expect(data.result.length).to.equal(1);
+							expect(data.result[0]).to.have.property('userId', credentials['X-User-Id']);
+						});
+				});
+			});
+
+			describe('simple message and thread where the room message was read by the invited user but the thread message was not', () => {
+				before("should read all main room's messages with the invited user", async () => {
+					await request
+						.post(methodCall('readMessages'))
+						.set(userCredentials)
+						.send({
+							message: JSON.stringify({
+								id: 'id',
+								msg: 'method',
+								method: 'readMessages',
+								params: [room._id, true],
+							}),
+						});
+				});
+
+				it("should return both the sender's and the invited user's read receipt for a message sent in the main room", async () => {
+					await request
+						.post(methodCall('getReadReceipts'))
+						.set(credentials)
+						.send({
+							message: JSON.stringify({
+								method: 'getReadReceipts',
+								params: [{ messageId: firstMessage._id }],
+								id: 'id',
+								msg: 'method',
+							}),
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', true);
+							expect(res.body).to.have.a.property('message').that.is.a('string');
+
+							const data = JSON.parse(res.body.message);
+							expect(data).to.have.a.property('result').that.is.an('array');
+							expect(data.result.length).to.equal(2);
+
+							const receiptsUserIds = [data.result[0].userId, data.result[1].userId];
+							expect(receiptsUserIds).to.have.members([credentials['X-User-Id'], user._id]);
+						});
+				});
+
+				it("should return only the sender's read receipt for a message sent in a thread", async () => {
+					await request
+						.post(methodCall('getReadReceipts'))
+						.set(credentials)
+						.send({
+							message: JSON.stringify({
+								method: 'getReadReceipts',
+								params: [{ messageId: firstThreadMessage._id }],
+								id: 'id',
+								msg: 'method',
+							}),
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', true);
+							expect(res.body).to.have.a.property('message').that.is.a('string');
+
+							const data = JSON.parse(res.body.message);
+							expect(data).to.have.a.property('result').that.is.an('array');
+							expect(data.result.length).to.equal(1);
+							expect(data.result[0]).to.have.property('userId', credentials['X-User-Id']);
+						});
+				});
+			});
+
+			describe('simple message and thread where both was read by the invited user', () => {
+				before('should read thread messages with the invited user', async () => {
+					await request
+						.post(methodCall('getThreadMessages'))
+						.set(userCredentials)
+						.send({
+							message: JSON.stringify({
+								id: 'id',
+								msg: 'method',
+								method: 'getThreadMessages',
+								params: [
+									{
+										tmid: firstMessage._id,
+									},
+								],
+							}),
+						});
+				});
+
+				it("should return both the sender's and invited user's read receipt for a message sent in a thread", async () => {
+					await request
+						.post(methodCall('getReadReceipts'))
+						.set(credentials)
+						.send({
+							message: JSON.stringify({
+								method: 'getReadReceipts',
+								params: [{ messageId: firstThreadMessage._id }],
+								id: 'id',
+								msg: 'method',
+							}),
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', true);
+							expect(res.body).to.have.a.property('message').that.is.a('string');
+
+							const data = JSON.parse(res.body.message);
+							expect(data).to.have.a.property('result').that.is.an('array');
+							expect(data.result.length).to.equal(2);
+
+							const receiptsUserIds = [data.result[0].userId, data.result[1].userId];
+							expect(receiptsUserIds).to.have.members([credentials['X-User-Id'], user._id]);
+						});
+				});
+			});
+
+			describe('simple message and thread marked as read by the invited user', () => {
+				let otherMessage = null;
+				let otherThreadMessage = null;
+
+				before('should send another message and create a thread', async () => {
+					otherMessage = (await sendSimpleMessage({ roomId: room._id })).body.message;
+					otherThreadMessage = (await sendSimpleMessage({ roomId: room._id, tmid: otherMessage._id })).body.message;
+				});
+
+				before('should mark the thread as read by the invited user', async () => {
+					await request
+						.post(methodCall('readThreads'))
+						.set(userCredentials)
+						.send({
+							message: JSON.stringify({
+								method: 'readThreads',
+								params: [otherMessage._id],
+								id: 'id',
+								msg: 'method',
+							}),
+						});
+				});
+
+				it("should return both the sender's and invited user's read receipt for a message sent in the main room", async () => {
+					await request
+						.post(methodCall('getReadReceipts'))
+						.set(credentials)
+						.send({
+							message: JSON.stringify({
+								method: 'getReadReceipts',
+								params: [{ messageId: otherThreadMessage._id }],
+								id: 'id',
+								msg: 'method',
+							}),
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', true);
+							expect(res.body).to.have.a.property('message').that.is.a('string');
+
+							const data = JSON.parse(res.body.message);
+							expect(data).to.have.a.property('result').that.is.an('array');
+							expect(data.result.length).to.equal(2);
+
+							const receiptsUserIds = [data.result[0].userId, data.result[1].userId];
+							expect(receiptsUserIds).to.have.members([credentials['X-User-Id'], user._id]);
+						});
+				});
+
+				it("should return both the sender's and invited user's read receipt for a message sent in a thread", async () => {
+					await request
+						.post(methodCall('getReadReceipts'))
+						.set(credentials)
+						.send({
+							message: JSON.stringify({
+								method: 'getReadReceipts',
+								params: [{ messageId: otherThreadMessage._id }],
+								id: 'id',
+								msg: 'method',
+							}),
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', true);
+							expect(res.body).to.have.a.property('message').that.is.a('string');
+
+							const data = JSON.parse(res.body.message);
+							expect(data).to.have.a.property('result').that.is.an('array');
+							expect(data.result.length).to.equal(2);
+
+							const receiptsUserIds = [data.result[0].userId, data.result[1].userId];
+							expect(receiptsUserIds).to.have.members([credentials['X-User-Id'], user._id]);
+						});
+				});
+			});
 		});
 	});
 
@@ -188,6 +512,8 @@ describe('Meteor.methods', function () {
 				})
 				.end(done);
 		});
+
+		after(() => deleteRoom({ type: 'p', roomId: rid }));
 
 		it('should fail if not logged in', (done) => {
 			request
@@ -348,6 +674,8 @@ describe('Meteor.methods', function () {
 				.end(done);
 		});
 
+		after(() => deleteRoom({ type: 'p', roomId: rid }));
+
 		it('should not change the _updatedAt value when nothing is changed on the room', async () => {
 			const roomBefore = await request.get(api('groups.info')).set(credentials).query({
 				roomId: rid,
@@ -472,6 +800,8 @@ describe('Meteor.methods', function () {
 				})
 				.end(done);
 		});
+
+		after(() => deleteRoom({ type: 'p', roomId: rid }));
 
 		it('should fail if not logged in', (done) => {
 			request
@@ -689,6 +1019,8 @@ describe('Meteor.methods', function () {
 				.end(done);
 		});
 
+		after(() => deleteRoom({ type: 'p', roomId: rid }));
+
 		it('should fail if not logged in', (done) => {
 			request
 				.post(methodCall('loadNextMessages'))
@@ -866,6 +1198,8 @@ describe('Meteor.methods', function () {
 				.expect(200)
 				.end(done);
 		});
+
+		after(() => Promise.all([deleteRoom({ type: 'p', roomId: rid }), deleteUser(testUser)]));
 
 		it('should fail if not logged in', (done) => {
 			request
@@ -1172,6 +1506,8 @@ describe('Meteor.methods', function () {
 				.end(done);
 		});
 
+		after(() => deleteRoom({ type: 'p', roomId: rid }));
+
 		it('should fail if not logged in', (done) => {
 			request
 				.post(methodCall('loadMissedMessages'))
@@ -1364,6 +1700,14 @@ describe('Meteor.methods', function () {
 		const date = {
 			$date: 0,
 		};
+
+		after(() =>
+			Promise.all([
+				updatePermission('view-privileged-setting', ['admin']),
+				updatePermission('edit-privileged-setting', ['admin']),
+				updatePermission('manage-selected-settings', ['admin']),
+			]),
+		);
 
 		it('should fail if not logged in', (done) => {
 			request
@@ -1576,6 +1920,8 @@ describe('Meteor.methods', function () {
 				.end(done);
 		});
 
+		after(() => deleteRoom({ type: 'p', roomId: rid }));
+
 		it('should send a message', (done) => {
 			request
 				.post(methodCall('sendMessage'))
@@ -1636,9 +1982,12 @@ describe('Meteor.methods', function () {
 
 	describe('[@updateMessage]', () => {
 		let rid = false;
+		let roomName = false;
 		let messageId;
+		let simpleMessageId;
 		let messageWithMarkdownId;
 		let channelName = false;
+		const siteUrl = process.env.SITE_URL || process.env.TEST_API_URL || 'http://localhost:3000';
 
 		before('create room', (done) => {
 			channelName = `methods-test-channel-${Date.now()}`;
@@ -1657,8 +2006,14 @@ describe('Meteor.methods', function () {
 					expect(res.body).to.have.nested.property('group.t', 'p');
 					expect(res.body).to.have.nested.property('group.msgs', 0);
 					rid = res.body.group._id;
+					roomName = res.body.group.name;
 				})
 				.end(done);
+		});
+
+		before('send simple message', async () => {
+			const res = await sendSimpleMessage({ roomId: rid });
+			simpleMessageId = res.body.message._id;
 		});
 
 		before('send message with URL', (done) => {
@@ -1725,6 +2080,14 @@ describe('Meteor.methods', function () {
 				.end(done);
 		});
 
+		after(() =>
+			Promise.all([
+				deleteRoom({ type: 'p', roomId: rid }),
+				updatePermission('bypass-time-limit-edit-and-delete', ['bot', 'app']),
+				updateSetting('Message_AllowEditing_BlockEditInMinutes', 0),
+			]),
+		);
+
 		it('should update a message with a URL', (done) => {
 			request
 				.post(methodCall('updateMessage'))
@@ -1746,6 +2109,138 @@ describe('Meteor.methods', function () {
 					expect(data).to.have.a.property('msg').that.is.an('string');
 				})
 				.end(done);
+		});
+
+		it('should add a quote attachment to a message', async () => {
+			const quotedMsgLink = `${siteUrl}/group/${roomName}?msg=${messageWithMarkdownId}`;
+			await request
+				.post(methodCall('updateMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'updateMessage',
+						params: [{ _id: messageId, rid, msg: `${quotedMsgLink} updated` }],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+				});
+
+			await request
+				.get(api(`chat.getMessage?msgId=${messageId}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('message').that.is.an('object');
+					expect(res.body.message).to.have.property('msg', `${quotedMsgLink} updated`);
+					expect(res.body.message).to.have.property('attachments').that.is.an('array').that.has.lengthOf(1);
+					expect(res.body.message.attachments[0]).to.have.property('message_link', quotedMsgLink);
+				});
+		});
+
+		it('should replace a quote attachment in a message', async () => {
+			const quotedMsgLink = `${siteUrl}/group/${roomName}?msg=${simpleMessageId}`;
+			await request
+				.post(methodCall('updateMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'updateMessage',
+						params: [{ _id: messageId, rid, msg: `${quotedMsgLink} updated` }],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+				});
+
+			await request
+				.get(api(`chat.getMessage?msgId=${messageId}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('message').that.is.an('object');
+					expect(res.body.message).to.have.property('msg', `${quotedMsgLink} updated`);
+					expect(res.body.message).to.have.property('attachments').that.is.an('array').that.has.lengthOf(1);
+					expect(res.body.message.attachments[0]).to.have.property('message_link', quotedMsgLink);
+				});
+		});
+
+		it('should add multiple quote attachments in a single message', async () => {
+			const quotedMsgLink = `${siteUrl}/group/${roomName}?msg=${simpleMessageId}`;
+			const newQuotedMsgLink = `${siteUrl}/group/${roomName}?msg=${messageWithMarkdownId}`;
+			await request
+				.post(methodCall('updateMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'updateMessage',
+						params: [{ _id: messageId, rid, msg: `${newQuotedMsgLink} ${quotedMsgLink} updated` }],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+				});
+
+			await request
+				.get(api(`chat.getMessage?msgId=${messageId}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('message').that.is.an('object');
+					expect(res.body.message).to.have.property('msg', `${newQuotedMsgLink} ${quotedMsgLink} updated`);
+					expect(res.body.message).to.have.property('attachments').that.is.an('array').that.has.lengthOf(2);
+					expect(res.body.message.attachments[0]).to.have.property('message_link', newQuotedMsgLink);
+					expect(res.body.message.attachments[1]).to.have.property('message_link', quotedMsgLink);
+				});
+		});
+
+		it('should remove a quote attachment from a message', async () => {
+			await request
+				.post(methodCall('updateMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'updateMessage',
+						params: [{ _id: messageId, rid, msg: 'updated' }],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+				});
+
+			await request
+				.get(api(`chat.getMessage?msgId=${messageId}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('message').that.is.an('object');
+					expect(res.body.message).to.have.property('msg', 'updated');
+					expect(res.body.message).to.have.property('attachments').that.is.an('array').that.has.lengthOf(0);
+				});
 		});
 
 		it('should update a message when bypass time limits permission is enabled', async () => {
@@ -1942,6 +2437,14 @@ describe('Meteor.methods', function () {
 				.end(done);
 		});
 
+		after(() =>
+			Promise.all([
+				deleteRoom({ type: 'p', roomId: rid }),
+				updatePermission('bypass-time-limit-edit-and-delete', ['bot', 'app']),
+				updateSetting('Message_AllowEditing_BlockEditInMinutes', 0),
+			]),
+		);
+
 		it('should delete a message', (done) => {
 			request
 				.post(methodCall('deleteMessage'))
@@ -2003,50 +2506,14 @@ describe('Meteor.methods', function () {
 	describe('[@setUserActiveStatus]', () => {
 		let testUser;
 		let testUser2;
-		const testUserCredentials = {};
+		let testUserCredentials;
 		let dmId;
 		let dmTestId;
 
-		before('create test user', (done) => {
-			const username = `user.test.${Date.now()}`;
-			const email = `${username}@rocket.chat`;
-			request
-				.post(api('users.create'))
-				.set(credentials)
-				.send({ email, name: username, username, password: username, roles: ['user'] })
-				.end((err, res) => {
-					testUser = res.body.user;
-					done();
-				});
-		});
-
-		before('create test user 2', (done) => {
-			const username = `user.test.${Date.now()}`;
-			const email = `${username}@rocket.chat`;
-			request
-				.post(api('users.create'))
-				.set(credentials)
-				.send({ email, name: username, username, password: username, roles: ['user'] })
-				.end((err, res) => {
-					testUser2 = res.body.user;
-					done();
-				});
-		});
-
-		before('login testUser', (done) => {
-			request
-				.post(api('login'))
-				.send({
-					user: testUser.username,
-					password: testUser.username,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					testUserCredentials['X-Auth-Token'] = res.body.data.authToken;
-					testUserCredentials['X-User-Id'] = res.body.data.userId;
-				})
-				.end(done);
+		before(async () => {
+			testUser = await createUser();
+			testUser2 = await createUser();
+			testUserCredentials = await login(testUser.username, password);
 		});
 
 		before('create direct conversation with user', (done) => {
@@ -2092,6 +2559,15 @@ describe('Meteor.methods', function () {
 					done();
 				});
 		});
+
+		after(() =>
+			Promise.all([
+				deleteRoom({ type: 'd', roomId: dmId }),
+				deleteRoom({ type: 'd', roomId: dmTestId }),
+				deleteUser(testUser),
+				deleteUser(testUser2),
+			]),
+		);
 
 		it('should deactivate a user', (done) => {
 			request
@@ -2198,7 +2674,7 @@ describe('Meteor.methods', function () {
 				.post(api('login'))
 				.send({
 					user: testUser.username,
-					password: testUser.username,
+					password,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -2293,6 +2769,7 @@ describe('Meteor.methods', function () {
 		let guestUser;
 		let user;
 		let room;
+		let createdRooms = [];
 
 		before(async () => {
 			guestUser = await createUser({ roles: ['guest'] });
@@ -2303,12 +2780,11 @@ describe('Meteor.methods', function () {
 					name: `channel.test.${Date.now()}-${Math.random()}`,
 				})
 			).body.channel;
+			createdRooms.push(room);
 		});
-		after(async () => {
-			await deleteUser(user);
-			await deleteUser(guestUser);
-			user = undefined;
-		});
+		after(() =>
+			Promise.all([...createdRooms.map((r) => deleteRoom({ type: 'c', roomId: r._id })), deleteUser(user), deleteUser(guestUser)]),
+		);
 
 		it('should fail if not logged in', (done) => {
 			request
@@ -2374,7 +2850,7 @@ describe('Meteor.methods', function () {
 					}),
 				);
 			}
-			await Promise.all(promises);
+			createdRooms = [...createdRooms, ...(await Promise.all(promises)).map((res) => res.body.channel)];
 
 			request
 				.post(methodCall('addUsersToRoom'))
@@ -2419,6 +2895,8 @@ describe('Meteor.methods', function () {
 		before('login testUser', async () => {
 			testUserCredentials = await login(testUser.username, testUser.username);
 		});
+
+		after(() => Promise.all([deleteRoom({ type: 'c', roomId: rid }), deleteUser(testUser)]));
 
 		describe('-> standard room', () => {
 			describe('- when muting a user in a standard room', () => {

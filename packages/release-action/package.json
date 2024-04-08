@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/release-action",
-	"version": "2.2.0",
+	"version": "2.2.1",
 	"private": true,
 	"scripts": {
 		"build": "tsc",
@@ -10,11 +10,11 @@
 	"main": "dist/index.js",
 	"packageManager": "yarn@3.5.1",
 	"devDependencies": {
-		"@types/node": "^16.18.36",
-		"typescript": "~5.2.2"
+		"@types/node": "^16.18.60",
+		"typescript": "~5.3.3"
 	},
 	"dependencies": {
-		"@actions/core": "^1.10.0",
+		"@actions/core": "^1.10.1",
 		"@actions/exec": "^1.1.1",
 		"@actions/github": "^5.1.1",
 		"@octokit/plugin-throttling": "^6.0.0",

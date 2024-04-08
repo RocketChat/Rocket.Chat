@@ -1,9 +1,8 @@
-import { Pagination } from '@rocket.chat/fuselage';
+import { IconButton, Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, hashQueryKey } from '@tanstack/react-query';
-import type { MutableRefObject } from 'react';
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import FilterByText from '../../../../client/components/FilterByText';
 import GenericNoResults from '../../../../client/components/GenericNoResults';
@@ -18,9 +17,9 @@ import {
 } from '../../../../client/components/GenericTable';
 import { usePagination } from '../../../../client/components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../client/components/GenericTable/hooks/useSort';
-import RemoveTagButton from './RemoveTagButton';
+import { useRemoveTag } from './useRemoveTag';
 
-const TagsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
+const TagsTable = () => {
 	const t = useTranslation();
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 500);
@@ -31,6 +30,7 @@ const TagsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 
 	const onRowClick = useMutableCallback((id) => router.navigate(`/omnichannel/tags/edit/${id}`));
 	const handleAddNew = useMutableCallback(() => router.navigate('/omnichannel/tags/new'));
+	const handleDeleteTag = useRemoveTag();
 
 	const query = useMemo(
 		() => ({
@@ -45,14 +45,10 @@ const TagsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 	);
 
 	const getTags = useEndpoint('GET', '/v1/livechat/tags');
-	const { data, refetch, isSuccess, isLoading } = useQuery(['livechat-tags', query], async () => getTags(query));
+	const { data, isSuccess, isLoading } = useQuery(['livechat-tags', query], async () => getTags(query), { refetchOnWindowFocus: false });
 
 	const [defaultQuery] = useState(hashQueryKey([query]));
 	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
-
-	useEffect(() => {
-		reload.current = refetch;
-	}, [reload, refetch]);
 
 	const headers = (
 		<>
@@ -68,9 +64,7 @@ const TagsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 			>
 				{t('Description')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='remove' w='x60'>
-				{t('Remove')}
-			</GenericTableHeaderCell>
+			<GenericTableHeaderCell key='remove' w='x60' />
 		</>
 	);
 
@@ -93,7 +87,7 @@ const TagsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 					description={t('No_tags_yet_description')}
 					buttonTitle={t('Create_tag')}
 					buttonAction={handleAddNew}
-					linkHref='https://go.rocket.chat/omnichannel-docs'
+					linkHref='https://go.rocket.chat/i/omnichannel-docs'
 					linkText={t('Learn_more_about_tags')}
 				/>
 			)}
@@ -106,7 +100,17 @@ const TagsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 								<GenericTableRow key={_id} tabIndex={0} role='link' onClick={() => onRowClick(_id)} action qa-user-id={_id}>
 									<GenericTableCell withTruncatedText>{name}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{description}</GenericTableCell>
-									<RemoveTagButton _id={_id} reload={refetch} />
+									<GenericTableCell>
+										<IconButton
+											icon='trash'
+											small
+											title={t('Remove')}
+											onClick={(e) => {
+												e.stopPropagation();
+												handleDeleteTag(_id);
+											}}
+										/>
+									</GenericTableCell>
 								</GenericTableRow>
 							))}
 						</GenericTableBody>

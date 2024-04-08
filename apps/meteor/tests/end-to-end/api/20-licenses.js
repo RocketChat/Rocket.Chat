@@ -1,20 +1,23 @@
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
+import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { password } from '../../data/user';
-import { createUser, login } from '../../data/users.helper';
+import { createUser, deleteUser, login } from '../../data/users.helper';
 
 describe('licenses', function () {
+	let createdUser;
 	this.retries(0);
 
 	before((done) => getCredentials(done));
 	let unauthorizedUserCredentials;
 
 	before(async () => {
-		const createdUser = await createUser();
+		createdUser = await createUser();
 		unauthorizedUserCredentials = await login(createdUser.username, password);
 	});
+
+	after(() => deleteUser(createdUser));
 
 	describe('[/licenses.add]', () => {
 		it('should fail if not logged in', (done) => {
@@ -126,9 +129,9 @@ describe('licenses', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('data').and.to.be.an('object');
-					expect(res.body.data).to.not.have.property('license');
-					expect(res.body.data).to.have.property('tags').and.to.be.an('array');
+					expect(res.body).to.have.property('license').and.to.be.an('object');
+					expect(res.body.license).to.not.have.property('license');
+					expect(res.body.license).to.have.property('tags').and.to.be.an('array');
 				})
 				.end(done);
 		});
@@ -140,11 +143,11 @@ describe('licenses', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('data').and.to.be.an('object');
+					expect(res.body).to.have.property('license').and.to.be.an('object');
 					if (process.env.IS_EE) {
-						expect(res.body.data).to.have.property('license').and.to.be.an('object');
+						expect(res.body.license).to.have.property('license').and.to.be.an('object');
 					}
-					expect(res.body.data).to.have.property('tags').and.to.be.an('array');
+					expect(res.body.license).to.have.property('tags').and.to.be.an('array');
 				})
 
 				.end(done);

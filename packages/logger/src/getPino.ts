@@ -16,12 +16,14 @@ function logMethod(this: Logger, args: unknown[], method: any): void {
 	return method.apply(this, args);
 }
 
+const infoLevel = process.env.LESS_INFO_LOGS ? 20 : 35;
+
 const mainPino = pino({
 	hooks: { logMethod },
 	customLevels: {
-		http: 35,
-		method: 35,
-		subscription: 35,
+		http: infoLevel,
+		method: infoLevel,
+		subscription: infoLevel,
 		startup: 51,
 	},
 	level: 'warn',

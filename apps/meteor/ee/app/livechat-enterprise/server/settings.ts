@@ -34,6 +34,17 @@ export const createSettings = async (): Promise<void> => {
 		modules: ['livechat-enterprise'],
 	});
 
+	await settingsRegistry.add('Omnichannel_max_fallback_forward_depth', 3, {
+		type: 'int',
+		group: 'Omnichannel',
+		section: 'Routing',
+		i18nLabel: 'Omnichannel_max_fallback_forward_depth',
+		enterprise: true,
+		invalidValue: 0,
+		modules: ['livechat-enterprise'],
+		enableQuery: omnichannelEnabledQuery,
+	});
+
 	await settingsRegistry.add('Livechat_last_chatted_agent_routing', false, {
 		type: 'boolean',
 		group: 'Omnichannel',
@@ -157,6 +168,73 @@ export const createSettings = async (): Promise<void> => {
 		});
 	});
 
+	await settingsRegistry.add('Livechat_AdditionalWidgetScripts', '', {
+		type: 'string',
+		group: 'Omnichannel',
+		section: 'Livechat',
+		enterprise: true,
+		invalidValue: '',
+		multiline: true,
+		i18nLabel: 'Livechat_AdditionalWidgetScripts',
+		i18nDescription: 'Livechat_AdditionalWidgetScripts_Description',
+		enableQuery: [omnichannelEnabledQuery],
+		modules: ['livechat-enterprise'],
+	});
+
+	await settingsRegistry.add('Livechat_WidgetLayoutClasses', '', {
+		type: 'string',
+		group: 'Omnichannel',
+		section: 'Livechat',
+		enterprise: true,
+		invalidValue: '',
+		multiline: true,
+		i18nLabel: 'Livechat_WidgetLayoutClasses',
+		i18nDescription: 'Livechat_WidgetLayoutClasses_Description',
+		enableQuery: [omnichannelEnabledQuery],
+		modules: ['livechat-enterprise'],
+	});
+
+	await settingsRegistry.add('Livechat_widget_position', 'right', {
+		type: 'select',
+		group: 'Omnichannel',
+		section: 'Livechat',
+		i18nLabel: 'Livechat_widget_position_on_the_screen',
+		public: true,
+		values: [
+			{ key: 'left', i18nLabel: 'Left' },
+			{ key: 'right', i18nLabel: 'Right' },
+		],
+		enterprise: true,
+		invalidValue: 'right',
+		modules: ['livechat-enterprise'],
+		enableQuery: omnichannelEnabledQuery,
+	});
+
+	await settingsRegistry.add('Livechat_background', '', {
+		type: 'string',
+		group: 'Omnichannel',
+		section: 'Livechat',
+		i18nDescription: 'Livechat_background_description',
+		placeholder: '#FFFFFF',
+		public: true,
+		enterprise: true,
+		invalidValue: '',
+		modules: ['livechat-enterprise'],
+		enableQuery: omnichannelEnabledQuery,
+	});
+
+	await settingsRegistry.add('Livechat_hide_watermark', false, {
+		type: 'boolean',
+		group: 'Omnichannel',
+		section: 'Livechat',
+		invalidValue: false,
+		enableQuery: omnichannelEnabledQuery,
+		i18nDescription: 'Livechat_hide_watermark_description',
+		enterprise: true,
+		sorter: 999,
+		modules: ['livechat-enterprise'],
+	});
+
 	await settingsRegistry.add('Omnichannel_contact_manager_routing', true, {
 		type: 'boolean',
 		group: 'Omnichannel',
@@ -198,6 +276,17 @@ export const createSettings = async (): Promise<void> => {
 		enableQuery: omnichannelEnabledQuery,
 	});
 
+	await settingsRegistry.add('Livechat_allow_manual_on_hold_upon_agent_engagement_only', true, {
+		type: 'boolean',
+		group: 'Omnichannel',
+		section: 'Sessions',
+		enterprise: true,
+		invalidValue: false,
+		public: true,
+		modules: ['livechat-enterprise'],
+		enableQuery: { _id: 'Livechat_allow_manual_on_hold', value: true },
+	});
+
 	await settingsRegistry.add('Livechat_auto_transfer_chat_timeout', 0, {
 		type: 'int',
 		group: 'Omnichannel',
@@ -213,6 +302,23 @@ export const createSettings = async (): Promise<void> => {
 		type: 'boolean',
 		public: true,
 		i18nLabel: 'Omnichannel_transcript_pdf',
+	});
+
+	await settingsRegistry.add('Livechat_hide_system_messages', ['uj', 'ul', 'livechat-close'], {
+		type: 'multiSelect',
+		group: 'Omnichannel',
+		section: 'Livechat',
+		enterprise: true,
+		modules: ['livechat-enterprise'],
+		invalidValue: ['uj', 'ul', 'livechat-close'],
+		public: true,
+		values: [
+			{ key: 'uj', i18nLabel: 'Message_HideType_uj' },
+			{ key: 'ul', i18nLabel: 'Message_HideType_ul' },
+			{ key: 'livechat-close', i18nLabel: 'Message_HideType_livechat_closed' },
+			{ key: 'livechat-started', i18nLabel: 'Message_HideType_livechat_started' },
+			{ key: 'livechat_transfer_history', i18nLabel: 'Message_HideType_livechat_transfer_history' },
+		],
 	});
 
 	await Settings.addOptionValueById('Livechat_Routing_Method', {

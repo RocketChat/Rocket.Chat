@@ -1,6 +1,6 @@
 import { Message } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import { memo, ReactElement, useContext, useMemo } from 'react';
+import { memo, ReactElement, useContext, useMemo, KeyboardEvent } from 'react';
 
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
 
@@ -13,13 +13,11 @@ const handleUserMention = (mention: string | undefined, withSymbol: boolean | un
 
 const UserMentionElement = ({ mention }: UserMentionElementProps): ReactElement => {
 	const t = useTranslation();
-	const { resolveUserMention, onUserMentionClick, isMobile, ownUserId, useRealName, showMentionSymbol } =
+	const { resolveUserMention, onUserMentionClick, ownUserId, useRealName, showMentionSymbol, triggerProps } =
 		useContext(MarkupInteractionContext);
 
 	const resolved = useMemo(() => resolveUserMention?.(mention), [mention, resolveUserMention]);
 	const handleClick = useMemo(() => (resolved ? onUserMentionClick?.(resolved) : undefined), [resolved, onUserMentionClick]);
-
-	const showRealName = useRealName && !isMobile;
 
 	if (mention === 'all') {
 		return (
@@ -46,10 +44,16 @@ const UserMentionElement = ({ mention }: UserMentionElementProps): ReactElement 
 			variant={resolved._id === ownUserId ? 'critical' : 'other'}
 			title={resolved._id === ownUserId ? t('Mentions_you') : t('Mentions_user')}
 			clickable
+			tabIndex={0}
+			role='button'
 			onClick={handleClick}
+			onKeyDown={(e: KeyboardEvent<HTMLSpanElement>): void => {
+				(e.code === 'Enter' || e.code === 'Space') && handleClick?.(e);
+			}}
+			{...triggerProps}
 			data-uid={resolved._id}
 		>
-			{handleUserMention((showRealName ? resolved.name : resolved.username) ?? mention, showMentionSymbol)}
+			{handleUserMention((useRealName ? resolved.name : resolved.username) ?? mention, showMentionSymbol)}
 		</Message.Highlight>
 	);
 };

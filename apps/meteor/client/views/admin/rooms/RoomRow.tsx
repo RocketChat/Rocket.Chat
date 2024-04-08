@@ -2,11 +2,11 @@ import { isDiscussion } from '@rocket.chat/core-typings';
 import type { IRoom, RoomAdminFieldsType } from '@rocket.chat/core-typings';
 import { Box, Icon } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
 import { GenericTableCell, GenericTableRow } from '../../../components/GenericTable';
-import RoomAvatar from '../../../components/avatar/RoomAvatar';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 
 const roomTypeI18nMap = {

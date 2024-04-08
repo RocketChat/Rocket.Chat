@@ -4,7 +4,7 @@ export default {
 	testEnvironment: 'jsdom',
 	modulePathIgnorePatterns: ['<rootDir>/dist/'],
 	transform: {
-		'^.+\\.(ts|tsx)$': [
+		'^.+\\.(t|j)sx?$': [
 			'@swc/jest',
 			{
 				sourceMaps: true,

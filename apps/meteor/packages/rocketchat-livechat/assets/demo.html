@@ -1,44 +1,39 @@
 <html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+	</head>
 
-<head>
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-	<script type="text/javascript">
-	(function(w, d, s, u) {
-		w.RocketChat = function(c) { w.RocketChat._.push(c) };
-		w.RocketChat._ = [];
-		w.RocketChat.url = u;
-		var h = d.getElementsByTagName(s)[0],
-			j = d.createElement(s);
-		j.async = true;
-		j.src = '/packages/rocketchat_livechat/assets/rocketchat-livechat.min.js?_=201702160944';
-		h.parentNode.insertBefore(j, h);
-	})(window, document, 'script', '/livechat');
-	</script>
-</head>
+	<!-- Access: http://localhost:3000/packages/rocketchat_livechat/assets/demo.html -->
 
-<!-- Access: http://localhost:3000/packages/rocketchat_livechat/assets/demo.html -->
+	<body style="background-color: #efefef">
+		<h1 style="color: #000">test</h1>
+		<p style="color: #000">Talk to us.</p>
 
-<body style="background-color: #EFEFEF">
-	<h1 style="color:#000">test</h1>
-	<p style="color:#000">Talk to us.</p>
+		<h2>changing page title</h2>
+		<a href="#page-0" onclick="document.title='page-0'">page 0</a><br />
+		<a href="#page-1" onclick="document.title='page-1'">page 1</a><br />
+		<a href="#page-2" onclick="document.title='page-2'">page 2</a><br />
+		<a href="#page-3" onclick="document.title='page-3'">page 3</a><br />
 
-	<h2>changing page title</h2>
-	<a href="#page-0" onclick="document.title='page-0'">page 0</a><br>
-	<a href="#page-1" onclick="document.title='page-1'">page 1</a><br>
-	<a href="#page-2" onclick="document.title='page-2'">page 2</a><br>
-	<a href="#page-3" onclick="document.title='page-3'">page 3</a><br>
+		<h2>without changing page title</h2>
+		<a href="#page-4">page 4</a><br />
+		<a href="#page-5">page 5</a><br />
+		<a href="#page-6">page 6</a><br />
+		<a href="#page-7">page 7</a><br />
 
-	<h2>without changing page title</h2>
-	<a href="#page-4">page 4</a><br>
-	<a href="#page-5">page 5</a><br>
-	<a href="#page-6">page 6</a><br>
-	<a href="#page-7">page 7</a><br>
-
-	<script type="text/javascript">
-		RocketChat(function() {
-			this.setCustomField('key-test', 'value test');
-		});
-	</script>
-</body>
-
+		<script type="text/javascript">
+			(function (w, d, s, u) {
+				w.RocketChat = function (c) {
+					w.RocketChat._.push(c);
+				};
+				w.RocketChat._ = [];
+				w.RocketChat.url = u;
+				var h = d.getElementsByTagName(s)[0],
+					j = d.createElement(s);
+				j.async = true;
+				j.src = `${window.location.origin}/livechat/rocketchat-livechat.min.js?_=201903270000`;
+				h.parentNode.insertBefore(j, h);
+			})(window, document, 'script', `${window.location.origin}/livechat`);
+		</script>
+	</body>
 </html>

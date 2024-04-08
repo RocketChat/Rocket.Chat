@@ -1,8 +1,10 @@
+import { Logger } from '@rocket.chat/logger';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { API } from '../../../../api/server';
 import { settings } from '../../../../settings/server';
-import { Livechat } from '../../lib/Livechat';
+
+const logger = new Logger('WebhookTest');
 
 API.v1.addRoute(
 	'livechat/webhook.test',
@@ -70,18 +72,18 @@ API.v1.addRoute(
 			}
 
 			try {
-				Livechat.logger.debug(`Testing webhook ${webhookUrl}`);
+				logger.debug(`Testing webhook ${webhookUrl}`);
 				const request = await fetch(webhookUrl, options);
 				const response = await request.text();
 
-				Livechat.logger.debug({ response });
+				logger.debug({ response });
 				if (request.status === 200) {
 					return API.v1.success();
 				}
 
 				throw new Error('Invalid status code');
 			} catch (error) {
-				Livechat.logger.error(`Error testing webhook: ${error}`);
+				logger.error(`Error testing webhook: ${error}`);
 				throw new Error('error-invalid-webhook-response');
 			}
 		},

@@ -9,6 +9,9 @@ import { useLoginSendEmailConfirmation } from './hooks/useLoginSendEmailConfirma
 export const EmailConfirmationForm = ({ email, onBackToLogin }: { email?: string; onBackToLogin: () => void }): ReactElement => {
 	const { t } = useTranslation();
 
+	const basicEmailRegex = /^[^@]+@[^@]+$/;
+	const isEmail = basicEmailRegex.test(email || '');
+
 	const {
 		register,
 		handleSubmit,
@@ -17,7 +20,7 @@ export const EmailConfirmationForm = ({ email, onBackToLogin }: { email?: string
 		email: string;
 	}>({
 		defaultValues: {
-			email,
+			email: isEmail ? email : '',
 		},
 	});
 
@@ -45,7 +48,6 @@ export const EmailConfirmationForm = ({ email, onBackToLogin }: { email?: string
 								{...register('email', {
 									required: true,
 								})}
-								disabled={Boolean(email)}
 								error={errors.email && t('registration.component.form.requiredField')}
 								aria-invalid={errors?.email?.type === 'required'}
 								placeholder={t('registration.component.form.emailPlaceholder')}
@@ -63,7 +65,7 @@ export const EmailConfirmationForm = ({ email, onBackToLogin }: { email?: string
 			</Form.Container>
 			<Form.Footer>
 				<ButtonGroup>
-					<Button disabled={sendEmail.isLoading} type='submit' primary>
+					<Button loading={sendEmail.isLoading} type='submit' primary>
 						{t('registration.component.form.sendConfirmationEmail')}
 					</Button>
 				</ButtonGroup>

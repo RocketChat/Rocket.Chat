@@ -16,6 +16,13 @@ COPY ./packages/core-typings/dist packages/core-typings/dist
 COPY ./packages/rest-typings/package.json packages/rest-typings/package.json
 COPY ./packages/rest-typings/dist packages/rest-typings/dist
 
+COPY ./packages/message-parser/package.json packages/message-parser/package.json
+COPY ./packages/message-parser/dist packages/message-parser/dist
+COPY ./packages/message-parser/messageParser.js packages/message-parser/messageParser.js
+
+COPY ./packages/peggy-loader/package.json packages/peggy-loader/package.json
+COPY ./packages/peggy-loader/dist packages/peggy-loader/dist
+
 COPY ./packages/model-typings/package.json packages/model-typings/package.json
 COPY ./packages/model-typings/dist packages/model-typings/dist
 
@@ -32,6 +39,9 @@ COPY ./packages/server-cloud-communication/ packages/server-cloud-communication/
 
 COPY ./ee/packages/license/package.json packages/license/package.json
 COPY ./ee/packages/license/dist packages/license/dist
+
+COPY ./packages/ui-kit/package.json packages/ui-kit/package.json
+COPY ./packages/ui-kit/dist packages/ui-kit/dist
 
 COPY ./ee/apps/${SERVICE}/dist .
 

@@ -78,6 +78,18 @@ export class HomeContent {
 		await this.page.keyboard.press('Enter');
 	}
 
+	async forwardMessage(chatName: string) {
+
+		await this.page.locator('[data-qa-type="message"]').last().hover();
+		await this.page.locator('role=button[name="Forward message"]').click();
+
+		await this.page.getByRole('textbox', { name: 'Person or Channel' }).click()
+		await this.page.keyboard.type(chatName);
+		await this.page.locator('#position-container').getByText(chatName).waitFor()
+		await this.page.locator('#position-container').getByText(chatName).click()
+		await this.page.locator('role=button[name="Forward"]').click();
+	}
+
 	get btnModalCancel(): Locator {
 		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--secondary');
 	}
@@ -149,11 +161,11 @@ export class HomeContent {
 	}
 
 	get btnRecordAudio(): Locator {
-		return this.page.locator('[data-qa-id="audio-record"]');
+		return this.page.locator('[data-qa-id="audio-message"]');
 	}
 
 	get btnMenuMoreActions() {
-		return this.page.locator('[data-qa-id="menu-more-actions"]');
+		return this.page.getByRole('button', { name: 'More actions' });
 	}
 
 	get userCard(): Locator {
@@ -196,14 +208,6 @@ export class HomeContent {
 		return this.page.locator('.rcx-vertical-bar button:has-text("Create")');
 	}
 
-	get inputModalAgentUserName(): Locator {
-		return this.page.locator('#modal-root input:nth-child(1)');
-	}
-
-	get inputModalAgentForwardComment(): Locator {
-		return this.page.locator('[data-qa-id="ForwardChatModalTextAreaInputComment"]');
-	}
-
 	async pickEmoji(emoji: string, section = 'Smileys & People') {
 		await this.page.locator('role=toolbar[name="Composer Primary Actions"] >> role=button[name="Emoji"]').click();
 
@@ -212,9 +216,8 @@ export class HomeContent {
 		await this.page.locator(`role=dialog[name="Emoji picker"] >> role=tabpanel >> role=button[name="${emoji}"]`).click();
 	}
 
-	async dragAndDropFile(): Promise<void> {
+	async dragAndDropTxtFile(): Promise<void> {
 		const contract = await fs.readFile('./tests/e2e/fixtures/files/any_file.txt', 'utf-8');
-
 		const dataTransfer = await this.page.evaluateHandle((contract) => {
 			const data = new DataTransfer();
 			const file = new File([`${contract}`], 'any_file.txt', {
@@ -229,32 +232,36 @@ export class HomeContent {
 		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
 	}
 
+	async dragAndDropLstFile(): Promise<void> {
+		const contract = await fs.readFile('./tests/e2e/fixtures/files/lst-test.lst', 'utf-8');
+		const dataTransfer = await this.page.evaluateHandle((contract) => {
+			const data = new DataTransfer();
+			const file = new File([`${contract}`], 'lst-test.lst', {
+				type: 'text/plain',
+			});
+			data.items.add(file);
+			return data;
+		}, contract);
+
+		await this.inputMessage.dispatchEvent('dragenter', { dataTransfer });
+
+		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
+	}
+
 	async openLastMessageMenu(): Promise<void> {
 		await this.page.locator('[data-qa-type="message"]').last().hover();
-		await this.page.locator('[data-qa-type="message"]').last().locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]').waitFor();
-		await this.page.locator('[data-qa-type="message"]').last().locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]').click();
+		await this.page.locator('[data-qa-type="message"]').last().locator('role=button[name="More"]').waitFor();
+		await this.page.locator('[data-qa-type="message"]').last().locator('role=button[name="More"]').click();
 	}
 
 	async openLastThreadMessageMenu(): Promise<void> {
-		await this.page.locator('//main//aside >> [data-qa-type="message"]').last().hover();
-		await this.page
-			.locator('//main//aside >> [data-qa-type="message"]')
-			.last()
-			.locator('role=button[name="More"]')
-			.waitFor();
-		await this.page
-			.locator('//main//aside >> [data-qa-type="message"]')
-			.last()
-			.locator('role=button[name="More"]')
-			.click();
+		await this.page.getByRole('dialog').locator('[data-qa-type="message"]').last().hover();
+		await this.page.getByRole('dialog').locator('[data-qa-type="message"]').last().locator('role=button[name="More"]').waitFor();
+		await this.page.getByRole('dialog').locator('[data-qa-type="message"]').last().locator('role=button[name="More"]').click();
 	}
 
 	async toggleAlsoSendThreadToChannel(isChecked: boolean): Promise<void> {
-		await this.page.locator('//main//aside >> [name="alsoSendThreadToChannel"]').setChecked(isChecked);
-	}
-
-	get takeOmnichannelChatButton(): Locator {
-		return this.page.locator('role=button[name="Take it!"]');
+		await this.page.getByRole('dialog').locator('[name="alsoSendThreadToChannel"]').setChecked(isChecked);
 	}
 
 	get lastSystemMessageBody(): Locator {
@@ -295,5 +302,9 @@ export class HomeContent {
 
 	get btnAnonymousTalk(): Locator {
 		return this.page.locator('role=button[name="Or talk as anonymous"]');
+	}
+
+	findSystemMessage(text: string): Locator {
+		return this.page.locator(`[data-qa-type="system-message-body"] >> text="${text}"`);
 	}
 }

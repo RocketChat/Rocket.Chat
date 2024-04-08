@@ -1,5 +1,342 @@
 # @rocket.chat/livechat Change Log
 
+## 1.14.19
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@4.0.6
+  </details>
+
+## 1.14.18
+
+### Patch Changes
+
+- ([#31792](https://github.com/RocketChat/Rocket.Chat/pull/31792)) Fixes issue of the `setDepartment` Livechat API method not setting the store value properly (is was only setting on the guest object)
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@4.0.5
+  </details>
+
+## 1.14.17
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@4.0.4
+  </details>
+
+## 1.14.16
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@4.0.3
+  </details>
+
+## 1.14.15
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@4.0.2
+  </details>
+
+## 1.14.14
+
+### Patch Changes
+
+- ([#31752](https://github.com/RocketChat/Rocket.Chat/pull/31752)) fixed livechat UI blinking different colors when the chat is finished
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@4.0.1
+  </details>
+
+## 1.14.13
+
+### Patch Changes
+
+- ([#31138](https://github.com/RocketChat/Rocket.Chat/pull/31138)) feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+
+- ([#31349](https://github.com/RocketChat/Rocket.Chat/pull/31349) by [@Subhojit-Dey1234](https://github.com/Subhojit-Dey1234)) feat: Implemented InlineCode handling in Bold, Italic and Strike
+
+- ([#31454](https://github.com/RocketChat/Rocket.Chat/pull/31454)) Fixed an issue with translations that caused text containing special characters to be shown escaped on UI
+
+- ([#31302](https://github.com/RocketChat/Rocket.Chat/pull/31302)) Fixed a problem that caused Livechat Widget registration page to ignore the `showOnRegistration` flag for departments, showing all items.
+
+- <details><summary>Updated dependencies [b223cbde14, dbb08ef948]:</summary>
+
+  - @rocket.chat/ui-kit@0.33.0
+  - @rocket.chat/gazzodown@4.0.0
+  - @rocket.chat/random@1.2.2
+  </details>
+
+## 1.14.13-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@4.0.0-rc.7
+  </details>
+
+## 1.14.13-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@4.0.0-rc.6
+  </details>
+
+## 1.14.13-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@4.0.0-rc.5
+  </details>
+
+## 1.14.13-rc.4
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@4.0.0-rc.4
+
+## 1.14.13-rc.3
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@4.0.0-rc.3
+
+## 1.14.13-rc.2
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@4.0.0-rc.2
+
+## 1.14.13-rc.1
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@4.0.0-rc.1
+
+## 1.14.13-rc.0
+
+### Patch Changes
+
+- b223cbde14: feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+- dbb08ef948: feat: Implemented InlineCode handling in Bold, Italic and Strike
+- bc28633c69: Fixed an issue with translations that caused text containing special characters to be shown escaped on UI
+- 5d73947a4f: Fixed a problem that caused Livechat Widget registration page to ignore the `showOnRegistration` flag for departments, showing all items.
+- Updated dependencies [b223cbde14]
+- Updated dependencies [dbb08ef948]
+  - @rocket.chat/ui-kit@0.33.0-rc.0
+  - @rocket.chat/gazzodown@4.0.0-rc.0
+  - @rocket.chat/random@1.2.2-rc.0
+
+## 1.14.12
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.3
+
+## 1.14.11
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.2
+
+## 1.14.10
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.1
+
+## 1.14.9
+
+### Patch Changes
+
+- Updated dependencies [c2f337664e]
+  - @rocket.chat/gazzodown@3.0.0
+
+## 1.14.9-rc.12
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.19
+
+## 1.14.9-rc.11
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.18
+
+## 1.14.9-rc.10
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.17
+
+## 1.14.9-rc.9
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.16
+
+## 1.14.9-rc.8
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.15
+
+## 1.14.9-rc.7
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.14
+
+## 1.14.9-rc.6
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.13
+
+## 1.14.9-rc.5
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.12
+
+## 1.14.9-rc.4
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.11
+
+## 1.14.9-rc.3
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.10
+
+## 1.14.9-rc.2
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.9
+
+## 1.14.9-rc.1
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.8
+
+## 1.14.6-rc.7
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.7
+
+## 1.14.6-rc.6
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.6
+
+## 1.14.6-rc.5
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.5
+
+## 1.14.6-rc.4
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.4
+
+## 1.14.6-rc.3
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.3
+
+## 1.14.6-rc.2
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.2
+
+## 1.14.6-rc.1
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.1
+
+## 1.14.6-rc.0
+
+### Patch Changes
+
+- Updated dependencies [c2f337664e]
+  - @rocket.chat/gazzodown@3.0.0-rc.0
+
+## 1.14.8
+
+### Patch Changes
+
+- d1c8e7ac13: Fixes reactivity issue with `registerGuest` Widget API Call, as well as other similar endpoint
+  - @rocket.chat/gazzodown@2.0.8
+
+## 1.14.7
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@2.0.7
+
+## 1.14.6
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@2.0.6
+
+## 1.14.5
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@2.0.5
+
+## 1.14.4
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@2.0.4
+
+## 1.14.3
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@2.0.3
+
+## 1.14.2
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@2.0.2
+
+## 1.14.1
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@2.0.1
+
 ## 1.14.0
 
 ### Minor Changes

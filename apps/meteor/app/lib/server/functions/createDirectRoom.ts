@@ -1,3 +1,4 @@
+import { AppEvents, Apps } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import type { ISubscriptionExtraData } from '@rocket.chat/core-services';
 import type { ICreatedRoom, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
@@ -6,7 +7,6 @@ import { Random } from '@rocket.chat/random';
 import { Meteor } from 'meteor/meteor';
 import type { MatchKeysAndValues } from 'mongodb';
 
-import { Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { settings } from '../../../settings/server';
@@ -19,6 +19,7 @@ const generateSubscription = (
 	extra: MatchKeysAndValues<ISubscription>,
 ): MatchKeysAndValues<ISubscription> => ({
 	_id: Random.id(),
+	ts: new Date(),
 	alert: false,
 	unread: 0,
 	userMentions: 0,
@@ -42,14 +43,21 @@ export async function createDirectRoom(
 	members: IUser[] | string[],
 	roomExtraData = {},
 	options: {
-		nameValidationRegex?: string;
 		creator?: string;
 		subscriptionExtra?: ISubscriptionExtraData;
 	},
 ): Promise<ICreatedRoom> {
-	if (members.length > (settings.get<number>('DirectMesssage_maxUsers') || 1)) {
-		throw new Error('error-direct-message-max-user-exceeded');
+	const maxUsers = settings.get<number>('DirectMesssage_maxUsers') || 1;
+	if (members.length > maxUsers) {
+		throw new Meteor.Error(
+			'error-direct-message-max-user-exceeded',
+			`You cannot add more than ${maxUsers} users, including yourself to a direct message`,
+			{
+				method: 'createDirectRoom',
+			},
+		);
 	}
+
 	await callbacks.run('beforeCreateDirectRoom', members);
 
 	const membersUsernames: string[] = members
@@ -95,7 +103,7 @@ export async function createDirectRoom(
 			_USERNAMES: usernames,
 		};
 
-		const prevent = await Apps.triggerEvent('IPreRoomCreatePrevent', tmpRoom).catch((error) => {
+		const prevent = await Apps.self?.triggerEvent(AppEvents.IPreRoomCreatePrevent, tmpRoom).catch((error) => {
 			if (error.name === AppsEngineException.name) {
 				throw new Meteor.Error('error-app-prevented', error.message);
 			}
@@ -107,7 +115,10 @@ export async function createDirectRoom(
 			throw new Meteor.Error('error-app-prevented', 'A Rocket.Chat App prevented the room creation.');
 		}
 
-		const result = await Apps.triggerEvent('IPreRoomCreateModify', await Apps.triggerEvent('IPreRoomCreateExtend', tmpRoom));
+		const result = await Apps.self?.triggerEvent(
+			AppEvents.IPreRoomCreateModify,
+			await Apps.self?.triggerEvent(AppEvents.IPreRoomCreateExtend, tmpRoom),
+		);
 
 		if (typeof result === 'object') {
 			Object.assign(roomInfo, result);
@@ -161,7 +172,7 @@ export async function createDirectRoom(
 
 		await callbacks.run('afterCreateDirectRoom', insertedRoom, { members: roomMembers, creatorId: options?.creator });
 
-		void Apps.triggerEvent('IPostRoomCreate', insertedRoom);
+		void Apps.self?.triggerEvent(AppEvents.IPostRoomCreate, insertedRoom);
 	}
 
 	return {

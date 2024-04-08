@@ -1,10 +1,11 @@
+import { AppEvents, Apps } from '@rocket.chat/apps';
 import { api } from '@rocket.chat/core-services';
 import type { AtLeast, IMessage, IUser } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Uploads, Users, ReadReceipts } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
+import { broadcastMessageFromData } from '../../../../server/modules/watchers/lib/messages';
 import { canDeleteMessageAsync } from '../../../authorization/server/functions/canDeleteMessage';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
@@ -28,14 +29,14 @@ export const deleteMessageValidatingPermission = async (message: AtLeast<IMessag
 };
 
 export async function deleteMessage(message: IMessage, user: IUser): Promise<void> {
-	const deletedMsg = await Messages.findOneById(message._id);
+	const deletedMsg: IMessage | null = await Messages.findOneById(message._id);
 	const isThread = (deletedMsg?.tcount || 0) > 0;
 	const keepHistory = settings.get('Message_KeepHistory') || isThread;
 	const showDeletedStatus = settings.get('Message_ShowDeletedStatus') || isThread;
-	const bridges = Apps?.isLoaded() && Apps.getBridges();
+	const bridges = Apps.self?.isLoaded() && Apps.getBridges();
 
 	if (deletedMsg && bridges) {
-		const prevent = await bridges.getListenerBridge().messageEvent('IPreMessageDeletePrevent', deletedMsg);
+		const prevent = await bridges.getListenerBridge().messageEvent(AppEvents.IPreMessageDeletePrevent, deletedMsg);
 		if (prevent) {
 			throw new Meteor.Error('error-app-prevented-deleting', 'A Rocket.Chat App prevented the message deleting.');
 		}
@@ -68,7 +69,6 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 			file?._id && (await FileUpload.getStore('Uploads').deleteById(file._id));
 		}
 	}
-
 	if (showDeletedStatus) {
 		// TODO is there a better way to tell TS "IUser[username]" is not undefined?
 		await Messages.setAsDeletedByIdAndUser(message._id, user as Required<Pick<IUser, '_id' | 'username' | 'name'>>);
@@ -79,19 +79,23 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 	const room = await Rooms.findOneById(message.rid, { projection: { lastMessage: 1, prid: 1, mid: 1, federated: 1 } });
 
 	// update last message
-	if (settings.get('Store_Last_Message')) {
-		if (!room?.lastMessage || room.lastMessage._id === message._id) {
-			const lastMessageNotDeleted = await Messages.getLastVisibleMessageSentWithNoTypeByRoomId(message.rid);
-			await Rooms.resetLastMessageById(message.rid, lastMessageNotDeleted);
-		}
+	if (settings.get('Store_Last_Message') && (!room?.lastMessage || room.lastMessage._id === message._id)) {
+		const lastMessageNotDeleted = await Messages.getLastVisibleMessageSentWithNoTypeByRoomId(message.rid);
+		await Rooms.resetLastMessageById(message.rid, lastMessageNotDeleted, -1);
+	} else {
+		// decrease message count
+		await Rooms.decreaseMessageCountById(message.rid, 1);
 	}
 
 	await callbacks.run('afterDeleteMessage', deletedMsg, room);
 
-	// decrease message count
-	await Rooms.decreaseMessageCountById(message.rid, 1);
+	if (keepHistory || showDeletedStatus) {
+		void broadcastMessageFromData({
+			id: message._id,
+		});
+	}
 
-	if (bridges) {
-		void bridges.getListenerBridge().messageEvent('IPostMessageDeleted', deletedMsg, user);
+	if (bridges && deletedMsg) {
+		void bridges.getListenerBridge().messageEvent(AppEvents.IPostMessageDeleted, deletedMsg, user);
 	}
 }

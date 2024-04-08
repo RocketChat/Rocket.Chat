@@ -2,8 +2,14 @@ import { Button } from '@rocket.chat/fuselage';
 import { useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useRef } from 'react';
 
-import { ContextualbarTitle, Contextualbar, ContextualbarClose, ContextualbarHeader } from '../../../components/Contextualbar';
-import Page from '../../../components/Page';
+import {
+	ContextualbarTitle,
+	Contextualbar,
+	ContextualbarClose,
+	ContextualbarHeader,
+	ContextualbarDialog,
+} from '../../../components/Contextualbar';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 import AddCustomSound from './AddCustomSound';
 import CustomSoundsTable from './CustomSoundsTable';
 import EditCustomSound from './EditCustomSound';
@@ -41,27 +47,29 @@ const CustomSoundsPage = () => {
 	return (
 		<Page flexDirection='row'>
 			<Page name='admin-custom-sounds'>
-				<Page.Header title={t('Sounds')}>
+				<PageHeader title={t('Sounds')}>
 					<Button primary onClick={handleNewButtonClick} aria-label={t('New')}>
 						{t('New')}
 					</Button>
-				</Page.Header>
-				<Page.Content>
+				</PageHeader>
+				<PageContent>
 					<CustomSoundsTable reload={reload} onClick={handleItemClick} />
-				</Page.Content>
+				</PageContent>
 			</Page>
 			{context && (
-				<Contextualbar flexShrink={0}>
-					<ContextualbarHeader>
-						<ContextualbarTitle>
-							{context === 'edit' && t('Custom_Sound_Edit')}
-							{context === 'new' && t('Custom_Sound_Add')}
-						</ContextualbarTitle>
-						<ContextualbarClose onClick={handleClose} />
-					</ContextualbarHeader>
-					{context === 'edit' && <EditCustomSound _id={id} close={handleClose} onChange={handleReload} />}
-					{context === 'new' && <AddCustomSound goToNew={handleItemClick} close={handleClose} onChange={handleReload} />}
-				</Contextualbar>
+				<ContextualbarDialog>
+					<Contextualbar>
+						<ContextualbarHeader>
+							<ContextualbarTitle>
+								{context === 'edit' && t('Custom_Sound_Edit')}
+								{context === 'new' && t('Custom_Sound_Add')}
+							</ContextualbarTitle>
+							<ContextualbarClose onClick={handleClose} />
+						</ContextualbarHeader>
+						{context === 'edit' && <EditCustomSound _id={id} close={handleClose} onChange={handleReload} />}
+						{context === 'new' && <AddCustomSound goToNew={handleItemClick} close={handleClose} onChange={handleReload} />}
+					</Contextualbar>
+				</ContextualbarDialog>
 			)}
 		</Page>
 	);

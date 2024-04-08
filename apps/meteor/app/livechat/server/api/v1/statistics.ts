@@ -3,7 +3,7 @@ import { isLivechatAnalyticsAgentOverviewProps, isLivechatAnalyticsOverviewProps
 
 import { API } from '../../../../api/server';
 import { settings } from '../../../../settings/server';
-import { Livechat } from '../../lib/Livechat';
+import { getAgentOverviewDataCached, getAnalyticsOverviewDataCached } from '../../lib/AnalyticsTyped';
 
 API.v1.addRoute(
 	'livechat/analytics/agent-overview',
@@ -22,7 +22,7 @@ API.v1.addRoute(
 
 			const user = await Users.findOneById(this.userId, { projection: { _id: 1, utcOffset: 1 } });
 			return API.v1.success(
-				await Livechat.Analytics.getAgentOverviewData({
+				await getAgentOverviewDataCached({
 					departmentId,
 					utcOffset: user?.utcOffset || 0,
 					daterange: { from, to },
@@ -52,7 +52,7 @@ API.v1.addRoute(
 			const language = user?.language || settings.get('Language') || 'en';
 
 			return API.v1.success(
-				await Livechat.Analytics.getAnalyticsOverviewData({
+				await getAnalyticsOverviewDataCached({
 					departmentId,
 					utcOffset: user?.utcOffset || 0,
 					daterange: { from, to },

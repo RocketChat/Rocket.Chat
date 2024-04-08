@@ -1,4 +1,4 @@
-import { getCredentials, request, api, credentials } from './api-data.js';
+import { credentials, request, api } from './api-data.js';
 
 export const customFieldText = {
 	type: 'text',
@@ -7,18 +7,12 @@ export const customFieldText = {
 	maxLength: 10,
 };
 
-export function setCustomFields(customFields, done) {
-	getCredentials((error) => {
-		if (error) {
-			return done(error);
-		}
+export function setCustomFields(customFields) {
+	const stringified = customFields ? JSON.stringify(customFields) : '';
 
-		const stringified = customFields ? JSON.stringify(customFields) : '';
-
-		request.post(api('settings/Accounts_CustomFields')).set(credentials).send({ value: stringified }).expect(200).end(done);
-	});
+	return request.post(api('settings/Accounts_CustomFields')).set(credentials).send({ value: stringified }).expect(200);
 }
 
-export function clearCustomFields(done = () => {}) {
-	setCustomFields(null, done);
+export function clearCustomFields() {
+	return setCustomFields(null);
 }

@@ -1112,6 +1112,14 @@ describe('[Chat]', function () {
 	});
 
 	describe('/chat.update', () => {
+		const siteUrl = process.env.SITE_URL || process.env.TEST_API_URL || 'http://localhost:3000';
+		let simpleMessageId;
+
+		before('should send simple message in room', async () => {
+			const res = await sendSimpleMessage({ roomId: 'GENERAL' });
+			simpleMessageId = res.body.message._id;
+		});
+
 		it('should update a message successfully', (done) => {
 			request
 				.post(api('chat.update'))
@@ -1128,6 +1136,86 @@ describe('[Chat]', function () {
 					expect(res.body).to.have.nested.property('message.msg', 'This message was edited via API');
 				})
 				.end(done);
+		});
+
+		it('should add quote attachments to a message', async () => {
+			const quotedMsgLink = `${siteUrl}/channel/general?msg=${message._id}`;
+			request
+				.post(api('chat.update'))
+				.set(credentials)
+				.send({
+					roomId: 'GENERAL',
+					msgId: message._id,
+					text: `Testing quotes ${quotedMsgLink}`,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('message.msg', `Testing quotes ${quotedMsgLink}`);
+					expect(res.body.message).to.have.property('attachments').that.is.an('array').that.has.lengthOf(1);
+					expect(res.body.message.attachments[0]).to.have.property('message_link', quotedMsgLink);
+				});
+		});
+
+		it('should replace a quote attachment in a message', async () => {
+			const quotedMsgLink = `${siteUrl}/channel/general?msg=${simpleMessageId}`;
+			request
+				.post(api('chat.update'))
+				.set(credentials)
+				.send({
+					roomId: 'GENERAL',
+					msgId: message._id,
+					text: `Testing quotes ${quotedMsgLink}`,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('message.msg', `Testing quotes ${quotedMsgLink}`);
+					expect(res.body.message).to.have.property('attachments').that.is.an('array').that.has.lengthOf(1);
+					expect(res.body.message.attachments[0]).to.have.property('message_link', quotedMsgLink);
+				});
+		});
+
+		it('should add multiple quote attachments in a single message', async () => {
+			const quotedMsgLink = `${siteUrl}/channel/general?msg=${simpleMessageId}`;
+			const newQuotedMsgLink = `${siteUrl}/channel/general?msg=${message._id}`;
+			request
+				.post(api('chat.update'))
+				.set(credentials)
+				.send({
+					roomId: 'GENERAL',
+					msgId: message._id,
+					text: `${newQuotedMsgLink} Testing quotes ${quotedMsgLink}`,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('message.msg', `Testing quotes ${quotedMsgLink}`);
+					expect(res.body.message).to.have.property('attachments').that.is.an('array').that.has.lengthOf(2);
+					expect(res.body.message.attachments[0]).to.have.property('message_link', newQuotedMsgLink);
+					expect(res.body.message.attachments[1]).to.have.property('message_link', quotedMsgLink);
+				});
+		});
+
+		it('should erase old quote attachments when updating a message', async () => {
+			await request
+				.post(api('chat.update'))
+				.set(credentials)
+				.send({
+					roomId: 'GENERAL',
+					msgId: message._id,
+					text: 'This message was edited via API',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('message.msg', 'This message was edited via API');
+					expect(res.body.message).to.have.property('attachments').that.is.an('array').that.has.lengthOf(0);
+				});
 		});
 	});
 
@@ -3102,6 +3190,73 @@ describe('Threads', () => {
 						expect(res.body).to.have.property('success', true);
 					})
 					.end(done);
+			});
+		});
+	});
+
+	describe('[/chat.getURLPreview]', () => {
+		const url = 'https://www.youtube.com/watch?v=no050HN4ojo';
+		it('should return the URL preview with metadata and headers', async () => {
+			await request
+				.get(api('chat.getURLPreview'))
+				.set(credentials)
+				.query({
+					roomId: 'GENERAL',
+					url,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('urlPreview').and.to.be.an('object').that.is.not.empty;
+					expect(res.body.urlPreview).to.have.property('url', url);
+					expect(res.body.urlPreview).to.have.property('headers').and.to.be.an('object').that.is.not.empty;
+				});
+		});
+
+		describe('when an error occurs', () => {
+			it('should return statusCode 400 and an error when "roomId" is not provided', async () => {
+				await request
+					.get(api('chat.getURLPreview'))
+					.set(credentials)
+					.query({
+						url,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.errorType).to.be.equal('invalid-params');
+					});
+			});
+			it('should return statusCode 400 and an error when "url" is not provided', async () => {
+				await request
+					.get(api('chat.getURLPreview'))
+					.set(credentials)
+					.query({
+						roomId: 'GENERAL',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.errorType).to.be.equal('invalid-params');
+					});
+			});
+			it('should return statusCode 400 and an error when "roomId" is provided but user is not in the room', async () => {
+				await request
+					.get(api('chat.getURLPreview'))
+					.set(credentials)
+					.query({
+						roomId: 'undefined',
+						url,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.errorType).to.be.equal('error-not-allowed');
+					});
 			});
 		});
 	});

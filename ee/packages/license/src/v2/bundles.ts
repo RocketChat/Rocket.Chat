@@ -1,23 +1,7 @@
-export type BundleFeature =
-	| 'auditing'
-	| 'canned-responses'
-	| 'ldap-enterprise'
-	| 'livechat-enterprise'
-	| 'voip-enterprise'
-	| 'omnichannel-mobile-enterprise'
-	| 'engagement-dashboard'
-	| 'push-privacy'
-	| 'scalability'
-	| 'saml-enterprise'
-	| 'device-management'
-	| 'oauth-enterprise'
-	| 'federation'
-	| 'videoconference-enterprise'
-	| 'message-read-receipt'
-	| 'outlook-calendar';
+import type { LicenseModule } from '@rocket.chat/core-typings';
 
 interface IBundle {
-	[key: string]: BundleFeature[];
+	[key: string]: LicenseModule[];
 }
 
 const bundles: IBundle = {
@@ -38,6 +22,11 @@ const bundles: IBundle = {
 		'videoconference-enterprise',
 		'message-read-receipt',
 		'outlook-calendar',
+		'teams-mention',
+		'hide-watermark',
+		'custom-roles',
+		'accessibility-certification',
+		'unlimited-presence',
 	],
 	pro: [],
 };

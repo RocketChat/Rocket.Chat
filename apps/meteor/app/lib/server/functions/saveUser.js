@@ -1,3 +1,4 @@
+import { Apps, AppEvents } from '@rocket.chat/apps';
 import { isUserFederated } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import Gravatar from 'gravatar';
@@ -5,7 +6,6 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { AppEvents, Apps } from '../../../../ee/server/apps/orchestrator';
 import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
@@ -108,10 +108,6 @@ async function validateUserData(userId, userData) {
 			method: 'insertOrUpdateUser',
 			field: 'Username',
 		});
-	}
-
-	if (userData.roles) {
-		await callbacks.run('validateUserRoles', userData);
 	}
 
 	let nameValidation;
@@ -337,11 +333,18 @@ const saveNewUser = async function (userData, sendPassword) {
 };
 
 export const saveUser = async function (userId, userData) {
-	const oldUserData = await Users.findOneById(userData._id);
+	const oldUserData = userData._id && (await Users.findOneById(userData._id));
 	if (oldUserData && isUserFederated(oldUserData)) {
 		throw new Meteor.Error('Edit_Federated_User_Not_Allowed', 'Not possible to edit a federated user');
 	}
+
 	await validateUserData(userId, userData);
+
+	await callbacks.run('beforeSaveUser', {
+		user: userData,
+		oldUser: oldUserData,
+	});
+
 	let sendPassword = false;
 
 	if (userData.hasOwnProperty('setRandomPassword')) {
@@ -432,7 +435,7 @@ export const saveUser = async function (userId, userData) {
 		oldUser: oldUserData,
 	});
 
-	await Apps.triggerEvent(AppEvents.IPostUserUpdated, {
+	await Apps.self?.triggerEvent(AppEvents.IPostUserUpdated, {
 		user: userUpdated,
 		previousUser: oldUserData,
 		performedBy: await safeGetMeteorUser(),

@@ -3,11 +3,13 @@ import { EventEmitter } from 'events';
 import { InstanceStatus } from '@rocket.chat/models';
 
 import { asyncLocalStorage } from '.';
-import type { EventSignatures } from './Events';
+import type { EventSignatures } from './events/Events';
 import type { IBroker, IBrokerNode } from './types/IBroker';
 import type { ServiceClass, IServiceClass } from './types/ServiceClass';
 
 export class LocalBroker implements IBroker {
+	private started = false;
+
 	private methods = new Map<string, (...params: any) => any>();
 
 	private events = new EventEmitter();
@@ -32,7 +34,7 @@ export class LocalBroker implements IBroker {
 		return this.call(method, data);
 	}
 
-	destroyService(instance: ServiceClass): void {
+	async destroyService(instance: ServiceClass): Promise<void> {
 		const namespace = instance.getName();
 
 		instance.getEvents().forEach((event) => event.listeners.forEach((listener) => this.events.removeListener(event.eventName, listener)));
@@ -49,7 +51,7 @@ export class LocalBroker implements IBroker {
 			this.methods.delete(`${namespace}.${method}`);
 		}
 		instance.removeAllListeners();
-		instance.stopped();
+		await instance.stopped();
 	}
 
 	createService(instance: IServiceClass): void {
@@ -72,6 +74,9 @@ export class LocalBroker implements IBroker {
 			const i = instance as any;
 
 			this.methods.set(`${namespace}.${method}`, i[method].bind(i));
+		}
+		if (this.started) {
+			void instance.started();
 		}
 	}
 
@@ -106,5 +111,6 @@ export class LocalBroker implements IBroker {
 
 	async start(): Promise<void> {
 		await Promise.all([...this.services].map((service) => service.started()));
+		this.started = true;
 	}
 }

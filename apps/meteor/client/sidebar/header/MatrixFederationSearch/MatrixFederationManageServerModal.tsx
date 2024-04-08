@@ -1,16 +1,4 @@
-import {
-	Divider,
-	Modal,
-	ButtonGroup,
-	Button,
-	Field,
-	TextInput,
-	Throbber,
-	FieldLabel,
-	FieldRow,
-	FieldError,
-	FieldHint,
-} from '@rocket.chat/fuselage';
+import { Divider, Modal, ButtonGroup, Button, Field, TextInput, FieldLabel, FieldRow, FieldError, FieldHint } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetModal, useTranslation, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -88,9 +76,8 @@ const MatrixFederationAddServerModal: VFC<MatrixFederationAddServerModalProps> =
 							}}
 							mie={4}
 						/>
-						<Button onClick={() => addServer()} primary disabled={isLoading}>
-							{!isLoading && t('Add')}
-							{isLoading && <Throbber inheritColor />}
+						<Button onClick={() => addServer()} primary loading={isLoading}>
+							{t('Add')}
 						</Button>
 					</FieldRow>
 					{isError && errorKey && <FieldError>{t(errorKey)}</FieldError>}

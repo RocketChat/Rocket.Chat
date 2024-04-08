@@ -1,3 +1,4 @@
+import { Omnichannel } from '@rocket.chat/core-services';
 import type { ILivechatAgent, IOmnichannelRoom, IUser, SelectedAgent, TransferByData } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom, OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, Users, LivechatRooms, Subscriptions, Messages } from '@rocket.chat/models';
@@ -23,7 +24,6 @@ import { hasPermissionAsync } from '../../../../authorization/server/functions/h
 import { addUserToRoom } from '../../../../lib/server/functions/addUserToRoom';
 import { settings as rcSettings } from '../../../../settings/server';
 import { normalizeTransferredByData } from '../../lib/Helper';
-import { Livechat } from '../../lib/Livechat';
 import type { CloseRoomParams } from '../../lib/LivechatTyped';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
@@ -251,7 +251,7 @@ API.v1.addRoute(
 			const { _id, username, name } = guest;
 			const transferredBy = normalizeTransferredByData({ _id, username, name, userType: 'visitor' }, room);
 
-			if (!(await Livechat.transfer(room, guest, { roomId: rid, departmentId: department, transferredBy }))) {
+			if (!(await LivechatTyped.transfer(room, guest, { departmentId: department, transferredBy }))) {
 				return API.v1.failure();
 			}
 
@@ -312,10 +312,10 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-l-room', 'transfer-livechat-guest'], validateParams: isLiveChatRoomForwardProps },
 	{
 		async post() {
-			const transferData: typeof this.bodyParams & {
-				transferredBy?: unknown;
+			const transferData = this.bodyParams as typeof this.bodyParams & {
+				transferredBy: TransferByData;
 				transferredTo?: { _id: string; username?: string; name?: string };
-			} = this.bodyParams;
+			};
 
 			const room = await LivechatRooms.findOneById(this.bodyParams.roomId);
 			if (!room || room.t !== 'l') {
@@ -326,7 +326,15 @@ API.v1.addRoute(
 				throw new Error('This_conversation_is_already_closed');
 			}
 
+			if (!(await Omnichannel.isWithinMACLimit(room))) {
+				throw new Error('error-mac-limit-reached');
+			}
+
 			const guest = await LivechatVisitors.findOneEnabledById(room.v?._id);
+			if (!guest) {
+				throw new Error('error-invalid-visitor');
+			}
+
 			const transferedBy = this.user satisfies TransferByData;
 			transferData.transferredBy = normalizeTransferredByData(transferedBy, room);
 			if (transferData.userId) {
@@ -340,7 +348,7 @@ API.v1.addRoute(
 				}
 			}
 
-			const chatForwardedResult = await Livechat.transfer(room, guest, transferData);
+			const chatForwardedResult = await LivechatTyped.transfer(room, guest, transferData);
 			if (!chatForwardedResult) {
 				throw new Error('error-forwarding-chat');
 			}
@@ -408,6 +416,14 @@ API.v1.addRoute(
 				throw new Error('error-invalid-room');
 			}
 
+			if (!room.open) {
+				throw new Error('room-closed');
+			}
+
+			if (!(await Omnichannel.isWithinMACLimit(room))) {
+				throw new Error('error-mac-limit-reached');
+			}
+
 			if (!(await canAccessRoomAsync(room, user))) {
 				throw new Error('error-not-allowed');
 			}
@@ -442,7 +458,7 @@ API.v1.addRoute(
 			}
 
 			// We want this both operations to be concurrent, so we have to go with Promise.allSettled
-			const result = await Promise.allSettled([Livechat.saveGuest(guestData, this.userId), Livechat.saveRoomInfo(roomData)]);
+			const result = await Promise.allSettled([LivechatTyped.saveGuest(guestData, this.userId), LivechatTyped.saveRoomInfo(roomData)]);
 
 			const firstError = result.find((item) => item.status === 'rejected');
 			if (firstError) {

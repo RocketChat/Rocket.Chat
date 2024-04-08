@@ -56,7 +56,6 @@ export class UsersRaw extends BaseRaw {
 			{ key: { lastLogin: 1 } },
 			{ key: { status: 1 } },
 			{ key: { statusText: 1 } },
-			{ key: { active: 1 }, sparse: 1 },
 			{ key: { statusConnection: 1 }, sparse: 1 },
 			{ key: { appId: 1 }, sparse: 1 },
 			{ key: { type: 1 } },
@@ -1037,7 +1036,7 @@ export class UsersRaw extends BaseRaw {
 	updateLivechatStatusBasedOnBusinessHours(userIds = []) {
 		const query = {
 			$or: [{ openBusinessHours: { $exists: false } }, { openBusinessHours: { $size: 0 } }],
-			roles: 'livechat-agent',
+			$and: [{ roles: 'livechat-agent' }, { roles: { $ne: 'bot' } }],
 			// exclude deactivated users
 			active: true,
 			// Avoid unnecessary updates
@@ -1076,10 +1075,18 @@ export class UsersRaw extends BaseRaw {
 	async isAgentWithinBusinessHours(agentId) {
 		const query = {
 			_id: agentId,
-			openBusinessHours: {
-				$exists: true,
-				$not: { $size: 0 },
-			},
+			$or: [
+				{
+					openBusinessHours: {
+						$exists: true,
+						$not: { $size: 0 },
+					},
+				},
+				{
+					// Bots can ignore Business Hours and be always available
+					roles: 'bot',
+				},
+			],
 		};
 		return (await this.col.countDocuments(query)) > 0;
 	}
@@ -1652,7 +1659,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		const user = await this.col.findOneAndUpdate(query, update, { sort, returnDocument: 'after' });
+		const user = await this.findOneAndUpdate(query, update, { sort, returnDocument: 'after' });
 		if (user && user.value) {
 			return {
 				agentId: user.value._id,
@@ -1682,7 +1689,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		const user = await this.col.findOneAndUpdate(query, update, { sort, returnDocument: 'after' });
+		const user = await this.findOneAndUpdate(query, update, { sort, returnDocument: 'after' });
 		if (user?.value) {
 			return {
 				agentId: user.value._id,
@@ -1937,45 +1944,63 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	removeExpiredEmailCodesOfUserId(userId) {
+	removeExpiredEmailCodeOfUserId(userId) {
+		return this.updateOne(
+			{ '_id': userId, 'services.emailCode.expire': { $lt: new Date() } },
+			{
+				$unset: { 'services.emailCode': 1 },
+			},
+		);
+	}
+
+	removeEmailCodeOfUserId(userId) {
 		return this.updateOne(
 			{ _id: userId },
 			{
-				$pull: {
-					'services.emailCode': {
-						expire: { $lt: new Date() },
-					},
+				$unset: { 'services.emailCode': 1 },
+			},
+		);
+	}
+
+	incrementInvalidEmailCodeAttempt(userId) {
+		return this.findOneAndUpdate(
+			{ _id: userId },
+			{
+				$inc: { 'services.emailCode.attempts': 1 },
+			},
+			{
+				returnDocument: 'after',
+				projection: {
+					'services.emailCode.attempts': 1,
 				},
 			},
 		);
 	}
 
-	removeEmailCodeByUserIdAndCode(userId, code) {
-		return this.updateOne(
-			{ _id: userId },
+	async maxInvalidEmailCodeAttemptsReached(userId, maxAttempts) {
+		const result = await this.findOne(
 			{
-				$pull: {
-					'services.emailCode': {
-						code,
-					},
+				'_id': userId,
+				'services.emailCode.attempts': { $gte: maxAttempts },
+			},
+			{
+				projection: {
+					_id: 1,
 				},
 			},
 		);
+		return !!result?._id;
 	}
 
 	addEmailCodeByUserId(userId, code, expire) {
 		return this.updateOne(
 			{ _id: userId },
 			{
-				$push: {
+				$set: {
 					'services.emailCode': {
-						$each: [
-							{
-								code,
-								expire,
-							},
-						],
-						$slice: -5,
+						code,
+						expire,
+						attempts: 0,
 					},
 				},
 			},

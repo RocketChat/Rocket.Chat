@@ -4,9 +4,11 @@ import React from 'react';
 
 import {
 	Contextualbar,
+	ContextualbarTitle,
 	ContextualbarHeader,
 	ContextualbarClose,
 	ContextualbarScrollableContent,
+	ContextualbarDialog,
 } from '../../../../client/components/Contextualbar';
 import type { PriorityFormData } from './PriorityEditForm';
 import PriorityEditFormWithData from './PriorityEditFormWithData';
@@ -22,15 +24,17 @@ const PriorityList = ({ priorityId, onClose, onSave }: PriorityListProps): React
 	const t = useTranslation();
 
 	return (
-		<Contextualbar>
-			<ContextualbarHeader>
-				{t('Edit_Priority')}
-				<ContextualbarClose onClick={onClose} />
-			</ContextualbarHeader>
-			<ContextualbarScrollableContent height='100%'>
-				<PriorityEditFormWithData priorityId={priorityId} onSave={onSave} onCancel={onClose} />
-			</ContextualbarScrollableContent>
-		</Contextualbar>
+		<ContextualbarDialog>
+			<Contextualbar>
+				<ContextualbarHeader>
+					<ContextualbarTitle>{t('Edit_Priority')}</ContextualbarTitle>
+					<ContextualbarClose onClick={onClose} />
+				</ContextualbarHeader>
+				<ContextualbarScrollableContent height='100%'>
+					<PriorityEditFormWithData priorityId={priorityId} onSave={onSave} onCancel={onClose} />
+				</ContextualbarScrollableContent>
+			</Contextualbar>
+		</ContextualbarDialog>
 	);
 };
 

@@ -171,6 +171,21 @@ describe('[Groups]', function () {
 					});
 			});
 		});
+
+		it(`should fail when trying to use an existing room's name`, async () => {
+			await request
+				.post(api('groups.create'))
+				.set(credentials)
+				.send({
+					name: 'general',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.nested.property('errorType', 'error-duplicate-channel-name');
+				});
+		});
 	});
 
 	describe('/groups.info', () => {
@@ -1051,7 +1066,7 @@ describe('[Groups]', function () {
 	});
 
 	describe('/groups.files', async () => {
-		await testFileUploads('groups.files', group);
+		await testFileUploads('groups.files', 'p');
 	});
 
 	describe('/groups.listAll', () => {

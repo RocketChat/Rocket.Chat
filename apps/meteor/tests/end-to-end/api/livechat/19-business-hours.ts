@@ -18,6 +18,7 @@ import {
 	addOrRemoveAgentFromDepartment,
 	archiveDepartment,
 	createDepartmentWithAnOnlineAgent,
+	createDepartmentWithAgent,
 	disableDepartment,
 	getDepartmentById,
 	deleteDepartment,
@@ -43,6 +44,17 @@ describe('LIVECHAT - business hours', function () {
 
 	let defaultBhId: any;
 	describe('[CE] livechat/business-hour', () => {
+		after(async () => {
+			await saveBusinessHour({
+				...defaultBhId,
+				timezone: {
+					name: 'America/Sao_Paulo',
+					utc: '-03:00',
+				},
+				workHours: getWorkHours(true),
+			});
+		});
+
 		it('should fail when user doesnt have view-livechat-business-hours permission', async () => {
 			await removePermissionFromAllRoles('view-livechat-business-hours');
 			const response = await request.get(api('livechat/business-hour')).set(credentials).expect(403);
@@ -98,6 +110,39 @@ describe('LIVECHAT - business hours', function () {
 
 			const { body } = await makeAgentAvailable(credentials);
 
+			expect(body).to.have.property('success', true);
+		});
+		it('should save a default business hour with proper timezone settings', async () => {
+			await saveBusinessHour({
+				...defaultBhId,
+				timezone: {
+					name: 'Asia/Kolkata',
+					utc: '+05:30',
+				},
+				workHours: getWorkHours(true),
+				timezoneName: 'Asia/Kolkata',
+			});
+
+			const { body } = await request
+				.get(api('livechat/business-hour'))
+				.set(credentials)
+				.query({ type: LivechatBusinessHourTypes.DEFAULT })
+				.expect(200);
+
+			expect(body.success).to.be.true;
+			expect(body.businessHour).to.be.an('object');
+			expect(body.businessHour.timezone).to.be.an('object').that.has.property('name').that.is.equal('Asia/Kolkata');
+			expect(body.businessHour.workHours).to.be.an('array').with.lengthOf(7);
+
+			const { workHours } = body.businessHour;
+
+			expect(workHours[0].day).to.be.equal('Sunday');
+			expect(workHours[0].start.utc.dayOfWeek).to.be.equal('Saturday');
+			expect(workHours[0].finish.utc.dayOfWeek).to.be.equal('Sunday');
+		});
+
+		it('should allow agents to be available', async () => {
+			const { body } = await makeAgentAvailable(credentials);
 			expect(body).to.have.property('success', true);
 		});
 	});
@@ -276,6 +321,21 @@ describe('LIVECHAT - business hours', function () {
 			expect(latestAgent).to.be.an('object');
 			expect(latestAgent.openBusinessHours).to.be.an('array').of.length(0);
 			expect(latestAgent.statusLivechat).to.be.equal(ILivechatAgentStatus.NOT_AVAILABLE);
+		});
+
+		it('should create a custom business hour which is closed by default, but a bot agent shouldnt be affected', async () => {
+			const bot = await createUser({ roles: ['bot', 'livechat-agent'] });
+			const creds = await login(bot.username, password);
+			await makeAgentAvailable(creds);
+
+			const { department } = await createDepartmentWithAgent({ user: bot, credentials: creds });
+
+			await createCustomBusinessHour([department._id], false);
+
+			const latestAgent: ILivechatAgent = await getMe(creds);
+			expect(latestAgent).to.be.an('object');
+			expect(latestAgent.openBusinessHours).to.be.an('array').of.length(0);
+			expect(latestAgent.statusLivechat).to.be.equal(ILivechatAgentStatus.AVAILABLE);
 		});
 	});
 
@@ -806,6 +866,7 @@ describe('LIVECHAT - business hours', function () {
 		});
 
 		it('should verify if agent becomes unavailable to take chats when user is deactivated', async () => {
+			await makeAgentAvailable(await login(agent.username, password));
 			await setUserActiveStatus(agent._id, false);
 
 			const latestAgent = await getUserByUsername(agent.username);

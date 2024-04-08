@@ -1,24 +1,17 @@
-import { Box, FieldLabel, FieldHint, Flex } from '@rocket.chat/fuselage';
+import { FieldLabel, FieldHint, FieldRow, Field } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import React from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 import CodeMirror from './CodeMirror';
 import CodeMirrorBox from './CodeMirror/CodeMirrorBox';
+import type { SettingInputProps } from './types';
 
-type CodeSettingInputProps = {
-	_id: string;
-	label: string;
+type CodeSettingInputProps = SettingInputProps & {
 	hint: string;
-	value?: string;
 	code: string;
-	placeholder?: string;
 	readonly: boolean;
-	autocomplete: boolean;
 	disabled: boolean;
-	hasResetButton: boolean;
-	onChangeValue: (value: string) => void;
-	onResetButtonClick: () => void;
 };
 
 function CodeSettingInput({
@@ -31,6 +24,7 @@ function CodeSettingInput({
 	readonly,
 	autocomplete,
 	disabled,
+	required,
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
@@ -40,16 +34,14 @@ function CodeSettingInput({
 	};
 
 	return (
-		<>
-			<Flex.Container>
-				<Box>
-					<FieldLabel htmlFor={_id} title={_id}>
-						{label}
-					</FieldLabel>
-					{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
-				</Box>
-				{hint && <FieldHint>{hint}</FieldHint>}
-			</Flex.Container>
+		<Field>
+			<FieldRow>
+				<FieldLabel htmlFor={_id} title={_id} required={required}>
+					{label}
+				</FieldLabel>
+				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+			</FieldRow>
+			{hint && <FieldHint>{hint}</FieldHint>}
 			<CodeMirrorBox label={label}>
 				<CodeMirror
 					data-qa-setting-id={_id}
@@ -63,7 +55,7 @@ function CodeSettingInput({
 					onChange={handleChange}
 				/>
 			</CodeMirrorBox>
-		</>
+		</Field>
 	);
 }
 

@@ -51,7 +51,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			{ key: { 'omnichannel.predictedVisitorAbandonmentAt': 1 }, sparse: true },
 			{ key: { closedAt: 1 }, sparse: true },
 			{ key: { servedBy: 1 }, sparse: true },
-			{ key: { 'v.token': 1 }, sparse: true },
 			{ key: { 'v.token': 1, 'email.thread': 1 }, sparse: true },
 			{ key: { 'v._id': 1 }, sparse: true },
 			{ key: { t: 1, departmentId: 1, closedAt: 1 }, partialFilterExpression: { closedAt: { $exists: true } } },
@@ -1131,8 +1130,8 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		const match: Document = {
 			$match: {
 				'v._id': visitorId,
-				...(open !== undefined && { open: { $exists: open } }),
-				...(served !== undefined && { servedBy: { $exists: served } }),
+				...(open !== undefined && !open && { closedAt: { $exists: true } }),
+				...(served !== undefined && served && { servedBy: { $exists: served } }),
 				...(source && {
 					$or: [{ 'source.type': new RegExp(escapeRegExp(source), 'i') }, { 'source.alias': new RegExp(escapeRegExp(source), 'i') }],
 				}),
@@ -1892,7 +1891,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 
 	findOneOpenByVisitorTokenAndDepartmentIdAndSource(
 		visitorToken: string,
-		departmentId: string,
+		departmentId?: string,
 		source?: string,
 		options: FindOptions<IOmnichannelRoom> = {},
 	) {
@@ -2263,6 +2262,17 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			],
 			{ readPreference: readSecondaryPreferred() },
 		);
+	}
+
+	countOpenByAgent(userId: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
+		const query: Filter<IOmnichannelRoom> = {
+			't': 'l',
+			'open': true,
+			'servedBy._id': userId,
+			...extraQuery,
+		};
+
+		return this.col.countDocuments(query);
 	}
 
 	findOpenByAgent(userId: string, extraQuery: Filter<IOmnichannelRoom> = {}) {

@@ -113,7 +113,18 @@ export const LivechatEnterprise = {
 			ancestors = unit.ancestors || [];
 		}
 
-		return LivechatUnit.createOrUpdateUnit(_id, unitData, ancestors, unitMonitors, unitDepartments);
+		const validUserMonitors = await Users.findUsersInRolesWithQuery(
+			'livechat-monitor',
+			{ _id: { $in: unitMonitors.map(({ monitorId }) => monitorId) } },
+			{ projection: { _id: 1, username: 1 } },
+		).toArray();
+
+		const monitors = validUserMonitors.map(({ _id: monitorId, username }) => ({
+			monitorId,
+			username,
+		})) as { monitorId: string; username: string }[];
+
+		return LivechatUnit.createOrUpdateUnit(_id, unitData, ancestors, monitors, unitDepartments);
 	},
 
 	async removeTag(_id: string) {
@@ -221,6 +232,7 @@ export const LivechatEnterprise = {
 			chatClosingTags: Match.Optional([String]),
 			fallbackForwardDepartment: Match.Optional(String),
 			departmentsAllowedToForward: Match.Optional([String]),
+			allowReceiveForwardOffline: Match.Optional(Boolean),
 		};
 
 		// The Livechat Form department support addition/custom fields, so those fields need to be added before validating
@@ -261,8 +273,15 @@ export const LivechatEnterprise = {
 			);
 		}
 
-		if (fallbackForwardDepartment && !(await LivechatDepartmentRaw.findOneById(fallbackForwardDepartment))) {
-			throw new Meteor.Error('error-fallback-department-not-found', 'Fallback department not found', { method: 'livechat:saveDepartment' });
+		if (fallbackForwardDepartment) {
+			const fallbackDep = await LivechatDepartmentRaw.findOneById(fallbackForwardDepartment, {
+				projection: { _id: 1, fallbackForwardDepartment: 1 },
+			});
+			if (!fallbackDep) {
+				throw new Meteor.Error('error-fallback-department-not-found', 'Fallback department not found', {
+					method: 'livechat:saveDepartment',
+				});
+			}
 		}
 
 		const departmentDB = await LivechatDepartmentRaw.createOrUpdateDepartment(_id, departmentData);
@@ -272,7 +291,7 @@ export const LivechatEnterprise = {
 
 		// Disable event
 		if (department?.enabled && !departmentDB?.enabled) {
-			void callbacks.run('livechat.afterDepartmentDisabled', departmentDB);
+			await callbacks.run('livechat.afterDepartmentDisabled', departmentDB);
 		}
 
 		return departmentDB;

@@ -12,8 +12,4 @@ export class SingleBusinessHourBehavior implements IBusinessHourBehavior {
 	showBackButton(): boolean {
 		return false;
 	}
-
-	showTimezoneTemplate(): boolean {
-		return false;
-	}
 }

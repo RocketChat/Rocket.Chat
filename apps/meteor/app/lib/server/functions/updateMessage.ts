@@ -1,10 +1,11 @@
+import { AppEvents, Apps } from '@rocket.chat/apps';
 import { Message } from '@rocket.chat/core-services';
-import type { IEditedMessage, IMessage, IUser, AtLeast } from '@rocket.chat/core-typings';
+import type { IMessage, IUser, AtLeast } from '@rocket.chat/core-typings';
 import { Messages, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
+import { broadcastMessageFromData } from '../../../../server/modules/watchers/lib/messages';
 import { settings } from '../../../settings/server';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 
@@ -15,31 +16,33 @@ export const updateMessage = async function (
 	previewUrls?: string[],
 ): Promise<void> {
 	const originalMessage = originalMsg || (await Messages.findOneById(message._id));
+	if (!originalMessage) {
+		throw new Error('Invalid message ID.');
+	}
+
+	let messageData: IMessage = Object.assign({}, originalMessage, message);
 
 	// For the Rocket.Chat Apps :)
-	if (message && Apps && Apps.isLoaded()) {
-		const appMessage = Object.assign({}, originalMessage, message);
-
-		const prevent = await Apps.getBridges()?.getListenerBridge().messageEvent('IPreMessageUpdatedPrevent', appMessage);
+	if (message && Apps.self && Apps.isLoaded()) {
+		const prevent = await Apps.getBridges().getListenerBridge().messageEvent(AppEvents.IPreMessageUpdatedPrevent, messageData);
 		if (prevent) {
 			throw new Meteor.Error('error-app-prevented-updating', 'A Rocket.Chat App prevented the message updating.');
 		}
 
-		let result;
-		result = await Apps.getBridges()?.getListenerBridge().messageEvent('IPreMessageUpdatedExtend', appMessage);
-		result = await Apps.getBridges()?.getListenerBridge().messageEvent('IPreMessageUpdatedModify', result);
+		let result = await Apps.getBridges().getListenerBridge().messageEvent(AppEvents.IPreMessageUpdatedExtend, messageData);
+		result = await Apps.getBridges().getListenerBridge().messageEvent(AppEvents.IPreMessageUpdatedModify, result);
 
 		if (typeof result === 'object') {
-			message = Object.assign(appMessage, result);
+			Object.assign(messageData, result);
 		}
 	}
 
 	// If we keep history of edits, insert a new message to store history information
 	if (settings.get('Message_KeepHistory')) {
-		await Messages.cloneAndSaveAsHistoryById(message._id, user as Required<Pick<IUser, '_id' | 'username' | 'name'>>);
+		await Messages.cloneAndSaveAsHistoryById(messageData._id, user as Required<Pick<IUser, '_id' | 'username' | 'name'>>);
 	}
 
-	Object.assign<AtLeast<IMessage, '_id' | 'rid' | 'msg'>, Omit<IEditedMessage, keyof IMessage>>(message, {
+	Object.assign(messageData, {
 		editedAt: new Date(),
 		editedBy: {
 			_id: user._id,
@@ -47,19 +50,16 @@ export const updateMessage = async function (
 		},
 	});
 
-	parseUrlsInMessage(message, previewUrls);
+	parseUrlsInMessage(messageData, previewUrls);
 
-	const room = await Rooms.findOneById(message.rid);
+	const room = await Rooms.findOneById(messageData.rid);
 	if (!room) {
 		return;
 	}
 
-	// TODO remove type cast
-	message = await Message.beforeSave({ message: message as IMessage, room, user });
+	messageData = await Message.beforeSave({ message: messageData, room, user });
 
-	message = await callbacks.run('beforeSaveMessage', message);
-
-	const { _id, ...editedMessage } = message;
+	const { _id, ...editedMessage } = messageData;
 
 	if (!editedMessage.msg) {
 		delete editedMessage.md;
@@ -76,16 +76,20 @@ export const updateMessage = async function (
 		},
 	);
 
-	if (Apps?.isLoaded()) {
+	if (Apps.self?.isLoaded()) {
 		// This returns a promise, but it won't mutate anything about the message
 		// so, we don't really care if it is successful or fails
-		void Apps.getBridges()?.getListenerBridge().messageEvent('IPostMessageUpdated', message);
+		void Apps.getBridges()?.getListenerBridge().messageEvent(AppEvents.IPostMessageUpdated, messageData);
 	}
 
 	setImmediate(async () => {
 		const msg = await Messages.findOneById(_id);
 		if (msg) {
 			await callbacks.run('afterSaveMessage', msg, room, user._id);
+			void broadcastMessageFromData({
+				id: msg._id,
+				data: msg,
+			});
 		}
 	});
 };

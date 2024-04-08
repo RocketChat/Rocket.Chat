@@ -4,8 +4,6 @@ import { compile } from 'path-to-regexp';
 import React, { useRef, useMemo } from 'react';
 import type { MutableRefObject, ReactElement, ReactNode } from 'react';
 
-import type { UpgradeTabVariant } from '../../../lib/upgradeTab';
-
 const encodeSearchParameters = (searchParameters: SearchParameters) => {
 	const search = new URLSearchParams();
 
@@ -47,9 +45,6 @@ const buildRoutePath = (to: To): LocationPathname | `${LocationPathname}?${Locat
 
 			case 'marketplace':
 				return `/marketplace/${params.context}/${params.page}${encodeSearchParameters(search)}`;
-
-			case 'upgrade':
-				return `/admin/upgrade/${params.type as UpgradeTabVariant}${encodeSearchParameters(search)}`;
 		}
 
 		return (compile(name, { encode: encodeURIComponent })(params) + encodeSearchParameters(search)) as

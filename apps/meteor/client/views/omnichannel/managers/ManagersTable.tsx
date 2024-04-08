@@ -1,9 +1,11 @@
 import { Box, Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
-import React, { useMemo } from 'react';
+import { hashQueryKey, useQuery } from '@tanstack/react-query';
+import React, { useMemo, useState } from 'react';
 
+import FilterByText from '../../../components/FilterByText';
 import GenericNoResults from '../../../components/GenericNoResults/GenericNoResults';
 import {
 	GenericTable,
@@ -16,13 +18,16 @@ import {
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
-import UserAvatar from '../../../components/avatar/UserAvatar';
 import AddManager from './AddManager';
 import RemoveManagerButton from './RemoveManagerButton';
 
 // TODO: Missing error state
 const ManagersTable = () => {
 	const t = useTranslation();
+
+	const [text, setText] = useState('');
+	const debouncedText = useDebouncedValue(text, 500);
+
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'username' | 'emails.address'>('name');
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
@@ -30,18 +35,24 @@ const ManagersTable = () => {
 	const query = useDebouncedValue(
 		useMemo(
 			() => ({
+				text: debouncedText,
 				fields: JSON.stringify({ name: 1, username: 1, emails: 1, avatarETag: 1 }),
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
 				count: itemsPerPage,
 				offset: current,
 			}),
-			[itemsPerPage, current, sortBy, sortDirection],
+			[debouncedText, sortBy, sortDirection, itemsPerPage, current],
 		),
 		500,
 	);
 
 	const getManagers = useEndpoint('GET', '/v1/livechat/users/manager');
-	const { data, isLoading, isSuccess, refetch } = useQuery(['livechat-manager', query], async () => getManagers(query));
+	const { data, isLoading, isSuccess, refetch } = useQuery(['omnichannel', 'managers', 'livechat-manager', query], async () =>
+		getManagers(query),
+	);
+
+	const [defaultQuery] = useState(hashQueryKey([query]));
+	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
 
 	const headers = (
 		<>
@@ -69,8 +80,9 @@ const ManagersTable = () => {
 	return (
 		<>
 			<AddManager reload={refetch} />
+			{((isSuccess && data?.users.length > 0) || queryHasChanged) && <FilterByText onChange={({ text }): void => setText(text)} />}
 			{isLoading && (
-				<GenericTable>
+				<GenericTable aria-busy>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						<GenericTableLoadingTable headerCells={2} />
@@ -82,13 +94,13 @@ const ManagersTable = () => {
 					icon='shield'
 					title={t('No_managers_yet')}
 					description={t('No_managers_yet_description')}
-					linkHref='https://go.rocket.chat/omnichannel-docs'
+					linkHref='https://go.rocket.chat/i/omnichannel-docs'
 					linkText={t('Learn_more_about_managers')}
 				/>
 			)}
 			{isSuccess && data.users.length > 0 && (
 				<>
-					<GenericTable>
+					<GenericTable aria-busy={text !== debouncedText}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody data-qa-id='GenericTableManagerInfoBody'>
 							{data.users.map((user) => (

@@ -3,16 +3,15 @@ import type { FC } from 'react';
 import { useEffect, useContext } from 'react';
 import SplitPane from 'react-split-pane';
 
-import { context } from '../../../Context';
-import { tabsToggleAction } from '../../../Context/action';
+import { context, previewTabsToggleAction } from '../../../Context';
 import Display from '../Display';
-import Editor from '../Editor';
+import EditorPanel from '../Editor';
 
 type PreviewSizeType = {
-  blockSize?: number;
-  inlineSize?: number;
+  blockSize: number;
+  inlineSize: number;
 };
-const SplitPlaneContainer: FC<{ PreviewSize: PreviewSizeType }> = ({
+const SplitPlaneContainer: FC<{ PreviewSize: Partial<PreviewSizeType> }> = ({
   PreviewSize,
 }) => {
   const {
@@ -21,25 +20,25 @@ const SplitPlaneContainer: FC<{ PreviewSize: PreviewSizeType }> = ({
   } = useContext(context);
 
   useEffect(() => {
-    dispatch(tabsToggleAction(0));
+    dispatch(previewTabsToggleAction(0));
   }, [isTablet, dispatch]);
 
   const splitPaneProps = {
-    defaultSize: (PreviewSize.inlineSize ?? 0) * 0.5,
-    minSize: 500,
-    maxSize: (PreviewSize.inlineSize ?? 0) - 300,
+    defaultSize: (PreviewSize.inlineSize || 1) * 0.5,
+    minSize: 300,
+    maxSize: (PreviewSize.inlineSize || 1) - 350,
     allowResize: !isTablet,
   };
 
   return isTablet ? (
     <>
       <Display />
-      <Editor />
+      <EditorPanel />
     </>
   ) : (
     <SplitPane {...splitPaneProps}>
       <Display />
-      <Editor />
+      <EditorPanel />
     </SplitPane>
   );
 };

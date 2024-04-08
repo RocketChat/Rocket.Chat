@@ -22,6 +22,8 @@ declare module 'meteor/meteor' {
 			const instances: {
 				[name: string]: IStreamer;
 			};
+
+			function on(name: string, callback: (...args: any[]) => void): void;
 		}
 
 		interface ErrorStatic {
@@ -40,8 +42,6 @@ declare module 'meteor/meteor' {
 		const server: any;
 
 		const runAsUser: <T>(userId: string, scope: () => T) => T;
-		// https://github.com/meteor/meteor/pull/12274 - Function is there on meteor 2.9, but meteor.d.ts doesn't have it registered
-		function userAsync(options?: { fields?: Mongo.FieldSpecifier | undefined }): Promise<Meteor.User | null>;
 
 		interface MethodThisType {
 			twoFactorChecked: boolean | undefined;
@@ -110,25 +110,22 @@ declare module 'meteor/meteor' {
 		function _relativeToSiteRootUrl(path: string): string;
 		const _localStorage: Window['localStorage'];
 
-		function loginWithLDAP(
-			username: string | object,
-			password: string,
-			cb: (error?: Error | Meteor.Error | Meteor.TypedError) => void,
-		): void;
-
-		function loginWithCrowd(
-			username: string | object,
-			password: string,
-			cb: (error?: Error | Meteor.Error | Meteor.TypedError) => void,
-		): void;
-
-		function loginWithSamlToken(token: string, cb: (error?: Error | Meteor.Error | Meteor.TypedError) => void): void;
-
 		function methods<TServerMethods extends ServerMethods>(methods: {
 			[TMethodName in keyof TServerMethods]?: (
 				this: MethodThisType,
 				...args: StringifyBuffers<Parameters<TServerMethods[TMethodName]>>
 			) => ReturnType<TServerMethods[TMethodName]> | Promise<ReturnType<TServerMethods[TMethodName]>>;
 		}): void;
+
+		const AppCache:
+			| {
+					config: (config: { onlineOnly: string[] }) => void;
+			  }
+			| undefined;
 	}
+
+	// eslint-disable-next-line no-var
+	var Meteor: {
+		[key: `loginWith${string}`]: any;
+	};
 }
