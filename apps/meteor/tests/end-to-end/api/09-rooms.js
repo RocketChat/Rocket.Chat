@@ -2324,6 +2324,24 @@ describe('[Rooms]', function () {
 				});
 		});
 
+		it('should fail exporting room as file if no format is provided', async () => {
+			return request
+				.post(api('rooms.export'))
+				.set(credentials)
+				.send({
+					rid: testChannel._id,
+					type: 'file',
+					dateFrom: '2024-03-15',
+					dateTo: '2024-03-22',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+				});
+		});
+
 		it('should fail exporting room as file if an invalid format is provided', async () => {
 			return request
 				.post(api('rooms.export'))
@@ -2333,6 +2351,7 @@ describe('[Rooms]', function () {
 					type: 'file',
 					dateFrom: '2024-03-15',
 					dateTo: '2024-03-22',
+					format: 'invalid-format',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -2379,6 +2398,22 @@ describe('[Rooms]', function () {
 				});
 		});
 
+		it('should succesfully export room as file even if no dates are provided', async () => {
+			return request
+				.post(api('rooms.export'))
+				.set(credentials)
+				.send({
+					rid: testChannel._id,
+					type: 'file',
+					format: 'html',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+
 		it('should fail exporting room via email if no target users are provided', async () => {
 			return request
 				.post(api('rooms.export'))
@@ -2387,6 +2422,43 @@ describe('[Rooms]', function () {
 					rid: testChannel._id,
 					type: 'email',
 					toUsers: [],
+					subject: 'Test Subject',
+					messages: [testMessageId],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-recipient');
+				});
+		});
+
+		it('should fail exporting room via email if no target e-mails are provided', async () => {
+			return request
+				.post(api('rooms.export'))
+				.set(credentials)
+				.send({
+					rid: testChannel._id,
+					type: 'email',
+					toEmails: [],
+					subject: 'Test Subject',
+					messages: [testMessageId],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-recipient');
+				});
+		});
+
+		it('should fail exporting room via email if no target users or e-mails params are provided', async () => {
+			return request
+				.post(api('rooms.export'))
+				.set(credentials)
+				.send({
+					rid: testChannel._id,
+					type: 'email',
 					subject: 'Test Subject',
 					messages: [testMessageId],
 				})
