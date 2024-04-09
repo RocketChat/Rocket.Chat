@@ -151,6 +151,7 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 						modules={[Navigation, Zoom, Keyboard, A11y]}
 						onInit={(swiper) => setSwiperInst(swiper)}
 						onReachEnd={loadMore}
+						dir='rtl'
 					>
 						{images?.map(({ _id, url }) => (
 							<SwiperSlide key={_id}>
