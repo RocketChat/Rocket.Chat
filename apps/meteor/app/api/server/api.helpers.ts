@@ -1,6 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 
 import { hasAllPermissionAsync, hasAtLeastOnePermissionAsync } from '../../authorization/server/functions/hasPermission';
+import { apiDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
 
 type RequestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | '*';
 export type PermissionsPayload = {
@@ -100,4 +101,11 @@ export function checkPermissions(options: { permissionsRequired?: PermissionsReq
 
 	// If reached here, options.permissionsRequired contained an invalid payload
 	return false;
+}
+
+export function parseDeprecation(methodThis: any, { alternatives, version }: { version: string; alternatives?: string[] }): void {
+	const infoMessage = alternatives?.length
+		? `Please use the alternative(s): ${alternatives?.length === 1 ? alternatives[0] : alternatives?.join(',')}`
+		: '';
+	apiDeprecationLogger.endpoint(methodThis.request.route, version, methodThis.response, infoMessage);
 }
