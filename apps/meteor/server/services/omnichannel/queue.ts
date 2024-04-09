@@ -63,7 +63,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 		return this.queues.shift();
 	}
 
-	private async execute() {
+	public async execute() {
 		if (!this.running) {
 			queueLogger.debug('Queue stopped. Cannot execute');
 			return;
@@ -117,9 +117,8 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 				queue: queue || 'Public',
 				err: e,
 			});
-		} finally {
-			setTimeout(this.execute.bind(this), this.delay());
 		}
+		setTimeout(this.execute.bind(this), this.delay());
 	}
 
 	async shouldStart() {

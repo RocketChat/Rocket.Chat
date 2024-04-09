@@ -34,6 +34,7 @@ import { Meteor } from 'meteor/meteor';
 import { callbacks } from '../../../../lib/callbacks';
 import { validateEmail as validatorFunc } from '../../../../lib/emailValidator';
 import { i18n } from '../../../../server/lib/i18n';
+import { OmnichannelQueue } from '../../../../server/services/omnichannel/queue';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { sendNotification } from '../../../lib/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
@@ -194,6 +195,7 @@ export const createLivechatInquiry = async ({
 	const result = (await LivechatInquiry.insertOne(inquiry)).insertedId;
 	logger.debug(`Inquiry ${result} created for visitor ${_id}`);
 
+	void OmnichannelQueue.execute();
 	return result;
 };
 
