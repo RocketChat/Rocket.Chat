@@ -8,7 +8,7 @@ export class OmnichannelSettings {
 	}
 
 	group(sectionName: string): Locator {
-		return this.page.locator(`h2 >> text="${sectionName}"`);
+		return this.page.locator(`[data-qa-section="${sectionName}"] h2 >> text="${sectionName}"`);
 	}
 
 	get labelHideWatermark(): Locator {
