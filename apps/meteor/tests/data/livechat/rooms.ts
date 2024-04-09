@@ -213,7 +213,7 @@ export const uploadFile = (roomId: string, visitorToken: string): Promise<IMessa
 	return new Promise((resolve, reject) => {
 		request
 			.post(api(`livechat/upload/${roomId}`))
-			.set({ 'content-type': '', 'x-visitor-token': visitorToken, ...credentials })
+			.set({ 'x-visitor-token': visitorToken, ...credentials })
 			.attach('file', imgURL)
 			.end((err: Error, res: DummyResponse<IMessage>) => {
 				if (err) {
@@ -259,6 +259,12 @@ export const fetchMessages = (roomId: string, visitorToken: string): Promise<IMe
 				if (err) {
 					return reject(err);
 				}
+
+				if (!res.body.success) {
+					reject(res.body);
+					return;
+				}
+
 				resolve(res.body.messages);
 			});
 	});

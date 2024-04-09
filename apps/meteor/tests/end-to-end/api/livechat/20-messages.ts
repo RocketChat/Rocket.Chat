@@ -61,8 +61,7 @@ describe('LIVECHAT - messages', () => {
 
 			const imgMessage = await uploadFile(roomId, token);
 
-			expect(imgMessage).to.have.property('files');
-			expect(imgMessage.files).to.be.an('array');
+			expect(imgMessage).to.have.property('files').that.is.an('array');
 		});
 	});
 });
