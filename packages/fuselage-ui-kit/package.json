@@ -63,6 +63,7 @@
     "@babel/preset-react": "~7.22.15",
     "@babel/preset-typescript": "~7.22.15",
     "@rocket.chat/apps-engine": "1.42.0-alpha.619",
+    "@rocket.chat/core-typings": "workspace:^",
     "@rocket.chat/eslint-config": "workspace:^",
     "@rocket.chat/fuselage": "^0.52.0",
     "@rocket.chat/fuselage-hooks": "^0.33.0",
@@ -84,6 +85,8 @@
     "@storybook/theming": "~6.5.16",
     "@tanstack/react-query": "^4.16.1",
     "@testing-library/react": "^12.1.5",
+    "@testing-library/react-hooks": "^8.0.1",
+    "@testing-library/user-event": "~13.5.0",
     "@types/babel__core": "^7.20.3",
     "@types/babel__preset-env": "^7.9.4",
     "@types/react": "~17.0.69",
@@ -104,6 +107,7 @@
     "typescript": "~5.3.3"
   },
   "dependencies": {
+    "@rocket.chat/core-typings": "*",
     "@rocket.chat/gazzodown": "workspace:^",
     "@rocket.chat/ui-kit": "workspace:~",
     "tslib": "^2.5.3"

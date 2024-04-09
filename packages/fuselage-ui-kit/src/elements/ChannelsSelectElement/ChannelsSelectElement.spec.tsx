@@ -1,14 +1,12 @@
 import { MockedServerContext } from '@rocket.chat/mock-providers';
-import type {
-  ChannelsSelectElement as ChannelsSelectElementType,
-  MultiChannelsSelectElement as MultiChannelsSelectElementType,
-} from '@rocket.chat/ui-kit';
+import type { ChannelsSelectElement as ChannelsSelectElementType } from '@rocket.chat/ui-kit';
 import { BlockContext } from '@rocket.chat/ui-kit';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { contextualBarParser } from '../../surfaces';
 import ChannelsSelectElement from './ChannelsSelectElement';
-import MultiChannelsSelectElement from './MultiChannelsSelectElement';
+import { useChannelsData } from './hooks/useChannelsData';
 
 const userBlock: ChannelsSelectElementType = {
   type: 'channels_select',
@@ -17,15 +15,42 @@ const userBlock: ChannelsSelectElementType = {
   actionId: 'test',
 };
 
-const multiUserBlock: MultiChannelsSelectElementType = {
-  type: 'multi_channels_select',
-  appId: 'test',
-  blockId: 'test',
-  actionId: 'test',
-};
+jest.mock('./hooks/useChannelsData');
+
+jest.useFakeTimers();
+
+const mockedOptions = [
+  {
+    value: 'channel1_id',
+    label: {
+      name: 'Channel 1',
+      avatarETag: 'test',
+      type: 'c',
+    },
+  },
+  {
+    value: 'channel2_id',
+    label: {
+      name: 'Channel 2',
+      avatarETag: 'test',
+      type: 'c',
+    },
+  },
+  {
+    value: 'channel3_id',
+    label: {
+      name: 'Channel 3',
+      avatarETag: 'test',
+      type: 'c',
+    },
+  },
+];
+
+const mockUseChannelsData = jest.mocked(useChannelsData);
+mockUseChannelsData.mockReturnValue(mockedOptions);
 
 describe('UiKit ChannelsSelect Element', () => {
-  it('should render a UiKit channel selector', async () => {
+  beforeEach(() => {
     render(
       <MockedServerContext>
         <ChannelsSelectElement
@@ -36,22 +61,41 @@ describe('UiKit ChannelsSelect Element', () => {
         />
       </MockedServerContext>
     );
+  });
 
+  it('should render a UiKit channel selector', async () => {
     expect(await screen.findByRole('textbox')).toBeInTheDocument();
   });
 
-  it('should render a UiKit multi channel selector', async () => {
-    render(
-      <MockedServerContext>
-        <MultiChannelsSelectElement
-          index={0}
-          block={multiUserBlock}
-          context={BlockContext.FORM}
-          surfaceRenderer={contextualBarParser}
-        />
-      </MockedServerContext>
+  it('should open the channel selector', async () => {
+    const input = await screen.findByRole('textbox');
+    input.focus();
+
+    expect(await screen.findByRole('listbox')).toBeInTheDocument();
+  });
+
+  it('should filter channels', async () => {
+    const input = (await screen.findByRole('textbox')) as HTMLInputElement;
+    userEvent.type(input, 'Channel 2');
+
+    mockUseChannelsData.mockReturnValueOnce(
+      mockedOptions.filter((option) => option.label.name === input.value)
     );
 
-    expect(await screen.findByRole('textbox')).toBeInTheDocument();
+    await waitFor(async () => {
+      const option = (await screen.findAllByRole('option'))[1];
+      expect(option).toHaveTextContent('Channel 2');
+    });
+  });
+
+  it('should select a channel', async () => {
+    const input = await screen.findByRole('textbox');
+    input.focus();
+
+    const option = (await screen.findAllByRole('option'))[1];
+    userEvent.click(option);
+
+    const selected = await screen.findByRole('button');
+    expect(selected).toHaveValue('channel1_id');
   });
 });
