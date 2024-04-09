@@ -78,6 +78,18 @@ export async function executeUpdateMessage(uid: IUser['_id'], message: AtLeast<I
 	}
 	await canSendMessageAsync(message.rid, { uid: user._id, username: user.username ?? undefined, ...user });
 
+	// We must remove description from older file messages
+	if (originalMessage?.attachments?.[0]?.description && originalMessage.files) {
+		message.msg = message.msg || originalMessage.attachments[0].description;
+		// if the original message has both msg and description, we must prepend the old msg field
+		// This usually happens when there are quotes attached with files.
+		if (originalMessage.msg) {
+			message.msg = `${originalMessage.msg}\n${message.msg}`;
+		}
+		delete originalMessage.attachments?.[0]?.description;
+		message.attachments = originalMessage.attachments;
+	}
+
 	message.u = originalMessage.u;
 
 	return updateMessage(message, user, originalMessage, previewUrls);
