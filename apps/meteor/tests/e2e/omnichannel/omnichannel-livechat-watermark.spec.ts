@@ -1,5 +1,4 @@
 import { faker } from '@faker-js/faker';
-// import { Page } from '@playwright/test';
 
 import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
