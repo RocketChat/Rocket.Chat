@@ -1,3 +1,4 @@
+import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel } from './utils';
@@ -11,11 +12,11 @@ test.describe.serial('image-gallery', () => {
 	// Using more than 5 images so that new images need to be loaded by the gallery
 	const imageNames = ['number1.png', 'number2.png', 'number3.png', 'number4.png', 'number5.png', 'number6.png'];
 
-	test.beforeAll(async ({ api, page }) => {
+	test.beforeAll(async ({ api, browser }) => {
 		targetChannel = await createTargetChannel(api);
+		const { page } = await createAuxContext(browser, Users.user1);
 		poHomeChannel = new HomeChannel(page);
 
-		await page.goto('/home');
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.content.btnJoinRoom.click();
 		for await (const imageName of imageNames) {
