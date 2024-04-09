@@ -33,7 +33,7 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 	const isThread = (deletedMsg?.tcount || 0) > 0;
 	const keepHistory = settings.get('Message_KeepHistory') || isThread;
 	const showDeletedStatus = settings.get('Message_ShowDeletedStatus') || isThread;
-	const bridges = Apps?.isLoaded() && Apps.getBridges();
+	const bridges = Apps.self?.isLoaded() && Apps.getBridges();
 
 	if (deletedMsg && bridges) {
 		const prevent = await bridges.getListenerBridge().messageEvent(AppEvents.IPreMessageDeletePrevent, deletedMsg);

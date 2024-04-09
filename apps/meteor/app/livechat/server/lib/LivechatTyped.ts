@@ -329,8 +329,8 @@ class LivechatClass {
 			 * @deprecated the `AppEvents.ILivechatRoomClosedHandler` event will be removed
 			 * in the next major version of the Apps-Engine
 			 */
-			void Apps?.getBridges()?.getListenerBridge().livechatEvent(AppEvents.ILivechatRoomClosedHandler, newRoom);
-			void Apps?.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomClosed, newRoom);
+			void Apps.self?.getBridges()?.getListenerBridge().livechatEvent(AppEvents.ILivechatRoomClosedHandler, newRoom);
+			void Apps.self?.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomClosed, newRoom);
 		});
 		if (process.env.TEST_MODE) {
 			await callbacks.run('livechat.closeRoom', {
@@ -1426,7 +1426,7 @@ class LivechatClass {
 		const ret = await LivechatVisitors.saveGuestById(_id, updateData);
 
 		setImmediate(() => {
-			void Apps?.triggerEvent(AppEvents.IPostLivechatGuestSaved, _id);
+			void Apps.self?.triggerEvent(AppEvents.IPostLivechatGuestSaved, _id);
 		});
 
 		return ret;
@@ -1792,7 +1792,7 @@ class LivechatClass {
 		await LivechatRooms.saveRoomById(roomData);
 
 		setImmediate(() => {
-			void Apps?.triggerEvent(AppEvents.IPostLivechatRoomSaved, roomData._id);
+			void Apps.self?.triggerEvent(AppEvents.IPostLivechatRoomSaved, roomData._id);
 		});
 
 		if (guestData?.name?.trim().length) {
