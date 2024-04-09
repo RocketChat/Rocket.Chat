@@ -37,7 +37,7 @@ const MultiChannelsSelectElement = ({
       setFilter={setFilter}
       multiple
       renderSelected={({ selected: { value, label }, onRemove, ...props }) => (
-        <Chip {...props} key={value} value={value} onClick={onRemove}>
+        <Chip key={value} {...props} value={value} onClick={onRemove}>
           <RoomAvatar
             size='x20'
             room={{ type: label?.type || 'c', _id: value, ...label }}
