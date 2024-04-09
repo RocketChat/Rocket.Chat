@@ -26,7 +26,9 @@ Meteor.methods<ServerMethods>({
 		const editAllowed = settings.get('Message_AllowEditing');
 		let editOwn = false;
 
-		if (originalMessage.msg === message.msg) {
+		const msgText = originalMessage?.attachments?.[0]?.description ?? originalMessage.msg;
+
+		if (msgText === message.msg) {
 			return;
 		}
 		if (originalMessage?.u?._id) {
