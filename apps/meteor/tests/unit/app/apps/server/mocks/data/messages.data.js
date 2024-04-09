@@ -148,4 +148,5 @@ export const exportMessagesMock = [
 		],
 	}),
 	createFakeMessage(),
+	createFakeMessage({ t: 'ujt', u: { _id: testUserId, username: testUsername }, msg: testUsername }),
 ];

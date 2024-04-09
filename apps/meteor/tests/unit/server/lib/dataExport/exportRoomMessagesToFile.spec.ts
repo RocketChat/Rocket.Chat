@@ -67,11 +67,22 @@ describe('Export - exportMessageObject', () => {
 	it('should correctly format system messages when exporting message object as html', async () => {
 		const result = await exportMessageObject('html', messagesData[0]);
 
+		expect(messagesData[0].msg).to.equal(translationPlaceholder);
 		expect(result).to.be.a.string;
 		expect(result).to.equal(
 			`<p><strong>${messagesData[0].username}</strong> (${new Date(messagesData[0].ts).toUTCString()}):<br/>\n<i>${
 				messagesData[0].msg
 			}</i>\n</p>`,
+		);
+	});
+
+	it('should correctly format non italic system messages when exporting message object as html', async () => {
+		const result = await exportMessageObject('html', messagesData[4]);
+
+		expect(messagesData[4].msg).to.equal(translationPlaceholder);
+		expect(result).to.be.a.string;
+		expect(result).to.equal(
+			`<p><strong>${messagesData[4].username}</strong> (${new Date(messagesData[4].ts).toUTCString()}):<br/>\n${messagesData[4].msg}\n</p>`,
 		);
 	});
 
