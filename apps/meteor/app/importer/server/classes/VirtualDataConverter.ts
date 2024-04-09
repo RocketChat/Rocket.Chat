@@ -6,7 +6,6 @@ import type {
 	IImportRecord,
 	IImportRecordType,
 	IImportData,
-	IImportChannel,
 } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 

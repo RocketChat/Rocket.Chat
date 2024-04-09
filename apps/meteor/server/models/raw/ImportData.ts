@@ -6,7 +6,7 @@ import type {
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
 import type { IImportDataModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, Filter, IndexDescription } from 'mongodb';
+import type { Collection, FindCursor, Db, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
