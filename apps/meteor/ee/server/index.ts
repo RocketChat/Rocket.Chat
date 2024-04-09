@@ -12,5 +12,6 @@ import './requestSeatsRoute';
 import './configuration/index';
 import './local-services/ldap/service';
 import './methods/getReadReceipts';
+import './apps/startup';
 
 export { registerEEBroker } from './startup';

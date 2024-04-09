@@ -11,10 +11,49 @@ import { createToken } from './random';
 import { loadMessages } from './room';
 import Triggers from './triggers';
 
+const evaluateChangesAndLoadConfigByFields = async (fn: () => Promise<void>) => {
+	const oldStore = JSON.parse(
+		JSON.stringify({
+			user: store.state.user || {},
+			department: store.state.department,
+			token: store.state.token,
+		}),
+	);
+	await fn();
+
+	/**
+	 * it solves the issues where the registerGuest is called every time the widget is opened
+	 * and the guest is already registered. If there is nothing different in the data,
+	 * it will not call the loadConfig again.
+	 *
+	 * if user changes, it will call loadConfig
+	 * if department changes, it will call loadConfig
+	 * if token changes, it will call loadConfig
+	 */
+
+	if (oldStore.user._id !== store.state.user?._id) {
+		await loadConfig();
+		await loadMessages();
+		return;
+	}
+
+	if (oldStore.department !== store.state.department) {
+		await loadConfig();
+		await loadMessages();
+		return;
+	}
+
+	if (oldStore.token !== store.state.token) {
+		await loadConfig();
+		await loadMessages();
+	}
+};
+
 const createOrUpdateGuest = async (guest: StoreState['guest']) => {
 	if (!guest) {
 		return;
 	}
+
 	const { token } = guest;
 	token && (await store.setState({ token }));
 	const { visitor: user } = await Livechat.grantVisitor({ visitor: { ...guest } });
@@ -23,7 +62,6 @@ const createOrUpdateGuest = async (guest: StoreState['guest']) => {
 		return;
 	}
 	store.setState({ user } as Omit<StoreState['user'], 'ts'>);
-	await loadConfig();
 	Triggers.callbacks?.emit('chat-visitor-registered');
 };
 
@@ -49,6 +87,18 @@ const updateIframeGuestData = (data: Partial<StoreState['guest']>) => {
 
 export type HooksWidgetAPI = typeof api;
 
+const updateIframeData = (data: Partial<StoreState['iframe']>) => {
+	const { iframe } = store.state;
+
+	if (data.guest) {
+		throw new Error('Guest data changes not allowed. Use updateIframeGuestData instead.');
+	}
+
+	const iframeData = { ...iframe, ...data };
+
+	store.setState({ iframe: { ...iframeData } });
+};
+
 const api = {
 	pageVisited(info: { change: string; title: string; location: { href: string } }) {
 		const { token, room } = store.state;
@@ -72,6 +122,7 @@ const api = {
 			iframe,
 			iframe: { theme: currentTheme },
 		} = store.state;
+
 		store.setState({
 			iframe: {
 				...iframe,
@@ -84,26 +135,34 @@ const api = {
 	},
 
 	setDepartment: async (value: string) => {
+		await evaluateChangesAndLoadConfigByFields(async () => api._setDepartment(value));
+	},
+
+	_setDepartment: async (value: string) => {
 		const {
 			user,
 			config: { departments = [] },
 			defaultAgent,
 		} = store.state;
 
-		const { department: existingDepartment } = user || {};
+		if (!user) {
+			updateIframeData({ defaultDepartment: value });
+			return;
+		}
 
 		const department = departments.find((dep) => dep._id === value || dep.name === value)?._id || '';
+
+		if (!department) {
+			console.warn(
+				'The selected department is invalid. Check departments configuration to ensure the department exists, is enabled and has at least 1 agent',
+			);
+		}
 
 		updateIframeGuestData({ department });
 		store.setState({ department });
 
 		if (defaultAgent && defaultAgent.department !== department) {
 			store.setState({ defaultAgent: undefined });
-		}
-
-		if (department !== existingDepartment) {
-			await loadConfig();
-			await loadMessages();
 		}
 	},
 
@@ -161,7 +220,10 @@ const api = {
 		if (token === localToken) {
 			return;
 		}
-		await createOrUpdateGuest({ token });
+
+		await evaluateChangesAndLoadConfigByFields(async () => {
+			await createOrUpdateGuest({ token });
+		});
 	},
 
 	setGuestName: (name: string) => {
@@ -177,17 +239,19 @@ const api = {
 			return;
 		}
 
-		if (!data.token) {
-			data.token = createToken();
-		}
+		await evaluateChangesAndLoadConfigByFields(async () => {
+			if (!data.token) {
+				data.token = createToken();
+			}
 
-		if (data.department) {
-			api.setDepartment(data.department);
-		}
+			if (data.department) {
+				await api._setDepartment(data.department);
+			}
 
-		Livechat.unsubscribeAll();
+			Livechat.unsubscribeAll();
 
-		await createOrUpdateGuest(data);
+			await createOrUpdateGuest(data);
+		});
 	},
 
 	setLanguage: async (language: StoreState['iframe']['language']) => {
@@ -221,9 +285,15 @@ const api = {
 	setParentUrl: (parentUrl: StoreState['parentUrl']) => {
 		store.setState({ parentUrl });
 	},
+
 	setGuestMetadata(metadata: StoreState['iframe']['guestMetadata']) {
 		const { iframe } = store.state;
 		store.setState({ iframe: { ...iframe, guestMetadata: metadata } });
+	},
+
+	setHiddenSystemMessages: (hiddenSystemMessages: StoreState['iframe']['hiddenSystemMessages']) => {
+		const { iframe } = store.state;
+		store.setState({ iframe: { ...iframe, hiddenSystemMessages } });
 	},
 };
 

@@ -5,23 +5,14 @@ import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
+import type { SettingInputProps } from './types';
 
-type ColorSettingInputProps = {
-	_id: string;
-	label: string;
+type ColorSettingInputProps = SettingInputProps & {
 	value: string;
 	editor: string;
 	allowedTypes?: TranslationKey[];
-	placeholder?: string;
-	readonly?: boolean;
-	autocomplete?: boolean;
-	disabled?: boolean;
-	required?: boolean;
-	hasResetButton?: boolean;
-	onChangeValue?: (value: string) => void;
-	onChangeEditor?: (value: string) => void;
-	onResetButtonClick?: () => void;
 };
+
 function ColorSettingInput({
 	_id,
 	label,
