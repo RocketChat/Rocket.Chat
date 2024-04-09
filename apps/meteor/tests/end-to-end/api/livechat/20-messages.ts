@@ -53,7 +53,7 @@ describe('LIVECHAT - messages', () => {
 			}
 		});
 
-		it('it should verify if visitor is receiving a message with a image attachment', async () => {
+		it('should verify if visitor is receiving a message with a image attachment', async () => {
 			const {
 				room: { _id: roomId },
 				visitor: { token },
