@@ -106,7 +106,7 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 		isReacted = true;
 	}
 
-	await Apps?.triggerEvent(AppEvents.IPostMessageReacted, message, user, reaction, isReacted);
+	await Apps.self?.triggerEvent(AppEvents.IPostMessageReacted, message, user, reaction, isReacted);
 
 	void broadcastMessageFromData({
 		id: message._id,
