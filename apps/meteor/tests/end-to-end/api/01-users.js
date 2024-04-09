@@ -45,9 +45,7 @@ describe('[Users]', function () {
 		userCredentials = await login(user.username, password);
 	});
 
-	after(async () => {
-		await Promise.all([deleteUser(targetUser), updateSetting('E2E_Enable', false)]);
-	});
+	after(() => Promise.all([deleteUser(targetUser), updateSetting('E2E_Enable', false)]));
 
 	it('enabling E2E in server and generating keys to user...', async () => {
 		await updateSetting('E2E_Enable', true);
@@ -473,13 +471,13 @@ describe('[Users]', function () {
 			).body.channel;
 		});
 
-		after(async () => {
-			await Promise.all([
+		after(() =>
+			Promise.all([
 				updatePermission('view-other-user-channels', ['admin']),
 				updatePermission('view-full-other-user-info', ['admin']),
 				deleteRoom({ type: 'c', roomId: infoRoom._id }),
-			]);
-		});
+			]),
+		);
 
 		it('should return an error when the user does not exist', (done) => {
 			request
@@ -564,9 +562,8 @@ describe('[Users]', function () {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.nested.property('user.rooms');
-						if (res.body.user.rooms.length > 0) {
-							expect(res.body.user.rooms[0]).to.have.property('unread');
-						}
+						expect(res.body.user.rooms).with.lengthOf.at.least(1);
+						expect(res.body.user.rooms[0]).to.have.property('unread');
 					})
 					.end(done);
 			});
@@ -681,7 +678,7 @@ describe('[Users]', function () {
 				userCredentials = await login(user.username, password);
 			});
 
-			after(async () => deleteUser(user));
+			after(() => deleteUser(user));
 
 			it('should return "offline" after a login type "resume" via REST', async () => {
 				await request
@@ -838,16 +835,16 @@ describe('[Users]', function () {
 			user2Credentials = await login(user2.username, password);
 		});
 
-		after(async () => {
-			await Promise.all([
+		after(() =>
+			Promise.all([
 				clearCustomFields(),
 				deleteUser(deactivatedUser),
 				deleteUser(user),
 				deleteUser(user2),
 				updatePermission('view-outside-room', ['admin', 'owner', 'moderator', 'user']),
 				updateSetting('API_Apply_permission_view-outside-room_on_users-list', false),
-			]);
-		});
+			]),
+		);
 
 		it('should query all users in the system', (done) => {
 			request
@@ -983,13 +980,13 @@ describe('[Users]', function () {
 			]);
 		});
 
-		after(async () => {
-			await Promise.all([
+		after(() =>
+			Promise.all([
 				updateSetting('Accounts_AllowUserAvatarChange', true),
 				deleteUser(user),
 				updatePermission('edit-other-user-avatar', ['admin']),
-			]);
-		});
+			]),
+		);
 
 		describe('[/users.setAvatar]', () => {
 			it('should set the avatar of the logged user by a local image', (done) => {
@@ -1693,8 +1690,8 @@ describe('[Users]', function () {
 			userCredentials = await login(user.username, password);
 		});
 
-		after(async () => {
-			await Promise.all([
+		after(() =>
+			Promise.all([
 				deleteUser(user),
 				updateSetting('E2E_Enable', false),
 				updateSetting('Accounts_AllowRealNameChange', true),
@@ -1702,8 +1699,8 @@ describe('[Users]', function () {
 				updateSetting('Accounts_AllowUserStatusMessageChange', true),
 				updateSetting('Accounts_AllowEmailChange', true),
 				updateSetting('Accounts_AllowPasswordChange', true),
-			]);
-		});
+			]),
+		);
 
 		const newPassword = `${password}test`;
 		const currentPassword = crypto.createHash('sha256').update(password, 'utf8').digest('hex');
@@ -2402,7 +2399,7 @@ describe('[Users]', function () {
 			userCredentials = await login(targetUser.username, password);
 		});
 
-		after(async () => deleteUser(targetUser));
+		after(() => deleteUser(targetUser));
 
 		it('should return 401 unauthorized when user is not logged in', (done) => {
 			request
@@ -2656,10 +2653,7 @@ describe('[Users]', function () {
 				await removeRoomOwner({ type: 'c', roomId: room._id, userId: credentials['X-User-Id'] });
 			});
 
-			afterEach(async () => {
-				await deleteRoom({ type: 'c', roomId: room._id });
-				await deleteUser(targetUser, { confirmRelinquish: true });
-			});
+			afterEach(() => Promise.all([deleteRoom({ type: 'c', roomId: room._id }), deleteUser(targetUser, { confirmRelinquish: true })]));
 
 			it('should return an error when trying to delete user account if the user is the last room owner', async () => {
 				await updatePermission('delete-user', ['admin']);
@@ -2722,13 +2716,8 @@ describe('[Users]', function () {
 	describe('Personal Access Tokens', () => {
 		const tokenName = `${Date.now()}token`;
 		describe('successful cases', () => {
-			before(async () => {
-				await updatePermission('create-personal-access-tokens', ['admin']);
-			});
-
-			after(async () => {
-				await updatePermission('create-personal-access-tokens', ['admin']);
-			});
+			before(() => updatePermission('create-personal-access-tokens', ['admin']));
+			after(() => updatePermission('create-personal-access-tokens', ['admin']));
 
 			describe('[/users.getPersonalAccessTokens]', () => {
 				it('should return an array when the user does not have personal tokens configured', (done) => {
@@ -2853,13 +2842,8 @@ describe('[Users]', function () {
 			});
 		});
 		describe('unsuccessful cases', () => {
-			before(async () => {
-				await updatePermission('create-personal-access-tokens', []);
-			});
-
-			after(async () => {
-				await updatePermission('create-personal-access-tokens', ['admin']);
-			});
+			before(() => updatePermission('create-personal-access-tokens', []));
+			after(() => updatePermission('create-personal-access-tokens', ['admin']));
 
 			describe('should return an error when the user dont have the necessary permission "create-personal-access-tokens"', () => {
 				it('/users.generatePersonalAccessToken', (done) => {
@@ -2942,6 +2926,7 @@ describe('[Users]', function () {
 		let user;
 		let agent;
 		let agentUser;
+		let userCredentials;
 
 		before(async () => {
 			agentUser = await createUser();
@@ -2955,39 +2940,24 @@ describe('[Users]', function () {
 			};
 		});
 
-		before((done) => {
-			const username = `user.test.${Date.now()}`;
-			const email = `${username}@rocket.chat`;
-			request
-				.post(api('users.create'))
-				.set(credentials)
-				.send({ email, name: username, username, password })
-				.end((err, res) => {
-					user = res.body.user;
-					done();
-				});
-		});
-		let userCredentials;
-
 		before(async () => {
 			user = await createUser();
 			userCredentials = await login(user.username, password);
-			await updatePermission('edit-other-user-active-status', ['admin', 'user']);
-			await updatePermission('manage-moderation-actions', ['admin']);
-		});
-
-		after(async () => {
 			await Promise.all([
-				deleteUser(user),
-				updatePermission('edit-other-user-active-status', ['admin']),
+				updatePermission('edit-other-user-active-status', ['admin', 'user']),
 				updatePermission('manage-moderation-actions', ['admin']),
 			]);
 		});
 
-		after(async () => {
-			await removeAgent(agent.user._id);
-			await deleteUser(agent.user);
-		});
+		after(() =>
+			Promise.all([
+				deleteUser(user),
+				updatePermission('edit-other-user-active-status', ['admin']),
+				updatePermission('manage-moderation-actions', ['admin']),
+			]),
+		);
+
+		after(() => Promise.all([removeAgent(agent.user._id), deleteUser(agent.user)]));
 
 		it('should set other user active status to false when the logged user has the necessary permission(edit-other-user-active-status)', (done) => {
 			request
@@ -3129,14 +3099,14 @@ describe('[Users]', function () {
 		describe('last owner cases', () => {
 			let room;
 
-			beforeEach(async () => {
-				await updatePermission('edit-other-user-active-status', ['admin', 'user']);
-				await updatePermission('manage-moderation-actions', ['admin', 'user']);
-			});
+			beforeEach(() =>
+				Promise.all([
+					updatePermission('edit-other-user-active-status', ['admin', 'user']),
+					updatePermission('manage-moderation-actions', ['admin', 'user']),
+				]),
+			);
 
-			afterEach(async () => {
-				await deleteRoom({ type: 'c', roomId: room._id });
-			});
+			afterEach(() => deleteRoom({ type: 'c', roomId: room._id }));
 
 			it('should return an error when trying to set other user status to inactive and the user is the last owner of a room', async () => {
 				room = (
@@ -3267,9 +3237,7 @@ describe('[Users]', function () {
 				});
 		});
 
-		after(async () => {
-			await Promise.all([deleteUser(testUser), updatePermission('edit-other-user-active-status', ['admin'])]);
-		});
+		after(() => Promise.all([deleteUser(testUser), updatePermission('edit-other-user-active-status', ['admin'])]));
 
 		it('should fail to deactivate if user doesnt have edit-other-user-active-status permission', (done) => {
 			updatePermission('edit-other-user-active-status', []).then(() => {
@@ -3400,9 +3368,7 @@ describe('[Users]', function () {
 			userCredentials = await login(user.username, password);
 			newCredentials = await login(user.username, password);
 		});
-		after(async () => {
-			await deleteUser(user);
-		});
+		after(() => deleteUser(user));
 
 		it('should invalidate all active sesions', (done) => {
 			/* We want to validate that the login with the "old" credentials fails
@@ -3440,9 +3406,7 @@ describe('[Users]', function () {
 	});
 
 	describe('[/users.autocomplete]', () => {
-		after(async () => {
-			await updatePermission('view-outside-room', ['admin', 'owner', 'moderator', 'user']);
-		});
+		after(() => updatePermission('view-outside-room', ['admin', 'owner', 'moderator', 'user']));
 
 		describe('[without permission]', function () {
 			let user;
@@ -3500,9 +3464,7 @@ describe('[Users]', function () {
 		});
 
 		describe('[with permission]', () => {
-			before(async () => {
-				await updatePermission('view-outside-room', ['admin', 'user']);
-			});
+			before(() => updatePermission('view-outside-room', ['admin', 'user']));
 
 			it('should return an error when the required parameter "selector" is not provided', () => {
 				request
@@ -3622,9 +3584,7 @@ describe('[Users]', function () {
 		before(async () => {
 			user = await createUser();
 		});
-		after(async () => {
-			await Promise.all([deleteUser(user), updateSetting('Accounts_AllowUserStatusMessageChange', true)]);
-		});
+		after(() => Promise.all([deleteUser(user), updateSetting('Accounts_AllowUserStatusMessageChange', true)]));
 
 		it('should return an error when the setting "Accounts_AllowUserStatusMessageChange" is disabled', (done) => {
 			updateSetting('Accounts_AllowUserStatusMessageChange', false).then(() => {
@@ -3764,9 +3724,7 @@ describe('[Users]', function () {
 			userCredentials = await login(user.username, password);
 			newCredentials = await login(user.username, password);
 		});
-		after(async () => {
-			await deleteUser(user);
-		});
+		after(() => deleteUser(user));
 
 		it('should invalidate all active sesions', (done) => {
 			/* We want to validate that the login with the "old" credentials fails
@@ -3881,8 +3839,8 @@ describe('[Users]', function () {
 				.then(() => done());
 		});
 
-		after(async () => {
-			await Promise.all([
+		after(() =>
+			Promise.all([
 				[teamName1, teamName2].map((team) =>
 					request
 						.post(api('teams.delete'))
@@ -3894,8 +3852,8 @@ describe('[Users]', function () {
 						.expect(200),
 				),
 				deleteUser(testUser),
-			]);
-		});
+			]),
+		);
 
 		it('should list both channels', (done) => {
 			request
@@ -3930,9 +3888,7 @@ describe('[Users]', function () {
 			userCredentials = await login(user.username, password);
 		});
 
-		after(async () => {
-			await Promise.all([deleteUser(user), deleteUser(otherUser), updatePermission('logout-other-user', ['admin'])]);
-		});
+		after(() => Promise.all([deleteUser(user), deleteUser(otherUser), updatePermission('logout-other-user', ['admin'])]));
 
 		it('should throw unauthorized error to user w/o "logout-other-user" permission', (done) => {
 			updatePermission('logout-other-user', []).then(() => {
