@@ -115,7 +115,7 @@ const RoomBody = (): ReactElement => {
 
 	const { innerRef: restoreScrollPositionInnerRef } = useRestoreScrollPosition(room._id);
 
-	const { messageListRef, messageListProps } = useMessageListNavigation();
+	const { messageListRef } = useMessageListNavigation();
 
 	const { handleNewMessageButtonClick, handleJumpToRecentButtonClick, handleComposerResize, hasNewMessages, newMessagesScrollRef } =
 		useHasNewMessages(room._id, user?._id, atBottomRef, {
@@ -283,7 +283,7 @@ const RoomBody = (): ReactElement => {
 								>
 									<MessageListErrorBoundary>
 										<CustomScrollbars ref={innerRef}>
-											<ul className='messages-list' aria-live='polite' aria-busy={isLoadingMoreMessages} {...messageListProps}>
+											<ul className='messages-list' aria-label={t('Message_list')} aria-busy={isLoadingMoreMessages}>
 												{canPreview ? (
 													<>
 														{hasMorePreviousMessages ? (

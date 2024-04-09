@@ -1,4 +1,3 @@
-import '../apps/startup';
 import '../../app/authorization/server';
 import './apps';
 import './audit';
