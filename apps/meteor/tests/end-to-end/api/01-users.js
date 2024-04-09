@@ -917,9 +917,7 @@ describe('[Users]', function () {
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('users');
 					const firstUser = res.body.users.find((u) => u._id === deactivatedUser._id);
-					if (firstUser) {
-						expect(firstUser).to.have.property('active', false);
-					}
+					expect(firstUser).to.have.property('active', false);
 				})
 				.end(done);
 		});
