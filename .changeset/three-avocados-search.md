@@ -2,4 +2,4 @@
 "@rocket.chat/meteor": major
 ---
 
-Fixed archived rooms returned in `rooms.autocomplete.channelAndPrivate` endpoint
+No longer shows archived rooms in `rooms.autocomplete.channelAndPrivate` endpoint
