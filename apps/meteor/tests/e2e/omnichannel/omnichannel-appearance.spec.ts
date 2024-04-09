@@ -24,15 +24,17 @@ test.describe.serial('OC - Livechat Appearance', () => {
 
 	test('OC - Livechat Appearance - Hide system messages', async ({ page }) => {
 		await test.step('expect to have default values', async () => {
-			await poLivechatAppearance.inputHideSystemMessages.click();
+			// Clicking at the edge of the element to prevent playwright from clicking a chip by mistake
+			await poLivechatAppearance.inputHideSystemMessages.click({ position: { x: 0, y: 0 } });
 			await expect(poLivechatAppearance.findHideSystemMessageOption('uj')).toHaveAttribute('aria-selected', 'true');
 			await expect(poLivechatAppearance.findHideSystemMessageOption('ul')).toHaveAttribute('aria-selected', 'true');
 			await expect(poLivechatAppearance.findHideSystemMessageOption('livechat-close')).toHaveAttribute('aria-selected', 'true');
-			await poLivechatAppearance.inputHideSystemMessages.click();
+			await poLivechatAppearance.inputHideSystemMessages.click({ position: { x: 0, y: 0 } });
 		});
 
 		await test.step('expect to change values', async () => {
-			await poLivechatAppearance.inputHideSystemMessages.click();
+			// Clicking at the edge of the element to prevent playwright from clicking a chip by mistake
+			await poLivechatAppearance.inputHideSystemMessages.click({ position: { x: 0, y: 0 } });
 			await poLivechatAppearance.findHideSystemMessageOption('livechat_transfer_history').click();
 			await poLivechatAppearance.findHideSystemMessageOption('livechat-close').click();
 			await poLivechatAppearance.btnSave.click();
@@ -40,7 +42,8 @@ test.describe.serial('OC - Livechat Appearance', () => {
 
 		await test.step('expect to have saved changes', async () => {
 			await page.reload();
-			await poLivechatAppearance.inputHideSystemMessages.click();
+			// Clicking at the edge of the element to prevent playwright from clicking a chip by mistake
+			await poLivechatAppearance.inputHideSystemMessages.click({ position: { x: 0, y: 0 } });
 			await expect(poLivechatAppearance.findHideSystemMessageOption('uj')).toHaveAttribute('aria-selected', 'true');
 			await expect(poLivechatAppearance.findHideSystemMessageOption('ul')).toHaveAttribute('aria-selected', 'true');
 			await expect(poLivechatAppearance.findHideSystemMessageOption('livechat_transfer_history')).toHaveAttribute('aria-selected', 'true');
