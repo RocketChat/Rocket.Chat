@@ -33,7 +33,7 @@ test.describe('OC - Livechat - Avatar visibility', async () => {
 		const res = await makeAgentAvailable(api, agent.data._id);
 
 		if (res.status() !== 200) {
-			throw new Error('Failed to reset Livechat_hide_watermark setting');
+			throw new Error('Failed to make agent available');
 		}
 	});
 
@@ -57,7 +57,7 @@ test.describe('OC - Livechat - Avatar visibility', async () => {
 		await agent.delete();
 	});
 
-	test('OC - Livechat - Show visitor avatar', async () => {
+	test('OC - Livechat - Change avatar visibility', async () => {
 		const visitor = createVisitor();
 
 		await test.step('should initiate Livechat conversation', async () => {
@@ -68,45 +68,23 @@ test.describe('OC - Livechat - Avatar visibility', async () => {
 			await expect(poLiveChat.txtChatMessage('this_a_test_message_from_user')).toBeVisible();
 		});
 
-		await test.step('expect visitor avatar to be hidden', async () => {
-			await expect(poLiveChat.imgAvatar(visitor.name)).not.toBeVisible();
-		});
-
-		await test.step('expect to make visitor avatar visible', async () => {
-			await poLiveChat.page.evaluate(() => window.RocketChat.livechat.setTheme({ hideGuestAvatar: false }));
-		});
-
-		await test.step('expect visitor avatar to be visible', async () => {
-			await expect(poLiveChat.imgAvatar(visitor.name)).toBeVisible();
-		});
-
-		await test.step('should close the conversation', async () => {
-			await poAuxContext.poHomeOmnichannel.sidenav.openChat(visitor.name);
-			await poAuxContext.poHomeOmnichannel.content.btnCloseChat.click();
-			await poAuxContext.poHomeOmnichannel.content.closeChatModal.inputComment.fill('this_is_a_test_comment');
-			await poAuxContext.poHomeOmnichannel.content.closeChatModal.btnConfirm.click();
-			await expect(poAuxContext.poHomeOmnichannel.toastSuccess).toBeVisible();
-		});
-	});
-
-	test('OC - Livechat - Hide agent avatar', async () => {
-		const visitor = createVisitor();
-
-		await test.step('should initiate Livechat conversation', async () => {
-			await poLiveChat.openLiveChat();
-			await poLiveChat.sendMessage(visitor, false);
-			await poLiveChat.onlineAgentMessage.fill('this_a_test_message_from_user');
-			await poLiveChat.btnSendMessageToOnlineAgent.click();
-		});
-
 		await test.step('expect to send a message as agent', async () => {
 			await poAuxContext.poHomeOmnichannel.sidenav.openChat(visitor.name);
 			await poAuxContext.poHomeOmnichannel.content.sendMessage('this_is_a_test_message_from_agent');
 			await expect(poLiveChat.txtChatMessage('this_is_a_test_message_from_agent')).toBeVisible();
 		});
 
+		await test.step('expect visitor avatar to be hidden', async () => {
+			await expect(poLiveChat.imgAvatar(visitor.name)).not.toBeVisible();
+		});
+
 		await test.step('expect agent avatar to be visible', async () => {
 			await expect(poLiveChat.imgAvatar('user1')).toBeVisible();
+		});
+
+		await test.step('expect to make visitor avatar visible', async () => {
+			await poLiveChat.page.evaluate(() => window.RocketChat.livechat.setTheme({ hideGuestAvatar: false }));
+			await expect(poLiveChat.imgAvatar(visitor.name)).toBeVisible();
 		});
 
 		await test.step('expect to hide agent avatar', async () => {
@@ -115,6 +93,7 @@ test.describe('OC - Livechat - Avatar visibility', async () => {
 		});
 
 		await test.step('should close the conversation', async () => {
+			await poAuxContext.poHomeOmnichannel.sidenav.openChat(visitor.name);
 			await poAuxContext.poHomeOmnichannel.content.btnCloseChat.click();
 			await poAuxContext.poHomeOmnichannel.content.closeChatModal.inputComment.fill('this_is_a_test_comment');
 			await poAuxContext.poHomeOmnichannel.content.closeChatModal.btnConfirm.click();
