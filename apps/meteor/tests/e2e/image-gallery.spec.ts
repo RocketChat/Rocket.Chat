@@ -6,7 +6,7 @@ import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.user1.state });
 
-test.describe.serial('image-gallery', () => {
+test.describe.parallel('image-gallery', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
 	// Using more than 5 images so that new images need to be loaded by the gallery
