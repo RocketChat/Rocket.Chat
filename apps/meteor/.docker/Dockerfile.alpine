@@ -51,6 +51,16 @@ ADD . /app
 
 LABEL maintainer="buildmaster@rocket.chat"
 
+# needs a mongo instance - defaults to container linking with alias 'mongo'
+ENV DEPLOY_METHOD=docker \
+    NODE_ENV=production \
+    MONGO_URL=mongodb://mongo:27017/rocketchat \
+    HOME=/tmp \
+    PORT=3000 \
+    ROOT_URL=http://localhost:3000 \
+    Accounts_AvatarStorePath=/app/uploads \
+    DENO_DIR=/usr/share/deno
+
 RUN set -x \
     && apk add --no-cache --virtual .fetch-deps python3 make g++ \
     && cd /app/bundle/programs/server \
@@ -65,19 +75,13 @@ RUN set -x \
     && npm install isolated-vm@4.4.2 \
     && mv node_modules/isolated-vm npm/node_modules/isolated-vm \
     # End hack for isolated-vm
-    && cd npm \
+    # Cache Deno dependencies for Apps-Engine
+    && cd npm/node_modules/@rocket.chat/apps-engine/deno-runtime \
+    && /app/bundle/programs/server/npm/node_modules/deno-bin/bin/deno cache main.ts \
+    && cd /app/bundle/programs/server/npm \
     && npm rebuild bcrypt --build-from-source \
     && npm cache clear --force \
     && apk del .fetch-deps
-
-# needs a mongo instance - defaults to container linking with alias 'mongo'
-ENV DEPLOY_METHOD=docker \
-    NODE_ENV=production \
-    MONGO_URL=mongodb://mongo:27017/rocketchat \
-    HOME=/tmp \
-    PORT=3000 \
-    ROOT_URL=http://localhost:3000 \
-    Accounts_AvatarStorePath=/app/uploads
 
 VOLUME /app/uploads
 
