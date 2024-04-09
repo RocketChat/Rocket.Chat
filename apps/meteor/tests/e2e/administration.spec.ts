@@ -70,7 +70,18 @@ test.describe.parallel('administration', () => {
 			await page.waitForSelector('[qa-room-id="GENERAL"]');
 		});
 
-		test('should edit target channel', async () => {
+		test('should edit target channel name', async () => {
+			await poAdmin.inputSearchRooms.fill(targetChannel);
+			await poAdmin.getRoomRow(targetChannel).click();
+			await poAdmin.roomNameInput.fill(`${targetChannel}-edited`);
+			await poAdmin.btnSave.click();
+
+			await expect(poAdmin.getRoomRow(targetChannel)).toContainText(`${targetChannel}-edited`);
+
+			targetChannel = `${targetChannel}-edited`;
+		});
+
+		test('should edit target channel type', async () => {
 			await poAdmin.inputSearchRooms.type(targetChannel);
 			await poAdmin.getRoomRow(targetChannel).click();
 			await poAdmin.privateLabel.click();
@@ -86,6 +97,47 @@ test.describe.parallel('administration', () => {
 
 			await poAdmin.getRoomRow(targetChannel).click();
 			await expect(poAdmin.archivedInput).toBeChecked();
+		});
+
+		test.describe.serial('Default rooms', () => {
+			test('expect target channel to be default', async () => {
+				await poAdmin.inputSearchRooms.type(targetChannel);
+				await poAdmin.getRoomRow(targetChannel).click();
+				await poAdmin.defaultLabel.click();
+
+				await test.step('should close contextualbar after saving', async () => {
+					await poAdmin.btnSave.click();
+					await expect(poAdmin.page).toHaveURL(new RegExp('/admin/rooms$'));
+				});
+
+				await poAdmin.getRoomRow(targetChannel).click();
+				await expect(poAdmin.defaultInput).toBeChecked();
+			});
+
+			test('should mark target default channel as "favorite by default"', async () => {
+				await poAdmin.inputSearchRooms.type(targetChannel);
+				await poAdmin.getRoomRow(targetChannel).click();
+				await poAdmin.favoriteLabel.click();
+				await poAdmin.btnSave.click();
+
+				await poAdmin.getRoomRow(targetChannel).click();
+				await expect(poAdmin.favoriteInput).toBeChecked();
+			});
+
+			test('should see favorite switch disabled when default is not true', async () => {
+				await poAdmin.inputSearchRooms.type(targetChannel);
+				await poAdmin.getRoomRow(targetChannel).click();
+				await poAdmin.defaultLabel.click();
+
+				await expect(poAdmin.favoriteInput).toBeDisabled();
+			});
+
+			test('should see favorite switch enabled when default is true', async () => {
+				await poAdmin.inputSearchRooms.type(targetChannel);
+				await poAdmin.getRoomRow(targetChannel).click();
+
+				await expect(poAdmin.favoriteInput).toBeEnabled();
+			});
 		});
 	});
 
@@ -104,13 +156,13 @@ test.describe.parallel('administration', () => {
 	test.describe('Mailer', () => {
 		test.beforeEach(async ({ page }) => {
 			await page.goto('/admin/mailer');
-		})
+		});
 
 		test('should not have any accessibility violations', async ({ makeAxeBuilder }) => {
 			const results = await makeAxeBuilder().analyze();
 			expect(results.violations).toEqual([]);
-		})
-	})
+		});
+	});
 
 	test.describe('Settings', () => {
 		test.describe('General', () => {

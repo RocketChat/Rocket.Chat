@@ -1,5 +1,183 @@
 # @rocket.chat/instance-status
 
+## 0.0.35
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [e203c40471]:</summary>
+
+  - @rocket.chat/models@0.0.35
+  </details>
+
+## 0.0.35-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.0.35-rc.4
+  </details>
+
+## 0.0.35-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.0.35-rc.3
+  </details>
+
+## 0.0.35-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.0.35-rc.2
+  </details>
+
+## 0.0.35-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.0.35-rc.1
+  </details>
+
+## 0.0.35-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [e203c40471]:</summary>
+
+  - @rocket.chat/models@0.0.35-rc.0
+  </details>
+
+## 0.0.34
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [ada096901a]:</summary>
+
+  - @rocket.chat/models@0.0.34
+  </details>
+
+## 0.0.33
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.0.33
+  </details>
+
+## 0.0.32
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.0.32
+  </details>
+
+## 0.0.31
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.0.31
+  </details>
+
+## 0.0.30
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.0.30
+  </details>
+
+## 0.0.29
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.0.29
+  </details>
+
+## 0.0.28
+
+### Patch Changes
+
+- ([#31138](https://github.com/RocketChat/Rocket.Chat/pull/31138)) feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+
+- <details><summary>Updated dependencies [b223cbde14]:</summary>
+
+  - @rocket.chat/models@0.0.28
+  </details>
+
+## 0.0.28-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.0.28-rc.7
+  </details>
+
+## 0.0.28-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.0.28-rc.6
+  </details>
+
+## 0.0.28-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.0.28-rc.5
+  </details>
+
+## 0.0.28-rc.4
+
+### Patch Changes
+
+- @rocket.chat/models@0.0.28-rc.4
+
+## 0.0.28-rc.3
+
+### Patch Changes
+
+- @rocket.chat/models@0.0.28-rc.3
+
+## 0.0.28-rc.2
+
+### Patch Changes
+
+- @rocket.chat/models@0.0.28-rc.2
+
+## 0.0.28-rc.1
+
+### Patch Changes
+
+- @rocket.chat/models@0.0.28-rc.1
+
+## 0.0.28-rc.0
+
+### Patch Changes
+
+- b223cbde14: feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+- Updated dependencies [b223cbde14]
+  - @rocket.chat/models@0.0.28-rc.0
+
 ## 0.0.27
 
 ### Patch Changes

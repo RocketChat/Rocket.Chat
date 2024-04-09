@@ -1,5 +1,214 @@
 # @rocket.chat/cron
 
+## 0.0.31
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b9ef630816, 3eb4dd7f50, b9e897a8f5, e203c40471]:</summary>
+
+  - @rocket.chat/core-typings@6.7.0
+  - @rocket.chat/models@0.0.35
+  - @rocket.chat/random@1.2.2
+  </details>
+
+## 0.0.31-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.4
+  - @rocket.chat/models@0.0.35-rc.4
+  </details>
+
+## 0.0.31-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.3
+  - @rocket.chat/models@0.0.35-rc.3
+  </details>
+
+## 0.0.31-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.2
+  - @rocket.chat/models@0.0.35-rc.2
+  </details>
+
+## 0.0.31-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.1
+  - @rocket.chat/models@0.0.35-rc.1
+  </details>
+
+## 0.0.31-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b9ef630816, 3eb4dd7f50, b9e897a8f5, e203c40471]:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.0
+  - @rocket.chat/models@0.0.35-rc.0
+  - @rocket.chat/random@1.2.2
+  </details>
+
+## 0.0.30
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [ada096901a]:</summary>
+
+  - @rocket.chat/models@0.0.34
+  - @rocket.chat/core-typings@6.6.6
+  </details>
+
+## 0.0.29
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.5
+  - @rocket.chat/models@0.0.33
+  </details>
+
+## 0.0.28
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.4
+  - @rocket.chat/models@0.0.32
+  </details>
+
+## 0.0.27
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.3
+  - @rocket.chat/models@0.0.31
+  </details>
+
+## 0.0.26
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.2
+  - @rocket.chat/models@0.0.30
+  </details>
+
+## 0.0.25
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.1
+  - @rocket.chat/models@0.0.29
+  </details>
+
+## 0.0.24
+
+### Patch Changes
+
+- ([#31138](https://github.com/RocketChat/Rocket.Chat/pull/31138)) feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+
+- <details><summary>Updated dependencies [b223cbde14, dbb08ef948, fdd9852079, b4b2cd20a8, db2551906c]:</summary>
+
+  - @rocket.chat/core-typings@6.6.0
+  - @rocket.chat/agenda@0.1.0
+  - @rocket.chat/models@0.0.28
+  - @rocket.chat/random@1.2.2
+  </details>
+
+## 0.0.24-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.0-rc.7
+  - @rocket.chat/models@0.0.28-rc.7
+  </details>
+
+## 0.0.24-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.0-rc.6
+  - @rocket.chat/models@0.0.28-rc.6
+  </details>
+
+## 0.0.24-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.0-rc.5
+  - @rocket.chat/models@0.0.28-rc.5
+  </details>
+
+## 0.0.24-rc.4
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.4
+- @rocket.chat/models@0.0.28-rc.4
+
+## 0.0.24-rc.3
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.3
+- @rocket.chat/models@0.0.28-rc.3
+
+## 0.0.24-rc.2
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.2
+- @rocket.chat/models@0.0.28-rc.2
+
+## 0.0.24-rc.1
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.1
+- @rocket.chat/models@0.0.28-rc.1
+
+## 0.0.24-rc.0
+
+### Patch Changes
+
+- b223cbde14: feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+- Updated dependencies [b223cbde14]
+- Updated dependencies [dbb08ef948]
+- Updated dependencies [fdd9852079]
+- Updated dependencies [b4b2cd20a8]
+- Updated dependencies [db2551906c]
+  - @rocket.chat/core-typings@6.6.0-rc.0
+  - @rocket.chat/agenda@0.1.0-rc.0
+  - @rocket.chat/models@0.0.28-rc.0
+  - @rocket.chat/random@1.2.2-rc.0
+
 ## 0.0.23
 
 ### Patch Changes

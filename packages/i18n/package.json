@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/i18n",
-	"version": "0.0.3",
+	"version": "0.2.0",
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.22.20",
@@ -10,7 +10,7 @@
 		"jest": "~29.6.4",
 		"ts-jest": "~29.1.1",
 		"tsup": "^6.7.0",
-		"typescript": "~5.3.2"
+		"typescript": "~5.3.3"
 	},
 	"scripts": {
 		"build": "node ./src/index.mjs",

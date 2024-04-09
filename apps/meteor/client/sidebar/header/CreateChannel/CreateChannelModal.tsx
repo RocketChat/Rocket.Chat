@@ -30,10 +30,12 @@ import { useForm, Controller } from 'react-hook-form';
 import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
 import UserAutoCompleteMultipleFederated from '../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
+import { useEncryptedRoomDescription } from '../hooks/useEncryptedRoomDescription';
 
 type CreateChannelModalProps = {
 	teamId?: string;
 	onClose: () => void;
+	reload?: () => void;
 };
 
 type CreateChannelModalPayload = {
@@ -57,7 +59,7 @@ const getFederationHintKey = (licenseModule: ReturnType<typeof useHasLicenseModu
 	return 'Federation_Matrix_Federated_Description';
 };
 
-const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): ReactElement => {
+const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModalProps): ReactElement => {
 	const t = useTranslation();
 	const canSetReadOnly = usePermissionWithScopedRoles('set-readonly', ['owner']);
 	const e2eEnabled = useSetting('E2E_Enable');
@@ -68,6 +70,7 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 
 	const canCreateChannel = usePermission('create-c');
 	const canCreatePrivateChannel = usePermission('create-p');
+	const getEncryptedHint = useEncryptedRoomDescription('channel');
 
 	const channelNameRegex = useMemo(() => new RegExp(`^${namesValidation}$`), [namesValidation]);
 	const federatedModule = useHasLicenseModule('federation');
@@ -110,7 +113,7 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 		},
 	});
 
-	const { isPrivate, broadcast, readOnly, federated } = watch();
+	const { isPrivate, broadcast, readOnly, federated, encrypted } = watch();
 
 	useEffect(() => {
 		if (!isPrivate) {
@@ -137,7 +140,7 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 		}
 
 		if (!allowSpecialNames && !channelNameRegex.test(name)) {
-			return t('error-invalid-name');
+			return t('Name_cannot_have_special_characters');
 		}
 
 		const { exists } = await channelNameExists({ roomName: name });
@@ -171,6 +174,7 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 			}
 
 			dispatchToastMessage({ type: 'success', message: t('Room_has_been_created') });
+			reload?.();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		} finally {
@@ -209,7 +213,7 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 				<FieldGroup>
 					<Field>
 						<FieldLabel required htmlFor={nameId}>
-							{t('Channel_name')}
+							{t('Name')}
 						</FieldLabel>
 						<FieldRow>
 							<TextInput
@@ -222,7 +226,7 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 								error={errors.name?.message}
 								addon={<Icon name={isPrivate ? 'hashtag-lock' : 'hashtag'} size='x20' />}
 								aria-invalid={errors.name ? 'true' : 'false'}
-								aria-describedby={`${nameId}-error`}
+								aria-describedby={`${nameId}-error ${nameId}-hint`}
 								aria-required='true'
 							/>
 						</FieldRow>
@@ -231,13 +235,24 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 								{errors.name.message}
 							</FieldError>
 						)}
+						{!allowSpecialNames && <FieldHint id={`${nameId}-hint`}>{t('No_spaces')}</FieldHint>}
 					</Field>
 					<Field>
 						<FieldLabel htmlFor={topicId}>{t('Topic')}</FieldLabel>
 						<FieldRow>
 							<TextInput id={topicId} aria-describedby={`${topicId}-hint`} {...register('topic')} data-qa-type='channel-topic-input' />
 						</FieldRow>
-						<FieldHint id={`${topicId}-hint`}>{t('Channel_what_is_this_channel_about')}</FieldHint>
+						<FieldHint id={`${topicId}-hint`}>{t('Displayed_next_to_name')}</FieldHint>
+					</Field>
+					<Field>
+						<FieldLabel htmlFor={addMembersId}>{t('Members')}</FieldLabel>
+						<Controller
+							control={control}
+							name='members'
+							render={({ field: { onChange, value } }): ReactElement => (
+								<UserAutoCompleteMultipleFederated id={addMembersId} value={value} onChange={onChange} placeholder={t('Add_people')} />
+							)}
+						/>
 					</Field>
 					<Field>
 						<FieldRow>
@@ -258,7 +273,7 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 							/>
 						</FieldRow>
 						<FieldHint id={`${privateId}-hint`}>
-							{isPrivate ? t('Only_invited_users_can_acess_this_channel') : t('Everyone_can_access_this_channel')}
+							{isPrivate ? t('People_can_only_join_by_being_invited') : t('Anyone_can_access')}
 						</FieldHint>
 					</Field>
 					<Field>
@@ -283,28 +298,6 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 					</Field>
 					<Field>
 						<FieldRow>
-							<FieldLabel htmlFor={readOnlyId}>{t('Read_only')}</FieldLabel>
-							<Controller
-								control={control}
-								name='readOnly'
-								render={({ field: { onChange, value, ref } }): ReactElement => (
-									<ToggleSwitch
-										id={readOnlyId}
-										aria-describedby={`${readOnlyId}-hint`}
-										ref={ref}
-										checked={value}
-										disabled={!canSetReadOnly || broadcast || federated}
-										onChange={onChange}
-									/>
-								)}
-							/>
-						</FieldRow>
-						<FieldHint id={`${readOnlyId}-hint`}>
-							{readOnly ? t('Only_authorized_users_can_write_new_messages') : t('All_users_in_the_channel_can_write_new_messages')}
-						</FieldHint>
-					</Field>
-					<Field>
-						<FieldRow>
 							<FieldLabel htmlFor={encryptedId}>{t('Encrypted')}</FieldLabel>
 							<Controller
 								control={control}
@@ -322,9 +315,29 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 								)}
 							/>
 						</FieldRow>
-						<FieldDescription id={`${encryptedId}-hint`}>
-							{isPrivate ? t('Encrypted_channel_Description') : t('Encrypted_not_available')}
-						</FieldDescription>
+						<FieldDescription id={`${encryptedId}-hint`}>{getEncryptedHint({ isPrivate, broadcast, encrypted })}</FieldDescription>
+					</Field>
+					<Field>
+						<FieldRow>
+							<FieldLabel htmlFor={readOnlyId}>{t('Read_only')}</FieldLabel>
+							<Controller
+								control={control}
+								name='readOnly'
+								render={({ field: { onChange, value, ref } }): ReactElement => (
+									<ToggleSwitch
+										id={readOnlyId}
+										aria-describedby={`${readOnlyId}-hint`}
+										ref={ref}
+										checked={value}
+										disabled={!canSetReadOnly || broadcast || federated}
+										onChange={onChange}
+									/>
+								)}
+							/>
+						</FieldRow>
+						<FieldHint id={`${readOnlyId}-hint`}>
+							{readOnly ? t('Read_only_field_hint_enabled', { roomType: 'channel' }) : t('Anyone_can_send_new_messages')}
+						</FieldHint>
 					</Field>
 					<Field>
 						<FieldRow>
@@ -344,17 +357,7 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 								)}
 							/>
 						</FieldRow>
-						<FieldHint id={`${broadcastId}-hint`}>{t('Broadcast_channel_Description')}</FieldHint>
-					</Field>
-					<Field>
-						<FieldLabel htmlFor={addMembersId}>{t('Add_members')}</FieldLabel>
-						<Controller
-							control={control}
-							name='members'
-							render={({ field: { onChange, value } }): ReactElement => (
-								<UserAutoCompleteMultipleFederated id={addMembersId} value={value} onChange={onChange} />
-							)}
-						/>
+						{broadcast && <FieldHint id={`${broadcastId}-hint`}>{t('Broadcast_hint_enabled', { roomType: 'channel' })}</FieldHint>}
 					</Field>
 				</FieldGroup>
 			</Modal.Content>

@@ -15,7 +15,6 @@ export function wait(cb, time) {
 
 export const apiUsername = `api${username}-${Date.now()}`;
 export const apiEmail = `api${email}-${Date.now()}`;
-export const apiPublicChannelName = `api${publicChannelName}-${Date.now()}`;
 export const apiPrivateChannelName = `api${privateChannelName}-${Date.now()}`;
 
 export const apiRoleNameUsers = `api${roleNameUsers}`;
@@ -25,7 +24,6 @@ export const apiRoleScopeSubscriptions = `${roleScopeSubscriptions}`;
 export const apiRoleDescription = `api${roleDescription}`;
 export const reservedWords = ['admin', 'administrator', 'system', 'user'];
 
-export const channel = {};
 export const group = {};
 export const message = {};
 export const directMessage = {};

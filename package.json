@@ -1,6 +1,6 @@
 {
 	"name": "rocket.chat",
-	"version": "6.6.0-develop",
+	"version": "6.8.0-develop",
 	"description": "Rocket.Chat Monorepo",
 	"main": "index.js",
 	"private": true,
@@ -19,7 +19,7 @@
 		"@changesets/cli": "^2.26.2",
 		"@types/chart.js": "^2.9.39",
 		"@types/js-yaml": "^4.0.8",
-		"turbo": "~1.11.2"
+		"turbo": "^1.12.4"
 	},
 	"workspaces": [
 		"apps/*",
