@@ -11,8 +11,18 @@ test.describe.serial('image-gallery', () => {
 	// Using more than 5 images so that new images need to be loaded by the gallery
 	const imageNames = ['number1.png', 'number2.png', 'number3.png', 'number4.png', 'number5.png', 'number6.png'];
 
-	test.beforeAll(async ({ api }) => {
+	test.beforeAll(async ({ api, page }) => {
 		targetChannel = await createTargetChannel(api);
+		poHomeChannel = new HomeChannel(page);
+
+		await page.goto('/home');
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.content.btnJoinRoom.click();
+		for await (const imageName of imageNames) {
+			await poHomeChannel.content.sendFileMessage(imageName);
+			await poHomeChannel.content.btnModalConfirm.click();
+			await expect(poHomeChannel.content.lastUserMessage).toContainText(imageName);
+		}
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -20,15 +30,6 @@ test.describe.serial('image-gallery', () => {
 
 		await page.goto('/home');
 		await poHomeChannel.sidenav.openChat(targetChannel);
-		const canJoinRoom = await poHomeChannel.content.btnJoinRoom.isVisible();
-		if (canJoinRoom) {
-			await poHomeChannel.content.btnJoinRoom.click();
-			for await (const imageName of imageNames) {
-				await poHomeChannel.content.sendFileMessage(imageName);
-				await poHomeChannel.content.btnModalConfirm.click();
-				await expect(poHomeChannel.content.lastUserMessage).toContainText(imageName);
-			}
-		}
 	});
 
 	test.afterAll(async ({ api }) => {
