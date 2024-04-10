@@ -35,6 +35,7 @@ import { useEncryptedRoomDescription } from '../hooks/useEncryptedRoomDescriptio
 type CreateChannelModalProps = {
 	teamId?: string;
 	onClose: () => void;
+	reload?: () => void;
 };
 
 type CreateChannelModalPayload = {
@@ -58,7 +59,7 @@ const getFederationHintKey = (licenseModule: ReturnType<typeof useHasLicenseModu
 	return 'Federation_Matrix_Federated_Description';
 };
 
-const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): ReactElement => {
+const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModalProps): ReactElement => {
 	const t = useTranslation();
 	const canSetReadOnly = usePermissionWithScopedRoles('set-readonly', ['owner']);
 	const e2eEnabled = useSetting('E2E_Enable');
@@ -173,6 +174,7 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 			}
 
 			dispatchToastMessage({ type: 'success', message: t('Room_has_been_created') });
+			reload?.();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		} finally {
