@@ -52,7 +52,7 @@ test.describe('omnichannel-take-chat', () => {
 		await poLiveChat.btnSendMessageToOnlineAgent.click();
 	});
 
-	test('expect "user1" to be able to take the chat from the queue', async () => {
+	test('should user take the chat', async () => {
 		await agent.poHomeChannel.sidenav.openQueuedOmnichannelChat(newVisitor.name);
 		await expect(agent.poHomeChannel.content.btnTakeChat).toBeVisible();
 		await agent.poHomeChannel.content.btnTakeChat.click();
@@ -62,7 +62,7 @@ test.describe('omnichannel-take-chat', () => {
 		await expect(agent.poHomeChannel.content.inputMessage).toBeVisible();
 	});
 
-	test('expect "user1" to not be able to take chat from queue in case its user status is offline', async () => {
+	test('should user not take the chat when offline status', async () => {
 		// make "user-1" offline
 		await agent.poHomeChannel.sidenav.switchStatus('offline');
 
