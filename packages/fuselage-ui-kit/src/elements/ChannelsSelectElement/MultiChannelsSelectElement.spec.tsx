@@ -47,7 +47,7 @@ const mockedOptions = [
 const mockUseChannelsData = jest.mocked(useChannelsData);
 mockUseChannelsData.mockReturnValue(mockedOptions);
 
-describe('UiKit ChannelsSelect Element', () => {
+describe('UiKit MultiChannelsSelect Element', () => {
   beforeAll(() => {
     jest.useFakeTimers();
   });
