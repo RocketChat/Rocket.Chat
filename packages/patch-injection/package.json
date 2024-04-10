@@ -1,5 +1,5 @@
 {
-	"name": "@rocket.chat/patch-coordinator",
+	"name": "@rocket.chat/patch-injection",
 	"version": "0.0.1",
 	"private": true,
 	"devDependencies": {
