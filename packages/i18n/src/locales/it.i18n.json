@@ -2622,7 +2622,6 @@
   "Room_default_change_to_private_will_be_default_no_more": "Questo è un canale predefinito e cambiandolo a un gruppo privato non causerà più un canale predefinito. Vuoi procedere?",
   "Room_description_changed_successfully": "Descrizione del canale cambiata con successo",
   "Room_has_been_archived": "La stanza è stata archiviata",
-  "Room_has_been_deleted": "Il canale è stato eliminato",
   "Room_has_been_unarchived": "La stanza è stata tolta dall'archivio",
   "Room_Info": "Informazioni canale",
   "room_is_blocked": "La stanza è sbloccata",

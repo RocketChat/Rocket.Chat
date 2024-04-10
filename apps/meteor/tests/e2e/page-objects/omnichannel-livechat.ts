@@ -46,9 +46,13 @@ export class OmnichannelLiveChat {
 	get btnChatNow(): Locator {
 		return this.page.locator('[type="button"] >> text="Chat now"');
 	}
-	
+
 	get headerTitle(): Locator {
 		return this.page.locator('[data-qa="header-title"]');
+	}
+
+	get txtWatermark(): Locator {
+		return this.page.locator('[data-qa="livechat-watermark"]');
 	}
 
 	alertMessage(message: string): Locator {
@@ -57,16 +61,6 @@ export class OmnichannelLiveChat {
 
 	txtChatMessage(message: string): Locator {
 		return this.page.locator(`text="${message}"`);
-	}
-
-	async changeDepartment (department: string): Promise<void> {
-		await this.btnOptions.click();
-		await this.btnChangeDepartment.click();
-		await this.selectDepartment.waitFor({ state: 'visible' });
-		await this.selectDepartment.selectOption({ label: department });
-		await this.btnSendMessage('Start chat').click();
-		await this.btnYes.click();
-		await this.btnOk.click();
 	}
 
 	async closeChat(): Promise<void> {
@@ -132,15 +126,19 @@ export class OmnichannelLiveChat {
 		return this.page.locator('footer div div div:nth-child(3) button');
 	}
 
-	get firstAutoMessage(): Locator {
-		return this.page.locator('div.message-text__WwYco p');
+	get livechatModal(): Locator {
+		return this.page.locator('[data-qa-type="modal-overlay"]');
+	}
+
+	livechatModalText(text: string): Locator {
+		return this.page.locator(`[data-qa-type="modal-overlay"] >> text=${text}`);
 	}
 
 	get fileUploadTarget(): Locator {
 		return this.page.locator('#files-drop-target');
 	}
 
-	findUploadedFileLink (fileName: string): Locator {
+	findUploadedFileLink(fileName: string): Locator {
 		return this.page.getByRole('link', { name: fileName });
 	}
 
