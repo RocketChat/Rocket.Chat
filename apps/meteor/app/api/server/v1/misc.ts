@@ -409,10 +409,13 @@ API.v1.addRoute(
 	{
 		authRequired: false,
 		validateParams: validateParamsPwGetPolicyRest,
+		deprecation: {
+			version: '7.0.0',
+			alternatives: ['pw.getPolicy'],
+		},
 	},
 	{
 		async get() {
-			apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, ' Use pw.getPolicy instead.');
 			check(
 				this.queryParams,
 				Match.ObjectIncluding({
