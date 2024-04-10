@@ -605,7 +605,7 @@ export class LDAPEEManager extends LDAPManager {
 	private static async disableMissingUsers(foundUsers: IUser['_id'][]): Promise<void> {
 		const userIds = (await Users.findLDAPUsersExceptIds(foundUsers, { projection: { _id: 1 } }).toArray()).map(({ _id }) => _id);
 
-		await Promise.allSettled([...userIds].map((id) => setUserActiveStatus(id, false, true)));
+		await Promise.allSettled(userIds.map((id) => setUserActiveStatus(id, false, true)));
 	}
 
 	private static async updateUserAvatars(ldap: LDAPConnection): Promise<void> {
