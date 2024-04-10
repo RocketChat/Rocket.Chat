@@ -21,7 +21,10 @@ type FilterByTextProps = FilterByTextCommonProps | FilterByTextPropsWithButton;
 const isFilterByTextPropsWithButton = (props: any): props is FilterByTextPropsWithButton =>
 	'displayButton' in props && props.displayButton === true;
 
-const FilterByText = forwardRef<HTMLElement, FilterByTextProps>(function FilterByText({ placeholder, onChange: setFilter, children, ...props }, ref) {
+const FilterByText = forwardRef<HTMLElement, FilterByTextProps>(function FilterByText(
+	{ placeholder, onChange: setFilter, children, ...props },
+	ref,
+) {
 	const t = useTranslation();
 	const [text, setText] = useState('');
 	const autoFocusRef = useAutoFocus();

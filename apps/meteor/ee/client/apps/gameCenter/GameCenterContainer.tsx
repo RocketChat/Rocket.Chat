@@ -1,4 +1,5 @@
 import { Avatar } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -10,7 +11,6 @@ import {
 	ContextualbarClose,
 } from '../../../../client/components/Contextualbar';
 import type { IGame } from './GameCenter';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 
 interface IGameCenterContainerProps {
 	handleClose: (e: any) => void;
