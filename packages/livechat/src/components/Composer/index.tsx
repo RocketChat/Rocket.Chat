@@ -6,9 +6,9 @@ import { createClassName } from '../../helpers/createClassName';
 import { parse } from '../../helpers/parse';
 import styles from './styles.scss';
 
-const findLastTextNode = (node: Node): Text | null => {
+const findLastTextNode = (node: Node): Node | null => {
 	if (node.nodeType === Node.TEXT_NODE) {
-		return node as Text;
+		return node;
 	}
 	const children = node.childNodes;
 	for (let i = children.length - 1; i >= 0; i--) {
@@ -26,7 +26,7 @@ const replaceCaret = (el: Element) => {
 	const target = findLastTextNode(el);
 	// do not move caret if element was not focused
 	const isTargetFocused = document.activeElement === el;
-	if (target !== null && target.nodeValue !== null && isTargetFocused) {
+	if (!!target?.nodeValue && isTargetFocused) {
 		const range = document.createRange();
 		const sel = window.getSelection();
 		range.setStart(target, target.nodeValue.length);
@@ -241,7 +241,7 @@ export class Composer extends Component<ComposerProps, ComposerState> {
 		}
 
 		if (typeof win.getSelection !== 'undefined' && (win.getSelection()?.rangeCount ?? 0) > 0) {
-			const range = win.getSelection()!.getRangeAt(0);
+			const range = win.getSelection()?.getRangeAt(0) as Range;
 			const preCaretRange = range.cloneRange();
 			preCaretRange.selectNodeContents(element);
 			preCaretRange.setEnd(range.endContainer, range.endOffset);
@@ -249,10 +249,10 @@ export class Composer extends Component<ComposerProps, ComposerState> {
 		}
 
 		if (doc.selection && doc.selection.type !== 'Control') {
-			const textRange = doc.selection.createRange!();
+			const textRange = doc.selection.createRange?.();
 			const preCaretTextRange = doc.body.createTextRange?.();
 			preCaretTextRange?.moveToElementText?.(element);
-			preCaretTextRange?.setEndPoint?.('EndToEnd', textRange);
+			preCaretTextRange?.setEndPoint?.('EndToEnd', textRange as Range);
 			return preCaretTextRange?.text?.length ?? 0;
 		}
 
