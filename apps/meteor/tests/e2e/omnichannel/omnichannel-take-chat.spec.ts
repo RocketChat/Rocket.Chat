@@ -6,7 +6,7 @@ import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';
 import { test, expect } from '../utils/test';
 
-test.describe('omnichannel-takeChat', () => {
+test.describe('omnichannel-take-chat', () => {
 	let poLiveChat: OmnichannelLiveChat;
 	let newVisitor: { email: string; name: string };
 
@@ -16,7 +16,7 @@ test.describe('omnichannel-takeChat', () => {
 		await Promise.all([
 			await api.post('/livechat/users/agent', { username: 'user1' }).then((res) => expect(res.status()).toBe(200)),
 			await api.post('/settings/Livechat_Routing_Method', { value: 'Manual_Selection' }).then((res) => expect(res.status()).toBe(200)),
-			await api.post('/settings/Livechat_enabled_when_agent_idle', { value: false }).then((res) => expect(res.status()).toBe(200)),
+			await api.post('/settings/Livechat_enabled_when_agent_idle', { value: true }).then((res) => expect(res.status()).toBe(200)),
 		]);
 
 		const { page } = await createAuxContext(browser, Users.user1);
@@ -25,9 +25,9 @@ test.describe('omnichannel-takeChat', () => {
 
 	test.afterAll(async ({ api }) => {
 		await Promise.all([
+			await api.delete('/livechat/users/agent/user1').then((res) => expect(res.status()).toBe(200)),
 			await api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }).then((res) => expect(res.status()).toBe(200)),
 			await api.post('/settings/Livechat_enabled_when_agent_idle', { value: false }).then((res) => expect(res.status()).toBe(200)),
-			await api.delete('/livechat/users/agent/user1').then((res) => expect(res.status()).toBe(200)),
 		]);
 
 		await agent.page.close();
@@ -42,11 +42,13 @@ test.describe('omnichannel-takeChat', () => {
 			name: `${faker.person.firstName()} ${faker.string.uuid()}`,
 			email: faker.internet.email(),
 		};
+
 		poLiveChat = new OmnichannelLiveChat(page, api);
+
 		await page.goto('/livechat');
 		await poLiveChat.openLiveChat();
 		await poLiveChat.sendMessage(newVisitor, false);
-		await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_user');
+		await poLiveChat.onlineAgentMessage.fill('this_a_test_message_from_user');
 		await poLiveChat.btnSendMessageToOnlineAgent.click();
 	});
 
@@ -60,15 +62,11 @@ test.describe('omnichannel-takeChat', () => {
 		await expect(agent.poHomeChannel.content.inputMessage).toBeVisible();
 	});
 
-	test('expect "user1" to not able able to take chat from queue in-case its user status is offline', async () => {
+	test('expect "user1" to not be able to take chat from queue in case its user status is offline', async () => {
 		// make "user-1" offline
 		await agent.poHomeChannel.sidenav.switchStatus('offline');
 
 		await agent.poHomeChannel.sidenav.openQueuedOmnichannelChat(newVisitor.name);
-		await expect(agent.poHomeChannel.content.btnTakeChat).toBeVisible();
-		await agent.poHomeChannel.content.btnTakeChat.click();
-
-		// expect to see error message
-		await expect(agent.page.locator('text=Agent status is offline or Omnichannel service is not active')).toBeVisible();
+		await expect(agent.poHomeChannel.content.btnTakeChat).toBeDisabled();
 	});
 });
