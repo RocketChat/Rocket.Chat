@@ -37,6 +37,10 @@ export class HomeSidenav {
 		return this.page.locator('[placeholder="Search (Ctrl+K)"]').first();
 	}
 
+	getQueuedChat(name: string): Locator {
+		return this.page.locator('[data-qa="sidebar-item-title"]', { hasText: name }).first();
+	}
+
 	getSidebarItemByName(name: string): Locator {
 		return this.page.locator(`[data-qa="sidebar-item"][aria-label="${name}"]`);
 	}
@@ -119,7 +123,7 @@ export class HomeSidenav {
 
 	// Note: this is a workaround for now since queued omnichannel chats are not searchable yet so we can't use openChat() :(
 	async openQueuedOmnichannelChat(name: string): Promise<void> {
-		await this.page.locator('[data-qa="sidebar-item-title"]', { hasText: name }).first().click();
+		await this.getQueuedChat(name).click();
 	}
 
 	async createPublicChannel(name: string) {

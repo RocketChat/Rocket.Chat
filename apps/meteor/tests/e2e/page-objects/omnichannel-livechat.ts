@@ -142,6 +142,13 @@ export class OmnichannelLiveChat {
 		return this.page.getByRole('link', { name: fileName });
 	}
 
+	public async openChatAndSendMessage(liveChatUser: { name: string; email: string }, message = '') {
+		await this.openLiveChat();
+		await this.sendMessage(liveChatUser, false);
+		await this.onlineAgentMessage.fill(message);
+		await this.btnSendMessageToOnlineAgent.click();
+	}
+
 	public async sendMessage(liveChatUser: { name: string; email: string }, isOffline = true, department?: string): Promise<void> {
 		const buttonLabel = isOffline ? 'Send' : 'Start chat';
 		await this.inputName.fill(liveChatUser.name);

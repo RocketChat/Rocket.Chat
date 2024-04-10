@@ -1,10 +1,12 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
+import { sleep } from '../../data/livechat/utils';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';
 import { test, expect } from '../utils/test';
+
 
 test.describe('omnichannel-take-chat', () => {
 	let poLiveChat: OmnichannelLiveChat;
@@ -33,11 +35,9 @@ test.describe('omnichannel-take-chat', () => {
 		await agent.page.close();
 	});
 
-	test.beforeEach(async ({ page, api }) => {
-		// make "user-1" online
+	test.beforeEach('start a new livechat chat', async ({ page, api },) => {
 		await agent.poHomeChannel.sidenav.switchStatus('online');
 
-		// start a new chat for each test
 		newVisitor = {
 			name: `${faker.person.firstName()} ${faker.string.uuid()}`,
 			email: faker.internet.email(),
@@ -46,13 +46,11 @@ test.describe('omnichannel-take-chat', () => {
 		poLiveChat = new OmnichannelLiveChat(page, api);
 
 		await page.goto('/livechat');
-		await poLiveChat.openLiveChat();
-		await poLiveChat.sendMessage(newVisitor, false);
-		await poLiveChat.onlineAgentMessage.fill('this_a_test_message_from_user');
-		await poLiveChat.btnSendMessageToOnlineAgent.click();
 	});
 
 	test('should user take the chat', async () => {
+		await poLiveChat.openChatAndSendMessage(newVisitor, 'this_a_test_message_from_user');
+
 		await agent.poHomeChannel.sidenav.openQueuedOmnichannelChat(newVisitor.name);
 		await expect(agent.poHomeChannel.content.btnTakeChat).toBeVisible();
 		await agent.poHomeChannel.content.btnTakeChat.click();
@@ -62,8 +60,22 @@ test.describe('omnichannel-take-chat', () => {
 		await expect(agent.poHomeChannel.content.inputMessage).toBeVisible();
 	});
 
-	test('should user not take the chat when offline status', async () => {
-		// make "user-1" offline
+	test('should user not receive a new chat when offline status and livechat disabled when agent idle', async ({ api }) => {
+		await api.post('/settings/Livechat_enabled_when_agent_idle', { value: false }).then((res) => expect(res.status()).toBe(200));
+		await agent.poHomeChannel.sidenav.switchStatus('offline');
+
+		await poLiveChat.openChatAndSendMessage(newVisitor, 'this_a_test_message_from_user');
+
+		await sleep(2000);
+
+		await expect(agent.poHomeChannel.sidenav.getQueuedChat(newVisitor.name)).toHaveCount(0);
+	});
+
+	test('should user not take the chat when offline status', async ({ api }) => {
+		await api.post('/settings/Livechat_enabled_when_agent_idle', { value: true }).then((res) => expect(res.status()).toBe(200));
+
+		await poLiveChat.openChatAndSendMessage(newVisitor, 'this_a_test_message_from_user');
+
 		await agent.poHomeChannel.sidenav.switchStatus('offline');
 
 		await agent.poHomeChannel.sidenav.openQueuedOmnichannelChat(newVisitor.name);
