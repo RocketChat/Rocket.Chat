@@ -1,7 +1,7 @@
 ---
-'@rocket.chat/model-typings': patch
-'@rocket.chat/i18n': patch
-'@rocket.chat/meteor': patch
+'@rocket.chat/model-typings': minor
+'@rocket.chat/i18n': minor
+'@rocket.chat/meteor': minor
 ---
 
-added a new setting to automatically disable users from LDAP that can no longer be found when querying LDAP for the background sync
+Added a new setting to automatically disable users from LDAP that can no longer be found by the background sync
