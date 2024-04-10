@@ -90,7 +90,7 @@ describe('UiKit ChannelsSelect Element', () => {
     );
 
     await waitFor(async () => {
-      const option = (await screen.findAllByRole('option'))[1];
+      const option = (await screen.findAllByRole('option'))[0];
       expect(option).toHaveTextContent('Channel 2');
     });
   });
@@ -100,7 +100,7 @@ describe('UiKit ChannelsSelect Element', () => {
 
     input.focus();
 
-    const option = (await screen.findAllByRole('option'))[1];
+    const option = (await screen.findAllByRole('option'))[0];
     await userEvent.click(option, { delay: null });
 
     const selected = await screen.findByRole('button');

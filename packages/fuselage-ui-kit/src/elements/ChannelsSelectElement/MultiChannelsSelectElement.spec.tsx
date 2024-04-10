@@ -90,7 +90,7 @@ describe('UiKit ChannelsSelect Element', () => {
     );
 
     await waitFor(async () => {
-      const option = (await screen.findAllByRole('option'))[1];
+      const option = (await screen.findAllByRole('option'))[0];
       expect(option).toHaveTextContent('Channel 2');
     });
   });
@@ -100,10 +100,10 @@ describe('UiKit ChannelsSelect Element', () => {
 
     input.focus();
 
-    const option1 = (await screen.findAllByRole('option'))[1];
+    const option1 = (await screen.findAllByRole('option'))[0];
     await userEvent.click(option1, { delay: null });
 
-    const option2 = (await screen.findAllByRole('option'))[3];
+    const option2 = (await screen.findAllByRole('option'))[2];
     await userEvent.click(option2, { delay: null });
 
     const selected = await screen.findAllByRole('button');
@@ -116,10 +116,10 @@ describe('UiKit ChannelsSelect Element', () => {
 
     input.focus();
 
-    const option1 = (await screen.findAllByRole('option'))[1];
+    const option1 = (await screen.findAllByRole('option'))[0];
     await userEvent.click(option1, { delay: null });
 
-    const option2 = (await screen.findAllByRole('option'))[3];
+    const option2 = (await screen.findAllByRole('option'))[2];
     await userEvent.click(option2, { delay: null });
 
     const selected1 = (await screen.findAllByRole('button'))[0];
