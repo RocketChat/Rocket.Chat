@@ -1,19 +1,5 @@
-import type { ILivechatTrigger, ILivechatTriggerCondition, Serialized } from '@rocket.chat/core-typings';
-import type { SelectOption } from '@rocket.chat/fuselage';
-import {
-	FieldGroup,
-	Button,
-	ButtonGroup,
-	Field,
-	FieldLabel,
-	FieldRow,
-	FieldError,
-	TextInput,
-	ToggleSwitch,
-	Select,
-	TextAreaInput,
-	NumberInput,
-} from '@rocket.chat/fuselage';
+import { type ILivechatTrigger, type ILivechatTriggerAction, type Serialized } from '@rocket.chat/core-typings';
+import { FieldGroup, Button, ButtonGroup, Field, FieldLabel, FieldRow, FieldError, TextInput, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRouter, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -28,44 +14,64 @@ import {
 	ContextualbarHeader,
 	ContextualbarClose,
 } from '../../../components/Contextualbar';
+import { ConditionForm } from './ConditionForm';
+import { ActionForm } from './actions/ActionForm';
 
-const getInitialValues = (triggerData: Serialized<ILivechatTrigger> | undefined) => ({
-	name: triggerData?.name || '',
-	description: triggerData?.description || '',
-	enabled: triggerData?.enabled || true,
-	runOnce: !!triggerData?.runOnce || false,
-	conditions: triggerData?.conditions.map(({ name, value }) => ({ name: name || 'page-url', value: value || '' })) || [
-		{ name: 'page-url' as unknown as ILivechatTriggerCondition['name'], value: '' },
-	],
-	actions: triggerData?.actions.map(({ name, params }) => ({
-		name: name || '',
-		params: {
-			sender: params?.sender || 'queue',
-			msg: params?.msg || '',
-			name: params?.name || '',
-		},
-	})) || [
-		{
-			name: 'send-message',
-			params: {
-				sender: 'queue',
-				msg: '',
-				name: '',
-			},
-		},
-	],
-});
-
-type TriggersPayload = {
+export type TriggersPayload = {
 	name: string;
 	description: string;
 	enabled: boolean;
 	runOnce: boolean;
-	// In the future, this will be an array
 	conditions: ILivechatTrigger['conditions'];
-	// In the future, this will be an array
 	actions: ILivechatTrigger['actions'];
 };
+
+const DEFAULT_SEND_MESSAGE_ACTION = {
+	name: 'send-message',
+	params: {
+		sender: 'queue',
+		name: '',
+		msg: '',
+	},
+} as const;
+
+const DEFAULT_PAGE_URL_CONDITION = { name: 'page-url', value: '' } as const;
+
+export const getDefaultAction = (action: ILivechatTriggerAction): ILivechatTriggerAction => {
+	switch (action.name) {
+		case 'send-message':
+			return {
+				name: 'send-message',
+				params: {
+					name: action.params?.name || '',
+					msg: action.params?.msg || '',
+					sender: action.params?.sender || 'queue',
+				},
+			};
+		case 'use-external-service':
+			return {
+				name: 'use-external-service',
+				params: {
+					name: action.params?.name || '',
+					sender: action.params?.sender || 'queue',
+					serviceUrl: action.params?.serviceUrl || '',
+					serviceTimeout: action.params?.serviceTimeout || 0,
+					serviceFallbackMessage: action.params?.serviceFallbackMessage || '',
+				},
+			};
+	}
+};
+
+const getInitialValues = (triggerData: Serialized<ILivechatTrigger> | undefined): TriggersPayload => ({
+	name: triggerData?.name ?? '',
+	description: triggerData?.description || '',
+	enabled: triggerData?.enabled ?? true,
+	runOnce: !!triggerData?.runOnce ?? false,
+	conditions: triggerData?.conditions.map(({ name, value }) => ({ name: name || 'page-url', value: value || '' })) ?? [
+		DEFAULT_PAGE_URL_CONDITION,
+	],
+	actions: triggerData?.actions.map((action) => getDefaultAction(action)) ?? [DEFAULT_SEND_MESSAGE_ACTION],
+});
 
 const EditTrigger = ({ triggerData }: { triggerData?: Serialized<ILivechatTrigger> }) => {
 	const t = useTranslation();
@@ -74,13 +80,24 @@ const EditTrigger = ({ triggerData }: { triggerData?: Serialized<ILivechatTrigge
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const saveTrigger = useEndpoint('POST', '/v1/livechat/triggers');
+	const initValues = getInitialValues(triggerData);
+
+	const formId = useUniqueId();
+	const enabledField = useUniqueId();
+	const runOnceField = useUniqueId();
+	const nameField = useUniqueId();
+	const descriptionField = useUniqueId();
 
 	const {
 		control,
 		handleSubmit,
-		formState: { isDirty, errors },
-		watch,
-	} = useForm<TriggersPayload>({ mode: 'onBlur', values: getInitialValues(triggerData) });
+		trigger,
+		formState: { isDirty, isSubmitting, errors },
+	} = useForm<TriggersPayload>({ mode: 'onBlur', reValidateMode: 'onBlur', values: initValues });
+
+	// Alternative way of checking isValid in order to not trigger validation on every render
+	// https://github.com/react-hook-form/documentation/issues/944
+	const isValid = useMemo(() => Object.keys(errors).length === 0, [errors]);
 
 	const { fields: conditionsFields } = useFieldArray({
 		control,
@@ -92,38 +109,11 @@ const EditTrigger = ({ triggerData }: { triggerData?: Serialized<ILivechatTrigge
 		name: 'actions',
 	});
 
-	const { description, conditions, actions } = watch();
-
-	const conditionOptions: SelectOption[] = useMemo(
-		() => [
-			['page-url', t('Visitor_page_URL')],
-			['time-on-site', t('Visitor_time_on_site')],
-			['chat-opened-by-visitor', t('Chat_opened_by_visitor')],
-			['after-guest-registration', t('After_guest_registration')],
-		],
-		[t],
-	);
-
-	const conditionValuePlaceholders: { [conditionName: string]: string } = useMemo(
-		() => ({
-			'page-url': t('Enter_a_regex'),
-			'time-on-site': t('Time_in_seconds'),
-		}),
-		[t],
-	);
-
-	const senderOptions: SelectOption[] = useMemo(
-		() => [
-			['queue', t('Impersonate_next_agent_from_queue')],
-			['custom', t('Custom_agent')],
-		],
-		[t],
-	);
-
 	const saveTriggerMutation = useMutation({
 		mutationFn: saveTrigger,
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
+			queryClient.invalidateQueries(['livechat-getTriggersById']);
 			queryClient.invalidateQueries(['livechat-triggers']);
 			router.navigate('/omnichannel/triggers');
 		},
@@ -133,17 +123,12 @@ const EditTrigger = ({ triggerData }: { triggerData?: Serialized<ILivechatTrigge
 	});
 
 	const handleSave = async (data: TriggersPayload) => {
-		saveTriggerMutation.mutateAsync({ ...data, _id: triggerData?._id });
+		return saveTriggerMutation.mutateAsync({
+			...data,
+			_id: triggerData?._id,
+			actions: data.actions.map(getDefaultAction),
+		});
 	};
-
-	const formId = useUniqueId();
-	const enabledField = useUniqueId();
-	const runOnceField = useUniqueId();
-	const nameField = useUniqueId();
-	const descriptionField = useUniqueId();
-	const conditionField = useUniqueId();
-	const actionField = useUniqueId();
-	const actionMessageField = useUniqueId();
 
 	return (
 		<Contextualbar>
@@ -164,6 +149,7 @@ const EditTrigger = ({ triggerData }: { triggerData?: Serialized<ILivechatTrigge
 								/>
 							</FieldRow>
 						</Field>
+
 						<Field>
 							<FieldRow>
 								<FieldLabel htmlFor={runOnceField}>{t('Run_only_once_for_each_visitor')}</FieldLabel>
@@ -174,6 +160,7 @@ const EditTrigger = ({ triggerData }: { triggerData?: Serialized<ILivechatTrigge
 								/>
 							</FieldRow>
 						</Field>
+
 						<Field>
 							<FieldLabel htmlFor={nameField} required>
 								{t('Name')}
@@ -201,94 +188,20 @@ const EditTrigger = ({ triggerData }: { triggerData?: Serialized<ILivechatTrigge
 								</FieldError>
 							)}
 						</Field>
+
 						<Field>
 							<FieldLabel htmlFor={descriptionField}>{t('Description')}</FieldLabel>
 							<FieldRow>
-								<Controller
-									name='description'
-									control={control}
-									render={({ field }) => <TextInput id={descriptionField} {...field} value={description} />}
-								/>
+								<Controller name='description' control={control} render={({ field }) => <TextInput id={descriptionField} {...field} />} />
 							</FieldRow>
 						</Field>
-						{conditionsFields.map((_, index) => {
-							const conditionValuePlaceholder = conditionValuePlaceholders[conditions[index].name];
-							return (
-								<Field key={index}>
-									<FieldLabel htmlFor={conditionField}>{t('Condition')}</FieldLabel>
-									<FieldRow>
-										<Controller
-											name={`conditions.${index}.name`}
-											control={control}
-											render={({ field }) => <Select id={conditionField} {...field} options={conditionOptions} />}
-										/>
-									</FieldRow>
-									{conditionValuePlaceholder && (
-										<FieldRow>
-											<Controller
-												name={`conditions.${index}.value`}
-												control={control}
-												render={({ field }) => {
-													if (conditions[index].name === 'time-on-site') {
-														return <NumberInput {...field} placeholder={conditionValuePlaceholder} />;
-													}
 
-													return <TextInput {...field} placeholder={conditionValuePlaceholder} />;
-												}}
-											/>
-										</FieldRow>
-									)}
-								</Field>
-							);
-						})}
-						{actionsFields.map((_, index) => (
-							<Field key={index}>
-								<FieldLabel htmlFor={actionField}>{t('Action')}</FieldLabel>
-								<FieldRow>
-									<TextInput value={t('Send_a_message')} readOnly />
-								</FieldRow>
-								<FieldRow>
-									<Controller
-										name={`actions.${index}.params.sender`}
-										control={control}
-										render={({ field }) => (
-											<Select id={actionField} {...field} options={senderOptions} placeholder={t('Select_an_option')} />
-										)}
-									/>
-								</FieldRow>
-								{actions[index].params?.sender === 'custom' && (
-									<FieldRow>
-										<Controller
-											name={`actions.${index}.params.name`}
-											control={control}
-											render={({ field }) => <TextInput {...field} placeholder={t('Name_of_agent')} />}
-										/>
-									</FieldRow>
-								)}
-								<FieldRow>
-									<Controller
-										name={`actions.${index}.params.msg`}
-										control={control}
-										rules={{ required: t('The_field_is_required', t('Message')) }}
-										render={({ field }) => (
-											<TextAreaInput
-												error={errors.actions?.[index]?.params?.msg?.message}
-												aria-invalid={Boolean(errors.actions?.[index]?.params?.msg)}
-												aria-describedby={`${actionMessageField}-error`}
-												aria-required={true}
-												{...field}
-												rows={3}
-												placeholder={`${t('Message')}*`}
-											/>
-										)}
-									/>
-								</FieldRow>
-								{errors.actions?.[index]?.params?.msg && (
-									<FieldError aria-live='assertive' id={`${actionMessageField}-error`}>
-										{errors.actions?.[index]?.params?.msg?.message}
-									</FieldError>
-								)}
-							</Field>
+						{conditionsFields.map((field, index) => (
+							<ConditionForm key={field.id} control={control} index={index} />
+						))}
+
+						{actionsFields.map((field, index) => (
+							<ActionForm key={field.id} control={control} trigger={trigger} index={index} />
 						))}
 					</FieldGroup>
 				</form>
@@ -296,7 +209,7 @@ const EditTrigger = ({ triggerData }: { triggerData?: Serialized<ILivechatTrigge
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={() => router.navigate('/omnichannel/triggers')}>{t('Cancel')}</Button>
-					<Button form={formId} type='submit' primary disabled={!isDirty}>
+					<Button form={formId} type='submit' primary disabled={!isDirty || !isValid} loading={isSubmitting}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

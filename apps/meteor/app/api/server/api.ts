@@ -589,7 +589,7 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 
 						try {
 							if (options.deprecationVersion) {
-								apiDeprecationLogger.endpoint(this.request.route, options.deprecationVersion, this.response);
+								apiDeprecationLogger.endpoint(this.request.route, options.deprecationVersion, this.response, options.deprecationInfo || '');
 							}
 
 							await api.enforceRateLimit(objectForRateLimitMatch, this.request, this.response, this.userId);
