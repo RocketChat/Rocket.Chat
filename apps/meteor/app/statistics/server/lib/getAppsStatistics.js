@@ -4,12 +4,20 @@ import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { Info } from '../../../utils/rocketchat.info';
 
 export async function getAppsStatistics() {
+	if (Apps.self?.isInitialized()) {
+		return {
+			engineVersion: Info.marketplaceApiVersion,
+			totalInstalled: false,
+			totalActive: false,
+			totalFailed: false,
+		};
+	}
+
 	return {
 		engineVersion: Info.marketplaceApiVersion,
-		totalInstalled: Apps.self?.isInitialized() && (await Apps.getManager().get()).length,
-		totalActive: Apps.self?.isInitialized() && (await Apps.getManager().get({ enabled: true })).length,
-		totalFailed:
-			Apps.self?.isInitialized() &&
-			(await Apps.getManager().get({ disabled: true })).filter(({ app: { status } }) => status !== AppStatus.MANUALLY_DISABLED).length,
+		totalInstalled: (await Apps.getManager().get()).length,
+		totalActive: (await Apps.getManager().get({ enabled: true })).length,
+		totalFailed: (await Apps.getManager().get({ disabled: true })).filter(({ app: { status } }) => status !== AppStatus.MANUALLY_DISABLED)
+			.length,
 	};
 }
