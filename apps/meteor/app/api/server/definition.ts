@@ -96,6 +96,7 @@ export type Options = (
 	validateParams?: ValidateFunction | { [key in Method]?: ValidateFunction };
 	authOrAnonRequired?: true;
 	deprecationVersion?: string;
+	deprecationInfo?: string;
 };
 
 export type PartialThis = {
