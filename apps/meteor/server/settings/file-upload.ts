@@ -183,6 +183,13 @@ export const createFileUploadSettings = () =>
 					value: 'AmazonS3',
 				},
 			});
+			await this.add('FileUpload_S3_Proxy_UserDataFiles', false, {
+				type: 'boolean',
+				enableQuery: {
+					_id: 'FileUpload_Storage_Type',
+					value: 'AmazonS3',
+				},
+			});
 		});
 
 		await this.section('Google Cloud Storage', async function () {
@@ -234,6 +241,13 @@ export const createFileUploadSettings = () =>
 				},
 			});
 			await this.add('FileUpload_GoogleStorage_Proxy_Uploads', false, {
+				type: 'boolean',
+				enableQuery: {
+					_id: 'FileUpload_Storage_Type',
+					value: 'GoogleCloudStorage',
+				},
+			});
+			await this.add('FileUpload_GoogleStorage_Proxy_UserDataFiles', false, {
 				type: 'boolean',
 				enableQuery: {
 					_id: 'FileUpload_Storage_Type',
@@ -292,6 +306,13 @@ export const createFileUploadSettings = () =>
 				},
 			});
 			await this.add('FileUpload_Webdav_Proxy_Uploads', false, {
+				type: 'boolean',
+				enableQuery: {
+					_id: 'FileUpload_Storage_Type',
+					value: 'Webdav',
+				},
+			});
+			await this.add('FileUpload_Webdav_Proxy_UserDataFiles', false, {
 				type: 'boolean',
 				enableQuery: {
 					_id: 'FileUpload_Storage_Type',
