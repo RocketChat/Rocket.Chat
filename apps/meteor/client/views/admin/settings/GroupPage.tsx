@@ -88,17 +88,6 @@ const GroupPage: FC<GroupPageProps> = ({
 
 		try {
 			await dispatch(changes);
-
-			if (changes.some(({ _id }) => _id === 'Language')) {
-				const lng = user?.language || changes.filter(({ _id }) => _id === 'Language').shift()?.value || 'en';
-				if (typeof lng === 'string') {
-					await loadLanguage(lng);
-					dispatchToastMessage({ type: 'success', message: t('Settings_updated', { lng }) });
-					return;
-				}
-				throw new Error('lng is not a string');
-			}
-
 			dispatchToastMessage({ type: 'success', message: t('Settings_updated') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
