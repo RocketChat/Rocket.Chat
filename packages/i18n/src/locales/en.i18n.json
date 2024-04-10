@@ -2870,6 +2870,7 @@
   "Knowledge_Base": "Knowledge Base",
   "Label": "Label",
   "Language": "Language",
+  "Language_setting_warning": "<strong>Server language setting does not affect user's client</strong><br/>Each user has their own preference for language, that will be kept if this setting is changed.",
   "Language_Bulgarian": "Bulgarian",
   "Language_Chinese": "Chinese",
   "Language_Czech": "Czech",
