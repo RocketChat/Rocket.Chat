@@ -87,6 +87,14 @@ jobs:
     name: MongoDB ${{ matrix.mongodb-version }} (${{ matrix.shard }}/${{ inputs.total-shard }})
 
     steps:
+      - name: Login to GitHub Container Registry
+        if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.CR_USER }}
+          password: ${{ secrets.CR_PAT }}
+
       - name: Launch MongoDB
         uses: supercharge/mongodb-github-action@v1.10.0
         with:
