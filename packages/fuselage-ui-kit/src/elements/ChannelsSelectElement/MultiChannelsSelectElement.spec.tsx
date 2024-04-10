@@ -8,7 +8,7 @@ import { contextualBarParser } from '../../surfaces';
 import MultiChannelsSelectElement from './MultiChannelsSelectElement';
 import { useChannelsData } from './hooks/useChannelsData';
 
-const userBlock: MultiChannelsSelectElementType = {
+const channelsBlock: MultiChannelsSelectElementType = {
   type: 'multi_channels_select',
   appId: 'test',
   blockId: 'test',
@@ -61,7 +61,7 @@ describe('UiKit ChannelsSelect Element', () => {
       <MockedServerContext>
         <MultiChannelsSelectElement
           index={0}
-          block={userBlock}
+          block={channelsBlock}
           context={BlockContext.FORM}
           surfaceRenderer={contextualBarParser}
         />
