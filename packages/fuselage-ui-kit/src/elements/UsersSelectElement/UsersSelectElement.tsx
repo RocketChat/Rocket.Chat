@@ -1,12 +1,4 @@
-import {
-  AutoComplete,
-  Box,
-  Chip,
-  Option,
-  OptionAvatar,
-  OptionContent,
-  OptionDescription,
-} from '@rocket.chat/fuselage';
+import { AutoComplete, Box, Chip, Option } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type * as UiKit from '@rocket.chat/ui-kit';
@@ -27,7 +19,7 @@ const UsersSelectElement = ({ block, context }: UsersSelectElementProps) => {
   const [{ value, loading }, action] = useUiKitState(block, context);
 
   const [filter, setFilter] = useState('');
-  const debouncedFilter = useDebouncedValue(filter, 1000);
+  const debouncedFilter = useDebouncedValue(filter, 300);
 
   const data = useUsersData({ filter: debouncedFilter });
 
@@ -56,14 +48,12 @@ const UsersSelectElement = ({ block, context }: UsersSelectElementProps) => {
         </Chip>
       )}
       renderItem={({ value, label, ...props }) => (
-        <Option key={value} {...props}>
-          <OptionAvatar>
-            <UserAvatar username={value} size='x20' />
-          </OptionAvatar>
-          <OptionContent>
-            {label} <OptionDescription>({value})</OptionDescription>
-          </OptionContent>
-        </Option>
+        <Option
+          key={value}
+          {...props}
+          label={label}
+          avatar={<UserAvatar username={value} size='x20' />}
+        />
       )}
     />
   );

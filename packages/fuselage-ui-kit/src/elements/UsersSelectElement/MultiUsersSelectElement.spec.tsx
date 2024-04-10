@@ -1,15 +1,15 @@
 import { MockedServerContext } from '@rocket.chat/mock-providers';
-import type { UsersSelectElement as UsersSelectElementType } from '@rocket.chat/ui-kit';
+import type { MultiUsersSelectElement as MultiUsersSelectElementType } from '@rocket.chat/ui-kit';
 import { BlockContext } from '@rocket.chat/ui-kit';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { contextualBarParser } from '../../surfaces';
-import UsersSelectElement from './UsersSelectElement';
+import MultiUsersSelectElement from './MultiUsersSelectElement';
 import { useUsersData } from './hooks/useUsersData';
 
-const userBlock: UsersSelectElementType = {
-  type: 'users_select',
+const usersBlock: MultiUsersSelectElementType = {
+  type: 'multi_users_select',
   appId: 'test',
   blockId: 'test',
   actionId: 'test',
@@ -35,7 +35,7 @@ const mockedOptions = [
 const mockUseUsersData = jest.mocked(useUsersData);
 mockUseUsersData.mockReturnValue(mockedOptions);
 
-describe('UiKit UserSelect Element', () => {
+describe('UiKit MultiUsersSelect Element', () => {
   beforeAll(() => {
     jest.useFakeTimers();
   });
@@ -47,9 +47,9 @@ describe('UiKit UserSelect Element', () => {
   beforeEach(() => {
     render(
       <MockedServerContext>
-        <UsersSelectElement
+        <MultiUsersSelectElement
           index={0}
-          block={userBlock}
+          block={usersBlock}
           context={BlockContext.FORM}
           surfaceRenderer={contextualBarParser}
         />
@@ -57,11 +57,11 @@ describe('UiKit UserSelect Element', () => {
     );
   });
 
-  it('should render a UiKit user selector', async () => {
+  it('should render a UiKit multiple users selector', async () => {
     expect(await screen.findByRole('textbox')).toBeInTheDocument();
   });
 
-  it('should open the user selector', async () => {
+  it('should open the users selector', async () => {
     const input = await screen.findByRole('textbox');
     input.focus();
 
@@ -74,9 +74,7 @@ describe('UiKit UserSelect Element', () => {
     await userEvent.type(input, 'User 2', { delay: null });
 
     mockUseUsersData.mockReturnValueOnce(
-      mockedOptions.filter((option) => {
-        return option.label === input.value;
-      })
+      mockedOptions.filter((option) => option.label === input.value)
     );
 
     await waitFor(async () => {
@@ -85,15 +83,38 @@ describe('UiKit UserSelect Element', () => {
     });
   });
 
-  it('should select a user', async () => {
+  it('should select users', async () => {
     const input = await screen.findByRole('textbox');
 
     input.focus();
 
-    const option = (await screen.findAllByRole('option'))[0];
-    await userEvent.click(option, { delay: null });
+    const option1 = (await screen.findAllByRole('option'))[0];
+    await userEvent.click(option1, { delay: null });
 
-    const selected = await screen.findByRole('button');
-    expect(selected).toHaveValue('user1_id');
+    const option2 = (await screen.findAllByRole('option'))[2];
+    await userEvent.click(option2, { delay: null });
+
+    const selected = await screen.findAllByRole('button');
+    expect(selected[0]).toHaveValue('user1_id');
+    expect(selected[1]).toHaveValue('user3_id');
+  });
+
+  it('should remove a user', async () => {
+    const input = await screen.findByRole('textbox');
+
+    input.focus();
+
+    const option1 = (await screen.findAllByRole('option'))[0];
+    await userEvent.click(option1, { delay: null });
+
+    const option2 = (await screen.findAllByRole('option'))[2];
+    await userEvent.click(option2, { delay: null });
+
+    const selected1 = (await screen.findAllByRole('button'))[0];
+    expect(selected1).toHaveValue('user1_id');
+    await userEvent.click(selected1, { delay: null });
+
+    const remainingSelected = (await screen.findAllByRole('button'))[0];
+    expect(remainingSelected).toHaveValue('user3_id');
   });
 });
