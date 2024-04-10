@@ -122,93 +122,92 @@ test.describe.serial('message-actions', () => {
 	});
 
 	test('expect forward message to channel', async () => {
-		const message = 'this is a message to forward to channel'
+		const message = 'this is a message to forward to channel';
 		await poHomeChannel.content.sendMessage(message);
-		await poHomeChannel.content.forwardMessage(forwardChannel)
+		await poHomeChannel.content.forwardMessage(forwardChannel);
 
 		await poHomeChannel.sidenav.openChat(forwardChannel);
-		await expect(poHomeChannel.content.lastUserMessage).toContainText(message)
+		await expect(poHomeChannel.content.lastUserMessage).toContainText(message);
 	})
 
 	test('expect forward message to team', async () => {
-		const message = 'this is a message to forward to team'
+		const message = 'this is a message to forward to team';
 		await poHomeChannel.content.sendMessage(message);
-		await poHomeChannel.content.forwardMessage(forwardTeam)
+		await poHomeChannel.content.forwardMessage(forwardTeam);
 
 		await poHomeChannel.sidenav.openChat(forwardTeam);
-		await expect(poHomeChannel.content.lastUserMessage).toContainText(message)
+		await expect(poHomeChannel.content.lastUserMessage).toContainText(message);
 	})
 
 	test('expect forward message to direct message', async () => {
-		const message = 'this is a message to forward to direct message'
-		const direct = 'RocketChat Internal Admin Test'
+		const message = 'this is a message to forward to direct message';
+		const direct = 'RocketChat Internal Admin Test';
 
 		// todo: Forward modal is using name as display and the sidebar is using username
 		await poHomeChannel.content.sendMessage(message);
-		await poHomeChannel.content.forwardMessage(direct)
+		await poHomeChannel.content.forwardMessage(direct);
 
 		await poHomeChannel.sidenav.openChat(ADMIN_CREDENTIALS.username);
-		await expect(poHomeChannel.content.lastUserMessage).toContainText(message)
+		await expect(poHomeChannel.content.lastUserMessage).toContainText(message);
 	})
 
 	test('expect forward text file to channel', async () => {
-		const filename = 'any_file.txt'
+		const filename = 'any_file.txt';
 		await poHomeChannel.content.sendFileMessage(filename);
 		await poHomeChannel.content.btnModalConfirm.click();
-		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename)
+		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 
-		await poHomeChannel.content.forwardMessage(forwardChannel)
+		await poHomeChannel.content.forwardMessage(forwardChannel);
 
 		await poHomeChannel.sidenav.openChat(forwardChannel);
-		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename)
+		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 	})
 
 	test('expect forward image file to channel', async () => {
-		const filename = 'test-image.jpeg'
+		const filename = 'test-image.jpeg';
 		await poHomeChannel.content.sendFileMessage(filename);
 		await poHomeChannel.content.btnModalConfirm.click();
-		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename)
+		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 
-		await poHomeChannel.content.forwardMessage(forwardChannel)
+		await poHomeChannel.content.forwardMessage(forwardChannel);
 
 		await poHomeChannel.sidenav.openChat(forwardChannel);
-		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename)
+		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 	})
 
 	test('expect forward pdf file to channel', async () => {
-		const filename = 'test_pdf_file.pdf'
+		const filename = 'test_pdf_file.pdf';
 		await poHomeChannel.content.sendFileMessage(filename);
 		await poHomeChannel.content.btnModalConfirm.click();
-		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename)
+		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 
-		await poHomeChannel.content.forwardMessage(forwardChannel)
+		await poHomeChannel.content.forwardMessage(forwardChannel);
 
 		await poHomeChannel.sidenav.openChat(forwardChannel);
-		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename)
+		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 	})
 
 	test('expect forward audio message to channel', async () => {
-		const filename = 'sample-audio.mp3'
+		const filename = 'sample-audio.mp3';
 		await poHomeChannel.content.sendFileMessage(filename);
 		await poHomeChannel.content.btnModalConfirm.click();
-		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename)
+		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 
-		await poHomeChannel.content.forwardMessage(forwardChannel)
+		await poHomeChannel.content.forwardMessage(forwardChannel);
 
 		await poHomeChannel.sidenav.openChat(forwardChannel);
-		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename)
+		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 	})
 
 	test('expect forward video message to channel', async () => {
-		const filename = 'test_video.mp4'
+		const filename = 'test_video.mp4';
 		await poHomeChannel.content.sendFileMessage(filename);
 		await poHomeChannel.content.btnModalConfirm.click();
-		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename)
+		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 
-		await poHomeChannel.content.forwardMessage(forwardChannel)
+		await poHomeChannel.content.forwardMessage(forwardChannel);
 
 		await poHomeChannel.sidenav.openChat(forwardChannel);
-		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename)
+		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 	})
 });
-
