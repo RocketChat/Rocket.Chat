@@ -48,7 +48,7 @@ test.describe('omnichannel-take-chat', () => {
 		await page.goto('/livechat');
 	});
 
-	test('should user take the chat', async () => {
+	test('user should take the chat', async () => {
 		await poLiveChat.openChatAndSendMessage(newVisitor, 'this_a_test_message_from_user');
 
 		await agent.poHomeChannel.sidenav.openQueuedOmnichannelChat(newVisitor.name);
