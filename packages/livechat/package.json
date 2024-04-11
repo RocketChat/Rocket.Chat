@@ -32,7 +32,7 @@
 		"@rocket.chat/ddp-client": "workspace:^",
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/fuselage-hooks": "^0.33.1",
-		"@rocket.chat/fuselage-tokens": "^0.33.1",
+		"@rocket.chat/fuselage-tokens": "^0.33.0",
 		"@rocket.chat/logo": "^0.31.30",
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"@storybook/addon-essentials": "~6.5.16",
