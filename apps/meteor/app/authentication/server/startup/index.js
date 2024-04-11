@@ -350,8 +350,8 @@ const insertUserDocAsync = async function (options, user) {
 
 	if (!options.skipAppsEngineEvent) {
 		// `post` triggered events don't need to wait for the promise to resolve
-		Apps?.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: await safeGetMeteorUser() }).catch((e) => {
-			Apps?.getRocketChatLogger().error('Error while executing post user created event:', e);
+		Apps.self?.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: await safeGetMeteorUser() }).catch((e) => {
+			Apps.self?.getRocketChatLogger().error('Error while executing post user created event:', e);
 		});
 	}
 
@@ -424,7 +424,7 @@ const validateLoginAttemptAsync = async function (login) {
 	 */
 	if (login.type !== 'resume') {
 		// App IPostUserLoggedIn event hook
-		await Apps?.triggerEvent(AppEvents.IPostUserLoggedIn, login.user);
+		await Apps.self?.triggerEvent(AppEvents.IPostUserLoggedIn, login.user);
 	}
 
 	return true;
