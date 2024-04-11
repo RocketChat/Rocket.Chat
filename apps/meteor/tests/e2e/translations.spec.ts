@@ -24,27 +24,15 @@ test.describe('Translations', () => {
     test('expect to respect user preference', async ({ page, api }) => {
         await expect(page.locator('h2')).toHaveText('Welcome to Rocket.Chat');
 
+        const response = page.waitForResponse('**/i18n/pt-BR.json');
         expect((await setUserPreferences(api, { language: 'pt-BR' })).status()).toBe(200);
-
+        await response;
         await expect(page.locator('h2')).toHaveText('Bem-vindo ao Rocket.Chat');
     });
 
     test.describe('Browser language', () => {
         test.use({ locale: 'pt-BR' })
         test('expect to respect browser language', async ({ page }) => {
-            // await expect(page.locator('html')).toHaveAttribute('lang', 'pt-BR');
-            await expect(page.locator('h2')).toHaveText('Bem-vindo ao Rocket.Chat');
-        });
-    })
-
-    test.describe.skip('Server language', () => {
-        test.use({ locale: '' })
-        test('expect to respect server language', async ({ page, api }) => {
-            // Didn't find a way to force the client to use the server language
-            await expect(page.locator('h2')).toHaveText('Welcome to Rocket.Chat');
-
-            expect((await setSettingValueById(api, 'Language', 'pt-BR')).status()).toBe(200);
-
             await expect(page.locator('h2')).toHaveText('Bem-vindo ao Rocket.Chat');
         });
     })
