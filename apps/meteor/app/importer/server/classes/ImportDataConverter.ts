@@ -832,13 +832,6 @@ export class ImportDataConverter {
 		await this.updateRoomId(room._id, roomData);
 	}
 
-	public async findDMForImportedUsers(...users: Array<string>): Promise<IImportChannel | undefined> {
-		const record = await ImportData.findDMForImportedUsers(...users);
-		if (record) {
-			return record.data;
-		}
-	}
-
 	async findImportedRoomId(importId: string): Promise<string | null> {
 		if (this._roomCache.has(importId)) {
 			return this._roomCache.get(importId) as string;

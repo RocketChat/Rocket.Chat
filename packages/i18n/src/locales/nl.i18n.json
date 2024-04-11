@@ -2123,8 +2123,6 @@
   "Importer_finishing": "Afwerking van de import.",
   "Importer_From_Description": "Impoort {{from}}-gegevens in Rocket.Chat.",
   "Importer_From_Description_CSV": "Importeert CSV-gegevens in Rocket.Chat. De geüploade file moet een ZIP-bestand zijn.",
-  "Importer_HipChatEnterprise_BetaWarning": "Houd er rekening mee dat deze import nog steeds in uitvoering is, meld eventuele fouten die optreden op GitHub:",
-  "Importer_HipChatEnterprise_Information": "Het geüploade bestand moet een gedecodeerde tar.gz zijn, lees de documentatie voor meer informatie:",
   "Importer_import_cancelled": "Import geannuleerd.",
   "Importer_import_failed": "Er is een fout opgetreden tijdens het importeren.",
   "Importer_importing_channels": "Kanalen aan het importeren.",

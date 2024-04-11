@@ -1274,8 +1274,6 @@
   "Importer_done": "Die Daten wurden erfolgreich importiert!",
   "Importer_finishing": "Import abgeschlossen.",
   "Importer_From_Description": "Importiert Daten von {{from}} nach Rocket.Chat.",
-  "Importer_HipChatEnterprise_BetaWarning": "Bitte beachten Sie, dass dieser Import noch in Arbeit ist. Bitte melden Sie alle Fehler, die in GitHub auftreten:",
-  "Importer_HipChatEnterprise_Information": "Die hochgeladene Datei muss eine entschlüsselte tar.gz sein. Bitte lesen Sie die Dokumentation für weitere Informationen:",
   "Importer_import_cancelled": "Der Import wurde abgebrochen.",
   "Importer_import_failed": "Während des Importierens ist ein Fehler aufgetreten.",
   "Importer_importing_channels": "Importiere die Kanäle.",
