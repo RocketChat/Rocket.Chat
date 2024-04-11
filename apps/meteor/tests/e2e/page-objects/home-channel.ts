@@ -64,4 +64,8 @@ export class HomeChannel {
 	get roomHeaderToolbar(): Locator {
 		return this.page.locator('[role=toolbar][aria-label="Primary Room actions"]');
 	}
+
+	getSystemMessageByText(text: string): Locator {
+		return this.page.locator('[aria-roledescription="system message"]', { hasText: text });
+	}
 }

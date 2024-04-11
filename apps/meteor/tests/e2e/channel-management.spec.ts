@@ -57,74 +57,90 @@ test.describe.serial('channel-management', () => {
 		await expect(page.getByRole('button', { name: 'Start call' })).toBeFocused();
 	});
 
-	// FIXME: bad assertion
-	test('should add "user1" to "targetChannel"', async () => {
+	test('should add user1 to targetChannel', async () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnTabMembers.click();
 		await poHomeChannel.tabs.members.showAllUsers();
 		await poHomeChannel.tabs.members.addUser('user1');
 
-		await expect(poHomeChannel.toastSuccess).toBeVisible();
+		await expect(poHomeChannel.getSystemMessageByText('added user1')).toBeVisible();
 	});
 
-	// FIXME: bad assertion
-	test('should create invite to the room', async () => {
-		await poHomeChannel.sidenav.openChat(targetChannel);
-		await poHomeChannel.tabs.btnTabMembers.click();
-		await poHomeChannel.tabs.members.inviteUser();
-
-		await expect(poHomeChannel.toastSuccess).toBeVisible();
-	});
-
-	test.fixme('should mute "user1"', async () => {
+	test('should mute user1', async () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnTabMembers.click();
 		await poHomeChannel.tabs.members.showAllUsers();
 		await poHomeChannel.tabs.members.muteUser('user1');
+
+		await expect(poHomeChannel.getSystemMessageByText('muted user1')).toBeVisible();
 	});
 
-	test.fixme('should set "user1" as owner', async () => {
+	test('should set user1 as owner', async () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnTabMembers.click();
 		await poHomeChannel.tabs.members.showAllUsers();
 		await poHomeChannel.tabs.members.setUserAsOwner('user1');
+
+		await expect(poHomeChannel.getSystemMessageByText('set user1 as owner')).toBeVisible();
 	});
 
 
-	test.fixme('should set "user1" as moderator', async () => {
+	test('should set "user1" as moderator', async () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnTabMembers.click();
 		await poHomeChannel.tabs.members.showAllUsers();
 		await poHomeChannel.tabs.members.setUserAsModerator('user1');
+
+		await expect(poHomeChannel.getSystemMessageByText('set user1 as moderator')).toBeVisible();
 	});
 
-	test.fixme('should edit topic of "targetChannel"', async () => {
+	test('should edit topic of targetChannel', async ({ page }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnRoomInfo.click();
+		await poHomeChannel.tabs.room.btnEdit.waitFor();
 		await poHomeChannel.tabs.room.btnEdit.click();
 		await poHomeChannel.tabs.room.inputTopic.fill('hello-topic-edited');
 		await poHomeChannel.tabs.room.btnSave.click();
+
+		await poHomeChannel.dismissToast();
+		await poHomeChannel.tabs.btnRoomInfo.click();
+		await expect(page.getByRole('dialog', { name: 'Channel info' })).toContainText('hello-topic-edited');
+		await expect(page.getByRole('heading', { name: 'hello-topic-edited' })).toBeVisible();
+		await expect(poHomeChannel.getSystemMessageByText('changed room topic to hello-topic-edited')).toBeVisible();
 	});
 
-	test.fixme('should edit announcement of "targetChannel"', async () => {
+	test('should edit announcement of targetChannel', async ({ page }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnRoomInfo.click();
+		await poHomeChannel.tabs.room.btnEdit.waitFor();
 		await poHomeChannel.tabs.room.btnEdit.click();
 		await poHomeChannel.tabs.room.inputAnnouncement.fill('hello-announcement-edited');
 		await poHomeChannel.tabs.room.btnSave.click();
+
+		await poHomeChannel.dismissToast();
+		await poHomeChannel.tabs.btnRoomInfo.click();
+		await expect(page.getByRole('dialog', { name: 'Channel info' })).toContainText('hello-announcement-edited');
+		await expect(poHomeChannel.getSystemMessageByText('changed room announcement to: hello-announcement-edited')).toBeVisible();
 	});
 
-	test.fixme('should edit description of "targetChannel"', async () => {
+	test('should edit description of targetChannel', async ({ page }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnRoomInfo.click();
+		await poHomeChannel.tabs.room.btnEdit.waitFor();
 		await poHomeChannel.tabs.room.btnEdit.click();
 		await poHomeChannel.tabs.room.inputDescription.fill('hello-description-edited');
 		await poHomeChannel.tabs.room.btnSave.click();
+
+		await poHomeChannel.dismissToast();
+		await poHomeChannel.tabs.btnRoomInfo.click();
+		await expect(page.getByRole('dialog', { name: 'Channel info' })).toContainText('hello-description-edited');
+		await expect(poHomeChannel.getSystemMessageByText('changed room description to: hello-description-edited')).toBeVisible();
 	});
 
 	test('should edit name of targetChannel', async ({ page }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnRoomInfo.click();
+		await poHomeChannel.tabs.room.btnEdit.waitFor();
 		await poHomeChannel.tabs.room.btnEdit.click();
 		await poHomeChannel.tabs.room.inputName.fill(`NAME-EDITED-${targetChannel}`);
 		await poHomeChannel.tabs.room.btnSave.click();
@@ -140,6 +156,7 @@ test.describe.serial('channel-management', () => {
 		const hugeName = faker.string.alpha(100);
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnRoomInfo.click();
+		await poHomeChannel.tabs.room.btnEdit.waitFor();
 		await poHomeChannel.tabs.room.btnEdit.click();
 		await poHomeChannel.tabs.room.inputName.fill(hugeName);
 		await poHomeChannel.tabs.room.btnSave.click();
@@ -180,15 +197,16 @@ test.describe.serial('channel-management', () => {
 		await expect(page).toHaveURL(`/channel/${targetChannel}`);
 	});
 
-	// FIXME: bad assertion
-	test.fixme('should edit notification preferences of "targetChannel"', async () => {
+	test('should edit notification preferences of "targetChannel"', async () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await poHomeChannel.tabs.btnNotificationPreferences.click({ force: true });
 		await poHomeChannel.tabs.notificationPreferences.updateAllNotificationPreferences();
 		await poHomeChannel.tabs.notificationPreferences.btnSave.click();
 
-		await expect(poHomeChannel.toastSuccess).toBeVisible();
+		await expect(poHomeChannel.tabs.notificationPreferences.getPreferenceByDevice('Desktop')).toContainText('Mentions');
+		await expect(poHomeChannel.tabs.notificationPreferences.getPreferenceByDevice('Mobile')).toContainText('Mentions');
+		await expect(poHomeChannel.tabs.notificationPreferences.getPreferenceByDevice('Email')).toContainText('Mentions');
 	});
 
 	let regularUserPage: Page;
@@ -210,15 +228,5 @@ test.describe.serial('channel-management', () => {
 		await expect(regularUserPage.locator('button >> text="Join"')).toBeVisible();
 
 		await regularUserPage.close();
-	});
-
-	test.fixme('should all notification preferences of "targetChannel" to be "Mentions"', async () => {
-		await poHomeChannel.sidenav.openChat(targetChannel);
-		await poHomeChannel.tabs.kebab.click({ force: true });
-		await poHomeChannel.tabs.btnNotificationPreferences.click({ force: true });
-
-		await expect(poHomeChannel.tabs.notificationPreferences.getPreferenceByDevice('Desktop')).toContainText('Mentions');
-		await expect(poHomeChannel.tabs.notificationPreferences.getPreferenceByDevice('Mobile')).toContainText('Mentions');
-		await expect(poHomeChannel.tabs.notificationPreferences.getPreferenceByDevice('Email')).toContainText('Mentions');
 	});
 });
