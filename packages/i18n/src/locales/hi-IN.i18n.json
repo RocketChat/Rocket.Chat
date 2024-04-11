@@ -2529,8 +2529,6 @@
   "Importer_finishing": "आयात समाप्त करना.",
   "Importer_From_Description": "Rocket.Chat में {{from}} डेटा आयात करता है।",
   "Importer_From_Description_CSV": "Rocket.Chat में CSV डेटा आयात करता है। अपलोड की गई फ़ाइल एक ज़िप फ़ाइल होनी चाहिए.",
-  "Importer_HipChatEnterprise_BetaWarning": "कृपया ध्यान रखें कि इस आयात पर अभी भी काम चल रहा है, कृपया GitHub में होने वाली किसी भी त्रुटि की रिपोर्ट करें:",
-  "Importer_HipChatEnterprise_Information": "अपलोड की गई फ़ाइल डिक्रिप्टेड tar.gz होनी चाहिए, कृपया अधिक जानकारी के लिए दस्तावेज़ पढ़ें:",
   "Importer_import_cancelled": "आयात रद्द कर दिया गया.",
   "Importer_import_failed": "आयात चलाते समय एक त्रुटि उत्पन्न हुई.",
   "Importer_importing_channels": "चैनल आयात करना.",
