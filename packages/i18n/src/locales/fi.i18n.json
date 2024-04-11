@@ -2428,8 +2428,6 @@
   "Importer_finishing": "Viimeistellään tuontia.",
   "Importer_From_Description": "Tuo tiedot kohteesta {{from}} Rocket.Chatiin.",
   "Importer_From_Description_CSV": "Tuo CSV-tiedot Rocket.Chatiin. Ladatun tiedoston on oltava ZIP-tiedosto.",
-  "Importer_HipChatEnterprise_BetaWarning": "Huomaa, että tuontitoiminto on edelleen kehitteillä. Ilmoita virheistä GitHubissa:",
-  "Importer_HipChatEnterprise_Information": "Ladattavan tiedoston on oltava purettu tar.gz-tiedosto. Katso lisätietoja oppaista:",
   "Importer_import_cancelled": "Tuonti peruutettu.",
   "Importer_import_failed": "Virhe tuotaessa.",
   "Importer_importing_channels": "Tuodaan kanavia.",

@@ -2131,8 +2131,6 @@
   "Importer_finishing": "Finalisation de l'importation.",
   "Importer_From_Description": "Importer les données de {{from}} dans Rocket.Chat.",
   "Importer_From_Description_CSV": "Importe des données CSV dans Rocket.Chat. Le fichier chargé doit être un fichier ZIP.",
-  "Importer_HipChatEnterprise_BetaWarning": "Notez que la fonction d'importation est toujours en cours de développement, veuillez signaler toute erreur dans GitHub :",
-  "Importer_HipChatEnterprise_Information": "Le fichier chargé doit être au format tar.gz déchiffré, lisez la documentation pour plus d'informations :",
   "Importer_import_cancelled": "Importation annulée.",
   "Importer_import_failed": "Une erreur est survenue lors de l'importation.",
   "Importer_importing_channels": "Importation des canaux.",
