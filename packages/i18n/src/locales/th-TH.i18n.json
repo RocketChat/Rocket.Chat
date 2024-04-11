@@ -1266,8 +1266,6 @@
   "Importer_CSV_Information": "ตัวนำเข้า CSV ต้องการรูปแบบเฉพาะโปรดอ่านเอกสารสำหรับวิธีจัดโครงสร้างไฟล์ซิปของคุณ:",
   "Importer_done": "การนำเข้าเสร็จสมบูรณ์!",
   "Importer_finishing": "เสร็จสิ้นการนำเข้า",
-  "Importer_HipChatEnterprise_BetaWarning": "โปรดทราบว่าการนำเข้านี้ยังคงเป็นงานระหว่างดำเนินการโปรดรายงานข้อผิดพลาดที่เกิดขึ้นใน GitHub:",
-  "Importer_HipChatEnterprise_Information": "ไฟล์ที่อัปโหลดต้องเป็น tar.gad ถอดรหัสลับโปรดอ่านเอกสารประกอบสำหรับข้อมูลเพิ่มเติม:",
   "Importer_import_cancelled": "ยกเลิกการนำเข้าแล้ว",
   "Importer_import_failed": "เกิดข้อผิดพลาดขณะเรียกใช้งานนำเข้า",
   "Importer_importing_channels": "การนำเข้าช่อง",

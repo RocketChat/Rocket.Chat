@@ -2084,8 +2084,6 @@
   "Importer_finishing": "完成了匯入。",
   "Importer_From_Description": "匯入{{from}}的資料轉換成Rocket.Chat。",
   "Importer_From_Description_CSV": "匯入 CSV 資料到 Rocket.Chat。上傳的檔案必須為 ZIP 檔。",
-  "Importer_HipChatEnterprise_BetaWarning": "請注意，此匯入仍在進行中，請報告GitHub中發生的任何錯誤：",
-  "Importer_HipChatEnterprise_Information": "上傳的文件必須是解密的tar.gz，請閱讀文件以獲取更多訊息：",
   "Importer_import_cancelled": "匯入已取消。",
   "Importer_import_failed": "在執行匯入時出錯。",
   "Importer_importing_channels": "匯入頻道。",

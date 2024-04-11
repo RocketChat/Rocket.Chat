@@ -1464,8 +1464,6 @@
   "Importer_ExternalUrl_Description": "Du kannst eine öffentlich erreichbare URL zur Datei angeben.",
   "Importer_finishing": "Import abgeschlossen.",
   "Importer_From_Description": "Importiert Daten von {{from}} nach Rocket.Chat.",
-  "Importer_HipChatEnterprise_BetaWarning": "Bitte beachte, dass sich dieser Importer noch in der Entwicklung befindet. Bitte melde Fehler auf GitHub: ",
-  "Importer_HipChatEnterprise_Information": "Die hochgeladene Datei muss ein nicht-verschlüsseltes tar.gz sein. Bitte lies die Dokumentation für weiterführende Informationen.",
   "Importer_import_cancelled": "Der Import wurde abgebrochen.",
   "Importer_import_failed": "Während des Importierens ist ein Fehler aufgetreten.",
   "Importer_importing_channels": "Importiere die Kanäle.",
