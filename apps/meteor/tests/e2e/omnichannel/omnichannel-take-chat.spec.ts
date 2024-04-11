@@ -62,7 +62,7 @@ test.describe('omnichannel-take-chat', () => {
 		await poLiveChat.closeChat();
 	});
 
-	test('should user not receive a new chat when offline status and livechat disabled when agent idle', async ({ api }) => {
+	test('user should not receive a new chat when offline status and livechat disabled when agent idle', async ({ api }) => {
 		await api.post('/settings/Livechat_enabled_when_agent_idle', { value: false }).then((res) => expect(res.status()).toBe(200));
 		await agent.poHomeChannel.sidenav.switchStatus('offline');
 
