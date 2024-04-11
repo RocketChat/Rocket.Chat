@@ -43,6 +43,7 @@ test.describe.parallel('image-gallery', () => {
 		/* eslint-disable no-await-in-loop */
 		for (let i = 0; i < imageNames.length - 1; i++) {
 			await expect(poHomeChannel.content.nextSlideButton).toBeEnabled();
+			await expect(poHomeChannel.content.currentGalleryImage).toHaveAttribute('src', new RegExp(`${imageNames[imageNames.length - (i + 1)]}$`));
 			await poHomeChannel.content.nextSlideButton.click();
 		}
 		await expect(poHomeChannel.content.nextSlideButton).toBeDisabled();
@@ -58,6 +59,7 @@ test.describe.parallel('image-gallery', () => {
 
 		for (let i = 0; i < imageNames.length - 1; i++) {
 			await expect(poHomeChannel.content.previousSlideButton).toBeEnabled();
+			await expect(poHomeChannel.content.currentGalleryImage).toHaveAttribute('src', new RegExp(`${imageNames[i]}$`));
 			await poHomeChannel.content.previousSlideButton.click();
 		}
 		await expect(poHomeChannel.content.previousSlideButton).toBeDisabled();

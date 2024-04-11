@@ -336,6 +336,10 @@ export class HomeContent {
 		return this.page.getByLabel('Close gallery');
 	}
 
+	get currentGalleryImage(): Locator {
+		return this.page.locator('div[class="swiper-slide swiper-slide-active"]').getByRole('img');
+	}
+
 	findSystemMessage(text: string): Locator {
 		return this.page.locator(`[data-qa-type="system-message-body"] >> text="${text}"`);
 	}
