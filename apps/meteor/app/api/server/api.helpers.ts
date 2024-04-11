@@ -104,8 +104,6 @@ export function checkPermissions(options: { permissionsRequired?: PermissionsReq
 }
 
 export function parseDeprecation(methodThis: any, { alternatives, version }: { version: string; alternatives?: string[] }): void {
-	const infoMessage = alternatives?.length
-		? ` Please use the alternative(s): ${alternatives.join(',')}`
-		: '';
+	const infoMessage = alternatives?.length ? ` Please use the alternative(s): ${alternatives.join(',')}` : '';
 	apiDeprecationLogger.endpoint(methodThis.request.route, version, methodThis.response, infoMessage);
 }

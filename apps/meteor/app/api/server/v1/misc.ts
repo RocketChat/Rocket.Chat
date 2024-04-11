@@ -24,7 +24,6 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 import { getLogs } from '../../../../server/stream/stdout';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { passwordPolicy } from '../../../lib/server';
-import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { settings } from '../../../settings/server';
 import { getDefaultUserFields } from '../../../utils/server/functions/getDefaultUserFields';
 import { getURL } from '../../../utils/server/getURL';
