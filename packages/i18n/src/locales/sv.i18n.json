@@ -2432,8 +2432,6 @@
   "Importer_finishing": "Avslutar importen.",
   "Importer_From_Description": "Importera {{from}}s  data till Rocket.Chat.",
   "Importer_From_Description_CSV": "Importerar CSV-data till Rocket.Chat. Den uppladdade filen måste vara en zip-fil.",
-  "Importer_HipChatEnterprise_BetaWarning": "Var medveten om att denna import fortfarande är ett pågående arbete, var god rapportera eventuella fel som uppstår i GitHub:",
-  "Importer_HipChatEnterprise_Information": "Den uppladdade filen måste vara en dekrypterad tar.gz, läs dokumentationen för ytterligare information:",
   "Importer_import_cancelled": "Import avbruten.",
   "Importer_import_failed": "Ett fel uppstod under importen.",
   "Importer_importing_channels": "Importerar kanalerna.",

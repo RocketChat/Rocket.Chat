@@ -1717,8 +1717,6 @@
   "Importer_ExternalUrl_Description": "თქვენ ასევე შეგიძლიათ ნახოთ ბმული საჯარო წვდომის ფაილისთვის",
   "Importer_finishing": "იმპორტი სრულდება",
   "Importer_From_Description": "მონაცემებს აიმპორტებს  {{from}}-დან Rocket.Chat-ში",
-  "Importer_HipChatEnterprise_BetaWarning": "გთხოვთ გაითვალისწინოთ, რომ ეს იმპორტი კვლავ შემუშავების პროცესშია  \n გთხოვთ, აცნობეთ შეცდომების შესახებ GitHub– ში:",
-  "Importer_HipChatEnterprise_Information": "ატვირთული ფაილი უნდა იყოს გაშიფრული tar.gz, დამატებითი ინფორმაციისთვის წაიკითხეთ დოკუმენტაცია:",
   "Importer_import_cancelled": "იმპორტი გაუქმდა.",
   "Importer_import_failed": "იმპორტისას მოხდა შეცდომა.",
   "Importer_importing_channels": "არხების იმპორტი.",
