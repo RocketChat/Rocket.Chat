@@ -1267,8 +1267,6 @@
   "Importer_done": "Importing temam!",
   "Importer_finishing": "Despêk xwe import.",
   "Importer_From_Description": "Imports {{from}} welat's nav Rocket.Chat.",
-  "Importer_HipChatEnterprise_BetaWarning": "Ji kerema xwe bizanibin ku ev import jî hîn jî di pêşveçûnê de ye, kerema ku li GitHubê pêk tê rapor bikin:",
-  "Importer_HipChatEnterprise_Information": "Divê belgeyê belaş divê tar.gz, ji kerema xwe belgeyên bêtir agahdarî belgeyên bixwînin:",
   "Importer_import_cancelled": "Import betalkirin.",
   "Importer_import_failed": "dema ku li import An error teqîn pêk hat.",
   "Importer_importing_channels": "Importing kanalên.",

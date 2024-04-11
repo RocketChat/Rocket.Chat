@@ -1263,8 +1263,6 @@
   "Importer_done": "Uvoz končan!",
   "Importer_finishing": "Končujem uvoz. ",
   "Importer_From_Description": "Uvozi {{from}} podatki v Rocket.Chat.",
-  "Importer_HipChatEnterprise_BetaWarning": "Upoštevajte, da uvoz še kar poteka, prijavite napake, ki so se zgodile v GitHub:",
-  "Importer_HipChatEnterprise_Information": "Naložena datoteka mora biti dešifrirana tar.gz, za več informacij preberite navodila. ",
   "Importer_import_cancelled": "Uvoz preklican. ",
   "Importer_import_failed": "Napaka med uvozom.",
   "Importer_importing_channels": "Uvažanje kanalov. ",
