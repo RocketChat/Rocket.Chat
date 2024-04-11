@@ -24,7 +24,7 @@ const UiKitModal = ({ initialView }: UiKitModalProps) => {
 
 	const handleSubmit = useEffectEvent((e: FormEvent) => {
 		preventSyntheticEvent(e);
-		actionManager.emitInteraction(view.appId, {
+		void actionManager.emitInteraction(view.appId, {
 			type: 'viewSubmit',
 			payload: {
 				view: {
