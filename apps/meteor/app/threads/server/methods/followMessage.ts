@@ -44,7 +44,7 @@ Meteor.methods<ServerMethods>({
 		const followResult = await follow({ tmid: message.tmid || message._id, uid });
 
 		const isFollowed = true;
-		await Apps?.triggerEvent(AppEvents.IPostMessageFollowed, message, await Meteor.userAsync(), isFollowed);
+		await Apps.self?.triggerEvent(AppEvents.IPostMessageFollowed, message, await Meteor.userAsync(), isFollowed);
 
 		return followResult;
 	},
