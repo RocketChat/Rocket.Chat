@@ -16,6 +16,7 @@ import { sortArrayByColumn } from '../../helpers/sortArrayByColumn';
 import CustomFields from '../../lib/customFields';
 import { validateEmail } from '../../lib/email';
 import { parentCall } from '../../lib/parentCall';
+import Triggers from '../../lib/triggers';
 import { StoreContext } from '../../store';
 import type { StoreState } from '../../store';
 import styles from './styles.scss';
@@ -43,7 +44,9 @@ export const Register: FunctionalComponent<{ path: string }> = () => {
 			theme: { title },
 			customFields = [],
 		},
-		iframe: { guest: { department: guestDepartment = undefined, name: guestName = undefined, email: guestEmail = undefined } = {} },
+
+		iframe: { defaultDepartment, guest: { name: guestName = undefined, email: guestEmail = undefined } = {} },
+
 		loading = false,
 		token,
 		dispatch,
@@ -87,6 +90,7 @@ export const Register: FunctionalComponent<{ path: string }> = () => {
 			await dispatch({ user } as Omit<StoreState['user'], 'ts'>);
 
 			parentCall('callback', 'pre-chat-form-submit', fields);
+			Triggers.callbacks?.emit('chat-visitor-registered');
 			registerCustomFields(customFields);
 		} finally {
 			dispatch({ loading: false });
@@ -94,8 +98,9 @@ export const Register: FunctionalComponent<{ path: string }> = () => {
 	};
 
 	const getDepartmentDefault = () => {
-		if (departments.some((dept) => dept._id === guestDepartment)) {
-			return guestDepartment;
+		const dept = departments.find((dept) => dept._id === defaultDepartment || dept.name === defaultDepartment);
+		if (dept?._id) {
+			return dept._id;
 		}
 	};
 

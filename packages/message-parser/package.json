@@ -1,7 +1,7 @@
 {
   "name": "@rocket.chat/message-parser",
   "description": "Rocket.Chat parser for messages",
-  "version": "0.31.28",
+  "version": "0.31.29",
   "author": {
     "name": "Rocket.Chat",
     "url": "https://rocket.chat/"
@@ -42,7 +42,7 @@
     "build": "run-s .:build:clean .:build:bundle",
     ".:build:clean": "rimraf dist",
     ".:build:bundle": "webpack",
-    "test": "jest --runInBand --coverage",
+    "testunit": "jest --runInBand --coverage",
     "watch": "jest --watch",
     "lint": "eslint src",
     "docs": "typedoc"

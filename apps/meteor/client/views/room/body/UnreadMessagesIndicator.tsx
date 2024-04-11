@@ -28,7 +28,7 @@ const UnreadMessagesIndicator = ({ count, onJumpButtonClick, onMarkAsReadButtonC
 				icon='arrow-up'
 				dismissProps={{ 'title': t('Mark_as_read'), 'aria-label': `${t('Mark_as_read')}` }}
 			>
-				{t('S_unread_messages', count)}
+				{t('unread_messages', { count })}
 			</Bubble>
 		</Box>
 	);

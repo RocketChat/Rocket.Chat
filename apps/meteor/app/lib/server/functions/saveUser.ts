@@ -1,3 +1,4 @@
+import { Apps, AppEvents } from '@rocket.chat/apps';
 import type { DeepWritable, IUser, RequiredField } from '@rocket.chat/core-typings';
 import { isUserFederated } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
@@ -8,7 +9,6 @@ import { Meteor } from 'meteor/meteor';
 import type { UpdateFilter } from 'mongodb';
 import _ from 'underscore';
 
-import { AppEvents, Apps } from '../../../../ee/server/apps/orchestrator';
 import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
@@ -430,7 +430,7 @@ export const saveUser = async function (userId: IUser['_id'], userData: ISaveUse
 		oldUser: oldUserData,
 	});
 
-	await Apps.triggerEvent(AppEvents.IPostUserUpdated, {
+	await Apps.self?.triggerEvent(AppEvents.IPostUserUpdated, {
 		user: userUpdated,
 		previousUser: oldUserData,
 		performedBy: await safeGetMeteorUser(),

@@ -1,4 +1,4 @@
-import type { IMessage, IRoom, IUser, RoomAdminFieldsType } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser, RoomAdminFieldsType, IUpload } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
@@ -130,6 +130,7 @@ type RoomsCreateDiscussionProps = {
 	users?: IUser['username'][];
 	encrypted?: boolean;
 	reply?: string;
+	topic?: string;
 };
 
 const RoomsCreateDiscussionSchema = {
@@ -435,6 +436,37 @@ export type Notifications = {
 
 type RoomsGetDiscussionsProps = PaginatedRequest<BaseRoomsProps>;
 
+export type RoomsImagesProps = {
+	roomId: string;
+	startingFromId?: string;
+	count?: number;
+	offset?: number;
+};
+const roomsImagesPropsSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+		startingFromId: {
+			type: 'string',
+			nullable: true,
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+export const isRoomsImagesProps = ajv.compile<RoomsImagesProps>(roomsImagesPropsSchema);
+
 export type RoomsEndpoints = {
 	'/v1/rooms.autocomplete.channelAndPrivate': {
 		GET: (params: RoomsAutoCompleteChannelAndPrivateProps) => {
@@ -570,6 +602,11 @@ export type RoomsEndpoints = {
 	'/v1/rooms.getDiscussions': {
 		GET: (params: RoomsGetDiscussionsProps) => PaginatedResult<{
 			discussions: IRoom[];
+		}>;
+	};
+	'/v1/rooms.images': {
+		GET: (params: RoomsImagesProps) => PaginatedResult<{
+			files: IUpload[];
 		}>;
 	};
 };
