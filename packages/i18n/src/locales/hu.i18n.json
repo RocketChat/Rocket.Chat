@@ -2342,8 +2342,6 @@
   "Importer_finishing": "Az importálás befejezése.",
   "Importer_From_Description": "{{from}}-adatokat importál a Rocket.Chatbe.",
   "Importer_From_Description_CSV": "CSV-adatokat importál a Rocket.Chatbe. A feltöltött fájlnak ZIP-fájlnak kell lennie.",
-  "Importer_HipChatEnterprise_BetaWarning": "Felhívjuk a figyelmét, hogy ennek az importálásnak a munkálatai még folyamatban vannak, az esetleges hibákat a GitHubon jelentse:",
-  "Importer_HipChatEnterprise_Information": "A feltöltött fájlnak visszafejtett tar.gz-nek kell lennie, olvassa el a dokumentációt további információkért:",
   "Importer_import_cancelled": "Az importálás megszakítva.",
   "Importer_import_failed": "Hiba történt az importálás futása során.",
   "Importer_importing_channels": "A csatornák importálása.",

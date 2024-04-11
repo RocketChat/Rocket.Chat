@@ -1306,8 +1306,6 @@
   "Importer_done": "ການນໍາເຂົ້າທີ່ສົມບູນ!",
   "Importer_finishing": "ສໍາເລັດເຖິງການນໍາເຂົ້າ.",
   "Importer_From_Description": "ການນໍາເຂົ້າ {{from}} ຂໍ້ມູນ's ເຂົ້າໄປໃນ Rocket.Chat.",
-  "Importer_HipChatEnterprise_BetaWarning": "ໂປດທາບວ່າການນໍາເຂົ້ານີ້ຍັງຄົງເປັນວຽກທີ່ກໍາລັງດໍາເນີນການ, ກະລຸນາລາຍງານຂໍ້ຜິດພາດທີ່ເກີດຂື້ນໃນ GitHub:",
-  "Importer_HipChatEnterprise_Information": "ໄຟລ໌ທີ່ອັບໂຫລດຕ້ອງເປັນ tar.gz ທີ່ຖືກລະຫັດ, ກະລຸນາອ່ານເອກສານສໍາລັບຂໍ້ມູນເພີ່ມເຕີມ:",
   "Importer_import_cancelled": "ການນໍາເຂົ້າຍົກເລີກ.",
   "Importer_import_failed": "ເກີດຄວາມຜິດພາດໃນຂະນະທີ່ເຮັດວຽກການນໍາເຂົ້າ.",
   "Importer_importing_channels": "ການນໍາເຂົ້າຊ່ອງທາງການ.",

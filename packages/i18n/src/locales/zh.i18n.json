@@ -1901,8 +1901,6 @@
   "Importer_ExternalUrl_Description": "您还可以将URL用于可公开访问的文件：",
   "Importer_finishing": "导入即将完成。",
   "Importer_From_Description": "将 {{from}} 数据导入 Rocket.Chat。",
-  "Importer_HipChatEnterprise_BetaWarning": "请注意，导入功能尚处于开发阶段，如有错误发生请在 GitHub 向我们反馈：",
-  "Importer_HipChatEnterprise_Information": "上传的文件必须为未加密的 tar.gz 文件，请查阅文档进一步了解相关信息：",
   "Importer_import_cancelled": "已取消导入。",
   "Importer_import_failed": "导入过程中发生错误！",
   "Importer_importing_channels": "正在导入频道。",

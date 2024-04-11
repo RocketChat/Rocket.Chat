@@ -1267,8 +1267,6 @@
   "Importer_CSV_Information": "CSV-ийн импортлогч тодорхой форматыг шаарддаг бөгөөд таны zip файлыг хэрхэн бүтээх талаар баримтжуулалтыг уншина уу:",
   "Importer_done": "Бүрэн импортлох!",
   "Importer_finishing": "Импортыг дуусгах.",
-  "Importer_HipChatEnterprise_BetaWarning": "Энэ импорт нь одоо ч ажил дуусч байгаа гэдгийг анхаарна уу, GitHub-д тохиолддог аливаа алдааг мэдээлнэ үү:",
-  "Importer_HipChatEnterprise_Information": "Байршуулсан файл нь шифрлэгдсэн tar.gz байна, дэлгэрэнгүй мэдээллийг баримтжуулж уншина уу:",
   "Importer_import_cancelled": "Импорт цуцлагдсан.",
   "Importer_import_failed": "Импортыг ажиллуулж байхад алдаа гарлаа.",
   "Importer_importing_channels": "Суваг оруулах.",

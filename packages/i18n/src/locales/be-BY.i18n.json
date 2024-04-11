@@ -1288,8 +1288,6 @@
   "Importer_done": "Імпарт завершаны!",
   "Importer_finishing": "Завяршэнне імпарту.",
   "Importer_From_Description": "Імпартуе {{from}} дадзеныя ў Rocket.Chat.",
-  "Importer_HipChatEnterprise_BetaWarning": "Звярніце ўвагу, што гэты імпарт па-ранейшаму знаходзіцца ў стадыі распрацоўкі, просьба паведамляць пра памылкі, якія адбываюцца ў GitHub:",
-  "Importer_HipChatEnterprise_Information": "Загружаны файл павінен быць расшыфраваны tar.gz, калі ласка, прачытайце дакументацыю для атрымання дадатковай інфармацыі:",
   "Importer_import_cancelled": "Імпарт адменены.",
   "Importer_import_failed": "пры выкананні імпарту адбылася памылка.",
   "Importer_importing_channels": "Імпарт каналаў.",

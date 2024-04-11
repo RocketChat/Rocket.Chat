@@ -1282,8 +1282,6 @@
   "Importer_done": "Import je dokončený!",
   "Importer_finishing": "Dokončenie importu.",
   "Importer_From_Description": "Importuje {{from}} dáta do Rocket.Chat.",
-  "Importer_HipChatEnterprise_BetaWarning": "Majte na pamäti, že tento import je stále prebiehajúcim procesom, nahláste všetky chyby, ktoré sa vyskytli v GitHub:",
-  "Importer_HipChatEnterprise_Information": "Nahraný súbor musí byť dešifrovaný tar.gz, prečítajte si prosím dokumentáciu pre ďalšie informácie:",
   "Importer_import_cancelled": "Import bol zrušený.",
   "Importer_import_failed": "Počas spúšťania importu sa vyskytla chyba.",
   "Importer_importing_channels": "Importovanie kanálov.",

@@ -1268,8 +1268,6 @@
   "Importer_done": "Mewnforio yn gyflawn!",
   "Importer_finishing": "Gorffen y mewnforio.",
   "Importer_From_Description": "Mewnforion {{from}} data i Rocket.Chat.",
-  "Importer_HipChatEnterprise_BetaWarning": "Cofiwch fod y mewnforio hwn yn dal i fod yn waith ar y gweill, rhowch wybod am unrhyw wallau sy'n digwydd yn GitHub:",
-  "Importer_HipChatEnterprise_Information": "Rhaid i'r ffeil a lwythir i fyny fod yn tar.gz dadgryptiedig, darllenwch y dogfennau i gael rhagor o wybodaeth:",
   "Importer_import_cancelled": "Canslo mewnforio.",
   "Importer_import_failed": "Digwyddodd gwall wrth redeg y mewnforio.",
   "Importer_importing_channels": "Mewnforio y sianeli.",

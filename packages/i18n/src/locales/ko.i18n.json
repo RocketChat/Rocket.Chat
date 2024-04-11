@@ -1869,8 +1869,6 @@
   "Importer_ExternalUrl_Description": "외부에서 접근할 수 있는 파일의 URL을 사용할 수 있습니다.",
   "Importer_finishing": "가져오기 마무리 중..",
   "Importer_From_Description": "{{from}} 데이터를 Rocket.Chat으로 가져옵니다.",
-  "Importer_HipChatEnterprise_BetaWarning": "이 가져 오기가 아직 진행 중이므로 GitHub에서 발생하는 모든 오류를보고하십시오.",
-  "Importer_HipChatEnterprise_Information": "업로드 된 파일은 해독 된 tar.gz 여야합니다. 자세한 내용은 설명서를 참조하십시오.",
   "Importer_import_cancelled": "가져오기가 취소되었습니다.",
   "Importer_import_failed": "가져오기를 실행하는 동안 오류가 발생했습니다.",
   "Importer_importing_channels": "채널 가져오기",

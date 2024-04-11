@@ -1279,8 +1279,6 @@
   "Importer_done": "Εισαγωγή πλήρης!",
   "Importer_finishing": "Ολοκλήρωση της εισαγωγής.",
   "Importer_From_Description": "Οι εισαγωγές {{from}} δεδομένων's σε Rocket.Chat.",
-  "Importer_HipChatEnterprise_BetaWarning": "Λάβετε υπόψη ότι αυτή η εισαγωγή εξακολουθεί να είναι εργασία σε εξέλιξη, αναφέρετε τυχόν λάθη που εμφανίζονται στο GitHub:",
-  "Importer_HipChatEnterprise_Information": "Το φορτωμένο αρχείο πρέπει να είναι αποκρυπτογραφημένο tar.gz, διαβάστε την τεκμηρίωση για περισσότερες πληροφορίες:",
   "Importer_import_cancelled": "Εισαγωγής ακυρωθεί.",
   "Importer_import_failed": "Παρουσιάστηκε σφάλμα κατά την εκτέλεση της εισαγωγής.",
   "Importer_importing_channels": "Εισάγει τα κανάλια.",
