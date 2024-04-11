@@ -4,7 +4,7 @@ import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { Info } from '../../../utils/rocketchat.info';
 
 export async function getAppsStatistics() {
-	if (Apps.self?.isInitialized()) {
+	if (!Apps.self?.isInitialized()) {
 		return {
 			engineVersion: Info.marketplaceApiVersion,
 			totalInstalled: false,
