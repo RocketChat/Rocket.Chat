@@ -52,7 +52,7 @@ Meteor.methods<ServerMethods>({
 		await deleteUser(userId, confirmRelinquish, uid);
 
 		// App IPostUserDeleted event hook
-		await Apps?.triggerEvent(AppEvents.IPostUserDeleted, { user, performedBy: await Meteor.userAsync() });
+		await Apps.self?.triggerEvent(AppEvents.IPostUserDeleted, { user, performedBy: await Meteor.userAsync() });
 
 		return true;
 	},
