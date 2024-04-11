@@ -2280,8 +2280,6 @@
   "Importer_finishing": "Завершить импорт данных.",
   "Importer_From_Description": "Импортировать данные из {{from}} в Rocket.Chat.",
   "Importer_From_Description_CSV": "Импортирует данные файла CSV в Rocket.Chat. Загруженный файл должен быть в формате ZIP.",
-  "Importer_HipChatEnterprise_BetaWarning": "Имейте в виду, что импорт всё ещё продолжается. Пожалуйста, сообщите о любых возникающих ошибках на GitHub:",
-  "Importer_HipChatEnterprise_Information": "Загруженный файл должен быть расшифрованным tar.gz, пожалуйста, прочитайте документацию для получения дополнительной информации:",
   "Importer_import_cancelled": "Импорт данных отменен.",
   "Importer_import_failed": "Во время импорта данных возникла ошибка.",
   "Importer_importing_channels": "Импортировать каналы.",

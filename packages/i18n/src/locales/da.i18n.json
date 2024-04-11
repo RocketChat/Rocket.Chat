@@ -1908,8 +1908,6 @@
   "Importer_ExternalUrl_Description": "Du kan også bruge en URL til en offentlig tilgængelig fil:",
   "Importer_finishing": "Afslutter importen.",
   "Importer_From_Description": "Importerer {{from}} data til Rocket.Chat.",
-  "Importer_HipChatEnterprise_BetaWarning": "Vær opmærksom på, at denne import stadig er under udvikling. Rapporter venligst eventuelle fejl der opstår til GitHub:",
-  "Importer_HipChatEnterprise_Information": "Den uploadede fil skal være en dekrypteret tar.gz. Du kan få mere at vide i dokumentationen:",
   "Importer_import_cancelled": "Import annulleret.",
   "Importer_import_failed": "Der opstod en fejl under udførelsen af importen.",
   "Importer_importing_channels": "Importerer kanalerne.",

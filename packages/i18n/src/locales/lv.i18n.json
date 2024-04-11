@@ -1283,8 +1283,6 @@
   "Importer_CSV_Information": "CSV importer ir nepieciešams noteikts formāts, lūdzu, izlasiet dokumentāciju, kā veidot savu zip failu:",
   "Importer_done": "Importēšana ir pabeigta.",
   "Importer_finishing": "Importēšanas pabeigšana.",
-  "Importer_HipChatEnterprise_BetaWarning": "Lūdzu, ņemiet vērā, ka šis importēšana joprojām turpinās darbu, lūdzu, ziņojiet par visām kļūdām, kas rodas GitHub:",
-  "Importer_HipChatEnterprise_Information": "Augšupielādētajam failam jābūt atšifrētam tar.gz, lūdzu, izlasiet dokumentāciju, lai saņemtu sīkāku informāciju:",
   "Importer_import_cancelled": "Imports ir atcelts.",
   "Importer_import_failed": "Veicot importēšanu, radās kļūda.",
   "Importer_importing_channels": "Kanālu importēšana.",

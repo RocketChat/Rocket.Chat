@@ -2211,8 +2211,6 @@
   "Importer_done": "Importerer komplett!",
   "Importer_finishing": "Fullfører importen.",
   "Importer_From_Description": "Importerer data fra {{from}} til Rocket.Chat.",
-  "Importer_HipChatEnterprise_BetaWarning": "Vær oppmerksom på at denne importen fortsatt er et pågående arbeid, vennligst rapporter eventuelle feil som oppstår i GitHub:",
-  "Importer_HipChatEnterprise_Information": "Filen som lastes opp må være en dekryptert tar.gz, vennligst les dokumentasjonen for ytterligere informasjon:",
   "Importer_import_cancelled": "Import avbrutt.",
   "Importer_import_failed": "Det oppsto en feil under kjøring av importen.",
   "Importer_importing_channels": "Importerer kanalene.",

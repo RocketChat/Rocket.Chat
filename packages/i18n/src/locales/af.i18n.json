@@ -1272,8 +1272,6 @@
   "Importer_done": "Invoer voltooi!",
   "Importer_finishing": "Voltooi die invoer.",
   "Importer_From_Description": "Invoer {{from}} data in Rocket.Chat.",
-  "Importer_HipChatEnterprise_BetaWarning": "Wees asseblief bewus daarvan dat hierdie invoer nog steeds 'n werk aan die gang is, meld asseblief enige foute wat in GitHub voorkom:",
-  "Importer_HipChatEnterprise_Information": "Die opgelaaide lêer moet 'n gedecodeerde tar.gz wees, lees asseblief die dokumentasie vir verdere inligting:",
   "Importer_import_cancelled": "Invoer gekanselleer.",
   "Importer_import_failed": "'N Fout het voorgekom terwyl die invoer uitgevoer word.",
   "Importer_importing_channels": "Die kanale invoer.",
