@@ -58,6 +58,8 @@ test.describe('omnichannel-take-chat', () => {
 		await agent.poHomeChannel.sidenav.openChat(newVisitor.name);
 		await expect(agent.poHomeChannel.content.btnTakeChat).not.toBeVisible();
 		await expect(agent.poHomeChannel.content.inputMessage).toBeVisible();
+
+		await poLiveChat.closeChat();
 	});
 
 	test('should user not receive a new chat when offline status and livechat disabled when agent idle', async ({ api }) => {
@@ -79,6 +81,12 @@ test.describe('omnichannel-take-chat', () => {
 		await agent.poHomeChannel.sidenav.switchStatus('offline');
 
 		await agent.poHomeChannel.sidenav.openQueuedOmnichannelChat(newVisitor.name);
-		await expect(agent.poHomeChannel.content.btnTakeChat).toBeDisabled();
+
+		await expect(agent.poHomeChannel.content.btnTakeChat).toBeVisible();
+
+		await agent.poHomeChannel.content.btnTakeChat.click();
+		await expect(agent.page.locator('role=alert')).toBeVisible();
+
+		await poLiveChat.closeChat();
 	});
 });
