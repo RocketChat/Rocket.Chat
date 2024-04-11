@@ -1271,8 +1271,6 @@
   "Importer_done": "Importimi i plotë!",
   "Importer_finishing": "Përfunduar importin.",
   "Importer_From_Description": "Importet {{from}} dhënat's në Rocket.Chat.",
-  "Importer_HipChatEnterprise_BetaWarning": "Ju lutemi, kini parasysh se ky import ende është një punë në vazhdim, ju lutem raportoni çdo gabim që ndodh në GitHub:",
-  "Importer_HipChatEnterprise_Information": "Skedari i ngarkuar duhet të jetë tar.gz i dekriptuar, ju lutem lexoni dokumentacionin për informacione të mëtejshme:",
   "Importer_import_cancelled": "Import anuluar.",
   "Importer_import_failed": "Ndodhi një gabim gjatë drejtimin e importit.",
   "Importer_importing_channels": "Importimin e kanaleve.",

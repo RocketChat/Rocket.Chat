@@ -1271,8 +1271,6 @@
   "Importer_done": "முழுமையான இறக்குமதி!",
   "Importer_finishing": "இறக்குமதி முடிக்கிறது.",
   "Importer_From_Description": "இறக்குமதி Rocket.Chat ஒரு 'கள் தரவு {{from}}.",
-  "Importer_HipChatEnterprise_BetaWarning": "இந்த இறக்குமதி இன்னமும் முன்னேற்றம் அடைந்ததை நினைவில் கொள்ளுங்கள், தயவுசெய்து GitHub இல் ஏற்படும் எந்த பிழைகளையும் தெரிவிக்கவும்:",
-  "Importer_HipChatEnterprise_Information": "பதிவேற்றிய கோப்பு ஒரு குறியாக்கப்பட்ட tar.gz ஆக இருக்க வேண்டும், மேலும் தகவலுக்கு ஆவணங்களைப் படிக்கவும்:",
   "Importer_import_cancelled": "இறக்குமதி ரத்துசெய்யப்பட்டது.",
   "Importer_import_failed": "இறக்குமதி இயங்கும் போது ஒரு பிழை ஏற்பட்டது.",
   "Importer_importing_channels": "சேனல்கள் இறக்குமதி.",

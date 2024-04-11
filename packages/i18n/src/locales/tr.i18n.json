@@ -1540,8 +1540,6 @@
   "Importer_ExternalUrl_Description": "Herkesin erişebileceği dosya için bir URL de kullanabilirsiniz:",
   "Importer_finishing": "İçe aktarım tamamlanıyor.",
   "Importer_From_Description": "{{from}} verisini Rocket.Chat'e aktarır.",
-  "Importer_HipChatEnterprise_BetaWarning": "Bu içe aktarma işlemi halen devam etmekte olan bir çalışma olduğuna dikkat edin, lütfen GitHub'ta oluşan hataları bildirin:",
-  "Importer_HipChatEnterprise_Information": "Yüklenen dosya, şifresi çözülmüş bir tar.gz olmalıdır; daha fazla bilgi için lütfen belgeleri okuyun:",
   "Importer_import_cancelled": "İçe aktarım iptal edildi.",
   "Importer_import_failed": "İçe aktarım sırasında bir hata oluştu.",
   "Importer_importing_channels": "Kanallar içe aktarılıyor.",

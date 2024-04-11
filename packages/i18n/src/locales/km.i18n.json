@@ -1528,8 +1528,6 @@
   "Importer_ExternalUrl_Description": "អ្នកក៏អាចប្រើ URL សម្រាប់ឯកសារអាចចូលដំណើរការជាសាធារណៈបានដែរ:",
   "Importer_finishing": "បញ្ចប់ការនាំចូល។",
   "Importer_From_Description": "ការនាំចូល {{from}} ទិន្នន័យ's បានចូលទៅក្នុង Rocket.Chat ។",
-  "Importer_HipChatEnterprise_BetaWarning": "សូមជ្រាបថាការនាំចូលនេះនៅតែជាការងារកំពុងដំណើរការសូមរាយការណ៍កំហុសទាំងឡាយដែលកើតឡើងនៅក្នុង GitHub:",
-  "Importer_HipChatEnterprise_Information": "ឯកសារដែលបានផ្ទុកឡើងត្រូវតែជាឌីជីថលដែលបានឌិគ្រីបសូមអានឯកសារសម្រាប់ព័ត៌មានបន្ថែម:",
   "Importer_import_cancelled": "នាំចូលលុបចោល។",
   "Importer_import_failed": "កំហុសមួយបានកើតឡើងខណៈពេលកំពុងរត់ការនាំចូល។",
   "Importer_importing_channels": "ការនាំចូលបណ្តាញនេះ។",

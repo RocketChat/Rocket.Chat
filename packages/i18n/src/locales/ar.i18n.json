@@ -2145,8 +2145,6 @@
   "Importer_finishing": "يتم إنهاء الاستيراد.",
   "Importer_From_Description": "استيراد بيانات {{from}} إلى Rocket.Chat.",
   "Importer_From_Description_CSV": "استيراد بيانات CSV إلى Rocket.Chat. يجب أن يكون الملف الذي تم رفعه بتنسيق ZIP.",
-  "Importer_HipChatEnterprise_BetaWarning": "يرجى العلم أن هذا الاستيراد لا يزال قيد التقدم، يُرجى الإبلاغ عن أي أخطاء تحدث في GitHub:",
-  "Importer_HipChatEnterprise_Information": "يجب أن يكون الملف الذي تم تحميله بتنسيق tar.gz غير مشفر، تُرجى قراءة الوثائق للحصول على مزيد من المعلومات:",
   "Importer_import_cancelled": "تم إلغاء الاستيراد.",
   "Importer_import_failed": "حدث خطأ أثناء تشغيل الاستيراد.",
   "Importer_importing_channels": "يتم استيراد القنوات.",

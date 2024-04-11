@@ -2113,8 +2113,6 @@
   "Importer_finishing": "Finalitza la importació.",
   "Importer_From_Description": "Importa les dades de {{from}} a Rocket.Chat.",
   "Importer_From_Description_CSV": "Importa dades CSV a Rocket.Chat. El fitxer penjat ha de ser un fitxer ZIP.",
-  "Importer_HipChatEnterprise_BetaWarning": "Tingueu en compte que aquest sistema d'importació encara està en desenvolupament. Si us plau, notifiqueu-nos a GitHub els errors que es produeixin:",
-  "Importer_HipChatEnterprise_Information": "L'arxiu carregat ha de ser un tar.gz desxifrat, llegiu la documentació per obtenir més informació:",
   "Importer_import_cancelled": "Importació cancel·lada.",
   "Importer_import_failed": "S'ha produït un error durant la importació.",
   "Importer_importing_channels": "Important els canals.",

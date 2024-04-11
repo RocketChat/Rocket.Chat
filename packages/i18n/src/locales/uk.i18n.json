@@ -1685,8 +1685,6 @@
   "Importer_ExternalUrl_Description": "Ви також можете використовувати URL-адресу для загальнодоступного файлу:",
   "Importer_finishing": "Завершення імпорту.",
   "Importer_From_Description": "Imports {{from}} data  в Rocket.Chat.",
-  "Importer_HipChatEnterprise_BetaWarning": "Будь ласка, пам'ятайте, що цей імпорт все ще працює, повідомте про всі помилки, які виникають в GitHub:",
-  "Importer_HipChatEnterprise_Information": "Завантажений файл повинен бути розшифрованим tar.gz, будь ласка, ознайомтеся з документацією для отримання додаткової інформації:",
   "Importer_import_cancelled": "Імпорт скасований.",
   "Importer_import_failed": "Сталася помилка під час виконання імпорту.",
   "Importer_importing_channels": "Імпорт каналів.",

@@ -1272,8 +1272,6 @@
   "Importer_done": "Importante kompletan!",
   "Importer_finishing": "Finante la importadon.",
   "Importer_From_Description": "Importas {{from}}-datumojn en Rocket.Chat.",
-  "Importer_HipChatEnterprise_BetaWarning": "Bonvolu konscii, ke ĉi tiu importado ankoraŭ estas progreso, bonvolu raporti iujn erarojn, kiuj okazas en GitHub:",
-  "Importer_HipChatEnterprise_Information": "La dosiero alŝutita devas esti senĉifrita tar.gz, bonvolu legi la dokumentadon por pliaj informoj:",
   "Importer_import_cancelled": "Importi nuligita.",
   "Importer_import_failed": "Eraro okazis dum ĝi funkciis la importadon.",
   "Importer_importing_channels": "Importante la kanaloj.",

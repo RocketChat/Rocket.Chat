@@ -1292,8 +1292,6 @@
   "Importer_done": "导入完成！",
   "Importer_finishing": "完成进口。",
   "Importer_From_Description": "将{{from}}数据导入Rocket.Chat。",
-  "Importer_HipChatEnterprise_BetaWarning": "请注意，此导入仍在进行中，请报告GitHub中发生的任何错误：",
-  "Importer_HipChatEnterprise_Information": "上传的文件必须是解密的tar.gz，请阅读文档以获取更多信息：",
   "Importer_import_cancelled": "导入已取消。",
   "Importer_import_failed": "运行导入时发生错误。",
   "Importer_importing_channels": "导入频道。",

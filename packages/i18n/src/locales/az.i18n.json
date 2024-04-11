@@ -1272,8 +1272,6 @@
   "Importer_done": "Tamamilə idxal!",
   "Importer_finishing": "İthalatı bitirmək.",
   "Importer_From_Description": "Rocket.Chat'a {{from}} data verin.",
-  "Importer_HipChatEnterprise_BetaWarning": "Xahiş edirik, bu idxal hələ də davam edən bir iş olduğundan xəbərdar edin, GitHub'da meydana gələn hər hansı bir səhv bildirin:",
-  "Importer_HipChatEnterprise_Information": "Yüklənən fayl şifresi çözülmüş tar.gz olmalıdır, daha ətraflı məlumat üçün sənədləri oxuyun:",
   "Importer_import_cancelled": "İxrac ləğv edildi.",
   "Importer_import_failed": "İçeceğinizde çalışırken bir səhv baş verdi.",
   "Importer_importing_channels": "Kanalları idxal etmək.",

@@ -1816,8 +1816,6 @@
   "Importer_ExternalUrl_Description": "Můžete také použít adresu URL pro veřejně přístupný soubor:",
   "Importer_finishing": "Dokončuji import.",
   "Importer_From_Description": "Import dat {{from}} do Rocket.Chat.",
-  "Importer_HipChatEnterprise_BetaWarning": "Mějte prosím na paměti, že tato funkcionalita je stále ve vývoji, prosím nahlašte nám jakékoliv chyby přes github:",
-  "Importer_HipChatEnterprise_Information": "Nahraný soubor musí být nešifrovaný tar.gz, Více informací naleznete v dokumentaci:",
   "Importer_import_cancelled": "Import zrušen.",
   "Importer_import_failed": "Došlo k chybě při importu.",
   "Importer_importing_channels": "Importuji místnosti.",

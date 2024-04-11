@@ -1531,8 +1531,6 @@
   "Importer_done": "وارد کردن تمام شد!",
   "Importer_finishing": "پایان دادن به وارد کردن.",
   "Importer_From_Description": "داده های {{from}} را وارد Rocket.chat می کند.",
-  "Importer_HipChatEnterprise_BetaWarning": "لطفا توجه داشته باشید که این واردات همچنان یک کار در حال انجام است، لطفا هر خطایی که در GitHub رخ می دهد گزارش دهید:",
-  "Importer_HipChatEnterprise_Information": "فایل آپلود شده باید یک tar.gz رمزگشایی شود، لطفا مستندات بیشتری برای اطلاعات بیشتر بخوانید:",
   "Importer_import_cancelled": "وارد کردن لغو شد.",
   "Importer_import_failed": "هنگام وارد کردن خطایی رخ داد.",
   "Importer_importing_channels": "وارد کردن کانال ها.",

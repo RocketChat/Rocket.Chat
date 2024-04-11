@@ -1153,8 +1153,6 @@
   "Importer_CSV_Information": "ЦСВ увознику је потребан одређени формат, молимо прочитајте документацију како структурирати своју зип датотеку:",
   "Importer_done": "Увоз завршен!",
   "Importer_finishing": "Завршавање увоза.",
-  "Importer_HipChatEnterprise_BetaWarning": "Имајте на уму да је овај увоз и даље посао у току, пријавите грешке које се јављају у ГитХуб-у:",
-  "Importer_HipChatEnterprise_Information": "Датотека која је отпремљена мора бити дешифрована тар.гз, прочитајте документацију за додатне информације:",
   "Importer_import_cancelled": "Увоз отказан.",
   "Importer_import_failed": "Дошло је до грешке приликом увоза.",
   "Importer_importing_channels": "Увожење канала.",

@@ -1365,8 +1365,6 @@
   "Importer_done": "Nhập đầy đủ!",
   "Importer_finishing": "Hoàn thành việc nhập dữ liệu.",
   "Importer_From_Description": "Nhập dữ liệu {{from}} vào Rocket.Chat.",
-  "Importer_HipChatEnterprise_BetaWarning": "Xin lưu ý rằng phần nhập dữ liệu này vẫn đang trong quá trình hoàn thiện, hãy báo cáo bất kỳ lỗi nào xảy ra tại GitHub:",
-  "Importer_HipChatEnterprise_Information": "Tệp được tải lên phải là tệp được giải mã tar.gz, vui lòng đọc tài liệu để biết thêm thông tin:",
   "Importer_import_cancelled": "Nhập dữ liệu bị hủy.",
   "Importer_import_failed": "Đã xảy ra lỗi khi chạy.",
   "Importer_importing_channels": "Nhập các kênh.",
