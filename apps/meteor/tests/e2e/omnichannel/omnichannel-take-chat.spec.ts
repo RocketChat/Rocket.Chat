@@ -73,7 +73,7 @@ test.describe('omnichannel-take-chat', () => {
 		await expect(agent.poHomeChannel.sidenav.getQueuedChat(newVisitor.name)).toHaveCount(0);
 	});
 
-	test('should user not take the chat when offline status', async ({ api }) => {
+	test('user should not take the chat when offline status', async ({ api }) => {
 		await api.post('/settings/Livechat_enabled_when_agent_idle', { value: true }).then((res) => expect(res.status()).toBe(200));
 
 		await poLiveChat.openChatAndSendMessage(newVisitor, 'this_a_test_message_from_user');
