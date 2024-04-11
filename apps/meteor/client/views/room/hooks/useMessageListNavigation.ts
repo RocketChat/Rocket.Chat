@@ -30,6 +30,14 @@ export const useMessageListNavigation = (): { messageListRef: RefCallback<HTMLEl
 				current: node,
 			});
 
+			document.addEventListener('mousedown', () => {
+				triggeredByKeyboard = false;
+			});
+
+			document.addEventListener('keydown', () => {
+				triggeredByKeyboard = true;
+			});
+
 			node.addEventListener('keydown', (e) => {
 				if (!e.target) {
 					return;
@@ -68,8 +76,6 @@ export const useMessageListNavigation = (): { messageListRef: RefCallback<HTMLEl
 
 					lastMessageFocused = document.activeElement as HTMLElement;
 				}
-
-				triggeredByKeyboard = true;
 			});
 
 			node.addEventListener(
@@ -89,20 +95,19 @@ export const useMessageListNavigation = (): { messageListRef: RefCallback<HTMLEl
 			node.addEventListener(
 				'focus',
 				(e) => {
+					if (!triggeredByKeyboard || !(e.currentTarget instanceof HTMLElement && e.relatedTarget instanceof HTMLElement)) {
+						return;
+					}
+
 					if (initialFocus) {
 						massageListFocusManager.focusLast({ accept: (node) => isListItem(node) });
 						lastMessageFocused = document.activeElement as HTMLElement;
 						initialFocus = false;
-					}
-
-					if (!triggeredByKeyboard || !(e.currentTarget instanceof HTMLElement && e.relatedTarget instanceof HTMLElement)) {
 						return;
 					}
 
 					if (lastMessageFocused && !e.currentTarget.contains(e.relatedTarget) && node.contains(e.target as HTMLElement)) {
 						lastMessageFocused?.focus();
-						lastMessageFocused = null;
-						triggeredByKeyboard = false;
 					}
 				},
 				{ capture: true },
