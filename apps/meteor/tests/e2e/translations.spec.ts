@@ -16,12 +16,12 @@ test.describe('Translations', () => {
         expect((await setSettingValueById(api, 'Language', 'en')).status()).toBe(200);
 	});
 
-    test.beforeEach(async ({ api, page }) => {
+    test.beforeEach(async ({ api }) => {
         expect((await setUserPreferences(api, { language: '' })).status()).toBe(200);
-        await page.goto('/home');
 	})
 
     test('expect to respect user preference', async ({ page, api }) => {
+        await page.goto('/home');
         await expect(page.locator('h2')).toHaveText('Welcome to Rocket.Chat');
 
         const response = page.waitForResponse('**/i18n/pt-BR.json');
@@ -33,6 +33,7 @@ test.describe('Translations', () => {
     test.describe('Browser language', () => {
         test.use({ locale: 'pt-BR' })
         test('expect to respect browser language', async ({ page }) => {
+            await page.goto('/home');
             await expect(page.locator('h2')).toHaveText('Bem-vindo ao Rocket.Chat');
         });
     })
