@@ -63,6 +63,10 @@ export const createVisitor = (department?: string): Promise<ILivechatVisitor> =>
 		});
 	});
 
+export const deleteVisitor = async (token: string): Promise<void> => {
+	await request.delete(api(`livechat/visitor/${token}`));
+}
+
 export const takeInquiry = async (inquiryId: string, agentCredentials?: IUserCredentialsHeader): Promise<void> => {
     const userId = agentCredentials ? agentCredentials['X-User-Id'] : credentials['X-User-Id'];
 
