@@ -2,4 +2,4 @@
 "@rocket.chat/meteor": major
 ---
 
-Added 7.0 MongoDB support 
+Added MongoDB 7.0 support 
