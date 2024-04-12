@@ -97,7 +97,6 @@ test.describe.serial('channel-management', () => {
 	test('should edit topic of targetChannel', async ({ page }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnRoomInfo.click();
-		await poHomeChannel.tabs.room.btnEdit.waitFor();
 		await poHomeChannel.tabs.room.btnEdit.click();
 		await poHomeChannel.tabs.room.inputTopic.fill('hello-topic-edited');
 		await poHomeChannel.tabs.room.btnSave.click();
@@ -112,7 +111,6 @@ test.describe.serial('channel-management', () => {
 	test('should edit announcement of targetChannel', async ({ page }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnRoomInfo.click();
-		await poHomeChannel.tabs.room.btnEdit.waitFor();
 		await poHomeChannel.tabs.room.btnEdit.click();
 		await poHomeChannel.tabs.room.inputAnnouncement.fill('hello-announcement-edited');
 		await poHomeChannel.tabs.room.btnSave.click();
@@ -126,7 +124,6 @@ test.describe.serial('channel-management', () => {
 	test('should edit description of targetChannel', async ({ page }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnRoomInfo.click();
-		await poHomeChannel.tabs.room.btnEdit.waitFor();
 		await poHomeChannel.tabs.room.btnEdit.click();
 		await poHomeChannel.tabs.room.inputDescription.fill('hello-description-edited');
 		await poHomeChannel.tabs.room.btnSave.click();
@@ -140,7 +137,6 @@ test.describe.serial('channel-management', () => {
 	test('should edit name of targetChannel', async ({ page }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnRoomInfo.click();
-		await poHomeChannel.tabs.room.btnEdit.waitFor();
 		await poHomeChannel.tabs.room.btnEdit.click();
 		await poHomeChannel.tabs.room.inputName.fill(`NAME-EDITED-${targetChannel}`);
 		await poHomeChannel.tabs.room.btnSave.click();
@@ -156,7 +152,6 @@ test.describe.serial('channel-management', () => {
 		const hugeName = faker.string.alpha(100);
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnRoomInfo.click();
-		await poHomeChannel.tabs.room.btnEdit.waitFor();
 		await poHomeChannel.tabs.room.btnEdit.click();
 		await poHomeChannel.tabs.room.inputName.fill(hugeName);
 		await poHomeChannel.tabs.room.btnSave.click();
