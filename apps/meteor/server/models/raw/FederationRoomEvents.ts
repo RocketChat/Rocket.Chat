@@ -1,7 +1,7 @@
 import { eventTypes } from '@rocket.chat/core-typings';
 import type { IRoom, ISubscription, IUser, IFederationEvent } from '@rocket.chat/core-typings';
 import type { IFederationRoomEventsModel } from '@rocket.chat/model-typings';
-import type { Db, DeleteResult, IndexDescription } from 'mongodb';
+import type { DeleteResult, IndexDescription } from 'mongodb';
 
 import { contextDefinitions } from '../../../app/federation/server/lib/context';
 import { FederationEventsModel } from './FederationEvents';
@@ -9,8 +9,8 @@ import { FederationEventsModel } from './FederationEvents';
 const { type, contextQuery } = contextDefinitions.ROOM;
 
 export class FederationRoomEvents extends FederationEventsModel implements IFederationRoomEventsModel {
-	constructor(db: Db) {
-		super(db, 'federation_room_events');
+	constructor() {
+		super('federation_room_events');
 	}
 
 	protected modelIndexes(): IndexDescription[] {

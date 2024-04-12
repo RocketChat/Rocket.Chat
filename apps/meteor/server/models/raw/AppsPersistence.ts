@@ -1,11 +1,11 @@
 import type { IAppsPersistenceModel } from '@rocket.chat/model-typings';
-import type { Db, DeleteResult, Filter, IndexDescription } from 'mongodb';
+import type { DeleteResult, Filter, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
 export class AppsPersistenceModel extends BaseRaw<any> implements IAppsPersistenceModel {
-	constructor(db: Db) {
-		super(db, 'apps_persistence');
+	constructor() {
+		super('apps_persistence');
 	}
 
 	protected modelIndexes(): IndexDescription[] {

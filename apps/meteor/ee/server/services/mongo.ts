@@ -1,5 +1,5 @@
 import { MongoClient } from 'mongodb';
-import type { Db, Collection, MongoClientOptions, Document } from 'mongodb';
+import type { Collection, MongoClientOptions, Document } from 'mongodb';
 
 const { MONGO_URL = 'mongodb://localhost:27017/rocketchat' } = process.env;
 

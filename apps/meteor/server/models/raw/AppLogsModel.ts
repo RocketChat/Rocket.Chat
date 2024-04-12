@@ -1,11 +1,11 @@
 import type { IAppLogsModel } from '@rocket.chat/model-typings';
-import type { Db, DeleteResult, Filter } from 'mongodb';
+import type { DeleteResult, Filter } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
 export class AppsLogsModel extends BaseRaw<any> implements IAppLogsModel {
-	constructor(db: Db) {
-		super(db, 'apps_logs', undefined, { _updatedAtIndexOptions: { expireAfterSeconds: 60 * 60 * 24 * 30 } });
+	constructor() {
+		super('apps_logs', undefined, { _updatedAtIndexOptions: { expireAfterSeconds: 60 * 60 * 24 * 30 } });
 	}
 
 	remove(query: Filter<any>): Promise<DeleteResult> {

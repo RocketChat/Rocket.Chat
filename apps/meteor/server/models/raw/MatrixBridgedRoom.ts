@@ -1,12 +1,12 @@
 import type { IMatrixBridgedRoom, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IMatrixBridgedRoomModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, IndexDescription } from 'mongodb';
+import type { Collection, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
 export class MatrixBridgedRoomRaw extends BaseRaw<IMatrixBridgedRoom> implements IMatrixBridgedRoomModel {
-	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IMatrixBridgedRoom>>) {
-		super(db, 'matrix_bridged_rooms', trash);
+	constructor(trash?: Collection<RocketChatRecordDeleted<IMatrixBridgedRoom>>) {
+		super('matrix_bridged_rooms', trash);
 	}
 
 	protected modelIndexes(): IndexDescription[] {

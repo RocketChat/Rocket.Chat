@@ -1,14 +1,14 @@
 import type { INpsVote, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import { INpsVoteStatus } from '@rocket.chat/core-typings';
 import type { INpsVoteModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, Document, FindOptions, IndexDescription, UpdateResult } from 'mongodb';
+import type { Collection, FindCursor, Document, FindOptions, IndexDescription, UpdateResult } from 'mongodb';
 import { ObjectId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
 export class NpsVoteRaw extends BaseRaw<INpsVote> implements INpsVoteModel {
-	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<INpsVote>>) {
-		super(db, 'nps_vote', trash);
+	constructor(trash?: Collection<RocketChatRecordDeleted<INpsVote>>) {
+		super('nps_vote', trash);
 	}
 
 	modelIndexes(): IndexDescription[] {

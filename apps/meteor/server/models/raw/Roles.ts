@@ -1,13 +1,13 @@
 import type { IRole, IRoom, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IRolesModel } from '@rocket.chat/model-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
-import type { Collection, FindCursor, Db, Filter, FindOptions, InsertOneResult, UpdateResult, WithId, Document } from 'mongodb';
+import type { Collection, FindCursor, Filter, FindOptions, InsertOneResult, UpdateResult, WithId, Document } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
 export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
-	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IRole>>) {
-		super(db, 'roles', trash);
+	constructor(trash?: Collection<RocketChatRecordDeleted<IRole>>) {
+		super('roles', trash);
 	}
 
 	findByUpdatedDate(updatedAfterDate: Date, options?: FindOptions<IRole>): FindCursor<IRole> {

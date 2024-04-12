@@ -6,7 +6,6 @@ import type {
 	AggregationCursor,
 	Collection,
 	FindCursor,
-	Db,
 	Document,
 	Filter,
 	FindOptions,
@@ -19,8 +18,8 @@ import type {
 import { BaseRaw } from './BaseRaw';
 
 export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements ILivechatVisitorsModel {
-	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatVisitor>>) {
-		super(db, 'livechat_visitor', trash);
+	constructor(trash?: Collection<RocketChatRecordDeleted<ILivechatVisitor>>) {
+		super('livechat_visitor', trash);
 	}
 
 	protected modelIndexes(): IndexDescription[] {

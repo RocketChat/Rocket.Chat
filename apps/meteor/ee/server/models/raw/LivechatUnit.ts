@@ -1,7 +1,7 @@
 import type { IOmnichannelBusinessUnit, ILivechatDepartment } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatUnitModel } from '@rocket.chat/model-typings';
 import { LivechatUnitMonitors, LivechatDepartment, LivechatRooms } from '@rocket.chat/models';
-import type { FindOptions, Filter, FindCursor, Db, FilterOperators, UpdateResult, DeleteResult, Document, UpdateFilter } from 'mongodb';
+import type { FindOptions, Filter, FindCursor, FilterOperators, UpdateResult, DeleteResult, Document, UpdateFilter } from 'mongodb';
 
 import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
 import { getUnitsFromUser } from '../../../app/livechat-enterprise/server/lib/units';
@@ -22,8 +22,8 @@ const addQueryRestrictions = async (originalQuery: Filter<IOmnichannelBusinessUn
 
 // We don't actually need Units to extends from Departments
 export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implements ILivechatUnitModel {
-	constructor(db: Db) {
-		super(db, 'livechat_department');
+	constructor() {
+		super('livechat_department');
 	}
 
 	findPaginatedUnits(

@@ -1,12 +1,12 @@
 import type { IOEmbedCache, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IOEmbedCacheModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, DeleteResult, IndexDescription } from 'mongodb';
+import type { Collection, DeleteResult, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
 export class OEmbedCacheRaw extends BaseRaw<IOEmbedCache> implements IOEmbedCacheModel {
-	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IOEmbedCache>>) {
-		super(db, 'oembed_cache', trash);
+	constructor(trash?: Collection<RocketChatRecordDeleted<IOEmbedCache>>) {
+		super('oembed_cache', trash);
 	}
 
 	protected modelIndexes(): IndexDescription[] {

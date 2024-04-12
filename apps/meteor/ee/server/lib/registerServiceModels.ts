@@ -5,7 +5,7 @@ import type {
 	ISubscription,
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
-import { registerModel } from '@rocket.chat/models';
+import { registerModel, db } from '@rocket.chat/models';
 import type { Collection, Db } from 'mongodb';
 
 import { EmailInboxRaw } from '../../../server/models/raw/EmailInbox';
@@ -32,35 +32,37 @@ import { UsersSessionsRaw } from '../../../server/models/raw/UsersSessions';
 import { LivechatPriorityRaw } from '../models/raw/LivechatPriority';
 
 // TODO add trash param to appropiate model instances
-export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecordDeleted<any>>): void {
-	registerModel('IRolesModel', () => new RolesRaw(db));
-	registerModel('IRoomsModel', () => new RoomsRaw(db));
-	registerModel('ISettingsModel', () => new SettingsRaw(db, trash as Collection<RocketChatRecordDeleted<ISetting>>));
-	registerModel('ISubscriptionsModel', () => new SubscriptionsRaw(db, trash as Collection<RocketChatRecordDeleted<ISubscription>>));
-	registerModel('ITeamModel', () => new TeamRaw(db));
-	registerModel('ITeamMemberModel', () => new TeamMemberRaw(db));
-	registerModel('IUsersModel', () => new UsersRaw(db));
+export function registerServiceModels(mongoDatabase: Db, trash?: Collection<RocketChatRecordDeleted<any>>): void {
+	db.register(mongoDatabase);
 
-	registerModel('IMessagesModel', () => new MessagesRaw(db));
+	registerModel('IRolesModel', () => new RolesRaw());
+	registerModel('IRoomsModel', () => new RoomsRaw());
+	registerModel('ISettingsModel', () => new SettingsRaw(trash as Collection<RocketChatRecordDeleted<ISetting>>));
+	registerModel('ISubscriptionsModel', () => new SubscriptionsRaw(trash as Collection<RocketChatRecordDeleted<ISubscription>>));
+	registerModel('ITeamModel', () => new TeamRaw());
+	registerModel('ITeamMemberModel', () => new TeamMemberRaw());
+	registerModel('IUsersModel', () => new UsersRaw());
+
+	registerModel('IMessagesModel', () => new MessagesRaw());
 
 	registerModel(
 		'ILivechatInquiryModel',
-		() => new LivechatInquiryRaw(db, trash as Collection<RocketChatRecordDeleted<ILivechatInquiryRecord>>),
+		() => new LivechatInquiryRaw(trash as Collection<RocketChatRecordDeleted<ILivechatInquiryRecord>>),
 	);
 	registerModel(
 		'ILivechatDepartmentAgentsModel',
-		() => new LivechatDepartmentAgentsRaw(db, trash as Collection<RocketChatRecordDeleted<ILivechatDepartmentAgents>>),
+		() => new LivechatDepartmentAgentsRaw(trash as Collection<RocketChatRecordDeleted<ILivechatDepartmentAgents>>),
 	);
-	registerModel('IUsersSessionsModel', () => new UsersSessionsRaw(db));
-	registerModel('IPermissionsModel', () => new PermissionsRaw(db));
-	registerModel('ILoginServiceConfigurationModel', () => new LoginServiceConfigurationRaw(db));
-	registerModel('IInstanceStatusModel', () => new InstanceStatusRaw(db));
-	registerModel('IIntegrationHistoryModel', () => new IntegrationHistoryRaw(db));
-	registerModel('IIntegrationsModel', () => new IntegrationsRaw(db));
-	registerModel('IEmailInboxModel', () => new EmailInboxRaw(db));
-	registerModel('IPbxEventsModel', () => new PbxEventsRaw(db));
-	registerModel('ILivechatPriorityModel', new LivechatPriorityRaw(db));
-	registerModel('ILivechatRoomsModel', () => new LivechatRoomsRaw(db));
-	registerModel('IUploadsModel', () => new UploadsRaw(db));
-	registerModel('ILivechatVisitorsModel', () => new LivechatVisitorsRaw(db));
+	registerModel('IUsersSessionsModel', () => new UsersSessionsRaw());
+	registerModel('IPermissionsModel', () => new PermissionsRaw());
+	registerModel('ILoginServiceConfigurationModel', () => new LoginServiceConfigurationRaw());
+	registerModel('IInstanceStatusModel', () => new InstanceStatusRaw());
+	registerModel('IIntegrationHistoryModel', () => new IntegrationHistoryRaw());
+	registerModel('IIntegrationsModel', () => new IntegrationsRaw());
+	registerModel('IEmailInboxModel', () => new EmailInboxRaw());
+	registerModel('IPbxEventsModel', () => new PbxEventsRaw());
+	registerModel('ILivechatPriorityModel', new LivechatPriorityRaw());
+	registerModel('ILivechatRoomsModel', () => new LivechatRoomsRaw());
+	registerModel('IUploadsModel', () => new UploadsRaw());
+	registerModel('ILivechatVisitorsModel', () => new LivechatVisitorsRaw());
 }

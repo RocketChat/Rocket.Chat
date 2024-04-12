@@ -1,12 +1,12 @@
 import type { IStats } from '@rocket.chat/core-typings';
 import type { IStatisticsModel } from '@rocket.chat/model-typings';
-import type { Db, IndexDescription } from 'mongodb';
+import type { IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
 export class StatisticsRaw extends BaseRaw<IStats> implements IStatisticsModel {
-	constructor(db: Db) {
-		super(db, 'statistics');
+	constructor() {
+		super('statistics');
 	}
 
 	protected modelIndexes(): IndexDescription[] {

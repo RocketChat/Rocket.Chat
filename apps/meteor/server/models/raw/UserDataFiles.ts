@@ -1,12 +1,12 @@
 import type { IUserDataFile, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IUserDataFilesModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, FindOptions, IndexDescription, InsertOneResult, WithId } from 'mongodb';
+import type { Collection, FindOptions, IndexDescription, InsertOneResult, WithId } from 'mongodb';
 
 import { BaseUploadModelRaw } from './BaseUploadModel';
 
 export class UserDataFilesRaw extends BaseUploadModelRaw implements IUserDataFilesModel {
-	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IUserDataFile>>) {
-		super(db, 'user_data_files', trash);
+	constructor(trash?: Collection<RocketChatRecordDeleted<IUserDataFile>>) {
+		super('user_data_files', trash);
 	}
 
 	protected modelIndexes(): IndexDescription[] {

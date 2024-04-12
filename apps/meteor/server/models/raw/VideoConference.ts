@@ -8,13 +8,13 @@ import type {
 } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 import type { FindPaginated, InsertionModel, IVideoConferenceModel } from '@rocket.chat/model-typings';
-import type { FindCursor, UpdateOptions, UpdateFilter, UpdateResult, IndexDescription, Collection, Db, FindOptions } from 'mongodb';
+import type { FindCursor, UpdateOptions, UpdateFilter, UpdateResult, IndexDescription, Collection, FindOptions } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
 export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVideoConferenceModel {
-	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<VideoConference>>) {
-		super(db, 'video_conference', trash);
+	constructor(trash?: Collection<RocketChatRecordDeleted<VideoConference>>) {
+		super('video_conference', trash);
 	}
 
 	protected modelIndexes(): IndexDescription[] {

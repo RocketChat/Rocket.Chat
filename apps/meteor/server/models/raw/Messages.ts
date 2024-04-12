@@ -17,7 +17,6 @@ import type {
 	CountDocumentsOptions,
 	AggregateOptions,
 	FindCursor,
-	Db,
 	Filter,
 	FindOptions,
 	IndexDescription,
@@ -41,8 +40,8 @@ type DeepWritable<T> = T extends (...args: any) => any
 	  };
 
 export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
-	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IMessage>>) {
-		super(db, 'message', trash);
+	constructor(trash?: Collection<RocketChatRecordDeleted<IMessage>>) {
+		super('message', trash);
 	}
 
 	protected modelIndexes(): IndexDescription[] {

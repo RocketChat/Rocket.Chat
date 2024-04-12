@@ -10,7 +10,6 @@ import type {
 	FindOptions,
 	UpdateFilter,
 	UpdateResult,
-	Db,
 	AggregationCursor,
 } from 'mongodb';
 
@@ -38,8 +37,8 @@ declare module '@rocket.chat/model-typings' {
 }
 
 export class LivechatDepartmentEE extends LivechatDepartmentRaw implements ILivechatDepartmentModel {
-	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatDepartment>>) {
-		super(db, trash);
+	constructor(trash?: Collection<RocketChatRecordDeleted<ILivechatDepartment>>) {
+		super(trash);
 	}
 
 	async removeDepartmentFromForwardListById(departmentId: string): Promise<void> {

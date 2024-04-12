@@ -9,7 +9,6 @@ import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import type { ILivechatInquiryModel } from '@rocket.chat/model-typings';
 import type {
 	Collection,
-	Db,
 	Document,
 	FindOptions,
 	DistinctOptions,
@@ -27,8 +26,8 @@ import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { BaseRaw } from './BaseRaw';
 
 export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implements ILivechatInquiryModel {
-	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatInquiryRecord>>) {
-		super(db, 'livechat_inquiry', trash);
+	constructor(trash?: Collection<RocketChatRecordDeleted<ILivechatInquiryRecord>>) {
+		super('livechat_inquiry', trash);
 	}
 
 	protected modelIndexes(): Array<IndexDescription> {

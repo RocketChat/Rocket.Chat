@@ -21,7 +21,6 @@ import type {
 	Collection,
 	Document,
 	FindCursor,
-	Db,
 	Filter,
 	IndexDescription,
 	UpdateResult,
@@ -735,8 +734,8 @@ export const aggregates = {
 export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 	private secondaryCollection: Collection<ISession>;
 
-	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ISession>>) {
-		super(db, 'sessions', trash);
+	constructor(trash?: Collection<RocketChatRecordDeleted<ISession>>) {
+		super('sessions', trash);
 
 		this.secondaryCollection = db.collection(getCollectionName('sessions'), { readPreference: readSecondaryPreferred(db) });
 	}

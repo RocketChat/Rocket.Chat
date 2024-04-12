@@ -1,12 +1,12 @@
 import type { ISetting, ISettingColor, ISettingSelectOption, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ISettingsModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, Filter, UpdateFilter, UpdateResult, Document, FindOptions } from 'mongodb';
+import type { Collection, FindCursor, Filter, UpdateFilter, UpdateResult, Document, FindOptions } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
 export class SettingsRaw extends BaseRaw<ISetting> implements ISettingsModel {
-	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ISetting>>) {
-		super(db, 'settings', trash);
+	constructor(trash?: Collection<RocketChatRecordDeleted<ISetting>>) {
+		super('settings', trash);
 	}
 
 	async getValueById(_id: string): Promise<ISetting['value'] | undefined> {

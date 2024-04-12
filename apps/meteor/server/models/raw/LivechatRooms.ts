@@ -15,7 +15,6 @@ import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
 import { Settings } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {
-	Db,
 	Collection,
 	IndexDescription,
 	Document,
@@ -36,8 +35,8 @@ import { BaseRaw } from './BaseRaw';
  * @extends BaseRaw<ILivechatRoom>
  */
 export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILivechatRoomsModel {
-	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IOmnichannelRoom>>) {
-		super(db, 'room', trash);
+	constructor(trash?: Collection<RocketChatRecordDeleted<IOmnichannelRoom>>) {
+		super('room', trash);
 	}
 
 	// move indexes from constructor to here using IndexDescription as type

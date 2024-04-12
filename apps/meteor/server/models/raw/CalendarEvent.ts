@@ -1,12 +1,12 @@
 import type { ICalendarEvent, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ICalendarEventModel } from '@rocket.chat/model-typings';
-import type { FindCursor, IndexDescription, Collection, Db, UpdateResult } from 'mongodb';
+import type { FindCursor, IndexDescription, Collection, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
 export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalendarEventModel {
-	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ICalendarEvent>>) {
-		super(db, 'calendar_event', trash);
+	constructor(trash?: Collection<RocketChatRecordDeleted<ICalendarEvent>>) {
+		super('calendar_event', trash);
 	}
 
 	protected modelIndexes(): IndexDescription[] {

@@ -1,13 +1,12 @@
 import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IBaseModel, DefaultFields, ResultFields, FindPaginated, InsertionModel } from '@rocket.chat/model-typings';
-import { getCollectionName } from '@rocket.chat/models';
+import { db, getCollectionName } from '@rocket.chat/models';
 import { ObjectId } from 'mongodb';
 import type {
 	BulkWriteOptions,
 	ChangeStream,
 	Collection,
 	CollectionOptions,
-	Db,
 	Filter,
 	FindOneAndUpdateOptions,
 	IndexDescription,
@@ -55,6 +54,8 @@ export abstract class BaseRaw<
 
 	private preventSetUpdatedAt: boolean;
 
+	protected db: Db = db;
+
 	/**
 	 * Collection name to store data.
 	 */
@@ -66,10 +67,10 @@ export abstract class BaseRaw<
 	 * @param trash Trash collection instance
 	 * @param options Model options
 	 */
-	constructor(private db: Db, protected name: string, protected trash?: Collection<TDeleted>, private options?: ModelOptions) {
+	constructor(protected name: string, protected trash?: Collection<TDeleted>, private options?: ModelOptions) {
 		this.collectionName = options?.collectionNameResolver ? options.collectionNameResolver(name) : getCollectionName(name);
 
-		this.col = this.db.collection(this.collectionName, options?.collection || {});
+		this.col = db.collection(this.collectionName, options?.collection || {});
 
 		void this.createIndexes().catch((e) => {
 			console.warn(`Some indexes for collection '${this.collectionName}' could not be created:\n\t${e.message}`);

@@ -7,14 +7,14 @@ import type {
 	UserReport,
 } from '@rocket.chat/core-typings';
 import type { FindPaginated, IModerationReportsModel, PaginationParams } from '@rocket.chat/model-typings';
-import type { AggregationCursor, Collection, Db, Document, FindCursor, FindOptions, IndexDescription, UpdateResult } from 'mongodb';
+import type { AggregationCursor, Collection, Document, FindCursor, FindOptions, IndexDescription, UpdateResult } from 'mongodb';
 
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { BaseRaw } from './BaseRaw';
 
 export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements IModerationReportsModel {
-	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IModerationReport>>) {
-		super(db, 'moderation_reports', trash);
+	constructor(trash?: Collection<RocketChatRecordDeleted<IModerationReport>>) {
+		super('moderation_reports', trash);
 	}
 
 	modelIndexes(): IndexDescription[] | undefined {

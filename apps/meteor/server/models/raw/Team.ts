@@ -1,12 +1,12 @@
 import type { ITeam, RocketChatRecordDeleted, TEAM_TYPE } from '@rocket.chat/core-typings';
 import type { FindPaginated, ITeamModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, DeleteResult, Document, Filter, FindOptions, IndexDescription, UpdateResult } from 'mongodb';
+import type { Collection, FindCursor, DeleteResult, Document, Filter, FindOptions, IndexDescription, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
 export class TeamRaw extends BaseRaw<ITeam> implements ITeamModel {
-	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ITeam>>) {
-		super(db, 'team', trash);
+	constructor(trash?: Collection<RocketChatRecordDeleted<ITeam>>) {
+		super('team', trash);
 	}
 
 	protected modelIndexes(): IndexDescription[] {

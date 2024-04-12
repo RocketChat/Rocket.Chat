@@ -5,7 +5,6 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {
 	Collection,
 	FindCursor,
-	Db,
 	Filter,
 	FindOptions,
 	UpdateResult,
@@ -19,8 +18,8 @@ import type {
 import { BaseRaw } from './BaseRaw';
 
 export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implements ILivechatDepartmentModel {
-	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatDepartment>>) {
-		super(db, 'livechat_department', trash);
+	constructor(trash?: Collection<RocketChatRecordDeleted<ILivechatDepartment>>) {
+		super('livechat_department', trash);
 	}
 
 	unfilteredFind(_query: Filter<ILivechatDepartment>, _options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {

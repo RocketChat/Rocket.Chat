@@ -4,7 +4,6 @@ import { Users } from '@rocket.chat/models';
 import type {
 	Collection,
 	FindCursor,
-	Db,
 	Filter,
 	FindOptions,
 	Document,
@@ -17,8 +16,8 @@ import type {
 import { BaseRaw } from './BaseRaw';
 
 export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgents> implements ILivechatDepartmentAgentsModel {
-	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatDepartmentAgents>>) {
-		super(db, 'livechat_department_agents', trash);
+	constructor(trash?: Collection<RocketChatRecordDeleted<ILivechatDepartmentAgents>>) {
+		super('livechat_department_agents', trash);
 	}
 
 	protected modelIndexes(): Array<IndexDescription> {

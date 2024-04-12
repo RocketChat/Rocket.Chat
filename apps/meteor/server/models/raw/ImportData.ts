@@ -6,13 +6,13 @@ import type {
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
 import type { IImportDataModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, Filter, IndexDescription } from 'mongodb';
+import type { Collection, FindCursor, Filter, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
 export class ImportDataRaw extends BaseRaw<IImportRecord> implements IImportDataModel {
-	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IImportRecord>>) {
-		super(db, 'import_data', trash);
+	constructor(trash?: Collection<RocketChatRecordDeleted<IImportRecord>>) {
+		super('import_data', trash);
 	}
 
 	protected modelIndexes(): IndexDescription[] {

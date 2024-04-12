@@ -79,6 +79,7 @@ import type {
 	IMigrationsModel,
 	IModerationReportsModel,
 } from '@rocket.chat/model-typings';
+import type { Db } from 'mongodb';
 
 import { proxify } from './proxify';
 
@@ -156,6 +157,7 @@ export const Team = proxify<ITeamModel>('ITeamModel');
 export const Users = proxify<IUsersModel>('IUsersModel');
 export const Uploads = proxify<IUploadsModel>('IUploadsModel');
 export const UserDataFiles = proxify<IUserDataFilesModel>('IUserDataFilesModel');
+
 export const UsersSessions = proxify<IUsersSessionsModel>('IUsersSessionsModel');
 export const VideoConference = proxify<IVideoConferenceModel>('IVideoConferenceModel');
 export const VoipRoom = proxify<IVoipRoomModel>('IVoipRoomModel');
@@ -170,3 +172,5 @@ export const AuditLog = proxify<IAuditLogModel>('IAuditLogModel');
 export const CronHistory = proxify<ICronHistoryModel>('ICronHistoryModel');
 export const Migrations = proxify<IMigrationsModel>('IMigrationsModel');
 export const ModerationReports = proxify<IModerationReportsModel>('IModerationReportsModel');
+
+export const db = proxify<Db>('Db');

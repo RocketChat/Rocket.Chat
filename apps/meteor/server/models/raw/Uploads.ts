@@ -2,13 +2,13 @@
 import type { IUpload, RocketChatRecordDeleted, IRoom } from '@rocket.chat/core-typings';
 import type { FindPaginated, IUploadsModel } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { Collection, FindCursor, Db, IndexDescription, WithId, Filter, FindOptions } from 'mongodb';
+import type { Collection, FindCursor, IndexDescription, WithId, Filter, FindOptions } from 'mongodb';
 
 import { BaseUploadModelRaw } from './BaseUploadModel';
 
 export class UploadsRaw extends BaseUploadModelRaw implements IUploadsModel {
-	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IUpload>>) {
-		super(db, 'uploads', trash);
+	constructor(trash?: Collection<RocketChatRecordDeleted<IUpload>>) {
+		super('uploads', trash);
 	}
 
 	protected modelIndexes(): IndexDescription[] {

@@ -1,12 +1,12 @@
 import type { IUserSession, IUserSessionConnection, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IUsersSessionsModel } from '@rocket.chat/model-typings';
-import type { FindCursor, Collection, Db, FindOptions } from 'mongodb';
+import type { FindCursor, Collection, FindOptions } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
 export class UsersSessionsRaw extends BaseRaw<IUserSession> implements IUsersSessionsModel {
-	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IUserSession>>) {
-		super(db, 'usersSessions', trash, {
+	constructor(trash?: Collection<RocketChatRecordDeleted<IUserSession>>) {
+		super('usersSessions', trash, {
 			preventSetUpdatedAt: true,
 			collectionNameResolver(name) {
 				return name;

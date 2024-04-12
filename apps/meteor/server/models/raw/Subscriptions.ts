@@ -16,7 +16,6 @@ import mem from 'mem';
 import type {
 	Collection,
 	FindCursor,
-	Db,
 	Filter,
 	FindOptions,
 	UpdateResult,
@@ -33,8 +32,8 @@ import { getDefaultSubscriptionPref } from '../../../app/utils/lib/getDefaultSub
 import { BaseRaw } from './BaseRaw';
 
 export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscriptionsModel {
-	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ISubscription>>) {
-		super(db, 'subscription', trash);
+	constructor(trash?: Collection<RocketChatRecordDeleted<ISubscription>>) {
+		super('subscription', trash);
 	}
 
 	protected modelIndexes(): IndexDescription[] {

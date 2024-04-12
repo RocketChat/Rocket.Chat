@@ -1,14 +1,14 @@
 import type { ILivechatAgentActivity, IServiceHistory, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ILivechatAgentActivityModel } from '@rocket.chat/model-typings';
 import moment from 'moment';
-import type { AggregationCursor, Collection, Document, FindCursor, Db, ModifyResult, IndexDescription, UpdateResult } from 'mongodb';
+import type { AggregationCursor, Collection, Document, FindCursor, ModifyResult, IndexDescription, UpdateResult } from 'mongodb';
 
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { BaseRaw } from './BaseRaw';
 
 export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> implements ILivechatAgentActivityModel {
-	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatAgentActivity>>) {
-		super(db, 'livechat_agent_activity', trash);
+	constructor(trash?: Collection<RocketChatRecordDeleted<ILivechatAgentActivity>>) {
+		super('livechat_agent_activity', trash);
 	}
 
 	modelIndexes(): IndexDescription[] {

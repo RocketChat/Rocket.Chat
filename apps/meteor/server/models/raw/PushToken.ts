@@ -1,12 +1,12 @@
 import type { IPushToken } from '@rocket.chat/core-typings';
 import type { IPushTokenModel } from '@rocket.chat/model-typings';
-import type { Db, DeleteResult, IndexDescription } from 'mongodb';
+import type { DeleteResult, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
 export class PushTokenRaw extends BaseRaw<IPushToken> implements IPushTokenModel {
-	constructor(db: Db) {
-		super(db, '_raix_push_app_tokens', undefined, {
+	constructor() {
+		super('_raix_push_app_tokens', undefined, {
 			collectionNameResolver(name) {
 				return name;
 			},

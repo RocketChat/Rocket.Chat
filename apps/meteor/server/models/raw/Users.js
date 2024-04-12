@@ -33,7 +33,7 @@ const queryStatusAgentOnline = (extraFilters = {}, isLivechatEnabledWhenAgentIdl
 
 export class UsersRaw extends BaseRaw {
 	constructor(db, trash) {
-		super(db, 'users', trash, {
+		super('users', trash, {
 			collectionNameResolver(name) {
 				return name;
 			},

@@ -1,22 +1,25 @@
 import type { IBaseModel } from '@rocket.chat/model-typings';
 
-const lazyModels = new Map<string, () => IBaseModel<any>>();
-const models = new Map<string, IBaseModel<any>>();
+type LazyModel<T> = () => T;
 
-function handler<T extends object>(namespace: string): ProxyHandler<T> {
+type NormalOrLazyModel<T> = T | LazyModel<T>;
+
+type Store<T> = Map<string, NormalOrLazyModel<T>>;
+
+const models = new Map<string, NormalOrLazyModel<Record<string, any>>>();
+function handler<T extends Record<string | symbol, any>>(namespace: string, models: Store<T>): ProxyHandler<T> {
 	return {
-		get: (_target: T, nameProp: keyof IBaseModel<any>): any => {
-			if (!models.has(namespace) && lazyModels.has(namespace)) {
-				const getModel = lazyModels.get(namespace);
-				if (getModel) {
-					models.set(namespace, getModel());
-				}
-			}
-
-			const model = models.get(namespace);
+		get: (_target: T, nameProp: keyof T): any => {
+			let model = models.get(namespace);
 
 			if (!model) {
 				throw new Error(`Model ${namespace} not found`);
+			}
+
+			if (typeof model === 'function') {
+				const modelInstance = model();
+				models.set(namespace, modelInstance);
+				model = modelInstance;
 			}
 
 			const prop = model[nameProp];
@@ -43,17 +46,28 @@ export function registerModel<TModel extends IBaseModel<any, any, any>>(
 	instance: TModel | (() => TModel),
 	overwriteExisting = true,
 ): void {
-	if (!overwriteExisting && (lazyModels.has(name) || models.has(name))) {
-		return;
-	}
-
-	if (typeof instance === 'function') {
-		lazyModels.set(name, instance);
-	} else {
-		models.set(name, instance);
-	}
+	return register(name, instance, overwriteExisting);
 }
 
-export function proxify<T>(namespace: string): T {
-	return new Proxy({}, handler(namespace)) as unknown as T;
+function register<T extends Record<string, any>>(name: string, instance: NormalOrLazyModel<T>, overwriteExisting = true): void {
+	if (!overwriteExisting && models.has(name)) {
+		throw new Error(`Model ${name} already exists`);
+	}
+
+	models.set(name, instance);
+}
+
+export function proxify<T extends Record<string, any>>(
+	namespace: string,
+): T & {
+	register: (instance: T, overwriteExisting?: boolean) => void;
+} {
+	return new Proxy(
+		{
+			register: (instance: T, overwriteExisting = true) => register(namespace, instance, overwriteExisting),
+		},
+		handler(namespace, models),
+	) as unknown as T & {
+		register: (instance: T, overwriteExisting?: boolean) => void;
+	};
 }

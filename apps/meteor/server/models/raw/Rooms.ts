@@ -14,7 +14,6 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {
 	AggregationCursor,
 	Collection,
-	Db,
 	DeleteResult,
 	Document,
 	Filter,
@@ -30,8 +29,8 @@ import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { BaseRaw } from './BaseRaw';
 
 export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
-	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IRoom>>) {
-		super(db, 'room', trash);
+	constructor(trash?: Collection<RocketChatRecordDeleted<IRoom>>) {
+		super('room', trash);
 	}
 
 	modelIndexes(): IndexDescription[] {

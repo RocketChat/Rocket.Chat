@@ -7,7 +7,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight, DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
 import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
-import type { FindCursor, UpdateResult, Document, FindOptions, Db, Collection, Filter, AggregationCursor } from 'mongodb';
+import type { FindCursor, UpdateResult, Document, FindOptions, Collection, Filter, AggregationCursor } from 'mongodb';
 
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { LivechatRoomsRaw } from '../../../../server/models/raw/LivechatRooms';
@@ -68,8 +68,8 @@ declare module '@rocket.chat/model-typings' {
 }
 
 export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoomsModel {
-	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IOmnichannelRoom>>) {
-		super(db, trash);
+	constructor(trash?: Collection<RocketChatRecordDeleted<IOmnichannelRoom>>) {
+		super(trash);
 	}
 
 	countPrioritizedRooms(): Promise<number> {

@@ -3,7 +3,6 @@ import type { FindPaginated, ITeamMemberModel } from '@rocket.chat/model-typings
 import type {
 	Collection,
 	FindCursor,
-	Db,
 	DeleteResult,
 	Document,
 	Filter,
@@ -16,8 +15,8 @@ import type {
 import { BaseRaw } from './BaseRaw';
 
 export class TeamMemberRaw extends BaseRaw<ITeamMember> implements ITeamMemberModel {
-	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ITeamMember>>) {
-		super(db, 'team_member', trash);
+	constructor(trash?: Collection<RocketChatRecordDeleted<ITeamMember>>) {
+		super('team_member', trash);
 	}
 
 	protected modelIndexes(): IndexDescription[] {
