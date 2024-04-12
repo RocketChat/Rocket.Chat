@@ -12,6 +12,7 @@ const SAMLLoginRoute = () => {
 		const { token } = router.getRouteParameters();
 		const { redirectUrl } = router.getSearchParameters();
 
+		console.log('Meteor', Meteor);
 		Meteor.loginWithSamlToken(token, (error?: unknown) => {
 			if (error) {
 				dispatchToastMessage({ type: 'error', message: error });

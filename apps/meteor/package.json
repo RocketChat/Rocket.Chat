@@ -40,7 +40,7 @@
 		"testunit": "npm run .testunit:definition && npm run .testunit:client && npm run .testunit:server:cov",
 		".testunit:server": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --config ./.mocharc.js",
 		".testunit:server:cov": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' nyc -r text -r lcov mocha --config ./.mocharc.js",
-		".testunit:client": "jest --silent && TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --config ./.mocharc.client.js --exit",
+		".testunit:client": "jest --silent=false && TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --config ./.mocharc.client.js --exit",
 		".testunit:definition": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --config ./.mocharc.definition.js",
 		"testunit-watch": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --watch --config ./.mocharc.js",
 		"test": "npm run testapi && npm run testui",
