@@ -2639,7 +2639,6 @@
   "Room_default_change_to_private_will_be_default_no_more": "Це типовий канал і зміна його на приватну групу призведе до того, що він більше не буде каналом за умовчанням. Ви хочете продовжити?",
   "Room_description_changed_successfully": "Опис номера змінено успішно",
   "Room_has_been_archived": "Кімната була заархівована",
-  "Room_has_been_deleted": "Номер був видалений",
   "Room_has_been_unarchived": "Номер було неархівовано",
   "Room_Info": "опис кімнати",
   "room_is_blocked": "Цей номер заблоковано",
