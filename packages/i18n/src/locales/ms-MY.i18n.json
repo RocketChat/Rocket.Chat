@@ -1270,8 +1270,6 @@
   "Importer_done": "Mengimport lengkap!",
   "Importer_finishing": "Hampir selesai import.",
   "Importer_From_Description": "Import {{from}} data's ke dalam Rocket.Chat.",
-  "Importer_HipChatEnterprise_BetaWarning": "Harap maklum bahawa import ini masih merupakan kerja yang sedang berjalan, sila laporkan kesilapan yang berlaku di GitHub:",
-  "Importer_HipChatEnterprise_Information": "Fail yang dimuat naik mestilah tar.gz disahsulit, sila baca dokumentasi untuk maklumat lanjut:",
   "Importer_import_cancelled": "Import dibatalkan.",
   "Importer_import_failed": "Ralat berlaku semasa berjalan import.",
   "Importer_importing_channels": "Mengimport saluran.",
