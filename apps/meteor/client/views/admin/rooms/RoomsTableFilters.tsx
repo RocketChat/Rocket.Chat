@@ -2,10 +2,9 @@ import { Box, Icon, TextInput } from '@rocket.chat/fuselage';
 import type { OptionProp } from '@rocket.chat/ui-client';
 import { MultiSelectCustom } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useContext } from 'react';
-import type { Dispatch, ReactElement, SetStateAction } from 'react';
+import React, { useCallback, useEffect, type Dispatch, type MutableRefObject, type ReactElement, type SetStateAction } from 'react';
 
-import { SearchFilterContext } from '../../../contexts/SearchFilterContext';
+import type { SearchFilters } from './RoomsTable';
 
 const roomTypeFilterStructure = [
 	{
@@ -45,24 +44,41 @@ const roomTypeFilterStructure = [
 	},
 ] as OptionProp[];
 
-const RoomsTableFilters = (): ReactElement => {
-	const { searchFilters, setSearchFilters } = useContext(SearchFilterContext);
+const RoomsTableFilters = ({
+	setRoomSearchText,
+	setRoomSearchTypes,
+	prevRoomFilters,
+}: {
+	setRoomSearchText: Dispatch<SetStateAction<string>>;
+	setRoomSearchTypes: Dispatch<SetStateAction<OptionProp[]>>;
+	prevRoomFilters: MutableRefObject<SearchFilters>;
+}): ReactElement => {
 	const t = useTranslation();
 
 	const handleSearchTextChange = useCallback(
-		(event: React.ChangeEvent<HTMLInputElement>) => {
-			const newText = event.currentTarget.value;
-			setSearchFilters((filters) => ({ ...filters, searchText: newText, types: searchFilters.types }));
+		(event) => {
+			const text = event.currentTarget.value;
+			setRoomSearchText(text);
 		},
-		[searchFilters.types, setSearchFilters],
+		[setRoomSearchText],
 	);
 
 	const handleRoomTypeChange = useCallback(
 		(options: OptionProp[]) => {
-			setSearchFilters((filters) => ({ ...filters, types: options, searchText: searchFilters.searchText }));
+			setRoomSearchTypes(options);
 		},
-		[searchFilters.searchText, setSearchFilters],
+		[setRoomSearchTypes],
 	) as Dispatch<SetStateAction<OptionProp[]>>;
+
+	useEffect(() => {
+		roomTypeFilterStructure.forEach((type, index) => {
+			prevRoomFilters.current.types.forEach((selectedType) => {
+				if (type.id === selectedType.id) {
+					roomTypeFilterStructure[index] = selectedType;
+				}
+			});
+		});
+	}, [prevRoomFilters]);
 
 	return (
 		<Box
@@ -76,21 +92,22 @@ const RoomsTableFilters = (): ReactElement => {
 		>
 			<Box minWidth='x224' display='flex' m='x4' flexGrow={2}>
 				<TextInput
+					data-qa-id='AdminRoomSearchInput'
 					name='search-rooms'
 					alignItems='center'
 					placeholder={t('Search_rooms')}
 					addon={<Icon name='magnifier' size='x20' />}
 					onChange={handleSearchTextChange}
-					value={searchFilters.searchText}
+					value={prevRoomFilters.current.searchText}
 				/>
 			</Box>
-			<Box minWidth='x224' m='x4'>
+			<Box minWidth='x224' m='x4' data-qa-id='AdminRoomDropdownInput'>
 				<MultiSelectCustom
 					dropdownOptions={roomTypeFilterStructure}
 					defaultTitle={'All_rooms' as any}
 					selectedOptionsTitle='Rooms'
 					setSelectedOptions={handleRoomTypeChange}
-					selectedOptions={searchFilters.types}
+					selectedOptions={prevRoomFilters.current.types}
 				/>
 			</Box>
 		</Box>

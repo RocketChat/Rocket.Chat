@@ -1,9 +1,10 @@
 import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
-import { useMediaQuery, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useMediaQuery, useDebouncedValue, useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import type { OptionProp } from '@rocket.chat/ui-client';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement, MutableRefObject } from 'react';
-import React, { useRef, useEffect, useMemo, useContext } from 'react';
+import React, { useRef, useEffect, useMemo } from 'react';
 
 import GenericNoResults from '../../../components/GenericNoResults';
 import {
@@ -15,30 +16,37 @@ import {
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
-import type { SearchFilters } from '../../../contexts/SearchFilterContext';
-import { SearchFilterContext } from '../../../contexts/SearchFilterContext';
 import RoomRow from './RoomRow';
 import RoomsTableFilters from './RoomsTableFilters';
 
 const DEFAULT_TYPES = ['d', 'p', 'c', 'l', 'discussions', 'teams'];
 
+export type SearchFilters = {
+	searchText: string;
+	types: OptionProp[];
+};
+
 const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): ReactElement => {
 	const t = useTranslation();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
-	const { searchFilters } = useContext(SearchFilterContext);
+	const [roomSearchText, setRoomSearchText] = useLocalStorage('roomSearchText', '');
+	const [roomSearchTypes, setRoomSearchTypes] = useLocalStorage<OptionProp[]>('roomSearchTypes', []);
 
-	const prevRoomFilters = useRef<SearchFilters>(searchFilters);
+	const prevRoomFilters = useRef<SearchFilters>({
+		searchText: roomSearchText,
+		types: roomSearchTypes,
+	});
 
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 't' | 'usersCount' | 'msgs' | 'default' | 'featured'>('name');
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
-	const searchText = useDebouncedValue(searchFilters.searchText, 500);
+	const searchText = useDebouncedValue(roomSearchText, 500);
 
 	const query = useDebouncedValue(
 		useMemo(() => {
 			const filtersChanged =
 				searchText !== prevRoomFilters.current.searchText ||
-				JSON.stringify(searchFilters.types) !== JSON.stringify(prevRoomFilters.current.types);
+				JSON.stringify(roomSearchTypes) !== JSON.stringify(prevRoomFilters.current.types);
 
 			if (filtersChanged) {
 				setCurrent(0);
@@ -49,9 +57,9 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
 				count: itemsPerPage,
 				offset: filtersChanged ? 0 : current,
-				types: searchFilters.types.length ? [...searchFilters.types.map((roomType) => roomType.id)] : DEFAULT_TYPES,
+				types: roomSearchTypes.length ? [...roomSearchTypes.map((roomType: OptionProp) => roomType.id)] : DEFAULT_TYPES,
 			};
-		}, [searchText, sortBy, sortDirection, itemsPerPage, current, searchFilters.types, setCurrent]),
+		}, [searchText, roomSearchTypes, sortBy, sortDirection, itemsPerPage, current, setCurrent]),
 		500,
 	);
 
@@ -64,8 +72,11 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 	}, [reload, refetch]);
 
 	useEffect(() => {
-		prevRoomFilters.current = searchFilters;
-	}, [searchFilters]);
+		prevRoomFilters.current = {
+			searchText: roomSearchText,
+			types: roomSearchTypes,
+		};
+	}, [roomSearchText, roomSearchTypes]);
 
 	const headers = (
 		<>
@@ -117,7 +128,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 
 	return (
 		<>
-			<RoomsTableFilters />
+			<RoomsTableFilters setRoomSearchText={setRoomSearchText} setRoomSearchTypes={setRoomSearchTypes} prevRoomFilters={prevRoomFilters} />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

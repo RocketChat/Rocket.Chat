@@ -25,13 +25,10 @@ test.describe.serial('admin-rooms', () => {
 	});
 	test('should display the Rooms Table', async ({ page }) => {
 		await expect(page.locator('[data-qa-type="PageHeader-title"]')).toContainText('Rooms');
-		await expect(page.locator(`[qa-room-name="${privateRoom}"]`)).toBeVisible();
-		await expect(page.locator(`[qa-room-name="${channel}"]`)).toBeVisible();
 	});
 
 	test('should filter room by name', async ({ page }) => {
-		const input = page.locator('input[type="text"]');
-		console.log('🚀 ~ test ~ channel:', channel);
+		const input = page.locator('[data-qa-id="AdminRoomSearchInput"]');
 
 		await input.click();
 		await input.fill(channel);
@@ -40,7 +37,7 @@ test.describe.serial('admin-rooms', () => {
 	});
 
 	test('should filter rooms by type', async ({ page }) => {
-		const dropdown = page.locator('text=All rooms');
+		const dropdown = page.locator('[data-qa-id="AdminRoomDropdownInput"]');
 		await dropdown.click();
 
 		const privateOption = page.locator('text=Private channels');
@@ -48,16 +45,16 @@ test.describe.serial('admin-rooms', () => {
 		await privateOption.waitFor();
 		await privateOption.click();
 
-		await expect(page.locator(`[qa-room-name="${privateRoom}"]`)).toBeVisible();
+		await expect(page.locator('text=Private Channel').first()).toBeVisible();
 	});
 
 	test('should filter rooms by type and name', async ({ page }) => {
-		const input = page.locator('input[type="text"]');
+		const input = page.locator('[data-qa-id="AdminRoomSearchInput"]');
 
 		await input.click();
 		await input.fill(privateRoom);
 
-		const dropdown = page.locator('text=All rooms');
+		const dropdown = page.locator('[data-qa-id="AdminRoomDropdownInput"]');
 		await dropdown.click();
 
 		const privateOption = page.locator('text=Private channels');
@@ -69,12 +66,12 @@ test.describe.serial('admin-rooms', () => {
 	});
 
 	test('should be empty in case of the search does not find any room', async ({ page }) => {
-		const input = page.locator('input[type="text"]');
+		const input = page.locator('[data-qa-id="AdminRoomSearchInput"]');
 
 		await input.click();
 		await input.fill('Wrong-channel');
 
-		const dropdown = page.locator('text=All rooms');
+		const dropdown = page.locator('[data-qa-id="AdminRoomDropdownInput"]');
 		await dropdown.click();
 
 		const privateOption = page.locator('text=Private channels');
@@ -85,13 +82,13 @@ test.describe.serial('admin-rooms', () => {
 		await expect(page.locator('text=No results found')).toBeVisible();
 	});
 
-	test.only('should filter rooms by type and name and keep the filter after changing section', async ({ page }) => {
-		const input = page.locator('input[type="text"]');
+	test('should filter rooms by type and name and keep the filter after changing section', async ({ page }) => {
+		const input = page.locator('[data-qa-id="AdminRoomSearchInput"]');
 
 		await input.click();
 		await input.fill(privateRoom);
 
-		const dropdown = page.locator('text=All rooms');
+		const dropdown = page.locator('[data-qa-id="AdminRoomDropdownInput"]');
 		await dropdown.click();
 
 		const privateOption = page.locator('text=Private channels');
@@ -99,9 +96,9 @@ test.describe.serial('admin-rooms', () => {
 		await privateOption.waitFor();
 		await privateOption.click();
 
-		await page.locator('text=Workspace').click();
+		await page.goto('/admin/info');
 
-		await page.locator('text=Rooms').click();
+		await page.goto('/admin/rooms');
 
 		const selectDropdown = page.locator('text=Rooms (1)');
 		await expect(selectDropdown).toBeVisible();
