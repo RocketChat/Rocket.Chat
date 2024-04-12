@@ -1,10 +1,6 @@
 import { ButtonGroup } from '@rocket.chat/fuselage';
-import type { ReactNode, ReactElement } from 'react';
+import type { ReactElement, ComponentProps } from 'react';
 
-const VideoConfPopupFooterButtons = ({ children }: { children: ReactNode }): ReactElement => (
-	<ButtonGroup medium width='full' stretch>
-		{children}
-	</ButtonGroup>
-);
+const VideoConfPopupFooterButtons = (props: ComponentProps<typeof ButtonGroup>): ReactElement => <ButtonGroup stretch {...props} />;
 
 export default VideoConfPopupFooterButtons;

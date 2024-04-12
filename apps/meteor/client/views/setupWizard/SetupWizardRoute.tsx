@@ -1,8 +1,10 @@
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import { DarkModeProvider } from '@rocket.chat/layout';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 import { useTranslation, I18nextProvider } from 'react-i18next';
 
+import ModalRegion from '../modal/ModalRegion';
 import SetupWizardPage from './SetupWizardPage';
 import { useBodyPosition } from './hooks/useBodyPosition';
 import { useRouteLock } from './hooks/useRouteLock';
@@ -25,6 +27,7 @@ export const SetupWizardRoute = (): ReactElement | null => {
 			<SetupWizardProvider>
 				<DarkModeProvider.default>
 					<SetupWizardPage />
+					<ModalRegion />
 				</DarkModeProvider.default>
 			</SetupWizardProvider>
 		</I18nextProvider>

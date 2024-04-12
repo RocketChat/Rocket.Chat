@@ -1,6 +1,7 @@
-import { Box, Icon } from '@rocket.chat/fuselage';
+import { AudioPlayer, Box, Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useEffect, useState, memo } from 'react';
+import type { ReactElement } from 'react';
+import React, { useEffect, useState, memo } from 'react';
 
 import { userAgentMIMETypeFallback } from '../../../../lib/utils/userAgentMIMETypeFallback';
 import { FilePreviewType } from './FilePreview';
@@ -46,7 +47,7 @@ const MediaPreview = ({ file, fileType }: MediaPreviewProps): ReactElement => {
 	if (typeof url !== 'string') {
 		return (
 			<Box display='flex' alignItems='center' w='full'>
-				<Icon name='image' size='x24' mie='x4' />
+				<Icon name='image' size='x24' mie={4} />
 				{t('FileUpload_Cannot_preview_file')}
 			</Box>
 		);
@@ -66,12 +67,7 @@ const MediaPreview = ({ file, fileType }: MediaPreviewProps): ReactElement => {
 	}
 
 	if (fileType === FilePreviewType.AUDIO) {
-		return (
-			<Box is='audio' w='full' controls>
-				<source src={url} type={file.type} />
-				{t('Browser_does_not_support_audio_element')}
-			</Box>
-		);
+		return <AudioPlayer src={url} />;
 	}
 
 	throw new Error('Wrong props provided for MediaPreview');

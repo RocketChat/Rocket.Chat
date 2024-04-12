@@ -1,7 +1,7 @@
-import faker from "@faker-js/faker";
-import { IOmnichannelBusinessUnit } from "@rocket.chat/core-typings";
+import { faker } from "@faker-js/faker";
+import type { IOmnichannelBusinessUnit } from "@rocket.chat/core-typings";
 import { methodCall, credentials, request } from "../api-data";
-import { DummyResponse } from "./utils";
+import type { DummyResponse } from "./utils";
 
 export const createMonitor = async (username: string): Promise<{ _id: string; username: string }> => {
     return new Promise((resolve, reject) => {
@@ -25,7 +25,7 @@ export const createMonitor = async (username: string): Promise<{ _id: string; us
 	});
 };
 
-export const createUnit = async (monitorId: string, username: string, departmentId: string): Promise<IOmnichannelBusinessUnit> => {
+export const createUnit = async (monitorId: string, username: string, departmentIds: string[], name?: string): Promise<IOmnichannelBusinessUnit> => {
     return new Promise((resolve, reject) => {
         request
             .post(methodCall(`livechat:saveUnit`))
@@ -33,7 +33,7 @@ export const createUnit = async (monitorId: string, username: string, department
             .send({
                 message: JSON.stringify({
                     method: 'livechat:saveUnit',
-                    params: [null, { name: faker.name.firstName(), visibility: faker.helpers.arrayElement(['public', 'private']) }, [{ monitorId, username }], [{ departmentId }]],
+                    params: [null, { name: name || faker.person.firstName(), visibility: faker.helpers.arrayElement(['public', 'private']) }, [{ monitorId, username }], departmentIds.map((departmentId) => ({ departmentId }))],
                     id: '101',
                     msg: 'method',
                 }),

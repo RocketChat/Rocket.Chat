@@ -1,5 +1,6 @@
 import { Box, Flex, Margins } from '@rocket.chat/fuselage';
-import React, { ReactElement, ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
+import React from 'react';
 
 import Growth from './Growth';
 
@@ -27,7 +28,7 @@ const Counter = ({ count, variation = 0, description }: CounterProps): ReactElem
 				<Growth fontScale='h4'>{variation}</Growth>
 			</Box>
 		</Flex.Container>
-		<Margins block='x12'>
+		<Margins block={12}>
 			<Flex.Container alignItems='center'>
 				<Box fontScale='p2' color='hint'>
 					{description}

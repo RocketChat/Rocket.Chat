@@ -1,18 +1,18 @@
+import { EmailInbox, Users } from '@rocket.chat/models';
 import { check, Match } from 'meteor/check';
-import { EmailInbox } from '@rocket.chat/models';
 
-import { API } from '../api';
-import { insertOneEmailInbox, findEmailInboxes, findOneEmailInbox, updateEmailInbox } from '../lib/emailInbox';
-import Users from '../../../models/server/models/Users';
 import { sendTestEmailToInbox } from '../../../../server/features/EmailInbox/EmailInbox_Outgoing';
+import { API } from '../api';
+import { getPaginationItems } from '../helpers/getPaginationItems';
+import { insertOneEmailInbox, findEmailInboxes, findOneEmailInbox, updateEmailInbox } from '../lib/emailInbox';
 
 API.v1.addRoute(
 	'email-inbox.list',
 	{ authRequired: true, permissionsRequired: ['manage-email-inbox'] },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort, query } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, query } = await this.parseJsonQuery();
 			const emailInboxes = await findEmailInboxes({ query, pagination: { offset, count, sort } });
 
 			return API.v1.success(emailInboxes);
@@ -146,7 +146,10 @@ API.v1.addRoute(
 				return API.v1.notFound();
 			}
 
-			const user = Users.findOneById(this.userId);
+			const user = await Users.findOneById(this.userId);
+			if (!user) {
+				return API.v1.notFound();
+			}
 
 			await sendTestEmailToInbox(emailInbox, user);
 

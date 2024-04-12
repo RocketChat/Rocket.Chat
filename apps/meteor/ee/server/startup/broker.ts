@@ -1,8 +1,8 @@
+import { isMeteorError, MeteorError } from '@rocket.chat/core-services';
 import EJSON from 'ejson';
 import { Errors, Serializers, ServiceBroker } from 'moleculer';
 import { pino } from 'pino';
 
-import { isMeteorError, MeteorError } from '../../../server/sdk/errors';
 import { NetworkBroker } from '../NetworkBroker';
 
 const {
@@ -13,13 +13,13 @@ const {
 	SERIALIZER = 'EJSON',
 	MOLECULER_LOG_LEVEL = 'warn',
 	BALANCE_STRATEGY = 'RoundRobin',
-	BALANCE_PREFER_LOCAL = 'false',
+	BALANCE_PREFER_LOCAL = 'true',
 	RETRY_FACTOR = '2',
 	RETRY_MAX_DELAY = '1000',
 	RETRY_DELAY = '100',
 	RETRY_RETRIES = '5',
 	RETRY_ENABLED = 'false',
-	REQUEST_TIMEOUT = '10',
+	REQUEST_TIMEOUT = '60',
 	HEARTBEAT_INTERVAL = '10',
 	HEARTBEAT_TIMEOUT = '30',
 	BULKHEAD_ENABLED = 'false',

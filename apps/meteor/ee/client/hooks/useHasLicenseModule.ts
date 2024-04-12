@@ -1,19 +1,11 @@
-import { useState, useEffect } from 'react';
+import type { LicenseModule } from '@rocket.chat/core-typings';
 
-import { hasLicense } from '../../app/license/client';
-import { BundleFeature } from '../../app/license/server/bundles';
+import { useLicenseBase } from '../../../client/hooks/useLicense';
 
-export const useHasLicenseModule = (licenseName: BundleFeature): 'loading' | boolean => {
-	const [license, setLicense] = useState<'loading' | boolean>('loading');
-
-	useEffect(() => {
-		hasLicense(licenseName).then((enabled) => {
-			if (enabled) {
-				return setLicense(true);
-			}
-			setLicense(false);
-		});
-	}, [licenseName]);
-
-	return license;
+export const useHasLicenseModule = (licenseName: LicenseModule): 'loading' | boolean => {
+	return (
+		useLicenseBase({
+			select: (data) => data.license.activeModules.includes(licenseName),
+		}).data ?? 'loading'
+	);
 };

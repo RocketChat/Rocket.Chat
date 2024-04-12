@@ -1,41 +1,31 @@
-import { States, StatesIcon, StatesTitle, StatesSubtitle, Box, StatesActions, StatesAction } from '@rocket.chat/fuselage';
-import { Header as TemplateHeader } from '@rocket.chat/ui-client';
-import { useLayout, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import { Box } from '@rocket.chat/fuselage';
+import { Header, HeaderToolbar } from '@rocket.chat/ui-client';
+import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import BurgerMenu from '../../components/BurgerMenu';
+import NotFoundState from '../../components/NotFoundState';
 import RoomLayout from './layout/RoomLayout';
 
 const RoomNotFound = (): ReactElement => {
-	const { isMobile } = useLayout();
 	const t = useTranslation();
-	const homeRoute = useRoute('home');
-
-	const handleGoHomeClick = (): void => {
-		homeRoute.push();
-	};
+	const { isMobile } = useLayout();
 
 	return (
 		<RoomLayout
 			header={
 				isMobile && (
-					<TemplateHeader justifyContent='start'>
-						<TemplateHeader.ToolBox>
+					<Header justifyContent='start'>
+						<HeaderToolbar>
 							<BurgerMenu />
-						</TemplateHeader.ToolBox>
-					</TemplateHeader>
+						</HeaderToolbar>
+					</Header>
 				)
 			}
 			body={
 				<Box display='flex' justifyContent='center' height='full'>
-					<States>
-						<StatesIcon name='magnifier' />
-						<StatesTitle>{t('Room_not_found')}</StatesTitle>
-						<StatesSubtitle>{t('Room_not_exist_or_not_permission')}</StatesSubtitle>
-						<StatesActions mbs='x16'>
-							<StatesAction onClick={handleGoHomeClick}>{t('Homepage')}</StatesAction>
-						</StatesActions>
-					</States>
+					<NotFoundState title={t('Room_not_found')} subtitle={t('Room_not_exist_or_not_permission')} />
 				</Box>
 			}
 		/>

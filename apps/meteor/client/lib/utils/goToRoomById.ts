@@ -1,8 +1,8 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { memoize } from '@rocket.chat/memo';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { ChatSubscription } from '../../../app/models/client';
+import { router } from '../../providers/RouterProvider';
 import { roomCoordinator } from '../rooms/roomCoordinator';
 import { callWithErrorHandling } from './callWithErrorHandling';
 
@@ -16,10 +16,10 @@ export const goToRoomById = async (rid: IRoom['_id']): Promise<void> => {
 	const subscription: ISubscription | undefined = ChatSubscription.findOne({ rid });
 
 	if (subscription) {
-		roomCoordinator.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
+		roomCoordinator.openRouteLink(subscription.t, subscription, router.getSearchParameters());
 		return;
 	}
 
 	const room = await getRoomById(rid);
-	roomCoordinator.openRouteLink(room.t, { rid: room._id, ...room }, FlowRouter.current().queryParams);
+	roomCoordinator.openRouteLink(room.t, { rid: room._id, ...room }, router.getSearchParameters());
 };

@@ -8,6 +8,7 @@ import type {
 	IVoipExtensionWithAgentInfo,
 	IManagementServerConnectionStatus,
 	IRegistrationInfo,
+	IVoipConnectorResult,
 } from '@rocket.chat/core-typings';
 import { VoipClientEvents } from '@rocket.chat/core-typings';
 import type { JSONSchemaType } from 'ajv';
@@ -23,7 +24,7 @@ const ajv = new Ajv({
 /** *************************************************/
 type CustomSoundsList = PaginatedRequest<{ query: string }>;
 
-const CustomSoundsListSchema: JSONSchemaType<CustomSoundsList> = {
+const CustomSoundsListSchema = {
 	type: 'object',
 	properties: {
 		count: {
@@ -577,5 +578,11 @@ export type VoipEndpoints = {
 	};
 	'/v1/voip/room.close': {
 		POST: (params: VoipRoomClose) => { rid: string };
+	};
+	'/v1/connector.extension.getDetails': {
+		GET: (params: { extension: string }) => IVoipConnectorResult;
+	};
+	'/v1/connector.extension.getRegistrationInfoByExtension': {
+		GET: (params: { extension: string }) => IRegistrationInfo;
 	};
 };

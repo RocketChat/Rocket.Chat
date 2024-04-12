@@ -1,10 +1,12 @@
 import { expect } from 'chai';
+import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
-import { updatePermission } from '../../data/permissions.helper';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
-import { createUser, login } from '../../data/users.helper';
+import { updatePermission } from '../../data/permissions.helper';
+import { createRoom, deleteRoom } from '../../data/rooms.helper.js';
 import { password } from '../../data/user';
+import { createUser, deleteUser, login } from '../../data/users.helper';
 
 describe('[Incoming Integrations]', function () {
 	this.retries(0);
@@ -13,23 +15,33 @@ describe('[Incoming Integrations]', function () {
 	let integrationCreatedByAnUser;
 	let user;
 	let userCredentials;
+	let channel;
+	let testChannelName;
 
 	before((done) => getCredentials(done));
 
-	before((done) => {
-		updatePermission('manage-incoming-integrations', [])
-			.then(() => updatePermission('manage-own-incoming-integrations', []))
-			.then(() => updatePermission('manage-own-outgoing-integrations', []))
-			.then(() => updatePermission('manage-outgoing-integrations', []))
-			.then(done);
+	before(async () => {
+		await Promise.all([
+			updatePermission('manage-incoming-integrations', []),
+			updatePermission('manage-own-incoming-integrations', []),
+			updatePermission('manage-own-outgoing-integrations', []),
+			updatePermission('manage-outgoing-integrations', []),
+		]);
+
+		testChannelName = `channel.test.${Date.now()}-${Math.random()}`;
+
+		channel = (await createRoom({ type: 'c', name: testChannelName })).body.channel;
 	});
 
-	after((done) => {
-		updatePermission('manage-incoming-integrations', ['admin'])
-			.then(() => updatePermission('manage-own-incoming-integrations', ['admin']))
-			.then(() => updatePermission('manage-own-outgoing-integrations', ['admin']))
-			.then(() => updatePermission('manage-outgoing-integrations', ['admin']))
-			.then(done);
+	after(async () => {
+		await Promise.all([
+			updatePermission('manage-incoming-integrations', ['admin']),
+			updatePermission('manage-own-incoming-integrations', ['admin']),
+			updatePermission('manage-own-outgoing-integrations', ['admin']),
+			updatePermission('manage-outgoing-integrations', ['admin']),
+			deleteRoom({ type: 'c', roomId: channel._id }),
+			deleteUser(user),
+		]);
 	});
 
 	describe('[/integrations.create]', () => {
@@ -45,6 +57,7 @@ describe('[Incoming Integrations]', function () {
 						alias: 'test',
 						username: 'rocket.cat',
 						scriptEnabled: false,
+						overrideDestinationChannelEnabled: true,
 						channel: '#general',
 					})
 					.expect('Content-Type', 'application/json')
@@ -69,6 +82,7 @@ describe('[Incoming Integrations]', function () {
 						alias: 'test',
 						username: 'rocket.cat',
 						scriptEnabled: false,
+						overrideDestinationChannelEnabled: true,
 						channel: '#general',
 					})
 					.expect('Content-Type', 'application/json')
@@ -92,6 +106,7 @@ describe('[Incoming Integrations]', function () {
 					alias: 'test',
 					username: 'rocket.cat',
 					scriptEnabled: false,
+					overrideDestinationChannelEnabled: true,
 					channel: '#general',
 				})
 				.expect('Content-Type', 'application/json')
@@ -116,6 +131,7 @@ describe('[Incoming Integrations]', function () {
 						alias: 'test',
 						username: 'rocket.cat',
 						scriptEnabled: false,
+						overrideDestinationChannelEnabled: false,
 						channel: '#general',
 					})
 					.expect('Content-Type', 'application/json')
@@ -127,6 +143,31 @@ describe('[Incoming Integrations]', function () {
 					})
 					.end(() => removeIntegration(integrationId, 'incoming').then(done));
 			});
+		});
+
+		it('should set overrideDestinationChannelEnabled setting to false when it is not provided', async () => {
+			let integrationId;
+			await request
+				.post(api('integrations.create'))
+				.set(credentials)
+				.send({
+					type: 'webhook-incoming',
+					name: 'Incoming test',
+					enabled: true,
+					alias: 'test',
+					username: 'rocket.cat',
+					scriptEnabled: false,
+					channel: '#general',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('integration').and.to.be.an('object');
+					expect(res.body.integration).to.have.property('overrideDestinationChannelEnabled', false);
+					integrationId = res.body.integration._id;
+				});
+			await removeIntegration(integrationId, 'incoming');
 		});
 
 		it('should add the integration successfully when the user ONLY has the permission "manage-own-incoming-integrations" to add an incoming integration', (done) => {
@@ -142,6 +183,7 @@ describe('[Incoming Integrations]', function () {
 							alias: 'test2',
 							username: 'rocket.cat',
 							scriptEnabled: false,
+							overrideDestinationChannelEnabled: false,
 							channel: '#general',
 						})
 						.expect('Content-Type', 'application/json')
@@ -164,6 +206,105 @@ describe('[Incoming Integrations]', function () {
 				})
 				.expect(200)
 				.end(done);
+		});
+
+		it("should return an error when sending 'channel' field telling its configuration is disabled", (done) => {
+			request
+				.post(`/hooks/${integration._id}/${integration.token}`)
+				.send({
+					text: 'Example message',
+					channel: [testChannelName],
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'overriding destination channel is disabled for this integration');
+				})
+				.end(done);
+		});
+
+		it("should return an error when sending 'roomId' field telling its configuration is disabled", (done) => {
+			request
+				.post(`/hooks/${integration._id}/${integration.token}`)
+				.send({
+					text: 'Example message',
+					roomId: channel._id,
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'overriding destination channel is disabled for this integration');
+				})
+				.end(done);
+		});
+		it('should send a message for a channel that is specified in the webhooks configuration', (done) => {
+			const successfulMesssage = `Message sent successfully at #${Date.now()}`;
+			request
+				.post(`/hooks/${integration._id}/${integration.token}`)
+				.send({
+					text: successfulMesssage,
+				})
+				.expect(200)
+				.end(() => {
+					return request
+						.get(api('channels.messages'))
+						.set(credentials)
+						.query({
+							roomId: 'GENERAL',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('messages').and.to.be.an('array');
+							expect(!!res.body.messages.find((m) => m.msg === successfulMesssage)).to.be.true;
+						})
+						.end(done);
+				});
+		});
+		it('should send a message for a channel that is not specified in the webhooks configuration', async () => {
+			await request
+				.put(api('integrations.update'))
+				.set(credentials)
+				.send({
+					type: 'webhook-incoming',
+					overrideDestinationChannelEnabled: true,
+					integrationId: integration._id,
+					username: 'rocket.cat',
+					channel: '#general',
+					scriptEnabled: true,
+					enabled: true,
+					name: integration.name,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('integration');
+					expect(res.body.integration.overrideDestinationChannelEnabled).to.be.equal(true);
+				});
+			const successfulMesssage = `Message sent successfully at #${Date.now()}`;
+			await request
+				.post(`/hooks/${integration._id}/${integration.token}`)
+				.send({
+					text: successfulMesssage,
+					channel: [testChannelName],
+				})
+				.expect(200);
+
+			return request
+				.get(api('channels.messages'))
+				.set(credentials)
+				.query({
+					roomId: channel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.an('array');
+					expect(!!res.body.messages.find((m) => m.msg === successfulMesssage)).to.be.true;
+				});
 		});
 	});
 
@@ -200,6 +341,7 @@ describe('[Incoming Integrations]', function () {
 								alias: 'test',
 								username: 'rocket.cat',
 								scriptEnabled: false,
+								overrideDestinationChannelEnabled: true,
 								channel: '#general',
 							},
 							userCredentials,
@@ -381,6 +523,7 @@ describe('[Incoming Integrations]', function () {
 					alias: 'test updated',
 					username: 'rocket.cat',
 					scriptEnabled: true,
+					overrideDestinationChannelEnabled: true,
 					channel: '#general',
 					integrationId: integration._id,
 				})

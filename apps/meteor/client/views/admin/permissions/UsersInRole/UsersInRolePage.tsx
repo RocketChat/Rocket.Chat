@@ -1,14 +1,20 @@
-import { IRole, IRoom, IUser } from '@rocket.chat/core-typings';
-import { Box, Field, Margins, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
+import type { IRole, IRoom } from '@rocket.chat/core-typings';
+import { Box, Field, FieldLabel, FieldRow, Margins, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useRef, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useRef } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
-import Page from '../../../../components/Page';
+import { Page, PageHeader, PageContent } from '../../../../components/Page';
 import RoomAutoComplete from '../../../../components/RoomAutoComplete';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import UsersInRoleTable from './UsersInRoleTable';
+
+type UsersInRolePayload = {
+	rid?: IRoom['_id'];
+	users: string[];
+};
 
 const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 	const t = useTranslation();
@@ -21,7 +27,7 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 		formState: { isDirty },
 		reset,
 		getValues,
-	} = useForm<{ rid?: IRoom['_id']; users: IUser['username'][] }>({ defaultValues: { users: [] } });
+	} = useForm<UsersInRolePayload>({ defaultValues: { users: [] } });
 
 	const { _id, name, description } = role;
 	const router = useRoute('admin-permissions');
@@ -36,7 +42,7 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 		});
 	});
 
-	const handleAdd = useMutableCallback(async ({ users, rid }: { users: IUser['username'][]; rid?: IRoom['_id'] }) => {
+	const handleAdd = useMutableCallback(async ({ users, rid }: UsersInRolePayload) => {
 		try {
 			await Promise.all(
 				users.map(async (user) => {
@@ -55,18 +61,18 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 
 	return (
 		<Page>
-			<Page.Header title={`${t('Users_in_role')} "${description || name}"`}>
+			<PageHeader title={`${t('Users_in_role')} "${description || name}"`}>
 				<ButtonGroup>
 					<Button onClick={handleReturn}>{t('Back')}</Button>
 				</ButtonGroup>
-			</Page.Header>
-			<Page.Content>
+			</PageHeader>
+			<PageContent>
 				<Box display='flex' flexDirection='column' w='full' mi='neg-x4'>
-					<Margins inline='x4'>
+					<Margins inline={4}>
 						{role.scope !== 'Users' && (
-							<Field mbe='x4'>
-								<Field.Label>{t('Choose_a_room')}</Field.Label>
-								<Field.Row>
+							<Field mbe={4}>
+								<FieldLabel>{t('Choose_a_room')}</FieldLabel>
+								<FieldRow>
 									<Controller
 										control={control}
 										name='rid'
@@ -74,48 +80,34 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 											<RoomAutoComplete value={value} onChange={onChange} placeholder={t('User')} />
 										)}
 									/>
-								</Field.Row>
+								</FieldRow>
 							</Field>
 						)}
 						<Field>
-							<Field.Label>{t('Add_users')}</Field.Label>
-							<Field.Row>
+							<FieldLabel>{t('Add_users')}</FieldLabel>
+							<FieldRow>
 								<Controller
 									control={control}
 									name='users'
 									render={({ field: { onChange, value } }): ReactElement => (
-										<UserAutoCompleteMultiple
-											value={value}
-											placeholder={t('User')}
-											onChange={(member, action): void => {
-												if (!action && value) {
-													if (value.includes(member)) {
-														return;
-													}
-													return onChange([...value, member]);
-												}
-
-												onChange(value?.filter((current) => current !== member));
-											}}
-										/>
+										<UserAutoCompleteMultiple value={value} placeholder={t('User')} onChange={onChange} />
 									)}
 								/>
-								<ButtonGroup mis='x8' align='end'>
-									<Button primary onClick={handleSubmit(handleAdd)} disabled={!isDirty}>
-										{t('Add')}
-									</Button>
-								</ButtonGroup>
-							</Field.Row>
+
+								<Button mis={8} primary onClick={handleSubmit(handleAdd)} disabled={!isDirty}>
+									{t('Add')}
+								</Button>
+							</FieldRow>
 						</Field>
 					</Margins>
 				</Box>
-				<Margins blockStart='x8'>
+				<Margins blockStart={8}>
 					{(role.scope === 'Users' || rid) && (
 						<UsersInRoleTable reloadRef={reload} rid={rid} roleId={_id} roleName={name} description={description} />
 					)}
 					{role.scope !== 'Users' && !rid && <Callout type='info'>{t('Select_a_room')}</Callout>}
 				</Margins>
-			</Page.Content>
+			</PageContent>
 		</Page>
 	);
 };

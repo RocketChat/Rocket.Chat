@@ -1,10 +1,11 @@
-import { clientLogger } from '../lib/logger';
-import { FederationRoomEvents, Subscriptions } from '../../../models/server';
-import { normalizers } from '../normalizers';
-import { deleteRoom } from '../../../lib/server/functions';
-import { getFederationDomain } from '../lib/getFederationDomain';
-import { dispatchEvents } from '../handler';
+import { FederationRoomEvents, Subscriptions } from '@rocket.chat/models';
+
+import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
 import { isFullyQualified } from '../functions/helpers';
+import { dispatchEvents } from '../handler';
+import { getFederationDomain } from '../lib/getFederationDomain';
+import { clientLogger } from '../lib/logger';
+import { normalizers } from '../normalizers';
 
 async function afterCreateDirectRoom(room, extras) {
 	clientLogger.debug({ msg: 'afterCreateDirectRoom', room, extras });
@@ -34,10 +35,10 @@ async function afterCreateDirectRoom(room, extras) {
 		const genesisEvent = await FederationRoomEvents.createGenesisEvent(getFederationDomain(), normalizedRoom);
 
 		const events = await Promise.all(
-			extras.members.map((member) => {
-				const normalizedMember = normalizers.normalizeUser(member);
+			extras.members.map(async (member) => {
+				const normalizedMember = await normalizers.normalizeUser(member);
 
-				const sourceSubscription = Subscriptions.findOne({
+				const sourceSubscription = await Subscriptions.findOne({
 					'rid': normalizedRoom._id,
 					'u._id': normalizedMember._id,
 				});
@@ -66,6 +67,6 @@ async function afterCreateDirectRoom(room, extras) {
 
 export const definition = {
 	hook: 'afterCreateDirectRoom',
-	callback: (room, extras) => Promise.await(afterCreateDirectRoom(room, extras)),
+	callback: afterCreateDirectRoom,
 	id: 'federation-after-create-direct-room',
 };

@@ -1,28 +1,27 @@
-import { Meteor } from 'meteor/meteor';
+import { Rooms, Users } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
 import { Match } from 'meteor/check';
-import { Random } from 'meteor/random';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
+import { i18n } from '../../../server/lib/i18n';
+import { msgStream } from '../../lib/server';
+import { slashCommands } from '../../utils/server/slashCommand';
 import { SlackBridge } from './slackbridge';
-import { Rooms } from '../../models/server';
-import { msgStream } from '../../lib';
-import { slashCommands } from '../../utils';
 
-function SlackBridgeImport(command, params, item) {
+async function SlackBridgeImport({ command, params, message, userId }) {
 	if (command !== 'slackbridge-import' || !Match.test(params, String)) {
 		return;
 	}
 
-	const room = Rooms.findOneById(item.rid);
+	const room = await Rooms.findOneById(message.rid);
 	const channel = room.name;
-	const user = Meteor.users.findOne(Meteor.userId());
+	const user = await Users.findOneById(userId);
 
-	msgStream.emit(item.rid, {
+	msgStream.emit(message.rid, {
 		_id: Random.id(),
-		rid: item.rid,
+		rid: message.rid,
 		u: { username: 'rocket.cat' },
 		ts: new Date(),
-		msg: TAPi18n.__(
+		msg: i18n.t(
 			'SlackBridge_start',
 			{
 				postProcess: 'sprintf',
@@ -33,15 +32,15 @@ function SlackBridgeImport(command, params, item) {
 	});
 
 	try {
-		SlackBridge.slackAdapters.forEach((slack) => {
-			slack.importMessages(item.rid, (error) => {
+		for await (const slack of SlackBridge.slackAdapters) {
+			await slack.importMessages(message.rid, (error) => {
 				if (error) {
-					msgStream.emit(item.rid, {
+					msgStream.emit(message.rid, {
 						_id: Random.id(),
-						rid: item.rid,
+						rid: message.rid,
 						u: { username: 'rocket.cat' },
 						ts: new Date(),
-						msg: TAPi18n.__(
+						msg: i18n.t(
 							'SlackBridge_error',
 							{
 								postProcess: 'sprintf',
@@ -51,12 +50,12 @@ function SlackBridgeImport(command, params, item) {
 						),
 					});
 				} else {
-					msgStream.emit(item.rid, {
+					msgStream.emit(message.rid, {
 						_id: Random.id(),
-						rid: item.rid,
+						rid: message.rid,
 						u: { username: 'rocket.cat' },
 						ts: new Date(),
-						msg: TAPi18n.__(
+						msg: i18n.t(
 							'SlackBridge_finish',
 							{
 								postProcess: 'sprintf',
@@ -67,14 +66,14 @@ function SlackBridgeImport(command, params, item) {
 					});
 				}
 			});
-		});
+		}
 	} catch (error) {
-		msgStream.emit(item.rid, {
+		msgStream.emit(message.rid, {
 			_id: Random.id(),
-			rid: item.rid,
+			rid: message.rid,
 			u: { username: 'rocket.cat' },
 			ts: new Date(),
-			msg: TAPi18n.__(
+			msg: i18n.t(
 				'SlackBridge_error',
 				{
 					postProcess: 'sprintf',

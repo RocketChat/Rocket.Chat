@@ -9,21 +9,47 @@ export type LayoutContextValue = {
 	isEmbedded: boolean;
 	showTopNavbarEmbeddedLayout: boolean;
 	isMobile: boolean;
-	sidebar: any;
+	roomToolboxExpanded: boolean;
+	sidebar: {
+		isCollapsed: boolean;
+		toggle: () => void;
+		collapse: () => void;
+		expand: () => void;
+		close: () => void;
+	};
 	size: SizeLayout;
 	contextualBarExpanded: boolean;
 	contextualBarPosition: 'absolute' | 'relative' | 'fixed';
+	hiddenActions: {
+		roomToolbox: Array<string>;
+		messageToolbox: Array<string>;
+		composerToolbox: Array<string>;
+		userToolbox: Array<string>;
+	};
 };
 
 export const LayoutContext = createContext<LayoutContextValue>({
 	isEmbedded: false,
 	showTopNavbarEmbeddedLayout: false,
 	isMobile: false,
-	sidebar: {},
+	roomToolboxExpanded: true,
+	sidebar: {
+		isCollapsed: false,
+		toggle: () => undefined,
+		collapse: () => undefined,
+		expand: () => undefined,
+		close: () => undefined,
+	},
 	size: {
 		sidebar: '380px',
 		contextualBar: '380px',
 	},
 	contextualBarPosition: 'relative',
 	contextualBarExpanded: false,
+	hiddenActions: {
+		roomToolbox: [],
+		messageToolbox: [],
+		composerToolbox: [],
+		userToolbox: [],
+	},
 });

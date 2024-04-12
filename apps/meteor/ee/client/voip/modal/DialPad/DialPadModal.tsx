@@ -1,6 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Field, Modal, IconButton } from '@rocket.chat/fuselage';
-import React, { ReactElement } from 'react';
+import { Field, FieldError, Modal, IconButton } from '@rocket.chat/fuselage';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { DialInput } from './DialInput';
 import Pad from './Pad';
@@ -50,9 +51,9 @@ const DialPadModal = ({ initialValue, errorMessage: initialErrorMessage, handleC
 						isButtonDisabled={isButtonDisabled}
 						handleOnChange={handleOnChange}
 					/>
-					<Field.Error fontSize='12px' h='16px' textAlign='center'>
+					<FieldError fontSize='12px' h='16px' textAlign='center'>
 						{inputError}
-					</Field.Error>
+					</FieldError>
 				</Field>
 				<Pad onClickPadButton={handlePadButtonClick} onLongPressPadButton={handlePadButtonLongPressed} />
 			</Modal.Content>

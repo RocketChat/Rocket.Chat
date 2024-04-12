@@ -1,10 +1,10 @@
-import formatDistance from 'date-fns/formatDistance';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import moment from 'moment';
-import { escapeHTML } from '@rocket.chat/string-helpers';
 import type { IOmnichannelSystemMessage } from '@rocket.chat/core-typings';
+import { escapeHTML } from '@rocket.chat/string-helpers';
+import formatDistance from 'date-fns/formatDistance';
+import moment from 'moment';
 
 import { MessageTypes } from '../../ui-utils/lib/MessageTypes';
+import { t } from '../../utils/lib/i18n';
 
 MessageTypes.registerType({
 	id: 'livechat_navigation_history',
@@ -36,30 +36,30 @@ MessageTypes.registerType({
 			message.transferData.transferredBy && (message.transferData.transferredBy.name || message.transferData.transferredBy.username);
 		const transferTypes = {
 			agent: (): string =>
-				TAPi18n.__(`Livechat_transfer_to_agent${commentLabel}`, {
+				t(`Livechat_transfer_to_agent${commentLabel}`, {
 					from,
 					to: message?.transferData?.transferredTo?.name || message?.transferData?.transferredTo?.username || '',
 					...(comment && { comment }),
 				}),
 			department: (): string =>
-				TAPi18n.__(`Livechat_transfer_to_department${commentLabel}`, {
+				t(`Livechat_transfer_to_department${commentLabel}`, {
 					from,
 					to: message?.transferData?.nextDepartment?.name || '',
 					...(comment && { comment }),
 				}),
 			queue: (): string =>
-				TAPi18n.__(`Livechat_transfer_return_to_the_queue${commentLabel}`, {
+				t(`Livechat_transfer_return_to_the_queue${commentLabel}`, {
 					from,
 					...(comment && { comment }),
 				}),
 			autoTransferUnansweredChatsToAgent: (): string =>
-				TAPi18n.__(`Livechat_transfer_to_agent_auto_transfer_unanswered_chat`, {
+				t(`Livechat_transfer_to_agent_auto_transfer_unanswered_chat`, {
 					from,
 					to: message?.transferData?.transferredTo?.name || message?.transferData?.transferredTo?.username || '',
 					duration: comment,
 				}),
 			autoTransferUnansweredChatsToQueue: (): string =>
-				TAPi18n.__(`Livechat_transfer_return_to_the_queue_auto_transfer_unanswered_chat`, {
+				t(`Livechat_transfer_return_to_the_queue_auto_transfer_unanswered_chat`, {
 					from,
 					duration: comment,
 				}),
@@ -84,11 +84,11 @@ MessageTypes.registerType({
 		const { requestData: { type, visitor, user } = { type: 'user' } } = message;
 		const requestTypes = {
 			visitor: (): string =>
-				TAPi18n.__('Livechat_visitor_transcript_request', {
+				t('Livechat_visitor_transcript_request', {
 					guest: visitor?.name || visitor?.username || '',
 				}),
 			user: (): string =>
-				TAPi18n.__('Livechat_user_sent_chat_transcript_to_visitor', {
+				t('Livechat_user_sent_chat_transcript_to_visitor', {
 					agent: user?.name || user?.username || '',
 					guest: visitor?.name || visitor?.username || '',
 				}),
@@ -108,19 +108,25 @@ MessageTypes.registerType({
 
 MessageTypes.registerType({
 	id: 'livechat_webrtc_video_call',
-	render(message) {
+	message: 'room_changed_type',
+	data(message) {
 		if (message.msg === 'ended' && message.webRtcCallEndTs && message.ts) {
-			return TAPi18n.__('WebRTC_call_ended_message', {
-				callDuration: formatDistance(new Date(message.webRtcCallEndTs), new Date(message.ts)),
-				endTime: moment(message.webRtcCallEndTs).format('h:mm A'),
-			});
+			return {
+				message: t('WebRTC_call_ended_message', {
+					callDuration: formatDistance(new Date(message.webRtcCallEndTs), new Date(message.ts)),
+					endTime: moment(message.webRtcCallEndTs).format('h:mm A'),
+				}),
+			};
 		}
 		if (message.msg === 'declined' && message.webRtcCallEndTs) {
-			return TAPi18n.__('WebRTC_call_declined_message');
+			return {
+				message: t('WebRTC_call_declined_message'),
+			};
 		}
-		return escapeHTML(message.msg);
+		return {
+			message: escapeHTML(message.msg),
+		};
 	},
-	message: 'room_changed_type',
 });
 
 MessageTypes.registerType({

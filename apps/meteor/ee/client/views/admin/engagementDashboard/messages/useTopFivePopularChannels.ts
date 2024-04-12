@@ -1,7 +1,8 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
-import { getPeriodRange, Period } from '../dataView/periods';
+import type { Period } from '../../../../components/dashboards/periods';
+import { getPeriodRange } from '../../../../components/dashboards/periods';
 
 type UseTopFivePopularChannelsOptions = { period: Period['key'] };
 

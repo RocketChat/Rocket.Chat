@@ -13,4 +13,10 @@ export const URL_MONGODB = process.env.MONGO_URL || 'mongodb://localhost:3001/me
 export const ADMIN_CREDENTIALS = {
 	email: 'rocketchat.internal.admin.test@rocket.chat',
 	password: 'rocketchat.internal.admin.test',
+	username: 'rocketchat.internal.admin.test',
+} as const;
+
+export const DEFAULT_USER_CREDENTIALS = {
+	password: 'password',
+	bcrypt: '$2b$10$LNYaqDreDE7tt9EVEeaS9uw.C3hic9hcqFfIocMBPTMxJaDCC6QWW',
 } as const;

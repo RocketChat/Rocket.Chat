@@ -2,6 +2,79 @@ import { lazy } from 'react';
 
 import { createRouteGroup } from '../../lib/createRouteGroup';
 
+declare module '@rocket.chat/ui-contexts' {
+	interface IRouterPaths {
+		'omnichannel-index': {
+			pattern: '/omnichannel';
+			pathname: '/omnichannel';
+		};
+		'omnichannel-installation': {
+			pattern: '/omnichannel/installation';
+			pathname: '/omnichannel/installation';
+		};
+		'omnichannel-managers': {
+			pattern: '/omnichannel/managers';
+			pathname: '/omnichannel/managers';
+		};
+		'omnichannel-agents': {
+			pattern: '/omnichannel/agents/:context?/:id?';
+			pathname: `/omnichannel/agents${`/${string}` | ''}${`/${string}` | ''}`;
+		};
+		'omnichannel-webhooks': {
+			pattern: '/omnichannel/webhooks';
+			pathname: '/omnichannel/webhooks';
+		};
+		'omnichannel-customfields': {
+			pattern: '/omnichannel/customfields/:context?/:id?';
+			pathname: `/omnichannel/customfields${`/${string}` | ''}${`/${string}` | ''}`;
+		};
+		'omnichannel-appearance': {
+			pattern: '/omnichannel/appearance';
+			pathname: '/omnichannel/appearance';
+		};
+		'omnichannel-businessHours': {
+			pattern: '/omnichannel/businessHours/:context?/:type?/:id?';
+			pathname: `/omnichannel/businessHours${`/${string}` | ''}${`/${string}` | ''}${`/${string}` | ''}`;
+		};
+		'omnichannel-units': {
+			pattern: '/omnichannel/units/:context?/:id?';
+			pathname: `/omnichannel/units${`/${string}` | ''}${`/${string}` | ''}`;
+		};
+		'omnichannel-tags': {
+			pattern: '/omnichannel/tags/:context?/:id?';
+			pathname: `/omnichannel/tags${`/${string}` | ''}${`/${string}` | ''}`;
+		};
+		'omnichannel-queue': {
+			pattern: '/omnichannel/queue/:context?/:id?';
+			pathname: `/omnichannel/queue${`/${string}` | ''}${`/${string}` | ''}`;
+		};
+		'omnichannel-rooms': {
+			pattern: '/omnichannel/rooms/:context?/:id?';
+			pathname: `/omnichannel/rooms${`/${string}` | ''}${`/${string}` | ''}`;
+		};
+		'omnichannel-triggers': {
+			pattern: '/omnichannel/triggers/:context?/:id?';
+			pathname: `/omnichannel/triggers${`/${string}` | ''}${`/${string}` | ''}`;
+		};
+		'omnichannel-current-chats': {
+			pattern: '/omnichannel/current/:id?/:tab?/:context?';
+			pathname: `/omnichannel/current${`/${string}` | ''}${`/${string}` | ''}${`/${string}` | ''}`;
+		};
+		'omnichannel-departments': {
+			pattern: '/omnichannel/departments/:context?/:id?/:tab?';
+			pathname: `/omnichannel/departments${`/${string}` | ''}${`/${string}` | ''}${`/${string}` | ''}`;
+		};
+		'omnichannel-analytics': {
+			pattern: '/omnichannel/analytics';
+			pathname: `/omnichannel/analytics`;
+		};
+		'omnichannel-realTime': {
+			pattern: '/omnichannel/realtime-monitoring';
+			pathname: `/omnichannel/realtime-monitoring`;
+		};
+	}
+}
+
 export const registerOmnichannelRoute = createRouteGroup(
 	'omnichannel',
 	'/omnichannel',
@@ -53,19 +126,9 @@ registerOmnichannelRoute('/tags/:context?/:id?', {
 	component: lazy(() => import('../../../ee/client/omnichannel/tags/TagsRoute')),
 });
 
-registerOmnichannelRoute('/priorities/:context?/:id?', {
-	name: 'omnichannel-priorities',
-	component: lazy(() => import('../../../ee/client/omnichannel/priorities/PrioritiesRoute')),
-});
-
 registerOmnichannelRoute('/triggers/:context?/:id?', {
 	name: 'omnichannel-triggers',
-	component: lazy(() => import('./triggers/TriggersPage')),
-});
-
-registerOmnichannelRoute('/facebook', {
-	name: 'omnichannel-facebook',
-	component: lazy(() => import('./facebook/FacebookPageContainer')),
+	component: lazy(() => import('./triggers/TriggersRoute')),
 });
 
 registerOmnichannelRoute('/current/:id?/:tab?/:context?', {

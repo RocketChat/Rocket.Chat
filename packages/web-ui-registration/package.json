@@ -1,37 +1,60 @@
 {
 	"name": "@rocket.chat/web-ui-registration",
-	"version": "0.0.1",
+	"version": "5.0.0",
 	"private": true,
-	"devDependencies": {
-		"@rocket.chat/layout": "next",
-		"@rocket.chat/ui-contexts": "workspace:^",
-		"@tanstack/react-query": "^4.2.3",
-		"@testing-library/react": "^13.3.0",
-		"@types/jest": "^27.4.1",
-		"eslint": "^8.12.0",
-		"jest": "^27.5.1",
-		"react-hook-form": "^7.34.2",
-		"ts-jest": "^27.1.4",
-		"typescript": "~4.5.5"
-	},
-	"peerDependencies": {
-		"@rocket.chat/layout": "*",
-		"@rocket.chat/ui-contexts": "*",
-		"@tanstack/react-query": "*",
-		"react": "*",
-		"react-hook-form": "*",
-		"react-i18next": "*"
-	},
-	"scripts": {
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
-		"jest": "jest",
-		"build": "tsc -p tsconfig.json",
-		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
-	},
+	"homepage": "https://rocket.chat",
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
 		"/dist"
-	]
+	],
+	"scripts": {
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"test": "jest",
+		"storybook": "start-storybook -p 6006 --no-version-updates",
+		"build": "tsc -p tsconfig.build.json",
+		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput"
+	},
+	"devDependencies": {
+		"@babel/core": "~7.22.20",
+		"@babel/preset-env": "~7.22.20",
+		"@babel/preset-react": "~7.22.15",
+		"@babel/preset-typescript": "~7.22.15",
+		"@rocket.chat/i18n": "workspace:~",
+		"@rocket.chat/layout": "~0.31.26",
+		"@rocket.chat/mock-providers": "workspace:~",
+		"@rocket.chat/tools": "workspace:~",
+		"@rocket.chat/ui-client": "workspace:^",
+		"@rocket.chat/ui-contexts": "workspace:^",
+		"@storybook/addon-actions": "~6.5.16",
+		"@storybook/addon-docs": "~6.5.16",
+		"@storybook/addon-essentials": "~6.5.16",
+		"@storybook/builder-webpack4": "~6.5.16",
+		"@storybook/manager-webpack4": "~6.5.16",
+		"@storybook/react": "~6.5.16",
+		"@storybook/testing-library": "^0.2.2",
+		"@tanstack/react-query": "^4.16.1",
+		"@testing-library/react": "^13.3.0",
+		"@types/jest": "~29.5.7",
+		"@types/react": "~17.0.69",
+		"babel-loader": "~8.3.0",
+		"eslint": "~8.45.0",
+		"jest": "~29.6.4",
+		"react": "~17.0.2",
+		"react-hook-form": "~7.45.4",
+		"react-i18next": "~13.2.2",
+		"storybook-dark-mode": "~3.0.1",
+		"ts-jest": "~29.1.1",
+		"typescript": "~5.3.3"
+	},
+	"peerDependencies": {
+		"@rocket.chat/layout": "*",
+		"@rocket.chat/tools": "0.2.1",
+		"@rocket.chat/ui-contexts": "5.0.0",
+		"@tanstack/react-query": "*",
+		"react": "*",
+		"react-hook-form": "*",
+		"react-i18next": "*"
+	}
 }

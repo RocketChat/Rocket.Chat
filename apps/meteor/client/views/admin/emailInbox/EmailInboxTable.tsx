@@ -1,7 +1,10 @@
-import { Pagination, States, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
-import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, useCallback, ReactElement } from 'react';
+import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
+import { useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
+import type { ReactElement } from 'react';
+import React, { useMemo, useCallback } from 'react';
 
+import GenericNoResults from '../../../components/GenericNoResults';
 import {
 	GenericTable,
 	GenericTableBody,
@@ -13,39 +16,13 @@ import {
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
-import { useEndpointData } from '../../../hooks/useEndpointData';
-import { AsyncStatePhase } from '../../../lib/asyncState/AsyncStatePhase';
 import SendTestButton from './SendTestButton';
-
-const useQuery = (
-	{
-		itemsPerPage,
-		current,
-	}: {
-		itemsPerPage: number;
-		current: number;
-	},
-	[column, direction]: string[],
-): {
-	offset?: number;
-	count?: number;
-	sort: string;
-} =>
-	useMemo(
-		() => ({
-			sort: JSON.stringify({ [column]: direction === 'asc' ? 1 : -1 }),
-			...(itemsPerPage && { count: itemsPerPage }),
-			...(current && { offset: current }),
-		}),
-		[column, current, direction, itemsPerPage],
-	);
 
 const EmailInboxTable = (): ReactElement => {
 	const t = useTranslation();
 	const router = useRoute('admin-email-inboxes');
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'email' | 'active'>('name');
-	const query = useQuery({ itemsPerPage, current }, [sortBy, sortDirection]);
 
 	const onClick = useCallback(
 		(_id) => (): void => {
@@ -57,7 +34,15 @@ const EmailInboxTable = (): ReactElement => {
 		[router],
 	);
 
-	const { phase, value: { emailInboxes = [], count = 0 } = {} } = useEndpointData('/v1/email-inbox.list', query);
+	const endpoint = useEndpoint('GET', '/v1/email-inbox.list');
+
+	const query = {
+		sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
+		...(itemsPerPage && { count: itemsPerPage }),
+		...(current && { offset: current }),
+	};
+
+	const result = useQuery(['email-list', query], () => endpoint(query));
 
 	const headers = useMemo(
 		() => [
@@ -77,18 +62,20 @@ const EmailInboxTable = (): ReactElement => {
 
 	return (
 		<>
-			{phase === AsyncStatePhase.LOADING && (
+			{result.isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
-					<GenericTableBody>{phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={4} />}</GenericTableBody>
+					<GenericTableBody>
+						<GenericTableLoadingTable headerCells={4} />
+					</GenericTableBody>
 				</GenericTable>
 			)}
-			{emailInboxes && emailInboxes.length > 0 && phase === AsyncStatePhase.RESOLVED && (
+			{result.isSuccess && result.data.emailInboxes.length > 0 && (
 				<>
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
-							{emailInboxes.map((emailInbox) => (
+							{result.data.emailInboxes.map((emailInbox) => (
 								<GenericTableRow
 									key={emailInbox._id}
 									onKeyDown={onClick(emailInbox._id)}
@@ -107,19 +94,24 @@ const EmailInboxTable = (): ReactElement => {
 						</GenericTableBody>
 					</GenericTable>
 					<Pagination
+						divider
 						current={current}
 						itemsPerPage={itemsPerPage}
-						count={count}
+						count={result.data.count}
 						onSetItemsPerPage={onSetItemsPerPage}
 						onSetCurrent={onSetCurrent}
 						{...paginationProps}
 					/>
 				</>
 			)}
-			{phase === AsyncStatePhase.RESOLVED && emailInboxes.length === 0 && (
+			{result.isSuccess && result.data.emailInboxes.length === 0 && <GenericNoResults />}
+			{result.isError && (
 				<States>
-					<StatesIcon name='magnifier' />
-					<StatesTitle>{t('No_results_found')}</StatesTitle>
+					<StatesIcon name='warning' variation='danger' />
+					<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
+					<StatesActions>
+						<StatesAction onClick={() => result.refetch()}>{t('Reload_page')}</StatesAction>
+					</StatesActions>
 				</States>
 			)}
 		</>

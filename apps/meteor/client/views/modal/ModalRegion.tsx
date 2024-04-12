@@ -1,9 +1,11 @@
 import { useModal, useCurrentModal } from '@rocket.chat/ui-contexts';
-import React, { useCallback, ReactElement } from 'react';
-import { FocusScope } from 'react-aria';
+import type { ReactElement } from 'react';
+import React, { lazy, useCallback } from 'react';
 
-import ModalBackdrop from '../../components/modal/ModalBackdrop';
-import ModalPortal from '../../components/modal/ModalPortal';
+import ModalBackdrop from '../../components/ModalBackdrop';
+import ModalPortal from '../../portals/ModalPortal';
+
+const FocusScope = lazy(() => import('react-aria').then((module) => ({ default: module.FocusScope })));
 
 const ModalRegion = (): ReactElement | null => {
 	const currentModal = useCurrentModal();

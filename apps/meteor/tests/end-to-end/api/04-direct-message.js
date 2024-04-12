@@ -1,17 +1,19 @@
 import { expect } from 'chai';
+import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials, directMessage, apiUsername, apiEmail, methodCall } from '../../data/api-data.js';
-import { password, adminUsername } from '../../data/user.js';
-import { deleteRoom } from '../../data/rooms.helper';
-import { createUser, deleteUser, login } from '../../data/users.helper';
 import { updateSetting, updatePermission } from '../../data/permissions.helper';
+import { deleteRoom } from '../../data/rooms.helper';
+import { testFileUploads } from '../../data/uploads.helper';
+import { password, adminUsername } from '../../data/user';
+import { createUser, deleteUser, login } from '../../data/users.helper';
 
 describe('[Direct Messages]', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
 
-	it('/chat.postMessage', (done) => {
+	before('/chat.postMessage', (done) => {
 		request
 			.post(api('chat.postMessage'))
 			.set(credentials)
@@ -229,7 +231,7 @@ describe('[Direct Messages]', function () {
 			.end(done);
 	});
 
-	context("Setting: 'Use Real Name': true", () => {
+	describe("Setting: 'Use Real Name': true", () => {
 		before(async () => updateSetting('UI_Use_Real_Name', true));
 		after(async () => updateSetting('UI_Use_Real_Name', false));
 
@@ -330,23 +332,26 @@ describe('[Direct Messages]', function () {
 			.end(done);
 	});
 
-	it('/im.files', (done) => {
-		request
-			.get(api('im.files'))
-			.set(credentials)
-			.query({
-				roomId: directMessage._id,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.property('files');
-				expect(res.body).to.have.property('count');
-				expect(res.body).to.have.property('offset');
-				expect(res.body).to.have.property('total');
-			})
-			.end(done);
+	describe('[/im.files]', async () => {
+		await testFileUploads('im.files', 'd', 'invalid-channel');
+	});
+
+	describe('/im.messages', () => {
+		it('should return all DM messages that were sent to yourself using your username', (done) => {
+			request
+				.get(api('im.messages'))
+				.set(credentials)
+				.query({
+					username: adminUsername,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.an('array');
+				})
+				.end(done);
+		});
 	});
 
 	describe('/im.messages.others', () => {
@@ -828,7 +833,7 @@ describe('[Direct Messages]', function () {
 				.end(done);
 		});
 
-		context('when authenticated as a non-admin user', () => {
+		describe('when authenticated as a non-admin user', () => {
 			let otherUser;
 			let otherCredentials;
 

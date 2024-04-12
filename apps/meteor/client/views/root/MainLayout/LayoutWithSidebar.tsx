@@ -1,20 +1,44 @@
-import { Box } from '@rocket.chat/fuselage';
-import { useLayout, useCurrentRoute, useRoutePath, useSetting, useCurrentModal } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, ReactNode, useCallback } from 'react';
+import { Box, PaletteStyleTag } from '@rocket.chat/fuselage';
+import { useLayout, useSetting, useCurrentModal, useRoute, useCurrentRoutePath } from '@rocket.chat/ui-contexts';
+import { useThemeMode } from '@rocket.chat/ui-theming/src/hooks/useThemeMode';
+import type { ReactElement, ReactNode } from 'react';
+import React, { useEffect, useRef } from 'react';
 
-import { useReactiveValue } from '../../../hooks/useReactiveValue';
-import BlazeTemplate from '../BlazeTemplate';
+import Sidebar from '../../../sidebar';
+import AccessibilityShortcut from './AccessibilityShortcut';
 
 const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement => {
 	const { isEmbedded: embeddedLayout } = useLayout();
-	const [currentRouteName = '', currentParameters = {}] = useCurrentRoute();
+	const [, , theme] = useThemeMode();
 
 	const modal = useCurrentModal();
-	const currentRoutePath = useRoutePath(currentRouteName, currentParameters);
-	const removeSidenav = useReactiveValue(
-		useCallback(() => embeddedLayout && !currentRoutePath?.startsWith('/admin'), [currentRoutePath, embeddedLayout]),
-	);
+	const currentRoutePath = useCurrentRoutePath();
+	const channelRoute = useRoute('channel');
+	const removeSidenav = embeddedLayout && !currentRoutePath?.startsWith('/admin');
 	const readReceiptsEnabled = useSetting('Message_Read_Receipt_Store_Users');
+
+	const firstChannelAfterLogin = useSetting('First_Channel_After_Login');
+
+	const redirected = useRef(false);
+
+	useEffect(() => {
+		const needToBeRedirect = currentRoutePath && ['/', '/home'].includes(currentRoutePath);
+
+		if (!needToBeRedirect) {
+			return;
+		}
+
+		if (!firstChannelAfterLogin || typeof firstChannelAfterLogin !== 'string') {
+			return;
+		}
+
+		if (redirected.current) {
+			return;
+		}
+		redirected.current = true;
+
+		channelRoute.push({ name: firstChannelAfterLogin });
+	}, [channelRoute, currentRoutePath, firstChannelAfterLogin]);
 
 	return (
 		<Box
@@ -23,10 +47,16 @@ const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement 
 			className={[embeddedLayout ? 'embedded-view' : undefined, 'menu-nav'].filter(Boolean).join(' ')}
 			aria-hidden={Boolean(modal)}
 		>
-			{!removeSidenav ? <BlazeTemplate template='sideNav' /> : null}
-			<div className={['rc-old', 'main-content', readReceiptsEnabled ? 'read-receipts-enabled' : undefined].filter(Boolean).join(' ')}>
+			<AccessibilityShortcut />
+			<PaletteStyleTag theme={theme} selector='.rcx-content--main, .rcx-tile' />
+			<PaletteStyleTag theme='dark' selector='.rcx-sidebar--main' tagId='sidebar-palette' />
+			{!removeSidenav && <Sidebar />}
+			<main
+				id='main-content'
+				className={['rc-old', 'main-content', readReceiptsEnabled ? 'read-receipts-enabled' : undefined].filter(Boolean).join(' ')}
+			>
 				{children}
-			</div>
+			</main>
 		</Box>
 	);
 };

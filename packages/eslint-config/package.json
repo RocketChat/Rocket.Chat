@@ -1,19 +1,21 @@
 {
 	"name": "@rocket.chat/eslint-config",
-	"version": "0.5.0",
-	"description": "Rocket.Chat's JS ESLint config",
-	"devDependencies": {
-		"@babel/eslint-parser": "^7.18.9",
+	"version": "0.6.2",
+	"description": "Rocket.Chat's JS/TS ESLint config",
+	"dependencies": {
+		"@babel/core": "^7.20.7",
+		"@babel/eslint-parser": "~7.23.3",
+		"@types/eslint": "~8.44.6",
 		"@types/prettier": "^2.6.3",
-		"@typescript-eslint/eslint-plugin": "^5.30.7",
-		"@typescript-eslint/parser": "^5.30.7",
-		"eslint": "^8.20.0",
-		"eslint-config-prettier": "^8.5.0",
-		"eslint-plugin-anti-trojan-source": "^1.1.0",
-		"eslint-plugin-import": "^2.26.0",
-		"eslint-plugin-jest": "^26.6.0",
-		"eslint-plugin-prettier": "^4.2.1",
-		"prettier": "2.7.1"
+		"@typescript-eslint/eslint-plugin": "~5.60.1",
+		"@typescript-eslint/parser": "~5.60.1",
+		"eslint": "~8.45.0",
+		"eslint-config-prettier": "~8.8.0",
+		"eslint-plugin-anti-trojan-source": "~1.1.1",
+		"eslint-plugin-import": "~2.26.0",
+		"eslint-plugin-jest": "~27.2.3",
+		"eslint-plugin-prettier": "~4.2.1",
+		"prettier": "~2.8.8"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js .",
@@ -29,6 +31,7 @@
 		"/imports",
 		"/node",
 		"/style",
-		"/variables"
+		"/variables",
+		"react.js"
 	]
 }

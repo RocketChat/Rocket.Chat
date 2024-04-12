@@ -1,16 +1,16 @@
 import { EventEmitter } from 'events';
 
-import type WebSocket from 'ws';
+import type { IServiceMetrics } from '@rocket.chat/core-services';
+import { MeteorService, isMeteorError, MeteorError } from '@rocket.chat/core-services';
+import { Logger } from '@rocket.chat/logger';
 import ejson from 'ejson';
 import { v1 as uuidv1 } from 'uuid';
+import WebSocket from 'ws';
 
-import { DDP_EVENTS } from './constants';
-import { Publication } from './Publication';
 import type { Client } from './Client';
+import { Publication } from './Publication';
+import { DDP_EVENTS } from './constants';
 import type { IPacket } from './types/IPacket';
-import { MeteorService } from '../../../../apps/meteor/server/sdk';
-import { isMeteorError, MeteorError } from '../../../../apps/meteor/server/sdk/errors';
-import { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';
 
 const logger = new Logger('DDP-Streamer');
 
@@ -39,6 +39,8 @@ export class Server extends EventEmitter {
 
 	private _methods = new Map<string, MethodFn>();
 
+	private metrics?: IServiceMetrics;
+
 	public readonly id = uuidv1();
 
 	serialize = ejson.stringify;
@@ -53,7 +55,15 @@ export class Server extends EventEmitter {
 		return ejson.parse(payload);
 	};
 
+	setMetrics(metrics: IServiceMetrics): void {
+		this.metrics = metrics;
+	}
+
 	async call(client: Client, packet: IPacket): Promise<void> {
+		// if client is not connected we don't need to do anything
+		if (client.ws.readyState !== WebSocket.OPEN) {
+			return;
+		}
 		try {
 			// if method was not defined on DDP Streamer we fall back to Meteor
 			if (!this._methods.has(packet.method)) {
@@ -87,6 +97,10 @@ export class Server extends EventEmitter {
 	}
 
 	async subscribe(client: Client, packet: IPacket): Promise<void> {
+		// if client is not connected we don't need to do anything
+		if (client.ws.readyState !== WebSocket.OPEN) {
+			return;
+		}
 		try {
 			if (!this._subscriptions.has(packet.name)) {
 				throw new MeteorError(404, `Subscription '${packet.name}' not found`);
@@ -96,9 +110,13 @@ export class Server extends EventEmitter {
 				throw new MeteorError(404, `Subscription '${packet.name}' not found`);
 			}
 
+			const end = this.metrics?.timer('rocketchat_subscription', { subscription: packet.name });
+
 			const publication = new Publication(client, packet, this);
 			const [eventName, options] = packet.params;
 			await fn.call(publication, eventName, options);
+
+			end?.();
 		} catch (err: unknown) {
 			return this.nosub(client, packet, handleInternalException(err, 'Subscription error'));
 		}

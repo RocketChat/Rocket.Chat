@@ -1,7 +1,8 @@
 // import type { Db } from 'mongodb';
 
-import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import type { ISAUMonitorService } from '../../sdk/types/ISAUMonitorService';
+import { ServiceClassInternal } from '@rocket.chat/core-services';
+import type { ISAUMonitorService } from '@rocket.chat/core-services';
+
 import { sauEvents } from './events';
 
 export class SAUMonitorService extends ServiceClassInternal implements ISAUMonitorService {

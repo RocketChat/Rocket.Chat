@@ -1,6 +1,14 @@
-import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
-import type { FindCursor, UpdateResult } from 'mongodb';
+import type {
+	IMessage,
+	IOmnichannelRoom,
+	IOmnichannelRoomClosingInfo,
+	ISetting,
+	ILivechatVisitor,
+	MACStats,
+} from '@rocket.chat/core-typings';
+import type { FindCursor, UpdateResult, AggregationCursor, Document, FindOptions, DeleteResult, Filter } from 'mongodb';
 
+import type { FindPaginated } from '..';
 import type { IBaseModel } from './IBaseModel';
 
 type Period = {
@@ -61,9 +69,9 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 
 	findAllAverageOfServiceTime(params: Period & WithDepartment & WithOnlyCount & WithOptions): any;
 
-	findByVisitorId(visitorId: any, options: any): any;
+	findByVisitorId(visitorId: any, options: any, extraQuery?: any): any;
 
-	findPaginatedByVisitorId(visitorId: any, options: any): any;
+	findPaginatedByVisitorId(visitorId: any, options: any, extraQuery?: any): any;
 
 	findRoomsByVisitorIdAndMessageWithCriteria(params: {
 		visitorId: any;
@@ -72,6 +80,7 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		served: any;
 		onlyCount?: boolean;
 		options?: any;
+		source?: string;
 	}): any;
 
 	findRoomsWithCriteria(params: {
@@ -79,16 +88,17 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		roomName: any;
 		departmentId: any;
 		open: any;
-		served: any;
+		served?: any;
 		createdAt: any;
 		closedAt: any;
 		tags: any;
 		customFields: any;
-		visitorId: any;
-		roomIds: any;
+		visitorId?: any;
+		roomIds?: any;
 		onhold: any;
 		options?: any;
-	}): any;
+		extraQuery?: any;
+	}): FindPaginated<FindCursor<IOmnichannelRoom>>;
 
 	getOnHoldConversationsBetweenDate(from: any, to: any, departmentId: any): any;
 
@@ -98,11 +108,141 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 
 	setDepartmentByRoomId(roomId: any, departmentId: any): any;
 
-	findOpen(): FindCursor<IOmnichannelRoom>;
+	findOpen(extraQuery?: Filter<IOmnichannelRoom>): FindCursor<IOmnichannelRoom>;
 
 	setAutoTransferOngoingById(roomId: string): Promise<UpdateResult>;
 
 	unsetAutoTransferOngoingById(roomId: string): Promise<UpdateResult>;
 
 	setAutoTransferredAtById(roomId: string): Promise<UpdateResult>;
+
+	findAvailableSources(): AggregationCursor<Document>;
+
+	setTranscriptRequestedPdfById(rid: string): Promise<UpdateResult>;
+	unsetTranscriptRequestedPdfById(rid: string): Promise<UpdateResult>;
+	setPdfTranscriptFileIdById(rid: string, fileId: string): Promise<UpdateResult>;
+
+	setEmailTranscriptRequestedByRoomId(
+		rid: string,
+		transcriptInfo: NonNullable<IOmnichannelRoom['transcriptRequest']>,
+	): Promise<UpdateResult>;
+	unsetEmailTranscriptRequestedByRoomId(rid: string): Promise<UpdateResult>;
+
+	closeRoomById(roomId: string, closeInfo: IOmnichannelRoomClosingInfo): Promise<UpdateResult>;
+
+	bulkRemoveDepartmentAndUnitsFromRooms(departmentId: string): Promise<Document | UpdateResult>;
+	findOneByIdOrName(_idOrName: string, options?: FindOptions<IOmnichannelRoom>): Promise<IOmnichannelRoom | null>;
+	updateSurveyFeedbackById(_id: string, surveyFeedback: unknown): Promise<UpdateResult>;
+	updateDataByToken(token: string, key: string, value: string, overwrite?: boolean): Promise<UpdateResult | Document | boolean>;
+	saveRoomById(
+		data: { _id: string; topic?: string; tags?: string[]; livechatData?: Record<string, any> } & Record<string, unknown>,
+	): Promise<UpdateResult | undefined>;
+	findById(_id: string, fields?: FindOptions<IOmnichannelRoom>['projection']): FindCursor<IOmnichannelRoom>;
+	findByIds(
+		ids: string[],
+		fields?: FindOptions<IOmnichannelRoom>['projection'],
+		extraQuery?: Filter<IOmnichannelRoom>,
+	): FindCursor<IOmnichannelRoom>;
+	findOneByIdAndVisitorToken(
+		_id: string,
+		visitorToken: string,
+		fields?: FindOptions<IOmnichannelRoom>['projection'],
+	): Promise<IOmnichannelRoom | null>;
+	findOneByVisitorTokenAndEmailThread(
+		visitorToken: string,
+		emailThread: string[],
+		options?: FindOptions<IOmnichannelRoom>,
+	): Promise<IOmnichannelRoom | null>;
+	findOneByVisitorTokenAndEmailThreadAndDepartment(
+		visitorToken: string,
+		emailThread: string[],
+		departmentId?: string,
+		options?: FindOptions<IOmnichannelRoom>,
+	): Promise<IOmnichannelRoom | null>;
+	findOneOpenByVisitorTokenAndEmailThread(
+		visitorToken: string,
+		emailThread: string[],
+		options: FindOptions<IOmnichannelRoom>,
+	): Promise<IOmnichannelRoom | null>;
+	updateEmailThreadByRoomId(roomId: string, threadIds: string[] | string): Promise<UpdateResult>;
+	findOneLastServedAndClosedByVisitorToken(visitorToken: string, options?: FindOptions<IOmnichannelRoom>): Promise<IOmnichannelRoom | null>;
+	findOneByVisitorToken(visitorToken: string, fields?: FindOptions<IOmnichannelRoom>['projection']): Promise<IOmnichannelRoom | null>;
+	updateRoomCount(): Promise<ISetting | null>;
+	findOpenByVisitorToken(
+		visitorToken: string,
+		options?: FindOptions<IOmnichannelRoom>,
+		extraQuery?: Filter<IOmnichannelRoom>,
+	): FindCursor<IOmnichannelRoom>;
+	findOneOpenByVisitorToken(visitorToken: string, options?: FindOptions<IOmnichannelRoom>): Promise<IOmnichannelRoom | null>;
+	findOneOpenByVisitorTokenAndDepartmentIdAndSource(
+		visitorToken: string,
+		departmentId?: string,
+		source?: string,
+		options?: FindOptions<IOmnichannelRoom>,
+	): Promise<IOmnichannelRoom | null>;
+	findOpenByVisitorTokenAndDepartmentId(
+		visitorToken: string,
+		departmentId: string,
+		options?: FindOptions<IOmnichannelRoom>,
+		extraQuery?: Filter<IOmnichannelRoom>,
+	): FindCursor<IOmnichannelRoom>;
+	findByVisitorToken(visitorToken: string, extraQuery?: Filter<IOmnichannelRoom>): FindCursor<IOmnichannelRoom>;
+	findByVisitorIdAndAgentId(
+		visitorId?: string,
+		agentId?: string,
+		options?: FindOptions<IOmnichannelRoom>,
+		extraQuery?: Filter<IOmnichannelRoom>,
+	): FindCursor<IOmnichannelRoom>;
+	findOneOpenByRoomIdAndVisitorToken(
+		roomId: string,
+		visitorToken: string,
+		options?: FindOptions<IOmnichannelRoom>,
+	): Promise<IOmnichannelRoom | null>;
+	findClosedRooms(
+		departmentIds?: string[],
+		options?: FindOptions<IOmnichannelRoom>,
+		extraQuery?: Filter<IOmnichannelRoom>,
+	): FindCursor<IOmnichannelRoom>;
+	setResponseByRoomId(roomId: string, responseBy: IOmnichannelRoom['responseBy']): Promise<UpdateResult>;
+	setNotResponseByRoomId(roomId: string): Promise<UpdateResult>;
+	setAgentLastMessageTs(roomId: string): Promise<UpdateResult>;
+	saveAnalyticsDataByRoomId(
+		room: IOmnichannelRoom,
+		message: IMessage,
+		analyticsData?: Record<string, string | number | Date>,
+	): Promise<UpdateResult>;
+	getTotalConversationsBetweenDate(t: 'l', date: { gte: Date; lt: Date }, data?: { departmentId: string }): Promise<number>;
+	getAnalyticsMetricsBetweenDate(
+		t: 'l',
+		date: { gte: Date; lt: Date },
+		data?: { departmentId?: string },
+		extraQuery?: Filter<IOmnichannelRoom>,
+	): FindCursor<Pick<IOmnichannelRoom, 'ts' | 'departmentId' | 'open' | 'servedBy' | 'metrics' | 'msgs'>>;
+	getAnalyticsMetricsBetweenDateWithMessages(
+		t: string,
+		date: { gte: Date; lt: Date },
+		data?: { departmentId?: string },
+		extraQuery?: Document,
+		extraMatchers?: Document,
+	): AggregationCursor<Pick<IOmnichannelRoom, '_id' | 'ts' | 'departmentId' | 'open' | 'servedBy' | 'metrics' | 'msgs'>>;
+	getAnalyticsBetweenDate(
+		date: { gte: Date; lt: Date },
+		data?: { departmentId: string },
+	): AggregationCursor<Pick<IOmnichannelRoom, 'ts' | 'departmentId' | 'open' | 'servedBy' | 'metrics' | 'msgs' | 'onHold'>>;
+	findOpenByAgent(userId: string, extraQuery?: Filter<IOmnichannelRoom>): FindCursor<IOmnichannelRoom>;
+	countOpenByAgent(userId: string, extraQuery?: Filter<IOmnichannelRoom>): Promise<number>;
+	changeAgentByRoomId(roomId: string, newAgent: { agentId: string; username: string }): Promise<UpdateResult>;
+	changeDepartmentIdByRoomId(roomId: string, departmentId: string): Promise<UpdateResult>;
+	saveCRMDataByRoomId(roomId: string, crmData: unknown): Promise<UpdateResult>;
+	updateVisitorStatus(token: string, status: ILivechatVisitor['status']): Promise<UpdateResult | Document>;
+	removeAgentByRoomId(roomId: string): Promise<UpdateResult>;
+	removeByVisitorToken(token: string): Promise<DeleteResult>;
+	removeById(_id: string): Promise<DeleteResult>;
+	setVisitorLastMessageTimestampByRoomId(roomId: string, lastMessageTs: Date): Promise<UpdateResult>;
+	setVisitorInactivityInSecondsById(roomId: string, visitorInactivity: any): Promise<UpdateResult>;
+	changeVisitorByRoomId(roomId: string, visitor: { _id: string; username: string; token: string }): Promise<UpdateResult>;
+	unarchiveOneById(roomId: string): Promise<UpdateResult>;
+	markVisitorActiveForPeriod(rid: string, period: string): Promise<UpdateResult>;
+	getMACStatisticsForPeriod(period: string): Promise<MACStats[]>;
+	getMACStatisticsBetweenDates(start: Date, end: Date): Promise<MACStats[]>;
 }

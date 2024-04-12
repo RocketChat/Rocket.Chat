@@ -92,8 +92,6 @@ video {
 
 	border: 0 solid;
 
-	font-size: 100%;
-
 	&::after,
 	&::before {
 		border: 0 solid;
@@ -138,8 +136,4 @@ table {
 	border-spacing: 0;
 
 	border-collapse: collapse;
-}
-
-a {
-	color: var(--rc-color-button-primary);
 }

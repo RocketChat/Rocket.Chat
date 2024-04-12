@@ -1,14 +1,22 @@
-import { IRoom } from '@rocket.chat/core-typings';
-import { Box, Button, Callout, Option, Menu, Icon } from '@rocket.chat/fuselage';
+import type { IRoom } from '@rocket.chat/core-typings';
+import { Box, Button, Callout, Option, Menu } from '@rocket.chat/fuselage';
+import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useMemo, ComponentProps } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
+import {
+	ContextualbarHeader,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarScrollableContent,
+} from '../../../../components/Contextualbar';
 import InfoPanel from '../../../../components/InfoPanel';
 import RetentionPolicyCallout from '../../../../components/InfoPanel/RetentionPolicyCallout';
 import MarkdownText from '../../../../components/MarkdownText';
-import VerticalBar from '../../../../components/VerticalBar';
-import RoomAvatar from '../../../../components/avatar/RoomAvatar';
-import { useActionSpread, Action } from '../../../hooks/useActionSpread';
+import type { Action } from '../../../hooks/useActionSpread';
+import { useActionSpread } from '../../../hooks/useActionSpread';
 
 type RetentionPolicy = {
 	retentionPolicyEnabled: boolean;
@@ -50,36 +58,36 @@ const TeamsInfo = ({
 			...(onClickEdit && {
 				edit: {
 					label: t('Edit'),
-					icon: 'edit',
 					action: onClickEdit,
+					icon: 'edit' as const,
 				},
 			}),
 			...(onClickDelete && {
 				delete: {
 					label: t('Delete'),
-					icon: 'trash',
 					action: onClickDelete,
+					icon: 'trash' as const,
 				},
 			}),
 			...(onClickConvertToChannel && {
 				convertToChannel: {
 					label: t('Convert_to_channel'),
 					action: onClickConvertToChannel,
-					icon: 'hash',
+					icon: 'hash' as const,
 				},
 			}),
 			...(onClickHide && {
 				hide: {
 					label: t('Hide'),
 					action: onClickHide,
-					icon: 'eye-off',
+					icon: 'eye-off' as const,
 				},
 			}),
 			...(onClickLeave && {
 				leave: {
 					label: t('Leave'),
 					action: onClickLeave,
-					icon: 'sign-out',
+					icon: 'sign-out' as const,
 				},
 			}),
 		}),
@@ -97,7 +105,7 @@ const TeamsInfo = ({
 			<Menu
 				small={false}
 				flexShrink={0}
-				mi='x2'
+				flexGrow={0}
 				key='menu'
 				maxHeight='initial'
 				secondary
@@ -109,7 +117,7 @@ const TeamsInfo = ({
 
 	const actions = useMemo(() => {
 		const mapAction = ([key, { label, icon, action }]: [string, Action]): ReactElement => (
-			<InfoPanel.Action key={key} label={label as string} onClick={action} icon={icon as ComponentProps<typeof Icon>['name']} />
+			<InfoPanel.Action key={key} label={label as string} onClick={action} icon={icon} />
 		);
 
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
@@ -117,30 +125,31 @@ const TeamsInfo = ({
 
 	return (
 		<>
-			<VerticalBar.Header>
-				<VerticalBar.Icon name='info-circled' />
-				<VerticalBar.Text>{t('Teams_Info')}</VerticalBar.Text>
-				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
-			</VerticalBar.Header>
-
-			<VerticalBar.ScrollableContent p='x24'>
+			<ContextualbarHeader>
+				<ContextualbarIcon name='info-circled' />
+				<ContextualbarTitle>{t('Teams_Info')}</ContextualbarTitle>
+				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
+			</ContextualbarHeader>
+			<ContextualbarScrollableContent p={24}>
 				<InfoPanel>
-					<InfoPanel.Avatar>
-						<RoomAvatar size={'x332'} room={room} />
-					</InfoPanel.Avatar>
+					<InfoPanel.Section maxWidth='x332' mi='auto'>
+						<InfoPanel.Avatar>
+							<RoomAvatar size='x332' room={room} />
+						</InfoPanel.Avatar>
 
-					<InfoPanel.ActionGroup>{actions}</InfoPanel.ActionGroup>
+						<InfoPanel.ActionGroup>{actions}</InfoPanel.ActionGroup>
+					</InfoPanel.Section>
 
 					<InfoPanel.Section>
 						{room.archived && (
-							<Box mb='x16'>
+							<Box mb={16}>
 								<Callout type='warning'>{t('Room_archived')}</Callout>
 							</Box>
 						)}
 					</InfoPanel.Section>
 
 					<InfoPanel.Section>
-						<InfoPanel.Title title={room.fname || room.name || ''} icon={'team'} />
+						<InfoPanel.Title title={room.fname || room.name || ''} icon='team' />
 					</InfoPanel.Section>
 
 					<InfoPanel.Section>
@@ -155,21 +164,27 @@ const TeamsInfo = ({
 						{room.description && (
 							<InfoPanel.Field>
 								<InfoPanel.Label>{t('Description')}</InfoPanel.Label>
-								<InfoPanel.Text withTruncatedText={false}>{<MarkdownText variant='inline' content={room.description} />}</InfoPanel.Text>
+								<InfoPanel.Text withTruncatedText={false}>
+									<MarkdownText variant='inline' content={room.description} />
+								</InfoPanel.Text>
 							</InfoPanel.Field>
 						)}
 
 						{room.announcement && (
 							<InfoPanel.Field>
 								<InfoPanel.Label>{t('Announcement')}</InfoPanel.Label>
-								<InfoPanel.Text withTruncatedText={false}>{<MarkdownText variant='inline' content={room.announcement} />}</InfoPanel.Text>
+								<InfoPanel.Text withTruncatedText={false}>
+									<MarkdownText variant='inline' content={room.announcement} />
+								</InfoPanel.Text>
 							</InfoPanel.Field>
 						)}
 
 						{room.topic && (
 							<InfoPanel.Field>
 								<InfoPanel.Label>{t('Topic')}</InfoPanel.Label>
-								<InfoPanel.Text withTruncatedText={false}>{<MarkdownText variant='inline' content={room.topic} />}</InfoPanel.Text>
+								<InfoPanel.Text withTruncatedText={false}>
+									<MarkdownText variant='inline' content={room.topic} />
+								</InfoPanel.Text>
 							</InfoPanel.Field>
 						)}
 
@@ -193,7 +208,7 @@ const TeamsInfo = ({
 						)}
 					</InfoPanel.Section>
 				</InfoPanel>
-			</VerticalBar.ScrollableContent>
+			</ContextualbarScrollableContent>
 		</>
 	);
 };

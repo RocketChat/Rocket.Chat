@@ -1,43 +1,49 @@
+import { useDocumentTitle } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import type { DispatchLoginRouter } from './hooks/useLoginRouter';
-import LoginRegisterForm from './RegisterForm';
+import RegisterForm from './RegisterForm';
 import RegisterFormDisabled from './RegisterFormDisabled';
+import RegisterTemplate from './RegisterTemplate';
 import SecretRegisterForm from './SecretRegisterForm';
 import SecretRegisterInvalidForm from './SecretRegisterInvalidForm';
+import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import FormSkeleton from './template/FormSkeleton';
-import HorizontalTemplate from './template/HorizontalTemplate';
 
 export const RegisterSecretPageRouter = ({
 	setLoginRoute,
 	origin,
 }: {
 	setLoginRoute: DispatchLoginRouter;
-	origin: 'register' | 'secret-register';
+	origin: 'register' | 'secret-register' | 'invite-register';
 }): ReactElement => {
-	const registrationMode = useSetting('Accounts_RegistrationForm');
+	const { t } = useTranslation();
+	const registrationMode = useSetting<string>('Accounts_RegistrationForm');
+
 	const isPublicRegistration = registrationMode === 'Public';
 	const isRegistrationAllowedForSecret = registrationMode === 'Secret URL';
 	const isRegistrationDisabled = registrationMode === 'Disabled' || (origin === 'register' && isRegistrationAllowedForSecret);
+
+	useDocumentTitle(t('registration.component.form.createAnAccount'), false);
 
 	if (origin === 'secret-register' && !isRegistrationAllowedForSecret) {
 		return <SecretRegisterInvalidForm />;
 	}
 
-	if (isPublicRegistration) {
+	if (isPublicRegistration || (origin === 'invite-register' && isRegistrationAllowedForSecret)) {
 		return (
-			<HorizontalTemplate>
-				<LoginRegisterForm setLoginRoute={setLoginRoute} />
-			</HorizontalTemplate>
+			<RegisterTemplate>
+				<RegisterForm setLoginRoute={setLoginRoute} />
+			</RegisterTemplate>
 		);
 	}
 
 	if (isRegistrationDisabled) {
 		return (
-			<HorizontalTemplate>
+			<RegisterTemplate>
 				<RegisterFormDisabled setLoginRoute={setLoginRoute} />
-			</HorizontalTemplate>
+			</RegisterTemplate>
 		);
 	}
 
@@ -46,9 +52,9 @@ export const RegisterSecretPageRouter = ({
 	}
 
 	return (
-		<HorizontalTemplate>
+		<RegisterTemplate>
 			<FormSkeleton />
-		</HorizontalTemplate>
+		</RegisterTemplate>
 	);
 };
 

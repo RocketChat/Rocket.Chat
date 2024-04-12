@@ -1,28 +1,33 @@
-import type { VideoConference } from '@rocket.chat/apps-engine/definition/videoConferences';
-import type { IVideoConference } from '@rocket.chat/core-typings';
+import type { IAppVideoConferencesConverter, AppsVideoConference } from '@rocket.chat/apps';
+import { VideoConf } from '@rocket.chat/core-services';
+import type { VideoConference } from '@rocket.chat/core-typings';
 
-import { VideoConf } from '../../../../server/sdk';
-
-export class AppVideoConferencesConverter {
-	async convertById(callId: string): Promise<VideoConference | undefined> {
+export class AppVideoConferencesConverter implements IAppVideoConferencesConverter {
+	async convertById(callId: string): Promise<AppsVideoConference | undefined> {
 		const call = await VideoConf.getUnfiltered(callId);
 
 		return this.convertVideoConference(call);
 	}
 
-	convertVideoConference(call: IVideoConference | null): VideoConference | undefined {
+	convertVideoConference(call: undefined | null): undefined;
+
+	convertVideoConference(call: VideoConference): AppsVideoConference;
+
+	convertVideoConference(call: VideoConference | undefined | null): AppsVideoConference | undefined;
+
+	convertVideoConference(call: VideoConference | undefined | null): AppsVideoConference | undefined {
 		if (!call) {
 			return;
 		}
 
 		return {
 			...call,
-		} as VideoConference;
+		} as AppsVideoConference;
 	}
 
-	convertAppVideoConference(call: VideoConference): IVideoConference {
+	convertAppVideoConference(call: AppsVideoConference): VideoConference {
 		return {
 			...call,
-		} as IVideoConference;
+		} as VideoConference;
 	}
 }

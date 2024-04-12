@@ -1,25 +1,21 @@
+import { api, ServiceClassInternal } from '@rocket.chat/core-services';
+import type { AutoUpdateRecord, IMeteor } from '@rocket.chat/core-services';
+import type { ILivechatAgent, LoginServiceConfiguration, UserStatus } from '@rocket.chat/core-typings';
+import { LoginServiceConfiguration as LoginServiceConfigurationModel, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
-import { ServiceConfiguration } from 'meteor/service-configuration';
 import { MongoInternals } from 'meteor/mongo';
-import { Users } from '@rocket.chat/models';
-import type { ILivechatAgent } from '@rocket.chat/core-typings';
 
-import { metrics } from '../../../app/metrics';
-import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import type { AutoUpdateRecord, IMeteor } from '../../sdk/types/IMeteor';
-import { api } from '../../sdk/api';
-import { Livechat } from '../../../app/livechat/server';
-import { settings } from '../../../app/settings/server';
-import { setValue, updateValue } from '../../../app/settings/server/raw';
-import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
-import { onlineAgents, monitorAgents } from '../../../app/livechat/server/lib/stream/agentStatus';
-import { matrixBroadCastActions } from '../../stream/streamBroadcast';
 import { triggerHandler } from '../../../app/integrations/server/lib/triggerHandler';
-import { ListenersModule } from '../../modules/listeners/listeners.module';
+import { Livechat } from '../../../app/livechat/server/lib/LivechatTyped';
+import { onlineAgents, monitorAgents } from '../../../app/livechat/server/lib/stream/agentStatus';
+import { metrics } from '../../../app/metrics/server';
 import notifications from '../../../app/notifications/server/lib/Notifications';
-import { configureEmailInboxes } from '../../features/EmailInbox/EmailInbox';
+import { settings } from '../../../app/settings/server';
 import { use } from '../../../app/settings/server/Middleware';
-import type { IRoutingManagerConfig } from '../../../definition/IRoutingManagerConfig';
+import { setValue, updateValue } from '../../../app/settings/server/raw';
+import { getURL } from '../../../app/utils/server/getURL';
+import { configureEmailInboxes } from '../../features/EmailInbox/EmailInbox';
+import { ListenersModule } from '../../modules/listeners/listeners.module';
 
 type Callbacks = {
 	added(id: string, record: object): void;
@@ -146,17 +142,6 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 			setValue(setting._id, undefined);
 		});
 
-		this.onEvent('watch.instanceStatus', async ({ clientAction, id, data }): Promise<void> => {
-			if (clientAction === 'removed') {
-				matrixBroadCastActions?.removed?.(id);
-				return;
-			}
-
-			if (clientAction === 'inserted' && data?.extraInformation?.port) {
-				matrixBroadCastActions?.added?.(data);
-			}
-		});
-
 		if (disableOplog) {
 			this.onEvent('watch.loginServiceConfiguration', ({ clientAction, id, data }) => {
 				if (clientAction === 'removed') {
@@ -166,16 +151,18 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 					return;
 				}
 
-				serviceConfigCallbacks.forEach((callbacks) => {
-					callbacks[clientAction === 'inserted' ? 'added' : 'changed']?.(id, data);
-				});
+				if (data) {
+					serviceConfigCallbacks.forEach((callbacks) => {
+						callbacks[clientAction === 'inserted' ? 'added' : 'changed']?.(id, data);
+					});
+				}
 			});
 		}
 
-		this.onEvent('watch.users', async ({ clientAction, id, diff }) => {
+		this.onEvent('watch.users', async (data) => {
 			if (disableOplog) {
-				if (clientAction === 'updated' && diff) {
-					processOnChange(diff, id);
+				if (data.clientAction === 'updated' && data.diff) {
+					processOnChange(data.diff, data.id);
 				}
 			}
 
@@ -183,14 +170,14 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 				return;
 			}
 
-			if (clientAction !== 'removed' && diff && !diff.status && !diff.statusLivechat) {
+			if (data.clientAction !== 'removed' && 'diff' in data && !data.diff.status && !data.diff.statusLivechat) {
 				return;
 			}
 
-			switch (clientAction) {
+			switch (data.clientAction) {
 				case 'updated':
 				case 'inserted':
-					const agent = await Users.findOneAgentById<Pick<ILivechatAgent, 'status' | 'statusLivechat'>>(id, {
+					const agent = await Users.findOneAgentById<Pick<ILivechatAgent, 'status' | 'statusLivechat'>>(data.id, {
 						projection: {
 							status: 1,
 							statusLivechat: 1,
@@ -199,14 +186,14 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 					const serviceOnline = agent && agent.status !== 'offline' && agent.statusLivechat === 'available';
 
 					if (serviceOnline) {
-						return onlineAgents.add(id);
+						return onlineAgents.add(data.id);
 					}
 
-					onlineAgents.remove(id);
+					onlineAgents.remove(data.id);
 
 					break;
 				case 'removed':
-					onlineAgents.remove(id);
+					onlineAgents.remove(data.id);
 					break;
 			}
 		});
@@ -231,13 +218,13 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		});
 
 		this.onEvent('watch.emailInbox', async () => {
-			configureEmailInboxes();
+			await configureEmailInboxes();
 		});
 
 		if (!disableMsgRoundtripTracking) {
-			this.onEvent('watch.messages', ({ message }) => {
-				if (message?._updatedAt) {
-					metrics.messageRoundtripTime.set(Date.now() - message._updatedAt.getDate());
+			this.onEvent('watch.messages', async ({ message }) => {
+				if (message?._updatedAt instanceof Date) {
+					metrics.messageRoundtripTime.observe(Date.now() - message._updatedAt.getTime());
 				}
 			});
 		}
@@ -251,11 +238,11 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		Meteor.server.publish_handlers.meteor_autoupdate_clientVersions.call({
 			added(_collection: string, _id: string, version: AutoUpdateRecord) {
 				clientVersionsStore.set(_id, version);
-				api.broadcast('meteor.clientVersionUpdated', version);
+				void api.broadcast('meteor.clientVersionUpdated', version);
 			},
 			changed(_collection: string, _id: string, version: AutoUpdateRecord) {
 				clientVersionsStore.set(_id, version);
-				api.broadcast('meteor.clientVersionUpdated', version);
+				void api.broadcast('meteor.clientVersionUpdated', version);
 			},
 			onStop() {
 				//
@@ -270,8 +257,8 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		return Object.fromEntries(clientVersionsStore);
 	}
 
-	async getLoginServiceConfiguration(): Promise<any[]> {
-		return ServiceConfiguration.configurations.find({}, { fields: { secret: 0 } }).fetch();
+	async getLoginServiceConfiguration(): Promise<LoginServiceConfiguration[]> {
+		return LoginServiceConfigurationModel.find({}, { projection: { secret: 0 } }).toArray();
 	}
 
 	async callMethodWithToken(userId: string, token: string, method: string, args: any[]): Promise<void | any> {
@@ -280,23 +267,20 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		});
 		if (!user) {
 			return {
-				result: Meteor.call(method, ...args),
+				result: Meteor.callAsync(method, ...args),
 			};
 		}
 
 		return {
-			result: Meteor.runAsUser(userId, () => Meteor.call(method, ...args)),
+			result: Meteor.runAsUser(userId, () => Meteor.callAsync(method, ...args)),
 		};
 	}
 
-	async notifyGuestStatusChanged(token: string, status: string): Promise<void> {
+	async notifyGuestStatusChanged(token: string, status: UserStatus): Promise<void> {
 		return Livechat.notifyGuestStatusChanged(token, status);
 	}
 
-	getRoutingManagerConfig(): IRoutingManagerConfig {
-		// return false if called before routing method is set
-		// this will cause that oplog events received on early stages of server startup
-		// won't be fired (at least, inquiry events)
-		return RoutingManager.isMethodSet() && RoutingManager.getConfig();
+	async getURL(path: string, params: Record<string, any> = {}, cloudDeepLinkUrl?: string): Promise<string> {
+		return getURL(path, params, cloudDeepLinkUrl);
 	}
 }

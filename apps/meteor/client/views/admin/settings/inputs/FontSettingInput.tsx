@@ -1,20 +1,14 @@
-import { Box, Field, Flex, TextInput } from '@rocket.chat/fuselage';
-import React, { FormEventHandler, ReactElement } from 'react';
+import { Field, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage';
+import type { FormEventHandler, ReactElement } from 'react';
+import React from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
+import type { SettingInputProps } from './types';
 
-type FontSettingInputProps = {
-	_id: string;
-	label: string;
+type FontSettingInputProps = SettingInputProps & {
 	value: string;
-	placeholder?: string;
-	readonly?: boolean;
-	autocomplete?: boolean;
-	disabled?: boolean;
-	hasResetButton?: boolean;
-	onChangeValue?: (value: string) => void;
-	onResetButtonClick?: () => void;
 };
+
 function FontSettingInput({
 	_id,
 	label,
@@ -23,6 +17,7 @@ function FontSettingInput({
 	readonly,
 	autocomplete,
 	disabled,
+	required,
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
@@ -32,16 +27,14 @@ function FontSettingInput({
 	};
 
 	return (
-		<>
-			<Flex.Container>
-				<Box>
-					<Field.Label htmlFor={_id} title={_id}>
-						{label}
-					</Field.Label>
-					{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
-				</Box>
-			</Flex.Container>
-			<Field.Row>
+		<Field>
+			<FieldRow>
+				<FieldLabel htmlFor={_id} title={_id} required={required}>
+					{label}
+				</FieldLabel>
+				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+			</FieldRow>
+			<FieldRow>
 				<TextInput
 					data-qa-setting-id={_id}
 					id={_id}
@@ -52,8 +45,8 @@ function FontSettingInput({
 					autoComplete={autocomplete === false ? 'off' : undefined}
 					onChange={handleChange}
 				/>
-			</Field.Row>
-		</>
+			</FieldRow>
+		</Field>
 	);
 }
 

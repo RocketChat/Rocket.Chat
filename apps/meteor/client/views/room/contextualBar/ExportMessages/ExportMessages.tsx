@@ -1,21 +1,48 @@
-import { IRoom } from '@rocket.chat/core-typings';
-import { Field, Select, FieldGroup, SelectOption } from '@rocket.chat/fuselage';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, useMemo, FC } from 'react';
+import React, { useMemo } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 
-import VerticalBar from '../../../../components/VerticalBar';
-import { useTabBarClose } from '../../contexts/ToolboxContext';
+import { ContextualbarHeader, ContextualbarIcon, ContextualbarTitle, ContextualbarClose } from '../../../../components/Contextualbar';
+import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
+import { useRoom } from '../../contexts/RoomContext';
+import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import FileExport from './FileExport';
 import MailExportForm from './MailExportForm';
 
-type ExportMessagesProps = {
-	rid: IRoom['_id'];
+export type MailExportFormValues = {
+	type: 'email' | 'file';
+	dateFrom: string;
+	dateTo: string;
+	format: 'html' | 'json';
+	toUsers: string[];
+	additionalEmails: string;
+	messagesCount: number;
+	subject: string;
 };
-const ExportMessages: FC<ExportMessagesProps> = ({ rid }) => {
-	const t = useTranslation();
-	const close = useTabBarClose();
 
-	const [type, setType] = useState('email');
+const ExportMessages = () => {
+	const t = useTranslation();
+	const room = useRoom();
+
+	const { closeTab } = useRoomToolbox();
+
+	const roomName = room?.t && roomCoordinator.getRoomName(room.t, room);
+
+	const methods = useForm<MailExportFormValues>({
+		mode: 'onBlur',
+		defaultValues: {
+			type: 'email',
+			dateFrom: '',
+			dateTo: '',
+			toUsers: [],
+			additionalEmails: '',
+			messagesCount: 0,
+			subject: t('Mail_Messages_Subject', roomName),
+			format: 'html',
+		},
+	});
 
 	const exportOptions = useMemo<SelectOption[]>(
 		() => [
@@ -25,24 +52,23 @@ const ExportMessages: FC<ExportMessagesProps> = ({ rid }) => {
 		[t],
 	);
 
+	const formId = useUniqueId();
+
 	return (
 		<>
-			<VerticalBar.Header>
-				{t('Export_Messages')}
-				<VerticalBar.Close onClick={close} />
-			</VerticalBar.Header>
-			<VerticalBar.ScrollableContent>
-				<FieldGroup>
-					<Field>
-						<Field.Label>{t('Method')}</Field.Label>
-						<Field.Row>
-							<Select value={type} onChange={(value): void => setType(value)} placeholder={t('Type')} options={exportOptions} />
-						</Field.Row>
-					</Field>
-				</FieldGroup>
-				{type && type === 'file' && <FileExport rid={rid} onCancel={close} />}
-				{type && type === 'email' && <MailExportForm rid={rid} onCancel={close} />}
-			</VerticalBar.ScrollableContent>
+			<ContextualbarHeader>
+				<ContextualbarIcon name='mail' />
+				<ContextualbarTitle id={`${formId}-title`}>{t('Export_Messages')}</ContextualbarTitle>
+				<ContextualbarClose onClick={closeTab} />
+			</ContextualbarHeader>
+			<FormProvider {...methods}>
+				{methods.watch('type') === 'email' && (
+					<MailExportForm formId={formId} rid={room._id} exportOptions={exportOptions} onCancel={closeTab} />
+				)}
+				{methods.watch('type') === 'file' && (
+					<FileExport formId={formId} rid={room._id} exportOptions={exportOptions} onCancel={closeTab} />
+				)}
+			</FormProvider>
 		</>
 	);
 };

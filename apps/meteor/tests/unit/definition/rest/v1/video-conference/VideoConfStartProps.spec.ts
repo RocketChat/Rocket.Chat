@@ -1,5 +1,5 @@
-import { assert } from 'chai';
 import { isVideoConfStartProps } from '@rocket.chat/rest-typings';
+import { assert } from 'chai';
 
 describe('VideoConfStartProps (definition/rest/v1)', () => {
 	describe('isVideoConfStartProps', () => {

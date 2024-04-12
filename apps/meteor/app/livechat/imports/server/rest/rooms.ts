@@ -1,8 +1,10 @@
+import { LivechatRooms } from '@rocket.chat/models';
 import { isGETLivechatRoomsParams } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
+import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
+import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { findRooms } from '../../../server/api/lib/rooms';
-import { hasPermission } from '../../../../authorization/server';
 
 const validateDateParams = (property: string, date?: string) => {
 	let parsedDate: { start?: string; end?: string } | undefined = undefined;
@@ -19,21 +21,24 @@ const validateDateParams = (property: string, date?: string) => {
 	return parsedDate;
 };
 
+const isBoolean = (value?: string | boolean): boolean => value === 'true' || value === 'false' || typeof value === 'boolean';
+
 API.v1.addRoute(
 	'livechat/rooms',
 	{ authRequired: true, validateParams: isGETLivechatRoomsParams },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort, fields } = this.parseJsonQuery();
-			const { agents, departmentId, open, tags, roomName, onhold } = this.requestParams();
-			const { createdAt, customFields, closedAt } = this.requestParams();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, fields } = await this.parseJsonQuery();
+			const { agents, departmentId, open, tags, roomName, onhold } = this.queryParams;
+			const { createdAt, customFields, closedAt } = this.queryParams;
 
 			const createdAtParam = validateDateParams('createdAt', createdAt);
 			const closedAtParam = validateDateParams('closedAt', closedAt);
 
-			const hasAdminAccess = hasPermission(this.userId, 'view-livechat-rooms');
-			const hasAgentAccess = hasPermission(this.userId, 'view-l-room') && agents?.includes(this.userId) && agents?.length === 1;
+			const hasAdminAccess = await hasPermissionAsync(this.userId, 'view-livechat-rooms');
+			const hasAgentAccess =
+				(await hasPermissionAsync(this.userId, 'view-l-room')) && agents?.includes(this.userId) && agents?.length === 1;
 			if (!hasAdminAccess && !hasAgentAccess) {
 				return API.v1.unauthorized();
 			}
@@ -58,7 +63,7 @@ API.v1.addRoute(
 					agents,
 					roomName,
 					departmentId,
-					open: open && open === 'true',
+					...(isBoolean(open) && { open: open === 'true' }),
 					createdAt: createdAtParam,
 					closedAt: closedAtParam,
 					tags,
@@ -67,6 +72,18 @@ API.v1.addRoute(
 					options: { offset, count, sort, fields },
 				}),
 			);
+		},
+	},
+);
+
+API.v1.addRoute(
+	'livechat/rooms/filters',
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
+	{
+		async get() {
+			return API.v1.success({
+				filters: (await LivechatRooms.findAvailableSources().toArray())[0].fullTypes,
+			});
 		},
 	},
 );

@@ -1,9 +1,11 @@
-import { formatDistance } from 'date-fns';
-import format from 'date-fns/format';
+import { format, formatDistance } from 'date-fns';
 import isToday from 'date-fns/isToday';
+import { memo } from 'preact/compat';
 import { withTranslation } from 'react-i18next';
 
-import { getAttachmentUrl, memo, normalizeTransferHistoryMessage, resolveDate } from '../../helpers';
+import { getAttachmentUrl } from '../../../helpers/baseUrl';
+import { normalizeTransferHistoryMessage } from '../../../helpers/normalizeTransferHistoryMessage';
+import { resolveDate } from '../../../helpers/resolveDate';
 import { default as AudioAttachment } from '../AudioAttachment';
 import { FileAttachment } from '../FileAttachment';
 import { ImageAttachment } from '../ImageAttachment';
@@ -90,26 +92,35 @@ const getMessageUsernames = (compact, message) => {
 	return [username];
 };
 
-const Message = memo(
-	({ avatarResolver, attachmentResolver = getAttachmentUrl, use, me, compact, className, style = {}, t, ...message }) => (
-		<MessageContainer id={message._id} compact={compact} reverse={me} use={use} className={className} style={style} system={!!message.type}>
-			{!message.type && <MessageAvatars avatarResolver={avatarResolver} usernames={getMessageUsernames(compact, message)} />}
-			<MessageContent reverse={me}>
-				{renderContent({
-					text: message.type ? getSystemMessageText(message, t) : message.msg,
-					system: !!message.type,
-					me,
-					attachments: message.attachments,
-					blocks: message.blocks,
-					mid: message._id,
-					rid: message.rid,
-					attachmentResolver,
-				})}
-			</MessageContent>
+const Message = ({
+	avatarResolver,
+	attachmentResolver = getAttachmentUrl,
+	use,
+	me,
+	compact,
+	className,
+	style = {},
+	t,
+	hideAvatar,
+	...message
+}) => (
+	<MessageContainer id={message._id} compact={compact} reverse={me} use={use} className={className} style={style} system={!!message.type}>
+		{!message.type && !hideAvatar && <MessageAvatars avatarResolver={avatarResolver} usernames={getMessageUsernames(compact, message)} />}
+		<MessageContent reverse={me}>
+			{renderContent({
+				text: message.type ? getSystemMessageText(message, t) : message.msg,
+				system: !!message.type,
+				me,
+				attachments: message.attachments,
+				blocks: message.blocks,
+				mid: message._id,
+				rid: message.rid,
+				attachmentResolver,
+			})}
+		</MessageContent>
 
-			{!compact && !message.type && <MessageTime normal={!me} inverse={me} ts={message.ts} />}
-		</MessageContainer>
-	),
+		{!compact && !message.type && <MessageTime normal={!me} inverse={me} ts={message.ts} />}
+	</MessageContainer>
 );
 
-export default withTranslation()(Message);
+export default withTranslation()(memo(Message));

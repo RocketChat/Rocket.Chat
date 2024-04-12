@@ -59,6 +59,12 @@ $modal-background-color: $bg-color-white;
 	line-height: 1.5;
 }
 
+@media (prefers-reduced-motion) {
+	.modal--animated {
+		animation: none;
+	}
+}
+
 @keyframes fadeInUp {
 	0% {
 		transform: translate3d(-50%, 100%, 0);

@@ -1,10 +1,10 @@
 import { EventEmitter } from 'events';
 
+import { EmailInbox } from '@rocket.chat/models';
 import type { ImapMessage, ImapMessageBodyInfo } from 'imap';
 import IMAP from 'imap';
 import type { ParsedMail } from 'mailparser';
 import { simpleParser } from 'mailparser';
-import { EmailInbox } from '@rocket.chat/models';
 
 import { logger } from '../features/EmailInbox/logger';
 
@@ -55,7 +55,7 @@ export class IMAPInterceptor extends EventEmitter {
 		});
 		this.retries = 0;
 		this.inboxId = id;
-		this.start();
+		void this.start();
 	}
 
 	openInbox(): Promise<IMAP.Box> {
@@ -123,7 +123,7 @@ export class IMAPInterceptor extends EventEmitter {
 			clearTimeout(this.backoff);
 			this.backoffDurationMS = 3000;
 		}
-		const loop = (): void => {
+		const loop = async (): Promise<void> => {
 			logger.debug(`Reconnecting to ${this.config.user}: ${this.retries}`);
 			if (this.canRetry()) {
 				this.backoffDurationMS *= 2;
@@ -132,11 +132,11 @@ export class IMAPInterceptor extends EventEmitter {
 				logger.info(`IMAP reconnection failed on inbox ${this.config.user}`);
 				clearTimeout(this.backoff);
 				this.stop();
-				this.selfDisable();
+				await this.selfDisable();
 				return;
 			}
 			this.stop();
-			this.start();
+			await this.start();
 		};
 		this.backoff = setTimeout(loop, this.backoffDurationMS);
 	}

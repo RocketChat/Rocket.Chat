@@ -4,15 +4,43 @@ import { withTranslation } from 'react-i18next';
 
 import { Livechat } from '../../api';
 import { ModalManager } from '../../components/Modal';
-import { debounce, getAvatarUrl, canRenderMessage, throttle, upsert } from '../../components/helpers';
+import { getAvatarUrl } from '../../helpers/baseUrl';
+import { canRenderMessage } from '../../helpers/canRenderMessage';
+import { debounce } from '../../helpers/debounce';
+import { throttle } from '../../helpers/throttle';
+import { upsert } from '../../helpers/upsert';
+import {
+	useAgentChangeSubscription,
+	useAgentStatusChangeSubscription,
+	useQueuePositionChangeSubscription,
+} from '../../hooks/livechatRoomSubscriptionHooks';
+import { useDeleteMessageSubscription } from '../../hooks/useDeleteMessageSubscription';
+import { useRoomMessagesSubscription } from '../../hooks/useRoomMessagesSubscription';
+import { useUserActivitySubscription } from '../../hooks/useUserActivitySubscription';
 import { normalizeQueueAlert } from '../../lib/api';
 import constants from '../../lib/constants';
-import { loadConfig, processUnread } from '../../lib/main';
+import { getLastReadMessage, loadConfig, processUnread, shouldMarkAsUnread } from '../../lib/main';
 import { parentCall, runCallbackEventEmitter } from '../../lib/parentCall';
 import { createToken } from '../../lib/random';
 import { initRoom, closeChat, loadMessages, loadMoreMessages, defaultRoomParams, getGreetingMessages } from '../../lib/room';
-import { Consumer } from '../../store';
+import store from '../../store';
 import Chat from './component';
+
+const ChatWrapper = ({ children, rid }) => {
+	useRoomMessagesSubscription(rid);
+
+	useUserActivitySubscription(rid);
+
+	useDeleteMessageSubscription(rid);
+
+	useAgentChangeSubscription(rid);
+
+	useAgentStatusChangeSubscription(rid);
+
+	useQueuePositionChangeSubscription(rid);
+
+	return children;
+};
 
 class ChatContainer extends Component {
 	state = {
@@ -36,7 +64,7 @@ class ChatContainer extends Component {
 			this.state.queueSpot = newQueueSpot;
 			this.state.estimatedWaitTime = newEstimatedWaitTime;
 			await this.handleQueueMessage(connecting, queueInfo);
-			await this.handleConnectingAgentAlert(newConnecting, normalizeQueueAlert(queueInfo));
+			await this.handleConnectingAgentAlert(newConnecting, await normalizeQueueAlert(queueInfo));
 		}
 	};
 
@@ -57,7 +85,7 @@ class ChatContainer extends Component {
 		}
 
 		const visitor = { token, ...guest };
-		const newUser = await Livechat.grantVisitor({ visitor });
+		const { visitor: newUser } = await Livechat.grantVisitor({ visitor });
 		await dispatch({ user: newUser });
 	};
 
@@ -79,9 +107,7 @@ class ChatContainer extends Component {
 			parentCall('callback', 'chat-started');
 			return newRoom;
 		} catch (error) {
-			const {
-				data: { error: reason },
-			} = error;
+			const reason = error ? error.error : '';
 			const alert = {
 				id: createToken(),
 				children: i18n.t('error_starting_a_new_conversation_reason', { reason }),
@@ -102,11 +128,11 @@ class ChatContainer extends Component {
 	};
 
 	startTyping = throttle(async ({ rid, username }) => {
-		await Livechat.notifyVisitorTyping(rid, username, true);
+		await Livechat.notifyVisitorActivity(rid, username, ['user-typing']);
 		this.stopTypingDebounced({ rid, username });
 	}, 4500);
 
-	stopTyping = ({ rid, username }) => Livechat.notifyVisitorTyping(rid, username, false);
+	stopTyping = ({ rid, username }) => Livechat.notifyVisitorActivity(rid, username, []);
 
 	stopTypingDebounced = debounce(this.stopTyping, 5000);
 
@@ -132,18 +158,18 @@ class ChatContainer extends Component {
 			this.stopTypingDebounced.stop();
 			await Promise.all([this.stopTyping({ rid, username: user.username }), Livechat.sendMessage({ msg, token, rid })]);
 		} catch (error) {
-			const reason = error?.data?.error ?? error.message;
+			const reason = error?.error ?? error.message;
 			const alert = { id: createToken(), children: reason, error: true, timeout: 5000 };
 			await dispatch({ alerts: (alerts.push(alert), alerts) });
 		}
-		await Livechat.notifyVisitorTyping(rid, user.username, false);
+		await Livechat.notifyVisitorActivity(rid, user.username, []);
 	};
 
 	doFileUpload = async (rid, file) => {
 		const { alerts, dispatch, i18n } = this.props;
 
 		try {
-			await Livechat.uploadFile({ rid, file });
+			await Livechat.uploadFile(rid, file);
 		} catch (error) {
 			const {
 				data: { reason, sizeAllowed },
@@ -164,6 +190,20 @@ class ChatContainer extends Component {
 	};
 
 	handleUpload = async (files) => {
+		const {
+			config: {
+				settings: { fileUpload },
+			},
+		} = store.state;
+
+		const { dispatch, alerts, i18n } = this.props;
+
+		if (!fileUpload) {
+			const alert = { id: createToken(), children: i18n.t('file_upload_disabled'), error: true, timeout: 5000 };
+			await dispatch({ alerts: (alerts.push(alert), alerts) });
+			return;
+		}
+
 		await this.grantUser();
 		const { _id: rid } = await this.getRoom();
 
@@ -321,16 +361,23 @@ class ChatContainer extends Component {
 	}
 
 	async componentDidUpdate(prevProps) {
-		const { messages, visible, minimized, dispatch } = this.props;
+		const { messages, dispatch, user } = this.props;
 		const { messages: prevMessages, alerts: prevAlerts } = prevProps;
 
-		if (messages && prevMessages && messages.length !== prevMessages.length && visible && !minimized) {
-			const nextLastMessage = messages[messages.length - 1];
-			const lastMessage = prevMessages[prevMessages.length - 1];
-			if (
-				(nextLastMessage && lastMessage && nextLastMessage._id !== lastMessage._id) ||
-				(messages.length === 1 && prevMessages.length === 0)
-			) {
+		const renderedMessages = messages.filter((message) => canRenderMessage(message));
+		const lastRenderedMessage = renderedMessages[renderedMessages.length - 1];
+		const prevRenderedMessages = prevMessages.filter((message) => canRenderMessage(message));
+
+		const shouldMarkUnread = shouldMarkAsUnread();
+
+		if (
+			(lastRenderedMessage && lastRenderedMessage.u?._id === user?._id) ||
+			(!shouldMarkUnread && renderedMessages?.length !== prevRenderedMessages?.length)
+		) {
+			const nextLastMessage = lastRenderedMessage;
+			const lastReadMessage = getLastReadMessage();
+
+			if (nextLastMessage && nextLastMessage._id !== lastReadMessage?._id) {
 				const newAlerts = prevAlerts.filter((item) => item.id !== constants.unreadMessagesAlertId);
 				dispatch({ alerts: newAlerts, unread: null, lastReadMessageId: nextLastMessage._id });
 			}
@@ -345,135 +392,25 @@ class ChatContainer extends Component {
 	}
 
 	render = ({ user, ...props }) => (
-		<Chat
-			{...props}
-			avatarResolver={getAvatarUrl}
-			uid={user && user._id}
-			onTop={this.handleTop}
-			onChangeText={this.handleChangeText}
-			onSubmit={this.handleSubmit}
-			onUpload={this.handleUpload}
-			options={this.showOptionsMenu()}
-			onChangeDepartment={(this.canSwitchDepartment() && this.onChangeDepartment) || null}
-			onFinishChat={(this.canFinishChat() && this.onFinishChat) || null}
-			onRemoveUserData={(this.canRemoveUserData() && this.onRemoveUserData) || null}
-			onSoundStop={this.handleSoundStop}
-			registrationRequired={this.registrationRequired()}
-			onRegisterUser={this.onRegisterUser}
-		/>
+		<ChatWrapper token={props.token} rid={props.room?._id}>
+			<Chat
+				{...props}
+				avatarResolver={getAvatarUrl}
+				uid={user && user._id}
+				onTop={this.handleTop}
+				onChangeText={this.handleChangeText}
+				onSubmit={this.handleSubmit}
+				onUpload={this.handleUpload}
+				options={this.showOptionsMenu()}
+				onChangeDepartment={(this.canSwitchDepartment() && this.onChangeDepartment) || null}
+				onFinishChat={(this.canFinishChat() && this.onFinishChat) || null}
+				onRemoveUserData={(this.canRemoveUserData() && this.onRemoveUserData) || null}
+				onSoundStop={this.handleSoundStop}
+				registrationRequired={this.registrationRequired()}
+				onRegisterUser={this.onRegisterUser}
+			/>
+		</ChatWrapper>
 	);
 }
 
-export const ChatConnector = ({ ref, t, ...props }) => (
-	<Consumer>
-		{({
-			config: {
-				settings: {
-					fileUpload: uploads,
-					allowSwitchingDepartments,
-					forceAcceptDataProcessingConsent: allowRemoveUserData,
-					showConnecting,
-					registrationForm,
-					nameFieldRegistrationForm,
-					emailFieldRegistrationForm,
-					limitTextLength,
-				} = {},
-				messages: { conversationFinishedMessage } = {},
-				theme: { color, title } = {},
-				departments = {},
-			},
-			iframe: {
-				theme: { color: customColor, fontColor: customFontColor, iconColor: customIconColor, title: customTitle } = {},
-				guest,
-			} = {},
-			token,
-			agent,
-			sound,
-			user,
-			room,
-			messages,
-			noMoreMessages,
-			typing,
-			loading,
-			dispatch,
-			alerts,
-			visible,
-			unread,
-			lastReadMessageId,
-			triggerAgent,
-			queueInfo,
-			incomingCallAlert,
-			ongoingCall,
-		}) => (
-			<ChatContainer
-				ref={ref}
-				{...props}
-				theme={{
-					color: customColor || color,
-					fontColor: customFontColor,
-					iconColor: customIconColor,
-					title: customTitle,
-				}}
-				title={customTitle || title || t('need_help')}
-				sound={sound}
-				token={token}
-				user={user}
-				agent={
-					agent
-						? {
-								_id: agent._id,
-								name: agent.name,
-								status: agent.status,
-								email: agent.emails && agent.emails[0] && agent.emails[0].address,
-								username: agent.username,
-								phone: (agent.phone && agent.phone[0] && agent.phone[0].phoneNumber) || (agent.customFields && agent.customFields.phone),
-								avatar: agent.username
-									? {
-											description: agent.username,
-											src: getAvatarUrl(agent.username),
-									  }
-									: undefined,
-						  }
-						: undefined
-				}
-				room={room}
-				messages={messages && messages.filter((message) => canRenderMessage(message))}
-				noMoreMessages={noMoreMessages}
-				emoji={true}
-				uploads={uploads}
-				typingUsernames={Array.isArray(typing) ? typing : []}
-				loading={loading}
-				showConnecting={showConnecting} // setting from server that tells if app needs to show "connecting" sometimes
-				connecting={!!(room && !agent && (showConnecting || queueInfo))}
-				dispatch={dispatch}
-				departments={departments}
-				allowSwitchingDepartments={allowSwitchingDepartments}
-				conversationFinishedMessage={conversationFinishedMessage || t('conversation_finished')}
-				allowRemoveUserData={allowRemoveUserData}
-				alerts={alerts}
-				visible={visible}
-				unread={unread}
-				lastReadMessageId={lastReadMessageId}
-				guest={guest}
-				triggerAgent={triggerAgent}
-				queueInfo={
-					queueInfo
-						? {
-								spot: queueInfo.spot,
-								estimatedWaitTimeSeconds: queueInfo.estimatedWaitTimeSeconds,
-								message: queueInfo.message,
-						  }
-						: undefined
-				}
-				registrationFormEnabled={registrationForm}
-				nameFieldRegistrationForm={nameFieldRegistrationForm}
-				emailFieldRegistrationForm={emailFieldRegistrationForm}
-				limitTextLength={limitTextLength}
-				incomingCallAlert={incomingCallAlert}
-				ongoingCall={ongoingCall}
-			/>
-		)}
-	</Consumer>
-);
-
-export default withTranslation()(ChatConnector);
+export default withTranslation()(ChatContainer);

@@ -11,15 +11,8 @@ const initialData = { user: { username: '' } };
 
 const RemoveUsersModal = ({ teamId, userId, onClose, onCancel, onConfirm }) => {
 	const t = useTranslation();
-	const { value, phase } = useEndpointData(
-		'/v1/teams.listRoomsOfUser',
-		useMemo(() => ({ teamId, userId }), [teamId, userId]),
-	);
-	const userDataFetch = useEndpointData(
-		'/v1/users.info',
-		useMemo(() => ({ userId }), [userId]),
-		initialData,
-	);
+	const { value, phase } = useEndpointData('/v1/teams.listRoomsOfUser', { params: useMemo(() => ({ teamId, userId }), [teamId, userId]) });
+	const userDataFetch = useEndpointData('/v1/users.info', { params: useMemo(() => ({ userId }), [userId]), initialValue: initialData });
 	const {
 		user: { username },
 	} = userDataFetch?.value;

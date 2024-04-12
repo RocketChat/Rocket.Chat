@@ -7,7 +7,7 @@ type RoomID = string;
 
 export interface ISubscription extends IRocketChatRecord {
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
-	v?: Pick<IUser, '_id' | 'username' | 'name'>;
+	v?: Pick<IUser, '_id' | 'username' | 'name' | 'status'> & { token?: string };
 	rid: RoomID;
 	open: boolean;
 	ts: Date;
@@ -18,7 +18,7 @@ export interface ISubscription extends IRocketChatRecord {
 	unread: number;
 	t: RoomType;
 	ls: Date;
-	f?: true;
+	f?: boolean;
 	lr: Date;
 	hideUnreadStatus?: true;
 	hideMentionStatus?: true;
@@ -40,6 +40,7 @@ export interface ISubscription extends IRocketChatRecord {
 	onHold?: boolean;
 	encrypted?: boolean;
 	E2EKey?: string;
+	E2ESuggestedKey?: string;
 	unreadAlert?: 'default' | 'all' | 'mentions' | 'nothing';
 
 	fname?: string;
@@ -50,6 +51,7 @@ export interface ISubscription extends IRocketChatRecord {
 	desktopNotifications?: 'all' | 'mentions' | 'nothing';
 	mobilePushNotifications?: 'all' | 'mentions' | 'nothing';
 	emailNotifications?: 'all' | 'mentions' | 'nothing';
+	userHighlights?: string[];
 	blocked?: unknown;
 	blocker?: unknown;
 	autoTranslate?: boolean;
@@ -63,6 +65,9 @@ export interface ISubscription extends IRocketChatRecord {
 	desktopPrefOrigin?: 'subscription' | 'user';
 	mobilePrefOrigin?: 'subscription' | 'user';
 	emailPrefOrigin?: 'subscription' | 'user';
+
+	/* @deprecated */
+	customFields?: Record<string, any>;
 }
 
 export interface IOmnichannelSubscription extends ISubscription {

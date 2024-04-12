@@ -1,14 +1,9 @@
-import { CheckBox, Table, Tag, Pagination } from '@rocket.chat/fuselage';
+import { CheckBox, Table, Tag, Pagination, TableHead, TableRow, TableCell, TableBody } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, useCallback, FC, Dispatch, SetStateAction, ChangeEvent } from 'react';
+import type { FC, Dispatch, SetStateAction, ChangeEvent } from 'react';
+import React, { useState, useCallback } from 'react';
 
-type UserDescriptor = {
-	user_id: string;
-	username: string;
-	email: string;
-	is_deleted: boolean;
-	do_import: boolean;
-};
+import type { UserDescriptor } from './UserDescriptor';
 
 type PrepareUsersProps = {
 	usersCount: number;
@@ -16,6 +11,7 @@ type PrepareUsersProps = {
 	setUsers: Dispatch<SetStateAction<UserDescriptor[]>>;
 };
 
+// TODO: review inner logic
 const PrepareUsers: FC<PrepareUsersProps> = ({ usersCount, users, setUsers }) => {
 	const t = useTranslation();
 	const [current, setCurrent] = useState(0);
@@ -29,9 +25,9 @@ const PrepareUsers: FC<PrepareUsersProps> = ({ usersCount, users, setUsers }) =>
 	return (
 		<>
 			<Table>
-				<Table.Head>
-					<Table.Row>
-						<Table.Cell width='x36'>
+				<TableHead>
+					<TableRow>
+						<TableCell width='x36'>
 							<CheckBox
 								checked={usersCount > 0}
 								indeterminate={usersCount > 0 && usersCount !== users.length}
@@ -52,16 +48,16 @@ const PrepareUsers: FC<PrepareUsersProps> = ({ usersCount, users, setUsers }) =>
 									});
 								}}
 							/>
-						</Table.Cell>
-						<Table.Cell is='th'>{t('Username')}</Table.Cell>
-						<Table.Cell is='th'>{t('Email')}</Table.Cell>
-						<Table.Cell is='th'></Table.Cell>
-					</Table.Row>
-				</Table.Head>
-				<Table.Body>
+						</TableCell>
+						<TableCell is='th'>{t('Username')}</TableCell>
+						<TableCell is='th'>{t('Email')}</TableCell>
+						<TableCell is='th'></TableCell>
+					</TableRow>
+				</TableHead>
+				<TableBody>
 					{users.slice(current, current + itemsPerPage).map((user) => (
-						<Table.Row key={user.user_id}>
-							<Table.Cell width='x36'>
+						<TableRow key={user.user_id}>
+							<TableCell width='x36'>
 								<CheckBox
 									checked={user.do_import}
 									onChange={(event: ChangeEvent<HTMLInputElement>): void => {
@@ -69,13 +65,13 @@ const PrepareUsers: FC<PrepareUsersProps> = ({ usersCount, users, setUsers }) =>
 										setUsers((users) => users.map((_user) => (_user === user ? { ..._user, do_import: checked } : _user)));
 									}}
 								/>
-							</Table.Cell>
-							<Table.Cell>{user.username}</Table.Cell>
-							<Table.Cell>{user.email}</Table.Cell>
-							<Table.Cell align='end'>{user.is_deleted && <Tag variant='danger'>{t('Deleted')}</Tag>}</Table.Cell>
-						</Table.Row>
+							</TableCell>
+							<TableCell>{user.username}</TableCell>
+							<TableCell>{user.email}</TableCell>
+							<TableCell align='end'>{user.is_deleted && <Tag variant='danger'>{t('Deleted')}</Tag>}</TableCell>
+						</TableRow>
 					))}
-				</Table.Body>
+				</TableBody>
 			</Table>
 			<Pagination
 				current={current}

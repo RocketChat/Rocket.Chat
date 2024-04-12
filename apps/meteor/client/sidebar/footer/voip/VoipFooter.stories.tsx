@@ -1,6 +1,6 @@
-import { VoIpCallerInfo } from '@rocket.chat/core-typings';
+import type { VoIpCallerInfo } from '@rocket.chat/core-typings';
 import { Box, Icon } from '@rocket.chat/fuselage';
-import { ComponentStory } from '@storybook/react';
+import type { ComponentStory } from '@storybook/react';
 import React, { useState } from 'react';
 
 import { VoipFooter } from './VoipFooter';
@@ -67,7 +67,7 @@ const VoipFooterTemplate: ComponentStory<typeof VoipFooter> = (args) => {
 	};
 
 	return (
-		<Box maxWidth='x300' bg='neutral-800' borderRadius='x4'>
+		<Box maxWidth='x300' bg='dark' borderRadius='x4'>
 			<VoipFooter
 				{...args}
 				callActions={callActions}
@@ -85,7 +85,7 @@ const VoipFooterTemplate: ComponentStory<typeof VoipFooter> = (args) => {
 					deviceSettings: {
 						label: (
 							<Box alignItems='center' display='flex'>
-								<Icon mie='x4' name='customize' size='x16' />
+								<Icon mie={4} name='customize' size='x16' />
 								Device Settings
 							</Box>
 						),

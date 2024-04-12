@@ -7,13 +7,19 @@ export class OmnichannelAgents {
 
 	readonly sidenav: OmnichannelSidenav;
 
+	readonly editCtxBar: Locator;
+
+	readonly infoCtxBar: Locator;
+
 	constructor(page: Page) {
 		this.page = page;
 		this.sidenav = new OmnichannelSidenav(page);
+		this.editCtxBar = page.locator('[data-qa-id="agent-edit-contextual-bar"]');
+		this.infoCtxBar = page.locator('[data-qa-id="agent-info-contextual-bar"]');
 	}
 
 	get inputUsername(): Locator {
-		return this.page.locator('input').first();
+		return this.page.locator('[data-qa-id="UserAutoComplete"]');
 	}
 
 	get inputSearch(): Locator {
@@ -21,30 +27,71 @@ export class OmnichannelAgents {
 	}
 
 	get btnAdd(): Locator {
-		return this.page.locator('button.rcx-button--primary.rcx-button >> text="Add"');
+		return this.page.locator('role=button[name="Add agent"]');
 	}
 
 	get firstRowInTable() {
-		return this.page.locator('[data-qa="GenericTableAgentInfoBody"] .rcx-table__row--action .rcx-table__cell:first-child');
+		return this.page.locator('[data-qa-id="agents-table"] tr:first-child td:first-child');
 	}
 
 	get btnDeletefirstRowInTable() {
-		return this.page.locator('button[title="Remove"]');
+		return this.page.locator('[data-qa-id="agents-table"] tr:first-child').locator('role=button[name="Remove"]');
+	}
+
+	get modalRemoveAgent(): Locator {
+		return this.page.locator('[data-qa-id="remove-agent-modal"]');
 	}
 
 	get btnModalRemove(): Locator {
-		return this.page.locator('#modal-root dialog .rcx-modal__inner .rcx-modal__footer .rcx-button--danger');
+		return this.modalRemoveAgent.locator('role=button[name="Delete"]');
 	}
 
 	get btnEdit(): Locator {
-		return this.page.locator('[data-qa="AgentInfoAction-Edit"]');
+		return this.infoCtxBar.locator('[data-qa="agent-info-action-edit"]');
 	}
 
-	get btnStatus(): Locator {
-		return this.page.locator('[data-qa="AgentEditTextInput-Status"]');
+	get btnRemove(): Locator {
+		return this.infoCtxBar.locator('role=button[name="Remove"]');
 	}
 
 	get btnSave(): Locator {
-		return this.page.locator('[data-qa="AgentEditButtonSave"]');
+		return this.editCtxBar.locator('[data-qa-id="agent-edit-save"]');
+	}
+
+	get inputMaxChats(): Locator {
+		return this.editCtxBar.locator('input[name="maxNumberSimultaneousChat"]');
+	}
+
+	get inputStatus(): Locator {
+		return this.page.locator('[data-qa-id="agent-edit-status"]');
+	}
+
+	get inputDepartment(): Locator {
+		return this.editCtxBar.locator('[data-qa-id="agent-edit-departments"]');
+	}
+
+	async selectDepartment(name: string) {
+		await this.inputDepartment.click();
+		await this.inputDepartment.type(name);
+		await this.page.locator(`.rcx-option__content:has-text("${name}")`).click();
+	}
+
+	async selectStatus(status: string) {
+		await this.inputStatus.click();
+		await this.page.locator(`.rcx-option__content:has-text("${status}")`).click();
+	}
+
+	async selectUsername(username: string) {
+		await this.inputUsername.fill('');
+		await this.inputUsername.type(username);
+		await this.page.locator(`role=option[name="${username}"]`).click();
+	}
+
+	findRowByUsername(username: string) {
+		return this.page.locator(`[data-qa-id="${username}"]`);
+	}
+
+	findRowByName(name: string) {
+		return this.page.locator('tr', { has: this.page.locator(`td >> text="${name}"`) });
 	}
 }

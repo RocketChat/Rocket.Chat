@@ -2,14 +2,14 @@
  * @author Vigneshwaran Odayappan <vickyokrm@gmail.com>
  */
 
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { HTTP } from 'meteor/http';
-import _ from 'underscore';
 import type { IMessage, IProviderMetadata, ISupportedLanguage, ITranslationResult, MessageAttachment } from '@rocket.chat/core-typings';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import _ from 'underscore';
 
+import { i18n } from '../../../server/lib/i18n';
+import { settings } from '../../settings/server';
 import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';
 import { msLogger } from './logger';
-import { settings } from '../../settings/server';
 
 /**
  * Microsoft translation service provider class representation.
@@ -55,7 +55,7 @@ class MsAutoTranslate extends AutoTranslate {
 	_getProviderMetadata(): IProviderMetadata {
 		return {
 			name: this.name,
-			displayName: TAPi18n.__('AutoTranslate_Microsoft'),
+			displayName: i18n.t('AutoTranslate_Microsoft'),
 			settings: this._getSettings(),
 		};
 	}
@@ -80,17 +80,21 @@ class MsAutoTranslate extends AutoTranslate {
 	 * @param {string} target
 	 * @returns {object} code : value pair
 	 */
-	getSupportedLanguages(target: string): ISupportedLanguage[] {
+	async getSupportedLanguages(target: string): Promise<ISupportedLanguage[]> {
 		if (!this.apiKey) {
 			return [];
 		}
 		if (this.supportedLanguages[target]) {
 			return this.supportedLanguages[target];
 		}
-		const languages = HTTP.get(this.apiGetLanguages);
-		this.supportedLanguages[target] = Object.keys(languages.data.translation).map((language) => ({
+		const request = await fetch(this.apiGetLanguages);
+		if (!request.ok) {
+			throw new Error(request.statusText);
+		}
+		const languages = await request.json();
+		this.supportedLanguages[target] = Object.keys(languages.translation).map((language) => ({
 			language,
-			name: languages.data.translation[language].name,
+			name: languages.translation[language].name,
 		}));
 		return this.supportedLanguages[target || 'en'];
 	}
@@ -103,35 +107,42 @@ class MsAutoTranslate extends AutoTranslate {
 	 * @throws Communication Errors
 	 * @returns {object} translations: Translated messages for each language
 	 */
-	_translate(
+	async _translate(
 		data: {
 			Text: string;
 		}[],
 		targetLanguages: string[],
-	): ITranslationResult {
+	): Promise<ITranslationResult> {
 		let translations: { [k: string]: string } = {};
-		const supportedLanguages = this.getSupportedLanguages('en');
+		const supportedLanguages = await this.getSupportedLanguages('en');
 		targetLanguages = targetLanguages.map((language) => {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
 				language = language.substr(0, 2);
 			}
 			return language;
 		});
-		const url = `${this.apiEndPointUrl}&to=${targetLanguages.join('&to=')}`;
-		const result = HTTP.post(url, {
+		const request = await fetch(this.apiEndPointUrl, {
+			method: 'POST',
 			headers: {
 				'Ocp-Apim-Subscription-Key': this.apiKey,
 				'Content-Type': 'application/json; charset=UTF-8',
 			},
-			data,
+			body: data,
+			params: {
+				to: targetLanguages,
+			},
 		});
+		if (!request.ok) {
+			throw new Error(request.statusText);
+		}
+		const result = await request.json();
 
-		if (result.statusCode === 200 && result.data && result.data.length > 0) {
+		if (request.status === 200 && result.length > 0) {
 			// store translation only when the source and target language are different.
 			translations = Object.assign(
 				{},
 				...targetLanguages.map((language) => ({
-					[language]: result.data
+					[language]: result
 						.map(
 							(line: { translations: { to: string; text: string }[] }) =>
 								line.translations.find((translation) => translation.to === language)?.text,
@@ -151,7 +162,7 @@ class MsAutoTranslate extends AutoTranslate {
 	 * @param {object} targetLanguages
 	 * @returns {object} translations: Translated messages for each language
 	 */
-	_translateMessage(message: IMessage, targetLanguages: string[]): ITranslationResult {
+	async _translateMessage(message: IMessage, targetLanguages: string[]): Promise<ITranslationResult> {
 		// There are multi-sentence-messages where multiple sentences come from different languages
 		// This is a problem for translation services since the language detection fails.
 		// Thus, we'll split the message in sentences, get them translated, and join them again after translation
@@ -171,7 +182,7 @@ class MsAutoTranslate extends AutoTranslate {
 	 * @param {object} targetLanguages
 	 * @returns {object} translated messages for each target language
 	 */
-	_translateAttachmentDescriptions(attachment: MessageAttachment, targetLanguages: string[]): ITranslationResult {
+	async _translateAttachmentDescriptions(attachment: MessageAttachment, targetLanguages: string[]): Promise<ITranslationResult> {
 		try {
 			return this._translate(
 				[

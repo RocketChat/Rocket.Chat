@@ -1,16 +1,18 @@
-import { IUser, Serialized } from '@rocket.chat/core-typings';
+import type { IUser, Serialized } from '@rocket.chat/core-typings';
 import { Box, Margins, Tag } from '@rocket.chat/fuselage';
-import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { memo, ReactElement, ReactNode } from 'react';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement, ReactNode } from 'react';
+import React, { memo } from 'react';
 
 import { useTimeAgo } from '../../hooks/useTimeAgo';
 import { useUserCustomFields } from '../../hooks/useUserCustomFields';
 import { useUserDisplayName } from '../../hooks/useUserDisplayName';
+import { ContextualbarScrollableContent } from '../Contextualbar';
 import InfoPanel from '../InfoPanel';
 import MarkdownText from '../MarkdownText';
 import UTCClock from '../UTCClock';
-import UserCard from '../UserCard';
-import VerticalBar from '../VerticalBar';
+import { UserCardRoles } from '../UserCard';
 import UserInfoAvatar from './UserInfoAvatar';
 
 type UserInfoDataProps = Serialized<
@@ -65,7 +67,7 @@ const UserInfo = ({
 	const userCustomFields = useUserCustomFields(customFields);
 
 	return (
-		<VerticalBar.ScrollableContent p='x24' {...props}>
+		<ContextualbarScrollableContent p={24} {...props}>
 			<InfoPanel>
 				{username && (
 					<InfoPanel.Avatar>
@@ -73,7 +75,7 @@ const UserInfo = ({
 					</InfoPanel.Avatar>
 				)}
 
-				{actions && <InfoPanel.Section>{actions}</InfoPanel.Section>}
+				{actions && <InfoPanel.ActionGroup>{actions}</InfoPanel.ActionGroup>}
 
 				<InfoPanel.Section>
 					{userDisplayName && <InfoPanel.Title icon={status} title={userDisplayName} />}
@@ -88,7 +90,7 @@ const UserInfo = ({
 					{roles.length !== 0 && (
 						<InfoPanel.Field>
 							<InfoPanel.Label>{t('Roles')}</InfoPanel.Label>
-							<UserCard.Roles>{roles}</UserCard.Roles>
+							<UserCardRoles>{roles}</UserCardRoles>
 						</InfoPanel.Field>
 					)}
 
@@ -154,7 +156,7 @@ const UserInfo = ({
 								<Box is='a' withTruncatedText href={`mailto:${email}`}>
 									{email}
 								</Box>
-								<Margins inline='x4'>
+								<Margins inline={4}>
 									<Tag>{verified ? t('Verified') : t('Not_verified')}</Tag>
 								</Margins>
 							</InfoPanel.Text>
@@ -181,7 +183,7 @@ const UserInfo = ({
 					)}
 				</InfoPanel.Section>
 			</InfoPanel>
-		</VerticalBar.ScrollableContent>
+		</ContextualbarScrollableContent>
 	);
 };
 

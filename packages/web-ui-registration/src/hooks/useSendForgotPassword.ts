@@ -1,7 +1,10 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useMutation } from '@tanstack/react-query';
 
 export const useSendForgotPassword = () => {
-	const forgot = useEndpoint('POST', '/v1/users.forgotPassword');
+	const sendForgotPassword = useEndpoint('POST', '/v1/users.forgotPassword');
 
-	return forgot;
+	return useMutation({
+		mutationFn: sendForgotPassword,
+	});
 };

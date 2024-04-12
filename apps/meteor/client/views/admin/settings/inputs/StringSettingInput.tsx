@@ -1,29 +1,26 @@
-import { Box, Field, Flex, TextAreaInput, TextInput } from '@rocket.chat/fuselage';
-import React, { EventHandler, ReactElement, SyntheticEvent } from 'react';
+import { Field, FieldLabel, FieldRow, TextAreaInput, TextInput } from '@rocket.chat/fuselage';
+import type { EventHandler, ReactElement, SyntheticEvent } from 'react';
+import React from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
+import type { SettingInputProps } from './types';
 
-type StringSettingInputProps = {
-	_id: string;
-	label: string;
-	value?: string;
+type StringSettingInputProps = SettingInputProps & {
+	name?: string;
 	multiline?: boolean;
-	placeholder?: string;
-	readonly?: boolean;
-	autocomplete?: boolean;
-	disabled?: boolean;
-	hasResetButton?: boolean;
-	onChangeValue?: (value: string) => void;
-	onResetButtonClick?: () => void;
+	error?: string;
 };
 
 function StringSettingInput({
 	_id,
 	label,
+	name,
 	disabled,
+	required,
 	multiline,
 	placeholder,
 	readonly,
+	error,
 	autocomplete,
 	value,
 	hasResetButton,
@@ -35,25 +32,25 @@ function StringSettingInput({
 	};
 
 	return (
-		<>
-			<Flex.Container>
-				<Box>
-					<Field.Label htmlFor={_id} title={_id}>
-						{label}
-					</Field.Label>
-					{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
-				</Box>
-			</Flex.Container>
-			<Field.Row>
+		<Field>
+			<FieldRow>
+				<FieldLabel htmlFor={_id} title={_id} required={required}>
+					{label}
+				</FieldLabel>
+				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+			</FieldRow>
+			<FieldRow>
 				{multiline ? (
 					<TextAreaInput
 						data-qa-setting-id={_id}
 						id={_id}
+						name={name}
 						rows={4}
 						value={value}
 						placeholder={placeholder}
 						disabled={disabled}
 						readOnly={readonly}
+						error={error}
 						autoComplete={autocomplete === false ? 'off' : undefined}
 						onChange={handleChange}
 					/>
@@ -62,15 +59,17 @@ function StringSettingInput({
 						data-qa-setting-id={_id}
 						id={_id}
 						value={value}
+						name={name}
 						placeholder={placeholder}
 						disabled={disabled}
 						readOnly={readonly}
 						autoComplete={autocomplete === false ? 'off' : undefined}
+						error={error}
 						onChange={handleChange}
 					/>
 				)}
-			</Field.Row>
-		</>
+			</FieldRow>
+		</Field>
 	);
 }
 

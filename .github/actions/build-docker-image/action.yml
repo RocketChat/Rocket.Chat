@@ -61,8 +61,8 @@ runs:
         echo "Build ${{ inputs.release }} Docker image"
         docker build -t $IMAGE_NAME .
 
-        echo "::set-output name=image-name-base::${IMAGE_NAME_BASE}"
-        echo "::set-output name=image-name::${IMAGE_NAME}"
+        echo "image-name-base=${IMAGE_NAME_BASE}" >> $GITHUB_OUTPUT
+        echo "image-name=${IMAGE_NAME}" >> $GITHUB_OUTPUT
 
     - name: Login to GitHub Container Registry
       if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop'

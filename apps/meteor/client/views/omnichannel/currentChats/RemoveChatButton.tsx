@@ -1,7 +1,8 @@
 import { IconButton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 
 import GenericModal from '../../../components/GenericModal';
 import { GenericTableCell } from '../../../components/GenericTable';
@@ -34,7 +35,14 @@ const RemoveChatButton: FC<{ _id: string }> = ({ _id }) => {
 		};
 
 		setModal(
-			<GenericModal variant='danger' onConfirm={onDeleteAgent} onClose={handleClose} onCancel={handleClose} confirmText={t('Delete')} />,
+			<GenericModal
+				variant='danger'
+				data-qa-id='current-chats-modal-remove'
+				onConfirm={onDeleteAgent}
+				onClose={handleClose}
+				onCancel={handleClose}
+				confirmText={t('Delete')}
+			/>,
 		);
 	});
 

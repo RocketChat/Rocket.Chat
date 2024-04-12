@@ -1,7 +1,8 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
 import { useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React, { ReactElement, ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
+import React from 'react';
 
 import CounterSet from '../../../components/dataView/CounterSet';
 
@@ -13,11 +14,25 @@ const useOverviewData = (): [eventCount: ReactNode, userCount: ReactNode, server
 	});
 
 	if (result.isLoading) {
-		return [<Skeleton variant='text' />, <Skeleton variant='text' />, <Skeleton variant='text' />];
+		return [
+			<Skeleton key='event-count' variant='text' />,
+			<Skeleton key='user-count' variant='text' />,
+			<Skeleton key='server-count' variant='text' />,
+		];
 	}
 
 	if (result.isError) {
-		return [<Box color='danger'>Error</Box>, <Box color='danger'>Error</Box>, <Box color='danger'>Error</Box>];
+		return [
+			<Box key='event-count' color='status-font-on-danger'>
+				Error
+			</Box>,
+			<Box key='user-count' color='status-font-on-danger'>
+				Error
+			</Box>,
+			<Box key='server-count' color='status-font-on-danger'>
+				Error
+			</Box>,
+		];
 	}
 
 	const { data } = result.data;

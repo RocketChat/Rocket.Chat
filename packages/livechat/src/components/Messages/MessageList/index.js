@@ -1,11 +1,14 @@
 import { parseISO } from 'date-fns/fp';
 import isSameDay from 'date-fns/isSameDay';
+import { Suspense } from 'preact/compat';
 
+import { MemoizedComponent } from '../../../helpers/MemoizedComponent';
+import { getAttachmentUrl } from '../../../helpers/baseUrl';
+import { createClassName } from '../../../helpers/createClassName';
 import constants from '../../../lib/constants';
 import store from '../../../store';
 import { isCallOngoing } from '../../Calls/CallStatus';
 import { JoinCallButton } from '../../Calls/JoinCallButton';
-import { createClassName, getAttachmentUrl, MemoizedComponent } from '../../helpers';
 import Message from '../Message';
 import MessageSeparator from '../MessageSeparator';
 import { TypingIndicator } from '../TypingIndicator';
@@ -22,6 +25,8 @@ export class MessageList extends MemoizedComponent {
 
 	static SCROLL_FREE = 'free';
 
+	static SCROLL_AT_BOTTOM_AREA = 128;
+
 	// eslint-disable-next-line no-use-before-define
 	scrollPosition = MessageList.SCROLL_AT_BOTTOM;
 
@@ -33,11 +38,15 @@ export class MessageList extends MemoizedComponent {
 		}
 
 		let scrollPosition;
+		const scrollBottom = this.base.scrollHeight - (this.base.clientHeight + this.base.scrollTop);
+
 		if (this.base.scrollHeight <= this.base.clientHeight) {
 			scrollPosition = MessageList.SCROLL_AT_BOTTOM;
 		} else if (this.base.scrollTop === 0) {
 			scrollPosition = MessageList.SCROLL_AT_TOP;
-		} else if (this.base.scrollHeight === this.base.scrollTop + this.base.clientHeight) {
+		} else if (scrollBottom <= MessageList.SCROLL_AT_BOTTOM_AREA) {
+			// TODO: Once we convert these classes to functional components we should use refs to check if the last message is within the viewport
+			// For now we are using a fixed value to check if the last message is within the bottom of the scroll area
 			scrollPosition = MessageList.SCROLL_AT_BOTTOM;
 		} else {
 			scrollPosition = MessageList.SCROLL_FREE;
@@ -47,6 +56,13 @@ export class MessageList extends MemoizedComponent {
 			this.scrollPosition = scrollPosition;
 			const { onScrollTo } = this.props;
 			onScrollTo && onScrollTo(scrollPosition);
+		}
+
+		const { dispatch } = this.props;
+		const { messageListPosition } = store.state;
+
+		if (messageListPosition !== this.scrollPosition) {
+			dispatch({ messageListPosition: this.scrollPosition });
 		}
 	};
 
@@ -75,7 +91,18 @@ export class MessageList extends MemoizedComponent {
 		}
 	}
 
-	componentDidUpdate() {
+	componentDidUpdate(prevProps) {
+		const { messages, uid } = this.props;
+		const { messages: prevMessages } = prevProps;
+
+		if (messages?.length !== prevMessages?.length) {
+			const lastMessage = messages[messages.length - 1];
+
+			if (lastMessage?.u?._id && lastMessage.u._id === uid) {
+				this.scrollPosition = MessageList.SCROLL_AT_BOTTOM;
+			}
+		}
+
 		if (this.scrollPosition === MessageList.SCROLL_AT_BOTTOM) {
 			this.base.scrollTop = this.base.scrollHeight;
 			return;
@@ -101,7 +128,9 @@ export class MessageList extends MemoizedComponent {
 
 	isVideoConfMessage(message) {
 		return Boolean(
-			message.blocks?.find(({ appId }) => appId === 'videoconf-core')?.elements?.find(({ actionId }) => actionId === 'joinLivechat'),
+			message.blocks
+				?.find(({ appId, type }) => appId === 'videoconf-core' && type === 'actions')
+				?.elements?.find(({ actionId }) => actionId === 'joinLivechat'),
 		);
 	}
 
@@ -115,8 +144,8 @@ export class MessageList extends MemoizedComponent {
 		typingUsernames,
 	}) => {
 		const items = [];
-		const { incomingCallAlert } = store.state;
-		const { ongoingCall } = store.state;
+		const { incomingCallAlert, ongoingCall } = store.state;
+		const { hideSenderAvatar = false, hideReceiverAvatar = false } = this.props || {};
 
 		for (let i = 0; i < messages.length; ++i) {
 			const previousMessage = messages[i - 1];
@@ -137,7 +166,7 @@ export class MessageList extends MemoizedComponent {
 			}
 
 			const videoConfJoinBlock = message.blocks
-				?.find(({ appId }) => appId === 'videoconf-core')
+				?.find(({ appId, type }) => appId === 'videoconf-core' && type === 'actions')
 				?.elements?.find(({ actionId }) => actionId === 'joinLivechat');
 			if (videoConfJoinBlock) {
 				// If the call is not accepted yet, don't render the message.
@@ -151,18 +180,22 @@ export class MessageList extends MemoizedComponent {
 				items.push(<MessageSeparator key={`sep-${message.ts}`} use='li' date={message.ts} />);
 			}
 
+			const isMe = uid && message.u && uid === message.u._id;
 			items.push(
-				<Message
-					key={message._id}
-					attachmentResolver={attachmentResolver}
-					avatarResolver={avatarResolver}
-					use='li'
-					me={uid && message.u && uid === message.u._id}
-					compact={nextMessage && message.u && nextMessage.u && message.u._id === nextMessage.u._id && !nextMessage.t}
-					conversationFinishedMessage={conversationFinishedMessage}
-					type={message.t}
-					{...message}
-				/>,
+				<Suspense fallback={null}>
+					<Message
+						key={message._id}
+						attachmentResolver={attachmentResolver}
+						avatarResolver={avatarResolver}
+						use='li'
+						me={isMe}
+						hideAvatar={(isMe && hideSenderAvatar) || (!isMe && hideReceiverAvatar)}
+						compact={nextMessage && message.u && nextMessage.u && message.u._id === nextMessage.u._id && !nextMessage.t}
+						conversationFinishedMessage={conversationFinishedMessage}
+						type={message.t}
+						{...message}
+					/>
+				</Suspense>,
 			);
 
 			const showUnreadSeparator = lastReadMessageId && nextMessage && lastReadMessageId === message._id;

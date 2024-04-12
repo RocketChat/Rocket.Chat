@@ -1,41 +1,31 @@
-import { Meteor } from 'meteor/meteor';
+import { Room } from '@rocket.chat/core-services';
+import type { IRoom } from '@rocket.chat/core-typings';
+import { Rooms } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
-import { hasPermission, canAccessRoom } from '../../../authorization/server';
-import { Rooms } from '../../../models/server';
-import { addUserToRoom } from '../functions';
-import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
-import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		joinRoom(rid: IRoom['_id'], code?: string): boolean | undefined;
+	}
+}
 
-Meteor.methods({
-	joinRoom(rid, code) {
+Meteor.methods<ServerMethods>({
+	async joinRoom(rid, code) {
 		check(rid, String);
 
-		const user = Meteor.user();
-
-		if (!user) {
+		const userId = await Meteor.userId();
+		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'joinRoom' });
 		}
 
-		const room = Rooms.findOneById(rid);
-
+		const room = await Rooms.findOneById(rid);
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'joinRoom' });
 		}
 
-		if (!roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.JOIN)) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
-		}
-
-		if (!canAccessRoom(room, user)) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
-		}
-		if (room.joinCodeRequired === true && code !== room.joinCode && !hasPermission(user._id, 'join-without-join-code')) {
-			throw new Meteor.Error('error-code-invalid', 'Invalid Room Password', {
-				method: 'joinRoom',
-			});
-		}
-
-		return addUserToRoom(rid, user);
+		return Room.join({ room, user: { _id: userId }, ...(code ? { joinCode: code } : {}) });
 	},
 });

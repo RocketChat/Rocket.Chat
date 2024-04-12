@@ -1,12 +1,14 @@
-import { Button, Field, Modal, Box, Throbber, PasswordInput, InputBoxSkeleton } from '@rocket.chat/fuselage';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useRouteParameter, useRoute, useUser, useMethod, useTranslation, useLoginWithToken } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import { Button, FieldGroup, Field, FieldLabel, ButtonGroup, PasswordInput, FieldRow, FieldError } from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { Form } from '@rocket.chat/layout';
+import { PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useSetting, useRouter, useRouteParameter, useUser, useMethod, useTranslation, useLoginWithToken } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 
 import HorizontalTemplate from '../template/HorizontalTemplate';
-import { usePasswordPolicy } from '../hooks/usePasswordPolicy';
 
 const getChangePasswordReason = ({
 	requirePasswordChange,
@@ -20,11 +22,17 @@ const ResetPasswordPage = (): ReactElement => {
 	const resetPassword = useMethod('resetPassword');
 	const token = useRouteParameter('token');
 
-	const policies = usePasswordPolicy({
-		token: user ? undefined : token,
-	});
+	const resetPasswordFormRef = useRef<HTMLElement>(null);
+	const passwordId = useUniqueId();
+	const passwordConfirmationId = useUniqueId();
+	const passwordVerifierId = useUniqueId();
+	const formLabelId = useUniqueId();
 
-	const homeRouter = useRoute('home');
+	const requiresPasswordConfirmation = useSetting('Accounts_RequirePasswordConfirmation');
+	const passwordPlaceholder = String(useSetting('Accounts_PasswordPlaceholder'));
+	const passwordConfirmationPlaceholder = String(useSetting('Accounts_ConfirmPasswordPlaceholder'));
+
+	const router = useRouter();
 
 	const changePasswordReason = getChangePasswordReason(user || {});
 
@@ -34,70 +42,115 @@ const ResetPasswordPage = (): ReactElement => {
 		register,
 		handleSubmit,
 		setError,
-		formState: { errors },
-		formState,
+		formState: { errors, isSubmitting },
+		watch,
 	} = useForm<{
 		password: string;
+		passwordConfirmation: string;
 	}>({
-		mode: 'onChange',
+		mode: 'onBlur',
 	});
 
-	const submit = handleSubmit(async (data) => {
+	const password = watch('password');
+	const passwordIsValid = useValidatePassword(password);
+
+	useEffect(() => {
+		if (resetPasswordFormRef.current) {
+			resetPasswordFormRef.current.focus();
+		}
+	}, []);
+
+	const handleResetPassword = async ({ password }: { password: string }) => {
 		try {
 			if (token) {
-				const result = await resetPassword(token, data.password);
+				const result = await resetPassword(token, password);
 				await loginWithToken(result.token);
-				homeRouter.push({});
+				router.navigate('/home');
 			} else {
-				await setUserPassword(data.password);
+				await setUserPassword(password);
 			}
-		} catch ({ error, reason }) {
+		} catch ({ error, reason }: any) {
 			const _error = reason ?? error;
 			setError('password', { message: String(_error) });
 		}
-	});
+	};
 
 	return (
 		<HorizontalTemplate>
-			<Form onSubmit={submit}>
+			<Form
+				tabIndex={-1}
+				ref={resetPasswordFormRef}
+				aria-labelledby={formLabelId}
+				aria-describedby='welcomeTitle'
+				onSubmit={handleSubmit(handleResetPassword)}
+			>
 				<Form.Header>
-					<Modal.Title textAlign='start'>{t('Password')}</Modal.Title>
+					<Form.Title id={formLabelId}>{t('Reset_password')}</Form.Title>
+					<Form.Subtitle>{t(changePasswordReason)}</Form.Subtitle>
 				</Form.Header>
 				<Form.Container>
-					<Field>
-						<Field.Label htmlFor='password'>{t(changePasswordReason)}</Field.Label>
-						<Field.Row>
-							<PasswordInput
-								{...register('password', {
-									required: true,
-								})}
-								error={errors.password?.message}
-								aria-invalid={errors.password ? 'true' : 'false'}
-								id='password'
-								placeholder={t('Type_your_new_password')}
-								name='password'
-								autoComplete='off'
-							/>
-						</Field.Row>
-						{errors && <Field.Error>{errors.password?.message}</Field.Error>}
-						<Field.Hint>
-							{policies.isLoading && <InputBoxSkeleton />}
-							{policies.isSuccess &&
-								policies.data.enabled &&
-								policies.data.policy?.map((policy, index) => (
-									<Box is='p' textAlign='start' key={index}>
-										{t(...(policy as unknown as [name: TranslationKey, options?: Record<string, unknown>]))}
-									</Box>
-								))}
-						</Field.Hint>
-					</Field>
+					<FieldGroup>
+						<Field>
+							<FieldLabel required htmlFor={passwordId}>
+								{t('registration.component.form.password')}
+							</FieldLabel>
+							<FieldRow>
+								<PasswordInput
+									{...register('password', {
+										required: t('registration.component.form.requiredField'),
+										validate: () => (!passwordIsValid ? t('Password_must_meet_the_complexity_requirements') : true),
+									})}
+									error={errors?.password?.message}
+									aria-invalid={errors.password ? 'true' : 'false'}
+									aria-required='true'
+									id={passwordId}
+									placeholder={passwordPlaceholder || t('Create_a_password')}
+									aria-describedby={`${passwordVerifierId} ${passwordId}-error`}
+								/>
+							</FieldRow>
+							{errors?.password && (
+								<FieldError aria-live='assertive' id={`${passwordId}-error`}>
+									{errors.password.message}
+								</FieldError>
+							)}
+							<PasswordVerifier password={password} id={passwordVerifierId} />
+						</Field>
+						{requiresPasswordConfirmation && (
+							<Field>
+								<FieldLabel required htmlFor={passwordConfirmationId}>
+									{t('registration.component.form.confirmPassword')}
+								</FieldLabel>
+								<FieldRow>
+									<PasswordInput
+										{...register('passwordConfirmation', {
+											required: t('registration.component.form.requiredField'),
+											deps: ['password'],
+											validate: (val: string) => (password === val ? true : t('registration.component.form.invalidConfirmPass')),
+										})}
+										error={errors?.passwordConfirmation?.message}
+										aria-required='true'
+										aria-invalid={errors.passwordConfirmation ? 'true' : 'false'}
+										aria-describedby={`${passwordConfirmationId}-error`}
+										id={passwordConfirmationId}
+										placeholder={passwordConfirmationPlaceholder || t('Confirm_password')}
+										disabled={!passwordIsValid}
+									/>
+								</FieldRow>
+								{errors.passwordConfirmation && (
+									<FieldError aria-live='assertive' id={`${passwordConfirmationId}-error`}>
+										{errors.passwordConfirmation?.message}
+									</FieldError>
+								)}
+							</Field>
+						)}
+					</FieldGroup>
 				</Form.Container>
 				<Form.Footer>
-					<Modal.FooterControllers>
-						<Button primary disabled={!formState.isValid} type='submit'>
-							{formState.isSubmitting ? <Throbber size='x12' inheritColor /> : t('Reset')}
+					<ButtonGroup>
+						<Button primary loading={isSubmitting} type='submit'>
+							{t('Reset')}
 						</Button>
-					</Modal.FooterControllers>
+					</ButtonGroup>
 				</Form.Footer>
 			</Form>
 		</HorizontalTemplate>

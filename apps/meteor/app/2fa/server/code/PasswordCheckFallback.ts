@@ -1,5 +1,5 @@
-import { Accounts } from 'meteor/accounts-base';
 import type { IUser } from '@rocket.chat/core-typings';
+import { Accounts } from 'meteor/accounts-base';
 
 import { settings } from '../../../settings/server';
 import type { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
@@ -19,12 +19,12 @@ export class PasswordCheckFallback implements ICodeCheck {
 		return false;
 	}
 
-	public verify(user: IUser, code: string, force: boolean): boolean {
+	public async verify(user: IUser, code: string, force: boolean): Promise<boolean> {
 		if (!this.isEnabled(user, force)) {
 			return false;
 		}
 
-		const passCheck = Accounts._checkPassword(user as Meteor.User, {
+		const passCheck = await Accounts._checkPasswordAsync(user as Meteor.User, {
 			digest: code.toLowerCase(),
 			algorithm: 'sha-256',
 		});
@@ -36,9 +36,13 @@ export class PasswordCheckFallback implements ICodeCheck {
 		return true;
 	}
 
-	public processInvalidCode(): IProcessInvalidCodeResult {
+	public async processInvalidCode(): Promise<IProcessInvalidCodeResult> {
 		return {
 			codeGenerated: false,
 		};
+	}
+
+	public async maxFaildedAttemtpsReached(_user: IUser): Promise<boolean> {
+		return false;
 	}
 }

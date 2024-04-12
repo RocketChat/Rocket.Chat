@@ -1,12 +1,18 @@
-import { expect } from 'chai';
+import fs from 'fs';
+import path from 'path';
 
+import { expect } from 'chai';
+import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
+
+import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
+import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
+import { imgURL, lstURL, svgLogoFileName, svgLogoURL } from '../../data/interactions';
+import { getSettingValueById, updateEEPermission, updatePermission, updateSetting } from '../../data/permissions.helper';
+import { closeRoom, createRoom, deleteRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
-import { closeRoom, createRoom } from '../../data/rooms.helper';
-import { imgURL } from '../../data/interactions.js';
-import { updatePermission, updateSetting } from '../../data/permissions.helper';
-import { sendSimpleMessage } from '../../data/chat.helper';
-import { createUser } from '../../data/users.helper';
+import { createUser, deleteUser, login } from '../../data/users.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
 describe('[Rooms]', function () {
 	this.retries(0);
@@ -75,7 +81,31 @@ describe('[Rooms]', function () {
 
 	describe('/rooms.upload', () => {
 		let testChannel;
+		let user;
+		let userCredentials;
+		let blockedMediaTypes;
+		before(async () => {
+			user = await createUser({ joinDefaultChannels: false });
+			userCredentials = await login(user.username, password);
+			blockedMediaTypes = await getSettingValueById('FileUpload_MediaTypeBlackList');
+			const newBlockedMediaTypes = blockedMediaTypes
+				.split(',')
+				.filter((type) => type !== 'image/svg+xml')
+				.join(',');
+			await updateSetting('FileUpload_MediaTypeBlackList', newBlockedMediaTypes);
+		});
+
+		after(async () => {
+			await deleteUser(user);
+			user = undefined;
+
+			await updateSetting('FileUpload_Restrict_to_room_members', false);
+			await updateSetting('FileUpload_ProtectFiles', true);
+			await updateSetting('FileUpload_MediaTypeBlackList', blockedMediaTypes);
+		});
+
 		const testChannelName = `channel.test.upload.${Date.now()}-${Math.random()}`;
+
 		it('create an channel', (done) => {
 			createRoom({ type: 'c', name: testChannelName }).end((err, res) => {
 				testChannel = res.body.channel;
@@ -123,8 +153,11 @@ describe('[Rooms]', function () {
 				})
 				.end(done);
 		});
-		it('upload a file to room', (done) => {
-			request
+
+		let fileNewUrl;
+		let fileOldUrl;
+		it('should upload a PNG file to room', async () => {
+			await request
 				.post(api(`rooms.upload/${testChannel._id}`))
 				.set(credentials)
 				.attach('file', imgURL)
@@ -133,12 +166,140 @@ describe('[Rooms]', function () {
 				.expect((res) => {
 					const { message } = res.body;
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('message._id', message._id);
-					expect(res.body).to.have.nested.property('message.rid', testChannel._id);
-					expect(res.body).to.have.nested.property('message.file._id', message.file._id);
-					expect(res.body).to.have.nested.property('message.file.type', message.file.type);
+					expect(res.body).to.have.property('message');
+					expect(res.body.message).to.have.property('attachments');
+					expect(res.body.message.attachments).to.be.an('array').of.length(1);
+					expect(res.body.message.attachments[0]).to.have.property('image_type', 'image/png');
+					expect(res.body.message.attachments[0]).to.have.property('title', '1024x1024.png');
+					expect(res.body.message).to.have.property('files');
+					expect(res.body.message.files).to.be.an('array').of.length(2);
+					expect(res.body.message.files[0]).to.have.property('type', 'image/png');
+					expect(res.body.message.files[0]).to.have.property('name', '1024x1024.png');
+
+					fileNewUrl = `/file-upload/${message.file._id}/${message.file.name}`;
+					fileOldUrl = `/ufs/GridFS:Uploads/${message.file._id}/${message.file.name}`;
+				});
+		});
+
+		it('should upload a LST file to room', (done) => {
+			request
+				.post(api(`rooms.upload/${testChannel._id}`))
+				.set(credentials)
+				.attach('file', lstURL)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('message');
+					expect(res.body.message).to.have.property('attachments');
+					expect(res.body.message.attachments).to.be.an('array').of.length(1);
+					expect(res.body.message.attachments[0]).to.have.property('format', 'LST');
+					expect(res.body.message.attachments[0]).to.have.property('title', 'lst-test.lst');
+					expect(res.body.message).to.have.property('files');
+					expect(res.body.message.files).to.be.an('array').of.length(1);
+					expect(res.body.message.files[0]).to.have.property('name', 'lst-test.lst');
 				})
 				.end(done);
+		});
+
+		it('should not allow uploading a blocked media type to a room', async () => {
+			await updateSetting('FileUpload_MediaTypeBlackList', 'application/octet-stream');
+			await request
+				.post(api(`rooms.upload/${testChannel._id}`))
+				.set(credentials)
+				.attach('file', lstURL)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-file-type');
+				});
+		});
+
+		it('should be able to get the file', async () => {
+			await request.get(fileNewUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
+			await request.get(fileOldUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
+		});
+
+		it('should be able to get the file when no access to the room if setting allows it', async () => {
+			await updateSetting('FileUpload_Restrict_to_room_members', false);
+			await request.get(fileNewUrl).set(userCredentials).expect('Content-Type', 'image/png').expect(200);
+			await request.get(fileOldUrl).set(userCredentials).expect('Content-Type', 'image/png').expect(200);
+		});
+
+		it('should not be able to get the file when no access to the room if setting blocks', async () => {
+			await updateSetting('FileUpload_Restrict_to_room_members', true);
+			await request.get(fileNewUrl).set(userCredentials).expect(403);
+			await request.get(fileOldUrl).set(userCredentials).expect(403);
+		});
+
+		it('should be able to get the file if member and setting blocks outside access', async () => {
+			await updateSetting('FileUpload_Restrict_to_room_members', true);
+			await request.get(fileNewUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
+			await request.get(fileOldUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
+		});
+
+		it('should not be able to get the file without credentials', async () => {
+			await request.get(fileNewUrl).attach('file', imgURL).expect(403);
+			await request.get(fileOldUrl).attach('file', imgURL).expect(403);
+		});
+
+		it('should be able to get the file without credentials if setting allows', async () => {
+			await updateSetting('FileUpload_ProtectFiles', false);
+			await request.get(fileNewUrl).expect('Content-Type', 'image/png').expect(200);
+			await request.get(fileOldUrl).expect('Content-Type', 'image/png').expect(200);
+		});
+
+		it('should generate thumbnail for SVG files correctly', async () => {
+			const expectedFileName = `thumb-${svgLogoFileName}`;
+			let thumbUrl;
+			await request
+				.post(api(`rooms.upload/${testChannel._id}`))
+				.set(credentials)
+				.attach('file', svgLogoURL)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					const { message } = res.body;
+					const { files, attachments } = message;
+
+					expect(files).to.be.an('array');
+					const hasThumbFile = files.some((file) => file.type === 'image/png' && file.name === expectedFileName);
+					expect(hasThumbFile).to.be.true;
+
+					expect(attachments).to.be.an('array');
+					const thumbAttachment = attachments.find((attachment) => attachment.title === svgLogoFileName);
+					expect(thumbAttachment).to.be.an('object');
+					thumbUrl = thumbAttachment.image_url;
+				});
+
+			await request.get(thumbUrl).set(credentials).expect('Content-Type', 'image/png');
+		});
+
+		it('should generate thumbnail for JPEG files correctly', async () => {
+			const expectedFileName = `thumb-sample-jpeg.jpg`;
+			let thumbUrl;
+			await request
+				.post(api(`rooms.upload/${testChannel._id}`))
+				.set(credentials)
+				.attach('file', fs.createReadStream(path.join(__dirname, '../../mocks/files/sample-jpeg.jpg')))
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					const { message } = res.body;
+					const { files, attachments } = message;
+
+					expect(files).to.be.an('array');
+					const hasThumbFile = files.some((file) => file.type === 'image/jpeg' && file.name === expectedFileName);
+					expect(hasThumbFile).to.be.true;
+
+					expect(attachments).to.be.an('array');
+					const thumbAttachment = attachments.find((attachment) => attachment.title === `sample-jpeg.jpg`);
+					expect(thumbAttachment).to.be.an('object');
+					thumbUrl = thumbAttachment.image_url;
+				});
+
+			await request.get(thumbUrl).set(credentials).expect('Content-Type', 'image/jpeg');
 		});
 	});
 
@@ -323,6 +484,12 @@ describe('[Rooms]', function () {
 				.end(done);
 			user = undefined;
 		});
+		before(async () => {
+			await updateSetting('Message_ShowDeletedStatus', true);
+		});
+		after(async () => {
+			await updateSetting('Message_ShowDeletedStatus', false);
+		});
 		it('create a public channel', (done) => {
 			createRoom({ type: 'c', name: `testeChannel${+new Date()}` }).end((err, res) => {
 				publicChannel = res.body.channel;
@@ -356,6 +523,43 @@ describe('[Rooms]', function () {
 					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
+		});
+		it('should not count hidden or deleted messages when limit param is not sent', async () => {
+			const res = await sendSimpleMessage({ roomId: publicChannel._id });
+			await deleteMessage({ roomId: publicChannel._id, msgId: res.body.message._id });
+			await request
+				.post(api('rooms.cleanHistory'))
+				.set(credentials)
+				.send({
+					roomId: publicChannel._id,
+					latest: '9999-12-31T23:59:59.000Z',
+					oldest: '0001-01-01T00:00:00.000Z',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count', 0);
+				});
+		});
+		it('should not count hidden or deleted messages when limit param is sent', async () => {
+			const res = await sendSimpleMessage({ roomId: publicChannel._id });
+			await deleteMessage({ roomId: publicChannel._id, msgId: res.body.message._id });
+			await request
+				.post(api('rooms.cleanHistory'))
+				.set(credentials)
+				.send({
+					roomId: publicChannel._id,
+					latest: '9999-12-31T23:59:59.000Z',
+					oldest: '0001-01-01T00:00:00.000Z',
+					limit: 2000,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count', 0);
+				});
 		});
 		it('should successfully delete an image and thumbnail from public channel', (done) => {
 			request
@@ -957,6 +1161,64 @@ describe('[Rooms]', function () {
 				})
 				.end(done);
 		});
+
+		describe('it should create a *private* discussion if the parent channel is public and inside a private team', async () => {
+			let privateTeam;
+
+			it('should create a team', (done) => {
+				request
+					.post(api('teams.create'))
+					.set(credentials)
+					.send({
+						name: `test-team-${Date.now()}`,
+						type: 1,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('team');
+						expect(res.body).to.have.nested.property('team._id');
+						privateTeam = res.body.team;
+					})
+					.end(done);
+			});
+
+			it('should add the public channel to the team', (done) => {
+				request
+					.post(api('teams.addRooms'))
+					.set(credentials)
+					.send({
+						rooms: [testChannel._id],
+						teamId: privateTeam._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success');
+					})
+					.end(done);
+			});
+
+			it('should create a private discussion inside the public channel', (done) => {
+				request
+					.post(api('rooms.createDiscussion'))
+					.set(credentials)
+					.send({
+						prid: testChannel._id,
+						t_name: `discussion-create-from-tests-${testChannel.name}-team`,
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('discussion').and.to.be.an('object');
+						expect(res.body.discussion).to.have.property('prid').and.to.be.equal(testChannel._id);
+						expect(res.body.discussion).to.have.property('fname').and.to.be.equal(`discussion-create-from-tests-${testChannel.name}-team`);
+						expect(res.body.discussion).to.have.property('t').and.to.be.equal('p');
+					})
+					.end(done);
+			});
+		});
 	});
 
 	describe('/rooms.getDiscussions', () => {
@@ -1141,8 +1403,8 @@ describe('[Rooms]', function () {
 					.end(done);
 			});
 		});
-		it('should return an error when the required parameter "selector" is not provided', (done) => {
-			updatePermission('can-audit', ['admin']).then(() => {
+		(IS_EE ? it : it.skip)('should return an error when the required parameter "selector" is not provided', (done) => {
+			updateEEPermission('can-audit', ['admin']).then(() => {
 				request
 					.get(api('rooms.autocomplete.adminRooms'))
 					.set(credentials)
@@ -1186,6 +1448,29 @@ describe('[Rooms]', function () {
 		});
 	});
 	describe('/rooms.adminRooms', () => {
+		const suffix = `test-${Date.now()}`;
+		const fnameRoom = `Ελληνικά-${suffix}`;
+		const nameRoom = `Ellinika-${suffix}`;
+		const discussionRoomName = `${nameRoom}-discussion`;
+
+		let testGroup;
+
+		before((done) => {
+			updateSetting('UI_Allow_room_names_with_special_chars', true).then(() => {
+				createRoom({ type: 'p', name: fnameRoom }).end((err, res) => {
+					testGroup = res.body.group;
+					request
+						.post(api('rooms.createDiscussion'))
+						.set(credentials)
+						.send({
+							prid: testGroup._id,
+							t_name: discussionRoomName,
+						})
+						.end(done);
+				});
+			});
+		});
+
 		it('should throw an error when the user tries to gets a list of discussion and he cannot access the room', (done) => {
 			updatePermission('view-room-administration', []).then(() => {
 				request
@@ -1231,6 +1516,115 @@ describe('[Rooms]', function () {
 				})
 				.end(done);
 		});
+		it('should search the list of admin rooms using non-latin characters when UI_Allow_room_names_with_special_chars setting is toggled', (done) => {
+			updateSetting('UI_Allow_room_names_with_special_chars', true).then(() => {
+				request
+					.get(api('rooms.adminRooms'))
+					.set(credentials)
+					.query({
+						filter: fnameRoom,
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('rooms').and.to.be.an('array');
+						expect(res.body.rooms).to.have.lengthOf(1);
+						expect(res.body.rooms[0].fname).to.be.equal(fnameRoom);
+						expect(res.body).to.have.property('offset');
+						expect(res.body).to.have.property('total');
+						expect(res.body).to.have.property('count');
+					})
+					.end(done);
+			});
+		});
+		it('should search the list of admin rooms using latin characters only when UI_Allow_room_names_with_special_chars setting is disabled', (done) => {
+			updateSetting('UI_Allow_room_names_with_special_chars', false).then(() => {
+				request
+					.get(api('rooms.adminRooms'))
+					.set(credentials)
+					.query({
+						filter: nameRoom,
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('rooms').and.to.be.an('array');
+						expect(res.body.rooms).to.have.lengthOf(1);
+						expect(res.body.rooms[0].name).to.be.equal(nameRoom);
+						expect(res.body).to.have.property('offset');
+						expect(res.body).to.have.property('total');
+						expect(res.body).to.have.property('count');
+					})
+					.end(done);
+			});
+		});
+		it('should filter by only rooms types', (done) => {
+			request
+				.get(api('rooms.adminRooms'))
+				.set(credentials)
+				.query({
+					types: ['p'],
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('rooms').and.to.be.an('array');
+					expect(res.body.rooms).to.have.lengthOf.at.least(1);
+					expect(res.body.rooms[0].t).to.be.equal('p');
+					expect(res.body.rooms.find((room) => room.name === nameRoom)).to.exist;
+					expect(res.body.rooms.find((room) => room.name === discussionRoomName)).to.not.exist;
+				})
+				.end(done);
+		});
+		it('should filter by only name', (done) => {
+			request
+				.get(api('rooms.adminRooms'))
+				.set(credentials)
+				.query({
+					filter: nameRoom,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('rooms').and.to.be.an('array');
+					expect(res.body.rooms).to.have.lengthOf(1);
+					expect(res.body.rooms[0].name).to.be.equal(nameRoom);
+				})
+				.end(done);
+		});
+		it('should filter by type and name at the same query', (done) => {
+			request
+				.get(api('rooms.adminRooms'))
+				.set(credentials)
+				.query({
+					filter: nameRoom,
+					types: ['p'],
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('rooms').and.to.be.an('array');
+					expect(res.body.rooms).to.have.lengthOf(1);
+					expect(res.body.rooms[0].name).to.be.equal(nameRoom);
+				})
+				.end(done);
+		});
+		it('should return an empty array when filter by wrong type and correct room name', (done) => {
+			request
+				.get(api('rooms.adminRooms'))
+				.set(credentials)
+				.query({
+					filter: nameRoom,
+					types: ['c'],
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('rooms').and.to.be.an('array');
+					expect(res.body.rooms).to.have.lengthOf(0);
+				})
+				.end(done);
+		});
 	});
 
 	describe('update group dms name', () => {
@@ -1250,54 +1644,56 @@ describe('[Rooms]', function () {
 			roomId = result.body.room.rid;
 		});
 
-		it('should update group name if user changes username', (done) => {
-			updateSetting('UI_Use_Real_Name', false).then(() => {
-				request
-					.post(api('users.update'))
-					.set(credentials)
-					.send({
-						userId: testUser._id,
-						data: {
-							username: `changed.username.${testUser.username}`,
-						},
-					})
-					.end(() => {
-						request
-							.get(api('subscriptions.getOne'))
-							.set(credentials)
-							.query({ roomId })
-							.end((err, res) => {
-								const { subscription } = res.body;
-								expect(subscription.name).to.equal(`rocket.cat,changed.username.${testUser.username}`);
-								done();
-							});
-					});
-			});
+		it('should update group name if user changes username', async () => {
+			await updateSetting('UI_Use_Real_Name', false);
+			await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: testUser._id,
+					data: {
+						username: `changed.username.${testUser.username}`,
+					},
+				});
+
+			// need to wait for the username update finish
+			await sleep(300);
+
+			await request
+				.get(api('subscriptions.getOne'))
+				.set(credentials)
+				.query({ roomId })
+				.send()
+				.expect((res) => {
+					const { subscription } = res.body;
+					expect(subscription.name).to.equal(`rocket.cat,changed.username.${testUser.username}`);
+				});
 		});
 
-		it('should update group name if user changes name', (done) => {
-			updateSetting('UI_Use_Real_Name', true).then(() => {
-				request
-					.post(api('users.update'))
-					.set(credentials)
-					.send({
-						userId: testUser._id,
-						data: {
-							name: `changed.name.${testUser.username}`,
-						},
-					})
-					.end(() => {
-						request
-							.get(api('subscriptions.getOne'))
-							.set(credentials)
-							.query({ roomId })
-							.end((err, res) => {
-								const { subscription } = res.body;
-								expect(subscription.fname).to.equal(`changed.name.${testUser.username}, Rocket.Cat`);
-								done();
-							});
-					});
-			});
+		it('should update group name if user changes name', async () => {
+			await updateSetting('UI_Use_Real_Name', true);
+			await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: testUser._id,
+					data: {
+						name: `changed.name.${testUser.username}`,
+					},
+				});
+
+			// need to wait for the name update finish
+			await sleep(300);
+
+			await request
+				.get(api('subscriptions.getOne'))
+				.set(credentials)
+				.query({ roomId })
+				.send()
+				.expect((res) => {
+					const { subscription } = res.body;
+					expect(subscription.fname).to.equal(`changed.name.${testUser.username}, Rocket.Cat`);
+				});
 		});
 	});
 
@@ -1343,6 +1739,314 @@ describe('[Rooms]', function () {
 					expect(res.body).to.have.property('success', false);
 				})
 				.end(done);
+		});
+	});
+
+	describe('rooms.saveRoomSettings', () => {
+		let testChannel;
+		const randomString = `randomString${Date.now()}`;
+		let discussion;
+
+		before(async () => {
+			const result = await createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` });
+			testChannel = result.body.channel;
+
+			const resDiscussion = await request
+				.post(api('rooms.createDiscussion'))
+				.set(credentials)
+				.send({
+					prid: testChannel._id,
+					t_name: `discussion-create-from-tests-${testChannel.name}`,
+				});
+
+			discussion = resDiscussion.body.discussion;
+		});
+
+		after(() => Promise.all([deleteRoom({ type: 'p', roomId: discussion._id }), deleteRoom({ type: 'p', roomId: testChannel._id })]));
+
+		it('should update the room settings', (done) => {
+			const imageDataUri = `data:image/png;base64,${fs.readFileSync(path.join(process.cwd(), imgURL)).toString('base64')}`;
+
+			request
+				.post(api('rooms.saveRoomSettings'))
+				.set(credentials)
+				.send({
+					rid: testChannel._id,
+					roomAvatar: imageDataUri,
+					featured: true,
+					roomName: randomString,
+					roomTopic: randomString,
+					roomAnnouncement: randomString,
+					roomDescription: randomString,
+					roomType: 'p',
+					readOnly: true,
+					reactWhenReadOnly: true,
+					default: true,
+					favorite: {
+						favorite: true,
+						defaultValue: true,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.end(done);
+		});
+
+		it('should have reflected on rooms.info', (done) => {
+			request
+				.get(api('rooms.info'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.be.an('object');
+
+					expect(res.body.room).to.have.property('_id', testChannel._id);
+					expect(res.body.room).to.have.property('name', randomString);
+					expect(res.body.room).to.have.property('topic', randomString);
+					expect(res.body.room).to.have.property('announcement', randomString);
+					expect(res.body.room).to.have.property('description', randomString);
+					expect(res.body.room).to.have.property('t', 'p');
+					expect(res.body.room).to.have.property('featured', true);
+					expect(res.body.room).to.have.property('ro', true);
+					expect(res.body.room).to.have.property('default', true);
+					expect(res.body.room).to.have.property('favorite', true);
+					expect(res.body.room).to.have.property('reactWhenReadOnly', true);
+				})
+				.end(done);
+		});
+
+		it('should be able to update the discussion name with spaces', async () => {
+			const newDiscussionName = `${randomString} with spaces`;
+
+			await request
+				.post(api('rooms.saveRoomSettings'))
+				.set(credentials)
+				.send({
+					rid: discussion._id,
+					roomName: newDiscussionName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			await request
+				.get(api('rooms.info'))
+				.set(credentials)
+				.query({
+					roomId: discussion._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.be.an('object');
+
+					expect(res.body.room).to.have.property('_id', discussion._id);
+					expect(res.body.room).to.have.property('fname', newDiscussionName);
+				});
+		});
+
+		it('should mark a room as favorite', async () => {
+			await request
+				.post(api('rooms.saveRoomSettings'))
+				.set(credentials)
+				.send({
+					rid: testChannel._id,
+					favorite: {
+						favorite: true,
+						defaultValue: true,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			await request
+				.get(api('rooms.info'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.be.an('object');
+
+					expect(res.body.room).to.have.property('_id', testChannel._id);
+					expect(res.body.room).to.have.property('favorite', true);
+				});
+		});
+		it('should not mark a room as favorite when room is not a default room', async () => {
+			await request
+				.post(api('rooms.saveRoomSettings'))
+				.set(credentials)
+				.send({
+					rid: testChannel._id,
+					favorite: {
+						favorite: true,
+						defaultValue: false,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			await request
+				.get(api('rooms.info'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.be.an('object');
+
+					expect(res.body.room).to.have.property('_id', testChannel._id);
+					expect(res.body.room).to.not.have.property('favorite');
+				});
+		});
+	});
+
+	describe('rooms.images', () => {
+		let testUserCreds = null;
+		before(async () => {
+			const user = await createUser();
+			testUserCreds = await login(user.username, password);
+		});
+
+		const uploadFile = async ({ roomId, file }) => {
+			const { body } = await request
+				.post(api(`rooms.upload/${roomId}`))
+				.set(credentials)
+				.attach('file', file)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			return body.message.attachments[0];
+		};
+
+		const getIdFromImgPath = (link) => {
+			return link.split('/')[2];
+		};
+
+		it('should return an error when user is not logged in', async () => {
+			await request.get(api('rooms.images')).expect(401);
+		});
+		it('should return an error when the required parameter "roomId" is not provided', async () => {
+			await request.get(api('rooms.images')).set(credentials).expect(400);
+		});
+		it('should return an error when the required parameter "roomId" is not a valid room', async () => {
+			await request.get(api('rooms.images')).set(credentials).query({ roomId: 'invalid' }).expect(403);
+		});
+		it('should return an error when room is valid but user is not part of it', async () => {
+			const { body } = await createRoom({ type: 'p', name: `test-${Date.now()}` });
+
+			const {
+				group: { _id: roomId },
+			} = body;
+			await request.get(api('rooms.images')).set(testUserCreds).query({ roomId }).expect(403);
+
+			await deleteRoom({ type: 'p', roomId });
+		});
+		it('should return an empty array when room is valid and user is part of it but there are no images', async () => {
+			const { body } = await createRoom({ type: 'p', usernames: [credentials.username], name: `test-${Date.now()}` });
+			const {
+				group: { _id: roomId },
+			} = body;
+			await request
+				.get(api('rooms.images'))
+				.set(credentials)
+				.query({ roomId })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('files').and.to.be.an('array').and.to.have.lengthOf(0);
+				});
+
+			await deleteRoom({ type: 'p', roomId });
+		});
+		it('should return an array of images when room is valid and user is part of it and there are images', async () => {
+			const { body } = await createRoom({ type: 'p', usernames: [credentials.username], name: `test-${Date.now()}` });
+			const {
+				group: { _id: roomId },
+			} = body;
+			const { title_link } = await uploadFile({
+				roomId,
+				file: fs.createReadStream(path.join(process.cwd(), imgURL)),
+			});
+			const fileId = getIdFromImgPath(title_link);
+			await request
+				.get(api('rooms.images'))
+				.set(credentials)
+				.query({ roomId })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('files').and.to.be.an('array').and.to.have.lengthOf(1);
+					expect(res.body.files[0]).to.have.property('_id', fileId);
+				});
+
+			await deleteRoom({ type: 'p', roomId });
+		});
+		it('should return multiple images when room is valid and user is part of it and there are multiple images', async () => {
+			const { body } = await createRoom({ type: 'p', usernames: [credentials.username], name: `test-${Date.now()}` });
+			const {
+				group: { _id: roomId },
+			} = body;
+			const { title_link: link1 } = await uploadFile({
+				roomId,
+				file: fs.createReadStream(path.join(process.cwd(), imgURL)),
+			});
+			const { title_link: link2 } = await uploadFile({
+				roomId,
+				file: fs.createReadStream(path.join(process.cwd(), imgURL)),
+			});
+
+			const fileId1 = getIdFromImgPath(link1);
+			const fileId2 = getIdFromImgPath(link2);
+
+			await request
+				.get(api('rooms.images'))
+				.set(credentials)
+				.query({ roomId })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('files').and.to.be.an('array').and.to.have.lengthOf(2);
+					expect(res.body.files.find((file) => file._id === fileId1)).to.exist;
+					expect(res.body.files.find((file) => file._id === fileId2)).to.exist;
+				});
+
+			await deleteRoom({ type: 'p', roomId });
+		});
+		it('should allow to filter images passing the startingFromId parameter', async () => {
+			const { body } = await createRoom({ type: 'p', usernames: [credentials.username], name: `test-${Date.now()}` });
+			const {
+				group: { _id: roomId },
+			} = body;
+			const { title_link } = await uploadFile({
+				roomId,
+				file: fs.createReadStream(path.join(process.cwd(), imgURL)),
+			});
+			await uploadFile({
+				roomId,
+				file: fs.createReadStream(path.join(process.cwd(), imgURL)),
+			});
+
+			const fileId2 = getIdFromImgPath(title_link);
+			await request
+				.get(api('rooms.images'))
+				.set(credentials)
+				.query({ roomId, startingFromId: fileId2 })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('files').and.to.be.an('array').and.to.have.lengthOf(1);
+					expect(res.body.files[0]).to.have.property('_id', fileId2);
+				});
+
+			await deleteRoom({ type: 'p', roomId });
 		});
 	});
 });

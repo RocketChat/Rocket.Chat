@@ -1,16 +1,12 @@
 import type { Readable } from 'stream';
 import stream from 'stream';
 
+import { ServiceClassInternal } from '@rocket.chat/core-services';
+import type { IMediaService, ResizeResult } from '@rocket.chat/core-services';
+import ExifTransformer from 'exif-be-gone';
 import ft from 'file-type';
-import sharp from 'sharp';
 import isSvg from 'is-svg';
-
-import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import type { IMediaService, ResizeResult } from '../../sdk/types/IMediaService';
-
-/* eslint-disable  @typescript-eslint/no-var-requires */
-const ExifTransformer = require('exif-be-gone');
-/* eslint-enable  @typescript-eslint/no-var-requires */
+import sharp from 'sharp';
 
 export class MediaService extends ServiceClassInternal implements IMediaService {
 	protected name = 'media';

@@ -1,9 +1,10 @@
 import { faker } from '@faker-js/faker';
 
-import { test, expect } from './utils/test';
+import { Users } from './fixtures/userStates';
 import { AdminEmailInboxes, Utils } from './page-objects';
+import { test, expect } from './utils/test';
 
-test.use({ storageState: 'admin-session.json' });
+test.use({ storageState: Users.admin.state });
 
 test.describe.serial('email-inboxes', () => {
 	let poAdminEmailInboxes: AdminEmailInboxes;
@@ -20,7 +21,8 @@ test.describe.serial('email-inboxes', () => {
 
 	test('expect create an email inbox', async () => {
 		await poAdminEmailInboxes.btnNewEmailInbox.click();
-		await poAdminEmailInboxes.inputName.type(faker.name.firstName());
+		const name = faker.person.firstName();
+		await poAdminEmailInboxes.inputName.type(name);
 		await poAdminEmailInboxes.inputEmail.type(email);
 
 		// SMTP
@@ -37,13 +39,13 @@ test.describe.serial('email-inboxes', () => {
 
 		await poAdminEmailInboxes.btnSave.click();
 
-		expect(poUtils.toastBarSuccess).toBeVisible();
+		await expect(poAdminEmailInboxes.itemRow(name)).toBeVisible();
 	});
 
 	test('expect delete an email inbox', async () => {
-		await poAdminEmailInboxes.findEmailInbox(email).click();
+		await poAdminEmailInboxes.itemRow(email).click();
 		await poAdminEmailInboxes.btnDelete.click();
 		await poUtils.btnModalConfirmDelete.click();
-		expect(poUtils.toastBarSuccess).toBeVisible();
+		await expect(poUtils.toastBarSuccess).toBeVisible();
 	});
 });

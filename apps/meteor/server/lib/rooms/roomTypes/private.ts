@@ -1,16 +1,19 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 
-import { Federation } from '../../../../app/federation-v2/server/Federation';
 import { settings } from '../../../../app/settings/server';
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { getPrivateRoomType } from '../../../../lib/rooms/roomTypes/private';
+import { Federation } from '../../../services/federation/Federation';
 import { roomCoordinator } from '../roomCoordinator';
 
-export const PrivateRoomType = getPrivateRoomType(roomCoordinator);
+const PrivateRoomType = getPrivateRoomType(roomCoordinator);
 
 roomCoordinator.add(PrivateRoomType, {
 	allowRoomSettingChange(room, setting) {
+		if (isRoomFederated(room)) {
+			return Federation.isRoomSettingAllowed(room, setting);
+		}
 		switch (setting) {
 			case RoomSettingsEnum.JOIN_CODE:
 				return false;
@@ -28,9 +31,9 @@ roomCoordinator.add(PrivateRoomType, {
 		}
 	},
 
-	allowMemberAction(_room, action) {
+	async allowMemberAction(_room, action, userId) {
 		if (isRoomFederated(_room as IRoom)) {
-			return Federation.actionAllowed(_room, action);
+			return Federation.actionAllowed(_room, action, userId);
 		}
 		switch (action) {
 			case RoomMemberActions.BLOCK:
@@ -40,8 +43,8 @@ roomCoordinator.add(PrivateRoomType, {
 		}
 	},
 
-	roomName(room, _userId?) {
-		if (room.prid) {
+	async roomName(room, _userId?) {
+		if (room.prid || isRoomFederated(room)) {
 			return room.fname;
 		}
 		if (settings.get('UI_Allow_room_names_with_special_chars')) {

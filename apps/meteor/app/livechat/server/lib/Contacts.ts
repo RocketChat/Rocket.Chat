@@ -1,11 +1,12 @@
+import type { ILivechatCustomField, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { LivechatVisitors, Users, LivechatRooms, LivechatCustomField, LivechatInquiry, Rooms, Subscriptions } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import s from 'underscore.string';
 import type { MatchKeysAndValues, OnlyFieldsOfType } from 'mongodb';
-import { LivechatVisitors, Users, LivechatRooms, LivechatCustomField } from '@rocket.chat/models';
-import type { ILivechatCustomField, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
 
-import { Rooms, LivechatInquiry, Subscriptions } from '../../../models/server';
+import { callbacks } from '../../../../lib/callbacks';
+import { trim } from '../../../../lib/utils/stringUtils';
+import { i18n } from '../../../utils/lib/i18n';
 
 type RegisterContactProps = {
 	_id?: string;
@@ -32,7 +33,7 @@ export const Contacts = {
 	}: RegisterContactProps): Promise<string> {
 		check(token, String);
 
-		const visitorEmail = s.trim(email).toLowerCase();
+		const visitorEmail = email.trim().toLowerCase();
 
 		if (contactManager?.username) {
 			// verify if the user exists with this username and has a livechat-agent role
@@ -71,38 +72,75 @@ export const Contacts = {
 			}
 		}
 
-		const allowedCF = await LivechatCustomField.findByScope<Pick<ILivechatCustomField, '_id'>>('visitor', { projection: { _id: 1 } })
-			.map(({ _id }) => _id)
-			.toArray();
+		const allowedCF = LivechatCustomField.findByScope<Pick<ILivechatCustomField, '_id' | 'label' | 'regexp' | 'required' | 'visibility'>>(
+			'visitor',
+			{
+				projection: { _id: 1, label: 1, regexp: 1, required: 1 },
+			},
+			false,
+		);
 
-		const livechatData = Object.keys(customFields)
-			.filter((key) => allowedCF.includes(key) && customFields[key] !== '' && customFields[key] !== undefined)
-			.reduce((obj: Record<string, unknown | string>, key) => {
-				obj[key] = customFields[key];
-				return obj;
-			}, {});
+		const livechatData: Record<string, string> = {};
+
+		for await (const cf of allowedCF) {
+			if (!customFields.hasOwnProperty(cf._id)) {
+				if (cf.required) {
+					throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label }));
+				}
+				continue;
+			}
+			const cfValue: string = trim(customFields[cf._id]);
+
+			if (!cfValue || typeof cfValue !== 'string') {
+				if (cf.required) {
+					throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label }));
+				}
+				continue;
+			}
+
+			if (cf.regexp) {
+				const regex = new RegExp(cf.regexp);
+				if (!regex.test(cfValue)) {
+					throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label }));
+				}
+			}
+
+			livechatData[cf._id] = cfValue;
+		}
+
+		const fieldsToRemove = {
+			// if field is explicitely set to empty string, remove
+			...(phone === '' && { phone: 1 }),
+			...(visitorEmail === '' && { visitorEmails: 1 }),
+			...(!contactManager?.username && { contactManager: 1 }),
+		};
 
 		const updateUser: { $set: MatchKeysAndValues<ILivechatVisitor>; $unset?: OnlyFieldsOfType<ILivechatVisitor> } = {
 			$set: {
 				token,
 				name,
 				livechatData,
+				// if phone has some value, set
 				...(phone && { phone: [{ phoneNumber: phone }] }),
 				...(visitorEmail && { visitorEmails: [{ address: visitorEmail }] }),
 				...(contactManager?.username && { contactManager: { username: contactManager.username } }),
 			},
-			...(!contactManager?.username && { $unset: { contactManager: 1 } }),
+			...(Object.keys(fieldsToRemove).length && { $unset: fieldsToRemove }),
 		};
 
 		await LivechatVisitors.updateOne({ _id: contactId }, updateUser);
 
-		const rooms: IOmnichannelRoom[] = await LivechatRooms.findByVisitorId(contactId, {}).toArray();
+		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+		const rooms: IOmnichannelRoom[] = await LivechatRooms.findByVisitorId(contactId, {}, extraQuery).toArray();
 
-		rooms?.length &&
-			rooms.forEach((room) => {
+		if (rooms?.length) {
+			for await (const room of rooms) {
 				const { _id: rid } = room;
-				Rooms.setFnameById(rid, name) && LivechatInquiry.setNameByRoomId(rid, name) && Subscriptions.updateDisplayNameByRoomId(rid, name);
-			});
+				(await Rooms.setFnameById(rid, name)) &&
+					(await LivechatInquiry.setNameByRoomId(rid, name)) &&
+					(await Subscriptions.updateDisplayNameByRoomId(rid, name));
+			}
+		}
 
 		return contactId;
 	},

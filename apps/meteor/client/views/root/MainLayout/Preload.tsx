@@ -1,9 +1,10 @@
 import { useUserId } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, ReactNode, useEffect } from 'react';
+import type { ReactElement, ReactNode } from 'react';
+import React, { useEffect } from 'react';
 
 import { CachedChatSubscription } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
-import { CachedCollectionManager } from '../../../../app/ui-cached-collection';
+import { CachedCollectionManager } from '../../../../app/ui-cached-collection/client';
 import { mainReady } from '../../../../app/ui-utils/client';
 import { useReactiveVar } from '../../../hooks/useReactiveVar';
 import { isSyncReady } from '../../../lib/userData';

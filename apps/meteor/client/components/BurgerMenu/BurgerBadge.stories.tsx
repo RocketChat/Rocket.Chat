@@ -1,6 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
-import { ComponentMeta, ComponentStory } from '@storybook/react';
-import React, { ReactElement } from 'react';
+import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import BurgerBadge from './BurgerBadge';
 
@@ -12,7 +13,7 @@ export default {
 	},
 	decorators: [
 		(fn): ReactElement => (
-			<Box size={24} backgroundColor='neutral-500' position='relative'>
+			<Box size='x24' backgroundColor='neutral' position='relative'>
 				{fn()}
 			</Box>
 		),

@@ -1,5 +1,7 @@
 import type { ILivechatVisitor, ISetting, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatVisitorsModel } from '@rocket.chat/model-typings';
+import { Settings } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {
 	AggregationCursor,
 	Collection,
@@ -13,8 +15,6 @@ import type {
 	DeleteResult,
 	UpdateFilter,
 } from 'mongodb';
-import { Settings } from '@rocket.chat/models';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -32,6 +32,8 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			{ key: { username: 1 } },
 			{ key: { 'contactMananger.username': 1 }, sparse: true },
 			{ key: { 'livechatData.$**': 1 } },
+			{ key: { activity: 1 }, partialFilterExpression: { activity: { $exists: true } } },
+			{ key: { disabled: 1 }, partialFilterExpression: { disabled: { $exists: true } } },
 		];
 	}
 
@@ -63,9 +65,29 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.find(query, options);
 	}
 
+	findEnabled(query: Filter<ILivechatVisitor>, options?: FindOptions<ILivechatVisitor>): FindCursor<ILivechatVisitor> {
+		return this.find(
+			{
+				...query,
+				disabled: { $ne: true },
+			},
+			options,
+		);
+	}
+
+	findOneEnabledById<T extends Document = ILivechatVisitor>(_id: string, options?: FindOptions<ILivechatVisitor>): Promise<T | null> {
+		const query = {
+			_id,
+			disabled: { $ne: true },
+		};
+
+		return this.findOne<T>(query, options);
+	}
+
 	findVisitorByToken(token: string): FindCursor<ILivechatVisitor> {
 		const query = {
 			token,
+			disabled: { $ne: true },
 		};
 
 		return this.find(query);
@@ -79,8 +101,9 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.findOne(query, options);
 	}
 
-	getVisitorsBetweenDate({ start, end, department }: { start: Date; end: Date; department: string }): FindCursor<ILivechatVisitor> {
+	getVisitorsBetweenDate({ start, end, department }: { start: Date; end: Date; department?: string }): FindCursor<ILivechatVisitor> {
 		const query = {
+			disabled: { $ne: true },
 			_updatedAt: {
 				$gte: new Date(start),
 				$lt: new Date(end),
@@ -113,7 +136,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return `guest-${livechatCount.value.value}`;
 	}
 
-	findByNameRegexWithExceptionsAndConditions<P = ILivechatVisitor>(
+	findByNameRegexWithExceptionsAndConditions<P extends Document = ILivechatVisitor>(
 		searchTerm: string,
 		exceptions: string[] = [],
 		conditions: Filter<ILivechatVisitor> = {},
@@ -166,7 +189,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		options?: FindOptions<ILivechatVisitor>,
 	): Promise<FindPaginated<FindCursor<ILivechatVisitor>>> {
 		if (!emailOrPhone && !nameOrUsername && allowedCustomFields.length === 0) {
-			return this.findPaginated({}, options);
+			return this.findPaginated({ disabled: { $ne: true } }, options);
 		}
 
 		const query: Filter<ILivechatVisitor> = {
@@ -193,6 +216,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 					: []),
 				...allowedCustomFields.map((c: string) => ({ [`livechatData.${c}`]: nameOrUsername })),
 			],
+			disabled: { $ne: true },
 		};
 
 		return this.findPaginated(query, options);
@@ -204,7 +228,9 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		customFields?: { [key: string]: RegExp },
 	): Promise<ILivechatVisitor | null> {
 		const query = Object.assign(
-			{},
+			{
+				disabled: { $ne: true },
+			},
 			{
 				...(email && { visitorEmails: { address: email } }),
 				...(phone && { phone: { phoneNumber: phone } }),
@@ -212,7 +238,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			},
 		);
 
-		if (Object.keys(query).length === 0) {
+		if (Object.keys(query).length === 1) {
 			return null;
 		}
 
@@ -236,11 +262,12 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			}
 		}
 
-		const update = {
+		const update: UpdateFilter<ILivechatVisitor> = {
 			$set: {
 				[`livechatData.${key}`]: value,
 			},
-		};
+		} as UpdateFilter<ILivechatVisitor>; // TODO: Remove this cast when TypeScript is updated
+		// TypeScript is not smart enough to infer that `messages.${string}` matches keys of `ILivechatVisitor`;
 
 		return this.updateOne(query, update);
 	}
@@ -326,33 +353,28 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 	}
 
 	saveGuestEmailPhoneById(_id: string, emails: string[], phones: string[]): Promise<UpdateResult | Document | void> {
-		const update: DeepWriteable<UpdateFilter<ILivechatVisitor>> = {
-			$addToSet: {},
-		};
-
 		const saveEmail = ([] as string[])
 			.concat(emails)
 			.filter((email) => email?.trim())
 			.map((email) => ({ address: email }));
-
-		if (update.$addToSet && saveEmail.length > 0) {
-			update.$addToSet.visitorEmails = { $each: saveEmail };
-		}
 
 		const savePhone = ([] as string[])
 			.concat(phones)
 			.filter((phone) => phone?.trim().replace(/[^\d]/g, ''))
 			.map((phone) => ({ phoneNumber: phone }));
 
-		if (update.$addToSet && savePhone.length > 0) {
-			update.$addToSet.phone = { $each: savePhone };
-		}
+		const update: UpdateFilter<ILivechatVisitor> = {
+			$addToSet: {
+				...(saveEmail.length && { visitorEmails: { $each: saveEmail } }),
+				...(savePhone.length && { phone: { $each: savePhone } }),
+			},
+		};
 
-		if (!Object.keys(update).length) {
+		if (!Object.keys(update.$addToSet as Record<string, any>).length) {
 			return Promise.resolve();
 		}
 
-		return this.updateOne({ _id }, update as UpdateFilter<ILivechatVisitor>);
+		return this.updateOne({ _id }, update);
 	}
 
 	removeContactManagerByUsername(manager: string): Promise<Document | UpdateResult> {
@@ -368,6 +390,63 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 				},
 			},
 		);
+	}
+
+	isVisitorActiveOnPeriod(visitorId: string, period: string): Promise<boolean> {
+		const query = {
+			_id: visitorId,
+			activity: period,
+		};
+
+		return this.findOne(query, { projection: { _id: 1 } }).then(Boolean);
+	}
+
+	markVisitorActiveForPeriod(visitorId: string, period: string): Promise<UpdateResult> {
+		const query = {
+			_id: visitorId,
+		};
+
+		const update = {
+			$push: {
+				activity: {
+					$each: [period],
+					$slice: -12,
+				},
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	disableById(_id: string): Promise<UpdateResult> {
+		return this.updateOne(
+			{ _id },
+			{
+				$set: { disabled: true },
+				$unset: {
+					department: 1,
+					contactManager: 1,
+					token: 1,
+					visitorEmails: 1,
+					phone: 1,
+					name: 1,
+					livechatData: 1,
+					lastChat: 1,
+					ip: 1,
+					host: 1,
+					userAgent: 1,
+					username: 1,
+					ts: 1,
+					status: 1,
+				},
+			},
+		);
+	}
+
+	countVisitorsOnPeriod(period: string): Promise<number> {
+		return this.countDocuments({
+			activity: period,
+		});
 	}
 }
 

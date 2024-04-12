@@ -1,8 +1,9 @@
-import { test, expect } from './utils/test';
+import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel } from './utils';
+import { test, expect } from './utils/test';
 
-test.use({ storageState: 'admin-session.json' });
+test.use({ storageState: Users.admin.state });
 
 test.describe.serial('emoji', () => {
 	let poHomeChannel: HomeChannel;
@@ -20,7 +21,7 @@ test.describe.serial('emoji', () => {
 
 	test('expect pick and send grinning emoji', async ({ page }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
-		await poHomeChannel.content.pickEmoji('emoji-grinning');
+		await poHomeChannel.content.pickEmoji('grinning');
 		await page.keyboard.press('Enter');
 
 		await expect(poHomeChannel.content.lastUserMessage).toContainText('😀');

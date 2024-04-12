@@ -1,4 +1,4 @@
-import { AsyncState } from './AsyncState';
+import type { AsyncState } from './AsyncState';
 import { AsyncStatePhase } from './AsyncStatePhase';
 
 export const loading = <T>(): AsyncState<T> => ({

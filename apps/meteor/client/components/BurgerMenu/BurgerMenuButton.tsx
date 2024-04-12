@@ -1,7 +1,8 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import BurgerBadge from './BurgerBadge';
 import BurgerIcon from './BurgerIcon';
@@ -22,7 +23,7 @@ const BurgerMenuButton = ({ open, badge, onClick }: BurgerMenuButtonProps): Reac
 			aria-label={open ? t('Close_menu') : t('Open_menu')}
 			type='button'
 			position='relative'
-			marginInlineEnd='x8'
+			marginInlineEnd={8}
 			className={css`
 				cursor: pointer;
 			`}

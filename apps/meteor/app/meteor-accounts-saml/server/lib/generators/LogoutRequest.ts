@@ -1,8 +1,8 @@
+import type { ILogoutRequestVariables } from '../../definition/ILogoutRequestVariables';
+import type { ISAMLRequest } from '../../definition/ISAMLRequest';
+import type { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
 import { SAMLUtils } from '../Utils';
 import { defaultIdentifierFormat, defaultLogoutRequestTemplate } from '../constants';
-import type { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
-import type { ISAMLRequest } from '../../definition/ISAMLRequest';
-import type { ILogoutRequestVariables } from '../../definition/ILogoutRequestVariables';
 
 /*
 	A Logout Request is used when the user is logged out of Rocket.Chat and the Service Provider is configured to also logout from the Identity Provider.

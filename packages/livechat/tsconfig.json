@@ -1,16 +1,13 @@
 {
+	"extends": "../../tsconfig.base.client.json",
 	"compilerOptions": {
 		"module": "CommonJS",
-		"moduleResolution": "node",
-		"target": "es2018",
 		"outDir": "./dist",
 		"allowJs": true,
 		"checkJs": false,
-		"noImplicitAny": true,
-		"jsx": "react-jsx",
 		"jsxImportSource": "preact",
-		"esModuleInterop": true,
 	},
+	"include": ["./src", "./webpack.config.ts", "./svg-component-loader.ts", ".storybook/**/*.ts"],
 	"exclude": [
 		"./node_modules",
 		"./dist"

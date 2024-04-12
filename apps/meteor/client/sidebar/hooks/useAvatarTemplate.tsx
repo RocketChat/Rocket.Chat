@@ -1,8 +1,8 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
-import React, { ComponentType, useMemo } from 'react';
-
-import RoomAvatar from '../../components/avatar/RoomAvatar';
+import type { ComponentType } from 'react';
+import React, { useMemo } from 'react';
 
 export const useAvatarTemplate = (
 	sidebarViewMode?: 'extended' | 'medium' | 'condensed',

@@ -1,5 +1,6 @@
-import { Box, Divider } from '@rocket.chat/fuselage';
-import React, { ReactElement } from 'react';
+import { Box, Divider, Margins } from '@rocket.chat/fuselage';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 type KeyboardShortcutSectionProps = {
 	title: string;
@@ -7,13 +8,15 @@ type KeyboardShortcutSectionProps = {
 };
 
 const KeyboardShortcutSection = ({ title, command }: KeyboardShortcutSectionProps): ReactElement => (
-	<Box is='section' mb='x16'>
-		<Box fontScale='p2m' fontWeight='700'>
-			{title}
+	<Margins block={16}>
+		<Box is='section' color='default'>
+			<Box fontScale='p2m' fontWeight='700'>
+				{title}
+			</Box>
+			<Divider />
+			<Box fontScale='p2'>{command}</Box>
 		</Box>
-		<Divider />
-		<Box fontScale='p2'>{command}</Box>
-	</Box>
+	</Margins>
 );
 
 export default KeyboardShortcutSection;

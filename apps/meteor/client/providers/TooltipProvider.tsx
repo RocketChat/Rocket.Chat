@@ -1,80 +1,134 @@
-import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedState, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { TooltipComponent } from '@rocket.chat/ui-client';
 import { TooltipContext } from '@rocket.chat/ui-contexts';
-import React, { FC, useEffect, useState, useMemo, ReactNode, useRef, memo } from 'react';
+import type { FC, ReactNode } from 'react';
+import React, { useEffect, useMemo, useRef, memo, useCallback, useState } from 'react';
 
-import TooltipPortal from '../components/TooltipPortal';
+import TooltipPortal from '../portals/TooltipPortal';
 
 const TooltipProvider: FC = ({ children }) => {
 	const lastAnchor = useRef<HTMLElement>();
 	const hasHover = !useMediaQuery('(hover: none)');
 
-	const [tooltip, setTooltip] = useState<ReactNode>(null);
+	const [tooltip, setTooltip] = useDebouncedState<ReactNode>(null, 300);
+
+	const restoreTitle = useCallback((previousAnchor: HTMLElement | undefined): void => {
+		setTimeout(() => {
+			if (previousAnchor && !previousAnchor.getAttribute('title')) {
+				previousAnchor.setAttribute('title', previousAnchor.getAttribute('data-title') ?? '');
+				previousAnchor.removeAttribute('data-title');
+			}
+		}, 0);
+	}, []);
+
+	const contextValue = useMemo(
+		() => ({
+			open: (tooltip: ReactNode, anchor: HTMLElement): void => {
+				const previousAnchor = lastAnchor.current;
+				setTooltip(<TooltipComponent key={new Date().toISOString()} title={tooltip} anchor={anchor} />);
+				lastAnchor.current = anchor;
+				previousAnchor && restoreTitle(previousAnchor);
+			},
+			close: (): void => {
+				const previousAnchor = lastAnchor.current;
+				setTooltip(null);
+				setTooltip.flush();
+				lastAnchor.current = undefined;
+				previousAnchor && restoreTitle(previousAnchor);
+			},
+			dismiss: (): void => {
+				setTooltip(null);
+				setTooltip.flush();
+			},
+		}),
+		[setTooltip, restoreTitle],
+	);
 
 	useEffect(() => {
 		if (!hasHover) {
 			return;
 		}
-		let timeout: ReturnType<typeof setTimeout> | undefined;
 
 		const handleMouseOver = (e: MouseEvent): void => {
 			const target = e.target as HTMLElement;
-			const anchor = target.title || target.dataset?.tooltip ? target : (target.closest('[title], [data-tooltip]') as HTMLElement);
+			if (lastAnchor.current === target) {
+				return;
+			}
+
+			const anchor = target.closest('[title], [data-tooltip]') as HTMLElement;
+
 			if (lastAnchor.current === anchor) {
 				return;
 			}
 
-			if (timeout) {
-				clearTimeout(timeout);
+			if (!anchor) {
+				contextValue.close();
+				return;
 			}
-			lastAnchor.current = undefined;
 
-			timeout = setTimeout(() => {
-				if (!anchor) {
-					return;
-				}
-				const title = anchor.getAttribute('title') || anchor.getAttribute('data-tooltip');
-				if (!title) {
-					anchor.removeAttribute('data-title');
-					return;
-				}
-				anchor.setAttribute('data-title', title);
-				anchor.setAttribute('data-tooltip', title);
-				anchor.removeAttribute('title');
-				lastAnchor.current = anchor;
-				setTooltip(<TooltipComponent title={title} anchor={anchor} />);
-			}, 300);
-			setTooltip(null);
+			const title = anchor.getAttribute('title') ?? anchor.getAttribute('data-tooltip') ?? '';
+			if (!title) {
+				contextValue.close();
+				return;
+			}
+
+			// eslint-disable-next-line react/no-multi-comp
+			const Handler = () => {
+				const [state, setState] = useState(title);
+				useEffect(() => {
+					const close = (): void => contextValue.close();
+					// store the title in a data attribute
+					anchor.setAttribute('data-title', title);
+					// Removes the title attribute to prevent the browser's tooltip from showing
+					anchor.setAttribute('title', '');
+
+					anchor.addEventListener('mouseleave', close);
+
+					const observer = new MutationObserver(() => {
+						const title = anchor.getAttribute('title') ?? anchor.getAttribute('data-tooltip') ?? '';
+
+						if (title === '') {
+							return;
+						}
+
+						// store the title in a data attribute
+						anchor.setAttribute('data-title', title);
+						// Removes the title attribute to prevent the browser's tooltip from showing
+						anchor.setAttribute('title', '');
+
+						setState(title);
+					});
+
+					observer.observe(anchor, {
+						attributes: true,
+						attributeFilter: ['title', 'data-tooltip'],
+					});
+
+					return () => {
+						anchor.removeEventListener('mouseleave', close);
+						observer.disconnect();
+					};
+				}, []);
+				return <>{state}</>;
+			};
+			contextValue.open(<Handler />, anchor);
 		};
 
-		const handleClick = (): void => {
-			setTooltip(null);
-			clearTimeout(timeout);
+		const dismissOnClick = (): void => {
+			contextValue.dismiss();
 		};
 
-		document.body.addEventListener('mouseover', handleMouseOver);
-		document.body.addEventListener('click', handleClick);
+		document.body.addEventListener('mouseover', handleMouseOver, {
+			passive: true,
+		});
+		document.body.addEventListener('click', dismissOnClick, { capture: true });
 
 		return (): void => {
-			if (timeout) {
-				clearTimeout(timeout);
-			}
+			contextValue.close();
 			document.body.removeEventListener('mouseover', handleMouseOver);
-			document.body.removeEventListener('click', handleClick);
+			document.body.removeEventListener('click', dismissOnClick);
 		};
-	}, [hasHover]);
-
-	const contextValue = useMemo(
-		() => ({
-			open: (tooltip: ReactNode, anchor: HTMLElement): void => {
-				setTooltip(<TooltipComponent title={tooltip} anchor={anchor} />);
-			},
-			close: (): void => {
-				setTooltip(null);
-			},
-		}),
-		[],
-	);
+	}, [contextValue, setTooltip, hasHover]);
 
 	return (
 		<TooltipContext.Provider value={contextValue}>

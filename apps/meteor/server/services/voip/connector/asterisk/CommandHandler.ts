@@ -13,18 +13,18 @@
  * We shall be using only AMI interface in the for now. Other interfaces will be
  * added as and when required.
  */
-import type { Db } from 'mongodb';
 import type { IVoipConnectorResult, IManagementServerConnectionStatus, IManagementConfigData } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
+import type { Db } from 'mongodb';
 
-import { Commands } from './Commands';
-import type { IConnection } from './IConnection';
-import { Logger } from '../../../../lib/logger/Logger';
+import { getManagementServerConfig } from '../../lib/Helper';
+import { WebsocketConnection } from '../websocket/WebsocketConnection';
 import type { Command } from './Command';
 import { CommandType } from './Command';
+import { Commands } from './Commands';
+import type { IConnection } from './IConnection';
 import { AMIConnection } from './ami/AMIConnection';
 import { CommandFactory } from './ami/CommandFactory';
-import { WebsocketConnection } from '../websocket/WebsocketConnection';
-import { getManagementServerConfig } from '../../lib/Helper';
 
 const version = 'Asterisk Connector 1.0';
 
@@ -99,7 +99,7 @@ export class CommandHandler {
 		this.logger.debug({ msg: `executeCommand() executing ${Commands[commandToExecute]}` });
 		const command = CommandFactory.getCommandObject(commandToExecute, this.db);
 		const connection = this.connections.get(command.type) as IConnection;
-		if (!connection || !connection.isConnected()) {
+		if (!connection?.isConnected()) {
 			throw Error('Connection error');
 		}
 		command.connection = this.connections.get(command.type) as IConnection;

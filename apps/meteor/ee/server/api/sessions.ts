@@ -1,11 +1,54 @@
+import type { IUser, ISession, DeviceManagementSession, DeviceManagementPopulatedSession } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { Users, Sessions } from '@rocket.chat/models';
-import type { IUser } from '@rocket.chat/core-typings';
+import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import Ajv from 'ajv';
 
-import { isSessionsPaginateProps, isSessionsProps } from '../../definition/rest/v1/sessions';
 import { API } from '../../../app/api/server/api';
-import { hasLicense } from '../../app/license/server/license';
+import { getPaginationItems } from '../../../app/api/server/helpers/getPaginationItems';
 import { Notifications } from '../../../app/notifications/server';
+
+const ajv = new Ajv({ coerceTypes: true });
+
+type SessionsProps = {
+	sessionId: string;
+};
+
+const isSessionsProps = ajv.compile<SessionsProps>({
+	type: 'object',
+	properties: {
+		sessionId: {
+			type: 'string',
+		},
+	},
+	required: ['sessionId'],
+	additionalProperties: false,
+});
+
+type SessionsPaginateProps = PaginatedRequest<{
+	filter?: string;
+}>;
+
+const isSessionsPaginateProps = ajv.compile<SessionsPaginateProps>({
+	type: 'object',
+	properties: {
+		offset: {
+			type: 'number',
+		},
+		count: {
+			type: 'number',
+		},
+		filter: {
+			type: 'string',
+		},
+		sort: {
+			type: 'string',
+		},
+	},
+	required: [],
+	additionalProperties: false,
+});
 
 const validateSortKeys = (sortKeys: string[]): boolean => {
 	const validSortKeys = ['loginAt', 'device.name', 'device.os.name', 'device.os.version', '_user.name', '_user.username'];
@@ -13,17 +56,41 @@ const validateSortKeys = (sortKeys: string[]): boolean => {
 	return sortKeys.every((s) => validSortKeys.includes(s));
 };
 
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface Endpoints {
+		'/v1/sessions/list': {
+			GET: (params: SessionsPaginateProps) => PaginatedResult<{ sessions: Array<DeviceManagementSession> }>;
+		};
+		'/v1/sessions/info': {
+			GET: (params: SessionsProps) => DeviceManagementSession;
+		};
+		'/v1/sessions/logout.me': {
+			POST: (params: SessionsProps) => Pick<ISession, 'sessionId'>;
+		};
+		'/v1/sessions/list.all': {
+			GET: (params: SessionsPaginateProps) => PaginatedResult<{ sessions: Array<DeviceManagementPopulatedSession> }>;
+		};
+		'/v1/sessions/info.admin': {
+			GET: (params: SessionsProps) => DeviceManagementPopulatedSession;
+		};
+		'/v1/sessions/logout': {
+			POST: (params: SessionsProps) => Pick<ISession, 'sessionId'>;
+		};
+	}
+}
+
 API.v1.addRoute(
 	'sessions/list',
 	{ authRequired: true, validateParams: isSessionsPaginateProps },
 	{
 		async get() {
-			if (!hasLicense('device-management')) {
+			if (!License.hasModule('device-management')) {
 				return API.v1.unauthorized();
 			}
 
-			const { offset, count } = this.getPaginationItems();
-			const { sort = { loginAt: -1 } } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort = { loginAt: -1 } } = await this.parseJsonQuery();
 			const search = escapeRegExp(this.queryParams?.filter || '');
 
 			if (!validateSortKeys(Object.keys(sort))) {
@@ -41,7 +108,7 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isSessionsProps },
 	{
 		async get() {
-			if (!hasLicense('device-management')) {
+			if (!License.hasModule('device-management')) {
 				return API.v1.unauthorized();
 			}
 
@@ -60,7 +127,7 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isSessionsProps },
 	{
 		async post() {
-			if (!hasLicense('device-management')) {
+			if (!License.hasModule('device-management')) {
 				return API.v1.unauthorized();
 			}
 
@@ -71,7 +138,7 @@ API.v1.addRoute(
 				return API.v1.notFound('Session not found');
 			}
 
-			Promise.all([
+			await Promise.all([
 				Users.unsetOneLoginToken(this.userId, sessionObj.loginToken),
 				Sessions.logoutByloginTokenAndUserId({ loginToken: sessionObj.loginToken, userId: this.userId }),
 			]);
@@ -86,12 +153,12 @@ API.v1.addRoute(
 	{ authRequired: true, twoFactorRequired: true, validateParams: isSessionsPaginateProps, permissionsRequired: ['view-device-management'] },
 	{
 		async get() {
-			if (!hasLicense('device-management')) {
+			if (!License.hasModule('device-management')) {
 				return API.v1.unauthorized();
 			}
 
-			const { offset, count } = this.getPaginationItems();
-			const { sort = { loginAt: -1 } } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort = { loginAt: -1 } } = await this.parseJsonQuery();
 			const filter = escapeRegExp(this.queryParams?.filter || '');
 
 			if (!validateSortKeys(Object.keys(sort))) {
@@ -126,7 +193,7 @@ API.v1.addRoute(
 	{ authRequired: true, twoFactorRequired: true, validateParams: isSessionsProps, permissionsRequired: ['view-device-management'] },
 	{
 		async get() {
-			if (!hasLicense('device-management')) {
+			if (!License.hasModule('device-management')) {
 				return API.v1.unauthorized();
 			}
 
@@ -145,7 +212,7 @@ API.v1.addRoute(
 	{ authRequired: true, twoFactorRequired: true, validateParams: isSessionsProps, permissionsRequired: ['logout-device-management'] },
 	{
 		async post() {
-			if (!hasLicense('device-management')) {
+			if (!License.hasModule('device-management')) {
 				return API.v1.unauthorized();
 			}
 
@@ -158,7 +225,7 @@ API.v1.addRoute(
 
 			Notifications.notifyUser(sessionObj.userId, 'force_logout');
 
-			Promise.all([
+			await Promise.all([
 				Users.unsetOneLoginToken(sessionObj.userId, sessionObj.loginToken),
 				Sessions.logoutByloginTokenAndUserId({ loginToken: sessionObj.loginToken, userId: sessionObj.userId, logoutBy: this.userId }),
 			]);

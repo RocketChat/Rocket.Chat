@@ -5,28 +5,30 @@ declare module 'meteor/kadira:flow-router' {
 		params: Record<string, string>;
 		queryParams: Record<string, string>;
 		pathname: string;
+		oldRoute?: Route<string, any>;
+		route: Route<string, any>;
 	};
 
-	export type RouteOptions = {
-		name: string;
-		action?: (this: Route, params?: Record<string, string>, queryParams?: Record<string, string>) => void;
-		subscriptions?: (this: Route, params?: Record<string, string>, queryParams?: Record<string, string>) => void;
-		triggersEnter?: ((context: Context, redirect: (pathDef: string) => void, stop: () => void) => void)[];
+	type RouteOptions<TRouteName extends string> = {
+		name?: TRouteName;
+		action?: (this: Route, params?: Record<string, string>, queryParams?: Record<string, string | string[]>) => void;
+		subscriptions?: (this: Route, params?: Record<string, string>, queryParams?: Record<string, string | string[]>) => void;
+		triggersEnter?: ((context: Context, redirect: (path: string) => void, stop: () => void) => void)[];
 		triggersExit?: ((context: Context) => void)[];
 	};
 
-	class Route {
-		constructor(router: Router, pathDef: string, options?: RouteOptions, group?: Group);
+	class Route<TRouteName extends string, TGroup extends Group<string> | undefined = any> {
+		constructor(router: Router, pathDef: string, options?: RouteOptions<TRouteName>, group?: TGroup);
 
-		options: RouteOptions;
+		options: RouteOptions<TRouteName>;
 
 		pathDef: string;
 
 		path: string;
 
-		name?: string;
+		name?: TRouteName;
 
-		group?: Group;
+		group?: TGroup;
 
 		clearSubscriptions(): void;
 
@@ -53,29 +55,38 @@ declare module 'meteor/kadira:flow-router' {
 		registerRouteChange(currentContext: Context, routeChanging?: boolean): void;
 	}
 
-	type GroupOptions = {
-		name: string;
+	type GroupOptions<TGroupName extends string> = {
+		name: TGroupName;
 		prefix?: string;
 		triggersEnter?: unknown[];
 		triggersExit?: unknown[];
-		subscriptions?: (this: Route, params?: Record<string, string>, queryParams?: Record<string, string>) => void;
+		subscriptions?: (this: Route, params?: Record<string, string>, queryParams?: Record<string, string | string[]>) => void;
 	};
 
-	class Group {
-		constructor(router: Router, options?: GroupOptions, parent?: Group);
+	/** @deprecated */
+	class Group<TGroupName extends string, TParentGroup extends Group<string> | undefined = any> {
+		/** @deprecated */
+		constructor(router: Router, options?: GroupOptions<TGroupName>, parent?: TParentGroup);
 
-		name: string;
+		/** @deprecated */
+		name: TGroupName;
 
+		/** @deprecated */
 		prefix: string;
 
-		options: GroupOptions;
+		/** @deprecated */
+		options: GroupOptions<TGroupName>;
 
-		parent: Group | undefined;
+		/** @deprecated */
+		parent: TParentGroup;
 
-		route(pathDef: string, options?: RouteOptions, group?: Group): Route;
+		/** @deprecated */
+		route<TRouteName extends string>(pathDef: string, options: RouteOptions<TRouteName>, group?: TParentGroup): Route<TRouteName, TGroup>;
 
-		group(options?: GroupOptions): Group;
+		/** @deprecated */
+		group(options?: GroupOptions<TGroupName>): Group;
 
+		/** @deprecated */
 		callSubscriptions(current: Current): void;
 	}
 
@@ -83,9 +94,9 @@ declare module 'meteor/kadira:flow-router' {
 		path: string;
 		context: Context;
 		params: Record<string, string>;
-		queryParams: Record<string, string>;
-		route?: Route | undefined;
-		oldRoute?: Route | undefined;
+		queryParams?: Record<string, string>;
+		route?: Route<string> | undefined;
+		oldRoute?: Route<string> | undefined;
 	};
 
 	type RouterOptions = {
@@ -95,9 +106,16 @@ declare module 'meteor/kadira:flow-router' {
 	class Router {
 		constructor();
 
-		route(pathDef: string, options: RouteOptions, group?: Group): void;
+		route<TRouteName extends string>(pathDef: string, options: RouteOptions<TRouteName>): Route<TRouteName, undefined>;
 
-		group(options: GroupOptions): Group;
+		route<TRouteName extends string, TGroup extends Group<string>>(
+			pathDef: string,
+			options: RouteOptions<TRouteName>,
+			group: TGroup,
+		): Route<TRouteName, TGroup>;
+
+		/** @deprecated */
+		group<TGroupName extends string>(options: GroupOptions<TGroupName>): Group<TGroupName>;
 
 		path(pathDef: string, fields?: Record<string, string>, queryParams?: Record<string, string>): string;
 
@@ -111,7 +129,7 @@ declare module 'meteor/kadira:flow-router' {
 
 		setParams(newParams: Record<string, string>): boolean;
 
-		setQueryParams(newParams: Record<string, string | null>): boolean;
+		setQueryParams(newParams: Record<string, string | undefined | null>): boolean;
 
 		current(): Current;
 
@@ -125,7 +143,7 @@ declare module 'meteor/kadira:flow-router' {
 
 		wait(): void;
 
-		notFound: Omit<RouteOptions, 'name'>;
+		notFound: Omit<RouteOptions<any>, 'name'>;
 
 		getRouteName(): string;
 
@@ -134,10 +152,32 @@ declare module 'meteor/kadira:flow-router' {
 		getQueryParam(key: string): string;
 
 		watchPathChange(): void;
+
+		_initialized: boolean;
+
+		_routes: Route[];
+
+		_routesMap: Record<string, Route>;
+
+		_updateCallbacks(): void;
+
+		_current: Current;
 	}
 
-	export const FlowRouter: Router & {
+	namespace page {
+		function start(): void;
+		function stop(): void;
+		function show(path: string): void;
+		function dispatch(ctx: page.Context): void;
+
+		class Context {
+			constructor(path: string, state?: object): Context;
+		}
+	}
+
+	const FlowRouter: Router & {
 		Route: typeof Route;
 		Router: typeof Router;
+		_page: typeof page;
 	};
 }

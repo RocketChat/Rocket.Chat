@@ -1,10 +1,11 @@
 import { expect } from 'chai';
+import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, request, api, credentials } from '../../data/api-data.js';
 import { cleanupApps, installTestApp } from '../../data/apps/helper.js';
-import { createRoom } from '../../data/rooms.helper';
 import { updateSetting } from '../../data/permissions.helper';
+import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { adminUsername } from '../../data/user';
 
 describe('Apps - Video Conferences', function () {
@@ -15,23 +16,30 @@ describe('Apps - Video Conferences', function () {
 	const roomName = `apps-e2etest-room-${Date.now()}-videoconf`;
 	let roomId: string | undefined;
 
-	before((done) => {
-		createRoom({
+	before(async () => {
+		const res = await createRoom({
 			type: 'p',
 			name: roomName,
-		} as any).end((_err: unknown, createdRoom: any) => {
-			roomId = createdRoom.body.group._id;
-			done();
+			username: undefined,
+			token: undefined,
+			agentId: undefined,
+			members: undefined,
+			credentials: undefined,
+			extraData: undefined,
 		});
+
+		roomId = res.body.group._id;
 	});
+
+	after(() => Promise.all([cleanupApps(), deleteRoom({ type: 'p', roomId }), updateSetting('VideoConf_Default_Provider', '')]));
 
 	describe('[With No App]', () => {
 		before(async () => {
 			await cleanupApps();
 		});
 
-		it('should fail to load capabilities', (done) => {
-			request
+		it('should fail to load capabilities', async () => {
+			await request
 				.get(api('video-conference.capabilities'))
 				.set(credentials)
 				.send()
@@ -39,12 +47,11 @@ describe('Apps - Video Conferences', function () {
 				.expect((res: Response) => {
 					expect(res.body.success).to.be.equal(false);
 					expect(res.body.error).to.be.equal('no-videoconf-provider-app');
-				})
-				.end(done);
+				});
 		});
 
-		it('should fail to start a call', (done) => {
-			request
+		it('should fail to start a call', async () => {
+			await request
 				.post(api('video-conference.start'))
 				.set(credentials)
 				.send({
@@ -54,223 +61,193 @@ describe('Apps - Video Conferences', function () {
 				.expect((res: Response) => {
 					expect(res.body.success).to.be.equal(false);
 					expect(res.body.error).to.be.equal('no-videoconf-provider-app');
-				})
-				.end(done);
+				});
 		});
 	});
 
 	describe('[With Test App]', () => {
 		before(async () => {
-			await updateSetting('Apps_Framework_enabled', true);
-			await updateSetting('Apps_Framework_Development_Mode', true);
 			await cleanupApps();
 			await installTestApp();
 		});
 
 		describe('[/video-conference.capabilities]', () => {
-			it('should fail to load capabilities with no default provider', (done) => {
-				updateSetting('VideoConf_Default_Provider', '').then(() => {
-					request
-						.get(api('video-conference.capabilities'))
-						.set(credentials)
-						.send()
-						.expect(400)
-						.expect((res: Response) => {
-							expect(res.body.success).to.be.equal(false);
-							expect(res.body.error).to.be.equal('no-active-video-conf-provider');
-						})
-						.end(done);
-				});
+			it('should fail to load capabilities with no default provider', async () => {
+				await updateSetting('VideoConf_Default_Provider', '');
+				await request
+					.get(api('video-conference.capabilities'))
+					.set(credentials)
+					.send()
+					.expect(400)
+					.expect((res: Response) => {
+						expect(res.body.success).to.be.equal(false);
+						expect(res.body.error).to.be.equal('no-active-video-conf-provider');
+					});
 			});
 
-			it('should fail to load capabilities with an invalid default provider', (done) => {
-				updateSetting('VideoConf_Default_Provider', 'invalid').then(() => {
-					request
-						.get(api('video-conference.capabilities'))
-						.set(credentials)
-						.send()
-						.expect(400)
-						.expect((res: Response) => {
-							expect(res.body.success).to.be.equal(false);
-							expect(res.body.error).to.be.equal('no-active-video-conf-provider');
-						})
-						.end(done);
-				});
+			it('should fail to load capabilities with an invalid default provider', async () => {
+				await updateSetting('VideoConf_Default_Provider', 'invalid');
+				await request
+					.get(api('video-conference.capabilities'))
+					.set(credentials)
+					.send()
+					.expect(400)
+					.expect((res: Response) => {
+						expect(res.body.success).to.be.equal(false);
+						expect(res.body.error).to.be.equal('no-active-video-conf-provider');
+					});
 			});
 
-			it('should fail to load capabilities with a default provider lacking configuration', (done) => {
-				updateSetting('VideoConf_Default_Provider', 'unconfigured').then(() => {
-					request
-						.get(api('video-conference.capabilities'))
-						.set(credentials)
-						.send()
-						.expect(400)
-						.expect((res: Response) => {
-							expect(res.body.success).to.be.equal(false);
-							expect(res.body.error).to.be.equal('video-conf-provider-not-configured');
-						})
-						.end(done);
-				});
+			it('should fail to load capabilities with a default provider lacking configuration', async () => {
+				await updateSetting('VideoConf_Default_Provider', 'unconfigured');
+				await request
+					.get(api('video-conference.capabilities'))
+					.set(credentials)
+					.send()
+					.expect(400)
+					.expect((res: Response) => {
+						expect(res.body.success).to.be.equal(false);
+						expect(res.body.error).to.be.equal('video-conf-provider-not-configured');
+					});
 			});
 
-			it('should load capabilities successfully with a valid default provider', (done) => {
-				updateSetting('VideoConf_Default_Provider', 'test').then(() => {
-					request
-						.get(api('video-conference.capabilities'))
-						.set(credentials)
-						.send()
-						.expect(200)
-						.expect((res: Response) => {
-							expect(res.body.success).to.be.equal(true);
-							expect(res.body.providerName).to.be.equal('test');
-							expect(res.body.capabilities).to.be.an('object');
-							expect(res.body.capabilities).to.have.a.property('mic').equal(true);
-							expect(res.body.capabilities).to.have.a.property('cam').equal(false);
-							expect(res.body.capabilities).to.have.a.property('title').equal(true);
-						})
-						.end(done);
-				});
+			it('should load capabilities successfully with a valid default provider', async () => {
+				await updateSetting('VideoConf_Default_Provider', 'test');
+				await request
+					.get(api('video-conference.capabilities'))
+					.set(credentials)
+					.send()
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body.success).to.be.equal(true);
+						expect(res.body.providerName).to.be.equal('test');
+						expect(res.body.capabilities).to.be.an('object');
+						expect(res.body.capabilities).to.have.a.property('mic').equal(true);
+						expect(res.body.capabilities).to.have.a.property('cam').equal(false);
+						expect(res.body.capabilities).to.have.a.property('title').equal(true);
+					});
 			});
 		});
 
 		describe('[/video-conference.start]', () => {
-			it('should fail to start a call with no default provider', (done) => {
-				updateSetting('VideoConf_Default_Provider', '').then(() => {
-					request
-						.post(api('video-conference.start'))
-						.set(credentials)
-						.send({
-							roomId,
-						})
-						.expect(400)
-						.expect((res: Response) => {
-							expect(res.body.success).to.be.equal(false);
-							expect(res.body.error).to.be.equal('no-active-video-conf-provider');
-						})
-						.end(done);
-				});
+			it('should fail to start a call with no default provider', async () => {
+				await updateSetting('VideoConf_Default_Provider', '');
+				await request
+					.post(api('video-conference.start'))
+					.set(credentials)
+					.send({
+						roomId,
+					})
+					.expect(400)
+					.expect((res: Response) => {
+						expect(res.body.success).to.be.equal(false);
+						expect(res.body.error).to.be.equal('no-active-video-conf-provider');
+					});
 			});
 
-			it('should fail to start a call with an invalid default provider', (done) => {
-				updateSetting('VideoConf_Default_Provider', 'invalid').then(() => {
-					request
-						.post(api('video-conference.start'))
-						.set(credentials)
-						.send({
-							roomId,
-						})
-						.expect(400)
-						.expect((res: Response) => {
-							expect(res.body.success).to.be.equal(false);
-							expect(res.body.error).to.be.equal('no-active-video-conf-provider');
-						})
-						.end(done);
-				});
+			it('should fail to start a call with an invalid default provider', async () => {
+				await updateSetting('VideoConf_Default_Provider', 'invalid');
+				await request
+					.post(api('video-conference.start'))
+					.set(credentials)
+					.send({
+						roomId,
+					})
+					.expect(400)
+					.expect((res: Response) => {
+						expect(res.body.success).to.be.equal(false);
+						expect(res.body.error).to.be.equal('no-active-video-conf-provider');
+					});
 			});
 
-			it('should fail to start a call with a default provider lacking configuration', (done) => {
-				updateSetting('VideoConf_Default_Provider', 'unconfigured').then(() => {
-					request
-						.post(api('video-conference.start'))
-						.set(credentials)
-						.send({
-							roomId,
-						})
-						.expect(400)
-						.expect((res: Response) => {
-							expect(res.body.success).to.be.equal(false);
-							expect(res.body.error).to.be.equal('video-conf-provider-not-configured');
-						})
-						.end(done);
-				});
+			it('should fail to start a call with a default provider lacking configuration', async () => {
+				await updateSetting('VideoConf_Default_Provider', 'unconfigured');
+				await request
+					.post(api('video-conference.start'))
+					.set(credentials)
+					.send({
+						roomId,
+					})
+					.expect(400)
+					.expect((res: Response) => {
+						expect(res.body.success).to.be.equal(false);
+						expect(res.body.error).to.be.equal('video-conf-provider-not-configured');
+					});
 			});
 
-			it('should start a call successfully with a valid default provider', (done) => {
-				updateSetting('VideoConf_Default_Provider', 'test').then(() => {
-					request
-						.post(api('video-conference.start'))
-						.set(credentials)
-						.send({
-							roomId,
-						})
-						.expect(200)
-						.expect((res: Response) => {
-							expect(res.body.success).to.be.equal(true);
-							expect(res.body.data).to.be.an('object');
-							expect(res.body.data).to.have.a.property('providerName').equal('test');
-							expect(res.body.data).to.have.a.property('type').equal('videoconference');
-							expect(res.body.data).to.have.a.property('callId').that.is.a('string');
-							// expect(res.body.data).to.have.a.property('rid').equal(roomId);
-							// expect(res.body.data).to.have.a.property('createdBy').that.is.an('object').with.a.property('username').equal(adminUsername);
-						})
-						.end(done);
-				});
+			it('should start a call successfully with a valid default provider', async () => {
+				await updateSetting('VideoConf_Default_Provider', 'test');
+				await request
+					.post(api('video-conference.start'))
+					.set(credentials)
+					.send({
+						roomId,
+					})
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body.success).to.be.equal(true);
+						expect(res.body.data).to.be.an('object');
+						expect(res.body.data).to.have.a.property('providerName').equal('test');
+						expect(res.body.data).to.have.a.property('type').equal('videoconference');
+						expect(res.body.data).to.have.a.property('callId').that.is.a('string');
+						// expect(res.body.data).to.have.a.property('rid').equal(roomId);
+						// expect(res.body.data).to.have.a.property('createdBy').that.is.an('object').with.a.property('username').equal(adminUsername);
+					});
 			});
 
-			it('should start a call successfully when sending a title', (done) => {
-				updateSetting('VideoConf_Default_Provider', 'test').then(() => {
-					request
-						.post(api('video-conference.start'))
-						.set(credentials)
-						.send({
-							roomId,
-							title: 'Conference Title',
-						})
-						.expect(200)
-						.expect((res: Response) => {
-							expect(res.body.success).to.be.equal(true);
-							expect(res.body.data).to.be.an('object');
-							expect(res.body.data).to.have.a.property('providerName').equal('test');
-							expect(res.body.data).to.have.a.property('type').equal('videoconference');
-							expect(res.body.data).to.have.a.property('callId').that.is.a('string');
-						})
-						.end(done);
-				});
+			it('should start a call successfully when sending a title', async () => {
+				await updateSetting('VideoConf_Default_Provider', 'test');
+				await request
+					.post(api('video-conference.start'))
+					.set(credentials)
+					.send({
+						roomId,
+						title: 'Conference Title',
+					})
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body.success).to.be.equal(true);
+						expect(res.body.data).to.be.an('object');
+						expect(res.body.data).to.have.a.property('providerName').equal('test');
+						expect(res.body.data).to.have.a.property('type').equal('videoconference');
+						expect(res.body.data).to.have.a.property('callId').that.is.a('string');
+					});
 			});
 
-			it('should start a call successfully when sending the allowRinging attribute', (done) => {
-				updateSetting('VideoConf_Default_Provider', 'test').then(() => {
-					request
-						.post(api('video-conference.start'))
-						.set(credentials)
-						.send({
-							roomId,
-							title: 'Conference Title',
-							allowRinging: true,
-						})
-						.expect(200)
-						.expect((res: Response) => {
-							expect(res.body.success).to.be.equal(true);
-							expect(res.body.data).to.be.an('object');
-							expect(res.body.data).to.have.a.property('providerName').equal('test');
-							expect(res.body.data).to.have.a.property('type').equal('videoconference');
-							expect(res.body.data).to.have.a.property('callId').that.is.a('string');
-						})
-						.end(done);
-				});
+			it('should start a call successfully when sending the allowRinging attribute', async () => {
+				await updateSetting('VideoConf_Default_Provider', 'test');
+				await request
+					.post(api('video-conference.start'))
+					.set(credentials)
+					.send({
+						roomId,
+						title: 'Conference Title',
+						allowRinging: true,
+					})
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body.success).to.be.equal(true);
+						expect(res.body.data).to.be.an('object');
+						expect(res.body.data).to.have.a.property('providerName').equal('test');
+						expect(res.body.data).to.have.a.property('type').equal('videoconference');
+						expect(res.body.data).to.have.a.property('callId').that.is.a('string');
+					});
 			});
 		});
 
 		describe('[/video-conference.join]', () => {
 			let callId: string | undefined;
 
-			before((done) => {
-				updateSetting('VideoConf_Default_Provider', 'test').then(() => {
-					request
-						.post(api('video-conference.start'))
-						.set(credentials)
-						.send({
-							roomId,
-						})
-						.then((res: Response) => {
-							callId = res.body.data.callId;
-							done();
-						});
+			before(async () => {
+				await updateSetting('VideoConf_Default_Provider', 'test');
+				const res = await request.post(api('video-conference.start')).set(credentials).send({
+					roomId,
 				});
+				callId = res.body.data.callId;
 			});
 
-			it('should join a videoconference successfully', (done) => {
-				request
+			it('should join a videoconference successfully', async () => {
+				await request
 					.post(api('video-conference.join'))
 					.set(credentials)
 					.send({
@@ -282,12 +259,11 @@ describe('Apps - Video Conferences', function () {
 						expect(res.body).to.have.a.property('providerName').equal('test');
 						const userId = credentials['X-User-Id'];
 						expect(res.body).to.have.a.property('url').equal(`test/videoconference/${callId}/${roomName}/${userId}`);
-					})
-					.end(done);
+					});
 			});
 
-			it('should join a videoconference using the specified state', (done) => {
-				request
+			it('should join a videoconference using the specified state', async () => {
+				await request
 					.post(api('video-conference.join'))
 					.set(credentials)
 					.send({
@@ -303,31 +279,24 @@ describe('Apps - Video Conferences', function () {
 						expect(res.body).to.have.a.property('providerName').equal('test');
 						const userId = credentials['X-User-Id'];
 						expect(res.body).to.have.a.property('url').equal(`test/videoconference/${callId}/${roomName}/${userId}/mic`);
-					})
-					.end(done);
+					});
 			});
 		});
 
 		describe('[/video-conference.info]', () => {
 			let callId: string | undefined;
 
-			before((done) => {
-				updateSetting('VideoConf_Default_Provider', 'test').then(() => {
-					request
-						.post(api('video-conference.start'))
-						.set(credentials)
-						.send({
-							roomId,
-						})
-						.then((res: Response) => {
-							callId = res.body.data.callId;
-							done();
-						});
+			before(async () => {
+				await updateSetting('VideoConf_Default_Provider', 'test');
+				const res = await request.post(api('video-conference.start')).set(credentials).send({
+					roomId,
 				});
+
+				callId = res.body.data.callId;
 			});
 
-			it('should load the video conference data successfully', (done) => {
-				request
+			it('should load the video conference data successfully', async () => {
+				await request
 					.get(api('video-conference.info'))
 					.set(credentials)
 					.query({
@@ -350,8 +319,7 @@ describe('Apps - Video Conferences', function () {
 						expect(res.body).to.have.a.property('createdBy').that.is.an('object');
 						expect(res.body.createdBy).to.have.a.property('_id').equal(credentials['X-User-Id']);
 						expect(res.body.createdBy).to.have.a.property('username').equal(adminUsername);
-					})
-					.end(done);
+					});
 			});
 		});
 
@@ -359,33 +327,22 @@ describe('Apps - Video Conferences', function () {
 			let callId1: string | undefined;
 			let callId2: string | undefined;
 
-			before((done) => {
-				updateSetting('VideoConf_Default_Provider', 'test').then(() => {
-					request
-						.post(api('video-conference.start'))
-						.set(credentials)
-						.send({
-							roomId,
-						})
-						.then((res: Response) => {
-							callId1 = res.body.data.callId;
-
-							request
-								.post(api('video-conference.start'))
-								.set(credentials)
-								.send({
-									roomId,
-								})
-								.then((res: Response) => {
-									callId2 = res.body.data.callId;
-									done();
-								});
-						});
+			before(async () => {
+				await updateSetting('VideoConf_Default_Provider', 'test');
+				const res = await request.post(api('video-conference.start')).set(credentials).send({
+					roomId,
 				});
+				callId1 = res.body.data.callId;
+
+				const res2 = await request.post(api('video-conference.start')).set(credentials).send({
+					roomId,
+				});
+
+				callId2 = res2.body.data.callId;
 			});
 
-			it('should load the list of video conferences sorted by new', (done) => {
-				request
+			it('should load the list of video conferences sorted by new', async () => {
+				await request
 					.get(api('video-conference.list'))
 					.set(credentials)
 					.query({
@@ -414,8 +371,7 @@ describe('Apps - Video Conferences', function () {
 						expect(call1.createdBy).to.have.a.property('username').equal(adminUsername);
 
 						expect(call2).to.have.a.property('_id').equal(callId2);
-					})
-					.end(done);
+					});
 			});
 		});
 	});

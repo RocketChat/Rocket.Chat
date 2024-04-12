@@ -1,5 +1,6 @@
-import { IUser, IRoom } from '@rocket.chat/core-typings';
-import React, { memo, MouseEvent, ReactElement } from 'react';
+import type { IUser, IRoom } from '@rocket.chat/core-typings';
+import type { MouseEvent, ReactElement } from 'react';
+import React, { memo } from 'react';
 
 import RoomMembersItem from './RoomMembersItem';
 
@@ -11,16 +12,18 @@ type RoomMembersRowProps = {
 	};
 	index: number;
 	reload: () => void;
+	useRealName: boolean;
 };
 
-const RoomMembersRow = ({ user, data: { onClickView, rid }, index, reload }: RoomMembersRowProps): ReactElement => {
-	if (!user || !user._id) {
+const RoomMembersRow = ({ user, data: { onClickView, rid }, index, reload, useRealName }: RoomMembersRowProps): ReactElement => {
+	if (!user?._id) {
 		return <RoomMembersItem.Skeleton />;
 	}
 
 	return (
 		<RoomMembersItem
 			key={index}
+			useRealName={useRealName}
 			username={user.username}
 			_id={user._id}
 			rid={rid}

@@ -1,7 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, MouseEvent } from 'react';
+import type { FC, MouseEvent } from 'react';
+import React from 'react';
 
 import GenericModal from '../../../components/GenericModal';
 import MarkdownText from '../../../components/MarkdownText';
@@ -30,7 +31,7 @@ const Announcement: FC<AnnouncementParams> = ({ announcement, announcementDetail
 			: setModal(
 					<GenericModal icon={null} title={t('Announcement')} confirmText={t('Close')} onConfirm={closeModal} onClose={closeModal}>
 						<Box>
-							<MarkdownText content={announcement} />
+							<MarkdownText content={announcement} parseEmoji />
 						</Box>
 					</GenericModal>,
 			  );
@@ -38,7 +39,7 @@ const Announcement: FC<AnnouncementParams> = ({ announcement, announcementDetail
 
 	return announcement ? (
 		<AnnouncementComponent onClickOpen={(e: MouseEvent<HTMLAnchorElement>): void => handleClick(e)}>
-			<MarkdownText variant='inlineWithoutBreaks' content={announcement} withTruncatedText />
+			<MarkdownText variant='inlineWithoutBreaks' content={announcement} withTruncatedText parseEmoji />
 		</AnnouncementComponent>
 	) : null;
 };

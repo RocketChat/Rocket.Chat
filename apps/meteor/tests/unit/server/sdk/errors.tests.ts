@@ -1,6 +1,5 @@
+import { MeteorError } from '@rocket.chat/core-services';
 import { expect } from 'chai';
-
-import { MeteorError } from '../../../../server/sdk/errors';
 
 describe('MeteorError', () => {
 	it('should create an error with no reason like Meteor.Error', () => {

@@ -1,11 +1,14 @@
-import _ from 'underscore';
-import { Base64 } from 'meteor/base64';
-import { EJSON } from 'meteor/ejson';
-import { Random } from 'meteor/random';
-import { Session } from 'meteor/session';
+import { Base64 } from '@rocket.chat/base64';
 import { Emitter } from '@rocket.chat/emitter';
+import { Random } from '@rocket.chat/random';
+import EJSON from 'ejson';
 
-import { e2e } from './rocketchat.e2e';
+import { RoomManager } from '../../../client/lib/RoomManager';
+import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
+import { RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
+import { ChatRoom, Subscriptions, Messages } from '../../models/client';
+import { sdk } from '../../utils/client/lib/SDKClient';
+import { E2ERoomState } from './E2ERoomState';
 import {
 	toString,
 	toArrayBuffer,
@@ -21,13 +24,8 @@ import {
 	importRSAKey,
 	readFileAsArrayBuffer,
 } from './helper';
-import { Notifications } from '../../notifications/client';
-import { Rooms, Subscriptions, Messages } from '../../models/client';
 import { log, logError } from './logger';
-import { E2ERoomState } from './E2ERoomState';
-import { call } from '../../../client/lib/utils/call';
-import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
-import { RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
+import { e2e } from './rocketchat.e2e';
 
 const KEY_ID = Symbol('keyID');
 const PAUSED = Symbol('PAUSED');
@@ -77,7 +75,7 @@ export class E2ERoom extends Emitter {
 		this.once(E2ERoomState.READY, () => this.decryptPendingMessages());
 		this.once(E2ERoomState.READY, () => this.decryptSubscription());
 		this.on('STATE_CHANGED', (prev) => {
-			if (this.roomId === Session.get('openedRoom')) {
+			if (this.roomId === RoomManager.opened) {
 				this.log(`[PREV: ${prev}]`, 'State CHANGED');
 			}
 		});
@@ -188,7 +186,7 @@ export class E2ERoom extends Emitter {
 			return;
 		}
 
-		Subscriptions.direct.update(
+		Subscriptions.update(
 			{
 				_id: subscription._id,
 			},
@@ -204,7 +202,7 @@ export class E2ERoom extends Emitter {
 
 	async decryptPendingMessages() {
 		return Messages.find({ rid: this.roomId, t: 'e2e', e2e: 'pending' }).forEach(async ({ _id, ...msg }) => {
-			Messages.direct.update({ _id }, await this.decryptMessage(msg));
+			Messages.update({ _id }, await this.decryptMessage(msg));
 		});
 	}
 
@@ -230,7 +228,7 @@ export class E2ERoom extends Emitter {
 		}
 
 		try {
-			const room = Rooms.findOne({ _id: this.roomId });
+			const room = ChatRoom.findOne({ _id: this.roomId });
 			if (!room.e2eKeyId) {
 				// TODO CHECK_PERMISSION
 				this.setState(E2ERoomState.CREATING_KEYS);
@@ -241,7 +239,7 @@ export class E2ERoom extends Emitter {
 
 			this.setState(E2ERoomState.WAITING_KEYS);
 			this.log('Requesting room key');
-			Notifications.notifyUsersOfRoom(this.roomId, 'e2ekeyRequest', this.roomId, room.e2eKeyId);
+			sdk.publish('notify-room-users', [`${this.roomId}/e2ekeyRequest`, this.roomId, room.e2eKeyId]);
 		} catch (error) {
 			// this.error = error;
 			this.setState(E2ERoomState.ERROR);
@@ -249,7 +247,7 @@ export class E2ERoom extends Emitter {
 	}
 
 	isSupportedRoomType(type) {
-		return roomCoordinator.getRoomDirectives(type)?.allowRoomSettingChange({}, RoomSettingsEnum.E2E);
+		return roomCoordinator.getRoomDirectives(type).allowRoomSettingChange({}, RoomSettingsEnum.E2E);
 	}
 
 	async importGroupKey(groupKey) {
@@ -264,7 +262,8 @@ export class E2ERoom extends Emitter {
 			const decryptedKey = await decryptRSA(e2e.privateKey, groupKey);
 			this.sessionKeyExportedString = toString(decryptedKey);
 		} catch (error) {
-			return this.error('Error decrypting group key: ', error);
+			this.error('Error decrypting group key: ', error);
+			return false;
 		}
 
 		this.keyID = Base64.encode(this.sessionKeyExportedString).slice(0, 12);
@@ -275,8 +274,11 @@ export class E2ERoom extends Emitter {
 			// Key has been obtained. E2E is now in session.
 			this.groupSessionKey = key;
 		} catch (error) {
-			return this.error('Error importing group key: ', error);
+			this.error('Error importing group key: ', error);
+			return false;
 		}
+
+		return true;
 	}
 
 	async createGroupKey() {
@@ -294,7 +296,7 @@ export class E2ERoom extends Emitter {
 			this.sessionKeyExportedString = JSON.stringify(sessionKeyExported);
 			this.keyID = Base64.encode(this.sessionKeyExportedString).slice(0, 12);
 
-			await call('e2e.setRoomKeyID', this.roomId, this.keyID);
+			await sdk.call('e2e.setRoomKeyID', this.roomId, this.keyID);
 			await this.encryptKeyForOtherParticipants();
 		} catch (error) {
 			this.error('Error exporting group key: ', error);
@@ -305,7 +307,7 @@ export class E2ERoom extends Emitter {
 	async encryptKeyForOtherParticipants() {
 		// Encrypt generated session key for every user in room and publish to subscription model.
 		try {
-			const { users } = await call('e2e.getUsersOfRoomWithoutKey', this.roomId);
+			const { users } = await sdk.call('e2e.getUsersOfRoomWithoutKey', this.roomId);
 			users.forEach((user) => this.encryptForParticipant(user));
 		} catch (error) {
 			return this.error('Error getting room users: ', error);
@@ -325,7 +327,7 @@ export class E2ERoom extends Emitter {
 		try {
 			const encryptedUserKey = await encryptRSA(userKey, toArrayBuffer(this.sessionKeyExportedString));
 			// Key has been encrypted. Publish to that user's subscription model for this room.
-			await call('e2e.updateGroupKey', this.roomId, user._id, this.keyID + Base64.encode(new Uint8Array(encryptedUserKey)));
+			await sdk.call('e2e.updateGroupKey', this.roomId, user._id, this.keyID + Base64.encode(new Uint8Array(encryptedUserKey)));
 		} catch (error) {
 			return this.error('Error encrypting user key: ', error);
 		}
@@ -373,7 +375,7 @@ export class E2ERoom extends Emitter {
 
 	// Encrypts messages
 	async encryptText(data) {
-		if (!_.isObject(data)) {
+		if (!(typeof data === 'function' || (typeof data === 'object' && !!data))) {
 			data = new TextEncoder('UTF-8').encode(EJSON.stringify({ text: data, ack: Random.id((Random.fraction() + 1) * 20) }));
 		}
 

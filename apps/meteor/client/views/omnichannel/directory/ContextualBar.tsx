@@ -1,26 +1,21 @@
 import { useRouteParameter } from '@rocket.chat/ui-contexts';
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 
 import CallsContextualBarDirectory from './CallsContextualBarDirectory';
 import ChatsContextualBar from './ChatsContextualBar';
 import ContactContextualBar from './ContactContextualBar';
 
 type ContextualBarProps = {
-	contactReload?: () => void;
 	chatReload?: () => void;
 };
 
-const ContextualBar: FC<ContextualBarProps> = ({ contactReload, chatReload }) => {
+const ContextualBar: FC<ContextualBarProps> = ({ chatReload }) => {
 	const page = useRouteParameter('page');
-	const bar = useRouteParameter('bar');
-
-	if (!bar) {
-		return null;
-	}
 
 	switch (page) {
 		case 'contacts':
-			return <ContactContextualBar contactReload={contactReload} />;
+			return <ContactContextualBar />;
 		case 'chats':
 			return <ChatsContextualBar chatReload={chatReload} />;
 		case 'calls':

@@ -1,40 +1,52 @@
-import { Roles } from '@rocket.chat/models';
+import type { IUser } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
+import { Roles, Rooms, Users } from '@rocket.chat/models';
 
-import { Rooms } from '../../../../app/models/server';
-import { addUserToRoom, createRoom } from '../../../../app/lib/server/functions';
-import { Logger } from '../../../../app/logger/server';
+import { addUserToRoom } from '../../../../app/lib/server/functions/addUserToRoom';
+import { createRoom } from '../../../../app/lib/server/functions/createRoom';
+import { getValidRoomName } from '../../../../app/utils/server/lib/getValidRoomName';
 import { syncUserRoles } from '../syncUserRoles';
 
-export const logger = new Logger('OAuth');
+const logger = new Logger('OAuth');
 
 export class OAuthEEManager {
-	static mapSSOGroupsToChannels(
-		user: Record<string, any>,
+	static async mapSSOGroupsToChannels(
+		user: IUser,
 		identity: Record<string, any>,
 		groupClaimName: string,
 		channelsMap: Record<string, any> | undefined,
 		channelsAdmin: string,
-	): void {
-		if (user && identity && groupClaimName) {
+	): Promise<void> {
+		if (channelsMap && user && identity && groupClaimName) {
 			const groupsFromSSO = identity[groupClaimName] || [];
 
-			for (const ssoGroup in channelsMap) {
+			const userChannelAdmin = await Users.findOneByUsernameIgnoringCase(channelsAdmin);
+			if (!userChannelAdmin) {
+				logger.error(`could not create channel, user not found: ${channelsAdmin}`);
+				return;
+			}
+
+			for await (const ssoGroup of Object.keys(channelsMap)) {
 				if (typeof ssoGroup === 'string') {
 					let channels = channelsMap[ssoGroup];
 					if (!Array.isArray(channels)) {
 						channels = [channels];
 					}
-					for (const channel of channels) {
-						let room = Rooms.findOneByNonValidatedName(channel);
+					for await (const channel of channels) {
+						const name = await getValidRoomName(channel.trim(), undefined, { allowDuplicates: true });
+						let room = await Rooms.findOneByNonValidatedName(name);
 						if (!room) {
-							room = createRoom('c', channel, channelsAdmin, [], false);
-							if (!room || !room.rid) {
+							const createdRoom = await createRoom('c', channel, userChannelAdmin, [], false, false);
+							if (!createdRoom?.rid) {
 								logger.error(`could not create channel ${channel}`);
 								return;
 							}
+
+							room = createdRoom;
 						}
-						if (Array.isArray(groupsFromSSO) && groupsFromSSO.includes(ssoGroup)) {
-							addUserToRoom(room._id, user.username);
+
+						if (room && Array.isArray(groupsFromSSO) && groupsFromSSO.includes(ssoGroup)) {
+							await addUserToRoom(room._id, user);
 						}
 					}
 				}
@@ -42,34 +54,44 @@ export class OAuthEEManager {
 		}
 	}
 
-	static updateRolesFromSSO(user: Record<string, any>, identity: Record<string, any>, roleClaimName: string, rolesToSync: string[]): void {
+	static async updateRolesFromSSO(
+		user: Record<string, any>,
+		identity: Record<string, any>,
+		roleClaimName: string,
+		rolesToSync: string[],
+	): Promise<void> {
 		if (user && identity && roleClaimName) {
-			const rolesFromSSO = this.mapRolesFromSSO(identity, roleClaimName);
+			const rolesFromSSO = await this.mapRolesFromSSO(identity, roleClaimName);
 
 			if (!Array.isArray(user.roles)) {
 				user.roles = [];
 			}
 
-			Promise.await(
-				syncUserRoles(user._id, rolesFromSSO, {
-					allowedRoles: rolesToSync,
-				}),
-			);
+			const rolesIdsFromSSO = (await Roles.findInIdsOrNames(rolesFromSSO).toArray()).map((role) => role._id);
+			const allowedRoles = (await Roles.findInIdsOrNames(rolesToSync).toArray()).map((role) => role._id);
+
+			await syncUserRoles(user._id, rolesIdsFromSSO, {
+				allowedRoles,
+			});
 		}
 	}
 
 	// Returns list of roles from SSO identity
-	static mapRolesFromSSO(identity: Record<string, any>, roleClaimName: string): string[] {
-		let roles: string[] = [];
-		if (identity && roleClaimName) {
-			// Adding roles
-			if (identity[roleClaimName] && Array.isArray(identity[roleClaimName])) {
-				roles = identity[roleClaimName].filter(
-					(val: string) => val !== 'offline_access' && val !== 'uma_authorization' && Promise.await(Roles.findOneByIdOrName(val)),
-				);
+	static async mapRolesFromSSO(identity: Record<string, any>, roleClaimName: string): Promise<string[]> {
+		if (!identity || !roleClaimName || !identity[roleClaimName] || !Array.isArray(identity[roleClaimName])) {
+			return [];
+		}
+
+		const baseRoles = identity[roleClaimName] as string[];
+
+		const filteredRoles = baseRoles.filter((val) => val !== 'offline_access' && val !== 'uma_authorization');
+		const validRoleList = [];
+		for await (const role of filteredRoles) {
+			if (await Roles.findOneByIdOrName(role)) {
+				validRoleList.push(role);
 			}
 		}
 
-		return roles;
+		return validRoleList;
 	}
 }

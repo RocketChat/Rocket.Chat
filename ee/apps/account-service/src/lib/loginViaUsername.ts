@@ -1,9 +1,9 @@
+import type { ILoginResult } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
-import { _generateStampedLoginToken, _hashStampedToken, _tokenExpiration, validatePassword } from './utils';
-import type { ILoginResult } from '../../../../../apps/meteor/server/sdk/types/IAccount';
 import { saveSession } from './saveSession';
+import { _generateStampedLoginToken, _hashStampedToken, _tokenExpiration, validatePassword } from './utils';
 
 export async function loginViaUsername(
 	{ username }: { username: string },

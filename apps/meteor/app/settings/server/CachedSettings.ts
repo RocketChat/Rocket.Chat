@@ -1,6 +1,6 @@
+import type { ISetting, SettingValue } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import _ from 'underscore';
-import type { ISetting, SettingValue } from '@rocket.chat/core-typings';
 
 import { SystemLogger } from '../../../server/lib/logger/system';
 

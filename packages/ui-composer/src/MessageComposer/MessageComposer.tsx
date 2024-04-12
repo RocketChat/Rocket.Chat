@@ -5,13 +5,24 @@ import { forwardRef } from 'react';
 type MessageComposerProps = Omit<HTMLAttributes<HTMLElement>, 'is'> & {
 	children: ReactNode;
 	is?: React.ElementType<any>;
-	variant?: 'default' | 'error';
+	variant?: 'default' | 'error' | 'editing';
 };
 
-const MessageComposer = forwardRef<HTMLElement, MessageComposerProps>(
-	(props, ref): ReactElement => (
-		<Box ref={ref} role='group' borderWidth={2} borderColor='light' borderRadius='x4' display='flex' flexDirection='column' {...props} />
-	),
-);
+const MessageComposer = forwardRef<HTMLElement, MessageComposerProps>(function MessageComposer({ variant, ...props }, ref): ReactElement {
+	return (
+		<Box
+			rcx-input-box__wrapper
+			mbs={2}
+			bg={variant === 'editing' ? 'status-background-warning-2' : undefined}
+			ref={ref}
+			role='group'
+			display='flex'
+			flexDirection='column'
+			overflow='hidden'
+			p={0}
+			{...props}
+		/>
+	);
+});
 
 export default MessageComposer;

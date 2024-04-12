@@ -1,20 +1,22 @@
 import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { memo, ReactElement, useMemo, useState } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import React, { memo, useMemo, useState } from 'react';
 
 import { useRecordList } from '../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../hooks/useAsyncState';
 import { useDepartmentsList } from './Omnichannel/hooks/useDepartmentsList';
 
 type AutoCompleteDepartmentProps = {
-	value?: { value: string; label: string } | string;
+	value?: string;
 	onChange: (value: string) => void;
 	excludeDepartmentId?: string;
 	onlyMyDepartments?: boolean;
 	haveAll?: boolean;
 	haveNone?: boolean;
-};
+	showArchived?: boolean;
+} & Omit<ComponentProps<typeof PaginatedSelectFiltered>, 'options' | 'setFilter'>;
 
 const AutoCompleteDepartment = ({
 	value,
@@ -23,9 +25,11 @@ const AutoCompleteDepartment = ({
 	onChange,
 	haveAll,
 	haveNone,
+	showArchived = false,
+	...props
 }: AutoCompleteDepartmentProps): ReactElement | null => {
 	const t = useTranslation();
-	const [departmentsFilter, setDepartmentsFilter] = useState('');
+	const [departmentsFilter, setDepartmentsFilter] = useState<string>('');
 
 	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);
 
@@ -37,48 +41,23 @@ const AutoCompleteDepartment = ({
 				haveAll,
 				haveNone,
 				excludeDepartmentId,
+				showArchived,
 			}),
-			[debouncedDepartmentsFilter, onlyMyDepartments, haveAll, haveNone, excludeDepartmentId],
+			[debouncedDepartmentsFilter, onlyMyDepartments, haveAll, haveNone, excludeDepartmentId, showArchived],
 		),
 	);
 
 	const { phase: departmentsPhase, items: departmentsItems, itemCount: departmentsTotal } = useRecordList(departmentsList);
 
-	const sortedByName = useMemo(
-		() =>
-			departmentsItems.sort((a, b) => {
-				if (a.value.value === 'all') {
-					return -1;
-				}
-
-				if (a.name > b.name) {
-					return 1;
-				}
-				if (a.name < b.name) {
-					return -1;
-				}
-
-				return 0;
-			}),
-		[departmentsItems],
-	);
-
-	const department = useMemo(() => {
-		const valueFound = typeof value === 'string' ? value : value?.value || '';
-		return sortedByName.find((dep) => dep.value.value === valueFound)?.value;
-	}, [sortedByName, value]);
-
 	return (
 		<PaginatedSelectFiltered
 			withTitle
-			value={department}
+			{...props}
+			value={value}
 			onChange={onChange}
 			filter={departmentsFilter}
-			// Workaround for setFilter weird typing
-			setFilter={setDepartmentsFilter as (value: string | number | undefined) => void}
-			// TODO: Fix typing on fuselage
-			// Workaround for options wrong typing
-			options={sortedByName as any}
+			setFilter={setDepartmentsFilter as (value?: string | number) => void}
+			options={departmentsItems}
 			placeholder={t('Select_an_option')}
 			data-qa='autocomplete-department'
 			endReached={

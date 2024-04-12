@@ -1,20 +1,43 @@
-import type { IUser } from '@rocket.chat/core-typings';
-import { Box, Modal, Button, TextInput, Field, ToggleSwitch, FieldGroup, Icon } from '@rocket.chat/fuselage';
-import { useTranslation, useSetting, usePermission, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import React, { memo, useMemo, ReactElement, useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import {
+	Box,
+	Button,
+	Field,
+	Icon,
+	Modal,
+	TextInput,
+	ToggleSwitch,
+	FieldGroup,
+	FieldLabel,
+	FieldRow,
+	FieldError,
+	FieldDescription,
+	FieldHint,
+} from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import {
+	useEndpoint,
+	usePermission,
+	usePermissionWithScopedRoles,
+	useSetting,
+	useToastMessageDispatch,
+	useTranslation,
+} from '@rocket.chat/ui-contexts';
+import type { ComponentProps, ReactElement } from 'react';
+import React, { memo, useEffect, useMemo } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
+import { useEncryptedRoomDescription } from '../hooks/useEncryptedRoomDescription';
 
 type CreateTeamModalInputs = {
 	name: string;
-	description: string;
+	topic: string;
 	isPrivate: boolean;
 	readOnly: boolean;
 	encrypted: boolean;
 	broadcast: boolean;
-	members?: Exclude<IUser['username'], undefined>[];
+	members?: string[];
 };
 
 const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => {
@@ -25,6 +48,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const canCreateTeam = usePermission('create-team');
+	const canSetReadOnly = usePermissionWithScopedRoles('set-readonly', ['owner']);
 
 	const checkTeamNameExists = useEndpoint('GET', '/v1/rooms.nameExists');
 	const createTeamAction = useEndpoint('POST', '/v1/teams.create');
@@ -42,13 +66,13 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 			return;
 		}
 
-		if (!teamNameRegex?.test(name)) {
-			return t('error-invalid-name');
+		if (teamNameRegex && !teamNameRegex?.test(name)) {
+			return t('Name_cannot_have_special_characters');
 		}
 
 		const { exists } = await checkTeamNameExists({ roomName: name });
 		if (exists) {
-			return t('Teams_Errors_team_name', { name });
+			return t('Teams_Errors_Already_exists', { name });
 		}
 	};
 
@@ -58,7 +82,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 		handleSubmit,
 		setValue,
 		watch,
-		formState: { isDirty, errors },
+		formState: { errors, isSubmitting },
 	} = useForm<CreateTeamModalInputs>({
 		defaultValues: {
 			isPrivate: true,
@@ -69,7 +93,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 		},
 	});
 
-	const { isPrivate, broadcast, readOnly } = watch();
+	const { isPrivate, broadcast, readOnly, encrypted } = watch();
 
 	useEffect(() => {
 		if (!isPrivate) {
@@ -85,14 +109,14 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 
 	const canChangeReadOnly = !broadcast;
 	const canChangeEncrypted = isPrivate && !broadcast && e2eEnabled && !e2eEnabledForPrivateByDefault;
-	const isButtonEnabled = isDirty && canCreateTeam;
+	const getEncryptedHint = useEncryptedRoomDescription('team');
 
 	const handleCreateTeam = async ({
 		name,
 		members,
 		isPrivate,
 		readOnly,
-		description,
+		topic,
 		broadcast,
 		encrypted,
 	}: CreateTeamModalInputs): Promise<void> => {
@@ -103,7 +127,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 			room: {
 				readOnly,
 				extraData: {
-					description,
+					topic,
 					broadcast,
 					encrypted,
 				},
@@ -121,141 +145,151 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 		}
 	};
 
+	const createTeamFormId = useUniqueId();
+	const nameId = useUniqueId();
+	const topicId = useUniqueId();
+	const privateId = useUniqueId();
+	const readOnlyId = useUniqueId();
+	const encryptedId = useUniqueId();
+	const broadcastId = useUniqueId();
+	const addMembersId = useUniqueId();
+
 	return (
-		<Modal>
+		<Modal
+			aria-labelledby={`${createTeamFormId}-title`}
+			wrapperFunction={(props: ComponentProps<typeof Box>) => (
+				<Box is='form' id={createTeamFormId} onSubmit={handleSubmit(handleCreateTeam)} {...props} />
+			)}
+		>
 			<Modal.Header>
-				<Modal.Title>{t('Teams_New_Title')}</Modal.Title>
-				<Modal.Close title={t('Close')} onClick={onClose} />
+				<Modal.Title id={`${createTeamFormId}-title`}>{t('Teams_New_Title')}</Modal.Title>
+				<Modal.Close title={t('Close')} onClick={onClose} tabIndex={-1} />
 			</Modal.Header>
-			<Modal.Content>
+			<Modal.Content mbe={2}>
+				<Box fontScale='p2' mbe={16}>
+					{t('Teams_new_description')}
+				</Box>
 				<FieldGroup>
 					<Field>
-						<Field.Label>{t('Teams_New_Name_Label')}</Field.Label>
-						<Field.Row>
+						<FieldLabel required htmlFor={nameId}>
+							{t('Teams_New_Name_Label')}
+						</FieldLabel>
+						<FieldRow>
 							<TextInput
-								autoFocus
+								id={nameId}
 								aria-invalid={errors.name ? 'true' : 'false'}
 								{...register('name', {
 									required: t('error-the-field-is-required', { field: t('Name') }),
 									validate: (value) => validateTeamName(value),
 								})}
-								placeholder={t('Team_Name')}
 								addon={<Icon size='x20' name={isPrivate ? 'team-lock' : 'team'} />}
 								error={errors.name?.message}
+								aria-describedby={`${nameId}-error ${nameId}-hint`}
+								aria-required='true'
 							/>
-						</Field.Row>
-						{errors?.name && <Field.Error>{errors.name.message}</Field.Error>}
+						</FieldRow>
+						{errors?.name && (
+							<FieldError aria-live='assertive' id={`${nameId}-error`}>
+								{errors.name.message}
+							</FieldError>
+						)}
+						{!allowSpecialNames && <FieldHint id={`${nameId}-hint`}>{t('No_spaces')}</FieldHint>}
 					</Field>
 					<Field>
-						<Field.Label>
-							{t('Teams_New_Description_Label')}{' '}
-							<Box is='span' color='annotation'>
-								({t('optional')})
-							</Box>
-						</Field.Label>
-						<Field.Row>
-							<TextInput {...register('description')} placeholder={t('Teams_New_Description_Placeholder')} />
-						</Field.Row>
+						<FieldLabel htmlFor={topicId}>{t('Topic')}</FieldLabel>
+						<FieldRow>
+							<TextInput id={topicId} aria-describedby={`${topicId}-hint`} {...register('topic')} />
+						</FieldRow>
+						<FieldRow>
+							<FieldHint id={`${topicId}-hint`}>{t('Displayed_next_to_name')}</FieldHint>
+						</FieldRow>
 					</Field>
 					<Field>
-						<Box display='flex' justifyContent='space-between' alignItems='start'>
-							<Box display='flex' flexDirection='column' width='full'>
-								<Field.Label>{t('Teams_New_Private_Label')}</Field.Label>
-								<Field.Description>
-									{isPrivate ? t('Teams_New_Private_Description_Enabled') : t('Teams_New_Private_Description_Disabled')}
-								</Field.Description>
-							</Box>
-							<Controller
-								control={control}
-								name='isPrivate'
-								render={({ field: { onChange, value, ref } }): ReactElement => (
-									<ToggleSwitch onChange={onChange} checked={value} ref={ref} />
-								)}
-							/>
-						</Box>
-					</Field>
-					<Field disabled={!canChangeReadOnly}>
-						<Box display='flex' justifyContent='space-between' alignItems='start'>
-							<Box display='flex' flexDirection='column' width='full'>
-								<Field.Label>{t('Teams_New_Read_only_Label')}</Field.Label>
-								<Field.Description>
-									{readOnly ? t('Only_authorized_users_can_write_new_messages') : t('Teams_New_Read_only_Description')}
-								</Field.Description>
-							</Box>
-							<Controller
-								control={control}
-								name='readOnly'
-								render={({ field: { onChange, value, ref } }): ReactElement => (
-									<ToggleSwitch disabled={!canChangeReadOnly} onChange={onChange} checked={value} ref={ref} />
-								)}
-							/>
-						</Box>
-					</Field>
-					<Field disabled={!canChangeEncrypted}>
-						<Box display='flex' justifyContent='space-between' alignItems='start'>
-							<Box display='flex' flexDirection='column' width='full'>
-								<Field.Label>{t('Teams_New_Encrypted_Label')}</Field.Label>
-								<Field.Description>
-									{isPrivate ? t('Teams_New_Encrypted_Description_Enabled') : t('Teams_New_Encrypted_Description_Disabled')}
-								</Field.Description>
-							</Box>
-							<Controller
-								control={control}
-								name='encrypted'
-								render={({ field: { onChange, value, ref } }): ReactElement => (
-									<ToggleSwitch disabled={!canChangeEncrypted} onChange={onChange} checked={value} ref={ref} />
-								)}
-							/>
-						</Box>
-					</Field>
-					<Field>
-						<Box display='flex' justifyContent='space-between' alignItems='start'>
-							<Box display='flex' flexDirection='column' width='full'>
-								<Field.Label>{t('Teams_New_Broadcast_Label')}</Field.Label>
-								<Field.Description>{t('Teams_New_Broadcast_Description')}</Field.Description>
-							</Box>
-							<Controller
-								control={control}
-								name='broadcast'
-								render={({ field: { onChange, value, ref } }): ReactElement => (
-									<ToggleSwitch onChange={onChange} checked={value} ref={ref} />
-								)}
-							/>
-						</Box>
-					</Field>
-					<Field>
-						<Field.Label>
-							{t('Teams_New_Add_members_Label')}{' '}
-							<Box is='span' color='annotation'>
-								({t('optional')})
-							</Box>
-						</Field.Label>
+						<FieldLabel htmlFor={addMembersId}>{t('Teams_New_Add_members_Label')}</FieldLabel>
 						<Controller
 							control={control}
 							name='members'
 							render={({ field: { onChange, value } }): ReactElement => (
-								<UserAutoCompleteMultiple
-									value={value}
-									onChange={(member, action): void => {
-										if (!action && value) {
-											if (value.includes(member)) {
-												return;
-											}
-											return onChange([...value, member]);
-										}
-
-										onChange(value?.filter((current) => current !== member));
-									}}
-								/>
+								<UserAutoCompleteMultiple id={addMembersId} value={value} onChange={onChange} placeholder={t('Add_people')} />
 							)}
 						/>
+					</Field>
+					<Field>
+						<FieldRow>
+							<FieldLabel htmlFor={privateId}>{t('Teams_New_Private_Label')}</FieldLabel>
+							<Controller
+								control={control}
+								name='isPrivate'
+								render={({ field: { onChange, value, ref } }): ReactElement => (
+									<ToggleSwitch id={privateId} aria-describedby={`${privateId}-hint`} onChange={onChange} checked={value} ref={ref} />
+								)}
+							/>
+						</FieldRow>
+						<FieldDescription id={`${privateId}-hint`}>
+							{isPrivate ? t('People_can_only_join_by_being_invited') : t('Anyone_can_access')}
+						</FieldDescription>
+					</Field>
+					<Field>
+						<FieldRow>
+							<FieldLabel htmlFor={readOnlyId}>{t('Teams_New_Read_only_Label')}</FieldLabel>
+							<Controller
+								control={control}
+								name='readOnly'
+								render={({ field: { onChange, value, ref } }): ReactElement => (
+									<ToggleSwitch
+										id={readOnlyId}
+										aria-describedby={`${readOnlyId}-hint`}
+										disabled={!canChangeReadOnly}
+										onChange={onChange}
+										checked={value}
+										ref={ref}
+									/>
+								)}
+							/>
+						</FieldRow>
+						<FieldDescription id={`${readOnlyId}-hint`}>
+							{readOnly ? t('Read_only_field_hint_enabled', { roomType: 'team' }) : t('Anyone_can_send_new_messages')}
+						</FieldDescription>
+					</Field>
+					<Field>
+						<FieldRow>
+							<FieldLabel htmlFor={encryptedId}>{t('Teams_New_Encrypted_Label')}</FieldLabel>
+							<Controller
+								control={control}
+								name='encrypted'
+								render={({ field: { onChange, value, ref } }): ReactElement => (
+									<ToggleSwitch
+										id={encryptedId}
+										disabled={!canSetReadOnly || !canChangeEncrypted}
+										onChange={onChange}
+										aria-describedby={`${encryptedId}-hint`}
+										checked={value}
+										ref={ref}
+									/>
+								)}
+							/>
+						</FieldRow>
+						<FieldDescription id={`${encryptedId}-hint`}>{getEncryptedHint({ isPrivate, broadcast, encrypted })}</FieldDescription>
+					</Field>
+					<Field>
+						<FieldRow>
+							<FieldLabel htmlFor={broadcastId}>{t('Teams_New_Broadcast_Label')}</FieldLabel>
+							<Controller
+								control={control}
+								name='broadcast'
+								render={({ field: { onChange, value, ref } }): ReactElement => (
+									<ToggleSwitch aria-describedby={`${broadcastId}-hint`} id={broadcastId} onChange={onChange} checked={value} ref={ref} />
+								)}
+							/>
+						</FieldRow>
+						{broadcast && <FieldDescription id={`${broadcastId}-hint`}>{t('Teams_New_Broadcast_Description')}</FieldDescription>}
 					</Field>
 				</FieldGroup>
 			</Modal.Content>
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button disabled={!isButtonEnabled} onClick={handleSubmit(handleCreateTeam)} primary>
+					<Button disabled={!canCreateTeam} loading={isSubmitting} type='submit' primary>
 						{t('Create')}
 					</Button>
 				</Modal.FooterControllers>

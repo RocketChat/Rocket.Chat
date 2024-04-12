@@ -1,10 +1,9 @@
 import type { Readable } from 'stream';
 
-import type { Request } from 'express';
-import busboy from 'busboy';
+import { MeteorError } from '@rocket.chat/core-services';
 import type { ValidateFunction } from 'ajv';
-
-import { MeteorError } from '../../../../server/sdk/errors';
+import busboy from 'busboy';
+import type { Request } from 'express';
 
 type UploadResult<K> = {
 	file: Readable & { truncated: boolean };
@@ -70,11 +69,11 @@ export async function getUploadFormData<
 		}
 
 		const fileChunks: Uint8Array[] = [];
-		file.on('data', function (chunk) {
+		file.on('data', (chunk) => {
 			fileChunks.push(chunk);
 		});
 
-		file.on('end', function () {
+		file.on('end', () => {
 			if (file.truncated) {
 				fileChunks.length = 0;
 				return returnError(new MeteorError('error-file-too-large'));
@@ -104,17 +103,17 @@ export async function getUploadFormData<
 	bb.on('end', onEnd);
 	bb.on('finish', onEnd);
 
-	bb.on('error', function (err: Error) {
+	bb.on('error', (err: Error) => {
 		returnError(err);
 	});
 
-	bb.on('partsLimit', function () {
+	bb.on('partsLimit', () => {
 		returnError();
 	});
-	bb.on('filesLimit', function () {
+	bb.on('filesLimit', () => {
 		returnError('Just 1 file is allowed');
 	});
-	bb.on('fieldsLimit', function () {
+	bb.on('fieldsLimit', () => {
 		returnError();
 	});
 

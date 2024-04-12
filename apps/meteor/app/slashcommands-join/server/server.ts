@@ -1,41 +1,40 @@
+import { api, Room } from '@rocket.chat/core-services';
+import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
+import { Rooms, Subscriptions } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { Rooms, Subscriptions } from '../../models/server';
+import { i18n } from '../../../server/lib/i18n';
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
-import { api } from '../../../server/sdk/api';
 
 slashCommands.add({
 	command: 'join',
-	callback: (_command: 'join', params, item): void => {
+	callback: async ({ params, message, userId }: SlashCommandCallbackParams<'join'>): Promise<void> => {
 		let channel = params.trim();
 		if (channel === '') {
 			return;
 		}
 
-		channel = channel.replace('#', '');
-
-		const userId = Meteor.userId() as string;
-		const user = Meteor.users.findOne(userId);
-		const room = Rooms.findOneByNameAndType(channel, 'c');
-
-		if (!user) {
+		if (!userId) {
 			return;
 		}
 
+		channel = channel.replace('#', '');
+
+		const room = await Rooms.findOneByNameAndType(channel, 'c');
 		if (!room) {
-			api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-				msg: TAPi18n.__('Channel_doesnt_exist', {
+			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
+				msg: i18n.t('Channel_doesnt_exist', {
 					postProcess: 'sprintf',
 					sprintf: [channel],
 					lng: settings.get('Language') || 'en',
 				}),
 			});
+			return;
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, {
-			fields: { _id: 1 },
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, userId, {
+			projection: { _id: 1 },
 		});
 
 		if (subscription) {
@@ -44,7 +43,7 @@ slashCommands.add({
 			});
 		}
 
-		Meteor.call('joinRoom', room._id);
+		await Room.join({ room, user: { _id: userId } });
 	},
 	options: {
 		description: 'Join_the_given_channel',

@@ -1,5 +1,5 @@
-import util from 'util';
 import dns from 'dns';
+import util from 'util';
 
 const dnsResolveSRV = util.promisify(dns.resolveSrv);
 const dnsResolveTXT = util.promisify(dns.resolveTxt);

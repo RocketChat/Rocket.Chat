@@ -1,0 +1,11 @@
+{
+	"extends": "../../../tsconfig.base.server.json",
+	"compilerOptions": {
+		"allowJs": true,
+		"strictPropertyInitialization": false,
+		"outDir": "./dist",
+	},
+	"files": ["./src/service.ts"],
+	"include": ["../../../apps/meteor/definition/externals/meteor"],
+	"exclude": ["./dist"]
+}

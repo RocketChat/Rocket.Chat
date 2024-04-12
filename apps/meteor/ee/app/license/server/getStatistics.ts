@@ -1,9 +1,8 @@
 import { log } from 'console';
 
-import { CannedResponse, LivechatPriority, LivechatTag, LivechatUnit } from '@rocket.chat/models';
-
-import { getModules, getTags, hasLicense } from './license';
-import { Analytics } from '../../../../server/sdk';
+import { Analytics } from '@rocket.chat/core-services';
+import { License } from '@rocket.chat/license';
+import { CannedResponse, OmnichannelServiceLevelAgreements, LivechatRooms, LivechatTag, LivechatUnit, Users } from '@rocket.chat/models';
 
 type ENTERPRISE_STATISTICS = GenericStats & Partial<EEOnlyStats>;
 
@@ -17,13 +16,19 @@ type EEOnlyStats = {
 	livechatTags: number;
 	cannedResponses: number;
 	priorities: number;
+	slas: number;
 	businessUnits: number;
+	omnichannelPdfTranscriptRequested: number;
+	omnichannelPdfTranscriptSucceeded: number;
+	omnichannelRoomsWithSlas: number;
+	omnichannelRoomsWithPriorities: number;
+	livechatMonitors: number;
 };
 
 export async function getStatistics(): Promise<ENTERPRISE_STATISTICS> {
 	const genericStats: GenericStats = {
-		modules: getModules(),
-		tags: getTags().map(({ name }) => name),
+		modules: License.getModules(),
+		tags: License.getTags().map(({ name }) => name),
 		seatRequests: await Analytics.getSeatRequestCount(),
 	};
 
@@ -39,7 +44,7 @@ export async function getStatistics(): Promise<ENTERPRISE_STATISTICS> {
 
 // These models are only available on EE license so don't import them inside CE license as it will break the build
 async function getEEStatistics(): Promise<EEOnlyStats | undefined> {
-	if (!hasLicense('livechat-enterprise')) {
+	if (!License.hasModule('livechat-enterprise')) {
 		return;
 	}
 
@@ -49,7 +54,7 @@ async function getEEStatistics(): Promise<EEOnlyStats | undefined> {
 
 	// Number of livechat tags
 	statsPms.push(
-		LivechatTag.col.count().then((count) => {
+		LivechatTag.estimatedDocumentCount().then((count) => {
 			statistics.livechatTags = count;
 			return true;
 		}),
@@ -57,28 +62,62 @@ async function getEEStatistics(): Promise<EEOnlyStats | undefined> {
 
 	// Number of canned responses
 	statsPms.push(
-		CannedResponse.col.count().then((count) => {
+		CannedResponse.estimatedDocumentCount().then((count) => {
 			statistics.cannedResponses = count;
 			return true;
 		}),
 	);
 
-	// Number of Priorities
+	// Number of Service Level Agreements
 	statsPms.push(
-		LivechatPriority.col.count().then((count) => {
-			statistics.priorities = count;
+		OmnichannelServiceLevelAgreements.estimatedDocumentCount().then((count) => {
+			statistics.slas = count;
+			return true;
+		}),
+	);
+
+	statsPms.push(
+		LivechatRooms.countPrioritizedRooms().then((count) => {
+			statistics.omnichannelRoomsWithPriorities = count;
+			return true;
+		}),
+	);
+
+	statsPms.push(
+		LivechatRooms.countRoomsWithSla().then((count) => {
+			statistics.omnichannelRoomsWithSlas = count;
 			return true;
 		}),
 	);
 
 	// Number of business units
 	statsPms.push(
-		LivechatUnit.find({ type: 'u' })
-			.count()
-			.then((count) => {
-				statistics.businessUnits = count;
-				return true;
-			}),
+		LivechatUnit.countUnits().then((count) => {
+			statistics.businessUnits = count;
+			return true;
+		}),
+	);
+
+	statsPms.push(
+		// Total livechat monitors
+		Users.countByRole('livechat-monitor').then((count) => {
+			statistics.livechatMonitors = count;
+			return true;
+		}),
+	);
+
+	// Number of PDF transcript requested
+	statsPms.push(
+		LivechatRooms.countRoomsWithPdfTranscriptRequested().then((count) => {
+			statistics.omnichannelPdfTranscriptRequested = count;
+		}),
+	);
+
+	// Number of PDF transcript that succeeded
+	statsPms.push(
+		LivechatRooms.countRoomsWithTranscriptSent().then((count) => {
+			statistics.omnichannelPdfTranscriptSucceeded = count;
+		}),
 	);
 
 	await Promise.all(statsPms).catch(log);

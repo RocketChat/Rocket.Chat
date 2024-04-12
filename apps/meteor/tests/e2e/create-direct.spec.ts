@@ -1,7 +1,8 @@
-import { test, expect } from './utils/test';
+import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
+import { test, expect } from './utils/test';
 
-test.use({ storageState: 'admin-session.json' });
+test.use({ storageState: Users.admin.state });
 
 test.describe.serial('channel-direct-message', () => {
 	let poHomeChannel: HomeChannel;
@@ -13,7 +14,7 @@ test.describe.serial('channel-direct-message', () => {
 	});
 
 	test('expect create a direct room', async ({ page }) => {
-		await poHomeChannel.sidenav.openNewByLabel('Direct Messages');
+		await poHomeChannel.sidenav.openNewByLabel('Direct message');
 
 		await poHomeChannel.sidenav.inputDirectUsername.click();
 		await page.keyboard.type('rocket.cat');

@@ -1,53 +1,85 @@
-import type { IRoom, ILivechatVisitor, ILivechatDepartment } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { IRoom, ILivechatVisitor, ILivechatDepartment, TransferData, AtLeast } from '@rocket.chat/core-typings';
 import { LivechatDepartment } from '@rocket.chat/models';
 
-import { callbacks } from '../../../../../lib/callbacks';
 import { forwardRoomToDepartment } from '../../../../../app/livechat/server/lib/Helper';
-import { Messages } from '../../../../../app/models/server';
+import { settings } from '../../../../../app/settings/server';
+import { callbacks } from '../../../../../lib/callbacks';
 import { cbLogger } from '../lib/logger';
 
-const onTransferFailure = async ({
-	room,
-	guest,
-	transferData,
-}: {
-	room: IRoom;
-	guest: ILivechatVisitor;
-	transferData: { [k: string]: string | any };
-}) => {
-	cbLogger.debug(`Attempting to transfer room ${room._id} using fallback departments`);
-	const { departmentId } = transferData;
-	const department = (await LivechatDepartment.findOneById(departmentId, {
-		projection: { _id: 1, name: 1, fallbackForwardDepartment: 1 },
-	})) as Partial<ILivechatDepartment>;
-
-	if (!department?.fallbackForwardDepartment) {
+const onTransferFailure = async (
+	room: IRoom,
+	{
+		guest,
+		transferData,
+		department,
+	}: {
+		guest: ILivechatVisitor;
+		transferData: TransferData;
+		department: AtLeast<ILivechatDepartment, '_id' | 'fallbackForwardDepartment' | 'name'>;
+	},
+) => {
+	if (!isOmnichannelRoom(room)) {
 		return false;
 	}
 
-	cbLogger.debug(`Fallback department ${department.fallbackForwardDepartment} found for department ${department._id}. Redirecting`);
+	if (!department?.fallbackForwardDepartment?.length) {
+		return false;
+	}
+
+	// TODO: find enabled not archived here
+	const fallbackDepartment = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'name'>>(
+		department.fallbackForwardDepartment,
+		{
+			projection: { name: 1, _id: 1 },
+		},
+	);
+
+	if (!fallbackDepartment) {
+		return false;
+	}
+
+	const { hops: currentHops = 1 } = transferData;
+	const maxHops = settings.get<number>('Omnichannel_max_fallback_forward_depth');
+
+	if (currentHops > maxHops) {
+		cbLogger.debug({
+			msg: 'Max fallback forward depth reached. Chat wont be transfered',
+			roomId: room._id,
+			hops: currentHops,
+			maxHops,
+			departmentId: department._id,
+		});
+		return false;
+	}
+
 	const transferDataFallback = {
 		...transferData,
+		usingFallbackDep: true,
 		prevDepartment: department.name,
 		departmentId: department.fallbackForwardDepartment,
-		department: await LivechatDepartment.findOneById(department.fallbackForwardDepartment, {
-			fields: { name: 1, _id: 1 },
-		}),
+		department: fallbackDepartment,
+		hops: currentHops + 1,
 	};
 
 	const forwardSuccess = await forwardRoomToDepartment(room, guest, transferDataFallback);
-	if (forwardSuccess) {
-		const { _id, username } = transferData.transferredBy;
-		// The property is injected dynamically on ee folder
-		// @ts-expect-error Property 'createTransferFailedHistoryMessage' does not exist on type 'Messages'.
-		Messages.createTransferFailedHistoryMessage(room._id, '', { _id, username }, { transferData: transferDataFallback });
+	if (!forwardSuccess) {
+		cbLogger.debug({
+			msg: 'Fallback forward failed',
+			departmentId: department._id,
+			roomId: room._id,
+			fallbackDepartmentId: department.fallbackForwardDepartment,
+		});
+		return false;
 	}
 
-	return forwardSuccess;
+	cbLogger.info({
+		msg: 'Fallback forward success',
+		departmentId: department._id,
+		roomId: room._id,
+		fallbackDepartmentId: department.fallbackForwardDepartment,
+	});
+	return true;
 };
 
-callbacks.add(
-	'livechat:onTransferFailure',
-	({ room, guest, transferData }) => Promise.await(onTransferFailure({ room, guest, transferData })),
-	callbacks.priority.HIGH,
-);
+callbacks.add('livechat:onTransferFailure', onTransferFailure, callbacks.priority.HIGH);

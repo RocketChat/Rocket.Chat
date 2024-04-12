@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
 /**
  * Class representing AMI connection.
  * @remarks
@@ -9,24 +8,26 @@
  * happens in /etc/asterisk/manager.conf file.
  *
  */
-import type { IConnection } from '../IConnection';
-import { Logger } from '../../../../../lib/logger/Logger';
+import { Logger } from '@rocket.chat/logger';
+import Manager from 'asterisk-manager';
+
 import type { Command } from '../Command';
+import type { IConnection } from '../IConnection';
 import type { CallbackContext } from './CallbackContext';
 
-/**
- * Note : asterisk-manager does not provide any types.
- * We will have to write TS definitions to use import.
- * This shall be done in future.
- */
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const Manager = require('asterisk-manager');
-
 function makeLoggerDummy(logger: Logger): Logger {
-	logger.log = function log(..._args: any[]): void {};
-	logger.debug = function debug(..._args: any[]): void {};
-	logger.info = function info(..._args: any[]): void {};
-	logger.error = function error(..._args: any[]): void {};
+	logger.log = function log(..._args: any[]): void {
+		// do nothing.
+	};
+	logger.debug = function debug(..._args: any[]): void {
+		// do nothing.
+	};
+	logger.info = function info(..._args: any[]): void {
+		// do nothing.
+	};
+	logger.error = function error(..._args: any[]): void {
+		// do nothing.
+	};
 
 	return logger;
 }

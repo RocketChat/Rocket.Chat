@@ -1,9 +1,9 @@
 import { Component } from 'preact';
 import { withTranslation } from 'react-i18next';
 
+import { createClassName } from '../../helpers/createClassName';
 import { Button } from '../Button';
 import { ButtonGroup } from '../ButtonGroup';
-import { createClassName } from '../helpers';
 import styles from './styles.scss';
 
 export class Modal extends Component {
@@ -48,7 +48,12 @@ export class Modal extends Component {
 
 	render = ({ children, animated, open, ...props }) =>
 		open ? (
-			<div onTouchStart={this.handleTouchStart} onMouseDown={this.handleMouseDown} className={createClassName(styles, 'modal__overlay')}>
+			<div
+				data-qa-type='modal-overlay'
+				onTouchStart={this.handleTouchStart}
+				onMouseDown={this.handleMouseDown}
+				className={createClassName(styles, 'modal__overlay')}
+			>
 				<div className={createClassName(styles, 'modal', { animated })} {...props}>
 					{children}
 				</div>

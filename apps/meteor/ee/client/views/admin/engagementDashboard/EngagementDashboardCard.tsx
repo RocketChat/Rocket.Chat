@@ -1,6 +1,6 @@
-import { Box } from '@rocket.chat/fuselage';
-import { Card } from '@rocket.chat/ui-client';
-import React, { ReactElement, ReactNode } from 'react';
+import { Box, Card, CardTitle, CardBody } from '@rocket.chat/fuselage';
+import type { ReactElement, ReactNode } from 'react';
+import React from 'react';
 
 import EngagementDashboardCardErrorBoundary from './EngagementDashboardCardErrorBoundary';
 
@@ -10,16 +10,14 @@ type EngagementDashboardCardProps = {
 };
 
 const EngagementDashboardCard = ({ children, title = undefined }: EngagementDashboardCardProps): ReactElement => (
-	<Box mb='x16'>
-		<Card variant='light'>
-			{title && <Card.Title>{title}</Card.Title>}
-			<Card.Body>
-				<Card.Col>
-					<EngagementDashboardCardErrorBoundary>
-						<Box>{children}</Box>
-					</EngagementDashboardCardErrorBoundary>
-				</Card.Col>
-			</Card.Body>
+	<Box mb={16}>
+		<Card>
+			{title && <CardTitle>{title}</CardTitle>}
+			<CardBody>
+				<EngagementDashboardCardErrorBoundary>
+					<Box w='full'>{children}</Box>
+				</EngagementDashboardCardErrorBoundary>
+			</CardBody>
 		</Card>
 	</Box>
 );

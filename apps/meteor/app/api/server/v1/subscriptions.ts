@@ -1,12 +1,13 @@
-import { Meteor } from 'meteor/meteor';
+import { Subscriptions } from '@rocket.chat/models';
 import {
 	isSubscriptionsGetProps,
 	isSubscriptionsGetOneProps,
 	isSubscriptionsReadProps,
 	isSubscriptionsUnreadProps,
 } from '@rocket.chat/rest-typings';
-import { Subscriptions } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
+import { readMessages } from '../../../../server/lib/readMessages';
 import { API } from '../api';
 
 API.v1.addRoute(
@@ -27,7 +28,7 @@ API.v1.addRoute(
 				updatedSinceDate = new Date(updatedSince as string);
 			}
 
-			const result = await Meteor.call('subscriptions/get', updatedSinceDate);
+			const result = await Meteor.callAsync('subscriptions/get', updatedSinceDate);
 
 			return API.v1.success(
 				Array.isArray(result)
@@ -63,7 +64,7 @@ API.v1.addRoute(
 );
 
 /**
-	This API is suppose to mark any room as read.
+  This API is suppose to mark any room as read.
 
 	Method: POST
 	Route: api/v1/subscriptions.read
@@ -78,10 +79,10 @@ API.v1.addRoute(
 		validateParams: isSubscriptionsReadProps,
 	},
 	{
-		post() {
+		async post() {
+			const { readThreads = false } = this.bodyParams;
 			const roomId = 'rid' in this.bodyParams ? this.bodyParams.rid : this.bodyParams.roomId;
-
-			Meteor.call('readMessages', roomId);
+			await readMessages(roomId, this.userId, readThreads);
 
 			return API.v1.success();
 		},
@@ -95,8 +96,8 @@ API.v1.addRoute(
 		validateParams: isSubscriptionsUnreadProps,
 	},
 	{
-		post() {
-			Meteor.call('unreadMessages', (this.bodyParams as any).firstUnreadMessage, (this.bodyParams as any).roomId);
+		async post() {
+			await Meteor.callAsync('unreadMessages', (this.bodyParams as any).firstUnreadMessage, (this.bodyParams as any).roomId);
 
 			return API.v1.success();
 		},

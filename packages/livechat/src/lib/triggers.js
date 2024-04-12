@@ -1,74 +1,53 @@
 import mitt from 'mitt';
-import { route } from 'preact-router';
 
 import { Livechat } from '../api';
-import { upsert, asyncForEach } from '../components/helpers';
 import store from '../store';
-import { normalizeAgent } from './api';
-import { processUnread } from './main';
-import { parentCall } from './parentCall';
-import { createToken } from './random';
+import { actions } from './triggerActions';
+import { conditions } from './triggerConditions';
+import { hasTriggerCondition, isInIframe } from './triggerUtils';
 
-const agentCacheExpiry = 3600000;
-let agentPromise;
-const getAgent = (triggerAction) => {
-	if (agentPromise) {
-		return agentPromise;
+class IgnoredScheduledTriggerError extends Error {
+	constructor(message) {
+		super(message);
+		this.name = 'IgnoredScheduledTriggerError';
 	}
-
-	agentPromise = new Promise(async (resolve, reject) => {
-		const { params } = triggerAction;
-
-		if (params.sender === 'queue') {
-			const { state } = store;
-			const {
-				defaultAgent,
-				iframe: {
-					guest: { department },
-				},
-			} = state;
-			if (defaultAgent && defaultAgent.ts && Date.now() - defaultAgent.ts < agentCacheExpiry) {
-				return resolve(defaultAgent); // cache valid for 1
-			}
-
-			let agent;
-			try {
-				agent = await Livechat.nextAgent(department);
-			} catch (error) {
-				return reject(error);
-			}
-
-			store.setState({ defaultAgent: { ...agent, department, ts: Date.now() } });
-			resolve(agent);
-		} else if (params.sender === 'custom') {
-			resolve({
-				username: params.name,
-			});
-		} else {
-			reject('Unknown sender');
-		}
-	});
-
-	// expire the promise cache as well
-	setTimeout(() => {
-		agentPromise = null;
-	}, agentCacheExpiry);
-
-	return agentPromise;
-};
+}
 
 class Triggers {
+	/** @property {Triggers} instance*/
+
+	/** @property {boolean} _started */
+
+	/** @property {Array} _requests */
+
+	/** @property {Array} _triggers */
+
+	/** @property {boolean} _enabled */
+
+	/** @property {import('mitt').Emitter} callbacks */
+
 	constructor() {
 		if (!Triggers.instance) {
 			this._started = false;
-			this._requests = [];
 			this._triggers = [];
 			this._enabled = true;
-			Triggers.instance = this;
 			this.callbacks = mitt();
+			Triggers.instance = this;
 		}
 
 		return Triggers.instance;
+	}
+
+	set triggers(newTriggers) {
+		this._triggers = [...newTriggers];
+	}
+
+	set enabled(value) {
+		this._enabled = value;
+	}
+
+	get parentUrl() {
+		return isInIframe() ? store.state.parentUrl : window.location.href;
 	}
 
 	init() {
@@ -78,7 +57,6 @@ class Triggers {
 
 		const {
 			token,
-			firedTriggers = [],
 			config: { triggers },
 		} = store.state;
 		Livechat.credentials.token = token;
@@ -88,112 +66,142 @@ class Triggers {
 		}
 
 		this._started = true;
-		this._triggers = [...triggers];
 
-		firedTriggers.forEach((triggerId) => {
-			this._triggers.forEach((trigger) => {
-				if (trigger._id === triggerId) {
-					trigger.skip = true;
-				}
-			});
-		});
+		this._triggers = triggers;
+
+		this._syncTriggerRecords();
+
+		this._listenParentUrlChanges();
 	}
 
-	async fire(trigger) {
-		const { token, firedTriggers = [], user } = store.state;
-		if (!this._enabled || user) {
-			return;
+	async when(id, condition) {
+		const { user } = store.state;
+
+		if (!this._enabled) {
+			return new IgnoredScheduledTriggerError('Failed to schedule. Triggers disabled.');
 		}
-		const { actions } = trigger;
-		await asyncForEach(actions, (action) => {
-			if (action.name === 'send-message') {
-				trigger.skip = true;
 
-				getAgent(action).then(async (agent) => {
-					const ts = new Date();
+		if (condition.name !== 'after-guest-registration' && user) {
+			throw new IgnoredScheduledTriggerError('Failed to schedule. User already registered.');
+		}
 
-					const message = {
-						msg: action.params.msg,
-						token,
-						u: agent,
-						ts: ts.toISOString(),
-						_id: createToken(),
-						trigger: true,
-					};
+		const record = this._findRecordById(id);
 
-					await store.setState({
-						triggered: true,
-						messages: upsert(
-							store.state.messages,
-							message,
-							({ _id }) => _id === message._id,
-							({ ts }) => ts,
-						),
-					});
-					await processUnread();
+		if (record && record.status === 'scheduled') {
+			throw new IgnoredScheduledTriggerError('Trigger already scheduled. ignoring...');
+		}
 
-					if (agent && agent._id) {
-						await store.setState({ agent });
-						parentCall('callback', ['assign-agent', normalizeAgent(agent)]);
-					}
-
-					const foundCondition = trigger.conditions.find((c) => c.name === 'chat-opened-by-visitor');
-					if (!foundCondition) {
-						route('/trigger-messages');
-					}
-					store.setState({ minimized: false });
-				});
-			}
+		this._updateRecord(id, {
+			status: 'scheduled',
+			condition: condition.name,
+			error: null,
 		});
 
-		if (trigger.runOnce) {
-			trigger.skip = true;
-			firedTriggers.push(trigger._id);
-			store.setState({ firedTriggers });
+		try {
+			return await conditions[condition.name](condition);
+		} catch (error) {
+			this._updateRecord(id, { status: 'error', error });
+			throw error;
 		}
 	}
 
-	processRequest(request) {
-		this._requests.push(request);
+	async fire(id, action, params) {
+		if (!this._enabled) {
+			return Promise.reject('Triggers disabled');
+		}
+
+		try {
+			await actions[action.name](id, action, params);
+			this._updateRecord(id, { status: 'fired', action: action.name });
+		} catch (error) {
+			this._updateRecord(id, { status: 'error', error });
+			throw error;
+		}
 	}
 
-	processTriggers() {
-		this._triggers.forEach((trigger) => {
-			if (trigger.skip) {
-				return;
-			}
-			trigger.conditions.forEach((condition) => {
-				switch (condition.name) {
-					case 'page-url':
-						const hrefRegExp = new RegExp(condition.value, 'g');
-						if (hrefRegExp.test(window.location.href)) {
-							this.fire(trigger);
-						}
-						break;
-					case 'time-on-site':
-						trigger.timeout = setTimeout(() => {
-							this.fire(trigger);
-						}, parseInt(condition.value, 10) * 1000);
-						break;
-					case 'chat-opened-by-visitor':
-						const openFunc = () => {
-							this.fire(trigger);
-							this.callbacks.off('chat-opened-by-visitor', openFunc);
-						};
-						this.callbacks.on('chat-opened-by-visitor', openFunc);
-						break;
+	schedule(trigger) {
+		const id = trigger._id;
+		const [condition] = trigger.conditions;
+		const [action] = trigger.actions;
+
+		return this.when(id, condition)
+			.then(() => this.fire(id, action, condition))
+			.catch((error) => {
+				if (error instanceof IgnoredScheduledTriggerError) {
+					console.warn(`[Livechat Triggers]: ${error}`);
+					return;
 				}
+				console.error(`[Livechat Triggers]: ${error}`);
 			});
+	}
+
+	scheduleAll(triggers) {
+		triggers.map((trigger) => this.schedule(trigger));
+	}
+
+	async processTrigger(id) {
+		this.processTriggers({ force: true, filter: (trigger) => trigger.conditions.some(({ name }) => name === id) });
+	}
+
+	async processTriggers({ force = false, filter = () => true } = {}) {
+		const triggers = this._triggers.filter((trigger) => force || this._isValid(trigger)).filter(filter);
+		this.scheduleAll(triggers);
+	}
+
+	hasTriggersBeforeRegistration() {
+		if (!this._triggers.length) {
+			return false;
+		}
+
+		const records = this._findRecordsByStatus(['scheduled', 'fired']);
+		return records.some((r) => r.condition !== 'after-guest-registration');
+	}
+
+	_listenParentUrlChanges() {
+		store.on('change', ([state, prevState]) => {
+			if (prevState.parentUrl !== state.parentUrl) {
+				this.processTriggers({ force: true, filter: hasTriggerCondition('page-url') });
+			}
 		});
-		this._requests = [];
 	}
 
-	set triggers(newTriggers) {
-		this._triggers = [...newTriggers];
+	_isValid(trigger) {
+		const record = this._findRecordById(trigger._id);
+		return !trigger.runOnce || !record?.status === 'fired';
 	}
 
-	set enabled(value) {
-		this._enabled = value;
+	_updateRecord(id, data) {
+		const { triggersRecords = {} } = store.state;
+		const oldRecord = this._findRecordById(id);
+		const newRecord = { ...oldRecord, id, ...data };
+
+		store.setState({ triggersRecords: { ...triggersRecords, [id]: newRecord } });
+	}
+
+	_findRecordsByStatus(status) {
+		const { triggersRecords = {} } = store.state;
+		const records = Object.values(triggersRecords);
+
+		return records.filter((e) => status.includes(e.status));
+	}
+
+	_findRecordById(id) {
+		const { triggersRecords = {} } = store.state;
+
+		return triggersRecords[id];
+	}
+
+	_syncTriggerRecords() {
+		const { triggersRecords = {} } = store.state;
+
+		const syncedTriggerRecords = this._triggers
+			.filter((trigger) => trigger.id in triggersRecords)
+			.reduce((acc, trigger) => {
+				acc[trigger.id] = triggersRecords[trigger.id];
+				return acc;
+			}, {});
+
+		store.setState({ triggersRecords: syncedTriggerRecords });
 	}
 }
 

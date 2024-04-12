@@ -1,12 +1,11 @@
 import type { Job } from '@rocket.chat/agenda';
 import { Agenda } from '@rocket.chat/agenda';
-import { ObjectID } from 'bson';
-import { MongoInternals } from 'meteor/mongo';
+import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import type { IProcessor, IOnetimeSchedule, IRecurringSchedule, IJobContext } from '@rocket.chat/apps-engine/definition/scheduler';
 import { StartupType } from '@rocket.chat/apps-engine/definition/scheduler';
 import { SchedulerBridge } from '@rocket.chat/apps-engine/server/bridges/SchedulerBridge';
-
-import type { AppServerOrchestrator } from '../orchestrator';
+import { ObjectID } from 'bson';
+import { MongoInternals } from 'meteor/mongo';
 
 function _callProcessor(processor: IProcessor['processor']): (job: Job) => Promise<void> {
 	return (job) => {
@@ -17,7 +16,13 @@ function _callProcessor(processor: IProcessor['processor']): (job: Job) => Promi
 
 		data.jobId = job.attrs._id.toString();
 
-		return (processor as (jobContext: IJobContext) => Promise<void>)(data);
+		return (processor as (jobContext: IJobContext) => Promise<void>)(data).then(async () => {
+			// ensure the 'normal' ('onetime' in our vocab) type job is removed after it is run
+			// as Agenda does not remove it from the DB
+			if (job.attrs.type === 'normal') {
+				await job.agenda.cancel({ _id: job.attrs._id });
+			}
+		});
 	};
 }
 
@@ -30,8 +35,7 @@ export class AppSchedulerBridge extends SchedulerBridge {
 
 	private scheduler: Agenda;
 
-	// eslint-disable-next-line no-empty-function
-	constructor(private readonly orch: AppServerOrchestrator) {
+	constructor(private readonly orch: IAppServerOrchestrator) {
 		super();
 		this.scheduler = new Agenda({
 			mongo: (MongoInternals.defaultRemoteCollectionDriver().mongo as any).client.db(),

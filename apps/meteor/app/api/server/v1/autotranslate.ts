@@ -1,13 +1,13 @@
-import { Meteor } from 'meteor/meteor';
+import { Messages } from '@rocket.chat/models';
 import {
 	isAutotranslateSaveSettingsParamsPOST,
 	isAutotranslateTranslateMessageParamsPOST,
 	isAutotranslateGetSupportedLanguagesParamsGET,
 } from '@rocket.chat/rest-typings';
+import { Meteor } from 'meteor/meteor';
 
-import { API } from '../api';
 import { settings } from '../../../settings/server';
-import { Messages } from '../../../models/server';
+import { API } from '../api';
 
 API.v1.addRoute(
 	'autotranslate.getSupportedLanguages',
@@ -16,12 +16,12 @@ API.v1.addRoute(
 		validateParams: isAutotranslateGetSupportedLanguagesParamsGET,
 	},
 	{
-		get() {
+		async get() {
 			if (!settings.get('AutoTranslate_Enabled')) {
 				return API.v1.failure('AutoTranslate is disabled.');
 			}
 			const { targetLanguage } = this.queryParams;
-			const languages = Meteor.call('autoTranslate.getSupportedLanguages', targetLanguage);
+			const languages = await Meteor.callAsync('autoTranslate.getSupportedLanguages', targetLanguage);
 
 			return API.v1.success({ languages: languages || [] });
 		},
@@ -35,7 +35,7 @@ API.v1.addRoute(
 		validateParams: isAutotranslateSaveSettingsParamsPOST,
 	},
 	{
-		post() {
+		async post() {
 			const { roomId, field, value, defaultLanguage } = this.bodyParams;
 			if (!settings.get('AutoTranslate_Enabled')) {
 				return API.v1.failure('AutoTranslate is disabled.');
@@ -58,7 +58,9 @@ API.v1.addRoute(
 				return API.v1.failure('The bodyParam "autoTranslateLanguage" must be a string.');
 			}
 
-			Meteor.call('autoTranslate.saveSettings', roomId, field, value === true ? '1' : String(value).valueOf(), { defaultLanguage });
+			await Meteor.callAsync('autoTranslate.saveSettings', roomId, field, value === true ? '1' : String(value).valueOf(), {
+				defaultLanguage,
+			});
 
 			return API.v1.success();
 		},
@@ -72,7 +74,7 @@ API.v1.addRoute(
 		validateParams: isAutotranslateTranslateMessageParamsPOST,
 	},
 	{
-		post() {
+		async post() {
 			const { messageId, targetLanguage } = this.bodyParams;
 			if (!settings.get('AutoTranslate_Enabled')) {
 				return API.v1.failure('AutoTranslate is disabled.');
@@ -80,12 +82,12 @@ API.v1.addRoute(
 			if (!messageId) {
 				return API.v1.failure('The bodyParam "messageId" is required.');
 			}
-			const message = Messages.findOneById(messageId);
+			const message = await Messages.findOneById(messageId);
 			if (!message) {
 				return API.v1.failure('Message not found.');
 			}
 
-			const translatedMessage = Meteor.call('autoTranslate.translateMessage', message, targetLanguage);
+			const translatedMessage = await Meteor.callAsync('autoTranslate.translateMessage', message, targetLanguage);
 
 			return API.v1.success({ message: translatedMessage });
 		},
