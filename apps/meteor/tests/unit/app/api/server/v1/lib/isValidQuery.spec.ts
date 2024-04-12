@@ -1,5 +1,5 @@
-import { expect } from 'chai';
-import { describe, it } from 'mocha';
+import { describe, it } from 'node:test';
+import * as assert from 'node:assert';
 
 import { isValidQuery } from '../../../../../../../app/api/server/lib/isValidQuery';
 
@@ -17,8 +17,9 @@ describe('isValidQuery', () => {
 					},
 				],
 			};
-			expect(isValidQuery(query, props, [])).to.be.false;
-			expect(isValidQuery.errors.length).to.be.equals(1);
+
+			assert.strictEqual(isValidQuery(query, props, []), false);
+			assert.strictEqual(isValidQuery.errors.length, 1);
 		});
 
 		it('should return true if the query contains operation and the attributes are set in the props array ', () => {
@@ -33,8 +34,9 @@ describe('isValidQuery', () => {
 					},
 				],
 			};
-			expect(isValidQuery(query, props, ['$or'])).to.be.true;
-			expect(isValidQuery.errors.length).to.be.equals(0);
+
+			assert.strictEqual(isValidQuery(query, props, ['$or']), true);
+			assert.strictEqual(isValidQuery.errors.length, 0);
 		});
 
 		it('should return false if the query contains operations allowed but some attributes are not set in the props array ', () => {
@@ -49,8 +51,9 @@ describe('isValidQuery', () => {
 					},
 				],
 			};
-			expect(isValidQuery(query, props, ['$or'])).to.be.false;
-			expect(isValidQuery.errors.length).to.be.equals(1);
+
+			assert.strictEqual(isValidQuery(query, props, ['$or']), false);
+			assert.strictEqual(isValidQuery.errors.length, 1);
 		});
 
 		it('should return true if the query contains only attributes set in the props array ', () => {
@@ -59,8 +62,9 @@ describe('isValidQuery', () => {
 				_id: '123',
 				name: '456',
 			};
-			expect(isValidQuery(query, props, [])).to.be.true;
-			expect(isValidQuery.errors.length).to.be.equals(0);
+
+			assert.strictEqual(isValidQuery(query, props, []), true);
+			assert.strictEqual(isValidQuery.errors.length, 0);
 		});
 
 		it('should return false if the query contains an attribute that is not in the props array ', () => {
@@ -69,8 +73,9 @@ describe('isValidQuery', () => {
 				_id: '123',
 				name: '456',
 			};
-			expect(isValidQuery(query, props, [])).to.be.false;
-			expect(isValidQuery.errors.length).to.be.equals(1);
+
+			assert.strictEqual(isValidQuery(query, props, []), false);
+			assert.strictEqual(isValidQuery.errors.length, 1);
 		});
 	});
 
@@ -83,8 +88,9 @@ describe('isValidQuery', () => {
 					name: '456',
 				},
 			};
-			expect(isValidQuery(query, props, [])).to.be.false;
-			expect(isValidQuery.errors.length).to.be.equals(1);
+
+			assert.strictEqual(isValidQuery(query, props, []), false);
+			assert.strictEqual(isValidQuery.errors.length, 1);
 		});
 
 		it('should return false if the query contains deep attributes that are and are not set as allowed', () => {
@@ -95,8 +101,9 @@ describe('isValidQuery', () => {
 					name: '456',
 				},
 			};
-			expect(isValidQuery(query, props, [])).to.be.false;
-			expect(isValidQuery.errors.length).to.be.equals(1);
+
+			assert.strictEqual(isValidQuery(query, props, []), false);
+			assert.strictEqual(isValidQuery.errors.length, 1);
 		});
 
 		it('should return true if the query contains deep attributes that are set on allowed keys', () => {
@@ -107,8 +114,9 @@ describe('isValidQuery', () => {
 					name: '456',
 				},
 			};
-			expect(isValidQuery(query, props, [])).to.be.true;
-			expect(isValidQuery.errors.length).to.be.equals(0);
+
+			assert.strictEqual(isValidQuery(query, props, []), true);
+			assert.strictEqual(isValidQuery.errors.length, 0);
 		});
 
 		it('should return true if the query contains deep attributes that are set on allowed keys even for many layers', () => {
@@ -122,8 +130,9 @@ describe('isValidQuery', () => {
 					},
 				},
 			};
-			expect(isValidQuery(query, props, [])).to.be.true;
-			expect(isValidQuery.errors.length).to.be.equals(0);
+
+			assert.strictEqual(isValidQuery(query, props, []), true);
+			assert.strictEqual(isValidQuery.errors.length, 0);
 		});
 	});
 
@@ -136,8 +145,9 @@ describe('isValidQuery', () => {
 					name: '456',
 				},
 			};
-			expect(isValidQuery(query, props, [])).to.be.true;
-			expect(isValidQuery.errors.length).to.be.equals(0);
+
+			assert.strictEqual(isValidQuery(query, props, []), true);
+			assert.strictEqual(isValidQuery.errors.length, 0);
 		});
 	});
 
@@ -150,16 +160,18 @@ describe('isValidQuery', () => {
 					name: '456',
 				},
 			};
-			expect(isValidQuery(query, props, [])).to.be.true;
-			expect(isValidQuery.errors.length).to.be.equals(0);
+
+			assert.strictEqual(isValidQuery(query, props, []), true);
+			assert.strictEqual(isValidQuery.errors.length, 0);
 		});
 		it('should return false if query uses * but the operation is not allowed', () => {
 			const props = ['user', '*'];
 			const query = {
 				$or: [{ user: '123' }, { user: '456' }],
 			};
-			expect(isValidQuery(query, props, [])).to.be.false;
-			expect(isValidQuery.errors.length).to.be.equals(1);
+
+			assert.strictEqual(isValidQuery(query, props, []), false);
+			assert.strictEqual(isValidQuery.errors.length, 1);
 		});
 	});
 
@@ -174,8 +186,9 @@ describe('isValidQuery', () => {
 					},
 				},
 			};
-			expect(isValidQuery(query, props, ['$or'])).to.be.true;
-			expect(isValidQuery.errors.length).to.be.equals(0);
+
+			assert.strictEqual(isValidQuery(query, props, ['$or']), true);
+			assert.strictEqual(isValidQuery.errors.length, 0);
 		});
 
 		it('should return false for services.password.reset.token', () => {
@@ -187,13 +200,13 @@ describe('isValidQuery', () => {
 				],
 				$and: [{ username: 'g1' }, { 'services.password.reset.token': { $regex: '.*' } }],
 			};
-			expect(
+
+			assert.strictEqual(
 				isValidQuery(
 					query,
 					['name', 'username', 'emails', 'roles', 'status', 'active', 'avatarETag', 'lastLogin', 'email.address.*', 'username.*', 'name.*'],
 					['$or', '$and'],
-				),
-			).to.be.false;
+				), false);
 		});
 		it('should return false for services.totp.secret', () => {
 			const query = {
@@ -204,13 +217,13 @@ describe('isValidQuery', () => {
 				],
 				$and: [{ username: 'g1' }, { 'services.totp.secret': { $regex: '.*' } }],
 			};
-			expect(
+
+			assert.strictEqual(
 				isValidQuery(
 					query,
 					['name', 'username', 'emails', 'roles', 'status', 'active', 'avatarETag', 'lastLogin', 'email.address.*', 'username.*', 'name.*'],
 					['$or', '$and'],
-				),
-			).to.be.false;
+				), false);
 		});
 	});
 });

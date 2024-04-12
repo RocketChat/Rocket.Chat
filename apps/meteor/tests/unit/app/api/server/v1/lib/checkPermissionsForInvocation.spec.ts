@@ -1,6 +1,6 @@
-import { expect } from 'chai';
-import { describe, it } from 'mocha';
-import mock from 'proxyquire';
+import { describe, it, mock } from 'node:test';
+import * as assert from 'node:assert';
+import proxyquire from 'proxyquire';
 
 import type { PermissionsPayload } from '../../../../../../../app/api/server/api.helpers';
 
@@ -22,14 +22,15 @@ const mocks = {
 	},
 };
 
-const { checkPermissionsForInvocation } = mock.noCallThru().load('../../../../../../../app/api/server/api.helpers', mocks);
+const { checkPermissionsForInvocation } = proxyquire.noCallThru().load('../../../../../../../app/api/server/api.helpers', mocks);
 
 describe('checkPermissionsForInvocation', () => {
+	const fn = mock.fn(checkPermissionsForInvocation);
+
 	it('should return false when no permissions are provided', async () => {
-		const options = {
-			permissionsRequired: {},
-		};
-		expect(await checkPermissionsForInvocation('4r3fsadfasf', options.permissionsRequired, 'GET')).to.be.false;
+		const options = { permissionsRequired: {} };
+
+		assert.strictEqual(await fn('4r3fsadfasf', options.permissionsRequired, 'GET'), false);
 	});
 
 	it('should return false when no config is provided for that specific method', async () => {
@@ -41,7 +42,8 @@ describe('checkPermissionsForInvocation', () => {
 				},
 			},
 		};
-		expect(await checkPermissionsForInvocation('4r3fsadfasf', options.permissionsRequired, 'POST')).to.be.false;
+
+		assert.strictEqual(await fn('4r3fsadfasf', options.permissionsRequired, 'POST'), false);
 	});
 
 	it('should return true path is configured with empty permissions array', async () => {
@@ -50,7 +52,8 @@ describe('checkPermissionsForInvocation', () => {
 				GET: { permissions: [], operation: 'hasAll' },
 			},
 		};
-		expect(await checkPermissionsForInvocation('4r3fsadfasf', options.permissionsRequired, 'GET')).to.be.true;
+
+		assert.strictEqual(await fn('4r3fsadfasf', options.permissionsRequired, 'GET'), true);
 	});
 
 	it('should return true when user has all permissions', async () => {
@@ -62,7 +65,8 @@ describe('checkPermissionsForInvocation', () => {
 				},
 			},
 		};
-		expect(await checkPermissionsForInvocation('4r3fsadfasf', options.permissionsRequired, 'GET')).to.be.true;
+
+		assert.strictEqual(await fn('4r3fsadfasf', options.permissionsRequired, 'GET'), true);
 	});
 
 	it('should read permissions config from * when request method provided doesnt have config', async () => {
@@ -78,7 +82,8 @@ describe('checkPermissionsForInvocation', () => {
 				},
 			},
 		};
-		expect(await checkPermissionsForInvocation('4r3fsadfasf', options.permissionsRequired, 'PUT')).to.be.true;
+
+		assert.strictEqual(await fn('4r3fsadfasf', options.permissionsRequired, 'PUT'), true);
 	});
 
 	it('should return false when user has no permissions', async () => {
@@ -90,7 +95,8 @@ describe('checkPermissionsForInvocation', () => {
 				},
 			},
 		};
-		expect(await checkPermissionsForInvocation('4r3fsadfasf4', options.permissionsRequired, 'GET')).to.be.false;
+
+		assert.strictEqual(await fn('4r3fsadfasf4', options.permissionsRequired, 'GET'), false);
 	});
 
 	it('should return false when operation is invalid', async () => {
@@ -103,10 +109,11 @@ describe('checkPermissionsForInvocation', () => {
 				},
 			},
 		};
-		expect(await checkPermissionsForInvocation('4r3fsadfasf', options.permissionsRequired, 'GET')).to.be.false;
+
+		assert.strictEqual(await fn('4r3fsadfasf', options.permissionsRequired, 'GET'), false);
 	});
 
-	it('should return true when operation is hasAny and user has at least one listed permission', async () => {
+	it('should return true when operation is hasAny and user has at least one listed permission', async (t) => {
 		const options: { permissionsRequired: PermissionsPayload } = {
 			permissionsRequired: {
 				GET: {
@@ -115,6 +122,7 @@ describe('checkPermissionsForInvocation', () => {
 				},
 			},
 		};
-		expect(await checkPermissionsForInvocation('4r3fsadfasf', options.permissionsRequired, 'GET')).to.be.true;
+
+		assert.strictEqual(await fn('4r3fsadfasf', options.permissionsRequired, 'GET'), true);
 	});
 });
