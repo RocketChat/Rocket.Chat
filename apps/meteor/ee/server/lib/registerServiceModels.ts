@@ -1,11 +1,5 @@
-import type {
-	ILivechatDepartmentAgents,
-	ILivechatInquiryRecord,
-	ISetting,
-	ISubscription,
-	RocketChatRecordDeleted,
-} from '@rocket.chat/core-typings';
-import { registerModel, db } from '@rocket.chat/models';
+import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import { registerModel, db, trash } from '@rocket.chat/models';
 import type { Collection, Db } from 'mongodb';
 
 import { EmailInboxRaw } from '../../../server/models/raw/EmailInbox';
@@ -32,27 +26,25 @@ import { UsersSessionsRaw } from '../../../server/models/raw/UsersSessions';
 import { LivechatPriorityRaw } from '../models/raw/LivechatPriority';
 
 // TODO add trash param to appropiate model instances
-export function registerServiceModels(mongoDatabase: Db, trash?: Collection<RocketChatRecordDeleted<any>>): void {
+export function registerServiceModels(mongoDatabase: Db, trashCollection?: Collection<RocketChatRecordDeleted<any>>): void {
 	db.register(mongoDatabase);
+
+	if (trashCollection) {
+		trash.register(trashCollection);
+	}
 
 	registerModel('IRolesModel', () => new RolesRaw());
 	registerModel('IRoomsModel', () => new RoomsRaw());
-	registerModel('ISettingsModel', () => new SettingsRaw(trash as Collection<RocketChatRecordDeleted<ISetting>>));
-	registerModel('ISubscriptionsModel', () => new SubscriptionsRaw(trash as Collection<RocketChatRecordDeleted<ISubscription>>));
+	registerModel('ISettingsModel', () => new SettingsRaw());
+	registerModel('ISubscriptionsModel', () => new SubscriptionsRaw());
 	registerModel('ITeamModel', () => new TeamRaw());
 	registerModel('ITeamMemberModel', () => new TeamMemberRaw());
 	registerModel('IUsersModel', () => new UsersRaw());
 
 	registerModel('IMessagesModel', () => new MessagesRaw());
 
-	registerModel(
-		'ILivechatInquiryModel',
-		() => new LivechatInquiryRaw(trash as Collection<RocketChatRecordDeleted<ILivechatInquiryRecord>>),
-	);
-	registerModel(
-		'ILivechatDepartmentAgentsModel',
-		() => new LivechatDepartmentAgentsRaw(trash as Collection<RocketChatRecordDeleted<ILivechatDepartmentAgents>>),
-	);
+	registerModel('ILivechatInquiryModel', () => new LivechatInquiryRaw());
+	registerModel('ILivechatDepartmentAgentsModel', () => new LivechatDepartmentAgentsRaw());
 	registerModel('IUsersSessionsModel', () => new UsersSessionsRaw());
 	registerModel('IPermissionsModel', () => new PermissionsRaw());
 	registerModel('ILoginServiceConfigurationModel', () => new LoginServiceConfigurationRaw());

@@ -1,3 +1,4 @@
+import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type {
 	IAnalyticsModel,
 	IAvatarsModel,
@@ -79,7 +80,7 @@ import type {
 	IMigrationsModel,
 	IModerationReportsModel,
 } from '@rocket.chat/model-typings';
-import type { Db } from 'mongodb';
+import type { Db, Collection } from 'mongodb';
 
 import { proxify } from './proxify';
 
@@ -174,3 +175,6 @@ export const Migrations = proxify<IMigrationsModel>('IMigrationsModel');
 export const ModerationReports = proxify<IModerationReportsModel>('IModerationReportsModel');
 
 export const db = proxify<Db>('Db');
+
+export const trash = proxify<Collection<RocketChatRecordDeleted<any>>>('Collection<RocketChatRecordDeleted<any>');
+

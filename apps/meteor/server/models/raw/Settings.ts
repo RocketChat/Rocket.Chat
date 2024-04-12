@@ -1,11 +1,12 @@
-import type { ISetting, ISettingColor, ISettingSelectOption, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { ISetting, ISettingColor, ISettingSelectOption } from '@rocket.chat/core-typings';
 import type { ISettingsModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Filter, UpdateFilter, UpdateResult, Document, FindOptions } from 'mongodb';
+import { trash } from '@rocket.chat/models';
+import type { FindCursor, Filter, UpdateFilter, UpdateResult, Document, FindOptions } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
 export class SettingsRaw extends BaseRaw<ISetting> implements ISettingsModel {
-	constructor(trash?: Collection<RocketChatRecordDeleted<ISetting>>) {
+	constructor() {
 		super('settings', trash);
 	}
 

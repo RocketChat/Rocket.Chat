@@ -1,22 +1,12 @@
-import type { ILivechatDepartmentAgents, RocketChatRecordDeleted, IUser } from '@rocket.chat/core-typings';
+import type { ILivechatDepartmentAgents, IUser } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatDepartmentAgentsModel } from '@rocket.chat/model-typings';
-import { Users } from '@rocket.chat/models';
-import type {
-	Collection,
-	FindCursor,
-	Filter,
-	FindOptions,
-	Document,
-	UpdateResult,
-	DeleteResult,
-	IndexDescription,
-	SortDirection,
-} from 'mongodb';
+import { trash, Users } from '@rocket.chat/models';
+import type { FindCursor, Filter, FindOptions, Document, UpdateResult, DeleteResult, IndexDescription, SortDirection } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
 export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgents> implements ILivechatDepartmentAgentsModel {
-	constructor(trash?: Collection<RocketChatRecordDeleted<ILivechatDepartmentAgents>>) {
+	constructor() {
 		super('livechat_department_agents', trash);
 	}
 

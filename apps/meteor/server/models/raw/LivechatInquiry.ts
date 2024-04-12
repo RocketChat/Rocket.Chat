@@ -1,14 +1,13 @@
 import type {
 	ILivechatInquiryRecord,
 	IMessage,
-	RocketChatRecordDeleted,
 	OmnichannelSortingMechanismSettingType,
 	ILivechatPriority,
 } from '@rocket.chat/core-typings';
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import type { ILivechatInquiryModel } from '@rocket.chat/model-typings';
+import { trash } from '@rocket.chat/models';
 import type {
-	Collection,
 	Document,
 	FindOptions,
 	DistinctOptions,
@@ -26,7 +25,7 @@ import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { BaseRaw } from './BaseRaw';
 
 export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implements ILivechatInquiryModel {
-	constructor(trash?: Collection<RocketChatRecordDeleted<ILivechatInquiryRecord>>) {
+	constructor() {
 		super('livechat_inquiry', trash);
 	}
 
