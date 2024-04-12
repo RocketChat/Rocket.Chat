@@ -82,6 +82,27 @@ import type {
 } from '@rocket.chat/model-typings';
 import type { Db, Collection } from 'mongodb';
 
+import { EmailInboxRaw } from './models/EmailInbox';
+import { InstanceStatusRaw } from './models/InstanceStatus';
+import { IntegrationHistoryRaw } from './models/IntegrationHistory';
+import { IntegrationsRaw } from './models/Integrations';
+import { LivechatDepartmentAgentsRaw } from './models/LivechatDepartmentAgents';
+import { LivechatInquiryRaw } from './models/LivechatInquiry';
+import { LivechatRoomsRaw } from './models/LivechatRooms';
+import { LivechatVisitorsRaw } from './models/LivechatVisitors';
+import { LoginServiceConfigurationRaw } from './models/LoginServiceConfiguration';
+import { MessagesRaw } from './models/Messages';
+import { PbxEventsRaw } from './models/PbxEvents';
+import { PermissionsRaw } from './models/Permissions';
+import { RolesRaw } from './models/Roles';
+import { RoomsRaw } from './models/Rooms';
+import { SettingsRaw } from './models/Settings';
+import { SubscriptionsRaw } from './models/Subscriptions';
+import { TeamRaw } from './models/Team';
+import { TeamMemberRaw } from './models/TeamMember';
+import { UploadsRaw } from './models/Uploads';
+import { UsersRaw } from './models/Users';
+import { UsersSessionsRaw } from './models/UsersSessions';
 import { proxify } from './proxify';
 
 const prefix = 'rocketchat_';
@@ -178,3 +199,36 @@ export const db = proxify<Db>('Db');
 
 export const trash = proxify<Collection<RocketChatRecordDeleted<any>>>('Collection<RocketChatRecordDeleted<any>');
 
+Roles.register(() => new RolesRaw());
+Rooms.register(() => new RoomsRaw());
+Team.register(() => new TeamRaw());
+TeamMember.register(() => new TeamMemberRaw());
+
+Users.register(() => new UsersRaw() as any);
+Messages.register(() => new MessagesRaw());
+UsersSessions.register(() => new UsersSessionsRaw());
+
+Permissions.register(() => new PermissionsRaw());
+
+LoginServiceConfiguration.register(() => new LoginServiceConfigurationRaw());
+
+InstanceStatus.register(() => new InstanceStatusRaw());
+
+IntegrationHistory.register(() => new IntegrationHistoryRaw());
+
+Integrations.register(() => new IntegrationsRaw());
+
+EmailInbox.register(() => new EmailInboxRaw());
+
+LivechatPriority.register(() => new LivechatPriorityRaw());
+LivechatRooms.register(() => new LivechatRoomsRaw());
+LivechatVisitors.register(() => new LivechatVisitorsRaw());
+
+Uploads.register(() => new UploadsRaw());
+
+PbxEvents.register(() => new PbxEventsRaw());
+
+Settings.register(() => new SettingsRaw());
+Subscriptions.register(() => new SubscriptionsRaw());
+LivechatInquiry.register(() => new LivechatInquiryRaw());
+LivechatDepartmentAgents.register(() => new LivechatDepartmentAgentsRaw());
